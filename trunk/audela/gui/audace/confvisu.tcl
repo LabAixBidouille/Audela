@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.81 2008-06-26 19:04:02 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.82 2008-11-03 22:01:23 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -181,7 +181,7 @@ namespace eval ::confVisu {
          #--- je ferme la camera associee a la visu
          ::confCam::stopItem $private($visuNo,camItem)
 
-         #--- je memorise les variables dans conf(..)
+         #--- je memorise les variables dans conf(.)
          set conf(audace,visu$visuNo,wmgeometry)     [wm geometry $::confVisu::private($visuNo,This)]
          set conf(seuils,visu$visuNo,intervalleSHSB) $private($visuNo,intervalleSHSB)
 
@@ -888,7 +888,8 @@ namespace eval ::confVisu {
    proc addCameraListener { visuNo cmd } {
       variable private
 
-      trace add execution ::confVisu::setCamera  leave $cmd
+     ### trace add execution ::confVisu::setCamera leave $cmd
+      trace add variable ::confVisu::private($visuNo,camItem) write $cmd
    }
 
    #------------------------------------------------------------
@@ -901,7 +902,8 @@ namespace eval ::confVisu {
    proc removeCameraListener { visuNo cmd } {
       variable private
 
-      trace remove execution ::confVisu::setCamera leave $cmd
+     ### trace remove execution ::confVisu::setCamera leave $cmd
+      trace remove variable ::confVisu::private($visuNo,camItem) write $cmd
    }
 
    #------------------------------------------------------------
@@ -914,7 +916,7 @@ namespace eval ::confVisu {
    proc addFileNameListener { visuNo cmd } {
       variable private
 
-      ##trace add execution ::confVisu::setFileName leave $cmd
+     ### trace add execution ::confVisu::setFileName leave $cmd
       trace add variable ::confVisu::private($visuNo,lastFileName) write $cmd
    }
 
@@ -928,7 +930,7 @@ namespace eval ::confVisu {
    proc removeFileNameListener { visuNo cmd } {
       variable private
 
-      ###trace remove execution ::confVisu::setFileName leave $cmd
+     ### trace remove execution ::confVisu::setFileName leave $cmd
       trace remove variable ::confVisu::private($visuNo,lastFileName) write $cmd
    }
 
