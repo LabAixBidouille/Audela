@@ -2,7 +2,7 @@
 # Fichier : ros.tcl
 # Description : Function to launch Robotic Observatory Software installation
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: ros.tcl,v 1.6 2008-06-29 21:39:45 robertdelmas Exp $
+# Mise a jour $Id: ros.tcl,v 1.7 2008-11-03 11:58:34 alainklotz Exp $
 #
 
 proc ros { args } {
@@ -27,14 +27,13 @@ proc ros { args } {
       #set syntax "ros gardien send SET init|roof_open|roof_close|flatfield_on|flatfield_off|dark_on|dark_off|native ?params?"
       set action2 [lindex $args 1]
       set params [lrange $args 2 end]
-      source "[pwd]/../ros/root.tcl"
-      #source "$ros(root,ros)/src/common/variables_globales.tcl"
-      #set roc(nameofexecutable) gardien
-      #source "$ros(root,conf)/conf/src/common/variables_sites.tcl"
-      set req(gardien,gar,host) 127.0.0.1
-      set req(gardien,gar,port) 30001
-      source "[pwd]/../gui/audace/socket_tools.tcl"
-      #puts "socket_client_open clientgar2 $req(gardien,gar,host) [expr $req(gardien,gar,port)+1]"
+      set err [catch {source "[pwd]/../ros/root.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../ros/root.tcl" }
+      set ros(falsenameofexecutable) majordome
+      source "$ros(root,ros)/src/common/variables_globales.tcl"
+      unset ros(falsenameofexecutable)
+      set req(gardien,gar,host) $req(majordome,gardien,host)
+      set req(gardien,gar,port) $req(majordome,gardien,port)
+      set err [catch {source "[pwd]/../gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../gui/audace/socket_tools.tcl" }
       set err [catch {socket_client_open clientgar2 $req(gardien,gar,host) [expr $req(gardien,gar,port)+1]} msg]
       if {$err==1} {
          set texte $msg
@@ -66,14 +65,13 @@ proc ros { args } {
       # case of native : ros telescope send SET native #j-
       set action2 [lindex $args 1]
       set params [lrange $args 2 end]
-      source "[pwd]/../ros/root.tcl"
-      #source "$ros(root,ros)/src/common/variables_globales.tcl"
-      #set roc(nameofexecutable) telescope
-      #source "$ros(root,conf)/conf/src/common/variables_sites.tcl"
-      set req(telescope,tel,host) 127.0.0.1
-      set req(telescope,tel,port) 30011
-      source "[pwd]/../gui/audace/socket_tools.tcl"
-      #puts "socket_client_open clientgar2 $req(gardien,gar,host) [expr $req(gardien,gar,port)+1]"
+      set err [catch {source "[pwd]/../ros/root.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../ros/root.tcl" }
+      set ros(falsenameofexecutable) majordome
+      source "$ros(root,ros)/src/common/variables_globales.tcl"
+      unset ros(falsenameofexecutable)
+      set req(telescope,tel,host) $req(majordome,tel,host)
+      set req(telescope,tel,port) $req(majordome,tel,port)
+      set err [catch {source "[pwd]/../gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../gui/audace/socket_tools.tcl" }
       set err [catch {socket_client_open clienttel2 $req(telescope,tel,host) [expr $req(telescope,tel,port)+1]} msg]
       if {$err==1} {
          set texte $msg
@@ -105,14 +103,13 @@ proc ros { args } {
       # case of native : ros telescope send SET native #j-
       set action2 [lindex $args 1]
       set params [lrange $args 2 end]
-      source "[pwd]/../ros/root.tcl"
-      #source "$ros(root,ros)/src/common/variables_globales.tcl"
-      #set roc(nameofexecutable) telescope
-      #source "$ros(root,conf)/conf/src/common/variables_sites.tcl"
-      set req(camera,cam,host) 192.168.10.4
-      set req(camera,cam,port) 30021
-      source "[pwd]/../gui/audace/socket_tools.tcl"
-      #puts "socket_client_open clientgar2 $req(gardien,gar,host) [expr $req(gardien,gar,port)+1]"
+      set err [catch {source "[pwd]/../ros/root.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../ros/root.tcl" }
+      set ros(falsenameofexecutable) majordome
+      source "$ros(root,ros)/src/common/variables_globales.tcl"
+      unset ros(falsenameofexecutable)
+      set req(camera,cam,host) $req(majordome,cam,host)
+      set req(camera,cam,port) $req(majordome,cam,port)
+      set err [catch {source "[pwd]/../gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../gui/audace/socket_tools.tcl" }
       set err [catch {socket_client_open clientcam2 $req(camera,cam,host) [expr $req(camera,cam,port)+1]} msg]
       if {$err==1} {
          set texte $msg
