@@ -2,7 +2,7 @@
 # Fichier : animate.tcl
 # Description : Outil pour le controle des animations d'images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: animate.tcl,v 1.16 2008-11-03 22:06:57 robertdelmas Exp $
+# Mise a jour $Id: animate.tcl,v 1.17 2008-11-08 09:38:30 robertdelmas Exp $
 #
 
 #============================================================
@@ -143,7 +143,10 @@ proc ::animate::startTool { visuNo } {
 #------------------------------------------------------------
 proc ::animate::stopTool { visuNo } {
    variable This
+   global panneau
 
+   set panneau(animate,filename) ""
+   set panneau(animate,nbi)      "3"
    pack forget $This
 }
 
@@ -157,6 +160,7 @@ proc ::animate::cmdGo { } {
 
    #--- Nettoyage de la visualisation
    visu$audace(visuNo) clear
+   ::confVisu::setFileName $audace(visuNo) ""
    #--- Lancement de l'animation
    if { $panneau(animate,filename) != "" } {
       #--- Verifie que le nombre d'images est un entier non nul
@@ -178,6 +182,14 @@ proc ::animate::cmdGo { } {
          tk_messageBox -title "$caption(animate,attention)" -icon error \
             -message "$caption(animate,nb_boucles1) $caption(animate,nbre_entier)"
          set panneau(animate,nbl) "5"
+         return
+      }
+      #--- Verifie que le fichier selectionne appartient au repertoire des images
+      if { [ file dirname $panneau(animate,folder+filname) ] != $audace(rep_images) } {
+         tk_messageBox -title "$caption(animate,attention)" -icon error \
+            -message "$caption(animate,rep-images)"
+         set panneau(animate,filename) ""
+         set panneau(animate,nbi)      ""
          return
       }
       #--- Gestion du bouton Go Animation
@@ -202,7 +214,7 @@ proc ::animate::erreurAnimate { } {
    global caption panneau
 
    tk_messageBox -title "$caption(animate,attention)" -icon error \
-      -message "$caption(animate,erreur1)\n$caption(animate,erreur2)"
+      -message "$caption(animate,erreur)"
    set panneau(animate,nbi) ""
    return
 }
@@ -218,13 +230,14 @@ proc ::animate::editNomGenerique { } {
    set fenetre "$audace(base)"
    #--- Ouvre la fenetre de choix des images
    set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
+   set panneau(animate,folder+filname) "$filename"
    #--- Il faut un fichier
    if { $filename == "" } {
       return
    }
    #--- Le fichier selectionne doit imperativement etre dans le repertoire des images
    if { [ file dirname $filename ] != $audace(rep_images) } {
-      tk_messageBox -title "$caption(animate,attention)" -type ok \
+      tk_messageBox -title "$caption(animate,attention)" -icon error \
          -message "$caption(animate,rep-images)"
       set panneau(animate,filename) ""
       set panneau(animate,nbi)      ""
