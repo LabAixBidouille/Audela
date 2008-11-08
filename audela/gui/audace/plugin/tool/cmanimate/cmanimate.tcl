@@ -2,7 +2,7 @@
 # Fichier : cmanimate.tcl
 # Description : Animation/slides control panel for Cloud Monitor
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmanimate.tcl,v 1.12 2007-10-05 15:34:12 robertdelmas Exp $
+# Mise a jour $Id: cmanimate.tcl,v 1.13 2008-11-08 09:40:24 robertdelmas Exp $
 #
 
 #****************************************************************
@@ -118,11 +118,7 @@ namespace eval ::cmanimate {
    #------------------------------------------------------------
    proc createPanel { this } {
       variable This
-      global audace
-      global caption
-      global cmconf
-      global numero
-      global panneau
+      global audace caption cmconf panneau
 
       #--- Chargement des variables de configuration de cmaude
       set fichier_cmaude [ file join $audace(rep_plugin) tool cmaude cmaude_ini.tcl ]
@@ -158,9 +154,9 @@ namespace eval ::cmanimate {
       if { [ info exists panneau(cmanimate,nbi) ] == "0" }      { set panneau(cmanimate,nbi)      "3" }
       if { [ info exists panneau(cmanimate,ms) ] == "0" }       { set panneau(cmanimate,ms)       "100" }
       if { [ info exists panneau(cmanimate,nbl) ] == "0" }      { set panneau(cmanimate,nbl)      "2" }
-      set panneau(cmanimate,nblast)          "10"
-      set panneau(cmanimate,numimg)          "1"
-      set numero                          "1"
+      set panneau(cmanimate,nblast) "10"
+      set panneau(cmanimate,numimg) "1"
+      set panneau(cmanimate,numero) "-1"
       #--- Construction de l'interface
       cmanimateBuildIF $This
    }
@@ -174,13 +170,12 @@ namespace eval ::cmanimate {
       if { [ file exists $fichier ] } {
          source $fichier
       }
-      if { ! [ info exists parametres(cmanimate,position) ]} { set parametres(cmanimate,position) "0" }
+      if { ! [ info exists parametres(cmanimate,position) ] } { set parametres(cmanimate,position) "0" }
    }
 
    proc enregistrementVar { } {
       variable parametres
-      global audace
-      global panneau
+      global audace panneau
 
       set parametres(cmanimate,position) "$panneau(cmanimate,position)"
 
@@ -242,8 +237,7 @@ namespace eval ::cmanimate {
    proc startTool { visuNo } {
       variable This
       variable parametres
-      global caption
-      global panneau
+      global caption panneau
 
       trace add variable ::panneau(cmanimate,position) write ::cmanimate::adaptOutilcmanimate
       ::cmanimate::chargementVar
@@ -267,15 +261,12 @@ namespace eval ::cmanimate {
    #------------------------------------------------------------
    proc stopTool { visuNo } {
       variable This
-      global audace
-      global panneau
+      global audace panneau
 
+      set panneau(cmanimate,filename) ""
       trace remove variable ::panneau(cmanimate,position) write ::cmanimate::adaptOutilcmanimate
       ::cmanimate::enregistrementVar
       pack forget $This
-      if { [ winfo exists $audace(base).erreurfichier ] } {
-         destroy $audace(base).erreurfichier
-      }
       if { [ winfo exists $audace(base).position_tel ] } {
          destroy $audace(base).position_tel
       }
@@ -283,18 +274,24 @@ namespace eval ::cmanimate {
 
    proc cmdGoall { } {
       variable This
-      global audace
-      global caption
-      global panneau
+      global audace caption panneau
 
-      #--- Destruction de la fenetre d'erreur si elle existe
-      if { [ winfo exists $audace(base).erreurfichier ] } {
-         destroy $audace(base).erreurfichier
-      }
       #--- Clean the screen
       visu$audace(visuNo) clear
+      ::confVisu::setFileName $audace(visuNo) ""
+      set panneau(cmanimate,numero) "-1"
+      #--- Gestion d'erreurs
+      set error [ ::cmanimate::gestionErreur ]
+      if { $error == "1" } {
+         return
+      }
       #--- Lancement de l'animation
       if { $panneau(cmanimate,filename) != "" } {
+         #--- Gestion d'erreurs
+         set error [ ::cmanimate::gestionErreur1 ]
+         if { $error == "1" } {
+            return
+         }
          #--- Efface la position des telescopes
          $audace(hCanvas) delete uts
          grab $This.frago.but1
@@ -305,9 +302,9 @@ namespace eval ::cmanimate {
          #--- Animation avec gestion des erreurs (absence d'images, images dans un autre repertoire, etc.)
          #--- supportee par la variable error retournee par la procedure animateMascot du present script
          set error [ animateMascot $panneau(cmanimate,filename) $panneau(cmanimate,nbi) $panneau(cmanimate,ms) \
-            $panneau(cmanimate,nbl) ]
+            $panneau(cmanimate,nbl) $panneau(cmanimate,liste_index) ]
          if { $error == "1" } {
-            ::cmanimate::erreurFichier
+            ::cmanimate::erreurCmAnimate
          }
          grab release $This.frago.but1
          $This.frago.but1 configure -relief raised -state normal
@@ -318,16 +315,13 @@ namespace eval ::cmanimate {
       }
    }
 
-   proc animateMascot { filename nb {millisecondes 200} {nbtours 10} } {
-      #--- filename : Nom generique des fichiers image filename*.fit a animer
-      #--- nb : Nombre d'images (1 a nb)
+   proc animateMascot { filename nb {millisecondes 200} {nbtours 10} {liste_index ""} } {
+      #--- filename      : Nom generique des fichiers image filename*.fit a animer
+      #--- nb            : Nombre d'images (1 a nb)
       #--- millisecondes : Temps entre chaque image affichee
-      #--- nbtours : Nombre de boucles sur les nb images
-      global audace
-      global caption
-      global color
-      global conf
-      global panneau
+      #--- nbtours       : Nombre de boucles sur les nb images
+      #--- liste_index   : Liste des index des nb images
+      global audace caption color conf panneau
 
       #--- Repertoire des images
       set len [string length $conf(rep_images)]
@@ -346,11 +340,12 @@ namespace eval ::cmanimate {
       set off "100"
       #--- Creation de nb visu a partir de la visu numero 101 (100 + 1) et des Tk_photoimage
       for { set k 1 } { $k <= $nb } { incr k } {
+         set index [ lindex $liste_index [ expr $k - 1 ] ]
          set kk [expr $k+$off]
          #--- Creation de l'image et association a la visu
          visu$audace(visuNo) image $kk
          #--- Chargement de l'image avec gestion des erreurs
-         set error [ catch { buf$audace(bufNo) load "$folder$filename$k" } msg ]
+         set error [ catch { buf$audace(bufNo) load "$folder$filename$index" } msg ]
          #--- Positionnement de la zone pointee par le telescope sur l'image
          if { $panneau(cmanimate,drawposuts) == "1" } {
             if { $panneau(cmanimate,position) == "2" } {
@@ -424,7 +419,8 @@ namespace eval ::cmanimate {
       visu$audace(visuNo) image $imageNo
       #--- Affichage de la premiere image de l'animation si elle existe
       if { $error == "0" } {
-         buf$audace(bufNo) load $folder${filename}1
+         set index1 [ lindex $liste_index 0 ]
+         buf$audace(bufNo) load $folder${filename}$index1
          ::audace::autovisu $audace(visuNo)
       }
       #--- Variable error pour la gestion des erreurs
@@ -433,36 +429,35 @@ namespace eval ::cmanimate {
 
    proc cmdGolast { } {
       variable This
-      global audace
-      global caption
-      global conf
-      global numbrend
-      global numbrstart
-      global panneau
+      global audace caption conf indexlisteend indexlistestart panneau
 
-      set numbrend "0"
-      set num "1"
-      while { $num != "0" } {
-         incr numbrend 1
-         set nom_image [ file join $audace(rep_images) $panneau(cmanimate,filename)$numbrend$conf(extension,defaut) ]
-         set num [ file exists $nom_image ]
-      }
-      incr numbrend -1
-      set numbrstart [expr $numbrend - $panneau(cmanimate,nblast) + 1]
-      if { $numbrstart <= "0" } {
-         set numbrstart "1"
-      }
-      if { $numbrend <= "0" } {
-         set numbrend "1"
-      }
-      #--- Destruction de la fenetre d'erreur si elle existe
-      if { [ winfo exists $audace(base).erreurfichier ] } {
-         destroy $audace(base).erreurfichier
-      }
       #--- Clean the screen
       visu$audace(visuNo) clear
+      ::confVisu::setFileName $audace(visuNo) ""
+      set panneau(cmanimate,numero) "-1"
+      #--- Gestion d'erreurs
+      set error [ ::cmanimate::gestionErreur ]
+      if { $error == "1" } {
+         return
+      }
       #--- Lancement de l'animation
       if { $panneau(cmanimate,filename) != "" } {
+         #--- Gestion d'erreurs
+         set error [ ::cmanimate::gestionErreur1 ]
+         if { $error == "1" } {
+            return
+         }
+         #---
+         set indexlisteend [ expr [ llength $panneau(cmanimate,liste_index) ] - 1 ]
+         set numbrend [ lindex $panneau(cmanimate,liste_index) $indexlisteend ]
+         set indexlistestart [ expr $indexlisteend - $panneau(cmanimate,nblast) + 1]
+         if { $indexlistestart < "0" } {
+            set indexlistestart "0"
+         }
+         set numbrstart [ lindex $panneau(cmanimate,liste_index) $indexlistestart ]
+         if { $numbrstart <= "0" } {
+            set numbrstart "1"
+         }
          #--- Efface la position des telescopes
          $audace(hCanvas) delete uts
          grab $This.frago.but5
@@ -472,10 +467,10 @@ namespace eval ::cmanimate {
          update
          #--- Animation avec gestion des erreurs (absence d'images, images dans un autre repertoire, etc.)
          #--- supportee par la variable error retournee par la procedure animateMascotLast du present script
-         set error [ ::cmanimate::animateMascotLast $panneau(cmanimate,filename) $numbrstart $numbrend \
-            $panneau(cmanimate,ms) $panneau(cmanimate,nbl) ]
+         set error [ ::cmanimate::animateMascotLast $panneau(cmanimate,filename) $indexlistestart $indexlisteend \
+            $panneau(cmanimate,ms) $panneau(cmanimate,nbl) $panneau(cmanimate,liste_index) ]
          if { $error == "1" } {
-            ::cmanimate::erreurFichier
+            ::cmanimate::erreurCmAnimate
          }
          grab release $This.frago.but5
          $This.frago.but5 configure -relief raised -state normal
@@ -486,18 +481,18 @@ namespace eval ::cmanimate {
       }
    }
 
-   proc animateMascotLast { filename numbrstart numbrend millisecondes nbtours } {
-      #--- filename : Nom generique des fichiers image filename*.fit a animer
-      #--- numbrstart : Numero de l'image de debut
-      #--- numbrend : Numero de l'image de fin
-      #--- millisecondes : Temps entre chaque image affichee
-      #--- nbtours : Nombre de boucles sur les nb images
-      global audace
-      global caption
-      global color
-      global conf
-      global panneau
+   proc animateMascotLast { filename indexlistestart indexlisteend millisecondes nbtours liste_index } {
+      #--- filename        : Nom generique des fichiers image filename*.fit a animer
+      #--- indexlistestart : Index dans la liste de l'image de debut
+      #--- indexlisteend   : Index dans la liste de l'image de fin
+      #--- millisecondes   : Temps entre chaque image affichee
+      #--- nbtours         : Nombre de boucles sur les nb images
+      #--- liste_index     : Liste des index des nb images
+      global audace caption color conf panneau
 
+      #--- Changement d'index
+      set indexlistestart [ expr $indexlistestart + 1 ]
+      set indexlisteend [ expr $indexlisteend + 1 ]
       #--- Repertoire des images
       set len [string length $conf(rep_images)]
       set folder "$conf(rep_images)"
@@ -514,12 +509,13 @@ namespace eval ::cmanimate {
       #--- Initialisation des visu
       set off "100"
       #--- Creation de nb visu a partir de la visu numero 101 (100 + 1) et des Tk_photoimage
-      for { set k $numbrstart } { $k <= $numbrend } { incr k } {
+      for { set k $indexlistestart } { $k <= $indexlisteend } { incr k } {
+         set index [ lindex $liste_index [ expr $k - 1 ] ]
          set kk [expr $k+$off]
          #--- Creation de l'image et association a la visu
          visu$audace(visuNo) image $kk
          #--- Chargement de l'image avec gestion des erreurs
-         set error [ catch { buf$audace(bufNo) load "$folder$filename$k" } msg ]
+         set error [ catch { buf$audace(bufNo) load "$folder$filename$index" } msg ]
          #--- Positionnement de la zone pointee par le telescope sur l'image
          if { $panneau(cmanimate,drawposuts) == "1" } {
             if { $panneau(cmanimate,position) == "2" } {
@@ -546,7 +542,7 @@ namespace eval ::cmanimate {
       #--- Animation
       if { $error == "0" } {
          for { set t 1 } { $t <= $nbtours } { incr t } {
-            for { set k $numbrstart } { $k <= $numbrend } { incr k } {
+            for { set k $indexlistestart } { $k <= $indexlisteend } { incr k } {
                set kk [expr $k+$off]
                #--- Positionnement de la zone pointee par le telescope sur l'image
                if { $panneau(cmanimate,drawposuts) == "1" } {
@@ -582,7 +578,7 @@ namespace eval ::cmanimate {
          }
       }
       #--- Destruction des Tk_photoimage
-      for { set k $numbrstart } { $k <= $numbrend } { incr k } {
+      for { set k $indexlistestart } { $k <= $indexlisteend } { incr k } {
          set kk [expr $k+$off]
          image delete image$kk
       }
@@ -593,7 +589,8 @@ namespace eval ::cmanimate {
       visu$audace(visuNo) image $imageNo
       #--- Affichage de la premiere image de l'animation si elle existe
       if { $error == "0" } {
-         buf$audace(bufNo) load $folder${filename}1
+         set index1 [ lindex $liste_index 0 ]
+         buf$audace(bufNo) load $folder${filename}$index1
          ::audace::autovisu $audace(visuNo)
       }
       #--- Variable error pour la gestion des erreurs
@@ -603,27 +600,31 @@ namespace eval ::cmanimate {
    proc cmdForw { } {
    #--- Push on FORWARD button, pass to the following image
       variable This
-      global audace
-      global caption
-      global conf
-      global numero
-      global panneau
+      global audace caption conf panneau
 
-      #--- Destruction de la fenetre d'erreur si elle existe
-      if { [ winfo exists $audace(base).erreurfichier ] } {
-         destroy $audace(base).erreurfichier
+      #--- Gestion d'erreurs
+      set error [ ::cmanimate::gestionErreur ]
+      if { $error == "1" } {
+         return
+      }
+      if { $panneau(cmanimate,filename) != "" } {
+         set error [ ::cmanimate::gestionErreur1 ]
+         if { $error == "1" } {
+            return
+         }
       }
       #---
       if { $panneau(cmanimate,filename) != "" } {
-         incr numero 1
-         set nom_image [ file join $audace(rep_images) $panneau(cmanimate,filename)$numero$conf(extension,defaut) ]
+         incr panneau(cmanimate,numero) 1
+         set index [ lindex $panneau(cmanimate,liste_index) $panneau(cmanimate,numero) ]
+         set nom_image [ file join $audace(rep_images) $panneau(cmanimate,filename)$index$conf(extension,defaut) ]
          set num [ catch { loadima $nom_image } msg ]
          if { $num == "1" } {
-            incr numero -1
-            ::cmanimate::erreurFichier
+            incr panneau(cmanimate,numero) -1
+            ::cmanimate::erreurCmAnimate2
          } else {
             set datefits [lindex [buf$audace(bufNo) getkwd DATE-OBS] 1]
-            set panneau(cmanimate,status) "$caption(cmanimate,image_numero)$numero - [string range $datefits 0 15]"
+            set panneau(cmanimate,status) "$caption(cmanimate,image_numero)$index - [string range $datefits 0 15]"
             $This.fra6.labURL2 configure -text "$panneau(cmanimate,status)"
             cmdchkuts_1
          }
@@ -633,31 +634,31 @@ namespace eval ::cmanimate {
    proc cmdBackw { } {
    #--- Push on BACKWARD button, pass to the previous image
       variable This
-      global audace
-      global caption
-      global conf
-      global numero
-      global panneau
+      global audace caption conf panneau
 
-      #--- Destruction de la fenetre d'erreur si elle existe
-      if { [ winfo exists $audace(base).erreurfichier ] } {
-         destroy $audace(base).erreurfichier
+      #--- Gestion d'erreurs
+      set error [ ::cmanimate::gestionErreur ]
+      if { $error == "1" } {
+         return
+      }
+      if { $panneau(cmanimate,filename) != "" } {
+         set error [ ::cmanimate::gestionErreur1 ]
+         if { $error == "1" } {
+            return
+         }
       }
       #---
       if { $panneau(cmanimate,filename) != "" } {
-         incr numero -1
-         if { $numero < "1" } {
-            set numero "1"
-            ::cmanimate::erreurFichier
-         }
-         set nom_image [ file join $audace(rep_images) $panneau(cmanimate,filename)$numero$conf(extension,defaut) ]
+         incr panneau(cmanimate,numero) -1
+         set index [ lindex $panneau(cmanimate,liste_index) $panneau(cmanimate,numero) ]
+         set nom_image [ file join $audace(rep_images) $panneau(cmanimate,filename)$index$conf(extension,defaut) ]
          set num [ catch { loadima $nom_image } msg ]
-         if { $num == "1" } then {
-            incr numero 1
-            ::cmanimate::erreurFichier
+         if { $num == "1" } {
+            incr panneau(cmanimate,numero) 1
+            ::cmanimate::erreurCmAnimate3
          } else {
             set datefits [lindex [buf$audace(bufNo) getkwd DATE-OBS] 1]
-            set panneau(cmanimate,status) "$caption(cmanimate,image_numero)$numero - [string range $datefits 0 15]"
+            set panneau(cmanimate,status) "$caption(cmanimate,image_numero)$index - [string range $datefits 0 15]"
             $This.fra6.labURL2 configure -text "$panneau(cmanimate,status)"
             cmdchkuts_1
          }
@@ -667,33 +668,38 @@ namespace eval ::cmanimate {
    proc cmdGotolast { } {
    #--- Push on Go To Last button, pass to the last image available
       variable This
-      global audace
-      global caption
-      global conf
-      global numero
-      global panneau
+      global audace caption conf panneau
 
-      #--- Destruction de la fenetre d'erreur si elle existe
-      if { [ winfo exists $audace(base).erreurfichier ] } {
-         destroy $audace(base).erreurfichier
+      #--- Gestion d'erreurs
+      set error [ ::cmanimate::gestionErreur ]
+      if { $error == "1" } {
+         return
+      }
+      if { $panneau(cmanimate,filename) != "" } {
+         set error [ ::cmanimate::gestionErreur1 ]
+         if { $error == "1" } {
+            return
+         }
       }
       #---
       if { $panneau(cmanimate,filename) != "" } {
-         set numero "1"
+         set panneau(cmanimate,numero) "-1"
          set num "1"
          while { $num != "0" } {
-            incr numero 1
-            set nom_image [ file join $audace(rep_images) $panneau(cmanimate,filename)$numero$conf(extension,defaut) ]
+            incr panneau(cmanimate,numero) 1
+            set index [ lindex $panneau(cmanimate,liste_index) $panneau(cmanimate,numero) ]
+            set nom_image [ file join $audace(rep_images) $panneau(cmanimate,filename)$index$conf(extension,defaut) ]
             set num [ file exists $nom_image ]
          }
-         incr numero -1
-         set nom_image [ file join $audace(rep_images) $panneau(cmanimate,filename)$numero$conf(extension,defaut) ]
+         incr panneau(cmanimate,numero) -1
+         set index [ lindex $panneau(cmanimate,liste_index) $panneau(cmanimate,numero) ]
+         set nom_image [ file join $audace(rep_images) $panneau(cmanimate,filename)$index$conf(extension,defaut) ]
          set num [catch {loadima $nom_image} msg]
-         if { $num == "1" } then {
-            ::cmanimate::erreurFichier
+         if { $num == "1" } {
+            ::cmanimate::erreurCmAnimate1
          } else {
             set datefits [lindex [buf$audace(bufNo) getkwd DATE-OBS] 1]
-            set panneau(cmanimate,status) "$caption(cmanimate,image_numero)$numero - [string range $datefits 0 15]"
+            set panneau(cmanimate,status) "$caption(cmanimate,image_numero)$index - [string range $datefits 0 15]"
             $This.fra6.labURL2 configure -text "$panneau(cmanimate,status)"
             cmdchkuts_1
          }
@@ -703,27 +709,31 @@ namespace eval ::cmanimate {
    proc cmdGoto { } {
    #--- Push on Go To button, pass to the image number "numero"
       variable This
-      global audace
-      global caption
-      global conf
-      global numero
-      global panneau
+      global audace caption conf panneau
 
-      #--- Destruction de la fenetre d'erreur si elle existe
-      if { [ winfo exists $audace(base).erreurfichier ] } {
-         destroy $audace(base).erreurfichier
+      #--- Gestion d'erreurs
+      set error [ ::cmanimate::gestionErreur ]
+      if { $error == "1" } {
+         return
+      }
+      if { $panneau(cmanimate,filename) != "" } {
+         set error [ ::cmanimate::gestionErreur1 ]
+         if { $error == "1" } {
+            return
+         }
       }
       #---
       if { $panneau(cmanimate,filename) != "" } {
-         set numero "$panneau(cmanimate,numimg)"
-         set nom_image [ file join $audace(rep_images) $panneau(cmanimate,filename)$numero$conf(extension,defaut) ]
+         set panneau(cmanimate,numero) [ expr $panneau(cmanimate,numimg) - 1 ]
+         set index [ lindex $panneau(cmanimate,liste_index) $panneau(cmanimate,numero) ]
+         set nom_image [ file join $audace(rep_images) $panneau(cmanimate,filename)$index$conf(extension,defaut) ]
          set num [catch {loadima $nom_image} msg]
-         if { $num == "1" } then {
-            ::cmanimate::erreurFichier
-            set numero "1"
+         if { $num == "1" } {
+            set panneau(cmanimate,numero) "-1"
+            ::cmanimate::erreurCmAnimate1
          } else {
             set datefits [lindex [buf$audace(bufNo) getkwd DATE-OBS] 1]
-            set panneau(cmanimate,status) "$caption(cmanimate,image_numero)$numero - [string range $datefits 0 15]"
+            set panneau(cmanimate,status) "$caption(cmanimate,image_numero)$index - [string range $datefits 0 15]"
             $This.fra6.labURL2 configure -text "$panneau(cmanimate,status)"
             cmdchkuts_1
          }
@@ -731,11 +741,9 @@ namespace eval ::cmanimate {
    }
 
    proc cmdchkgrid { } {
-      global audace
-      global caption
-      global panneau
+      global audace caption panneau
 
-      if { $panneau(cmanimate,drawgrid) == "1" } then {
+      if { $panneau(cmanimate,drawgrid) == "1" } {
          console::affiche_erreur "$caption(cmanimate,dessine_grille)"
          cmdGrid
       } else {
@@ -745,11 +753,7 @@ namespace eval ::cmanimate {
    }
 
    proc cmdGrid { } {
-      global audace
-      global caption
-      global cmconf
-      global color
-      global panneau
+      global audace caption cmconf color panneau
 
       if { $panneau(cmanimate,position) == "2" } {
       #--- Grille pour l'option Paranal avec des images en binning 1x1
@@ -786,9 +790,7 @@ namespace eval ::cmanimate {
    }
 
    proc altaz2oval { altut aziut utID color_cmanimate width radius tag } {
-      global audace
-      global caption
-      global cmconf
+      global audace caption cmconf
 
       set centerx [lindex $cmconf(zenith11) 0]
       set centery [lindex $cmconf(zenith11) 1]
@@ -807,11 +809,9 @@ namespace eval ::cmanimate {
    }
 
    proc cmdchkuts { } {
-      global audace
-      global caption
-      global panneau
+      global audace caption panneau
 
-      if { $panneau(cmanimate,drawposuts) == "1" } then {
+      if { $panneau(cmanimate,drawposuts) == "1" } {
          $audace(hCanvas) delete uts
          if { $panneau(cmanimate,position) == "1" } {
             console::affiche_erreur "$caption(cmanimate,dessine_position)"
@@ -830,10 +830,9 @@ namespace eval ::cmanimate {
    }
 
    proc cmdchkuts_1 { } {
-      global audace
-      global panneau
+      global audace panneau
 
-      if { $panneau(cmanimate,drawposuts) == "1" } then {
+      if { $panneau(cmanimate,drawposuts) == "1" } {
          $audace(hCanvas) delete uts
          catch { cmdDrawuts }
       } else {
@@ -843,10 +842,7 @@ namespace eval ::cmanimate {
 
    proc cmdDrawuts { } {
    #--- Draw the position of the UT's on the image
-      global audace
-      global caption
-      global color
-      global panneau
+      global audace caption color panneau
 
       if { $panneau(cmanimate,position) == "2" } {
       #--- Positionnement pour l'option Paranal avec des images en binning 1x1
@@ -878,9 +874,7 @@ namespace eval ::cmanimate {
    }
 
    proc drawwind { aziwind forcewind } {
-      global audace
-      global caption
-      global color
+      global audace caption color
 
       #--- Convert the {altitude azimuth} position into the {x1 y1 x2 y2} oval coordinates
       #--- This is the radius from the center given by the altitude
@@ -901,39 +895,91 @@ namespace eval ::cmanimate {
       $audace(hCanvas) create text 515 45 -text "$caption(cmanimate,vent)" -fill $color(cyan) -tags uts
    }
 
-   proc erreurFichier { } {
-   #--- Notice the user of a wrong folder or file
-      global audace
+   proc gestionErreur { } {
+      global caption panneau
+
+      #--- Initialisation
+      set error "0"
+      #--- Verifie que le nombre d'images est un entier non nul
+      if { ( [ TestEntier $panneau(cmanimate,nbi) ] == "0" ) || ( $panneau(cmanimate,nbi) == "0" ) } {
+         tk_messageBox -title "$caption(cmanimate,attention)" -icon error \
+            -message "$caption(cmanimate,nb_images1) $caption(cmanimate,nbre_entier)"
+         set panneau(cmanimate,nbi) ""
+         set error "1"
+         return $error
+      }
+      #--- Verifie que le nombre de ms est un entier non nul
+      if { ( [ TestEntier $panneau(cmanimate,ms) ] == "0" ) || ( $panneau(cmanimate,ms) == "0" ) } {
+         tk_messageBox -title "$caption(cmanimate,attention)" -icon error \
+            -message "$caption(cmanimate,delai) $caption(cmanimate,nbre_entier)"
+         set panneau(cmanimate,ms) "100"
+         set error "1"
+         return $error
+      }
+      #--- Verifie que le nombre de boucles est un entier non nul
+      if { ( [ TestEntier $panneau(cmanimate,nbl) ] == "0" ) || ( $panneau(cmanimate,nbl) == "0" ) } {
+         tk_messageBox -title "$caption(cmanimate,attention)" -icon error \
+            -message "$caption(cmanimate,nb_boucles1) $caption(cmanimate,nbre_entier)"
+         set panneau(cmanimate,nbl) "2"
+         set error "1"
+         return $error
+      }
+      return $error
+   }
+
+   proc gestionErreur1 { } {
+      global audace caption panneau
+
+      #--- Initialisation
+      set error "0"
+      #--- Verifie que le fichier selectionne appartient au repertoire des images
+      if { [ file dirname $panneau(cmanimate,folder+filname) ] != $audace(rep_images) } {
+         tk_messageBox -title "$caption(cmanimate,attention)" -icon error \
+            -message "$caption(cmanimate,rep-images)"
+         set panneau(cmanimate,filename) ""
+         set panneau(cmanimate,nbi)      ""
+         set error "1"
+         return $error
+      }
+      return $error
+   }
+
+   proc erreurCmAnimate { } {
+      global caption panneau
+
+      tk_messageBox -title "$caption(cmanimate,attention)" -icon error \
+         -message "$caption(cmanimate,erreur1)"
+      set panneau(cmanimate,nbi) ""
+      return
+   }
+
+   proc erreurCmAnimate1 { } {
       global caption
 
-      if { [ winfo exists $audace(base).erreurfichier ] } {
-         destroy $audace(base).erreurfichier
-      }
-      toplevel $audace(base).erreurfichier
-      wm transient $audace(base).erreurfichier $audace(base)
-      wm title $audace(base).erreurfichier "$caption(cmanimate,attention)"
-      set posx_erreurfichier [ lindex [ split [ wm geometry $audace(base) ] "+" ] 1 ]
-      set posy_erreurfichier [ lindex [ split [ wm geometry $audace(base) ] "+" ] 2 ]
-      wm geometry $audace(base).erreurfichier +[ expr $posx_erreurfichier + 170 ]+[ expr $posy_erreurfichier + 102 ]
-      wm resizable $audace(base).erreurfichier 0 0
-      #--- Create the message
-      label $audace(base).erreurfichier.lab1 -text "$caption(cmanimate,erreur1)"
-      pack $audace(base).erreurfichier.lab1 -padx 10 -pady 2
-      label $audace(base).erreurfichier.lab2 -text "$caption(cmanimate,erreur2)"
-      pack $audace(base).erreurfichier.lab2 -padx 10 -pady 2
-      label $audace(base).erreurfichier.lab3 -text "$caption(cmanimate,erreur3)"
-      pack $audace(base).erreurfichier.lab3 -padx 10 -pady 2
-      #--- New message window is on
-      focus $audace(base).erreurfichier
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $audace(base).erreurfichier
+      tk_messageBox -title "$caption(cmanimate,attention)" -icon error \
+         -message "$caption(cmanimate,erreur1)"
+      return
+   }
+
+   proc erreurCmAnimate2 { } {
+      global caption
+
+      tk_messageBox -title "$caption(cmanimate,attention)" -icon error \
+         -message "$caption(cmanimate,erreur2)"
+      return
+   }
+
+   proc erreurCmAnimate3 { } {
+      global caption
+
+      tk_messageBox -title "$caption(cmanimate,attention)" -icon error \
+         -message "$caption(cmanimate,erreur3)"
+      return
    }
 
    proc positionTel { } {
    #--- Notice the user of a wrong folder or file
-      global audace
-      global caption
-      global panneau
+      global audace caption panneau
 
       if { [ winfo exists $audace(base).position_tel ] } {
          destroy $audace(base).position_tel
@@ -962,17 +1008,30 @@ namespace eval ::cmanimate {
    }
 
    proc editNomGenerique { } {
-      global audace
-      global panneau
+      global audace caption panneau
 
       #--- Fenetre parent
       set fenetre "$audace(base)"
       #--- Ouvre la fenetre de choix des images
       set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
+      set panneau(cmanimate,folder+filname) "$filename"
+      #--- Il faut un fichier
+      if { $filename == "" } {
+         return
+      }
+      #--- Le fichier selectionne doit imperativement etre dans le repertoire des images
+      if { [ file dirname $filename ] != $audace(rep_images) } {
+         tk_messageBox -title "$caption(cmanimate,attention)" -icon error \
+            -message "$caption(cmanimate,rep-images)"
+         set panneau(cmanimate,filename) ""
+         set panneau(cmanimate,nbi)      ""
+         return
+      }
       #--- Extraction du nom generique
-      set filenameAnimation        [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
-      set panneau(cmanimate,filename) [ lindex $filenameAnimation 0 ]
-      set panneau(cmanimate,nbi)      [ lindex $filenameAnimation 1 ]
+      set filenameAnimation              [ ::pretraitement::afficherNomGenerique [ file tail $filename ] 1 ]
+      set panneau(cmanimate,filename)    [ lindex $filenameAnimation 0 ]
+      set panneau(cmanimate,nbi)         [ lindex $filenameAnimation 1 ]
+      set panneau(cmanimate,liste_index) [ lindex $filenameAnimation 3 ]
    }
 
 #--- End of the procedures
@@ -983,10 +1042,7 @@ namespace eval ::cmanimate {
 #    cree la fenetre de l'outil
 #------------------------------------------------------------
 proc cmanimateBuildIF { This } {
-   global audace
-   global caption
-   global color
-   global panneau
+   global audace caption color panneau
 
    #--- Frame de l'outil
    frame $This -borderwidth 2 -relief groove
@@ -1011,7 +1067,8 @@ proc cmanimateBuildIF { This } {
          pack   $This.fra2.lab1 -in $This.fra2 -anchor center -fill none -padx 4 -pady 2
 
          #--- Entry for generic name
-         entry  $This.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(cmanimate,filename) -relief groove
+         entry  $This.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(cmanimate,filename) -relief groove \
+            -state disabled
          pack   $This.fra2.ent1 -in $This.fra2 -anchor center -fill none -padx 2 -pady 4 -side left
 
          #--- Bouton parcourir
@@ -1058,7 +1115,7 @@ proc cmanimateBuildIF { This } {
 
          #--- Entry pour le nb de boucles
          entry  $This.fra5.ent1 -font $audace(font,arial_8_b) -textvariable panneau(cmanimate,nbl) -relief groove \
-            -width 2 -justify center
+            -width 3 -justify center
          pack   $This.fra5.ent1 -in $This.fra5 -anchor center -expand true -fill none -side left -pady 4
 
       pack $This.fra5 -side top -fill x
