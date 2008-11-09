@@ -2,10 +2,10 @@
 # Fichier : acqfcSetup.tcl
 # Description : Configuration de certains parametres de l'outil Acquisition
 # Auteur : Robert DELMAS
-# Mise a jour $Id: acqfcSetup.tcl,v 1.12 2008-05-24 10:39:49 robertdelmas Exp $
+# Mise a jour $Id: acqfcSetup.tcl,v 1.13 2008-11-09 06:58:21 robertdelmas Exp $
 #
 
-namespace eval acqfcSetup {
+namespace eval ::acqfcSetup {
 
    #
    # acqfcSetup::init
