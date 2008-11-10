@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.88 2008-05-31 15:52:39 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.89 2008-11-10 22:06:39 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -32,6 +32,7 @@ source iris.tcl
 source poly.tcl
 source filtrage.tcl
 source mauclaire.tcl
+source afrho.tcl
 source astrometry.tcl
 source fieldchart.tcl
 source help.tcl
@@ -145,6 +146,7 @@ namespace eval ::audace {
       source [ file join $audace(rep_caption) confgene.cap ]
       source [ file join $audace(rep_caption) confgene_en-tete.cap ]
       source [ file join $audace(rep_caption) confgene_touche.cap ]
+      source [ file join $audace(rep_caption) afrho.cap ]
       source [ file join $audace(rep_caption) astrometry.cap ]
       source [ file join $audace(rep_caption) bifsconv.cap ]
       source [ file join $audace(rep_caption) compute_stellaire.cap ]
@@ -729,6 +731,8 @@ namespace eval ::audace {
          "::astrometry::create $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,carte_champ)..." \
          { ::mapWindow::run "$audace(base).mapWindow" }
+      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,afrho)..." \
+         { ::afRho::run "$audace(base).afRho" }
       Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,carte)" \
          { ::carte::showMapFromBuffer buf$audace(bufNo) }
 
