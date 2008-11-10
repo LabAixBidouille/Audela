@@ -1,6 +1,6 @@
 #
 # Fichier : kitty.cap
-# Mise a jour $Id: kitty.cap,v 1.4 2008-03-16 09:49:12 robertdelmas Exp $
+# Mise a jour $Id: kitty.cap,v 1.5 2008-11-10 10:45:42 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -140,8 +140,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,miroir_x)                  "Espelho Horizontal"
    set caption(kitty,miroir_y)                  "Espelho Vertical"
    set caption(kitty,refroidissement_2)         "Arrefecimento:"
-   set caption(kitty,refroidissement_on)        "ligado"
-   set caption(kitty,refroidissement_off)       "desligado"
+   set caption(kitty,refroidissement_on)        "Ligado"
+   set caption(kitty,refroidissement_off)       "Desligado"
    set caption(kitty,temperature_CCD)           "Temperatura do CCD:"
    set caption(kitty,deg_c)                     "°C"
    set caption(kitty,test)                      "Teste SX28"
