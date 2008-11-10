@@ -1,6 +1,6 @@
 #
 # Fichier : confgene_en-tete.cap
-# Mise a jour $Id: confgene_en-tete.cap,v 1.15 2008-04-10 17:49:59 robertdelmas Exp $
+# Mise a jour $Id: confgene_en-tete.cap,v 1.16 2008-11-10 22:01:33 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -24,7 +24,7 @@ set caption(en-tete,a_propos_de_copyright3)           "M. Pujol, C. Jasinski, J.
 set caption(en-tete,a_propos_de_copyright4)           "R. Zachantke, Ph. Kauffmann, G. Spitzer, B. Maugis,"
 set caption(en-tete,a_propos_de_copyright5)           "P. Thierry, P. Chevalley, A. Kalicki, M. Meunier, V. Cotrez"
 set caption(en-tete,a_propos_de_copyright6)           "B. Mauclaire, H. Rischbieter, X. Rey-Robert, R. Behrend"
-set caption(en-tete,a_propos_de_copyright7)           "J. Berthier, S. Girard, J. Cadien"
+set caption(en-tete,a_propos_de_copyright7)           "J. Berthier, S. Girard, J. Cadien, L. Jorda, JF. Coliac"
 set caption(en-tete,a_propos_de_copyright8)           "Translations: (GB) C. Jasinski + D. Futak + D. Holler"
 set caption(en-tete,a_propos_de_copyright9)           "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia"
 set caption(en-tete,a_propos_de_copyright10)          "(D) Ph. Kauffmann + J. Hoebelmann"
@@ -46,7 +46,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(en-tete,a_propos_de_copyright4)        "R. Zachantke, Ph. Kauffmann, G. Spitzer, B. Maugis,"
    set caption(en-tete,a_propos_de_copyright5)        "P. Thierry, P. Chevalley, A. Kalicki, M. Meunier, V. Cotrez"
    set caption(en-tete,a_propos_de_copyright6)        "B. Mauclaire, H. Rischbieter, X. Rey-Robert, R. Behrend"
-   set caption(en-tete,a_propos_de_copyright7)        "J. Berthier, S. Girard, J. Cadien"
+   set caption(en-tete,a_propos_de_copyright7)        "J. Berthier, S. Girard, J. Cadien, L. Jorda, JF. Coliac"
    set caption(en-tete,a_propos_de_copyright8)        "Traductions : (GB) C. Jasinski + D. Futak + D. Holler"
    set caption(en-tete,a_propos_de_copyright9)        "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia"
    set caption(en-tete,a_propos_de_copyright10)       "(D) Ph. Kauffmann + J. Hoebelmann"
@@ -68,7 +68,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(en-tete,a_propos_de_copyright4)        "R. Zachantke, Ph. Kauffmann, G. Spitzer, B. Maugis,"
    set caption(en-tete,a_propos_de_copyright5)        "P. Thierry, P. Chevalley, A. Kalicki, M. Meunier, V. Cotrez"
    set caption(en-tete,a_propos_de_copyright6)        "B. Mauclaire, H. Rischbieter, X. Rey-Robert, R. Behrend"
-   set caption(en-tete,a_propos_de_copyright7)        "J. Berthier, S. Girard, J. Cadien"
+   set caption(en-tete,a_propos_de_copyright7)        "J. Berthier, S. Girard, J. Cadien, L. Jorda, JF. Coliac"
    set caption(en-tete,a_propos_de_copyright8)        "Traduttori: (GB) C. Jasinski + D. Futak + D. Holler"
    set caption(en-tete,a_propos_de_copyright9)        "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia"
    set caption(en-tete,a_propos_de_copyright10)       "(D) Ph. Kauffmann + J. Hoebelmann"
@@ -90,7 +90,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(en-tete,a_propos_de_copyright4)        "R. Zachantke, Ph. Kauffmann, G. Spitzer, B. Maugis,"
    set caption(en-tete,a_propos_de_copyright5)        "P. Thierry, P. Chevalley, A. Kalicki, M. Meunier, V. Cotrez"
    set caption(en-tete,a_propos_de_copyright6)        "B. Mauclaire, H. Rischbieter, X. Rey-Robert, R. Behrend"
-   set caption(en-tete,a_propos_de_copyright7)        "J. Berthier, S. Girard, J. Cadien"
+   set caption(en-tete,a_propos_de_copyright7)        "J. Berthier, S. Girard, J. Cadien, L. Jorda, JF. Coliac"
    set caption(en-tete,a_propos_de_copyright8)        "Traducciones: (GB) C. Jasinski + D. Futak + D. Holler"
    set caption(en-tete,a_propos_de_copyright9)        "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia"
    set caption(en-tete,a_propos_de_copyright10)       "(D) Ph. Kauffmann + J. Hoebelmann"
@@ -112,7 +112,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(en-tete,a_propos_de_copyright4)        "R. Zachantke, Ph. Kauffmann, G. Spitzer, B. Maugis,"
    set caption(en-tete,a_propos_de_copyright5)        "P. Thierry, P. Chevalley, A. Kalicki, M. Meunier, V. Cotrez"
    set caption(en-tete,a_propos_de_copyright6)        "B. Mauclaire, H. Rischbieter, X. Rey-Robert, R. Behrend"
-   set caption(en-tete,a_propos_de_copyright7)        "J. Berthier, S. Girard, J. Cadien"
+   set caption(en-tete,a_propos_de_copyright7)        "J. Berthier, S. Girard, J. Cadien, L. Jorda, JF. Coliac"
    set caption(en-tete,a_propos_de_copyright8)        "Übersetzungen: (GB) C. Jasinski + D. Futak + D. Holler"
    set caption(en-tete,a_propos_de_copyright9)        "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia"
    set caption(en-tete,a_propos_de_copyright10)       "(D) Ph. Kauffmann + J. Hoebelmann"
@@ -134,7 +134,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(en-tete,a_propos_de_copyright4)        "R. Zachantke, Ph. Kauffmann, G. Spitzer, B. Maugis,"
    set caption(en-tete,a_propos_de_copyright5)        "P. Thierry, P. Chevalley, A. Kalicki, M. Meunier, V. Cotrez"
    set caption(en-tete,a_propos_de_copyright6)        "B. Mauclaire, H. Rischbieter, X. Rey-Robert, R. Behrend"
-   set caption(en-tete,a_propos_de_copyright7)        "J. Berthier, S. Girard, J. Cadien"
+   set caption(en-tete,a_propos_de_copyright7)        "J. Berthier, S. Girard, J. Cadien, L. Jorda, JF. Coliac"
    set caption(en-tete,a_propos_de_copyright8)        "Traduções: (GB) C. Jasinski + D. Futak + D. Holler"
    set caption(en-tete,a_propos_de_copyright9)        "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia"
    set caption(en-tete,a_propos_de_copyright10)       "(D) Ph. Kauffmann + J. Hoebelmann"
@@ -156,7 +156,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(en-tete,a_propos_de_copyright4)        "R. Zachantke, Ph. Kauffmann, G. Spitzer, B. Maugis,"
    set caption(en-tete,a_propos_de_copyright5)        "P. Thierry, P. Chevalley, A. Kalicki, M. Meunier, V. Cotrez"
    set caption(en-tete,a_propos_de_copyright6)        "B. Mauclaire, H. Rischbieter, X. Rey-Robert, R. Behrend"
-   set caption(en-tete,a_propos_de_copyright7)        "J. Berthier, S. Girard, J. Cadien"
+   set caption(en-tete,a_propos_de_copyright7)        "J. Berthier, S. Girard, J. Cadien, L. Jorda, JF. Coliac"
    set caption(en-tete,a_propos_de_copyright8)        "Oversættere: (GB) C. Jasinski + D. Futak + D. Holler"
    set caption(en-tete,a_propos_de_copyright9)        "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia"
    set caption(en-tete,a_propos_de_copyright10)       "(D) Ph. Kauffmann + J. Hoebelmann"
