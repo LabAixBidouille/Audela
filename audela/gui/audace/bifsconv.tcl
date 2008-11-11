@@ -2,7 +2,7 @@
 # Fichier : bifsconv.tcl
 # Description : Ce script permet de convertir de multiples formats d'images vers du fits
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: bifsconv.tcl,v 1.10 2008-11-01 11:48:58 robertdelmas Exp $
+# Mise a jour $Id: bifsconv.tcl,v 1.11 2008-11-11 13:29:09 robertdelmas Exp $
 #
 
 #--- Documentation : Voir le fichier bifsconv.htm dans le dossier doc_html
@@ -26,11 +26,15 @@ proc bifsconv_full { {fichier} {arg1 ""} {arg2 ""} {arg3 ""} {arg4 ""} {arg5 ""}
       }
 
       #--- Petit message
-      console::affiche_resultat "$caption(bifsconv,imaencours) $fichier\n"
-      console::affiche_saut "\n"
+      ::console::affiche_resultat "$caption(bifsconv,imaencours) $fichier\n"
 
       #--- Execution de BifsConv
-      exec [file join $audace(rep_install) $subdir_bifs $bifs_version] $fichier $arg1 $arg2 $arg3 $arg4 $arg5 $arg6 $arg7 $arg8 $arg9 $arg10 $arg11 $arg12 $arg13 $arg14 $arg15
+      set error [ catch { exec [file join $audace(rep_install) $subdir_bifs $bifs_version] $fichier $arg1 $arg2 $arg3 $arg4 $arg5 $arg6 $arg7 $arg8 $arg9 $arg10 $arg11 $arg12 $arg13 $arg14 $arg15 } msg ]
+
+      if [ string match "*Tfi=0*" $msg ] {
+         ::console::affiche_resultat "$caption(bifsconv,formatpasbon)\n"
+         return
+      }
 
       set racine [file rootname $fichier]
 
@@ -45,8 +49,7 @@ proc bifsconv_full { {fichier} {arg1 ""} {arg2 ""} {arg3 ""} {arg4 ""} {arg5 ""}
       }
 
    } else {
-      console::affiche_resultat "$caption(bifsconv,pasdefichier) $fichier\n"
-      console::affiche_saut "\n"
+      ::console::affiche_resultat "$caption(bifsconv,pasdefichier) $fichier\n"
    }
 }
 
@@ -64,8 +67,7 @@ proc convert_fits_all { {extension} {rep "audace(rep_images)"} } {
    global audace caption
 
    if {$rep=="audace(rep_images)"} {set rep $audace(rep_images)}
-   console::affiche_resultat "$caption(bifsconv,repencours) $rep\n"
-   console::affiche_saut "\n"
+   ::console::affiche_resultat "$caption(bifsconv,repencours) $rep\n"
    set liste_cibles [glob -nocomplain [file join $rep *$extension]]
    foreach cible $liste_cibles {
       bifsconv_full $cible
@@ -96,8 +98,12 @@ proc loadima_nofits { {fichier} {rep "audace(rep_images)"} } {
    #--- Conversion de l'image au format FITS
    bifsconv_full [file join $rep_tmp $fichier]
    set fichierfits [file join $rep_tmp [file rootname $fichier].fit]
-   #--- Chargement de l'image
-   buf$audace(bufNo) load $fichierfits
+   #--- Chargement de l'image et gestion des erreurs
+   set error [ catch { buf$audace(bufNo) load $fichierfits } msg ]
+   if { $error == "1" } {
+      ::console::affiche_resultat "$caption(bifsconv,sortieconversion)"
+      return
+   }
    #--- Visualisation automatique
    audace::autovisu $audace(visuNo)
    #--- Mise a jour de l'en-tete audace
