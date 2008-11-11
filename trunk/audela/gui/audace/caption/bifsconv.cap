@@ -1,6 +1,6 @@
 #
 # Fichier : bifsconv.cap
-# Mise a jour $Id: bifsconv.cap,v 1.6 2007-01-27 14:35:36 robertdelmas Exp $
+# Mise a jour $Id: bifsconv.cap,v 1.7 2008-11-11 13:24:57 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,58 +11,72 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(bifsconv,audace)           "Aud'ACE"
-set caption(bifsconv,imaencours)       "FITS Conversion of Image:"
-set caption(bifsconv,repencours)       "FITS Conversion in Folder:"
-set caption(bifsconv,pasdefichier)     "Cannot convert because the following file does not exist: "
+set caption(bifsconv,audace)              "Aud'ACE"
+set caption(bifsconv,imaencours)          "FITS Conversion of Image:"
+set caption(bifsconv,repencours)          "FITS Conversion in Folder:"
+set caption(bifsconv,pasdefichier)        "Unable to convert. The following file does not exist: "
+set caption(bifsconv,formatpasbon)        "Unable to convert. This image format is not supported by BifsConv."
+set caption(bifsconv,sortieconversion)    "Unexpected end of conversion. Please contact Raoul Behrend."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(bifsconv,audace)        "Aud'ACE"
-   set caption(bifsconv,imaencours)    "Conversion FITS de l'image :"
-   set caption(bifsconv,repencours)    "Conversion FITS dans le répertoire :"
-   set caption(bifsconv,pasdefichier)  "Conversion impossible, le fichier suivant n'existe pas : "
+   set caption(bifsconv,audace)           "Aud'ACE"
+   set caption(bifsconv,imaencours)       "Conversion FITS de l'image :"
+   set caption(bifsconv,repencours)       "Conversion FITS dans le répertoire :"
+   set caption(bifsconv,pasdefichier)     "Conversion impossible. Le fichier suivant n'existe pas : "
+   set caption(bifsconv,formatpasbon)     "Conversion impossible. Ce format d'image n'est pas supporté par BifsConv."
+   set caption(bifsconv,sortieconversion) "Arrêt prématuré de la conversion. Contacter Raoul Behrend."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(bifsconv,audace)        "Aud'ACE"
-   set caption(bifsconv,imaencours)    "Conversione dell'immagine in FITS:"
-   set caption(bifsconv,repencours)    "Conversione FITS nella cartella:"
-   set caption(bifsconv,pasdefichier)  "Impossibile effettuare la conversione, il seguente file non esiste: "
+   set caption(bifsconv,audace)           "Aud'ACE"
+   set caption(bifsconv,imaencours)       "Conversione dell'immagine in FITS:"
+   set caption(bifsconv,repencours)       "Conversione FITS nella cartella:"
+   set caption(bifsconv,pasdefichier)     "# Impossibile effettuare la conversione, il seguente file non esiste: "
+   set caption(bifsconv,formatpasbon)     "# Conversion impossible. Ce format d'image n'est pas supporté par BifsConv."
+   set caption(bifsconv,sortieconversion) "# Arrêt prématuré de la conversion. Contacter Raoul Behrend."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(bifsconv,audace)        "Aud'ACE"
-   set caption(bifsconv,imaencours)    "Conversion de la imagen a FITS:"
-   set caption(bifsconv,repencours)    "Conversión FITS en carpeta:"
-   set caption(bifsconv,pasdefichier)  "No se puede convertir, el siguiente fichero no existe: "
+   set caption(bifsconv,audace)           "Aud'ACE"
+   set caption(bifsconv,imaencours)       "Conversion de la imagen a FITS:"
+   set caption(bifsconv,repencours)       "Conversión FITS en carpeta:"
+   set caption(bifsconv,pasdefichier)     "# No se puede convertir, el siguiente fichero no existe: "
+   set caption(bifsconv,formatpasbon)     "# Conversion impossible. Ce format d'image n'est pas supporté par BifsConv."
+   set caption(bifsconv,sortieconversion) "# Arrêt prématuré de la conversion. Contacter Raoul Behrend."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(bifsconv,audace)        "Aud'ACE"
-   set caption(bifsconv,imaencours)    "FITS Konversion des Bildes:"
-   set caption(bifsconv,repencours)    "FITS Konversion in einen Register:"
-   set caption(bifsconv,pasdefichier)  "Unmögliche Verwandlung: "
+   set caption(bifsconv,audace)           "Aud'ACE"
+   set caption(bifsconv,imaencours)       "FITS Konversion des Bildes:"
+   set caption(bifsconv,repencours)       "FITS Konversion in einen Register:"
+   set caption(bifsconv,pasdefichier)     "# Unmögliche Verwandlung: "
+   set caption(bifsconv,formatpasbon)     "# Conversion impossible. Ce format d'image n'est pas supporté par BifsConv."
+   set caption(bifsconv,sortieconversion) "# Arrêt prématuré de la conversion. Contacter Raoul Behrend."
 
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(bifsconv,audace)        "Aud'ACE"
-   set caption(bifsconv,imaencours)    "Conversão da imagem em FITS:"
-   set caption(bifsconv,repencours)    "Conversão FITS na pasta:"
-   set caption(bifsconv,pasdefichier)  "Impossível de converter por inexistência do seguinte ficheiro: "
+   set caption(bifsconv,audace)           "Aud'ACE"
+   set caption(bifsconv,imaencours)       "Conversão da imagem em FITS:"
+   set caption(bifsconv,repencours)       "Conversão FITS na pasta:"
+   set caption(bifsconv,pasdefichier)     "# Impossível de converter por inexistência do seguinte ficheiro: "
+   set caption(bifsconv,formatpasbon)     "# Conversion impossible. Ce format d'image n'est pas supporté par BifsConv."
+   set caption(bifsconv,sortieconversion) "# Arrêt prématuré de la conversion. Contacter Raoul Behrend."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(bifsconv,audace)        "Aud'ACE"
-   set caption(bifsconv,imaencours)    "FITS billedtransformation:"
-   set caption(bifsconv,repencours)    "FITS transformation i folder:"
-   set caption(bifsconv,pasdefichier)  "Kan ikke konvertere, da den følgende fil ikke eksisterer: "
+   set caption(bifsconv,audace)           "Aud'ACE"
+   set caption(bifsconv,imaencours)       "FITS billedtransformation:"
+   set caption(bifsconv,repencours)       "FITS transformation i folder:"
+   set caption(bifsconv,pasdefichier)     "# Kan ikke konvertere, da den følgende fil ikke eksisterer: "
+   set caption(bifsconv,formatpasbon)     "# Conversion impossible. Ce format d'image n'est pas supporté par BifsConv."
+   set caption(bifsconv,sortieconversion) "# Arrêt prématuré de la conversion. Contacter Raoul Behrend."
 
 }
 
