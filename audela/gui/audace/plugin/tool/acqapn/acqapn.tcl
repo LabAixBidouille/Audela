@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Outil d'acquisition pour APN Nikon CoolPix
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.32 2008-05-12 15:39:09 robertdelmas Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.33 2008-11-11 19:11:06 robertdelmas Exp $
 #
 
 #============================================================
@@ -927,8 +927,8 @@ namespace eval ::acqapn {
 
       set hauteur [llength $coolpix_base($variable)]
       if { $hauteur > "5" } { set hauteur 5 }
-      ComboBox $this -relief sunken -borderwidth 1 -width 14 -editable 0 -height $hauteur \
-         -values $coolpix_base($variable)
+      ComboBox $this -borderwidth 1 -width [ ::tkutil::lgEntryComboBox $coolpix_base($variable) ] \
+         -relief sunken -editable 0 -height $hauteur -values $coolpix_base($variable)
 
       #--- Affiche l'element selectionne, sinon le premier element de la liste
       if { ![info exists private(coolpix,$variable)] } {
@@ -1591,7 +1591,7 @@ namespace eval ::acqapn {
 
             set list_combobox [ list 115200 57600 38400 19200 9600 ]
             ComboBox $frm.baud.listeBaud \
-               -width 8                           \
+               -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
                -height [ llength $list_combobox ] \
                -relief sunken                     \
                -borderwidth 1                     \
