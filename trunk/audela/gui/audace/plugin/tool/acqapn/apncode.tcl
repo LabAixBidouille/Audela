@@ -2,7 +2,7 @@
 # Fichier : apncode.tcl
 # Description : Transcodage des variables de commande des APN
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: apncode.tcl,v 1.8 2007-11-08 22:03:55 robertdelmas Exp $
+# Mise a jour $Id: apncode.tcl,v 1.9 2008-11-11 19:09:56 robertdelmas Exp $
 #
 
 #============================================================
@@ -104,7 +104,7 @@ proc ::acqapn::ReverseDzoom { } {
 
 #
 # ReverseResolution
-#---Définition du format et de la compresion en fonction de la résolution
+#---Définition du format et de la compression en fonction de la résolution
 #
 proc ::acqapn::ReverseResolution { } {
    variable private
