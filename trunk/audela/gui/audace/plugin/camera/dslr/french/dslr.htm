@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 11 juillet 2007</p>
+<p class="date">Date de mise &agrave; jour : 11 novembre 2008</p>
 <h1>Appareil Photo Num&eacute;rique </h1>
 <blockquote> 
   <p>Pilotage des appareils photo num&eacute;riques Canon via USB.</p>
@@ -38,6 +38,38 @@
     &agrave; l'appareil. </font></p>
   <p>&nbsp;</p>
 </blockquote>
+<h1>Configuration de l'onglet APN pour une longue pose avec un QuickRemote </h1>
+<p>Une premi&egrave;re remarque : Quand on branche le c&acirc;ble USB sur l'ordinateur,
+Windows affiche une fen&ecirc;tre pour demander quel logiciel il doit lancer : </p>
+<img src="images/windowsrebel300D.gif" alt="" width="311" height="329" />
+<p>Il faut cliquer sur "Annuler" car sinon un autre logiciel peut prendre la main sur
+ l'appareil photo et g&ecirc;ner AudeLA surtout pendant les longues poses.</p>
+<p>Si vous souhaitez faire des acquisitions longue pose avec votre APN par l'interm&eacute;diare d'un QuickRemote,
+ vous devez configurer l'option longue pose comme sur l'image ci-dessous : </p>
+<img src="images/configquichremote.gif" alt="" width="613" height="474" />
+<p>Si vous utilisez la prise Jack du QuickRemote, le champ <b>Num&eacute;ro du bit de commande</b> doit &ecirc;tre &agrave;
+ <b>0</b> et le champ <b>Commande au début de la pose</b> doit &ecirc;tre &agrave; <b>1</b>.</p>
+<h2>Test manuel de fonctionnement de la longue pose</h2>
+<p>Si vous avez un probl&egrave;me avec le fonctionnement du miroir de l'APN (ne se rel&egrave;ve pas, etc.),
+ je vous sugg&egrave;re le test suivant :</p>
+<p>Vous devez faire ce test avec seulement le bo&icirc;tier photo et le c&acirc;ble de commande longue pose :</p>
+<p>- Mettez sous tension le bo&icirc;tier photo et r&eacute;glez-le en mode Manuel.</p>
+<p>- Branchez la prise Jack dans le bo&icirc;tier.</p>
+<p>- Court-circuitez avec un pi&egrave;ce m&eacute;tallique les broches &agrave; l'autre bout du Jack 
+ (les broches 1 et 3, en num&eacute;rotant &agrave; partir de l'extr&eacute;mit&eacute; du Jack).</p>
+<p>Le miroir doit s'abaisser quand on fait le court-circuit et il doit se relever quand on supprime le court-circuit.
+ Si le miroir ne se rel&egrave;ve pas, c'est probablement parce que le Jack est trop enfonc&eacute; ou mal positionn&eacute;
+ dans le bo&icirc;tier photo.</p>
+<p>Remarque : J'ai constat&eacute; qu'un faux contact entre les broches 2 (mise au point automatique) et 3 
+ (abaissement du miroir) du Jack fait "planter" le firmware de l'appareil photo. Dans ce cas, il faut "rebooter" l'APN 
+ pour reprendre la main. Cela &eacute;tait d&ucirc; &agrave; un court-circuit du connecteur Jack qui &eacute;tait trop
+ enfonc&eacute; dans le bo&icirc;tier de l'appareil photo.<p>
+<h2>Cas particulier de l'acquisition d'offsets avec le QuickRemote connect&eacute;</h2>
+<p>L'acquisition avec un APN en mode longue pose via un Quickremote a du mal avec des poses de moins de 300 ms environ.
+ Parfois &ccedil;a passe, mais cela d&eacute;pend beaucoup du mod&egrave;le d'APN (la commmande par la prise Jack est 
+ p&eacute;vue pour une pose B manuelle) et aussi de la charge du micro-ordinateur de contr&ocirc;le.</p>
+<p>Aussi je vous propose de faire vos offsets sans la longue pose. Vous devez d&eacute;cocher <b>Longue pose</b> dans 
+ l'onglet de configuration des APN pour d&eacute;connecter le QuickRemote.</p>
 <h1>Manuel de programmation</h1>
 <h2>Commande de cr&eacute;ation d'une cam&eacute;ra dslr</h2>
 <blockquote> 
