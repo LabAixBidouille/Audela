@@ -2,7 +2,7 @@
 # Fichier : snvisuzoom.tcl
 # Description : Creation d'une loupe de visualisation en association avec Sn Visu
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisuzoom.tcl,v 1.7 2008-10-27 21:50:07 robertdelmas Exp $
+# Mise a jour $Id: snvisuzoom.tcl,v 1.8 2008-11-13 22:20:25 robertdelmas Exp $
 #
 
 #--- Chargement des captions
@@ -146,21 +146,23 @@ proc sn_visuzoom_disp_g { { x 1 } { y 1 } { zoom 3 } } {
          set nume $num(buffer1b)
       }
       #---
-      set scalecut [lindex [get_seuils $nume] 0]
-      set s        [ buf$nume stat ]
-      set scalemax [lindex $s 2]
-      set scalemin [lindex $s 3]
-      if {($scalecut>=$scalemin)&&($scalecut<=$scalemax)} {
-         set ds1 [expr $scalemax-$scalecut]
-         set ds2 [expr $scalecut-$scalemin]
-         if {$ds1>$ds2} {
-            set scalemin [expr $scalecut-$ds1]
-         } else {
-            set scalemax [expr $scalecut+$ds2]
+      set scalecut [ lindex [ get_seuils $nume ] 0 ]
+      set err [ catch { buf$nume stat } s ]
+      if { $err == "0" } {
+         set scalemax [ lindex $s 2 ]
+         set scalemin [ lindex $s 3 ]
+         if {($scalecut>=$scalemin)&&($scalecut<=$scalemax)} {
+            set ds1 [expr $scalemax-$scalecut]
+            set ds2 [expr $scalecut-$scalemin]
+            if {$ds1>$ds2} {
+               set scalemin [expr $scalecut-$ds1]
+            } else {
+               set scalemax [expr $scalecut+$ds2]
+            }
          }
+         $zone(sh2000) configure -to $scalemax -from $scalemin
       }
       $zone(sh2000) set $scalecut
-      $zone(sh2000) configure -to $scalemax -from $scalemin
       update
    }
 }
@@ -300,21 +302,23 @@ proc sn_visuzoom_disp_d { { x 1 } { y 1 } { zoom 3 } } {
          set nume $num(buffer2b)
       }
       #---
-      set scalecut [lindex [get_seuils $nume] 0]
-      set s        [ buf$nume stat ]
-      set scalemax [lindex $s 2]
-      set scalemin [lindex $s 3]
-      if {($scalecut>=$scalemin)&&($scalecut<=$scalemax)} {
-         set ds1 [expr $scalemax-$scalecut]
-         set ds2 [expr $scalecut-$scalemin]
-         if {$ds1>$ds2} {
-            set scalemin [expr $scalecut-$ds1]
-         } else {
-            set scalemax [expr $scalecut+$ds2]
+      set scalecut [ lindex [ get_seuils $nume ] 0 ]
+      set err [ catch { buf$nume stat } s ]
+      if { $err == "0" } {
+         set scalemax [ lindex $s 2 ]
+         set scalemin [ lindex $s 3 ]
+         if {($scalecut>=$scalemin)&&($scalecut<=$scalemax)} {
+            set ds1 [expr $scalemax-$scalecut]
+            set ds2 [expr $scalecut-$scalemin]
+            if {$ds1>$ds2} {
+               set scalemin [expr $scalecut-$ds1]
+            } else {
+               set scalemax [expr $scalecut+$ds2]
+            }
          }
+         $zone(sh2001) configure -to $scalemax -from $scalemin
       }
       $zone(sh2001) set $scalecut
-      $zone(sh2001) configure -to $scalemax -from $scalemin
       update
    }
 }
