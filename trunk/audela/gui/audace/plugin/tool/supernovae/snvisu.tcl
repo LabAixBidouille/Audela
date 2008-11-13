@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.32 2008-10-27 21:53:10 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.33 2008-11-13 22:20:09 robertdelmas Exp $
 #
 
 global audace snvisu snconfvisu
@@ -952,9 +952,6 @@ proc affimages { } {
          return
       }
       #---
-     # set moyenne [ lindex [ buf$num(buffer1) stat ] 4 ]
-     # set sb [expr $moyenne - $conf(seuils,irisautobas) ]
-     # set sh [expr $moyenne + $conf(seuils,irisautobas) ]
       set sbh      [ buf$num(buffer1) stat ]
       set sh       [ lindex $sbh 0 ]
       set sb       [ lindex $sbh 1 ]
@@ -963,30 +960,32 @@ proc affimages { } {
       visu$num(visu_1) cut [ list $sh $sb ]
       #--- Affichage en mode logarithme
       if {$afflog==1} {
-         visu$num(visu_1) cut [sn_buflog $num(buffer1) $num(buffer1b)]
+         visu$num(visu_1) cut [ sn_buflog $num(buffer1) $num(buffer1b) ]
       }
       #---
       visu$num(visu_1) disp
       if {$afflog==0} {
          set nume $num(buffer1)
       } else {
-         set nume     $num(buffer1b)
-         set s        [ buf$nume stat ]
-         set scalemax [ lindex $s 2 ]
-         set scalemin [ lindex $s 3 ]
+         set nume $num(buffer1b)
       }
       set scalecut [ lindex [ get_seuils $nume ] 0 ]
-      if {($scalecut>=$scalemin)&&($scalecut<=$scalemax)} {
-         set ds1 [expr $scalemax-$scalecut]
-         set ds2 [expr $scalecut-$scalemin]
-         if {$ds1>$ds2} {
-            set scalemin [expr $scalecut-$ds1]
-         } else {
-            set scalemax [expr $scalecut+$ds2]
+      set err [ catch { buf$nume stat } s ]
+      if { $err == "0" } {
+         set scalemax [ lindex $s 2 ]
+         set scalemin [ lindex $s 3 ]
+         if {($scalecut>=$scalemin)&&($scalecut<=$scalemax)} {
+            set ds1 [expr $scalemax-$scalecut]
+            set ds2 [expr $scalecut-$scalemin]
+            if {$ds1>$ds2} {
+               set scalemin [expr $scalecut-$ds1]
+            } else {
+               set scalemax [expr $scalecut+$ds2]
+            }
          }
+         $zone(sh1) configure -to $scalemax -from $scalemin
       }
       $zone(sh1) set $scalecut
-      $zone(sh1) configure -to $scalemax -from $scalemin
       update
       #---
       $zone(labelh1) configure -text [lindex [buf$num(buffer1) getkwd DATE-OBS] 1]
@@ -1152,17 +1151,14 @@ proc affimages { } {
       }
       #---
       catch {
-        # set moyenne [ lindex [ buf$num(buffer2) stat ] 4 ]
-        # set sb [expr $moyenne - $conf(seuils,irisautobas) ]
-        # set sh [expr $moyenne + $conf(seuils,irisautobas) ]
          set sbh [ buf$num(buffer2) stat ]
-         set sh [lindex $sbh 0]
-         set sb [lindex $sbh 1]
+         set sh  [ lindex $sbh 0 ]
+         set sb  [ lindex $sbh 1 ]
          visu$num(visu_2) cut [ list $sh $sb ]
       }
       #--- Affichage en mode logarithme
       if {$afflog==1} {
-         visu$num(visu_2) cut [sn_buflog $num(buffer2) $num(buffer2b)]
+         visu$num(visu_2) cut [ sn_buflog $num(buffer2) $num(buffer2b) ]
       }
       if {$result==""} {
          #---
@@ -1172,12 +1168,11 @@ proc affimages { } {
          } else {
             set nume $num(buffer2b)
          }
-         set scalecut [lindex [get_seuils $nume] 0]
-         set err [catch {buf$nume stat} s]
-         if {$err==0} {
-            set s [ buf$nume stat ]
-            set scalemax [lindex $s 2]
-            set scalemin [lindex $s 3]
+         set scalecut [ lindex [ get_seuils $nume ] 0 ]
+         set err [ catch { buf$nume stat } s ]
+         if { $err == "0" } {
+            set scalemax [ lindex $s 2 ]
+            set scalemin [ lindex $s 3 ]
             if {($scalecut>=$scalemin)&&($scalecut<=$scalemax)} {
                set ds1 [expr $scalemax-$scalecut]
                set ds2 [expr $scalecut-$scalemin]
