@@ -2,7 +2,7 @@
 # Fichier : confcat.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'chart'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confcat.tcl,v 1.25 2008-06-14 09:02:16 robertdelmas Exp $
+# Mise a jour $Id: confcat.tcl,v 1.26 2008-11-15 23:27:54 robertdelmas Exp $
 #
 
 namespace eval ::confCat {
@@ -56,14 +56,18 @@ proc ::confCat::getLabel { } {
 # ::confCat::run
 # Affiche la fenetre de choix et de configuration
 #------------------------------------------------------------
-proc ::confCat::run { } {
+proc ::confCat::run { { pluginName "" } } {
    variable private
    global caption conf
 
    #--- je verifie si le plugin existe dans la liste des onglets
    if { [ llength $private(pluginNamespaceList) ] > 0 } {
       ::confCat::createDialog
-      set selectedPluginName "$conf(confCat)"
+      if { $pluginName == "" } {
+         set selectedPluginName $conf(confCat)
+      } else {
+         set selectedPluginName $pluginName
+      }
       if { $selectedPluginName != "" } {
          #--- je verifie que la valeur par defaut existe dans la liste
          if { [ lsearch -exact $private(pluginNamespaceList) $selectedPluginName ] == -1 } {
