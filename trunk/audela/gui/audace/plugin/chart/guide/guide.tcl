@@ -2,7 +2,7 @@
 # Fichier : guide.tcl
 # Description : Plugin de communication avec "guide"
 # Auteur : Robert DELMAS
-# Mise a jour $Id: guide.tcl,v 1.21 2007-12-04 20:47:00 robertdelmas Exp $
+# Mise a jour $Id: guide.tcl,v 1.22 2008-11-15 23:27:15 robertdelmas Exp $
 #
 
 namespace eval guide {
@@ -306,35 +306,39 @@ namespace eval guide {
 
      # console::disp "::guide::gotoObject $nom_objet, $ad, $dec, $zoom_objet, $avant_plan, \n"
 
-      set num [ catch {
-         if { $avant_plan == "1" } { gs_guide show } else { gs_guide hide }
-            gs_guide refresh
-            gs_guide zoom $zoom_objet
-            if { $nom_objet != "#etoile#" && $nom_objet != "" } {
-               gs_guide objet $nom_objet
-            } else {
-               gs_guide coord $ad $dec "J2000.0"
-            }
-         } msg ]
-
-      if { $msg == "1" } {
+      if { $avant_plan == "1" } {
+         set gsResult [ gs_guide show ]
+      } else {
+         set gsResult [ gs_guide hide ]
+      }
+      if { $gsResult == "0" } {
+         gs_guide refresh
+         gs_guide zoom $zoom_objet
+         if { $nom_objet != "#etoile#" && $nom_objet != "" } {
+            gs_guide objet $nom_objet
+         } else {
+            gs_guide coord $ad $dec "J2000.0"
+         }
+      } else {
          set choix [ tk_messageBox -type yesno -icon warning -title "$caption(guide,attention)" \
             -message "$caption(guide,option) $caption(guide,creation)\n\n$caption(guide,non)\n\n$caption(guide,lance)" ]
          if { $choix == "yes" } {
             set erreur [ launch ]
             if { $erreur != "1" } {
-               after 2000
-               set num [ catch {
-               if { $avant_plan == "1" } { gs_guide show } else { gs_guide hide } ;
-                  gs_guide refresh ;
-                  gs_guide zoom $zoom_objet ;
-                  if { $nom_objet != "#etoile#" } {
+               if { $avant_plan == "1" } {
+                  set gsResult [ gs_guide show ]
+               } else {
+                  set gsResult [ gs_guide hide ]
+               }
+               if { $gsResult == "0" } {
+                  gs_guide refresh
+                  gs_guide zoom $zoom_objet
+                  if { $nom_objet != "#etoile#" && $nom_objet != "" } {
                      gs_guide objet $nom_objet
                   } else {
                      gs_guide coord $ad $dec "J2000.0"
                   }
-               } msg ]
-               if { $msg == "1" } {
+               } else {
                   set choix [ tk_messageBox -type ok -icon warning -title "$caption(guide,attention)" \
                      -message "$caption(guide,verification)" ]
                   set result "1"
@@ -372,35 +376,14 @@ namespace eval guide {
       #--- Place temporairement AudeLA dans le dossier de Guide
       cd "$dirname"
       #--- Prepare l'ouverture du logiciel
-      set a_effectuer "exec \"$conf(guide,binarypath)\" \"$filename\" &"
+      set a_effectuer "exec \"$filename\" &"
       #--- Ouvre le logiciel
       if [ catch $a_effectuer input ] {
          #--- Affichage du message d'erreur sur la console
          ::console::affiche_erreur "$caption(guide,rate)\n"
          ::console::affiche_saut "\n"
-         #--- Ouvre la fenetre de configuration des editeurs
-         set conf(confCat) "::guide"
-         ::confCat::run
-         #--- Extrait le nom de dossier
-         set dirname [ file dirname "$conf(guide,binarypath)" ]
-         #--- Place temporairement AudeLA dans le dossier de Guide
-         cd "$dirname"
-         #--- Prepare l'ouverture du logiciel
-         set a_effectuer "exec \"$conf(guide,binarypath)\" \"$filename\" &"
-         #--- Affichage sur la console
-         set filename $conf(guide,binarypath)
-         ::console::disp $filename
-         ::console::affiche_saut "\n"
-         if [ catch $a_effectuer input ] {
-            set audace(current_edit) $input
-         }
-      } else {
-         #--- Affichage sur la console
-         ::console::disp $filename
-         ::console::affiche_saut "\n"
-         set audace(current_edit) $input
-         ::console::affiche_resultat "$caption(guide,gagne)\n"
-         ::console::affiche_saut "\n"
+         #--- Ouvre la fenetre de configuration des cartes
+         ::confCat::run "guide"
       }
       cd "$pwd0"
       #--- J'attends que Guide soit completement demarre

@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows uniquement
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv2.tcl,v 1.20 2008-09-21 11:53:31 michelpujol Exp $
+# Mise a jour $Id: carteducielv2.tcl,v 1.21 2008-11-15 23:26:51 robertdelmas Exp $
 #
 
 namespace eval carteducielv2 {
@@ -1004,29 +1004,8 @@ proc ::carteducielv2::launch { } {
       #--- Affichage du message d'erreur sur la console
       ::console::affiche_erreur "$caption(carteducielv2,rate)\n"
       ::console::affiche_saut "\n"
-      #--- Ouvre la fenetre de configuration des editeurs
-      set conf(confCat) "::carteducielv2"
-      ::confCat::run
-      #--- Extrait le nom de dossier
-      set dirname [file dirname "$conf(carteducielv2,binarypath)"]
-      #--- Place temporairement AudeLA dans le dossier de CDC
-      cd "$dirname"
-      #--- Prepare l'ouverture du logiciel
-      set a_effectuer "exec \"$conf(carteducielv2,binarypath)\" \"$filename\" &"
-      #--- Affichage sur la console
-      set filename $conf(carteducielv2,binarypath)
-      ::console::disp $filename
-      ::console::affiche_saut "\n"
-     if [catch $a_effectuer input] {
-         set audace(current_edit) $input
-      }
-   } else {
-      #--- Affichage sur la console
-      ::console::disp $filename
-      ::console::affiche_saut "\n"
-      set audace(current_edit) $input
-      ::console::affiche_resultat "$caption(carteducielv2,gagne)\n"
-      ::console::affiche_saut "\n"
+      #--- Ouvre la fenetre de configuration des cartes
+      ::confCat::run "carteducielv2"
    }
    cd "$pwd0"
    #--- J'attends que Cartes du Ciel soit completement demarre

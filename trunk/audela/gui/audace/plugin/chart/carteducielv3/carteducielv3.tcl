@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows et Linux
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv3.tcl,v 1.21 2008-09-21 11:53:32 michelpujol Exp $
+# Mise a jour $Id: carteducielv3.tcl,v 1.22 2008-11-15 23:27:04 robertdelmas Exp $
 #
 
 namespace eval carteducielv3 {
@@ -338,8 +338,13 @@ namespace eval carteducielv3 {
    #  return 0 (ready), 1 (not ready)
    #------------------------------------------------------------
    proc isReady { } {
-      set ready 0
-      return  $ready
+      if { [ openConnection ] == 1 } {
+         set ready 0
+      } else {
+         set ready 0
+         closeConnection
+      }
+      return $ready
    }
 
    #==============================================================
@@ -846,29 +851,8 @@ namespace eval carteducielv3 {
          #--- Affichage du message d'erreur sur la console
          ::console::affiche_erreur "$caption(carteducielv3,rate)\n"
          ::console::affiche_saut "\n"
-         #--- Ouvre la fenetre de configuration des editeurs
-         set conf(confCat) "::carteducielv3"
-         ::confCat::run
-         #--- Extrait le nom de dossier
-         set dirname [file dirname "$conf(carteducielv3,binarypath)"]
-         #--- Place temporairement AudeLA dans le dossier de CDC
-         cd "$dirname"
-         #--- Prepare l'ouverture du logiciel
-         set a_effectuer "exec \"$filename\" &"
-         #--- Affichage sur la console
-         set filename $conf(carteducielv3,binarypath)
-         ::console::disp $filename
-         ::console::affiche_saut "\n"
-         if [catch $a_effectuer input] {
-            set audace(current_edit) $input
-         }
-      } else {
-         #--- Affichage sur la console
-         ::console::disp $filename
-         ::console::affiche_saut "\n"
-         set audace(current_edit) $input
-         ::console::affiche_resultat "$caption(carteducielv3,gagne)\n"
-         ::console::affiche_saut "\n"
+         #--- Ouvre la fenetre de configuration des cartes
+         ::confCat::run "carteducielv3"
       }
       cd "$pwd0"
       #--- J'attends que Cartes du Ciel soit completement demarre
@@ -902,7 +886,7 @@ namespace eval carteducielv3 {
                   -message "$caption(carteducielv3,verification)"
                return ""
             }
-            #--- nouvelle tentative
+            #--- nouvelle tentative apres le lancement
             if { [ openConnection ] == 1 } {
                console::affiche_erreur "$caption(carteducielv3,no_connect)\n\n"
                tk_messageBox -message "$caption(carteducielv3,no_connect)" -icon info

@@ -3,7 +3,7 @@
 # Description : namespace generique des cartes (~ classe abstraite)
 #    Transmet les appels aux procedures du namespace de la carte choisie avec confcat.tcl
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carte.tcl,v 1.5 2008-06-01 13:19:08 robertdelmas Exp $
+# Mise a jour $Id: carte.tcl,v 1.6 2008-11-15 23:26:37 robertdelmas Exp $
 #
 
 namespace eval ::carte {
@@ -74,16 +74,7 @@ namespace eval ::carte {
 
       set result 1
       if { $conf(confCat) != "" } {
-         if { [isReady] == 0 } {
-            set resultcatch [ catch { set result [$conf(confCat)\:\:gotoObject "$nom_objet" "$ad" "$dec" "$zoom_objet" "$avant_plan" ] } msg]
-         } else {
-            #--- Affichage de la fenetre de configuration des cartes si aucune carte n'est prete
-            set choice [tk_messageBox -message "$caption(carte,error_no_map)" -title "$caption(carte,title)" \
-               -icon question -type yesno]
-            if {$choice=="yes"} {
-               ::confCat::run
-            }
-         }
+         set resultcatch [ catch { set result [$conf(confCat)\:\:gotoObject "$nom_objet" "$ad" "$dec" "$zoom_objet" "$avant_plan" ] } msg]
       } else {
          #--- Affichage de la fenetre de configuration des cartes si aucune carte n'est selectionnee
          set choice [tk_messageBox -message "$caption(carte,error_no_map)" -title "$caption(carte,title)" \
