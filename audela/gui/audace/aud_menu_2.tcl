@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_2.tcl
 # Description : Script regroupant les fonctionnalites du menu Affichage
-# Mise a jour $Id: aud_menu_2.tcl,v 1.13 2008-10-03 16:45:47 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.tcl,v 1.14 2008-11-15 16:45:15 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -775,14 +775,14 @@ namespace eval ::seuilWindow {
    # Procedure correspondant a l'appui sur le bouton Appliquer
    #
    proc cmdApply { visuNo } {
-      global audace conf num selectWindow seuilWindow snconfvisu snvisu tmp
+      global audace conf selectWindow seuilWindow tmp
 
-      #---
+      #--- Copie des seuils manuels maxi et mini
       if { $seuilWindow($visuNo,seuilWindowAuto_Manuel) == "2" } {
          set ::confVisu::private($visuNo,maxdyn) $seuilWindow($visuNo,max)
          set ::confVisu::private($visuNo,mindyn) $seuilWindow($visuNo,min)
       }
-      #---
+      #--- Copie des parametres du reglage
       set ::confVisu::private($visuNo,intervalleSHSB) $seuilWindow($visuNo,intervalleSHSB)
       set conf(seuils,auto_manuel)                    $seuilWindow($visuNo,seuilWindowAuto_Manuel)
       set conf(seuils,%_dynamique)                    $seuilWindow($visuNo,pourcentage_dynamique)
@@ -797,16 +797,6 @@ namespace eval ::seuilWindow {
       #--- Visualisation avec les reglages courants dans la fenetre de selection des images si elle existe
       if [ winfo exists $audace(base).select ] {
          ::audace::autovisu $selectWindow(visuNo)
-      }
-      #--- Visualisation avec les reglages courants dans la fenetre de recherche de supernova
-      if [ winfo exists $audace(base).snvisu ] {
-         ::confVisu::autovisu $num(visu_1)
-         if { $snconfvisu(num_rep2_3) == "0" && $snvisu(ima_rep2_exist) == "1" } {
-            ::confVisu::autovisu $num(visu_2)
-         }
-         if { $snconfvisu(num_rep2_3) == "1" && $snvisu(ima_rep3_exist) =="1" } {
-            ::confVisu::autovisu $num(visu_2)
-         }
       }
       #--- Recuperation de la position de la fenetre de reglages
       seuils_recup_position $visuNo
