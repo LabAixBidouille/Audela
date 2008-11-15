@@ -2,15 +2,19 @@
 # Fichier : sntkutil.tcl
 # Description : Utilitaires pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: sntkutil.tcl,v 1.6 2008-07-16 16:37:51 robertdelmas Exp $
+# Mise a jour $Id: sntkutil.tcl,v 1.7 2008-11-15 16:46:35 robertdelmas Exp $
 #
+
+#--- Conventions pour ce script :
+#--- Les indices 1 se rapportent à l'image de gauche
+#--- Les indices 2 se rapportent à l'image de droite
 
 #
 # Scrolled_Canvas
 # Cree un canvas scrollable, ainsi que les deux scrollbars pour le deplacer
 # Ref: Brent Welsh, Practical Programming in TCL/TK, rev.2, page 392
 #
-proc sn_Scrolled_Canvas { c yscroll args } {
+proc snScrolledCanvas { c yscroll args } {
    frame $c
    if { $yscroll == "right" } {
       set grille { 0 0 0 1 1 0 }
@@ -35,7 +39,7 @@ proc sn_Scrolled_Canvas { c yscroll args } {
 # Transforme des coordonnees ecran en coordonnees canvas. L'argument est une liste de
 # deux entiers, et retourne egalement une liste de deux entiers. Pour l'image de gauche
 #
-proc sn_screen2Canvas_g { coord } {
+proc snScreen2Canvas1 { coord } {
    global zone
 
    set x [ $zone(image1) canvasx [ lindex $coord 0 ] ]
@@ -47,7 +51,7 @@ proc sn_screen2Canvas_g { coord } {
 # Transforme des coordonnees ecran en coordonnees canvas. L'argument est une liste de
 # deux entiers, et retourne egalement une liste de deux entiers. Pour l'image de droite
 #
-proc sn_screen2Canvas_d { coord } {
+proc snScreen2Canvas2 { coord } {
    global zone
 
    set x [ $zone(image2) canvasx [ lindex $coord 0 ] ]
@@ -59,7 +63,7 @@ proc sn_screen2Canvas_d { coord } {
 # Transforme des coordonnees canvas en coordonnees image. L'argument est une liste de
 # deux entiers, et retourne egalement une liste de deux entiers. Pour l'image de gauche
 #
-proc sn_canvas2Picture_g { coord } {
+proc snCanvas2Picture1 { coord } {
    global zone
 
    set xx [ expr [ lindex $coord 0 ] + 1 ]
@@ -82,7 +86,7 @@ proc sn_canvas2Picture_g { coord } {
 # Transforme des coordonnees canvas en coordonnees image. L'argument est une liste de
 # deux entiers, et retourne egalement une liste de deux entiers. Pour l'image de droite
 #
-proc sn_canvas2Picture_d { coord } {
+proc snCanvas2Picture2 { coord } {
    global zone
 
    set xx [ expr [ lindex $coord 0 ] + 1 ]
@@ -104,7 +108,7 @@ proc sn_canvas2Picture_d { coord } {
 #
 # Lancement de la recherche du fichier image au format .cpa sur le DVD
 #
-proc recherche_fichier_DVD { filename } {
+proc searchFileDVD { filename } {
    global snconfvisu
 
    #--- Recherche du fichier image
@@ -125,7 +129,7 @@ proc recherche_fichier_DVD { filename } {
 #
 # Convertion et affichage d'une image .cpa en .fit
 #
-proc snvisu_loadima_nofits { { fichier } { rep } } {
+proc snLoadimaNofits { { fichier } { rep } } {
    global num
 
    #--- Creation du repertoire temporaire
@@ -138,7 +142,7 @@ proc snvisu_loadima_nofits { { fichier } { rep } } {
    #--- Chargement de l'image
    buf$num(buffer2) load $fichierfits
    #--- Visualisation automatique
-   visu$num(visu_2) disp
+   visu$num(visu2) disp
    #--- Suppression de l'image copiee
    file delete [ file join $rep_tmp $fichier ]
    #--- Suppression de l'image FITS temporaire
