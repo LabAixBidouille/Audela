@@ -1,6 +1,6 @@
 #
 # Fichier : smedianrvb.cap
-# Mise a jour $Id: smedianrvb.cap,v 1.6 2007-01-27 14:54:28 robertdelmas Exp $
+# Mise a jour $Id: smedianrvb.cap,v 1.7 2008-11-16 21:17:19 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -17,7 +17,7 @@ set caption(smedianrvb,comment1)       "Generates 3 final files (red, green, blu
 set caption(smedianrvb,comment2)       "Deletes temporary files"
 set caption(smedianrvb,rep_images)     "Image Folder"
 set caption(smedianrvb,parcourir)      "..."
-set caption(smedianrvb,nom_images)     "Images Name"
+set caption(smedianrvb,nom_images)     "Generic name for RGB images"
 set caption(smedianrvb,nbre_images)    "Images Number"
 set caption(smedianrvb,nom_med)        "Median Name"
 set caption(smedianrvb,comment3)       "Comments: Save Displayed Median"
@@ -32,7 +32,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(smedianrvb,comment2)    "Efface les fichiers intermédiaires"
    set caption(smedianrvb,rep_images)  "Répertoire des images"
    set caption(smedianrvb,parcourir)   "..."
-   set caption(smedianrvb,nom_images)  "Nom des images"
+   set caption(smedianrvb,nom_images)  "Nom générique des images RVB"
    set caption(smedianrvb,nbre_images) "Nombre d'images"
    set caption(smedianrvb,nom_med)     "Nom de la médiane"
    set caption(smedianrvb,comment3)    "Commentaire : Enregistrer la médiane affichée"
@@ -47,7 +47,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(smedianrvb,comment2)    "Cancella i file intermedi"
    set caption(smedianrvb,rep_images)  "Directory delle immagini"
    set caption(smedianrvb,parcourir)   "..."
-   set caption(smedianrvb,nom_images)  "Nomi delle immagini"
+   set caption(smedianrvb,nom_images)  "Nomi generici delle immagini RGB"
    set caption(smedianrvb,nbre_images) "Numero immagini"
    set caption(smedianrvb,nom_med)     "Nome della mediana"
    set caption(smedianrvb,comment3)    "Commento: Registrare la mediana visualizzata"
@@ -62,7 +62,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(smedianrvb,comment2)    "Borra ficheros temporales"
    set caption(smedianrvb,rep_images)  "Directorio de imágenes"
    set caption(smedianrvb,parcourir)   "..."
-   set caption(smedianrvb,nom_images)  "Nombre de imágenes"
+   set caption(smedianrvb,nom_images)  "Nombre genérico de las imágenes RVA"
    set caption(smedianrvb,nbre_images) "Numero imágenes"
    set caption(smedianrvb,nom_med)     "Nombre de la mediana"
    set caption(smedianrvb,comment3)    "Comentarios: Guardar la mediana mostrada"
@@ -77,7 +77,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(smedianrvb,comment2)    "Löscht die zwischen Dateien aus"
    set caption(smedianrvb,rep_images)  "Bilder Verzeichnis"
    set caption(smedianrvb,parcourir)   "..."
-   set caption(smedianrvb,nom_images)  "Bilder Namen"
+   set caption(smedianrvb,nom_images)  "Generischen Nahmen für RGB Bilder"
    set caption(smedianrvb,nbre_images) "Bilder Zahl"
    set caption(smedianrvb,nom_med)     "Mittelbild Namen"
    set caption(smedianrvb,comment3)    "Kommentar: Das angerzeigte Mittelbild speichern"
@@ -92,7 +92,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(smedianrvb,comment2)    "Apagar os ficheiros temporários"
    set caption(smedianrvb,rep_images)  "Directório das imagens"
    set caption(smedianrvb,parcourir)   "..."
-   set caption(smedianrvb,nom_images)  "Nome das imagens"
+   set caption(smedianrvb,nom_images)  "Nome genérico das imagens RGB"
    set caption(smedianrvb,nbre_images) "Número das imagens"
    set caption(smedianrvb,nom_med)     "Nome da mediana"
    set caption(smedianrvb,comment3)    "Comentário : Guardar a mediana"
@@ -107,7 +107,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(smedianrvb,comment2)    "Deletes temporary files"
    set caption(smedianrvb,rep_images)  "Image Folder"
    set caption(smedianrvb,parcourir)   "..."
-   set caption(smedianrvb,nom_images)  "Images Name"
+   set caption(smedianrvb,nom_images)  "Generic name for RGB images"
    set caption(smedianrvb,nbre_images) "Images Number"
    set caption(smedianrvb,nom_med)     "Median Name"
    set caption(smedianrvb,comment3)    "Comments: Save Displayed Median"
