@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows uniquement
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv2.tcl,v 1.21 2008-11-15 23:26:51 robertdelmas Exp $
+# Mise a jour $Id: carteducielv2.tcl,v 1.22 2008-11-16 15:45:08 robertdelmas Exp $
 #
 
 namespace eval carteducielv2 {
@@ -304,14 +304,7 @@ proc ::carteducielv2::isReady { } {
       #--- DDE n'est pas disponible (on est sous linux ?)
       set private(ready) 1
    } else {
-      #--- Je teste si Cartes du Ciel est lance
-     # set erreur [ catch { dde services ciel DdeSkyChart } result ]
-     # if { $erreur !=0 || $result=="" } {
-     #    #--- Cartes du Ciel n'est pas lance
-     #    set private(ready) 1
-     # } else {
-     #    set private(ready) 0
-     # }
+      #--- DDE est disponible
       set private(ready) 0
    }
    return $private(ready)
@@ -381,8 +374,8 @@ proc ::carteducielv2::moveCoord { ra dec } {
    #--- je rajoute le "s" des secondes
    append ra "s"
 
-   set dec  [string map { "d" "\°" "m" "\'" "s" "\"" } $dec ]
-   set fov  [string map { "d" "\°" "m" "\'" "s" "\"" } $fov ]
+   set dec [string map { "d" "\°" "m" "\'" "s" "\"" } $dec ]
+   set fov [string map { "d" "\°" "m" "\'" "s" "\"" } $fov ]
 
    set command "MOVE RA: $ra DEC:$dec FOV:$fov"
    set result [sendDDECommand $command]
@@ -468,8 +461,8 @@ proc ::carteducielv2::selectObject { objectName } {
       #--- j'utilise le champ fixe
       set fov $conf(carteducielv2,fixedfovvalue)
       #--- je remplace les unites
-      set dec  [string map { "d" "\°" "m" "\'" "s" "\"" } $dec ]
-      set fov  [string map { "d" "\°" "m" "\'" "s" "\"" } $fov ]
+      set dec [string map { "d" "\°" "m" "\'" "s" "\"" } $dec ]
+      set fov [string map { "d" "\°" "m" "\'" "s" "\"" } $fov ]
       if { $fov == "" } {
          #--- rien a faire, j'abandonne
          return 1
@@ -509,8 +502,8 @@ proc ::carteducielv2::selectObject { objectName } {
 #
 #  exemple de reponse :
 #     ligne 0 ==> 22/12/2001 23:50:57
-   #     ligne 1 ==> RA: 13h40m13.00s DEC:+30°59'55.0" FOV:+90°00'00"
-   #     ligne 2 ==> 14h15m39.70s +19°10'57.0"   * HR 5340 HD124897 Fl: 16 Ba:Alp  const:Boo mV:-0.04 b-v: 1.23 sp:  K1.5IIIFe-0.5      pm:-1.093 -1.998 ;ARCTURUS; Haris-el-sema
+#     ligne 1 ==> RA: 13h40m13.00s DEC:+30°59'55.0" FOV:+90°00'00"
+#     ligne 2 ==> 14h15m39.70s +19°10'57.0"   * HR 5340 HD124897 Fl: 16 Ba:Alp  const:Boo mV:-0.04 b-v: 1.23 sp:  K1.5IIIFe-0.5      pm:-1.093 -1.998 ;ARCTURUS; Haris-el-sema
 #     ligne 3 ==> 2001-12-22T23:50:58
 #     ligne 4 ==> LAT:+43d37m00s LON:-01d27m00s ALT:200m OBS:Toulouse
 #
@@ -520,7 +513,7 @@ proc ::carteducielv2::selectObject { objectName } {
 #     Format de la ligne 2 : "$ra $dec $objType $detail"
 #     avec
 #       $ra      = right ascension  ex: "16h41m42.00s"
-   #       $dec     = declinaison      ex: "+36°28'00.0""
+#       $dec     = declinaison      ex: "+36°28'00.0""
 #       $objType = object type      ex: "M "
 #       $detail  = object detail    ex :"13 NGC 6205 const: HER Dim: 23.2'x 23.2'  m: 5.90 sbr:12.00 desc: !!eB,vRi,vgeCM,*11...;Hercules cluster;Messier said round nebula contains no star"
 #
@@ -891,11 +884,10 @@ proc ::carteducielv2::getRaDecFov { } {
       return ""
    }
 
-   #--- je decoupe les 5 lignes d'information
+   #--- je decoupe les 5 lignes d'informations
    set ligneList [split $result "\n"]
 
    #--- je separe les coordonnees de la ligne 1
-
    set ligne1 [lindex $ligneList 1]
    set ra  ""
    set dec ""
@@ -904,7 +896,7 @@ proc ::carteducielv2::getRaDecFov { } {
    scan $ligne1 "RA:%s DEC:%s FOV:%s%\[^\r\]" ra dec fov dummy
 
    #--- Mise en forme de ra
-   # set ra  [string map { "h" " " "m" " " "s" " " } $ra ]
+   # set ra [string map { "h" " " "m" " " "s" " " } $ra ]
    #--- je supprime les diziemes de secondes apres le point decimal
    set ra [lindex [split $ra "."] 0]
    #--- je rajoute le "s" des secondes
@@ -912,9 +904,9 @@ proc ::carteducielv2::getRaDecFov { } {
 
    #--- Mise en forme de dec
    #--- je remplace les unites par dms
-   set dec  [string map { "\°" "d" "ß" "d" "\'" "m" "\"" "s" } $dec ]
+   set dec [string map { "\°" "d" "ß" "d" "\'" "m" "\"" "s" } $dec ]
    #--- je remplace le quatrieme caractere par un "d"
-   set dec  [string replace $dec 3 3 "d" ]
+   set dec [string replace $dec 3 3 "d" ]
    #--- je supprime les diziemes de secondes apres le point decimal
    set dec [lindex [split $dec "."] 0]
    #--- je rajoute le "s" des secondes
@@ -922,14 +914,15 @@ proc ::carteducielv2::getRaDecFov { } {
 
    #--- Mise en forme de fov
    #--- je remplace les unites par des espaces
-   set fov  [string map { "\°" "d" "ß" "d" "\'" "m" "\"" "s" } $fov ]
+   set fov [string map { "\°" "d" "ß" "d" "\'" "m" "\"" "s" } $fov ]
    #--- je remplace le quatrieme caractere par un "d"
-   set fov  [string replace $fov 3 3 "d" ]
+   set fov [string replace $fov 3 3 "d" ]
    #--- je supprime le signe "+" au debut
-   set fov  [string range $fov 1 end ]
+   set fov [string range $fov 1 end ]
 
   # console::disp "getRaDecFov ligne1=$ligne1 \n"
   # console::disp "getRaDecFov ra=$ra dec=$dec fov=$fov###\n\n"
+
    return [list $ra $dec $fov]
 }
 
@@ -993,7 +986,7 @@ proc ::carteducielv2::launch { } {
    set filename $conf(carteducielv2,binarypath)
    #--- Stocke le nom du chemin courant dans une variable
    set pwd0 [pwd]
-   #--- Extrait le nom de dossier
+   #--- Extrait le nom du repertoire
    set dirname [file dirname "$conf(carteducielv2,binarypath)"]
    #--- Place temporairement AudeLA dans le dossier de CDC
    cd "$dirname"
@@ -1007,10 +1000,10 @@ proc ::carteducielv2::launch { } {
       #--- Ouvre la fenetre de configuration des cartes
       ::confCat::run "carteducielv2"
    }
+   #--- Ramene AudeLA dans son repertoire
    cd "$pwd0"
    #--- J'attends que Cartes du Ciel soit completement demarre
    after 2000
    return "0"
 }
-
 
