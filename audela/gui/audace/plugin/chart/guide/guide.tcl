@@ -2,7 +2,7 @@
 # Fichier : guide.tcl
 # Description : Plugin de communication avec "guide"
 # Auteur : Robert DELMAS
-# Mise a jour $Id: guide.tcl,v 1.22 2008-11-15 23:27:15 robertdelmas Exp $
+# Mise a jour $Id: guide.tcl,v 1.23 2008-11-16 15:47:45 robertdelmas Exp $
 #
 
 namespace eval guide {
@@ -296,22 +296,24 @@ namespace eval guide {
    #     avant_plan :   1 = mettre la carte au premier plan, 0 = ne pas mettre au premier plan
    #------------------------------------------------------------
    proc gotoObject { nom_objet ad dec zoom_objet avant_plan } {
-      global caption
+      global caption conf
 
       set result "0"
 
       #--- Je mets en forme dec pour GUIDE
       #--- Je remplace les unites d, m, s par \° \' \"
       set dec [ string map { m "\'" s "\"" } $dec ]
-
+      #---
      # console::disp "::guide::gotoObject $nom_objet, $ad, $dec, $zoom_objet, $avant_plan, \n"
-
-      if { $avant_plan == "1" } {
-         set gsResult [ gs_guide show ]
-      } else {
-         set gsResult [ gs_guide hide ]
-      }
-      if { $gsResult == "0" } {
+      #--- Version de Guide utilisee
+      set useVersionGuide [ string toupper [ file rootname [ file tail $conf(guide,binarypath) ] ] ]
+      #---
+      if { [ gs_guide version ] == "$useVersionGuide" } {
+         if { $avant_plan == "1" } {
+            set gs_guide show
+         } else {
+            gs_guide hide
+         }
          gs_guide refresh
          gs_guide zoom $zoom_objet
          if { $nom_objet != "#etoile#" && $nom_objet != "" } {
@@ -325,12 +327,12 @@ namespace eval guide {
          if { $choix == "yes" } {
             set erreur [ launch ]
             if { $erreur != "1" } {
-               if { $avant_plan == "1" } {
-                  set gsResult [ gs_guide show ]
-               } else {
-                  set gsResult [ gs_guide hide ]
-               }
-               if { $gsResult == "0" } {
+               if { [ gs_guide version ] == "$useVersionGuide" } {
+                  if { $avant_plan == "1" } {
+                     gs_guide show
+                  } else {
+                     gs_guide hide
+                  }
                   gs_guide refresh
                   gs_guide zoom $zoom_objet
                   if { $nom_objet != "#etoile#" && $nom_objet != "" } {
@@ -371,7 +373,7 @@ namespace eval guide {
       set filename $conf(guide,binarypath)
       #--- Stocke le nom du chemin courant dans une variable
       set pwd0 [ pwd ]
-      #--- Extrait le nom de dossier
+      #--- Extrait le nom du repertoire
       set dirname [ file dirname "$conf(guide,binarypath)" ]
       #--- Place temporairement AudeLA dans le dossier de Guide
       cd "$dirname"
@@ -385,6 +387,7 @@ namespace eval guide {
          #--- Ouvre la fenetre de configuration des cartes
          ::confCat::run "guide"
       }
+      #--- Ramene AudeLA dans son repertoire
       cd "$pwd0"
       #--- J'attends que Guide soit completement demarre
       after 2000
