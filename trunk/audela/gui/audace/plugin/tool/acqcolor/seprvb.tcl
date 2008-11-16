@@ -2,7 +2,7 @@
 # Fichier : seprvb.tcl
 # Description : Outil pour la separation des plans couleur
 # Auteur : Pierre THIERRY
-# Mise a jour $Id: seprvb.tcl,v 1.6 2007-05-16 18:13:23 robertdelmas Exp $
+# Mise a jour $Id: seprvb.tcl,v 1.7 2008-11-16 21:19:52 robertdelmas Exp $
 #
 
 global audace caption conf infos
@@ -56,7 +56,7 @@ pack $audace(base).test1.frame1 \
 
    #--- Cree l'entry
    entry $audace(base).test1.frame1.ent \
-      -textvariable infos(dir) -width 45
+      -textvariable infos(dir) -width 50
    pack $audace(base).test1.frame1.ent \
       -in $audace(base).test1.frame1 -side left -anchor center -expand 1 \
       -padx 10 -pady 3
@@ -127,7 +127,7 @@ pack $audace(base).test1.frame3 \
       -textvariable infos(nbre_images) -width 6
    pack $audace(base).test1.frame3.ent \
       -in $audace(base).test1.frame3 -side left -anchor center \
-      -padx 10 -pady 3
+      -padx 10 -pady 10
 
 #--- Cree le bouton 'Validation'
 button $audace(base).test1.but_valid \
@@ -139,6 +139,10 @@ button $audace(base).test1.but_valid \
          for { set k 1 } { $k <= $infos(nbre_images) } { incr k } {
             #--- Chargement des images
             buf1000 load "${nom}$k$conf(extension,defaut)"
+            #--- Fixe NAXIS a 2
+            set kwdNaxis [ buf1000 getkwd NAXIS ]
+            set kwdNaxis [ lreplace $kwdNaxis 1 1 "2" ]
+            buf1000 setkwd $kwdNaxis
             #--- Creation dans le buffer du mot-cles RGBFILTR pour le plan rouge
             buf1000 setkwd [list RGBFILTR R string "Color extracted (Red)" ""]
             #--- Sauvegarde du plan rouge
