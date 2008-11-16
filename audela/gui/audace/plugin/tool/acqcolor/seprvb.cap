@@ -1,6 +1,6 @@
 #
 # Fichier : seprvb.cap
-# Mise a jour $Id: seprvb.cap,v 1.6 2007-01-27 14:53:04 robertdelmas Exp $
+# Mise a jour $Id: seprvb.cap,v 1.7 2008-11-16 21:17:06 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -16,7 +16,7 @@ set caption(seprvb,titre)           "Color Plane Separation"
 set caption(seprvb,comment)         "Creating Red/Green/Blue Images"
 set caption(seprvb,rep_images)      "Image Folder"
 set caption(seprvb,parcourir)       "..."
-set caption(seprvb,nom_images)      "Images Name"
+set caption(seprvb,nom_images)      "Generic name for RGB images"
 set caption(seprvb,nbre_images)     "Images Number"
 set caption(seprvb,executer)        "Run"
 
@@ -28,7 +28,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seprvb,comment)      "Création des images rouges/vertes/bleues"
    set caption(seprvb,rep_images)   "Répertoire des images"
    set caption(seprvb,parcourir)    "..."
-   set caption(seprvb,nom_images)   "Nom des images"
+   set caption(seprvb,nom_images)   "Nom générique des images RVB"
    set caption(seprvb,nbre_images)  "Nombre d'images"
    set caption(seprvb,executer)     "Exécuter"
 
@@ -40,7 +40,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seprvb,comment)      "Creazione delle immagini rosse/verdi/blu"
    set caption(seprvb,rep_images)   "Directory delle immagini"
    set caption(seprvb,parcourir)    "..."
-   set caption(seprvb,nom_images)   "Nomi delle immagini"
+   set caption(seprvb,nom_images)   "Nomi generici delle immagini RGB"
    set caption(seprvb,nbre_images)  "Numero immagini"
    set caption(seprvb,executer)     "Esegui"
 
@@ -52,7 +52,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seprvb,comment)      "Creando imágenes rojo/verde/azul"
    set caption(seprvb,rep_images)   "Directorio de imágenes"
    set caption(seprvb,parcourir)    "..."
-   set caption(seprvb,nom_images)   "Nombre de imágenes"
+   set caption(seprvb,nom_images)   "Nombre genérico de las imágenes RVA"
    set caption(seprvb,nbre_images)  "Numero imágenes"
    set caption(seprvb,executer)     "Ejecutar"
 
@@ -64,7 +64,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seprvb,comment)      "Rot/Grün/Blau Bilder Schaffung"
    set caption(seprvb,rep_images)   "Bilder Verzeichnis"
    set caption(seprvb,parcourir)    "..."
-   set caption(seprvb,nom_images)   "Bilder Namen"
+   set caption(seprvb,nom_images)   "Generischen Nahmen für RGB Bilder"
    set caption(seprvb,nbre_images)  "Bilder Zahl"
    set caption(seprvb,executer)     "Starten"
 
@@ -76,7 +76,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seprvb,comment)      "Criação de imagens vermelhas/verdes/azuis"
    set caption(seprvb,rep_images)   "Directório das imagens"
    set caption(seprvb,parcourir)    "..."
-   set caption(seprvb,nom_images)   "Nome das imagens"
+   set caption(seprvb,nom_images)   "Nome genérico das imagens RGB"
    set caption(seprvb,nbre_images)  "Número das imagens"
    set caption(seprvb,executer)     "Executar"
 
@@ -88,7 +88,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seprvb,comment)      "Creating Red/Green/Blue Images"
    set caption(seprvb,rep_images)   "Image Folder"
    set caption(seprvb,parcourir)    "..."
-   set caption(seprvb,nom_images)   "Images Name"
+   set caption(seprvb,nom_images)   "Generic name for RGB images"
    set caption(seprvb,nbre_images)  "Images Number"
    set caption(seprvb,executer)     "Run"
 
