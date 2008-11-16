@@ -3,7 +3,7 @@
 # Description : namespace generique des cartes (~ classe abstraite)
 #    Transmet les appels aux procedures du namespace de la carte choisie avec confcat.tcl
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carte.tcl,v 1.6 2008-11-15 23:26:37 robertdelmas Exp $
+# Mise a jour $Id: carte.tcl,v 1.7 2008-11-16 15:43:31 robertdelmas Exp $
 #
 
 namespace eval ::carte {
@@ -32,7 +32,7 @@ namespace eval ::carte {
       set ra  [lindex [$buffer getkwd RA] 1]
       set dec [lindex [$buffer getkwd DEC] 1]
 
-      #console::disp "gotoFromBuffer [$buffer getkwd RA]\n"
+     # console::disp "gotoFromBuffer [$buffer getkwd RA]\n"
 
       if { "$ra" != "" && "$dec" != "" } {
          #--- je convertis RA au format HMS
@@ -70,7 +70,7 @@ namespace eval ::carte {
       global conf
       global caption
 
-      #console::disp "::carte::gotoObject $nom_objet, $ad, $dec, $zoom_objet, $avant_plan carte=$conf(confCat) \n"
+     # console::disp "::carte::gotoObject $nom_objet, $ad, $dec, $zoom_objet, $avant_plan, carte=$conf(confCat) \n"
 
       set result 1
       if { $conf(confCat) != "" } {
