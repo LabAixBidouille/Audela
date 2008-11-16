@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows et Linux
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv3.tcl,v 1.22 2008-11-15 23:27:04 robertdelmas Exp $
+# Mise a jour $Id: carteducielv3.tcl,v 1.23 2008-11-16 15:45:43 robertdelmas Exp $
 #
 
 namespace eval carteducielv3 {
@@ -840,7 +840,7 @@ namespace eval carteducielv3 {
       set filename $conf(carteducielv3,binarypath)
       #--- Stocke le nom du chemin courant dans une variable
       set pwd0 [pwd]
-      #--- Extrait le nom de dossier
+      #--- Extrait le nom du repertoire
       set dirname [file dirname "$conf(carteducielv3,binarypath)"]
       #--- Place temporairement AudeLA dans le dossier de CDC
       cd "$dirname"
@@ -854,6 +854,7 @@ namespace eval carteducielv3 {
          #--- Ouvre la fenetre de configuration des cartes
          ::confCat::run "carteducielv3"
       }
+      #--- Ramene AudeLA dans son repertoire
       cd "$pwd0"
       #--- J'attends que Cartes du Ciel soit completement demarre
       after 2000
