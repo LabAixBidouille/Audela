@@ -2,7 +2,7 @@
 # Fichier : trichro.tcl
 # Description : Outil pour importer une trichromie
 # Auteur : Pierre THIERRY
-# Mise a jour $Id: trichro.tcl,v 1.6 2007-05-16 18:14:00 robertdelmas Exp $
+# Mise a jour $Id: trichro.tcl,v 1.7 2008-11-16 21:18:21 robertdelmas Exp $
 #
 
 global audace caption conf infos
@@ -58,7 +58,7 @@ pack $audace(base).test3.frame1 \
 
    #--- Cree l'entry
    entry $audace(base).test3.frame1.ent \
-      -textvariable infos(dir) -width 45
+      -textvariable infos(dir) -width 50
    pack $audace(base).test3.frame1.ent \
       -in $audace(base).test3.frame1 -side left -anchor center -expand 1 \
       -padx 10 -pady 3
@@ -195,7 +195,7 @@ pack $audace(base).test3.frame5 \
       -textvariable infos(image_rvb)
    pack $audace(base).test3.frame5.ent \
       -in $audace(base).test3.frame5 -side left -anchor center -expand 1 -fill x \
-      -padx 10 -pady 3
+      -padx 10 -pady 10
 
 #--- Cree le bouton 'Validation'
 button $audace(base).test3.but_valid \
