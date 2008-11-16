@@ -2,7 +2,7 @@
 # Fichier : smedianrvb.tcl
 # Description : Outil pour calculer la mediane d'une pile d'images
 # Auteur : Pierre THIERRY
-# Mise a jour $Id: smedianrvb.tcl,v 1.7 2007-05-16 18:13:42 robertdelmas Exp $
+# Mise a jour $Id: smedianrvb.tcl,v 1.8 2008-11-16 21:19:23 robertdelmas Exp $
 #
 
 global audace caption conf infos
@@ -64,7 +64,7 @@ pack $audace(base).test2.frame1 \
 
    #--- Cree l'entry
    entry $audace(base).test2.frame1.ent \
-      -textvariable infos(dir) -width 45
+      -textvariable infos(dir) -width 50
    pack $audace(base).test2.frame1.ent \
       -in $audace(base).test2.frame1 -side left -anchor center -expand 1 \
       -padx 10 -pady 3
@@ -135,7 +135,7 @@ pack $audace(base).test2.frame3 \
       -textvariable infos(nbre_images) -width 6
    pack $audace(base).test2.frame3.ent \
       -in $audace(base).test2.frame3 -side left -anchor center \
-      -padx 10 -pady 3
+      -padx 10 -pady 10
 
 #--- Cree un frame
 frame $audace(base).test2.frame4 \
@@ -148,7 +148,7 @@ pack $audace(base).test2.frame4 \
       -text "$caption(smedianrvb,nom_med)"
    pack $audace(base).test2.frame4.lab \
       -in $audace(base).test2.frame4 -side left -anchor center \
-      -padx 3 -pady 3
+      -padx 3 -pady 10
 
    #--- Cree l'entry
    entry $audace(base).test2.frame4.ent \
@@ -183,6 +183,10 @@ button $audace(base).test2.but_valid \
          for { set k 1 } { $k <= $nb } { incr k } {
             #--- Chargement des images
             buf1000 load "${nom}$k$conf(extension,defaut)"
+            #--- Fixe NAXIS a 2
+            set kwdNaxis [ buf1000 getkwd NAXIS ]
+            set kwdNaxis [ lreplace $kwdNaxis 1 1 "2" ]
+            buf1000 setkwd $kwdNaxis
             #--- Creation dans le buffer du mot-cles RGBFILTR pour le plan rouge
             buf1000 setkwd [list RGBFILTR R string "Color extracted (Red)" ""]
             #--- Sauvegarde du plan rouge
@@ -232,7 +236,7 @@ button $audace(base).test2.but_valid \
          delete2 [ file tail ${nom}r ] $nb
          delete2 [ file tail ${nom}v ] $nb
          delete2 [ file tail ${nom}b ] $nb
-         #--- Detruit la fenêtre devant l'image
+         #--- Ferme la boite de dialogue
          destroy $audace(base).test2
       }
    }
