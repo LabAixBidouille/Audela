@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.9 2008-09-22 06:18:39 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.10 2008-11-20 17:38:16 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -338,19 +338,19 @@ proc gcn_decode { longs } {
          set gcn(long,$k) [string toupper [lindex $longs $k] ]
       }
       set items [gcn_pkt_indices]
-gcn_print "----"
+		#gcn_print "----"
       foreach item $items {
          set k [lindex $item 0]
          set name [lindex $item 1]
          set gcn(long,$name) $gcn(long,$k)
-gcn_print "gcn(long,$name)=$gcn(long,$name)"
+			#gcn_print "gcn(long,$name)=$gcn(long,$name)"
       }
       # --- date de l'envoi de la notice
-gcn_print "----"
+		#gcn_print "----"
       set res [mc_date2ymdhms $date_rec_notice]
       set res [lrange $res 0 2]
       set pkt_date [mc_date2jd $res]
-gcn_print "gcn(long,pkt_sod)=$gcn(long,pkt_sod)"
+		#gcn_print "gcn(long,pkt_sod)=$gcn(long,pkt_sod)"
       set pkt_time [expr $gcn(long,pkt_sod)/100.]
       set gcn(descr,jd_pkt) [expr $pkt_date+$pkt_time/86400.] ; # jd de la notice
       if {[expr $gcn(descr,jd_pkt)-[mc_date2jd $date_rec_notice]]>0.5} {
@@ -373,6 +373,9 @@ gcn_print "gcn(long,pkt_sod)=$gcn(long,pkt_sod)"
          set grb_date [expr $gcn(long,burst_tjd)-13370.-1.+[mc_date2jd {2005 1 1}]] ; # TJD=13370 is 01 Jan 2005
          set grb_time [expr $gcn(long,burst_sod)/100.]
          set gcn(descr,burst_jd) [expr $grb_date+$grb_time/86400.] ; # jd du trigger
+	      if {($gcn(descr,burst_jd)-$gcn(descr,jd_pkt))>0.5} {
+		      set gcn(descr,burst_jd) [expr $gcn(descr,burst_jd)-1] ; # bug GCN du quart d'heure avant minuit
+	      }
       }
       if {$gcn(descr,satellite)=="INTEGRAL"} {
          set grb_date [expr $gcn(long,burst_tjd)-12640.+[mc_date2jd {2003 1 1}]]
@@ -403,7 +406,7 @@ gcn_print "gcn(long,pkt_sod)=$gcn(long,pkt_sod)"
             }
          }
       }
-      if {$gcn(descr,satellite)=="GLAST"} {
+      if {$gcn(descr,satellite)=="FERMI"} {
          set gcn(descr,burst_ra) [expr $gcn(long,burst_ra)*0.0001]
          set gcn(descr,burst_dec) [expr $gcn(long,burst_dec)*0.0001]
          if {$gcn(descr,prompt)>0} {
@@ -419,6 +422,9 @@ gcn_print "gcn(long,pkt_sod)=$gcn(long,pkt_sod)"
          set grb_date [expr $gcn(long,burst_tjd)-13370.-1.+[mc_date2jd {2005 1 1}]] ; # TJD=13370 is 01 Jan 2005
          set grb_time [expr $gcn(long,burst_sod)/100.]
          set gcn(descr,burst_jd) [expr $grb_date+$grb_time/86400.] ; # jd du trigger
+	      #if {($gcn(descr,burst_jd)-$gcn(descr,jd_pkt))>0.5} {
+		   #   set gcn(descr,burst_jd) [expr $gcn(descr,burst_jd)-1] ; # bug GCN du quart d'heure avant minuit
+	      #}
       }
       if {$gcn(descr,satellite)=="MILAGRO"} {
          set gcn(descr,burst_ra) [expr $gcn(long,burst_ra)*0.0001]
@@ -688,7 +694,7 @@ proc gcn_pkt_type { pkt_type } {
      128      FERMI_LAT_GND_TRIG               NOT YET AVAILABLE TO THE PUBLIC
      129      FERMI_POINTDIR                   NOT YET AVAILABLE
      130      SIMBAD/NED_SEARCH_RESULTS
-     901      ANTARES_GRB_POSITION
+     901      ANTARES_GRB_POSITION             AVAILABLE ONLY FOR TAROT COLLABORATION
    }
    set lignes [split $lignes \n]
    set textes ""
@@ -751,23 +757,26 @@ proc gcn_pkt_type { pkt_type } {
    if {($pkt_type>=60)&&($pkt_type<=89)} {
       set satellite SWIFT
    }
-   if {($pkt_type>=110)&&($pkt_type<=126)} {
-      set satellite GLAST
+   if {($pkt_type>=100)&&($pkt_type<=109)} {
+      set satellite AGILE
    }
-   if {($pkt_type>=901)&&($pkt_type<=910)} {
+   if {($pkt_type>=110)&&($pkt_type<=126)} {
+      set satellite FERMI
+   }
+   if {($pkt_type>=901)&&($pkt_type<=901)} {
       set satellite ANTARES
    }
    lappend textes $satellite
    # --- prompt identification
    # =-1 informations only, =0 pointdir, =1 prompt, =2 refined
    set prompt -1
-   if {($pkt_type==126)||($pkt_type==83)||($pkt_type==51)} {
+   if {($pkt_type==108)||($pkt_type==126)||($pkt_type==83)||($pkt_type==51)} {
       set prompt 0
    }
-   if {($pkt_type==110)||($pkt_type==111)||($pkt_type==61)||($pkt_type==58)||($pkt_type==53)||($pkt_type==40)||($pkt_type==33)||($pkt_type==35)||($pkt_type==30)||($pkt_type==26)||($pkt_type==28)||($pkt_type==1)||($pkt_type==901)} {
+   if {($pkt_type==100)||($pkt_type==110)||($pkt_type==111)||($pkt_type==61)||($pkt_type==58)||($pkt_type==53)||($pkt_type==40)||($pkt_type==33)||($pkt_type==35)||($pkt_type==30)||($pkt_type==26)||($pkt_type==28)||($pkt_type==1)||($pkt_type==901)} {
       set prompt 1
    }
-   if {($pkt_type==67)||($pkt_type==54)||($pkt_type==55)||($pkt_type==41)||($pkt_type==42)||($pkt_type==43)||($pkt_type==39)} {
+   if {($pkt_type==101)||($pkt_type==102)||($pkt_type==67)||($pkt_type==54)||($pkt_type==55)||($pkt_type==41)||($pkt_type==42)||($pkt_type==43)||($pkt_type==39)} {
       set prompt 2
    }
    lappend textes $prompt
