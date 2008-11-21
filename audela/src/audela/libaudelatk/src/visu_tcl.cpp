@@ -583,6 +583,11 @@ int cmdVisuDisp(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                result = TCL_ERROR;
             }
             break;
+         case ELIBSTD_NO_MEMORY_FOR_DISPLAY:            
+            sprintf(ligne,"NO MEMORY FOR DISPLAY");
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
+            break;
 
          default:
             sprintf(ligne,"Error %d in UpdateDisplay",i);

@@ -652,6 +652,10 @@ int CVisu::UpdateDisplay()
       orgwh = yy2 - yy1 + 1; // Hauteur 
    }
 
+   if ( zoom * orgww * orgwh > 16384000 ) {
+      // Tk_PhotoPutBlock ne supporte pas les tailles d'image > 16Mo
+      return ELIBSTD_NO_MEMORY_FOR_DISPLAY;
+   }
    
    ptr = (unsigned char*)calloc(orgww*orgwh,3);
    if(ptr==NULL) {
