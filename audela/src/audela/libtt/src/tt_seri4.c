@@ -115,6 +115,7 @@ int tt_ima_series_smilex_1(TT_IMA_SERIES *pseries)
 /***************************************************************************/
 /* Unsmile centre sur la ligne ycenter */
 /* loadima vega-2 ; buf2 imaseries "SMILEX ycenter=100 coef_smile2=0.0003 coef_smile4=0.0"        */
+/* Le parametre optionel Y1 permet d'indiquer l'ordonnees sur laquelle on souhaite recentre l'image horizontallement apres le traitement du smilex */
 /***************************************************************************/
 {
    TT_IMA *p_in,*p_out;
@@ -122,6 +123,7 @@ int tt_ima_series_smilex_1(TT_IMA_SERIES *pseries)
    double ycenter,ddx,ddy,ddy2,ddy4;
    double alpha,beta;
    double a2,a4;
+   double ddy1;
 
    /* --- fin pour assurer la compatibilite avec IMA/SERIES ---*/
    index=pseries->index;
@@ -132,12 +134,22 @@ int tt_ima_series_smilex_1(TT_IMA_SERIES *pseries)
    ycenter=pseries->ycenter;
    a2=pseries->coef_smile2;
    a4=pseries->coef_smile4;
+
+   if ( pseries->y1 != 0 ) {
+      ddy=pseries->y1 - ycenter;
+      ddy2=ddy*ddy;
+      ddy4=ddy2*ddy2;
+      ddy1=a2*ddy2+a4*ddy4;      
+   } else {
+      ddy1 = 0.0;
+   }
+
    tt_imacreater(p_out,naxis1,naxis2);
    for(y=0;y<naxis2;y++) {
       ddy=y-ycenter;
       ddy2=ddy*ddy;
       ddy4=ddy2*ddy2;
-      ddx=a2*ddy2+a4*ddy4;
+      ddx=a2*ddy2+a4*ddy4 -ddy1;
       alpha=ddx-floor(ddx);
       beta=1.-alpha;
       for(x=0;x<naxis1;x++) {
