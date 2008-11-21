@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.21 2008-06-01 13:28:29 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.22 2008-11-21 16:49:20 michelpujol Exp $
 #
 
 #============================================================
@@ -291,7 +291,7 @@ namespace eval ::remotectrl {
       ::remotectrl::cmdAfficheCoord
    }
 
-   proc setRaDec { 1 listRaDec nomObjet equinox } {
+   proc setRaDec { 1 listRaDec nomObjet equinox magnitude } {
       global panneau
 
       set panneau(remotectrl,getobj)       $listRaDec
