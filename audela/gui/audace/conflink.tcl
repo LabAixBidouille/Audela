@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.31 2008-06-14 09:02:51 robertdelmas Exp $
+# Mise a jour $Id: conflink.tcl,v 1.32 2008-11-21 17:50:17 michelpujol Exp $
 #
 
 namespace eval ::confLink {
@@ -70,20 +70,19 @@ proc ::confLink::appliquer { } {
    #--- je recupere le nom du plugin selectionne
    set linkNamespace [ $private(frm).usr.onglet raise ]
 
-   #--- je recupere le link choisi
-   set private(linkLabel) [$linkNamespace\:\:getSelectedLinkLabel]
-   set $private(variableLinkLabel) $private(linkLabel)
-
-   #--- j'arrete la liaison precedente
-  ### stopPlugin
 
    #--- je demande a chaque plugin de sauver sa config dans le tableau conf(..)
    foreach name $private(pluginNamespaceList) {
       $name\:\:widgetToConf
    }
 
+   #--- je recupere le link choisi (pour la procedure ::confLink::run)
+   set private(linkLabel) [$linkNamespace\:\:getSelectedLinkLabel]
+   set $private(variableLinkLabel) $private(linkLabel)
+
    #--- je demarre le plugin selectionne
    configurePlugin
+
 
    $private(frm).cmd.ok configure -state normal
    $private(frm).cmd.appliquer configure -relief raised -state normal
@@ -343,7 +342,7 @@ proc ::confLink::configurePlugin { } {
 #------------------------------------------------------------
 proc ::confLink::stopPlugin { { linkLabel "" } } {
    if { $linkLabel != "" } {
-      [getLinkNamespace )]\:\:stopPlugin
+      [getLinkNamespace $linkLabel]\:\:stopPlugin
    } else {
       #--- j'arrete tous les links
       ##### A FAIRE
@@ -511,17 +510,19 @@ proc ::confLink::getLinkNamespace { linkLabel } {
 proc ::confLink::getLinkNo { linkLabel } {
    variable private
 
-   #--- je recupere les linkNo ouverts
-   set linkNoList [link::list]
+   #--- je recupere les linkNo ouverts avec une librairie dynamique
+   ##set linkNoList [link::list]
+   #--- je recherche les commandes de la forme link£linkno
+   set linkList [info command {link*[0-9]} ]
 
    set linkNamespace [::confLink::getLinkNamespace $linkLabel]
    if { $linkNamespace != "" } {
       set linkIndex [$linkNamespace\::getLinkIndex $linkLabel]
       #--- je recherche la liaison deja ouverte qui a le meme namespace et le meme index
-      foreach linkNo [link::list] {
-         if {    "[link$linkNo drivername]" == $linkNamespace
-              && "[link$linkNo index]" == $linkIndex } {
-            return $linkNo
+      foreach link $linkList {
+         if {    "[$link drivername]" == $linkNamespace
+              && "[$link index]" == $linkIndex } {
+            return [scan $link "link%d" ]
          }
       }
    }
@@ -534,7 +535,7 @@ proc ::confLink::getLinkNo { linkLabel } {
 #    Affiche la fenetre de choix et de configuration
 #
 #    Parametres :
-#      linkLabel : link pre-selectionne
+#      variableLinkLabel : nom de la variable qui contient le link pre-selectionne
 #      authorizedNamespaces : namespaces autorises (optionel)
 #      configurationTitle : titre de la fenetre de configuration (optionel)
 #------------------------------------------------------------
@@ -570,7 +571,8 @@ proc ::confLink::run { { variableLinkLabel "" } { authorizedNamespaces "" } { co
          #--- je selectionne le link dans l'onglet
          $linkNamespace\::selectConfigLink $private(linkLabel)
       } else {
-         selectNotebook [ lindex $private(pluginNamespaceList) 0 ]
+         #--- si  linkNamespace demande n'existe pas je selectionne le premier onglet
+         selectNotebook [ lindex $authorizedPresentNamespaces 0 ]
       }
       #--- j'attends la fermeture de la fenetre
       tkwait window $private(frm)
@@ -578,6 +580,7 @@ proc ::confLink::run { { variableLinkLabel "" } { authorizedNamespaces "" } { co
       return $private(linkLabel)
    }
 }
+
 
 #--- Connexion au demarrage du plugin selectionne par defaut
 ::confLink::init
