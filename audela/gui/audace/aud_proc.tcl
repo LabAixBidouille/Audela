@@ -1,7 +1,7 @@
 #
 # Fichier : aud_proc.tcl
 # Description : Fonctions de chargement, sauvegarde et traitement d'images
-# Mise a jour $Id: aud_proc.tcl,v 1.8 2008-10-31 16:42:21 robertdelmas Exp $
+# Mise a jour $Id: aud_proc.tcl,v 1.9 2008-11-21 17:43:26 michelpujol Exp $
 #
 
 #
@@ -10,6 +10,9 @@
 # ouvre une fenetre de selection pour demander le nom de fichier,
 # avec l'option "-novisu" l'image n'est pas affichee
 #
+# return
+#   nom du fichier si le chargement est OK
+#   ""  si le chargement n'est pas fait
 # Exemple :
 # loadima                      #--- Ouvre une fenetre de selection, et affiche l'image dans la visu numero 1
 # loadima m57                  #--- Charge l'image m57.fit (extension par defaut) et affiche l'image dans la visu numero 1
@@ -22,6 +25,7 @@ proc loadima { { filename "?" } { visuNo 1 } { affichage "-dovisu" } } {
 
    #---
    set bufNo [ visu$visuNo buf ]
+   set result ""
 
    #--- Recuperation de l'extension par defaut
    buf$bufNo extension "$conf(extension,defaut)"
@@ -31,11 +35,6 @@ proc loadima { { filename "?" } { visuNo 1 } { affichage "-dovisu" } } {
       buf$bufNo compress gzip
    } else {
       buf$bufNo compress none
-   }
-
-   #--- Suppression de la zone selectionnee avec la souris si elle existe
-   if { [ lindex [ list [ ::confVisu::getBox $visuNo ] ] 0 ] != "" } {
-      ::confVisu::deleteBox $visuNo
    }
 
    #--- Fenetre parent
@@ -54,12 +53,30 @@ proc loadima { { filename "?" } { visuNo 1 } { affichage "-dovisu" } } {
    if { [ string compare $filename "" ] != "0" } {
       set result [ buf$bufNo load $filename ]
       if { $result == "" } {
-         ::confVisu::autovisu $visuNo "-no"
-         ::confVisu::setFileName $visuNo "$filename"
+         ::confVisu::autovisu $visuNo "-no" $filename
+         ##::confVisu::setFileName $visuNo  $filename
       } else {
          #--- Echec du chargement
-         ::confVisu::autovisu $visuNo "-novisu" ""
+         ::confVisu::autovisu $visuNo "-novisu" "$filename"
+         ##::confVisu::setFileName $visuNo ""
       }
+
+      #--- Suppression de la zone selectionnee avec la souris si elle est hors de l'image
+      if { [ lindex [ list [ ::confVisu::getBox $visuNo ] ] 0 ] != "" } {
+         set box [ ::confVisu::getBox $visuNo ]
+         set x1 [lindex  [confVisu::getBox $visuNo ] 0]
+         set y1 [lindex  [confVisu::getBox $visuNo ] 1]
+         set x2 [lindex  [confVisu::getBox $visuNo ] 2]
+         set y2 [lindex  [confVisu::getBox $visuNo ] 3]
+         if { $x1 > $::confVisu::private($visuNo,picture_w)
+           || $y1 > $::confVisu::private($visuNo,picture_h)
+           || $y2 > $::confVisu::private($visuNo,picture_w)
+           || $y2 > $::confVisu::private($visuNo,picture_h) } {
+            ::confVisu::deleteBox $visuNo
+         }
+      }
+
+
       #---
       set calib 1
       if { [string compare [lindex [buf$bufNo getkwd CRPIX1] 0] ""] == 0 } {
@@ -105,7 +122,11 @@ proc loadima { { filename "?" } { visuNo 1 } { affichage "-dovisu" } } {
       } else {
          ::confVisu::setAvailableScale $visuNo "xy"
       }
+   } else {
+      set result ""
    }
+
+   return $result
 }
 
 #
