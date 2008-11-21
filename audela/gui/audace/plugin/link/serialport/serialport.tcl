@@ -2,7 +2,7 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: serialport.tcl,v 1.20 2007-12-04 22:43:54 robertdelmas Exp $
+# Mise a jour $Id: serialport.tcl,v 1.21 2008-11-21 16:43:47 michelpujol Exp $
 #
 
 namespace eval serialport {
@@ -319,19 +319,11 @@ proc ::serialport::refreshAvailableList { } {
 
    #--- j'efface le contenu de la liste des ports disponibles
    $private(frm).available.list delete 0 [ $private(frm).available.list size]
-
-   #--- je tiens compte des ports com exclus
    widgetToConf
 
-   #--- je recherche les ports com
-   Recherche_Ports
-
-   #--- je remplis la liste des ports disponibles
-   foreach linkLabel [::serialport::getLinkLabels] {
-      $private(frm).available.list insert end $linkLabel
-   }
-
-   #--- je recherche si ce link est ouvert
+   set linkList [list ]
+   set linkLabelList [list ]
+   #--- j'affiche les port serie deja ouverts
    foreach { key value } [array get ::serialport::private serialLink,*] {
       set linklabel [lindex [split $key ","] 1]
       set deviceId  [lindex [split $key ","] 2]
@@ -339,8 +331,24 @@ proc ::serialport::refreshAvailableList { } {
       set comment   $value
       set linkText "$linklabel { $deviceId $usage $comment }"
       #--- je renseigne la liste les ports deja utilises
-      $private(frm).available.list insert end $linkText
+      lappend linkList $linkText
+      lappend linkLabelList $linklabel
    }
+
+   #--- je recherche les ports disponibles non utilises
+   Recherche_Ports
+   #--- j'ajoute les ports disponibles non utilises
+   foreach linkLabel [::serialport::getLinkLabels] {
+      if { [lsearch $linkLabelList $linkLabel] == -1 } {
+         lappend linkList $linkLabel
+      }
+   }
+
+   #--- j'affiche la liste triee
+   foreach linkLabel [lsort $linkList] {
+      $private(frm).available.list insert end $linkLabel
+   }
+   
 
    #--- je selectionne le linkLabel comme avant le rafraichissement
    selectConfigLink $selectedLinkLabel
