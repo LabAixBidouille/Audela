@@ -2,7 +2,7 @@
 # Fichier : sbig.tcl
 # Description : Configuration de la camera SBIG
 # Auteur : Robert DELMAS
-# Mise a jour $Id: sbig.tcl,v 1.19 2008-11-01 15:44:31 robertdelmas Exp $
+# Mise a jour $Id: sbig.tcl,v 1.20 2008-11-21 16:39:30 michelpujol Exp $
 #
 
 namespace eval ::sbig {
@@ -109,9 +109,20 @@ proc ::sbig::confToWidget { } {
    variable widget
    global caption conf
 
-   #--- Recupere la configuration de la camera SBIG dans le tableau widget(...)
+   #--- Copie la configuration de la camera SBIG dans le tableau widget(...)
+   switch $conf(sbig,foncobtu) {
+      1  {
+         set widget(foncobtu) $caption(sbig,obtu_ferme)
+      }
+      2  {
+         set widget(foncobtu) $caption(sbig,obtu_synchro)
+      }
+      default {
+         #--- je mets "syncho" dans tous les autres cas pour eviter les erreurs
+         set widget(foncobtu) $caption(sbig,obtu_synchro)
+      }
+   }
    set widget(cool)              $conf(sbig,cool)
-   set widget(foncobtu)          [ lindex "$caption(sbig,obtu_ferme) $caption(sbig,obtu_synchro)" $conf(sbig,foncobtu) ]
    set widget(host)              $conf(sbig,host)
    set widget(mirh)              $conf(sbig,mirh)
    set widget(mirv)              $conf(sbig,mirv)
@@ -130,8 +141,13 @@ proc ::sbig::widgetToConf { camItem } {
    global caption conf
 
    #--- Memorise la configuration de la camera SBIG dans le tableau conf(sbig,...)
+   switch $widget(foncobtu) {
+      $caption(sbig,obtu_ferme)    { set conf(sbig,foncobtu) 1     }
+      $caption(sbig,obtu_synchro)  { set conf(sbig,foncobtu) 2     }
+      default                      { set conf(sbig,foncobtu) 2     }
+   }
+
    set conf(sbig,cool)              $widget(cool)
-   set conf(sbig,foncobtu)          [ lsearch "$caption(sbig,obtu_ferme) $caption(sbig,obtu_synchro)" "$widget(foncobtu)" ]
    set conf(sbig,host)              $widget(host)
    set conf(sbig,mirh)              $widget(mirh)
    set conf(sbig,mirv)              $widget(mirv)
@@ -161,13 +177,9 @@ proc ::sbig::fillConfigPage { frm camItem } {
       destroy $i
    }
 
-   #--- Je constitue la liste des liaisons pour l'acquisition des images
+   #--- Je recuperer la liste des ports paralelles
    set list_combobox [ ::confLink::getLinkLabels { "parallelport" } ]
-   if { $::tcl_platform(os) == "Linux" } {
-      lappend list_combobox $caption(sbig,usb)
-   } else {
-      lappend list_combobox $caption(sbig,usb) $caption(sbig,ethernet)
-   }
+   lappend list_combobox $caption(sbig,usb) $caption(sbig,ethernet)
 
    #--- Je verifie le contenu de la liste
    if { [llength $list_combobox ] > 0 } {
@@ -463,28 +475,29 @@ proc ::sbig::configurePort { } {
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         if { $::tcl_platform(os) != "Linux" } {
-            if { $widget(port) == "$caption(sbig,usb)" || $widget(port) == "$caption(sbig,ethernet)" } {
-               $frm.frame1.configure configure -state disabled
+         if { $widget(port) == "$caption(sbig,usb)" || $widget(port) == "$caption(sbig,ethernet)" } {
+            $frm.frame1.configure configure -state disabled
+         } else {
+            $frm.frame1.configure configure -state normal
+         }
+         if { $widget(port) == "$caption(sbig,ethernet)" } {
+            $frm.frame1.address.ethernet.lab2 configure -state normal
+            $frm.frame1.address.ethernet.host configure -state normal
+         } else {
+            $frm.frame1.address.ethernet.lab2 configure -state disabled
+            $frm.frame1.address.ethernet.host configure -state disabled
+         }
+         if { [string equal -length 3 $widget(port) "LPT"] == 1
+              || [string equal -length 4 $widget(port) "/dev"] == 1 } {
+            $frm.frame1.address.lpt.checkbutton configure -state normal
+            if { $widget(lptAddressEnabled) == 1 } {
+               $frm.frame1.address.lpt.entry configure -state normal
             } else {
-               $frm.frame1.configure configure -state normal
-            }
-            if { $widget(port) == "$caption(sbig,ethernet)" } {
-               $frm.frame1.address.ethernet.host configure -state normal
-            } else {
-               $frm.frame1.address.ethernet.host configure -state disabled
-            }
-            if { [string equal -length 3 $widget(port) "LPT"] == 1 } {
-               $frm.frame1.address.lpt.checkbutton configure -state normal
-               if { $widget(lptAddressEnabled) == 1 } {
-                  $frm.frame1.address.lpt.entry configure -state normal
-               } else {
-                  $frm.frame1.address.lpt.entry configure -state disabled
-               }
-            } else {
-               $frm.frame1.address.lpt.checkbutton configure -state disabled
                $frm.frame1.address.lpt.entry configure -state disabled
             }
+         } else {
+            $frm.frame1.address.lpt.checkbutton configure -state disabled
+            $frm.frame1.address.lpt.entry configure -state disabled
          }
       }
    }
@@ -532,21 +545,27 @@ proc ::sbig::setTempCCD { } {
 #
 proc ::sbig::setShutter { camItem shutterState ShutterOptionList } {
    variable private
+   variable widget
    global caption conf
 
    set conf(sbig,foncobtu) $shutterState
    set camNo $private($camItem,camNo)
 
-   if { [ info exists private(frm) ] } {
-      #--- Gestion du mode de fonctionnement
-      switch -exact -- $shutterState {
-         1  {
+   switch $shutterState {
+      1  {
+         #--- j'envoie la commande a la camera
+         cam$camNo shutter "closed"
+         #--- je mets a jour le widget dans la fenetre de configuration si elle est ouverte
+         if { [ info exists private(frm) ] } {
             set widget(foncobtu) $caption(sbig,obtu_ferme)
-            cam$camNo shutter "closed"
          }
-         2  {
+      }
+      2  {
+         #--- j'envoie la commande a la camera
+         cam$camNo shutter "synchro"
+         #--- je mets a jour le widget dans la fenetre de configuration si elle est ouverte
+         if { [ info exists private(frm) ] } {
             set widget(foncobtu) $caption(sbig,obtu_synchro)
-            cam$camNo shutter "synchro"
          }
       }
    }
