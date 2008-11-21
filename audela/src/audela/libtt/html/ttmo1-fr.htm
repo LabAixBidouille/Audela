@@ -71,6 +71,56 @@
 <h3> </h3>
 <h3> </h3>
 <h3> 
+  <h3><small>2008-11-21 :</small></h3>
+  <small> </small> </h3>
+<ul>
+  <li>Allocation dynamique des variables par lesquelles transitent les parametres 
+    de IMA/SERIES et IMA/STACK 
+    <ul>
+      <li>tt_utils1.c : 
+        <ul>
+          <li>tt_writelog : remplace chaine[TT_MAXLIGNE] par chaine=malloc(TT_MAXLIGNE 
+            + strlen(message)) </li>
+          <li>tt_writelog : remplace message_log[TT_MAXLIGNE] par message_log=malloc(TT_MAXLIGNE 
+            + strlen(message)) </li>
+          <li>tt_decodekeys : remplace lenkeys=500 par lenkeys=strlen(ligne)</li>
+        </ul>
+      </li>
+      <li>tt_seri1.c : 
+        <ul>
+          <li>tt_ima_series_builder : remplace argu[1000] par argu=malloc(strlen(keys[k]));</li>
+        </ul>
+      </li>
+      <li>tt_stac1.c : 
+        <ul>
+          <li>tt_ima_stack_builder : remplace mot[80] par libtt_main0(TT_UTIL_CALLOC_PTR,4,&amp;mot,&amp;nombre,&amp;taille,&quot;mot&quot;)</li>
+          <li>tt_ima_stack_builder : remplace argu[80] par libtt_main0(TT_UTIL_CALLOC_PTR,4,&amp;argu,&amp;nombre,&amp;taille,&quot;argu&quot;))</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <ul>
+  </ul>
+  <li>Ajout de la fonction IMA/SERIES HOTPIXEL pour supprimer les pixels chauds 
+    dans une image</li>
+  <li>Ajout de la fonction IMA/SERIES COSMIC pour supprimer les cosmiques dans 
+    une image</li>
+  <li>Ajout des param&egrave;tres HOT_PIXEL_LIST et COSMIC_THRESHOLD dans les 
+    fonctions SUB et SUBDARK de IMA/SERIES </li>
+  <li>Ajout du parametre Y1 dans la fonction SMILEX de IMA/SERIES </li>
+</ul>
+<h3> </h3>
+<h3> </h3>
+<h3> </h3>
+<h3> </h3>
+<h3> </h3>
+<h3> </h3>
+<h3> </h3>
+<h3> </h3>
+<h3> </h3>
+<h3> </h3>
+<h3> </h3>
+<h3> 
   <h3><small>2008-06-09 :</small></h3>
   <small> </small> </h3>
 <ul>
