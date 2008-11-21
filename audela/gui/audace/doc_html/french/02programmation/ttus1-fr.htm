@@ -56,12 +56,13 @@
       MED <br />
       MEAN<br />
       SIG<br />
+      <hr>
     </td>
   </tr>
   <tr>
     <td>IMA/SERIES [bitpix jpegfile skylevel nullpixel <br />
       jpeg_quality]</td>
-    <td>SUB [file offset] <br />
+    <td>SUB [file offset] [hot_pixel_list] [cosmic_threshold]<br />
       ADD [file offset] <br />
       OFFSET [offset] <br />
       COPY [nbsubseries] <br />
@@ -80,7 +81,8 @@
       UNSMEARING [unsmearing] <br />
       INVERT [mirror] [flip] [xy] [normaflux] <br />
       CONV [kernel_type] [sigma] <br />
-      SUBDARK [dark] [bias] [exptime] [dexptime] [unsmearing] <br />
+      SUBDARK [dark] [bias] [exptime] [dexptime] [unsmearing] [hot_pixel_list] 
+      [cosmic_threshold]<br />
       RGRADIENT [xcenter] [ycenter] [radius] [angle] <br />
       HOUGH [threshold] [binary] <br />
       BACK [back_kernel] [back_threshold] [sub] [div] <br />
@@ -102,7 +104,13 @@
       REC2POL [y0] [x0] [scale_theta] [scale_rho] <br />
       POL2REC [y0] [x0] [scale_theta] [scale_rho] [width] [height] <br />
       <p> Fonctions &eacute;crites par tt_user4</p>
-      ASTROMETRY2</td>
+      <p>ASTROMETRY2<br>
+      </p>
+      <p>Fonctions &eacute;crites par tt_user6</p>
+      <p>HOTPIXEL [HOT_PIXEL_LIST]<br>
+        COSMIC [COSMIC_THRESHOLD]</p>
+      <p>&nbsp;</p>
+    </td>
   </tr>
 </table>
 <h4> 1.1.1.2. Param&egrave;tres optionnels de la d&eacute;finition IMA/SERIES</h4>
@@ -139,9 +147,21 @@
 <h2> 1.3. Fonctions de la d&eacute;finition IMA/SERIES</h2>
 <p>Chacune des fonctions de IMA/SERIES peut &ecirc;tre associ&eacute;e aux param&egrave;tres optionnels g&eacute;n&eacute;raux de IMA/SERIES. Les param&egrave;tres optionnels (et leur argument) sp&eacute;cifiques &agrave; chaque fonction sont d&eacute;crits maintenant :</p>
 <h4> <a name="ADD" id="ADD"></a>1.3.1. Fonction ADD</h4>
-  <p>Addition pixel &agrave; pixel avec une image dont le nom complet est d&eacute;fini par l'argument de [file]. Une valeur d'offset peut &ecirc;tre ajout&eacute;e et vaut l'argument de [offset].</p>
+  
+<p>Addition pixel &agrave; pixel avec une image dont le nom complet est d&eacute;fini 
+  par l'argument de [file]. Une valeur d'offset peut &ecirc;tre ajout&eacute;e 
+  et vaut l'argument de [offset].</p>
 <h4> <a name="SUB" id="SUB"></a>1.3.2. Fonction SUB</h4>
-<p>Soustraction pixel &agrave; pixel avec une image dont le nom complet est d&eacute;fini par l'argument de [file]. Une valeur d'offset peut &ecirc;tre ajout&eacute;e et vaut l'argument de [offset]. </p>
+<p>Soustraction pixel &agrave; pixel avec une image dont le nom complet est d&eacute;fini 
+  par l'argument de [file]. Une valeur d'offset peut &ecirc;tre ajout&eacute;e 
+  et vaut l'argument de [offset]. </p>
+<p>Si l'argument HOT_PIXEL_LIST=&quot;P x1 y1 P x2 y2 ...&quot; est pr&eacute;sent, 
+  les pixels chauds sont retir&eacute;s de chaque image avant la soustraction 
+  (la syntaxe est identique &agrave; la fonction <a href="#HOTPIXEL">HOTPIXEL</a> 
+  ).</p>
+<p>Si l'argument COSMIC_THRESHOLD=400 est pr&eacute;sent, les cosmiques sont retir&eacute;s 
+  de chaque image avant la soustraction (la syntaxe est identique &agrave; la 
+  fonction <a href="#COSMIC">COSMIC</a> )</p>
 <h4> <a name="OFFSET" id="OFFSET"></a>1.3.3. Fonction OFFSET</h4>
 <p>Ajoute, &agrave; tous les pixels, une valeur constante qui vaut l'argument de [offset]. </p>
 <h4> <a name="COPY" id="COPY"></a>1.3.4. Fonction COPY</h4>
@@ -162,11 +182,11 @@
 <p>kernel_type=mean : filtre moyen </p>
 <p>kernel_type=gradleft : filtre gradient &eacute;clair&eacute; par la gauche</p>
 kernel_type=gradright : filtre gradient &eacute;clair&eacute; par la droite
-</p>
+<p></p>
 kernel_type=gradup : filtre gradient &eacute;clair&eacute; par le haut
-</p>
+<p></p>
 kernel_type=graddown : filtre gradient &eacute;clair&eacute; par le bas
-</p>
+<p></p>
 <p>L'argument de [kernel_coef] permet de r&eacute;gler l'efficacit&eacute; d'action du filtre. Cette efficacit&eacute; est nulle (le filtre n'a aucun effet) si la valeur vaut 1. L'efficacit&eacute; est maximale si la valeur vaut 0. En pratique l'efficacit&eacute; est calcul&eacute;e de la fa&ccedil;on suivante : value est la valeur initiale du pixel central du kernel, val0 est la valeur filtr&eacute;e par le kernel, valmax est l'avant derni&egrave;re valeur maximale des pixels sous le kernel et valmin est la deuxi&egrave;me valeur minimale des pixels sous le kernel. On calcule val1 et val2 de la fa&ccedil;on suivante : </p>
 <p>val1=fabs((double)(val0-value));</p>
 <p>val2=kernel_coef*(valmax-valmin);</p>
@@ -256,7 +276,18 @@ kernel_type=graddown : filtre gradient &eacute;clair&eacute; par le bas
 <h4> <a name="SUBDARK" id="SUBDARK"></a>1.3.20. Fonction SUBDARK</h4>
 <p>Soustraction d'un dark de temps de pose diff&eacute;rent des images brutes. Le nom du dark est [dark] et celui du bias est [bias]. Si [exptime] est le temps d'int&eacute;gration des images et [dexptime] le temps d'exposition du dark, le dark est corrig&eacute; du rapport de ces valeurs. Si [exptime] et [dexptime] sont des cha&icirc;nes de caract&egrave;res, alors la valeur des temps d'int&eacute;gration sera recherch&eacute;e comme la valeur de ces mots cl&eacute;.</p>
 <p>Par d&eacute;faut, [exptime]="EXPTIME" et [dexptime]="EXPTIME". </p>
-<p>A la suite des corrections pr&eacute;c&eacute;dentes, il est possible d'effectuer une correction de tra&icirc;n&eacute;e (deconvflat) dans le cas d'une image effectu&eacute;e avec une cam&eacute;ra sans obturateur. Pour ce faire, indiquer la valeur du rapport de lecture (en g&eacute;n&eacute;ral proche de 0.0005) dans le param&egrave;tre [unsmearing].</p>
+<p>A la suite des corrections pr&eacute;c&eacute;dentes, il est possible d'effectuer 
+  une correction de tra&icirc;n&eacute;e (deconvflat) dans le cas d'une image 
+  effectu&eacute;e avec une cam&eacute;ra sans obturateur. Pour ce faire, indiquer 
+  la valeur du rapport de lecture (en g&eacute;n&eacute;ral proche de 0.0005) 
+  dans le param&egrave;tre [unsmearing].</p>
+<p>Si l'argument HOT_PIXEL_LIST=&quot;P x1 y1 P x2 y2 ...&quot; est pr&eacute;sent, 
+  les pixels chauds sont retir&eacute;s de chaque image avant la soustraction 
+  du dark (la syntaxe est identique &agrave; la fonction <a href="#HOTPIXEL">HOTPIXEL</a> 
+  ).</p>
+<p>Si l'argument COSMIC_THRESHOLD=400 est pr&eacute;sent, les cosmiques sont retir&eacute;s 
+  de chaque image avant la soustraction du dark (la syntaxe est identique &agrave; 
+  la fonction <a href="#COSMIC">COSMIC</a> )</p>
 <h4> <a name="RGRADIENT" id="RGRADIENT"></a>1.3.21. Fonction RGRADIENT</h4>
 <p>Effectue un gradient rotationnel, centr&eacute; sur la position pixel d&eacute;finie par [xcenter] [ycenter]. Le gradient a pour param&egrave;tre radial [radius] (en pixel) et pour param&egrave;tre angulaire [angle] (en degr&eacute;s).</p>
 <h4> <a name="ROT" id="ROT"></a>1.3.22. Fonction ROT</h4>
@@ -275,7 +306,7 @@ kernel_type=graddown : filtre gradient &eacute;clair&eacute; par le bas
 <p>Effectue une op&eacute;ration math&eacute;matique de logarithme selon la formule :</p>
 <p>[coeff] *log10(value-[offsetlog]) </p>
 <p>La valeur [nullpixel] (z&eacute;ro par d&eacute;faut) appara&icirc;t lorsque (value-[offsetlog]) est n&eacute;gatif (log non d&eacute;fini).</p>
-</p>
+<p></p>
 <h4> <a name="MEDIANX" id="MEDIANX"></a>1.2.29. Fonction MEDIANX</h4>
 <p>Attribue, &agrave; chaque ligne, une valeur constante &eacute;gale &agrave; la m&eacute;diane de tous les pixels de cette ligne entre les pixels [x1] et [x2]. L'image finale comporte [width] colonnes (20 par d&eacute;faut).</p>
 <h4> <a name="MEDIANY" id="MEDIANY"></a>1.2.30. Fonction MEDIANY</h4>
@@ -311,7 +342,45 @@ kernel_type=graddown : filtre gradient &eacute;clair&eacute; par le bas
 <h4> <a name="SORTX" id="SORTX"></a>1.2.39. Fonction SORTX</h4>
 <p>Attribue, &agrave; chaque ligne, une valeur constante &eacute;gale &agrave; la valeur tri&eacute;e &agrave; [percent] (=50 pour la m&eacute;diane, =100 pour le maximum) de tous les pixels de cette ligne entre les pixels [x1] et [x2]. L'image finale comporte [width] colonnes (20 par d&eacute;faut).</p>
 <h4> <a name="SORTY" id="SORTY"></a>1.2.40. Fonction SORTY</h4>
-<p>Attribue, &agrave; chaque colonne, une valeur constante &eacute;gale &agrave; la valeur tri&eacute;e &agrave; [percent] (=50 pour la m&eacute;diane, =100 pour le maximum) de tous les pixels de cette colonne entre les pixels [y1] et [y2]. L'image finale comporte [height] colonnes (20 par d&eacute;faut).</p>
+<p>Attribue, &agrave; chaque colonne, une valeur constante &eacute;gale &agrave; 
+  la valeur tri&eacute;e &agrave; [percent] (=50 pour la m&eacute;diane, =100 
+  pour le maximum) de tous les pixels de cette colonne entre les pixels [y1] et 
+  [y2]. L'image finale comporte [height] colonnes (20 par d&eacute;faut).</p>
+<h4><a name="HOTPIXEL" id="SORTY"></a>1.2.41 Fonction HOTPIXEL </h4>
+<p>Corrige les pixels chauds, les colonnes d&eacute;fectueuses et les lignes d&eacute;fectueuses 
+  en rempla&ccedil;ant les valeurs d&eacute;fectueuse par la moyenne des pixels 
+  voisins.</p>
+<p>La fonction re&ccedil;oit en param&egrave;tre la liste des pixels &agrave; 
+  corriger sous la forme d'une chaine de caract&egrave;res contenant les &eacute;l&eacute;ments 
+  suivants :</p>
+<blockquote>
+  <p>&quot;P x y&quot; repr&eacute;sente les coordonn&eacute;es d'un pixel chaud 
+    <br>
+    &quot;C x&quot; repr&eacute;sente l'abscisse d'une colonne d&eacute;fectueuse<br>
+    &quot;L y&quot; repr&eacute;sente l'ordonn&eacute;e d'une ligne d&eacute;fectueuse 
+    <br>
+  </p>
+</blockquote>
+<p>L'exemple suivant corrige le pixel (232,133), le pixel (456 198), la colonne 
+  400 et la ligne 200 :</p>
+<p>IMA/SERIES ./images/ i- 1 9 .fit ./images/ j . .fit HOTPIXEL HOT_PIXEL_LIST=&quot;P 
+  232 183 P 456 198 C 400 L 200&quot;</p>
+<p>Remarque : Pour optimiser les traitements, il est possible de corriger aussi 
+  les pixels chauds avec les fonctions de soustraction des images ou de soustraction 
+  des darks (voir les commandes SUB et SUBDARK)<br>
+</p>
+<h4><a name="COSMIC" id="SORTY"></a>1.2.42 Fonction COSMIC</h4>
+<p>Corrige les cosmiques en rempla&ccedil;ant les valeurs alt&eacute;r&eacute;es 
+  par un cosmique par la moyenne des pixels voisins.</p>
+<p>La fonction re&ccedil;oit en param&egrave;tre un seuil qui permet d'adapter 
+  le niveau de d&eacute;tection des cosmiques dans l'image. La valeur par d&eacute;faut 
+  est 400. Il est conseill&eacute; d'utiliser une valeur entre 100 et 500.</p>
+<p></p>
+<p>Exemple :</p>
+<p>IMA/SERIES ./images/ i- 1 9 .fit ./images/ j . .fit COSMIC COSMIC_THRESHOLD=350</p>
+<p>Remarque : Pour optimiser les traitements, il est possible de corriger aussi 
+  les cosmiques avec les fonctions de soustraction des images ou de soustraction 
+  des darks (voir les commandes SUB et SUBDARK</p>
 <h1> 2. Exemples de scripts</h1>
 <p>Nous allons &eacute;tudier ici quelques cas classiques de traitement d'images astronomiques.</p>
 <h2> 2.1. Pr&eacute;traitement des images CCD</h2>
@@ -348,7 +417,7 @@ kernel_type=graddown : filtre gradient &eacute;clair&eacute; par le bas
 <h3> 2.1.6. Mise en forme de l'image pr&eacute;trait&eacute;e</h3>
 SET/VAR $sky sky <br />
 IMA/SERIES ./prt/ $sky . . .fit ./prt/ $sky . .fit STAT fwhm jpegfile=./prt/$sky.jpg
-</p>
+<p></p>
 <h2> 2.2. Calibration astrom&eacute;trique d'une image pr&eacute;trait&eacute;e</h2>
 <p> IMA/SERIES ./prt/ $sky . . .fit ./prt/ $sky . .fit STAT objefile=./prt/x$sky.fit <br />
   IMA/SERIES ./prt/ $sky . . .fit ./prt/ $sky . .fit CATCHART path_astromcatalog=/cdrom/ astromcatalog=Microcat catafile=./prt/c$sky.fit <br />
