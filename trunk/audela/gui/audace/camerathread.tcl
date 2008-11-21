@@ -3,7 +3,7 @@
 # Description : procedures d'acqusitition et de traitement avec
 #         plusieurs cameras simultanées exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise a jour $Id: camerathread.tcl,v 1.4 2008-06-15 16:29:40 michelpujol Exp $
+# Mise a jour $Id: camerathread.tcl,v 1.5 2008-11-21 17:05:18 michelpujol Exp $
 #
 
 namespace eval ::camerathread {
@@ -47,18 +47,18 @@ proc ::camerathread::stopAcquisition { } {
 #  in    private(mode)
 #
 #------------------------------------------------------------
-proc ::camerathread::acquisition { exptime binning } {
+proc ::camerathread::acquisition { exptime } {
    variable private
 
    set private(mode)             "acq"
    set private(exptime)          $exptime
-   set private(binning)          $binning
    set private(acquisitionState) "1"
    set private(acquisitionResult)     ""
    set private(originCoord)      ""
    set private(targetCoord)      ""
    set private(mountEnabled)     "0"
    set private(intervalle)        "0"
+   set private(declinaisonEnabled) 1
 
    ##::camerathread::disp "::camerathread::acquisition \n"
 
@@ -91,7 +91,7 @@ proc ::camerathread::acquisition { exptime binning } {
 #------------------------------------------------------------
 
 #------------------------------------------------------------
-proc ::camerathread::centerBrightestStar { exptime binning originCoord targetCoord angle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse seuilx seuily } {
+proc ::camerathread::centerBrightestStar { exptime originCoord targetCoord angle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse seuilx seuily } {
    variable private
 
    if { $private(acquisitionState) == 1 } {
@@ -101,7 +101,6 @@ proc ::camerathread::centerBrightestStar { exptime binning originCoord targetCoo
 
    set private(mode)          "center"
    set private(exptime)       $exptime
-   set private(binning)       $binning
    set private(detection)     "PSF"
    set private(originCoord)   $originCoord
    set private(targetCoord)   $targetCoord
@@ -115,6 +114,7 @@ proc ::camerathread::centerBrightestStar { exptime binning originCoord targetCoo
    set private(seuilx)        $seuilx
    set private(seuily)        $seuily
    set private(intervalle)    0.3
+   set private(declinaisonEnabled) 1
 
    set private(previousAlphaDirection)   "e"
    set private(previousDeltaDirection)   "n"
@@ -132,7 +132,7 @@ proc ::camerathread::centerBrightestStar { exptime binning originCoord targetCoo
 }
 
 #------------------------------------------------------------
-proc ::camerathread::centerRadec { exptime binning originCoord radec angle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse seuilx seuily foclen detection catalogue kappa threshin fwhm radius threshold maxMagnitude delta epsilon catalogueName cataloguePath } {
+proc ::camerathread::centerRadec { exptime originCoord radec angle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse seuilx seuily foclen detection catalogue kappa threshin fwhm radius threshold maxMagnitude delta epsilon catalogueName cataloguePath } {
    variable private
 
    if { $private(acquisitionState) == 1 } {
@@ -142,7 +142,6 @@ proc ::camerathread::centerRadec { exptime binning originCoord radec angle targe
 
    set private(mode)          "center"
    set private(exptime)       $exptime
-   set private(binning)       $binning
    set private(detection)     "CALIBRE"
    set private(radec)         $radec
    set private(catalogueName) $catalogueName
@@ -160,6 +159,7 @@ proc ::camerathread::centerRadec { exptime binning originCoord radec angle targe
    set private(seuilx)        $seuilx
    set private(seuily)        $seuily
    set private(intervalle)    0
+   set private(declinaisonEnabled) 1
 
    set private(foclen)        $foclen
    set private(detection)     $detection
@@ -190,7 +190,7 @@ proc ::camerathread::centerRadec { exptime binning originCoord radec angle targe
 }
 
 #------------------------------------------------------------
-proc ::camerathread::guide { exptime binning detection originCoord targetCoord angle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse seuilx seuily slitWidth slitRatio intervalle} {
+proc ::camerathread::guide { exptime detection originCoord targetCoord angle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse seuilx seuily slitWidth slitRatio intervalle declinaisonEnabled} {
    variable private
 
    if { $private(acquisitionState) == 1 } {
@@ -200,7 +200,6 @@ proc ::camerathread::guide { exptime binning detection originCoord targetCoord a
 
    set private(mode)          "guide"
    set private(detection)     $detection
-   set private(binning)       $binning
    set private(exptime)       $exptime
    set private(originCoord)   $originCoord
    set private(targetCoord)   $targetCoord
@@ -216,6 +215,7 @@ proc ::camerathread::guide { exptime binning detection originCoord targetCoord a
    set private(slitWidth)     $slitWidth
    set private(slitRatio)     $slitRatio
    set private(intervalle)    $intervalle
+   set private(declinaisonEnabled) $declinaisonEnabled
 
    set private(previousAlphaDirection)   "e"
    set private(previousDeltaDirection)   "n"
@@ -232,7 +232,7 @@ proc ::camerathread::guide { exptime binning detection originCoord targetCoord a
 
 
 #------------------------------------------------------------
-proc ::camerathread::searchBrightestStar { exptime binning originCoord targetBoxSize threshin fwhm radius threshold } {
+proc ::camerathread::searchBrightestStar { exptime originCoord targetBoxSize threshin fwhm radius threshold } {
    variable private
 
    if { $private(acquisitionState) == 1 } {
@@ -243,9 +243,6 @@ proc ::camerathread::searchBrightestStar { exptime binning originCoord targetBox
    set private(mode)             "search"
    set private(detection)        "PSF"
    set private(exptime)          $exptime
-   set private(binning)          $binning
-   set private(exptime)          $exptime
-   set private(binning)          $binning
    set private(originCoord)      $originCoord
    set private(targetCoord)      ""
    set private(targetBoxSize)    $targetBoxSize
@@ -255,7 +252,7 @@ proc ::camerathread::searchBrightestStar { exptime binning originCoord targetBox
    set private(radius)           $radius
    set private(threshold)        $threshold
    set private(intervalle)       0
-
+   set private(declinaisonEnabled) 1
 
    set private(previousAlphaDirection)   "e"
    set private(previousDeltaDirection)   "n"
@@ -279,7 +276,6 @@ proc ::camerathread::processAcquisition { } {
 
    #--- je parametre la camera
    cam$private(camNo) exptime $private(exptime)
-   cam$private(camNo) bin     $private(binning)
    set private(previousClock) [clock clicks -milliseconds ]
 
    ::camerathread::processAcquisitionLoop
@@ -288,21 +284,22 @@ proc ::camerathread::processAcquisition { } {
 proc ::camerathread::processAcquisitionLoop { } {
    variable private
 
-   #--- je fais une acquisition
-   if { $private(test) == 0 } {
-      cam$private(camNo) acq
-      set statusVariableName "::status_cam$private(camNo)"
-      if { [set $statusVariableName] == "exp" } {
-         vwait ::status_cam$private(camNo)
-      }
-   } else {
-      #--- pour simuler la presence d'une camera pendant les tests de debuggage
-      set statusVariableName "::status_cam$private(camNo)"
-      set $statusVariableName "stand"
-   }
-
-
    set catchError [ catch {
+
+      #--- je fais une acquisition
+      if { $private(test) == 0 } {
+         cam$private(camNo) acq
+         set statusVariableName "::status_cam$private(camNo)"
+         if { [set $statusVariableName] == "exp" } {
+            vwait ::status_cam$private(camNo)
+         }
+      } else {
+         #--- pour simuler la presence d'une camera pendant les tests de debuggage
+         set statusVariableName "::status_cam$private(camNo)"
+         set $statusVariableName "stand"
+      }
+
+
       set bufNo $private(bufNo)
       #--- je calcule le temps ecoule entre deux fins de pose
       set nextClock [clock clicks -milliseconds ]
@@ -335,6 +332,7 @@ proc ::camerathread::processAcquisitionLoop { } {
             ###set private(targetCoord) [lrange $centro 0 1]
             set centro [buf$bufNo fitgauss "[list $x1 $y1 $x2 $y2]"]
             set private(targetCoord) [list [lindex $centro 1] [lindex $centro 5]]
+###::camerathread::disp  "PSF= y1=$y1 y2=$y2 $centro \n"
          } elseif { $private(detection)=="SLIT" } {
             #--- SLIT : je cherche l'etoile dans la zone cible proche de la fente du psectroscope
             set ydelta [expr abs([lindex $private(originCoord) 1] - [lindex $private(targetCoord) 1]) ]
@@ -342,13 +340,14 @@ proc ::camerathread::processAcquisitionLoop { } {
             if { $private(dynamicDectection) == "SLIT" } {
                 #--- l'etoile était proche de la fente dans l'image précédente
                 set x  [lindex $private(targetCoord) 0]
-                set y  [lindex $private(originCoord) 1]
+                set y  [lindex $private(targetCoord) 1]
                 set x1 [expr int($x) - $private(targetBoxSize)]
                 set x2 [expr int($x) + $private(targetBoxSize)]
                 set y1 [expr int($y) - $private(targetBoxSize)]
                 set y2 [expr int($y) + $private(targetBoxSize)]
                 set centro [buf$bufNo slitcentro "[list $x1 $y1 $x2 $y2]" $private(slitWidth) $private(slitRatio) ]
                 set private(targetCoord) [lrange $centro 0 1]
+###::camerathread::disp  "SLIT= y1=$y1 y2=$y2 $centro \n"
             } else {
                 #--- l'etoile était loin de la fente dans l'image précédente
                 set x  [lindex $private(targetCoord) 0]
@@ -357,9 +356,12 @@ proc ::camerathread::processAcquisitionLoop { } {
                 set x2 [expr int($x) + $private(targetBoxSize)]
                 set y1 [expr int($y) - $private(targetBoxSize)]
                 set y2 [expr int($y) + $private(targetBoxSize)]
-                set centro [buf$bufNo centro "[list $x1 $y1 $x2 $y2]" ]
-                set private(targetCoord) [lrange $centro 0 1]
+                ##set centro [buf$bufNo centro "[list $x1 $y1 $x2 $y2]" ]
+                ##set private(targetCoord) [lrange $centro 0 1]
+                set centro [buf$bufNo fitgauss "[list $x1 $y1 $x2 $y2]"]
+                set private(targetCoord) [list [lindex $centro 1] [lindex $centro 5]]
                 ##::camerathread::disp  "PSF=$centro \n"
+###::camerathread::disp  "PSF-SLIT= y1=$y1 y2=$y2 $centro \n"
             }
          } elseif { $private(detection) == "STAT" || $private(detection)=="BOGUMIL" } {
             set tempPath "."
@@ -490,19 +492,23 @@ proc ::camerathread::processAcquisitionLoop { } {
             }
             set private(previousAlphaDirection) $alphaDirection
 
-            #--- je calcule la direction delta
-            if { $deltaDelay >= 0 } {
-               set deltaDirection "n"
+            if { $private(declinaisonEnabled) == 1 } {
+               #--- je calcule la direction delta
+               if { $deltaDelay >= 0 } {
+                  set deltaDirection "n"
+               } else {
+                  set deltaDirection "s"
+                  set deltaDelay [expr -$deltaDelay]
+               }
+               #--- test anti-turbulence en delta
+               if { $deltaDirection != $private(previousDeltaDirection) } {
+                 set deltaDelay 0
+               }
+               if { $deltaDelay < $seuilDelta } {
+                 set deltaDelay 0
+               }
             } else {
-               set deltaDirection "s"
-               set deltaDelay [expr -$deltaDelay]
-            }
-            #--- test anti-turbulence en delta
-            if { $deltaDirection != $private(previousDeltaDirection) } {
-              set deltaDelay 0
-            }
-            if { $deltaDelay < $seuilDelta } {
-              set deltaDelay 0
+               set deltaDelay 0
             }
             set private(previousDeltaDirection) $deltaDirection
 
@@ -515,8 +521,6 @@ proc ::camerathread::processAcquisitionLoop { } {
                } else {
                   ::thread::send $private(mainThreadNo) [list ::telescope::moveTelescope $alphaDirection $alphaDelay $deltaDirection $deltaDelay  ]
                }
-
-
             }
          }
 
@@ -548,15 +552,17 @@ proc ::camerathread::processAcquisitionLoop { } {
 
          set x  [lindex $private(originCoord) 0]
          set y  [lindex $private(originCoord) 1]
-         set x1 [expr int($x) - $private(targetBoxSize)]
-         set x2 [expr int($x) + $private(targetBoxSize)]
-         set y1 [expr int($y) - $private(targetBoxSize)]
-         set y2 [expr int($y) + $private(targetBoxSize)]
-         set x1 1
-         set x2 [buf$bufNo getpixelswidth]
-         set y1 1
-         set y2 [buf$bufNo getpixelsheight]
-
+         if { $private(targetBoxSize) != 0 } {
+            set x1 [expr int($x) - $private(targetBoxSize)]
+            set x2 [expr int($x) + $private(targetBoxSize)]
+            set y1 [expr int($y) - $private(targetBoxSize)]
+            set y2 [expr int($y) + $private(targetBoxSize)]
+         } else {
+            set x1 1
+            set x2 [buf$bufNo getpixelswidth]
+            set y1 1
+            set y2 [buf$bufNo getpixelsheight]
+         }
          set acquisitionResult [::camerathread::searchStar [list $x1 $y1 $x2 $y2] $private(threshin) $private(fwhm) $private(radius) $private(threshold) ]
          #--- je retourne le resultat
          ::camerathread::notify "acquisitionResult" $acquisitionResult
@@ -842,7 +848,8 @@ proc ::camerathread::disp { message } {
 #------------------------------------------------------------
 proc ::camerathread::setParam { paramName paramValue } {
    variable private
-   set private($paramName) $paramValue
+   #--- thread::eval utilise un mutex interne a la thread
+   thread::eval "set private($paramName) { $paramValue }"
 }
 
 #------------------------------------------------------------
