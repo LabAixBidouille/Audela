@@ -341,8 +341,9 @@ int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
             } else {
                char temp_drivername[64];
                char temp_index[64];
+               int linkNo = 1 ;
 
-               // je cherche si le link est deja cree (meme type et meme index)
+               // je cherche si le link est deja cree (meme drivername et meme index)
                toto = ((CPool*)clientData)->dev;
 
                while(toto) {
@@ -367,9 +368,19 @@ int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
                   toto = toto->next;
                }
 
+               // je cherche le premier numero de link libre (certains link peuvent etre cree en TCL)
+               while( 1 ) {
+                  sprintf(ligne,"lindex [::link%d drivername] 0",linkNo);
+                  if (Tcl_Eval(interp,ligne)==TCL_ERROR ) {
+                     // le link n'existe pas , je vais utiliser ce numero
+                     break;
+                  }
+                  linkNo += 1;
+               }
+
                // Instancie de l'objet en fonction du link demande
                toto = new CDevice();
-               pool->Ajouter(0,toto);
+               pool->Ajouter(linkNo,toto);
                dontCreateCommand = 1;
                // Cree la nouvelle commande par le biais de l'unique
                // commande exportee de la librairie liblink.
