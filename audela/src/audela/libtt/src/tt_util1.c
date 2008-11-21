@@ -201,17 +201,35 @@ int tt_writelog(char *message)
 {
    FILE *fichier_log;
    time_t ltime;
-   char chaine[TT_MAXLIGNE];
-   char message_log[TT_MAXLIGNE];
+   //char chaine[TT_MAXLIGNE];
+   //char message_log[TT_MAXLIGNE];
+   char * chaine = NULL;
+   char * message_log = NULL;
    int pos;
    char *car;
+
+   chaine = malloc(TT_MAXLIGNE + strlen(message));
+   if ( chaine == NULL ) {
+      return(PB_DLL);
+   }
+
+   message_log = malloc(TT_MAXLIGNE + strlen(message));
+   if ( message_log == NULL ) {
+      free(chaine);
+      return(PB_DLL);
+   }
+
    if ((fichier_log=fopen(nom_fichier_log, "r") ) == NULL) {
       if ((fichier_log=fopen(nom_fichier_log, "w") ) == NULL) {
+      free(chaine);
+      free(message_log);
 	 return(PB_DLL);
       }
    } else {
       fclose(fichier_log);
       if ((fichier_log=fopen(nom_fichier_log, "a") ) == NULL) {
+      free(chaine);
+      free(message_log);
 	 return(PB_DLL);
       }
    }
@@ -235,6 +253,8 @@ int tt_writelog(char *message)
    strcat(message_log,"\n");
    fwrite(message_log,strlen(message_log),1,fichier_log);
    fclose(fichier_log);
+   free(chaine);
+   free(message_log);
    return(OK_DLL);
 }
 
@@ -362,17 +382,20 @@ int tt_verifargus_getFileNb(char *fileNames )
 
 }
 
+//*************************************************************************
+// tt_verifargus_getFileName
+//
+//    retourne le n'ieme nom de fichier de la serie   
+//                        
+// parametres :                                                            
+//    fileNames (in) liste des noms de fichiers (separes par un espace)    
+//      les noms contenant un espace doivent etre encadres par des accolades 
+//    filIndex  (in)  numero du nom de fichier                             
+//    fileName  (out)  nom du fichier correspondant a fileIndex            
+// return :                                                                
+//    1 si ok, ou -1 si erreur                                             
+//***************************************************************************/
 int tt_verifargus_getFileName(char *fileNames, int fileIndex , char* fileName)
-/***************************************************************************/
-/* retourne le n'ieme nom de fichier de la serie                           */
-/* parametres :                                                            */
-/*    fileNames (in) liste des noms de fichiers (separes par un espace)    */
-/*      les noms contant un espace doivent etre encadres par des accolades */
-/*    filIndex  (in)  numero du nom de fichier                             */
-/*    fileName  (out)  nom du fichier correspondant a fileIndex            */
-/* return :                                                                */
-/*    1 si ok, ou -1 si erreur                                             */
-/***************************************************************************/
 {
    int levelBrace  =0;
    int posString = 0;
@@ -628,6 +651,7 @@ int tt_strupr(char *chaine)
    return(OK_DLL);
 }
 
+
 int tt_decodekeys(char *ligne,void ***outkeys,int *numkeys)
 /***************************************************************************/
 /***************************************************************************/
@@ -636,18 +660,18 @@ int tt_decodekeys(char *ligne,void ***outkeys,int *numkeys)
    int msg,k,kk;
    char **keys;/**ligne;*/
    int lenkeys,nbkeys=TT_MAXKEYS,pos_deb[TT_MAXKEYS],pos_fin[TT_MAXKEYS],len,inmot,quote_opened;
-
+   
    /* --- decodage de la ligne de commandes ---*/
    keys=NULL;
-   lenkeys=500;
+   lenkeys=strlen(ligne);
    if ((msg=libtt_main0(TT_UTIL_CALLOC_PTRPTR_CHAR,4,&keys,&nbkeys,&lenkeys,"keys"))!=0) {
       tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_decodekeys for pointer keys");
       return(msg);
    }
-
-/* Warning corrige par Denis
+   
+   /* Warning corrige par Denis
    *(outkeys)=(char**)(keys);
-*/
+   */
    *(outkeys)=(void**)(keys);
    len=(int)(strlen(ligne));
    for (k=0;k<TT_MAXKEYS;k++) {
@@ -657,25 +681,25 @@ int tt_decodekeys(char *ligne,void ***outkeys,int *numkeys)
    for (inmot=TT_NO,quote_opened=TT_NO,kk=0,k=0;k<len;k++) {
       if (kk>=TT_MAXKEYS) {break;}
       if (ligne[k]=='\"') {
-	 if (quote_opened==TT_NO) {
-	    quote_opened=TT_YES;
-	    inmot=TT_YES;
-	    pos_deb[kk]=k+1;
-	 } else {
-	    quote_opened=TT_NO;
-	    inmot=TT_NO;
-	    pos_fin[kk++]=k;
-	 }
+         if (quote_opened==TT_NO) {
+            quote_opened=TT_YES;
+            inmot=TT_YES;
+            pos_deb[kk]=k+1;
+         } else {
+            quote_opened=TT_NO;
+            inmot=TT_NO;
+            pos_fin[kk++]=k;
+         }
       } else if ((ligne[k]==' ')||(ligne[k]=='\n')) {
-	 if ((quote_opened==TT_NO)&&(inmot==TT_YES)) {
-	    inmot=TT_NO;
-	    pos_fin[kk++]=k;
-	 }
+         if ((quote_opened==TT_NO)&&(inmot==TT_YES)) {
+            inmot=TT_NO;
+            pos_fin[kk++]=k;
+         }
       } else {
-	 if ((quote_opened==TT_NO)&&(inmot==TT_NO)) {
-	    pos_deb[kk]=k;
-	    inmot=TT_YES;
-	 }
+         if ((quote_opened==TT_NO)&&(inmot==TT_NO)) {
+            pos_deb[kk]=k;
+            inmot=TT_YES;
+         }
       }
       /*printf("k=%d kk=%d nbkeys=%d inmot=%d\n",k,kk,nbkeys,inmot);*/
       if (ligne[k]=='\n') {break;}
@@ -691,7 +715,7 @@ int tt_decodekeys(char *ligne,void ***outkeys,int *numkeys)
    /*
    printf("= k=%d kk=%d nbkeys=%d\n",k,kk,nbkeys);
    for (k=0;k<nbkeys;k++) {
-      printf("%d-%d ",pos_deb[k],pos_fin[k]);
+   printf("%d-%d ",pos_deb[k],pos_fin[k]);
    }
    printf("\n");
    getch();
@@ -699,11 +723,11 @@ int tt_decodekeys(char *ligne,void ***outkeys,int *numkeys)
    for (k=0;k<nbkeys;k++) {
       len=pos_fin[k]-pos_deb[k];
       if (len<=0) {
-	 strcpy(keys[k],"");
+         strcpy(keys[k],"");
       } else {
-	 if (len>=(lenkeys-1)) {len=(lenkeys-2);}
-	 strncpy(keys[k],ligne+(int)(pos_deb[k]),len);
-	 keys[k][len]='\0';
+         if (len>=(lenkeys-1)) {len=(lenkeys-2);}
+         strncpy(keys[k],ligne+(int)(pos_deb[k]),len);
+         keys[k][len]='\0';
       }
       /*printf("keys[%d]=<%s>\n",k,keys[k]);*/
    }
@@ -712,3 +736,587 @@ int tt_decodekeys(char *ligne,void ***outkeys,int *numkeys)
 }
 
 
+/***************************************************************************/
+//  tt_scanNextInt (M . Pujol)
+// 
+//  extrait un entier du début d'une chaine de caracteres, 
+//  et retourne un pointeur sur le debut de l'entier suivant
+//   
+//  Return 
+//     pointeur sur le debut de l'entier suivant 
+///    ou NULL si fin de chaine rencontree
+/***************************************************************************/
+char * tt_scanNextInt(char* buffer,int *value) {
+   char *p = buffer;
+   int resultScan;
+   
+   if ( p== NULL ) {
+      // j'arrete si j'ai atteint la fin de la chaine de caracteres  
+      return NULL; 
+   }
+   
+   while ( *p ==  ' ' || *p == '{' || *p == '}' ) {
+      // je point le caractere suivant
+      p++;
+      // je commence s'il y a encore un espace
+   }
+
+   if ( p== NULL ) {
+      // j'arrete si j'ai atteint la fin de la chaine de caracteres  
+      return NULL; 
+   }
+
+   // je lis l'entier 
+   if ( *p == 'P' || *p == 'C' || *p == 'L' ) {
+      *value = (int) *p;
+   } else {
+      resultScan = sscanf(p, "%d", value); 
+      if (resultScan == 0 ) return NULL;
+   }
+
+   // je cherche l'espace suivant 
+   p = strchr(p,' ');
+   if ( p== NULL ) {
+      // j'arrete si j'ai atteint la fin de la chaine de caracteres  
+      return NULL; 
+   }
+   while ( *p ==  ' ' || *p == '{' || *p == '}' ) {
+      // je pointe le caractere suivant
+      p++;
+   }
+
+   return p;
+}
+
+
+///////////////////////////////////////////////////////////////
+//  Traitement des pixels chauds ou les lignes defectueuses ou les colonnes defecteuses 
+///////////////////////////////////////////////////////////////
+
+//***************************************************************************/
+//  tt_parseHotPixelList (M . Pujol)
+// 
+//  transforme une chaine de caracteres contenant une liste de pixels chauds 
+//     en une table d'entiers 
+//  
+//  Type valeurs 
+//   P   x  y    un pixel chaud (3 valeurs)
+//   C   x       une colonne defectueuse (2 valeurs)
+//   R   y       une ligne defectueuse (2 valeurs)
+//   \0          fin de table (1 valeur)
+//
+//  Exemple : 2 pixels chauds et une colonne defecteuse 
+//   chaine en entree : char sHotPixels[] = "P 232 183 P 456 198 C 400 L 200"
+//   table en sortie  : int  iHotPixels[] = [50 232 183 50 456 198 43 400 4C 200 0]
+//***************************************************************************/
+int tt_parseHotPixelList(char* sHotPixels,int **iHotPixels)
+{
+   char * p = sHotPixels;
+   int nbvalues = 0;
+
+   if ( sHotPixels == NULL ) {
+      return OK_DLL; 
+   }
+   *iHotPixels = malloc((nbvalues+1)* sizeof(int));
+   
+   do { 
+      int type , x , y; 
+      p = tt_scanNextInt(p, &type);
+      if ( p == NULL ) break;
+
+      switch (type) {
+      case 'P' : 
+         p = tt_scanNextInt(p, &x); 
+         if ( p== NULL ) break;
+         p = tt_scanNextInt(p, &y); 
+         if ( p== NULL ) break;
+         nbvalues += 3;
+         *iHotPixels = realloc(*iHotPixels,(nbvalues+1)*sizeof(int));
+         (*iHotPixels)[nbvalues -3] = type;
+         (*iHotPixels)[nbvalues -2] = x;
+         (*iHotPixels)[nbvalues -1] = y;
+         break;
+      case 'C' : 
+      case 'L' : 
+         p = tt_scanNextInt(p, &x); 
+         if ( p== NULL ) break;
+         nbvalues += 2;
+         *iHotPixels = realloc(*iHotPixels,(nbvalues+1)*sizeof(int));
+         (*iHotPixels)[nbvalues - 2] = type;
+         (*iHotPixels)[nbvalues -1] = x;
+         break;
+      }
+      
+   } while (p!=NULL);
+
+   // j'ajoute la valeur nulle pour signaler la fin de table
+   (*iHotPixels)[nbvalues] = 0;
+   return(OK_DLL);
+}
+
+
+/************************ HMEDIAN (C Buil) *******************/
+/* Retourne la valeur mediane d'un echantillon RA de n point */
+/* Attention : l'echantillon est trie apres excecution       */
+/*  utilise par tt_repairHotPixel                            */
+/*************************************************************/
+TT_PTYPE tt_hmedian(TT_PTYPE *table,int n)
+{
+   int l,j,ir,i;
+   TT_PTYPE rtable;
+   
+   if (n<2)
+      return *table;
+   table--;
+   for (l=((ir=n)>>1)+1;;)
+   {
+      if (l>1)
+         rtable=table[--l];
+      else
+      {
+         rtable=table[ir];
+         table[ir]=table[1];
+         if (--ir==1)
+         {
+            table[1]=rtable;
+            return n&1? table[n/2+1] : (TT_PTYPE)(((double)table[n/2]+(double)table[n/2+1])/2.0);
+         }
+      }
+      for (j=(i=l)<<1;j<=ir;)
+      {
+         if (j<ir && table[j]<table[j+1]) ++j;
+         if (rtable<table[j])
+         {
+            table[i]=table[j];
+            j+=(i=j);
+         }
+         else
+            j=ir+1;
+      }
+      table[i]=rtable;
+   }   
+}
+
+//***************************************************************************/
+//  tt_repairHotPixel (M . Pujol)
+// 
+//  supprime les pixels chauds ou les lignes defectueuses ou les colonnes
+//  defecteuses d'un image 2D 
+//
+// Parametres :
+//  int *iHotPixels : tableau de d'entiers contenant les pixels chauds ou les 
+//                    lignes defectueuses ou les colonnes defecteuse 
+//      Exemple : 2 pixels chauds et une colonne defecteuse 
+//      iHotPixels[] = [50 232 183 50 456 198 43 400 52 200 0]
+//
+//***************************************************************************/
+int tt_repairHotPixel(int *iHotPixels, TT_IMA *p)
+{
+
+   int *pHotPixel = iHotPixels;
+   int type, x, y,adr;
+   TT_PTYPE tab[8];
+
+   if (iHotPixels == NULL ) {
+      return(OK_DLL);
+   }
+
+   do {
+      type = *(pHotPixel++);
+      switch (type) {
+      case 'P' : 
+         x = *(pHotPixel++);
+         y = *(pHotPixel++);
+         if (x>2 && y>2 && x<p->naxis1-2 && y<p->naxis2-2) {
+            // je repare un pixel chaud en le remplaçant par la mediane des points voisins
+            adr=(x-1)+(y-1)* p->naxis1;
+            tab[0]=p->p[adr-p->naxis1-1];
+            tab[1]=p->p[adr          -1];
+            tab[2]=p->p[adr+p->naxis1-1];
+            tab[3]=p->p[adr-p->naxis1  ];
+            tab[4]=p->p[adr+p->naxis1  ];
+            tab[5]=p->p[adr-p->naxis1+1];
+            tab[6]=p->p[adr          +1];
+            tab[7]=p->p[adr+p->naxis1+1];         
+            p->p[adr]=tt_hmedian(tab,8);    
+         }
+
+         break;
+      case 'C' : 
+         x = *(pHotPixel++);
+         if (x>2 && x<p->naxis1-2 ) {
+            // je repare la colonne defectueuse
+            int adr=x-1;
+            int j;
+            for (j=0;j<p->naxis2;j++) {
+               int adr2=j* p->naxis1+adr;
+               p->p[adr2]=(p->p[adr2-1]+p->p[adr2+1])/2;
+            }
+
+         }
+      case 'L' : 
+         y = *(pHotPixel++);
+         if (y>2 && y<p->naxis2-2) {
+            // je repare la ligne defectueuse
+            int adr=(y-1)* p->naxis1;
+            int i;
+            for (i=0;i<p->naxis1;i++) {
+               int adr2=adr+i;
+               p->p[adr2]=(p->p[adr2+p->naxis1]+p->p[adr2-p->naxis1])/2;
+            }
+         }
+
+         break;
+      }
+   } while( type != 0);
+   return(OK_DLL);
+}
+
+
+
+
+
+///////////////////////////////////////////////////////////////
+//  Traitement des cosmiques 
+///////////////////////////////////////////////////////////////
+
+
+/************************* MEDIAN_LIBRE *****************************/
+/* Calcul de la médiane dans une matrice de dimension quelconque    */
+/* (la dimension de la matrice est tout au plus la moitié de la     */
+/* plus petite dimension de l'image - la largeur de la matrice est  */
+/* impaire - sont format est carré)                                 */
+/********************************************************************/
+int median_libre(TT_PTYPE *image, int imax, int jmax, int dimension, double parametre)
+{
+   int i,j,k;
+   TT_PTYPE v_median;
+   TT_PTYPE *p0,*p1,*ptr0,*ptr1,*ptr;
+   TT_PTYPE *ker,*buf;
+   int *d;
+   int l_kernel,largeur2;
+   int dim_kernel;
+   int longueur,adr;
+   
+   /* la dimension du kernel doit être impaire */
+   if (dimension%2==0)
+   {
+      tt_errlog(TT_ERR_PB_MALLOC,"median_libre : la dimension de la matrice doit être impaire");
+      return(TT_ERR_PB_MALLOC);
+   }
+   
+   l_kernel= dimension;
+   dim_kernel=l_kernel*l_kernel;
+   
+   longueur=sizeof(TT_PTYPE)*imax*jmax;
+   
+   if (imax<2*l_kernel || jmax<2*l_kernel)
+   {
+      tt_errlog(TT_ERR_PB_MALLOC,"median_libre :  kernel trop grand");
+      return(TT_ERR_PB_MALLOC);
+   }
+   
+   if ((buf=(TT_PTYPE *)malloc(longueur))==NULL)
+   {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc buf in median_libre");
+      return TT_ERR_PB_MALLOC;
+   }
+   
+   if ((d=(int *)malloc(dim_kernel*sizeof(int)))==NULL)
+   {
+      free(buf);
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc d in median_libre");
+      return TT_ERR_PB_MALLOC;
+   }
+   
+   if ((ker=(TT_PTYPE *)malloc(dim_kernel*sizeof(TT_PTYPE)))==NULL)
+   {
+      free(buf);
+      free(d);
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc ker in median_libre");
+      return TT_ERR_PB_MALLOC;
+   }
+   
+   largeur2=l_kernel/2;
+   for (i=0;i<l_kernel;i++)
+   {
+      for (k=0;k<l_kernel;k++)
+      {
+         d[i+k*l_kernel]=(largeur2-k)*imax+i-largeur2;
+      }
+   }
+   
+   p0=image;
+   p1=buf;
+   memset(buf,0,longueur);
+   
+   for (j=largeur2;j<(jmax-largeur2);j++)
+   {
+      adr=j*imax;
+      ptr0=p0+adr;
+      ptr1=p1+adr;
+      ptr=ptr0+largeur2;
+      for (i=largeur2;i<(imax-largeur2);i++,ptr++)
+      {
+         for (k=0;k<dim_kernel;k++) ker[k]=*(ptr+d[k]);
+         v_median=tt_hmedian(ker,dim_kernel);
+         if (parametre>0)
+         {
+            if (fabs(*ptr-v_median) > (TT_PTYPE)(parametre*(double)(ker[dim_kernel-2]-ker[1])))
+               *(ptr1+i)=v_median;
+            else
+               *(ptr1+i)=*ptr;
+         }
+         else
+         {
+            *(ptr1+i)=v_median;
+         }
+      }
+   }
+   memmove(p0,buf,longueur);
+   
+   free(buf);
+   free(d);
+   free(ker);
+   
+   return OK_DLL;
+}
+
+/************************ COSMIC_MED ************************/
+/* Détection des rayons cosmiques.                          */
+/* La carte des rayons (map) est un buffer                  */
+/* qui a la taille de l'image traitée.                      */
+/* La position des cosmiques est marquée par la valeur      */
+/* 32767 dans cette carte (c'est un wildcard)               */
+/* Algorithme :                                             */
+/* (1) on charge l'image à traiter                          */
+/* (2) on réalise un filtre médian 5x5 pondéré              */
+/* (3) on soutrait à l'image traitée l'image filtrée        */
+/* (4) dans l'image différence, les cosmiques sont          */
+/*     les points au dessus d'un seuil (passé en paramètre) */
+/* La fonction retourne le nombre de cosmique trouvé        */
+/************************************************************/
+int cosmic_med(TT_IMA *pIma, TT_PTYPE *map, double coef, TT_PTYPE seuil, int *nb)
+{
+   int i,j, k, nbb, adr;
+   int imax=pIma->naxis1;
+   int jmax=pIma->naxis2;
+   int msg;
+   
+   TT_PTYPE *tampon = NULL; 
+   int number = imax*jmax;
+   int size  = sizeof(TT_PTYPE); 
+
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&tampon,&number,&size,"tampon"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in cosmic_med tampon");
+      return(TT_ERR_PB_MALLOC);
+   }
+   
+   memmove(tampon, pIma->p, imax * jmax * sizeof(TT_PTYPE));
+   
+   if (median_libre(tampon, imax, jmax, 5, coef) != OK_DLL) {
+      tt_errlog(TT_ERR_PB_MALLOC,"cosmic_med : Pb in median_libre");
+      tt_free(tampon,"tampon");
+      return(TT_ERR_PB_MALLOC);      
+   }
+
+   k=0;
+   for (j=0;j<jmax;j++)
+   {
+      for (i=0;i<imax;i++,k++)
+      {
+         tampon[k]=pIma->p[k]-tampon[k];
+      }
+   }
+   
+   nbb=0;
+   
+   for (j=3; j<jmax-3; j++)
+   {
+      for (i=3; i<imax-3; i++)
+      {
+         adr=i+j*imax;
+         if (tampon[adr]>seuil)
+         {
+            map[adr]=32767;
+            nbb++; 
+         }
+         else
+            map[adr]=0;
+      }
+   }
+   
+   *nb=nbb;
+   
+   tt_free(tampon,"tampon");
+   return OK_DLL; 
+}
+
+/********************** COSMIC_REPAIR (C. Buil) **********/
+/* Réparation des rayons cosmiques                       */
+/* Un cosmique dans l'image map est flaggé par           */
+/* la valeur 32767                                       */
+/* Le cosmique est bouché par la valeur médiane          */
+/* des 8 plus proches voisins (sauf si c'est un cosmiqe) */
+/*********************************************************/
+int cosmic_repair(TT_IMA *pIma, TT_PTYPE *map)
+{
+   int i,j,adr;
+   TT_PTYPE table[8];
+   
+   int imax=pIma->naxis1;
+   int jmax=pIma->naxis2;
+   
+   for (j=3; j<jmax-3; j++)
+   {
+      for (i=3; i<imax-3; i++)
+      {
+         adr=i+j*imax;
+         if (map[adr]==32767)
+         {         
+            int n=0;
+            if (map[adr-imax-1]!=32767)
+            {
+               table[n]=pIma->p[adr-imax-1];
+               n++;
+            }
+            if (map[adr     -1]!=32767)
+            {
+               table[n]=pIma->p[adr     -1];
+               n++;
+            }
+            if (map[adr+imax-1]!=32767)
+            {   
+               table[n]=pIma->p[adr+imax-1];
+               n++;
+            }
+            if (map[adr-imax  ]!=32767)
+            { 
+               table[n]=pIma->p[adr-imax  ];
+               n++;
+            }
+            if (map[adr+imax  ]!=32767)
+            {
+               table[n]=pIma->p[adr+imax  ];
+               n++;
+            }
+            if (map[adr-imax+1]!=32767)
+            {
+               table[n]=pIma->p[adr-imax+1];
+               n++;
+            }
+            if (map[adr     +1]!=32767)
+            {  
+               table[n]=pIma->p[adr     +1];
+               n++;
+            }
+            if (map[adr+imax+1]!=32767)
+            { 
+               table[n]=pIma->p[adr+imax+1];
+               n++;
+            } 
+            pIma->p[adr]=tt_hmedian(table,n);    
+         }
+      }
+   }
+   return OK_DLL;
+}
+
+
+
+//***************************************************************************/
+//  tt_repairCosmic (M . Pujol)
+// 
+//  supprime les cosmiques d'un image 2D 
+//
+// Parametres :
+//  TT_PTYPE cosmicThreshold : seuil de detection des cosmiques (typiquement entre 100 et 500) 
+//
+//***************************************************************************/
+int tt_repairCosmic(TT_PTYPE cosmicThreshold, TT_IMA *pIma)
+{
+
+   TT_PTYPE *map = NULL;           // carte des cosmiques (à l'itération courante)
+   TT_PTYPE *map_total = NULL;     // carte cumulée
+   int msg;
+   int adr;
+   int nb=0;
+   int nb_total=0;
+   int i,j,k;
+   int nb_iter=5;   // nombre d'itérations (fixée par l'expérience)
+   int imax=pIma->naxis1;
+   int jmax=pIma->naxis2;
+   int number = imax*jmax;
+   int size  = sizeof(TT_PTYPE); 
+
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&map,&number,&size,"map"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_repairCosmic map");
+      return(TT_ERR_PB_MALLOC);
+   }
+   
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&map_total,&number,&size,"map_total"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_repairCosmic map_total");
+      tt_free(map,"map");
+      return(TT_ERR_PB_MALLOC);
+   }
+
+   // Boucle de calcul...
+   for (k=0;k<nb_iter;k++)
+   {
+      if (cosmic_med(pIma,map,0.6,cosmicThreshold,&nb)!=OK_DLL) {
+         tt_free(map,"map");
+         tt_free(map_total,"map_total");
+         tt_errlog(TT_ERR_PB_MALLOC,"tt_repairCosmic: Pb calloc in cosmic_med ");
+         return(TT_ERR_PB_MALLOC);
+      }
+      if (cosmic_repair(pIma,map)!=OK_DLL) {
+         tt_free(map,"map");
+         tt_free(map_total,"map_total");
+         tt_errlog(TT_ERR_PB_MALLOC,"tt_repairCosmic: Pb calloc in cosmic_repair ");
+         return(TT_ERR_PB_MALLOC);
+      }
+      for (j=3; j<jmax-3; j++)
+      {
+         for (i=3; i<imax-3; i++)
+         {
+            adr=i+j*imax;
+            if (map_total[adr]==0 && map[adr]==32767) // si un point n'est pas déjà flaggé, il est ajouté dans la carte de cumul 
+            {
+               map_total[adr]=32767;
+               nb_total++;
+            }
+         } 
+      }
+   }
+   
+   //memmove(pIma->p,map_total,number*size);
+   
+   // .......
+   // .......
+   // sauvegarde de la carte des cosmiques (map_total)      
+   //bufTotal = createImage(map_total, imax, jmax);
+   //pMapFits = Fits_createFits("@map.fit", bufTotal ); 
+   //Fits_closeFits( pMapFits);
+   //freeImage(bufTotal);
+
+   {   /* --- sauve l'image avec une entete minimale ---*/
+      int typehdu=IMAGE_HDU;
+      int hdunum=0;
+
+      if ((msg=libfiles_main(FS_MACR_WRITE,11,"@map.fit",hdunum,&typehdu,
+            NULL,NULL,NULL,
+            &pIma->naxis,pIma->naxes,&pIma->save_bitpix,&pIma->datatype,map_total))!=0) {
+      }
+   }
+
+
+
+   printf("\nNombre de cosmiques trouvé : %d\n",nb_total);
+
+   tt_free(map,"map");
+   tt_free(map_total,"map_total");
+
+   
+
+   return(OK_DLL);
+}
