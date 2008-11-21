@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.82 2008-11-03 22:01:23 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.83 2008-11-21 17:56:20 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -15,6 +15,22 @@ namespace eval ::confVisu {
    proc init { } {
       variable private
       global conf
+
+      #--- je charge la librairie fitstcl
+      #--- (ne fonctionne pas encore sur linux)
+      if { $::tcl_platform(os) != "Linux" } {
+         set oldPath "[pwd]"
+         set catchResult [ catch {
+            cd $::audela_start_dir
+            load fitstcl[info sharedlibextension]
+         } ]
+         cd "$oldPath"
+         if { $catchResult == 1 } {
+            ::console::affiche_erreur "::confVisu::init $::errorInfo\n"
+         }
+      }
+
+      set ::caption(confVisu,fitsHduList)                        "HDU"
 
    }
 
@@ -31,6 +47,7 @@ namespace eval ::confVisu {
       variable private
       global audace
       global conf
+
 
       #--- je cree une visu temporaire pour savoir quel sera le numero de visu
       set result [catch {::visu::create 1 1} visuNo]
@@ -81,6 +98,8 @@ namespace eval ::confVisu {
       set private($visuNo,applyThickness)  "0"
       set private($visuNo,autovisuEnCours) "0"
       set private($visuNo,lastFileName)    "?"
+      set private($visuNo,fitsHduList)     ""
+      set private($visuNo,currentHduNo)    1
       set private($visuNo,maxdyn)          "32767"
       set private($visuNo,mindyn)          "-32768"
       set private($visuNo,intervalleSHSB)  "$conf(seuils,visu$visuNo,intervalleSHSB)"
@@ -91,6 +110,8 @@ namespace eval ::confVisu {
       set private($visuNo,hCrosshairV)     $private($visuNo,hCanvas).crosshairV
       set private($visuNo,crosshairstate)  $conf(visu,crosshairstate)
       set private($visuNo,menu)            ""
+      set private($visuNo,mode)            "image"
+
 
       #--- Initialisation des variables utilisees par les menus
       set private($visuNo,mirror_x)        "0"
@@ -211,7 +232,6 @@ namespace eval ::confVisu {
 
          #--- je supprime les graphes des coupes
          ::sectiongraph::closeToplevel $visuNo
-
       }
 
       #--- je supprime la fenetre et la variable
@@ -230,7 +250,7 @@ namespace eval ::confVisu {
    #          -novisu : pas de rafraichissement
    #  retour: null
    #------------------------------------------------------------
-   proc autovisu { visuNo { force "-no" } } {
+   proc autovisu { visuNo { force "-no" } { fileName "" } } {
       variable private
       global conf
       global caption
@@ -253,6 +273,10 @@ namespace eval ::confVisu {
          #--- Je mets a jour la taille du reticule
          ::confVisu::redrawCrosshair $visuNo
       } else {
+         #--- je supprime l'item video s'il existe
+         Movie::deleteMovieWindow $visuNo
+         $private($visuNo,hCanvas) itemconfigure display -state normal
+
          #--- je recupere la largeur et la hauteur de l'image
          set private($visuNo,picture_w) [buf$bufNo getpixelswidth]
          if { "$private($visuNo,picture_w)" == "" } {
@@ -262,73 +286,96 @@ namespace eval ::confVisu {
             #--- dans le cas d'une image 1D, la hauteur correspond a l'epaisseur affichee par la visu
             set private($visuNo,applyThickness) "1"
             set private($visuNo,picture_h) [visu$visuNo thickness]
+            set mode "graph"
          } else {
             #--- dans le cas d'une image 2D ou plus, la hauteur est la hauteur retournee par le buffer
             set private($visuNo,applyThickness) "0"
             set private($visuNo,picture_h) [buf$bufNo getpixelsheight]
+            set mode "image"
          }
 
-         set width  $private($visuNo,picture_w)
-         set height $private($visuNo,picture_h)
-
-         #--- je supprime l'item video s'il existe
-         Movie::deleteMovieWindow $visuNo
-         $private($visuNo,hCanvas) itemconfigure display -state normal
-
-         #--- je supprime le fenetrage si la fenetre deborde de l'image
-         set windowBox [visu$visuNo window]
-         if { [lindex $windowBox 2] > $width
-            || [lindex $windowBox 3] > $height } {
-            set private($visuNo,window) "0"
-            setWindow $visuNo
+         #--- j'affiche les noms des HDU si on charge un nouveau fichier FITS (sans le suffixe du HDU)
+         if { [string first ";" $fileName ] == -1 } {
+            #--- je recupere la liste des HDU
+            ::confVisu::initHduList $visuNo $fileName
+            ::confVisu::showHduList $visuNo
+            #--- j'affiche liste des HDU s'il y en a plusieurs
+            if { [llength $private($visuNo,fitsHduList) ] > 1 } {
+               ::confVisu::showToolBar $visuNo 1
+            } else {
+               ::confVisu::showToolBar $visuNo 0
+            }
+            #--- j'affiche le nom du fichier
+            ::confVisu::setFileName $visuNo $fileName
+            set private($visuNo,currentHduNo) 1
+         } else {
+            #--- j'affiche le nom du fichier
+            ::confVisu::setFileName $visuNo $fileName
          }
 
-         #--- Si le buffer contient une image on met a jour les seuils
-         if { [ buf$bufNo imageready ] == "1" } {
-            switch -exact -- $conf(seuils,visu$visuNo,mode) {
-               disable {
-                  if { $force == "-no" } {
-                    visu $visuNo current
-                  } else {
+         #--- j'affiche les donnees dans la visu
+         if { $mode == "image" } {
+            #--- petits raccourcis bien pratiques
+            set width  $private($visuNo,picture_w)
+            set height $private($visuNo,picture_h)
+
+            #--- je supprime le fenetrage si la fenetre deborde de l'image
+            set windowBox [visu$visuNo window]
+            if { [lindex $windowBox 2] > $width
+               || [lindex $windowBox 3] > $height } {
+               set private($visuNo,window) "0"
+               setWindow $visuNo
+            }
+
+            #--- Si le buffer contient une image on met a jour les seuils
+            if { [ buf$bufNo imageready ] == "1" } {
+               switch -exact -- $conf(seuils,visu$visuNo,mode) {
+                  disable {
+                     if { $force == "-no" } {
+                       visu $visuNo current
+                     } else {
+                        visu $visuNo [ lrange [ buf$bufNo stat ] 0 1 ]
+                     }
+                  }
+                  loadima {
                      visu $visuNo [ lrange [ buf$bufNo stat ] 0 1 ]
                   }
-               }
-               loadima {
-                  visu $visuNo [ lrange [ buf$bufNo stat ] 0 1 ]
-               }
-               iris {
-                  set moyenne [ lindex [ buf$bufNo stat ] 4 ]
-                  visu $visuNo [ list [ expr $moyenne + $conf(seuils,irisautohaut) ] [expr $moyenne - $conf(seuils,irisautobas) ] ]
-               }
-               histoauto {
-                  set keytype FLOAT
-                  buf$bufNo imaseries "CUTS lofrac=[expr 0.01*$conf(seuils,histoautobas)] hifrac=[expr 0.01*$conf(seuils,histoautohaut)] keytype=$keytype"
-                  visu $visuNo [ list [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ] ]
-               }
-               initiaux {
-                  buf$bufNo initialcut
-                  if { [ lindex [ buf$bufNo getkwd NAXIS ] 1 ] == "3" } {
-                     set mycuts [ list [ lindex [ buf$bufNo getkwd MIPS-HIR ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LOR ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-HIG ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LOG ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-HIB ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LOB ] 1 ] ]
-                  } else {
-                     set mycuts [ list [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ] ]
+                  iris {
+                     set moyenne [ lindex [ buf$bufNo stat ] 4 ]
+                     visu $visuNo [ list [ expr $moyenne + $conf(seuils,irisautohaut) ] [expr $moyenne - $conf(seuils,irisautobas) ] ]
                   }
-                  visu $visuNo $mycuts
+                  histoauto {
+                     set keytype FLOAT
+                     buf$bufNo imaseries "CUTS lofrac=[expr 0.01*$conf(seuils,histoautobas)] hifrac=[expr 0.01*$conf(seuils,histoautohaut)] keytype=$keytype"
+                     visu $visuNo [ list [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ] ]
+                  }
+                  initiaux {
+                     buf$bufNo initialcut
+                     if { [ lindex [ buf$bufNo getkwd NAXIS ] 1 ] == "3" } {
+                        set mycuts [ list [ lindex [ buf$bufNo getkwd MIPS-HIR ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LOR ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-HIG ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LOG ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-HIB ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LOB ] 1 ] ]
+                     } else {
+                        set mycuts [ list [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ] ]
+                     }
+                     visu $visuNo $mycuts
+                  }
                }
+            } else {
+               #--- nettoyage de l'affichage s'il n'y a pas d'image dans le buffer
+               set private($visuNo,picture_w) 0
+               set private($visuNo,picture_h) 0
+               visu $visuNo current
             }
-         } else {
-            #--- nettoyage de l'affichage s'il n'y a pas d'image dans le buffer
-            set private($visuNo,picture_w) 0
-            set private($visuNo,picture_h) 0
-            visu $visuNo current
+            #--- Je mets a jour la taille les scrollbars
+            setScrollbarSize $visuNo
+
+            #--- Je mets a jour la taille du reticule
+            ::confVisu::redrawCrosshair $visuNo
+            ::confVisu::setMode $visuNo "image"
+         } elseif { $mode == "graph" } {
+            ::confVisu::setMode $visuNo "graph"
+            ::confVisu::onSelectHdu $visuNo 0
          }
-
-         #--- Je mets a jour la taille les scrollbars
-         setScrollbarSize $visuNo
-
-         #--- Je mets a jour la taille du reticule
-         ::confVisu::redrawCrosshair $visuNo
       }
-
    }
 
    #
@@ -367,7 +414,17 @@ namespace eval ::confVisu {
       ::audace::MAJ_palette $visuNo
 
       #--- rafraichissement de l'affichage
-      visu$visuNo disp
+      while { 1 } {
+         set catchResult [catch { visu$visuNo disp } msg ]
+         if { $catchResult == 1 && $msg == "NO MEMORY FOR DISPLAY" } {
+            #--- en cas d'erreur "NO MEMORY FOR DISPLAY" , j'essaie avec un zoom inferieur
+            set private($visuNo,zoom) [expr $private($visuNo,zoom) / 2]
+            visu$visuNo zoom $private($visuNo,zoom)
+            console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY , set zoom=$private($visuNo,zoom)\n"
+         } else {
+            break
+         }
+      }
    }
 
    #------------------------------------------------------------
@@ -520,7 +577,17 @@ namespace eval ::confVisu {
 
       #--- rafraichissement de l'image avec le nouveau zoom
       visu$visuNo clear
-      visu$visuNo disp
+      while { 1 } {
+         set catchResult [catch { visu$visuNo disp } msg ]
+         if { $catchResult == 1 && $msg == "NO MEMORY FOR DISPLAY" } {
+            #--- en cas d'erreur "NO MEMORY FOR DISPLAY" , j'essaie avec un zoom inferieur
+            set private($visuNo,zoom) [expr $private($visuNo,zoom) / 2]
+            visu$visuNo zoom $private($visuNo,zoom)
+            console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY , set zoom=$private($visuNo,zoom)\n"
+         } else {
+            break
+         }
+      }
 
       #--- mise a jour du parametre scrollposition du canvas
       setScrollbarSize $visuNo
@@ -607,12 +674,12 @@ namespace eval ::confVisu {
             set camName [::confCam::getPluginProperty $camItem "name"]
             set description "$camItem $caption(confVisu,2points) $camName $model"
          }
+         #--- J'affiche le nom de la camera
+         $private($visuNo,This).fra1.labCam_name_labURL configure -text $description
+         #--- Je renseigne la dynamique de la camera
+         set dynamic [ ::confCam::getPluginProperty $camItem "dynamic" ]
+         ::confVisu::visuDynamix $visuNo [ lindex $dynamic 0 ] [ lindex $dynamic 1 ]
       }
-      #--- J'affiche le nom de la camera
-      $private($visuNo,This).fra1.labCam_name_labURL configure -text $description
-      #--- Je renseigne la dynamique de la camera
-      set dynamic [ ::confCam::getPluginProperty $camItem "dynamic" ]
-      ::confVisu::visuDynamix $visuNo [ lindex $dynamic 0 ] [ lindex $dynamic 1 ]
       #--- je memorise le camItem associe a cette visu
       set private($visuNo,camItem) $camItem
    }
@@ -843,7 +910,14 @@ namespace eval ::confVisu {
          visu$visuNo mode video
 
          #--- Je connecte la sortie de la camera a l'image
-         set result [ catch { cam$camNo startvideoview $visuNo } ]
+         set result [ catch {
+            if { [image type image$visuNo ] == "video" } {
+               set windowHandle [image$visuNo  cget -owner]
+               cam$camNo startvideoview  $visuNo $windowHandle
+            } else {
+               error "Error connect webcam to image$visuNo : [image type image$visuNo ] wrong image type, must be video"
+            }
+         } ]
          if { $result == 1 } {
             #--- je restaure le mode photo
             visu$visuNo mode photo
@@ -855,7 +929,7 @@ namespace eval ::confVisu {
             return
          }
 
-         visu$visuNo disp
+         ###visu$visuNo disp
 
          #--- je desactive le reglage des seuils
          $private($visuNo,This).fra1.sca1 configure -state disabled
@@ -888,7 +962,7 @@ namespace eval ::confVisu {
    proc addCameraListener { visuNo cmd } {
       variable private
 
-     ### trace add execution ::confVisu::setCamera leave $cmd
+      ### trace add execution ::confVisu::setCamera leave $cmd
       trace add variable ::confVisu::private($visuNo,camItem) write $cmd
    }
 
@@ -900,12 +974,30 @@ namespace eval ::confVisu {
    #    cmd : commande TCL a lancer quand la camera associee a la visu change
    #------------------------------------------------------------
    proc removeCameraListener { visuNo cmd } {
-      variable private
-
-     ### trace remove execution ::confVisu::setCamera leave $cmd
       trace remove variable ::confVisu::private($visuNo,camItem) write $cmd
    }
 
+   #------------------------------------------------------------
+   # addHduListener
+   #   ajoute une procedure a appeler si on change de Hdu
+   # parametres :
+   #    visuNo: numero de la visu
+   #    cmd : commande TCL a lancer
+   #------------------------------------------------------------
+   proc addHduListener { visuNo cmd } {
+      trace add variable ::confVisu::private($visuNo,currentHduNo) write $cmd
+   }
+
+   #------------------------------------------------------------
+   # removeHduListener
+   #   supprime une procedure a appeler si on change de HDU
+   # parametres :
+   #    visuNo: numero de la visu
+   #    cmd : commande TCL a lancer
+   #------------------------------------------------------------
+   proc removeHduListener { visuNo cmd } {
+      trace remove variable ::confVisu::private($visuNo,currentHduNo) write $cmd
+   }
    #------------------------------------------------------------
    # addFileNameListener
    #   ajoute une procedure a appeler si on change de nom de fichier image
@@ -1027,6 +1119,7 @@ namespace eval ::confVisu {
       if { $private($visuNo,currentTool) != "" } {
          $private($visuNo,currentTool)::stopTool $visuNo
       }
+      grid forget $private($visuNo,This).tool
    }
 
    #------------------------------------------------------------
@@ -1045,17 +1138,15 @@ namespace eval ::confVisu {
       #--- j'arrete l'outil deja present
       if { "$private($visuNo,currentTool)" != "" } {
          #--- Cela veut dire qu'il y a deja un outil selectionne
-         if { "$private($visuNo,currentTool)" != "$toolName" } {
-            if { $toolName != "" } {
-               if { [$toolName\::getPluginProperty "display" ] != "window"
-                  && [$private($visuNo,currentTool)::getPluginProperty "display" ] != "window" } {
-                  #--- Cela veut dire que l'utilisateur selectionne un nouvel outil
-                  stopTool $visuNo
-               }
-            } else {
-               #--- Cela veut dire que l'utilisateur veut arreter l'outil en cours
+         if { $toolName != "" } {
+            if { [$toolName\::getPluginProperty "display" ] != "window"
+               && [$private($visuNo,currentTool)::getPluginProperty "display" ] != "window" } {
+               #--- Cela veut dire que l'utilisateur selectionne un nouvel outil
                stopTool $visuNo
             }
+         } else {
+            #--- Cela veut dire que l'utilisateur veut arreter l'outil en cours
+            stopTool $visuNo
          }
       }
 
@@ -1064,7 +1155,7 @@ namespace eval ::confVisu {
          if { [lsearch -exact $private($visuNo,pluginInstanceList) $toolName ] == -1 } {
             #--- je cree une instance de l'outil
             set catchResult [catch {
-               namespace inscope $toolName createPluginInstance $private($visuNo,This) $visuNo
+               namespace inscope $toolName createPluginInstance $private($visuNo,This).tool $visuNo
             }]
             if { $catchResult == 1 } {
                ::console::affiche_erreur "$::errorInfo\n"
@@ -1076,6 +1167,8 @@ namespace eval ::confVisu {
          }
          #--- je demarre l'outil
          namespace inscope $toolName startTool $visuNo
+
+         grid $private($visuNo,This).tool -row 0 -column 0 -rowspan 2 -sticky ns
 
          #--- je memorise le nom de l'outil en cours d'execution
          if { [$toolName\::getPluginProperty "display" ] != "window" } {
@@ -1111,8 +1204,14 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    proc getFileName { visuNo } {
       variable private
-
-      return "$private($visuNo,lastFileName)"
+      #--- je supprime le suffixe du HDU s'il est present
+      set hduSuffix [string first ";" $private($visuNo,lastFileName)]
+      if { $hduSuffix != -1 } {
+         set fileName [string range $private($visuNo,lastFileName) 0 [expr $hduSuffix -1]]
+      } else {
+         set fileName $private($visuNo,lastFileName)
+      }
+      return $fileName
    }
 
    #------------------------------------------------------------
@@ -1182,7 +1281,14 @@ namespace eval ::confVisu {
       global caption
       global color
 
-      #---
+      #---- frame de la barre d'outils
+      frame $This.bar -borderwidth 0
+      createToolBar $visuNo
+
+      #---- frame des outils
+      frame $This.tool -borderwidth 0
+
+      #--- frame du status (et des seuils)
       frame $This.fra1 -borderwidth 2 -cursor arrow -relief groove
 
          button $This.fra1.but_seuils_auto -text "$caption(confVisu,seuil_auto)" \
@@ -1241,19 +1347,44 @@ namespace eval ::confVisu {
             -text "$caption(confVisu,2points) $caption(confVisu,non_connecte)" -fg $color(blue)
          grid configure $This.fra1.labTel_name_labURL -column 7 -row 1 -sticky we -in $This.fra1 -pady 2
 
-      pack $This.fra1 -anchor center -expand 0 -fill x -side bottom
+         grid columnconfigure $This.fra1 5 -weight 1
 
-      grid columnconfigure $This.fra1 5 -weight 1
 
       #--- Canvas de dessin de l'image
       Scrolled_Canvas $This.can1 -borderwidth 0 -relief flat \
          -width 300 -height 200 -scrollregion {0 0 0 0} -cursor crosshair
-      pack $This.can1 -in $This -anchor center -expand 1 -fill both -side right
       $This.can1.canvas configure -borderwidth 0
       $This.can1.canvas configure -relief flat
 
+      #--- creation du graphe
+      createGraph $visuNo
+      createTable $visuNo
+
+      #--- attention l'ordre des pack est important
+      #pack $This.fra1 -side bottom -anchor center -expand 0 -fill x
+      #pack $This.tool -side left -expand 0 -fill y
+      #pack $This.bar  -side top -expand 0 -fill x
+      #pack $This.can1 -side right -anchor center -expand 1 -fill both
+
+
+
+      grid $This.tool -row 0 -column 0 -rowspan 2 -sticky ns
+      grid $This.bar  -row 0 -column 1 -sticky ew
+      grid $This.can1 -row 1 -column 1 -sticky nsew
+      grid $This.fra1 -row 2 -column 0 -columnspan 2 -sticky ew
+
+      grid rowconfig    $This  0 -weight 0
+      grid rowconfig    $This  1 -weight 1
+      grid rowconfig    $This  2 -weight 0
+      grid columnconfig $This  0 -weight 0
+      grid columnconfig $This  1 -weight 1
+
+      #--- je masque la barre d'outil par defaut
+      grid forget $This.bar
+
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
+      update
 
    }
 
@@ -1313,7 +1444,6 @@ namespace eval ::confVisu {
       bind $This.fra1.labTel_name_labURL <ButtonPress-1> {
          ::confTel::run
       }
-
    }
 
    #------------------------------------------------------------
@@ -1414,7 +1544,7 @@ namespace eval ::confVisu {
 
       Menu           $visuNo "$caption(audace,menu,fichier)"
       Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,charger)..." \
-         "::audace::charger $visuNo "
+         "::audace::charger $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,enregistrer)" \
          "::audace::enregistrer $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,enregistrer_sous)..." \
@@ -1856,8 +1986,8 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  getBox
-   #     retourne les coordonnees de la boite (coordonnees dans le
-   #     buffer) si elle existe, sinon retourne une chaine vide
+   #     retourne les coordonnees de la boite (referentiel picture)
+   #     si elle existe, sinon retourne une chaine vide
    #  parametres :
    #     visuNo : numero de la visu
    #------------------------------------------------------------
@@ -1897,10 +2027,11 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    #  boxEnd
    #     redessine la boite en suivant le deplacement de la souris
-   #     et enregistre les coordonnees de la boite dans private($visuNo,boxSize)
+   #     et enregistre les coordonnees (referentiel picture) de la boite
+   #     dans privaste($visuNo,boxSize)
    #  parametres :
    #    visuNo: numero de la visu
-   #    x y : coordonnees de la souris (referentiel ecran)
+   #    coord : coordonnees de la souris (referentiel ecran)
    #------------------------------------------------------------
    proc boxEnd { visuNo coord } {
       variable private
@@ -2298,26 +2429,785 @@ namespace eval ::confVisu {
         wm title $private($visuNo,This) "$caption(audace,titre) (visu$visuNo)"
       }
 
+
       #--- je mets a jour le nom du fichier
       set private($visuNo,lastFileName) "$fileName"
    }
 
-   #------------------------------------------------------------
-   #  loadFile
-   #    charge et affiche un fichier
-   #  parametres :
-   #    visuNo : numero de la visu
-   #    fileName: nom du fichier
-   #------------------------------------------------------------
-   proc loadFile { visuNo fileName} {
-      variable private
-
-      loadima $fileName $visuNo
-      autovisu $visuNo
-   }
 
 }
 #--- namespace end
+
+#------------------------------------------------------------
+#  loadIma
+#    charge et affiche une image
+#  parametres :
+#    visuNo : numero de la visu
+#    fileName: nom du fichier
+#------------------------------------------------------------
+proc ::confVisu::loadIma { visuNo fileName } {
+   variable private
+
+   set fileName [loadima $fileName $visuNo]
+   if { $fileName == "" } {
+      #--- chargement abandonne
+      return
+   }
+}
+
+#------------------------------------------------------------
+# setMode
+#   change le mode de visualsation (photo, video, graph, table)
+#
+#------------------------------------------------------------
+proc ::confVisu::setMode { visuNo mode} {
+   variable private
+
+   if { $mode == $private($visuNo,mode) } {
+      return
+   }
+
+   set This $private($visuNo,This)
+
+   #--- j'arrete le mode precedent
+   switch $private($visuNo,mode) {
+      "image" {
+         #pack forget $This.fra1
+         #pack forget $This.can1
+         grid forget $This.fra1
+         grid forget $This.can1
+      }
+      "graph" {
+         #pack forget $This.graph
+         #destroy $This.graph
+         grid forget $This.graph
+      }
+
+      "table" {
+         #pack forget $This.ftable
+         #destroy $This.ftable
+         grid forget $This.ftable
+      }
+   }
+
+   #--- j'active le nouveau mode
+   switch $mode {
+      "image" {
+         #--- j'affiche le canvas photo et la frame des seuils
+         ##set tkTool [lindex [winfo children $This] end]
+         ##pack $This.fra1 -side bottom -anchor center -expand 0 -fill x -before $This.tool ; ##-before $tkTool
+         ##pack $This.can1 -side right  -anchor center -expand 1 -fill both -after $This.bar
+         grid $This.fra1 -row 2 -column 0 -columnspan 2 -sticky ew
+         grid $This.can1 -row 1 -column 1 -sticky nsew
+      }
+      "graph" {
+         createGraph $visuNo
+         #pack $This.graph -side right -anchor center -expand 1 -fill both
+         grid $This.graph -row 1 -column 1 -sticky nsew
+      }
+      "table" {
+         createTable $visuNo
+         #pack $This.ftable -side right -anchor center -expand 1 -fill both
+         grid $This.ftable -row 1 -column 1 -sticky nsew
+      }
+
+   }
+   update
+   set private($visuNo,mode) $mode
+}
+
+
+#############################################################
+#  Gestion d'un graphe
+#############################################################
+
+
+#------------------------------------------------------------
+# createGraph
+#    passe en mode graphe (affichage de graphique)
+#
+#------------------------------------------------------------
+proc ::confVisu::createGraph { visuNo } {
+   variable private
+
+   set This $private($visuNo,This)
+
+   if { [winfo exists $This.graph ] } {
+      return
+   }
+
+   #--- je cree le graphique
+   blt::graph $This.graph  -plotbackground "white"
+   $This.graph crosshairs on
+   $This.graph crosshairs configure -color red -dashes 2
+   $This.graph axis configure x2 -hide true
+   $This.graph axis configure y2 -hide true
+   $This.graph legend configure -hide yes
+   $This.graph configure  -plotbackground "white"
+
+   bind $This.graph <Motion>          "::confVisu::onGraphMotion $visuNo %W %x %y"
+   bind $This.graph <ButtonPress-1>   "::confVisu::onGraphRegionStart $visuNo %W %x %y "
+   bind $This.graph <B1-Motion>       "::confVisu::onGraphRegionMotion $visuNo %W %x %y"
+   bind $This.graph <ButtonRelease-1> "::confVisu::onGraphRegionEnd $visuNo %W %x %y"
+   bind $This.graph <ButtonRelease-3> "::confVisu::onGraphUnzoom $visuNo"
+
+
+   ###::confVisu::selectTool 1 ""
+}
+
+#------------------------------------------------------------
+# getGraph
+#    retourne le nom tk du graphe
+#
+#------------------------------------------------------------
+proc ::confVisu::getGraph { visuNo } {
+   variable private
+   return $private($visuNo,This).graph
+}
+
+#------------------------------------------------------------
+# onGraphMotion
+#  affiche les coordonnees du curseur de la souris
+#  apres chaque deplacement de la souris
+#
+# Parameters
+#    visuNo  numero de la fenetre
+#    xScreen yScreen  coordoonnees ecran de la souris
+#  Return
+#     rien
+#------------------------------------------------------------
+proc ::confVisu::onGraphMotion { visuNo graph xScreen yScreen } {
+   variable private
+
+   set This $private($visuNo,This)
+
+   #set x %x
+   #set y %y
+   set x [$graph  axis invtransform x $xScreen]
+   set y [$graph  axis invtransform y $yScreen]
+   set lx [string length $x]
+   if {$lx>8} { set x [string range $x 0 7] }
+   set ly [string length $y]
+   if {$ly>8} { set y [string range $y 0 7] }
+   $graph  crosshairs configure -position @$xScreen,$yScreen
+##   $This.status1.coords configure -text "$x $private($visuNo,xunit)   $y $private($visuNo,yunit)"
+   ###$This.status1.coords configure -text "$x  $y "
+}
+
+
+#------------------------------------------------------------
+# onGraphRegionStart
+#  demarre la selection d'une region du graphe avec la souris
+#
+# Parameters
+#    visuNo  numero de la fenetre
+#    graph      nom tk du graphe
+#    xScreen yScreen  coordoonnees ecran de la souris
+#  Return
+#    rien
+#------------------------------------------------------------
+proc ::confVisu::onGraphRegionStart { visuNo graph x y } {
+   variable private
+
+   set x [$graph axis invtransform x $x]
+   set y [$graph axis invtransform y $y]
+   $graph marker create line -coords {} -name myLine \
+      -dashes dash -xor yes
+   set private($visuNo,regionStartX) $x
+   set private($visuNo,regionStartY) $y
+}
+
+#------------------------------------------------------------
+# onGraphRegionMotion
+#  modifie la selection d'une region du graphe avec la souris
+#
+# Parameters
+#    visuNo  numero de la fenetre
+#    graph      nom tk du graphe
+#    xScreen yScreen  coordoonnees ecran de la souris
+#  Return
+#     rien
+#------------------------------------------------------------
+proc ::confVisu::onGraphRegionMotion { visuNo graph x y } {
+   variable private
+
+   if { [info exists private($visuNo,regionStartX)] } {
+      set x0 $private($visuNo,regionStartX)
+      set y0 $private($visuNo,regionStartY)
+      set x [$graph axis invtransform x $x]
+      set y [$graph axis invtransform y $y]
+      $graph marker configure myLine -coords \
+         "$x0 $y0 $x0 $y $x $y $x $y0 $x0 $y0"
+   }
+}
+
+#------------------------------------------------------------
+# onGraphRegionEnd
+#  termine la selection d'une region du graphe avec la souris
+#  et applique un zoom sur cette region
+
+# Parameters
+#    visuNo  numero de la fenetre
+#    graph      nom tk du graphe
+#    xScreen yScreen  coordoonnees ecran de la souris
+#  Return
+#     rien
+#------------------------------------------------------------
+proc ::confVisu::onGraphRegionEnd { visuNo graph x y } {
+   variable private
+
+   if { [info exists private($visuNo,regionStartX)] } {
+      set x0 $private($visuNo,regionStartX)
+      set y0 $private($visuNo,regionStartY)
+      $graph marker delete myLine
+      set x [$graph axis invtransform x $x]
+      set y [$graph axis invtransform y $y]
+      onGraphZoom $visuNo $x0 $y0 $x $y
+
+      unset private($visuNo,regionStartX)
+      unset private($visuNo,regionStartY)
+   }
+}
+
+#------------------------------------------------------------
+# onGraphZoom
+#  applique le zoom sur une region du graphe
+#
+# Parameters
+#    visuNo  numero de la fenetre
+#    graph      nom tk du graphe
+#  Return
+#     rien
+#------------------------------------------------------------
+proc ::confVisu::onGraphZoom { visuNo x1 y1 x2 y2 } {
+   variable private
+
+   set graph $private($visuNo,This).graph
+
+   if { $x1 > $x2 } {
+      $graph axis configure x -min $x2 -max $x1
+   } elseif { $x1 < $x2 } {
+      $graph axis configure x -min $x1 -max $x2
+   }
+   if { $y1 > $y2 } {
+      $graph axis configure y -min $y2 -max $y1
+   } elseif { $y1 < $y2 } {
+      $graph axis configure y -min $y1 -max $y2
+   }
+}
+
+#------------------------------------------------------------
+# onGraphUnzoom
+#  supprime le zoom sur le graphe
+#
+# Parameters
+#    visuNo  numero de la fenetre
+#    graph      nom tk du graphe
+#  Return
+#     rien
+#------------------------------------------------------------
+proc ::confVisu::onGraphUnzoom { visuNo  } {
+   variable private
+   set graph $private($visuNo,This).graph
+   $graph axis configure x y -min {} -max {}
+}
+
+#############################################################
+#  Gestion d'une table
+#############################################################
+
+
+#------------------------------------------------------------
+# createTable
+#    passe en mode table (affichage d'une table)
+#
+#------------------------------------------------------------
+proc ::confVisu::createTable { visuNo } {
+   variable private
+
+   set This $private($visuNo,This)
+
+   package require Tablelist
+
+   if { [winfo exists $This.ftable ] } {
+      return
+   }
+
+   frame $This.ftable -borderwidth 0
+      scrollbar $This.ftable.ysb -command "$This.ftable.table yview"
+      scrollbar $This.ftable.xsb -command "$This.ftable.table xview" -orient horizontal
+      ::tablelist::tablelist $This.ftable.table \
+         -columns { 0 titre center } \
+         -xscrollcommand [list $This.ftable.xsb set] \
+         -yscrollcommand [list $This.ftable.ysb set] \
+         -exportselection 0 \
+         -setfocus 1 \
+         -activestyle none
+      #--- je place la table et les scrollbars dans la frame
+      grid $This.ftable.table -row 0 -column 0 -sticky ewns
+      grid $This.ftable.ysb   -row 0 -column 1 -sticky nsew
+      grid $This.ftable.xsb   -row 1 -column 0 -sticky ew
+      grid rowconfig    $This.ftable  0 -weight 1
+      grid columnconfig $This.ftable  0 -weight 1
+   ###::confVisu::selectTool 1 ""
+}
+
+#------------------------------------------------------------
+# getTable
+#    retourne le nom tk de la table
+#
+#------------------------------------------------------------
+proc ::confVisu::getTable { visuNo } {
+   variable private
+   return $private($visuNo,This).ftable.table
+}
+
+
+#############################################################
+#  Gestion de la barre d'outils
+#############################################################
+
+proc ::confVisu::createToolBar { visuNo } {
+   variable private
+
+   set tkToolbar $private($visuNo,This).bar.toolbar
+
+   if { [winfo exists $tkToolbar ] } {
+      #--- la barre d'outils existe deja
+      grid $private($visuNo,This).bar  -row 0 -column 1 -sticky ew
+      return
+   }
+
+   #--- je cree la barre d'outils
+   frame $tkToolbar -borderwidth 0 -cursor arrow
+      Label $tkToolbar.labelHdu  -text $::caption(confVisu,fitsHduList)
+      pack $tkToolbar.labelHdu  -side left -fill none -padx 2
+      Button $tkToolbar.previous -text "<" -command "::confVisu::onChangeHdu $visuNo -1" -state disabled
+      pack $tkToolbar.previous  -side left -fill none -padx 2
+      set configList [list ]
+      ComboBox $tkToolbar.combo \
+         -width 40 -height 0 \
+         -relief sunken -borderwidth 1 -editable 0 \
+         -modifycmd "::confVisu::onSelectHdu $visuNo" \
+         -values $configList
+      pack $tkToolbar.combo -side left -fill none -padx 2
+      Button $tkToolbar.next -text ">" -command "::confVisu::onChangeHdu $visuNo +1" -state disabled
+      pack $tkToolbar.next -side left -fill none -padx 2
+   pack $tkToolbar -anchor n -side top -expand 0 -fill x
+
+}
+
+#------------------------------------------------------------
+# ::confVisu::deleteToolBar
+#    supprime la barre d'outil
+#
+#------------------------------------------------------------
+proc ::confVisu::deleteToolBar { visuNo } {
+   variable private
+
+   destroy $private($visuNo,This).bar.toolbar
+}
+
+#------------------------------------------------------------
+# ::confVisu::showToolBar
+#    affiche ou masque la barre d'outil
+# parameters
+#    visuNo : numero de la visu
+#    state  : 1= affiche , 0= masque
+#
+#------------------------------------------------------------
+proc ::confVisu::showToolBar { visuNo state} {
+   variable private
+
+   if { $state == 1 } {
+      grid $private($visuNo,This).bar  -row 0 -column 1 -sticky ew
+   } else {
+      grid forget $private($visuNo,This).bar
+   }
+}
+
+
+#------------------------------------------------------------
+# ::confVisu::getToolBar
+#    retourne le nom TK de la barre d'outil
+#
+#------------------------------------------------------------
+proc ::confVisu::getToolBar { visuNo } {
+   variable private
+
+   return $private($visuNo,This).bar.toolbar
+}
+
+#############################################################
+#  Gestion des HDU FITS
+#############################################################
+
+#------------------------------------------------------------
+# ::confVisu::initHduList
+#    initialise la liste des HDU
+#
+#------------------------------------------------------------
+proc ::confVisu::initHduList { visuNo fileName } {
+   variable private
+
+   #--- je recupere la liste des HDU si on n'a pas precise le HDU en suffixe du nom de fichier
+   set hFile ""
+   set private($visuNo,fitsHduList) ""
+   set catchResult [catch {
+      #--- j'ouvre le fichier en mode lecture
+      set hFile [fits open $fileName 0 ]
+      set nbHdu [$hFile info nhdu]
+
+      #--- je lis la liste des HDU
+      set itemList ""
+      for { set i 1 } { $i <= $nbHdu } { incr i } {
+         set extensionType [$hFile move $i]
+         if { $i == 1 } {
+            set hduName  "PRIMARY"
+         } else {
+            set hduName [string trim [string map {"'" ""} [lindex [lindex [$hFile get keyword "EXTNAME"] 0] 1]]]
+         }
+         set hduType [lindex [$hFile info hdutype] 0]
+
+         #--- je compose le libelle a mettre dans la combobox en fonction du type du HDU
+         #---  si HDU image :   " hduName   width  X height"
+         #---  si HDU table :   " hduName   nbcols X nbrows"
+         switch $extensionType {
+            0  {
+               #--- c'est une image
+               set hduNaxes [string map {" " " X "} [$hFile info imgdim]]
+            }
+            1 {
+               #--- c'est une table ASCII
+               set hduNaxes "[$hFile info ncols] cols X [$hFile info nrows] rows"
+            }
+            2 {
+               #--- c'est une table BINARY
+               set hduNaxes "[$hFile info ncols] cols X [$hFile info nrows] rows"
+            }
+         }
+         ##lappend itemList [format "% 2s %10s %8s %12s" $i $hduName $hduType $hduNaxes]
+         lappend itemList [list $hduName $hduType $hduNaxes ]
+      }
+      set private($visuNo,fitsHduList) $itemList
+
+   } ]
+
+   if { $catchResult == 1 } {
+      #--- rien a faire
+   }
+
+   #--- je ferme le fichier
+   if { $hFile != "" } {
+      $hFile close
+   }
+}
+
+#------------------------------------------------------------
+# ::confVisu::getHduList
+#    retourne la liste des HDU
+#
+#    format :  { $hduName $hduType $hduNaxes }
+#------------------------------------------------------------
+proc ::confVisu::getHduList { visuNo } {
+   variable private
+   return $private($visuNo,fitsHduList)
+}
+
+#------------------------------------------------------------
+# ::confVisu::getHduNo
+#    retourne le numero du HDU courant
+#
+#    format :  { $hduName $hduType $hduNaxes }
+#------------------------------------------------------------
+proc ::confVisu::getHduNo { visuNo } {
+   variable private
+   return $private($visuNo,currentHduNo)
+}
+
+
+#------------------------------------------------------------
+# ::confVisu::showHduList
+#    affiche la liste des HDU dans la barre d'outils
+#
+#------------------------------------------------------------
+proc ::confVisu::showHduList { visuNo } {
+   variable private
+
+   set tkToolbar $private($visuNo,This).bar.toolbar
+
+   #--- je prepare les lignes a affiche dans la combo
+   set hduNo 0
+   set valueList ""
+   foreach item $private($visuNo,fitsHduList) {
+      incr hduNo
+      set hduName [lindex $item 0]
+      set hduType [lindex $item 1]
+      set hduNaxes [lindex $item 2]
+      lappend valueList [format "#% 2s %10s %8s %12s" $hduNo $hduName $hduType $hduNaxes]
+   }
+
+   if { [llength $valueList] < 24  } {
+      set height [llength $valueList]
+   } else {
+      set height 24
+   }
+   #--- je configure la combo
+   $tkToolbar.combo configure -values $valueList -height $height
+   set index 0
+   $tkToolbar.combo setvalue "@$index"
+
+   #--- je mets a jour les boutons de la barre d'outils
+   if { $index == 0 } {
+      $tkToolbar.previous configure -state disabled
+   } else {
+      $tkToolbar.previous configure -state normal
+   }
+
+   if { $index == [expr [llength $private($visuNo,fitsHduList)] - 1]  } {
+      $tkToolbar.next configure -state disabled
+   } else {
+      $tkToolbar.next configure -state normal
+   }
+}
+
+#------------------------------------------------------------
+#  onChangeHdu
+#    affiche le contenu du HDU suivant ou precedent
+#  Parameters
+#     visuNo : numero de la fenetre de profil
+#     increment : numero relatif du HDU cible ( +1 ou -1)
+#  Return
+#     rien
+#------------------------------------------------------------
+proc ::confVisu::onChangeHdu { visuNo increment  } {
+   variable private
+
+   #--- je recupere le numero de HDU courant
+   set index [$private($visuNo,This).bar.toolbar.combo getvalue]
+   #--- j'increment le numerao de HDU
+   set index [expr $index + $increment]
+
+   #--- je verifie que le numero correspond a un HDU qui existe
+   if { $index <0 && $index >= [llength $private($visuNo,fitsHduList)] } {
+      return
+   }
+
+   #--- je selectionne et j'affiche le contenu du HDU
+   ::confVisu::onSelectHdu $visuNo $index
+}
+
+#------------------------------------------------------------
+#  onSelectHdu
+#    affiche le contenu du HDU
+#    si le parametre index n'est pas fourni, le HDU selectionné dans la combobox est affiché
+#  Parameters
+#     profileNo : numero de la fenetre de profil
+#     index :     numero du HDU a afficher (0 pour le premier HDU)
+#  Return
+#     rien
+#------------------------------------------------------------
+proc ::confVisu::onSelectHdu { visuNo { index "" } } {
+   variable private
+
+   #--- je recupere l'index du HDU dans la combo (index commence a 0)
+   if { $index == "" } {
+      set index [$private($visuNo,This).bar.toolbar.combo getvalue]
+      if { $index == -1 } {
+         #--- je prend le premier HDU si aucun n'est deja selectionné
+         set index 0
+      }
+      $private($visuNo,This).bar.toolbar.combo setvalue "@$index"
+   } else {
+      $private($visuNo,This).bar.toolbar.combo setvalue "@$index"
+   }
+   set hFile ""
+   ::blt::busy hold $private($visuNo,This)
+   update
+
+   set catchResult [catch {
+      #--- j'ouvre le fichier en mode lecture
+      set hFile [fits open [getFileName $visuNo] 0]
+      set extensionType [$hFile move [expr $index +1]]
+
+      if { $extensionType == 0 } {
+         #--- c'est une image
+         set hduNaxes [$hFile info imgdim]
+         if { [llength $hduNaxes] == 1
+            || ( [llength $hduNaxes] == 2 && [lindex $hduNaxes 1 ] == 1 ) } {
+            #--- c'est une image de dimension 1, j'affiche un profil
+            showProfile $visuNo $hFile
+         } else {
+            #--- c'est une image de dimension 2 ou plus, j'affiche une image
+            showImage2d $visuNo $hFile
+         }
+      } else {
+         #--- c'est une table
+         showTable $visuNo $hFile
+      }
+
+      #--- j'affiche les mots clefs du header si la fenetre est ouverte
+      ###if { [::headergui::exists $visuNo] == 1} {
+      ###   showHeader $visuNo
+      ###}
+
+   } ]
+
+   if { $hFile != "" } {
+      $hFile close
+   }
+   ::blt::busy release $private($visuNo,This)
+
+   if { $catchResult == 1 } {
+      tk_messageBox -message  $::errorInfo -icon error -title "$::caption(audace,titre) (visu$visuNo)"
+      ::console::affiche_erreur "$::errorInfo\n"
+   }
+
+   #--- je mets a jour les boutons de la barre d'outils
+   if { $index == 0 } {
+      $private($visuNo,This).bar.toolbar.previous configure -state disabled
+   } else {
+      $private($visuNo,This).bar.toolbar.previous configure -state normal
+   }
+
+   if { $index == [expr [llength $private($visuNo,fitsHduList)] - 1]  } {
+      $private($visuNo,This).bar.toolbar.next configure -state disabled
+   } else {
+      $private($visuNo,This).bar.toolbar.next configure -state normal
+   }
+
+   set private($visuNo,currentHduNo) [expr $index +1]
+}
+
+
+#------------------------------------------------------------
+#  showProfile
+#    affiche un profil
+#  Parameters
+#     visuNo : numero de la fenetre de profil
+#  Return
+#     rien
+#------------------------------------------------------------
+proc ::confVisu::showProfile { visuNo hFile } {
+   variable private
+
+   #--- j'affiche le graphique
+   set tkgraph [::confVisu::getGraph $visuNo]
+###   #--- je supprime la courbe precedente
+###   if { [ $tkgraph element exists line$visuNo ] == 1 } {
+###      $tkgraph element delete line$visuNo
+###   }
+###   if { [blt::vector names ::confVisu::vx$visuNo ] != "" } {
+###      blt::vector destroy vx$visuNo vy$visuNo
+###   }
+###   set vx "vx$visuNo"
+###   set vy "vy$visuNo"
+###   blt::vector create $vx
+###   blt::vector create $vy
+###
+###   #--- je recupere les coefficents des abcissses
+###   set size [lindex [$hFile info imgdim] 0]
+###   set crval1 [lindex [lindex [$hFile get keyword "CRVAL1"] 0] 1]
+###   set cdelt1 [lindex [lindex [$hFile get keyword "CDELT1"] 0] 1]
+###
+###   #--- je calcule les abcisses
+###   for { set i 0 } { $i < $size } { incr i } {
+###      $vx append [expr $cdelt1 * $i + $crval1 ]
+###   }
+###   #--- je recupere les ordonnees
+###   $vy set [$hFile get image]
+###
+###   #--- je supprime le zoom, au cas ou il aurait ete applique precedemement
+###   ::confVisu::onGraphUnzoom $visuNo
+###
+###   #--- j'affiche le profil
+###   $tkgraph element create line$visuNo -symbol none -xdata $vx -ydata $vy -smooth natural
+###   set div_x 10
+###   set div_y 5
+###   set echellex [expr int($size/($div_x*10))*10]
+###   set end [ set $vx\(end) ]
+###
+   if { [ $tkgraph element exists line$visuNo ] == 0 } {
+       $tkgraph element create line$visuNo -symbol none -smooth natural
+   }
+
+   #--- je recupere les coefficents des abcissses
+   set size [lindex [$hFile info imgdim] 0]
+   set crval1 [lindex [lindex [$hFile get keyword "CRVAL1"] 0] 1]
+   set cdelt1 [lindex [lindex [$hFile get keyword "CDELT1"] 0] 1]
+
+   #--- je calcule les abcisses
+   set abcisses ""
+   for { set i 0 } { $i < $size } { incr i } {
+      lappend abcisses [expr $cdelt1 * $i + $crval1 ]
+   }
+   $tkgraph element configure line$visuNo -xdata $abcisses -ydata [$hFile get image]
+
+   #--- je supprime le zoom, au cas ou il aurait ete applique precedemement
+   ::confVisu::onGraphUnzoom $visuNo
+
+   $tkgraph axis configure x2 -hide true
+   $tkgraph axis configure y2 -hide true
+   $tkgraph configure  -plotbackground "white"
+   #--- j'affiche le graphe
+   ::confVisu::setMode $visuNo "graph"
+
+}
+
+#------------------------------------------------------------
+#  showTable
+#    affiche une table
+#  Parameters
+#     visuNo : numero de la fenetre de profil
+#  Return
+#     rien
+#------------------------------------------------------------
+proc ::confVisu::showTable { visuNo hFile } {
+   variable private
+
+   set tkTable [::confVisu::getTable $visuNo ]
+
+   #--- je vide la table
+   $tkTable delete 0 end
+
+   #--- j'ajoute le nom des colonnes en titre
+   set colNames [$hFile info column ]
+   set columnList ""
+   foreach colName $colNames {
+         lappend columnList 0 $colName center
+   }
+
+   #--- j'ajoute le contenu des lignes
+   $tkTable configure -columns $columnList
+   set values [$hFile get table]
+   foreach row $values {
+      $tkTable insert end $row
+   }
+
+   #--- j'affiche la table
+   ::confVisu::setMode $visuNo "table"
+
+}
+
+#------------------------------------------------------------
+#  showImage2d
+#    affiche une image 2D dans une visu
+#  Parameters
+#     visuNo : numero de la fenetre de profil
+#  Return
+#     rien
+#------------------------------------------------------------
+proc ::confVisu::showImage2d { visuNo hFile } {
+   variable private
+
+   #--- je charge le HDU courant
+   set currentHduNum [$hFile info chdu ]
+   loadima "[getFileName $visuNo];$currentHduNum" $visuNo
+
+   #--- j'affiche le canvas des images
+   ::confVisu::setMode $visuNo "image"
+}
+
 
 ::confVisu::init
 
