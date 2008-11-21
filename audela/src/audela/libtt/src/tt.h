@@ -162,6 +162,8 @@
 #define TT_IMASERIES_REGISTERFINE 38
 #define TT_IMASERIES_PROD 39
 #define TT_IMASERIES_FITELLIP 40
+#define TT_IMASERIES_REPAIR_HOTPIXEL 41
+#define TT_IMASERIES_REPAIR_COSMIC   42
 
 #define TT_KERNELTYPE_FH 0
 #define TT_KERNELTYPE_FB 1
@@ -738,6 +740,8 @@ typedef struct {
    char jpegfile[FLEN_FILENAME];
    int jpegfile_make;
    int powernorm;
+   int *hotPixelList;
+   TT_PTYPE cosmicThreshold;
    TT_USER1_IMA_STACK user1;
    TT_USER2_IMA_STACK user2;
    TT_USER3_IMA_STACK user3;
@@ -890,6 +894,8 @@ typedef struct {
    int index_out;
    int nbimages;
    double fwhmsat;
+   int *hotPixelList;
+   TT_PTYPE cosmicThreshold;
    TT_USER1_IMA_SERIES user1;
    TT_USER2_IMA_SERIES user2;
    TT_USER3_IMA_SERIES user3;
@@ -978,6 +984,8 @@ int tt_ima_series_resample_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_radial_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_prod_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_fitellip_1(TT_IMA_SERIES *pseries);
+int tt_ima_series_hotpixel_1(TT_IMA_SERIES *pseries);
+int tt_ima_series_cosmic_1(TT_IMA_SERIES *pseries);
 
 int tt_ima_series_tilt_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_smilex_1(TT_IMA_SERIES *pseries);
@@ -1064,6 +1072,9 @@ int tt_verifargus_getFileName(char *fileNames, int fileIndex , char* fileName);
 int tt_verifargus_1indice(char **keys,int deb,int *level_index,int *indice_deb);
 int tt_verifargus_2indices(char **keys,int deb,int *level_index,int *indice_deb,int *indice_fin);
 char *tt_indeximafilecater(char *path, char *name, int index,char *suffix);
+int tt_parseHotPixelList(char* sHotPixels,int **iHotPixels);
+int tt_repairHotPixel(int *iHotPixels, TT_IMA *p);
+int tt_repairCosmic(TT_PTYPE cosmicThreshold, TT_IMA *p);
 
 int tt_script_2(void *arg1);
 int tt_script_3(void *arg1);
