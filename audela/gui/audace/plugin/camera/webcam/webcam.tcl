@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.43 2008-11-01 15:45:26 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.44 2008-11-21 16:40:37 michelpujol Exp $
 #
 
 namespace eval ::webcam {
@@ -152,7 +152,7 @@ proc ::webcam::setConnection { camItem state }  {
    if { [::webcam::isReady $camItem] != 1 }              return
    if { [cam$private($camItem,camNo) connect ] == 1 }    return
 
-console::disp "::webcam::setConnection $state \n"
+   ###console::disp "::webcam::setConnection $state \n"
    if { $state == 1 } {
       #--- Je deconnecte d'abord les autres cameras
       foreach camItem2 { A B C } {
@@ -585,8 +585,12 @@ proc ::webcam::stop { camItem } {
 
    #--- J'arrete le mode preview et la capture de film au cas ou ils seraient actifs
    if { $::tcl_platform(platform) == "windows" }  {
-      cam$private($camItem,camNo) stopvideoview
-      cam$private($camItem,camNo) stopvideocapture
+      catch {
+         if { $private($camItem,camNo) != 0 } {
+            cam$private($camItem,camNo) stopvideoview
+            cam$private($camItem,camNo) stopvideocapture
+         }
+      }
    }
 
    #--- J'arrete la camera
