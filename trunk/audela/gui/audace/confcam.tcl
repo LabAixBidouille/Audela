@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.121 2008-11-01 09:00:23 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.122 2008-11-21 17:14:08 michelpujol Exp $
 #
 
 namespace eval ::confCam {
@@ -28,23 +28,6 @@ proc ::confCam::init { } {
    if { ! [ info exists conf(camera,C,start) ] }   { set conf(camera,C,start)   "0" }
    if { ! [ info exists conf(camera,geometry) ] }  { set conf(camera,geometry)  "605x440+15+15" }
 
-   #--- Je charge le package Thread si l'option multitread est activive dans le TCL
-   if { [info exists ::tcl_platform(threaded)] } {
-      if { $::tcl_platform(threaded)==1 } {
-         #--- Je charge le package Thread
-         #--- La version minimale 2.6.5.1 pour disposer de la commande thread::copycommand
-         if { ! [catch {package require Thread 2.6.5.1}]} {
-            #--- Je redirige les messages d'erreur vers la procedure ::confCam::dispThreadError
-            thread::errorproc ::confCam::dispThreadError
-         } else {
-            set ::tcl_platform(threaded) 0
-            console::affiche_erreur "Thread 2.6.5.1 not present\n"
-         }
-      }
-   } else {
-      set ::tcl_platform(threaded) 0
-   }
-
    #--- Initalise le numero de camera a nul
    set audace(camNo) "0"
 
@@ -65,9 +48,6 @@ proc ::confCam::init { } {
    set private(A,camName)    ""
    set private(B,camName)    ""
    set private(C,camName)    ""
-   set private(A,threadNo)   "0"
-   set private(B,threadNo)   "0"
-   set private(C,threadNo)   "0"
 
    #--- Initialise les variables locales
    set private(pluginNamespaceList) ""
@@ -92,13 +72,6 @@ proc ::confCam::init { } {
       #--- s'il n'existe pas, je vide le nom du plugin par defaut
       set conf(camera,C,camName) ""
    }
-}
-
-#------------------------------------------------------------
-# dispThreadError
-#------------------------------------------------------------
-proc ::confCam::dispThreadError { thread_id errorInfo } {
-   ::console::disp "thread_id=$thread_id errorInfo=$errorInfo\n"
 }
 
 #------------------------------------------------------------
@@ -400,78 +373,6 @@ proc ::confCam::createDialog { } {
 }
 
 #------------------------------------------------------------
-# createThread
-# Cree une thread dediee a la camera
-# et retourne le numero de la thread
-#------------------------------------------------------------
-proc ::confCam::createThread { camItem bufNo } {
-   variable private
-
-   ###set ::tcl_platform(threaded) 0
-   #--- Je cree la thread de la camera, si l'option multithread est activee dans le TCL
-   set camNo $private($camItem,camNo)
-   if { $::tcl_platform(threaded)==1 } {
-      #--- creation dun nouvelle thread
-      set threadNo [thread::create ]
-      #--- je copie la commande de la camera dans la thread de la camera
-      ::thread::copycommand $threadNo "cam$camNo"
-      #--- je copie la commande du buffer dans la thread de la camera
-      ::thread::copycommand $threadNo "buf$bufNo"
-      ::thread::copycommand $threadNo "ttscript2"
-      ::thread::copycommand $threadNo "mc_date2jd"
-      ::thread::copycommand $threadNo "mc_date2iso8601"
-      #--- J'ajoute la commande de liaison longue pose
-      if { [getPluginProperty $camItem "hasLongExposure"] == 1 } {
-         if { [cam$camNo longueposelinkno] != 0} {
-            thread::copycommand $threadNo "link[cam$camNo longueposelinkno]"
-         }
-      }
-      #--- je charge camerathread.tcl dans l'intepreteur de la thread de la camera
-      ::thread::send $threadNo  [list uplevel #0 source \"[file join $::audace(rep_audela) audace camerathread.tcl]\"]
-      ::thread::send $threadNo "::camerathread::init $camItem $camNo [thread::id]"
-   } else {
-      #--- creation d'un interpreteur esclave
-      set threadNo [interp create ]
-      $threadNo alias "::console::disp" "::console::disp"
-      $threadNo alias ::camera::addCameraEvent ::camera::addCameraEvent
-      $threadNo alias ::telescope::moveTelescope ::telescope::moveTelescope
-      $threadNo alias ttscript2 ttscript2
-      $threadNo alias mc_date2jd mc_date2jd
-      #--- je copie la commande de la camera dans la thread de la camera
-      copycommand $threadNo "cam$camNo"
-      #--- je copie la commande du buffer dans la thread de la camera
-      copycommand $threadNo "buf$bufNo"
-      #--- J'ajoute la commande de liaison longue pose
-      if { [getPluginProperty $camItem "hasLongExposure"] == 1 } {
-         if { [cam$camNo longueposelinkno] != 0} {
-            copycommand $threadNo "link[cam$camNo longueposelinkno]"
-         }
-      }
-      #--- je charge  camerathread.tcl dans l'intepreteur esclave
-      interp eval $threadNo [list uplevel #0 source \"[file join $::audace(rep_audela) audace camerathread.tcl]\"]
-      interp eval $threadNo ::camerathread::init $camItem $camNo "0"
-   }
-   return $threadNo
-}
-
-#------------------------------------------------------------
-# deleteThread
-# Supprime la thread de la camera
-#------------------------------------------------------------
-proc ::confCam::deleteThread { camItem } {
-   variable private
-
-   if { $private($camItem,threadNo) != 0 } {
-      if { $::tcl_platform(threaded)==1 } {
-         thread::release $private($camItem,threadNo)
-      } else {
-         interp delete  $private($camItem,threadNo)
-      }
-      set private($camItem,threadNo) "0"
-   }
-}
-
-#------------------------------------------------------------
 # createUrlLabel
 # Cree un widget "label" avec une URL du site WEB
 #------------------------------------------------------------
@@ -616,14 +517,14 @@ proc ::confCam::setMount { camItem telNo } {
    variable private
 
    if { [::confCam::isReady $camItem] && [confTel::isReady]  } {
-      set threadNo [::confCam::getThreadNo $camItem]
-      if { $::tcl_platform(threaded)==1 } {
-         #--- je copie la commande de la monture dans l'interpreteur de la camera
-         thread::copycommand $threadNo "tel$telNo"
-      } else {
-         #--- je copie la commande de la monture dans l'interpreteur de la camera
-         copycommand $threadNo "tel$telNo"
-      }
+      ###set threadNo [::confCam::getThreadNo $camItem]
+      ###if { $::tcl_platform(threaded)==1 } {
+      ###   #--- je copie la commande de la monture dans l'interpreteur de la camera
+      ###   thread::copycommand $threadNo "tel$telNo"
+      ###} else {
+      ###   #--- je copie la commande de la monture dans l'interpreteur de la camera
+      ###   copycommand $threadNo "tel$telNo"
+      ###}
    }
 }
 
@@ -679,8 +580,7 @@ proc ::confCam::stopItem { camItem } {
       return
    }
    if { $private($camItem,camName) != "" } {
-      #--- je supprime la thread
-      deleteThread $camItem
+      ::camera::delete $camItem
       #--- Je ferme les ressources specifiques de la camera
       ::$private($camItem,camName)::stop $camItem
    }
@@ -748,11 +648,13 @@ proc ::confCam::getPluginProperty { camItem propertyName } {
    # hasSetTemp         Retourne l'existence d'une consigne de temperature (1 : Oui, 0 : Non)
    # hasVideo :         Retourne l'existence du mode video (1 : Oui, 0 : Non)
    # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
+   # loadMode :         Retourne le mode de chargement d'une image (1: pas de chargment, 2:chargement immediat, 3: chargement differe)
    # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
    # multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
    # name :             Retourne le modele de la camera
    # product :          Retourne le nom du produit
    # shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
+   # title :            Retourne le titre du plugin
 
    #--- je recherche la valeur par defaut de la propriete
    #--- si la valeur par defaut de la propriete n'existe pas , je retourne une chaine vide
@@ -770,11 +672,13 @@ proc ::confCam::getPluginProperty { camItem propertyName } {
       hasSetTemp       { set result 0 }
       hasVideo         { set result 0 }
       hasWindow        { set result 0 }
+      loadMode         { set result 2 }
       longExposure     { set result 1 }
       multiCamera      { set result 0 }
       name             { set result "" }
       product          { set result "" }
       shutterList      { set result [ list "" ] }
+      title            { set result "" }
       default          { set result "" }
    }
 
@@ -784,7 +688,11 @@ proc ::confCam::getPluginProperty { camItem propertyName } {
    }
 
    #--- si une camera est selectionnee, je recherche la valeur propre a la camera
-   set result [ ::$private($camItem,camName)::getPluginProperty $camItem $propertyName ]
+   if { $propertyName != "title" } {
+      set result [ ::$private($camItem,camName)::getPluginProperty $camItem $propertyName ]
+   } else {
+      set result [ ::$private($camItem,camName)::getPluginTitle]
+   }
    return $result
 }
 
@@ -857,20 +765,6 @@ proc ::confCam::getTempCCD { camItem } {
          return ""
       }
    }
-}
-
-#------------------------------------------------------------
-# getThreadNo
-# Retourne le numero de la thread de la camera
-# Si la camera n'a pas de thread associee, la valeur retournee est "0"
-#
-# Parametres :
-#    camNo : Numero de la camera
-#------------------------------------------------------------
-proc ::confCam::getThreadNo { camItem } {
-   variable private
-
-   return $private($camItem,threadNo)
 }
 
 #------------------------------------------------------------
@@ -951,15 +845,15 @@ proc ::confCam::configureCamera { camItem } {
    set bufNo [::confVisu::getBufNo $visuNo]
 
    set catchResult [ catch {
-
       #--- je configure la camera
       ::$private($camItem,camName)::configureCamera $camItem $bufNo
+      ###::$private($camItem,camName)::configureCamera $camItem $bufNo
 
       #--- je recupere camNo
       set private($camItem,camNo) [ ::$private($camItem,camName)::getCamNo $camItem ]
 
-      #--- Je cree la thread dediee a la camera
-      set private($camItem,threadNo) [ ::confCam::createThread $camItem $bufNo]
+      #--- Je cree la camera
+      ::camera::create $camItem
 
       if { $private($camItem,visuNo) == "1" } {
          #--- Mise a jour de la variable audace pour compatibilite
@@ -995,8 +889,8 @@ proc ::confCam::configureCamera { camItem } {
       #--- Je desactive le demarrage automatique
       set conf(camera,$camItem,start) "0"
 
-      #--- Je supprime la thread de la camera si elle existe
-      ::confCam::deleteThread $camItem
+      #--- Je supprime la camera
+      ::camera::delete $camItem
 
       #--- En cas de probleme, camera par defaut
       set private($camItem,camName) ""
