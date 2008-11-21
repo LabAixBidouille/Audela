@@ -2,7 +2,7 @@
 # Fichier : autoguiderconfig.tcl
 # Description : Fenetre de configuration de l'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguiderconfig.tcl,v 1.16 2007-11-02 23:20:48 michelpujol Exp $
+# Mise a jour $Id: autoguiderconfig.tcl,v 1.17 2008-11-21 17:02:58 michelpujol Exp $
 #
 
 ################################################################
@@ -56,6 +56,7 @@ proc ::autoguider::config::apply { visuNo } {
    if {  $widget($visuNo,angle) != $conf(autoguider,angle) } {
       set pendingUpdateAxis 1
    }
+   set conf(autoguider,learn,delay)       $widget($visuNo,learn,delay)
 
    set conf(autoguider,seuilx)            $widget($visuNo,seuilx)
    set conf(autoguider,seuily)            $widget($visuNo,seuily)
@@ -64,9 +65,7 @@ proc ::autoguider::config::apply { visuNo } {
    set conf(autoguider,alphaReverse)      $widget($visuNo,alphaReverse)
    set conf(autoguider,deltaSpeed)        $widget($visuNo,deltaSpeed)
    set conf(autoguider,deltaReverse)      $widget($visuNo,deltaReverse)
-   set conf(autoguider,learn,delay)       $widget($visuNo,learn,delay)
    set conf(autoguider,angle)             $widget($visuNo,angle)
-   set conf(autoguider,declinaisonEnabled) $widget($visuNo,declinaisonEnabled)
    set conf(autoguider,targetBoxSize)     $widget($visuNo,targetBoxSize)
    set conf(autoguider,cumulEnabled)      $widget($visuNo,cumulEnabled)
    set conf(autoguider,cumulNb)           $widget($visuNo,cumulNb)
@@ -74,11 +73,31 @@ proc ::autoguider::config::apply { visuNo } {
    set conf(autoguider,darkFileName)      $widget($visuNo,darkFileName)
    set conf(autoguider,slitWidth)         $widget($visuNo,slitWidth)
    set conf(autoguider,slitRatio)         $widget($visuNo,slitRatio)
+   set conf(autoguider,declinaisonEnabled) $widget($visuNo,declinaisonEnabled)
 
    set conf(autoguider,searchThreshin)   $widget($visuNo,searchThreshin)
    set conf(autoguider,searchFwhm)       $widget($visuNo,searchFwhm)
    set conf(autoguider,searchRadius)     $widget($visuNo,searchRadius)
    set conf(autoguider,searchThreshold)  $widget($visuNo,searchThreshold)
+
+   #--- je notifie la thread de la camera
+   ::camera::setParam [::confVisu::getCamItem $visuNo] "seuilx" $::conf(autoguider,seuilx)
+   ::camera::setParam [::confVisu::getCamItem $visuNo] "seuily" $::conf(autoguider,seuily)
+   ::camera::setParam [::confVisu::getCamItem $visuNo] "detection"   $::conf(autoguider,detection)
+   ::camera::setParam [::confVisu::getCamItem $visuNo] "alphaSpeed" $::conf(autoguider,alphaSpeed)
+   ::camera::setParam [::confVisu::getCamItem $visuNo] "deltaSpeed" $::conf(autoguider,deltaSpeed)
+   ::camera::setParam [::confVisu::getCamItem $visuNo] "alphaReverse" $::conf(autoguider,alphaReverse)
+   ::camera::setParam [::confVisu::getCamItem $visuNo] "deltaReverse" $::conf(autoguider,deltaReverse)
+   ::camera::setParam [::confVisu::getCamItem $visuNo] "angle" $::conf(autoguider,angle)
+   ::camera::setParam [::confVisu::getCamItem $visuNo] "targetBoxSize" $::conf(autoguider,targetBoxSize)
+   ::camera::setParam [::confVisu::getCamItem $visuNo] "slitWidth"   $::conf(autoguider,slitWidth)
+   ::camera::setParam [::confVisu::getCamItem $visuNo] "slitRatio"   $::conf(autoguider,slitRatio)
+
+   ::camera::setParam [::confVisu::getCamItem $visuNo] "searchThreshin"   $::conf(autoguider,searchThreshin)
+   ::camera::setParam [::confVisu::getCamItem $visuNo] "searchFwhm"   $::conf(autoguider,searchFwhm)
+   ::camera::setParam [::confVisu::getCamItem $visuNo] "searchRadius"   $::conf(autoguider,searchRadius)
+   ::camera::setParam [::confVisu::getCamItem $visuNo] "searchThreshold"   $::conf(autoguider,searchThreshold)
+
 
    #--- je redessine la cible si le mode de detection a change
    if { $pendingUpdateTarget } {
