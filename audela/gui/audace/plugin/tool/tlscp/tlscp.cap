@@ -1,6 +1,6 @@
 #
 # Fichier : tlscp.cap
-# Mise a jour $Id: tlscp.cap,v 1.7 2008-06-13 16:44:15 robertdelmas Exp $
+# Mise a jour $Id: tlscp.cap,v 1.8 2008-11-21 16:55:06 michelpujol Exp $
 #
 
 #=========================================================================
@@ -66,7 +66,7 @@ set caption(tlscp,searchTitle)           "Star Search"
 set caption(tlscp,searchBoxSize)         "Area Size"
 set caption(tlscp,showSearchBox)         "Display Area"
 set caption(tlscp,searchThreshin)        "Min. Luminosity (1)"
-set caption(tlscp,searchFwmh)            "Min. Fwhm"
+set caption(tlscp,searchFwhm)            "Min. Fwhm"
 set caption(tlscp,searchRadius)          "Search Radius (pixel)"
 set caption(tlscp,searchThreshold)       "Min. Luminosity (2)"
 
@@ -155,7 +155,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,searchBoxSize)      "Taille de la zone"
    set caption(tlscp,showSearchBox)      "Afficher la zone"
    set caption(tlscp,searchThreshin)     "Intensité mini (1)"
-   set caption(tlscp,searchFwmh)         "Fwhm mini"
+   set caption(tlscp,searchFwhm)         "Fwhm mini"
    set caption(tlscp,searchRadius)       "Rayon de recherche (pixel)"
    set caption(tlscp,searchThreshold)    "Intensité mini (2)"
 
@@ -244,7 +244,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,searchBoxSize)      "Dimensioni della zona"
    set caption(tlscp,showSearchBox)      "Mostra area"
    set caption(tlscp,searchThreshin)     "Intensita` minima (1)"
-   set caption(tlscp,searchFwmh)         "Fwhm minima"
+   set caption(tlscp,searchFwhm)         "Fwhm minima"
    set caption(tlscp,searchRadius)       "Raggio di ricerca (pixel)"
    set caption(tlscp,searchThreshold)    "Intensita` minima (2)"
 
@@ -333,7 +333,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,searchBoxSize)      "Tamaño zona"
    set caption(tlscp,showSearchBox)      "Mostrar la zona"
    set caption(tlscp,searchThreshin)     "Mínima luminosidad (1)"
-   set caption(tlscp,searchFwmh)         "Fwhm minimo"
+   set caption(tlscp,searchFwhm)         "Fwhm minimo"
    set caption(tlscp,searchRadius)       "Radio de búsqueda (pixel)"
    set caption(tlscp,searchThreshold)    "Mínima luminosidad (2)"
 
@@ -422,7 +422,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,searchBoxSize)      "Größe der Zone"
    set caption(tlscp,showSearchBox)      "Zone Zeigen"
    set caption(tlscp,searchThreshin)     "Min. Licht (1)"
-   set caption(tlscp,searchFwmh)         "Min. Fwhm"
+   set caption(tlscp,searchFwhm)         "Min. Fwhm"
    set caption(tlscp,searchRadius)       "Radius Durchsuchung (Pixel)"
    set caption(tlscp,searchThreshold)    "Min. Licht (2)"
 
@@ -511,7 +511,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,searchBoxSize)      "Tamanho da zona"
    set caption(tlscp,showSearchBox)      "Mostrar a zona"
    set caption(tlscp,searchThreshin)     "Luminosidade min. (1)"
-   set caption(tlscp,searchFwmh)         "Fwhm min."
+   set caption(tlscp,searchFwhm)         "Fwhm min."
    set caption(tlscp,searchRadius)       "Raio de pesquisa (pixel)"
    set caption(tlscp,searchThreshold)    "Luminosidade min. (2)"
 
@@ -600,7 +600,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,searchBoxSize)      "Area Size"
    set caption(tlscp,showSearchBox)      "Display Area"
    set caption(tlscp,searchThreshin)     "Min. Luminosity (1)"
-   set caption(tlscp,searchFwmh)         "Min. Fwhm"
+   set caption(tlscp,searchFwhm)         "Min. Fwhm"
   set caption(tlscp,searchRadius)       "Search Radius (pixel)"
    set caption(tlscp,searchThreshold)    "Min. Luminosity (2)"
 
