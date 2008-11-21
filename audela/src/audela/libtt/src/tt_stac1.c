@@ -378,6 +378,21 @@ int tt_fct_ima_stack(void *arg1)
    }
    tt_imadestroyer(&p_tmp);
    
+
+   /* --- supprime les points chauds, les colonnes defectueuses et les lignes defectueuses ---*/   
+   // dans l'image finale 
+   if (pstack.hotPixelList!= NULL) {
+      // je retire le pixels chauds dans p_out
+     tt_repairHotPixel(pstack.hotPixelList, &p_out);
+     // je detruis la liste des pixels 
+     tt_free(pstack.hotPixelList,"pseries->hotPixelList");
+   }
+
+   if (pstack.cosmicThreshold != 0.) {
+      // je retire les cosmiques dans p_out
+     tt_repairCosmic(pstack.cosmicThreshold, &p_out);
+   }
+
    /* --- cree le fullname out ---*/
    if (save_level_index==0) {
       strcpy(fullname,tt_imafilecater(keys[6],keys[7],keys[9]));
@@ -485,8 +500,10 @@ int tt_ima_stack_builder(char **keys,TT_IMA_STACK *pstack)
    int k;
    int pos;
    char *car;
-   char mot[80];
-   char argu[80];
+   //char mot[80];
+   //char argu[80];
+   char *mot;
+   char *argu;
    pstack->numfct=0;
    if (strcmp(keys[10],"MEAN")==0) { pstack->numfct=TT_IMASTACK_MOY; }
    else if (strcmp(keys[10],"ADD")==0) { pstack->numfct=TT_IMASTACK_ADD; }
@@ -498,7 +515,7 @@ int tt_ima_stack_builder(char **keys,TT_IMA_STACK *pstack)
    else if (strcmp(keys[10],"SHUTTER")==0) { pstack->numfct=TT_IMASTACK_SHUTTER; }
    else if (strcmp(keys[10],"PROD")==0) { pstack->numfct=TT_IMASTACK_PROD; }
    else if (strcmp(keys[10],"PYTHAGORE")==0) { pstack->numfct=TT_IMASTACK_PYTHAGORE; }
-
+   
    /* --- decodage des parametres optionels ---*/
    pstack->bitpix=0;
    pstack->percent=50.;
@@ -508,65 +525,91 @@ int tt_ima_stack_builder(char **keys,TT_IMA_STACK *pstack)
    pstack->jpegfile_make=TT_NO;
    strcpy(pstack->jpegfile,"");
    pstack->powernorm=0;
-
+   pstack->hotPixelList=NULL;
+   pstack->cosmicThreshold = 0;
+   
    for (k=11;k<(pstack->nbkeys);k++) {
+      int nombre, taille, msg;
+      nombre = 1;
+      taille = strlen(keys[k])+1;
+      mot=NULL;
+      if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&mot,&nombre,&taille,"mot"))!=0) {
+         tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_stack_builder (pointer mot)");
+         return(TT_ERR_PB_MALLOC);
+      }
+      argu=NULL;
+      if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&argu,&nombre,&taille,"argu"))!=0) {
+         tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_stack_builder (pointer argu)");
+         tt_free(mot,"mot");
+         return(TT_ERR_PB_MALLOC);
+      }
+
       /* --- extrait le mot cle ---*/
       strcpy(mot,keys[k]);
       tt_strupr(mot);
       car=strstr(mot,"=");
       pos=0;
       if (car!=NULL) {
-	 pos=(int)(car-mot);
-	 mot[pos]='\0';
-	 strcpy(argu,keys[k]+pos+1);
+         pos=(int)(car-mot);
+         mot[pos]='\0';
+         strcpy(argu,keys[k]+pos+1);
       } else {
-	 /* --- mot sans argument ---*/
-	 strcpy(argu,"");
+         /* --- mot sans argument ---*/
+         strcpy(argu,"");
       }
-
+      
       /* --- extrait la valeur de l'argument ---*/
       if (strcmp(mot,"BITPIX")==0) {
-	 if (strcmp(argu,"8")==0) {
-	    pstack->bitpix=BYTE_IMG;
-	 } else if (strcmp(argu,"16")==0) {
-	    pstack->bitpix=SHORT_IMG;
-	 } else if (strcmp(argu,"+16")==0) {
-	    pstack->bitpix=USHORT_IMG;
-	 } else if (strcmp(argu,"32")==0) {
-	    pstack->bitpix=LONG_IMG;
-	 } else if (strcmp(argu,"+32")==0) {
-	    pstack->bitpix=ULONG_IMG;
-	 } else if (strcmp(argu,"-32")==0) {
-	    pstack->bitpix=FLOAT_IMG;
-	 } else if (strcmp(argu,"-64")==0) {
-	    pstack->bitpix=DOUBLE_IMG;
-	 } else {
-	    pstack->bitpix=0;
-	 }
+         if (strcmp(argu,"8")==0) {
+            pstack->bitpix=BYTE_IMG;
+         } else if (strcmp(argu,"16")==0) {
+            pstack->bitpix=SHORT_IMG;
+         } else if (strcmp(argu,"+16")==0) {
+            pstack->bitpix=USHORT_IMG;
+         } else if (strcmp(argu,"32")==0) {
+            pstack->bitpix=LONG_IMG;
+         } else if (strcmp(argu,"+32")==0) {
+            pstack->bitpix=ULONG_IMG;
+         } else if (strcmp(argu,"-32")==0) {
+            pstack->bitpix=FLOAT_IMG;
+         } else if (strcmp(argu,"-64")==0) {
+            pstack->bitpix=DOUBLE_IMG;
+         } else {
+            pstack->bitpix=0;
+         }
       }
       else if (strcmp(mot,"NULLPIXEL")==0) {
-	 pstack->nullpix_exist=TT_YES;
-	 pstack->nullpix_value=(double)(atof(argu));
+         pstack->nullpix_exist=TT_YES;
+         pstack->nullpix_value=(double)(atof(argu));
       }
       else if (strcmp(mot,"PERCENT")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    pstack->percent=(double)(fabs(atof(argu)));
-	 }
+         if (strcmp(argu,"")!=0) {
+            pstack->percent=(double)(fabs(atof(argu)));
+         }
       }
       else if (strcmp(mot,"JPEGFILE")==0) {
-	 pstack->jpegfile_make=TT_YES;
-	 if (strcmp(argu,"")!=0) {
-	    strcpy(pstack->jpegfile,argu);
-	 }
+         pstack->jpegfile_make=TT_YES;
+         if (strcmp(argu,"")!=0) {
+            strcpy(pstack->jpegfile,argu);
+         }
       }
       else if (strcmp(mot,"KAPPA")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    pstack->kappa=(double)(fabs(atof(argu)));
-	 }
+         if (strcmp(argu,"")!=0) {
+            pstack->kappa=(double)(fabs(atof(argu)));
+         }
       }
       else if (strcmp(mot,"POWERNORM")==0) {
          pstack->powernorm=1;
-      }
+      } 
+      else if (strcmp(mot,"HOT_PIXEL_LIST")==0) {
+         tt_parseHotPixelList(argu, &pstack->hotPixelList);
+      }   
+      else if (strcmp(mot,"COSMIC_THRESHOLD")==0) {
+         pstack->cosmicThreshold=(TT_PTYPE)fabs(atof(argu));
+      }   
+
+      tt_free(mot,"mot");
+      tt_free(argu,"argu");
    }
    return(OK_DLL);
 }
