@@ -932,7 +932,11 @@ int CBuffer::GetNaxis()
  */
 int CBuffer::GetWidth()
 {
-   return pix->GetWidth();
+   int width;
+   pthread_mutex_lock(&mutex);
+   width = pix->GetWidth();
+   pthread_mutex_unlock(&mutex);
+   return width;
 }
 
 /*
@@ -941,7 +945,11 @@ int CBuffer::GetWidth()
  */
 int CBuffer::GetHeight()
 {
-   return pix->GetHeight();
+   int height;
+   pthread_mutex_lock(&mutex);
+   height = pix->GetHeight();
+   pthread_mutex_unlock(&mutex);
+   return height;
 }
 
 
