@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteur : Robert DELMAS
-# Mise a jour $Id: camera.tcl,v 1.20 2008-06-23 17:38:50 robertdelmas Exp $
+# Mise a jour $Id: camera.tcl,v 1.21 2008-11-21 17:06:36 michelpujol Exp $
 #
 
 namespace eval camera {
@@ -25,15 +25,105 @@ proc ::camera::init { } {
    bind . "<<cameraEventB>>" "::camera::processCameraEvent B"
    bind . "<<cameraEventC>>" "::camera::processCameraEvent C"
 
-   set private(eventList,A) [list]
-   set private(eventList,B) [list]
-   set private(eventList,C) [list]
+   #--- Je charge le package Thread si l'option multitread est activive dans le TCL
+   if { [info exists ::tcl_platform(threaded)] } {
+      if { $::tcl_platform(threaded)==1 } {
+         #--- Je charge le package Thread
+         #--- La version minimale 2.6.5.1 pour disposer de la commande thread::copycommand
+         if { ! [catch {package require Thread 2.6.5.1}]} {
+            #--- Je redirige les messages d'erreur vers la procedure ::confCam::dispThreadError
+            thread::errorproc ::camera::dispThreadError
+         } else {
+            set ::tcl_platform(threaded) 0
+            console::affiche_erreur "Thread 2.6.5.1 not present\n"
+         }
+      }
+   } else {
+      set ::tcl_platform(threaded) 0
+   }
+
+   ###set private(eventList,A) [list]
+   ###set private(eventList,B) [list]
+   ###set private(eventList,C) [list]
 }
+
+#------------------------------------------------------------
+# dispThreadError
+#------------------------------------------------------------
+proc ::camera::dispThreadError { thread_id errorInfo } {
+   ::console::disp "thread_id=$thread_id errorInfo=$errorInfo\n"
+}
+
+
+
+#------------------------------------------------------------
+# create
+#    cree une camera
+#
+# parametres :
+#    direction : e w n s
+# return
+#    0 si OK , 1 si erreur
+#------------------------------------------------------------
+proc ::camera::create { camItem } {
+   variable private
+
+   if { $::tcl_platform(threaded) == 0  } {
+
+   } else {
+      set private($camItem,camNo)    [::confCam::getCamNo $camItem]
+      set private($camItem,threadNo) [ cam$private($camItem,camNo) threadid]
+
+      #--- je duplique les commandes TCL dans la thread de la camera
+      ::thread::copycommand $private($camItem,threadNo) "ttscript2"
+      ::thread::copycommand $private($camItem,threadNo) "mc_date2jd"
+      ::thread::copycommand $private($camItem,threadNo) "mc_date2iso8601"
+
+      #--- J'ajoute la commande de liaison longue pose dans la thread de la camera
+      if { [::confCam::getPluginProperty $camItem "hasLongExposure"] == 1 } {
+         if { [cam$private($camItem,camNo)  longueposelinkno] != 0} {
+            thread::copycommand $private($camItem,threadNo) "link[cam$private($camItem,camNo) longueposelinkno]"
+         }
+      }
+      #--- je descative la recuperation des coordonnees du telescope
+      cam$private($camItem,camNo) radecfromtel 0
+
+      #--- j'initialise la file d'evenement  pour la communication entre les deux threads
+      set private($camItem,eventList) [list]
+
+      #--- je charge camerathread.tcl dans l'intepreteur de la thread de la camera
+      ::thread::send $private($camItem,threadNo)  [list uplevel #0 source \"[file join $::audace(rep_audela) audace camerathread.tcl]\"]
+      ::thread::send $private($camItem,threadNo) "::camerathread::init $camItem $private($camItem,camNo)  [thread::id]"
+      return 0
+   }
+}
+
+#------------------------------------------------------------
+# delete
+#    supprime une camera
+#
+# parametres :
+#    direction : e w n s
+# return
+#    rien
+#------------------------------------------------------------
+proc ::camera::delete { camItem } {
+   variable private
+   console::disp "::camera::delete  coucou\n"
+
+   if { $::tcl_platform(threaded) == 0  } {
+      interp eval $camThreadNo  [list ::cam::delete $args]
+   } else {
+      return
+   }
+}
+
+
 
 #
 # acq exptime binning
 # Declenche l'acquisition et affiche l'image une fois l'acquisition terminee dans la visu 1
-#
+#  (procdure conservee pour compatibilite avec les anciennes versions de Audela (pour les scripts perso des utilisateurs)y
 # Exemple :
 # acq 10 2
 #
@@ -400,8 +490,8 @@ proc ::camera::addCameraEvent { camItem args } {
    variable private
 
    ###console::disp "::camera::addCameraEvent camItem=$camItem args=$args arg0=[lindex $args 0] \n"
-   if { [lsearch $private(eventList,$camItem) [list [lindex $args 0] *]] == -1 } {
-      lappend private(eventList,$camItem) $args
+   if { [lsearch $private($camItem,eventList) [list [lindex $args 0] *]] == -1 } {
+      lappend private($camItem,eventList) $args
       event generate . "<<cameraEvent$camItem>>" -when tail
    } else {
       ##console::disp "::camera::addCameraEvent camItem=$camItem  [lindex $args 0] already exist\n"
@@ -417,10 +507,10 @@ proc ::camera::addCameraEvent { camItem args } {
 proc ::camera::processCameraEvent { camItem } {
    variable private
 
-   ###console::disp "::camera::processCameraEvent eventList=$private(eventList,$camItem)\n"
-   if { [llength $private(eventList,$camItem)] > 0 } {
-      set args [lindex $private(eventList,$camItem) 0]
-      set private(eventList,$camItem) [lrange $private(eventList,$camItem) 1 end]
+   ###console::disp "::camera::processCameraEvent eventList=$private($camItem,eventList)\n"
+   if { [llength $private($camItem,eventList)] > 0 } {
+      set args [lindex $private($camItem,eventList) 0]
+      set private($camItem,eventList) [lrange $private($camItem,eventList) 1 end]
       eval $private($camItem,callback) $args
    }
 }
@@ -446,18 +536,18 @@ proc ::camera::processCameraEvent { camItem } {
 # return
 #    rien
 #------------------------------------------------------------
-proc ::camera::acquisition { camItem callback exptime binning } {
+proc ::camera::acquisition { camItem callback exptime } {
    variable private
 
    #--- je connecte la camera
    ::confCam::setConnection  $camItem 1
    #--- je renseigne la procedure de retour
    set private($camItem,callback) $callback
-   set camThreadNo [::confCam::getThreadNo $camItem ]
+   set camThreadNo $private($camItem,threadNo)
    if { $::tcl_platform(threaded) == 0 } {
-      after 10 [list interp eval $camThreadNo   [list ::camerathread::acquisition $exptime $binning]]
+      after 10 [list interp eval $camThreadNo   [list ::camerathread::acquisition $exptime ]]
    } else {
-      ::thread::send -async $camThreadNo [list ::camerathread::acquisition $exptime $binning]
+      ::thread::send -async $camThreadNo [list ::camerathread::acquisition $exptime ]
    }
 }
 
@@ -467,20 +557,20 @@ proc ::camera::acquisition { camItem callback exptime binning } {
 #
 # parametres :
 #------------------------------------------------------------
-proc ::camera::centerBrightestStar { camItem callback exptime binning originCoord targetCoord angle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse seuilx seuily } {
+proc ::camera::centerBrightestStar { camItem callback exptime originCoord targetCoord angle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse seuilx seuily } {
    variable private
 
    #--- je connecte la camera
    ::confCam::setConnection  $camItem 1
    #--- je renseigne la procedure de retour
    set private($camItem,callback) $callback
-   set camThreadNo [::confCam::getThreadNo $camItem ]
+   set camThreadNo $private($camItem,threadNo)
    ###console::disp "::camera::centerBrightestStar targetCoord=$targetCoord targetBoxSize=$targetBoxSize\n"
    if { $::tcl_platform(threaded) == 0 } {
-      after 10 [list interp eval $camThreadNo           [list ::camerathread::centerBrightestStar $exptime $binning $originCoord $targetCoord $angle $targetBoxSize $mountEnabled $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $seuilx $seuily]]
+      after 10 [list interp eval $camThreadNo           [list ::camerathread::centerBrightestStar $exptime $originCoord $targetCoord $angle $targetBoxSize $mountEnabled $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $seuilx $seuily]]
       update
    } else {
-      ::thread::send -async $camThreadNo [list ::camerathread::centerBrightestStar $exptime $binning $originCoord $targetCoord $angle $targetBoxSize $mountEnabled $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $seuilx $seuily]
+      ::thread::send -async $camThreadNo [list ::camerathread::centerBrightestStar $exptime $originCoord $targetCoord $angle $targetBoxSize $mountEnabled $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $seuilx $seuily]
    }
 }
 
@@ -490,19 +580,19 @@ proc ::camera::centerBrightestStar { camItem callback exptime binning originCoor
 #
 # parametres :
 #------------------------------------------------------------
-proc ::camera::centerRadec { camItem callback exptime binning originCoord raDec angle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse seuilx seuily foclen detection catalogue kappa threshin fwhm radius threshold maxMagnitude delta epsilon  catalogueName cataloguePath } {
+proc ::camera::centerRadec { camItem callback exptime originCoord raDec angle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse seuilx seuily foclen detection catalogue kappa threshin fwhm radius threshold maxMagnitude delta epsilon  catalogueName cataloguePath } {
    variable private
 
    #--- je connecte la camera
    ::confCam::setConnection  $camItem 1
    #--- je renseigne la procedure de retour
    set private($camItem,callback) $callback
-   set camThreadNo [::confCam::getThreadNo $camItem ]
+   set camThreadNo $private($camItem,threadNo)
    ###console::disp "::camera::centerRadec raDec=$raDec targetBoxSize=$targetBoxSize\n"
    if { $::tcl_platform(threaded) == 0 } {
-      after 10 [list interp eval $camThreadNo           [list ::camerathread::centerRadec $exptime $binning $originCoord $raDec $angle $targetBoxSize $mountEnabled $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $seuilx $seuily $foclen $detection $catalogue $kappa $threshin $fwhm $radius $threshold $maxMagnitude $delta $epsilon $catalogueName $cataloguePath]]
+      after 10 [list interp eval $camThreadNo           [list ::camerathread::centerRadec $exptime $originCoord $raDec $angle $targetBoxSize $mountEnabled $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $seuilx $seuily $foclen $detection $catalogue $kappa $threshin $fwhm $radius $threshold $maxMagnitude $delta $epsilon $catalogueName $cataloguePath]]
    } else {
-      ::thread::send -async $camThreadNo [list ::camerathread::centerRadec $exptime $binning $originCoord $raDec $angle $targetBoxSize $mountEnabled $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $seuilx $seuily $foclen $detection $catalogue $kappa $threshin $fwhm $radius $threshold $maxMagnitude $delta $epsilon $catalogueName $cataloguePath]
+      ::thread::send -async $camThreadNo [list ::camerathread::centerRadec $exptime $originCoord $raDec $angle $targetBoxSize $mountEnabled $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $seuilx $seuily $foclen $detection $catalogue $kappa $threshin $fwhm $radius $threshold $maxMagnitude $delta $epsilon $catalogueName $cataloguePath]
    }
 }
 
@@ -527,19 +617,19 @@ proc ::camera::centerRadec { camItem callback exptime binning originCoord raDec 
 # return
 #    rien
 #------------------------------------------------------------
-proc ::camera::guide { camItem callback exptime binning detection originCoord targetCoord angle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse seuilx seuily slitWidth slitRatio intervalle } {
+proc ::camera::guide { camItem callback exptime detection originCoord targetCoord angle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse seuilx seuily slitWidth slitRatio intervalle declinaisonEnabled } {
    variable private
 
    #--- je connecte la camera
    ::confCam::setConnection  $camItem 1
    #--- je renseigne la procedure de retour
    set private($camItem,callback) $callback
-   set camThreadNo [::confCam::getThreadNo $camItem ]
+   set camThreadNo $private($camItem,threadNo)
    if { $::tcl_platform(threaded) == 0 } {
-      after 10 [list interp eval $camThreadNo   [list ::camerathread::guide $exptime $binning $detection $originCoord $targetCoord $angle $targetBoxSize $mountEnabled $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $seuilx $seuily $slitWidth $slitRatio $intervalle]]
+      after 10 [list interp eval $camThreadNo   [list ::camerathread::guide $exptime $detection $originCoord $targetCoord $angle $targetBoxSize $mountEnabled $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $seuilx $seuily $slitWidth $slitRatio $intervalle $declinaisonEnabled]]
       update
    } else {
-      ::thread::send -async $camThreadNo [list ::camerathread::guide $exptime $binning $detection $originCoord $targetCoord $angle $targetBoxSize $mountEnabled $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $seuilx $seuily $slitWidth $slitRatio $intervalle]
+      ::thread::send -async $camThreadNo [list ::camerathread::guide $exptime $detection $originCoord $targetCoord $angle $targetBoxSize $mountEnabled $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $seuilx $seuily $slitWidth $slitRatio $intervalle $declinaisonEnabled ]
    }
 }
 
@@ -549,18 +639,18 @@ proc ::camera::guide { camItem callback exptime binning detection originCoord ta
 #
 # parametres :
 #------------------------------------------------------------
-proc ::camera::searchBrightestStar { camItem callback exptime binning originCoord targetBoxSize searchThreshin searchFwmh searchRadius searchThreshold} {
+proc ::camera::searchBrightestStar { camItem callback exptime originCoord targetBoxSize searchThreshin searchFwhm searchRadius searchThreshold} {
    variable private
 
    #--- je connecte la camera
    ::confCam::setConnection  $camItem 1
    #--- je renseigne la procedure de retour
    set private($camItem,callback) $callback
-   set camThreadNo [::confCam::getThreadNo $camItem ]
+   set camThreadNo $private($camItem,threadNo)
    if { $::tcl_platform(threaded) == 0 } {
-      after 10 [list interp eval $camThreadNo  [list ::camerathread::searchBrightestStar $exptime $binning $originCoord $targetBoxSize $searchThreshin $searchFwmh $searchRadius $searchThreshold]]
+      after 10 [list interp eval $camThreadNo  [list ::camerathread::searchBrightestStar $exptime $originCoord $targetBoxSize $searchThreshin $searchFwhm $searchRadius $searchThreshold]]
    } else {
-     ::thread::send -async $camThreadNo [list ::camerathread::searchBrightestStar $exptime $binning $originCoord $targetBoxSize $searchThreshin $searchFwmh $searchRadius $searchThreshold]
+     ::thread::send -async $camThreadNo [list ::camerathread::searchBrightestStar $exptime $originCoord $targetBoxSize $searchThreshin $searchFwhm $searchRadius $searchThreshold]
    }
 }
 
@@ -574,16 +664,18 @@ proc ::camera::searchBrightestStar { camItem callback exptime binning originCoor
 #    rien
 #------------------------------------------------------------
 proc ::camera::setParam { camItem  paramName paramValue } {
+   variable private
    if { $camItem == "" } {
       return
    }
-   set camThreadNo [::confCam::getThreadNo $camItem ]
+   set camThreadNo $private($camItem,threadNo)
    #--- je notifie la camera
    if { $::tcl_platform(threaded) == 0  } {
       interp eval $camThreadNo  [list ::camerathread::setParam $paramName $paramValue]
-     update
+      update
    } else {
       ::thread::send -async $camThreadNo [list ::camerathread::setParam $paramName $paramValue]
+      ###::thread::send $camThreadNo [list ::camerathread::setParam $paramName $paramValue]
    }
 }
 
@@ -597,7 +689,8 @@ proc ::camera::setParam { camItem  paramName paramValue } {
 #    rien
 #------------------------------------------------------------
 proc ::camera::stopAcquisition { camItem } {
-   set camThreadNo [::confCam::getThreadNo $camItem ]
+   variable private
+   set camThreadNo $private($camItem,threadNo)
    if { $::tcl_platform(threaded) == 0  } {
       interp eval $camThreadNo  [list ::camerathread::stopAcquisition ]
       update
@@ -607,6 +700,16 @@ proc ::camera::stopAcquisition { camItem } {
 }
 
 #--- Importe la procedure acq dans le namespace global
+##rename cam::create cam::create_old
+##rename cam::delete cam::delete_old
+##interp alias "" cam::create "" ::camera::create
+##interp alias "" cam::delete "" ::camera::delete
+
+##proc ::cam::create { args } {
+##   ::thread::send -async $camThreadNo [list ::camerathread::stopAcquisition ]
+##}
+
+#--- import de acq dan le namespace principal pour compatibilite avec les anciens scripts
 namespace import ::camera::acq
 
 ::camera::init
