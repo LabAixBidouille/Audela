@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.13 2008-09-24 17:42:53 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.14 2008-11-21 16:54:05 michelpujol Exp $
 #
 
 #============================================================
@@ -88,7 +88,7 @@ proc ::tlscp::initPlugin { tkbase } {
 # createPluginInstance
 #    cree une nouvelle instance de l'outil
 #------------------------------------------------------------
-proc ::tlscp::createPluginInstance { { in "" } { visuNo 1 } } {
+proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
    variable private
    global audace caption conf
 
@@ -117,7 +117,7 @@ proc ::tlscp::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists conf(tlscp,darkFileName)] }           { set conf(tlscp,darkFileName)           "dark.fit" }
    if { ! [ info exists conf(tlscp,centerSpeed)] }            { set conf(tlscp,centerSpeed)            "2" }
    if { ! [ info exists conf(tlscp,searchThreshin)] }         { set conf(tlscp,searchThreshin)         "10" }
-   if { ! [ info exists conf(tlscp,searchFwmh)] }             { set conf(tlscp,searchFwmh)             "3" }
+   if { ! [ info exists conf(tlscp,searchFwhm)] }             { set conf(tlscp,searchFwhm)             "3" }
    if { ! [ info exists conf(tlscp,searchRadius)] }           { set conf(tlscp,searchRadius)           "4" }
    if { ! [ info exists conf(tlscp,searchThreshold)] }        { set conf(tlscp,searchThreshold)        "40" }
 
@@ -140,7 +140,7 @@ proc ::tlscp::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists conf(tlscp,cataloguePath,USNO)] }     { set conf(tlscp,cataloguePath,USNO)     ""  }
 
    #--- Initialisation des variables
-   set private($visuNo,This)              "[::confVisu::getBase $visuNo].tlscp"
+   set private($visuNo,This)              "$tkBase.tlscp"
    set private($visuNo,choix_bin)         "1x1 2x2 4x4"
    set private($visuNo,menu)              "$caption(tlscp,coord)"
    set private($visuNo,camItem)           ""
@@ -411,9 +411,8 @@ proc ::tlscp::createPluginInstance { { in "" } { visuNo 1 } } {
                -width 4 -height [ llength $list_combobox ] \
                -relief sunken -borderwidth 1 -editable 0 \
                -textvariable ::conf(tlscp,binning)) \
-               -values $list_combobox
-
-               ###-modifycmd "::tlscp::selectBinning $visuNo"
+               -values $list_combobox \
+               -modifycmd "::tlscp::setBinning $visuNo"
 
             pack $private($visuNo,This).camera.binning.combo -anchor center -side left -fill x -expand 1
 
@@ -867,6 +866,21 @@ proc ::tlscp::cmdSpeed { } {
    ::telescope::incrementSpeed
 }
 
+
+#------------------------------------------------------------
+# setBinning
+#    change le binning de la camera
+#------------------------------------------------------------
+proc ::tlscp::setBinning { visuNo } {
+   variable private
+
+   set binning [list [string range $::conf(tlscp,binning) 0 0] [string range $::conf(tlscp,binning) 2 2]]
+   set camItem [::confVisu::getCamItem $visuNo]
+   set camNo   [::confCam::getCamNo $camItem ]
+   cam$camNo bin $binning
+
+}
+
 #------------------------------------------------------------
 # startAcquisition
 #    fait une acquisition
@@ -883,7 +897,7 @@ proc ::tlscp::startAcquisition { visuNo  } {
       return
    }
 
-   set binning [list [string range $::conf(tlscp,binning) 0 0] [string range $::conf(tlscp,binning) 2 2]]
+   ####set binning [list [string range $::conf(tlscp,binning) 0 0] [string range $::conf(tlscp,binning) 2 2]]
    set private($visuNo,acquisitionState) "acquisition"
 
    #--- j'affiche le bouton STOP CCD
@@ -892,7 +906,7 @@ proc ::tlscp::startAcquisition { visuNo  } {
    bind all <Key-Escape> "::tlscp::stopAcquisition $visuNo $private($visuNo,This).camera.goccd "
 
    #--- je lance l'acquisition
-   ::camera::acquisition $private($visuNo,camItem) "::tlscp::callbackAcquisition $visuNo" $::conf(tlscp,expTime) $binning
+   ::camera::acquisition $private($visuNo,camItem) "::tlscp::callbackAcquisition $visuNo" $::conf(tlscp,expTime)
 
    #--- j'attend la fin de l'acquisition
    vwait ::tlscp::private($visuNo,acquisitionState)
@@ -946,7 +960,7 @@ proc ::tlscp::startCenter { visuNo { methode "" } } {
    }
 
    #--- je recupere le binning de la camera
-   set binning [list [string range $::conf(tlscp,binning) 0 0] [string range $::conf(tlscp,binning) 2 2]]
+   ###set binning [list [string range $::conf(tlscp,binning) 0 0] [string range $::conf(tlscp,binning) 2 2]]
    set private($visuNo,acquisitionState) "center"
 
    #--- je configure le tescope
@@ -984,17 +998,17 @@ proc ::tlscp::startCenter { visuNo { methode "" } } {
    }
 
    if { $methode == "BRIGHTEST" } {
-      ::camera::centerBrightestStar $private($visuNo,camItem) "::tlscp::callbackAcquisition $visuNo" $::conf(tlscp,expTime) $binning $::conf(tlscp,originCoord) $private($visuNo,targetCoord) $::conf(tlscp,angle) $::conf(tlscp,targetBoxSize) $::conf(tlscp,mountEnabled) $::conf(tlscp,alphaSpeed) $::conf(tlscp,deltaSpeed) $::conf(tlscp,alphaReverse) $::conf(tlscp,deltaReverse) $::conf(tlscp,seuilx) $::conf(tlscp,seuily)
+      ::camera::centerBrightestStar $private($visuNo,camItem) "::tlscp::callbackAcquisition $visuNo" $::conf(tlscp,expTime) $::conf(tlscp,originCoord) $private($visuNo,targetCoord) $::conf(tlscp,angle) $::conf(tlscp,targetBoxSize) $::conf(tlscp,mountEnabled) $::conf(tlscp,alphaSpeed) $::conf(tlscp,deltaSpeed) $::conf(tlscp,alphaReverse) $::conf(tlscp,deltaReverse) $::conf(tlscp,seuilx) $::conf(tlscp,seuily)
    } else {
       ::camera::centerRadec $private($visuNo,camItem) "::tlscp::callbackAcquisition $visuNo" \
-         $::conf(tlscp,expTime) $binning $::conf(tlscp,originCoord) [list $ra $dec] $::conf(tlscp,angle) \
+         $::conf(tlscp,expTime) $::conf(tlscp,originCoord) [list $ra $dec] $::conf(tlscp,angle) \
          $::conf(tlscp,targetBoxSize) $::conf(tlscp,mountEnabled) \
          $::conf(tlscp,alphaSpeed) $::conf(tlscp,deltaSpeed) \
          $::conf(tlscp,alphaReverse) $::conf(tlscp,deltaReverse) \
          $::conf(tlscp,seuilx) $::conf(tlscp,seuily) \
          $::conf(tlscp,foclen) $::conf(tlscp,detection) $::conf(tlscp,catalogue) \
          $::conf(tlscp,kappa)  \
-         $::conf(tlscp,searchThreshin) $::conf(tlscp,searchFwmh) $::conf(tlscp,searchRadius) $::conf(tlscp,searchThreshold) \
+         $::conf(tlscp,searchThreshin) $::conf(tlscp,searchFwhm) $::conf(tlscp,searchRadius) $::conf(tlscp,searchThreshold) \
          $::conf(tlscp,maxMagnitude) $::conf(tlscp,delta) $::conf(tlscp,epsilon) \
          $::conf(tlscp,catalogueName) $::conf(tlscp,cataloguePath,$::conf(tlscp,catalogueName))
    }
@@ -1054,7 +1068,7 @@ proc ::tlscp::startSearchStar { visuNo } {
    clearSearchStar  $visuNo
 
    #--- je parametre la camera
-   set binning [list [string range $::conf(tlscp,binning) 0 0] [string range $::conf(tlscp,binning) 2 2]]
+   ###set binning [list [string range $::conf(tlscp,binning) 0 0] [string range $::conf(tlscp,binning) 2 2]]
    set private($visuNo,acquisitionState)  "search"
    set private($visuNo,acquisitionResult) ""
 
@@ -1064,7 +1078,7 @@ proc ::tlscp::startSearchStar { visuNo } {
    bind all <Key-Escape> "::tlscp::stopAcquisition $visuNo $private($visuNo,This).camera.search"
 
    #--- je lance la recherche
-   ::camera::searchBrightestStar $private($visuNo,camItem) "::tlscp::callbackAcquisition $visuNo" $::conf(tlscp,expTime) $binning $::conf(tlscp,originCoord) $::conf(tlscp,searchBoxSize) $::conf(tlscp,searchThreshin) $::conf(tlscp,searchFwmh) $::conf(tlscp,searchRadius) $::conf(tlscp,searchThreshold)
+   ::camera::searchBrightestStar $private($visuNo,camItem) "::tlscp::callbackAcquisition $visuNo" $::conf(tlscp,expTime) $::conf(tlscp,originCoord) $::conf(tlscp,searchBoxSize) $::conf(tlscp,searchThreshin) $::conf(tlscp,searchFwhm) $::conf(tlscp,searchRadius) $::conf(tlscp,searchThreshold)
 
    #--- j'attends la fin de le recherche
    vwait ::tlscp::private($visuNo,acquisitionState)
@@ -1720,7 +1734,7 @@ proc ::tlscp::config::apply { visuNo } {
    set conf(tlscp,foclen)           $widget($visuNo,foclen)
 
    set conf(tlscp,searchThreshin)   $widget($visuNo,searchThreshin)
-   set conf(tlscp,searchFwmh)       $widget($visuNo,searchFwmh)
+   set conf(tlscp,searchFwhm)       $widget($visuNo,searchFwhm)
    set conf(tlscp,searchRadius)     $widget($visuNo,searchRadius)
    set conf(tlscp,searchThreshold)  $widget($visuNo,searchThreshold)
 
@@ -1811,7 +1825,7 @@ proc ::tlscp::config::fillConfigPage { frm visuNo } {
    set widget($visuNo,foclen)          $conf(tlscp,foclen)
 
    set widget($visuNo,searchThreshin)  $conf(tlscp,searchThreshin)
-   set widget($visuNo,searchFwmh)      $conf(tlscp,searchFwmh)
+   set widget($visuNo,searchFwhm)      $conf(tlscp,searchFwhm)
    set widget($visuNo,searchRadius)    $conf(tlscp,searchRadius)
    set widget($visuNo,searchThreshold) $conf(tlscp,searchThreshold)
 
@@ -1941,9 +1955,9 @@ proc ::tlscp::config::fillConfigPage { frm visuNo } {
          LabelEntry $frm.astrom.bogumil.threshin -label "$caption(tlscp,searchThreshin)" \
             -labeljustify left -labelwidth 22 -width 3 -justify right \
             -textvariable ::tlscp::config::widget($visuNo,searchThreshin)
-         LabelEntry $frm.astrom.bogumil.fwhm -label "$caption(tlscp,searchFwmh)" \
+         LabelEntry $frm.astrom.bogumil.fwhm -label "$caption(tlscp,searchFwhm)" \
             -labeljustify left -labelwidth 22 -width 3 -justify right \
-            -textvariable ::tlscp::config::widget($visuNo,searchFwmh)
+            -textvariable ::tlscp::config::widget($visuNo,searchFwhm)
          LabelEntry $frm.astrom.bogumil.radius -label "$caption(tlscp,searchRadius)" \
             -labeljustify left -labelwidth 22 -width 3 -justify right \
             -textvariable ::tlscp::config::widget($visuNo,searchRadius)
