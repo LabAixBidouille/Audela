@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Alain KLOTZ <alain.klotz@free.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -71,6 +71,14 @@ int tt_ima_series_sub_1(TT_IMA_SERIES *pseries)
    for (kkk=0;kkk<(int)(nelem);kkk++) {
       value=offset+p_in->p[kkk]-p_tmp1->p[kkk];
       p_out->p[kkk]=(TT_PTYPE)(value);
+   }
+   if (pseries->hotPixelList!= NULL) {
+      // je retire les pixels chauds dans p_out
+      tt_repairHotPixel (pseries->hotPixelList, pseries->p_out);
+   }
+   if (pseries->cosmicThreshold!= 0.) {
+      // je retire les cosmiques dans p_out
+      tt_repairCosmic(pseries->cosmicThreshold, pseries->p_out);
    }
 
    /* --- calcul des temps ---*/
@@ -597,7 +605,7 @@ int tt_ima_series_filter_1(TT_IMA_SERIES *pseries)
       for (x=0;x<imax;x++) {
          if (imax>=kernel_width) {
             if (x>=imax-bordure) { continue; }
-            if (x<bordure) { continue; }         
+            if (x<bordure) { continue; }
          }
          /* - 2eme demi boucle de balayage kernel en x -*/
          for (kkk=1,kx=x+bordurex,ky=y-bordurey;ky<=y+bordurey;ky++,kkk++) {
@@ -1475,6 +1483,7 @@ int tt_ima_series_conv_1(TT_IMA_SERIES *pseries)
 
 }
 
+
 int tt_ima_series_subdark_1(TT_IMA_SERIES *pseries)
 /***************************************************************************/
 /* Soustraction du noir par equilibrage du temps de pose.                  */
@@ -1501,7 +1510,6 @@ int tt_ima_series_subdark_1(TT_IMA_SERIES *pseries)
    char unit[FLEN_COMMENT];
    int datatype;
    int bitpix,adu_tot;
-
    /* --- intialisations ---*/
    p_in=pseries->p_in;
    p_tmp1=pseries->p_tmp1;
@@ -1510,10 +1518,10 @@ int tt_ima_series_subdark_1(TT_IMA_SERIES *pseries)
    nelem=pseries->nelements;
    index=pseries->index;
    bitpix=pseries->bitpix;
-   
+
    //attention a la valeur de bitpix par défaut!
    adu_tot=(int)pow(2,(double)bitpix)-1;
-	
+
    /* --- charge les images bias et dark dans p_tmp1 et p_tmp2 ---*/
    if (index==1) {
       /* --- charge le bias ---*/
@@ -1522,15 +1530,15 @@ int tt_ima_series_subdark_1(TT_IMA_SERIES *pseries)
       nelem_tmp=(long)(0);
       strcpy(fullname,pseries->bias);
       if ((msg=tt_imaloader(p_tmp1,fullname,firstelem,nelem_tmp))!=0) {
-	 sprintf(message,"Problem concerning file %s",fullname);
-	 tt_errlog(msg,message);
-	 return(msg);
+         sprintf(message,"Problem concerning file %s",fullname);
+         tt_errlog(msg,message);
+         return(msg);
       }
       /* --- verification des dimensions ---*/
       if ((p_tmp1->naxis1!=p_in->naxis1)||(p_tmp1->naxis2!=p_in->naxis2)) {
-	 sprintf(message,"(%d,%d) of %s must be equal to (%d,%d) of %s",p_tmp1->naxis1,p_tmp1->naxis2,p_tmp1->load_fullname,p_in->naxis1,p_in->naxis2,p_in->load_fullname);
-	 tt_errlog(TT_ERR_IMAGES_NOT_SAME_SIZE,message);
-	 return(TT_ERR_IMAGES_NOT_SAME_SIZE);
+         sprintf(message,"(%d,%d) of %s must be equal to (%d,%d) of %s",p_tmp1->naxis1,p_tmp1->naxis2,p_tmp1->load_fullname,p_in->naxis1,p_in->naxis2,p_in->load_fullname);
+         tt_errlog(TT_ERR_IMAGES_NOT_SAME_SIZE,message);
+         return(TT_ERR_IMAGES_NOT_SAME_SIZE);
       }
       /* --- charge le dark ---*/
       /*tt_imabuilder(p_tmp2);*/
@@ -1538,19 +1546,19 @@ int tt_ima_series_subdark_1(TT_IMA_SERIES *pseries)
       nelem_tmp=(long)(0);
       strcpy(fullname,pseries->dark);
       if ((msg=tt_imaloader(p_tmp2,fullname,firstelem,nelem_tmp))!=0) {
-	 sprintf(message,"Problem concerning file %s",fullname);
-	 tt_errlog(msg,message);
-	 return(msg);
+         sprintf(message,"Problem concerning file %s",fullname);
+         tt_errlog(msg,message);
+         return(msg);
       }
       /* --- verification des dimensions ---*/
       if ((p_tmp2->naxis1!=p_in->naxis1)||(p_tmp2->naxis2!=p_in->naxis2)) {
-	 sprintf(message,"(%d,%d) of %s must be equal to (%d,%d) of %s",p_tmp2->naxis1,p_tmp2->naxis2,p_tmp2->load_fullname,p_in->naxis1,p_in->naxis2,p_in->load_fullname);
-	 tt_errlog(TT_ERR_IMAGES_NOT_SAME_SIZE,message);
-	 return(TT_ERR_IMAGES_NOT_SAME_SIZE);
+         sprintf(message,"(%d,%d) of %s must be equal to (%d,%d) of %s",p_tmp2->naxis1,p_tmp2->naxis2,p_tmp2->load_fullname,p_in->naxis1,p_in->naxis2,p_in->load_fullname);
+         tt_errlog(TT_ERR_IMAGES_NOT_SAME_SIZE,message);
+         return(TT_ERR_IMAGES_NOT_SAME_SIZE);
       }
       /* --- transforme le dark en therm et recherche exptime ---*/
       for (kkk=0;kkk<(int)(nelem);kkk++) {
-	 p_tmp2->p[kkk]-=p_tmp1->p[kkk];
+         p_tmp2->p[kkk]-=p_tmp1->p[kkk];
       }
       /* -- recherche des mots cles 'EXPTIME' dans l'entete FITS du dark --*/
       strcpy(keyname,pseries->key_dexptime);
@@ -1573,6 +1581,16 @@ int tt_ima_series_subdark_1(TT_IMA_SERIES *pseries)
       pseries->val_exptime=atof(value_char);
    }
 
+   /* --- suppression des points chauds, des colonnes defectueuses et des lignes defectueuses ---*/
+   if (pseries->hotPixelList!= NULL) {
+      // je retire les pixels chauds dans p_in
+      tt_repairHotPixel (pseries->hotPixelList, pseries->p_in);
+   }
+   if (pseries->cosmicThreshold != 0.) {
+      // je retire les cosmiques dans p_in
+      tt_repairCosmic(pseries->cosmicThreshold , pseries->p_in);
+   }
+
    /* --- calcul de la fonction ---*/
    /*tt_imabuilder(p_out);*/
    tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
@@ -1591,7 +1609,7 @@ int tt_ima_series_subdark_1(TT_IMA_SERIES *pseries)
 		  p_out->p[kkk]=(TT_PTYPE)(value);
 	   }
    } else {
-	   for (kkk=0;kkk<(int)(nelem);kkk++) { 
+	   for (kkk=0;kkk<(int)(nelem);kkk++) {
 		  value=(p_in->p[kkk])- xb*(p_tmp2->p[kkk]) - (p_tmp1->p[kkk]) ;
 		  p_out->p[kkk]=(TT_PTYPE)(value);
 	   }
@@ -1610,20 +1628,20 @@ int tt_ima_series_subdark_1(TT_IMA_SERIES *pseries)
          return(TT_ERR_PB_MALLOC);
       }
       for(ii=0;ii<imax;ii++) {
-        for(jj=0;jj<jmax;jj++) {
+         for(jj=0;jj<jmax;jj++) {
             adr=jj*imax+ii;
             pp[jj]=p_out->p[adr];
-        }
-        for(jj=0;jj<jmax;jj++) {
+         }
+         for(jj=0;jj<jmax;jj++) {
             somme=0.0;
             adr=jj*imax+ii;
             for(k=0;k<jj;k++) somme+=coef*pp[k];
             pp[jj]=p_out->p[adr]-(somme+.5);
-        }
-        for(jj=0;jj<jmax;jj++) {
+         }
+         for(jj=0;jj<jmax;jj++) {
             adr = jj*imax+ii;
             p_out->p[adr]=(TT_PTYPE)(pp[jj]);
-        }
+         }
       }
       tt_free2((void**)&pp,"pp");
    }

@@ -255,3 +255,77 @@ int tt_ima_series_fitellip_1(TT_IMA_SERIES *pseries)
    return(OK_DLL);
 }
 
+
+int tt_ima_series_hotpixel_1(TT_IMA_SERIES *pseries)
+/***************************************************************************/
+/* suppression des pixels chauds ou des colonnes ou des lignes defectueuses*/
+/***************************************************************************/
+// Parametres :
+//  int *hotPixelList : tableau de d'entiers contenant les pixels chauds ou les 
+//                    lignes defectueuses ou les colonnes defecteuse 
+//      Exemple : 2 pixels chauds, une colonne defecteuse , une ligne defectueuse
+//      iHotPixels[] = ['P' 232 183 'P' 456 198 'C' 400 'L' 200 0]
+//      equivalent a 
+//      iHotPixels[] = [50 232 183 50 456 198 43 400 4C 200 0]
+/***************************************************************************/
+{
+   TT_IMA *p_in,*p_out;
+   long nelem;
+   int index;
+   int result;
+
+   /* --- intialisations ---*/
+   p_in=pseries->p_in;
+   p_out=pseries->p_out;
+   nelem=pseries->nelements;
+   index=pseries->index;
+
+   /* --- calcul de la fonction ---*/
+   tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
+   // je copie l'image dans p_out
+   memcpy(p_out->p,p_in->p,nelem*sizeof(TT_PTYPE));
+   // je retire les pixels chauds de p_out
+   result = tt_repairHotPixel(pseries->hotPixelList,p_out);
+
+   /* --- calcul des temps ---*/
+   pseries->jj_stack=pseries->jj[index-1];
+   pseries->exptime_stack=pseries->exptime[index-1];
+
+   return(result);
+}
+
+int tt_ima_series_cosmic_1(TT_IMA_SERIES *pseries)
+/***************************************************************************/
+/* suppression des cosmiques                                               */
+/***************************************************************************/
+/* parametres :                                                            */
+/* cosmicThreshold= 400 par défaut (valeur conseillees 100 à 500)          */
+/***************************************************************************/
+{
+   TT_IMA *p_in,*p_out;
+   long nelem;
+   int index;
+   int result;
+
+   /* --- intialisations ---*/
+   p_in=pseries->p_in;
+   p_out=pseries->p_out;
+   nelem=pseries->nelements;
+   index=pseries->index;
+
+   /* --- calcul de la fonction ---*/
+   tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
+   // je copie l'image dans p_out
+   memcpy(p_out->p,p_in->p,nelem*sizeof(TT_PTYPE));
+   // je retire les cosmiques de p_out
+   result = tt_repairCosmic(pseries->cosmicThreshold,p_out);
+
+   /* --- calcul des temps ---*/
+   pseries->jj_stack=pseries->jj[index-1];
+   pseries->exptime_stack=pseries->exptime[index-1];
+
+   return(result);
+}
+
+
+
