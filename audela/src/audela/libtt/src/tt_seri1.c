@@ -408,6 +408,12 @@ int tt_ima_series_dispatch(char **keys,TT_IMA_SERIES *pseries)
    } else if (pseries->numfct==TT_IMASERIES_DELETE) {
       msg=OK_DLL;
       fct_found=TT_YES;
+   } else if (pseries->numfct==TT_IMASERIES_REPAIR_HOTPIXEL) {
+      msg=tt_ima_series_hotpixel_1(pseries);
+      fct_found=TT_YES;
+   } else if (pseries->numfct==TT_IMASERIES_REPAIR_COSMIC) {
+      msg=tt_ima_series_cosmic_1(pseries);
+      fct_found=TT_YES;
    } else {
       tt_user1_ima_series_dispatch1(pseries,&fct_found,&msg);
       tt_user2_ima_series_dispatch1(pseries,&fct_found,&msg);
@@ -463,12 +469,12 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    int pos,msg,taille,nombre;
    char *car;
    char mot[1000];
-   char argu[1000];
+   char *argu = NULL;
    double valsat=(double)(TT_MAX_DOUBLE);
    pseries->nbima=nbima;
    pseries->numfct=0;
    pseries->index_out=0;
-
+   
    tt_strupr(keys[10]);
    if (strcmp(keys[10],"SUB")==0) { pseries->numfct=TT_IMASERIES_SUB; }
    else if (strcmp(keys[10],"ADD")==0) { pseries->numfct=TT_IMASERIES_ADD; }
@@ -510,13 +516,15 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    else if (strcmp(keys[10],"REGISTERFINE")==0) { pseries->numfct=TT_IMASERIES_REGISTERFINE; }
    else if (strcmp(keys[10],"PROD")==0) { pseries->numfct=TT_IMASERIES_PROD; }
    else if (strcmp(keys[10],"FITELLIP")==0) { pseries->numfct=TT_IMASERIES_FITELLIP; }
-
+   else if (strcmp(keys[10],"HOTPIXEL")==0) { pseries->numfct=TT_IMASERIES_REPAIR_HOTPIXEL; }
+   else if (strcmp(keys[10],"COSMIC")==0)   { pseries->numfct=TT_IMASERIES_REPAIR_COSMIC; }
+   
    tt_user1_ima_series_builder1(keys[10],pseries);
    tt_user2_ima_series_builder1(keys[10],pseries);
    tt_user3_ima_series_builder1(keys[10],pseries);
    tt_user4_ima_series_builder1(keys[10],pseries);
    tt_user5_ima_series_builder1(keys[10],pseries);
-
+   
    /* --- valeurs des options par defaut ---*/
    strcpy(pseries->catafile,"");
    strcpy(pseries->jpegfile_chart,"");
@@ -642,322 +650,326 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    pseries->p_ast.pv[1][1]=1.;
    pseries->p_ast.pv[2][1]=1.;
    pseries->p_ast.pv_valid=TT_NO;
-
+   pseries->hotPixelList = NULL;
+   pseries->cosmicThreshold = 0.;
+   
    tt_user1_ima_series_builder2(pseries);
    tt_user2_ima_series_builder2(pseries);
    tt_user3_ima_series_builder2(pseries);
    tt_user4_ima_series_builder2(pseries);
    tt_user5_ima_series_builder2(pseries);
-
+   
    /* --- decodage des parametres optionels ---*/
    for (k=11;k<(pseries->nbkeys);k++) {
-      /* --- extrait le mot cle ---*/
-      strcpy(mot,keys[k]);
+      /* --- extrait le mot cle ( 999 caracteres au maximum )---*/
+      strncpy(mot,keys[k], 999);
       tt_strupr(mot);
       car=strstr(mot,"=");
       pos=0;
+      
+      argu= malloc(strlen(keys[k]));
       if (car!=NULL) {
-	 pos=(int)(car-mot);
-	 mot[pos]='\0';
-	 strcpy(argu,keys[k]+pos+1);
+         pos=(int)(car-mot);
+         mot[pos]='\0';
+         strcpy(argu,keys[k]+pos+1);
       } else {
-	 /* --- mot sans argument ---*/
-	 strcpy(argu,"");
+         /* --- mot sans argument ---*/
+         strcpy(argu,"");
       }
-
+      
       /* --- extrait la valeur de l'argument ---*/
       if (strcmp(mot,"BITPIX")==0) {
-	 if (strcmp(argu,"8")==0) {
-	    pseries->bitpix=BYTE_IMG;
-	    valsat=(double)(TT_MAX_UNSIGNEDCHAR);
-	 } else if (strcmp(argu,"16")==0) {
-	    pseries->bitpix=SHORT_IMG;
-	    valsat=(double)(TT_MAX_SHORT);
-	 } else if (strcmp(argu,"+16")==0) {
-	    pseries->bitpix=USHORT_IMG;
-	    valsat=(double)(TT_MAX_UNSIGNEDSHORT);
-	 } else if (strcmp(argu,"32")==0) {
-	    pseries->bitpix=LONG_IMG;
-	    valsat=(double)(TT_MAX_INT);
-	 } else if (strcmp(argu,"+32")==0) {
-	    pseries->bitpix=ULONG_IMG;
-	    valsat=(double)(TT_MAX_UNSIGNEDINT);
-	 } else if (strcmp(argu,"-32")==0) {
-	    pseries->bitpix=FLOAT_IMG;
-	    valsat=(double)(TT_MAX_FLOAT);
-	 } else if (strcmp(argu,"-64")==0) {
-	    pseries->bitpix=DOUBLE_IMG;
-	    valsat=(double)(TT_MAX_DOUBLE);
-	 } else {
-	    pseries->bitpix=0;
-	    valsat=(double)(TT_MAX_DOUBLE);
-	 }
+         if (strcmp(argu,"8")==0) {
+            pseries->bitpix=BYTE_IMG;
+            valsat=(double)(TT_MAX_UNSIGNEDCHAR);
+         } else if (strcmp(argu,"16")==0) {
+            pseries->bitpix=SHORT_IMG;
+            valsat=(double)(TT_MAX_SHORT);
+         } else if (strcmp(argu,"+16")==0) {
+            pseries->bitpix=USHORT_IMG;
+            valsat=(double)(TT_MAX_UNSIGNEDSHORT);
+         } else if (strcmp(argu,"32")==0) {
+            pseries->bitpix=LONG_IMG;
+            valsat=(double)(TT_MAX_INT);
+         } else if (strcmp(argu,"+32")==0) {
+            pseries->bitpix=ULONG_IMG;
+            valsat=(double)(TT_MAX_UNSIGNEDINT);
+         } else if (strcmp(argu,"-32")==0) {
+            pseries->bitpix=FLOAT_IMG;
+            valsat=(double)(TT_MAX_FLOAT);
+         } else if (strcmp(argu,"-64")==0) {
+            pseries->bitpix=DOUBLE_IMG;
+            valsat=(double)(TT_MAX_DOUBLE);
+         } else {
+            pseries->bitpix=0;
+            valsat=(double)(TT_MAX_DOUBLE);
+         }
       }
       else if (strcmp(mot,"JPEGFILE")==0) {
-	 pseries->jpegfile_make=TT_YES;
-	 if (strcmp(argu,"")!=0) {
-	    strcpy(pseries->jpegfile,argu);
-	 }
+         pseries->jpegfile_make=TT_YES;
+         if (strcmp(argu,"")!=0) {
+            strcpy(pseries->jpegfile,argu);
+         }
       }
       else if (strcmp(mot,"MAGRLIM")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    pseries->magrlim=(double)atof(argu);
-	 }
+         if (strcmp(argu,"")!=0) {
+            pseries->magrlim=(double)atof(argu);
+         }
       }
       else if (strcmp(mot,"MAGBLIM")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    pseries->magblim=(double)atof(argu);
-	 }
+         if (strcmp(argu,"")!=0) {
+            pseries->magblim=(double)atof(argu);
+         }
       }
       else if (strcmp(mot,"MATCHWCS")==0) {
-	 pseries->matchwcs=(int)1;
+         pseries->matchwcs=(int)1;
       }
       else if (strcmp(mot,"XCENTER")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    pseries->xcenter=(double)atof(argu);
-	 }
+         if (strcmp(argu,"")!=0) {
+            pseries->xcenter=(double)atof(argu);
+         }
       }
       else if (strcmp(mot,"YCENTER")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    pseries->ycenter=(double)atof(argu);
-	 }
+         if (strcmp(argu,"")!=0) {
+            pseries->ycenter=(double)atof(argu);
+         }
       }
       else if (strcmp(mot,"RADIUS")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    pseries->radius=(double)atof(argu);
-	 }
-	 }
-      else if (strcmp(mot,"EXPOSURE")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    pseries->exposure=(double)atof(argu);
-	 }
-      }else if (strcmp(mot,"NOM_TRAIT")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    strcpy(pseries->nom_trait,argu);
-	 }
+         if (strcmp(argu,"")!=0) {
+            pseries->radius=(double)atof(argu);
+         }
       }
-	  else if (strcmp(mot,"STRUCT_ELEM")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    strcpy(pseries->struct_elem,argu);
-	 }
+      else if (strcmp(mot,"EXPOSURE")==0) {
+         if (strcmp(argu,"")!=0) {
+            pseries->exposure=(double)atof(argu);
+         }
+      }else if (strcmp(mot,"NOM_TRAIT")==0) {
+         if (strcmp(argu,"")!=0) {
+            strcpy(pseries->nom_trait,argu);
+         }
+      }
+      else if (strcmp(mot,"STRUCT_ELEM")==0) {
+         if (strcmp(argu,"")!=0) {
+            strcpy(pseries->struct_elem,argu);
+         }
       }
       else if (strcmp(mot,"ANGLE")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    pseries->angle=(double)atof(argu);
-	 }
+         if (strcmp(argu,"")!=0) {
+            pseries->angle=(double)atof(argu);
+         }
       }
       else if (strcmp(mot,"BACKGROUND")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    pseries->background=(double)atof(argu);
-	 }
+         if (strcmp(argu,"")!=0) {
+            pseries->background=(double)atof(argu);
+         }
       }
       else if (strcmp(mot,"FITORDER6543")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    pseries->fitorder6543=(int)atoi(argu);
-	 }
+         if (strcmp(argu,"")!=0) {
+            pseries->fitorder6543=(int)atoi(argu);
+         }
       }
       else if (strcmp(mot,"EXPTIME")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    strcpy(pseries->key_exptime,argu);
-	 }
+         if (strcmp(argu,"")!=0) {
+            strcpy(pseries->key_exptime,argu);
+         }
       }
       else if (strcmp(mot,"DEXPTIME")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    strcpy(pseries->key_dexptime,argu);
-	 }
+         if (strcmp(argu,"")!=0) {
+            strcpy(pseries->key_dexptime,argu);
+         }
       }
       else if (strcmp(mot,"LOCUT")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    strcpy(pseries->keylocut,argu);
-	 }
+         if (strcmp(argu,"")!=0) {
+            strcpy(pseries->keylocut,argu);
+         }
       }
       else if (strcmp(mot,"HICUT")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    strcpy(pseries->keyhicut,argu);
-	 }
+         if (strcmp(argu,"")!=0) {
+            strcpy(pseries->keyhicut,argu);
+         }
       }
       else if (strcmp(mot,"KEYTYPE")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    strcpy(pseries->keytype,argu);
-	 }
-	  }
+         if (strcmp(argu,"")!=0) {
+            strcpy(pseries->keytype,argu);
+         }
+      }
       else if (strcmp(mot,"LOFRAC")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    pseries->lofrac=(double)(atof(argu));
-	 }
+         if (strcmp(argu,"")!=0) {
+            pseries->lofrac=(double)(atof(argu));
+         }
       }
       else if (strcmp(mot,"HIFRAC")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    pseries->hifrac=(double)(atof(argu));
-	 }
+         if (strcmp(argu,"")!=0) {
+            pseries->hifrac=(double)(atof(argu));
+         }
       }
       else if (strcmp(mot,"CUTSCONTRAST")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    pseries->cutscontrast=(double)(atof(argu));
-	 }
+         if (strcmp(argu,"")!=0) {
+            pseries->cutscontrast=(double)(atof(argu));
+         }
       }
       else if (strcmp(mot,"FILE_ASCII")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    strcpy(pseries->file_ascii,argu);
-	 }
+         if (strcmp(argu,"")!=0) {
+            strcpy(pseries->file_ascii,argu);
+         }
       }
       else if (strcmp(mot,"SKYLEVEL")==0) {
-	 pseries->skylevel_compute=TT_YES;
+         pseries->skylevel_compute=TT_YES;
       }
       else if (strcmp(mot,"CATAFILE")==0) {
-	 pseries->catalog_list=TT_YES;
-	 strcpy(pseries->catafile,argu);
+         pseries->catalog_list=TT_YES;
+         strcpy(pseries->catafile,argu);
       }
       else if (strcmp(mot,"OBJEFILE")==0) {
-	 pseries->object_list=TT_YES;
-	 pseries->fwhm_compute=TT_YES;
-	 strcpy(pseries->objefile,argu);
+         pseries->object_list=TT_YES;
+         pseries->fwhm_compute=TT_YES;
+         strcpy(pseries->objefile,argu);
       }
       else if (strcmp(mot,"OBJEFILETYPE")==0) {
-	 strcpy(pseries->objefiletype,argu);
+         strcpy(pseries->objefiletype,argu);
       }
       else if (strcmp(mot,"PIXEFILE")==0) {
-	 pseries->pixel_list=TT_YES;
-	 pseries->fwhm_compute=TT_YES;
-	 strcpy(pseries->pixefile,argu);
+         pseries->pixel_list=TT_YES;
+         pseries->fwhm_compute=TT_YES;
+         strcpy(pseries->pixefile,argu);
       }
       else if (strcmp(mot,"PIXINT")==0) {
-	 pseries->pixint=TT_YES;
+         pseries->pixint=TT_YES;
       }
       else if (strcmp(mot,"NORMAFLUX")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    pseries->normaflux=(double)(atof(argu));
-	 }
+         if (strcmp(argu,"")!=0) {
+            pseries->normaflux=(double)(atof(argu));
+         }
       }
       else if (strcmp(mot,"OFFSET")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    pseries->offset=(double)(atof(argu));
-	 }
+         if (strcmp(argu,"")!=0) {
+            pseries->offset=(double)(atof(argu));
+         }
       }
       else if (strcmp(mot,"JPEG_QUALITY")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    pseries->jpeg_qualite=(int)(atoi(argu));
-	 }
+         if (strcmp(argu,"")!=0) {
+            pseries->jpeg_qualite=(int)(atoi(argu));
+         }
       }
       else if (strcmp(mot,"NBSUBSERIES")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    pseries->nbsubseries=(int)(atoi(argu));
-	 }
+         if (strcmp(argu,"")!=0) {
+            pseries->nbsubseries=(int)(atoi(argu));
+         }
       }
       else if (strcmp(mot,"SIGMA")==0) {
          pseries->sigma_given=TT_YES;
          pseries->sigma_value=atof(argu);
       }
       else if (strcmp(mot,"BINARY")==0) {
-	 pseries->binary_yesno=TT_YES;
+         pseries->binary_yesno=TT_YES;
       }
       else if (strcmp(mot,"JPEGFILE_CHART")==0) {
-	 pseries->jpegfile_chart_make=TT_YES;
-	 if (strcmp(argu,"")!=0) {
-	    strcpy(pseries->jpegfile_chart,argu);
-	 }
+         pseries->jpegfile_chart_make=TT_YES;
+         if (strcmp(argu,"")!=0) {
+            strcpy(pseries->jpegfile_chart,argu);
+         }
       }
       else if (strcmp(mot,"JPEGFILE_CHART2")==0) {
-	 pseries->jpegfile_chart2_make=TT_YES;
-	 if (strcmp(argu,"")!=0) {
-	    strcpy(pseries->jpegfile_chart2,argu);
-	 }
+         pseries->jpegfile_chart2_make=TT_YES;
+         if (strcmp(argu,"")!=0) {
+            strcpy(pseries->jpegfile_chart2,argu);
+         }
       }
       else if (strcmp(mot,"FILE")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    strcpy(pseries->file,argu);
-	 }
+         if (strcmp(argu,"")!=0) {
+            strcpy(pseries->file,argu);
+         }
       }
       else if (strcmp(mot,"DARK")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    strcpy(pseries->dark,argu);
-	 }
+         if (strcmp(argu,"")!=0) {
+            strcpy(pseries->dark,argu);
+         }
       }
       else if (strcmp(mot,"BIAS")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    strcpy(pseries->bias,argu);
-	 }
+         if (strcmp(argu,"")!=0) {
+            strcpy(pseries->bias,argu);
+         }
       }
-	  else if (strcmp(mot,"CENTROIDE")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    strcpy(pseries->centroide,argu);
-	 }
+      else if (strcmp(mot,"CENTROIDE")==0) {
+         if (strcmp(argu,"")!=0) {
+            strcpy(pseries->centroide,argu);
+         }
       }
       else if (strcmp(mot,"FLAT")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    strcpy(pseries->flat,argu);
-	 }
+         if (strcmp(argu,"")!=0) {
+            strcpy(pseries->flat,argu);
+         }
       }
       else if (strcmp(mot,"PATH_ASTROMCATALOG")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    strcpy(pseries->path_astromcatalog,argu);
-	 }
+         if (strcmp(argu,"")!=0) {
+            strcpy(pseries->path_astromcatalog,argu);
+         }
       }
       else if (strcmp(mot,"ASTROMCATALOG")==0) {
-	 if (strcmp(argu,"")!=0) {
-	    strcpy(pseries->astromcatalog,argu);
-	 }
+         if (strcmp(argu,"")!=0) {
+            strcpy(pseries->astromcatalog,argu);
+         }
       }
       else if (strcmp(mot,"TRANSLATE")==0) {
-	 tt_strupr(argu);
-	 if (strcmp(argu,"ONLY")==0) { pseries->regitrans=TT_REGITRANS_ONLY;}
-	 else if (strcmp(argu,"BEFORE")==0) { pseries->regitrans=TT_REGITRANS_BEFORE;}
-	 else if (strcmp(argu,"AFTER")==0) { pseries->regitrans=TT_REGITRANS_AFTER;}
-	 else if (strcmp(argu,"NEVER")==0) { pseries->regitrans=TT_REGITRANS_NEVER;}
+         tt_strupr(argu);
+         if (strcmp(argu,"ONLY")==0) { pseries->regitrans=TT_REGITRANS_ONLY;}
+         else if (strcmp(argu,"BEFORE")==0) { pseries->regitrans=TT_REGITRANS_BEFORE;}
+         else if (strcmp(argu,"AFTER")==0) { pseries->regitrans=TT_REGITRANS_AFTER;}
+         else if (strcmp(argu,"NEVER")==0) { pseries->regitrans=TT_REGITRANS_NEVER;}
       }
       else if (strcmp(mot,"THERM_KAPPA")==0) {
-	 pseries->therm_kappa=(double)(atof(argu));
+         pseries->therm_kappa=(double)(atof(argu));
       }
       else if (strcmp(mot,"PARAMRESAMPLE")==0) {
-	 strcpy(pseries->paramresample,argu);
+         strcpy(pseries->paramresample,argu);
       }
       else if (strcmp(mot,"DETECT_KAPPA")==0) {
-	 pseries->detect_kappa=(double)(atof(argu));
+         pseries->detect_kappa=(double)(atof(argu));
       }
       else if (strcmp(mot,"POWER")==0) {
-	 pseries->power=(double)(atof(argu));
+         pseries->power=(double)(atof(argu));
       }
       else if (strcmp(mot,"BORDER")==0) {
-	 pseries->bordure=(double)(atof(argu));
+         pseries->bordure=(double)(atof(argu));
       }
       else if (strcmp(mot,"PIXSAT_VALUE")==0) {
-	 pseries->pixelsat_compute=TT_YES;
-	 if (strcmp(argu,"")!=0) {
-	    pseries->pixelsat_value=(double)(atof(argu));
-	 } else {
-	    pseries->pixelsat_value=TT_MIN_DOUBLE;
-	 }
+         pseries->pixelsat_compute=TT_YES;
+         if (strcmp(argu,"")!=0) {
+            pseries->pixelsat_value=(double)(atof(argu));
+         } else {
+            pseries->pixelsat_value=TT_MIN_DOUBLE;
+         }
       }
       else if (strcmp(mot,"NULLPIXEL")==0) {
-	 pseries->nullpix_exist=TT_YES;
-	 pseries->nullpix_value=(double)(atof(argu));
+         pseries->nullpix_exist=TT_YES;
+         pseries->nullpix_value=(double)(atof(argu));
       }
       else if (strcmp(mot,"FWHM")==0) {
-	 pseries->fwhm_compute=TT_YES;
+         pseries->fwhm_compute=TT_YES;
       }
       else if (strcmp(mot,"EPSILON")==0) {
-	 pseries->epsilon=(double)(atof(argu));
+         pseries->epsilon=(double)(atof(argu));
       }
       else if (strcmp(mot,"DELTA")==0) {
-	 pseries->delta=(double)(atof(argu));
+         pseries->delta=(double)(atof(argu));
       }
       else if (strcmp(mot,"THRESHOLD")==0) {
-	 pseries->threshold=(double)(atof(argu));
+         pseries->threshold=(double)(atof(argu));
       }
       else if (strcmp(mot,"TRANS_X")==0) {
-	 pseries->trans_x=(double)(atof(argu));
+         pseries->trans_x=(double)(atof(argu));
       }
       else if (strcmp(mot,"TRANS_Y")==0) {
-	 pseries->trans_y=(double)(atof(argu));
+         pseries->trans_y=(double)(atof(argu));
       }
       else if (strcmp(mot,"CONSTANT")==0) {
-	 pseries->constant=atof(argu);
+         pseries->constant=atof(argu);
       }
       else if (strcmp(mot,"NORMGAIN_VALUE")==0) {
-	 pseries->normgain_value=atof(argu);
+         pseries->normgain_value=atof(argu);
       }
       else if (strcmp(mot,"NORMOFFSET_VALUE")==0) {
-	 pseries->normoffset_value=atof(argu);
+         pseries->normoffset_value=atof(argu);
       }
       else if (strcmp(mot,"UNSMEARING")==0) {
          pseries->coef_unsmearing=atof(argu);
@@ -990,89 +1002,98 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
          pseries->invert_xy=TT_YES;
       }
       else if (strcmp(mot,"X1")==0) {
-	 pseries->x1=(int)(fabs(atoi(argu)));
+         pseries->x1=(int)(fabs(atoi(argu)));
       }
       else if (strcmp(mot,"Y1")==0) {
-	 pseries->y1=(int)(fabs(atoi(argu)));
+         pseries->y1=(int)(fabs(atoi(argu)));
       }
       else if (strcmp(mot,"X2")==0) {
-	 pseries->x2=(int)(fabs(atoi(argu)));
+         pseries->x2=(int)(fabs(atoi(argu)));
       }
       else if (strcmp(mot,"Y2")==0) {
-	 pseries->y2=(int)(fabs(atoi(argu)));
+         pseries->y2=(int)(fabs(atoi(argu)));
       }
       else if (strcmp(mot,"WIDTH")==0) {
-	 pseries->width=(int)(fabs(atoi(argu)));
+         pseries->width=(int)(fabs(atoi(argu)));
       }
       else if (strcmp(mot,"HEIGHT")==0) {
-	 pseries->height=(int)(fabs(atoi(argu)));
+         pseries->height=(int)(fabs(atoi(argu)));
       }
       else if (strcmp(mot,"LENGTH")==0) {
-	 pseries->length=(int)(fabs(atoi(argu)));
+         pseries->length=(int)(fabs(atoi(argu)));
       }
       else if (strcmp(mot,"OVERSAMPLING")==0) {
-	 pseries->oversampling=(int)(fabs(atoi(argu)));
+         pseries->oversampling=(int)(fabs(atoi(argu)));
       }
       else if (strcmp(mot,"PERCENT")==0) {
-	 pseries->percent=(double)(fabs(atof(argu)));
+         pseries->percent=(double)(fabs(atof(argu)));
       }      
       else if (strcmp(mot,"FWHMSAT")==0) {
-	 pseries->fwhmsat=(double)(fabs(atof(argu)));
+         pseries->fwhmsat=(double)(fabs(atof(argu)));
       }      
       else if (strcmp(mot,"KERNEL_COEF")==0) {
-	 pseries->kernel_coef=(double)(fabs(atof(argu)));
+         pseries->kernel_coef=(double)(fabs(atof(argu)));
       }
       else if (strcmp(mot,"TYPE_THRESHOLD")==0) {
-	 if (atof(argu)>0) {
-	    pseries->type_threshold=1;
-	 } else if (atof(argu)<0) {
-	    pseries->type_threshold=-1;
-	 } else {
-	    pseries->type_threshold=0;
-	 }
+         if (atof(argu)>0) {
+            pseries->type_threshold=1;
+         } else if (atof(argu)<0) {
+            pseries->type_threshold=-1;
+         } else {
+            pseries->type_threshold=0;
+         }
       }
       else if (strcmp(mot,"KERNEL_WIDTH")==0) {
-	 valint=atoi(argu);
-	 if (valint>2) {
-	    if ((valint%2)==0) {valint++;}
-	    pseries->kernel_width=valint;
-	 }
+         valint=atoi(argu);
+         if (valint>2) {
+            if ((valint%2)==0) {valint++;}
+            pseries->kernel_width=valint;
+         }
       }
       else if (strcmp(mot,"KERNEL_TYPE")==0) {
-	 tt_strupr(argu);
-	 if (strcmp(argu,"FH")==0) {
-	    pseries->kernel_type=TT_KERNELTYPE_FH;
-	 } else if (strcmp(argu,"FB")==0) {
-	    pseries->kernel_type=TT_KERNELTYPE_FB;
-	 } else if (strcmp(argu,"MED")==0) {
-	    pseries->kernel_type=TT_KERNELTYPE_MED;
-	 } else if (strcmp(argu,"MIN")==0) {
-	    pseries->kernel_type=TT_KERNELTYPE_MIN;
-	 } else if (strcmp(argu,"MAX")==0) {
-	    pseries->kernel_type=TT_KERNELTYPE_MAX;
-	 } else if (strcmp(argu,"MEAN")==0) {
-	    pseries->kernel_type=TT_KERNELTYPE_MEAN;
-	 } else if ((strcmp(argu,"GRADLEFT")==0)||(strcmp(argu,"LAP")==0)) {
-	    pseries->kernel_type=TT_KERNELTYPE_GRAD_LEFT;
-	 } else if (strcmp(argu,"GRADRIGHT")==0) {
-	    pseries->kernel_type=TT_KERNELTYPE_GRAD_RIGHT;
-	 } else if (strcmp(argu,"GRADUP")==0) {
-	    pseries->kernel_type=TT_KERNELTYPE_GRAD_UP;
-	 } else if (strcmp(argu,"GRADDOWN")==0) {
-	    pseries->kernel_type=TT_KERNELTYPE_GRAD_DOWN;
-	 } else if (strcmp(argu,"MORLET")==0) {
-	    pseries->kernel_type=TT_KERNELTYPE_MORLET;
-	 } else if (strcmp(argu,"MEXICAN")==0) {
-	    pseries->kernel_type=TT_KERNELTYPE_MEXICAN;
-	 } else if (strcmp(argu,"GAUSSIAN")==0) {
-	    pseries->kernel_type=TT_KERNELTYPE_GAUSSIAN;
-	 }
-   }
-     tt_user1_ima_series_builder3(mot,argu,pseries);
-     tt_user2_ima_series_builder3(mot,argu,pseries);
-     tt_user3_ima_series_builder3(mot,argu,pseries);
-     tt_user4_ima_series_builder3(mot,argu,pseries);
-     tt_user5_ima_series_builder3(mot,argu,pseries);
+         tt_strupr(argu);
+         if (strcmp(argu,"FH")==0) {
+            pseries->kernel_type=TT_KERNELTYPE_FH;
+         } else if (strcmp(argu,"FB")==0) {
+            pseries->kernel_type=TT_KERNELTYPE_FB;
+         } else if (strcmp(argu,"MED")==0) {
+            pseries->kernel_type=TT_KERNELTYPE_MED;
+         } else if (strcmp(argu,"MIN")==0) {
+            pseries->kernel_type=TT_KERNELTYPE_MIN;
+         } else if (strcmp(argu,"MAX")==0) {
+            pseries->kernel_type=TT_KERNELTYPE_MAX;
+         } else if (strcmp(argu,"MEAN")==0) {
+            pseries->kernel_type=TT_KERNELTYPE_MEAN;
+         } else if ((strcmp(argu,"GRADLEFT")==0)||(strcmp(argu,"LAP")==0)) {
+            pseries->kernel_type=TT_KERNELTYPE_GRAD_LEFT;
+         } else if (strcmp(argu,"GRADRIGHT")==0) {
+            pseries->kernel_type=TT_KERNELTYPE_GRAD_RIGHT;
+         } else if (strcmp(argu,"GRADUP")==0) {
+            pseries->kernel_type=TT_KERNELTYPE_GRAD_UP;
+         } else if (strcmp(argu,"GRADDOWN")==0) {
+            pseries->kernel_type=TT_KERNELTYPE_GRAD_DOWN;
+         } else if (strcmp(argu,"MORLET")==0) {
+            pseries->kernel_type=TT_KERNELTYPE_MORLET;
+         } else if (strcmp(argu,"MEXICAN")==0) {
+            pseries->kernel_type=TT_KERNELTYPE_MEXICAN;
+         } else if (strcmp(argu,"GAUSSIAN")==0) {
+            pseries->kernel_type=TT_KERNELTYPE_GAUSSIAN;
+         } 
+      } else if (strcmp(mot,"HOT_PIXEL_LIST")==0) {
+            tt_parseHotPixelList(argu, &pseries->hotPixelList);
+      } else if (strcmp(mot,"COSMIC_THRESHOLD")==0) {
+            pseries->cosmicThreshold=(TT_PTYPE)fabs(atof(argu));
+      }   
+      tt_user1_ima_series_builder3(mot,argu,pseries);
+      tt_user2_ima_series_builder3(mot,argu,pseries);
+      tt_user3_ima_series_builder3(mot,argu,pseries);
+      tt_user4_ima_series_builder3(mot,argu,pseries);
+      tt_user5_ima_series_builder3(mot,argu,pseries);
+
+      if (argu != NULL ) {
+         free(argu);
+         argu = NULL;
+      }
    }
    if ((pseries->pixelsat_compute==TT_YES)&&(pseries->pixelsat_value==TT_MIN_DOUBLE)&&(pseries->bitpix!=0)) {
       pseries->pixelsat_value=valsat;
@@ -1096,7 +1117,7 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    pseries->fwhm=0.;
    pseries->d_fwhm=0.;
    pseries->nbmatched=0;
-
+   
    /* --- initialise les pointeurs a allouer ---*/
    pseries->p_in=NULL;
    pseries->p_tmp1=NULL;
@@ -1108,7 +1129,7 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    pseries->exptime=NULL;
    pseries->poids=NULL;
    pseries->coefa=NULL;
-
+   
    /* --- alloue de la place pour les images ---*/
    nombre=1;
    taille=sizeof(TT_IMA);
@@ -1122,7 +1143,7 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
       tt_ima_series_destroyer(pseries);
       return(msg);
    }
-
+   
    nombre=1;
    taille=sizeof(TT_IMA);
    if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&pseries->p_tmp1,&nombre,&taille,"pseries->p_tmp1"))!=0) {
@@ -1135,7 +1156,7 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
       tt_ima_series_destroyer(pseries);
       return(msg);
    }
-
+   
    nombre=1;
    taille=sizeof(TT_IMA);
    if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&pseries->p_tmp2,&nombre,&taille,"pseries->p_tmp2"))!=0) {
@@ -1148,7 +1169,7 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
       tt_ima_series_destroyer(pseries);
       return(msg);
    }
-
+   
    nombre=1;
    taille=sizeof(TT_IMA);
    if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&pseries->p_tmp3,&nombre,&taille,"pseries->p_tmp3"))!=0) {
@@ -1161,7 +1182,7 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
       tt_ima_series_destroyer(pseries);
       return(msg);
    }
-
+   
    nombre=1;
    taille=sizeof(TT_IMA);
    if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&pseries->p_tmp4,&nombre,&taille,"pseries->p_tmp4"))!=0) {
@@ -1174,7 +1195,7 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
       tt_ima_series_destroyer(pseries);
       return(msg);
    }
-
+   
    nombre=1;
    taille=sizeof(TT_IMA);
    if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&pseries->p_out,&nombre,&taille,"pseries->p_out"))!=0) {
@@ -1187,7 +1208,7 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
       tt_ima_series_destroyer(pseries);
       return(msg);
    }
-
+   
    /* --- alloue de la place pour les tableaux ---*/
    nombre=nbima;
    taille=sizeof(double);
@@ -1275,6 +1296,11 @@ int tt_ima_series_destroyer(TT_IMA_SERIES *pseries)
       tt_free(pseries->coefa,"pseries->coefa");
    }
    pseries->coefa=NULL;
+
+   if (pseries->hotPixelList!=NULL) {
+      tt_free(pseries->hotPixelList,"pseries->hotPixelList");
+   }
+   pseries->hotPixelList = NULL;
    return(OK_DLL);
 }
 
