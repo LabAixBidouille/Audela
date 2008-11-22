@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.14 2008-11-21 16:54:05 michelpujol Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.15 2008-11-22 22:09:38 robertdelmas Exp $
 #
 
 #============================================================
@@ -386,21 +386,6 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
             grid columnconfigure  $private($visuNo,This).camera.pose 0 -weight  1
             grid columnconfigure  $private($visuNo,This).camera.pose 1 -weight  1
 
-#         #--- Frame invisible pour le temps de pose
-#         frame $private($visuNo,This).camera.fra1
-
-#            #--- Entry pour l'objet a centrer
-#            entry $private($visuNo,This).camera.fra1.ent1 -font $audace(font,arial_8_b) \
-#               -textvariable ::conf(tlscp,expTime) -relief groove -width 5 -justify center
-#            pack $private($visuNo,This).camera.fra1.ent1 -in $private($visuNo,This).camera.fra1 -side left \
-#               -fill none -padx 4 -pady 2
-
-#            label $private($visuNo,This).camera.fra1.lab1 -text $caption(tlscp,seconde) -relief flat
-#            pack $private($visuNo,This).camera.fra1.lab1 -in $private($visuNo,This).camera.fra1 -side left \
-#               -fill none -padx 1 -pady 1
-
-#         pack $private($visuNo,This).camera.fra1 -in $private($visuNo,This).camera -side top -fill x
-
          #--- Label pour binning
          frame $private($visuNo,This).camera.binning -borderwidth 0 -relief groove
 
@@ -434,7 +419,7 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
 
          #--- checkbutton monture active
          ###checkbutton $private($visuNo,This).camera.mountEnabled -text "$caption(tlscp,mountEnabled)" \
-         ###-variable ::conf(tlscp,mountEnabled)
+         ###   -variable ::conf(tlscp,mountEnabled)
 
          grid $private($visuNo,This).camera.pose  -row 0  -sticky nsew -pady 1
          grid $private($visuNo,This).camera.binning -row 1 -sticky nsew -pady 1
@@ -601,8 +586,11 @@ proc ::tlscp::adaptPanel { visuNo args } {
 proc ::tlscp::startTool { visuNo } {
    variable private
 
+   #--- j'active les traces et affiche l'outil
    trace add variable ::conf(telescope) write "::tlscp::adaptPanel $visuNo"
-   trace add variable ::temma::private(modele) write "::tlscp::adaptPanel $visuNo"
+   if { [ ::confTel::getPluginProperty hasModel ] == "1" } {
+      trace add variable ::conf($::conf(telescope),modele) write "::tlscp::adaptPanel $visuNo"
+   }
    pack $private($visuNo,This) -side left -fill y
 
    #--- j'active la mise a jour automatique de l'affichage quand on change de camera
@@ -614,7 +602,7 @@ proc ::tlscp::startTool { visuNo } {
    #--- j'active la mise a jour automatique de l'affichage quand on change de miroir
    ::confVisu::addMirrorListener $visuNo "::tlscp::onChangeDisplay $visuNo"
 
-   #--- Je refraichis l'affichage des coordonnees
+   #--- je refraichis l'affichage des coordonnees
    ::telescope::afficheCoord
 
    #--- je change le bind du bouton droit de la souris
@@ -622,7 +610,7 @@ proc ::tlscp::startTool { visuNo } {
    #--- je change le bind du double-clic du bouton gauche de la souris
    ::confVisu::createBindCanvas $visuNo <Double-1> "::tlscp::setTargetCoord $visuNo %x %y"
 
-   #--- J'affiche les axes
+   #--- j'affiche les axes
    if { $::conf(tlscp,showAxis) == "1" } {
       ::tlscp::changeShowAxis $visuNo
    }
@@ -656,8 +644,11 @@ proc ::tlscp::stopTool { visuNo } {
    #--- j'active la mise a jour automatique de l'affichage quand on change de miroir
    ::confVisu::removeMirrorListener $visuNo "::tlscp::onChangeDisplay $visuNo"
 
+   #--- je desactive les traces et enleve l'outil de l'affichage
    trace remove variable ::conf(telescope) write "::tlscp::adaptPanel $visuNo"
-   trace remove variable ::temma::private(modele) write "::tlscp::adaptPanel $visuNo"
+   if { [ ::confTel::getPluginProperty hasModel ] == "1" } {
+      trace remove variable ::conf($::conf(telescope),modele) write "::tlscp::adaptPanel $visuNo"
+   }
    pack forget $private($visuNo,This)
 }
 
@@ -866,7 +857,6 @@ proc ::tlscp::cmdSpeed { } {
    ::telescope::incrementSpeed
 }
 
-
 #------------------------------------------------------------
 # setBinning
 #    change le binning de la camera
@@ -878,7 +868,6 @@ proc ::tlscp::setBinning { visuNo } {
    set camItem [::confVisu::getCamItem $visuNo]
    set camNo   [::confCam::getCamNo $camItem ]
    cam$camNo bin $binning
-
 }
 
 #------------------------------------------------------------
@@ -897,7 +886,7 @@ proc ::tlscp::startAcquisition { visuNo  } {
       return
    }
 
-   ####set binning [list [string range $::conf(tlscp,binning) 0 0] [string range $::conf(tlscp,binning) 2 2]]
+   #--- je configure le type d'acquisition
    set private($visuNo,acquisitionState) "acquisition"
 
    #--- j'affiche le bouton STOP CCD
@@ -959,11 +948,10 @@ proc ::tlscp::startCenter { visuNo { methode "" } } {
       }
    }
 
-   #--- je recupere le binning de la camera
-   ###set binning [list [string range $::conf(tlscp,binning) 0 0] [string range $::conf(tlscp,binning) 2 2]]
+   #--- je configure le type d'acquisition
    set private($visuNo,acquisitionState) "center"
 
-   #--- je configure le tescope
+   #--- je configure le telescope
    if { $::audace(telNo) != 0 } {
       ::telescope::setSpeed $::conf(tlscp,centerSpeed)
       ::camera::setParam $private($visuNo,camItem) "telRate" $::audace(telescope,rate)
@@ -1067,8 +1055,7 @@ proc ::tlscp::startSearchStar { visuNo } {
    #--- j'efface les traces precedentes
    clearSearchStar  $visuNo
 
-   #--- je parametre la camera
-   ###set binning [list [string range $::conf(tlscp,binning) 0 0] [string range $::conf(tlscp,binning) 2 2]]
+   #--- je configure le type d'acquisition
    set private($visuNo,acquisitionState)  "search"
    set private($visuNo,acquisitionResult) ""
 
@@ -1092,7 +1079,7 @@ proc ::tlscp::startSearchStar { visuNo } {
          set x  [lindex $coord 0]
          set y  [lindex $coord 1]
          $hCanvas create oval [expr $x-5] [expr $y-5] [expr $x+5] [expr $y+5] -fill {} -outline blue -width 2 -activewidth 3 -tag tlscpstar
-         ###$hCanvas create text [expr $x+12] [expr $y+6] -text "$xintensity $yintensity" -tag tlscpstar  -state normal -fill green
+         ###$hCanvas create text [expr $x+12] [expr $y+6] -text "$xintensity $yintensity" -tag tlscpstar -state normal -fill green
       }
 
       #--- je cree un cercle rouge autour de l'etoile la plus brillante
@@ -1100,8 +1087,8 @@ proc ::tlscp::startSearchStar { visuNo } {
       set private($visuNo,targetCoord) $brigthestStarCoord
       moveTarget $visuNo $brigthestStarCoord
       ###set coord [::confVisu::picture2Canvas $visuNo $brigthestStarCoord ]
-      ###set x  [lindex $coord 0]
-      ###set y  [lindex $coord 1]
+      ###set x [lindex $coord 0]
+      ###set y [lindex $coord 1]
       ###$hCanvas create oval [expr $x-8] [expr $y-8] [expr $x+8] [expr $y+8] -fill {} -outline red -width 2 -activewidth 3 -tag tlscpstar
    } else {
        set brigthestStarCoord ""
@@ -1163,8 +1150,7 @@ proc ::tlscp::stopAcquisition { visuNo { tkButton "" } } {
 proc ::tlscp::callbackAcquisition { visuNo command args } {
    variable private
 
-   ###console::disp "::tlscp::callbackAcquisition visu=$visuNo command=$command args=$args\n"
-   switch $command  {
+   switch $command {
       "autovisu" {
          ::confVisu::autovisu $visuNo
       }
@@ -1674,10 +1660,9 @@ proc ::tlscp::setOrigin { visuNo x y } {
 }
 
 ################################################################################
-namespace eval ::tlscp::config {
 
+namespace eval ::tlscp::config {
 }
-################################################################################
 
 #------------------------------------------------------------
 # run
@@ -1861,7 +1846,7 @@ proc ::tlscp::config::fillConfigPage { frm visuNo } {
       LabelEntry $frm.delta.gainprop -label "$caption(tlscp,vitesse)" \
          -labeljustify left -labelwidth 16 -width 5 -justify right \
          -textvariable ::tlscp::config::widget($visuNo,deltaSpeed)
-##         -validate all -validatecommand { ::tlscp::validateNumber %W %V %P %s -9999 9999}
+###         -validate all -validatecommand { ::tlscp::validateNumber %W %V %P %s -9999 9999}
       pack $frm.delta.gainprop -in [$frm.delta getframe] -anchor w -side top -fill x -expand 0
       LabelEntry $frm.delta.seuil -label "$caption(tlscp,seuil)" \
          -labeljustify left -labelwidth 16 -width 5 -justify right \
@@ -2087,12 +2072,12 @@ proc ::tlscp::config::onSelectDetection { visuNo frm } {
 
    switch $widget($visuNo,detection) {
       "STAT" {
-         pack $frm.astrom.stat      -in [$frm.astrom getframe] -anchor w -side top -fill x -expand 0
+         pack $frm.astrom.stat -in [$frm.astrom getframe] -anchor w -side top -fill x -expand 0
          pack forget  $frm.astrom.bogumil
       }
       "BOGUMIL" {
          pack forget  $frm.astrom.stat
-         pack $frm.astrom.bogumil      -in [$frm.astrom getframe] -anchor w -side top -fill x -expand 0
+         pack $frm.astrom.bogumil -in [$frm.astrom getframe] -anchor w -side top -fill x -expand 0
       }
    }
 }
