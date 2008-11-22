@@ -2,7 +2,7 @@
 # Fichier : celestron.tcl
 # Description : Configuration de la monture Celestron
 # Auteur : Robert DELMAS
-# Mise a jour $Id: celestron.tcl,v 1.11 2008-11-01 17:43:52 robertdelmas Exp $
+# Mise a jour $Id: celestron.tcl,v 1.12 2008-11-22 22:08:23 robertdelmas Exp $
 #
 
 namespace eval ::celestron {
@@ -301,19 +301,17 @@ proc ::celestron::stop { } {
 #
 proc ::celestron::confCelestron { } {
    variable private
-   global audace
 
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
          if { [ ::celestron::isReady ] == 1 } {
-            #--- Bouton Mise a jour de la monture actif
-            $frm.majpara configure -state normal -command {
-               tel$::celestron::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
-               tel$::celestron::private(telNo) home $audace(posobs,observateur,gps)
+            if { [ ::confTel::getPluginProperty hasUpdateDate ] == "1" } {
+               #--- Bouton Mise a jour de la date et du lieu actif
+               $frm.majpara configure -state normal
             }
          } else {
-            #--- Bouton Mise a jour de la monture inactif
+            #--- Bouton Mise a jour de la date et du lieu inactif
             $frm.majpara configure -state disabled
          }
       }
@@ -331,7 +329,7 @@ proc ::celestron::confCelestronInactif { } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
          if { [ ::celestron::isReady ] == 1 } {
-            #--- Bouton Mise a jour de la monture inactif
+            #--- Bouton Mise a jour de la date et du lieu inactif
             $frm.majpara configure -state disabled
          }
       }
@@ -355,6 +353,10 @@ proc ::celestron::confCelestronInactif { } {
 # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
 # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
 # hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
+# hasModel                Retourne la possibilite d'avoir plusieurs modeles pour le meme product
+# hasPark                 Retourne la possibilite de parquer la monture
+# hasUnpark               Retourne la possibilite de de-parquer la monture
+# hasUpdateDate           Retourne la possibilite de mettre a jour la date et le lieu
 # backlash                Retourne la possibilite de faire un rattrapage des jeux
 #
 proc ::celestron::getPluginProperty { propertyName } {
@@ -382,6 +384,10 @@ proc ::celestron::getPluginProperty { propertyName } {
       hasManualMotion         { return 1 }
       hasControlSuivi         { return 0 }
       hasCorrectionRefraction { return 1 }
+      hasModel                { return 0 }
+      hasPark                 { return 0 }
+      hasUnpark               { return 0 }
+      hasUpdateDate           { return 1 }
       backlash                { return 0 }
    }
 }
