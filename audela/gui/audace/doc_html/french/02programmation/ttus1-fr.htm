@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 11 novembre 2004</p>
+<p class="date">Date de mise &agrave; jour : 22 novembre 2008</p>
 <h1>LIB TT - Librairie de pr&eacute;traitement d'images astronomiques </h1>
 <h1>Manuel Utilisateur </h1>
 <p>Ce guide de l'utilisateur s'adresse aux astronomes qui veulent &eacute;crire des scripts de traitement d'image utilisant la librairie TT. Rappelons que seul le format d'images FITS est reconnu. </p>
@@ -348,10 +348,10 @@ kernel_type=graddown : filtre gradient &eacute;clair&eacute; par le bas
   [y2]. L'image finale comporte [height] colonnes (20 par d&eacute;faut).</p>
 <h4><a name="HOTPIXEL" id="SORTY"></a>1.2.41 Fonction HOTPIXEL </h4>
 <p>Corrige les pixels chauds, les colonnes d&eacute;fectueuses et les lignes d&eacute;fectueuses 
-  en rempla&ccedil;ant les valeurs d&eacute;fectueuse par la moyenne des pixels 
+  en rempla&ccedil;ant les valeurs d&eacute;fectueuses par la moyenne des pixels 
   voisins.</p>
 <p>La fonction re&ccedil;oit en param&egrave;tre la liste des pixels &agrave; 
-  corriger sous la forme d'une chaine de caract&egrave;res contenant les &eacute;l&eacute;ments 
+  corriger sous la forme d'une cha&icirc;ne de caract&egrave;res contenant les &eacute;l&eacute;ments 
   suivants :</p>
 <blockquote>
   <p>&quot;P x y&quot; repr&eacute;sente les coordonn&eacute;es d'un pixel chaud 
@@ -364,7 +364,7 @@ kernel_type=graddown : filtre gradient &eacute;clair&eacute; par le bas
 <p>L'exemple suivant corrige le pixel (232,133), le pixel (456 198), la colonne 
   400 et la ligne 200 :</p>
 <p>IMA/SERIES ./images/ i- 1 9 .fit ./images/ j . .fit HOTPIXEL HOT_PIXEL_LIST=&quot;P 
-  232 183 P 456 198 C 400 L 200&quot;</p>
+  232 133 P 456 198 C 400 L 200&quot;</p>
 <p>Remarque : Pour optimiser les traitements, il est possible de corriger aussi 
   les pixels chauds avec les fonctions de soustraction des images ou de soustraction 
   des darks (voir les commandes SUB et SUBDARK)<br>
