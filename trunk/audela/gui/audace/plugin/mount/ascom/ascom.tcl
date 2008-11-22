@@ -2,7 +2,7 @@
 # Fichier : ascom.tcl
 # Description : Configuration de la monture ASCOM
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ascom.tcl,v 1.12 2008-11-01 17:43:11 robertdelmas Exp $
+# Mise a jour $Id: ascom.tcl,v 1.13 2008-11-22 22:05:04 robertdelmas Exp $
 #
 
 namespace eval ::ascom {
@@ -108,7 +108,7 @@ proc ::ascom::initPlugin { } {
    }
 
    #--- Initialise les variables de la monture ASCOM
-   if { ! [ info exists conf(ascom,driver) ] } { set conf(ascom,driver) [ lindex $private(ascom_drivers) 0 ] }
+   if { ! [ info exists conf(ascom,modele) ] } { set conf(ascom,modele) [ lindex $private(ascom_drivers) 0 ] }
 }
 
 #
@@ -120,7 +120,7 @@ proc ::ascom::confToWidget { } {
    global conf
 
    #--- Recupere la configuration de la monture ASCOM dans le tableau private(...)
-   set private(driver)   $conf(ascom,driver)
+   set private(modele)   $conf(ascom,modele)
    set private(raquette) $conf(raquette)
 }
 
@@ -133,7 +133,7 @@ proc ::ascom::widgetToConf { } {
    global conf
 
    #--- Memorise la configuration de la monture ASCOM dans le tableau conf(ascom,...)
-   set conf(ascom,driver) $private(driver)
+   set conf(ascom,modele) $private(modele)
    set conf(raquette)     $private(raquette)
 }
 
@@ -170,7 +170,7 @@ proc ::ascom::fillConfigPage { frm } {
       -height [ llength $private(ascom_drivers) ] \
       -relief sunken    \
       -borderwidth 1    \
-      -textvariable ::ascom::private(driver) \
+      -textvariable ::ascom::private(modele) \
       -editable 0       \
       -values $private(ascom_drivers)
    pack $frm.driver -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
@@ -202,10 +202,10 @@ proc ::ascom::configureMonture { } {
    global caption conf
 
    #--- Je cree la monture
-   set telNo [ tel::create ascom "unknown" [ lindex $conf(ascom,driver) 1 ] ]
+   set telNo [ tel::create ascom "unknown" [ lindex $conf(ascom,modele) 1 ] ]
    #--- J'affiche un message d'information dans la Console
    console::affiche_erreur "$caption(ascom,driver) \
-      $caption(ascom,2points) [ lindex $conf(ascom,driver) 1 ] \n"
+      $caption(ascom,2points) [ lindex $conf(ascom,modele) 1 ] \n"
    console::affiche_saut "\n"
    #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
   ### set linkNo [ ::confLink::create $conf(ascom,port) "tel$telNo" "control" [ tel$telNo product ] ]
@@ -252,6 +252,10 @@ proc ::ascom::stop { } {
 # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
 # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
 # hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
+# hasModel                Retourne la possibilite d'avoir plusieurs modeles pour le meme product
+# hasPark                 Retourne la possibilite de parquer la monture
+# hasUnpark               Retourne la possibilite de de-parquer la monture
+# hasUpdateDate           Retourne la possibilite de mettre a jour la date et le lieu
 # backlash                Retourne la possibilite de faire un rattrapage des jeux
 #
 proc ::ascom::getPluginProperty { propertyName } {
@@ -279,6 +283,10 @@ proc ::ascom::getPluginProperty { propertyName } {
       hasManualMotion         { return 1 }
       hasControlSuivi         { return 0 }
       hasCorrectionRefraction { return 0 }
+      hasModel                { return 1 }
+      hasPark                 { return 0 }
+      hasUnpark               { return 0 }
+      hasUpdateDate           { return 0 }
       backlash                { return 0 }
    }
 }
