@@ -1,6 +1,6 @@
 #
 # Fichier : tlscp.cap
-# Mise a jour $Id: tlscp.cap,v 1.8 2008-11-21 16:55:06 michelpujol Exp $
+# Mise a jour $Id: tlscp.cap,v 1.9 2008-11-22 08:31:02 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -601,7 +601,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,showSearchBox)      "Display Area"
    set caption(tlscp,searchThreshin)     "Min. Luminosity (1)"
    set caption(tlscp,searchFwhm)         "Min. Fwhm"
-  set caption(tlscp,searchRadius)       "Search Radius (pixel)"
+   set caption(tlscp,searchRadius)       "Search Radius (pixel)"
    set caption(tlscp,searchThreshold)    "Min. Luminosity (2)"
 
    set caption(tlscp,en-tete_fits)       "FITS Keywords"
