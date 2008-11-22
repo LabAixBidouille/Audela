@@ -2,7 +2,7 @@
 # Fichier : sbig.tcl
 # Description : Configuration de la camera SBIG
 # Auteur : Robert DELMAS
-# Mise a jour $Id: sbig.tcl,v 1.20 2008-11-21 16:39:30 michelpujol Exp $
+# Mise a jour $Id: sbig.tcl,v 1.21 2008-11-22 08:31:20 robertdelmas Exp $
 #
 
 namespace eval ::sbig {
@@ -177,7 +177,7 @@ proc ::sbig::fillConfigPage { frm camItem } {
       destroy $i
    }
 
-   #--- Je recuperer la liste des ports paralelles
+   #--- Je recupere la liste des ports paralelles
    set list_combobox [ ::confLink::getLinkLabels { "parallelport" } ]
    lappend list_combobox $caption(sbig,usb) $caption(sbig,ethernet)
 
