@@ -2,7 +2,7 @@
 # Fichier : ouranos.tcl
 # Description : Configuration de la monture Ouranos
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ouranos.tcl,v 1.12 2008-11-01 17:45:13 robertdelmas Exp $
+# Mise a jour $Id: ouranos.tcl,v 1.13 2008-11-22 22:05:53 robertdelmas Exp $
 #
 
 namespace eval ::ouranos {
@@ -839,6 +839,10 @@ proc ::ouranos::confOuranosInactif { } {
 # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
 # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
 # hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
+# hasModel                Retourne la possibilite d'avoir plusieurs modeles pour le meme product
+# hasPark                 Retourne la possibilite de parquer la monture
+# hasUnpark               Retourne la possibilite de de-parquer la monture
+# hasUpdateDate           Retourne la possibilite de mettre a jour la date et le lieu
 # backlash                Retourne la possibilite de faire un rattrapage des jeux
 #
 proc ::ouranos::getPluginProperty { propertyName } {
@@ -866,6 +870,10 @@ proc ::ouranos::getPluginProperty { propertyName } {
       hasManualMotion         { return 0 }
       hasControlSuivi         { return 0 }
       hasCorrectionRefraction { return 0 }
+      hasModel                { return 0 }
+      hasPark                 { return 0 }
+      hasUnpark               { return 0 }
+      hasUpdateDate           { return 0 }
       backlash                { return 0 }
    }
 }

@@ -2,7 +2,7 @@
 # Fichier : deltatau.tcl
 # Description : Configuration de la monture Delta Tau
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: deltatau.tcl,v 1.7 2008-11-01 17:44:06 robertdelmas Exp $
+# Mise a jour $Id: deltatau.tcl,v 1.8 2008-11-22 22:05:31 robertdelmas Exp $
 #
 
 namespace eval ::deltatau {
@@ -354,6 +354,10 @@ proc ::deltatau::confDeltaTauInactif { } {
 # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
 # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
 # hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
+# hasModel                Retourne la possibilite d'avoir plusieurs modeles pour le meme product
+# hasPark                 Retourne la possibilite de parquer la monture
+# hasUnpark               Retourne la possibilite de de-parquer la monture
+# hasUpdateDate           Retourne la possibilite de mettre a jour la date et le lieu
 # backlash                Retourne la possibilite de faire un rattrapage des jeux
 #
 proc ::deltatau::getPluginProperty { propertyName } {
@@ -381,6 +385,10 @@ proc ::deltatau::getPluginProperty { propertyName } {
       hasManualMotion         { return 1 }
       hasControlSuivi         { return 0 }
       hasCorrectionRefraction { return 0 }
+      hasModel                { return 0 }
+      hasPark                 { return 0 }
+      hasUnpark               { return 0 }
+      hasUpdateDate           { return 0 }
       backlash                { return 0 }
    }
 }

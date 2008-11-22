@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise a jour $Id: lx200.tcl,v 1.17 2008-11-01 17:44:51 robertdelmas Exp $
+# Mise a jour $Id: lx200.tcl,v 1.18 2008-11-22 22:08:11 robertdelmas Exp $
 #
 
 namespace eval ::lx200 {
@@ -433,32 +433,31 @@ proc ::lx200::stop { } {
 #
 proc ::lx200::confLX200 { } {
    variable private
-   global audace caption conf
 
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
          if { [ ::lx200::isReady ] == 1 } {
             if { [ ::confTel::getPluginProperty hasUpdateDate ] == "1" } {
-               #--- Bouton Mise a jour de la date et du lieu
+               #--- Bouton Mise a jour de la date et du lieu actif
                $frm.majpara configure -state normal
             }
             #--- Cas des modeles qui ont la fonction "park"
             if { [ ::confTel::getPluginProperty hasPark ] == "1" } {
-               #--- Bouton park
+               #--- Bouton park actif
                $frm.park configure -state normal
             }
             #--- Cas des modeles qui ont la fonction "unpark"
             if { [ ::confTel::getPluginProperty hasUnpark ] == "1" } {
-               #--- Bouton unpark
+               #--- Bouton unpark actif
                $frm.unpark configure -state normal
             }
          } else {
-            #--- Bouton Mise a jour de la monture inactif
+            #--- Bouton Mise a jour de la date et du lieu inactif
             $frm.majpara configure -state disabled
-            #--- Bouton unpark
-            $frm.unpark configure -state disabled
-            #--- Bouton unpark
+            #--- Bouton park inactif
+            $frm.park configure -state disabled
+            #--- Bouton unpark inactif
             $frm.unpark configure -state disabled
          }
       }
@@ -475,11 +474,11 @@ proc ::lx200::confLX200Inactif { } {
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [winfo exists $frm ] } {
-         #--- Bouton Mise a jour de la monture inactif
+         #--- Bouton Mise a jour de la date et du lieu inactif
          $frm.majpara configure -state disabled
-         #--- Bouton unpark
+         #--- Bouton park inactif
          $frm.park configure -state disabled
-         #--- Bouton unpark
+         #--- Bouton unpark inactif
          $frm.unpark configure -state disabled
       }
    }
@@ -545,10 +544,11 @@ proc ::lx200::confModele { } {
 # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
 # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
 # hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
-# backlash                Retourne la possibilite de faire un rattrapage des jeux
+# hasModel                Retourne la possibilite d'avoir plusieurs modeles pour le meme product
 # hasPark                 Retourne la possibilite de parquer la monture
 # hasUnpark               Retourne la possibilite de de-parquer la monture
-# hasUpdatedate           Retourne la possibilite de mettre a jour la date et le lieu
+# hasUpdateDate           Retourne la possibilite de mettre a jour la date et le lieu
+# backlash                Retourne la possibilite de faire un rattrapage des jeux
 #
 proc ::lx200::getPluginProperty { propertyName } {
    variable private
@@ -589,7 +589,8 @@ proc ::lx200::getPluginProperty { propertyName } {
             return 1
          }
       }
-      hasPark {
+      hasModel                { return 1 }
+      hasPark                 {
          if {  $::conf(lx200,modele) == $::caption(lx200,modele_lx200)
             || $::conf(lx200,modele) == $::caption(lx200,modele_astro_physics)} {
             return 1
@@ -597,14 +598,14 @@ proc ::lx200::getPluginProperty { propertyName } {
             return 0
          }
       }
-      hasUnpark {
+      hasUnpark               {
          if { $::conf(lx200,modele) == $::caption(lx200,modele_astro_physics)} {
             return 1
          } else {
             return 0
          }
       }
-      hasUpdateDate {
+      hasUpdateDate           {
          if {  $::conf(lx200,modele) == $::caption(lx200,modele_lx200)
             || $::conf(lx200,modele) == $::caption(lx200,modele_skysensor)
             || $::conf(lx200,modele) == $::caption(lx200,modele_gemini)

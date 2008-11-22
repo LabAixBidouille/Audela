@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.50 2008-06-14 09:03:51 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.51 2008-11-22 22:08:58 robertdelmas Exp $
 #
 
 namespace eval ::confTel {
@@ -482,10 +482,11 @@ proc ::confTel::getPluginProperty { propertyName } {
    # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
    # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
    # hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
-   # backlash                Retourne la possibilite de faire un rattrapage des jeux
+   # hasModel                Retourne la possibilite d'avoir plusieurs modeles pour le meme product
    # hasPark                 Retourne la possibilite de parquer la monture
    # hasUnpark               Retourne la possibilite de de-parquer la monture
-   # hasUpdatedate           Retourne la possibilite de mettre a jour la date et le lieu
+   # hasUpdateDate           Retourne la possibilite de mettre a jour la date et le lieu
+   # backlash                Retourne la possibilite de faire un rattrapage des jeux
 
    #--- je recherche la valeur par defaut de la propriete
    #--- si la valeur par defaut de la propriete n'existe pas, je retourne une chaine vide
@@ -499,10 +500,11 @@ proc ::confTel::getPluginProperty { propertyName } {
       hasManualMotion         { set result 1 }
       hasControlSuivi         { set result 0 }
       hasCorrectionRefraction { set result 0 }
-      backlash                { set result 0 }
+      hasModel                { set result 0 }
       hasPark                 { set result 0 }
       hasUnpark               { set result 0 }
-      hasUpdatedate           { set result 0 }
+      hasUpdateDate           { set result 0 }
+      backlash                { set result 0 }
       default                 { set result 0 }
    }
 
