@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.6 2008-06-16 21:19:13 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.7 2008-11-23 12:05:54 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -169,6 +169,7 @@ proc ::keyword::init { } {
    set private(detectorName)        ""
    set private(objName)             ""
    set private(name_software)       "[ ::audela::getPluginTitle ] $::audela(version)"
+   set private(name_software)       "[ ::keyword::headerFitsCompliant $::keyword::private(name_software) ]"
    set private(commentaire)         ""
 
    #--- On cree la liste des caracteristiques (nom, categorie, variable et procedure) des mots cles
@@ -187,7 +188,7 @@ proc ::keyword::init { } {
    lappend private(infosMotsClefs) [ list "YPIXSZ"   $::caption(keyword,instrument)  ::keyword::private(cell_dim_y)          readonly $::caption(keyword,parcourir)  "::confCam::run"                               "float"  "Pixel height" "micron" ]
    lappend private(infosMotsClefs) [ list "SET_TEMP" $::caption(keyword,instrument)  ::keyword::private(set_temperature_ccd) readonly $::caption(keyword,parcourir)  "::keyword::openSetTemperature"                "float"  "Set CCD temperature" "degres Celsius" ]
    lappend private(infosMotsClefs) [ list "CCD_TEMP" $::caption(keyword,instrument)  ::keyword::private(temperature_ccd)     readonly $::caption(keyword,rafraichir) "::keyword::onChangeTemperature"               "float"  "Actual CCD temperature" "degres Celsius" ]
-   lappend private(infosMotsClefs) [ list "INSTRUME" $::caption(keyword,instrument)  ::keyword::private(equipement)          normal   $::caption(keyword,parcourir)  ""                                             "string" "Instrument" "" ]
+   lappend private(infosMotsClefs) [ list "INSTRUME" $::caption(keyword,instrument)  ::keyword::private(equipement)          normal   ""                             ""                                             "string" "Instrument" "" ]
    lappend private(infosMotsClefs) [ list "DETNAM"   $::caption(keyword,instrument)  ::keyword::private(detectorName)        normal   ""                             ""                                             "string" "Detector" "" ]
    lappend private(infosMotsClefs) [ list "OBJNAME"  $::caption(keyword,cible)       ::keyword::private(objName)             normal   ""                             ""                                             "string" "Object name" "" ]
    lappend private(infosMotsClefs) [ list "RA"       $::caption(keyword,cible)       ::keyword::private(ra)                  normal   ""                             ""                                             "string" "Object Right Ascension" "degres" ]
@@ -289,7 +290,7 @@ proc ::keyword::onChangeConfOptic { visuNo args } {
    set camItem [ ::confVisu::getCamItem $visuNo ]
    if { $camItem != "" } {
       set combinaison [ ::confOptic::getConfOptic $camItem ]
-      set private(instrument)        [lindex $combinaison 0]
+      set private(instrument)        [ ::keyword::headerFitsCompliant [lindex $combinaison 0] ]
       set private(diametre)          [lindex $combinaison 1]
       set private(focale_resultante) [lindex $combinaison 2]
    } else {
@@ -427,6 +428,28 @@ proc ::keyword::getKeywords { visuNo } {
       lappend result [list $motclef $valeur $type $commentaire $unite]
    }
    return $result
+}
+
+#------------------------------------------------------------------------------
+# headerFitsCompliant
+#    rend les mots cles FITS conformes a la norme
+#
+# Parametres :
+#    stringInput : mots cles FITS
+# return
+#    stringOutput : mots cles FITS conformes
+#------------------------------------------------------------------------------
+proc ::keyword::headerFitsCompliant { stringInput } {
+   set res $stringInput
+   set res [regsub -all {[é;ê;è;ë]} $res e]
+   set res [regsub -all {[à;â;ä]} $res a]
+   set res [regsub -all {[ï;î]} $res i]
+   set res [regsub -all {[ö;ô]} $res o]
+   set res [regsub -all {[ü;û;ù]} $res u]
+   set res [regsub -all {[ç]} $res c]
+   set res [regsub -all {[']} $res " "]
+   set stringOutput $res
+   return $stringOutput
 }
 
 #------------------------------------------------------------------------------
