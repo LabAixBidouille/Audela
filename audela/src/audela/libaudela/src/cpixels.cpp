@@ -378,14 +378,14 @@ void CPixels::AstroPhotometry(int x1, int y1, int x2, int y2,
    if (yy1>naxis2) yy1=naxis2-1;
    if (yy2<0) yy2=0;
    if (yy2>naxis2) yy2=naxis2-1;
-   n1=0;
+   *n1=0;
    f1=0.;
    if (method==0) {
       for (j=yy1;j<=yy2;j++) {
          offset = pixTemp + j * naxis1;
          for (i=xx1;i<=xx2;i++) {
             f1 += (double)*(offset+i);
-            n1++;
+            (*n1)++;
          }
       }
    }
@@ -399,7 +399,7 @@ void CPixels::AstroPhotometry(int x1, int y1, int x2, int y2,
             dx2=dx*dx;
             if ((dx2+dy2)<=r11) {
                f1 += (double)*(offset+i);
-               n1++;
+               (*n1)++;
             }
          }
       }
