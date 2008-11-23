@@ -5,7 +5,7 @@
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.49 2008-11-21 17:46:17 michelpujol Exp $
+# Mise a jour $Id: confgene.tcl,v 1.50 2008-11-23 11:05:31 robertdelmas Exp $
 #
 
 #
@@ -90,18 +90,23 @@ namespace eval confPosObs {
    proc initConf { } {
       global conf
 
-      #--- Nom de l'observateur
-      if { ! [ info exists conf(posobs,nom_observateur) ] }   { set conf(posobs,nom_observateur)   "" }
+      #--- Initialisation indispensable de variables
+      if { ! [ info exists conf(posobs,nom_observateur) ] }  { set conf(posobs,nom_observateur)  "" }
+      if { ! [ info exists conf(posobs,nom_observatoire) ] } { set conf(posobs,nom_observatoire) "Pic du Midi - France" }
+      if { ! [ info exists conf(posobs,ref_geodesique) ] }   { set conf(posobs,ref_geodesique)   "WGS84" }
+      if { ! [ info exists conf(posobs,station_uai) ] }      { set conf(posobs,station_uai)      "586" }
 
       #--- Observatoire du Pic du Midi
-      if { ! [ info exists conf(posobs,estouest) ] }        { set conf(posobs,estouest)        "E" }
-      if { ! [ info exists conf(posobs,long) ] }            { set conf(posobs,long)            "0d8m32s2" }
-      if { ! [ info exists conf(posobs,nordsud) ] }         { set conf(posobs,nordsud)         "N" }
-      if { ! [ info exists conf(posobs,lat) ] }             { set conf(posobs,lat)             "42d56m11s9" }
-      if { ! [ info exists conf(posobs,altitude) ] }        { set conf(posobs,altitude)        "2890.5" }
-      if { ! [ info exists conf(posobs,observateur,gps) ] } { set conf(posobs,observateur,gps) "GPS 0.142300 E 42.936639 2890.5" }
+      if { ! [ info exists conf(posobs,estouest) ] }         { set conf(posobs,estouest)         "E" }
+      if { ! [ info exists conf(posobs,long) ] }             { set conf(posobs,long)             "0d8m32s2" }
+      if { ! [ info exists conf(posobs,nordsud) ] }          { set conf(posobs,nordsud)          "N" }
+      if { ! [ info exists conf(posobs,lat) ] }              { set conf(posobs,lat)              "42d56m11s9" }
+      if { ! [ info exists conf(posobs,altitude) ] }         { set conf(posobs,altitude)         "2890.5" }
+      if { ! [ info exists conf(posobs,observateur,gps) ] }  { set conf(posobs,observateur,gps)  "GPS 0.142300 E 42.936639 2890.5" }
 
-      initConf1
+      #--- Concatenation de variables pour l'en-tete FITS
+      set conf(posobs,estouest_long) $conf(posobs,estouest)$conf(posobs,long)
+      set conf(posobs,nordsud_lat)   $conf(posobs,nordsud)$conf(posobs,lat)
    }
 
    #
@@ -111,14 +116,7 @@ namespace eval confPosObs {
    proc initConf1 { } {
       global conf
 
-      #--- Concatenation de variables pour l'en-tete FITS
-      set conf(posobs,estouest_long) $conf(posobs,estouest)$conf(posobs,long)
-      set conf(posobs,nordsud_lat)   $conf(posobs,nordsud)$conf(posobs,lat)
-
       #--- Initialisation indispensable d'autres variables
-      if { ! [ info exists conf(posobs,nom_observatoire) ] }       { set conf(posobs,nom_observatoire)       "Pic du Midi - France" }
-      if { ! [ info exists conf(posobs,ref_geodesique) ] }         { set conf(posobs,ref_geodesique)         "WGS84" }
-      if { ! [ info exists conf(posobs,station_uai) ] }            { set conf(posobs,station_uai)            "586" }
       if { ! [ info exists conf(posobs,fichier_station_uai) ] }    { set conf(posobs,fichier_station_uai)    "obscodes.txt" }
       if { ! [ info exists conf(posobs,observateur,mpc) ] }        { set conf(posobs,observateur,mpc)        "" }
       if { ! [ info exists conf(posobs,observateur,mpcstation) ] } { set conf(posobs,observateur,mpcstation) "" }
@@ -1426,7 +1424,7 @@ namespace eval confFichierIma {
       widgetToConf
       #--- Mise a jour de l'extension des fichiers image pour toutes les visu disponibles
       foreach visuNo [ ::visu::list ] {
-         ::confFichierIma::MAJ_Extension
+         ::confFichierIma::MajExtension
       }
       #--- Mise a jour du format des fichiers image pour tous les buffers disponibles
       foreach visuNo [ ::visu::list ] {
@@ -1657,14 +1655,16 @@ namespace eval confFichierIma {
       set conf(list_extension)       $confgene(fichier,list_extension)
    }
 
-   proc MAJ_Extension { } {
+   proc MajExtension { } {
       variable This
       global conf confgene panneau
 
       #---
       if { ( $conf(extension,new) == ".jpg" )  || ( $conf(extension,new) == ".jpeg" ) \
-         || ( $conf(extension,new) == ".crw" ) || ( $conf(extension,new) == ".cr2" ) \
-         || ( $conf(extension,new) == ".nef" ) || ( $conf(extension,new) == ".dng" ) } {
+         || ( $conf(extension,new) == ".crw" ) || ( $conf(extension,new) == ".CRW" ) \
+         || ( $conf(extension,new) == ".cr2" ) || ( $conf(extension,new) == ".CR2" ) \
+         || ( $conf(extension,new) == ".nef" ) || ( $conf(extension,new) == ".NEF" ) \
+         || ( $conf(extension,new) == ".dng" ) || ( $conf(extension,new) == ".DNG" ) } {
          set confgene(fichier,compres) "0"
          $This.compress configure -variable confgene(fichier,compres)
          set conf(fichier,compres) $confgene(fichier,compres)
@@ -2507,8 +2507,7 @@ namespace eval confLangue {
 
       #--- Mise a jour des boutons de la fenetre
       .audace.confLangue.but_fermer configure -text "$caption(confgene,fermer)"
-     ### .audace.confLangue.but_aide configure -text "$caption(confgene,aide)" -state disabled
-      .audace.confLangue.but_aide configure -state disabled
+      .audace.confLangue.but_aide configure -text "$caption(confgene,aide)" -state disabled
    }
 }
 
