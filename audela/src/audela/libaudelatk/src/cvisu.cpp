@@ -657,7 +657,7 @@ int CVisu::UpdateDisplay()
       return ELIBSTD_NO_MEMORY_FOR_DISPLAY;
    }
    
-   ptr = (unsigned char*)calloc(orgww*orgwh,3);
+   ptr = (unsigned char*)malloc(orgww*orgwh*4);
    if(ptr==NULL) {
       return ELIBSTD_NO_MEMORY_FOR_DISPLAY;
    }
@@ -678,13 +678,13 @@ int CVisu::UpdateDisplay()
    // s'il n'y a qu'une ligne , je duplique la ligne "thickness" fois a l'affichae
    if( buffer->GetHeight()==1 ) {
       unsigned char *ptr2;
-      ptr2 = (unsigned char*)calloc(orgww*thickness_1d,3);
+      ptr2 = (unsigned char*)malloc(orgww*thickness_1d*4);
       if(ptr2==NULL) {
          free(ptr);
          return ELIBSTD_NO_MEMORY_FOR_DISPLAY;
       }
       for(int y=0 ; y < thickness_1d; y++) {
-         memcpy(ptr2+y*orgww*3, ptr, orgww*3);
+         memcpy(ptr2+y*orgww*4, ptr, orgww*4);
       }
       free(ptr);
       // ptr pointe sur le nouveau buffer contenant la ligne dupliquee
@@ -695,8 +695,8 @@ int CVisu::UpdateDisplay()
    pib.pixelPtr = ptr;
    pib.width = orgww;
    pib.height = orgwh;
-   pib.pitch = orgww*3;
-   pib.pixelSize = 3;
+   pib.pitch = orgww*4;
+   pib.pixelSize = 4;
    pib.offset[0] = 0;
    pib.offset[1] = 1;
    pib.offset[2] = 2;
