@@ -1235,8 +1235,8 @@ void CPixelsRgb::GetPixelsVisu( int x1,int y1,int x2, int y2,
    float fsbBlue = (float)cuts[5];
    long base;
    int xdest, ydest;
-   unsigned char (*pdest)[3];
-   pdest = (unsigned char (*)[3])ptr;
+   unsigned char (*pdest)[4];
+   pdest = (unsigned char (*)[4])ptr;
 
    orgww = x2 - x1 + 1; // Largeur de la fenetre au depart
    orgwh = y2 - y1 + 1; // Hauteur ...

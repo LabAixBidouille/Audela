@@ -21,7 +21,7 @@
  */
 
 #include <math.h>   // floor()
-
+#include <windows.h>
 #include "cpixelsgray.h"
 #include "libtt.h"            // for TFLOAT, LONG_IMG, TT_PTR_...
 #include "cerror.h"
@@ -510,64 +510,63 @@ void CPixelsGray::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat 
 
 void CPixelsGray::GetPixelsVisu( int x1,int y1,int x2, int y2,
             int mirrorX, int mirrorY,
-                  //double hicutRed,   double locutRed, 
-                  //double hicutGreen, double locutGreen,
-                  //double hicutBlue,  double locutBlue,
-                  float *cuts,
+            float *cuts,
             unsigned char *palette[3], unsigned char *ptr) 
 {
    int i, j;
    int orgww, orgwh;                // original window width, height
    float dyn;
-//   float fsh = (float) hicutRed;
-//   float fsb = (float) locutRed;
    float fsh = (float) cuts[0];
    float fsb = (float) cuts[1];
    long base;
    int xdest, ydest;
    unsigned char colorIndex;
-   unsigned char (*pdest)[3];
-   pdest = (unsigned char (*)[3])ptr;
+   unsigned int *mypal;  // palette de mots int32
+   unsigned int *myptr;  // pointeur courant sur l'image a construire
+
+   myptr = (unsigned int*)ptr;
 
    orgww = x2 - x1 + 1;  // Largeur de la fenetre au depart
    orgwh = y2 - y1 + 1;  // Hauteur ...
 
-// Spécifique log
-//   float a,b;
-//   b = fsb - 1.;
-//   a = 255. / log10(fsh-b);
-/*
-   if(fsh==fsb) {
-      dyn = -1e10;
-   } else {
-      dyn = 256. / (fsh - fsb);
-   }
-*/
+   // Acceleration de la fonction de visualisation: creation d'une image couleur
+   // dont chaque pixel fait 32 bits au lieu de 24. Cela permet d'affecter le niveau
+   // de couleur en une seule operation 32 bits (au lieu de 3 8 bits). Une palette de
+   // valeurs int32 est prealablement calculee a partir des trois palettes.
+   // Egalement quelques optimisations pour sortir les calculs fixes des boucles.
    if(fsh==fsb) {
       fsb -= (float)1e-1;
    }
    dyn = (float)256. / (fsh - fsb);
 
+   // Construction de la palette 32 bits
+   mypal = (unsigned int*) malloc(256*4);
+   for(i=0;i<256;i++) {
+      mypal[i] = (palette[2][i]<<16)+(palette[1][i]<<8)+(palette[0][i]<<0);
+   }
+   
    for(j=y1;j<=y2;j++) {
       if(mirrorY == 0) {
          ydest = ((y2-y1) - (j -y1) )*orgww ;
       } else {
          ydest = (j - y1)*orgww ;
       }
-    
-      for(i=x1;i<=x2;i++) {
-         if(mirrorX == 0) {
+      base = j*naxis1;
+      if(mirrorX == 0) {
+         for(i=x1;i<=x2;i++) {
             xdest = i-x1;
-         } else {
-            xdest = (x2-x1) - (i-x1) ;
-         }
-         base = j*naxis1+i;
-         colorIndex = (unsigned char)min(max(((float)pix[base]-fsb)*dyn,0),255);
-         pdest[ydest+xdest][0] = palette[0][colorIndex];
-         pdest[ydest+xdest][1] = palette[1][colorIndex];
-         pdest[ydest+xdest][2] = palette[2][colorIndex];
+            colorIndex = (unsigned char)min(max(((float)pix[base+i]-fsb)*dyn,0),255);
+            myptr[ydest+xdest] = mypal[colorIndex];
+		 }
+      } else {
+         for(i=x1;i<=x2;i++) {
+			xdest = x2 - i;
+            colorIndex = (unsigned char)min(max(((float)pix[base+i]-fsb)*dyn,0),255);
+            myptr[ydest+xdest] = mypal[colorIndex];
+		 }
       }
    }
+   free(mypal);
 }
 
 
