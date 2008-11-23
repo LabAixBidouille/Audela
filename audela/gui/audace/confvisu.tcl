@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.83 2008-11-21 17:56:20 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.84 2008-11-23 12:10:30 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -248,6 +248,7 @@ namespace eval ::confVisu {
    #  force:  -dovisu : rafraichissement complet
    #          -no     : rafraichissement sans recalcul des seuils
    #          -novisu : pas de rafraichissement
+   #  filename : nom du fichier contenant l'image (parametre optionnel
    #  retour: null
    #------------------------------------------------------------
    proc autovisu { visuNo { force "-no" } { fileName "" } } {
@@ -286,7 +287,13 @@ namespace eval ::confVisu {
             #--- dans le cas d'une image 1D, la hauteur correspond a l'epaisseur affichee par la visu
             set private($visuNo,applyThickness) "1"
             set private($visuNo,picture_h) [visu$visuNo thickness]
-            set mode "graph"
+            if { [info command fits] == "fits" } {
+               #--- si la commande fits existe, je choisis le mode graphe
+               set mode "graph"
+            } else {
+               #--- si la commande fits n'existe pas , je choisis le mode image
+               set mode "image"
+            }
          } else {
             #--- dans le cas d'une image 2D ou plus, la hauteur est la hauteur retournee par le buffer
             set private($visuNo,applyThickness) "0"
@@ -365,7 +372,7 @@ namespace eval ::confVisu {
                set private($visuNo,picture_h) 0
                visu $visuNo current
             }
-            #--- Je mets a jour la taille les scrollbars
+            #--- Je mets a jour la taille des scrollbars
             setScrollbarSize $visuNo
 
             #--- Je mets a jour la taille du reticule
@@ -3136,12 +3143,21 @@ proc ::confVisu::showProfile { visuNo hFile } {
    set crval1 [lindex [lindex [$hFile get keyword "CRVAL1"] 0] 1]
    set cdelt1 [lindex [lindex [$hFile get keyword "CDELT1"] 0] 1]
 
-   #--- je calcule les abcisses
+   #--- je recupere les ordonnees
+   set ydata [$hFile get image]
+   set ydata2 ""
    set abcisses ""
    for { set i 0 } { $i < $size } { incr i } {
+      #--- je calcule les abcisses
       lappend abcisses [expr $cdelt1 * $i + $crval1 ]
+      #--- je controle les ordonnees
+      set y [lindex $ydata $i]
+      if { $y == "NULL" } {
+         set y 0
+      }
+      lappend ydata2 $y
    }
-   $tkgraph element configure line$visuNo -xdata $abcisses -ydata [$hFile get image]
+   $tkgraph element configure line$visuNo -xdata $abcisses -ydata $ydata2
 
    #--- je supprime le zoom, au cas ou il aurait ete applique precedemement
    ::confVisu::onGraphUnzoom $visuNo
