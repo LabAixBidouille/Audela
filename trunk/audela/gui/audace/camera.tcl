@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteur : Robert DELMAS
-# Mise a jour $Id: camera.tcl,v 1.21 2008-11-21 17:06:36 michelpujol Exp $
+# Mise a jour $Id: camera.tcl,v 1.22 2008-11-23 12:00:58 robertdelmas Exp $
 #
 
 namespace eval camera {
@@ -54,21 +54,19 @@ proc ::camera::dispThreadError { thread_id errorInfo } {
    ::console::disp "thread_id=$thread_id errorInfo=$errorInfo\n"
 }
 
-
-
 #------------------------------------------------------------
 # create
 #    cree une camera
 #
 # parametres :
-#    direction : e w n s
+#    camItem : Item de la camera
 # return
 #    0 si OK , 1 si erreur
 #------------------------------------------------------------
 proc ::camera::create { camItem } {
    variable private
 
-   if { $::tcl_platform(threaded) == 0  } {
+   if { $::tcl_platform(threaded) == 0 } {
 
    } else {
       set private($camItem,camNo)    [::confCam::getCamNo $camItem]
@@ -103,27 +101,24 @@ proc ::camera::create { camItem } {
 #    supprime une camera
 #
 # parametres :
-#    direction : e w n s
+#    camItem : Item de la camera
 # return
 #    rien
 #------------------------------------------------------------
 proc ::camera::delete { camItem } {
    variable private
-   console::disp "::camera::delete  coucou\n"
 
-   if { $::tcl_platform(threaded) == 0  } {
-      interp eval $camThreadNo  [list ::cam::delete $args]
+   if { $::tcl_platform(threaded) == 0 } {
+      interp eval $camThreadNo [list ::cam::delete $args]
    } else {
       return
    }
 }
 
-
-
 #
 # acq exptime binning
 # Declenche l'acquisition et affiche l'image une fois l'acquisition terminee dans la visu 1
-#  (procdure conservee pour compatibilite avec les anciennes versions de Audela (pour les scripts perso des utilisateurs)y
+# (procdure conservee pour compatibilite avec les anciennes versions de Audela (pour les scripts perso des utilisateurs)y
 # Exemple :
 # acq 10 2
 #
