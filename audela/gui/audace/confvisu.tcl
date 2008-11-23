@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.84 2008-11-23 12:10:30 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.85 2008-11-23 22:55:53 denismarchais Exp $
 #
 
 namespace eval ::confVisu {
@@ -418,14 +418,17 @@ namespace eval ::confVisu {
       ::confVisu::ChangeCutsDisplay $visuNo
 
       #--- prise en compte de la palette prealablement choisie
-      ::audace::MAJ_palette $visuNo
+      #::audace::MAJ_palette $visuNo
 
       #--- rafraichissement de l'affichage
+	  # La fonction audace::MAJ_palette appelle la fonction visu$visuNo pal, qui elle-meme
+	  # appelle l'equivalent de visu$visuNo disp. Il ne faut donc pas rappeler cette fonction
+	  # une deuxieme fois.
       while { 1 } {
-         set catchResult [catch { visu$visuNo disp } msg ]
+         set catchResult [catch { ::audace::MAJ_palette $visuNo } msg ]
          if { $catchResult == 1 && $msg == "NO MEMORY FOR DISPLAY" } {
             #--- en cas d'erreur "NO MEMORY FOR DISPLAY" , j'essaie avec un zoom inferieur
-            set private($visuNo,zoom) [expr $private($visuNo,zoom) / 2]
+            set private($visuNo,zoom) [expr double($private($visuNo,zoom)) / 2]
             visu$visuNo zoom $private($visuNo,zoom)
             console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY , set zoom=$private($visuNo,zoom)\n"
          } else {
@@ -588,7 +591,7 @@ namespace eval ::confVisu {
          set catchResult [catch { visu$visuNo disp } msg ]
          if { $catchResult == 1 && $msg == "NO MEMORY FOR DISPLAY" } {
             #--- en cas d'erreur "NO MEMORY FOR DISPLAY" , j'essaie avec un zoom inferieur
-            set private($visuNo,zoom) [expr $private($visuNo,zoom) / 2]
+            set private($visuNo,zoom) [expr double($private($visuNo,zoom)) / 2]
             visu$visuNo zoom $private($visuNo,zoom)
             console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY , set zoom=$private($visuNo,zoom)\n"
          } else {
@@ -2221,7 +2224,17 @@ namespace eval ::confVisu {
 
       ComputeScaleRange $visuNo
       if { [ image type image[visu$visuNo image] ] == "photo" } {
-         visu$visuNo disp
+         while { 1 } {
+            set catchResult [catch { visu$visuNo disp } msg ]
+            if { $catchResult == 1 && $msg == "NO MEMORY FOR DISPLAY" } {
+               #--- en cas d'erreur "NO MEMORY FOR DISPLAY" , j'essaie avec un zoom inferieur
+               set private($visuNo,zoom) [expr double($private($visuNo,zoom)) / 2]
+               visu$visuNo zoom $private($visuNo,zoom)
+               console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY , set zoom=$private($visuNo,zoom)\n"
+            } else {
+               break
+            }
+         }
       }
    }
 
