@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.38 2008-11-01 19:13:27 robertdelmas Exp $
+# Mise a jour $Id: visio2.tcl,v 1.39 2008-11-23 12:07:20 michelpujol Exp $
 #
 
 namespace eval ::visio2 {
@@ -690,7 +690,7 @@ proc ::visio2::config::fillConfigPage { frm visuNo } {
    global caption
    global conf
 
-  array set fileExtension [array get ::visio2::fileExtension]
+  ###array set fileExtension [array get ::visio2::fileExtension]
 
   #--- je memorise la reference de la frame
    set widget(frm) $frm
@@ -1026,18 +1026,7 @@ proc ::visio2::localTable::cmdButton1Click { visuNo tbl } {
    }
    update
    #--- je charge l'item selectionne
-   set catchResult [catch {
-     save_cursor
-     all_cursor watch
-     ::visio2::localTable::loadItem $visuNo [lindex $selection 0 ]
-   }]
-   set catchErrorInfo $::errorInfo
-   #--- je restaure le curseur
-   restore_cursor
-   #--- j'affiche l'erreur
-   if { $catchResult } {
-      error $catchErrorInfo
-   }
+   after 10 "::visio2::localTable::loadItem $visuNo [lindex $selection 0 ]"
 }
 
 #------------------------------------------------------------------------------
@@ -1078,6 +1067,10 @@ proc ::visio2::localTable::loadItem { visuNo index { doubleClick 0 } } {
    variable private
    global audace conf
 
+   $::visio2::private($visuNo,This) configure -cursor watch
+   update
+
+   set catchResult [ catch {
    set tbl $private($visuNo,tbl)
 
    if { $private($visuNo,animation) == 1 } {
@@ -1085,75 +1078,87 @@ proc ::visio2::localTable::loadItem { visuNo index { doubleClick 0 } } {
       stopAnimation $visuNo
    }
 
-   set name [string trimleft [$tbl cellcget $index,0 -text]]
-   set type [$tbl cellcget $index,1 -text]
-   set filename [file join "$private($visuNo,directory)" "$name"]
+      set name [string trimleft [$tbl cellcget $index,0 -text]]
+      set type [$tbl cellcget $index,1 -text]
+      set filename [file join "$private($visuNo,directory)" "$name"]
 
-   if { [string first "$private(fileImage)" "$type" ] != -1 } {
-      #--- j'affiche l'image
-      loadima $filename $visuNo
-      #--- je recupere naxis1 de l'image qui vient d'etre chargee
-      set mynaxis [ lindex [ buf[::confVisu::getBufNo $visuNo] getkwd "NAXIS" ] 1 ]
-      if { $mynaxis == 1 } {
-         #--- j'ouvre la fenetre de spcaudace
-         ::confVisu::selectTool 1 ::spcaudace
-         #--- j'affiche l'image 1D
-         spc_load "$filename"
-      } else {
-         #--- si spcaudace est ouvert, je le ferme
-        ### if [ winfo exists .spc ] {
-        ###    destroy .spc
-        ### }
-      }
+      if { [string first "$private(fileImage)" "$type" ] != -1 } {
+         #--- j'affiche l'image
+         ::confVisu::loadIma $visuNo $filename
+         if { $::tcl_platform(os) == "Linux" } {
+           #--- Avec Linux, j'affiche le profil 1D avec spcaudace
+           #--- Avec Windows, le profil 1D est affiche par confVisu
+           #--- je recupere naxis1 de l'image qui vient d'etre chargee
+           set mynaxis [ lindex [ buf[::confVisu::getBufNo $visuNo] getkwd "NAXIS" ] 1 ]
+           if { $mynaxis == 1 } {
+              #--- j'ouvre la fenetre de spcaudace
+              ::confVisu::selectTool 1 ::spcaudace
+              #--- j'affiche l'image 1D
+              spc_load "$filename"
+           } else {
+              #--- si spcaudace est ouvert, je le ferme
+              ### if [ winfo exists .spc ] {
+              ###    destroy .spc
+              ### }
+           }
+         }
 
-      if { [::Image::isAnimatedGIF "$filename"] == 1 } {
+         if { [::Image::isAnimatedGIF "$filename"] == 1 } {
+            setAnimationState $visuNo "1"
+            if { $doubleClick == 1 } {
+               startAnimation $visuNo
+            }
+         } else {
+            setAnimationState $visuNo "0"
+         }
+
+      } elseif { "$type" == "$private(fileMovie)" } {
+         #--- j'affiche la premiere image du film
+         ::Image::loadmovie $visuNo $filename
          setAnimationState $visuNo "1"
          if { $doubleClick == 1 } {
             startAnimation $visuNo
          }
-      } else {
-         setAnimationState $visuNo "0"
-      }
 
-   } elseif { "$type" == "$private(fileMovie)" } {
-      #--- j'affiche la premiere image du film
-      ::Image::loadmovie $visuNo $filename
-      setAnimationState $visuNo "1"
-      if { $doubleClick == 1 } {
-         startAnimation $visuNo
-      }
-
-   } elseif { "$type" == "$private(folder)" || "$type" == "$private(volume)" } {
-      if { $doubleClick == 1 } {
-         #--- j'affiche le contenu du sous repertoire
-         set private($visuNo,directory) [ file join "$private($visuNo,directory)" "$name" ]
-         fillTable $visuNo
-      }
-      setAnimationState $visuNo "0"
-      set name ""
-
-   } elseif { "$type" == "$private(parentFolder)"} {
-      if { $doubleClick == 1 } {
-         #--- j'affiche le contenu du repertoire parent
-         if { "[file tail $private($visuNo,directory)]" != "" } {
-            #--- si on n'est pas à la racine du disque, on monte d'un repertoire
-            set private($visuNo,directory) [ file dirname "$private($visuNo,directory)" ]
+      } elseif { "$type" == "$private(folder)" || "$type" == "$private(volume)" } {
+         if { $doubleClick == 1 } {
+            #--- j'affiche le contenu du sous repertoire
+            set private($visuNo,directory) [ file join "$private($visuNo,directory)" "$name" ]
             fillTable $visuNo
-         } else {
-            #--- si on est a la racine d'un disque, j'affiche la liste des disques
-            ::visio2::fillVolumeTable $visuNo $private($visuNo,tbl)
          }
+         setAnimationState $visuNo "0"
+         set name ""
+
+      } elseif { "$type" == "$private(parentFolder)"} {
+         if { $doubleClick == 1 } {
+            #--- j'affiche le contenu du repertoire parent
+            if { "[file tail $private($visuNo,directory)]" != "" } {
+               #--- si on n'est pas à la racine du disque, on monte d'un repertoire
+               set private($visuNo,directory) [ file dirname "$private($visuNo,directory)" ]
+               fillTable $visuNo
+            } else {
+               #--- si on est a la racine d'un disque, j'affiche la liste des disques
+               ::visio2::fillVolumeTable $visuNo $private($visuNo,tbl)
+            }
+         }
+         setAnimationState $visuNo "0"
+         #--- je masque le nom pour que ".." n'apparaisse pas dans la barre de titre
+         set name ""
       }
-      setAnimationState $visuNo "0"
-      #--- je masque le nom pour que ".." n'apparaisse pas dans la barre de titre
-      set name ""
+
+
+      #--- j'affiche le widget dans le canvas
+      set private($visuNo,previousType)     "$type"
+      set private($visuNo,previousFileName) "$filename"
+
+      set private($visuNo,currentItemIndex) $index
+
+   } ]
+   if { $catchResult == 1 } {
+      ::console::affiche_erreur "$::errorInfo\n"
    }
 
-   #--- j'affiche le widget dans le canvas
-   set private($visuNo,previousType)     "$type"
-   set private($visuNo,previousFileName) "$filename"
-
-   set private($visuNo,currentItemIndex) $index
+   $::visio2::private($visuNo,This) configure -cursor arrow
 
 }
 
@@ -1198,7 +1203,7 @@ proc ::visio2::localTable::refresh { visuNo { fileName "" } } {
 # localTable::selectAll
 #   selectionne tous les fichiers dans la table
 #------------------------------------------------------------------------------
-proc ::visio2::localTable::selectAll { $visuNo } {
+proc ::visio2::localTable::selectAll { visuNo } {
    variable private
 
    $private($visuNo,tbl) selection set 0 end
@@ -1624,7 +1629,7 @@ proc ::visio2::localTable::createTbl { visuNo frame } {
    #--- table des fichiers
    tablelist::tablelist $tbl \
       -columns [ list \
-         12 $caption(visio2,column_name)   left  \
+         20 $caption(visio2,column_name)   left  \
          10 $caption(visio2,column_type)   left  \
          10 $caption(visio2,column_series) left  \
          17 $caption(visio2,column_date)   left  \
@@ -1669,7 +1674,7 @@ proc ::visio2::localTable::createTbl { visuNo frame } {
 
    #--- je place la liste et les scrollbar dans une grille
    grid $frame.directory -row 0 -column 0 -columnspan 2 -sticky ew
-   grid $tbl -row 1 -column 0 -sticky ns
+   grid $tbl -row 1 -column 0 -sticky nsew
    grid $frame.vsb -row 1 -column 1 -sticky ns
    grid $frame.hsb -row 2 -column 0 -sticky ew
    grid rowconfigure    $frame 1 -weight 1
