@@ -237,7 +237,7 @@ int CVisu::CreatePaletteFromFile(char *filename)
          (pal.pal)[i] = palette[i];
       }
       // Mise a jour de l'image
-      UpdateDisplay();
+      return UpdateDisplay();
    } else {
       for(i=0;i<3;i++) delete palette[i];
       return ELIBSTD_PALETTE_NOTCOMPLETE;
@@ -319,9 +319,7 @@ int CVisu::CreatePalette(Pal_Type t)
          break;
    };
 
-   UpdateDisplay();
-
-   return 0;
+   return UpdateDisplay();
 }
 
 
