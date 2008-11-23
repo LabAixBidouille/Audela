@@ -240,28 +240,38 @@ int cmdVisuPal(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    } else {
       if(strcmp(argv[2],"grey")==0) {
-         ((CVisu*)clientData)->CreatePalette(Pal_Grey);
+         res = ((CVisu*)clientData)->CreatePalette(Pal_Grey);
       } else if(strcmp(argv[2],"red1")==0) {
-         ((CVisu*)clientData)->CreatePalette(Pal_Red1);
+         res = ((CVisu*)clientData)->CreatePalette(Pal_Red1);
       } else if(strcmp(argv[2],"red2")==0) {
-         ((CVisu*)clientData)->CreatePalette(Pal_Red2);
+         res = ((CVisu*)clientData)->CreatePalette(Pal_Red2);
       } else if(strcmp(argv[2],"green1")==0) {
-         ((CVisu*)clientData)->CreatePalette(Pal_Green1);
+         res = ((CVisu*)clientData)->CreatePalette(Pal_Green1);
       } else if(strcmp(argv[2],"green2")==0) {
-         ((CVisu*)clientData)->CreatePalette(Pal_Green2);
+         res = ((CVisu*)clientData)->CreatePalette(Pal_Green2);
       } else if(strcmp(argv[2],"blue1")==0) {
-         ((CVisu*)clientData)->CreatePalette(Pal_Blue1);
+         res = ((CVisu*)clientData)->CreatePalette(Pal_Blue1);
       } else if(strcmp(argv[2],"blue2")==0) {
-         ((CVisu*)clientData)->CreatePalette(Pal_Blue2);
+         res = ((CVisu*)clientData)->CreatePalette(Pal_Blue2);
       } else {
          // je traite les noms de repertoires contenant des caractères accentués
          sprintf(ligne,"encoding convertfrom identity {%s}",argv[2]);
          Tcl_Eval(interp,ligne);
          res = ((CVisu*)clientData)->CreatePaletteFromFile(interp->result);
-         if(res!=0) {
+      }
+      if (res != 0) {
+         switch (res) {
+         case ELIBSTD_NO_MEMORY_FOR_DISPLAY:
+            Tcl_SetResult(interp,"NO MEMORY FOR DISPLAY",TCL_VOLATILE);
+            result = TCL_ERROR;
+            break;
+         default:
             Tcl_SetResult(interp,CError::message(res),TCL_VOLATILE);
             result = TCL_ERROR;
+            break;
          }
+      } else {
+         Tcl_ResetResult(interp);
       }
    }
    free(ligne);
