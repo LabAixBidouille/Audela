@@ -4,24 +4,26 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Michel PUJOL <michel-pujol@wanadoo.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 #include <math.h>   // floor()
+#if defined(OS_WIN)
 #include <windows.h>
+#endif
 #include "cpixelsgray.h"
 #include "libtt.h"            // for TFLOAT, LONG_IMG, TT_PTR_...
 #include "cerror.h"
@@ -53,10 +55,10 @@ CPixelsGray::~CPixelsGray()
 
 }
 
-CPixelsGray::CPixelsGray(int width, int height, TYPE_PIXELS *ppix) 
+CPixelsGray::CPixelsGray(int width, int height, TYPE_PIXELS *ppix)
 {
    int t;
-   
+
    naxis1 = width;
    naxis2 = height;
 
@@ -67,16 +69,16 @@ CPixelsGray::CPixelsGray(int width, int height, TYPE_PIXELS *ppix)
 
    t = naxis1 * naxis2;
    while(--t>=0) *(pix+t) = (TYPE_PIXELS)*((ppix+t));
-            
+
 }
 
 CPixelsGray::CPixelsGray(int width, int height, TPixelFormat pixelFormat, void * pixels, int reverseX, int reverseY)
 {
-   int t, u, x, y;         
-   
+   int t, u, x, y;
+
    naxis1 = width;
    naxis2 = height;
-   
+
    // je cree le pointeur sur l'image (pix)
    pix = (TYPE_PIXELS*)malloc(naxis1*naxis2 * sizeof(TYPE_PIXELS));
    if(pix==NULL) {
@@ -103,7 +105,7 @@ CPixelsGray::CPixelsGray(int width, int height, TPixelFormat pixelFormat, void *
             }
          }
          break;
-         
+
       case FORMAT_SHORT:
          {
             short * pixelPtr = (short *) pixels;
@@ -134,7 +136,7 @@ CPixelsGray::CPixelsGray(int width, int height, TPixelFormat pixelFormat, void *
             }
          }
          break;
-      case FORMAT_FLOAT: 
+      case FORMAT_FLOAT:
          {
             float * pixelPtr = (float *) pixels;
             if (reverseY == 0) {
@@ -149,11 +151,11 @@ CPixelsGray::CPixelsGray(int width, int height, TPixelFormat pixelFormat, void *
             }
          }
          break;
-      default: 
+      default:
          free(pix);
          throw CError(ELIBSTD_NO_MEMORY_FOR_PIXELS);
          break;
-         
+
       }
    } else {
       while(--t>=0) *(pix+t) = 0;
@@ -167,7 +169,7 @@ CPixelsGray::CPixelsGray(int width, int height, TPixelFormat pixelFormat, void *
 
 void CPixelsGray::GetPix(int *plane, TYPE_PIXELS *val1,TYPE_PIXELS *val2,TYPE_PIXELS *val3,int x, int y)
 {
-   
+
    if((x<0)||(x>=naxis1)) {
       throw CError( ELIBSTD_X1X2_NOT_IN_1NAXIS1);
    } else if ((y<0)||(y>=naxis2)) {
@@ -191,7 +193,7 @@ void CPixelsGray::GetPix(int *plane, TYPE_PIXELS *val1,TYPE_PIXELS *val2,TYPE_PI
  */
 void CPixelsGray::SetPix(TColorPlane plane, TYPE_PIXELS val,int x, int y)
 {
- 
+
    if((x<0)||(x>=naxis1)) {
       throw CError( ELIBSTD_X1X2_NOT_IN_1NAXIS1);
    } else if ((y<0)||(y>=naxis2)) {
@@ -219,7 +221,7 @@ void CPixelsGray::Add(char *filename, float offset)
    msg = Libtt_main(TT_PTR_IMASERIES,7,&pix,&datatype,&naxis1,&naxis2,&pix,&datatype,s);
    delete s;
    if(msg) throw CErrorLibtt(msg);
-   
+
 }
 
 void CPixelsGray::Autocut(double *phicut,double *plocut,double *pmode)
@@ -264,22 +266,22 @@ void CPixelsGray::BinX(int x1, int x2, int width)
       throw CError( ELIBSTD_NO_MEMORY_FOR_PIXELS );
    }
 
-   // bining 
+   // bining
    for(y = 0; y < naxis2;y++)
    {
        value = (float)0;
        for(x=x1;x<=x2;x++)
        {
           value += pix[x+y*naxis1];
-       } 
+       }
        for(x=0;x<width;x++)
        {
           out[x+y*width]=value;
-       } 
-   } 
+       }
+   }
 
    naxis1 = width;
-   naxis2 = naxis2; 
+   naxis2 = naxis2;
 
    free(pix);
    pix = out;
@@ -292,12 +294,12 @@ void CPixelsGray::BinY(int y1, int y2, int height)
    TYPE_PIXELS value;
    TYPE_PIXELS *out;
 
-   // verification des donnees 
+   // verification des donnees
    if (height < 0)
    {
          throw CError( ELIBSTD_HEIGHT_POSITIVE );
 
-   } 
+   }
    if ((y1 < 0) || (y2 < 0) || (y1 > naxis2-1) || (y2 > naxis2-1))
    {
          throw CError( ELIBSTD_Y1Y2_NOT_IN_1NAXIS2);
@@ -308,30 +310,30 @@ void CPixelsGray::BinY(int y1, int y2, int height)
        temp = y2;
        y2 = y1;
        y1 = temp;
-   }  
+   }
 
    out = (TYPE_PIXELS*)malloc(naxis1*height * sizeof(TYPE_PIXELS));
    if( out == NULL ) {
       throw CError( ELIBSTD_NO_MEMORY_FOR_PIXELS );
    }
 
-   // bining 
+   // bining
    for(x = 0; x < naxis1;x++)
    {
        value = (float)0;
        for(y=y1;y<=y2;y++)
        {
           value += pix[x+y*naxis1];
-       } 
+       }
        for(y=0;y<height;y++)
        {
           out[x+y*naxis1]=value;
        }
-   } 
+   }
 
    // ne surtout pas oublier de mettre à jour les nouvelles dimensions
-   naxis2 = height; 
-   
+   naxis2 = height;
+
    // je libére l'ancien espace mémoire
    free(pix);
    // j'affcete le nouvel espce mémoire
@@ -382,7 +384,7 @@ int CPixelsGray::GetHeight(void) {
 }
 
 
-/** 
+/**
   retourne le pointeur du tableau interne de pixels
   fonction obsolète. Remplace par SetPixels/GetPixels/SetPix/GetPix
 */
@@ -390,7 +392,7 @@ void CPixelsGray::GetPixelsPointer(TYPE_PIXELS **pixels) {
    *pixels = pix;
 }
 
-/** 
+/**
   GetPixels
   retourne le tableau de pixels correspondant à la fenetre (x1,y1)-(x2,y2)
   en inlcuant les valeur limites x=x1, x=x2, y=y1 , y=y2
@@ -410,7 +412,7 @@ void CPixelsGray::GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFo
             }
          }
          break;
-         
+
       case FORMAT_SHORT:
          {
             short * outPtr = (short *) pixels;
@@ -431,7 +433,7 @@ void CPixelsGray::GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFo
             }
          }
          break;
-      case FORMAT_FLOAT: 
+      case FORMAT_FLOAT:
          {
             float * outPtr = (float *) pixels;
             for(y=y1;y<=y2;y++) {
@@ -441,10 +443,10 @@ void CPixelsGray::GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFo
             }
          }
          break;
-      default: 
+      default:
          throw CError(ELIBSTD_PIXEL_FORMAT_UNKNOWN);
          break;
-         
+
       }
 
 
@@ -466,7 +468,7 @@ void CPixelsGray::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat 
             }
          }
          break;
-         
+
       case FORMAT_SHORT:
          {
             short * outPtr = (short *) pixels;
@@ -487,22 +489,22 @@ void CPixelsGray::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat 
             }
          }
          break;
-      case FORMAT_FLOAT: 
+      case FORMAT_FLOAT:
          {
             float * outPtr = (float *) pixels;
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*(naxis2-y-1)+x1);
-               out = outPtr + width*(y-y1);               
+               out = outPtr + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   *(out++) = (float) (*ptr++);
                }
             }
          }
          break;
-      default: 
+      default:
          throw CError(ELIBSTD_PIXEL_FORMAT_UNKNOWN);
          break;
-         
+
       }
 
 
@@ -511,7 +513,7 @@ void CPixelsGray::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat 
 void CPixelsGray::GetPixelsVisu( int x1,int y1,int x2, int y2,
             int mirrorX, int mirrorY,
             float *cuts,
-            unsigned char *palette[3], unsigned char *ptr) 
+            unsigned char *palette[3], unsigned char *ptr)
 {
    int i, j;
    int orgww, orgwh;                // original window width, height
@@ -544,7 +546,7 @@ void CPixelsGray::GetPixelsVisu( int x1,int y1,int x2, int y2,
    for(i=0;i<256;i++) {
       mypal[i] = (palette[2][i]<<16)+(palette[1][i]<<8)+(palette[0][i]<<0);
    }
-   
+
    for(j=y1;j<=y2;j++) {
       if(mirrorY == 0) {
          ydest = ((y2-y1) - (j -y1) )*orgww ;
@@ -586,7 +588,7 @@ int CPixelsGray::GetPlanes(void) {
  * IsPixelsReady
  *    informe si une image est presente dans le buffer
  *
- * Parameters: 
+ * Parameters:
  *    none
  * Results:
  *    returns 1 if pixels are ready, otherwise 0.
@@ -618,7 +620,7 @@ void CPixelsGray::MergePixels(TColorPlane plane, int pixels)
 {
    throw CError(ELIBSTD_NOT_IMPLEMENTED);
 }
-   
+
 
 void CPixelsGray::MirX()
 {
@@ -684,7 +686,7 @@ void CPixelsGray::Offset(float offset)
 
    datatype = TFLOAT;
    s = new char[512];
-   
+
    sprintf(s,"OFFSET offset=%f",offset);
    msg = Libtt_main(TT_PTR_IMASERIES,7,&pix,&datatype,&naxis1,&naxis2,&pix,&datatype,s);
    delete s;
@@ -695,7 +697,7 @@ void CPixelsGray::Offset(float offset)
 void CPixelsGray::Opt(char *dark, char *offset)
 {
    int msg, datatype;
-   // "s" doit etre suffisamment grande pour contenir les noms complets des deux fichiers. 
+   // "s" doit etre suffisamment grande pour contenir les noms complets des deux fichiers.
    char s[2048];
 
    datatype = TFLOAT;
@@ -731,10 +733,10 @@ void CPixelsGray::Sub(char *filename, float offset)
 }
 
 //***************************************************
-// unifybg                      
-//                                         
+// unifybg
+//
 // - decoupe l'image en fentres
-// - calcule le fond de ciel pour chaque fenetre 
+// - calcule le fond de ciel pour chaque fenetre
 // - construit une matrice du fond du ciel pour chaque pixel
 //   par interpolation entre les centres des rectangles
 //
@@ -775,14 +777,14 @@ void CPixelsGray::UnifyBg()
       }
    }
 
-   // lines des centres des fenetres 
+   // lines des centres des fenetres
    lines = (int*)malloc(nbLine * sizeof(int));
    if (lines==NULL) throw CError(ELIBSTD_NO_MEMORY_FOR_PIXELS);
 
    // columns des centres des fenetres
    columns = (int*)malloc(nbCol * sizeof(int));
    if (columns==NULL) throw CError(ELIBSTD_NO_MEMORY_FOR_PIXELS);
-   
+
 
    // -----------------------------------------------------------
    // je calcule le fond du ciel de chaque fenetre (x,y)(x+wRect,y+hRect)
@@ -791,7 +793,7 @@ void CPixelsGray::UnifyBg()
    for(x1=0; x1 < naxis1 ; x1 +=wRect) {
       lineIndex=0;
       for(y1=0; y1 < naxis2 ; y1 +=hRect) {
-      
+
          // calcul de coordonnées de la fenetre
          if( x1 + wRect < naxis1) {
             x2 = x1 + wRect;
@@ -809,8 +811,8 @@ void CPixelsGray::UnifyBg()
          // calcul des coord. du centre de la fenetre
          xc = (x2-x1)/2 +x1;
          yc = (y2-y1)/2 +y1;
-        
-         // je copie les pixels de la fenetre 
+
+         // je copie les pixels de la fenetre
          naxis11 = x2-x1+1;
          naxis22 = y2-y1+1;
          pixel = (TYPE_PIXELS*)malloc(naxis11*naxis22 * sizeof(TYPE_PIXELS));
@@ -844,7 +846,7 @@ void CPixelsGray::UnifyBg()
          //logInfo("1 x1=%d y1=%d x2=%d y2=%d bg=%f", x1, y1, x2, y2, dbgmean);
 
       }
-      
+
       colIndex++;
    }
 
@@ -871,7 +873,7 @@ void CPixelsGray::UnifyBg()
          v2 = matbg[yc2*naxis1+ xc ];
          a = (v2 - v1)/(yc2 - yc1);
          b = v1 - a * yc1;
- 
+
          // je calcule les bornes de la droite de regression  y1, y2
          if(lineIndex == 0 ) {
             y1 = 0 ;          // première fenetre en haut
@@ -881,34 +883,34 @@ void CPixelsGray::UnifyBg()
          if(lineIndex >= nbLine - 2 ) {
             y2 = naxis2 ;   // deniere fenetre en bas
          } else {
-            y2 = yc2;          
+            y2 = yc2;
          }
-         
-         // je calcule les points entre les deux bornes 
+
+         // je calcule les points entre les deux bornes
          for( y = y1; y < y2 ; y++) {
-            matbg[y*naxis1+ xc ]  = a * y + b; 
+            matbg[y*naxis1+ xc ]  = a * y + b;
          }
 
          //logInfo("col xc=%d yc1=%d yc2=%d y1=%d y2=%d", xc, yc1, yc2, y1, y2);
       }
    }
-                 
-   
+
+
    //  calcul des lignes
    for(yc=0; yc<naxis2; yc++ ) {
       for(colIndex=0; colIndex<nbCol-1; colIndex++) {
-         
+
          // je recupere les coordonness des deux points pour calculer la droite
          xc1 = columns[colIndex];
          xc2 = columns[colIndex+1];
-      
+
          // je calcule les coefs de la droite de regression v = ax +b
          // la doite passe par les 2 points (xc1,v1) et (xc2, v2)
          v1 = matbg[yc*naxis1+ xc1 ];
          v2 = matbg[yc*naxis1+ xc2 ];
          a = (v2 - v1)/(xc2 - xc1);
          b = v1 - a*xc1;
- 
+
          // je calcule les bornes de la droite de regression  x1, x2
          if(colIndex == 0 ) {
             x1 = 0 ;          // première fenetre a gauche
@@ -918,11 +920,11 @@ void CPixelsGray::UnifyBg()
          if(colIndex == nbCol -2 ) {
             x2 = naxis1;   // deniere fenetre a droite
          } else {
-            x2 = xc2;          
+            x2 = xc2;
          }
-         
+
          for( x = x1; x < x2 ; x++) {
-            matbg[yc*naxis1+ x ]  = a * x + b; 
+            matbg[yc*naxis1+ x ]  = a * x + b;
          }
          //logInfo("line yc=%d xc1=%d xc2=%d x1=%d x2=%d v1=%f v2=%f", yc, xc1, xc2, x1, x2, v1, v2);
       }
@@ -969,7 +971,7 @@ void CPixelsGray::Window(int x1, int y1, int x2, int y2)
    int x, y, diff_x, diff_y;
    TYPE_PIXELS *out;
 
-   // verification des donnees 
+   // verification des donnees
    if ((x1 < 0) || (x2 < 0) || (x1 > naxis1-1) || (x2 > naxis1-1))
    {
          throw CError( ELIBSTD_X1X2_NOT_IN_1NAXIS1);
@@ -977,7 +979,7 @@ void CPixelsGray::Window(int x1, int y1, int x2, int y2)
    if ((y1 < 0) || (y2 < 0) || (y1 > naxis2-1) || (y2 > naxis2-1))
    {
          throw CError( ELIBSTD_Y1Y2_NOT_IN_1NAXIS2);
-   } 
+   }
 
    if(x1 > x2)
    {
@@ -1002,17 +1004,17 @@ void CPixelsGray::Window(int x1, int y1, int x2, int y2)
       throw CError(  ELIBSTD_NO_MEMORY_FOR_PIXELS);
    }
 
-   // window 
+   // window
    for(x = 0; x < diff_x;x++)
    {
        for(y = 0;y < diff_y;y++)
        {
          out[x + y * diff_x] =  pix[(x1 + x) + (y1 + y) * naxis1];
-       } 
-   } 
+       }
+   }
 
    naxis1 = diff_x;
-   naxis2 = diff_y; 
+   naxis2 = diff_y;
    free(pix);
    pix = out;
 }
