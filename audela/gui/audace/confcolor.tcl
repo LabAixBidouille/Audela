@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.19 2008-09-14 22:00:02 robertdelmas Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.20 2008-11-27 17:36:17 robertdelmas Exp $
 #
 
 namespace eval confColor {
@@ -34,6 +34,12 @@ namespace eval confColor {
       if { ! [ info exists conf(confcolor,day,listBox) ] }             { set conf(confcolor,day,listBox)             "#DDDDFF" }
       if { ! [ info exists conf(confcolor,day,drag_rectangle) ] }      { set conf(confcolor,day,drag_rectangle)      "#0000EF" }
 
+      if { ! [ info exists conf(confcolor,day,style_entete) ] }        { set conf(confcolor,day,style_entete)        "#007F00" }
+      if { ! [ info exists conf(confcolor,day,style_resultat) ] }      { set conf(confcolor,day,style_resultat)      "azure4" }
+      if { ! [ info exists conf(confcolor,day,style_cmd) ] }           { set conf(confcolor,day,style_cmd)           "black" }
+      if { ! [ info exists conf(confcolor,day,style_erreur) ] }        { set conf(confcolor,day,style_erreur)        "red" }
+      if { ! [ info exists conf(confcolor,day,style_prompt) ] }        { set conf(confcolor,day,style_prompt)        "purple" }
+
       #--- Couleurs nocturnes
       if { ! [ info exists conf(confcolor,night,entryBackColor)] }     { set conf(confcolor,night,entryBackColor)    "#BB0923" }
       if { ! [ info exists conf(confcolor,night,entryBackColor2) ] }   { set conf(confcolor,night,entryBackColor2)   "#F93956" }
@@ -48,6 +54,12 @@ namespace eval confColor {
       if { ! [ info exists conf(confcolor,night,canvas) ] }            { set conf(confcolor,night,canvas)            "#004559" }
       if { ! [ info exists conf(confcolor,night,listBox) ] }           { set conf(confcolor,night,listBox)           "#C40627" }
       if { ! [ info exists conf(confcolor,night,drag_rectangle) ] }    { set conf(confcolor,night,drag_rectangle)    "#0000EF" }
+
+      if { ! [ info exists conf(confcolor,night,style_entete) ] }      { set conf(confcolor,night,style_entete)      "#007F00" }
+      if { ! [ info exists conf(confcolor,night,style_resultat) ] }    { set conf(confcolor,night,style_resultat)    "azure4" }
+      if { ! [ info exists conf(confcolor,night,style_cmd) ] }         { set conf(confcolor,night,style_cmd)         "black" }
+      if { ! [ info exists conf(confcolor,night,style_erreur) ] }      { set conf(confcolor,night,style_erreur)      "red" }
+      if { ! [ info exists conf(confcolor,night,style_prompt) ] }      { set conf(confcolor,night,style_prompt)      "purple" }
 
       #--- Je copie les couleurs conf() dans audace() en fonction de l'apparence choisie
       set appearance $conf(confcolor,appearance)
@@ -157,7 +169,7 @@ namespace eval confColor {
 
       set widget(position) "$conf(confcolor,position)"
 
-      #--- Je copie les couleurs  de conf() dans widget() en fonction de l'apparence choisie
+      #--- Je copie les couleurs de conf() dans widget() en fonction de l'apparence choisie
       set widget(appearance) $conf(confcolor,appearance)
       foreach {key value} [array get conf confcolor,*,*] {
          set appearance [lindex [split $key ,] 1]
@@ -174,7 +186,7 @@ namespace eval confColor {
       variable widget
       global audace conf
 
-      #--- Je sauvegarde les couleurs  de widget() dans conf()
+      #--- Je sauvegarde les couleurs de widget() dans conf()
       set appearance $conf(confcolor,appearance)
       foreach {key value} [array get widget color,*,*] {
          set appearance [lindex [split $key ,] 1]
@@ -246,7 +258,7 @@ namespace eval confColor {
       grid $frm.select.title_label $frm.select.rb_day $frm.select.rb_night $frm.select.restore -ipadx 5 -ipady 5
       pack $frm.select -fill x -expand 1 -anchor n -side top
 
-      #--- J'ajoute les button par type de couleur dans une grille a deux colonnes
+      #--- J'ajoute les buttons par type de couleur dans une grille a deux colonnes
       frame $frm.but -borderwidth 1 -relief groove
       foreach {key } [lsort [array names widget -glob color,day,*] ] {
          set i [lindex [split $key ,] 2]
@@ -409,11 +421,8 @@ namespace eval confColor {
             $w configure -bg $audace(color,entryBackColor) -fg $audace(color,entryTextColor) \
                -disabledbackground $audace(color,entryBackColor2) \
                -disabledforeground $audace(color,disabledTextColor) \
-               -selectbackground $audace(color,activeBackColor)  \
+               -selectbackground $audace(color,activeBackColor) \
                -selectforeground $audace(color,activeTextColor)
-
-               ##-selectbackground "SystemHighlight"
-               ##-selectforeground SystemHighlightText
          }
          LabelEntry {
             $w configure -bg $audace(color,entryBackColor) -fg $audace(color,entryTextColor) \
@@ -498,13 +507,19 @@ namespace eval confColor {
             $w configure -selectbackground $audace(color,entryBackColor) -selectforeground $audace(color,entryTextColor)
          }
          default {
-            #--- Trace pour faire apparaitre les widget non traites
+            #--- Trace pour faire apparaitre les widgets non traites
            ### console::disp "Defaut ==> w=$w class=[ winfo class $w ]\n"
          }
       }
       foreach i [ winfo children $w ] {
          ::confColor::applyColor $i
       }
+      #--- Mise a jour des couleurs des textes dans la Console
+      $audace(Console).txt1 tag configure style_entete   -foreground $audace(color,style_entete)
+      $audace(Console).txt1 tag configure style_resultat -foreground $audace(color,style_resultat)
+      $audace(Console).txt1 tag configure style_cmd      -foreground $audace(color,style_cmd)
+      $audace(Console).txt1 tag configure style_erreur   -foreground $audace(color,style_erreur)
+      $audace(Console).txt1 tag configure style_prompt   -foreground $audace(color,style_prompt)
    }
 
    #------------------------------------------------------------
