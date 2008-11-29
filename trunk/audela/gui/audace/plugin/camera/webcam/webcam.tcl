@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.44 2008-11-21 16:40:37 michelpujol Exp $
+# Mise a jour $Id: webcam.tcl,v 1.45 2008-11-29 13:01:57 michelpujol Exp $
 #
 
 namespace eval ::webcam {
@@ -331,9 +331,9 @@ proc ::webcam::fillConfigPage { frm camItem } {
    pack $frm.miry -in $frm.frame9 -anchor w -side top -padx 20 -pady 10
 
    #--- Connexion alternee
-   checkbutton $frm.switchedConnexion -text "$caption(webcam,switchedConnexion)" -highlightthickness 0 \
-      -variable ::webcam::private($camItem,switchedConnexion)
-   pack $frm.switchedConnexion -in $frm.frame7 -anchor w -side top -padx 20 -pady 10
+   ###checkbutton $frm.switchedConnexion -text "$caption(webcam,switchedConnexion)" -highlightthickness 0 \
+   ###   -variable ::webcam::private($camItem,switchedConnexion)
+   ###pack $frm.switchedConnexion -in $frm.frame7 -anchor w -side top -padx 20 -pady 10
 
    #--- Boutons de configuration de la source
    if { $::tcl_platform(os) == "Linux" } {
@@ -490,16 +490,16 @@ proc ::webcam::configureCamera { camItem bufNo } {
 
    set catchResult [ catch {
 
-      if { $conf(webcam,switchedConnexion) == 1 } {
-        #--- je deconnecte les autres cameras
-        foreach camItem2 { A B C } {
-            if { $camItem2 != $camItem && $private($camItem2,camNo)!= 0  && $conf(webcam,$camItem2,videomode) == "directx" != 0 } {
-               if { [cam$private($camItem2,camNo) connect ] == 1 } {
-                  cam$private($camItem2,camNo) connect 0
-               }
-            }
-         }
-      }
+      ###if { $conf(webcam,switchedConnexion) == 1 } {
+      ###  #--- je deconnecte les autres cameras
+      ###  foreach camItem2 { A B C } {
+      ###      if { $camItem2 != $camItem && $private($camItem2,camNo)!= 0  && $conf(webcam,$camItem2,videomode) == "directx" != 0 } {
+      ###         if { [cam$private($camItem2,camNo) connect ] == 1 } {
+      ###            cam$private($camItem2,camNo) connect 0
+      ###         }
+      ###      }
+      ###   }
+      ###}
 
       if { $conf(webcam,$camItem,longuepose) == "1" } {
          #--- Je cree la liaison longue pose
@@ -524,9 +524,17 @@ proc ::webcam::configureCamera { camItem bufNo } {
          -longueposelinkbit $conf(webcam,$camItem,longueposelinkbit) \
          -longueposestart $conf(webcam,$camItem,longueposestartvalue) \
       ]
-      console::affiche_erreur "$caption(webcam,canal_usb) ($caption(webcam,camera))\
-         $caption(webcam,2points) $conf(webcam,$camItem,channel)\n"
+      if { $::tcl_platform(os) == "Linux" } {
+         #--- j'affiche le canal et le port
+         console::affiche_erreur "$caption(webcam,camera) $conf(webcam,$camItem,port) (($caption(webcam,canal_usb)\
+         $caption(webcam,2points) $conf(webcam,$camItem,channel)) \n"
+      } else {
+         #--- j'affiche le canal (vfw ou directx)  et le mode
+         console::affiche_erreur "$caption(webcam,camera) ($caption(webcam,canal_usb)\
+         $caption(webcam,2points) $conf(webcam,$camItem,channel)) $conf(webcam,$camItem,port)\n"
       console::affiche_erreur "$caption(webcam,mode_video) $caption(webcam,2points) $conf(webcam,$camItem,videomode)\n"
+      }
+
       console::affiche_erreur "$caption(webcam,longuepose) $caption(webcam,2points)\
          $conf(webcam,$camItem,longuepose)\n"
       console::affiche_saut "\n"
@@ -642,9 +650,7 @@ proc ::webcam::configWebCam { camItem } {
          #--- actualise la liste des ports
          if { $::tcl_platform(os) == "Linux" } {
             #--- je remplis la liste avec la liste des ports
-            if { "$private(portList)" == "" } {
                set private(portList) [lsort -dictionary [ glob -nocomplain /dev/video? ]]
-            }
             #--- je selectionne le port courant
              set index [lsearch $private(portList) $private($camItem,port)]
              if { $index != -1 } {
