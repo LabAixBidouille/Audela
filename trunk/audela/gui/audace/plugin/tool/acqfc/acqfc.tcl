@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.70 2008-11-21 16:58:39 michelpujol Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.71 2008-11-29 13:03:55 michelpujol Exp $
 #
 
 #==============================================================
@@ -15,608 +15,615 @@ namespace eval ::acqfc {
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] acqfc.cap ]
+}
 
 #***** Procedure createPluginInstance***************************
-   proc createPluginInstance { { in "" } { visuNo 1 } } {
-      variable parametres
-      global audace caption conf panneau
+proc ::acqfc::createPluginInstance { { in "" } { visuNo 1 } } {
+   variable parametres
+   global audace caption conf panneau
 
-      #--- Chargement des fichiers auxiliaires
-      uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqfc acqfcSetup.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqfc dlgshift.tcl ]\""
+   #--- Chargement des fichiers auxiliaires
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqfc acqfcSetup.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqfc dlgshift.tcl ]\""
 
-      #---
-      set panneau(acqfc,$visuNo,base) "$in"
-      set panneau(acqfc,$visuNo,This) "$in.acqfc"
+   #---
+   set panneau(acqfc,$visuNo,base) "$in"
+   set panneau(acqfc,$visuNo,This) "$in.acqfc"
 
-      set panneau(acqfc,$visuNo,camItem) [::confVisu::getCamItem $visuNo]
-      set panneau(acqfc,$visuNo,camNo)   [::confCam::getCamNo $panneau(acqfc,$visuNo,camItem)]
+   set panneau(acqfc,$visuNo,camItem) [::confVisu::getCamItem $visuNo]
+   set panneau(acqfc,$visuNo,camNo)   [::confCam::getCamNo $panneau(acqfc,$visuNo,camItem)]
 
-      #--- Recuperation de la derniere configuration de l'outil
-      ::acqfc::Chargement_Var $visuNo
+   #--- Recuperation de la derniere configuration de l'outil
+   ::acqfc::Chargement_Var $visuNo
 
-      #--- Initialisation des variables de la boite de configuration
-      ::acqfcSetup::confToWidget $visuNo
+   #--- Initialisation des variables de la boite de configuration
+   ::acqfcSetup::confToWidget $visuNo
 
-      #--- Initialisation de la variable conf()
-      if { ! [info exists conf(acqfc,avancement,position)] } { set conf(acqfc,avancement,position) "+120+315" }
+   #--- Initialisation de la variable conf()
+   if { ! [info exists conf(acqfc,avancement,position)] } { set conf(acqfc,avancement,position) "+120+315" }
 
-      #--- Initialisation de variables
-      set panneau(acqfc,$visuNo,simulation)            "0"
-      set panneau(acqfc,$visuNo,simulation_deja_faite) "0"
-      set panneau(acqfc,$visuNo,attente_pose)          "0"
-      set panneau(acqfc,$visuNo,pose_en_cours)         "0"
-      set panneau(acqfc,$visuNo,avancement,position)   "$conf(acqfc,avancement,position)"
+   #--- Initialisation de variables
+   set panneau(acqfc,$visuNo,simulation)            "0"
+   set panneau(acqfc,$visuNo,simulation_deja_faite) "0"
+   set panneau(acqfc,$visuNo,attente_pose)          "0"
+   set panneau(acqfc,$visuNo,pose_en_cours)         "0"
+   set panneau(acqfc,$visuNo,avancement,position)   "$conf(acqfc,avancement,position)"
 
-      #--- Entrer ici les valeurs de temps de pose a afficher dans le menu "pose"
-      set panneau(acqfc,$visuNo,temps_pose) { 0 0.1 0.3 0.5 1 2 3 5 10 15 20 30 60 90 120 180 300 600 }
-      #--- Valeur par defaut du temps de pose
-      if { ! [ info exists panneau(acqfc,$visuNo,pose) ] } {
-         set panneau(acqfc,$visuNo,pose) "$parametres(acqfc,$visuNo,pose)"
-      }
-
-      #--- Valeur par defaut du binning
-      if { ! [ info exists panneau(acqfc,$visuNo,bin) ] } {
-         set panneau(acqfc,$visuNo,bin) "$parametres(acqfc,$visuNo,bin)"
-      }
-
-      #--- Entrer ici les valeurs pour l'obturateur a afficher dans le menu "obt"
-      set panneau(acqfc,$visuNo,obt,0) "$caption(acqfc,ouv)"
-      set panneau(acqfc,$visuNo,obt,1) "$caption(acqfc,ferme)"
-      set panneau(acqfc,$visuNo,obt,2) "$caption(acqfc,auto)"
-      #--- Obturateur par defaut : Synchro
-      if { ! [ info exists panneau(acqfc,$visuNo,obt) ] } {
-         set panneau(acqfc,$visuNo,obt) "$parametres(acqfc,$visuNo,obt)"
-      }
-
-      #--- Liste des modes disponibles
-      set panneau(acqfc,$visuNo,list_mode) [ list $caption(acqfc,uneimage) $caption(acqfc,serie) $caption(acqfc,continu) \
-         $caption(acqfc,continu_1) $caption(acqfc,continu_2) ]
-
-      #--- Initialisation des modes
-      set panneau(acqfc,$visuNo,mode,1) "$panneau(acqfc,$visuNo,This).mode.une"
-      set panneau(acqfc,$visuNo,mode,2) "$panneau(acqfc,$visuNo,This).mode.serie"
-      set panneau(acqfc,$visuNo,mode,3) "$panneau(acqfc,$visuNo,This).mode.continu"
-      set panneau(acqfc,$visuNo,mode,4) "$panneau(acqfc,$visuNo,This).mode.serie_1"
-      set panneau(acqfc,$visuNo,mode,5) "$panneau(acqfc,$visuNo,This).mode.continu_1"
-      #--- Mode par defaut : Une image
-      if { ! [ info exists panneau(acqfc,$visuNo,mode) ] } {
-         set panneau(acqfc,$visuNo,mode) "$parametres(acqfc,$visuNo,mode)"
-      }
-
-      #--- Initialisation d'autres variables
-      set panneau(acqfc,$visuNo,index)             "1"
-      set panneau(acqfc,$visuNo,nom_image)         ""
-      set panneau(acqfc,$visuNo,extension)         "$conf(extension,defaut)"
-      set panneau(acqfc,$visuNo,indexer)           "0"
-      set panneau(acqfc,$visuNo,nb_images)         "5"
-      set panneau(acqfc,$visuNo,session_ouverture) "1"
-      set panneau(acqfc,$visuNo,avancement_acq)    "$parametres(acqfc,$visuNo,avancement_acq)"
-      set panneau(acqfc,$visuNo,enregistrer)       "$parametres(acqfc,$visuNo,enregistrer)"
-
-      #--- Mise en place de l'interface graphique
-      acqfcBuildIF $visuNo
-
-      #--- Traitement du bouton Configuration pour la camera APN (DSLR)
-      $panneau(acqfc,$visuNo,This).obt.dslr configure -state normal
-
-      pack $panneau(acqfc,$visuNo,mode,$panneau(acqfc,$visuNo,mode)) -anchor nw -fill x
-
-      #--- Surveillance de la connexion d'une camera
-      ::confVisu::addCameraListener $visuNo "::acqfc::Adapt_Panneau_AcqFC $visuNo"
-      #--- Surveillance de l'ajout ou de la suppression d'une extension
-      trace add variable ::conf(list_extension) write ::acqfc::Init_list_extension
-
+   #--- Entrer ici les valeurs de temps de pose a afficher dans le menu "pose"
+   set panneau(acqfc,$visuNo,temps_pose) { 0 0.1 0.3 0.5 1 2 3 5 10 15 20 30 60 90 120 180 300 600 }
+   #--- Valeur par defaut du temps de pose
+   if { ! [ info exists panneau(acqfc,$visuNo,pose) ] } {
+      set panneau(acqfc,$visuNo,pose) "$parametres(acqfc,$visuNo,pose)"
    }
+
+   #--- Valeur par defaut du binning
+   if { ! [ info exists panneau(acqfc,$visuNo,bin) ] } {
+      set panneau(acqfc,$visuNo,bin) "$parametres(acqfc,$visuNo,bin)"
+   }
+
+   #--- Entrer ici les valeurs pour l'obturateur a afficher dans le menu "obt"
+   set panneau(acqfc,$visuNo,obt,0) "$caption(acqfc,ouv)"
+   set panneau(acqfc,$visuNo,obt,1) "$caption(acqfc,ferme)"
+   set panneau(acqfc,$visuNo,obt,2) "$caption(acqfc,auto)"
+   #--- Obturateur par defaut : Synchro
+   if { ! [ info exists panneau(acqfc,$visuNo,obt) ] } {
+      set panneau(acqfc,$visuNo,obt) "$parametres(acqfc,$visuNo,obt)"
+   }
+
+   #--- Liste des modes disponibles
+   set panneau(acqfc,$visuNo,list_mode) [ list $caption(acqfc,uneimage) $caption(acqfc,serie) $caption(acqfc,continu) \
+      $caption(acqfc,continu_1) $caption(acqfc,continu_2) ]
+
+   #--- Initialisation des modes
+   set panneau(acqfc,$visuNo,mode,1) "$panneau(acqfc,$visuNo,This).mode.une"
+   set panneau(acqfc,$visuNo,mode,2) "$panneau(acqfc,$visuNo,This).mode.serie"
+   set panneau(acqfc,$visuNo,mode,3) "$panneau(acqfc,$visuNo,This).mode.continu"
+   set panneau(acqfc,$visuNo,mode,4) "$panneau(acqfc,$visuNo,This).mode.serie_1"
+   set panneau(acqfc,$visuNo,mode,5) "$panneau(acqfc,$visuNo,This).mode.continu_1"
+   #--- Mode par defaut : Une image
+   if { ! [ info exists panneau(acqfc,$visuNo,mode) ] } {
+      set panneau(acqfc,$visuNo,mode) "$parametres(acqfc,$visuNo,mode)"
+   } else {
+      if { $panneau(acqfc,$visuNo,mode) > 5 } {
+         #--- je positionne mode=1 si un mode > 5 dans config.ini,
+         #--- car les modes 6 et 7 n'exitent plus. Ils sont deplaces dans l'outil d'acquisition video.
+         set panneau(acqfc,$visuNo,mode) 1
+      }
+   }
+
+   #--- Initialisation d'autres variables
+   set panneau(acqfc,$visuNo,index)             "1"
+   set panneau(acqfc,$visuNo,nom_image)         ""
+   set panneau(acqfc,$visuNo,extension)         "$conf(extension,defaut)"
+   set panneau(acqfc,$visuNo,indexer)           "0"
+   set panneau(acqfc,$visuNo,nb_images)         "5"
+   set panneau(acqfc,$visuNo,session_ouverture) "1"
+   set panneau(acqfc,$visuNo,avancement_acq)    "$parametres(acqfc,$visuNo,avancement_acq)"
+   set panneau(acqfc,$visuNo,enregistrer)       "$parametres(acqfc,$visuNo,enregistrer)"
+   set panneau(acqfc,$visuNo,dispTimeAfterId)   ""
+   #--- Mise en place de l'interface graphique
+   acqfcBuildIF $visuNo
+
+   #--- Traitement du bouton Configuration pour la camera APN (DSLR)
+   $panneau(acqfc,$visuNo,This).obt.dslr configure -state normal
+
+   pack $panneau(acqfc,$visuNo,mode,$panneau(acqfc,$visuNo,mode)) -anchor nw -fill x
+
+   #--- Surveillance de la connexion d'une camera
+   ::confVisu::addCameraListener $visuNo "::acqfc::Adapt_Panneau_AcqFC $visuNo"
+   #--- Surveillance de l'ajout ou de la suppression d'une extension
+   trace add variable ::conf(list_extension) write ::acqfc::Init_list_extension
+
+}
 #***** Fin de la procedure createPluginInstance*****************
 
-   #------------------------------------------------------------
-   #  deletePluginInstance
-   #     suppprime l'instance du plugin
-   #------------------------------------------------------------
-   proc deletePluginInstance { visuNo } {
-      global conf panneau
+#------------------------------------------------------------
+#  deletePluginInstance
+#     suppprime l'instance du plugin
+#------------------------------------------------------------
+proc ::acqfc::deletePluginInstance { visuNo } {
+   global conf panneau
 
-      #--- Je desactive la surveillance de la connexion d'une camera
-      ::confVisu::removeCameraListener $visuNo "::acqfc::Adapt_Panneau_AcqFC $visuNo"
-      #--- Je desactive la surveillance de l'ajout ou de la suppression d'une extension
-      trace remove variable ::conf(list_extension) write ::acqfc::Init_list_extension
+   #--- Je desactive la surveillance de la connexion d'une camera
+   ::confVisu::removeCameraListener $visuNo "::acqfc::Adapt_Panneau_AcqFC $visuNo"
+   #--- Je desactive la surveillance de l'ajout ou de la suppression d'une extension
+   trace remove variable ::conf(list_extension) write ::acqfc::Init_list_extension
 
-      #---
-      set conf(acqfc,avancement,position) $panneau(acqfc,$visuNo,avancement,position)
+   #---
+   set conf(acqfc,avancement,position) $panneau(acqfc,$visuNo,avancement,position)
 
-      #---
-      destroy $panneau(acqfc,$visuNo,This)
-      destroy $panneau(acqfc,$visuNo,This).pose.but.menu
-      destroy $panneau(acqfc,$visuNo,This).bin.but.menu
+   #---
+   destroy $panneau(acqfc,$visuNo,This)
+   destroy $panneau(acqfc,$visuNo,This).pose.but.menu
+   destroy $panneau(acqfc,$visuNo,This).bin.but.menu
+}
+
+#------------------------------------------------------------
+#  getPluginProperty
+#     retourne la valeur de la propriete
+#
+# parametre :
+#    propertyName : nom de la propriete
+# return : valeur de la propriete ou "" si la propriete n'existe pas
+#------------------------------------------------------------
+proc ::acqfc::getPluginProperty { propertyName } {
+   switch $propertyName {
+      function  { return "acquisition" }
+      multivisu { return 1 }
+      display   { return "panel" }
    }
+}
 
-   #------------------------------------------------------------
-   #  getPluginProperty
-   #     retourne la valeur de la propriete
-   #
-   # parametre :
-   #    propertyName : nom de la propriete
-   # return : valeur de la propriete ou "" si la propriete n'existe pas
-   #------------------------------------------------------------
-   proc getPluginProperty { propertyName } {
-      switch $propertyName {
-         function  { return "acquisition" }
-         multivisu { return 1 }
-         display   { return "panel" }
-      }
-   }
+#------------------------------------------------------------
+#  getPluginTitle
+#     retourne le titre du plugin dans la langue de l'utilisateur
+#------------------------------------------------------------
+proc ::acqfc::getPluginTitle { } {
+   global caption
 
-   #------------------------------------------------------------
-   #  getPluginTitle
-   #     retourne le titre du plugin dans la langue de l'utilisateur
-   #------------------------------------------------------------
-   proc getPluginTitle { } {
-      global caption
+   return "$caption(acqfc,titre)"
+}
 
-      return "$caption(acqfc,titre)"
-   }
+#------------------------------------------------------------
+#  getPluginHelp
+#     retourne le nom du fichier d'aide principal
+#------------------------------------------------------------
+proc ::acqfc::getPluginHelp { } {
+   return "acqfc.htm"
+}
 
-   #------------------------------------------------------------
-   #  getPluginHelp
-   #     retourne le nom du fichier d'aide principal
-   #------------------------------------------------------------
-   proc getPluginHelp { } {
-      return "acqfc.htm"
-   }
+#------------------------------------------------------------
+#  getPluginType
+#     retourne le type de plugin
+#------------------------------------------------------------
+proc ::acqfc::getPluginType { } {
+   return "tool"
+}
 
-   #------------------------------------------------------------
-   #  getPluginType
-   #     retourne le type de plugin
-   #------------------------------------------------------------
-   proc getPluginType { } {
-      return "tool"
-   }
+#------------------------------------------------------------
+#  getPluginDirectory
+#     retourne le type de plugin
+#------------------------------------------------------------
+proc ::acqfc::getPluginDirectory { } {
+   return "acqfc"
+}
 
-   #------------------------------------------------------------
-   #  getPluginDirectory
-   #     retourne le type de plugin
-   #------------------------------------------------------------
-   proc getPluginDirectory { } {
-      return "acqfc"
-   }
+#------------------------------------------------------------
+#  getPluginOS
+#     retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::acqfc::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
+}
 
-   #------------------------------------------------------------
-   #  getPluginOS
-   #     retourne le ou les OS de fonctionnement du plugin
-   #------------------------------------------------------------
-   proc getPluginOS { } {
-      return [ list Windows Linux Darwin ]
-   }
+#------------------------------------------------------------
+#  initPlugin
+#     initialise le plugin
+#------------------------------------------------------------
+proc ::acqfc::initPlugin { tkbase } {
 
-   #------------------------------------------------------------
-   #  initPlugin
-   #     initialise le plugin
-   #------------------------------------------------------------
-   proc initPlugin { tkbase } {
-
-   }
+}
 
 #***** Procedure DemarrageAcqFC ********************************
-   proc DemarrageAcqFC { visuNo } {
-      global audace caption panneau
+proc ::acqfc::DemarrageAcqFC { visuNo } {
+   global audace caption panneau
 
-      #--- Gestion du fichier de log
-      #--- Creation du nom de fichier log
-      set nom_generique "acqfc-visu$visuNo-"
-      #--- Heure a partir de laquelle on passe sur un nouveau fichier de log
-      set heure_nouveau_fichier "12"
-      set heure_courante [lindex [split $audace(tu,format,hmsint) h] 0]
-      if { $heure_courante < $heure_nouveau_fichier } {
-         #--- Si avant l'heure de changement, je prends la date de la veille
-         set formatdate [clock format [expr {[clock seconds] - 86400}] -format "%Y-%m-%d"]
-      } else {
-         #--- Sinon, je prends la date du jour
-         set formatdate [clock format [clock seconds] -format "%Y-%m-%d"]
-      }
-      set file_log ""
-      set ::acqfc::fichier_log [ file join $audace(rep_images) [ append $file_log $nom_generique $formatdate ".log" ] ]
-
-      #--- Ouverture du fichier de log
-      if { [ catch { open $::acqfc::fichier_log a } ::acqfc::log_id($visuNo) ] } {
-         Message $visuNo console $caption(acqfc,pbouvfichcons)
-         tk_messageBox -title $caption(acqfc,pb) -type ok \
-            -message $caption(acqfc,pbouvfich)
-         #--- Note importante : Je detecte si j'ai un pb a l'ouverture du fichier, mais je ne sais pas traiter ce cas :
-         #--- Il faudrait interdire l'ouverture du panneau, mais le processus est deja lance a ce stade...
-         #--- Tout ce que je fais, c'est inviter l'utilisateur a changer d'outil !
-      } else {
-         #--- En-tete du fichier
-         Message $visuNo log $caption(acqfc,ouvsess) [ package version acqfc ]
-         set date [clock format [clock seconds] -format "%A %d %B %Y"]
-         set heure $audace(tu,format,hmsint)
-         Message $visuNo consolog $caption(acqfc,affheure) $date $heure
-         #--- Definition du binding pour declencher l'acquisition (ou l'arret) par Echap.
-         bind all <Key-Escape> "::acqfc::Stop $visuNo"
-      }
+   #--- Gestion du fichier de log
+   #--- Creation du nom de fichier log
+   set nom_generique "acqfc-visu$visuNo-"
+   #--- Heure a partir de laquelle on passe sur un nouveau fichier de log
+   set heure_nouveau_fichier "12"
+   set heure_courante [lindex [split $audace(tu,format,hmsint) h] 0]
+   if { $heure_courante < $heure_nouveau_fichier } {
+      #--- Si avant l'heure de changement, je prends la date de la veille
+      set formatdate [clock format [expr {[clock seconds] - 86400}] -format "%Y-%m-%d"]
+   } else {
+      #--- Sinon, je prends la date du jour
+      set formatdate [clock format [clock seconds] -format "%Y-%m-%d"]
    }
+   set file_log ""
+   set ::acqfc::fichier_log [ file join $audace(rep_images) [ append $file_log $nom_generique $formatdate ".log" ] ]
+
+   #--- Ouverture du fichier de log
+   if { [ catch { open $::acqfc::fichier_log a } ::acqfc::log_id($visuNo) ] } {
+      Message $visuNo console $caption(acqfc,pbouvfichcons)
+      tk_messageBox -title $caption(acqfc,pb) -type ok \
+         -message $caption(acqfc,pbouvfich)
+      #--- Note importante : Je detecte si j'ai un pb a l'ouverture du fichier, mais je ne sais pas traiter ce cas :
+      #--- Il faudrait interdire l'ouverture du panneau, mais le processus est deja lance a ce stade...
+      #--- Tout ce que je fais, c'est inviter l'utilisateur a changer d'outil !
+   } else {
+      #--- En-tete du fichier
+      Message $visuNo log $caption(acqfc,ouvsess) [ package version acqfc ]
+      set date [clock format [clock seconds] -format "%A %d %B %Y"]
+      set heure $audace(tu,format,hmsint)
+      Message $visuNo consolog $caption(acqfc,affheure) $date $heure
+      #--- Definition du binding pour declencher l'acquisition (ou l'arret) par Echap.
+      bind all <Key-Escape> "::acqfc::Stop $visuNo"
+   }
+}
 #***** Fin de la procedure DemarrageAcqFC **********************
 
 #***** Procedure ArretAcqFC ************************************
-   proc ArretAcqFC { visuNo } {
-      global audace caption panneau
+proc ::acqfc::ArretAcqFC { visuNo } {
+   global audace caption panneau
 
-      #--- Fermeture du fichier de log
-      if { [ info exists ::acqfc::log_id($visuNo) ] } {
-         set heure $audace(tu,format,hmsint)
-         #--- Je m'assure que le fichier se termine correctement, en particulier pour le cas ou il y
-         #--- a eu un probleme a l'ouverture (c'est un peu une rustine...)
-         if { [ catch { Message $visuNo log $caption(acqfc,finsess) $heure } bug ] } {
-            Message $visuNo console $caption(acqfc,pbfermfichcons)
-         } else {
-            Message $visuNo console "\n"
-            close $::acqfc::log_id($visuNo)
-            unset ::acqfc::log_id($visuNo)
-         }
+   #--- Fermeture du fichier de log
+   if { [ info exists ::acqfc::log_id($visuNo) ] } {
+      set heure $audace(tu,format,hmsint)
+      #--- Je m'assure que le fichier se termine correctement, en particulier pour le cas ou il y
+      #--- a eu un probleme a l'ouverture (c'est un peu une rustine...)
+      if { [ catch { Message $visuNo log $caption(acqfc,finsess) $heure } bug ] } {
+         Message $visuNo console $caption(acqfc,pbfermfichcons)
+      } else {
+         Message $visuNo console "\n"
+         close $::acqfc::log_id($visuNo)
+         unset ::acqfc::log_id($visuNo)
       }
-      #--- Re-initialisation de la session
-      set panneau(acqfc,$visuNo,session_ouverture) "1"
-      #--- Desactivation du binding pour declencher l'acquisition (ou l'arret) par Echap.
-      bind all <Key-Escape> { }
    }
+   #--- Re-initialisation de la session
+   set panneau(acqfc,$visuNo,session_ouverture) "1"
+   #--- Desactivation du binding pour declencher l'acquisition (ou l'arret) par Echap.
+   bind all <Key-Escape> { }
+}
 #***** Fin de la procedure ArretAcqFC **************************
 
 #***** Procedure Init_list_extension ***************************
-   proc Init_list_extension { { a "" } { b "" } { c "" } { visuNo 1 } } {
-      variable This
-      global conf panneau
+proc ::acqfc::Init_list_extension { { a "" } { b "" } { c "" } { visuNo 1 } } {
+   variable This
+   global conf panneau
 
-      #--- Mise a jour de la liste des extensions disponibles pour le mode "Une seule image"
-      $panneau(acqfc,$visuNo,This).mode.une.nom.extension.menu delete 0 20
-      foreach extension $conf(list_extension) {
-         $panneau(acqfc,$visuNo,This).mode.une.nom.extension.menu add radiobutton -label "$extension" \
-            -indicatoron "1" \
-            -value "$extension" \
-            -variable panneau(acqfc,$visuNo,extension) \
-            -command " "
-      }
-      #--- Mise a jour de la liste des extensions disponibles pour le mode "Serie d'images"
-      $panneau(acqfc,$visuNo,This).mode.serie.nom.extension.menu delete 0 20
-      foreach extension $conf(list_extension) {
-         $panneau(acqfc,$visuNo,This).mode.serie.nom.extension.menu add radiobutton -label "$extension" \
-            -indicatoron "1" \
-            -value "$extension" \
-            -variable panneau(acqfc,$visuNo,extension) \
-            -command " "
-      }
-      #--- Mise a jour de la liste des extensions disponibles pour le mode "Continu"
-      $panneau(acqfc,$visuNo,This).mode.continu.nom.extension.menu delete 0 20
-      foreach extension $conf(list_extension) {
-         $panneau(acqfc,$visuNo,This).mode.continu.nom.extension.menu add radiobutton -label "$extension" \
-            -indicatoron "1" \
-            -value "$extension" \
-            -variable panneau(acqfc,$visuNo,extension) \
-            -command " "
-      }
-      #--- Mise a jour de la liste des extensions disponibles pour le mode "Series d'images en continu avec intervalle entre chaque serie"
-      $panneau(acqfc,$visuNo,This).mode.serie_1.nom.extension.menu delete 0 20
-      foreach extension $conf(list_extension) {
-         $panneau(acqfc,$visuNo,This).mode.serie_1.nom.extension.menu add radiobutton -label "$extension" \
-            -indicatoron "1" \
-            -value "$extension" \
-            -variable panneau(acqfc,$visuNo,extension) \
-            -command " "
-      }
-      #--- Mise a jour de la liste des extensions disponibles pour le mode "Continu avec intervalle entre chaque image"
-      $panneau(acqfc,$visuNo,This).mode.continu_1.nom.extension.menu delete 0 20
-      foreach extension $conf(list_extension) {
-         $panneau(acqfc,$visuNo,This).mode.continu_1.nom.extension.menu add radiobutton -label "$extension" \
-            -indicatoron "1" \
-            -value "$extension" \
-            -variable panneau(acqfc,$visuNo,extension) \
-            -command " "
-      }
+   #--- Mise a jour de la liste des extensions disponibles pour le mode "Une seule image"
+   $panneau(acqfc,$visuNo,This).mode.une.nom.extension.menu delete 0 20
+   foreach extension $conf(list_extension) {
+      $panneau(acqfc,$visuNo,This).mode.une.nom.extension.menu add radiobutton -label "$extension" \
+         -indicatoron "1" \
+         -value "$extension" \
+         -variable panneau(acqfc,$visuNo,extension) \
+         -command " "
    }
+   #--- Mise a jour de la liste des extensions disponibles pour le mode "Serie d'images"
+   $panneau(acqfc,$visuNo,This).mode.serie.nom.extension.menu delete 0 20
+   foreach extension $conf(list_extension) {
+      $panneau(acqfc,$visuNo,This).mode.serie.nom.extension.menu add radiobutton -label "$extension" \
+         -indicatoron "1" \
+         -value "$extension" \
+         -variable panneau(acqfc,$visuNo,extension) \
+         -command " "
+   }
+   #--- Mise a jour de la liste des extensions disponibles pour le mode "Continu"
+   $panneau(acqfc,$visuNo,This).mode.continu.nom.extension.menu delete 0 20
+   foreach extension $conf(list_extension) {
+      $panneau(acqfc,$visuNo,This).mode.continu.nom.extension.menu add radiobutton -label "$extension" \
+         -indicatoron "1" \
+         -value "$extension" \
+         -variable panneau(acqfc,$visuNo,extension) \
+         -command " "
+   }
+   #--- Mise a jour de la liste des extensions disponibles pour le mode "Series d'images en continu avec intervalle entre chaque serie"
+   $panneau(acqfc,$visuNo,This).mode.serie_1.nom.extension.menu delete 0 20
+   foreach extension $conf(list_extension) {
+      $panneau(acqfc,$visuNo,This).mode.serie_1.nom.extension.menu add radiobutton -label "$extension" \
+         -indicatoron "1" \
+         -value "$extension" \
+         -variable panneau(acqfc,$visuNo,extension) \
+         -command " "
+   }
+   #--- Mise a jour de la liste des extensions disponibles pour le mode "Continu avec intervalle entre chaque image"
+   $panneau(acqfc,$visuNo,This).mode.continu_1.nom.extension.menu delete 0 20
+   foreach extension $conf(list_extension) {
+      $panneau(acqfc,$visuNo,This).mode.continu_1.nom.extension.menu add radiobutton -label "$extension" \
+         -indicatoron "1" \
+         -value "$extension" \
+         -variable panneau(acqfc,$visuNo,extension) \
+         -command " "
+   }
+}
 #***** Fin de la procedure Init_list_extension *****************
 
 #***** Procedure Adapt_Panneau_AcqFC ***************************
-   proc Adapt_Panneau_AcqFC { visuNo args } {
-      global audace conf panneau
+proc ::acqfc::Adapt_Panneau_AcqFC { visuNo args } {
+   global audace conf panneau
 
-      set panneau(acqfc,$visuNo,camItem) [::confVisu::getCamItem $visuNo]
-      set panneau(acqfc,$visuNo,camNo)   [::confCam::getCamNo $panneau(acqfc,$visuNo,camItem)]
+   set panneau(acqfc,$visuNo,camItem) [::confVisu::getCamItem $visuNo]
+   set panneau(acqfc,$visuNo,camNo)   [::confCam::getCamNo $panneau(acqfc,$visuNo,camItem)]
 
-      #---
-      set camNo $panneau(acqfc,$visuNo,camNo)
-      if { $camNo == "0" } {
-         #--- La camera n'a pas ete encore selectionnee
-         set camProduct ""
-      } else {
-         set camProduct [ cam$camNo product ]
-      }
-      #---
-      if { "$camProduct" == "webcam" } {
-         #--- C'est une WebCam
-         if { [ confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] longExposure ] == "0" } {
-            #--- Cas d'une WebCam standard
-            pack forget $panneau(acqfc,$visuNo,This).pose.but
-            pack forget $panneau(acqfc,$visuNo,This).pose.lab
-            pack forget $panneau(acqfc,$visuNo,This).pose.entr
-            pack forget $panneau(acqfc,$visuNo,This).bin.but
-            pack forget $panneau(acqfc,$visuNo,This).bin.lab
-            pack $panneau(acqfc,$visuNo,This).pose.conf -fill x -expand true -ipady 3
-            pack forget $panneau(acqfc,$visuNo,This).obt.but
-            pack forget $panneau(acqfc,$visuNo,This).obt.lab
-            pack forget $panneau(acqfc,$visuNo,This).obt.lab1
-            pack forget $panneau(acqfc,$visuNo,This).obt.dslr
-         } else {
-            #--- Cas d'une WebCam Longue Pose
-            pack $panneau(acqfc,$visuNo,This).pose.but -side left
-            pack $panneau(acqfc,$visuNo,This).pose.lab -side right
-            pack $panneau(acqfc,$visuNo,This).pose.entr -side left
-            pack forget $panneau(acqfc,$visuNo,This).bin.but
-            pack forget $panneau(acqfc,$visuNo,This).bin.lab
-            pack forget $panneau(acqfc,$visuNo,This).pose.conf
-            pack forget $panneau(acqfc,$visuNo,This).obt.but
-            pack forget $panneau(acqfc,$visuNo,This).obt.lab
-            pack forget $panneau(acqfc,$visuNo,This).obt.lab1
-            pack forget $panneau(acqfc,$visuNo,This).obt.dslr
-         }
-      } elseif { "$camProduct" == "dslr" } {
-         #--- C'est une APN (DSLR)
-         pack $panneau(acqfc,$visuNo,This).pose.but -side left
-         pack $panneau(acqfc,$visuNo,This).pose.lab -side right
-         pack $panneau(acqfc,$visuNo,This).pose.entr -side left
-         pack $panneau(acqfc,$visuNo,This).bin.but -side left
-         pack $panneau(acqfc,$visuNo,This).bin.lab -side left
-         pack forget $panneau(acqfc,$visuNo,This).pose.conf
+   #---
+   set camNo $panneau(acqfc,$visuNo,camNo)
+   if { $camNo == "0" } {
+      #--- La camera n'a pas ete encore selectionnee
+      set camProduct ""
+   } else {
+      set camProduct [ cam$camNo product ]
+   }
+   #---
+   if { "$camProduct" == "webcam" } {
+      #--- C'est une WebCam
+      if { [ confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] longExposure ] == "0" } {
+         #--- Cas d'une WebCam standard
+         pack forget $panneau(acqfc,$visuNo,This).pose.but
+         pack forget $panneau(acqfc,$visuNo,This).pose.lab
+         pack forget $panneau(acqfc,$visuNo,This).pose.entr
+         pack forget $panneau(acqfc,$visuNo,This).bin.but
+         pack forget $panneau(acqfc,$visuNo,This).bin.lab
+         pack $panneau(acqfc,$visuNo,This).pose.conf -fill x -expand true -ipady 3
          pack forget $panneau(acqfc,$visuNo,This).obt.but
          pack forget $panneau(acqfc,$visuNo,This).obt.lab
          pack forget $panneau(acqfc,$visuNo,This).obt.lab1
-         pack $panneau(acqfc,$visuNo,This).obt.dslr -fill x -expand true -ipady 3
+         pack forget $panneau(acqfc,$visuNo,This).obt.dslr
       } else {
-         #--- Ce n'est pas une WebCam, ni une APN (DSLR)
+         #--- Cas d'une WebCam Longue Pose
          pack $panneau(acqfc,$visuNo,This).pose.but -side left
          pack $panneau(acqfc,$visuNo,This).pose.lab -side right
          pack $panneau(acqfc,$visuNo,This).pose.entr -side left
-         pack $panneau(acqfc,$visuNo,This).bin.but -side left
-         pack $panneau(acqfc,$visuNo,This).bin.lab -side left
+         pack forget $panneau(acqfc,$visuNo,This).bin.but
+         pack forget $panneau(acqfc,$visuNo,This).bin.lab
          pack forget $panneau(acqfc,$visuNo,This).pose.conf
-         pack $panneau(acqfc,$visuNo,This).obt.but -side left -ipady 3
-         pack $panneau(acqfc,$visuNo,This).obt.lab -side left -fill x -expand true -ipady 3
+         pack forget $panneau(acqfc,$visuNo,This).obt.but
+         pack forget $panneau(acqfc,$visuNo,This).obt.lab
          pack forget $panneau(acqfc,$visuNo,This).obt.lab1
          pack forget $panneau(acqfc,$visuNo,This).obt.dslr
       }
+   } elseif { "$camProduct" == "dslr" } {
+      #--- C'est une APN (DSLR)
+      pack $panneau(acqfc,$visuNo,This).pose.but -side left
+      pack $panneau(acqfc,$visuNo,This).pose.lab -side right
+      pack $panneau(acqfc,$visuNo,This).pose.entr -side left
+      pack $panneau(acqfc,$visuNo,This).bin.but -side left
+      pack $panneau(acqfc,$visuNo,This).bin.lab -side left
+      pack forget $panneau(acqfc,$visuNo,This).pose.conf
+      pack forget $panneau(acqfc,$visuNo,This).obt.but
+      pack forget $panneau(acqfc,$visuNo,This).obt.lab
+      pack forget $panneau(acqfc,$visuNo,This).obt.lab1
+      pack $panneau(acqfc,$visuNo,This).obt.dslr -fill x -expand true -ipady 3
+   } else {
+      #--- Ce n'est pas une WebCam, ni une APN (DSLR)
+      pack $panneau(acqfc,$visuNo,This).pose.but -side left
+      pack $panneau(acqfc,$visuNo,This).pose.lab -side right
+      pack $panneau(acqfc,$visuNo,This).pose.entr -side left
+      pack $panneau(acqfc,$visuNo,This).bin.but -side left
+      pack $panneau(acqfc,$visuNo,This).bin.lab -side left
+      pack forget $panneau(acqfc,$visuNo,This).pose.conf
+      pack $panneau(acqfc,$visuNo,This).obt.but -side left -ipady 3
+      pack $panneau(acqfc,$visuNo,This).obt.lab -side left -fill x -expand true -ipady 3
+      pack forget $panneau(acqfc,$visuNo,This).obt.lab1
+      pack forget $panneau(acqfc,$visuNo,This).obt.dslr
+   }
 
-      if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] hasShutter ] == "1" } {
-         pack forget $panneau(acqfc,$visuNo,This).obt.lab
-         if { ! [ info exists conf($camProduct,foncobtu) ] } {
-            set conf($camProduct,foncobtu) "2"
-         } else {
-            if { $conf($camProduct,foncobtu) == "0" } {
-               set panneau(acqfc,$visuNo,obt) "0"
-            } elseif { $conf($camProduct,foncobtu) == "1" } {
-               set panneau(acqfc,$visuNo,obt) "1"
-            } elseif { $conf($camProduct,foncobtu) == "2" } {
-               set panneau(acqfc,$visuNo,obt) "2"
-            }
-         }
-         $panneau(acqfc,$visuNo,This).obt.lab configure -text $panneau(acqfc,$visuNo,obt,$panneau(acqfc,$visuNo,obt))
-         pack $panneau(acqfc,$visuNo,This).obt.lab -fill both -expand true -ipady 3
+   if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] hasShutter ] == "1" } {
+      pack forget $panneau(acqfc,$visuNo,This).obt.lab
+      if { ! [ info exists conf($camProduct,foncobtu) ] } {
+         set conf($camProduct,foncobtu) "2"
       } else {
-         pack forget $panneau(acqfc,$visuNo,This).obt.but
-         pack forget $panneau(acqfc,$visuNo,This).obt.lab
-         if { ( "$camProduct" != "webcam" ) && ( "$camProduct" != "dslr" ) } {
-            pack $panneau(acqfc,$visuNo,This).obt.lab1 -side top -ipady 3
+         if { $conf($camProduct,foncobtu) == "0" } {
+            set panneau(acqfc,$visuNo,obt) "0"
+         } elseif { $conf($camProduct,foncobtu) == "1" } {
+            set panneau(acqfc,$visuNo,obt) "1"
+         } elseif { $conf($camProduct,foncobtu) == "2" } {
+            set panneau(acqfc,$visuNo,obt) "2"
          }
       }
-      #---
-      $panneau(acqfc,$visuNo,This).bin.but.menu delete 0 20
-      set list_binning [ ::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] binningList ]
-      foreach valbin $list_binning {
-         $panneau(acqfc,$visuNo,This).bin.but.menu add radiobutton -label "$valbin" \
-            -indicatoron "1" \
-            -value "$valbin" \
-            -variable panneau(acqfc,$visuNo,bin) \
-            -command " "
+      $panneau(acqfc,$visuNo,This).obt.lab configure -text $panneau(acqfc,$visuNo,obt,$panneau(acqfc,$visuNo,obt))
+      pack $panneau(acqfc,$visuNo,This).obt.lab -fill both -expand true -ipady 3
+   } else {
+      pack forget $panneau(acqfc,$visuNo,This).obt.but
+      pack forget $panneau(acqfc,$visuNo,This).obt.lab
+      if { ( "$camProduct" != "webcam" ) && ( "$camProduct" != "dslr" ) } {
+         pack $panneau(acqfc,$visuNo,This).obt.lab1 -side top -ipady 3
       }
    }
+   #---
+   $panneau(acqfc,$visuNo,This).bin.but.menu delete 0 20
+   set list_binning [ ::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] binningList ]
+   foreach valbin $list_binning {
+      $panneau(acqfc,$visuNo,This).bin.but.menu add radiobutton -label "$valbin" \
+         -indicatoron "1" \
+         -value "$valbin" \
+         -variable panneau(acqfc,$visuNo,bin) \
+         -command " "
+   }
+}
 #***** Fin de la procedure Adapt_Panneau_AcqFC *****************
 
 #***** Procedure Chargement_Var ********************************
-   proc Chargement_Var { visuNo } {
-      variable parametres
-      global audace
+proc ::acqfc::Chargement_Var { visuNo } {
+   variable parametres
+   global audace
 
-      #--- Ouverture du fichier de parametres
-      set fichier [ file join $audace(rep_plugin) tool acqfc acqfc.ini ]
-      if { [ file exists $fichier ] } {
-         source $fichier
-      }
-
-      #--- Creation des variables si elles n'existent pas
-      if { ! [ info exists parametres(acqfc,$visuNo,pose) ] } { set parametres(acqfc,$visuNo,pose) "5" }   ; #--- Temps de pose : 5s
-      if { ! [ info exists parametres(acqfc,$visuNo,bin) ] }  { set parametres(acqfc,$visuNo,bin)  "2x2" } ; #--- Binning : 2x2
-      if { ! [ info exists parametres(acqfc,$visuNo,obt) ] }  { set parametres(acqfc,$visuNo,obt)  "2" }   ; #--- Obturateur : Synchro
-      if { ! [ info exists parametres(acqfc,$visuNo,mode) ] } { set parametres(acqfc,$visuNo,mode) "1" }   ; #--- Mode : Une image
-      if { ! [ info exists parametres(acqfc,$visuNo,avancement_acq) ] } {
-         if { $visuNo == "1" } {
-            set parametres(acqfc,$visuNo,avancement_acq) "1" ; #--- Barre de progression de la pose : Oui
-         } else {
-            set parametres(acqfc,$visuNo,avancement_acq) "0" ; #--- Barre de progression de la pose : Non
-         }
-      }
-      if { ! [ info exists parametres(acqfc,$visuNo,enregistrer) ] }    { set parametres(acqfc,$visuNo,enregistrer) "1" }   ; #--- Sauvegarde des images : Oui
-
-      #--- Creation des variables de la boite de configuration si elles n'existent pas
-      ::acqfcSetup::initToConf $visuNo
+   #--- Ouverture du fichier de parametres
+   set fichier [ file join $audace(rep_plugin) tool acqfc acqfc.ini ]
+   if { [ file exists $fichier ] } {
+      source $fichier
    }
+
+   #--- Creation des variables si elles n'existent pas
+   if { ! [ info exists parametres(acqfc,$visuNo,pose) ] } { set parametres(acqfc,$visuNo,pose) "5" }   ; #--- Temps de pose : 5s
+   if { ! [ info exists parametres(acqfc,$visuNo,bin) ] }  { set parametres(acqfc,$visuNo,bin)  "2x2" } ; #--- Binning : 2x2
+   if { ! [ info exists parametres(acqfc,$visuNo,obt) ] }  { set parametres(acqfc,$visuNo,obt)  "2" }   ; #--- Obturateur : Synchro
+   if { ! [ info exists parametres(acqfc,$visuNo,mode) ] } { set parametres(acqfc,$visuNo,mode) "1" }   ; #--- Mode : Une image
+   if { ! [ info exists parametres(acqfc,$visuNo,avancement_acq) ] } {
+      if { $visuNo == "1" } {
+         set parametres(acqfc,$visuNo,avancement_acq) "1" ; #--- Barre de progression de la pose : Oui
+      } else {
+         set parametres(acqfc,$visuNo,avancement_acq) "0" ; #--- Barre de progression de la pose : Non
+      }
+   }
+   if { ! [ info exists parametres(acqfc,$visuNo,enregistrer) ] }    { set parametres(acqfc,$visuNo,enregistrer) "1" }   ; #--- Sauvegarde des images : Oui
+
+   #--- Creation des variables de la boite de configuration si elles n'existent pas
+   ::acqfcSetup::initToConf $visuNo
+}
 #***** Fin de la procedure Chargement_Var **********************
 
 #***** Procedure Enregistrement_Var ****************************
-   proc Enregistrement_Var { visuNo } {
-      variable parametres
-      global audace panneau
+proc ::acqfc::Enregistrement_Var { visuNo } {
+   variable parametres
+   global audace panneau
 
-      #---
-      set panneau(acqfc,$visuNo,mode)              [ expr [ lsearch "$panneau(acqfc,$visuNo,list_mode)" "$panneau(acqfc,$visuNo,mode_en_cours)" ] + 1 ]
-      #---
-      set parametres(acqfc,$visuNo,pose)           $panneau(acqfc,$visuNo,pose)
-      set parametres(acqfc,$visuNo,bin)            $panneau(acqfc,$visuNo,bin)
-      set parametres(acqfc,$visuNo,obt)            $panneau(acqfc,$visuNo,obt)
-      set parametres(acqfc,$visuNo,mode)           $panneau(acqfc,$visuNo,mode)
-      set parametres(acqfc,$visuNo,avancement_acq) $panneau(acqfc,$visuNo,avancement_acq)
-      set parametres(acqfc,$visuNo,enregistrer)    $panneau(acqfc,$visuNo,enregistrer)
-      #--- Sauvegarde des parametres
-      catch {
-        set nom_fichier [ file join $audace(rep_plugin) tool acqfc acqfc.ini ]
-        if [ catch { open $nom_fichier w } fichier ] {
-           #---
-        } else {
-           foreach { a b } [ array get parametres ] {
-              puts $fichier "set parametres($a) \"$b\""
-           }
-           close $fichier
+   #---
+   set panneau(acqfc,$visuNo,mode)              [ expr [ lsearch "$panneau(acqfc,$visuNo,list_mode)" "$panneau(acqfc,$visuNo,mode_en_cours)" ] + 1 ]
+   #---
+   set parametres(acqfc,$visuNo,pose)           $panneau(acqfc,$visuNo,pose)
+   set parametres(acqfc,$visuNo,bin)            $panneau(acqfc,$visuNo,bin)
+   set parametres(acqfc,$visuNo,obt)            $panneau(acqfc,$visuNo,obt)
+   set parametres(acqfc,$visuNo,mode)           $panneau(acqfc,$visuNo,mode)
+   set parametres(acqfc,$visuNo,avancement_acq) $panneau(acqfc,$visuNo,avancement_acq)
+   set parametres(acqfc,$visuNo,enregistrer)    $panneau(acqfc,$visuNo,enregistrer)
+   #--- Sauvegarde des parametres
+   catch {
+     set nom_fichier [ file join $audace(rep_plugin) tool acqfc acqfc.ini ]
+     if [ catch { open $nom_fichier w } fichier ] {
+        #---
+     } else {
+        foreach { a b } [ array get parametres ] {
+           puts $fichier "set parametres($a) \"$b\""
         }
-      }
+        close $fichier
+     }
    }
+}
 #***** Fin de la procedure Enregistrement_Var ******************
 
 #***** Procedure startTool *************************************
-   proc startTool { { visuNo 1 } } {
-      global conf panneau
+proc ::acqfc::startTool { { visuNo 1 } } {
+   global conf panneau
 
-      #--- Creation des fenetres auxiliaires si necessaire
-      if { $panneau(acqfc,$visuNo,mode) == "4" } {
-         ::acqfc::Intervalle_continu_1 $visuNo
-      } elseif { $panneau(acqfc,$visuNo,mode) == "5" } {
-         ::acqfc::Intervalle_continu_2 $visuNo
-      }
-
-      pack $panneau(acqfc,$visuNo,This) -side left -fill y
-      ::acqfc::Adapt_Panneau_AcqFC $visuNo
+   #--- Creation des fenetres auxiliaires si necessaire
+   if { $panneau(acqfc,$visuNo,mode) == "4" } {
+      ::acqfc::Intervalle_continu_1 $visuNo
+   } elseif { $panneau(acqfc,$visuNo,mode) == "5" } {
+      ::acqfc::Intervalle_continu_2 $visuNo
    }
+
+   pack $panneau(acqfc,$visuNo,This) -side left -fill y
+   ::acqfc::Adapt_Panneau_AcqFC $visuNo
+}
 #***** Fin de la procedure startTool ***************************
 
 #***** Procedure stopTool **************************************
-   proc stopTool { { visuNo 1 } } {
-      global audace conf panneau
+proc ::acqfc::stopTool { { visuNo 1 } } {
+   global audace conf panneau
 
-      #--- Sauvegarde de la configuration de prise de vue
-      ::acqfc::Enregistrement_Var $visuNo
+   #--- Sauvegarde de la configuration de prise de vue
+   ::acqfc::Enregistrement_Var $visuNo
 
-      #--- Destruction des fenetres auxiliaires et sauvegarde de leurs positions si elles existent
-      ::acqfc::recup_position $visuNo
+   #--- Destruction des fenetres auxiliaires et sauvegarde de leurs positions si elles existent
+   ::acqfc::recup_position $visuNo
 
-      ArretAcqFC $visuNo
-      pack forget $panneau(acqfc,$visuNo,This)
-   }
+   ArretAcqFC $visuNo
+   pack forget $panneau(acqfc,$visuNo,This)
+}
 #***** Fin de la procedure stopTool ****************************
 
 #***** Procedure de changement du mode d'acquisition ***********
-   proc ChangeMode { visuNo { mode "" } } {
-      global panneau
+proc ::acqfc::ChangeMode { visuNo { mode "" } } {
+   global panneau
 
-      pack forget $panneau(acqfc,$visuNo,mode,$panneau(acqfc,$visuNo,mode)) -anchor nw -fill x
+   pack forget $panneau(acqfc,$visuNo,mode,$panneau(acqfc,$visuNo,mode)) -anchor nw -fill x
 
-      if { $mode != "" } {
-         #--- j'applique le mode passe en parametre
-         set panneau(acqfc,$visuNo,mode_en_cours) $mode
-      }
-
-      set panneau(acqfc,$visuNo,mode) [ expr [ lsearch "$panneau(acqfc,$visuNo,list_mode)" "$panneau(acqfc,$visuNo,mode_en_cours)" ] + 1 ]
-      if { $panneau(acqfc,$visuNo,mode) == "1" } {
-         ::acqfc::recup_position $visuNo
-         $panneau(acqfc,$visuNo,This).obt.dslr configure -state normal
-      } elseif { $panneau(acqfc,$visuNo,mode) == "2" } {
-        ::acqfc::recup_position $visuNo
-         $panneau(acqfc,$visuNo,This).obt.dslr configure -state normal
-      } elseif { $panneau(acqfc,$visuNo,mode) == "3" } {
-         ::acqfc::recup_position $visuNo
-         $panneau(acqfc,$visuNo,This).obt.dslr configure -state normal
-      } elseif { $panneau(acqfc,$visuNo,mode) == "4" } {
-         ::acqfc::Intervalle_continu_1 $visuNo
-         $panneau(acqfc,$visuNo,This).obt.dslr configure -state normal
-      } elseif { $panneau(acqfc,$visuNo,mode) == "5" } {
-         ::acqfc::Intervalle_continu_2 $visuNo
-         $panneau(acqfc,$visuNo,This).obt.dslr configure -state normal
-      }
-      pack $panneau(acqfc,$visuNo,mode,$panneau(acqfc,$visuNo,mode)) -anchor nw -fill x
+   if { $mode != "" } {
+      #--- j'applique le mode passe en parametre
+      set panneau(acqfc,$visuNo,mode_en_cours) $mode
    }
+
+   set panneau(acqfc,$visuNo,mode) [ expr [ lsearch "$panneau(acqfc,$visuNo,list_mode)" "$panneau(acqfc,$visuNo,mode_en_cours)" ] + 1 ]
+   if { $panneau(acqfc,$visuNo,mode) == "1" } {
+      ::acqfc::recup_position $visuNo
+      $panneau(acqfc,$visuNo,This).obt.dslr configure -state normal
+   } elseif { $panneau(acqfc,$visuNo,mode) == "2" } {
+     ::acqfc::recup_position $visuNo
+      $panneau(acqfc,$visuNo,This).obt.dslr configure -state normal
+   } elseif { $panneau(acqfc,$visuNo,mode) == "3" } {
+      ::acqfc::recup_position $visuNo
+      $panneau(acqfc,$visuNo,This).obt.dslr configure -state normal
+   } elseif { $panneau(acqfc,$visuNo,mode) == "4" } {
+      ::acqfc::Intervalle_continu_1 $visuNo
+      $panneau(acqfc,$visuNo,This).obt.dslr configure -state normal
+   } elseif { $panneau(acqfc,$visuNo,mode) == "5" } {
+      ::acqfc::Intervalle_continu_2 $visuNo
+      $panneau(acqfc,$visuNo,This).obt.dslr configure -state normal
+   }
+   pack $panneau(acqfc,$visuNo,mode,$panneau(acqfc,$visuNo,mode)) -anchor nw -fill x
+}
 #***** Fin de la procedure de changement du mode d'acquisition *
 
 #***** Procedure de changement de l'obturateur *****************
-   proc ChangeObt { visuNo } {
-      global audace caption conf panneau
+proc ::acqfc::ChangeObt { visuNo } {
+   global audace caption conf panneau
 
-      #---
-      set camItem [ ::confVisu::getCamItem $visuNo ]
-      set result [::confCam::setShutter $camItem $panneau(acqfc,$visuNo,obt) ]
-      if { $result != -1 } {
-         set panneau(acqfc,$visuNo,obt) $result
-         $panneau(acqfc,$visuNo,This).obt.lab configure -text $panneau(acqfc,$visuNo,obt,$panneau(acqfc,$visuNo,obt))
-      }
+   #---
+   set camItem [ ::confVisu::getCamItem $visuNo ]
+   set result [::confCam::setShutter $camItem $panneau(acqfc,$visuNo,obt) ]
+   if { $result != -1 } {
+      set panneau(acqfc,$visuNo,obt) $result
+      $panneau(acqfc,$visuNo,This).obt.lab configure -text $panneau(acqfc,$visuNo,obt,$panneau(acqfc,$visuNo,obt))
    }
+}
 #***** Fin de la procedure de changement de l'obturateur *******
 
-   #----------------------------------------------------------------------------
-   # setObt
-   #   force l'obturateur de la camera a l'etat donnee en parametre
-   #
-   # parametres :
-   #    visuNo: numero de la visu
-   #    state : etat de l'obturateur (0=ouvert 1=ferme 2=synchro )
-   #----------------------------------------------------------------------------
-   proc setShutter { visuNo state } {
-      global audace caption conf frmm panneau
+#----------------------------------------------------------------------------
+# setObt
+#   force l'obturateur de la camera a l'etat donnee en parametre
+#
+# parametres :
+#    visuNo: numero de la visu
+#    state : etat de l'obturateur (0=ouvert 1=ferme 2=synchro )
+#----------------------------------------------------------------------------
+proc ::acqfc::setShutter { visuNo state } {
+   global audace caption conf frmm panneau
 
-      set camItem [ ::confVisu::getCamItem $visuNo ]
-      if { [ ::confCam::getPluginProperty $camItem hasShutter ] == 1 } {
-         set panneau(acqfc,$visuNo,obt) [::confCam::setShutter $camItem $state  "set" ]
-         $panneau(acqfc,$visuNo,This).obt.lab configure -text $panneau(acqfc,$visuNo,obt,$panneau(acqfc,$visuNo,obt))
-      }
+   set camItem [ ::confVisu::getCamItem $visuNo ]
+   if { [ ::confCam::getPluginProperty $camItem hasShutter ] == 1 } {
+      set panneau(acqfc,$visuNo,obt) [::confCam::setShutter $camItem $state  "set" ]
+      $panneau(acqfc,$visuNo,This).obt.lab configure -text $panneau(acqfc,$visuNo,obt,$panneau(acqfc,$visuNo,obt))
    }
+}
 
 
 #***** Procedure de test de validite d'un entier *****************
 #--- Cette procedure (copiee de methking.tcl) verifie que la chaine passee en argument decrit bien un entier.
 #--- Elle retourne 1 si c'est la cas, et 0 si ce n'est pas un entier.
-   proc TestEntier { valeur } {
-      set test 1
-      for { set i 0 } { $i < [ string length $valeur ] } { incr i } {
-         set a [string index $valeur $i]
-         if { ![string match {[0-9]} $a] } {
-            set test 0
-         }
+proc ::acqfc::TestEntier { valeur } {
+   set test 1
+   for { set i 0 } { $i < [ string length $valeur ] } { incr i } {
+      set a [string index $valeur $i]
+      if { ![string match {[0-9]} $a] } {
+         set test 0
       }
-      if { $valeur == "" } { set test 0 }
-      return $test
    }
+   if { $valeur == "" } { set test 0 }
+   return $test
+}
 #***** Fin de la procedure de test de validite d'une entier *******
 
 #***** Procedure de test de validite d'une chaine de caracteres *******
 #--- Cette procedure verifie que la chaine passee en argument ne contient que des caracteres valides.
 #--- Elle retourne 1 si c'est la cas, et 0 si ce n'est pas valable.
-   proc TestChaine { valeur } {
-      set test 1
-      for { set i 0 } { $i < [ string length $valeur ] } { incr i } {
-         set a [ string index $valeur $i ]
-         if { ![string match {[-a-zA-Z0-9_]} $a] } {
-            set test 0
-         }
+proc ::acqfc::TestChaine { valeur } {
+   set test 1
+   for { set i 0 } { $i < [ string length $valeur ] } { incr i } {
+      set a [ string index $valeur $i ]
+      if { ![string match {[-a-zA-Z0-9_]} $a] } {
+         set test 0
       }
-      return $test
    }
+   return $test
+}
 #***** Fin de la procedure de test de validite d'une chaine de caracteres *******
 
 #***** Procedure de test de validite d'un nombre reel *****************
 #--- Cette procedure (inspiree de methking.tcl) verifie que la chaine passee en argument decrit bien un reel.
 #--- Elle retourne 1 si c'est la cas, et 0 si ce n'est pas un reel.
-   proc TestReel { valeur } {
-      set test 1
-      for { set i 0 } { $i < [string length $valeur] } { incr i } {
-         set a [string index $valeur $i]
-         if { ![string match {[0-9.]} $a] } {
-            set test 0
-         }
+proc ::acqfc::TestReel { valeur } {
+   set test 1
+   for { set i 0 } { $i < [string length $valeur] } { incr i } {
+      set a [string index $valeur $i]
+      if { ![string match {[0-9.]} $a] } {
+         set test 0
       }
-      return $test
    }
+   return $test
+}
 #***** Fin de la procedure de test de validite d'un nombre reel *******
 
 #------------------------------------------------------------
@@ -626,195 +633,73 @@ namespace eval ::acqfc {
 # return
 #   retourne oui ou non
 #------------------------------------------------------------
-   proc testParametreAcquisition { visuNo } {
-      global audace caption conf panneau
+proc ::acqfc::testParametreAcquisition { visuNo } {
+   global audace caption conf panneau
 
-      #--- Recopie de l'extension des fichiers image
-      set ext $panneau(acqfc,$visuNo,extension)
-      set camItem [ ::confVisu::getCamItem $visuNo ]
+   #--- Recopie de l'extension des fichiers image
+   set ext $panneau(acqfc,$visuNo,extension)
+   set camItem [ ::confVisu::getCamItem $visuNo ]
 
-      #--- Desactive le bouton Go, pour eviter un double appui
-      $panneau(acqfc,$visuNo,This).go_stop.but configure -state disabled
+   #--- Desactive le bouton Go, pour eviter un double appui
+   $panneau(acqfc,$visuNo,This).go_stop.but configure -state disabled
 
-      #------ Tests generaux de l'integrite de la requete
-      set integre oui
+   #------ Tests generaux de l'integrite de la requete
+   set integre oui
 
-      #--- Tester si une camera est bien selectionnee
-      if { [ ::confVisu::getCamItem $visuNo ] == "" } {
-         ::audace::menustate disabled
-         set choix [ tk_messageBox -title $caption(acqfc,pb) -type ok \
-            -message $caption(acqfc,selcam) ]
-         set integre non
-         if { $choix == "ok" } {
-            #--- Ouverture de la fenetre de selection des cameras
-            ::confCam::run
-            tkwait window $audace(base).confCam
+   #--- Tester si une camera est bien selectionnee
+   if { [ ::confVisu::getCamItem $visuNo ] == "" } {
+      ::audace::menustate disabled
+      set choix [ tk_messageBox -title $caption(acqfc,pb) -type ok \
+         -message $caption(acqfc,selcam) ]
+      set integre non
+      if { $choix == "ok" } {
+         #--- Ouverture de la fenetre de selection des cameras
+         ::confCam::run
+         tkwait window $audace(base).confCam
+      }
+      ::audace::menustate normal
+   }
+
+   #--- Le temps de pose existe-t-il ?
+   if { $panneau(acqfc,$visuNo,pose) == "" } {
+      tk_messageBox -title $caption(acqfc,pb) -type ok \
+         -message $caption(acqfc,saistps)
+      set integre non
+   }
+   #--- Le champ "temps de pose" est-il bien un reel positif ?
+   if { [ TestReel $panneau(acqfc,$visuNo,pose) ] == "0" } {
+      tk_messageBox -title $caption(acqfc,pb) -type ok \
+         -message $caption(acqfc,Tpsinv)
+      set integre non
+   }
+
+   #--- Tests d'integrite specifiques a chaque mode d'acquisition
+   if { $integre == "oui" } {
+      #--- Branchement selon le mode de prise de vue
+      switch $panneau(acqfc,$visuNo,mode) {
+         1  {
+            #--- Mode une image
+            if { $panneau(acqfc,$visuNo,indexer) == "1" } {
+               #--- Verifie que l'index existe
+               if { $panneau(acqfc,$visuNo,index) == "" } {
+                  tk_messageBox -title $caption(acqfc,pb) -type ok \
+                      -message $caption(acqfc,saisind)
+                  set integre non
+               }
+               #--- Verifier que l'index est valide (entier positif)
+               if { [ TestEntier $panneau(acqfc,$visuNo,index) ] == "0" } {
+                  tk_messageBox -title $caption(acqfc,pb) -type ok \
+                     -message $caption(acqfc,indinv)
+                  set integre non
+               }
+            }
+            #--- Pas de decalage du telescope
+            set panneau(DlgShift,buttonShift) "0"
          }
-         ::audace::menustate normal
-      }
-
-      #--- Le temps de pose existe-t-il ?
-      if { $panneau(acqfc,$visuNo,pose) == "" } {
-         tk_messageBox -title $caption(acqfc,pb) -type ok \
-            -message $caption(acqfc,saistps)
-         set integre non
-      }
-      #--- Le champ "temps de pose" est-il bien un reel positif ?
-      if { [ TestReel $panneau(acqfc,$visuNo,pose) ] == "0" } {
-         tk_messageBox -title $caption(acqfc,pb) -type ok \
-            -message $caption(acqfc,Tpsinv)
-         set integre non
-      }
-
-      #--- Tests d'integrite specifiques a chaque mode d'acquisition
-      if { $integre == "oui" } {
-         #--- Branchement selon le mode de prise de vue
-         switch $panneau(acqfc,$visuNo,mode) {
-            1  {
-               #--- Mode une image
-               if { $panneau(acqfc,$visuNo,indexer) == "1" } {
-                  #--- Verifie que l'index existe
-                  if { $panneau(acqfc,$visuNo,index) == "" } {
-                     tk_messageBox -title $caption(acqfc,pb) -type ok \
-                         -message $caption(acqfc,saisind)
-                     set integre non
-                  }
-                  #--- Verifier que l'index est valide (entier positif)
-                  if { [ TestEntier $panneau(acqfc,$visuNo,index) ] == "0" } {
-                     tk_messageBox -title $caption(acqfc,pb) -type ok \
-                        -message $caption(acqfc,indinv)
-                     set integre non
-                  }
-               }
-               #--- Pas de decalage du telescope
-               set panneau(DlgShift,buttonShift) "0"
-            }
-            2  {
-               #--- Mode serie
-               #--- Les tests ne sont pas necessaires pendant une simulation
-               if { $panneau(acqfc,$visuNo,simulation) == "0" } {
-                  #--- Verifier qu'il y a bien un nom de fichier
-                  if { $panneau(acqfc,$visuNo,nom_image) == "" } {
-                     tk_messageBox -title $caption(acqfc,pb) -type ok \
-                        -message $caption(acqfc,donnomfich)
-                     set integre non
-                  }
-                  #--- Verifier que le nom de fichier n'a pas d'espace
-                  if { [ llength $panneau(acqfc,$visuNo,nom_image) ] > "1" } {
-                     tk_messageBox -title $caption(acqfc,pb) -type ok \
-                        -message $caption(acqfc,nomblanc)
-                     set integre non
-                  }
-                  #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
-                  if { [ TestChaine $panneau(acqfc,$visuNo,nom_image) ] == "0" } {
-                     tk_messageBox -title $caption(acqfc,pb) -type ok \
-                        -message $caption(acqfc,mauvcar)
-                     set integre non
-                  }
-                  #--- Verifier que le nombre de poses est valide (nombre entier)
-                  if { [ TestEntier $panneau(acqfc,$visuNo,nb_images) ] == "0" } {
-                     tk_messageBox -title $caption(acqfc,pb) -type ok \
-                        -message $caption(acqfc,nbinv)
-                     set integre non
-                  }
-                  #--- Verifier que l'index existe
-                  if { $panneau(acqfc,$visuNo,index) == "" } {
-                     tk_messageBox -title $caption(acqfc,pb) -type ok \
-                         -message $caption(acqfc,saisind)
-                     set integre non
-                  }
-                  #--- Verifier que l'index est valide (entier positif)
-                  if { [ TestEntier $panneau(acqfc,$visuNo,index) ] == "0" } {
-                     tk_messageBox -title $caption(acqfc,pb) -type ok \
-                        -message $caption(acqfc,indinv)
-                     set integre non
-                  }
-                  #--- Envoyer un warning si l'index n'est pas a 1
-                  if { $panneau(acqfc,$visuNo,index) != "1" } {
-                     set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
-                        -message $caption(acqfc,indpasun)]
-                     if { $confirmation == "no" } {
-                        set integre non
-                     }
-                  }
-               }
-               #--- Tester si un telescope est bien selectionnee si l'option decalage est selectionnee
-               if { $panneau(DlgShift,buttonShift) == "1" } {
-                  if { [ ::tel::list ] == "" } {
-                     ::audace::menustate disabled
-                     set choix [ tk_messageBox -title $caption(acqfc,pb) -type ok \
-                        -message $caption(acqfc,seltel) ]
-                     set integre non
-                     if { $choix == "ok" } {
-                        #--- Ouverture de la fenetre de selection des cameras
-                        ::confTel::run
-                        tkwait window $audace(base).confTel
-                     }
-                     ::audace::menustate normal
-                  }
-               }
-            }
-            3  {
-               #--- Mode continu
-               #--- Les tests ne sont necessaires que si l'enregistrement est demande
-               if { $panneau(acqfc,$visuNo,enregistrer) == "1" } {
-                  #--- Verifier qu'il y a bien un nom de fichier
-                  if { $panneau(acqfc,$visuNo,nom_image) == "" } {
-                     tk_messageBox -title $caption(acqfc,pb) -type ok \
-                        -message $caption(acqfc,donnomfich)
-                     set integre non
-                  }
-                  #--- Verifier que le nom de fichier n'a pas d'espace
-                  if { [ llength $panneau(acqfc,$visuNo,nom_image) ] > "1" } {
-                     tk_messageBox -title $caption(acqfc,pb) -type ok \
-                        -message $caption(acqfc,nomblanc)
-                     set integre non
-                  }
-                  #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
-                  if { [ TestChaine $panneau(acqfc,$visuNo,nom_image) ] == "0" } {
-                     tk_messageBox -title $caption(acqfc,pb) -type ok \
-                        -message $caption(acqfc,mauvcar)
-                     set integre non
-                  }
-                  #--- Verifier que l'index existe
-                  if { $panneau(acqfc,$visuNo,index) == "" } {
-                     tk_messageBox -title $caption(acqfc,pb) -type ok \
-                         -message $caption(acqfc,saisind)
-                     set integre non
-                  }
-                  #--- Verifier que l'index est valide (entier positif)
-                  if { [ TestEntier $panneau(acqfc,$visuNo,index) ] == "0" } {
-                     tk_messageBox -title $caption(acqfc,pb) -type ok \
-                        -message $caption(acqfc,indinv)
-                     set integre non
-                  }
-                  #--- Envoyer un warning si l'index n'est pas a 1
-                  if { $panneau(acqfc,$visuNo,index) != "1" } {
-                     set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
-                        -message $caption(acqfc,indpasun)]
-                     if { $confirmation == "no" } {
-                        set integre non
-                     }
-                  }
-               }
-               #--- Tester si un telescope est bien selectionnee si l'option decalage est selectionnee
-               if { $panneau(DlgShift,buttonShift) == "1" } {
-                  if { [ ::tel::list ] == "" } {
-                     ::audace::menustate disabled
-                     set choix [ tk_messageBox -title $caption(acqfc,pb) -type ok \
-                        -message $caption(acqfc,seltel) ]
-                     set integre non
-                     if { $choix == "ok" } {
-                        #--- Ouverture de la fenetre de selection des cameras
-                        ::confTel::run
-                        tkwait window $audace(base).confTel
-                     }
-                     ::audace::menustate normal
-                  }
-               }
-            }
-            4  {
-               #--- Mode series d'images en continu avec intervalle entre chaque serie
+         2  {
+            #--- Mode serie
+            #--- Les tests ne sont pas necessaires pendant une simulation
+            if { $panneau(acqfc,$visuNo,simulation) == "0" } {
                #--- Verifier qu'il y a bien un nom de fichier
                if { $panneau(acqfc,$visuNo,nom_image) == "" } {
                   tk_messageBox -title $caption(acqfc,pb) -type ok \
@@ -834,9 +719,206 @@ namespace eval ::acqfc {
                   set integre non
                }
                #--- Verifier que le nombre de poses est valide (nombre entier)
-               if { [ TestEntier $panneau(acqfc,$visuNo,nb_images) ] == "0"} {
+               if { [ TestEntier $panneau(acqfc,$visuNo,nb_images) ] == "0" } {
                   tk_messageBox -title $caption(acqfc,pb) -type ok \
                      -message $caption(acqfc,nbinv)
+                  set integre non
+               }
+               #--- Verifier que l'index existe
+               if { $panneau(acqfc,$visuNo,index) == "" } {
+                  tk_messageBox -title $caption(acqfc,pb) -type ok \
+                      -message $caption(acqfc,saisind)
+                  set integre non
+               }
+               #--- Verifier que l'index est valide (entier positif)
+               if { [ TestEntier $panneau(acqfc,$visuNo,index) ] == "0" } {
+                  tk_messageBox -title $caption(acqfc,pb) -type ok \
+                     -message $caption(acqfc,indinv)
+                  set integre non
+               }
+               #--- Envoyer un warning si l'index n'est pas a 1
+               if { $panneau(acqfc,$visuNo,index) != "1" } {
+                  set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
+                     -message $caption(acqfc,indpasun)]
+                  if { $confirmation == "no" } {
+                     set integre non
+                  }
+               }
+            }
+            #--- Tester si un telescope est bien selectionnee si l'option decalage est selectionnee
+            if { $panneau(DlgShift,buttonShift) == "1" } {
+               if { [ ::tel::list ] == "" } {
+                  ::audace::menustate disabled
+                  set choix [ tk_messageBox -title $caption(acqfc,pb) -type ok \
+                     -message $caption(acqfc,seltel) ]
+                  set integre non
+                  if { $choix == "ok" } {
+                     #--- Ouverture de la fenetre de selection des cameras
+                     ::confTel::run
+                     tkwait window $audace(base).confTel
+                  }
+                  ::audace::menustate normal
+               }
+            }
+         }
+         3  {
+            #--- Mode continu
+            #--- Les tests ne sont necessaires que si l'enregistrement est demande
+            if { $panneau(acqfc,$visuNo,enregistrer) == "1" } {
+               #--- Verifier qu'il y a bien un nom de fichier
+               if { $panneau(acqfc,$visuNo,nom_image) == "" } {
+                  tk_messageBox -title $caption(acqfc,pb) -type ok \
+                     -message $caption(acqfc,donnomfich)
+                  set integre non
+               }
+               #--- Verifier que le nom de fichier n'a pas d'espace
+               if { [ llength $panneau(acqfc,$visuNo,nom_image) ] > "1" } {
+                  tk_messageBox -title $caption(acqfc,pb) -type ok \
+                     -message $caption(acqfc,nomblanc)
+                  set integre non
+               }
+               #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
+               if { [ TestChaine $panneau(acqfc,$visuNo,nom_image) ] == "0" } {
+                  tk_messageBox -title $caption(acqfc,pb) -type ok \
+                     -message $caption(acqfc,mauvcar)
+                  set integre non
+               }
+               #--- Verifier que l'index existe
+               if { $panneau(acqfc,$visuNo,index) == "" } {
+                  tk_messageBox -title $caption(acqfc,pb) -type ok \
+                      -message $caption(acqfc,saisind)
+                  set integre non
+               }
+               #--- Verifier que l'index est valide (entier positif)
+               if { [ TestEntier $panneau(acqfc,$visuNo,index) ] == "0" } {
+                  tk_messageBox -title $caption(acqfc,pb) -type ok \
+                     -message $caption(acqfc,indinv)
+                  set integre non
+               }
+               #--- Envoyer un warning si l'index n'est pas a 1
+               if { $panneau(acqfc,$visuNo,index) != "1" } {
+                  set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
+                     -message $caption(acqfc,indpasun)]
+                  if { $confirmation == "no" } {
+                     set integre non
+                  }
+               }
+            }
+            #--- Tester si un telescope est bien selectionnee si l'option decalage est selectionnee
+            if { $panneau(DlgShift,buttonShift) == "1" } {
+               if { [ ::tel::list ] == "" } {
+                  ::audace::menustate disabled
+                  set choix [ tk_messageBox -title $caption(acqfc,pb) -type ok \
+                     -message $caption(acqfc,seltel) ]
+                  set integre non
+                  if { $choix == "ok" } {
+                     #--- Ouverture de la fenetre de selection des cameras
+                     ::confTel::run
+                     tkwait window $audace(base).confTel
+                  }
+                  ::audace::menustate normal
+               }
+            }
+         }
+         4  {
+            #--- Mode series d'images en continu avec intervalle entre chaque serie
+            #--- Verifier qu'il y a bien un nom de fichier
+            if { $panneau(acqfc,$visuNo,nom_image) == "" } {
+               tk_messageBox -title $caption(acqfc,pb) -type ok \
+                  -message $caption(acqfc,donnomfich)
+               set integre non
+            }
+            #--- Verifier que le nom de fichier n'a pas d'espace
+            if { [ llength $panneau(acqfc,$visuNo,nom_image) ] > "1" } {
+               tk_messageBox -title $caption(acqfc,pb) -type ok \
+                  -message $caption(acqfc,nomblanc)
+               set integre non
+            }
+            #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
+            if { [ TestChaine $panneau(acqfc,$visuNo,nom_image) ] == "0" } {
+               tk_messageBox -title $caption(acqfc,pb) -type ok \
+                  -message $caption(acqfc,mauvcar)
+               set integre non
+            }
+            #--- Verifier que le nombre de poses est valide (nombre entier)
+            if { [ TestEntier $panneau(acqfc,$visuNo,nb_images) ] == "0"} {
+               tk_messageBox -title $caption(acqfc,pb) -type ok \
+                  -message $caption(acqfc,nbinv)
+               set integre non
+            }
+            #--- Verifier que l'index existe
+            if { $panneau(acqfc,$visuNo,index) == "" } {
+               tk_messageBox -title $caption(acqfc,pb) -type ok \
+                   -message $caption(acqfc,saisind)
+               set integre non
+            }
+            #--- Verifier que l'index est valide (entier positif)
+            if { [ TestEntier $panneau(acqfc,$visuNo,index) ] == "0" } {
+               tk_messageBox -title $caption(acqfc,pb) -type ok \
+                  -message $caption(acqfc,indinv)
+               set integre non
+            }
+            #--- Envoyer un warning si l'index n'est pas a 1
+            if { $panneau(acqfc,$visuNo,index) != "1" } {
+               set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
+                  -message $caption(acqfc,indpasun)]
+               if { $confirmation == "no" } {
+                  set integre non
+               }
+            }
+            #--- Verifier que la simulation a ete lancee
+            if { $panneau(acqfc,$visuNo,intervalle) == "....." } {
+               tk_messageBox -title $caption(acqfc,pb) -type ok \
+                  -message $caption(acqfc,interinv_2)
+               set integre non
+            #--- Verifier que l'intervalle est valide (entier positif)
+            } elseif { [ TestEntier $panneau(acqfc,$visuNo,intervalle_1) ] == "0" } {
+               tk_messageBox -title $caption(acqfc,pb) -type ok \
+                  -message $caption(acqfc,interinv)
+               set integre non
+            #--- Verifier que l'intervalle est superieur a celui calcule par la simulation
+            } elseif { ( $panneau(acqfc,$visuNo,intervalle) > $panneau(acqfc,$visuNo,intervalle_1) ) && \
+              ( $panneau(acqfc,$visuNo,intervalle) != "xxx" ) } {
+                  tk_messageBox -title $caption(acqfc,pb) -type ok \
+                     -message $caption(acqfc,interinv_1)
+                  set integre non
+            }
+            #--- Tester si un telescope est bien selectionnee si l'option decalage est selectionnee
+            if { $panneau(DlgShift,buttonShift) == "1" } {
+               if { [ ::tel::list ] == "" } {
+                  ::audace::menustate disabled
+                  set choix [ tk_messageBox -title $caption(acqfc,pb) -type ok \
+                     -message $caption(acqfc,seltel) ]
+                  set integre non
+                  if { $choix == "ok" } {
+                     #--- Ouverture de la fenetre de selection des cameras
+                     ::confTel::run
+                     tkwait window $audace(base).confTel
+                  }
+                  ::audace::menustate normal
+               }
+            }
+         }
+         5  {
+            #--- Mode continu avec intervalle entre chaque image
+            #--- Les tests ne sont necessaires que si l'enregistrement est demande
+            if { $panneau(acqfc,$visuNo,enregistrer) == "1" } {
+               #--- Verifier qu'il y a bien un nom de fichier
+               if { $panneau(acqfc,$visuNo,nom_image) == "" } {
+                  tk_messageBox -title $caption(acqfc,pb) -type ok \
+                     -message $caption(acqfc,donnomfich)
+                  set integre non
+               }
+               #--- Verifier que le nom de fichier n'a pas d'espace
+               if { [ llength $panneau(acqfc,$visuNo,nom_image) ] > "1" } {
+                  tk_messageBox -title $caption(acqfc,pb) -type ok \
+                     -message $caption(acqfc,nomblanc)
+                  set integre non
+               }
+               #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
+               if { [ TestChaine $panneau(acqfc,$visuNo,nom_image) ] == "0" } {
+                  tk_messageBox -title $caption(acqfc,pb) -type ok \
+                     -message $caption(acqfc,mauvcar)
                   set integre non
                }
                #--- Verifier que l'index existe
@@ -865,585 +947,397 @@ namespace eval ::acqfc {
                      -message $caption(acqfc,interinv_2)
                   set integre non
                #--- Verifier que l'intervalle est valide (entier positif)
-               } elseif { [ TestEntier $panneau(acqfc,$visuNo,intervalle_1) ] == "0" } {
+               } elseif { [ TestEntier $panneau(acqfc,$visuNo,intervalle_2) ] == "0" } {
                   tk_messageBox -title $caption(acqfc,pb) -type ok \
                      -message $caption(acqfc,interinv)
                   set integre non
                #--- Verifier que l'intervalle est superieur a celui calcule par la simulation
-               } elseif { ( $panneau(acqfc,$visuNo,intervalle) > $panneau(acqfc,$visuNo,intervalle_1) ) && \
+               } elseif { ( $panneau(acqfc,$visuNo,intervalle) > $panneau(acqfc,$visuNo,intervalle_2) ) && \
                  ( $panneau(acqfc,$visuNo,intervalle) != "xxx" ) } {
                      tk_messageBox -title $caption(acqfc,pb) -type ok \
                         -message $caption(acqfc,interinv_1)
                      set integre non
                }
-               #--- Tester si un telescope est bien selectionnee si l'option decalage est selectionnee
-               if { $panneau(DlgShift,buttonShift) == "1" } {
-                  if { [ ::tel::list ] == "" } {
-                     ::audace::menustate disabled
-                     set choix [ tk_messageBox -title $caption(acqfc,pb) -type ok \
-                        -message $caption(acqfc,seltel) ]
+            } else {
+               #--- Verifier que la simulation a ete lancee
+               if { $panneau(acqfc,$visuNo,intervalle) == "....." } {
+                  tk_messageBox -title $caption(acqfc,pb) -type ok \
+                     -message $caption(acqfc,interinv_2)
+                  set integre non
+               #--- Verifier que l'intervalle est valide (entier positif)
+               } elseif { [ TestEntier $panneau(acqfc,$visuNo,intervalle_2) ] == "0" } {
+                  tk_messageBox -title $caption(acqfc,pb) -type ok \
+                     -message $caption(acqfc,interinv)
+                  set integre non
+               #--- Verifier que l'intervalle est superieur a celui calcule par la simulation
+               } elseif { ( $panneau(acqfc,$visuNo,intervalle) > $panneau(acqfc,$visuNo,intervalle_2) ) && \
+                 ( $panneau(acqfc,$visuNo,intervalle) != "xxx" ) } {
+                     tk_messageBox -title $caption(acqfc,pb) -type ok \
+                        -message $caption(acqfc,interinv_1)
                      set integre non
-                     if { $choix == "ok" } {
-                        #--- Ouverture de la fenetre de selection des cameras
-                        ::confTel::run
-                        tkwait window $audace(base).confTel
-                     }
-                     ::audace::menustate normal
-                  }
                }
             }
-            5  {
-               #--- Mode continu avec intervalle entre chaque image
-               #--- Les tests ne sont necessaires que si l'enregistrement est demande
-               if { $panneau(acqfc,$visuNo,enregistrer) == "1" } {
-                  #--- Verifier qu'il y a bien un nom de fichier
-                  if { $panneau(acqfc,$visuNo,nom_image) == "" } {
-                     tk_messageBox -title $caption(acqfc,pb) -type ok \
-                        -message $caption(acqfc,donnomfich)
-                     set integre non
+            #--- Tester si un telescope est bien selectionnee si l'option decalage est selectionnee
+            if { $panneau(DlgShift,buttonShift) == "1" } {
+               if { [ ::tel::list ] == "" } {
+                  ::audace::menustate disabled
+                  set choix [ tk_messageBox -title $caption(acqfc,pb) -type ok \
+                     -message $caption(acqfc,seltel) ]
+                  set integre non
+                  if { $choix == "ok" } {
+                     #--- Ouverture de la fenetre de selection des cameras
+                     ::confTel::run
+                     tkwait window $audace(base).confTel
                   }
-                  #--- Verifier que le nom de fichier n'a pas d'espace
-                  if { [ llength $panneau(acqfc,$visuNo,nom_image) ] > "1" } {
-                     tk_messageBox -title $caption(acqfc,pb) -type ok \
-                        -message $caption(acqfc,nomblanc)
-                     set integre non
-                  }
-                  #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
-                  if { [ TestChaine $panneau(acqfc,$visuNo,nom_image) ] == "0" } {
-                     tk_messageBox -title $caption(acqfc,pb) -type ok \
-                        -message $caption(acqfc,mauvcar)
-                     set integre non
-                  }
-                  #--- Verifier que l'index existe
-                  if { $panneau(acqfc,$visuNo,index) == "" } {
-                     tk_messageBox -title $caption(acqfc,pb) -type ok \
-                         -message $caption(acqfc,saisind)
-                     set integre non
-                  }
-                  #--- Verifier que l'index est valide (entier positif)
-                  if { [ TestEntier $panneau(acqfc,$visuNo,index) ] == "0" } {
-                     tk_messageBox -title $caption(acqfc,pb) -type ok \
-                        -message $caption(acqfc,indinv)
-                     set integre non
-                  }
-                  #--- Envoyer un warning si l'index n'est pas a 1
-                  if { $panneau(acqfc,$visuNo,index) != "1" } {
-                     set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
-                        -message $caption(acqfc,indpasun)]
-                     if { $confirmation == "no" } {
-                        set integre non
-                     }
-                  }
-                  #--- Verifier que la simulation a ete lancee
-                  if { $panneau(acqfc,$visuNo,intervalle) == "....." } {
-                     tk_messageBox -title $caption(acqfc,pb) -type ok \
-                        -message $caption(acqfc,interinv_2)
-                     set integre non
-                  #--- Verifier que l'intervalle est valide (entier positif)
-                  } elseif { [ TestEntier $panneau(acqfc,$visuNo,intervalle_2) ] == "0" } {
-                     tk_messageBox -title $caption(acqfc,pb) -type ok \
-                        -message $caption(acqfc,interinv)
-                     set integre non
-                  #--- Verifier que l'intervalle est superieur a celui calcule par la simulation
-                  } elseif { ( $panneau(acqfc,$visuNo,intervalle) > $panneau(acqfc,$visuNo,intervalle_2) ) && \
-                    ( $panneau(acqfc,$visuNo,intervalle) != "xxx" ) } {
-                        tk_messageBox -title $caption(acqfc,pb) -type ok \
-                           -message $caption(acqfc,interinv_1)
-                        set integre non
-                  }
-               } else {
-                  #--- Verifier que la simulation a ete lancee
-                  if { $panneau(acqfc,$visuNo,intervalle) == "....." } {
-                     tk_messageBox -title $caption(acqfc,pb) -type ok \
-                        -message $caption(acqfc,interinv_2)
-                     set integre non
-                  #--- Verifier que l'intervalle est valide (entier positif)
-                  } elseif { [ TestEntier $panneau(acqfc,$visuNo,intervalle_2) ] == "0" } {
-                     tk_messageBox -title $caption(acqfc,pb) -type ok \
-                        -message $caption(acqfc,interinv)
-                     set integre non
-                  #--- Verifier que l'intervalle est superieur a celui calcule par la simulation
-                  } elseif { ( $panneau(acqfc,$visuNo,intervalle) > $panneau(acqfc,$visuNo,intervalle_2) ) && \
-                    ( $panneau(acqfc,$visuNo,intervalle) != "xxx" ) } {
-                        tk_messageBox -title $caption(acqfc,pb) -type ok \
-                           -message $caption(acqfc,interinv_1)
-                        set integre non
-                  }
-               }
-               #--- Tester si un telescope est bien selectionnee si l'option decalage est selectionnee
-               if { $panneau(DlgShift,buttonShift) == "1" } {
-                  if { [ ::tel::list ] == "" } {
-                     ::audace::menustate disabled
-                     set choix [ tk_messageBox -title $caption(acqfc,pb) -type ok \
-                        -message $caption(acqfc,seltel) ]
-                     set integre non
-                     if { $choix == "ok" } {
-                        #--- Ouverture de la fenetre de selection des cameras
-                        ::confTel::run
-                        tkwait window $audace(base).confTel
-                     }
-                     ::audace::menustate normal
-                  }
+                  ::audace::menustate normal
                }
             }
          }
       }
-      #------ Fin des tests de l'integrite de la requete
-
-      #--- Apres les tests d'integrite, je reactive le bouton "GO"
-      $panneau(acqfc,$visuNo,This).go_stop.but configure -state normal
-
-      return $integre
-
    }
+   #------ Fin des tests de l'integrite de la requete
 
-   #------------------------------------------------------------
-   # startAcquisitionUneImage
-   #   fait l'acquisition d'une image
-   #
-   # Parameters
-   #   visuNo
-   #   expTime
-   #   binning
-   #   fileName
-   # return
-   #   retourne rien
-   #------------------------------------------------------------
-   proc startAcquisitionUneImage { visuNo expTime binning fileName} {
+   #--- Apres les tests d'integrite, je reactive le bouton "GO"
+   $panneau(acqfc,$visuNo,This).go_stop.but configure -state normal
 
-      set ::panneau(acqfc,$visuNo,pose) $expTime
-      set ::panneau(acqfc,$visuNo,bin)  $binning
-      set ::panneau(acqfc,$visuNo,nom_image) $fileName
-      set ::panneau(acqfc,$visuNo,mode) "1"
-      set ::panneau(acqfc,$visuNo,indexer) "0"
-      ChangeMode $visuNo $::caption(acqfc,uneimage)
+   return $integre
 
-      #--- je lance l'acquisition
-      set ::panneau(acqfc,$visuNo,acqImageEnd) "0"
-      ::acqfc::Go $visuNo
-      vwait ::panneau(acqfc,$visuNo,acqImageEnd)
+}
 
-      if { $fileName != "" } {
-         ::acqfc::SauveUneImage $visuNo
-      }
+#------------------------------------------------------------
+# startAcquisitionUneImage
+#   fait l'acquisition d'une image
+#
+# Parameters
+#   visuNo
+#   expTime
+#   binning
+#   fileName
+# return
+#   retourne rien
+#------------------------------------------------------------
+proc ::acqfc::startAcquisitionUneImage { visuNo expTime binning fileName} {
+
+   set ::panneau(acqfc,$visuNo,pose) $expTime
+   set ::panneau(acqfc,$visuNo,bin)  $binning
+   set ::panneau(acqfc,$visuNo,nom_image) $fileName
+   set ::panneau(acqfc,$visuNo,mode) "1"
+   set ::panneau(acqfc,$visuNo,indexer) "0"
+   ChangeMode $visuNo $::caption(acqfc,uneimage)
+
+   #--- je lance l'acquisition
+   set ::panneau(acqfc,$visuNo,acqImageEnd) "0"
+   ::acqfc::Go $visuNo
+   vwait ::panneau(acqfc,$visuNo,acqImageEnd)
+
+   if { $fileName != "" } {
+      ::acqfc::SauveUneImage $visuNo
    }
+}
 
-   #------------------------------------------------------------
-   # startAcquisitionSerieImage
-   #   fait l'acquisition d'une image (procedure appelee depuis un autre outil)
-   #
-   # Parameters
-   #   visuNo
-   #   expTime
-   #   binning
-   #   fileName
-   #   imageNb
-   # return
-   #   retourne rien
-   #------------------------------------------------------------
-   proc startAcquisitionSerieImage { visuNo expTime binning fileName imageNb} {
+#------------------------------------------------------------
+# startAcquisitionSerieImage
+#   fait l'acquisition d'une image (procedure appelee depuis un autre outil)
+#
+# Parameters
+#   visuNo
+#   expTime
+#   binning
+#   fileName
+#   imageNb
+# return
+#   retourne rien
+#------------------------------------------------------------
+proc ::acqfc::startAcquisitionSerieImage { visuNo expTime binning fileName imageNb} {
 
-      set ::panneau(acqfc,$visuNo,pose) $expTime
-      set ::panneau(acqfc,$visuNo,bin)  $binning
-      set ::panneau(acqfc,$visuNo,nom_image) $fileName
-      set ::panneau(acqfc,$visuNo,nb_images) $imageNb
-      set ::panneau(acqfc,$visuNo,indexer) "1"
-      set ::panneau(acqfc,$visuNo,index)   "1"
+   set ::panneau(acqfc,$visuNo,pose) $expTime
+   set ::panneau(acqfc,$visuNo,bin)  $binning
+   set ::panneau(acqfc,$visuNo,nom_image) $fileName
+   set ::panneau(acqfc,$visuNo,nb_images) $imageNb
+   set ::panneau(acqfc,$visuNo,indexer) "1"
+   set ::panneau(acqfc,$visuNo,index)   "1"
 
-      ChangeMode $visuNo $::caption(acqfc,serie)
+   ChangeMode $visuNo $::caption(acqfc,serie)
 
-      set ::panneau(acqfc,$visuNo,acqImageEnd) "0"
-      ::acqfc::Go $visuNo
-      #--- j'attends la fin des acquisitions
-      vwait ::panneau(acqfc,$visuNo,acqImageEnd)
+   set ::panneau(acqfc,$visuNo,acqImageEnd) "0"
+   ::acqfc::Go $visuNo
+   #--- j'attends la fin des acquisitions
+   vwait ::panneau(acqfc,$visuNo,acqImageEnd)
+}
+
+#------------------------------------------------------------
+# stopAcquisition
+#   arret une acquisition en cours (procedure appelee depuis un autre outil)
+#
+# Parameters
+#   visuNo
+# return
+#   retourne rien
+#------------------------------------------------------------
+proc ::acqfc::stopAcquisition { visuNo } {
+   global panneau
+
+   if { $panneau(acqfc,$visuNo,pose_en_cours) == 1 } {
+      Stop $visuNo
    }
-
-   #------------------------------------------------------------
-   # stopAcquisition
-   #   arret une acquisition en cours (procedure appelee depuis un autre outil)
-   #
-   # Parameters
-   #   visuNo
-   # return
-   #   retourne rien
-   #------------------------------------------------------------
-   proc stopAcquisition { visuNo } {
-      global panneau
-
-      if { $panneau(acqfc,$visuNo,pose_en_cours) == 1 } {
-         Stop $visuNo
-      }
-   }
+}
 
 
 #***** Procedure Go (appui sur le bouton Go/Stop) *********
-   proc Go { visuNo } {
-      global audace caption conf panneau
+proc ::acqfc::Go { visuNo } {
+   global audace caption conf panneau
 
-      set camItem [::confVisu::getCamItem $visuNo]
+   set camItem [::confVisu::getCamItem $visuNo]
 
-      #--- Ouverture du fichier historique
-      if { $panneau(acqfc,$visuNo,save_file_log) == "1" } {
-         if { $panneau(acqfc,$visuNo,session_ouverture) == "1" } {
-            DemarrageAcqFC $visuNo
-            set panneau(acqfc,$visuNo,session_ouverture) "0"
-         }
-      }
-
-      #--- je verifie l'integrite des parametres
-      set integre [testParametreAcquisition $visuNo]
-      if { $integre != "oui" } {
-         return
-      }
-
-      #--- Modification du bouton, pour eviter un second lancement
-      $panneau(acqfc,$visuNo,This).go_stop.but configure -text $caption(acqfc,stop) -command "::acqfc::Stop $visuNo"
-      #--- Verrouille tous les boutons et champs de texte pendant les acquisitions
-      $panneau(acqfc,$visuNo,This).pose.but configure -state disabled
-      $panneau(acqfc,$visuNo,This).pose.entr configure -state disabled
-      $panneau(acqfc,$visuNo,This).bin.but configure -state disabled
-      $panneau(acqfc,$visuNo,This).obt.but configure -state disabled
-      $panneau(acqfc,$visuNo,This).mode.but configure -state disabled
-      #--- Desactive toute demande d'arret
-      set panneau(acqfc,$visuNo,demande_arret) "0"
-      #--- Pose en cours
-      set panneau(acqfc,$visuNo,pose_en_cours) "1"
-      #--- Enregistrement d'une image interrompue
-      set panneau(acqfc,$visuNo,sauve_img_interrompue) "0"
-      #--- Cas particulier du passage WebCam LP en WebCam normale pour inhiber la barre progression
-      set camNo $panneau(acqfc,$visuNo,camNo)
-      if { ( [::confCam::getPluginProperty $camItem "hasVideo"] == 1 ) && ( [ confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] longExposure ] == "0" ) } {
-         set panneau(acqfc,$visuNo,pose) "0"
-      }
-      #--- Si je fais un offset (pose de 0s) alors l'obturateur reste ferme
-      if { $panneau(acqfc,$visuNo,pose) == "0" } {
-         cam$camNo shutter "closed"
-      }
-
-      #--- Initialisation du fenetrage
-      ###catch {
-      ###   set n1n2 [ cam$camNo nbcells ]
-      ###   cam$camNo window [ list 1 1 [ lindex $n1n2 0 ] [ lindex $n1n2 1 ] ]
-      ###}
-
-      if { [::confCam::getPluginProperty $panneau(acqfc,$visuNo,camItem) hasBinning] == "1" } {
-         #--- je selectionne le binning
-         set binning [list [string range $panneau(acqfc,$visuNo,bin) 0 0] [string range $panneau(acqfc,$visuNo,bin) 2 2]]
-         cam$camNo bin $binning
-      } else {
-         set panneau(acqfc,$visuNo,binning) [list 1 1 ]
-      }
-
-      if { [::confCam::getPluginProperty $panneau(acqfc,$visuNo,camItem) hasFormat] == "1" } {
-         #--- je selectionne la qualite
-         cam$camNo quality $panneau(acqfc,$visuNo,bin)
-      }
-
-      #--- Branchement selon le mode de prise de vue
-      switch $panneau(acqfc,$visuNo,mode) {
-         1  {
-            #--- Mode une image
-            #--- Verrouille les boutons du mode "une image"
-            $panneau(acqfc,$visuNo,This).mode.une.nom.entr configure -state disabled
-            $panneau(acqfc,$visuNo,This).mode.une.index.case configure -state disabled
-            $panneau(acqfc,$visuNo,This).mode.une.index.entr configure -state disabled
-            $panneau(acqfc,$visuNo,This).mode.une.index.but configure -state disabled
-            $panneau(acqfc,$visuNo,This).mode.une.sauve configure -state disabled
-            set heure $audace(tu,format,hmsint)
-            Message $visuNo consolog $caption(acqfc,acquneim) \
-               $panneau(acqfc,$visuNo,pose) $panneau(acqfc,$visuNo,bin) $heure
-            acq $visuNo
-         }
-         2  {
-            #--- Mode serie
-            #--- Verrouille les boutons du mode "serie"
-            $panneau(acqfc,$visuNo,This).mode.serie.nom.entr configure -state disabled
-            $panneau(acqfc,$visuNo,This).mode.serie.nb.entr configure -state disabled
-            $panneau(acqfc,$visuNo,This).mode.serie.index.entr configure -state disabled
-            $panneau(acqfc,$visuNo,This).mode.serie.index.but configure -state disabled
-            set heure $audace(tu,format,hmsint)
-            if { $panneau(acqfc,$visuNo,simulation) != "0" } {
-               Message $visuNo consolog $caption(acqfc,lance_simu)
-               #--- Heure de debut de la premiere pose
-               set panneau(acqfc,$visuNo,debut) [ clock second ]
-            }
-            Message $visuNo consolog $caption(acqfc,lanceserie) \
-               $panneau(acqfc,$visuNo,nb_images) $heure
-            Message $visuNo consolog $caption(acqfc,nomgen) $panneau(acqfc,$visuNo,nom_image) \
-               $panneau(acqfc,$visuNo,pose) $panneau(acqfc,$visuNo,bin) $panneau(acqfc,$visuNo,index)
-            set panneau(acqfc,$visuNo,compteurImageSerie) "1"
-            acq $visuNo
-         }
-         3  {
-            #--- Mode continu
-            #--- Verrouille les boutons du mode "continu"
-            $panneau(acqfc,$visuNo,This).mode.continu.sauve.case configure -state disabled
-            $panneau(acqfc,$visuNo,This).mode.continu.nom.entr configure -state disabled
-            $panneau(acqfc,$visuNo,This).mode.continu.index.entr configure -state disabled
-            $panneau(acqfc,$visuNo,This).mode.continu.index.but configure -state disabled
-            set heure $audace(tu,format,hmsint)
-            Message $visuNo consolog $caption(acqfc,lancecont) $panneau(acqfc,$visuNo,pose) $panneau(acqfc,$visuNo,bin) $heure
-            if { $panneau(acqfc,$visuNo,enregistrer) == "1" } {
-               Message $visuNo consolog $caption(acqfc,enregen) \
-                 $panneau(acqfc,$visuNo,nom_image)
-            } else {
-               Message $visuNo consolog $caption(acqfc,sansenr)
-            }
-            acq $visuNo
-         }
-         4  {
-            #--- Mode series d'images en continu avec intervalle entre chaque serie
-            #--- Verrouille les boutons du mode "continu 1"
-            $panneau(acqfc,$visuNo,This).mode.serie_1.nom.entr configure -state disabled
-            $panneau(acqfc,$visuNo,This).mode.serie_1.nb.entr configure -state disabled
-            $panneau(acqfc,$visuNo,This).mode.serie_1.index.entr configure -state disabled
-            $panneau(acqfc,$visuNo,This).mode.serie_1.index.but configure -state disabled
-            set heure $audace(tu,format,hmsint)
-            Message $visuNo consolog $caption(acqfc,lanceserie_int) \
-               $panneau(acqfc,$visuNo,nb_images) $panneau(acqfc,$visuNo,intervalle_1) $heure
-            Message $visuNo consolog $caption(acqfc,nomgen) $panneau(acqfc,$visuNo,nom_image) \
-               $panneau(acqfc,$visuNo,pose) $panneau(acqfc,$visuNo,bin) $panneau(acqfc,$visuNo,index)
-            set panneau(acqfc,$visuNo,compteurImageSerie) "1"
-            #--- Je note l'heure de debut de la premiere serie (utile pour les series espacees)
-            set panneau(acqfc,$visuNo,deb_serie) [ clock second ]
-            acq $visuNo
-         }
-         5  {
-            #--- Mode continu avec intervalle entre chaque image
-            #--- Verrouille les boutons du mode "continu 2"
-            $panneau(acqfc,$visuNo,This).mode.continu_1.sauve.case configure -state disabled
-            $panneau(acqfc,$visuNo,This).mode.continu_1.nom.entr configure -state disabled
-            $panneau(acqfc,$visuNo,This).mode.continu_1.index.entr configure -state disabled
-            $panneau(acqfc,$visuNo,This).mode.continu_1.index.but configure -state disabled
-            set heure $audace(tu,format,hmsint)
-            Message $visuNo consolog $caption(acqfc,lancecont_int) $panneau(acqfc,$visuNo,intervalle_2) \
-               $panneau(acqfc,$visuNo,pose) $panneau(acqfc,$visuNo,bin) $heure
-            if { $panneau(acqfc,$visuNo,enregistrer) == "1" } {
-               Message $visuNo consolog $caption(acqfc,enregen) \
-                 $panneau(acqfc,$visuNo,nom_image)
-            } else {
-               Message $visuNo consolog $caption(acqfc,sansenr)
-            }
-            acq $visuNo
-         }
+   #--- Ouverture du fichier historique
+   if { $panneau(acqfc,$visuNo,save_file_log) == "1" } {
+      if { $panneau(acqfc,$visuNo,session_ouverture) == "1" } {
+         DemarrageAcqFC $visuNo
+         set panneau(acqfc,$visuNo,session_ouverture) "0"
       }
    }
 
-#***** Procedure Stop (appui sur le bouton Go/Stop) *********
-   proc Stop { visuNo } {
-      global audace caption conf panneau
+   #--- je verifie l'integrite des parametres
+   set integre [testParametreAcquisition $visuNo]
+   if { $integre != "oui" } {
+      return
+   }
 
-      #--- Je desactive le bouton "STOP"
-      $panneau(acqfc,$visuNo,This).go_stop.but configure -state disabled
-      #--- On annule la sonnerie
-      catch { after cancel $audace(after,bell,id) }
-      #--- Annulation de l'alarme de fin de pose
-      catch { after cancel bell }
+   #--- Modification du bouton, pour eviter un second lancement
+   $panneau(acqfc,$visuNo,This).go_stop.but configure -text $caption(acqfc,stop) -command "::acqfc::Stop $visuNo"
+   #--- Verrouille tous les boutons et champs de texte pendant les acquisitions
+   $panneau(acqfc,$visuNo,This).pose.but configure -state disabled
+   $panneau(acqfc,$visuNo,This).pose.entr configure -state disabled
+   $panneau(acqfc,$visuNo,This).bin.but configure -state disabled
+   $panneau(acqfc,$visuNo,This).obt.but configure -state disabled
+   $panneau(acqfc,$visuNo,This).mode.but configure -state disabled
+   #--- Desactive toute demande d'arret
+   set panneau(acqfc,$visuNo,demande_arret) "0"
+   #--- Pose en cours
+   set panneau(acqfc,$visuNo,pose_en_cours) "1"
+   #--- Enregistrement d'une image interrompue
+   set panneau(acqfc,$visuNo,sauve_img_interrompue) "0"
+   #--- Cas particulier du passage WebCam LP en WebCam normale pour inhiber la barre progression
+   set camNo $panneau(acqfc,$visuNo,camNo)
+   if { ( [::confCam::getPluginProperty $camItem "hasVideo"] == 1 ) && ( [ confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] longExposure ] == "0" ) } {
+      set panneau(acqfc,$visuNo,pose) "0"
+   }
+   #--- Si je fais un offset (pose de 0s) alors l'obturateur reste ferme
+   if { $panneau(acqfc,$visuNo,pose) == "0" } {
+      cam$camNo shutter "closed"
+   }
 
-      #--- Je positionne l'indicateur d'interruption de pose
-      set panneau(acqfc,$visuNo,demande_arret) "1"
-      #--- j'interromps la pose
-      if { $panneau(acqfc,$visuNo,mode) == "1" } {
-         #--- J'arrete la capture de l'image
-         ::camera::stopAcquisition [::confVisu::getCamItem $visuNo]
-      } else {
-          set choix [ tk_messageBox -title $caption(acqfc,serie) -type yesno -icon info \
-              -message $caption(acqfc,arret_serie) \
-          ]
-         if { $choix == "no" } {
-            #--- Je positionne l'indicateur d'enregistrement d'image interrompue
-            set panneau(acqfc,$visuNo,sauve_img_interrompue) "1"
-            #--- J'arrete la capture de l'image
-            ::camera::stopAcquisition [::confVisu::getCamItem $visuNo]
+   #--- Initialisation du fenetrage
+   ###catch {
+   ###   set n1n2 [ cam$camNo nbcells ]
+   ###   cam$camNo window [ list 1 1 [ lindex $n1n2 0 ] [ lindex $n1n2 1 ] ]
+   ###}
+
+   if { [::confCam::getPluginProperty $panneau(acqfc,$visuNo,camItem) hasBinning] == "1" } {
+      #--- je selectionne le binning
+      set binning [list [string range $panneau(acqfc,$visuNo,bin) 0 0] [string range $panneau(acqfc,$visuNo,bin) 2 2]]
+      cam$camNo bin $binning
+   } else {
+      set panneau(acqfc,$visuNo,binning) [list 1 1 ]
+   }
+
+   if { [::confCam::getPluginProperty $panneau(acqfc,$visuNo,camItem) hasFormat] == "1" } {
+      #--- je selectionne la qualite
+      cam$camNo quality $panneau(acqfc,$visuNo,bin)
+   }
+
+   #--- je verouille les widgets selon le mode de prise de vue
+   switch $panneau(acqfc,$visuNo,mode) {
+      1  {
+         #--- Mode une image
+         #--- Verrouille les boutons du mode "une image"
+         $panneau(acqfc,$visuNo,This).mode.une.nom.entr configure -state disabled
+         $panneau(acqfc,$visuNo,This).mode.une.index.case configure -state disabled
+         $panneau(acqfc,$visuNo,This).mode.une.index.entr configure -state disabled
+         $panneau(acqfc,$visuNo,This).mode.une.index.but configure -state disabled
+         $panneau(acqfc,$visuNo,This).mode.une.sauve configure -state disabled
+         set heure $audace(tu,format,hmsint)
+         Message $visuNo consolog $caption(acqfc,acquneim) \
+            $panneau(acqfc,$visuNo,pose) $panneau(acqfc,$visuNo,bin) $heure
+         #--- je ne fais qu'une image dans ce mode
+         set nbImages 1
+      }
+      2  {
+         #--- Mode serie
+         #--- Verrouille les boutons du mode "serie"
+         $panneau(acqfc,$visuNo,This).mode.serie.nom.entr configure -state disabled
+         $panneau(acqfc,$visuNo,This).mode.serie.nb.entr configure -state disabled
+         $panneau(acqfc,$visuNo,This).mode.serie.index.entr configure -state disabled
+         $panneau(acqfc,$visuNo,This).mode.serie.index.but configure -state disabled
+         set heure $audace(tu,format,hmsint)
+         if { $panneau(acqfc,$visuNo,simulation) != "0" } {
+            Message $visuNo consolog $caption(acqfc,lance_simu)
+            #--- Heure de debut de la premiere pose
+            set panneau(acqfc,$visuNo,debut) [ clock second ]
+         }
+         Message $visuNo consolog $caption(acqfc,lanceserie) \
+            $panneau(acqfc,$visuNo,nb_images) $heure
+         Message $visuNo consolog $caption(acqfc,nomgen) $panneau(acqfc,$visuNo,nom_image) \
+            $panneau(acqfc,$visuNo,pose) $panneau(acqfc,$visuNo,bin) $panneau(acqfc,$visuNo,index)
+         #--- je recupere le nombre d'images de la serie donne par l'utilisateur
+         set nbImages $panneau(acqfc,$visuNo,nb_images)
+      }
+      3  {
+         #--- Mode continu
+         #--- Verrouille les boutons du mode "continu"
+         $panneau(acqfc,$visuNo,This).mode.continu.sauve.case configure -state disabled
+         $panneau(acqfc,$visuNo,This).mode.continu.nom.entr configure -state disabled
+         $panneau(acqfc,$visuNo,This).mode.continu.index.entr configure -state disabled
+         $panneau(acqfc,$visuNo,This).mode.continu.index.but configure -state disabled
+         set heure $audace(tu,format,hmsint)
+         Message $visuNo consolog $caption(acqfc,lancecont) $panneau(acqfc,$visuNo,pose) $panneau(acqfc,$visuNo,bin) $heure
+         if { $panneau(acqfc,$visuNo,enregistrer) == "1" } {
+            Message $visuNo consolog $caption(acqfc,enregen) \
+              $panneau(acqfc,$visuNo,nom_image)
          } else {
-            #--- Je positionne l'indicateur d'enregistrement d'image interrompue
-            set panneau(acqfc,$visuNo,sauve_img_interrompue) "0"
+            Message $visuNo consolog $caption(acqfc,sansenr)
          }
+         #--- il n'y a pas de nombre d'image
+         set nbImages ""
+      }
+      4  {
+         #--- Mode series d'images en continu avec intervalle entre chaque serie
+         #--- Verrouille les boutons du mode "continu 1"
+         $panneau(acqfc,$visuNo,This).mode.serie_1.nom.entr configure -state disabled
+         $panneau(acqfc,$visuNo,This).mode.serie_1.nb.entr configure -state disabled
+         $panneau(acqfc,$visuNo,This).mode.serie_1.index.entr configure -state disabled
+         $panneau(acqfc,$visuNo,This).mode.serie_1.index.but configure -state disabled
+         set heure $audace(tu,format,hmsint)
+         Message $visuNo consolog $caption(acqfc,lanceserie_int) \
+            $panneau(acqfc,$visuNo,nb_images) $panneau(acqfc,$visuNo,intervalle_1) $heure
+         Message $visuNo consolog $caption(acqfc,nomgen) $panneau(acqfc,$visuNo,nom_image) \
+            $panneau(acqfc,$visuNo,pose) $panneau(acqfc,$visuNo,bin) $panneau(acqfc,$visuNo,index)
+         #--- Je note l'heure de debut de la premiere serie (utile pour les series espacees)
+         set panneau(acqfc,$visuNo,deb_serie) [ clock second ]
+         #--- je recupere le nombre d'images des series donne par l'utilisateur
+         set nbImages $panneau(acqfc,$visuNo,nb_images)
+      }
+      5  {
+         #--- Mode continu avec intervalle entre chaque image
+         #--- Verrouille les boutons du mode "continu 2"
+         $panneau(acqfc,$visuNo,This).mode.continu_1.sauve.case configure -state disabled
+         $panneau(acqfc,$visuNo,This).mode.continu_1.nom.entr configure -state disabled
+         $panneau(acqfc,$visuNo,This).mode.continu_1.index.entr configure -state disabled
+         $panneau(acqfc,$visuNo,This).mode.continu_1.index.but configure -state disabled
+         set heure $audace(tu,format,hmsint)
+         Message $visuNo consolog $caption(acqfc,lancecont_int) $panneau(acqfc,$visuNo,intervalle_2) \
+            $panneau(acqfc,$visuNo,pose) $panneau(acqfc,$visuNo,bin) $heure
+         if { $panneau(acqfc,$visuNo,enregistrer) == "1" } {
+            Message $visuNo consolog $caption(acqfc,enregen) \
+              $panneau(acqfc,$visuNo,nom_image)
+         } else {
+            Message $visuNo consolog $caption(acqfc,sansenr)
+         }
+         #--- il n'y a pas de nombre d'image
+         set nbImages ""
       }
    }
-#***** Fin de la procedure Go/Stop *****************************
 
-#***** Procedure de lancement d'acquisition ********************
-   proc acq { visuNo } {
-      global audace caption conf panneau
 
+   set catchResult [catch {
+      set camNo $panneau(acqfc,$visuNo,camNo)
+      set bufNo [ ::confVisu::getBufNo $visuNo ]
+      set loadMode [::confCam::getPluginProperty $panneau(acqfc,$visuNo,camItem) "loadMode" ]
+
+      #--- j'intialise l'indicateur d'etat de l'acquisition
+      set panneau(acqfc,$visuNo,acquisitionState) ""
+   set compteurImageSerie 1
+
+
+   #--- Boucle d'acquisition des images
+   while { $panneau(acqfc,$visuNo,demande_arret) == "0"  } {
+      #--- si un nombre d'image est precise, je verifie
+      if { $nbImages != "" && $compteurImageSerie > $nbImages } {
+         #--- le nombre d'image est atteint, j'arrete la boucle
+         break
+      }
       #--- Je note l'heure de debut de l'image (utile pour les images espacees)
       set panneau(acqfc,$visuNo,deb_im) [ clock second ]
       #--- Alarme sonore de fin de pose
       ::camera::alarme_sonore $panneau(acqfc,$visuNo,pose)
       #--- Declenchement l'acquisition (voir la suite dans callbackAcquition)
       ::camera::acquisition $panneau(acqfc,$visuNo,camItem) "::acqfc::callbackAcquisition $visuNo" $panneau(acqfc,$visuNo,pose)
+      #--- je lance la boucle d'affichage du status
       after 10 ::acqfc::dispTime $visuNo
-   }
+      #--- j'attends la fin de l'acquisition (voir ::acqfc::callbackAcquisition)
+      vwait panneau(acqfc,$visuNo,acquisitionState)
 
-   #***** Procedure appelee par ::camera::acquisition pour retouner des informations pendant et en fin de l'acquisition ********************
-   proc callbackAcquisition { visuNo command args } {
-      variable private
-
-      switch $command {
-         "autovisu" {
-            #--- ce message signale que l'image est prete dans le buffer
-            #--- on peut l'afficher sans attendre la fin complete de la thread de la camera
-            ::confVisu::autovisu $visuNo
-         }
-         "acquisitionResult" {
-            #--- ce message signale que la thread de la camera a termine completement l'acquisition
-            #--- je peux traiter l'image
-            ::acqfc::acqImageEnd $visuNo
-         }
-         "error" {
-            #--- ce message signale qu'une erreur est survenue dans la thread de la camera
-            #--- j'affiche l'erreur dans la console
-            ::console::affiche_erreur "acqfc::acq error: $args\n"
-            ::acqfc::acqImageEnd $visuNo
-         }
-
+      #--- Chargement de l'image precedente (si telecharge_mode = 3 et si mode = serie, continu, continu 1 ou continu 2)
+      if { $loadMode == "3" && $panneau(acqfc,$visuNo,mode) >= "1" && $panneau(acqfc,$visuNo,mode) <= "5" } {
+         after 10 ::acqfc::loadLastImage $visuNo $camNo
       }
-   }
 
-   #***** Fin d'acquisition d'une image **********
-   proc acqImageEnd { visuNo } {
-      global audace caption conf panneau
+      #--- Rajoute des mots clefs dans l'en-tete FITS
+      foreach keyword [ ::keyword::getKeywords $visuNo ] {
+         buf$bufNo setkwd $keyword
+      }
+      ###wm title [winfo toplevel $panneau(acqfc,$visuNo,base)] "$caption(acqfc,acquisition) $panneau(acqfc,$visuNo,pose) s"
 
-      set catchResult [catch {
-
-         set camNo $panneau(acqfc,$visuNo,camNo)
-         set bufNo [ ::confVisu::getBufNo $visuNo ]
-         set loadMode [::confCam::getPluginProperty $panneau(acqfc,$visuNo,camItem) "loadMode" ]
-         #--- Chargement de l'image precedente (si telecharge_mode = 3 et si mode = serie, continu, continu 1 ou continu 2)
-         if { $loadMode == "3" && $panneau(acqfc,$visuNo,mode) >= "1" && $panneau(acqfc,$visuNo,mode) <= "5" } {
-            after 10 ::acqfc::loadLastImage $visuNo $camNo
+      #--- je trace la duree réelle de la pose s'il y a eu une interruption
+      if { $panneau(acqfc,$visuNo,demande_arret) == "1" } {
+         set exposure [ lindex [ buf$bufNo getkwd EXPOSURE ] 1 ]
+         #--- je verifie qu'il y eu interruption vraiment pendant l'acquisition
+         set dateEnd [mc_date2ymdhms [ lindex [ buf$bufNo getkwd DATE-END ] 1 ]]
+         set dateEnd [format "%02dh %02dm %02ds" [lindex $dateEnd 3] [lindex $dateEnd 4] [expr int([lindex $dateEnd 5])]]
+         if { $exposure != $panneau(acqfc,$visuNo,pose) } {
+            Message $visuNo consolog $caption(acqfc,arrprem) $dateEnd
+            Message $visuNo consolog $caption(acqfc,lg_pose_arret) $exposure
+         } else {
+            Message $visuNo consolog $caption(acqfc,arrprem) $dateEnd
          }
+      }
 
-         #--- Rajoute des mots clefs dans l'en-tete FITS
-         foreach keyword [ ::keyword::getKeywords $visuNo ] {
-            buf$bufNo setkwd $keyword
+      #--- j'enregistre l'image et je decale le telescope
+      switch $panneau(acqfc,$visuNo,mode) {
+         1  {
+            #--- mode une image
+            incr compteurImageSerie
          }
-         wm title [winfo toplevel $panneau(acqfc,$visuNo,base)] "$caption(acqfc,acquisition) $panneau(acqfc,$visuNo,pose) s"
-
-         #--- je trace la duree réelle de la pose s'il y a eu une interruption
-         if { $panneau(acqfc,$visuNo,demande_arret) == "1" } {
-            set exposure [ lindex [ buf$bufNo getkwd EXPOSURE ] 1 ]
-            #--- je verifie qu'il y eu interruption vraiment pendant l'acquisition
-            set dateEnd [mc_date2ymdhms [ lindex [ buf$bufNo getkwd DATE-END ] 1 ]]
-            set dateEnd [format "%02dh %02dm %02ds" [lindex $dateEnd 3] [lindex $dateEnd 4] [expr int([lindex $dateEnd 5])]]
-            if { $exposure != $panneau(acqfc,$visuNo,pose) } {
-               Message $visuNo consolog $caption(acqfc,arrprem) $dateEnd
-               Message $visuNo consolog $caption(acqfc,lg_pose_arret) $exposure
-            } else {
-               Message $visuNo consolog $caption(acqfc,arrprem) $dateEnd
-            }
-         }
-
-         #--- j'enregistre l'image et je lance l'acquistion suivante
-         switch $panneau(acqfc,$visuNo,mode) {
-            1  {
-               #--- Deverouille les boutons du mode "une image"
-               $panneau(acqfc,$visuNo,This).mode.une.nom.entr configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.une.index.case configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.une.index.entr configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.une.index.but configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.une.sauve configure -state normal
-               #--- Pose en cours
-               set panneau(acqfc,$visuNo,pose_en_cours) "0"
-            }
-            2  {
-               #--- Je sauvegarde l'image
-               set nom $panneau(acqfc,$visuNo,nom_image)
-               #--- Pour eviter un nom de fichier qui commence par un blanc
-               set nom [lindex $nom 0]
-               if { $panneau(acqfc,$visuNo,simulation) == "0" } {
-                  #--- Verifie que le nom du fichier n'existe pas deja...
-                  set nom1 "$nom"
-                  append nom1 $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)
-                  set sauvegardeValidee "1"
-                  if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
-                     #--- Dans ce cas, le fichier existe deja...
-                     set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
-                        -message $caption(acqfc,fichdeja)]
-                     if { $confirmation == "no" } {
-                        #--- je ne sauvegarde pas l'image et j'arrete les acquisitions
-                        set sauvegardeValidee "0"
-                        set panneau(acqfc,$visuNo,demande_arret) "1"
-                     }
+         2  {
+            #--- Mode serie
+            #--- Je sauvegarde l'image
+            set nom $panneau(acqfc,$visuNo,nom_image)
+            #--- Pour eviter un nom de fichier qui commence par un blanc
+            set nom [lindex $nom 0]
+            if { $panneau(acqfc,$visuNo,simulation) == "0" } {
+               #--- Verifie que le nom du fichier n'existe pas deja...
+               set nom1 "$nom"
+               append nom1 $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)
+               set sauvegardeValidee "1"
+               if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                  #--- Dans ce cas, le fichier existe deja...
+                  set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
+                     -message $caption(acqfc,fichdeja)]
+                  if { $confirmation == "no" } {
+                     #--- je ne sauvegarde pas l'image et j'arrete les acquisitions
+                     set sauvegardeValidee "0"
+                     set panneau(acqfc,$visuNo,demande_arret) "1"
                   }
+               }
+               #--- Sauvegarde de l'image
+               if { $sauvegardeValidee == "1" && $panneau(acqfc,$visuNo,sauve_img_interrompue) == "0" } {
                   #--- Sauvegarde de l'image
-                  if { $sauvegardeValidee == "1" && $panneau(acqfc,$visuNo,sauve_img_interrompue) == "0" } {
-                     #--- Sauvegarde de l'image
-                     saveima [append nom $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)] $visuNo
-                     set heure $audace(tu,format,hmsint)
-                     Message $visuNo consolog $caption(acqfc,enrim) $heure $nom
-                     incr panneau(acqfc,$visuNo,index)
-                  }
-               }
-               #---
-               if { $panneau(acqfc,$visuNo,compteurImageSerie) < $panneau(acqfc,$visuNo,nb_images)
-               && $panneau(acqfc,$visuNo,demande_arret) == "0" } {
-                   #--- Deplacement du telescope
-                   ::DlgShift::Decalage_Telescope
-                   #--- j'incremente le compteur d'image
-                   incr panneau(acqfc,$visuNo,compteurImageSerie)
-                   #--- je lance la pose suivante
-                   ::acqfc::acq $visuNo
-                   #---- C'EST REPARTI POUR UN TOUR...
-                   return
-               } else {
-                  #--- Fin de la derniere pose et intervalle mini entre 2 poses ou 2 series
-                  if { $panneau(acqfc,$visuNo,simulation) == "1" } {
-                     #--- Affichage de l'intervalle mini simule
-                     set panneau(acqfc,$visuNo,fin) [ clock second ]
-                     set exposure [ lindex [ buf$bufNo getkwd EXPOSURE ] 1 ]
-                     if { $exposure == $panneau(acqfc,$visuNo,pose) } {
-                        set panneau(acqfc,$visuNo,intervalle) [ expr $panneau(acqfc,$visuNo,fin) - $panneau(acqfc,$visuNo,debut) ]
-                     } else {
-                        set panneau(acqfc,$visuNo,intervalle) "....."
-                     }
-                     set simu1 "$caption(acqfc,int_mini_serie) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
-                     $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab3 configure -text "$simu1"
-                     #--- Je retablis les reglages initiaux
-                     set panneau(acqfc,$visuNo,simulation) "0"
-                     set panneau(acqfc,$visuNo,mode)       "4"
-                     set panneau(acqfc,$visuNo,index)      $panneau(acqfc,$visuNo,index_temp)
-                     set panneau(acqfc,$visuNo,nb_images)  $panneau(acqfc,$visuNo,nombre_temp)
-                     #--- Fin de la simulation
-                     Message $visuNo consolog $caption(acqfc,fin_simu)
-                  } elseif { $panneau(acqfc,$visuNo,simulation) == "2" } {
-                     #--- Affichage de l'intervalle mini simule
-                     set panneau(acqfc,$visuNo,fin) [ clock second ]
-                     set exposure [ lindex [ buf$bufNo getkwd EXPOSURE ] 1 ]
-                     if { $exposure == $panneau(acqfc,$visuNo,pose) } {
-                        set panneau(acqfc,$visuNo,intervalle) [ expr $panneau(acqfc,$visuNo,fin) - $panneau(acqfc,$visuNo,debut) ]
-                     } else {
-                        set panneau(acqfc,$visuNo,intervalle) "....."
-                     }
-                     set simu2 "$caption(acqfc,int_mini_image) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
-                     $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab3 configure -text "$simu2"
-                     #--- Je retablis les reglages initiaux
-                     set panneau(acqfc,$visuNo,simulation) "0"
-                     set panneau(acqfc,$visuNo,mode)       "5"
-                     set panneau(acqfc,$visuNo,index)      $panneau(acqfc,$visuNo,index_temp)
-                     set panneau(acqfc,$visuNo,nb_images)  $panneau(acqfc,$visuNo,nombre_temp)
-                     #--- Fin de la simulation
-                     Message $visuNo consolog $caption(acqfc,fin_simu)
-                  }
-                  #--- Cas particulier des cameras APN (DSLR)
-                  if { $loadMode == "3" } {
-                     #--- Chargement de la derniere image
-                     ::acqfc::loadLastImage $visuNo $panneau(acqfc,$visuNo,camNo)
-                  }
-                  #--- Deverouille les boutons du mode "serie"
-                  $panneau(acqfc,$visuNo,This).mode.serie.nom.entr configure -state normal
-                  $panneau(acqfc,$visuNo,This).mode.serie.nb.entr configure -state normal
-                  $panneau(acqfc,$visuNo,This).mode.serie.index.entr configure -state normal
-                  $panneau(acqfc,$visuNo,This).mode.serie.index.but configure -state normal
-                  #--- Pose en cours
-                  set panneau(acqfc,$visuNo,pose_en_cours) "0"
+                  saveima [append nom $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)] $visuNo
+                  set heure $audace(tu,format,hmsint)
+                  Message $visuNo consolog $caption(acqfc,enrim) $heure $nom
+                  incr panneau(acqfc,$visuNo,index)
                }
             }
-            3  {
-               #--- Je sauvegarde l'image
-               if { $panneau(acqfc,$visuNo,enregistrer) == "1" } {
-                  $panneau(acqfc,$visuNo,This).status.lab configure -text $caption(acqfc,enreg)
+            #--- Deplacement du telescope
+            ::DlgShift::Decalage_Telescope
+            #--- j'increment le nombre d'images de la serie
+            incr compteurImageSerie
+         }
+         3  {
+            #--- Mode continu
+            #--- Je sauvegarde l'image
+            if { $panneau(acqfc,$visuNo,enregistrer) == "1" } {
+               $panneau(acqfc,$visuNo,This).status.lab configure -text $caption(acqfc,enreg)
                   set nom $panneau(acqfc,$visuNo,nom_image)
                   #--- Pour eviter un nom de fichier qui commence par un blanc
                   set nom [lindex $nom 0]
@@ -1470,28 +1364,8 @@ namespace eval ::acqfc {
                      incr panneau(acqfc,$visuNo,index)
                   }
                }
-               #---
-               if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
-                   #--- Deplacement du telescope
-                   ::DlgShift::Decalage_Telescope
-                   #--- je lance la pose suivante
-                   ::acqfc::acq $visuNo
-                   #---- C'EST REPARTI POUR UN TOUR...
-                   return
-               } else {
-                  #--- Cas particulier des cameras APN (DSLR)
-                  if { $loadMode == "3" } {
-                     #--- Chargement de la derniere image
-                     ::acqfc::loadLastImage $visuNo $panneau(acqfc,$visuNo,camNo)
-                  }
-                  #--- Deverrouille les boutons du mode "continu"
-                  $panneau(acqfc,$visuNo,This).mode.continu.sauve.case configure -state normal
-                  $panneau(acqfc,$visuNo,This).mode.continu.nom.entr configure -state normal
-                  $panneau(acqfc,$visuNo,This).mode.continu.index.entr configure -state normal
-                  $panneau(acqfc,$visuNo,This).mode.continu.index.but configure -state normal
-                  #--- Pose en cours
-                  set panneau(acqfc,$visuNo,pose_en_cours) "0"
-               }
+               #--- Deplacement du telescope
+               ::DlgShift::Decalage_Telescope
             }
             4  {
                #--- Je sauvegarde l'image
@@ -1526,9 +1400,9 @@ namespace eval ::acqfc {
                if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
                   #--- Deplacement du telescope
                   ::DlgShift::Decalage_Telescope
-                  if { $panneau(acqfc,$visuNo,compteurImageSerie) < $panneau(acqfc,$visuNo,nb_images) } {
+                  if { $compteurImageSerie < $nbImages } {
                      #--- j'incremente le compteur d'image
-                     incr panneau(acqfc,$visuNo,compteurImageSerie)
+                     incr compteurImageSerie
                   } else {
                      #--- j'attends que la fin de la temporisation entre 2 series
                      set panneau(acqfc,$visuNo,attente_pose) "1"
@@ -1545,27 +1419,9 @@ namespace eval ::acqfc {
                      #--- Je note l'heure de debut des series suivantes (utile pour les series espacees)
                      set panneau(acqfc,$visuNo,deb_serie) [ clock second ]
                      #--- je reinitalise le compteur d'image
-                     set panneau(acqfc,$visuNo,compteurImageSerie) "1"
-                  }
-                  if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
-                     #--- je lance la pose suivante
-                     ::acqfc::acq $visuNo
-                     #---- C'EST REPARTI POUR UN TOUR...
-                     return
+                     set compteurImageSerie 1
                   }
                }
-               #--- Cas particulier des cameras APN (DSLR)
-               if { $loadMode == "3" } {
-                  #--- Chargement de la derniere image
-                  ::acqfc::loadLastImage $visuNo $panneau(acqfc,$visuNo,camNo)
-               }
-               #--- Deverrouille les boutons du mode "continu 1"
-               $panneau(acqfc,$visuNo,This).mode.serie_1.nom.entr configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.serie_1.nb.entr configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.serie_1.index.entr configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.serie_1.index.but configure -state normal
-               #--- Pose en cours
-               set panneau(acqfc,$visuNo,pose_en_cours) "0"
             }
             5  {
                #--- Je sauvegarde l'image
@@ -1611,28 +1467,10 @@ namespace eval ::acqfc {
                      ::acqfc::Avancement_pose $visuNo $t
                   }
                   set panneau(acqfc,$visuNo,attente_pose) "0"
-                  if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
-                     #--- je lance la pose suivante
-                     ::acqfc::acq $visuNo
-                     #---- C'EST REPARTI POUR UN TOUR...
-                     return
-                  }
                }
-               #--- Cas particulier des cameras APN (DSLR)
-               if { $loadMode == "3" } {
-                  #--- Chargement de la derniere image
-                  ::acqfc::loadLastImage $visuNo $panneau(acqfc,$visuNo,camNo)
-               }
-               #--- Deverrouille les boutons du mode "continu 2"
-               $panneau(acqfc,$visuNo,This).mode.continu_1.sauve.case configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.continu_1.nom.entr configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.continu_1.index.entr configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.continu_1.index.but configure -state normal
-               #--- Pose en cours
-               set panneau(acqfc,$visuNo,pose_en_cours) "0"
             }
-         }
-         #--- fin du switch mode
+         } ;  #--- fin du switch d'acquisition
+
 
          #--- Je retablis le choix du fonctionnement de l'obturateur
          if { $panneau(acqfc,$visuNo,pose) == "0" } {
@@ -1648,329 +1486,516 @@ namespace eval ::acqfc {
                }
             }
          }
-      }]   ; #--- fin du catch
+      }  ; #--- fin de la boucle d'acquisition
 
-      if { $catchResult == 1 } {
-         ::console::affiche_erreur "$::errorInfo\n"
-         tk_messageBox -message "$::errorInfo. See console" -icon error
-         #--- J'arrete la capture de l'image
-         ::camera::stopAcquisition [::confVisu::getCamItem $visuNo]
-      }
+      #--- je deverrouille des widgets selon le mode d'acquisition
+      switch $panneau(acqfc,$visuNo,mode) {
+         1  {
+            #--- Deverouille les boutons du mode "une image"
+            $panneau(acqfc,$visuNo,This).mode.une.nom.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.une.index.case configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.une.index.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.une.index.but configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.une.sauve configure -state normal
+         }
+         2  {
+            #--- Mode serie
+            #--- Fin de la derniere pose et intervalle mini entre 2 poses ou 2 series
+            if { $panneau(acqfc,$visuNo,simulation) == "1" } {
+               #--- Affichage de l'intervalle mini simule
+               set panneau(acqfc,$visuNo,fin) [ clock second ]
+               set exposure [ lindex [ buf$bufNo getkwd EXPOSURE ] 1 ]
+               if { $exposure == $panneau(acqfc,$visuNo,pose) } {
+                  set panneau(acqfc,$visuNo,intervalle) [ expr $panneau(acqfc,$visuNo,fin) - $panneau(acqfc,$visuNo,debut) ]
+               } else {
+                  set panneau(acqfc,$visuNo,intervalle) "....."
+               }
+               set simu1 "$caption(acqfc,int_mini_serie) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
+               $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab3 configure -text "$simu1"
+               #--- Je retablis les reglages initiaux
+               set panneau(acqfc,$visuNo,simulation) "0"
+               set panneau(acqfc,$visuNo,mode)       "4"
+               set panneau(acqfc,$visuNo,index)      $panneau(acqfc,$visuNo,index_temp)
+               set panneau(acqfc,$visuNo,nb_images)  $panneau(acqfc,$visuNo,nombre_temp)
+               #--- Fin de la simulation
+               Message $visuNo consolog $caption(acqfc,fin_simu)
+            } elseif { $panneau(acqfc,$visuNo,simulation) == "2" } {
+               #--- Affichage de l'intervalle mini simule
+               set panneau(acqfc,$visuNo,fin) [ clock second ]
+               set exposure [ lindex [ buf$bufNo getkwd EXPOSURE ] 1 ]
+               if { $exposure == $panneau(acqfc,$visuNo,pose) } {
+                  set panneau(acqfc,$visuNo,intervalle) [ expr $panneau(acqfc,$visuNo,fin) - $panneau(acqfc,$visuNo,debut) ]
+               } else {
+                  set panneau(acqfc,$visuNo,intervalle) "....."
+               }
+               set simu2 "$caption(acqfc,int_mini_image) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
+               $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab3 configure -text "$simu2"
+               #--- Je retablis les reglages initiaux
+               set panneau(acqfc,$visuNo,simulation) "0"
+               set panneau(acqfc,$visuNo,mode)       "5"
+               set panneau(acqfc,$visuNo,index)      $panneau(acqfc,$visuNo,index_temp)
+               set panneau(acqfc,$visuNo,nb_images)  $panneau(acqfc,$visuNo,nombre_temp)
+               #--- Fin de la simulation
+               Message $visuNo consolog $caption(acqfc,fin_simu)
+            }
+            #--- Cas particulier des cameras APN (DSLR)
+            if { $loadMode == "3" } {
+               #--- Chargement de la derniere image
+               ::acqfc::loadLastImage $visuNo $panneau(acqfc,$visuNo,camNo)
+            }
+            #--- Deverouille les boutons du mode "serie"
+            $panneau(acqfc,$visuNo,This).mode.serie.nom.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.serie.nb.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.serie.index.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.serie.index.but configure -state normal
+         }
+         3  {
+            #--- Mode continu
+            #--- Cas particulier des cameras APN (DSLR)
+            if { $loadMode == "3" } {
+               #--- Chargement de la derniere image
+               ::acqfc::loadLastImage $visuNo $panneau(acqfc,$visuNo,camNo)
+            }
+            #--- Deverrouille les boutons du mode "continu"
+            $panneau(acqfc,$visuNo,This).mode.continu.sauve.case configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.continu.nom.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.continu.index.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.continu.index.but configure -state normal
+         }
+         4  {
+            #--- Mode continu
+            #--- Cas particulier des cameras APN (DSLR)
+            if { $loadMode == "3" } {
+               #--- Chargement de la derniere image
+               ::acqfc::loadLastImage $visuNo $panneau(acqfc,$visuNo,camNo)
+            }
+            #--- Deverrouille les boutons du mode "continu 1"
+            $panneau(acqfc,$visuNo,This).mode.serie_1.nom.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.serie_1.nb.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.serie_1.index.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.serie_1.index.but configure -state normal
+         }
+         5 {
+            #--- Cas particulier des cameras APN (DSLR)
+            if { $loadMode == "3" } {
+               #--- Chargement de la derniere image
+               ::acqfc::loadLastImage $visuNo $panneau(acqfc,$visuNo,camNo)
+            }
+            #--- Deverrouille les boutons du mode "continu 2"
+            $panneau(acqfc,$visuNo,This).mode.continu_1.sauve.case configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.continu_1.nom.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.continu_1.index.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.continu_1.index.but configure -state normal
+         }
+      }  ; #--- fin du switch de deverrouillage
+   }]   ; #--- fin du catch
 
-      set panneau(acqfc,$visuNo,demande_arret) 0
-      #--- Effacement de la barre de progression quand la pose est terminee
-      ::acqfc::Avancement_pose $visuNo -1
-      $panneau(acqfc,$visuNo,This).status.lab configure -text ""
-      #--- Deverrouille tous les boutons et champs de texte pendant les acquisitions
-      $panneau(acqfc,$visuNo,This).pose.but configure -state normal
-      $panneau(acqfc,$visuNo,This).pose.entr configure -state normal
-      $panneau(acqfc,$visuNo,This).bin.but configure -state normal
-      $panneau(acqfc,$visuNo,This).obt.but configure -state normal
-      $panneau(acqfc,$visuNo,This).mode.but configure -state normal
-      #--- Je restitue l'affichage du bouton "GO"
-      $panneau(acqfc,$visuNo,This).go_stop.but configure -text $caption(acqfc,GO) -state normal -command "::acqfc::Go $visuNo"
-      #--- je positionne l'indateur de fin d'acquisition (pour startAcquisitionSerieImage)
-      set ::panneau(acqfc,$visuNo,acqImageEnd) "1"
+   if { $catchResult == 1 } {
+      ::console::affiche_erreur "$::errorInfo\n"
+      tk_messageBox -message "$::errorInfo. See console" -icon error
+      #--- J'arrete la capture de l'image
+      ::camera::stopAcquisition [::confVisu::getCamItem $visuNo]
    }
+
+   #--- Pose en cours
+   set panneau(acqfc,$visuNo,pose_en_cours) "0"
+
+   set panneau(acqfc,$visuNo,demande_arret) 0
+   #--- Effacement de la barre de progression quand la pose est terminee
+   ::acqfc::Avancement_pose $visuNo -1
+   $panneau(acqfc,$visuNo,This).status.lab configure -text ""
+   #--- Deverrouille tous les boutons et champs de texte pendant les acquisitions
+   $panneau(acqfc,$visuNo,This).pose.but configure -state normal
+   $panneau(acqfc,$visuNo,This).pose.entr configure -state normal
+   $panneau(acqfc,$visuNo,This).bin.but configure -state normal
+   $panneau(acqfc,$visuNo,This).obt.but configure -state normal
+   $panneau(acqfc,$visuNo,This).mode.but configure -state normal
+   #--- Je restitue l'affichage du bouton "GO"
+   $panneau(acqfc,$visuNo,This).go_stop.but configure -text $caption(acqfc,GO) -state normal -command "::acqfc::Go $visuNo"
+console::disp "acqImageEnd go_stop.but GO\n"
+   #--- je positionne l'indateur de fin d'acquisition (pour startAcquisitionSerieImage)
+   set ::panneau(acqfc,$visuNo,acqImageEnd) "1"
+}
 #***** Fin de la procedure de lancement d'acquisition **********
 
-#***** Procedure chargement differe d'image pour APN (DSLR) ****
-   proc loadLastImage { visuNo camNo } {
-      set result [ catch { cam$camNo loadlastimage } msg ]
-      if { $result == "1" } {
-         ::console::disp "::acqfc::acq loadlastimage camNo$camNo error=$msg \n"
-      } else {
-         ::console::disp "::acqfc::acq loadlastimage visuNo$visuNo OK \n"
+
+#------------------------------------------------------------
+# callbackAcquisition
+#     cette procedure est appelee par la thread de la camera
+#     pour informer de l'avancement des acquisitions.
+# Parameters
+#  visuNo  : numero de la visu associee a la camera
+#  message : message envoye par la thread de la camera (voir la description dans camera.tcl)
+#  args    : parametres du message (voir la description dans camera.tcl)
+# Return
+#    rien
+#------------------------------------------------------------
+proc ::acqfc::callbackAcquisition { visuNo message args } {
+   variable private
+
+   switch $message {
+      "autovisu" {
+         #--- ce message signale que l'image est prete dans le buffer
+         #--- on peut l'afficher sans attendre la fin complete de la thread de la camera
          ::confVisu::autovisu $visuNo
       }
+      "acquisitionResult" {
+         #--- ce message signale que la thread de la camera a termine completement l'acquisition
+         #--- je peux traiter l'image
+         set ::panneau(acqfc,$visuNo,acquisitionState) "acquisitionResult"
+      }
+      "error" {
+         #--- ce message signale qu'une erreur est survenue dans la thread de la camera
+         #--- j'affiche l'erreur dans la console
+         ::console::affiche_erreur "acqfc::acq error: $args\n"
+         set ::panneau(acqfc,$visuNo,acquisitionState) "acquisitionResult"
+      }
+
    }
+}
+
+#***** Procedure Stop (appui sur le bouton Go/Stop) *********
+proc ::acqfc::Stop { visuNo } {
+   global audace caption conf panneau
+
+   #--- Je desactive le bouton "STOP"
+   $panneau(acqfc,$visuNo,This).go_stop.but configure -state disabled
+   #--- On annule la sonnerie
+   catch { after cancel $audace(after,bell,id) }
+   #--- Annulation de l'alarme de fin de pose
+   catch { after cancel bell }
+
+   #--- Je positionne l'indicateur d'interruption de pose
+   set panneau(acqfc,$visuNo,demande_arret) "1"
+   #--- j'interromps la pose
+   if { $panneau(acqfc,$visuNo,mode) == "1" } {
+      #--- J'arrete la capture de l'image
+      ::camera::stopAcquisition [::confVisu::getCamItem $visuNo]
+   } else {
+       set choix [ tk_messageBox -title $caption(acqfc,serie) -type yesno -icon info \
+           -message $caption(acqfc,arret_serie) \
+       ]
+      if { $choix == "no" } {
+         #--- Je positionne l'indicateur d'enregistrement d'image interrompue
+         set panneau(acqfc,$visuNo,sauve_img_interrompue) "1"
+         #--- J'arrete la capture de l'image
+         ::camera::stopAcquisition [::confVisu::getCamItem $visuNo]
+      } else {
+         #--- Je positionne l'indicateur d'enregistrement d'image interrompue
+         set panneau(acqfc,$visuNo,sauve_img_interrompue) "0"
+      }
+   }
+}
+#***** Fin de la procedure Go/Stop *****************************
+
+
+#***** Procedure chargement differe d'image pour APN (DSLR) ****
+proc ::acqfc::loadLastImage { visuNo camNo } {
+   set result [ catch { cam$camNo loadlastimage } msg ]
+   if { $result == "1" } {
+      ::console::disp "::acqfc::acq loadlastimage camNo$camNo error=$msg \n"
+   } else {
+      ::console::disp "::acqfc::acq loadlastimage visuNo$visuNo OK \n"
+      ::confVisu::autovisu $visuNo
+   }
+}
 #***** Fin de la procedure chargement differe d'image **********
 
-   proc dispTime { visuNo } {
-      global caption panneau
+proc ::acqfc::dispTime { visuNo } {
+   global caption panneau
 
-      set t [cam$panneau(acqfc,$visuNo,camNo) timer -1 ]
-      #--- je met a jour le status
-      if { $panneau(acqfc,$visuNo,pose_en_cours) == 0 } {
-         #--- je supprime la fenetre s'il n'y a plus de pose en cours
-         set status ""
-      } else {
-         if { $panneau(acqfc,$visuNo,attente_pose) == "0" } {
-            if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
-               if { $t > 0 } {
-                  set status "[ expr $t ] / [ format "%d" [ expr int($panneau(acqfc,$visuNo,pose)) ] ]"
-               } else {
-                  set status "$caption(camera,numerisation)"
-               }
+   #--- j'arrete le timer s'il est deja lance
+   if { [info exists panneau(acqfc,$visuNo,dispTimeAfterId)] && $panneau(acqfc,$visuNo,dispTimeAfterId)!="" } {
+      after cancel $panneau(acqfc,$visuNo,dispTimeAfterId)
+      set panneau(acqfc,$visuNo,dispTimeAfterId) ""
+   }
+
+   set t [cam$panneau(acqfc,$visuNo,camNo) timer -1 ]
+   #--- je met a jour le status
+   if { $panneau(acqfc,$visuNo,pose_en_cours) == 0 } {
+      #--- je supprime la fenetre s'il n'y a plus de pose en cours
+      set status ""
+   } else {
+      if { $panneau(acqfc,$visuNo,attente_pose) == "0" } {
+         if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
+            if { [expr $t > 1] } {
+               set status "[ expr $t ] / [ format "%d" [ expr int($panneau(acqfc,$visuNo,pose)) ] ]"
             } else {
                set status "$caption(camera,numerisation)"
             }
          } else {
-            set status $caption(acqfc,attente)
+            set status "$caption(camera,numerisation)"
          }
-      }
-      $panneau(acqfc,$visuNo,This).status.lab configure -text $status
-      update
-
-      #--- je met a jour la fenetre de progression
-      Avancement_pose $visuNo $t
-
-      if { $t > 0 } {
-         #--- je lance l'iteration suivante avec l'option idle
-         #--- (mode asynchone pour eviter l'enpilement des appels recursifs)
-         after 1000 ::acqfc::dispTime $visuNo
+      } else {
+         set status $caption(acqfc,attente)
       }
    }
+   $panneau(acqfc,$visuNo,This).status.lab configure -text $status
+   update
+
+   #--- je met a jour la fenetre de progression
+   Avancement_pose $visuNo $t
+
+   if { $t > 0 } {
+      #--- je lance l'iteration suivante avec un delai de 1000 millisecondes
+      #--- (mode asynchone pour eviter l'enpilement des appels recursifs)
+      set panneau(acqfc,$visuNo,dispTimeAfterId) [after 1000 ::acqfc::dispTime $visuNo]
+   } else {
+      #--- je ne relance pas le timer
+      set panneau(acqfc,$visuNo,dispTimeAfterId) ""
+   }
+}
+
 
 #***** Procedure d'affichage d'une barre de progression ********
-   proc Avancement_pose { visuNo { t } } {
-      global audace caption color conf panneau
+proc ::acqfc::Avancement_pose { visuNo { t } } {
+   global audace caption color conf panneau
 
-      if { $panneau(acqfc,$visuNo,avancement_acq) != "1" } {
+   if { $panneau(acqfc,$visuNo,avancement_acq) != "1" } {
+      return
+   }
+
+   #--- Recuperation de la position de la fenetre
+   ::acqfc::recup_position_1 $visuNo
+
+   #--- Initialisation de la barre de progression
+   set cpt "100"
+   #---
+   if { [ winfo exists $panneau(acqfc,$visuNo,base).progress ] != "1" } {
+      if { $t <=0 } {
          return
       }
+      toplevel $panneau(acqfc,$visuNo,base).progress
+      wm transient $panneau(acqfc,$visuNo,base).progress $panneau(acqfc,$visuNo,base)
+      wm resizable $panneau(acqfc,$visuNo,base).progress 0 0
+      wm title $panneau(acqfc,$visuNo,base).progress "$caption(acqfc,en_cours)"
+      wm geometry $panneau(acqfc,$visuNo,base).progress $panneau(acqfc,$visuNo,avancement,position)
 
-      #--- Recuperation de la position de la fenetre
-      ::acqfc::recup_position_1 $visuNo
+      #--- Cree le widget et le label du temps ecoule
+      label $panneau(acqfc,$visuNo,base).progress.lab_status -text "" -font $audace(font,arial_12_b) -justify center
+      pack $panneau(acqfc,$visuNo,base).progress.lab_status -side top -fill x -expand true -pady 5
 
-      #--- Initialisation de la barre de progression
-      set cpt "100"
       #---
-      if { [ winfo exists $panneau(acqfc,$visuNo,base).progress ] != "1" } {
-         if { $t <=0 } {
-            return
-         }
-         toplevel $panneau(acqfc,$visuNo,base).progress
-         wm transient $panneau(acqfc,$visuNo,base).progress $panneau(acqfc,$visuNo,base)
-         wm resizable $panneau(acqfc,$visuNo,base).progress 0 0
-         wm title $panneau(acqfc,$visuNo,base).progress "$caption(acqfc,en_cours)"
-         wm geometry $panneau(acqfc,$visuNo,base).progress $panneau(acqfc,$visuNo,avancement,position)
-
-         #--- Cree le widget et le label du temps ecoule
-         label $panneau(acqfc,$visuNo,base).progress.lab_status -text "" -font $audace(font,arial_12_b) -justify center
-         pack $panneau(acqfc,$visuNo,base).progress.lab_status -side top -fill x -expand true -pady 5
-
-         #---
-         if { $panneau(acqfc,$visuNo,attente_pose) == "0" } {
-            if { $panneau(acqfc,$visuNo,demande_arret) == "1" && $panneau(acqfc,$visuNo,mode) != "2" && $panneau(acqfc,$visuNo,mode) != "4" } {
-               $panneau(acqfc,$visuNo,base).progress.lab_status configure -text $caption(acqfc,lect)
+      if { $panneau(acqfc,$visuNo,attente_pose) == "0" } {
+         if { $panneau(acqfc,$visuNo,demande_arret) == "1" && $panneau(acqfc,$visuNo,mode) != "2" && $panneau(acqfc,$visuNo,mode) != "4" } {
+            $panneau(acqfc,$visuNo,base).progress.lab_status configure -text $caption(acqfc,lect)
+         } else {
+            if { $t < 0 } {
+               destroy $panneau(acqfc,$visuNo,base).progress
+            } elseif { $t > 0 } {
+               $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "$t $caption(acqfc,sec) /\
+                  [ format "%d" [ expr int( $panneau(acqfc,$visuNo,pose) ) ] ] $caption(acqfc,sec)"
+               set cpt [expr $t * 100 / int( $panneau(acqfc,$visuNo,pose) ) ]
+               set cpt [expr 100 - $cpt]
             } else {
-               if { $t < 0 } {
-                  destroy $panneau(acqfc,$visuNo,base).progress
-               } elseif { $t > 0 } {
-                  $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "$t $caption(acqfc,sec) /\
+               $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,lect)"
+           }
+         }
+      } else {
+         if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
+            if { $t < 0 } {
+               destroy $panneau(acqfc,$visuNo,base).progress
+            } else {
+               if { $panneau(acqfc,$visuNo,mode) == "4" } {
+                  $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
+                     $caption(acqfc,sec) / $panneau(acqfc,$visuNo,intervalle_1) $caption(acqfc,sec)"
+                  set cpt [expr $t*100 / $panneau(acqfc,$visuNo,intervalle_1) ]
+               } elseif { $panneau(acqfc,$visuNo,mode) == "5" } {
+                  $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
+                     $caption(acqfc,sec) / $panneau(acqfc,$visuNo,intervalle_2) $caption(acqfc,sec)"
+                  set cpt [expr $t*100 / $panneau(acqfc,$visuNo,intervalle_2) ]
+               }
+               set cpt [expr 100 - $cpt]
+            }
+         }
+      }
+
+      catch {
+         #--- Cree le widget pour la barre de progression
+         frame $panneau(acqfc,$visuNo,base).progress.cadre -width 200 -height 30 -borderwidth 2 -relief groove
+         pack $panneau(acqfc,$visuNo,base).progress.cadre -in $panneau(acqfc,$visuNo,base).progress -side top \
+            -anchor center -fill x -expand true -padx 8 -pady 8
+
+         #--- Affiche de la barre de progression
+         frame $panneau(acqfc,$visuNo,base).progress.cadre.barre_color_invariant -height 26 -bg $color(blue)
+         place $panneau(acqfc,$visuNo,base).progress.cadre.barre_color_invariant -in $panneau(acqfc,$visuNo,base).progress.cadre -x 0 -y 0 \
+            -relwidth [ expr $cpt / 100.0 ]
+         update
+      }
+      ::confColor::applyColor $panneau(acqfc,$visuNo,base).progress
+   } else {
+      if { $panneau(acqfc,$visuNo,pose_en_cours) == 0 } {
+         #--- je supprime la fenetre s'il n'y a plus de pose en cours
+         destroy $panneau(acqfc,$visuNo,base).progress
+      } else {
+         if { $panneau(acqfc,$visuNo,attente_pose) == "0" } {
+            if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
+               if { $t > 0 } {
+                  $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "[ expr $t ] $caption(acqfc,sec) /\
                      [ format "%d" [ expr int( $panneau(acqfc,$visuNo,pose) ) ] ] $caption(acqfc,sec)"
-                  set cpt [expr $t * 100 / int( $panneau(acqfc,$visuNo,pose) ) ]
-                  set cpt [expr 100 - $cpt]
+                  set cpt [ expr ( $t ) * 100 / int( $panneau(acqfc,$visuNo,pose) )]
+                  set cpt [ expr 100 - $cpt ]
                } else {
                   $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,lect)"
-              }
+               }
+            } else {
+               #--- j'affiche "lecture" des qu'une demande d'arret est demandee
+               $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,lect)"
             }
          } else {
             if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
-               if { $t < 0 } {
-                  destroy $panneau(acqfc,$visuNo,base).progress
-               } else {
-                  if { $panneau(acqfc,$visuNo,mode) == "4" } {
-                     $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
-                        $caption(acqfc,sec) / $panneau(acqfc,$visuNo,intervalle_1) $caption(acqfc,sec)"
-                     set cpt [expr $t*100 / $panneau(acqfc,$visuNo,intervalle_1) ]
-                  } elseif { $panneau(acqfc,$visuNo,mode) == "5" } {
-                     $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
-                        $caption(acqfc,sec) / $panneau(acqfc,$visuNo,intervalle_2) $caption(acqfc,sec)"
-                     set cpt [expr $t*100 / $panneau(acqfc,$visuNo,intervalle_2) ]
-                  }
-                  set cpt [expr 100 - $cpt]
+               if { $panneau(acqfc,$visuNo,mode) == "4" } {
+                  $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
+                     $caption(acqfc,sec) / $panneau(acqfc,$visuNo,intervalle_1) $caption(acqfc,sec)"
+                  set cpt [expr $t*100 / $panneau(acqfc,$visuNo,intervalle_1) ]
+               } elseif { $panneau(acqfc,$visuNo,mode) == "5" } {
+                  $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
+                     $caption(acqfc,sec) / $panneau(acqfc,$visuNo,intervalle_2) $caption(acqfc,sec)"
+                  set cpt [expr $t*100 / $panneau(acqfc,$visuNo,intervalle_2) ]
                }
+               set cpt [expr 100 - $cpt]
             }
          }
 
-         catch {
-            #--- Cree le widget pour la barre de progression
-            frame $panneau(acqfc,$visuNo,base).progress.cadre -width 200 -height 30 -borderwidth 2 -relief groove
-            pack $panneau(acqfc,$visuNo,base).progress.cadre -in $panneau(acqfc,$visuNo,base).progress -side top \
-               -anchor center -fill x -expand true -padx 8 -pady 8
-
-            #--- Affiche de la barre de progression
-            frame $panneau(acqfc,$visuNo,base).progress.cadre.barre_color_invariant -height 26 -bg $color(blue)
-            place $panneau(acqfc,$visuNo,base).progress.cadre.barre_color_invariant -in $panneau(acqfc,$visuNo,base).progress.cadre -x 0 -y 0 \
-               -relwidth [ expr $cpt / 100.0 ]
-            update
-         }
-         ::confColor::applyColor $panneau(acqfc,$visuNo,base).progress
-      } else {
-         if { $panneau(acqfc,$visuNo,pose_en_cours) == 0 } {
-            #--- je supprime la fenetre s'il n'y a plus de pose en cours
-            destroy $panneau(acqfc,$visuNo,base).progress
-         } else {
-            if { $panneau(acqfc,$visuNo,attente_pose) == "0" } {
-               if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
-                  if { $t > 0 } {
-                     $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "[ expr $t ] $caption(acqfc,sec) /\
-                        [ format "%d" [ expr int( $panneau(acqfc,$visuNo,pose) ) ] ] $caption(acqfc,sec)"
-                     set cpt [ expr ( $t ) * 100 / int( $panneau(acqfc,$visuNo,pose) )]
-                     set cpt [ expr 100 - $cpt ]
-                  } else {
-                     $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,lect)"
-                  }
-               } else {
-                  #--- j'affiche "lecture" des qu'une demande d'arret est demandee
-                  $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,lect)"
-               }
-            } else {
-               if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
-                  if { $panneau(acqfc,$visuNo,mode) == "4" } {
-                     $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
-                        $caption(acqfc,sec) / $panneau(acqfc,$visuNo,intervalle_1) $caption(acqfc,sec)"
-                     set cpt [expr $t*100 / $panneau(acqfc,$visuNo,intervalle_1) ]
-                  } elseif { $panneau(acqfc,$visuNo,mode) == "5" } {
-                     $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
-                        $caption(acqfc,sec) / $panneau(acqfc,$visuNo,intervalle_2) $caption(acqfc,sec)"
-                     set cpt [expr $t*100 / $panneau(acqfc,$visuNo,intervalle_2) ]
-                  }
-                  set cpt [expr 100 - $cpt]
-               }
-            }
-
-            #--- Met a jour la barre de progression
-            place $panneau(acqfc,$visuNo,base).progress.cadre.barre_color_invariant -in $panneau(acqfc,$visuNo,base).progress.cadre -x 0 -y 0 \
-               -relwidth [ expr $cpt / 100.0 ]
-            update
-         }
+         #--- Met a jour la barre de progression
+         place $panneau(acqfc,$visuNo,base).progress.cadre.barre_color_invariant -in $panneau(acqfc,$visuNo,base).progress.cadre -x 0 -y 0 \
+            -relwidth [ expr $cpt / 100.0 ]
+         update
       }
    }
+}
 #***** Fin de la procedure d'avancement de la pose *************
 
 #***** Procedure de sauvegarde de l'image **********************
 #--- Procedure lancee par appui sur le bouton "enregistrer", uniquement dans le mode "Une image"
-   proc SauveUneImage { visuNo } {
-      global audace caption panneau
+proc ::acqfc::SauveUneImage { visuNo } {
+   global audace caption panneau
 
-      #--- Recopie de l'extension des fichiers image
-      set ext $panneau(acqfc,$visuNo,extension)
+   #--- Recopie de l'extension des fichiers image
+   set ext $panneau(acqfc,$visuNo,extension)
 
-      #--- Tests d'integrite de la requete
+   #--- Tests d'integrite de la requete
 
-      #--- Verifier qu'il y a bien un nom de fichier
-      if { $panneau(acqfc,$visuNo,nom_image) == "" } {
-         tk_messageBox -title $caption(acqfc,pb) -type ok \
-            -message $caption(acqfc,donnomfich)
-         return
-      }
-      #--- Verifier que le nom de fichier n'a pas d'espace
-      if { [ llength $panneau(acqfc,$visuNo,nom_image) ] > "1" } {
-         tk_messageBox -title $caption(acqfc,pb) -type ok \
-            -message $caption(acqfc,nomblanc)
-         return
-      }
-      #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
-      if { [ ::acqfc::TestChaine $panneau(acqfc,$visuNo,nom_image) ] == "0" } {
-         tk_messageBox -title $caption(acqfc,pb) -type ok \
-            -message $caption(acqfc,mauvcar)
-         return
-      }
-      #--- Si la case index est cochee, verifier qu'il y a bien un index
-      if { $panneau(acqfc,$visuNo,indexer) == "1" } {
-         #--- Verifier que l'index existe
-         if { $panneau(acqfc,$visuNo,index) == "" } {
-            tk_messageBox -title $caption(acqfc,pb) -type ok \
-               -message $caption(acqfc,saisind)
-            return
-         }
-         #--- Verifier que l'index est bien un nombre entier
-         if { [ ::acqfc::TestEntier $panneau(acqfc,$visuNo,index) ] == "0" } {
-            tk_messageBox -title $caption(acqfc,pb) -type ok \
-               -message $caption(acqfc,indinv)
-            return
-         }
-      }
-
-      #--- Generer le nom du fichier
-      set nom $panneau(acqfc,$visuNo,nom_image)
-      #--- Pour eviter un nom de fichier qui commence par un blanc
-      set nom [lindex $nom 0]
-      if { $panneau(acqfc,$visuNo,indexer) == "1" } {
-         append nom $panneau(acqfc,$visuNo,index)
-      }
-
-      #--- Verifier que le nom du fichier n'existe pas
-      set nom1 "$nom"
-      append nom1 $panneau(acqfc,$visuNo,extension)
-      if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
-         #--- Dans ce cas, le fichier existe deja
-         set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
-            -message $caption(acqfc,fichdeja)]
-         if { $confirmation == "no" } {
-            return
-         }
-      }
-
-      #--- Incrementer l'index
-      set bufNo [ visu$visuNo buf ]
-      if { $panneau(acqfc,$visuNo,indexer) == "1" } {
-         if { [ buf$bufNo imageready ] != "0" } {
-            incr panneau(acqfc,$visuNo,index)
-         } else {
-            #--- Sortir immediatement s'il n'y a pas d'image dans le buffer
-            return
-         }
-      } else {
-         if { [ buf$bufNo imageready ] == "0" } {
-            #--- Sortir immediatement s'il n'y a pas d'image dans le buffer
-            return
-         }
-      }
-
-      #--- Indiquer l'enregistrement dans le fichier log
-      set heure $audace(tu,format,hmsint)
-      Message $visuNo consolog $caption(acqfc,demsauv) $heure
-      Message $visuNo consolog $caption(acqfc,imsauvnom) $nom $panneau(acqfc,$visuNo,extension)
-      #--- Sauvegarder l'image
-      saveima $nom$panneau(acqfc,$visuNo,extension) $visuNo
-
+   #--- Verifier qu'il y a bien un nom de fichier
+   if { $panneau(acqfc,$visuNo,nom_image) == "" } {
+      tk_messageBox -title $caption(acqfc,pb) -type ok \
+         -message $caption(acqfc,donnomfich)
+      return
    }
+   #--- Verifier que le nom de fichier n'a pas d'espace
+   if { [ llength $panneau(acqfc,$visuNo,nom_image) ] > "1" } {
+      tk_messageBox -title $caption(acqfc,pb) -type ok \
+         -message $caption(acqfc,nomblanc)
+      return
+   }
+   #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
+   if { [ ::acqfc::TestChaine $panneau(acqfc,$visuNo,nom_image) ] == "0" } {
+      tk_messageBox -title $caption(acqfc,pb) -type ok \
+         -message $caption(acqfc,mauvcar)
+      return
+   }
+   #--- Si la case index est cochee, verifier qu'il y a bien un index
+   if { $panneau(acqfc,$visuNo,indexer) == "1" } {
+      #--- Verifier que l'index existe
+      if { $panneau(acqfc,$visuNo,index) == "" } {
+         tk_messageBox -title $caption(acqfc,pb) -type ok \
+            -message $caption(acqfc,saisind)
+         return
+      }
+      #--- Verifier que l'index est bien un nombre entier
+      if { [ ::acqfc::TestEntier $panneau(acqfc,$visuNo,index) ] == "0" } {
+         tk_messageBox -title $caption(acqfc,pb) -type ok \
+            -message $caption(acqfc,indinv)
+         return
+      }
+   }
+
+   #--- Generer le nom du fichier
+   set nom $panneau(acqfc,$visuNo,nom_image)
+   #--- Pour eviter un nom de fichier qui commence par un blanc
+   set nom [lindex $nom 0]
+   if { $panneau(acqfc,$visuNo,indexer) == "1" } {
+      append nom $panneau(acqfc,$visuNo,index)
+   }
+
+   #--- Verifier que le nom du fichier n'existe pas
+   set nom1 "$nom"
+   append nom1 $panneau(acqfc,$visuNo,extension)
+   if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+      #--- Dans ce cas, le fichier existe deja
+      set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
+         -message $caption(acqfc,fichdeja)]
+      if { $confirmation == "no" } {
+         return
+      }
+   }
+
+   #--- Incrementer l'index
+   set bufNo [ visu$visuNo buf ]
+   if { $panneau(acqfc,$visuNo,indexer) == "1" } {
+      if { [ buf$bufNo imageready ] != "0" } {
+         incr panneau(acqfc,$visuNo,index)
+      } else {
+         #--- Sortir immediatement s'il n'y a pas d'image dans le buffer
+         return
+      }
+   } else {
+      if { [ buf$bufNo imageready ] == "0" } {
+         #--- Sortir immediatement s'il n'y a pas d'image dans le buffer
+         return
+      }
+   }
+
+   #--- Indiquer l'enregistrement dans le fichier log
+   set heure $audace(tu,format,hmsint)
+   Message $visuNo consolog $caption(acqfc,demsauv) $heure
+   Message $visuNo consolog $caption(acqfc,imsauvnom) $nom $panneau(acqfc,$visuNo,extension)
+   #--- Sauvegarder l'image
+   saveima $nom$panneau(acqfc,$visuNo,extension) $visuNo
+
+}
 #***** Fin de la procedure de sauvegarde de l'image *************
 
 #***** Procedure d'affichage des messages ************************
 #--- Cette procedure est recopiee de methking.tcl, elle permet l'affichage de differents
 #--- messages (dans la console, le fichier log, etc.)
-   proc Message { visuNo niveau args } {
-      global caption panneau
+proc ::acqfc::Message { visuNo niveau args } {
+   global caption panneau
 
-      switch -exact -- $niveau {
-         console {
+   switch -exact -- $niveau {
+      console {
+         ::console::disp [eval [concat {format} $args]]
+         update idletasks
+      }
+      log {
+         set temps [clock format [clock seconds] -format %H:%M:%S]
+         append temps " "
+         catch {
+            puts -nonewline $::acqfc::log_id($visuNo) [eval [concat {format} $args]]
+            #--- Force l'ecriture immediate sur le disque
+            flush $::acqfc::log_id($visuNo)
+         }
+      }
+      consolog {
+         if { $panneau(acqfc,$visuNo,messages) == "1" } {
             ::console::disp [eval [concat {format} $args]]
             update idletasks
          }
-         log {
-            set temps [clock format [clock seconds] -format %H:%M:%S]
-            append temps " "
-            catch {
-               puts -nonewline $::acqfc::log_id($visuNo) [eval [concat {format} $args]]
-               #--- Force l'ecriture immediate sur le disque
-               flush $::acqfc::log_id($visuNo)
-            }
-         }
-         consolog {
-            if { $panneau(acqfc,$visuNo,messages) == "1" } {
-               ::console::disp [eval [concat {format} $args]]
-               update idletasks
-            }
-            set temps [clock format [clock seconds] -format %H:%M:%S]
-            append temps " "
-            catch {
-               puts -nonewline $::acqfc::log_id($visuNo) [eval [concat {format} $args]]
-               #--- Force l'ecriture immediate sur le disque
-               flush $::acqfc::log_id($visuNo)
-            }
-         }
-         default {
-            set b [ list "%s\n" $caption(acqfc,pbmesserr) ]
-            ::console::disp [ eval [ concat {format} $b ] ]
-            update idletasks
+         set temps [clock format [clock seconds] -format %H:%M:%S]
+         append temps " "
+         catch {
+            puts -nonewline $::acqfc::log_id($visuNo) [eval [concat {format} $args]]
+            #--- Force l'ecriture immediate sur le disque
+            flush $::acqfc::log_id($visuNo)
          }
       }
+      default {
+         set b [ list "%s\n" $caption(acqfc,pbmesserr) ]
+         ::console::disp [ eval [ concat {format} $b ] ]
+         update idletasks
+      }
    }
+}
 #***** Fin de la procedure d'affichage des messages ***************
 
 #***** Bouton pour le decalage du telescope ***********************
@@ -1978,285 +2003,281 @@ namespace eval ::acqfc {
 #    affiche la fenetre de configuration pour modifier les parametres
 #    de deplacement du telescope entre 2 acquisitions d'une serie
 #------------------------------------------------------------------
-   proc cmdShiftConfig { visuNo } {
-      global audace
+proc ::acqfc::cmdShiftConfig { visuNo } {
+   global audace
 
-      set shiftConfig [ ::DlgShift::run "$audace(base).dlgShift" ]
-      return
-   }
+   set shiftConfig [ ::DlgShift::run "$audace(base).dlgShift" ]
+   return
+}
 #***** Fin du bouton pour le decalage du telescope *****************
 
 #***** Fenetre de configuration series d'images a intervalle regulier en continu *********
-   proc Intervalle_continu_1 { visuNo } {
-      global audace caption conf panneau
+proc ::acqfc::Intervalle_continu_1 { visuNo } {
+   global audace caption conf panneau
 
-      set panneau(acqfc,$visuNo,intervalle)            "....."
-      set panneau(acqfc,$visuNo,simulation_deja_faite) "0"
+   set panneau(acqfc,$visuNo,intervalle)            "....."
+   set panneau(acqfc,$visuNo,simulation_deja_faite) "0"
 
-      ::acqfc::recup_position $visuNo
+   ::acqfc::recup_position $visuNo
 
-      #--- Initialisation de la position de la fenetre
-      if { ! [ info exists conf(acqfc,continu1,position) ] } { set conf(acqfc,continu1,position) "+120+260" }
+   #--- Initialisation de la position de la fenetre
+   if { ! [ info exists conf(acqfc,continu1,position) ] } { set conf(acqfc,continu1,position) "+120+260" }
 
-      #--- Creation de la fenetre Continu 1
-      toplevel $panneau(acqfc,$visuNo,base).intervalle_continu_1
-      wm transient $panneau(acqfc,$visuNo,base).intervalle_continu_1 $panneau(acqfc,$visuNo,base)
-      wm resizable $panneau(acqfc,$visuNo,base).intervalle_continu_1 0 0
-      wm title $panneau(acqfc,$visuNo,base).intervalle_continu_1 "$caption(acqfc,continu_1)"
-      wm geometry $panneau(acqfc,$visuNo,base).intervalle_continu_1 $conf(acqfc,continu1,position)
-      wm protocol $panneau(acqfc,$visuNo,base).intervalle_continu_1 WM_DELETE_WINDOW " \
-         set panneau(acqfc,$visuNo,mode_en_cours) \"$caption(acqfc,continu_1)\" \
-      "
+   #--- Creation de la fenetre Continu 1
+   toplevel $panneau(acqfc,$visuNo,base).intervalle_continu_1
+   wm transient $panneau(acqfc,$visuNo,base).intervalle_continu_1 $panneau(acqfc,$visuNo,base)
+   wm resizable $panneau(acqfc,$visuNo,base).intervalle_continu_1 0 0
+   wm title $panneau(acqfc,$visuNo,base).intervalle_continu_1 "$caption(acqfc,continu_1)"
+   wm geometry $panneau(acqfc,$visuNo,base).intervalle_continu_1 $conf(acqfc,continu1,position)
+   wm protocol $panneau(acqfc,$visuNo,base).intervalle_continu_1 WM_DELETE_WINDOW " \
+      set panneau(acqfc,$visuNo,mode_en_cours) \"$caption(acqfc,continu_1)\" \
+   "
 
-      #--- Create the message
-      label $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab1 -text "$caption(acqfc,titre_1)" -font $audace(font,arial_10_b)
-      pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab1 -padx 20 -pady 5
+   #--- Create the message
+   label $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab1 -text "$caption(acqfc,titre_1)" -font $audace(font,arial_10_b)
+   pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab1 -padx 20 -pady 5
 
-      frame $panneau(acqfc,$visuNo,base).intervalle_continu_1.a
-         label $panneau(acqfc,$visuNo,base).intervalle_continu_1.a.lab2 -text "$caption(acqfc,intervalle_1)"
-         pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.a.lab2 -anchor center -expand 1 -fill none -side left \
-            -padx 10 -pady 5
-         entry $panneau(acqfc,$visuNo,base).intervalle_continu_1.a.ent1 -width 5 -font $audace(font,arial_10_b) -relief groove \
-            -textvariable panneau(acqfc,$visuNo,intervalle_1) -justify center
-         pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.a.ent1 -anchor center -expand 1 -fill none -side left \
-            -padx 10
-      pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.a -padx 10 -pady 5
+   frame $panneau(acqfc,$visuNo,base).intervalle_continu_1.a
+      label $panneau(acqfc,$visuNo,base).intervalle_continu_1.a.lab2 -text "$caption(acqfc,intervalle_1)"
+      pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.a.lab2 -anchor center -expand 1 -fill none -side left \
+         -padx 10 -pady 5
+      entry $panneau(acqfc,$visuNo,base).intervalle_continu_1.a.ent1 -width 5 -font $audace(font,arial_10_b) -relief groove \
+         -textvariable panneau(acqfc,$visuNo,intervalle_1) -justify center
+      pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.a.ent1 -anchor center -expand 1 -fill none -side left \
+         -padx 10
+   pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.a -padx 10 -pady 5
 
-      frame $panneau(acqfc,$visuNo,base).intervalle_continu_1.b
-         checkbutton $panneau(acqfc,$visuNo,base).intervalle_continu_1.b.check_simu \
-            -text "$caption(acqfc,simu_deja_faite)" \
-            -variable panneau(acqfc,$visuNo,simulation_deja_faite) -command "::acqfc::Simu_deja_faite_1 $visuNo"
-        pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.b.check_simu -anchor w -expand 1 -fill none \
-           -side left -padx 10 -pady 5
-      pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.b -side bottom -anchor w -padx 10 -pady 5
+   frame $panneau(acqfc,$visuNo,base).intervalle_continu_1.b
+      checkbutton $panneau(acqfc,$visuNo,base).intervalle_continu_1.b.check_simu \
+         -text "$caption(acqfc,simu_deja_faite)" \
+         -variable panneau(acqfc,$visuNo,simulation_deja_faite) -command "::acqfc::Simu_deja_faite_1 $visuNo"
+     pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.b.check_simu -anchor w -expand 1 -fill none \
+        -side left -padx 10 -pady 5
+   pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.b -side bottom -anchor w -padx 10 -pady 5
 
-      button $panneau(acqfc,$visuNo,base).intervalle_continu_1.but1 -text "$caption(acqfc,simulation)" \
-         -command "::acqfc::Command_continu_1 $visuNo"
-      pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.but1 -anchor center -expand 1 -fill none -side left \
-         -ipadx 5 -ipady 3 -padx 10 -pady 5
+   button $panneau(acqfc,$visuNo,base).intervalle_continu_1.but1 -text "$caption(acqfc,simulation)" \
+      -command "::acqfc::Command_continu_1 $visuNo"
+   pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.but1 -anchor center -expand 1 -fill none -side left \
+      -ipadx 5 -ipady 3 -padx 10 -pady 5
 
-      set simu1 "$caption(acqfc,int_mini_serie) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
-      label $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab3 -text "$simu1"
-      pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab3 -anchor center -expand 1 -fill none -side left -padx 10
+   set simu1 "$caption(acqfc,int_mini_serie) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
+   label $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab3 -text "$simu1"
+   pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab3 -anchor center -expand 1 -fill none -side left -padx 10
 
-      #--- New message window is on
-      focus $panneau(acqfc,$visuNo,base).intervalle_continu_1
+   #--- New message window is on
+   focus $panneau(acqfc,$visuNo,base).intervalle_continu_1
 
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $panneau(acqfc,$visuNo,base).intervalle_continu_1
-   }
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $panneau(acqfc,$visuNo,base).intervalle_continu_1
+}
 #***** Fin fenetre de configuration series d'images a intervalle regulier en continu *****
 
 #***** Commande associee au bouton simulation de la fenetre Continu (1) ******************
-   proc Command_continu_1 { visuNo } {
-      global caption panneau
+proc ::acqfc::Command_continu_1 { visuNo } {
+   global caption panneau
 
-      set panneau(acqfc,$visuNo,intervalle) "....."
-      set simu1 "$caption(acqfc,int_mini_serie) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
-      $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab3 configure -text "$simu1"
-      set panneau(acqfc,$visuNo,simulation)  "1"
-      set panneau(acqfc,$visuNo,mode)        "2"
-      set panneau(acqfc,$visuNo,index_temp)  $panneau(acqfc,$visuNo,index)
-      set panneau(acqfc,$visuNo,nombre_temp) $panneau(acqfc,$visuNo,nb_images)
-      ::acqfc::Go $visuNo
-   }
+   set panneau(acqfc,$visuNo,intervalle) "....."
+   set simu1 "$caption(acqfc,int_mini_serie) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
+   $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab3 configure -text "$simu1"
+   set panneau(acqfc,$visuNo,simulation)  "1"
+   set panneau(acqfc,$visuNo,mode)        "2"
+   set panneau(acqfc,$visuNo,index_temp)  $panneau(acqfc,$visuNo,index)
+   set panneau(acqfc,$visuNo,nombre_temp) $panneau(acqfc,$visuNo,nb_images)
+   ::acqfc::Go $visuNo
+}
 #***** Fin de la commande associee au bouton simulation de la fenetre Continu (1) ********
 
 #***** Si une simulation a deja ete faite pour la fenetre Continu (1) ********************
-   proc Simu_deja_faite_1 { visuNo } {
-      global caption panneau
+proc ::acqfc::Simu_deja_faite_1 { visuNo } {
+   global caption panneau
 
-      if { $panneau(acqfc,$visuNo,simulation_deja_faite) == "1" } {
-         set panneau(acqfc,$visuNo,intervalle) "xxx"
-         $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab3 configure \
-            -text "$caption(acqfc,int_mini_serie) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
-         focus $panneau(acqfc,$visuNo,base).intervalle_continu_1.a.ent1
-      } else {
-         set panneau(acqfc,$visuNo,intervalle) "....."
-         $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab3 configure \
-            -text "$caption(acqfc,int_mini_serie) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
-         focus $panneau(acqfc,$visuNo,base).intervalle_continu_1.but1
-      }
+   if { $panneau(acqfc,$visuNo,simulation_deja_faite) == "1" } {
+      set panneau(acqfc,$visuNo,intervalle) "xxx"
+      $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab3 configure \
+         -text "$caption(acqfc,int_mini_serie) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
+      focus $panneau(acqfc,$visuNo,base).intervalle_continu_1.a.ent1
+   } else {
+      set panneau(acqfc,$visuNo,intervalle) "....."
+      $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab3 configure \
+         -text "$caption(acqfc,int_mini_serie) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
+      focus $panneau(acqfc,$visuNo,base).intervalle_continu_1.but1
    }
+}
 #***** Fin de si une simulation a deja ete faite pour la fenetre Continu (1) *************
 
 #***** Fenetre de configuration images a intervalle regulier en continu ******************
-   proc Intervalle_continu_2 { visuNo } {
-      global audace caption conf panneau
+proc ::acqfc::Intervalle_continu_2 { visuNo } {
+   global audace caption conf panneau
 
-      set panneau(acqfc,$visuNo,intervalle)            "....."
-      set panneau(acqfc,$visuNo,simulation_deja_faite) "0"
+   set panneau(acqfc,$visuNo,intervalle)            "....."
+   set panneau(acqfc,$visuNo,simulation_deja_faite) "0"
 
-      ::acqfc::recup_position $visuNo
+   ::acqfc::recup_position $visuNo
 
-      #--- Initialisation de la position de la fenetre
-      if { ! [ info exists conf(acqfc,continu2,position) ] } { set conf(acqfc,continu2,position) "+120+260" }
+   #--- Initialisation de la position de la fenetre
+   if { ! [ info exists conf(acqfc,continu2,position) ] } { set conf(acqfc,continu2,position) "+120+260" }
 
-      #--- Creation de la fenetre Continu 2
-      toplevel $panneau(acqfc,$visuNo,base).intervalle_continu_2
-      wm transient $panneau(acqfc,$visuNo,base).intervalle_continu_2 $panneau(acqfc,$visuNo,base)
-      wm resizable $panneau(acqfc,$visuNo,base).intervalle_continu_2 0 0
-      wm title $panneau(acqfc,$visuNo,base).intervalle_continu_2 "$caption(acqfc,continu_2)"
-      wm geometry $panneau(acqfc,$visuNo,base).intervalle_continu_2 $conf(acqfc,continu2,position)
-      wm protocol $panneau(acqfc,$visuNo,base).intervalle_continu_2 WM_DELETE_WINDOW " \
-         set panneau(acqfc,$visuNo,mode_en_cours) \"$caption(acqfc,continu_2)\" \
-      "
+   #--- Creation de la fenetre Continu 2
+   toplevel $panneau(acqfc,$visuNo,base).intervalle_continu_2
+   wm transient $panneau(acqfc,$visuNo,base).intervalle_continu_2 $panneau(acqfc,$visuNo,base)
+   wm resizable $panneau(acqfc,$visuNo,base).intervalle_continu_2 0 0
+   wm title $panneau(acqfc,$visuNo,base).intervalle_continu_2 "$caption(acqfc,continu_2)"
+   wm geometry $panneau(acqfc,$visuNo,base).intervalle_continu_2 $conf(acqfc,continu2,position)
+   wm protocol $panneau(acqfc,$visuNo,base).intervalle_continu_2 WM_DELETE_WINDOW " \
+      set panneau(acqfc,$visuNo,mode_en_cours) \"$caption(acqfc,continu_2)\" \
+   "
 
-      #--- Create the message
-      label $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab1 -text "$caption(acqfc,titre_2)" -font $audace(font,arial_10_b)
-      pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab1 -padx 10 -pady 5
+   #--- Create the message
+   label $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab1 -text "$caption(acqfc,titre_2)" -font $audace(font,arial_10_b)
+   pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab1 -padx 10 -pady 5
 
-      frame $panneau(acqfc,$visuNo,base).intervalle_continu_2.a
-         label $panneau(acqfc,$visuNo,base).intervalle_continu_2.a.lab2 -text "$caption(acqfc,intervalle_2)"
-         pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.a.lab2 -anchor center -expand 1 -fill none -side left \
-            -padx 10 -pady 5
-         entry $panneau(acqfc,$visuNo,base).intervalle_continu_2.a.ent1 -width 5 -font $audace(font,arial_10_b) -relief groove \
-            -textvariable panneau(acqfc,$visuNo,intervalle_2) -justify center
-         pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.a.ent1 -anchor center -expand 1 -fill none -side left \
-            -padx 10
-      pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.a -padx 10 -pady 5
+   frame $panneau(acqfc,$visuNo,base).intervalle_continu_2.a
+      label $panneau(acqfc,$visuNo,base).intervalle_continu_2.a.lab2 -text "$caption(acqfc,intervalle_2)"
+      pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.a.lab2 -anchor center -expand 1 -fill none -side left \
+         -padx 10 -pady 5
+      entry $panneau(acqfc,$visuNo,base).intervalle_continu_2.a.ent1 -width 5 -font $audace(font,arial_10_b) -relief groove \
+         -textvariable panneau(acqfc,$visuNo,intervalle_2) -justify center
+      pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.a.ent1 -anchor center -expand 1 -fill none -side left \
+         -padx 10
+   pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.a -padx 10 -pady 5
 
-      frame $panneau(acqfc,$visuNo,base).intervalle_continu_2.b
-         checkbutton $panneau(acqfc,$visuNo,base).intervalle_continu_2.b.check_simu \
-            -text "$caption(acqfc,simu_deja_faite)" \
-            -variable panneau(acqfc,$visuNo,simulation_deja_faite) -command "::acqfc::Simu_deja_faite_2 $visuNo"
-         pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.b.check_simu -anchor w -expand 1 -fill none \
-            -side left -padx 10 -pady 5
-      pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.b -side bottom -anchor w -padx 10 -pady 5
+   frame $panneau(acqfc,$visuNo,base).intervalle_continu_2.b
+      checkbutton $panneau(acqfc,$visuNo,base).intervalle_continu_2.b.check_simu \
+         -text "$caption(acqfc,simu_deja_faite)" \
+         -variable panneau(acqfc,$visuNo,simulation_deja_faite) -command "::acqfc::Simu_deja_faite_2 $visuNo"
+      pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.b.check_simu -anchor w -expand 1 -fill none \
+         -side left -padx 10 -pady 5
+   pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.b -side bottom -anchor w -padx 10 -pady 5
 
-      button $panneau(acqfc,$visuNo,base).intervalle_continu_2.but1 -text "$caption(acqfc,simulation)" \
-         -command "::acqfc::Command_continu_2 $visuNo"
-      pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.but1 -anchor center -expand 1 -fill none -side left \
-         -ipadx 5 -ipady 3 -padx 10 -pady 5
+   button $panneau(acqfc,$visuNo,base).intervalle_continu_2.but1 -text "$caption(acqfc,simulation)" \
+      -command "::acqfc::Command_continu_2 $visuNo"
+   pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.but1 -anchor center -expand 1 -fill none -side left \
+      -ipadx 5 -ipady 3 -padx 10 -pady 5
 
-      set simu2 "$caption(acqfc,int_mini_image) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
-      label $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab3 -text "$simu2"
-      pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab3 -anchor center -expand 1 -fill none -side left -padx 10
+   set simu2 "$caption(acqfc,int_mini_image) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
+   label $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab3 -text "$simu2"
+   pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab3 -anchor center -expand 1 -fill none -side left -padx 10
 
-      #--- New message window is on
-      focus $panneau(acqfc,$visuNo,base).intervalle_continu_2
+   #--- New message window is on
+   focus $panneau(acqfc,$visuNo,base).intervalle_continu_2
 
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $panneau(acqfc,$visuNo,base).intervalle_continu_2
-   }
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $panneau(acqfc,$visuNo,base).intervalle_continu_2
+}
 #***** Fin fenetre de configuration images a intervalle regulier en continu **************
 
 #***** Commande associee au bouton simulation de la fenetre Continu (2) ******************
-   proc Command_continu_2 { visuNo } {
-      global caption panneau
+proc ::acqfc::Command_continu_2 { visuNo } {
+   global caption panneau
 
-      set panneau(acqfc,$visuNo,intervalle) "....."
-      set simu2 "$caption(acqfc,int_mini_image) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
-      $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab3 configure -text "$simu2"
-      set panneau(acqfc,$visuNo,simulation)  "2"
-      set panneau(acqfc,$visuNo,mode)        "2"
-      set panneau(acqfc,$visuNo,index_temp)  $panneau(acqfc,$visuNo,index)
-      set panneau(acqfc,$visuNo,nombre_temp) $panneau(acqfc,$visuNo,nb_images)
-      set panneau(acqfc,$visuNo,nb_images)   "1"
-      ::acqfc::Go $visuNo
-   }
+   set panneau(acqfc,$visuNo,intervalle) "....."
+   set simu2 "$caption(acqfc,int_mini_image) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
+   $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab3 configure -text "$simu2"
+   set panneau(acqfc,$visuNo,simulation)  "2"
+   set panneau(acqfc,$visuNo,mode)        "2"
+   set panneau(acqfc,$visuNo,index_temp)  $panneau(acqfc,$visuNo,index)
+   set panneau(acqfc,$visuNo,nombre_temp) $panneau(acqfc,$visuNo,nb_images)
+   set panneau(acqfc,$visuNo,nb_images)   "1"
+   ::acqfc::Go $visuNo
+}
 #***** Fin de la commande associee au bouton simulation de la fenetre Continu (2) ********
 
 #***** Si une simulation a deja ete faite pour la fenetre Continu (2) ********************
-   proc Simu_deja_faite_2 { visuNo } {
-      global caption panneau
+proc ::acqfc::Simu_deja_faite_2 { visuNo } {
+   global caption panneau
 
-      if { $panneau(acqfc,$visuNo,simulation_deja_faite) == "1" } {
-         set panneau(acqfc,$visuNo,intervalle) "xxx" ; \
-         $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab3 configure \
-            -text "$caption(acqfc,int_mini_image) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
-         focus $panneau(acqfc,$visuNo,base).intervalle_continu_2.a.ent1
-      } else {
-         set panneau(acqfc,$visuNo,intervalle) "....."
-         $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab3 configure \
-            -text "$caption(acqfc,int_mini_image) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
-         focus $panneau(acqfc,$visuNo,base).intervalle_continu_2.but1
-      }
+   if { $panneau(acqfc,$visuNo,simulation_deja_faite) == "1" } {
+      set panneau(acqfc,$visuNo,intervalle) "xxx" ; \
+      $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab3 configure \
+         -text "$caption(acqfc,int_mini_image) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
+      focus $panneau(acqfc,$visuNo,base).intervalle_continu_2.a.ent1
+   } else {
+      set panneau(acqfc,$visuNo,intervalle) "....."
+      $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab3 configure \
+         -text "$caption(acqfc,int_mini_image) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
+      focus $panneau(acqfc,$visuNo,base).intervalle_continu_2.but1
    }
+}
 #***** Fin de si une simulation a deja ete faite pour la fenetre Continu (2) *************
 
 #***** Enregistrement de la position des fenetres Continu (1) et Continu (2) *************
-   proc recup_position { visuNo } {
-      global audace conf panneau
+proc ::acqfc::recup_position { visuNo } {
+   global audace conf panneau
 
-      #--- Cas de la fenetre Continu (1)
-      if [ winfo exists $panneau(acqfc,$visuNo,base).intervalle_continu_1 ] {
-         #--- Determination de la position de la fenetre
-         set geometry [ wm geometry $panneau(acqfc,$visuNo,base).intervalle_continu_1 ]
-         set deb [ expr 1 + [ string first + $geometry ] ]
-         set fin [ string length $geometry ]
-         set conf(acqfc,continu1,position) "+[ string range $geometry $deb $fin ]"
-         #--- Fermeture de la fenetre
-         destroy $panneau(acqfc,$visuNo,base).intervalle_continu_1
-      }
-      #--- Cas de la fenetre Continu (2)
-      if [ winfo exists $panneau(acqfc,$visuNo,base).intervalle_continu_2 ] {
-         #--- Determination de la position de la fenetre
-         set geometry [ wm geometry $panneau(acqfc,$visuNo,base).intervalle_continu_2 ]
-         set deb [ expr 1 + [ string first + $geometry ] ]
-         set fin [ string length $geometry ]
-         set conf(acqfc,continu2,position) "+[ string range $geometry $deb $fin ]"
-         #--- Fermeture de la fenetre
-         destroy $panneau(acqfc,$visuNo,base).intervalle_continu_2
-      }
+   #--- Cas de la fenetre Continu (1)
+   if [ winfo exists $panneau(acqfc,$visuNo,base).intervalle_continu_1 ] {
+      #--- Determination de la position de la fenetre
+      set geometry [ wm geometry $panneau(acqfc,$visuNo,base).intervalle_continu_1 ]
+      set deb [ expr 1 + [ string first + $geometry ] ]
+      set fin [ string length $geometry ]
+      set conf(acqfc,continu1,position) "+[ string range $geometry $deb $fin ]"
+      #--- Fermeture de la fenetre
+      destroy $panneau(acqfc,$visuNo,base).intervalle_continu_1
    }
+   #--- Cas de la fenetre Continu (2)
+   if [ winfo exists $panneau(acqfc,$visuNo,base).intervalle_continu_2 ] {
+      #--- Determination de la position de la fenetre
+      set geometry [ wm geometry $panneau(acqfc,$visuNo,base).intervalle_continu_2 ]
+      set deb [ expr 1 + [ string first + $geometry ] ]
+      set fin [ string length $geometry ]
+      set conf(acqfc,continu2,position) "+[ string range $geometry $deb $fin ]"
+      #--- Fermeture de la fenetre
+      destroy $panneau(acqfc,$visuNo,base).intervalle_continu_2
+   }
+}
 #***** Fin enregistrement de la position des fenetres Continu (1) et Continu (2) *********
 
 #***** Enregistrement de la position de la fenetre Avancement ********
-   proc recup_position_1 { visuNo } {
-      global audace conf panneau
+proc ::acqfc::recup_position_1 { visuNo } {
+   global audace conf panneau
 
-      #--- Cas de la fenetre Avancement
-      if [ winfo exists $panneau(acqfc,$visuNo,base).progress ] {
-         #--- Determination de la position de la fenetre
-         set geometry [ wm geometry $panneau(acqfc,$visuNo,base).progress ]
-         set deb [ expr 1 + [ string first + $geometry ] ]
-         set fin [ string length $geometry ]
-         set panneau(acqfc,$visuNo,avancement,position) "+[ string range $geometry $deb $fin ]"
-      }
+   #--- Cas de la fenetre Avancement
+   if [ winfo exists $panneau(acqfc,$visuNo,base).progress ] {
+      #--- Determination de la position de la fenetre
+      set geometry [ wm geometry $panneau(acqfc,$visuNo,base).progress ]
+      set deb [ expr 1 + [ string first + $geometry ] ]
+      set fin [ string length $geometry ]
+      set panneau(acqfc,$visuNo,avancement,position) "+[ string range $geometry $deb $fin ]"
    }
+}
 #***** Fin enregistrement de la position de la fenetre Avancement ****
 
 #***** Affichage de la fenetre de configuration de WebCam ************
-   proc webcamConfigure { visuNo } {
-      global caption
+proc ::acqfc::webcamConfigure { visuNo } {
+   global caption
 
-      set result [::webcam::config::run $visuNo [::confVisu::getCamItem $visuNo]]
-      if { $result == "1" } {
-         if { [ ::confVisu::getCamItem $visuNo ] == "" } {
-            ::audace::menustate disabled
-            set choix [ tk_messageBox -title $caption(acqfc,pb) -type ok \
-               -message $caption(acqfc,selcam) ]
-            set integre non
-            if { $choix == "ok" } {
-               #--- Ouverture de la fenetre de selection des cameras
-               ::confCam::run
-               tkwait window $audace(base).confCam
-            }
-            ::audace::menustate normal
+   set result [::webcam::config::run $visuNo [::confVisu::getCamItem $visuNo]]
+   if { $result == "1" } {
+      if { [ ::confVisu::getCamItem $visuNo ] == "" } {
+         ::audace::menustate disabled
+         set choix [ tk_messageBox -title $caption(acqfc,pb) -type ok \
+            -message $caption(acqfc,selcam) ]
+         set integre non
+         if { $choix == "ok" } {
+            #--- Ouverture de la fenetre de selection des cameras
+            ::confCam::run
+            tkwait window $audace(base).confCam
          }
+         ::audace::menustate normal
       }
    }
+}
 #***** Fin de la fenetre de configuration de WebCam ******************
 
 #***** Ouverture de la boite de configuration du telechargement ******
-   proc choixTelechargement { visuNo} {
-      global panneau
+proc ::acqfc::choixTelechargement { visuNo} {
+   global panneau
 
-      if { ( $panneau(acqfc,$visuNo,mode) == "1" ) || ( $panneau(acqfc,$visuNo,mode) == "2" ) || \
-         ( $panneau(acqfc,$visuNo,mode) == "3" ) || ( $panneau(acqfc,$visuNo,mode) == "4" ) || \
-         ( $panneau(acqfc,$visuNo,mode) == "5" ) } {
-         ::dslr::setLoadParameters $panneau(acqfc,$visuNo,camItem)
-      }
+   if { ( $panneau(acqfc,$visuNo,mode) == "1" ) || ( $panneau(acqfc,$visuNo,mode) == "2" ) || \
+      ( $panneau(acqfc,$visuNo,mode) == "3" ) || ( $panneau(acqfc,$visuNo,mode) == "4" ) || \
+      ( $panneau(acqfc,$visuNo,mode) == "5" ) } {
+      ::dslr::setLoadParameters $panneau(acqfc,$visuNo,camItem)
    }
+}
 #***** Fin de la configuration du telechargement *********************
 
-}
-#==============================================================
-#   Fin de la declaration du namespace acqfc
-#==============================================================
 
-proc acqfcBuildIF { visuNo } {
+proc ::acqfc::acqfcBuildIF { visuNo } {
    global audace caption conf panneau
 
    #--- Determination de la fenetre parente
