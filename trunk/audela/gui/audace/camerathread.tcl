@@ -3,7 +3,7 @@
 # Description : procedures d'acqusitition et de traitement avec
 #         plusieurs cameras simultanées exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise a jour $Id: camerathread.tcl,v 1.5 2008-11-21 17:05:18 michelpujol Exp $
+# Mise a jour $Id: camerathread.tcl,v 1.6 2008-11-29 12:58:59 michelpujol Exp $
 #
 
 namespace eval ::camerathread {
@@ -809,9 +809,9 @@ proc ::camerathread::notify { args } {
 
    ###::camerathread::disp "::camerathread::notify $args\n"
    if { $private(mainThreadNo)==0 } {
-      interp eval "" [list after idle ::camera::addCameraEvent $private(camItem) $args]
+      interp eval "" [list after 10 ::camera::addCameraEvent $private(camItem) $args]
    } else {
-      ::thread::send -async $private(mainThreadNo) [list after idle ::camera::addCameraEvent $private(camItem) $args ]
+      ::thread::send -async $private(mainThreadNo) [list after 10 ::camera::addCameraEvent $private(camItem) $args ]
    }
 }
 
