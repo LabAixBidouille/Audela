@@ -2,8 +2,36 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteur : Robert DELMAS
-# Mise a jour $Id: camera.tcl,v 1.22 2008-11-23 12:00:58 robertdelmas Exp $
+# Mise a jour $Id: camera.tcl,v 1.23 2008-11-29 12:56:13 michelpujol Exp $
 #
+# Procedures utilisées par confCam
+#   ::camera::create  : cree une camera
+#   ::camera::delete
+#
+# Procedures utilisées par les outils et les scripts des utilisateurs
+#   ::camera::acquisition
+#       fait une acquition
+#   ::camera::centerBrightestStar
+#       fait des acquisitions jusqu'a ce que l'etoile la plus brillante soit a la position (x,y) donne en parametre.
+#   ::camera::centerRadec
+#       fait des acquisitions jusqu'a ce que l'etoile de coordonnee (ra,dec) soit a la position (x,y) donne en parametre
+#   ::camera::guide
+#       fait des acquisitions et guide le telescope pour garder l'etoile a la position (x,y)
+#   ::camera::stopAcquisition :
+#       interrompt les acquisitions
+#
+#   Pendant les acquisitions, les procedures envoient des messages pour
+#   informer le programme appelant de l'avancement des acquisitions.
+#   Les messages sont transmis en appelant la procedure dont le nom est passe dans le prarametre "callback"
+#
+#   Liste des messages :
+#      targetCoord : position (x,y)  de l'etoile
+#      mountInfo   : deplacement de la monture a faire
+#      autovisu    : l'image est disponible dans le buffer
+#      acquisitionResult : resultat final
+#      error       :  signale une erreur bloquante
+#
+
 
 namespace eval camera {
    global audace
@@ -11,7 +39,7 @@ namespace eval camera {
    #--- Chargement des captions
    source [ file join $audace(rep_caption) camera.cap ]
 
-   #--- Autorise d'exporter la procedure acq
+   #--- Autorise d'exporter la procedure "::camera::acq" sous nom d'alias "acq"
    namespace export acq
 }
 
@@ -41,10 +69,6 @@ proc ::camera::init { } {
    } else {
       set ::tcl_platform(threaded) 0
    }
-
-   ###set private(eventList,A) [list]
-   ###set private(eventList,B) [list]
-   ###set private(eventList,C) [list]
 }
 
 #------------------------------------------------------------
@@ -67,9 +91,40 @@ proc ::camera::create { camItem } {
    variable private
 
    if { $::tcl_platform(threaded) == 0 } {
-
-   } else {
+      #--- cas mono thread
+      #--- je recupere le numero de la camera
       set private($camItem,camNo)    [::confCam::getCamNo $camItem]
+      #--- je cree un interpreteur  pour la camera
+      set private($camItem,threadNo) [interp create ]
+      #--- je duplique les commandes TCL dans l'interpreteur de la camera
+      $private($camItem,threadNo) alias "::console::disp" "::console::disp"
+      $private($camItem,threadNo) alias ::camera::addCameraEvent ::camera::addCameraEvent
+      $private($camItem,threadNo) alias ::telescope::moveTelescope ::telescope::moveTelescope
+      $private($camItem,threadNo) alias ttscript2 ttscript2
+      $private($camItem,threadNo) alias mc_date2jd mc_date2jd
+      $private($camItem,threadNo) alias mc_date2iso8601 mc_date2iso8601
+      #--- je copie la commande de la camera dans la thread de la camera
+      copycommand $private($camItem,threadNo) "cam$private($camItem,camNo)"
+      #--- je copie la commande du buffer dans la thread de la camera
+      copycommand $private($camItem,threadNo) "buf[cam$private($camItem,camNo) buf]"
+      #--- J'ajoute la commande de liaison longue pose
+      if { [::confCam::getPluginProperty $camItem "hasLongExposure"] == 1 } {
+         if { [cam$private($camItem,camNo) longueposelinkno] != 0} {
+            copycommand $private($camItem,threadNo) "link[cam$private($camItem,camNo) longueposelinkno]"
+         }
+      }
+      #--- je descative la recuperation des coordonnees du telescope
+      cam$private($camItem,camNo) radecfromtel 0
+      #--- j'initialise la file d'evenement  pour la communication entre les deux threads
+      set private($camItem,eventList) [list]
+      #--- je charge  camerathread.tcl dans l'intepreteur esclave de la camera
+      interp eval $private($camItem,threadNo) [list uplevel #0 source \"[file join $::audace(rep_audela) audace camerathread.tcl]\"]
+      interp eval $private($camItem,threadNo) ::camerathread::init $camItem $private($camItem,camNo) "0"
+   } else {
+      #--- cas multi thread
+      #--- je recupere le numero de la camera
+      set private($camItem,camNo)    [::confCam::getCamNo $camItem]
+      #--- je recupere l'indentifiant de la thread de la camera
       set private($camItem,threadNo) [ cam$private($camItem,camNo) threadid]
 
       #--- je duplique les commandes TCL dans la thread de la camera
@@ -107,9 +162,9 @@ proc ::camera::create { camItem } {
 #------------------------------------------------------------
 proc ::camera::delete { camItem } {
    variable private
-
+console::disp "::camera::delete coucou\n"
    if { $::tcl_platform(threaded) == 0 } {
-      interp eval $camThreadNo [list ::cam::delete $args]
+      ###interp eval $private($camItem,threadNo)  [list ::cam::delete $private($camItem,camNo) ]
    } else {
       return
    }
@@ -535,7 +590,7 @@ proc ::camera::acquisition { camItem callback exptime } {
    variable private
 
    #--- je connecte la camera
-   ::confCam::setConnection  $camItem 1
+   ###::confCam::setConnection  $camItem 1
    #--- je renseigne la procedure de retour
    set private($camItem,callback) $callback
    set camThreadNo $private($camItem,threadNo)
@@ -556,7 +611,7 @@ proc ::camera::centerBrightestStar { camItem callback exptime originCoord target
    variable private
 
    #--- je connecte la camera
-   ::confCam::setConnection  $camItem 1
+   ###::confCam::setConnection  $camItem 1
    #--- je renseigne la procedure de retour
    set private($camItem,callback) $callback
    set camThreadNo $private($camItem,threadNo)
@@ -579,7 +634,7 @@ proc ::camera::centerRadec { camItem callback exptime originCoord raDec angle ta
    variable private
 
    #--- je connecte la camera
-   ::confCam::setConnection  $camItem 1
+   ###::confCam::setConnection  $camItem 1
    #--- je renseigne la procedure de retour
    set private($camItem,callback) $callback
    set camThreadNo $private($camItem,threadNo)
@@ -616,7 +671,7 @@ proc ::camera::guide { camItem callback exptime detection originCoord targetCoor
    variable private
 
    #--- je connecte la camera
-   ::confCam::setConnection  $camItem 1
+   ###::confCam::setConnection  $camItem 1
    #--- je renseigne la procedure de retour
    set private($camItem,callback) $callback
    set camThreadNo $private($camItem,threadNo)
@@ -638,7 +693,7 @@ proc ::camera::searchBrightestStar { camItem callback exptime originCoord target
    variable private
 
    #--- je connecte la camera
-   ::confCam::setConnection  $camItem 1
+   ###::confCam::setConnection  $camItem 1
    #--- je renseigne la procedure de retour
    set private($camItem,callback) $callback
    set camThreadNo $private($camItem,threadNo)
