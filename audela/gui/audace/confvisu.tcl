@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.86 2008-11-29 16:28:07 denismarchais Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.87 2008-11-29 16:41:48 denismarchais Exp $
 #
 
 namespace eval ::confVisu {
@@ -2388,8 +2388,8 @@ namespace eval ::confVisu {
 ##::console::disp "displayCrosshair   x0=$x0 y0=$y0 x1=$x1 y1=$y1 \n"
       set coord0Canvas [ picture2Canvas $visuNo [list $x0 $y0 ] ]
       set coord1Canvas [ picture2Canvas $visuNo [list $x1 $y1 ] ]
-      set widthCanvas [expr abs([lindex $coord1Canvas 0] - [lindex $coord0Canvas 0] + 1) ]
-      set heightCanvas [expr abs([lindex $coord0Canvas 1] - [lindex $coord1Canvas 1] + 1) ]
+      set widthCanvas [expr abs([lindex $coord1Canvas 0] - [lindex $coord0Canvas 0]) + 1 ]
+      set heightCanvas [expr abs([lindex $coord0Canvas 1] - [lindex $coord1Canvas 1]) + 1 ]
 
       #--- j'affiche le trait horizontal du reticule s'il est a l'interieur de la fenetre
       if { $yc >= $y0 && $yc <= $y1 } {
