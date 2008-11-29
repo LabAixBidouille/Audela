@@ -821,16 +821,19 @@ int cmdCamStartVideoView(ClientData clientData, Tcl_Interp * interp,
    struct camprop *cam;
    int imgno;
    WORD previewRate = 33;
+   int owner ;
 
    cam = (struct camprop *) clientData;
 
-   if ( argc != 3) {
+   if ( argc != 4) {
       sprintf(ligne, "Usage: %s %s ?imgno?", argv[0], argv[1]);
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
       return TCL_ERROR;
    } else {
+      
       // je recupere le numero de l'image dans laquelle va etre affichee la video
       imgno = (int) atoi(argv[2]);
+      /*
       // je verifie que l'image est du type "video"
       sprintf(ligne, "image type image%d", imgno);
       if( Tcl_Eval(interp, ligne) == TCL_ERROR) {
@@ -846,8 +849,10 @@ int cmdCamStartVideoView(ClientData clientData, Tcl_Interp * interp,
             return TCL_ERROR;
          }
       }
+      */
    }
 
+   /*
    // je recupere le handle de la fenetre d'afficher de la video
    sprintf(ligne, "image%d cget -owner", imgno);
    if( Tcl_Eval(interp, ligne) == TCL_ERROR) {
@@ -872,6 +877,22 @@ int cmdCamStartVideoView(ClientData clientData, Tcl_Interp * interp,
          }
       }
    }
+   */
+
+      if(Tcl_GetInt(interp,argv[3],&owner)!=TCL_OK) {
+         sprintf(ligne, "Error image%d cget -owner: %s", imgno, argv[2] );
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         return TCL_ERROR;
+      } else {
+         if ( startVideoPreview(cam, owner, previewRate) == TRUE ) {
+            cam->videonum = imgno;
+            return TCL_OK;
+         } else {
+            sprintf(ligne, "Error startVideoPreview: %s", cam->msg );
+            Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+            return TCL_ERROR;
+         }
+      }
 
 }
 

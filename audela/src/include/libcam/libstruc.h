@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libstruc.h,v 1.11 2008-07-07 20:25:53 michelpujol Exp $
+ * $Id: libstruc.h,v 1.12 2008-11-29 12:46:10 michelpujol Exp $
  */
 
 #ifndef __LIBSTRUC_H__
@@ -99,6 +99,8 @@ struct Capabilities {
    unsigned long clockbegin;\
    Tcl_Interp *interp;\
    Tcl_Interp *interpCam;\
+   char mainThreadId[20]; \
+   char camThreadId[20]; \
    struct TimerExpirationStruct *timerExpiration;\
    char pixels_classe[60]; \
    char pixels_format[60]; \
