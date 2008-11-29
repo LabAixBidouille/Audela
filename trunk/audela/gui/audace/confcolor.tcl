@@ -2,15 +2,19 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.21 2008-11-29 20:20:50 robertdelmas Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.22 2008-11-29 22:24:19 robertdelmas Exp $
 #
 
-namespace eval confColor {
+namespace eval confColor:: {
    global audace
 
    #--- Charge le fichier caption
    source [ file join $audace(rep_caption) confcolor.cap ]
 
+   #------------------------------------------------------------
+   #  init
+   #     initialisation
+   #------------------------------------------------------------
    proc init { } {
       global audace color conf
 
@@ -99,8 +103,8 @@ namespace eval confColor {
    }
 
    #------------------------------------------------------------
-   #  ::confColor::switchDayNight
-   #  bascule l'apparance jour <=> nuit
+   #  switchDayNight
+   #     bascule l'apparance jour <=> nuit
    #------------------------------------------------------------
    proc switchDayNight { } {
       global audace conf
@@ -130,18 +134,18 @@ namespace eval confColor {
    }
 
    #------------------------------------------------------------
-   #  ::confColor::run
-   #  ouverture de la fenetre de configuration
+   #  run
+   #     ouverture de la fenetre de configuration
    #------------------------------------------------------------
    proc run { visuNo } {
       global audace
 
-      ::confGenerique::run $visuNo $audace(base).select_color "::confColor" -modal 0
+      ::confGenerique::run $visuNo $audace(base).selectColor "::confColor" -modal 0
    }
 
    #------------------------------------------------------------
-   #  ::confColor::getLabel
-   #  retourne le nom de la fenetre de configuration
+   #  getLabel
+   #     retourne le nom de la fenetre de configuration
    #------------------------------------------------------------
    proc getLabel { } {
       global caption
@@ -150,8 +154,8 @@ namespace eval confColor {
    }
 
    #------------------------------------------------------------
-   #  ::confColor::showHelp
-   #  affiche l'aide de la fenetre de configuration
+   #  showHelp
+   #     affiche l'aide de la fenetre de configuration
    #------------------------------------------------------------
    proc showHelp { } {
       global help
@@ -160,7 +164,7 @@ namespace eval confColor {
    }
 
    #------------------------------------------------------------
-   #  ::confColor::confToWidget { }
+   #  confToWidget
    #     copie les parametres du tableau conf() dans les variables des widgets
    #------------------------------------------------------------
    proc confToWidget { visuNo } {
@@ -179,8 +183,8 @@ namespace eval confColor {
    }
 
    #------------------------------------------------------------
-   #  ::confColor::apply { }
-   #  copie les variable des widgets dans le tableau conf()
+   #  apply
+   #     est appele apres avoir appuyer sur le bouton OK ou Appliquer
    #------------------------------------------------------------
    proc apply { visuNo } {
       variable widget
@@ -223,9 +227,8 @@ namespace eval confColor {
    }
 
    #------------------------------------------------------------
-   #  ::confColor::fillConfigPage { }
-   #  fenetre de configuration
-   #
+   #  fillConfigPage
+   #     fenetre de configuration
    #------------------------------------------------------------
    proc fillConfigPage { frm visuNo } {
       variable widget
@@ -242,7 +245,7 @@ namespace eval confColor {
 
       #--- Je place les radiobuttons de selection de l'apparence
       frame $frm.select -borderwidth 1 -relief groove
-      label $frm.select.title_label  -text "$caption(confcolor,vision)"
+      label $frm.select.title_label -text "$caption(confcolor,vision)"
       #--- Radiobutton day
       radiobutton $frm.select.rb_day -text "$caption(confcolor,diurne)" \
          -variable ::confColor::widget(appearance) -value "day" \
@@ -260,7 +263,7 @@ namespace eval confColor {
 
       #--- J'ajoute les buttons par type de couleur dans une grille a deux colonnes
       frame $frm.but -borderwidth 1 -relief groove
-      foreach {key } [lsort [array names widget -glob color,day,*] ] {
+      foreach { key } [lsort [array names widget -glob color,day,*] ] {
          set i [lindex [split $key ,] 2]
          label $frm.but.l$i -text "$i"
          button $frm.but.b_color_invariant$i -command "::confColor::chooseColor $i $frm.but.b_color_invariant$i" \
@@ -271,10 +274,10 @@ namespace eval confColor {
    }
 
    #------------------------------------------------------------
-   #  ::confColor::closeWindow
-   #  est appele quand on ferme la fenetre sans sauvegarder les modifications
+   #  closeWindow
+   #     est appele quand on ferme la fenetre sans sauvegarder les modifications
    #
-   #  param : aucun
+   #     parametres : aucun
    #------------------------------------------------------------
    proc closeWindow { visuNo } {
       variable widget
@@ -297,10 +300,10 @@ namespace eval confColor {
    }
 
    #------------------------------------------------------------
-   #  ::confColor::chooseAppearance
-   #  est appele quand on change d'apparence jour/nuit
+   #  chooseAppearance
+   #     est appele quand on change d'apparence jour/nuit
    #
-   #  param : type de couleur  ( background, foreground, ...)
+   #     param : type de couleur  ( background, foreground, ...)
    #------------------------------------------------------------
    proc chooseAppearance { } {
       variable widget
@@ -331,10 +334,10 @@ namespace eval confColor {
    }
 
    #------------------------------------------------------------
-   #  ::confColor::chooseColor
-   #  est appelle quand on clique sur un bouton d'une couleur
+   #  chooseColor
+   #     est appelle quand on clique sur un bouton d'une couleur
    #
-   #  param : type de couleur ( background, foreground, ...)
+   #     parametres : type de couleur ( background, foreground, ...)
    #------------------------------------------------------------
    proc chooseColor { colorType buttonName } {
       variable widget
@@ -348,7 +351,7 @@ namespace eval confColor {
 
       set a [ tk_chooseColor -initialcolor $widget(color,$appearance,$colorType) \
          -title "$caption(confcolor,selection) $colorType" \
-         -parent "$audace(base).select_color" ]
+         -parent "$audace(base).selectColor" ]
       if { [ llength $a ] > "0" } {
          set widget(color,$appearance,$colorType) $a
          set audace(color,$colorType) $a
@@ -367,11 +370,11 @@ namespace eval confColor {
    }
 
    #------------------------------------------------------------
-   #  ::confColor::applyColor
+   #  applyColor
    #     est appele apres avoir choisi une nouvelle couleur
    #     et applique la couleur en fonction de la charte des couleurs de Audace (voir doc de programmation)
    #
-   #  w : window parent des resources qui doivent changer de couleur
+   #     w : window parent des resources qui doivent changer de couleur
    #------------------------------------------------------------
    proc applyColor { w } {
       global audace color
@@ -523,8 +526,8 @@ namespace eval confColor {
    }
 
    #------------------------------------------------------------
-   #  ::confColor::restoreFactoryColor
-   #  restaure les couleur usine
+   #  restoreFactoryColor
+   #     restaure les couleur usine
    #------------------------------------------------------------
    proc restoreFactoryColor { } {
       variable widget
