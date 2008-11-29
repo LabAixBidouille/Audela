@@ -76,6 +76,7 @@ struct cmditem {
    {"capabilities", (Tcl_CmdProc *)cmdCamCapabilities},\
    {"lasterror", (Tcl_CmdProc *)cmdCamLastError},\
    {"debug", (Tcl_CmdProc *)cmdCamDebug},\
+   {"threadid", (Tcl_CmdProc *)cmdCamThreadId},\
    {"headerproc", (Tcl_CmdProc *)cmdCamHeaderProc},\
 
 

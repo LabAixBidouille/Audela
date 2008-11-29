@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.22 2008-07-07 20:25:53 michelpujol Exp $
+ * $Id: libcam.c,v 1.23 2008-11-29 12:46:10 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -121,6 +121,7 @@ static int cmdCamMirrorH(ClientData clientData, Tcl_Interp * interp, int argc, c
 static int cmdCamMirrorV(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamCapabilities(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamLastError(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+static int cmdCamThreadId(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 
 
 /* --- Action commands ---*/
@@ -292,21 +293,95 @@ int CAM_ENTRYPOINT(Tcl_Interp * interp)
 
 static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
-   char s[256];
+   char s[1024];
    int camno, err, i;
    struct camprop *cam, *camm;
+   char camThreadId[20];
+   char mainThreadId[20];
 
    if (argc < 3) {
       sprintf(s, "%s driver port ?options?", argv[0]);
       Tcl_SetResult(interp, s, TCL_VOLATILE);
       return TCL_ERROR;
    } else {
-   /*
-   * On initialise la camera sur le port. S'il y a une erreur, alors on
-   * renvoie le message qui va bien, en supprimant la structure cree.
-   * Si OK, la commande TCL est creee d'apres l'argv[1], et on garde
-   * trace de la structure creee.
-      */
+      const char *platform;
+      const char *threaded;
+
+      // 
+      if((platform=Tcl_GetVar(interp,"tcl_platform(platform)",TCL_GLOBAL_ONLY))==NULL) {
+         sprintf(s, "cmdCamCreate: Global variable tcl_platform(os) not found");
+         Tcl_SetResult(interp, s, TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+      if((threaded=Tcl_GetVar(interp,"tcl_platform(threaded)",TCL_GLOBAL_ONLY))==NULL) {
+         sprintf(s, "cmdCamCreate: Global variable tcl_platform(threaded) not found");
+         Tcl_SetResult(interp, s, TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+
+
+      if ( strcmp(argv[argc-2],"mainThreadId") != 0 ) {
+         if ( strcmp(threaded,"1") == 0 ) {
+            // Cas de l'environnement multi-thread : je cree un thread dediee a la camera ,
+            if ( !( strcmp(argv[0],"webcam") == 0 && strcmp(platform,"windows")==0) ) {
+               // Cas normal en mutlti-thread
+
+               // je recupere l'indentifiant de la thread principale
+               Tcl_Eval(interp, "thread::id");
+               strcpy(mainThreadId, interp->result);
+               // je cree la thread de la camera
+               Tcl_Eval(interp, "thread::create");
+               strcpy(camThreadId, interp->result);
+               // je duplique la commande "cam1" dans la thread de la camera
+               sprintf(s,"thread::copycommand %s %s ",camThreadId, argv[0]);
+               if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
+                  sprintf(s, "cmdCamCreate: %s",interp->result);
+                  Tcl_SetResult(interp, s, TCL_VOLATILE);
+                  return TCL_ERROR;
+               }
+
+               // je prepare la commande de creation de la camera dans la thread de la camera :
+               // thread::send $threadId { {argv0} {argv1} ... {argvn} mainThreadId $mainThreadId }
+               sprintf(s,"thread::send %s { ",camThreadId);
+               for (i=0;i<argc;i++) {
+                  strcat(s," {");
+                  strcat(s,argv[i]);
+                  strcat(s,"} ");
+               }
+               // j'ajoute le numero de la thread principale en dernier parametre
+               strcat(s,"mainThreadId ");
+               strcat(s, mainThreadId);
+               strcat(s," }");
+               // je lance la creattion de la camera en l'executant dans la thread de la camera
+               return Tcl_Eval(interp, s);
+            } else {
+               // Cas particulier de la webcam avec le driver VFW en multi-thread sous Windows :
+               // je cree la camera dans la thread principale a cause de la fenetre du driver
+               // par contre les acquisitions seront faites dans la thread de la camera comme
+               // pour les autres cameras
+               Tcl_Eval(interp, "thread::id");
+               strcpy(mainThreadId, interp->result);
+               Tcl_Eval(interp, "thread::create");
+               strcpy(camThreadId, interp->result);
+            }
+         } else {
+            // Cas de l'environnement mono-thread
+            strcpy(mainThreadId, "");
+            strcpy(camThreadId,  "");
+         }
+      } else {
+         // on est dans la thread de la camera
+         strcpy(mainThreadId, argv[argc-1]);
+         Tcl_Eval(interp, "thread::id");
+         strcpy(camThreadId, interp->result);
+      }
+
+
+      // On initialise la camera sur le port. S'il y a une erreur, alors on
+      // renvoie le message qui va bien, en supprimant la structure cree.
+      // Si OK, la commande TCL est creee d'apres l'argv[1], et on garde
+      // trace de la structure creee.
+
       fprintf(stderr, "%s(%s): CamCreate(argc=%d", CAM_LIBNAME, CAM_LIBVER, argc);
       for (i = 0; i < argc; i++) {
          fprintf(stderr, ",argv[%d]=%s", i, argv[i]);
@@ -314,15 +389,20 @@ static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, ch
       fprintf(stderr, ")\n");
 
       cam = (struct camprop *) calloc(1, sizeof(struct camprop));
-      Tcl_Eval(interp, "set ::tcl_platform(os)");
-      strcpy(s, interp->result);
-      if ((strcmp(s, "Windows 95") == 0)
-         || (strcmp(s, "Windows 98") == 0)
-         || (strcmp(s, "Linux") == 0)) {
+
+      strcpy(cam->mainThreadId, mainThreadId);
+      strcpy(cam->camThreadId,  camThreadId);
+      fprintf(stderr, "%s(%s): CamCreate mainThreadId=%s camThreadId=%s platform=%s\n", CAM_LIBNAME, CAM_LIBVER, mainThreadId, camThreadId, platform);
+
+      // Je ne sais pas a quoi sert ce test (Michel)
+      // Est-ce pour inhiber les cameras sous Windows et Mac ?
+      if ( strcmp(platform, "unix") == 0) {
          cam->authorized = 1;
       } else {
+         // je n'autorise pas les interuptions usr Windows et sur Mac
          cam->authorized = 0;
       }
+
       cam->interp = interp;
       sscanf(argv[1], "cam%d", &camno);
       cam->camno = camno;
@@ -337,6 +417,7 @@ static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, ch
          free(cam);
          return TCL_ERROR;
       }
+
       cam->bufno = CAM_INI[0].numbuf;
       cam->telno = CAM_INI[0].numtel;
       cam->timerExpiration = NULL;
@@ -348,14 +429,36 @@ static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, ch
             camm = camm->next;
          camm->next = cam;
       }
+
+      // Cree la nouvelle commande par le biais de l'unique
+      // commande exportee de la librairie libcam.
       Tcl_CreateCommand(interp, argv[1], (Tcl_CmdProc *) cmdCam, (ClientData) cam, NULL);
+
+      if ( cam->camThreadId[0] != 0 ) {
+         // cas du mutltithread
+         if ( !(strcmp(argv[0],"webcam") == 0 && strcmp(platform,"windows")==0) ) {
+            // je duplique la commande de la camera dans la thread principale
+            sprintf(s,"thread::copycommand %s %s ",mainThreadId, argv[1]);
+            Tcl_Eval(interp, s);
+            // je cree la variable ::status_cam dans la thread principale
+            sprintf(s, "thread::send -async %s { set ::status_cam%d stand }", cam->mainThreadId, cam->camno);
+            Tcl_Eval(interp, s);
+         } else {
+            // cas particulier de la webcam sous windows
+            // je duplique la commande de la camera dans la thread de la camera
+            sprintf(s,"thread::copycommand %s %s ",cam->camThreadId, argv[1]);
+            Tcl_Eval(interp, s);
+            // je cree la variable ::status_cam dans la thread de la camera
+            sprintf(s, "thread::send -async %s { set ::status_cam%d stand }", cam->camThreadId, cam->camno);
+            Tcl_Eval(interp, s);
+         }
+      }
 
       // set TCL global status_camNo
       sprintf(s, "status_cam%d", cam->camno);
       Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
 
       libcam_log(LOG_DEBUG, "cmdCamCreate: create camera data at %p\n", cam);
-
    }
    return TCL_OK;
 }
@@ -365,6 +468,7 @@ static int cmdCam(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
    char s[1024], ss[50];
    int retour = TCL_OK, k, i;
    struct cmditem *cmd;
+   struct camprop *cam = (struct camprop *) clientData;
 
    if (debug_level > 0) {
       char s1[256], *s2;
@@ -378,7 +482,7 @@ static int cmdCam(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
    }
 
    if (argc == 1) {
-      sprintf(s, "%s choose sub-command among ", argv[0]);
+     sprintf(s, "%s choose sub-command among ", argv[0]);
       k = 0;
       while (cmdlist[k].cmd != NULL) {
          sprintf(ss, " %s", cmdlist[k].cmd);
@@ -388,6 +492,29 @@ static int cmdCam(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
       Tcl_SetResult(interp, s, TCL_VOLATILE);
       retour = TCL_ERROR;
    } else {
+      
+      if ( cam->camThreadId[0] != 0 ) {
+         // cas du mutltithread
+         char currentThread[80];
+         // je recupere la thread courante
+         Tcl_Eval(interp, "thread::id");
+         strcpy(currentThread,interp->result);
+         if ( strcmp(CAM_INI[0].product,"webcam") != 0 ) {
+            // si on n'est pas dans la thread de la camera je transmet la commande a la thread de la camera
+            if ( strcmp(currentThread, cam->camThreadId) !=0 )  {
+               sprintf(s,"thread::send %s {",cam->camThreadId);
+               for (k=0;k<argc;k++) {
+                  // les accolades servent a delemiter les parametres de type "list", par exemple le binning
+                  strcat(s,"{");
+                  strcat(s,argv[k]);
+                  strcat(s,"} ");
+               }
+               strcat(s,"}");
+               return Tcl_Eval(interp, s);
+            }
+         }
+      }
+
       for (cmd = cmdlist; cmd->cmd != NULL; cmd++) {
          if (strcmp(cmd->cmd, argv[1]) == 0) {
             retour = (*cmd->func) (clientData, interp, argc, argv);
@@ -680,6 +807,14 @@ static int cmdCamBuf(ClientData clientData, Tcl_Interp * interp, int argc, char 
       } else {
          cam = (struct camprop *) clientData;
          cam->bufno = i_bufno;
+
+         if ( cam->camThreadId[0] != 0 ) {
+            // cas du mutltithread
+            // je duplique la commande du buffer dans la thread de la camera
+            sprintf(ligne, "thread::send -async %s { thread::copycommand %s buf%d }", cam->mainThreadId, cam->camThreadId, cam->bufno);
+            Tcl_Eval(interp, ligne);
+         }
+
          sprintf(ligne, "%d", cam->bufno);
          Tcl_SetResult(interp, ligne, TCL_VOLATILE);
       }
@@ -780,6 +915,16 @@ static int cmdCamRadecFromTel(ClientData clientData, Tcl_Interp * interp, int ar
    return result;
 }
 
+static int cmdCamThreadId(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+   char ligne[256];
+   struct camprop *cam;
+   cam = (struct camprop *) clientData;
+   sprintf(ligne, "%s", cam->camThreadId);
+   Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+   return TCL_OK;
+}
+
 /*
  * AcqRead
  * Commande de lecture du CCD.
@@ -869,7 +1014,7 @@ static void AcqRead(ClientData clientData )
 
       // --- application du miroir vertical
       if( cam->mirrorv == 1 ) {
-         // j'inverse l'orientation de l'image par rapport � un miroir vertical
+         // j'inverse l'orientation de l'image par rapport a un miroir vertical
          // les pixels seront inverses lors de la recopie dans le buffer par "buf1 setpixels ..."
          if( cam->pixels_reverse_x == 1 ) {
             cam->pixels_reverse_x = 0;
@@ -1025,6 +1170,13 @@ static void AcqRead(ClientData clientData )
    if (cam->timerExpiration != NULL) {
       sprintf(s, "status_cam%d", cam->camno);
       Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
+      if ( cam->camThreadId[0] != 0 ) {
+         // cas du mutltithread
+         // je change l'etat de la variable dans la thread principale
+         sprintf(s, "thread::send -async %s { set ::status_cam%d stand }", cam->mainThreadId, cam->camno);
+         Tcl_Eval(interp, s);
+      }
+
    }
    cam->clockbegin = 0;
 
@@ -1056,6 +1208,13 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
          /* Pour avertir les gens du status de la camera. */
          sprintf(ligne, "status_cam%d", cam->camno);
          Tcl_SetVar(interp, ligne, "exp", TCL_GLOBAL_ONLY);
+         if ( cam->camThreadId[0] != 0 ) {
+            // cas du mutltithread
+            // je change l'etat de la variable dans la thread principale
+            sprintf(ligne, "thread::send -async %s { set ::status_cam%d exp }", cam->mainThreadId, cam->camno);
+            Tcl_Eval(interp, ligne);
+            }
+
          // set current interp for multithread
          cam->interpCam = interp;
          cam->exptimeTimer = cam->exptime;
@@ -1127,6 +1286,12 @@ static int cmdCamStop(ClientData clientData, Tcl_Interp * interp, int argc, char
 
    sprintf(s, "status_cam%d", cam->camno);
    Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
+   if ( cam->camThreadId[0] != 0 ) {
+      // cas du mutltithread
+      // je change l'etat de la variable dans la thread principale
+      sprintf(s, "thread::send -async %s { set ::status_cam%d stand }", cam->mainThreadId, cam->camno);
+      Tcl_Eval(interp, s);
+   }
 
    return retour;
 }
@@ -1657,6 +1822,18 @@ static int cmdCamClose(ClientData clientData, Tcl_Interp * interp, int argc, cha
    // je supprime la variable globale contenant le status de la camera
    sprintf(s, "status_cam%d", cam->camno);
    Tcl_UnsetVar(interp, s, TCL_GLOBAL_ONLY);
+   if ( cam->camThreadId[0] != 0 ) {
+      // cas du mutltithread
+      // Pas necesaire de changer l'etat de la variable dans la thread de la camera  car la thread est supprimee juste apres
+      //sprintf(s, "thread::send -async %s { unset status_cam%d }", cam->camThreadId, cam->camno);
+      //Tcl_Eval(interp, s);
+   
+      // je supprime la thread de la camera
+      if ( strcmp(cam->camThreadId,"")!= 0 ) {
+         sprintf(s,"thread::release %s" , cam->camThreadId);
+         Tcl_Eval(interp, s);
+      }
+   }
 
    Tcl_ResetResult(interp);
    return TCL_OK;
