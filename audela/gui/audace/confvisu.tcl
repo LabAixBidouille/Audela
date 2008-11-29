@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.87 2008-11-29 16:41:48 denismarchais Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.88 2008-11-29 22:34:03 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -421,9 +421,9 @@ namespace eval ::confVisu {
       #::audace::MAJ_palette $visuNo
 
       #--- rafraichissement de l'affichage
-	  # La fonction audace::MAJ_palette appelle la fonction visu$visuNo pal, qui elle-meme
-	  # appelle l'equivalent de visu$visuNo disp. Il ne faut donc pas rappeler cette fonction
-	  # une deuxieme fois.
+      # La fonction audace::MAJ_palette appelle la fonction visu$visuNo pal, qui elle-meme
+      # appelle l'equivalent de visu$visuNo disp. Il ne faut donc pas rappeler cette fonction
+      # une deuxieme fois.
       while { 1 } {
          set catchResult [catch { ::audace::MAJ_palette $visuNo } msg ]
          if { $catchResult == 1 && $msg == "NO MEMORY FOR DISPLAY" } {
@@ -1629,8 +1629,8 @@ namespace eval ::confVisu {
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
          "$caption(audace,menu,vision_nocturne)" "1" "conf(confcolor,menu_night_vision)" \
          "::confColor::switchDayNight ; \
-            if { [ winfo exists $audace(base).select_color ] } { \
-               destroy $audace(base).select_color \
+            if { [ winfo exists $audace(base).selectColor ] } { \
+               destroy $audace(base).selectColor \
                ::confColor::run $visuNo\
             } \
          "

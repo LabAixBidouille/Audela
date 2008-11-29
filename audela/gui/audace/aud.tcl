@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.89 2008-11-10 22:06:39 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.90 2008-11-29 22:33:39 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -612,8 +612,8 @@ namespace eval ::audace {
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
          "$caption(audace,menu,vision_nocturne)" "1" "conf(confcolor,menu_night_vision)" \
          "::confColor::switchDayNight ; \
-            if { [ winfo exists $audace(base).select_color ] } { \
-               destroy $audace(base).select_color \
+            if { [ winfo exists $audace(base).selectColor ] } { \
+               destroy $audace(base).selectColor \
                ::confColor::run $visuNo\
             } \
          "
@@ -764,6 +764,8 @@ namespace eval ::audace {
          { ::confTypeFenetre::run "$audace(base).confTypeFenetre" }
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,apparence)..." \
          "::confColor::run $visuNo"
+     ### Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,police)..." \
+     ###    "::confFont::run $visuNo"
       Menu_Separator $visuNo "$caption(audace,menu,configuration)"
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,camera)..." \
          "::confCam::run"
