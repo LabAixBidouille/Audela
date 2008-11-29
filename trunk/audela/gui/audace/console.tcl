@@ -1,7 +1,7 @@
 #
 # Fichier : console.tcl
 # Description : Creation de la Console
-# Mise a jour $Id: console.tcl,v 1.8 2008-11-27 17:36:28 robertdelmas Exp $
+# Mise a jour $Id: console.tcl,v 1.9 2008-11-29 20:20:33 robertdelmas Exp $
 #
 
 namespace eval ::console {
@@ -54,18 +54,18 @@ namespace eval ::console {
       $This.ent1 configure -font $audace(font,console)
 
       #--- Initialisation des couleurs de la Console
-      set color(style_entete)   #007F00
-      set color(style_resultat) "azure4"
-      set color(style_cmd)      "black"
-      set color(style_erreur)   "red"
-      set color(style_prompt)   "purple"
+      set color(textConsoleEntete)   #007F00
+      set color(textConsoleResultat) "azure4"
+      set color(textConsoleCmd)      "black"
+      set color(textConsoleErreur)   "red"
+      set color(textConsolePrompt)   "purple"
 
       #--- Couleurs des messages de la Console
-      $This.txt1 tag configure style_entete   -foreground $color(style_entete)
-      $This.txt1 tag configure style_resultat -foreground $color(style_resultat)
-      $This.txt1 tag configure style_cmd      -foreground $color(style_cmd)
-      $This.txt1 tag configure style_erreur   -foreground $color(style_erreur)
-      $This.txt1 tag configure style_prompt   -foreground $color(style_prompt)
+      $This.txt1 tag configure style_entete   -foreground $color(textConsoleEntete)
+      $This.txt1 tag configure style_resultat -foreground $color(textConsoleResultat)
+      $This.txt1 tag configure style_cmd      -foreground $color(textConsoleCmd)
+      $This.txt1 tag configure style_erreur   -foreground $color(textConsoleErreur)
+      $This.txt1 tag configure style_prompt   -foreground $color(textConsolePrompt)
 
       #--- Affichage de l'en-tete dans la Console
       $This.txt1 insert end "#\n" style_entete
