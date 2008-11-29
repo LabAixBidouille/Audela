@@ -28,6 +28,7 @@ SC_PATH_TCLCONFIG
 SC_LOAD_TCLCONFIG
 SC_PATH_TKCONFIG
 SC_LOAD_TKCONFIG
+SC_ENABLE_THREADS
 dnl Visiblement les 8.3 ne declarent pas TCl_INCLUDE_SPEC, il faut
 dnl donc le reconstruire a partir de TCL_INC_DIR / TK_INC_DIR...
 if test x"${TCL_INCLUDE_SPEC}" = x ; then
@@ -38,6 +39,7 @@ if test x"${TCL_INCLUDE_SPEC}" = x ; then
    fi
 fi
 AC_SUBST(TCL_INCLUDE_SPEC)
+AC_SUBST(TCL_PREFIX)
 AC_SUBST(TK_XINCLUDES)
 AC_SUBST(TK_LIB_SPEC)
 AC_SUBST(TK_STUB_LIB_SPEC)
@@ -137,6 +139,15 @@ if test $TARGET = "Linux"; then
 	CXXFLAGS=$CXXFLAGS" -fPIC "
 	LDFLAGS=$LDFLAGS" -shared "
 fi
+
+AC_MSG_CHECKING([if TCL is thread enabled])
+if test x"${TCL_THREADS}" = x ; then
+        AC_MSG_RESULT([no.])
+else
+        AC_MSG_RESULT([yes.])
+	CXXFLAGS=$CXXFLAGS" -DTCL_THREADS "
+fi
+
 AC_SUBST(CXXFLAGS)
 AC_SUBST(LDFLAGS)
 
@@ -148,6 +159,9 @@ dnl Configure the modules to be compiled.
 dnl
 
 EXTERNAL="andor cfitsio gzip jpeg6b libdcjpeg libdcraw libftd2xx libgphoto2 libusb porttalk sbig sextractor tcl"
+if test x"$TCL_THREADS" = x"1" ; then
+	EXTERNAL="$EXTERNAL libthread"
+fi
 
 CONTRIB="ethernaude libgs"
 if test x"$GSL_FOUND" = x"1" ; then
