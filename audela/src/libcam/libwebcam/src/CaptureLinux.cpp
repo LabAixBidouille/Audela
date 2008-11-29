@@ -153,7 +153,7 @@ BOOL CCaptureLinux::initHardware(UINT uIndex, CCaptureListener * captureListener
       sprintf(errorMessage, "Can't open %s - %s", portName, strerror(errno));
       return FALSE;
    }
-
+//printf"initHardware %s cam_fd=%d\n",portName,cam_fd);
    /* Get camera capability */
    IsPhilips = 0;
    if (ioctl(cam_fd, VIDIOCGCAP, &vcap)) {
@@ -212,8 +212,13 @@ BOOL CCaptureLinux::initHardware(UINT uIndex, CCaptureListener * captureListener
 
    // j'inialise le mapping memoire du buffer de la camera
    if ( webcam_smmapInit() == 0 ) {
-      // je fais une capture
+      // je fais une capture de test
       //webcam_mmapCapture();
+   } else {
+      sprintf(errorMessage, "error webcam_smmapInit");
+      close(cam_fd);
+      cam_fd = -1;
+      return FALSE;   
    }
 
    return TRUE;
@@ -540,7 +545,7 @@ BOOL CCaptureLinux::setVideoParameter(int paramValue, int command, char * errorM
 {
    int ret = TRUE;
 
-printf("setVideoParameter value=%d command=%d \n",paramValue, command);
+//printf"setVideoParameter value=%d command=%d \n",paramValue, command);
    switch (command) {
 
    case SETVALIDFRAME:
@@ -719,20 +724,26 @@ BOOL    CCaptureLinux::grabFrame(char *errorMessage){
    int readResult;
    int i;
 
+//printf"grabFrame port=%s debut\n", this->portName);
    if (longExposure == 0)  {
       if (mmap_buffer) {
          // j'active l'acces direct a la memoire video
+//printf"grabFrame port=%s mmapCapture\n", this->portName);
          webcam_mmapCapture();
+//printf"grabFrame port=%s mmapSync\n", this->portName);
          webcam_mmapSync();
+//printf"grabFrame port=%s memcpy\n", this->portName);
          memcpy(yuvBuffer,webcam_mmapLastFrame(), yuvBufferSize);
       } else {
          if (cam_fd < 0) {
                strcpy(errorMessage, "cam_fd is < 0");
+//printf"grabFrame port=%s error=%s\n", this->portName,errorMessage);
                return FALSE;
             }
          readResult = read(cam_fd, yuvBuffer, yuvBufferSize);
          if (yuvBufferSize != readResult) {
             sprintf(errorMessage, "error while reading frame: read()=%d yuvBufferSize=%d",readResult,yuvBufferSize );
+//printf"grabFrame port=%s error=%s\n", this->portName,errorMessage);
             return FALSE;
          }
       }
@@ -752,6 +763,7 @@ BOOL    CCaptureLinux::grabFrame(char *errorMessage){
                readResult = read(cam_fd, yuvBuffer, yuvBufferSize);
                if (yuvBufferSize != readResult) {
                   sprintf(errorMessage, "error while reading frame: read()=%d yuvBufferSize=%d",readResult,yuvBufferSize );
+//printf"grabFrame port=%s error=%s\n", this->portName,errorMessage);
                   return FALSE;
                }
             }
@@ -761,6 +773,7 @@ BOOL    CCaptureLinux::grabFrame(char *errorMessage){
                readResult = read(cam_fd, yuvBuffer, yuvBufferSize);
                if (yuvBufferSize != readResult) {
                   sprintf(errorMessage, "error while reading frame: read()=%d yuvBufferSize=%d",readResult,yuvBufferSize );
+//printf"grabFrame port=%s error=%s\n", this->portName,errorMessage);
                   return FALSE;
                }
                yuv420p_to_rgb24(yuvBuffer, rgbBuffer,
@@ -774,15 +787,18 @@ BOOL    CCaptureLinux::grabFrame(char *errorMessage){
             }
             if (i >= 20) {
                strcpy(errorMessage, "impossible to find valid frame");
+//printf"grabFrame port=%s error=%s\n", this->portName,errorMessage);
                return FALSE;
             }
          } else {
             strcpy(errorMessage, "validFrame has invalid value");
+//printf"grabFrame port=%s error=%s\n", this->portName,errorMessage);
             return FALSE;
          }
       }
    }
 
+//printf"grabFrame port=%s fin\n", this->portName);
 
    return TRUE;
 }
@@ -908,6 +924,8 @@ BOOL CCaptureLinux::isCapturingNow()
  */
 unsigned char * CCaptureLinux::getGrabbedFrame(char *errorMessage)
 {
+//printf("getGrabbedFrame port=%s debut\n", this->portName);
+
    if (rgbBuffer != NULL) {
       free(rgbBuffer);
    }
@@ -917,6 +935,7 @@ unsigned char * CCaptureLinux::getGrabbedFrame(char *errorMessage)
    // Convert yuv to rgb
    yuv420p_to_rgb24(yuvBuffer, rgbBuffer, currentWidth, currentHeight);
 
+//printf("getGrabbedFrame port=%s fin\n", this->portName);
    return rgbBuffer;
 }
 
@@ -993,6 +1012,7 @@ int CCaptureLinux::webcam_smmapInit() {
 }
 
 void CCaptureLinux::webcam_mmapSync() {
+//printf("mmapSync %s cam_fd=%d mmap_last_sync_buff=%ld mmap_mbuf.frames=%d\n",this->portName, cam_fd,mmap_last_sync_buff,mmap_mbuf.frames);
    mmap_last_sync_buff=(mmap_last_sync_buff+1)%mmap_mbuf.frames;
    if (ioctl(cam_fd, VIDIOCSYNC, &mmap_last_sync_buff) < 0) {
       printf("webcam_mmapSync() error\n");
@@ -1011,7 +1031,8 @@ void CCaptureLinux::webcam_mmapCapture() {
    vm.format = VIDEO_PALETTE_YUV420P;
    vm.width = currentWidth ;
    vm.height = currentHeight ;
-   if (ioctl(cam_fd, VIDIOCMCAPTURE, &vm) < 0) {
+//printf("mmapCapture %s cam_fd=%d mmap_last_sync_buff=%ld mmap_mbuf.frames=%d,w=%d,h=%d\n",this->portName, cam_fd,mmap_last_capture_buff,mmap_mbuf.frames,vm.width,vm.height);
+    if (ioctl(cam_fd, VIDIOCMCAPTURE, &vm) < 0) {
       printf("webcam_mmapCapture error\n");
    }
 }
