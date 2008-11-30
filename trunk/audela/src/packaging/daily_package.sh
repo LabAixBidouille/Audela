@@ -25,7 +25,8 @@ Section: science
 Priority: optional
 Architecture: i386
 Essential: no
-Depends: libc6, libgcc1, libgphoto2-2-dev, libgsl0ldbl, libstdc++6, libusb-0.1-4, tcl8.4, tk8.4
+Depends: tk8.4, libgcc1, libstdc++6, gsl-bin
+Recommends: gzip, gnuplot, libusb-0.1-4
 Installed-Size: 57521
 Maintainer: Denis Marchais <denis.marchais@free.fr>
 Homepage: http://www.audela.org
