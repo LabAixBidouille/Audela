@@ -140,11 +140,7 @@ if test $TARGET = "Linux"; then
 	LDFLAGS=$LDFLAGS" -shared "
 fi
 
-AC_MSG_CHECKING([if TCL is thread enabled])
-if test x"${TCL_THREADS}" = x ; then
-        AC_MSG_RESULT([no.])
-else
-        AC_MSG_RESULT([yes.])
+if test x"${TCL_THREADS}" = x"1" ; then
 	CXXFLAGS=$CXXFLAGS" -DTCL_THREADS "
 fi
 
@@ -187,6 +183,8 @@ LIBTELS="libaudecom libcombit liblx200  liblxnet libouranos libtemma"
 
 LIBLINKS="libparallelport libquickremote"
 
+AC_MSG_RESULT([CXXFLAGS = $CXXFLAGS])
+AC_MSG_RESULT([LDFLAGS  = $LDFLAGS])
 AC_MSG_RESULT([EXTERNAL = $EXTERNAL])
 AC_MSG_RESULT([CONTRIB  = $CONTRIB])
 AC_MSG_RESULT([AUDELA   = $AUDELA])
