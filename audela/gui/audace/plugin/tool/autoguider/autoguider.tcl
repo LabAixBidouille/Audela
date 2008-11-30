@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.30 2008-11-21 17:02:01 michelpujol Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.31 2008-11-30 10:41:24 robertdelmas Exp $
 #
 
 #==============================================================
@@ -128,23 +128,25 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists conf(autoguider,searchRadius)] }         { set conf(autoguider,searchRadius)         "4" }
    if { ! [ info exists conf(autoguider,searchThreshold)] }      { set conf(autoguider,searchThreshold)      "40" }
 
-   set private($visuNo,base)             $in
-   set private($visuNo,This)             "$in.autoguider"
-   set private($visuNo,hCanvas)          [::confVisu::getCanvas $visuNo]
+   if { $conf(autoguider,originCoord) == "" }                    { set conf(autoguider,originCoord)          [list 320 240 ] }
 
-   set private($visuNo,mountEnabled)       0
-   set private($visuNo,acquisitionState) 0
-   set private($visuNo,acquisitionResult)     ""
-   set private($visuNo,dx)               "0.00"
-   set private($visuNo,dy)               "0.00"
-   set private($visuNo,delay,alpha)      "0.00"
-   set private($visuNo,delay,delta)      "0.00"
-   set private($visuNo,targetCoord)      ""
-   set private($visuNo,interval)         ""
-   set private($visuNo,updateAxis)       "0"
-   set private($visuNo,camBufNo)         "0"
-   set private($visuNo,cumulCounter)     "0"
-   ####set private($visuNo,cumulFileName)    "autoguider_cumul_visu$visuNo"
+   set private($visuNo,base)              $in
+   set private($visuNo,This)              "$in.autoguider"
+   set private($visuNo,hCanvas)           [::confVisu::getCanvas $visuNo]
+
+   set private($visuNo,mountEnabled)      0
+   set private($visuNo,acquisitionState)  0
+   set private($visuNo,acquisitionResult) ""
+   set private($visuNo,dx)                "0.00"
+   set private($visuNo,dy)                "0.00"
+   set private($visuNo,delay,alpha)       "0.00"
+   set private($visuNo,delay,delta)       "0.00"
+   set private($visuNo,targetCoord)       "$conf(autoguider,originCoord)"
+   set private($visuNo,interval)          ""
+   set private($visuNo,updateAxis)        "0"
+   set private($visuNo,camBufNo)          "0"
+   set private($visuNo,cumulCounter)      "0"
+  ### set private($visuNo,cumulFileName)  "autoguider_cumul_visu$visuNo"
 
    #--- Petit raccourci bien pratique
    set This $private($visuNo,This)
@@ -411,8 +413,6 @@ proc ::autoguider::stopTool { { visuNo 1 } } {
 
    #--- je masque la fenetre
    pack forget $private($visuNo,This)
-
-
 }
 
 #------------------------------------------------------------
@@ -470,7 +470,6 @@ proc ::autoguider::startSearch { visuNo } {
 
    #--- j'attends la fin de l'acquisition
    vwait ::autoguider::private($visuNo,acquisitionState)
-
 
    if { $private($visuNo,acquisitionResult) != "" } {
       set hCanvas [::confVisu::getCanvas $visuNo]
@@ -759,8 +758,6 @@ proc ::autoguider::setTargetCoord { visuNo x y } {
 
    #--- je transmet les coordonnees a l'interperteur de la camera
    ::camera::setParam [::confVisu::getCamItem $visuNo] "targetCoord" $private($visuNo,targetCoord)
-
-
 }
 
 #------------------------------------------------------------
@@ -968,7 +965,6 @@ proc ::autoguider::setShowTarget { visuNo } {
    ###}
 }
 
-
 #------------------------------------------------------------
 # createAlphaDeltaAxis
 #    dessine les axes alpha et delta centres sur l'origine
@@ -1006,7 +1002,6 @@ proc ::autoguider::deleteAlphaDeltaAxis { visuNo } {
    #--- je supprime les axes
    $private($visuNo,hCanvas) delete axis
 }
-
 
 #------------------------------------------------------------
 # drawAxis
@@ -1232,7 +1227,6 @@ proc ::autoguider::setMountEnabled { visuNo { state "" } } {
    #--- je notifie l'interperteur de la camera
    ::camera::setParam [::confVisu::getCamItem $visuNo] "mountEnabled" $private($visuNo,mountEnabled)
 }
-
 
 #------------------------------------------------------------
 # selectBinning
