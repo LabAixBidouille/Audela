@@ -1,0 +1,100 @@
+#
+# Fichier : conffont.cap
+# Mise a jour $Id: conffont.cap,v 1.1 2008-11-30 09:30:09 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(conffont,title)              "Fonts"
+set caption(conffont,selection)          "Font Selection: "
+set caption(conffont,couleur_defaut)     "Reset Fonts"
+set caption(conffont,confirmation)       "Are you sure you want to reset fonts?"
+set caption(conffont,button_restore)     "Default Fonts"
+set caption(conffont,police)             "Font"
+set caption(conffont,style)              "Style"
+set caption(conffont,taille)             "Size"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(conffont,title)           "Police de caractères"
+   set caption(conffont,selection)       "Sélection de la police de caractères : "
+   set caption(conffont,couleur_defaut)  "Rétablir les polices de caractères d'origine"
+   set caption(conffont,confirmation)    "Etes-vous sûr de vouloir rétablir les polices de caractères d'origine ?"
+   set caption(conffont,button_restore)  "Police de caractères d'origine"
+   set caption(conffont,police)          "Police"
+   set caption(conffont,style)           "Style"
+   set caption(conffont,taille)          "Taille"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(conffont,title)           "# Police de caractères"
+   set caption(conffont,selection)       "# Sélection de la police de caractères: "
+   set caption(conffont,couleur_defaut)  "# Rétablir les polices de caractères d'origine"
+   set caption(conffont,confirmation)    "# Etes-vous sûr de vouloir rétablir les polices de caractères d'origine?"
+   set caption(conffont,button_restore)  "# Police de caractères d'origine"
+   set caption(conffont,police)          "# Police"
+   set caption(conffont,style)           "# Style"
+   set caption(conffont,taille)          "# Taille"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(conffont,title)           "# Police de caractères"
+   set caption(conffont,selection)       "# Sélection de la police de caractères: "
+   set caption(conffont,couleur_defaut)  "# Rétablir les polices de caractères d'origine"
+   set caption(conffont,confirmation)    "# Etes-vous sûr de vouloir rétablir les polices de caractères d'origine?"
+   set caption(conffont,button_restore)  "# Police de caractères d'origine"
+   set caption(conffont,police)          "# Police"
+   set caption(conffont,style)           "# Style"
+   set caption(conffont,taille)          "# Taille"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(conffont,title)           "# Police de caractères"
+   set caption(conffont,selection)       "# Sélection de la police de caractères: "
+   set caption(conffont,couleur_defaut)  "# Rétablir les polices de caractères d'origine"
+   set caption(conffont,confirmation)    "# Etes-vous sûr de vouloir rétablir les polices de caractères d'origine?"
+   set caption(conffont,button_restore)  "# Police de caractères d'origine"
+   set caption(conffont,police)          "# Police"
+   set caption(conffont,style)           "# Style"
+   set caption(conffont,taille)          "# Taille"
+
+# *************** Version portugaise ****************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(conffont,title)           "# Police de caractères"
+   set caption(conffont,selection)       "# Sélection de la police de caractères: "
+   set caption(conffont,couleur_defaut)  "# Rétablir les polices de caractères d'origine"
+   set caption(conffont,confirmation)    "# Etes-vous sûr de vouloir rétablir les polices de caractères d'origine?"
+   set caption(conffont,button_restore)  "# Police de caractères d'origine"
+   set caption(conffont,police)          "# Police"
+   set caption(conffont,style)           "# Style"
+   set caption(conffont,taille)          "# Taille"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(conffont,title)           "# Police de caractères"
+   set caption(conffont,selection)       "# Sélection de la police de caractères: "
+   set caption(conffont,couleur_defaut)  "# Rétablir les polices de caractères d'origine"
+   set caption(conffont,confirmation)    "# Etes-vous sûr de vouloir rétablir les polices de caractères d'origine?"
+   set caption(conffont,button_restore)  "# Police de caractères d'origine"
+   set caption(conffont,police)          "# Police"
+   set caption(conffont,style)           "# Style"
+   set caption(conffont,taille)          "# Taille"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
