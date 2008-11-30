@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.71 2008-11-29 13:03:55 michelpujol Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.72 2008-11-30 15:52:18 michelpujol Exp $
 #
 
 #==============================================================
@@ -1612,7 +1612,6 @@ proc ::acqfc::Go { visuNo } {
    $panneau(acqfc,$visuNo,This).mode.but configure -state normal
    #--- Je restitue l'affichage du bouton "GO"
    $panneau(acqfc,$visuNo,This).go_stop.but configure -text $caption(acqfc,GO) -state normal -command "::acqfc::Go $visuNo"
-console::disp "acqImageEnd go_stop.but GO\n"
    #--- je positionne l'indateur de fin d'acquisition (pour startAcquisitionSerieImage)
    set ::panneau(acqfc,$visuNo,acqImageEnd) "1"
 }
@@ -1718,7 +1717,7 @@ proc ::acqfc::dispTime { visuNo } {
    } else {
       if { $panneau(acqfc,$visuNo,attente_pose) == "0" } {
          if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
-            if { [expr $t > 1] } {
+            if { [expr $t > 0] } {
                set status "[ expr $t ] / [ format "%d" [ expr int($panneau(acqfc,$visuNo,pose)) ] ]"
             } else {
                set status "$caption(camera,numerisation)"
