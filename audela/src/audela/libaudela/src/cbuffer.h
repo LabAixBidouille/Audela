@@ -221,7 +221,6 @@ public:
    void UnifyBg();
    void SubStars(FILE *fascii, int indexcol_x, int indexcol_y, int indexcol_bg, double radius, double xc_exclu, double yc_exclu, double radius_exclu,int *n);
    void Window(int x1, int y1, int x2, int y2);
-    void DMVariance(double *mean, double *stddev);
 };
 
 #endif
