@@ -6420,14 +6420,7 @@ if test $TARGET = "Linux"; then
 	LDFLAGS=$LDFLAGS" -shared "
 fi
 
-{ echo "$as_me:$LINENO: checking if TCL is thread enabled" >&5
-echo $ECHO_N "checking if TCL is thread enabled... $ECHO_C" >&6; }
-if test x"${TCL_THREADS}" = x ; then
-        { echo "$as_me:$LINENO: result: no." >&5
-echo "${ECHO_T}no." >&6; }
-else
-        { echo "$as_me:$LINENO: result: yes." >&5
-echo "${ECHO_T}yes." >&6; }
+if test x"${TCL_THREADS}" = x"1" ; then
 	CXXFLAGS=$CXXFLAGS" -DTCL_THREADS "
 fi
 
@@ -6596,6 +6589,10 @@ LIBTELS="libaudecom libcombit liblx200  liblxnet libouranos libtemma"
 
 LIBLINKS="libparallelport libquickremote"
 
+{ echo "$as_me:$LINENO: result: CXXFLAGS = $CXXFLAGS" >&5
+echo "${ECHO_T}CXXFLAGS = $CXXFLAGS" >&6; }
+{ echo "$as_me:$LINENO: result: LDFLAGS  = $LDFLAGS" >&5
+echo "${ECHO_T}LDFLAGS  = $LDFLAGS" >&6; }
 { echo "$as_me:$LINENO: result: EXTERNAL = $EXTERNAL" >&5
 echo "${ECHO_T}EXTERNAL = $EXTERNAL" >&6; }
 { echo "$as_me:$LINENO: result: CONTRIB  = $CONTRIB" >&5
