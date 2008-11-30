@@ -186,7 +186,6 @@ static struct cmditem cmdlist[] = {
    {(char*)"A_starlist",(Tcl_CmdProc *)cmdA_StarList},
    {(char*)"ubg",(Tcl_CmdProc *)cmdUnifyBg},
    {(char*)"region",(Tcl_CmdProc *)cmdRegion},
-   {(char*)"DMvariance",(Tcl_CmdProc *)cmdDMTestVariance},
    {NULL, NULL}
 };
 
@@ -4930,10 +4929,3 @@ int cmdTtFitellip(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    delete ligne;
    return retour;
 }
-
-int cmdDMTestVariance(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
-{
-    ((CBuffer*)clientData)->DMVariance(NULL,NULL);
-    return TCL_OK;
-}
-
