@@ -3,7 +3,7 @@
 # Description : procedures d'acqusitition et de traitement avec
 #         plusieurs cameras simultanées exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise a jour $Id: camerathread.tcl,v 1.6 2008-11-29 12:58:59 michelpujol Exp $
+# Mise a jour $Id: camerathread.tcl,v 1.7 2008-11-30 17:32:43 michelpujol Exp $
 #
 
 namespace eval ::camerathread {
@@ -848,8 +848,13 @@ proc ::camerathread::disp { message } {
 #------------------------------------------------------------
 proc ::camerathread::setParam { paramName paramValue } {
    variable private
-   #--- thread::eval utilise un mutex interne a la thread
-   thread::eval "set private($paramName) { $paramValue }"
+
+   if { $private(mainThreadNo)==0 } {
+      interp eval "" "set private($paramName) { $paramValue }"
+   } else {
+      #--- thread::eval utilise un mutex interne a la thread
+      thread::eval "set private($paramName) { $paramValue }"
+   }
 }
 
 #------------------------------------------------------------
