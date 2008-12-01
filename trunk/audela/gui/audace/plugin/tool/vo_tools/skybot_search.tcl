@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_search.tcl,v 1.21 2008-10-02 18:34:20 robertdelmas Exp $
+# Mise a jour $Id: skybot_search.tcl,v 1.22 2008-12-01 18:11:55 robertdelmas Exp $
 #
 
 namespace eval skybot_Search {
@@ -946,7 +946,7 @@ namespace eval skybot_Search {
             #--- Cree un bouton pour afficher la liste des code UAI
             button $fov.al.but_iau_code \
                -text "$caption(search,liste_code_uai)" -borderwidth 1 \
-               -font $audace(font,arial_6_b) \
+               -font $audace(font,arial_7_b) \
                -command { ::audace::Lance_Site_htm $myurl(iau_codes) }
             pack $fov.al.but_iau_code \
                -in $fov.al -side bottom -anchor c -padx 5 -pady 1 -expand 0
