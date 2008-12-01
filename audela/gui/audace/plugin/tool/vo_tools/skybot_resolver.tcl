@@ -2,7 +2,7 @@
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_resolver.tcl,v 1.21 2008-10-02 18:34:04 robertdelmas Exp $
+# Mise a jour $Id: skybot_resolver.tcl,v 1.22 2008-12-01 18:11:42 robertdelmas Exp $
 #
 
 namespace eval skybot_Resolver {
@@ -383,7 +383,7 @@ namespace eval skybot_Resolver {
              -in $This.frame3.eph -anchor c -side left
             #--- Creation des checkbutton pour activer ou non la resolution par Skybot
             checkbutton $This.frame3.eph.cb.but_skybot -text "$caption(resolver,but_skybot)" \
-               -variable voconf(but_skybot) -font $audace(font,arial_6_b) -bg "red"
+               -variable voconf(but_skybot) -font $audace(font,arial_7_b) -bg "red"
             pack $This.frame3.eph.cb.but_skybot  \
                -in $This.frame3.eph.cb -side top -anchor w -padx 3
             #--- Cree un frame pour mettre l'acitvation du resolver Sesame et pour le choix du serveur
@@ -392,24 +392,24 @@ namespace eval skybot_Resolver {
                -in $This.frame3.eph.cb -side top -anchor w
               #--- Creation du checkbutton pour activer ou non la resolution par Sesame
               checkbutton $This.frame3.eph.cb.sesame.but_sesame -text "$caption(resolver,but_sesame)" \
-                 -variable voconf(but_sesame) -font $audace(font,arial_6_b)
+                 -variable voconf(but_sesame) -font $audace(font,arial_7_b)
               pack $This.frame3.eph.cb.sesame.but_sesame  \
                  -in $This.frame3.eph.cb.sesame -side left -anchor c -padx 3
               #--- Creation du bouton menu pour choisir le serveur de Sesame
-              label $This.frame3.eph.cb.sesame.lab -text "@" -font $audace(font,arial_6_b) -borderwidth 0 -relief flat
+              label $This.frame3.eph.cb.sesame.lab -text "@" -font $audace(font,arial_7_b) -borderwidth 0 -relief flat
               pack $This.frame3.eph.cb.sesame.lab \
                  -in $This.frame3.eph.cb.sesame -side left -anchor c
               menubutton $This.frame3.eph.cb.sesame.but_server \
                  -textvariable voconf(sesame_server) -menu $This.frame3.eph.cb.sesame.but_server.m \
-                 -borderwidth 1 -relief raised -font $audace(font,arial_6_n)
+                 -borderwidth 1 -relief raised -font $audace(font,arial_7_n)
               pack $This.frame3.eph.cb.sesame.but_server  \
                  -in $This.frame3.eph.cb.sesame -side left -anchor c
                 #--- Menu server
                 menu $This.frame3.eph.cb.sesame.but_server.m
-                $This.frame3.eph.cb.sesame.but_server.m add radiobutton -label "CDS" -variable voconf(sesame_server) -font $audace(font,arial_6_n)
-                $This.frame3.eph.cb.sesame.but_server.m add radiobutton -label "ADS" -variable voconf(sesame_server) -font $audace(font,arial_6_n)
-                $This.frame3.eph.cb.sesame.but_server.m add radiobutton -label "ADAC" -variable voconf(sesame_server) -font $audace(font,arial_6_n)
-                $This.frame3.eph.cb.sesame.but_server.m add radiobutton -label "CADC" -variable voconf(sesame_server) -font $audace(font,arial_6_n)
+                $This.frame3.eph.cb.sesame.but_server.m add radiobutton -label "CDS" -variable voconf(sesame_server) -font $audace(font,arial_7_n)
+                $This.frame3.eph.cb.sesame.but_server.m add radiobutton -label "ADS" -variable voconf(sesame_server) -font $audace(font,arial_7_n)
+                $This.frame3.eph.cb.sesame.but_server.m add radiobutton -label "ADAC" -variable voconf(sesame_server) -font $audace(font,arial_7_n)
+                $This.frame3.eph.cb.sesame.but_server.m add radiobutton -label "CADC" -variable voconf(sesame_server) -font $audace(font,arial_7_n)
 
       #--- Cree un frame pour l'affichage du resultat de la recherche
       frame $This.frame5
