@@ -2,7 +2,7 @@
 # Fichier : skybot_statut.tcl
 # Description : Affiche le statut de la base de donnees SkyBoT
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_statut.tcl,v 1.12 2008-06-29 21:40:55 robertdelmas Exp $
+# Mise a jour $Id: skybot_statut.tcl,v 1.13 2008-12-01 18:13:43 robertdelmas Exp $
 #
 
 namespace eval skybot_Statut {
@@ -77,7 +77,7 @@ namespace eval skybot_Statut {
          wm deiconify $This
          focus $This.frame11.but_fermer
          #--- Gestion du bouton
-         $audace(base).vo_tools.fra5.but1 configure -relief raised -state normal
+         $audace(base).tool.vo_tools.fra5.but1 configure -relief raised -state normal
          return
       }
 
@@ -229,13 +229,13 @@ namespace eval skybot_Statut {
             set msgError $caption(statut,msg_skybot)
          }
          tk_messageBox -title $caption(statut,msg_erreur) -type ok -message $msgError
-         $audace(base).vo_tools.fra5.but1 configure -relief raised -state normal
+         $audace(base).tool.vo_tools.fra5.but1 configure -relief raised -state normal
          return
 
       }
 
       #--- Gestion du bouton
-      $audace(base).vo_tools.fra5.but1 configure -relief raised -state normal
+      $audace(base).tool.vo_tools.fra5.but1 configure -relief raised -state normal
 
       #--- La fenetre est active
       focus $This
