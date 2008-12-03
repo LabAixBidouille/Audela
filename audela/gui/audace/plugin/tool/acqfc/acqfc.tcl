@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.72 2008-11-30 15:52:18 michelpujol Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.73 2008-12-03 19:11:11 robertdelmas Exp $
 #
 
 #==============================================================
@@ -409,7 +409,7 @@ proc ::acqfc::Adapt_Panneau_AcqFC { visuNo args } {
       pack forget $panneau(acqfc,$visuNo,This).obt.but
       pack forget $panneau(acqfc,$visuNo,This).obt.lab
       if { ( "$camProduct" != "webcam" ) && ( "$camProduct" != "dslr" ) } {
-         pack $panneau(acqfc,$visuNo,This).obt.lab1 -side top -ipady 3
+         pack $panneau(acqfc,$visuNo,This).obt.lab1 -side top -fill x -ipady 3
       }
    }
    #---
@@ -578,7 +578,6 @@ proc ::acqfc::setShutter { visuNo state } {
       $panneau(acqfc,$visuNo,This).obt.lab configure -text $panneau(acqfc,$visuNo,obt,$panneau(acqfc,$visuNo,obt))
    }
 }
-
 
 #***** Procedure de test de validite d'un entier *****************
 #--- Cette procedure (copiee de methking.tcl) verifie que la chaine passee en argument decrit bien un entier.
@@ -1082,7 +1081,6 @@ proc ::acqfc::stopAcquisition { visuNo } {
    }
 }
 
-
 #***** Procedure Go (appui sur le bouton Go/Stop) *********
 proc ::acqfc::Go { visuNo } {
    global audace caption conf panneau
@@ -1128,10 +1126,10 @@ proc ::acqfc::Go { visuNo } {
    }
 
    #--- Initialisation du fenetrage
-   ###catch {
-   ###   set n1n2 [ cam$camNo nbcells ]
-   ###   cam$camNo window [ list 1 1 [ lindex $n1n2 0 ] [ lindex $n1n2 1 ] ]
-   ###}
+  ### catch {
+  ###    set n1n2 [ cam$camNo nbcells ]
+  ###    cam$camNo window [ list 1 1 [ lindex $n1n2 0 ] [ lindex $n1n2 1 ] ]
+  ### }
 
    if { [::confCam::getPluginProperty $panneau(acqfc,$visuNo,camItem) hasBinning] == "1" } {
       #--- je selectionne le binning
@@ -1238,7 +1236,6 @@ proc ::acqfc::Go { visuNo } {
       }
    }
 
-
    set catchResult [catch {
       set camNo $panneau(acqfc,$visuNo,camNo)
       set bufNo [ ::confVisu::getBufNo $visuNo ]
@@ -1247,7 +1244,6 @@ proc ::acqfc::Go { visuNo } {
       #--- j'intialise l'indicateur d'etat de l'acquisition
       set panneau(acqfc,$visuNo,acquisitionState) ""
    set compteurImageSerie 1
-
 
    #--- Boucle d'acquisition des images
    while { $panneau(acqfc,$visuNo,demande_arret) == "0"  } {
@@ -1276,7 +1272,7 @@ proc ::acqfc::Go { visuNo } {
       foreach keyword [ ::keyword::getKeywords $visuNo ] {
          buf$bufNo setkwd $keyword
       }
-      ###wm title [winfo toplevel $panneau(acqfc,$visuNo,base)] "$caption(acqfc,acquisition) $panneau(acqfc,$visuNo,pose) s"
+     ### wm title [winfo toplevel $panneau(acqfc,$visuNo,base)] "$caption(acqfc,acquisition) $panneau(acqfc,$visuNo,pose) s"
 
       #--- je trace la duree réelle de la pose s'il y a eu une interruption
       if { $panneau(acqfc,$visuNo,demande_arret) == "1" } {
@@ -1471,7 +1467,6 @@ proc ::acqfc::Go { visuNo } {
             }
          } ;  #--- fin du switch d'acquisition
 
-
          #--- Je retablis le choix du fonctionnement de l'obturateur
          if { $panneau(acqfc,$visuNo,pose) == "0" } {
             switch -exact -- $panneau(acqfc,$visuNo,obt) {
@@ -1617,7 +1612,6 @@ proc ::acqfc::Go { visuNo } {
 }
 #***** Fin de la procedure de lancement d'acquisition **********
 
-
 #------------------------------------------------------------
 # callbackAcquisition
 #     cette procedure est appelee par la thread de la camera
@@ -1687,7 +1681,6 @@ proc ::acqfc::Stop { visuNo } {
 }
 #***** Fin de la procedure Go/Stop *****************************
 
-
 #***** Procedure chargement differe d'image pour APN (DSLR) ****
 proc ::acqfc::loadLastImage { visuNo camNo } {
    set result [ catch { cam$camNo loadlastimage } msg ]
@@ -1744,7 +1737,6 @@ proc ::acqfc::dispTime { visuNo } {
       set panneau(acqfc,$visuNo,dispTimeAfterId) ""
    }
 }
-
 
 #***** Procedure d'affichage d'une barre de progression ********
 proc ::acqfc::Avancement_pose { visuNo { t } } {
@@ -2275,7 +2267,6 @@ proc ::acqfc::choixTelechargement { visuNo} {
 }
 #***** Fin de la configuration du telechargement *********************
 
-
 proc ::acqfc::acqfcBuildIF { visuNo } {
    global audace caption conf panneau
 
@@ -2370,8 +2361,8 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
    frame $panneau(acqfc,$visuNo,This).status -borderwidth 2 -relief ridge
       label $panneau(acqfc,$visuNo,This).status.lab -text "" -font $audace(font,arial_10_b) -relief ridge \
          -justify center -width 16
-      pack $panneau(acqfc,$visuNo,This).status.lab -side top -pady 1
-   pack $panneau(acqfc,$visuNo,This).status -side top
+      pack $panneau(acqfc,$visuNo,This).status.lab -side top -fill x -pady 1
+   pack $panneau(acqfc,$visuNo,This).status -side top -fill x
 
    #--- Trame du bouton Go/Stop
    frame $panneau(acqfc,$visuNo,This).go_stop -borderwidth 2 -relief ridge
