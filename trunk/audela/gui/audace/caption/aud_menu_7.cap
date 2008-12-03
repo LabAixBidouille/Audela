@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_7.cap
-# Mise a jour $Id: aud_menu_7.cap,v 1.10 2008-04-23 21:21:03 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.cap,v 1.11 2008-12-03 17:01:39 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -23,6 +23,7 @@ set caption(audace,menu,tempo_scan)             "Drift Scan and Fast Scan"
 set caption(audace,menu,messages_console)       "Terminal Messages"
 set caption(audace,menu,type_fenetre)           "Window Type"
 set caption(audace,menu,apparence)              "Appearance"
+set caption(audace,menu,police)                 "Fonts"
 set caption(audace,menu,camera)                 "Camera"
 set caption(audace,menu,monture)                "Mount"
 set caption(audace,menu,liaison)                "Link"
@@ -72,6 +73,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,messages_console)    "Messages sur la Console"
    set caption(audace,menu,type_fenetre)        "Type de fenêtre"
    set caption(audace,menu,apparence)           "Apparence"
+   set caption(audace,menu,police)              "Police de caractères"
    set caption(audace,menu,camera)              "Caméra"
    set caption(audace,menu,monture)             "Monture"
    set caption(audace,menu,liaison)             "Liaison"
@@ -121,6 +123,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,messages_console)    "Messaggio sulla Console"
    set caption(audace,menu,type_fenetre)        "Tipo di finestra"
    set caption(audace,menu,apparence)           "Apparenza"
+   set caption(audace,menu,police)              "Font"
    set caption(audace,menu,camera)              "Camera"
    set caption(audace,menu,monture)             "Montatura"
    set caption(audace,menu,liaison)             "Collegamento"
@@ -170,6 +173,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,messages_console)    "Mensajes de Consola"
    set caption(audace,menu,type_fenetre)        "Tipo de ventana"
    set caption(audace,menu,apparence)           "Apariencia"
+   set caption(audace,menu,police)              "Fuentes"
    set caption(audace,menu,camera)              "Cámara"
    set caption(audace,menu,monture)             "Montura"
    set caption(audace,menu,liaison)             "Enlace"
@@ -219,6 +223,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,messages_console)    "Auf die Konsole auftragen"
    set caption(audace,menu,type_fenetre)        "Fenster Typ"
    set caption(audace,menu,apparence)           "Erscheinung"
+   set caption(audace,menu,police)              "Schriftgrößen"
    set caption(audace,menu,camera)              "Kamera"
    set caption(audace,menu,monture)             "Montierung"
    set caption(audace,menu,liaison)             "Link"
@@ -268,6 +273,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,messages_console)    "Mensagens de Consola"
    set caption(audace,menu,type_fenetre)        "Tipo de janela"
    set caption(audace,menu,apparence)           "Aparência"
+   set caption(audace,menu,police)              "Tipos de letra"
    set caption(audace,menu,camera)              "Câmara"
    set caption(audace,menu,monture)             "Montagem"
    set caption(audace,menu,liaison)             "Ligação"
@@ -317,6 +323,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,messages_console)    "Konsolmeddelelser"
    set caption(audace,menu,type_fenetre)        "Vindue-type"
    set caption(audace,menu,apparence)           "Udseende"
+   set caption(audace,menu,police)              "Skrifttype"
    set caption(audace,menu,camera)              "Kamera"
    set caption(audace,menu,monture)             "Montering"
    set caption(audace,menu,liaison)             "Link"
