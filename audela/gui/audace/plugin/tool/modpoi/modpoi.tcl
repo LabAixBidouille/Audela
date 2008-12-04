@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi.tcl,v 1.18 2008-11-01 19:10:52 robertdelmas Exp $
+# Mise a jour $Id: modpoi.tcl,v 1.19 2008-12-04 16:51:50 robertdelmas Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -1526,7 +1526,7 @@ proc modpoi_coord { } {
    lappend modpoi(starname,choosen) "$modpoi(starname,actual)"
 }
 
-proc modpoi_catalogmean2apparent { rae dece equinox date { dra_dan "" } { ddec_dan "" } } {
+proc modpoi_catalogmean2apparent { rae dece equinox date { dra_dan "" } { ddec_dan "" } { epoch "" } } {
 #--- Input
 #--- rae,dece : coordinates J2000.0 (degrees)
 #--- Output
@@ -1542,7 +1542,7 @@ proc modpoi_catalogmean2apparent { rae dece equinox date { dra_dan "" } { ddec_d
    #--- Aberration annuelle
    set radec [mc_aberrationradec annual [list $rae $dece] $date ]
    #--- Correction de precession
-   set radec [mc_precessradec $radec $equinox $date [list $dra_dan $ddec_dan $equinox]]
+   set radec [mc_precessradec $radec $equinox $date [list $dra_dan $ddec_dan $epoch]]
    #--- Correction de nutation
    set radec [mc_nutationradec $radec $date]
    #--- Aberration de l'aberration diurne
@@ -1822,7 +1822,7 @@ proc modpoi_choose_beststar { { h0 0 } { dec0 80 } { date now } } {
       set dece [lindex $star 1]
       set dra_dan [lindex $star 2]
       set ddec_dan [lindex $star 3]
-      set listv [modpoi_catalogmean2apparent $rae $dece J2000.0 $date $dra_dan $ddec_dan]
+      set listv [modpoi_catalogmean2apparent $rae $dece J2000.0 $date $dra_dan $ddec_dan J1991.25]
       set hauteur [lindex $listv 3]
       set dummy [list [lindex $radec_moon 0] [lindex $radec_moon 1] $rae $dece]
       set sepmoon [lindex [mc_anglesep $dummy] 0]
@@ -1847,7 +1847,7 @@ proc modpoi_choose_beststar { { h0 0 } { dec0 80 } { date now } } {
          set starname "[lindex $modpoi(stars,names) $k]"
          set rae [lindex $star 0]
          set dece [lindex $star 1]
-         set listv [modpoi_catalogmean2apparent $rae $dece J2000.0 $date $dra_dan $ddec_dan]
+         set listv [modpoi_catalogmean2apparent $rae $dece J2000.0 $date $dra_dan $ddec_dan J1991.25]
          set hauteur [lindex $listv 3]
          if {$starname=="$modpoi(starname,actual)"} {
             #--- Case :
