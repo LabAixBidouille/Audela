@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.73 2008-12-03 19:11:11 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.74 2008-12-04 16:54:23 robertdelmas Exp $
 #
 
 #==============================================================
@@ -59,6 +59,11 @@ proc ::acqfc::createPluginInstance { { in "" } { visuNo 1 } } {
    #--- Valeur par defaut du binning
    if { ! [ info exists panneau(acqfc,$visuNo,bin) ] } {
       set panneau(acqfc,$visuNo,bin) "$parametres(acqfc,$visuNo,bin)"
+   }
+
+   #--- Cas particulier ou la variable du binning est vide (connexion d'une WebCam)
+   if { $panneau(acqfc,$visuNo,bin) == "" } {
+      set panneau(acqfc,$visuNo,bin) "2x2"
    }
 
    #--- Entrer ici les valeurs pour l'obturateur a afficher dans le menu "obt"
@@ -355,7 +360,7 @@ proc ::acqfc::Adapt_Panneau_AcqFC { visuNo args } {
          #--- Cas d'une WebCam Longue Pose
          pack $panneau(acqfc,$visuNo,This).pose.but -side left
          pack $panneau(acqfc,$visuNo,This).pose.lab -side right
-         pack $panneau(acqfc,$visuNo,This).pose.entr -side left
+         pack $panneau(acqfc,$visuNo,This).pose.entr -side left -fill both -expand true
          pack forget $panneau(acqfc,$visuNo,This).bin.but
          pack forget $panneau(acqfc,$visuNo,This).bin.lab
          pack forget $panneau(acqfc,$visuNo,This).pose.conf
@@ -368,9 +373,9 @@ proc ::acqfc::Adapt_Panneau_AcqFC { visuNo args } {
       #--- C'est une APN (DSLR)
       pack $panneau(acqfc,$visuNo,This).pose.but -side left
       pack $panneau(acqfc,$visuNo,This).pose.lab -side right
-      pack $panneau(acqfc,$visuNo,This).pose.entr -side left
+      pack $panneau(acqfc,$visuNo,This).pose.entr -side left -fill both -expand true
       pack $panneau(acqfc,$visuNo,This).bin.but -side left
-      pack $panneau(acqfc,$visuNo,This).bin.lab -side left
+      pack $panneau(acqfc,$visuNo,This).bin.lab -side left -fill both -expand true
       pack forget $panneau(acqfc,$visuNo,This).pose.conf
       pack forget $panneau(acqfc,$visuNo,This).obt.but
       pack forget $panneau(acqfc,$visuNo,This).obt.lab
@@ -380,9 +385,9 @@ proc ::acqfc::Adapt_Panneau_AcqFC { visuNo args } {
       #--- Ce n'est pas une WebCam, ni une APN (DSLR)
       pack $panneau(acqfc,$visuNo,This).pose.but -side left
       pack $panneau(acqfc,$visuNo,This).pose.lab -side right
-      pack $panneau(acqfc,$visuNo,This).pose.entr -side left
+      pack $panneau(acqfc,$visuNo,This).pose.entr -side left -fill both -expand true
       pack $panneau(acqfc,$visuNo,This).bin.but -side left
-      pack $panneau(acqfc,$visuNo,This).bin.lab -side left
+      pack $panneau(acqfc,$visuNo,This).bin.lab -side left -fill both -expand true
       pack forget $panneau(acqfc,$visuNo,This).pose.conf
       pack $panneau(acqfc,$visuNo,This).obt.but -side left -ipady 3
       pack $panneau(acqfc,$visuNo,This).obt.lab -side left -fill x -expand true -ipady 3
@@ -448,7 +453,10 @@ proc ::acqfc::Chargement_Var { visuNo } {
          set parametres(acqfc,$visuNo,avancement_acq) "0" ; #--- Barre de progression de la pose : Non
       }
    }
-   if { ! [ info exists parametres(acqfc,$visuNo,enregistrer) ] }    { set parametres(acqfc,$visuNo,enregistrer) "1" }   ; #--- Sauvegarde des images : Oui
+   if { ! [ info exists parametres(acqfc,$visuNo,enregistrer) ] } { set parametres(acqfc,$visuNo,enregistrer) "1" } ; #--- Sauvegarde des images : Oui
+
+   #--- Cas particulier ou la variable du binning est vide (connexion d'une WebCam)
+   if { $parametres(acqfc,$visuNo,bin) == "" } { set parametres(acqfc,$visuNo,bin) "2x2" }
 
    #--- Creation des variables de la boite de configuration si elles n'existent pas
    ::acqfcSetup::initToConf $visuNo
@@ -469,6 +477,10 @@ proc ::acqfc::Enregistrement_Var { visuNo } {
    set parametres(acqfc,$visuNo,mode)           $panneau(acqfc,$visuNo,mode)
    set parametres(acqfc,$visuNo,avancement_acq) $panneau(acqfc,$visuNo,avancement_acq)
    set parametres(acqfc,$visuNo,enregistrer)    $panneau(acqfc,$visuNo,enregistrer)
+   #--- Cas particulier ou la variable du binning est vide (connexion d'une WebCam)
+   if { $panneau(acqfc,$visuNo,bin) == "" } {
+      set parametres(acqfc,$visuNo,bin) "2x2"
+   }
    #--- Sauvegarde des parametres
    catch {
      set nom_fichier [ file join $audace(rep_plugin) tool acqfc acqfc.ini ]
@@ -1017,16 +1029,18 @@ proc ::acqfc::testParametreAcquisition { visuNo } {
 #------------------------------------------------------------
 proc ::acqfc::startAcquisitionUneImage { visuNo expTime binning fileName} {
 
-   set ::panneau(acqfc,$visuNo,pose) $expTime
-   set ::panneau(acqfc,$visuNo,bin)  $binning
+   set ::panneau(acqfc,$visuNo,pose)      $expTime
+   set ::panneau(acqfc,$visuNo,bin)       $binning
    set ::panneau(acqfc,$visuNo,nom_image) $fileName
-   set ::panneau(acqfc,$visuNo,mode) "1"
-   set ::panneau(acqfc,$visuNo,indexer) "0"
+   set ::panneau(acqfc,$visuNo,mode)      "1"
+   set ::panneau(acqfc,$visuNo,indexer)   "0"
+
    ChangeMode $visuNo $::caption(acqfc,uneimage)
 
    #--- je lance l'acquisition
    set ::panneau(acqfc,$visuNo,acqImageEnd) "0"
    ::acqfc::Go $visuNo
+   #--- j'attends la fin de l'acquisition
    vwait ::panneau(acqfc,$visuNo,acqImageEnd)
 
    if { $fileName != "" } {
@@ -1049,15 +1063,16 @@ proc ::acqfc::startAcquisitionUneImage { visuNo expTime binning fileName} {
 #------------------------------------------------------------
 proc ::acqfc::startAcquisitionSerieImage { visuNo expTime binning fileName imageNb} {
 
-   set ::panneau(acqfc,$visuNo,pose) $expTime
-   set ::panneau(acqfc,$visuNo,bin)  $binning
+   set ::panneau(acqfc,$visuNo,pose)      $expTime
+   set ::panneau(acqfc,$visuNo,bin)       $binning
    set ::panneau(acqfc,$visuNo,nom_image) $fileName
    set ::panneau(acqfc,$visuNo,nb_images) $imageNb
-   set ::panneau(acqfc,$visuNo,indexer) "1"
-   set ::panneau(acqfc,$visuNo,index)   "1"
+   set ::panneau(acqfc,$visuNo,indexer)   "1"
+   set ::panneau(acqfc,$visuNo,index)     "1"
 
    ChangeMode $visuNo $::caption(acqfc,serie)
 
+   #--- je lance les acquisitions
    set ::panneau(acqfc,$visuNo,acqImageEnd) "0"
    ::acqfc::Go $visuNo
    #--- j'attends la fin des acquisitions
