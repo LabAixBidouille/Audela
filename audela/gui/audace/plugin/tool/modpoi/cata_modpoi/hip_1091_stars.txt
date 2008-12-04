@@ -1,32 +1,32 @@
 #
-#   VizieR Astronomical Server: http://vizier.u-strasbg.fr	2006-11-17T21:24:24
-#   Explanations and Statistics of UCDs:			See LINK below
-#   In case of problem, please report to:	question@simbad.u-strasbg.fr
-#    (link)
+# VizieR Astronomical Server: http://vizier.u-strasbg.fr 2006-11-17T21:24:24
+# Explanations and Statistics of UCDs: See LINK below
+# In case of problem, please report to: question@simbad.u-strasbg.fr
+# (link)
 #
-#Coosys	J2000:	eq_FK5 2000
-#INFO	-ref=Vxml2846	
+#Coosys J2000: eq_FK5 2000
+#INFO -ref=Vxml2846
 
 #RESOURCE=1239
 #Name: I/239
-#Title:	The Hipparcos and Tycho Catalogues (ESA 1997)
-#Table	I_239_hip_main:
+#Title: The Hipparcos and Tycho Catalogues (ESA 1997)
+#Table I_239_hip_main:
 #Name: I/239/hip_main
-#Title:	The Hipparcos Main Catalogue\vizContent{timeSerie}
-#Coosys	J2000_1991.250:	eq_FK5 2000_1991.250
-#Column	HIP	(I6)	Identifier (HIP number) (H1)	[ucd=meta.id;meta.main]
-#Column	_RAJ2000	(F10.6)	Right ascension (FK5) Equinox=J2000.0 Epoch=J2000.000, proper motions taken into account  (computed by VizieR, not part of the original data)	[ucd=pos.eq.ra;meta.main]
-#Column	_DEJ2000	(F10.6)	Declination (FK5) Equinox=J2000.0 Epoch=J2000.000, proper motions taken into account  (computed by VizieR, not part of the original data)	[ucd=pos.eq.dec;meta.main]
-#Column	Vmag	(F5.2)	? Magnitude in Johnson V (H5)
-#---List of  values:     	[ucd=phot.mag;em.opt.V]
-#Column	B-V	(F6.3)	? Johnson B-V colour (H37)
-#---List of  values:     	[ucd=phot.color;em.opt.B;em.opt.V]
-#Column	pmRA	(F8.2)	Proper motion mu_alpha.cos(delta), ICRS(H12) {\em(for J1991.25 epoch)}
-#---List of  values:     	[ucd=pos.pm.ra]
-#Column	pmDE	(F8.2)	? Proper motion mu_delta, ICRS (H13) {\em(for J1991.25 epoch)}
-#---List of  values:     	[ucd=pos.pm.dec]
-#Column	Plx	(F7.2)	? Trigonometric parallax (H11)
-#---List of  values:     	[ucd=pos.parallax.trig]
+#Title: The Hipparcos Main Catalogue\vizContent{timeSerie}
+#Coosys J2000_1991.250: eq_FK5 2000_1991.250
+#Column HIP (I6) Identifier (HIP number) (H1) [ucd=meta.id;meta.main]
+#Column _RAJ2000 (F10.6) Right ascension (FK5) Equinox=J2000.0 Epoch=J2000.000, proper motions taken into account (computed by VizieR, not part of the original data) [ucd=pos.eq.ra;meta.main]
+#Column _DEJ2000 (F10.6) Declination (FK5) Equinox=J2000.0 Epoch=J2000.000, proper motions taken into account (computed by VizieR, not part of the original data) [ucd=pos.eq.dec;meta.main]
+#Column Vmag (F5.2) ? Magnitude in Johnson V (H5)
+#---List of values: [ucd=phot.mag;em.opt.V]
+#Column B-V (F6.3) ? Johnson B-V colour (H37)
+#---List of values: [ucd=phot.color;em.opt.B;em.opt.V]
+#Column pmRA (F8.2) Proper motion mu_alpha.cos(delta), ICRS(H12) {\em(for J1991.25 epoch)}
+#---List of values: [ucd=pos.pm.ra]
+#Column pmDE (F8.2) ? Proper motion mu_delta, ICRS (H13) {\em(for J1991.25 epoch)}
+#---List of values: [ucd=pos.pm.dec]
+#Column Plx (F7.2) ? Trigonometric parallax (H11)
+#---List of values: [ucd=pos.parallax.trig]
 #HIP;_RAJ2000;_DEJ2000;Vmag;B-V;pmRA;pmDE;Plx
 #;deg;deg;mag;mag;mas/yr;mas/yr;mas
 #------;----------;----------;-----;------;--------;--------;-------
