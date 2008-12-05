@@ -155,6 +155,9 @@ dnl Configure the modules to be compiled.
 dnl
 
 EXTERNAL="andor cfitsio gzip jpeg6b libdcjpeg libdcraw libftd2xx libgphoto2 libusb porttalk sbig sextractor tcl"
+if test -f /usr/bin/mysql_config ; then
+	EXTERNAL="$EXTERNAL mysqltcl"
+fi
 if test x"$TCL_THREADS" = x"1" ; then
 	EXTERNAL="$EXTERNAL libthread"
 fi
