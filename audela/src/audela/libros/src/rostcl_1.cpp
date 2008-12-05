@@ -357,7 +357,7 @@ ros_meteo close vantage
       /* --- ---*/
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       return TCL_ERROR;
-#elif
+#else
       Tcl_SetResult(interp,"function not available",TCL_VOLATILE);
       return TCL_ERROR;
 #endif
@@ -471,7 +471,7 @@ ros_gps close symmetricom
       /* --- ---*/
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       return TCL_ERROR;
-#elif
+#else
       Tcl_SetResult(interp,"function not available",TCL_VOLATILE);
       return TCL_ERROR;
 #endif
@@ -960,7 +960,7 @@ ros_velleman close
       /* --- ---*/
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       return TCL_ERROR;
-#elif
+#else
       Tcl_SetResult(interp,"function not available",TCL_VOLATILE);
       return TCL_ERROR;
 #endif
