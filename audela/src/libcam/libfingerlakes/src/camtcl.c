@@ -212,8 +212,9 @@ int cmdFingerlakesScan(ClientData clientData, Tcl_Interp * interp,
 		}
 		if (ok) {
 		    /* Pour avertir les gens du status de la camera. */
-		    sprintf(ligne, "status_cam%d", cam->camno);
-		    Tcl_SetVar(interp, ligne, "exp", TCL_GLOBAL_ONLY);
+		    //sprintf(ligne, "status_cam%d", cam->camno);
+		    //Tcl_SetVar(interp, ligne, "exp", TCL_GLOBAL_ONLY);
+          setCameraStatus(cam,interp,"exp");
 		    idt = (int) dt;
 		    TheScanStruct =
 			(ScanStruct *) calloc(1, sizeof(ScanStruct));
@@ -477,26 +478,28 @@ void ScanCallback(ClientData clientData)
 
 void ScanTerminateSequence(ClientData clientData, int camno, char *reason)
 {
-    char s[80];
-    FILE *f;
-    int i;
-    if (TheScanStruct->fileima == 1) {
-	fclose(TheScanStruct->fima);
-	TheScanStruct->fima = NULL;
-    }
-    ScanTransfer(clientData);
-    sprintf(s, "scan_result%d", camno);
-    Tcl_SetVar(TheScanStruct->interp, s, reason, TCL_GLOBAL_ONLY);
-    sprintf(s, "status_cam%d", camno);
-    Tcl_SetVar(TheScanStruct->interp, s, "stand", TCL_GLOBAL_ONLY);
-    if (TheScanStruct->keep_perfos) {
-	f = fopen("scanperf.txt", "wt");
-	for (i = 0; i < TheScanStruct->height; i++) {
-	    fprintf(f, "%d %d\n", i, TheScanStruct->dts[i]);
-	}
-	fclose(f);
-    }
-    ScanLibereStructure();
+   //char s[80];
+   FILE *f;
+   int i;
+   if (TheScanStruct->fileima == 1) {
+      fclose(TheScanStruct->fima);
+      TheScanStruct->fima = NULL;
+   }
+   ScanTransfer(clientData);
+   //sprintf(s, "scan_result%d", camno);
+   //Tcl_SetVar(TheScanStruct->interp, s, reason, TCL_GLOBAL_ONLY);
+   setScanResult(clientData, TheScanStruct->interp, reason);
+   //sprintf(s, "status_cam%d", camno);
+   //Tcl_SetVar(TheScanStruct->interp, s, "stand", TCL_GLOBAL_ONLY);
+   setCameraStatus(clientData,TheScanStruct->interp,"stand");
+   if (TheScanStruct->keep_perfos) {
+      f = fopen("scanperf.txt", "wt");
+      for (i = 0; i < TheScanStruct->height; i++) {
+         fprintf(f, "%d %d\n", i, TheScanStruct->dts[i]);
+      }
+      fclose(f);
+   }
+   ScanLibereStructure();
 }
 
 /*
@@ -659,8 +662,9 @@ void ScanTransfer(ClientData clientData)
 	Tcl_Eval(interp, s);
     }
 
-    sprintf(s, "status_cam%d", cam->camno);
-    Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
+    //sprintf(s, "status_cam%d", cam->camno);
+    //Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
+    setCameraStatus(cam,interp,"stand");
 
 }
 

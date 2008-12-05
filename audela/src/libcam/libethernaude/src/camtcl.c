@@ -380,8 +380,9 @@ int cmdEthernaudeScan(ClientData clientData, Tcl_Interp * interp, int argc, char
    }
 
    /* La commande ethernaude a reussi : mise en place du callback */
-   sprintf(ligne, "status_cam%d", cam->camno);
-   Tcl_SetVar(interp, ligne, "exp", TCL_GLOBAL_ONLY);
+   //sprintf(ligne, "status_cam%d", cam->camno);
+   //Tcl_SetVar(interp, ligne, "exp", TCL_GLOBAL_ONLY);
+   setCameraStatus(cam,interp,"exp");
 
    TheScanStruct = (ScanStruct *) calloc(1, sizeof(ScanStruct));
    TheScanStruct->clientData = clientData;
@@ -476,14 +477,16 @@ void EthernaudeScanCallback(ClientData clientData)
 
 void EthernaudeScanTerminateSequence(ClientData clientData, int camno, char *reason)
 {
-    char s[200];
+    //char s[200];
 
     EthernaudeScanTransfer(clientData);
 
-    sprintf(s, "scan_result%d", camno);
-    Tcl_SetVar(TheScanStruct->interp, s, reason, TCL_GLOBAL_ONLY);
-    sprintf(s, "status_cam%d", camno);
-    Tcl_SetVar(TheScanStruct->interp, s, "stand", TCL_GLOBAL_ONLY);
+    //sprintf(s, "scan_result%d", camno);
+    //Tcl_SetVar(TheScanStruct->interp, s, reason, TCL_GLOBAL_ONLY);
+    setScanResult(clientData, TheScanStruct->interp, reason);
+    //sprintf(s, "status_cam%d", camno);
+    //Tcl_SetVar(TheScanStruct->interp, s, "stand", TCL_GLOBAL_ONLY);
+    setCameraStatus(clientData,TheScanStruct->interp,"stand");
 
     EthernaudeScanLibereStructure();
 }
@@ -660,8 +663,9 @@ void EthernaudeScanTransfer(ClientData clientData)
       Tcl_Eval(cam->interp, s);
    }
 
-   sprintf(s, "status_cam%d", cam->camno);
-   Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
+   //sprintf(s, "status_cam%d", cam->camno);
+   //Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
+   setCameraStatus(cam,interp,"stand");
 }
 
 /*

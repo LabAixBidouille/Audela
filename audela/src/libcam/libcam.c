@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.23 2008-11-29 12:46:10 michelpujol Exp $
+ * $Id: libcam.c,v 1.24 2008-12-05 21:33:54 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -434,8 +434,8 @@ static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, ch
       // commande exportee de la librairie libcam.
       Tcl_CreateCommand(interp, argv[1], (Tcl_CmdProc *) cmdCam, (ClientData) cam, NULL);
 
+      // cas du mutltithread
       if ( cam->camThreadId[0] != 0 ) {
-         // cas du mutltithread
          if ( !(strcmp(argv[0],"webcam") == 0 && strcmp(platform,"windows")==0) ) {
             // je duplique la commande de la camera dans la thread principale
             sprintf(s,"thread::copycommand %s %s ",mainThreadId, argv[1]);
@@ -455,9 +455,10 @@ static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, ch
       }
 
       // set TCL global status_camNo
-      sprintf(s, "status_cam%d", cam->camno);
-      Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
-
+      //sprintf(s, "status_cam%d", cam->camno);
+      //Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
+      setCameraStatus(cam,interp,"stand");
+      
       libcam_log(LOG_DEBUG, "cmdCamCreate: create camera data at %p\n", cam);
    }
    return TCL_OK;
@@ -499,12 +500,21 @@ static int cmdCam(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
          // je recupere la thread courante
          Tcl_Eval(interp, "thread::id");
          strcpy(currentThread,interp->result);
-         if ( strcmp(CAM_INI[0].product,"webcam") != 0 ) {
-            // si on n'est pas dans la thread de la camera je transmet la commande a la thread de la camera
+         //if ( strcmp(CAM_INI[0].product,"webcam") != 0 ) {
+         if ( (strcmp(argv[1],"timer") == 0 )  
+#if defined(OS_WIN)
+              // ces commandes de webcam doivent s'executer dans l thread principale sous Windows car elles ouvrer une fenetre.
+              || (strcmp(CAM_INI[0].product,"webcam") == 0 && (strcmp(argv[1],"close") == 0 || strcmp(argv[1],"videoformat") == 0|| strcmp(argv[1],"videosource") == 0 || strcmp(argv[1],"startvideoview") == 0 || strcmp(argv[1],"stopvideoview") == 0 || strcmp(argv[1],"startvideocapture") == 0 || strcmp(argv[1],"stopvideocapture") == 0 || strcmp(argv[1],"startvideocrop") == 0 || strcmp(argv[1],"stopvideocrop") == 0 )) 
+#endif
+              )
+         {
+            // je passe a la suite pour executer immediatement la commande dans la thread principale
+         } else {
+             // si on n'est pas dans la thread de la camera je transmets la commande a la thread de la camera
             if ( strcmp(currentThread, cam->camThreadId) !=0 )  {
                sprintf(s,"thread::send %s {",cam->camThreadId);
                for (k=0;k<argc;k++) {
-                  // les accolades servent a delemiter les parametres de type "list", par exemple le binning
+                  // les accolades servent a delimiter les parametres de type "list", par exemple le binning
                   strcat(s,"{");
                   strcat(s,argv[k]);
                   strcat(s,"} ");
@@ -582,6 +592,7 @@ void libcam_GetCurrentFITSDate_function(Tcl_Interp * interp, char *s, char *func
    /* --- conversion TSystem -> TU pour l'interface Aud'ACE par exemple --- */
    /*     (function = ::audace::date_sys2ut) */
    char ligne[1024];
+   /*
    sprintf(ligne, "info commands  %s", function);
    Tcl_Eval(interp, ligne);
    if (strcmp(interp->result, function) == 0) {
@@ -589,6 +600,13 @@ void libcam_GetCurrentFITSDate_function(Tcl_Interp * interp, char *s, char *func
       Tcl_Eval(interp, ligne);
       strcpy(s, interp->result);
    }
+   */
+   strcpy(ligne, "clock format [clock seconds] -gmt 1 -format %Y-%m-%dT%H:%M:%S");
+   Tcl_Eval(interp, ligne);
+   if ( Tcl_Eval(interp, ligne) == TCL_OK) {
+      strcpy(s, interp->result);
+   }
+
 }
 
 /*
@@ -1168,15 +1186,15 @@ static void AcqRead(ClientData clientData )
    free(p);
 
    if (cam->timerExpiration != NULL) {
-      sprintf(s, "status_cam%d", cam->camno);
-      Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
-      if ( cam->camThreadId[0] != 0 ) {
-         // cas du mutltithread
-         // je change l'etat de la variable dans la thread principale
-         sprintf(s, "thread::send -async %s { set ::status_cam%d stand }", cam->mainThreadId, cam->camno);
-         Tcl_Eval(interp, s);
-      }
-
+      //sprintf(s, "status_cam%d", cam->camno);
+      //Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
+      //if ( cam->camThreadId[0] != 0 ) {
+      //   // cas du mutltithread
+      //   // je change l'etat de la variable dans la thread principale
+      //   sprintf(s, "thread::send -async %s { set ::status_cam%d stand }", cam->mainThreadId, cam->camno);
+      //   Tcl_Eval(interp, s);
+      //}
+      setCameraStatus(cam,interp,"stand");
    }
    cam->clockbegin = 0;
 
@@ -1206,14 +1224,15 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
       cam = (struct camprop *) clientData;
       if (cam->timerExpiration == NULL) {
          /* Pour avertir les gens du status de la camera. */
-         sprintf(ligne, "status_cam%d", cam->camno);
-         Tcl_SetVar(interp, ligne, "exp", TCL_GLOBAL_ONLY);
-         if ( cam->camThreadId[0] != 0 ) {
-            // cas du mutltithread
-            // je change l'etat de la variable dans la thread principale
-            sprintf(ligne, "thread::send -async %s { set ::status_cam%d exp }", cam->mainThreadId, cam->camno);
-            Tcl_Eval(interp, ligne);
-            }
+         //sprintf(ligne, "status_cam%d", cam->camno);
+         //Tcl_SetVar(interp, ligne, "exp", TCL_GLOBAL_ONLY);
+         //if ( cam->camThreadId[0] != 0 ) {
+         //   // cas du mutltithread
+         //   // je change l'etat de la variable dans la thread principale
+         //   sprintf(ligne, "thread::send -async %s { set ::status_cam%d exp }", cam->mainThreadId, cam->camno);
+         //   Tcl_Eval(interp, ligne);
+         //}
+         setCameraStatus(cam,interp,"exp");
 
          // set current interp for multithread
          cam->interpCam = interp;
@@ -1267,7 +1286,7 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
 static int cmdCamStop(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
    struct camprop *cam;
-   char s[100];
+   //char s[100];
    int retour = TCL_OK;
 
    cam = (struct camprop *) clientData;
@@ -1284,15 +1303,15 @@ static int cmdCamStop(ClientData clientData, Tcl_Interp * interp, int argc, char
       retour = TCL_ERROR;
    }
 
-   sprintf(s, "status_cam%d", cam->camno);
-   Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
-   if ( cam->camThreadId[0] != 0 ) {
-      // cas du mutltithread
-      // je change l'etat de la variable dans la thread principale
-      sprintf(s, "thread::send -async %s { set ::status_cam%d stand }", cam->mainThreadId, cam->camno);
-      Tcl_Eval(interp, s);
-   }
-
+   //sprintf(s, "status_cam%d", cam->camno);
+   //Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
+   //if ( cam->camThreadId[0] != 0 ) {
+   //   // cas du mutltithread
+   //   // je change l'etat de la variable dans la thread principale
+   //   sprintf(s, "thread::send -async %s { set ::status_cam%d stand }", cam->mainThreadId, cam->camno);
+   //   Tcl_Eval(interp, s);
+   //}
+   setCameraStatus(cam,interp,"stand");
    return retour;
 }
 
@@ -2004,3 +2023,30 @@ static int cmdCamDebug(ClientData clientData, Tcl_Interp * interp, int argc, cha
    return result;
 }
 
+
+
+void setCameraStatus(struct camprop *cam, Tcl_Interp * interp, char * status)
+{
+   char s[256];
+   sprintf(s, "status_cam%d", cam->camno);
+   Tcl_SetVar(interp, s, status, TCL_GLOBAL_ONLY);
+   if ( cam->camThreadId[0] != 0 ) {
+      // cas du mutltithread
+      // je change l'etat de la variable dans la thread principale
+      sprintf(s, "thread::send -async %s { set ::status_cam%d {%s} }", cam->mainThreadId, cam->camno, status);
+      Tcl_Eval(interp, s);
+   }
+}
+
+void setScanResult(struct camprop *cam, Tcl_Interp * interp, char * status)
+{
+   char s[256];
+   sprintf(s, "scan_result%d", cam->camno);
+   Tcl_SetVar(interp, s, status, TCL_GLOBAL_ONLY);
+   if ( cam->camThreadId[0] != 0 ) {
+      // cas du mutltithread
+      // je change l'etat de la variable dans la thread principale
+      sprintf(s, "thread::send -async %s { set ::scan_result%d {%s} }", cam->mainThreadId, cam->camno, status);
+      Tcl_Eval(interp, s);
+   }
+}
