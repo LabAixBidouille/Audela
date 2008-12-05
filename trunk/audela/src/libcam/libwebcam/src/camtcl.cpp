@@ -21,8 +21,6 @@
 #if defined(OS_LIN)
 #include <unistd.h>
 #include <sys/ioctl.h>
-//#include <linux/ppdev.h>
-//#include <linux/parport.h>
 #include <errno.h>
 #endif
 
@@ -206,107 +204,6 @@ int cmdCamLonguePoseLinkno(ClientData clientData, Tcl_Interp * interp,
    }
    return result;
 }
-
-
-
-/**
- * cmdCamLonguePoseLinkbit
- * Changes or returns the bit number
-*/
-/*
-int cmdCamLonguePoseLinkbit(ClientData clientData, Tcl_Interp * interp,
-                               int argc, char *argv[])
-{
-   char ligne[256];
-   int result = TCL_OK;
-   struct camprop *cam;
-   cam = (struct camprop *) clientData;
-
-   if (argc != 2 && argc != 3) {
-      sprintf(ligne, "Usage: %s %s ?numbit", argv[0], argv[1]);
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      result = TCL_ERROR;
-   } else  if (argc == 2 ) {
-      // je retourne le numero du bit
-      sprintf(ligne,"%d",cam->longueposelinkbit);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-   } else {
-      // je memorise le numero du bit
-      if(Tcl_GetInt(interp,argv[2],&cam->longueposelinkbit)!=TCL_OK) {
-         sprintf(ligne,"Usage: %s %s  numbit\n numbit = must be an integer > 0",argv[0],argv[1]);
-         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-         result = TCL_ERROR;
-      }
-   }
-   return result;
-}
-*/
-
-
-/**
- * cmdCamLonguePoseStartValue - definition du caractere de debut de pose.
-*/
-/*
-int cmdCamLonguePoseStartValue(ClientData clientData, Tcl_Interp * interp,
-                               int argc, char *argv[])
-{
-   char ligne[256];
-   int result = TCL_OK, pb = 0;
-   struct camprop *cam;
-   cam = (struct camprop *) clientData;
-   if ((argc != 2) && (argc != 3)) {
-      pb = 1;
-   } else if (argc == 2) {
-      pb = 0;
-   } else {
-      cam->longueposestart = (int) atoi(argv[2]);
-      pb = 0;
-   }
-   if (pb == 1) {
-      sprintf(ligne, "Usage: %s %s ?decimal_number?", argv[0], argv[1]);
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      result = TCL_ERROR;
-   } else {
-      strcpy(ligne, "");
-      sprintf(ligne, "%d", cam->longueposestart);
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-   }
-   return result;
-}
-*/
-
-/**
- * cmdCamLonguePoseStopValue - definition du caracter de fin de pose.
- */
-/*
-int cmdCamLonguePoseStopValue(ClientData clientData, Tcl_Interp * interp,
-                              int argc, char *argv[])
-{
-   char ligne[256];
-   int result = TCL_OK, pb = 0;
-   struct camprop *cam;
-   cam = (struct camprop *) clientData;
-   if ((argc != 2) && (argc != 3)) {
-      pb = 1;
-   } else if (argc == 2) {
-      pb = 0;
-   } else {
-      cam->longueposestop = (int) atoi(argv[2]);
-      pb = 0;
-   }
-   if (pb == 1) {
-      sprintf(ligne, "Usage: %s %s ?decimal_number?", argv[0], argv[1]);
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      result = TCL_ERROR;
-   } else {
-      strcpy(ligne, "");
-      sprintf(ligne, "%d", cam->longueposestop);
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-   }
-   return result;
-}
-*/
-
 
 /******************************************************************/
 /*  Fonctions d'affichage et de capture video LINUX (M. Pujol)    */

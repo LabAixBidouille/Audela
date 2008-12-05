@@ -350,10 +350,11 @@ int cmdAudineRead(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
       sprintf(s, "buf%d setkwd {DEC %f float \"Declination telescope encoder\" \"\"}", cam->bufno, dec);
       Tcl_Eval(interp, s);
    }
-   if (cam->timerExpiration != NULL) {
-      sprintf(s, "status_cam%d", cam->camno);
-   }
-   Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
+   //if (cam->timerExpiration != NULL) {      
+   //   sprintf(s, "status_cam%d", cam->camno);
+   //}
+   //Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
+   setCameraStatus(cam,interp,"stand");
    cam->clockbegin = 0;
    
    if (cam->timerExpiration != NULL) {
@@ -963,9 +964,10 @@ int cmdAudineScan(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
 		    }
 		}
 		if (ok) {
-		    /* Pour avertir les gens du status de la camera. */
-		    sprintf(ligne, "status_cam%d", cam->camno);
-		    Tcl_SetVar(interp, ligne, "exp", TCL_GLOBAL_ONLY);
+		    // Pour avertir les gens du status de la camera. 
+		    //sprintf(ligne, "status_cam%d", cam->camno);
+		    //Tcl_SetVar(interp, ligne, "exp", TCL_GLOBAL_ONLY);
+          setCameraStatus(cam,interp,"exp");
 		    idt = (int) dt;
 		    TheScanStruct = (ScanStruct *) calloc(1, sizeof(ScanStruct));
 		    TheScanStruct->clientData = clientData;
@@ -1183,7 +1185,7 @@ void AudineScanCallback(ClientData clientData)
 
 void AudineScanTerminateSequence(ClientData clientData, int camno, char *reason)
 {
-    char s[80];
+    //char s[80];
     FILE *f;
     int i;
     struct camprop *cam;
@@ -1199,10 +1201,12 @@ void AudineScanTerminateSequence(ClientData clientData, int camno, char *reason)
 	TheScanStruct->fima = NULL;
     }
     AudineScanTransfer(clientData);
-    sprintf(s, "scan_result%d", camno);
-    Tcl_SetVar(TheScanStruct->interp, s, reason, TCL_GLOBAL_ONLY);
-    sprintf(s, "status_cam%d", camno);
-    Tcl_SetVar(TheScanStruct->interp, s, "stand", TCL_GLOBAL_ONLY);
+    //sprintf(s, "scan_result%d", camno);
+    //Tcl_SetVar(TheScanStruct->interp, s, reason, TCL_GLOBAL_ONLY);
+    setScanResult(cam, TheScanStruct->interp, reason);
+    //sprintf(s, "status_cam%d", camno);
+    //Tcl_SetVar(TheScanStruct->interp, s, "stand", TCL_GLOBAL_ONLY);
+    setCameraStatus(cam,TheScanStruct->interp,"stand");
     if (TheScanStruct->keep_perfos) {
 	f = fopen("scanperf.txt", "wt");
 	for (i = 0; i < TheScanStruct->height; i++) {
@@ -1354,9 +1358,10 @@ void AudineScanTransfer(ClientData clientData)
       Tcl_Eval(interp, s);
    }
    
-   sprintf(s, "status_cam%d", cam->camno);
-   Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
-   
+   //sprintf(s, "status_cam%d", cam->camno);
+   //Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
+   setCameraStatus(cam,interp,"stand");
+
 }
 
 /*

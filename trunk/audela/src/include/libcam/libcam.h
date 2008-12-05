@@ -92,6 +92,8 @@ void libcam_GetCurrentFITSDate_function(Tcl_Interp * interp, char *s,
 void libcam_get_tel_coord(Tcl_Interp * interp, double *ra, double *dec,
 			  struct camprop *cam, int *status);
 
+void setCameraStatus(struct camprop *cam, Tcl_Interp * interp, char * status);
+void setScanResult(struct camprop *cam, Tcl_Interp * interp, char * status);
 #ifdef __cplusplus
 }                       /* End of extern "C" { */
 #endif  /* __cplusplus */
