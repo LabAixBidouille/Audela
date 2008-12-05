@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.45 2008-11-29 13:01:57 michelpujol Exp $
+# Mise a jour $Id: webcam.tcl,v 1.46 2008-12-05 21:15:15 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -526,15 +526,12 @@ proc ::webcam::configureCamera { camItem bufNo } {
       ]
       if { $::tcl_platform(os) == "Linux" } {
          #--- j'affiche le canal et le port
-         console::affiche_erreur "$caption(webcam,camera) $conf(webcam,$camItem,port) (($caption(webcam,canal_usb)\
-         $caption(webcam,2points) $conf(webcam,$camItem,channel)) \n"
+         console::affiche_erreur "$caption(webcam,camera) $conf(webcam,$camItem,port)\n"
       } else {
-         #--- j'affiche le canal (vfw ou directx)  et le mode
-         console::affiche_erreur "$caption(webcam,camera) ($caption(webcam,canal_usb)\
-         $caption(webcam,2points) $conf(webcam,$camItem,channel)) $conf(webcam,$camItem,port)\n"
-      console::affiche_erreur "$caption(webcam,mode_video) $caption(webcam,2points) $conf(webcam,$camItem,videomode)\n"
+         #--- j'affiche la connexion de la camera
+         console::affiche_erreur "$caption(webcam,camera) - $caption(webcam,mode_video) $caption(webcam,2points)\
+         $conf(webcam,$camItem,videomode)\n"
       }
-
       console::affiche_erreur "$caption(webcam,longuepose) $caption(webcam,2points)\
          $conf(webcam,$camItem,longuepose)\n"
       console::affiche_saut "\n"
