@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.22 2008-11-29 22:24:19 robertdelmas Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.23 2008-12-05 23:28:27 robertdelmas Exp $
 #
 
 namespace eval confColor:: {
@@ -206,7 +206,7 @@ namespace eval confColor:: {
          set conf(confcolor,menu_night_vision) "1"
       }
 
-      #--- Je copie les couleurs  de l'apparence en cours dans audace()
+      #--- Je copie les couleurs de l'apparence en cours dans audace()
       foreach {key value} [array get conf confcolor,$conf(confcolor,appearance),*] {
          set colorType [lindex [split $key ,] 2]
          set audace(color,$colorType) $value
@@ -249,11 +249,11 @@ namespace eval confColor:: {
       #--- Radiobutton day
       radiobutton $frm.select.rb_day -text "$caption(confcolor,diurne)" \
          -variable ::confColor::widget(appearance) -value "day" \
-         -command  { ::confColor::chooseAppearance }
+         -command { ::confColor::chooseAppearance }
       #--- Radiobutton night
       radiobutton $frm.select.rb_night -text "$caption(confcolor,nocturne)" \
          -variable ::confColor::widget(appearance) -value "night" \
-         -command  { ::confColor::chooseAppearance }
+         -command { ::confColor::chooseAppearance }
       #--- Button restore
       button $frm.select.restore -text "$caption(confcolor,button_restore)" -borderwidth 2 \
          -command { ::confColor::restoreFactoryColor }
@@ -285,7 +285,7 @@ namespace eval confColor:: {
 
       #--- Je restore les couleurs precedentes
       if { $widget(appearance) != $conf(confcolor,appearance) } {
-         #--- Je copie les couleurs initiales dans audace (color,*)
+         #--- Je copie les couleurs initiales dans audace(color,*)
          foreach {key value} [array get conf confcolor,$conf(confcolor,appearance),*] {
             set colorType [lindex [split $key ,] 2]
             set audace(color,$colorType) $value
@@ -312,7 +312,7 @@ namespace eval confColor:: {
       #--- Je recupere l'apparence qui vient d'etre choisie
       set appearance $widget(appearance)
 
-      #--- Je copie les couleurs  de l'apparence choisi dans audace (color,*)
+      #--- Je copie les couleurs de l'apparence choisi dans audace (color,*)
       foreach {key value} [array get widget color,$appearance,*] {
          set colorType [lindex [split $key ,] 2]
          set audace(color,$colorType) $value
@@ -381,6 +381,7 @@ namespace eval confColor:: {
 
       switch -exact -- [ winfo class $w ] {
          Canvas {
+            #--- Je mets a jour la couleur des widgets
             if { "[ winfo class [ winfo parent $w ] ]" == "Tree"
               || "[ winfo class [ winfo parent $w ] ]" == "NoteBook" } {
                $w configure -bg $audace(color,backColor)
@@ -393,14 +394,17 @@ namespace eval confColor:: {
             }
          }
          Toplevel {
+            #--- Je mets a jour la couleur des widgets
             $w configure -bg $audace(color,backColor)
          }
          Frame {
+            #--- Je mets a jour la couleur des widgets
             if { [ string first color_invariant $w ] == -1 } {
                $w configure -bg $audace(color,backColor)
             }
          }
          Label {
+            #--- Je mets a jour la couleur des widgets
             if { [ string first labURL $w ] == -1 } {
                if { [ string first color_invariant $w ] == -1 } {
                   $w configure -bg $audace(color,backColor) -fg $audace(color,textColor)
@@ -416,52 +420,78 @@ namespace eval confColor:: {
                   }
                }
             }
+            #--- Je mets a jour la police des widgets
+            $w configure -font "$audace(font,Label)"
          }
          LabelFrame {
+            #--- Je mets a jour la couleur des widgets
             $w configure -bg $audace(color,backColor) -fg $audace(color,textColor)
+            #--- Je mets a jour la police des widgets
+            $w configure -font "$audace(font,LabelFrame)"
          }
          Entry {
+            #--- Je mets a jour la couleur des widgets
             $w configure -bg $audace(color,entryBackColor) -fg $audace(color,entryTextColor) \
                -disabledbackground $audace(color,entryBackColor2) \
                -disabledforeground $audace(color,disabledTextColor) \
                -selectbackground $audace(color,activeBackColor) \
                -selectforeground $audace(color,activeTextColor)
+            #--- Je mets a jour la police des widgets
+            $w configure -font "$audace(font,Entry)"
          }
          LabelEntry {
+            #--- Je mets a jour la couleur des widgets
             $w configure -bg $audace(color,entryBackColor) -fg $audace(color,entryTextColor) \
                -disabledbackground $audace(color,entryBackColor2) \
                -disabledforeground $audace(color,disabledTextColor)
          }
          Button {
+            #--- Je mets a jour la couleur des widgets
             if { [ string first color_invariant $w ] == -1 } {
                $w configure -bg $audace(color,backColor) -activebackground $audace(color,backColor) \
                   -fg $audace(color,textColor) -activeforeground $audace(color,activeTextColor)
             }
+            #--- Je mets a jour la police des widgets
+            $w configure -font "$audace(font,Button)"
          }
          Checkbutton {
+            #--- Je mets a jour la couleur des widgets
             $w configure -bg $audace(color,backColor) -activebackground $audace(color,backColor) \
                -fg $audace(color,textColor) -activeforeground $audace(color,textColor) \
                -disabledforeground $audace(color,disabledTextColor) \
                -selectcolor $audace(color,backColor) -highlightbackground $audace(color,backColor)
+            #--- Je mets a jour la police des widgets
+            $w configure -font "$audace(font,Checkbutton)"
          }
          Radiobutton {
+            #--- Je mets a jour la couleur des widgets
             $w configure -fg $audace(color,textColor) -bg $audace(color,backColor) \
                -activeforeground $audace(color,textColor) -disabledforeground $audace(color,disabledTextColor) \
                -selectcolor $audace(color,backColor) -highlightbackground $audace(color,backColor)
+            #--- Je mets a jour la police des widgets
+            $w configure -font "$audace(font,Radiobutton)"
          }
          ArrowButton {
+            #--- Je mets a jour la couleur des widgets
             $w configure -bg $audace(color,backColor2) -fg $audace(color,textColor)
          }
          Menubutton {
+            #--- Je mets a jour la couleur des widgets
             $w configure -bg $audace(color,backColor) -activebackground $audace(color,textColor) \
                -fg $audace(color,textColor) -activeforeground $audace(color,backColor) \
                -highlightbackground $audace(color,backColor)
+            #--- Je mets a jour la police des widgets
+            $w configure -font "$audace(font,Menubutton)"
          }
          Menu {
+            #--- Je mets a jour la couleur des widgets
             $w configure -bg $audace(color,backColor2) -activebackground $audace(color,textColor) \
                -fg $audace(color,textColor) -activeforeground $audace(color,backColor)
+            #--- Je mets a jour la police des widgets
+            $w configure -font "$audace(font,Menu)"
          }
          Scale {
+            #--- Je mets a jour la couleur des widgets
             if { [ string first variant $w ] == -1 } {
                $w configure -fg $audace(color,textColor) -troughcolor $audace(color,backColor2) \
                   -highlightbackground $audace(color,backColor)
@@ -470,15 +500,23 @@ namespace eval confColor:: {
                   -highlightbackground $audace(color,backColor) -background $audace(color,entryBackColor2) \
                   -activebackground $audace(color,entryBackColor)
             }
+            #--- Je mets a jour la police des widgets
+            $w configure -font "$audace(font,Scale)"
          }
          Listbox {
+            #--- Je mets a jour la couleur des widgets
             $w configure -bg $audace(color,listBox) -fg $audace(color,textColor)
+            #--- Je mets a jour la police des widgets
+            $w configure -font "$audace(font,Listbox)"
          }
          ListBox {
-            #--- listbox de Bwidget
+            #--- Je mets a jour la couleur des widgets listbox de Bwidget
             $w configure -bg $audace(color,listBox) -fg $audace(color,textColor)
+            #--- Je mets a jour la police des widgets
+            $w configure -font "$audace(font,ListBox)"
          }
          Scrollbar {
+            #--- Je mets a jour la couleur des widgets
             $w configure -activebackground $audace(color,backColor) \
                -background $audace(color,backColor) \
                -highlightbackground $audace(color,backColor) \
@@ -486,28 +524,49 @@ namespace eval confColor:: {
                -troughcolor $audace(color,backColor)
          }
          Tablelist {
+            #--- Je mets a jour la couleur des widgets
             #--- Couleur des lignes selectionnes de cette listbox
             $w configure -selectbackground $audace(color,activeBackColor) -selectforeground $audace(color,activeTextColor)
             #--- Couleur des lignes paires de cette listbox
             $w configure -stripebackground $audace(color,backColor) -stripeforeground $audace(color,textColor)
+            #--- Je mets a jour la police des widgets
+            $w configure -font "$audace(font,Tablelist)"
          }
          Text {
+            #--- Je mets a jour la couleur des widgets
             $w configure -bg $audace(color,listBox) -fg $audace(color,textColor)
+            #--- Je mets a jour la police des widgets
+            $w configure -font "$audace(font,Text)"
          }
          Message {
+            #--- Je mets a jour la couleur des widgets
             $w configure -bg $audace(color,backColor) -fg $audace(color,textColor)
+            #--- Je mets a jour la police des widgets
+            $w configure -font "$audace(font,Message)"
          }
          Graph {
+            #--- Je mets a jour la couleur des widgets
             $w configure -bg $audace(color,backColor) -fg $audace(color,textColor) \
                -plotbackground $audace(color,entryTextColor)
             $w axis configure x  -hide no -color $audace(color,textColor) -titlecolor $audace(color,textColor)
             $w axis configure x2 -hide no -color $audace(color,textColor) -titlecolor $audace(color,textColor)
             $w axis configure y  -hide no -color $audace(color,textColor) -titlecolor $audace(color,textColor)
             $w axis configure y2 -hide no -color $audace(color,textColor) -titlecolor $audace(color,textColor)
+            #--- Je mets a jour la police des widgets
+            $w configure -font "$audace(font,Graph)"
          }
          ComboBox {
+            #--- Je mets a jour la couleur des widgets
             #--- Couleur de la valeur selectionnee dans l'entry de la combobox
             $w configure -selectbackground $audace(color,entryBackColor) -selectforeground $audace(color,entryTextColor)
+            #--- Je mets a jour la police des widgets
+            $w configure -font "$audace(font,ComboBox)"
+         }
+         Spinbox {
+            #--- Je mets a jour la couleur des widgets
+            $w configure -bg $audace(color,listBox) -fg $audace(color,textColor)
+            #--- Je mets a jour la police des widgets
+            $w configure -font "$audace(font,Spinbox)"
          }
          default {
             #--- Trace pour faire apparaitre les widgets non traites
@@ -555,13 +614,13 @@ namespace eval confColor:: {
       #--- Je recupere l'apparence qui vient d'etre choisie
       set appearance $conf(confcolor,appearance)
 
-      #--- Je supprime les variable conf(confcolor,$appearance,*)
+      #--- Je supprime les variables conf(confcolor,$appearance,*)
       foreach {key value} [array get conf confcolor,$appearance,*] {
          unset conf($key)
       }
 
       #--- Je recree les variables supprimees avec les valeurs par defaut
-      confColor::init
+      ::confColor::init
 
       #--- Je mets a jour les couleurs de la fenetre audace
       foreach visuNo [ ::visu::list ] {
