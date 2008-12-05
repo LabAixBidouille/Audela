@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.90 2008-11-29 22:33:39 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.91 2008-12-05 23:27:07 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -764,8 +764,8 @@ namespace eval ::audace {
          { ::confTypeFenetre::run "$audace(base).confTypeFenetre" }
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,apparence)..." \
          "::confColor::run $visuNo"
-     ### Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,police)..." \
-     ###    "::confFont::run $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,police)..." \
+         "::confFont::run $visuNo"
       Menu_Separator $visuNo "$caption(audace,menu,configuration)"
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,camera)..." \
          "::confCam::run"
