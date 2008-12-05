@@ -1,6 +1,6 @@
 #
 # Fichier : cmanimate.cap
-# Mise a jour $Id: cmanimate.cap,v 1.8 2008-11-08 09:36:14 robertdelmas Exp $
+# Mise a jour $Id: cmanimate.cap,v 1.9 2008-12-05 19:11:21 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -171,9 +171,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmanimate,dessine_positions)     "Disegno della posizione degli UTs\n\n"
    set caption(cmanimate,efface_positions)      "Cancellazione della posizione degli UTs\n\n"
    set caption(cmanimate,attention)             "Attenzione"
-   set caption(cmanimate,erreur1)               "# Le nombre d'images demandées est supérieur au nombre d'images disponibles."
-   set caption(cmanimate,erreur2)               "# C'est la dernière image de la série."
-   set caption(cmanimate,erreur3)               "# C'est la première image de la série."
+   set caption(cmanimate,erreur1)               "Il numero di immagini richieste e' superiore a quello delle immagini disponibili."
+   set caption(cmanimate,erreur2)               "Questa e' l'ultima immagine della serie."
+   set caption(cmanimate,erreur3)               "Questa e' la prima immagine della serie."
    set caption(cmanimate,rep-images)            "Le immagini devono provenire dalla cartella immagini\n(Configurazione --> Directories)."
    set caption(cmanimate,nb_images1)            "Numero immagini:"
    set caption(cmanimate,delai)                 "Intervallo:"
@@ -233,9 +233,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmanimate,dessine_positions)     "Dibujar la posición UT\n\n"
    set caption(cmanimate,efface_positions)      "Borrar la posición UT\n\n"
    set caption(cmanimate,attention)             "Aviso"
-   set caption(cmanimate,erreur1)               "# Le nombre d'images demandées est supérieur au nombre d'images disponibles."
-   set caption(cmanimate,erreur2)               "# C'est la dernière image de la série."
-   set caption(cmanimate,erreur3)               "# C'est la première image de la série."
+   set caption(cmanimate,erreur1)               "El numero de imágenes solicitadas excede el número de imágenes disponibles."
+   set caption(cmanimate,erreur2)               "Esta es la ultima imágen de la serie."
+   set caption(cmanimate,erreur3)               "Esta es la primera imagen de la serie."
    set caption(cmanimate,rep-images)            "Las imágenes deben provenir de la carpeta de imágenes\n(Configuración --> Directorios)."
    set caption(cmanimate,nb_images1)            "Numero imagenes:"
    set caption(cmanimate,delai)                 "Retraso:"
@@ -295,9 +295,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmanimate,dessine_positions)     "Zeichnet die UZ Positionen\n\n"
    set caption(cmanimate,efface_positions)      "Löscht die UZ Positionen\n\n"
    set caption(cmanimate,attention)             "Achtung"
-   set caption(cmanimate,erreur1)               "# Le nombre d'images demandées est supérieur au nombre d'images disponibles."
-   set caption(cmanimate,erreur2)               "# C'est la dernière image de la série."
-   set caption(cmanimate,erreur3)               "# C'est la première image de la série."
+   set caption(cmanimate,erreur1)               "Die gewünschte Bildern Anzahl ist größer als der verfügbaren Bilder Anzahl."
+   set caption(cmanimate,erreur2)               "Es ist das letzte Bild der Reihe."
+   set caption(cmanimate,erreur3)               "Es ist das erste Bild der Reihe."
    set caption(cmanimate,rep-images)            "Die Bilder müssen vom Bilder Verzeichnis kommen\n(Konfiguration --> Verzeichnis)."
    set caption(cmanimate,nb_images1)            "Bilder Zahl:"
    set caption(cmanimate,delai)                 "Zeitraum:"
@@ -357,9 +357,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmanimate,dessine_positions)     "Desenhar a posição dos UTs\n\n"
    set caption(cmanimate,efface_positions)      "Apagar a posição dos UTs\n\n"
    set caption(cmanimate,attention)             "Atenção"
-   set caption(cmanimate,erreur1)               "# Le nombre d'images demandées est supérieur au nombre d'images disponibles."
-   set caption(cmanimate,erreur2)               "# C'est la dernière image de la série."
-   set caption(cmanimate,erreur3)               "# C'est la première image de la série."
+   set caption(cmanimate,erreur1)               "O número de imagens pedidas é superior ao número de imagens disponíveis."
+   set caption(cmanimate,erreur2)               "É a última imagem da série."
+   set caption(cmanimate,erreur3)               "É a primeira imagem da série."
    set caption(cmanimate,rep-images)            "As imagens têm que estar contidas na pasta de imagens\n(Configuração --> Pastas)."
    set caption(cmanimate,nb_images1)            "Número de imagens:"
    set caption(cmanimate,delai)                 "Atraso:"
