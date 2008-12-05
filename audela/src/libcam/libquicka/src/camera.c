@@ -231,6 +231,7 @@ void cam_stop_exp(struct camprop *cam)
 void cam_read_ccd(struct camprop *cam, unsigned short *p)
 {
     short r;
+	 int rr;
     if (p == NULL)
 	return;
     if (cam->authorized == 1) {
@@ -242,7 +243,10 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
    } else {
 	    r = usb_write(255);	 // obligé d'envoyer 255, car ça plante si on envoie une autre valeur ou si on n'envoie rien
    }
-	quicka_read(cam, p);
+	rr=quicka_read(cam, p);
+	if (rr!=0) {
+		/* traiter le cas d'un blocage de la liaison USB */
+	}
     }
 }
 
@@ -726,17 +730,22 @@ int j=0;
 int k=0;
 int v1,v2,v3,v4,v;
 int nb_pixel;
-int longueur_buffer=1024;  
+int longueur_buffer=1024,deltat;  
 char ReadBuffer[1024];
 unsigned long Nb_RxOctets,i;
+time_t ltime0,ltime;
 
 nb_pixel=(unsigned long)imax*jmax;
 
    while (j<=4*nb_pixel-longueur_buffer)  {
       FT_GetQueueStatus(ftHandle, &Nb_RxOctets);
    
+		time( &ltime0 );
       while((int)Nb_RxOctets<longueur_buffer) {
          FT_GetQueueStatus(ftHandle, &Nb_RxOctets);
+			time( &ltime );
+			deltat=(int)(ltime-ltime0);
+			if (deltat>10) { return 1; }
       }
    
       FT_Read(ftHandle,ReadBuffer,longueur_buffer,&Nb_RxOctets);
@@ -759,8 +768,12 @@ nb_pixel=(unsigned long)imax*jmax;
    
    if (j!=4*nb_pixel) {
       FT_GetQueueStatus(ftHandle, &Nb_RxOctets);
+		time( &ltime0 );
       while ((int)Nb_RxOctets<4*nb_pixel-j) {
          FT_GetQueueStatus(ftHandle,&Nb_RxOctets);
+			time( &ltime );
+			deltat=(int)(ltime-ltime0);
+			if (deltat>10) { return 2; }
       }
 
       FT_Read(ftHandle,ReadBuffer,4*nb_pixel-j,&Nb_RxOctets);
