@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.88 2008-11-29 22:34:03 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.89 2008-12-05 21:17:14 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -922,8 +922,12 @@ namespace eval ::confVisu {
          #--- Je connecte la sortie de la camera a l'image
          set result [ catch {
             if { [image type image$visuNo ] == "video" } {
+               #--- je recupere le handle de l'image de la visu
                set windowHandle [image$visuNo  cget -owner]
+               #--- je connecte le flux de la camera avec le handle l'image de la visu
                cam$camNo startvideoview  $visuNo $windowHandle
+               #--- je configure le zoom de l'image video
+               image$visuNo configure -zoom $private($visuNo,zoom)
             } else {
                error "Error connect webcam to image$visuNo : [image type image$visuNo ] wrong image type, must be video"
             }
