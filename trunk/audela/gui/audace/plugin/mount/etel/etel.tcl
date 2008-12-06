@@ -2,7 +2,7 @@
 # Fichier : etel.tcl
 # Description : Configuration de la monture Etel
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: etel.tcl,v 1.10 2008-12-06 17:08:41 robertdelmas Exp $
+# Mise a jour $Id: etel.tcl,v 1.11 2008-12-06 19:23:16 robertdelmas Exp $
 #
 
 namespace eval ::etel {
@@ -165,8 +165,7 @@ proc ::etel::configureMonture { } {
    #--- Je cree la monture
    set telNo [ tel::create etel PCI ]
    #--- J'affiche un message d'information dans la Console
-   console::affiche_erreur "$caption(etel,port_etel)\
-      $caption(etel,2points) PCI\n"
+   console::affiche_erreur "$caption(etel,port_etel) $caption(etel,2points) PCI\n"
    console::affiche_saut "\n"
    #--- Je change de variable
    set private(telNo) $telNo
