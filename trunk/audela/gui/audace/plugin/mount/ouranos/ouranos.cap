@@ -1,6 +1,6 @@
 #
 # Fichier : ouranos.cap
-# Mise a jour $Id: ouranos.cap,v 1.4 2008-02-10 17:36:26 robertdelmas Exp $
+# Mise a jour $Id: ouranos.cap,v 1.5 2008-12-06 18:22:20 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -113,7 +113,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ouranos,reglage)                  "Regolaz."
    set caption(ouranos,stop)                     "Stop"
    set caption(ouranos,lire)                     "Lettura"
-   set caption(ouranos,port)                     "Porte"
+   set caption(ouranos,port)                     "Porta"
    set caption(ouranos,configurer)               "Configurare"
    set caption(ouranos,controle)                 "Controllo"
 

@@ -1,6 +1,6 @@
 #
 # Fichier : celestron.cap
-# Mise a jour $Id: celestron.cap,v 1.2 2007-12-18 22:16:54 robertdelmas Exp $
+# Mise a jour $Id: celestron.cap,v 1.3 2008-12-06 18:21:58 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -49,7 +49,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(celestron,monture)                "Celestron"
    set caption(celestron,format_court_long)      "corto lungo"
-   set caption(celestron,port)                   "Porte"
+   set caption(celestron,port)                   "Porta"
    set caption(celestron,configurer)             "Configurare"
    set caption(celestron,controle)               "Controllo"
    set caption(celestron,format)                 "Formato"

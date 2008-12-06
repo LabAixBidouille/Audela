@@ -1,6 +1,6 @@
 #
 # Fichier : audine.cap
-# Mise a jour $Id: audine.cap,v 1.3 2007-10-23 21:36:47 robertdelmas Exp $
+# Mise a jour $Id: audine.cap,v 1.4 2008-12-06 18:21:25 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -118,8 +118,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,obtu_i2c)                  "i2c"
    set caption(audine,obtu_thierry)              "thierry"
 
-   set caption(audine,port)                      "Porte"
-   set caption(audine,port_liaison)              "Porte / Collegamento"
+   set caption(audine,port)                      "Porta"
+   set caption(audine,port_liaison)              "Porta / Collegamento"
    set caption(audine,configurer)                "Configurare"
    set caption(audine,acquisition)               "Acquisizione"
    set caption(audine,miroir_x)                  "Specchio orizzontale"

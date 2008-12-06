@@ -1,6 +1,6 @@
 #
 # Fichier : temma.cap
-# Mise a jour $Id: temma.cap,v 1.9 2007-12-18 22:18:40 robertdelmas Exp $
+# Mise a jour $Id: temma.cap,v 1.10 2008-12-06 18:22:39 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -78,7 +78,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(temma,monture)                    "Temma"
-   set caption(temma,port)                       "Porte"
+   set caption(temma,port)                       "Porta"
    set caption(temma,configurer)                 "Configurare"
    set caption(temma,controle)                   "Controllo"
    set caption(temma,modele)                     "Modello"
