@@ -2,7 +2,7 @@
 # Fichier : ros.tcl
 # Description : Function to launch Robotic Observatory Software installation
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: ros.tcl,v 1.8 2008-11-20 17:38:16 alainklotz Exp $
+# Mise a jour $Id: ros.tcl,v 1.9 2008-12-06 08:43:57 alainklotz Exp $
 #
 
 proc ros { args } {
@@ -33,8 +33,8 @@ proc ros { args } {
       set ros(falsenameofexecutable) majordome
       source "$ros(root,ros)/src/common/variables_globales.tcl"
       unset ros(falsenameofexecutable)
-      set req(gardien,gar,host) $req(majordome,gardien,host)
-      set req(gardien,gar,port) $req(majordome,gardien,port)
+      set req(gardien,gar,host) $req(majordome,gar,host)
+      set req(gardien,gar,port) $req(majordome,gar,port)
       set err [catch {source "[pwd]/../gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../gui/audace/socket_tools.tcl" }
       set err [catch {socket_client_open clientgar2 $req(gardien,gar,host) [expr $req(gardien,gar,port)+1]} msg]
       if {$err==1} {
