@@ -501,9 +501,20 @@ int mytel_radec_move(struct telprop *tel,char *direction)
 int mytel_radec_stop(struct telprop *tel,char *direction)
 {
    char s[1024],direc[10];
-   /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
+
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   sprintf(s,"lindex [string toupper %s] 0",direction); mytel_tcleval(tel,s);
+   // remarque : je mets des accolades autour de %s pour eviter de provoquer une erreur TCL
+   //            si la variable "direction" est vide
+   sprintf(s,"lindex [string toupper {%s} ] 0",direction); ;
+   if ( mytel_tcleval(tel,s) == TCL_ERROR ) {
+      printf("mytel_radec_stop: %s\n",tel->interp->result);
+      return 1;
+   } else if ( strlen(tel->interp->result) >= sizeof(direc) ) {
+      // je verifie que le resultat n'est pas plus long que la variable "direct" 
+      // pour eviter un debordement de variable quand on va copier le resultat dans "direct"
+      printf("mytel_radec_stop: direction too long: %s\n",tel->interp->result);
+      return 1;
+   }
    strcpy(direc,tel->interp->result);
    if (strcmp(direc,"N")==0) {
       sprintf(s,"puts -nonewline %s \"#:Qn#\"",tel->channel); mytel_tcleval(tel,s);
