@@ -1,6 +1,6 @@
 #
 # Fichier : audecom.cap
-# Mise a jour $Id: audecom.cap,v 1.14 2008-02-10 17:35:01 robertdelmas Exp $
+# Mise a jour $Id: audecom.cap,v 1.15 2008-12-06 18:21:12 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -72,7 +72,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(audecom,monture)                   "AudeCom"
-   set caption(audecom,port)                      "Porte"
+   set caption(audecom,port)                      "Porta"
    set caption(audecom,configurer)                "Configurare"
    set caption(audecom,controle)                  "Controllo"
    set caption(audecom,ouranos)                   "AudeCom + Ouranos"

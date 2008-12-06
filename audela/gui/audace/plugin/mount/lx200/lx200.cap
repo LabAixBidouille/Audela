@@ -1,6 +1,6 @@
 #
 # Fichier : lx200.cap
-# Mise a jour $Id: lx200.cap,v 1.6 2008-05-11 21:01:42 robertdelmas Exp $
+# Mise a jour $Id: lx200.cap,v 1.7 2008-12-06 18:22:10 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -76,7 +76,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,monture)                    "LX200"
    set caption(lx200,ouranos)                    "AudeCom + Ouranos"
    set caption(lx200,format_court_long)          "corto lungo"
-   set caption(lx200,port_liaison)               "Porte / Collegamento"
+   set caption(lx200,port_liaison)               "Porta / Collegamento"
    set caption(lx200,configurer)                 "Configurare"
    set caption(lx200,controle)                   "Controllo"
    set caption(lx200,modele)                     "Modello"

@@ -1,6 +1,6 @@
 #
 # Fichier : bermasaude.cap
-# Mise a jour $Id: bermasaude.cap,v 1.17 2008-05-29 21:30:01 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.cap,v 1.18 2008-12-06 18:21:37 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -91,7 +91,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(bermasaude,titre)                       "Ruota portafiltri"
 
-   set caption(bermasaude,port)                        "Porte"
+   set caption(bermasaude,port)                        "Porta"
    set caption(bermasaude,configurer)                  "Configurare"
    set caption(bermasaude,controle)                    "Controllo"
    set caption(bermasaude,bermasaude_combinaison)      "Combinazione richiesta"
