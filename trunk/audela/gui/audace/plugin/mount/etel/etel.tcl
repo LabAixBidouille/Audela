@@ -2,7 +2,7 @@
 # Fichier : etel.tcl
 # Description : Configuration de la monture Etel
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: etel.tcl,v 1.9 2008-11-22 22:05:41 robertdelmas Exp $
+# Mise a jour $Id: etel.tcl,v 1.10 2008-12-06 17:08:41 robertdelmas Exp $
 #
 
 namespace eval ::etel {
@@ -80,17 +80,9 @@ proc ::etel::isReady { } {
 #
 proc ::etel::initPlugin { } {
    variable private
-   global conf
 
    #--- Initialisation
    set private(telNo) "0"
-
-   #--- Prise en compte des liaisons
-   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
-
-   #--- Initialise les variables de la monture Etel
-   if { ! [ info exists conf(etel,port) ] }   { set conf(etel,port)   [ lindex $list_connexion 0 ] }
-   if { ! [ info exists conf(etel,format) ] } { set conf(etel,format) "1" }
 }
 
 #
@@ -99,11 +91,9 @@ proc ::etel::initPlugin { } {
 #
 proc ::etel::confToWidget { } {
    variable private
-   global caption conf
+   global conf
 
    #--- Recupere la configuration de la monture Etel dans le tableau private(...)
-   set private(port)     $conf(etel,port)
-   set private(format)   [ lindex "$caption(etel,format_court_long)" $conf(etel,format) ]
    set private(raquette) $conf(raquette)
 }
 
@@ -113,12 +103,10 @@ proc ::etel::confToWidget { } {
 #
 proc ::etel::widgetToConf { } {
    variable private
-   global caption conf
+   global conf
 
    #--- Memorise la configuration de la monture Etel dans le tableau conf(etel,...)
-   set conf(etel,port)   $private(port)
-   set conf(etel,format) [ lsearch "$caption(etel,format_court_long)" "$private(format)" ]
-   set conf(raquette)    $private(raquette)
+   set conf(raquette) $private(raquette)
 }
 
 #
@@ -127,16 +115,13 @@ proc ::etel::widgetToConf { } {
 #
 proc ::etel::fillConfigPage { frm } {
    variable private
-   global audace caption
+   global caption
 
    #--- Initialise une variable locale
    set private(frm) $frm
 
    #--- confToWidget
    ::etel::confToWidget
-
-   #--- Prise en compte des liaisons
-   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
 
    #--- Creation des differents frames
    frame $frm.frame1 -borderwidth 0 -relief raised
@@ -149,77 +134,7 @@ proc ::etel::fillConfigPage { frm } {
    pack $frm.frame3 -side top -fill x
 
    frame $frm.frame4 -borderwidth 0 -relief raised
-   pack $frm.frame4 -side top -fill x
-
-   frame $frm.frame5 -borderwidth 0 -relief raised
-   pack $frm.frame5 -side bottom -fill x -pady 2
-
-   frame $frm.frame6 -borderwidth 0 -relief raised
-   pack $frm.frame6 -in $frm.frame1 -side left -fill both -expand 1
-
-   frame $frm.frame7 -borderwidth 0 -relief raised
-   pack $frm.frame7 -in $frm.frame1 -side left -fill both -expand 1
-
-   frame $frm.frame8 -borderwidth 0 -relief raised
-   pack $frm.frame8 -in $frm.frame7 -side top -fill x
-
-   #--- Definition du port
-   label $frm.lab1 -text "$caption(etel,port)"
-   pack $frm.lab1 -in $frm.frame6 -anchor n -side left -padx 10 -pady 10
-
-   #--- Je verifie le contenu de la liste
-   if { [ llength $list_connexion ] > 0 } {
-      #--- Si la liste n'est pas vide,
-      #--- je verifie que la valeur par defaut existe dans la liste
-      if { [ lsearch -exact $list_connexion $private(port) ] == -1 } {
-         #--- Si la valeur par defaut n'existe pas dans la liste,
-         #--- je la remplace par le premier item de la liste
-         set private(port) [ lindex $list_connexion 0 ]
-      }
-   } else {
-      #--- Si la liste est vide, on continue quand meme
-   }
-
-   #--- Bouton de configuration des ports et liaisons
-   button $frm.configure -text "$caption(etel,configurer)" -relief raised \
-      -command {
-         ::confLink::run ::etel::private(port) { serialport } \
-            "- $caption(etel,controle) - $caption(etel,monture)"
-      }
-   pack $frm.configure -in $frm.frame6 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
-
-   #--- Choix du port ou de la liaison
-   ComboBox $frm.port \
-      -width [ ::tkutil::lgEntryComboBox $list_connexion ] \
-      -height [ llength $list_connexion ] \
-      -relief sunken    \
-      -borderwidth 1    \
-      -textvariable ::etel::private(port) \
-      -editable 0       \
-      -values $list_connexion
-   pack $frm.port -in $frm.frame6 -anchor n -side left -padx 10 -pady 10
-
-   #--- Definition du format des donnees transmises au Etel
-   label $frm.lab2 -text "$caption(etel,format)"
-   pack $frm.lab2 -in $frm.frame8 -anchor center -side left -padx 10 -pady 10
-
-   set list_combobox "$caption(etel,format_court_long)"
-   ComboBox $frm.formatradec \
-      -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
-      -height [ llength $list_combobox ] \
-      -relief sunken    \
-      -borderwidth 1    \
-      -textvariable ::etel::private(format) \
-      -editable 0       \
-      -values $list_combobox
-   pack $frm.formatradec -in $frm.frame8 -anchor center -side left -padx 30 -pady 10
-
-   #--- Le bouton de commande maj heure et position du Etel
-   button $frm.majpara -text "$caption(etel,maj_etel)" -relief raised -command {
-      tel$::etel::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
-      tel$::etel::private(telNo) home $audace(posobs,observateur,gps)
-   }
-   pack $frm.majpara -in $frm.frame2 -anchor center -side top -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
+   pack $frm.frame4 -side bottom -fill x -pady 2
 
    #--- Le checkbutton pour la visibilite de la raquette a l'ecran
    checkbutton $frm.raquette -text "$caption(etel,raquette_tel)" \
@@ -232,14 +147,11 @@ proc ::etel::fillConfigPage { frm } {
 
    #--- Site web officiel du Etel
    label $frm.lab103 -text "$caption(etel,titre_site_web)"
-   pack $frm.lab103 -in $frm.frame5 -side top -fill x -pady 2
+   pack $frm.lab103 -in $frm.frame4 -side top -fill x -pady 2
 
-   set labelName [ ::confTel::createUrlLabel $frm.frame5 "$caption(etel,site_etel)" \
+   set labelName [ ::confTel::createUrlLabel $frm.frame4 "$caption(etel,site_etel)" \
       "$caption(etel,site_etel)" ]
    pack $labelName -side top -fill x -pady 2
-
-   #--- Gestion du bouton actif/inactif
-   ::etel::confEtel
 }
 
 #
@@ -248,25 +160,16 @@ proc ::etel::fillConfigPage { frm } {
 #
 proc ::etel::configureMonture { } {
    variable private
-   global caption conf
+   global caption
 
    #--- Je cree la monture
-   set telNo [ tel::create etel $conf(etel,port) ]
+   set telNo [ tel::create etel PCI ]
    #--- J'affiche un message d'information dans la Console
    console::affiche_erreur "$caption(etel,port_etel)\
-      $caption(etel,2points) $conf(etel,port)\n"
+      $caption(etel,2points) PCI\n"
    console::affiche_saut "\n"
-   if { $conf(etel,format) == "0" } {
-      tel$telNo longformat off
-   } else {
-      tel$telNo longformat on
-   }
-   #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
-   set linkNo [ ::confLink::create $conf(etel,port) "tel$telNo" "control" [ tel$telNo product ] ]
    #--- Je change de variable
    set private(telNo) $telNo
-   #--- Gestion du bouton actif/inactif
-   ::etel::confEtel
 }
 
 #
@@ -281,60 +184,10 @@ proc ::etel::stop { } {
       return
    }
 
-   #--- Gestion du bouton actif/inactif
-   ::etel::confEtelInactif
-
-   #--- Je memorise le port
-   set telPort [ tel$private(telNo) port ]
    #--- J'arrete la monture
    tel::delete $private(telNo)
-   #--- J'arrete le link
-   ::confLink::delete $telPort "tel$private(telNo)" "control"
    #--- Remise a zero du numero de monture
    set private(telNo) "0"
-}
-
-#
-# ::etel::confEtel
-# Permet d'activer ou de désactiver le bouton
-#
-proc ::etel::confEtel { } {
-   variable private
-   global audace
-
-   if { [ info exists private(frm) ] } {
-      set frm $private(frm)
-      if { [ winfo exists $frm ] } {
-         if { [ ::etel::isReady ] == 1 } {
-            #--- Bouton Mise a jour de la monture actif
-            $frm.majpara configure -state normal -command {
-               tel$::etel::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
-               tel$::etel::private(telNo) home $audace(posobs,observateur,gps)
-            }
-         } else {
-            #--- Bouton Mise a jour de la monture inactif
-            $frm.majpara configure -state disabled
-         }
-      }
-   }
-}
-
-#
-# ::etel::confEtelInactif
-#    Permet de desactiver le bouton a l'arret de la monture
-#
-proc ::etel::confEtelInactif { } {
-   variable private
-
-   if { [ info exists private(frm) ] } {
-      set frm $private(frm)
-      if { [ winfo exists $frm ] } {
-         if { [ ::etel::isReady ] == 1 } {
-            #--- Bouton Mise a jour de la monture inactif
-            $frm.majpara configure -state disabled
-         }
-      }
-   }
 }
 
 #
