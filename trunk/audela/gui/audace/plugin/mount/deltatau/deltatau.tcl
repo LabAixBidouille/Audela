@@ -2,7 +2,7 @@
 # Fichier : deltatau.tcl
 # Description : Configuration de la monture Delta Tau
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: deltatau.tcl,v 1.8 2008-11-22 22:05:31 robertdelmas Exp $
+# Mise a jour $Id: deltatau.tcl,v 1.9 2008-12-06 19:48:59 robertdelmas Exp $
 #
 
 namespace eval ::deltatau {
@@ -85,12 +85,10 @@ proc ::deltatau::initPlugin { } {
    #--- Initialisation
    set private(telNo) "0"
 
-   #--- Prise en compte des liaisons
-   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
-
    #--- Initialise les variables de la monture Delta Tau
-   if { ! [ info exists conf(deltatau,port) ] }   { set conf(deltatau,port)   [ lindex $list_connexion 0 ] }
-   if { ! [ info exists conf(deltatau,format) ] } { set conf(deltatau,format) "1" }
+   if { ! [ info exists conf(deltatau,mode) ] } { set conf(deltatau,mode) "0" }
+   if { ! [ info exists conf(deltatau,host) ] } { set conf(deltatau,host) "127.0.0.1" }
+   if { ! [ info exists conf(deltatau,port) ] } { set conf(deltatau,port) "1025" }
 }
 
 #
@@ -99,11 +97,16 @@ proc ::deltatau::initPlugin { } {
 #
 proc ::deltatau::confToWidget { } {
    variable private
-   global caption conf
+   global conf
 
    #--- Recupere la configuration de la monture Delta Tau dans le tableau private(...)
+   if { $::tcl_platform(os) == "Linux" } {
+      set private(mode) "Umac"
+   } else {
+      set private(mode) [ lindex "Umac Pmac" $conf(deltatau,mode) ]
+   }
+   set private(host)     $conf(deltatau,host)
    set private(port)     $conf(deltatau,port)
-   set private(format)   [ lindex "$caption(deltatau,format_court_long)" $conf(deltatau,format) ]
    set private(raquette) $conf(raquette)
 }
 
@@ -113,12 +116,17 @@ proc ::deltatau::confToWidget { } {
 #
 proc ::deltatau::widgetToConf { } {
    variable private
-   global caption conf
+   global conf
 
    #--- Memorise la configuration de la monture Delta Tau dans le tableau conf(deltatau,...)
-   set conf(deltatau,port)   $private(port)
-   set conf(deltatau,format) [ lsearch "$caption(deltatau,format_court_long)" "$private(format)" ]
-   set conf(raquette)        $private(raquette)
+   if { $::tcl_platform(os) == "Linux" } {
+      set conf(deltatau,mode) "0"
+   } else {
+      set conf(deltatau,mode) [ lsearch "Umac Pmac" "$private(mode)" ]
+   }
+   set conf(deltatau,host) $private(host)
+   set conf(deltatau,port) $private(port)
+   set conf(raquette)      $private(raquette)
 }
 
 #
@@ -127,16 +135,20 @@ proc ::deltatau::widgetToConf { } {
 #
 proc ::deltatau::fillConfigPage { frm } {
    variable private
-   global audace caption
+   global caption
 
    #--- Initialise une variable locale
    set private(frm) $frm
 
+   #--- Depend de la plateforme
+   if { $::tcl_platform(os) == "Linux" } {
+      set list_combobox "Umac"
+   } else {
+      set list_combobox "Umac Pmac"
+   }
+
    #--- confToWidget
    ::deltatau::confToWidget
-
-   #--- Prise en compte des liaisons
-   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
 
    #--- Creation des differents frames
    frame $frm.frame1 -borderwidth 0 -relief raised
@@ -155,80 +167,50 @@ proc ::deltatau::fillConfigPage { frm } {
    pack $frm.frame5 -side bottom -fill x -pady 2
 
    frame $frm.frame6 -borderwidth 0 -relief raised
-   pack $frm.frame6 -in $frm.frame1 -side left -fill both -expand 1
+   pack $frm.frame6 -in $frm.frame3 -side left -fill both -expand 1
 
    frame $frm.frame7 -borderwidth 0 -relief raised
-   pack $frm.frame7 -in $frm.frame1 -side left -fill both -expand 1
+   pack $frm.frame7 -in $frm.frame3 -side left -fill both -expand 1
 
-   frame $frm.frame8 -borderwidth 0 -relief raised
-   pack $frm.frame8 -in $frm.frame7 -side top -fill x
+   #--- Definition du mode des donnees transmises au Delta Tau
+   label $frm.lab1 -text "$caption(deltatau,mode)"
+   pack $frm.lab1 -in $frm.frame2 -anchor center -side left -padx 10 -pady 10
 
-   #--- Definition du port
-   label $frm.lab1 -text "$caption(deltatau,port)"
-   pack $frm.lab1 -in $frm.frame6 -anchor n -side left -padx 10 -pady 10
-
-   #--- Je verifie le contenu de la liste
-   if { [ llength $list_connexion ] > 0 } {
-      #--- Si la liste n'est pas vide,
-      #--- je verifie que la valeur par defaut existe dans la liste
-      if { [ lsearch -exact $list_connexion $private(port) ] == -1 } {
-         #--- Si la valeur par defaut n'existe pas dans la liste,
-         #--- je la remplace par le premier item de la liste
-         set private(port) [ lindex $list_connexion 0 ]
-      }
-   } else {
-      #--- Si la liste est vide, on continue quand meme
-   }
-
-   #--- Bouton de configuration des ports et liaisons
-   button $frm.configure -text "$caption(deltatau,configurer)" -relief raised \
-      -command {
-         ::confLink::run ::deltatau::private(port) { serialport } \
-            "- $caption(deltatau,controle) - $caption(deltatau,monture)"
-      }
-   pack $frm.configure -in $frm.frame6 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
-
-   #--- Choix du port ou de la liaison
-   ComboBox $frm.port \
-      -width [ ::tkutil::lgEntryComboBox $list_connexion ] \
-      -height [ llength $list_connexion ] \
-      -relief sunken    \
-      -borderwidth 1    \
-      -textvariable ::deltatau::private(port) \
-      -editable 0       \
-      -values $list_connexion
-   pack $frm.port -in $frm.frame6 -anchor n -side left -padx 10 -pady 10
-
-   #--- Definition du format des donnees transmises au Delta Tau
-   label $frm.lab2 -text "$caption(deltatau,format)"
-   pack $frm.lab2 -in $frm.frame8 -anchor center -side left -padx 10 -pady 10
-
-   set list_combobox "$caption(deltatau,format_court_long)"
-   ComboBox $frm.formatradec \
+   ComboBox $frm.mode        \
       -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
       -height [ llength $list_combobox ] \
-      -relief sunken    \
-      -borderwidth 1    \
-      -textvariable ::deltatau::private(format) \
-      -editable 0       \
-      -values $list_combobox
-   pack $frm.formatradec -in $frm.frame8 -anchor center -side left -padx 30 -pady 10
+      -relief sunken         \
+      -borderwidth 1         \
+      -textvariable ::deltatau::private(mode) \
+      -editable 0            \
+      -values $list_combobox \
+      -modifycmd "::deltatau::configurePort"
+   pack $frm.mode -in $frm.frame2 -anchor center -side left -padx 30 -pady 10
 
-   #--- Le bouton de commande maj heure et position du Delta Tau
-   button $frm.majpara -text "$caption(deltatau,maj_deltatau)" -relief raised -command {
-      tel$::deltatau::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
-      tel$::deltatau::private(telNo) home $audace(posobs,observateur,gps)
-   }
-   pack $frm.majpara -in $frm.frame2 -anchor center -side top -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
+   #--- Definition du host
+   label $frm.lab2 -text "$caption(deltatau,host)"
+   pack $frm.lab2 -in $frm.frame6 -anchor n -side left -padx 10 -pady 10
+
+   #--- Entry du host
+   entry $frm.host -textvariable ::deltatau::private(host) -width 15 -justify center
+   pack $frm.host -in $frm.frame6 -anchor n -side left -padx 10 -pady 10
+
+   #--- Definition du port
+   label $frm.lab3 -text "$caption(deltatau,port)"
+   pack $frm.lab3 -in $frm.frame7 -anchor n -side left -padx 10 -pady 10
+
+   #--- Entry du port
+   entry $frm.port -textvariable ::deltatau::private(port) -width 7 -justify center
+   pack $frm.port -in $frm.frame7 -anchor n -side left -padx 10 -pady 10
 
    #--- Le checkbutton pour la visibilite de la raquette a l'ecran
    checkbutton $frm.raquette -text "$caption(deltatau,raquette_tel)" \
       -highlightthickness 0 -variable ::deltatau::private(raquette)
-   pack $frm.raquette -in $frm.frame3 -anchor center -side left -padx 10 -pady 10
+   pack $frm.raquette -in $frm.frame4 -anchor center -side left -padx 10 -pady 10
 
    #--- Frame raquette
    ::confPad::createFramePad $frm.nom_raquette "::confTel::private(nomRaquette)"
-   pack $frm.nom_raquette -in $frm.frame3 -anchor center -side left -padx 0 -pady 10
+   pack $frm.nom_raquette -in $frm.frame4 -anchor center -side left -padx 0 -pady 10
 
    #--- Site web officiel du Delta Tau
    label $frm.lab103 -text "$caption(deltatau,titre_site_web)"
@@ -238,8 +220,29 @@ proc ::deltatau::fillConfigPage { frm } {
       "$caption(deltatau,site_deltatau)" ]
    pack $labelName -side top -fill x -pady 2
 
-   #--- Gestion du bouton actif/inactif
-   ::deltatau::confDeltaTau
+   #--- Gestion des widgets pour le mode Umac
+   ::deltatau::configurePort
+}
+
+#
+# ::deltatau::configurePort
+#    Configure le host et le port
+#
+proc ::deltatau::configurePort { } {
+   variable private
+
+   if { [ info exists private(frm) ] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         if { $private(mode) == "Umac" } {
+            $frm.host configure -state normal
+            $frm.port configure -state normal
+         } else {
+            $frm.host configure -state disabled
+            $frm.port configure -state disabled
+         }
+      }
+   }
 }
 
 #
@@ -251,22 +254,25 @@ proc ::deltatau::configureMonture { } {
    global caption conf
 
    #--- Je cree la monture
-   set telNo [ tel::create deltatau $conf(deltatau,port) ]
-   #--- J'affiche un message d'information dans la Console
-   console::affiche_erreur "$caption(deltatau,port_deltatau)\
-      $caption(deltatau,2points) $conf(deltatau,port)\n"
-   console::affiche_saut "\n"
-   if { $conf(deltatau,format) == "0" } {
-      tel$telNo longformat off
+   if { $conf(deltatau,mode) == "0" } {
+      set telNo [ tel::create deltatau pci -type pmac ]
    } else {
-      tel$telNo longformat on
+      set telNo [ tel::create deltatau ethernet -type umac -ip $conf(deltatau,host) -port $conf(deltatau,port) ]
    }
-   #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
-   set linkNo [ ::confLink::create $conf(deltatau,port) "tel$telNo" "control" [ tel$telNo product ] ]
+   #--- J'affiche un message d'information dans la Console
+   if { $conf(deltatau,mode) == "0" } {
+      console::affiche_erreur "$caption(deltatau,port_deltatau) $caption(deltatau,2points) PCI\n"
+      console::affiche_erreur "$caption(deltatau,mode) $caption(deltatau,2points) Pmac\n"
+      console::affiche_saut "\n"
+   } else {
+      console::affiche_erreur "$caption(deltatau,port_deltatau) $caption(deltatau,2points) Ethernet\n"
+      console::affiche_erreur "$caption(deltatau,mode) $caption(deltatau,2points) Umac\n"
+      console::affiche_erreur "$caption(deltatau,host) $caption(deltatau,2points) $conf(deltatau,host)\n"
+      console::affiche_erreur "$caption(deltatau,port) $caption(deltatau,2points) $conf(deltatau,port)\n"
+      console::affiche_saut "\n"
+   }
    #--- Je change de variable
    set private(telNo) $telNo
-   #--- Gestion du bouton actif/inactif
-   ::deltatau::confDeltaTau
 }
 
 #
@@ -281,60 +287,10 @@ proc ::deltatau::stop { } {
       return
    }
 
-   #--- Gestion du bouton actif/inactif
-   ::deltatau::confDeltaTauInactif
-
-   #--- Je memorise le port
-   set telPort [ tel$private(telNo) port ]
    #--- J'arrete la monture
    tel::delete $private(telNo)
-   #--- J'arrete le link
-   ::confLink::delete $telPort "tel$private(telNo)" "control"
    #--- Remise a zero du numero de monture
    set private(telNo) "0"
-}
-
-#
-# ::deltatau::confDeltaTau
-# Permet d'activer ou de désactiver le bouton
-#
-proc ::deltatau::confDeltaTau { } {
-   variable private
-   global audace
-
-   if { [ info exists private(frm) ] } {
-      set frm $private(frm)
-      if { [ winfo exists $frm ] } {
-         if { [ ::deltatau::isReady ] == 1 } {
-            #--- Bouton Mise a jour de la monture actif
-            $frm.majpara configure -state normal -command {
-               tel$::deltatau::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
-               tel$::deltatau::private(telNo) home $audace(posobs,observateur,gps)
-            }
-         } else {
-            #--- Bouton Mise a jour de la monture inactif
-            $frm.majpara configure -state disabled
-         }
-      }
-   }
-}
-
-#
-# ::deltatau::confDeltaTauInactif
-#    Permet de desactiver le bouton a l'arret de la monture
-#
-proc ::deltatau::confDeltaTauInactif { } {
-   variable private
-
-   if { [ info exists private(frm) ] } {
-      set frm $private(frm)
-      if { [ winfo exists $frm ] } {
-         if { [ ::deltatau::isReady ] == 1 } {
-            #--- Bouton Mise a jour de la monture inactif
-            $frm.majpara configure -state disabled
-         }
-      }
-   }
 }
 
 #
