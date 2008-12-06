@@ -311,7 +311,7 @@ int tel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,d
 int mytel_radec_init(struct telprop *tel)
 /* it corresponds to the "match" function of an LX200 */
 {
-   char s[1024],ls[100];
+   char s[1024],ls[100],ss[1024];
    int nbcar_1,nbcar_2;
    /* get the short|long format */
    mytel_get_format(tel);
@@ -327,22 +327,22 @@ int mytel_radec_init(struct telprop *tel)
    /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
    sprintf(s,"mc_angle2lx200ra %f %s",tel->ra0,ls); mytel_tcleval(tel,s);
    /* Send Sr */
-   sprintf(s,"read -nonewline %s",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s",tel->channel); mytel_tcleval(tel,ss);
    sprintf(s,"puts -nonewline %s \"#:Sr%s%s#\"",tel->channel,tel->autostar_char,tel->interp->result); mytel_tcleval(tel,s);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    /* Receive 1 if it is OK */
-   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,ss);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    sprintf(s,"mc_angle2lx200dec %f %s",tel->dec0,ls); mytel_tcleval(tel,s);
    /* Send Sd */
-   sprintf(s,"read -nonewline %s",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s",tel->channel); mytel_tcleval(tel,ss);
    sprintf(s,"puts -nonewline %s \"#:Sd%s%s#\"",tel->channel,tel->autostar_char,tel->interp->result); mytel_tcleval(tel,s);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    /* Receive 1 if it is OK */
-   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,ss);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    /* tel->radec_goto_rate is not used for the LX200 protocol (always slew) */
-   sprintf(s,"read -nonewline %s",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s",tel->channel); mytel_tcleval(tel,ss);
    sprintf(s,"puts -nonewline %s \"#:CM#\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after 200"); mytel_tcleval(tel,s);
    /*mytel_flush(tel);*/
