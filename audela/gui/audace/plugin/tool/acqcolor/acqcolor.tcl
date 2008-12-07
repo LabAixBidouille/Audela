@@ -2,7 +2,7 @@
 # Fichier : acqcolor.tcl
 # Description : Outil pour l'acquisition d'images en couleur
 # Auteurs : Alain KLOTZ et Pierre THIERRY
-# Mise a jour $Id: acqcolor.tcl,v 1.13 2008-04-12 16:42:47 robertdelmas Exp $
+# Mise a jour $Id: acqcolor.tcl,v 1.14 2008-12-07 22:16:40 robertdelmas Exp $
 #
 
 proc testexit { } {
@@ -485,7 +485,7 @@ pack $audace(base).test.frame2b \
       #--- Cree le bouton 'Obturateur'
       button $audace(base).test.frame2b.but_obtu \
          -text $caption(acqcolor,obtu) -borderwidth 2 \
-         -command { set confcolor(obtu_pierre) "0" ; ::Obtu_Pierre::run }
+         -command { set confcolor(obtu_pierre) "0" ; ::Obtu_Pierre::run 1000 }
       pack $audace(base).test.frame2b.but_obtu \
          -in $audace(base).test.frame2b -side top -anchor center \
          -padx 3 -pady 3
@@ -1560,7 +1560,7 @@ proc header_color { } {
    if { [ buf1000 imageready ] == "1" } {
       wm minsize $audace(base).header_color 632 380
    }
-   wm resizable $audace(base).header_color 0 1
+   wm resizable $audace(base).header_color 1 1
    if { [ buf1000 imageready ] == "1" } {
       set rgbfiltr [ string trimright [ lindex [ buf1000 getkwd RGBFILTR ] 1 ] " " ]
    } else {
@@ -1575,7 +1575,7 @@ proc header_color { } {
    } else {
       wm title $audace(base).header_color "$caption(acqcolor,entete_fits)"
    }
-   wm geometry $audace(base).header_color +3+75
+   wm geometry $audace(base).header_color 632x380+3+75
 
    if { [ buf1000 imageready ] == "1" } {
       Scrolled_Text $audace(base).header_color.slb -width 150 -font $audace(font,en_tete_1) -height 20
