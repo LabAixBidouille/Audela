@@ -2,7 +2,7 @@
 # Fichier : dfm.tcl
 # Description : Configuration de la monture DFM
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dfm.tcl,v 1.1 2008-12-07 15:06:57 robertdelmas Exp $
+# Mise a jour $Id: dfm.tcl,v 1.2 2008-12-07 20:31:21 robertdelmas Exp $
 #
 
 namespace eval ::dfm {
@@ -294,24 +294,29 @@ proc ::dfm::configureMonture { } {
 
    #--- Je cree la monture
    if { $conf(dfm,mode) == "0" } {
-      set telNo [ tel::create dfm tcp -ip $conf(dfm,host) -port $conf(dfm,port) ]
+      #--- Mode TCP
+      set telNo [ tel::create dfm TCP -ip $conf(dfm,host) -port $conf(dfm,port) ]
    } else {
-      set telNo [ tel::create dfm tcp $conf(dfm,portSerie) ]
+      #--- Mode EXCOM
+      set telNo [ tel::create dfm $conf(dfm,portSerie) ]
    }
    #--- J'affiche un message d'information dans la Console
    if { $conf(dfm,mode) == "0" } {
+      #--- Mode TCP
       console::affiche_erreur "$caption(dfm,port_dfm) $caption(dfm,2points) Ethernet\n"
       console::affiche_erreur "$caption(dfm,mode) $caption(dfm,2points) TCP\n"
       console::affiche_erreur "$caption(dfm,host) $caption(dfm,2points) $conf(dfm,host)\n"
       console::affiche_erreur "$caption(dfm,port) $caption(dfm,2points) $conf(dfm,port)\n"
       console::affiche_saut "\n"
    } else {
+      #--- Mode EXCOM
       console::affiche_erreur "$caption(dfm,port_dfm) $caption(dfm,2points) $conf(dfm,portSerie)\n"
       console::affiche_erreur "$caption(dfm,mode) $caption(dfm,2points) EXCOM\n"
       console::affiche_saut "\n"
    }
    #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
    if { $conf(dfm,mode) == "1" } {
+      #--- Mode EXCOM
       set linkNo [ ::confLink::create $conf(dfm,portSerie) "tel$telNo" "control" [ tel$telNo product ] ]
    }
    #--- Je change de variable
@@ -333,12 +338,14 @@ proc ::dfm::stop { } {
 
    #--- Je memorise le port
    if { $conf(dfm,mode) == "1" } {
+      #--- Mode EXCOM
       set telPort [ tel$private(telNo) port ]
    }
    #--- J'arrete la monture
    tel::delete $private(telNo)
    #--- J'arrete le link
    if { $conf(dfm,mode) == "1" } {
+      #--- Mode EXCOM
       ::confLink::delete $telPort "tel$private(telNo)" "control"
    }
    #--- Remise a zero du numero de monture
