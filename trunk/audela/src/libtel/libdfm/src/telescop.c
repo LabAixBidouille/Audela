@@ -99,7 +99,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 #endif
 	/* --- decode type (umac by default) ---*/
 	kk=2;
-   if (strcmp(argv[kk], "tcp") == 0) {
+   if ((strcmp(argv[kk],"tcp")==0)||(strcmp(argv[kk],"TCP")==0)) {
 		tel->type=0;
 	} else {
 		tel->type=1;
