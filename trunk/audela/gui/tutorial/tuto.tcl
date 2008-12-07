@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.tcl,v 1.6 2008-04-23 21:03:32 robertdelmas Exp $
+# Mise a jour $Id: tuto.tcl,v 1.7 2008-12-07 22:49:51 michelpujol Exp $
 #
 
 #!/bin/sh
@@ -114,6 +114,15 @@ set lpt "lpt1"
 
 #--- declare a new buffer in memory to place images
 set num(buf1) [buf::create]
+
+#--- je charge le package Thread  si Audela est compile avec l'otion multithread
+if { [info exists ::tcl_platform(threaded)] } {
+   if { $::tcl_platform(threaded)==1 } {
+      #--- Je charge le package Thread
+      #--- La version minimale 2.6.5.1 pour disposer de la commande thread::copycommand
+      package require Thread 2.6.5.1
+   }
+}
 
 #--- declare a new camera
 set num(cam1) [cam::create audine $lpt]
