@@ -2,7 +2,7 @@
 # Fichier : deltatau.tcl
 # Description : Configuration de la monture Delta Tau
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: deltatau.tcl,v 1.9 2008-12-06 19:48:59 robertdelmas Exp $
+# Mise a jour $Id: deltatau.tcl,v 1.10 2008-12-07 20:44:02 robertdelmas Exp $
 #
 
 namespace eval ::deltatau {
@@ -255,16 +255,20 @@ proc ::deltatau::configureMonture { } {
 
    #--- Je cree la monture
    if { $conf(deltatau,mode) == "0" } {
-      set telNo [ tel::create deltatau pci -type pmac ]
+      #--- Mode Pmac
+      set telNo [ tel::create deltatau PCI -type pmac ]
    } else {
-      set telNo [ tel::create deltatau ethernet -type umac -ip $conf(deltatau,host) -port $conf(deltatau,port) ]
+      #--- Mode Umac
+      set telNo [ tel::create deltatau Ethernet -type umac -ip $conf(deltatau,host) -port $conf(deltatau,port) ]
    }
    #--- J'affiche un message d'information dans la Console
    if { $conf(deltatau,mode) == "0" } {
+      #--- Mode Pmac
       console::affiche_erreur "$caption(deltatau,port_deltatau) $caption(deltatau,2points) PCI\n"
       console::affiche_erreur "$caption(deltatau,mode) $caption(deltatau,2points) Pmac\n"
       console::affiche_saut "\n"
    } else {
+      #--- Mode Umac
       console::affiche_erreur "$caption(deltatau,port_deltatau) $caption(deltatau,2points) Ethernet\n"
       console::affiche_erreur "$caption(deltatau,mode) $caption(deltatau,2points) Umac\n"
       console::affiche_erreur "$caption(deltatau,host) $caption(deltatau,2points) $conf(deltatau,host)\n"
