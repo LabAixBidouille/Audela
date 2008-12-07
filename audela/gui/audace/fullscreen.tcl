@@ -2,7 +2,7 @@
 # Fichier : fullscreen.tcl
 # Description : Fenetre plein ecran pour afficher des images ou des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: fullscreen.tcl,v 1.17 2008-11-01 18:43:10 robertdelmas Exp $
+# Mise a jour $Id: fullscreen.tcl,v 1.18 2008-12-07 22:19:37 michelpujol Exp $
 #
 
 ##############################################################################
@@ -65,15 +65,16 @@ namespace eval ::FullScreen {
       set private($visuNo,gif_anime)          "0"
 
       #--- je recupere la liste des frames qui sont dans la toplevel
-      set private($visuNo,slaves) [pack slaves $private($visuNo,toplevel)]
+      set private($visuNo,slaves) [grid slaves $private($visuNo,toplevel)]
 
       #--- je masque les frames, sauf le canvas
       foreach slave $private($visuNo,slaves) {
          #--- je sauvegarde les parametre de chaque frame
-         set private($visuNo,$slave,pack_config) "[pack info $slave]"
+         set private($visuNo,$slave,pack_config) "[grid info $slave]"
          #--- je cache la frame sauf celle du canvas
          if { [string compare -length [string length $slave] "$slave" "$private($visuNo,hCanvas)" ] != 0 } {
-            pack forget $slave
+            ##pack forget $slave
+            grid forget $slave
          }
       }
 
@@ -270,7 +271,7 @@ namespace eval ::FullScreen {
 
          #--- je restaure les fenetres filles
          foreach slave $private($visuNo,slaves) {
-            set a_exec "pack $slave $private($visuNo,$slave,pack_config)"
+            set a_exec "grid $slave $private($visuNo,$slave,pack_config)"
             eval $a_exec
          }
 
