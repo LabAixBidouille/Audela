@@ -8,7 +8,9 @@ Sous windows:
    cfitsio : vars.bat (regler les chemins si besoin), puis
    make.bat, puis install.bat
 
- - Lancer etel\make.bat (dezipper eventuellement lib.zip
+ - Lancer deltatau\make.bat puis deltatau\install.bat
+
+  - Lancer etel\make.bat (dezipper eventuellement lib.zip
    dans le dossier etel) puis etel\install.bat
 
  - Ouvrir et compiler avec visual c++, en mode release :
