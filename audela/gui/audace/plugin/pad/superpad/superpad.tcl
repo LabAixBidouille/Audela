@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.25 2008-11-01 17:50:35 robertdelmas Exp $
+# Mise a jour $Id: superpad.tcl,v 1.26 2008-12-07 18:23:34 michelpujol Exp $
 #
 
 namespace eval ::superpad {
@@ -747,22 +747,27 @@ namespace eval ::AlignManager {
       variable private
 
       set result [::carte::getSelectedObject]
-      if { [llength $result] == 4 } {
+      if { [llength $result] == 5 } {
+         set ra        [mc_angle2hms [lindex $result 0] 360 nozero 0 auto string]
+         set dec       [mc_angle2dms [lindex $result 1] 90 nozero 0 + string]
+         set equinox   [lindex $result 2]
+         set name      [lindex $result 3]
+         set magnitude [lindex $result 4]
 
-         set now now
-         catch {set now [::audace::date_sys2ut now]}
-         set listv [modpoi_catalogmean2apparent [lindex $result 0] [lindex $result 1] J2000.0 $now]
-         set ra [lindex $listv 0]
-         set ra [mc_angle2hms $ra 360 nozero 1 auto string]
-         set ra [string range $ra 0 [string first "s" "$ra" ] ]
+         if { $equinox != "now" } {
+            set listv [modpoi_catalogmean2apparent $ra $dec $equinox now]
+            set ra [lindex $listv 0]
+            set ra [mc_angle2hms $ra 360 nozero 1 auto string]
+            set ra [string range $ra 0 [string first "s" "$ra" ] ]
 
-         set dec [lindex $listv 1]
-         set dec [mc_angle2dms $dec 90 nozero 0 + string]
-         set dec [string range $dec 0 [string first "s" "$dec" ] ]
-
-         set private(targetRa)   "$ra"
-         set private(targetDec)  "$dec"
-         set private(targetName) "[ lindex $result 2 ]"
+            set dec [lindex $listv 1]
+            set dec [mc_angle2dms $dec 90 nozero 0 + string]
+            set dec [string range $dec 0 [string first "s" "$dec" ] ]
+            set equinox   "now"
+         }
+         set private(targetRa)   $ra
+         set private(targetDec)  $dec
+         set private(targetName) $name
          update
       }
    }
