@@ -2,7 +2,7 @@
 # Fichier : obj_lune.tcl
 # Description : Outil dedie a la Lune, avec Goto vers un site choisi, ephemerides et cartographie
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune.tcl,v 1.13 2008-01-13 17:26:57 robertdelmas Exp $
+# Mise a jour $Id: obj_lune.tcl,v 1.14 2008-12-08 22:28:23 robertdelmas Exp $
 #
 
 global audace
@@ -300,7 +300,7 @@ namespace eval obj_lune {
    #
    proc gotoPage { frm } {
       variable This
-      global audace caption obj_lune zone
+      global caption obj_lune zone
 
       #--- Initialisation
       set obj_lune(onglet1) $frm
@@ -460,7 +460,7 @@ namespace eval obj_lune {
       scrollbar $frm.frame3.scrollbar -orient vertical -command [list $frm.frame3.lb1 yview] -takefocus 1 -borderwidth 1
       pack $frm.frame3.scrollbar -side right -anchor ne -fill both
       listbox $frm.frame3.lb1 -width 24 -height 40 -borderwidth 2 -relief sunken \
-         -font $audace(font,listbox) -yscrollcommand [list $frm.frame3.scrollbar set]
+         -yscrollcommand [list $frm.frame3.scrollbar set]
       pack $frm.frame3.lb1 -side right -anchor ne -fill both
       set zone(list_site) $frm.frame3.lb1
 
@@ -469,7 +469,7 @@ namespace eval obj_lune {
       pack $frm.frame6.lab1 -side top -fill both -expand 1
 
       text $frm.frame5.lb1 -width 30 -height 5 -borderwidth 2 -relief sunken \
-         -font $audace(font,listbox) -yscrollcommand [list $frm.frame5.scrollbar set] -wrap word
+         -yscrollcommand [list $frm.frame5.scrollbar set] -wrap word
       pack $frm.frame5.lb1 -side left -anchor nw -fill both -expand 1
       scrollbar $frm.frame5.scrollbar -orient vertical -command [list $frm.frame5.lb1 yview] \
          -takefocus 1 -borderwidth 1

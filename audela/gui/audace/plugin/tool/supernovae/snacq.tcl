@@ -2,7 +2,7 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snacq.tcl,v 1.12 2008-11-01 19:11:22 robertdelmas Exp $
+# Mise a jour $Id: snacq.tcl,v 1.13 2008-12-08 22:28:34 robertdelmas Exp $
 #
 
 # ===================================================================
@@ -532,7 +532,7 @@ set zone(status_scrl) $audace(base).snacq.frame3.scr1
 #--- Create a console for status returned
 #--- Cree la console de retour d'etats
 text $audace(base).snacq.frame3.lst1 \
-   -borderwidth 1 -relief sunken -font $audace(font,listbox) \
+   -borderwidth 1 -relief sunken \
    -yscrollcommand {global audace ; $audace(base).snacq.frame3.scr1 set} -wrap word
 pack $audace(base).snacq.frame3.lst1 \
    -in $audace(base).snacq.frame3 -expand yes -fill both \

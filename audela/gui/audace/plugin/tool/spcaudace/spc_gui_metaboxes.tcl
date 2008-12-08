@@ -5,7 +5,7 @@
 #*********************************************************************************#
 # Chargement : source $audace(rep_scripts)/spcaudace/spc_gui_boxes.tcl
 
-# Mise a jour $Id: spc_gui_metaboxes.tcl,v 1.1 2008-06-14 16:36:20 bmauclaire Exp $
+# Mise a jour $Id: spc_gui_metaboxes.tcl,v 1.2 2008-12-08 22:31:20 robertdelmas Exp $
 
 
 
@@ -1910,7 +1910,7 @@ namespace eval ::param_spc_audace_calibreprofil {
       #scrollbar $frm.frame3.scrollbar -orient vertical -command [list $frm.frame3.lb1 yview] -takefocus 1 -borderwidth 1
       #pack $frm.frame3.scrollbar -side right -anchor ne -fill both
       #listbox $frm.frame3.lb1 -width 24 -height 40 -borderwidth 2 -relief sunken \
-      #   -font $audace(font,listbox) -yscrollcommand [list $frm.frame3.scrollbar set]
+      #   -yscrollcommand [list $frm.frame3.scrollbar set]
       #pack $frm.frame3.lb1 -side right -anchor ne -fill both
       #set zone(list_site) $frm.frame3.lb1
       # obj_Lune_2::LitCataChoisi :
