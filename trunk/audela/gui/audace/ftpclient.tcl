@@ -2,7 +2,7 @@
 # Fichier : ftpclient.tcl
 # Description : Connexion a un serveur FTP
 # Auteur : Michel PUJOL
-# Mise a jour $Id: ftpclient.tcl,v 1.9 2008-09-14 22:00:23 robertdelmas Exp $
+# Mise a jour $Id: ftpclient.tcl,v 1.10 2008-12-08 22:28:11 robertdelmas Exp $
 #
 
 ##############################################################################
@@ -528,7 +528,7 @@ namespace eval ::ftpclient {
    proc fillConfigPage { frm visuNo } {
       variable widget
       variable private
-      global audace caption
+      global caption
 
       #--- je memorise la reference de la frame
       set widget(frm) $frm
@@ -637,7 +637,7 @@ namespace eval ::ftpclient {
       #pack $widget(frm).framepreview -side top -fill both -expand 1
 
       #--- listpreview
-      label $widget(frm).framepreview.listpreview -font $audace(font,listbox) -justify left
+      label $widget(frm).framepreview.listpreview -justify left
       pack $widget(frm).framepreview.listpreview -anchor center -side top -padx 2 -pady 2 -fill both -expand 1
 
       #--- frame preview detail
@@ -645,11 +645,11 @@ namespace eval ::ftpclient {
       pack $widget(frm).framepreview.detail -side top -fill both -expand 1
 
       #--- name preview
-      label $widget(frm).framepreview.detail.name -font $audace(font,listbox) -justify left
+      label $widget(frm).framepreview.detail.name -justify left
       pack $widget(frm).framepreview.detail.name -anchor center -side left -padx 2 -pady 2 -fill both -expand 1
 
       #--- size preview
-      label $widget(frm).framepreview.detail.size -font $audace(font,listbox) -justify left
+      label $widget(frm).framepreview.detail.size -justify left
       pack $widget(frm).framepreview.detail.size -anchor center -side left -padx 2 -pady 2 -fill both -expand 1
 
       #--- je selectionne le premier element de la combobox
