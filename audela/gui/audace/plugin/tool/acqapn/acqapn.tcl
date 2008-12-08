@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Outil d'acquisition pour APN Nikon CoolPix
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.34 2008-12-07 22:38:26 robertdelmas Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.35 2008-12-08 21:57:13 robertdelmas Exp $
 #
 
 #============================================================
@@ -393,12 +393,15 @@ namespace eval ::acqapn {
 
       #--- Recherche du port serie sur lequel la camera repond
       set port [::acqapn::IdCom]
-      if { $port!="no port" && $port!="not found" } {
+      set panneau(acqapn,port) $port
+      if { $port!="no_port" && $port!="not found" } {
          set panneau(acqapn,cmd_usb) "-l$port:"
          ::console::affiche_erreur "$conf(coolpix,model) $caption(acqapn,msg,connect) $port\n"
          ::console::affiche_erreur "$caption(acqapn,msg,apn_baud) $conf(coolpix,baud)\n"
          ::console::affiche_saut "\n"
          ::confVisu::setCamera "$audace(visuNo)" "$camItem" "$conf(coolpix,model)"
+         #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la camera)
+         set linkNo [ ::confLink::create $port "cam" "control" $conf(coolpix,model) ]
       } else {
          $This.fra4.connect configure -text $caption(acqapn,sw_connect,on) -command { ::acqapn::connect }
          if { $port=="not found" } { set msg 1 } else { set msg 2 }
@@ -407,7 +410,7 @@ namespace eval ::acqapn {
       }
 
       #--- Commandes secretes
-      #id "DIAG RAW" ou "NIKON DIGITAL CAMERA"
+     ### id "DIAG RAW" ou "NIKON DIGITAL CAMERA"
 
       #--- Cree le fichier audace\audace\plugin\tool\acqapn\saveconf.log
       catch { set reponse [exec $panneau(acqapn,photopc) -q $panneau(acqapn,cmd_usb) clock -t -f 3\
@@ -453,7 +456,6 @@ namespace eval ::acqapn {
       #--- Nouvelle configuration du panneau
       ::acqapn::Photo
       $This.fra4.connect configure -text $caption(acqapn,sw_connect,off) -command { ::acqapn::deconnect }
-      $This.fra2.info configure -font $audace(font,arial_8_b)
       ::acqapn::ConfigEtat normal
    }
 
@@ -465,9 +467,9 @@ namespace eval ::acqapn {
       variable This
       variable compteur_erreur
       variable private
-      global audace caption conf panneau
+      global caption conf panneau
 
-      #--- Connexion par configuration de la camera si deja connecte
+      #--- Connexion par configuration de la camera si deja connectee
       if { [ $This.fra4.connect cget -text ] == "$caption(acqapn,sw_connect,on)" } {
          return
       }
@@ -519,7 +521,6 @@ namespace eval ::acqapn {
       #--- Mise a jour des variables et reconfiguration du bouton de la fenetre '+Infos'
       foreach var { camera_id serial_number version battery memory_free } { set private(coolpix_init,$var) "-" }
       set private(coolpix,nb_images) "-"
-      $This.fra2.info configure -font $audace(font,arial_8_n)
       $This.fra4.connect configure -text $caption(acqapn,sw_connect,on) -command { ::acqapn::connect }
       ::acqapn::ConfigEtat normal
 
@@ -527,6 +528,8 @@ namespace eval ::acqapn {
       if { $compteur_erreur == "1" } {
          ::console::affiche_erreur "$private(coolpix,model) $caption(acqapn,msg,deconnect)\n"
          ::console::affiche_saut "\n"
+         #--- J'arrete le link
+         ::confLink::delete $panneau(acqapn,port) "cam" "control"
       }
    }
 
@@ -1087,7 +1090,7 @@ namespace eval ::acqapn {
    proc ConfigListeVues { } {
       variable This
       variable private
-      global audace panneau
+      global panneau
 
       if [winfo exists $This.fra4.vues] { destroy $This.fra4.vues }
 
@@ -1097,12 +1100,12 @@ namespace eval ::acqapn {
          pack $This.fra4.vues\
             -in $This.fra4 -anchor center -side top -padx 2 -pady 4
          $This.fra4.vues configure -state normal -modifycmd {
-            set this "$This.fra4.vues"
+            set this "$::acqapn::This.fra4.vues"
             set index [$this getvalue]
             set panneau(acqapn,selection) [expr $index+1]
             set panneau(acqapn,imagename) [$this get]
          }
-         $This.fra4.vues configure -values $panneau(acqapn,imagelist) -font $audace(font,arial_8_n)
+         $This.fra4.vues configure -values $panneau(acqapn,imagelist)
          #--- Et affichage du plus recent
          $This.fra4.vues setvalue last
          set panneau(acqapn,imagename) "[$This.fra4.vues get]"
@@ -1147,17 +1150,17 @@ namespace eval ::acqapn {
    proc Photo { } {
       variable This
       variable private
-      global audace caption panneau
+      global caption panneau
 
       #--- Armement du bouton 'GO'
       Button $This.fra4.expose -borderwidth 4 -text $caption(acqapn,sw,exposer)\
-         -font $audace(font,arial_8_b) -state normal -command { ::acqapn::Expose }
+         -state normal -command { ::acqapn::Expose }
       pack $This.fra4.expose\
          -in $This.fra4 -anchor center -side top -fill x
 
       #--- Le bouton 'Memoire' pour ouvrir le boite des reglages avances
       Button $This.fra4.memory -borderwidth 4 -text $caption(acqapn,label,avance)\
-         -font $audace(font,arial_8_n) -state normal -command { ::acqapn::Avance }
+         -state normal -command { ::acqapn::Avance }
       pack $This.fra4.memory\
          -in $This.fra4 -anchor center -side bottom -fill x
 
@@ -1175,15 +1178,15 @@ namespace eval ::acqapn {
       frame $This.fra7 -borderwidth 1 -relief groove
 
       #--- Le label 'Poses'
-      label $This.fra7.lab -text $caption(acqapn,label,poses) -font $audace(font,arial_8_b)
+      label $This.fra7.lab -text $caption(acqapn,label,poses)
       pack $This.fra7.lab\
          -in $This.fra7 -anchor center -side top
 
       #--- Le temps de pose
       LabelEntry $This.fra7.duree -borderwidth 1 -relief flat\
-         -label $caption(acqapn,poses,duree) -labelfont $audace(font,arial_7_n) \
+         -label $caption(acqapn,poses,duree)\
          -labelanchor w -labelwidth 8 -padx 4 -width 7 -relief sunken\
-         -justify right -font $audace(font,arial_8_b) -state normal\
+         -justify right -state normal\
          -textvariable panneau(acqapn,duree_pose) -helptext $caption(acqapn,help,unites)
       pack $This.fra7.duree\
          -in $This.fra7 -anchor nw -side top -pady 2
@@ -1192,9 +1195,9 @@ namespace eval ::acqapn {
 
       #--- Le nombre de poses a prendre
       LabelEntry $This.fra7.poses -borderwidth 1 -relief flat\
-         -label $caption(acqapn,poses,nb) -labelfont $audace(font,arial_7_n) \
+         -label $caption(acqapn,poses,nb)\
          -labelanchor w -labelwidth 8 -padx 4 -width 7 -relief sunken\
-         -justify right -font $audace(font,arial_8_b) -state normal\
+         -justify right -state normal\
          -textvariable panneau(acqapn,nb_poses)
       pack $This.fra7.poses \
          -in $This.fra7 -anchor nw -side top -pady 2
@@ -1202,9 +1205,9 @@ namespace eval ::acqapn {
 
       #--- Le delai avant la premiere pose
       LabelEntry $This.fra7.prog -borderwidth 1 -relief flat\
-         -label $caption(acqapn,poses,delai) -labelfont $audace(font,arial_7_n) \
+         -label $caption(acqapn,poses,delai)\
          -labelanchor w -labelwidth 8 -padx 4 -width 7 -relief sunken\
-         -justify right -font $audace(font,arial_8_b) -state normal\
+         -justify right -state normal\
          -textvariable panneau(acqapn,delai) -helptext $caption(acqapn,help,unites)
       pack $This.fra7.prog\
          -in $This.fra7 -anchor nw -side top -pady 2
@@ -1214,10 +1217,10 @@ namespace eval ::acqapn {
       #--- L'intervalle entre poses
       set panneau(acqapn,intervalle) $panneau(acqapn,intervalle_mini)
       LabelEntry $This.fra7.timer -borderwidth 1 -relief flat\
-         -label $caption(acqapn,poses,intervalle) -labelfont $audace(font,arial_7_n) \
+         -label $caption(acqapn,poses,intervalle)\
          -labelanchor w -labelwidth 8 -padx 4 -width 7 -relief sunken\
          -justify right -state normal\
-         -textvariable panneau(acqapn,intervalle) -font $audace(font,arial_8_b)\
+         -textvariable panneau(acqapn,intervalle)\
          -helptext "$caption(acqapn,help,intervalle1)\n$panneau(acqapn,intervalle_mini) $caption(acqapn,help,unites)\n"
       pack $This.fra7.timer\
          -in $This.fra7 -anchor nw -side top -pady 2
@@ -1247,79 +1250,72 @@ namespace eval ::acqapn {
       wm title $This.info "$caption(acqapn,titre,info)"
       set posx_PlusInfo [ lindex [ split [ wm geometry $audace(base) ] "+" ] 1 ]
       set posy_PlusInfo [ lindex [ split [ wm geometry $audace(base) ] "+" ] 2 ]
-      wm geometry $This.info +[ expr $posx_PlusInfo + 130 ]+[ expr $posy_PlusInfo + 85 ]
+      wm geometry $This.info +[ expr $posx_PlusInfo + 125 ]+[ expr $posy_PlusInfo + 85 ]
       wm protocol $This.info WM_DELETE_WINDOW "destroy $This.info"
 
       #--- Indication du constructeur
       LabelFrame $This.info.connect -textvariable ::acqapn::private(coolpix_init,camera_id)\
-         -font $audace(font,arial_8_n) -side left -padx 5
+         -side left -padx 5
       pack $This.info.connect\
          -in $This.info -anchor center -side top
 
       #--- Identification du n° de serie
-      LabelFrame $This.info.numser -text $caption(acqapn,info,serial)\
-         -font $audace(font,arial_8_n) -side left -padx 5
-         label $This.info.numser.num -textvariable ::acqapn::private(coolpix_init,serial_number) -font $audace(font,arial_8_n)
+      LabelFrame $This.info.numser -text $caption(acqapn,info,serial) -side left -padx 5
+         label $This.info.numser.num -textvariable ::acqapn::private(coolpix_init,serial_number)
          pack $This.info.numser.num\
             -in $This.info.numser -side left
       pack $This.info.numser\
          -in $This.info -anchor w -side top
 
       #--- Identification de la version
-      LabelFrame $This.info.version -text $caption(acqapn,info,version)\
-         -font $audace(font,arial_8_n) -side left -padx 5
-         label $This.info.version.num -textvariable ::acqapn::private(coolpix_init,version) -font $audace(font,arial_8_n)
+      LabelFrame $This.info.version -text $caption(acqapn,info,version) -side left -padx 5
+         label $This.info.version.num -textvariable ::acqapn::private(coolpix_init,version)
          pack $This.info.version.num\
             -in $This.info.version -side left
       pack $This.info.version\
          -in $This.info -anchor w -side top
 
       #--- Caracteristiques du CCD
-      LabelFrame $This.info.ccd -text $caption(acqapn,info,ccd)\
-         -font $audace(font,arial_8_n) -side left -padx 5
-         label $This.info.ccd.num -text $panneau(acqapn,ccd_size) -font $audace(font,arial_8_n)
+      LabelFrame $This.info.ccd -text $caption(acqapn,info,ccd) -side left -padx 5
+         label $This.info.ccd.num -text $panneau(acqapn,ccd_size)
          pack $This.info.ccd.num\
             -in $This.info.ccd -side left
       pack $This.info.ccd\
          -in $This.info -anchor w -side top
 
       #--- Taille des pixels
-      LabelFrame $This.info.pixel -text $caption(acqapn,info,pixel)\
-         -font $audace(font,arial_8_n) -side left -padx 5
-         label $This.info.pixel.size -text $panneau(acqapn,pixel_size) -font $audace(font,arial_8_n)
+      LabelFrame $This.info.pixel -text $caption(acqapn,info,pixel) -side left -padx 5
+         label $This.info.pixel.size -text $panneau(acqapn,pixel_size)
          pack $This.info.pixel.size\
             -in $This.info.pixel -side left
-         label $This.info.pixel.dim -text $caption(acqapn,info,um) -font $audace(font,arial_8_n)
+         label $This.info.pixel.dim -text $caption(acqapn,info,um)
          pack $This.info.pixel.dim\
             -in $This.info.pixel -side left
       pack $This.info.pixel\
          -in $This.info -anchor w -side top -padx 3
 
       #--- Charge de la batterie
-      LabelFrame $This.info.batt -text $caption(acqapn,info,batterie)\
-         -font $audace(font,arial_8_n) -side left -padx 5
-         label $This.info.batt.size -textvariable ::acqapn::private(coolpix_init,battery) -font $audace(font,arial_8_n)
+      LabelFrame $This.info.batt -text $caption(acqapn,info,batterie) -side left -padx 5
+         label $This.info.batt.size -textvariable ::acqapn::private(coolpix_init,battery)
          pack $This.info.batt.size\
             -in $This.info.batt -side left
       pack $This.info.batt\
          -in $This.info -anchor w -side top -padx 3
 
       #--- Nombre de photos enregistrees
-      LabelFrame $This.info.vues -text $caption(acqapn,info,vues)\
-         -font $audace(font,arial_8_n) -side left -padx 5
-         label $This.info.vues.size -textvariable ::acqapn::private(coolpix,nb_images) -font $audace(font,arial_8_n)
+      LabelFrame $This.info.vues -text $caption(acqapn,info,vues) -side left -padx 5
+         label $This.info.vues.size -textvariable ::acqapn::private(coolpix,nb_images)
          pack $This.info.vues.size\
             -in $This.info.vues -side left
       pack $This.info.vues\
          -in $This.info -anchor w -side top -padx 3
 
       #--- Memoire libre
-      LabelFrame $This.info.mem -text $caption(acqapn,info,memoire_libre)\
-         -font $audace(font,arial_8_n) -side left -padx 5
-         label $This.info.mem.size -textvariable ::acqapn::private(coolpix_init,memory_free) -font $audace(font,arial_8_n)
+      LabelFrame $This.info.mem -text $caption(acqapn,info,memoire_libre) -side left -padx 5
+         label $This.info.mem.size -textvariable ::acqapn::private(coolpix_init,memory_free)
          pack $This.info.mem.size\
             -in $This.info.mem -side left
-         label $This.info.mem.dim -text $caption(acqapn,info,unites) -font $audace(font,arial_8_n)
+         label $This.info.mem.dim -text $caption(acqapn,info,unites)
          pack $This.info.mem.dim\
             -in $This.info.mem -side left
       pack $This.info.mem\
@@ -1346,7 +1342,7 @@ namespace eval ::acqapn {
       wm title $This.param "$caption(acqapn,titre,parametres)"
       set posx_GesPar [ lindex [ split [ wm geometry $audace(base) ] "+" ] 1 ]
       set posy_GesPar [ lindex [ split [ wm geometry $audace(base) ] "+" ] 2 ]
-      wm geometry $This.param +[ expr $posx_GesPar + 130 ]+[ expr $posy_GesPar + 360 ]
+      wm geometry $This.param +[ expr $posx_GesPar + 125 ]+[ expr $posy_GesPar + 360 ]
       wm protocol $This.param WM_DELETE_WINDOW "destroy $This.param"
 
       #--- Le bouton 'Adopter' les options dans le fichier conf
@@ -1392,7 +1388,7 @@ namespace eval ::acqapn {
       wm title $this $caption(acqapn,titre,avance)
       set posx_Avance [ lindex [ split [ wm geometry $audace(base) ] "+" ] 1 ]
       set posy_Avance [ lindex [ split [ wm geometry $audace(base) ] "+" ] 2 ]
-      wm geometry $this +[ expr $posx_Avance + 130 ]+[ expr $posy_Avance + 490 ]
+      wm geometry $this +[ expr $posx_Avance + 125 ]+[ expr $posy_Avance + 475 ]
       wm protocol $this WM_DELETE_WINDOW "destroy $This.avance"
 
       frame $this.efface -borderwidth 2 -relief ridge
@@ -1424,8 +1420,8 @@ namespace eval ::acqapn {
          -in $This.avance.charge -anchor center -side top -fill x
       #--- Le nom de l'image chargee
       LabelEntry $this.charge.nom -borderwidth 1 -relief flat\
-         -label $caption(acqapn,poses,nom) -labelfont $audace(font,arial_8_n) -labelanchor w\
-         -labelwidth 7 -padx 4 -width 20 -relief sunken -justify right -font $audace(font,arial_8_b)\
+         -label $caption(acqapn,poses,nom) -labelanchor w\
+         -labelwidth 7 -padx 4 -width 20 -relief sunken -justify right\
          -textvariable panneau(acqapn,imagename) -helptext $caption(acqapn,help,charge)
       pack $This.avance.charge.nom\
          -in $This.avance.charge -anchor nw -side top -padx 5
@@ -1535,7 +1531,7 @@ namespace eval ::acqapn {
          ::confGenerique::run $visuNo "$audace(base).tool.acqapnSetup" "::acqapn::config" -modal 0
          set posx_config [ lindex [ split [ wm geometry $audace(base) ] "+" ] 1 ]
          set posy_config [ lindex [ split [ wm geometry $audace(base) ] "+" ] 2 ]
-         wm geometry $audace(base).tool.acqapnSetup +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
+         wm geometry $audace(base).tool.acqapnSetup +[ expr $posx_config + 125 ]+[ expr $posy_config + 120 ]
       }
 
       #
@@ -1613,7 +1609,7 @@ namespace eval ::acqapn {
 #------------------------------------------------------------
 proc acqapnBuildIF { This } {
    variable private
-   global coolpix_base audace caption panneau
+   global coolpix_base caption panneau
 
    frame $This -borderwidth 2 -relief groove
       #--- Frame du titre et du bouton de l'aide
@@ -1635,7 +1631,7 @@ proc acqapnBuildIF { This } {
          ::acqapn::SetComboBoxList $This.fra2.opt_model "model"
          pack $This.fra2.opt_model -in $This.fra2 -anchor center -side top -pady 2
          $This.fra2.opt_model configure -modifycmd {
-               set this "$audace(base).tool.acqapn"
+               set this "$::acqapn::This"
                set private(coolpix,model) [$this.fra2.opt_model get]
                #--- Mise a jour des valeurs dependantes du modele d'APN dans la boite d'infos
                ::acqapn::ConfigPanneau
@@ -1656,16 +1652,13 @@ proc acqapnBuildIF { This } {
       frame $This.fra5 -borderwidth 1 -relief groove
 
          #--- Le bouton 'Video'
-         button $This.fra5.video -borderwidth 4 -text $caption(acqapn,sw_video,no) -font $audace(font,arial_8_n) \
+         button $This.fra5.video -borderwidth 4 -text $caption(acqapn,sw_video,no) \
             -command { ::acqapn::ShowVideo }
          pack $This.fra5.video -in $This.fra5 -anchor center -side top -fill x
 
          #--- Le Bouton Reglages renvoie vers la configuration de la vitesse du port serie
          button $This.fra5.avance -borderwidth 4 -text $caption(acqapn,label,reglage) \
-            -font $audace(font,arial_8_n) -state normal \
-            -command {
-               ::acqapn::config::run 1
-            }
+            -state normal -command { ::acqapn::config::run 1 }
          pack $This.fra5.avance -in $This.fra5 -anchor center -side top -fill x
 
       pack $This.fra5 -side top -fill x
@@ -1674,7 +1667,7 @@ proc acqapnBuildIF { This } {
       frame $This.fra3 -borderwidth 1 -relief groove
 
          #--- Le label 'Options'
-         label $This.fra3.lab1 -text $caption(acqapn,label,options) -font $audace(font,arial_8_b)
+         label $This.fra3.lab1 -text $caption(acqapn,label,options)
          pack $This.fra3.lab1 -in $This.fra3 -anchor center -side top -fill x
 
          #--- Le label 'Variables'
@@ -1684,7 +1677,7 @@ proc acqapnBuildIF { This } {
             ::acqapn::SetComboBoxList $This.fra3.reglage.var "variables"
             pack $This.fra3.reglage.var -in $This.fra3.reglage -anchor center -side top -padx 2 -pady 2
             $This.fra3.reglage.var configure -modifycmd {
-               set this "$This.fra3"
+               set this "$::acqapn::This.fra3"
                #--- Capture de la nouvelle variable affichee
                set panneau(acqapn,variable_affichee) [$this.reglage.var get]
                #--- Configuration de la liste des valeurs specifique de la variable
@@ -1706,7 +1699,7 @@ proc acqapnBuildIF { This } {
                pack $This.fra3.valeur.val -in $This.fra3.valeur -anchor center -side top -padx 2 -pady 2
                $This.fra3.valeur.val configure -text $::acqapn::private(coolpix,$panneau(acqapn,variable_affichee))
                $This.fra3.valeur.val configure -modifycmd {
-                  set this "$This.fra3"
+                  set this "$::acqapn::This.fra3"
                   #--- Capture de la nouvelle variable modifiee
                   set panneau(acqapn,variable_affichee) [$this.reglage.var get]
                   #--- Recherche de la valeur litterale associee a l'index et mise a jour
@@ -1746,12 +1739,12 @@ proc acqapnBuildIF { This } {
       frame $This.fra4 -borderwidth 1 -relief groove
 
          #--- Le label 'Vues'
-         label $This.fra4.lab -text $caption(acqapn,label,vues) -font $audace(font,arial_8_b)
+         label $This.fra4.lab -text $caption(acqapn,label,vues)
          pack $This.fra4.lab -in $This.fra4 -anchor center -side top
 
          #--- Le bouton 'Connecter'
          button $This.fra4.connect -borderwidth 4 -text $caption(acqapn,sw_connect,on) \
-            -font $audace(font,arial_8_b) -state normal -command { ::acqapn::connect }
+            -state normal -command { ::acqapn::connect }
          pack $This.fra4.connect -in $This.fra4 -anchor center -side top -fill x
 
       pack $This.fra4 -side top -fill x
