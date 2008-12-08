@@ -641,6 +641,7 @@ char *ak_photometric_parallax(char *path,char *ascii_star,int filetype, double r
  * @param fitsnamemd is the output FITS file of Av map (without the path).
  * @param naxis1 is the number of pixels along RA axis of the output maps.
  * @param naxis2 is the number of pixels along DEC axis of the output maps.
+ * @param goconvolve=1 to convolve the map (else=0 not to convolve).
  * @return stringresult = "" is no error. Else a text file that explains the problem.
 */
 /***************************************************************************/
@@ -648,7 +649,7 @@ char *ak_photometric_parallax(char *path,char *ascii_star,int filetype, double r
  * The maps are real FITS files (BITPIX=-32) including World Coordinates Keyword.
 */
 /***************************************************************************/
-char *ak_photometric_parallax_avmap(char *path,char *ascii_htmav, char *fitsnameav, char *fitsnamemd,int naxis1,int naxis2)
+char *ak_photometric_parallax_avmap(char *path,char *ascii_htmav, char *fitsnameav, char *fitsnamemd,int naxis1,int naxis2, int goconvolve)
 {
    static char stringresult[1024];
    char fullname[1024];
@@ -662,7 +663,6 @@ char *ak_photometric_parallax_avmap(char *path,char *ascii_htmav, char *fitsname
    double *ras,*decs,av=0.,md=0.;
    float *imgav,*imgmd,*imgconvav,*imgconvmd;
    char htm[20],htm0[20];
-   int goconvolve=1;
    double dx10,dy10,dx20,dy20,dx21,dy21;
    double dista,distb,distc,anga,angb,angc;
    double r;

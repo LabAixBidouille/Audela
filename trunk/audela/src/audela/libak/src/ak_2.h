@@ -118,7 +118,7 @@ typedef struct {
 /***************************************************************************/
 
 char *ak_photometric_parallax(char *path,char *ascii_star,int filetype, double rac, double decc, double radius, int htmlevel, int savetmpfiles, char *ascii_htmav, char *ascii_colcol,char *ascii_colmag,int colcolmagtype);
-char *ak_photometric_parallax_avmap(char *path,char *ascii_htmav, char *fitsnameav, char *fitsnamemd,int naxis1,int naxis2);
+char *ak_photometric_parallax_avmap(char *path,char *ascii_htmav, char *fitsnameav, char *fitsnamemd,int naxis1,int naxis2, int goconvolve);
 
 char *ak_photometric_parallax_convgauss(ak_phot_par_diag *diags,double sigmagx, double sigmagy);
 char *ak_photometric_parallax_diagram(char *ascii_diagram,char *tmpfile,double sigmagy, ak_phot_par_diag *diags);

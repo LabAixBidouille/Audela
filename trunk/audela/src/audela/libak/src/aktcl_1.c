@@ -2655,10 +2655,10 @@ load libak; ak_photometric_parallax_avmap ./ htmav.txt htmav.fit htmdm.fit 300 3
    char stringresult[1024];
    char s[100];
    char ascii_htmav[1024],fitsfilenameav[1024],fitsfilenamedm[1024],path[1024];
-   int naxis1,naxis2;
+   int naxis1,naxis2,goconvolve;
    int result=TCL_ERROR;
    if(argc<6) {
-      sprintf(s,"Usage: %s path ascii_in(HTM,Av) fitsfile_Av fitsfile_DM naxis1 naxis2", argv[0]);
+      sprintf(s,"Usage: %s path ascii_in(HTM,Av) fitsfile_Av fitsfile_DM naxis1 naxis2 ?goconvolve?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       return TCL_ERROR;
    } else {
@@ -2669,7 +2669,11 @@ load libak; ak_photometric_parallax_avmap ./ htmav.txt htmav.fit htmdm.fit 300 3
       strcpy(fitsfilenamedm,argv[4]);
       naxis1=(int)atoi(argv[5]);
       naxis2=(int)atoi(argv[6]);
-      strcpy(stringresult,ak_photometric_parallax_avmap(path,ascii_htmav,fitsfilenameav,fitsfilenamedm,naxis1,naxis2));
+		goconvolve=0;
+		if (argc>7) {
+			goconvolve=(int)atoi(argv[7]);
+		}
+      strcpy(stringresult,ak_photometric_parallax_avmap(path,ascii_htmav,fitsfilenameav,fitsfilenamedm,naxis1,naxis2,goconvolve));
       if (strcmp(stringresult,"")==0) {
          result=0;
       } else {
