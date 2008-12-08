@@ -2,7 +2,7 @@
 # Fichier : conffont.tcl
 # Description : Selection et mise a jour en direct des polices de l'interface Aud'ACE
 # Auteur : Robert DELMAS
-# Mise a jour $Id: conffont.tcl,v 1.4 2008-12-05 23:29:40 robertdelmas Exp $
+# Mise a jour $Id: conffont.tcl,v 1.5 2008-12-08 22:27:40 robertdelmas Exp $
 #
 
 namespace eval confFont:: {
@@ -48,7 +48,6 @@ proc ::confFont::init { } {
       #--- Polices des en-tetes FITS et des listes (police Linux = police Windows + 3)
       set audace(font,en_tete_1)       "$conf(conffont,EnteteFITS)"
       set audace(font,en_tete_2)       [ lreplace $audace(font,en_tete_1) 2 2 "bold" ]
-      set audace(font,listbox)         [ lreplace $audace(font,en_tete_2) 1 1 "13" ]
 
       #--- Polices des boites, des outils et des liens hypertextes (police Linux = police Windows + 3)
       set audace(font,arial_8_n)       "$conf(conffont,Autres)"
@@ -88,7 +87,6 @@ proc ::confFont::init { } {
       #--- Polices des en-tetes FITS et des listes (police Darwin = police Windows + 3)
       set audace(font,en_tete_1)       "$conf(conffont,EnteteFITS)"
       set audace(font,en_tete_2)       [ lreplace $audace(font,en_tete_1) 2 2 "bold" ]
-      set audace(font,listbox)         [ lreplace $audace(font,en_tete_2) 1 1 "13" ]
 
       #--- Polices des boites, des outils et des liens hypertextes (police Darwin = police Windows + 3)
       set audace(font,arial_8_n)       "$conf(conffont,Autres)"
@@ -114,7 +112,7 @@ proc ::confFont::init { } {
       if { ! [ info exists conf(conffont,Menubutton) ] }  { set conf(conffont,Menubutton)  "{MS Sans Serif} 8 normal" }
       if { ! [ info exists conf(conffont,Menu) ] }        { set conf(conffont,Menu)        "{MS Sans Serif} 8 normal" }
       if { ! [ info exists conf(conffont,Scale) ] }       { set conf(conffont,Scale)       "{MS Sans Serif} 8 normal" }
-      if { ! [ info exists conf(conffont,Listbox) ] }     { set conf(conffont,Listbox)     "{MS Sans Serif} 8 normal" }
+      if { ! [ info exists conf(conffont,Listbox) ] }     { set conf(conffont,Listbox)     "Courier 10 normal" }
       if { ! [ info exists conf(conffont,ListBox) ] }     { set conf(conffont,ListBox)     "{MS Sans Serif} 8 normal" }
       if { ! [ info exists conf(conffont,Spinbox) ] }     { set conf(conffont,Spinbox)     "{MS Sans Serif} 8 normal" }
       if { ! [ info exists conf(conffont,Tablelist) ] }   { set conf(conffont,Tablelist)   "{MS Sans Serif} 8 normal" }
@@ -128,7 +126,6 @@ proc ::confFont::init { } {
       #--- Polices des en-tetes FITS et des listes
       set audace(font,en_tete_1)       "$conf(conffont,EnteteFITS)"
       set audace(font,en_tete_2)       [ lreplace $audace(font,en_tete_1) 2 2 "bold" ]
-      set audace(font,listbox)         [ lreplace $audace(font,en_tete_2) 1 1 "10" ]
 
       #--- Polices des boites, des outils et des liens hypertextes
       set audace(font,arial_8_n)       "$conf(conffont,Autres)"

@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.28 2008-11-01 18:41:07 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.29 2008-12-08 22:27:54 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -1363,7 +1363,7 @@ namespace eval cataGoto {
       #--- Cree l'affichage du catalogue dans une fenetre a defilement
       frame $audace(base).cataEtoile.frame1 -borderwidth 1 -relief raised
          listbox $audace(base).cataEtoile.frame1.lb1 -width 59 -height 9 -borderwidth 2 -relief sunken \
-            -font $audace(font,listbox) -yscrollcommand [list $audace(base).cataEtoile.frame1.scrollbar set]
+            -yscrollcommand [list $audace(base).cataEtoile.frame1.scrollbar set]
          pack $audace(base).cataEtoile.frame1.lb1 -side left -anchor nw
          scrollbar $audace(base).cataEtoile.frame1.scrollbar -orient vertical \
             -command [list $audace(base).cataEtoile.frame1.lb1 yview] -takefocus 1 -borderwidth 1
@@ -1730,7 +1730,6 @@ namespace eval cataGoto {
       #--- Cree l'affichage du catalogue dans une fenetre a defilement
       frame $audace(base).cataObjetUtilisateur.frame1 -borderwidth 1 -relief raised
          listbox $audace(base).cataObjetUtilisateur.frame1.lb1 -width 59 -height 9 -borderwidth 2 -relief sunken \
-            -font $audace(font,listbox) \
             -yscrollcommand [list $audace(base).cataObjetUtilisateur.frame1.scrollbar set]
          pack $audace(base).cataObjetUtilisateur.frame1.lb1 -side left -anchor nw
          scrollbar $audace(base).cataObjetUtilisateur.frame1.scrollbar -orient vertical \
