@@ -6,10 +6,10 @@ AudeLA-1.5.0-beta2 (20080709)
 
 AudeLA est un logiciel de pilotage d'instruments astronomiques amateurs, et
 de traitement d'images. Sa particularite est de proposer une modularite unique
-dans son domaine grace a un puissant langage de script. C'est le fruit du 
-travail d'astronomes amateurs, realise pendant leur temps libre, dans le but 
+dans son domaine grace a un puissant langage de script. C'est le fruit du
+travail d'astronomes amateurs, realise pendant leur temps libre, dans le but
 d'ameliorer leurs conditions d'observations. Leur souhait est de partager cet
-outil avec d'autres personnes, autant astronomes amateurs, qu'informaticiens 
+outil avec d'autres personnes, autant astronomes amateurs, qu'informaticiens
 amateurs, afin de le faire progresser : N'hesitez pas a nous contacter si vous
 souhaitez apporter votre contribution.
 
@@ -54,6 +54,7 @@ AudeLA est capable de piloter les montures suivantes :
 - AudeCom (ex-carte Kauffmann),
 - Celestron,
 - Delta Tau,
+- DFM,
 - Etel,
 - LX200 ou n'importe quelle monture repondant au protocole LX200,
 - Ouranos (codeurs absolus),
@@ -77,10 +78,10 @@ AudeLA est capable de piloter les equipements suivants :
 - Lhires III,
 - Roue a filtres developpee dans le cadre de l'association Aude.
 
-Bien entendu les auteurs ne disposent pas de tout ce materiel cite. Ils les ont 
-integres en fonction des moyens et des connaissances disponibles, n'etant pas a 
-l'abris de quelques specificites de ce materiel se traduisant soit par un 
-dysfonctionnement, soit par une baisse de performance, soit par une absence de 
+Bien entendu les auteurs ne disposent pas de tout ce materiel cite. Ils les ont
+integres en fonction des moyens et des connaissances disponibles, n'etant pas a
+l'abris de quelques specificites de ce materiel se traduisant soit par un
+dysfonctionnement, soit par une baisse de performance, soit par une absence de
 fonctionnalite.
 
 AudeLA fonctionne avec :
@@ -97,10 +98,10 @@ ou Linux (root). En revanche, pour utiliser le port parallele sous winNT, XP,
 2000, l'utilitaire "allowio" s'installe automatiquement au premier demarrage
 pour donner acces aux ports. Si une version anterieure d'allowio est detectee
 il sera propose de la desinstaller et de la remplacer par la version fournie
-avec AudeLA. 
+avec AudeLA.
 
 * Particularite linux :
-AudeLA n'utilise pas de kernel driver pour communiquer avec les cameras, mais 
+AudeLA n'utilise pas de kernel driver pour communiquer avec les cameras, mais
 utilise les acces directs au port parallele. Il faut donc avoir les droits de
 superviseur pour pouvoir realiser des acquisitions.
 
@@ -109,17 +110,17 @@ superviseur pour pouvoir realiser des acquisitions.
 =====================================================
 
 "AudeLA" est une executable qui ne fait que charger un ensemble de librairies
-(traitement d'images, mecanique celeste, acquisition, pilotage, autres), et 
-demarre ensuite un interpreteur TCL/TK. Ces librairies ont ete ecrites soit 
-par les auteurs, soit par des contributeurs, et reposent egalement sur des 
-librairies externes (TCL, FITSIO, GZIP, JPEG, et certains drivers de cameras). 
+(traitement d'images, mecanique celeste, acquisition, pilotage, autres), et
+demarre ensuite un interpreteur TCL/TK. Ces librairies ont ete ecrites soit
+par les auteurs, soit par des contributeurs, et reposent egalement sur des
+librairies externes (TCL, FITSIO, GZIP, JPEG, et certains drivers de cameras).
 
 Par la suite on entend par "modules propres a AudeLA" ceux qui ont reellement
 ete ecrits par les auteurs ou contributeurs directs. Cela correspond aux
-repertoires audela, libak, libaudela, libcam, libgsl, libgzip, libjm, libmc, 
+repertoires audela, libak, libaudela, libcam, libgsl, libgzip, libjm, libmc,
 librgb, libtel, libtt.
 
-"Aud'ACE" est une interface graphique qui exploite les possibilites de 
+"Aud'ACE" est une interface graphique qui exploite les possibilites de
 "AudeLA". "Aud'ACE" a ete ecrit en TCL/TK par les auteurs, et utilise bon
 nombre de librairies externes (affichage, widgets, formats d'image, etc).
 
@@ -127,22 +128,22 @@ nombre de librairies externes (affichage, widgets, formats d'image, etc).
 4. License
 ==========
 
-Les modules propres a AudeLA et Aud'ACE sont distribues sous la license 
+Les modules propres a AudeLA et Aud'ACE sont distribues sous la license
 GPL (GNU Public Licence). En quelques mots, cela veut dire que c'est un
-logiciel libre : Vous etes libres de le copier, le distribuer, et le 
+logiciel libre : Vous etes libres de le copier, le distribuer, et le
 modifier. La GPL impose que si vous distribuez ce programme, alors vous
 devez donner les meme droits au recipiendaire que ceux que vous avez recus.
 En particulier vous devez rendre les sources accessibles, y-compris les
 modifications que vous auriez eventuellement pu apporter au programme.
 
-La license GPL est faite pour developper le logiciel libre. Elle impose donc 
-que si vous ecrivez un logiciel utilisant tout ou partie de "AudeLA", alors 
+La license GPL est faite pour developper le logiciel libre. Elle impose donc
+que si vous ecrivez un logiciel utilisant tout ou partie de "AudeLA", alors
 celui-ci devra etre GPL, a l'image de "Aud'ACE".
 
 Ce programme ne comporte aucune garantie de fonctionnement (on essaye
 quand meme de faire quelque chose qui marche :-)), et est livre "en l'etat".
-En particulier, les auteurs ne s'engagent en aucune maniere a devoir 
-corriger des bugs, s'il y en avait ; Et ils ne peuvent en aucun cas etre 
+En particulier, les auteurs ne s'engagent en aucune maniere a devoir
+corriger des bugs, s'il y en avait ; Et ils ne peuvent en aucun cas etre
 tenus responsables d'une quelconque degradation du fait d'un evenement
 ayant une relation avec AudeLA. Le disclaimer suivant resume la situation :
 
@@ -163,21 +164,21 @@ monde des logiciels libres.
 
 AudeLA et Aud'ACE utilisent des librairies externes. Ces modules ont ete
 ecrits par des gens que nous ne connaissons meme pas (mais que nous remercions
-au passage), et sont distribuees avec des licenses diverses. Qu'il soit bien 
-clair que nous n'appliquons pas la license GPL a ces modules. 
+au passage), et sont distribuees avec des licenses diverses. Qu'il soit bien
+clair que nous n'appliquons pas la license GPL a ces modules.
 
-Nous avons autant que possible respecte la volonte des auteurs, lorsque 
+Nous avons autant que possible respecte la volonte des auteurs, lorsque
 celle-ci est stipulee, concernant la redistribution de leur travail. Nous
 vous invitons a naviguer dans l'arborescence de AudeLA afin de consulter les
 differents fichiers de license. Pour information, seuls les sources de
 gzip ont legerement ete modifies afin de pouvoir generer une librairie partagee.
 
 Enfin, certaines librairies sont distribuees sans license, voire meme sans
-code source. Nous les redistribuons avec l'intention de rendre service a 
-l'utilisateur, et avec l'espoir de ne pas aller a l'encontre de la volonte 
+code source. Nous les redistribuons avec l'intention de rendre service a
+l'utilisateur, et avec l'espoir de ne pas aller a l'encontre de la volonte
 de leurs auteurs. Si tel etait le cas, qu'ils veuillent bien nous contacter.
 
-Si les ayatollah du logiciel libre le veulent, ils peuvent supprimer ces fichiers 
+Si les ayatollah du logiciel libre le veulent, ils peuvent supprimer ces fichiers
 apres leur installation afin de ne pas teinter leur machine.
 
 
@@ -194,30 +195,30 @@ Dans ce cas, executez-le. A l'issue de l'installation, il y aura un menu AudeLA
 dans votre "Menu Demarrer", et aussi une icone sur votre bureau. C'est ce qui vous
 permet de lancer AudeLA.
 
-Note aux utilisateurs de cameras SBIG : Installez le driver systeme pour la camera 
-avec le logiciel propose par SBIG: "SetupDriverChecker.exe", disponible gratuitement 
+Note aux utilisateurs de cameras SBIG : Installez le driver systeme pour la camera
+avec le logiciel propose par SBIG: "SetupDriverChecker.exe", disponible gratuitement
 a l'adresse suivante: ftp://ftp.sbig.com/pub/SetupDriverChecker.exe
 
 Note aux utilisateurs d'APN (Appareil Photo Numerique) :
-   La liaison USB entre AudeLA et les APN requiert libusb-win32 qui est disponible 
+   La liaison USB entre AudeLA et les APN requiert libusb-win32 qui est disponible
    sur le site  http://libusb-win32.sourceforge.net
-   Telecharger le fichier libusb-win32-filter-bin-0.1.10.1.exe 
+   Telecharger le fichier libusb-win32-filter-bin-0.1.10.1.exe
    Puis installer libusb-win32 en executant ce fichier.
 
-Note aux utilisateurs de Quickaudine et de Quickremote : 
+Note aux utilisateurs de Quickaudine et de Quickremote :
    La liaison USB entre AudeLA et Quickaudine ou Quickremote necessite le driver FTDI
    qui est disponible sur le site http://www.ftdichip.com/
    (menu Drivers->D2XX)
-   
-   Pour Windows XP 64 bits , telecharger le fichier 
+
+   Pour Windows XP 64 bits , telecharger le fichier
         http://www.ftdichip.com/Drivers/CDM/WinXPx64/CDM%202.00.00%20x64.zip
-   Pour Windows XP 32 bits , telecharger le fichier 
+   Pour Windows XP 32 bits , telecharger le fichier
         http://www.ftdichip.com/Drivers/CDM/Win2000/CDM%202.00.00.zip
-   Pour Windows 98 ou Me , telecharger le fichier    
+   Pour Windows 98 ou Me , telecharger le fichier
         http://www.ftdichip.com/Drivers/D2XX/Win98/D30104.zip
 
-   Puis dezipper le fichier dans un repertoire temporaire et lancer l'installation 
-   en suivant la procedure decrite dans 
+   Puis dezipper le fichier dans un repertoire temporaire et lancer l'installation
+   en suivant la procedure decrite dans
    http://www.ftdichip.com/Documents/InstallGuides.htm
 
 5.2 Linux
@@ -261,7 +262,7 @@ Aller dans le repertoire bin, et executer ./audela.sh
 5.2.3 Utilisation de quickremote ou quickaudine
 -----------------------------------------------
 
-Cette action peut etre necessaire seulement pour les liaisons avec 
+Cette action peut etre necessaire seulement pour les liaisons avec
 quickremote et quickaudine.
 
 Il se peut que les services hotplug qui surveillent le branchement des
@@ -270,15 +271,15 @@ a base de FTDI, tels que quickremote et quickaudine.
 
 Pour savoir si tel est le cas, brancher un des deux equipements et lancer
 la commande shell lsmod pour lister les drivers utilises par le kernel.
-Generalement celui correspondant a l'identifiant USB de quickremote 
+Generalement celui correspondant a l'identifiant USB de quickremote
 s'appelle ftdi_sio.  Si ce service existe, le supprimer.
 
 Pour lister les services, utiliser la commande lsmod.
 Pour arreter un service, utiliser la commande rmmod.
-  
+
 Attention, ces commandes sont a executer en ayant les privileges root.
 
-Exemple : 
+Exemple :
   # su root
   # lsmod |grep ftdi_sio
     ftdi_sio               31940  0
@@ -288,11 +289,11 @@ Exemple :
   # lsmod |grep ftdi_sio
   #
 
-Remarques : 
-  - le service est relance automatiquement chaque fois que quickremote est 
-    rebranche. Je n'ai pas trouve la commande qui desactive definitivement 
+Remarques :
+  - le service est relance automatiquement chaque fois que quickremote est
+    rebranche. Je n'ai pas trouve la commande qui desactive definitivement
     le hotplug pour cet equipement.
-  - Pour relancer le service hotplug manuellement, taper la commande 
+  - Pour relancer le service hotplug manuellement, taper la commande
     "modprobe ftdi_sio" sous root.
 
 5.3 Organisation des repertoires
@@ -305,8 +306,8 @@ src : Repertoire des sources.
 lib : Contient les librairies TCL additionnelles.
 
 
-    
-    
+
+
 6. Auteurs
 ==========
 
@@ -319,7 +320,7 @@ Par la suite, ils ont ete rejoints par :
  - Christian JASINSKI <chris.jasinski@gmail.com>,
  - Michel PUJOL <michel-pujol@wanadoo.fr>.
 
-Ils forment "The AudeLA Core Team" (TACT), nom employe pour le copyright dans 
+Ils forment "The AudeLA Core Team" (TACT), nom employe pour le copyright dans
 les sources.
 
 
