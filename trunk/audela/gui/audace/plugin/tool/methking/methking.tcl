@@ -2,7 +2,7 @@
 # Fichier : methking.tcl
 # Description : Outil d'aide a la mise en station par la methode de King
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: methking.tcl,v 1.20 2008-09-15 09:10:44 jacquesmichelet Exp $
+# Mise a jour $Id: methking.tcl,v 1.21 2008-12-08 21:58:16 michelpujol Exp $
 #
 
 #============================================================
@@ -972,12 +972,13 @@ namespace eval ::methking {
 
 # --------------Partie methking.tcl
    #--------------------------------------------------------------------------#
-   proc DemarrageKing {This} {
+   proc DemarrageKing { } {
       variable fichier_config
       variable fichier_log
       variable king_config
       variable liste_motcle
       variable log_id
+      variable This
       global panneau audace caption conf
 
       # Gestion du fichier de log
@@ -1031,17 +1032,18 @@ namespace eval ::methking {
       CreeFenetreParametres
       ModifieFenetreParametres
       for {set i 0} {$i < $panneau(methking,nombre_config)} {incr i} {
-         $audace(base).methking.flisteconfig.configmb.menu insert $i radiobutton -label $king_config(config,$i) -variable panneau(methking,config_active) -value $i -command ::methking::ModifieFenetreParametres
+         $This.flisteconfig.configmb.menu insert $i radiobutton -label $king_config(config,$i) -variable panneau(methking,config_active) -value $i -command ::methking::ModifieFenetreParametres
       }
    }
 
    #--------------------------------------------------------------------------#
-   proc ArretKing {} {
+   proc ArretKing { } {
       global panneau caption audace
+      variable This
       variable log_id
 
       # Effacement des entrees du menu Parametre
-      $audace(base).methking.flisteconfig.configmb.menu delete 0 [expr $panneau(methking,nombre_config) - 1]
+      $This.flisteconfig.configmb.menu delete 0 [expr $panneau(methking,nombre_config) - 1]
 
       # Fermeture du fichier de log
       Message log "%s\n\n" $caption(methking,fin_session)
@@ -1125,7 +1127,7 @@ namespace eval ::methking {
       variable This
       variable methking_actif
 
-      DemarrageKing This
+      DemarrageKing
       pack $This -anchor center -expand 0 -fill y -side left
       set methking_actif 1
    }
@@ -2297,10 +2299,10 @@ proc methkingBuildIF {This tableau} {
    place $t2 -x 4 -y 74 -width 92  -anchor nw -bordermode ignore
 
    # Bouton d'arret
-   frame $audace(base).methking.stop -borderwidth 1 -relief groove
-   button $audace(base).methking.stop.b -borderwidth 1 -text $caption(methking,arret) -state disabled -width 10
-   pack $audace(base).methking.stop.b -in $audace(base).methking.stop -anchor center -fill none -pady 4 -ipady 4
-   place $audace(base).methking.stop -x 4 -y 209 -width 92  -anchor nw -bordermode ignore
+   frame $This.stop -borderwidth 1 -relief groove
+   button $This.stop.b -borderwidth 1 -text $caption(methking,arret) -state disabled -width 10
+   pack $This.stop.b -in $This.stop -anchor center -fill none -pady 4 -ipady 4
+   place $This.stop -x 4 -y 209 -width 92  -anchor nw -bordermode ignore
 
    # Affichage des status
    frame $This.fstatus -borderwidth 1 -height 77 -relief groove
