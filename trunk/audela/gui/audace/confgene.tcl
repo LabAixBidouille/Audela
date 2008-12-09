@@ -5,7 +5,7 @@
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.50 2008-11-23 11:05:31 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.51 2008-12-09 21:09:36 robertdelmas Exp $
 #
 
 #
@@ -92,7 +92,7 @@ namespace eval confPosObs {
 
       #--- Initialisation indispensable de variables
       if { ! [ info exists conf(posobs,nom_observateur) ] }  { set conf(posobs,nom_observateur)  "" }
-      if { ! [ info exists conf(posobs,nom_observatoire) ] } { set conf(posobs,nom_observatoire) "Pic du Midi - France" }
+      if { ! [ info exists conf(posobs,nom_observatoire) ] } { set conf(posobs,nom_observatoire) "Pic du Midi" }
       if { ! [ info exists conf(posobs,ref_geodesique) ] }   { set conf(posobs,ref_geodesique)   "WGS84" }
       if { ! [ info exists conf(posobs,station_uai) ] }      { set conf(posobs,station_uai)      "586" }
 
@@ -125,7 +125,7 @@ namespace eval confPosObs {
       if { ! [ info exists conf(posobs,config_observatoire,0) ] } {
          #--- Je prepare un exemple de configuration optique
          array set config_observatoire { }
-         set config_observatoire(nom_observatoire) "Pic du Midi - France"
+         set config_observatoire(nom_observatoire) "Pic du Midi"
          set config_observatoire(estouest)         "E"
          set config_observatoire(long)             "0d8m32s2"
          set config_observatoire(nordsud)          "N"
@@ -141,7 +141,7 @@ namespace eval confPosObs {
       if { ! [ info exists conf(posobs,config_observatoire,1) ] } {
          #--- Je prepare un exemple de configuration optique
          array set config_observatoire { }
-         set config_observatoire(nom_observatoire) "Haute Provence - France"
+         set config_observatoire(nom_observatoire) "Haute Provence"
          set config_observatoire(estouest)         "E"
          set config_observatoire(long)             "5d42m56s5"
          set config_observatoire(nordsud)          "N"
@@ -174,6 +174,10 @@ namespace eval confPosObs {
 
       #--- initConf
       ::confPosObs::initConf1
+
+      #--- Initialisation d'autres variables
+      set confgene(index_del)  "0"
+      set confgene(index_copy) "0"
 
       #--- confToWidget
       ::confPosObs::confToWidget
@@ -535,7 +539,7 @@ namespace eval confPosObs {
                   set line "$config_observatoire(nom_observatoire) $config_observatoire(estouest) $config_observatoire(long) \
                      $config_observatoire(nordsud) $config_observatoire(lat) $config_observatoire(altitude) \
                      $config_observatoire(ref_geodesique) $config_observatoire(station_uai)"
-                  #--- J'ajoute la ligne
+                  #--- Je supprime la ligne
                   lappend confgene(posobs,nom_observatoire_liste) "$line"
                }
                #--- Je mets a jour les combobox
@@ -549,12 +553,12 @@ namespace eval confPosObs {
                array set config_observatoire $conf(posobs,config_observatoire,$index)
                #--- Je copie les valeurs dans les widgets de la configuration choisie
                set confgene(posobs,nom_observatoire) "$confgene(posobs,nom_observatoire_copie)"
-               set confgene(posobs,estouest)         $config_observatoire(estouest)
-               set confgene(posobs,long)             $config_observatoire(long)
-               set confgene(posobs,nordsud)          $config_observatoire(nordsud)
-               set confgene(posobs,lat)              $config_observatoire(lat)
-               set confgene(posobs,altitude)         $config_observatoire(altitude)
-               set confgene(posobs,ref_geodesique)   $config_observatoire(ref_geodesique)
+               set confgene(posobs,estouest)         "$config_observatoire(estouest)"
+               set confgene(posobs,long)             "$config_observatoire(long)"
+               set confgene(posobs,nordsud)          "$config_observatoire(nordsud)"
+               set confgene(posobs,lat)              "$config_observatoire(lat)"
+               set confgene(posobs,altitude)         "$config_observatoire(altitude)"
+               set confgene(posobs,ref_geodesique)   "$config_observatoire(ref_geodesique)"
                set confgene(posobs,station_uai)      ""
                #--- Fonction pour la mise a la forme MPC et MPCSTATION
                ::confPosObs::MPC
@@ -987,14 +991,14 @@ namespace eval confPosObs {
 
       #--- J'ajoute l'observatoire en tete dans le tableau des observatoires precedents s'il n'y est pas deja
       array set config_observatoire { }
-      set config_observatoire(nom_observatoire) "$confgene(posobs,nom_observatoire)"
-      set config_observatoire(estouest)         "$confgene(posobs,estouest)"
-      set config_observatoire(long)             "$confgene(posobs,long)"
-      set config_observatoire(nordsud)          "$confgene(posobs,nordsud)"
-      set config_observatoire(lat)              "$confgene(posobs,lat)"
-      set config_observatoire(altitude)         "$confgene(posobs,altitude)"
-      set config_observatoire(ref_geodesique)   "$confgene(posobs,ref_geodesique)"
-      set config_observatoire(station_uai)      "$confgene(posobs,station_uai)"
+      set config_observatoire(nom_observatoire) [ string trimright $confgene(posobs,nom_observatoire) " " ]
+      set config_observatoire(estouest)         $confgene(posobs,estouest)
+      set config_observatoire(long)             $confgene(posobs,long)
+      set config_observatoire(nordsud)          $confgene(posobs,nordsud)
+      set config_observatoire(lat)              $confgene(posobs,lat)
+      set config_observatoire(altitude)         $confgene(posobs,altitude)
+      set config_observatoire(ref_geodesique)   $confgene(posobs,ref_geodesique)
+      set config_observatoire(station_uai)      $confgene(posobs,station_uai)
 
       #--- Je copie conf dans templist en mettant l'observatoire courant en premier
       array set templist { }
@@ -1035,7 +1039,7 @@ namespace eval confPosObs {
 
       #---
       set conf(posobs,nom_observateur)        $confgene(posobs,nom_observateur)
-      set conf(posobs,nom_observatoire)       $confgene(posobs,nom_observatoire)
+      set conf(posobs,nom_observatoire)       [ string trimright $confgene(posobs,nom_observatoire) " " ]
       set conf(posobs,estouest)               $confgene(posobs,estouest)
       set conf(posobs,long)                   $confgene(posobs,long)
       set conf(posobs,nordsud)                $confgene(posobs,nordsud)
@@ -1059,9 +1063,45 @@ namespace eval confPosObs {
    #
    proc majListComboBox { } {
       variable This
-      global confgene
+      global conf confgene
 
+      #--- Je configure la combobox des observatoires
       $This.nom_observatoire configure -values $confgene(posobs,nom_observatoire_liste)
+      #--- Cas particulier du premier de la liste
+      if { $confgene(index_del) == "0" } {
+         #--- Je recupere le nouvel index 0
+         set index 0
+         #--- Je recupere les attributs de la configuration
+         array set config_observatoire $conf(posobs,config_observatoire,$index)
+         #--- Je copie les valeurs dans les widgets de la configuration choisie
+         set confgene(posobs,nom_observatoire) $config_observatoire(nom_observatoire)
+         set confgene(posobs,estouest)         $config_observatoire(estouest)
+         set confgene(posobs,long)             $config_observatoire(long)
+         set confgene(posobs,nordsud)          $config_observatoire(nordsud)
+         set confgene(posobs,lat)              $config_observatoire(lat)
+         set confgene(posobs,altitude)         $config_observatoire(altitude)
+         set confgene(posobs,ref_geodesique)   $config_observatoire(ref_geodesique)
+         set confgene(posobs,station_uai)      $config_observatoire(station_uai)
+         #--- Fonction pour la mise a la forme MPC et MPCSTATION
+         ::confPosObs::MPC
+         #--- Fonction pour la mise a la forme GPS
+         ::confPosObs::Position
+         #--- Je copie les valeurs dans les variables de configuration
+         set conf(posobs,nom_observatoire)       $confgene(posobs,nom_observatoire)
+         set conf(posobs,estouest)               $confgene(posobs,estouest)
+         set conf(posobs,long)                   $confgene(posobs,long)
+         set conf(posobs,nordsud)                $confgene(posobs,nordsud)
+         set conf(posobs,lat)                    $confgene(posobs,lat)
+         set conf(posobs,altitude)               $confgene(posobs,altitude)
+         set conf(posobs,ref_geodesique)         $confgene(posobs,ref_geodesique)
+         set conf(posobs,observateur,gps)        $confgene(posobs,observateur,gps)
+         set conf(posobs,station_uai)            $confgene(posobs,station_uai)
+         set conf(posobs,observateur,mpc)        $confgene(posobs,observateur,mpc)
+         set conf(posobs,observateur,mpcstation) $confgene(posobs,observateur,mpcstation)
+         #--- Concatenation de variables pour l'en-tete FITS
+         set conf(posobs,estouest_long)          $conf(posobs,estouest)$conf(posobs,long)
+         set conf(posobs,nordsud_lat)            $conf(posobs,nordsud)$conf(posobs,lat)
+      }
    }
 }
 
@@ -2567,7 +2607,7 @@ namespace eval confVersion {
 
       #--- Nom du logiciel et sa version
       label $This.lab1 -text "[ ::audela::getPluginTitle ] $audela(version)" -font $audace(font,arial_15_b)
-      pack $This.lab1 -in $This.frame1 -padx 30 -pady 5
+      pack $This.lab1 -in $This.frame1 -padx 30 -pady 2
 
       #--- Version Tcl/Tk utilisee
       if { $::tcl_platform(threaded) == "1" } {
@@ -2577,64 +2617,59 @@ namespace eval confVersion {
          label $This.lab2 -text "$caption(en-tete,a_propos_de_version_Tcl/Tk)[ info patchlevel ]" \
             -font $audace(font,arial_10_n)
       }
-      pack $This.lab2 -in $This.frame1 -padx 30 -pady 0
+      pack $This.lab2 -in $This.frame1 -padx 30 -pady 2
 
       #--- Date de la mise a jour
       label $This.labURL2 -text "$caption(en-tete,a_propos_de_maj) $audela(date)." -font $audace(font,arial_10_n) -fg $color(red)
-      pack $This.labURL2 -in $This.frame1 -padx 30 -pady 5
+      pack $This.labURL2 -in $This.frame1 -padx 30 -pady 2
 
       #--- Logiciel libre et gratuit
       label $This.lab3 -text "$caption(en-tete,a_propos_de_libre)" -font $audace(font,arial_10_n)
-      pack $This.lab3 -in $This.frame1 -padx 30 -pady 5
+      pack $This.lab3 -in $This.frame1 -padx 30 -pady 2
 
       #--- Site web officiel
       label $This.labURL4 -text "$caption(en-tete,a_propos_de_site)" -font $audace(font,arial_10_n) -fg $color(blue)
-      pack $This.labURL4 -in $This.frame1 -padx 30 -pady 5
+      pack $This.labURL4 -in $This.frame1 -padx 30 -pady 2
 
       #--- Copyright
-      label $This.lab5 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright1)" \
-         -font $audace(font,arial_8_n)
-      pack $This.lab5 -in $This.frame1 -padx 30 -pady 5
+      label $This.lab5 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright1)"
+      pack $This.lab5 -in $This.frame1 -padx 30 -pady 2
 
-      label $This.lab6 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright2)" \
-         -font $audace(font,arial_8_n)
-      pack $This.lab6 -in $This.frame1 -padx 30 -pady 5
+      label $This.lab6 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright2)"
+      pack $This.lab6 -in $This.frame1 -padx 30 -pady 2
 
-      label $This.lab7 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright3)" \
-         -font $audace(font,arial_8_n)
-      pack $This.lab7 -in $This.frame1 -padx 30 -pady 5
+      label $This.lab7 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright3)"
+      pack $This.lab7 -in $This.frame1 -padx 30 -pady 2
 
-      label $This.lab8 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright4)" \
-         -font $audace(font,arial_8_n)
-      pack $This.lab8 -in $This.frame1 -padx 30 -pady 5
+      label $This.lab8 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright4)"
+      pack $This.lab8 -in $This.frame1 -padx 30 -pady 2
 
-      label $This.lab9 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright5)" \
-         -font $audace(font,arial_8_n)
-      pack $This.lab9 -in $This.frame1 -padx 30 -pady 5
+      label $This.lab9 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright5)"
+      pack $This.lab9 -in $This.frame1 -padx 30 -pady 2
 
-      label $This.lab10 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright6)" \
-         -font $audace(font,arial_8_n)
-      pack $This.lab10 -in $This.frame1 -padx 30 -pady 5
+      label $This.lab10 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright6)"
+      pack $This.lab10 -in $This.frame1 -padx 30 -pady 2
 
-      label $This.lab11 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright7)" \
-         -font $audace(font,arial_8_n)
-      pack $This.lab11 -in $This.frame1 -padx 30 -pady 5
+      label $This.lab11 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright7)"
+      pack $This.lab11 -in $This.frame1 -padx 30 -pady 2
 
-      label $This.lab12 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright8)" \
-         -font $audace(font,arial_8_n)
-      pack $This.lab12 -in $This.frame1 -padx 30 -pady 5
+      label $This.lab12 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright8)"
+      pack $This.lab12 -in $This.frame1 -padx 30 -pady 2
 
-      label $This.lab13 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright9)" \
-         -font $audace(font,arial_8_n)
-      pack $This.lab13 -in $This.frame1 -padx 30 -pady 5
+      label $This.lab13 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright9)"
+      pack $This.lab13 -in $This.frame1 -padx 30 -pady 2
 
-      label $This.lab14 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright10)" \
-         -font $audace(font,arial_8_n)
-      pack $This.lab14 -in $This.frame1 -padx 30 -pady 5
+      label $This.lab14 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright10)"
+      pack $This.lab14 -in $This.frame1 -padx 30 -pady 2
 
-      label $This.lab15 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright11)" \
-         -font $audace(font,arial_8_n)
-      pack $This.lab15 -in $This.frame1 -padx 30 -pady 5
+      label $This.lab15 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright11)"
+      pack $This.lab15 -in $This.frame1 -padx 30 -pady 2
+
+      label $This.lab16 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright12)"
+      pack $This.lab16 -in $This.frame1 -padx 30 -pady 2
+
+      label $This.lab17 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright13)"
+      pack $This.lab17 -in $This.frame1 -padx 30 -pady 2
 
       #--- Cree le bouton 'Fermer'
       button $This.but_fermer -text "$caption(confgene,fermer)" -width 7 -borderwidth 2 \
