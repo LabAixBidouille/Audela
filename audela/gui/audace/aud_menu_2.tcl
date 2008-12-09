@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_2.tcl
 # Description : Script regroupant les fonctionnalites du menu Affichage
-# Mise a jour $Id: aud_menu_2.tcl,v 1.14 2008-11-15 16:45:15 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.tcl,v 1.15 2008-12-09 16:18:30 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -267,7 +267,7 @@ namespace eval ::audace {
    # Procedure d'affichage de la fenetre "fonctions de transfert"
    #
    proc fonction_transfert { visuNo } {
-      global audace caption conf tmp
+      global caption conf tmp
 
       #--- Fenetre de base
       set base $::confVisu::private($visuNo,This)
@@ -302,7 +302,7 @@ namespace eval ::audace {
             -text $caption(audace,menu,fcttransfert_log) -value 2
          pack $base.fonction_transfert.regl.2.but -side left
          entry $base.fonction_transfert.regl.2.ent -textvariable conf(fonction_transfert,param2) \
-            -font $audace(font,arial_8_b) -width 4 -justify center
+            -width 4 -justify center
          pack $base.fonction_transfert.regl.2.ent -side right
          frame $base.fonction_transfert.regl.3
          pack $base.fonction_transfert.regl.3 -fill x
@@ -310,7 +310,7 @@ namespace eval ::audace {
             -text $caption(audace,menu,fcttransfert_exp) -value 3
          pack $base.fonction_transfert.regl.3.but -side left
          entry $base.fonction_transfert.regl.3.ent -textvariable conf(fonction_transfert,param3) \
-            -font $audace(font,arial_8_b) -width 4 -justify center
+            -width 4 -justify center
          pack $base.fonction_transfert.regl.3.ent -side right
          frame $base.fonction_transfert.regl.4
          pack $base.fonction_transfert.regl.4 -fill x
@@ -318,7 +318,7 @@ namespace eval ::audace {
             -text $caption(audace,menu,fcttransfert_arc) -value 4
          pack $base.fonction_transfert.regl.4.but -side left
          entry $base.fonction_transfert.regl.4.ent -textvariable conf(fonction_transfert,param4) \
-            -font $audace(font,arial_8_b) -width 4 -justify center
+            -width 4 -justify center
          pack $base.fonction_transfert.regl.4.ent -side right
 
          #--- Bouton Aide
@@ -462,7 +462,7 @@ namespace eval ::seuilWindow {
    # Creation de l'interface graphique
    #
    proc createDialog { visuNo } {
-      global audace caption conf seuilWindow tmp
+      global caption conf seuilWindow tmp
 
       #---
       set seuilWindow($visuNo,choix_dynamique) "65535 32767 20000 10000 5000 2000 1000 500 200 0 -500 -1000 -32768"
@@ -536,7 +536,7 @@ namespace eval ::seuilWindow {
             pack $seuilWindow($visuNo,This).usr11.shsb.lab1 -side left -padx 10
 
             entry $seuilWindow($visuNo,This).usr11.shsb.intervalleSHSB -textvariable seuilWindow($visuNo,intervalleSHSB) \
-               -font $audace(font,arial_8_b) -width 8 -justify center
+               -width 8 -justify center
             pack $seuilWindow($visuNo,This).usr11.shsb.intervalleSHSB -side left -padx 0
 
          pack $seuilWindow($visuNo,This).usr11.shsb -side left
@@ -643,10 +643,10 @@ namespace eval ::seuilWindow {
             -text $caption(seuilWindow,iris) -value iris
          pack $seuilWindow($visuNo,This).usr3.regl_seuils.2.but -side left -padx 10
          entry $seuilWindow($visuNo,This).usr3.regl_seuils.2.enth -textvariable tmp(seuils,irisautohaut_) \
-            -font $audace(font,arial_8_b) -width 10 -justify center
+            -width 10 -justify center
          pack $seuilWindow($visuNo,This).usr3.regl_seuils.2.enth -side right -padx 10
          entry $seuilWindow($visuNo,This).usr3.regl_seuils.2.entb -textvariable tmp(seuils,irisautobas_) \
-            -font $audace(font,arial_8_b) -width 10 -justify center
+            -width 10 -justify center
          pack $seuilWindow($visuNo,This).usr3.regl_seuils.2.entb -side right -padx 10
          frame $seuilWindow($visuNo,This).usr3.regl_seuils.4
          pack $seuilWindow($visuNo,This).usr3.regl_seuils.4 -fill x
@@ -654,10 +654,10 @@ namespace eval ::seuilWindow {
             -text $caption(seuilWindow,histoauto) -value histoauto
          pack $seuilWindow($visuNo,This).usr3.regl_seuils.4.but -side left -padx 10
          entry $seuilWindow($visuNo,This).usr3.regl_seuils.4.enth -textvariable tmp(seuils,histoautohaut_) \
-            -font $audace(font,arial_8_b) -width 10 -justify center
+            -width 10 -justify center
          pack $seuilWindow($visuNo,This).usr3.regl_seuils.4.enth -side right -padx 10
          entry $seuilWindow($visuNo,This).usr3.regl_seuils.4.entb -textvariable tmp(seuils,histoautobas_) \
-            -font $audace(font,arial_8_b) -width 10 -justify center
+            -width 10 -justify center
          pack $seuilWindow($visuNo,This).usr3.regl_seuils.4.entb -side right -padx 10
          frame $seuilWindow($visuNo,This).usr3.regl_seuils.6
          pack $seuilWindow($visuNo,This).usr3.regl_seuils.6 -fill x
