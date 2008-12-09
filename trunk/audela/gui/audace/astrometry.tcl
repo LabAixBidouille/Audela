@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.23 2008-11-01 18:40:23 robertdelmas Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.24 2008-12-09 16:19:03 robertdelmas Exp $
 #
 
 namespace eval ::astrometry {
@@ -100,9 +100,6 @@ namespace eval ::astrometry {
       wm title $astrom(This) "$caption(astrometry,title)"
       wm protocol $astrom(This) WM_DELETE_WINDOW "::astrometry::quit $visuNo"
       bind $astrom(This) <Destroy> "::astrometry::quit $visuNo"
-      #---
-      label $astrom(This).lab1 -text "$caption(astrometry,title)" -font $audace(font,arial_12_b)
-      pack $astrom(This).lab1 -in $astrom(This) -anchor center -fill x -pady 5 -ipadx 15 -padx 5
       #--- Button for choosing the WCS type displayed
       button $astrom(This).but1 -text "$caption(astrometry,wcs,[lindex $astrom(typewcs) 0])" \
          -command {::astrometry::wcs_pack +}
