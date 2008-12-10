@@ -2,7 +2,7 @@
 # Fichier : fieldchart.tcl
 # Description : Interfaces graphiques pour les fonctions carte de champ
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: fieldchart.tcl,v 1.7 2008-11-01 18:42:51 robertdelmas Exp $
+# Mise a jour $Id: fieldchart.tcl,v 1.8 2008-12-10 18:47:01 robertdelmas Exp $
 #
 
 namespace eval ::mapWindow {
@@ -231,7 +231,7 @@ namespace eval ::mapWindow {
       frame $This.cmd -borderwidth 1 -relief raised
 
          button $This.cmd.ok -text "$caption(fieldchart,ok)" -width 7 \
-             -command { ::mapWindow::cmdOk }
+            -command { ::mapWindow::cmdOk }
          if { $conf(ok+appliquer) == "1" } {
             pack $This.cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
          }
@@ -320,11 +320,11 @@ namespace eval ::mapWindow {
          #--- Liste des objets
          set choix [ $This.usr.1.cata get ]
          if { ! [ string compare $choix $caption(fieldchart,microcat) ] } {
-               set objects [ list * ASTROMMICROCAT [ lindex $::mapWindow::widget(mapWindow,path_cata) 0 ] ]
+            set objects [ list * ASTROMMICROCAT $::mapWindow::widget(mapWindow,path_cata) ]
          } elseif { ! [ string compare $choix $caption(fieldchart,tycho) ] } {
-               set objects [ list * TYCHOMICROCAT [ lindex $::mapWindow::widget(mapWindow,path_cata) 0 ] ]
+            set objects [ list * TYCHOMICROCAT $::mapWindow::widget(mapWindow,path_cata) ]
          } elseif { ! [ string compare $choix $caption(fieldchart,loneos) ] } {
-               set objects [ list * LONEOSMICROCAT [ lindex $::mapWindow::widget(mapWindow,path_cata) 0 ] ]
+            set objects [ list * LONEOSMICROCAT $::mapWindow::widget(mapWindow,path_cata) ]
          }
          set result [ list LIST ]
          set magmax [ $This.usr.1.magmax get ]
