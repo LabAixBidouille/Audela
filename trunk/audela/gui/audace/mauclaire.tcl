@@ -3,7 +3,7 @@
 # Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# Mise a jour $Id: mauclaire.tcl,v 1.25 2008-10-31 15:11:29 bmauclaire Exp $
+# Mise a jour $Id: mauclaire.tcl,v 1.26 2008-12-10 10:40:17 bmauclaire Exp $
 #
 
 #
@@ -277,9 +277,11 @@ proc bm_ls { args } {
    if { $nbargs <= 1 } {
       if { $nbargs == 1 } {
          set prefixe [ lindex $args 0 ]
-         set fliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails $prefixe*$conf(extension,defaut) ] ]
+         # set fliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails $prefixe*$conf(extension,defaut) ] ]
+         set fliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails $prefixe* ] ]
       } elseif { $nbargs == 0 } {
-         set fliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails *$conf(extension,defaut) ] ]
+         # set fliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails *$conf(extension,defaut) ] ]
+         set fliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails * ] ]
       } else {
          console::affiche_erreur "Usage: bm_ls ?string_searched?\n"
          return ""
