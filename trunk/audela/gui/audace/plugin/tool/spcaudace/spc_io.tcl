@@ -10,7 +10,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_io.tcl,v 1.3 2008-09-20 17:20:05 bmauclaire Exp $
+# Mise a jour $Id: spc_io.tcl,v 1.4 2008-12-10 11:07:41 bmauclaire Exp $
 
 
 # Remarque (par Benoît) : il faut mettre remplacer toutes les variables textes par des variables caption(mauclaire,...)
@@ -1965,7 +1965,7 @@ proc spc_dat2pngman { args } {
 ###################################################################
 proc spc_spc2fits { args } {
 
- global conf
+ global conf spcaudace
  global audace caption
  #global profilspc
  global caption
@@ -1974,13 +1974,16 @@ proc spc_spc2fits { args } {
 #    set profilspc(xunit) "Position"
 #    set profilspc(yunit) "ADU"
 
+ 
+
  if {[llength $args] <= 1} {
      if {[llength $args] == 1} {
          set filenamespc [ lindex $args 0 ]
      } elseif { [llength $args]==0 } {
-         set spctrouve [ file rootname [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] ]
-         if { [ file exists "$audace(rep_images)/$spctrouve$conf(extension,defaut)" ] == 1 } {
-             set filenamespc $spctrouve
+         # set spctrouve [ file rootname [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] ]
+         set spctrouve [ file rootname [ file tail [ tk_getOpenFile  -filetypes [list [list "SPC file" "$spcaudace(extvspec)"] ] -initialdir $audace(rep_images) ] ] ]
+         if { [ file exists "$audace(rep_images)/$spctrouve$spcaudace(extvspec)" ] == 1 } {
+             set filenamespc "$spctrouve$spcaudace(extvspec)"
          } else {
              ::console::affiche_erreur "Usage: spc_spc2fits fichier_spc\n\n"
              return 0
