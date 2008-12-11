@@ -2,7 +2,7 @@
 # Fichier : animate.tcl
 # Description : Outil pour le controle des animations d'images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: animate.tcl,v 1.17 2008-11-08 09:38:30 robertdelmas Exp $
+# Mise a jour $Id: animate.tcl,v 1.18 2008-12-11 19:17:32 robertdelmas Exp $
 #
 
 #============================================================
@@ -280,8 +280,7 @@ proc ::animate::animBuildIF { This } {
          pack $This.fra2.lab1 -in $This.fra2 -anchor center -fill none -padx 4 -pady 1
 
          #--- Entry pour le nom generique
-         entry $This.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(animate,filename) \
-            -width 14 -relief groove -state disabled
+         entry $This.fra2.ent1 -textvariable panneau(animate,filename) -width 14 -relief groove -state disabled
          pack $This.fra2.ent1 -in $This.fra2 -anchor center -fill none -padx 2 -pady 1 -side left
 
          #--- Bouton parcourir
@@ -299,8 +298,7 @@ proc ::animate::animBuildIF { This } {
          pack $This.fra3.lab1 -in $This.fra3 -anchor center -expand true -fill none -padx 2 -pady 5 -side left
 
          #--- Entry pour le nombre d'images
-         entry $This.fra3.ent1 -font $audace(font,arial_8_b) -textvariable panneau(animate,nbi) -relief groove \
-            -width 4 -justify center
+         entry $This.fra3.ent1 -textvariable panneau(animate,nbi) -relief groove -width 4 -justify center
          pack $This.fra3.ent1 -in $This.fra3 -anchor center -expand true -fill none -padx 2 -pady 5 -side left
 
       pack $This.fra3 -side top -fill x
@@ -313,8 +311,7 @@ proc ::animate::animBuildIF { This } {
          pack $This.fra4.lab1 -in $This.fra4 -anchor center -expand true -fill none -padx 2 -pady 5 -side left
 
          #--- Entry pour le delai
-         entry $This.fra4.ent1 -font $audace(font,arial_8_b) -textvariable panneau(animate,ms) -relief groove \
-            -width 5 -justify center
+         entry $This.fra4.ent1 -textvariable panneau(animate,ms) -relief groove -width 5 -justify center
          pack $This.fra4.ent1 -in $This.fra4 -anchor center -expand true -fill none -padx 2 -pady 5 -side left
 
       pack $This.fra4 -side top -fill x
@@ -327,8 +324,7 @@ proc ::animate::animBuildIF { This } {
          pack $This.fra5.lab1 -in $This.fra5 -anchor center -expand true -fill none -padx 2 -pady 5 -side left
 
          #--- Entry pour le nb de boucles
-         entry $This.fra5.ent1 -font $audace(font,arial_8_b) -textvariable panneau(animate,nbl) -relief groove \
-            -width 4 -justify center
+         entry $This.fra5.ent1 -textvariable panneau(animate,nbl) -relief groove -width 4 -justify center
          pack $This.fra5.ent1 -in $This.fra5 -anchor center -expand true -fill none -padx 2 -pady 5 -side left
 
       pack $This.fra5 -side top -fill x
