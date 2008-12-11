@@ -2,7 +2,7 @@
 # Fichier : obj_lune.tcl
 # Description : Outil dedie a la Lune, avec Goto vers un site choisi, ephemerides et cartographie
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune.tcl,v 1.14 2008-12-08 22:28:23 robertdelmas Exp $
+# Mise a jour $Id: obj_lune.tcl,v 1.15 2008-12-11 19:11:06 robertdelmas Exp $
 #
 
 global audace
@@ -847,7 +847,7 @@ namespace eval obj_lune {
       $zone(image_cartes_lune) itemconfigure display -image imageflag1
 
       #--- Labels pour les cartes
-      label $frm.frame3.lab1 -text "$caption(obj_lune,atlas)" -font $audace(font,arial_12_b)
+      label $frm.frame3.lab1 -text "$caption(obj_lune,atlas)"
       pack $frm.frame3.lab1 -anchor center -padx 0 -pady 3
 
       label $frm.frame5.lab2 -text "$caption(obj_lune,carte_choisies)"
@@ -935,7 +935,7 @@ namespace eval obj_lune {
       $zone(image4a) itemconfigure display -image imageflag4a
 
       #--- Labels pour les cartes de libration
-      label $frm.frame3.lab1 -text "$caption(obj_lune,atlas)" -font $audace(font,arial_12_b)
+      label $frm.frame3.lab1 -text "$caption(obj_lune,atlas)"
       pack $frm.frame3.lab1 -anchor center -padx 0 -pady 4
 
       label $frm.frame5.lab2 -text "$caption(obj_lune,carte_choisies)"
