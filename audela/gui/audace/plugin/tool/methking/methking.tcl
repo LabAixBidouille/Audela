@@ -2,7 +2,7 @@
 # Fichier : methking.tcl
 # Description : Outil d'aide a la mise en station par la methode de King
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: methking.tcl,v 1.21 2008-12-08 21:58:16 michelpujol Exp $
+# Mise a jour $Id: methking.tcl,v 1.22 2008-12-11 19:27:41 robertdelmas Exp $
 #
 
 #============================================================
@@ -1516,7 +1516,7 @@ namespace eval ::methking {
          set panneau(methking,numero_visu_2) $numero_visu_2
 
          # Mise en oeuvre du bouton d'arret
-         $This.stop.b configure -command {::methking::ArretReglages}  -state normal
+         $This.stop.b configure -command {::methking::ArretReglages} -state normal
          # Blocage de tous les boutons
          EtatBoutons disabled
 
@@ -1770,7 +1770,7 @@ namespace eval ::methking {
       # Edition
       set fichier_config [file join $audace(rep_plugin) tool methking methking.ini]
 
-      catch {eval exec \"$conf(editscript)\" $fichier_config} resultat
+      catch {eval exec \"$conf(editscript)\" \"$fichier_config\"} resultat
 
       # Gestion des cas d'erreurs
       if {$resultat == ""} {
