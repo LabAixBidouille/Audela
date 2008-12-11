@@ -685,6 +685,8 @@ GSL_CONFIG
 GSL_CFLAGS
 GSL_LIBS
 GSL_FOUND
+CFLAGS_DEFAULT
+LDFLAGS_DEFAULT
 CXX
 CXXFLAGS
 ac_ct_CXX
@@ -1284,6 +1286,7 @@ Optional Features:
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --enable-threads        build with threads
   --disable-gsltest       Do not try to compile and run a test GSL program
+  --enable-debug          build with debugging symbols and possibly no optimisation (yes, symbols or no(default))
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -3960,6 +3963,39 @@ fi
 
 
 
+CXXFLAGS=""
+LDFLAGS=""
+
+    { echo "$as_me:$LINENO: checking for debug options enabled" >&5
+echo $ECHO_N "checking for debug options enabled... $ECHO_C" >&6; }
+    # Check whether --enable-debug was given.
+if test "${enable_debug+set}" = set; then
+  enableval=$enable_debug; enable_debug=$enableval
+else
+  enable_debug=no
+fi
+
+    if test "$enable_debug" = "no"; then
+		CFLAGS_DEFAULT='-O2 '
+		LDFLAGS_DEFAULT=""
+		{ echo "$as_me:$LINENO: result: no debug" >&5
+echo "${ECHO_T}no debug" >&6; }
+    elif test "$enable_debug" = "symbols"; then
+		CFLAGS_DEFAULT='-g -O2 '
+		LDFLAGS_DEFAULT=""
+		{ echo "$as_me:$LINENO: result: symbols only" >&5
+echo "${ECHO_T}symbols only" >&6; }
+	else
+		CFLAGS_DEFAULT='-g -O0 '
+		LDFLAGS_DEFAULT=""
+		{ echo "$as_me:$LINENO: result: full debug" >&5
+echo "${ECHO_T}full debug" >&6; }
+    fi
+
+
+
+CXXFLAGS=$CFLAGS_DEFAULT
+LDFLAGS=$LDFLAGS_DEFAULT
 
 
 
@@ -5341,8 +5377,6 @@ done
 
 
 
-CXXFLAGS=""
-LDFLAGS=""
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -7323,6 +7357,8 @@ GSL_CONFIG!$GSL_CONFIG$ac_delim
 GSL_CFLAGS!$GSL_CFLAGS$ac_delim
 GSL_LIBS!$GSL_LIBS$ac_delim
 GSL_FOUND!$GSL_FOUND$ac_delim
+CFLAGS_DEFAULT!$CFLAGS_DEFAULT$ac_delim
+LDFLAGS_DEFAULT!$LDFLAGS_DEFAULT$ac_delim
 CXX!$CXX$ac_delim
 CXXFLAGS!$CXXFLAGS$ac_delim
 ac_ct_CXX!$ac_ct_CXX$ac_delim
@@ -7341,7 +7377,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 89; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 91; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

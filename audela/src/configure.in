@@ -58,8 +58,13 @@ fi
 AC_SUBST(GSL_FOUND)
 
 
-dnl Checking for --with args
+CXXFLAGS=""
+LDFLAGS=""
+dnl Checking for --enable args
 dnl
+SC_ENABLE_DEBUG
+CXXFLAGS=$CFLAGS_DEFAULT
+LDFLAGS=$LDFLAGS_DEFAULT
 
 
 dnl AutoChecks
@@ -88,8 +93,6 @@ AC_SUBST(DL_LIB)
 
 dnl Checks for header files.
 dnl
-CXXFLAGS=""
-LDFLAGS=""
 AC_HEADER_STDC
 AC_MSG_CHECKING(for kernel headers)
 if test ! -f /usr/include/asm/system.h ; then
@@ -167,7 +170,7 @@ if test x"$GSL_FOUND" = x"1" ; then
 	CONTRIB="$CONTRIB libbm"
 fi
 dnl CONTRIB="$CONTRIB quicka"
-dnl quicka only works on Windows for the moment.  
+dnl quicka only works on Windows for the moment.
 
 AUDELA="audela libaudela libaudelatk libgzip libmc librgb libtt"
 if test x"$GSL_FOUND" = x"1" ; then

@@ -226,7 +226,7 @@ AC_DEFUN(SC_PATH_TKCONFIG, [
 #	Load the tclConfig.sh file
 #
 # Arguments:
-#	
+#
 #	Requires the following vars to be set:
 #		TCL_BIN_DIR
 #
@@ -295,7 +295,7 @@ AC_DEFUN(SC_LOAD_TCLCONFIG, [
 #	Load the tkConfig.sh file
 #
 # Arguments:
-#	
+#
 #	Requires the following vars to be set:
 #		TK_BIN_DIR
 #
@@ -328,7 +328,7 @@ AC_DEFUN(SC_LOAD_TKCONFIG, [
 #
 # Arguments:
 #	none
-#	
+#
 # Results:
 #
 #	Adds the following arguments to configure:
@@ -372,7 +372,7 @@ AC_DEFUN(SC_ENABLE_SHARED, [
 #
 # Arguments:
 #	none
-#	
+#
 # Results:
 #
 #	Adds the following arguments to configure:
@@ -417,7 +417,7 @@ AC_DEFUN(SC_ENABLE_FRAMEWORK, [
 #
 # Arguments:
 #	none
-#	
+#
 # Results:
 #
 #	Adds the following arguments to configure:
@@ -501,71 +501,41 @@ AC_DEFUN(SC_ENABLE_THREADS, [
 ])
 
 #------------------------------------------------------------------------
-# SC_ENABLE_SYMBOLS --
+# SC_ENABLE_DEBUG --
 #
 #	Specify if debugging symbols should be used.
-#	Memory (TCL_MEM_DEBUG) and compile (TCL_COMPILE_DEBUG) debugging
-#	can also be enabled.
 #
 # Arguments:
 #	none
-#	
-#	Requires the following vars to be set in the Makefile:
-#		CFLAGS_DEBUG
-#		CFLAGS_OPTIMIZE
-#		LDFLAGS_DEBUG
-#		LDFLAGS_OPTIMIZE
-#	
-# Results:
 #
 #	Adds the following arguments to configure:
-#		--enable-symbols
+#		--enable-debug
 #
 #	Defines the following vars:
-#		CFLAGS_DEFAULT	Sets to $(CFLAGS_DEBUG) if true
-#				Sets to $(CFLAGS_OPTIMIZE) if false
-#		LDFLAGS_DEFAULT	Sets to $(LDFLAGS_DEBUG) if true
-#				Sets to $(LDFLAGS_OPTIMIZE) if false
-#		DBGX		Debug library extension
+#		CFLAGS_DEFAULT	Sets to "-g -O0" if true (i.e. adding symbols and removing optimisation)
+#		CFLAGS_DEFAULT	Sets to "-g" if symbols only
+#		CFLAGS_DEFAULT	Sets to "-O2" otherwise
 #
 #------------------------------------------------------------------------
 
-AC_DEFUN(SC_ENABLE_SYMBOLS, [
-    AC_MSG_CHECKING([for build with symbols])
-    AC_ARG_ENABLE(symbols, [  --enable-symbols        build with debugging symbols [--disable-symbols]],    [tcl_ok=$enableval], [tcl_ok=no])
-# FIXME: Currently, LDFLAGS_DEFAULT is not used, it should work like CFLAGS_DEFAULT.
-    if test "$tcl_ok" = "no"; then
-	CFLAGS_DEFAULT='$(CFLAGS_OPTIMIZE)'
-	LDFLAGS_DEFAULT='$(LDFLAGS_OPTIMIZE)'
-	DBGX=""
-	AC_MSG_RESULT([no])
-    else
-	CFLAGS_DEFAULT='$(CFLAGS_DEBUG)'
-	LDFLAGS_DEFAULT='$(LDFLAGS_DEBUG)'
-	DBGX=g
-	if test "$tcl_ok" = "yes"; then
-	    AC_MSG_RESULT([yes (standard debugging)])
-	fi
+AC_DEFUN(SC_ENABLE_DEBUG, [
+    AC_MSG_CHECKING([for debug options enabled])
+    AC_ARG_ENABLE(debug, [  --enable-debug          build with debugging symbols and possibly no optimisation (yes, symbols or no(default))], [enable_debug=$enableval], [enable_debug=no])
+    if test "$enable_debug" = "no"; then
+		CFLAGS_DEFAULT='-O2 '
+		LDFLAGS_DEFAULT=""
+		AC_MSG_RESULT([no debug])
+    elif test "$enable_debug" = "symbols"; then
+		CFLAGS_DEFAULT='-g -O2 '
+		LDFLAGS_DEFAULT=""
+		AC_MSG_RESULT([symbols only])
+	else
+		CFLAGS_DEFAULT='-g -O0 '
+		LDFLAGS_DEFAULT=""
+		AC_MSG_RESULT([full debug])
     fi
     AC_SUBST(CFLAGS_DEFAULT)
     AC_SUBST(LDFLAGS_DEFAULT)
-
-    if test "$tcl_ok" = "mem" -o "$tcl_ok" = "all"; then
-	AC_DEFINE(TCL_MEM_DEBUG)
-    fi
-
-    if test "$tcl_ok" = "compile" -o "$tcl_ok" = "all"; then
-	AC_DEFINE(TCL_COMPILE_DEBUG)
-	AC_DEFINE(TCL_COMPILE_STATS)
-    fi
-
-    if test "$tcl_ok" != "yes" -a "$tcl_ok" != "no"; then
-	if test "$tcl_ok" = "all"; then
-	    AC_MSG_RESULT([enabled symbols mem compile debugging])
-	else
-	    AC_MSG_RESULT([enabled $tcl_ok debugging])
-	fi
-    fi
 ])
 
 #------------------------------------------------------------------------
@@ -576,7 +546,7 @@ AC_DEFUN(SC_ENABLE_SYMBOLS, [
 #
 # Arguments:
 #	none
-#	
+#
 # Results:
 #
 #	Adds the following arguments to configure:
@@ -615,7 +585,7 @@ AC_DEFUN(SC_ENABLE_LANGINFO, [
 
 #--------------------------------------------------------------------
 # SC_CONFIG_MANPAGES
-#	
+#
 #	Decide whether to use symlinks for linking the manpages and
 #	whether to compress the manpages after installation.
 #
@@ -719,7 +689,7 @@ AC_DEFUN(SC_CONFIG_MANPAGES, [
 # TCL_SHLIB_LD_EXTRAS - Additional element which are added to SHLIB_LD_LIBS
 #  TK_SHLIB_LD_EXTRAS   for the build of Tcl and Tk, but not recorded in the
 #                       tclConfig.sh, since they are only used for the build
-#                       of Tcl and Tk. 
+#                       of Tcl and Tk.
 #                       Examples: MacOS X records the library version and
 #                       compatibility version in the shared library.  But
 #                       of course the Tcl version of this is only used for Tcl.
@@ -794,7 +764,7 @@ AC_DEFUN(SC_CONFIG_CFLAGS, [
 	else
 	    # Special check for weird MP-RAS system (uname returns weird
 	    # results, and the version is kept in special file).
-	
+
 	    if test -r /etc/.relid -a "X`uname -n`" = "X`uname -s`" ; then
 		system=MP-RAS-`awk '{print $3}' /etc/.relid'`
 	    fi
@@ -823,8 +793,8 @@ AC_DEFUN(SC_CONFIG_CFLAGS, [
     TCL_TRIM_DOTS='`echo ${VERSION} | tr -d .`'
     ECHO_VERSION='`echo ${VERSION}`'
     TCL_LIB_VERSIONS_OK=ok
-    CFLAGS_DEBUG=-g
-    CFLAGS_OPTIMIZE=-O
+    CFLAGS_DEBUG=-g -O0
+    CFLAGS_OPTIMIZE=-O2
     if test "$GCC" = "yes" ; then
 	CFLAGS_WARNING="-Wall -Wno-implicit-int -fno-strict-aliasing"
     else
@@ -867,7 +837,7 @@ dnl AC_CHECK_TOOL(AR, ar)
 	    if test "$do64bit" = "yes" ; then
 		if test "$GCC" = "yes" ; then
 		    AC_MSG_WARN("64bit mode not supported with GCC on $system")
-		else 
+		else
 		    do64bit_ok=yes
 		    CFLAGS="$CFLAGS -q64"
 		    LDFLAGS="$LDFLAGS -q64"
@@ -927,7 +897,7 @@ dnl AC_CHECK_TOOL(AR, ar)
 	    if test "$do64bit" = "yes" ; then
 		if test "$GCC" = "yes" ; then
 		    AC_MSG_WARN("64bit mode not supported with GCC on $system")
-		else 
+		else
 		    do64bit_ok=yes
 		    CFLAGS="$CFLAGS -q64"
 		    LDFLAGS="$LDFLAGS -q64"
@@ -1146,7 +1116,7 @@ dnl AC_CHECK_TOOL(AR, ar)
 	    SHLIB_SUFFIX=".so"
 
 	    CFLAGS_OPTIMIZE=-O2
-	    # egcs-2.91.66 on Redhat Linux 6.0 generates lots of warnings 
+	    # egcs-2.91.66 on Redhat Linux 6.0 generates lots of warnings
 	    # when you inline the string and math operations.  Turn this off to
 	    # get rid of the warnings.
 	    #CFLAGS_OPTIMIZE="${CFLAGS_OPTIMIZE} -D__NO_STRING_INLINES -D__NO_MATH_INLINES"
@@ -1354,7 +1324,7 @@ dnl AC_CHECK_TOOL(AR, ar)
 	OS/390-*)
 	    CFLAGS_OPTIMIZE=""      # Optimizer is buggy
 	    AC_DEFINE(_OE_SOCKETS)  # needed in sys/socket.h
-	    ;;      
+	    ;;
 	OSF1-1.0|OSF1-1.1|OSF1-1.2)
 	    # OSF/1 1.[012] from OSF, and derivatives, including Paragon OSF/1
 	    SHLIB_CFLAGS=""
@@ -1523,7 +1493,7 @@ dnl AC_CHECK_TOOL(AR, ar)
 	    AC_DEFINE(_POSIX_PTHREAD_SEMANTICS)
 
 	    SHLIB_CFLAGS="-KPIC"
-    
+
 	    # Check to enable 64-bit flags for compiler/linker
 	    if test "$do64bit" = "yes" ; then
 		arch=`isainfo`
@@ -1544,7 +1514,7 @@ dnl AC_CHECK_TOOL(AR, ar)
 		    AC_MSG_WARN("64bit mode only supported sparcv9 system")
 		fi
 	    fi
-	    
+
 	    # Note: need the LIBS below, otherwise Tk won't find Tcl's
 	    # symbols when dynamically loaded into tclsh.
 
@@ -1605,7 +1575,7 @@ dnl AC_CHECK_TOOL(AR, ar)
     # New Orleans, LA, Computerized Processes Unlimited, 1994), then we need
     # to determine which of several header files defines the a.out file
     # format (a.out.h, sys/exec.h, or sys/exec_aout.h).  At present, we
-    # support only a file format that is more or less version-7-compatible. 
+    # support only a file format that is more or less version-7-compatible.
     # In particular,
     #	- a.out files must begin with `struct exec'.
     #	- the N_TXTOFF on the `struct exec' must compute the seek address
@@ -1821,7 +1791,7 @@ dnl        esac
 #
 # Arguments:
 #	none
-#	
+#
 # Results:
 #
 #	Defines only one of the following vars:
@@ -1942,7 +1912,7 @@ int main() {
 #
 # Arguments:
 #	none
-#	
+#
 # Results:
 #
 #	Defines some of the following vars:
@@ -2033,7 +2003,7 @@ closedir(d);
 #
 # Arguments:
 #	none
-#	
+#
 # Results:
 #
 #	Sets the the following vars:
@@ -2110,13 +2080,13 @@ AC_DEFUN(SC_PATH_X, [
 # SC_BLOCKING_STYLE
 #
 #	The statements below check for systems where POSIX-style
-#	non-blocking I/O (O_NONBLOCK) doesn't work or is unimplemented. 
+#	non-blocking I/O (O_NONBLOCK) doesn't work or is unimplemented.
 #	On these systems (mostly older ones), use the old BSD-style
 #	FIONBIO approach instead.
 #
 # Arguments:
 #	none
-#	
+#
 # Results:
 #
 #	Defines some of the following vars:
@@ -2140,7 +2110,7 @@ AC_DEFUN(SC_BLOCKING_STYLE, [
 	else
 	    # Special check for weird MP-RAS system (uname returns weird
 	    # results, and the version is kept in special file).
-	
+
 	    if test -r /etc/.relid -a "X`uname -n`" = "X`uname -s`" ; then
 		system=MP-RAS-`awk '{print $3}' /etc/.relid'`
 	    fi
@@ -2181,7 +2151,7 @@ AC_DEFUN(SC_BLOCKING_STYLE, [
 #
 # Arguments:
 #	none
-#	
+#
 # Results:
 #
 #	Defines some of the following vars:
@@ -2261,7 +2231,7 @@ AC_DEFUN(SC_TIME_HANDLER, [
 #
 # Arguments:
 #	none
-#	
+#
 # Results:
 #
 #	Might defines some of the following vars:
@@ -2316,7 +2286,7 @@ AC_DEFUN(SC_BUGGY_STRTOD, [
 #		DL_LIBS
 #		LIBS
 #		MATH_LIBS
-#	
+#
 # Results:
 #
 #	Subst's the following var:
@@ -2381,7 +2351,7 @@ AC_DEFUN(SC_TCL_LINK_LIBS, [
     fi
     AC_CHECK_FUNC(gethostbyname, , [AC_CHECK_LIB(nsl, gethostbyname,
 	    [LIBS="$LIBS -lnsl"])])
-    
+
     # Don't perform the eval of the libraries here because DL_LIBS
     # won't be set until we call SC_CONFIG_CFLAGS
 
@@ -2398,7 +2368,7 @@ AC_DEFUN(SC_TCL_LINK_LIBS, [
 #
 # Arguments:
 #	None
-#	
+#
 # Results:
 #
 #	Might define the following vars:
@@ -2439,7 +2409,7 @@ AC_DEFUN(SC_TCL_EARLY_FLAGS,[
 #
 # Arguments:
 #	None
-#	
+#
 # Results:
 #
 #	Might define the following vars:
@@ -2461,8 +2431,8 @@ AC_DEFUN(SC_TCL_64BIT_FLAGS, [
 	# See if we should use long anyway  Note that we substitute in the
 	# type that is our current guess for a 64-bit type inside this check
 	# program, so it should be modified only carefully...
-        AC_TRY_COMPILE(,[switch (0) { 
-            case 1: case (sizeof(]${tcl_type_64bit}[)==sizeof(long)): ; 
+        AC_TRY_COMPILE(,[switch (0) {
+            case 1: case (sizeof(]${tcl_type_64bit}[)==sizeof(long)): ;
         }],tcl_cv_type_64bit=${tcl_type_64bit})])
     if test "${tcl_cv_type_64bit}" = none ; then
 	AC_DEFINE(TCL_WIDE_INT_IS_LONG)
