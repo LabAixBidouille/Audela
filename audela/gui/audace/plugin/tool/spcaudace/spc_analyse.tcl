@@ -1,7 +1,7 @@
 
 # Procédures d'analyse spectrale
 # source $audace(rep_scripts)/spcaudace/spc_analyse.tcl
-# Mise a jour $Id: spc_analyse.tcl,v 1.2 2008-09-01 17:54:08 bmauclaire Exp $
+# Mise a jour $Id: spc_analyse.tcl,v 1.3 2008-12-11 18:58:16 bmauclaire Exp $
 
 
 
@@ -1350,7 +1350,7 @@ proc spc_icontinuum { args } {
        ::console::affiche_resultat "Le continuum entre $lambda_deb-$lambda_fin vaut $icontinuum\n"
        return $icontinuum
     } else {
-        ::console::affiche_erreur "Usage: spc_icontinuum nom_profil_raies ?lambda?\n"
+        ::console::affiche_erreur "Usage: spc_icontinuum nom_profil_raies ?lambda?/?lambda_deb lambda_fin?\n"
     }
 }
 #***************************************************************************#
