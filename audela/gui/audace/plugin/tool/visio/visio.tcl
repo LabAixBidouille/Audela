@@ -2,7 +2,7 @@
 # Fichier : visio.tcl
 # Description : Outil de visionnage d'images fits + gestion des series d'images
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: visio.tcl,v 1.16 2008-06-07 09:17:03 robertdelmas Exp $
+# Mise a jour $Id: visio.tcl,v 1.17 2008-12-11 22:03:04 robertdelmas Exp $
 #
 
 # ========================================================
@@ -162,9 +162,9 @@ namespace eval ::visio {
       #--- Affichage de l'onglet par defaut (serie)
       set panneau(visio,onglet) serie
 
-      pack $This.onglet.serie -side top -fill x -pady 3 -ipady 3
+      pack $This.onglet.serie -side top -fill x -pady 0 -ipady 3
 
-      $This.onglet.chg config -text $caption(visio,modeserie)
+      $This.onglet.chg config -text $caption(visio,serie)
    }
 
    #------------------------------------------------------------
@@ -315,7 +315,7 @@ namespace eval ::visio {
       }
 
       #--- Affichage du nouvel onglet
-      pack $This.onglet.$panneau(visio,onglet) -side top -fill x
+      pack $This.onglet.$panneau(visio,onglet) -side top -fill x -pady 0 -ipady 3
       $This.onglet.chg config -text $caption(visio,$panneau(visio,onglet))
    }
 
@@ -859,13 +859,13 @@ proc visioBuildIF { This } {
       pack $This.panneau.goind -expand true
 
          #--- Bouton Go
-         button $This.panneau.goind.2 -text $caption(visio,charger) -width 2 -font $audace(font,arial_10_b) \
+         button $This.panneau.goind.2 -text $caption(visio,charger) -width 2 \
             -command ::visio::seriego
          pack $This.panneau.goind.2 -expand true -side left -pady 8
 
          #--- Index
-         entry $This.panneau.goind.index -font $audace(font,arial_10_b) \
-            -textvariable panneau(visio,index) -relief groove -width 8 -justify center
+         entry $This.panneau.goind.index -textvariable panneau(visio,index) \
+            -relief groove -width 8 -justify center
          pack $This.panneau.goind.index -expand true -side right
 
       #--- Sous-trame de deplacement dans une serie
@@ -875,19 +875,19 @@ proc visioBuildIF { This } {
          frame $This.panneau.depl_serie.1
          pack $This.panneau.depl_serie.1 -side left -fill x -expand true
          button $This.panneau.depl_serie.1.1 -text $caption(visio,arr1) -width 2 \
-            -font $audace(font,arial_10_b) -command ::visio::serie-1
+            -command ::visio::serie-1
          pack $This.panneau.depl_serie.1.1 -fill x
          button $This.panneau.depl_serie.1.2 -text $caption(visio,arr-) -width 2 \
-            -font $audace(font,arial_10_b) -command ::visio::serie--
+            -command ::visio::serie--
          pack $This.panneau.depl_serie.1.2 -fill x
 
          frame $This.panneau.depl_serie.3
          pack $This.panneau.depl_serie.3 -side right -fill x -expand true
          button $This.panneau.depl_serie.3.1 -text $caption(visio,avt1) -width 2 \
-            -font $audace(font,arial_10_b) -command ::visio::serie+1
+            -command ::visio::serie+1
          pack $This.panneau.depl_serie.3.1 -fill x
          button $This.panneau.depl_serie.3.2 -text $caption(visio,avt+) -width 2 \
-            -font $audace(font,arial_10_b) -command ::visio::serie++
+            -command ::visio::serie++
          pack $This.panneau.depl_serie.3.2 -fill x
 
    #---Trame bouton de suppression de l'image
@@ -900,16 +900,16 @@ proc visioBuildIF { This } {
 
    #--- Trame des sous-commandes
    frame $This.onglet -relief groove -borderwidth 1
-   pack $This.onglet -side top -fill x
+   pack $This.onglet -side top -fill x -pady 20
 
    #--- Bouton de changement d'onglet
    button $This.onglet.chg -text $caption(visio,serie) \
-      -command ::visio::ChangeOnglet -font $audace(font,arial_10_b) -borderwidth 0
-   pack $This.onglet.chg -side top -fill x -pady 2 -ipady 2
+      -command ::visio::ChangeOnglet -borderwidth 2
+   pack $This.onglet.chg -side top -fill x -pady 5
 
    #---Trame de gestion et de reorganisation des fichiers
    frame $This.onglet.serie -relief groove -borderwidth 1
-   pack $This.onglet.serie -side top -fill x -pady 3 -ipady 3
+   pack $This.onglet.serie -side top -fill x -pady 0 -ipady 3
 
       #--- Bouton de suppression des lacunes d'une serie (reindexer serie)
       button $This.onglet.serie.suppr_lacunes -text $caption(visio,suppr_lacunes) \
