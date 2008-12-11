@@ -1,6 +1,6 @@
 #
 # Fichier : obj_lune.cap
-# Mise a jour $Id: obj_lune.cap,v 1.9 2007-04-01 14:39:34 robertdelmas Exp $
+# Mise a jour $Id: obj_lune.cap,v 1.10 2008-12-11 19:10:34 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -50,7 +50,7 @@ set caption(obj_lune,latitude)               "Lunar Latitude:"
 set caption(obj_lune,longitude)              "Lunar Longitude:"
 set caption(obj_lune,dimension)              "Size (km):"
 set caption(obj_lune,carte_atlas)            "Gründ Atlas Map:"
-set caption(obj_lune,objectif)               "GoTo Coordinates:"
+set caption(obj_lune,objectif)               "GOTO Coordinates:"
 set caption(obj_lune,ad)                     "RA (J2000):"
 set caption(obj_lune,dec)                    "Dec. (J2000):"
 
@@ -123,7 +123,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,longitude)           "Longitude sélène :"
    set caption(obj_lune,dimension)           "Dimension (en km) :"
    set caption(obj_lune,carte_atlas)         "Carte Atlas Gründ :"
-   set caption(obj_lune,objectif)            "Coordonnées du GoTo :"
+   set caption(obj_lune,objectif)            "Coordonnées du GOTO :"
    set caption(obj_lune,ad)                  "AD (J2000) :"
    set caption(obj_lune,dec)                 "Déc. (J2000) :"
 
@@ -196,7 +196,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,longitude)           "Longitudine selenica:"
    set caption(obj_lune,dimension)           "Dimensioni (in km):"
    set caption(obj_lune,carte_atlas)         "Carta Atlas Gründ:"
-   set caption(obj_lune,objectif)            "Coordinates del GoTo:"
+   set caption(obj_lune,objectif)            "Coordinates del GOTO:"
    set caption(obj_lune,ad)                  "AR (J2000):"
    set caption(obj_lune,dec)                 "Dec. (J2000):"
 
@@ -269,7 +269,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,longitude)           "Longitud selenográfica:"
    set caption(obj_lune,dimension)           "Dimensión (en km):"
    set caption(obj_lune,carte_atlas)         "Mapa del Atlas Gründ:"
-   set caption(obj_lune,objectif)            "Coordenadas de GoTo:"
+   set caption(obj_lune,objectif)            "Coordenadas de GOTO:"
    set caption(obj_lune,ad)                  "AR (J2000):"
    set caption(obj_lune,dec)                 "Dec. (J2000):"
 
@@ -342,7 +342,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,longitude)           "Mond Länge:"
    set caption(obj_lune,dimension)           "Maß (in km):"
    set caption(obj_lune,carte_atlas)         "Gründ Atlas Karte:"
-   set caption(obj_lune,objectif)            "GoTo Koordinaten:"
+   set caption(obj_lune,objectif)            "GOTO Koordinaten:"
    set caption(obj_lune,ad)                  "AD (J2000):"
    set caption(obj_lune,dec)                 "Dek. (J2000):"
 
@@ -411,46 +411,46 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,pheno_transitoires)  "Fenómenos transitórios"
    set caption(obj_lune,origine)             "Origem do nome"
    set caption(obj_lune,pos_caract)          "Posicionamento e características"
-   set caption(obj_lune,latitude)            "Latitude selene :"
-   set caption(obj_lune,longitude)           "Longitude selene :"
-   set caption(obj_lune,dimension)           "Dimensão (em km) :"
-   set caption(obj_lune,carte_atlas)         "Mapa Atlas Gründ :"
-   set caption(obj_lune,objectif)            "Coordenadas do GoTo :"
-   set caption(obj_lune,ad)                  "AR (J2000) :"
-   set caption(obj_lune,dec)                 "Dec. (J2000) :"
+   set caption(obj_lune,latitude)            "Latitude selene:"
+   set caption(obj_lune,longitude)           "Longitude selene:"
+   set caption(obj_lune,dimension)           "Dimensão (em km):"
+   set caption(obj_lune,carte_atlas)         "Mapa Atlas Gründ:"
+   set caption(obj_lune,objectif)            "Coordenadas do GOTO:"
+   set caption(obj_lune,ad)                  "AR (J2000):"
+   set caption(obj_lune,dec)                 "Dec. (J2000):"
 
-   set caption(obj_lune,date)                "Data :"
-   set caption(obj_lune,heure)               "Tempo Universal (TU) :"
-   set caption(obj_lune,pos_centre)          "Coordenadas topocentricas da Lua :"
-   set caption(obj_lune,hauteur)             "Altura :"
-   set caption(obj_lune,azimut)              "Azimute :"
-   set caption(obj_lune,anglehoraire)        "Ângulo horário :"
-   set caption(obj_lune,diametre_apparent)   "Diâmetro aparente :"
-   set caption(obj_lune,magnitude)           "Magnitude :"
-   set caption(obj_lune,fraction_eclairee)   "Fracção iluminada do disco lunar :"
-   set caption(obj_lune,age)                 "Idade da Lua :"
-   set caption(obj_lune,distance_terre)      "Distância à Terra :"
-   set caption(obj_lune,libration,n_s)       "Libração topocentrica em latitude (N/S) :"
-   set caption(obj_lune,libration,e_o)       "Libração topocentrica em longitude (E/O) :"
-   set caption(obj_lune,long_terminateur)    "Longitude do terminador :"
-   set caption(obj_lune,nl)                  "Lua nova :"
-   set caption(obj_lune,pq)                  "Quarto crescente :"
-   set caption(obj_lune,pl)                  "Lua cheia :"
-   set caption(obj_lune,dq)                  "Quarto minguante :"
+   set caption(obj_lune,date)                "Data:"
+   set caption(obj_lune,heure)               "Tempo Universal (TU):"
+   set caption(obj_lune,pos_centre)          "Coordenadas topocentricas da Lua:"
+   set caption(obj_lune,hauteur)             "Altura:"
+   set caption(obj_lune,azimut)              "Azimute:"
+   set caption(obj_lune,anglehoraire)        "Ângulo horário:"
+   set caption(obj_lune,diametre_apparent)   "Diâmetro aparente:"
+   set caption(obj_lune,magnitude)           "Magnitude:"
+   set caption(obj_lune,fraction_eclairee)   "Fracção iluminada do disco lunar:"
+   set caption(obj_lune,age)                 "Idade da Lua:"
+   set caption(obj_lune,distance_terre)      "Distância à Terra:"
+   set caption(obj_lune,libration,n_s)       "Libração topocentrica em latitude (N/S):"
+   set caption(obj_lune,libration,e_o)       "Libração topocentrica em longitude (E/O):"
+   set caption(obj_lune,long_terminateur)    "Longitude do terminador:"
+   set caption(obj_lune,nl)                  "Lua nova:"
+   set caption(obj_lune,pq)                  "Quarto crescente:"
+   set caption(obj_lune,pl)                  "Lua cheia:"
+   set caption(obj_lune,dq)                  "Quarto minguante:"
 
    set caption(obj_lune,atlas)               "Atlas lunar de Antonin RUKL"
-   set caption(obj_lune,carte_choisies)      "Mapas do local :"
-   set caption(obj_lune,carte_choisie)       "Mapa escolhido :"
-   set caption(obj_lune,carte_courante)      "Mapa actual :"
+   set caption(obj_lune,carte_choisies)      "Mapas do local:"
+   set caption(obj_lune,carte_choisie)       "Mapa escolhido:"
+   set caption(obj_lune,carte_courante)      "Mapa actual:"
 
-   set caption(obj_lune,nom)                 "Nome :"
+   set caption(obj_lune,nom)                 "Nome:"
    set caption(obj_lune,calculer)            "Calcular"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(obj_lune,titre)               "Destination Månen"
-   set caption(obj_lune,goto)                "Gå til"
+   set caption(obj_lune,goto)                "GOTO"
    set caption(obj_lune,ephemerides)         "Efemerider"
    set caption(obj_lune,cartographie)        "Kartografi"
    set caption(obj_lune,carte_libration)     "Librationskort"
@@ -488,7 +488,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,longitude)           "Månes longitude:"
    set caption(obj_lune,dimension)           "Størrelse (km):"
    set caption(obj_lune,carte_atlas)         "Gründ Atlas kort:"
-   set caption(obj_lune,objectif)            "Gå til flg. koordinater:"
+   set caption(obj_lune,objectif)            "GOTO flg. koordinater:"
    set caption(obj_lune,ad)                  "RA (J2000):"
    set caption(obj_lune,dec)                 "Dec. (J2000):"
 
