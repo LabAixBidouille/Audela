@@ -324,25 +324,26 @@ int mytel_radec_init(struct telprop *tel)
       nbcar_1=8;
       nbcar_2=7;
    }
-   /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
    sprintf(s,"mc_angle2lx200ra %f %s",tel->ra0,ls); mytel_tcleval(tel,s);
+	strcpy(ss,tel->interp->result);
    /* Send Sr */
-   sprintf(s,"read -nonewline %s",tel->channel); mytel_tcleval(tel,ss);
-   sprintf(s,"puts -nonewline %s \"#:Sr%s%s#\"",tel->channel,tel->autostar_char,tel->interp->result); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"puts -nonewline %s \"#:Sr%s%s#\"",tel->channel,tel->autostar_char,ss); mytel_tcleval(tel,s);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    /* Receive 1 if it is OK */
-   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,ss);
+   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    sprintf(s,"mc_angle2lx200dec %f %s",tel->dec0,ls); mytel_tcleval(tel,s);
+	strcpy(ss,tel->interp->result);
    /* Send Sd */
-   sprintf(s,"read -nonewline %s",tel->channel); mytel_tcleval(tel,ss);
-   sprintf(s,"puts -nonewline %s \"#:Sd%s%s#\"",tel->channel,tel->autostar_char,tel->interp->result); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"puts -nonewline %s \"#:Sd%s%s#\"",tel->channel,tel->autostar_char,ss); mytel_tcleval(tel,s);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    /* Receive 1 if it is OK */
-   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,ss);
+   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    /* tel->radec_goto_rate is not used for the LX200 protocol (always slew) */
-   sprintf(s,"read -nonewline %s",tel->channel); mytel_tcleval(tel,ss);
+   sprintf(s,"read -nonewline %s",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"puts -nonewline %s \"#:CM#\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after 200"); mytel_tcleval(tel,s);
    /*mytel_flush(tel);*/
