@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.23 2008-12-05 23:28:27 robertdelmas Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.24 2008-12-12 23:06:29 michelpujol Exp $
 #
 
 namespace eval confColor:: {
@@ -536,7 +536,9 @@ namespace eval confColor:: {
             #--- Je mets a jour la couleur des widgets
             $w configure -bg $audace(color,listBox) -fg $audace(color,textColor)
             #--- Je mets a jour la police des widgets
-            $w configure -font "$audace(font,Text)"
+            if { [ winfo class [ winfo parent $w ] ] != "Tablelist" } {
+               $w configure -font "$audace(font,Text)"
+            }
          }
          Message {
             #--- Je mets a jour la couleur des widgets
