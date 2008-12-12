@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.89 2008-12-05 21:17:14 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.90 2008-12-12 23:05:42 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -429,6 +429,9 @@ namespace eval ::confVisu {
          if { $catchResult == 1 && $msg == "NO MEMORY FOR DISPLAY" } {
             #--- en cas d'erreur "NO MEMORY FOR DISPLAY" , j'essaie avec un zoom inferieur
             set private($visuNo,zoom) [expr double($private($visuNo,zoom)) / 2]
+            if { $private($visuNo,zoom) >= 1 } {
+                set private($visuNo,zoom) [expr int($private($visuNo,zoom))]  
+            }
             visu$visuNo zoom $private($visuNo,zoom)
             console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY , set zoom=$private($visuNo,zoom)\n"
          } else {
@@ -592,6 +595,9 @@ namespace eval ::confVisu {
          if { $catchResult == 1 && $msg == "NO MEMORY FOR DISPLAY" } {
             #--- en cas d'erreur "NO MEMORY FOR DISPLAY" , j'essaie avec un zoom inferieur
             set private($visuNo,zoom) [expr double($private($visuNo,zoom)) / 2]
+            if { $private($visuNo,zoom) >= 1 } {
+                set private($visuNo,zoom) [expr int($private($visuNo,zoom))]  
+            }
             visu$visuNo zoom $private($visuNo,zoom)
             console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY , set zoom=$private($visuNo,zoom)\n"
          } else {
@@ -2233,6 +2239,9 @@ namespace eval ::confVisu {
             if { $catchResult == 1 && $msg == "NO MEMORY FOR DISPLAY" } {
                #--- en cas d'erreur "NO MEMORY FOR DISPLAY" , j'essaie avec un zoom inferieur
                set private($visuNo,zoom) [expr double($private($visuNo,zoom)) / 2]
+               if { $private($visuNo,zoom) >= 1 } {
+                   set private($visuNo,zoom) [expr int($private($visuNo,zoom))]  
+               }
                visu$visuNo zoom $private($visuNo,zoom)
                console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY , set zoom=$private($visuNo,zoom)\n"
             } else {
