@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.29 2008-12-08 22:27:54 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.30 2008-12-12 23:25:40 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -164,9 +164,12 @@ namespace eval cataGoto {
       #--- Gestion des catalogues
       if { $catalogue(choisi,$visuNo) == "$caption(catagoto,coord)" } {
          ::cataGoto::nettoyage
-         set catalogue($visuNo,nom_objet) ""
-         set catalogue($visuNo,equinoxe)  "J2000.0"
-         set catalogue($visuNo,magnitude) ""
+         set catalogue($visuNo,list_radec) [ list "" "" ]
+         set catalogue($visuNo,nom_objet)  ""
+         set catalogue($visuNo,equinoxe)   "J2000.0"
+         set catalogue($visuNo,magnitude)  ""
+         #--- Mise a jour des coordonnees pour les outils Telescope et Controle a distance
+         $catalogue($visuNo,nameSpaceCaller)::setRaDec $visuNo $catalogue($visuNo,list_radec) $catalogue($visuNo,nom_objet) $catalogue($visuNo,equinoxe) $catalogue($visuNo,magnitude)
       } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,planete)" } {
          ::cataGoto::gotoPlanete $visuNo
       } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,asteroide)" } {
