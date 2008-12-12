@@ -218,7 +218,7 @@ BOOL CCaptureLinux::initHardware(UINT uIndex, CCaptureListener * captureListener
       sprintf(errorMessage, "error webcam_smmapInit");
       close(cam_fd);
       cam_fd = -1;
-      return FALSE;   
+      return FALSE;
    }
 
    return TRUE;
@@ -275,27 +275,11 @@ BOOL CCaptureLinux::isConnected() {
 */
 
 unsigned int CCaptureLinux::getImageWidth() {
-   struct video_capability vcap;
-
-   if (ioctl(cam_fd, VIDIOCGCAP, &vcap)) {
-      //strcpy(errorMessage, "Can't VIDIOCGCAP");
-      //close(cam_fd);
-      //cam_fd = -1;
-      return 0;
-   }
-   return vcap.maxwidth;
+    return currentWidth;
 }
 
 unsigned int CCaptureLinux::getImageHeight() {
-   struct video_capability vcap;
-
-   if (ioctl(cam_fd, VIDIOCGCAP, &vcap)) {
-      //strcpy(errorMessage, "Can't VIDIOCGCAP");
-      //close(cam_fd);
-      //cam_fd = -1;
-      return 0;
-   }
-   return vcap.maxheight;
+    return currentHeight;
 }
 
 /*
