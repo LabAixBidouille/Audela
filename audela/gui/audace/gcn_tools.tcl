@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.10 2008-11-20 17:38:16 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.11 2008-12-12 09:33:07 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -695,6 +695,7 @@ proc gcn_pkt_type { pkt_type } {
      129      FERMI_POINTDIR                   NOT YET AVAILABLE
      130      SIMBAD/NED_SEARCH_RESULTS
      901      ANTARES_GRB_POSITION             AVAILABLE ONLY FOR TAROT COLLABORATION
+     902      ANTARES_GRB_POS_TEST             AVAILABLE ONLY FOR TAROT COLLABORATION
    }
    set lignes [split $lignes \n]
    set textes ""
@@ -763,7 +764,7 @@ proc gcn_pkt_type { pkt_type } {
    if {($pkt_type>=110)&&($pkt_type<=126)} {
       set satellite FERMI
    }
-   if {($pkt_type>=901)&&($pkt_type<=901)} {
+   if {($pkt_type>=901)&&($pkt_type<=902)} {
       set satellite ANTARES
    }
    lappend textes $satellite
