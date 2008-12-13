@@ -7,7 +7,7 @@ DIR = thread26
 build:
 	@if test ! -f $(DIR)/Makefile; then \
 		cd $(DIR) && \
-			chmod +x configure ; ./configure --enable-threads --exec-prefix=$(ROOT)/.. --with-tcl=$(AUD_TCL_SPEC)/lib/tcl8.4 ; \
+			chmod +x configure ; ./configure --enable-threads --exec-prefix=$(ROOT)/.. --with-tcl=$(AUD_TCL_BIN_DIR) ; \
 	fi;
 	make -C $(DIR)
 
