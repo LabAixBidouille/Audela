@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.24 2008-12-12 23:06:29 michelpujol Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.25 2008-12-13 19:27:06 jacquesmichelet Exp $
 #
 
 namespace eval confColor:: {
@@ -371,7 +371,7 @@ namespace eval confColor:: {
 
    #------------------------------------------------------------
    #  applyColor
-   #     est appele apres avoir choisi une nouvelle couleur
+   #     est appele apres avoir choisi une nouvelle couleur et/ou une nouvelle police
    #     et applique la couleur en fonction de la charte des couleurs de Audace (voir doc de programmation)
    #
    #     w : window parent des resources qui doivent changer de couleur
