@@ -5,9 +5,9 @@ include ../../Makefile.defs
 DIR = thread26
 
 build:
-	@if test ! -f $(DIR)/Makefile; then \
+	@if test ! -f $(DIR)/Makefile || test ../../Makefile.defs -nt thread26/Makefile; then \
 		cd $(DIR) && \
-			chmod +x configure ; ./configure --enable-threads --exec-prefix=$(ROOT)/.. --with-tcl=$(AUD_TCL_BIN_DIR) ; \
+			chmod +x configure ; ./configure --enable-threads --exec-prefix=$(ROOT)/.. --with-tcl=$(AUD_TCL_BIN_DIR) ; make clean ; \
 	fi;
 	make -C $(DIR)
 
