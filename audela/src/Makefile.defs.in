@@ -7,6 +7,7 @@ RM  = rm -f -v
 # Definitions for external tools
 
 AUD_TCL_SPEC          = @TCL_PREFIX@
+AUD_TCL_BIN_DIR       = @TCL_BIN_DIR@
 AUD_TCL_INCLUDE_SPEC  = @TCL_INCLUDE_SPEC@
 AUD_TCL_LIB_SPEC      = @TCL_LIB_SPEC@
 AUD_TCL_STUB_LIB_SPEC = @TCL_STUB_LIB_SPEC@

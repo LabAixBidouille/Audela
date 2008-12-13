@@ -3646,6 +3646,8 @@ fi
 
 
 
+{ echo "$as_me:$LINENO: result: TCL_BIN_DIR=$TCL_BIN_DIR" >&5
+echo "${ECHO_T}TCL_BIN_DIR=$TCL_BIN_DIR" >&6; }
 
 
 
