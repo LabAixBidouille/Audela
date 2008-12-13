@@ -175,9 +175,10 @@ int cam_init(struct camprop *cam, int argc, char **argv)
     int i;
     
 #ifdef OS_LIN
-    // Astuce pour autoriser l'acces au port parallele
-    libcam_bloquer();
-    libcam_debloquer();
+    if ( ! libcam_can_access_parport() ) {
+	sprintf(cam->msg,"You don't have sufficient privileges to access parallel port. Camera cannot be created.");
+	return 1;
+    }
 #endif
 
     // Creation du tableau des octets a envoyer a la camera
@@ -186,7 +187,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
         for (i=0;i<256;i++) {
             unsigned char v = (unsigned char)i, v1, v2;
             // 87654321
-	    // 3 est inversé
+	    // 3 est inversï¿½
 	    v = v ^ 0x04;
 	    // 1 et 2 sont swapes
 	    v1 = v & 0x01;		// 0000 0001
@@ -515,7 +516,7 @@ unsigned char audine_kafinv(struct camprop *cam, unsigned char value)
     unsigned char v = value, v1, v2;
     if (cam->index_cam == 2) {
 	/* 87654321 */
-	/* 3 est inversé */
+	/* 3 est inversï¿½ */
 	v = value ^ 0x04;
 	/* 1 et 2 sont swapes */
 	v1 = v & 0x01;		/* 0000 0001 */
@@ -661,7 +662,7 @@ void audine_read_win_inv(struct camprop *cam, unsigned short *buf)
 	for (j = 0; j < imax; j++) {
 	    libcam_out(port0, cam->bytes[247]);	/* reset 11110111 */
 
-	    libcam_out(port0, cam->bytes[255]);	/* délai critique 11111111 */
+	    libcam_out(port0, cam->bytes[255]);	/* dï¿½lai critique 11111111 */
 	    libcam_out(port0, cam->bytes[255]);
 	    libcam_out(port0, cam->bytes[255]);
 #if defined(READSLOW)
@@ -672,7 +673,7 @@ void audine_read_win_inv(struct camprop *cam, unsigned short *buf)
 
 	    for (l = 0; l < cam->binx; l++) {
 		libcam_out(port0, cam->bytes[255]);
-		libcam_out(port0, cam->bytes[251]);	/* palier vidéo 11111011 */
+		libcam_out(port0, cam->bytes[251]);	/* palier vidï¿½o 11111011 */
 	    }
 
 	    libcam_out(port0, cam->bytes[251]);
@@ -723,7 +724,7 @@ void audine_read_win_inv(struct camprop *cam, unsigned short *buf)
 	    buffer[j] = (unsigned short) x;
 	}
 
-	/* On retire cx2 pixels à la fin */
+	/* On retire cx2 pixels ï¿½ la fin */
 
 	for (j = 0; j < cx2; j++)
 	    audine_read_pel_fast_inv(cam);
@@ -1038,7 +1039,7 @@ int audine_read_line(struct camprop *cam, int width, int offset, int binx, int b
     for (j = 0; j <= imax; j++) {
 	libcam_out(port0, cam->bytes[247]);	/* reset 11110111 */
 
-	libcam_out(port0, cam->bytes[255]);	/* délai critique 11111111 */
+	libcam_out(port0, cam->bytes[255]);	/* dï¿½lai critique 11111111 */
 	libcam_out(port0, cam->bytes[255]);
 	libcam_out(port0, cam->bytes[255]);
 #if defined(READSLOW)
@@ -1050,7 +1051,7 @@ int audine_read_line(struct camprop *cam, int width, int offset, int binx, int b
 
 	for (l = 0; l < binx; l++) {
 	    libcam_out(port0, cam->bytes[255]);
-	    libcam_out(port0, cam->bytes[251]);	/* palier vidéo 11111011 */
+	    libcam_out(port0, cam->bytes[251]);	/* palier vidï¿½o 11111011 */
 	}
 	libcam_out(port0, cam->bytes[251]);
 	libcam_out(port0, cam->bytes[251]);
@@ -1127,7 +1128,7 @@ int audine_read_line(struct camprop *cam, int width, int offset, int binx, int b
 	x = 32767;
     buffer[j] = (unsigned short) x;
 
-    /* On retire cx2 pixels à la fin */
+    /* On retire cx2 pixels ï¿½ la fin */
     for (j = 0; j < cx2; j++)
 	audine_read_pel_fast_inv(cam);
 
@@ -1278,7 +1279,7 @@ short audine_obtu_pierre(short base, short t1, short v)
 }
 
 /***************** OBTU_OFF *****************/
-/* Met à zéro du bit 1 du port de controle  */
+/* Met ï¿½ zï¿½ro du bit 1 du port de controle  */
 /********************************************/
 short audine_obtu_off(short base)
 {
@@ -1291,7 +1292,7 @@ short audine_obtu_off(short base)
 }
 
 /*************** OBTU_ON ******************/
-/* Met à un du bit 1 du port de controle  */
+/* Met ï¿½ un du bit 1 du port de controle  */
 /******************************************/
 short audine_obtu_on(short base)
 {
