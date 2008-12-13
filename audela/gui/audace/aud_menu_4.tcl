@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_4.tcl
 # Description : Script regroupant les fonctionnalites du menu Traitement
-# Mise a jour $Id: aud_menu_4.tcl,v 1.10 2008-01-03 22:03:09 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_4.tcl,v 1.11 2008-12-13 18:45:01 robertdelmas Exp $
 #
 
 namespace eval ::traiteFilters {
@@ -173,7 +173,7 @@ namespace eval ::traiteFilters {
                frame $This.usr.3.1 -borderwidth 0 -relief flat
                   label $This.usr.3.1.lab1 -text "$caption(traiteFilters,entree)"
                   pack $This.usr.3.1.lab1 -side left -padx 5 -pady 5
-                  entry $This.usr.3.1.ent1 -textvariable traiteFilters(image_in) -font $audace(font,arial_8_b)
+                  entry $This.usr.3.1.ent1 -textvariable traiteFilters(image_in)
                   pack $This.usr.3.1.ent1 -side left -padx 10 -pady 5 -fill x -expand 1
                   button $This.usr.3.1.explore -text "$caption(traiteFilters,parcourir)" -width 1 \
                      -command { ::traiteFilters::parcourir 1 }
@@ -186,7 +186,7 @@ namespace eval ::traiteFilters {
                   button $This.usr.4.1.but_defaut -text "$caption(traiteFilters,valeur_par_defaut)" \
                      -command { ::traiteFilters::val_defaut }
                  # pack $This.usr.4.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
-                  entry $This.usr.4.1.ent2 -textvariable traiteFilters(coef_etal) -width 10 -font $audace(font,arial_8_b)
+                  entry $This.usr.4.1.ent2 -textvariable traiteFilters(coef_etal) -width 10
                   pack $This.usr.4.1.ent2 -side right -padx 10 -pady 5
                   label $This.usr.4.1.lab2 -text "$caption(traiteFilters,coef_etalement)"
                   pack $This.usr.4.1.lab2 -side right -padx 5 -pady 5
@@ -198,7 +198,7 @@ namespace eval ::traiteFilters {
                   button $This.usr.5.1.but_defaut -text "$caption(traiteFilters,valeur_par_defaut)" \
                      -command { ::traiteFilters::val_defaut }
                  # pack $This.usr.5.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
-                  entry $This.usr.5.1.ent3 -textvariable traiteFilters(coef_mult) -width 10 -font $audace(font,arial_8_b)
+                  entry $This.usr.5.1.ent3 -textvariable traiteFilters(coef_mult) -width 10
                   pack $This.usr.5.1.ent3 -side right -padx 10 -pady 5
                   label $This.usr.5.1.lab3 -text "$caption(traiteFilters,coef_mult)"
                   pack $This.usr.5.1.lab3 -side right -padx 5 -pady 5
@@ -209,7 +209,7 @@ namespace eval ::traiteFilters {
                frame $This.usr.6.1 -borderwidth 0 -relief flat
                   label $This.usr.6.1.lab4 -text "$caption(traiteFilters,coef_efficacite)"
                   pack $This.usr.6.1.lab4 -side left -padx 5 -pady 5
-                  entry $This.usr.6.1.ent4 -textvariable traiteFilters(efficacite) -width 4 -font $audace(font,arial_8_b)
+                  entry $This.usr.6.1.ent4 -textvariable traiteFilters(efficacite) -width 4
                   pack $This.usr.6.1.ent4 -side left -padx 10 -pady 5
                pack $This.usr.6.1 -side left -fill both
                frame $This.usr.6.2 -borderwidth 0 -relief flat
@@ -231,7 +231,7 @@ namespace eval ::traiteFilters {
 
             frame $This.usr.7 -borderwidth 0 -relief raised
                frame $This.usr.7.1 -borderwidth 0 -relief flat
-                  entry $This.usr.7.1.ent5 -textvariable traiteFilters(offset) -width 10 -font $audace(font,arial_8_b)
+                  entry $This.usr.7.1.ent5 -textvariable traiteFilters(offset) -width 10
                   pack $This.usr.7.1.ent5 -side right -padx 10 -pady 5
                   label $This.usr.7.1.lab7 -text "$caption(traiteFilters,offset)"
                   pack $This.usr.7.1.lab7 -side right -padx 5 -pady 5
