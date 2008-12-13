@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.91 2008-12-13 19:20:02 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.92 2008-12-13 19:22:35 jacquesmichelet Exp $
 #
 
 namespace eval ::confVisu {
@@ -173,6 +173,9 @@ namespace eval ::confVisu {
 
       #--- j'affiche le nom de la monture
       setMount $visuNo
+
+      #--- je mets à jour couleurs et polices
+      ::confColor::applyColor $private($visuNo,This)
 
       return $visuNo
    }
