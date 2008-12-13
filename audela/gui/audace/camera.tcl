@@ -2,13 +2,13 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteur : Robert DELMAS
-# Mise a jour $Id: camera.tcl,v 1.23 2008-11-29 12:56:13 michelpujol Exp $
+# Mise a jour $Id: camera.tcl,v 1.24 2008-12-13 14:00:44 jacquesmichelet Exp $
 #
-# Procedures utilisées par confCam
+# Procedures utilisï¿½es par confCam
 #   ::camera::create  : cree une camera
 #   ::camera::delete
 #
-# Procedures utilisées par les outils et les scripts des utilisateurs
+# Procedures utilisï¿½es par les outils et les scripts des utilisateurs
 #   ::camera::acquisition
 #       fait une acquition
 #   ::camera::centerBrightestStar
@@ -162,7 +162,6 @@ proc ::camera::create { camItem } {
 #------------------------------------------------------------
 proc ::camera::delete { camItem } {
    variable private
-console::disp "::camera::delete coucou\n"
    if { $::tcl_platform(threaded) == 0 } {
       ###interp eval $private($camItem,threadNo)  [list ::cam::delete $private($camItem,camNo) ]
    } else {
