@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: util.c,v 1.3 2008-05-11 06:39:17 denismarchais Exp $
+ * $Id: util.c,v 1.4 2008-12-13 14:38:34 denismarchais Exp $
  */
 
 
@@ -136,6 +136,18 @@ unsigned short libcam_inw(unsigned short a)
 }
 
 
+// libcam_can_access_parport renvoie 1 si on peut acceder au port parallele, 0 sinon.
+int libcam_can_access_parport()
+{
+#if defined(OS_LIN)
+    if ( iopl(3) != 0 ) {
+	return 0;
+    }
+#endif
+    return 1;
+}
+
+
 /*
  * Blocage des interruptions. Attention, sous Linux un appel systeme retablit
  * les interruptions (acces memoire, printf, etc...).
@@ -143,11 +155,6 @@ unsigned short libcam_inw(unsigned short a)
 void libcam_bloquer()
 {
 #if defined(OS_LIN)
-    int permission;
-    if ((permission = iopl(3)) != 0) {
-	printf("Impossible d'acceder au port parallele.\n");
-	exit(1);
-    }
     AUDELA_CLI();
 #endif
 #if defined(OS_WIN)

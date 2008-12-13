@@ -56,6 +56,7 @@ void libcam_swap(int *a, int *b);
 void libcam_out(unsigned short a, unsigned char d);
 unsigned char libcam_in(unsigned short a);
 unsigned short libcam_inw(unsigned short a);
+int libcam_can_access_parport();
 void libcam_bloquer();
 void libcam_debloquer();
 
