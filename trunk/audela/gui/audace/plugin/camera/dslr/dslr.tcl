@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.31 2008-12-14 15:53:10 denismarchais Exp $
+# Mise a jour $Id: dslr.tcl,v 1.32 2008-12-14 17:15:41 michelpujol Exp $
 #
 
 namespace eval ::dslr {
@@ -116,7 +116,7 @@ proc ::dslr::confToWidget { } {
    set private(longueposeport)       $conf(dslr,longueposeport)
    set private(longueposelinkbit)    $conf(dslr,longueposelinkbit)
    set private(longueposestartvalue) $conf(dslr,longueposestartvalue)
-   set private(longueposestopvalue)  $conf(dslr,longueposestopvalue)
+   ###set private(longueposestopvalue)  $conf(dslr,longueposestopvalue)
    set private(statut_service)       $conf(dslr,statut_service)
    set private(mirh)                 $conf(dslr,mirh)
    set private(mirv)                 $conf(dslr,mirv)
@@ -136,7 +136,7 @@ proc ::dslr::widgetToConf { camItem } {
    set conf(dslr,longueposeport)       $private(longueposeport)
    set conf(dslr,longueposelinkbit)    $private(longueposelinkbit)
    set conf(dslr,longueposestartvalue) $private(longueposestartvalue)
-   set conf(dslr,longueposestopvalue)  $private(longueposestopvalue)
+   set conf(dslr,longueposestopvalue)  [expr $private(longueposestartvalue)== 0]
    set conf(dslr,statut_service)       $private(statut_service)
    set conf(dslr,mirh)                 $private(mirh)
    set conf(dslr,mirv)                 $private(mirv)
@@ -373,6 +373,13 @@ proc ::dslr::configureCamera { camItem bufNo } {
       if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
          error "" "" "CameraUnique"
       }
+
+      if { $conf(dslr,longuepose) == "1" } {
+         #--- Je cree la liaison longue pose
+         set linkNo [ ::confLink::create $conf(dslr,longueposeport) "temp" "" "" ]
+         link$linkNo bit $conf(dslr,longueposelinkbit) $conf(dslr,longueposestopvalue)
+      }
+
       #--- Je mets audela_start_dir entre guillemets pour le cas ou le nom du repertoire contient des espaces
       #--- Je cree la camera
       set camNo [ cam::create digicam USB -name DSLR -debug_cam $conf(dslr,debug) -gphoto2_win_dll_dir \"$::audela_start_dir\" ]
@@ -390,19 +397,12 @@ proc ::dslr::configureCamera { camItem bufNo } {
       #--- Je fais le parametrage des longues poses
       if { $conf(dslr,longuepose) == "1" } {
          switch [ ::confLink::getLinkNamespace $conf(dslr,longueposeport) ] {
-            parallelport {
-               #--- Je cree la liaison longue pose
-               set linkNo [ ::confLink::create $conf(dslr,longueposeport) "cam$camNo" "longuepose" "bit $conf(dslr,longueposelinkbit)" ]
-               #---
-               cam$camNo longuepose 1
-               cam$camNo longueposelinkno $linkNo
-               cam$camNo longueposelinkbit $conf(dslr,longueposelinkbit)
-               cam$camNo longueposestartvalue $conf(dslr,longueposestartvalue)
-               cam$camNo longueposestopvalue  $conf(dslr,longueposestopvalue)
-            }
+            parallelport -
             quickremote {
                #--- Je cree la liaison longue pose
-               set linkNo [ ::confLink::create $conf(dslr,longueposeport) "cam$camNo" "longuepose" "bit $conf(dslr,longueposelinkbit)" ]
+               #####set linkNo [ ::confLink::create $conf(dslr,longueposeport) "cam$camNo" "longuepose" "bit $conf(dslr,longueposelinkbit)" ]
+               link$linkNo use remove "temp" ""
+               link$linkNo use add "cam$camNo" "longuepose" "bit $conf(dslr,longueposelinkbit)"
                #---
                cam$camNo longuepose 1
                cam$camNo longueposelinkno $linkNo
@@ -564,13 +564,13 @@ proc ::dslr::configureAPNLinkLonguePose { } {
    #--- Je positionne startvalue par defaut en fonction du type de liaison
    if { [ ::confLink::getLinkNamespace $private(longueposeport) ] == "parallelport" } {
       set private(longueposestartvalue) "0"
-      set private(longueposestopvalue)  "1"
+      ###set private(longueposestopvalue)  "1"
    } elseif { [ ::confLink::getLinkNamespace $private(longueposeport) ] == "quickremote" } {
       set private(longueposestartvalue) "1"
-      set private(longueposestopvalue)  "0"
+      ###set private(longueposestopvalue)  "0"
    } else {
       set private(longueposestartvalue) "0"
-      set private(longueposestopvalue)  "1"
+      ###set private(longueposestopvalue)  "1"
    }
 }
 
