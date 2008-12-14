@@ -2,7 +2,7 @@
 # Fichier : andor.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise a jour $Id: andor.tcl,v 1.18 2008-12-14 15:53:09 denismarchais Exp $
+# Mise a jour $Id: andor.tcl,v 1.19 2008-12-14 23:45:55 robertdelmas Exp $
 #
 
 namespace eval ::andor {
@@ -317,7 +317,7 @@ proc ::andor::configureCamera { camItem bufNo } {
       #--- Je mets conf(andor,config) entre guillemets pour le cas ou le nom du repertoire contient des espaces
       #--- Je cree la camera
       set camNo [ cam::create andor PCI \"$conf(andor,config)\" ]
-      console::affiche_erreur "$caption(andor,port_camera) ([ cam$camNo name ]) \
+      console::affiche_entete "$caption(andor,port_camera) ([ cam$camNo name ]) \
          $caption(andor,2points) $conf(andor,config)\n"
       console::affiche_saut "\n"
       #--- Je change de variable
@@ -359,7 +359,7 @@ proc ::andor::configureCamera { camItem bufNo } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::andor::stop $camItem
       #--- Je transmets l'erreur a la procedure appellante
-      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(confcam,cannotcreatecam)"
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(andor,cannotcreatecam)"
    }
 }
 

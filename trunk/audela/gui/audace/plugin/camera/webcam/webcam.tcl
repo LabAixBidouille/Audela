@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.47 2008-12-14 15:53:10 denismarchais Exp $
+# Mise a jour $Id: webcam.tcl,v 1.48 2008-12-14 23:47:58 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -526,13 +526,13 @@ proc ::webcam::configureCamera { camItem bufNo } {
       ]
       if { $::tcl_platform(os) == "Linux" } {
          #--- j'affiche le canal et le port
-         console::affiche_erreur "$caption(webcam,camera) $conf(webcam,$camItem,port)\n"
+         console::affiche_entete "$caption(webcam,camera) $conf(webcam,$camItem,port)\n"
       } else {
          #--- j'affiche la connexion de la camera
-         console::affiche_erreur "$caption(webcam,camera) - $caption(webcam,mode_video) $caption(webcam,2points)\
+         console::affiche_entete "$caption(webcam,camera) - $caption(webcam,mode_video) $caption(webcam,2points)\
          $conf(webcam,$camItem,videomode)\n"
       }
-      console::affiche_erreur "$caption(webcam,longuepose) $caption(webcam,2points)\
+      console::affiche_entete "$caption(webcam,longuepose) $caption(webcam,2points)\
          $conf(webcam,$camItem,longuepose)\n"
       console::affiche_saut "\n"
       #--- Je change de variable
@@ -556,7 +556,7 @@ proc ::webcam::configureCamera { camItem bufNo } {
       #--- en cas d'erreur, je libere toutes les ressources allouees
       ::webcam::stop $camItem
       #--- je transmets l'erreur à la procedure appelante
-      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(confcam,cannotcreatecam)"
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(webcam,cannotcreatecam)"
    }
 
 }

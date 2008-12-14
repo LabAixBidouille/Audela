@@ -2,7 +2,7 @@
 # Fichier : th7852a.tcl
 # Description : Configuration de la camera TH7852A
 # Auteur : Robert DELMAS
-# Mise a jour $Id: th7852a.tcl,v 1.25 2008-12-14 15:53:10 denismarchais Exp $
+# Mise a jour $Id: th7852a.tcl,v 1.26 2008-12-14 23:47:48 robertdelmas Exp $
 #
 
 namespace eval ::th7852a {
@@ -196,9 +196,9 @@ proc ::th7852a::configureCamera { camItem bufNo } {
       }
       #--- Je cree la camera
       if { [ catch { set camNo [ cam::create camth "unknown" -name TH7852A ] } m ] == 1 } {
-         error "" "" NotRoot
+         error "" "" "NotRoot"
       }
-      console::affiche_erreur "$caption(th7852a,port_camera) $caption(th7852a,2points) $caption(th7852a,bus_ISA)\n"
+      console::affiche_entete "$caption(th7852a,port_camera) $caption(th7852a,2points) $caption(th7852a,bus_ISA)\n"
       console::affiche_saut "\n"
       #--- Je change de variable
       set private($camItem,camNo) $camNo
@@ -215,7 +215,7 @@ proc ::th7852a::configureCamera { camItem bufNo } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::th7852a::stop $camItem
       #--- Je transmets l'erreur a la procedure appellante
-      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(confcam,cannotcreatecam)"
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(th7852a,cannotcreatecam)"
    }
 }
 

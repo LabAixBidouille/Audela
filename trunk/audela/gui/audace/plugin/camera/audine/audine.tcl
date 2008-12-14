@@ -2,7 +2,7 @@
 # Fichier : audine.tcl
 # Description : Configuration de la camera Audine
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audine.tcl,v 1.20 2008-12-14 15:53:09 denismarchais Exp $
+# Mise a jour $Id: audine.tcl,v 1.21 2008-12-14 23:46:05 robertdelmas Exp $
 #
 
 namespace eval ::audine {
@@ -393,12 +393,11 @@ proc ::audine::fillConfigPage { frm camItem } {
 proc ::audine::configureCamera { camItem bufNo } {
    variable private
    global audace caption conf
-   #set local_error 0
 
    set catchResult [ catch {
       #--- je verifie que la camera n'est deja utilisee
       if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
-         error "" "" CameraUnique
+         error "" "" "CameraUnique"
       }
       #--- Je configure le CCCD
       if { [ string range $conf(audine,ccd) 0 4 ] == "kaf16" } {
@@ -413,7 +412,7 @@ proc ::audine::configureCamera { camItem bufNo } {
          parallelport {
             #--- Je cree la camera
             if { [ catch { set camNo [ cam::create audine $conf(audine,port) -name Audine -ccd $ccd ] } m ] == 1 } {
-               error "" "" NotRoot
+               error "" "" "NotRoot"
             }
             #--- Je configure le nom du CAN utilise
             cam$camNo cantype $conf(audine,can)
@@ -480,8 +479,8 @@ proc ::audine::configureCamera { camItem bufNo } {
          }
       }
       #--- J'affiche un message d'information dans la Console
-      console::affiche_erreur "$caption(audine,camera) ([ cam$camNo ccd ])\n"
-      console::affiche_erreur "$caption(audine,port_liaison)\
+      console::affiche_entete "$caption(audine,camera) ([ cam$camNo ccd ])\n"
+      console::affiche_entete "$caption(audine,port_liaison)\
          ([ ::[ ::confLink::getLinkNamespace $conf(audine,port) ]::getPluginTitle ])\
          $caption(audine,2points) $conf(audine,port)\n"
       console::affiche_saut "\n"
@@ -536,7 +535,7 @@ proc ::audine::configureCamera { camItem bufNo } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::audine::stop $camItem
       #--- Je transmets l'erreur a la procedure appellante
-      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(confcam,cannotcreatecam)"
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(audine,cannotcreatecam)"
    }
 }
 
