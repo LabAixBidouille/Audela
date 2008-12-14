@@ -2,7 +2,7 @@
 # Fichier : methking.tcl
 # Description : Outil d'aide a la mise en station par la methode de King
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: methking.tcl,v 1.22 2008-12-11 19:27:41 robertdelmas Exp $
+# Mise a jour $Id: methking.tcl,v 1.23 2008-12-14 12:43:36 jacquesmichelet Exp $
 #
 
 #============================================================
@@ -10,7 +10,7 @@
 #  initialise le namespace
 #============================================================
 namespace eval ::methking {
-   package provide methking 1.18
+   package provide methking 1.19
    package require audela 1.4.0
 
    # Chargement des captions pour recuperer le titre utilise par getPluginLabel
@@ -1676,7 +1676,7 @@ namespace eval ::methking {
       ::pack $t1 $t2 -fill x
 
       #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $This
+      ::confColor::applyColor $audace(base).dxdy
    }
 
    #--------------------------------------------------------------------------#
@@ -1864,7 +1864,7 @@ namespace eval ::methking {
       tkwait visibility $audace(base).fenreglages
 
       #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $This
+      ::confColor::applyColor $audace(base).fenreglages
    }
 
    #--------------------------------------------------------------------------#
@@ -2115,7 +2115,7 @@ namespace eval ::methking {
       set panneau(methking,pare_au_reglages) 23
 
       #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $This
+      ::confColor::applyColor $audace(base).fenreglages2
    }
 
    #--------------------------------------------------------------------------#
@@ -2302,21 +2302,21 @@ proc methkingBuildIF {This tableau} {
    frame $This.stop -borderwidth 1 -relief groove
    button $This.stop.b -borderwidth 1 -text $caption(methking,arret) -state disabled -width 10
    pack $This.stop.b -in $This.stop -anchor center -fill none -pady 4 -ipady 4
-   place $This.stop -x 4 -y 209 -width 92  -anchor nw -bordermode ignore
+   place $This.stop -x 4 -y 220 -width 92  -anchor nw -bordermode ignore
 
    # Affichage des status
    frame $This.fstatus -borderwidth 1 -height 77 -relief groove
-   label  $This.fstatus.l1 -text $caption(methking,label_status) -font {times 12 bold} -relief flat -height 1
+   label  $This.fstatus.l1 -text $caption(methking,label_status) -relief flat -height 1
    pack   $This.fstatus.l1 -in $This.fstatus -anchor center -fill both -padx 0 -pady 0
-   label  $This.fstatus.m -text $panneau(methking,status) -font {times 12 bold} -justify center -padx 0 -pady 0 -relief flat -width 11 -height 3 -wraplength 88
+   label  $This.fstatus.m -text $panneau(methking,status) -justify center -padx 0 -pady 0 -relief flat -width 11 -height 3 -wraplength 88
    pack   $This.fstatus.m -in $This.fstatus -anchor center -fill both -padx 0 -pady 0
-   place $This.fstatus -x 4 -y 259 -width 92 -anchor nw -bordermode ignore
+   place $This.fstatus -x 4 -y 270 -width 92 -anchor nw -bordermode ignore
 
    # Affichage des infos
    frame $This.finfos -borderwidth 1 -relief groove
-   label  $This.finfos.m -text $panneau(methking,infos) -justify center -padx 0 -pady 0 -relief flat -font {times 12 bold} -width 11 -height 2 -wraplength 88
+   label  $This.finfos.m -text $panneau(methking,infos) -justify center -padx 0 -pady 0 -relief flat -width 11 -height 2 -wraplength 88
    pack   $This.finfos.m -in $This.finfos -anchor center -fill both -padx 0 -pady 0
-   place $This.finfos -x 4 -y 360 -width 92 -anchor nw -bordermode ignore
+   place $This.finfos -x 4 -y 370 -width 92 -anchor nw -bordermode ignore
 }
 
 # === fin du fichier methking.tcl ===
