@@ -28,8 +28,8 @@
  * La structure "camprop" peut etre adaptee
  * dans le fichier camera.h
  *
- * D'après l'exemple de dll "SCR1300XT_DLL.CPP"
- * de la société SYNONYME Conseil et Réalisation
+ * D'aprï¿½s l'exemple de dll "SCR1300XT_DLL.CPP"
+ * de la sociï¿½tï¿½ SYNONYME Conseil et Rï¿½alisation
  */
 
 #include "sysexp.h"
@@ -162,9 +162,10 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 /* --------------------------------------------------------- */
 {
 #ifdef OS_LIN
-    // Astuce pour autoriser l'acces au port parallele
-    libcam_bloquer();
-    libcam_debloquer();
+    if ( ! libcam_can_access_parport() ) {
+	sprintf(cam->msg,"You don't have sufficient privileges to access parallel port. Camera cannot be created.");
+	return 1;
+    }
 #endif
 
     cam_update_window(cam);	/* met a jour x1,y1,x2,y2,h,w dans cam */
@@ -389,7 +390,7 @@ int mclk(int nb)
     long i;
     for (i = 0; i < nb; i++) {
 	reg = libcam_in(Portc);
-	reg |= 0x02;		// mclk inversé
+	reg |= 0x02;		// mclk inversï¿½
 	libcam_out(Portc, reg);
 	reg ^= 0x02;
 	libcam_out(Portc, reg);
@@ -690,7 +691,7 @@ int scr_read_ccd(int nbx, int nby, int binx, short *pixels)
 		val = libcam_in(Port);
 		valn = val;
 		if (binx == 2) {
-		    // deuxième lecture pour bin
+		    // deuxiï¿½me lecture pour bin
 		    libcam_out(Portc, 0xef);
 		    libcam_out(Portc, 0xed);
 		    reg = libcam_in(Port);	// sauvegarde de data
@@ -722,7 +723,7 @@ int scr_read_ccd(int nbx, int nby, int binx, short *pixels)
 		val = libcam_in(eppdata);	// mclk epp
 		valn = val;
 		if (binx == 2) {
-		    // deuxième lecture pour bin
+		    // deuxiï¿½me lecture pour bin
 		    val = libcam_in(eppdata);	// mclk epp
 		    valn = valn + val;
 		}		// fin bin

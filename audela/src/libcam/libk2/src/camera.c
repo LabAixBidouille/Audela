@@ -146,9 +146,10 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 /* --------------------------------------------------------- */
 {
 #ifdef OS_LIN
-    // Astuce pour autoriser l'acces au port parallele
-    libcam_bloquer();
-    libcam_debloquer();
+    if ( ! libcam_can_access_parport() ) {
+	sprintf(cam->msg,"You don't have sufficient privileges to access parallel port. Camera cannot be created.");
+	return 1;
+    }
 #endif
 
     cam_update_window(cam);	/* met a jour x1,y1,x2,y2,h,w dans cam */
@@ -367,7 +368,7 @@ void SendCmd(struct camprop *cam, unsigned char data)
 }
 
 /****************************************************/
-/* SendData : envoi d'un paramètre (8 bits) au SX28 */
+/* SendData : envoi d'un paramï¿½tre (8 bits) au SX28 */
 /****************************************************/
 void SendData(struct camprop *cam, unsigned char data)
 {
@@ -428,14 +429,14 @@ int ReadData(struct camprop *cam, int nbbits)
     {
         tmp = libcam_in(port);
         while ((tmp & 128) != 0x0)
-        {	/* boucle d'attente de \SXSCLK à 1 */
+        {	/* boucle d'attente de \SXSCLK ï¿½ 1 */
             if (timeout++ > 1000)
                 return -1;	/* time out */
             tmp = libcam_in(port);
         }
         res |= tmp & 64 ? (1 << (nbbits - 1)) >> i : 0;
         while ((libcam_in(port) & 128) == 0x0)
-        {	/* boucle d'attente de \SXSCLK à 0 */
+        {	/* boucle d'attente de \SXSCLK ï¿½ 0 */
             if (timeout++ > 1000)
                 return -1;	/* time out */
         }
@@ -572,18 +573,18 @@ void SelectFifo(struct camprop *cam, int num)
     libcam_out(port2, FIOE_0 | RSTR_0 | ChangeSRCK(0) | DLE_0);
 
     libcam_out(port2, FIOE_1 | RSTR_0 | ChangeSRCK(0) | DLE_0);
-    libcam_out(port2, FIOE_1 | RSTR_0 | ChangeSRCK(1) | DLE_0);	/* decale de 2 cases mémoires */
+    libcam_out(port2, FIOE_1 | RSTR_0 | ChangeSRCK(1) | DLE_0);	/* decale de 2 cases mï¿½moires */
     libcam_out(port2, FIOE_1 | RSTR_0 | ChangeSRCK(1) | DLE_0);	/* avant d'effectuer en reset */
 
     ResetFifo(cam);
     libcam_out(port2, FIOE_1 | RSTR_0 | ChangeSRCK(0) | DLE_0);
 
-    MoveSRCK(cam);		/* decale de 2 cases mémoires */
+    MoveSRCK(cam);		/* decale de 2 cases mï¿½moires */
     MoveSRCK(cam);		/* avant la lecture de la FIFO */
 }
 
 /*********************************************/
-/* Transfert du nombre de pixels à supprimer */
+/* Transfert du nombre de pixels ï¿½ supprimer */
 /*     Envoi d'une trame: %1000 + VidageX    */
 /*     ATTENTION: VidageX est modulo 128!    */
 /*********************************************/
@@ -601,7 +602,7 @@ void TransfertVidageX(int VidageX, struct camprop *cam)
 }
 
 /*********************************************/
-/* Transfert du nombre de pixels à acquérir  */
+/* Transfert du nombre de pixels ï¿½ acquï¿½rir  */
 /*      Envoi d'une trame: %1001 + LargX     */
 /*      ATTENTION: LargX est modulo 128!     */
 /*********************************************/
@@ -619,7 +620,7 @@ void TransfertLargX(int LargeurX, struct camprop *cam)
 }
 
 /*********************************************/
-/* Transfert du nombre de pixels à supprimer */
+/* Transfert du nombre de pixels ï¿½ supprimer */
 /*     Envoi d'une trame: %1010 + VidageY    */
 /*     ATTENTION: VidageY est modulo 128!    */
 /*********************************************/
@@ -637,7 +638,7 @@ void TransfertVidageY(int VidageY, struct camprop *cam)
 }
 
 /*********************************************/
-/* Transfert du nombre de pixels à acquérir  */
+/* Transfert du nombre de pixels ï¿½ acquï¿½rir  */
 /*      Envoi d'une trame: %1011 + LargY     */
 /*      ATTENTION: LargY est modulo 128!     */
 /*********************************************/
@@ -672,7 +673,7 @@ void TransfertBinXY(unsigned char BinningX, unsigned char BinningY,
 }
 
 /*****************************************/
-/* Envoi d'un paramètre de temporisation */
+/* Envoi d'un paramï¿½tre de temporisation */
 /*****************************************/
 void SendDelay(struct camprop *cam)
 {
@@ -709,8 +710,8 @@ void SendPose(struct camprop *cam)
 /* =========================================================== */
 
 /*************************************************/
-/* Pose_CCD : envoi des paramètres d'acquisition */
-/* et déclenchement de la pose                   */
+/* Pose_CCD : envoi des paramï¿½tres d'acquisition */
+/* et dï¿½clenchement de la pose                   */
 /*************************************************/
 void Pose_CCD(struct camprop *cam)
 {
@@ -764,14 +765,14 @@ void Pose_CCD(struct camprop *cam)
     /* === PC-DATA 0100 Lancement de la pose === */
     SendCmd(cam, 4);
 
-    /*fprintf(f, "       pose mesuré : %dms\n", tmp);
+    /*fprintf(f, "       pose mesurï¿½ : %dms\n", tmp);
     fprintf(f, "       FIN Pose_CCD\n");
     fclose(f);*/
 }
 
 /***************************************************************/
 /* Read_CCD : attente de la fin de la pose et du remplissage   */
-/* des mémoire FIFO puis lecture des FIFO dans le buffer image */
+/* des mï¿½moire FIFO puis lecture des FIFO dans le buffer image */
 /***************************************************************/
 void Read_CCD(struct camprop *cam, unsigned short *buf)
 {
@@ -853,7 +854,7 @@ void Read_CCD(struct camprop *cam, unsigned short *buf)
 }
 
 /**********************************************************/
-/* LectureLM35 : lecture de la température du capteur CCD */
+/* LectureLM35 : lecture de la tempï¿½rature du capteur CCD */
 /**********************************************************/
 double LectureLM35(struct camprop *cam)
 {
@@ -895,7 +896,7 @@ char *k2_SetABL(struct camprop *cam,int argc, char *argv[])
 	return k2_AntiBlooming ? "on" : "off";
 }
 
-/***********************é*************************************/
+/***********************ï¿½*************************************/
 /* Version : Lecture de la version du logiciel (ex : K2.02) */
 /*  Retourne une chaine de 5 caracteres                     */
 /************************************************************/
@@ -960,7 +961,7 @@ void k2_test_out(struct camprop *cam, unsigned long nb_out)
 
 /**********************************************/
 /* TestDG642 : Test du commutateur analogique */
-/* équivalent au test 6 de Kool               */
+/* ï¿½quivalent au test 6 de Kool               */
 /**********************************************/
 void k2_TestDG642(struct camprop *cam)
 {
@@ -972,7 +973,7 @@ void k2_TestDG642(struct camprop *cam)
 }
 
 /*************************************************************************/
-/* TestFifo : test des mémoire FIFO en demandant au SX28 de les remplirs */
+/* TestFifo : test des mï¿½moire FIFO en demandant au SX28 de les remplirs */
 /* d'octet o puis lecture des FIFO pour comparer                         */
 /*************************************************************************/
 char *k2_TestFifo(struct camprop *cam, unsigned char o)

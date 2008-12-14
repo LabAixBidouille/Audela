@@ -193,9 +193,10 @@ int cam_init(struct camprop *cam, int argc, char **argv)
     fprintf(stderr, "libcookbook <INFO>: enter cam_init\n");
 
 #ifdef OS_LIN
-    // Astuce pour autoriser l'acces au port parallele
-    libcam_bloquer();
-    libcam_debloquer();
+    if ( ! libcam_can_access_parport() ) {
+	sprintf(cam->msg,"You don't have sufficient privileges to access parallel port. Camera cannot be created.");
+	return 1;
+    }
 #endif
     
     cam_update_window(cam);	/* met a jour x1,y1,x2,y2,h,w dans cam */

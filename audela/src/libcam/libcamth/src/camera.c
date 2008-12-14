@@ -138,9 +138,10 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 {
 
 #ifdef OS_LIN
-    // Astuce pour autoriser l'acces au port parallele
-    libcam_bloquer();
-    libcam_debloquer();
+    if ( ! libcam_can_access_parport() ) {
+	sprintf(cam->msg,"You don't have sufficient privileges to access parallel port. Camera cannot be created.");
+	return 1;
+    }
 #endif
  
    cam_update_window(cam); /* met a jour x1,y1,x2,y2,h,w dans cam */
@@ -284,7 +285,7 @@ void cam_update_window(struct camprop *cam)
 /*                                                                  */
 /* (*) Si G est au niveau haut et si le bit phi L est au niveau bas */
 /* l'horloge est produite par la carte a 500KHz.                    */
-/* Si G est au niveau bas, l'horloge est crée par le chronogramme.  */
+/* Si G est au niveau bas, l'horloge est crï¿½e par le chronogramme.  */
 /* ref : Astronomie CCD page 85                                     */
 /*                                                                  */
 /* ================================================================ */
@@ -430,7 +431,7 @@ void th7852_read(struct camprop *cam,unsigned short *buf)
       /* Cumul des lignes (binning y) */
       for(k=0;k<cam->biny;k++) th7852_zmzh(cam);
 
-      /* On retire les cx1 premiers pixels sans numérisation */
+      /* On retire les cx1 premiers pixels sans numï¿½risation */
       for (j=0;j<cx1;j++) {
          libcam_out(port0,(unsigned char)16); /* 00010000 */
          th7852_attente(cam,4);
@@ -442,17 +443,17 @@ void th7852_read(struct camprop *cam,unsigned short *buf)
       for(j=0;j<imax;j++) {
 
          /* A ce moment, le front de l'horloge phi L est descendant. */
-         /* Cela déclenche automatiquement un Reset pendant environ  */
-         /* 0,1us. La durée optimale du niveau bas de phi L devrait  */
+         /* Cela dï¿½clenche automatiquement un Reset pendant environ  */
+         /* 0,1us. La durï¿½e optimale du niveau bas de phi L devrait  */
          /* etre de l'ordre de 0,3us. */
 
          /* On digitalise juste avant le niveau de reset (?)     */
-         /* Cela bloque l'échantillonneur bloqueur afin d'éviter */
+         /* Cela bloque l'ï¿½chantillonneur bloqueur afin d'ï¿½viter */
          /* de transmettre le Reset vers l'ampli.                */
          libcam_out(port0,(unsigned char)16); /* 00010000 */
          th7852_attente(cam,4);
          libcam_out(port0,(unsigned char)0);  /* 00000000 */
-         /* Delai d'établissement du palier de reference */
+         /* Delai d'ï¿½tablissement du palier de reference */
          th7852_attente(cam,7);
          /* On digitalise le niveau de reference */
          libcam_out(port0,(unsigned char)16); /* 00010000 */
@@ -461,8 +462,8 @@ void th7852_read(struct camprop *cam,unsigned short *buf)
          /* On lit le niveau de reference */
          ref=256*(int)libcam_in(p770)+(int)libcam_in(p768);
 
-         /* Maintenant on va monter le niveau de phi L pour transférer */
-         /* les charges du pixel vers l'étage de sortie.               */
+         /* Maintenant on va monter le niveau de phi L pour transfï¿½rer */
+         /* les charges du pixel vers l'ï¿½tage de sortie.               */
 
          /* Quelques lignes inutiles a mon avis... */
          libcam_out(port0,(unsigned char)20); /* 00010100 */
@@ -489,7 +490,7 @@ void th7852_read(struct camprop *cam,unsigned short *buf)
          buffer[j] = (unsigned short)x;
       }
 
-      /* On retire cx2 pixels à la fin */
+      /* On retire cx2 pixels ï¿½ la fin */
 
       for (j=0;j<cx2;j++) {
          libcam_out(port0,(unsigned char)16); /* 00010000 */
