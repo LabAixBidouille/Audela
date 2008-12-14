@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.30 2008-11-01 15:43:03 robertdelmas Exp $
+# Mise a jour $Id: dslr.tcl,v 1.31 2008-12-14 15:53:10 denismarchais Exp $
 #
 
 namespace eval ::dslr {
@@ -371,7 +371,7 @@ proc ::dslr::configureCamera { camItem bufNo } {
    set catchResult [ catch {
       #--- je verifie que la camera n'est deja utilisee
       if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
-         error "" "CameraUnique"
+         error "" "" "CameraUnique"
       }
       #--- Je mets audela_start_dir entre guillemets pour le cas ou le nom du repertoire contient des espaces
       #--- Je cree la camera
@@ -452,7 +452,7 @@ proc ::dslr::configureCamera { camItem bufNo } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::dslr::stop $camItem
       #--- Je transmets l'erreur a la procedure appellante
-      error $::errorInfo
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(confcam,cannotcreatecam)"
    }
 }
 

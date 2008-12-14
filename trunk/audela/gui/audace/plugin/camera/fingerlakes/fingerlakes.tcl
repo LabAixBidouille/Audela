@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.27 2008-11-01 15:43:28 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.28 2008-12-14 15:53:10 denismarchais Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -255,7 +255,7 @@ proc ::fingerlakes::configureCamera { camItem bufNo } {
    set catchResult [ catch {
       #--- je verifie que la camera n'est deja utilisee
       if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
-         error "" "CameraUnique"
+         error "" "" "CameraUnique"
       }
       #--- Je cree la camera
       set camNo [ cam::create fingerlakes USB ]
@@ -297,7 +297,7 @@ proc ::fingerlakes::configureCamera { camItem bufNo } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::fingerlakes::stop $camItem
       #--- Je transmets l'erreur a la procedure appellante
-      error $::errorInfo
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(confcam,cannotcreatecam)"
    }
 }
 

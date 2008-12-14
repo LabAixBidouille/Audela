@@ -2,7 +2,7 @@
 # Fichier : kitty.tcl
 # Description : Configuration de la camera Kitty
 # Auteur : Robert DELMAS
-# Mise a jour $Id: kitty.tcl,v 1.20 2008-11-01 15:44:12 robertdelmas Exp $
+# Mise a jour $Id: kitty.tcl,v 1.21 2008-12-14 15:53:10 denismarchais Exp $
 #
 
 namespace eval ::kitty {
@@ -296,10 +296,12 @@ proc ::kitty::configureCamera { camItem bufNo } {
    set catchResult [ catch {
       #--- je verifie que la camera n'est deja utilisee
       if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0 } {
-         error "" "CameraUnique"
+         error "" "" "CameraUnique"
       }
       #--- Je cree la camera
-      set camNo [ cam::create k2 $conf(kitty,port) -name KITTYK2 ]
+      if { [ catch { set camNo [ cam::create k2 $conf(kitty,port) -name KITTYK2 ] } m ] == 1 } {
+         error "" "" NotRoot
+      }
       console::affiche_erreur "$caption(kitty,port_camera) $caption(kitty,2points) $conf(kitty,port)\n"
       console::affiche_saut "\n"
       #--- Je change de variable
@@ -329,7 +331,7 @@ proc ::kitty::configureCamera { camItem bufNo } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::kitty::stop $camItem
       #--- Je transmets l'erreur a la procedure appellante
-      error $::errorInfo
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(confcam,cannotcreatecam)"
    }
 }
 

@@ -2,7 +2,7 @@
 # Fichier : andor.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise a jour $Id: andor.tcl,v 1.17 2008-11-01 15:41:40 robertdelmas Exp $
+# Mise a jour $Id: andor.tcl,v 1.18 2008-12-14 15:53:09 denismarchais Exp $
 #
 
 namespace eval ::andor {
@@ -312,7 +312,7 @@ proc ::andor::configureCamera { camItem bufNo } {
    set catchResult [ catch {
       #--- je verifie que la camera n'est deja utilisee
       if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
-         error "" "CameraUnique"
+         error "" "" "CameraUnique"
       }
       #--- Je mets conf(andor,config) entre guillemets pour le cas ou le nom du repertoire contient des espaces
       #--- Je cree la camera
@@ -359,7 +359,7 @@ proc ::andor::configureCamera { camItem bufNo } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::andor::stop $camItem
       #--- Je transmets l'erreur a la procedure appellante
-      error $::errorInfo
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(confcam,cannotcreatecam)"
    }
 }
 

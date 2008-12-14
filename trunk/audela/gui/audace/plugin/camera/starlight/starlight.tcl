@@ -2,7 +2,7 @@
 # Fichier : starlight.tcl
 # Description : Configuration de la camera Starlight
 # Auteur : Robert DELMAS
-# Mise a jour $Id: starlight.tcl,v 1.14 2008-11-01 15:45:01 robertdelmas Exp $
+# Mise a jour $Id: starlight.tcl,v 1.15 2008-12-14 15:53:10 denismarchais Exp $
 #
 
 namespace eval ::starlight {
@@ -270,11 +270,13 @@ proc ::starlight::configureCamera { camItem bufNo } {
    set catchResult [ catch {
       #--- je verifie que la camera n'est deja utilisee
       if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
-         error "" "CameraUnique"
+         error "" "" "CameraUnique"
       }
       if { $conf(starlight,modele) == "MX516" } {
          #--- Je cree la camera
-         set camNo [ cam::create starlight $conf(starlight,port) -name MX516 ]
+         if { [ catch { set camNo [ cam::create starlight $conf(starlight,port) -name MX516 ] } m ] == 1 } {
+            error "" "" NotRoot
+         }
          console::affiche_erreur "$caption(starlight,port_camera) $conf(starlight,modele)\
             $caption(starlight,2points) $conf(starlight,port)\n"
          console::affiche_saut "\n"
@@ -291,7 +293,9 @@ proc ::starlight::configureCamera { camItem bufNo } {
          cam$camNo mirrorv $conf(starlight,mirv)
       } elseif { $conf(starlight,modele) == "MX916" } {
          #--- Je cree la camera
-         set camNo [ cam::create starlight $conf(starlight,port) -name MX916 ]
+         if { [ catch { set camNo [ cam::create starlight $conf(starlight,port) -name MX916 ] } m ] == 1 } {
+            error "" "" NotRoot
+         }
          console::affiche_erreur "$caption(starlight,port_camera) $conf(starlight,modele)\
             $caption(starlight,2points) $conf(starlight,port)\n"
          console::affiche_saut "\n"
@@ -308,7 +312,9 @@ proc ::starlight::configureCamera { camItem bufNo } {
          cam$camNo mirrorv $conf(starlight,mirv)
       } elseif { $conf(starlight,modele) == "HX516" } {
          #--- Je cree la camera
-         set camNo [ cam::create starlight $conf(starlight,port) -name HX516 ]
+         if { [ catch { set camNo [ cam::create starlight $conf(starlight,port) -name HX516 ] } m ] == 1 } {
+            error "" "" NotRoot
+         }
          console::affiche_erreur "$caption(starlight,port_camera) $conf(starlight,modele)\
             $caption(starlight,2points) $conf(starlight,port)\n"
          console::affiche_saut "\n"
@@ -330,7 +336,7 @@ proc ::starlight::configureCamera { camItem bufNo } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::starlight::stop $camItem
       #--- Je transmets l'erreur a la procedure appellante
-      error $::errorInfo
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(confcam,cannotcreatecam)"
    }
 }
 

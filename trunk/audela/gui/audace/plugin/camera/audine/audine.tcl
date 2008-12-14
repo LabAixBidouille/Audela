@@ -2,7 +2,7 @@
 # Fichier : audine.tcl
 # Description : Configuration de la camera Audine
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audine.tcl,v 1.19 2008-12-14 08:46:13 robertdelmas Exp $
+# Mise a jour $Id: audine.tcl,v 1.20 2008-12-14 15:53:09 denismarchais Exp $
 #
 
 namespace eval ::audine {
@@ -393,11 +393,12 @@ proc ::audine::fillConfigPage { frm camItem } {
 proc ::audine::configureCamera { camItem bufNo } {
    variable private
    global audace caption conf
+   #set local_error 0
 
    set catchResult [ catch {
       #--- je verifie que la camera n'est deja utilisee
       if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
-         error "" "CameraUnique"
+         error "" "" CameraUnique
       }
       #--- Je configure le CCCD
       if { [ string range $conf(audine,ccd) 0 4 ] == "kaf16" } {
@@ -411,7 +412,9 @@ proc ::audine::configureCamera { camItem bufNo } {
       switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
          parallelport {
             #--- Je cree la camera
-            set camNo [ cam::create audine $conf(audine,port) -name Audine -ccd $ccd ]
+            if { [ catch { set camNo [ cam::create audine $conf(audine,port) -name Audine -ccd $ccd ] } m ] == 1 } {
+               error "" "" NotRoot
+            }
             #--- Je configure le nom du CAN utilise
             cam$camNo cantype $conf(audine,can)
             #--- Je cree la liaison utilisee par la camera pour l'acquisition
@@ -533,7 +536,7 @@ proc ::audine::configureCamera { camItem bufNo } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::audine::stop $camItem
       #--- Je transmets l'erreur a la procedure appellante
-      error $::errorInfo
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(confcam,cannotcreatecam)"
    }
 }
 
