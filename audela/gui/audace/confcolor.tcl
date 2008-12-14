@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.25 2008-12-13 19:27:06 jacquesmichelet Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.26 2008-12-14 12:06:40 robertdelmas Exp $
 #
 
 namespace eval confColor:: {
@@ -371,8 +371,10 @@ namespace eval confColor:: {
 
    #------------------------------------------------------------
    #  applyColor
-   #     est appele apres avoir choisi une nouvelle couleur et/ou une nouvelle police
-   #     et applique la couleur en fonction de la charte des couleurs de Audace (voir doc de programmation)
+   #     est appele apres avoir choisi une nouvelle couleur et/ou
+   #     une nouvelle police et applique la couleur et la police
+   #     en fonction de la charte des couleurs et des polices de
+   #     Audace (voir doc de programmation : script1b.htm)
    #
    #     w : window parent des resources qui doivent changer de couleur
    #------------------------------------------------------------
@@ -466,7 +468,9 @@ namespace eval confColor:: {
          Radiobutton {
             #--- Je mets a jour la couleur des widgets
             $w configure -fg $audace(color,textColor) -bg $audace(color,backColor) \
-               -activeforeground $audace(color,textColor) -disabledforeground $audace(color,disabledTextColor) \
+               -activeforeground $audace(color,textColor) \
+               -activebackground $audace(color,backColor) \
+               -disabledforeground $audace(color,disabledTextColor) \
                -selectcolor $audace(color,backColor) -highlightbackground $audace(color,backColor)
             #--- Je mets a jour la police des widgets
             $w configure -font "$audace(font,Radiobutton)"
