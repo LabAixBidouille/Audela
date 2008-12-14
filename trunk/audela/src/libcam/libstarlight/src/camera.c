@@ -242,9 +242,10 @@ int cam_init(struct camprop *cam, int argc, char **argv)
     int i;
 
 #ifdef OS_LIN
-    // Astuce pour autoriser l'acces au port parallele
-    libcam_bloquer();
-    libcam_debloquer();
+    if ( ! libcam_can_access_parport() ) {
+	sprintf(cam->msg,"You don't have sufficient privileges to access parallel port. Camera cannot be created.");
+	return 1;
+    }
 #endif
 
     cam->timescale = 1.;
@@ -329,7 +330,7 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 	}
 	/* Transfert interligne non destructif */
 	reader(cam);
-	/* Lecture et numérisation avec fenetre et binning */
+	/* Lecture et numï¿½risation avec fenetre et binning */
 	lineread_win(cam, p);
 	/* Debloquage des interruptions */
 	if (cam->interrupt == 1) {
