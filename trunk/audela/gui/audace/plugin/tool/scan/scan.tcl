@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.42 2008-09-15 15:50:46 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.43 2008-12-14 08:46:57 robertdelmas Exp $
 #
 
 #============================================================
@@ -342,9 +342,13 @@ proc ::scan::adaptOutilScan { args } {
    set panneau(scan,listBinningX) [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningXListScan ]
    if { $panneau(scan,listBinningX) == "{}" } {
       $This.fra3.bin.binX configure -height 1
-      $This.fra3.bin.binX configure -values "2"
+      $This.fra3.bin.binX configure -values "1"
    } else {
-      $This.fra3.bin.binX configure -height [ llength $panneau(scan,listBinningX) ]
+      set height [ llength $panneau(scan,listBinningX) ]
+      if { $height > "16" } {
+         set height "16"
+      }
+      $This.fra3.bin.binX configure -height $height
       $This.fra3.bin.binX configure -values $panneau(scan,listBinningX)
    }
 
@@ -352,7 +356,7 @@ proc ::scan::adaptOutilScan { args } {
    set panneau(scan,listBinningY) [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningYListScan ]
    if { $panneau(scan,listBinningY) == "{}" } {
       $This.fra3.bin.binY configure -height 1
-      $This.fra3.bin.binY configure -values "2"
+      $This.fra3.bin.binY configure -values "1"
    } else {
       set height [ llength $panneau(scan,listBinningY) ]
       if { $height > "16" } {
@@ -367,7 +371,7 @@ proc ::scan::adaptOutilScan { args } {
       ethernaude {
          #--- Adaptation des binnings extremes
          if { $panneau(scan,binningX) > "2" } {
-            set panneau(scan,binningX) "2"
+            set panneau(scan,binningX) "1"
          }
          #--- Etat des boutons
          $This.fra3.but1 configure -state normal
@@ -376,7 +380,7 @@ proc ::scan::adaptOutilScan { args } {
       parallelport {
          #--- Adaptation des binnings extremes
          if { $panneau(scan,binningY) > "16" } {
-            set panneau(scan,binningY) "2"
+            set panneau(scan,binningY) "1"
          }
          #--- Etat des boutons
          $This.fra3.but1 configure -state normal
@@ -783,7 +787,7 @@ proc ::scan::cmdStop { } {
 proc ::scan::cmdCalcul { } {
    variable This
    variable parametres
-   global audace conf panneau
+   global conf panneau
 
    #--- Le champ "Pixel" ne doit pas etre vide
    if { $panneau(scan,pix) == "" } {
@@ -1085,12 +1089,12 @@ proc scanBuildIF { This } {
          frame $This.fra2.fra1 -borderwidth 1 -relief flat
 
             #--- Entry pour la colonne de debut
-            entry $This.fra2.fra1.ent1 -textvariable panneau(scan,col1) -font $audace(font,arial_8_b) \
+            entry $This.fra2.fra1.ent1 -textvariable panneau(scan,col1) \
                -relief groove -width 5 -justify center
             pack $This.fra2.fra1.ent1 -in $This.fra2.fra1 -side left -fill none -padx 4 -pady 1
 
             #--- Entry pour la colonne de fin
-            entry $This.fra2.fra1.ent2 -textvariable panneau(scan,col2) -font $audace(font,arial_8_b) \
+            entry $This.fra2.fra1.ent2 -textvariable panneau(scan,col2) \
                -relief groove -width 5 -justify center
             pack $This.fra2.fra1.ent2 -in $This.fra2.fra1 -side right -fill none -padx 4 -pady 1
 
@@ -1104,7 +1108,7 @@ proc scanBuildIF { This } {
             pack $This.fra2.fra2.lab2 -in $This.fra2.fra2 -side left -fill none -padx 2 -pady 1
 
             #--- Entry pour lignes
-            entry $This.fra2.fra2.ent1 -textvariable panneau(scan,lig1) -font $audace(font,arial_8_b) \
+            entry $This.fra2.fra2.ent1 -textvariable panneau(scan,lig1) \
                -relief groove -width 7 -justify center
             pack $This.fra2.fra2.ent1 -in $This.fra2.fra2 -side right -fill none -padx 2 -pady 1
 
@@ -1118,7 +1122,7 @@ proc scanBuildIF { This } {
             pack $This.fra2.fra3.lab3 -in $This.fra2.fra3 -side left -fill none -padx 2 -pady 1
 
             #--- Entry pour la dimension des pixels
-            entry $This.fra2.fra3.ent1 -textvariable panneau(scan,pix) -font $audace(font,arial_8_b) \
+            entry $This.fra2.fra3.ent1 -textvariable panneau(scan,pix) \
                -relief groove -width 4 -justify center
             pack $This.fra2.fra3.ent1 -in $This.fra2.fra3 -side left -fill none -padx 2 -pady 1
 
@@ -1155,7 +1159,6 @@ proc scanBuildIF { This } {
             #--- Combobox pour binning X
             ComboBox $This.fra3.bin.binX \
                -width 3        \
-               -font $audace(font,arial_8_b) \
                -justify center \
                -height [ llength $panneau(scan,listBinningX) ] \
                -relief sunken  \
@@ -1167,13 +1170,12 @@ proc scanBuildIF { This } {
             pack $This.fra3.bin.binX -in $This.fra3.bin -side left -fill none
 
             #--- Label pour binning Y
-            label $This.fra3.bin.lab2 -text "x" -relief flat -font $audace(font,arial_8_b)
+            label $This.fra3.bin.lab2 -text "x" -relief flat
             pack $This.fra3.bin.lab2 -in $This.fra3.bin -side left -fill none
 
             #--- Combobox pour binning Y
             ComboBox $This.fra3.bin.binY \
                -width 3        \
-               -font $audace(font,arial_8_b) \
                -justify center \
                -height [ llength $panneau(scan,listBinningY) ] \
                -relief sunken  \
@@ -1194,7 +1196,7 @@ proc scanBuildIF { This } {
             pack $This.fra3.fra2.lab1 -in $This.fra3.fra2 -side left -fill none -padx 1 -pady 2
 
             #--- Entry pour la focale
-            entry $This.fra3.fra2.ent1 -textvariable panneau(scan,foc) -font $audace(font,arial_8_b) \
+            entry $This.fra3.fra2.ent1 -textvariable panneau(scan,foc) \
                -relief groove -width 5 -justify center
             pack $This.fra3.fra2.ent1 -in $This.fra3.fra2 -side left -fill none -padx 1 -pady 2
 
@@ -1213,8 +1215,7 @@ proc scanBuildIF { This } {
             pack $This.fra3.fra3.but2 -in $This.fra3.fra3 -side left -fill none -pady 1
 
             #--- Entry pour la dec
-            entry $This.fra3.fra3.ent2 -textvariable panneau(scan,dec) -font $audace(font,arial_8_b) \
-               -relief groove -width 10
+            entry $This.fra3.fra3.ent2 -textvariable panneau(scan,dec) -relief groove -width 10
             pack $This.fra3.fra3.ent2 -in $This.fra3.fra3 -side right -fill none -pady 1
 
          pack $This.fra3.fra3 -in $This.fra3 -anchor center -fill none
@@ -1228,7 +1229,7 @@ proc scanBuildIF { This } {
          frame $This.fra3.fra1 -borderwidth 1 -relief flat
 
             #--- Entry pour les millisecondes
-            entry $This.fra3.fra1.ent1 -width 7 -relief groove -font $audace(font,arial_8_b) \
+            entry $This.fra3.fra1.ent1 -width 7 -relief groove \
               -textvariable panneau(scan,interlig1) -state disabled
             pack $This.fra3.fra1.ent1 -in $This.fra3.fra1 -side left -fill none -padx 1 -pady 2
 
@@ -1252,11 +1253,11 @@ proc scanBuildIF { This } {
             pack $This.fra4.obt.but -side left -ipady 3
 
             #--- Label pour l'etat de l'obturateur
-            label $This.fra4.obt.lab1 -text "" -width 6 -font $audace(font,arial_10_b) -relief groove
+            label $This.fra4.obt.lab1 -text "" -width 6 -relief groove
             pack $This.fra4.obt.lab1 -side left -fill x -expand true -ipady 3
 
             #--- Label avant la connexion de la camera
-            label $This.fra4.obt.lab2 -text "" -font $audace(font,arial_10_b) -relief ridge -justify center
+            label $This.fra4.obt.lab2 -text "" -relief ridge -justify center
             pack $This.fra4.obt.lab2 -side top -fill x -ipady 3
 
          pack $This.fra4.obt -side top -fill x
@@ -1288,8 +1289,7 @@ proc scanBuildIF { This } {
            pack $This.fra5.nom.lab1 -fill x -side top
 
            #--- Entry du nom de l'image
-           entry $This.fra5.nom.ent1 -width 10 -textvariable panneau(scan,nom_image) \
-              -font $audace(font,arial_10_b) -relief groove
+           entry $This.fra5.nom.ent1 -width 10 -textvariable panneau(scan,nom_image) -relief groove
            pack $This.fra5.nom.ent1 -fill x -side top
 
            #--- Label de l'extension
@@ -1312,12 +1312,11 @@ proc scanBuildIF { This } {
 
            #--- Entry de l'index
            entry $This.fra5.index.ent2 -width 3 -textvariable panneau(scan,indice) \
-              -font $audace(font,arial_10_b) -relief groove -justify center
+              -relief groove -justify center
            pack $This.fra5.index.ent2 -side left -fill x -expand true
 
            #--- Bouton de mise a 1 de l'index
-           button $This.fra5.index.but1 -text "1" -width 3 \
-              -command "set panneau(scan,indice) 1"
+           button $This.fra5.index.but1 -text "1" -width 3 -command "set panneau(scan,indice) 1"
            pack $This.fra5.index.but1 -side right -fill x
 
         pack $This.fra5.index -side top -fill x
