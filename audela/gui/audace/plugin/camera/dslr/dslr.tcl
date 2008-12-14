@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.32 2008-12-14 17:15:41 michelpujol Exp $
+# Mise a jour $Id: dslr.tcl,v 1.33 2008-12-14 23:46:35 robertdelmas Exp $
 #
 
 namespace eval ::dslr {
@@ -116,7 +116,7 @@ proc ::dslr::confToWidget { } {
    set private(longueposeport)       $conf(dslr,longueposeport)
    set private(longueposelinkbit)    $conf(dslr,longueposelinkbit)
    set private(longueposestartvalue) $conf(dslr,longueposestartvalue)
-   ###set private(longueposestopvalue)  $conf(dslr,longueposestopvalue)
+  ### set private(longueposestopvalue)  $conf(dslr,longueposestopvalue)
    set private(statut_service)       $conf(dslr,statut_service)
    set private(mirh)                 $conf(dslr,mirh)
    set private(mirv)                 $conf(dslr,mirv)
@@ -136,7 +136,7 @@ proc ::dslr::widgetToConf { camItem } {
    set conf(dslr,longueposeport)       $private(longueposeport)
    set conf(dslr,longueposelinkbit)    $private(longueposelinkbit)
    set conf(dslr,longueposestartvalue) $private(longueposestartvalue)
-   set conf(dslr,longueposestopvalue)  [expr $private(longueposestartvalue)== 0]
+   set conf(dslr,longueposestopvalue)  [ expr $private(longueposestartvalue) == 0 ]
    set conf(dslr,statut_service)       $private(statut_service)
    set conf(dslr,mirh)                 $private(mirh)
    set conf(dslr,mirv)                 $private(mirv)
@@ -373,17 +373,15 @@ proc ::dslr::configureCamera { camItem bufNo } {
       if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
          error "" "" "CameraUnique"
       }
-
+      #--- Je cree la liaison longue pose
       if { $conf(dslr,longuepose) == "1" } {
-         #--- Je cree la liaison longue pose
          set linkNo [ ::confLink::create $conf(dslr,longueposeport) "temp" "" "" ]
          link$linkNo bit $conf(dslr,longueposelinkbit) $conf(dslr,longueposestopvalue)
       }
-
       #--- Je mets audela_start_dir entre guillemets pour le cas ou le nom du repertoire contient des espaces
       #--- Je cree la camera
       set camNo [ cam::create digicam USB -name DSLR -debug_cam $conf(dslr,debug) -gphoto2_win_dll_dir \"$::audela_start_dir\" ]
-      console::affiche_erreur "$caption(dslr,name) $caption(dslr,2points) [ cam$camNo name ]\n"
+      console::affiche_entete "$caption(dslr,name) $caption(dslr,2points) [ cam$camNo name ]\n"
       console::affiche_saut "\n"
       #--- Je change de variable
       set private($camItem,camNo) $camNo
@@ -400,7 +398,7 @@ proc ::dslr::configureCamera { camItem bufNo } {
             parallelport -
             quickremote {
                #--- Je cree la liaison longue pose
-               #####set linkNo [ ::confLink::create $conf(dslr,longueposeport) "cam$camNo" "longuepose" "bit $conf(dslr,longueposelinkbit)" ]
+              ### set linkNo [ ::confLink::create $conf(dslr,longueposeport) "cam$camNo" "longuepose" "bit $conf(dslr,longueposelinkbit)" ]
                link$linkNo use remove "temp" ""
                link$linkNo use add "cam$camNo" "longuepose" "bit $conf(dslr,longueposelinkbit)"
                #---
@@ -426,7 +424,7 @@ proc ::dslr::configureCamera { camItem bufNo } {
       if { $resultUsecf == 1 } {
          #--- Si l'appareil n'a pas de carte memoire,
          #--- je desactive l'utilisation de la carte memoire de l'appareil
-         console::affiche_erreur "$messageUseCf.\nUnset use memory card."
+         console::affiche_entete "$messageUseCf.\nUnset use memory card."
          set conf(dslr,utiliser_cf) 0
          cam$camNo usecf $conf(dslr,utiliser_cf)
       }
@@ -452,7 +450,7 @@ proc ::dslr::configureCamera { camItem bufNo } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::dslr::stop $camItem
       #--- Je transmets l'erreur a la procedure appellante
-      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(confcam,cannotcreatecam)"
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(dslr,cannotcreatecam)"
    }
 }
 
@@ -564,13 +562,13 @@ proc ::dslr::configureAPNLinkLonguePose { } {
    #--- Je positionne startvalue par defaut en fonction du type de liaison
    if { [ ::confLink::getLinkNamespace $private(longueposeport) ] == "parallelport" } {
       set private(longueposestartvalue) "0"
-      ###set private(longueposestopvalue)  "1"
+     ### set private(longueposestopvalue)  "1"
    } elseif { [ ::confLink::getLinkNamespace $private(longueposeport) ] == "quickremote" } {
       set private(longueposestartvalue) "1"
-      ###set private(longueposestopvalue)  "0"
+     ### set private(longueposestopvalue)  "0"
    } else {
       set private(longueposestartvalue) "0"
-      ###set private(longueposestopvalue)  "1"
+     ### set private(longueposestopvalue)  "1"
    }
 }
 

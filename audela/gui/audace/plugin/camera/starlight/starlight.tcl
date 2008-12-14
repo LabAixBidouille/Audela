@@ -2,7 +2,7 @@
 # Fichier : starlight.tcl
 # Description : Configuration de la camera Starlight
 # Auteur : Robert DELMAS
-# Mise a jour $Id: starlight.tcl,v 1.15 2008-12-14 15:53:10 denismarchais Exp $
+# Mise a jour $Id: starlight.tcl,v 1.16 2008-12-14 23:47:39 robertdelmas Exp $
 #
 
 namespace eval ::starlight {
@@ -275,9 +275,9 @@ proc ::starlight::configureCamera { camItem bufNo } {
       if { $conf(starlight,modele) == "MX516" } {
          #--- Je cree la camera
          if { [ catch { set camNo [ cam::create starlight $conf(starlight,port) -name MX516 ] } m ] == 1 } {
-            error "" "" NotRoot
+            error "" "" "NotRoot"
          }
-         console::affiche_erreur "$caption(starlight,port_camera) $conf(starlight,modele)\
+         console::affiche_entete "$caption(starlight,port_camera) $conf(starlight,modele)\
             $caption(starlight,2points) $conf(starlight,port)\n"
          console::affiche_saut "\n"
          #--- Je change de variable
@@ -294,9 +294,9 @@ proc ::starlight::configureCamera { camItem bufNo } {
       } elseif { $conf(starlight,modele) == "MX916" } {
          #--- Je cree la camera
          if { [ catch { set camNo [ cam::create starlight $conf(starlight,port) -name MX916 ] } m ] == 1 } {
-            error "" "" NotRoot
+            error "" "" "NotRoot"
          }
-         console::affiche_erreur "$caption(starlight,port_camera) $conf(starlight,modele)\
+         console::affiche_entete "$caption(starlight,port_camera) $conf(starlight,modele)\
             $caption(starlight,2points) $conf(starlight,port)\n"
          console::affiche_saut "\n"
          #--- Je change de variable
@@ -313,9 +313,9 @@ proc ::starlight::configureCamera { camItem bufNo } {
       } elseif { $conf(starlight,modele) == "HX516" } {
          #--- Je cree la camera
          if { [ catch { set camNo [ cam::create starlight $conf(starlight,port) -name HX516 ] } m ] == 1 } {
-            error "" "" NotRoot
+            error "" "" "NotRoot"
          }
-         console::affiche_erreur "$caption(starlight,port_camera) $conf(starlight,modele)\
+         console::affiche_entete "$caption(starlight,port_camera) $conf(starlight,modele)\
             $caption(starlight,2points) $conf(starlight,port)\n"
          console::affiche_saut "\n"
          #--- Je change de variable
@@ -336,7 +336,7 @@ proc ::starlight::configureCamera { camItem bufNo } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::starlight::stop $camItem
       #--- Je transmets l'erreur a la procedure appellante
-      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(confcam,cannotcreatecam)"
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(starlight,cannotcreatecam)"
    }
 }
 

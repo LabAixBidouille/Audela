@@ -2,7 +2,7 @@
 # Fichier : kitty.tcl
 # Description : Configuration de la camera Kitty
 # Auteur : Robert DELMAS
-# Mise a jour $Id: kitty.tcl,v 1.21 2008-12-14 15:53:10 denismarchais Exp $
+# Mise a jour $Id: kitty.tcl,v 1.22 2008-12-14 23:47:07 robertdelmas Exp $
 #
 
 namespace eval ::kitty {
@@ -300,9 +300,9 @@ proc ::kitty::configureCamera { camItem bufNo } {
       }
       #--- Je cree la camera
       if { [ catch { set camNo [ cam::create k2 $conf(kitty,port) -name KITTYK2 ] } m ] == 1 } {
-         error "" "" NotRoot
+         error "" "" "NotRoot"
       }
-      console::affiche_erreur "$caption(kitty,port_camera) $caption(kitty,2points) $conf(kitty,port)\n"
+      console::affiche_entete "$caption(kitty,port_camera) $caption(kitty,2points) $conf(kitty,port)\n"
       console::affiche_saut "\n"
       #--- Je change de variable
       set private($camItem,camNo) $camNo
@@ -331,7 +331,7 @@ proc ::kitty::configureCamera { camItem bufNo } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::kitty::stop $camItem
       #--- Je transmets l'erreur a la procedure appellante
-      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(confcam,cannotcreatecam)"
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(kitty,cannotcreatecam)"
    }
 }
 

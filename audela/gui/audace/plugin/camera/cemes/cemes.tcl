@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.34 2008-12-14 15:53:09 denismarchais Exp $
+# Mise a jour $Id: cemes.tcl,v 1.35 2008-12-14 23:46:16 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -257,7 +257,7 @@ proc ::cemes::configureCamera { camItem bufNo } {
       }
       #--- Je cree la camera
       set camNo [ cam::create cemes PCI ]
-      console::affiche_erreur "$caption(cemes,port_camera) $caption(cemes,2points) [ cam$camNo port ]\n"
+      console::affiche_entete "$caption(cemes,port_camera) $caption(cemes,2points) [ cam$camNo port ]\n"
       console::affiche_saut "\n"
       #--- Je change de variable
       set private($camItem,camNo) $camNo
@@ -295,7 +295,7 @@ proc ::cemes::configureCamera { camItem bufNo } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::cemes::stop $camItem
       #--- Je transmets l'erreur a la procedure appellante
-      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(confcam,cannotcreatecam)"
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(cemes,cannotcreatecam)"
    }
 }
 
