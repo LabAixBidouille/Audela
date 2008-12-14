@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.92 2008-12-13 19:22:35 jacquesmichelet Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.93 2008-12-14 11:54:10 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -1362,10 +1362,6 @@ namespace eval ::confVisu {
 
       #--- je masque la barre d'outil par defaut
       grid forget $This.bar
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $This
-      update
 
    }
 
