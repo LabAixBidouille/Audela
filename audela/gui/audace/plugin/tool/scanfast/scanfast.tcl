@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.42 2008-09-15 15:49:24 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.43 2008-12-14 08:47:15 robertdelmas Exp $
 #
 
 global panneau
@@ -423,9 +423,13 @@ proc ::scanfast::adaptOutilScanfast { args } {
    set panneau(scanfast,listBinningX) [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningXListScan ]
    if { $panneau(scanfast,listBinningX) == "{}" } {
       $This.fra3.bin.binX configure -height 1
-      $This.fra3.bin.binX configure -values "2"
+      $This.fra3.bin.binX configure -values "1"
    } else {
-      $This.fra3.bin.binX configure -height [ llength $panneau(scanfast,listBinningX) ]
+      set height [ llength $panneau(scanfast,listBinningX) ]
+      if { $height > "16" } {
+         set height "16"
+      }
+      $This.fra3.bin.binX configure -height $height
       $This.fra3.bin.binX configure -values $panneau(scanfast,listBinningX)
    }
 
@@ -433,7 +437,7 @@ proc ::scanfast::adaptOutilScanfast { args } {
    set panneau(scanfast,listBinningY) [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningYListScan ]
    if { $panneau(scanfast,listBinningY) == "{}" } {
       $This.fra3.bin.binY configure -height 1
-      $This.fra3.bin.binY configure -values "2"
+      $This.fra3.bin.binY configure -values "1"
    } else {
       set height [ llength $panneau(scanfast,listBinningY) ]
       if { $height > "16" } {
@@ -448,7 +452,7 @@ proc ::scanfast::adaptOutilScanfast { args } {
       ethernaude {
          #--- Adaptation des binnings extremes
          if { $panneau(scanfast,binningX) > "2" } {
-            set panneau(scanfast,binningX) "2"
+            set panneau(scanfast,binningX) "1"
          }
          #--- Etat du bouton et mise en forme des frames
          $This.fra33.but1 configure -state normal
@@ -461,7 +465,7 @@ proc ::scanfast::adaptOutilScanfast { args } {
       parallelport {
          #--- Adaptation des binnings extremes
          if { $panneau(scanfast,binningY) > "16" } {
-            set panneau(scanfast,binningY) "2"
+            set panneau(scanfast,binningY) "1"
          }
          #--- Etat du bouton et mise en forme des frames
          $This.fra33.but1 configure -state normal
@@ -1212,12 +1216,12 @@ proc scanfastBuildIF { This } {
          frame $This.fra2.fra1 -borderwidth 1 -relief flat
 
             #--- Entry pour la colonne de debut
-            entry $This.fra2.fra1.ent1 -font $audace(font,arial_8_b) -textvariable panneau(scanfast,col1) \
+            entry $This.fra2.fra1.ent1 -textvariable panneau(scanfast,col1) \
                -relief groove -width 5 -justify center
             pack $This.fra2.fra1.ent1 -in $This.fra2.fra1 -side left -fill none -padx 4 -pady 2
 
             #--- Entry pour la colonne de fin
-            entry $This.fra2.fra1.ent2 -font $audace(font,arial_8_b) -textvariable panneau(scanfast,col2) \
+            entry $This.fra2.fra1.ent2 -textvariable panneau(scanfast,col2) \
                -relief groove -width 5 -justify center
             pack $This.fra2.fra1.ent2 -in $This.fra2.fra1 -side right -fill none -padx 4 -pady 2
 
@@ -1228,7 +1232,7 @@ proc scanfastBuildIF { This } {
          pack $This.fra2.lab2 -in $This.fra2 -anchor center -fill none -padx 4 -pady 1
 
          #--- Entry pour lignes
-         entry $This.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(scanfast,lig1) \
+         entry $This.fra2.ent1 -textvariable panneau(scanfast,lig1) \
             -relief groove -width 5 -justify center
          pack $This.fra2.ent1 -in $This.fra2 -anchor center -fill none -padx 4 -pady 2
 
@@ -1257,7 +1261,6 @@ proc scanfastBuildIF { This } {
             #--- Combobox pour binning X
             ComboBox $This.fra3.bin.binX \
                -width 3        \
-               -font $audace(font,arial_8_b) \
                -justify center \
                -height [ llength $panneau(scanfast,listBinningX) ] \
                -relief sunken  \
@@ -1269,13 +1272,12 @@ proc scanfastBuildIF { This } {
             pack $This.fra3.bin.binX -in $This.fra3.bin -side left -fill none
 
             #--- Label pour binning Y
-            label $This.fra3.bin.lab2 -text "x" -relief flat -font $audace(font,arial_8_b)
+            label $This.fra3.bin.lab2 -text "x" -relief flat
             pack $This.fra3.bin.lab2 -in $This.fra3.bin -side left -fill none
 
             #--- Combobox pour binning Y
             ComboBox $This.fra3.bin.binY \
                -width 3        \
-               -font $audace(font,arial_8_b) \
                -justify center \
                -height [ llength $panneau(scanfast,listBinningY) ] \
                -relief sunken  \
@@ -1292,7 +1294,7 @@ proc scanfastBuildIF { This } {
          frame $This.fra3.fra1 -borderwidth 1 -relief flat
 
             #--- Entry pour les millisecondes
-            entry $This.fra3.fra1.ent1 -font $audace(font,arial_8_b) -textvariable panneau(scanfast,interligne) \
+            entry $This.fra3.fra1.ent1 -textvariable panneau(scanfast,interligne) \
                -relief groove -width 6 -justify center
             pack $This.fra3.fra1.ent1 -in $This.fra3.fra1 -side left -fill none -padx 4 -pady 2
 
@@ -1320,8 +1322,7 @@ proc scanfastBuildIF { This } {
          frame $This.fra33.fra1 -borderwidth 1 -relief flat
 
             #--- Entry pour DT
-            entry $This.fra33.fra1.ent1 -font $audace(font,arial_8_b) -textvariable panneau(scanfast,dt) \
-               -relief groove -width 8
+            entry $This.fra33.fra1.ent1 -textvariable panneau(scanfast,dt) -relief groove -width 8
             pack $This.fra33.fra1.ent1 -in $This.fra33.fra1 -side left -fill none -padx 2 -pady 2
 
             #--- Label pour les ms
@@ -1334,8 +1335,7 @@ proc scanfastBuildIF { This } {
          frame $This.fra33.fra2 -borderwidth 1 -relief flat
 
             #--- Entry pour SPEED
-            entry $This.fra33.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(scanfast,speed) \
-               -relief groove -width 8
+            entry $This.fra33.fra2.ent1 -textvariable panneau(scanfast,speed) -relief groove -width 8
             pack $This.fra33.fra2.ent1 -in $This.fra33.fra2 -side left -fill none -padx 2 -pady 2
 
             #--- Label pour les boucles
@@ -1358,11 +1358,11 @@ proc scanfastBuildIF { This } {
             pack $This.fra4.obt.but -side left -ipady 3
 
             #--- Label pour l'etat de l'obturateur
-            label $This.fra4.obt.lab1 -text "" -width 6 -font $audace(font,arial_10_b) -relief groove
+            label $This.fra4.obt.lab1 -text "" -width 6 -relief groove
             pack $This.fra4.obt.lab1 -side left -fill x -expand true -ipady 3
 
             #--- Label avant la connexion de la camera
-            label $This.fra4.obt.lab2 -text "" -font $audace(font,arial_10_b) -relief ridge -justify center
+            label $This.fra4.obt.lab2 -text "" -relief ridge -justify center
             pack $This.fra4.obt.lab2 -side top -fill x -ipady 3
 
          pack $This.fra4.obt -side top -fill x
@@ -1394,8 +1394,7 @@ proc scanfastBuildIF { This } {
             pack $This.fra5.nom.lab1 -fill x -side top
 
             #--- Entry du nom de l'image
-            entry $This.fra5.nom.ent1 -width 10 -textvariable panneau(scanfast,nom_image) \
-               -font $audace(font,arial_10_b) -relief groove
+            entry $This.fra5.nom.ent1 -width 10 -textvariable panneau(scanfast,nom_image) -relief groove
             pack $This.fra5.nom.ent1 -fill x -side top
 
             #--- Label de l'extension
@@ -1418,12 +1417,11 @@ proc scanfastBuildIF { This } {
 
             #--- Entry de l'index
             entry $This.fra5.index.ent2 -width 3 -textvariable panneau(scanfast,indice) \
-               -font $audace(font,arial_10_b) -relief groove -justify center
+               -relief groove -justify center
             pack $This.fra5.index.ent2 -side left -fill x -expand true
 
             #--- Bouton de mise a 1 de l'index
-            button $This.fra5.index.but1 -text "1" -width 3 \
-               -command "set panneau(scanfast,indice) 1"
+            button $This.fra5.index.but1 -text "1" -width 3 -command "set panneau(scanfast,indice) 1"
             pack $This.fra5.index.but1 -side right -fill x
 
          pack $This.fra5.index -side top -fill x
