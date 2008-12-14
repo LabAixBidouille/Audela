@@ -2,7 +2,7 @@
 # Fichier : gps.tcl
 # Description : Outil de synchronisation GPS
 # Auteur : Jacques MICHELET
-# Mise a jour $Id: gps.tcl,v 1.12 2008-01-22 19:09:15 jacquesmichelet Exp $
+# Mise a jour $Id: gps.tcl,v 1.13 2008-12-14 13:41:14 jacquesmichelet Exp $
 #
 
 namespace eval ::gps {
@@ -10,7 +10,7 @@ namespace eval ::gps {
 	variable parametres
 	variable base
 
-	package provide gps 3.5
+	package provide gps 3.6
 	package require audela 1.4.0
 
 	source [file join [file dirname [info script]] gps.cap]
@@ -335,7 +335,6 @@ namespace eval ::gps {
 		variable This
 		variable parametres
 		variable couleur
-		variable police
 
 		if {[catch {load libjm[info sharedlibextension]} chargement_lib]} {
 			Message console "%s\n" $chargement_lib
@@ -358,10 +357,6 @@ namespace eval ::gps {
 		set couleur(donnee,valide) $color(green)
 		set couleur(fond,entree) $color(black)
 
-		set police(gras) {arial 10 bold}
-		set police(italique) {arial 10 italic}
-		set police(normal) {arial 10 normal}
-
 		CreationPanneauGPS $This
 
 		# Si le repertoire gps n'existe pas, le creer
@@ -377,7 +372,6 @@ namespace eval ::gps {
 		global conf
 		global caption
 		variable couleur
-		variable police
 		variable position
 		variable base
 
@@ -417,11 +411,20 @@ namespace eval ::gps {
 		set apparence(altitude) w
 
 		foreach champ {temps_gps temps_pc diff_temps moyenne etat correction latitude longitude altitude} {
-			label $tb.trame1.l$champ -text $caption(gps,$champ) -font $police(normal)
-			label $tb.trame1.color_invariant_$champ -text $valeur_defaut($champ) -bg $couleur(fond,entree) -fg $couleur(donnee,invalide) -relief sunken -font $police(gras) -anchor $apparence($champ)
-			grid $tb.trame1.l$champ $tb.trame1.color_invariant_$champ -sticky news
+			label $tb.trame1.l$champ \
+                -text $caption(gps,$champ)
+			label $tb.trame1.color_invariant_$champ \
+                -text $valeur_defaut($champ) \
+                -bg $couleur(fond,entree) \
+                -fg $couleur(donnee,invalide) \
+                -relief sunken \
+                -anchor $apparence($champ)
+			grid $tb.trame1.l$champ $tb.trame1.color_invariant_$champ \
+                -sticky news
 		}
-		::pack $tb.trame1 -fill x -side left
+		::pack $tb.trame1 \
+            -fill x \
+            -side left
 
 		#--- Mise a jour dynamique des couleurs
 		::confColor::applyColor $tb
@@ -435,48 +438,92 @@ namespace eval ::gps {
 		global audace
 		global caption
 		variable couleur
-		variable police
 		variable parametres
 
 		# Partie graphique
-		frame $This -borderwidth 2 -relief groove
+		frame $This \
+            -borderwidth 2 \
+            -relief groove
 		#--- Frame du titre
-		frame $This.fra1 -borderwidth 2 -relief groove
+		frame $This.fra1 \
+            -borderwidth 2 \
+            -relief groove
 		#--- Label du titre
-		Button $This.fra1.but -borderwidth 2 -text $caption(gps,titre) -font $police(gras) \
+		Button $This.fra1.but \
+            -borderwidth 2 \
+            -text $caption(gps,titre) \
 			-command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::gps::getPluginType ] ] \
-			   [ ::gps::getPluginDirectory ] [ ::gps::getPluginHelp ]"
-		::pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top
-		DynamicHelp::add $This.fra1.but -text $caption(gps,help,titre)
-		pack $This.fra1 -side top -fill x
+                [ ::gps::getPluginDirectory ] [ ::gps::getPluginHelp ]"
+		::pack $This.fra1.but \
+            -in $This.fra1 \
+            -anchor center \
+            -expand 1 \
+            -fill both \
+            -side top
+		DynamicHelp::add $This.fra1.but \
+            -text $caption(gps,help,titre)
+		pack $This.fra1 \
+            -side top \
+            -fill x
 
 		#Trame d'affichage des parametres
 		# Construction de la trame
-		set t1 [frame $This.fparametre -borderwidth 1 -relief groove]
+		set t1 [frame $This.fparametre \
+            -borderwidth 1 \
+            -relief groove]
 		# Definition des menus
-		menubutton $t1.mb -text $caption(gps,parametre) -menu $t1.mb.menu -height 1 -relief raised -font $police(gras)
-		::pack $t1.mb -in $t1 -pady 4
-		set m1 [menu $t1.mb.menu -tearoff 0]
+		menubutton $t1.mb \
+            -text $caption(gps,parametre) \
+            -menu $t1.mb.menu \
+            -height 1 \
+            -relief raised
+		::pack $t1.mb \
+            -in $t1 \
+            -pady 4
+		set m1 [menu $t1.mb.menu \
+            -tearoff 0]
 		# Menus et sous-menus
 		$m1 add separator
-		$m1 add cascade -label $caption(gps,port) -menu $m1.sm1
-		$m1 add cascade -label $caption(gps,intervalle_synchro) -menu $m1.sm2
-		$m1 add command -label $caption(gps,divers) -command {::gps::EditionsDiverses}
-		set sm1 [menu $m1.sm1 -tearoff 0]
-		set sm2 [menu $m1.sm2 -tearoff 0]
+		$m1 add cascade \
+            -label $caption(gps,port) \
+            -menu $m1.sm1
+		$m1 add cascade \
+            -label $caption(gps,intervalle_synchro) \
+            -menu $m1.sm2
+		$m1 add command \
+            -label $caption(gps,divers) \
+            -command {::gps::EditionsDiverses}
+		set sm1 [menu $m1.sm1 \
+            -tearoff 0]
+		set sm2 [menu $m1.sm2 \
+            -tearoff 0]
 		# Les sous-menus des ports et des intervalles de synchro sont crees plus tard pour tenir compte des parametres initialises ulterieurement
 		# Positionnement de la trame
-		pack $t1 -side top -fill x -padx 3 -pady 3
+		pack $t1 \
+            -side top \
+            -fill x \
+            -padx 3 \
+            -pady 3
 
 		#Trame Commande Manuel (t2)
-		set t2 [frame $This.fmanuel -borderwidth 1 -relief groove]
-		label $t2.l -text $caption(gps,manuel) -font $police(gras)
-		::pack $t2.l -fill x -side top
+		set t2 [frame $This.fmanuel \
+            -borderwidth 1 \
+            -relief groove]
+		label $t2.l \
+            -text $caption(gps,manuel)
+		::pack $t2.l \
+            -fill x \
+            -side top
 
 		#Trame du GPS (t21)
-		set t21 [frame $t2.fgps -borderwidth 1 -relief groove]
-		label $t21.l -text $caption(gps,titre_gps) -font $police(gras)
-		::pack $t21.l -fill x -side top
+		set t21 [frame $t2.fgps \
+            -borderwidth 1 \
+            -relief groove]
+		label $t21.l \
+            -text $caption(gps,titre_gps)
+		::pack $t21.l \
+            -fill x \
+            -side top
 		# Generation des boutons
 		set commande(lancement_gps) ::gps::LancementGPS
 		set commande(arret_gps) ::gps::ArretGPS
@@ -484,54 +531,110 @@ namespace eval ::gps {
 		set commande(synchro_position) ::gps::SynchroPositionGPS
 
 		foreach champ {synchro_position synchro_temps arret_gps lancement_gps} {
-			button $t21.b$champ -text $caption(gps,$champ) -command $commande($champ) -font $police(gras)
-			pack $t21.b$champ -in $t21 -pady 2 -side bottom
+			button $t21.b$champ \
+                -text $caption(gps,$champ) \
+                -command $commande($champ)
+			pack $t21.b$champ \
+                -in $t21 \
+                -pady 2 \
+                -side bottom
 		}
-		pack $t21 -side top -fill x -padx 3 -pady 3
+		pack $t21 \
+            -side top \
+            -fill x \
+            -padx 3 \
+            -pady 3
 		pack forget $t21.barret_gps
 
 		# Trame du reglage fin (t22)
-		set t22 [frame $t2.freg -borderwidth 1 -relief groove]
-		label $t22.l -text $caption(gps,titre_reglage_fin) -font $police(gras)
-		::pack $t22.l -fill x -side top
+		set t22 [frame $t2.freg \
+            -borderwidth 1 \
+            -relief groove]
+		label $t22.l \
+            -text $caption(gps,titre_reglage_fin)
+		::pack $t22.l \
+            -fill x \
+            -side top
 		set commande(ecoute_horloge) ::gps::EcouteHorloge
 		set commande(arret_horloge) ::gps::ArretHorloge
 		set commande(avance) {::gps::AvanceHorloge}
 		set commande(retard) {::gps::RetardHorloge }
 		foreach champ {retard avance arret_horloge ecoute_horloge} {
-			button $t22.b$champ -text $caption(gps,$champ) -command $commande($champ) -font $police(gras)
-			pack $t22.b$champ -in $t22 -pady 2 -side bottom
+			button $t22.b$champ \
+                -text $caption(gps,$champ) \
+                -command $commande($champ)
+			pack $t22.b$champ \
+                -in $t22 \
+                -pady 2 \
+                -side bottom
 		}
-		pack $t22 -side top -fill x -padx 3 -pady 3
+		pack $t22 \
+            -side top \
+            -fill x \
+            -padx 3 \
+            -pady 3
 		pack forget $t22.barret_horloge
 
-		pack $t2 -side top -fill x -padx 3 -pady 3
+		pack $t2 \
+            -side top \
+            -fill x \
+            -padx 3 \
+            -pady 3
 
 		#Trame Commande Automatique (t3)
-		set t3 [frame $This.fautomatique -borderwidth 1 -relief groove]
-		label $t3.l -text $caption(gps,automatique) -font $police(gras)
-		::pack $t3.l -fill x -side top
+		set t3 [frame $This.fautomatique \
+            -borderwidth 1 \
+            -relief groove]
+		label $t3.l \
+            -text $caption(gps,automatique)
+		::pack $t3.l \
+            -fill x \
+            -side top
 
-		set t31 [frame $t3.fautobis -borderwidth 1 -relief groove]
+		set t31 [frame $t3.fautobis \
+            -borderwidth 1 \
+            -relief groove]
 		set commande(demarrage_auto) ::gps::DemarrageAuto
 		set commande(arret_auto) ::gps::ArretAuto
 		foreach champ {demarrage_auto arret_auto} {
-			button $t31.b$champ -text $caption(gps,$champ) -command $commande($champ) -font $police(gras)
-			pack $t31.b$champ -in $t31 -pady 2
+			button $t31.b$champ \
+                -text $caption(gps,$champ) \
+                -command $commande($champ)
+			pack $t31.b$champ \
+                -in $t31 \
+                -pady 2
 		}
-		pack $t31 -side top -fill x -padx 3 -pady 3
+		pack $t31 \
+            -side top \
+            -fill x \
+            -padx 3 \
+            -pady 3
 		pack forget $t31.barret_auto
 
-		pack $t3 -side top -fill x -padx 3 -pady 3
+		pack $t3 \
+            -side top \
+            -fill x \
+            -padx 3 \
+            -pady 3
 
 		# Etats d'activation des boutons
 		EtatBouton normal normal disabled disabled disabled normal disabled disabled disabled normal disabled
 
 		# Trame des infos (couleurs fixes)
-		set t4 [frame $This.finfos -borderwidth 1 -relief groove]
-		label $t4.color_invariant -bg $couleur(fond,entree) -fg $couleur(donnee,valide) -font $police(gras)
-		::pack $t4.color_invariant -fill both -side top
-		pack $t4 -side top -fill x -padx 3 -pady 3
+		set t4 [frame $This.finfos \
+            -borderwidth 1 \
+            -relief groove]
+		label $t4.color_invariant \
+            -bg $couleur(fond,entree) \
+            -fg $couleur(donnee,valide)
+		::pack $t4.color_invariant \
+            -fill both \
+            -side top
+		pack $t4 \
+            -side top \
+            -fill x \
+            -padx 3 \
+            -pady 3
 
 		#--- Mise a jour dynamique des couleurs
 		::confColor::applyColor $This
@@ -637,7 +740,6 @@ namespace eval ::gps {
 	proc EditionsDiverses {} {
 		variable parametres
 		global caption
-		variable police
 		variable base
 
 		set d [toplevel $base.divers -borderwidth 2 -relief groove]
@@ -648,16 +750,30 @@ namespace eval ::gps {
 
 		set t1 [frame $d.trame1]
 		foreach champ {decalage seuil_ok reglage} {
-			label $t1.l$champ -text $caption(gps,$champ) -font $police(normal)
-			entry $t1.e$champ -textvariable ::gps::parametres($champ) -font $police(normal) -relief sunken -width 4
-			grid $t1.l$champ $t1.e$champ -sticky news
+			label $t1.l$champ \
+                -text $caption(gps,$champ)
+			entry $t1.e$champ \
+                -textvariable ::gps::parametres($champ) \
+                -relief sunken \
+                -width 4
+			grid $t1.l$champ $t1.e$champ \
+                -sticky news
 		}
 
-		set t2 [frame $d.trame2 -borderwidth 2 -relief groove]
-		button $t2.b1 -text $caption(gps,valider) -command {::gps::ValideSaisie} -font $police(gras) -height 1
-		::pack $t2.b1 -side top -padx 10 -pady 10
+		set t2 [frame $d.trame2 \
+            -borderwidth 2 \
+            -relief groove]
+		button $t2.b1 \
+            -text $caption(gps,valider) \
+            -command {::gps::ValideSaisie} \
+            -height 1
+		::pack $t2.b1 \
+            -side top \
+            -padx 10 \
+            -pady 10
 
-		::pack $t1 $t2 -fill x
+		::pack $t1 $t2 \
+            -fill x
 
 		#--- Mise a jour dynamique des couleurs
 		::confColor::applyColor $d
@@ -846,27 +962,43 @@ namespace eval ::gps {
 		variable test
 
 		if {[catch {open $parametres(port_serie) r+} serie]} {
-			tk_messageBox -type ok -message $caption(gps,conseil_serie) -title $caption(gps,erreur) -icon error
+			tk_messageBox \
+                -type ok \
+                -message $caption(gps,conseil_serie) \
+                -title $caption(gps,erreur) \
+                -icon error
 			return
 		}
 
 		# Sauvegarde de la configuration du port serie
 		if {[catch {fconfigure $serie -blocking} confserie]} {
-			tk_messageBox -type ok -message $caption(gps,non_rs232) -title $caption(gps,erreur) -icon error
+			tk_messageBox \
+                -type ok \
+                -message $caption(gps,non_rs232) \
+                -title $caption(gps,erreur) \
+                -icon error
 			return
 		} else {
 			set gps(configuration_serie_blocking) $confserie
 		}
 
 		if {[catch {fconfigure $serie -mode} confserie]} {
-			tk_messageBox -type ok -message $caption(gps,non_rs232) -title $caption(gps,erreur) -icon error
+			tk_messageBox \
+                -type ok \
+                -message $caption(gps,non_rs232) \
+                -title $caption(gps,erreur) \
+                -icon error
 			return
 		} else {
 			set gps(configuration_serie_mode) $confserie
 		}
 
 		if {[catch {fconfigure $serie -buffering} confserie]} {
-			tk_messageBox -type ok -message caption(gps,non_rs232) -title $caption(gps,erreur) -icon error
+			tk_messageBox \
+                -type ok \
+                -message caption(gps,non_rs232) \
+                -title $caption(gps,erreur) \
+                -icon error
 			return
 		} else {
 			set gps(configuration_serie_buffering) $confserie
