@@ -2,7 +2,7 @@
 # Fichier : sbig.tcl
 # Description : Configuration de la camera SBIG
 # Auteur : Robert DELMAS
-# Mise a jour $Id: sbig.tcl,v 1.21 2008-11-22 08:31:20 robertdelmas Exp $
+# Mise a jour $Id: sbig.tcl,v 1.22 2008-12-14 15:53:10 denismarchais Exp $
 #
 
 namespace eval ::sbig {
@@ -361,7 +361,7 @@ proc ::sbig::configureCamera { camItem bufNo } {
    set catchResult [ catch {
       #--- je verifie que la camera n'est deja utilisee
       if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
-         error "" "CameraUnique"
+         error "" "" "CameraUnique"
       }
      ### set conf(sbig,host) [ ::audace::verifip $conf(sbig,host) ]
       #--- Je configure l'adresse LPT personnalisee
@@ -411,7 +411,7 @@ proc ::sbig::configureCamera { camItem bufNo } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::sbig::stop $camItem
       #--- Je transmets l'erreur a la procedure appellante
-      error $::errorInfo
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(confcam,cannotcreatecam)"
    }
 }
 

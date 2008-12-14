@@ -2,7 +2,7 @@
 # Fichier : hisis.tcl
 # Description : Configuration de la camera Hi-SIS
 # Auteur : Robert DELMAS
-# Mise a jour $Id: hisis.tcl,v 1.14 2008-11-01 15:43:47 robertdelmas Exp $
+# Mise a jour $Id: hisis.tcl,v 1.15 2008-12-14 15:53:10 denismarchais Exp $
 #
 
 namespace eval ::hisis {
@@ -416,11 +416,13 @@ proc ::hisis::configureCamera { camItem bufNo } {
    set catchResult [ catch {
       #--- je verifie que la camera n'est deja utilisee
       if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
-         error "" "CameraUnique"
+         error "" "" "CameraUnique"
       }
       if { $conf(hisis,modele) == "11" } {
          #--- Je cree la camera
-         set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS11 ]
+         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS11 ] } m ] == 1 } {
+            error "" "" NotRoot
+         }
          console::affiche_erreur "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
          console::affiche_saut "\n"
@@ -435,7 +437,9 @@ proc ::hisis::configureCamera { camItem bufNo } {
          cam$camNo mirrorv $conf(hisis,mirv)
       } elseif { $conf(hisis,modele) == "22" } {
          #--- Je cree la camera
-         set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS22-[ lindex $conf(hisis,res) 0 ] ]
+         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS22-[ lindex $conf(hisis,res) 0 ] ] } m ] == 1 } {
+            error "" "" NotRoot
+         }
          console::affiche_erreur "$caption(hisis,port_camera) $conf(hisis,modele) ($conf(hisis,res))\
             $caption(hisis,2points) $conf(hisis,port)\n"
          console::affiche_saut "\n"
@@ -464,7 +468,9 @@ proc ::hisis::configureCamera { camItem bufNo } {
          cam$camNo delayloops $conf(hisis,delai_a) $conf(hisis,delai_b) $conf(hisis,delai_c)
       } elseif { $conf(hisis,modele) == "23" } {
          #--- Je cree la camera
-         set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS23 ]
+         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS23 ] } m ] == 1 } {
+            error "" "" NotRoot
+          }
          console::affiche_erreur "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
          console::affiche_saut "\n"
@@ -491,7 +497,9 @@ proc ::hisis::configureCamera { camItem bufNo } {
          cam$camNo mirrorv $conf(hisis,mirv)
       } elseif { $conf(hisis,modele) == "24" } {
          #--- Je cree la camera
-         set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS24 ]
+         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS24 ] } m ] == 1 } {
+            error "" "" NotRoot
+         }
          console::affiche_erreur "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
          console::affiche_saut "\n"
@@ -518,7 +526,9 @@ proc ::hisis::configureCamera { camItem bufNo } {
          cam$camNo mirrorv $conf(hisis,mirv)
       } elseif { $conf(hisis,modele) == "33" } {
          #--- Je cree la camera
-         set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS33 ]
+         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS33 ] } m ] == 1 } {
+            error "" "" NotRoot
+         }
          console::affiche_erreur "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
          console::affiche_saut "\n"
@@ -545,7 +555,9 @@ proc ::hisis::configureCamera { camItem bufNo } {
          cam$camNo mirrorv $conf(hisis,mirv)
       } elseif { $conf(hisis,modele) == "36" } {
          #--- Je cree la camera
-         set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS36 ]
+         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS36 ] } m ] == 1 } {
+            error "" "" NotRoot
+         }
          console::affiche_erreur "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
          console::affiche_saut "\n"
@@ -572,7 +584,9 @@ proc ::hisis::configureCamera { camItem bufNo } {
          cam$camNo mirrorv $conf(hisis,mirv)
       } elseif { $conf(hisis,modele) == "39" } {
          #--- Je cree la camera
-         set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS39 ]
+         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS39 ] } m ] == 1 } {
+            error "" "" NotRoot
+         }
          console::affiche_erreur "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
          console::affiche_saut "\n"
@@ -599,7 +613,9 @@ proc ::hisis::configureCamera { camItem bufNo } {
          cam$camNo mirrorv $conf(hisis,mirv)
       } elseif { $conf(hisis,modele) == "43" } {
          #--- Je cree la camera
-         set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS43 ]
+         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS43 ] } m ] == 1 } {
+            error "" "" NotRoot
+         }
          console::affiche_erreur "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
          console::affiche_saut "\n"
@@ -626,7 +642,9 @@ proc ::hisis::configureCamera { camItem bufNo } {
          cam$camNo mirrorv $conf(hisis,mirv)
       } elseif { $conf(hisis,modele) == "44" } {
          #--- Je cree la camera
-         set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS44 ]
+         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS44 ] } m ] == 1 } {
+            error "" "" NotRoot
+         }
          console::affiche_erreur "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
          console::affiche_saut "\n"
@@ -653,7 +671,9 @@ proc ::hisis::configureCamera { camItem bufNo } {
          cam$camNo mirrorv $conf(hisis,mirv)
       } elseif { $conf(hisis,modele) == "48" } {
          #--- Je cree la camera
-         set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS48 ]
+         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS48 ] } m ] == 1 } {
+            error "" "" NotRoot
+         }
          console::affiche_erreur "$caption(hisis,port_camera) $conf(hisis,modele)\
            $caption(hisis,2points) $conf(hisis,port)\n"
          console::affiche_saut "\n"
@@ -685,7 +705,7 @@ proc ::hisis::configureCamera { camItem bufNo } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::hisis::stop $camItem
       #--- Je transmets l'erreur a la procedure appellante
-      error $::errorInfo
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(confcam,cannotcreatecam)"
    }
 }
 

@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.42 2007-11-26 17:43:03 robertdelmas Exp $
+# Mise a jour $Id: confcam.cap,v 1.43 2008-12-14 15:53:09 denismarchais Exp $
 #
 
 #=========================================================================
@@ -56,6 +56,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,connexion_texte1)        "Veuillez patienter quelques secondes"
    set caption(confcam,connexion_texte2)        "pendant la connexion de votre caméra."
    set caption(confcam,connexion_texte3)        "Une seule caméra de ce type peut être connectée.\nVeuillez en choisir une autre."
+   set caption(confcam,notroot)                 "Il faut être root pour utiliser cette caméra."
+   set caption(confcam,cannotcreatecam)         "La caméra ne peut pas être créée."
+   set caption(confcam,seeconsole)              "Détails dans la console."
 
    set caption(confcam,pb)                      "Problème"
    set caption(confcam,onlycam+obt)             "Désolé, cette fonction n'est pas\ndisponible avec cette caméra."

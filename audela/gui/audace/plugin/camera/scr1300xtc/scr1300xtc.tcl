@@ -2,7 +2,7 @@
 # Fichier : scr1300xtc.tcl
 # Description : Configuration de la camera SCR1300XTC
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scr1300xtc.tcl,v 1.23 2008-11-01 15:44:46 robertdelmas Exp $
+# Mise a jour $Id: scr1300xtc.tcl,v 1.24 2008-12-14 15:53:10 denismarchais Exp $
 #
 
 namespace eval ::scr1300xtc {
@@ -227,10 +227,12 @@ proc ::scr1300xtc::configureCamera { camItem bufNo } {
    set catchResult [ catch {
       #--- je verifie que la camera n'est deja utilisee
       if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
-         error "" "CameraUnique"
+         error "" "" "CameraUnique"
       }
       #--- Je cree la camera
-      set camNo [ cam::create synonyme $conf(scr1300xtc,port) -name SCR1300XTC ]
+      if { [ catch { set camNo [ cam::create synonyme $conf(scr1300xtc,port) -name SCR1300XTC ] } m ] == 1 } {
+         error "" "" NotRoot
+      }
       console::affiche_erreur "$caption(scr1300xtc,port_camera) $caption(scr1300xtc,2points) $conf(scr1300xtc,port)\n"
       console::affiche_saut "\n"
       #--- Je change de variable
@@ -248,7 +250,7 @@ proc ::scr1300xtc::configureCamera { camItem bufNo } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::scr1300xtc::stop $camItem
       #--- Je transmets l'erreur a la procedure appellante
-      error $::errorInfo
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(confcam,cannotcreatecam)"
    }
 }
 
