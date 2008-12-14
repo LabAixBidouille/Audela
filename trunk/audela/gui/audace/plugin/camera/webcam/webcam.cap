@@ -1,6 +1,6 @@
 #
 # Fichier : webcam.cap
-# Mise a jour $Id: webcam.cap,v 1.6 2008-08-24 21:11:43 robertdelmas Exp $
+# Mise a jour $Id: webcam.cap,v 1.7 2008-12-14 23:44:50 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -27,6 +27,7 @@ set caption(webcam,conf_source)                 "Video Source Selection"
 set caption(webcam,format_video)                "Video Format Selection"
 set caption(webcam,ccd_N_B)                     "B&W CCD Modified WebCam"
 set caption(webcam,switchedConnexion)           "Toggle between WebCams"
+set caption(webcam,cannotcreatecam)             "The camera cannot be created."
 
 set caption(webcam,shutter)                     "Shutter"
 set caption(webcam,gain)                        "Gain"
@@ -58,6 +59,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,format_video)             "Sélection du format vidéo"
    set caption(webcam,ccd_N_B)                  "WebCam modifiée avec CCD N&B"
    set caption(webcam,switchedConnexion)        "Utilisation en alternance des WebCams"
+   set caption(webcam,cannotcreatecam)          "La caméra ne peut pas être créée."
 
    set caption(webcam,shutter)                  "Obturateur"
    set caption(webcam,gain)                     "Gain"
@@ -89,6 +91,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,format_video)             "Selezione del formato video"
    set caption(webcam,ccd_N_B)                  "WebCam modificata con CCD B&N"
    set caption(webcam,switchedConnexion)        "Utilizzo alternato delle WebCams"
+   set caption(webcam,cannotcreatecam)          "# La caméra ne peut pas être créée."
 
    set caption(webcam,shutter)                  "Otturatore"
    set caption(webcam,gain)                     "Gain"
@@ -120,6 +123,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,format_video)             "Selección de formato de vídeo"
    set caption(webcam,ccd_N_B)                  "CCD WebCam Blanco y Negro modificada"
    set caption(webcam,switchedConnexion)        "Utilización en alternancia de las WebCams"
+   set caption(webcam,cannotcreatecam)          "# La caméra ne peut pas être créée."
 
    set caption(webcam,shutter)                  "Obturador"
    set caption(webcam,gain)                     "Ganancia"
@@ -151,6 +155,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,format_video)             "Wahl des Videoformats"
    set caption(webcam,ccd_N_B)                  "Veränderte Schwartz/Weiss WebCam CCD"
    set caption(webcam,switchedConnexion)        "Zwischen WebCam wechseln"
+   set caption(webcam,cannotcreatecam)          "# La caméra ne peut pas être créée."
 
    set caption(webcam,shutter)                  "Verschluss"
    set caption(webcam,gain)                     "Zunahme"
@@ -182,6 +187,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,format_video)             "Selecção do Formato Video"
    set caption(webcam,ccd_N_B)                  "WebCam Modificada (CCD B&W)"
    set caption(webcam,switchedConnexion)        "Utilização alternada de WebCams"
+   set caption(webcam,cannotcreatecam)          "# La caméra ne peut pas être créée."
 
    set caption(webcam,shutter)                  "Obturador"
    set caption(webcam,gain)                     "Ganho"
@@ -213,6 +219,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,format_video)             "Video Format Selection"
    set caption(webcam,ccd_N_B)                  "B&W CCD Modified WebCam"
    set caption(webcam,switchedConnexion)        "Toggle between WebCams"
+   set caption(webcam,cannotcreatecam)          "The camera cannot be created."
 
    set caption(webcam,shutter)                  "Shutter"
    set caption(webcam,gain)                     "Gain"

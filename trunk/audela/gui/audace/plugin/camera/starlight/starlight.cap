@@ -1,6 +1,6 @@
 #
 # Fichier : starlight.cap
-# Mise a jour $Id: starlight.cap,v 1.3 2007-10-20 15:25:26 robertdelmas Exp $
+# Mise a jour $Id: starlight.cap,v 1.4 2008-12-14 23:44:31 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -24,6 +24,7 @@ set caption(starlight,miroir_y)                     "Vertical Mirror"
 set caption(starlight,accelerateur)                 "Parallel Port Accelerator Box"
 set caption(starlight,sans_accelerateur)            "without"
 set caption(starlight,avec_accelerateur)            "with"
+set caption(starlight,cannotcreatecam)              "The camera cannot be created."
 
 set caption(starlight,port_camera)                  "Starlight Port - Model"
 set caption(starlight,2points)                      ":"
@@ -47,6 +48,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(starlight,accelerateur)              "Boîtier accélérateur de port parallèle"
    set caption(starlight,sans_accelerateur)         "sans"
    set caption(starlight,avec_accelerateur)         "avec"
+   set caption(starlight,cannotcreatecam)           "La caméra ne peut pas être créée."
 
    set caption(starlight,port_camera)               "Port Starlight"
    set caption(starlight,2points)                   ":"
@@ -70,6 +72,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(starlight,accelerateur)              "Acceleratore per porta parallela"
    set caption(starlight,sans_accelerateur)         "senza"
    set caption(starlight,avec_accelerateur)         "con"
+   set caption(starlight,cannotcreatecam)           "# La caméra ne peut pas être créée."
 
    set caption(starlight,port_camera)               "Porta Starlight"
    set caption(starlight,2points)                   ":"
@@ -93,6 +96,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(starlight,accelerateur)              "Caja aceleradora de puerto paralelo"
    set caption(starlight,sans_accelerateur)         "sin"
    set caption(starlight,avec_accelerateur)         "con"
+   set caption(starlight,cannotcreatecam)           "# La caméra ne peut pas être créée."
 
    set caption(starlight,port_camera)               "Puerto Starlight"
    set caption(starlight,2points)                   ":"
@@ -116,6 +120,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(starlight,accelerateur)              "Parallel Port Beschleuniger Gehäuse"
    set caption(starlight,sans_accelerateur)         "ohne"
    set caption(starlight,avec_accelerateur)         "mit"
+   set caption(starlight,cannotcreatecam)           "# La caméra ne peut pas être créée."
 
    set caption(starlight,port_camera)               "Starlight Port - Modell"
    set caption(starlight,2points)                   ":"
@@ -139,6 +144,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(starlight,accelerateur)              "Caixa de Aceleração da porta Paralela"
    set caption(starlight,sans_accelerateur)         "sem"
    set caption(starlight,avec_accelerateur)         "com"
+   set caption(starlight,cannotcreatecam)           "# La caméra ne peut pas être créée."
 
    set caption(starlight,port_camera)               "Porta Starlight"
    set caption(starlight,2points)                   ":"
@@ -162,6 +168,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(starlight,accelerateur)              "Parallel Port Accelerator Box"
    set caption(starlight,sans_accelerateur)         "without"
    set caption(starlight,avec_accelerateur)         "with"
+   set caption(starlight,cannotcreatecam)           "The camera cannot be created."
 
    set caption(starlight,port_camera)               "Starlight Port - Model"
    set caption(starlight,2points)                   ":"

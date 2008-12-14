@@ -1,6 +1,6 @@
 #
 # Fichier : audine.cap
-# Mise a jour $Id: audine.cap,v 1.4 2008-12-06 18:21:25 robertdelmas Exp $
+# Mise a jour $Id: audine.cap,v 1.5 2008-12-14 23:42:57 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -44,9 +44,10 @@ set caption(audine,modele_can)                   "A/D Converter"
 set caption(audine,type_obtu)                    "Shutter Type"
 set caption(audine,fonc_obtu)                    "Shutter Operation"
 set caption(audine,test_fab_audine)              "Tests to Check Camera Operation"
+set caption(audine,cannotcreatecam)              "The camera cannot be created."
 
-set caption(audine,2points)                      ":"
 set caption(audine,port_camera)                  "Audine Port"
+set caption(audine,2points)                      ":"
 
 set caption(audine,titre_site_web)               "Reference Web Site:"
 set caption(audine,site_web_ref)                 "http://www.astrosurf.com/audine/English/index_en.htm"
@@ -87,9 +88,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,type_obtu)                 "Type de l'obturateur"
    set caption(audine,fonc_obtu)                 "Fonctionnement de l'obturateur"
    set caption(audine,test_fab_audine)           "Tests pour la fabrication de la caméra"
+   set caption(audine,cannotcreatecam)           "La caméra ne peut pas être créée."
 
-   set caption(audine,2points)                   ":"
    set caption(audine,port_camera)               "Port Audine"
+   set caption(audine,2points)                   ":"
 
    set caption(audine,titre_site_web)            "Site Web de référence :"
    set caption(audine,site_web_ref)              "http://www.astrosurf.com/audine/index_fr.htm"
@@ -130,9 +132,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,type_obtu)                 "Tipo otturatore"
    set caption(audine,fonc_obtu)                 "Funzionamento otturatore"
    set caption(audine,test_fab_audine)           "Rilevamento camera in corso"
+   set caption(audine,cannotcreatecam)           "# La caméra ne peut pas être créée."
 
-   set caption(audine,2points)                   ":"
    set caption(audine,port_camera)               "Porta Audine"
+   set caption(audine,2points)                   ":"
 
    set caption(audine,titre_site_web)            "Sito Web di riferimento:"
    set caption(audine,site_web_ref)              "http://www.astrosurf.com/audine/English/index_en.htm"
@@ -173,9 +176,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,type_obtu)                 "Tipo de obturador"
    set caption(audine,fonc_obtu)                 "Funcionamiento del obturador"
    set caption(audine,test_fab_audine)           "Tests para la fabricación de la cámara"
+   set caption(audine,cannotcreatecam)           "# La caméra ne peut pas être créée."
 
-   set caption(audine,2points)                   ":"
    set caption(audine,port_camera)               "Puerto Audine"
+   set caption(audine,2points)                   ":"
 
    set caption(audine,titre_site_web)            "Sitio Web de referencia:"
    set caption(audine,site_web_ref)              "http://www.astrosurf.com/audine/English/index_en.htm"
@@ -216,9 +220,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,type_obtu)                 "Verschluss Modell"
    set caption(audine,fonc_obtu)                 "Verschluss Arbeiten"
    set caption(audine,test_fab_audine)           "Testen für das Kamera Bau"
+   set caption(audine,cannotcreatecam)           "# La caméra ne peut pas être créée."
 
-   set caption(audine,2points)                   ":"
    set caption(audine,port_camera)               "Audine Port"
+   set caption(audine,2points)                   ":"
 
    set caption(audine,titre_site_web)            "Referenz Webseite:"
    set caption(audine,site_web_ref)              "http://www.astrosurf.com/audine/English/index_en.htm"
@@ -259,9 +264,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,type_obtu)                 "Tipo de obturador"
    set caption(audine,fonc_obtu)                 "Operação do obturador"
    set caption(audine,test_fab_audine)           "Testa a operação da câmara"
+   set caption(audine,cannotcreatecam)           "# La caméra ne peut pas être créée."
 
-   set caption(audine,2points)                   ":"
    set caption(audine,port_camera)               "Porta Audine"
+   set caption(audine,2points)                   ":"
 
    set caption(audine,titre_site_web)            "Site Web de referência:"
    set caption(audine,site_web_ref)              "http://www.astrosurf.com/audine/English/index_en.htm"
@@ -302,9 +308,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,type_obtu)                 "Shutter Type"
    set caption(audine,fonc_obtu)                 "Shutter Operation"
    set caption(audine,test_fab_audine)           "Tests to Check Camera Operation"
+   set caption(audine,cannotcreatecam)           "The camera cannot be created."
 
-   set caption(audine,2points)                   ":"
    set caption(audine,port_camera)               "Audine Port"
+   set caption(audine,2points)                   ":"
 
    set caption(audine,titre_site_web)            "Reference Web Site:"
    set caption(audine,site_web_ref)              "http://www.astrosurf.com/audine/English/index_en.htm"

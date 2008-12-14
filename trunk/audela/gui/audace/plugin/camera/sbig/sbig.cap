@@ -1,6 +1,6 @@
 #
 # Fichier : sbig.cap
-# Mise a jour $Id: sbig.cap,v 1.5 2008-06-13 16:43:57 robertdelmas Exp $
+# Mise a jour $Id: sbig.cap,v 1.6 2008-12-14 23:44:09 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -32,6 +32,7 @@ set caption(sbig,temp_ext)                     "CCD Temp. / Ext.:"
 set caption(sbig,miroir_x)                     "Horizontal Mirror"
 set caption(sbig,miroir_y)                     "Vertical Mirror"
 set caption(sbig,fonc_obtu)                    "Shutter Operation"
+set caption(sbig,cannotcreatecam)              "The camera cannot be created."
 
 set caption(sbig,port_camera)                  "SBIG Port"
 set caption(sbig,2points)                      ":"
@@ -63,6 +64,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sbig,miroir_x)                  "Miroir horizontal"
    set caption(sbig,miroir_y)                  "Miroir vertical"
    set caption(sbig,fonc_obtu)                 "Fonctionnement de l'obturateur"
+   set caption(sbig,cannotcreatecam)           "La caméra ne peut pas être créée."
 
    set caption(sbig,port_camera)               "Port SBIG"
    set caption(sbig,2points)                   ":"
@@ -94,6 +96,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sbig,miroir_x)                  "Specchio orizzontale"
    set caption(sbig,miroir_y)                  "Specchio verticale"
    set caption(sbig,fonc_obtu)                 "Funzionamento otturatore"
+   set caption(sbig,cannotcreatecam)           "# La caméra ne peut pas être créée."
 
    set caption(sbig,port_camera)               "Porta SBIG"
    set caption(sbig,2points)                   ":"
@@ -125,6 +128,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sbig,miroir_x)                  "Espejo horizontal"
    set caption(sbig,miroir_y)                  "Espejo vertical"
    set caption(sbig,fonc_obtu)                 "Funcionamiento del obturador"
+   set caption(sbig,cannotcreatecam)           "# La caméra ne peut pas être créée."
 
    set caption(sbig,port_camera)               "Puerto SBIG"
    set caption(sbig,2points)                   ":"
@@ -156,6 +160,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sbig,miroir_x)                  "Horizontale Spiegel"
    set caption(sbig,miroir_y)                  "Verticale Spiegel"
    set caption(sbig,fonc_obtu)                 "Verschluss Arbeiten"
+   set caption(sbig,cannotcreatecam)           "# La caméra ne peut pas être créée."
 
    set caption(sbig,port_camera)               "SBIG Port"
    set caption(sbig,2points)                   ":"
@@ -187,6 +192,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sbig,miroir_x)                  "Espelho Horizontal"
    set caption(sbig,miroir_y)                  "Espelho Vertical"
    set caption(sbig,fonc_obtu)                 "Operação do obturador"
+   set caption(sbig,cannotcreatecam)           "# La caméra ne peut pas être créée."
 
    set caption(sbig,port_camera)               "Porta SBIG"
    set caption(sbig,2points)                   ":"
@@ -218,6 +224,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sbig,miroir_x)                  "Horisontal spejl"
    set caption(sbig,miroir_y)                  "Vertikal spejl"
    set caption(sbig,fonc_obtu)                 "Shutter Operation"
+   set caption(sbig,cannotcreatecam)           "The camera cannot be created."
 
    set caption(sbig,port_camera)               "SBIG Port"
    set caption(sbig,2points)                   ":"

@@ -1,6 +1,6 @@
 #
 # Fichier : kitty.cap
-# Mise a jour $Id: kitty.cap,v 1.5 2008-11-10 10:45:42 robertdelmas Exp $
+# Mise a jour $Id: kitty.cap,v 1.6 2008-12-14 23:43:59 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -25,6 +25,7 @@ set caption(kitty,refroidissement_off)          "Off"
 set caption(kitty,temperature_CCD)              "CCD Temperature:"
 set caption(kitty,deg_c)                        "°C"
 set caption(kitty,test)                         "SX28 Test"
+set caption(kitty,cannotcreatecam)              "The camera cannot be created."
 
 set caption(kitty,port_camera)                  "Kitty Port - Model"
 set caption(kitty,2points)                      ":"
@@ -49,6 +50,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,temperature_CCD)           "Température du CCD :"
    set caption(kitty,deg_c)                     "°C"
    set caption(kitty,test)                      "Test du SX28"
+   set caption(kitty,cannotcreatecam)           "La caméra ne peut pas être créée."
 
    set caption(kitty,port_camera)               "Port Kitty"
    set caption(kitty,2points)                   ":"
@@ -73,6 +75,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,temperature_CCD)           "CCD Temperatura:"
    set caption(kitty,deg_c)                     "°C"
    set caption(kitty,test)                      "SX28 Test"
+   set caption(kitty,cannotcreatecam)           "# La caméra ne peut pas être créée."
 
    set caption(kitty,port_camera)               "Porta Kitty"
    set caption(kitty,2points)                   ":"
@@ -97,6 +100,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,temperature_CCD)           "Temperatura CCD:"
    set caption(kitty,deg_c)                     "°C"
    set caption(kitty,test)                      "Test SX28"
+   set caption(kitty,cannotcreatecam)           "# La caméra ne peut pas être créée."
 
    set caption(kitty,port_camera)               "Puerto Kitty"
    set caption(kitty,2points)                   ":"
@@ -121,6 +125,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,temperature_CCD)           "Temperatur CCD:"
    set caption(kitty,deg_c)                     "°C"
    set caption(kitty,test)                      "Test SX28"
+   set caption(kitty,cannotcreatecam)           "# La caméra ne peut pas être créée."
 
    set caption(kitty,port_camera)               "Kitty Port - Modell"
    set caption(kitty,2points)                   ":"
@@ -145,6 +150,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,temperature_CCD)           "Temperatura do CCD:"
    set caption(kitty,deg_c)                     "°C"
    set caption(kitty,test)                      "Teste SX28"
+   set caption(kitty,cannotcreatecam)           "# La caméra ne peut pas être créée."
 
    set caption(kitty,port_camera)               "Porta Kitty"
    set caption(kitty,2points)                   ":"
@@ -169,6 +175,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,temperature_CCD)           "CCD Temperature:"
    set caption(kitty,deg_c)                     "°C"
    set caption(kitty,test)                      "SX28 Test"
+   set caption(kitty,cannotcreatecam)           "The camera cannot be created."
 
    set caption(kitty,port_camera)               "Kitty Port - Model"
    set caption(kitty,2points)                   ":"

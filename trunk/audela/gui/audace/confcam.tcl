@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.123 2008-12-14 15:53:09 denismarchais Exp $
+# Mise a jour $Id: confcam.tcl,v 1.124 2008-12-14 23:45:08 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -875,7 +875,9 @@ proc ::confCam::configureCamera { camItem } {
       #--- J'affiche le message d'erreur
       switch $::errorCode {
          "NotRoot" {
-            tk_messageBox -message "$caption(confcam,notroot)" -icon error
+            #--- message d'erreur si non root sous Linux
+            tk_messageBox -title "$caption(confcam,attention)" -icon error \
+               -message "$caption(confcam,notroot)"
          }
          "CameraUnique" {
             #--- message d'erreur pour une camera unique
@@ -885,7 +887,8 @@ proc ::confCam::configureCamera { camItem } {
          default {
             #--- message d'erreur pour les autres cas d'erreur
             ::console::affiche_erreur "$::errorInfo\n\n"
-            tk_messageBox -message "$errorMessage $caption(confcam,seeconsole)" -icon error
+            tk_messageBox -title "$caption(confcam,attention)" -icon error \
+               -message "$errorMessage\n$caption(confcam,seeconsole)"
          }
       }
 
