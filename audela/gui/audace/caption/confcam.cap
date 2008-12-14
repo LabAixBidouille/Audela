@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.43 2008-12-14 15:53:09 denismarchais Exp $
+# Mise a jour $Id: confcam.cap,v 1.44 2008-12-14 23:42:31 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -30,6 +30,8 @@ set caption(confcam,attention)                  "Warning"
 set caption(confcam,connexion_texte1)           "Camera Connection in Progress..."
 set caption(confcam,connexion_texte2)           "Please wait a few seconds."
 set caption(confcam,connexion_texte3)           "Only one of this camera can be connected.\nPlease choose another camera."
+set caption(confcam,notroot)                    "You must be root to drive this camera."
+set caption(confcam,seeconsole)                 "See details in Terminal."
 
 set caption(confcam,pb)                         "Problem"
 set caption(confcam,onlycam+obt)                "Sorry, this function is not\navailable with this camera."
@@ -56,9 +58,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,connexion_texte1)        "Veuillez patienter quelques secondes"
    set caption(confcam,connexion_texte2)        "pendant la connexion de votre caméra."
    set caption(confcam,connexion_texte3)        "Une seule caméra de ce type peut être connectée.\nVeuillez en choisir une autre."
-   set caption(confcam,notroot)                 "Il faut être root pour utiliser cette caméra."
-   set caption(confcam,cannotcreatecam)         "La caméra ne peut pas être créée."
-   set caption(confcam,seeconsole)              "Détails dans la console."
+   set caption(confcam,notroot)                 "Vous devez être root pour utiliser cette caméra."
+   set caption(confcam,seeconsole)              "Détails dans la Console."
 
    set caption(confcam,pb)                      "Problème"
    set caption(confcam,onlycam+obt)             "Désolé, cette fonction n'est pas\ndisponible avec cette caméra."
@@ -85,6 +86,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,connexion_texte1)        "Attendere qualche secondo per"
    set caption(confcam,connexion_texte2)        "la connessione della camera."
    set caption(confcam,connexion_texte3)        "Solamente una fotocamera di questo tipo puo` essere collegata.\nSceglierne un'altra."
+   set caption(confcam,notroot)                 "# Vous devez être root pour utiliser cette caméra."
+   set caption(confcam,seeconsole)              "# Détails dans la Console."
 
    set caption(confcam,pb)                      "Problema"
    set caption(confcam,onlycam+obt)             "Spiacenti, ma questa funzionalita'\nnon e` disponibile per questa camera."
@@ -111,6 +114,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,connexion_texte1)        "Conectando con la cámara..."
    set caption(confcam,connexion_texte2)        "Por favor, espere unos segundos."
    set caption(confcam,connexion_texte3)        "Solo se puede conectar una camara de este tipo.\nPor favor, seleccione otra camara."
+   set caption(confcam,notroot)                 "# Vous devez être root pour utiliser cette caméra."
+   set caption(confcam,seeconsole)              "# Détails dans la Console."
 
    set caption(confcam,pb)                      "Problema"
    set caption(confcam,onlycam+obt)             "Lo siento, esta función\nno está disponible en\neste modelo de cámara."
@@ -137,6 +142,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,connexion_texte1)        "Bitte, einige Sekunden warten"
    set caption(confcam,connexion_texte2)        "während das Kamera Anschluß."
    set caption(confcam,connexion_texte3)        "Nur eine Kamera dieser Typ kann verbunden sein.\nBitte eine andere wählen.."
+   set caption(confcam,notroot)                 "# Vous devez être root pour utiliser cette caméra."
+   set caption(confcam,seeconsole)              "# Détails dans la Console."
 
    set caption(confcam,pb)                      "Problem"
    set caption(confcam,onlycam+obt)             "Diese Funktion ist leider nicht\nmit diese Kamera verfügbar."
@@ -163,6 +170,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,connexion_texte1)        "Conexão da câmara em curso..."
    set caption(confcam,connexion_texte2)        "Por favor aguarde alguns segundos."
    set caption(confcam,connexion_texte3)        "Apenas uma câmara deste tipo pode ser conectada.\nPor favor escolha outra câmara."
+   set caption(confcam,notroot)                 "# Vous devez être root pour utiliser cette caméra."
+   set caption(confcam,seeconsole)              "# Détails dans la Console."
 
    set caption(confcam,pb)                      "Problema"
    set caption(confcam,onlycam+obt)             "Desculpe, esta função não está\ndisponível com esta câmara."
@@ -189,6 +198,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,connexion_texte1)        "Camera Connection in Progress..."
    set caption(confcam,connexion_texte2)        "Please wait a few seconds."
    set caption(confcam,connexion_texte3)        "Only one of this camera can be connected.\nPlease choose another camera."
+   set caption(confcam,notroot)                 "You must be root to drive this camera."
+   set caption(confcam,seeconsole)              "See details in Terminal."
 
    set caption(confcam,pb)                      "Problem"
    set caption(confcam,onlycam+obt)             "Sorry, this function is not\navailable with this camera."

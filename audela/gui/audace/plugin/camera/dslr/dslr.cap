@@ -1,6 +1,6 @@
 #
 # Fichier : dslr.cap
-# Mise a jour $Id: dslr.cap,v 1.14 2007-12-15 08:11:00 robertdelmas Exp $
+# Mise a jour $Id: dslr.cap,v 1.15 2008-12-14 23:43:28 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -25,6 +25,7 @@ set caption(dslr,externe)                   "Manual"
 set caption(dslr,longueposebit)             "Control Bit Number"
 set caption(dslr,longueposestart)           "Control when exposure begins"
 set caption(dslr,detect_service)            "Stop Automatic Detection of Digital Cameras"
+set caption(dslr,cannotcreatecam)           "The camera cannot be created."
 
 set caption(dslr,telecharger)               "Download Image"
 set caption(dslr,pas_telecharger)           "Do Not Download"
@@ -55,6 +56,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dslr,longueposebit)          "Numéro du bit de commande"
    set caption(dslr,longueposestart)        "Commande au début de la pose"
    set caption(dslr,detect_service)         "Arrêt de la détection automatique des appareils photo numériques"
+   set caption(dslr,cannotcreatecam)        "La caméra ne peut pas être créée."
 
    set caption(dslr,telecharger)            "Télécharger l'image"
    set caption(dslr,pas_telecharger)        "Ne pas télécharger"
@@ -85,6 +87,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dslr,longueposebit)          "Numero bit del comando"
    set caption(dslr,longueposestart)        "Comando all'inizio della posa"
    set caption(dslr,detect_service)         "Arresto detezione automatica delle camere digitali"
+   set caption(dslr,cannotcreatecam)        "# La caméra ne peut pas être créée."
 
    set caption(dslr,telecharger)            "Scaricare l'immagine"
    set caption(dslr,pas_telecharger)        "Non scaricare"
@@ -115,6 +118,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dslr,longueposebit)          "Número del bit de control"
    set caption(dslr,longueposestart)        "Control cuando empieza la exposición"
    set caption(dslr,detect_service)         "Parar la detección automática de cámaras digitales"
+   set caption(dslr,cannotcreatecam)        "# La caméra ne peut pas être créée."
 
    set caption(dslr,telecharger)            "Descargar imagen"
    set caption(dslr,pas_telecharger)        "No descargar"
@@ -145,6 +149,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dslr,longueposebit)          "Steuer Bit Nummer"
    set caption(dslr,longueposestart)        "Anfang der Belichtung Antrieb"
    set caption(dslr,detect_service)         "Ende der digitale Fotoapparate automatische Registrierung"
+   set caption(dslr,cannotcreatecam)        "# La caméra ne peut pas être créée."
 
    set caption(dslr,telecharger)            "Das Bild herunterladen"
    set caption(dslr,pas_telecharger)        "Nicht herunterladen"
@@ -175,6 +180,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dslr,longueposebit)          "Controlo do Número do Bit"
    set caption(dslr,longueposestart)        "Controlo do Início da Exposição"
    set caption(dslr,detect_service)         "Parar Automaticamente a Detecção de Câmaras Digitais"
+   set caption(dslr,cannotcreatecam)        "# La caméra ne peut pas être créée."
 
    set caption(dslr,telecharger)            "Descarregar a imagem"
    set caption(dslr,pas_telecharger)        "Não descarregar"
@@ -205,6 +211,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dslr,longueposebit)          "Control Bit Number"
    set caption(dslr,longueposestart)        "Control when exposure begins"
    set caption(dslr,detect_service)         "Stop Automatic Detection of Digital Cameras"
+   set caption(dslr,cannotcreatecam)        "The camera cannot be created."
 
    set caption(dslr,telecharger)            "Download Image"
    set caption(dslr,pas_telecharger)        "Do Not Download"
