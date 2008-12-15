@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.17 2008-06-02 15:59:23 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.18 2008-12-15 22:22:17 robertdelmas Exp $
 #
 
 # =========================================================
@@ -473,8 +473,8 @@ namespace eval ::acqfen {
                $This.acqcentred.but configure -text $caption(acqfen,GO)
 
                #--- On modifie le bouton "Go" des acquisitions fenetrees
-               $This.acq.but configure -text $caption(acqfen,actuxy) -command {::acqfen::ActuCoord}
-               $This.acqred.but configure -text $caption(acqfen,actuxy) -command {::acqfen::ActuCoord}
+               $This.acq.but configure -text $caption(acqfen,actuxy) -command ::acqfen::ActuCoord
+               $This.acqred.but configure -text $caption(acqfen,actuxy) -command ::acqfen::ActuCoord
 
                #--- RAZ du fenetrage
                set panneau(acqfen,X1) "-"
@@ -1278,8 +1278,8 @@ namespace eval ::acqfen {
             -y [expr $panneau(acqfen,mtx_y)*([lindex [cam$audace(camNo) nbcells] 1]-$panneau(acqfen,Y1))/[lindex [cam$audace(camNo) nbcells] 1]-$hauteur]
 
          #--- On modifie le bouton "Go" des acquisitions fenetrees
-         $This.acq.but configure -text $caption(acqfen,GO) -command {::acqfen::GoStop}
-         $This.acqred.but configure -text $caption(acqfen,GO) -command {::acqfen::GoStop}
+         $This.acq.but configure -text $caption(acqfen,GO) -command ::acqfen::GoStop
+         $This.acqred.but configure -text $caption(acqfen,GO) -command ::acqfen::GoStop
       }
    }
 
@@ -1511,16 +1511,15 @@ frame $This -borderwidth 2 -relief groove
    pack $This.config -side top -fill x
 
       #--- Bonton de Configuration
-      button $This.config.but -text $caption(acqfen,congiguration) \
-         -command { Creefenreglfen } -borderwidth 1
+      button $This.config.but -text $caption(acqfen,congiguration) -borderwidth 1 -command Creefenreglfen
       pack $This.config.but -in $This.config -anchor center -expand 1 -fill both -side top -ipadx 5
 
    #--- Trame acquisition centrage (version complete)
    frame $This.acqcent -borderwidth 1 -relief groove
 
       #--- Sous-titre "acquisition pleine trame"
-      button $This.acqcent.titre -text $caption(acqfen,titre_centrage) \
-         -command {::acqfen::ChangeAffPleineTrame} -borderwidth 0
+      button $This.acqcent.titre -text $caption(acqfen,titre_centrage) -borderwidth 0 \
+         -command ::acqfen::ChangeAffPleineTrame
       pack $This.acqcent.titre -expand true -fill x -pady 2
 
       #--- Sous-trame pour temps de pose
@@ -1544,41 +1543,39 @@ frame $This -borderwidth 2 -relief groove
          pack $This.acqcent.pose.sec -side right
 
          #--- Ligne de saisie du temps de pose
-         entry $This.acqcent.pose.pose_ent -font $audace(font,arial_8_b) -width 4 \
-            -textvariable panneau(acqfen,pose_centrage) -relief groove -justify center
+         entry $This.acqcent.pose.pose_ent -width 4 -textvariable panneau(acqfen,pose_centrage) \
+            -relief groove -justify center
          pack $This.acqcent.pose.pose_ent -side left -fill y
 
       pack $This.acqcent.pose -expand true
 
       #--- Bouton binning
       button $This.acqcent.butbin -text $caption(acqfen,bin,$panneau(acqfen,bin_centrage)) \
-         -command {::acqfen::ChangeBinCent}
+         -command ::acqfen::ChangeBinCent
       pack $This.acqcent.butbin -expand true
 
       #--- Bouton Go/Stop
-      button $This.acqcent.but -text $caption(acqfen,GO) -font $audace(font,arial_12_b) -borderwidth 3 \
-         -command ::acqfen::GoStopCent
+      button $This.acqcent.but -text $caption(acqfen,GO) -borderwidth 3 -command ::acqfen::GoStopCent
       pack $This.acqcent.but -expand true -fill both
 
    #--- Trame acquisition centrage (version reduite)
    frame $This.acqcentred -borderwidth 1 -relief groove
 
       #--- Sous-titre "acquisition pleine trame"
-      button $This.acqcentred.titre -text $caption(acqfen,titre_centrage) \
-         -command {::acqfen::ChangeAffPleineTrame} -borderwidth 0
+      button $This.acqcentred.titre -text $caption(acqfen,titre_centrage) -borderwidth 0 \
+         -command ::acqfen::ChangeAffPleineTrame
       pack $This.acqcentred.titre -expand true -fill x -pady 2
 
       #--- Bouton Go/Stop
-      button $This.acqcentred.but -text $caption(acqfen,GO) -font $audace(font,arial_12_b) -borderwidth 3 \
-         -command ::acqfen::GoStopCent
+      button $This.acqcentred.but -text $caption(acqfen,GO) -borderwidth 3 -command ::acqfen::GoStopCent
       pack $This.acqcentred.but -expand true -fill both
 
    #--- Trame acquisition (version complete)
    frame $This.acq -borderwidth 1 -relief groove
 
       #--- Sous-titre "acquisitions fenetrees"
-      button $This.acq.titre -text $caption(acqfen,titre_fenetrees) \
-         -command {::acqfen::ChangeAffFenetrees} -borderwidth 0
+      button $This.acq.titre -text $caption(acqfen,titre_fenetrees) -borderwidth 0 \
+         -command ::acqfen::ChangeAffFenetrees
       pack $This.acq.titre -expand true -fill x -pady 2
 
       #--- Sous-trame pour temps de pose
@@ -1602,15 +1599,14 @@ frame $This -borderwidth 2 -relief groove
          pack $This.acq.pose.sec -side right
 
          #--- Ligne de saisie du temps de pose
-         entry $This.acq.pose.pose_ent -font $audace(font,arial_8_b) -width 4 \
-            -textvariable panneau(acqfen,pose) -relief groove -justify center
+         entry $This.acq.pose.pose_ent -width 4 -textvariable panneau(acqfen,pose) \
+            -relief groove -justify center
          pack $This.acq.pose.pose_ent -side left -fill y
 
       pack $This.acq.pose -expand true
 
       #--- Bouton binning
-      button $This.acq.butbin -text $caption(acqfen,bin,$panneau(acqfen,bin)) \
-         -command {::acqfen::ChangeBin}
+      button $This.acq.butbin -text $caption(acqfen,bin,$panneau(acqfen,bin)) -command ::acqfen::ChangeBin
       pack $This.acq.butbin -expand true
 
       #--- Representation matrice CCD
@@ -1622,16 +1618,15 @@ frame $This -borderwidth 2 -relief groove
       pack $This.acq.matrice_color_invariant.fen
 
       #--- Bouton Go/Stop
-      button $This.acq.but -text $caption(acqfen,actuxy) -font $audace(font,arial_12_b) -borderwidth 3 \
-         -command {::acqfen::ActuCoord}
+      button $This.acq.but -text $caption(acqfen,actuxy) -borderwidth 3 -command ::acqfen::ActuCoord
       pack $This.acq.but -expand true -fill both
 
    #--- Trame acquisition (version reduite)
    frame $This.acqred -borderwidth 1 -relief groove
 
       #--- Sous-titre "acquisitions fenetrees"
-      button $This.acqred.titre -text $caption(acqfen,titre_fenetrees) \
-         -command {::acqfen::ChangeAffFenetrees} -borderwidth 0
+      button $This.acqred.titre -text $caption(acqfen,titre_fenetrees) -borderwidth 0 \
+         -command ::acqfen::ChangeAffFenetrees
       pack $This.acqred.titre -expand true -fill x -pady 2
 
       #--- Representation matrice CCD
@@ -1643,15 +1638,13 @@ frame $This -borderwidth 2 -relief groove
       pack $This.acqred.matrice_color_invariant.fen
 
       #--- Bouton Go/Stop
-      button $This.acqred.but -text $caption(acqfen,actuxy) -font $audace(font,arial_12_b) -borderwidth 3 \
-         -command {::acqfen::ActuCoord}
+      button $This.acqred.but -text $caption(acqfen,actuxy) -borderwidth 3 -command ::acqfen::ActuCoord
       pack $This.acqred.but -expand true -fill both
 
    #--- Trame du mode d'acquisition
    frame $This.mode -borderwidth 2 -relief groove
 
-      button $This.mode.but -text $panneau(acqfen,bouton_mode) -font $audace(font,arial_10_b) \
-         -command ::acqfen::ChangeMode
+      button $This.mode.but -text $panneau(acqfen,bouton_mode) -command ::acqfen::ChangeMode
       pack $This.mode.but -expand true -fill both
 
       #--- Definition du sous-panneau "Mode: Une seule image"
@@ -1661,7 +1654,7 @@ frame $This -borderwidth 2 -relief groove
             label $This.mode.une.nom.but -text $caption(acqfen,nom) -pady 0
             pack $This.mode.une.nom.but -fill x -side top
             entry $This.mode.une.nom.entr -width 10 -textvariable panneau(acqfen,nom_image) \
-               -font $audace(font,arial_10_b) -relief groove
+               -relief groove
             pack $This.mode.une.nom.entr -fill x -side top
          pack $This.mode.une.nom -expand true -fill both
          frame $This.mode.une.index -relief ridge -borderwidth 2
@@ -1669,13 +1662,12 @@ frame $This -borderwidth 2 -relief groove
                -variable panneau(acqfen,indexer)
             pack $This.mode.une.index.case -expand true -fill both
             entry $This.mode.une.index.entr -width 3 -textvariable panneau(acqfen,index) \
-               -font $audace(font,arial_10_b) -relief groove -justify center
+               -relief groove -justify center
             pack $This.mode.une.index.entr -side left -fill x -expand true
             button $This.mode.une.index.but -text "1" -width 3 -command {set panneau(acqfen,index) 1}
             pack $This.mode.une.index.but -side right -fill x
          pack $This.mode.une.index -expand true -fill both
-         button $This.mode.une.sauve -text $caption(acqfen,sauvegde) \
-            -command ::acqfen::SauveUneImage
+         button $This.mode.une.sauve -text $caption(acqfen,sauvegde) -command ::acqfen::SauveUneImage
          pack $This.mode.une.sauve -expand true -fill both
 
       #--- Definition du sous-panneau "Mode: Serie d'image"
@@ -1684,21 +1676,21 @@ frame $This -borderwidth 2 -relief groove
             label $This.mode.serie.nom.but -text $caption(acqfen,nom) -pady 0
             pack $This.mode.serie.nom.but -fill x
             entry $This.mode.serie.nom.entr -width 10 -textvariable panneau(acqfen,nom_image) \
-               -font $audace(font,arial_10_b) -relief groove
+               -relief groove
             pack $This.mode.serie.nom.entr -fill x
          pack $This.mode.serie.nom -expand true -fill both
          frame $This.mode.serie.nb -relief ridge -borderwidth 2
             label $This.mode.serie.nb.but -text $caption(acqfen,nombre) -pady 0
             pack $This.mode.serie.nb.but -side left -fill y
             entry $This.mode.serie.nb.entr -width 3 -textvariable panneau(acqfen,nb_images) \
-               -font $audace(font,arial_10_b) -relief groove -justify center
+               -relief groove -justify center
             pack $This.mode.serie.nb.entr -side left -fill x -expand true
          pack $This.mode.serie.nb -expand true -fill both
          frame $This.mode.serie.index -relief ridge -borderwidth 2
             label $This.mode.serie.index.lab -text $caption(acqfen,index) -pady 0
             pack $This.mode.serie.index.lab -expand true -fill both
             entry $This.mode.serie.index.entr -width 3 -textvariable panneau(acqfen,index) \
-               -font $audace(font,arial_10_b) -relief groove -justify center
+               -relief groove -justify center
             pack $This.mode.serie.index.entr -side left -fill x -expand true
             button $This.mode.serie.index.but -text "1" -width 3 -command {set panneau(acqfen,index) 1}
             pack $This.mode.serie.index.but -side right -fill x
@@ -1715,14 +1707,14 @@ frame $This -borderwidth 2 -relief groove
             label $This.mode.continu.nom.but -text $caption(acqfen,nom) -pady 0
             pack $This.mode.continu.nom.but -fill x
             entry $This.mode.continu.nom.entr -width 10 -textvariable panneau(acqfen,nom_image) \
-               -font $audace(font,arial_10_b) -relief groove
+               -relief groove
             pack $This.mode.continu.nom.entr -fill x
          pack $This.mode.continu.nom -expand true -fill both
          frame $This.mode.continu.index -relief ridge -borderwidth 2
             label $This.mode.continu.index.lab -text $caption(acqfen,index) -pady 0
             pack $This.mode.continu.index.lab -expand true -fill both
             entry $This.mode.continu.index.entr -width 3 -textvariable panneau(acqfen,index) \
-               -font $audace(font,arial_10_b) -relief groove -justify center
+               -relief groove -justify center
             pack $This.mode.continu.index.entr -side left -fill x -expand true
             button $This.mode.continu.index.but -text "1" -width 3 -command {set panneau(acqfen,index) 1}
             pack $This.mode.continu.index.but -side right -fill x
@@ -1783,7 +1775,7 @@ proc Creefenreglfen { } {
          -variable panneau(acqfen,fenreglfen1) -value 2
       pack $audace(base).fenreglfen.1.2.but -side left
       entry $audace(base).fenreglfen.1.2.ent -textvariable panneau(acqfen,fenreglfen12) \
-         -font $audace(font,arial_8_b) -width 10 -justify center
+         -width 10 -justify center
       pack $audace(base).fenreglfen.1.2.ent -side left
       frame $audace(base).fenreglfen.2
       pack $audace(base).fenreglfen.2 -expand true -fill x
@@ -1800,7 +1792,7 @@ proc Creefenreglfen { } {
          -variable panneau(acqfen,fenreglfen2) -value 2
       pack $audace(base).fenreglfen.2.2.but -side left
       entry $audace(base).fenreglfen.2.2.ent -textvariable panneau(acqfen,fenreglfen22) \
-         -font $audace(font,arial_8_b) -width 10 -justify center
+         -width 10 -justify center
       pack $audace(base).fenreglfen.2.2.ent -side left
       frame $audace(base).fenreglfen.2.3
       pack $audace(base).fenreglfen.2.3 -expand true -fill x

@@ -2,7 +2,7 @@
 # Fichier : pretrfc.tcl
 # Description : Outil pour le pretraitement automatique
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: pretrfc.tcl,v 1.19 2007-11-29 22:11:50 robertdelmas Exp $
+# Mise a jour $Id: pretrfc.tcl,v 1.20 2008-12-15 22:22:53 robertdelmas Exp $
 #
 
 #============================================================
@@ -1845,13 +1845,12 @@ proc creeFenetrePrFC { } {
       #--- Titre de l'etape 1: Pretraitement des noirs & option cosmetique
       frame $audace(base).fenetrePretr.et1.titre -borderwidth 1 -relief groove
          #--- Affichage du titre
-         label $audace(base).fenetrePretr.et1.titre.nom -text $caption(pretrfc,titret1) \
-            -font $audace(font,arial_10_b) -justify left
+         label $audace(base).fenetrePretr.et1.titre.nom -text $caption(pretrfc,titret1) -justify left
          pack $audace(base).fenetrePretr.et1.titre.nom -side left -in $audace(base).fenetrePretr.et1.titre
       pack $audace(base).fenetrePretr.et1.titre -side top -fill x
       #--- Bouton TEST
       button $audace(base).fenetrePretr.et1.test -borderwidth 2 -width 4 -text $caption(pretrfc,test) \
-         -font $audace(font,arial_12_n) -command {
+         -command {
             #--- Sauvegarde des parametres dans le fichier de config
             ::pretrfc::SauvegardeParametres
             #--- Traitement etape 1
@@ -1860,7 +1859,7 @@ proc creeFenetrePrFC { } {
       pack $audace(base).fenetrePretr.et1.test -side right -anchor sw -in $audace(base).fenetrePretr.et1
       #--- Bouton Recharge
       button $audace(base).fenetrePretr.et1.recharge -borderwidth 2 -text $caption(pretrfc,recharge) \
-         -font $audace(font,arial_12_n) -command {
+         -command {
             #--- Sauvegarde des parametres dans le fichier de config
             ::pretrfc::SauvegardeParametres
             #--- Traitement etape 1
@@ -1870,11 +1869,10 @@ proc creeFenetrePrFC { } {
       #--- Premiere ligne de l'etape 1
       frame $audace(base).fenetrePretr.et1.ligne1
          #--- Affichage du label "Fichier du script"
-         label $audace(base).fenetrePretr.et1.ligne1.nmFichScr -text $caption(pretrfc,FichScript) \
-            -font $audace(font,arial_10_n) -width 29
+         label $audace(base).fenetrePretr.et1.ligne1.nmFichScr -text $caption(pretrfc,FichScript) -width 29
          pack $audace(base).fenetrePretr.et1.ligne1.nmFichScr -side left
          #--- Affichage du champ de saisie "Fichier du script"
-         entry $audace(base).fenetrePretr.et1.ligne1.entnmFichScr -width 16 -font $audace(font,arial_10_b) -relief flat \
+         entry $audace(base).fenetrePretr.et1.ligne1.entnmFichScr -width 16 -relief flat \
             -textvariable conf_pt_fc(FichScript) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et1.ligne1.entnmFichScr -side left
       pack $audace(base).fenetrePretr.et1.ligne1 -side top -fill x
@@ -1882,10 +1880,10 @@ proc creeFenetrePrFC { } {
       frame $audace(base).fenetrePretr.et1.ligne2
          #--- Affichage du label "Procedure de correction cosmetique"
          label $audace(base).fenetrePretr.et1.ligne2.lab1 -text $caption(pretrfc,procCorr) \
-            -font $audace(font,arial_10_n) -width 29 -justify right
+            -width 29 -justify right
          pack $audace(base).fenetrePretr.et1.ligne2.lab1 -side left
          #--- Affichage du champ de saisie "Procedure de correction cosmetique"
-         entry $audace(base).fenetrePretr.et1.ligne2.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat\
+         entry $audace(base).fenetrePretr.et1.ligne2.ent1 -width 16 -relief flat\
             -textvariable conf_pt_fc(procCorr) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et1.ligne2.ent1 -side left
       pack $audace(base).fenetrePretr.et1.ligne2 -side top -fill x
@@ -1896,17 +1894,16 @@ proc creeFenetrePrFC { } {
       #--- Titre de l'etape 2: Pretraitement des noirs & option cosmetique
       frame $audace(base).fenetrePretr.et2.titre -borderwidth 1 -relief groove
          #--- Affichage du titre
-         label $audace(base).fenetrePretr.et2.titre.nom -text $caption(pretrfc,titret2) \
-            -font $audace(font,arial_10_b) -justify left
+         label $audace(base).fenetrePretr.et2.titre.nom -text $caption(pretrfc,titret2) -justify left
          pack $audace(base).fenetrePretr.et2.titre.nom -side left -in $audace(base).fenetrePretr.et2.titre
          #--- Affichage de la case a cocher pour l'activation de la correction cosmetique
          checkbutton $audace(base).fenetrePretr.et2.titre.case -text $caption(pretrfc,corcosm) \
-            -font $audace(font,arial_10_n) -variable conf_pt_fc(cosmPrech)
+            -variable conf_pt_fc(cosmPrech)
          pack $audace(base).fenetrePretr.et2.titre.case -side right -in $audace(base).fenetrePretr.et2.titre
       pack $audace(base).fenetrePretr.et2.titre -side top -fill x
       #--- Bouton GO
       button $audace(base).fenetrePretr.et2.go -borderwidth 2 -width 4 -text $caption(pretrfc,goet) \
-         -font $audace(font,arial_12_n) -command {
+         -command {
             #--- Sauvegarde des parametres dans le fichier de config
             ::pretrfc::SauvegardeParametres
             #--- Traitement etape 2
@@ -1916,18 +1913,17 @@ proc creeFenetrePrFC { } {
       #--- Premiere ligne de l'etape 2
       frame $audace(base).fenetrePretr.et2.ligne1
          #--- Affichage du label "Nom des fichiers source"
-         label $audace(base).fenetrePretr.et2.ligne1.nmPrechSce -text $caption(pretrfc,nmPrechSce) \
-            -font $audace(font,arial_10_n) -width 29
+         label $audace(base).fenetrePretr.et2.ligne1.nmPrechSce -text $caption(pretrfc,nmPrechSce) -width 29
          pack $audace(base).fenetrePretr.et2.ligne1.nmPrechSce -side left
          #--- Affichage du champ de saisie "Nom des fichiers source"
-         entry $audace(base).fenetrePretr.et2.ligne1.entnmPrechSce -width 16 -font $audace(font,arial_10_b) -relief flat\
+         entry $audace(base).fenetrePretr.et2.ligne1.entnmPrechSce -width 16 -relief flat\
             -textvariable conf_pt_fc(nmPrechSce) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et2.ligne1.entnmPrechSce -side left
          #--- Affichage du label "Nombre de fichiers source"
-         label $audace(base).fenetrePretr.et2.ligne1.nbPrech -text $caption(pretrfc,nb) -font $audace(font,arial_10_n)
+         label $audace(base).fenetrePretr.et2.ligne1.nbPrech -text $caption(pretrfc,nb)
          pack $audace(base).fenetrePretr.et2.ligne1.nbPrech -side left
          #--- Affichage du champ de saisie "Nombre de fichiers source"
-         entry $audace(base).fenetrePretr.et2.ligne1.entNbPrech -width 3 -font $audace(font,arial_10_b) -relief flat\
+         entry $audace(base).fenetrePretr.et2.ligne1.entNbPrech -width 3 -relief flat\
             -textvariable conf_pt_fc(nbPrech) -justify center -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et2.ligne1.entNbPrech -side left
       pack $audace(base).fenetrePretr.et2.ligne1 -side top -fill x
@@ -1935,18 +1931,18 @@ proc creeFenetrePrFC { } {
       frame $audace(base).fenetrePretr.et2.ligne2
          #--- Affichage du label "Nom du fichier destination"
          label $audace(base).fenetrePretr.et2.ligne2.lab1 -text $caption(pretrfc,nmPrechRes) \
-            -font $audace(font,arial_10_n) -width 29 -justify right
+            -width 29 -justify right
          pack $audace(base).fenetrePretr.et2.ligne2.lab1 -side left
          #--- Affichage du champ de saisie "Nom du fichier destination"
-         entry $audace(base).fenetrePretr.et2.ligne2.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat\
+         entry $audace(base).fenetrePretr.et2.ligne2.ent1 -width 16 -relief flat\
             -textvariable conf_pt_fc(nmPrechRes) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et2.ligne2.ent1 -side left
          #--- Affichage de la case a cocher pour filtrer la mediane
          checkbutton $audace(base).fenetrePretr.et2.ligne2.case -text $caption(pretrfc,medFiltree) \
-            -font $audace(font,arial_10_n) -variable conf_pt_fc(medFiltree)
+            -variable conf_pt_fc(medFiltree)
          pack $audace(base).fenetrePretr.et2.ligne2.case -side left -in $audace(base).fenetrePretr.et2.ligne2
          #--- Affichage du champ de saisie "Filtrage"
-         entry $audace(base).fenetrePretr.et2.ligne2.ent2 -width 3 -font $audace(font,arial_10_b) -relief flat\
+         entry $audace(base).fenetrePretr.et2.ligne2.ent2 -width 3 -relief flat\
             -textvariable conf_pt_fc(filtrage) -justify center -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et2.ligne2.ent2 -side left
       pack $audace(base).fenetrePretr.et2.ligne2 -side top -fill x
@@ -1957,17 +1953,16 @@ proc creeFenetrePrFC { } {
       #--- Titre de l'etape 3: Pretraitement des noirs & option cosmetique
       frame $audace(base).fenetrePretr.et3.titre -borderwidth 1 -relief groove
          #--- Affichage du titre
-         label $audace(base).fenetrePretr.et3.titre.nom -text $caption(pretrfc,titret3) \
-            -font $audace(font,arial_10_b) -justify left
+         label $audace(base).fenetrePretr.et3.titre.nom -text $caption(pretrfc,titret3) -justify left
          pack $audace(base).fenetrePretr.et3.titre.nom -side left -in $audace(base).fenetrePretr.et3.titre
          #--- Affichage de la case a cocher pour l'activation de la correction cosmetique
          checkbutton $audace(base).fenetrePretr.et3.titre.case -text $caption(pretrfc,corcosm) \
-            -font $audace(font,arial_10_n) -variable conf_pt_fc(cosmNoir)
+            -variable conf_pt_fc(cosmNoir)
          pack $audace(base).fenetrePretr.et3.titre.case -side right -in $audace(base).fenetrePretr.et3.titre
       pack $audace(base).fenetrePretr.et3.titre -side top -fill x
       #--- Bouton GO
       button $audace(base).fenetrePretr.et3.go -borderwidth 2 -width 4 -text $caption(pretrfc,goet) \
-         -font $audace(font,arial_12_n) -command {
+         -command {
             #--- Sauvegarde des parametres dans le fichier de config
             ::pretrfc::SauvegardeParametres
             #--- Traitement etape 3
@@ -1977,18 +1972,17 @@ proc creeFenetrePrFC { } {
       #--- Premiere ligne de l'etape 3
       frame $audace(base).fenetrePretr.et3.ligne1
          #--- Affichage du label "Nom des fichiers source"
-         label $audace(base).fenetrePretr.et3.ligne1.nmNrSce -text $caption(pretrfc,nmNrSce) \
-            -font $audace(font,arial_10_n) -width 29
+         label $audace(base).fenetrePretr.et3.ligne1.nmNrSce -text $caption(pretrfc,nmNrSce) -width 29
          pack $audace(base).fenetrePretr.et3.ligne1.nmNrSce -side left
          #--- Affichage du champ de saisie "Nom des fichiers source"
-         entry $audace(base).fenetrePretr.et3.ligne1.entnmNrSce -width 16 -font $audace(font,arial_10_b) -relief flat \
+         entry $audace(base).fenetrePretr.et3.ligne1.entnmNrSce -width 16 -relief flat \
             -textvariable conf_pt_fc(nmNrSce) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et3.ligne1.entnmNrSce -side left
          #--- Affichage du label "Nombre de fichiers source"
-         label $audace(base).fenetrePretr.et3.ligne1.nbNr -text $caption(pretrfc,nbNr) -font $audace(font,arial_10_n)
+         label $audace(base).fenetrePretr.et3.ligne1.nbNr -text $caption(pretrfc,nbNr)
          pack $audace(base).fenetrePretr.et3.ligne1.nbNr -side left
          #--- Affichage du champ de saisie "Nombre de fichiers source"
-         entry $audace(base).fenetrePretr.et3.ligne1.entNbNr -width 3 -font $audace(font,arial_10_b) -relief flat\
+         entry $audace(base).fenetrePretr.et3.ligne1.entNbNr -width 3 -relief flat\
             -textvariable conf_pt_fc(nbNoirs) -justify center -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et3.ligne1.entNbNr -side left
       pack $audace(base).fenetrePretr.et3.ligne1 -side top -fill x
@@ -1996,15 +1990,15 @@ proc creeFenetrePrFC { } {
       frame $audace(base).fenetrePretr.et3.ligne2
          #--- Affichage du label "Nom du fichier destination"
          label $audace(base).fenetrePretr.et3.ligne2.lab1 -text $caption(pretrfc,nmNrRes) \
-            -font $audace(font,arial_10_n) -width 29 -justify right
+            -width 29 -justify right
          pack $audace(base).fenetrePretr.et3.ligne2.lab1 -side left
          #--- Affichage du champ de saisie "Nom du fichier source"
-         entry $audace(base).fenetrePretr.et3.ligne2.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat\
+         entry $audace(base).fenetrePretr.et3.ligne2.ent1 -width 16 -relief flat\
             -textvariable conf_pt_fc(nmNoirRes) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et3.ligne2.ent1 -side left
          #--- Affichage de la case a cocher pour indiquer si le noir contient la precharge
          checkbutton $audace(base).fenetrePretr.et3.ligne2.case -text $caption(pretrfc,NrContientPrech) \
-            -font $audace(font,arial_10_n) -variable conf_pt_fc(NrContientPrech)
+            -variable conf_pt_fc(NrContientPrech)
          pack $audace(base).fenetrePretr.et3.ligne2.case -side left -in $audace(base).fenetrePretr.et3.ligne2
       pack $audace(base).fenetrePretr.et3.ligne2 -side top -fill x
    pack $audace(base).fenetrePretr.et3 -side top -fill x
@@ -2014,17 +2008,16 @@ proc creeFenetrePrFC { } {
       #--- Titre de l'etape 4: Pretraitement des noirs & option cosmetique
       frame $audace(base).fenetrePretr.et4.titre -borderwidth 1 -relief groove
          #--- Affichage du titre
-         label $audace(base).fenetrePretr.et4.titre.nom -text $caption(pretrfc,titret4) \
-            -font $audace(font,arial_10_b) -justify left
+         label $audace(base).fenetrePretr.et4.titre.nom -text $caption(pretrfc,titret4) -justify left
          pack $audace(base).fenetrePretr.et4.titre.nom -side left -in $audace(base).fenetrePretr.et4.titre
          #--- Affichage de la case a cocher pour l'activation de la correction cosmetique
          checkbutton $audace(base).fenetrePretr.et4.titre.case -text $caption(pretrfc,corcosm) \
-            -font $audace(font,arial_10_n) -variable conf_pt_fc(cosmNrPLU)
+            -variable conf_pt_fc(cosmNrPLU)
          pack $audace(base).fenetrePretr.et4.titre.case -side right -in $audace(base).fenetrePretr.et4.titre
       pack $audace(base).fenetrePretr.et4.titre -side top -fill x
       #--- Bouton GO
       button $audace(base).fenetrePretr.et4.go -borderwidth 2 -width 4 -text $caption(pretrfc,goet) \
-         -font $audace(font,arial_12_n) -command {
+         -command {
             #--- Sauvegarde des parametres dans le fichier de config
             ::pretrfc::SauvegardeParametres
             #--- Traitement etape 4
@@ -2035,17 +2028,17 @@ proc creeFenetrePrFC { } {
       frame $audace(base).fenetrePretr.et4.ligne1
          #--- Affichage du label "Nom des fichiers source"
          label $audace(base).fenetrePretr.et4.ligne1.nmNrPLUSce -text $caption(pretrfc,nmNrPLUSce) \
-            -font $audace(font,arial_10_n) -width 29
+            -width 29
          pack $audace(base).fenetrePretr.et4.ligne1.nmNrPLUSce -side left
          #--- Affichage du champ de saisie "Nom des fichiers source"
-         entry $audace(base).fenetrePretr.et4.ligne1.entnmNrPLUSce -width 16 -font $audace(font,arial_10_b) -relief flat\
+         entry $audace(base).fenetrePretr.et4.ligne1.entnmNrPLUSce -width 16 -relief flat\
             -textvariable conf_pt_fc(nmNrPLUSce) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et4.ligne1.entnmNrPLUSce -side left
          #--- Affichage du label "Nombre de fichiers source"
-         label $audace(base).fenetrePretr.et4.ligne1.nbNrPLU -text $caption(pretrfc,nb) -font $audace(font,arial_10_n)
+         label $audace(base).fenetrePretr.et4.ligne1.nbNrPLU -text $caption(pretrfc,nb)
          pack $audace(base).fenetrePretr.et4.ligne1.nbNrPLU -side left
          #--- Affichage du champ de saisie "Nombre de fichiers source"
-         entry $audace(base).fenetrePretr.et4.ligne1.entNbNrPLU -width 3 -font $audace(font,arial_10_b) -relief flat\
+         entry $audace(base).fenetrePretr.et4.ligne1.entNbNrPLU -width 3 -relief flat\
             -textvariable conf_pt_fc(nbNrPLU) -justify center -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et4.ligne1.entNbNrPLU -side left
       pack $audace(base).fenetrePretr.et4.ligne1 -side top -fill x
@@ -2053,10 +2046,10 @@ proc creeFenetrePrFC { } {
       frame $audace(base).fenetrePretr.et4.ligne2
          #--- Affichage du label "Nom du fichier destination"
          label $audace(base).fenetrePretr.et4.ligne2.lab1 -text $caption(pretrfc,nmNrPLURes) \
-            -font $audace(font,arial_10_n) -width 29 -justify right
+            -width 29 -justify right
          pack $audace(base).fenetrePretr.et4.ligne2.lab1 -side left
          #--- Affichage du champ de saisie "Nom du fichier destination"
-         entry $audace(base).fenetrePretr.et4.ligne2.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat\
+         entry $audace(base).fenetrePretr.et4.ligne2.ent1 -width 16 -relief flat\
             -textvariable conf_pt_fc(nmNrPLURes) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et4.ligne2.ent1 -side left
          #--- Affichage des boutons radio pour le mode de noir
@@ -2068,17 +2061,16 @@ proc creeFenetrePrFC { } {
       #--- Titre de l'etape 5: Pretraitement des PLU
       frame $audace(base).fenetrePretr.et5.titre -borderwidth 1 -relief groove
          #--- Affichage du titre
-         label $audace(base).fenetrePretr.et5.titre.nom -text $caption(pretrfc,titret5) \
-            -font $audace(font,arial_10_b) -justify left
+         label $audace(base).fenetrePretr.et5.titre.nom -text $caption(pretrfc,titret5) -justify left
          pack $audace(base).fenetrePretr.et5.titre.nom -side left -in $audace(base).fenetrePretr.et5.titre
          #--- Affichage de la case a cocher pour l'activation de la correction cosmetique
          checkbutton $audace(base).fenetrePretr.et5.titre.case -text $caption(pretrfc,corcosm) \
-            -font $audace(font,arial_10_n) -variable conf_pt_fc(cosmPLU)
+            -variable conf_pt_fc(cosmPLU)
          pack $audace(base).fenetrePretr.et5.titre.case -side right -in $audace(base).fenetrePretr.et5.titre
       pack $audace(base).fenetrePretr.et5.titre -side top -fill x
       #--- Bouton GO
       button $audace(base).fenetrePretr.et5.go -borderwidth 2 -width 4 -text $caption(pretrfc,goet) \
-         -font $audace(font,arial_12_n) -command {
+         -command {
             #--- Sauvegarde des parametres dans le fichier de config
             ::pretrfc::SauvegardeParametres
             #--- Traitement etape 5
@@ -2088,18 +2080,17 @@ proc creeFenetrePrFC { } {
       #--- Premiere ligne de l'etape 5
       frame $audace(base).fenetrePretr.et5.ligne1
          #--- Affichage du label "Nom des fichiers source"
-         label $audace(base).fenetrePretr.et5.ligne1.nmPLUSce -text $caption(pretrfc,nmPLUSce) \
-            -font $audace(font,arial_10_n) -width 29
+         label $audace(base).fenetrePretr.et5.ligne1.nmPLUSce -text $caption(pretrfc,nmPLUSce) -width 29
          pack $audace(base).fenetrePretr.et5.ligne1.nmPLUSce -side left
          #--- Affichage du champ de saisie "Nom des fichiers source"
-         entry $audace(base).fenetrePretr.et5.ligne1.entnmPLUSce -width 16 -font $audace(font,arial_10_b) -relief flat\
+         entry $audace(base).fenetrePretr.et5.ligne1.entnmPLUSce -width 16 -relief flat\
             -textvariable conf_pt_fc(nmPLUSce) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et5.ligne1.entnmPLUSce -side left
          #--- Affichage du label "Nombre de fichiers source"
-         label $audace(base).fenetrePretr.et5.ligne1.nbPLU -text $caption(pretrfc,nb) -font $audace(font,arial_10_n)
+         label $audace(base).fenetrePretr.et5.ligne1.nbPLU -text $caption(pretrfc,nb)
          pack $audace(base).fenetrePretr.et5.ligne1.nbPLU -side left
          #--- Affichage du champ de saisie "Nombre de fichiers source"
-         entry $audace(base).fenetrePretr.et5.ligne1.entNbPLU -width 3 -font $audace(font,arial_10_b) -relief flat\
+         entry $audace(base).fenetrePretr.et5.ligne1.entNbPLU -width 3 -relief flat\
             -textvariable conf_pt_fc(nbPLU) -justify center -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et5.ligne1.entNbPLU -side left
       pack $audace(base).fenetrePretr.et5.ligne1 -side top -fill x
@@ -2107,26 +2098,25 @@ proc creeFenetrePrFC { } {
       frame $audace(base).fenetrePretr.et5.ligne2
          #--- Affichage du label "Nom du fichier resultant"
          label $audace(base).fenetrePretr.et5.ligne2.lab1 -text $caption(pretrfc,nmPLURes) \
-            -font $audace(font,arial_10_n) -width 29 -justify right
+            -width 29 -justify right
          pack $audace(base).fenetrePretr.et5.ligne2.lab1 -side left
          #--- Affichage du champ de saisie "Nom du fichier resultant"
-         entry $audace(base).fenetrePretr.et5.ligne2.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat\
+         entry $audace(base).fenetrePretr.et5.ligne2.ent1 -width 16 -relief flat\
             -textvariable conf_pt_fc(nmPLURes) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et5.ligne2.ent1 -side left
       pack $audace(base).fenetrePretr.et5.ligne2 -side top -fill x
       #--- Troisieme ligne de l'etape 5
       frame $audace(base).fenetrePretr.et5.ligne3
-         label $audace(base).fenetrePretr.et5.ligne3.lab1 -text $caption(pretrfc,SoustrNrPLU) \
-            -font $audace(font,arial_10_n)
+         label $audace(base).fenetrePretr.et5.ligne3.lab1 -text $caption(pretrfc,SoustrNrPLU)
          pack $audace(base).fenetrePretr.et5.ligne3.lab1 -side left
          radiobutton $audace(base).fenetrePretr.et5.ligne3.rad1 -variable conf_pt_fc(modePLU) \
-            -text $caption(pretrfc,NrPLUBut1) -value simple -font $audace(font,arial_10_n)
+            -text $caption(pretrfc,NrPLUBut1) -value simple
          pack $audace(base).fenetrePretr.et5.ligne3.rad1 -side left
          radiobutton $audace(base).fenetrePretr.et5.ligne3.rad2 -variable conf_pt_fc(modePLU) \
-            -text $caption(pretrfc,NrPLUBut2) -value rapTps -font $audace(font,arial_10_n)
+            -text $caption(pretrfc,NrPLUBut2) -value rapTps
          pack $audace(base).fenetrePretr.et5.ligne3.rad2 -side left
          radiobutton $audace(base).fenetrePretr.et5.ligne3.rad3 -variable conf_pt_fc(modePLU) \
-            -text $caption(pretrfc,NrPLUBut3) -value opt -font $audace(font,arial_10_n)
+            -text $caption(pretrfc,NrPLUBut3) -value opt
          pack $audace(base).fenetrePretr.et5.ligne3.rad3 -side left
       pack $audace(base).fenetrePretr.et5.ligne3 -side top -fill x
    pack $audace(base).fenetrePretr.et5 -side top -fill x
@@ -2136,17 +2126,16 @@ proc creeFenetrePrFC { } {
       #--- Titre de l'etape 6: Pretraitement des PLU
       frame $audace(base).fenetrePretr.et6.titre -borderwidth 1 -relief groove
          #--- Affichage du titre
-         label $audace(base).fenetrePretr.et6.titre.nom -text $caption(pretrfc,titret6) \
-            -font $audace(font,arial_10_b) -justify left
+         label $audace(base).fenetrePretr.et6.titre.nom -text $caption(pretrfc,titret6) -justify left
          pack $audace(base).fenetrePretr.et6.titre.nom -side left -in $audace(base).fenetrePretr.et6.titre
          #--- Affichage de la case a cocher pour l'activation de la correction cosmetique
          checkbutton $audace(base).fenetrePretr.et6.titre.case -text $caption(pretrfc,corcosm) \
-            -font $audace(font,arial_10_n) -variable conf_pt_fc(cosmBrut)
+            -variable conf_pt_fc(cosmBrut)
          pack $audace(base).fenetrePretr.et6.titre.case -side right -in $audace(base).fenetrePretr.et6.titre
       pack $audace(base).fenetrePretr.et6.titre -side top -fill x
       #--- Bouton GO
       button $audace(base).fenetrePretr.et6.go -borderwidth 2 -width 5 -text $caption(pretrfc,goet) \
-         -font $audace(font,arial_15_b) -command {
+         -command {
             #--- Sauvegarde des parametres dans le fichier de config
             ::pretrfc::SauvegardeParametres
             #--- Traitement etape 6
@@ -2157,17 +2146,17 @@ proc creeFenetrePrFC { } {
       frame $audace(base).fenetrePretr.et6.ligne1
          #--- Affichage du label "Nom des fichiers source"
          label $audace(base).fenetrePretr.et6.ligne1.nmBrutSce -text $caption(pretrfc,nmBrutSce) \
-            -font $audace(font,arial_10_n) -width 29
+            -width 29
          pack $audace(base).fenetrePretr.et6.ligne1.nmBrutSce -side left
          #--- Affichage du champ de saisie "Nom des fichiers source"
-         entry $audace(base).fenetrePretr.et6.ligne1.entnmBrutSce -width 16 -font $audace(font,arial_10_b) -relief flat\
+         entry $audace(base).fenetrePretr.et6.ligne1.entnmBrutSce -width 16 -relief flat\
             -textvariable conf_pt_fc(nmBrutSce) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et6.ligne1.entnmBrutSce -side left
          #--- Affichage du label "Nombre de fichiers source"
-         label $audace(base).fenetrePretr.et6.ligne1.nbBrut -text $caption(pretrfc,nb) -font $audace(font,arial_10_n)
+         label $audace(base).fenetrePretr.et6.ligne1.nbBrut -text $caption(pretrfc,nb)
          pack $audace(base).fenetrePretr.et6.ligne1.nbBrut -side left
          #--- Affichage du champ de saisie "Nombre de fichiers source"
-         entry $audace(base).fenetrePretr.et6.ligne1.entNbBrut -width 3 -font $audace(font,arial_10_b) -relief flat\
+         entry $audace(base).fenetrePretr.et6.ligne1.entNbBrut -width 3 -relief flat\
             -textvariable conf_pt_fc(nbBrut) -justify center -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et6.ligne1.entNbBrut -side left
       pack $audace(base).fenetrePretr.et6.ligne1 -side top -fill x
@@ -2175,25 +2164,25 @@ proc creeFenetrePrFC { } {
       frame $audace(base).fenetrePretr.et6.ligne2
          #--- Affichage du label "Nom du fichier resultant"
          label $audace(base).fenetrePretr.et6.ligne2.lab1 -text $caption(pretrfc,nmBrutRes) \
-            -font $audace(font,arial_10_n) -width 29 -justify right
+            -width 29 -justify right
          pack $audace(base).fenetrePretr.et6.ligne2.lab1 -side left
          #--- Affichage du champ de saisie "Nom du fichier resultant"
-         entry $audace(base).fenetrePretr.et6.ligne2.ent1 -width 16 -font $audace(font,arial_10_b) -relief flat\
+         entry $audace(base).fenetrePretr.et6.ligne2.ent1 -width 16 -relief flat\
             -textvariable conf_pt_fc(nmBrutRes) -justify left -borderwidth 1 -relief groove
          pack $audace(base).fenetrePretr.et6.ligne2.ent1 -side left
       pack $audace(base).fenetrePretr.et6.ligne2 -side top -fill x
       #--- Troisieme ligne de l'etape 6
       frame $audace(base).fenetrePretr.et6.ligne3
-         label $audace(base).fenetrePretr.et6.ligne3.lab1 -text $caption(pretrfc,SoustrNr) -font $audace(font,arial_10_n)
+         label $audace(base).fenetrePretr.et6.ligne3.lab1 -text $caption(pretrfc,SoustrNr)
          pack $audace(base).fenetrePretr.et6.ligne3.lab1 -side left
          radiobutton $audace(base).fenetrePretr.et6.ligne3.rad1 -variable conf_pt_fc(modeBrut) \
-            -text $caption(pretrfc,NrBut1) -value simple -font $audace(font,arial_10_n)
+            -text $caption(pretrfc,NrBut1) -value simple
          pack $audace(base).fenetrePretr.et6.ligne3.rad1 -side left
          radiobutton $audace(base).fenetrePretr.et6.ligne3.rad2 -variable conf_pt_fc(modeBrut) \
-            -text $caption(pretrfc,NrBut2) -value rapTps -font $audace(font,arial_10_n)
+            -text $caption(pretrfc,NrBut2) -value rapTps
          pack $audace(base).fenetrePretr.et6.ligne3.rad2 -side left
          radiobutton $audace(base).fenetrePretr.et6.ligne3.rad3 -variable conf_pt_fc(modeBrut) \
-            -text $caption(pretrfc,NrBut3) -value opt -font $audace(font,arial_10_n)
+            -text $caption(pretrfc,NrBut3) -value opt
          pack $audace(base).fenetrePretr.et6.ligne3.rad3 -side left
       pack $audace(base).fenetrePretr.et6.ligne3 -side top -fill x
    pack $audace(base).fenetrePretr.et6 -side top -fill x
@@ -2202,13 +2191,12 @@ proc creeFenetrePrFC { } {
    frame $audace(base).fenetrePretr.but -borderwidth 2 -relief groove
       #--- Bouton Configuration
       button $audace(base).fenetrePretr.but.config -borderwidth 2 -width 15 -text $caption(pretrfc,configuration) \
-         -font $audace(font,arial_10_n) -command {
+         -command {
             ::pretrfcSetup::run 1 $audace(base).pretrfcSetup
          }
       pack $audace(base).fenetrePretr.but.config -side left -anchor sw -in $audace(base).fenetrePretr.but
       #--- Bouton Aide
       button $audace(base).fenetrePretr.but.aide -borderwidth 2 -width 5 -text $caption(pretrfc,aide) \
-         -font $audace(font,arial_10_n) \
          -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::pretrfc::getPluginType ] ] \
             [ ::pretrfc::getPluginDirectory ] [ ::pretrfc::getPluginHelp ]"
       pack $audace(base).fenetrePretr.but.aide -side right -anchor sw -in $audace(base).fenetrePretr.but
