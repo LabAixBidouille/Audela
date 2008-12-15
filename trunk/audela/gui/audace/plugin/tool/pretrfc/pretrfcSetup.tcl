@@ -2,10 +2,10 @@
 # Fichier : pretrfcSetup.tcl
 # Description : Configuration de certains parametres de l'outil Pretraitement
 # Auteur : Robert DELMAS
-# Mise a jour $Id: pretrfcSetup.tcl,v 1.11 2007-12-15 08:10:21 robertdelmas Exp $
+# Mise a jour $Id: pretrfcSetup.tcl,v 1.12 2008-12-15 22:24:25 robertdelmas Exp $
 #
 
-namespace eval pretrfcSetup {
+namespace eval ::pretrfcSetup {
 
    #
    # pretrfcSetup::init
@@ -66,7 +66,7 @@ namespace eval pretrfcSetup {
       ::confGenerique::run $visuNo "$This" "::pretrfcSetup" -modal 0
       set posx_config [ lindex [ split [ wm geometry $audace(base).fenetrePretr ] "+" ] 1 ]
       set posy_config [ lindex [ split [ wm geometry $audace(base).fenetrePretr ] "+" ] 2 ]
-      wm geometry $This +[ expr $posx_config + 40 ]+[ expr $posy_config + 390 ]
+      wm geometry $This +[ expr $posx_config + 0 ]+[ expr $posy_config + 340 ]
    }
 
    #
