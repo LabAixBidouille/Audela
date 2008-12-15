@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.74 2008-12-04 16:54:23 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.75 2008-12-15 22:22:00 robertdelmas Exp $
 #
 
 #==============================================================
@@ -1778,7 +1778,7 @@ proc ::acqfc::Avancement_pose { visuNo { t } } {
       wm geometry $panneau(acqfc,$visuNo,base).progress $panneau(acqfc,$visuNo,avancement,position)
 
       #--- Cree le widget et le label du temps ecoule
-      label $panneau(acqfc,$visuNo,base).progress.lab_status -text "" -font $audace(font,arial_12_b) -justify center
+      label $panneau(acqfc,$visuNo,base).progress.lab_status -text "" -justify center
       pack $panneau(acqfc,$visuNo,base).progress.lab_status -side top -fill x -expand true -pady 5
 
       #---
@@ -2040,14 +2040,14 @@ proc ::acqfc::Intervalle_continu_1 { visuNo } {
    "
 
    #--- Create the message
-   label $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab1 -text "$caption(acqfc,titre_1)" -font $audace(font,arial_10_b)
+   label $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab1 -text "$caption(acqfc,titre_1)"
    pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab1 -padx 20 -pady 5
 
    frame $panneau(acqfc,$visuNo,base).intervalle_continu_1.a
       label $panneau(acqfc,$visuNo,base).intervalle_continu_1.a.lab2 -text "$caption(acqfc,intervalle_1)"
       pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.a.lab2 -anchor center -expand 1 -fill none -side left \
          -padx 10 -pady 5
-      entry $panneau(acqfc,$visuNo,base).intervalle_continu_1.a.ent1 -width 5 -font $audace(font,arial_10_b) -relief groove \
+      entry $panneau(acqfc,$visuNo,base).intervalle_continu_1.a.ent1 -width 5 -relief groove \
          -textvariable panneau(acqfc,$visuNo,intervalle_1) -justify center
       pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.a.ent1 -anchor center -expand 1 -fill none -side left \
          -padx 10
@@ -2134,14 +2134,14 @@ proc ::acqfc::Intervalle_continu_2 { visuNo } {
    "
 
    #--- Create the message
-   label $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab1 -text "$caption(acqfc,titre_2)" -font $audace(font,arial_10_b)
+   label $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab1 -text "$caption(acqfc,titre_2)"
    pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab1 -padx 10 -pady 5
 
    frame $panneau(acqfc,$visuNo,base).intervalle_continu_2.a
       label $panneau(acqfc,$visuNo,base).intervalle_continu_2.a.lab2 -text "$caption(acqfc,intervalle_2)"
       pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.a.lab2 -anchor center -expand 1 -fill none -side left \
          -padx 10 -pady 5
-      entry $panneau(acqfc,$visuNo,base).intervalle_continu_2.a.ent1 -width 5 -font $audace(font,arial_10_b) -relief groove \
+      entry $panneau(acqfc,$visuNo,base).intervalle_continu_2.a.ent1 -width 5 -relief groove \
          -textvariable panneau(acqfc,$visuNo,intervalle_2) -justify center
       pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.a.ent1 -anchor center -expand 1 -fill none -side left \
          -padx 10
@@ -2326,7 +2326,7 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
       }
       label $panneau(acqfc,$visuNo,This).pose.lab -text $caption(acqfc,sec)
       pack $panneau(acqfc,$visuNo,This).pose.lab -side right -fill x -expand true
-      entry $panneau(acqfc,$visuNo,This).pose.entr -width 6 -font $audace(font,arial_10_b) -relief groove \
+      entry $panneau(acqfc,$visuNo,This).pose.entr -width 6 -relief groove \
         -textvariable panneau(acqfc,$visuNo,pose) -justify center
       pack $panneau(acqfc,$visuNo,This).pose.entr -side left -fill both -expand true
    pack $panneau(acqfc,$visuNo,This).pose -side top -fill x
@@ -2349,7 +2349,7 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
            -variable panneau(acqfc,$visuNo,bin) \
            -command " "
       }
-      entry $panneau(acqfc,$visuNo,This).bin.lab -width 10 -font $audace(font,arial_10_b) -relief groove \
+      entry $panneau(acqfc,$visuNo,This).bin.lab -width 10 -relief groove \
         -textvariable panneau(acqfc,$visuNo,bin) -justify center -state disabled
       pack $panneau(acqfc,$visuNo,This).bin.lab -side left -fill both -expand true
    pack $panneau(acqfc,$visuNo,This).bin -side top -fill x
@@ -2360,9 +2360,9 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
          -state normal
       pack $panneau(acqfc,$visuNo,This).obt.but -side left -ipady 3
       label $panneau(acqfc,$visuNo,This).obt.lab -text $panneau(acqfc,$visuNo,obt,$panneau(acqfc,$visuNo,obt)) -width 6 \
-        -font $audace(font,arial_10_b) -relief groove
+        -relief groove
       pack $panneau(acqfc,$visuNo,This).obt.lab -side left -fill x -expand true -ipady 3
-      label $panneau(acqfc,$visuNo,This).obt.lab1 -text "" -font $audace(font,arial_10_b) -relief ridge \
+      label $panneau(acqfc,$visuNo,This).obt.lab1 -text "" -relief ridge \
          -justify center -width 16
       pack $panneau(acqfc,$visuNo,This).obt.lab1 -side top -ipady 3
    pack $panneau(acqfc,$visuNo,This).obt -side top -fill x
@@ -2374,7 +2374,7 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
 
    #--- Trame du Status
    frame $panneau(acqfc,$visuNo,This).status -borderwidth 2 -relief ridge
-      label $panneau(acqfc,$visuNo,This).status.lab -text "" -font $audace(font,arial_10_b) -relief ridge \
+      label $panneau(acqfc,$visuNo,This).status.lab -text "" -relief ridge \
          -justify center -width 16
       pack $panneau(acqfc,$visuNo,This).status.lab -side top -fill x -pady 1
    pack $panneau(acqfc,$visuNo,This).status -side top -fill x
@@ -2382,7 +2382,7 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
    #--- Trame du bouton Go/Stop
    frame $panneau(acqfc,$visuNo,This).go_stop -borderwidth 2 -relief ridge
       Button $panneau(acqfc,$visuNo,This).go_stop.but -text $caption(acqfc,GO) -height 2 \
-         -font $audace(font,arial_12_b) -borderwidth 3 -command "::acqfc::Go $visuNo"
+         -borderwidth 3 -command "::acqfc::Go $visuNo"
       pack $panneau(acqfc,$visuNo,This).go_stop.but -fill both -padx 0 -pady 0 -expand true
    pack $panneau(acqfc,$visuNo,This).go_stop -side top -fill x
 
@@ -2391,7 +2391,6 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
    frame $panneau(acqfc,$visuNo,This).mode -borderwidth 5 -relief ridge
       ComboBox $panneau(acqfc,$visuNo,This).mode.but \
         -width 15         \
-        -font $audace(font,arial_10_n) \
         -height [llength $panneau(acqfc,$visuNo,list_mode)] \
         -relief raised    \
         -borderwidth 1    \
@@ -2409,7 +2408,7 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
            label $panneau(acqfc,$visuNo,This).mode.une.nom.but -text $caption(acqfc,nom) -pady 0
            pack $panneau(acqfc,$visuNo,This).mode.une.nom.but -fill x -side top
            entry $panneau(acqfc,$visuNo,This).mode.une.nom.entr -width 10 -textvariable panneau(acqfc,$visuNo,nom_image) \
-              -font $audace(font,arial_10_b) -relief groove
+              -relief groove
            pack $panneau(acqfc,$visuNo,This).mode.une.nom.entr -fill x -side top
            label $panneau(acqfc,$visuNo,This).mode.une.nom.lab_extension -text $caption(acqfc,extension) -pady 0
            pack $panneau(acqfc,$visuNo,This).mode.une.nom.lab_extension -fill x -side left
@@ -2430,7 +2429,7 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
               -variable panneau(acqfc,$visuNo,indexer)
            pack $panneau(acqfc,$visuNo,This).mode.une.index.case -side top -fill x
            entry $panneau(acqfc,$visuNo,This).mode.une.index.entr -width 3 -textvariable panneau(acqfc,$visuNo,index) \
-              -font $audace(font,arial_10_b) -relief groove -justify center
+              -relief groove -justify center
            pack $panneau(acqfc,$visuNo,This).mode.une.index.entr -side left -fill x -expand true
            button $panneau(acqfc,$visuNo,This).mode.une.index.but -text "1" -width 3 \
               -command "set panneau(acqfc,$visuNo,index) 1"
@@ -2446,7 +2445,7 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
            label $panneau(acqfc,$visuNo,This).mode.serie.nom.but -text $caption(acqfc,nom) -pady 0
            pack $panneau(acqfc,$visuNo,This).mode.serie.nom.but -fill x
            entry $panneau(acqfc,$visuNo,This).mode.serie.nom.entr -width 10 -textvariable panneau(acqfc,$visuNo,nom_image) \
-              -font $audace(font,arial_10_b) -relief groove
+              -relief groove
            pack $panneau(acqfc,$visuNo,This).mode.serie.nom.entr -fill x
            label $panneau(acqfc,$visuNo,This).mode.serie.nom.lab_extension -text $caption(acqfc,extension) -pady 0
            pack $panneau(acqfc,$visuNo,This).mode.serie.nom.lab_extension -fill x -side left
@@ -2466,14 +2465,14 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
            label $panneau(acqfc,$visuNo,This).mode.serie.nb.but -text $caption(acqfc,nombre) -pady 0
            pack $panneau(acqfc,$visuNo,This).mode.serie.nb.but -side left -fill y
            entry $panneau(acqfc,$visuNo,This).mode.serie.nb.entr -width 3 -textvariable panneau(acqfc,$visuNo,nb_images) \
-              -font $audace(font,arial_10_b) -relief groove -justify center
+              -relief groove -justify center
            pack $panneau(acqfc,$visuNo,This).mode.serie.nb.entr -side left -fill x -expand true
         pack $panneau(acqfc,$visuNo,This).mode.serie.nb -side top -fill x
         frame $panneau(acqfc,$visuNo,This).mode.serie.index -relief ridge -borderwidth 2
            label $panneau(acqfc,$visuNo,This).mode.serie.index.lab -text $caption(acqfc,index) -pady 0
            pack $panneau(acqfc,$visuNo,This).mode.serie.index.lab -side top -fill x
            entry $panneau(acqfc,$visuNo,This).mode.serie.index.entr -width 3 -textvariable panneau(acqfc,$visuNo,index) \
-              -font $audace(font,arial_10_b) -relief groove -justify center
+              -relief groove -justify center
            pack $panneau(acqfc,$visuNo,This).mode.serie.index.entr -side left -fill x -expand true
            button $panneau(acqfc,$visuNo,This).mode.serie.index.but -text "1" -width 3 \
               -command "set panneau(acqfc,$visuNo,index) 1"
@@ -2491,7 +2490,7 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
            label $panneau(acqfc,$visuNo,This).mode.continu.nom.but -text $caption(acqfc,nom) -pady 0
            pack $panneau(acqfc,$visuNo,This).mode.continu.nom.but -fill x
            entry $panneau(acqfc,$visuNo,This).mode.continu.nom.entr -width 10 -textvariable panneau(acqfc,$visuNo,nom_image) \
-              -font $audace(font,arial_10_b) -relief groove
+              -relief groove
            pack $panneau(acqfc,$visuNo,This).mode.continu.nom.entr -fill x
            label $panneau(acqfc,$visuNo,This).mode.continu.nom.lab_extension -text $caption(acqfc,extension) -pady 0
            pack $panneau(acqfc,$visuNo,This).mode.continu.nom.lab_extension -fill x -side left
@@ -2511,7 +2510,7 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
            label $panneau(acqfc,$visuNo,This).mode.continu.index.lab -text $caption(acqfc,index) -pady 0
            pack $panneau(acqfc,$visuNo,This).mode.continu.index.lab -side top -fill x
            entry $panneau(acqfc,$visuNo,This).mode.continu.index.entr -width 3 -textvariable panneau(acqfc,$visuNo,index) \
-              -font $audace(font,arial_10_b) -relief groove -justify center
+              -relief groove -justify center
            pack $panneau(acqfc,$visuNo,This).mode.continu.index.entr -side left -fill x -expand true
            button $panneau(acqfc,$visuNo,This).mode.continu.index.but -text "1" -width 3 \
               -command "set panneau(acqfc,$visuNo,index) 1"
@@ -2524,7 +2523,7 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
            label $panneau(acqfc,$visuNo,This).mode.serie_1.nom.but -text $caption(acqfc,nom) -pady 0
            pack $panneau(acqfc,$visuNo,This).mode.serie_1.nom.but -fill x
            entry $panneau(acqfc,$visuNo,This).mode.serie_1.nom.entr -width 10 -textvariable panneau(acqfc,$visuNo,nom_image) \
-              -font $audace(font,arial_10_b) -relief groove
+              -relief groove
            pack $panneau(acqfc,$visuNo,This).mode.serie_1.nom.entr -fill x
            label $panneau(acqfc,$visuNo,This).mode.serie_1.nom.lab_extension -text $caption(acqfc,extension) -pady 0
            pack $panneau(acqfc,$visuNo,This).mode.serie_1.nom.lab_extension -fill x -side left
@@ -2544,14 +2543,14 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
            label $panneau(acqfc,$visuNo,This).mode.serie_1.nb.but -text $caption(acqfc,nombre) -pady 0
            pack $panneau(acqfc,$visuNo,This).mode.serie_1.nb.but -side left -fill y
            entry $panneau(acqfc,$visuNo,This).mode.serie_1.nb.entr -width 3 -textvariable panneau(acqfc,$visuNo,nb_images) \
-              -font $audace(font,arial_10_b) -relief groove -justify center
+              -relief groove -justify center
            pack $panneau(acqfc,$visuNo,This).mode.serie_1.nb.entr -side left -fill x -expand true
         pack $panneau(acqfc,$visuNo,This).mode.serie_1.nb -side top -fill x
         frame $panneau(acqfc,$visuNo,This).mode.serie_1.index -relief ridge -borderwidth 2
            label $panneau(acqfc,$visuNo,This).mode.serie_1.index.lab -text $caption(acqfc,index) -pady 0
            pack $panneau(acqfc,$visuNo,This).mode.serie_1.index.lab -side top -fill x
            entry $panneau(acqfc,$visuNo,This).mode.serie_1.index.entr -width 3 -textvariable panneau(acqfc,$visuNo,index) \
-              -font $audace(font,arial_10_b) -relief groove -justify center
+              -relief groove -justify center
            pack $panneau(acqfc,$visuNo,This).mode.serie_1.index.entr -side left -fill x -expand true
            button $panneau(acqfc,$visuNo,This).mode.serie_1.index.but -text "1" -width 3 \
               -command "set panneau(acqfc,$visuNo,index) 1"
@@ -2569,7 +2568,7 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
            label $panneau(acqfc,$visuNo,This).mode.continu_1.nom.but -text $caption(acqfc,nom) -pady 0
            pack $panneau(acqfc,$visuNo,This).mode.continu_1.nom.but -fill x
            entry $panneau(acqfc,$visuNo,This).mode.continu_1.nom.entr -width 10 -textvariable panneau(acqfc,$visuNo,nom_image) \
-              -font $audace(font,arial_10_b) -relief groove
+              -relief groove
            pack $panneau(acqfc,$visuNo,This).mode.continu_1.nom.entr -fill x
            label $panneau(acqfc,$visuNo,This).mode.continu_1.nom.lab_extension -text $caption(acqfc,extension) -pady 0
            pack $panneau(acqfc,$visuNo,This).mode.continu_1.nom.lab_extension -fill x -side left
@@ -2589,7 +2588,7 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
            label $panneau(acqfc,$visuNo,This).mode.continu_1.index.lab -text $caption(acqfc,index) -pady 0
            pack $panneau(acqfc,$visuNo,This).mode.continu_1.index.lab -side top -fill x
            entry $panneau(acqfc,$visuNo,This).mode.continu_1.index.entr -width 3 -textvariable panneau(acqfc,$visuNo,index) \
-              -font $audace(font,arial_10_b) -relief groove -justify center
+              -relief groove -justify center
            pack $panneau(acqfc,$visuNo,This).mode.continu_1.index.entr -side left -fill x -expand true
            button $panneau(acqfc,$visuNo,This).mode.continu_1.index.but -text "1" -width 3 \
               -command "set panneau(acqfc,$visuNo,index) 1"

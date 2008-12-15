@@ -2,7 +2,7 @@
 # Fichier : acqvideo.tcl
 # Description : Outil d'acquisition video
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: acqvideo.tcl,v 1.7 2008-09-12 16:24:54 robertdelmas Exp $
+# Mise a jour $Id: acqvideo.tcl,v 1.8 2008-12-15 22:22:30 robertdelmas Exp $
 #
 
 #==============================================================
@@ -956,8 +956,7 @@ namespace eval ::acqvideo {
             wm geometry $panneau(acqvideo,$visuNo,base).progress $panneau(acqvideo,$visuNo,avancement,position)
 
             #--- Creation du label du temps d'attente
-            label $panneau(acqvideo,$visuNo,base).progress.lab_status -text "" -font $audace(font,arial_12_b) \
-               -justify center
+            label $panneau(acqvideo,$visuNo,base).progress.lab_status -text "" -justify center
             pack $panneau(acqvideo,$visuNo,base).progress.lab_status -side top -fill x -expand true -pady 5
 
             #--- Creation des frames pour la barre de progression
@@ -1103,14 +1102,13 @@ namespace eval ::acqvideo {
 
       #--- Trame de l'intervalle entre les videos
       if { $panneau(acqvideo,$visuNo,mode) == "2" } {
-         label $panneau(acqvideo,$visuNo,base).status_video.lab1 -text "$caption(acqvideo,titre1)" \
-            -font $audace(font,arial_10_b)
+         label $panneau(acqvideo,$visuNo,base).status_video.lab1 -text "$caption(acqvideo,titre1)"
          pack $panneau(acqvideo,$visuNo,base).status_video.lab1 -padx 10 -pady 5
          frame $panneau(acqvideo,$visuNo,base).status_video.a
             label $panneau(acqvideo,$visuNo,base).status_video.a.lab2 -text "$caption(acqvideo,intervalle_video)"
             pack $panneau(acqvideo,$visuNo,base).status_video.a.lab2 -anchor center -expand 1 -fill none -side left \
                -padx 10 -pady 5
-            entry $panneau(acqvideo,$visuNo,base).status_video.a.ent1 -width 5 -font $audace(font,arial_10_b) \
+            entry $panneau(acqvideo,$visuNo,base).status_video.a.ent1 -width 5 \
                -relief groove -textvariable panneau(acqvideo,$visuNo,intervalle_video) -justify center
             pack $panneau(acqvideo,$visuNo,base).status_video.a.ent1 -anchor center -expand 1 -fill none \
                -side left -padx 10
@@ -1130,7 +1128,7 @@ namespace eval ::acqvideo {
                -variable panneau(acqvideo,$visuNo,lg_film) \
                -command " "
          }
-         entry $panneau(acqvideo,$visuNo,base).status_video.pose.entr -width 5 -font $audace(font,arial_10_b) \
+         entry $panneau(acqvideo,$visuNo,base).status_video.pose.entr -width 5 \
             -relief groove -textvariable panneau(acqvideo,$visuNo,lg_film) -justify center
          pack $panneau(acqvideo,$visuNo,base).status_video.pose.entr -side left -fill x -expand 0
          label $panneau(acqvideo,$visuNo,base).status_video.pose.lab -text $caption(acqvideo,sec)
@@ -1152,7 +1150,7 @@ namespace eval ::acqvideo {
                -variable panneau(acqvideo,$visuNo,rate) \
                -command " "
          }
-         entry $panneau(acqvideo,$visuNo,base).status_video.rate.entr -width 5 -font $audace(font,arial_10_b) \
+         entry $panneau(acqvideo,$visuNo,base).status_video.rate.entr -width 5 \
             -relief groove -textvariable panneau(acqvideo,$visuNo,rate) -justify center
          pack $panneau(acqvideo,$visuNo,base).status_video.rate.entr -side left -fill x -expand 0
          label $panneau(acqvideo,$visuNo,base).status_video.rate.unite -text $caption(acqvideo,rate_unite)
@@ -1164,7 +1162,7 @@ namespace eval ::acqvideo {
       #--- Label affichant le status de la camera en mode video
       frame $panneau(acqvideo,$visuNo,base).status_video.status -borderwidth 2 -relief ridge
          label $panneau(acqvideo,$visuNo,base).status_video.status.label -textvariable panneau(acqvideo,$visuNo,status) \
-            -font $audace(font,arial_8_b) -wraplength 150 -height 4 -pady 0
+            -wraplength 150 -height 4 -pady 0
          pack $panneau(acqvideo,$visuNo,base).status_video.status.label -anchor center -expand 0 -fill x -side top
       pack $panneau(acqvideo,$visuNo,base).status_video.status -anchor center -fill y -pady 0 -ipadx 5 -ipady 0
 
@@ -1422,13 +1420,13 @@ namespace eval ::acqvideo {
 
       #--- Abcisses et ordonnees des 4 coins de la fenetre
       $zone(image1) create text 30 200 -text "(x1,y1)" \
-         -justify center -fill $audace(color,drag_rectangle) -tags cadres -font $audace(font,arial_8_b)
+         -justify center -fill $audace(color,drag_rectangle) -tags cadres
       $zone(image1) create text 30 80 -text "(x1,y2)" \
-         -justify center -fill $audace(color,drag_rectangle) -tags cadres -font $audace(font,arial_8_b)
+         -justify center -fill $audace(color,drag_rectangle) -tags cadres
       $zone(image1) create text 270 80 -text "(x2,y2)" \
-         -justify center -fill $audace(color,drag_rectangle) -tags cadres -font $audace(font,arial_8_b)
+         -justify center -fill $audace(color,drag_rectangle) -tags cadres
       $zone(image1) create text 270 200 -text "(x2,y1)" \
-         -justify center -fill $audace(color,drag_rectangle) -tags cadres -font $audace(font,arial_8_b)
+         -justify center -fill $audace(color,drag_rectangle) -tags cadres
 
       #--- Cree la zone a renseigner pour x1
       label $panneau(acqvideo,$visuNo,base).selectWindowedFenster.lab1 -text "$caption(acqvideo,x1)"
@@ -1516,9 +1514,9 @@ namespace eval ::acqvideo {
 
       #--- Largeur et hauteur de la video
       $zone(image1) create text 170 20 -text "$largeur" \
-         -justify center -fill $audace(color,textColor) -tags label_nb_pixel_x_y -font $audace(font,arial_8_b)
+         -justify center -fill $audace(color,textColor) -tags label_nb_pixel_x_y
       $zone(image1) create text 25 130 -text "$hauteur" \
-         -justify center -fill $audace(color,textColor) -tags label_nb_pixel_x_y -font $audace(font,arial_8_b)
+         -justify center -fill $audace(color,textColor) -tags label_nb_pixel_x_y
 
       #--- Je demarre le mode video fenetree
       catch { cam$panneau(acqvideo,$visuNo,camNo) startvideocrop }
@@ -1695,7 +1693,7 @@ proc acqvideoBuildIF { visuNo } {
    #--- Trame du bouton Go/Stop
    frame $panneau(acqvideo,$visuNo,This).go_stop -borderwidth 2 -relief ridge
       Button $panneau(acqvideo,$visuNo,This).go_stop.but -text $caption(acqvideo,GO) -height 2 \
-        -font $audace(font,arial_12_b) -borderwidth 3 -command "::acqvideo::GoStop $visuNo"
+         -borderwidth 3 -command "::acqvideo::GoStop $visuNo"
       pack $panneau(acqvideo,$visuNo,This).go_stop.but -fill both -padx 0 -pady 0 -expand true
    pack $panneau(acqvideo,$visuNo,This).go_stop -side top -fill x
 
@@ -1704,7 +1702,6 @@ proc acqvideoBuildIF { visuNo } {
    frame $panneau(acqvideo,$visuNo,This).mode -borderwidth 5 -relief ridge
       ComboBox $panneau(acqvideo,$visuNo,This).mode.but \
         -width 15         \
-        -font $audace(font,arial_10_n) \
         -height [llength $panneau(acqvideo,$visuNo,list_mode)] \
         -relief raised    \
         -borderwidth 1    \
@@ -1722,7 +1719,7 @@ proc acqvideoBuildIF { visuNo } {
            label $panneau(acqvideo,$visuNo,This).mode.video.nom.but -text $caption(acqvideo,nom) -pady 0
            pack $panneau(acqvideo,$visuNo,This).mode.video.nom.but -fill x -side top
            entry $panneau(acqvideo,$visuNo,This).mode.video.nom.entr -width 10 \
-              -textvariable panneau(acqvideo,$visuNo,nom_image) -font $audace(font,arial_10_b) -relief groove
+              -textvariable panneau(acqvideo,$visuNo,nom_image) -relief groove
            pack $panneau(acqvideo,$visuNo,This).mode.video.nom.entr -fill x -side top
         pack $panneau(acqvideo,$visuNo,This).mode.video.nom -side top -fill x
         frame $panneau(acqvideo,$visuNo,This).mode.video.index -relief ridge -borderwidth 2
@@ -1730,7 +1727,7 @@ proc acqvideoBuildIF { visuNo } {
               -variable panneau(acqvideo,$visuNo,indexer)
            pack $panneau(acqvideo,$visuNo,This).mode.video.index.case -side top -fill x
            entry $panneau(acqvideo,$visuNo,This).mode.video.index.entr -width 3 \
-              -textvariable panneau(acqvideo,$visuNo,index) -font $audace(font,arial_10_b) -relief groove -justify center
+              -textvariable panneau(acqvideo,$visuNo,index) -relief groove -justify center
            pack $panneau(acqvideo,$visuNo,This).mode.video.index.entr -side left -fill x -expand true
            button $panneau(acqvideo,$visuNo,This).mode.video.index.but -text "1" -width 3 \
               -command "set panneau(acqvideo,$visuNo,index) 1"
@@ -1749,14 +1746,14 @@ proc acqvideoBuildIF { visuNo } {
             label $panneau(acqvideo,$visuNo,This).mode.video_1.nom.but -text $caption(acqvideo,nom) -pady 0
             pack $panneau(acqvideo,$visuNo,This).mode.video_1.nom.but -fill x -side top
             entry $panneau(acqvideo,$visuNo,This).mode.video_1.nom.entr -width 10 \
-               -textvariable panneau(acqvideo,$visuNo,nom_image) -font $audace(font,arial_10_b) -relief groove
+               -textvariable panneau(acqvideo,$visuNo,nom_image) -relief groove
             pack $panneau(acqvideo,$visuNo,This).mode.video_1.nom.entr -fill x -side top
          pack $panneau(acqvideo,$visuNo,This).mode.video_1.nom -side top -fill x
          frame $panneau(acqvideo,$visuNo,This).mode.video_1.index -relief ridge -borderwidth 2
             label $panneau(acqvideo,$visuNo,This).mode.video_1.index.lab -text $caption(acqvideo,index) -pady 0
             pack $panneau(acqvideo,$visuNo,This).mode.video_1.index.lab -side top -fill x
             entry $panneau(acqvideo,$visuNo,This).mode.video_1.index.entr -width 3 \
-               -textvariable panneau(acqvideo,$visuNo,index) -font $audace(font,arial_10_b) -relief groove -justify center
+               -textvariable panneau(acqvideo,$visuNo,index) -relief groove -justify center
             pack $panneau(acqvideo,$visuNo,This).mode.video_1.index.entr -side left -fill x -expand true
             button $panneau(acqvideo,$visuNo,This).mode.video_1.index.but -text "1" -width 3 \
                -command "set panneau(acqvideo,$visuNo,index) 1"
