@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.15 2008-11-01 19:14:55 robertdelmas Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.16 2008-12-16 22:31:06 michelpujol Exp $
 #
 
 namespace eval tkutil {
@@ -251,6 +251,19 @@ namespace eval tkutil {
       }
       set longEntryComboBox [ expr $a + 2 ]
       return $longEntryComboBox
+   }
+
+
+   #
+   # tkutil::displayErrorInfo
+   #   affiche le contenu de ::errorInfo dans la console et dans une fenetre modale
+   #
+   proc displayErrorInfo { title } {
+      #--- j'affiche le message complet dans la console
+      ::console::affiche_erreur "$::errorInfo\n"
+      #--- j'affiche le message d'erreur dasn une fenetre modale.
+      tk_messageBox  -icon error -title $title) \
+         -message  [string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo ]]
    }
 
 }
