@@ -1,19 +1,19 @@
 /* camera.c
- * 
+ *
  * Copyright (C) 2004 Sylvain GIRARD <sly.girard@wanadoo.fr>
- * 
+ *
  * This file is part of the AudeLA project : <http://software.audela.free.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -460,8 +460,8 @@ int ReadData(struct camprop *cam, int nbbits)
 void WaitFifo(struct camprop *cam)
 {
     unsigned short port = cam->port + 1;
-    unsigned char status, busy;
-	FILE *f;
+    unsigned char status;
+//  unsigned char busy;
 
     /* Bloquage des interruptions */
     if (cam->interrupt == 1)
@@ -717,7 +717,7 @@ void Pose_CCD(struct camprop *cam)
 {
     unsigned char BinningX, BinningY;
     int LargeurX, LargeurY, VidageX, VidageY;
-    unsigned int tmp = 0;
+    // unsigned int tmp = 0;
     //FILE *f;
 
     BinningX = (unsigned char) (cam->binx);
@@ -779,7 +779,8 @@ void Read_CCD(struct camprop *cam, unsigned short *buf)
     unsigned char BinningX, BinningY;
     int LargX, LargY;
     int x, y, impair = 0;
-    unsigned short port, d, *tmp;
+    unsigned short port, d;
+    //unsigned short *tmp;
 
    port = cam->port;
     BinningX = (unsigned char) (cam->binx);
