@@ -41,9 +41,9 @@
  */
 
 struct telini tel_ini[] = {
-   {"Dfm",    /* telescope name */
+   {"DFM",    /* telescope name */
     "Dfm",    /* protocol name */
-    "Dfm",    /* product */
+    "dfm",    /* product */
      1.         /* default focal lenght of optic system */
    },
    {"",       /* telescope name */
