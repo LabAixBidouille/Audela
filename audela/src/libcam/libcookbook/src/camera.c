@@ -1,20 +1,20 @@
 /* camera.c
- * 
+ *
  * This file is part of the AudeLA project : <http://software.audela.free.fr>
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Alain KLOTZ <alain.klotz@free.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -139,7 +139,7 @@ static void read_ccd_internalbin(struct camprop *cam, unsigned short *p);
 
 
 /*
- *  Definition a structure specific for this driver 
+ *  Definition a structure specific for this driver
  *  (see declaration in camera.h)
  */
 
@@ -198,7 +198,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 	return 1;
     }
 #endif
-    
+
     cam_update_window(cam);	/* met a jour x1,y1,x2,y2,h,w dans cam */
     timetest(cam);
     cam->readfunc = 0;
@@ -366,7 +366,7 @@ void cam_set_binning(int binx, int biny, struct camprop *cam)
     cam->binx = binx;
     cam->biny = biny;
 
-    // Inhibit binning feature (for test purpose) 
+    // Inhibit binning feature (for test purpose)
     // TODO: restore binning feature
     fprintf(stderr, "libcookbook <DEBUG>: binning forced to 1x1\n");
     cam->binx = 1;
@@ -573,7 +573,7 @@ void read_ccd(struct camprop *cam, unsigned short *p)
 
     long i;
     long j, jj;
-    unsigned short data[1000];
+    short data[1000];
     int b;
 
     shift_image(cam);
@@ -628,7 +628,7 @@ void read_ccd_externalbin(struct camprop *cam, unsigned short *p)
 
     long i;
     long j, jj;
-    unsigned short data[1000];
+    short data[1000];
     int b;
 
     fprintf(stderr, "libcookbook <INFO>: use read_ccd_externalbin\n");
@@ -702,7 +702,7 @@ void read_ccd_internalbin(struct camprop *cam, unsigned short *p)
 	shift_line_b(cam);
 	// Vidage des pixels de prescan + prewindow
 	for (j = 0; j < cam->nb_deadbeginphotox + cam->x1; j++) {
-	    write_out(cam, "\x10\x11\x20\x22\x30\x34", 6);
+	    write_out(cam, (cookbyte * )"\x10\x11\x20\x22\x30\x34", 6);
 	}
 	// Lecture des pixels dans la fenetre
 	for (j = cam->x1; j <= cam->x2; j++) {
@@ -803,7 +803,7 @@ void write_out(struct camprop *cam, cookbyte * ptr, short count)
 
 void shift_line_2(struct camprop *cam)
 {
-    write_out(cam, "\x38\x30\x37\x30", 4);
+    write_out(cam, (cookbyte * )"\x38\x30\x37\x30", 4);
 }
 
 /*
@@ -819,7 +819,7 @@ void shift_line_2(struct camprop *cam)
 
 void shift_line_1(struct camprop *cam)
 {
-    write_out(cam, "\x70\x30\x38\x30\x37\x30", 6);
+    write_out(cam, (cookbyte * )"\x70\x30\x38\x30\x37\x30", 6);
 }
 
 /*
@@ -833,7 +833,7 @@ void shift_line_1(struct camprop *cam)
 
 void shift_line_3(struct camprop *cam)
 {
-    write_out(cam, "\x38\x30\x37\x30", 4);
+    write_out(cam, (cookbyte * )"\x38\x30\x37\x30", 4);
 }
 
 /*
@@ -850,7 +850,7 @@ void shift_line_3(struct camprop *cam)
 */
 void shift_line_b(struct camprop *cam)
 {
-    write_out(cam, "\x38\x30\x38\x30\x38\x37\x70\x30", 8);
+    write_out(cam, (cookbyte * )"\x38\x30\x38\x30\x38\x37\x70\x30", 8);
 }
 
 /*
@@ -867,7 +867,7 @@ void shift_image(struct camprop *cam)
     long i;
 
     for (i = 0; i < 245; i++)
-	write_out(cam, "\x38\x78\xf7\xb7", 4);
+	write_out(cam, (cookbyte * )"\x38\x78\xf7\xb7", 4);
 }
 
 /*
@@ -884,7 +884,7 @@ void clear_storage(struct camprop *cam)
     long i;
 
     for (i = 0; i < 248; i++)
-	write_out(cam, "\x38\x78\x77\x37", 4);
+	write_out(cam, (cookbyte * )"\x38\x78\x77\x37", 4);
 }
 
 /*
@@ -902,7 +902,7 @@ void clear_image_area(struct camprop *cam)
     unsigned short port = cam->port;
 
     for (i = 0; i < 500; i++)
-	write_out(cam, "\x38\x78\xf7\xb7", 4);
+	write_out(cam, (cookbyte * )"\x38\x78\xf7\xb7", 4);
 
     libcam_out(port, 0x00);
 }
@@ -920,7 +920,7 @@ void clear_serial_register(struct camprop *cam)
     long i;
 
     for (i = 0; i < 274; i++)
-	write_out(cam, "\x31\x32\x34", 3);
+	write_out(cam, (cookbyte * )"\x31\x32\x34", 3);
 }
 
 /*-------------------------------------------*/
@@ -983,7 +983,7 @@ void readout_line(struct camprop *cam, short *data, int shift)
     k = 0;
     for (i = shift; i < cx2; i += 3) {
 	if (i < cx1) {
-	    write_out(cam, "\x10\x11\x20\x22\x30\x34", 6);
+	    write_out(cam, (cookbyte * )"\x10\x11\x20\x22\x30\x34", 6);
 	} else {
 	    libcam_out(port, 0x10);
 	    libcam_out(port, 0x11);
@@ -1070,7 +1070,7 @@ void readout_line_int(struct camprop *cam, short *data)
 
     i = 11;
     while (i--)
-	write_out(cam, "\x10\x11\x20\x22\x30\x34", 6);
+	write_out(cam, (cookbyte * )"\x10\x11\x20\x22\x30\x34", 6);
 
     i = 242;
 
@@ -1109,7 +1109,7 @@ long exposure(struct camprop *cam, unsigned short *p)
 {
     long i;
 /*	long    	j;*/
-    unsigned short data[780];
+    short data[780];
 
 
     for (i = 0; i < 3; i++) {
