@@ -2,12 +2,10 @@
 # Fichier : viseur_polaire_taka.tcl
 # Description : Positionne l'etoile polaire dans un viseau polaire de type Takahashi ou à niveau
 # Auteur : Robert DELMAS
-# Mise a jour $Id: viseur_polaire_taka.tcl,v 1.11 2008-11-01 19:13:03 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_taka.tcl,v 1.12 2008-12-16 16:32:05 robertdelmas Exp $
 #
 
-namespace eval viseurPolaireTaka {
-   variable This
-   global viseurPolaireTaka
+namespace eval ::viseurPolaireTaka {
 
    #
    # viseurPolaireTaka::run this
@@ -109,7 +107,6 @@ namespace eval viseurPolaireTaka {
    #  Copie les variables des widgets dans le tableau conf()
    #
    proc widgetToConf { } {
-      variable This
       variable widget
       global conf
 
@@ -193,7 +190,7 @@ namespace eval viseurPolaireTaka {
       pack $This.lab1 -in $This.frame4 -anchor center -side left -padx 5 -pady 2
 
       set viseurPolaireTaka(longitude) "$conf(posobs,estouest) $conf(posobs,long)"
-      label $This.labURL3 -textvariable "viseurPolaireTaka(longitude)" -font $audace(font,url) -fg $color(blue)
+      label $This.labURL3 -textvariable "viseurPolaireTaka(longitude)" -fg $color(blue)
       pack $This.labURL3 -in $This.frame4 -anchor center -side right -padx 5 -pady 2
 
       label $This.lab2 -text "$caption(viseur_taka,long)"
