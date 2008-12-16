@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.75 2008-12-15 22:22:00 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.76 2008-12-16 19:27:20 robertdelmas Exp $
 #
 
 #==============================================================
@@ -211,7 +211,7 @@ proc ::acqfc::initPlugin { tkbase } {
 
 #***** Procedure DemarrageAcqFC ********************************
 proc ::acqfc::DemarrageAcqFC { visuNo } {
-   global audace caption panneau
+   global audace caption
 
    #--- Gestion du fichier de log
    #--- Creation du nom de fichier log
@@ -275,7 +275,6 @@ proc ::acqfc::ArretAcqFC { visuNo } {
 
 #***** Procedure Init_list_extension ***************************
 proc ::acqfc::Init_list_extension { { a "" } { b "" } { c "" } { visuNo 1 } } {
-   variable This
    global conf panneau
 
    #--- Mise a jour de la liste des extensions disponibles pour le mode "Une seule image"
@@ -328,7 +327,7 @@ proc ::acqfc::Init_list_extension { { a "" } { b "" } { c "" } { visuNo 1 } } {
 
 #***** Procedure Adapt_Panneau_AcqFC ***************************
 proc ::acqfc::Adapt_Panneau_AcqFC { visuNo args } {
-   global audace conf panneau
+   global conf panneau
 
    set panneau(acqfc,$visuNo,camItem) [::confVisu::getCamItem $visuNo]
    set panneau(acqfc,$visuNo,camNo)   [::confCam::getCamNo $panneau(acqfc,$visuNo,camItem)]
@@ -370,7 +369,7 @@ proc ::acqfc::Adapt_Panneau_AcqFC { visuNo args } {
          pack forget $panneau(acqfc,$visuNo,This).obt.dslr
       }
    } elseif { "$camProduct" == "dslr" } {
-      #--- C'est une APN (DSLR)
+      #--- C'est un APN (DSLR)
       pack $panneau(acqfc,$visuNo,This).pose.but -side left
       pack $panneau(acqfc,$visuNo,This).pose.lab -side right
       pack $panneau(acqfc,$visuNo,This).pose.entr -side left -fill both -expand true
@@ -382,7 +381,7 @@ proc ::acqfc::Adapt_Panneau_AcqFC { visuNo args } {
       pack forget $panneau(acqfc,$visuNo,This).obt.lab1
       pack $panneau(acqfc,$visuNo,This).obt.dslr -fill x -expand true -ipady 3
    } else {
-      #--- Ce n'est pas une WebCam, ni une APN (DSLR)
+      #--- Ce n'est pas une WebCam, ni un APN (DSLR)
       pack $panneau(acqfc,$visuNo,This).pose.but -side left
       pack $panneau(acqfc,$visuNo,This).pose.lab -side right
       pack $panneau(acqfc,$visuNo,This).pose.entr -side left -fill both -expand true
@@ -394,7 +393,13 @@ proc ::acqfc::Adapt_Panneau_AcqFC { visuNo args } {
       pack forget $panneau(acqfc,$visuNo,This).obt.lab1
       pack forget $panneau(acqfc,$visuNo,This).obt.dslr
    }
-
+   #---
+   if { "$camProduct" != "" } {
+      $panneau(acqfc,$visuNo,This).bin.but configure -state normal
+   } else {
+      $panneau(acqfc,$visuNo,This).bin.but configure -state disabled
+   }
+   #---
    if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] hasShutter ] == "1" } {
       pack forget $panneau(acqfc,$visuNo,This).obt.lab
       if { ! [ info exists conf($camProduct,foncobtu) ] } {
@@ -498,7 +503,7 @@ proc ::acqfc::Enregistrement_Var { visuNo } {
 
 #***** Procedure startTool *************************************
 proc ::acqfc::startTool { { visuNo 1 } } {
-   global conf panneau
+   global panneau
 
    #--- Creation des fenetres auxiliaires si necessaire
    if { $panneau(acqfc,$visuNo,mode) == "4" } {
@@ -514,7 +519,7 @@ proc ::acqfc::startTool { { visuNo 1 } } {
 
 #***** Procedure stopTool **************************************
 proc ::acqfc::stopTool { { visuNo 1 } } {
-   global audace conf panneau
+   global panneau
 
    #--- Sauvegarde de la configuration de prise de vue
    ::acqfc::Enregistrement_Var $visuNo
@@ -561,7 +566,7 @@ proc ::acqfc::ChangeMode { visuNo { mode "" } } {
 
 #***** Procedure de changement de l'obturateur *****************
 proc ::acqfc::ChangeObt { visuNo } {
-   global audace caption conf panneau
+   global panneau
 
    #---
    set camItem [ ::confVisu::getCamItem $visuNo ]
@@ -582,7 +587,7 @@ proc ::acqfc::ChangeObt { visuNo } {
 #    state : etat de l'obturateur (0=ouvert 1=ferme 2=synchro )
 #----------------------------------------------------------------------------
 proc ::acqfc::setShutter { visuNo state } {
-   global audace caption conf frmm panneau
+   global panneau
 
    set camItem [ ::confVisu::getCamItem $visuNo ]
    if { [ ::confCam::getPluginProperty $camItem hasShutter ] == 1 } {
@@ -645,7 +650,7 @@ proc ::acqfc::TestReel { valeur } {
 #   retourne oui ou non
 #------------------------------------------------------------
 proc ::acqfc::testParametreAcquisition { visuNo } {
-   global audace caption conf panneau
+   global audace caption panneau
 
    #--- Recopie de l'extension des fichiers image
    set ext $panneau(acqfc,$visuNo,extension)
@@ -1098,7 +1103,7 @@ proc ::acqfc::stopAcquisition { visuNo } {
 
 #***** Procedure Go (appui sur le bouton Go/Stop) *********
 proc ::acqfc::Go { visuNo } {
-   global audace caption conf panneau
+   global audace caption panneau
 
    set camItem [::confVisu::getCamItem $visuNo]
 
@@ -1639,8 +1644,6 @@ proc ::acqfc::Go { visuNo } {
 #    rien
 #------------------------------------------------------------
 proc ::acqfc::callbackAcquisition { visuNo message args } {
-   variable private
-
    switch $message {
       "autovisu" {
          #--- ce message signale que l'image est prete dans le buffer
@@ -1664,7 +1667,7 @@ proc ::acqfc::callbackAcquisition { visuNo message args } {
 
 #***** Procedure Stop (appui sur le bouton Go/Stop) *********
 proc ::acqfc::Stop { visuNo } {
-   global audace caption conf panneau
+   global audace caption panneau
 
    #--- Je desactive le bouton "STOP"
    $panneau(acqfc,$visuNo,This).go_stop.but configure -state disabled
@@ -1755,7 +1758,7 @@ proc ::acqfc::dispTime { visuNo } {
 
 #***** Procedure d'affichage d'une barre de progression ********
 proc ::acqfc::Avancement_pose { visuNo { t } } {
-   global audace caption color conf panneau
+   global caption color panneau
 
    if { $panneau(acqfc,$visuNo,avancement_acq) != "1" } {
       return
@@ -2019,7 +2022,7 @@ proc ::acqfc::cmdShiftConfig { visuNo } {
 
 #***** Fenetre de configuration series d'images a intervalle regulier en continu *********
 proc ::acqfc::Intervalle_continu_1 { visuNo } {
-   global audace caption conf panneau
+   global caption conf panneau
 
    set panneau(acqfc,$visuNo,intervalle)            "....."
    set panneau(acqfc,$visuNo,simulation_deja_faite) "0"
@@ -2113,7 +2116,7 @@ proc ::acqfc::Simu_deja_faite_1 { visuNo } {
 
 #***** Fenetre de configuration images a intervalle regulier en continu ******************
 proc ::acqfc::Intervalle_continu_2 { visuNo } {
-   global audace caption conf panneau
+   global caption conf panneau
 
    set panneau(acqfc,$visuNo,intervalle)            "....."
    set panneau(acqfc,$visuNo,simulation_deja_faite) "0"
@@ -2208,7 +2211,7 @@ proc ::acqfc::Simu_deja_faite_2 { visuNo } {
 
 #***** Enregistrement de la position des fenetres Continu (1) et Continu (2) *************
 proc ::acqfc::recup_position { visuNo } {
-   global audace conf panneau
+   global conf panneau
 
    #--- Cas de la fenetre Continu (1)
    if [ winfo exists $panneau(acqfc,$visuNo,base).intervalle_continu_1 ] {
@@ -2235,7 +2238,7 @@ proc ::acqfc::recup_position { visuNo } {
 
 #***** Enregistrement de la position de la fenetre Avancement ********
 proc ::acqfc::recup_position_1 { visuNo } {
-   global audace conf panneau
+   global panneau
 
    #--- Cas de la fenetre Avancement
    if [ winfo exists $panneau(acqfc,$visuNo,base).progress ] {
@@ -2250,7 +2253,7 @@ proc ::acqfc::recup_position_1 { visuNo } {
 
 #***** Affichage de la fenetre de configuration de WebCam ************
 proc ::acqfc::webcamConfigure { visuNo } {
-   global caption
+   global audace caption
 
    set result [::webcam::config::run $visuNo [::confVisu::getCamItem $visuNo]]
    if { $result == "1" } {
@@ -2339,7 +2342,7 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
    #--- Trame du binning
    frame $panneau(acqfc,$visuNo,This).bin -borderwidth 2 -relief ridge
       menubutton $panneau(acqfc,$visuNo,This).bin.but -text $caption(acqfc,bin) \
-         -menu $panneau(acqfc,$visuNo,This).bin.but.menu -relief raised
+         -menu $panneau(acqfc,$visuNo,This).bin.but.menu -relief raised -state disabled
       pack $panneau(acqfc,$visuNo,This).bin.but -side left -fill y -expand true -ipady 1
       set m [ menu $panneau(acqfc,$visuNo,This).bin.but.menu -tearoff 0 ]
       foreach valbin [ ::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] binningList ] {
