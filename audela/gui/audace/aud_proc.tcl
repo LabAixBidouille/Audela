@@ -1,7 +1,7 @@
 #
 # Fichier : aud_proc.tcl
 # Description : Fonctions de chargement, sauvegarde et traitement d'images
-# Mise a jour $Id: aud_proc.tcl,v 1.9 2008-11-21 17:43:26 michelpujol Exp $
+# Mise a jour $Id: aud_proc.tcl,v 1.10 2008-12-16 22:32:26 michelpujol Exp $
 #
 
 #
@@ -51,82 +51,83 @@ proc loadima { { filename "?" } { visuNo 1 } { affichage "-dovisu" } } {
 
    #---
    if { [ string compare $filename "" ] != "0" } {
-      set result [ buf$bufNo load $filename ]
-      if { $result == "" } {
-         ::confVisu::autovisu $visuNo "-no" $filename
-         ##::confVisu::setFileName $visuNo  $filename
-      } else {
-         #--- Echec du chargement
-         ::confVisu::autovisu $visuNo "-novisu" "$filename"
-         ##::confVisu::setFileName $visuNo ""
-      }
+      ::confVisu::autovisu $visuNo "-no" $filename
+      ###set result [ buf$bufNo load $filename ]
+      ###if { $result == "" } {
+      ###   ::confVisu::autovisu $visuNo "-no" $filename
+      ###   ##::confVisu::setFileName $visuNo  $filename
+      ###} else {
+      ###   #--- Echec du chargement
+      ###   ::confVisu::autovisu $visuNo "-novisu" "$filename"
+      ###   ##::confVisu::setFileName $visuNo ""
+      ###}
 
-      #--- Suppression de la zone selectionnee avec la souris si elle est hors de l'image
-      if { [ lindex [ list [ ::confVisu::getBox $visuNo ] ] 0 ] != "" } {
-         set box [ ::confVisu::getBox $visuNo ]
-         set x1 [lindex  [confVisu::getBox $visuNo ] 0]
-         set y1 [lindex  [confVisu::getBox $visuNo ] 1]
-         set x2 [lindex  [confVisu::getBox $visuNo ] 2]
-         set y2 [lindex  [confVisu::getBox $visuNo ] 3]
-         if { $x1 > $::confVisu::private($visuNo,picture_w)
-           || $y1 > $::confVisu::private($visuNo,picture_h)
-           || $y2 > $::confVisu::private($visuNo,picture_w)
-           || $y2 > $::confVisu::private($visuNo,picture_h) } {
-            ::confVisu::deleteBox $visuNo
-         }
-      }
+      ####--- Suppression de la zone selectionnee avec la souris si elle est hors de l'image
+      ###if { [ lindex [ list [ ::confVisu::getBox $visuNo ] ] 0 ] != "" } {
+      ###   set box [ ::confVisu::getBox $visuNo ]
+      ###   set x1 [lindex  [confVisu::getBox $visuNo ] 0]
+      ###   set y1 [lindex  [confVisu::getBox $visuNo ] 1]
+      ###   set x2 [lindex  [confVisu::getBox $visuNo ] 2]
+      ###   set y2 [lindex  [confVisu::getBox $visuNo ] 3]
+      ###   if { $x1 > $::confVisu::private($visuNo,picture_w)
+      ###     || $y1 > $::confVisu::private($visuNo,picture_h)
+      ###     || $y2 > $::confVisu::private($visuNo,picture_w)
+      ###     || $y2 > $::confVisu::private($visuNo,picture_h) } {
+      ###      ::confVisu::deleteBox $visuNo
+      ###   }
+      ###}
 
 
-      #---
-      set calib 1
-      if { [string compare [lindex [buf$bufNo getkwd CRPIX1] 0] ""] == 0 } {
-         set calib 0
-      }
-      if { [string compare [lindex [buf$bufNo getkwd CRPIX2] 0] ""] == 0 } {
-         set calib 0
-      }
-      if { [string compare [lindex [buf$bufNo getkwd CRVAL1] 0] ""] == 0 } {
-         set calib 0
-      }
-      if { [string compare [lindex [buf$bufNo getkwd CRVAL2] 0] ""] == 0 } {
-         set calib 0
-      }
-      set classic 0
-      set nouveau 0
-      if { [string compare [lindex [buf$bufNo getkwd CD1_1] 0] ""] != 0 } {
-         incr nouveau
-      }
-      if { [string compare [lindex [buf$bufNo getkwd CD1_2] 0] ""] != 0 } {
-         incr nouveau
-      }
-      if { [string compare [lindex [buf$bufNo getkwd CD2_1] 0] ""] != 0 } {
-         incr nouveau
-      }
-      if { [string compare [lindex [buf$bufNo getkwd CD2_2] 0] ""] != 0 } {
-         incr nouveau
-      }
-      if { [string compare [lindex [buf$bufNo getkwd CDELT1] 0] ""] != 0 } {
-         incr classic
-      }
-      if { [string compare [lindex [buf$bufNo getkwd CDELT2] 0] ""] != 0 } {
-         incr classic
-      }
-      if { [string compare [lindex [buf$bufNo getkwd CROTA1] 0] ""] != 0 } {
-         incr classic
-      }
-      if { [string compare [lindex [buf$bufNo getkwd CROTA2] 0] ""] != 0 } {
-         incr classic
-      }
-      if {(($calib == 1)&&($nouveau==4))||(($calib == 1)&&($classic>=3))} {
-         ::confVisu::setAvailableScale $visuNo "xy_radec"
-      } else {
-         ::confVisu::setAvailableScale $visuNo "xy"
-      }
+      ####---
+      ###set calib 1
+      ###if { [string compare [lindex [buf$bufNo getkwd CRPIX1] 0] ""] == 0 } {
+      ###   set calib 0
+      ###}
+      ###if { [string compare [lindex [buf$bufNo getkwd CRPIX2] 0] ""] == 0 } {
+      ###   set calib 0
+      ###}
+      ###if { [string compare [lindex [buf$bufNo getkwd CRVAL1] 0] ""] == 0 } {
+      ###   set calib 0
+      ###}
+      ###if { [string compare [lindex [buf$bufNo getkwd CRVAL2] 0] ""] == 0 } {
+      ###   set calib 0
+      ###}
+      ###set classic 0
+      ###set nouveau 0
+      ###if { [string compare [lindex [buf$bufNo getkwd CD1_1] 0] ""] != 0 } {
+      ###   incr nouveau
+      ###}
+      ###if { [string compare [lindex [buf$bufNo getkwd CD1_2] 0] ""] != 0 } {
+      ###   incr nouveau
+      ###}
+      ###if { [string compare [lindex [buf$bufNo getkwd CD2_1] 0] ""] != 0 } {
+      ###   incr nouveau
+      ###}
+      ###if { [string compare [lindex [buf$bufNo getkwd CD2_2] 0] ""] != 0 } {
+      ###   incr nouveau
+      ###}
+      ###if { [string compare [lindex [buf$bufNo getkwd CDELT1] 0] ""] != 0 } {
+      ###   incr classic
+      ###}
+      ###if { [string compare [lindex [buf$bufNo getkwd CDELT2] 0] ""] != 0 } {
+      ###   incr classic
+      ###}
+      ###if { [string compare [lindex [buf$bufNo getkwd CROTA1] 0] ""] != 0 } {
+      ###   incr classic
+      ###}
+      ###if { [string compare [lindex [buf$bufNo getkwd CROTA2] 0] ""] != 0 } {
+      ###   incr classic
+      ###}
+      ###if {(($calib == 1)&&($nouveau==4))||(($calib == 1)&&($classic>=3))} {
+      ###   ::confVisu::setAvailableScale $visuNo "xy_radec"
+      ###} else {
+      ###   ::confVisu::setAvailableScale $visuNo "xy"
+      ###}
    } else {
       set result ""
    }
 
-   return $result
+   return ""
 }
 
 #
