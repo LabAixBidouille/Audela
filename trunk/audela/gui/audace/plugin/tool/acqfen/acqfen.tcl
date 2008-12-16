@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.18 2008-12-15 22:22:17 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.19 2008-12-16 19:23:22 robertdelmas Exp $
 #
 
 # =========================================================
@@ -133,7 +133,7 @@ namespace eval ::acqfen {
 
       #--- Valeurs par defaut d'acquisition (mode "planetaire", fenetre)
       #--- Liste de valeurs du temps de pose disponibles par defaut
-      set panneau(acqfen,temps_pose) {.01 .02 .03 .05 .08 .1 .15 .2 .3 .5 1}
+      set panneau(acqfen,temps_pose) {.01 .02 .03 .05 .08 .1 .15 .2 .3 .5 1 2 5}
       #--- Valeur par defaut du temps de pose:
       if { ! [ info exists panneau(acqfen,pose) ] } {
          set panneau(acqfen,pose) "$parametres(acqfen,pose)"
@@ -406,7 +406,7 @@ namespace eval ::acqfen {
    #--- Procedure d'acquisition pleine trame
    proc GoStopCent { } {
       variable This
-      global audace caption conf panneau
+      global audace caption panneau
 
       if { [::cam::list] != "" } {
 
@@ -1191,8 +1191,7 @@ namespace eval ::acqfen {
    }
 
    proc acq_acqfen { } {
-      variable This
-      global audace caption conf panneau
+      global audace panneau
 
       #--- Raccourcis
       set camxis1 [lindex [cam$audace(camNo) nbcells] 0]
@@ -1351,7 +1350,6 @@ namespace eval ::acqfen {
 #--- Procedure lancee par appui sur le bouton "enregistrer", uniquement dans le
 #--- mode "Une image".
    proc SauveUneImage { } {
-      variable This
       global audace caption panneau
 
       #--- Enregistrement de l'extension des fichiers
@@ -1490,7 +1488,7 @@ namespace eval ::acqfen {
 #    cree la fenetre de l'outil
 #------------------------------------------------------------
 proc acqfenBuildIF { This } {
-global audace caption color panneau
+global caption color panneau
 
 #--- Trame du panneau
 
@@ -1606,7 +1604,8 @@ frame $This -borderwidth 2 -relief groove
       pack $This.acq.pose -expand true
 
       #--- Bouton binning
-      button $This.acq.butbin -text $caption(acqfen,bin,$panneau(acqfen,bin)) -command ::acqfen::ChangeBin
+      button $This.acq.butbin -text $caption(acqfen,bin,$panneau(acqfen,bin)) \
+         -command ::acqfen::ChangeBin
       pack $This.acq.butbin -expand true
 
       #--- Representation matrice CCD
@@ -1727,7 +1726,7 @@ frame $This -borderwidth 2 -relief groove
 #---Procedure d'affichage de la fenetre de reglages acquisition serie et continu
 
 proc Creefenreglfen { } {
-   global audace caption conf infos panneau
+   global audace caption conf panneau
 
    if { ! [ info exists conf(fenreglfen,position) ] } { set conf(fenreglfen,position) "+0+0" }
 

@@ -2,7 +2,7 @@
 # Fichier : acqfcSetup.tcl
 # Description : Configuration de certains parametres de l'outil Acquisition
 # Auteur : Robert DELMAS
-# Mise a jour $Id: acqfcSetup.tcl,v 1.13 2008-11-09 06:58:21 robertdelmas Exp $
+# Mise a jour $Id: acqfcSetup.tcl,v 1.14 2008-12-16 19:20:20 robertdelmas Exp $
 #
 
 namespace eval ::acqfcSetup {
@@ -118,7 +118,7 @@ namespace eval ::acqfcSetup {
    # Creation de l'interface graphique
    #
    proc fillConfigPage { frm visuNo } {
-      global audace caption panneau
+      global caption panneau
 
       #--- Charge la configuration de la vitesse de communication dans une variable locale
       ::acqfcSetup::confToWidget $visuNo

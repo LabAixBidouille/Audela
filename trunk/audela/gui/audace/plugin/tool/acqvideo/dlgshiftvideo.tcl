@@ -2,11 +2,10 @@
 # Fichier : dlgshiftvideo.tcl
 # Description : Fenetre de dialogue pour saisir les parametres de deplacement entre 2 images
 # Auteur : Michel PUJOL
-# Mise a jour $Id: dlgshiftvideo.tcl,v 1.1 2008-04-17 20:39:34 robertdelmas Exp $
+# Mise a jour $Id: dlgshiftvideo.tcl,v 1.2 2008-12-16 19:21:57 robertdelmas Exp $
 #
 
-namespace eval DlgShiftVideo {
-   variable This
+namespace eval ::DlgShiftVideo {
 
    #------------------------------------------------------------
    #  init
@@ -42,7 +41,6 @@ namespace eval DlgShiftVideo {
    #  cmdSave
    #------------------------------------------------------------
    proc cmdSave { } {
-      variable This
       global fileName panneau
 
       #---
@@ -81,7 +79,6 @@ namespace eval DlgShiftVideo {
    #      display fields values in the grid
    #------------------------------------------------------------
    proc loadDataFile { } {
-      variable This
       global fileName panneau
 
       set arrayName "panneau"
@@ -111,7 +108,7 @@ namespace eval DlgShiftVideo {
    #      decalage du telescope pendant une serie d'images
    #------------------------------------------------------------
    proc Decalage_Telescope { } {
-      global caption conf panneau
+      global caption panneau
 
       #--- Déplacement du télescope
       if { $panneau(DlgShiftVideo,buttonShift) == "1" } {

@@ -2,11 +2,10 @@
 # Fichier : dlgshift.tcl
 # Description : Fenetre de dialogue pour saisir les parametres de deplacement entre 2 images
 # Auteur : Michel PUJOL
-# Mise a jour $Id: dlgshift.tcl,v 1.5 2008-04-17 20:40:31 robertdelmas Exp $
+# Mise a jour $Id: dlgshift.tcl,v 1.6 2008-12-16 19:21:29 robertdelmas Exp $
 #
 
-namespace eval DlgShift {
-   variable This
+namespace eval ::DlgShift {
 
    #------------------------------------------------------------
    #  init
@@ -42,7 +41,6 @@ namespace eval DlgShift {
    #  cmdSave
    #------------------------------------------------------------
    proc cmdSave { } {
-      variable This
       global fileName panneau
 
       #---
@@ -81,7 +79,6 @@ namespace eval DlgShift {
    #      display fields values in the grid
    #------------------------------------------------------------
    proc loadDataFile { } {
-      variable This
       global fileName panneau
 
       set arrayName "panneau"
@@ -111,7 +108,7 @@ namespace eval DlgShift {
    #      decalage du telescope pendant une serie d'images
    #------------------------------------------------------------
    proc Decalage_Telescope { } {
-      global caption conf panneau
+      global caption panneau
 
       #--- Déplacement du télescope
       if { $panneau(DlgShift,buttonShift) == "1" } {

@@ -2,7 +2,7 @@
 # Fichier : acqvideo.tcl
 # Description : Outil d'acquisition video
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: acqvideo.tcl,v 1.8 2008-12-15 22:22:30 robertdelmas Exp $
+# Mise a jour $Id: acqvideo.tcl,v 1.9 2008-12-16 19:22:34 robertdelmas Exp $
 #
 
 #==============================================================
@@ -937,7 +937,7 @@ namespace eval ::acqvideo {
 
 #***** Procedure d'affichage d'une barre de progression ********
    proc Avancement_pose { visuNo { t } } {
-      global audace caption color panneau
+      global caption color panneau
 
       if { $panneau(acqvideo,$visuNo,avancement_acq) == "1" } {
          #--- Recuperation de la position de la fenetre Avancement
@@ -1071,7 +1071,7 @@ namespace eval ::acqvideo {
 
 #***** Fenetre de configuration video ****************************************************
    proc selectVideoMode { visuNo } {
-      global audace caption conf panneau
+      global caption conf panneau
 
       #--- Recuperation de la position de la fenetre
       ::acqvideo::recup_position $visuNo
@@ -1292,7 +1292,7 @@ namespace eval ::acqvideo {
 
 #***** Procedure d'arret du fenetrage video **************************************************
    proc stopWindowedFenster { visuNo } {
-      global caption panneau
+      global panneau
 
       set camItem [::confVisu::getCamItem $visuNo]
 
@@ -1629,7 +1629,7 @@ namespace eval ::acqvideo {
 
 #***** Affichage de la fenetre de configuration de WebCam ************
    proc webcamConfigure { visuNo } {
-      global caption
+      global audace caption
 
       set result [::webcam::config::run $visuNo [::confVisu::getCamItem $visuNo]]
       if { $result == "1" } {
