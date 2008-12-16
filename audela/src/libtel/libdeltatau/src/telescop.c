@@ -52,9 +52,9 @@ SENDCOMMANDA DeviceSendCommandeA;
  */
 
 struct telini tel_ini[] = {
-   {"DeltaTau",    /* telescope name */
-    "DeltaTau",    /* protocol name */
-    "DeltaTau",    /* product */
+   {"Delta Tau",    /* telescope name */
+    "Delta Tau",    /* protocol name */
+    "delta tau",    /* product */
      1.         /* default focal lenght of optic system */
    },
    {"",       /* telescope name */
