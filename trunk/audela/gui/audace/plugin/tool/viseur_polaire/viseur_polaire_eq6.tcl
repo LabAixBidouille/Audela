@@ -2,12 +2,10 @@
 # Fichier : viseur_polaire_eq6.tcl
 # Description : Positionne l'etoile polaire dans un viseau polaire de type EQ6 ou a constellations
 # Auteur : Robert DELMAS
-# Mise a jour $Id: viseur_polaire_eq6.tcl,v 1.10 2008-11-01 19:11:50 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_eq6.tcl,v 1.11 2008-12-16 16:31:50 robertdelmas Exp $
 #
 
-namespace eval viseurPolaireEQ6 {
-   variable This
-   global viseurPolaireEQ6
+namespace eval ::viseurPolaireEQ6 {
 
    #
    # viseurPolaireEQ6::run this
@@ -109,7 +107,6 @@ namespace eval viseurPolaireEQ6 {
    #  Copie les variables des widgets dans le tableau conf()
    #
    proc widgetToConf { } {
-      variable This
       variable widget
       global conf
 
@@ -193,7 +190,7 @@ namespace eval viseurPolaireEQ6 {
       pack $This.lab1 -in $This.frame4 -anchor center -side left -padx 5 -pady 2
 
       set viseurPolaireEQ6(longitude) "$conf(posobs,estouest) $conf(posobs,long)"
-      label $This.labURL3 -textvariable "viseurPolaireEQ6(longitude)" -font $audace(font,url) -fg $color(blue)
+      label $This.labURL3 -textvariable "viseurPolaireEQ6(longitude)" -fg $color(blue)
       pack $This.labURL3 -in $This.frame4 -anchor center -side right -padx 5 -pady 2
 
       label $This.lab2 -text "$caption(viseur_eq6,long)"
@@ -416,7 +413,6 @@ namespace eval viseurPolaireEQ6 {
    # Calcule l'angle horaire des etoiles de la constellation Cassiopee
    #
    proc HA_Cas { } {
-      variable This
       global audace
 
       #--- Initialisation du temps
@@ -476,7 +472,6 @@ namespace eval viseurPolaireEQ6 {
    # Calcule l'angle horaire des etoiles de la constellation la Grande Ourse
    #
    proc HA_UMa { } {
-      variable This
       global audace
 
       #--- Initialisation du temps
@@ -543,7 +538,6 @@ namespace eval viseurPolaireEQ6 {
    # Affichage des constellations de Cassiopee et de la Grande Ourse
    #
    proc Affich_const { } {
-      variable This
       variable widget
       global viseurPolaireEQ6
 
