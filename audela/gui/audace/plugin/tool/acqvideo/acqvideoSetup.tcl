@@ -2,10 +2,10 @@
 # Fichier : acqvideoSetup.tcl
 # Description : Configuration de certains parametres de l'outil Acquisition video
 # Auteur : Robert DELMAS
-# Mise a jour $Id: acqvideoSetup.tcl,v 1.1 2008-04-17 20:39:34 robertdelmas Exp $
+# Mise a jour $Id: acqvideoSetup.tcl,v 1.2 2008-12-16 19:20:45 robertdelmas Exp $
 #
 
-namespace eval acqvideoSetup {
+namespace eval ::acqvideoSetup {
 
    #
    # acqvideoSetup::init
@@ -118,7 +118,7 @@ namespace eval acqvideoSetup {
    # Creation de l'interface graphique
    #
    proc fillConfigPage { frm visuNo } {
-      global audace caption panneau
+      global caption panneau
 
       #--- Charge la configuration de la vitesse de communication dans une variable locale
       ::acqvideoSetup::confToWidget $visuNo
