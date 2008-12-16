@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.7 2008-11-23 12:05:54 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.8 2008-12-16 22:19:23 michelpujol Exp $
 #
 
 namespace eval ::keyword {
@@ -39,6 +39,8 @@ proc ::keyword::header { visuNo args } {
       pack $base.header.slb -fill y -expand true
       #--- Je declare le rafraichissement automatique des mots-cles si on charge une image
       ::confVisu::addFileNameListener $visuNo "::keyword::header $visuNo"
+      #--- Je declare le rafraichissement automatique des mots-cles si on charge de HDU de l'image FITS
+      ::confVisu::addHduListener $visuNo "::keyword::header $visuNo"
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
       bind $base.header <Key-F1> { ::console::GiveFocus }
       #--- Mise a jour dynamique des couleurs
@@ -88,6 +90,7 @@ proc ::keyword::header { visuNo args } {
 proc ::keyword::closeHeader { visuNo } {
    ::keyword::headerRecupPosition $visuNo
    ::confVisu::removeFileNameListener $visuNo "::keyword::header $visuNo"
+   ::confVisu::removeHduListener $visuNo "::keyword::header $visuNo"
    destroy [ ::confVisu::getBase $visuNo ].header
 }
 
