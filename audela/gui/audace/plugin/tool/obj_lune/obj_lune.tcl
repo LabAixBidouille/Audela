@@ -2,7 +2,7 @@
 # Fichier : obj_lune.tcl
 # Description : Outil dedie a la Lune, avec Goto vers un site choisi, ephemerides et cartographie
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune.tcl,v 1.15 2008-12-11 19:11:06 robertdelmas Exp $
+# Mise a jour $Id: obj_lune.tcl,v 1.16 2008-12-16 17:01:21 robertdelmas Exp $
 #
 
 global audace
@@ -13,7 +13,7 @@ source [ file join $audace(rep_plugin) tool obj_lune obj_lune_1.tcl ]
 #--- Chargement du programme pour la partie graphique de l'outil Objectif Lune
 source [ file join $audace(rep_plugin) tool obj_lune obj_lune_2.tcl ]
 
-namespace eval obj_lune {
+namespace eval ::obj_lune {
    global audace
 
    #--- Chargement des legendes et des textes pour differentes langues
@@ -28,7 +28,7 @@ namespace eval obj_lune {
    #
    proc run { } {
       variable This
-      global audace obj_lune
+      global audace
 
       set This "$audace(base).obj_lune"
       createDialog
@@ -42,7 +42,7 @@ namespace eval obj_lune {
    #
    proc goto_lune { } {
       variable This
-      global audace conf obj_lune
+      global obj_lune
 
       #--- Gestion des boutons actifs/inactifs
       $This.cmd.goto configure -relief groove -state disabled
@@ -798,7 +798,7 @@ namespace eval obj_lune {
    # Onglet de selection et d'affichage des cartes
    #
    proc cartePage { frm } {
-      global audace caption color obj_lune zone
+      global audace caption obj_lune zone
 
       #--- Initialisation
       set obj_lune(onglet3) $frm
@@ -886,7 +886,7 @@ namespace eval obj_lune {
    # Onglet de selection et d'affichage des cartes de libration
    #
    proc carteLibrationPage { frm } {
-      global audace caption color obj_lune zone
+      global audace caption obj_lune zone
 
       #--- Initialisation
       set obj_lune(onglet4) $frm
