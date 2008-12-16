@@ -2,7 +2,7 @@
 # Fichier : animate.tcl
 # Description : Outil pour le controle des animations d'images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: animate.tcl,v 1.18 2008-12-11 19:17:32 robertdelmas Exp $
+# Mise a jour $Id: animate.tcl,v 1.19 2008-12-16 16:33:46 robertdelmas Exp $
 #
 
 #============================================================
@@ -255,7 +255,7 @@ proc ::animate::editNomGenerique { } {
 #    cree la fenetre de l'outil
 #------------------------------------------------------------
 proc ::animate::animBuildIF { This } {
-   global audace panneau
+   global panneau
 
    #--- Frame de l'outil
    frame $This -borderwidth 2 -relief groove
