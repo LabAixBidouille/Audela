@@ -2,10 +2,10 @@
 # Fichier : obj_lune_2.tcl
 # Description : Programme pour la partie graphique de l'outil Objectif Lune
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune_2.tcl,v 1.9 2007-12-04 18:54:20 robertdelmas Exp $
+# Mise a jour $Id: obj_lune_2.tcl,v 1.10 2008-12-16 17:02:36 robertdelmas Exp $
 #
 
-namespace eval obj_lune {
+namespace eval ::obj_lune {
 
    #
    # obj_lune::Lune_Scrolled_Canvas
@@ -1710,8 +1710,7 @@ namespace eval obj_lune {
       #--- Cree l'affichage du message
       label $audace(base).manque_cartes.lab1 -text "$caption(obj_lune2,manque_cartes_1)"
       pack $audace(base).manque_cartes.lab1 -padx 10 -pady 2
-      label $audace(base).manque_cartes.labURL2 -text "$caption(obj_lune2,manque_cartes_2)" \
-         -fg $fg -font $audace(font,url)
+      label $audace(base).manque_cartes.labURL2 -text "$caption(obj_lune2,manque_cartes_2)" -fg $fg
       pack $audace(base).manque_cartes.labURL2 -padx 10 -pady 2
       label $audace(base).manque_cartes.lab3 -text "$caption(obj_lune2,manque_cartes_3)"
       pack $audace(base).manque_cartes.lab3 -padx 10 -pady 2
@@ -1731,7 +1730,7 @@ namespace eval obj_lune {
          $audace(base).manque_cartes.labURL2 configure -fg $fg2
       }
       bind $audace(base).manque_cartes.labURL2 <Leave> {
-         set fg3  $color(blue)
+         set fg3 $color(blue)
          $audace(base).manque_cartes.labURL2 configure -fg $fg3
       }
       #--- Mise a jour dynamique des couleurs
