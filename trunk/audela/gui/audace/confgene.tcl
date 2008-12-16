@@ -5,7 +5,7 @@
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.51 2008-12-09 21:09:36 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.52 2008-12-16 22:22:20 robertdelmas Exp $
 #
 
 #
@@ -13,7 +13,7 @@
 # Description : Position de l'observateur sur la Terre
 #
 
-namespace eval confPosObs {
+namespace eval ::confPosObs {
 
    #
    # confPosObs::run this
@@ -460,7 +460,7 @@ namespace eval confPosObs {
    # Ajout d'un observatoire dans la liste
    #
    proc addObs { } {
-      ::confPosObs::::config::run "add"
+      ::confPosObs::config::run "add"
    }
 
    #
@@ -468,7 +468,7 @@ namespace eval confPosObs {
    # Suppression d'un observatoire dans la liste
    #
    proc delObs { } {
-      ::confPosObs::::config::run "del"
+      ::confPosObs::config::run "del"
    }
 
    #
@@ -476,7 +476,7 @@ namespace eval confPosObs {
    # Copie d'un observatoire de la liste
    #
    proc copyObs { } {
-      ::confPosObs::::config::run "copy"
+      ::confPosObs::config::run "copy"
    }
 
    #--- Namespace pour les boite de gestion des noms d'observatoire
@@ -516,6 +516,12 @@ namespace eval confPosObs {
          if { $confgene(action) == "add" } {
             if { $confgene(posobs,new_nom_observatoire) != "" } {
                set confgene(posobs,nom_observatoire) "$confgene(posobs,new_nom_observatoire)"
+               #--- Mettre a vide le numero UAI sinon ::MPC va changer les informations
+               set confgene(posobs,station_uai)      ""
+               #--- Fonction pour la mise a la forme MPC et MPCSTATION
+               ::confPosObs::MPC
+               #--- Fonction pour la mise a la forme GPS
+               ::confPosObs::Position
             }
          } elseif { $confgene(action) == "del" } {
             if { $confgene(posobs,del_nom_observatoire) != "" } {
@@ -559,6 +565,7 @@ namespace eval confPosObs {
                set confgene(posobs,lat)              "$config_observatoire(lat)"
                set confgene(posobs,altitude)         "$config_observatoire(altitude)"
                set confgene(posobs,ref_geodesique)   "$config_observatoire(ref_geodesique)"
+               #--- Mettre a vide le numero UAI sinon ::MPC va changer les informations
                set confgene(posobs,station_uai)      ""
                #--- Fonction pour la mise a la forme MPC et MPCSTATION
                ::confPosObs::MPC
@@ -607,7 +614,7 @@ namespace eval confPosObs {
       #--- Creation de l'interface graphique
       #
       proc fillConfigPage { frm visuNo } {
-         global audace caption confgene
+         global caption confgene
 
          #--- Initialisation
          set confgene(frm)                           $frm
@@ -705,8 +712,7 @@ namespace eval confPosObs {
       pack $audace(base).maj.lab2 -padx 10 -pady 2
       label $audace(base).maj.lab3 -text "$caption(confgene,fichier_uai_maj3)"
       pack $audace(base).maj.lab3 -padx 10 -pady 2
-      label $audace(base).maj.labURL4 -text "$caption(confgene,fichier_uai_maj4)" -font $audace(font,url) \
-         -fg $color(blue)
+      label $audace(base).maj.labURL4 -text "$caption(confgene,fichier_uai_maj4)" -fg $color(blue)
       pack $audace(base).maj.labURL4 -padx 10 -pady 2
       label $audace(base).maj.lab5 -text "$caption(confgene,fichier_uai_maj5) $confgene(posobs,fichier_station_uai)"
       pack $audace(base).maj.lab5 -padx 10 -pady 2
@@ -769,7 +775,7 @@ namespace eval confPosObs {
    #
    proc Position { } {
       variable This
-      global caption conf confgene
+      global caption confgene
 
       #--- Localisation de l'observateur
       set estouest $confgene(posobs,estouest)
@@ -821,7 +827,7 @@ namespace eval confPosObs {
    #
    proc MPC { } {
       variable This
-      global audace caption color conf confgene
+      global audace caption color confgene
 
       #--- Effacement de la fenetre d'alerte
       bind $This.station_uai <Enter> { destroy $audace(base).erreur }
@@ -1110,7 +1116,7 @@ namespace eval confPosObs {
 # Description : Configuration du temps (heure systeme ou TU)
 #
 
-namespace eval confTemps {
+namespace eval ::confTemps {
 
    #
    # confTemps::run this
@@ -1339,7 +1345,7 @@ namespace eval confTemps {
    #
    proc Temps_TU_TSL { } {
       variable This
-      global caption conf confgene
+      global caption confgene
 
       #--- Systeme d'heure utilise
       if { $confgene(temps,hsysteme) == "$caption(confgene,temps_heurelegale)" } {
@@ -1403,7 +1409,7 @@ namespace eval confTemps {
 # Description : Configuration des fichiers image
 #
 
-namespace eval confFichierIma {
+namespace eval ::confFichierIma {
 
    #
    # confFichierIma::run this
@@ -1740,7 +1746,7 @@ namespace eval confFichierIma {
 # Description : Configuration de l'alarme de fin de pose
 #
 
-namespace eval confAlarmeFinPose {
+namespace eval ::confAlarmeFinPose {
 
    #
    # confAlarmeFinPose::run this
@@ -1905,7 +1911,7 @@ namespace eval confAlarmeFinPose {
 # Description : Choisir les outils a afficher dans le menu Outil
 #
 
-namespace eval confChoixOutil {
+namespace eval ::confChoixOutil {
 
    #
    # confChoixOutil::run this
@@ -1983,7 +1989,7 @@ namespace eval confChoixOutil {
       #--- confToWidget
       for { set i 1 } { $i <= $confgene(Choix_Outil,nbre) } { incr i } {
          catch {
-            set confgene(Choix_Outil,n$i)   $conf(panneau,n$i)
+            set confgene(Choix_Outil,n$i)           $conf(panneau,n$i)
             set confgene(Choix_Outil,raccourci_n$i) $conf(raccourci,n$i)
          }
       }
@@ -2165,7 +2171,7 @@ namespace eval confChoixOutil {
 # Description : Configuration du type de fenetre du menu 'Reglages'
 #
 
-namespace eval confTypeFenetre {
+namespace eval ::confTypeFenetre {
 
    #
    # confTypeFenetre::run this
@@ -2369,7 +2375,7 @@ namespace eval confTypeFenetre {
 # Description : Configuration pour le choix des langues
 #
 
-namespace eval confLangue {
+namespace eval ::confLangue {
 
    #
    # confLangue::run this
@@ -2410,7 +2416,7 @@ namespace eval confLangue {
 
    proc createDialog { } {
       variable This
-      global audace caption conf
+      global caption
 
       if { [winfo exists $This] } {
          wm withdraw $This
@@ -2556,7 +2562,7 @@ namespace eval confLangue {
 # Description : Version du logiciel
 #
 
-namespace eval confVersion {
+namespace eval ::confVersion {
 
    #
    # confVersion::run this
@@ -2583,7 +2589,7 @@ namespace eval confVersion {
 
    proc createDialog { } {
       variable This
-      global audace audela caption color conf
+      global audela caption color
 
       if { [winfo exists $This] } {
          wm withdraw $This
@@ -2606,29 +2612,27 @@ namespace eval confVersion {
       pack $This.frame2 -side top -fill x
 
       #--- Nom du logiciel et sa version
-      label $This.lab1 -text "[ ::audela::getPluginTitle ] $audela(version)" -font $audace(font,arial_15_b)
+      label $This.lab1 -text "[ ::audela::getPluginTitle ] $audela(version)"
       pack $This.lab1 -in $This.frame1 -padx 30 -pady 2
 
       #--- Version Tcl/Tk utilisee
       if { $::tcl_platform(threaded) == "1" } {
-         label $This.lab2 -text "$caption(en-tete,a_propos_de_version_Tcl/Tk)[ info patchlevel ] multithread" \
-            -font $audace(font,arial_10_n)
+         label $This.lab2 -text "$caption(en-tete,a_propos_de_version_Tcl/Tk)[ info patchlevel ] multithread"
       } else {
-         label $This.lab2 -text "$caption(en-tete,a_propos_de_version_Tcl/Tk)[ info patchlevel ]" \
-            -font $audace(font,arial_10_n)
+         label $This.lab2 -text "$caption(en-tete,a_propos_de_version_Tcl/Tk)[ info patchlevel ]"
       }
       pack $This.lab2 -in $This.frame1 -padx 30 -pady 2
 
       #--- Date de la mise a jour
-      label $This.labURL2 -text "$caption(en-tete,a_propos_de_maj) $audela(date)." -font $audace(font,arial_10_n) -fg $color(red)
+      label $This.labURL2 -text "$caption(en-tete,a_propos_de_maj) $audela(date)." -fg $color(red)
       pack $This.labURL2 -in $This.frame1 -padx 30 -pady 2
 
       #--- Logiciel libre et gratuit
-      label $This.lab3 -text "$caption(en-tete,a_propos_de_libre)" -font $audace(font,arial_10_n)
+      label $This.lab3 -text "$caption(en-tete,a_propos_de_libre)"
       pack $This.lab3 -in $This.frame1 -padx 30 -pady 2
 
       #--- Site web officiel
-      label $This.labURL4 -text "$caption(en-tete,a_propos_de_site)" -font $audace(font,arial_10_n) -fg $color(blue)
+      label $This.labURL4 -text "$caption(en-tete,a_propos_de_site)" -fg $color(blue)
       pack $This.labURL4 -in $This.frame1 -padx 30 -pady 2
 
       #--- Copyright
@@ -2711,7 +2715,7 @@ namespace eval confVersion {
 #     namespace::showHelp         pour le bouton d'aide
 #
 
-namespace eval confGenerique {
+namespace eval ::confGenerique {
 }
 
 #
@@ -2832,8 +2836,8 @@ proc ::confGenerique::closeWindow { visuNo NameSpace This } {
 }
 
 proc ::confGenerique::createDialog { visuNo NameSpace This} {
-   global caption conf
    variable private
+   global caption conf
 
    if { [winfo exists $This] } {
       wm withdraw $This
