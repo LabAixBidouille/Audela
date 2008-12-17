@@ -1,6 +1,6 @@
 #
 # Fichier : cemes.cap
-# Mise a jour $Id: cemes.cap,v 1.4 2008-12-14 23:43:07 robertdelmas Exp $
+# Mise a jour $Id: cemes.cap,v 1.5 2008-12-17 21:36:49 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -72,7 +72,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cemes,miroir_x)                  "Specchio orizzontale"
    set caption(cemes,miroir_y)                  "Specchio verticale"
    set caption(cemes,fonc_obtu)                 "Funzionamento otturatore"
-   set caption(cemes,cannotcreatecam)           "# La caméra ne peut pas être créée."
+   set caption(cemes,cannotcreatecam)           "La camera non e' stata creata."
 
    set caption(cemes,port_camera)               "Porta CEMES"
    set caption(cemes,2points)                   ":"
@@ -96,7 +96,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cemes,miroir_x)                  "Espejo horizontal"
    set caption(cemes,miroir_y)                  "Espejo vertical"
    set caption(cemes,fonc_obtu)                 "Funcionamiento del obturador"
-   set caption(cemes,cannotcreatecam)           "# La caméra ne peut pas être créée."
+   set caption(cemes,cannotcreatecam)           "La cámara no puede ser creada."
 
    set caption(cemes,port_camera)               "Puerto CEMES"
    set caption(cemes,2points)                   ":"
@@ -120,7 +120,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cemes,miroir_x)                  "Horizontale Spiegel"
    set caption(cemes,miroir_y)                  "Verticale Spiegel"
    set caption(cemes,fonc_obtu)                 "Verschluss Arbeiten"
-   set caption(cemes,cannotcreatecam)           "# La caméra ne peut pas être créée."
+   set caption(cemes,cannotcreatecam)           "Die Kamera kann nicht hergestellt werden."
 
    set caption(cemes,port_camera)               "CEMES Port"
    set caption(cemes,2points)                   ":"
@@ -144,7 +144,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cemes,miroir_x)                  "Espelho Horizontal"
    set caption(cemes,miroir_y)                  "Espelho Vertical"
    set caption(cemes,fonc_obtu)                 "Operação do obturador"
-   set caption(cemes,cannotcreatecam)           "# La caméra ne peut pas être créée."
+   set caption(cemes,cannotcreatecam)           "A câmara não pode ser criada."
 
    set caption(cemes,port_camera)               "Porta CEMES"
    set caption(cemes,2points)                   ":"

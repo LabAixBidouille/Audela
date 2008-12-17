@@ -1,6 +1,6 @@
 #
 # Fichier : fingerlakes.cap
-# Mise a jour $Id: fingerlakes.cap,v 1.3 2008-12-14 23:43:39 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.cap,v 1.4 2008-12-17 21:37:44 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -72,7 +72,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,miroir_x)                  "Specchio orizzontale"
    set caption(fingerlakes,miroir_y)                  "Specchio verticale"
    set caption(fingerlakes,fonc_obtu)                 "Funzionamento otturatore"
-   set caption(fingerlakes,cannotcreatecam)           "# La caméra ne peut pas être créée."
+   set caption(fingerlakes,cannotcreatecam)           "La camera non e' stata creata."
 
    set caption(fingerlakes,port_camera)               "Porta FLI"
    set caption(fingerlakes,2points)                   ":"
@@ -96,7 +96,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,miroir_x)                  "Espejo horizontal"
    set caption(fingerlakes,miroir_y)                  "Espejo vertical"
    set caption(fingerlakes,fonc_obtu)                 "Funcionamiento del obturador"
-   set caption(fingerlakes,cannotcreatecam)           "# La caméra ne peut pas être créée."
+   set caption(fingerlakes,cannotcreatecam)           "La cámara no puede ser creada."
 
    set caption(fingerlakes,port_camera)               "Puerto FLI"
    set caption(fingerlakes,2points)                   ":"
@@ -120,7 +120,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,miroir_x)                  "Horizontale Spiegel"
    set caption(fingerlakes,miroir_y)                  "Verticale Spiegel"
    set caption(fingerlakes,fonc_obtu)                 "Verschluss Arbeiten"
-   set caption(fingerlakes,cannotcreatecam)           "# La caméra ne peut pas être créée."
+   set caption(fingerlakes,cannotcreatecam)           "Die Kamera kann nicht hergestellt werden."
 
    set caption(fingerlakes,port_camera)               "FLI Port"
    set caption(fingerlakes,2points)                   ":"
@@ -144,7 +144,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,miroir_x)                  "Espelho Horizontal"
    set caption(fingerlakes,miroir_y)                  "Espelho Vertical"
    set caption(fingerlakes,fonc_obtu)                 "Operação do obturador"
-   set caption(fingerlakes,cannotcreatecam)           "# La caméra ne peut pas être créée."
+   set caption(fingerlakes,cannotcreatecam)           "A câmara não pode ser criada."
 
    set caption(fingerlakes,port_camera)               "Porta FLI"
    set caption(fingerlakes,2points)                   ":"

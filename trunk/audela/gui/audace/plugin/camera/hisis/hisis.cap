@@ -1,6 +1,6 @@
 #
 # Fichier : hisis.cap
-# Mise a jour $Id: hisis.cap,v 1.4 2008-12-14 23:43:49 robertdelmas Exp $
+# Mise a jour $Id: hisis.cap,v 1.5 2008-12-17 21:37:54 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -117,7 +117,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,delai_b)                   "Intervallo b"
    set caption(hisis,delai_c)                   "Intervallo c"
    set caption(hisis,fonc_obtu)                 "Funzionamento otturatore"
-   set caption(hisis,cannotcreatecam)           "# La caméra ne peut pas être créée."
+   set caption(hisis,cannotcreatecam)           "La camera non e' stata creata."
 
    set caption(hisis,port_camera)               "Porta Hi-SIS"
    set caption(hisis,2points)                   ":"
@@ -156,7 +156,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,delai_b)                   "Retraso b"
    set caption(hisis,delai_c)                   "Retraso c"
    set caption(hisis,fonc_obtu)                 "Funcionamiento del obturador"
-   set caption(hisis,cannotcreatecam)           "# La caméra ne peut pas être créée."
+   set caption(hisis,cannotcreatecam)           "La cámara no puede ser creada."
 
    set caption(hisis,port_camera)               "Puerto Hi-SIS"
    set caption(hisis,2points)                   ":"
@@ -195,7 +195,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,delai_b)                   "Zeitraum b"
    set caption(hisis,delai_c)                   "Zeitraum c"
    set caption(hisis,fonc_obtu)                 "Verschluss Arbeiten"
-   set caption(hisis,cannotcreatecam)           "# La caméra ne peut pas être créée."
+   set caption(hisis,cannotcreatecam)           "Die Kamera kann nicht hergestellt werden."
 
    set caption(hisis,port_camera)               "Hi-SIS Port - Modell"
    set caption(hisis,2points)                   ":"
@@ -234,7 +234,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,delai_b)                   "Atraso b"
    set caption(hisis,delai_c)                   "Atraso c"
    set caption(hisis,fonc_obtu)                 "Operação do obturador"
-   set caption(hisis,cannotcreatecam)           "# La caméra ne peut pas être créée."
+   set caption(hisis,cannotcreatecam)           "A câmara não pode ser criada."
 
    set caption(hisis,port_camera)               "Porta Hi-SIS"
    set caption(hisis,2points)                   ":"

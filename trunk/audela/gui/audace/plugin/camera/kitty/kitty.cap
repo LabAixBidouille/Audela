@@ -1,6 +1,6 @@
 #
 # Fichier : kitty.cap
-# Mise a jour $Id: kitty.cap,v 1.6 2008-12-14 23:43:59 robertdelmas Exp $
+# Mise a jour $Id: kitty.cap,v 1.7 2008-12-17 21:38:05 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -75,7 +75,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,temperature_CCD)           "CCD Temperatura:"
    set caption(kitty,deg_c)                     "°C"
    set caption(kitty,test)                      "SX28 Test"
-   set caption(kitty,cannotcreatecam)           "# La caméra ne peut pas être créée."
+   set caption(kitty,cannotcreatecam)           "La camera non e' stata creata."
 
    set caption(kitty,port_camera)               "Porta Kitty"
    set caption(kitty,2points)                   ":"
@@ -100,7 +100,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,temperature_CCD)           "Temperatura CCD:"
    set caption(kitty,deg_c)                     "°C"
    set caption(kitty,test)                      "Test SX28"
-   set caption(kitty,cannotcreatecam)           "# La caméra ne peut pas être créée."
+   set caption(kitty,cannotcreatecam)           "La cámara no puede ser creada."
 
    set caption(kitty,port_camera)               "Puerto Kitty"
    set caption(kitty,2points)                   ":"
@@ -125,7 +125,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,temperature_CCD)           "Temperatur CCD:"
    set caption(kitty,deg_c)                     "°C"
    set caption(kitty,test)                      "Test SX28"
-   set caption(kitty,cannotcreatecam)           "# La caméra ne peut pas être créée."
+   set caption(kitty,cannotcreatecam)           "Die Kamera kann nicht hergestellt werden."
 
    set caption(kitty,port_camera)               "Kitty Port - Modell"
    set caption(kitty,2points)                   ":"
@@ -150,7 +150,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,temperature_CCD)           "Temperatura do CCD:"
    set caption(kitty,deg_c)                     "°C"
    set caption(kitty,test)                      "Teste SX28"
-   set caption(kitty,cannotcreatecam)           "# La caméra ne peut pas être créée."
+   set caption(kitty,cannotcreatecam)           "A câmara não pode ser criada."
 
    set caption(kitty,port_camera)               "Porta Kitty"
    set caption(kitty,2points)                   ":"

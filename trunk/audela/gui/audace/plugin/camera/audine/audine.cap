@@ -1,6 +1,6 @@
 #
 # Fichier : audine.cap
-# Mise a jour $Id: audine.cap,v 1.5 2008-12-14 23:42:57 robertdelmas Exp $
+# Mise a jour $Id: audine.cap,v 1.6 2008-12-17 21:36:39 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -132,7 +132,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,type_obtu)                 "Tipo otturatore"
    set caption(audine,fonc_obtu)                 "Funzionamento otturatore"
    set caption(audine,test_fab_audine)           "Rilevamento camera in corso"
-   set caption(audine,cannotcreatecam)           "# La caméra ne peut pas être créée."
+   set caption(audine,cannotcreatecam)           "La camera non e' stata creata."
 
    set caption(audine,port_camera)               "Porta Audine"
    set caption(audine,2points)                   ":"
@@ -176,7 +176,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,type_obtu)                 "Tipo de obturador"
    set caption(audine,fonc_obtu)                 "Funcionamiento del obturador"
    set caption(audine,test_fab_audine)           "Tests para la fabricación de la cámara"
-   set caption(audine,cannotcreatecam)           "# La caméra ne peut pas être créée."
+   set caption(audine,cannotcreatecam)           "La cámara no puede ser creada."
 
    set caption(audine,port_camera)               "Puerto Audine"
    set caption(audine,2points)                   ":"
@@ -220,7 +220,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,type_obtu)                 "Verschluss Modell"
    set caption(audine,fonc_obtu)                 "Verschluss Arbeiten"
    set caption(audine,test_fab_audine)           "Testen für das Kamera Bau"
-   set caption(audine,cannotcreatecam)           "# La caméra ne peut pas être créée."
+   set caption(audine,cannotcreatecam)           "Die Kamera kann nicht hergestellt werden."
 
    set caption(audine,port_camera)               "Audine Port"
    set caption(audine,2points)                   ":"
@@ -264,7 +264,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,type_obtu)                 "Tipo de obturador"
    set caption(audine,fonc_obtu)                 "Operação do obturador"
    set caption(audine,test_fab_audine)           "Testa a operação da câmara"
-   set caption(audine,cannotcreatecam)           "# La caméra ne peut pas être créée."
+   set caption(audine,cannotcreatecam)           "A câmara não pode ser criada."
 
    set caption(audine,port_camera)               "Porta Audine"
    set caption(audine,2points)                   ":"
