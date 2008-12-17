@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.11 2008-12-12 09:33:07 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.12 2008-12-17 21:49:27 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -471,6 +471,17 @@ proc gcn_decode { longs } {
          set gcn(descr,burst_flue) $gcn(long,9)
          set gcn(descr,integ_time) [expr $gcn(long,14)*4e-3]
       }
+      if {$gcn(descr,satellite)=="LOOCUP"} {
+         set gcn(descr,burst_ra) [expr $gcn(long,burst_ra)*0.0001]
+         set gcn(descr,burst_dec) [expr $gcn(long,burst_dec)*0.0001]
+         set gcn(descr,trigger_num) [expr int($gcn(long,4))] ; # identificateur du trigger
+         set grb_date [expr $gcn(long,burst_tjd)-13370.-1.+[mcc_date2jd {2005 1 1}]] ; # TJD=13370 is 01 Jan 2005
+         set grb_time [expr $gcn(long,burst_sod)/100.]
+         set gcn(descr,burst_jd) [expr $grb_date+$grb_time/86400.] ; # jd du trigger
+         set gcn(descr,grb_error) [expr 0.0001*$gcn(long,burst_error)*60.]; # boite d'erreur en arcmin
+         set gcn(descr,burst_flue) $gcn(long,9)
+         set gcn(descr,integ_time) [expr $gcn(long,14)*4e-3]
+      }
       # --- update status
       set gcn(status,last,last,jd_send) "$gcn(descr,jd_pkt)"
       set gcn(status,last,last,jd_received) "[mc_date2jd $date_rec_notice]"
@@ -696,6 +707,8 @@ proc gcn_pkt_type { pkt_type } {
      130      SIMBAD/NED_SEARCH_RESULTS
      901      ANTARES_GRB_POSITION             AVAILABLE ONLY FOR TAROT COLLABORATION
      902      ANTARES_GRB_POS_TEST             AVAILABLE ONLY FOR TAROT COLLABORATION
+     905      LOOCUP_GRB_POSITION              AVAILABLE ONLY FOR TAROT COLLABORATION
+     906      LOOCPU_GRB_POS_TEST              AVAILABLE ONLY FOR TAROT COLLABORATION
    }
    set lignes [split $lignes \n]
    set textes ""
@@ -767,6 +780,9 @@ proc gcn_pkt_type { pkt_type } {
    if {($pkt_type>=901)&&($pkt_type<=902)} {
       set satellite ANTARES
    }
+   if {($pkt_type>=905)&&($pkt_type<=906)} {
+      set satellite LOOCUP
+   }
    lappend textes $satellite
    # --- prompt identification
    # =-1 informations only, =0 pointdir, =1 prompt, =2 refined
@@ -774,10 +790,10 @@ proc gcn_pkt_type { pkt_type } {
    if {($pkt_type==108)||($pkt_type==126)||($pkt_type==83)||($pkt_type==51)} {
       set prompt 0
    }
-   if {($pkt_type==100)||($pkt_type==110)||($pkt_type==111)||($pkt_type==61)||($pkt_type==58)||($pkt_type==53)||($pkt_type==40)||($pkt_type==33)||($pkt_type==35)||($pkt_type==30)||($pkt_type==26)||($pkt_type==28)||($pkt_type==1)||($pkt_type==901)} {
+   if {($pkt_type==100)||($pkt_type==120)||($pkt_type==61)||($pkt_type==58)||($pkt_type==53)||($pkt_type==40)||($pkt_type==33)||($pkt_type==35)||($pkt_type==30)||($pkt_type==26)||($pkt_type==28)||($pkt_type==1)||($pkt_type==901)||($pkt_type==905)} {
       set prompt 1
    }
-   if {($pkt_type==101)||($pkt_type==102)||($pkt_type==67)||($pkt_type==54)||($pkt_type==55)||($pkt_type==41)||($pkt_type==42)||($pkt_type==43)||($pkt_type==39)} {
+   if {($pkt_type==101)||($pkt_type==102)||($pkt_type==67)||($pkt_type==54)||($pkt_type==55)||($pkt_type==41)||($pkt_type==42)||($pkt_type==43)||($pkt_type==39)||($pkt_type==121)} {
       set prompt 2
    }
    lappend textes $prompt
