@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_4.tcl
 # Description : Script regroupant les fonctionnalites du menu Traitement
-# Mise a jour $Id: aud_menu_4.tcl,v 1.12 2008-12-18 23:21:44 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_4.tcl,v 1.13 2008-12-18 23:24:51 robertdelmas Exp $
 #
 
 namespace eval ::traiteFilters {
@@ -250,8 +250,7 @@ namespace eval ::traiteFilters {
 
          frame $This.usr.9 -borderwidth 1 -relief raised
             frame $This.usr.9.1 -borderwidth 0 -relief flat
-               label $This.usr.9.1.labURL1 -textvariable "traiteFilters(avancement)" \
-                  -fg $color(blue)
+               label $This.usr.9.1.labURL1 -textvariable "traiteFilters(avancement)" -fg $color(blue)
                pack $This.usr.9.1.labURL1 -side top -padx 10 -pady 5
             pack $This.usr.9.1 -side top -fill both
         # pack $This.usr.9 -side top -fill both
