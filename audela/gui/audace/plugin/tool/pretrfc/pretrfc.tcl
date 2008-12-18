@@ -2,7 +2,7 @@
 # Fichier : pretrfc.tcl
 # Description : Outil pour le pretraitement automatique
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: pretrfc.tcl,v 1.20 2008-12-15 22:22:53 robertdelmas Exp $
+# Mise a jour $Id: pretrfc.tcl,v 1.21 2008-12-18 23:07:21 robertdelmas Exp $
 #
 
 #============================================================
@@ -265,7 +265,7 @@ proc getPluginHelp { } {
 
 #***** Procedure SauvegardeParametres ********************************
     proc SauvegardeParametres { } {
-       global audace conf_pt_fc
+       global audace caption conf_pt_fc
 
        catch {
           set nom_fichier [file join $audace(rep_plugin) tool pretrfc pretrfc.ini]
@@ -286,7 +286,7 @@ proc getPluginHelp { } {
       #--- Cette procedure a pour fonction de recharger le script de correction
       #---    cosmetique (pour permettre a l'utilisateur de faire du debug sans
       #---    sortir de Audela !
-      global conf_pt_fc audace caption
+      global audace caption conf_pt_fc
 
       #--- Verifie validite du nom du fichier de script
       if {[TestNomFichier $conf_pt_fc(FichScript)] == 0} {
@@ -310,7 +310,7 @@ proc getPluginHelp { } {
 
 #***** Procedure goCosm***********************************************
    proc goCosm { } {
-      global caption integre
+      global integre
 
       #--- Dans un premier temps, je teste l'integrite de l'operation
       testCosm
@@ -367,7 +367,7 @@ proc getPluginHelp { } {
 
 #***** Procedure traiteCosm*******************************************
    proc traiteCosm { } {
-      global caption conf_pt_fc integre
+      global conf_pt_fc
 
       desactiveBoutons
       #--- Applique la procedure de correction cosmetique a l'image en cours
@@ -378,7 +378,7 @@ proc getPluginHelp { } {
 
 #***** Procedure goPrecharge *****************************************
    proc goPrecharge { } {
-      global caption integre
+      global integre
 
       #--- Dans un premier temps, je teste l'integrite de l'operation
       testPrecharge
@@ -467,7 +467,7 @@ proc getPluginHelp { } {
 
 #***** Procedure traitePrecharge *************************************
    proc traitePrecharge { } {
-      global audace caption conf_pt_fc integre
+      global audace caption conf_pt_fc
 
       focus $audace(base)
       focus $audace(Console)
@@ -544,7 +544,7 @@ proc getPluginHelp { } {
 
 #***** Procedure goNoir **********************************************
    proc goNoir { } {
-      global caption integre
+      global integre
 
       #--- Dans un premier temps, je teste l'integrite de l'operation
       testNoir
@@ -623,7 +623,7 @@ proc getPluginHelp { } {
 
 #***** Procedure traiteNoir ******************************************
    proc traiteNoir { } {
-      global audace caption conf_pt_fc integre
+      global audace caption conf_pt_fc
 
       focus $audace(base)
       focus $audace(Console)
@@ -685,7 +685,7 @@ proc getPluginHelp { } {
 
 #***** Procedure goNoirDePLU *****************************************
    proc goNoirDePLU { } {
-      global caption integre
+      global integre
 
       #--- Dans un premier temps, je teste l'integrite de l'operation
       testNoirDePLU
@@ -764,7 +764,7 @@ proc getPluginHelp { } {
 
 #***** Procedure traiteNoirDePLU *************************************
    proc traiteNoirDePLU { } {
-      global audace caption conf_pt_fc integre
+      global audace caption conf_pt_fc
 
       focus $audace(base)
       focus $audace(Console)
@@ -825,7 +825,7 @@ proc getPluginHelp { } {
 
 #***** Procedure goPLU ***********************************************
    proc goPLU { } {
-      global caption integre
+      global integre
 
       #--- Dans un premier temps, je teste l'integrite de l'operation
       testPLU
@@ -978,7 +978,7 @@ proc getPluginHelp { } {
 
 #***** Procedure traitePLU *******************************************
    proc traitePLU { } {
-      global audace caption conf_pt_fc integre
+      global audace caption conf_pt_fc
 
       if {$conf_pt_fc(noir_de_PLU_a_faire_pl) == "oui"} {
          traiteNoirDePLU
@@ -1213,7 +1213,7 @@ proc getPluginHelp { } {
 
 #***** Procedure goBrut **********************************************
    proc goBrut { } {
-      global caption integre
+      global integre
 
       #--- Dans un premier temps, je teste l'integrite de l'operation
       testBrut
@@ -1379,7 +1379,7 @@ proc getPluginHelp { } {
 
 #***** Procedure traiteBrut ******************************************
    proc traiteBrut { } {
-      global audace caption conf_pt_fc integre
+      global audace caption conf_pt_fc
 
       #--- Enregistrement de l'extension des fichiers
       set ext [buf$audace(bufNo) extension]
@@ -1835,7 +1835,7 @@ proc getPluginHelp { } {
 
 #---------------------------------------------------------------------------------------------
 proc creeFenetrePrFC { } {
-   global audace caption conf_pt_fc panneau
+   global audace caption conf_pt_fc
 
 #--- Note du 21 mars 2002: Comme j'ajoute la partie offset, je mets un peu le bazar
 #--- dans les numerotations...
