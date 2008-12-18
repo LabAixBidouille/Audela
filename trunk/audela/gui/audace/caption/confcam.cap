@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.45 2008-12-17 21:39:05 robertdelmas Exp $
+# Mise a jour $Id: confcam.cap,v 1.46 2008-12-18 23:19:29 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -30,8 +30,8 @@ set caption(confcam,attention)                  "Warning"
 set caption(confcam,connexion_texte1)           "Camera Connection in Progress..."
 set caption(confcam,connexion_texte2)           "Please wait a few seconds."
 set caption(confcam,connexion_texte3)           "Only one of this camera can be connected.\nPlease choose another camera."
-set caption(confcam,notroot)                    "You must be root to drive this camera."
-set caption(confcam,seeconsole)                 "See details in Terminal."
+set caption(confcam,notroot)                    "You must be root to use this camera."
+set caption(confcam,seeconsole)                 "See details in the Terminal screen."
 
 set caption(confcam,pb)                         "Problem"
 set caption(confcam,onlycam+obt)                "Sorry, this function is not\navailable with this camera."
@@ -143,7 +143,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,connexion_texte2)        "während das Kamera Anschluß."
    set caption(confcam,connexion_texte3)        "Nur eine Kamera dieser Typ kann verbunden sein.\nBitte eine andere wählen.."
    set caption(confcam,notroot)                 "Um diese Kamera zu verwenden müssen Sie root sein."
-   set caption(confcam,seeconsole)              "Details im Konsole."
+   set caption(confcam,seeconsole)              "Siehe Details auf der Konsole."
 
    set caption(confcam,pb)                      "Problem"
    set caption(confcam,onlycam+obt)             "Diese Funktion ist leider nicht\nmit diese Kamera verfügbar."
@@ -198,8 +198,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,connexion_texte1)        "Camera Connection in Progress..."
    set caption(confcam,connexion_texte2)        "Please wait a few seconds."
    set caption(confcam,connexion_texte3)        "Only one of this camera can be connected.\nPlease choose another camera."
-   set caption(confcam,notroot)                 "You must be root to drive this camera."
-   set caption(confcam,seeconsole)              "See details in Terminal."
+   set caption(confcam,notroot)                 "You must be root to use this camera."
+   set caption(confcam,seeconsole)              "See details in the Terminal screen."
 
    set caption(confcam,pb)                      "Problem"
    set caption(confcam,onlycam+obt)             "Sorry, this function is not\navailable with this camera."
