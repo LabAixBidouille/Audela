@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.45 2008-12-13 18:44:47 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.46 2008-12-18 23:32:41 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -143,14 +143,13 @@ namespace eval ::pretraitement {
       #---
       frame $This.usr -borderwidth 0 -relief raised
          frame $This.usr.0 -borderwidth 1 -relief raised
-            label $This.usr.0.lab1 -textvariable "pretraitement(formule)" -font $audace(font,arial_15_b)
+            label $This.usr.0.lab1 -textvariable "pretraitement(formule)"
             pack $This.usr.0.lab1 -padx 10 -pady 5
         # pack $This.usr.0 -in $This.usr -side top -fill both
 
          frame $This.usr.9 -borderwidth 1 -relief raised
             frame $This.usr.9.1 -borderwidth 0 -relief flat
-               label $This.usr.9.1.labURL1 -textvariable "pretraitement(avancement)" -font $audace(font,arial_12_b) \
-                  -fg $color(blue)
+               label $This.usr.9.1.labURL1 -textvariable "pretraitement(avancement)" -fg $color(blue)
                pack $This.usr.9.1.labURL1 -side top -padx 10 -pady 5
             pack $This.usr.9.1 -side top -fill both
         # pack $This.usr.9 -in $This.usr -side top -fill both
@@ -2517,14 +2516,13 @@ namespace eval ::traiteImage {
       #---
       frame $This.usr -borderwidth 0 -relief raised
          frame $This.usr.0 -borderwidth 1 -relief raised
-            label $This.usr.0.lab1 -textvariable "traiteImage(formule)" -font $audace(font,arial_15_b)
+            label $This.usr.0.lab1 -textvariable "traiteImage(formule)"
             pack $This.usr.0.lab1 -padx 10 -pady 5
         # pack $This.usr.0 -side top -fill both
 
          frame $This.usr.3 -borderwidth 1 -relief raised
             frame $This.usr.3.1 -borderwidth 0 -relief flat
-               label $This.usr.3.1.labURL1 -textvariable "traiteImage(avancement)" -font $audace(font,arial_12_b) \
-                  -fg $color(blue)
+               label $This.usr.3.1.labURL1 -textvariable "traiteImage(avancement)" -fg $color(blue)
                pack $This.usr.3.1.labURL1 -side top -padx 10 -pady 5
             pack $This.usr.3.1 -side top -fill both
         # pack $This.usr.3 -in $This.usr -side top -fill both
@@ -3190,14 +3188,13 @@ namespace eval ::traiteWindow {
       frame $This.usr -borderwidth 0 -relief raised
 
          frame $This.usr.0 -borderwidth 1 -relief raised
-            label $This.usr.0.lab1 -textvariable "traiteWindow(formule)" -font $audace(font,arial_15_b)
+            label $This.usr.0.lab1 -textvariable "traiteWindow(formule)"
             pack $This.usr.0.lab1 -padx 10 -pady 5
         # pack $This.usr.0 -in $This.usr -side top -fill both
 
          frame $This.usr.4 -borderwidth 1 -relief raised
             frame $This.usr.4.1 -borderwidth 0 -relief flat
-               label $This.usr.4.1.labURL1 -textvariable "traiteWindow(avancement)" -font $audace(font,arial_12_b) \
-                  -fg $color(blue)
+               label $This.usr.4.1.labURL1 -textvariable "traiteWindow(avancement)" -fg $color(blue)
                pack $This.usr.4.1.labURL1 -side top -padx 10 -pady 5
             pack $This.usr.4.1 -side top -fill both
         # pack $This.usr.4 -in $This.usr -side top -fill both
@@ -3813,7 +3810,7 @@ namespace eval ::faireImageRef {
 
          frame $This.usr.8 -borderwidth 1 -relief raised
             frame $This.usr.8.1 -borderwidth 0 -relief flat
-               label $This.usr.8.1.labURL1 -textvariable "faireImageRef(avancement)" -font $audace(font,arial_12_b) \
+               label $This.usr.8.1.labURL1 -textvariable "faireImageRef(avancement)" \
                   -fg $color(blue)
                pack $This.usr.8.1.labURL1 -side top -padx 10 -pady 5
             pack $This.usr.8.1 -side top -fill both
