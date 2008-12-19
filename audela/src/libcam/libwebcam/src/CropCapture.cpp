@@ -61,7 +61,7 @@ int CCropCapture::startCropCapture(unsigned short exptime, unsigned long microSe
 
 
     capture->allocFileSpace();
-
+    ;
     // get video format of capture device
     if ((inputFormatSize = capture->getVideoFormatSize())<=0) {
         return FALSE;
@@ -76,7 +76,7 @@ int CCropCapture::startCropCapture(unsigned short exptime, unsigned long microSe
     }
 
     // open output file
-    capture->getCaptureFileName(fileName, sizeof(fileName));
+    //capture->getCaptureFileName(fileName, sizeof(fileName));
     result = AVIFileOpen(
         &outputFile,                // returned file pointer
         fileName,                   // file name
@@ -181,6 +181,19 @@ int CCropCapture::startCropCapture(unsigned short exptime, unsigned long microSe
 
     nbFrame = 0;
        
+
+    // duree de la capture limitee dans le temps(en seconde)
+    capture->setLimitEnabled(TRUE);
+    capture->setTimeLimit(exptime);
+    // frequence de la capture (millisecondes par frame)
+    capture->setCaptureRate( microSecPerFrame);
+    // nombre maxi de frames dans le fichier AVI (32000 par defaut)
+    capture->setIndexSize (32767);
+    // ne pas enregistrer le son
+    capture->setCaptureAudio(FALSE);
+    // ne pas utiliser le controle de peripheriques  MCI
+    //capture->setMCIControl(FALSE);
+    
 
     // capture now
     result = capture->startCaptureNoFile((FARPROC)cropCallbackOnSequenceProc, (long) this );   
