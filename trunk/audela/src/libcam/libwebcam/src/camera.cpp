@@ -304,6 +304,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    // WINDOWS :
    if ( strcmp(videomode,"vfw") == 0 ) {
       cam->params->capture = new CCaptureWinVfw();
+      cam->params->cropCapture = NULL;
    }else {
 #ifdef LIBWEBCAM_WITH_DIRECTX
       cam->params->capture = new CCaptureWinDirectx();
@@ -1038,14 +1039,11 @@ int startVideoCapture(struct camprop *cam, unsigned short exptime, unsigned long
    }
 
    // je lance la capture
-   result =  cam->params->capture->startCapture(exptime, microSecPerFrame, fileName);
-
-   //if( cam->params->cropCapture == NULL ) {
-   //   result =  cam->params->capture->startCapture(exptime, microSecPerFrame, fileName);
-   //} else {
-   //  result =  cam->cropCapture->startCropCapture(exptime, microSecPerFrame, fileName);
-   //   return FALSE;
-   //}
+   if( cam->params->cropCapture == NULL ) {
+     result =  cam->params->capture->startCapture(exptime, microSecPerFrame, fileName);
+   } else {
+     result =  cam->params->cropCapture->startCropCapture(exptime, microSecPerFrame, fileName);
+   }
 
    return result;
 
