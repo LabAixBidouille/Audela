@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.30 2008-12-12 23:25:40 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.31 2008-12-19 18:51:07 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -320,68 +320,59 @@ namespace eval cataGoto {
       #--- Cree l'affichage de la selection
       frame $audace(base).gotoPlanete.frame2 -borderwidth 1 -relief raised
          frame $audace(base).gotoPlanete.frame2.frame3 -borderwidth 0 -relief raised
-            label $audace(base).gotoPlanete.frame2.frame3.lab2 -text "$caption(catagoto,planete_choisie)" \
-               -font $audace(font,arial_12_b)
+            label $audace(base).gotoPlanete.frame2.frame3.lab2 -text "$caption(catagoto,planete_choisie)"
             pack $audace(base).gotoPlanete.frame2.frame3.lab2 -side top -padx 5 -pady 5
-            label $audace(base).gotoPlanete.frame2.frame3.lab3 -text "$caption(catagoto,nom)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).gotoPlanete.frame2.frame3.lab3 -text "$caption(catagoto,nom)"
             pack $audace(base).gotoPlanete.frame2.frame3.lab3 -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame3.lab3a -textvariable "catalogue(planete_choisie)"
             pack $audace(base).gotoPlanete.frame2.frame3.lab3a -side left -padx 5 -pady 5
-            label $audace(base).gotoPlanete.frame2.frame3.lab4 -text "$caption(catagoto,magnitude)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).gotoPlanete.frame2.frame3.lab4 -text "$caption(catagoto,magnitude)"
             pack $audace(base).gotoPlanete.frame2.frame3.lab4 -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame3.lab4a -textvariable "catalogue(planete_mag)"
             pack $audace(base).gotoPlanete.frame2.frame3.lab4a -side left -padx 5 -pady 5
          pack $audace(base).gotoPlanete.frame2.frame3 -side top -fill both -expand 1
          frame $audace(base).gotoPlanete.frame2.frame3a -borderwidth 0 -relief raised
-            label $audace(base).gotoPlanete.frame2.frame3a.lab41 -text "$caption(catagoto,diametre_ap)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).gotoPlanete.frame2.frame3a.lab41 -text "$caption(catagoto,diametre_ap)"
             pack $audace(base).gotoPlanete.frame2.frame3a.lab41 -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame3a.lab41a -textvariable "catalogue(planete_diam_apparent)"
             pack $audace(base).gotoPlanete.frame2.frame3a.lab41a -side left -padx 5 -pady 5
          pack $audace(base).gotoPlanete.frame2.frame3a -side top -fill both -expand 1
          frame $audace(base).gotoPlanete.frame2.frame3b -borderwidth 0 -relief raised
-            label $audace(base).gotoPlanete.frame2.frame3b.lab42 -text "$caption(catagoto,phase)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).gotoPlanete.frame2.frame3b.lab42 -text "$caption(catagoto,phase)"
             pack $audace(base).gotoPlanete.frame2.frame3b.lab42 -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame3b.lab42a -textvariable "catalogue(planete_phase)"
             pack $audace(base).gotoPlanete.frame2.frame3b.lab42a -side left -padx 5 -pady 5
-            label $audace(base).gotoPlanete.frame2.frame3b.lab43 -text "$caption(catagoto,elongation)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).gotoPlanete.frame2.frame3b.lab43 -text "$caption(catagoto,elongation)"
             pack $audace(base).gotoPlanete.frame2.frame3b.lab43 -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame3b.lab43a -textvariable "catalogue(planete_elongation)"
             pack $audace(base).gotoPlanete.frame2.frame3b.lab43a -side left -padx 5 -pady 5
          pack $audace(base).gotoPlanete.frame2.frame3b -side top -fill both -expand 1
          frame $audace(base).gotoPlanete.frame2.frame4 -borderwidth 0 -relief raised
             label $audace(base).gotoPlanete.frame2.frame4.lab5 \
-               -text "$caption(catagoto,RA) $caption(catagoto,2points)" -font $audace(font,arial_10_b)
+               -text "$caption(catagoto,RA) $caption(catagoto,2points)"
             pack $audace(base).gotoPlanete.frame2.frame4.lab5 -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame4.lab5a -textvariable "catalogue(planete_ad)"
             pack $audace(base).gotoPlanete.frame2.frame4.lab5a -side left -padx 5 -pady 5
          pack $audace(base).gotoPlanete.frame2.frame4 -side top -fill both -expand 1
          frame $audace(base).gotoPlanete.frame2.frame5 -borderwidth 0 -relief raised
             label $audace(base).gotoPlanete.frame2.frame5.lab6 \
-               -text "$caption(catagoto,DEC) $caption(catagoto,2points)" -font $audace(font,arial_10_b)
+               -text "$caption(catagoto,DEC) $caption(catagoto,2points)"
             pack $audace(base).gotoPlanete.frame2.frame5.lab6 -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame5.lab6a -textvariable "catalogue(planete_dec)"
             pack $audace(base).gotoPlanete.frame2.frame5.lab6a -side left -padx 5 -pady 5
          pack $audace(base).gotoPlanete.frame2.frame5 -side top -fill both -expand 1
          frame $audace(base).gotoPlanete.frame2.frame6 -borderwidth 0 -relief raised
-            label $audace(base).gotoPlanete.frame2.frame6.lab7 -text "$caption(catagoto,hauteur)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).gotoPlanete.frame2.frame6.lab7 -text "$caption(catagoto,hauteur)"
             pack $audace(base).gotoPlanete.frame2.frame6.lab7 -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame6.labURLRed7a -textvariable "catalogue(planete_hauteur_°)"
             pack $audace(base).gotoPlanete.frame2.frame6.labURLRed7a -side left -padx 5 -pady 5
-            label $audace(base).gotoPlanete.frame2.frame6.lab8 -text "$caption(catagoto,azimut)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).gotoPlanete.frame2.frame6.lab8 -text "$caption(catagoto,azimut)"
             pack $audace(base).gotoPlanete.frame2.frame6.lab8 -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame6.lab8a -textvariable "catalogue(planete_azimut_°)"
             pack $audace(base).gotoPlanete.frame2.frame6.lab8a -side left -padx 5 -pady 5
          pack $audace(base).gotoPlanete.frame2.frame6 -side top -fill both -expand 1
          frame $audace(base).gotoPlanete.frame2.frame7 -borderwidth 0 -relief raised
-            label $audace(base).gotoPlanete.frame2.frame7.lab9 -text "$caption(catagoto,angle_horaire)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).gotoPlanete.frame2.frame7.lab9 -text "$caption(catagoto,angle_horaire)"
             pack $audace(base).gotoPlanete.frame2.frame7.lab9 -side left -padx 5 -pady 5
             label $audace(base).gotoPlanete.frame2.frame7.lab9a -textvariable "catalogue(planete_anglehoraire)"
             pack $audace(base).gotoPlanete.frame2.frame7.lab9a -side left -padx 5 -pady 5
@@ -684,7 +675,7 @@ namespace eval cataGoto {
       #--- Cree l'affichage de la fenetre de selection et des boutons
       frame $audace(base).cataAsteroide.frame1 -borderwidth 1 -relief raised
          label $audace(base).cataAsteroide.frame1.labURL -text "$caption(catagoto,besoin_internet)" \
-            -font $audace(font,arial_10_b) -fg $color(red)
+            -fg $color(red)
          pack $audace(base).cataAsteroide.frame1.labURL -side top -padx 5 -pady 5
          label $audace(base).cataAsteroide.frame1.lab1 -text "$caption(catagoto,objet_choisi)"
          pack $audace(base).cataAsteroide.frame1.lab1 -side left -padx 5 -pady 5
@@ -699,49 +690,43 @@ namespace eval cataGoto {
       #--- Cree l'affichage de la selection
       frame $audace(base).cataAsteroide.frame2 -borderwidth 1 -relief raised
          frame $audace(base).cataAsteroide.frame2.frame3 -borderwidth 0 -relief raised
-            label $audace(base).cataAsteroide.frame2.frame3.lab2 -text "$caption(catagoto,objet_choisi)" \
-               -font $audace(font,arial_12_b)
+            label $audace(base).cataAsteroide.frame2.frame3.lab2 -text "$caption(catagoto,objet_choisi)"
             pack $audace(base).cataAsteroide.frame2.frame3.lab2 -side top -padx 5 -pady 5
-            label $audace(base).cataAsteroide.frame2.frame3.lab3 -text "$caption(catagoto,nom)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).cataAsteroide.frame2.frame3.lab3 -text "$caption(catagoto,nom)"
             pack $audace(base).cataAsteroide.frame2.frame3.lab3 -side left -padx 5 -pady 5
             label $audace(base).cataAsteroide.frame2.frame3.lab3a -textvariable "catalogue(asteroide_choisie)"
             pack $audace(base).cataAsteroide.frame2.frame3.lab3a -side left -padx 5 -pady 5
-            label $audace(base).cataAsteroide.frame2.frame3.lab4 -text "$caption(catagoto,magnitude)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).cataAsteroide.frame2.frame3.lab4 -text "$caption(catagoto,magnitude)"
             pack $audace(base).cataAsteroide.frame2.frame3.lab4 -side left -padx 5 -pady 5
             label $audace(base).cataAsteroide.frame2.frame3.lab4a -textvariable "catalogue(asteroide_mag)"
             pack $audace(base).cataAsteroide.frame2.frame3.lab4a -side left -padx 5 -pady 5
          pack $audace(base).cataAsteroide.frame2.frame3 -side top -fill both -expand 1
          frame $audace(base).cataAsteroide.frame2.frame4 -borderwidth 0 -relief raised
             label $audace(base).cataAsteroide.frame2.frame4.lab5 \
-               -text "$caption(catagoto,RA) $caption(catagoto,2points)" -font $audace(font,arial_10_b)
+               -text "$caption(catagoto,RA) $caption(catagoto,2points)"
             pack $audace(base).cataAsteroide.frame2.frame4.lab5 -side left -padx 5 -pady 5
             label $audace(base).cataAsteroide.frame2.frame4.lab5a -textvariable "catalogue(asteroide_ad)"
             pack $audace(base).cataAsteroide.frame2.frame4.lab5a -side left -padx 5 -pady 5
          pack $audace(base).cataAsteroide.frame2.frame4 -side top -fill both -expand 1
          frame $audace(base).cataAsteroide.frame2.frame5 -borderwidth 0 -relief raised
             label $audace(base).cataAsteroide.frame2.frame5.lab6 \
-               -text "$caption(catagoto,DEC) $caption(catagoto,2points)" -font $audace(font,arial_10_b)
+               -text "$caption(catagoto,DEC) $caption(catagoto,2points)"
             pack $audace(base).cataAsteroide.frame2.frame5.lab6 -side left -padx 5 -pady 5
             label $audace(base).cataAsteroide.frame2.frame5.lab6a -textvariable "catalogue(asteroide_dec)"
             pack $audace(base).cataAsteroide.frame2.frame5.lab6a -side left -padx 5 -pady 5
          pack $audace(base).cataAsteroide.frame2.frame5 -side top -fill both -expand 1
          frame $audace(base).cataAsteroide.frame2.frame6 -borderwidth 0 -relief raised
-            label $audace(base).cataAsteroide.frame2.frame6.lab7 -text "$caption(catagoto,hauteur)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).cataAsteroide.frame2.frame6.lab7 -text "$caption(catagoto,hauteur)"
             pack $audace(base).cataAsteroide.frame2.frame6.lab7 -side left -padx 5 -pady 5
             label $audace(base).cataAsteroide.frame2.frame6.labURLRed7a -textvariable "catalogue(asteroide_hauteur_°)"
             pack $audace(base).cataAsteroide.frame2.frame6.labURLRed7a -side left -padx 5 -pady 5
-            label $audace(base).cataAsteroide.frame2.frame6.lab8 -text "$caption(catagoto,azimut)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).cataAsteroide.frame2.frame6.lab8 -text "$caption(catagoto,azimut)"
             pack $audace(base).cataAsteroide.frame2.frame6.lab8 -side left -padx 5 -pady 5
             label $audace(base).cataAsteroide.frame2.frame6.lab8a -textvariable "catalogue(asteroide_azimut_°)"
             pack $audace(base).cataAsteroide.frame2.frame6.lab8a -side left -padx 5 -pady 5
          pack $audace(base).cataAsteroide.frame2.frame6 -side top -fill both -expand 1
          frame $audace(base).cataAsteroide.frame2.frame7 -borderwidth 0 -relief raised
-            label $audace(base).cataAsteroide.frame2.frame7.lab9 -text "$caption(catagoto,angle_horaire)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).cataAsteroide.frame2.frame7.lab9 -text "$caption(catagoto,angle_horaire)"
             pack $audace(base).cataAsteroide.frame2.frame7.lab9 -side left -padx 5 -pady 5
             label $audace(base).cataAsteroide.frame2.frame7.lab9a -textvariable "catalogue(asteroide_anglehoraire)"
             pack $audace(base).cataAsteroide.frame2.frame7.lab9a -side left -padx 5 -pady 5
@@ -1056,51 +1041,43 @@ namespace eval cataGoto {
       #--- Cree l'affichage de la selection
       frame $audace(base).cataObjet.frame2 -borderwidth 1 -relief raised
          frame $audace(base).cataObjet.frame2.frame3 -borderwidth 0 -relief raised
-            label $audace(base).cataObjet.frame2.frame3.lab2 -text "$caption(catagoto,objet_choisi)" \
-               -font $audace(font,arial_12_b)
+            label $audace(base).cataObjet.frame2.frame3.lab2 -text "$caption(catagoto,objet_choisi)"
             pack $audace(base).cataObjet.frame2.frame3.lab2 -side top -padx 5 -pady 5
-            label $audace(base).cataObjet.frame2.frame3.lab3 -text "$caption(catagoto,nom)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).cataObjet.frame2.frame3.lab3 -text "$caption(catagoto,nom)"
             pack $audace(base).cataObjet.frame2.frame3.lab3 -side left -padx 5 -pady 5
             label $audace(base).cataObjet.frame2.frame3.lab3a -textvariable "catalogue(M-NGC-IC_choisie)"
             pack $audace(base).cataObjet.frame2.frame3.lab3a -side left -padx 5 -pady 5
-            label $audace(base).cataObjet.frame2.frame3.lab4 -text "$caption(catagoto,magnitude)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).cataObjet.frame2.frame3.lab4 -text "$caption(catagoto,magnitude)"
             pack $audace(base).cataObjet.frame2.frame3.lab4 -side left -padx 5 -pady 5
             label $audace(base).cataObjet.frame2.frame3.lab4a -textvariable "catalogue(M-NGC-IC_mag)"
             pack $audace(base).cataObjet.frame2.frame3.lab4a -side left -padx 5 -pady 5
          pack $audace(base).cataObjet.frame2.frame3 -side top -fill both -expand 1
          frame $audace(base).cataObjet.frame2.frame4 -borderwidth 0 -relief raised
             label $audace(base).cataObjet.frame2.frame4.lab5 \
-               -text "$caption(catagoto,RA) $caption(catagoto,J2000) $caption(catagoto,2points)" \
-               -font $audace(font,arial_10_b)
+               -text "$caption(catagoto,RA) $caption(catagoto,J2000) $caption(catagoto,2points)"
             pack $audace(base).cataObjet.frame2.frame4.lab5 -side left -padx 5 -pady 5
             label $audace(base).cataObjet.frame2.frame4.lab5a -textvariable "catalogue(M-NGC-IC_ad)"
             pack $audace(base).cataObjet.frame2.frame4.lab5a -side left -padx 5 -pady 5
          pack $audace(base).cataObjet.frame2.frame4 -side top -fill both -expand 1
          frame $audace(base).cataObjet.frame2.frame5 -borderwidth 0 -relief raised
             label $audace(base).cataObjet.frame2.frame5.lab6 \
-               -text "$caption(catagoto,DEC) $caption(catagoto,J2000) $caption(catagoto,2points)" \
-               -font $audace(font,arial_10_b)
+               -text "$caption(catagoto,DEC) $caption(catagoto,J2000) $caption(catagoto,2points)"
             pack $audace(base).cataObjet.frame2.frame5.lab6 -side left -padx 5 -pady 5
             label $audace(base).cataObjet.frame2.frame5.lab6a -textvariable "catalogue(M-NGC-IC_dec)"
             pack $audace(base).cataObjet.frame2.frame5.lab6a -side left -padx 5 -pady 5
          pack $audace(base).cataObjet.frame2.frame5 -side top -fill both -expand 1
          frame $audace(base).cataObjet.frame2.frame6 -borderwidth 0 -relief raised
-            label $audace(base).cataObjet.frame2.frame6.lab7 -text "$caption(catagoto,hauteur)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).cataObjet.frame2.frame6.lab7 -text "$caption(catagoto,hauteur)"
             pack $audace(base).cataObjet.frame2.frame6.lab7 -side left -padx 5 -pady 5
             label $audace(base).cataObjet.frame2.frame6.labURLRed7a -textvariable "catalogue(M-NGC-IC_hauteur_°)"
             pack $audace(base).cataObjet.frame2.frame6.labURLRed7a -side left -padx 5 -pady 5
-            label $audace(base).cataObjet.frame2.frame6.lab8 -text "$caption(catagoto,azimut)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).cataObjet.frame2.frame6.lab8 -text "$caption(catagoto,azimut)"
             pack $audace(base).cataObjet.frame2.frame6.lab8 -side left -padx 5 -pady 5
             label $audace(base).cataObjet.frame2.frame6.lab8a -textvariable "catalogue(M-NGC-IC_azimut_°)"
             pack $audace(base).cataObjet.frame2.frame6.lab8a -side left -padx 5 -pady 5
          pack $audace(base).cataObjet.frame2.frame6 -side top -fill both -expand 1
          frame $audace(base).cataObjet.frame2.frame7 -borderwidth 0 -relief raised
-            label $audace(base).cataObjet.frame2.frame7.lab9 -text "$caption(catagoto,angle_horaire)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).cataObjet.frame2.frame7.lab9 -text "$caption(catagoto,angle_horaire)"
             pack $audace(base).cataObjet.frame2.frame7.lab9 -side left -padx 5 -pady 5
             label $audace(base).cataObjet.frame2.frame7.lab9a -textvariable "catalogue(M-NGC-IC_anglehoraire)"
             pack $audace(base).cataObjet.frame2.frame7.lab9a -side left -padx 5 -pady 5
@@ -1430,54 +1407,45 @@ namespace eval cataGoto {
       #--- Cree l'affichage de la selection
       frame $audace(base).cataEtoile.frame2 -borderwidth 1 -relief raised
          frame $audace(base).cataEtoile.frame2.frame3 -borderwidth 0 -relief raised
-            label $audace(base).cataEtoile.frame2.frame3.lab1 -text "$caption(catagoto,etoile_choisie)" \
-               -font $audace(font,arial_12_b)
+            label $audace(base).cataEtoile.frame2.frame3.lab1 -text "$caption(catagoto,etoile_choisie)"
             pack $audace(base).cataEtoile.frame2.frame3.lab1 -side top -padx 5 -pady 5
-            label $audace(base).cataEtoile.frame2.frame3.lab2 -text "$caption(catagoto,nom_courant)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).cataEtoile.frame2.frame3.lab2 -text "$caption(catagoto,nom_courant)"
             pack $audace(base).cataEtoile.frame2.frame3.lab2 -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame3.lab2a -textvariable "catalogue(etoile_nom_courant)"
             pack $audace(base).cataEtoile.frame2.frame3.lab2a -side left -padx 5 -pady 5
-            label $audace(base).cataEtoile.frame2.frame3.lab3 -text "$caption(catagoto,nom)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).cataEtoile.frame2.frame3.lab3 -text "$caption(catagoto,nom)"
             pack $audace(base).cataEtoile.frame2.frame3.lab3 -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame3.lab3a -textvariable "catalogue(etoile_choisie)"
             pack $audace(base).cataEtoile.frame2.frame3.lab3a -side left -padx 5 -pady 5
-            label $audace(base).cataEtoile.frame2.frame3.lab4 -text "$caption(catagoto,magnitude)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).cataEtoile.frame2.frame3.lab4 -text "$caption(catagoto,magnitude)"
             pack $audace(base).cataEtoile.frame2.frame3.lab4 -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame3.lab4a -textvariable "catalogue(etoile_mag)"
             pack $audace(base).cataEtoile.frame2.frame3.lab4a -side left -padx 5 -pady 5
          pack $audace(base).cataEtoile.frame2.frame3 -side top -fill both -expand 1
          frame $audace(base).cataEtoile.frame2.frame4 -borderwidth 0 -relief raised
             label $audace(base).cataEtoile.frame2.frame4.lab5 \
-               -text "$caption(catagoto,RA) $caption(catagoto,J2000) $caption(catagoto,2points)" \
-               -font $audace(font,arial_10_b)
+               -text "$caption(catagoto,RA) $caption(catagoto,J2000) $caption(catagoto,2points)"
             pack $audace(base).cataEtoile.frame2.frame4.lab5 -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame4.lab5a -textvariable "catalogue(etoile_ad)"
             pack $audace(base).cataEtoile.frame2.frame4.lab5a -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame4.lab6 \
-               -text "$caption(catagoto,DEC) $caption(catagoto,J2000) $caption(catagoto,2points)" \
-               -font $audace(font,arial_10_b)
+               -text "$caption(catagoto,DEC) $caption(catagoto,J2000) $caption(catagoto,2points)"
             pack $audace(base).cataEtoile.frame2.frame4.lab6 -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame4.lab6a -textvariable "catalogue(etoile_dec)"
             pack $audace(base).cataEtoile.frame2.frame4.lab6a -side left -padx 5 -pady 5
          pack $audace(base).cataEtoile.frame2.frame4 -side top -fill both -expand 1
          frame $audace(base).cataEtoile.frame2.frame5 -borderwidth 0 -relief raised
-            label $audace(base).cataEtoile.frame2.frame5.lab7 -text "$caption(catagoto,hauteur)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).cataEtoile.frame2.frame5.lab7 -text "$caption(catagoto,hauteur)"
             pack $audace(base).cataEtoile.frame2.frame5.lab7 -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame5.labURLRed7a -textvariable "catalogue(etoile_hauteur_°)"
             pack $audace(base).cataEtoile.frame2.frame5.labURLRed7a -side left -padx 5 -pady 5
-            label $audace(base).cataEtoile.frame2.frame5.lab8 -text "$caption(catagoto,azimut)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).cataEtoile.frame2.frame5.lab8 -text "$caption(catagoto,azimut)"
             pack $audace(base).cataEtoile.frame2.frame5.lab8 -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame5.lab8a -textvariable "catalogue(etoile_azimut_°)"
             pack $audace(base).cataEtoile.frame2.frame5.lab8a -side left -padx 5 -pady 5
          pack $audace(base).cataEtoile.frame2.frame5 -side top -fill both -expand 1
          frame $audace(base).cataEtoile.frame2.frame6 -borderwidth 0 -relief raised
-            label $audace(base).cataEtoile.frame2.frame6.lab9 -text "$caption(catagoto,angle_horaire)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).cataEtoile.frame2.frame6.lab9 -text "$caption(catagoto,angle_horaire)"
             pack $audace(base).cataEtoile.frame2.frame6.lab9 -side left -padx 5 -pady 5
             label $audace(base).cataEtoile.frame2.frame6.lab9a -textvariable "catalogue(etoile_anglehoraire)"
             pack $audace(base).cataEtoile.frame2.frame6.lab9a -side left -padx 5 -pady 5
@@ -1787,49 +1755,41 @@ namespace eval cataGoto {
       #--- Cree l'affichage de la selection
       frame $audace(base).cataObjetUtilisateur.frame2 -borderwidth 1 -relief raised
          frame $audace(base).cataObjetUtilisateur.frame2.frame3 -borderwidth 0 -relief raised
-            label $audace(base).cataObjetUtilisateur.frame2.frame3.lab1 -text "$caption(catagoto,objet_choisi)" \
-               -font $audace(font,arial_12_b)
+            label $audace(base).cataObjetUtilisateur.frame2.frame3.lab1 -text "$caption(catagoto,objet_choisi)"
             pack $audace(base).cataObjetUtilisateur.frame2.frame3.lab1 -side top -padx 5 -pady 5
-            label $audace(base).cataObjetUtilisateur.frame2.frame3.lab2 -text "$caption(catagoto,nom)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).cataObjetUtilisateur.frame2.frame3.lab2 -text "$caption(catagoto,nom)"
             pack $audace(base).cataObjetUtilisateur.frame2.frame3.lab2 -side left -padx 5 -pady 5
             label $audace(base).cataObjetUtilisateur.frame2.frame3.lab2a -textvariable "catalogue(utilisateur_choisie)"
             pack $audace(base).cataObjetUtilisateur.frame2.frame3.lab2a -side left -padx 5 -pady 5
-            label $audace(base).cataObjetUtilisateur.frame2.frame3.lab3 -text "$caption(catagoto,magnitude)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).cataObjetUtilisateur.frame2.frame3.lab3 -text "$caption(catagoto,magnitude)"
             pack $audace(base).cataObjetUtilisateur.frame2.frame3.lab3 -side left -padx 5 -pady 5
             label $audace(base).cataObjetUtilisateur.frame2.frame3.lab3a -textvariable "catalogue(utilisateur_mag)"
             pack $audace(base).cataObjetUtilisateur.frame2.frame3.lab3a -side left -padx 5 -pady 5
          pack $audace(base).cataObjetUtilisateur.frame2.frame3 -side top -fill both -expand 1
          frame $audace(base).cataObjetUtilisateur.frame2.frame4 -borderwidth 0 -relief raised
             label $audace(base).cataObjetUtilisateur.frame2.frame4.lab4 \
-               -text "$caption(catagoto,RA) $caption(catagoto,J2000) $caption(catagoto,2points)" \
-               -font $audace(font,arial_10_b)
+               -text "$caption(catagoto,RA) $caption(catagoto,J2000) $caption(catagoto,2points)"
             pack $audace(base).cataObjetUtilisateur.frame2.frame4.lab4 -side left -padx 5 -pady 5
             label $audace(base).cataObjetUtilisateur.frame2.frame4.lab4a -textvariable "catalogue(utilisateur_ad)"
             pack $audace(base).cataObjetUtilisateur.frame2.frame4.lab4a -side left -padx 5 -pady 5
             label $audace(base).cataObjetUtilisateur.frame2.frame4.lab5 \
-               -text "$caption(catagoto,DEC) $caption(catagoto,J2000) $caption(catagoto,2points)" \
-               -font $audace(font,arial_10_b)
+               -text "$caption(catagoto,DEC) $caption(catagoto,J2000) $caption(catagoto,2points)"
             pack $audace(base).cataObjetUtilisateur.frame2.frame4.lab5 -side left -padx 5 -pady 5
             label $audace(base).cataObjetUtilisateur.frame2.frame4.lab5a -textvariable "catalogue(utilisateur_dec)"
             pack $audace(base).cataObjetUtilisateur.frame2.frame4.lab5a -side left -padx 5 -pady 5
          pack $audace(base).cataObjetUtilisateur.frame2.frame4 -side top -fill both -expand 1
          frame $audace(base).cataObjetUtilisateur.frame2.frame5 -borderwidth 0 -relief raised
-            label $audace(base).cataObjetUtilisateur.frame2.frame5.lab6 -text "$caption(catagoto,hauteur)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).cataObjetUtilisateur.frame2.frame5.lab6 -text "$caption(catagoto,hauteur)"
             pack $audace(base).cataObjetUtilisateur.frame2.frame5.lab6 -side left -padx 5 -pady 5
             label $audace(base).cataObjetUtilisateur.frame2.frame5.labURLRed6a -textvariable "catalogue(utilisateur_hauteur_°)"
             pack $audace(base).cataObjetUtilisateur.frame2.frame5.labURLRed6a -side left -padx 5 -pady 5
-            label $audace(base).cataObjetUtilisateur.frame2.frame5.lab7 -text "$caption(catagoto,azimut)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).cataObjetUtilisateur.frame2.frame5.lab7 -text "$caption(catagoto,azimut)"
             pack $audace(base).cataObjetUtilisateur.frame2.frame5.lab7 -side left -padx 5 -pady 5
             label $audace(base).cataObjetUtilisateur.frame2.frame5.lab7a -textvariable "catalogue(utilisateur_azimut_°)"
             pack $audace(base).cataObjetUtilisateur.frame2.frame5.lab7a -side left -padx 5 -pady 5
          pack $audace(base).cataObjetUtilisateur.frame2.frame5 -side top -fill both -expand 1
          frame $audace(base).cataObjetUtilisateur.frame2.frame6 -borderwidth 0 -relief raised
-            label $audace(base).cataObjetUtilisateur.frame2.frame6.lab8 -text "$caption(catagoto,angle_horaire)" \
-               -font $audace(font,arial_10_b)
+            label $audace(base).cataObjetUtilisateur.frame2.frame6.lab8 -text "$caption(catagoto,angle_horaire)"
             pack $audace(base).cataObjetUtilisateur.frame2.frame6.lab8 -side left -padx 5 -pady 5
             label $audace(base).cataObjetUtilisateur.frame2.frame6.lab8a -textvariable "catalogue(utilisateur_anglehoraire)"
             pack $audace(base).cataObjetUtilisateur.frame2.frame6.lab8a -side left -padx 5 -pady 5

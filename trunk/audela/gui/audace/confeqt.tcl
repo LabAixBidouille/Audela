@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'equipment'
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.35 2008-11-01 18:41:28 robertdelmas Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.36 2008-12-19 18:50:41 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {
@@ -206,9 +206,9 @@ proc ::confEqt::recupPosDim { } {
 #    cree un widget "label" avec une URL du site WEB
 #------------------------------------------------------------
 proc ::confEqt::createUrlLabel { tkparent title url } {
-   global audace color
+   global color
 
-   label  $tkparent.labURL -text "$title" -font $audace(font,url) -fg $color(blue)
+   label  $tkparent.labURL -text "$title" -fg $color(blue)
    bind   $tkparent.labURL <ButtonPress-1> "::audace::Lance_Site_htm $url"
    bind   $tkparent.labURL <Enter> "$tkparent.labURL configure -fg $color(purple)"
    bind   $tkparent.labURL <Leave> "$tkparent.labURL configure -fg $color(blue)"
@@ -461,11 +461,9 @@ proc ::confEqt::connectEquipement { } {
    }
 
    #--- Cree l'affichage du message
-   label $audace(base).connectEquipement.labURL_1 -text "$caption(confeqt,connexion_texte1)" \
-      -font $audace(font,arial_10_b) -fg $color(red)
+   label $audace(base).connectEquipement.labURL_1 -text "$caption(confeqt,connexion_texte1)" -fg $color(red)
    pack $audace(base).connectEquipement.labURL_1 -padx 10 -pady 2
-   label $audace(base).connectEquipement.labURL_2 -text "$caption(confeqt,connexion_texte2)" \
-      -font $audace(font,arial_10_b) -fg $color(red)
+   label $audace(base).connectEquipement.labURL_2 -text "$caption(confeqt,connexion_texte2)" -fg $color(red)
    pack $audace(base).connectEquipement.labURL_2 -padx 10 -pady 2
    update
 
@@ -591,7 +589,6 @@ proc ::confEqt::createFrameFocuserTool { frm variablePluginName } {
 #    nothing
 #------------------------------------------------------------
 proc ::confEqt::activeFocuser { configureButton variablePluginName } {
-
    if { [set $variablePluginName] == "" } {
       $configureButton configure -state disabled
    } else {
