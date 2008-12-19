@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.124 2008-12-14 23:45:08 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.125 2008-12-19 18:50:53 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -377,9 +377,9 @@ proc ::confCam::createDialog { } {
 # Cree un widget "label" avec une URL du site WEB
 #------------------------------------------------------------
 proc ::confCam::createUrlLabel { tkparent title url } {
-   global audace color
+   global color
 
-   label $tkparent.labURL -text "$title" -font $audace(font,url) -fg $color(blue)
+   label $tkparent.labURL -text "$title" -fg $color(blue)
    if { $url != "" } {
       bind $tkparent.labURL <ButtonPress-1> "::audace::Lance_Site_htm $url"
    }
@@ -415,11 +415,9 @@ proc ::confCam::displayConnectCamera { } {
       wm transient $audace(base).connectCamera $audace(base)
    }
    #--- Cree l'affichage du message
-   label $audace(base).connectCamera.labURL_1 -text "$caption(confcam,connexion_texte1)" \
-      -font $audace(font,arial_10_b) -fg $color(red)
+   label $audace(base).connectCamera.labURL_1 -text "$caption(confcam,connexion_texte1)" -fg $color(red)
    pack $audace(base).connectCamera.labURL_1 -padx 10 -pady 2
-   label $audace(base).connectCamera.labURL_2 -text "$caption(confcam,connexion_texte2)" \
-      -font $audace(font,arial_10_b) -fg $color(red)
+   label $audace(base).connectCamera.labURL_2 -text "$caption(confcam,connexion_texte2)" -fg $color(red)
    pack $audace(base).connectCamera.labURL_2 -padx 10 -pady 2
 
    #--- La nouvelle fenetre est active
@@ -478,6 +476,7 @@ proc ::confCam::onRaiseNotebook { camName } {
 #----------------------------------------------------------------------------
 proc ::confCam::setConnection { camItem state } {
    variable private
+
    if { $camItem == "" } {
       #--- je retourne une erreur
       error "No camera"
@@ -514,17 +513,15 @@ proc ::confCam::setTempCCD { camItem } {
 #    telNo   : numero du telescope
 #----------------------------------------------------------------------------
 proc ::confCam::setMount { camItem telNo } {
-   variable private
-
    if { [::confCam::isReady $camItem] && [confTel::isReady]  } {
-      ###set threadNo [::confCam::getThreadNo $camItem]
-      ###if { $::tcl_platform(threaded)==1 } {
-      ###   #--- je copie la commande de la monture dans l'interpreteur de la camera
-      ###   thread::copycommand $threadNo "tel$telNo"
-      ###} else {
-      ###   #--- je copie la commande de la monture dans l'interpreteur de la camera
-      ###   copycommand $threadNo "tel$telNo"
-      ###}
+     ### set threadNo [::confCam::getThreadNo $camItem]
+     ### if { $::tcl_platform(threaded)==1 } {
+     ###    #--- je copie la commande de la monture dans l'interpreteur de la camera
+     ###    thread::copycommand $threadNo "tel$telNo"
+     ### } else {
+     ###    #--- je copie la commande de la monture dans l'interpreteur de la camera
+     ###    copycommand $threadNo "tel$telNo"
+     ### }
    }
 }
 
@@ -847,7 +844,7 @@ proc ::confCam::configureCamera { camItem } {
    set catchResult [ catch {
       #--- je configure la camera
       ::$private($camItem,camName)::configureCamera $camItem $bufNo
-      ###::$private($camItem,camName)::configureCamera $camItem $bufNo
+     ### ::$private($camItem,camName)::configureCamera $camItem $bufNo
 
       #--- je recupere camNo
       set private($camItem,camNo) [ ::$private($camItem,camName)::getCamNo $camItem ]

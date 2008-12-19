@@ -2,7 +2,7 @@
 # Fichier : ftpclient.tcl
 # Description : Connexion a un serveur FTP
 # Auteur : Michel PUJOL
-# Mise a jour $Id: ftpclient.tcl,v 1.10 2008-12-08 22:28:11 robertdelmas Exp $
+# Mise a jour $Id: ftpclient.tcl,v 1.11 2008-12-19 18:50:17 robertdelmas Exp $
 #
 
 ##############################################################################
@@ -16,7 +16,6 @@
 
 namespace eval ::ftpclient {
    global audace
-   global caption
 
    #--- Chargement des captions
    source [ file join $audace(rep_caption) ftpclient.cap ]
@@ -137,7 +136,6 @@ namespace eval ::ftpclient {
    #------------------------------------------------------------------------------
    proc getDirectory { } {
       variable private
-      global conf
 
       return "$private(directory)"
    }
@@ -148,7 +146,6 @@ namespace eval ::ftpclient {
    #------------------------------------------------------------------------------
    proc getUrl { } {
       variable private
-      global conf
 
       return "ftp://$private(hostname):$private(port)"
    }
@@ -174,7 +171,6 @@ namespace eval ::ftpclient {
    #------------------------------------------------------------------------------
    proc getFileList { fullPath { cnx $private(connection) } } {
       variable private
-      global conf
 
       #--- je recupere la liste des des fichiers
       set var [ftp::List $private(connection) "$fullPath"]
@@ -192,7 +188,7 @@ namespace eval ::ftpclient {
                set size " "
                set name [lrange $ligne $private(namePositionBegin) end]
                if { $name != ".." && $name != "."} {
-                  ##::console::disp "   append name=$name \n"
+                 ### ::console::disp "   append name=$name \n"
                   lappend filenames [list "$isdir" "$name" "$date" "$size" ]
                }
             } elseif { $id == "-r" } {
@@ -214,7 +210,6 @@ namespace eval ::ftpclient {
    #------------------------------------------------------------------------------
    proc get { sourceFile targetDir { size } } {
       variable private
-      global conf
 
       #--- j'affiche une barre de progression
       showProgressWindow $size $sourceFile
@@ -268,7 +263,7 @@ namespace eval ::ftpclient {
       wm geometry $audace(base).ftpprogress +140+315
 
       #--- Cree le widget et le label du temps ecoule
-      label $audace(base).ftpprogress.lab_status -text " 0 / $targetsize" -font $audace(font,arial_12_b) -justify center
+      label $audace(base).ftpprogress.lab_status -text " 0 / $targetsize" -justify center
       pack $audace(base).ftpprogress.lab_status -side top -fill x -expand true -pady 5
 
       set cpt "0"
@@ -695,7 +690,7 @@ namespace eval ::ftpclient {
    #------------------------------------------------------------
    proc preview { listpreview namepreview sizepreview } {
       variable widget
-      global caption conf
+      global caption
 
       #--- j'ouvre la connexion ftp avc les parametres temporaires
       set cnx [ftp::Open $widget(hostname) $widget(user) $widget(password) -port $widget(port) -timeout $widget(timeout) ]
@@ -752,7 +747,6 @@ namespace eval ::ftpclient {
 ################################################################
 
 namespace eval ::ftpserver {
-   global caption
 
    proc start { } {
       package require ftpd

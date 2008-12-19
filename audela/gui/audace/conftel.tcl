@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.51 2008-11-22 22:08:58 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.52 2008-12-19 18:50:31 robertdelmas Exp $
 #
 
 namespace eval ::confTel {
@@ -89,7 +89,6 @@ proc ::confTel::ok { } {
 #------------------------------------------------------------
 proc ::confTel::appliquer { } {
    variable private
-   global audace caption conf
 
    $private(frm).cmd.ok configure -state disabled
    $private(frm).cmd.appliquer configure -relief groove -state disabled
@@ -234,9 +233,9 @@ proc ::confTel::createDialog { } {
 #    Cree un widget "label" avec une URL du site WEB
 #------------------------------------------------------------
 proc ::confTel::createUrlLabel { tkparent title url } {
-   global audace color
+   global color
 
-   label $tkparent.labURL -text "$title" -font $audace(font,url) -fg $color(blue)
+   label $tkparent.labURL -text "$title" -fg $color(blue)
    if { $url != "" } {
       bind $tkparent.labURL <ButtonPress-1> "::audace::Lance_Site_htm $url"
    }
@@ -253,7 +252,7 @@ proc ::confTel::createPdfLabel { tkparent title pdf } {
    global audace color
 
    set filename [ file join $audace(rep_plugin) mount audecom french $pdf ]
-   label $tkparent.labURL -text "$title" -font $audace(font,url) -fg $color(blue)
+   label $tkparent.labURL -text "$title" -fg $color(blue)
    if { $pdf != "" } {
       bind $tkparent.labURL <ButtonPress-1> "::audace::Lance_Notice_pdf \"$filename\""
    }
@@ -290,11 +289,9 @@ proc ::confTel::connectMonture { } {
    }
 
    #--- Cree l'affichage du message
-   label $audace(base).connectMonture.labURL_1 -text "$caption(conftel,connexion_texte1)" \
-      -font $audace(font,arial_10_b) -fg $color(red)
+   label $audace(base).connectMonture.labURL_1 -text "$caption(conftel,connexion_texte1)" -fg $color(red)
    pack $audace(base).connectMonture.labURL_1 -padx 10 -pady 2
-   label $audace(base).connectMonture.labURL_2 -text "$caption(conftel,connexion_texte2)" \
-      -font $audace(font,arial_10_b) -fg $color(red)
+   label $audace(base).connectMonture.labURL_2 -text "$caption(conftel,connexion_texte2)" -fg $color(red)
    pack $audace(base).connectMonture.labURL_2 -padx 10 -pady 2
 
    #--- La nouvelle fenetre est active
