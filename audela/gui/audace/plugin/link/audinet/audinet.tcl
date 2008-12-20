@@ -2,7 +2,7 @@
 # Fichier : audinet.tcl
 # Description : Interface de liaison AudiNet
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: audinet.tcl,v 1.15 2008-11-01 17:27:42 robertdelmas Exp $
+# Mise a jour $Id: audinet.tcl,v 1.16 2008-12-20 11:06:07 robertdelmas Exp $
 #
 
 namespace eval audinet {
@@ -134,7 +134,7 @@ proc ::audinet::getPluginOS { } {
 #------------------------------------------------------------
 proc ::audinet::fillConfigPage { frm } {
    variable widget
-   global audace caption color
+   global caption color
 
    #--- Je memorise la reference de la frame
    set widget(frm) $frm
@@ -270,7 +270,7 @@ proc ::audinet::fillConfigPage { frm } {
    label $frm.lab103 -text "$caption(audinet,site_web_ref)"
    pack $frm.lab103 -in $frm.frame6 -side top -fill x -pady 2
 
-   label $frm.labURL -text "$caption(audinet,site_audinet)" -font $audace(font,url) -fg $color(blue)
+   label $frm.labURL -text "$caption(audinet,site_audinet)" -fg $color(blue)
    pack $frm.labURL -in $frm.frame6 -side top -fill x -pady 2
 
    #--- Mise a jour dynamique des couleurs
