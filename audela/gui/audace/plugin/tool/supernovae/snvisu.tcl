@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.34 2008-11-15 16:46:25 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.35 2008-12-20 15:10:41 robertdelmas Exp $
 #
 
 #--- Conventions pour ce script :
@@ -118,7 +118,7 @@ wm protocol $audace(base).snvisu WM_DELETE_WINDOW { snDelete }
 #--- Create the command line
 #--- Cree la ligne de commande
 entry $audace(base).snvisu.command_line \
-   -font $audace(font,arial_12_b) -textvariable command_line \
+   -textvariable command_line \
    -borderwidth 1 -relief groove
 pack $audace(base).snvisu.command_line \
    -in $audace(base).snvisu -fill x -side bottom \
@@ -288,8 +288,7 @@ if { [ info commands "::carte::isReady" ] != "" } {
 
 #--- Label du nom de l'image
 label $audace(base).snvisu.lab1 \
-   -font $audace(font,arial_12_b) -text "" \
-   -borderwidth 0 -relief flat
+   -text "" -borderwidth 0 -relief flat
 pack $audace(base).snvisu.lab1 \
    -in $audace(base).snvisu.frame8 -anchor center \
    -padx 10 -pady 4
@@ -379,8 +378,7 @@ pack $audace(base).snvisu.frame3 \
 
    #--- Label de l'heure de l'image
    label $audace(base).snvisu.frame3.labh1 \
-      -font $audace(font,arial_12_b) -text "" \
-      -borderwidth 0 -relief flat
+      -text "" -borderwidth 0 -relief flat
    pack $audace(base).snvisu.frame3.labh1 \
       -in $audace(base).snvisu.frame3 -side left -anchor nw \
       -padx 30 -pady 10
@@ -388,8 +386,7 @@ pack $audace(base).snvisu.frame3 \
 
    #--- Label de l'heure de l'image
    label $audace(base).snvisu.frame3.labh2 \
-      -font $audace(font,arial_12_b) -text "" \
-      -borderwidth 0 -relief flat
+      -text "" -borderwidth 0 -relief flat
    pack $audace(base).snvisu.frame3.labh2 \
       -in $audace(base).snvisu.frame3 -side right -anchor ne \
       -padx 30 -pady 10
@@ -1265,13 +1262,13 @@ proc gotoImage { } {
    #--- Cree l'etiquette et la ligne de commande
    frame $audace(base).snvisu_1.frame1 -borderwidth 0 -relief raised
       label $audace(base).snvisu_1.frame1.label \
-         -font $audace(font,arial_8_b) -text $caption(snvisu,image_numero) \
+         -text $caption(snvisu,image_numero) \
          -borderwidth 0 -relief flat
       pack $audace(base).snvisu_1.frame1.label \
          -fill x -side left \
          -padx 5 -pady 5
       entry $audace(base).snvisu_1.frame1.command_line \
-         -font $audace(font,arial_8_b) -textvariable command_line2 \
+         -textvariable command_line2 \
          -borderwidth 1 -relief groove -takefocus 1 -width 8
       pack $audace(base).snvisu_1.frame1.command_line \
          -fill x -side right \
@@ -1350,7 +1347,7 @@ proc snSetup { } {
    frame $audace(base).snvisu_3.frame1 -borderwidth 0 -relief raised
       #--- Label
       label $audace(base).snvisu_3.frame1.label \
-         -font $audace(font,arial_8_b) -text $caption(snvisu,rafraich_images) \
+         -text $caption(snvisu,rafraich_images) \
          -borderwidth 0 -relief flat
       pack $audace(base).snvisu_3.frame1.label \
          -fill x -side left \
@@ -1358,7 +1355,7 @@ proc snSetup { } {
       #--- Bouton radio 1 - Option "motion"
       radiobutton $audace(base).snvisu_3.frame1.but_rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text $caption(snvisu,motion) -value "motion" -variable snconfvisu(cuts_change) \
-         -font $audace(font,arial_8_b) -command {
+         -command {
             global audace
             global num
             global zone
@@ -1381,7 +1378,7 @@ proc snSetup { } {
       #--- Bouton radio 2 - Option "release"
       radiobutton $audace(base).snvisu_3.frame1.but_rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text $caption(snvisu,release) -value "release" -variable snconfvisu(cuts_change) \
-         -font $audace(font,arial_8_b) -command {
+         -command {
             global audace
             global num
             global zone
@@ -1408,35 +1405,35 @@ proc snSetup { } {
    frame $audace(base).snvisu_3.frame2 -borderwidth 0 -relief raised
       #--- Label
       label $audace(base).snvisu_3.frame2.label \
-         -font $audace(font,arial_8_b) -text $caption(snvisu,blink_delai) \
+         -text $caption(snvisu,blink_delai) \
          -borderwidth 0 -relief flat
       pack $audace(base).snvisu_3.frame2.label \
          -fill x -side left \
          -padx 5 -pady 5
       #--- Entry
       entry $audace(base).snvisu_3.frame2.command_line \
-         -font $audace(font,arial_8_b) -textvariable snconfvisu(delai_blink) \
+         -textvariable snconfvisu(delai_blink) \
          -borderwidth 1 -relief groove -takefocus 1 -width 8 -justify center
       pack $audace(base).snvisu_3.frame2.command_line \
          -fill x -side left \
          -padx 5 -pady 5
       #--- Label
       label $audace(base).snvisu_3.frame2.label1 \
-         -font $audace(font,arial_8_b) -text $caption(snvisu,blink_nbre) \
+         -text $caption(snvisu,blink_nbre) \
          -borderwidth 0 -relief flat
       pack $audace(base).snvisu_3.frame2.label1 \
          -fill x -side left \
          -padx 5 -pady 5
       #--- Entry
       entry $audace(base).snvisu_3.frame2.command_line_1 \
-         -font $audace(font,arial_8_b) -textvariable snconfvisu(nb_blink) \
+         -textvariable snconfvisu(nb_blink) \
          -borderwidth 1 -relief groove -takefocus 1 -width 8 -justify center
       pack $audace(base).snvisu_3.frame2.command_line_1 \
          -fill x -side left \
          -padx 5 -pady 5
       #--- Label
       label $audace(base).snvisu_3.frame2.label2 \
-         -font $audace(font,arial_8_b) -text $caption(snvisu,auto_blink) \
+         -text $caption(snvisu,auto_blink) \
          -borderwidth 0 -relief flat
       pack $audace(base).snvisu_3.frame2.label2 \
          -fill x -side left \
@@ -1444,8 +1441,7 @@ proc snSetup { } {
 
       #--- Checkbutton
       checkbutton $audace(base).snvisu_3.frame2.auto -text "$caption(snvisu,auto_blink)" \
-         -highlightthickness 0 -variable snconfvisu(auto_blink) \
-         -font $audace(font,arial_8_b)
+         -highlightthickness 0 -variable snconfvisu(auto_blink)
       pack $audace(base).snvisu_3.frame2.auto \
         -in $audace(base).snvisu_3.frame2 -anchor center -side left \
         -padx 5 -pady 5
@@ -1457,14 +1453,14 @@ proc snSetup { } {
    frame $audace(base).snvisu_3.frame2b -borderwidth 0 -relief raised
       #--- Label
       label $audace(base).snvisu_3.frame2b.label \
-         -font $audace(font,arial_8_b) -text $caption(snvisu,zoom_normal) \
+         -text $caption(snvisu,zoom_normal) \
          -borderwidth 0 -relief flat
       pack $audace(base).snvisu_3.frame2b.label \
          -fill x -side left \
          -padx 5 -pady 5
       #--- Entry
       entry $audace(base).snvisu_3.frame2b.command_line \
-         -font $audace(font,arial_8_b) -textvariable snconfvisu(zoom_normal) \
+         -textvariable snconfvisu(zoom_normal) \
          -borderwidth 1 -relief groove -takefocus 1 -width 8 -justify center
       pack $audace(base).snvisu_3.frame2b.command_line \
          -fill x -side left \
@@ -1476,7 +1472,7 @@ proc snSetup { } {
    frame $audace(base).snvisu_3.frame3 -borderwidth 0 -relief raised
       #--- Label
       label $audace(base).snvisu_3.frame3.label \
-         -font $audace(font,arial_8_b) -text $caption(snvisu,scrollbar) \
+         -text $caption(snvisu,scrollbar) \
          -borderwidth 0 -relief flat
       pack $audace(base).snvisu_3.frame3.label \
          -fill x -side left \
@@ -1484,14 +1480,14 @@ proc snSetup { } {
       #--- Bouton radio 1 - Option avec scrollbar
       radiobutton $audace(base).snvisu_3.frame3.but_rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text $caption(snvisu,scroollbar_on) -value "on" -variable snconfvisu(scrollbars) \
-         -font $audace(font,arial_8_b) -command { }
+         -command { }
       pack $audace(base).snvisu_3.frame3.but_rad0 \
          -in $audace(base).snvisu_3.frame3 -side left -anchor center \
          -padx 5 -pady 5
       #--- Bouton radio 2 - Option sans scrollbar
       radiobutton $audace(base).snvisu_3.frame3.but_rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text $caption(snvisu,scroollbar_off) -value "off" -variable snconfvisu(scrollbars) \
-         -font $audace(font,arial_8_b) -command { }
+         -command { }
       pack $audace(base).snvisu_3.frame3.but_rad1 \
          -in $audace(base).snvisu_3.frame3 -side left -anchor center \
          -padx 5 -pady 5
@@ -1502,7 +1498,7 @@ proc snSetup { } {
    frame $audace(base).snvisu_3.frame4 -borderwidth 0 -relief raised
       #--- Label
       label $audace(base).snvisu_3.frame4.label \
-         -font $audace(font,arial_8_b) -text $caption(snvisu,image_gzip) \
+         -text $caption(snvisu,image_gzip) \
          -borderwidth 0 -relief flat
       pack $audace(base).snvisu_3.frame4.label \
          -fill x -side left \
@@ -1510,14 +1506,14 @@ proc snSetup { } {
       #--- Bouton radio 1 - Option enregistrement image non compressee
       radiobutton $audace(base).snvisu_3.frame4.but_rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text [ buf$audace(bufNo) extension ] -value "no" -variable snconfvisu(gzip) \
-         -font $audace(font,arial_8_b) -command { set rep(gz) "$snconfvisu(gzip)" }
+         -command { set rep(gz) "$snconfvisu(gzip)" }
       pack $audace(base).snvisu_3.frame4.but_rad0 \
          -in $audace(base).snvisu_3.frame4 -side left -anchor center \
          -padx 5 -pady 5
       #--- Bouton radio 2 - Option enregistrement image compressee
       radiobutton $audace(base).snvisu_3.frame4.but_rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "[ buf$audace(bufNo) extension ].gz" -value "yes" -variable snconfvisu(gzip) \
-         -font $audace(font,arial_8_b) -command { set rep(gz) "$snconfvisu(gzip)" }
+         -command { set rep(gz) "$snconfvisu(gzip)" }
       pack $audace(base).snvisu_3.frame4.but_rad1 \
          -in $audace(base).snvisu_3.frame4 -side left -anchor center \
          -padx 5 -pady 5
@@ -1528,8 +1524,7 @@ proc snSetup { } {
    frame $audace(base).snvisu_3.frame5 -borderwidth 0 -relief raised
       #--- Checkbutton images DSS sur disque dur ou sur DVD
       checkbutton $audace(base).snvisu_3.frame5.dss_dvd -text "$caption(snvisu,dss_dvd)" \
-         -highlightthickness 0 -variable snconfvisu(dss_dvd) \
-         -font $audace(font,arial_8_b)
+         -highlightthickness 0 -variable snconfvisu(dss_dvd)
       pack $audace(base).snvisu_3.frame5.dss_dvd \
         -in $audace(base).snvisu_3.frame5 -anchor center -side left \
         -padx 5 -pady 5
@@ -1561,8 +1556,7 @@ proc snSetup { } {
    frame $audace(base).snvisu_3.frame6 -borderwidth 0 -relief raised
       #--- Checkbutton images DSS sur disque dur ou sur DVD
       checkbutton $audace(base).snvisu_3.frame6.priorite_dvd -text "$caption(snvisu,priorite_dvd)" \
-         -highlightthickness 0 -variable snconfvisu(priorite_dvd) \
-         -font $audace(font,arial_8_b)
+         -highlightthickness 0 -variable snconfvisu(priorite_dvd)
       pack $audace(base).snvisu_3.frame6.priorite_dvd \
         -in $audace(base).snvisu_3.frame6 -anchor center -side left \
         -padx 5 -pady 5
@@ -1895,7 +1889,7 @@ proc htmImage { } {
       -borderwidth 0 -cursor arrow
       #--- Label de magest
       label $audace(base).snvisu_2.fra_magest.lab_magest \
-         -font $audace(font,arial_8_b) -text "$caption(snvisu,magnitude)" \
+         -text "$caption(snvisu,magnitude)" \
          -borderwidth 0 -relief flat
       pack $audace(base).snvisu_2.fra_magest.lab_magest \
          -in $audace(base).snvisu_2.fra_magest -side left \
@@ -1903,7 +1897,7 @@ proc htmImage { } {
       #--- Create the command line
       #--- Cree la ligne de commande
       entry $audace(base).snvisu_2.fra_magest.entry_magest \
-         -font $audace(font,arial_8_b) -textvariable htmlp(magest) \
+         -textvariable htmlp(magest) \
          -borderwidth 1 -relief groove -width 10
       pack $audace(base).snvisu_2.fra_magest.entry_magest \
          -in $audace(base).snvisu_2.fra_magest -side left \
@@ -1922,7 +1916,7 @@ proc htmImage { } {
       -borderwidth 0 -cursor arrow
       #--- Label de posew
       label $audace(base).snvisu_2.fra_posew.lab_posew \
-         -font $audace(font,arial_8_b) -text "$caption(snvisu,offsetew)" \
+         -text "$caption(snvisu,offsetew)" \
          -borderwidth 0 -relief flat
       pack $audace(base).snvisu_2.fra_posew.lab_posew \
          -in $audace(base).snvisu_2.fra_posew -side left \
@@ -1930,7 +1924,7 @@ proc htmImage { } {
       #--- Create the command line
       #--- Cree la ligne de commande
       entry $audace(base).snvisu_2.fra_posew.entry_posew \
-         -font $audace(font,arial_8_b) -textvariable htmlp(posew) \
+         -textvariable htmlp(posew) \
          -borderwidth 1 -relief groove -width 10
       pack $audace(base).snvisu_2.fra_posew.entry_posew \
          -in $audace(base).snvisu_2.fra_posew -side left \
@@ -1962,7 +1956,7 @@ proc htmImage { } {
       -borderwidth 0 -cursor arrow
       #--- Label de posns
       label $audace(base).snvisu_2.fra_posns.lab_posns \
-         -font $audace(font,arial_8_b) -text "$caption(snvisu,offsetns)" \
+         -text "$caption(snvisu,offsetns)" \
          -borderwidth 0 -relief flat
       pack $audace(base).snvisu_2.fra_posns.lab_posns \
          -in $audace(base).snvisu_2.fra_posns -side left \
@@ -1970,7 +1964,7 @@ proc htmImage { } {
       #--- Create the command line
       #--- Cree la ligne de commande
       entry $audace(base).snvisu_2.fra_posns.entry_posns \
-         -font $audace(font,arial_8_b) -textvariable htmlp(posns) \
+         -textvariable htmlp(posns) \
          -borderwidth 1 -relief groove -width 10
       pack $audace(base).snvisu_2.fra_posns.entry_posns \
          -in $audace(base).snvisu_2.fra_posns -side left \

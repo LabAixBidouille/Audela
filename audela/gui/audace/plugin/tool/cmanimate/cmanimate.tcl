@@ -2,7 +2,7 @@
 # Fichier : cmanimate.tcl
 # Description : Animation/slides control panel for Cloud Monitor
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmanimate.tcl,v 1.13 2008-11-08 09:40:24 robertdelmas Exp $
+# Mise a jour $Id: cmanimate.tcl,v 1.14 2008-12-20 15:13:29 robertdelmas Exp $
 #
 
 #****************************************************************
@@ -1042,7 +1042,7 @@ namespace eval ::cmanimate {
 #    cree la fenetre de l'outil
 #------------------------------------------------------------
 proc cmanimateBuildIF { This } {
-   global audace caption color panneau
+   global caption color panneau
 
    #--- Frame de l'outil
    frame $This -borderwidth 2 -relief groove
@@ -1067,7 +1067,7 @@ proc cmanimateBuildIF { This } {
          pack   $This.fra2.lab1 -in $This.fra2 -anchor center -fill none -padx 4 -pady 2
 
          #--- Entry for generic name
-         entry  $This.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(cmanimate,filename) -relief groove \
+         entry  $This.fra2.ent1 -textvariable panneau(cmanimate,filename) -relief groove \
             -state disabled
          pack   $This.fra2.ent1 -in $This.fra2 -anchor center -fill none -padx 2 -pady 4 -side left
 
@@ -1086,7 +1086,7 @@ proc cmanimateBuildIF { This } {
          pack   $This.fra3.lab1 -in $This.fra3 -anchor center -expand true -fill none -side left
 
          #--- Entry for the number of images
-         entry  $This.fra3.ent1 -font $audace(font,arial_8_b) -textvariable panneau(cmanimate,nbi) -relief groove \
+         entry  $This.fra3.ent1 -textvariable panneau(cmanimate,nbi) -relief groove \
             -width 4 -justify center
          pack   $This.fra3.ent1 -in $This.fra3 -anchor center -expand true -fill none -side left -pady 4
 
@@ -1100,7 +1100,7 @@ proc cmanimateBuildIF { This } {
          pack   $This.fra4.lab1 -in $This.fra4 -anchor center -expand true -fill none -side left
 
          #--- Entry for the delay
-         entry  $This.fra4.ent1 -font $audace(font,arial_8_b) -textvariable panneau(cmanimate,ms) -relief groove \
+         entry  $This.fra4.ent1 -textvariable panneau(cmanimate,ms) -relief groove \
             -width 5 -justify center
          pack   $This.fra4.ent1 -in $This.fra4 -anchor center -expand true -fill none -side left -pady 4
 
@@ -1114,7 +1114,7 @@ proc cmanimateBuildIF { This } {
          pack   $This.fra5.lab1 -in $This.fra5 -anchor center -expand true -fill none -side left
 
          #--- Entry pour le nb de boucles
-         entry  $This.fra5.ent1 -font $audace(font,arial_8_b) -textvariable panneau(cmanimate,nbl) -relief groove \
+         entry  $This.fra5.ent1 -textvariable panneau(cmanimate,nbl) -relief groove \
             -width 3 -justify center
          pack   $This.fra5.ent1 -in $This.fra5 -anchor center -expand true -fill none -side left -pady 4
 
@@ -1134,7 +1134,7 @@ proc cmanimateBuildIF { This } {
          pack   $This.frago.but5 -in $This.frago -side left -expand true -pady 8 -ipadx 3 -ipady 3
 
          #--- Entry for the number of last images
-         entry  $This.frago.ent2 -font $audace(font,arial_8_b) -textvariable panneau(cmanimate,nblast) -relief groove \
+         entry  $This.frago.ent2 -textvariable panneau(cmanimate,nblast) -relief groove \
             -width 3 -justify center
          pack   $This.frago.ent2 -in $This.frago -side left -expand true
 
@@ -1168,7 +1168,7 @@ proc cmanimateBuildIF { This } {
          pack   $This.frabrowse.but4 -in $This.frabrowse -side left -expand true -pady 8 -ipadx 3 -ipady 3
 
          #--- Entry for the Go To image number
-         entry  $This.frabrowse.ent1 -font $audace(font,arial_8_b) -textvariable panneau(cmanimate,numimg) -relief groove \
+         entry  $This.frabrowse.ent1 -textvariable panneau(cmanimate,numimg) -relief groove \
             -width 4 -justify center
          pack   $This.frabrowse.ent1 -in $This.frabrowse -side left -expand true
 
@@ -1195,24 +1195,20 @@ proc cmanimateBuildIF { This } {
          #--- Labels color of the UT's
          frame $This.frauts.lab -borderwidth 0 -height 100 -relief groove
             button $This.frauts.lab.but1 -borderwidth 2 -text "$caption(cmanimate,pas_instrument)" \
-               -font $audace(font,arial_10_b) -command { ::cmanimate::positionTel }
+               -command { ::cmanimate::positionTel }
             pack $This.frauts.lab.but1 -in $This.frauts.lab -anchor center -fill both -side left -expand true
-            button $This.frauts.lab.but2 -borderwidth 2 -font $audace(font,arial_10_b) -state disabled
+            button $This.frauts.lab.but2 -borderwidth 2 -state disabled
             pack $This.frauts.lab.but2 -in $This.frauts.lab -anchor center -fill both -side left -expand true
-            label $This.frauts.lab.but2.labURL1 -borderwidth 2 -text "$caption(cmanimate,ut1)" \
-               -font $audace(font,arial_10_b) -fg $color(red)
+            label $This.frauts.lab.but2.labURL1 -borderwidth 2 -text "$caption(cmanimate,ut1)" -fg $color(red)
             pack $This.frauts.lab.but2.labURL1 -in $This.frauts.lab.but2 -anchor center -fill both -side left -expand true
-            label $This.frauts.lab.but2.labURL2 -borderwidth 2 -text "$caption(cmanimate,ut2)" \
-               -font $audace(font,arial_10_b) -fg $color(yellow)
+            label $This.frauts.lab.but2.labURL2 -borderwidth 2 -text "$caption(cmanimate,ut2)" -fg $color(yellow)
             pack $This.frauts.lab.but2.labURL2 -in $This.frauts.lab.but2 -anchor center -fill both -side left -expand true
-            label $This.frauts.lab.but2.labURL3 -borderwidth 2 -text "$caption(cmanimate,ut3)" \
-               -font $audace(font,arial_10_b) -fg $color(green)
+            label $This.frauts.lab.but2.labURL3 -borderwidth 2 -text "$caption(cmanimate,ut3)" -fg $color(green)
             pack $This.frauts.lab.but2.labURL3 -in $This.frauts.lab.but2 -anchor center -fill both -side left -expand true
-            label $This.frauts.lab.but2.labURL4 -borderwidth 2 -text "$caption(cmanimate,ut4)" \
-               -font $audace(font,arial_10_b) -fg $color(blue)
+            label $This.frauts.lab.but2.labURL4 -borderwidth 2 -text "$caption(cmanimate,ut4)" -fg $color(blue)
             pack $This.frauts.lab.but2.labURL4 -in $This.frauts.lab.but2 -anchor center -fill both -side left -expand true
             button $This.frauts.lab.but3 -borderwidth 2 -text "$caption(cmanimate,instrument)" \
-               -font $audace(font,arial_10_b) -command { ::cmanimate::positionTel }
+               -command { ::cmanimate::positionTel }
             pack $This.frauts.lab.but3 -in $This.frauts.lab -anchor center -fill both -side left -expand true
          pack   $This.frauts.lab -in $This.frauts -side top -fill none -padx 2 -pady 2 -ipadx 4 -ipady 2
 
@@ -1222,11 +1218,11 @@ proc cmanimateBuildIF { This } {
       frame $This.fra6 -borderwidth 2 -relief groove
 
          #--- Label for title
-         label $This.fra6.lab1 -borderwidth 1 -text "$panneau(cmanimate,label_ima)" -font $audace(font,arial_10_b)
+         label $This.fra6.lab1 -borderwidth 1 -text "$panneau(cmanimate,label_ima)"
          pack $This.fra6.lab1 -in $This.fra6 -anchor center -expand 1 -fill both -side top
 
          #--- Label for images name
-         label  $This.fra6.labURL2 -text "$panneau(cmanimate,status)" -font $audace(font,arial_7_b) -fg $color(red) -relief flat
+         label  $This.fra6.labURL2 -text "$panneau(cmanimate,status)" -fg $color(red) -relief flat
          pack   $This.fra6.labURL2 -in $This.fra6 -anchor center -expand 1 -fill both -padx 4 -pady 1
 
       pack $This.fra6 -side top -fill x

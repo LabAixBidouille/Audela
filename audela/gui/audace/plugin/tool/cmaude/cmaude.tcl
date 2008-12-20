@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude.tcl,v 1.16 2008-05-25 15:54:33 robertdelmas Exp $
+# Mise a jour $Id: cmaude.tcl,v 1.17 2008-12-20 15:13:18 robertdelmas Exp $
 #
 # Remarks :
 # The definition of some variables (binning, exp. time, rythm, etc.)
@@ -781,7 +781,7 @@ namespace eval ::cmaude::config {
 #    cree la fenetre de l'outil
 #------------------------------------------------------------
 proc cmaudeBuildIF {This} {
-global audace color panneau
+global color panneau
 
    #--- Frame of panel
    frame $This -borderwidth 2 -relief groove
@@ -821,7 +821,7 @@ global audace color panneau
             label $This.fra2.fra4.lab1 -text "$panneau(cmaude,label_bias)" -relief flat
             pack $This.fra2.fra4.lab1 -in $This.fra2.fra4 -anchor center -expand 1 -fill both -padx 4 -pady 1
             #--- Entry for the name of bias
-            entry $This.fra2.fra4.ent1 -font $audace(font,arial_7_b) -textvariable panneau(cmaude,bias) -relief groove
+            entry $This.fra2.fra4.ent1 -textvariable panneau(cmaude,bias) -relief groove
             pack $This.fra2.fra4.ent1 -in $This.fra2.fra4 -anchor center -expand 1 -fill both -padx 4 -pady 2
 
          pack $This.fra2.fra4 -side top -fill x
@@ -836,7 +836,7 @@ global audace color panneau
             label $This.fra2.fra5.lab2 -text "$panneau(cmaude,label_dark)" -relief flat
             pack $This.fra2.fra5.lab2 -in $This.fra2.fra5 -anchor center -expand 1 -fill both -padx 4 -pady 1
             #--- Entry for the name of dark
-            entry $This.fra2.fra5.ent2 -font $audace(font,arial_7_b) -textvariable panneau(cmaude,dark) -relief groove
+            entry $This.fra2.fra5.ent2 -textvariable panneau(cmaude,dark) -relief groove
             pack $This.fra2.fra5.ent2 -in $This.fra2.fra5 -anchor center -expand 1 -fill both -padx 4 -pady 2
 
          pack $This.fra2.fra5 -side top -fill x
@@ -851,7 +851,7 @@ global audace color panneau
             label $This.fra2.fra6.lab2a -text "$panneau(cmaude,label_overlay)" -relief flat
             pack $This.fra2.fra6.lab2a -in $This.fra2.fra6 -anchor center -expand 1 -fill both -padx 4 -pady 1
             #--- Entry for the name of overlay
-            entry $This.fra2.fra6.ent2a -font $audace(font,arial_7_b) -textvariable panneau(cmaude,overlay) -relief groove
+            entry $This.fra2.fra6.ent2a -textvariable panneau(cmaude,overlay) -relief groove
             pack $This.fra2.fra6.ent2a -in $This.fra2.fra6 -anchor center -expand 1 -fill both -padx 4 -pady 2
 
          pack $This.fra2.fra6 -side top -fill x
@@ -860,7 +860,7 @@ global audace color panneau
          label $This.fra2.lab3 -text "$panneau(cmaude,label_nom)" -relief flat
          pack $This.fra2.lab3 -in $This.fra2 -anchor center -expand 1 -fill both -padx 4 -pady 2
          #--- Entry for the name of image
-         entry $This.fra2.ent3 -font $audace(font,arial_7_b) -textvariable panneau(cmaude,nom) -relief groove
+         entry $This.fra2.ent3 -textvariable panneau(cmaude,nom) -relief groove
          pack $This.fra2.ent3 -in $This.fra2 -anchor center -expand 1 -fill both -padx 4 -pady 2
 
          #--- Checkbutton for HTML page creation
@@ -887,16 +887,14 @@ global audace color panneau
          label $This.fra2.lab5 -text "$panneau(cmaude,label_time)" -relief flat
          pack $This.fra2.lab5 -in $This.fra2 -anchor center -expand 1 -fill both -padx 4 -pady 1
          #--- Entry for the exptime
-         entry $This.fra2.ent5 -font $audace(font,arial_8_b) -textvariable panneau(cmaude,time) \
-            -width 4 -relief groove -justify center
+         entry $This.fra2.ent5 -textvariable panneau(cmaude,time) -width 4 -relief groove -justify center
          pack $This.fra2.ent5 -in $This.fra2 -anchor center -padx 4 -pady 2
 
          #--- Label for the rythm
          label $This.fra2.lab6 -text "$panneau(cmaude,label_rythm)" -relief flat
          pack $This.fra2.lab6 -in $This.fra2 -anchor center -expand 1 -fill both -padx 4 -pady 2
          #--- Entry for the rythm
-         entry $This.fra2.ent6 -font $audace(font,arial_8_b) -textvariable panneau(cmaude,rythm) \
-            -width 5 -relief groove -justify center
+         entry $This.fra2.ent6 -textvariable panneau(cmaude,rythm) -width 5 -relief groove -justify center
          pack $This.fra2.ent6 -in $This.fra2 -anchor center -padx 4 -pady 2
 
          #--- Button GO
@@ -920,16 +918,16 @@ global audace color panneau
       frame $This.fra3 -borderwidth 2 -relief groove
 
          #--- Label for designation of status
-         label $This.fra3.lab1 -text "$panneau(cmaude,label_status)" -font $audace(font,arial_10_b) -relief flat
+         label $This.fra3.lab1 -text "$panneau(cmaude,label_status)" -relief flat
          pack $This.fra3.lab1 -in $This.fra3 -anchor center -expand 1 -fill both -side top
          #--- Label for status2
-         label $This.fra3.lab2 -text "$panneau(cmaude,status)" -font $audace(font,arial_8_b) -relief flat
+         label $This.fra3.lab2 -text "$panneau(cmaude,status)" -relief flat
          pack $This.fra3.lab2 -in $This.fra3 -anchor center -fill none -padx 4 -pady 1
          #--- Label for status2
-         label $This.fra3.labURL3 -text "$panneau(cmaude,status2)" -font $audace(font,arial_8_b) -fg $color(red) -relief flat
+         label $This.fra3.labURL3 -text "$panneau(cmaude,status2)" -fg $color(red) -relief flat
          pack $This.fra3.labURL3 -in $This.fra3 -anchor center -fill none -padx 4 -pady 1
          #--- Label for status3
-         label $This.fra3.labURL4 -text "$panneau(cmaude,status3)" -font $audace(font,arial_8_b) -fg $color(red) -relief flat
+         label $This.fra3.labURL4 -text "$panneau(cmaude,status3)" -fg $color(red) -relief flat
          pack $This.fra3.labURL4 -in $This.fra3 -anchor center -fill none -padx 4 -pady 1
 
       pack $This.fra3 -side top -fill x
