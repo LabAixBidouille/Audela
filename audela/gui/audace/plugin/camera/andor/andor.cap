@@ -1,6 +1,6 @@
 #
 # Fichier : andor.cap
-# Mise a jour $Id: andor.cap,v 1.4 2008-12-17 21:36:28 robertdelmas Exp $
+# Mise a jour $Id: andor.cap,v 1.5 2008-12-20 14:51:42 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -30,7 +30,6 @@ set caption(andor,fonc_obtu)                    "Shutter Operation"
 set caption(andor,ouvert_obtu)                  "Shutter Opening Delay"
 set caption(andor,ferm_obtu)                    "Shutter Closing Delay"
 set caption(andor,ms)                           "ms"
-set caption(andor,cannotcreatecam)              "The camera cannot be created."
 
 set caption(andor,port_camera)                  "FLI Port"
 set caption(andor,2points)                      ":"
@@ -60,7 +59,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(andor,ouvert_obtu)               "Délai d'ouverture de l'obturateur"
    set caption(andor,ferm_obtu)                 "Délai de fermeture de l'obturateur"
    set caption(andor,ms)                        "ms"
-   set caption(andor,cannotcreatecam)           "La caméra ne peut pas être créée."
 
    set caption(andor,port_camera)               "Port FLI"
    set caption(andor,2points)                   ":"
@@ -90,7 +88,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(andor,ouvert_obtu)               "Ritardo apertura otturatore"
    set caption(andor,ferm_obtu)                 "Ritardo di chiusura otturatore"
    set caption(andor,ms)                        "ms"
-   set caption(andor,cannotcreatecam)           "La camera non e' stata creata."
 
    set caption(andor,port_camera)               "Porta FLI"
    set caption(andor,2points)                   ":"
@@ -120,7 +117,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(andor,ouvert_obtu)               "Retardo de apertura de obturador"
    set caption(andor,ferm_obtu)                 "Retardo de cerrado de obturador"
    set caption(andor,ms)                        "ms"
-   set caption(andor,cannotcreatecam)           "La cámara no puede ser creada."
 
    set caption(andor,port_camera)               "Puerto FLI"
    set caption(andor,2points)                   ":"
@@ -150,7 +146,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(andor,ouvert_obtu)               "Verschluss Öffnung Verspätung"
    set caption(andor,ferm_obtu)                 "Verschluss Schließen Verspätung"
    set caption(andor,ms)                        "ms"
-   set caption(andor,cannotcreatecam)           "Die Kamera kann nicht hergestellt werden."
 
    set caption(andor,port_camera)               "FLI Port"
    set caption(andor,2points)                   ":"
@@ -180,7 +175,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(andor,ouvert_obtu)               "Atraso de Abertura do obturador"
    set caption(andor,ferm_obtu)                 "Atraso de encerramento do obturador"
    set caption(andor,ms)                        "ms"
-   set caption(andor,cannotcreatecam)           "A câmara não pode ser criada."
 
    set caption(andor,port_camera)               "Porta FLI"
    set caption(andor,2points)                   ":"
@@ -210,7 +204,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(andor,ouvert_obtu)               "Shutter Opening Delay"
    set caption(andor,ferm_obtu)                 "Shutter Closing Delay"
    set caption(andor,ms)                        "ms"
-   set caption(andor,cannotcreatecam)           "The camera cannot be created."
 
    set caption(andor,port_camera)               "FLI Port"
    set caption(andor,2points)                   ":"

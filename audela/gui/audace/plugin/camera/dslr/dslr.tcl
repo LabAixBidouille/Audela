@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.34 2008-12-20 11:54:52 michelpujol Exp $
+# Mise a jour $Id: dslr.tcl,v 1.35 2008-12-20 14:52:39 robertdelmas Exp $
 #
 
 namespace eval ::dslr {
@@ -449,8 +449,8 @@ proc ::dslr::configureCamera { camItem bufNo } {
    if { $catchResult == "1" } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::dslr::stop $camItem
-      #--- Je transmets l'erreur a la procedure appellante
-      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(dslr,cannotcreatecam)"
+      #--- Je transmets l'erreur a la procedure appelante
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo
    }
 }
 
@@ -708,7 +708,6 @@ proc ::dslr::changerSelectionTelechargementAPN { camItem } {
    global conf
    variable private
 
-
    switch -exact -- $conf(dslr,telecharge_mode) {
       1 {
          #--- Ne pas telecharger
@@ -739,10 +738,11 @@ proc ::dslr::changerSelectionTelechargementAPN { camItem } {
 # binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
 # binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
 # dynamic :          Retourne la liste de la dynamique haute et basse
-# formatList :       Retourne la liste des foramt ou des qualites d'image (fine, normal, raw, ...)
+# formatList :       Retourne la liste des formats ou des qualites d'image (fine, normal, raw, ...)
 # hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
 # hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
 # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
+# hasQuality :       Retourne l'existence d'une qualité (1 : Oui, 0 : Non)
 # hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
 # hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
 # hasTempSensor      Retourne l'existence du capteur de temperature (1 : Oui, 0 : Non)
@@ -764,7 +764,7 @@ proc ::dslr::getPluginProperty { camItem propertyName } {
       binningYListScan { return [ list "" ] }
       dynamic          { return [ list 4096 0 ] }
       formatList       {
-          return [ cam$private($camItem,camNo) quality list ]
+         return [ cam$private($camItem,camNo) quality list ]
       }
       hasBinning       { return 0 }
       hasFormat        { return 1 }
@@ -802,13 +802,14 @@ proc ::dslr::getPluginProperty { camItem propertyName } {
 #
 # Parametres :
 #    camItem : item de la camera
-#    format  : format de l'image (voir getFormatList)
+#    format  : format de l'image
 # Return
 #    rien
 #------------------------------------------------------------
 proc ::dslr::setFormat { camItem format } {
    variable private
-##console::disp "::dslr::setFormat stack\n"
+
+### console::disp "::dslr::setFormat stack\n"
    cam$private($camItem,camNo) quality $format
 }
 

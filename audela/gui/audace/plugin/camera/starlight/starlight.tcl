@@ -2,7 +2,7 @@
 # Fichier : starlight.tcl
 # Description : Configuration de la camera Starlight
 # Auteur : Robert DELMAS
-# Mise a jour $Id: starlight.tcl,v 1.16 2008-12-14 23:47:39 robertdelmas Exp $
+# Mise a jour $Id: starlight.tcl,v 1.17 2008-12-20 14:53:53 robertdelmas Exp $
 #
 
 namespace eval ::starlight {
@@ -335,8 +335,8 @@ proc ::starlight::configureCamera { camItem bufNo } {
    if { $catchResult == "1" } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::starlight::stop $camItem
-      #--- Je transmets l'erreur a la procedure appellante
-      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(starlight,cannotcreatecam)"
+      #--- Je transmets l'erreur a la procedure appelante
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo
    }
 }
 

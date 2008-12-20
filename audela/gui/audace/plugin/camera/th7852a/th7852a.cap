@@ -1,6 +1,6 @@
 #
 # Fichier : th7852a.cap
-# Mise a jour $Id: th7852a.cap,v 1.4 2008-12-17 21:38:45 robertdelmas Exp $
+# Mise a jour $Id: th7852a.cap,v 1.5 2008-12-20 14:54:04 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -16,7 +16,6 @@ set caption(th7852a,camera)                       "TH7852A"
 set caption(th7852a,miroir_x)                     "Horizontal Mirror"
 set caption(th7852a,miroir_y)                     "Vertical Mirror"
 set caption(th7852a,coef)                         "Coefficient"
-set caption(th7852a,cannotcreatecam)              "The camera cannot be created."
 
 set caption(th7852a,port_camera)                  "TH7852A Port"
 set caption(th7852a,2points)                      ":"
@@ -33,7 +32,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,miroir_x)                  "Miroir horizontal"
    set caption(th7852a,miroir_y)                  "Miroir vertical"
    set caption(th7852a,coef)                      "Coefficient"
-   set caption(th7852a,cannotcreatecam)           "La caméra ne peut pas être créée."
 
    set caption(th7852a,port_camera)               "Port TH7852A"
    set caption(th7852a,2points)                   ":"
@@ -50,7 +48,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,miroir_x)                  "Specchio orizzontale"
    set caption(th7852a,miroir_y)                  "Specchio verticale"
    set caption(th7852a,coef)                      "Coefficiente"
-   set caption(th7852a,cannotcreatecam)           "La camera non e' stata creata."
 
    set caption(th7852a,port_camera)               "Porta TH7852A"
    set caption(th7852a,2points)                   ":"
@@ -67,7 +64,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,miroir_x)                  "Espejo horizontal"
    set caption(th7852a,miroir_y)                  "Espejo vertical"
    set caption(th7852a,coef)                      "Coeficiente"
-   set caption(th7852a,cannotcreatecam)           "La cámara no puede ser creada."
 
    set caption(th7852a,port_camera)               "Puerto TH7852A"
    set caption(th7852a,2points)                   ":"
@@ -84,7 +80,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,miroir_x)                  "Horizontale Spiegel"
    set caption(th7852a,miroir_y)                  "Verticale Spiegel"
    set caption(th7852a,coef)                      "Faktor"
-   set caption(th7852a,cannotcreatecam)           "Die Kamera kann nicht hergestellt werden."
 
    set caption(th7852a,port_camera)               "TH7852A Port"
    set caption(th7852a,2points)                   ":"
@@ -101,7 +96,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,miroir_x)                  "Espelho Horizontal"
    set caption(th7852a,miroir_y)                  "Espelho Vertical"
    set caption(th7852a,coef)                      "Coeficiente"
-   set caption(th7852a,cannotcreatecam)           "A câmara não pode ser criada."
 
    set caption(th7852a,port_camera)               "Porta TH7852A"
    set caption(th7852a,2points)                   ":"
@@ -118,7 +112,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,miroir_x)                  "Horisontal spejl"
    set caption(th7852a,miroir_y)                  "Vertikal spejl"
    set caption(th7852a,coef)                      "Coefficient"
-   set caption(th7852a,cannotcreatecam)           "The camera cannot be created."
 
    set caption(th7852a,port_camera)               "TH7852A Port"
    set caption(th7852a,2points)                   ":"
