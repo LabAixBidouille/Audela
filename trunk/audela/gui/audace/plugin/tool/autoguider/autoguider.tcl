@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.32 2008-12-20 22:21:28 robertdelmas Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.33 2008-12-20 22:59:33 robertdelmas Exp $
 #
 
 #==============================================================
@@ -218,7 +218,7 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
    #--- Cadre du bouton Go/Stop
    frame $This.go_stop -borderwidth 2 -relief ridge
       button $This.go_stop.but -text "$caption(autoguider,GO)" -height 2 \
-        -font $audace(font,arial_12_b) -borderwidth 3 -pady 6 -command "::autoguider::startGuiding $visuNo"
+         -borderwidth 3 -pady 6 -command "::autoguider::startGuiding $visuNo"
       pack $This.go_stop.but -fill both -padx 0 -pady 0 -expand true
    grid $This.go_stop -sticky new
 
