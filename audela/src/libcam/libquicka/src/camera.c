@@ -187,12 +187,13 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 /* cam::create quicka usb */
 {
    FT_STATUS status;
+   int index;
 
-   cam->portindex = 0; 
-
-   status = FT_Open(cam->portindex,&ftHandle);
+   // je recupere l'index de la quickaudine
+   sscanf(cam->portname,"quickaudine%d",&index);
+   status = FT_Open(index,&ftHandle);
    if (status != FT_OK) {
-      sprintf(cam->msg, "Can't open FTDI device : Error number %ld", status);
+      sprintf(cam->msg, "Can't open FTDI device %s on port index=%d : Error number %ld", cam->portname, index, status);
       return -1;
    }
 
