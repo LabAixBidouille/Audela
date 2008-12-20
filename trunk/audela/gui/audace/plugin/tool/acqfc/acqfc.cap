@@ -1,6 +1,6 @@
 #
 # Fichier : acqfc.cap
-# Mise a jour $Id: acqfc.cap,v 1.32 2008-06-30 18:21:14 robertdelmas Exp $
+# Mise a jour $Id: acqfc.cap,v 1.33 2008-12-20 11:57:39 michelpujol Exp $
 #
 
 #=========================================================================
@@ -18,6 +18,7 @@ set caption(acqfc,configuration)             "Setup"
 set caption(acqfc,pose)                      "Exp."
 set caption(acqfc,sec)                       "sec."
 set caption(acqfc,bin)                       "Binning"
+set caption(acqfc,format)                    "#Format"
 set caption(acqfc,obt)                       "Shut."
 set caption(acqfc,GO)                        "GO CCD"
 set caption(acqfc,uneimage)                  "One Image"
@@ -103,6 +104,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,pose)                   "Pose"
    set caption(acqfc,sec)                    "sec."
    set caption(acqfc,bin)                    "Binning"
+   set caption(acqfc,format)                 "Format"
    set caption(acqfc,obt)                    "Obt."
    set caption(acqfc,GO)                     "GO CCD"
    set caption(acqfc,uneimage)               "Une image"
@@ -189,6 +191,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,pose)                   "Posa"
    set caption(acqfc,sec)                    "sec."
    set caption(acqfc,bin)                    "Binning"
+   set caption(acqfc,format)                 "#Format"
    set caption(acqfc,obt)                    "Ott."
    set caption(acqfc,GO)                     "GO CCD"
    set caption(acqfc,uneimage)               "Una immagine"
@@ -275,6 +278,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,pose)                   "Exp."
    set caption(acqfc,sec)                    "seg."
    set caption(acqfc,bin)                    "Binning"
+   set caption(acqfc,format)                 "#Format"
    set caption(acqfc,obt)                    "Obt."
    set caption(acqfc,GO)                     "GO CCD"
    set caption(acqfc,uneimage)               "Una imagen"
@@ -361,6 +365,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,pose)                   "Bel."
    set caption(acqfc,sec)                    "sek."
    set caption(acqfc,bin)                    "Binning"
+   set caption(acqfc,format)                 "#Format"
    set caption(acqfc,obt)                    "Ver."
    set caption(acqfc,GO)                     "GO CCD"
    set caption(acqfc,uneimage)               "Ein Bild"
@@ -447,6 +452,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,pose)                   "Exposição"
    set caption(acqfc,sec)                    "seg."
    set caption(acqfc,bin)                    "Binning"
+   set caption(acqfc,format)                 "#Format"
    set caption(acqfc,obt)                    "Obt."
    set caption(acqfc,GO)                     "GO CCD"
    set caption(acqfc,uneimage)               "Uma imagem"
@@ -533,6 +539,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,pose)                   "Exp."
    set caption(acqfc,sec)                    "sec."
    set caption(acqfc,bin)                    "Binning"
+   set caption(acqfc,format)                 "#Format"
    set caption(acqfc,obt)                    "Shut."
    set caption(acqfc,GO)                     "GO CCD"
    set caption(acqfc,uneimage)               "One Image"
