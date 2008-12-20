@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.35 2008-12-14 23:46:16 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.36 2008-12-20 14:52:12 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -294,8 +294,8 @@ proc ::cemes::configureCamera { camItem bufNo } {
    if { $catchResult == "1" } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::cemes::stop $camItem
-      #--- Je transmets l'erreur a la procedure appellante
-      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(cemes,cannotcreatecam)"
+      #--- Je transmets l'erreur a la procedure appelante
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo
    }
 }
 

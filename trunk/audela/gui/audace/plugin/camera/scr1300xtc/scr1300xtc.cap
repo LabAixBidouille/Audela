@@ -1,6 +1,6 @@
 #
 # Fichier : scr1300xtc.cap
-# Mise a jour $Id: scr1300xtc.cap,v 1.3 2008-12-17 21:38:25 robertdelmas Exp $
+# Mise a jour $Id: scr1300xtc.cap,v 1.4 2008-12-20 14:53:40 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -18,7 +18,6 @@ set caption(scr1300xtc,configurer)                   "Set up"
 set caption(scr1300xtc,acquisition)                  "Acquisition"
 set caption(scr1300xtc,miroir_x)                     "Horizontal Mirror"
 set caption(scr1300xtc,miroir_y)                     "Vertical Mirror"
-set caption(scr1300xtc,cannotcreatecam)              "The camera cannot be created."
 
 set caption(scr1300xtc,port_camera)                  "SCR1300XTC Port"
 set caption(scr1300xtc,2points)                      ":"
@@ -36,7 +35,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,acquisition)               "Acquisition"
    set caption(scr1300xtc,miroir_x)                  "Miroir horizontal"
    set caption(scr1300xtc,miroir_y)                  "Miroir vertical"
-   set caption(scr1300xtc,cannotcreatecam)           "La caméra ne peut pas être créée."
 
    set caption(scr1300xtc,port_camera)               "Port SCR1300XTC"
    set caption(scr1300xtc,2points)                   ":"
@@ -54,7 +52,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,acquisition)               "Acquisizione"
    set caption(scr1300xtc,miroir_x)                  "Specchio orizzontale"
    set caption(scr1300xtc,miroir_y)                  "Specchio verticale"
-   set caption(scr1300xtc,cannotcreatecam)           "La camera non e' stata creata."
 
    set caption(scr1300xtc,port_camera)               "Porta SCR1300XTC"
    set caption(scr1300xtc,2points)                   ":"
@@ -72,7 +69,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,acquisition)               "Adquisición"
    set caption(scr1300xtc,miroir_x)                  "Espejo horizontal"
    set caption(scr1300xtc,miroir_y)                  "Espejo vertical"
-   set caption(scr1300xtc,cannotcreatecam)           "La cámara no puede ser creada."
 
    set caption(scr1300xtc,port_camera)               "Puerto SCR1300XTC"
    set caption(scr1300xtc,2points)                   ":"
@@ -90,7 +86,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,acquisition)               "Belichtung"
    set caption(scr1300xtc,miroir_x)                  "Horizontale Spiegel"
    set caption(scr1300xtc,miroir_y)                  "Verticale Spiegel"
-   set caption(scr1300xtc,cannotcreatecam)           "Die Kamera kann nicht hergestellt werden."
 
    set caption(scr1300xtc,port_camera)               "SCR1300XTC Port"
    set caption(scr1300xtc,2points)                   ":"
@@ -108,7 +103,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,acquisition)               "Aquisição"
    set caption(scr1300xtc,miroir_x)                  "Espelho Horizontal"
    set caption(scr1300xtc,miroir_y)                  "Espelho Vertical"
-   set caption(scr1300xtc,cannotcreatecam)           "A câmara não pode ser criada."
 
    set caption(scr1300xtc,port_camera)               "Porta SCR1300XTC"
    set caption(scr1300xtc,2points)                   ":"
@@ -126,7 +120,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,acquisition)               "Acquisition"
    set caption(scr1300xtc,miroir_x)                  "Horisontal spejl"
    set caption(scr1300xtc,miroir_y)                  "Vertikal spejl"
-   set caption(scr1300xtc,cannotcreatecam)           "The camera cannot be created."
 
    set caption(scr1300xtc,port_camera)               "SCR1300XTC Port"
    set caption(scr1300xtc,2points)                   ":"

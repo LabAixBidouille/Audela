@@ -2,7 +2,7 @@
 # Fichier : th7852a.tcl
 # Description : Configuration de la camera TH7852A
 # Auteur : Robert DELMAS
-# Mise a jour $Id: th7852a.tcl,v 1.26 2008-12-14 23:47:48 robertdelmas Exp $
+# Mise a jour $Id: th7852a.tcl,v 1.27 2008-12-20 14:54:04 robertdelmas Exp $
 #
 
 namespace eval ::th7852a {
@@ -214,8 +214,8 @@ proc ::th7852a::configureCamera { camItem bufNo } {
    if { $catchResult == "1" } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::th7852a::stop $camItem
-      #--- Je transmets l'erreur a la procedure appellante
-      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(th7852a,cannotcreatecam)"
+      #--- Je transmets l'erreur a la procedure appelante
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo
    }
 }
 

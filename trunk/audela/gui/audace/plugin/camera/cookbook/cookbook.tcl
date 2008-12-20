@@ -2,7 +2,7 @@
 # Fichier : cookbook.tcl
 # Description : Configuration de la camera Cookbook
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cookbook.tcl,v 1.26 2008-12-14 23:46:25 robertdelmas Exp $
+# Mise a jour $Id: cookbook.tcl,v 1.27 2008-12-20 14:52:27 robertdelmas Exp $
 #
 
 namespace eval ::cookbook {
@@ -266,8 +266,8 @@ proc ::cookbook::configureCamera { camItem bufNo } {
    if { $catchResult == "1" } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::cookbook::stop $camItem
-      #--- Je transmets l'erreur a la procedure appellante
-      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(cookbook,cannotcreatecam)"
+      #--- Je transmets l'erreur a la procedure appelante
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo
    }
 }
 

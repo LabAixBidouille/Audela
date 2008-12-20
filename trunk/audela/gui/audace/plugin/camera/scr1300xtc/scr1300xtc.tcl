@@ -2,7 +2,7 @@
 # Fichier : scr1300xtc.tcl
 # Description : Configuration de la camera SCR1300XTC
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scr1300xtc.tcl,v 1.25 2008-12-14 23:47:28 robertdelmas Exp $
+# Mise a jour $Id: scr1300xtc.tcl,v 1.26 2008-12-20 14:53:40 robertdelmas Exp $
 #
 
 namespace eval ::scr1300xtc {
@@ -249,8 +249,8 @@ proc ::scr1300xtc::configureCamera { camItem bufNo } {
    if { $catchResult == "1" } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::scr1300xtc::stop $camItem
-      #--- Je transmets l'erreur a la procedure appellante
-      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(scr1300xtc,cannotcreatecam)"
+      #--- Je transmets l'erreur a la procedure appelante
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo
    }
 }
 

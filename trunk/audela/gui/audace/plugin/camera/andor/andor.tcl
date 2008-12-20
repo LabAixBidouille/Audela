@@ -2,7 +2,7 @@
 # Fichier : andor.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise a jour $Id: andor.tcl,v 1.19 2008-12-14 23:45:55 robertdelmas Exp $
+# Mise a jour $Id: andor.tcl,v 1.20 2008-12-20 14:51:42 robertdelmas Exp $
 #
 
 namespace eval ::andor {
@@ -358,8 +358,8 @@ proc ::andor::configureCamera { camItem bufNo } {
    if { $catchResult == "1" } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::andor::stop $camItem
-      #--- Je transmets l'erreur a la procedure appellante
-      return -code error -errorcode $::errorCode -errorinfo $::errorInfo "$caption(andor,cannotcreatecam)"
+      #--- Je transmets l'erreur a la procedure appelante
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo
    }
 }
 
