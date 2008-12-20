@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.22 2008-11-21 16:49:20 michelpujol Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.23 2008-12-20 22:43:24 robertdelmas Exp $
 #
 
 #============================================================
@@ -132,9 +132,6 @@ namespace eval ::remotectrl {
       #---
       set panneau(remotectrl,base)          "$this"
       set panneau(remotectrl,wizCon1,base)  "$audace(base).wiz_remotectrl"
-      set panneau(remotectrl,font,title2)   "$audace(font,arial_12_b)"
-      set panneau(remotectrl,font,normal)   "$audace(font,arial_12_n)"
-      set panneau(remotectrl,font,button)   "$audace(font,arial_12_b)"
       #---
       set panneau(remotectrl,wizCon1,title)                "$caption(remotectrl,wizCon1,title)"
       set panneau(remotectrl,wizCon1,title2)               "$caption(remotectrl,wizCon1,title2)"
@@ -204,7 +201,7 @@ namespace eval ::remotectrl {
       if { ! [ info exists parametres(port2) ] }     { set parametres(port2) "4001" }
       if { ! [ info exists parametres(path_img) ] }  { set parametres(path_img) "21" } ; # changer 21 par une valeur
       #--- Dans le cas de l'utilisation d'un dossier partage sous Windows uniquement
-      ### if { ! [ info exists parametres(path_img) ] }  { set parametres(path_img) "[pwd]/" }
+     ### if { ! [ info exists parametres(path_img) ] }  { set parametres(path_img) "[pwd]/" }
    }
 
    proc enregistrementVar { } {
@@ -805,7 +802,7 @@ namespace eval ::remotectrl {
 
          #--- Appel du timer
          if { $exptime > "2" } {
-        ### ::remotectrl::dispTime
+        ###    ::remotectrl::dispTime
          }
 
         # after $exptime ; #--- A tester
@@ -926,8 +923,7 @@ proc remotectrlBuildIF { This } {
          pack $This.fra2.lab1 -in $This.fra2 -anchor center -padx 2 -pady 1
 
          #--- Entry pour l'objet a entrer
-         entry $This.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(remotectrl,getobj) \
-            -width 14 -relief groove
+         entry $This.fra2.ent1 -textvariable panneau(remotectrl,getobj) -width 14 -relief groove
          pack $This.fra2.ent1 -in $This.fra2 -anchor center -pady 2
 
          #--- Bouton GOTO
@@ -945,11 +941,11 @@ proc remotectrlBuildIF { This } {
          set panneau(remotectrl,getdec) " "
 
          #--- Label pour RA
-         label $This.fra3.ent1 -font $audace(font,arial_10_b) -text $panneau(remotectrl,getra) -relief flat
+         label $This.fra3.ent1 -text $panneau(remotectrl,getra) -relief flat
          pack $This.fra3.ent1 -in $This.fra3 -anchor center -fill none -pady 0
 
          #--- Label pour DEC
-         label $This.fra3.ent2 -font $audace(font,arial_10_b) -text $panneau(remotectrl,getdec) -relief flat
+         label $This.fra3.ent2 -text $panneau(remotectrl,getdec) -relief flat
          pack $This.fra3.ent2 -in $This.fra3 -anchor center -fill none -pady 1
 
       pack $This.fra3 -side top -fill x
@@ -970,7 +966,7 @@ proc remotectrlBuildIF { This } {
             pack $This.fra4.after.lab -in $This.fra4.after -side left
 
             #--- Write the entry
-            entry $This.fra4.after.entry -font $audace(font,arial_8_b) -textvariable panneau(remotectrl,after) \
+            entry $This.fra4.after.entry -textvariable panneau(remotectrl,after) \
                -relief groove -width 4 -justify center
             pack $This.fra4.after.entry -in $This.fra4.after -side left -padx 0
 
@@ -985,7 +981,7 @@ proc remotectrlBuildIF { This } {
          pack $This.fra4.e -in $This.fra4 -side left -expand true -fill y
          #--- Button-design 'E'
          button $This.fra4.e.canv1 -borderwidth 2 \
-            -font [ list {Arial} 12 bold ] \
+            -font $audace(font,arial_12_b) \
             -text "$caption(remotectrl,est)" \
             -width 2 \
             -anchor center \
@@ -997,7 +993,7 @@ proc remotectrlBuildIF { This } {
          pack $This.fra4.ns -in $This.fra4 -side left -expand true -fill y
          #--- Button-design 'N'
          button $This.fra4.ns.canv1 -borderwidth 2 \
-            -font [ list {Arial} 12 bold ] \
+            -font $audace(font,arial_12_b) \
             -text "$caption(remotectrl,nord)" \
             -width 2 \
             -anchor center \
@@ -1005,13 +1001,13 @@ proc remotectrlBuildIF { This } {
          pack $This.fra4.ns.canv1 -in $This.fra4.ns -expand 1 -side top
 
          #--- Write the label of moves speed
-         label $This.fra4.ns.lab -font [list {Arial} 12 bold ] -textvariable audace(telescope,labelspeed) \
+         label $This.fra4.ns.lab -font $audace(font,arial_12_b) -textvariable audace(telescope,labelspeed) \
             -borderwidth 0 -relief flat
          pack $This.fra4.ns.lab -in $This.fra4.ns -expand 0 -side top -pady 6
 
          #--- Button-design 'S'
          button $This.fra4.ns.canv2 -borderwidth 2 \
-            -font [ list {Arial} 12 bold ] \
+            -font $audace(font,arial_12_b) \
             -text "$caption(remotectrl,sud)" \
             -width 2 \
             -anchor center \
@@ -1023,7 +1019,7 @@ proc remotectrlBuildIF { This } {
          pack $This.fra4.w -in $This.fra4 -side left -expand true -fill y
          #--- Button-design 'W'
          button $This.fra4.w.canv1 -borderwidth 2 \
-            -font [ list {Arial} 12 bold ] \
+            -font $audace(font,arial_12_b) \
             -text "$caption(remotectrl,ouest)" \
             -width 2 \
             -anchor center \
@@ -1054,7 +1050,7 @@ proc remotectrlBuildIF { This } {
          pack $This.fra5.e -in $This.fra5 -side left -expand true -fill y
          #--- Button-design '+'
          button $This.fra5.e.canv1 -borderwidth 2 \
-            -font [ list {Arial} 12 bold ] \
+            -font $audace(font,arial_12_b) \
             -text "+" \
             -width 2 \
             -anchor center \
@@ -1065,7 +1061,7 @@ proc remotectrlBuildIF { This } {
          frame $This.fra5.speed -width 27 -borderwidth 0 -relief flat
          pack $This.fra5.speed -in $This.fra5 -side left -expand true -fill y
          #--- Write the label of focus speed
-         label $This.fra5.speed.lab -font [list {Arial} 12 bold ] -textvariable audace(focus,labelspeed) \
+         label $This.fra5.speed.lab -font $audace(font,arial_12_b) -textvariable audace(focus,labelspeed) \
             -borderwidth 0 -relief flat
          pack $This.fra5.speed.lab -in $This.fra5.speed -expand 0 -side top -pady 6
 
@@ -1074,7 +1070,7 @@ proc remotectrlBuildIF { This } {
          pack $This.fra5.w -in $This.fra5 -side left -expand true -fill y
          #--- Button-design '-'
          button $This.fra5.w.canv1 -borderwidth 2 \
-            -font [ list {Arial} 12 bold ] \
+            -font $audace(font,arial_12_b) \
             -text "-" \
             -width 2 \
             -anchor center \
@@ -1100,7 +1096,7 @@ proc remotectrlBuildIF { This } {
          frame $This.fra6.fra1
 
             #--- Entry pour l'objet a entrer
-            entry $This.fra6.fra1.ent1 -font $audace(font,arial_8_b) -textvariable panneau(remotectrl,exptime) \
+            entry $This.fra6.fra1.ent1 -textvariable panneau(remotectrl,exptime) \
                -relief groove -width 5 -justify center
             pack $This.fra6.fra1.ent1 -in $This.fra6.fra1 -side left -fill none -padx 4 -pady 2
 
@@ -1123,7 +1119,7 @@ proc remotectrlBuildIF { This } {
                   -variable panneau(remotectrl,binning) \
                   -command { }
             }
-            entry $This.fra6.optionmenu1.lab_bin -width 3 -font {arial 10 bold}  -relief groove \
+            entry $This.fra6.optionmenu1.lab_bin -width 3 -relief groove \
               -textvariable panneau(remotectrl,binning) -justify center -state disabled
             pack $This.fra6.optionmenu1.lab_bin -in $This.fra6.optionmenu1 -side left -fill both -expand true
          pack $This.fra6.optionmenu1 -anchor n -fill x -expand 0 -pady 2
@@ -1174,25 +1170,25 @@ proc remotectrlBuildIF { This } {
       }
       wm resizable $base 0 0
       #--- Title
-      label $base.lab_title2 -text "$panneau(remotectrl,wizCon1,title2)" -borderwidth 2 -font $panneau(remotectrl,font,title2)
+      label $base.lab_title2 -text "$panneau(remotectrl,wizCon1,title2)" -borderwidth 2
       pack $base.lab_title2 -side top -anchor center -padx 20 -pady 5 -expand 0
       #--- Describe
-      label $base.lab_desc -text $texte -borderwidth 2 -font $panneau(remotectrl,font,normal)
+      label $base.lab_desc -text $texte -borderwidth 2
       pack $base.lab_desc -side top  -anchor center -padx 20 -pady 5 -expand 0
       #--- Buttons
       if {$rpcid(state)==""} {
          #--- Button HOME >>
          button $base.but_home -text $panneau(remotectrl,wizCon1,home) -borderwidth 2 \
-            -font $panneau(remotectrl,font,button) -command { wizConClient }
+            -command { wizConClient }
          pack $base.but_home -side bottom -anchor center -padx 20 -pady 5 -ipadx 10 -ipady 5 -expand 0
          #--- Button BACKYARD >>
          button $base.but_backyard -text $panneau(remotectrl,wizCon1,backyard) -borderwidth 2 \
-            -font $panneau(remotectrl,font,button) -command { wizConServer $panneau(remotectrl,port1) }
+            -command { wizConServer $panneau(remotectrl,port1) }
          pack $base.but_backyard -side bottom -anchor center -padx 20 -pady 5 -ipadx 10 -ipady 5 -expand 0
       } else {
          #--- Button << CANCEL
          button $base.but_backyard -text $panneau(remotectrl,wizCon1,cancel) -borderwidth 2 \
-            -font $panneau(remotectrl,font,button) -command {
+            -command {
                global panneau
                destroy $panneau(remotectrl,wizCon1,base)
             }
@@ -1200,13 +1196,13 @@ proc remotectrlBuildIF { This } {
          #--- Button DECONNECT >>
          if {$rpcid(state)=="server"} {
             button $base.but_home -text $panneau(remotectrl,wizCon1,unconnect_backyard) -borderwidth 2 \
-               -font $panneau(remotectrl,font,button) -command {
+               -command {
                   ::$conf(confPad)::deletePluginInstance
                   wizDelServer
                }
          } else {
             button $base.but_home -text $panneau(remotectrl,wizCon1,unconnect_home) -borderwidth 2 \
-               -font $panneau(remotectrl,font,button) -command {
+               -command {
                   ::$conf(confPad)::deletePluginInstance
                   wizDelClient
                }
@@ -1238,69 +1234,64 @@ proc remotectrlBuildIF { This } {
       wm geometry $base +[ expr $posxWizCon1 + 170 ]+[ expr $posyWizCon1 + 70 ]
       wm resizable $base 0 0
       #--- Title
-      label $base.lab_title2 -text "$panneau(remotectrl,wizConClient,title2)" -borderwidth 2 \
-         -font $panneau(remotectrl,font,title2)
+      label $base.lab_title2 -text "$panneau(remotectrl,wizConClient,title2)" -borderwidth 2
       pack $base.lab_title2 -side top -anchor center -padx 20 -pady 5 -expand 0
       #--- Describe
       frame $base.f1
          #---
-         label $base.f1.lab_ip1 -text "$panneau(remotectrl,backyard) $panneau(remotectrl,ip)" \
-            -font $panneau(remotectrl,font,normal)
+         label $base.f1.lab_ip1 -text "$panneau(remotectrl,backyard) $panneau(remotectrl,ip)"
          pack $base.f1.lab_ip1 -side left -anchor se -padx 20 -pady 5 -expand 0
          entry $base.f1.ent_ip1 -textvariable panneau(remotectrl,ip1) -width 15 -relief groove \
-            -font $panneau(remotectrl,font,normal) -justify center
+            -justify center
          pack $base.f1.ent_ip1 -side left -anchor se -pady 5 -expand 0
          #---
       pack $base.f1 -side top -anchor sw
       frame $base.f2
          #---
-         label $base.f2.lab_port1 -text "$panneau(remotectrl,backyard) $panneau(remotectrl,port_rcp)" \
-            -font $panneau(remotectrl,font,normal)
+         label $base.f2.lab_port1 -text "$panneau(remotectrl,backyard) $panneau(remotectrl,port_rcp)"
          pack $base.f2.lab_port1 -side left -anchor se -padx 20 -pady 5 -expand 0
          entry $base.f2.ent_port1 -textvariable panneau(remotectrl,port1) -width 5 -relief groove \
-            -font $panneau(remotectrl,font,normal) -justify center
+            -justify center
          pack $base.f2.ent_port1 -side left -anchor se -pady 5 -expand 0
          #---
       pack $base.f2 -side top -anchor sw
       frame $base.f3
          #---
-         label $base.f3.lab_ip2 -text "$panneau(remotectrl,home) $panneau(remotectrl,ip)" \
-            -font $panneau(remotectrl,font,normal)
+         label $base.f3.lab_ip2 -text "$panneau(remotectrl,home) $panneau(remotectrl,ip)"
          pack $base.f3.lab_ip2 -side left -anchor se -padx 20 -pady 5 -expand 0
          entry $base.f3.ent_ip2 -textvariable panneau(remotectrl,ip2) -width 15 -relief groove \
-            -font $panneau(remotectrl,font,normal) -justify center
+            -justify center
          pack $base.f3.ent_ip2 -side left -anchor se -pady 5 -expand 0
          #---
       pack $base.f3 -side top -anchor sw
       frame $base.f4
          #---
-         label $base.f4.lab_port2 -text "$panneau(remotectrl,home) $panneau(remotectrl,port_rcp)" \
-            -font $panneau(remotectrl,font,normal)
+         label $base.f4.lab_port2 -text "$panneau(remotectrl,home) $panneau(remotectrl,port_rcp)"
          pack $base.f4.lab_port2 -side left -anchor se -padx 20 -pady 5 -expand 0
          entry $base.f4.ent_port2 -textvariable panneau(remotectrl,port2) -width 5 -relief groove \
-            -font $panneau(remotectrl,font,normal) -justify center
+            -justify center
          pack $base.f4.ent_port2 -side left -anchor se -pady 5 -expand 0
          #---
       pack $base.f4 -side top -anchor sw
       frame $base.f5
          #---
-         label $base.f5.lab_path -text "$panneau(remotectrl,path_img)" -font $panneau(remotectrl,font,normal)
+         label $base.f5.lab_path -text "$panneau(remotectrl,path_img)"
          pack $base.f5.lab_path -side left -anchor se -padx 20 -pady 5 -expand 0
          entry $base.f5.ent_path -textvariable panneau(remotectrl,path_img) -width 5 -relief groove \
-            -font $panneau(remotectrl,font,normal) -justify center
+            -justify center
          pack $base.f5.ent_path -side left -anchor center -pady 5 -expand 0
          #---
       pack $base.f5 -side top -anchor sw
       #--- Button << CANCEL
       button $base.but_backyard -text $panneau(remotectrl,wizCon1,cancel) -borderwidth 2 \
-         -font $panneau(remotectrl,font,button) -command {
+         -command {
             global panneau
             destroy $panneau(remotectrl,wizCon1,base)
          }
       pack $base.but_backyard -side left -anchor se -padx 20 -pady 5 -ipadx 10 -ipady 5 -expand 0
       #--- Button CONNECT >>
       button $base.but_home -text $panneau(remotectrl,wizConClient,connect) -borderwidth 2 \
-         -font $panneau(remotectrl,font,button) -command {
+         -command {
             global panneau
             ::remotectrl::enregistrementVar
             wizConClient2 $panneau(remotectrl,ip1) $panneau(remotectrl,port1) $panneau(remotectrl,ip2) $panneau(remotectrl,port2)
@@ -1315,7 +1306,6 @@ proc remotectrlBuildIF { This } {
    }
 
    proc wizConClient2 { ip1 port1 ip2 port2 } {
-      global audace
       global panneau
       global color
       global rpcid
@@ -1371,41 +1361,38 @@ proc remotectrlBuildIF { This } {
       wm geometry $base +[ expr $posxWizCon1 + 190 ]+[ expr $posyWizCon1 + 70 ]
       wm resizable $base 0 0
       #--- Title
-      label $base.lab_title2 -text "$panneau(remotectrl,wizConClient,title3)" -borderwidth 2 \
-         -font $panneau(remotectrl,font,title2)
+      label $base.lab_title2 -text "$panneau(remotectrl,wizConClient,title3)" -borderwidth 2
       pack $base.lab_title2 -side top -anchor center -padx 20 -pady 5 -expand 0
       #--- Describe
       frame $base.f1
          #---
-         label $base.f1.lab_port1 -text "$panneau(remotectrl,backyard) $panneau(remotectrl,port_rcp)" \
-            -font $panneau(remotectrl,font,normal)
+         label $base.f1.lab_port1 -text "$panneau(remotectrl,backyard) $panneau(remotectrl,port_rcp)"
          pack $base.f1.lab_port1 -side left -anchor se -padx 20 -pady 5 -expand 0
          entry $base.f1.ent_port1 -textvariable panneau(remotectrl,port1) -width 5 -relief groove \
-            -font $panneau(remotectrl,font,normal) -justify center
+            -justify center
          pack $base.f1.ent_port1 -side left -anchor se -pady 5 -expand 0
          #---
       pack $base.f1 -side top -anchor sw
       frame $base.f2
          #---
-         label $base.f2.lab_port1 -text "$panneau(remotectrl,backyard) $panneau(remotectrl,port_ftp)" \
-            -font $panneau(remotectrl,font,normal)
+         label $base.f2.lab_port1 -text "$panneau(remotectrl,backyard) $panneau(remotectrl,port_ftp)"
          pack $base.f2.lab_port1 -side left -anchor se -padx 20 -pady 5 -expand 0
          entry $base.f2.ent_port1 -textvariable panneau(remotectrl,ftp_port1) -width 5 -relief groove \
-            -font $panneau(remotectrl,font,normal) -justify center
+            -justify center
          pack $base.f2.ent_port1 -side left -anchor se -pady 5 -expand 0
          #---
       pack $base.f2 -side top -anchor sw
 
       #--- Button << CANCEL
       button $base.but_backyard -text $panneau(remotectrl,wizCon1,cancel) -borderwidth 2 \
-         -font $panneau(remotectrl,font,button) -command {
+         -command {
             global panneau
             destroy $panneau(remotectrl,wizCon1,base)
           }
       pack $base.but_backyard -side left -anchor se -padx 20 -pady 5 -ipadx 10 -ipady 5 -expand 0
       #--- Button CONNECT >>
       button $base.but_home -text $panneau(remotectrl,wizConClient,connect) -borderwidth 2 \
-         -font $panneau(remotectrl,font,button) -command {
+         -command {
             global audace
             global panneau
             ::remotectrl::enregistrementVar
@@ -1459,7 +1446,6 @@ proc remotectrlBuildIF { This } {
 
    proc wizDelServer { } {
       variable This
-      global audace
       global panneau
       global rpcid
       global color
@@ -1482,7 +1468,6 @@ proc remotectrlBuildIF { This } {
 
    proc wizDelClient { } {
       variable This
-      global audace
       global panneau
       global rpcid
       global color
