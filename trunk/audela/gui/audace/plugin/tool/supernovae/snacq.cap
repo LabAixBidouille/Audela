@@ -1,6 +1,6 @@
 #
 # Fichier : snacq.cap
-# Mise a jour $Id: snacq.cap,v 1.8 2007-05-09 21:49:06 robertdelmas Exp $
+# Mise a jour $Id: snacq.cap,v 1.9 2008-12-20 15:11:11 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -40,8 +40,7 @@ set caption(snacq,godark)                    "Dark Frame"
 set caption(snacq,gobias)                    "Bias Frame"
 set caption(snacq,help)                      "Help"
 
-set caption(snacq,status_1)                  "            Automatic acquisition of galaxy images"
-set caption(snacq,status_2)                  "                    to discover supernovae."
+set caption(snacq,status)                    "Automatic acquisition of galaxy images to discover supernovae."
 set caption(snacq,status_nodark)             "No dark frame found (clic on Dark Frame)."
 set caption(snacq,status_nobias)             "No bias frame found (clic on Bias Frame)."
 set caption(snacq,status_importemacros)      "Macro Import"
@@ -96,8 +95,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,gobias)                 "Bias"
    set caption(snacq,help)                   "Aide"
 
-   set caption(snacq,status_1)               "         Acquisition automatique d'images de galaxies"
-   set caption(snacq,status_2)               "                pour découvrir des supernovae."
+   set caption(snacq,status)                 "Acquisition automatique d'images de galaxies pour découvrir des supernovae."
    set caption(snacq,status_nodark)          "Pas de dark trouvé (appuyer sur Dark)."
    set caption(snacq,status_nobias)          "Pas de bias trouvé (appuyer sur Bias)."
    set caption(snacq,status_importemacros)   "Importe les macros"
@@ -152,8 +150,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,gobias)                 "Bias"
    set caption(snacq,help)                   "Aiuto"
 
-   set caption(snacq,status_1)               "           Acquisizione automatica immagini galassie"
-   set caption(snacq,status_2)               "                   per scoprire supernovae."
+   set caption(snacq,status)                 "Acquisizione automatica immagini galassie per scoprire supernovae."
    set caption(snacq,status_nodark)          "Dark non trovato (click in Dark)."
    set caption(snacq,status_nobias)          "Bias non trovato (click in Bias)."
    set caption(snacq,status_importemacros)   "Importazione di macro"
@@ -208,8 +205,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,gobias)                 "Bias"
    set caption(snacq,help)                   "Ayuda"
 
-   set caption(snacq,status_1)               "        Adquisición automatica de imagenes de galaxias"
-   set caption(snacq,status_2)               "                  para descubrir supernovas."
+   set caption(snacq,status)                 "Adquisición automatica de imagenes de galaxias para descubrir supernovas."
    set caption(snacq,status_nodark)          "No se ha encontrado imagen de dark (pulsar Dark)."
    set caption(snacq,status_nobias)          "No se ha encontrado imagen de bias (pulsar Bias)."
    set caption(snacq,status_importemacros)   "Importar macros"
@@ -264,8 +260,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,gobias)                 "Bias"
    set caption(snacq,help)                   "Hilfe"
 
-   set caption(snacq,status_1)               "          Automatische Galaxien Bilder Belichtung"
-   set caption(snacq,status_2)               "                 um Supernovae zu entdecken."
+   set caption(snacq,status)                 "Automatische Galaxien Bilder Belichtung um Supernovae zu entdecken."
    set caption(snacq,status_nodark)          "Kein Dark gefunden (auf Dark drücken)."
    set caption(snacq,status_nobias)          "Kein Bias gefunden (auf Bias drücken)."
    set caption(snacq,status_importemacros)   "Makros einführen"
@@ -320,8 +315,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,gobias)                 "Bias"
    set caption(snacq,help)                   "Ajuda"
 
-   set caption(snacq,status_1)               "         Aquisição automática de imagens de galáxias"
-   set caption(snacq,status_2)               "                para descobrir supernovas."
+   set caption(snacq,status)                 "Aquisição automática de imagens de galáxias para descobrir supernovas."
    set caption(snacq,status_nodark)          "Dark não encontrado (clique em Dark)."
    set caption(snacq,status_nobias)          "Bias não encontrado (clique em Bias)."
    set caption(snacq,status_importemacros)   "Importar macros"
@@ -376,8 +370,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,gobias)                 "Bias Frame"
    set caption(snacq,help)                   "Help"
 
-   set caption(snacq,status_1)               "            Automatic acquisition of galaxy images"
-   set caption(snacq,status_2)               "                    to discover supernovae."
+   set caption(snacq,status)                 "Automatic acquisition of galaxy images to discover supernovae."
    set caption(snacq,status_nodark)          "No dark frame found (clic on Dark Frame)."
    set caption(snacq,status_nobias)          "No bias frame found (clic on Bias Frame)."
    set caption(snacq,status_importemacros)   "Macro Import"
