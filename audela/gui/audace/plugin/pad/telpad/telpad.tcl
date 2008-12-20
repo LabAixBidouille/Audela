@@ -2,7 +2,7 @@
 # Fichier : telpad.tcl
 # Description : Raquette simplifiee a l'usage des telescopes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: telpad.tcl,v 1.18 2008-02-02 12:39:40 robertdelmas Exp $
+# Mise a jour $Id: telpad.tcl,v 1.19 2008-12-20 22:21:16 robertdelmas Exp $
 #
 
 namespace eval telpad {
@@ -239,11 +239,11 @@ namespace eval telpad {
       pack $This.frame3 -side top -fill both -expand 1
 
       #--- Label pour RA
-      label $This.frame1.ent1 -font $audace(font,arial_10_b) -textvariable audace(telescope,getra)
+      label $This.frame1.ent1 -textvariable audace(telescope,getra)
       pack $This.frame1.ent1 -anchor center -fill none -pady 1
 
       #--- Label pour DEC
-      label $This.frame1.ent2 -font $audace(font,arial_10_b) -textvariable audace(telescope,getdec)
+      label $This.frame1.ent2 -textvariable audace(telescope,getdec)
       pack $This.frame1.ent2 -anchor center -fill none -pady 1
 
       set zone(radec) $This.frame1
@@ -258,7 +258,7 @@ namespace eval telpad {
 
       #--- Button-design 'N'
       button $This.frame2.n.canv1 -borderwidth 2 \
-         -font [ list {Arial} 12 bold ] \
+         -font $audace(font,arial_12_b) \
          -text "$caption(telpad,nord)" \
          -width 2  \
          -anchor center \
@@ -271,7 +271,7 @@ namespace eval telpad {
 
       #--- Button-design 'E'
       button $This.frame2.we.canv1 -borderwidth 2 \
-         -font [ list {Arial} 12 bold ] \
+         -font $audace(font,arial_12_b) \
          -text "$caption(telpad,est)" \
          -width 2  \
          -anchor center \
@@ -279,13 +279,13 @@ namespace eval telpad {
       pack $This.frame2.we.canv1 -expand 0 -side left -padx 10 -pady 4
 
       #--- Write the label of speed
-      label $This.frame2.we.lab -font [ list {Arial} 12 bold ] -textvariable audace(telescope,labelspeed) \
+      label $This.frame2.we.lab -font $audace(font,arial_12_b) -textvariable audace(telescope,labelspeed) \
          -borderwidth 0 -relief flat
       pack $This.frame2.we.lab -expand 1 -side left
 
       #--- Button-design 'W'
       button $This.frame2.we.canv2 -borderwidth 2 \
-         -font [ list {Arial} 12 bold ] \
+         -font $audace(font,arial_12_b) \
          -text "$caption(telpad,ouest)" \
          -width 2  \
          -anchor center \
@@ -298,7 +298,7 @@ namespace eval telpad {
 
       #--- Button-design 'S'
       button $This.frame2.s.canv1 -borderwidth 2 \
-         -font [ list {Arial} 12 bold ] \
+         -font $audace(font,arial_12_b) \
          -text "$caption(telpad,sud)" \
          -width 2  \
          -anchor center \
@@ -312,9 +312,7 @@ namespace eval telpad {
 
       #--- Ecrit l'etiquette du controle du suivi : Suivi on ou off
       if { [ ::confTel::getPluginProperty hasControlSuivi ] == "1" } {
-         label $This.frame2.s.lab1 \
-            -font $audace(font,arial_10_b) -textvariable audace(telescope,controle) \
-            -borderwidth 0 -relief flat
+         label $This.frame2.s.lab1 -textvariable audace(telescope,controle) -borderwidth 0 -relief flat
          pack $This.frame2.s.lab1 -expand 1 -side left
          bind $This.frame2.s.lab1 <ButtonPress-1> { ::telescope::controleSuivi }
       }
@@ -342,7 +340,7 @@ namespace eval telpad {
 
       #--- Button '-'
       button $This.frame3.we.canv1 -borderwidth 2 \
-         -font [ list {Arial} 12 bold ] \
+         -font $audace(font,arial_12_b) \
          -text "-" \
          -width 2  \
          -anchor center \
@@ -350,13 +348,13 @@ namespace eval telpad {
       pack $This.frame3.we.canv1 -expand 0 -side left -padx 10 -pady 4
 
       #--- Write the label of speed for LX200 and compatibles
-      label $This.frame3.we.lab -font [ list {Arial} 12 bold ] -textvariable audace(focus,labelspeed) -width 2 \
-         -borderwidth 0 -relief flat
+      label $This.frame3.we.lab -font $audace(font,arial_12_b) -textvariable audace(focus,labelspeed) \
+         -width 2 -borderwidth 0 -relief flat
       pack $This.frame3.we.lab -expand 1 -side left
 
       #--- Button '+'
       button $This.frame3.we.canv2 -borderwidth 2 \
-         -font [ list {Arial} 12 bold ] \
+         -font $audace(font,arial_12_b) \
          -text "+" \
          -width 2  \
          -anchor center \

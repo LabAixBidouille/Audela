@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.31 2008-11-30 10:41:24 robertdelmas Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.32 2008-12-20 22:21:28 robertdelmas Exp $
 #
 
 #==============================================================
@@ -177,7 +177,8 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
       label $This.pose.lab1 -text "$caption(autoguider,pose)"
       set list_combobox {0 0.1 0.3 0.5 1 2 3 5 10}
       ComboBox $This.pose.combo \
-         -width 4 -height [ llength $list_combobox ] \
+         -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
+         -height [ llength $list_combobox ] \
          -relief sunken -borderwidth 1 -editable 1 \
          -textvariable ::conf(autoguider,pose) \
          -values $list_combobox
@@ -191,7 +192,8 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
       pack $This.binning.lab1 -anchor center -side left -padx 5
       set list_combobox [list "" ]
       ComboBox $This.binning.combo \
-         -width 4 -height [ llength $list_combobox ] \
+         -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
+         -height [ llength $list_combobox ] \
          -relief sunken -borderwidth 1 -editable 0 \
          -textvariable ::conf(autoguider,binning) \
          -values $list_combobox \
@@ -205,7 +207,8 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
       pack $This.intervalle.lab1 -anchor center -side left -padx 5
       set list_combobox {0 0.1 0.3 0.5 1 2 3 5 10}
       ComboBox $This.intervalle.combo \
-         -width 4 -height [ llength $list_combobox ] \
+         -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
+         -height [ llength $list_combobox ] \
          -relief sunken -borderwidth 1 -editable 0 \
          -textvariable conf(autoguider,intervalle) \
          -values $list_combobox

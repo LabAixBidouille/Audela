@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.15 2008-11-22 22:09:38 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.16 2008-12-20 22:21:03 robertdelmas Exp $
 #
 
 #============================================================
@@ -194,12 +194,12 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
          pack $private($visuNo,This).fra2.lab1 -in $private($visuNo,This).fra2 -anchor center -padx 2 -pady 1
 
          #--- Entry pour les coordonnes de l'objet
-         entry $private($visuNo,This).fra2.ra -font $audace(font,arial_8_b) \
-            -textvariable ::tlscp::private($visuNo,raObjet) -relief groove -width 16
+         entry $private($visuNo,This).fra2.ra -textvariable ::tlscp::private($visuNo,raObjet) \
+            -relief groove -width 16
          pack $private($visuNo,This).fra2.ra -in $private($visuNo,This).fra2 -anchor center -padx 2 -pady 2
          DynamicHelp::add $private($visuNo,This).fra2.ra -text "$caption(tlscp,formataddec1)"
-         entry $private($visuNo,This).fra2.dec -font $audace(font,arial_8_b) \
-            -textvariable ::tlscp::private($visuNo,decObjet) -relief groove -width 16
+         entry $private($visuNo,This).fra2.dec -textvariable ::tlscp::private($visuNo,decObjet) \
+            -relief groove -width 16
          pack $private($visuNo,This).fra2.dec -in $private($visuNo,This).fra2 -anchor center -padx 2 -pady 2
          DynamicHelp::add $private($visuNo,This).fra2.dec -text "$caption(tlscp,formataddec2)"
 
@@ -234,7 +234,7 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
 
             #--- Bouton Coord. / Stop GOTO
             button $private($visuNo,This).fra2.fra2a.but2 -borderwidth 2 -text $caption(tlscp,coord) \
-               -font $audace(font,arial_8_b) -command { ::telescope::afficheCoord }
+               -command { ::telescope::afficheCoord }
             pack $private($visuNo,This).fra2.fra2a.but2 -in $private($visuNo,This).fra2.fra2a -side left \
                -fill both -anchor center -pady 1
 
@@ -246,7 +246,7 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
 
             #--- Bouton Stop GOTO
             button $private($visuNo,This).fra2.fra2a.but3 -borderwidth 2 -text $caption(tlscp,stop_goto) \
-               -font $audace(font,arial_10_b) -command { ::telescope::stopGoto }
+               -command { ::telescope::stopGoto }
             pack $private($visuNo,This).fra2.fra2a.but3 -in $private($visuNo,This).fra2.fra2a -side left \
                -fill y -anchor center -pady 1
 
@@ -264,13 +264,11 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
       frame $private($visuNo,This).fra3 -borderwidth 1 -relief groove
 
          #--- Label pour RA
-         label $private($visuNo,This).fra3.ent1 -font $audace(font,arial_10_b) \
-            -textvariable audace(telescope,getra) -relief flat
+         label $private($visuNo,This).fra3.ent1 -textvariable audace(telescope,getra) -relief flat
          pack $private($visuNo,This).fra3.ent1 -in $private($visuNo,This).fra3 -anchor center -fill none -pady 1
 
          #--- Label pour DEC
-         label $private($visuNo,This).fra3.ent2 -font $audace(font,arial_10_b) \
-            -textvariable audace(telescope,getdec) -relief flat
+         label $private($visuNo,This).fra3.ent2 -textvariable audace(telescope,getdec) -relief flat
          pack $private($visuNo,This).fra3.ent2 -in $private($visuNo,This).fra3 -anchor center -fill none -pady 1
 
       pack $private($visuNo,This).fra3 -side top -fill x
@@ -289,7 +287,7 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
 
          #--- Button-design
          button $private($visuNo,This).fra4.n.canv1 -borderwidth 2 \
-            -font [ list {Arial} 12 bold ] \
+            -font $audace(font,arial_12_b) \
             -text "$caption(tlscp,nord)" \
             -width 2  \
             -anchor center \
@@ -303,7 +301,7 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
 
          #--- Button-design 'E'
          button $private($visuNo,This).fra4.we.canv1 -borderwidth 2 \
-            -font [ list {Arial} 12 bold ] \
+            -font $audace(font,arial_12_b) \
             -text "$caption(tlscp,est)" \
             -width 2  \
             -anchor center \
@@ -313,14 +311,14 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
 
          #--- Write the label of speed
          label $private($visuNo,This).fra4.we.lab \
-            -font [ list {Arial} 12 bold ] -textvariable audace(telescope,labelspeed) \
+            -font $audace(font,arial_12_b) -textvariable audace(telescope,labelspeed) \
             -borderwidth 0 -relief flat
          pack $private($visuNo,This).fra4.we.lab \
             -in $private($visuNo,This).fra4.we -expand 1 -side left
 
          #--- Button-design 'W'
          button $private($visuNo,This).fra4.we.canv2 -borderwidth 2 \
-            -font [ list {Arial} 12 bold ] \
+            -font $audace(font,arial_12_b) \
             -text "$caption(tlscp,ouest)" \
             -width 2  \
             -anchor center \
@@ -334,7 +332,7 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
 
          #--- Button-design
          button $private($visuNo,This).fra4.s.canv1 -borderwidth 2 \
-            -font [ list {Arial} 12 bold ] \
+            -font $audace(font,arial_12_b) \
             -text "$caption(tlscp,sud)" \
             -width 2  \
             -anchor center \
@@ -348,8 +346,8 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
          set zone(s) $private($visuNo,This).fra4.s.canv1
 
          #--- Ecrit l'etiquette du controle du suivi : Suivi on ou off
-         label $private($visuNo,This).fra4.s.lab1 -font $audace(font,arial_10_b) \
-            -textvariable audace(telescope,controle) -borderwidth 0 -relief flat
+         label $private($visuNo,This).fra4.s.lab1 -textvariable audace(telescope,controle) \
+            -borderwidth 0 -relief flat
          pack $private($visuNo,This).fra4.s.lab1 -in $private($visuNo,This).fra4.s -expand 1 -side left
 
       pack $private($visuNo,This).fra4 -side top -fill x
@@ -373,7 +371,8 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
             label $private($visuNo,This).camera.pose.label -text "$caption(tlscp,pose)"
             set list_combobox {0 0.1 0.3 0.5 1 2 3 5 10}
             ComboBox $private($visuNo,This).camera.pose.combo \
-               -width 4 -height [ llength $list_combobox ] \
+               -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
+               -height [ llength $list_combobox ] \
                -relief sunken -borderwidth 1 -editable 1 \
                -textvariable ::conf(tlscp,expTime) \
                -values $list_combobox
@@ -393,7 +392,8 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
             pack $private($visuNo,This).camera.binning.label -anchor center -side left -fill x -expand 1
             set list_combobox [list "" ]
             ComboBox $private($visuNo,This).camera.binning.combo \
-               -width 4 -height [ llength $list_combobox ] \
+               -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
+               -height [ llength $list_combobox ] \
                -relief sunken -borderwidth 1 -editable 0 \
                -textvariable ::conf(tlscp,binning)) \
                -values $list_combobox \
@@ -418,8 +418,8 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
             -command " ::tlscp::clearSearchStar $visuNo"
 
          #--- checkbutton monture active
-         ###checkbutton $private($visuNo,This).camera.mountEnabled -text "$caption(tlscp,mountEnabled)" \
-         ###   -variable ::conf(tlscp,mountEnabled)
+        ### checkbutton $private($visuNo,This).camera.mountEnabled -text "$caption(tlscp,mountEnabled)" \
+        ###    -variable ::conf(tlscp,mountEnabled)
 
          grid $private($visuNo,This).camera.pose  -row 0  -sticky nsew -pady 1
          grid $private($visuNo,This).camera.binning -row 1 -sticky nsew -pady 1
@@ -427,7 +427,7 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
          grid $private($visuNo,This).camera.center -row 3 -sticky nsew -pady 1
          grid $private($visuNo,This).camera.search -row 4 -sticky nsew -pady 1
          grid $private($visuNo,This).camera.clear  -row 5 -sticky nsew -pady 1
-         ###grid $private($visuNo,This).camera.mountEnabled -row 7 -sticky nsew -pady 1
+        ### grid $private($visuNo,This).camera.mountEnabled -row 7 -sticky nsew -pady 1
          grid columnconfigure  $private($visuNo,This).camera 0 -weight  1
 
       pack $private($visuNo,This).camera -side top -fill x
@@ -676,7 +676,7 @@ proc ::tlscp::cmdGoto { visuNo } {
 
    #--- Gestion graphique des boutons GOTO et Stop
    $private($visuNo,This).fra2.fra2a.but1 configure -relief groove -state disabled
-   $private($visuNo,This).fra2.fra2a.but2 configure -text $caption(tlscp,stop_goto) -font $audace(font,arial_8_b) \
+   $private($visuNo,This).fra2.fra2a.but2 configure -text $caption(tlscp,stop_goto) \
       -command "::tlscp::cmdStopGoto $visuNo"
    update
 
@@ -727,7 +727,7 @@ proc ::tlscp::cmdGoto { visuNo } {
 
    #--- Gestion graphique du bouton Stop
    $private($visuNo,This).fra2.fra2a.but2 configure -relief raised -state normal -text $caption(tlscp,coord) \
-      -font $audace(font,arial_8_b) -command { ::telescope::afficheCoord }
+      -command { ::telescope::afficheCoord }
    update
 }
 
@@ -745,9 +745,9 @@ proc ::tlscp::cmdSkyMap { visuNo } {
 
    set result [::carte::getSelectedObject]
    if { [llength $result] == 5 } {
-      ###set now now
-      ###set now [::audace::date_sys2ut now]
-      ###set result [modpoi_catalogmean2apparent [lindex $result 0] [lindex $result 1] J2000.0 $now]
+     ### set now now
+     ### set now [::audace::date_sys2ut now]
+     ### set result [modpoi_catalogmean2apparent [lindex $result 0] [lindex $result 1] J2000.0 $now]
       set ra        [mc_angle2hms [lindex $result 0] 360 nozero 0 auto string]
       set dec       [mc_angle2dms [lindex $result 1] 90 nozero 0 + string]
       set equinox   [lindex $result 2]
@@ -955,9 +955,9 @@ proc ::tlscp::startCenter { visuNo { methode "" } } {
    if { $::audace(telNo) != 0 } {
       ::telescope::setSpeed $::conf(tlscp,centerSpeed)
       ::camera::setParam $private($visuNo,camItem) "telRate" $::audace(telescope,rate)
-      ###set ::conf(tlscp,mountEnabled) 1
+     ### set ::conf(tlscp,mountEnabled) 1
    } else {
-      ###set ::conf(tlscp,mountEnabled) 0
+     ### set ::conf(tlscp,mountEnabled) 0
    }
 
    #--- j'affiche le bouton STOP CENTER
@@ -1079,17 +1079,17 @@ proc ::tlscp::startSearchStar { visuNo } {
          set x  [lindex $coord 0]
          set y  [lindex $coord 1]
          $hCanvas create oval [expr $x-5] [expr $y-5] [expr $x+5] [expr $y+5] -fill {} -outline blue -width 2 -activewidth 3 -tag tlscpstar
-         ###$hCanvas create text [expr $x+12] [expr $y+6] -text "$xintensity $yintensity" -tag tlscpstar -state normal -fill green
+        ### $hCanvas create text [expr $x+12] [expr $y+6] -text "$xintensity $yintensity" -tag tlscpstar -state normal -fill green
       }
 
       #--- je cree un cercle rouge autour de l'etoile la plus brillante
       set brigthestStarCoord [lrange [lindex $private($visuNo,acquisitionResult) 0 ] 1 2]
       set private($visuNo,targetCoord) $brigthestStarCoord
       moveTarget $visuNo $brigthestStarCoord
-      ###set coord [::confVisu::picture2Canvas $visuNo $brigthestStarCoord ]
-      ###set x [lindex $coord 0]
-      ###set y [lindex $coord 1]
-      ###$hCanvas create oval [expr $x-8] [expr $y-8] [expr $x+8] [expr $y+8] -fill {} -outline red -width 2 -activewidth 3 -tag tlscpstar
+     ### set coord [::confVisu::picture2Canvas $visuNo $brigthestStarCoord ]
+     ### set x [lindex $coord 0]
+     ### set y [lindex $coord 1]
+     ### $hCanvas create oval [expr $x-8] [expr $y-8] [expr $x+8] [expr $y+8] -fill {} -outline red -width 2 -activewidth 3 -tag tlscpstar
    } else {
        set brigthestStarCoord ""
    }
@@ -1846,7 +1846,7 @@ proc ::tlscp::config::fillConfigPage { frm visuNo } {
       LabelEntry $frm.delta.gainprop -label "$caption(tlscp,vitesse)" \
          -labeljustify left -labelwidth 16 -width 5 -justify right \
          -textvariable ::tlscp::config::widget($visuNo,deltaSpeed)
-###         -validate all -validatecommand { ::tlscp::validateNumber %W %V %P %s -9999 9999}
+        ### -validate all -validatecommand { ::tlscp::validateNumber %W %V %P %s -9999 9999}
       pack $frm.delta.gainprop -in [$frm.delta getframe] -anchor w -side top -fill x -expand 0
       LabelEntry $frm.delta.seuil -label "$caption(tlscp,seuil)" \
          -labeljustify left -labelwidth 16 -width 5 -justify right \
@@ -1864,7 +1864,7 @@ proc ::tlscp::config::fillConfigPage { frm visuNo } {
       set speedList [::telescope::getSpeedValueList]
       ComboBox $frm.telescope.speedList -relief sunken -borderwidth 1 -editable 0 \
          -height [llength $speedList] \
-         -width 3 \
+         -width [ ::tkutil::lgEntryComboBox $speedList ] \
          -textvariable ::tlscp::config::widget($visuNo,centerSpeed) \
          -values $speedList
       pack $frm.telescope.speedList -in [$frm.telescope getframe] -anchor w -side left -fill x -expand 0
@@ -1949,10 +1949,10 @@ proc ::tlscp::config::fillConfigPage { frm visuNo } {
          LabelEntry $frm.astrom.bogumil.threshold -label "$caption(tlscp,searchThreshold)" \
             -labeljustify left -labelwidth 22 -width 3 -justify right \
             -textvariable ::tlscp::config::widget($visuNo,searchThreshold)
-         pack $frm.astrom.bogumil.threshin   -anchor w -side top -fill x -expand 0
-         pack $frm.astrom.bogumil.fwhm       -anchor w -side top -fill x -expand 0
-         pack $frm.astrom.bogumil.radius     -anchor w -side top -fill x -expand 0
-         pack $frm.astrom.bogumil.threshold  -anchor w -side top -fill x -expand 0
+         pack $frm.astrom.bogumil.threshin  -anchor w -side top -fill x -expand 0
+         pack $frm.astrom.bogumil.fwhm      -anchor w -side top -fill x -expand 0
+         pack $frm.astrom.bogumil.radius    -anchor w -side top -fill x -expand 0
+         pack $frm.astrom.bogumil.threshold -anchor w -side top -fill x -expand 0
 
       pack $frm.astrom.detection -in [$frm.astrom getframe] -anchor w -side top -fill x -expand 0
       pack $frm.astrom.stat      -in [$frm.astrom getframe] -anchor w -side top -fill x -expand 0
@@ -1962,7 +1962,7 @@ proc ::tlscp::config::fillConfigPage { frm visuNo } {
       set catalogueList [list "MicroCat" "USNO"]
       ComboBox $frm.catalogue.name -relief sunken -borderwidth 1 -editable 0 \
          -height [llength $catalogueList] \
-         -width  10 \
+         -width [ ::tkutil::lgEntryComboBox $catalogueList ] \
          -textvariable ::tlscp::config::widget($visuNo,catalogueName) \
          -modifycmd "::tlscp::config::onSelectCatalogue $visuNo" \
          -values $catalogueList
