@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.33 2008-12-14 23:46:35 robertdelmas Exp $
+# Mise a jour $Id: dslr.tcl,v 1.34 2008-12-20 11:54:52 michelpujol Exp $
 #
 
 namespace eval ::dslr {
@@ -728,17 +728,6 @@ proc ::dslr::changerSelectionTelechargementAPN { camItem } {
 }
 
 #
-# ::dslr::getBinningList
-#    Retourne la liste des binnings disponibles de la camera
-#
-proc ::dslr::getBinningList { camItem } {
-   variable private
-
-   set binningList [ cam$private($camItem,camNo) quality list ]
-   return $binningList
-}
-
-#
 # ::dslr::getPluginProperty
 #    Retourne la valeur de la propriete
 #
@@ -750,6 +739,7 @@ proc ::dslr::getBinningList { camItem } {
 # binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
 # binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
 # dynamic :          Retourne la liste de la dynamique haute et basse
+# formatList :       Retourne la liste des foramt ou des qualites d'image (fine, normal, raw, ...)
 # hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
 # hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
 # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
@@ -769,13 +759,17 @@ proc ::dslr::getPluginProperty { camItem propertyName } {
    variable private
 
    switch $propertyName {
-      binningList      { return [ ::dslr::getBinningList $camItem] }
+      binningList      { return [ list "" ] }
       binningXListScan { return [ list "" ] }
       binningYListScan { return [ list "" ] }
-      dynamic          { return [ list 4096 -4096 ] }
+      dynamic          { return [ list 4096 0 ] }
+      formatList       {
+          return [ cam$private($camItem,camNo) quality list ]
+      }
       hasBinning       { return 0 }
       hasFormat        { return 1 }
       hasLongExposure  { return 1 }
+      hasQuality       { return 1 }
       hasScan          { return 0 }
       hasShutter       { return 0 }
       hasTempSensor    { return 0 }
@@ -800,5 +794,21 @@ proc ::dslr::getPluginProperty { camItem propertyName } {
       }
       shutterList      { return [ list "" ] }
    }
+}
+
+#------------------------------------------------------------
+# setFormat
+#  configure le format (ou la qualite) d'image de la camera
+#
+# Parametres :
+#    camItem : item de la camera
+#    format  : format de l'image (voir getFormatList)
+# Return
+#    rien
+#------------------------------------------------------------
+proc ::dslr::setFormat { camItem format } {
+   variable private
+##console::disp "::dslr::setFormat stack\n"
+   cam$private($camItem,camNo) quality $format
 }
 

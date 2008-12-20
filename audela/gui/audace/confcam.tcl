@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.125 2008-12-19 18:50:53 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.126 2008-12-20 11:54:52 michelpujol Exp $
 #
 
 namespace eval ::confCam {
@@ -486,21 +486,22 @@ proc ::confCam::setConnection { camItem state } {
    }
 }
 
+
 #------------------------------------------------------------
-# setTempCCD
-# Retourne la temperature de consigne du CCD
-# Si la camera n'a pas cette fonctionnalite, retourne une chaine vide
+# setFormat
+#  configure le format (ou la qualite) d'image de la camera
 #
 # Parametres :
-#    camItem : Item de la camera
+#    camItem : item de la camera
+#    format  : format de l'image (voir getFormatList)
+# Return
+#    rien
 #------------------------------------------------------------
-proc ::confCam::setTempCCD { camItem } {
-   global conf
+proc ::confCam::setFormat { camItem format } {
+   variable private
 
-   if { [ ::confCam::getPluginProperty $camItem hasSetTemp ] == "1" } {
-      return [ format "%+4.1f" [ ::$conf(camera,$camItem,camName)::setTempCCD ] ]
-   } else {
-      return ""
+   if { $camItem != "" } {
+      ::$private($camItem,camName)::setFormat $camItem $format
    }
 }
 
@@ -565,6 +566,7 @@ proc ::confCam::setShutter { camItem shutterState  { mode "increment" } } {
    return $shutterState
 }
 
+
 #----------------------------------------------------------------------------
 # stopItem
 # Arrete la camera camItem
@@ -628,30 +630,33 @@ proc ::confCam::isReady { camItem } {
 # Parametres :
 #    camItem      : Instance de la camera
 #    propertyName : Propriete
+#
+# Liste des proprietes :
+# binningList :      Retourne la liste des binnings disponibles
+# binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
+# binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
+# dynamic :          Retourne la liste de la dynamique haute et basse
+# formatList :       Retourne la liste des foramt ou des qualites d'image (fine, normal, raw, ...)
+# hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
+# hasFormat :        Retourne l'existence d'un format ou d'une qualite d'image (1 : Oui, 0 : Non)
+# hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
+# hasQuality :       Retourne l'existence d'une qualité (1 : Oui, 0 : Non)
+# hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
+# hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
+# hasTempSensor      Retourne l'existence du capteur de temperature (1 : Oui, 0 : Non)
+# hasSetTemp         Retourne l'existence d'une consigne de temperature (1 : Oui, 0 : Non)
+# hasVideo :         Retourne l'existence du mode video (1 : Oui, 0 : Non)
+# hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
+# loadMode :         Retourne le mode de chargement d'une image (1: pas de chargment, 2:chargement immediat, 3: chargement differe)
+# longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
+# multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# name :             Retourne le modele de la camera
+# product :          Retourne le nom du produit
+# shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
+# title :            Retourne le titre du plugin
 #------------------------------------------------------------
 proc ::confCam::getPluginProperty { camItem propertyName } {
    variable private
-
-   # binningList :      Retourne la liste des binnings disponibles
-   # binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
-   # binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
-   # dynamic :          Retourne la liste de la dynamique haute et basse
-   # hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
-   # hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
-   # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
-   # hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
-   # hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
-   # hasTempSensor      Retourne l'existence du capteur de temperature (1 : Oui, 0 : Non)
-   # hasSetTemp         Retourne l'existence d'une consigne de temperature (1 : Oui, 0 : Non)
-   # hasVideo :         Retourne l'existence du mode video (1 : Oui, 0 : Non)
-   # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
-   # loadMode :         Retourne le mode de chargement d'une image (1: pas de chargment, 2:chargement immediat, 3: chargement differe)
-   # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
-   # multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
-   # name :             Retourne le modele de la camera
-   # product :          Retourne le nom du produit
-   # shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
-   # title :            Retourne le titre du plugin
 
    #--- je recherche la valeur par defaut de la propriete
    #--- si la valeur par defaut de la propriete n'existe pas , je retourne une chaine vide
@@ -660,9 +665,11 @@ proc ::confCam::getPluginProperty { camItem propertyName } {
       binningXListScan { set result [ list "" ] }
       binningYListScan { set result [ list "" ] }
       dynamic          { set result [ list 32767 -32768 ] }
+      formatList       { set result [ list "" ] }
       hasBinning       { set result 0 }
       hasFormat        { set result 0 }
       hasLongExposure  { set result 0 }
+      hasQuality       { set result 0 }
       hasScan          { set result 0 }
       hasShutter       { set result 0 }
       hasTempSensor    { set result 0 }
