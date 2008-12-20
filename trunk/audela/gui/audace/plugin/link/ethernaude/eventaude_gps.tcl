@@ -2,7 +2,7 @@
 # Fichier : eventaude_gps.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: eventaude_gps.tcl,v 1.11 2007-11-03 23:02:38 robertdelmas Exp $
+# Mise a jour $Id: eventaude_gps.tcl,v 1.12 2008-12-20 11:06:28 robertdelmas Exp $
 #
 
 namespace eval eventAude_GPS {
@@ -188,7 +188,7 @@ namespace eval eventAude_GPS {
       label $This.lab103 -text "$caption(eventaude_gps,site_web_ref)"
       pack $This.lab103 -in $This.frame8 -side top -fill x -pady 2
 
-      label $This.labURL -text "$caption(eventaude_gps,site_eventaude)" -font $audace(font,url) -fg $color(blue)
+      label $This.labURL -text "$caption(eventaude_gps,site_eventaude)" -fg $color(blue)
       pack $This.labURL -in $This.frame8 -side top -fill x -pady 2
 
       #--- Creation du lien avec le navigateur web et changement de sa couleur

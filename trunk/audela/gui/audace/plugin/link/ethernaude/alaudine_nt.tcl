@@ -2,7 +2,7 @@
 # Fichier : alaudine_nt.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: alaudine_nt.tcl,v 1.17 2008-05-24 10:48:43 robertdelmas Exp $
+# Mise a jour $Id: alaudine_nt.tcl,v 1.18 2008-12-20 11:05:52 robertdelmas Exp $
 #
 
 namespace eval AlAudine_NT {
@@ -197,7 +197,7 @@ namespace eval AlAudine_NT {
       label $This.lab103 -text "$caption(alaudine_nt,site_web_ref)"
       pack $This.lab103 -in $This.frame8 -side top -fill x -pady 2
 
-      label $This.labURL -text "$caption(alaudine_nt,site_alaudine_nt)" -font $audace(font,url) -fg $color(blue)
+      label $This.labURL -text "$caption(alaudine_nt,site_alaudine_nt)" -fg $color(blue)
       pack $This.labURL -in $This.frame8 -side top -fill x -pady 2
 
       #--- Creation du lien avec le navigateur web et changement de sa couleur
