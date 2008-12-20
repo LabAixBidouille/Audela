@@ -2,7 +2,7 @@
 # Fichier : ouranos.tcl
 # Description : Configuration de la monture Ouranos
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ouranos.tcl,v 1.13 2008-11-22 22:05:53 robertdelmas Exp $
+# Mise a jour $Id: ouranos.tcl,v 1.14 2008-12-20 22:59:44 robertdelmas Exp $
 #
 
 namespace eval ::ouranos {
@@ -208,8 +208,7 @@ proc ::ouranos::fillConfigPage { frm } {
    label $frm.lab1 -text "$caption(ouranos,port)"
    pack $frm.lab1 -in $frm.frame1 -anchor center -side left -padx 10 -pady 5
 
-   entry $frm.status -font $audace(font,arial_8_b) -textvariable ::ouranos::private(status) -width 4 \
-      -justify center -bg $color(red)
+   entry $frm.status -textvariable ::ouranos::private(status) -width 4 -justify center -bg $color(red)
    pack $frm.status -in $frm.frame1 -anchor center -side left -padx 0 -pady 5
 
    #--- Je verifie le contenu de la liste
@@ -274,8 +273,7 @@ proc ::ouranos::fillConfigPage { frm } {
    pack $frm.encRA -in $frm.frame14 -anchor center -side right -padx 10 -pady 5
 
    #--- Fenêtre de lecture de RA
-   label $frm.coordRA -font $audace(font,arial_8_b) -textvariable ::ouranos::private(coord_ra) \
-      -justify left -width 12
+   label $frm.coordRA -textvariable ::ouranos::private(coord_ra) -justify left -width 12
    pack $frm.coordRA -in $frm.frame9 -anchor center -side top -padx 10 -pady 5
 
    #--- Informations concernant le codeur DEC
@@ -296,8 +294,7 @@ proc ::ouranos::fillConfigPage { frm } {
    pack $frm.encDEC -in $frm.frame15 -anchor center -side right -padx 10 -pady 5
 
    #--- Fenêtre de lecture de DEC
-   label $frm.coordDEC -font $audace(font,arial_8_b) -textvariable ::ouranos::private(coord_dec) \
-      -justify left -width 12
+   label $frm.coordDEC -textvariable ::ouranos::private(coord_dec) -justify left -width 12
    pack $frm.coordDEC -in $frm.frame9 -anchor center -side bottom -padx 10 -pady 5
 
    #--- Definition de l'initialisation DEC
