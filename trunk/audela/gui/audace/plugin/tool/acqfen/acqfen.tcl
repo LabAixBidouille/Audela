@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.19 2008-12-16 19:23:22 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.20 2008-12-20 00:42:44 robertdelmas Exp $
 #
 
 # =========================================================
@@ -144,17 +144,17 @@ namespace eval ::acqfen {
       }
 
       #--- Taille par defaut de la petite matrice schematisant le fenetrage
-      set panneau(acqfen,mtx_x)           81
-      set panneau(acqfen,mtx_y)           54
+      set panneau(acqfen,mtx_x) 81
+      set panneau(acqfen,mtx_y) 54
 
       #--- Valeurs initiales des coordonnees de la "boîte"
-      set panneau(acqfen,X1)              "-"
-      set panneau(acqfen,Y1)              "-"
-      set panneau(acqfen,X2)              "-"
-      set panneau(acqfen,Y2)              "-"
+      set panneau(acqfen,X1) "-"
+      set panneau(acqfen,Y1) "-"
+      set panneau(acqfen,X2) "-"
+      set panneau(acqfen,Y2) "-"
 
-      #--- Type de zoom par defaut (scale / zoom)
-      set panneau(acqfen,typezoom)        "scale"
+      #--- Type scale par defaut (scale ou zoom)
+      set panneau(acqfen,typezoom) "scale"
 
       #--- Mode d'acquisition par defaut
       if { ! [ info exists panneau(acqfen,mode) ] } {
@@ -171,24 +171,24 @@ namespace eval ::acqfen {
       }
 
       #--- Variables diverses
-      set panneau(acqfen,index)           1
-      set panneau(acqfen,nb_images)       1
-      set panneau(acqfen,enregistrer)     0
+      set panneau(acqfen,index)          1
+      set panneau(acqfen,nb_images)      1
+      set panneau(acqfen,enregistrer)    0
 
       #--- Reglages acquisitions serie et continu par defaut
-      set panneau(acqfen,fenreglfen1)     1
-      set panneau(acqfen,fenreglfen12)    0
-      set panneau(acqfen,fenreglfen2)     1
-      set panneau(acqfen,fenreglfen22)    2
-      set panneau(acqfen,fenreglfen3)     1
-      set panneau(acqfen,fenreglfen4)     1
+      set panneau(acqfen,fenreglfen1)    1
+      set panneau(acqfen,fenreglfen12)   0
+      set panneau(acqfen,fenreglfen2)    1
+      set panneau(acqfen,fenreglfen22)   2
+      set panneau(acqfen,fenreglfen3)    1
+      set panneau(acqfen,fenreglfen4)    1
 
       #--- Pourcentage de correction des defauts de suivi (doit etre compris entre 1 et 100)
-      set panneau(acqfen,fenreglfen42)    70
+      set panneau(acqfen,fenreglfen42)   70
 
       #--- Au debut les reglages de temps de pose et de binning sont "accessibles" pour les 2 modes d'acquisition
-      set panneau(acqfen,affpleinetrame)  1
-      set panneau(acqfen,afffenetrees)    1
+      set panneau(acqfen,affpleinetrame) 1
+      set panneau(acqfen,afffenetrees)   1
 
       acqfenBuildIF $This
 
@@ -448,11 +448,13 @@ namespace eval ::acqfen {
                #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
                ::camera::gestionPose $panneau(acqfen,pose_centrage) 1 cam$audace(camNo) buf$audace(bufNo)
 
-               #--- Zoom
+               #--- Applique un zoom ou un scale (re-echantillonnage)
                if {$panneau(acqfen,typezoom)=="zoom"} {
+                  #--- Applique un zoom
                   visu$audace(visuNo) zoom $panneau(acqfen,bin_centrage)
                } else {
-                  #--- Applique le scale si la camera possede bien le binning demande
+                  #--- Applique un scale (re-echantillonne) si la camera possede bien le binning demande
+                  #--- L'image finale a la meme dimension a l'ecran que l'image en binning 1x1
                   set binningCamera "$panneau(acqfen,bin_centrage)x$panneau(acqfen,bin_centrage)"
                   if { [ lsearch [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningList ] $binningCamera ] != "-1" } {
                      buf$audace(bufNo) scale [list $panneau(acqfen,bin_centrage) $panneau(acqfen,bin_centrage)] 1
@@ -1319,8 +1321,8 @@ namespace eval ::acqfen {
    proc depl_fen { } {
       global audace
 
-      set dimx [lindex [[buf$audace(bufNo) getkwd NAXIS1 ] 1]
-      set dimy [lindex [[buf$audace(bufNo) getkwd NAXIS2 ] 1]
+      set dimx [lindex [buf$audace(bufNo) getkwd NAXIS1 ] 1]
+      set dimy [lindex [buf$audace(bufNo) getkwd NAXIS2 ] 1]
       set centro [buf$audace(bufNo) centro [list 1 1 $dimx $dimy ]]
       set depl [list [expr [lindex $centro 0]-0.5*[lindex $format 0]] [expr [lindex $centro 1]-0.5*[lindex $format 1]]]
       set depl_corr [list [expr 1.*[lindex $depl 0]*$panneau(acqfen,fenreglfen42)] [expr 1.*[lindex $depl 1]*$panneau(acqfen,fenreglfen42)]]
