@@ -1,14 +1,14 @@
 #
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
-# Auteur : Robert DELMAS
-# Mise a jour $Id: camera.tcl,v 1.24 2008-12-13 14:00:44 jacquesmichelet Exp $
+# Auteurs : Robert DELMAS et Michel PUJOL
+# Mise a jour $Id: camera.tcl,v 1.25 2008-12-20 14:56:12 robertdelmas Exp $
 #
-# Procedures utilis�es par confCam
-#   ::camera::create  : cree une camera
+# Procedures utilisees par confCam
+#   ::camera::create : cree une camera
 #   ::camera::delete
 #
-# Procedures utilis�es par les outils et les scripts des utilisateurs
+# Procedures utilisees par les outils et les scripts des utilisateurs
 #   ::camera::acquisition
 #       fait une acquition
 #   ::camera::centerBrightestStar
@@ -274,7 +274,7 @@ proc ::camera::Avancement_scan { tt Nb_Line_Total scan_Delai } {
       wm geometry $audace(base).progress_scan 250x30$conf(avancement_scan,position)
 
       #--- Cree le widget et le label du temps ecoule
-      label $audace(base).progress_scan.lab_status -text "" -font $audace(font,arial_12_b) -justify center
+      label $audace(base).progress_scan.lab_status -text "" -justify center
       pack $audace(base).progress_scan.lab_status -side top -fill x -expand true -pady 5
       if { $tt == "-10" } {
          if { $scan_Delai > "1" } {
@@ -373,7 +373,10 @@ proc ::camera::gestionPose { Exposure GO_Stop { CameraName "" } { BufferName "" 
       }
 
       #--- Attente de la fin de la pose
-      vwait status_$CameraName
+      set statusVariableName "::status_$CameraName"
+      if { [set $statusVariableName] == "exp" } {
+         vwait $statusVariableName
+      }
 
       #--- Effacement de la fenetre de progression
       if [ winfo exists $audace(base).progress_pose ] {
@@ -434,7 +437,7 @@ proc ::camera::Avancement_pose { { t } } {
       wm geometry $audace(base).progress_pose $conf(avancement_pose,position)
 
       #--- Cree le widget et le label du temps ecoule
-      label $audace(base).progress_pose.lab_status -text "" -font $audace(font,arial_12_b) -justify center
+      label $audace(base).progress_pose.lab_status -text "" -justify center
       pack $audace(base).progress_pose.lab_status -side top -fill x -expand true -pady 5
 
       #--- t est un nombre entier
