@@ -2,12 +2,14 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snacq.tcl,v 1.13 2008-12-08 22:28:34 robertdelmas Exp $
+# Mise a jour $Id: snacq.tcl,v 1.14 2008-12-20 15:10:26 robertdelmas Exp $
 #
 
 # ===================================================================
 # ===================================================================
 # ===================================================================
+
+global audace
 
 #--- Initialisation des repertoires
 set sn(inidir)        [ pwd ]
@@ -34,7 +36,7 @@ catch { set snconf(fits,OBSERVER) "$conf(posobs,nom_observateur)" }
 # ===================================================================
 # ===================================================================
 
-set extname          "[buf$audace(bufNo) extension]"
+set extname          [buf$audace(bufNo) extension]
 set snconf(darkfile) "d$snconf(exptime)b$snconf(binning)$extname"
 set snconf(biasfile) "d0b$snconf(binning)$extname"
 
@@ -82,10 +84,9 @@ if { [ info exists snconf(geometry) ] } {
 
 #---
 toplevel $audace(base).snacq -class Toplevel
-wm geometry $audace(base).snacq 530x420$snconf(position)
+wm geometry $audace(base).snacq 570x420$snconf(position)
 wm resizable $audace(base).snacq 1 1
-wm minsize $audace(base).snacq 530 420
-wm maxsize $audace(base).snacq 600 600
+wm minsize $audace(base).snacq 510 420
 wm title $audace(base).snacq $caption(snacq,main_title)
 wm protocol $audace(base).snacq WM_DELETE_WINDOW { ::recup_position ; ::ExitSnAcq }
 
@@ -104,8 +105,7 @@ pack $audace(base).snacq.frame1 \
       set fg $color(red)
    }
    label $audace(base).snacq.frame1.labURL_cam \
-      -font $audace(font,url) -text $cap1 \
-      -borderwidth 0 -relief flat -fg $fg
+      -text $cap1 -borderwidth 0 -relief flat -fg $fg
    pack $audace(base).snacq.frame1.labURL_cam \
       -in $audace(base).snacq.frame1 -side left \
       -padx 8 -pady 3
@@ -120,8 +120,7 @@ pack $audace(base).snacq.frame1 \
       set fg $color(red)
    }
    label $audace(base).snacq.frame1.labURL_tel \
-      -font $audace(font,url) -text $cap1 \
-      -borderwidth 0 -relief flat -fg $fg
+      -text $cap1 -borderwidth 0 -relief flat -fg $fg
    pack $audace(base).snacq.frame1.labURL_tel \
       -in $audace(base).snacq.frame1 -side left \
       -padx 8 -pady 3
@@ -134,7 +133,7 @@ pack $audace(base).snacq.frame9 \
 
    #--- Cree un label pour le dossier
    label $audace(base).snacq.frame9.label_rep \
-      -font $audace(font,arial_8_b) -text $caption(snacq,dossier) \
+      -text $caption(snacq,dossier) \
       -borderwidth 0 -relief flat
    pack $audace(base).snacq.frame9.label_rep \
       -in $audace(base).snacq.frame9 -side left \
@@ -142,7 +141,7 @@ pack $audace(base).snacq.frame9 \
 
    #--- Cree un label pour le chemin du dossier
    label $audace(base).snacq.frame9.labURL_chemin_rep \
-      -font $audace(font,url) -text $snconf(dossier) \
+      -text $snconf(dossier) \
       -borderwidth 0 -relief flat -fg $color(blue)
    pack $audace(base).snacq.frame9.labURL_chemin_rep \
       -in $audace(base).snacq.frame9 -side left \
@@ -156,7 +155,7 @@ pack $audace(base).snacq.frame10 \
 
    #--- Cree un label pour la localite
    label $audace(base).snacq.frame10.label_localite \
-      -font $audace(font,arial_8_b) -text $caption(snacq,localite) \
+      -text $caption(snacq,localite) \
       -borderwidth 0 -relief flat
    pack $audace(base).snacq.frame10.label_localite \
       -in $audace(base).snacq.frame10 -side left \
@@ -164,7 +163,7 @@ pack $audace(base).snacq.frame10 \
 
    #--- Cree un label pour la position de la localite
    label $audace(base).snacq.frame10.labURL_position_localite \
-      -font $audace(font,url) -text $snconf(localite) \
+      -text $snconf(localite) \
       -borderwidth 0 -relief flat -fg $color(blue)
    pack $audace(base).snacq.frame10.labURL_position_localite \
       -in $audace(base).snacq.frame10 -side left \
@@ -172,7 +171,7 @@ pack $audace(base).snacq.frame10 \
 
    #--- Cree un label pour la hauteur du soleil
    label $audace(base).snacq.frame10.label_haurore \
-      -font $audace(font,arial_8_b) -text $caption(snacq,haurore) \
+      -text $caption(snacq,haurore) \
       -borderwidth 0 -relief flat
    pack $audace(base).snacq.frame10.label_haurore \
       -in $audace(base).snacq.frame10 -side left \
@@ -180,7 +179,7 @@ pack $audace(base).snacq.frame10 \
 
    #--- Cree une ligne d'entree pour la hauteur du soleil
    entry $audace(base).snacq.frame10.entry_haurore \
-      -font $audace(font,arial_8_b) -textvariable snconf(haurore) \
+      -textvariable snconf(haurore) \
       -borderwidth 1 -relief groove -width 8
    pack $audace(base).snacq.frame10.entry_haurore \
       -in $audace(base).snacq.frame10 -side left \
@@ -195,7 +194,7 @@ pack $audace(base).snacq.frame11 \
    #--- Create a label
    #--- Cree un label
    label $audace(base).snacq.frame11.label_houest \
-      -font $audace(font,arial_8_b) -text $caption(snacq,houest) \
+      -text $caption(snacq,houest) \
       -borderwidth 0 -relief flat
    pack $audace(base).snacq.frame11.label_houest \
       -in $audace(base).snacq.frame11 -side left \
@@ -204,7 +203,7 @@ pack $audace(base).snacq.frame11 \
    #--- Create an entry line
    #--- Cree une ligne d'entree
    entry $audace(base).snacq.frame11.entry_houest \
-      -font $audace(font,arial_8_b) -textvariable snconf(houest) \
+      -textvariable snconf(houest) \
       -borderwidth 1 -relief groove -width 8
    pack $audace(base).snacq.frame11.entry_houest \
       -in $audace(base).snacq.frame11 -side left \
@@ -213,7 +212,7 @@ pack $audace(base).snacq.frame11 \
    #--- Create a label
    #--- Cree un label
    label $audace(base).snacq.frame11.label_hest \
-      -font $audace(font,arial_8_b) -text $caption(snacq,hest) \
+      -text $caption(snacq,hest) \
       -borderwidth 0 -relief flat
    pack $audace(base).snacq.frame11.label_hest \
       -in $audace(base).snacq.frame11 -side left \
@@ -222,7 +221,7 @@ pack $audace(base).snacq.frame11 \
    #--- Create an entry line
    #--- Cree une ligne d'entree
    entry $audace(base).snacq.frame11.entry_hest \
-      -font $audace(font,arial_8_b) -textvariable snconf(hest) \
+      -textvariable snconf(hest) \
       -borderwidth 1 -relief groove -width 8
    pack $audace(base).snacq.frame11.entry_hest \
       -in $audace(base).snacq.frame11 -side left \
@@ -237,7 +236,7 @@ pack $audace(base).snacq.frame12 \
    #--- Create a label
    #--- Cree un label
    label $audace(base).snacq.frame12.label_decinf \
-      -font $audace(font,arial_8_b) -text $caption(snacq,decinf) \
+      -text $caption(snacq,decinf) \
       -borderwidth 0 -relief flat
    pack $audace(base).snacq.frame12.label_decinf \
       -in $audace(base).snacq.frame12 -side left \
@@ -246,7 +245,7 @@ pack $audace(base).snacq.frame12 \
    #--- Create an entry line
    #--- Cree une ligne d'entree
    entry $audace(base).snacq.frame12.entry_decinf \
-      -font $audace(font,arial_8_b) -textvariable snconf(decinf) \
+      -textvariable snconf(decinf) \
       -borderwidth 1 -relief groove -width 8
    pack $audace(base).snacq.frame12.entry_decinf \
       -in $audace(base).snacq.frame12 -side left \
@@ -255,7 +254,7 @@ pack $audace(base).snacq.frame12 \
    #--- Create a label
    #--- Cree un label
    label $audace(base).snacq.frame12.label_decsup \
-      -font $audace(font,arial_8_b) -text $caption(snacq,decsup) \
+      -text $caption(snacq,decsup) \
       -borderwidth 0 -relief flat
    pack $audace(base).snacq.frame12.label_decsup \
       -in $audace(base).snacq.frame12 -side left \
@@ -264,7 +263,7 @@ pack $audace(base).snacq.frame12 \
    #--- Create an entry line
    #--- Cree une ligne d'entree
    entry $audace(base).snacq.frame12.entry_decsup \
-      -font $audace(font,arial_8_b) -textvariable snconf(decsup) \
+      -textvariable snconf(decsup) \
       -borderwidth 1 -relief groove -width 8
    pack $audace(base).snacq.frame12.entry_decsup \
       -in $audace(base).snacq.frame12 -side left \
@@ -279,7 +278,7 @@ pack $audace(base).snacq.frame13 \
    #--- Create a label
    #--- Cree un label
    label $audace(base).snacq.frame13.label_exptime \
-      -font $audace(font,arial_8_b) -text "$caption(snacq,exptime)" \
+      -text "$caption(snacq,exptime)" \
       -borderwidth 0 -relief flat
    pack $audace(base).snacq.frame13.label_exptime \
       -in $audace(base).snacq.frame13 -side left \
@@ -288,7 +287,7 @@ pack $audace(base).snacq.frame13 \
    #--- Create an entry line
    #--- Cree une ligne d'entree
    entry $audace(base).snacq.frame13.entry_exptime \
-      -font $audace(font,arial_8_b) -textvariable snconf(exptime) \
+      -textvariable snconf(exptime) \
       -borderwidth 1 -relief groove -width 4
    pack $audace(base).snacq.frame13.entry_exptime \
       -in $audace(base).snacq.frame13 -side left \
@@ -297,7 +296,7 @@ pack $audace(base).snacq.frame13 \
    #--- Create a label
    #--- Cree un label
    label $audace(base).snacq.frame13.label_nbimages \
-      -font $audace(font,arial_8_b) -text "$caption(snacq,nbimages)" \
+      -text "$caption(snacq,nbimages)" \
       -borderwidth 0 -relief flat
    pack $audace(base).snacq.frame13.label_nbimages \
       -in $audace(base).snacq.frame13 -side left \
@@ -306,7 +305,7 @@ pack $audace(base).snacq.frame13 \
    #--- Create an entry line
    #--- Cree une ligne d'entree
    entry $audace(base).snacq.frame13.entry_nbimages \
-      -font $audace(font,arial_8_b) -textvariable snconf(nbimages) \
+      -textvariable snconf(nbimages) \
       -borderwidth 1 -relief groove -width 2
    pack $audace(base).snacq.frame13.entry_nbimages \
       -in $audace(base).snacq.frame13 -side left \
@@ -315,7 +314,7 @@ pack $audace(base).snacq.frame13 \
    #--- Create a label
    #--- Cree un label
    label $audace(base).snacq.frame13.label_unsmearing \
-      -font $audace(font,arial_8_b) -text $caption(snacq,unsmearing) \
+      -text $caption(snacq,unsmearing) \
       -borderwidth 0 -relief flat
    pack $audace(base).snacq.frame13.label_unsmearing \
       -in $audace(base).snacq.frame13 -side left \
@@ -324,7 +323,7 @@ pack $audace(base).snacq.frame13 \
    #--- Create an entry line
    #--- Cree une ligne d'entree
    entry $audace(base).snacq.frame13.entry_unsmearing \
-      -font $audace(font,arial_8_b) -textvariable snconf(unsmearing) \
+      -textvariable snconf(unsmearing) \
       -borderwidth 1 -relief groove -width 8
    pack $audace(base).snacq.frame13.entry_unsmearing \
       -in $audace(base).snacq.frame13 -side left \
@@ -339,7 +338,7 @@ pack $audace(base).snacq.frame14 \
    #--- Create a label
    #--- Cree un label
    label $audace(base).snacq.frame14.label_fichier_sn \
-      -font $audace(font,arial_8_b) -text "$caption(snacq,fichier_sn)" \
+      -text "$caption(snacq,fichier_sn)" \
       -borderwidth 0 -relief flat
    pack $audace(base).snacq.frame14.label_fichier_sn \
       -in $audace(base).snacq.frame14 -side left \
@@ -361,7 +360,6 @@ pack $audace(base).snacq.frame14 \
    ComboBox $audace(base).snacq.frame14.combobox_fichier_sn \
       -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
       -height [ llength $list_combobox ] \
-      -font $audace(font,arial_8_b) \
       -relief sunken    \
       -borderwidth 1    \
       -editable 0       \
@@ -374,7 +372,7 @@ pack $audace(base).snacq.frame14 \
    #--- Create a label
    #--- Cree un label
    label $audace(base).snacq.frame14.label_magsup \
-      -font $audace(font,arial_8_b) -text "$caption(snacq,magsup)" \
+      -text "$caption(snacq,magsup)" \
       -borderwidth 0 -relief flat
    pack $audace(base).snacq.frame14.label_magsup \
       -in $audace(base).snacq.frame14 -side left \
@@ -383,7 +381,7 @@ pack $audace(base).snacq.frame14 \
    #--- Create an entry line
    #--- Cree une ligne d'entree
    entry $audace(base).snacq.frame14.entry_magsup \
-      -font $audace(font,arial_8_b) -textvariable snconf(magsup) \
+      -textvariable snconf(magsup) \
       -borderwidth 1 -relief groove -width 5
    pack $audace(base).snacq.frame14.entry_magsup \
       -in $audace(base).snacq.frame14 -side left \
@@ -392,7 +390,7 @@ pack $audace(base).snacq.frame14 \
    #--- Create a label
    #--- Cree un label
    label $audace(base).snacq.frame14.label_maginf \
-      -font $audace(font,arial_8_b) -text "$caption(snacq,maginf)" \
+      -text "$caption(snacq,maginf)" \
       -borderwidth 0 -relief flat
    pack $audace(base).snacq.frame14.label_maginf \
       -in $audace(base).snacq.frame14 -side left \
@@ -401,7 +399,7 @@ pack $audace(base).snacq.frame14 \
    #--- Create an entry line
    #--- Cree une ligne d'entree
    entry $audace(base).snacq.frame14.entry_maginf \
-      -font $audace(font,arial_8_b) -textvariable snconf(maginf) \
+      -textvariable snconf(maginf) \
       -borderwidth 1 -relief groove -width 5
    pack $audace(base).snacq.frame14.entry_maginf\
       -in $audace(base).snacq.frame14 -side left \
@@ -416,7 +414,7 @@ pack $audace(base).snacq.frame15 \
    #--- Create a label
    #--- Cree un label
    label $audace(base).snacq.frame15.label_binning \
-      -font $audace(font,arial_8_b) -text "$caption(snacq,binning)" \
+      -text "$caption(snacq,binning)" \
       -borderwidth 0 -relief flat
    pack $audace(base).snacq.frame15.label_binning \
       -in $audace(base).snacq.frame15 -side left \
@@ -425,7 +423,7 @@ pack $audace(base).snacq.frame15 \
    #--- Create an entry line
    #--- Cree une ligne d'entree
    entry $audace(base).snacq.frame15.entry_binning \
-      -font $audace(font,arial_8_b) -textvariable snconf(binning) \
+      -textvariable snconf(binning) \
       -borderwidth 1 -relief groove -width 3
    pack $audace(base).snacq.frame15.entry_binning \
       -in $audace(base).snacq.frame15 -side left \
@@ -434,7 +432,7 @@ pack $audace(base).snacq.frame15 \
    #--- Create a label
    #--- Cree un label
    label $audace(base).snacq.frame15.label_foclen \
-      -font $audace(font,arial_8_b) -text "$caption(snacq,foclen)" \
+      -text "$caption(snacq,foclen)" \
       -borderwidth 0 -relief flat
    pack $audace(base).snacq.frame15.label_foclen \
       -in $audace(base).snacq.frame15 -side left \
@@ -443,7 +441,7 @@ pack $audace(base).snacq.frame15 \
    #--- Create an entry line
    #--- Cree une ligne d'entree
    entry $audace(base).snacq.frame15.entry_foclen \
-      -font $audace(font,arial_8_b) -textvariable snconf(foclen) \
+      -textvariable snconf(foclen) \
       -borderwidth 1 -relief groove -width 6
    pack $audace(base).snacq.frame15.entry_foclen \
       -in $audace(base).snacq.frame15 -side left \
@@ -452,18 +450,18 @@ pack $audace(base).snacq.frame15 \
    #--- Create a label
    #--- Cree un label
    label $audace(base).snacq.frame15.label_observer \
-      -font $audace(font,arial_8_b) -text "$caption(snacq,fits,OBSERVER)" \
+      -text "$caption(snacq,fits,OBSERVER)" \
       -borderwidth 0 -relief flat
    pack $audace(base).snacq.frame15.label_observer \
       -in $audace(base).snacq.frame15 -side left \
       -padx 3 -pady 3
 
-   #--- Create an entry line
-   #--- Cree une ligne d'entree
-   entry $audace(base).snacq.frame15.entry_observer \
-      -font $audace(font,arial_8_b) -textvariable snconf(fits,OBSERVER) \
-      -borderwidth 1 -relief groove -width 25
-   pack $audace(base).snacq.frame15.entry_observer \
+   #--- Create a label
+   #--- Cree un label
+   label $audace(base).snacq.frame15.labURL_observer \
+      -text $snconf(fits,OBSERVER) \
+      -borderwidth 0 -relief flat -fg $color(blue)
+   pack $audace(base).snacq.frame15.labURL_observer \
       -in $audace(base).snacq.frame15 -side left \
       -padx 3 -pady 3
 
@@ -546,13 +544,41 @@ focus $audace(base).snacq
 #--- Mise a jour dynamique des couleurs
 ::confColor::applyColor $audace(base).snacq
 
-$zone(status_list) insert end "$caption(snacq,status_1)\n"
-$zone(status_list) insert end "$caption(snacq,status_2)\n\n\n"
+$zone(status_list) insert end "$caption(snacq,status)\n\n"
 
 # =================================
 # ===    Setting the binding    ===
 # === Met en place les liaisons ===
 # =================================
+
+bind $audace(base).snacq.frame1.labURL_cam <ButtonPress-1> {
+   ::confCam::run
+   tkwait window $audace(base).confCam
+   if {[::cam::list]!=""} {
+      set cap1 "$caption(snacq,typecam) [lindex [cam$audace(camNo) info] 1]"
+      set fg $color(blue)
+   } else {
+      set cap1 $caption(snacq,nocam)
+      set fg $color(red)
+   }
+   catch { $audace(base).snacq.frame1.labURL_cam configure -text $cap1 -fg $fg }
+   update
+}
+
+bind $audace(base).snacq.frame1.labURL_tel <ButtonPress-1> {
+   ::confTel::run
+   tkwait window $audace(base).confTel
+   set snconf(telescope) $conf(telescope)
+   if {[::tel::list]!=""} {
+      set cap1 "$caption(snacq,typetel) [ tel$audace(telNo) name ]"
+      set fg $color(blue)
+   } else {
+      set cap1 $caption(snacq,notel)
+      set fg $color(red)
+   }
+   catch { $audace(base).snacq.frame1.labURL_tel configure -text $cap1 -fg $fg }
+   update
+}
 
 bind $audace(base).snacq.frame9.labURL_chemin_rep <ButtonPress-1> {
    ::cwdWindow::run "$audace(base).cwdWindow"
@@ -572,32 +598,11 @@ bind $audace(base).snacq.frame10.labURL_position_localite <ButtonPress-1> {
    update
 }
 
-bind $audace(base).snacq.frame1.labURL_tel <ButtonPress-1> {
-   ::confTel::run
-   tkwait window $audace(base).confTel
-   set snconf(telescope) $conf(telescope)
-   if {[::tel::list]!=""} {
-      set cap1 "$caption(snacq,typetel) [ tel$audace(telNo) name ]"
-      set fg $color(blue)
-   } else {
-      set cap1 $caption(snacq,notel)
-      set fg $color(red)
-   }
-   catch { $audace(base).snacq.frame1.labURL_tel configure -text $cap1 -fg $fg }
-   update
-}
-
-bind $audace(base).snacq.frame1.labURL_cam <ButtonPress-1> {
-   ::confCam::run
-   tkwait window $audace(base).confCam
-   if {[::cam::list]!=""} {
-      set cap1 "$caption(snacq,typecam) [lindex [cam$audace(camNo) info] 1]"
-      set fg $color(blue)
-   } else {
-      set cap1 $caption(snacq,nocam)
-      set fg $color(red)
-   }
-   catch { $audace(base).snacq.frame1.labURL_cam configure -text $cap1 -fg $fg }
+bind $audace(base).snacq.frame15.labURL_observer <ButtonPress-1> {
+   ::confPosObs::run "$audace(base).confPosObs"
+   tkwait window $audace(base).confPosObs
+   set snconf(fits,OBSERVER) $conf(posobs,nom_observateur)
+   catch { $audace(base).snacq.frame15.labURL_observer configure -text $snconf(fits,OBSERVER) }
    update
 }
 
@@ -1098,9 +1103,9 @@ proc OutSnAcq { } {
    wm transient $audace(base).outSnAcq $audace(base).snacq
 
    #--- Cree l'affichage du message
-   label $audace(base).outSnAcq.labURL1 -text "$caption(snacq,texte1)" -font $audace(font,arial_10_b) -fg $color(red)
+   label $audace(base).outSnAcq.labURL1 -text "$caption(snacq,texte1)" -fg $color(red)
    pack $audace(base).outSnAcq.labURL1 -padx 10 -pady 2
-   label $audace(base).outSnAcq.labURL2 -text "$caption(snacq,texte2)" -font $audace(font,arial_10_b) -fg $color(red)
+   label $audace(base).outSnAcq.labURL2 -text "$caption(snacq,texte2)" -fg $color(red)
    pack $audace(base).outSnAcq.labURL2 -padx 10 -pady 2
 
    #--- La nouvelle fenetre est active
@@ -1132,9 +1137,9 @@ proc Out_SnAcq { } {
    wm transient $audace(base).out_SnAcq $audace(base).snacq
 
    #--- Cree l'affichage du message
-   label $audace(base).out_SnAcq.labURL1 -text "$caption(snacq,texte3)" -font $audace(font,arial_10_b) -fg $color(red)
+   label $audace(base).out_SnAcq.labURL1 -text "$caption(snacq,texte3)" -fg $color(red)
    pack $audace(base).out_SnAcq.labURL1 -padx 10 -pady 2
-   label $audace(base).out_SnAcq.labURL2 -text "$caption(snacq,texte4)" -font $audace(font,arial_10_b) -fg $color(red)
+   label $audace(base).out_SnAcq.labURL2 -text "$caption(snacq,texte4)" -fg $color(red)
    pack $audace(base).out_SnAcq.labURL2 -padx 10 -pady 2
 
    #--- La nouvelle fenetre est active
@@ -1207,7 +1212,6 @@ proc UpdateSnAcq { } {
    $audace(base).snacq.frame14.entry_maginf configure -textvariable snconf(maginf)
    $audace(base).snacq.frame15.entry_binning configure -textvariable snconf(binning)
    $audace(base).snacq.frame15.entry_foclen configure -textvariable snconf(foclen)
-   $audace(base).snacq.frame15.entry_observer configure -textvariable snconf(observer)
    update
 }
 
