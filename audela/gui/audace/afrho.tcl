@@ -3,7 +3,7 @@
 # Description : Calcule le parametre Af[Rho] pour une comete
 #               Caracterise le taux de production de poussieres des cometes
 # Auteurs : Alain KLOTZ, Laurent JORDA et Jean-Francois COLIAC
-# Mise a jour $Id: afrho.tcl,v 1.1 2008-11-10 22:05:48 robertdelmas Exp $
+# Mise a jour $Id: afrho.tcl,v 1.2 2008-12-20 10:53:01 robertdelmas Exp $
 #
 
 namespace eval ::afRho {
@@ -507,20 +507,20 @@ proc ::afRho::createDialog { } {
 # Gestion du site web
 #
 proc ::afRho::createUrlLabel { tkparent title url } {
-   global audace color
+   global color
 
-   label $tkparent.labURL -text "$title" -font $audace(font,url) -fg $color(blue)
+   label $tkparent.labURL -text "$title" -fg $color(blue)
    if { $url != "" } {
       bind $tkparent.labURL <ButtonPress-1> "::audace::Lance_Site_htm $url"
    }
    bind $tkparent.labURL <Enter> "$tkparent.labURL configure -fg $color(purple)"
    bind $tkparent.labURL <Leave> "$tkparent.labURL configure -fg $color(blue)"
-   return  $tkparent.labURL
+   return $tkparent.labURL
 }
 
 #
 # ::afRho::gestionErreur
-# Surveille si l'image appartient au répertoire des images
+# Surveille si l'image appartient au repertoire des images
 #
 proc ::afRho::gestionErreur { filename } {
    global audace caption

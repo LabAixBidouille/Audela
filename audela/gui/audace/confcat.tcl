@@ -2,7 +2,7 @@
 # Fichier : confcat.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'chart'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confcat.tcl,v 1.26 2008-11-15 23:27:54 robertdelmas Exp $
+# Mise a jour $Id: confcat.tcl,v 1.27 2008-12-20 10:53:16 robertdelmas Exp $
 #
 
 namespace eval ::confCat {
@@ -307,9 +307,9 @@ proc ::confCat::configurePlugin { pluginName } {
 # cree un widget "label" avec une URL du site WEB
 #------------------------------------------------------------
 proc ::confCat::createUrlLabel { tkparent title url } {
-   global audace color
+   global color
 
-   label  $tkparent.labURL -text "$title" -font $audace(font,url) -fg $color(blue)
+   label  $tkparent.labURL -text "$title" -fg $color(blue)
    bind   $tkparent.labURL <ButtonPress-1> "::audace::Lance_Site_htm $url"
    bind   $tkparent.labURL <Enter> "$tkparent.labURL configure -fg $color(purple)"
    bind   $tkparent.labURL <Leave> "$tkparent.labURL configure -fg $color(blue)"

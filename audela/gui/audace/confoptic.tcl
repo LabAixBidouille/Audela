@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration des systemes optiques associes aux cameras A, B et C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.30 2008-11-01 18:42:10 robertdelmas Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.31 2008-12-20 10:53:28 robertdelmas Exp $
 #
 
 namespace eval ::confOptic {
@@ -789,7 +789,7 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    proc fillConfigCameraA { frm } {
       variable widget
-      global audace caption color
+      global caption color
 
       #--- Recherche du numero de la camera A connectee
       if { [::confCam::isReady "A"] != "0" } {
@@ -929,7 +929,7 @@ namespace eval ::confOptic {
       label $widget(frm).labCamera -text "$caption(confoptic,camera)" -relief flat
       pack $widget(frm).labCamera -in $widget(frm).frame11 -anchor w -side top -padx 10 -pady 5
 
-      label $widget(frm).labURL_nomCamera -font $audace(font,url) -text $camera(A) -fg $fg
+      label $widget(frm).labURL_nomCamera -text $camera(A) -fg $fg
       pack $widget(frm).labURL_nomCamera -in $widget(frm).frame12 -anchor w -side top -padx 0 -pady 5
 
       label $widget(frm).labCapteurCCD -text "$caption(confoptic,capteur_ccd)" -relief flat
@@ -1005,7 +1005,7 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    proc fillConfigCameraB { frm } {
       variable widget
-      global audace caption color
+      global caption color
 
       #--- Recherche du numero de la camera B connectee
       if { [::confCam::isReady "B"] != "0" } {
@@ -1145,7 +1145,7 @@ namespace eval ::confOptic {
       label $widget(frm).labCamera -text "$caption(confoptic,camera)" -relief flat
       pack $widget(frm).labCamera -in $widget(frm).frame11 -anchor w -side top -padx 10 -pady 5
 
-      label $widget(frm).labURL_nomCamera -font $audace(font,url) -text $camera(B) -fg $fg
+      label $widget(frm).labURL_nomCamera -text $camera(B) -fg $fg
       pack $widget(frm).labURL_nomCamera -in $widget(frm).frame12 -anchor w -side top -padx 0 -pady 5
 
       label $widget(frm).labCapteurCCD -text "$caption(confoptic,capteur_ccd)" -relief flat
@@ -1221,7 +1221,7 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    proc fillConfigCameraC { frm } {
       variable widget
-      global audace caption color
+      global caption color
 
       #--- Recherche du numero de la camera C connectee
       if { [::confCam::isReady "C"] != "0" } {
@@ -1361,7 +1361,7 @@ namespace eval ::confOptic {
       label $widget(frm).labCamera -text "$caption(confoptic,camera)" -relief flat
       pack $widget(frm).labCamera -in $widget(frm).frame11 -anchor w -side top -padx 10 -pady 5
 
-      label $widget(frm).labURL_nomCamera -font $audace(font,url) -text $camera(C) -fg $fg
+      label $widget(frm).labURL_nomCamera -text $camera(C) -fg $fg
       pack $widget(frm).labURL_nomCamera -in $widget(frm).frame12 -anchor w -side top -padx 0 -pady 5
 
       label $widget(frm).labCapteurCCD -text "$caption(confoptic,capteur_ccd)" -relief flat
