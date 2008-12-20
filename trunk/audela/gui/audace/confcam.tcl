@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.126 2008-12-20 11:54:52 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.127 2008-12-20 14:55:09 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -486,6 +486,23 @@ proc ::confCam::setConnection { camItem state } {
    }
 }
 
+#------------------------------------------------------------
+# setTempCCD
+# Retourne la temperature de consigne du CCD
+# Si la camera n'a pas cette fonctionnalite, retourne une chaine vide
+#
+# Parametres :
+#    camItem : Item de la camera
+#------------------------------------------------------------
+proc ::confCam::setTempCCD { camItem } {
+   global conf
+
+   if { [ ::confCam::getPluginProperty $camItem hasSetTemp ] == "1" } {
+      return [ format "%+4.1f" [ ::$conf(camera,$camItem,camName)::setTempCCD ] ]
+   } else {
+      return ""
+   }
+}
 
 #------------------------------------------------------------
 # setFormat
@@ -493,7 +510,7 @@ proc ::confCam::setConnection { camItem state } {
 #
 # Parametres :
 #    camItem : item de la camera
-#    format  : format de l'image (voir getFormatList)
+#    format  : format de l'image
 # Return
 #    rien
 #------------------------------------------------------------
@@ -566,7 +583,6 @@ proc ::confCam::setShutter { camItem shutterState  { mode "increment" } } {
    return $shutterState
 }
 
-
 #----------------------------------------------------------------------------
 # stopItem
 # Arrete la camera camItem
@@ -636,15 +652,15 @@ proc ::confCam::isReady { camItem } {
 # binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
 # binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
 # dynamic :          Retourne la liste de la dynamique haute et basse
-# formatList :       Retourne la liste des foramt ou des qualites d'image (fine, normal, raw, ...)
+# formatList :       Retourne la liste des formats ou des qualites d'image (fine, normal, raw, ...)
 # hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
 # hasFormat :        Retourne l'existence d'un format ou d'une qualite d'image (1 : Oui, 0 : Non)
 # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
 # hasQuality :       Retourne l'existence d'une qualité (1 : Oui, 0 : Non)
 # hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
 # hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
-# hasTempSensor      Retourne l'existence du capteur de temperature (1 : Oui, 0 : Non)
-# hasSetTemp         Retourne l'existence d'une consigne de temperature (1 : Oui, 0 : Non)
+# hasTempSensor :    Retourne l'existence du capteur de temperature (1 : Oui, 0 : Non)
+# hasSetTemp :       Retourne l'existence d'une consigne de temperature (1 : Oui, 0 : Non)
 # hasVideo :         Retourne l'existence du mode video (1 : Oui, 0 : Non)
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # loadMode :         Retourne le mode de chargement d'une image (1: pas de chargment, 2:chargement immediat, 3: chargement differe)
@@ -851,7 +867,6 @@ proc ::confCam::configureCamera { camItem } {
    set catchResult [ catch {
       #--- je configure la camera
       ::$private($camItem,camName)::configureCamera $camItem $bufNo
-     ### ::$private($camItem,camName)::configureCamera $camItem $bufNo
 
       #--- je recupere camNo
       set private($camItem,camNo) [ ::$private($camItem,camName)::getCamNo $camItem ]
@@ -892,7 +907,7 @@ proc ::confCam::configureCamera { camItem } {
             #--- message d'erreur pour les autres cas d'erreur
             ::console::affiche_erreur "$::errorInfo\n\n"
             tk_messageBox -title "$caption(confcam,attention)" -icon error \
-               -message "$errorMessage\n$caption(confcam,seeconsole)"
+               -message "$errorMessage\n$caption(confcam,cannotcreatecam)\n$caption(confcam,seeconsole)"
          }
       }
 
