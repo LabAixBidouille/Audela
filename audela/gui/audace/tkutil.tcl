@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.16 2008-12-16 22:31:06 michelpujol Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.17 2008-12-20 11:53:57 michelpujol Exp $
 #
 
 namespace eval tkutil {
@@ -262,7 +262,7 @@ namespace eval tkutil {
       #--- j'affiche le message complet dans la console
       ::console::affiche_erreur "$::errorInfo\n"
       #--- j'affiche le message d'erreur dasn une fenetre modale.
-      tk_messageBox  -icon error -title $title) \
+      tk_messageBox  -icon error -title $title \
          -message  [string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo ]]
    }
 
