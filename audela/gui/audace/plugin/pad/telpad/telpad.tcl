@@ -2,7 +2,7 @@
 # Fichier : telpad.tcl
 # Description : Raquette simplifiee a l'usage des telescopes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: telpad.tcl,v 1.19 2008-12-20 22:21:16 robertdelmas Exp $
+# Mise a jour $Id: telpad.tcl,v 1.20 2008-12-21 09:29:31 robertdelmas Exp $
 #
 
 namespace eval telpad {
@@ -143,7 +143,7 @@ namespace eval telpad {
    #  return rien
    #------------------------------------------------------------
    proc createPluginInstance { } {
-      global audace conf
+      global conf
 
       #--- Creation du focuser
       if { $conf(superpad,focuserLabel) != "" } {
@@ -151,7 +151,7 @@ namespace eval telpad {
       }
 
       #--- Affiche la raquette
-      telpad::run "$audace(base).telpad"
+      telpad::run
 
       return
    }
@@ -190,14 +190,14 @@ namespace eval telpad {
    #==============================================================
 
    #------------------------------------------------------------
-   #  run this
+   #  run
    #     cree la fenetre de la raquette
-   #     this = chemin de la fenetre
    #------------------------------------------------------------
-   proc run { { this } } {
+   proc run { } {
       variable This
 
-      set This $this
+      #--- Je cree la fenetre de la raquette
+      set This ".telpad"
       createDialog
 
       #--- Je refraichis l'affichage des coordonnees
@@ -211,39 +211,41 @@ namespace eval telpad {
    #------------------------------------------------------------
    proc createDialog { } {
       variable This
-      global audace caption conf
+      global audace caption color conf
 
       if { [ winfo exists $This ] } {
          destroy $This
       }
 
       #--- Cree la fenetre $This de niveau le plus haut
-      toplevel $This -class Toplevel
+      toplevel $This -class toplevel -bg $color(blue_pad)
       wm title $This $caption(telpad,titre)
       if { [ info exists conf(telpad,wmgeometry) ] == "1" } {
          wm geometry $This $conf(telpad,wmgeometry)
       } else {
-         wm geometry $This 157x256+657+252
+         wm geometry $This 170x260+647+240
       }
       wm resizable $This 1 1
       wm protocol $This WM_DELETE_WINDOW ::telpad::deletePluginInstance
 
       #--- Creation des differents frames
-      frame $This.frame1 -borderwidth 1 -relief groove
+      frame $This.frame1 -borderwidth 1 -relief groove -bg $color(blue_pad)
       pack $This.frame1 -side top -fill both -expand 1
 
-      frame $This.frame2 -borderwidth 1 -relief groove
+      frame $This.frame2 -borderwidth 1 -relief groove -bg $color(blue_pad)
       pack $This.frame2 -side top -fill both -expand 1
 
-      frame $This.frame3 -borderwidth 1 -relief groove
+      frame $This.frame3 -borderwidth 1 -relief groove -bg $color(blue_pad)
       pack $This.frame3 -side top -fill both -expand 1
 
       #--- Label pour RA
-      label $This.frame1.ent1 -textvariable audace(telescope,getra)
+      label $This.frame1.ent1 -textvariable audace(telescope,getra) \
+         -fg $color(white) -bg $color(blue_pad) -font [ list {Arial} 10 bold ]
       pack $This.frame1.ent1 -anchor center -fill none -pady 1
 
       #--- Label pour DEC
-      label $This.frame1.ent2 -textvariable audace(telescope,getdec)
+      label $This.frame1.ent2 -textvariable audace(telescope,getdec) \
+         -fg $color(white) -bg $color(blue_pad) -font [ list {Arial} 10 bold ]
       pack $This.frame1.ent2 -anchor center -fill none -pady 1
 
       set zone(radec) $This.frame1
@@ -253,12 +255,14 @@ namespace eval telpad {
 
       #--- Frame des boutons manuels
       #--- Create the button 'N'
-      frame $This.frame2.n -width 27 -borderwidth 0 -relief flat
+      frame $This.frame2.n -width 27 -borderwidth 0 -relief flat -bg $color(blue_pad)
       pack $This.frame2.n -side top -fill x
 
       #--- Button-design 'N'
       button $This.frame2.n.canv1 -borderwidth 2 \
-         -font $audace(font,arial_12_b) \
+         -font [ list {Arial} 12 bold ] \
+         -fg $color(white) \
+         -bg $color(gray_pad) \
          -text "$caption(telpad,nord)" \
          -width 2  \
          -anchor center \
@@ -266,12 +270,14 @@ namespace eval telpad {
       pack $This.frame2.n.canv1 -expand 0 -side top -padx 10 -pady 4
 
       #--- Create the buttons 'E W'
-      frame $This.frame2.we -width 27 -borderwidth 0 -relief flat
+      frame $This.frame2.we -width 27 -borderwidth 0 -relief flat -bg $color(blue_pad)
       pack $This.frame2.we -side top -fill x
 
       #--- Button-design 'E'
       button $This.frame2.we.canv1 -borderwidth 2 \
-         -font $audace(font,arial_12_b) \
+         -font [ list {Arial} 12 bold ] \
+         -fg $color(white) \
+         -bg $color(gray_pad) \
          -text "$caption(telpad,est)" \
          -width 2  \
          -anchor center \
@@ -279,13 +285,15 @@ namespace eval telpad {
       pack $This.frame2.we.canv1 -expand 0 -side left -padx 10 -pady 4
 
       #--- Write the label of speed
-      label $This.frame2.we.lab -font $audace(font,arial_12_b) -textvariable audace(telescope,labelspeed) \
-         -borderwidth 0 -relief flat
+      label $This.frame2.we.lab -font [ list {Arial} 12 bold ] -textvariable audace(telescope,labelspeed) \
+         -bg $color(blue_pad) -fg $color(white) -borderwidth 0 -relief flat
       pack $This.frame2.we.lab -expand 1 -side left
 
       #--- Button-design 'W'
       button $This.frame2.we.canv2 -borderwidth 2 \
-         -font $audace(font,arial_12_b) \
+         -font [ list {Arial} 12 bold ] \
+         -fg $color(white) \
+         -bg $color(gray_pad) \
          -text "$caption(telpad,ouest)" \
          -width 2  \
          -anchor center \
@@ -293,12 +301,14 @@ namespace eval telpad {
       pack $This.frame2.we.canv2 -expand 0 -side right -padx 10 -pady 4
 
       #--- Create the button 'S'
-      frame $This.frame2.s -width 27 -borderwidth 0 -relief flat
+      frame $This.frame2.s -width 27 -borderwidth 0 -relief flat -bg $color(blue_pad)
       pack $This.frame2.s -side top -fill x
 
       #--- Button-design 'S'
       button $This.frame2.s.canv1 -borderwidth 2 \
-         -font $audace(font,arial_12_b) \
+         -font [ list {Arial} 12 bold ] \
+         -fg $color(white) \
+         -bg $color(gray_pad) \
          -text "$caption(telpad,sud)" \
          -width 2  \
          -anchor center \
@@ -312,7 +322,8 @@ namespace eval telpad {
 
       #--- Ecrit l'etiquette du controle du suivi : Suivi on ou off
       if { [ ::confTel::getPluginProperty hasControlSuivi ] == "1" } {
-         label $This.frame2.s.lab1 -textvariable audace(telescope,controle) -borderwidth 0 -relief flat
+         label $This.frame2.s.lab1 -textvariable audace(telescope,controle) -borderwidth 0 -relief flat \
+            -fg $color(white) -bg $color(blue_pad) -font [ list {Arial} 10 bold ]
          pack $This.frame2.s.lab1 -expand 1 -side left
          bind $This.frame2.s.lab1 <ButtonPress-1> { ::telescope::controleSuivi }
       }
@@ -331,16 +342,19 @@ namespace eval telpad {
       bind $zone(n) <ButtonRelease-1> { ::telescope::stop n }
 
       #--- Label pour moteur focus
-      label $This.frame3.lab1 -text $caption(telpad,moteur_foc) -relief flat
+      label $This.frame3.lab1 -text $caption(telpad,moteur_foc) -relief flat \
+         -fg $color(white) -bg $color(blue_pad) -font [ list {Arial} 10 bold ]
       pack $This.frame3.lab1 -anchor center -fill none -padx 4 -pady 1
 
       #--- Create the buttons '- +'
-      frame $This.frame3.we -width 27 -borderwidth 0 -relief flat
+      frame $This.frame3.we -width 27 -borderwidth 0 -relief flat -bg $color(blue_pad)
       pack $This.frame3.we -side top -fill x
 
       #--- Button '-'
       button $This.frame3.we.canv1 -borderwidth 2 \
-         -font $audace(font,arial_12_b) \
+         -font [ list {Arial} 12 bold ] \
+         -fg $color(white) \
+         -bg $color(gray_pad) \
          -text "-" \
          -width 2  \
          -anchor center \
@@ -348,13 +362,15 @@ namespace eval telpad {
       pack $This.frame3.we.canv1 -expand 0 -side left -padx 10 -pady 4
 
       #--- Write the label of speed for LX200 and compatibles
-      label $This.frame3.we.lab -font $audace(font,arial_12_b) -textvariable audace(focus,labelspeed) \
-         -width 2 -borderwidth 0 -relief flat
-      pack $This.frame3.we.lab -expand 1 -side left
+      label $This.frame3.we.lab -font [ list {Arial} 12 bold ] -textvariable audace(focus,labelspeed) \
+         -bg $color(blue_pad) -fg $color(white) -width 2 -borderwidth 0 -relief flat
+     pack $This.frame3.we.lab -expand 1 -side left
 
       #--- Button '+'
       button $This.frame3.we.canv2 -borderwidth 2 \
-         -font $audace(font,arial_12_b) \
+         -font [ list {Arial} 12 bold ] \
+         -fg $color(white) \
+         -bg $color(gray_pad) \
          -text "+" \
          -width 2  \
          -anchor center \
@@ -381,9 +397,6 @@ namespace eval telpad {
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
       bind $This <Key-F1> { ::console::GiveFocus }
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $This
    }
 
 }
