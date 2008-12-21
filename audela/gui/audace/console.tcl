@@ -1,7 +1,7 @@
 #
 # Fichier : console.tcl
 # Description : Creation de la Console
-# Mise a jour $Id: console.tcl,v 1.11 2008-12-14 23:41:41 robertdelmas Exp $
+# Mise a jour $Id: console.tcl,v 1.12 2008-12-21 09:40:01 robertdelmas Exp $
 #
 
 namespace eval ::console {
@@ -46,12 +46,12 @@ namespace eval ::console {
 
       #--- Polices de caracteres de la Console
       if {[string compare $::tcl_platform(platform) windows]==0} {
-         set audace(font,console) "verdana 8"
+         set font(console) "Verdana 8"
       } else {
-         set audace(font,console) "arial 12 bold"
+         set font(console) "Arial 12 bold"
       }
-      $This.txt1 configure -font $audace(font,console)
-      $This.ent1 configure -font $audace(font,console)
+      $This.txt1 configure -font $font(console)
+      $This.ent1 configure -font $font(console)
 
       #--- Initialisation des couleurs de la Console
       set color(textConsoleEntete)   #007F00
