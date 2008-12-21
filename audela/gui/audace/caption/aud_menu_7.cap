@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_7.cap
-# Mise a jour $Id: aud_menu_7.cap,v 1.11 2008-12-03 17:01:39 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.cap,v 1.12 2008-12-21 11:40:19 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -229,7 +229,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,liaison)             "Link"
    set caption(audace,menu,optique)             "Optisch"
    set caption(audace,menu,equipement)          "Einrichtung"
-   set caption(audace,menu,raquette)            "Handsteuerung"
+   set caption(audace,menu,raquette)            "Hand Kontroller"
    set caption(audace,menu,carte)               "Karte"
    set caption(audace,menu,sauve_config)        "Gestalt speichern"
 
