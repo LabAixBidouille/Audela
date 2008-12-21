@@ -1,8 +1,8 @@
 #
 # Fichier : pkgIndex.tcl
 # Description : Definition du point d'entree du plugin
-# Mise a jour $Id: pkgIndex.tcl,v 1.2 2008-09-20 17:20:05 bmauclaire Exp $
+# Mise a jour $Id: pkgIndex.tcl,v 1.3 2008-12-21 07:50:24 bmauclaire Exp $
 #
 
-package ifneeded spcaudace 1.4.2 [ list source [ file join $dir spcaudace.tcl ] ]
+package ifneeded spcaudace 1.5.0 [ list source [ file join $dir spcaudace.tcl ] ]
 
