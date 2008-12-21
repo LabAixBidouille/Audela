@@ -7,7 +7,8 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.10 2008-10-05 07:59:13 michelpujol Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.11 2008-12-21 07:47:29 bmauclaire Exp $
+
 
 
 
@@ -15,8 +16,8 @@
 # Procedure d'élimination des bords dont les intensites sont nulles
 #
 # Auteur : Benjamin MAUCLAIRE
-# Date creation : 2008-07-8
-# Date modification : 2008-07-8
+# Date creation : 2008-07-08
+# Date modification : 2008-12-18
 # Arguments : fichier .fit du profil de raies (calibré linéairement) ?fraction de continuum (0.85)?
 ####################################################################
 
@@ -63,31 +64,57 @@ proc spc_rmedges { args } {
        }
 
        #--- Détermine lambda_min et lambda_max :
-       set xlistdeb 0
-       set i 1
-       foreach intensite $intensites {
-           # if { $intensite!=0. && $i<=$dnaxis1 }
-           if { $intensite>=$conti_min && $i<=$dnaxis1 } {
-              set xlistdeb [ expr $i-1 ]
-              break
-           }
-           incr i
+       set xlistdeb1 0
+       for { set i 1 } { $i<$dnaxis1 } { incr i } {
+          set intA [ lindex $intensites $i ]
+          set intB [ lindex $intensites [ expr $i+4 ] ]
+          set pente [ expr (abs($intB)-abs($intA))/4. ]
+          #-- Teste si il y a une pente assez croissante :
+          if { $pente >= $spcaudace(croissbord) } {
+             #-- Gestion des pentes douces (met de la souplesse a spcaudace(croissbord)) :
+             if { [ lindex $intensites [ expr $i+2 ] ] >= $conti_min } {
+                set xlistdeb1 [ expr $i+2 ]
+                break
+             } elseif { [ lindex $intensites [ expr $i+3 ] ] >= $conti_min } {
+                set xlistdeb1 [ expr $i+3 ]
+                break
+             }
+          }
        }
-       set i 1
-       set xlistfin $naxis1
-       foreach intensite $intensites {
-           # if { $intensite==0. && $i>=$dnaxis1 }
-           if { $intensite<=$conti_min && $i>=$dnaxis1 } {
-              set xlistfin [ expr $i-2 ]
-              break
-           }
-           incr i
+       set xlistfin1 [ expr $naxis1-1 ]
+       for { set i [ expr $naxis1-1 ] } { $i>$dnaxis1 } { incr i -1 } {
+          set intA [ lindex $intensites [ expr $i-4 ] ]
+          set intB [ lindex $intensites $i ]
+          set pente [ expr abs(abs($intA)-abs($intB))/4. ]
+          #-- Teste si il y a une pente assez croissante :
+          if { $pente >= $spcaudace(croissbord) } {
+             #-- Gestion des pentes douces (met de la souplesse a spcaudace(croissbord)) :
+             if { [ lindex $intensites [ expr $i-2 ] ] >= $conti_min } {
+                set xlistfin1 [ expr $i-2 ]
+                break
+             } elseif { [ lindex $intensites [ expr $i-3 ] ] >= $conti_min }  {
+                set xlistfin1 [ expr $i-3 ]
+                break
+             }
+          }
        }
-       #if { $lfin=="" } {
-       #   set lfin [ lindex $lambdas [ expr $i-2 ] ]
-       #   set xlistfin [ expr $i-2 ]
-       #}
+       #::console::affiche_resultat "$conti_min ; $xlistdeb -> ([ expr $crval1+$cdelt1*$xlistdeb ], [ lindex $intensites $xlistdeb ]) ; $xlistfin -> ([ expr $crval1+$cdelt1*$xlistfin ], [ lindex $intensites $xlistfin ]) \n"
 
+       #--- Seconde passe pour effacer les irréductibles échantillons vraiment nuls :
+       set xlistdeb $xlistdeb1
+       for { set i $xlistdeb1 } { $i <= $dnaxis1 } { incr i } {
+          if { [ lindex $intensites $i ] != 0.} {
+             set xlistdeb [ expr $i ]
+             break
+          }
+       }
+       set xlistfin $xlistfin1
+       for { set i $xlistdeb1 } { $i >= $dnaxis1 } { incr i -1 } {
+          if { [ lindex $intensites $i ] != 0. } {
+             set xlistfin [ expr $i ]
+             break
+          }
+       }
 
        #--- Decoupage des bords du profil de raies :
        set new_longueur [ expr $xlistfin-$xlistdeb+1 ]
@@ -95,6 +122,7 @@ proc spc_rmedges { args } {
        set lambda_deb [ expr $crval1+$cdelt1*$xlistdeb ]
 
        #--- Creation du nouveau profil de raies :
+       buf$audace(bufNo) load "$audace(rep_images)/$spectre"
        set newBufNo [ buf::create ]
        buf$newBufNo setpixels CLASS_GRAY $new_longueur 1 FORMAT_FLOAT COMPRESS_NONE 0
        foreach keyword $keywords {
@@ -102,10 +130,11 @@ proc spc_rmedges { args } {
        }
        buf$newBufNo setkwd [ list "NAXIS" 1 int "" "" ]
        buf$newBufNo setkwd [ list "NAXIS1" $new_longueur int "" "" ]
-       #- k=compteur des pixels ; i=index des intensites a prendre dans la liste de selection.
+       #-- k=compteur des pixels ; i=index des intensites a prendre dans la liste de selection.
        set k 1
        for { set i $xlistdeb } { $i <= $xlistfin } { incr i } {
-          buf$newBufNo setpix [ list $k 1 ] [ lindex $intensites $i ]
+          # buf$newBufNo setpix [ list $k 1 ] [ lindex $intensites $i ]
+          buf$newBufNo setpix [ list $k 1 ] [ lindex [ buf$audace(bufNo) getpix [ list [ expr $i+1 ] 1 ] ] 1 ]
           incr k
        }
        buf$newBufNo setkwd [ list "CRVAL1" $lambda_deb double "" "" ]
@@ -1851,7 +1880,7 @@ proc spc_derive { args } {
 
 proc spc_normaflat { args } {
     global conf
-    global audace
+    global audace spcaudace
 
     if { [llength $args] == 3 } {
         set filename [ file tail [ file rootname [ lindex $args 0 ] ] ]
@@ -1864,6 +1893,8 @@ proc spc_normaflat { args } {
         #--- Extrait le continuum d'information :
         set fpbas [ spc_passebas $fbin ]
         set fconti [ spc_div $fbin $fpbas ]
+        # set fconti [ spc_passebas $fconti1 14 ]
+        # set fconti [ spc_bigsmooth2 $fconti1 0.3 ]
 
         #--- Obtention du flat normalisé :
         buf$audace(bufNo) load "$audace(rep_images)/$filename"
