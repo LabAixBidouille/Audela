@@ -1,6 +1,6 @@
 
 
-# Mise a jour $Id: spc_filter2.tcl,v 1.4 2008-09-20 17:20:05 bmauclaire Exp $
+# Mise a jour $Id: spc_filter2.tcl,v 1.5 2008-12-21 07:56:18 bmauclaire Exp $
 
 
 ####################################################################
@@ -174,10 +174,15 @@ proc spc_passebas_pat { args } {
 
 	#normalisation du filtre (conservation de la DC)
 	set normal [ expr 1./ [ lindex $refiltrfft 0 ] ]
-
-	for {set i 0} {$i<$nlen} {incr i} {
-		set refiltrfft [ lreplace $refiltrfft $i $i [ expr [ lindex $refiltrfft $i ] * $normal ] ]
-	}
+	#for {set i 0} {$i<$nlen} {incr i} {
+	#	set refiltrfft [ lreplace $refiltrfft $i $i [ expr [ lindex $refiltrfft $i ] * $normal ] ]
+	#}
+        set refiltrfftold $refiltrfft
+        set refiltrfft [ list ]
+        for {set i 0} {$i<$nlen} {incr i} {
+           set elemi [ expr [ lindex $refiltrfftold $i ] * $normal ]
+           lappend refiltrfft $elemi
+        }
 
 	# filtrage des donnees
 
