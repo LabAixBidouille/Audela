@@ -3,7 +3,7 @@
 # Mise a jour : 18-08-2007
 #
 
-# Mise a jour $Id: spc_gui_metaboxes.cap,v 1.1 2008-06-14 16:36:20 bmauclaire Exp $
+# Mise a jour $Id: spc_gui_metaboxes.cap,v 1.2 2008-12-21 07:46:11 bmauclaire Exp $
 
 
 # remarque : les traductions qui restent a faire commencent par "#"
@@ -185,7 +185,7 @@ global caption langage
    set caption(spcaudace,metaboxes,traite2srinstrum,config,methbin) "Raws binning method"
    set caption(spcaudace,metaboxes,traite2srinstrum,config,methinv) "Invert left-right sides of lines profiles (y/n)"
    set caption(spcaudace,metaboxes,traite2srinstrum,config,smooth) "Smoothing (y/n)"
-   set caption(spcaudace,metaboxes,traite2srinstrum,config,norma) "Normalization (yes(o)/emission/absorption/no)"
+   set caption(spcaudace,metaboxes,traite2srinstrum,config,norma) "Normalization (yes(o)/emission/absorption/rescale/no)"
    set caption(spcaudace,metaboxes,traite2srinstrum,config,ejbad) "Reject too much weak spectrum (y/n)"
    set caption(spcaudace,metaboxes,traite2srinstrum,config,ejtilt) "Reject too much tilted spectrum (y/n)"
    set caption(spcaudace,metaboxes,traite2srinstrum,config,export_png) "PNG file exportation (o/n)"
@@ -207,7 +207,7 @@ global caption langage
    set caption(spcaudace,metaboxes,traitestellaire,config,methraie) "Manual line selection for geometric correction (y/n)"
    set caption(spcaudace,metaboxes,traitestellaire,config,methcos) "Remove comsmics (y/n)"
    set caption(spcaudace,metaboxes,traitestellaire,config,methinv) "Left-right inversion of lines profil (y/n)"
-   set caption(spcaudace,metaboxes,traitestellaire,config,norma)  "Normalization (yes(o)/emission/absorption/no)"
+   set caption(spcaudace,metaboxes,traitestellaire,config,norma)  "Normalization (yes(o)/emission/absorption/rescale/no)"
    set caption(spcaudace,metaboxes,traitestellaire,config,cal_eau) "Extra calibration with telluric lines (y/n)"
    set caption(spcaudace,metaboxes,traitestellaire,config,2lamps) "Calibration with several lampe spectra (y/n)"
    set caption(spcaudace,metaboxes,traitestellaire,config,export_png) "PNG graph export (y/n)"
@@ -228,7 +228,7 @@ global caption langage
    set caption(spcaudace,metaboxes,traitenebula,config,methcos)   "Erase cosmics (o/n)"
    set caption(spcaudace,metaboxes,traitenebula,config,methinv)   "Invert left-right sides of lines profiles (y/n)"
    set caption(spcaudace,metaboxes,traitenebula,config,2lamps)    "Calibration with several lampe spectra (y/n)"
-   set caption(spcaudace,metaboxes,traitenebula,config,norma)     "Normalization (yes(o)/emission/absorption/no)"
+   set caption(spcaudace,metaboxes,traitenebula,config,norma)     "Normalization (yes(o)/emission/absorption/rescale/no)"
    set caption(spcaudace,metaboxes,traitenebula,config,export_png) "PNG file exportation (y/n)"
    set caption(spcaudace,metaboxes,traitenebula,config,methreg)   "Register method"
    set caption(spcaudace,metaboxes,traitenebula,config,methsky)   "Subsky method"
@@ -425,7 +425,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spcaudace,metaboxes,traite2srinstrum,config,methbin) "Méthode de binning des colonnes"
    set caption(spcaudace,metaboxes,traite2srinstrum,config,methinv) "Inversion gauche-droite des profils de raies (o/n)"
    set caption(spcaudace,metaboxes,traite2srinstrum,config,smooth) "Adoucissement (o/n)"
-   set caption(spcaudace,metaboxes,traite2srinstrum,config,norma) "Normalisation (oui/émission/absorption/non)"
+   set caption(spcaudace,metaboxes,traite2srinstrum,config,norma) "Normalisation (oui/émission/absorption/rescale/non)"
    set caption(spcaudace,metaboxes,traite2srinstrum,config,ejbad) "Rejet des spectres trop faibles (o/n)"
    set caption(spcaudace,metaboxes,traite2srinstrum,config,ejtilt) "Rejet des spectres trop inclinés (o/n)"
    set caption(spcaudace,metaboxes,traite2srinstrum,config,export_png) "Export vers un graphique au format PNG (o/n)"
@@ -447,7 +447,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spcaudace,metaboxes,traitestellaire,config,methraie) "Sélection manuelle d'une raie pour la géométrie (o/n)"
    set caption(spcaudace,metaboxes,traitestellaire,config,methcos) "Retrait des cosmics (o/n)"
    set caption(spcaudace,metaboxes,traitestellaire,config,methinv) "Inversion gauche-droite des profils de raies (o/n)"
-   set caption(spcaudace,metaboxes,traitestellaire,config,norma) "Normalisation (oui/émission/absorption/non)"
+   set caption(spcaudace,metaboxes,traitestellaire,config,norma) "Normalisation (oui/émission/absorption/rescale/non)"
    set caption(spcaudace,metaboxes,traitestellaire,config,cal_eau) "Calibration supplémentaire avec raies telluriques (o/n)"
    set caption(spcaudace,metaboxes,traitestellaire,config,2lamps) "Calibration avec plusieurs spectres de lampe (o/n)"
    set caption(spcaudace,metaboxes,traitestellaire,config,export_png) "Export vers un graphique au format PNG (o/n)"
@@ -468,7 +468,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spcaudace,metaboxes,traitenebula,config,methcos) "Retrait des cosmics (o/n)"
    set caption(spcaudace,metaboxes,traitenebula,config,methinv) "Inversion gauche-droite des profils de raies (o/n)"
    set caption(spcaudace,metaboxes,traitenebula,config,2lamps) "Calibration avec plusieurs spectres de lampe (o/n)"
-   set caption(spcaudace,metaboxes,traitenebula,config,norma) "Normalisation (oui/émission/absorption/non)"
+   set caption(spcaudace,metaboxes,traitenebula,config,norma) "Normalisation (oui/émission/absorption/rescale/non)"
    set caption(spcaudace,metaboxes,traitenebula,config,export_png) "Export vers un graphique au format PNG (o/n)"
    set caption(spcaudace,metaboxes,traitenebula,config,methreg) "Méthode d'appariement"
    set caption(spcaudace,metaboxes,traitenebula,config,methsky) "Méthode de soustraction du fond de ciel"
