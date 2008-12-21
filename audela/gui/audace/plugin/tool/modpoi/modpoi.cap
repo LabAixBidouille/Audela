@@ -1,6 +1,6 @@
 #
 # Fichier : modpoi.cap
-# Mise a jour $Id: modpoi.cap,v 1.15 2007-05-12 15:02:39 robertdelmas Exp $
+# Mise a jour $Id: modpoi.cap,v 1.16 2008-12-21 11:41:08 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -103,7 +103,7 @@ and nutation corrections."
    set caption(modpoi,wiz4,comment)          "\
 Center the star in the field (if possible, check\n\
 with a CCD image) using the\n\
-telescope keypad buttons:"
+telescope hand controller buttons:"
    set caption(modpoi,wiz4,next)             "Star Centered >>"
    set caption(modpoi,wiz4,prev)             "<< Back"
    set caption(modpoi,wiz4,cannot)           "$caption(modpoi,wiz3,cannot)"
@@ -921,7 +921,7 @@ and nutation corrections."
    set caption(modpoi,wiz4,comment)           "\
 Center the star in the field (if possible, check\n\
 with a CCD image) using the\n\
-telescope keypad buttons:"
+telescope hand controller buttons:"
    set caption(modpoi,wiz4,next)             "Star Centered >>"
    set caption(modpoi,wiz4,prev)             "<< Back"
    set caption(modpoi,wiz4,cannot)           "$caption(modpoi,wiz3,cannot)"
