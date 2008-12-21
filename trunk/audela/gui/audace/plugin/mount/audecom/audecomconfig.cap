@@ -1,6 +1,6 @@
 #
 # Fichier : audecomconfig.cap
-# Mise a jour $Id: audecomconfig.cap,v 1.2 2008-01-15 15:57:35 robertdelmas Exp $
+# Mise a jour $Id: audecomconfig.cap,v 1.3 2008-12-21 11:40:08 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -502,7 +502,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecomconfig,direction)               "Dirección del desplazamiento para la fase final de la focalisación:"
    set caption(audecomconfig,intra_focal)             "Intrafocal"
    set caption(audecomconfig,extra_focal)             "Extrafocal"
-   set caption(audecomconfig,inversion_rot)           "Inversión del sentido de rotación del motor (teclado virtual)"
+   set caption(audecomconfig,inversion_rot)           "Inversión del sentido de rotación del motor (controlador de mano virtual)"
    set caption(audecomconfig,valeur_dep)              "Valor de rebasamiento para la compensación de holguras:"
    set caption(audecomconfig,pas)                     "pasos"
 
@@ -596,10 +596,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecomconfig,para_foc,aide1)          "Esta opción permite modificar la velocidad del motor de enfoque. '255' corresponde\
                                                        a la velocidad más lenta, mientras que '5' corresponde a la velocidad más rapida\
                                                        posible (5000 pasos/seg.) si el motor lo permite."
-   set caption(audecomconfig,para_foc,aide2)          "Esta opción permite escoger el sentido del desplazamiento del sistema de enfoque\
-                                                       en la ultima fase de enfoque. Este movimiento final debe efectuarse siempre en el\
-                                                       mismo sentido (intrafocal u extrafocal). Permite igualmente acceder a la inversión\
-                                                       del sentido de rotación del motor de enfoque (para el teclado virtual solamente)."
+   set caption(audecomconfig,para_foc,aide2)          "Esta opción permite escoger el sentido del desplazamiento del sistema de enfoque en\
+                                                       la ultima fase de enfoque. Este movimiento final debe efectuarse siempre en el mismo\
+                                                       sentido (intrafocal u extrafocal). Permite igualmente acceder a la inversión del\
+                                                       sentido de rotación del motor de enfoque (para el Controlador de mano virtual solamente)."
    set caption(audecomconfig,para_foc,aide3)          "Esta opción permite definir el valor de rebasamiento para el punto de enfoque en el\
                                                        ultimo movimiento que sera siempre en el mismo sentido (250 pasos corresponden a\
                                                        media vuelta del motor de enfoque)."

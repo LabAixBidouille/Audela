@@ -1,6 +1,6 @@
 #
 # Fichier : confpad.cap
-# Mise a jour $Id: confpad.cap,v 1.12 2007-11-26 17:43:56 robertdelmas Exp $
+# Mise a jour $Id: confpad.cap,v 1.13 2008-12-21 11:40:28 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -63,15 +63,15 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(confpad,raquette)     "Handsteuerung:"
-   set caption(confpad,config)       "Handsteuerung Konfiguration"
+   set caption(confpad,raquette)     "Hand Kontroller:"
+   set caption(confpad,config)       "Hand Kontroller Konfiguration"
    set caption(confpad,ok)           "OK"
    set caption(confpad,appliquer)    "Anwenden"
    set caption(confpad,fermer)       "Schlieﬂen"
    set caption(confpad,aide)         "Hilfe"
   set caption(confpad,configurer)    "Konfigurieren"
 
-   set caption(confpad,pas_raquette) "Keine Handsteuerung."
+   set caption(confpad,pas_raquette) "Keine Hand Kontroller."
 
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {

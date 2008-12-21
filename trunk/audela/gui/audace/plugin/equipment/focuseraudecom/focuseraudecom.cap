@@ -1,6 +1,6 @@
 #
 # Fichier : focuseraudecom.cap
-# Mise a jour $Id: focuseraudecom.cap,v 1.5 2007-05-09 21:46:45 robertdelmas Exp $
+# Mise a jour $Id: focuseraudecom.cap,v 1.6 2008-12-21 11:40:38 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -75,7 +75,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuseraudecom,link)        "Die Steuervorrichtungen sind zum AudeCom Montierung geschickt."
 
    set caption(focuseraudecom,attention)   "Achtung"
-   set caption(focuseraudecom,msg1)        "Für diese Handsteuerung haben Sie den AudeCom Scharfeinsteller gewählt."
+   set caption(focuseraudecom,msg1)        "Für diese Hand Kontroller haben Sie den AudeCom Scharfeinsteller gewählt."
    set caption(focuseraudecom,msg2)        "Es funktioniert nicht mit dieses Montierung."
    set caption(focuseraudecom,msg3)        "Für diese Geräte haben Sie den AudeCom Scharfeinsteller gewählt."
 
