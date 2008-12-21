@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.4 2008-09-29 17:49:18 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.5 2008-12-21 07:42:31 bmauclaire Exp $
 
 
 
@@ -2145,7 +2145,7 @@ proc spc_calibretelluric { args } {
         file delete -force "$audace(rep_images)/$fcont1$conf(extension,defaut)"
         file delete -force "$audace(rep_images)/${filename}_conti$conf(extension,defaut)"
 
-        #--- Methode 1 : spectre initial linéaire
+        #--- Methode 1 : spectre initial linéaire :
         ::console::affiche_resultat "============ 1) spectre initial linéaire ================\n"
         set spectre_linear [ spc_linearcal "$filename" ]
         set infos_cal [ spc_rms "$spectre_linear" $listeraies ]
@@ -2154,6 +2154,7 @@ proc spc_calibretelluric { args } {
         set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
         set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
         ::console::affiche_resultat "Loi de calibration lineaire : $crval1+$cdelt1*x\n"
+
 
         #--- Methode 2 : Décalage du spectre inital linéarisé à l'aide des raies telluriques :
         ::console::affiche_resultat "============ 2) Décalage du spectre inital linéarisé================\n"
@@ -2165,8 +2166,10 @@ proc spc_calibretelluric { args } {
         set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
         ::console::affiche_resultat "Loi de calibration lineaire : $crval1+$cdelt1*x\n"
 
-        #--- Methode 3 : callibration avec les raies telluriques
+
+        #--- Methode 3 : callibration avec les raies telluriques :
         ::console::affiche_resultat "============ 3) calibration sur l'eau ================\n"
+        #-- Ajustement polynomial de degre 3 :
         set sortie [ spc_ajustdeg3 $listexmesures $listeraies $errors ]
         set coeffs [ lindex $sortie 0 ]
         set d [ lindex $coeffs 3 ]
@@ -2177,7 +2180,7 @@ proc spc_calibretelluric { args } {
         set covar [ lindex $sortie 2 ]
         set rms [ expr $cdelt1*sqrt($chi2/$nbraies) ]
 
-        #--- Sauvegarde le spectre calibré non-linéairement :
+        #-- Sauvegarde le spectre calibré non-linéairement :
         buf$audace(bufNo) load "$audace(rep_images)/$filename"
         buf$audace(bufNo) setkwd [list "SPC_DESC" "D.x.x.x+C.x.x+B.x+A" string "" ""]
         buf$audace(bufNo) setkwd [list "SPC_A" $a double "" "angstrom"]
@@ -2189,31 +2192,32 @@ proc spc_calibretelluric { args } {
         buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocalnl"
         buf$audace(bufNo) bitpix short
 
-        #--- Recalage de la calibration grace aux raies telluriques :
-        #-- Rééchantillonnage pour obtenir une loi de calibration linéaire :
+        #-- Recalage de la calibration grace aux raies telluriques :
+        #- Rééchantillonnage pour obtenir une loi de calibration linéaire :
         set spectre_ocallin [ spc_linearcal "${filename}-ocalnl" ]
 
-        #-- Calcul de décalage moyen+rms :
+        #- Calcul de décalage moyen+rms :
         set mean_shift [ lindex [ spc_rms "$spectre_ocallin" $listeraies ] 2 ]
-        #-- Réalise le décalage sur la loi linéaire :
+        #- Réalise le décalage sur la loi linéaire :
         set spectre_ocalshifted [ spc_calibredecal "$spectre_ocallin" [ expr -1.*$mean_shift ] ]
-        #-- Calcul le décalage moyen+rms du spectre final :
+        #- Calcul le décalage moyen+rms du spectre final :
         # set infos_cal [ spc_rms "$spectre_ocalshifted" $listeraies 1.5 ]
         set infos_cal [ spc_rms "$spectre_ocalshifted" $listeraies ]
         set rms_calo [ lindex $infos_cal 1 ]
         set mean_shift_calo [ lindex $infos_cal 2 ]
-        #-- Effacement des fichiers temporaires :
+        #- Effacement des fichiers temporaires :
         if { $spectre_ocallin != "${filename}-ocalnl" } {
             file delete -force "$audace(rep_images)/${filename}-ocalnl$conf(extension,defaut)"
         }
         file delete -force "$audace(rep_images)/$spectre_ocallin$conf(extension,defaut)"
-        #---
+        #- Enregistre les éléments de la calibration :
         set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
         set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
 
+
         #--- Methode 4 : callibration 2 avec les raies telluriques
         ::console::affiche_resultat "============ 4) calibration sur l'eau bis ================\n"
-        #--- Calcul du polynôme de calibration xlin = a+bx+cx^2+cx^3
+        #-- Calcul du polynôme de calibration xlin = a+bx+cx^2+cx^3
         ### spc_calibretelluric 94-bet-leo--profil-traite-final.fit
         set sortie [ spc_ajustdeg2 $listexmesures $listexraies $errors ]
         # set sortie [ spc_ajustdeg3 $listexmesures $listexraies $errors ]
@@ -2227,7 +2231,7 @@ proc spc_calibretelluric { args } {
         set covar [ lindex $sortie 2 ]
         set rms [ expr $cdelt1*sqrt($chi2/$nbraies) ]
 
-        #--- je calcule les x linearises
+        #-- je calcule les x linearises
         set listexlin [list]
         foreach x $listexmesures {
             lappend listexlin [ expr $a + $b*$x + $c*$x*$x + $d*$x*$x*$x ]
@@ -2282,14 +2286,31 @@ proc spc_calibretelluric { args } {
         set mean_shift_calobis [ lindex $infos_cal 2 ]
         ::console::affiche_resultat "Loi de calibration lineaire calobis : $crval1+$cdelt1*x\n"
 
-        ::console::affiche_resultat "============ Fin) Meilleure mesure ================\n"
-        #-- Sauve le spectre final recalibré (linéarirement) :
-        set liste_rms [ list [ list "calobis" $rms_calobis ] [ list "calo" $rms_calo ] [ list "lindec" $rms_lindec ] [ list "initial" $rms_initial ] ]
+
+        #--- Détermine la meilleure calibration :
+        ::console::affiche_resultat "============ Détermine la meilleure calibration ================\n"
+        #-- Sauvera le spectre final recalibré (linéarirement) :
+        # set liste_rms [ list [ list "calobis" $rms_calobis ] [ list "calo" $rms_calo ] [ list "lindec" $rms_lindec ] [ list "initial" $rms_initial ] ]
+        #-- Gestion des méthodes sélectionnées (car calo n°3 mauvaise selon la taille du capteur) :
+        set liste_rms [ list ]
+        if { [ lsearch $spcaudace(calo_meths) 1 ] != -1 } {
+           lappend liste_rms [ list "initial" $rms_initial ]
+        }
+        if { [ lsearch $spcaudace(calo_meths) 2 ] != -1 } {
+           lappend liste_rms [ list "lindec" $rms_lindec ]
+        }
+        if { [ lsearch $spcaudace(calo_meths) 3 ] != -1 } {
+           lappend liste_rms [ list "calo" $rms_calo ]
+        }
+        if { [ lsearch $spcaudace(calo_meths) 4 ] != -1 } {
+           lappend liste_rms [ list "calobis" $rms_calobis ]
+        }
+        #-- Tri par RMS croissant :
         set liste_rms [ lsort -index 1 -increasing -real $liste_rms ]
         set best_rms_name [ lindex [ lindex $liste_rms 0 ] 0 ]
         set best_rms_val [ lindex [ lindex $liste_rms 0 ] 1 ]
 
-	#--- Compare et choisis la meilleure calibration a l'aide du RMS :
+	#-- Compare et choisis la meilleure calibration a l'aide du RMS :
         if { $best_rms_name == "calobis" } {
             #-- Le spectre recalibré avec l'eau (4) est meilleur :
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_ocallinbis"
