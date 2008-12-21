@@ -3,7 +3,7 @@
 #
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.4 2008-09-20 17:20:05 bmauclaire Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.5 2008-12-21 07:49:43 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -12,7 +12,7 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "1.4.5 - 20/09/2008"
+set spcaudace(version) "1.5.0 - 20/12/2008"
 #set spcaudace(version) "1.2.0 - 10/10/2007"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
@@ -92,6 +92,8 @@ set spcaudace(methbin) "rober"
 set spcaudace(degpoly_cont) 5
 #-- Fraction des bords ignorés dans certains calculs (spc_divri...) pour la détermination du Imax du profil :
 set spcaudace(pourcent_bord) 0.15
+#-- Taux de croissance de l'intensité pour considérer que l'on passe du bord (proche de 0) au continuum :
+set spcaudace(croissbord) 0.2
 #-- Tolérence sur l'écart à l'intensité maximale (spc_divri) : 5%
 set spcaudace(imax_tolerence) 1.05
 #-- Largeur spectrale considérée comme basse résolution :
@@ -127,6 +129,8 @@ set spcaudace(tilt_limit) 4.
 #set spcaudace(rapport_imoy) 0.97
 #-- Linéarisation automatique de la loi de calibration en longueur d'onde :
 set spcaudace(linear_cal) "o"
+#-- Elimination des bords "nuls" :
+set spcaudace(rm_edges) "o"
 #-- Largeur du filtrage SavGol pour la recherche des raies telluriques :
 set spcaudace(largeur_savgol) 28
 #-- Demi-largeur (anstroms) de plage de recherche des raies telluriques (spc_calibretelluric) :
@@ -135,6 +139,8 @@ set spcaudace(dlargeur_eau) 0.5
 set spcaudace(uncosmic) 0.85
 #-- Largeur des raies detectees (spc_findbiglines) : 10 ; 8
 set spcaudace(largeur_raie_detect) 8
+#-- Liste des methodes de calibrations telluriques :
+set spcaudace(calo_meths) { 1 2 3 4 }
 
 
 #----------------------------------------------------------------------------------#
