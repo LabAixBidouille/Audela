@@ -5,7 +5,7 @@
 #*********************************************************************************#
 # Chargement : source $audace(rep_scripts)/spcaudace/spc_gui_boxes.tcl
 
-# Mise a jour $Id: spc_gui_metaboxes.tcl,v 1.2 2008-12-08 22:31:20 robertdelmas Exp $
+# Mise a jour $Id: spc_gui_metaboxes.tcl,v 1.3 2008-12-21 07:46:11 bmauclaire Exp $
 
 
 
@@ -3119,7 +3119,7 @@ namespace eval ::param_spc_audace_traite2rinstrum {
       set liste_methsky [ list "med" "moy" "moy2" "sup" "inf" "back" "none" ]
       set liste_methinv [ list "o" "n" ]
       set liste_methbin [ list "add" "rober" "horne" ]
-      set liste_norma [ list "e" "a" "n" ]
+      set liste_norma [ list "e" "a" "r" "n" ]
       set liste_smooth [ list "o" "n" ]
       set liste_on [ list "o" "n" ]
 
@@ -3139,7 +3139,7 @@ namespace eval ::param_spc_audace_traite2rinstrum {
       set audace(param_spc_audace,traite2rinstrum,config,norma) "n"
       set audace(param_spc_audace,traite2rinstrum,config,ejbad) "n"
       set audace(param_spc_audace,traite2rinstrum,config,ejtilt) "n"
-      set audace(param_spc_audace,traite2rinstrum,config,methraie) "n"
+      set audace(param_spc_audace,traite2rinstrum,config,methraie) "o"
       set audace(param_spc_audace,traite2rinstrum,config,methmasters) "o"
       set audace(param_spc_audace,traite2rinstrum,config,methcalo) "o"
 
@@ -3328,26 +3328,26 @@ namespace eval ::param_spc_audace_traite2rinstrum {
       pack .param_spc_audace_traite2rinstrum.etoile_cat -in .param_spc_audace_traite2rinstrum -fill none -pady 1 -padx 12
 
 
-      #--- Label + Entry pour methmasters
+
+      #--- Label + Entry pour methraie
       #-- Partie Label
-      frame .param_spc_audace_traite2rinstrum.methmasters -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2rinstrum,color,backpad)
-      label .param_spc_audace_traite2rinstrum.methmasters.label  \
+      frame .param_spc_audace_traite2rinstrum.methraie -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2rinstrum,color,backpad)
+      label .param_spc_audace_traite2rinstrum.methraie.label  \
 	      -font $audace(param_spc_audace,traite2rinstrum,font,c12b) \
-	      -text "$caption(spcaudace,metaboxes,traite2rinstrum,config,methmasters) " -bg $audace(param_spc_audace,traite2rinstrum,color,backpad) \
+	      -text "$caption(spcaudace,metaboxes,traite2rinstrum,config,methraie) " -bg $audace(param_spc_audace,traite2rinstrum,color,backpad) \
 	      -fg $audace(param_spc_audace,traite2rinstrum,color,textkey) -relief flat
-      pack  .param_spc_audace_traite2rinstrum.methmasters.label -in .param_spc_audace_traite2rinstrum.methmasters -side left -fill none
+      pack  .param_spc_audace_traite2rinstrum.methraie.label -in .param_spc_audace_traite2rinstrum.methraie -side left -fill none
       #-- Partie Combobox
-      ComboBox .param_spc_audace_traite2rinstrum.methmasters.combobox \
+      ComboBox .param_spc_audace_traite2rinstrum.methraie.combobox \
          -width 7          \
          -height [ llength $liste_on ]  \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
-         -textvariable audace(param_spc_audace,traite2rinstrum,config,methmasters) \
+         -textvariable audace(param_spc_audace,traite2rinstrum,config,methraie) \
          -values $liste_on
-      pack  .param_spc_audace_traite2rinstrum.methmasters.combobox -in .param_spc_audace_traite2rinstrum.methmasters -side right -fill none
-      pack .param_spc_audace_traite2rinstrum.methmasters -in .param_spc_audace_traite2rinstrum -fill x -pady 1 -padx 12
-
+      pack  .param_spc_audace_traite2rinstrum.methraie.combobox -in .param_spc_audace_traite2rinstrum.methraie -side right -fill none
+      pack .param_spc_audace_traite2rinstrum.methraie -in .param_spc_audace_traite2rinstrum -fill x -pady 1 -padx 12
 
 
       #--- Label + Entry pour methinv
@@ -3543,25 +3543,25 @@ namespace eval ::param_spc_audace_traite2rinstrum {
    }
 
 
-      #--- Label + Entry pour methraie
+      #--- Label + Entry pour methmasters
       #-- Partie Label
-      frame .param_spc_audace_traite2rinstrum.methraie -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2rinstrum,color,backpad)
-      label .param_spc_audace_traite2rinstrum.methraie.label  \
+      frame .param_spc_audace_traite2rinstrum.methmasters -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2rinstrum,color,backpad)
+      label .param_spc_audace_traite2rinstrum.methmasters.label  \
 	      -font $audace(param_spc_audace,traite2rinstrum,font,c12b) \
-	      -text "$caption(spcaudace,metaboxes,traite2rinstrum,config,methraie) " -bg $audace(param_spc_audace,traite2rinstrum,color,backpad) \
+	      -text "$caption(spcaudace,metaboxes,traite2rinstrum,config,methmasters) " -bg $audace(param_spc_audace,traite2rinstrum,color,backpad) \
 	      -fg $audace(param_spc_audace,traite2rinstrum,color,textkey) -relief flat
-      pack  .param_spc_audace_traite2rinstrum.methraie.label -in .param_spc_audace_traite2rinstrum.methraie -side left -fill none
+      pack  .param_spc_audace_traite2rinstrum.methmasters.label -in .param_spc_audace_traite2rinstrum.methmasters -side left -fill none
       #-- Partie Combobox
-      ComboBox .param_spc_audace_traite2rinstrum.methraie.combobox \
+      ComboBox .param_spc_audace_traite2rinstrum.methmasters.combobox \
          -width 7          \
          -height [ llength $liste_on ]  \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
-         -textvariable audace(param_spc_audace,traite2rinstrum,config,methraie) \
+         -textvariable audace(param_spc_audace,traite2rinstrum,config,methmasters) \
          -values $liste_on
-      pack  .param_spc_audace_traite2rinstrum.methraie.combobox -in .param_spc_audace_traite2rinstrum.methraie -side right -fill none
-      pack .param_spc_audace_traite2rinstrum.methraie -in .param_spc_audace_traite2rinstrum -fill x -pady 1 -padx 12
+      pack  .param_spc_audace_traite2rinstrum.methmasters.combobox -in .param_spc_audace_traite2rinstrum.methmasters -side right -fill none
+      pack .param_spc_audace_traite2rinstrum.methmasters -in .param_spc_audace_traite2rinstrum -fill x -pady 1 -padx 12
 
 
       #--- Message sur les réponses intrumentales :
@@ -3683,6 +3683,7 @@ namespace eval ::param_spc_audace_traite2srinstrum {
 
       # === Initialisation des variables qui seront changées
       #- set audace(param_spc_audace,traite2srinstrum,config,rinstrum) "none"
+      set audace(param_spc_audace,traite2srinstrum,config,methraie) "o"
       set audace(param_spc_audace,traite2srinstrum,config,offset) "none"
       set audace(param_spc_audace,traite2srinstrum,config,methreg) "spc"
       set audace(param_spc_audace,traite2srinstrum,config,methsel) "serre"
@@ -4246,7 +4247,7 @@ namespace eval ::param_spc_audace_traitestellaire {
 
       set liste_methcos [ list "o" "n" ]
       set liste_methinv [ list "o" "n" ]
-      set liste_norma [ list "o" "e" "a" "n" ]
+      set liste_norma [ list "o" "e" "a" "r" "n" ]
       set liste_on [ list "o" "n" ]
 
       if { [ string length [ info commands .param_spc_audace_traitestellaire.* ] ] != "0" } {
@@ -4267,7 +4268,7 @@ namespace eval ::param_spc_audace_traitestellaire {
       # === Initialisation des variables qui seront changées
       #- set audace(param_spc_audace,traitestellaire,config,rinstrum) "none"
       set audace(param_spc_audace,traitestellaire,config,methinv) "n"
-      set audace(param_spc_audace,traitestellaire,config,methraie) "n"
+      set audace(param_spc_audace,traitestellaire,config,methraie) "o"
       set audace(param_spc_audace,traitestellaire,config,methcos) "n"
       set audace(param_spc_audace,traitestellaire,config,norma) "n"
       set audace(param_spc_audace,traitestellaire,config,offset) "none"
@@ -4462,6 +4463,26 @@ namespace eval ::param_spc_audace_traitestellaire {
       pack .param_spc_audace_traitestellaire.methraie -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
 
 
+      #--- Label + Entry pour 2lamps
+      #-- Partie Label
+      frame .param_spc_audace_traitestellaire.2lamps -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
+      label .param_spc_audace_traitestellaire.2lamps.label  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -text "$caption(spcaudace,metaboxes,traitestellaire,config,2lamps) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
+      pack  .param_spc_audace_traitestellaire.2lamps.label -in .param_spc_audace_traitestellaire.2lamps -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitestellaire.2lamps.combobox \
+         -width 7          \
+         -height [ llength $liste_on ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable audace(param_spc_audace,traitestellaire,config,2lamps) \
+         -values $liste_on
+      pack  .param_spc_audace_traitestellaire.2lamps.combobox -in .param_spc_audace_traitestellaire.2lamps -side right -fill none
+      pack .param_spc_audace_traitestellaire.2lamps -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
+
 
       #--- Label + Entry pour methinv
       #-- Partie Label
@@ -4484,48 +4505,26 @@ namespace eval ::param_spc_audace_traitestellaire {
       pack .param_spc_audace_traitestellaire.methinv -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
 
 
-
-
-      #--- Label + Entry pour methcos
+      #--- Label + Entry pour cal_eau
       #-- Partie Label
-      frame .param_spc_audace_traitestellaire.methcos -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
-      label .param_spc_audace_traitestellaire.methcos.label  \
+      frame .param_spc_audace_traitestellaire.cal_eau -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
+      label .param_spc_audace_traitestellaire.cal_eau.label  \
 	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
-	      -text "$caption(spcaudace,metaboxes,traitestellaire,config,methcos) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -text "$caption(spcaudace,metaboxes,traitestellaire,config,cal_eau) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
 	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
-      pack  .param_spc_audace_traitestellaire.methcos.label -in .param_spc_audace_traitestellaire.methcos -side left -fill none
+      pack  .param_spc_audace_traitestellaire.cal_eau.label -in .param_spc_audace_traitestellaire.cal_eau -side left -fill none
       #-- Partie Combobox
-      ComboBox .param_spc_audace_traitestellaire.methcos.combobox \
-         -width 7          \
-         -height [ llength $liste_methcos ]  \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -textvariable audace(param_spc_audace,traitestellaire,config,methcos) \
-         -values $liste_methcos
-      pack  .param_spc_audace_traitestellaire.methcos.combobox -in .param_spc_audace_traitestellaire.methcos -side right -fill none
-      pack .param_spc_audace_traitestellaire.methcos -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
-
-
-      #--- Label + Entry pour 2lamps
-      #-- Partie Label
-      frame .param_spc_audace_traitestellaire.2lamps -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
-      label .param_spc_audace_traitestellaire.2lamps.label  \
-	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
-	      -text "$caption(spcaudace,metaboxes,traitestellaire,config,2lamps) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
-	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
-      pack  .param_spc_audace_traitestellaire.2lamps.label -in .param_spc_audace_traitestellaire.2lamps -side left -fill none
-      #-- Partie Combobox
-      ComboBox .param_spc_audace_traitestellaire.2lamps.combobox \
+      ComboBox .param_spc_audace_traitestellaire.cal_eau.combobox \
          -width 7          \
          -height [ llength $liste_on ]  \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
-         -textvariable audace(param_spc_audace,traitestellaire,config,2lamps) \
+         -textvariable audace(param_spc_audace,traitestellaire,config,cal_eau) \
          -values $liste_on
-      pack  .param_spc_audace_traitestellaire.2lamps.combobox -in .param_spc_audace_traitestellaire.2lamps -side right -fill none
-      pack .param_spc_audace_traitestellaire.2lamps -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
+      pack  .param_spc_audace_traitestellaire.cal_eau.combobox -in .param_spc_audace_traitestellaire.cal_eau -side right -fill none
+      pack .param_spc_audace_traitestellaire.cal_eau -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
+
 
 
       #--- Label + Entry pour norma
@@ -4549,25 +4548,28 @@ namespace eval ::param_spc_audace_traitestellaire {
       pack .param_spc_audace_traitestellaire.norma -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
 
 
-      #--- Label + Entry pour cal_eau
+      #--- Label + Entry pour methcos
       #-- Partie Label
-      frame .param_spc_audace_traitestellaire.cal_eau -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
-      label .param_spc_audace_traitestellaire.cal_eau.label  \
+      frame .param_spc_audace_traitestellaire.methcos -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
+      label .param_spc_audace_traitestellaire.methcos.label  \
 	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
-	      -text "$caption(spcaudace,metaboxes,traitestellaire,config,cal_eau) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -text "$caption(spcaudace,metaboxes,traitestellaire,config,methcos) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
 	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
-      pack  .param_spc_audace_traitestellaire.cal_eau.label -in .param_spc_audace_traitestellaire.cal_eau -side left -fill none
+      pack  .param_spc_audace_traitestellaire.methcos.label -in .param_spc_audace_traitestellaire.methcos -side left -fill none
       #-- Partie Combobox
-      ComboBox .param_spc_audace_traitestellaire.cal_eau.combobox \
+      ComboBox .param_spc_audace_traitestellaire.methcos.combobox \
          -width 7          \
-         -height [ llength $liste_on ]  \
+         -height [ llength $liste_methcos ]  \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
-         -textvariable audace(param_spc_audace,traitestellaire,config,cal_eau) \
-         -values $liste_on
-      pack  .param_spc_audace_traitestellaire.cal_eau.combobox -in .param_spc_audace_traitestellaire.cal_eau -side right -fill none
-      pack .param_spc_audace_traitestellaire.cal_eau -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
+         -textvariable audace(param_spc_audace,traitestellaire,config,methcos) \
+         -values $liste_methcos
+      pack  .param_spc_audace_traitestellaire.methcos.combobox -in .param_spc_audace_traitestellaire.methcos -side right -fill none
+      pack .param_spc_audace_traitestellaire.methcos -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
+
+
+
 
 
       #--- Label + Entry pour export_bess
@@ -4720,7 +4722,7 @@ namespace eval ::param_spc_audace_traitenebula {
       set liste_methsky [ list "med" "moy" "moy2" "sup" "inf" "back" "none" ]
       set liste_methinv [ list "o" "n" ]
       set liste_methbin [ list "add" "rober" "horne" ]
-      set liste_norma [ list "o" "e" "a" "n" ]
+      set liste_norma [ list "o" "e" "a" "r" "n" ]
       set liste_smooth [ list "o" "n" ]
       set liste_on [ list "o" "n" ]
 
@@ -4934,6 +4936,26 @@ namespace eval ::param_spc_audace_traitenebula {
       pack .param_spc_audace_traitenebula.methraie -in .param_spc_audace_traitenebula -fill x -pady 1 -padx 12
 
 
+      #--- Label + Entry pour 2lamps
+      #-- Partie Label
+      frame .param_spc_audace_traitenebula.2lamps -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitenebula,color,backpad)
+      label .param_spc_audace_traitenebula.2lamps.label  \
+	      -font $audace(param_spc_audace,traitenebula,font,c12b) \
+	      -text "$caption(spcaudace,metaboxes,traitenebula,config,2lamps) " -bg $audace(param_spc_audace,traitenebula,color,backpad) \
+	      -fg $audace(param_spc_audace,traitenebula,color,textkey) -relief flat
+      pack  .param_spc_audace_traitenebula.2lamps.label -in .param_spc_audace_traitenebula.2lamps -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitenebula.2lamps.combobox \
+         -width 7          \
+         -height [ llength $liste_on ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable audace(param_spc_audace,traitenebula,config,2lamps) \
+         -values $liste_on
+      pack  .param_spc_audace_traitenebula.2lamps.combobox -in .param_spc_audace_traitenebula.2lamps -side right -fill none
+      pack .param_spc_audace_traitenebula.2lamps -in .param_spc_audace_traitenebula -fill x -pady 1 -padx 12
+
 
       #--- Label + Entry pour methinv
       #-- Partie Label
@@ -4957,48 +4979,6 @@ namespace eval ::param_spc_audace_traitenebula {
 
 
 
-
-      #--- Label + Entry pour methcos
-      #-- Partie Label
-      frame .param_spc_audace_traitenebula.methcos -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitenebula,color,backpad)
-      label .param_spc_audace_traitenebula.methcos.label  \
-	      -font $audace(param_spc_audace,traitenebula,font,c12b) \
-	      -text "$caption(spcaudace,metaboxes,traitenebula,config,methcos) " -bg $audace(param_spc_audace,traitenebula,color,backpad) \
-	      -fg $audace(param_spc_audace,traitenebula,color,textkey) -relief flat
-      pack  .param_spc_audace_traitenebula.methcos.label -in .param_spc_audace_traitenebula.methcos -side left -fill none
-      #-- Partie Combobox
-      ComboBox .param_spc_audace_traitenebula.methcos.combobox \
-         -width 7          \
-         -height [ llength $liste_methcos ]  \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -textvariable audace(param_spc_audace,traitenebula,config,methcos) \
-         -values $liste_methcos
-      pack  .param_spc_audace_traitenebula.methcos.combobox -in .param_spc_audace_traitenebula.methcos -side right -fill none
-      pack .param_spc_audace_traitenebula.methcos -in .param_spc_audace_traitenebula -fill x -pady 1 -padx 12
-
-      #--- Label + Entry pour 2lamps
-      #-- Partie Label
-      frame .param_spc_audace_traitenebula.2lamps -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitenebula,color,backpad)
-      label .param_spc_audace_traitenebula.2lamps.label  \
-	      -font $audace(param_spc_audace,traitenebula,font,c12b) \
-	      -text "$caption(spcaudace,metaboxes,traitenebula,config,2lamps) " -bg $audace(param_spc_audace,traitenebula,color,backpad) \
-	      -fg $audace(param_spc_audace,traitenebula,color,textkey) -relief flat
-      pack  .param_spc_audace_traitenebula.2lamps.label -in .param_spc_audace_traitenebula.2lamps -side left -fill none
-      #-- Partie Combobox
-      ComboBox .param_spc_audace_traitenebula.2lamps.combobox \
-         -width 7          \
-         -height [ llength $liste_on ]  \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -textvariable audace(param_spc_audace,traitenebula,config,2lamps) \
-         -values $liste_on
-      pack  .param_spc_audace_traitenebula.2lamps.combobox -in .param_spc_audace_traitenebula.2lamps -side right -fill none
-      pack .param_spc_audace_traitenebula.2lamps -in .param_spc_audace_traitenebula -fill x -pady 1 -padx 12
-
-
       #--- Label + Entry pour norma
       #-- Partie Label
       frame .param_spc_audace_traitenebula.norma -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitenebula,color,backpad)
@@ -5020,8 +5000,6 @@ namespace eval ::param_spc_audace_traitenebula {
       pack .param_spc_audace_traitenebula.norma -in .param_spc_audace_traitenebula -fill x -pady 1 -padx 12
 
 
-
-
       #--- Label + Entry pour export_png
       #-- Partie Label
       frame .param_spc_audace_traitenebula.export_png -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitenebula,color,backpad)
@@ -5041,6 +5019,28 @@ namespace eval ::param_spc_audace_traitenebula {
          -values $liste_on
       pack  .param_spc_audace_traitenebula.export_png.combobox -in .param_spc_audace_traitenebula.export_png -side right -fill none
       pack .param_spc_audace_traitenebula.export_png -in .param_spc_audace_traitenebula -fill x -pady 1 -padx 12
+
+
+      #--- Label + Entry pour methcos
+      #-- Partie Label
+      frame .param_spc_audace_traitenebula.methcos -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitenebula,color,backpad)
+      label .param_spc_audace_traitenebula.methcos.label  \
+	      -font $audace(param_spc_audace,traitenebula,font,c12b) \
+	      -text "$caption(spcaudace,metaboxes,traitenebula,config,methcos) " -bg $audace(param_spc_audace,traitenebula,color,backpad) \
+	      -fg $audace(param_spc_audace,traitenebula,color,textkey) -relief flat
+      pack  .param_spc_audace_traitenebula.methcos.label -in .param_spc_audace_traitenebula.methcos -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitenebula.methcos.combobox \
+         -width 7          \
+         -height [ llength $liste_methcos ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable audace(param_spc_audace,traitenebula,config,methcos) \
+         -values $liste_methcos
+      pack  .param_spc_audace_traitenebula.methcos.combobox -in .param_spc_audace_traitenebula.methcos -side right -fill none
+      pack .param_spc_audace_traitenebula.methcos -in .param_spc_audace_traitenebula -fill x -pady 1 -padx 12
+
 
 
       #--- Label + Entry pour methreg
