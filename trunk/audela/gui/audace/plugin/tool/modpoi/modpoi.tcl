@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi.tcl,v 1.19 2008-12-04 16:51:50 robertdelmas Exp $
+# Mise a jour $Id: modpoi.tcl,v 1.20 2008-12-22 19:17:10 robertdelmas Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -177,14 +177,6 @@ proc modpoi_wiz { { mode new } } {
    set modpoi(deg2rad) [expr $modpoi(pi)/180.]
    set modpoi(rad2deg) [expr 180./$modpoi(pi)]
 
-   #--- Gestion des polices de caracteres
-   set modpoi(font,title2)   "$audace(font,arial_12_b)"
-   set modpoi(font,normal)   "$audace(font,arial_12_n)"
-   set modpoi(font,next)     "$audace(font,arial_15_b)"
-   set modpoi(font,cannot)   "$audace(font,arial_10_b)"
-   set modpoi(font,result)   "$audace(font,arial_7_b)"
-   set modpoi(font,starname) "$audace(font,arial_8_n)"
-
    #---
    set modpoi(toplevel,position) $parametres(modpoi,position)
 
@@ -229,22 +221,22 @@ proc modpoi_wiz1 { } {
    wm title $modpoi(g,base) $caption(modpoi,wiz1,title)
    #--- Title
    label $modpoi(g,base).lab_title2 \
-   -text $caption(modpoi,wiz1,title2) -borderwidth 2 \
-   -padx 20 -pady 10 -font $modpoi(font,title2)
+   -text $caption(modpoi,wiz1,title2) \
+   -borderwidth 2 -padx 20 -pady 10
    pack $modpoi(g,base).lab_title2 \
    -side top -anchor center \
    -padx 5 -pady 3 -expand 0
    #--- Describe
    label $modpoi(g,base).lab_desc \
    -text $caption(modpoi,wiz1,desc) -borderwidth 2 \
-   -padx 20 -pady 10 -font $modpoi(font,normal)
+   -padx 20 -pady 10
    pack $modpoi(g,base).lab_desc \
    -side top -anchor center \
    -padx 5 -pady 3 -expand 0
    #--- NEXT button
    button $modpoi(g,base).but_next \
    -text $caption(modpoi,wiz1,next) -borderwidth 2 \
-   -padx 20 -pady 10 -font $modpoi(font,next) -command { modpoi_wiz1b }
+   -padx 20 -pady 10 -command { modpoi_wiz1b }
    pack $modpoi(g,base).but_next \
    -side bottom -anchor center \
    -padx 5 -pady 10 -expand 0
@@ -278,8 +270,8 @@ proc modpoi_wiz1b { } {
    wm title $modpoi(g,base) $caption(modpoi,wiz1b,title)
    #--- Title
    label $modpoi(g,base).lab_title1b \
-   -text $caption(modpoi,wiz1b,title2) -borderwidth 2 \
-   -padx 20 -pady 10 -font $modpoi(font,title2)
+   -text $caption(modpoi,wiz1b,title2) \
+   -borderwidth 2 -padx 20 -pady 10
    pack $modpoi(g,base).lab_title1b \
    -side top -anchor center \
    -padx 5 -pady 3 -expand 0
@@ -296,30 +288,30 @@ proc modpoi_wiz1b { } {
       #--- Label heast
       label $modpoi(g,base).fra_hlim.lab_heast \
       -text "   $caption(modpoi,wiz1b,heast) " -borderwidth 2 \
-      -padx 0 -pady 3 -font $modpoi(font,normal)
+      -padx 0 -pady 3
       pack $modpoi(g,base).fra_hlim.lab_heast \
       -side left -anchor center \
       -padx 0 -pady 3 -expand 0
       #--- Entry heast
       set modpoi(stars,heast) "[ format "%4.1f" $modpoi(stars,heast) ]"
       entry $modpoi(g,base).fra_hlim.ent_heast \
-      -textvariable modpoi(stars,heast) -borderwidth 2 -width 6 -justify center \
-      -font $modpoi(font,normal)
+      -textvariable modpoi(stars,heast) \
+      -borderwidth 2 -width 6 -justify center
       pack $modpoi(g,base).fra_hlim.ent_heast \
       -side left -anchor center \
       -padx 0 -pady 3 -expand 0
       #--- Label hwest
       label $modpoi(g,base).fra_hlim.lab_hwest \
       -text "    $caption(modpoi,wiz1b,hwest) " -borderwidth 2 \
-      -padx 0 -pady 3 -font $modpoi(font,normal)
+      -padx 0 -pady 3
       pack $modpoi(g,base).fra_hlim.lab_hwest \
       -side left -anchor center \
       -padx 0 -pady 3 -expand 0
       #--- Entry hwest
       set modpoi(stars,hwest) "[ format "%4.1f" $modpoi(stars,hwest) ]"
       entry $modpoi(g,base).fra_hlim.ent_hwest \
-      -textvariable modpoi(stars,hwest) -borderwidth 2 -width 6 -justify center \
-      -font $modpoi(font,normal)
+      -textvariable modpoi(stars,hwest) \
+      -borderwidth 2 -width 6 -justify center
       pack $modpoi(g,base).fra_hlim.ent_hwest \
       -side left -anchor center \
       -padx 0 -pady 3 -expand 0
@@ -331,30 +323,30 @@ proc modpoi_wiz1b { } {
       #--- Label decinf
       label $modpoi(g,base).fra_dlim.lab_decinf \
       -text "   $caption(modpoi,wiz1b,decinf) " -borderwidth 2 \
-      -padx 0 -pady 3 -font $modpoi(font,normal)
+      -padx 0 -pady 3
       pack $modpoi(g,base).fra_dlim.lab_decinf \
       -side left -anchor center \
       -padx 0 -pady 3 -expand 0
       #--- Entry decinf
       set modpoi(stars,decmin) "[ format "%4.1f" $modpoi(stars,decmin) ]"
       entry $modpoi(g,base).fra_dlim.ent_decinf \
-      -textvariable modpoi(stars,decmin) -borderwidth 2 -width 6 -justify center \
-      -font $modpoi(font,normal)
+      -textvariable modpoi(stars,decmin) \
+      -borderwidth 2 -width 6 -justify center
       pack $modpoi(g,base).fra_dlim.ent_decinf \
       -side left -anchor center \
       -padx 0 -pady 3 -expand 0
       #--- Label decsup
       label $modpoi(g,base).fra_dlim.lab_decsup \
       -text "    $caption(modpoi,wiz1b,decsup) " -borderwidth 2 \
-      -padx 0 -pady 3 -font $modpoi(font,normal)
+      -padx 0 -pady 3
       pack $modpoi(g,base).fra_dlim.lab_decsup \
       -side left -anchor center \
       -padx 0 -pady 3 -expand 0
       #--- Entry decsuo
       set modpoi(stars,decmax) "[ format "%4.1f" $modpoi(stars,decmax) ]"
       entry $modpoi(g,base).fra_dlim.ent_decsup \
-      -textvariable modpoi(stars,decmax) -borderwidth 2 -width 6 -justify center \
-      -font $modpoi(font,normal)
+      -textvariable modpoi(stars,decmax) \
+      -borderwidth 2 -width 6 -justify center
       pack $modpoi(g,base).fra_dlim.ent_decsup \
       -side left -anchor center \
       -padx 0 -pady 3 -expand 0
@@ -366,7 +358,7 @@ proc modpoi_wiz1b { } {
       #--- Label nstars
       label $modpoi(g,base).fra_star_catalog.lab_star_catalog \
       -text "   $caption(modpoi,wiz1b,catalog) " -borderwidth 2 \
-      -padx 0 -pady 10 -font $modpoi(font,normal)
+      -padx 0 -pady 10
       pack $modpoi(g,base).fra_star_catalog.lab_star_catalog \
       -side left -anchor center \
       -padx 0 -pady 3 -expand 0
@@ -385,7 +377,6 @@ proc modpoi_wiz1b { } {
       ComboBox $modpoi(g,base).fra_star_catalog.combobox_star_catalog \
          -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
          -height [ llength $list_combobox ] \
-         -font $modpoi(font,normal) \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
@@ -405,14 +396,14 @@ proc modpoi_wiz1b { } {
       #--- Label nstars
       label $modpoi(g,base).fra_nstars.lab_nstars \
       -text "   $caption(modpoi,wiz1b,nstars) " -borderwidth 2 \
-      -padx 0 -pady 3 -font $modpoi(font,normal)
+      -padx 0 -pady 3
       pack $modpoi(g,base).fra_nstars.lab_nstars \
       -side left -anchor center \
       -padx 0 -pady 3 -expand 0
       #--- Entry nstars
       entry $modpoi(g,base).fra_nstars.ent_nstars \
-      -textvariable modpoi(stars,nb) -borderwidth 2 -width 2 -justify center \
-      -font $modpoi(font,normal)
+      -textvariable modpoi(stars,nb) \
+      -borderwidth 2 -width 2 -justify center
       pack $modpoi(g,base).fra_nstars.ent_nstars \
       -side left -anchor center \
       -padx 0 -pady 3 -expand 0
@@ -424,7 +415,7 @@ proc modpoi_wiz1b { } {
       if { [ ::confTel::getPluginProperty hasCorrectionRefraction ] == "1" } {
          label $modpoi(g,base).fra_refr.lab_refraction_1 \
          -text $caption(modpoi,wiz1b,refraction_1) -borderwidth 2 \
-         -padx 0 -pady 3 -font $modpoi(font,normal)
+         -padx 0 -pady 3
          pack $modpoi(g,base).fra_refr.lab_refraction_1 \
          -side left -anchor center \
          -padx 0 -pady 3 -fill x
@@ -432,7 +423,7 @@ proc modpoi_wiz1b { } {
       } else {
          label $modpoi(g,base).fra_refr.lab_refraction_2 \
          -text $caption(modpoi,wiz1b,refraction_2) -borderwidth 2 \
-         -padx 0 -pady 3 -font $modpoi(font,normal)
+         -padx 0 -pady 3
          pack $modpoi(g,base).fra_refr.lab_refraction_2 \
          -side left -anchor center \
          -padx 0 -pady 3 -fill x
@@ -445,7 +436,7 @@ proc modpoi_wiz1b { } {
    frame $modpoi(g,base).fra_auto
       checkbutton $modpoi(g,base).fra_auto.chk -text "$caption(modpoi,wiz1b,acqauto)" \
       -highlightthickness 0 -variable modpoi(centering,check) \
-      -font $modpoi(font,normal) -command {
+      -command {
          if { $modpoi(centering,check) == "1" } {
             if { [ ::cam::list ] == "" } {
                #--- Ouverture de la fenetre de selection des cameras
@@ -477,14 +468,14 @@ proc modpoi_wiz1b { } {
       #--- PREVIOUS button
       button $modpoi(g,base).fra_bottom.but_prev \
       -text $caption(modpoi,$wiz,prev) -borderwidth 2 \
-      -padx 20 -pady 10 -font $modpoi(font,next) -command { modpoi_wiz1 }
+      -padx 20 -pady 10 -command { modpoi_wiz1 }
       pack $modpoi(g,base).fra_bottom.but_prev \
       -side left -anchor se \
       -padx 5 -pady 5 -expand 0
       #--- NEXT button
       button $modpoi(g,base).fra_bottom.but_next \
       -text $caption(modpoi,$wiz,next) -borderwidth 2 \
-      -padx 20 -pady 10 -font $modpoi(font,next) \
+      -padx 20 -pady 10 \
       -command {
          if { ( $modpoi(stars,nb) >= "6" ) && ( $modpoi(stars,nb) <= "48" ) } {
             modpoi_paraminit $modpoi(stars,decmin) $modpoi(stars,decmax) $modpoi(stars,heast) $modpoi(stars,hwest)
@@ -526,8 +517,8 @@ proc modpoi_wiz1c { } {
    wm title $modpoi(g,base) $caption(modpoi,wiz1c,title)
    #--- Title
    label $modpoi(g,base).lab_title1b \
-   -text $caption(modpoi,wiz1c,title2) -borderwidth 2 \
-   -padx 20 -pady 10 -font $modpoi(font,title2)
+   -text $caption(modpoi,wiz1c,title2) \
+   -borderwidth 2 -padx 20 -pady 10
    pack $modpoi(g,base).lab_title1b \
    -side top -anchor center \
    -padx 5 -pady 3 -expand 0
@@ -540,7 +531,7 @@ proc modpoi_wiz1c { } {
       #--- Label xyc
       label $modpoi(g,base).fra_c0.lab_xyc \
       -text "   $caption(modpoi,wiz1c,xyc) " -borderwidth 2 \
-      -padx 0 -pady 0 -font $modpoi(font,normal)
+      -padx 0 -pady 0
       pack $modpoi(g,base).fra_c0.lab_xyc \
       -side left -anchor center \
       -padx 0 -pady 3 -expand 0
@@ -551,28 +542,28 @@ proc modpoi_wiz1c { } {
       #--- Label xc
       label $modpoi(g,base).fra_c.lab_xc \
       -text "   $caption(modpoi,wiz1c,xc) " -borderwidth 2 \
-      -padx 0 -pady 0 -font $modpoi(font,normal)
+      -padx 0 -pady 0
       pack $modpoi(g,base).fra_c.lab_xc \
       -side left -anchor center \
       -padx 0 -pady 3 -expand 0
       #--- Entry xc
       entry $modpoi(g,base).fra_c.ent_xc \
-      -textvariable modpoi(centering,xc) -borderwidth 2 -width 6 -justify center \
-      -font $modpoi(font,normal)
+      -textvariable modpoi(centering,xc) \
+      -borderwidth 2 -width 6 -justify center
       pack $modpoi(g,base).fra_c.ent_xc \
       -side left -anchor center \
       -padx 0 -pady 3 -expand 0
       #--- Label yc
       label $modpoi(g,base).fra_c.lab_yc \
       -text "    $caption(modpoi,wiz1c,yc) " -borderwidth 2 \
-      -padx 0 -pady 0 -font $modpoi(font,normal)
+      -padx 0 -pady 0
       pack $modpoi(g,base).fra_c.lab_yc \
       -side left -anchor center \
       -padx 0 -pady 3 -expand 0
       #--- Entry yc
       entry $modpoi(g,base).fra_c.ent_yc \
-      -textvariable modpoi(centering,yc) -borderwidth 2 -width 6 -justify center \
-      -font $modpoi(font,normal)
+      -textvariable modpoi(centering,yc) \
+      -borderwidth 2 -width 6 -justify center
       pack $modpoi(g,base).fra_c.ent_yc \
       -side left -anchor center \
       -padx 0 -pady 3 -expand 0
@@ -584,14 +575,14 @@ proc modpoi_wiz1c { } {
       #--- Label accuraccy
       label $modpoi(g,base).fra_a.lab \
       -text "   $caption(modpoi,wiz1c,accuracy) " -borderwidth 2 \
-      -padx 0 -pady 0 -font $modpoi(font,normal)
+      -padx 0 -pady 0
       pack $modpoi(g,base).fra_a.lab \
       -side left -anchor center \
       -padx 0 -pady 0 -expand 0
       #--- Entry accuracy
       entry $modpoi(g,base).fra_a.ent \
-      -textvariable modpoi(centering,accuracy) -borderwidth 2 -width 6 -justify center \
-      -font $modpoi(font,normal)
+      -textvariable modpoi(centering,accuracy) \
+      -borderwidth 2 -width 6 -justify center
       pack $modpoi(g,base).fra_a.ent \
       -side left -anchor center \
       -padx 0 -pady 0 -expand 0
@@ -603,14 +594,14 @@ proc modpoi_wiz1c { } {
       #--- Label initial delay
       label $modpoi(g,base).fra_r.lab \
       -text "   $caption(modpoi,wiz1c,initial_delay) " -borderwidth 2 \
-      -padx 0 -pady 0 -font $modpoi(font,normal)
+      -padx 0 -pady 0
       pack $modpoi(g,base).fra_r.lab \
       -side left -anchor center \
       -padx 0 -pady 0 -expand 0
       #--- Entry initial delay
       entry $modpoi(g,base).fra_r.ent \
-      -textvariable modpoi(centering,t0) -borderwidth 2 -width 6 -justify center \
-      -font $modpoi(font,normal)
+      -textvariable modpoi(centering,t0) \
+      -borderwidth 2 -width 6 -justify center
       pack $modpoi(g,base).fra_r.ent \
       -side left -anchor center \
       -padx 0 -pady 0 -expand 0
@@ -622,28 +613,28 @@ proc modpoi_wiz1c { } {
       #--- Label binning
       label $modpoi(g,base).fra_cam.lab_bin \
       -text "   $caption(modpoi,wiz1c,binning) " -borderwidth 2 \
-      -padx 0 -pady 10 -font $modpoi(font,normal)
+      -padx 0 -pady 10
       pack $modpoi(g,base).fra_cam.lab_bin \
       -side left -anchor center \
       -padx 0 -pady 3 -expand 0
       #--- Entry binning
       entry $modpoi(g,base).fra_cam.ent_bin \
-      -textvariable modpoi(centering,binning) -borderwidth 2 -width 3 -justify center \
-      -font $modpoi(font,normal)
+      -textvariable modpoi(centering,binning) \
+      -borderwidth 2 -width 3 -justify center
       pack $modpoi(g,base).fra_cam.ent_bin \
       -side left -anchor center \
       -padx 0 -pady 3 -expand 0
       #--- Label temps de pose
       label $modpoi(g,base).fra_cam.lab_exp \
       -text "    $caption(modpoi,wiz1c,exptime) " -borderwidth 2 \
-      -padx 0 -pady 10 -font $modpoi(font,normal)
+      -padx 0 -pady 10
       pack $modpoi(g,base).fra_cam.lab_exp \
       -side left -anchor center \
       -padx 0 -pady 3 -expand 0
       #--- Entry temps de pose
       entry $modpoi(g,base).fra_cam.ent_exp \
-      -textvariable modpoi(centering,exptime) -borderwidth 2 -width 6 -justify center \
-      -font $modpoi(font,normal)
+      -textvariable modpoi(centering,exptime) \
+      -borderwidth 2 -width 6 -justify center
       pack $modpoi(g,base).fra_cam.ent_exp \
       -side left -anchor center \
       -padx 0 -pady 3 -expand 0
@@ -655,14 +646,14 @@ proc modpoi_wiz1c { } {
       #--- Label nombre d'images a moyenner
       label $modpoi(g,base).fra_comp.lab \
       -text "   $caption(modpoi,wiz1c,compositage) " -borderwidth 2 \
-      -padx 0 -pady 0 -font $modpoi(font,normal)
+      -padx 0 -pady 0
       pack $modpoi(g,base).fra_comp.lab \
       -side left -anchor center \
       -padx 0 -pady 0 -expand 0
       #--- Entry nombre d'images a moyenner
       entry $modpoi(g,base).fra_comp.ent \
-      -textvariable modpoi(centering,nbmean) -borderwidth 2 -width 3 -justify center \
-      -font $modpoi(font,normal)
+      -textvariable modpoi(centering,nbmean) \
+      -borderwidth 2 -width 3 -justify center
       pack $modpoi(g,base).fra_comp.ent \
       -side left -anchor center \
       -padx 0 -pady 0 -expand 0
@@ -676,14 +667,14 @@ proc modpoi_wiz1c { } {
       #--- PREVIOUS button
       button $modpoi(g,base).fra_bottom.but_prev \
       -text $caption(modpoi,$wiz,prev) -borderwidth 2 \
-      -padx 20 -pady 10 -font $modpoi(font,next) -command { modpoi_wiz1b }
+      -padx 20 -pady 10 -command { modpoi_wiz1b }
       pack $modpoi(g,base).fra_bottom.but_prev \
       -side left -anchor se \
       -padx 5 -pady 5 -expand 0
       #--- NEXT button
       button $modpoi(g,base).fra_bottom.but_next \
       -text $caption(modpoi,$wiz,next) -borderwidth 2 \
-      -padx 20 -pady 10 -font $modpoi(font,next) -command { modpoi_paraminit $modpoi(stars,decmin) $modpoi(stars,decmax) $modpoi(stars,heast) $modpoi(stars,hwest) ; modpoi_wiz2 }
+      -padx 20 -pady 10 -command { modpoi_paraminit $modpoi(stars,decmin) $modpoi(stars,decmax) $modpoi(stars,heast) $modpoi(stars,hwest) ; modpoi_wiz2 }
       pack $modpoi(g,base).fra_bottom.but_next \
       -side right -anchor se \
       -padx 5 -pady 5 -expand 0
@@ -714,8 +705,8 @@ proc modpoi_wiz2 { } {
    wm title $modpoi(g,base) $caption(modpoi,wiz2,title)
    #--- Title
    label $modpoi(g,base).lab_title2 \
-   -text $caption(modpoi,wiz2,title2) -borderwidth 2 \
-   -padx 20 -pady 10 -font $modpoi(font,title2)
+   -text $caption(modpoi,wiz2,title2) \
+   -borderwidth 2 -padx 20 -pady 10
    pack $modpoi(g,base).lab_title2 \
    -side top -anchor center \
    -padx 5 -pady 3 -expand 0
@@ -777,7 +768,7 @@ proc modpoi_wiz2 { } {
          button $modpoi(g,base).star_bottom.1.but_color_invariant_$k \
          -bg $col -activebackground $col \
          -text $lab -borderwidth 2 \
-         -padx 10 -pady 0 -font $modpoi(font,starname) -command $command
+         -padx 10 -pady 0 -command $command
          pack $modpoi(g,base).star_bottom.1.but_color_invariant_$k \
          -side top -anchor center \
          -padx 5 -pady [expr int(4*4./$nstars)] -expand 0
@@ -786,7 +777,7 @@ proc modpoi_wiz2 { } {
             button $modpoi(g,base).star_bottom.1.but_color_invariant_$k \
             -bg $col -activebackground $col \
             -text $lab -borderwidth 2 \
-            -padx 10 -pady 0 -font $modpoi(font,starname) -command $command
+            -padx 10 -pady 0 -command $command
             pack $modpoi(g,base).star_bottom.1.but_color_invariant_$k \
             -side top -anchor center \
             -padx 5 -pady [expr int(4*4./$nstars)] -expand 0
@@ -795,7 +786,7 @@ proc modpoi_wiz2 { } {
             button $modpoi(g,base).star_bottom.2.but_color_invariant_$k \
             -bg $col -activebackground $col \
             -text $lab -borderwidth 2 \
-            -padx 10 -pady 0 -font $modpoi(font,starname) -command $command
+            -padx 10 -pady 0 -command $command
             pack $modpoi(g,base).star_bottom.2.but_color_invariant_$k \
             -side top -anchor center \
             -padx 5 -pady [expr int(4*4./$nstars)] -expand 0
@@ -806,7 +797,7 @@ proc modpoi_wiz2 { } {
             button $modpoi(g,base).star_bottom.1.but_color_invariant_$k \
             -bg $col -activebackground $col \
             -text $lab -borderwidth 2 \
-            -padx 10 -pady 0 -font $modpoi(font,starname) -command $command
+            -padx 10 -pady 0 -command $command
             pack $modpoi(g,base).star_bottom.1.but_color_invariant_$k \
             -side top -anchor center \
             -padx 5 -pady [expr int(4*4./$nstars)] -expand 0
@@ -815,7 +806,7 @@ proc modpoi_wiz2 { } {
             button $modpoi(g,base).star_bottom.2.but_color_invariant_$k \
             -bg $col -activebackground $col \
             -text $lab -borderwidth 2 \
-            -padx 10 -pady 0 -font $modpoi(font,starname) -command $command
+            -padx 10 -pady 0 -command $command
             pack $modpoi(g,base).star_bottom.2.but_color_invariant_$k \
             -side top -anchor center \
             -padx 5 -pady [expr int(4*4./$nstars)] -expand 0
@@ -824,7 +815,7 @@ proc modpoi_wiz2 { } {
             button $modpoi(g,base).star_bottom.3.but_color_invariant_$k \
             -bg $col -activebackground $col \
             -text $lab -borderwidth 2 \
-            -padx 10 -pady 0 -font $modpoi(font,starname) -command $command
+            -padx 10 -pady 0 -command $command
             pack $modpoi(g,base).star_bottom.3.but_color_invariant_$k \
             -side top -anchor center \
             -padx 5 -pady [expr int(4*4./$nstars)] -expand 0
@@ -835,7 +826,7 @@ proc modpoi_wiz2 { } {
             button $modpoi(g,base).star_bottom.1.but_color_invariant_$k \
             -bg $col -activebackground $col \
             -text $lab -borderwidth 2 \
-            -padx 10 -pady 0 -font $modpoi(font,starname) -command $command
+            -padx 10 -pady 0 -command $command
             pack $modpoi(g,base).star_bottom.1.but_color_invariant_$k \
             -side top -anchor center \
             -padx 5 -pady [expr int(4*4./$nstars)] -expand 0
@@ -844,7 +835,7 @@ proc modpoi_wiz2 { } {
             button $modpoi(g,base).star_bottom.2.but_color_invariant_$k \
             -bg $col -activebackground $col \
             -text $lab -borderwidth 2 \
-            -padx 10 -pady 0 -font $modpoi(font,starname) -command $command
+            -padx 10 -pady 0 -command $command
             pack $modpoi(g,base).star_bottom.2.but_color_invariant_$k \
             -side top -anchor center \
             -padx 5 -pady [expr int(4*4./$nstars)] -expand 0
@@ -853,7 +844,7 @@ proc modpoi_wiz2 { } {
             button $modpoi(g,base).star_bottom.3.but_color_invariant_$k \
             -bg $col -activebackground $col \
             -text $lab -borderwidth 2 \
-            -padx 10 -pady 0 -font $modpoi(font,starname) -command $command
+            -padx 10 -pady 0 -command $command
             pack $modpoi(g,base).star_bottom.3.but_color_invariant_$k \
             -side top -anchor center \
             -padx 5 -pady [expr int(4*4./$nstars)] -expand 0
@@ -862,7 +853,7 @@ proc modpoi_wiz2 { } {
             button $modpoi(g,base).star_bottom.4.but_color_invariant_$k \
             -bg $col -activebackground $col \
             -text $lab -borderwidth 2 \
-            -padx 10 -pady 0 -font $modpoi(font,starname) -command $command
+            -padx 10 -pady 0 -command $command
             pack $modpoi(g,base).star_bottom.4.but_color_invariant_$k \
             -side top -anchor center \
             -padx 5 -pady [expr int(4*4./$nstars)] -expand 0
@@ -876,7 +867,7 @@ proc modpoi_wiz2 { } {
       #--- PREVIOUS button
       button $modpoi(g,base).fra_bottom.but_prev \
       -text $caption(modpoi,wiz2,prev) -borderwidth 2 \
-      -padx 20 -pady 10 -font $modpoi(font,next) -command { modpoi_wiz1 }
+      -padx 20 -pady 10 -command { modpoi_wiz1 }
       pack $modpoi(g,base).fra_bottom.but_prev \
       -side left -anchor se \
       -padx 5 -pady 5 -expand 0
@@ -884,7 +875,7 @@ proc modpoi_wiz2 { } {
       if {$nk==$nstars} {
          button $modpoi(g,base).fra_bottom.but_next \
          -text $caption(modpoi,wiz2,next) -borderwidth 2 \
-         -padx 20 -pady 10 -font $modpoi(font,next) -command { modpoi_wiz5 }
+         -padx 20 -pady 10 -command { modpoi_wiz5 }
          pack $modpoi(g,base).fra_bottom.but_next \
          -side right -anchor se \
          -padx 5 -pady 5 -expand 0
@@ -957,43 +948,39 @@ proc modpoi_wiz3 { { h0 0 } { d0 0 } { starindex 1 } } {
    wm title $modpoi(g,base) "$caption(modpoi,$wiz,title) $starindex"
    #--- Title
    label $modpoi(g,base).lab_title2 \
-   -text "$caption(modpoi,$wiz,title2) $starindex" -borderwidth 2 \
-   -padx 20 -pady 10 -font $modpoi(font,title2)
+   -text "$caption(modpoi,$wiz,title2) $starindex" \
+   -borderwidth 2 -padx 20 -pady 10
    pack $modpoi(g,base).lab_title2 \
    -side top -anchor center \
    -padx 5 -pady 3 -expand 0
    #--- Label for star name
    label $modpoi(g,base).lab_starname \
    -text $starname -borderwidth 2 \
-   -padx 20 -pady 10 -font $modpoi(font,title2)
+   -padx 20 -pady 10
    pack $modpoi(g,base).lab_starname \
    -side top -anchor center \
    -padx 5 -pady 3 -expand 0
    #--- Label for J2000.0 coordinates
    label $modpoi(g,base).lab_j2000 \
-   -text $caption(modpoi,$wiz,j2000) -borderwidth 2 \
-   -font $modpoi(font,normal)
+   -text $caption(modpoi,$wiz,j2000) -borderwidth 2
    pack $modpoi(g,base).lab_j2000 \
    -side top -anchor center \
    -expand 0
    #--- Label for RADEC J2000.0 coordinates
    label $modpoi(g,base).lab_radecj2000 \
-   -text "RA=$rae DEC=$dece" -borderwidth 2 \
-   -font $modpoi(font,normal)
+   -text "RA=$rae DEC=$dece" -borderwidth 2
    pack $modpoi(g,base).lab_radecj2000 \
    -side top -anchor center \
    -expand 0
    #--- Label for telescope coordinates
    label $modpoi(g,base).lab_tel \
-   -text "\n$caption(modpoi,$wiz,tel)" -borderwidth 2 \
-   -font $modpoi(font,normal)
+   -text "\n$caption(modpoi,$wiz,tel)" -borderwidth 2
    pack $modpoi(g,base).lab_tel \
    -side top -anchor center \
    -expand 0
    #--- Label for RADEC telescope coordinates
    label $modpoi(g,base).lab_radectel \
-   -text "RA=${raadt} DEC=${decadt}" -borderwidth 2 \
-   -font $modpoi(font,normal)
+   -text "RA=${raadt} DEC=${decadt}" -borderwidth 2
    pack $modpoi(g,base).lab_radectel \
    -side top -anchor center \
    -expand 0
@@ -1001,14 +988,14 @@ proc modpoi_wiz3 { { h0 0 } { d0 0 } { starindex 1 } } {
    if { [ ::confTel::getPluginProperty hasCorrectionRefraction ] == "0" } {
       label $modpoi(g,base).lab_comment_1 \
       -text $caption(modpoi,$wiz,comment_1) -borderwidth 2 \
-      -padx 20 -pady 10 -font $modpoi(font,normal)
+      -padx 20 -pady 10
       pack $modpoi(g,base).lab_comment_1 \
       -side top -anchor center \
       -padx 5 -pady 3 -expand 0
    } else {
       label $modpoi(g,base).lab_comment_2 \
       -text $caption(modpoi,$wiz,comment_2) -borderwidth 2 \
-      -padx 20 -pady 10 -font $modpoi(font,normal)
+      -padx 20 -pady 10
       pack $modpoi(g,base).lab_comment_2 \
       -side top -anchor center \
       -padx 5 -pady 3 -expand 0
@@ -1020,14 +1007,14 @@ proc modpoi_wiz3 { { h0 0 } { d0 0 } { starindex 1 } } {
       #--- PREVIOUS button
       button $modpoi(g,base).fra_bottom.but_prev \
       -text $caption(modpoi,$wiz,prev) -borderwidth 2 \
-      -padx 20 -pady 10 -font $modpoi(font,next) -command { modpoi_wiz2 }
+      -padx 20 -pady 10 -command { modpoi_wiz2 }
       pack $modpoi(g,base).fra_bottom.but_prev \
       -side left -anchor se \
       -padx 5 -pady 5 -expand 0
       #--- NEXT button
       button $modpoi(g,base).fra_bottom.but_next \
       -text $caption(modpoi,$wiz,next) -borderwidth 2 \
-      -padx 20 -pady 10 -font $modpoi(font,next) -command $com_next
+      -padx 20 -pady 10 -command $com_next
       pack $modpoi(g,base).fra_bottom.but_next \
       -side right -anchor se \
       -padx 5 -pady 5 -expand 0
@@ -1038,7 +1025,7 @@ proc modpoi_wiz3 { { h0 0 } { d0 0 } { starindex 1 } } {
       set com_cannot "lappend modpoi(starname,choosen) \"$modpoi(starname,actual)\" ; modpoi_wiz3 [lindex $modpoi(stars,h0) $starindex] [lindex $modpoi(stars,dec0) $starindex] $starindex"
       button $modpoi(g,base).but_cannot \
       -text $caption(modpoi,$wiz,cannot) -borderwidth 2 \
-      -padx 20 -pady 3 -font $modpoi(font,cannot) -command $com_cannot
+      -padx 20 -pady 3 -command $com_cannot
       pack $modpoi(g,base).but_cannot \
       -side bottom -anchor center \
       -padx 10 -pady 0 -expand 0 -fill x
@@ -1074,15 +1061,15 @@ proc modpoi_wiz4 { } {
    wm title $modpoi(g,base) "$caption(modpoi,wiz4,title) $starindex"
    #--- Title
    label $modpoi(g,base).lab_title2 \
-   -text "$caption(modpoi,wiz4,title2) $starindex" -borderwidth 2 \
-   -padx 20 -pady 10 -font $modpoi(font,title2)
+   -text "$caption(modpoi,wiz4,title2) $starindex" \
+   -borderwidth 2 -padx 20 -pady 10
    pack $modpoi(g,base).lab_title2 \
    -side top -anchor center \
    -padx 5 -pady 3 -expand 0
    #--- Label for star name to center
    label $modpoi(g,base).lab_starname \
-   -text "$caption(modpoi,wiz4,center) $starname" -borderwidth 2 \
-   -padx 20 -pady 10 -font $modpoi(font,title2)
+   -text "$caption(modpoi,wiz4,center) $starname" \
+   -borderwidth 2 -padx 20 -pady 10
    pack $modpoi(g,base).lab_starname \
    -side top -anchor center \
    -padx 5 -pady 3 -expand 0
@@ -1094,7 +1081,7 @@ proc modpoi_wiz4 { } {
    }
    label $modpoi(g,base).lab_comment \
    -text "$labtext" -borderwidth 2 \
-   -padx 20 -pady 10 -font $modpoi(font,normal)
+   -padx 20 -pady 10
    pack $modpoi(g,base).lab_comment \
    -side top -anchor center \
    -padx 5 -pady 3 -expand 0
@@ -1108,7 +1095,7 @@ proc modpoi_wiz4 { } {
       pack $modpoi(g,base).fra.n -side top -fill x
       #--- Button-design 'N'
       button $modpoi(g,base).fra.n.canv1 -borderwidth 4 \
-         -font [ list {Arial} 18 bold ] \
+         -font $audace(font,arial_12_b) \
          -text "$caption(modpoi,north)" \
          -width 2 \
          -anchor center \
@@ -1119,19 +1106,19 @@ proc modpoi_wiz4 { } {
       pack $modpoi(g,base).fra.we -in $modpoi(g,base).fra -side top -fill x
       #--- Button-design 'E'
       button $modpoi(g,base).fra.we.canv1 -borderwidth 4 \
-         -font [ list {Arial} 18 bold ] \
+         -font $audace(font,arial_12_b) \
          -text "$caption(modpoi,east)" \
          -width 2 \
          -anchor center \
          -relief ridge
       pack $modpoi(g,base).fra.we.canv1 -in $modpoi(g,base).fra.we -expand 1 -side left
       #--- Write the label of speed
-      label $modpoi(g,base).fra.we.lab -font [list {Arial} 18 bold ] -textvariable audace(telescope,labelspeed) \
-      -borderwidth 0 -relief flat -padx 20
+      label $modpoi(g,base).fra.we.lab -font $audace(font,arial_12_b) -textvariable audace(telescope,labelspeed) \
+         -borderwidth 0 -relief flat -padx 20
       pack $modpoi(g,base).fra.we.lab -in $modpoi(g,base).fra.we -expand 1 -side left
       #--- Button-design 'W'
       button $modpoi(g,base).fra.we.canv2 -borderwidth 4 \
-         -font [ list {Arial} 18 bold ] \
+         -font $audace(font,arial_12_b) \
          -text "$caption(modpoi,west)" \
          -width 2 \
          -anchor center \
@@ -1142,7 +1129,7 @@ proc modpoi_wiz4 { } {
       pack $modpoi(g,base).fra.s -in $modpoi(g,base).fra -side top -fill x
       #--- Button-design 'S'
       button $modpoi(g,base).fra.s.canv1 -borderwidth 4 \
-         -font [ list {Arial} 18 bold ] \
+         -font $audace(font,arial_12_b) \
          -text "$caption(modpoi,south)" \
          -width 2 \
          -anchor center \
@@ -1176,14 +1163,14 @@ proc modpoi_wiz4 { } {
       #--- PREVIOUS button
       button $modpoi(g,base).fra_bottom.but_prev \
       -text $caption(modpoi,wiz4,prev) -borderwidth 2 \
-      -padx 10 -pady 10 -font $modpoi(font,next) -command { modpoi_wiz2 }
+      -padx 10 -pady 10 -command { modpoi_wiz2 }
       pack $modpoi(g,base).fra_bottom.but_prev \
       -side left -anchor se \
       -padx 5 -pady 5 -expand 0
       #--- NEXT button
       button $modpoi(g,base).fra_bottom.but_next \
       -text $caption(modpoi,wiz4,next) -borderwidth 2 \
-      -padx 10 -pady 10 -font $modpoi(font,next) -command { modpoi_coord ; modpoi_wiz2 }
+      -padx 10 -pady 10 -command { modpoi_coord ; modpoi_wiz2 }
       pack $modpoi(g,base).fra_bottom.but_next \
       -side right -anchor se \
       -padx 5 -pady 5 -expand 0
@@ -1194,14 +1181,14 @@ proc modpoi_wiz4 { } {
       set com_cannot "lappend modpoi(starname,choosen) \"$modpoi(starname,actual)\" ; modpoi_wiz3 [lindex $modpoi(stars,h0) $starindex] [lindex $modpoi(stars,dec0) $starindex] $starindex"
       button $modpoi(g,base).but_cannot \
       -text $caption(modpoi,wiz4,cannot) -borderwidth 2 \
-      -padx 20 -pady 3 -font $modpoi(font,cannot) -command $com_cannot
+      -padx 20 -pady 3 -command $com_cannot
       pack $modpoi(g,base).but_cannot \
       -side bottom -anchor center \
       -padx 10 -pady 0 -expand 0 -fill x
    } else {
       label $modpoi(g,base).lab_dist \
       -text " " -borderwidth 2 \
-      -padx 10 -pady 10 -font $modpoi(font,normal)
+      -padx 10 -pady 10
       pack $modpoi(g,base).lab_dist \
       -side top -anchor center \
       -padx 5 -pady 3 -expand 0
@@ -1273,14 +1260,14 @@ proc modpoi_wiz5 { } {
    #--- Display name
    label $modpoi(g,base).lab_name \
    -text "[ file rootname [ file tail $modpoi(Filename) ] ]" -borderwidth 2 \
-   -padx 20 -pady 10 -font $modpoi(font,cannot)
+   -padx 20 -pady 10
    pack $modpoi(g,base).lab_name \
    -side top -anchor center \
    -padx 5 -pady 3 -expand 0
    #--- Display the results
    label $modpoi(g,base).lab_res1 \
    -text "$res1" -borderwidth 2 \
-   -padx 20 -pady 10 -font $modpoi(font,result)
+   -padx 20 -pady 10
    pack $modpoi(g,base).lab_res1 \
    -side top -anchor center \
    -padx 5 -pady 3 -expand 0
@@ -1289,14 +1276,14 @@ proc modpoi_wiz5 { } {
       #--- PREVIOUS button
       button $modpoi(g,base).fra_bottom.but_prev \
       -text $caption(modpoi,wiz5,prev) -borderwidth 2 \
-      -padx 10 -pady 10 -font $modpoi(font,next) -command { modpoi_wiz2 }
+      -padx 10 -pady 10 -command { modpoi_wiz2 }
       pack $modpoi(g,base).fra_bottom.but_prev \
       -side left -anchor se \
       -padx 5 -pady 5 -expand 0
       #--- NEXT button
       button $modpoi(g,base).fra_bottom.but_next \
       -text $caption(modpoi,wiz5,next) -borderwidth 2 \
-      -padx 10 -pady 10 -font $modpoi(font,next) -command { recup_position ; modpoi_wiz11 }
+      -padx 10 -pady 10 -command { recup_position ; modpoi_wiz11 }
       pack $modpoi(g,base).fra_bottom.but_next \
       -side right -anchor se \
       -padx 5 -pady 5 -expand 0
@@ -1374,14 +1361,14 @@ proc modpoi_wiz5b { } {
       }
       label $modpoi(g,base).lab_name \
       -text "[ file rootname [ file tail $name ] ]" -borderwidth 2 \
-      -padx 20 -pady 10 -font $modpoi(font,cannot)
+      -padx 20 -pady 10
       pack $modpoi(g,base).lab_name \
       -side top -anchor center \
       -padx 5 -pady 3 -expand 0
       #--- Display the results
       label $modpoi(g,base).lab_res1 \
       -text "$res1" -borderwidth 2 \
-      -padx 20 -pady 10 -font $modpoi(font,result)
+      -padx 20 -pady 10
       pack $modpoi(g,base).lab_res1 \
       -side top -anchor center \
       -padx 5 -pady 3 -expand 0
