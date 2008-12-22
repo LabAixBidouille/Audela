@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.16 2008-12-20 22:21:03 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.17 2008-12-22 09:21:35 robertdelmas Exp $
 #
 
 #============================================================
@@ -695,7 +695,6 @@ proc ::tlscp::cmdGoto { visuNo } {
       #--- Calcul des corrections et affichage dans la Console
       set ad_objet_cata  [ lindex $private($visuNo,list_radec) 0 ]
       set dec_objet_cata [ lindex $private($visuNo,list_radec) 1 ]
-      ::console::disp "\n"
       ::console::disp "$caption(tlscp,coord_catalogue) \n"
       ::console::disp "$caption(tlscp,ad) $ad_objet_cata \n"
       ::console::disp "$caption(tlscp,dec) $dec_objet_cata \n"
