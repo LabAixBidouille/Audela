@@ -1,6 +1,6 @@
 #
 # Fichier : ouranos.cap
-# Mise a jour $Id: ouranos.cap,v 1.5 2008-12-06 18:22:20 robertdelmas Exp $
+# Mise a jour $Id: ouranos.cap,v 1.6 2008-12-22 09:27:47 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,7 +13,7 @@ global caption langage
 
 set caption(ouranos,monture)                     "Ouranos"
 set caption(ouranos,unites)                      "Coordinates"
-set caption(ouranos,visible)                     "Always Visible on Screen"
+set caption(ouranos,raquette)                    "Ouranos Hand Controller"
 set caption(ouranos,on)                          "on"
 set caption(ouranos,off)                         "off"
 set caption(ouranos,ferme)                       "Closed"
@@ -55,7 +55,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(ouranos,monture)                  "Ouranos"
    set caption(ouranos,unites)                   "Coordonnées"
-   set caption(ouranos,visible)                  "Toujours visibles à l'écran"
+   set caption(ouranos,raquette)                 "Raquette Ouranos"
    set caption(ouranos,on)                       "on"
    set caption(ouranos,off)                      "off"
    set caption(ouranos,ferme)                    "Fermé"
@@ -97,7 +97,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(ouranos,monture)                  "Ouranos"
    set caption(ouranos,unites)                   "Coordinates"
-   set caption(ouranos,visible)                  "Sempre visibile sullo schermo"
+   set caption(ouranos,raquette)                 "Pulsantiera Ouranos"
    set caption(ouranos,on)                       "on"
    set caption(ouranos,off)                      "off"
    set caption(ouranos,ferme)                    "Chiuso"
@@ -139,7 +139,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(ouranos,monture)                  "Ouranos"
    set caption(ouranos,unites)                   "Coordenadas"
-   set caption(ouranos,visible)                  "Siempre visible en pantalla"
+   set caption(ouranos,raquette)                 "Controlador de mano Ouranos"
    set caption(ouranos,on)                       "on"
    set caption(ouranos,off)                      "off"
    set caption(ouranos,ferme)                    "Cerrado"
@@ -181,7 +181,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(ouranos,monture)                  "Ouranos"
    set caption(ouranos,unites)                   "Koordinaten"
-   set caption(ouranos,visible)                  "Immer am Bildschirm Sehbar"
+   set caption(ouranos,raquette)                 "Ouranos Hand Kontroller"
    set caption(ouranos,on)                       "ein"
    set caption(ouranos,off)                      "aus"
    set caption(ouranos,ferme)                    "Geschlossen"
@@ -223,7 +223,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(ouranos,monture)                  "Ouranos"
    set caption(ouranos,unites)                   "Coordenadas"
-   set caption(ouranos,visible)                  "Sempre visível no ecrã"
+   set caption(ouranos,raquette)                 "Controlador de mão Ouranos"
    set caption(ouranos,on)                       "on"
    set caption(ouranos,off)                      "off"
    set caption(ouranos,ferme)                    "Fechado"
@@ -265,7 +265,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(ouranos,monture)                  "Ouranos"
    set caption(ouranos,unites)                   "Coordinates"
-   set caption(ouranos,visible)                  "Always Visible on Screen"
+   set caption(ouranos,raquette)                 "Ouranos Hand Controller"
    set caption(ouranos,on)                       "on"
    set caption(ouranos,off)                      "off"
    set caption(ouranos,ferme)                    "Closed"
