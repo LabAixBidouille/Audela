@@ -1,6 +1,6 @@
 #
 # Fichier : tlscp.cap
-# Mise a jour $Id: tlscp.cap,v 1.9 2008-11-22 08:31:02 robertdelmas Exp $
+# Mise a jour $Id: tlscp.cap,v 1.10 2008-12-22 09:20:10 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -35,7 +35,7 @@ set caption(tlscp,probleme)              "Problem"
 set caption(tlscp,entier_positif)        "Exposure time not valid\n(must be a positive integer)"
 
 set caption(tlscp,coord_catalogue)       "Catalogue Coordinates (J2000):"
-set caption(tlscp,coord_corrigees)       "Corrected Coordinates (aberration, \nprecession and nutation):"
+set caption(tlscp,coord_corrigees)       "Corrected Coordinates (aberration, precession and nutation):"
 set caption(tlscp,coord_pointees)        "Coordinates aimed at by the telescope:"
 set caption(tlscp,ad)                    "    RA:"
 set caption(tlscp,dec)                   "    Dec.:"
@@ -124,7 +124,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,entier_positif)     "Temps de pose invalide\n(doit être un nombre positif)"
 
    set caption(tlscp,coord_catalogue)    "Coordonnées catalogue (J2000) :"
-   set caption(tlscp,coord_corrigees)    "Coordonnées corrigées (aberration, \nprécession et nutation) :"
+   set caption(tlscp,coord_corrigees)    "Coordonnées corrigées (aberration, précession et nutation) :"
    set caption(tlscp,coord_pointees)     "Coordonnées pointées par le télescope :"
    set caption(tlscp,ad)                 "    AD :"
    set caption(tlscp,dec)                "    Déc. :"
@@ -213,7 +213,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,entier_positif)     "Tempo di esposizione non valido\n(deve essere un valore positivo)"
 
    set caption(tlscp,coord_catalogue)    "Coordinate da catalogo (J2000):"
-   set caption(tlscp,coord_corrigees)    "Coordinate corrette (aberrazione, \nprecessione e nutazione):"
+   set caption(tlscp,coord_corrigees)    "Coordinate corrette (aberrazione, precessione e nutazione):"
    set caption(tlscp,coord_pointees)     "Coordinate puntate dal telescopio:"
    set caption(tlscp,ad)                 "    AR:"
    set caption(tlscp,dec)                "    Dec.:"
@@ -302,7 +302,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,entier_positif)     "Tiempo de exposición no valido\n(debe ser un número positivo)"
 
    set caption(tlscp,coord_catalogue)    "Coordenadas de catálogo (J2000):"
-   set caption(tlscp,coord_corrigees)    "Coordenadas corregidas (aberración, \nprecesión y nutación):"
+   set caption(tlscp,coord_corrigees)    "Coordenadas corregidas (aberración, precesión y nutación):"
    set caption(tlscp,coord_pointees)     "Coordenadas apuntadas por el telescopio:"
    set caption(tlscp,ad)                 "    RA:"
    set caption(tlscp,dec)                "    Dec.:"
@@ -391,7 +391,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,entier_positif)     "Ungültig Bildleuchtung Zeit \n(muss ein positives Wert sein)"
 
    set caption(tlscp,coord_catalogue)    "Katalog Koordinaten (J2000):"
-   set caption(tlscp,coord_corrigees)    "Korrigierten Koordinaten (Aberration, \nPräzession und Nutation):"
+   set caption(tlscp,coord_corrigees)    "Korrigierten Koordinaten (Aberration, Präzession und Nutation):"
    set caption(tlscp,coord_pointees)     "Übergetragten Koordinaten:"
    set caption(tlscp,ad)                 "    RA:"
    set caption(tlscp,dec)                "    Dek.:"
@@ -480,7 +480,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,entier_positif)     "Tempo de exposição inválido\n(deve ser um numero positivo)"
 
    set caption(tlscp,coord_catalogue)    "Coordenadas catálogo (J2000):"
-   set caption(tlscp,coord_corrigees)    "Coordonadas corrigidas (aberração, \nprecessão e nutação):"
+   set caption(tlscp,coord_corrigees)    "Coordonadas corrigidas (aberração, precessão e nutação):"
    set caption(tlscp,coord_pointees)     "Coordonadas apontadas pelo telescópio:"
    set caption(tlscp,ad)                 "    AR:"
    set caption(tlscp,dec)                "    Dec.:"
@@ -569,7 +569,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,entier_positif)     "Exposure time not valid\n(must be a positive integer)"
 
    set caption(tlscp,coord_catalogue)    "Catalogue Coordinates (J2000):"
-   set caption(tlscp,coord_corrigees)    "Corrected Coordinates (aberration, \nprecession and nutation):"
+   set caption(tlscp,coord_corrigees)    "Corrected Coordinates (aberration, precession and nutation):"
    set caption(tlscp,coord_pointees)     "Coordinates aimed at by the telescope:"
    set caption(tlscp,ad)                 "    RA:"
    set caption(tlscp,dec)                "    Dec.:"
