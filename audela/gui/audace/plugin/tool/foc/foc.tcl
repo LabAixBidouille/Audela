@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise a jour $Id: foc.tcl,v 1.17 2007-10-05 16:07:17 robertdelmas Exp $
+# Mise a jour $Id: foc.tcl,v 1.18 2008-12-22 16:42:02 robertdelmas Exp $
 #
 
 set ::graphik(compteur) {}
@@ -765,7 +765,7 @@ proc focBuildIF { This } {
          frame $This.fra2.fra1 -borderwidth 1 -relief flat
 
             #--- Entry pour exptime
-            entry $This.fra2.fra1.ent1 -font $audace(font,arial_8_b) -textvariable panneau(foc,exptime) \
+            entry $This.fra2.fra1.ent1 -textvariable panneau(foc,exptime) \
                -relief groove -width 6 -justify center
             pack $This.fra2.fra1.ent1 -in $This.fra2.fra1 -side left -fill none -padx 4 -pady 2
 
@@ -802,7 +802,7 @@ proc focBuildIF { This } {
 
          #--- Button '-'
          button $This.fra4.we.canv1 -borderwidth 2 \
-            -font [ list {Arial} 12 bold ] \
+            -font $audace(font,arial_12_b) \
             -text "-" \
             -width 2  \
             -anchor center \
@@ -810,13 +810,13 @@ proc focBuildIF { This } {
          pack $This.fra4.we.canv1 -in $This.fra4.we -expand 0 -side left -padx 2 -pady 2
 
          #--- Write the label of speed for LX200 and compatibles
-         label $This.fra4.we.lab -font [ list {Arial} 12 bold ] -textvariable audace(focus,labelspeed) -width 2 \
-            -borderwidth 0 -relief flat
+         label $This.fra4.we.lab -font $audace(font,arial_12_b) -textvariable audace(focus,labelspeed) \
+            -width 2 -borderwidth 0 -relief flat
          pack $This.fra4.we.lab -in $This.fra4.we -expand 1 -side left
 
          #--- Button '+'
          button $This.fra4.we.canv2 -borderwidth 2 \
-            -font [ list {Arial} 12 bold ] \
+            -font $audace(font,arial_12_b) \
             -text "+" \
             -width 2  \
             -anchor center \
@@ -852,7 +852,7 @@ proc focBuildIF { This } {
          frame $This.fra5.fra1 -borderwidth 1 -relief flat
 
             #--- Label pour nbpas1
-            entry $This.fra5.fra1.lab1 -font $audace(font,arial_8_b) -textvariable audace(focus,nbpas1) \
+            entry $This.fra5.fra1.lab1 -textvariable audace(focus,nbpas1) \
                -relief groove -width 6 -state disabled
             pack $This.fra5.fra1.lab1 -in $This.fra5.fra1 -side left -fill none -padx 4 -pady 2
 
@@ -870,7 +870,7 @@ proc focBuildIF { This } {
          frame $This.fra5.fra2 -borderwidth 1 -relief flat
 
             #--- Entry pour nbpas2
-            entry $This.fra5.fra2.ent3 -font $audace(font,arial_8_b) -textvariable audace(focus,nbpas2) \
+            entry $This.fra5.fra2.ent3 -textvariable audace(focus,nbpas2) \
                -relief groove -width 6 -justify center
             pack $This.fra5.fra2.ent3 -in $This.fra5.fra2 -side left -fill none -padx 4 -pady 2
             bind $This.fra5.fra2.ent3 <Enter> { ::foc::formatFoc }
