@@ -1,6 +1,6 @@
 #
 # Fichier : conftel.cap
-# Mise a jour $Id: conftel.cap,v 1.28 2007-12-18 22:24:36 robertdelmas Exp $
+# Mise a jour $Id: conftel.cap,v 1.29 2008-12-22 09:28:24 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -22,6 +22,8 @@ set caption(conftel,arreter)                          "Stop"
 set caption(conftel,attention)                        "Warning"
 set caption(conftel,connexion_texte1)                 "Mount Connection in Progress..."
 set caption(conftel,connexion_texte2)                 "Please wait a few seconds."
+set caption(conftel,cannotcreatecam)                  "The link with the mount can not be created."
+set caption(conftel,seeconsole)                       "See details in the Terminal screen."
 
 set caption(conftel,mount)                            "Mount"
 
@@ -39,6 +41,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,attention)                     "Attention"
    set caption(conftel,connexion_texte1)              "Veuillez patienter quelques secondes"
    set caption(conftel,connexion_texte2)              "pendant la connexion de votre monture."
+   set caption(conftel,cannotcreatecam)               "La monture ne peut pas être créée."
+   set caption(conftel,seeconsole)                    "Détails dans la Console."
 
    set caption(conftel,mount)                         "Monture"
 
@@ -56,6 +60,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,attention)                     "Attenzione"
    set caption(conftel,connexion_texte1)              "Attendere qualche secondo per"
    set caption(conftel,connexion_texte2)              "la connessione de la montatura."
+   set caption(conftel,cannotcreatecam)               "La montatura non e' stata creata."
+   set caption(conftel,seeconsole)                    "Vedere i dettagli sul Console."
 
    set caption(conftel,mount)                         "Montatura"
 
@@ -73,6 +79,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,attention)                     "!Cuidado¡"
    set caption(conftel,connexion_texte1)              "Conectando con la montura..."
    set caption(conftel,connexion_texte2)              "Por favor, espere unos segundos."
+   set caption(conftel,cannotcreatecam)               "La montura no puede ser creada."
+   set caption(conftel,seeconsole)                    "Ver detalles en la Consola."
 
    set caption(conftel,mount)                         "Montura"
 
@@ -90,6 +98,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,attention)                     "Achtung"
    set caption(conftel,connexion_texte1)              "Bitte, einige Sekunden warten"
    set caption(conftel,connexion_texte2)              "während das Montierung Anschluß."
+   set caption(conftel,cannotcreatecam)               "Das Montierung kann nicht hergestellt werden."
+   set caption(conftel,seeconsole)                    "Siehe Details auf der Konsole."
 
    set caption(conftel,mount)                         "Montierung"
 
@@ -107,6 +117,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,attention)                     "Aviso"
    set caption(conftel,connexion_texte1)              "Ligação da Montagem em curso..."
    set caption(conftel,connexion_texte2)              "Por favor aguarde alguns segundos."
+   set caption(conftel,cannotcreatecam)               "Da montagem não pode ser criada."
+   set caption(conftel,seeconsole)                    "Ver detalhes na Consola."
 
    set caption(conftel,mount)                         "Montagem"
 
@@ -124,6 +136,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,attention)                     "Warning"
    set caption(conftel,connexion_texte1)              "Mount Connection in Progress..."
    set caption(conftel,connexion_texte2)              "Please wait a few seconds."
+   set caption(conftel,cannotcreatecam)               "The link with the mount can not be created."
+   set caption(conftel,seeconsole)                    "See details in the Terminal screen."
 
    set caption(conftel,mount)                         "Mount"
 
