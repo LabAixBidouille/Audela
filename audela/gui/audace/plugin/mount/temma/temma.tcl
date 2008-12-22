@@ -2,7 +2,7 @@
 # Fichier : temma.tcl
 # Description : Fenetre de configuration pour le parametrage du suivi d'objets mobiles pour la monture Temma
 # Auteur : Robert DELMAS
-# Mise a jour $Id: temma.tcl,v 1.20 2008-11-22 22:08:01 robertdelmas Exp $
+# Mise a jour $Id: temma.tcl,v 1.21 2008-12-22 09:27:20 robertdelmas Exp $
 #
 
 namespace eval ::temma {
@@ -14,7 +14,7 @@ namespace eval ::temma {
 }
 
 #
-# ::temma::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::temma::getPluginTitle { } {
@@ -24,7 +24,7 @@ proc ::temma::getPluginTitle { } {
 }
 
 #
-#  ::temma::getPluginHelp
+# getPluginHelp
 #     Retourne la documentation du plugin
 #
 proc ::temma::getPluginHelp { } {
@@ -32,7 +32,7 @@ proc ::temma::getPluginHelp { } {
 }
 
 #
-# ::temma::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::temma::getPluginType { } {
@@ -40,7 +40,7 @@ proc ::temma::getPluginType { } {
 }
 
 #
-# ::temma::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::temma::getPluginOS { } {
@@ -48,7 +48,7 @@ proc ::temma::getPluginOS { } {
 }
 
 #
-# ::temma::getTelNo
+# getTelNo
 #    Retourne le numero de la monture
 #
 proc ::temma::getTelNo { } {
@@ -58,7 +58,7 @@ proc ::temma::getTelNo { } {
 }
 
 #
-# ::temma::isReady
+# isReady
 #    Indique que la monture est prete
 #    Retourne "1" si la monture est prete, sinon retourne "0"
 #
@@ -75,7 +75,7 @@ proc ::temma::isReady { } {
 }
 
 #
-# ::temma::initPlugin
+# initPlugin
 #    Initialise les variables conf(temma,...)
 #
 proc ::temma::initPlugin { } {
@@ -103,7 +103,7 @@ proc ::temma::initPlugin { } {
 }
 
 #
-# ::temma::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::temma::confToWidget { } {
@@ -123,7 +123,7 @@ proc ::temma::confToWidget { } {
 }
 
 #
-# ::temma::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::temma::widgetToConf { } {
@@ -143,7 +143,7 @@ proc ::temma::widgetToConf { } {
 }
 
 #
-# ::temma::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la monture Temma
 #
 proc ::temma::fillConfigPage { frm } {
@@ -359,86 +359,95 @@ proc ::temma::fillConfigPage { frm } {
 }
 
 #
-# ::temma::configureMonture
+# configureMonture
 #    Configure la monture Temma en fonction des donnees contenues dans les variables conf(temma,...)
 #
 proc ::temma::configureMonture { } {
    variable private
    global caption conf
 
-   #--- Je cree la monture
-   set telNo [ tel::create temma $conf(temma,port) ]
-   if { $conf(temma,modele) == "0" } {
-      set private(modele) $caption(temma,modele_1)
-   } elseif { $conf(temma,modele) == "1" } {
-      set private(modele) $caption(temma,modele_2)
-   } else {
-      set private(modele) $caption(temma,modele_3)
+   set catchResult [ catch {
+      #--- Je cree la monture
+      set telNo [ tel::create temma $conf(temma,port) ]
+      if { $conf(temma,modele) == "0" } {
+         set private(modele) $caption(temma,modele_1)
+      } elseif { $conf(temma,modele) == "1" } {
+         set private(modele) $caption(temma,modele_2)
+      } else {
+         set private(modele) $caption(temma,modele_3)
+      }
+      #--- J'affiche un message d'information dans la Console
+      ::console::affiche_entete "$caption(temma,port_temma) ($private(modele)) \
+         $caption(temma,2points) $conf(temma,port)\n"
+      #--- Lit et affiche la version du Temma
+      set version [ tel$telNo firmware ]
+      ::console::affiche_entete "$caption(temma,version) $version\n"
+      ::console::affiche_saut "\n"
+      #--- Demande et recoit la latitude
+      set latitude_temma [ tel$telNo getlatitude ]
+      #--- Mise en forme de la latitude du lieu du format Temma au format d'affichage
+      set signe_lat [ string range $latitude_temma 0 0 ]
+      if { $signe_lat == "-" } {
+         set signe_lat "S"
+         set lat_deg [ lindex [ mc_angle2dms $latitude_temma 90 zero ] 0 ]
+         set lat_deg [ string range $lat_deg 1 2 ]
+      } else {
+         set signe_lat "N"
+         set lat_deg [ lindex [ mc_angle2dms $latitude_temma 90 zero ] 0 ]
+      }
+      set lat_min [ lindex [ mc_angle2dms $latitude_temma 90 zero ] 1 ]
+      set lat_min_deci [ format "%.1f" [ expr [ lindex [ mc_angle2dms $latitude_temma 90 zero ] 2 ] / 60.0 ] ]
+      set lat_min_deci [ string range $lat_min_deci 2 2 ]
+      set latitude_temma "$signe_lat $lat_deg° $lat_min.$lat_min_deci'"
+      #--- Affichage de la latitude
+      ::console::affiche_entete "$caption(temma,init_module)\n"
+      ::console::affiche_entete "$caption(temma,latitude) $latitude_temma\n\n"
+      #--- Prise en compte des encodeurs
+      tel$telNo encoder "1"
+      #--- Force la mise en marche des moteurs
+      tel$telNo radec motor on
+      #--- Prise en compte des corrections de la vitesse normale en AD et en Dec.
+      if { $conf(temma,liaison) == "1" } {
+         tel$telNo correctionspeed $conf(temma,correc_AD) $conf(temma,correc_AD)
+      } else {
+         tel$telNo correctionspeed $conf(temma,correc_AD) $conf(temma,correc_Dec)
+      }
+      #--- Correction de la vitesse de suivi en ad et en dec
+      if { $conf(temma,type) == "0" } {
+         tel$telNo driftspeed 0 0
+         ::console::affiche_resultat "$caption(temma,mobile_etoile)\n\n"
+      } elseif { $conf(temma,type) == "1" } {
+         tel$telNo driftspeed $conf(temma,suivi_ad) $conf(temma,suivi_dec)
+         set correction_suivi [ tel$telNo driftspeed ]
+         ::console::affiche_resultat "$caption(temma,ctl_mobile:)\n"
+         ::console::affiche_resultat "$caption(temma,mobile_ad) $caption(temma,2points)\
+            [ lindex $correction_suivi 0 ]\n"
+         ::console::affiche_resultat "$caption(temma,mobile_dec) $caption(temma,2points)\
+            [ lindex $correction_suivi 1 ]\n\n"
+      }
+      #--- Affichage de la position du telescope
+      if { [ ::temma::isReady ] == 1 } {
+         ::telescope::monture_allemande
+      }
+      #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
+      set linkNo [ ::confLink::create $conf(temma,port) "tel$telNo" "control" [ tel$telNo product ] ]
+      #--- Je change de variable
+      set private(telNo) $telNo
+      #--- Gestion des boutons actifs/inactifs
+      ::temma::confTemma
+      ::temma::configCorrectionTemma
+   } ]
+
+   if { $catchResult == "1" } {
+      #--- En cas d'erreur, je libere toutes les ressources allouees
+      ::temma::stop
+      #--- Je transmets l'erreur a la procedure appelante
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo
    }
-   #--- J'affiche un message d'information dans la Console
-   console::affiche_erreur "$caption(temma,port_temma) ($private(modele)) \
-      $caption(temma,2points) $conf(temma,port)\n"
-   #--- Lit et affiche la version du Temma
-   set version [ tel$telNo firmware ]
-   console::affiche_erreur "$caption(temma,version) $version\n"
-   console::affiche_saut "\n"
-   #--- Demande et recoit la latitude
-   set latitude_temma [ tel$telNo getlatitude ]
-   #--- Mise en forme de la latitude du lieu du format Temma au format d'affichage
-   set signe_lat [ string range $latitude_temma 0 0 ]
-   if { $signe_lat == "-" } {
-      set signe_lat "S"
-      set lat_deg [ lindex [ mc_angle2dms $latitude_temma 90 zero ] 0 ]
-      set lat_deg [ string range $lat_deg 1 2 ]
-   } else {
-      set signe_lat "N"
-      set lat_deg [ lindex [ mc_angle2dms $latitude_temma 90 zero ] 0 ]
-   }
-   set lat_min [ lindex [ mc_angle2dms $latitude_temma 90 zero ] 1 ]
-   set lat_min_deci [ format "%.1f" [ expr [ lindex [ mc_angle2dms $latitude_temma 90 zero ] 2 ] / 60.0 ] ]
-   set lat_min_deci [ string range $lat_min_deci 2 2 ]
-   set latitude_temma "$signe_lat $lat_deg° $lat_min.$lat_min_deci'"
-   #--- Affichage de la latitude
-   ::console::affiche_erreur "$caption(temma,init_module)\n"
-   ::console::affiche_erreur "$caption(temma,latitude) $latitude_temma\n\n"
-   #--- Prise en compte des encodeurs
-   tel$telNo encoder "1"
-   #--- Force la mise en marche des moteurs
-   tel$telNo radec motor on
-   #--- Prise en compte des corrections de la vitesse normale en AD et en Dec.
-   if { $conf(temma,liaison) == "1" } {
-      tel$telNo correctionspeed $conf(temma,correc_AD) $conf(temma,correc_AD)
-   } else {
-      tel$telNo correctionspeed $conf(temma,correc_AD) $conf(temma,correc_Dec)
-   }
-   #--- Correction de la vitesse de suivi en ad et en dec
-   if { $conf(temma,type) == "0" } {
-      tel$telNo driftspeed 0 0
-      ::console::affiche_resultat "$caption(temma,mobile_etoile)\n\n"
-   } elseif { $conf(temma,type) == "1" } {
-      tel$telNo driftspeed $conf(temma,suivi_ad) $conf(temma,suivi_dec)
-      set correction_suivi [ tel$telNo driftspeed ]
-      ::console::affiche_resultat "$caption(temma,ctl_mobile:)\n"
-      ::console::affiche_resultat "$caption(temma,mobile_ad) $caption(temma,2points)\
-         [ lindex $correction_suivi 0 ]\n"
-      ::console::affiche_resultat "$caption(temma,mobile_dec) $caption(temma,2points)\
-         [ lindex $correction_suivi 1 ]\n\n"
-   }
-   #--- Affichage de la position du telescope
-   if { [ ::temma::isReady ] == 1 } {
-      ::telescope::monture_allemande
-   }
-   #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
-   set linkNo [ ::confLink::create $conf(temma,port) "tel$telNo" "control" [ tel$telNo product ] ]
-   #--- Je change de variable
-   set private(telNo) $telNo
-   #--- Gestion des boutons actifs/inactifs
-   ::temma::confTemma
-   ::temma::configCorrectionTemma
 }
 
 #
-# ::temma::stop
+# stop
 #    Arrete la monture Temma
 #
 proc ::temma::stop { } {
@@ -463,7 +472,7 @@ proc ::temma::stop { } {
 }
 
 #
-# ::temma::confTemma
+# confTemma
 # Permet d'activer ou de désactiver les boutons
 #
 proc ::temma::confTemma { } {
@@ -498,7 +507,7 @@ proc ::temma::confTemma { } {
 }
 
 #
-# ::temma::confTemmaInactif
+# confTemmaInactif
 #    Permet de desactiver le bouton a l'arret de la monture
 #
 proc ::temma::confTemmaInactif { } {
@@ -517,7 +526,7 @@ proc ::temma::confTemmaInactif { } {
 }
 
 #
-# ::temma::configCorrectionTemma
+# configCorrectionTemma
 # Permet d'afficher une ou deux echelles de reglage de la vitesse normale de correction
 #
 proc ::temma::configCorrectionTemma { } {
@@ -593,7 +602,7 @@ proc ::temma::configCorrectionTemma { } {
 }
 
 #
-# ::temma::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :

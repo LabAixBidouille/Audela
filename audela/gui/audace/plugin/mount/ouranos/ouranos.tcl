@@ -2,7 +2,7 @@
 # Fichier : ouranos.tcl
 # Description : Configuration de la monture Ouranos
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ouranos.tcl,v 1.14 2008-12-20 22:59:44 robertdelmas Exp $
+# Mise a jour $Id: ouranos.tcl,v 1.15 2008-12-22 09:27:10 robertdelmas Exp $
 #
 
 namespace eval ::ouranos {
@@ -14,7 +14,7 @@ namespace eval ::ouranos {
 }
 
 #
-# ::ouranos::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::ouranos::getPluginTitle { } {
@@ -24,7 +24,7 @@ proc ::ouranos::getPluginTitle { } {
 }
 
 #
-#  ::ouranos::getPluginHelp
+# getPluginHelp
 #     Retourne la documentation du plugin
 #
 proc ::ouranos::getPluginHelp { } {
@@ -32,7 +32,7 @@ proc ::ouranos::getPluginHelp { } {
 }
 
 #
-# ::ouranos::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::ouranos::getPluginType { } {
@@ -40,7 +40,7 @@ proc ::ouranos::getPluginType { } {
 }
 
 #
-# ::ouranos::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::ouranos::getPluginOS { } {
@@ -48,7 +48,7 @@ proc ::ouranos::getPluginOS { } {
 }
 
 #
-# ::ouranos::getTelNo
+# getTelNo
 #    Retourne le numero de la monture
 #
 proc ::ouranos::getTelNo { } {
@@ -58,7 +58,7 @@ proc ::ouranos::getTelNo { } {
 }
 
 #
-# ::ouranos::isReady
+# isReady
 #    Indique que la monture est prete
 #    Retourne "1" si la monture est prete, sinon retourne "0"
 #
@@ -75,12 +75,12 @@ proc ::ouranos::isReady { } {
 }
 
 #
-# ::ouranos::initPlugin
+# initPlugin
 #    Initialise les variables conf(ouranos,...)
 #
 proc ::ouranos::initPlugin { } {
    variable private
-   global audace conf
+   global conf
 
    #--- Initialisation
    set private(telNo)   "0"
@@ -103,12 +103,12 @@ proc ::ouranos::initPlugin { } {
    if { ! [ info exists conf(ouranos,tjrsvisible) ] } { set conf(ouranos,tjrsvisible) "0" }
 
    #--- Initialisation des fenetres d'affichage des coordonnees AD et Dec.
-   if { ! [ info exists conf(ouranos,wmgeometry) ] }     { set conf(ouranos,wmgeometry)     "200x70+640+268" }
-   if { ! [ info exists conf(ouranos,x10,wmgeometry) ] } { set conf(ouranos,x10,wmgeometry) "850x500+0+0" }
+   if { ! [ info exists conf(ouranos,wmgeometry) ] }    { set conf(ouranos,wmgeometry)    "200x70+646+240" }
+   if { ! [ info exists conf(ouranos,wmgeometryX10) ] } { set conf(ouranos,wmgeometryX10) "850x500+0+0" }
 }
 
 #
-# ::ouranos::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::ouranos::confToWidget { } {
@@ -119,11 +119,13 @@ proc ::ouranos::confToWidget { } {
    if { $private(lecture) == "0" } {
       ::ouranos::init_ouranos
    }
-   set private(port) $conf(ouranos,port)
+   set private(port)          $conf(ouranos,port)
+   set private(wmgeometry)    $conf(ouranos,wmgeometry)
+   set private(wmgeometryX10) $conf(ouranos,wmgeometryX10)
 }
 
 #
-# ::ouranos::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::ouranos::widgetToConf { } {
@@ -142,12 +144,29 @@ proc ::ouranos::widgetToConf { } {
 }
 
 #
-# ::ouranos::fillConfigPage
+# recupPosDim
+#    Permet de recuperer et de sauvegarder la position de la fenetre de configuration
+#
+proc ::ouranos::recupPosDim { } {
+   variable private
+   global conf
+
+   if { [ winfo exists .tjrsvisible ] } {
+      set private(wmgeometry) [ wm geometry .tjrsvisible ]
+      set conf(ouranos,wmgeometry) $private(wmgeometry)
+   } elseif { [ winfo exists .tjrsvisibleX10 ] } {
+      set private(wmgeometryX10) [ wm geometry .tjrsvisibleX10 ]
+      set conf(ouranos,wmgeometryX10) $private(wmgeometryX10)
+   }
+}
+
+#
+# fillConfigPage
 #    Interface de configuration de la monture Ouranos
 #
 proc ::ouranos::fillConfigPage { frm } {
    variable private
-   global audace caption color conf
+   global caption color
 
    #--- Initialise une variable locale
    set private(frm) $frm
@@ -244,7 +263,7 @@ proc ::ouranos::fillConfigPage { frm } {
    pack $frm.port -in $frm.frame1 -anchor center -side left -padx 0 -pady 5
 
    #--- Selection affichage toujours visibles ou non
-   checkbutton $frm.visible -text "$caption(ouranos,visible)" -highlightthickness 0 \
+   checkbutton $frm.visible -text "$caption(ouranos,raquette)" -highlightthickness 0 \
       -variable ::ouranos::private(tjrsvisible) -onvalue 1 -offvalue 0 \
       -command { ::ouranos::tjrsVisible }
    pack $frm.visible -in $frm.frame1 -anchor center -side right -padx 13 -pady 5
@@ -349,7 +368,7 @@ proc ::ouranos::fillConfigPage { frm } {
    pack $labelName -side top -fill x -pady 2
 
    #---
-   if [ winfo exists $audace(base).tjrsvisible ] {
+   if [ winfo exists .tjrsvisible ] {
       set private(tjrsvisible) "1"
    }
    if { $private(lecture) == "1" } {
@@ -361,50 +380,59 @@ proc ::ouranos::fillConfigPage { frm } {
 }
 
 #
-# ::ouranos::configureMonture
+# configureMonture
 #    Configure la monture Ouranos en fonction des donnees contenues dans les variables conf(ouranos,...)
 #
 proc ::ouranos::configureMonture { } {
    variable private
    global audace caption conf
 
-   #--- Initialisation
-   set conf(raquette) "0"
-   #--- Je cree la monture
-   set telNo [ tel::create ouranos $conf(ouranos,port) -resol_ra $conf(ouranos,cod_ra) \
-      -resol_dec $conf(ouranos,cod_dec) -initial_dec $conf(ouranos,init) ]
-   #--- J'initialise la position de l'observateur
-   tel$telNo home $::audace(posobs,observateur,gps)
-   #--- J'initialise le sens de rotation des codeurs
-   tel$telNo invert $conf(ouranos,inv_ra) $conf(ouranos,inv_dec)
-   #--- J'affiche un message d'information dans la Console
-   console::affiche_erreur "$caption(ouranos,port_ouranos) $caption(ouranos,2points)\
-      $conf(ouranos,port)\n"
-   console::affiche_erreur "$caption(ouranos,res_codeurs)\n"
-   console::affiche_erreur "$caption(ouranos,ra) $caption(ouranos,2points)\
-      $conf(ouranos,cod_ra) $caption(ouranos,pas) $caption(ouranos,et) $caption(ouranos,dec)\
-      $caption(ouranos,2points) $conf(ouranos,cod_dec) $caption(ouranos,pas)\n"
-   console::affiche_saut "\n"
-   #--- Je nettoye l'affichage les codeurs
-   set private(coord_ra)  ""
-   set private(coord_dec) ""
-   #--- J'affiche le statut du port
-   set private(status) $caption(ouranos,on)
-   #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
-   set linkNo [ ::confLink::create $conf(ouranos,port) "tel$telNo" "control" [ tel$telNo product ] ]
-   #--- Je change de variable
-   set private(telNo) $telNo
-   #--- Gestion des boutons actifs/inactifs
-   ::ouranos::confOuranos
+   set catchResult [ catch {
+      #--- Initialisation
+      set conf(raquette) "0"
+      #--- Je cree la monture
+      set telNo [ tel::create ouranos $conf(ouranos,port) -resol_ra $conf(ouranos,cod_ra) \
+         -resol_dec $conf(ouranos,cod_dec) -initial_dec $conf(ouranos,init) ]
+      #--- J'initialise la position de l'observateur
+      tel$telNo home $::audace(posobs,observateur,gps)
+      #--- J'initialise le sens de rotation des codeurs
+      tel$telNo invert $conf(ouranos,inv_ra) $conf(ouranos,inv_dec)
+      #--- J'affiche un message d'information dans la Console
+      ::console::affiche_entete "$caption(ouranos,port_ouranos) $caption(ouranos,2points)\
+         $conf(ouranos,port)\n"
+      ::console::affiche_entete "$caption(ouranos,res_codeurs)\n"
+      ::console::affiche_entete "$caption(ouranos,ra) $caption(ouranos,2points)\
+         $conf(ouranos,cod_ra) $caption(ouranos,pas) $caption(ouranos,et) $caption(ouranos,dec)\
+         $caption(ouranos,2points) $conf(ouranos,cod_dec) $caption(ouranos,pas)\n"
+      ::console::affiche_saut "\n"
+      #--- Je nettoye l'affichage les codeurs
+      set private(coord_ra)  ""
+      set private(coord_dec) ""
+      #--- J'affiche le statut du port
+      set private(status) $caption(ouranos,on)
+      #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
+      set linkNo [ ::confLink::create $conf(ouranos,port) "tel$telNo" "control" [ tel$telNo product ] ]
+      #--- Je change de variable
+      set private(telNo) $telNo
+      #--- Gestion des boutons actifs/inactifs
+      ::ouranos::confOuranos
 
-   #--- Si Ouranos est une monture secondaire, c'est AudeCom qui specifie l'utilisation de la raquette
-   if { [ ::telescope::getSecondaryTelNo ] != "0" } {
-      set conf(raquette) $::audecom::private(raquette)
+      #--- Si Ouranos est une monture secondaire, c'est AudeCom qui specifie l'utilisation de la raquette
+      if { [ ::telescope::getSecondaryTelNo ] != "0" } {
+         set conf(raquette) $::audecom::private(raquette)
+      }
+   } ]
+
+   if { $catchResult == "1" } {
+      #--- En cas d'erreur, je libere toutes les ressources allouees
+      ::ouranos::stop
+      #--- Je transmets l'erreur a la procedure appelante
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo
    }
 }
 
 #
-# ::ouranos::stop
+# stop
 #    Arrete la monture Ouranos
 #
 proc ::ouranos::stop { } {
@@ -432,7 +460,7 @@ proc ::ouranos::stop { } {
 }
 
 #
-# ::ouranos::init_ouranos
+# init_ouranos
 # Initialisation de variables
 #
 proc ::ouranos::init_ouranos { } {
@@ -454,20 +482,18 @@ proc ::ouranos::init_ouranos { } {
 }
 
 #
-# ::ouranos::find_res
+# find_res
 # Recherche la resolution des 2 codeurs
 #
 proc ::ouranos::find_res { } {
    variable private
-   global audace
 
    #--- Effacement des fenetres auxiliaires
    set private(tjrsvisible) "0"
-   if { [ winfo exists $audace(base).tjrsvisible ] } {
-      destroy $audace(base).tjrsvisible
-   }
-   if { [ winfo exists $audace(base).tjrsvisible_x10 ] } {
-      destroy $audace(base).tjrsvisible_x10
+   if { [ winfo exists .tjrsvisible ] } {
+      destroy .tjrsvisible
+   } elseif { [ winfo exists .tjrsvisibleX10 ] } {
+      destroy .tjrsvisibleX10
    }
 
    #--- Initialisation de variables
@@ -501,23 +527,22 @@ proc ::ouranos::find_res { } {
 }
 
 #
-# ::ouranos::close_com
+# close_com
 # Ferme le port serie s'il n'est pas deja ferme
 #
 proc ::ouranos::close_com { } {
    variable private
-   global audace caption conf
+   global caption conf
 
    #--- Initialisation de variables
    set private(lecture) "0"
    set private(find)    "0"
    #--- Effacement des fenetres auxiliaires
    set private(tjrsvisible) "0"
-   if { [ winfo exists $audace(base).tjrsvisible ] } {
-      destroy $audace(base).tjrsvisible
-   }
-   if { [ winfo exists $audace(base).tjrsvisible_x10 ] } {
-      destroy $audace(base).tjrsvisible_x10
+   if { [ winfo exists .tjrsvisible ] } {
+      destroy .tjrsvisible
+   } elseif { [ winfo exists .tjrsvisibleX10 ] } {
+      destroy .tjrsvisibleX10
    }
    #--- Traitement des autres widgets
    if { [ info exists private(frm) ] } {
@@ -539,12 +564,12 @@ proc ::ouranos::close_com { } {
    #--- Fermeture du port et affichage du status
    tel$private(telNo) close
    set private(status) $caption(ouranos,off)
-   console::affiche_erreur "$caption(ouranos,port_ouranos) ($conf(ouranos,port))\
+   ::console::affiche_entete "$caption(ouranos,port_ouranos) ($conf(ouranos,port))\
       $caption(ouranos,2points) $caption(ouranos,ferme)\n\n"
 }
 
 #
-# ::ouranos::go_ouranos
+# go_ouranos
 # Lance la lecture des 2 codeurs
 #
 proc ::ouranos::go_ouranos { } {
@@ -561,12 +586,12 @@ proc ::ouranos::go_ouranos { } {
 }
 
 #
-# ::ouranos::read_coord
+# read_coord
 # Lecture des 2 codeurs et affichage des positions
 #
 proc ::ouranos::read_coord { } {
    variable private
-   global audace caption
+   global caption
 
    #--- Affichage dans l'onglet Ouranos
    if { $private(find) == "0" } {
@@ -576,17 +601,17 @@ proc ::ouranos::read_coord { } {
    }
    #--- Affichage dans la boite auxiliaire
    if { $private(tjrsvisible) == "1" } {
-      if { [ winfo exists $audace(base).tjrsvisible ] } {
-         $audace(base).tjrsvisible.lab1 configure -text "$caption(ouranos,ad1) $private(coord_ra)"
-         $audace(base).tjrsvisible.lab2 configure -text "$caption(ouranos,dec1) $private(coord_dec)"
+      if { [ winfo exists .tjrsvisible ] } {
+         .tjrsvisible.lab1 configure -text "$caption(ouranos,ad1) $private(coord_ra)"
+         .tjrsvisible.lab2 configure -text "$caption(ouranos,dec1) $private(coord_dec)"
       }
-      if { [ winfo exists $audace(base).tjrsvisible_x10 ] } {
-         $audace(base).tjrsvisible_x10.lab1 configure -text "$caption(ouranos,ad1)\n$private(coord_ra)"
-         $audace(base).tjrsvisible_x10.lab2 configure -text "$caption(ouranos,dec1)\n$private(coord_dec)"
+      if { [ winfo exists .tjrsvisibleX10 ] } {
+         .tjrsvisibleX10.lab1 configure -text "$caption(ouranos,ad1)\n$private(coord_ra)"
+         .tjrsvisibleX10.lab2 configure -text "$caption(ouranos,dec1)\n$private(coord_dec)"
       }
    } else {
-      destroy $audace(base).tjrsvisible
-      destroy $audace(base).tjrsvisible_x10
+      destroy .tjrsvisible
+      destroy .tjrsvisibleX10
    }
    #--- Et on recommence...
    if { $private(lecture) == "1" } {
@@ -599,7 +624,7 @@ proc ::ouranos::read_coord { } {
 }
 
 #
-# ::ouranos::show1
+# show1
 # Affichage en mode lecture (pas codeurs ou coordonnees)
 #
 proc ::ouranos::show1 { } {
@@ -636,7 +661,7 @@ proc ::ouranos::show1 { } {
 }
 
 #
-# ::ouranos::show2
+# show2
 # Affichage des pas codeurs en mode reglage
 #
 proc ::ouranos::show2 { } {
@@ -664,118 +689,137 @@ proc ::ouranos::show2 { } {
 }
 
 #
-# ::ouranos::tjrsVisible
+# tjrsVisible
 # Affichage visible des coordonnees ou des pas en petit
 #
 proc ::ouranos::tjrsVisible { } {
    variable private
-   global audace caption conf
+   global audace caption color conf
 
    if { $private(tjrsvisible) == "0" } {
-      destroy $audace(base).tjrsvisible
+      if { [ winfo exists .tjrsvisible ] } {
+         destroy .tjrsvisible
+      } elseif { [ winfo exists .tjrsvisibleX10 ] } {
+         destroy .tjrsvisibleX10
+      }
    } else {
-      if { [ winfo exists $audace(base).tjrsvisible ] } {
-         destroy $audace(base).tjrsvisible
+      set private(dim) "0"
+      if { [ winfo exists .tjrsvisible ] } {
+         destroy .tjrsvisible
       }
-      toplevel $audace(base).tjrsvisible
-      wm transient $audace(base).tjrsvisible $audace(base)
-      wm resizable $audace(base).tjrsvisible 0 0
-      wm title $audace(base).tjrsvisible "$caption(ouranos,pos_tel)"
-      wm protocol $audace(base).tjrsvisible WM_DELETE_WINDOW {
-         set private(tjrsvisible) "0"
-         destroy $audace(base).tjrsvisible
+      toplevel .tjrsvisible -bg $color(blue_pad)
+      wm transient .tjrsvisible $audace(base)
+      wm resizable .tjrsvisible 0 0
+      wm title .tjrsvisible "$caption(ouranos,pos_tel)"
+      wm protocol .tjrsvisible WM_DELETE_WINDOW {
+         ::ouranos::recupPosDim
+         set ::ouranos::private(tjrsvisible) "0"
+         destroy .tjrsvisible
       }
-      if { [ info exists conf(ouranos,wmgeometry) ] == "1" } {
-         wm geometry $audace(base).tjrsvisible $conf(ouranos,wmgeometry)
-      } else {
-         wm geometry $audace(base).tjrsvisible 200x70+370+375
-      }
+      wm geometry .tjrsvisible $private(wmgeometry)
 
       #--- Cree l'affichage d'AD et Dec
-      label $audace(base).tjrsvisible.lab1 -borderwidth 1 -anchor w
-      pack $audace(base).tjrsvisible.lab1 -padx 10 -pady 2
-      label $audace(base).tjrsvisible.lab2 -borderwidth 1 -anchor w
-      pack $audace(base).tjrsvisible.lab2 -padx 10 -pady 2
+      label .tjrsvisible.lab1 -borderwidth 1 -anchor w -fg $color(white) -bg $color(blue_pad)
+      pack .tjrsvisible.lab1 -padx 10 -pady 2
+      label .tjrsvisible.lab2 -borderwidth 1 -anchor w -fg $color(white) -bg $color(blue_pad)
+      pack .tjrsvisible.lab2 -padx 10 -pady 2
 
       #--- Bouton radio x1
-      radiobutton $audace(base).tjrsvisible.rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -text "$caption(ouranos,x1)" -value 0 -variable ::ouranos::private(dim) -command {
-            destroy $audace(base).tjrsvisible_x10 ; ::ouranos::tjrsVisible
+      radiobutton .tjrsvisible.rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
+         -fg $color(white) -bg $color(blue_pad) -text "$caption(ouranos,x1)" \
+         -activeforeground $color(white) -activebackground $color(blue_pad) \
+         -selectcolor $color(blue_pad) -highlightbackground $color(blue_pad)\
+         -variable ::ouranos::private(dim) -value 0 \
+         -command {
+            destroy .tjrsvisibleX10
+            ::ouranos::tjrsVisible
          }
-      pack $audace(base).tjrsvisible.rad0 -padx 20 -pady 2 -side left
+      pack .tjrsvisible.rad0 -padx 20 -pady 2 -side left
       #--- Bouton radio x10
-      radiobutton $audace(base).tjrsvisible.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -text "$caption(ouranos,x5)" -value 1 -variable ::ouranos::private(dim) -command {
-            destroy $audace(base).tjrsvisible ; ::ouranos::tjrsVisibleX10
+      radiobutton .tjrsvisible.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
+         -fg $color(white) -bg $color(blue_pad) -text "$caption(ouranos,x5)" \
+         -activeforeground $color(white) -activebackground $color(blue_pad) \
+         -selectcolor $color(blue_pad) -highlightbackground $color(blue_pad)\
+         -variable ::ouranos::private(dim) -value 1 \
+         -command {
+            destroy .tjrsvisible
+            ::ouranos::tjrsVisibleX10
          }
-      pack $audace(base).tjrsvisible.rad1 -padx 20 -pady 2 -side right
+      pack .tjrsvisible.rad1 -padx 20 -pady 2 -side right
       #--- La fenetre est active
-      focus $audace(base).tjrsvisible
+      focus .tjrsvisible
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $audace(base).tjrsvisible <Key-F1> { ::console::GiveFocus }
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $audace(base).tjrsvisible
+      bind .tjrsvisible <Key-F1> { ::console::GiveFocus }
    }
 }
 
 #
-# ::ouranos::tjrsVisibleX10
+# tjrsVisibleX10
 # Affichage visible des coordonnees ou des pas en gros
 #
 proc ::ouranos::tjrsVisibleX10 { } {
    variable private
-   global audace caption conf
+   global audace caption color conf
 
    if { $private(tjrsvisible) == "0" } {
-      destroy $audace(base).tjrsvisible_x10
+      if { [ winfo exists .tjrsvisibleX10 ] } {
+         destroy .tjrsvisibleX10
+      } elseif { [ winfo exists .tjrsvisible ] } {
+            destroy .tjrsvisible
+      }
    } else {
-      if { [ winfo exists $audace(base).tjrsvisible_x10 ] } {
-         destroy $audace(base).tjrsvisible_x10
+      if { [ winfo exists .tjrsvisibleX10 ] } {
+         destroy .tjrsvisibleX10
       }
-      toplevel $audace(base).tjrsvisible_x10
-      wm transient $audace(base).tjrsvisible_x10 $audace(base)
-      wm resizable $audace(base).tjrsvisible_x10 0 0
-      wm title $audace(base).tjrsvisible_x10 "$caption(ouranos,pos_tel)"
-      wm protocol $audace(base).tjrsvisible_x10 WM_DELETE_WINDOW {
-         set private(tjrsvisible) "0"
-         destroy $audace(base).tjrsvisible_x10
+      toplevel .tjrsvisibleX10 -bg $color(blue_pad)
+      wm transient .tjrsvisibleX10 $audace(base)
+      wm resizable .tjrsvisibleX10 0 0
+      wm title .tjrsvisibleX10 "$caption(ouranos,pos_tel)"
+      wm protocol .tjrsvisibleX10 WM_DELETE_WINDOW {
+         ::ouranos::recupPosDim
+         set ::ouranos::private(tjrsvisible) "0"
+         destroy .tjrsvisibleX10
       }
-      if { [ info exists conf(ouranos,x10,wmgeometry) ] == "1" } {
-         wm geometry $audace(base).tjrsvisible_x10 $conf(ouranos,x10,wmgeometry)
-      } else {
-         wm geometry $audace(base).tjrsvisible_x10 850x500+0+0
-      }
+      wm geometry .tjrsvisibleX10 $private(wmgeometryX10)
 
       #--- Cree l'affichage d'AD et Dec
-      label $audace(base).tjrsvisible_x10.lab1 -borderwidth 1 -anchor w -font {verdana 60 bold}
-      pack $audace(base).tjrsvisible_x10.lab1 -padx 10 -pady 2
-      label $audace(base).tjrsvisible_x10.lab2 -borderwidth 1 -anchor w -font {verdana 60 bold}
-      pack $audace(base).tjrsvisible_x10.lab2 -padx 10 -pady 2
+      label .tjrsvisibleX10.lab1 -borderwidth 1 -anchor w -font {verdana 60 bold} \
+         -fg $color(white) -bg $color(blue_pad)
+      pack .tjrsvisibleX10.lab1 -padx 10 -pady 2
+      label .tjrsvisibleX10.lab2 -borderwidth 1 -anchor w -font {verdana 60 bold} \
+         -fg $color(white) -bg $color(blue_pad)
+      pack .tjrsvisibleX10.lab2 -padx 10 -pady 2
 
       #--- Bouton radio x1
-      radiobutton $audace(base).tjrsvisible_x10.rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -font {verdana 20 bold} -text "$caption(ouranos,:5)" -value 0 -variable ::ouranos::private(dim) \
+      radiobutton .tjrsvisibleX10.rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
+         -font {verdana 30 bold} -text "$caption(ouranos,:5)" -value 0 -variable ::ouranos::private(dim) \
+         -fg $color(white) -bg $color(blue_pad) \
+         -selectcolor $color(blue_pad) -highlightbackground $color(blue_pad) \
+         -activeforeground $color(white) -activebackground $color(blue_pad) \
          -command {
-            destroy $audace(base).tjrsvisible_x10 ; ::ouranos::tjrsVisible
+            destroy .tjrsvisibleX10
+            ::ouranos::tjrsVisible
          }
-      pack $audace(base).tjrsvisible_x10.rad0 -padx 100 -pady 10 -side left
+      pack .tjrsvisibleX10.rad0 -padx 100 -pady 10 -side left
       #--- Bouton radio x10
-      radiobutton $audace(base).tjrsvisible_x10.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -font {verdana 20 bold} -text "$caption(ouranos,x1)" -value 1 -variable ::ouranos::private(dim) \
+      radiobutton .tjrsvisibleX10.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
+         -font {verdana 30 bold} -text "$caption(ouranos,x1)" -value 1 -variable ::ouranos::private(dim) \
+         -fg $color(white) -bg $color(blue_pad) \
+         -selectcolor $color(blue_pad) -highlightbackground $color(blue_pad) \
+         -activeforeground $color(white) -activebackground $color(blue_pad) \
          -command {
-            destroy $audace(base).tjrsvisible ; ::ouranos::tjrsVisibleX10
+            destroy .tjrsvisible
+            ::ouranos::tjrsVisibleX10
          }
-      pack $audace(base).tjrsvisible_x10.rad1 -padx 100 -pady 10 -side right
+      pack .tjrsvisibleX10.rad1 -padx 100 -pady 10 -side right
       #--- La fenetre est active
-      focus $audace(base).tjrsvisible_x10
+      focus .tjrsvisibleX10
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $audace(base).tjrsvisible_x10 <Key-F1> { ::console::GiveFocus }
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $audace(base).tjrsvisible_x10
+      bind .tjrsvisibleX10 <Key-F1> { ::console::GiveFocus }
    }
 }
 #
-# ::ouranos::confOuranos
+# confOuranos
 # Permet d'activer ou de désactiver les boutons 'Regler', 'Stopper' et 'Lire'
 #
 proc ::ouranos::confOuranos { } {
@@ -800,7 +844,7 @@ proc ::ouranos::confOuranos { } {
 }
 
 #
-# ::ouranos::confOuranosInactif
+# confOuranosInactif
 #    Permet de desactiver le bouton a l'arret de la monture
 #
 proc ::ouranos::confOuranosInactif { } {
@@ -820,7 +864,7 @@ proc ::ouranos::confOuranosInactif { } {
 }
 
 #
-# ::ouranos::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :

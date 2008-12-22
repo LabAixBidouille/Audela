@@ -2,7 +2,7 @@
 # Fichier : celestron.tcl
 # Description : Configuration de la monture Celestron
 # Auteur : Robert DELMAS
-# Mise a jour $Id: celestron.tcl,v 1.12 2008-11-22 22:08:23 robertdelmas Exp $
+# Mise a jour $Id: celestron.tcl,v 1.13 2008-12-22 09:26:14 robertdelmas Exp $
 #
 
 namespace eval ::celestron {
@@ -14,7 +14,7 @@ namespace eval ::celestron {
 }
 
 #
-# ::celestron::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::celestron::getPluginTitle { } {
@@ -24,7 +24,7 @@ proc ::celestron::getPluginTitle { } {
 }
 
 #
-#  ::celestron::getPluginHelp
+# getPluginHelp
 #     Retourne la documentation du plugin
 #
 proc ::celestron::getPluginHelp { } {
@@ -32,7 +32,7 @@ proc ::celestron::getPluginHelp { } {
 }
 
 #
-# ::celestron::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::celestron::getPluginType { } {
@@ -40,7 +40,7 @@ proc ::celestron::getPluginType { } {
 }
 
 #
-# ::celestron::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::celestron::getPluginOS { } {
@@ -48,7 +48,7 @@ proc ::celestron::getPluginOS { } {
 }
 
 #
-# ::celestron::getTelNo
+# getTelNo
 #    Retourne le numero de la monture
 #
 proc ::celestron::getTelNo { } {
@@ -58,7 +58,7 @@ proc ::celestron::getTelNo { } {
 }
 
 #
-# ::celestron::isReady
+# isReady
 #    Indique que la monture est prete
 #    Retourne "1" si la monture est prete, sinon retourne "0"
 #
@@ -75,7 +75,7 @@ proc ::celestron::isReady { } {
 }
 
 #
-# ::celestron::initPlugin
+# initPlugin
 #    Initialise les variables conf(celestron,...)
 #
 proc ::celestron::initPlugin { } {
@@ -94,7 +94,7 @@ proc ::celestron::initPlugin { } {
 }
 
 #
-# ::celestron::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::celestron::confToWidget { } {
@@ -109,7 +109,7 @@ proc ::celestron::confToWidget { } {
 }
 
 #
-# ::celestron::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::celestron::widgetToConf { } {
@@ -123,7 +123,7 @@ proc ::celestron::widgetToConf { } {
 }
 
 #
-# ::celestron::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la monture Celestron
 #
 proc ::celestron::fillConfigPage { frm } {
@@ -244,34 +244,43 @@ proc ::celestron::fillConfigPage { frm } {
 }
 
 #
-# ::celestron::configureMonture
+# configureMonture
 #    Configure la monture Celestron en fonction des donnees contenues dans les variables conf(celestron,...)
 #
 proc ::celestron::configureMonture { } {
    variable private
    global caption conf
 
-   #--- Je cree la monture
-   set telNo [ tel::create celestron $conf(celestron,port) ]
-   #--- J'affiche un message d'information dans la Console
-   console::affiche_erreur "$caption(celestron,port_celestron)\
-      $caption(celestron,2points) $conf(celestron,port)\n"
-   console::affiche_saut "\n"
-   if { $conf(celestron,format) == "0" } {
-      tel$telNo longformat off
-   } else {
-      tel$telNo longformat on
+   set catchResult [ catch {
+      #--- Je cree la monture
+      set telNo [ tel::create celestron $conf(celestron,port) ]
+      #--- J'affiche un message d'information dans la Console
+      ::console::affiche_entete "$caption(celestron,port_celestron)\
+         $caption(celestron,2points) $conf(celestron,port)\n"
+      ::console::affiche_saut "\n"
+      if { $conf(celestron,format) == "0" } {
+         tel$telNo longformat off
+      } else {
+         tel$telNo longformat on
+      }
+      #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
+      set linkNo [ ::confLink::create $conf(celestron,port) "tel$telNo" "control" [ tel$telNo product ] ]
+      #--- Je change de variable
+      set private(telNo) $telNo
+      #--- Gestion du bouton actif/inactif
+      ::celestron::confCelestron
+   } ]
+
+   if { $catchResult == "1" } {
+      #--- En cas d'erreur, je libere toutes les ressources allouees
+      ::celestron::stop
+      #--- Je transmets l'erreur a la procedure appelante
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo
    }
-   #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
-   set linkNo [ ::confLink::create $conf(celestron,port) "tel$telNo" "control" [ tel$telNo product ] ]
-   #--- Je change de variable
-   set private(telNo) $telNo
-   #--- Gestion du bouton actif/inactif
-   ::celestron::confCelestron
 }
 
 #
-# ::celestron::stop
+# stop
 #    Arrete la monture Celestron
 #
 proc ::celestron::stop { } {
@@ -296,7 +305,7 @@ proc ::celestron::stop { } {
 }
 
 #
-# ::celestron::confCelestron
+# confCelestron
 # Permet d'activer ou de désactiver le bouton
 #
 proc ::celestron::confCelestron { } {
@@ -319,7 +328,7 @@ proc ::celestron::confCelestron { } {
 }
 
 #
-# ::celestron::confCelestronInactif
+# confCelestronInactif
 #    Permet de desactiver le bouton a l'arret de la monture
 #
 proc ::celestron::confCelestronInactif { } {
@@ -337,7 +346,7 @@ proc ::celestron::confCelestronInactif { } {
 }
 
 #
-# ::celestron::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :

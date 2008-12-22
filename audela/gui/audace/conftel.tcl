@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.52 2008-12-19 18:50:31 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.53 2008-12-22 09:28:01 robertdelmas Exp $
 #
 
 namespace eval ::confTel {
@@ -384,7 +384,7 @@ proc ::confTel::stopPlugin { } {
 #------------------------------------------------------------
 proc ::confTel::configureMonture { } {
    variable private
-   global audace conf
+   global audace caption conf
 
    #--- Affichage d'un message d'alerte si necessaire
    ::confTel::connectMonture
@@ -410,32 +410,39 @@ proc ::confTel::configureMonture { } {
          ::confCam::setMount $camItem $audace(telNo)
       }
 
+      #--- Raffraichissement de la vitesse dans les raquettes et les outils, et de l'affichage des coordonnees
+      if { $conf(raquette) == "1" } {
+         #--- je cree la nouvelle raquette
+         ::confPad::configurePlugin $private(nomRaquette)
+      } else {
+         ::confPad::stopPlugin
+      }
+
    } errorMessage ]
 
-   #--- Raffraichissement de la vitesse dans les raquettes et les outils, et de l'affichage des coordonnees
-   if { $conf(raquette) == "1" } {
-      #--- je cree la nouvelle raquette
-      ::confPad::configurePlugin $private(nomRaquette)
-   } else {
-      ::confPad::stopPlugin
-   }
+   #--- Il n'y a pas d'erreur detectee par le catch
    if { $catchResult == "0" } {
+
       ::telescope::setSpeed "$audace(telescope,speed)"
       ::telescope::afficheCoord
+
    }
 
-   #--- Traitement des erreurs detectees par le catch
+   #--- Il y a des erreurs detectees par le catch
    if { $catchResult != "0" } {
+
       #--- J'affiche le message d'erreur
       ::console::affiche_erreur "$::errorInfo\n\n"
-      tk_messageBox -message "$errorMessage. See console" -icon error
+      tk_messageBox -title "$caption(conftel,attention)" -icon error \
+         -message "$errorMessage\n$caption(conftel,cannotcreatecam)\n$caption(conftel,seeconsole)"
 
       #--- Je desactive le demarrage automatique
       set conf(telescope,start) "0"
 
-      #--- En cas de probleme, camera par defaut
+      #--- En cas de probleme, monture par defaut
       set private(mountName) ""
       set private(telNo)     "0"
+
    }
 
    #--- Effacement du message d'alerte s'il existe
@@ -557,7 +564,8 @@ proc ::confTel::findPlugin { } {
    #--- je recherche les fichiers mount/*/pkgIndex.tcl
    set filelist [glob -nocomplain -type f -join "$audace(rep_plugin)" mount * pkgIndex.tcl ]
    foreach pkgIndexFileName $filelist {
-      set catchResult [catch {
+
+      set catchResult [ catch {
          #--- je recupere le nom du package
          if { [ ::audace::getPluginInfo "$pkgIndexFileName" pluginInfo] == 0 } {
             if { $pluginInfo(type) == "mount" } {
@@ -576,10 +584,11 @@ proc ::confTel::findPlugin { } {
          } else {
             ::console::affiche_erreur "Error loading mount $pkgIndexFileName \n$::errorInfo\n\n"
          }
-      } catchMessage]
+      } catchMessage ]
+
       #--- j'affiche le message d'erreur et je continue la recherche des plugins
       if { $catchResult !=0 } {
-         console::affiche_erreur "::confTel::findPlugin $::errorInfo\n"
+         ::console::affiche_erreur "::confTel::findPlugin $::errorInfo\n"
       }
    }
 
