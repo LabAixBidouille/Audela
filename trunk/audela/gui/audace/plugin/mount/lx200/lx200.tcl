@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise a jour $Id: lx200.tcl,v 1.18 2008-11-22 22:08:11 robertdelmas Exp $
+# Mise a jour $Id: lx200.tcl,v 1.19 2008-12-22 09:26:57 robertdelmas Exp $
 #
 
 namespace eval ::lx200 {
@@ -332,10 +332,11 @@ proc ::lx200::configureMonture { } {
    variable private
    global caption conf
 
-   switch [::confLink::getLinkNamespace $conf(lx200,port)] {
-      audinet {
-         #--- Je cree la monture
-         set telNo [ tel::create lxnet $conf(lx200,port) -name lxnet \
+   set catchResult [ catch {
+      switch [::confLink::getLinkNamespace $conf(lx200,port)] {
+         audinet {
+            #--- Je cree la monture
+            set telNo [ tel::create lxnet $conf(lx200,port) -name lxnet \
                -host $conf(audinet,host) \
                -ipsetting $conf(audinet,ipsetting) \
                -macaddress $conf(audinet,mac_address) \
@@ -344,56 +345,61 @@ proc ::lx200::configureMonture { } {
                -focuseraddr $conf(audinet,focuser_addr) \
                -focuserbit $conf(audinet,focuser_bit) \
             ]
-         #--- J'affiche un message d'information dans la Console
-         console::affiche_erreur "$caption(lx200,host_audinet) $caption(lx200,2points)\
-            $conf(audinet,host)\n"
-         console::affiche_saut "\n"
-         if { $conf(lx200,format) == "0" } {
-            tel$telNo longformat off
-         } else {
-            tel$telNo longformat on
+            #--- J'affiche un message d'information dans la Console
+            ::console::affiche_entete "$caption(lx200,host_audinet) $caption(lx200,2points)\
+               $conf(audinet,host)\n"
+            ::console::affiche_saut "\n"
+            if { $conf(lx200,format) == "0" } {
+               tel$telNo longformat off
+            } else {
+               tel$telNo longformat on
+            }
+            #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
+            set linkNo [ ::confLink::create $conf(lx200,port) "tel$telNo" "control" [ tel$telNo product ] ]
+            #--- Je change de variable
+            set private(telNo) $telNo
          }
-         #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
-         set linkNo [ ::confLink::create $conf(lx200,port) "tel$telNo" "control" [ tel$telNo product ] ]
-         #--- Je change de variable
-         set private(telNo) $telNo
+         serialport {
+            #--- Je cree la monture
+            set telNo [ tel::create lx200 $conf(lx200,port) ]
+            #--- J'affiche un message d'information dans la Console
+            ::console::affiche_entete "$caption(lx200,port_lx200) ($conf(lx200,modele))\
+               $caption(lx200,2points) $conf(lx200,port)\n"
+            ::console::affiche_saut "\n"
+            if { $conf(lx200,format) == "0" } {
+               tel$telNo longformat off
+            } else {
+               tel$telNo longformat on
+            }
+            if { $conf(lx200,modele) == "Ite-lente" } {
+               tel$telNo tempo $conf(lx200,ite-lente_tempo)
+            }
+            #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
+            set linkNo [ ::confLink::create $conf(lx200,port) "tel$telNo" "control" [ tel$telNo product ] ]
+            #--- Je change de variable
+            set private(telNo) $telNo
+         }
       }
-      serialport {
-         #--- Je cree la monture
-         set telNo [ tel::create lx200 $conf(lx200,port) ]
-         #--- J'affiche un message d'information dans la Console
-         console::affiche_erreur "$caption(lx200,port_lx200) ($conf(lx200,modele))\
-            $caption(lx200,2points) $conf(lx200,port)\n"
-         console::affiche_saut "\n"
-         if { $conf(lx200,format) == "0" } {
-            tel$telNo longformat off
-         } else {
-            tel$telNo longformat on
-         }
-         if { $conf(lx200,modele) == "Ite-lente" } {
-            tel$telNo tempo $conf(lx200,ite-lente_tempo)
-         }
-         #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
-         set linkNo [ ::confLink::create $conf(lx200,port) "tel$telNo" "control" [ tel$telNo product ] ]
-         #--- Je change de variable
-         set private(telNo) $telNo
-      }
-   }
-   #--- Gestion du bouton actif/inactif
-   ::lx200::confLX200
+      #--- Gestion du bouton actif/inactif
+      ::lx200::confLX200
 
-   #--- Si connexion des codeurs Ouranos demandee en tant que monture secondaire
-   if { $conf(lx200,ouranos) == "1" } {
-      #--- Je copie les parametres Ouranos dans conf()
-      ::ouranos::widgetToConf
-      #--- Je configure la monture secondaire Ouranos
-      set catchResult [ catch {
+      #--- Si connexion des codeurs Ouranos demandee en tant que monture secondaire
+      if { $conf(lx200,ouranos) == "1" } {
+         #--- Je copie les parametres Ouranos dans conf()
+         ::ouranos::widgetToConf
+         #--- Je configure la monture secondaire Ouranos
          ::ouranos::configureMonture
-      } errorMessage ]
-      if { $catchResult != "0" } {
-         ::lx200::stop
-         error $errorMessage
       }
+   } ]
+
+   if { $catchResult == "1" } {
+      #--- En cas d'erreur, je libere toutes les ressources allouees
+      ::lx200::stop
+      if { $conf(lx200,ouranos) == "1" } {
+         ::ouranos::stop
+      }
+      #--- Je transmets l'erreur a la procedure appelante
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo
    }
 }
 
@@ -686,7 +692,7 @@ proc ::lx200::move { direction rate } {
       } elseif { $d == "W" } {
          tel$private(telNo) command ":Mw#" none
       } else {
-         ::console::affiche_erreur "AP command set : unknow direction"
+         ::console::affiche_entete "AP command set : unknow direction"
       }
    }
 

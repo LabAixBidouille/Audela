@@ -2,7 +2,7 @@
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audecom.tcl,v 1.22 2008-11-22 22:05:21 robertdelmas Exp $
+# Mise a jour $Id: audecom.tcl,v 1.23 2008-12-22 09:26:02 robertdelmas Exp $
 #
 
 namespace eval ::audecom {
@@ -14,7 +14,7 @@ namespace eval ::audecom {
 }
 
 #
-# ::audecom::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::audecom::getPluginTitle { } {
@@ -24,7 +24,7 @@ proc ::audecom::getPluginTitle { } {
 }
 
 #
-#  ::audecom::getPluginHelp
+# getPluginHelp
 #     Retourne la documentation du plugin
 #
 proc ::audecom::getPluginHelp { } {
@@ -32,7 +32,7 @@ proc ::audecom::getPluginHelp { } {
 }
 
 #
-# ::audecom::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::audecom::getPluginType { } {
@@ -40,7 +40,7 @@ proc ::audecom::getPluginType { } {
 }
 
 #
-# ::audecom::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::audecom::getPluginOS { } {
@@ -48,7 +48,7 @@ proc ::audecom::getPluginOS { } {
 }
 
 #
-# ::audecom::getTelNo
+# getTelNo
 #    Retourne le numero de la monture
 #
 proc ::audecom::getTelNo { } {
@@ -58,7 +58,7 @@ proc ::audecom::getTelNo { } {
 }
 
 #
-# ::audecom::isReady
+# isReady
 #    Indique que la monture est prete
 #    Retourne "1" si la monture est prete, sinon retourne "0"
 #
@@ -75,7 +75,7 @@ proc ::audecom::isReady { } {
 }
 
 #
-# ::audecom::getSecondaryTelNo
+# getSecondaryTelNo
 #    Retourne le numero de la monture secondaire, sinon retourne "0"
 #
 proc ::audecom::getSecondaryTelNo { } {
@@ -84,7 +84,7 @@ proc ::audecom::getSecondaryTelNo { } {
 }
 
 #
-# ::audecom::slewpathLong2Short
+# slewpathLong2Short
 #    Commute le mode slewpath de long a short
 #
 proc ::audecom::slewpathLong2Short { } {
@@ -97,7 +97,7 @@ proc ::audecom::slewpathLong2Short { } {
 }
 
 #
-# ::audecom::slewpathShort2Long
+# slewpathShort2Long
 #    Commute le mode slewpath de short a long
 #
 proc ::audecom::slewpathShort2Long { } {
@@ -111,7 +111,7 @@ proc ::audecom::slewpathShort2Long { } {
 }
 
 #
-# ::audecom::setTrackSpeed
+# setTrackSpeed
 #    Parametre la vitesse de suivi pour le Soleil ou la Lune
 #
 proc ::audecom::setTrackSpeed { } {
@@ -154,7 +154,7 @@ proc ::audecom::setTrackSpeed { } {
 }
 
 #
-# ::audecom::initPlugin
+# initPlugin
 #    Initialise les variables conf(audecom,...)
 #
 proc ::audecom::initPlugin { } {
@@ -232,7 +232,7 @@ proc ::audecom::initPlugin { } {
 }
 
 #
-# ::audecom::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::audecom::confToWidget { } {
@@ -287,7 +287,7 @@ proc ::audecom::confToWidget { } {
 }
 
 #
-# ::audecom::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::audecom::widgetToConf { } {
@@ -342,7 +342,7 @@ proc ::audecom::widgetToConf { } {
 }
 
 #
-# ::audecom::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la monture AudeCom
 #
 proc ::audecom::fillConfigPage { frm } {
@@ -561,100 +561,106 @@ proc ::audecom::fillConfigPage { frm } {
 }
 
 #
-# ::audecom::configureMonture
+# configureMonture
 #    Configure la monture AudeCom en fonction des donnees contenues dans les variables conf(audecom,...)
 #
 proc ::audecom::configureMonture { } {
    variable private
    global caption conf
 
-   #--- Je cree la monture
-   set telNo [ tel::create audecom $conf(audecom,port) ]
-   #--- J'affiche un message d'information dans la Console
-   console::affiche_erreur "$caption(audecom,port_audecom) $caption(audecom,2points)\
-      $conf(audecom,port)\n"
-   #--- Lit et affiche la version du firmware
-   set v_firmware [ tel$telNo firmware ]
-   set v_firmware "[ string range $v_firmware 0 0 ].[ string range $v_firmware 1 2 ]"
-   console::affiche_erreur "$caption(audecom,ver_firmware)$v_firmware\n"
-   console::affiche_saut "\n"
-   #--- Transfere les parametres des moteurs dans le microcontroleur
-   tel$telNo slewspeed $conf(audecom,maxad) $conf(audecom,maxdec)
-   tel$telNo pulse $conf(audecom,limp)
-   tel$telNo backlash $conf(audecom,rat_ad) $conf(audecom,rat_dec)
-   tel$telNo focspeed $conf(audecom,vitesse)
-   #--- R : Inhibe le PEC
-   tel$telNo pec_period 0
-   #--- Transfere les corrections pour le PEC dans le microcontroleur
-   for { set i 0 } { $i <= 19 } { incr i } {
-      tel$telNo pec_speed $conf(audecom,t$i)
-   }
-   #--- r : Active ou non le PEC
-   if { $conf(audecom,pec) == "1" } {
-      tel$telNo pec_period $conf(audecom,rpec)
-   }
-   #--- Transfere les parametres de derive dans le microcontroleur
-   set vit_der_alpha "0" ; set vit_der_delta "0"
-   if { $::confAudecomMobile::private(fenetre,mobile,valider) == "1" } {
-      if { $conf(audecom,mobile) == "1" } {
-         switch -exact -- $conf(audecom,type) {
-            0 { set vit_der_alpha "43636" ; set vit_der_delta "0" }                          ; #--- Lune
-            1 { set vit_der_alpha "3548"  ; set vit_der_delta "0" }                          ; #--- Soleil
-            2 { set vit_der_alpha $conf(audecom,ad) ; set vit_der_delta $conf(audecom,dec) } ; #--- Comete
-            3 { set vit_der_alpha "0" ; set vit_der_delta "0" }                              ; #--- Etoile
+   set catchResult [ catch {
+      #--- Je cree la monture
+      set telNo [ tel::create audecom $conf(audecom,port) ]
+      #--- J'affiche un message d'information dans la Console
+      ::console::affiche_entete "$caption(audecom,port_audecom) $caption(audecom,2points)\
+         $conf(audecom,port)\n"
+      #--- Lit et affiche la version du firmware
+      set v_firmware [ tel$telNo firmware ]
+      set v_firmware "[ string range $v_firmware 0 0 ].[ string range $v_firmware 1 2 ]"
+      ::console::affiche_entete "$caption(audecom,ver_firmware)$v_firmware\n"
+      ::console::affiche_saut "\n"
+      #--- Transfere les parametres des moteurs dans le microcontroleur
+      tel$telNo slewspeed $conf(audecom,maxad) $conf(audecom,maxdec)
+      tel$telNo pulse $conf(audecom,limp)
+      tel$telNo backlash $conf(audecom,rat_ad) $conf(audecom,rat_dec)
+      tel$telNo focspeed $conf(audecom,vitesse)
+      #--- R : Inhibe le PEC
+      tel$telNo pec_period 0
+      #--- Transfere les corrections pour le PEC dans le microcontroleur
+      for { set i 0 } { $i <= 19 } { incr i } {
+         tel$telNo pec_speed $conf(audecom,t$i)
+      }
+      #--- r : Active ou non le PEC
+      if { $conf(audecom,pec) == "1" } {
+         tel$telNo pec_period $conf(audecom,rpec)
+      }
+      #--- Transfere les parametres de derive dans le microcontroleur
+      set vit_der_alpha "0" ; set vit_der_delta "0"
+      if { $::confAudecomMobile::private(fenetre,mobile,valider) == "1" } {
+         if { $conf(audecom,mobile) == "1" } {
+            switch -exact -- $conf(audecom,type) {
+               0 { set vit_der_alpha "43636" ; set vit_der_delta "0" }                          ; #--- Lune
+               1 { set vit_der_alpha "3548"  ; set vit_der_delta "0" }                          ; #--- Soleil
+               2 { set vit_der_alpha $conf(audecom,ad) ; set vit_der_delta $conf(audecom,dec) } ; #--- Comete
+               3 { set vit_der_alpha "0" ; set vit_der_delta "0" }                              ; #--- Etoile
+            }
+         }
+      } else {
+         catch { set frm $private(frm) }
+         set private(mobile)      "0"
+         set conf(audecom,mobile) "0"
+         if { $conf(telescope,start) != "1" } {
+            $frm.mobile configure -variable ::audecom::private(mobile)
          }
       }
-   } else {
-      catch { set frm $private(frm) }
-      set private(mobile)      "0"
-      set conf(audecom,mobile) "0"
-      if { $conf(telescope,start) != "1" } {
-         $frm.mobile configure -variable ::audecom::private(mobile)
-      }
-   }
-   #--- Precaution pour ne jamais diviser par zero
-   if { $vit_der_alpha == "0" } { set vit_der_alpha "1" }
-   if { $vit_der_delta == "0" } { set vit_der_delta "1" }
-   #--- Calcul de la correction
-   set alpha [ expr $conf(audecom,dsuivinom)*1296000/$vit_der_alpha ]
-   set alpha [ expr round($alpha) ]
-   set delta [ expr $conf(audecom,dsuividelta)*1296000/$vit_der_delta ]
-   set delta [ expr round($delta) ]
-   #--- Bornage de la correction
-   if { $alpha > "99999999" }  { set alpha "99999999" }
-   if { $alpha < "-99999999" } { set alpha "-99999999" }
-   if { $delta > "99999999" }  { set delta "99999999" }
-   if { $delta < "-99999999" } { set delta "-99999999" }
-   #--- Arret des moteurs + Application des corrections + Mise en marche des moteurs
-   tel$telNo radec motor off
-   tel$telNo driftspeed $alpha $delta
-   tel$telNo radec motor on
-   #--- Affichage de la position du telescope sur la monture
-  ### ::telescope::monture_allemande
-   #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
-   set linkNo [ ::confLink::create $conf(audecom,port) "tel$telNo" "control" [ tel$telNo product ] ]
-   #--- Je change de variable
-   set private(telNo) $telNo
-   #--- Gestion du bouton actif/inactif
-   ::audecom::confAudeCom
+      #--- Precaution pour ne jamais diviser par zero
+      if { $vit_der_alpha == "0" } { set vit_der_alpha "1" }
+      if { $vit_der_delta == "0" } { set vit_der_delta "1" }
+      #--- Calcul de la correction
+      set alpha [ expr $conf(audecom,dsuivinom)*1296000/$vit_der_alpha ]
+      set alpha [ expr round($alpha) ]
+      set delta [ expr $conf(audecom,dsuividelta)*1296000/$vit_der_delta ]
+      set delta [ expr round($delta) ]
+      #--- Bornage de la correction
+      if { $alpha > "99999999" }  { set alpha "99999999" }
+      if { $alpha < "-99999999" } { set alpha "-99999999" }
+      if { $delta > "99999999" }  { set delta "99999999" }
+      if { $delta < "-99999999" } { set delta "-99999999" }
+      #--- Arret des moteurs + Application des corrections + Mise en marche des moteurs
+      tel$telNo radec motor off
+      tel$telNo driftspeed $alpha $delta
+      tel$telNo radec motor on
+      #--- Affichage de la position du telescope sur la monture
+     ### ::telescope::monture_allemande
+      #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
+      set linkNo [ ::confLink::create $conf(audecom,port) "tel$telNo" "control" [ tel$telNo product ] ]
+      #--- Je change de variable
+      set private(telNo) $telNo
+      #--- Gestion du bouton actif/inactif
+      ::audecom::confAudeCom
 
-   #--- Si connexion des codeurs Ouranos demandee en tant que monture secondaire
-   if { $conf(audecom,ouranos) == "1" } {
-      #--- Je copie les parametres Ouranos dans conf()
-      ::ouranos::widgetToConf
-      #--- Je configure la monture secondaire Ouranos
-      set catchResult [ catch {
+      #--- Si connexion des codeurs Ouranos demandee en tant que monture secondaire
+      if { $conf(audecom,ouranos) == "1" } {
+         #--- Je copie les parametres Ouranos dans conf()
+         ::ouranos::widgetToConf
+         #--- Je configure la monture secondaire Ouranos
          ::ouranos::configureMonture
-      } errorMessage ]
-      if { $catchResult != "0" } {
-         ::audecom::stop
-         error $errorMessage
       }
+   } ]
+
+   if { $catchResult == "1" } {
+      #--- En cas d'erreur, je libere toutes les ressources allouees
+      ::audecom::stop
+      if { $conf(audecom,ouranos) == "1" } {
+         ::ouranos::stop
+      }
+      #--- Je transmets l'erreur a la procedure appelante
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo
    }
 }
 
 #
-# ::audecom::stop
+# stop
 #    Arrete la monture AudeCom
 #
 proc ::audecom::stop { } {
@@ -693,7 +699,7 @@ proc ::audecom::stop { } {
 }
 
 #
-# ::audecom::confAudeCom
+# confAudeCom
 # Permet d'activer ou de désactiver le bouton 'Controle de la vitesse de King'
 #
 proc ::audecom::confAudeCom { } {
@@ -724,7 +730,7 @@ proc ::audecom::confAudeCom { } {
 }
 
 #
-# ::audecom::confAudeComInactif
+# confAudeComInactif
 #    Permet de desactiver le bouton a l'arret de la monture
 #
 proc ::audecom::confAudeComInactif { } {
@@ -743,7 +749,7 @@ proc ::audecom::confAudeComInactif { } {
 }
 
 #
-# ::audecom::configEquatorialAudeCom
+# configEquatorialAudeCom
 # Permet d'afficher les fonctionnalites d'une monture equatoriale allemande pilotee par AudeCom
 #
 proc ::audecom::configEquatorialAudeCom { } {
@@ -797,7 +803,7 @@ proc ::audecom::configEquatorialAudeCom { } {
 }
 
 #
-# ::audecom::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :

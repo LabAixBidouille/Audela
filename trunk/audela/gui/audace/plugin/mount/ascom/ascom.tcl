@@ -2,7 +2,7 @@
 # Fichier : ascom.tcl
 # Description : Configuration de la monture ASCOM
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ascom.tcl,v 1.13 2008-11-22 22:05:04 robertdelmas Exp $
+# Mise a jour $Id: ascom.tcl,v 1.14 2008-12-22 09:25:50 robertdelmas Exp $
 #
 
 namespace eval ::ascom {
@@ -14,7 +14,7 @@ namespace eval ::ascom {
 }
 
 #
-# ::ascom::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::ascom::getPluginTitle { } {
@@ -24,7 +24,7 @@ proc ::ascom::getPluginTitle { } {
 }
 
 #
-#  ::ascom::getPluginHelp
+# getPluginHelp
 #     Retourne la documentation du plugin
 #
 proc ::ascom::getPluginHelp { } {
@@ -32,7 +32,7 @@ proc ::ascom::getPluginHelp { } {
 }
 
 #
-# ::ascom::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::ascom::getPluginType { } {
@@ -40,7 +40,7 @@ proc ::ascom::getPluginType { } {
 }
 
 #
-# ::ascom::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::ascom::getPluginOS { } {
@@ -48,7 +48,7 @@ proc ::ascom::getPluginOS { } {
 }
 
 #
-# ::ascom::getTelNo
+# getTelNo
 #    Retourne le numero de la monture
 #
 proc ::ascom::getTelNo { } {
@@ -58,7 +58,7 @@ proc ::ascom::getTelNo { } {
 }
 
 #
-# ::ascom::isReady
+# isReady
 #    Indique que la monture est prete
 #    Retourne "1" si la monture est prete, sinon retourne "0"
 #
@@ -75,7 +75,7 @@ proc ::ascom::isReady { } {
 }
 
 #
-# ::ascom::initPlugin
+# initPlugin
 #    Initialise les variables conf(ascom,...)
 #
 proc ::ascom::initPlugin { } {
@@ -112,7 +112,7 @@ proc ::ascom::initPlugin { } {
 }
 
 #
-# ::ascom::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::ascom::confToWidget { } {
@@ -125,7 +125,7 @@ proc ::ascom::confToWidget { } {
 }
 
 #
-# ::ascom::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::ascom::widgetToConf { } {
@@ -138,7 +138,7 @@ proc ::ascom::widgetToConf { } {
 }
 
 #
-# ::ascom::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la monture ASCOM
 #
 proc ::ascom::fillConfigPage { frm } {
@@ -194,27 +194,36 @@ proc ::ascom::fillConfigPage { frm } {
 }
 
 #
-# ::ascom::configureMonture
+# configureMonture
 #    Configure la monture ASCOM en fonction des donnees contenues dans les variables conf(ascom,...)
 #
 proc ::ascom::configureMonture { } {
    variable private
    global caption conf
 
-   #--- Je cree la monture
-   set telNo [ tel::create ascom "unknown" [ lindex $conf(ascom,modele) 1 ] ]
-   #--- J'affiche un message d'information dans la Console
-   console::affiche_erreur "$caption(ascom,driver) \
-      $caption(ascom,2points) [ lindex $conf(ascom,modele) 1 ] \n"
-   console::affiche_saut "\n"
-   #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
-  ### set linkNo [ ::confLink::create $conf(ascom,port) "tel$telNo" "control" [ tel$telNo product ] ]
-   #--- Je change de variable
-   set private(telNo) $telNo
+   set catchResult [ catch {
+      #--- Je cree la monture
+      set telNo [ tel::create ascom "unknown" [ lindex $conf(ascom,modele) 1 ] ]
+      #--- J'affiche un message d'information dans la Console
+      ::console::affiche_entete "$caption(ascom,driver) \
+         $caption(ascom,2points) [ lindex $conf(ascom,modele) 1 ] \n"
+      ::console::affiche_saut "\n"
+      #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
+     ### set linkNo [ ::confLink::create $conf(ascom,port) "tel$telNo" "control" [ tel$telNo product ] ]
+      #--- Je change de variable
+      set private(telNo) $telNo
+   } ]
+
+   if { $catchResult == "1" } {
+      #--- En cas d'erreur, je libere toutes les ressources allouees
+      ::ascom::stop
+      #--- Je transmets l'erreur a la procedure appelante
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo
+   }
 }
 
 #
-# ::ascom::stop
+# stop
 #    Arrete la monture ASCOM
 #
 proc ::ascom::stop { } {
@@ -236,7 +245,7 @@ proc ::ascom::stop { } {
 }
 
 #
-# ::ascom::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :

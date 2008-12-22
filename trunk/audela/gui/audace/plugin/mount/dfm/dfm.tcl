@@ -2,7 +2,7 @@
 # Fichier : dfm.tcl
 # Description : Configuration de la monture DFM
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dfm.tcl,v 1.2 2008-12-07 20:31:21 robertdelmas Exp $
+# Mise a jour $Id: dfm.tcl,v 1.3 2008-12-22 09:26:36 robertdelmas Exp $
 #
 
 namespace eval ::dfm {
@@ -14,7 +14,7 @@ namespace eval ::dfm {
 }
 
 #
-# ::dfm::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::dfm::getPluginTitle { } {
@@ -24,7 +24,7 @@ proc ::dfm::getPluginTitle { } {
 }
 
 #
-#  ::dfm::getPluginHelp
+# getPluginHelp
 #     Retourne la documentation du plugin
 #
 proc ::dfm::getPluginHelp { } {
@@ -32,7 +32,7 @@ proc ::dfm::getPluginHelp { } {
 }
 
 #
-# ::dfm::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::dfm::getPluginType { } {
@@ -40,7 +40,7 @@ proc ::dfm::getPluginType { } {
 }
 
 #
-# ::dfm::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::dfm::getPluginOS { } {
@@ -48,7 +48,7 @@ proc ::dfm::getPluginOS { } {
 }
 
 #
-# ::dfm::getTelNo
+# getTelNo
 #    Retourne le numero de la monture
 #
 proc ::dfm::getTelNo { } {
@@ -58,7 +58,7 @@ proc ::dfm::getTelNo { } {
 }
 
 #
-# ::dfm::isReady
+# isReady
 #    Indique que la monture est prete
 #    Retourne "1" si la monture est prete, sinon retourne "0"
 #
@@ -75,7 +75,7 @@ proc ::dfm::isReady { } {
 }
 
 #
-# ::dfm::initPlugin
+# initPlugin
 #    Initialise les variables conf(dfm,...)
 #
 proc ::dfm::initPlugin { } {
@@ -96,7 +96,7 @@ proc ::dfm::initPlugin { } {
 }
 
 #
-# ::dfm::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::dfm::confToWidget { } {
@@ -112,7 +112,7 @@ proc ::dfm::confToWidget { } {
 }
 
 #
-# ::dfm::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::dfm::widgetToConf { } {
@@ -128,7 +128,7 @@ proc ::dfm::widgetToConf { } {
 }
 
 #
-# ::dfm::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la monture DFM
 #
 proc ::dfm::fillConfigPage { frm } {
@@ -260,7 +260,7 @@ proc ::dfm::fillConfigPage { frm } {
 }
 
 #
-# ::dfm::configurePort
+# configurePort
 #    Configure le host et les ports
 #
 proc ::dfm::configurePort { } {
@@ -285,46 +285,55 @@ proc ::dfm::configurePort { } {
 }
 
 #
-# ::dfm::configureMonture
+# configureMonture
 #    Configure la monture DFM en fonction des donnees contenues dans les variables conf(dfm,...)
 #
 proc ::dfm::configureMonture { } {
    variable private
    global caption conf
 
-   #--- Je cree la monture
-   if { $conf(dfm,mode) == "0" } {
-      #--- Mode TCP
-      set telNo [ tel::create dfm TCP -ip $conf(dfm,host) -port $conf(dfm,port) ]
-   } else {
-      #--- Mode EXCOM
-      set telNo [ tel::create dfm $conf(dfm,portSerie) ]
+   set catchResult [ catch {
+      #--- Je cree la monture
+      if { $conf(dfm,mode) == "0" } {
+         #--- Mode TCP
+         set telNo [ tel::create dfm TCP -ip $conf(dfm,host) -port $conf(dfm,port) ]
+      } else {
+         #--- Mode EXCOM
+         set telNo [ tel::create dfm $conf(dfm,portSerie) ]
+      }
+      #--- J'affiche un message d'information dans la Console
+      if { $conf(dfm,mode) == "0" } {
+         #--- Mode TCP
+         ::console::affiche_entete "$caption(dfm,port_dfm) $caption(dfm,2points) Ethernet\n"
+         ::console::affiche_entete "$caption(dfm,mode) $caption(dfm,2points) TCP\n"
+         ::console::affiche_entete "$caption(dfm,host) $caption(dfm,2points) $conf(dfm,host)\n"
+         ::console::affiche_entete "$caption(dfm,port) $caption(dfm,2points) $conf(dfm,port)\n"
+         ::console::affiche_saut "\n"
+      } else {
+         #--- Mode EXCOM
+         ::console::affiche_entete "$caption(dfm,port_dfm) $caption(dfm,2points) $conf(dfm,portSerie)\n"
+         ::console::affiche_entete "$caption(dfm,mode) $caption(dfm,2points) EXCOM\n"
+         ::console::affiche_saut "\n"
+      }
+      #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
+      if { $conf(dfm,mode) == "1" } {
+         #--- Mode EXCOM
+         set linkNo [ ::confLink::create $conf(dfm,portSerie) "tel$telNo" "control" [ tel$telNo product ] ]
+      }
+      #--- Je change de variable
+      set private(telNo) $telNo
+   } ]
+
+   if { $catchResult == "1" } {
+      #--- En cas d'erreur, je libere toutes les ressources allouees
+      ::dfm::stop
+      #--- Je transmets l'erreur a la procedure appelante
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo
    }
-   #--- J'affiche un message d'information dans la Console
-   if { $conf(dfm,mode) == "0" } {
-      #--- Mode TCP
-      console::affiche_erreur "$caption(dfm,port_dfm) $caption(dfm,2points) Ethernet\n"
-      console::affiche_erreur "$caption(dfm,mode) $caption(dfm,2points) TCP\n"
-      console::affiche_erreur "$caption(dfm,host) $caption(dfm,2points) $conf(dfm,host)\n"
-      console::affiche_erreur "$caption(dfm,port) $caption(dfm,2points) $conf(dfm,port)\n"
-      console::affiche_saut "\n"
-   } else {
-      #--- Mode EXCOM
-      console::affiche_erreur "$caption(dfm,port_dfm) $caption(dfm,2points) $conf(dfm,portSerie)\n"
-      console::affiche_erreur "$caption(dfm,mode) $caption(dfm,2points) EXCOM\n"
-      console::affiche_saut "\n"
-   }
-   #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
-   if { $conf(dfm,mode) == "1" } {
-      #--- Mode EXCOM
-      set linkNo [ ::confLink::create $conf(dfm,portSerie) "tel$telNo" "control" [ tel$telNo product ] ]
-   }
-   #--- Je change de variable
-   set private(telNo) $telNo
 }
 
 #
-# ::dfm::stop
+# stop
 #    Arrete la monture DFM
 #
 proc ::dfm::stop { } {
@@ -353,7 +362,7 @@ proc ::dfm::stop { } {
 }
 
 #
-# ::dfm::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :

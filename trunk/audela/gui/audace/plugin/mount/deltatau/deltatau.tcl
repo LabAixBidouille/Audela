@@ -2,7 +2,7 @@
 # Fichier : deltatau.tcl
 # Description : Configuration de la monture Delta Tau
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: deltatau.tcl,v 1.10 2008-12-07 20:44:02 robertdelmas Exp $
+# Mise a jour $Id: deltatau.tcl,v 1.11 2008-12-22 09:26:25 robertdelmas Exp $
 #
 
 namespace eval ::deltatau {
@@ -14,7 +14,7 @@ namespace eval ::deltatau {
 }
 
 #
-# ::deltatau::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::deltatau::getPluginTitle { } {
@@ -24,7 +24,7 @@ proc ::deltatau::getPluginTitle { } {
 }
 
 #
-#  ::deltatau::getPluginHelp
+# getPluginHelp
 #     Retourne la documentation du plugin
 #
 proc ::deltatau::getPluginHelp { } {
@@ -32,7 +32,7 @@ proc ::deltatau::getPluginHelp { } {
 }
 
 #
-# ::deltatau::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::deltatau::getPluginType { } {
@@ -40,7 +40,7 @@ proc ::deltatau::getPluginType { } {
 }
 
 #
-# ::deltatau::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::deltatau::getPluginOS { } {
@@ -48,7 +48,7 @@ proc ::deltatau::getPluginOS { } {
 }
 
 #
-# ::deltatau::getTelNo
+# getTelNo
 #    Retourne le numero de la monture
 #
 proc ::deltatau::getTelNo { } {
@@ -58,7 +58,7 @@ proc ::deltatau::getTelNo { } {
 }
 
 #
-# ::deltatau::isReady
+# isReady
 #    Indique que la monture est prete
 #    Retourne "1" si la monture est prete, sinon retourne "0"
 #
@@ -75,7 +75,7 @@ proc ::deltatau::isReady { } {
 }
 
 #
-# ::deltatau::initPlugin
+# initPlugin
 #    Initialise les variables conf(deltatau,...)
 #
 proc ::deltatau::initPlugin { } {
@@ -92,7 +92,7 @@ proc ::deltatau::initPlugin { } {
 }
 
 #
-# ::deltatau::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::deltatau::confToWidget { } {
@@ -111,7 +111,7 @@ proc ::deltatau::confToWidget { } {
 }
 
 #
-# ::deltatau::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::deltatau::widgetToConf { } {
@@ -130,7 +130,7 @@ proc ::deltatau::widgetToConf { } {
 }
 
 #
-# ::deltatau::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la monture Delta Tau
 #
 proc ::deltatau::fillConfigPage { frm } {
@@ -225,7 +225,7 @@ proc ::deltatau::fillConfigPage { frm } {
 }
 
 #
-# ::deltatau::configurePort
+# configurePort
 #    Configure le host et le port
 #
 proc ::deltatau::configurePort { } {
@@ -246,41 +246,50 @@ proc ::deltatau::configurePort { } {
 }
 
 #
-# ::deltatau::configureMonture
+# configureMonture
 #    Configure la monture Delta Tau en fonction des donnees contenues dans les variables conf(deltatau,...)
 #
 proc ::deltatau::configureMonture { } {
    variable private
    global caption conf
 
-   #--- Je cree la monture
-   if { $conf(deltatau,mode) == "0" } {
-      #--- Mode Pmac
-      set telNo [ tel::create deltatau PCI -type pmac ]
-   } else {
-      #--- Mode Umac
-      set telNo [ tel::create deltatau Ethernet -type umac -ip $conf(deltatau,host) -port $conf(deltatau,port) ]
+   set catchResult [ catch {
+      #--- Je cree la monture
+      if { $conf(deltatau,mode) == "0" } {
+         #--- Mode Pmac
+         set telNo [ tel::create deltatau PCI -type pmac ]
+      } else {
+         #--- Mode Umac
+         set telNo [ tel::create deltatau Ethernet -type umac -ip $conf(deltatau,host) -port $conf(deltatau,port) ]
+      }
+      #--- J'affiche un message d'information dans la Console
+      if { $conf(deltatau,mode) == "0" } {
+         #--- Mode Pmac
+         ::console::affiche_entete "$caption(deltatau,port_deltatau) $caption(deltatau,2points) PCI\n"
+         ::console::affiche_entete "$caption(deltatau,mode) $caption(deltatau,2points) Pmac\n"
+         ::console::affiche_saut "\n"
+      } else {
+         #--- Mode Umac
+         ::console::affiche_entete "$caption(deltatau,port_deltatau) $caption(deltatau,2points) Ethernet\n"
+         ::console::affiche_entete "$caption(deltatau,mode) $caption(deltatau,2points) Umac\n"
+         ::console::affiche_entete "$caption(deltatau,host) $caption(deltatau,2points) $conf(deltatau,host)\n"
+         ::console::affiche_entete "$caption(deltatau,port) $caption(deltatau,2points) $conf(deltatau,port)\n"
+         ::console::affiche_saut "\n"
+      }
+      #--- Je change de variable
+      set private(telNo) $telNo
+   } ]
+
+   if { $catchResult == "1" } {
+      #--- En cas d'erreur, je libere toutes les ressources allouees
+      ::deltatau::stop
+      #--- Je transmets l'erreur a la procedure appelante
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo
    }
-   #--- J'affiche un message d'information dans la Console
-   if { $conf(deltatau,mode) == "0" } {
-      #--- Mode Pmac
-      console::affiche_erreur "$caption(deltatau,port_deltatau) $caption(deltatau,2points) PCI\n"
-      console::affiche_erreur "$caption(deltatau,mode) $caption(deltatau,2points) Pmac\n"
-      console::affiche_saut "\n"
-   } else {
-      #--- Mode Umac
-      console::affiche_erreur "$caption(deltatau,port_deltatau) $caption(deltatau,2points) Ethernet\n"
-      console::affiche_erreur "$caption(deltatau,mode) $caption(deltatau,2points) Umac\n"
-      console::affiche_erreur "$caption(deltatau,host) $caption(deltatau,2points) $conf(deltatau,host)\n"
-      console::affiche_erreur "$caption(deltatau,port) $caption(deltatau,2points) $conf(deltatau,port)\n"
-      console::affiche_saut "\n"
-   }
-   #--- Je change de variable
-   set private(telNo) $telNo
 }
 
 #
-# ::deltatau::stop
+# stop
 #    Arrete la monture Delta Tau
 #
 proc ::deltatau::stop { } {
@@ -298,7 +307,7 @@ proc ::deltatau::stop { } {
 }
 
 #
-# ::deltatau::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :

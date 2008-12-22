@@ -2,7 +2,7 @@
 # Fichier : etel.tcl
 # Description : Configuration de la monture Etel
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: etel.tcl,v 1.11 2008-12-06 19:23:16 robertdelmas Exp $
+# Mise a jour $Id: etel.tcl,v 1.12 2008-12-22 09:26:46 robertdelmas Exp $
 #
 
 namespace eval ::etel {
@@ -14,7 +14,7 @@ namespace eval ::etel {
 }
 
 #
-# ::etel::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::etel::getPluginTitle { } {
@@ -24,7 +24,7 @@ proc ::etel::getPluginTitle { } {
 }
 
 #
-#  ::etel::getPluginHelp
+# getPluginHelp
 #     Retourne la documentation du plugin
 #
 proc ::etel::getPluginHelp { } {
@@ -32,7 +32,7 @@ proc ::etel::getPluginHelp { } {
 }
 
 #
-# ::etel::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::etel::getPluginType { } {
@@ -40,7 +40,7 @@ proc ::etel::getPluginType { } {
 }
 
 #
-# ::etel::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::etel::getPluginOS { } {
@@ -48,7 +48,7 @@ proc ::etel::getPluginOS { } {
 }
 
 #
-# ::etel::getTelNo
+# getTelNo
 #    Retourne le numero de la monture
 #
 proc ::etel::getTelNo { } {
@@ -58,7 +58,7 @@ proc ::etel::getTelNo { } {
 }
 
 #
-# ::etel::isReady
+# isReady
 #    Indique que la monture est prete
 #    Retourne "1" si la monture est prete, sinon retourne "0"
 #
@@ -75,7 +75,7 @@ proc ::etel::isReady { } {
 }
 
 #
-# ::etel::initPlugin
+# initPlugin
 #    Initialise les variables conf(etel,...)
 #
 proc ::etel::initPlugin { } {
@@ -86,7 +86,7 @@ proc ::etel::initPlugin { } {
 }
 
 #
-# ::etel::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::etel::confToWidget { } {
@@ -98,7 +98,7 @@ proc ::etel::confToWidget { } {
 }
 
 #
-# ::etel::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::etel::widgetToConf { } {
@@ -110,7 +110,7 @@ proc ::etel::widgetToConf { } {
 }
 
 #
-# ::etel::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la monture Etel
 #
 proc ::etel::fillConfigPage { frm } {
@@ -155,24 +155,33 @@ proc ::etel::fillConfigPage { frm } {
 }
 
 #
-# ::etel::configureMonture
+# configureMonture
 #    Configure la monture Etel en fonction des donnees contenues dans les variables conf(etel,...)
 #
 proc ::etel::configureMonture { } {
    variable private
    global caption
 
-   #--- Je cree la monture
-   set telNo [ tel::create etel PCI ]
-   #--- J'affiche un message d'information dans la Console
-   console::affiche_erreur "$caption(etel,port_etel) $caption(etel,2points) PCI\n"
-   console::affiche_saut "\n"
-   #--- Je change de variable
-   set private(telNo) $telNo
+   set catchResult [ catch {
+      #--- Je cree la monture
+      set telNo [ tel::create etel PCI ]
+      #--- J'affiche un message d'information dans la Console
+      ::console::affiche_entete "$caption(etel,port_etel) $caption(etel,2points) PCI\n"
+      ::console::affiche_saut "\n"
+      #--- Je change de variable
+      set private(telNo) $telNo
+   } ]
+
+   if { $catchResult == "1" } {
+      #--- En cas d'erreur, je libere toutes les ressources allouees
+      ::etel::stop
+      #--- Je transmets l'erreur a la procedure appelante
+      return -code error -errorcode $::errorCode -errorinfo $::errorInfo
+   }
 }
 
 #
-# ::etel::stop
+# stop
 #    Arrete la monture Etel
 #
 proc ::etel::stop { } {
@@ -190,7 +199,7 @@ proc ::etel::stop { } {
 }
 
 #
-# ::etel::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :
