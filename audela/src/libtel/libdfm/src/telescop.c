@@ -647,7 +647,7 @@ int mytel_tcleval(struct telprop *tel,char *ligne)
 int dfm_delete(struct telprop *tel)
 {
    char s[1024];
-	if (tel->type==0) {
+	if (tel->type==1) {
 		/* --- Fermeture du port com ou tcp */
 		sprintf(s,"close %s ",tel->channel); mytel_tcleval(tel,s);
 	}
