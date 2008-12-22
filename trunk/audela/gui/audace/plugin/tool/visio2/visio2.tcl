@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.39 2008-11-23 12:07:20 michelpujol Exp $
+# Mise a jour $Id: visio2.tcl,v 1.40 2008-12-22 09:28:53 robertdelmas Exp $
 #
 
 namespace eval ::visio2 {
@@ -1086,21 +1086,16 @@ proc ::visio2::localTable::loadItem { visuNo index { doubleClick 0 } } {
          #--- j'affiche l'image
          ::confVisu::loadIma $visuNo $filename
          if { $::tcl_platform(os) == "Linux" } {
-           #--- Avec Linux, j'affiche le profil 1D avec spcaudace
-           #--- Avec Windows, le profil 1D est affiche par confVisu
-           #--- je recupere naxis1 de l'image qui vient d'etre chargee
-           set mynaxis [ lindex [ buf[::confVisu::getBufNo $visuNo] getkwd "NAXIS" ] 1 ]
-           if { $mynaxis == 1 } {
-              #--- j'ouvre la fenetre de spcaudace
-              ::confVisu::selectTool 1 ::spcaudace
-              #--- j'affiche l'image 1D
-              spc_load "$filename"
-           } else {
-              #--- si spcaudace est ouvert, je le ferme
-              ### if [ winfo exists .spc ] {
-              ###    destroy .spc
-              ### }
-           }
+            #--- Avec Linux, j'affiche le profil 1D avec spcaudace
+            #--- Avec Windows, le profil 1D est affiche par confVisu
+            #--- je recupere naxis1 de l'image qui vient d'etre chargee
+            set mynaxis [ lindex [ buf[::confVisu::getBufNo $visuNo] getkwd "NAXIS" ] 1 ]
+            if { $mynaxis == 1 } {
+               #--- j'ouvre la fenetre de spcaudace
+               ::confVisu::selectTool 1 ::spcaudace
+               #--- j'affiche l'image 1D
+               spc_load "$filename"
+            }
          }
 
          if { [::Image::isAnimatedGIF "$filename"] == 1 } {
