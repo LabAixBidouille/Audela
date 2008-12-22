@@ -2,7 +2,7 @@
 # Fichier : ascom.tcl
 # Description : Configuration de la monture ASCOM
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ascom.tcl,v 1.14 2008-12-22 09:25:50 robertdelmas Exp $
+# Mise a jour $Id: ascom.tcl,v 1.15 2008-12-22 17:34:46 robertdelmas Exp $
 #
 
 namespace eval ::ascom {
@@ -175,6 +175,11 @@ proc ::ascom::fillConfigPage { frm } {
       -values $private(ascom_drivers)
    pack $frm.driver -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
 
+   #--- Bouton de configuration du plugin
+   button $frm.configure -text "$caption(ascom,configurer)" -relief raised \
+      -command { $::ascom_variable(1) SetupDialog }
+   pack $frm.configure -in $frm.frame1 -anchor center -side left -pady 10 -ipadx 10 -ipady 5
+
    #--- Le checkbutton pour la visibilite de la raquette a l'ecran
    checkbutton $frm.raquette -text "$caption(ascom,raquette_tel)" \
       -highlightthickness 0 -variable ::ascom::private(raquette)
@@ -191,6 +196,9 @@ proc ::ascom::fillConfigPage { frm } {
    set labelName [ ::confTel::createUrlLabel $frm.frame3 "$caption(ascom,site_web_ref)" \
       "$caption(ascom,site_web_ref)" ]
    pack $labelName -side top -fill x -pady 2
+
+   #--- Gestion du bouton actif/inactif
+   ::ascom::confAscom
 }
 
 #
@@ -212,6 +220,8 @@ proc ::ascom::configureMonture { } {
      ### set linkNo [ ::confLink::create $conf(ascom,port) "tel$telNo" "control" [ tel$telNo product ] ]
       #--- Je change de variable
       set private(telNo) $telNo
+      #--- Gestion du bouton actif/inactif
+      ::ascom::confAscom
    } ]
 
    if { $catchResult == "1" } {
@@ -234,6 +244,9 @@ proc ::ascom::stop { } {
       return
    }
 
+   #--- Gestion du bouton actif/inactif
+   ::ascom::confAscomInactif
+
    #--- Je memorise le port
   ### set telPort [ tel$private(telNo) port ]
    #--- J'arrete la monture
@@ -242,6 +255,45 @@ proc ::ascom::stop { } {
   ### ::confLink::delete $telPort "tel$private(telNo)" "control"
    #--- Remise a zero du numero de monture
    set private(telNo) "0"
+}
+
+#
+# confAscom
+# Permet d'activer ou de désactiver le bouton
+#
+proc ::ascom::confAscom { } {
+   variable private
+
+   if { [ info exists private(frm) ] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         if { [ ::ascom::isReady ] == 1 } {
+            #--- Bouton de configuration du driver actif
+            $frm.configure configure -state normal
+         } else {
+            #--- Bouton de configuration du driver inactif
+            $frm.configure configure -state disabled
+         }
+      }
+   }
+}
+
+#
+# confAscomInactif
+#    Permet de desactiver le bouton a l'arret de la monture
+#
+proc ::ascom::confAscomInactif { } {
+   variable private
+
+   if { [ info exists private(frm) ] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         if { [ ::ascom::isReady ] == 1 } {
+            #--- Bouton de configuration du driver inactif
+            $frm.configure configure -state disabled
+         }
+      }
+   }
 }
 
 #
