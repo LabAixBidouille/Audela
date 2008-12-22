@@ -1,6 +1,6 @@
 #
 # Fichier : modpoi.cap
-# Mise a jour $Id: modpoi.cap,v 1.16 2008-12-21 11:41:08 robertdelmas Exp $
+# Mise a jour $Id: modpoi.cap,v 1.17 2008-12-22 19:16:29 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -18,7 +18,7 @@ global caption langage
    set caption(modpoi,modele,editer)         "To edit an aiming model, you must first open it."
 
    set caption(modpoi,wiz1,title)            "Aiming Model"
-   set caption(modpoi,wiz1,title2)           "Establishing\nthe Aiming Model"
+   set caption(modpoi,wiz1,title2)           "Establishing the Aiming Model"
    set caption(modpoi,wiz1,next)             "Next >>"
    set caption(modpoi,wiz1,desc)             "\
 This method consists in measuring\n\
@@ -69,7 +69,7 @@ movements. In this case, Aud'ACE performs this calculation."
    set caption(modpoi,wiz1c,compositage)     "Number of Images to be Averaged"
 
    set caption(modpoi,wiz2,title)            "Aiming Model: Measurement of Aiming Deviations"
-   set caption(modpoi,wiz2,title2)           "Measurement sequence of deviations\nbetween the aimed position\nand the actual observed position"
+   set caption(modpoi,wiz2,title2)           "Measurement sequence of deviations between the aimed\nposition and the actual observed position"
    set caption(modpoi,wiz2,star)             "Star"
    set caption(modpoi,wiz2,next)             "Compute >>"
    set caption(modpoi,wiz2,prev)             "<< Back"
@@ -154,7 +154,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(modpoi,modele,editer)         "Pour éditer un modèle de pointage, il faut d'abord l'ouvrir."
 
    set caption(modpoi,wiz1,title)            "Modèle de pointage"
-   set caption(modpoi,wiz1,title2)           "Détermination du\nmodèle de pointage"
+   set caption(modpoi,wiz1,title2)           "Détermination du modèle de pointage"
    set caption(modpoi,wiz1,next)             "Suivant >>"
    set caption(modpoi,wiz1,desc)             "\
 Procédure de mesure des défauts\n\
@@ -205,7 +205,7 @@ Aud'ACE se charge de ce calcul pour lui."
    set caption(modpoi,wiz1c,compositage)     "Nombre d'images à moyenner"
 
    set caption(modpoi,wiz2,title)            "Modèle de pointage : Mesure des écarts de pointage"
-   set caption(modpoi,wiz2,title2)           "Séquence de mesure des écarts\nentre la position pointée\net la position observée"
+   set caption(modpoi,wiz2,title2)           "Séquence de mesure des écarts entre la position\npointée et la position observée"
    set caption(modpoi,wiz2,star)             "Etoile"
    set caption(modpoi,wiz2,next)             "Calcul >>"
    set caption(modpoi,wiz2,prev)             "<< Précédent"
@@ -291,7 +291,7 @@ des directions :"
    set caption(modpoi,modele,editer)         "Per editare un modello di puntamento, occorre prima aprirlo."
 
    set caption(modpoi,wiz1,title)            "Modello di puntamento"
-   set caption(modpoi,wiz1,title2)           "Determinazione del\nmodello di puntamento"
+   set caption(modpoi,wiz1,title2)           "Determinazione del modello di puntamento"
    set caption(modpoi,wiz1,next)             "Seguente >>"
    set caption(modpoi,wiz1,desc)             "\
 Procedura per la misura dei difetti\n\
@@ -342,7 +342,7 @@ per i movimenti di GoTo, ma Aud'ACE la esegue."
    set caption(modpoi,wiz1c,compositage)     "Numero delle immagini da mediare"
 
    set caption(modpoi,wiz2,title)            "Modello di puntamento: Misura degli scarti di puntamento"
-   set caption(modpoi,wiz2,title2)           "Sequenza di misura degli scarti\ntra la posizione puntata\ne la posizione osservata"
+   set caption(modpoi,wiz2,title2)           "Sequenza di misura degli scarti tra la posizione\npuntata e la posizione osservata"
    set caption(modpoi,wiz2,star)             "Stella"
    set caption(modpoi,wiz2,next)             "Calcolo >>"
    set caption(modpoi,wiz2,prev)             "<< Precedente"
@@ -428,7 +428,7 @@ di direzione:"
    set caption(modpoi,modele,editer)         "Para editar un modelo de apuntado, se debe abrirlo en primer lugar."
 
    set caption(modpoi,wiz1,title)            "Modelo de apuntado"
-   set caption(modpoi,wiz1,title2)           "Estableciendo\nel Modelo de apuntado"
+   set caption(modpoi,wiz1,title2)           "Estableciendo el Modelo de apuntado"
    set caption(modpoi,wiz1,next)             "Siguiente >>"
    set caption(modpoi,wiz1,desc)             "\
 Este método consiste en medir\n\
@@ -479,7 +479,7 @@ pero Aud'ACE sí."
    set caption(modpoi,wiz1c,compositage)     "Número de imagenes a promediar"
 
    set caption(modpoi,wiz2,title)            "Modelo de apuntado: Medida de las desviaciones del apuntado"
-   set caption(modpoi,wiz2,title2)           "Secuencia de medida de las desviaciones\nla posición objetivo\ny la posición real observada"
+   set caption(modpoi,wiz2,title2)           "Secuencia de medida de las desviaciones la posición\nobjetivo y la posición real observada"
    set caption(modpoi,wiz2,star)             "Estrella"
    set caption(modpoi,wiz2,next)             "Calcular >>"
    set caption(modpoi,wiz2,prev)             "<< Precedente"
@@ -564,7 +564,7 @@ los mandos del telescopio:"
    set caption(modpoi,modele,editer)         "Um den Operativ Richtung Modell zu editieren, muss man es erst öffnen."
 
    set caption(modpoi,wiz1,title)            "Richtung Modell"
-   set caption(modpoi,wiz1,title2)           "Festlegung der\nRichtung Modell"
+   set caption(modpoi,wiz1,title2)           "Festlegung der Richtung Modell"
    set caption(modpoi,wiz1,next)             "Nächsten >>"
    set caption(modpoi,wiz1,desc)             "\
 Verfahren von euren Teleskop\n\
@@ -614,7 +614,7 @@ nicht aber Aud’ACE tut diese Berechnung."
    set caption(modpoi,wiz1c,compositage)     "Bilder Zahl durch zu schneiden"
 
    set caption(modpoi,wiz2,title)            "Richtung Modell: Schwenken Abstand Messung"
-   set caption(modpoi,wiz2,title2)           "Abstand Messung Folge\nzwischen die Schwenken Stelle\nund die beobachte Stelle"
+   set caption(modpoi,wiz2,title2)           "Abstand Messung Folge zwischen die Schwenken\nStelle und die beobachte Stelle"
    set caption(modpoi,wiz2,star)             "Stern"
    set caption(modpoi,wiz2,next)             "Rechnung >>"
    set caption(modpoi,wiz2,prev)             "<< Vorigen"
@@ -699,7 +699,7 @@ Richtung Hand Kontroller Knöpfe drücken:"
    set caption(modpoi,modele,editer)         "Para editar um modelo de apontamento é preciso abri-lo primeiro."
 
    set caption(modpoi,wiz1,title)            "Modelo de apontamento"
-   set caption(modpoi,wiz1,title2)           "Determinação do\nmodelo de apontamento"
+   set caption(modpoi,wiz1,title2)           "Determinação do modelo de apontamento"
    set caption(modpoi,wiz1,next)             "Seguinte >>"
    set caption(modpoi,wiz1,desc)             "\
 Procedimento de medida dos valores\n\
@@ -750,7 +750,7 @@ Aud'ACE encarrega-se desse cálculo."
    set caption(modpoi,wiz1c,compositage)     "Número de imagens a interferir"
 
    set caption(modpoi,wiz2,title)            "Modelo de apontamento: Medida dos desvios de apontamento"
-   set caption(modpoi,wiz2,title2)           "Sequência de medida dos desvios\nentre a posição a apontar\ne a posição observada"
+   set caption(modpoi,wiz2,title2)           "Sequência de medida dos desvios entre a posição\na apontar e a posição observada"
    set caption(modpoi,wiz2,star)             "Estrela"
    set caption(modpoi,wiz2,next)             "Cálculo >>"
    set caption(modpoi,wiz2,prev)             "<< Anterior"
@@ -836,7 +836,7 @@ para comandar as direcções:"
    set caption(modpoi,modele,editer)         "To edit an aiming model, you must first open it."
 
    set caption(modpoi,wiz1,title)            "Aiming Model"
-   set caption(modpoi,wiz1,title2)           "Establishing\nthe Aiming Model"
+   set caption(modpoi,wiz1,title2)           "Establishing the Aiming Model"
    set caption(modpoi,wiz1,next)             "Next >>"
    set caption(modpoi,wiz1,desc)             "\
 This method consists in measuring\n\
@@ -887,7 +887,7 @@ movements. In this case, Aud'ACE performs this calculation."
    set caption(modpoi,wiz1c,compositage)     "Number of Images to be Averaged"
 
    set caption(modpoi,wiz2,title)            "Aiming Model: Measurement of Aiming Deviations"
-   set caption(modpoi,wiz2,title2)           "Measurement sequence of deviations\nbetween the aimed position\nand the actual observed position"
+   set caption(modpoi,wiz2,title2)           "Measurement sequence of deviations between the aimed\nposition and the actual observed position"
    set caption(modpoi,wiz2,star)             "Star"
    set caption(modpoi,wiz2,next)             "Compute >>"
    set caption(modpoi,wiz2,prev)             "<< Back"
