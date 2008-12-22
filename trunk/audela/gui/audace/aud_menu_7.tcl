@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise a jour $Id: aud_menu_7.tcl,v 1.10 2008-01-06 18:52:48 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.tcl,v 1.11 2008-12-22 09:24:24 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -663,12 +663,9 @@ namespace eval ::audace {
 
       #---
       menustate disabled
-      #--- Positions des fenetres
-      set conf(audace,visu$visuNo,wmgeometry) "[wm geometry $audace(base)]"
-      set conf(console,wmgeometry) "[wm geometry $audace(Console)]"
-      if { [ winfo exists $audace(base).tjrsvisible ] == 1 } {
-         set conf(ouranos,wmgeometry) "[wm geometry $audace(base).tjrsvisible]"
-      }
+      #--- Positions et tailles des fenetres
+      set conf(audace,visu$visuNo,wmgeometry) [ wm geometry $audace(base) ]
+      set conf(console,wmgeometry)            [ wm geometry $audace(Console) ]
 
       #---
       if { $::tcl_platform(os) == "Linux" } {

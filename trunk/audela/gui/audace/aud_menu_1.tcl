@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.24 2008-07-07 17:51:39 michelpujol Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.25 2008-12-22 09:24:03 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -189,11 +189,8 @@ namespace eval ::audace {
          wm protocol $audace(base) WM_DELETE_WINDOW ::audace::rien
          wm protocol $audace(Console) WM_DELETE_WINDOW ::audace::rien
          #--- Positions et tailles des fenetres
-         set conf(audace,visu1,wmgeometry) "[wm geometry $audace(base)]"
-         set conf(console,wmgeometry) "[wm geometry $audace(Console)]"
-         if { [ winfo exists $audace(base).tjrsvisible ] == 1 } {
-            set conf(ouranos,wmgeometry) "[wm geometry $audace(base).tjrsvisible]"
-         }
+         set conf(audace,visu1,wmgeometry) [ wm geometry $audace(base) ]
+         set conf(console,wmgeometry)      [ wm geometry $audace(Console) ]
 
          #--- tous les outils de la visu 1
          ::confVisu::stopTool 1
