@@ -2,7 +2,7 @@
 # Fichier : conffont.tcl
 # Description : Selection et mise a jour en direct des polices de l'interface Aud'ACE
 # Auteur : Robert DELMAS
-# Mise a jour $Id: conffont.tcl,v 1.5 2008-12-08 22:27:40 robertdelmas Exp $
+# Mise a jour $Id: conffont.tcl,v 1.6 2008-12-23 16:42:43 robertdelmas Exp $
 #
 
 namespace eval confFont:: {
@@ -42,24 +42,13 @@ proc ::confFont::init { } {
       if { ! [ info exists conf(conffont,Message) ] }     { set conf(conffont,Message)     "Arial 11 normal" }
       if { ! [ info exists conf(conffont,Graph) ] }       { set conf(conffont,Graph)       "Arial 11 normal" }
       if { ! [ info exists conf(conffont,ComboBox) ] }    { set conf(conffont,ComboBox)    "Arial 11 normal" }
-      if { ! [ info exists conf(conffont,Autres) ] }      { set conf(conffont,Autres)      "Arial 11 normal" }
-      if { ! [ info exists conf(conffont,EnteteFITS) ] }  { set conf(conffont,EnteteFITS)  "Arial 11 normal" }
 
-      #--- Polices des en-tetes FITS et des listes (police Linux = police Windows + 3)
-      set audace(font,en_tete_1)       "$conf(conffont,EnteteFITS)"
-      set audace(font,en_tete_2)       [ lreplace $audace(font,en_tete_1) 2 2 "bold" ]
+      #--- Polices des en-tetes FITS (police Linux = police Windows + 3)
+      set audace(font,en_tete_1) "Arial 11 normal"
+      set audace(font,en_tete_2) [ lreplace $audace(font,en_tete_1) 2 2 "bold" ]
 
-      #--- Polices des boites, des outils et des liens hypertextes (police Linux = police Windows + 3)
-      set audace(font,arial_8_n)       "$conf(conffont,Autres)"
-      set audace(font,arial_8_b)       [ lreplace $audace(font,arial_8_n) 2 2 "bold" ]
-      set audace(font,arial_7_n)       [ lreplace $audace(font,arial_8_n) 1 1 "10" ]
-      set audace(font,arial_7_b)       [ lreplace $audace(font,arial_8_b) 1 1 "10" ]
-      set audace(font,arial_10_n)      [ lreplace $audace(font,arial_8_n) 1 1 "13" ]
-      set audace(font,arial_10_b)      [ lreplace $audace(font,arial_8_b) 1 1 "13" ]
-      set audace(font,arial_12_n)      [ lreplace $audace(font,arial_8_n) 1 1 "15" ]
-      set audace(font,arial_12_b)      [ lreplace $audace(font,arial_8_b) 1 1 "15" ]
-      set audace(font,arial_15_b)      [ lreplace $audace(font,arial_8_b) 1 1 "18" ]
-      set audace(font,url)             [ lreplace $audace(font,arial_8_n) 1 1 "12" ]
+      #--- Police des raquettes integrees aux outils (police Linux = police Windows + 3)
+      set audace(font,arial_12_b) "Arial 15 bold"
 
    } elseif { $::tcl_platform(os) == "Darwin" } {
 
@@ -81,24 +70,13 @@ proc ::confFont::init { } {
       if { ! [ info exists conf(conffont,Message) ] }     { set conf(conffont,Message)     "Arial 11 normal" }
       if { ! [ info exists conf(conffont,Graph) ] }       { set conf(conffont,Graph)       "Arial 11 normal" }
       if { ! [ info exists conf(conffont,ComboBox) ] }    { set conf(conffont,ComboBox)    "Arial 11 normal" }
-      if { ! [ info exists conf(conffont,Autres) ] }      { set conf(conffont,Autres)      "Arial 11 normal" }
-      if { ! [ info exists conf(conffont,EnteteFITS) ] }  { set conf(conffont,EnteteFITS)  "Arial 11 normal" }
 
-      #--- Polices des en-tetes FITS et des listes (police Darwin = police Windows + 3)
-      set audace(font,en_tete_1)       "$conf(conffont,EnteteFITS)"
-      set audace(font,en_tete_2)       [ lreplace $audace(font,en_tete_1) 2 2 "bold" ]
+      #--- Polices des en-tetes FITS (police Darwin = police Windows + 3)
+      set audace(font,en_tete_1) "Arial 11 normal"
+      set audace(font,en_tete_2) [ lreplace $audace(font,en_tete_1) 2 2 "bold" ]
 
-      #--- Polices des boites, des outils et des liens hypertextes (police Darwin = police Windows + 3)
-      set audace(font,arial_8_n)       "$conf(conffont,Autres)"
-      set audace(font,arial_8_b)       [ lreplace $audace(font,arial_8_n) 2 2 "bold" ]
-      set audace(font,arial_7_n)       [ lreplace $audace(font,arial_8_n) 1 1 "10" ]
-      set audace(font,arial_7_b)       [ lreplace $audace(font,arial_8_b) 1 1 "10" ]
-      set audace(font,arial_10_n)      [ lreplace $audace(font,arial_8_n) 1 1 "13" ]
-      set audace(font,arial_10_b)      [ lreplace $audace(font,arial_8_b) 1 1 "13" ]
-      set audace(font,arial_12_n)      [ lreplace $audace(font,arial_8_n) 1 1 "15" ]
-      set audace(font,arial_12_b)      [ lreplace $audace(font,arial_8_b) 1 1 "15" ]
-      set audace(font,arial_15_b)      [ lreplace $audace(font,arial_8_b) 1 1 "18" ]
-      set audace(font,url)             [ lreplace $audace(font,arial_8_n) 1 1 "12" ]
+      #--- Police des raquettes integrees aux outils (police Darwin = police Windows + 3)
+      set audace(font,arial_12_b) "Arial 15 bold"
 
    } else {
 
@@ -120,24 +98,13 @@ proc ::confFont::init { } {
       if { ! [ info exists conf(conffont,Message) ] }     { set conf(conffont,Message)     "Arial 8 normal" }
       if { ! [ info exists conf(conffont,Graph) ] }       { set conf(conffont,Graph)       "Arial 12 normal" }
       if { ! [ info exists conf(conffont,ComboBox) ] }    { set conf(conffont,ComboBox)    "{MS Sans Serif} 8 normal" }
-      if { ! [ info exists conf(conffont,Autres) ] }      { set conf(conffont,Autres)      "Arial 8 normal" }
-      if { ! [ info exists conf(conffont,EnteteFITS) ] }  { set conf(conffont,EnteteFITS)  "Courier 8 normal" }
 
-      #--- Polices des en-tetes FITS et des listes
-      set audace(font,en_tete_1)       "$conf(conffont,EnteteFITS)"
-      set audace(font,en_tete_2)       [ lreplace $audace(font,en_tete_1) 2 2 "bold" ]
+      #--- Polices des en-tetes FITS
+      set audace(font,en_tete_1) "Courier 8 normal"
+      set audace(font,en_tete_2) [ lreplace $audace(font,en_tete_1) 2 2 "bold" ]
 
-      #--- Polices des boites, des outils et des liens hypertextes
-      set audace(font,arial_8_n)       "$conf(conffont,Autres)"
-      set audace(font,arial_8_b)       [ lreplace $audace(font,arial_8_n) 2 2 "bold" ]
-      set audace(font,arial_7_n)       [ lreplace $audace(font,arial_8_n) 1 1 "7" ]
-      set audace(font,arial_7_b)       [ lreplace $audace(font,arial_8_b) 1 1 "7" ]
-      set audace(font,arial_10_n)      [ lreplace $audace(font,arial_8_n) 1 1 "10" ]
-      set audace(font,arial_10_b)      [ lreplace $audace(font,arial_8_b) 1 1 "10" ]
-      set audace(font,arial_12_n)      [ lreplace $audace(font,arial_8_n) 1 1 "12" ]
-      set audace(font,arial_12_b)      [ lreplace $audace(font,arial_8_b) 1 1 "12" ]
-      set audace(font,arial_15_b)      [ lreplace $audace(font,arial_8_b) 1 1 "15" ]
-      set audace(font,url)             [ lreplace $audace(font,arial_8_n) 1 1 "9" ]
+      #--- Police des raquettes integrees aux outils
+      set audace(font,arial_12_b) "Arial 12 bold"
 
    }
 
