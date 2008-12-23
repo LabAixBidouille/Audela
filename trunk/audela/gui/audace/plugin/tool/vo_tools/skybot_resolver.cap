@@ -1,6 +1,6 @@
 #
 # Fichier : skybot_resolver.cap
-# Mise a jour $Id: skybot_resolver.cap,v 1.13 2008-07-03 11:55:33 jberthier Exp $
+# Mise a jour $Id: skybot_resolver.cap,v 1.14 2008-12-23 13:26:54 jberthier Exp $
 #
 
 #=========================================================================
@@ -11,73 +11,73 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(resolver,main_title)            "# SkyBoT - Recherche des corps du Système Solaire autour d'un corps céleste"
-set caption(resolver,titre_objet)           "# Choix du corps céleste"
-set caption(resolver,nom_objet)             "# Nom de la cible :"
-set caption(resolver,titre_param)           "# Paramètres de calcul"
-set caption(resolver,epoch)                 "# Epoque de calcul de l'éphéméride :"
-set caption(resolver,loc)                   "# Localisation de l'observateur :"
-set caption(resolver,date_crte)             "# Date courante"
-set caption(resolver,liste_code_uai)        "# Liste des codes UAI"
+set caption(resolver,main_title)            "SkyBoT - Seek for solar system objects around a celestial body"
+set caption(resolver,titre_objet)           "Celestial body"
+set caption(resolver,nom_objet)             "Name of the target:"
+set caption(resolver,titre_param)           "Parameters of the calculation"
+set caption(resolver,epoch)                 "Epoch of computation of the ephemeris:"
+set caption(resolver,loc)                   "Localization of the observer:"
+set caption(resolver,date_crte)             "Current date"
+set caption(resolver,liste_code_uai)        "List of observatory IAU codes"
 set caption(resolver,info)                  "\[ ? \]"
 set caption(resolver,but_skybot)            "SkyBoT"
 set caption(resolver,but_sesame)            "Sesame"
 
-set caption(resolver,calcul_ephemerides)    "# Calcul de l'éphémérides de la cible"
+set caption(resolver,calcul_ephemerides)    "Compute target ephemeris"
 
-set caption(resolver,titre_fov)             "# Caractéristiques du champ de vue :"
-set caption(resolver,taille_champ)          "# Dimension du champ de vue :"
-set caption(resolver,filter)                "# Filtre sur les erreur de position :"
+set caption(resolver,titre_fov)             "Characteristics of the field of view:"
+set caption(resolver,taille_champ)          "Size of the field of view:"
+set caption(resolver,filter)                "Filter on the position errors:"
 
-set caption(resolver,asteroide)             "# Astéroïdes"
+set caption(resolver,asteroide)             "Asteroids"
 
-set caption(resolver,recherche)             "# Lancer la\nrecherche"
-set caption(resolver,caract_objet)          "# Caractéristiques de\nl'objet sélectionné"
-set caption(resolver,view_aladin)           "# Visualiser le FOV\navec Aladin"
-set caption(resolver,aide)                  "# Aide"
-set caption(resolver,fermer)                "# Fermer"
+set caption(resolver,recherche)             "Start to\nseek"
+set caption(resolver,caract_objet)          "Information about the\nselected object"
+set caption(resolver,view_aladin)           "Display the FOV\nwith Aladin"
+set caption(resolver,aide)                  "Help"
+set caption(resolver,fermer)                "Close"
 
-set caption(resolver,msg_erreur)            "# Erreur"
-set caption(resolver,msg_format)            "# Format de la saisie"
-set caption(resolver,msg_notarget)          "# Veuillez saisir le nom d'une cible"
-set caption(resolver,msg_noresolver)        "# Veuillez choisir au moins un resolver pour calculer l'éphémérides de la cible..."
-set caption(resolver,msg_objnotfound)       "# RESOLVER -> La cible n'a pas pu être résolue ni par SkyBoT@IMCCE ni par Sesame@"
-set caption(resolver,msg_nodata)            "# Veuillez calculer l'éphémérides d'un corps céleste avant de lancer la recherche"
-set caption(resolver,msg_noepoch)           "# Veuillez saisir une date"
-set caption(resolver,msg_date_max)          "# La date saisie doit être une date antérieure au"
-set caption(resolver,msg_date_min)          "# La date saisie doit être une date postérieure au"
-set caption(resolver,msg_reel_ad)           "# L'ascension droite doit être un nombre réel compris entre 0.0° et 360.0°"
-set caption(resolver,msg_reel_dec)          "# La déclinaison doit être un nombre réel compris entre -90.0° et 90.0°"
-set caption(resolver,msg_reel_fov)          "# Les dimensions du champ de vue doivent être un nombre réel positif, non nul et inférieur à 36000 secondes de degré (10°)"
+set caption(resolver,msg_erreur)            "Error"
+set caption(resolver,msg_format)            "Data format"
+set caption(resolver,msg_notarget)          "Please, enter the name of a target"
+set caption(resolver,msg_noresolver)        "Please, choose at least a resolver to resolve the target"
+set caption(resolver,msg_objnotfound)       "RESOLVER -> the target has not been resolved, neither by SkyBoT@IMCCE nor by Sesame@"
+set caption(resolver,msg_nodata)            "Please, compute the ephemeris of a celestial body before starting the seek"
+set caption(resolver,msg_noepoch)           "Please, enter a date"
+set caption(resolver,msg_date_max)          "The date must be prior to"
+set caption(resolver,msg_date_min)          "The date must be after"
+set caption(resolver,msg_reel_ad)           "The right ascension must be a positive real number ranging from 0.0° to 360.0°"
+set caption(resolver,msg_reel_dec)          "The declination must be a real number ranging from -90.0° to 90.0°"
+set caption(resolver,msg_reel_fov)          "The size of the FOV must be a positive real number, not null and lesser than 3600 secondes de degré (1°)"
 set caption(resolver,msg_internet)          "An Internet connexion is required to access SkyBoT and Sesame services."
 set caption(resolver,msg_skybot)            "The SkyBoT or Sesame server is unreachable; please, try again later."
 
-set caption(resolver,msg_nbre_objets)       "# Nombre d'objets du Système Solaire trouvés dans le FOV :"
-set caption(resolver,msg_nbre_objet)        "# Un seul objet  du Système Solaire trouvé dans le FOV"
-set caption(resolver,msg_no_objet)          "# Aucun objet du Système Solaire n'a été trouvé dans le FOV"
+set caption(resolver,msg_nbre_objets)       "Number of solar system objects found in the FOV:"
+set caption(resolver,msg_nbre_objet)        "Only one solar system object has been found in the FOV"
+set caption(resolver,msg_no_objet)          "No solar system object has been found in the FOV"
 
-set caption(resolver,param_none)            "# Pas d'information disponible !"
-set caption(resolver,format_target)         "# Saisir le nom d'un objet céleste:\n - du Système Solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
-- stellaire, galactique ou extragalactique reconnus par Simbad (ex.: m42, IC434, HIP 1234, etc.)"
-set caption(resolver,format_epoch)          "# Saisir la date d'observation dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss, now, jd, etc.\n\n(cf. type 'Date' de la libMC)"
-set caption(resolver,format_loc)            "# Saisir le code correspondant à la localisation de l'observateur : code UAI de l'observatoire (code 500 = géocentre) ou \
-un des codes reconnus : Mars, Spirit, Opportunity"
-set caption(resolver,format_dim_fov)        "# Saisir les dimensions RAxDEC du champ de vue exprimées en secondes de degré.\nLe deuxième paramètre est optionnel: s'il est omis alors on considère un champ circulaire de rayon la valeur saisie"
-set caption(resolver,format_filter)         "# Saisir la valeur du filtre, en secondes de degrés, sur les erreurs de position des objets. Les corps dont l'erreur en position est supérieure à la valeur\
-indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
+set caption(resolver,param_none)            "No information!"
+set caption(resolver,format_target)         "Enter the name of a solar system object\n (asteroid, planet or natural satellite, e.g. Ceres, 1996 TO66, 15905, mars, J-IV, ...)\n\
+or any stellar, galactic or extra-galactic body resolved by Simbad (e.g. m42, IC434, HIP 1234, ...)"
+set caption(resolver,format_epoch)          "Enter the date of the observation in a format recognized by Audela:\n yyyy-mm-ddThh:mm:ss.sss, now, jd, etc.\n\n(cf. type 'Date' of the libMC)"
+set caption(resolver,format_loc)            "Enter the code number of the place of the observer: IAU observatory code (500 is geocenter) or \
+one of the recognized code: Mars, Spirit, Opportunity, HST, ..."
+set caption(resolver,format_dim_fov)        "Enter the size RAxDEC of the field of view in arcsec.\nIf the second parameter is omitted (i.e. DEC) then the FOV is circular with a radius equal to the given value"
+set caption(resolver,format_filter)         "Enter a value to filter the objects on their position error, in arcsec. Only the objects for which the error of position is lesser than the given value\
+will be retrieved. Enter 0 to not filter the result."
 
-set caption(resolver,num)                   "# Numéro"
-set caption(resolver,name)                  "# Nom"
-set caption(resolver,rah)                   "# AD (h)"
-set caption(resolver,dedeg)                 "# DEC (degrés)"
-set caption(resolver,class)                 "# Classe"
-set caption(resolver,mv)                    "# Mag. V"
-set caption(resolver,errarcsec)             "# Err (arcsec)"
-set caption(resolver,darcsec)               "# d (arcsec)"
-set caption(resolver,draarcsec)             "# dAD (arcsec/h)"
-set caption(resolver,ddecarcsec)            "# dDEC (arcsec/h)"
-set caption(resolver,dgua)                  "# Dg (UA)"
-set caption(resolver,dhua)                  "# Dh (UA)"
+set caption(resolver,num)                   "Number"
+set caption(resolver,name)                  "Name"
+set caption(resolver,rah)                   "RA (h)"
+set caption(resolver,dedeg)                 "DEC (deg)"
+set caption(resolver,class)                 "Class"
+set caption(resolver,mv)                    "V Mag."
+set caption(resolver,errarcsec)             "Err (arcsec)"
+set caption(resolver,darcsec)               "d (arcsec)"
+set caption(resolver,draarcsec)             "dAD (arcsec/h)"
+set caption(resolver,ddecarcsec)            "dDEC (arcsec/h)"
+set caption(resolver,dgua)                  "Dg (UA)"
+set caption(resolver,dhua)                  "Dh (UA)"
 set caption(resolver,goto)                  "Goto"
 
 # *************** Version française ***************************
