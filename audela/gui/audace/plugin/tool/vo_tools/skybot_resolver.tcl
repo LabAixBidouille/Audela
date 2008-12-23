@@ -2,7 +2,7 @@
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_resolver.tcl,v 1.22 2008-12-01 18:11:42 robertdelmas Exp $
+# Mise a jour $Id: skybot_resolver.tcl,v 1.23 2008-12-23 13:26:06 jberthier Exp $
 #
 
 namespace eval skybot_Resolver {
@@ -114,18 +114,23 @@ namespace eval skybot_Resolver {
      set rest {}
      foreach item "{$xml}" {
          switch -regexp -- $item {
-            ^# {append res "{[lrange $item 0 end]} " ; #text item}
+            ^# {
+               append res "{[lrange $item 0 end]} " ; #text item
+            }
             ^/ {
-                regexp {/(.+)} $item -> tagname ;# end tag
-                set expected [lindex $stack end]
-                if {$tagname != $expected} {error "$item != $expected"}
-                set stack [lrange $stack 0 end-1]
-                append res "\}\} "
-          }
+               regexp {/(.+)} $item -> tagname ; # end tag
+               set expected [lindex $stack end]
+               if {$tagname != $expected} {error "$item != $expected"}
+               set stack [lrange $stack 0 end-1]
+               append res "\}\} "
+            }
             /$ { # singleton - start and end in one <> group
                regexp {([^ ]+)( (.+))?/$} $item -> tagname - rest
                set rest [lrange [string map {= " "} $rest] 0 end]
                append res "{$tagname [list $rest] {}} "
+            }
+            ^! { # comment <!-- -->
+               # nothing to do, just skip the comments in the xml document
             }
             default {
                set tagname [lindex $item 0] ;# start tag
@@ -134,11 +139,11 @@ namespace eval skybot_Resolver {
                append res "\{$tagname [list $rest] \{"
             }
          }
-         if {[llength $rest]%2} {error "att's not paired: $rest"}
+         if {[llength $rest]%2} { error [concat "att's not paired: $rest"] }
      }
-     if [llength $stack] {error "unresolved: $stack"}
+     if [llength $stack] { error [concat "unresolved: $stack"] }
      string map {"\} \}" "\}\}"} [lindex $res 0]
-
+     return $res
    }
 
    #
@@ -150,19 +155,39 @@ namespace eval skybot_Resolver {
       set ok(name) 0
       set ok(ra) 0
       set ok(de) 0
-      set data [ lindex [ lindex [ lindex [ xml2list $xml ] 2 ] 1 ] 2 ]
+      # Extraction des enfants de Resolver dans la liste de listes xml
+      # Exemple de fichier XML retourne par Sesame (dec. 2008)
+      # <Target>
+      #   <name>ic434</name>
+      #   <!-- Q315553 #1 -->
+      #   <Resolver name="S=Simbad (CDS, via client/server)">
+      #     <INFO>from cache</INFO>
+      #     <otype>HII</otype>
+      #     <jpos>05:41:00.00 -02:30:00.0</jpos>
+      #     <jradeg>85.25</jradeg>
+      #     <jdedeg>-2.5</jdedeg>
+      #     <errRAmas>1080000</errRAmas><errDEmas>1080000</errDEmas>
+      #     <oname>IC 434</oname>
+      #     <alias>IC 434</alias>
+      #     <nrefs>37</nrefs>
+      #   </Resolver>
+      # </Target>
+      # </Sesame>
+      set data [ lindex [ xml2list $xml ] 0 2 0 2 1 2 ]
+      # Pour chaque enfant on recupere element->value
       for { set i 0 } { $i <= [ expr [ llength $data ] - 1 ] } { incr i } {
-         set key   [ lindex [ lindex $data $i ] 0 ]
-         set value [ string map {\{\#text "" \{ "" \} ""} [ lindex [ lindex $data $i ] 2 ] ]
+         set key   [ lindex $data $i 0 ]
+         set value [ string map {\{\#text "" \{ "" \} ""} [ lindex $data $i 2 ] ]
+         # Sauvegarde des parametres souhaites
          switch $key {
-            oname  { set sesame(name) $value;  set ok(name) 1 }
-            jradeg { set sesame(radeg) $value; set ok(ra)   1 }
-            jdedeg { set sesame(dedeg) $value; set ok(de)   1 }
-            otype  { set sesame(type) $value }
+            oname  { set sesame(oname) $value;  set ok(name) 1 }
+            jradeg { set sesame(jradeg) $value; set ok(ra)   1 }
+            jdedeg { set sesame(jdedeg) $value; set ok(de)   1 }
+            otype  { set sesame(otype) $value }
          }
       }
       if { $ok(name) && $ok(ra) && $ok(de) } {
-         set response [concat "# Num, Name, RA(h), DE(deg), Class, Mv, Err(arcsec), dRA(arcsec/h), dDEC(arcsec/h), Dg(ua), Dh(ua) ; -|$sesame(name)|[expr $sesame(radeg)/15.0]|$sesame(dedeg)|$sesame(type)|||||| " ]
+         set response [concat "# Num, Name, RA(h), DE(deg), Class, Mv, Err(arcsec), dRA(arcsec/h), dDEC(arcsec/h), Dg(ua), Dh(ua) ; -|$sesame(oname)|[expr $sesame(jradeg)/15.0]|$sesame(jdedeg)|$sesame(otype)|||||| " ]
       } else {
          set response "1"
       }
@@ -407,9 +432,9 @@ namespace eval skybot_Resolver {
                 #--- Menu server
                 menu $This.frame3.eph.cb.sesame.but_server.m
                 $This.frame3.eph.cb.sesame.but_server.m add radiobutton -label "CDS" -variable voconf(sesame_server) -font $audace(font,arial_7_n)
-                $This.frame3.eph.cb.sesame.but_server.m add radiobutton -label "ADS" -variable voconf(sesame_server) -font $audace(font,arial_7_n)
                 $This.frame3.eph.cb.sesame.but_server.m add radiobutton -label "ADAC" -variable voconf(sesame_server) -font $audace(font,arial_7_n)
-                $This.frame3.eph.cb.sesame.but_server.m add radiobutton -label "CADC" -variable voconf(sesame_server) -font $audace(font,arial_7_n)
+ #               $This.frame3.eph.cb.sesame.but_server.m add radiobutton -label "ADS" -variable voconf(sesame_server) -font $audace(font,arial_7_n)
+ #               $This.frame3.eph.cb.sesame.but_server.m add radiobutton -label "CADC" -variable voconf(sesame_server) -font $audace(font,arial_7_n)
 
       #--- Cree un frame pour l'affichage du resultat de la recherche
       frame $This.frame5
@@ -861,12 +886,16 @@ namespace eval skybot_Resolver {
 
       #--- Conversion de la date en JD
       set date_calcul [ mc_date2jd $voconf(date_ephemerides) ]
-      set erreur [ valideDate $date_calcul 0 ]
-      if { $erreur != "0" } {
-         tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message $erreur
-         $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
-         $::skybot_Resolver::This configure -cursor arrow
-         return
+
+      #--- Verifie que la date JD est couverte par le service Skybot (si demande)
+      if { $voconf(but_skybot) } {
+         set erreur [ valideDate $date_calcul 0 ]
+         if { $erreur != "0" } {
+            tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message $erreur
+            $::skybot_Resolver::This.frame3.eph.but_calcul configure -relief raised -state normal
+            $::skybot_Resolver::This configure -cursor arrow
+            return
+         }
       }
 
       #--- Traitement du nom des objets

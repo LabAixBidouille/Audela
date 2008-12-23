@@ -2,7 +2,7 @@
 # Fichier : vo_tools.tcl
 # Description : Outils pour l'Observatoire Virtuel
 # Auteur : Alain KLOTZ et Jerome BERTHIER
-# Mise a jour $Id: vo_tools.tcl,v 1.19 2008-07-03 11:55:32 jberthier Exp $
+# Mise a jour $Id: vo_tools.tcl,v 1.20 2008-12-23 13:26:06 jberthier Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -599,8 +599,8 @@ proc vo_sesame { args } {
    package require SOAP
 
    set sesame(CDS)  "http://cdsws.u-strasbg.fr/axis/services/Sesame"
-   set sesame(ADS)  "http://vizier.cfa.harvard.edu:8080/axis/services/Sesame"
    set sesame(ADAC) "http://vizier.nao.ac.jp:8080/axis/services/Sesame"
+   set sesame(ADS)  "http://vizier.cfa.harvard.edu:8080/axis/services/Sesame"
    set sesame(CADC) "http://vizier.hia.nrc.ca:8080/axis/services/Sesame"
 
    set argc [llength $args]
