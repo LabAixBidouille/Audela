@@ -1,8 +1,8 @@
 #
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
-# Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_search.tcl,v 1.22 2008-12-01 18:11:55 robertdelmas Exp $
+# Auteur : Jerome BERTHIER
+# Mise a jour $Id: skybot_search.tcl,v 1.23 2008-12-23 16:42:12 robertdelmas Exp $
 #
 
 namespace eval skybot_Search {
@@ -435,9 +435,9 @@ namespace eval skybot_Search {
       set can2_xy [ ::audace::picture2Canvas $img2_xy ]
       #--- trace du repere
       $audace(hCanvas) create line [lindex $can0_xy 0] [lindex $can0_xy 1] [lindex $can1_xy 0] [lindex $can1_xy 1] -fill "green" -tags cadres -width 1.0 -arrow last
-      $audace(hCanvas) create text [expr [lindex $can1_xy 0]-1] [expr [lindex $can1_xy 1]-10] -text $dir_EW -justify center -fill "green" -tags cadres -font $audace(font,arial_7_n)
+      $audace(hCanvas) create text [expr [lindex $can1_xy 0]-1] [expr [lindex $can1_xy 1]-10] -text $dir_EW -justify center -fill "green" -tags cadres
       $audace(hCanvas) create line [lindex $can0_xy 0] [lindex $can0_xy 1] [lindex $can2_xy 0] [lindex $can2_xy 1]  -fill "green" -tags cadres -width 1.0 -arrow last
-      $audace(hCanvas) create text [expr [lindex $can2_xy 0]-10] [expr [lindex $can2_xy 1]-1] -text $dir_NS -justify center -fill "green" -tags cadres -font $audace(font,arial_7_n)
+      $audace(hCanvas) create text [expr [lindex $can2_xy 0]-10] [expr [lindex $can2_xy 1]-1] -text $dir_NS -justify center -fill "green" -tags cadres
    }
 
    #
@@ -946,7 +946,6 @@ namespace eval skybot_Search {
             #--- Cree un bouton pour afficher la liste des code UAI
             button $fov.al.but_iau_code \
                -text "$caption(search,liste_code_uai)" -borderwidth 1 \
-               -font $audace(font,arial_7_b) \
                -command { ::audace::Lance_Site_htm $myurl(iau_codes) }
             pack $fov.al.but_iau_code \
                -in $fov.al -side bottom -anchor c -padx 5 -pady 1 -expand 0
@@ -1959,7 +1958,7 @@ namespace eval skybot_Search {
          if { $voconf(label_objets) == 1 } {
             set voconf(name) [ lindex [ $tbl cellconfigure $idx,1 -text ] 4 ]
             $audace(hCanvas) create text $x [ expr $y - 20. ] -text $voconf(name) \
-                -justify center -fill $color($mycolor) -tags cadres -font $audace(font,arial_7_n)
+                -justify center -fill $color($mycolor) -tags cadres
          }
       }
 

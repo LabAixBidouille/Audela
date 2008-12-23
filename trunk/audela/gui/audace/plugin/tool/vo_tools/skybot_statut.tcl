@@ -1,8 +1,8 @@
 #
 # Fichier : skybot_statut.tcl
 # Description : Affiche le statut de la base de donnees SkyBoT
-# Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_statut.tcl,v 1.13 2008-12-01 18:13:43 robertdelmas Exp $
+# Auteur : Jerome BERTHIER
+# Mise a jour $Id: skybot_statut.tcl,v 1.14 2008-12-23 16:42:26 robertdelmas Exp $
 #
 
 namespace eval skybot_Statut {
@@ -121,7 +121,7 @@ namespace eval skybot_Statut {
          pack $This.frame1 -in $This -anchor s -side top -expand 0 -fill x
 
            #--- Cree un label pour le titre
-           label $This.frame1.titre -font $audace(font,arial_10_b) \
+           label $This.frame1.titre \
                  -text "$caption(statut,titre)"
            pack $This.frame1.titre \
                 -in $This.frame1 -side top -padx 3 -pady 3
@@ -137,32 +137,25 @@ namespace eval skybot_Statut {
              pack $intitle -in $This.frame1.statut -side left
 
                #--- Cree un label pour le statut
-               label $intitle.ok -font $audace(font,en_tete_2) \
-                     -text "$caption(statut,label_ok)"
+               label $intitle.ok -text "$caption(statut,label_ok)"
                pack $intitle.ok -in $intitle -side top -padx 3 -pady 1 -anchor w
                #--- Cree un label pour la periode
-               label $intitle.pe -font $audace(font,en_tete_2) \
-                     -text "$caption(statut,label_periode)"
+               label $intitle.pe -text "$caption(statut,label_periode)"
                pack $intitle.pe -in $intitle -side top -padx 3 -pady 1 -anchor w
                #--- Cree un label pour la date de MAJ
-               label $intitle.dm -font $audace(font,en_tete_2) \
-                     -text "$caption(statut,label_maj)"
+               label $intitle.dm -text "$caption(statut,label_maj)"
                pack $intitle.dm -in $intitle -side top -padx 3 -pady 1 -anchor w
                #--- Cree un label pour le nombre d'asteroides
-               label $intitle.na -font $audace(font,en_tete_2) \
-                     -text "$caption(statut,label_aster)"
+               label $intitle.na -text "$caption(statut,label_aster)"
                pack $intitle.na -in $intitle -side top -padx 3 -pady 1 -anchor w
                #--- Cree un label pour le nombre de planetes
-               label $intitle.np -font $audace(font,en_tete_2) \
-                     -text "$caption(statut,label_planet)"
+               label $intitle.np -text "$caption(statut,label_planet)"
                pack $intitle.np -in $intitle -side top -padx 3 -pady 1 -anchor w
                #--- Cree un label pour le nombre de satellites naturels
-               label $intitle.ns -font $audace(font,en_tete_2) \
-                     -text "$caption(statut,label_satnat)"
+               label $intitle.ns -text "$caption(statut,label_satnat)"
                pack $intitle.ns -in $intitle -side top -padx 3 -pady 1 -anchor w
                #--- Cree un label pour le nombre de cometes
-               label $intitle.nc -font $audace(font,en_tete_2) \
-                     -text "$caption(statut,label_comet)"
+               label $intitle.nc -text "$caption(statut,label_comet)"
                pack $intitle.nc -in $intitle -side top -padx 3 -pady 1 -anchor w
 
              #--- Cree un frame pour afficher les valeurs
@@ -170,33 +163,26 @@ namespace eval skybot_Statut {
              pack $inparam -in $This.frame1.statut -side right -expand 1 -fill x
 
                #--- Cree un label pour le statut
-               label $inparam.ok -font $audace(font,arial_8_n)\
-                     -text [string trim [lindex $statut 0]] -fg $color(green)
+               label $inparam.ok -text [string trim [lindex $statut 0]] -fg $color(green)
                pack $inparam.ok -in $inparam -side top -pady 1 -anchor w
                if {[string trim [lindex $statut 0]] != "ok"} { $inparam.ok configure -fg $color(red) }
                #--- Cree un label pour la periode
-               label $inparam.pe -font $audace(font,arial_8_n) \
-                     -text [string trim [concat $date_debut - $date_fin]] -fg $color(blue)
+               label $inparam.pe -text [string trim [concat $date_debut - $date_fin]] -fg $color(blue)
                pack $inparam.pe -in $inparam -side top -pady 1 -anchor w
                #--- Cree un label pour la date de MAJ
-               label $inparam.dm -font $audace(font,arial_8_n) \
-                     -text [string trim [lindex $statut 7]] -fg $color(blue)
+               label $inparam.dm -text [string trim [lindex $statut 7]] -fg $color(blue)
                pack $inparam.dm -in $inparam -side top -pady 1 -anchor w
                #--- Cree un label pour le nombre d'asteroides
-               label $inparam.na -font $audace(font,arial_8_n) \
-                     -text [string trim [lindex $statut 3]] -fg $color(blue)
+               label $inparam.na -text [string trim [lindex $statut 3]] -fg $color(blue)
                pack $inparam.na -in $inparam -side top -pady 1 -anchor w
                #--- Cree un label pour le nombre de planetes
-               label $inparam.np -font $audace(font,arial_8_n) \
-                     -text [string trim [lindex $statut 4]] -fg $color(blue)
+               label $inparam.np -text [string trim [lindex $statut 4]] -fg $color(blue)
                pack $inparam.np -in $inparam -side top -pady 1 -anchor w
                #--- Cree un label pour le nombre de satellites naturels
-               label $inparam.ns -font $audace(font,arial_8_n) \
-                     -text [string trim [lindex $statut 5]] -fg $color(blue)
+               label $inparam.ns -text [string trim [lindex $statut 5]] -fg $color(blue)
                pack $inparam.ns -in $inparam -side top -pady 1 -anchor w
                #--- Cree un label pour le nombre de cometes
-               label $inparam.nc -font $audace(font,arial_8_n) \
-                     -text [string trim [lindex $statut 6]] -fg $color(blue)
+               label $inparam.nc -text [string trim [lindex $statut 6]] -fg $color(blue)
                pack $inparam.nc -in $inparam -side top -pady 1 -anchor w
 
          #--- Cree un frame pour y mettre les boutons
