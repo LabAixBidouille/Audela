@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.17 2008-12-22 09:21:35 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.18 2008-12-29 12:03:22 robertdelmas Exp $
 #
 
 #============================================================
@@ -286,13 +286,13 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
          pack $private($visuNo,This).fra4.n -in $private($visuNo,This).fra4 -side top -fill x
 
          #--- Button-design
-         button $private($visuNo,This).fra4.n.canv1 -borderwidth 2 \
-            -font $audace(font,arial_12_b) \
+         button $private($visuNo,This).fra4.n.canv1PoliceInvariant -borderwidth 2 \
+            -font $audace(font,PoliceInvariant) \
             -text "$caption(tlscp,nord)" \
             -width 2  \
             -anchor center \
             -relief ridge
-         pack $private($visuNo,This).fra4.n.canv1 -in $private($visuNo,This).fra4.n -expand 0 \
+         pack $private($visuNo,This).fra4.n.canv1PoliceInvariant -in $private($visuNo,This).fra4.n -expand 0 \
             -side top -padx 2 -pady 0
 
          #--- Create the buttons 'E W'
@@ -300,30 +300,30 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
          pack $private($visuNo,This).fra4.we -in $private($visuNo,This).fra4 -side top -fill x
 
          #--- Button-design 'E'
-         button $private($visuNo,This).fra4.we.canv1 -borderwidth 2 \
-            -font $audace(font,arial_12_b) \
+         button $private($visuNo,This).fra4.we.canv1PoliceInvariant -borderwidth 2 \
+            -font $audace(font,PoliceInvariant) \
             -text "$caption(tlscp,est)" \
             -width 2  \
             -anchor center \
             -relief ridge
-         pack $private($visuNo,This).fra4.we.canv1 \
+         pack $private($visuNo,This).fra4.we.canv1PoliceInvariant \
             -in $private($visuNo,This).fra4.we -expand 1 -side left -padx 0 -pady 0
 
          #--- Write the label of speed
-         label $private($visuNo,This).fra4.we.lab \
-            -font $audace(font,arial_12_b) -textvariable audace(telescope,labelspeed) \
+         label $private($visuNo,This).fra4.we.labPoliceInvariant \
+            -font $audace(font,PoliceInvariant) -textvariable audace(telescope,labelspeed) \
             -borderwidth 0 -relief flat
-         pack $private($visuNo,This).fra4.we.lab \
+         pack $private($visuNo,This).fra4.we.labPoliceInvariant \
             -in $private($visuNo,This).fra4.we -expand 1 -side left
 
          #--- Button-design 'W'
-         button $private($visuNo,This).fra4.we.canv2 -borderwidth 2 \
-            -font $audace(font,arial_12_b) \
+         button $private($visuNo,This).fra4.we.canv2PoliceInvariant -borderwidth 2 \
+            -font $audace(font,PoliceInvariant) \
             -text "$caption(tlscp,ouest)" \
             -width 2  \
             -anchor center \
             -relief ridge
-         pack $private($visuNo,This).fra4.we.canv2 \
+         pack $private($visuNo,This).fra4.we.canv2PoliceInvariant \
             -in $private($visuNo,This).fra4.we -expand 1 -side right -padx 0 -pady 0
 
          #--- Create the button 'S'
@@ -331,19 +331,19 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
          pack $private($visuNo,This).fra4.s -in $private($visuNo,This).fra4 -side top -fill x
 
          #--- Button-design
-         button $private($visuNo,This).fra4.s.canv1 -borderwidth 2 \
-            -font $audace(font,arial_12_b) \
+         button $private($visuNo,This).fra4.s.canv1PoliceInvariant -borderwidth 2 \
+            -font $audace(font,PoliceInvariant) \
             -text "$caption(tlscp,sud)" \
             -width 2  \
             -anchor center \
             -relief ridge
-         pack $private($visuNo,This).fra4.s.canv1 \
+         pack $private($visuNo,This).fra4.s.canv1PoliceInvariant \
             -in $private($visuNo,This).fra4.s -expand 0 -side top -padx 2 -pady 0
 
-         set zone(n) $private($visuNo,This).fra4.n.canv1
-         set zone(e) $private($visuNo,This).fra4.we.canv1
-         set zone(w) $private($visuNo,This).fra4.we.canv2
-         set zone(s) $private($visuNo,This).fra4.s.canv1
+         set zone(n) $private($visuNo,This).fra4.n.canv1PoliceInvariant
+         set zone(e) $private($visuNo,This).fra4.we.canv1PoliceInvariant
+         set zone(w) $private($visuNo,This).fra4.we.canv2PoliceInvariant
+         set zone(s) $private($visuNo,This).fra4.s.canv1PoliceInvariant
 
          #--- Ecrit l'etiquette du controle du suivi : Suivi on ou off
          label $private($visuNo,This).fra4.s.lab1 -textvariable audace(telescope,controle) \
@@ -352,7 +352,7 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
 
       pack $private($visuNo,This).fra4 -side top -fill x
 
-      bind $private($visuNo,This).fra4.we.lab <ButtonPress-1> { ::tlscp::cmdSpeed }
+      bind $private($visuNo,This).fra4.we.labPoliceInvariant <ButtonPress-1> { ::tlscp::cmdSpeed }
       bind $private($visuNo,This).fra4.s.lab1 <ButtonPress-1> { ::tlscp::cmdCtlSuivi }
 
       #--- Cardinal moves
