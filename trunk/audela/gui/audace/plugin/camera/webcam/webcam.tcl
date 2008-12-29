@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.49 2008-12-20 14:54:17 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.50 2008-12-29 22:52:55 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -493,7 +493,7 @@ proc ::webcam::configureCamera { camItem bufNo } {
       ###if { $conf(webcam,switchedConnexion) == 1 } {
       ###  #--- je deconnecte les autres cameras
       ###  foreach camItem2 { A B C } {
-      ###      if { $camItem2 != $camItem && $private($camItem2,camNo)!= 0  && $conf(webcam,$camItem2,videomode) == "directx" != 0 } {
+      ###      if { $camItem2 != $camItem && $private($camItem2,camNo)!= 0 && $conf(webcam,$camItem2,videomode) == "directx" != 0 } {
       ###         if { [cam$private($camItem2,camNo) connect ] == 1 } {
       ###            cam$private($camItem2,camNo) connect 0
       ###         }
@@ -503,9 +503,8 @@ proc ::webcam::configureCamera { camItem bufNo } {
 
       if { $conf(webcam,$camItem,longuepose) == "1" } {
          #--- Je cree la liaison longue pose
-         set linkNo [ ::confLink::create $conf(webcam,$camItem,longueposeport) "cam $camItem" "longuepose" "bit $conf(webcam,$camItem,longueposelinkbit)" ]
-         #--- Je cree la liaison longue pose
-         set linkNo [ ::confLink::create $conf(webcam,$camItem,longueposeport) "cam $camItem" "longuepose" "bit $conf(webcam,$camItem,longueposelinkbit)" ]
+         set linkNo [ ::confLink::create $conf(webcam,$camItem,longueposeport) "temp" "" "" ]
+        ### set linkNo [ ::confLink::create $conf(webcam,$camItem,longueposeport) "cam $camItem" "longuepose" "bit $conf(webcam,$camItem,longueposelinkbit)" ]
       } else {
          #--- Pas de liaison longue pose
          set linkNo 0
@@ -547,6 +546,11 @@ proc ::webcam::configureCamera { camItem bufNo } {
          cam$camNo videoformat $conf(webcam,$camItem,videoformat)
          cam$camNo framerate $conf(webcam,$camItem,framerate)
       }
+      #--- Je cree la liaison longue pose
+      if { $conf(webcam,$camItem,longuepose) == "1" } {
+         link$linkNo use remove "temp" ""
+         link$linkNo use add "cam$camNo" "longuepose" "bit $conf(webcam,$camItem,longueposelinkbit)"
+      }
       #--- Gestion des widgets actifs/inactifs
       ::webcam::configWebCam $camItem
 
@@ -585,7 +589,7 @@ proc ::webcam::stop { camItem } {
 
    #--- Je ferme la liaison longuepose
    if { $conf(webcam,$camItem,longuepose) == 1 } {
-      ::confLink::delete $conf(webcam,$camItem,longueposeport) "cam $camItem" "longuepose"
+      ::confLink::delete $conf(webcam,$camItem,longueposeport) "cam$private($camItem,camNo)" "longuepose"
    }
 
    #--- J'arrete le mode preview et la capture de film au cas ou ils seraient actifs
