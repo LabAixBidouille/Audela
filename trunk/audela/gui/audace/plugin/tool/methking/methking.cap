@@ -1,6 +1,6 @@
 #
 # Fichier : methking.cap
-# Mise a jour $Id: methking.cap,v 1.12 2008-09-15 09:10:44 jacquesmichelet Exp $
+# Mise a jour $Id: methking.cap,v 1.13 2008-12-29 12:01:33 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -16,7 +16,7 @@ set caption(methking,titre)                   "King"
 set caption(methking,help,titre)              "Help For This Tool"
 set caption(methking,titre_console_1)         "Polar Alignment using the King Method"
 set caption(methking,titre_console_2)         "MethKing Tool"
-set caption(methking,copyright)               "(C)2001-2008 François Cochard & Jacques Michelet"
+set caption(methking,copyright)               "(C)2001-2009 François Cochard & Jacques Michelet"
 set caption(methking,date)                    "Date"
 set caption(methking,erreur_fichier_log)      "Cannot open log file"
 set caption(methking,lecture_config)          "Configuration File Reading"
@@ -187,7 +187,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(methking,help,titre)           "Aide pour cet outil"
    set caption(methking,titre_console_1)      "Session de mise en station par la méthode de King"
    set caption(methking,titre_console_2)      "Outil MethKing"
-   set caption(methking,copyright)            "(C)2001-2008 François Cochard et Jacques Michelet"
+   set caption(methking,copyright)            "(C)2001-2009 François Cochard et Jacques Michelet"
    set caption(methking,date)                 "Date"
    set caption(methking,erreur_fichier_log)   "Impossible d'ouvrir le fichier de log"
    set caption(methking,lecture_config)       "Lecture du fichier de configuration"
@@ -358,7 +358,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(methking,help,titre)           "Aiuto per questo tool"
    set caption(methking,titre_console_1)      "Sessione per stazionamento telescopio col metodo di King"
    set caption(methking,titre_console_2)      "Accessorio MethKing"
-   set caption(methking,copyright)            "(C)2001-2008 François Cochard e Jacques Michelet"
+   set caption(methking,copyright)            "(C)2001-2009 François Cochard e Jacques Michelet"
    set caption(methking,date)                 "Data"
    set caption(methking,erreur_fichier_log)   "Impossibile aprire il file di log"
    set caption(methking,lecture_config)       "Lettura del file di configurazione"
@@ -529,7 +529,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(methking,help,titre)           "Ayuda para esta herramienta"
    set caption(methking,titre_console_1)      "Alineamiento polar utilizando el método King"
    set caption(methking,titre_console_2)      "Herramienta MethKing"
-   set caption(methking,copyright)            "(C)2001-2008 François Cochard & Jacques Michelet"
+   set caption(methking,copyright)            "(C)2001-2009 François Cochard & Jacques Michelet"
    set caption(methking,date)                 "Fecha"
    set caption(methking,erreur_fichier_log)   "No puedo abrir fichero de registro"
    set caption(methking,lecture_config)       "Leyendo el fichero de configuración"
@@ -700,7 +700,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(methking,help,titre)           "Hilfe für dieses Gerät"
    set caption(methking,titre_console_1)      "Mit King Methode Einstellung Session"
    set caption(methking,titre_console_2)      "MethKing Gerät"
-   set caption(methking,copyright)            "(C)2001-2008 François Cochard und Jacques Michelet"
+   set caption(methking,copyright)            "(C)2001-2009 François Cochard und Jacques Michelet"
    set caption(methking,date)                 "Datum"
    set caption(methking,erreur_fichier_log)   "Unmöglich die Log Datei zu öffnen"
    set caption(methking,lecture_config)       "Konfiguration Datei lesen"
@@ -871,7 +871,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(methking,help,titre)           "Ajuda para esta ferramenta"
    set caption(methking,titre_console_1)      "Sessão de colocação em estação pelo método King"
    set caption(methking,titre_console_2)      "Ferramenta MethKing"
-   set caption(methking,copyright)            "(C)2001-2008 François Cochard e Jacques Michelet"
+   set caption(methking,copyright)            "(C)2001-2009 François Cochard e Jacques Michelet"
    set caption(methking,date)                 "Data"
    set caption(methking,erreur_fichier_log)   "Impossível abrir o ficheiro de log"
    set caption(methking,lecture_config)       "Leitura do ficheiro de configuração"
@@ -1042,7 +1042,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(methking,help,titre)           "Help For This Tool"
    set caption(methking,titre_console_1)      "Polar Alignment using the King Method"
    set caption(methking,titre_console_2)      "MethKing Tool"
-   set caption(methking,copyright)            "(C)2001-2008 François Cochard & Jacques Michelet"
+   set caption(methking,copyright)            "(C)2001-2009 François Cochard & Jacques Michelet"
    set caption(methking,date)                 "Date"
    set caption(methking,erreur_fichier_log)   "Cannot open log file"
    set caption(methking,lecture_config)       "Configuration File Reading"
