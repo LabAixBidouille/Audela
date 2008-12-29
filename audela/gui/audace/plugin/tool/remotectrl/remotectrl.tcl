@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.23 2008-12-20 22:43:24 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.24 2008-12-29 11:51:37 robertdelmas Exp $
 #
 
 #============================================================
@@ -980,61 +980,61 @@ proc remotectrlBuildIF { This } {
          frame $This.fra4.e -width 27 -borderwidth 0 -relief flat
          pack $This.fra4.e -in $This.fra4 -side left -expand true -fill y
          #--- Button-design 'E'
-         button $This.fra4.e.canv1 -borderwidth 2 \
-            -font $audace(font,arial_12_b) \
+         button $This.fra4.e.canv1PoliceInvariant -borderwidth 2 \
+            -font $audace(font,PoliceInvariant) \
             -text "$caption(remotectrl,est)" \
             -width 2 \
             -anchor center \
             -relief ridge
-         pack $This.fra4.e.canv1 -in $This.fra4.e -expand 1
+         pack $This.fra4.e.canv1PoliceInvariant -in $This.fra4.e -expand 1
 
          #--- Create the buttons 'N S'
          frame $This.fra4.ns -width 27 -borderwidth 0 -relief flat
          pack $This.fra4.ns -in $This.fra4 -side left -expand true -fill y
          #--- Button-design 'N'
-         button $This.fra4.ns.canv1 -borderwidth 2 \
-            -font $audace(font,arial_12_b) \
+         button $This.fra4.ns.canv1PoliceInvariant -borderwidth 2 \
+            -font $audace(font,PoliceInvariant) \
             -text "$caption(remotectrl,nord)" \
             -width 2 \
             -anchor center \
             -relief ridge
-         pack $This.fra4.ns.canv1 -in $This.fra4.ns -expand 1 -side top
+         pack $This.fra4.ns.canv1PoliceInvariant -in $This.fra4.ns -expand 1 -side top
 
          #--- Write the label of moves speed
-         label $This.fra4.ns.lab -font $audace(font,arial_12_b) -textvariable audace(telescope,labelspeed) \
-            -borderwidth 0 -relief flat
-         pack $This.fra4.ns.lab -in $This.fra4.ns -expand 0 -side top -pady 6
+         label $This.fra4.ns.labPoliceInvariant -font $audace(font,PoliceInvariant) \
+            -textvariable audace(telescope,labelspeed) -borderwidth 0 -relief flat
+         pack $This.fra4.ns.labPoliceInvariant -in $This.fra4.ns -expand 0 -side top -pady 6
 
          #--- Button-design 'S'
-         button $This.fra4.ns.canv2 -borderwidth 2 \
-            -font $audace(font,arial_12_b) \
+         button $This.fra4.ns.canv2PoliceInvariant -borderwidth 2 \
+            -font $audace(font,PoliceInvariant) \
             -text "$caption(remotectrl,sud)" \
             -width 2 \
             -anchor center \
             -relief ridge
-         pack $This.fra4.ns.canv2 -in $This.fra4.ns -expand 1 -side bottom
+         pack $This.fra4.ns.canv2PoliceInvariant -in $This.fra4.ns -expand 1 -side bottom
 
          #--- Create the button 'W'
          frame $This.fra4.w -width 27 -borderwidth 0 -relief flat
          pack $This.fra4.w -in $This.fra4 -side left -expand true -fill y
          #--- Button-design 'W'
-         button $This.fra4.w.canv1 -borderwidth 2 \
-            -font $audace(font,arial_12_b) \
+         button $This.fra4.w.canv1PoliceInvariant -borderwidth 2 \
+            -font $audace(font,PoliceInvariant) \
             -text "$caption(remotectrl,ouest)" \
             -width 2 \
             -anchor center \
             -relief ridge
-         pack $This.fra4.w.canv1 -in $This.fra4.w -expand 1
+         pack $This.fra4.w.canv1PoliceInvariant -in $This.fra4.w -expand 1
 
-         set zone(e) $This.fra4.e.canv1
-         set zone(n) $This.fra4.ns.canv1
-         set zone(s) $This.fra4.ns.canv2
-         set zone(w) $This.fra4.w.canv1
+         set zone(e) $This.fra4.e.canv1PoliceInvariant
+         set zone(n) $This.fra4.ns.canv1PoliceInvariant
+         set zone(s) $This.fra4.ns.canv2PoliceInvariant
+         set zone(w) $This.fra4.w.canv1PoliceInvariant
 
       pack $This.fra4 -side top -fill x
 
       #--- Cardinal speed
-      bind $This.fra4.ns.lab <ButtonPress-1> { ::remotectrl::cmdSpeed }
+      bind $This.fra4.ns.labPoliceInvariant <ButtonPress-1> { ::remotectrl::cmdSpeed }
 
       #--- Cardinal moves
       bind $zone(e) <ButtonRelease-1> { catch { ::remotectrl::cmdPulse e } }
@@ -1049,41 +1049,41 @@ proc remotectrlBuildIF { This } {
          frame $This.fra5.e -width 27 -borderwidth 0 -relief flat
          pack $This.fra5.e -in $This.fra5 -side left -expand true -fill y
          #--- Button-design '+'
-         button $This.fra5.e.canv1 -borderwidth 2 \
-            -font $audace(font,arial_12_b) \
+         button $This.fra5.e.canv1PoliceInvariant -borderwidth 2 \
+            -font $audace(font,PoliceInvariant) \
             -text "+" \
             -width 2 \
             -anchor center \
             -relief ridge
-         pack $This.fra5.e.canv1 -in $This.fra5.e -expand 1
+         pack $This.fra5.e.canv1PoliceInvariant -in $This.fra5.e -expand 1
 
          #--- Create the button focus speed
          frame $This.fra5.speed -width 27 -borderwidth 0 -relief flat
          pack $This.fra5.speed -in $This.fra5 -side left -expand true -fill y
          #--- Write the label of focus speed
-         label $This.fra5.speed.lab -font $audace(font,arial_12_b) -textvariable audace(focus,labelspeed) \
-            -borderwidth 0 -relief flat
-         pack $This.fra5.speed.lab -in $This.fra5.speed -expand 0 -side top -pady 6
+         label $This.fra5.speed.labPoliceInvariant -font $audace(font,PoliceInvariant) \
+            -textvariable audace(focus,labelspeed) -borderwidth 0 -relief flat
+         pack $This.fra5.speed.labPoliceInvariant -in $This.fra5.speed -expand 0 -side top -pady 6
 
          #--- Create the button '-'
          frame $This.fra5.w -width 27 -borderwidth 0 -relief flat
          pack $This.fra5.w -in $This.fra5 -side left -expand true -fill y
          #--- Button-design '-'
-         button $This.fra5.w.canv1 -borderwidth 2 \
-            -font $audace(font,arial_12_b) \
+         button $This.fra5.w.canv1PoliceInvariant -borderwidth 2 \
+            -font $audace(font,PoliceInvariant) \
             -text "-" \
             -width 2 \
             -anchor center \
             -relief ridge
-         pack $This.fra5.w.canv1 -in $This.fra5.w -expand 1
+         pack $This.fra5.w.canv1PoliceInvariant -in $This.fra5.w -expand 1
 
-         set zone(+) $This.fra5.e.canv1
-         set zone(-) $This.fra5.w.canv1
+         set zone(+) $This.fra5.e.canv1PoliceInvariant
+         set zone(-) $This.fra5.w.canv1PoliceInvariant
 
       pack $This.fra5 -side top -fill x
 
       #--- Foc speed
-      bind $This.fra5.speed.lab <ButtonPress-1> { ::remotectrl::cmdFocusSpeed }
+      bind $This.fra5.speed.labPoliceInvariant <ButtonPress-1> { ::remotectrl::cmdFocusSpeed }
 
       #--- Foc moves
       bind $zone(+) <ButtonRelease-1> { catch { ::remotectrl::cmdPulseFoc + } }

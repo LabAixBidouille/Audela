@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.26 2008-12-14 12:06:40 robertdelmas Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.27 2008-12-29 11:44:42 robertdelmas Exp $
 #
 
 namespace eval confColor:: {
@@ -423,7 +423,16 @@ namespace eval confColor:: {
                }
             }
             #--- Je mets a jour la police des widgets
-            $w configure -font "$audace(font,Label)"
+            if { [ string first PoliceInvariant $w ] == -1 } {
+               $w configure -font "$audace(font,Label)"
+            } else {
+               set taille [ lindex $audace(font,Button) 1 ]
+               set taille [ expr $taille + 4 ]
+               set police [ lreplace $audace(font,Button) 2 2 "bold" ]
+               set police [ lreplace $police 1 1 "$taille" ]
+               set audace(font,PoliceInvariant) "$police"
+               $w configure -font "$audace(font,PoliceInvariant)"
+            }
          }
          LabelFrame {
             #--- Je mets a jour la couleur des widgets
@@ -454,7 +463,16 @@ namespace eval confColor:: {
                   -fg $audace(color,textColor) -activeforeground $audace(color,activeTextColor)
             }
             #--- Je mets a jour la police des widgets
-            $w configure -font "$audace(font,Button)"
+            if { [ string first PoliceInvariant $w ] == -1 } {
+               $w configure -font "$audace(font,Button)"
+            } else {
+               set taille [ lindex $audace(font,Button) 1 ]
+               set taille [ expr $taille + 4 ]
+               set police [ lreplace $audace(font,Button) 2 2 "bold" ]
+               set police [ lreplace $police 1 1 "$taille" ]
+               set audace(font,PoliceInvariant) "$police"
+               $w configure -font "$audace(font,PoliceInvariant)"
+            }
          }
          Checkbutton {
             #--- Je mets a jour la couleur des widgets
