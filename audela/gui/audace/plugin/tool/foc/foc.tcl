@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise a jour $Id: foc.tcl,v 1.19 2008-12-29 11:46:41 robertdelmas Exp $
+# Mise a jour $Id: foc.tcl,v 1.20 2008-12-29 14:42:12 robertdelmas Exp $
 #
 
 set ::graphik(compteur) {}
@@ -430,7 +430,15 @@ namespace eval ::foc {
    }
 
    proc cmdSpeed { } {
-      ::focus::incrementSpeed $::panneau(foc,focuser) "tool foc"
+      #--- Commande et gestion de l'erreur
+      set catchResult [ catch {
+         ::focus::incrementSpeed $::panneau(foc,focuser) "tool foc"
+      } ]
+      #--- Traitement de l'erreur
+      if { $catchResult == "1" } {
+         #--- J'ouvre la fenetre de configuration du focuser
+         ::confEqt::run ::panneau(foc,focuser) focuser
+      }
    }
 
    proc cmdFocus { command } {
@@ -439,8 +447,15 @@ namespace eval ::foc {
       #--- Gestion graphique des boutons
       $This.fra4.we.canv1PoliceInvariant configure -relief ridge
       $This.fra4.we.canv2PoliceInvariant configure -relief ridge
-      #--- Commande
-      ::focus::move $::panneau(foc,focuser) $command
+      #--- Commande et gestion de l'erreur
+      set catchResult [ catch {
+         ::focus::move $::panneau(foc,focuser) $command
+      } ]
+      #--- Traitement de l'erreur
+      if { $catchResult == "1" } {
+         #--- J'ouvre la fenetre de configuration du focuser
+         ::confEqt::run ::panneau(foc,focuser) focuser
+      }
    }
 
    proc cmdInitFoc { } {
@@ -545,7 +560,7 @@ namespace eval ::foc {
       wm title $audace(base).formatfoc "$caption(foc,attention)"
       set posx_formatfoc [ lindex [ split [ wm geometry $audace(base) ] "+" ] 1 ]
       set posy_formatfoc [ lindex [ split [ wm geometry $audace(base) ] "+" ] 2 ]
-      wm geometry $audace(base).formatfoc +[ expr $posx_formatfoc + 120 ]+[ expr $posy_formatfoc + 340 ]
+      wm geometry $audace(base).formatfoc +[ expr $posx_formatfoc + 150 ]+[ expr $posy_formatfoc + 370 ]
       wm resizable $audace(base).formatfoc 0 0
 
       #--- Cree l'affichage du message
