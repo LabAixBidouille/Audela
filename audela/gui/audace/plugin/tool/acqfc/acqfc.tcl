@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.77 2008-12-20 11:57:39 michelpujol Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.78 2008-12-29 16:49:01 robertdelmas Exp $
 #
 
 #==============================================================
@@ -1149,7 +1149,8 @@ proc ::acqfc::Go { visuNo } {
       if { [::confCam::getPluginProperty $panneau(acqfc,$visuNo,camItem) hasFormat] == "1" } {
          #--- je selectionne le format des images
          ::confCam::setFormat $panneau(acqfc,$visuNo,camItem) $panneau(acqfc,$visuNo,format)
-         append binningMessage " $panneau(acqfc,$visuNo,format)"
+        ### append binningMessage " $panneau(acqfc,$visuNo,format)"
+         set binningMessage "$panneau(acqfc,$visuNo,format)"
       }
 
       #--- je verouille les widgets selon le mode de prise de vue
@@ -1196,7 +1197,8 @@ proc ::acqfc::Go { visuNo } {
             $panneau(acqfc,$visuNo,This).mode.continu.index.entr configure -state disabled
             $panneau(acqfc,$visuNo,This).mode.continu.index.but configure -state disabled
             set heure $audace(tu,format,hmsint)
-            Message $visuNo consolog $caption(acqfc,lancecont) $panneau(acqfc,$visuNo,pose) $binningMessage $heure
+            Message $visuNo consolog $caption(acqfc,lancecont) $panneau(acqfc,$visuNo,pose) \
+               $binningMessage $heure
             if { $panneau(acqfc,$visuNo,enregistrer) == "1" } {
                Message $visuNo consolog $caption(acqfc,enregen) \
                  $panneau(acqfc,$visuNo,nom_image)
