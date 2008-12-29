@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.78 2008-12-29 16:49:01 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.79 2008-12-29 16:51:56 robertdelmas Exp $
 #
 
 #==============================================================
@@ -1149,7 +1149,6 @@ proc ::acqfc::Go { visuNo } {
       if { [::confCam::getPluginProperty $panneau(acqfc,$visuNo,camItem) hasFormat] == "1" } {
          #--- je selectionne le format des images
          ::confCam::setFormat $panneau(acqfc,$visuNo,camItem) $panneau(acqfc,$visuNo,format)
-        ### append binningMessage " $panneau(acqfc,$visuNo,format)"
          set binningMessage "$panneau(acqfc,$visuNo,format)"
       }
 
