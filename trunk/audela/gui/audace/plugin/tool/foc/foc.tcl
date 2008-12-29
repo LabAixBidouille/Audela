@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise a jour $Id: foc.tcl,v 1.18 2008-12-22 16:42:02 robertdelmas Exp $
+# Mise a jour $Id: foc.tcl,v 1.19 2008-12-29 11:46:41 robertdelmas Exp $
 #
 
 set ::graphik(compteur) {}
@@ -169,7 +169,7 @@ namespace eval ::foc {
          pack forget $This.fra5.fra2.lab4
          pack forget $This.fra5.but3
       }
-      $This.fra4.we.lab configure -text $audace(focus,labelspeed)
+      $This.fra4.we.labPoliceInvariant configure -text $audace(focus,labelspeed)
    }
 
    #------------------------------------------------------------
@@ -437,8 +437,8 @@ namespace eval ::foc {
       variable This
 
       #--- Gestion graphique des boutons
-      $This.fra4.we.canv1 configure -relief ridge
-      $This.fra4.we.canv2 configure -relief ridge
+      $This.fra4.we.canv1PoliceInvariant configure -relief ridge
+      $This.fra4.we.canv2PoliceInvariant configure -relief ridge
       #--- Commande
       ::focus::move $::panneau(foc,focuser) $command
    }
@@ -801,35 +801,35 @@ proc focBuildIF { This } {
          pack $This.fra4.we -in $This.fra4 -side top -fill x
 
          #--- Button '-'
-         button $This.fra4.we.canv1 -borderwidth 2 \
-            -font $audace(font,arial_12_b) \
+         button $This.fra4.we.canv1PoliceInvariant -borderwidth 2 \
+            -font $audace(font,PoliceInvariant) \
             -text "-" \
             -width 2  \
             -anchor center \
             -relief ridge
-         pack $This.fra4.we.canv1 -in $This.fra4.we -expand 0 -side left -padx 2 -pady 2
+         pack $This.fra4.we.canv1PoliceInvariant -in $This.fra4.we -expand 0 -side left -padx 2 -pady 2
 
          #--- Write the label of speed for LX200 and compatibles
-         label $This.fra4.we.lab -font $audace(font,arial_12_b) -textvariable audace(focus,labelspeed) \
-            -width 2 -borderwidth 0 -relief flat
-         pack $This.fra4.we.lab -in $This.fra4.we -expand 1 -side left
+         label $This.fra4.we.labPoliceInvariant -font $audace(font,PoliceInvariant) \
+            -textvariable audace(focus,labelspeed) -width 2 -borderwidth 0 -relief flat
+         pack $This.fra4.we.labPoliceInvariant -in $This.fra4.we -expand 1 -side left
 
          #--- Button '+'
-         button $This.fra4.we.canv2 -borderwidth 2 \
-            -font $audace(font,arial_12_b) \
+         button $This.fra4.we.canv2PoliceInvariant -borderwidth 2 \
+            -font $audace(font,PoliceInvariant) \
             -text "+" \
             -width 2  \
             -anchor center \
             -relief ridge
-         pack $This.fra4.we.canv2 -in $This.fra4.we -expand 0 -side right -padx 2 -pady 2
+         pack $This.fra4.we.canv2PoliceInvariant -in $This.fra4.we -expand 0 -side right -padx 2 -pady 2
 
-         set zone(moins) $This.fra4.we.canv1
-         set zone(plus)  $This.fra4.we.canv2
+         set zone(moins) $This.fra4.we.canv1PoliceInvariant
+         set zone(plus)  $This.fra4.we.canv2PoliceInvariant
 
       pack $This.fra4 -side top -fill x
 
       #--- Speed
-      bind $This.fra4.we.lab <ButtonPress-1> { ::foc::cmdSpeed }
+      bind $This.fra4.we.labPoliceInvariant <ButtonPress-1> { ::foc::cmdSpeed }
 
       #--- Cardinal moves
       bind $zone(moins) <ButtonPress-1>   { ::foc::cmdFocus - }

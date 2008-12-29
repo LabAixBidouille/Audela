@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi.tcl,v 1.20 2008-12-22 19:17:10 robertdelmas Exp $
+# Mise a jour $Id: modpoi.tcl,v 1.21 2008-12-29 11:49:34 robertdelmas Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -1094,53 +1094,53 @@ proc modpoi_wiz4 { } {
       frame $modpoi(g,base).fra.n -width 54 -borderwidth 0 -relief flat
       pack $modpoi(g,base).fra.n -side top -fill x
       #--- Button-design 'N'
-      button $modpoi(g,base).fra.n.canv1 -borderwidth 4 \
-         -font $audace(font,arial_12_b) \
+      button $modpoi(g,base).fra.n.canv1PoliceInvariant -borderwidth 4 \
+         -font $audace(font,PoliceInvariant) \
          -text "$caption(modpoi,north)" \
          -width 2 \
          -anchor center \
          -relief ridge
-      pack $modpoi(g,base).fra.n.canv1 -in $modpoi(g,base).fra.n -expand 1
+      pack $modpoi(g,base).fra.n.canv1PoliceInvariant -in $modpoi(g,base).fra.n -expand 1
       #--- Create the buttons 'E W'
       frame $modpoi(g,base).fra.we -width 54 -borderwidth 0 -relief flat
       pack $modpoi(g,base).fra.we -in $modpoi(g,base).fra -side top -fill x
       #--- Button-design 'E'
-      button $modpoi(g,base).fra.we.canv1 -borderwidth 4 \
-         -font $audace(font,arial_12_b) \
+      button $modpoi(g,base).fra.we.canv1PoliceInvariant -borderwidth 4 \
+         -font $audace(font,PoliceInvariant) \
          -text "$caption(modpoi,east)" \
          -width 2 \
          -anchor center \
          -relief ridge
-      pack $modpoi(g,base).fra.we.canv1 -in $modpoi(g,base).fra.we -expand 1 -side left
+      pack $modpoi(g,base).fra.we.canv1PoliceInvariant -in $modpoi(g,base).fra.we -expand 1 -side left
       #--- Write the label of speed
-      label $modpoi(g,base).fra.we.lab -font $audace(font,arial_12_b) -textvariable audace(telescope,labelspeed) \
-         -borderwidth 0 -relief flat -padx 20
-      pack $modpoi(g,base).fra.we.lab -in $modpoi(g,base).fra.we -expand 1 -side left
+      label $modpoi(g,base).fra.we.labPoliceInvariant -font $audace(font,PoliceInvariant) \
+         -textvariable audace(telescope,labelspeed) -borderwidth 0 -relief flat -padx 20
+      pack $modpoi(g,base).fra.we.labPoliceInvariant -in $modpoi(g,base).fra.we -expand 1 -side left
       #--- Button-design 'W'
-      button $modpoi(g,base).fra.we.canv2 -borderwidth 4 \
-         -font $audace(font,arial_12_b) \
+      button $modpoi(g,base).fra.we.canv2PoliceInvariant -borderwidth 4 \
+         -font $audace(font,PoliceInvariant) \
          -text "$caption(modpoi,west)" \
          -width 2 \
          -anchor center \
          -relief ridge
-      pack $modpoi(g,base).fra.we.canv2 -in $modpoi(g,base).fra.we -expand 1 -side right
+      pack $modpoi(g,base).fra.we.canv2PoliceInvariant -in $modpoi(g,base).fra.we -expand 1 -side right
       #--- Create the button 'S'
       frame $modpoi(g,base).fra.s -width 54 -borderwidth 0 -relief flat
       pack $modpoi(g,base).fra.s -in $modpoi(g,base).fra -side top -fill x
       #--- Button-design 'S'
-      button $modpoi(g,base).fra.s.canv1 -borderwidth 4 \
-         -font $audace(font,arial_12_b) \
+      button $modpoi(g,base).fra.s.canv1PoliceInvariant -borderwidth 4 \
+         -font $audace(font,PoliceInvariant) \
          -text "$caption(modpoi,south)" \
          -width 2 \
          -anchor center \
          -relief ridge
-      pack $modpoi(g,base).fra.s.canv1 -in $modpoi(g,base).fra.s -expand 1
+      pack $modpoi(g,base).fra.s.canv1PoliceInvariant -in $modpoi(g,base).fra.s -expand 1
       #---
-      set zone(n) $modpoi(g,base).fra.n.canv1
-      set zone(e) $modpoi(g,base).fra.we.canv1
-      set zone(w) $modpoi(g,base).fra.we.canv2
-      set zone(s) $modpoi(g,base).fra.s.canv1
-      bind $modpoi(g,base).fra.we.lab <ButtonPress-1> { modpoi_speed }
+      set zone(n) $modpoi(g,base).fra.n.canv1PoliceInvariant
+      set zone(e) $modpoi(g,base).fra.we.canv1PoliceInvariant
+      set zone(w) $modpoi(g,base).fra.we.canv2PoliceInvariant
+      set zone(s) $modpoi(g,base).fra.s.canv1PoliceInvariant
+      bind $modpoi(g,base).fra.we.labPoliceInvariant <ButtonPress-1> { modpoi_speed }
       #--- Cardinal moves
       bind $zone(e) <ButtonPress-1> { catch { modpoi_move e } }
      # bind $zone(e).lab <ButtonPress-1> { catch { modpoi_move e } }

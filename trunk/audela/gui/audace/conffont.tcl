@@ -2,7 +2,7 @@
 # Fichier : conffont.tcl
 # Description : Selection et mise a jour en direct des polices de l'interface Aud'ACE
 # Auteur : Robert DELMAS
-# Mise a jour $Id: conffont.tcl,v 1.6 2008-12-23 16:42:43 robertdelmas Exp $
+# Mise a jour $Id: conffont.tcl,v 1.7 2008-12-29 11:43:33 robertdelmas Exp $
 #
 
 namespace eval confFont:: {
@@ -48,7 +48,11 @@ proc ::confFont::init { } {
       set audace(font,en_tete_2) [ lreplace $audace(font,en_tete_1) 2 2 "bold" ]
 
       #--- Police des raquettes integrees aux outils (police Linux = police Windows + 3)
-      set audace(font,arial_12_b) "Arial 15 bold"
+      set taille [ lindex $conf(conffont,Button) 1 ]
+      set taille [ expr $taille + 4 ]
+      set police [ lreplace $conf(conffont,Button) 2 2 "bold" ]
+      set police [ lreplace $police 1 1 "$taille" ]
+      set audace(font,PoliceInvariant) "$police"
 
    } elseif { $::tcl_platform(os) == "Darwin" } {
 
@@ -76,7 +80,11 @@ proc ::confFont::init { } {
       set audace(font,en_tete_2) [ lreplace $audace(font,en_tete_1) 2 2 "bold" ]
 
       #--- Police des raquettes integrees aux outils (police Darwin = police Windows + 3)
-      set audace(font,arial_12_b) "Arial 15 bold"
+      set taille [ lindex $conf(conffont,Button) 1 ]
+      set taille [ expr $taille + 4 ]
+      set police [ lreplace $conf(conffont,Button) 2 2 "bold" ]
+      set police [ lreplace $police 1 1 "$taille" ]
+      set audace(font,PoliceInvariant) "$police"
 
    } else {
 
@@ -104,7 +112,11 @@ proc ::confFont::init { } {
       set audace(font,en_tete_2) [ lreplace $audace(font,en_tete_1) 2 2 "bold" ]
 
       #--- Police des raquettes integrees aux outils
-      set audace(font,arial_12_b) "Arial 12 bold"
+      set taille [ lindex $conf(conffont,Button) 1 ]
+      set taille [ expr $taille + 4 ]
+      set police [ lreplace $conf(conffont,Button) 2 2 "bold" ]
+      set police [ lreplace $police 1 1 "$taille" ]
+      set audace(font,PoliceInvariant) "$police"
 
    }
 
