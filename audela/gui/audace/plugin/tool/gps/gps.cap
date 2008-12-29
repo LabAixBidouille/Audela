@@ -1,6 +1,6 @@
 #
 # Fichier : gps.cap
-# Mise a jour $Id: gps.cap,v 1.11 2008-05-21 18:13:19 robertdelmas Exp $
+# Mise a jour $Id: gps.cap,v 1.12 2008-12-29 12:00:51 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -54,7 +54,7 @@ set caption(gps,valider)                     "OK"
 set caption(gps,erreur)                      "ERROR"
 set caption(gps,type_non_entier)             "At least one of the values is not an integer"
 set caption(gps,bienvenue)                   "GPS"
-set caption(gps,copyright)                   "(C)2001-2008   J. Michelet"
+set caption(gps,copyright)                   "(C)2001-2009   J. Michelet"
 set caption(gps,tchao)                       "End of GPS"
 set caption(gps,conseil_serie)               "Cannot open the serial port.\nPlease check whether the telescope uses the same port."
 set caption(gps,mauvaise_version)            "Libjm version must be greater than or equal to 3.0"
@@ -114,7 +114,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,erreur)                   "ERREUR"
    set caption(gps,type_non_entier)          "Au moins une valeur n'est pas entière"
    set caption(gps,bienvenue)                "GPS"
-   set caption(gps,copyright)                "(C)2001-2008   J. Michelet"
+   set caption(gps,copyright)                "(C)2001-2009   J. Michelet"
    set caption(gps,tchao)                    "Fin de GPS"
    set caption(gps,conseil_serie)            "Problème à l'ouverture de la liaison série.\nPensez à vérifier si le télescope n'est pas configuré pour utiliser le même port."
    set caption(gps,mauvaise_version)         "Libjm doit être de version supérieure ou égale à 3.0"
@@ -174,7 +174,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,erreur)                   "ERRORE"
    set caption(gps,type_non_entier)          "Almeno un valore non e' intero"
    set caption(gps,bienvenue)                "GPS"
-   set caption(gps,copyright)                "(C)2001-2008   J. Michelet"
+   set caption(gps,copyright)                "(C)2001-2009   J. Michelet"
    set caption(gps,tchao)                    "Fine GPS"
    set caption(gps,conseil_serie)            "Problemi nell'apertura della porta seriale.\nVerificare che il telescopio non sia connesso sulla stessa porta."
    set caption(gps,mauvaise_version)         "Libjm deve avere una versione uguale o superiore a 3.0"
@@ -234,7 +234,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,erreur)                   "ERROR"
    set caption(gps,type_non_entier)          "Al menos uno de los valores no es un número entero"
    set caption(gps,bienvenue)                "GPS"
-   set caption(gps,copyright)                "(C)2001-2008   J. Michelet"
+   set caption(gps,copyright)                "(C)2001-2009   J. Michelet"
    set caption(gps,tchao)                    "Fin de GPS"
    set caption(gps,conseil_serie)            "No puedo abrir el puerto serie.\nPor favor, compruebe que el telescopio no usa el mismo puerto."
    set caption(gps,mauvaise_version)         "La version de Libjm debe ser mayor o igual a 3.0"
@@ -294,7 +294,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,erreur)                   "IRRTUM"
    set caption(gps,type_non_entier)          "Mindestens einen Wert ist nicht ganz"
    set caption(gps,bienvenue)                "GPS"
-   set caption(gps,copyright)                "(C)2001-2008   J. Michelet"
+   set caption(gps,copyright)                "(C)2001-2009   J. Michelet"
    set caption(gps,tchao)                    "GPS Ende"
    set caption(gps,conseil_serie)            "Problem mit dem Comport Öffnung.\nNachsehen sie ob das Teleskop nicht beschaffen ist um dem selben Comport zu nützen."
    set caption(gps,mauvaise_version)         "Libjm Version soll größer als 3.0 sein"
@@ -354,7 +354,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,erreur)                   "ERRO"
    set caption(gps,type_non_entier)          "Pelo menos um valor não é inteiro"
    set caption(gps,bienvenue)                "GPS"
-   set caption(gps,copyright)                "(C)2001-2008   J. Michelet"
+   set caption(gps,copyright)                "(C)2001-2009   J. Michelet"
    set caption(gps,tchao)                    "Fim de GPS"
    set caption(gps,conseil_serie)            "Problema na abertura da ligação série.\nVerifique se o telescópio não está configurado para utilizar a mesma porta."
    set caption(gps,mauvaise_version)         "Libjm deve ser de versão superior ou igual a 3.0"
@@ -414,7 +414,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,erreur)                   "ERROR"
    set caption(gps,type_non_entier)          "At least one of the values is not an integer"
    set caption(gps,bienvenue)                "GPS"
-   set caption(gps,copyright)                "(C)2001-2008   J. Michelet"
+   set caption(gps,copyright)                "(C)2001-2009   J. Michelet"
    set caption(gps,tchao)                    "End of GPS"
    set caption(gps,conseil_serie)            "Cannot open the serial port.\nPlease check whether the telescope uses the same port."
    set caption(gps,mauvaise_version)         "Libjm version must be greater than or equal to 3.0"
