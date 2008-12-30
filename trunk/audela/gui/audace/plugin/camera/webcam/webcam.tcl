@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.50 2008-12-29 22:52:55 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.51 2008-12-30 15:10:10 michelpujol Exp $
 #
 
 namespace eval ::webcam {
@@ -108,6 +108,7 @@ proc ::webcam::initPlugin { } {
          if { ! [ info exists conf(webcam,$camItem,gain) ] }               { set conf(webcam,$camItem,gain)                 "50" }
          if { ! [ info exists conf(webcam,$camItem,autoShutter) ] }        { set conf(webcam,$camItem,autoShutter)          "1" }
          if { ! [ info exists conf(webcam,$camItem,autoGain) ] }           { set conf(webcam,$camItem,autoGain)             "1" }
+         if { ! [ info exists conf(webcam,$camItem,validFrame) ] }         { set conf(webcam,$camItem,validFrame)           "3" }
       }
    }
 
@@ -192,6 +193,10 @@ proc ::webcam::confToWidget { } {
       set private($camItem,videomode)            $conf(webcam,$camItem,videomode)
       set private($camItem,port)                 $conf(webcam,$camItem,port)
 
+      if { $::tcl_platform(os) == "Linux" } {
+         set private($camItem,validFrame)                 $conf(webcam,$camItem,validFrame)
+      }
+
       #--- je copie le label correspondant au format video
       set formatIndex [lsearch -exact $private(videoFormatNames) $conf(webcam,$camItem,videoformat)]
       set private($camItem,videoformat) [lindex $private(videoFormatLabels) $formatIndex]
@@ -220,6 +225,10 @@ proc ::webcam::widgetToConf { camItem } {
    set conf(webcam,$camItem,ccd)                  $private($camItem,ccd)
    set conf(webcam,$camItem,videomode)            $private($camItem,videomode)
    set conf(webcam,$camItem,port)                 $private($camItem,port)
+
+   if { $::tcl_platform(os) == "Linux" } {
+      set conf(webcam,$camItem,validFrame)        $private($camItem,validFrame)
+   }
 
       #--- je copie le label correspondant au format video
    set formatIndex [lsearch -exact $private(videoFormatLabels) $private($camItem,videoformat)]
@@ -444,6 +453,26 @@ proc ::webcam::fillConfigPage { frm camItem } {
       -values $longuePoseStartList
    pack $frm.longueposestartvalue -in $frm.frame13 -anchor center -side right -padx 10 -pady 5
 
+   #--- numero de l'image (Linux uniquement)
+   if { $::tcl_platform(os) == "Linux" } {
+      frame $frm.frame13b -borderwidth 0 -relief raised
+      pack $frm.frame13b -in $frm.frame5 -side top -fill x -pady 5
+
+      label $frm.validFrameLabel -text "$caption(webcam,validFrame)"
+      pack  $frm.validFrameLabel -in $frm.frame13b -anchor center -side left -padx 3 -pady 5
+
+      set validFrameList [ list 0 1 2 3 4 5 6 7 8 9]
+      ComboBox $frm.validFrame \
+         -width [ ::tkutil::lgEntryComboBox $validFrameList ] \
+         -height [ llength $validFrameList ] \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable ::webcam::private($camItem,validFrame) \
+         -values $validFrameList
+      pack $frm.validFrame -in $frm.frame13b -anchor center -side right -padx 10 -pady 5
+   }
+
    #--- WebCam modifiee avec un capteur Noir et Blanc
    checkbutton $frm.ccd_N_B -text "$caption(webcam,ccd_N_B)" -highlightthickness 0 \
       -variable ::webcam::private($camItem,ccd_N_B) -command "::webcam::checkConfigCCDN&B $camItem"
@@ -543,8 +572,9 @@ proc ::webcam::configureCamera { camItem bufNo } {
       cam$camNo mirrorv $conf(webcam,$camItem,mirv)
       #--- Je configure le format video (pour Linux uniquement)
       if { $::tcl_platform(os) == "Linux" } {
+         cam$camNo validframe  $conf(webcam,$camItem,validFrame)
          cam$camNo videoformat $conf(webcam,$camItem,videoformat)
-         cam$camNo framerate $conf(webcam,$camItem,framerate)
+         cam$camNo framerate   $conf(webcam,$camItem,framerate)
       }
       #--- Je cree la liaison longue pose
       if { $conf(webcam,$camItem,longuepose) == "1" } {
@@ -1091,4 +1121,3 @@ proc ::webcam::config::onSetAutoGain { visuNo tkscale } {
       set ::conf(webcam,$camItem,autoGain) $private($visuNo,autoGain)
    }
 }
-
