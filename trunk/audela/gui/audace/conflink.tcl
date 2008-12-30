@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.32 2008-11-21 17:50:17 michelpujol Exp $
+# Mise a jour $Id: conflink.tcl,v 1.33 2008-12-30 12:38:58 michelpujol Exp $
 #
 
 namespace eval ::confLink {
@@ -72,7 +72,7 @@ proc ::confLink::appliquer { } {
 
 
    #--- je demande a chaque plugin de sauver sa config dans le tableau conf(..)
-   foreach name $private(pluginNamespaceList) {
+   foreach name $private(authorizedPresentNamespaces) {
       $name\:\:widgetToConf
    }
 
@@ -562,6 +562,9 @@ proc ::confLink::run { { variableLinkLabel "" } { authorizedNamespaces "" } { co
           }
       }
    }
+
+   #--- je memorise la liste des onglets qui vont etre affiches
+   set private(authorizedPresentNamespaces) $authorizedPresentNamespaces
 
    if { [createDialog $authorizedPresentNamespaces $configurationTitle ]==0 } {
       set linkNamespace [getLinkNamespace $private(linkLabel) ]
