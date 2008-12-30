@@ -1,6 +1,6 @@
 #
 # Fichier : webcam.cap
-# Mise a jour $Id: webcam.cap,v 1.9 2008-12-20 14:54:17 robertdelmas Exp $
+# Mise a jour $Id: webcam.cap,v 1.10 2008-12-30 15:10:10 michelpujol Exp $
 #
 
 #=========================================================================
@@ -32,6 +32,7 @@ set caption(webcam,shutter)                     "Shutter"
 set caption(webcam,gain)                        "Gain"
 set caption(webcam,auto)                        "Auto"
 set caption(webcam,framerate)                   "Images/s"
+set caption(webcam,validFrame)                  "Image number"
 
 set caption(webcam,2points)                     ":"
 
@@ -63,7 +64,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,gain)                     "Gain"
    set caption(webcam,auto)                     "Auto"
    set caption(webcam,framerate)                "Images/s"
-
+   set caption(webcam,validFrame)               "Numero de l'image"
    set caption(webcam,2points)                  ":"
 
    set caption(webcam,titre_site_web)           "Site Web de référence :"
@@ -94,6 +95,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,gain)                     "Gain"
    set caption(webcam,auto)                     "Auto"
    set caption(webcam,framerate)                "Immagini/s"
+   set caption(webcam,validFrame)               "#Numero de l'image"
 
    set caption(webcam,2points)                  ":"
 
@@ -125,6 +127,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,gain)                     "Ganancia"
    set caption(webcam,auto)                     "Auto"
    set caption(webcam,framerate)                "Imágenes/s"
+   set caption(webcam,validFrame)               "#Numero de l'image"
 
    set caption(webcam,2points)                  ":"
 
@@ -151,6 +154,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,format_video)             "Wahl des Videoformats"
    set caption(webcam,ccd_N_B)                  "Veränderte Schwartz/Weiss WebCam CCD"
    set caption(webcam,switchedConnexion)        "Zwischen WebCam wechseln"
+   set caption(webcam,validFrame)               "#Numero de l'image"
 
    set caption(webcam,shutter)                  "Verschluss"
    set caption(webcam,gain)                     "Zunahme"
@@ -182,6 +186,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,format_video)             "Selecção do Formato Video"
    set caption(webcam,ccd_N_B)                  "WebCam Modificada (CCD B&W)"
    set caption(webcam,switchedConnexion)        "Utilização alternada de WebCams"
+   set caption(webcam,validFrame)               "#Numero de l'image"
 
    set caption(webcam,shutter)                  "Obturador"
    set caption(webcam,gain)                     "Ganho"
@@ -213,6 +218,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,format_video)             "Video Format Selection"
    set caption(webcam,ccd_N_B)                  "B&W CCD Modified WebCam"
    set caption(webcam,switchedConnexion)        "Toggle between WebCams"
+   set caption(webcam,validFrame)               "#Numero de l'image"
 
    set caption(webcam,shutter)                  "Shutter"
    set caption(webcam,gain)                     "Gain"
