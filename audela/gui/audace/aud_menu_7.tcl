@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise a jour $Id: aud_menu_7.tcl,v 1.11 2008-12-22 09:24:24 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.tcl,v 1.12 2008-12-31 07:42:56 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -43,7 +43,7 @@ namespace eval ::cwdWindow {
    #
    proc createDialog { } {
       variable This
-      global caption conf cwdWindow
+      global audace caption conf cwdWindow
 
       #--- Nom du sous-repertoire
       set date [clock format [clock seconds] -format "%y%m%d"]
@@ -103,7 +103,7 @@ namespace eval ::cwdWindow {
          pack $This.usr.3 -side top -fill both -expand 1
       pack $This.usr -side top -fill both -expand 1
       #--- Recuperation de la police par defaut des entry
-      set cwdWindow(rep_font) [ $This.usr.1.a.ent1 cget -font ]
+      set cwdWindow(rep_font) $audace(font,Entry)
       #---
       frame $This.cmd -borderwidth 1 -relief raised
          button $This.cmd.ok -text "$caption(aud_menu_7,ok)" -width 7 \
@@ -403,7 +403,7 @@ namespace eval ::confEditScript {
 
          #--- Creation d'une entry non affichee pour en recuperer le parametre -font
          entry $This.usr1.ent0 -width 1
-         set confgene(EditScript,edit_font)        [ $This.usr1.ent0 cget -font ]
+         set confgene(EditScript,edit_font)        "$audace(font,Entry)"
          set confgene(EditScript,edit_font)        "$confgene(EditScript,edit_font) normal"
          set confgene(EditScript,edit_font_italic) [ lreplace $confgene(EditScript,edit_font) 2 2 italic ]
 
