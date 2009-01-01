@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.12 2008-12-17 21:49:27 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.13 2009-01-01 18:55:23 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -155,8 +155,7 @@ proc socket_client_close_gcn { name } {
 proc socket_server_open_gcn { name portgcn {portout 0} {index_html ""}} {
    global audace
    global gcn
-   set gcn(index_html) $index_html
-   set proc_accept socket_server_accept_gcn
+   set proc_accept socket_server_accept_gcn_${name}
    if {[info exists audace(socket,server,$name)]==1} {
       error "server $name already opened"
    }
@@ -166,9 +165,15 @@ proc socket_server_open_gcn { name portgcn {portout 0} {index_html ""}} {
    if {$errno==1} {
       error $msg
    }
+   set sockname $name
+   # ==========================================================================================
+   # socket_server_accept_gcn : this is called by  the GCN socket server
+   set ligne "proc ::socket_server_accept_gcn_${name} {fid ip port} { global audace ; fconfigure \$fid -buffering full -translation binary -encoding binary -buffersize 160 ; fileevent \$fid readable \[list socket_server_respons_gcn \$fid $name\] ; }"
+   eval $ligne
+   # ==========================================================================================
    if {$portout!=0} {
       set name x$name
-      set proc_accept socket_server_accept_out
+      set proc_accept socket_server_accept_out_${name}
       if {[info exists audace(socket,server,$name)]==1} {
          error "server $name already opened"
       }
@@ -178,7 +183,13 @@ proc socket_server_open_gcn { name portgcn {portout 0} {index_html ""}} {
       if {$errno==1} {
          error $msg
       }
+      # ==========================================================================================
+      # socket_server_accept_out : this is called by  the GCN socket server
+      set ligne "proc ::socket_server_accept_out_${name} {fid ip port} { global audace ; fconfigure \$fid -buffering full -translation binary -encoding binary -buffersize 160 ; fileevent \$fid readable \[list socket_server_respons_out \$fid $name\] ; }"
+      eval $ligne
+      # ==========================================================================================
    }
+   set gcn($sockname,index_html) $index_html
    if {$index_html!=""} {
       set errno [catch {
          set f [open $index_html r]
@@ -187,7 +198,7 @@ proc socket_server_open_gcn { name portgcn {portout 0} {index_html ""}} {
          set n [llength $lignes]
          for {set k 1} {$k<[expr $n-1]} {incr k} {
             set ligne [lindex $lignes $k]
-            set texte "set gcn(status,[lindex $ligne 0],[lindex $ligne 1],[lindex $ligne 2]) [lindex $ligne 3]"
+            set texte "set gcn($sockname,status,[lindex $ligne 0],[lindex $ligne 1],[lindex $ligne 2]) [lindex $ligne 3]"
             eval $texte
          }
       } msg]
@@ -200,16 +211,16 @@ proc socket_server_open_gcn { name portgcn {portout 0} {index_html ""}} {
 
 # ==========================================================================================
 # socket_server_accept_gcn : this is called by  the GCN socket server
-proc socket_server_accept_gcn {fid ip port} {
-   global audace
-   fconfigure $fid -buffering full -translation binary -encoding binary -buffersize 160
-   fileevent $fid readable [list socket_server_respons_gcn $fid]
-}
+#proc socket_server_accept_gcn {fid ip port} {
+#   global audace
+#   fconfigure $fid -buffering full -translation binary -encoding binary -buffersize 160
+#   fileevent $fid readable [list socket_server_respons_gcn $fid ""]
+#}
 # ==========================================================================================
 
 # ==========================================================================================
 # socket_server_respons_gcn : decode the GCN stream
-proc socket_server_respons_gcn {fid} {
+proc socket_server_respons_gcn {fid {sockname dummy} } {
    global gcn
    set errsoc [ catch {
       if {[eof $fid] || [catch {set line [read $fid 160]}] } {
@@ -218,7 +229,7 @@ proc socket_server_respons_gcn {fid} {
          #::console::affiche_resultat "$fid received \"$line\"\n"
          # --- convert the binary stream into longs
          binary scan $line I* longs
-         gcn_decode $longs
+         gcn_decode $longs $sockname
       }
    } msgsoc ]
    if {$errsoc==1} {
@@ -248,17 +259,17 @@ proc socket_server_close_gcn { name } {
 # ==========================================================================================
 # socket_server_accept : this is the default proc_accept of a socket server
 # Please use this proc as a canvas to write those dedicaded to your job.
-proc socket_server_accept_out {fid ip port} {
-   global audace
-   fconfigure $fid -buffering line
-   fileevent $fid readable [list socket_server_respons_out $fid]
-}
+#proc socket_server_accept_out {fid ip port} {
+#   global audace
+#   fconfigure $fid -buffering line
+#   fileevent $fid readable [list socket_server_respons_out $fid]
+#}
 # ==========================================================================================
 
 # ==========================================================================================
 # socket_server_respons : this is the default proc_accept of a socket server
 # Please use this proc as a canvas to write those dedicaded to your job.
-proc socket_server_respons_out {fid} {
+proc socket_server_respons_out {fid {$sockname dummy} } {
    global audace
    global gcn
    set errsoc [ catch {
@@ -276,8 +287,8 @@ proc socket_server_respons_out {fid} {
          set names [lsort [array names gcn]]
          foreach name $names {
             set res [regsub -all , $name " "]
-            if {[lindex $res 0]=="status"} {
-               set res [lrange $res 1 end]
+            if {([lindex $res 0]=="$sockname")&&([lindex $res 1]=="status")} {
+               set res [lrange $res 2 end]
                append lignes "\{ $res $gcn($name) \} "
             }
          }
@@ -301,7 +312,7 @@ proc gcn_print { msg } {
    }
 }
 
-proc gcn_decode { longs } {
+proc gcn_decode { longs sockname } {
    global gcn
    global ros
    set errno [catch {
@@ -310,9 +321,12 @@ proc gcn_decode { longs } {
       catch {
          set names [array names gcn]
          foreach name $names {
-            if {([string first status $name]!=0)&&([string first index_html $name]!=0)} {
-               set ligne "unset gcn($name)"
-               eval $ligne
+            set res [regsub -all , $name " "]
+            if {([lindex $res 0]=="$sockname")} {
+               if {([string first status $name]!=0)&&([string first index_html $name]!=0)} {
+                  set ligne "unset gcn($name)"
+                  eval $ligne
+               }
             }
          }
       }
@@ -325,173 +339,173 @@ proc gcn_decode { longs } {
       # --- extract basic informations
       set pkt_type [lindex $longs 0]
       set res [gcn_pkt_type $pkt_type]
-      set gcn(descr,type) [lindex $res 0]
-      set gcn(descr,satellite) [lindex $res 1]
-      set gcn(descr,prompt) [lindex $res 2]
-      gcn_print "$date_rec_notice type $pkt_type: $gcn(descr,type)"
-      #if {$gcn(descr,type)==""} {
+      set gcn($sockname,descr,type) [lindex $res 0]
+      set gcn($sockname,descr,satellite) [lindex $res 1]
+      set gcn($sockname,descr,prompt) [lindex $res 2]
+      gcn_print "$date_rec_notice ($sockname) type $pkt_type: $gcn($sockname,descr,type)"
+      #if {$gcn($sockname,descr,type)==""} {
 	   #   return
       #}
-      gcn_print "$longs"
+      gcn_print "($sockname) $longs"
       # --- common codes
       for {set k 0} {$k<40} {incr k} {
-         set gcn(long,$k) [string toupper [lindex $longs $k] ]
+         set gcn($sockname,long,$k) [string toupper [lindex $longs $k] ]
       }
       set items [gcn_pkt_indices]
 		#gcn_print "----"
       foreach item $items {
          set k [lindex $item 0]
          set name [lindex $item 1]
-         set gcn(long,$name) $gcn(long,$k)
-			#gcn_print "gcn(long,$name)=$gcn(long,$name)"
+         set gcn($sockname,long,$name) $gcn($sockname,long,$k)
+			#gcn_print "gcn($sockname,long,$name)=$gcn($sockname,long,$name)"
       }
       # --- date de l'envoi de la notice
 		#gcn_print "----"
       set res [mc_date2ymdhms $date_rec_notice]
       set res [lrange $res 0 2]
       set pkt_date [mc_date2jd $res]
-		#gcn_print "gcn(long,pkt_sod)=$gcn(long,pkt_sod)"
-      set pkt_time [expr $gcn(long,pkt_sod)/100.]
-      set gcn(descr,jd_pkt) [expr $pkt_date+$pkt_time/86400.] ; # jd de la notice
-      if {[expr $gcn(descr,jd_pkt)-[mc_date2jd $date_rec_notice]]>0.5} {
-         set gcn(descr,jd_pkt) [expr $gcn(descr,jd_pkt)-1.]
+		#gcn_print "gcn($sockname,long,pkt_sod)=$gcn($sockname,long,pkt_sod)"
+      set pkt_time [expr $gcn($sockname,long,pkt_sod)/100.]
+      set gcn($sockname,descr,jd_pkt) [expr $pkt_date+$pkt_time/86400.] ; # jd de la notice
+      if {[expr $gcn($sockname,descr,jd_pkt)-[mc_date2jd $date_rec_notice]]>0.5} {
+         set gcn($sockname,descr,jd_pkt) [expr $gcn($sockname,descr,jd_pkt)-1.]
       }
       # --- translations
-      if {$gcn(descr,satellite)=="SWIFT"} {
-         set gcn(descr,burst_ra) [expr $gcn(long,burst_ra)*0.0001]
-         set gcn(descr,burst_dec) [expr $gcn(long,burst_dec)*0.0001]
-         if {$gcn(descr,prompt)>0} {
-            set gcn(descr,trigger_num) [expr int($gcn(long,burst_trig))] ; # identificateur du trigger
-            set gcn(descr,grb_error) [expr 0.0001*$gcn(long,burst_error)*60.]; # boite d'erreur en arcmin
-            set soln_status [gcn_long2bits $gcn(long,18)]
-            set gcn(descr,soln_status) $soln_status
-            set gcn(descr,point_src) [string index $soln_status 0]
-            set gcn(descr,grb) [string index $soln_status 1]
-            set gcn(descr,image_trig) [string index $soln_status 4]
-            set gcn(descr,def_not_grb) [string index $soln_status 5]
+      if {$gcn($sockname,descr,satellite)=="SWIFT"} {
+         set gcn($sockname,descr,burst_ra) [expr $gcn($sockname,long,burst_ra)*0.0001]
+         set gcn($sockname,descr,burst_dec) [expr $gcn($sockname,long,burst_dec)*0.0001]
+         if {$gcn($sockname,descr,prompt)>0} {
+            set gcn($sockname,descr,trigger_num) [expr int($gcn($sockname,long,burst_trig))] ; # identificateur du trigger
+            set gcn($sockname,descr,grb_error) [expr 0.0001*$gcn($sockname,long,burst_error)*60.]; # boite d'erreur en arcmin
+            set soln_status [gcn_long2bits $gcn($sockname,long,18)]
+            set gcn($sockname,descr,soln_status) $soln_status
+            set gcn($sockname,descr,point_src) [string index $soln_status 0]
+            set gcn($sockname,descr,grb) [string index $soln_status 1]
+            set gcn($sockname,descr,image_trig) [string index $soln_status 4]
+            set gcn($sockname,descr,def_not_grb) [string index $soln_status 5]
          }
-         set grb_date [expr $gcn(long,burst_tjd)-13370.-1.+[mc_date2jd {2005 1 1}]] ; # TJD=13370 is 01 Jan 2005
-         set grb_time [expr $gcn(long,burst_sod)/100.]
-         set gcn(descr,burst_jd) [expr $grb_date+$grb_time/86400.] ; # jd du trigger
-	      if {($gcn(descr,burst_jd)-$gcn(descr,jd_pkt))>0.5} {
-		      set gcn(descr,burst_jd) [expr $gcn(descr,burst_jd)-1] ; # bug GCN du quart d'heure avant minuit
+         set grb_date [expr $gcn($sockname,long,burst_tjd)-13370.-1.+[mc_date2jd {2005 1 1}]] ; # TJD=13370 is 01 Jan 2005
+         set grb_time [expr $gcn($sockname,long,burst_sod)/100.]
+         set gcn($sockname,descr,burst_jd) [expr $grb_date+$grb_time/86400.] ; # jd du trigger
+	      if {($gcn($sockname,descr,burst_jd)-$gcn($sockname,descr,jd_pkt))>0.5} {
+		      set gcn($sockname,descr,burst_jd) [expr $gcn($sockname,descr,burst_jd)-1] ; # bug GCN du quart d'heure avant minuit
 	      }
       }
-      if {$gcn(descr,satellite)=="INTEGRAL"} {
-         set grb_date [expr $gcn(long,burst_tjd)-12640.+[mc_date2jd {2003 1 1}]]
-         set grb_time [expr $gcn(long,burst_sod)/100.]
-         set gcn(descr,grb_jd) [expr $grb_date+$grb_time/86400.] ; # jd0 du trigger
+      if {$gcn($sockname,descr,satellite)=="INTEGRAL"} {
+         set grb_date [expr $gcn($sockname,long,burst_tjd)-12640.+[mc_date2jd {2003 1 1}]]
+         set grb_time [expr $gcn($sockname,long,burst_sod)/100.]
+         set gcn($sockname,descr,grb_jd) [expr $grb_date+$grb_time/86400.] ; # jd0 du trigger
          if {($pkt_type==51)||($pkt_type==52)} {
-            set ra [expr $gcn(long,14)*0.0001]
-            set dec [expr $gcn(long,15)*0.0001]
+            set ra [expr $gcn($sockname,long,14)*0.0001]
+            set dec [expr $gcn($sockname,long,15)*0.0001]
          } else {
-            set ra [expr $gcn(long,burst_ra)*0.0001]
-            set dec [expr $gcn(long,burst_dec)*0.0001]
+            set ra [expr $gcn($sockname,long,burst_ra)*0.0001]
+            set dec [expr $gcn($sockname,long,burst_dec)*0.0001]
          }
-         set radec [mc_precessradec [list $ra $dec] $gcn(descr,grb_jd) J2000.0]
-         set gcn(descr,burst_ra) [lindex $radec 0]
-         set gcn(descr,burst_dec) [lindex $radec 1]
-         if {$gcn(descr,prompt)>0} {
-            set trigger_subnum [expr int($gcn(long,burst_trig)/pow(2,16))]
-            set gcn(descr,trigger_num) [expr int($gcn(long,burst_trig)-$trigger_subnum*pow(2,16))] ; # identificateur du trigger
-            set gcn(descr,grb_error) [expr $gcn(long,burst_error)/60.]; # boite d'erreur en arcmin
-            set test_mpos [gcn_long2bits $gcn(long,12)]
-            set gcn(descr,test_mpos) $test_mpos
+         set radec [mc_precessradec [list $ra $dec] $gcn($sockname,descr,grb_jd) J2000.0]
+         set gcn($sockname,descr,burst_ra) [lindex $radec 0]
+         set gcn($sockname,descr,burst_dec) [lindex $radec 1]
+         if {$gcn($sockname,descr,prompt)>0} {
+            set trigger_subnum [expr int($gcn($sockname,long,burst_trig)/pow(2,16))]
+            set gcn($sockname,descr,trigger_num) [expr int($gcn($sockname,long,burst_trig)-$trigger_subnum*pow(2,16))] ; # identificateur du trigger
+            set gcn($sockname,descr,grb_error) [expr $gcn($sockname,long,burst_error)/60.]; # boite d'erreur en arcmin
+            set test_mpos [gcn_long2bits $gcn($sockname,long,12)]
+            set gcn($sockname,descr,test_mpos) $test_mpos
             if {($pkt_type==53)||($pkt_type==54)||($pkt_type==55)} {
-               set gcn(descr,def_not_grb) [string index $test_mpos 30]
+               set gcn($sockname,descr,def_not_grb) [string index $test_mpos 30]
             }
-            set gcn(descr,test) [string index $test_mpos 31]
-            if {$gcn(descr,test)==1} {
-               set gcn(descr,prompt) -1
+            set gcn($sockname,descr,test) [string index $test_mpos 31]
+            if {$gcn($sockname,descr,test)==1} {
+               set gcn($sockname,descr,prompt) -1
             }
          }
       }
-      if {$gcn(descr,satellite)=="FERMI"} {
-         set gcn(descr,burst_ra) [expr $gcn(long,burst_ra)*0.0001]
-         set gcn(descr,burst_dec) [expr $gcn(long,burst_dec)*0.0001]
-         if {$gcn(descr,prompt)>0} {
-            set gcn(descr,trigger_num) [expr int($gcn(long,burst_trig))] ; # identificateur du trigger
-            set gcn(descr,grb_error) [expr 0.0001*$gcn(long,burst_error)*60.]; # boite d'erreur en arcmin
-            set soln_status [gcn_long2bits $gcn(long,18)]
-            set gcn(descr,soln_status) $soln_status
-            set gcn(descr,point_src) [string index $soln_status 0]
-            set gcn(descr,grb) [string index $soln_status 1]
-            set gcn(descr,image_trig) [string index $soln_status 4]
-            set gcn(descr,def_not_grb) [string index $soln_status 5]
+      if {$gcn($sockname,descr,satellite)=="FERMI"} {
+         set gcn($sockname,descr,burst_ra) [expr $gcn($sockname,long,burst_ra)*0.0001]
+         set gcn($sockname,descr,burst_dec) [expr $gcn($sockname,long,burst_dec)*0.0001]
+         if {$gcn($sockname,descr,prompt)>0} {
+            set gcn($sockname,descr,trigger_num) [expr int($gcn($sockname,long,burst_trig))] ; # identificateur du trigger
+            set gcn($sockname,descr,grb_error) [expr 0.0001*$gcn($sockname,long,burst_error)*60.]; # boite d'erreur en arcmin
+            set soln_status [gcn_long2bits $gcn($sockname,long,18)]
+            set gcn($sockname,descr,soln_status) $soln_status
+            set gcn($sockname,descr,point_src) [string index $soln_status 0]
+            set gcn($sockname,descr,grb) [string index $soln_status 1]
+            set gcn($sockname,descr,image_trig) [string index $soln_status 4]
+            set gcn($sockname,descr,def_not_grb) [string index $soln_status 5]
          }
-         set grb_date [expr $gcn(long,burst_tjd)-13370.-1.+[mc_date2jd {2005 1 1}]] ; # TJD=13370 is 01 Jan 2005
-         set grb_time [expr $gcn(long,burst_sod)/100.]
-         set gcn(descr,burst_jd) [expr $grb_date+$grb_time/86400.] ; # jd du trigger
-	      #if {($gcn(descr,burst_jd)-$gcn(descr,jd_pkt))>0.5} {
-		   #   set gcn(descr,burst_jd) [expr $gcn(descr,burst_jd)-1] ; # bug GCN du quart d'heure avant minuit
+         set grb_date [expr $gcn($sockname,long,burst_tjd)-13370.-1.+[mc_date2jd {2005 1 1}]] ; # TJD=13370 is 01 Jan 2005
+         set grb_time [expr $gcn($sockname,long,burst_sod)/100.]
+         set gcn($sockname,descr,burst_jd) [expr $grb_date+$grb_time/86400.] ; # jd du trigger
+	      #if {($gcn($sockname,descr,burst_jd)-$gcn($sockname,descr,jd_pkt))>0.5} {
+		   #   set gcn($sockname,descr,burst_jd) [expr $gcn($sockname,descr,burst_jd)-1] ; # bug GCN du quart d'heure avant minuit
 	      #}
       }
-      if {$gcn(descr,satellite)=="MILAGRO"} {
-         set gcn(descr,burst_ra) [expr $gcn(long,burst_ra)*0.0001]
-         set gcn(descr,burst_dec) [expr $gcn(long,burst_dec)*0.0001]
-         set gcn(descr,trigger_num) [expr int($gcn(long,4))] ; # identificateur du trigger
-         set grb_date [expr $gcn(long,burst_tjd)-12640.-1.+[mc_date2jd {2003 1 1}]] ; # TJD=12640 is 01 Jan 2003
-         set grb_time [expr $gcn(long,burst_sod)/100.]
-         set gcn(descr,burst_jd) [expr $grb_date+$grb_time/86400.] ; # jd du trigger
-         set gcn(descr,grb_error) [expr 0.0001*$gcn(long,burst_error)*60.]; # boite d'erreur en arcmin
-         set gcn(descr,burst_sig) $gcn(long,9)
-         set gcn(descr,bkg) [expr 0.0001*$gcn(long,10)]
-         set gcn(descr,duration) [expr $gcn(long,13)/100.]
-         set trigger_id [gcn_long2bits $gcn(long,18)]
-         set gcn(descr,trigger_id) $trigger_id
-         set gcn(descr,possible_grb) [string index $trigger_id 0]
-         set gcn(descr,definite_grb) [string index $trigger_id 1]
-         set gcn(descr,def_not_grb) [string index $trigger_id 15]
+      if {$gcn($sockname,descr,satellite)=="MILAGRO"} {
+         set gcn($sockname,descr,burst_ra) [expr $gcn($sockname,long,burst_ra)*0.0001]
+         set gcn($sockname,descr,burst_dec) [expr $gcn($sockname,long,burst_dec)*0.0001]
+         set gcn($sockname,descr,trigger_num) [expr int($gcn($sockname,long,4))] ; # identificateur du trigger
+         set grb_date [expr $gcn($sockname,long,burst_tjd)-12640.-1.+[mc_date2jd {2003 1 1}]] ; # TJD=12640 is 01 Jan 2003
+         set grb_time [expr $gcn($sockname,long,burst_sod)/100.]
+         set gcn($sockname,descr,burst_jd) [expr $grb_date+$grb_time/86400.] ; # jd du trigger
+         set gcn($sockname,descr,grb_error) [expr 0.0001*$gcn($sockname,long,burst_error)*60.]; # boite d'erreur en arcmin
+         set gcn($sockname,descr,burst_sig) $gcn($sockname,long,9)
+         set gcn($sockname,descr,bkg) [expr 0.0001*$gcn($sockname,long,10)]
+         set gcn($sockname,descr,duration) [expr $gcn($sockname,long,13)/100.]
+         set trigger_id [gcn_long2bits $gcn($sockname,long,18)]
+         set gcn($sockname,descr,trigger_id) $trigger_id
+         set gcn($sockname,descr,possible_grb) [string index $trigger_id 0]
+         set gcn($sockname,descr,definite_grb) [string index $trigger_id 1]
+         set gcn($sockname,descr,def_not_grb) [string index $trigger_id 15]
       }
-      if {$gcn(descr,satellite)=="SNEWS"} {
-         set gcn(descr,burst_ra) [expr $gcn(long,burst_ra)*0.0001]
-         set gcn(descr,burst_dec) [expr $gcn(long,burst_dec)*0.0001]
-         set gcn(descr,trigger_num) [expr int($gcn(long,4))] ; # identificateur du trigger
-         set grb_date [expr $gcn(long,burst_tjd)-12640.-1.+[mc_date2jd {2003 1 1}]] ; # TJD=12640 is 01 Jan 2003
-         set grb_time [expr $gcn(long,burst_sod)/100.]
-         set gcn(descr,burst_jd) [expr $grb_date+$grb_time/86400.] ; # jd du trigger
-         set gcn(descr,grb_error) [expr 0.0001*$gcn(long,burst_error)*60.]; # boite d'erreur en arcmin
-         set gcn(descr,burst_sig) $gcn(long,9)
-         set gcn(descr,duration) [expr $gcn(long,13)/100.]
-         set trig_id [gcn_long2bits $gcn(long,18)]
-         set gcn(descr,trig_id) $trig_id
-         set gcn(descr,Subtype) [string index $trig_id 0]
-         set gcn(descr,test_flag) [string index $trig_id 1]
-         set gcn(descr,radec_undef) [string index $trig_id 2]
-         set gcn(descr,retract) [string index $trig_id 5]
+      if {$gcn($sockname,descr,satellite)=="SNEWS"} {
+         set gcn($sockname,descr,burst_ra) [expr $gcn($sockname,long,burst_ra)*0.0001]
+         set gcn($sockname,descr,burst_dec) [expr $gcn($sockname,long,burst_dec)*0.0001]
+         set gcn($sockname,descr,trigger_num) [expr int($gcn($sockname,long,4))] ; # identificateur du trigger
+         set grb_date [expr $gcn($sockname,long,burst_tjd)-12640.-1.+[mc_date2jd {2003 1 1}]] ; # TJD=12640 is 01 Jan 2003
+         set grb_time [expr $gcn($sockname,long,burst_sod)/100.]
+         set gcn($sockname,descr,burst_jd) [expr $grb_date+$grb_time/86400.] ; # jd du trigger
+         set gcn($sockname,descr,grb_error) [expr 0.0001*$gcn($sockname,long,burst_error)*60.]; # boite d'erreur en arcmin
+         set gcn($sockname,descr,burst_sig) $gcn($sockname,long,9)
+         set gcn($sockname,descr,duration) [expr $gcn($sockname,long,13)/100.]
+         set trig_id [gcn_long2bits $gcn($sockname,long,18)]
+         set gcn($sockname,descr,trig_id) $trig_id
+         set gcn($sockname,descr,Subtype) [string index $trig_id 0]
+         set gcn($sockname,descr,test_flag) [string index $trig_id 1]
+         set gcn($sockname,descr,radec_undef) [string index $trig_id 2]
+         set gcn($sockname,descr,retract) [string index $trig_id 5]
       }
-      if {$gcn(descr,satellite)=="ANTARES"} {
-         set gcn(descr,burst_ra) [expr $gcn(long,burst_ra)*0.0001]
-         set gcn(descr,burst_dec) [expr $gcn(long,burst_dec)*0.0001]
-         set gcn(descr,trigger_num) [expr int($gcn(long,4))] ; # identificateur du trigger
-         set grb_date [expr $gcn(long,burst_tjd)-13370.-1.+[mc_date2jd {2005 1 1}]] ; # TJD=13370 is 01 Jan 2005
-         set grb_time [expr $gcn(long,burst_sod)/100.]
-         set gcn(descr,burst_jd) [expr $grb_date+$grb_time/86400.] ; # jd du trigger
-         set gcn(descr,grb_error) [expr 0.0001*$gcn(long,burst_error)*60.]; # boite d'erreur en arcmin
-         set gcn(descr,burst_flue) $gcn(long,9)
-         set gcn(descr,integ_time) [expr $gcn(long,14)*4e-3]
+      if {$gcn($sockname,descr,satellite)=="ANTARES"} {
+         set gcn($sockname,descr,burst_ra) [expr $gcn($sockname,long,burst_ra)*0.0001]
+         set gcn($sockname,descr,burst_dec) [expr $gcn($sockname,long,burst_dec)*0.0001]
+         set gcn($sockname,descr,trigger_num) [expr int($gcn($sockname,long,4))] ; # identificateur du trigger
+         set grb_date [expr $gcn($sockname,long,burst_tjd)-13370.-1.+[mc_date2jd {2005 1 1}]] ; # TJD=13370 is 01 Jan 2005
+         set grb_time [expr $gcn($sockname,long,burst_sod)/100.]
+         set gcn($sockname,descr,burst_jd) [expr $grb_date+$grb_time/86400.] ; # jd du trigger
+         set gcn($sockname,descr,grb_error) [expr 0.0001*$gcn($sockname,long,burst_error)*60.]; # boite d'erreur en arcmin
+         set gcn($sockname,descr,burst_flue) $gcn($sockname,long,9)
+         set gcn($sockname,descr,integ_time) [expr $gcn($sockname,long,14)*4e-3]
       }
-      if {$gcn(descr,satellite)=="LOOCUP"} {
-         set gcn(descr,burst_ra) [expr $gcn(long,burst_ra)*0.0001]
-         set gcn(descr,burst_dec) [expr $gcn(long,burst_dec)*0.0001]
-         set gcn(descr,trigger_num) [expr int($gcn(long,4))] ; # identificateur du trigger
-         set grb_date [expr $gcn(long,burst_tjd)-13370.-1.+[mcc_date2jd {2005 1 1}]] ; # TJD=13370 is 01 Jan 2005
-         set grb_time [expr $gcn(long,burst_sod)/100.]
-         set gcn(descr,burst_jd) [expr $grb_date+$grb_time/86400.] ; # jd du trigger
-         set gcn(descr,grb_error) [expr 0.0001*$gcn(long,burst_error)*60.]; # boite d'erreur en arcmin
-         set gcn(descr,burst_flue) $gcn(long,9)
-         set gcn(descr,integ_time) [expr $gcn(long,14)*4e-3]
+      if {$gcn($sockname,descr,satellite)=="LOOCUP"} {
+         set gcn($sockname,descr,burst_ra) [expr $gcn($sockname,long,burst_ra)*0.0001]
+         set gcn($sockname,descr,burst_dec) [expr $gcn($sockname,long,burst_dec)*0.0001]
+         set gcn($sockname,descr,trigger_num) [expr int($gcn($sockname,long,4))] ; # identificateur du trigger
+         set grb_date [expr $gcn($sockname,long,burst_tjd)-13370.-1.+[mcc_date2jd {2005 1 1}]] ; # TJD=13370 is 01 Jan 2005
+         set grb_time [expr $gcn($sockname,long,burst_sod)/100.]
+         set gcn($sockname,descr,burst_jd) [expr $grb_date+$grb_time/86400.] ; # jd du trigger
+         set gcn($sockname,descr,grb_error) [expr 0.0001*$gcn($sockname,long,burst_error)*60.]; # boite d'erreur en arcmin
+         set gcn($sockname,descr,burst_flue) $gcn($sockname,long,9)
+         set gcn($sockname,descr,integ_time) [expr $gcn($sockname,long,14)*4e-3]
       }
       # --- update status
-      set gcn(status,last,last,jd_send) "$gcn(descr,jd_pkt)"
-      set gcn(status,last,last,jd_received) "[mc_date2jd $date_rec_notice]"
-      set gcn(status,last,last,type) $gcn(descr,type)
-      set gcn(status,last,last,prompt) $gcn(descr,prompt)
-      set gcn(status,last,last,satellite) $gcn(descr,satellite)
-      if {$gcn(descr,prompt)>=0} {
-         set gcn(status,$gcn(descr,prompt),$gcn(descr,satellite),jd_send) $gcn(status,last,last,jd_send)
-         set gcn(status,$gcn(descr,prompt),$gcn(descr,satellite),jd_received) $gcn(status,last,last,jd_received)
-         set gcn(status,$gcn(descr,prompt),$gcn(descr,satellite),type) $gcn(status,last,last,type)
+      set gcn($sockname,status,last,last,jd_send) "$gcn($sockname,descr,jd_pkt)"
+      set gcn($sockname,status,last,last,jd_received) "[mc_date2jd $date_rec_notice]"
+      set gcn($sockname,status,last,last,type) $gcn($sockname,descr,type)
+      set gcn($sockname,status,last,last,prompt) $gcn($sockname,descr,prompt)
+      set gcn($sockname,status,last,last,satellite) $gcn($sockname,descr,satellite)
+      if {$gcn($sockname,descr,prompt)>=0} {
+         set gcn($sockname,status,$gcn($sockname,descr,prompt),$gcn($sockname,descr,satellite),jd_send) $gcn($sockname,status,last,last,jd_send)
+         set gcn($sockname,status,$gcn($sockname,descr,prompt),$gcn($sockname,descr,satellite),jd_received) $gcn($sockname,status,last,last,jd_received)
+         set gcn($sockname,status,$gcn($sockname,descr,prompt),$gcn($sockname,descr,satellite),type) $gcn($sockname,status,last,last,type)
          set names [array names gcn]
          foreach name $names {
             set res [regsub -all , $name " "]
@@ -500,7 +514,7 @@ proc gcn_decode { longs } {
                if {($re=="type")||($re=="prompt")||($re=="satellite")} {
                   continue
                }
-               set gcn(status,$gcn(descr,prompt),$gcn(descr,satellite),$re) $gcn($name)
+               set gcn($sockname,status,$gcn($sockname,descr,prompt),$gcn($sockname,descr,satellite),$re) $gcn($name)
             }
          }
       }
@@ -508,15 +522,15 @@ proc gcn_decode { longs } {
       set names [lsort [array names gcn]]
       foreach name $names {
          set res [regsub -all , $name " "]
-         if {[lindex $res 0]=="status"} {
-            set res [lrange $res 1 end]
-            append lignes "$res $gcn($name)\n"
+         if {[lindex $res 1]=="status"} {
+            set res [lrange $res 2 end]
+            append lignes "$sockname $res $gcn($name)\n"
          }
       }
       gcn_print "$lignes"
-      if {[info exist gcn(index_html)]==1} {
+      if {[info exist gcn($sockname,index_html)]==1} {
          catch {
-            set f [open $gcn(index_html) w]
+            set f [open $gcn($sockname,index_html) w]
             puts -nonewline $f "[mc_date2iso8601 $date_rec_notice]\n$lignes"
             close $f
          }
@@ -529,9 +543,9 @@ proc gcn_decode { longs } {
       append comments " ---------------\n"
       foreach item $items {
          set ident [regsub -all , "$item" " "]
-         if {[lindex $ident 0]=="descr"} {
-            set name [lindex $ident 1]
-            append comments " gcn(descr,$name) = $gcn(descr,$name)\n"
+         if {([lindex $ident 0]=="$sockname")&&([lindex $ident 1]=="descr")} {
+            set name [lindex $ident 2]
+            append comments " gcn($sockname,descr,$name) = $gcn($sockname,descr,$name)\n"
          }
       }
       append comments " ---------------\n"
@@ -544,7 +558,7 @@ proc gcn_decode { longs } {
    #
    catch {
       set f [open c:/d/a/toto.txt a]
-      puts -nonewline $f "[mc_date2iso8601 $date_rec_notice] : $longs \n$comments"
+      puts -nonewline $f "[mc_date2iso8601 $date_rec_notice] : ($sockname) $longs \n$comments"
       close $f
    }
 }
