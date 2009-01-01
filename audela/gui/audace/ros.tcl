@@ -2,7 +2,7 @@
 # Fichier : ros.tcl
 # Description : Function to launch Robotic Observatory Software installation
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: ros.tcl,v 1.10 2008-12-23 10:39:42 alainklotz Exp $
+# Mise a jour $Id: ros.tcl,v 1.11 2009-01-01 18:55:23 alainklotz Exp $
 #
 
 proc ros { args } {
@@ -1192,8 +1192,8 @@ proc rosmodpoi_modpoi_passage { azim elev sens } {
    set vecW ""
    set res [rosmodpoi_modpoi_addobs "$vecY" "$matX" "$vecW" $delev $dazim $azim $elev]
    set matX [lindex $res 1]
-   gren_info "  vecY = $rosmodpoi(modpoi,vec)"
-   gren_info "  matX = $matX"
+   #gren_info "  vecY = $rosmodpoi(modpoi,vec)"
+   #gren_info "  matX = $matX"
    # --- calcul direct
    set res [gsl_mmult $matX $rosmodpoi(modpoi,vec)]
    set dazim [expr [lindex $res 0]/60.]
@@ -1626,6 +1626,8 @@ proc rosmodpoi_modpoi_addobs { vecY matX vecW dazim delev azim elev} {
 	   set sinl [expr sin([mc_angle2rad $lati]) ]
 	   set cos2h [expr cos([mc_angle2rad [expr 2.*$azim]]) ]
 	   set sin2h [expr sin([mc_angle2rad [expr 2.*$azim]]) ]
+	   set cos3h [expr cos([mc_angle2rad [expr 3.*$azim]]) ]
+	   set sin3h [expr sin([mc_angle2rad [expr 3.*$azim]]) ]
 	   set hdeg [mc_angle2deg $azim 360]
 	   set decdeg [mc_angle2deg $elev 90]
 	   if {$hdeg>180} {
@@ -1660,7 +1662,7 @@ proc rosmodpoi_modpoi_addobs { vecY matX vecW dazim delev azim elev} {
 		   if {$sym=="FARDS2"} { lappend res 0 }
 		   if {$sym=="FARHCATAN"} { set coefha [expr 0.9+(1-0.9)*atan(3*($decdeg-30.)*$rosmodpoi(pi)/180.)/($rosmodpoi(pi)/2.)] ; lappend res [expr $cosh*$coefha] }
 		   if {$sym=="FARHSATAN"} { set coefha [expr 0.9+(1-0.9)*atan(3*($decdeg-30.)*$rosmodpoi(pi)/180.)/($rosmodpoi(pi)/2.)] ; lappend res [expr $sinh*$coefha] }
-		   if {$sym=="IHATAN"} { set coefih [expr (1.-1.*atan(3*($decdeg-10.)*$rosmodpoi(pi)/180.)/($rosmodpoi(pi)/2.)] ; lappend res [expr $coefih] }
+		   if {$sym=="IHATAN"} { set coefih [expr (1.-1.*atan(3*($decdeg-10.)*$rosmodpoi(pi)/180.)/($rosmodpoi(pi)/2.))] ; lappend res [expr $coefih] }
 	   }
 	   #
 	   lappend matX $res
@@ -1686,10 +1688,15 @@ proc rosmodpoi_modpoi_addobs { vecY matX vecW dazim delev azim elev} {
 		   if {$sym=="IHDEG"} { lappend res 0 }
 		   if {$sym=="FARHC2"} { lappend res 0 }
 		   if {$sym=="FARHS2"} { lappend res 0 }
+		   if {$sym=="FARHC3"} { lappend res 0 }
+		   if {$sym=="FARHS3"} { lappend res 0 }
 		   if {$sym=="FARDC"} { lappend res [expr $cosh] }
 		   if {$sym=="FARDS"} { lappend res [expr $sinh] }
 		   if {$sym=="FARDC2"} { lappend res [expr $cos2h] }
 		   if {$sym=="FARDS2"} { lappend res [expr $sin2h] }
+		   if {$sym=="FARHCATAN"} { lappend res 0 }
+		   if {$sym=="FARHSATAN"} { lappend res 0 }
+		   if {$sym=="IHATAN"} { lappend res 0 }
 	   }
    }
    lappend matX $res
@@ -2398,6 +2405,7 @@ proc rosmodpoi_corrected_positions { OutputFile DateDeb DateFin InputType InputD
 					set star_site [lindex $res 0]
 					set star_gise [lindex $res 1]
 				} else {
+					#set er [catch {set hadec [rosmodpoi_modpoi_obs2tel $hao $deco $rao]} msg ]
 					set hadec [rosmodpoi_modpoi_obs2tel $hao $deco $rao]
 					set hao [lindex $hadec 0]
 					set deco [lindex $hadec 1]
