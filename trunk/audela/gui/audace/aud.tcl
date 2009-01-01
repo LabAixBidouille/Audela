@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.91 2008-12-05 23:27:07 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.92 2009-01-01 12:17:46 jacquesmichelet Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -1200,7 +1200,7 @@ namespace eval ::audace {
    #
    proc ini_writeIniFile { filename f_a } {
       upvar $f_a file_array
-      catch {
+      if {[catch {
          set fid [open $filename w]
          puts $fid "global conf"
          #foreach {a b} [array get file_array] {
@@ -1210,6 +1210,8 @@ namespace eval ::audace {
             puts $fid "set conf($a) \"[lindex [array get file_array $a] 1]\""
          }
          close $fid
+      } erreur ]} {
+        tk_messageBox -icon error -message $erreur -type ok
       }
    }
 
