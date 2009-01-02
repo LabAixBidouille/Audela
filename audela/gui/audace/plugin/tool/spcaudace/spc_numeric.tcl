@@ -1,7 +1,47 @@
 # Fonctions de calculs numeriques : interpolation, ajustement...
 # source $audace(rep_scripts)/spcaudace/spc_numeric.tcl
 
-# Mise a jour $Id: spc_numeric.tcl,v 1.2 2008-09-20 17:20:05 bmauclaire Exp $
+# Mise a jour $Id: spc_numeric.tcl,v 1.3 2009-01-02 21:23:29 bmauclaire Exp $
+
+
+
+###################################################################
+# Procedure de determination du minimum entre 2 valeurs
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 01-06-08
+# Date modification : 01-06-08
+# Arguments : valeur 1, valeur 2
+#####################################################################
+
+proc spc_resample { args } {
+
+
+   if { [ llength $args ] == 3 } {
+      set xvals [ lindex $args 0 ]
+      set yvals [ lindex $args 1 ]
+      set nxvals [ lindex $args 2 ]
+
+      #--- Recupere les informations sur l'echantillon :
+      set len [ llength $xvals ]
+      set x_0 [ lindex $xvals 0 ]
+
+      #--- Calcul
+      set new_xvals [ list ]
+      for {set i 0} {$i<$len} {incr i} {
+         lappend new_xvals [ expr $pas*$i+$lambda_deb ]
+      }
+
+      #-- Rééchantillonne par spline les intensités sur la nouvelle échelle en longueur d'onde :
+      #-- Verifier les valeurs des lambdas pour eviter un "monoticaly error de BLT".
+      set new_intensities [ lindex  [ spc_spline $xvals $yvals $nxvals n ] 1 ]
+      return $new_coordonnees
+   } else {
+
+   }
+}
+
+#****************************************************************#
 
 
 ###################################################################
@@ -261,6 +301,79 @@ proc spc_ajust { args } {
 #****************************************************************#
 
 
+####################################################################
+#  Procedure d'ajustement d'un nuage de points par une fonction affine (hp : nombre reels longs)
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 15-12-2005
+# Date modification : 28-12-2008
+# Arguments : liste abscisses, liste ordonnees, erreur
+####################################################################
+#spc_ajustdeg1 {218.67 127.32 16.67} {211 208 210.1} 1
+#{218.67 127.32 16.67} {211.022333817 208.007561837 210.100127057}
+
+proc spc_ajustdeg1hp { args } {
+    global conf
+    global audace
+
+    if {[llength $args] == 3} {
+       set abscisses_orig [lindex $args 0]
+       set ordonnees [lindex $args 1]
+       set erreur [lindex $args 2]
+       set len [llength $ordonnees]
+       set n [ llength $abscisses_orig ]
+       set abscisses_rangees [ lsort -real -increasing $abscisses_orig ]
+       set abs_min [ lindex $abscisses_rangees 0 ]
+       set abs_max [ lindex $abscisses_rangees [ expr $n -1 ] ]
+       ::console::affiche_resultat "$abs_min $abs_max\n"
+
+       #--- Changement de variable (preconditionnement du systeme lineaire) :
+       set aa [ expr 2. / ($abs_max - $abs_min ) ]
+       #::console::affiche_resultat "aa= $aa\n"
+       set bb [ expr 1. - $aa * $abs_max ]
+       #::console::affiche_resultat "bb= $bb\n"
+       set abscisses [ list ]
+       for { set i 0 } { $i<$n } {incr i} {
+          set xi [ expr $aa * [ lindex $abscisses_orig $i ] +$bb ]
+          lappend abscisses $xi
+       }
+
+	#--- Calcul des coefficients du polynôme d'ajustement
+	# - calcul de la matrice X 
+	set n [llength $abscisses]
+	set x ""
+	set X "" 
+	for {set i 0} {$i<$n} {incr i} { 
+	    set xi [lindex $abscisses $i] 
+	    set ligne_i 1
+	    lappend erreurs $erreur
+	    lappend ligne_i $xi 
+	    lappend X $ligne_i 
+	} 
+	# - calcul de l'ajustement 
+	set result [ gsl_mfitmultilin $ordonnees $X $erreurs ] 
+	# - extrait le resultat 
+	set coeffs [lindex $result 0] 
+	set chi2 [lindex $result 1] 
+	set covar [lindex $result 2]
+
+	set a0 [lindex $coeffs 0]
+	set b0 [lindex $coeffs 1]
+       #--- Retour aux variables d'origine :
+       set a [ expr $a0 + $b0 * $bb ]
+       set b [ expr $aa * $b0 ]
+	::console::affiche_resultat "Coefficients : $a+$b*x\nChi2=$chi2, Covar=$covar\n"
+
+	set coefs [ list $a $b ]
+	# set adj_vals [list $coefs $abscisses $yadj]
+	set adj_vals [ list $coefs $chi2 $covar ]
+	#set adj_vals [ list $coefs ]
+	return $adj_vals
+    } else {
+	::console::affiche_erreur "Usage: spc_ajustdeg1hp liste_abscisses liste_ordonnees erreur (ex. 1)\n\n"
+    }
+}
+#****************************************************************#
 
 
 
@@ -280,10 +393,9 @@ proc spc_ajustdeg1 { args } {
     global audace
 
     if {[llength $args] == 3} {
-	set abscisses [lindex $args 0]
-	set ordonnees [lindex $args 1]
-	set erreur [lindex $args 2]
-	set len [llength $ordonnees]
+       set abscisses [lindex $args 0]
+       set ordonnees [lindex $args 1]
+       set erreur [lindex $args 2]
 
 	#--- Calcul des coefficients du polynôme d'ajustement
 	# - calcul de la matrice X 
