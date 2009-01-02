@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.5 2008-12-21 07:42:31 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.6 2009-01-02 21:39:40 bmauclaire Exp $
 
 
 
@@ -2145,6 +2145,580 @@ proc spc_calibretelluric { args } {
         file delete -force "$audace(rep_images)/$fcont1$conf(extension,defaut)"
         file delete -force "$audace(rep_images)/${filename}_conti$conf(extension,defaut)"
 
+       #--- Methode 1 : spectre initial linéaire :
+       ::console::affiche_resultat "============ 1) spectre initial linéaire ================\n"
+       set spectre_linear [ spc_linearcal "$filename" ]
+       set infos_cal [ spc_rms "$spectre_linear" $listeraies ]
+       set rms_initial [ lindex $infos_cal 1 ]
+       set mean_shift_initial [ lindex $infos_cal 2 ]
+       set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+       set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+       set cdelt1_initial $cdelt1
+       set crval1_initial $crval1
+       ::console::affiche_resultat "Loi de calibration lineaire : $crval1+$cdelt1*x\n"
+              
+
+       #--- Methode 2 : origine decalee du decalage moyen
+       if { [ lsearch $spcaudace(calo_meths) 2 ] != -1 } {
+          ::console::affiche_resultat "============ 2) Décalage du SHIFT du spectre inital linéarisé ================\n"
+          set spectre_lindec [ spc_calibredecal "$spectre_linear" [ expr -1.0*$mean_shift_initial ] ]
+          set infos_cal [ spc_rms "$spectre_lindec" $listeraies ]
+          set rms_lindec [ lindex $infos_cal 1 ]
+          set mean_shift_lindec [ lindex $infos_cal 2 ]
+          file rename -force "$audace(rep_images)/$spectre_lindec$conf(extension,defaut)" "$audace(rep_images)/${filename}_mshiftdec$conf(extension,defaut)"
+          set spectre_lindec "${filename}_mshiftdec"
+       }
+          
+
+       #--- Methode 5 : Décalage du spectre inital linéarisé de la valeur du RMS : 
+       if { [ lsearch $spcaudace(calo_meths) 5 ] != -1 } {
+          ::console::affiche_resultat "============ 5) Décalage de RMS du spectre inital linéarisé ================\n"
+          #set rms_decalage [ expr $rms_initial/$cdelt1_initial/2. ]
+          set rms_decalage [ expr $rms_initial/$cdelt1_initial ]
+          if { $mean_shift_initial > 0. } {
+             set spectre_lindec_rms [ spc_calibredecal "$spectre_linear" [ expr -1.0*$rms_decalage ] ]
+          } else {
+             set spectre_lindec_rms [ spc_calibredecal "$spectre_linear" $rms_decalage ]
+          }
+          set infos_cal [ spc_rms "$spectre_lindec_rms" $listeraies ]
+          set rms_lindec_rms [ lindex $infos_cal 1 ]
+          set mean_shift_lindec_rms [ lindex $infos_cal 2 ]
+          file rename -force "$audace(rep_images)/$spectre_lindec_rms$conf(extension,defaut)" "$audace(rep_images)/${filename}_rmsdec$conf(extension,defaut)"
+          set spectre_lindec_rms "${filename}_rmsdec"
+       }
+
+
+       #--- Methode 6 : Décalage du spectre inital linéarisé de la valeur du RMS : 
+       if { [ lsearch $spcaudace(calo_meths) 6 ] != -1 } {
+          ::console::affiche_resultat "============ 7) Décalage de 0.5RMS du spectre inital linéarisé ================\n"
+          set rms_decalage [ expr $rms_initial/$cdelt1_initial/2. ]
+          if { $mean_shift_initial > 0. } {
+             set spectre_lindec_drms [ spc_calibredecal "$spectre_linear" [ expr -1.0*$rms_decalage ] ]
+          } else {
+             set spectre_lindec_drms [ spc_calibredecal "$spectre_linear" $rms_decalage ]
+          }
+          set infos_cal [ spc_rms "$spectre_lindec_drms" $listeraies ]
+          set drms_dec [ lindex $infos_cal 1 ]
+          set mean_shift_drms [ lindex $infos_cal 2 ]
+          file rename -force "$audace(rep_images)/$spectre_lindec_drms$conf(extension,defaut)" "$audace(rep_images)/${filename}_drmsdec$conf(extension,defaut)"
+          set spectre_lindec_drms "${filename}_drmsdec"
+       }
+
+          
+       #--- Methode 3 : callibration avec les raies telluriques :
+       if { [ lsearch $spcaudace(calo_meths) 3 ] != -1 } {
+          ::console::affiche_resultat "============ 3) calibration sur l'eau ================\n"
+          #-- Ajustement polynomial de degre 3 :
+          set sortie [ spc_ajustdeg3 $listexmesures $listeraies $errors ]
+          set coeffs [ lindex $sortie 0 ]
+          set d [ lindex $coeffs 3 ]
+          set c [ lindex $coeffs 2 ]
+          set b [ lindex $coeffs 1 ]
+          set a [ lindex $coeffs 0 ]
+          set chi2 [ lindex $sortie 1 ]
+          set covar [ lindex $sortie 2 ]
+          set rms [ expr $cdelt1*sqrt($chi2/$nbraies) ]
+          #-- Sauvegarde le spectre calibré non-linéairement :
+          buf$audace(bufNo) load "$audace(rep_images)/$filename"
+          buf$audace(bufNo) setkwd [list "SPC_DESC" "D.x.x.x+C.x.x+B.x+A" string "" ""]
+          buf$audace(bufNo) setkwd [list "SPC_A" $a double "" "angstrom"]
+          buf$audace(bufNo) setkwd [list "SPC_B" $b double "" "angstrom/pixel"]
+          buf$audace(bufNo) setkwd [list "SPC_C" $c double "" "angstrom.angstrom/pixel.pixel"]
+          buf$audace(bufNo) setkwd [list "SPC_D" $d double "" "angstrom.angstrom.angstrom/pixel.pixel.pixel"]
+          buf$audace(bufNo) setkwd [list "SPC_RMS" $rms double "" "angstrom"]
+          buf$audace(bufNo) bitpix float
+          buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocalnl"
+          buf$audace(bufNo) bitpix short
+          #-- Recalage de la calibration grace aux raies telluriques :
+          #- Rééchantillonnage pour obtenir une loi de calibration linéaire :
+          set spectre_ocallin [ spc_linearcal "${filename}-ocalnl" ]
+          #- Calcul de décalage moyen+rms :
+          set mean_shift [ lindex [ spc_rms "$spectre_ocallin" $listeraies ] 2 ]
+          #- Réalise le décalage sur la loi linéaire :
+          set spectre_ocalshifted [ spc_calibredecal "$spectre_ocallin" [ expr -1.*$mean_shift ] ]
+          #- Calcul le décalage moyen+rms du spectre final :
+          # set infos_cal [ spc_rms "$spectre_ocalshifted" $listeraies 1.5 ]
+          set infos_cal [ spc_rms "$spectre_ocalshifted" $listeraies ]
+          set rms_calo [ lindex $infos_cal 1 ]
+          set mean_shift_calo [ lindex $infos_cal 2 ]
+          #- Effacement des fichiers temporaires :
+          file rename -force "$audace(rep_images)/$spectre_ocalshifted$conf(extension,defaut)" "$audace(rep_images)/${filename}_caloshift$conf(extension,defaut)"
+          set spectre_ocalshifted "${filename}_caloshift"
+          if { $spectre_ocallin != "${filename}-ocalnl" } {
+             file delete -force "$audace(rep_images)/${filename}-ocalnl$conf(extension,defaut)"
+          }
+          file delete -force "$audace(rep_images)/$spectre_ocallin$conf(extension,defaut)"
+       }
+
+          
+       #--- Methode 4 : callibration 2 avec les raies telluriques
+       if { [ lsearch $spcaudace(calo_meths) 4 ] != -1 } {
+          ::console::affiche_resultat "============ 4) calibration sur l'eau bis ================\n"
+          #-- Calcul du polynôme de calibration xlin = a+bx+cx^2+cx^3
+          ### spc_calibretelluric 94-bet-leo--profil-traite-final.fit
+          set sortie [ spc_ajustdeg2 $listexmesures $listexraies $errors ]
+          # set sortie [ spc_ajustdeg3 $listexmesures $listexraies $errors ]
+          set coeffs [ lindex $sortie 0 ]
+          # set d [ lindex $coeffs 3 ]
+          set d 0.0
+          set c [ lindex $coeffs 2 ]
+          set b [ lindex $coeffs 1 ]
+          set a [ lindex $coeffs 0 ]
+          set chi2 [ lindex $sortie 1 ]
+          set covar [ lindex $sortie 2 ]
+          set rms [ expr $cdelt1*sqrt($chi2/$nbraies) ]
+          #-- je calcule les x linearises
+          set listexlin [list]
+          foreach x $listexmesures {
+             lappend listexlin [ expr $a + $b*$x + $c*$x*$x + $d*$x*$x*$x ]
+          }
+          #-- je charge l'image calibree avec le neon
+          buf$audace(bufNo) load "$audace(rep_images)/$filename"
+          #-- Rééchantillonnage pour obtenir une loi de calibration linéaire :
+          set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
+          set xorigin [list ]
+          set xlinear [list ]
+          set intensites [list ]
+          for {set x 0 } {$x<$naxis1} {incr x} {
+             lappend xorigin $x
+             lappend xlinear [ expr $a + $b*$x + $c*$x*$x + $d*$x*$x*$x ]
+             lappend intensities [lindex [ buf$audace(bufNo) getpix [list [expr $x +1] 1] ] 1]
+          }
+          set newIntensities [ lindex [ spc_spline $xlinear $intensities $xorigin n ] 1 ]
+          for {set x 0 } {$x<$naxis1} {incr x} {
+             buf$audace(bufNo) setpix [ list [expr $x +1] 1 ] [lindex $newIntensities $x]
+          }
+          #-- je calcule les coefficients de la droite moyenne lambda=f(xlin)
+          set sortie [ spc_ajustdeg1hp $listexlin $listeraies $errors ]
+          #- lambda0 : lambda pour x=0
+          set lambda0 [lindex [ lindex $sortie 0 ] 0]
+          set cdelt1 [lindex [ lindex $sortie 0 ] 1]
+          #- crval1 : lambda pour x=1
+          set crval1 [expr $lambda0 + $cdelt1]
+          buf$audace(bufNo) setkwd [list "CRVAL1" $crval1 double "" "angstrom" ]
+          buf$audace(bufNo) setkwd [list "CDELT1" $cdelt1 double "" "angstrom/pixel" ]
+          set listemotsclef [ buf$audace(bufNo) getkwds ]
+          if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+             buf$audace(bufNo) delkwd "SPC_A"
+             buf$audace(bufNo) delkwd "SPC_B"
+             buf$audace(bufNo) delkwd "SPC_C"
+             if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
+		buf$audace(bufNo) delkwd "SPC_D"
+             }
+          }
+          #-- j'enregistre l'image
+          set spectre_ocallinbis "${filename}_caloshift2"
+          buf$audace(bufNo) bitpix float
+          buf$audace(bufNo) save "$audace(rep_images)/$spectre_caloshift2"
+          buf$audace(bufNo) bitpix short
+          #-- Calcul le décalage moyen+rms du spectre final :
+          set infos_cal   [ spc_rms $spectre_ocallinbis $listeraies ]
+          set rms_calobis [ lindex $infos_cal 1 ]
+          set mean_shift_calobis [ lindex $infos_cal 2 ]
+          ::console::affiche_resultat "Loi de calibration lineaire calobis : $crval1+$cdelt1*x\n"
+       }
+          
+
+       #--- Methode 7 : callibration avec les raies telluriques :
+       if { [ lsearch $spcaudace(calo_meths) 7 ] != -1 } {
+          ::console::affiche_resultat "====== 7) Recalage progressif par iterations ====\n"
+          set nb_iteration 0
+          set dl 0.01
+          set rms_dec1 [ expr $rms_initial+$dl ]
+          set tdl $dl
+          set tdl_max [ expr 2.*abs($mean_shift_initial) ]
+          if { $mean_shift_initial > 0 } { set signe "-" } else { set signe "" }
+          set spectre_decini [ spc_calibredecal "$spectre_linear" "$signe$mean_shift_initial" ]
+          set rms_dec2 [ lindex [ spc_rms "$spectre_decini" $listeraies ] 1 ]
+          while { $tdl < $tdl_max } {
+             #if { $rms_dec2 > $rms_dec1 &&  [ expr abs($rms_dec2-$rms_dec1) ] >= 0.01 } 
+             if { $rms_dec2 > $rms_dec1 } {
+                set spectre_dec [ spc_calibredecal "$spectre_decini" [ expr $signe$tdl-$dl ] ]
+                set infos_cal [ spc_rms "$spectre_dec" $listeraies ]
+                set rms_dec [ lindex $infos_cal 1 ]
+                set mean_shift_dec [ lindex $infos_cal 2 ]
+                file rename -force "$audace(rep_images)/$spectre_dec$conf(extension,defaut)" "$audace(rep_images)/${filename}_iterdec$conf(extension,defaut)"
+                set spectre_dec "${filename}_iterdec"
+                file delete -force "$audace(rep_images)/$spectre_decini$conf(extension,defaut)"
+                ::console::affiche_resultat "\nNb iterations : $nb_iteration, dec=$tdl ; RMS2=$rms_dec2 ; RMS1=$rms_dec1\n"
+                break
+             } else {
+                set rms_dec1 $rms_dec2
+                set tdl [ expr $tdl+$dl ]
+                incr nb_iteration
+                set spectre_dec [ spc_calibredecal "$spectre_decini" "$signe$tdl" ]
+                set rms_dec2 [ lindex [ spc_rms "$spectre_dec" $listeraies ] 1 ]
+             }
+          }
+       }
+
+
+
+        #--- Détermine la meilleure calibration :
+        ::console::affiche_resultat "============ Détermine la meilleure calibration ================\n"
+        #-- Sauvera le spectre final recalibré (linéarirement) :
+        # set liste_rms [ list [ list "calobis" $rms_calobis ] [ list "calo" $rms_calo ] [ list "lindec" $rms_lindec ] [ list "initial" $rms_initial ] ]
+        #-- Gestion des méthodes sélectionnées (car calo n°3 mauvaise selon la taille du capteur) :
+        set liste_rms [ list ]
+        if { [ lsearch $spcaudace(calo_meths) 1 ] != -1 } {
+           lappend liste_rms [ list "initial" $rms_initial ]
+        }
+        if { [ lsearch $spcaudace(calo_meths) 2 ] != -1 } {
+           lappend liste_rms [ list "lindec" $rms_lindec ]
+        }
+        if { [ lsearch $spcaudace(calo_meths) 3 ] != -1 } {
+           lappend liste_rms [ list "calo" $rms_calo ]
+        }
+        if { [ lsearch $spcaudace(calo_meths) 4 ] != -1 } {
+           lappend liste_rms [ list "calobis" $rms_calobis ]
+        }
+        if { [ lsearch $spcaudace(calo_meths) 5 ] != -1 } {
+           lappend liste_rms [ list "lindec_rms" $rms_lindec_rms ]
+        }
+        if { [ lsearch $spcaudace(calo_meths) 6 ] != -1 } {
+           lappend liste_rms [ list "lindec_drms" $drms_dec ]
+        }
+        if { [ lsearch $spcaudace(calo_meths) 7 ] != -1 } {
+           lappend liste_rms [ list "iterdec" $rms_dec ]
+        }
+
+        #-- Tri par RMS croissant :
+        set liste_rms [ lsort -index 1 -increasing -real $liste_rms ]
+        set best_rms_name [ lindex [ lindex $liste_rms 0 ] 0 ]
+        set best_rms_val [ lindex [ lindex $liste_rms 0 ] 1 ]
+
+	#-- Compare et choisis la meilleure calibration a l'aide du RMS :
+        if { $best_rms_name == "calobis" } {
+            #-- Le spectre recalibré avec l'eau (4) est meilleur :
+            buf$audace(bufNo) load "$audace(rep_images)/$spectre_ocallinbis"
+            set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+            set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_calobis double "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 4)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
+            buf$audace(bufNo) bitpix float
+            buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
+            buf$audace(bufNo) bitpix short
+            #-- Exploitatoin des résultats :
+            ::console::affiche_resultat "\nSpectre recalibré avec (4) les raies telluriques de meilleure qualité.\n"
+            ::console::affiche_resultat "Loi de calibration linéarisée : $crval1+$cdelt1*x\n"
+            ::console::affiche_resultat "Qualité de la calibration :\nRMS=$rms_calobis A\nEcart moyen=$mean_shift_calobis A\n\n"
+        } elseif { $best_rms_name == "calo" } {
+            #-- Le spectre recalibré avec l'eau (3) est meilleur :
+            buf$audace(bufNo) load "$audace(rep_images)/$spectre_ocalshifted"
+            set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+            set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_calo double "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 3)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
+            buf$audace(bufNo) bitpix float
+            buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
+            buf$audace(bufNo) bitpix short
+            #-- Exploitatoin des résultats :
+            ::console::affiche_resultat "\nSpectre recalibré avec (3) les raies telluriques de meilleure qualité.\n"
+            ::console::affiche_resultat "Loi de calibration finale linéarisée : $crval1+$cdelt1*x\n"
+            ::console::affiche_resultat "Loi de calibration tellutique trouvée : $a+$b*x+$c*x^2\n"
+            ::console::affiche_resultat "Qualité de la calibration :\nRMS=$rms_calo A\nEcart moyen=$mean_shift_calo A\n\n"
+        } elseif { $best_rms_name == "lindec" } {
+            #-- Le spectre linéarisé juste décalé avec l'eau est meilleur :
+            buf$audace(bufNo) load "$audace(rep_images)/$spectre_lindec"
+            set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+            set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_lindec double "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 2)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
+            buf$audace(bufNo) bitpix float
+            buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
+            buf$audace(bufNo) bitpix short
+            #-- Exploitatoin des résultats :
+            ::console::affiche_resultat "\nSpectre de calibration avec (2) de meilleure qualité (dec de Meanshift).\n"
+            ::console::affiche_resultat "Loi de calibration finale linéarisée : $crval1+$cdelt1*x\n"
+            ::console::affiche_resultat "Qualité de la calibration :\nRMS=$rms_lindec A\nEcart moyen=$mean_shift_lindec A\n\n"
+        } elseif { $best_rms_name == "lindec_rms" } {
+            #-- Le spectre linéarisé juste décalé avec l'eau est meilleur :
+            buf$audace(bufNo) load "$audace(rep_images)/$spectre_lindec_rms"
+            set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+            set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_lindec_rms double "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 5)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
+            buf$audace(bufNo) bitpix float
+            buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
+            buf$audace(bufNo) bitpix short
+            #-- Exploitatoin des résultats :
+            ::console::affiche_resultat "\nSpectre de calibration avec (5) de meilleure qualité (dec de RMS).\n"
+            ::console::affiche_resultat "Loi de calibration finale linéarisée : $crval1+$cdelt1*x\n"
+            ::console::affiche_resultat "Qualité de la calibration :\nRMS=$rms_lindec_rms A\nEcart moyen=$mean_shift_lindec_rms A\n\n"
+        } elseif { $best_rms_name == "lindec_drms" } {
+            #-- Le spectre linéarisé juste décalé avec l'eau est meilleur :
+            buf$audace(bufNo) load "$audace(rep_images)/$spectre_lindec_drms"
+            set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+            set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+            buf$audace(bufNo) setkwd [ list "SPC_RMS" $drms_dec double "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 6)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
+            buf$audace(bufNo) bitpix float
+            buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
+            buf$audace(bufNo) bitpix short
+            #-- Exploitatoin des résultats :
+            ::console::affiche_resultat "\nSpectre de calibration avec (6) de meilleure qualité (dec de 0.5RMS).\n"
+            ::console::affiche_resultat "Loi de calibration finale linéarisée : $crval1+$cdelt1*x\n"
+            ::console::affiche_resultat "Qualité de la calibration :\nRMS=$drms_dec A\nEcart moyen=$mean_shift_drms A\n\n"
+        } elseif { $best_rms_name == "iterdec" } {
+            #-- Le spectre linéarisé juste décalé avec l'eau est meilleur :
+            buf$audace(bufNo) load "$audace(rep_images)/$spectre_dec"
+            set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+            set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_dec double "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 7)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
+            buf$audace(bufNo) bitpix float
+            buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
+            buf$audace(bufNo) bitpix short
+            #-- Exploitatoin des résultats :
+            ::console::affiche_resultat "\nSpectre de calibration avec (7) de meilleure qualité.\n"
+            ::console::affiche_resultat "Loi de calibration finale linéarisée : $crval1+$cdelt1*x\n"
+            ::console::affiche_resultat "Qualité de la calibration :\nRMS=$rms_dec A\nEcart moyen=$mean_shift_dec A\n\n"
+        } elseif { $best_rms_name == "initial" } {
+            #-- La calibration du spectre inital est meilleure :
+            buf$audace(bufNo) load "$audace(rep_images)/$spectre_linear"
+            set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+            set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_initial double "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 1)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
+            buf$audace(bufNo) bitpix float
+            buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
+            buf$audace(bufNo) bitpix short
+            #-- Exploitatoin des résultats :
+            ::console::affiche_resultat "\nSpectre de calibration (1) initiale de meilleure qualité.\n"
+            ::console::affiche_resultat "Loi de calibration finale linéarisée : $crval1+$cdelt1*x\n"
+            ::console::affiche_resultat "Qualité de la calibration :\nRMS=$rms_initial A\nEcart moyen=$mean_shift_initial A\n\n"
+        }
+
+        #--- Effacement des fichiers resultats des 4 methodes :
+        if { $spectre_linear != $filename } {
+           file delete -force "$audace(rep_images)/$spectre_linear$conf(extension,defaut)"
+        }
+        if { $spcaudace(flag_rmcalo) == "o" } {
+           file delete -force "$audace(rep_images)/${filename}_caloshift2$conf(extension,defaut)"
+           #file delete -force "$audace(rep_images)/$spectre_linear$conf(extension,defaut)"
+           file delete -force "$audace(rep_images)/${filename}_caloshift$conf(extension,defaut)"
+           file delete -force "$audace(rep_images)/${filename}_mshiftdec$conf(extension,defaut)"
+           file delete -force "$audace(rep_images)/${filename}_rmsdec$conf(extension,defaut)"
+           file delete -force "$audace(rep_images)/${filename}_drmsdec$conf(extension,defaut)"
+           file delete -force "$audace(rep_images)/${filename}_iterdec$conf(extension,defaut)"
+        }
+        return "${filename}-ocal"
+   } else {
+       ::console::affiche_erreur "Usage: spc_calibretelluric profil_de_raies_a_calibrer ?largeur_raie (pixels)?\n\n"
+   }
+}
+#****************************************************************#
+
+
+
+####################################################################
+# Fonction d'étalonnage à partir de raies de l'eau autour de Ha
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 12-09-2007
+# Date modification : 12-09-2007
+# Arguments : nom_profil_raies
+####################################################################
+
+proc spc_calibretelluric1 { args } {
+    global conf
+    global audace spcaudace
+    # set pas 10
+    #-- Demi-largeur de recherche des raies telluriques (Angstroms)
+    #set ecart 4.0
+    #set ecart 1.2
+    #set ecart 1.5
+    # set ecart 1.0
+    set ecart $spcaudace(dlargeur_eau)
+    set marge_bord 2.5
+    #set erreur 0.01
+
+    #--- Rappels des raies pour resneignements :
+    #-- Liste C.Buil :
+    ### set listeraies [ list 6532.359 6542.313 6548.622 6552.629 6574.852 6586.597 ]
+    ##set listeraies [ list 6532.359 6543.912 6548.622 6552.629 6574.852 6586.597 ]
+    # GOOD : set listeraies [ list 6532.359 6543.907 6548.622 6552.629 6572.072 6574.847 ]
+    #-- Liste ESO-Pollman :
+    ##set listeraies [ list 6532.351 6543.912 6548.651 6552.646 6574.880 6586.730 ]
+    #set listeraies [ list 6532.351 6543.912 6548.651 6552.646 6572.079 6574.880 ]
+    ##set listeraies [ list 6532.351 6543.912 6548.651 6552.646 6572.079 ]
+
+    set nbargs [ llength $args ]
+    if { $nbargs <= 2 } {
+        if { $nbargs == 1 } {
+            set filename [ file rootname [ lindex $args 0 ] ]
+            set largeur $spcaudace(largeur_savgol)
+        } elseif { $nbargs == 2 } {
+            set filename [ file rootname [ lindex $args 0 ] ]
+            set largeur [ lindex $args 1 ]
+        } else {
+            ::console::affiche_erreur "Usage: spc_calibretelluric profil_de_raies_a_calibrer ?largeur_raie_pixels (28)?\n"
+            return ""
+        }
+
+        #--- Gestion des profils selon la loi de calibration :
+        buf$audace(bufNo) load "$audace(rep_images)/$filename"
+        #-- Renseigne sur les parametres de l'image :
+        set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+        set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+        set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+        #- Cas non-lineaire :
+        set listemotsclef [ buf$audace(bufNo) getkwds ]
+        if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+            set flag_spccal 1
+            set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
+            set spc_b [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
+            set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
+            if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
+                set spc_d [ lindex [ buf$audace(bufNo) getkwd "SPC_D" ] 1 ]
+            } else {
+                set spc_d 0.
+            }
+            set lmin_spectre [ expr $spc_a+$spc_b+$spc_c+$spc_d ]
+            set lmax_spectre [ expr $spc_a+$spc_b*$naxis1+$spc_c*pow($naxis1,2)+$spc_d*pow($naxis1,3) ]
+        } else {
+            set flag_spccal 0
+            set lmin_spectre $crval1
+            set lmax_spectre [ expr $crval1+$cdelt1*($naxis1 -1) ]
+        }
+        #-- Incertitude sur mesure=1/nbpix*disp, nbpix_incertitude=1 :
+
+        ### modif michel (mes_incertitude avait une valeur beaucoup trop elevee)
+        set mes_incertitude [ expr 1.0/($cdelt1*$cdelt1) ]
+
+
+        #--- Charge la liste des raies de l'eau :
+        set file_id [ open "$spcaudace(filetelluric)" r ]
+        set contents [ split [ read $file_id ] \n ]
+        close $file_id
+        set nbraiesbib 0
+        foreach ligne $contents {
+            lappend listeraieseau [ lindex $ligne 1 ]
+            incr nbraiesbib
+        }
+        set nbraiesbib [ expr $nbraiesbib-2 ]
+        set listeraieseau [ lrange $listeraieseau 0 $nbraiesbib ]
+        set lmin_bib [ lindex $listeraieseau 0 ]
+        set lmax_bib [ lindex $listeraieseau $nbraiesbib ]
+        # ::console::affiche_resultat "$nbraiesbib ; Lminbib=$lmin_bib ; Lmaxbib=$lmax_bib\n"
+        # ::console::affiche_resultat "Lminsp=$lmin_spectre ; Lmaxsp=$lmax_spectre\n"
+
+
+        #--- Creée la liste de travail des raies de l'eau pour le spectre :
+        if { [ expr $lmin_bib+$marge_bord ]<$lmin_spectre || [ expr $lmax_bib-$marge_bord ]<$lmax_spectre } {
+            #-- Recherche la longueur minimum des raies raies telluriques utilisables (2 A) :
+            set index_min 0
+            foreach raieo $listeraieseau {
+                if { [ expr $lmin_spectre-$raieo ]<=-$marge_bord } {
+                    break
+                } else {
+                    incr index_min
+                }
+            }
+            # ::console::affiche_resultat "$index_min ; [ lindex $listeraieseau $index_min ]\n"
+            #-- Recherche la longueur maximum des raies raies telluriques utilisables (2 A) :
+            set index_max $nbraiesbib
+            for { set index_max $nbraiesbib } { $index_max>=0 } { incr index_max -1 } {
+                if { [ expr [ lindex $listeraieseau $index_max ]-$lmax_spectre ]<=-$marge_bord } {
+                    break
+                }
+            }
+            # ::console::affiche_resultat "$index_max ; [ lindex $listeraieseau $index_max ]\n"
+            #-- Liste des raies telluriques utilisables :
+            #- Enleve une raie sur chaque bords : 070910
+            # set index_min [ expr $index_min+1 ]
+            # set index_max [ expr $index_max-1 ]
+            set listeraies [ lrange $listeraieseau $index_min $index_max ]
+            # ::console::affiche_resultat "$listeraies\n"
+        } else {
+            ::console::affiche_erreur "Plage de longueurs d'onde incompatibles avec la calibration tellurique\n"
+            return "$filename"
+        }
+
+
+        #--- Filtrage pour isoler le continuum :
+        #-- Retire les petites raies qui seraient des pixels chauds ou autre :
+        #buf$audace(bufNo) imaseries "CONV kernel_type=gaussian sigma=0.9"
+        set ffiltered [ spc_smoothsg $filename $largeur ]
+        set fcont1 [ spc_div $filename $ffiltered ]
+
+        #--- Inversion et mise a 0 du niveau moyen :
+        buf$audace(bufNo) load "$audace(rep_images)/$fcont1"
+        set icontinuum [ expr 2*[ lindex [ buf$audace(bufNo) stat ] 4 ] ]
+        buf$audace(bufNo) mult -1.0
+        buf$audace(bufNo) offset $icontinuum
+        buf$audace(bufNo) bitpix float
+        buf$audace(bufNo) save "$audace(rep_images)/${filename}_conti"
+        buf$audace(bufNo) bitpix short
+
+        #--- Recherche des raies telluriques en absorption :
+        ::console::affiche_resultat "Recherche des raies d'absorption de l'eau...\n"
+        #set pas [ expr int($largeur/2) ]
+        #buf$audace(bufNo) scale {1 3} 1
+        #buf$audace(bufNo) load "$audace(rep_images)/${filename}_conti"
+        #buf$audace(bufNo) load "$audace(rep_images)/$filename"
+        set nbraies [ llength $listeraies ]
+        set listexraies [list ]
+        set listexmesures [list ]
+        set listelmesurees [list ]
+        set listeldiff [list ]
+        foreach raie $listeraies {
+            if { $flag_spccal } {
+                set x  [ expr (-$spc_b+sqrt($spc_b*$spc_b-4*($spc_a-($raie))*$spc_c))/(2*$spc_c) ]
+                set x1 [ expr round((-$spc_b+sqrt($spc_b*$spc_b-4*($spc_a-($raie-$ecart))*$spc_c))/(2*$spc_c)) ]
+                set x2 [ expr round((-$spc_b+sqrt($spc_b*$spc_b-4*($spc_a-($raie+$ecart))*$spc_c))/(2*$spc_c)) ]
+                set coords [ list $x1 1 $x2 1 ]
+                #-- Meth 1 : centre de gravité
+                ###set xcenter [ lindex [ buf$audace(bufNo) centro $coords ] 0 ]
+                #-- Meth 2 : centre gaussien
+                set xcenter [ lindex [ buf$audace(bufNo) fitgauss $coords ] 1 ]
+                #-- Meth 3 : centre moyen de gravité
+                # set xc1 [ lindex [ buf$audace(bufNo) centro $coords ] 0 ]
+                # buf$audace(bufNo) mult -1.0
+                # set xc2 [ lindex [ buf$audace(bufNo) centro $coords ] 0 ]
+                # buf$audace(bufNo) mult -1.0
+                # set xcenter [ expr [ lindex [ lsort -real -increasing [ list $xc1 $xc2 ]  ] 0 ]+0.5*abs($xc2-$xc1) ]
+                set lambda_mes [ expr ($xcenter -1)*$cdelt1+$crval1 ]
+                set ldiff [ expr $lambda_mes-$raie ]
+                lappend listexraies $x
+                lappend listexmesures $xcenter
+                lappend listelmesurees $lambda_mes
+                lappend listeldiff $ldiff
+            } else {
+                set x  [ expr ($raie-$crval1)/$cdelt1 + 1 ]
+                set x1 [ expr round(($raie-$ecart-$crval1)/$cdelt1 +1 ) ]
+                set x2 [ expr round(($raie+$ecart-$crval1)/$cdelt1 +1 ) ]
+                set coords [ list $x1 1 $x2 1 ]
+                #-- Meth 1 : centre de gravité
+                ###set xcenter [ lindex [ buf$audace(bufNo) centro $coords ] 0 ]
+                #-- Meth 2 : centre gaussien
+                set xcenter [ lindex [ buf$audace(bufNo) fitgauss $coords ] 1 ]
+                #-- Meth 3 : centre moyen de gravité
+                # set xc1 [ lindex [ buf$audace(bufNo) centro $coords ] 0 ]
+                # buf$audace(bufNo) mult -1.0
+                # set xc2 [ lindex [ buf$audace(bufNo) centro $coords ] 0 ]
+                # buf$audace(bufNo) mult -1.0
+                # set xcenter [ expr [ lindex [ lsort -real -increasing [ list $xc1 $xc2 ]  ] 0 ]+0.5*abs($xc2-$xc1) ]
+                set lambda_mes [ expr  ($xcenter -1) *$cdelt1+$crval1 ]
+                set ldiff [ expr $lambda_mes-$raie ]
+                lappend listexraies    $x
+                lappend listexmesures  $xcenter
+                lappend listelmesurees $lambda_mes
+                lappend listeldiff     $ldiff
+
+            }
+            lappend errors $mes_incertitude
+        }
+        ::console::affiche_resultat "Liste des raies trouvées :\n$listelmesurees\n"
+        ::console::affiche_resultat "Liste des x mesures :\n$listexmesures\n"
+        ::console::affiche_resultat "Liste des raies du catalogue :\n$listeraies\n"
+        ::console::affiche_resultat "Liste des x du catalogue :\n$listexraies\n"
+
+        #--- Effacement des fichiers temporaires :
+        file delete -force "$audace(rep_images)/$ffiltered$conf(extension,defaut)"
+        file delete -force "$audace(rep_images)/$fcont1$conf(extension,defaut)"
+        file delete -force "$audace(rep_images)/${filename}_conti$conf(extension,defaut)"
+
         #--- Methode 1 : spectre initial linéaire :
         ::console::affiche_resultat "============ 1) spectre initial linéaire ================\n"
         set spectre_linear [ spc_linearcal "$filename" ]
@@ -2153,11 +2727,13 @@ proc spc_calibretelluric { args } {
         set mean_shift_initial [ lindex $infos_cal 2 ]
         set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
         set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+        set cdelt1_initial $cdelt1
+        set crval1_initial $crval1
         ::console::affiche_resultat "Loi de calibration lineaire : $crval1+$cdelt1*x\n"
 
 
         #--- Methode 2 : Décalage du spectre inital linéarisé à l'aide des raies telluriques :
-        ::console::affiche_resultat "============ 2) Décalage du spectre inital linéarisé================\n"
+        ::console::affiche_resultat "============ 2) Décalage du SHIFT du spectre inital linéarisé ================\n"
         set spectre_lindec [ spc_calibredecal "$spectre_linear" [ expr -1.0*$mean_shift_initial ] ]
         set infos_cal [ spc_rms "$spectre_lindec" $listeraies ]
         set rms_lindec [ lindex $infos_cal 1 ]
@@ -2165,6 +2741,56 @@ proc spc_calibretelluric { args } {
         set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
         set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
         ::console::affiche_resultat "Loi de calibration lineaire : $crval1+$cdelt1*x\n"
+
+
+        #--- Methode 5 : Décalage du spectre inital linéarisé de la valeur du RMS : 
+        ::console::affiche_resultat "============ 5) Décalage de RMS du spectre inital linéarisé ================\n"
+        #set rms_decalage [ expr $rms_initial/$cdelt1_initial/2. ]
+        set rms_decalage [ expr $rms_initial/$cdelt1_initial ]
+        if { $mean_shift_initial > 0. } {
+           set spectre_lindec_rms [ spc_calibredecal "$spectre_linear" [ expr -1.0*$rms_decalage ] ]
+        } else {
+           set spectre_lindec_rms [ spc_calibredecal "$spectre_linear" $rms_decalage ]
+        }
+        set infos_cal [ spc_rms "$spectre_lindec" $listeraies ]
+        set rms_lindec_rms [ lindex $infos_cal 1 ]
+        set mean_shift_lindec_rms [ lindex $infos_cal 2 ]
+        set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+        set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+        ::console::affiche_resultat "Loi de calibration lineaire : $crval1+$cdelt1*x\n"
+
+
+        #--- Methode 6 : callibration avec les raies telluriques :
+        ::console::affiche_resultat "====== 6) Recalage sur la valeur de PDeg3 au pixel 1 ====\n"
+        #-- Ajustement polynomial de degre 3 :
+        set sortie [ spc_ajustdeg3 $listexmesures $listeraies $errors ]
+        set coeffs [ lindex $sortie 0 ]
+        set d [ lindex $coeffs 3 ]
+        set c [ lindex $coeffs 2 ]
+        set b [ lindex $coeffs 1 ]
+        set a [ lindex $coeffs 0 ]
+        #set crval1_deg3 [ expr $a+$b+$c+$d ]
+        #-- Lineratistation de la loi polynomiale :
+        for { set i 1 } { $i<=$naxis1 } { incr i 10 } {
+          lappend abscisses $i
+          lappend ordonnees [ expr $a+$b*$i+$c*pow($i,2)+$d*pow($i,3) ]
+          lappend erreurs 1.
+        }
+        set sortie [ spc_ajustdeg1hp $abscisses $ordonnees $erreurs ]
+	#- lambda0 : lambda pour x=0
+        set lambda0 [ lindex [ lindex $sortie 0 ] 0 ]
+        set cdelt1 [ lindex [ lindex $sortie 0 ] 1 ]
+	#- crval1 : lambda pour x=1
+        set crval1_deg3 [ expr $lambda0 + $cdelt1 ]
+        buf$audace(bufNo) load "$audace(rep_images)/$spectre_linear"
+        buf$audace(bufNo) setkwd [list "CRVAL1" $crval1_deg3 double "" "angstrom" ]
+        set spectre_deg3dec "${spectre_linear}_deg2dec"
+        buf$audace(bufNo) bitpix float
+        buf$audace(bufNo) save "$audace(rep_images)/$spectre_deg3dec"
+        buf$audace(bufNo) bitpix short
+        set infos_cal [ spc_rms "$spectre_deg3dec" $listeraies ]
+        set rms_deg3dec [ lindex $infos_cal 1 ]
+        set mean_shift_deg3dec [ lindex $infos_cal 2 ]
 
 
         #--- Methode 3 : callibration avec les raies telluriques :
@@ -2256,7 +2882,7 @@ proc spc_calibretelluric { args } {
         }
 
         #-- je calcule les coefficients de la droite moyenne lambda=f(xlin)
-        set sortie [ spc_ajustdeg1 $listexlin $listeraies $errors ]
+        set sortie [ spc_ajustdeg1hp $listexlin $listeraies $errors ]
 	#- lambda0 : lambda pour x=0
         set lambda0 [lindex [ lindex $sortie 0 ] 0]
         set cdelt1 [lindex [ lindex $sortie 0 ] 1]
@@ -2305,6 +2931,13 @@ proc spc_calibretelluric { args } {
         if { [ lsearch $spcaudace(calo_meths) 4 ] != -1 } {
            lappend liste_rms [ list "calobis" $rms_calobis ]
         }
+        if { [ lsearch $spcaudace(calo_meths) 5 ] != -1 } {
+           lappend liste_rms [ list "lindec_rms" $rms_lindec_rms ]
+        }
+        if { [ lsearch $spcaudace(calo_meths) 6 ] != -1 } {
+           lappend liste_rms [ list "deg3dec" $rms_deg3dec ]
+        }
+
         #-- Tri par RMS croissant :
         set liste_rms [ lsort -index 1 -increasing -real $liste_rms ]
         set best_rms_name [ lindex [ lindex $liste_rms 0 ] 0 ]
@@ -2354,6 +2987,34 @@ proc spc_calibretelluric { args } {
             ::console::affiche_resultat "\nSpectre de calibration avec (2) décalage de meilleure qualité.\n"
             ::console::affiche_resultat "Loi de calibration finale linéarisée : $crval1+$cdelt1*x\n"
             ::console::affiche_resultat "Qualité de la calibration :\nRMS=$rms_lindec A\nEcart moyen=$mean_shift_lindec A\n\n"
+        } elseif { $best_rms_name == "lindec_rms" } {
+            #-- Le spectre linéarisé juste décalé avec l'eau est meilleur :
+            buf$audace(bufNo) load "$audace(rep_images)/$spectre_lindec_rms"
+            set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+            set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_lindec_rms double "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 5)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
+            buf$audace(bufNo) bitpix float
+            buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
+            buf$audace(bufNo) bitpix short
+            #-- Exploitatoin des résultats :
+            ::console::affiche_resultat "\nSpectre de calibration avec (5) décalage de meilleure qualité.\n"
+            ::console::affiche_resultat "Loi de calibration finale linéarisée : $crval1+$cdelt1*x\n"
+            ::console::affiche_resultat "Qualité de la calibration :\nRMS=$rms_lindec_rms A\nEcart moyen=$mean_shift_lindec_rms A\n\n"
+        } elseif { $best_rms_name == "deg3dec" } {
+            #-- La calibration du spectre inital est meilleure :
+            buf$audace(bufNo) load "$audace(rep_images)/$spectre_deg3dec"
+            set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+            set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_deg3dec double "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 6)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
+            buf$audace(bufNo) bitpix float
+            buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
+            buf$audace(bufNo) bitpix short
+            #-- Exploitatoin des résultats :
+            ::console::affiche_resultat "\nSpectre de calibration avec (6) de meilleure qualité.\n"
+            ::console::affiche_resultat "Loi de calibration finale linéarisée : $crval1+$cdelt1*x\n"
+            ::console::affiche_resultat "Qualité de la calibration :\nRMS=$rms_initial A\nEcart moyen=$mean_shift_initial A\n\n"
         } elseif { $best_rms_name == "initial" } {
             #-- La calibration du spectre inital est meilleure :
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_linear"
@@ -2374,15 +3035,18 @@ proc spc_calibretelluric { args } {
         file delete -force "$audace(rep_images)/$spectre_ocallinbis$conf(extension,defaut)"
         file delete -force "$audace(rep_images)/$spectre_ocalshifted$conf(extension,defaut)"
         file delete -force "$audace(rep_images)/$spectre_lindec$conf(extension,defaut)"
+        file delete -force "$audace(rep_images)/$spectre_lindec_rms$conf(extension,defaut)"
+        file delete -force "$audace(rep_images)/$spectre_deg3dec$conf(extension,defaut)"
         if { $spectre_linear != $filename } {
            file delete -force "$audace(rep_images)/$spectre_linear$conf(extension,defaut)"
         }
         return "${filename}-ocal"
    } else {
-       ::console::affiche_erreur "Usage: spc_calibretelluric profil_de_raies_a_calibrer ?largeur_raie (pixels)?\n\n"
+       ::console::affiche_erreur "Usage: spc_calibretelluric1 profil_de_raies_a_calibrer ?largeur_raie (pixels)?\n\n"
    }
 }
 #****************************************************************#
+
 
 
 
