@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.11 2008-12-21 07:47:29 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.12 2009-01-02 21:16:32 bmauclaire Exp $
 
 
 
@@ -871,6 +871,7 @@ proc spc_rescalecont { args } {
         } else {
             buf$audace(bufNo) load "$audace(rep_images)/$fichier"
             buf$audace(bufNo) mult [ expr 1./$icont ]
+            buf$audace(bufNo) setkwd [ list "SPC_NORM" "Rescaling local middle continuum" string "Process used for transforming the continuum" "" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${fichier}_norm"
             buf$audace(bufNo) bitpix short
@@ -1352,7 +1353,7 @@ proc spc_echant { args } {
        set fichier_a_echant [ file rootname [ lindex $args 0 ] ]
        set fichier_modele [ file rootname [ lindex $args 1 ] ]
 
-       #--- Chargement des param<E8>tres du spectre a echantillonner :
+       #--- Chargement des parametres du spectre a echantillonner :
        buf$audace(bufNo) load "$audace(rep_images)/$fichier_a_echant"
        set listemotsclef [ buf$audace(bufNo) getkwds ]
        if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
@@ -1376,8 +1377,7 @@ proc spc_echant { args } {
           }
 ::console::affiche_resultat "ICI2\n"
        } else {
-          ::console::affiche_erreur "Le spectre $fichier_a_echant doit <EA>tre calibr<E9> et avec une loi lin
-<E9>aire.\n"
+          ::console::affiche_erreur "Le spectre $fichier_a_echant doit etre calibre et avec une loi lineaire.\n"
           return ""
        }
 
@@ -1393,8 +1393,7 @@ proc spc_echant { args } {
              lappend lambdas_modele [ expr $crval1+$cdelt1*$i ]
           }
        } else {
-          ::console::affiche_erreur "Le spectre $fichier_modele doit <EA>tre calibr<E9> et avec une loi lin
-<E9>aire.\n"
+          ::console::affiche_erreur "Le spectre $fichier_modele doit etre calibre et avec une loi lineaire.\n"
           return ""
        }
 
