@@ -2,7 +2,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_metaf.tcl ]
 
-# Mise a jour $Id: spc_metaf.tcl,v 1.6 2008-12-21 07:46:11 bmauclaire Exp $
+# Mise a jour $Id: spc_metaf.tcl,v 1.7 2009-01-02 21:37:59 bmauclaire Exp $
 
 
 
@@ -1524,10 +1524,17 @@ proc spc_traite2srinstrum { args } {
 	       ::console::affiche_erreur "\nLa division par la réponse intrumentale n'a pas pu peut être calculée.\n"
 	       return 0
 	   } else {
-              set fricorrlin [ spc_linearcal "$fricorr" ]
+              set fricorrlin1 [ spc_linearcal "$fricorr" ]             
+              #-- Elimination des bords "nuls" :
+              if { $spcaudace(rm_edges)=="o" } {
+                 set fricorrlin [ spc_rmedges "$fricorrlin1" ]
+              } else {
+                 set fricorrlin "$fricorrlin1"
+              }
               file copy -force "$audace(rep_images)/$fricorrlin$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1c$conf(extension,defaut)"
               file copy -force "$audace(rep_images)/$fricorr$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1c_nonlin$conf(extension,defaut)"
               file delete -force "$audace(rep_images)/$fricorr$conf(extension,defaut)"
+              file delete -force "$audace(rep_images)/$fricorrlin1$conf(extension,defaut)"
 	   }
        }
 
@@ -1711,56 +1718,41 @@ proc spc_traitestellaire { args } {
        set spectre_traite [ spc_traite2srinstrum "$brut" "$noir_master" "$plu" "$noirplu_master" "$offset" "$lampe_traitee" "$rinstrum" $methreg $methcos $methsel $methsky $methinv $methbin $methnorma $methsmo $ejbad $ejtilt $rmfpretrait "n" $flag_2lamps ]
        #- L'export au format PNG est ici réalisé en dehors de spc_traite2srinstrum
 
-       #--- Elimination des bords "nuls" :
-       if { $spcaudace(rm_edges)=="o" } {
-	   set spectre_rmedges [ spc_rmedges "$spectre_traite" ]
-       } else {
-	   set spectre_rmedges "$spectre_traite"
-       }
-       if { $methnorma != "n" && $spcaudace(rm_edges)=="o" } {
-          set spectre_2b [ spc_rmedges "${brut}-profil-2b" ]
-          file rename -force "$audace(rep_images)/$spectre_2b$conf(extension,defaut)" "$audace(rep_images)/${brut}-profil-2b$conf(extension,defaut)"
-       }
-
 
        #--- Calibration avec les raies telluriques :
        if { $cal_eau=="o" } {
-	   buf$audace(bufNo) load "$audace(rep_images)/$spectre_rmedges"
+	   buf$audace(bufNo) load "$audace(rep_images)/$spectre_traite"
 	   set listemotsclef [ buf$audace(bufNo) getkwds ]
 	   if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
 	       set dispersion [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
 	       if { $dispersion <= $spcaudace(dmax) } {
 		   ::console::affiche_resultat "\n\n**** Calibration avec les raies telluriques ****\n\n"
-                   if { $spcaudace(rm_edges)=="o" } {
-                      set spectre_calo1 [ spc_calibretelluric "$spectre_rmedges" ]
-                      set spectre_calo [ spc_rmedges "$spectre_calo1" ]
-                      file delete -force "$audace(rep_images)/$spectre_calo1$conf(extension,defaut)"
-                   } else {
-                      set spectre_calo [ spc_calibretelluric "$spectre_rmedges" ]
-                   }
+                   #if { $spcaudace(rm_edges)=="o" } 
+                   #   set spectre_calo1 [ spc_calibretelluric "$spectre_traite" ]
+                   #   set spectre_calo [ spc_rmedges "$spectre_calo1" ]
+                   #   file delete -force "$audace(rep_images)/$spectre_calo1$conf(extension,defaut)"
+                      set spectre_calo [ spc_calibretelluric "$spectre_traite" ]
 	       } else {
 		   ::console::affiche_erreur "\n\n**** Calibration avec les raies telluriques non réalisée car dispersion insuffisante ****\n\n"
-		   set spectre_calo "$spectre_rmedges"
+		   set spectre_calo "$spectre_traite"
 	       }
 	   } elseif { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
 	       set dispersion [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
 	       if { $dispersion <= $spcaudace(dmax) } {
 		   ::console::affiche_resultat "\n\n**** Calibration avec les raies telluriques ****\n\n"
-                   if { $spcaudace(rm_edges)=="o" } {
-                      set spectre_calo1 [ spc_calibretelluric "$spectre_rmedges" ]
-                      set spectre_calo [ spc_rmedges "$spectre_calo1" ]
-                      file delete -force "$audace(rep_images)/$spectre_calo1$conf(extension,defaut)"
-                   } else {
-                      set spectre_calo [ spc_calibretelluric "$spectre_rmedges" ]
-                   }
+                   #if { $spcaudace(rm_edges)=="o" } 
+                   #   set spectre_calo1 [ spc_calibretelluric "$spectre_traite" ]
+                   #   set spectre_calo [ spc_rmedges "$spectre_calo1" ]
+                   #   file delete -force "$audace(rep_images)/$spectre_calo1$conf(extension,defaut)"
+                      set spectre_calo [ spc_calibretelluric "$spectre_traite" ]
 	       } else {
 		   ::console::affiche_erreur "\n\n**** Calibration avec les raies telluriques non réalisée car dispersion insuffisante ****\n\n"
-		   set spectre_calo "$spectre_rmedges"
+		   set spectre_calo "$spectre_traite"
 	       }
 	   }
 	   ## set spectre_calo [ spc_calibretelluric "$spectre_traite" ]
        } else {
-	   set spectre_calo "$spectre_rmedges"
+	   set spectre_calo "$spectre_traite"
        }
 
 
@@ -1797,8 +1789,8 @@ proc spc_traitestellaire { args } {
          set profil_final "${brut}-profil-2b"
       }
 
-       if { [ file exists "$audace(rep_images)/$spectre_rmedges$conf(extension,defaut)" ] } {
-          file delete -force "$audace(rep_images)/$spectre_rmedges$conf(extension,defaut)"
+       if { [ file exists "$audace(rep_images)/$spectre_traite$conf(extension,defaut)" ] } {
+          file delete -force "$audace(rep_images)/$spectre_traite$conf(extension,defaut)"
        }
        if { $cal_eau=="o" } {
           ::console::affiche_resultat "\n\n**** Qualité de la calibration en longueur d'onde ****\n\n"
