@@ -1,7 +1,7 @@
 
 # Procédures liées à 'linterface graphique et au tracé des profils de raies.
 
-# Mise a jour $Id: spc_gui.tcl,v 1.2 2008-09-20 17:20:05 bmauclaire Exp $
+# Mise a jour $Id: spc_gui.tcl,v 1.3 2009-01-02 20:48:53 bmauclaire Exp $
 
 
 
@@ -188,9 +188,9 @@ proc spc_winini { } {
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibre_space)
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibretelluric) -command "spc_calibretelluric" -underline 0 -accelerator "Ctrl-T"
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calobilan) -command "spc_calobilan" -underline 0 -accelerator "Ctrl-B"
-      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_caloverif) -command "spc_caloverif" -underline 0 -accelerator "Ctrl-V"
+      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_caloverif) -command "spc_caloverif" -underline 0
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_loadneon) -command "spc_loadneon" -underline 0
-      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_loadmh2o) -command "spc_loadmh2o" -underline 0
+      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_loadmh2o) -command "spc_loadmh2o" -underline 0 -accelerator "Ctrl-V"
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibre_space)
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_rinstrum_w) -command "spc_rinstrum" -underline 0
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_rinstrumcorr_w) -command "spc_rinstrumcorr" -underline 0 -accelerator "Ctrl-I"
@@ -203,7 +203,7 @@ proc spc_winini { } {
       bind .spc <Control-f> cali_flux
       bind .spc <Control-t> spc_calibretelluric
       bind .spc <Control-b> spc_calobilan
-      bind .spc <Control-v> spc_caloverif
+      bind .spc <Control-v> spc_loadmh2o
 
       #--- Menu Pipelines ---#
       .spc.menuBar add cascade -menu .spc.menuBar.pipelines -label $caption(spcaudace,gui,spc_pipelines) -underline 0 -background $colorspc(backmenu)
@@ -226,8 +226,8 @@ proc spc_winini { } {
       #.spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_specLhIII_w) -command "::spbmfc::fenetreSpData" -underline 0 -accelerator "Ctrl-8"
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :
-      bind .spc <Control-i> ::param_spc_audace_traite2rinstrum::run
-      bind .spc <Control-v> ::param_spc_audace_lampe2calibre::run
+      #bind .spc <Control-i> ::param_spc_audace_traite2rinstrum::run
+      #bind .spc <Control-v> ::param_spc_audace_lampe2calibre::run
       bind .spc <Control-a> ::param_spc_audace_traite2srinstrum::run
       bind .spc <Control-s> ::param_spc_audace_traitestellaire::run
       bind .spc <Control-n> ::param_spc_audace_traitenebula::run
