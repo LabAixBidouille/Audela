@@ -5,7 +5,7 @@
 #*********************************************************************************#
 # Chargement : source $audace(rep_scripts)/spcaudace/spc_gui_boxes.tcl
 
-# Mise a jour $Id: spc_gui_metaboxes.tcl,v 1.3 2008-12-21 07:46:11 bmauclaire Exp $
+# Mise a jour $Id: spc_gui_metaboxes.tcl,v 1.4 2009-01-02 20:50:59 bmauclaire Exp $
 
 
 
@@ -4484,26 +4484,6 @@ namespace eval ::param_spc_audace_traitestellaire {
       pack .param_spc_audace_traitestellaire.2lamps -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
 
 
-      #--- Label + Entry pour methinv
-      #-- Partie Label
-      frame .param_spc_audace_traitestellaire.methinv -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
-      label .param_spc_audace_traitestellaire.methinv.label  \
-	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
-	      -text "$caption(spcaudace,metaboxes,traitestellaire,config,methinv) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
-	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
-      pack  .param_spc_audace_traitestellaire.methinv.label -in .param_spc_audace_traitestellaire.methinv -side left -fill none
-      #-- Partie Combobox
-      ComboBox .param_spc_audace_traitestellaire.methinv.combobox \
-         -width 7          \
-         -height [ llength $liste_methinv ]  \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -textvariable audace(param_spc_audace,traitestellaire,config,methinv) \
-         -values $liste_methinv
-      pack  .param_spc_audace_traitestellaire.methinv.combobox -in .param_spc_audace_traitestellaire.methinv -side right -fill none
-      pack .param_spc_audace_traitestellaire.methinv -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
-
 
       #--- Label + Entry pour cal_eau
       #-- Partie Label
@@ -4546,6 +4526,26 @@ namespace eval ::param_spc_audace_traitestellaire {
          -values $liste_norma
       pack  .param_spc_audace_traitestellaire.norma.combobox -in .param_spc_audace_traitestellaire.norma -side right -fill none
       pack .param_spc_audace_traitestellaire.norma -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
+
+      #--- Label + Entry pour methinv
+      #-- Partie Label
+      frame .param_spc_audace_traitestellaire.methinv -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
+      label .param_spc_audace_traitestellaire.methinv.label  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -text "$caption(spcaudace,metaboxes,traitestellaire,config,methinv) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
+      pack  .param_spc_audace_traitestellaire.methinv.label -in .param_spc_audace_traitestellaire.methinv -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitestellaire.methinv.combobox \
+         -width 7          \
+         -height [ llength $liste_methinv ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable audace(param_spc_audace,traitestellaire,config,methinv) \
+         -values $liste_methinv
+      pack  .param_spc_audace_traitestellaire.methinv.combobox -in .param_spc_audace_traitestellaire.methinv -side right -fill none
+      pack .param_spc_audace_traitestellaire.methinv -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
 
 
       #--- Label + Entry pour methcos
