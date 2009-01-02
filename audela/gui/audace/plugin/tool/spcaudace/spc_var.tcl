@@ -3,7 +3,7 @@
 #
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.5 2008-12-21 07:49:43 bmauclaire Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.6 2009-01-02 20:56:03 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -44,8 +44,12 @@ set spcaudace(spectrum) [ file join $spcaudace(rep_spc) plugins spectrum ]
 #-- Répertoire des données chimiques :
 set spcaudace(repchimie) [ file join $spcaudace(rep_spc) data chimie ]
 set spcaudace(reptelluric) [ file join $spcaudace(rep_spc) data telluric ]
-# set spcaudace(filetelluric) "$spcaudace(reptelluric)/h2o_calibrage_temp.txt"
 set spcaudace(filetelluric) "$spcaudace(reptelluric)/h2o_calibrage.txt"
+#set spcaudace(filetelluric) "$spcaudace(reptelluric)/h2o_calibrage_140b.txt"
+#-- Liste des methodes de calibrations telluriques :
+set spcaudace(calo_meths) { 1 2 4 5 6 }
+#-- Effacement des profils des differentes methodes de calibration tellurique :
+set spcaudace(flag_rmcalo) "o"
 
 #-- Répertoire de la bibliothèque spectrale :
 set spcaudace(rep_spcbib) [ file join $spcaudace(rep_spc) data bibliotheque_spectrale ]
@@ -139,8 +143,6 @@ set spcaudace(dlargeur_eau) 0.5
 set spcaudace(uncosmic) 0.85
 #-- Largeur des raies detectees (spc_findbiglines) : 10 ; 8
 set spcaudace(largeur_raie_detect) 8
-#-- Liste des methodes de calibrations telluriques :
-set spcaudace(calo_meths) { 1 2 3 4 }
 
 
 #----------------------------------------------------------------------------------#
