@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise a jour $Id: foc.tcl,v 1.20 2008-12-29 14:42:12 robertdelmas Exp $
+# Mise a jour $Id: foc.tcl,v 1.21 2009-01-03 22:53:16 robertdelmas Exp $
 #
 
 set ::graphik(compteur) {}
@@ -136,6 +136,9 @@ namespace eval ::foc {
       set panneau(foc,deplace)          "$caption(foc,aller_a)"
       set panneau(foc,initialise)       "$caption(foc,init)"
       set panneau(foc,graphe)           "$caption(foc,graphe)"
+      set panneau(foc,dispTimeAfterId)  ""
+      set panneau(foc,pose_en_cours)    "0"
+      set panneau(foc,demande_arret)    "0"
 
       focBuildIF $This
    }
@@ -228,7 +231,7 @@ namespace eval ::foc {
          #--- Parametrage de la prise de vue en Centrage ou en Fenetrage
          if { [ info exists panneau(foc,actuel) ] == "0" } {
             set panneau(foc,actuel) "$caption(foc,centrage)"
-            set dimxy [ cam$audace(camNo) nbcells ]
+            set dimxy               [ cam$audace(camNo) nbcells ]
             set panneau(foc,window) [ list 1 1 [ lindex $dimxy 0 ] [ lindex $dimxy 1 ] ]
          }
          if { $panneau(foc,menu) == "$caption(foc,centrage)" } {
@@ -239,11 +242,11 @@ namespace eval ::foc {
             } else {
                set panneau(foc,bin) "1"
             }
-            set panneau(foc,bin_centrage) $panneau(foc,bin)
-            set dimxy [ cam$audace(camNo) nbcells ]
-            set panneau(foc,window) [ list 1 1 [ lindex $dimxy 0 ] [ lindex $dimxy 1 ] ]
-            set panneau(foc,actuel) "$caption(foc,centrage)"
-            set panneau(foc,boucle) "$caption(foc,off)"
+            set panneau(foc,bin_centrage) "$panneau(foc,bin)"
+            set dimxy                     [ cam$audace(camNo) nbcells ]
+            set panneau(foc,window)       [ list 1 1 [ lindex $dimxy 0 ] [ lindex $dimxy 1 ] ]
+            set panneau(foc,actuel)       "$caption(foc,centrage)"
+            set panneau(foc,boucle)       "$caption(foc,off)"
          } elseif { $panneau(foc,menu) == "$caption(foc,fenetre)" } {
             set panneau(foc,bin) "1"
             if { $panneau(foc,actuel) == "$caption(foc,centrage)" } {
@@ -290,19 +293,19 @@ namespace eval ::foc {
       set camera cam$audace(camNo)
       set buffer buf$audace(bufNo)
 
-      #--- La commande exptime permet de fixer le temps de pose de l'image
-      $camera exptime $panneau(foc,exptime)
+      #--- Initialisation d'une variable
+      set panneau(foc,finAquisition) ""
+
+      #--- Pose en cours
+      set panneau(foc,pose_en_cours) "1"
 
       #--- La commande bin permet de fixer le binning
       $camera bin [ list $panneau(foc,bin) $panneau(foc,bin) ]
 
       #--- Cas des petites poses : Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
-      if { $panneau(foc,exptime) >= "0" && $panneau(foc,exptime) < "2" } {
-         ::camera::Avancement_pose "1"
+      if { $panneau(foc,exptime) >= "0" && $panneau(foc,exptime) < "1" } {
+         ::foc::avancementPose 0
       }
-
-      #--- Declenchement de l'acquisition
-      $camera acq
 
       #--- Alarme sonore de fin de pose
       ::camera::alarme_sonore $panneau(foc,exptime)
@@ -314,16 +317,14 @@ namespace eval ::foc {
          set audace(after,focstop,id) [ after [ expr int($delay*1000) ] { ::foc::cmdFocus stop } ]
       }
 
-      #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
-      ::camera::gestionPose $panneau(foc,exptime) 1 $camera $buffer
+      #--- Declenchement de l'acquisition
+      ::camera::acquisition [ ::confVisu::getCamItem $audace(visuNo) ] "::foc::attendImage" $panneau(foc,exptime)
 
-      #--- Fenetrage sur le buffer si la camera ne possede pas le mode fenetrage (APN et WebCam)
-      if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] window ] == "0" } {
-         buf$audace(bufNo) window $panneau(foc,window)
-      }
+      #--- Je lance la boucle d'affichage du decompte
+      after 10 ::foc::dispTime
 
-      #--- Visualisation de l'image acquise
-      ::audace::autovisu $audace(visuNo)
+      #--- J'attends la fin de l'acquisition
+      vwait panneau(foc,finAquisition)
 
       #--- Informations sur l'image fenetree
       if { $panneau(foc,actuel) == "$caption(foc,fenetre)" } {
@@ -352,9 +353,9 @@ namespace eval ::foc {
             lappend ::graphik(fwhmy) $::fwhmy
             #--- Graphique
             append ::graphik(fichier) "$::inten $::fwhmx $::fwhmy $::contr \n"
-            visuf g_inten $::graphik(compteur) $::graphik(inten) "$caption(foc,intensite_adu)" yes
-            visuf g_fwhmx $::graphik(compteur) $::graphik(fwhmx) "$caption(foc,fwhm_x)" yes
-            visuf g_fwhmy $::graphik(compteur) $::graphik(fwhmy) "$caption(foc,fwhm_y)" yes
+            visuf g_inten $::graphik(compteur) $::graphik(inten) "$caption(foc,intensite_adu)" no
+            visuf g_fwhmx $::graphik(compteur) $::graphik(fwhmx) "$caption(foc,fwhm_x)" no
+            visuf g_fwhmy $::graphik(compteur) $::graphik(fwhmy) "$caption(foc,fwhm_y)" no
             visuf g_contr $::graphik(compteur) $::graphik(contr) "$caption(foc,contrast_adu)" no
             #--- Valeurs a l'ecran
             ::foc::qualiteFoc
@@ -362,7 +363,166 @@ namespace eval ::foc {
             after idle ::foc::cmdAcq
          }
       }
+
+      #--- Pose en cours
+      set panneau(foc,pose_en_cours) "0"
+
+      #--- Demande d'arret de la pose
+      set panneau(foc,demande_arret) "0"
+
+      #--- Effacement de la barre de progression quand la pose est terminee
+      ::foc::avancementPose -1
+
    }
+
+   proc attendImage { message args } {
+      global audace panneau
+
+      switch $message {
+         "autovisu" {
+            #--- ce message signale que l'image est prete dans le buffer
+            #--- on peut l'afficher sans attendre la fin complete de la thread de la camera
+            ::confVisu::autovisu $audace(visuNo)
+         }
+         "acquisitionResult" {
+            #--- ce message signale que la thread de la camera a termine completement l'acquisition
+            #--- je peux traiter l'image
+            set panneau(foc,finAquisition) "acquisitionResult"
+         }
+         "error" {
+            #--- ce message signale qu'une erreur est survenue dans la thread de la camera
+            #--- j'affiche l'erreur dans la console
+            ::console::affiche_erreur "foc::cmdAcq error: $args\n"
+            set panneau(foc,finAquisition) "acquisitionResult"
+         }
+      }
+   }
+
+   proc dispTime { } {
+      global audace caption panneau
+
+      #--- J'arrete le timer s'il est deja lance
+      if { [info exists panneau(foc,dispTimeAfterId)] && $panneau(foc,dispTimeAfterId)!="" } {
+         after cancel $panneau(foc,dispTimeAfterId)
+         set panneau(foc,dispTimeAfterId) ""
+      }
+
+      #--- Je mets a jour la fenetre de progression
+      set t [cam$audace(camNo) timer -1 ]
+      ::foc::avancementPose $t
+
+      if { $t > 0 } {
+         #--- Je lance l'iteration suivante avec un delai de 1000 millisecondes
+         #--- (mode asynchone pour eviter l'enpilement des appels recursifs)
+         set panneau(foc,dispTimeAfterId) [ after 1000 ::foc::dispTime ]
+      } else {
+         #--- Je ne relance pas le timer
+         set panneau(foc,dispTimeAfterId) ""
+      }
+   }
+
+proc avancementPose { t } {
+   global audace caption color conf panneau
+
+   #--- Recuperation de la position de la fenetre
+   ::foc::recupPositionAvancementPose
+
+   #--- Initialisation de la barre de progression
+   set cpt "100"
+
+   #--- Initialisation de la position de la fenetre
+   if { ! [ info exists conf(foc,avancement,position) ] } { set conf(foc,avancement,position) "+120+315" }
+
+   #---
+   if { [ winfo exists $audace(base).progress_pose ] != "1" } {
+      #--- Cree la fenetre toplevel
+      toplevel $audace(base).progress_pose
+      wm transient $audace(base).progress_pose $audace(base)
+      wm resizable $audace(base).progress_pose 0 0
+      wm title $audace(base).progress_pose "$caption(camera,en_cours)"
+      wm geometry $audace(base).progress_pose $conf(foc,avancement,position)
+
+      #--- Cree le widget et le label du temps ecoule
+      label $audace(base).progress_pose.lab_status -text "" -justify center
+      pack $audace(base).progress_pose.lab_status -side top -fill x -expand true -pady 5
+
+      #---
+      if { $panneau(foc,demande_arret) == "1" } {
+         $audace(base).progress_pose.lab_status configure -text "$caption(camera,numerisation)"
+      } else {
+         if { $t < "0" } {
+            destroy $audace(base).progress_pose
+         } elseif { $t > "0" } {
+            $audace(base).progress_pose.lab_status configure -text "$t $caption(camera,sec) / \
+               [ format "%d" [ expr int( $panneau(foc,exptime) ) ] ] $caption(camera,sec)"
+            set cpt [ expr $t * 100 / int( $panneau(foc,exptime) ) ]
+            set cpt [ expr 100 - $cpt ]
+         } else {
+            $audace(base).progress_pose.lab_status configure -text "$caption(camera,numerisation)"
+         }
+      }
+
+      #---
+      catch {
+         #--- Cree le widget pour la barre de progression
+         frame $audace(base).progress_pose.cadre -width 200 -height 30 -borderwidth 2 -relief groove
+         pack $audace(base).progress_pose.cadre -in $audace(base).progress_pose -side top \
+            -anchor center -fill x -expand true -padx 8 -pady 8
+
+         #--- Affiche de la barre de progression
+         frame $audace(base).progress_pose.cadre.barre_color_invariant -height 26 -bg $color(blue)
+         place $audace(base).progress_pose.cadre.barre_color_invariant -in $audace(base).progress_pose.cadre \
+            -x 0 -y 0 -relwidth [ expr $cpt / 100.0 ]
+         update
+      }
+
+      #--- Mise a jour dynamique des couleurs
+      if { [ winfo exists $audace(base).progress_pose ] == "1" } {
+         ::confColor::applyColor $audace(base).progress_pose
+      }
+
+   } else {
+
+      #---
+      if { $panneau(foc,pose_en_cours) == 0 } {
+         #--- Je supprime la fenetre s'il n'y a plus de pose en cours
+         destroy $audace(base).progress_pose
+      } else {
+         if { $panneau(foc,demande_arret) == "0" } {
+            if { $t > "0" } {
+               $audace(base).progress_pose.lab_status configure -text "$t $caption(camera,sec) / \
+                  [ format "%d" [ expr int( $panneau(foc,exptime) ) ] ] $caption(camera,sec)"
+               set cpt [ expr $t * 100 / int( $panneau(foc,exptime) ) ]
+               set cpt [ expr 100 - $cpt ]
+            } else {
+               $audace(base).progress_pose.lab_status configure -text "$caption(camera,numerisation)"
+            }
+         } else {
+            #--- J'affiche "Lecture" des qu'une demande d'arret est demandee
+            $audace(base).progress_pose.lab_status configure -text "$caption(camera,numerisation)"
+         }
+         catch {
+            #--- Affiche de la barre de progression
+            place $audace(base).progress_pose.cadre.barre_color_invariant -in $audace(base).progress_pose.cadre \
+               -x 0 -y 0 -relwidth [ expr $cpt / 100.0 ]
+            update
+         }
+      }
+
+   }
+}
+
+proc recupPositionAvancementPose { } {
+   global audace conf
+
+   if [ winfo exists $audace(base).progress_pose ] {
+      #--- Determination de la position de la fenetre
+      set geometry [ wm geometry $audace(base).progress_pose ]
+      set deb [ expr 1 + [ string first + $geometry ] ]
+      set fin [ string length $geometry ]
+      set conf(foc,avancement,position) "+[ string range $geometry $deb $fin ]"
+   }
+}
 
    proc cmdStop { } {
       variable This
@@ -380,21 +540,20 @@ namespace eval ::foc {
             destroy $audace(base).visufoc
             update
          } else {
-            #--- Gestion graphique des boutons
-            $This.fra2.but2 configure -relief groove -state disabled
+            #--- Je positionne l'indicateur d'arret de la pose
+            set panneau(foc,demande_arret) "1"
             #--- On annule l'identificateur qui arrete le moteur de foc
             catch { after cancel $audace(after,focstop,id) }
             #--- Graphiques du panneau
             set panneau(foc,boucle) "$caption(foc,off)"
             #--- Annulation de l'alarme de fin de pose
             catch { after cancel bell }
-            #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
-            ::camera::gestionPose $panneau(foc,exptime) 0 cam$audace(camNo) buf$audace(bufNo)
-            #--- Arret de la pose
-            catch { cam$audace(camNo) stop }
-            after 200
+            #--- Arret de la capture de l'image
+            ::camera::stopAcquisition [ ::confVisu::getCamItem $audace(visuNo) ]
             #--- Sauvegarde du fichier .log
             ::foc::cmdSauveLog foc.log
+            #--- J'attends la fin de l'acquisition
+            vwait panneau(foc,finAquisition)
             #--- Gestion graphique des boutons
             $This.fra2.but1 configure -relief raised -text $panneau(foc,go) -state normal
             $This.fra2.but2 configure -relief raised -text $panneau(foc,raz) -state normal
@@ -673,7 +832,7 @@ proc focGraphe { } {
       if { $panneau(foc,exptime) > "2" } {
          wm transient $audace(base).visufoc $audace(base)
       }
-      wm resizable $audace(base).visufoc 0 0
+      wm resizable $audace(base).visufoc 1 1
       wm geometry $audace(base).visufoc $conf(visufoc,position)
       wm protocol $audace(base).visufoc WM_DELETE_WINDOW { fermeGraphe }
       #---
@@ -681,9 +840,9 @@ proc focGraphe { } {
       ::blt::graph $audace(base).visufoc.g_fwhmx
       ::blt::graph $audace(base).visufoc.g_fwhmy
       ::blt::graph $audace(base).visufoc.g_contr
-      visuf g_inten $::graphik(compteur) $::graphik(inten) "$caption(foc,intensite_adu)" yes
-      visuf g_fwhmx $::graphik(compteur) $::graphik(fwhmx) "$caption(foc,fwhm_x)" yes
-      visuf g_fwhmy $::graphik(compteur) $::graphik(fwhmy) "$caption(foc,fwhm_y)" yes
+      visuf g_inten $::graphik(compteur) $::graphik(inten) "$caption(foc,intensite_adu)" no
+      visuf g_fwhmx $::graphik(compteur) $::graphik(fwhmx) "$caption(foc,fwhm_x)" no
+      visuf g_fwhmy $::graphik(compteur) $::graphik(fwhmy) "$caption(foc,fwhm_y)" no
       visuf g_contr $::graphik(compteur) $::graphik(contr) "$caption(foc,contrast_adu)" no
       update
 
