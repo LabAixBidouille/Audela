@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.24 2008-12-29 11:51:37 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.25 2009-01-03 22:51:37 robertdelmas Exp $
 #
 
 #============================================================
@@ -149,6 +149,7 @@ namespace eval ::remotectrl {
       set panneau(remotectrl,wizConClient,connect)         "$caption(remotectrl,wizConClient,connect)"
       set panneau(remotectrl,wizConClient,attention)       "$caption(remotectrl,attention)"
       set panneau(remotectrl,panneau,port_utilise)         "$caption(remotectrl,port_utilise)"
+      set panneau(remotectrl,panneau,host)                 "$caption(remotectrl,host)"
       set panneau(remotectrl,after)                        "200"
       set panneau(remotectrl,bin)                          "$caption(remotectrl,binning)"
       set panneau(remotectrl,choix_bin)                    "1x1 2x2 4x4"
@@ -802,7 +803,7 @@ namespace eval ::remotectrl {
 
          #--- Appel du timer
          if { $exptime > "2" } {
-        ###    ::remotectrl::dispTime
+           ### ::remotectrl::dispTime
          }
 
         # after $exptime ; #--- A tester
@@ -816,15 +817,20 @@ namespace eval ::remotectrl {
             after 1000
             set message "send \{catch \{ set ::ftpd::port \$panneau(remotectrl,ftp_port1) \} \}"
             eval $message
+            after 1000
             set message "send \{catch \{set ::ftpd::cwd \$audace(rep_images) \} \}"
             eval $message
+            after 1000
             set error [catch {package require ftp} msg]
             if {$error==0} {
                set error [catch {::ftp::Open $panneau(remotectrl,ip1) anonymous software.audela@free.fr -timeout 15} msg]
+               after 1000
                if {($error==0)} {
                   set ftpid $msg
                   ::ftp::Type $ftpid binary
+                  after 1000
                   ::ftp::Get $ftpid temp$ext
+                  after 1000
                   catch {file rename -force temp$ext "$audace(rep_images)/temp$ext" }
                   catch {loadima "temp$ext"}
                   catch { file delete "$audace(rep_images)/temp$ext" }
@@ -1262,6 +1268,12 @@ proc remotectrlBuildIF { This } {
          entry $base.f3.ent_ip2 -textvariable panneau(remotectrl,ip2) -width 15 -relief groove \
             -justify center
          pack $base.f3.ent_ip2 -side left -anchor se -pady 5 -expand 0
+         button $base.f3.hostbackyard -text $panneau(remotectrl,panneau,host) -borderwidth 2 \
+            -command {
+               set ip2 [ lindex [ hostaddress ] 0 ]
+               set panneau(remotectrl,ip2) "[lindex $ip2 0].[lindex $ip2 1].[lindex $ip2 2].[lindex $ip2 3]"
+            }
+         pack $base.f3.hostbackyard -side left -padx 10 -pady 5 -ipadx 10 -ipady 0 -expand 0
          #---
       pack $base.f3 -side top -anchor sw
       frame $base.f4
