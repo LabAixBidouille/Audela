@@ -1,6 +1,6 @@
 #
 # Fichier : remotectrl.cap
-# Mise a jour $Id: remotectrl.cap,v 1.10 2007-09-01 16:49:24 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.cap,v 1.11 2009-01-03 15:46:15 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -20,6 +20,7 @@ set caption(remotectrl,backyard)                          "Outside"
 set caption(remotectrl,port_ftp)                          "FTP Port"
 set caption(remotectrl,port_rcp)                          "RCP Port"
 set caption(remotectrl,ip)                                "IP"
+set caption(remotectrl,host)                              "Host"
 set caption(remotectrl,connect)                           "Connect"
 set caption(remotectrl,unconnect)                         "Disconnect"
 set caption(remotectrl,wizCon1,title)                     "Connection Setup"
@@ -79,6 +80,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(remotectrl,port_ftp)                       "Port FTP"
    set caption(remotectrl,port_rcp)                       "Port RCP"
    set caption(remotectrl,ip)                             "IP"
+   set caption(remotectrl,host)                           "Host"
    set caption(remotectrl,connect)                        "Connecter"
    set caption(remotectrl,unconnect)                      "Déconnecter"
    set caption(remotectrl,wizCon1,title)                  "Configuration de la connexion"
@@ -138,6 +140,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(remotectrl,port_ftp)                       "Porta FTP"
    set caption(remotectrl,port_rcp)                       "Porta RCP"
    set caption(remotectrl,ip)                             "IP"
+   set caption(remotectrl,host)                           "Host"
    set caption(remotectrl,connect)                        "Connettere"
    set caption(remotectrl,unconnect)                      "Sconnettere"
    set caption(remotectrl,wizCon1,title)                  "Configurazione della connessione"
@@ -197,6 +200,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(remotectrl,port_ftp)                       "Puerto FTP"
    set caption(remotectrl,port_rcp)                       "Puerto RCP"
    set caption(remotectrl,ip)                             "IP"
+   set caption(remotectrl,host)                           "Host"
    set caption(remotectrl,connect)                        "Conectar"
    set caption(remotectrl,unconnect)                      "Desconectar"
    set caption(remotectrl,wizCon1,title)                  "Configuración de la conexión"
@@ -256,6 +260,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(remotectrl,port_ftp)                       "FTP Port"
    set caption(remotectrl,port_rcp)                       "RCP Port"
    set caption(remotectrl,ip)                             "IP"
+   set caption(remotectrl,host)                           "Host"
    set caption(remotectrl,connect)                        "Anschließen"
    set caption(remotectrl,unconnect)                      "Abschließen"
    set caption(remotectrl,wizCon1,title)                  "Anschließen Konfigurieren"
@@ -315,6 +320,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(remotectrl,port_ftp)                       "Porta FTP"
    set caption(remotectrl,port_rcp)                       "Porta RCP"
    set caption(remotectrl,ip)                             "IP"
+   set caption(remotectrl,host)                           "Host"
    set caption(remotectrl,connect)                        "Conectar"
    set caption(remotectrl,unconnect)                      "Desconectar"
    set caption(remotectrl,wizCon1,title)                  "Configuração da ligação"
@@ -374,6 +380,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(remotectrl,port_ftp)                       "FTP Port"
    set caption(remotectrl,port_rcp)                       "RCP Port"
    set caption(remotectrl,ip)                             "IP"
+   set caption(remotectrl,host)                           "Host"
    set caption(remotectrl,connect)                        "Connect"
    set caption(remotectrl,unconnect)                      "Disconnect"
    set caption(remotectrl,wizCon1,title)                  "Connection Setup"
