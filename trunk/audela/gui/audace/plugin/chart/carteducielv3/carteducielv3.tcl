@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows et Linux
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv3.tcl,v 1.23 2008-11-16 15:45:43 robertdelmas Exp $
+# Mise a jour $Id: carteducielv3.tcl,v 1.24 2009-01-03 22:44:52 robertdelmas Exp $
 #
 
 namespace eval carteducielv3 {
@@ -84,7 +84,7 @@ namespace eval carteducielv3 {
       if { $::tcl_platform(os) == "Linux"  } {
          if { ! [ info exists conf(carteducielv3,binaryname) ] } { set conf(carteducielv3,binaryname)    "skychart" }
       } else {
-         if { ! [ info exists conf(carteducielv3,binaryname) ] } { set conf(carteducielv3,binaryname)    "cdc.exe" }
+         if { ! [ info exists conf(carteducielv3,binaryname) ] } { set conf(carteducielv3,binaryname)    "skychart.exe" }
       }
 
       if { ! [ info exists conf(carteducielv3,fixedfovstate) ] } { set conf(carteducielv3,fixedfovstate) "1" }
