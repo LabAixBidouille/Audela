@@ -1,6 +1,6 @@
 #
 # Fichier : calaphot.cap
-# Mise a jour $Id: calaphot.cap,v 1.12 2009-01-01 14:55:54 jacquesmichelet Exp $
+# Mise a jour $Id: calaphot.cap,v 1.13 2009-01-04 06:49:13 jacquesmichelet Exp $
 #
 
 #=========================================================================
@@ -122,6 +122,7 @@ set calaphot(texte,reprise_astres_1)       "Yes"
 set calaphot(texte,param_sextractor)       "Parameters for the Sextractor Mode"
 set calaphot(texte,tri_images_0)           "No"
 set calaphot(texte,tri_images_1)           "Yes"
+set calaphot(texte,detection_ini)          "The Calaphot version has changed : the calaphot.ini settings will be reset"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -233,6 +234,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,param_sextractor)    "Paramètres pour le mode Sextractor"
    set calaphot(texte,tri_images_0)        "non"
    set calaphot(texte,tri_images_1)        "oui"
+   set calaphot(texte,detection_ini)       "Changement de version de Calaphot : le contenu de calaphot.ini va être re-initialisé"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -345,6 +347,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,param_sextractor)    "Parameters for the Sextractor Mode"
    set calaphot(texte,tri_images_0)        "No"
    set calaphot(texte,tri_images_1)        "Yes"
+   set calaphot(texte,detection_ini)       "The Calaphot version has changed : the calaphot.ini settings will be reset"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -457,6 +460,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,param_sextractor)    "Parameters for the Sextractor Mode"
    set calaphot(texte,tri_images_0)        "No"
    set calaphot(texte,tri_images_1)        "Yes"
+   set calaphot(texte,detection_ini)       "The Calaphot version has changed : the calaphot.ini settings will be reset"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -569,6 +573,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,param_sextractor)    "Parameters for the Sextractor Mode"
    set calaphot(texte,tri_images_0)        "No"
    set calaphot(texte,tri_images_1)        "Yes"
+   set calaphot(texte,detection_ini)       "The Calaphot version has changed : the calaphot.ini settings will be reset"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -680,6 +685,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,param_sextractor)    "Parameters for the Sextractor Mode"
    set calaphot(texte,tri_images_0)        "No"
    set calaphot(texte,tri_images_1)        "Yes"
+   set calaphot(texte,detection_ini)       "The Calaphot version has changed : the calaphot.ini settings will be reset"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -792,6 +798,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,param_sextractor)    "Parameters for the Sextractor Mode"
    set calaphot(texte,tri_images_0)        "No"
    set calaphot(texte,tri_images_1)        "Yes"
+   set calaphot(texte,detection_ini)       "The Calaphot version has changed : the calaphot.ini settings will be reset"
 }
 
 #=========================================================================
