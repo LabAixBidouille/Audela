@@ -4,7 +4,7 @@
 # Description : Script pour la photometrie d'asteroides ou d'etoiles variables.
 # Auteurs     : Olivier Thizy (thizy@free.fr)
 #               Jacques Michelet (jacques.michelet@laposte.net)
-# Mise a jour $Id: calaphot.tcl,v 1.12 2009-01-04 10:15:26 jacquesmichelet Exp $
+# Mise a jour $Id: calaphot.tcl,v 1.13 2009-01-04 10:30:17 jacquesmichelet Exp $
 
 #### Fonctionnel
 # Multiples astéroides en //
@@ -1070,7 +1070,7 @@ namespace eval ::CalaPhot {
             rayon2 \
             rayon3 \
             sortie \
-            fichier_cl \set trace_log 1
+            fichier_cl \
             objet \
             code_UAI \
             surechantillonage \
