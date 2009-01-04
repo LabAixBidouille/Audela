@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise a jour $Id: foc.tcl,v 1.21 2009-01-03 22:53:16 robertdelmas Exp $
+# Mise a jour $Id: foc.tcl,v 1.22 2009-01-04 16:02:57 robertdelmas Exp $
 #
 
 set ::graphik(compteur) {}
@@ -884,6 +884,9 @@ proc visuf { win_name x y { title "" } { yesno "yes" } } {
          set h 140
       }
       $audace(base).visufoc.$win_name configure -height $h
+      $audace(base).visufoc.$win_name axis configure x2 -hide no
+      set lx [ $audace(base).visufoc.$win_name axis limits x ]
+      $audace(base).visufoc.$win_name axis configure x2 -min [ lindex $lx 0 ] -max [ lindex $lx 1 ]
       $audace(base).visufoc.$win_name axis configure y2 -hide no
       set ly [ $audace(base).visufoc.$win_name axis limits y ]
       $audace(base).visufoc.$win_name axis configure y2 -min [ lindex $ly 0 ] -max [ lindex $ly 1 ]
