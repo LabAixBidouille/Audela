@@ -4,7 +4,7 @@
 # Description : Script pour la photometrie d'asteroides ou d'etoiles variables.
 # Auteurs     : Olivier Thizy (thizy@free.fr)
 #               Jacques Michelet (jacques.michelet@laposte.net)
-# Mise a jour $Id: calaphot.tcl,v 1.10 2009-01-04 06:49:13 jacquesmichelet Exp $
+# Mise a jour $Id: calaphot.tcl,v 1.11 2009-01-04 08:18:18 jacquesmichelet Exp $
 
 #### Fonctionnel
 # Multiples astéroides en //
@@ -335,6 +335,7 @@ namespace eval ::CalaPhot {
                 # Cas Sextractor
                 set test [Sextractor [file join $audace(rep_images) $parametres(source)$i$conf(extension,defaut) ] ]
                 if {$test != 0} {
+                    set data_script($i,invalidation) [list sextractor]
                     set data_image($i,valide) "N"
                     continue
                 }
