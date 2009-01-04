@@ -4,7 +4,7 @@
 # Description : Script pour la photometrie d'asteroides ou d'etoiles variables.
 # Auteurs     : Olivier Thizy (thizy@free.fr)
 #               Jacques Michelet (jacques.michelet@laposte.net)
-# Mise a jour $Id: calaphot.tcl,v 1.9 2009-01-01 14:55:54 jacquesmichelet Exp $
+# Mise a jour $Id: calaphot.tcl,v 1.10 2009-01-04 06:49:13 jacquesmichelet Exp $
 
 #### Fonctionnel
 # Multiples astéroides en //
@@ -36,7 +36,7 @@ namespace eval ::CalaPhot {
 
 # L'existence de trace_log cree le ficher debug.log et le mode d'affichage debug
     catch {unset trace_log}
-#    set trace_log 1
+    set trace_log 1
 
     set numero_version v5.0
 
@@ -51,53 +51,54 @@ namespace eval ::CalaPhot {
     set calaphot(niveau_probleme) 3
     set calaphot(niveau_erreur) 4
 
-    set calaphot(texte,debug)              "debug"
-    set calaphot(texte,info)               "info"
-    set calaphot(texte,notice)             "notice"
-    set calaphot(texte,probleme)           "probleme"
-    set calaphot(texte,erreur)             "erreur"
+    set calaphot(texte,debug)               "debug"
+    set calaphot(texte,info)                "info"
+    set calaphot(texte,notice)              "notice"
+    set calaphot(texte,probleme)            "probleme"
+    set calaphot(texte,erreur)              "erreur"
 
-    set calaphot(nom_fichier_ini)          [file join $audace(rep_scripts) calaphot calaphot.ini]
-    set calaphot(nom_fichier_log)          [file join $audace(rep_scripts) calaphot trace_calaphot.log]
+    set calaphot(nom_fichier_ini)           [file join $audace(rep_scripts) calaphot calaphot.ini]
+    set calaphot(nom_fichier_log)           [file join $audace(rep_scripts) calaphot trace_calaphot.log]
 
-    set calaphot(sextractor,catalog)       [ file join $audace(rep_scripts) calaphot calaphot.cat ]
-    set calaphot(sextractor,config)        [ file join $audace(rep_scripts) calaphot calaphot.sex ]
-    set calaphot(sextractor,param)         [ file join $audace(rep_scripts) calaphot calaphot.param ]
-    set calaphot(sextractor,neurone)       [ file join $audace(rep_scripts) calaphot calaphot.nnw ]
-    set calaphot(sextractor,assoc)         [ file join $audace(rep_scripts) calaphot calaphot.assoc ]
+    set calaphot(sextractor,catalog)        [ file join $audace(rep_scripts) calaphot calaphot.cat ]
+    set calaphot(sextractor,config)         [ file join $audace(rep_scripts) calaphot calaphot.sex ]
+    set calaphot(sextractor,param)          [ file join $audace(rep_scripts) calaphot calaphot.param ]
+    set calaphot(sextractor,neurone)        [ file join $audace(rep_scripts) calaphot calaphot.nnw ]
+    set calaphot(sextractor,assoc)          [ file join $audace(rep_scripts) calaphot calaphot.assoc ]
 
-    set calaphot(init,mode)                ouverture
-    set calaphot(init,operateur)           "Tycho Brahe"
-    set calaphot(init,source)              kandrup
-    set calaphot(init,indice_premier)      1
-    set calaphot(init,indice_dernier)      100
-    set calaphot(init,gain_camera)         3
-    set calaphot(init,bruit_lecture)       20
-    set calaphot(init,saturation)          32500
-    set calaphot(init,tailleboite)         7
-    set calaphot(init,rayon1)              1
-    set calaphot(init,rayon2)              3
-    set calaphot(init,rayon3)              6
-    set calaphot(init,sortie)              "kandrup.txt"
-    set calaphot(init,fichier_cl)          "kandrup.ps"
-    set calaphot(init,objet)               Kandrup
-    set calaphot(init,code_UAI)            615
-    set calaphot(init,surechantillonage)   5
-    set calaphot(init,type_capteur)        "Kaf401E"
-    set calaphot(init,type_telescope)      "Schmidt-Cassegrain"
-    set calaphot(init,diametre_telescope)  "0.203"
-    set calaphot(init,focale_telescope)    "1.260"
-    set calaphot(init,catalogue_reference) "USNO B1,R"
-    set calaphot(init,filtre_optique)      "-"
-    set calaphot(init,niveau_message)      $calaphot(niveau_notice)
-    set calaphot(init,tri_images)          "non"
-    set calaphot(init,type_images)         "non_recalees"
-    set calaphot(init,pose_minute)         "seconde"
-    set calaphot(init,date_images)         "debut_pose"
-    set calaphot(init,reprise_astres)      "non"
-    set calaphot(init,format_sortie)       "cdr"
-    set calaphot(init,signal_bruit)        20
-    set calaphot(init,type_objet)          0
+    set calaphot(init,mode)                 ouverture
+    set calaphot(init,operateur)            "Tycho Brahe"
+    set calaphot(init,source)               kandrup
+    set calaphot(init,indice_premier)       1
+    set calaphot(init,indice_dernier)       100
+    set calaphot(init,gain_camera)          3
+    set calaphot(init,bruit_lecture)        20
+    set calaphot(init,saturation)           32500
+    set calaphot(init,tailleboite)          7
+    set calaphot(init,rayon1)               1
+    set calaphot(init,rayon2)               3
+    set calaphot(init,rayon3)               6
+    set calaphot(init,sortie)               "kandrup.txt"
+    set calaphot(init,fichier_cl)           "kandrup.ps"
+    set calaphot(init,objet)                Kandrup
+    set calaphot(init,code_UAI)             615
+    set calaphot(init,surechantillonage)    5
+    set calaphot(init,type_capteur)         "Kaf401E"
+    set calaphot(init,type_telescope)       "Schmidt-Cassegrain"
+    set calaphot(init,diametre_telescope)   "0.203"
+    set calaphot(init,focale_telescope)     "1.260"
+    set calaphot(init,catalogue_reference)  "USNO B1,R"
+    set calaphot(init,filtre_optique)       "-"
+    set calaphot(init,niveau_message)       $calaphot(niveau_notice)
+    set calaphot(init,tri_images)           "non"
+    set calaphot(init,type_images)          "non_recalees"
+    set calaphot(init,pose_minute)          "seconde"
+    set calaphot(init,date_images)          "debut_pose"
+    set calaphot(init,reprise_astres)       "non"
+    set calaphot(init,format_sortie)        "cdr"
+    set calaphot(init,signal_bruit)         20
+    set calaphot(init,type_objet)           0
+    set calaphot(init,version_ini)          $numero_version
 
     # couleur des affichages console
     foreach niveau { debug info notice probleme erreur } couleur_style { green orange blue purple red } {
@@ -1048,6 +1049,13 @@ namespace eval ::CalaPhot {
             source $fichier
         }
 
+        # Verification de la version du calaphot.ini et invalidation eventuelle du contenu
+        if { ( (![info exists parametres(version_ini)]) \
+            || ([string compare $parametres(version_ini) $calaphot(init,version_ini)] != 0) ) } {
+            Message probleme "%s\n" $calaphot(texte,detection_ini)
+            foreach {a b} [array get parametres] {unset parametres($a)}
+        }
+
         foreach choix {mode \
             operateur \
             source \
@@ -1079,7 +1087,8 @@ namespace eval ::CalaPhot {
             date_images \
             reprise_astres \
             signal_bruit \
-            type_objet } {
+            type_objet \
+            version_ini} {
             if {![info exists parametres($choix)]} {set parametres($choix) $calaphot(init,$choix)}
         }
     }
