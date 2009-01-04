@@ -1,3 +1,6 @@
+# Mise a jour $Id: calaphot_sex.tcl,v 1.2 2009-01-04 08:18:18 jacquesmichelet Exp $
+
+
 proc FichierNeuronalSex { {filename default.nnw} } {
         Message debug "%s\n" [info level [info level]]
 
@@ -202,7 +205,6 @@ proc FichierConfigurationSex { {filename calaphot.sex} } {
             return 0
         } else {
             Message probleme "%s\n" $err
-            set data_script($i,invalidation) [list sextractor]
             return 1
         }
     }
