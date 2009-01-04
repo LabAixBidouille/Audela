@@ -4,22 +4,26 @@
 # Description : Script pour la photometrie d'asteroides ou d'etoiles variables.
 # Auteurs     : Olivier Thizy (thizy@free.fr)
 #               Jacques Michelet (jacques.michelet@laposte.net)
-# Mise a jour $Id: calaphot.tcl,v 1.13 2009-01-04 10:30:17 jacquesmichelet Exp $
+# Mise a jour $Id: calaphot.tcl,v 1.14 2009-01-04 16:41:40 jacquesmichelet Exp $
 
+################## Choses a faire
 #### Fonctionnel
-# Multiples astéroides en //
-#   voir le tag MultAster pour rétablir la fonctionnalité
-#   différencier les aster. par couleur dans le graph. de la cl.
+# Multiples asteroides en //
+#   voir le tag MultAster pour retablir la fonctionnalite
+#   differencier les aster. par couleur dans le graph. de la cl.
 #   pouvoir les nommer individuellement dans le graph. de la cl.
-# Intégration en tant que panneau (outil audace)
+# Integration en tant que panneau (outil audace)
 # Nom pour les etoiles de ref
 #   voir le tag NomRef
 #### Non fonctionnel
-# Faire une vraie routime jm_fitgauss2d
-# Virer les choix basés sur _0 ou _1 (lisibilité du code)
+# Faire une vraie routine jm_fitgauss2d
+# Virer les choix bases sur _0 ou _1 (lisibilité du code)
 
-# Bugs connus:
+################## Bogues connues a ce jour :
 # - pas de suppression des fichiers de config sextractor en cas d'arret anticipe
+# - effacement des "tags" sur l'image lors des suppressions d'étoiles
+# - plantage lors de l'affichage de la CL si aucune image n'est validee (premier n'existe pas)
+# - mode sextractor ne marche pas si les repertoires ont des blancs dans leurs noms (exe, images ou configs)
 
 
 catch {namespace delete ::Calaphot}
@@ -36,7 +40,7 @@ namespace eval ::CalaPhot {
 
 # L'existence de trace_log cree le ficher debug.log et le mode d'affichage debug
     catch {unset trace_log}
-    set trace_log 1
+#    set trace_log 1
 
     set numero_version v5.0
 
