@@ -4,7 +4,7 @@
 # Description : Script pour la photometrie d'asteroides ou d'etoiles variables.
 # Auteurs     : Olivier Thizy (thizy@free.fr)
 #               Jacques Michelet (jacques.michelet@laposte.net)
-# Mise a jour $Id: calaphot.tcl,v 1.11 2009-01-04 08:18:18 jacquesmichelet Exp $
+# Mise a jour $Id: calaphot.tcl,v 1.12 2009-01-04 10:15:26 jacquesmichelet Exp $
 
 #### Fonctionnel
 # Multiples astéroides en //
@@ -1048,13 +1048,13 @@ namespace eval ::CalaPhot {
 
         if {[file exists $fichier]} {
             source $fichier
-        }
-
-        # Verification de la version du calaphot.ini et invalidation eventuelle du contenu
-        if { ( (![info exists parametres(version_ini)]) \
-            || ([string compare $parametres(version_ini) $calaphot(init,version_ini)] != 0) ) } {
-            Message probleme "%s\n" $calaphot(texte,detection_ini)
-            foreach {a b} [array get parametres] {unset parametres($a)}
+            # Verification de la version du calaphot.ini et invalidation eventuelle du contenu
+            if { ( (![info exists parametres(version_ini)]) \
+                || ([string compare $parametres(version_ini) $calaphot(init,version_ini)] != 0) ) } {
+                set parametres(niveau_message) $calaphot(init,niveau_message)
+                Message probleme "%s\n" $calaphot(texte,detection_ini)
+                foreach {a b} [array get parametres] {unset parametres($a)}
+            }
         }
 
         foreach choix {mode \
@@ -1070,7 +1070,7 @@ namespace eval ::CalaPhot {
             rayon2 \
             rayon3 \
             sortie \
-            fichier_cl \
+            fichier_cl \set trace_log 1
             objet \
             code_UAI \
             surechantillonage \
