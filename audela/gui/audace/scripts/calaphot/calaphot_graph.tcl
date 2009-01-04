@@ -1,4 +1,6 @@
-    #*************************************************************************#
+# Mise a jour $Id: calaphot_graph.tcl,v 1.2 2009-01-04 14:02:51 jacquesmichelet Exp $
+
+#*************************************************************************#
     #*************  AffichageMenus  ******************************************#
     #*************************************************************************#
     # Entree : trace_log                                                      #
@@ -310,50 +312,49 @@
 
         Message debug "%s\n" [info level [info level]]
 
-        pack $t.trame1 $t.trame2
+        # Attention : le canevas $c fonctionne avec un grid manager !
+        # Ne pas faire de mélange pack et grid
+        catch {grid forget $t.trame1}
+        catch {grid forget $t.trame2}
+        catch {grid forget $t.trame_ouv}
+        catch {grid forget $t.trame_mod}
+        catch {grid forget $t.trame_sex}
+        catch {grid forget $t.trame3}
 
-        # Le mode modelisation n'a plus de parametres specifiques
-        # On garde le mecanisme de la trame dynamique, des fois qu'il faille
-        # en remettre ...
         if {$mode == "ouverture"} {
-            catch {pack forget $t.trame_mod}
-            catch {pack forget $t.trame_sex}
-            pack $t.trame_ouv -in $t
             set fils $t.trame_ouv
-        }
-        if {$mode == "modelisation"} {
-            catch {pack forget $t.trame_ouv}
-            catch {pack forget $t.trame_sex}
-            pack $t.trame_mod -in $t
+        } elseif {$mode == "modelisation"} {
             set fils $t.trame_mod
-        }
-        if {$mode == "sextractor"} {
-            catch {pack forget $t.trame_mod}
-            catch {pack forget $t.trame_ouv}
-            pack $t.trame_sex -in $t
+        } elseif {$mode == "sextractor"} {
             set fils $t.trame_sex
+        } else {
+            Message erreur "mode=%s\n" $mode
+            return
         }
+        grid $t.trame1
+        grid $t.trame2
+        grid $fils
+        grid $t.trame3
 
-        pack $y -side right -fill y
-        pack $c -side left -fill both -expand true
-        pack $audace(base).saisie.listes -side top -fill both -expand true
-        pack $audace(base).saisie.trame3 -side top -fill both -expand true
-
-        # Reglage de la taille de la fenetre et de l'ascenseur
-        if {![catch {tkwait visibility $fils} visible]} {
-            set bbox [grid bbox $t 0 0]
-            set incr [lindex $bbox 3]
-            set largeur [winfo reqwidth $t]
-            set hauteur [winfo reqheight $t]
-            $c config -scrollregion "0 0 $largeur $hauteur"
-            $c config -yscrollincrement $incr
-            set hauteur_max [expr [winfo screenheight .] * 3 / 4]
-            if {$hauteur > $hauteur_max} {set hauteur $hauteur_max}
-            $c config -width $largeur -height $hauteur
-        }
+        # Il faut retailler les fenêtres avant de calculer leur largeur et hauteur
+        ::confColor::applyColor $audace(base).saisie
+        # Gestion dynamique de la taille du scrollbar
+        # inspiré de Practical Programming in TclTk, exemple 34.13
+        tkwait visibility $fils
+        # L'instruction suivant semble servir pour reqwidth et reqheight
+        # Ne pas effacer
+        set bbox [grid bbox $t 0 0]
+#        set incr [lindex $bbox 3]
+        set largeur [winfo reqwidth $t]
+        set hauteur [winfo reqheight $t]
+        $c config -scrollregion "0 0 $largeur $hauteur"
+        $c config -yscrollincrement 5
+        set hauteur_max [expr [winfo screenheight .] * 3 / 4]
+        if {$hauteur > $hauteur_max} {set hauteur $hauteur_max}
+        $c config -width $largeur -height $hauteur
     }
 
-    #*************************************************************************#
+#*************************************************************************#
     #*************  AnnuleSaisie  ********************************************#
     #*************************************************************************#
     proc AnnuleSaisie {} {
@@ -1081,8 +1082,20 @@
         frame $audace(base).saisie.listes
 
         # Construction du canevas qui va contenir toutes les trames et des ascenseurs
-        set c [canvas $audace(base).saisie.listes.canevas -yscrollcommand [list $audace(base).saisie.listes.yscroll set]]
+        set c [canvas $audace(base).saisie.listes.canevas -yscrollcommand [list $audace(base).saisie.listes.yscroll set] -width 10 -height 10]
         set y [scrollbar $audace(base).saisie.listes.yscroll -orient vertical -command [list $audace(base).saisie.listes.canevas yview] ]
+
+        pack $y \
+            -side right \
+            -fill y
+        pack $c \
+            -side left \
+            -fill both \
+            -expand true
+        pack $audace(base).saisie.listes \
+            -side top \
+            -fill both \
+            -expand true
 
         # Construction d'une trame qui va englober toutes les listes dans le canevas
         set t [frame $c.t]
@@ -1238,20 +1251,6 @@
         frame $t.trame_mod \
             -borderwidth 5 \
             -relief groove
-        # Le mode modelisation n'a plus de parametres specifiques
-        # On garde le mecanisme de la trame dynamique, des fois qu'il faille
-        # en remettre un jour ...
-#        label $t.trame_mod.titre -text $calaphot(texte,param_modelisation) -font $police(titre)
-#        grid $t.trame_mod.titre -in $t.trame_mod -columnspan 2
-
-#        foreach champ {rayon1 rayon2 rayon3} {
-#            set valeur_defaut($champ) $::CalaPhot::parametres($champ)
-#            label $t.trame_mod.l$champ -text $calaphot(texte,m_$champ) -font $police(gras)
-#            entry $t.trame_mod.e$champ -textvariable ::CalaPhot::parametres($champ) -width 3 -font $police(normal) -relief sunken
-#            $t.trame_mod.e$champ delete 0 end
-#            $t.trame_mod.e$champ insert 0 $valeur_defaut($champ)
-#            grid $t.trame_mod.l$champ $t.trame_mod.e$champ
-#        }
 
         #--------------------------------------------------------------------------------
         # Trame specifique au mode sextractor
@@ -1276,28 +1275,27 @@
             $t.trame_sex.e$champ insert 0 $valeur_defaut($champ)
             grid $t.trame_sex.l$champ $t.trame_sex.e$champ
         }
+
         #--------------------------------------------------------------------------------
-        # Trame des boutons. Ceux-ci sont fixes (pas d'ascenseur).
-        frame $audace(base).saisie.trame3 \
-            -borderwidth 5 -relief groove
-        button $audace(base).saisie.trame3.b1 \
+        # Trame des boutons.
+        set t3 [frame $t.trame3 \
+            -borderwidth 5 \
+            -relief groove]
+        button $t3.b1 \
             -text $calaphot(texte,continuer) \
             -command {::CalaPhot::ValideSaisie}
-        button $audace(base).saisie.trame3.b2 \
+        button $t3.b2 \
             -text $calaphot(texte,annuler) \
             -command {::CalaPhot::AnnuleSaisie}
-        pack $audace(base).saisie.trame3.b1 \
+        pack $t3.b1 \
             -side left \
             -padx 10 \
             -pady 10
-        pack $audace(base).saisie.trame3.b2 \
+        pack $t3.b2 \
             -side right \
             -padx 10 \
             -pady 10
-
         AffichageVariable $parametres(mode) $c $y $t
-        #--- Mise a jour dynamique des couleurs
-        ::confColor::applyColor $audace(base).saisie
 
         tkwait window $audace(base).saisie
     }
