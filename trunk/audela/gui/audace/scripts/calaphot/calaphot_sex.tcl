@@ -1,4 +1,4 @@
-# Mise a jour $Id: calaphot_sex.tcl,v 1.2 2009-01-04 08:18:18 jacquesmichelet Exp $
+# Mise a jour $Id: calaphot_sex.tcl,v 1.3 2009-01-04 16:40:42 jacquesmichelet Exp $
 
 
 proc FichierNeuronalSex { {filename default.nnw} } {
@@ -192,7 +192,8 @@ proc FichierConfigurationSex { {filename calaphot.sex} } {
             set k [file exists "$exefile"]
         }
         if {$k==0} {
-            error "sextractor.exe not found"
+            Message erreur "sextractor.exe not found\n"
+            return 1
         }
 
         set ligne "exec \"$exefile\" $args -c $calaphot(sextractor,config)"
@@ -204,7 +205,7 @@ proc FichierConfigurationSex { {filename calaphot.sex} } {
         if { [file exists $calaphot(sextractor,catalog)] } {
             return 0
         } else {
-            Message probleme "%s\n" $err
+            Message erreur "%s\n" $msg
             return 1
         }
     }
