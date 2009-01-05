@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.13 2009-01-01 18:55:23 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.14 2009-01-05 22:02:21 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -117,6 +117,7 @@ proc socket_client_send_gcn { name ipserver portserver {data {3 2008 07 07 23 45
 		#::console::affiche_resultat "$ipserver $portserver\n"
 	   set errno [ catch {
 	      set fid [socket $ipserver $portserver ]
+   		#::console::affiche_resultat "fid=$fid\n"
 	   } msg]
 	   if {$errno==1} {
 	      error $msg
@@ -190,6 +191,7 @@ proc socket_server_open_gcn { name portgcn {portout 0} {index_html ""}} {
       # ==========================================================================================
    }
    set gcn($sockname,index_html) $index_html
+   #::console::affiche_resultat "gcn($sockname,index_html)=$gcn($sockname,index_html)\n"
    if {$index_html!=""} {
       set errno [catch {
          set f [open $index_html r]
@@ -319,11 +321,11 @@ proc gcn_decode { longs sockname } {
       # --- reinit gcn array
       set comments ""
       catch {
-         set names [array names gcn]
+         set names [lsort [array names gcn]]
          foreach name $names {
             set res [regsub -all , $name " "]
             if {([lindex $res 0]=="$sockname")} {
-               if {([string first status $name]!=0)&&([string first index_html $name]!=0)} {
+               if {([string first status $name]==-1)&&([string first index_html $name]==-1)} {
                   set ligne "unset gcn($name)"
                   eval $ligne
                }
@@ -528,7 +530,7 @@ proc gcn_decode { longs sockname } {
          }
       }
       gcn_print "$lignes"
-      if {[info exist gcn($sockname,index_html)]==1} {
+      if {[info exist gcn($sockname,index_html)]>=1} {
          catch {
             set f [open $gcn($sockname,index_html) w]
             puts -nonewline $f "[mc_date2iso8601 $date_rec_notice]\n$lignes"
