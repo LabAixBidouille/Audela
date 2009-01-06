@@ -33,49 +33,49 @@ int tt_ima2jd(TT_IMA *p,int numlist,double *jd)
    int k,mjd_found=TT_NO;
    if (numlist==0) {
       if ((p->keyused==TT_YES)&&(p->nbkeys>0)) {
-	 for (k=0;k<(p->nbkeys);k++) {
-	    if (strcmp(p->keynames[k],"MJD-OBS")==0) {
-	       *jd=(atof(p->values[k])+2400000.5);
-	       mjd_found=TT_YES;
-	    }
-	    if (mjd_found==TT_NO) {
-	       if (strcmp(p->keynames[k],"DATE-OBS")==0) {
-		  tt_dateobs2jd(p->values[k],jd);
-	       }
-	    }
-	 }
+         for (k=0;k<(p->nbkeys);k++) {
+            if (strcmp(p->keynames[k],"MJD-OBS")==0) {
+               *jd=(atof(p->values[k])+2400000.5);
+               mjd_found=TT_YES;
+            }
+            if (mjd_found==TT_NO) {
+               if (strcmp(p->keynames[k],"DATE-OBS")==0) {
+                  tt_dateobs2jd(p->values[k],jd);
+               }
+            }
+         }
       }
       return(OK_DLL);
    }
    if (numlist==1) {
       if ((p->ref_keyused==TT_YES)&&(p->ref_nbkeys>0)) {
-	 for (k=0;k<(p->ref_nbkeys);k++) {
-	    if (strcmp(p->ref_keynames[k],"MJD-OBS")==0) {
-	       *jd=(atof(p->ref_values[k])+2400000.5);
-	       mjd_found=TT_YES;
-	    }
-	    if (mjd_found==TT_NO) {
-	       if (strcmp(p->ref_keynames[k],"DATE-OBS")==0) {
-		  tt_dateobs2jd(p->ref_values[k],jd);
-	       }
-	    }
-	 }
+         for (k=0;k<(p->ref_nbkeys);k++) {
+            if (strcmp(p->ref_keynames[k],"MJD-OBS")==0) {
+               *jd=(atof(p->ref_values[k])+2400000.5);
+               mjd_found=TT_YES;
+            }
+            if (mjd_found==TT_NO) {
+               if (strcmp(p->ref_keynames[k],"DATE-OBS")==0) {
+                  tt_dateobs2jd(p->ref_values[k],jd);
+               }
+            }
+         }
       }
       return(OK_DLL);
    }
    if (numlist==2) {
       if ((p->new_keyused==TT_YES)&&(p->new_nbkeys>0)) {
-	 for (k=0;k<(p->new_nbkeys);k++) {
-	    if (strcmp(p->new_keynames[k],"MJD-OBS")==0) {
-	       *jd=(atof(p->new_values[k])+2400000.5);
-	       mjd_found=TT_YES;
-	    }
-	    if (mjd_found==TT_NO) {
-	       if (strcmp(p->new_keynames[k],"DATE-OBS")==0) {
-		  tt_dateobs2jd(p->new_values[k],jd);
-	       }
-	    }
-	 }
+         for (k=0;k<(p->new_nbkeys);k++) {
+            if (strcmp(p->new_keynames[k],"MJD-OBS")==0) {
+               *jd=(atof(p->new_values[k])+2400000.5);
+               mjd_found=TT_YES;
+            }
+            if (mjd_found==TT_NO) {
+               if (strcmp(p->new_keynames[k],"DATE-OBS")==0) {
+                  tt_dateobs2jd(p->new_values[k],jd);
+               }
+            }
+         }
       }
       return(OK_DLL);
    }
@@ -91,33 +91,53 @@ int tt_ima2exposure(TT_IMA *p,int numlist,double *exposure)
 /***************************************************************************/
 {
    int k;
+   int exp_found=TT_NO;
+
    if (numlist==0) {
       if ((p->keyused==TT_YES)&&(p->nbkeys>0)) {
-	 for (k=0;k<(p->nbkeys);k++) {
-	    if (strcmp(p->keynames[k],"EXPOSURE")==0) {
-	       *exposure=(double)atof(p->values[k]);
-	    }
-	 }
+         for (k=0;k<(p->nbkeys);k++) {
+            if (strcmp(p->keynames[k],"EXPOSURE")==0) {
+               *exposure=(double)atof(p->values[k]);
+               exp_found = TT_YES;
+            }
+            if (exp_found==TT_NO) {
+               if (strcmp(p->keynames[k],"EXPTIME")==0) {
+                  *exposure=(double)atof(p->values[k]);
+               }
+            }
+         }
       }
       return(OK_DLL);
    }
    if (numlist==1) {
       if ((p->ref_keyused==TT_YES)&&(p->ref_nbkeys>0)) {
-	 for (k=0;k<(p->ref_nbkeys);k++) {
-	    if (strcmp(p->ref_keynames[k],"EXPOSURE")==0) {
-	       *exposure=(double)atof(p->ref_values[k]);
-	    }
-	 }
+         for (k=0;k<(p->ref_nbkeys);k++) {
+            if (strcmp(p->ref_keynames[k],"EXPOSURE")==0) {
+               *exposure=(double)atof(p->ref_values[k]);
+               exp_found = TT_YES;
+            }
+            if (exp_found==TT_NO) {
+               if (strcmp(p->keynames[k],"EXPTIME")==0) {
+                  *exposure=(double)atof(p->values[k]);
+               }
+            }
+         }
       }
       return(OK_DLL);
    }
    if (numlist==2) {
       if ((p->new_keyused==TT_YES)&&(p->new_nbkeys>0)) {
-	 for (k=0;k<(p->new_nbkeys);k++) {
-	    if (strcmp(p->new_keynames[k],"EXPOSURE")==0) {
-	       *exposure=(double)atof(p->new_values[k]);
-	    }
-	 }
+         for (k=0;k<(p->new_nbkeys);k++) {
+            if (strcmp(p->new_keynames[k],"EXPOSURE")==0) {
+               *exposure=(double)atof(p->new_values[k]);
+               exp_found = TT_YES;
+            }
+            if (exp_found==TT_NO) {
+               if (strcmp(p->keynames[k],"EXPTIME")==0) {
+                  *exposure=(double)atof(p->values[k]);
+               }
+            }
+         }
       }
       return(OK_DLL);
    }
@@ -222,7 +242,7 @@ void tt_jd2dateobs(double jj, char *date)
    c=floor(((b-122.1)/365.25));
    d=floor(365.25*c);
    e=floor((b-d)/30.6001);
-   jourd=b-d-floor(30.6001*e)+f;
+   jourd=b-d-floor(30.6001*e)+f; // j'ajoute un millime de seconde pour compenser les arrondis des divisions precedente
    mois= (e<14) ? (int)(e-1) : (int)(e-13) ;
    annee= (mois>2) ? (int)(c-4716) : (int)(c-4715) ;
    if ((annee>=0)&&(annee<=9999)) {
@@ -241,7 +261,7 @@ void tt_jd2dateobs(double jj, char *date)
       seconde=0.;
    }
    seca=(int)(floor(seconde));
-   secb=(int)(floor((seconde-(double)seca)*1.e2+.001));
+   secb=(int)(floor((seconde-(double)seca)*1.e2));
 #ifdef OS_LINUX_GCC_SO
    sprintf(date,"%4d-%2d-%2dT%2d:%2d:%2d.%2d",annee,mois,jour,heure,minute,seca,secb);
 #else
