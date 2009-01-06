@@ -111,19 +111,26 @@ int tt_fct_ima_stack(void *arg1)
    /* =1 pour un indice dans le nom */
    /* =2 pour un indice d'entete avec le meme nom */
    int save_level_index;
-   char date_obs_stack[FLEN_VALUE];
    char xvalue[FLEN_VALUE],yvalue[FLEN_VALUE];
    double *jj,*exptime,exptime_stack,jj_stack;
    double *poids,poids_total;
+   double minDateObs = 0;
+   double maxDateEnd = 0;
    TT_IMA_STACK pstack;
    char fullname2[FLEN_FILENAME];
    char path[FLEN_FILENAME];
    char name[FLEN_FILENAME];
    char suffix[FLEN_FILENAME];
+   char isoDateObs[FLEN_FILENAME];
+   char isoDateEnd[FLEN_FILENAME];
    int hdunum,dimx,dimy,choix;
    char sb[]="MIPS-LO";
    char sh[]="MIPS-HI";
    int nombre,taille;
+   double dateObs = 0.0;
+   double dateEnd = 0.0;
+
+
    
    /* ======================================== */
    /* === decodage de la ligne d'arguments === */
@@ -326,6 +333,34 @@ int tt_fct_ima_stack(void *arg1)
             tt_ima2jd(&p_in,2,&jj[kk-load_indice_deb]);
             tt_ima2exposure(&p_in,2,&exptime[kk-load_indice_deb]);
          }
+
+         // je cherche le mot clef DATE-END
+         dateEnd = 0.0;
+         for (kk=0;kk<p_in.nbkeys;kk++) {
+            if (strcmp(p_in.keynames[kk],"DATE-END")==0) { 
+               // je convertis en jour julien
+               tt_dateobs2jd(p_in.values[kk], &dateEnd);
+               // j'arrete la boucle car j'ai la valeur qu'il faut
+               break;
+            }
+         }
+
+         // si DATE-END n'est pas trouvee, je calcule DATE-END = DATE-OBS + EXPOSURE
+         if ( dateEnd == 0.0 ) {
+            dateEnd = jj[kk-load_indice_deb] + exptime[kk-load_indice_deb]/86400.0;
+         }
+         
+         // je memorise la valeur la plus recente
+         if ( dateEnd > maxDateEnd ) {
+            maxDateEnd = dateEnd ;
+         }
+
+         // je memorise dateObs la plus ancienne
+         dateObs = jj[kk-load_indice_deb];
+         if ( dateObs < minDateObs || minDateObs == 0.0 ) {
+            minDateObs = dateObs ;
+         }
+         
          /* --- copie la zone de l'image vers le tampon ---*/
          base_adr=(int)(nelem0)*(kk-load_indice_deb);
          for (kkk=0;kkk<(int)(nelem);kkk++) {
@@ -341,7 +376,7 @@ int tt_fct_ima_stack(void *arg1)
       pstack.nelem=nelem;
       pstack.nelem0=nelem0;
       pstack.nbima=nbima;
-      pstack.poids=poids;
+      pstack.poids=poids ; 
       pstack.exptimes=exptime;
       
       /* --- calcul de l'image finale pour la zone concernee ---*/
@@ -364,6 +399,8 @@ int tt_fct_ima_stack(void *arg1)
       } else if (pstack.numfct==TT_IMASTACK_PYTHAGORE) {
          msg=tt_ima_stack_pythagore_1(&pstack);
       } else {
+         // il faut preparer le message d'erreur avant de liberer keys []
+         sprintf(message,"Function %s is not implemented in IMA/STACK",keys[10]);
          tt_imadestroyer(&p_in);
          tt_imadestroyer(&p_tmp);
          tt_imadestroyer(&p_out);
@@ -371,7 +408,6 @@ int tt_fct_ima_stack(void *arg1)
          tt_free(jj,"jj");
          tt_free(exptime,"exptime");
          tt_free(poids,"poids");
-         sprintf(message,"Function %s is not implemented in IMA/STACK",keys[10]);
          tt_errlog(TT_ERR_FCT_NOT_FOUND_IN_IMASTACK,message);
          return(TT_ERR_FCT_NOT_FOUND_IN_IMASTACK);
       }
@@ -379,12 +415,12 @@ int tt_fct_ima_stack(void *arg1)
    tt_imadestroyer(&p_tmp);
    
 
-   /* --- supprime les points chauds, les colonnes defectueuses et les lignes defectueuses ---*/   
+   // je supprime les points chauds, les colonnes defectueuses et les lignes defectueuses    
    // dans l'image finale 
    if (pstack.hotPixelList!= NULL) {
       // je retire le pixels chauds dans p_out
      tt_repairHotPixel(pstack.hotPixelList, &p_out);
-     // je detruis la liste des pixels 
+     // je detruis la liste des pixels qui avait ete allouee dynamiquement
      tt_free(pstack.hotPixelList,"pseries->hotPixelList");
    }
 
@@ -402,19 +438,39 @@ int tt_fct_ima_stack(void *arg1)
       sprintf(fullname,"%s;%d",tt_imafilecater(keys[6],keys[7],keys[9]),save_indice_deb);
    }
    
-   /* --- complete l'entete de l'image a sauver ---*/
+
+
+      //char date_obs_stack[FLEN_VALUE];
+      //char dateEndKeyword[FLEN_VALUE];
+      //double cumulativeExpTime;
+
+   // je calcule le temps de pose moyen et le poids de chaque image
    exptime_stack=(double)(0);
+   //cumulativeExpTime=(double)(0);
    jj_stack=(double)(0.);
-   for (poids_total=(double)(0.),k=0;k<nbima;k++) {
-      exptime_stack+=(poids[k]*exptime[k]);
+   for (k=0;k<nbima;k++) {
+      //cumulativeExpTime+=exptime[k];
+      exptime_stack+= poids[k]*exptime[k];
       jj_stack+=(poids[k]*(jj[k]+exptime[k]/2/86400));
       poids_total+=poids[k];
    }
    jj_stack/=(double)(poids_total);
-   jj_stack-=(double)(exptime_stack/2/86400);
-   tt_jd2dateobs(jj_stack,date_obs_stack);
-   tt_imanewkey(&p_out,"DATE-OBS",date_obs_stack,TSTRING,"Start of exposure. FITS standard","Iso 8601");
-   tt_imanewkey(&p_out,"EXPOSURE",&exptime_stack,TDOUBLE,"Total time of exposure","s");
+   jj_stack-=(double)((exptime_stack)/2/86400);
+   exptime_stack = floor(exptime_stack*1000.0 + 0.5)/1000.0; // j'arrondis au centième de seconde
+
+   // j'ajoute EXPOSURE (valeur moyenne des poses individuelles)
+   tt_imanewkey(&p_out,"EXPOSURE",&exptime_stack,TDOUBLE,"Exposure average time","s");
+
+   // j'ajoute EXPTIME (cumul des poses) dans l'image finale
+   //tt_imanewkey(&p_out,"EXPTIME",&cumulativeExpTime,TDOUBLE,"Exposure cumulative time","s");
+
+   // j'ajoute DATE-OBS la plus ancienne dans l'image finale
+   tt_jd2dateobs(minDateObs,isoDateObs);
+   tt_imanewkey(&p_out,"DATE-OBS",isoDateObs,TSTRING,"Start of exposure. FITS standard","Iso 8601");
+
+   // j'ajoute DATE-END la plus recente dans l'image finale
+   tt_jd2dateobs(maxDateEnd,isoDateEnd);
+   tt_imanewkey(&p_out,"DATE-END",isoDateEnd,TSTRING,"End of exposure. FITS standard","Iso 8601");      
    
    /* --- complete l'entete avec celle de la premiere image ---*/
    if ((msg=tt_imarefheader(&p_out,fullname0))!=0) {
