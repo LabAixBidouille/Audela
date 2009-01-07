@@ -206,6 +206,9 @@ ros_meteo close vantage
       else if (strcmp(argv[1],"read")==0) {
          mode=2;
       }
+      else if (strcmp(argv[1],"test")==0) {
+         mode=4;
+      }
       else if (strcmp(argv[1],"close")==0) {
          mode=3;
       }
@@ -339,6 +342,19 @@ ros_meteo close vantage
 	      Tcl_DStringAppend(&dsptr,Buf,-1);
          /* --- ---*/	
          Valeur = GetDewPt_V();
+      	Valeur = (5.0/9.0)*(Valeur-32);
+	      sprintf(Buf,"%.2f ",Valeur);
+	      Tcl_DStringAppend(&dsptr,Buf,-1);
+         /* --- ---*/	
+         Tcl_DStringResult(interp,&dsptr);
+         Tcl_DStringFree(&dsptr);
+         return TCL_OK;
+      }
+      /* --- ---*/
+      if ((mode==4)&&(modele==1)) {
+   	   Tcl_DStringInit(&dsptr);
+         /* --- ---*/
+      	Valeur = GetOutsideTemp_V();
       	Valeur = (5.0/9.0)*(Valeur-32);
 	      sprintf(Buf,"%.2f ",Valeur);
 	      Tcl_DStringAppend(&dsptr,Buf,-1);
