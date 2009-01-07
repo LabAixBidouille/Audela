@@ -785,9 +785,13 @@ int deltatau_delete(struct telprop *tel)
 int deltatau_put(struct telprop *tel,char *cmd)
 {
    char s[1024];
+	/*char ss[1024];*/
 
 	if (tel->type==0) {
-		sprintf(s,"puts -nonewline %s [binary format H2H2H4H4S 40 BF 0000 0000 [string length \"%s\"]]%s",tel->channel,cmd,cmd);
+		sprintf(s,"puts -nonewline %s \"[binary format H2H2H4H4S 40 BF 0000 0000 [string length \"%s\"]]%s\"",tel->channel,cmd,cmd);
+		//sprintf(ss,"puts \"PUT s=<%s> envoye\"",s);
+		//mytel_tcleval(tel,ss);
+		mytel_tcleval(tel,s);	
 		if (mytel_tcleval(tel,s)==1) {
 			return 1;
 		}
@@ -811,14 +815,26 @@ int deltatau_read(struct telprop *tel,char *res)
    		set res [read -nonewline $channel];\
    		binary scan $res H* chaine;\
    		set n [string length $chaine] ;\
+   		for {set k 0} {$k<$n} {set k [expr $k+2]} {\
+				set cars [string range $chaine 0 1] ;\
+				if {$cars==\"06\"} { set chaine [string range $chaine 2 end] } else { break } ;\
+			};\
+   		set n [string length $chaine] ;\
+			set cars [string range $chaine [expr $n-2] [expr $n-1]] ;\
+			if {$cars==\"06\"} { set chaine [string range $chaine 0 [expr $n-3]] } ;\
+   		set n [string length $chaine] ;\
+			set cars [string range $chaine [expr $n-2] [expr $n-1]] ;\
+			if {$cars==\"0d\"} { set chaine [string range $chaine 0 [expr $n-3]] } ;\
+			set n [string length $chaine] ;\
    		set resultat \"\" ;\
    		for {set k 0} {$k<$n} {set k [expr $k+2]} {\
 				set h [string range $chaine $k [expr $k+1]] ;\
 				if {($h==\"0d\")||($h==\"06\")} {\
-   				break ;\
+					set res \"\\n\";\
+				} else {\
+					set ligne \"format %c 0x$h\" ;\
+					set res [eval $ligne] ;\
 				};\
-				set ligne \"format %c 0x$h\" ;\
-				set res [eval $ligne] ;\
 				append resultat $res ;\
 			};\
 			return $resultat ;\
