@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise a jour $Id: foc.tcl,v 1.22 2009-01-04 16:02:57 robertdelmas Exp $
+# Mise a jour $Id: foc.tcl,v 1.23 2009-01-08 22:49:29 robertdelmas Exp $
 #
 
 set ::graphik(compteur) {}
@@ -413,7 +413,7 @@ namespace eval ::foc {
 
       if { $t > 0 } {
          #--- Je lance l'iteration suivante avec un delai de 1000 millisecondes
-         #--- (mode asynchone pour eviter l'enpilement des appels recursifs)
+         #--- (mode asynchone pour eviter l'empilement des appels recursifs)
          set panneau(foc,dispTimeAfterId) [ after 1000 ::foc::dispTime ]
       } else {
          #--- Je ne relance pas le timer
@@ -435,6 +435,7 @@ proc avancementPose { t } {
 
    #---
    if { [ winfo exists $audace(base).progress_pose ] != "1" } {
+
       #--- Cree la fenetre toplevel
       toplevel $audace(base).progress_pose
       wm transient $audace(base).progress_pose $audace(base)
@@ -510,6 +511,7 @@ proc avancementPose { t } {
       }
 
    }
+
 }
 
 proc recupPositionAvancementPose { } {
