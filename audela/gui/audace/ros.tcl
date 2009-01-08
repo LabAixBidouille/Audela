@@ -2,7 +2,7 @@
 # Fichier : ros.tcl
 # Description : Function to launch Robotic Observatory Software installation
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: ros.tcl,v 1.11 2009-01-01 18:55:23 alainklotz Exp $
+# Mise a jour $Id: ros.tcl,v 1.12 2009-01-08 05:17:46 alainklotz Exp $
 #
 
 proc ros { args } {
@@ -35,7 +35,7 @@ proc ros { args } {
       unset ros(falsenameofexecutable)
       set req(gardien,gar,host) $req(majordome,gar,host)
       set req(gardien,gar,port) $req(majordome,gar,port)
-      set err [catch {source "[pwd]/../gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../gui/audace/socket_tools.tcl" }
+      set err [catch {source "[pwd]/../gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,audela)/gui/audace/socket_tools.tcl" }
       set err [catch {socket_client_open clientgar2 $req(gardien,gar,host) [expr $req(gardien,gar,port)+1]} msg]
       if {$err==1} {
          set texte $msg
@@ -86,7 +86,7 @@ proc ros { args } {
       unset ros(falsenameofexecutable)
       set req(telescope,tel,host) $req(majordome,tel,host)
       set req(telescope,tel,port) $req(majordome,tel,port)
-      set err [catch {source "[pwd]/../gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../gui/audace/socket_tools.tcl" }
+      set err [catch {source "[pwd]/../gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,audela)/gui/audace/socket_tools.tcl" }
       set err [catch {socket_client_open clienttel2 $req(telescope,tel,host) [expr $req(telescope,tel,port)+1]} msg]
       if {$err==1} {
          set texte $msg
@@ -138,7 +138,7 @@ proc ros { args } {
       unset ros(falsenameofexecutable)
       set req(camera,cam,host) $req(majordome,cam,host)
       set req(camera,cam,port) $req(majordome,cam,port)
-      set err [catch {source "[pwd]/../gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../gui/audace/socket_tools.tcl" }
+      set err [catch {source "[pwd]/../gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,audela)/gui/audace/socket_tools.tcl" }
       set err [catch {socket_client_open clientcam2 $req(camera,cam,host) [expr $req(camera,cam,port)+1]} msg]
       if {$err==1} {
          set texte $msg
@@ -188,7 +188,7 @@ proc ros { args } {
       unset ros(falsenameofexecutable)
       set req(majordome,maj,host) $req(majordome,maj,host)
       set req(majordome,maj,port) $req(majordome,maj,port)
-      set err [catch {source "[pwd]/../gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../gui/audace/socket_tools.tcl" }
+      set err [catch {source "[pwd]/../gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,audela)/gui/audace/socket_tools.tcl" }
       set err [catch {socket_client_open clientmaj2 $req(majordome,maj,host) [expr $req(majordome,maj,port)+1]} msg]
       if {$err==1} {
          set texte $msg
