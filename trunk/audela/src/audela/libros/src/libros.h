@@ -55,7 +55,7 @@
    __declspec(dllexport) int __cdecl ros_Init(Tcl_Interp *interp);
 #endif
 #if defined(LIBRARY_SO)
-   extern int ros_Init(Tcl_Interp *interp);
+   extern "C" int ros_Init(Tcl_Interp *interp);
 #endif
 
 /***************************************************************************/

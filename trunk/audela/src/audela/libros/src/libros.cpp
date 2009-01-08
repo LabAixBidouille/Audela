@@ -43,15 +43,15 @@
 /*                      Point d'entree de la librairie                     */
 /***************************************************************************/
 #if defined(LIBRARY_DLL)
-   int __cdecl Ros_Init(Tcl_Interp *interp)
+   extern "C" int __cdecl Ros_Init(Tcl_Interp *interp)
 #endif
 #if defined(LIBRARY_SO)
-   int Ros_Init(Tcl_Interp *interp)
+   extern "C" int Ros_Init(Tcl_Interp *interp)
 #endif
 
 {
    if(Tcl_InitStubs(interp,"8.3",0)==NULL) {
-      Tcl_SetResult(interp,"Tcl Stubs initialization failed in libak.",TCL_STATIC);
+      Tcl_SetResult(interp,"Tcl Stubs initialization failed in libros.",TCL_STATIC);
       return TCL_ERROR;
    }
 
