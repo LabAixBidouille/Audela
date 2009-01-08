@@ -791,7 +791,7 @@ int deltatau_put(struct telprop *tel,char *cmd)
 		sprintf(s,"puts -nonewline %s \"[binary format H2H2H4H4S 40 BF 0000 0000 [string length \"%s\"]]%s\"",tel->channel,cmd,cmd);
 		//sprintf(ss,"puts \"PUT s=<%s> envoye\"",s);
 		//mytel_tcleval(tel,ss);
-		mytel_tcleval(tel,s);	
+		//mytel_tcleval(tel,s);	
 		if (mytel_tcleval(tel,s)==1) {
 			return 1;
 		}
