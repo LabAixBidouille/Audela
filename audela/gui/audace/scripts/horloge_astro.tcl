@@ -2,7 +2,7 @@
 # Fichier : horloge_asro.tcl
 # Description : Horloge de l'astronome
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: horloge_astro.tcl,v 1.2 2006-06-21 18:50:49 robertdelmas Exp $
+# Mise a jour $Id: horloge_astro.tcl,v 1.3 2009-01-09 15:46:57 robertdelmas Exp $
 #
 
 #---
@@ -29,11 +29,9 @@ set paramhorloge(new,dec)    "$paramhorloge(dec)"
 #--- Create the toplevel window
 set base .horloge_astro
 toplevel $base -class Toplevel
-wm geometry $base 700x410+10+10
+wm geometry $base 700x480+10+10
 wm focusmodel $base passive
-wm maxsize $base 700 410
-wm minsize $base 700 410
-#wm overrideredirect $base 0
+wm minsize $base 700 480
 wm resizable $base 1 1
 wm deiconify $base
 wm title $base "$caption(horloge_astro,titre)"
@@ -81,6 +79,10 @@ proc calcul { } {
       set s [format "%02d" [expr int(floor([lindex $res 2]))]]
       $base.f.lab_ha configure -text "$caption(horloge_astro,angle_horaire) ${h}h ${m}mn ${s}s"
       $base.f.lab_altaz configure -text "$caption(horloge_astro,azimut) ${az}° - $caption(horloge_astro,hauteur) ${alt}°"
+      set distanceZenithale [ expr 90.0 - $alt ]
+      set distanceZenithale [ mc_angle2rad $distanceZenithale ]
+      set secz [format "%5.2f" [ expr 1. / cos($distanceZenithale) ] ]
+      $base.f.lab_secz configure -text "$caption(horloge_astro,secz) ${secz}"
       update
       #--- An infinite loop to change the language interactively
       after 1000 ::calcul
@@ -144,6 +146,10 @@ frame $base.f -bg $paramhorloge(color,back)
       -font $paramhorloge(font)
    pack $base.f.lab_ha -fill none -pady 2
    pack $base.f.lab_altaz -fill none -pady 2
+   label $base.f.lab_secz \
+      -bg $paramhorloge(color,back) -fg $paramhorloge(color,text) \
+      -font $paramhorloge(font)
+   pack $base.f.lab_secz -fill none -pady 2
 pack $base.f -fill both
 
 bind $base.f.ra.ent1 <Enter> { met_a_jour }
