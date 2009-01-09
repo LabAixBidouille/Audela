@@ -1,6 +1,6 @@
 #
 # Fichier : horloge_astro.cap
-# Mise a jour $Id: horloge_astro.cap,v 1.8 2007-05-12 14:59:18 robertdelmas Exp $
+# Mise a jour $Id: horloge_astro.cap,v 1.9 2009-01-09 15:46:23 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -20,6 +20,7 @@ set caption(horloge_astro,valider)              "Enter"
 set caption(horloge_astro,angle_horaire)        "Hour Angle:"
 set caption(horloge_astro,azimut)               "Azimuth:"
 set caption(horloge_astro,hauteur)              "Elevation:"
+set caption(horloge_astro,secz)                 "sec z:"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -33,6 +34,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(horloge_astro,angle_horaire)     "Angle Horaire :"
    set caption(horloge_astro,azimut)            "Azimut :"
    set caption(horloge_astro,hauteur)           "Hauteur :"
+   set caption(horloge_astro,secz)              "sec z :"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -46,6 +48,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(horloge_astro,angle_horaire)     "Angolo orario:"
    set caption(horloge_astro,azimut)            "Azimuth:"
    set caption(horloge_astro,hauteur)           "Elevazione:"
+   set caption(horloge_astro,secz)              "sec z:"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -59,6 +62,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(horloge_astro,angle_horaire)     "Angulo horario:"
    set caption(horloge_astro,azimut)            "Azimuth:"
    set caption(horloge_astro,hauteur)           "Elevación:"
+   set caption(horloge_astro,secz)              "sec z:"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -72,6 +76,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(horloge_astro,angle_horaire)     "Zeit Winkel:"
    set caption(horloge_astro,azimut)            "Azimut:"
    set caption(horloge_astro,hauteur)           "Höhe:"
+   set caption(horloge_astro,secz)              "sec z:"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -85,6 +90,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(horloge_astro,angle_horaire)     "Ângulo Horário :"
    set caption(horloge_astro,azimut)            "Azimute :"
    set caption(horloge_astro,hauteur)           "Altura :"
+   set caption(horloge_astro,secz)              "sec z:"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -98,6 +104,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(horloge_astro,angle_horaire)     "Hour Angle:"
    set caption(horloge_astro,azimut)            "Azimuth:"
    set caption(horloge_astro,hauteur)           "Elevation:"
+   set caption(horloge_astro,secz)              "sec z:"
 
 }
 
