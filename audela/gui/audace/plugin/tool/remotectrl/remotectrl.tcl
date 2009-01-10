@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.25 2009-01-03 22:51:37 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.26 2009-01-10 21:08:03 robertdelmas Exp $
 #
 
 #============================================================
@@ -801,12 +801,6 @@ namespace eval ::remotectrl {
          set message "send \{acq $exptime $bin\}"
          eval $message
 
-         #--- Appel du timer
-         if { $exptime > "2" } {
-           ### ::remotectrl::dispTime
-         }
-
-        # after $exptime ; #--- A tester
          #--- Extension par defaut
          set ext $conf(extension,defaut)
          #---
@@ -814,23 +808,17 @@ namespace eval ::remotectrl {
             #--- Transfert par protocole ftp
             set message "send \{saveima \"\$audace(rep_images)/temp$ext\" \}"
             eval $message
-            after 1000
             set message "send \{catch \{ set ::ftpd::port \$panneau(remotectrl,ftp_port1) \} \}"
             eval $message
-            after 1000
             set message "send \{catch \{set ::ftpd::cwd \$audace(rep_images) \} \}"
             eval $message
-            after 1000
             set error [catch {package require ftp} msg]
             if {$error==0} {
                set error [catch {::ftp::Open $panneau(remotectrl,ip1) anonymous software.audela@free.fr -timeout 15} msg]
-               after 1000
                if {($error==0)} {
                   set ftpid $msg
                   ::ftp::Type $ftpid binary
-                  after 1000
                   ::ftp::Get $ftpid temp$ext
-                  after 1000
                   catch {file rename -force temp$ext "$audace(rep_images)/temp$ext" }
                   catch {loadima "temp$ext"}
                   catch { file delete "$audace(rep_images)/temp$ext" }
@@ -841,7 +829,6 @@ namespace eval ::remotectrl {
             #--- Tranfert par fichier dans un dossier partagé
             set message "send \{saveima \"\$panneau(remotectrl,path_img)/temp$ext\" \}"
             eval $message
-            after 1000
             loadima "$panneau(remotectrl,path_img)/temp$ext"
             catch { file delete "$panneau(remotectrl,path_img)/temp$ext" }
          }
@@ -859,22 +846,6 @@ namespace eval ::remotectrl {
          update
         # ::confCam::run
         # tkwait window $audace(base).confCam
-      }
-   }
-
-   proc dispTime { } {
-      variable This
-      global audace
-      global caption
-
-      set t "[cam$audace(camNo) timer -1]"
-      if {$t>1} {
-         $This.fra1.but configure -text "[expr $t-1] / [format "%d" [expr int([cam$audace(camNo) exptime])]]"
-         update
-         after 1000 ::remotectrl::dispTime
-      } else {
-         $This.fra1.but configure -text "$caption(remotectrl,numerisation)"
-         update
       }
    }
 }
