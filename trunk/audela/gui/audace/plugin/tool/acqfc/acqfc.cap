@@ -1,6 +1,6 @@
 #
 # Fichier : acqfc.cap
-# Mise a jour $Id: acqfc.cap,v 1.35 2009-01-08 22:52:05 robertdelmas Exp $
+# Mise a jour $Id: acqfc.cap,v 1.36 2009-01-10 10:40:16 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -411,9 +411,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,pbouvfichcons)          "Problem während der Öffnung der Datei log\n"
    set caption(acqfc,selcam)                 "Sie müssen erst eine Kamera wählen\n(Konfiguration/Kamera Menu)."
    set caption(acqfc,seltel)                 "Sie müssen erst ein Montierung wählen\n(Konfiguration/Montierung Menu)."
-   set caption(acqfc,saistps)                "Eine Bildleuchtung Zeit erfassen"
-   set caption(acqfc,Tpsinv)                 "Ungültig Bildleuchtung Zeit \n(muss ein positives Wert sein)"
-   set caption(acqfc,nbinv)                  "Ungültig Bildleuchtung Zahl \n(muss ein positives Ganz sein)"
+   set caption(acqfc,saistps)                "Eine Belichtungszeit erfassen"
+   set caption(acqfc,Tpsinv)                 "Ungültig Belichtungszeit \n(muss ein positives Wert sein)"
+   set caption(acqfc,nbinv)                  "Ungültig Belichtungszahl \n(muss ein positives Ganz sein)"
    set caption(acqfc,interinv)               "Ungültig Zwischenzeit\n(muss ein positives Wert sein)"
    set caption(acqfc,interinv_1)             "Ungültig Zwischenzeit (muss größer\nals der mindeste Zwischenzeit sein,\nder mit die Simulation gerechnet ist)"
    set caption(acqfc,interinv_2)             "Sie haben keine Simulation erledigt um\nder mindest Zwischenzeit zu rechnen"
@@ -429,14 +429,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,stop)                   "STOP\n(Esc)"
    set caption(acqfc,arrprem)                "Vom Benutzer Frühabstellung um %s WZ.\n"
    set caption(acqfc,lg_pose_arret)          "%ss Sekunden eigentliche Belichtung.\n"
-   set caption(acqfc,acquneim)               "Eine Bild Belichtung (Bildleuchtung von %ss, binning %s) um %s WZ.\n"
+   set caption(acqfc,acquneim)               "Eine Bild Belichtung (Belichtung von %ss, binning %s) um %s WZ.\n"
    set caption(acqfc,lanceserie)             "Eine Reihe von %s Belichtung(en) um %s WZ anlassen "
    set caption(acqfc,lanceserie_int)         "Eine Reihe von %s Belichtung(en) mit gleichmäßigen Zwischenzeit (%s sek.) um %s WZ starten "
-   set caption(acqfc,nomgen)                 "(Mangel Namen: %s, Bildleuchtung von %ss, binning %s, von Index %s).\n"
+   set caption(acqfc,nomgen)                 "(Mangel Namen: %s, Belichtung von %ss, binning %s, von Index %s).\n"
    set caption(acqfc,enreg)                  "Speichern"
    set caption(acqfc,arret_serie)            "Wollen sie bis die ende diese Belichtung warten?"
-   set caption(acqfc,lancecont)              "Eine laufende Belichtung anlassen (Bildleuchtung von %ss, binning %s) zum %s WZ "
-   set caption(acqfc,lancecont_int)          "Eine Reihe von fortdauernde Belichtungen mit gleichmäßigen Zwischenzeit (%s sek.) starten (Bildleuchtung von %ss, binning %s) zum %s WZ "
+   set caption(acqfc,lancecont)              "Eine laufende Belichtung anlassen (Belichtung von %ss, binning %s) zum %s WZ "
+   set caption(acqfc,lancecont_int)          "Eine Reihe von fortdauernde Belichtungen mit gleichmäßigen Zwischenzeit (%s sek.) starten (Belichtung von %ss, binning %s) zum %s WZ "
    set caption(acqfc,enregen)                "(mit Gattungsnamen: %s speichern).\n"
    set caption(acqfc,sansenr)                "(ohne Speicherung).\n"
    set caption(acqfc,enrim)                  "Bei %s WZ, %s Bild Speicherung.\n"

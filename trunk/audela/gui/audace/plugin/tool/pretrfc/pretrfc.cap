@@ -1,6 +1,6 @@
 #
 # Fichier : pretrfc.cap
-# Mise a jour $Id: pretrfc.cap,v 1.11 2007-09-05 17:24:30 robertdelmas Exp $
+# Mise a jour $Id: pretrfc.cap,v 1.12 2009-01-10 10:41:23 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -775,11 +775,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretrfc,choisir_mode_PLU)        "Sie müssen eine GLG Handlung Modus\nwählen"
    set caption(pretrfc,fichModeBrutAbs)         "Sie müssen ein Sternbild Handlung Modus\nwählen"
    set caption(pretrfc,ChargeNoir)              "# Schwarz Bild Ladung:\n"
-   set caption(pretrfc,LitTpsPLU)               "# Lesung der GLG Bildleuchtung Zeit:\n"
+   set caption(pretrfc,LitTpsPLU)               "# Lesung der GLG Belichtungszeit:\n"
    set caption(pretrfc,SauveNoirPond)           "# Schwarzbild Speicherung:\n"
-   set caption(pretrfc,LitTpsNoir)              "# Schwarz Bildleuchtung Zeit Lesung:\n"
-   set caption(pretrfc,calcRapp)                "# Verhältnis zwischen Schwarz und GLG Bildleuchtung Zeit Rechnung:\n"
-   set caption(pretrfc,multNoir)                "# Multipliziert das Schwarz mit dem Verhältnis der Bildleuchtung Zeiten:\n"
+   set caption(pretrfc,LitTpsNoir)              "# Schwarz Belichtungszeit Lesung:\n"
+   set caption(pretrfc,calcRapp)                "# Verhältnis zwischen Schwarz und GLG Belichtungszeit Rechnung:\n"
+   set caption(pretrfc,multNoir)                "# Multipliziert das Schwarz mit dem Verhältnis der Belichtungszeiten:\n"
    set caption(pretrfc,soustrPrechDuNoir)       "# Abzieht den Schwarz Offset:\n"
    set caption(pretrfc,SoustrPrechPLUProv)      "# Abzieht die Vorladung von der GLG Bilder:\n"
    set caption(pretrfc,SoustrNoirPondPLU)       "# Abzieht den Schwarz von der GLG Bilder:\n"
@@ -788,15 +788,15 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretrfc,ajoutePrechNoir)         "# Addiert die Vorladung mit den Schwarz:\n"
    set caption(pretrfc,SoustrPrechStelProv)     "# Abzieht die Vorladung von den Sternbilder:\n"
    set caption(pretrfc,SoustrNoirPondStel)      "# Abzieht den gewichteter Schwarz von den Sternbilder:\n"
-   set caption(pretrfc,LitTpsStellaire)         "# Lest die Bildleuchtung Zeit der Sternbilder:\n"
+   set caption(pretrfc,LitTpsStellaire)         "# Lest die Belichtungszeit der Sternbilder:\n"
    set caption(pretrfc,OptBrutes)               "# Schwarz Abziehung bei Optimierung:\n"
    set caption(pretrfc,filtrage)                "# Vorladung Bild Optimierung:\n"
    set caption(pretrfc,SoustrPrechBrut)         "# Abzieht die Vorladung der roh Bilder(die Vorladung ist nicht im Schwarz enthalten):\n"
    set caption(pretrfc,ModeBrutSimple)          "# Rechnung Modus: einfache Schwarz Abziehung\n"
-   set caption(pretrfc,ModeBrutRapTps)          "# Rechnung Modus: Verhältnis der Bildleuchtung Zeiten\n"
+   set caption(pretrfc,ModeBrutRapTps)          "# Rechnung Modus: Verhältnis der Belichtungszeiten\n"
    set caption(pretrfc,ModeBrutOpt)             "# Rechnung Modus: Schwarz Abziehung bei Optimierung\n"
    set caption(pretrfc,ModePLUSimple)           "# Rechnung Modus: einfache GLG Schwarz Abziehung\n"
-   set caption(pretrfc,ModePLURapTps)           "# Rechnung Modus: Verhältnis der Bildleuchtung Zeiten\n"
+   set caption(pretrfc,ModePLURapTps)           "# Rechnung Modus: Verhältnis der Belichtungszeiten\n"
    set caption(pretrfc,ModePLUOpt)              "# Rechnung Modus: Schwarz Abziehung bei Optimierung\n"
 
 # *************** Version portugaise **************************

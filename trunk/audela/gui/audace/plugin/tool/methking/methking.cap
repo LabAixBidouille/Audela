@@ -1,6 +1,6 @@
 #
 # Fichier : methking.cap
-# Mise a jour $Id: methking.cap,v 1.13 2008-12-29 12:01:33 robertdelmas Exp $
+# Mise a jour $Id: methking.cap,v 1.14 2009-01-10 10:41:11 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -716,7 +716,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(methking,parametres)           "Parametern"
    set caption(methking,binning)              "Binning"
    set caption(methking,poseparseq)           "Leuch. Zahl pro Folgung"
-   set caption(methking,tempspose)            "Bildleuchtung Zeit"
+   set caption(methking,tempspose)            "Belichtungszeit"
    set caption(methking,entrepose)            "Zeit zwischen Folgungen"
    set caption(methking,noir)                 "Schwarzen Belichtung"
    set caption(methking,edition)              "Edition"

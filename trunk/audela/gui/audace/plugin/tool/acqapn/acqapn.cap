@@ -1,6 +1,6 @@
 #
 # Fichier : acqapn.cap
-# Mise a jour $Id: acqapn.cap,v 1.16 2008-06-13 16:42:56 robertdelmas Exp $
+# Mise a jour $Id: acqapn.cap,v 1.17 2009-01-10 10:40:05 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -397,7 +397,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqapn,label,derniere)        "Letztes"
    set caption(acqapn,label,toutes)          "Alle"
    set caption(acqapn,label,avance)          "Speicher"
-   set caption(acqapn,label,exposition)      "Bestrahlung"
+   set caption(acqapn,label,exposition)      "Belichtung"
    set caption(acqapn,label,mini)            "Miniatur"
    set caption(acqapn,label,options)         "Wählen"
    set caption(acqapn,label,poses)           "Belichtungen"
