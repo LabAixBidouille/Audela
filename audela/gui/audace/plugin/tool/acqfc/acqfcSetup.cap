@@ -1,6 +1,6 @@
 #
 # Fichier : acqfcSetup.cap
-# Mise a jour $Id: acqfcSetup.cap,v 1.10 2008-05-21 18:12:11 robertdelmas Exp $
+# Mise a jour $Id: acqfcSetup.cap,v 1.11 2009-01-10 10:39:34 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -15,6 +15,7 @@ set caption(acqfcSetup,titre)                     "Acquisition - Setup"
 set caption(acqfcSetup,en-tete_fits)              "FITS Keywords"
 set caption(acqfcSetup,texte1)                    "Display messages on the Terminal:"
 set caption(acqfcSetup,texte2)                    "Record dates in the log file:"
+set caption(acqfcSetup,texte3)                    "Aural warning when the series ends:"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -23,6 +24,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfcSetup,en-tete_fits)           "Mots clés FITS"
    set caption(acqfcSetup,texte1)                 "Afficher les messages sur la Console :"
    set caption(acqfcSetup,texte2)                 "Enregistrer les dates dans le fichier log :"
+   set caption(acqfcSetup,texte3)                 "Alarme sonore de fin de série :"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -31,6 +33,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfcSetup,en-tete_fits)           "Parole chiave FITS"
    set caption(acqfcSetup,texte1)                 "Mostra messaggio sul terminale:"
    set caption(acqfcSetup,texte2)                 "Salvataggio date nel file di log:"
+   set caption(acqfcSetup,texte3)                 "Segnale acustico quando finisce la serie:"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -39,6 +42,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfcSetup,en-tete_fits)           "Palabras clave FITS"
    set caption(acqfcSetup,texte1)                 "Mostrar mensajes en la Consola:"
    set caption(acqfcSetup,texte2)                 "Grabar fechas en el fichero de log:"
+   set caption(acqfcSetup,texte3)                 "Alarma sonora cuando la serie termina:"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -47,6 +51,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfcSetup,en-tete_fits)           "FITS Stichwörter"
    set caption(acqfcSetup,texte1)                 "Die Nachrichten am Bildschirm zeigen:"
    set caption(acqfcSetup,texte2)                 "Die Zeit in die Log Datei speichern:"
+   set caption(acqfcSetup,texte3)                 "Ton Alarm wenn die Serie endet:"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -55,6 +60,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfcSetup,en-tete_fits)           "Palavras-chave FITS"
    set caption(acqfcSetup,texte1)                 "Mostrar mensagens na Consola:"
    set caption(acqfcSetup,texte2)                 "Guardar datas no ficheiro log:"
+   set caption(acqfcSetup,texte3)                 "Alarme sonoro quando a série terminar:"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -63,6 +69,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfcSetup,en-tete_fits)           "FITS Keywords"
    set caption(acqfcSetup,texte1)                 "Display messages on the Terminal:"
    set caption(acqfcSetup,texte2)                 "Record dates in the log file:"
+   set caption(acqfcSetup,texte3)                 "Aural warning when the series ends:"
 
 }
 
