@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.80 2009-01-08 23:09:18 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.81 2009-01-10 10:43:56 robertdelmas Exp $
 #
 
 #==============================================================
@@ -1263,16 +1263,18 @@ proc ::acqfc::Go { visuNo } {
          #--- si un nombre d'image est precise, je verifie
          if { $nbImages != "" && $compteurImageSerie > $nbImages } {
             #--- alerte sonore de fin de serie
-            if { $nbImages > "1" && $panneau(acqfc,$visuNo,mode) == "2" } {
-               bell
-               after 200
-               bell
-               after 200
-               bell
-               after 200
-               bell
-               after 200
-               bell
+            if { $panneau(acqfc,$visuNo,alarme_fin_serie) == "1" } {
+               if { $nbImages > "1" && $panneau(acqfc,$visuNo,mode) == "2" } {
+                  bell
+                  after 200
+                  bell
+                  after 200
+                  bell
+                  after 200
+                  bell
+                  after 200
+                  bell
+               }
             }
             #--- le nombre d'image est atteint, j'arrete la boucle
             break
