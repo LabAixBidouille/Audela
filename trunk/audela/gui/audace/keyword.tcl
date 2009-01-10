@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.8 2008-12-16 22:19:23 michelpujol Exp $
+# Mise a jour $Id: keyword.tcl,v 1.9 2009-01-10 14:51:28 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -153,6 +153,8 @@ proc ::keyword::init { } {
    if { ! [ info exists ::conf(keyword,geometry) ] } { set ::conf(keyword,geometry) "650x240+350+15" }
 
    #--- Initialisation de variables
+   set private(nom_observateur)     ""
+   set private(nom_observatoire)    ""
    set private(instrument)          ""
    set private(diametre)            ""
    set private(focale_resultante)   ""
@@ -177,8 +179,8 @@ proc ::keyword::init { } {
 
    #--- On cree la liste des caracteristiques (nom, categorie, variable et procedure) des mots cles
    set private(infosMotsClefs) ""
-   lappend private(infosMotsClefs) [ list "OBSERVER" $::caption(keyword,lieu)        ::conf(posobs,nom_observateur)          readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" "string" "Observer name" "" ]
-   lappend private(infosMotsClefs) [ list "SITENAME" $::caption(keyword,lieu)        ::conf(posobs,nom_observatoire)         readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" "string" "Observatory name" "" ]
+   lappend private(infosMotsClefs) [ list "OBSERVER" $::caption(keyword,lieu)        ::keyword::private(nom_observateur)     readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" "string" "Observer name" "" ]
+   lappend private(infosMotsClefs) [ list "SITENAME" $::caption(keyword,lieu)        ::keyword::private(nom_observatoire)    readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" "string" "Observatory name" "" ]
    lappend private(infosMotsClefs) [ list "IAU_CODE" $::caption(keyword,lieu)        ::conf(posobs,station_uai)              readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" "string" "Observatory IAU Code" "" ]
    lappend private(infosMotsClefs) [ list "SITELONG" $::caption(keyword,lieu)        ::conf(posobs,estouest_long)            readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" "string" "Observatory longitude" "degres, minutes, seconds" ]
    lappend private(infosMotsClefs) [ list "SITELAT"  $::caption(keyword,lieu)        ::conf(posobs,nordsud_lat)              readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" "string" "Observatory latitude" "degres, minutes, seconds" ]
@@ -223,6 +225,9 @@ proc ::keyword::run { visuNo } {
    #--- Creation des variables de la boite de configuration de l'en-tete FITS si elles n'existent pas
    if { ! [ info exists ::conf(keyword,visu$visuNo,check) ] } { set ::conf(keyword,visu$visuNo,check) "" }
 
+   #--- j'ajoute un listener sur la configuration de l'observatoire
+   ::confPosObs::addPosObsListener [list ::keyword::onChangeConfPosObs $visuNo]
+
    #--- j'ajoute un listener sur la configuration optique
    ::confOptic::addOpticListener [list ::keyword::onChangeConfOptic $visuNo]
 
@@ -232,6 +237,9 @@ proc ::keyword::run { visuNo } {
    ::confVisu::addCameraListener $visuNo [list ::keyword::onChangeSetTemperature $visuNo]
    ::AlAudine_NT::addAlAudineNTListener  [list ::keyword::onChangeSetTemperature $visuNo]
    ::confVisu::addCameraListener $visuNo [list ::keyword::onChangeTemperature $visuNo]
+
+   #--- je recupere la configuration de l'observateur et de l'observatoire
+   onChangeConfPosObs $visuNo
 
    #--- je recupere la configuration optique
    onChangeConfOptic $visuNo
@@ -275,6 +283,23 @@ proc ::keyword::run { visuNo } {
    } else {
       ::keyword::createDialog $visuNo
    }
+}
+
+#------------------------------------------------------------------------------
+# onChangeConfPosObs
+#    met a jour les mots cles des noms de l'observateur et de l'observatoire
+#
+# Parametres :
+#    visuNo
+#    args : valeurs fournies par le gestionnaire de listener
+# Return :
+#    rien
+#------------------------------------------------------------------------------
+proc ::keyword::onChangeConfPosObs { visuNo args } {
+   variable private
+
+   set private(nom_observateur)  [ ::keyword::headerFitsCompliant $::conf(posobs,nom_observateur) ]
+   set private(nom_observatoire) [ ::keyword::headerFitsCompliant $::conf(posobs,nom_observatoire) ]
 }
 
 #------------------------------------------------------------------------------
@@ -403,6 +428,9 @@ proc ::keyword::getKeywords { visuNo } {
 
    #--- Creation de la variable de la boite de configuration de l'en-tete FITS si elle n'existe pas
    if { ! [ info exists ::conf(keyword,visu$visuNo,check) ] } { set ::conf(keyword,visu$visuNo,check) "" }
+
+   #--- je recupere la configuration de l'observateur et de l'observatoire
+   onChangeConfPosObs $visuNo
 
    #--- je recupere la configuration optique
    onChangeConfOptic $visuNo
@@ -699,6 +727,9 @@ proc ::keyword::cmdClose { visuNo } {
 
    #--- je supprime un listener sur la configuration optique
    ::confOptic::removeOpticListener [list ::keyword::onChangeConfOptic $visuNo]
+
+   #--- je supprime un listener sur la configuration de l'observatoire
+   ::confPosObs::removePosObsListener [list ::keyword::onChangeConfPosObs $visuNo]
 
    #--- je recupere la geometrie de la fenetre
    ::keyword::recupPosDim $visuNo
