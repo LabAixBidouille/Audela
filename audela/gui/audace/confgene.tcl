@@ -5,7 +5,7 @@
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.52 2008-12-16 22:22:20 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.53 2009-01-10 11:23:46 robertdelmas Exp $
 #
 
 #
@@ -1108,6 +1108,24 @@ namespace eval ::confPosObs {
          set conf(posobs,estouest_long)          $conf(posobs,estouest)$conf(posobs,long)
          set conf(posobs,nordsud_lat)            $conf(posobs,nordsud)$conf(posobs,lat)
       }
+   }
+
+   #
+   # confPosObs::addPosObsListener
+   # Ajoute une procedure a appeler si on change un parametre
+   #
+   proc addPosObsListener { cmd } {
+      trace add variable "::conf(posobs,nom_observateur)" write $cmd
+      trace add variable "::conf(posobs,nom_observatoire)" write $cmd
+   }
+
+   #
+   # confPosObs::removePosObsListener
+   # Supprime une procedure a appeler si on change un parametre
+   #
+   proc removePosObsListener { cmd } {
+      trace remove variable "::conf(posobs,nom_observatoire)" write $cmd
+      trace remove variable "::conf(posobs,nom_observateur)" write $cmd
    }
 }
 
