@@ -1,6 +1,6 @@
 #
 # Fichier : telshift.cap
-# Mise a jour $Id: telshift.cap,v 1.7 2007-01-27 14:57:35 robertdelmas Exp $
+# Mise a jour $Id: telshift.cap,v 1.8 2009-01-10 10:41:55 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -189,7 +189,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telshift,erreuraide)    "telshift_ge.txt Datei unauffindbar. Um die Hilfe zu sehen können, muss diese Datei im Register 'aide_telshift' legen."
    set caption(telshift,pointevers)    "Schwenken nach"
    set caption(telshift,pointesur)     "Schwenken auf"
-   set caption(telshift,lancepose)     "Bildleuchtung N°... anfangen"
+   set caption(telshift,lancepose)     "Belichtung N°... anfangen"
    set caption(telshift,termine)       "Behandlung fertig!"
    set caption(telshift,anticipee)     "Vorzeitigen beenden!"
    set caption(telshift,attention)     "Achtung!"

@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.27 2008-10-17 22:17:46 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.28 2009-01-10 10:40:39 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -411,9 +411,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,fichier_image_jpeg_quality)         "Mangel JPEG Qualität:"
    set caption(confgene,fichier_image_jpeg_newquality)      "Sie können eine Qualität wählen (5 bis 100):"
 
-   set caption(confgene,alarme)                             "Bildleuchtungsende ton Alarm"
+   set caption(confgene,alarme)                             "Ton Alarm wenn die Exposition endet"
    set caption(confgene,alarme_active)                      "Aktiviert die Ton Alarm"
-   set caption(confgene,alarme_delai)                       "Sek. bis das Bildleuchtungsende"
+   set caption(confgene,alarme_delai)                       "Sek. vor dem Ende der Exposition"
 
    set caption(confgene,position)                           "Beobachter-Position"
    set caption(confgene,nom_observateur)                    "Beobachters Namen (70 Zeichen max.):"

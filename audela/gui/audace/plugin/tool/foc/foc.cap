@@ -1,6 +1,6 @@
 #
 # Fichier : foc.cap
-# Mise a jour $Id: foc.cap,v 1.7 2007-05-09 21:46:25 robertdelmas Exp $
+# Mise a jour $Id: foc.cap,v 1.8 2009-01-10 10:41:00 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -206,7 +206,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,limitefoc2)      "weil größer als 32767."
    set caption(foc,limitefoc3)      "weil kleiner als -32767."
    set caption(foc,probleme)        "Problem"
-   set caption(foc,entier_positif)  "Ungültig Bildleuchtung Zeit \n(muss ein positives Wert sein)"
+   set caption(foc,entier_positif)  "Ungültig Belichtungszeit \n(muss ein positives Wert sein)"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {

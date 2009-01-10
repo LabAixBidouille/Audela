@@ -1,6 +1,6 @@
 #
 # Fichier : tlscp.cap
-# Mise a jour $Id: tlscp.cap,v 1.10 2008-12-22 09:20:10 robertdelmas Exp $
+# Mise a jour $Id: tlscp.cap,v 1.11 2009-01-10 10:42:05 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -388,7 +388,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,pose)               "Bel."
    set caption(tlscp,goccd)              "GO CCD"
    set caption(tlscp,probleme)           "Problem"
-   set caption(tlscp,entier_positif)     "Ungültig Bildleuchtung Zeit \n(muss ein positives Wert sein)"
+   set caption(tlscp,entier_positif)     "Ungültig Belichtungszeit \n(muss ein positives Wert sein)"
 
    set caption(tlscp,coord_catalogue)    "Katalog Koordinaten (J2000):"
    set caption(tlscp,coord_corrigees)    "Korrigierten Koordinaten (Aberration, Präzession und Nutation):"

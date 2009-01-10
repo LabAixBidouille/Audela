@@ -1,6 +1,6 @@
 #
 # Fichier : detection.cap
-# Mise a jour $Id: detection.cap,v 1.10 2007-05-12 14:58:44 robertdelmas Exp $
+# Mise a jour $Id: detection.cap,v 1.11 2009-01-10 10:40:50 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -91,7 +91,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(detection,binning)               "Binning"
    set caption(detection,wait_before_exposure)  "Pause vor Belichtung"
    set caption(detection,seconds)               "Sekunden"
-   set caption(detection,time_exposure)         "Bildleuchtung Zeit"
+   set caption(detection,time_exposure)         "Belichtungszeit"
    set caption(detection,number_exposures)      "Belichtungen Zahl"
    set caption(detection,iteration)             "Iteration"
    set caption(detection,wait_before_serie)     "Pause vor dem Satz"
