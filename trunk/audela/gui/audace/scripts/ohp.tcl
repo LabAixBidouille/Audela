@@ -2,7 +2,7 @@
 # Fichier : ohp.tcl
 # Auteur : Alain KLOTZ
 # Lancement du script : source audace/scripts/ohp.tcl
-# Mise a jour $Id: ohp.tcl,v 1.5 2007-10-01 13:10:59 robertdelmas Exp $
+# Mise a jour $Id: ohp.tcl,v 1.6 2009-01-11 16:23:07 robertdelmas Exp $
 #
 
 namespace eval ::ohp {
@@ -92,7 +92,6 @@ namespace eval ::ohp {
       set audace(ohp,nameout) "atami"
       set audace(ohp,methodes) ""
 
-      set audace(ohp,font,c12b) [ list {Courier} 10 bold ]
       set audace(ohp,font,c10b) [ list {Courier} 10 bold ]
 
       set audace(ohp,allmethodes) ""
@@ -147,32 +146,32 @@ namespace eval ::ohp {
       # --- boutons
       frame .ohp.buttons -borderwidth 3 -relief sunken -bg $audace(ohp,color,backpad)
          button .ohp.load_button  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -text "$caption(ohp,load_button)" \
             -command {::ohp::load}
          pack  .ohp.load_button -in .ohp.buttons -side left -fill none -padx 3
          button .ohp.save_button  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -text "$caption(ohp,save_button)" \
             -command {::ohp::save}
          pack  .ohp.save_button -in .ohp.buttons -side left -fill none -padx 3
          button .ohp.go_button  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -text "$caption(ohp,go_button)" \
             -command {::ohp::go}
          pack  .ohp.go_button -in .ohp.buttons -side left -fill none -padx 3
          button .ohp.files_button  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -text "$caption(ohp,files_button)" \
             -command {::ohp::files}
          pack  .ohp.files_button -in .ohp.buttons -side left -fill none -padx 3
          button .ohp.purge_button  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -text "$caption(ohp,purge_button)" \
             -command {::ohp::files 1}
          pack  .ohp.purge_button -in .ohp.buttons -side left -fill none -padx 3
          button .ohp.getbox_button  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -text "$caption(ohp,getbox_button)" \
             -command {::ohp::getbox}
          pack  .ohp.getbox_button -in .ohp.buttons -side left -fill none -padx 3
@@ -198,12 +197,12 @@ namespace eval ::ohp {
       #--- IMAGES BRUTES .FITS
       frame .ohp.namerawfits -borderwidth 3 -relief sunken -bg $audace(ohp,color,backpad)
          label .ohp.namerawfits.label  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -text "$caption(ohp,namerawfits) " -bg $audace(ohp,color,backpad) \
             -fg $audace(ohp,color,textkey) -relief flat
          pack  .ohp.namerawfits.label -in .ohp.namerawfits -side left -fill none
          entry  .ohp.namerawfits.entry  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -textvariable audace(ohp,namerawfits) -bg $audace(ohp,color,backdisp) \
             -fg $audace(ohp,color,textdisp) -relief flat -width 20
          pack  .ohp.namerawfits.entry -in .ohp.namerawfits -side left -fill none
@@ -212,12 +211,12 @@ namespace eval ::ohp {
       #--- IMAGES BRUTES
       frame .ohp.nameraw -borderwidth 3 -relief sunken -bg $audace(ohp,color,backpad)
          label .ohp.nameraw.label  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -text "$caption(ohp,nameraw) " -bg $audace(ohp,color,backpad) \
             -fg $audace(ohp,color,textkey) -relief flat
          pack  .ohp.nameraw.label -in .ohp.nameraw -side left -fill none
          entry  .ohp.nameraw.entry  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -textvariable audace(ohp,nameraw) -bg $audace(ohp,color,backdisp) \
             -fg $audace(ohp,color,textdisp) -relief flat -width 20
          pack  .ohp.nameraw.entry -in .ohp.nameraw -side left -fill none
@@ -226,12 +225,12 @@ namespace eval ::ohp {
       #--- TELESCOPE
       frame .ohp.telescope -borderwidth 3 -relief sunken -bg $audace(ohp,color,backpad)
          label .ohp.telescope.label  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -text "$caption(ohp,telescope) " -bg $audace(ohp,color,backpad) \
             -fg $audace(ohp,color,textkey) -relief flat
          pack  .ohp.telescope.label -in .ohp.telescope -side left -fill none
          entry  .ohp.telescope.entry  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -textvariable audace(ohp,telescope) -bg $audace(ohp,color,backdisp) \
             -fg $audace(ohp,color,textdisp) -relief flat -width 10
          pack  .ohp.telescope.entry -in .ohp.telescope -side left -fill none
@@ -240,12 +239,12 @@ namespace eval ::ohp {
       #--- RA
       frame .ohp.ra -borderwidth 3 -relief sunken -bg $audace(ohp,color,backpad)
          label .ohp.ra.label  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -text "$caption(ohp,ra) " -bg $audace(ohp,color,backpad) \
             -fg $audace(ohp,color,textkey) -relief flat
          pack  .ohp.ra.label -in .ohp.ra -side left -fill none
          entry  .ohp.ra.entry  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -textvariable audace(ohp,ra) -bg $audace(ohp,color,backdisp) \
             -fg $audace(ohp,color,textdisp) -relief flat -width 10
          pack  .ohp.ra.entry -in .ohp.ra -side left -fill none
@@ -254,12 +253,12 @@ namespace eval ::ohp {
       #--- DEC
       frame .ohp.dec -borderwidth 3 -relief sunken -bg $audace(ohp,color,backpad)
          label .ohp.dec.label  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -text "$caption(ohp,dec) " -bg $audace(ohp,color,backpad) \
             -fg $audace(ohp,color,textkey) -relief flat
          pack  .ohp.dec.label -in .ohp.dec -side left -fill none
          entry  .ohp.dec.entry  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -textvariable audace(ohp,dec) -bg $audace(ohp,color,backdisp) \
             -fg $audace(ohp,color,textdisp) -relief flat -width 10
          pack  .ohp.dec.entry -in .ohp.dec -side left -fill none
@@ -268,12 +267,12 @@ namespace eval ::ohp {
       #--- dark
       frame .ohp.dark -borderwidth 3 -relief sunken -bg $audace(ohp,color,backpad)
          label .ohp.dark.label  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -text "$caption(ohp,dark) " -bg $audace(ohp,color,backpad) \
             -fg $audace(ohp,color,textkey) -relief flat
          pack  .ohp.dark.label -in .ohp.dark -side left -fill none
          entry  .ohp.dark.entry  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -textvariable audace(ohp,dark) -bg $audace(ohp,color,backdisp) \
             -fg $audace(ohp,color,textdisp) -relief flat -width 20
          pack  .ohp.dark.entry -in .ohp.dark -side left -fill none
@@ -282,12 +281,12 @@ namespace eval ::ohp {
       #--- flat
       frame .ohp.flat -borderwidth 3 -relief sunken -bg $audace(ohp,color,backpad)
          label .ohp.flat.label  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -text "$caption(ohp,flat) " -bg $audace(ohp,color,backpad) \
             -fg $audace(ohp,color,textkey) -relief flat
          pack  .ohp.flat.label -in .ohp.flat -side left -fill none
          entry  .ohp.flat.entry  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -textvariable audace(ohp,flat) -bg $audace(ohp,color,backdisp) \
             -fg $audace(ohp,color,textdisp) -relief flat -width 20
          pack  .ohp.flat.entry -in .ohp.flat -side left -fill none
@@ -296,12 +295,12 @@ namespace eval ::ohp {
       #--- pathcat
       frame .ohp.pathcat -borderwidth 3 -relief sunken -bg $audace(ohp,color,backpad)
          label .ohp.pathcat.label  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -text "$caption(ohp,pathcat) " -bg $audace(ohp,color,backpad) \
             -fg $audace(ohp,color,textkey) -relief flat
          pack  .ohp.pathcat.label -in .ohp.pathcat -side left -fill none
          entry  .ohp.pathcat.entry  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -textvariable audace(ohp,pathcat) -bg $audace(ohp,color,backdisp) \
             -fg $audace(ohp,color,textdisp) -relief flat -width 20
          pack  .ohp.pathcat.entry -in .ohp.pathcat -side left -fill none
@@ -310,12 +309,12 @@ namespace eval ::ohp {
       #--- box
       frame .ohp.box -borderwidth 3 -relief sunken -bg $audace(ohp,color,backpad)
          label .ohp.box.label  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -text "$caption(ohp,box) " -bg $audace(ohp,color,backpad) \
             -fg $audace(ohp,color,textkey) -relief flat
          pack  .ohp.box.label -in .ohp.box -side left -fill none
          entry  .ohp.box.entry  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -textvariable audace(ohp,box) -bg $audace(ohp,color,backdisp) \
             -fg $audace(ohp,color,textdisp) -relief flat -width 20
          pack  .ohp.box.entry -in .ohp.box -side left -fill none
@@ -324,12 +323,12 @@ namespace eval ::ohp {
       #--- namein
       frame .ohp.namein -borderwidth 3 -relief sunken -bg $audace(ohp,color,backpad)
          label .ohp.namein.label  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -text "$caption(ohp,namein) " -bg $audace(ohp,color,backpad) \
             -fg $audace(ohp,color,textkey) -relief flat
          pack  .ohp.namein.label -in .ohp.namein -side left -fill none
          entry  .ohp.namein.entry  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -textvariable audace(ohp,namein) -bg $audace(ohp,color,backdisp) \
             -fg $audace(ohp,color,textdisp) -relief flat -width 20
          pack  .ohp.namein.entry -in .ohp.namein -side left -fill none
@@ -338,12 +337,12 @@ namespace eval ::ohp {
       #--- nameout
       frame .ohp.nameout -borderwidth 3 -relief sunken -bg $audace(ohp,color,backpad)
          label .ohp.nameout.label  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -text "$caption(ohp,nameout) " -bg $audace(ohp,color,backpad) \
             -fg $audace(ohp,color,textkey) -relief flat
          pack  .ohp.nameout.label -in .ohp.nameout -side left -fill none
          entry  .ohp.nameout.entry  \
-            -font $audace(ohp,font,c12b) \
+            -font $audace(ohp,font,c10b) \
             -textvariable audace(ohp,nameout) -bg $audace(ohp,color,backdisp) \
             -fg $audace(ohp,color,textdisp) -relief flat -width 20
          pack  .ohp.nameout.entry -in .ohp.nameout -side left -fill none
