@@ -1,6 +1,6 @@
 #
 # Fichier : keyword.cap
-# Mise a jour $Id: keyword.cap,v 1.6 2008-09-24 21:18:08 robertdelmas Exp $
+# Mise a jour $Id: keyword.cap,v 1.7 2009-01-11 12:07:51 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -10,6 +10,9 @@
 global caption langage
 
 # *************** Version anglaise ****************************
+
+set caption(keyword,header_title)                      "FITS Header"
+set caption(keyword,header_noimage)                    "No Image in Memory."
 
 #--- Fenetre de configuration
 set caption(keyword,titre)                             "FITS Keywords"
@@ -67,6 +70,9 @@ set caption(keyword,description,COMMENT)               "Comments"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
+   set caption(keyword,header_title)                   "En-tête FITS"
+   set caption(keyword,header_noimage)                 "Il n'y a pas d'image actuellement en mémoire."
+
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "Mots clés FITS"
    set caption(keyword,camera)                         "Caméra"
@@ -122,6 +128,9 @@ if { [ string compare $langage "french" ] == "0" } {
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(keyword,header_title)                   "Intestazione FITS"
+   set caption(keyword,header_noimage)                 "Nessuna immagine in memoria."
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "Parole chiave FITS"
@@ -179,6 +188,9 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
+   set caption(keyword,header_title)                   "Cabecera FITS"
+   set caption(keyword,header_noimage)                 "No existe una imágen cargada en la memoria."
+
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "Palabras clave FITS"
    set caption(keyword,camera)                         "Cámara"
@@ -234,6 +246,9 @@ if { [ string compare $langage "french" ] == "0" } {
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(keyword,header_title)                   "FITS Vorsatz"
+   set caption(keyword,header_noimage)                 "Es ist jetzt kein Bild im Speicher."
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "FITS Stichwörter"
@@ -291,6 +306,9 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise ***************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
+   set caption(keyword,header_title)                   "Cabeçalho FITS"
+   set caption(keyword,header_noimage)                 "Não existe imagem carregada em memória."
+
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "Palavras-chave FITS"
    set caption(keyword,camera)                         "Câmara"
@@ -346,6 +364,9 @@ if { [ string compare $langage "french" ] == "0" } {
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(keyword,header_title)                   "FITS Header"
+   set caption(keyword,header_noimage)                 "No Image in Memory."
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "FITS Keywords"
