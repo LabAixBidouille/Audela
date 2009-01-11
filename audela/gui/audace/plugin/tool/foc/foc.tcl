@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise a jour $Id: foc.tcl,v 1.23 2009-01-08 22:49:29 robertdelmas Exp $
+# Mise a jour $Id: foc.tcl,v 1.24 2009-01-11 11:49:38 robertdelmas Exp $
 #
 
 set ::graphik(compteur) {}
@@ -981,7 +981,6 @@ proc focBuildIF { This } {
 
          #--- Button '-'
          button $This.fra4.we.canv1PoliceInvariant -borderwidth 2 \
-            -font $audace(font,PoliceInvariant) \
             -text "-" \
             -width 2  \
             -anchor center \
@@ -989,13 +988,12 @@ proc focBuildIF { This } {
          pack $This.fra4.we.canv1PoliceInvariant -in $This.fra4.we -expand 0 -side left -padx 2 -pady 2
 
          #--- Write the label of speed for LX200 and compatibles
-         label $This.fra4.we.labPoliceInvariant -font $audace(font,PoliceInvariant) \
+         label $This.fra4.we.labPoliceInvariant \
             -textvariable audace(focus,labelspeed) -width 2 -borderwidth 0 -relief flat
          pack $This.fra4.we.labPoliceInvariant -in $This.fra4.we -expand 1 -side left
 
          #--- Button '+'
          button $This.fra4.we.canv2PoliceInvariant -borderwidth 2 \
-            -font $audace(font,PoliceInvariant) \
             -text "+" \
             -width 2  \
             -anchor center \

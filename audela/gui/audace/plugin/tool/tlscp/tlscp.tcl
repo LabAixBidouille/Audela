@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.18 2008-12-29 12:03:22 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.19 2009-01-11 11:49:25 robertdelmas Exp $
 #
 
 #============================================================
@@ -287,7 +287,6 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
 
          #--- Button-design
          button $private($visuNo,This).fra4.n.canv1PoliceInvariant -borderwidth 2 \
-            -font $audace(font,PoliceInvariant) \
             -text "$caption(tlscp,nord)" \
             -width 2  \
             -anchor center \
@@ -301,7 +300,6 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
 
          #--- Button-design 'E'
          button $private($visuNo,This).fra4.we.canv1PoliceInvariant -borderwidth 2 \
-            -font $audace(font,PoliceInvariant) \
             -text "$caption(tlscp,est)" \
             -width 2  \
             -anchor center \
@@ -311,14 +309,13 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
 
          #--- Write the label of speed
          label $private($visuNo,This).fra4.we.labPoliceInvariant \
-            -font $audace(font,PoliceInvariant) -textvariable audace(telescope,labelspeed) \
+            -textvariable audace(telescope,labelspeed) \
             -borderwidth 0 -relief flat
          pack $private($visuNo,This).fra4.we.labPoliceInvariant \
             -in $private($visuNo,This).fra4.we -expand 1 -side left
 
          #--- Button-design 'W'
          button $private($visuNo,This).fra4.we.canv2PoliceInvariant -borderwidth 2 \
-            -font $audace(font,PoliceInvariant) \
             -text "$caption(tlscp,ouest)" \
             -width 2  \
             -anchor center \
@@ -332,7 +329,6 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
 
          #--- Button-design
          button $private($visuNo,This).fra4.s.canv1PoliceInvariant -borderwidth 2 \
-            -font $audace(font,PoliceInvariant) \
             -text "$caption(tlscp,sud)" \
             -width 2  \
             -anchor center \
