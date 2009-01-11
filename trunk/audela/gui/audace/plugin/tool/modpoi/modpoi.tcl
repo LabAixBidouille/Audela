@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi.tcl,v 1.21 2008-12-29 11:49:34 robertdelmas Exp $
+# Mise a jour $Id: modpoi.tcl,v 1.22 2009-01-11 11:49:52 robertdelmas Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -1095,7 +1095,6 @@ proc modpoi_wiz4 { } {
       pack $modpoi(g,base).fra.n -side top -fill x
       #--- Button-design 'N'
       button $modpoi(g,base).fra.n.canv1PoliceInvariant -borderwidth 4 \
-         -font $audace(font,PoliceInvariant) \
          -text "$caption(modpoi,north)" \
          -width 2 \
          -anchor center \
@@ -1106,19 +1105,17 @@ proc modpoi_wiz4 { } {
       pack $modpoi(g,base).fra.we -in $modpoi(g,base).fra -side top -fill x
       #--- Button-design 'E'
       button $modpoi(g,base).fra.we.canv1PoliceInvariant -borderwidth 4 \
-         -font $audace(font,PoliceInvariant) \
          -text "$caption(modpoi,east)" \
          -width 2 \
          -anchor center \
          -relief ridge
       pack $modpoi(g,base).fra.we.canv1PoliceInvariant -in $modpoi(g,base).fra.we -expand 1 -side left
       #--- Write the label of speed
-      label $modpoi(g,base).fra.we.labPoliceInvariant -font $audace(font,PoliceInvariant) \
+      label $modpoi(g,base).fra.we.labPoliceInvariant \
          -textvariable audace(telescope,labelspeed) -borderwidth 0 -relief flat -padx 20
       pack $modpoi(g,base).fra.we.labPoliceInvariant -in $modpoi(g,base).fra.we -expand 1 -side left
       #--- Button-design 'W'
       button $modpoi(g,base).fra.we.canv2PoliceInvariant -borderwidth 4 \
-         -font $audace(font,PoliceInvariant) \
          -text "$caption(modpoi,west)" \
          -width 2 \
          -anchor center \
@@ -1129,7 +1126,6 @@ proc modpoi_wiz4 { } {
       pack $modpoi(g,base).fra.s -in $modpoi(g,base).fra -side top -fill x
       #--- Button-design 'S'
       button $modpoi(g,base).fra.s.canv1PoliceInvariant -borderwidth 4 \
-         -font $audace(font,PoliceInvariant) \
          -text "$caption(modpoi,south)" \
          -width 2 \
          -anchor center \
