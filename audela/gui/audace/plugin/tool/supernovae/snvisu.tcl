@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.35 2008-12-20 15:10:41 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.36 2009-01-11 11:59:36 robertdelmas Exp $
 #
 
 #--- Conventions pour ce script :
@@ -2094,14 +2094,15 @@ proc snHeader { bufnum } {
    wm title $audace(base).snheader "$title"
    wm geometry $audace(base).snheader 632x303+3+75
 
+   Scrolled_Text $audace(base).snheader.slb -width 150 -height 20
+   pack $audace(base).snheader.slb -fill y -expand true
+
    if { [ buf$bufnum imageready ] == "1" } {
-      Scrolled_Text $audace(base).snheader.slb -width 150 -font $audace(font,en_tete_1) -height 20
-      pack $audace(base).snheader.slb -fill y -expand true
-      $audace(base).snheader.slb.list tag configure keyw -foreground $color(blue)   -font $audace(font,en_tete_2)
-      $audace(base).snheader.slb.list tag configure egal -foreground $color(black)  -font $audace(font,en_tete_2)
-      $audace(base).snheader.slb.list tag configure valu -foreground $color(red)    -font $audace(font,en_tete_2)
-      $audace(base).snheader.slb.list tag configure comm -foreground $color(green1) -font $audace(font,en_tete_2)
-      $audace(base).snheader.slb.list tag configure unit -foreground $color(orange) -font $audace(font,en_tete_2)
+      $audace(base).snheader.slb.list tag configure keyw -foreground $color(blue)
+      $audace(base).snheader.slb.list tag configure egal -foreground $color(black)
+      $audace(base).snheader.slb.list tag configure valu -foreground $color(red)
+      $audace(base).snheader.slb.list tag configure comm -foreground $color(green1)
+      $audace(base).snheader.slb.list tag configure unit -foreground $color(orange)
       foreach kwd [lsort -dictionary [buf$bufnum getkwds]] {
          set liste [buf$bufnum getkwd $kwd]
          set koff 0
@@ -2120,10 +2121,8 @@ proc snHeader { bufnum } {
          $audace(base).snheader.slb.list insert end "[lindex $liste [expr $koff+4]]\n" unit
       }
    } else {
-      label $audace(base).snheader.l -text "$caption(snvisu,header,noimage)"
-      pack $audace(base).snheader.l -padx 20 -pady 10
+      $audace(base).snheader.slb.list insert end "$caption(snvisu,header,noimage)"
    }
-   update
 
    #--- La nouvelle fenetre est active
    focus $audace(base).snheader

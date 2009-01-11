@@ -2,7 +2,7 @@
 # Fichier : acqcolor.tcl
 # Description : Outil pour l'acquisition d'images en couleur
 # Auteurs : Alain KLOTZ et Pierre THIERRY
-# Mise a jour $Id: acqcolor.tcl,v 1.14 2008-12-07 22:16:40 robertdelmas Exp $
+# Mise a jour $Id: acqcolor.tcl,v 1.15 2009-01-11 12:01:35 robertdelmas Exp $
 #
 
 proc testexit { } {
@@ -1577,14 +1577,15 @@ proc header_color { } {
    }
    wm geometry $audace(base).header_color 632x380+3+75
 
+   Scrolled_Text $audace(base).header_color.slb -width 150 -height 20
+   pack $audace(base).header_color.slb -fill y -expand true
+
    if { [ buf1000 imageready ] == "1" } {
-      Scrolled_Text $audace(base).header_color.slb -width 150 -font $audace(font,en_tete_1) -height 20
-      pack $audace(base).header_color.slb -fill y -expand true
-      $audace(base).header_color.slb.list tag configure keyw -foreground $color(blue)   -font $audace(font,en_tete_2)
-      $audace(base).header_color.slb.list tag configure egal -foreground $color(black)  -font $audace(font,en_tete_2)
-      $audace(base).header_color.slb.list tag configure valu -foreground $color(red)    -font $audace(font,en_tete_2)
-      $audace(base).header_color.slb.list tag configure comm -foreground $color(green1) -font $audace(font,en_tete_2)
-      $audace(base).header_color.slb.list tag configure unit -foreground $color(orange) -font $audace(font,en_tete_2)
+      $audace(base).header_color.slb.list tag configure keyw -foreground $color(blue)
+      $audace(base).header_color.slb.list tag configure egal -foreground $color(black)
+      $audace(base).header_color.slb.list tag configure valu -foreground $color(red)
+      $audace(base).header_color.slb.list tag configure comm -foreground $color(green1)
+      $audace(base).header_color.slb.list tag configure unit -foreground $color(orange)
       foreach kwd [lsort -dictionary [buf1000 getkwds]] {
          set liste [buf1000 getkwd $kwd]
          set koff 0
@@ -1603,11 +1604,12 @@ proc header_color { } {
          $audace(base).header_color.slb.list insert end "[lindex $liste [expr $koff+4]]\n" unit
       }
    } else {
-      label $audace(base).header_color.l -text "$caption(acqcolor,entete_fits_noimage)"
-      pack $audace(base).header_color.l -padx 20 -pady 10
+      $audace(base).header_color.slb.list insert end "$caption(acqcolor,entete_fits_noimage)"
    }
-   update
+
+   #--- La nouvelle fenetre est active
    focus $audace(base).header_color
+
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $audace(base).header_color
 }
