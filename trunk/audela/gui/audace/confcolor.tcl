@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.27 2008-12-29 11:44:42 robertdelmas Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.28 2009-01-11 12:12:51 robertdelmas Exp $
 #
 
 namespace eval confColor:: {
@@ -559,7 +559,14 @@ namespace eval confColor:: {
             $w configure -bg $audace(color,listBox) -fg $audace(color,textColor)
             #--- Je mets a jour la police des widgets
             if { [ winfo class [ winfo parent $w ] ] != "Tablelist" } {
-               $w configure -font "$audace(font,Text)"
+               if { [ string first .slb.list $w ] == -1 } {
+                  $w configure -font "$audace(font,Text)"
+               } else {
+                  set police [ lreplace $audace(font,Text) 0 0 "Courier" ]
+                  set police [ lreplace $police 2 2 "bold" ]
+                  set audace(font,enTeteFITS) "$police"
+                  $w configure -font "$audace(font,enTeteFITS)"
+               }
             }
          }
          Message {
