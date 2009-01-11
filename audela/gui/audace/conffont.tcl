@@ -2,7 +2,7 @@
 # Fichier : conffont.tcl
 # Description : Selection et mise a jour en direct des polices de l'interface Aud'ACE
 # Auteur : Robert DELMAS
-# Mise a jour $Id: conffont.tcl,v 1.7 2008-12-29 11:43:33 robertdelmas Exp $
+# Mise a jour $Id: conffont.tcl,v 1.8 2009-01-11 12:09:54 robertdelmas Exp $
 #
 
 namespace eval confFont:: {
@@ -43,17 +43,6 @@ proc ::confFont::init { } {
       if { ! [ info exists conf(conffont,Graph) ] }       { set conf(conffont,Graph)       "Arial 11 normal" }
       if { ! [ info exists conf(conffont,ComboBox) ] }    { set conf(conffont,ComboBox)    "Arial 11 normal" }
 
-      #--- Polices des en-tetes FITS (police Linux = police Windows + 3)
-      set audace(font,en_tete_1) "Arial 11 normal"
-      set audace(font,en_tete_2) [ lreplace $audace(font,en_tete_1) 2 2 "bold" ]
-
-      #--- Police des raquettes integrees aux outils (police Linux = police Windows + 3)
-      set taille [ lindex $conf(conffont,Button) 1 ]
-      set taille [ expr $taille + 4 ]
-      set police [ lreplace $conf(conffont,Button) 2 2 "bold" ]
-      set police [ lreplace $police 1 1 "$taille" ]
-      set audace(font,PoliceInvariant) "$police"
-
    } elseif { $::tcl_platform(os) == "Darwin" } {
 
       #--- Polices par classe de widget (police Darwin = police Windows + 3)
@@ -75,17 +64,6 @@ proc ::confFont::init { } {
       if { ! [ info exists conf(conffont,Graph) ] }       { set conf(conffont,Graph)       "Arial 11 normal" }
       if { ! [ info exists conf(conffont,ComboBox) ] }    { set conf(conffont,ComboBox)    "Arial 11 normal" }
 
-      #--- Polices des en-tetes FITS (police Darwin = police Windows + 3)
-      set audace(font,en_tete_1) "Arial 11 normal"
-      set audace(font,en_tete_2) [ lreplace $audace(font,en_tete_1) 2 2 "bold" ]
-
-      #--- Police des raquettes integrees aux outils (police Darwin = police Windows + 3)
-      set taille [ lindex $conf(conffont,Button) 1 ]
-      set taille [ expr $taille + 4 ]
-      set police [ lreplace $conf(conffont,Button) 2 2 "bold" ]
-      set police [ lreplace $police 1 1 "$taille" ]
-      set audace(font,PoliceInvariant) "$police"
-
    } else {
 
       #--- Polices par classe de widget
@@ -106,17 +84,6 @@ proc ::confFont::init { } {
       if { ! [ info exists conf(conffont,Message) ] }     { set conf(conffont,Message)     "Arial 8 normal" }
       if { ! [ info exists conf(conffont,Graph) ] }       { set conf(conffont,Graph)       "Arial 12 normal" }
       if { ! [ info exists conf(conffont,ComboBox) ] }    { set conf(conffont,ComboBox)    "{MS Sans Serif} 8 normal" }
-
-      #--- Polices des en-tetes FITS
-      set audace(font,en_tete_1) "Courier 8 normal"
-      set audace(font,en_tete_2) [ lreplace $audace(font,en_tete_1) 2 2 "bold" ]
-
-      #--- Police des raquettes integrees aux outils
-      set taille [ lindex $conf(conffont,Button) 1 ]
-      set taille [ expr $taille + 4 ]
-      set police [ lreplace $conf(conffont,Button) 2 2 "bold" ]
-      set police [ lreplace $police 1 1 "$taille" ]
-      set audace(font,PoliceInvariant) "$police"
 
    }
 
