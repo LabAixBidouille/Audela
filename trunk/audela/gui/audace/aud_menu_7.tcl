@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise a jour $Id: aud_menu_7.tcl,v 1.12 2008-12-31 07:42:56 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.tcl,v 1.13 2009-01-11 16:11:37 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -102,8 +102,6 @@ namespace eval ::cwdWindow {
             pack $This.usr.3.ent3 -side right -padx 5 -pady 5
          pack $This.usr.3 -side top -fill both -expand 1
       pack $This.usr -side top -fill both -expand 1
-      #--- Recuperation de la police par defaut des entry
-      set cwdWindow(rep_font) $audace(font,Entry)
       #---
       frame $This.cmd -borderwidth 1 -relief raised
          button $This.cmd.ok -text "$caption(aud_menu_7,ok)" -width 7 \
@@ -155,10 +153,11 @@ namespace eval ::cwdWindow {
    #
    proc change_rep_images { } {
       variable This
-      global caption cwdWindow
+      global audace caption cwdWindow
 
-      #---
-      set cwdWindow(rep_font) "$cwdWindow(rep_font) normal"
+      #--- Recuperation de la police par defaut des entry
+      set cwdWindow(rep_font) $audace(font,Entry)
+      #--- Transformation de la police en italique
       set cwdWindow(rep_font_italic) [ lreplace $cwdWindow(rep_font) 2 2 italic ]
       #---
       set cwdWindow(rep_images) "1"
@@ -177,10 +176,11 @@ namespace eval ::cwdWindow {
    #
    proc change_rep_scripts { } {
       variable This
-      global caption cwdWindow
+      global audace caption cwdWindow
 
-      #---
-      set cwdWindow(rep_font) "$cwdWindow(rep_font) normal"
+      #--- Recuperation de la police par defaut des entry
+      set cwdWindow(rep_font) $audace(font,Entry)
+      #--- Transformation de la police en italique
       set cwdWindow(rep_font_italic) [ lreplace $cwdWindow(rep_font) 2 2 italic ]
       #---
       set cwdWindow(rep_scripts) "1"
@@ -199,10 +199,11 @@ namespace eval ::cwdWindow {
    #
    proc change_rep_catalogues { } {
       variable This
-      global caption cwdWindow
+      global audace caption cwdWindow
 
-      #---
-      set cwdWindow(rep_font) "$cwdWindow(rep_font) normal"
+      #--- Recuperation de la police par defaut des entry
+      set cwdWindow(rep_font) $audace(font,Entry)
+      #--- Transformation de la police en italique
       set cwdWindow(rep_font_italic) [ lreplace $cwdWindow(rep_font) 2 2 italic ]
       #---
       set cwdWindow(rep_catalogues) "1"
@@ -365,6 +366,11 @@ namespace eval ::confEditScript {
       variable This
       global audace caption conf confgene
 
+      #--- Recuperation de la police par defaut des entry
+      set confgene(EditScript,edit_font)        "$audace(font,Entry)"
+      #--- Transformation de la police en italique
+      set confgene(EditScript,edit_font_italic) [ lreplace $confgene(EditScript,edit_font) 2 2 italic ]
+
       if { [ winfo exists $This ] } {
          wm withdraw $This
          wm deiconify $This
@@ -400,13 +406,6 @@ namespace eval ::confEditScript {
 
       #--- Cree un frame pour y mettre le bouton ... et la zone a renseigner - Editeur de scripts
       frame $This.usr1 -borderwidth 1 -relief raised
-
-         #--- Creation d'une entry non affichee pour en recuperer le parametre -font
-         entry $This.usr1.ent0 -width 1
-         set confgene(EditScript,edit_font)        "$audace(font,Entry)"
-         set confgene(EditScript,edit_font)        "$confgene(EditScript,edit_font) normal"
-         set confgene(EditScript,edit_font_italic) [ lreplace $confgene(EditScript,edit_font) 2 2 italic ]
-
          #--- Positionne le bouton ... et la zone a renseigner
          if { $confgene(EditScript,error_script) == "1" } {
             set font $confgene(EditScript,edit_font)
@@ -419,6 +418,11 @@ namespace eval ::confEditScript {
          pack $This.usr1.lab1 -side left -padx 5 -pady 5
          button $This.usr1.explore1 -text "$caption(aud_menu_7,parcourir)" -width 1 \
             -command {
+               #--- Recuperation de la police par defaut des entry
+               set confgene(EditScript,edit_font)        "$audace(font,Entry)"
+               #--- Transformation de la police en italique
+               set confgene(EditScript,edit_font_italic) [ lreplace $confgene(EditScript,edit_font) 2 2 italic ]
+               #---
                $::confEditScript::This.usr1.ent1 configure -font $confgene(EditScript,edit_font_italic) -relief solid
                set fenetre "$::confEditScript::This"
                set confgene(EditScript,edit_script) \
@@ -449,6 +453,11 @@ namespace eval ::confEditScript {
          pack $This.usr2.lab2 -side left -padx 5 -pady 5
          button $This.usr2.explore2 -text "$caption(aud_menu_7,parcourir)" -width 1 \
             -command {
+               #--- Recuperation de la police par defaut des entry
+               set confgene(EditScript,edit_font)        "$audace(font,Entry)"
+               #--- Transformation de la police en italique
+               set confgene(EditScript,edit_font_italic) [ lreplace $confgene(EditScript,edit_font) 2 2 italic ]
+               #---
                $::confEditScript::This.usr2.ent2 configure -font $confgene(EditScript,edit_font_italic) -relief solid
                set fenetre "$::confEditScript::This"
                set confgene(EditScript,edit_pdf) \
@@ -479,6 +488,11 @@ namespace eval ::confEditScript {
          pack $This.usr3.lab3 -side left -padx 5 -pady 5
          button $This.usr3.explore3 -text "$caption(aud_menu_7,parcourir)" -width 1 \
             -command {
+               #--- Recuperation de la police par defaut des entry
+               set confgene(EditScript,edit_font)        "$audace(font,Entry)"
+               #--- Transformation de la police en italique
+               set confgene(EditScript,edit_font_italic) [ lreplace $confgene(EditScript,edit_font) 2 2 italic ]
+               #---
                $::confEditScript::This.usr3.ent3 configure -font $confgene(EditScript,edit_font_italic) -relief solid
                set fenetre "$::confEditScript::This"
                set confgene(EditScript,edit_htm) \
@@ -509,6 +523,11 @@ namespace eval ::confEditScript {
          pack $This.usr4.lab4 -side left -padx 5 -pady 5
          button $This.usr4.explore4 -text "$caption(aud_menu_7,parcourir)" -width 1 \
             -command {
+               #--- Recuperation de la police par defaut des entry
+               set confgene(EditScript,edit_font)        "$audace(font,Entry)"
+               #--- Transformation de la police en italique
+               set confgene(EditScript,edit_font_italic) [ lreplace $confgene(EditScript,edit_font) 2 2 italic ]
+               #---
                $::confEditScript::This.usr4.ent4 configure -font $confgene(EditScript,edit_font_italic) -relief solid
                set fenetre "$::confEditScript::This"
                set confgene(EditScript,edit_viewer) \
