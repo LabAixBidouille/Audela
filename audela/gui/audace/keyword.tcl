@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.9 2009-01-10 14:51:28 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.10 2009-01-11 12:15:33 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -18,7 +18,7 @@ namespace eval ::keyword {
 #------------------------------------------------------------------------------
 proc ::keyword::header { visuNo args } {
    variable private
-   global audace caption color conf
+   global caption color conf
 
    #--- Initialisation
    set base [ ::confVisu::getBase $visuNo ]
@@ -35,11 +35,11 @@ proc ::keyword::header { visuNo args } {
       wm resizable $base.header 1 1
       wm geometry $base.header $private(geometry_header_$visuNo)
       wm protocol $base.header WM_DELETE_WINDOW "::keyword::closeHeader $visuNo"
-      Scrolled_Text $base.header.slb -width 150 -font $audace(font,en_tete_1) -height 20
+      Scrolled_Text $base.header.slb -width 150 -height 20
       pack $base.header.slb -fill y -expand true
       #--- Je declare le rafraichissement automatique des mots-cles si on charge une image
       ::confVisu::addFileNameListener $visuNo "::keyword::header $visuNo"
-      #--- Je declare le rafraichissement automatique des mots-cles si on charge de HDU de l'image FITS
+      #--- Je declare le rafraichissement automatique des mots-cles si on change de HDU de l'image FITS
       ::confVisu::addHduListener $visuNo "::keyword::header $visuNo"
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
       bind $base.header <Key-F1> { ::console::GiveFocus }
@@ -49,14 +49,14 @@ proc ::keyword::header { visuNo args } {
       $base.header.slb.list delete 1.0 end
    }
    #---
-   wm title $base.header "$caption(audace,header_title) (visu$visuNo) - [::confVisu::getFileName $visuNo]"
+   wm title $base.header "$caption(keyword,header_title) (visu$visuNo) - [::confVisu::getFileName $visuNo]"
    #---
    if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] == "1" } {
-      $base.header.slb.list tag configure keyw -foreground $color(blue)   -font $audace(font,en_tete_2)
-      $base.header.slb.list tag configure egal -foreground $color(black)  -font $audace(font,en_tete_2)
-      $base.header.slb.list tag configure valu -foreground $color(red)    -font $audace(font,en_tete_2)
-      $base.header.slb.list tag configure comm -foreground $color(green1) -font $audace(font,en_tete_2)
-      $base.header.slb.list tag configure unit -foreground $color(orange) -font $audace(font,en_tete_2)
+      $base.header.slb.list tag configure keyw -foreground $color(blue)
+      $base.header.slb.list tag configure egal -foreground $color(black)
+      $base.header.slb.list tag configure valu -foreground $color(red)
+      $base.header.slb.list tag configure comm -foreground $color(green1)
+      $base.header.slb.list tag configure unit -foreground $color(orange)
       foreach kwd [ lsort -dictionary [ buf[ ::confVisu::getBufNo $visuNo ] getkwds ] ] {
          set liste [ buf[ ::confVisu::getBufNo $visuNo ] getkwd $kwd ]
          set koff 0
@@ -75,9 +75,8 @@ proc ::keyword::header { visuNo args } {
          $base.header.slb.list insert end "[lindex $liste [expr $koff+4]]\n" unit
       }
    } else {
-      $base.header.slb.list insert end "$caption(audace,header_noimage)"
+      $base.header.slb.list insert end "$caption(keyword,header_noimage)"
    }
-   update
 }
 
 #------------------------------------------------------------------------------
