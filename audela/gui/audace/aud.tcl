@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.92 2009-01-01 12:17:46 jacquesmichelet Exp $
+# Mise a jour $Id: aud.tcl,v 1.93 2009-01-11 15:37:24 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -878,16 +878,16 @@ namespace eval ::audace {
             wm deiconify $base
             wm title $base "$caption(audace,porttalk_erreur)"
             if { [ string range $msg 0 41 ] != "$no_administrator" } {
-               message $base.msg -text "$msg\n\n$caption(audace,porttalk_msg_erreur)\n" -font 6 -justify center -width 460
+               message $base.msg -text "$msg\n\n$caption(audace,porttalk_msg_erreur)\n" -justify center -width 350
             } else {
-               message $base.msg -text "$msg\n" -font 6 -justify center -width 460
+               message $base.msg -text "$msg\n" -justify center -width 350
             }
             pack $base.msg -in $base -anchor center -side top -fill x -padx 0 -pady 0 -expand 0
             frame $base.frame1
                set saveallowio "0"
                checkbutton $base.frame1.check1 -variable saveallowio
                pack $base.frame1.check1 -anchor w -side left -fill x -padx 1 -pady 1 -expand 1
-               label $base.frame1.lab1 -text "$caption(audace,porttalk_message)" -font 6
+               label $base.frame1.lab1 -text "$caption(audace,porttalk_message)"
                pack $base.frame1.lab1 -anchor w -side left -fill x -padx 1 -pady 1 -expand 1
             pack $base.frame1 -in $base -anchor center -side top -fill none -padx 0 -pady 0 -expand 0
             button $base.but1 -text "$caption(audace,ok)" \
