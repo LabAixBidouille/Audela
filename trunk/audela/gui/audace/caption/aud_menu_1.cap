@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_1.cap
-# Mise a jour $Id: aud_menu_1.cap,v 1.5 2007-01-27 14:28:09 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.cap,v 1.6 2009-01-11 12:07:11 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -22,9 +22,6 @@ set caption(audace,menu,nouveau_script)      "New Script"
 set caption(audace,menu,editer_script)       "Edit a script"
 set caption(audace,menu,lancer_script)       "Run a script"
 set caption(audace,menu,quitter)             "Exit"
-
-set caption(audace,header_title)             "FITS Header"
-set caption(audace,header_noimage)           "No Image in Memory."
 
 set caption(audace,pas_ouvrir_fichier)       "Cannot open file:"
 
@@ -67,9 +64,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,lancer_script)    "Lancer un script"
    set caption(audace,menu,quitter)          "Quitter"
 
-   set caption(audace,header_title)          "En-tête FITS"
-   set caption(audace,header_noimage)        "Il n'y a pas d'image actuellement en mémoire."
-
    set caption(audace,pas_ouvrir_fichier)    "Impossible d'ouvrir le fichier :"
 
    set caption(audace,console_gagne)         "Accès réussi"
@@ -110,9 +104,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,editer_script)    "Edita uno script"
    set caption(audace,menu,lancer_script)    "Esegui uno script"
    set caption(audace,menu,quitter)          "Esci"
-
-   set caption(audace,header_title)          "Intestazione FITS"
-   set caption(audace,header_noimage)        "Nessuna immagine in memoria."
 
    set caption(audace,pas_ouvrir_fichier)    "Impossibile aprire il file:"
 
@@ -155,9 +146,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,lancer_script)    "Ejecutar un script"
    set caption(audace,menu,quitter)          "Salir"
 
-   set caption(audace,header_title)          "Cabecera FITS"
-   set caption(audace,header_noimage)        "No existe una imágen cargada en la memoria."
-
    set caption(audace,pas_ouvrir_fichier)    "No se puede abrir fichero:"
 
    set caption(audace,console_gagne)         "Acceso correcto"
@@ -198,9 +186,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,editer_script)    "Ein Skript editieren"
    set caption(audace,menu,lancer_script)    "Ein Skript ausführen"
    set caption(audace,menu,quitter)          "Programm beenden"
-
-   set caption(audace,header_title)          "FITS Vorsatz"
-   set caption(audace,header_noimage)        "Es ist jetzt kein Bild im Speicher."
 
    set caption(audace,pas_ouvrir_fichier)    "Es ist unmöglich die Datei zu öffnen:"
 
@@ -243,9 +228,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,lancer_script)    "Executar um script"
    set caption(audace,menu,quitter)          "Sair"
 
-   set caption(audace,header_title)          "Cabeçalho FITS"
-   set caption(audace,header_noimage)        "Não existe imagem carregada em memória."
-
    set caption(audace,pas_ouvrir_fichier)    "Impossível abrir ficheiro:"
 
    set caption(audace,console_gagne)         "Acesso OK"
@@ -286,9 +268,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,editer_script)    "Rediger en skript"
    set caption(audace,menu,lancer_script)    "Kør en skript"
    set caption(audace,menu,quitter)          "Afbryd"
-
-   set caption(audace,header_title)          "FITS Header"
-   set caption(audace,header_noimage)        "Intet billede i memory."
 
    set caption(audace,pas_ouvrir_fichier)    "Fil kan ikke åbnes:"
 
