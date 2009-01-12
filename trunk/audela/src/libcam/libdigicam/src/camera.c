@@ -27,7 +27,7 @@
  * dans le fichier camera.h
  */
 
-// $Id: camera.c,v 1.10 2007-04-23 19:17:46 michelpujol Exp $
+// $Id: camera.c,v 1.11 2009-01-12 18:08:06 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -781,7 +781,7 @@ int cam_setLongExposureDevice(struct camprop *cam, unsigned char value)
    // j'envoie une commande à la liaison
    // exemple "link1 bit 0 1"
    sprintf(ligne, "link%d bit %d %d", cam->longueposelinkno, cam->longueposelinkbit, value);
-   if( Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
+   if( Tcl_Eval(cam->interpCam, ligne) == TCL_ERROR) {
       result = -1;
    } else {
       result = 0;
