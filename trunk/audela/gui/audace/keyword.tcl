@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.10 2009-01-11 12:15:33 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.11 2009-01-12 18:15:16 michelpujol Exp $
 #
 
 namespace eval ::keyword {
@@ -147,6 +147,7 @@ proc ::keyword::init { } {
 
    #--- Charge le fichier caption
    source [ file join "$::audace(rep_caption)" keyword.cap ]
+   set ::caption(keyword,description,CONFNAME) "Configuration instrumentale"
 
    #--- Creation de la variable de la boite de configuration de l'en-tete FITS si elle n'existe pas
    if { ! [ info exists ::conf(keyword,geometry) ] } { set ::conf(keyword,geometry) "650x240+350+15" }
@@ -175,6 +176,8 @@ proc ::keyword::init { } {
    set private(name_software)       "[ ::audela::getPluginTitle ] $::audela(version)"
    set private(name_software)       "[ ::keyword::headerFitsCompliant $::keyword::private(name_software) ]"
    set private(commentaire)         ""
+   set private(confName)            ""
+
 
    #--- On cree la liste des caracteristiques (nom, categorie, variable et procedure) des mots cles
    set private(infosMotsClefs) ""
@@ -204,6 +207,7 @@ proc ::keyword::init { } {
    lappend private(infosMotsClefs) [ list "EXPTIME"  $::caption(keyword,acquisition) ::keyword::private(expTime)             normal   ""                             ""                                             "float"  "Exposure time" "s" ]
    lappend private(infosMotsClefs) [ list "SWCREATE" $::caption(keyword,logiciel)    ::keyword::private(name_software)       readonly ""                             ""                                             "string" "Acquisition software: http://www.audela.org/" "" ]
    lappend private(infosMotsClefs) [ list "SWMODIFY" $::caption(keyword,logiciel)    ::keyword::private(name_software)       readonly ""                             ""                                             "string" "Processing software: http://www.audela.org/" "" ]
+   lappend private(infosMotsClefs) [ list "CONFNAME" $::caption(keyword,instrument)  ::keyword::private(confName)         normal      ""                             ""                                             "string" "Configuration name" "" ]
    lappend private(infosMotsClefs) [ list "COMMENT"  $::caption(keyword,divers)      ::keyword::private(commentaire)         normal   ""                             ""                                             "string" "Comment" "" ]
 }
 
@@ -776,6 +780,29 @@ proc ::keyword::setKeywordValue { visuNo keywordName keywordValue} {
    error "keyword $keywordName unknown"
 }
 
+#------------------------------------------------------------------------------
+# selectKeywords
+#    selectionne les mots clefs a mettre dans les images
+#    cette prode
+# Parametres :
+#    visuNo
+#------------------------------------------------------------------------------
+proc ::keyword::selectKeywords { visuNo keywordNameList} {
+   variable private
+
+   set ::conf(keyword,visu$visuNo,check) ""
+   foreach name [array names private $visuNo,check,*] {
+      set private($name) 0
+   }
+
+   foreach keywordName $keywordNameList {
+      set private($visuNo,check,$keywordName) 1
+      lappend ::conf(keyword,visu$visuNo,check) "$visuNo,check,$keywordName"
+   }
+}
+
+
 #--- Initialisation
 ::keyword::init
+
 
