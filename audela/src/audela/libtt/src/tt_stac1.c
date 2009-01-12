@@ -99,6 +99,7 @@ int tt_fct_ima_stack(void *arg1)
 {
    int msg;
    int naxis,naxis1_1,naxis2_1,k,kk,kkk,nbzones;
+   int keywordIndex;
    long nelements,firstelem,nelem,n,nelem0;
    char **keys,*ligne,fonction[80];
    char fullname[(FLEN_FILENAME)+5];
@@ -332,35 +333,35 @@ int tt_fct_ima_stack(void *arg1)
             }
             tt_ima2jd(&p_in,2,&jj[kk-load_indice_deb]);
             tt_ima2exposure(&p_in,2,&exptime[kk-load_indice_deb]);
-         }
 
-         // je cherche le mot clef DATE-END
-         dateEnd = 0.0;
-         for (kk=0;kk<p_in.nbkeys;kk++) {
-            if (strcmp(p_in.keynames[kk],"DATE-END")==0) { 
-               // je convertis en jour julien
-               tt_dateobs2jd(p_in.values[kk], &dateEnd);
-               // j'arrete la boucle car j'ai la valeur qu'il faut
-               break;
+            // je cherche le mot clef DATE-END
+            dateEnd = 0.0;
+            for (keywordIndex=0;keywordIndex<p_in.nbkeys;keywordIndex++) {
+               if (strcmp(p_in.keynames[keywordIndex],"DATE-END")==0) { 
+                  // je convertis en jour julien
+                  tt_dateobs2jd(p_in.values[keywordIndex], &dateEnd);
+                  // j'arrete la boucle car j'ai la valeur qu'il faut
+                  break;
+               }
             }
-         }
 
-         // si DATE-END n'est pas trouvee, je calcule DATE-END = DATE-OBS + EXPOSURE
-         if ( dateEnd == 0.0 ) {
-            dateEnd = jj[kk-load_indice_deb] + exptime[kk-load_indice_deb]/86400.0;
-         }
+            // si DATE-END n'est pas trouvee, je calcule DATE-END = DATE-OBS + EXPOSURE
+            if ( dateEnd == 0.0 ) {
+               dateEnd = jj[kk-load_indice_deb] + exptime[kk-load_indice_deb]/86400.0;
+            }
          
-         // je memorise la valeur la plus recente
-         if ( dateEnd > maxDateEnd ) {
-            maxDateEnd = dateEnd ;
-         }
+            // je memorise la valeur la plus recente
+            if ( dateEnd > maxDateEnd ) {
+               maxDateEnd = dateEnd ;
+            }
 
-         // je memorise dateObs la plus ancienne
-         dateObs = jj[kk-load_indice_deb];
-         if ( dateObs < minDateObs || minDateObs == 0.0 ) {
-            minDateObs = dateObs ;
-         }
+            // je memorise dateObs la plus ancienne
+            dateObs = jj[kk-load_indice_deb];
+            if ( dateObs < minDateObs || minDateObs == 0.0 ) {
+               minDateObs = dateObs ;
+            }
          
+         }
          /* --- copie la zone de l'image vers le tampon ---*/
          base_adr=(int)(nelem0)*(kk-load_indice_deb);
          for (kkk=0;kkk<(int)(nelem);kkk++) {
@@ -438,12 +439,6 @@ int tt_fct_ima_stack(void *arg1)
       sprintf(fullname,"%s;%d",tt_imafilecater(keys[6],keys[7],keys[9]),save_indice_deb);
    }
    
-
-
-      //char date_obs_stack[FLEN_VALUE];
-      //char dateEndKeyword[FLEN_VALUE];
-      //double cumulativeExpTime;
-
    // je calcule le temps de pose moyen et le poids de chaque image
    exptime_stack=(double)(0);
    //cumulativeExpTime=(double)(0);
