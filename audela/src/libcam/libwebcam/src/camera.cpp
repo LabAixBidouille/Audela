@@ -791,7 +791,7 @@ int webcam_setLongExposureDevice(struct camprop *cam, unsigned char value)
 
    sprintf(ligne, "link%d bit %d %d", cam->longueposelinkno, cam->longueposelinkbit, value);
 
-   if( Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
+   if( Tcl_Eval(cam->interpCam, ligne) == TCL_ERROR) {
       result = 1;
    } else {
       result = 0;
