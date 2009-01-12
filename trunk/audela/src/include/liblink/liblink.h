@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Linkbridge, MA 02139, USA.
  */
 
-// $Id: liblink.h,v 1.3 2006-09-28 19:25:57 michelpujol Exp $
+// $Id: liblink.h,v 1.4 2009-01-12 18:02:29 michelpujol Exp $
 
 #ifndef __LIBLINK_H__
 #define __LIBLINK_H__
@@ -35,7 +35,6 @@
 
 //#include "liblink.h"
 
-#include "tcl.h"
 #include "liblink/useitem.h"
 
 #define LINK_OK       0
@@ -54,16 +53,14 @@ class CLink {
    int removeUse(char *deviceId, char *usage);
    int getUse(char **list);
 
-   char * getLastMessage();
    int getIndex();
-
+   void setLastMessage(const char *format, ...);
+   char * getLastMessage();
    void setAuthorized(int value);
    void setLinkNo(int value);
-   void setLastMessage(char *value);
 
 
  protected:
-	Tcl_Interp *interp;
    int authorized;
    int index;
    char msg[1024];
