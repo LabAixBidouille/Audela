@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.24 2008-12-05 21:33:54 michelpujol Exp $
+ * $Id: libcam.c,v 1.25 2009-01-12 18:48:00 michelpujol Exp $
  */
 
 #include "sysexp.h"
