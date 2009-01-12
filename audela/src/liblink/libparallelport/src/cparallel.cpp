@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: cparallel.cpp,v 1.4 2008-05-12 07:32:56 denismarchais Exp $
+// $Id: cparallel.cpp,v 1.5 2009-01-12 18:03:29 michelpujol Exp $
 
 
 #include "sysexp.h"
@@ -270,8 +270,7 @@ int CParallel::closeLink()
 int CParallel::setChar(char c)
 {
    int result = LINK_OK;
-   unsigned short a = this->address;
-
+   
 #if defined(OS_LIN)
 #if defined(OS_LIN_USE_PARRALLEL_OLD_STYLE)
    parallel_bloquer();
@@ -291,6 +290,7 @@ int CParallel::setChar(char c)
 
 #if defined(OS_WIN)
 #if defined(OS_WIN_USE_PARRALLEL_OLD_STYLE)
+   unsigned short a = this->address;
    // Write a byte 
    _asm {
         mov dx, a 
