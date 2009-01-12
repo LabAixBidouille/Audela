@@ -20,13 +20,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: liblink.cpp,v 1.2 2006-09-29 19:57:25 michelpujol Exp $
+// $Id: liblink.cpp,v 1.3 2009-01-12 18:02:29 michelpujol Exp $
 
 
 #include "sysexp.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
+#define vsnprintf _vsnprintf
 #endif
 #if defined(_MSC_VER)
 #include <sys/timeb.h>
@@ -212,7 +213,7 @@ static int cmdLinkCreate(ClientData clientData, Tcl_Interp * interp, int argc, c
       sscanf(argv[1], "link%d", &linkno);
       link->setLinkNo(linkno);
       link->setLastMessage("");
-      if ((err = link->init_common(argc, argv)) != 0) {
+      if ((err = link->init_common(argc, argv)) != LINK_OK) {
          Tcl_SetResult(interp, link->getLastMessage(), TCL_VOLATILE);
          free(link);
          result = TCL_ERROR;
@@ -401,33 +402,29 @@ CLink::~CLink()
    }
 }
 
+
+/**
+ * init_common
+ *    initalise les parametres du link
+ * Return :
+ * - LINK_OK    when success.
+ * - LINK_ERROR when error occurred, error description in cam->msg.
+*/
 int CLink::init_common(int argc, char **argv)
-/* --------------------------------------------------------- */
-/* --- link_init permet d'initialiser les variables de la --- */
-/* --- structure 'linkprop'                               --- */
-/* --------------------------------------------------------- */
-/* argv[1] : symbole du port (link1,etc.)                    */
-/* argv[2] : index                                           */
-/* --------------------------------------------------------- */
 {
    int result;
-   char *ligne;
-   
-   ligne = (char*)calloc(1024,sizeof(char));
-   if(argc>2) {     
-      if(Tcl_GetInt(interp,argv[2],&index)!=TCL_OK) {
-         sprintf(ligne,"Usage: %s %s ?index?\nindex = must be an integer 0 to 255",argv[0],argv[1]);
-         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-         result = TCL_ERROR;
+
+   if(argc>2) {    
+      if( sscanf(argv[2],"%d",&index) != 1 ) {
+         setLastMessage("Usage: %s %s ?index?\nindex = must be an integer 0 to 255",argv[0],argv[1]);
+         result = LINK_ERROR;
       } else {
-         result = TCL_OK;   
+         result = LINK_OK;   
       }
    } else {
-         sprintf(ligne,"Usage: %s %s index" ,argv[0],argv[1]);
-         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-         result = TCL_ERROR;
+         setLastMessage("Usage: %s %s ?index?\nindex = must be an integer 0 to 255",argv[0],argv[1]);
+         result = LINK_ERROR;
    }
-   free(ligne);
 
    return result;
 }
@@ -500,7 +497,34 @@ void CLink::setLinkNo(int value) {
    authorized = value;
 }
 
-void CLink::setLastMessage(char *value) {
-   strcpy( msg , value);
+
+void CLink::setLastMessage(const char *format, ...) {
+	va_list val;
+//   strcpy( msg , value);
+
+	va_start(val, format);
+   vsnprintf(msg,1024,format,val);
+	va_end(val);
+
 }
 
+/*
+void CError::setf(const char *f, ...) throw(){
+	va_list val;
+
+	va_start(val, f);
+	vsetf(f,val);
+	va_end(val);
+}
+
+void CError::vsetf(const char *f, va_list val) throw(){
+	buf = new char[1024];
+	if (buf) {
+		buf[1023] = 0;
+		//sprintf(buf, f, val);
+      vsprintf(buf,f,val);
+
+	}
+}
+
+  */
