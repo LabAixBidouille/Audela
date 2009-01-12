@@ -117,7 +117,7 @@ int tt_ima2exposure(TT_IMA *p,int numlist,double *exposure)
                exp_found = TT_YES;
             }
             if (exp_found==TT_NO) {
-               if (strcmp(p->keynames[k],"EXPTIME")==0) {
+               if (strcmp(p->ref_keynames[k],"EXPTIME")==0) {
                   *exposure=(double)atof(p->values[k]);
                }
             }
@@ -133,7 +133,7 @@ int tt_ima2exposure(TT_IMA *p,int numlist,double *exposure)
                exp_found = TT_YES;
             }
             if (exp_found==TT_NO) {
-               if (strcmp(p->keynames[k],"EXPTIME")==0) {
+               if (strcmp(p->new_keynames[k],"EXPTIME")==0) {
                   *exposure=(double)atof(p->values[k]);
                }
             }
