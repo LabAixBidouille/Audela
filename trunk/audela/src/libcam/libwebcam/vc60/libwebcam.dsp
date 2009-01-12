@@ -159,7 +159,15 @@ SOURCE=..\src\CaptureWinVfw.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\..\include\libcam\libcam.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\libname.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\include\libcam\libstruc.h
 # End Source File
 # Begin Source File
 
