@@ -23,9 +23,7 @@
 #ifndef __QUICKREMOTE__H__
 #define __QUICKREMOTE__H__
 
-#include "ftd2xx_win.h"
 #include <liblink/liblink.h>
-
 
 class CQuickremote : public CLink {
    

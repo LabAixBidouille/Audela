@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: cquickremote.cpp,v 1.4 2008-12-20 18:13:26 michelpujol Exp $
+// $Id: cquickremote.cpp,v 1.5 2009-01-12 18:06:05 michelpujol Exp $
 
 
 #ifdef WIN32
@@ -180,9 +180,9 @@ int CQuickremote::setChar(char c)
 }
 
 /**
-* ftdipapi_write 
-*    ecrit un octet 
-*/
+ * getChar 
+ *    retourne la valeur courante du port 
+ */
 int CQuickremote::getChar(char *c) {
    *c = currentValue;
    return LINK_OK;
@@ -190,9 +190,9 @@ int CQuickremote::getChar(char *c) {
 }
 
 /**
-* ftdipapi_write 
-*    ecrit un octet 
-*/
+ * setBit
+ *    change la valeur d'un bit
+ */
 int CQuickremote::setBit(int numbit, int value)
 {
    unsigned long  bytesWritten = 0;
@@ -229,9 +229,9 @@ int CQuickremote::setBit(int numbit, int value)
 
 
 /**
-* ftdipapi_write 
-*    ecrit un octet 
-*/
+ * getBit 
+ *    retourne la valeur d'un bit
+ */
 int CQuickremote::getBit(int numbit, int *value)
 {
    char mask; 
@@ -255,6 +255,10 @@ int CQuickremote::getBit(int numbit, int *value)
 }
 
 
+/**
+ * getBit 
+ *    retourne le libelle d'une erreur FTDI
+ */
 void CQuickremote::getLastError(char *message) {
    
    switch( lastStatus) {
