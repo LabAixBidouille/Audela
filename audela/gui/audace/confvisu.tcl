@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.95 2009-01-12 18:20:53 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.96 2009-01-12 20:53:56 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -320,7 +320,7 @@ namespace eval ::confVisu {
                               buf$bufNo clear
                               #--- j'ouvre le fichier en mode lecture
                               set hFile [fits open [getFileName $visuNo] 0]
-                              $hFile move $hduNo
+                             $hFile move $hduNo
                               #--- je charge le titre des colonnes
                               set columnNames  [$hFile info column ]
                               #--- je charge les valeurs de colonnes
@@ -341,6 +341,7 @@ namespace eval ::confVisu {
                   #--- j'affiche la toolbar
                   ::confVisu::showToolBar $visuNo 1
                } else {
+                  set hduType "Image"
                   ::confVisu::showToolBar $visuNo 0
                }
                #--- j'affiche le nom du fichier
@@ -3098,6 +3099,10 @@ proc ::confVisu::getToolBar { visuNo } {
 proc ::confVisu::initHduList { visuNo fileName } {
    variable private
 
+	if { [info command fits] == "" } {
+       #--- si la commande fits n'existe pas , on ne peut lire que le premier HDU
+       return ""
+   }
    #--- je recupere la liste des HDU si on n'a pas precise le HDU en suffixe du nom de fichier
    set hFile ""
    set fitsHduList ""
@@ -3153,7 +3158,8 @@ proc ::confVisu::initHduList { visuNo fileName } {
    }
 
    if { $catchResult == 1 } {
-      error $::errorInfo
+      #--- ce n'est pas une image FITS
+      return ""
    }
 
    return $fitsHduList
