@@ -2,15 +2,15 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.94 2008-12-16 22:32:59 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.95 2009-01-12 18:20:53 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
 
    #------------------------------------------------------------
-   # confVisu::init
-   #    initialise le namespace visu
-   #
+   ## init
+   #    initialise le namespace confVisu
+   # @return rien
    #------------------------------------------------------------
    proc init { } {
       variable private
@@ -35,12 +35,12 @@ namespace eval ::confVisu {
    }
 
    #------------------------------------------------------------
-   # confVisu::create
+   ##
    #    cree une nouvelle visu
    # parametres :
-   #    base : fenetre Toplevel dans laquelle est cree la visu
+   # @param  base : fenetre Toplevel dans laquelle est cree la visu
    #           si base est vide, la fonction cree une nouvelle Toplevel
-   # retour :
+   # @return
    #    retourne une exception en cas d'erreur
    #------------------------------------------------------------
    proc create { { base "" } } {
@@ -94,8 +94,8 @@ namespace eval ::confVisu {
       set private($visuNo,picture_w)       "0"
       set private($visuNo,picture_h)       "0"
       set private($visuNo,applyThickness)  "0"
-      set private($visuNo,autovisuEnCours) "0"
       set private($visuNo,lastFileName)    "?"
+      set private($visuNo,autovisuEnCours) "0"
       set private($visuNo,fitsHduList)     ""
       set private($visuNo,currentHduNo)    1
       set private($visuNo,maxdyn)          "32767"
@@ -251,7 +251,7 @@ namespace eval ::confVisu {
    #          Exemple : vega.fit;3  signifie qu'il faut afficher le HDU numero 3 du fichier vega.fit
    #  retour: null
    #------------------------------------------------------------
-   proc autovisu { visuNo { force "-no" } { fileName "" } } {
+   proc autovisu { visuNo { force "-no" } { fileName "" } { hduName "" } } {
       variable private
       global caption conf
 
@@ -286,24 +286,67 @@ namespace eval ::confVisu {
             } else  {
                set hduNo 1
             }
-
-            #--- j'affiche les noms des HDU si on charge un nouveau fichier FITS
             if { $fileName != [getFileName $visuNo] } {
-               #--- je charge le nouveau fichier
+               #--- c'est un nouveau fichier,
+               if { $hduName == "" } {
+                  #--- je recupere le nom du HDU du fichier precedent
+                  if { [llength $private($visuNo,fitsHduList) ] > 1 } {
+                     set hduName [lindex [lindex $private($visuNo,fitsHduList) [expr $private($visuNo,currentHduNo) -1]] 0]
+                  }
+               }
+               #--- je charge le fichier
                buf$bufNo load $fileName
                #--- je recupere la liste des HDU du fichier
                set private($visuNo,fitsHduList)  [initHduList $visuNo $fileName ]
                #--- j'affiche liste des HDU s'il y en a plusieurs
                if { [llength $private($visuNo,fitsHduList) ] > 1 } {
-                  ::confVisu::showHduList $visuNo
+                  #--- j'affiche le meme HDU que celui du fichie precedent s'il existe
+                  if { $hduName != "PRIMARY" } {
+                     #--- je cherche un HDU avec le meme nom que celui de l'image precedente
+                     set hduIndex [lsearch -regexp $private($visuNo,fitsHduList) $hduName]
+                     if { $hduIndex != -1 } {
+                        set hduInfo [lindex $private($visuNo,fitsHduList) $hduIndex ]
+                        set hduType [lindex $hduInfo 1]
+                        set hduNo   [expr $hduIndex + 1]
+                        if { $hduType == "Image" } {
+                           #--- je charge le hdu
+                           buf$bufNo load "$fileName;$hduNo"
+                        } else {
+                           #--- si c'est une table, je charge la table dans les variables columnNames et columnValues
+                           #--- j'utilise commande "fits open" car la commande "buf$bufno load" ne focntionne pas que pour les images
+                           set hFile ""
+                           set catchResult [catch {
+                              #--- je nettoie le buffer pour gagner de la place en memoire car il n'est pas utilise dans ce cas
+                              buf$bufNo clear
+                              #--- j'ouvre le fichier en mode lecture
+                              set hFile [fits open [getFileName $visuNo] 0]
+                              $hFile move $hduNo
+                              #--- je charge le titre des colonnes
+                              set columnNames  [$hFile info column ]
+                              #--- je charge les valeurs de colonnes
+                              set columnValues [$hFile get table]
+                           } ]
+                           if { $hFile != "" } {
+                              $hFile close
+                           }
+                           if { $catchResult == 1 } {
+                              #--- je transmet l'erreur
+                              error $::errorInfo
+                           }
+                        }
+                     }
+                  }
+                  #--- je charge la liste dans la combox de la toolbar
+                  ::confVisu::showHduList $visuNo $hduNo
+                  #--- j'affiche la toolbar
                   ::confVisu::showToolBar $visuNo 1
                } else {
                   ::confVisu::showToolBar $visuNo 0
                }
                #--- j'affiche le nom du fichier
                ::confVisu::setFileName $visuNo $fileName
-               #--- je choisis HDU=1 par defaut
             } else {
+               #--- C'est le mem fichier, j'ai deja la liste des HDU
                #--- je recupere le type de HDU pour savoir si les donnees
                #--- doivent etre chargees avec "buf load" pour une image 1D ou 2D
                #--- ou avec "fits open" pour une table
@@ -2643,12 +2686,12 @@ namespace eval ::confVisu {
 #    visuNo : numero de la visu
 #    fileName: nom du fichier
 #------------------------------------------------------------
-proc ::confVisu::loadIma { visuNo fileName { hduNo "" } } {
+proc ::confVisu::loadIma { visuNo fileName { hduName "" } } {
    variable private
 
    set catchResult [catch {
       ###buf[::confVisu::getBufNo $visuNo] load $fileName
-      ::confVisu::autovisu $visuNo "-no" $fileName
+      ::confVisu::autovisu $visuNo "-no" $fileName $hduName
    }]
 
    if { $catchResult == 1 } {
@@ -2773,7 +2816,7 @@ proc ::confVisu::getGraph { visuNo } {
 # Parameters
 #    visuNo  numero de la fenetre
 #    xScreen yScreen  coordoonnees ecran de la souris
-#  Return
+#  @return
 #     rien
 #------------------------------------------------------------
 proc ::confVisu::onGraphMotion { visuNo graph xScreen yScreen } {
@@ -2802,7 +2845,7 @@ proc ::confVisu::onGraphMotion { visuNo graph xScreen yScreen } {
 #    visuNo  numero de la fenetre
 #    graph   nom tk du graphe
 #    xScreen yScreen  coordoonnees ecran de la souris
-#  Return
+#  @return
 #    rien
 #------------------------------------------------------------
 proc ::confVisu::onGraphRegionStart { visuNo graph x y } {
@@ -2824,7 +2867,7 @@ proc ::confVisu::onGraphRegionStart { visuNo graph x y } {
 #    visuNo  numero de la fenetre
 #    graph   nom tk du graphe
 #    xScreen yScreen  coordoonnees ecran de la souris
-#  Return
+#  @return
 #     rien
 #------------------------------------------------------------
 proc ::confVisu::onGraphRegionMotion { visuNo graph x y } {
@@ -2849,7 +2892,7 @@ proc ::confVisu::onGraphRegionMotion { visuNo graph x y } {
 #    visuNo  numero de la fenetre
 #    graph   nom tk du graphe
 #    xScreen yScreen  coordoonnees ecran de la souris
-#  Return
+#  @return
 #     rien
 #------------------------------------------------------------
 proc ::confVisu::onGraphRegionEnd { visuNo graph x y } {
@@ -2875,7 +2918,7 @@ proc ::confVisu::onGraphRegionEnd { visuNo graph x y } {
 # Parameters
 #    visuNo  numero de la fenetre
 #    graph   nom tk du graphe
-#  Return
+#  @return
 #     rien
 #------------------------------------------------------------
 proc ::confVisu::onGraphZoom { visuNo x1 y1 x2 y2 } {
@@ -2902,7 +2945,7 @@ proc ::confVisu::onGraphZoom { visuNo x1 y1 x2 y2 } {
 # Parameters
 #    visuNo  numero de la fenetre
 #    graph   nom tk du graphe
-#  Return
+#  @return
 #     rien
 #------------------------------------------------------------
 proc ::confVisu::onGraphUnzoom { visuNo  } {
@@ -3041,12 +3084,12 @@ proc ::confVisu::getToolBar { visuNo } {
 #############################################################
 
 #------------------------------------------------------------
-# ::confVisu::getHduList
-#    retourne la liste des HDU
+# ::confVisu::initHduList
+#    retourne la liste des HDU contenus dans le fichier FITS
 # Parameters :
-#    visuNo : numero de la visu
-#    fileName :
-# Return
+# @param visuNo : numero de la visu
+# @param fileName nom du fichier FITS
+# @return
 #    liste du nom, type et nombre d'axes des HDU
 #    exemple :
 #    { { hduName hduType { naxis1 naxis2 ...}  }  { hduName1 hduType1 { naxis1 naxis2 ...} ... } ... }
@@ -3060,7 +3103,11 @@ proc ::confVisu::initHduList { visuNo fileName } {
    set fitsHduList ""
    set catchResult [catch {
       #--- j'ouvre le fichier en mode lecture
-      set hFile [fits open $fileName 0 ]
+      #--- remarque: je normalise le nom du fichier car "fits open" ne trouve pas les fichier du genre ./cdummy.fit
+      if { [file extension $fileName] == "" } {
+         append fileName $::conf(extension,defaut)
+      }
+      set hFile [fits open [file normalize $fileName] 0 ]
       set nbHdu [$hFile info nhdu]
 
       #--- je lis la liste des HDU
@@ -3100,15 +3147,15 @@ proc ::confVisu::initHduList { visuNo fileName } {
 
    } ]
 
-   if { $catchResult == 1 } {
-      #--- rien a faire
-      return ""
-   }
-
    #--- je ferme le fichier
    if { $hFile != "" } {
       $hFile close
    }
+
+   if { $catchResult == 1 } {
+      error $::errorInfo
+   }
+
    return $fitsHduList
 }
 
@@ -3139,23 +3186,28 @@ proc ::confVisu::getHduNo { visuNo } {
 #------------------------------------------------------------
 # ::confVisu::showHduList
 #    affiche la liste des HDU dans la barre d'outils
-#
+#    et selectionne un HDU
+#  Parameters
+#     visuNo : numero de la fenetre de profil
+#     hduNo  : numero du HDU
+#  @return
+#     rien
 #------------------------------------------------------------
-proc ::confVisu::showHduList { visuNo } {
+proc ::confVisu::showHduList { visuNo { hduNo 1 } } {
    variable private
 
    set tkToolbar $private($visuNo,This).bar.toolbar
 
    #--- je prepare les lignes a affiche dans la combo
-   set hduNo 0
+   set tempHduNo 0
    set valueList ""
    foreach item $private($visuNo,fitsHduList) {
-      incr hduNo
+      incr tempHduNo
       set hduName [lindex $item 0]
       set hduType [lindex $item 1]
       ###set hduNaxes [lindex $item 2]
       set hduNaxes  [string map {" " " X "} [lindex $item 2]]
-      lappend valueList [format "#% 2s %10s %8s %12s" $hduNo $hduName $hduType $hduNaxes]
+      lappend valueList [format "#% 2s %10s %8s %12s" $tempHduNo $hduName $hduType $hduNaxes]
    }
 
    if { [llength $valueList] < 24  } {
@@ -3163,9 +3215,16 @@ proc ::confVisu::showHduList { visuNo } {
    } else {
       set height 24
    }
+
    #--- je configure la combo
    $tkToolbar.combo configure -values $valueList -height $height
-   set index 0
+
+   #--- je selectionne le HDU
+   if { $hduNo <= $tempHduNo } {
+      set index [expr $hduNo -1]
+   } else {
+      set index 0
+   }
    $tkToolbar.combo setvalue "@$index"
 
    #--- je mets a jour les boutons de la barre d'outils
@@ -3188,7 +3247,7 @@ proc ::confVisu::showHduList { visuNo } {
 #  Parameters
 #     visuNo : numero de la fenetre de profil
 #     increment : numero relatif du HDU cible ( +1 ou -1)
-#  Return
+#  @return
 #     rien
 #------------------------------------------------------------
 proc ::confVisu::onChangeHdu { visuNo increment  } {
@@ -3215,7 +3274,7 @@ proc ::confVisu::onChangeHdu { visuNo increment  } {
 #  Parameters
 #     profileNo : numero de la fenetre de profil
 #     index :     numero du HDU a afficher (1 pour le premier HDU)
-#  Return
+#  @return
 #     rien
 #------------------------------------------------------------
 proc ::confVisu::onSelectHdu { visuNo { hduNo "" } } {
@@ -3291,128 +3350,6 @@ proc ::confVisu::onSelectHdu { visuNo { hduNo "" } } {
 
    #--- je met a jour la variable a la fin de la procedure car elle est surveillee par un listener
    ###set private($visuNo,currentHduNo) $hduNo
-}
-
-#------------------------------------------------------------
-#  showProfile
-#    affiche un profil
-#  Parameters
-#     visuNo : numero de la fenetre de profil
-#     hduNo  : numero du HDU
-#  Return
-#     rien
-#------------------------------------------------------------
-proc ::confVisu::showProfile { visuNo hduNo } {
-   variable private
-
-   #--- je charge le HDU courant
-   ##::confVisu::loadIma $visuNo "[getFileName $visuNo];$hduNo"
-
-   ####--- j'affiche le graphique
-   ###set tkgraph [::confVisu::getGraph $visuNo]
-   ###
-   ####--- je cree la courbe par defaut si elle n'existe pas
-   ###if { [ $tkgraph element exists line$visuNo ] == 0 } {
-   ###    $tkgraph element create line$visuNo -symbol none -smooth natural
-   ###}
-   ###
-   ###
-   ####--- je recupere les coefficents des abcissses
-   ######set size [lindex [$hFile info imgdim] 0]
-   ######set crval1 [lindex [lindex [$hFile get keyword "CRVAL1"] 0] 1]
-   ######set cdelt1 [lindex [lindex [$hFile get keyword "CDELT1"] 0] 1]
-   ###
-   ####--- je charge le HDU courant
-   ###loadima "[getFileName $visuNo];$hduNo" $visuNo
-   ###
-   ####--- je recupere les most clefs
-   ###set bufNo [getBufNo $visuNo]
-   ###set size   [lindex [buf$bufNo getkwd NAXIS1] 1]
-   ###set crval1 [lindex [buf$bufNo getkwd CRVAL1] 1]
-   ###set cdelt1 [lindex [buf$bufNo getkwd CDELT1] 1]
-   ###
-   ####--- je recupere les ordonnees
-   ######set ydata [$hFile get image]
-   ###set ydata2 ""
-   ###set abcisses ""
-   ###for { set i 0 } { $i < $size } { incr i } {
-   ###   #--- je calcule les abcisses
-   ###   lappend abcisses [expr $cdelt1 * $i + $crval1 ]
-   ###   #--- je controle les ordonnees
-   ###   ###set y [lindex $ydata $i]
-   ###   set y [lindex [ buf$bufNo getpix [ list $i 0 ] ] 1]
-   ###   if { $y == "NULL" } {
-   ###      set y 0
-   ###   }
-   ###   lappend ydata2 $y
-   ###}
-   ###$tkgraph element configure line$visuNo -xdata $abcisses -ydata $ydata2
-   ###
-   ####--- je supprime le zoom, au cas ou il aurait ete applique precedemement
-   ###::confVisu::onGraphUnzoom $visuNo
-   ###
-   ###$tkgraph axis configure x2 -hide true
-   ###$tkgraph axis configure y2 -hide true
-   ###$tkgraph configure  -plotbackground "white"
-   ####--- j'affiche le graphe
-   ###::confVisu::setMode $visuNo "graph"
-
-}
-
-#------------------------------------------------------------
-#  showTable
-#    affiche une table
-#  Parameters
-#     visuNo : numero de la fenetre de profil
-#  Return
-#     rien
-#------------------------------------------------------------
-proc ::confVisu::showTable { visuNo hduNo } {
-   variable private
-
-   ###::confVisu::loadIma $visuNo "[getFileName $visuNo];$hduNo"
-
-   ###set tkTable [::confVisu::getTable $visuNo ]
-   ###
-   ####--- je vide la table
-   ###$tkTable delete 0 end
-   ###
-   ####--- j'ajoute le nom des colonnes en titre
-   ###set colNames [$hFile info column ]
-   ###set columnList ""
-   ###foreach colName $colNames {
-   ###      lappend columnList 0 $colName center
-   ###}
-   ###
-   ####--- j'ajoute le contenu des lignes
-   ###$tkTable configure -columns $columnList
-   ###set values [$hFile get table]
-   ###foreach row $values {
-   ###   $tkTable insert end $row
-   ###}
-   ###
-   ####--- j'affiche la table
-   ###::confVisu::setMode $visuNo "table"
-
-}
-
-#------------------------------------------------------------
-#  showImage2d
-#    affiche une image 2D dans une visu
-#  Parameters
-#     visuNo : numero de la fenetre de profil
-#     hduNo  : numero du HDU
-#  Return
-#     rien
-#------------------------------------------------------------
-proc ::confVisu::showImage2d { visuNo hduNo } {
-   variable private
-
-   #--- je charge le HDU courant
-   ###::confVisu::loadIma $visuNo "[getFileName $visuNo];$hduNo"
-
-   #--- j'affiche le canvas des images
-   ###::confVisu::setMode $visuNo "image"
 }
 
 ::confVisu::init
