@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.11 2009-01-12 18:15:16 michelpujol Exp $
+# Mise a jour $Id: keyword.tcl,v 1.12 2009-01-13 16:34:31 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -147,7 +147,6 @@ proc ::keyword::init { } {
 
    #--- Charge le fichier caption
    source [ file join "$::audace(rep_caption)" keyword.cap ]
-   set ::caption(keyword,description,CONFNAME) "Configuration instrumentale"
 
    #--- Creation de la variable de la boite de configuration de l'en-tete FITS si elle n'existe pas
    if { ! [ info exists ::conf(keyword,geometry) ] } { set ::conf(keyword,geometry) "650x240+350+15" }
@@ -177,7 +176,6 @@ proc ::keyword::init { } {
    set private(name_software)       "[ ::keyword::headerFitsCompliant $::keyword::private(name_software) ]"
    set private(commentaire)         ""
    set private(confName)            ""
-
 
    #--- On cree la liste des caracteristiques (nom, categorie, variable et procedure) des mots cles
    set private(infosMotsClefs) ""
@@ -783,7 +781,7 @@ proc ::keyword::setKeywordValue { visuNo keywordName keywordValue} {
 #------------------------------------------------------------------------------
 # selectKeywords
 #    selectionne les mots clefs a mettre dans les images
-#    cette prode
+#
 # Parametres :
 #    visuNo
 #------------------------------------------------------------------------------
@@ -801,8 +799,6 @@ proc ::keyword::selectKeywords { visuNo keywordNameList} {
    }
 }
 
-
 #--- Initialisation
 ::keyword::init
-
 
