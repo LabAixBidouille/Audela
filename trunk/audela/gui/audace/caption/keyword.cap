@@ -1,6 +1,6 @@
 #
 # Fichier : keyword.cap
-# Mise a jour $Id: keyword.cap,v 1.7 2009-01-11 12:07:51 robertdelmas Exp $
+# Mise a jour $Id: keyword.cap,v 1.8 2009-01-13 16:34:15 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -65,6 +65,7 @@ set caption(keyword,description,IMAGETYP)              "Image Type"
 set caption(keyword,description,SERIESID)              "Serie Identifiant"
 set caption(keyword,description,SWCREATE)              "Acquisition Software"
 set caption(keyword,description,SWMODIFY)              "Processing Software"
+set caption(keyword,description,CONFNAME)              "Instrument Setup"
 set caption(keyword,description,COMMENT)               "Comments"
 
 # *************** Version française ***************************
@@ -124,6 +125,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,SERIESID)           "Identifiant de série"
    set caption(keyword,description,SWCREATE)           "Logiciel d'acquisition"
    set caption(keyword,description,SWMODIFY)           "Logiciel de traitement"
+   set caption(keyword,description,CONFNAME)           "Configuration instrumentale"
    set caption(keyword,description,COMMENT)            "Commentaire"
 
 # *************** Version italienne ***************************
@@ -183,6 +185,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,SERIESID)           "Identificativo della serie"
    set caption(keyword,description,SWCREATE)           "Software di acquisizione"
    set caption(keyword,description,SWMODIFY)           "Software del elaborazione"
+   set caption(keyword,description,CONFNAME)           "# Configuration instrumentale"
    set caption(keyword,description,COMMENT)            "Commenti"
 
 # *************** Version espagnole ***************************
@@ -242,6 +245,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,SERIESID)           "Identificador de serie"
    set caption(keyword,description,SWCREATE)           "Programa de adquisición"
    set caption(keyword,description,SWMODIFY)           "Programa de tratamiento"
+   set caption(keyword,description,CONFNAME)           "# Configuration instrumentale"
    set caption(keyword,description,COMMENT)            "Comentarios"
 
 # *************** Version allemande ***************************
@@ -301,6 +305,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,SERIESID)           "Reihen Ausweis"
    set caption(keyword,description,SWCREATE)           "Software Belichtung"
    set caption(keyword,description,SWMODIFY)           "Aufbereitung Software"
+   set caption(keyword,description,CONFNAME)           "# Configuration instrumentale"
    set caption(keyword,description,COMMENT)            "Kommentar"
 
 # *************** Version portugaise ***************************
@@ -360,6 +365,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,SERIESID)           "Identificador de série"
    set caption(keyword,description,SWCREATE)           "Software de aquisição"
    set caption(keyword,description,SWMODIFY)           "Software de processamento"
+   set caption(keyword,description,CONFNAME)           "# Configuration instrumentale"
    set caption(keyword,description,COMMENT)            "Comentário"
 
 # *************** Version danoise *****************************
@@ -419,6 +425,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,SERIESID)           "Serie Identifiant"
    set caption(keyword,description,SWCREATE)           "Acquisition Software"
    set caption(keyword,description,SWMODIFY)           "Processing Software"
+   set caption(keyword,description,CONFNAME)           "Instrument Setup"
    set caption(keyword,description,COMMENT)            "Comments"
 
 }
