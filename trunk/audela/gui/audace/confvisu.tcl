@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.96 2009-01-12 20:53:56 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.97 2009-01-13 16:24:09 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -29,9 +29,6 @@ namespace eval ::confVisu {
             ::console::affiche_erreur "::confVisu::init $::errorInfo\n"
          }
       }
-
-      set ::caption(confVisu,fitsHduList) "HDU"
-
    }
 
    #------------------------------------------------------------

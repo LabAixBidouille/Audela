@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.52 2008-12-06 18:21:47 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.53 2009-01-13 16:23:45 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -72,6 +72,7 @@ set caption(confVisu,rouge)                           "R:"
 set caption(confVisu,vert)                            "G:"
 set caption(confVisu,bleu)                            "B:"
 set caption(confVisu,non_connecte)                    "Not connected"
+set caption(confVisu,fitsHduList)                     "HDU"
 
 set caption(plotxy,figure)                            "Figure"
 
@@ -141,6 +142,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,vert)                         "V:"
    set caption(confVisu,bleu)                         "B:"
    set caption(confVisu,non_connecte)                 "Non connectée"
+   set caption(confVisu,fitsHduList)                  "HDU"
 
    set caption(plotxy,figure)                         "Figure"
 
@@ -210,6 +212,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,vert)                         "V:"
    set caption(confVisu,bleu)                         "B:"
    set caption(confVisu,non_connecte)                 "Non connessa"
+   set caption(confVisu,fitsHduList)                  "HDU"
 
    set caption(plotxy,figure)                         "Figura"
 
@@ -279,6 +282,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,vert)                         "V:"
    set caption(confVisu,bleu)                         "A:"
    set caption(confVisu,non_connecte)                 "No conectado"
+   set caption(confVisu,fitsHduList)                  "HDU"
 
    set caption(plotxy,figure)                         "Figura"
 
@@ -348,6 +352,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,vert)                         "G:"
    set caption(confVisu,bleu)                         "B:"
    set caption(confVisu,non_connecte)                 "Nicht verbun"
+   set caption(confVisu,fitsHduList)                  "HDU"
 
    set caption(plotxy,figure)                         "Figur"
 
@@ -417,6 +422,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,vert)                         "G:"
    set caption(confVisu,bleu)                         "B:"
    set caption(confVisu,non_connecte)                 "Não conectado"
+   set caption(confVisu,fitsHduList)                  "HDU"
 
    set caption(plotxy,figure)                         "Figura"
 
@@ -486,6 +492,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,vert)                         "G:"
    set caption(confVisu,bleu)                         "B:"
    set caption(confVisu,non_connecte)                 "Ikke tilsluttet"
+   set caption(confVisu,fitsHduList)                  "HDU"
 
    set caption(plotxy,figure)                         "Figur"
 
