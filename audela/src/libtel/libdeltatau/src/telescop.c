@@ -311,6 +311,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		tel->radec_speed_dec_conversion=10.; /* (ADU)/(deg) */
 		tel->radec_position_conversion=-10000.; /* (ADU)/(deg) */
 		tel->radec_move_rate_max=1.0; /* deg/s */
+      tel->radec_tol=10 ; /* 10 arcsec */
 		/* --- Match --- */
 		tel->ha00=0.;
 		tel->roth00=0;
@@ -522,7 +523,7 @@ int mytel_radec_goto(struct telprop *tel)
    if (tel->radec_goto_blocking==1) {
       /* A loop is actived until the telescope is stopped */
       deltatau_positions12(tel,&p10,&p20);
-      tol=(tel->radec_position_conversion)/3600.*20; /* tolerance +/- 20 arcsec */
+      tol=(tel->radec_position_conversion)/3600.*tel->radec_tol; /* tolerance +/- 20 arcsec */
       while (1==1) {
    	   time_in++;
          sprintf(s,"after 350"); mytel_tcleval(tel,s);
@@ -556,7 +557,6 @@ int mytel_hadec_goto(struct telprop *tel)
 {
    char s[1024];
    int time_in=0,time_out=70;
-   int nbgoto=1;
    int p10,p1,p20,p2;
    double tol;
 
@@ -566,7 +566,7 @@ int mytel_hadec_goto(struct telprop *tel)
    if (tel->radec_goto_blocking==1) {
       /* A loop is actived until the telescope is stopped */
       deltatau_positions12(tel,&p10,&p20);
-      tol=(tel->radec_position_conversion)/3600.*20; /* tolerance +/- 20 arcsec */
+      tol=(tel->radec_position_conversion)/3600.*tel->radec_tol; /* tolerance +/- 20 arcsec */
       while (1==1) {
    	   time_in++;
          sprintf(s,"after 350"); mytel_tcleval(tel,s);
@@ -591,7 +591,7 @@ int mytel_radec_move(struct telprop *tel,char *direction)
    char s[1024],direc[10];
    int res;
    double v;
-   char axe,sens;
+   char axe=1,sens;
    
    if (tel->radec_move_rate>1.0) {
       tel->radec_move_rate=1;
@@ -626,7 +626,7 @@ int mytel_radec_move(struct telprop *tel,char *direction)
 
 int mytel_radec_stop(struct telprop *tel,char *direction)
 {
-   char s[1024],direc[10],axe;
+   char s[1024],direc[10],axe=1;
    int res;
    if (sate_move_radec=='A') {
       /* on arrete un GOTO */
@@ -886,7 +886,7 @@ int deltatau_coord(struct telprop *tel,char *result)
    char decs[20];   
    int roth_uc,rotd_uc;
    int h,m,retournement=0;
-   double sec,lst,ha,dec,ra;
+   double sec,lst,ha,dec=0,ra=0;
    /* --- Vide le buffer --- */
    res=deltatau_read(tel,s);
    /* --- Lecture AXE 2 (delta) en premier pour tester le retournement --- */
@@ -960,7 +960,7 @@ int deltatau_hadec_coord(struct telprop *tel,char *result)
    char decs[20];   
    int roth_uc,rotd_uc;
    int retournement=0;
-   double ha,dec,ra;
+   double ha,dec=0,ra=0;
    /* --- Vide le buffer --- */
    res=deltatau_read(tel,s);
    /* --- Lecture AXE 2 (delta) en premier pour tester le retournement --- */
@@ -1400,7 +1400,7 @@ void deltatau_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *func
       Tcl_Eval(interp,ligne);
       strcpy(s,interp->result);
    } else {
-      sprintf(ligne,"mc_date2iso8601 now",function);
+      strcpy(ligne,"mc_date2iso8601 now");
       Tcl_Eval(interp,ligne);
       strcpy(s,interp->result);
    }

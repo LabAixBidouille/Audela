@@ -143,7 +143,7 @@ int cmdTelPosition(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
    char ligne[2048];
    int result = TCL_OK,res;
    struct telprop *tel;
-   int axe_min=1,axe_max=4;
+   /*int axe_min=1,axe_max=4;*/
    char s[1024],ss[1024],axe;
    double ha,lst,sec,ra,dec;
    int h,m;
@@ -601,4 +601,19 @@ int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       }
    }
    return result;
+}
+
+/*
+ *   tolerence de position lors d'un GOTO bloquant
+ */
+int cmdTelTolPos(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char s[1024];
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;   
+   if (argc>=3) {   
+      tel->radec_tol=atof(argv[2]);
+   }
+   sprintf(s,"%f",tel->radec_tol);
+   Tcl_SetResult(interp,s,TCL_VOLATILE);
+   return TCL_OK;
 }
