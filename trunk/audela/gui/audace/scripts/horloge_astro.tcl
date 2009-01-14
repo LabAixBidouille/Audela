@@ -2,7 +2,7 @@
 # Fichier : horloge_asro.tcl
 # Description : Horloge de l'astronome
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: horloge_astro.tcl,v 1.3 2009-01-09 15:46:57 robertdelmas Exp $
+# Mise a jour $Id: horloge_astro.tcl,v 1.4 2009-01-14 15:23:27 robertdelmas Exp $
 #
 
 #---
@@ -79,9 +79,13 @@ proc calcul { } {
       set s [format "%02d" [expr int(floor([lindex $res 2]))]]
       $base.f.lab_ha configure -text "$caption(horloge_astro,angle_horaire) ${h}h ${m}mn ${s}s"
       $base.f.lab_altaz configure -text "$caption(horloge_astro,azimut) ${az}° - $caption(horloge_astro,hauteur) ${alt}°"
-      set distanceZenithale [ expr 90.0 - $alt ]
-      set distanceZenithale [ mc_angle2rad $distanceZenithale ]
-      set secz [format "%5.2f" [ expr 1. / cos($distanceZenithale) ] ]
+      if { $alt >= "0" } {
+         set distanceZenithale [ expr 90.0 - $alt ]
+         set distanceZenithale [ mc_angle2rad $distanceZenithale ]
+         set secz [format "%5.2f" [ expr 1. / cos($distanceZenithale) ] ]
+      } else {
+         set secz "$caption(horloge_astro,horizon)"
+      }
       $base.f.lab_secz configure -text "$caption(horloge_astro,secz) ${secz}"
       update
       #--- An infinite loop to change the language interactively
