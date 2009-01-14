@@ -54,6 +54,7 @@ struct telprop {
    int stop_e_uc; /* butee mecanique est */
    int stop_w_uc; /* butee mecanique ouest */
    double radec_move_rate_max; /* vitesse max (deg/s) pour move -rate 1 */
+   double radec_tol; /* tolerance en arcsec pour le goto -blocking 1 toutes les 350 ms */
 #if defined(OS_WIN)
 	HINSTANCE hPmacLib; /* handler Pmac */
 	int PmacDevice;

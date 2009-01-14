@@ -33,5 +33,6 @@ int cmdTelSpeedslew(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 int cmdTelSpeedtrack(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelLst(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelTolPos(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif
