@@ -1,6 +1,6 @@
 #
 # Fichier : remotectrl.cap
-# Mise a jour $Id: remotectrl.cap,v 1.11 2009-01-03 15:46:15 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.cap,v 1.12 2009-01-14 15:20:05 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -289,8 +289,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(remotectrl,goto)                           "GOTO"
    set caption(remotectrl,tel)                            "Montierung"
    set caption(remotectrl,non_connecte)                   "nicht verbun."
-   set caption(remotectrl,astre_est)                      "Das Gestirn isst"
-   set caption(remotectrl,pas_leve)                       "nicht auf."
+   set caption(remotectrl,astre_est)                      "Das Gestirn ist"
+   set caption(remotectrl,pas_leve)                       "unter dem Horizont."
    set caption(remotectrl,camera)                         "Kamera"
    set caption(remotectrl,non_connectee)                  "nicht verbun."
    set caption(remotectrl,nord)                           "N"

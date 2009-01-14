@@ -1,6 +1,6 @@
 #
 # Fichier : telescope.cap
-# Mise a jour $Id: telescope.cap,v 1.16 2008-02-10 17:35:26 robertdelmas Exp $
+# Mise a jour $Id: telescope.cap,v 1.17 2009-01-14 15:20:46 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -220,8 +220,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telescope,non_connecte)     "nicht verbun."
    set caption(telescope,pas_coord1)       "Keine"
    set caption(telescope,pas_coord2)       "Koordinate"
-   set caption(telescope,astre_est)        "Das Gestirn isst"
-   set caption(telescope,pas_leve)         "nicht auf."
+   set caption(telescope,astre_est)        "Das Gestirn ist"
+   set caption(telescope,pas_leve)         "unter dem Horizont."
    set caption(telescope,x1)               "x1"
    set caption(telescope,x5)               "x5"
    set caption(telescope,200)              "200"
