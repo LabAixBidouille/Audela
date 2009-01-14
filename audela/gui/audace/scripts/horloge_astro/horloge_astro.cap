@@ -1,6 +1,6 @@
 #
 # Fichier : horloge_astro.cap
-# Mise a jour $Id: horloge_astro.cap,v 1.9 2009-01-09 15:46:23 robertdelmas Exp $
+# Mise a jour $Id: horloge_astro.cap,v 1.10 2009-01-14 15:21:34 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -21,6 +21,7 @@ set caption(horloge_astro,angle_horaire)        "Hour Angle:"
 set caption(horloge_astro,azimut)               "Azimuth:"
 set caption(horloge_astro,hauteur)              "Elevation:"
 set caption(horloge_astro,secz)                 "sec z:"
+set caption(horloge_astro,horizon)              "The target is below the horizon."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -35,6 +36,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(horloge_astro,azimut)            "Azimut :"
    set caption(horloge_astro,hauteur)           "Hauteur :"
    set caption(horloge_astro,secz)              "sec z :"
+   set caption(horloge_astro,horizon)           "L'astre est sous l'horizon."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -49,6 +51,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(horloge_astro,azimut)            "Azimuth:"
    set caption(horloge_astro,hauteur)           "Elevazione:"
    set caption(horloge_astro,secz)              "sec z:"
+   set caption(horloge_astro,horizon)           "Il campo si trova sotto l'orizzonte."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -63,6 +66,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(horloge_astro,azimut)            "Azimuth:"
    set caption(horloge_astro,hauteur)           "Elevación:"
    set caption(horloge_astro,secz)              "sec z:"
+   set caption(horloge_astro,horizon)           "El astro está bajo el horizonte."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -77,6 +81,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(horloge_astro,azimut)            "Azimut:"
    set caption(horloge_astro,hauteur)           "Höhe:"
    set caption(horloge_astro,secz)              "sec z:"
+   set caption(horloge_astro,horizon)           "Das Gestirn ist unter dem Horizont."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -91,6 +96,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(horloge_astro,azimut)            "Azimute :"
    set caption(horloge_astro,hauteur)           "Altura :"
    set caption(horloge_astro,secz)              "sec z:"
+   set caption(horloge_astro,horizon)           "O alvo é abaixo do horizonte."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -105,6 +111,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(horloge_astro,azimut)            "Azimuth:"
    set caption(horloge_astro,hauteur)           "Elevation:"
    set caption(horloge_astro,secz)              "sec z:"
+   set caption(horloge_astro,horizon)           "The target is below the horizon."
 
 }
 
