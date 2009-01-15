@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.14 2009-01-05 22:02:21 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.15 2009-01-15 06:48:01 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -559,7 +559,7 @@ proc gcn_decode { longs sockname } {
    }
    #
    catch {
-      set f [open c:/d/a/toto.txt a]
+      set f [open $ros(root,htdocs)/htdocs/gcn.txt a]
       puts -nonewline $f "[mc_date2iso8601 $date_rec_notice] : ($sockname) $longs \n$comments"
       close $f
    }
