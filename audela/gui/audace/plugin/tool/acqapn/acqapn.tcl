@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Outil d'acquisition pour APN Nikon CoolPix
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.35 2008-12-08 21:57:13 robertdelmas Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.36 2009-01-17 18:17:20 robertdelmas Exp $
 #
 
 #============================================================
@@ -162,13 +162,13 @@ namespace eval ::acqapn {
       foreach var { camera_id serial_number version battery memory_free } { set private(coolpix_init,$var) "-" }
       set private(coolpix,nb_images) "-"
 
-      #--- Recuperation de la derniere configuration pour la mise a jour des panneaux 'acqapn' et 'infos'
+      #--- Recuperation de la derniere configuration pour la mise a jour des fenetres 'acqapn' et 'infos'
       ::acqapn::SetOptions
 
       #--- Initialisation des variables concernant les poses et les images
       ::acqapn::InitVar
 
-      #--- Caracteristiques du panneau
+      #--- Caracteristiques de l'outil
       set panneau(acqapn,titre)           "$caption(acqapn,titre,panneau_1)"
 
       #--- Texte du bouton 'Video'
@@ -183,7 +183,7 @@ namespace eval ::acqapn {
       set panneau(acqapn,a_effacer)       "last"
 
       #--- Les variables de l'outil deduites du modele d'APN
-      ::acqapn::ConfigPanneau
+      ::acqapn::ConfigOutil
 
       #--- Construction de l'interface graphique
       acqapnBuildIF $This
@@ -260,6 +260,7 @@ namespace eval ::acqapn {
       if { $reglages=="" } {
          ::console::affiche_saut "$caption(acqapn,msg,edition_selection)\n"
       } elseif { $reglages=="_init" } {
+         #--- Reglages affiches a la connexion du CoolPix
          ::console::affiche_saut "$caption(acqapn,msg,edition_init)\n"
       }
       #--- Les variables de configuration private // conf
@@ -453,7 +454,7 @@ namespace eval ::acqapn {
       #--- Liste des parametres sur la console
       ::acqapn::EditOptions "_init"
 
-      #--- Nouvelle configuration du panneau
+      #--- Nouvelle configuration de l'outil
       ::acqapn::Photo
       $This.fra4.connect configure -text $caption(acqapn,sw_connect,off) -command { ::acqapn::deconnect }
       ::acqapn::ConfigEtat normal
@@ -474,7 +475,7 @@ namespace eval ::acqapn {
          return
       }
 
-      #--- Modification du bouton 'Connecter' et desactivation du panneau
+      #--- Modification du bouton 'Connecter' et desactivation de l'outil
       $This.fra4.connect configure -text $caption(acqapn,sw,encours) -command { }
       ::acqapn::ConfigEtat disabled
 
@@ -543,7 +544,7 @@ namespace eval ::acqapn {
       variable private
       global caption conf panneau
 
-      #--- Mofification du texte du bouton 'Go' et desactivation du panneau
+      #--- Mofification du texte du bouton 'Go' et desactivation de l'outil
       $This.fra4.expose configure -text $caption(acqapn,sw,encours)
       ::acqapn::ConfigEtat disabled
 
@@ -650,7 +651,7 @@ namespace eval ::acqapn {
          pack $This.fra4.memory  -in $This.fra4 -anchor center -side bottom -fill x
       }
 
-      #--- Reconfiguration du bouton 'Go' et reactivation du panneau
+      #--- Reconfiguration du bouton 'Go' et reactivation de l'outil
       $This.fra4.expose configure -text $caption(acqapn,sw,exposer)
       pack $This.fra4 -side top -fill x
       set panneau(acqapn,nb_poses) "1"
@@ -666,7 +667,7 @@ namespace eval ::acqapn {
       variable private
       global caption conf panneau
 
-      #--- Inactivation des panneaux
+      #--- Inactivation de l'outil
       $This.avance.efface.erase configure -text $caption(acqapn,sw,encours)
       ::acqapn::ConfigEtat disabled
 
@@ -720,7 +721,7 @@ namespace eval ::acqapn {
       variable private
       global audace caption conf panneau
 
-      #--- Mise a jour du bouton 'Charger' et activation du panneau
+      #--- Mise a jour du bouton 'Charger' et activation de l'outil
       $This.avance.charge.load configure -text $caption(acqapn,sw,encours)
       ::acqapn::ConfigEtat disabled
 
@@ -741,7 +742,7 @@ namespace eval ::acqapn {
          }
       }
 
-      #--- Mise a jour du bouton 'Charger' et activation du panneau
+      #--- Mise a jour du bouton 'Charger' et activation de l'outil
       $This.avance.charge.load configure -text $caption(acqapn,but,charger)
       ::acqapn::ConfigEtat normal
    }
@@ -937,7 +938,7 @@ namespace eval ::acqapn {
       if { ![info exists private(coolpix,$variable)] } {
          $this setvalue @0
       } else {
-         $this configure -text $::acqapn::private(coolpix,$variable)
+         $this configure -text $private(coolpix,$variable)
       }
 
       #--- Mise a jour dynamique de la couleur
@@ -993,18 +994,18 @@ namespace eval ::acqapn {
 
       if { $private(coolpix,model) == "Coolpix-990" } {
          #--- Parametres specifiques au Nikon CoolPix 990
-         set coolpix_base(format) " MAX XGA VGA 3:2 "
+         set coolpix_base(format) "MAX XGA VGA \"\" 3:2"
       } else {
-         set coolpix_base(format) " VGA XGA SXGA UXGA 3:2 MAX "
+         set coolpix_base(format) "VGA XGA SXGA UXGA \"\" 3:2 MAX"
       }
       return $coolpix_base(format)
    }
 
    #
-   # ::acqapn::ConfigPanneau
+   # ::acqapn::ConfigOutil
    #--- Fonction appelee pour adapter l'outil a l'APN
    #
-   proc ConfigPanneau { } {
+   proc ConfigOutil { } {
       variable This
       variable private
       global coolpix_base panneau
@@ -1015,13 +1016,13 @@ namespace eval ::acqapn {
       }
       #--- Formats supportes par le modele choisi
       set coolpix_base(format) [ ::acqapn::Formats ]
-      #--- Si la valeur n'est plus dans la liste on prend le premier de la nouvelle liste
+      #--- Si la valeur n'est plus dans la liste on prend la premiere de la nouvelle liste
       if { ![regexp $private(coolpix,format) $coolpix_base(format)] } {
          set private(coolpix,format) [lindex $coolpix_base(format) 0]
       }
       #--- Si la fenetre est affichee on change l'affichage
       if { [winfo exists $This.fra3.reglage.var]=="1" && [$This.fra3.reglage.var get]=="format" } {
-         $This.fra3.valeur.val configure -values $coolpix_base(format) -text $::acqapn::private(coolpix,format)
+         $This.fra3.valeur.val configure -values $coolpix_base(format) -text $private(coolpix,format)
       }
       update
    }
@@ -1078,7 +1079,7 @@ namespace eval ::acqapn {
             }
             close $rp
          }
-         #--- Affiche la liste des images dans le panneau
+         #--- Affiche la liste des images dans l'outil
          set coolpix_base(imagelist) $panneau(acqapn,imagelist)
       }
    }
@@ -1099,12 +1100,7 @@ namespace eval ::acqapn {
          ::acqapn::SetComboBoxList $This.fra4.vues "imagelist"
          pack $This.fra4.vues\
             -in $This.fra4 -anchor center -side top -padx 2 -pady 4
-         $This.fra4.vues configure -state normal -modifycmd {
-            set this "$::acqapn::This.fra4.vues"
-            set index [$this getvalue]
-            set panneau(acqapn,selection) [expr $index+1]
-            set panneau(acqapn,imagename) [$this get]
-         }
+         $This.fra4.vues configure -state normal -modifycmd { ::acqapn::modifyVues }
          $This.fra4.vues configure -values $panneau(acqapn,imagelist)
          #--- Et affichage du plus recent
          $This.fra4.vues setvalue last
@@ -1140,6 +1136,73 @@ namespace eval ::acqapn {
          }
       }
       return $essai_port
+   }
+
+   #
+   # ::acqapn::modifyModele
+   #--- Commande associee au changement du modele
+   #
+   proc modifyModele { } {
+      variable This
+      variable private
+      global panneau
+
+      set this "$This"
+      set private(coolpix,model) [$this.fra2.opt_model get]
+      #--- Mise a jour des valeurs dependantes du modele d'APN dans la boite d'infos
+      ::acqapn::ConfigOutil
+      #--- Mise a jour des scales 'zoom' et "correction d'exposition' dans l'outil 'acqapn'
+      $this.fra3.zoom.opt_zoom_variant configure -from $panneau(acqapn,L_focus) -to $panneau(acqapn,H_focus)
+      set private(coolpix,zoom) $panneau(acqapn,L_focus)
+   }
+
+   #
+   # ::acqapn::modifyReglage
+   #--- Commande associee au changement de "reglage"
+   #
+   proc modifyReglage { } {
+      variable This
+      variable private
+      global coolpix_base panneau
+
+      set this "$This.fra3"
+      #--- Capture de la nouvelle variable affichee
+      set panneau(acqapn,variable_affichee) [$this.reglage.var get]
+      #--- Configuration de la liste des valeurs specifique de la variable
+      $this.valeur.val configure -values $coolpix_base($panneau(acqapn,variable_affichee))
+      #--- Affichage de la valeur correspondante
+      $this.valeur.val configure -text $private(coolpix,$panneau(acqapn,variable_affichee))
+   }
+
+   #
+   # ::acqapn::modifyValeur
+   #--- Commande associee au changement de "valeur"
+   #
+   proc modifyValeur { } {
+      variable This
+      variable private
+      global panneau
+
+      set this "$This.fra3"
+      #--- Capture de la nouvelle variable modifiee
+      set panneau(acqapn,variable_affichee) [$this.reglage.var get]
+      #--- Recherche de la valeur litterale associee a l'index et mise a jour
+      set private(coolpix,$panneau(acqapn,variable_affichee)) [$this.valeur.val get]
+      ::acqapn::VerifData $panneau(acqapn,variable_affichee)
+   }
+
+   #
+   # ::acqapn::modifyVues
+   #--- Commande associee au changement de vues
+   #
+   proc modifyVues { } {
+      variable This
+      global panneau
+
+      set this "$This.fra4.vues"
+      set index [$this getvalue]
+      set panneau(acqapn,selection) [expr $index+1]
+      set panneau(acqapn,imagename) [$this get]
    }
 
    #====================== Les fenetres annexes =================================================
@@ -1630,16 +1693,7 @@ proc acqapnBuildIF { This } {
          #--- Label du modele
          ::acqapn::SetComboBoxList $This.fra2.opt_model "model"
          pack $This.fra2.opt_model -in $This.fra2 -anchor center -side top -pady 2
-         $This.fra2.opt_model configure -modifycmd {
-               set this "$::acqapn::This"
-               set private(coolpix,model) [$this.fra2.opt_model get]
-               #--- Mise a jour des valeurs dependantes du modele d'APN dans la boite d'infos
-               ::acqapn::ConfigPanneau
-               #--- Mise a jour des scales 'zoom' et "correction d'exposition' dans l'outil 'acqapn'
-               $this.fra3.zoom.opt_zoom_variant configure -from $panneau(acqapn,L_focus) -to $panneau(acqapn,H_focus)
-               set private(coolpix,zoom) $panneau(acqapn,L_focus)
-               update
-            }
+         $This.fra2.opt_model configure -modifycmd { ::acqapn::modifyModele }
 
          #--- Le bouton 'Infos' pour afficher plus d'infos sur l'APN
          Button $This.fra2.info -borderwidth 4 -text $caption(acqapn,titre,info) -state normal\
@@ -1673,39 +1727,24 @@ proc acqapnBuildIF { This } {
          #--- Le label 'Variables'
          LabelFrame $This.fra3.reglage -borderwidth 0 -relief groove\
             -text $caption(acqapn,label,reglage) -side top -anchor center
-            #--- Construction du combobox des variables
+            #--- Construction de la combobox des variables
             ::acqapn::SetComboBoxList $This.fra3.reglage.var "variables"
             pack $This.fra3.reglage.var -in $This.fra3.reglage -anchor center -side top -padx 2 -pady 2
-            $This.fra3.reglage.var configure -modifycmd {
-               set this "$::acqapn::This.fra3"
-               #--- Capture de la nouvelle variable affichee
-               set panneau(acqapn,variable_affichee) [$this.reglage.var get]
-               #--- Configuration de la liste des valeurs specifique de la variable
-               $this.valeur.val configure -values $coolpix_base($panneau(acqapn,variable_affichee))
-               #--- Affichage de la valeur correspondante
-               $this.valeur.val configure -text $::acqapn::private(coolpix,$panneau(acqapn,variable_affichee))
-            }
+            $This.fra3.reglage.var configure -modifycmd { ::acqapn::modifyReglage }
          pack $This.fra3.reglage -in $This.fra3 -anchor center -side top -fill x
 
             #--- Le label 'Valeur'
             LabelFrame $This.fra3.valeur -borderwidth 0 -relief groove\
                -text $caption(acqapn,label,valeur) -side top -anchor center
-               #--- Construction du combobox des valeurs utilisables pour la valeur affichee
-               #--- Identification de la variable affichee dans le combobox des variables
+               #--- Construction de la combobox des valeurs utilisables pour la valeur affichee
+               #--- Identification de la variable affichee dans la combobox des variables
                set panneau(acqapn,variable_affichee) [$This.fra3.reglage.var get]
 
-               #--- Construction du combobox des valeurs utilisables pour la valeur afichee
+               #--- Construction de la combobox des valeurs utilisables pour la valeur affichee
                ::acqapn::SetComboBoxList $This.fra3.valeur.val "$panneau(acqapn,variable_affichee)"
                pack $This.fra3.valeur.val -in $This.fra3.valeur -anchor center -side top -padx 2 -pady 2
                $This.fra3.valeur.val configure -text $::acqapn::private(coolpix,$panneau(acqapn,variable_affichee))
-               $This.fra3.valeur.val configure -modifycmd {
-                  set this "$::acqapn::This.fra3"
-                  #--- Capture de la nouvelle variable modifiee
-                  set panneau(acqapn,variable_affichee) [$this.reglage.var get]
-                  #--- Recherche de la valeur litterale associee a l'index et mise a jour
-                  set private(coolpix,$panneau(acqapn,variable_affichee)) [$this.valeur.val get]
-                  ::acqapn::VerifData $panneau(acqapn,variable_affichee)
-               }
+               $This.fra3.valeur.val configure -modifycmd { ::acqapn::modifyValeur }
             pack $This.fra3.valeur -in $This.fra3 -anchor center -side top -fill x
 
             #--- Le zoom
