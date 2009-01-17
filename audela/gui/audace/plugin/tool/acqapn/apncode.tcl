@@ -2,7 +2,7 @@
 # Fichier : apncode.tcl
 # Description : Transcodage des variables de commande des APN
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: apncode.tcl,v 1.9 2008-11-11 19:09:56 robertdelmas Exp $
+# Mise a jour $Id: apncode.tcl,v 1.10 2009-01-17 17:52:36 robertdelmas Exp $
 #
 
 #============================================================
@@ -13,7 +13,7 @@ namespace eval ::acqapn {
 }
 
 # VerifData
-#--- Vérification des valeurs
+#--- Verification des valeurs
 #
 proc ::acqapn::VerifData { reglage } {
    variable private
@@ -27,7 +27,7 @@ proc ::acqapn::VerifData { reglage } {
 }
 
 # Dzoom
-#--- Codage du digital zoom à partir de lens
+#--- Codage du digital zoom a partir de lens
 #
 proc ::acqapn::Dzoom { lens } {
    switch -exact $lens {
@@ -39,7 +39,7 @@ proc ::acqapn::Dzoom { lens } {
 }
 
 # Metering
-#--- Codage du digital metering à partir de metering
+#--- Codage du digital metering a partir de metering
 #
 proc ::acqapn::Metering { metering } {
    switch -exact $metering {
@@ -53,27 +53,31 @@ proc ::acqapn::Metering { metering } {
 
 #
 # Resolution
-#--- Cette commande est appelée pour définir la comande de résolution
+#--- Cette commande est appelee pour definir la commande de resolution
 #--- en fonction du format et de la compression
 #
 proc ::acqapn::Resolution { } {
    variable private
 
-   #--- La combinaison format+compression est vérifiée
+   #--- La combinaison format+compression est verifiee
    set cmdresol "$private(coolpix,format)-$private(coolpix,compression)"
-   switch -exact $cmdresol {
+
+   switch -exact -- $cmdresol {
       VGA-Basic   { set private(coolpix,resolution) "1" }
       VGA-Normal  { set private(coolpix,resolution) "2" }
       VGA-Fine    { set private(coolpix,resolution) "3" }
-      XGA-Basic   { set private(coolpix,resolution) "7" }
-      XGA-Normal  { set private(coolpix,resolution) "8" }
-      XGA-Fine    { set private(coolpix,resolution) "9" }
       SXGA-Basic  { set private(coolpix,resolution) "4" }
       SXGA-Normal { set private(coolpix,resolution) "5" }
       SXGA-Fine   { set private(coolpix,resolution) "6" }
+      XGA-Basic   { set private(coolpix,resolution) "7" }
+      XGA-Normal  { set private(coolpix,resolution) "8" }
+      XGA-Fine    { set private(coolpix,resolution) "9" }
       UXGA-Basic  { set private(coolpix,resolution) "10" }
       UXGA-Normal { set private(coolpix,resolution) "11" }
       UXGA-Fine   { set private(coolpix,resolution) "12" }
+      -Basic      { set private(coolpix,resolution) "17" }
+      -Normal     { set private(coolpix,resolution) "18" }
+      -Fine       { set private(coolpix,resolution) "19" }
       3:2-Basic   { set private(coolpix,resolution) "26" }
       3:2-Normal  { set private(coolpix,resolution) "27" }
       3:2-Fine    { set private(coolpix,resolution) "28" }
@@ -89,7 +93,7 @@ proc ::acqapn::Resolution { } {
 
 #
 # ReverseDzoom
-#--- Décodage du digital zoom en lens
+#--- Decodage du digital zoom en lens
 #
 proc ::acqapn::ReverseDzoom { } {
    variable private
@@ -104,12 +108,12 @@ proc ::acqapn::ReverseDzoom { } {
 
 #
 # ReverseResolution
-#---Définition du format et de la compression en fonction de la résolution
+#---Definition du format et de la compression en fonction de la resolution
 #
 proc ::acqapn::ReverseResolution { } {
    variable private
 
-   switch -exact $private(coolpix_init,resolution) {
+   switch -exact -- $private(coolpix_init,resolution) {
       1       { set private(coolpix_init,format) "VGA"  ; set private(coolpix_init,compression) "Basic" }
       2       { set private(coolpix_init,format) "VGA"  ; set private(coolpix_init,compression) "Normal" }
       3       { set private(coolpix_init,format) "VGA"  ; set private(coolpix_init,compression) "Fine" }
@@ -122,6 +126,9 @@ proc ::acqapn::ReverseResolution { } {
       10      { set private(coolpix_init,format) "UXGA" ; set private(coolpix_init,compression) "Basic" }
       11      { set private(coolpix_init,format) "UXGA" ; set private(coolpix_init,compression) "Normal" }
       12      { set private(coolpix_init,format) "UXGA" ; set private(coolpix_init,compression) "Fine" }
+      17      { set private(coolpix_init,format) ""     ; set private(coolpix_init,compression) "Basic" }
+      18      { set private(coolpix_init,format) ""     ; set private(coolpix_init,compression) "Normal" }
+      19      { set private(coolpix_init,format) ""     ; set private(coolpix_init,compression) "Fine" }
       26      { set private(coolpix_init,format) "3:2"  ; set private(coolpix_init,compression) "Basic" }
       27      { set private(coolpix_init,format) "3:2"  ; set private(coolpix_init,compression) "Normal" }
       28      { set private(coolpix_init,format) "3:2"  ; set private(coolpix_init,compression) "Fine" }
@@ -137,7 +144,7 @@ proc ::acqapn::ReverseResolution { } {
 
 #
 # Exposure
-#--- Cette commande est appelée pour définir la commande et la valeur d'exposition
+#--- Cette commande est appelee pour definir la commande et la valeur d'exposition
 #
 proc ::acqapn::Exposure { var exposure } {
    variable private
