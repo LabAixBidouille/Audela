@@ -379,8 +379,8 @@ pour rectifier l'injustice qu'ils subissent.
  - Dp : Communication sur protocole IP de bas niveau (TCP, RCP, UDP, SMTP, etc.).
  - HelpViewer : Affichage d'une aide.
  - Img : Librairie de chargement de formats d'images standards (jpg, bmp, etc.).
- - Memchan : Librairie pour l'outil "Mise � jour d'AudeLA".
- - Mk4tcl : Librairie pour l'outil "Mise � jour d'AudeLA".
+ - Memchan : Librairie pour l'outil "Mise a jour d'AudeLA".
+ - Mk4tcl : Librairie pour l'outil "Mise a jour d'AudeLA".
  - Reg : Fonctions d'acces a la base de registres Windows.
  - SuperGrid : Positionne automatiquement les widgets dans une grille.
  - TableList : Affichage d'une liste avec parametrage des colonnes (outil Visionneuse bis).
@@ -392,9 +392,9 @@ pour rectifier l'injustice qu'ils subissent.
  - Thread : Multi-thread.
  - TkHtml : Widget permettant d'afficher une page HTML.
  - TMCI : Gestion du format video avi.
- - Trf : Librairie pour l'outil "Mise � jour d'AudeLA".
- - Vfs : Librairie pour l'outil "Mise � jour d'AudeLA".
- - Zlibtcl : Librairie pour l'outil "Mise � jour d'AudeLA".
+ - Trf : Librairie pour l'outil "Mise a jour d'AudeLA".
+ - Vfs : Librairie pour l'outil "Mise a jour d'AudeLA".
+ - Zlibtcl : Librairie pour l'outil "Mise a jour d'AudeLA".
  - CFITSIO (2.51).
  - Sextractor (2.5.0).
  - jpeg6b.
