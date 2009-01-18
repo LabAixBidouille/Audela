@@ -26,11 +26,11 @@ global audela
 set audela(major) "1"
 set audela(minor) "5"
 set audela(patch) "0"
-set audela(extra) "-beta2"
+set audela(extra) ""
 
-set audela(version) "1.5.0-beta2"
+set audela(version) "1.5.0"
 
-set audela(date) "09/07/2008"
+set audela(date) "18/01/2009"
 
 package provide audela "$audela(major).$audela(minor).$audela(patch)"
 

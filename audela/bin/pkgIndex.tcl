@@ -1,7 +1,7 @@
 #
 # Fichier : pkgIndex.tcl
 # Description : Definition du point d'entree du package
-# Mise a jour $Id: pkgIndex.tcl,v 1.2 2008-07-09 19:43:13 denismarchais Exp $
+# Mise a jour $Id: pkgIndex.tcl,v 1.3 2009-01-18 16:50:25 denismarchais Exp $
 #
 # This file is part of the AudeLA project : <http://www.audela.org>
 # Copyright (C) 2008 The AudeLA Core Team
