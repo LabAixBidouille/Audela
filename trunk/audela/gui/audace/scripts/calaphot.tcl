@@ -4,7 +4,7 @@
 # Description : Script pour la photometrie d'asteroides ou d'etoiles variables.
 # Auteurs     : Olivier Thizy (thizy@free.fr)
 #               Jacques Michelet (jacques.michelet@laposte.net)
-# Mise a jour $Id: calaphot.tcl,v 1.14 2009-01-04 16:41:40 jacquesmichelet Exp $
+# Mise a jour $Id: calaphot.tcl,v 1.15 2009-01-18 13:55:35 jacquesmichelet Exp $
 
 ################## Choses a faire
 #### Fonctionnel
@@ -21,9 +21,9 @@
 
 ################## Bogues connues a ce jour :
 # - pas de suppression des fichiers de config sextractor en cas d'arret anticipe
-# - effacement des "tags" sur l'image lors des suppressions d'étoiles
 # - plantage lors de l'affichage de la CL si aucune image n'est validee (premier n'existe pas)
 # - mode sextractor ne marche pas si les repertoires ont des blancs dans leurs noms (exe, images ou configs)
+# - pb d'affichage des valeurs numeriques si on refait le pointade de l'asteroide sur le 1ere image
 
 
 catch {namespace delete ::Calaphot}
