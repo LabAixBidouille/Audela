@@ -1,6 +1,6 @@
-# Mise a jour $Id: calaphot_graph.tcl,v 1.2 2009-01-04 14:02:51 jacquesmichelet Exp $
+# Mise a jour $Id: calaphot_graph.tcl,v 1.3 2009-01-18 13:55:35 jacquesmichelet Exp $
 
-#*************************************************************************#
+    #*************************************************************************#
     #*************  AffichageMenus  ******************************************#
     #*************************************************************************#
     # Entree : trace_log                                                      #
@@ -813,15 +813,22 @@
         variable mag_etoile
         variable calaphot
         variable data_script
+        variable flux_premiere_etoile
 
         Message debug "%s\n" [info level [info level]]
 
-        if {![info exists nombre_reference]} {
+        if {![info exists data_script(nombre_reference)]} {
             set data_script(nombre_reference) 0
         }
+        Message debug "nombre_reference=%d\n" $data_script(nombre_reference)
         set pos [Centroide]
+        Message debug "centroide=%s\n" $pos
         if {([llength $pos] != 0) && ($data_script(nombre_reference) > 0)} {
             incr data_script(nombre_reference) -1
+            # Va permettre de reprendre le recalage photometrique de l'image
+            if {($data_script(nombre_reference) == 0)} {
+                unset flux_premiere_etoile
+            }
             set cx [lindex $pos 0]
             set cy [lindex $pos 1]
             set ix [lsearch $coord_etoile_x $cx]
