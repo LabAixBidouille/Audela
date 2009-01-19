@@ -1,0 +1,135 @@
+#
+# Fichier : scr1300xtc.cap
+# Mise a jour $Id: scr1300xtc.cap,v 1.4 2008-12-20 14:53:40 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(scr1300xtc,camera)                       "SCR1300XTC"
+
+set caption(scr1300xtc,port)                         "Port"
+set caption(scr1300xtc,configurer)                   "Set up"
+set caption(scr1300xtc,acquisition)                  "Acquisition"
+set caption(scr1300xtc,miroir_x)                     "Horizontal Mirror"
+set caption(scr1300xtc,miroir_y)                     "Vertical Mirror"
+
+set caption(scr1300xtc,port_camera)                  "SCR1300XTC Port"
+set caption(scr1300xtc,2points)                      ":"
+
+set caption(scr1300xtc,titre_site_web)               "Reference Web Site:"
+set caption(scr1300xtc,site_web_ref)                 "http://synonyme.nerim.net/imagerie/HomePage.html"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(scr1300xtc,camera)                    "SCR1300XTC"
+
+   set caption(scr1300xtc,port)                      "Port"
+   set caption(scr1300xtc,configurer)                "Configurer"
+   set caption(scr1300xtc,acquisition)               "Acquisition"
+   set caption(scr1300xtc,miroir_x)                  "Miroir horizontal"
+   set caption(scr1300xtc,miroir_y)                  "Miroir vertical"
+
+   set caption(scr1300xtc,port_camera)               "Port SCR1300XTC"
+   set caption(scr1300xtc,2points)                   ":"
+
+   set caption(scr1300xtc,titre_site_web)            "Site Web de référence :"
+   set caption(scr1300xtc,site_web_ref)              "http://synonyme.nerim.net/imagerie/HomePage.html"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(scr1300xtc,camera)                    "SCR1300XTC"
+
+   set caption(scr1300xtc,port)                      "Porta"
+   set caption(scr1300xtc,configurer)                "Configurare"
+   set caption(scr1300xtc,acquisition)               "Acquisizione"
+   set caption(scr1300xtc,miroir_x)                  "Specchio orizzontale"
+   set caption(scr1300xtc,miroir_y)                  "Specchio verticale"
+
+   set caption(scr1300xtc,port_camera)               "Porta SCR1300XTC"
+   set caption(scr1300xtc,2points)                   ":"
+
+   set caption(scr1300xtc,titre_site_web)            "Sito Web di riferimento:"
+   set caption(scr1300xtc,site_web_ref)              "http://synonyme.nerim.net/imagerie/HomePage.html"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(scr1300xtc,camera)                    "SCR1300XTC"
+
+   set caption(scr1300xtc,port)                      "Puerto"
+   set caption(scr1300xtc,configurer)                "Configurar"
+   set caption(scr1300xtc,acquisition)               "Adquisición"
+   set caption(scr1300xtc,miroir_x)                  "Espejo horizontal"
+   set caption(scr1300xtc,miroir_y)                  "Espejo vertical"
+
+   set caption(scr1300xtc,port_camera)               "Puerto SCR1300XTC"
+   set caption(scr1300xtc,2points)                   ":"
+
+   set caption(scr1300xtc,titre_site_web)            "Sitio Web de referencia:"
+   set caption(scr1300xtc,site_web_ref)              "http://synonyme.nerim.net/imagerie/HomePage.html"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(scr1300xtc,camera)                    "SCR1300XTC"
+
+   set caption(scr1300xtc,port)                      "Port"
+   set caption(scr1300xtc,configurer)                "Konfigurieren"
+   set caption(scr1300xtc,acquisition)               "Belichtung"
+   set caption(scr1300xtc,miroir_x)                  "Horizontale Spiegel"
+   set caption(scr1300xtc,miroir_y)                  "Verticale Spiegel"
+
+   set caption(scr1300xtc,port_camera)               "SCR1300XTC Port"
+   set caption(scr1300xtc,2points)                   ":"
+
+   set caption(scr1300xtc,titre_site_web)            "Referenz Webseite:"
+   set caption(scr1300xtc,site_web_ref)              "http://synonyme.nerim.net/imagerie/HomePage.html"
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(scr1300xtc,camera)                    "SCR1300XTC"
+
+   set caption(scr1300xtc,port)                      "Porto"
+   set caption(scr1300xtc,configurer)                "Configurar"
+   set caption(scr1300xtc,acquisition)               "Aquisição"
+   set caption(scr1300xtc,miroir_x)                  "Espelho Horizontal"
+   set caption(scr1300xtc,miroir_y)                  "Espelho Vertical"
+
+   set caption(scr1300xtc,port_camera)               "Porta SCR1300XTC"
+   set caption(scr1300xtc,2points)                   ":"
+
+   set caption(scr1300xtc,titre_site_web)            "Site Web de referência:"
+   set caption(scr1300xtc,site_web_ref)              "http://synonyme.nerim.net/imagerie/HomePage.html"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(scr1300xtc,camera)                    "SCR1300XTC"
+
+   set caption(scr1300xtc,port)                      "Port"
+   set caption(scr1300xtc,configurer)                "Set up"
+   set caption(scr1300xtc,acquisition)               "Acquisition"
+   set caption(scr1300xtc,miroir_x)                  "Horisontal spejl"
+   set caption(scr1300xtc,miroir_y)                  "Vertikal spejl"
+
+   set caption(scr1300xtc,port_camera)               "SCR1300XTC Port"
+   set caption(scr1300xtc,2points)                   ":"
+
+   set caption(scr1300xtc,titre_site_web)            "Reference Web Site:"
+   set caption(scr1300xtc,site_web_ref)              "http://synonyme.nerim.net/imagerie/HomePage.html"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

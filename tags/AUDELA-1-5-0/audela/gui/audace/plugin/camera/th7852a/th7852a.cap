@@ -1,0 +1,128 @@
+#
+# Fichier : th7852a.cap
+# Mise a jour $Id: th7852a.cap,v 1.5 2008-12-20 14:54:04 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(th7852a,camera)                       "TH7852A"
+
+set caption(th7852a,miroir_x)                     "Horizontal Mirror"
+set caption(th7852a,miroir_y)                     "Vertical Mirror"
+set caption(th7852a,coef)                         "Coefficient"
+
+set caption(th7852a,port_camera)                  "TH7852A Port"
+set caption(th7852a,2points)                      ":"
+set caption(th7852a,bus_ISA)                      "Bus ISA"
+
+set caption(th7852a,titre_site_web)               "Reference Web Site:"
+set caption(th7852a,site_web_ref)                 "To be created"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(th7852a,camera)                    "TH7852A"
+
+   set caption(th7852a,miroir_x)                  "Miroir horizontal"
+   set caption(th7852a,miroir_y)                  "Miroir vertical"
+   set caption(th7852a,coef)                      "Coefficient"
+
+   set caption(th7852a,port_camera)               "Port TH7852A"
+   set caption(th7852a,2points)                   ":"
+   set caption(th7852a,bus_ISA)                   "Bus ISA"
+
+   set caption(th7852a,titre_site_web)            "Site Web de référence :"
+   set caption(th7852a,site_web_ref)              "A créer"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(th7852a,camera)                    "TH7852A"
+
+   set caption(th7852a,miroir_x)                  "Specchio orizzontale"
+   set caption(th7852a,miroir_y)                  "Specchio verticale"
+   set caption(th7852a,coef)                      "Coefficiente"
+
+   set caption(th7852a,port_camera)               "Porta TH7852A"
+   set caption(th7852a,2points)                   ":"
+   set caption(th7852a,bus_ISA)                   "Bus ISA"
+
+   set caption(th7852a,titre_site_web)            "Sito Web di riferimento:"
+   set caption(th7852a,site_web_ref)              "Crea"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(th7852a,camera)                    "TH7852A"
+
+   set caption(th7852a,miroir_x)                  "Espejo horizontal"
+   set caption(th7852a,miroir_y)                  "Espejo vertical"
+   set caption(th7852a,coef)                      "Coeficiente"
+
+   set caption(th7852a,port_camera)               "Puerto TH7852A"
+   set caption(th7852a,2points)                   ":"
+   set caption(th7852a,bus_ISA)                   "Bus ISA"
+
+   set caption(th7852a,titre_site_web)            "Sitio Web de referencia:"
+   set caption(th7852a,site_web_ref)              "A crear"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(th7852a,camera)                    "TH7852A"
+
+   set caption(th7852a,miroir_x)                  "Horizontale Spiegel"
+   set caption(th7852a,miroir_y)                  "Verticale Spiegel"
+   set caption(th7852a,coef)                      "Faktor"
+
+   set caption(th7852a,port_camera)               "TH7852A Port"
+   set caption(th7852a,2points)                   ":"
+   set caption(th7852a,bus_ISA)                   "Bus ISA"
+
+   set caption(th7852a,titre_site_web)            "Referenz Webseite:"
+   set caption(th7852a,site_web_ref)              "Zu schaffen"
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(th7852a,camera)                    "TH7852A"
+
+   set caption(th7852a,miroir_x)                  "Espelho Horizontal"
+   set caption(th7852a,miroir_y)                  "Espelho Vertical"
+   set caption(th7852a,coef)                      "Coeficiente"
+
+   set caption(th7852a,port_camera)               "Porta TH7852A"
+   set caption(th7852a,2points)                   ":"
+   set caption(th7852a,bus_ISA)                   "Bus ISA"
+
+   set caption(th7852a,titre_site_web)            "Site Web de referência:"
+   set caption(th7852a,site_web_ref)              "A criar"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(th7852a,camera)                    "TH7852A"
+
+   set caption(th7852a,miroir_x)                  "Horisontal spejl"
+   set caption(th7852a,miroir_y)                  "Vertikal spejl"
+   set caption(th7852a,coef)                      "Coefficient"
+
+   set caption(th7852a,port_camera)               "TH7852A Port"
+   set caption(th7852a,2points)                   ":"
+   set caption(th7852a,bus_ISA)                   "Bus ISA"
+
+   set caption(th7852a,titre_site_web)            "Reference Web Site:"
+   set caption(th7852a,site_web_ref)              "To be created"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

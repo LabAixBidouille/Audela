@@ -1,0 +1,2 @@
+LIBRARY libavrcom
+EXPORTS Avrcom_Init @1

@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<HTML>
+<HEAD>
+   <TITLE>LIBFLIAPI FLIGrabFrame</TITLE>
+   <META NAME="GENERATOR" CONTENT="DOC++ 3.4.8">
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+<H2>LIBFLIAPI <A HREF="#DOC.DOCU">FLIGrabFrame</A></H2><H2>(<!1><A HREF="flidev_t.html">flidev_t</A> dev,  void* buff,  size_t buffsize,<BR>&nbsp; size_t* bytesgrabbed)</H2><BLOCKQUOTE>
+ Grab a frame from a given camera.</BLOCKQUOTE>
+
+<A NAME="DOC.DOCU"></A>
+<HR>
+<H2>Documentation</H2>
+<BLOCKQUOTE>
+Grab a frame from a given camera.  This function grabs a complete
+frame (image) according to the settings (image area, exposure time,
+bit depth, etc.) of camera <TT>dev</TT>.  Up to <TT>buffsize</TT>
+bytes of the grabbed image are placed into the buffer pointed to by
+<TT>buff</TT>, and the actual number of bytes grabbed is placed in
+the location pointed to by <TT>bytesgrabbed</TT>.  The settings of
+<TT>dev</TT> must be valid for the camera device.  They are set by
+calling the appropriate set library functions.  This function
+returns after the frame has been exposed and the image is acquired.
+This includes starting the exposure, waiting until the exposure is
+complete, flushing rows above the image area, grabbing all rows of
+the image, and flushing any remaining rows below the image.
+
+</BLOCKQUOTE>
+<DL><DT><DT><B>Parameters:</B><DD><B>dev</B> -  Camera to grab frame of.
+
+<BR><B>buff</B> -  Pointer to where the grabbed frame will be placed.
+
+<BR><B>buffsize</B> -  The size in bytes of the buffer pointed to by
+<TT>buff</TT>.
+
+<BR><B>bytesgrabbed</B> -  Pointer to where the actual number of bytes grabbed will be placed.
+
+<BR><DT><B>Returns:</B><DD>  Zero on success.
+<BR>  Non-zero on failure.
+
+<BR><DT><B>See Also:</B><DD><!1><A HREF="FLISetExposureTime.html">FLISetExposureTime</A>
+<BR><!1><A HREF="FLISetFrameType.html">FLISetFrameType</A>
+<BR><!1><A HREF="FLISetImageArea.html">FLISetImageArea</A>
+<BR><!1><A HREF="FLISetHBin.html">FLISetHBin</A>
+<BR><!1><A HREF="FLISetVBin.html">FLISetVBin</A>
+<BR><!1><A HREF="FLISetNFlushes.html">FLISetNFlushes</A>
+<BR><!1><A HREF="FLISetBitDepth.html">FLISetBitDepth</A>
+<BR><!1><A HREF="FLIExposeFrame.html">FLIExposeFrame</A>
+<BR><!1><A HREF="FLIGetExposureStatus.html">FLIGetExposureStatus</A>
+<BR><!1><A HREF="FLIFlushRow.html">FLIFlushRow</A>
+<BR><!1><A HREF="FLIGrabRow.html">FLIGrabRow</A>
+<BR><DD></DL><P><P><I><A HREF="index.html">Alphabetic index</A></I></P><HR>
+<BR>
+This page was generated with the help of <A HREF="http://docpp.sourceforge.net">DOC++</A>.
+</BODY>
+</HTML>

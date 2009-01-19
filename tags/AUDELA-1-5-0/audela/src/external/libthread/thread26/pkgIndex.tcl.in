@@ -1,0 +1,10 @@
+# Thread 2.6.5.1
+#    = Thread 2.6.5 ( http://sourceforge.net/projects/tcl )
+#      + new command "copycommand" for Audela.
+
+if { $::tcl_platform(os) == "Linux" } {
+   package ifneeded Thread @PACKAGE_VERSION@ [list load [file join $dir libthread@PACKAGE_VERSION@.so]]
+} else {
+   package ifneeded Thread @PACKAGE_VERSION@  [list load [file join $dir thread@PACKAGE_VERSION@.dll]]
+}
+

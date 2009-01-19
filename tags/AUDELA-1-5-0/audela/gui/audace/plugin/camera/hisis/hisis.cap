@@ -1,0 +1,282 @@
+#
+# Fichier : hisis.cap
+# Mise a jour $Id: hisis.cap,v 1.6 2008-12-20 14:53:05 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(hisis,camera)                       "Hi-SIS"
+
+set caption(hisis,obtu_ouvert)                  "Open"
+set caption(hisis,obtu_ferme)                   "Closed"
+set caption(hisis,obtu_synchro)                 "Synchro"
+
+set caption(hisis,hisis_11)                     "Hi-SIS 11"
+set caption(hisis,hisis_22)                     "Hi-SIS 22"
+set caption(hisis,hisis_23)                     "Hi-SIS 23"
+set caption(hisis,hisis_24)                     "Hi-SIS 24"
+set caption(hisis,hisis_33)                     "Hi-SIS 33"
+set caption(hisis,hisis_36)                     "Hi-SIS 36"
+set caption(hisis,hisis_39)                     "Hi-SIS 39"
+set caption(hisis,hisis_43)                     "Hi-SIS 43"
+set caption(hisis,hisis_44)                     "Hi-SIS 44"
+set caption(hisis,hisis_48)                     "Hi-SIS 48"
+set caption(hisis,port)                         "Port"
+set caption(hisis,configurer)                   "Set up"
+set caption(hisis,acquisition)                  "Acquisition"
+set caption(hisis,miroir_x)                     "Horizontal Mirror"
+set caption(hisis,miroir_y)                     "Vertical Mirror"
+set caption(hisis,can_resolution)               "Resolution"
+set caption(hisis,can_12bits)                   "12 bits"
+set caption(hisis,can_14bits)                   "14 bits"
+set caption(hisis,delai_a)                      "Delay a"
+set caption(hisis,delai_b)                      "Delay b"
+set caption(hisis,delai_c)                      "Delay c"
+set caption(hisis,fonc_obtu)                    "Shutter Operation"
+
+set caption(hisis,port_camera)                  "Hi-SIS Port - Model"
+set caption(hisis,2points)                      ":"
+
+set caption(hisis,titre_site_web)               "Reference Web Site:"
+set caption(hisis,site_web_ref)                 "http://www.europixel.it/europixelweb/welcomeframe.htm"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(hisis,camera)                    "Hi-SIS"
+
+   set caption(hisis,obtu_ouvert)               "Ouvert"
+   set caption(hisis,obtu_ferme)                "Fermé"
+   set caption(hisis,obtu_synchro)              "Synchro"
+
+   set caption(hisis,hisis_11)                  "Hi-SIS 11"
+   set caption(hisis,hisis_22)                  "Hi-SIS 22"
+   set caption(hisis,hisis_23)                  "Hi-SIS 23"
+   set caption(hisis,hisis_24)                  "Hi-SIS 24"
+   set caption(hisis,hisis_33)                  "Hi-SIS 33"
+   set caption(hisis,hisis_36)                  "Hi-SIS 36"
+   set caption(hisis,hisis_39)                  "Hi-SIS 39"
+   set caption(hisis,hisis_43)                  "Hi-SIS 43"
+   set caption(hisis,hisis_44)                  "Hi-SIS 44"
+   set caption(hisis,hisis_48)                  "Hi-SIS 48"
+   set caption(hisis,port)                      "Port"
+   set caption(hisis,configurer)                "Configurer"
+   set caption(hisis,acquisition)               "Acquisition"
+   set caption(hisis,miroir_x)                  "Miroir horizontal"
+   set caption(hisis,miroir_y)                  "Miroir vertical"
+   set caption(hisis,can_resolution)            "Résolution"
+   set caption(hisis,can_12bits)                "12 bits"
+   set caption(hisis,can_14bits)                "14 bits"
+   set caption(hisis,delai_a)                   "Délai a"
+   set caption(hisis,delai_b)                   "Délai b"
+   set caption(hisis,delai_c)                   "Délai c"
+   set caption(hisis,fonc_obtu)                 "Fonctionnement de l'obturateur"
+
+   set caption(hisis,port_camera)               "Port Hi-SIS"
+   set caption(hisis,2points)                   ":"
+
+   set caption(hisis,titre_site_web)            "Site Web de référence :"
+   set caption(hisis,site_web_ref)              "http://www.europixel.it/europixelweb/welcomeframe.htm"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(hisis,camera)                    "Hi-SIS"
+
+   set caption(hisis,obtu_ouvert)               "Aperto"
+   set caption(hisis,obtu_ferme)                "Chiuso"
+   set caption(hisis,obtu_synchro)              "Sincronizza"
+
+   set caption(hisis,hisis_11)                  "Hi-SIS 11"
+   set caption(hisis,hisis_22)                  "Hi-SIS 22"
+   set caption(hisis,hisis_23)                  "Hi-SIS 23"
+   set caption(hisis,hisis_24)                  "Hi-SIS 24"
+   set caption(hisis,hisis_33)                  "Hi-SIS 33"
+   set caption(hisis,hisis_36)                  "Hi-SIS 36"
+   set caption(hisis,hisis_39)                  "Hi-SIS 39"
+   set caption(hisis,hisis_43)                  "Hi-SIS 43"
+   set caption(hisis,hisis_44)                  "Hi-SIS 44"
+   set caption(hisis,hisis_48)                  "Hi-SIS 48"
+   set caption(hisis,port)                      "Porta"
+   set caption(hisis,configurer)                "Configurare"
+   set caption(hisis,acquisition)               "Acquisizione"
+   set caption(hisis,miroir_x)                  "Specchio orizzontale"
+   set caption(hisis,miroir_y)                  "Specchio verticale"
+   set caption(hisis,can_resolution)            "Risoluzione"
+   set caption(hisis,can_12bits)                "12 bits"
+   set caption(hisis,can_14bits)                "14 bits"
+   set caption(hisis,delai_a)                   "Intervallo a"
+   set caption(hisis,delai_b)                   "Intervallo b"
+   set caption(hisis,delai_c)                   "Intervallo c"
+   set caption(hisis,fonc_obtu)                 "Funzionamento otturatore"
+
+   set caption(hisis,port_camera)               "Porta Hi-SIS"
+   set caption(hisis,2points)                   ":"
+
+   set caption(hisis,titre_site_web)            "Sito Web di riferimento:"
+   set caption(hisis,site_web_ref)              "http://www.europixel.it/europixelweb/welcomeframe.htm"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(hisis,camera)                    "Hi-SIS"
+
+   set caption(hisis,obtu_ouvert)               "Abierto"
+   set caption(hisis,obtu_ferme)                "Cerrado"
+   set caption(hisis,obtu_synchro)              "Sincro"
+
+   set caption(hisis,hisis_11)                  "Hi-SIS 11"
+   set caption(hisis,hisis_22)                  "Hi-SIS 22"
+   set caption(hisis,hisis_23)                  "Hi-SIS 23"
+   set caption(hisis,hisis_24)                  "Hi-SIS 24"
+   set caption(hisis,hisis_33)                  "Hi-SIS 33"
+   set caption(hisis,hisis_36)                  "Hi-SIS 36"
+   set caption(hisis,hisis_39)                  "Hi-SIS 39"
+   set caption(hisis,hisis_43)                  "Hi-SIS 43"
+   set caption(hisis,hisis_44)                  "Hi-SIS 44"
+   set caption(hisis,hisis_48)                  "Hi-SIS 48"
+   set caption(hisis,port)                      "Puerto"
+   set caption(hisis,configurer)                "Configurar"
+   set caption(hisis,acquisition)               "Adquisición"
+   set caption(hisis,miroir_x)                  "Espejo horizontal"
+   set caption(hisis,miroir_y)                  "Espejo vertical"
+   set caption(hisis,can_resolution)            "Resolución"
+   set caption(hisis,can_12bits)                "12 bits"
+   set caption(hisis,can_14bits)                "14 bits"
+   set caption(hisis,delai_a)                   "Retraso a"
+   set caption(hisis,delai_b)                   "Retraso b"
+   set caption(hisis,delai_c)                   "Retraso c"
+   set caption(hisis,fonc_obtu)                 "Funcionamiento del obturador"
+
+   set caption(hisis,port_camera)               "Puerto Hi-SIS"
+   set caption(hisis,2points)                   ":"
+
+   set caption(hisis,titre_site_web)            "Sitio Web de referencia:"
+   set caption(hisis,site_web_ref)              "http://www.europixel.it/europixelweb/welcomeframe.htm"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(hisis,camera)                    "Hi-SIS"
+
+   set caption(hisis,obtu_ouvert)               "Offen"
+   set caption(hisis,obtu_ferme)                "Geschlossen"
+   set caption(hisis,obtu_synchro)              "Synchro"
+
+   set caption(hisis,hisis_11)                  "Hi-SIS 11"
+   set caption(hisis,hisis_22)                  "Hi-SIS 22"
+   set caption(hisis,hisis_23)                  "Hi-SIS 23"
+   set caption(hisis,hisis_24)                  "Hi-SIS 24"
+   set caption(hisis,hisis_33)                  "Hi-SIS 33"
+   set caption(hisis,hisis_36)                  "Hi-SIS 36"
+   set caption(hisis,hisis_39)                  "Hi-SIS 39"
+   set caption(hisis,hisis_43)                  "Hi-SIS 43"
+   set caption(hisis,hisis_44)                  "Hi-SIS 44"
+   set caption(hisis,hisis_48)                  "Hi-SIS 48"
+   set caption(hisis,port)                      "Port"
+   set caption(hisis,configurer)                "Konfigurieren"
+   set caption(hisis,acquisition)               "Belichtung"
+   set caption(hisis,miroir_x)                  "Horizontale Spiegel"
+   set caption(hisis,miroir_y)                  "Verticale Spiegel"
+   set caption(hisis,can_resolution)            "Auflösung"
+   set caption(hisis,can_12bits)                "12 bit"
+   set caption(hisis,can_14bits)                "14 bit"
+   set caption(hisis,delai_a)                   "Zeitraum a"
+   set caption(hisis,delai_b)                   "Zeitraum b"
+   set caption(hisis,delai_c)                   "Zeitraum c"
+   set caption(hisis,fonc_obtu)                 "Verschluss Arbeiten"
+
+   set caption(hisis,port_camera)               "Hi-SIS Port - Modell"
+   set caption(hisis,2points)                   ":"
+
+   set caption(hisis,titre_site_web)            "Referenz Webseite:"
+   set caption(hisis,site_web_ref)              "http://www.europixel.it/europixelweb/welcomeframe.htm"
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(hisis,camera)                    "Hi-SIS"
+
+   set caption(hisis,obtu_ouvert)               "Aberto"
+   set caption(hisis,obtu_ferme)                "Fechado"
+   set caption(hisis,obtu_synchro)              "Sincro"
+
+   set caption(hisis,hisis_11)                  "Hi-SIS 11"
+   set caption(hisis,hisis_22)                  "Hi-SIS 22"
+   set caption(hisis,hisis_23)                  "Hi-SIS 23"
+   set caption(hisis,hisis_24)                  "Hi-SIS 24"
+   set caption(hisis,hisis_33)                  "Hi-SIS 33"
+   set caption(hisis,hisis_36)                  "Hi-SIS 36"
+   set caption(hisis,hisis_39)                  "Hi-SIS 39"
+   set caption(hisis,hisis_43)                  "Hi-SIS 43"
+   set caption(hisis,hisis_44)                  "Hi-SIS 44"
+   set caption(hisis,hisis_48)                  "Hi-SIS 48"
+   set caption(hisis,port)                      "Porto"
+   set caption(hisis,configurer)                "Configurar"
+   set caption(hisis,acquisition)               "Aquisição"
+   set caption(hisis,miroir_x)                  "Espelho Horizontal"
+   set caption(hisis,miroir_y)                  "Espelho Vertical"
+   set caption(hisis,can_resolution)            "Resolução"
+   set caption(hisis,can_12bits)                "12 bits"
+   set caption(hisis,can_14bits)                "14 bits"
+   set caption(hisis,delai_a)                   "Atraso a"
+   set caption(hisis,delai_b)                   "Atraso b"
+   set caption(hisis,delai_c)                   "Atraso c"
+   set caption(hisis,fonc_obtu)                 "Operação do obturador"
+
+   set caption(hisis,port_camera)               "Porta Hi-SIS"
+   set caption(hisis,2points)                   ":"
+
+   set caption(hisis,titre_site_web)            "Site Web de referência:"
+   set caption(hisis,site_web_ref)              "http://www.europixel.it/europixelweb/welcomeframe.htm"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+  set caption(hisis,camera)                    "Hi-SIS"
+
+   set caption(hisis,obtu_ouvert)               "Open"
+   set caption(hisis,obtu_ferme)                "Closed"
+   set caption(hisis,obtu_synchro)              "Synchro"
+
+   set caption(hisis,hisis_11)                  "Hi-SIS 11"
+   set caption(hisis,hisis_22)                  "Hi-SIS 22"
+   set caption(hisis,hisis_23)                  "Hi-SIS 23"
+   set caption(hisis,hisis_24)                  "Hi-SIS 24"
+   set caption(hisis,hisis_33)                  "Hi-SIS 33"
+   set caption(hisis,hisis_36)                  "Hi-SIS 36"
+   set caption(hisis,hisis_39)                  "Hi-SIS 39"
+   set caption(hisis,hisis_43)                  "Hi-SIS 43"
+   set caption(hisis,hisis_44)                  "Hi-SIS 44"
+   set caption(hisis,hisis_48)                  "Hi-SIS 48"
+   set caption(hisis,port)                      "Port"
+   set caption(hisis,configurer)                "Set up"
+   set caption(hisis,acquisition)               "Acquisition"
+   set caption(hisis,miroir_x)                  "Horisontal spejl"
+   set caption(hisis,miroir_y)                  "Vertikal spejl"
+   set caption(hisis,can_resolution)            "Resolution"
+   set caption(hisis,can_12bits)                "12 bits"
+   set caption(hisis,can_14bits)                "14 bits"
+   set caption(hisis,delai_a)                   "Delay a"
+   set caption(hisis,delai_b)                   "Delay b"
+   set caption(hisis,delai_c)                   "Delay c"
+   set caption(hisis,fonc_obtu)                 "Shutter Operation"
+
+   set caption(hisis,port_camera)               "Hi-SIS Port - Model"
+   set caption(hisis,2points)                   ":"
+
+   set caption(hisis,titre_site_web)            "Reference Web Site:"
+   set caption(hisis,site_web_ref)              "http://www.europixel.it/europixelweb/welcomeframe.htm"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

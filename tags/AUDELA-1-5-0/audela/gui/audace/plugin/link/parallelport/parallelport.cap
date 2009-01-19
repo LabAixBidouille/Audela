@@ -1,0 +1,93 @@
+#
+# Fichier : parallelport.cap
+# Mise a jour $Id: parallelport.cap,v 1.15 2008-04-23 21:19:44 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(parallelport,titre)           "Parallel Port"
+set caption(parallelport,available)       "Parallel ports available"
+set caption(parallelport,refresh)         "Reload"
+set caption(parallelport,texte)           "Next time software is run, you will have access to:"
+set caption(parallelport,porttalk)        "Porttalk Error Message (if any)"
+set caption(parallelport,oui)             "Yes"
+set caption(parallelport,non)             "No"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(parallelport,titre)        "Port parallèle"
+   set caption(parallelport,available)    "Ports parallèles disponibles"
+   set caption(parallelport,refresh)      "Rafraîchir"
+   set caption(parallelport,texte)        "Au prochain démarrage, il sera proposé l'accès au :"
+   set caption(parallelport,porttalk)     "Message d'erreur de Porttalk (s'il existe)"
+   set caption(parallelport,oui)          "Oui"
+   set caption(parallelport,non)          "Non"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(parallelport,titre)        "Porta parallela"
+   set caption(parallelport,available)    "Porta parallela disponibile"
+   set caption(parallelport,refresh)      "Rinfresca"
+   set caption(parallelport,texte)        "Alla prossima esecuzione sara' possibile accedere a:"
+   set caption(parallelport,porttalk)     "Messaggio di errore di Porttalk (se presente)"
+   set caption(parallelport,oui)          "Si"
+   set caption(parallelport,non)          "No"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(parallelport,titre)        "Puerto paralelo"
+   set caption(parallelport,available)    "Puertos paralelos disponibles"
+   set caption(parallelport,refresh)      "Recargar"
+   set caption(parallelport,texte)        "La próxima vez que se ejecute el programa, tendrás acceso a:"
+   set caption(parallelport,porttalk)     "Mensaje de error de Porttalk (si existe)"
+   set caption(parallelport,oui)          "Sí"
+   set caption(parallelport,non)          "No"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(parallelport,titre)        "Parallel Anschlüss"
+   set caption(parallelport,available)    "Parallel Anschlüssen verfügbar"
+   set caption(parallelport,refresh)      "Aktualisieren"
+   set caption(parallelport,texte)        "Am nächsten Anlassen, werden sie Zugang zu … haben:"
+   set caption(parallelport,porttalk)     "Porttalk Fehlermeldung (falls es existiert)"
+   set caption(parallelport,oui)          "Ja"
+   set caption(parallelport,non)          "Nein"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(parallelport,titre)        "Porta paralela"
+   set caption(parallelport,available)    "Portas paralelas disponíveis"
+   set caption(parallelport,refresh)      "Actualizar"
+   set caption(parallelport,texte)        "Na próxima vez que executar o programa, terá acesso a:"
+   set caption(parallelport,porttalk)     "Mensagem de erro de Porttalk (se existir)"
+   set caption(parallelport,oui)          "Sim"
+   set caption(parallelport,non)          "Não"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(parallelport,titre)        "Parallel port"
+   set caption(parallelport,available)    "Disponible parallelle porte"
+   set caption(parallelport,refresh)      "Genindlæs"
+   set caption(parallelport,texte)        "Ved næste start vil du få adgang til:"
+   set caption(parallelport,porttalk)     "Porttalk fejlmeddelelse (hvis nogen)"
+   set caption(parallelport,oui)          "Ja"
+   set caption(parallelport,non)          "Nej"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

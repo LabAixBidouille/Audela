@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Fonctions de la librairie libjm</title></head>
+
+
+<body>
+
+<p>Date de mise à jour : 10 avril 2005</p>
+<h1>Fonctions de la librairie libjm </h1>
+<p><strong>Liste des fonctions utilisables :</strong></p>
+
+<h3> <a name="jm_versionlib" id="jm_versionlib"></a>jm_versionlib </h3>
+<p>Retourne le numéro de version de la librairie au format <code>major.minor</code></p>
+
+<h3> <a name="jm_heurepc" id="jm_heurepc"></a>jm_heurepc <em>[{année mois quantième heure minute seconde milliseconde}]</em></h3>
+<p>En l'absence de paramètres, lit l'heure système d'un PC. Retourne la liste {<code>année mois quantième heure minute seconde milliseconde</code>}. Si la liste {<code>année mois quantième heure minute seconde milliseconde</code>} est donnée en argument , fixe l'heure système d'un PC avec les valeurs de la liste. Retourne la liste {<code>année mois quantième heure minute seconde milliseconde</code>} après la mise à l'heure. <strong>ATTENTION</strong>
+: Dans ce cas, l'utilisation de cette commande requiert que le
+processus qui la lance ait les droits d'administrateur sur la machine.</p>
+
+<h3> <a name="jm_reglageheurepc" id="jm_reglageheurepc"></a>jm_reglageheurepc <em>decalage en ms</em></h3>
+<p>Décale l'heure système d'un PC de la valeur numérique du paramètre <code>decalage_en_ms</code>. Ce paramètre peut être positif (avance dans le temps) ou négatif (retard). <strong>ATTENTION</strong> : L'utilisation de cette commande requiert que le processus qui la lance ait les droits d'administrateur sur la machine.</p>
+
+<h3> <a name="jm_fluxellipse" id="jm_fluxellipse"></a>jm_fluxellipse <em>b x0 y0 r1x r1y ro r2 r3 [n]</em></h3>
+<p>Dans l'image contenue dans le buffer <code>b</code>, calcule le flux d'une étoile contenue dans une ellipse de centre (x0, y0) d'axe principaux <code>r1x</code> et <code>r1y</code> et de facteur d'allongement <code>ro</code>. Les paramètres <code>r2</code> et <code>r3</code>
+définissent les rayons des cercles (couronne) autour de cette ellipse
+dans lesquels sera calculé le flux du fond de ciel. Le paramètre <code>n</code> définit des sous-pixels artificiels, afin d'augmenter la précision des calculs. Les pixels sont découpés en <i>n²</i> sous-pixels, mais le temps de calcul sera multiplié par la même valeur...</p>
+<p>L'ellipse a pour équation centrée : <code>(x-x0)²/r1x² + (y-y0)²/r1y² - 2.0*ro*(x-x0)*(y-y0)/(r1x*r1y) = 1</code>, avec <code>|ro| &lt; 1</code>.</p>
+<p>Cette fonction retourne la liste <code>{flux_etoile nb_pixels_etoile flux_fond nb_pixels_fond sigma_fond}</code>.</p>
+<p><code>flux_etoile</code> est le flux apporté par l'étoile, c'est à dire le flux contenu dans l'ellipse de taille <code>nb_pixels</code>, flux auquel on a soustrait la quantité <code>flux_fond*nb_pixels</code>.</p>
+<p><code>flux_fond</code> est le flux moyen par pixel du fond de ciel calculé sur les <code>nb_pixels_fond</code> de la couronne délimitée par <code>r2</code> et <code>r3</code>. <code>sigma_fond</code> est l'écart-type du flux de fond de ciel.</p>
+
+<h3> <a name="jm_fitgauss2d" id="jm_fitgauss2d"></a>jm_fitgauss2d <em>b {x1 y1 x2 y2} [-sub]</em></h3>
+<p>Dans un carré définit par la liste <code>{x1 y1 x2 y2}</code> dans l'image contenue dans le buffer <code>b</code>,
+modélise une nappe gaussienne représentant les valeurs de niveaux de
+gris d'une étoile. Cette nappe est optimale au sens des moindres
+carrés. La modélisation cherche à déterminer les paramètres <code>x0, y0, r1x, r1y et ro</code> d'une nappe donnée par <code>z=A*[(x-x0)²/r1x² + (y-y0)²/r1y² - 2.0*ro*(x-x0)*(y-y0)/(r1x*r1y)] + B</code>, où <code>(x0, y0)</code> sont les coordonnées du centroïde de l'étoile, <code>r1x et r2x</code> les grands axes de l'ellipse, <code>ro</code> son facteur d'allongement, <code>A</code> le niveau de gris maximum de l'étoile et <code>B</code> le niveau de gris du fond de ciel. Le mot-clé <code>-sub</code> va soustraire l'étoile modélisée à celle encadrée dans le rectangle <code>{x1 y1 x2 y2}</code>. Cette fonction retourne une liste de 24 paramètres {p0 p1 p2 ... p23}
+  </p><ul>
+    <li>p0
+correspond à l'erreur générale de modélisation, et est égale à la
+racine carré du quotient du chi2 par le nombre de degrés de libertés.</li>
+    <li>p1
+indique le nombre d'itérations nécessaires pour faire la modélisation.
+La valeur 0 indique que la modélisation a échoué, auquel cas tous les
+autres paramètres sont sans signification.</li>
+    <li>(p2, p3) sont les coordonnées du centroïde de l'étoile (<code>x0</code> et <code>y0</code>), (p13, p14) sont les incertitudes sur ces 2 coordonnées.</li>
+    <li>p4 est le niveau de gris maximum de l'étoile (<i>A</i>), p15 l'incertitude sur cette valeur.</li>
+    <li>p5 est le niveau de gris du fond de ciel (<i>B</i>), p16 l'incertitude sur cette valeur.</li>
+    <li>(p6, p7) sont les valeurs des grand axe et petit axe de l'ellipse (<i>r1x</i> et <i>r1y</i>), (p17, p18) sont les incertitudes sur ces 2 valeurs.</li>
+    <li>p8 est le facteur <i>ro</i> d'allongement de l'ellipse, p19 l'incertitude sur cette valeur.</li>
+  </ul>
+<p>Les valeurs suivantes sont des valeurs déduites des précédentes :</p>
+  <ul>
+    <li>p9
+est l'angle exprimé en degrés décimaux que font les axes principaux de
+l'ellipse par rapport aux axes de l'image, p20 l'incertitude sur cette
+valeur. p9 et p20 n'ont pas de sens si r1x et r1y sont identiques ou si
+ro vaut 0.</li>
+    <li>(p10, p11) sont les FWHMs de l'étoile modélisée sur ses axes principaux, (p21, p22) sont les incertitudes sur ces 2 valeurs.</li>
+    <li>p12 est le flux intégré de l'étoile (hors fond de ciel), p23 l'incertitude sur cette valeur.</li>
+  </ul>
+
+</body></html>

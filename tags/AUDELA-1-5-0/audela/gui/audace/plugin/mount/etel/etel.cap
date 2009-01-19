@@ -1,0 +1,100 @@
+#
+# Fichier : etel.cap
+# Mise a jour $Id: etel.cap,v 1.3 2008-12-06 17:08:03 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(etel,monture)                        "Etel"
+set caption(etel,raquette_tel)                   "Hand controller on screen"
+
+set caption(etel,port_etel)                      "Etel Port"
+set caption(etel,2points)                        ":"
+
+set caption(etel,titre_site_web)                 "Reference Web Site:"
+set caption(etel,site_etel)                      "http://www.etel.ch/"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(etel,monture)                     "Etel"
+   set caption(etel,raquette_tel)                "Raquette à l'écran"
+
+   set caption(etel,port_etel)                   "Port Etel"
+   set caption(etel,2points)                     ":"
+
+   set caption(etel,titre_site_web)              "Site Web de référence :"
+   set caption(etel,site_etel)                   "http://www.etel.ch/"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(etel,monture)                     "Etel"
+   set caption(etel,raquette_tel)                "Pulsantiera a schermo"
+
+   set caption(etel,port_etel)                   "Porta Etel"
+   set caption(etel,2points)                     ":"
+
+   set caption(etel,titre_site_web)              "Sito Web di riferimento:"
+   set caption(etel,site_etel)                   "http://www.etel.ch/"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(etel,monture)                     "Etel"
+   set caption(etel,raquette_tel)                "Controlador virtual"
+
+   set caption(etel,port_etel)                   "Puerto Etel"
+   set caption(etel,2points)                     ":"
+
+   set caption(etel,titre_site_web)              "Sitio Web de referencia:"
+   set caption(etel,site_etel)                   "http://www.etel.ch/"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(etel,monture)                     "Etel"
+   set caption(etel,raquette_tel)                "Hand Kontroller am Bildschirm"
+
+   set caption(etel,port_etel)                   "Etel Port"
+   set caption(etel,2points)                     ":"
+
+   set caption(etel,titre_site_web)              "Referenz Webseite:"
+   set caption(etel,site_etel)                   "http://www.etel.ch/"
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(etel,monture)                     "Etel"
+   set caption(etel,raquette_tel)                "Controlador de mão no ecrã"
+
+   set caption(etel,port_etel)                   "Porta Etel"
+   set caption(etel,2points)                     ":"
+
+   set caption(etel,titre_site_web)              "Site Web de referência:"
+   set caption(etel,site_etel)                   "http://www.etel.ch/"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(etel,monture)                     "Etel"
+   set caption(etel,raquette_tel)                "Hand controller on screen"
+
+   set caption(etel,port_etel)                   "Etel Port"
+   set caption(etel,2points)                     ":"
+
+   set caption(etel,titre_site_web)              "Reference Web Site:"
+   set caption(etel,site_etel)                   "http://www.etel.ch/"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

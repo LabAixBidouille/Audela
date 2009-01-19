@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Fonctions sp&eacute;cifiques &agrave; l'interface Aud'ACE</title>
+</head>
+
+<body>
+<p class="date">Date de mise &agrave; jour : 03 mars 2007</p>
+<h1>Fonctions sp&eacute;cifiques &agrave; l'interface Aud'ACE </h1>
+<p>Les fonctions qui suivent sont impl&eacute;ment&eacute;es dans les scripts Aud'ACE (hors des namespaces).</p>
+<h2> 1. Visualisation</h2>
+<h3> <a name="animate" id="animate"></a>animate filename nb ?millisecondes? ?nbtours?</h3>
+<p>Affiche successivement <em>nb</em> images de nom g&eacute;n&eacute;rique <em>filename</em>. Le d&eacute;lai d'attente entre chaque image est de <em>millisecondes</em> millisecondes (200 par d&eacute;faut). L'animation est r&eacute;p&eacute;t&eacute;es <em>nbtours</em> fois (10 par d&eacute;faut).</p>
+<h2> 2. Traitement d'image</h2>
+<h3> <a name="mult" id="mult"></a>mult constant</h3>
+<p>Multiplie tous les pixels de l'image en m&eacute;moire dans le buffer 1 par une valeur constante <em>constant</em> (en adu).</p>
+<h3> <a name="convgauss" id="convgauss"></a>convgauss sigma</h3>
+<p>Convolution de l'image en m&eacute;moire dans le buffer 1 par une fonction gaussienne dont le param&egrave;tre d'&eacute;talement <em>sigma</em> (en pixels).</p>
+<h3>
+  <p><a name="uncosmic" id="uncosmic"></a>uncosmic coef</p>
+</h3>
+Filtre kernel m&eacute;dian pond&eacute;r&eacute; pour &eacute;liminer les cosmiques. Le filtre est inactif si <em>coef</em>=0 et devient tr&egrave;s efficace pour <em>coef</em>>1.
+<p></p>
+<h3> <a name="register" id="register"></a>register in out number</h3>
+<p>Translate les <em>number</em> images de nom g&eacute;n&eacute;rique <em>in</em> pour les recentrer automatiquement par rapport aux &eacute;toiles pr&eacute;sentes sur l'image. Les <em>number</em> images de sortie sont nomm&eacute;es par le nom g&eacute;n&eacute;rique <em>out</em>.</p>
+<h3> <a name="add2" id="add2"></a>add1 in operand out const</h3>
+<h3>add2 in operand out const nb</h3>
+<p>Addition d'une image <em>operand</em> &agrave; un lot de <em>nb</em> images de nom g&eacute;n&eacute;rique <em>in</em>. <em>const</em> est un nombre (en pas codeurs) &agrave; ajouter &agrave; tous les pixels. Le nom g&eacute;n&eacute;rique des images de sortie est <em>out</em>.</p>
+<h3> <a name="div2" id="div2"></a>div1 in operand out const</h3>
+<h3>div2 in operand out const nb</h3>
+<p>Division d'une image <em>operand</em> &agrave; un lot de <em>nb</em> images de nom g&eacute;n&eacute;rique <em>in</em>. <em>const</em> est un nombre (en pas codeurs) &agrave; multiplier &agrave; tous les pixels. Le nom g&eacute;n&eacute;rique des images de sortie est <em>out</em>.</p>
+<h3> <a name="mult2" id="mult2"></a>mult1 in out const</h3>
+<h3>mult2 in out const nb</h3>
+<p>Multiplication d'une valeur constante <em>const</em> (en pas codeurs) &agrave; 
+  tous les pixels d'un lot de <em>nb</em> images de nom g&eacute;n&eacute;rique 
+  <em>in</em>. Le nom g&eacute;n&eacute;rique des images de sortie est <em>out</em>.</p>
+<h3><a name="ngain2" id="ngain2"></a>ngain1 in out const </h3>
+<h3>ngain2 in out const nb</h3>
+<p>Normalisation du gain &agrave; un lot de <em>nb</em> images de nom g&eacute;n&eacute;rique <em>in</em>. <em>const</em> est un nombre (en pas codeurs) qui repr&eacute;sente la moyenne des pixels des images de sortie. Le nom g&eacute;n&eacute;rique des images de sortie est <em>out</em>.</p>
+<h3> <a name="noffset2" id="noffset2"></a>noffset1 in out const </h3>
+<h3>noffset2 in out const nb</h3>
+<p>Normalisation du fond de ciel &agrave; un lot de <em>nb</em> images de nom 
+  g&eacute;n&eacute;rique <em>in</em>. <em>const</em> est un nombre (en pas codeurs) 
+  qui repr&eacute;sente la moyenne des pixels des images de sortie. Le nom g&eacute;n&eacute;rique 
+  des images de sortie est <em>out</em></p>
+<h2> </h2>
+<h3><a name="offset2" id="offset2"></a>offset1 in out const </h3>
+<h3>offset2 in out const nb</h3>
+<p>Addition d'une valeur constante <em>const</em> (en pas codeurs) &agrave; tous 
+  les pixels d'un lot de <em>nb</em> images de nom g&eacute;n&eacute;rique <em>in</em>. 
+  Le nom g&eacute;n&eacute;rique des images de sortie est <em>out</em>.</p>
+<h3></h3>
+<h3><a name="opt2" id="opt2"></a>opt1 in dark offset out</h3>
+<h3>opt2 in dark offset out nb</h3>
+<p>Soustraction du noir optimis&eacute; &agrave; un lot de <em>nb</em> images de nom g&eacute;n&eacute;rique <em>in</em>. Le nom de fichier du noir est <em>dark</em> et le nom de fichier de pr&eacute;charge (bias) s'appelle <em>offset</em>. Le nom g&eacute;n&eacute;rique des images de sortie est <em>out</em>.</p>
+<h3> <a name="register2" id="register2"></a>register2 in out number</h3>
+<p>Registration d'un lot de <em>nb</em> images de nom g&eacute;n&eacute;rique <em>in</em>. Le nom g&eacute;n&eacute;rique des images de sortie est <em>out</em>.</p>
+<h3> <a name="sadd" id="sadd"></a>sadd in out number</h3>
+<p>Somme d'une pile de <em>nb</em> images de nom g&eacute;n&eacute;rique <em>in</em>. Le nom de l'image de sortie est <em>out</em>.</p>
+<h3> <a name="scale2" id="div2"></a>scale1 in out scale_x scale_y</h3>
+<h3>scale2 in out nb scale_x scale_y</h3>
+<p>Re-&eacute;chantillonnage d'un lot de <em>nb</em> images de nom g&eacute;n&eacute;rique <em>in</em>. <em>scale_x</em> et <em>scale_y</em> sont les facteurs d'&eacute;chelle. Le nom g&eacute;n&eacute;rique des images de sortie est <em>out</em>.</p>
+<h3></h3>
+<h3><a name="smean" id="smean"></a>smean in out number</h3>
+<p>Moyenne d'une pile de <em>nb</em> images de nom g&eacute;n&eacute;rique <em>in</em>. Le nom de l'image de sortie est <em>out</em>.</p>
+<h3> <a name="smedian" id="smedian"></a>smedian in out number</h3>
+<p>M&eacute;diane d'une pile de <em>nb</em> images de nom g&eacute;n&eacute;rique <em>in</em>. Le nom de l'image de sortie est <em>out</em>.</p>
+<h3> <a name="sub2" id="sub2"></a>sub1 in operand out const</h3>
+<h3>sub2 in operand out const nb</h3>
+<p>Soustraction d'une image <em>operand</em> &agrave; un lot de <em>nb</em> images de nom g&eacute;n&eacute;rique <em>in</em>. <em>const</em> est un nombre (en pas codeurs) &agrave; ajouter &agrave; tous les pixels.</p>
+<h3> <a name="trans2" id="trans2"></a>trans2 in out number dx dy</h3>
+<p>Translation d'un lot de <em>nb</em> images de nom g&eacute;n&eacute;rique <em>in</em>. Le nom g&eacute;n&eacute;rique des images de sortie est <em>out</em>. La translation vaut <em>dx</em> et <em>dy</em> (en pixels).</p>
+<h3> <a name="ssort" id="ssort"></a>ssort in out number percent</h3>
+<p>Tri et attribue au niveau <em>percent</em> (de 0 pour le mini &agrave; 100 pour le maxi) les pixels d'une pile de <em>nb</em> images de nom g&eacute;n&eacute;rique <em>in</em>. Le nom de l'image de sortie est <em>out</em>.</p>
+<h3> <a name="ssk" id="ssk"></a>ssk in out number kappa</h3>
+<p>Synth&egrave;se d'une image sigma-kappa au niveau <em>kappa</em>, &agrave; partir d'une pile de <em>nb</em> images de nom g&eacute;n&eacute;rique <em>in</em>. Le nom de l'image de sortie est <em>out</em>.</p>
+<h3> <a name="uncosmic2" id="uncosmic2"></a>uncosmic2 in out number coef</h3>
+<p>Corrige les cosmiques d'un lot de <em>nb</em> images de nom g&eacute;n&eacute;rique <em>in</em>. Le nom g&eacute;n&eacute;rique des images de sortie est <em>out</em>. Le filtre est inefficace si <em>coef</em>=0 et devient tr&egrave;s efficace pour <em>coef</em>>1.</p>
+<h3> <a name="convgauss2" id="convgauss2"></a>convgauss2 in out number sigma</h3>
+<p>Convolue un lot de <em>nb</em> images de nom g&eacute;n&eacute;rique <em>in </em>par une gaussienne de param&egrave;tre d'&eacute;talement <em>sigma</em> (en pixels). Le nom g&eacute;n&eacute;rique des images de sortie est <em>out</em>. Le filtre est inefficace si <em>coef</em>=0 et devient tr&egrave;s efficace pour <em>coef</em>>1.</p>
+<h3> 3. Communication r&eacute;seau</h3>
+<h3> <a name="create_server" id="create_server"></a>create_server ?port?</h3>
+<p>Cr&eacute;e un serveur &agrave; protocole RPC. Le port (5000 par d&eacute;faut) est r&eacute;gl&eacute; par l'option <em>port</em>. La variable rpcid(serveur) contient d'identificateur Tcl du serveur. La variable rcpid(state) prend la valeur "server".</p>
+<h3> <a name="delete_server" id="delete_server"></a>delete_server ?id?</h3>
+<p>D&eacute;truit un serveur &agrave; protocole RPC. L'option id (par d&eacute;faut vaut le contenu de la variable rpcid(serveur)) contient l'identificateur Tcl du serveur &agrave; d&eacute;truire. La variable rcpid(state) prend la valeur "". Il faut s'assurer pr&eacute;alablement que des clients ne sont pas connect&eacute;s.</p>
+<h3> <a name="create_client" id="create_client"></a>create_client ?ip_serveur? ?port_serveur? ?ip_client? ?port_client?</h3>
+<p>Connecte le client sur le serveur de num&eacute;ro IP ip_serveur (192.168.0.1 par d&eacute;faut) et sur le port port_serveur (5000 par d&eacute;faut). La variable rpcid(client) contient d'identificateur Tcl du client. La variable rcpid(state) prend la valeur "client".</p>
+<p>Si l'on souhaite afficher les images sur l'application Aud'ACE cliente (un dossier doit &ecirc;tre partag&eacute; localement) alors il faut cr&eacute;er une connexion client/serveur dans l'autre sens. Le client doit donc indiquer son num&eacute;ro IP ip_client (vaut le contenu de la variable rpcid(client) par d&eacute;faut) et son num&eacute;ro de port (5000 par d&eacute;faut).</p>
+<p>La variable rcpid(state) prend la valeur "client/server".</p>
+<h3> <a name="delete_client" id="delete_client"></a>delete_client ?id?</h3>
+<p>D&eacute;connecte un serveur &agrave; protocole RPC. L'option id contient l'identificateur Tcl du client &agrave; d&eacute;connecter. Par d&eacute;faut ?id? vaut le contenu de la variable rpcid(client). Apr&egrave;s d&eacute;connexion, la variable rcpid(state) prend la valeur "".</p>
+<h3> <a name="send" id="send"></a>send arg</h3>
+<p>Envoie une ligne de commande (<em>arg</em>) d'un client vers un serveur &agrave; protocole RPC.</p>
+</body>
+
+</html>

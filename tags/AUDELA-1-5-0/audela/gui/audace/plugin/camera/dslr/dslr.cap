@@ -1,0 +1,226 @@
+#
+# Fichier : dslr.cap
+# Mise a jour $Id: dslr.cap,v 1.17 2008-12-20 14:52:39 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(dslr,camera)                    "Digital Camera"
+
+set caption(dslr,name)                      "Digital Camera"
+
+set caption(dslr,liaison)                   "Link"
+set caption(dslr,configurer)                "Set up"
+set caption(dslr,miroir_x)                  "Horizontal Mirror"
+set caption(dslr,miroir_y)                  "Vertical Mirror"
+set caption(dslr,longuepose)                "Long Exposure"
+set caption(dslr,quickremote)               "QuickRemote"
+set caption(dslr,externe)                   "Manual"
+set caption(dslr,longueposebit)             "Control Bit Number"
+set caption(dslr,longueposestart)           "Control when exposure begins"
+set caption(dslr,detect_service)            "Stop Automatic Detection of Digital Cameras"
+
+set caption(dslr,telecharger)               "Download Image"
+set caption(dslr,pas_telecharger)           "Do Not Download"
+set caption(dslr,immediat)                  "Now"
+set caption(dslr,acq_suivante)              "During next acquisition"
+set caption(dslr,utiliser_cf)               "Use Compact Flash Memory of DSLR"
+set caption(dslr,supprimer_image)           "Delete image from Compact Flash memory after loading"
+
+set caption(dslr,2points)                   ":"
+
+set caption(dslr,titre_site_web)            "Reference Web Site:"
+set caption(dslr,site_web_ref)              "http://gphoto.sourceforge.net/"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(dslr,camera)                 "APN"
+
+   set caption(dslr,name)                   "Appareil Photo Numérique"
+
+   set caption(dslr,liaison)                "Liaison"
+   set caption(dslr,configurer)             "Configurer"
+   set caption(dslr,miroir_x)               "Miroir horizontal"
+   set caption(dslr,miroir_y)               "Miroir vertical"
+   set caption(dslr,longuepose)             "Longue pose"
+   set caption(dslr,quickremote)            "QuickRemote"
+   set caption(dslr,externe)                "Manuel"
+   set caption(dslr,longueposebit)          "Numéro du bit de commande"
+   set caption(dslr,longueposestart)        "Commande au début de la pose"
+   set caption(dslr,detect_service)         "Arrêt de la détection automatique des appareils photo numériques"
+
+   set caption(dslr,telecharger)            "Télécharger l'image"
+   set caption(dslr,pas_telecharger)        "Ne pas télécharger"
+   set caption(dslr,immediat)               "Immédiatement"
+   set caption(dslr,acq_suivante)           "Pendant l'acquisition suivante"
+   set caption(dslr,utiliser_cf)            "Utiliser la carte Compact Flash de l'APN"
+   set caption(dslr,supprimer_image)        "Supprimer l'image de la carte Compact Flash après chargement"
+
+   set caption(dslr,2points)                ":"
+
+   set caption(dslr,titre_site_web)         "Site Web de référence :"
+   set caption(dslr,site_web_ref)           "http://gphoto.sourceforge.net/"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(dslr,camera)                 "Fotocamera digitale"
+
+   set caption(dslr,name)                   "Fotocamera digitale"
+
+   set caption(dslr,liaison)                "Collegamento"
+   set caption(dslr,configurer)             "Configurare"
+   set caption(dslr,miroir_x)               "Specchio orizzontale"
+   set caption(dslr,miroir_y)               "Specchio verticale"
+   set caption(dslr,longuepose)             "Lunga posa"
+   set caption(dslr,quickremote)            "QuickRemote"
+   set caption(dslr,externe)                "Manuale"
+   set caption(dslr,longueposebit)          "Numero bit del comando"
+   set caption(dslr,longueposestart)        "Comando all'inizio della posa"
+   set caption(dslr,detect_service)         "Arresto detezione automatica delle camere digitali"
+
+   set caption(dslr,telecharger)            "Scaricare l'immagine"
+   set caption(dslr,pas_telecharger)        "Non scaricare"
+   set caption(dslr,immediat)               "Adesso"
+   set caption(dslr,acq_suivante)           "Durante la successiva acquisizione"
+   set caption(dslr,utiliser_cf)            "Uso della Memory Card dell'APN"
+   set caption(dslr,supprimer_image)        "Cancellazione immagine dalla memory Card dopo il caricamento"
+
+   set caption(dslr,2points)                ":"
+
+   set caption(dslr,titre_site_web)         "Sito Web di riferimento:"
+   set caption(dslr,site_web_ref)           "http://gphoto.sourceforge.net/"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(dslr,camera)                 "Cámara digital"
+
+   set caption(dslr,name)                   "Cámara digital"
+
+   set caption(dslr,liaison)                "Enlace"
+   set caption(dslr,configurer)             "Configurar"
+   set caption(dslr,miroir_x)               "Espejo horizontal"
+   set caption(dslr,miroir_y)               "Espejo vertical"
+   set caption(dslr,longuepose)             "Exposición larga"
+   set caption(dslr,quickremote)            "QuickRemote"
+   set caption(dslr,externe)                "Manual"
+   set caption(dslr,longueposebit)          "Número del bit de control"
+   set caption(dslr,longueposestart)        "Control cuando empieza la exposición"
+   set caption(dslr,detect_service)         "Parar la detección automática de cámaras digitales"
+
+   set caption(dslr,telecharger)            "Descargar imagen"
+   set caption(dslr,pas_telecharger)        "No descargar"
+   set caption(dslr,immediat)               "Inmediatamente"
+   set caption(dslr,acq_suivante)           "Durante la próxima adquisición"
+   set caption(dslr,utiliser_cf)            "Usar tarjeta Compact Flash de la Reflex Digital"
+   set caption(dslr,supprimer_image)        "Borrar la imagen de la Compact Flash despues de cargarla"
+
+   set caption(dslr,2points)                ":"
+
+   set caption(dslr,titre_site_web)         "Sitio Web de referencia:"
+   set caption(dslr,site_web_ref)           "http://gphoto.sourceforge.net/"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(dslr,camera)                 "Digital Fotoapparat"
+
+   set caption(dslr,name)                   "Digital Fotoapparat"
+
+   set caption(dslr,liaison)                "Link"
+   set caption(dslr,configurer)             "Konfigurieren"
+   set caption(dslr,miroir_x)               "Horizontale Spiegel"
+   set caption(dslr,miroir_y)               "Verticale Spiegel"
+   set caption(dslr,longuepose)             "Lange Belichtung"
+   set caption(dslr,quickremote)            "QuickRemote"
+   set caption(dslr,externe)                "Manuell"
+   set caption(dslr,longueposebit)          "Steuer Bit Nummer"
+   set caption(dslr,longueposestart)        "Anfang der Belichtung Antrieb"
+   set caption(dslr,detect_service)         "Ende der digitale Fotoapparate automatische Registrierung"
+
+   set caption(dslr,telecharger)            "Das Bild herunterladen"
+   set caption(dslr,pas_telecharger)        "Nicht herunterladen"
+   set caption(dslr,immediat)               "Sofort"
+   set caption(dslr,acq_suivante)           "Während die nächste Erwerbung"
+   set caption(dslr,utiliser_cf)            "Die Compact Flash Karte für den Digital Fotoapparat nützen"
+   set caption(dslr,supprimer_image)        "Das Bild der Compact Flash Karte nach Ladung löschen"
+
+   set caption(dslr,2points)                ":"
+
+   set caption(dslr,titre_site_web)         "Referenz Webseite:"
+   set caption(dslr,site_web_ref)           "http://gphoto.sourceforge.net/"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(dslr,camera)                 "Digital Câmara"
+
+   set caption(dslr,name)                   "Câmara Digital"
+
+   set caption(dslr,liaison)                "Ligação"
+   set caption(dslr,configurer)             "Configurar"
+   set caption(dslr,miroir_x)               "Espelho Horizontal"
+   set caption(dslr,miroir_y)               "Espelho Vertical"
+   set caption(dslr,longuepose)             "Longa Exposição"
+   set caption(dslr,quickremote)            "QuickRemote"
+   set caption(dslr,externe)                "Manual"
+   set caption(dslr,longueposebit)          "Controlo do Número do Bit"
+   set caption(dslr,longueposestart)        "Controlo do Início da Exposição"
+   set caption(dslr,detect_service)         "Parar Automaticamente a Detecção de Câmaras Digitais"
+
+   set caption(dslr,telecharger)            "Descarregar a imagem"
+   set caption(dslr,pas_telecharger)        "Não descarregar"
+   set caption(dslr,immediat)               "Imediatamente"
+   set caption(dslr,acq_suivante)           "Durante a próxima aquisição"
+   set caption(dslr,utiliser_cf)            "Utilizar a carta Compact Flash da APN"
+   set caption(dslr,supprimer_image)        "Eliminar a imagem da carta Compact Flash após carregamento"
+
+   set caption(dslr,2points)                ":"
+
+   set caption(dslr,titre_site_web)         "Site Web de referência:"
+   set caption(dslr,site_web_ref)           "http://gphoto.sourceforge.net/"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(dslr,camera)                 "Digital Camera"
+
+   set caption(dslr,name)                   "Digital Camera"
+
+   set caption(dslr,liaison)                "Link"
+   set caption(dslr,configurer)             "Set up"
+   set caption(dslr,miroir_x)               "Horisontal spejl"
+   set caption(dslr,miroir_y)               "Vertikal spejl"
+   set caption(dslr,longuepose)             "Long Exposure"
+   set caption(dslr,quickremote)            "QuickRemote"
+   set caption(dslr,externe)                "Manual"
+   set caption(dslr,longueposebit)          "Control Bit Number"
+   set caption(dslr,longueposestart)        "Control when exposure begins"
+   set caption(dslr,detect_service)         "Stop Automatic Detection of Digital Cameras"
+
+   set caption(dslr,telecharger)            "Download Image"
+   set caption(dslr,pas_telecharger)        "Do Not Download"
+   set caption(dslr,immediat)               "Now"
+   set caption(dslr,acq_suivante)           "During Next Acquisition"
+   set caption(dslr,utiliser_cf)            "Use Compact Flash Memory of DSLR"
+   set caption(dslr,supprimer_image)        "Delete image from Compact Flash memory after loading"
+
+   set caption(dslr,2points)                ":"
+
+   set caption(dslr,titre_site_web)         "Reference Web Site:"
+   set caption(dslr,site_web_ref)           "http://gphoto.sourceforge.net/"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
