@@ -341,7 +341,31 @@ Package=<4>
 
 ###############################################################################
 
+Project: "libdfm"=".\libtel\libdfm\vc60\libdfm.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "libdigicam"=".\libcam\libdigicam\vc60\libdigicam.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "libetel"=".\libtel\libetel\vc60\libetel.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
