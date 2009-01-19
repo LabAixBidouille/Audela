@@ -7,7 +7,7 @@
 #
 # source [pwd]/../src/tools/innosetup/listfiles.tcl
 
-set version 1.5.0-beta2
+set version 1.5.0
 #set makes audela
 set makes {audela bin src ros}
 
@@ -159,7 +159,7 @@ foreach make $makes {
 	if {($make=="audela")||($make=="bin")} {
 		# --- efface les fichiers en trop dans images
 		set fimas [glob -nocomplain "${base}/images/*"]
-		set fima0s {47toucan.jpg c2.gif c2w.gif m57.fit CVS}
+		set fima0s {47toucan.jpg c2.gif c2w.gif m57.fit tempel1_IC.fit CVS}
 		foreach fima $fimas {
 			set shortname [file tail $fima]
 			if {[lsearch -exact $fima0s $shortname ]==-1} {
