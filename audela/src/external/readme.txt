@@ -23,20 +23,7 @@ Sous windows:
    jpeg6b : vars.bat (regler les chemins si besoin), puis
    make.bat, puis install.bat
 
- - Compiler libdcjpeg\vc60\libdcjpeg.dsw en mode release
-
- - Compiler libdcraw\vc60\libdcraw.dsw en mode release
-
  - Lancer libftd2xx\make.bat puis libftd2xx\install.bat
-
- - Compiler libgphoto2\libltdl\vc60\libltdl.dsw
-   en mode release.
-   Compiler libgphoto2\libgphoto2_port\libgphoto2_port\vc60\libgphoto2_port.dsw
-   en mode release.
-   Compiler libgphoto2\libgphoto2_port\usb\vc60\libgphoto2_port_usb.dsw
-   en mode release.
-   Compiler libgphoto2\libgphoto2\vc60\libgphoto2.dsw
-   en mode release.
 
  - Lancer libusb\make.bat puis libusb\install.bat
 
@@ -49,6 +36,8 @@ Sous windows:
  - Ouvrir et compiler avec visual c++, en mode release :
       sextractor\sextractor\vc60\sextractor.dsw
          (sex.exe est mis directement dans audela/bin)
+
+ - Lancer symmetricom\make.bat puis symmetricom\install.bat
 
  - Lancer tcl\make.bat puis tcl\install.bat
 
