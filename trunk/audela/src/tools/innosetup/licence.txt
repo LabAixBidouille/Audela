@@ -17,15 +17,15 @@ Full texts of these lincenses can be found at:
 
 http://www.gnu.org/copyleft/copyleft.fr.html
 
-AudeLA : Copyright (C) 1999-2008 AudeLAdev
+AudeLA : Copyright (C) 1999-2009 The AudeLA Core Team.
 
-AudeLAdev developers are:
+AudeLA developers are:
 D. Marchais, A. Klotz, R. Delmas,
 C. Jasinski, J. Michelet, F. Cochard, O. Thizy,
 R. Zachantke, Ph. Kauffmann, G. Spitzer, B. Maugis,
 M. Pujol, P. Thierry, P. Chevalley, A. Kalicki
 
-AudeLAdev Software Translations are made by:
+AudeLA Software Translations are made by:
 (GB) C. Jasinski + D. Futak + D. Holler
 (I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia
 (D) Ph. Kauffmann, (DK) K. Strandbaek
