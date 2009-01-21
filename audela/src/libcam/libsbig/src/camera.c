@@ -442,10 +442,10 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    CAM_INI[cam->index_cam].overscanybeg = 0;
    CAM_INI[cam->index_cam].overscanyend = 0;
    CAM_INI[cam->index_cam].celldimx =
-      ((double) (gcir0.readoutInfo[0].pixelWidth)) * 1e-6;
+      ((double) (gcir0.readoutInfo[0].pixelWidth)) * 1e-8;
    CAM_INI[cam->index_cam].celldimy =
-      ((double) (gcir0.readoutInfo[0].pixelHeight)) * 1e-6;
-   CAM_INI[cam->index_cam].gain = (double) (gcir0.readoutInfo[0].gain);
+      ((double) (gcir0.readoutInfo[0].pixelHeight)) * 1e-8;
+   CAM_INI[cam->index_cam].gain = (double) (gcir0.readoutInfo[0].gain/100.); /* e/ADU */
    CAM_INI[cam->index_cam].maxconvert = pow(2, (double) 16) - 1.;
 
    /* --- initialisation of elements of the structure cam === */

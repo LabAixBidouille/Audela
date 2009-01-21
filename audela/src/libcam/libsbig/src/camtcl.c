@@ -729,3 +729,151 @@ int cmdSbigBinTrack(ClientData clientData, Tcl_Interp * interp, int argc,
     }
     return result;
 }
+
+int cmdSbigCFW(ClientData clientData, Tcl_Interp * interp,int argc, char *argv[])
+/***********************************************************************/
+/* cmdSbigCFW : used to set the filter wheel SBIG functions.           */
+/***********************************************************************/
+{
+	char ligne[256],res[2048];
+	struct camprop *cam;
+	int ret, k, pb ;
+	CFWParams params;
+	CFWResults results;
+	char cfw_model_select[512];
+	char cfw_command[512];
+	char cfw_position[512];
+	char cfw_com_port[512];
+	char cfw_getinfo_select[512];
+   Tcl_DString dsptr;
+	strcpy(cfw_model_select,"0=CFWSEL_UNKNOWN 1=CFWSEL_CFW2 2=CFWSEL_CFW5 3=CFWSEL_CFW8 4=CFWSEL_CFWL 5=CFWSEL_CFW402 6=CFWSEL_AUO 7=CFWSEL_CFW6A 8=CFWSEL_CFW10 9=CFWSEL_CFW10_SERIAL 10=CFWSEL_CFW9 11=CFWSEL_CFWL8 12=CFWSEL_CFWL8G");
+	strcpy(cfw_command,"0=CFWC_QUERY 1=CFWC_GOTO 2=CFWC_INIT 3=CFWC_GET_INFO 4=CFWC_OPEN_DEVICE 5=CFWC_CLOSE_DEVICE");
+	strcpy(cfw_position,"0=CFWP_UNKNOWN 1=CFWP_1 2=CFWP_2 3=CFWP_3 4=CFWP_4 5=CFWP_5 6=CFWP_6 7=CFWP_7 8=CFWP_8 9=CFWP_9 10=CFWP_10");
+	strcpy(cfw_com_port,"0=CFWPORT_COM1=1 1=CFWPORT_COM2 2=CFWPORT_COM3 3=CFWPORT_COM4");
+	strcpy(cfw_getinfo_select,"0=CFWG_FIRMWARE_VERSION 1=CFWG_CAL_DATA 2=CFWG_DATA_REGISTERS");
+ 
+	ret=TCL_OK;
+	if (argc <= 2) {
+		sprintf(ligne, "Usage: %s %s cfwModel cfwCommand ?cwfParam1? ?cwfParam2? ",argv[0], argv[1]);
+		Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+		return TCL_ERROR;
+	} else {
+	   Tcl_DStringInit(&dsptr);
+		cam = (struct camprop *) clientData;
+		pb=0;
+		// --- Model
+		if (argc>=3) {
+			k = atoi(argv[2]);
+			if ((k < 0)||(k > 12)) {
+				pb=1;
+				sprintf(res,"cfwModel must be amongst %s. ",cfw_model_select);
+	         Tcl_DStringAppend(&dsptr,res,-1);
+			} else {
+				params.cfwModel=(unsigned short)k;
+			}
+		}
+		// --- Command
+		if (argc>=4) {
+			k = atoi(argv[3]);
+			if ((k >= 0)&&(k <= 5)) {
+				params.cfwCommand=(unsigned short)k;
+			} else {
+				pb=2;
+			}
+		} else {
+			pb=2;
+		}
+		if (pb==2) {
+			sprintf(res,"cfwCommand must be amongst %s. ",cfw_command);
+	      Tcl_DStringAppend(&dsptr,res,-1);
+		}
+		// --- Default other params
+		params.cfwParam1=(unsigned long)0;
+		params.cfwParam2=(unsigned long)0;
+		/*
+		params.outLength=(unsigned short)0;
+		params.outPtr=(unsigned char*)NULL;
+		params.inLength=(unsigned short)0;
+		params.inPtr=(unsigned char*)NULL;
+		*/
+		// --- Command=Goto
+		if (params.cfwCommand==(unsigned short)1) {
+			if (argc>=5) {
+				k = atoi(argv[4]);
+				if ((k >= 0)&&(k <= 10)) {
+					params.cfwParam1=(unsigned long)k;
+				} else {
+					pb=3;
+				}
+			}
+			if (pb==3) {
+				sprintf(res,"cfwParam1 must be amongst %s. ",cfw_position);
+				Tcl_DStringAppend(&dsptr,res,-1);
+			}
+		}
+		// --- Command=Info
+		if (params.cfwCommand==(unsigned short)3) {
+			if (argc>=5) {
+				k = atoi(argv[4]);
+				if ((k >= 0)&&(k <= 2)) {
+					params.cfwParam1=(unsigned long)k;
+				} else {
+					pb=4;
+				}
+			}
+			if (pb==4) {
+				sprintf(res,"cfwParam1 must be amongst %s. ",cfw_getinfo_select);
+				Tcl_DStringAppend(&dsptr,res,-1);
+			}
+		}
+		// --- Command=Open or Close
+		if ((params.cfwCommand==(unsigned short)4)||(params.cfwCommand==(unsigned short)5)) {
+			if (argc>=5) {
+				k = atoi(argv[4]);
+				if ((k >= 0)&&(k <= 3)) {
+					params.cfwParam1=(unsigned long)k;
+				} else {
+					pb=4;
+				}
+			}
+			if (pb==4) {
+				sprintf(res,"cfwParam1 must be amongst %s. ",cfw_com_port);
+				Tcl_DStringAppend(&dsptr,res,-1);
+			}
+		}
+		/*
+		pb=0;
+		params.cfwModel=(unsigned short)CFWSEL_CFW9;
+		params.cfwCommand=(unsigned short)CFWC_GET_INFO;
+		params.cfwParam1=(unsigned long)CFWG_FIRMWARE_VERSION;
+		*/
+		// --- Execute command cam1 cfw 10 2 0
+		if (pb==0) {
+			cam->drv_status = pardrvcommand(CC_CFW, &params, &results);
+			if (cam->drv_status != 0) {
+				sprintf(ligne, "Error %d. %s", cam->drv_status,sbig_get_status(cam->drv_status));
+				Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+				return TCL_ERROR;
+			}
+			// --- Analysis of the result
+			sprintf(res,"{cfwModel %d} ",(int)results.cfwModel);
+			Tcl_DStringAppend(&dsptr,res,-1);
+			sprintf(res,"{cfwPosition %d} ",(int)results.cfwPosition);
+			Tcl_DStringAppend(&dsptr,res,-1);
+			sprintf(res,"{cfwStatus %d} ",(int)results.cfwStatus);
+			Tcl_DStringAppend(&dsptr,res,-1);
+			sprintf(res,"{cfwError %d} ",(int)results.cfwError);
+			Tcl_DStringAppend(&dsptr,res,-1);
+			sprintf(res,"{cfwResult1 %d} ",(int)results.cfwResult1);
+			Tcl_DStringAppend(&dsptr,res,-1);
+			sprintf(res,"{cfwResult2 %d} ",(int)results.cfwResult2);
+			Tcl_DStringAppend(&dsptr,res,-1);
+			Tcl_DStringResult(interp,&dsptr);
+		} else {
+			ret=TCL_ERROR;
+			Tcl_DStringResult(interp,&dsptr);
+		}
+		Tcl_DStringFree(&dsptr);
+	}
+	return ret;
+}
