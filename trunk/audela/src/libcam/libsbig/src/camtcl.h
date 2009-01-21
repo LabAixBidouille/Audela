@@ -36,7 +36,8 @@
     {"stoptrack", (Tcl_CmdProc *) cmdSbigStopTrack}, \
     {"windowtrack", (Tcl_CmdProc *) cmdSbigWindowTrack}, \
     {"exptimetrack", (Tcl_CmdProc *) cmdSbigExptimeTrack}, \
-    {"bintrack", (Tcl_CmdProc *) cmdSbigBinTrack},
+    {"bintrack", (Tcl_CmdProc *) cmdSbigBinTrack},\
+    {"cfw", (Tcl_CmdProc *) cmdSbigCFW},
 
 
  /* === Specific commands for that camera === */
@@ -64,6 +65,8 @@ int cmdSbigWindowTrack(ClientData clientData, Tcl_Interp * interp,
 int cmdSbigExptimeTrack(ClientData clientData, Tcl_Interp * interp,
 			int argc, char *argv[]);
 int cmdSbigBinTrack(ClientData clientData, Tcl_Interp * interp, int argc,
+		    char *argv[]);
+int cmdSbigCFW(ClientData clientData, Tcl_Interp * interp, int argc,
 		    char *argv[]);
 
 /* ----- defines specifiques aux fonctions de cette camera ----*/
