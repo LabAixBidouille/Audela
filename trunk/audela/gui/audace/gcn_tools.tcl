@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.15 2009-01-15 06:48:01 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.16 2009-01-21 23:28:30 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -511,8 +511,8 @@ proc gcn_decode { longs sockname } {
          set names [array names gcn]
          foreach name $names {
             set res [regsub -all , $name " "]
-            if {([lindex $res 0]=="descr")} {
-               set re [lindex $res 1]
+            if {([lindex $res 1]=="descr")} {
+               set re [lindex $res 2]
                if {($re=="type")||($re=="prompt")||($re=="satellite")} {
                   continue
                }
