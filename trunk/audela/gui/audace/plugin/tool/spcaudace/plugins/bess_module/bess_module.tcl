@@ -5,7 +5,7 @@
 # Auteurs     : François Cochard (francois.cochard@wanadoo.fr)
 #               Sur la forme, je suis parti du script calaphot de Jacques Michelet (jacques.michelet@laposte.net)
 #               Par ailleurs, je m'appuie sur les routines spc_audace de Benjamin Mauclaire
-# Mise a jour $Id: bess_module.tcl,v 1.7 2008-09-20 17:51:17 bmauclaire Exp $
+# Mise a jour $Id: bess_module.tcl,v 1.8 2009-01-22 16:19:46 bmauclaire Exp $
 # Mise à jour FC mars 2007
 # Dernière mise à jour: 24 mars 2007 - 11h00
 #
@@ -228,7 +228,7 @@ namespace eval ::bess {
       #  - On regarde le format du fichier, et on convertit si besoin
             set racine [file tail [file rootname $fich_in]]
             set ::bess::fich_in $racine
-            set fich_out $racine
+            set fich_out "bess_$racine"
 
             switch [file extension $fich_in] {
                ".dat" {
@@ -634,8 +634,34 @@ namespace eval ::bess {
                  buf$audace(bufNo) setkwd [list $motcle $parametres($motcle) $formatmotcle($motcle) $commentaire($motcle) ""]
              }
 
-	     #--- Complete les mots clefs vides :
-	     set listemotsclef [ buf$audace(bufNo) getkwds ]
+            #--- Gestion de certains mots clefs :
+            set listemotsclef [ buf$audace(bufNo) getkwds ]
+            #-- Gere les mots clefs vides generes par le panneau Telescope :
+            if { [ lsearch $listemotsclef "RA" ] != -1 } {
+               if { [ lindex [ buf$audace(bufNo) getkwd "RA" ] 1 ] == "        " } { buf$audace(bufNo) delkwd "RA" }
+            }
+            if { [ lsearch $listemotsclef "DEC" ] != -1 } {
+               if { [ lindex [ buf$audace(bufNo) getkwd "DEC" ] 1 ] == "        " } { buf$audace(bufNo) delkwd "DEC" }
+            }
+            if { [ lsearch $listemotsclef "EQUINOX" ] != -1 } {
+               if { [ lindex [ buf$audace(bufNo) getkwd "EQUINOX" ] 1 ] == "        " } { buf$audace(bufNo) delkwd "EQUINOX" }
+            }
+            if { [ lsearch $listemotsclef "OBJNAME" ] != -1 } {
+               if { [ lindex [ buf$audace(bufNo) getkwd "OBJNAME" ] 1 ] == "        " } { buf$audace(bufNo) delkwd "OBJNAME" }
+            }
+
+            #-- Efface des mots clefs incompatibles avec la presence de BSS_INST :
+            if { [ lsearch $listemotsclef "INSTRUME" ] != -1 } {
+               buf$audace(bufNo) delkwd "INSTRUME"
+            }
+            if { [ lsearch $listemotsclef "TELESCOP" ] != -1 } {
+               buf$audace(bufNo) delkwd "TELESCOP"
+            }
+            if { [ lsearch $listemotsclef "DETNAM" ] != -1 } {
+               buf$audace(bufNo) delkwd "DETNAM"
+            }
+
+	     #-- Complete les mots clefs vides :
 	     if { [ lsearch $listemotsclef "BSS_VHEL" ] ==-1 } {
 		 buf$audace(bufNo) setkwd [ list BSS_VHEL 0.0 float "Heliocentric velocity at data date" "km/s" ]
 	     }
@@ -667,7 +693,7 @@ namespace eval ::bess {
 	               set okpoursauver 1
                }
                if { $okpoursauver == 1 } {
-	               buf$audace(bufNo) bitpix float
+	           buf$audace(bufNo) bitpix float
                    buf$audace(bufNo) save [file join $audace(rep_images) $fich_out]
                    buf$audace(bufNo) bitpix short
                    ChargeFichier $fich_out
