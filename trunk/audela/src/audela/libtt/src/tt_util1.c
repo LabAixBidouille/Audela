@@ -70,6 +70,7 @@ int tt_errmessage2(int numerreur,char *message)
    if (numerreur==TT_ERR_SERVICE_NOT_FOUND) {strcat(message,"Service not found");}
    else if (numerreur==TT_ERR_PB_MALLOC) {strcat(message,"Allocation memory error");}
    else if (numerreur==TT_ERR_HDUNUM_OVER) {strcat(message,"Numhdu over limits");}
+   else if (numerreur==TT_ERR_REMOVE_FILE) {strcat(message,"File is read only");}   
    else if (numerreur==TT_ERR_HDU_NOT_IMAGE) {strcat(message,"Selected hdu is not an IMAGE");}
    else if (numerreur==TT_ERR_PTR_ALREADY_ALLOC) {strcat(message,"Pointer already allocated");}
    else if (numerreur==TT_ERR_FILENAME_TOO_LONG) {strcat(message,"Filename too long");}
