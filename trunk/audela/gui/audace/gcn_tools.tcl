@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.16 2009-01-21 23:28:30 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.17 2009-01-22 00:28:22 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -508,9 +508,10 @@ proc gcn_decode { longs sockname } {
          set gcn($sockname,status,$gcn($sockname,descr,prompt),$gcn($sockname,descr,satellite),jd_send) $gcn($sockname,status,last,last,jd_send)
          set gcn($sockname,status,$gcn($sockname,descr,prompt),$gcn($sockname,descr,satellite),jd_received) $gcn($sockname,status,last,last,jd_received)
          set gcn($sockname,status,$gcn($sockname,descr,prompt),$gcn($sockname,descr,satellite),type) $gcn($sockname,status,last,last,type)
-         set names [array names gcn]
+         set names [lsort [array names gcn]]
          foreach name $names {
             set res [regsub -all , $name " "]
+            #gren_info ">>>> GCN name=$name => res=$res"
             if {([lindex $res 1]=="descr")} {
                set re [lindex $res 2]
                if {($re=="type")||($re=="prompt")||($re=="satellite")} {
@@ -540,7 +541,7 @@ proc gcn_decode { longs sockname } {
       # --- use by ROS
       catch { source $ros(root,ros)/src/majordome/gcn.tcl }
       # --- infos
-      set items [array names gcn]
+      set items [lsort [array names gcn]]
       set comments ""
       append comments " ---------------\n"
       foreach item $items {
@@ -803,7 +804,7 @@ proc gcn_pkt_type { pkt_type } {
    # --- prompt identification
    # =-1 informations only, =0 pointdir, =1 prompt, =2 refined
    set prompt -1
-   if {($pkt_type==108)||($pkt_type==126)||($pkt_type==83)||($pkt_type==51)} {
+   if {($pkt_type==108)||($pkt_type==126)||($pkt_type==83)||($pkt_type==51)||($pkt_type==902)||($pkt_type==906)} {
       set prompt 0
    }
    if {($pkt_type==100)||($pkt_type==120)||($pkt_type==61)||($pkt_type==58)||($pkt_type==53)||($pkt_type==40)||($pkt_type==33)||($pkt_type==35)||($pkt_type==30)||($pkt_type==26)||($pkt_type==28)||($pkt_type==1)||($pkt_type==901)||($pkt_type==905)} {
