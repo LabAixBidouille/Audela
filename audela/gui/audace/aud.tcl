@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.93 2009-01-11 15:37:24 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.94 2009-01-25 19:21:43 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -67,10 +67,10 @@ namespace eval ::audace {
       global confgene
       global caption
 
-      #--- Dans l'interface Aud'ACE, c'est la premiere fois que l'on appelle une fonction de libaudela
-      #--- Si libaudela n'a pas ete chargee, ca plante ici. D'ou le catch
       #--- Utilisation de la Console
       set audace(Console) ".console"
+      #--- Initialisation de la variable de fermeture
+      set audace(quitterEnCours) "0"
       #--- Initialisation de variables pour la fenetre Editeurs...
       set confgene(EditScript,error_script) "1"
       set confgene(EditScript,error_pdf)    "1"
@@ -737,13 +737,13 @@ namespace eval ::audace {
          { ::carte::showMapFromBuffer buf$audace(bufNo) }
 
       Menu           $visuNo "$caption(audace,menu,outils)"
+      Menu_Command   $visuNo "$caption(audace,menu,outils)" "$caption(audace,menu,choix_outils)..." \
+         { ::confChoixOutil::run "$audace(base).confChoixOutil" }
+      Menu_Separator $visuNo "$caption(audace,menu,outils)"
       Menu_Command   $visuNo "$caption(audace,menu,outils)" "$caption(audace,menu,pas_outil)" { ::audace::pas_Outil }
       Menu_Separator $visuNo "$caption(audace,menu,outils)"
       #--- Affichage des outils du menu Outils
       ::audace::affiche_Outil $visuNo
-      Menu_Separator $visuNo "$caption(audace,menu,outils)"
-      Menu_Command   $visuNo "$caption(audace,menu,outils)" "$caption(audace,menu,choix_outils)..." \
-         { ::confChoixOutil::run "$audace(base).confChoixOutil" }
 
       Menu           $visuNo "$caption(audace,menu,configuration)"
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,langue)..." \
