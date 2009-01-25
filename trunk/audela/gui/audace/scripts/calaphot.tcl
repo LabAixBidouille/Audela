@@ -1,120 +1,148 @@
-#####################################################################
+##
+# @file calaphot.tcl
 #
-# Fichier     : calaphot.tcl
-# Description : Script pour la photometrie d'asteroides ou d'etoiles variables.
-# Auteurs     : Olivier Thizy (thizy@free.fr)
-#               Jacques Michelet (jacques.michelet@laposte.net)
-# Mise a jour $Id: calaphot.tcl,v 1.15 2009-01-18 13:55:35 jacquesmichelet Exp $
+# @author Olivier Thizy (thizy@free.fr) & Jacques Michelet (jacques.michelet@laposte.net)
+#
+# @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
+#
+# $Id: calaphot.tcl,v 1.16 2009-01-25 15:35:50 jacquesmichelet Exp $
+#
 
-################## Choses a faire
-#### Fonctionnel
-# Multiples asteroides en //
-#   voir le tag MultAster pour retablir la fonctionnalite
-#   differencier les aster. par couleur dans le graph. de la cl.
-#   pouvoir les nommer individuellement dans le graph. de la cl.
-# Integration en tant que panneau (outil audace)
-# Nom pour les etoiles de ref
-#   voir le tag NomRef
-#### Non fonctionnel
-# Faire une vraie routine jm_fitgauss2d
-# Virer les choix bases sur _0 ou _1 (lisibilité du code)
+###catch {namespace delete ::Calaphot}
 
-################## Bogues connues a ce jour :
+source [file join $audace(rep_scripts) calaphot calaphot_graph.tcl]
+source [file join $audace(rep_scripts) calaphot calaphot_calcul.tcl]
+
+##
+# @defgroup calaphot_notice_fr Calaphot
+#
+# @defgroup calaphot_presentation Presentation
+# Calaphot est un script permettant de faire de la photometrie differentielle sur un lot d'images
+# @ingroup calaphot_notice_fr
+#
+# @section calaphot_presentation Presentation
+# Plusieurs méthodes de calcul de photometrie sont proposees
+# - photometrie par ouverture : le flux de chaque astre est calcule dans une fenetre elliptique, auxquel est soustrait la flux de fond de ciel mesure dans un anneau elliptique entourant la fenetre precedente
+# - photometrie par modelisation : les niveaux de gris de chaque astre sont modelises par une nappe gaussienne. On obtient ainsi directement le flux de chaque astre.
+# - photometrie par @c sextractor : @c sextractor est un logiciel libre (developpe par Emmanuel Bertin) dont la finalite premiere est d'effectuer des mesures astrometriques sur les images. Il comporte aussi des fonctions de photometrie qui sont exploitees dans Calaphot.
+# .
+# Pour utiliser Calaphot, sont fournis :
+# - @link calaphot_documentation_fr le mode d'emploi @endlink .
+# - Le mode de calcul des flux et des magnitudes.
+# .
+#
+# @todo Choses a faire
+# - Fonctionnel
+#   - multiples asteroides en // : voir le tag MultAster pour retablir la fonctionnalite
+#   - differencier les aster. par couleur dans le graph. de la cl.
+#   - pouvoir les nommer individuellement dans le graph. de la cl.
+#   - integration en tant que panneau (outil audace)
+#   - nommer les etoiles de ref : voir le tag NomRef
+#   .
+# - Non fonctionnel
+#   - faire une vraie routine jm_fitgauss2d
+#   - virer les choix bases sur _0 ou _1 (lisibilité du code)
+#   .
+# .
+#
+# @bug Bogues connues a ce jour :
 # - pas de suppression des fichiers de config sextractor en cas d'arret anticipe
 # - plantage lors de l'affichage de la CL si aucune image n'est validee (premier n'existe pas)
 # - mode sextractor ne marche pas si les repertoires ont des blancs dans leurs noms (exe, images ou configs)
 # - pb d'affichage des valeurs numeriques si on refait le pointade de l'asteroide sur le 1ere image
+# .
+#
+#
 
-
-catch {namespace delete ::Calaphot}
+##
+# @brief Calaphot est un script permettant de faire de la photometrie differentielle sur un lot d'images
+# @namespace CalaPhot
 namespace eval ::CalaPhot {
-
-    variable parametres
-    variable calaphot
-    variable police
-    variable demande_arret
-    variable trace_log
-    variable data_script
-    variable data_image
-    variable parametres
-
-# L'existence de trace_log cree le ficher debug.log et le mode d'affichage debug
-    catch {unset trace_log}
-#    set trace_log 1
-
-    set numero_version v5.0
-
-    source [file join $audace(rep_scripts) calaphot calaphot.cap]
-    source [file join $audace(rep_scripts) calaphot calaphot_graph.tcl]
-    source [file join $audace(rep_scripts) calaphot calaphot_calcul.tcl]
     source [file join $audace(rep_scripts) calaphot calaphot_sex.tcl]
 
-    set calaphot(niveau_debug) 0
-    set calaphot(niveau_info) 1
-    set calaphot(niveau_notice) 2
-    set calaphot(niveau_probleme) 3
-    set calaphot(niveau_erreur) 4
+    ##
+    # @brief Initialisation generale des variables par défaut
+    # @return
+    proc InitialisationStatique {} {
+        global audace
+        variable parametres
+        variable calaphot
+        variable police
+        variable demande_arret
+        variable trace_log
+        variable data_script
+        variable data_image
+        variable parametres
 
-    set calaphot(texte,debug)               "debug"
-    set calaphot(texte,info)                "info"
-    set calaphot(texte,notice)              "notice"
-    set calaphot(texte,probleme)            "probleme"
-    set calaphot(texte,erreur)              "erreur"
+# L'existence de trace_log cree le ficher debug.log et le mode d'affichage debug
+        catch {unset trace_log}
+#    set trace_log 1
 
-    set calaphot(nom_fichier_ini)           [file join $audace(rep_scripts) calaphot calaphot.ini]
-    set calaphot(nom_fichier_log)           [file join $audace(rep_scripts) calaphot trace_calaphot.log]
+        set numero_version v5.0
 
-    set calaphot(sextractor,catalog)        [ file join $audace(rep_scripts) calaphot calaphot.cat ]
-    set calaphot(sextractor,config)         [ file join $audace(rep_scripts) calaphot calaphot.sex ]
-    set calaphot(sextractor,param)          [ file join $audace(rep_scripts) calaphot calaphot.param ]
-    set calaphot(sextractor,neurone)        [ file join $audace(rep_scripts) calaphot calaphot.nnw ]
-    set calaphot(sextractor,assoc)          [ file join $audace(rep_scripts) calaphot calaphot.assoc ]
+        source [file join $audace(rep_scripts) calaphot calaphot.cap]
 
-    set calaphot(init,mode)                 ouverture
-    set calaphot(init,operateur)            "Tycho Brahe"
-    set calaphot(init,source)               kandrup
-    set calaphot(init,indice_premier)       1
-    set calaphot(init,indice_dernier)       100
-    set calaphot(init,gain_camera)          3
-    set calaphot(init,bruit_lecture)        20
-    set calaphot(init,saturation)           32500
-    set calaphot(init,tailleboite)          7
-    set calaphot(init,rayon1)               1
-    set calaphot(init,rayon2)               3
-    set calaphot(init,rayon3)               6
-    set calaphot(init,sortie)               "kandrup.txt"
-    set calaphot(init,fichier_cl)           "kandrup.ps"
-    set calaphot(init,objet)                Kandrup
-    set calaphot(init,code_UAI)             615
-    set calaphot(init,surechantillonage)    5
-    set calaphot(init,type_capteur)         "Kaf401E"
-    set calaphot(init,type_telescope)       "Schmidt-Cassegrain"
-    set calaphot(init,diametre_telescope)   "0.203"
-    set calaphot(init,focale_telescope)     "1.260"
-    set calaphot(init,catalogue_reference)  "USNO B1,R"
-    set calaphot(init,filtre_optique)       "-"
-    set calaphot(init,niveau_message)       $calaphot(niveau_notice)
-    set calaphot(init,tri_images)           "non"
-    set calaphot(init,type_images)          "non_recalees"
-    set calaphot(init,pose_minute)          "seconde"
-    set calaphot(init,date_images)          "debut_pose"
-    set calaphot(init,reprise_astres)       "non"
-    set calaphot(init,format_sortie)        "cdr"
-    set calaphot(init,signal_bruit)         20
-    set calaphot(init,type_objet)           0
-    set calaphot(init,version_ini)          $numero_version
+        set calaphot(niveau_debug) 0
+        set calaphot(niveau_info) 1
+        set calaphot(niveau_notice) 2
+        set calaphot(niveau_probleme) 3
+        set calaphot(niveau_erreur) 4
 
-    # couleur des affichages console
-    foreach niveau { debug info notice probleme erreur } couleur_style { green orange blue purple red } {
-        $audace(Console).txt1 tag configure calaphot(style_$niveau) -foreground $couleur_style
+        set calaphot(texte,debug)               "debug"
+        set calaphot(texte,info)                "info"
+        set calaphot(texte,notice)              "notice"
+        set calaphot(texte,probleme)            "probleme"
+        set calaphot(texte,erreur)              "erreur"
+
+        set calaphot(nom_fichier_ini)           [file join $audace(rep_scripts) calaphot calaphot.ini]
+        set calaphot(nom_fichier_log)           [file join $audace(rep_scripts) calaphot trace_calaphot.log]
+
+        set calaphot(sextractor,catalog)        [ file join $audace(rep_scripts) calaphot calaphot.cat ]
+        set calaphot(sextractor,config)         [ file join $audace(rep_scripts) calaphot calaphot.sex ]
+        set calaphot(sextractor,param)          [ file join $audace(rep_scripts) calaphot calaphot.param ]
+        set calaphot(sextractor,neurone)        [ file join $audace(rep_scripts) calaphot calaphot.nnw ]
+        set calaphot(sextractor,assoc)          [ file join $audace(rep_scripts) calaphot calaphot.assoc ]
+
+        set calaphot(init,mode)                 ouverture
+        set calaphot(init,operateur)            "Tycho Brahe"
+        set calaphot(init,source)               kandrup
+        set calaphot(init,indice_premier)       1
+        set calaphot(init,indice_dernier)       100
+        set calaphot(init,gain_camera)          3
+        set calaphot(init,bruit_lecture)        20
+        set calaphot(init,saturation)           32500
+        set calaphot(init,tailleboite)          7
+        set calaphot(init,rayon1)               1
+        set calaphot(init,rayon2)               3
+        set calaphot(init,rayon3)               6
+        set calaphot(init,sortie)               "kandrup.txt"
+        set calaphot(init,fichier_cl)           "kandrup.ps"
+        set calaphot(init,objet)                Kandrup
+        set calaphot(init,code_UAI)             615
+        set calaphot(init,surechantillonage)    5
+        set calaphot(init,type_capteur)         "Kaf401E"
+        set calaphot(init,type_telescope)       "Schmidt-Cassegrain"
+        set calaphot(init,diametre_telescope)   "0.203"
+        set calaphot(init,focale_telescope)     "1.260"
+        set calaphot(init,catalogue_reference)  "USNO B1,R"
+        set calaphot(init,filtre_optique)       "-"
+        set calaphot(init,niveau_message)       $calaphot(niveau_notice)
+        set calaphot(init,tri_images)           "non"
+        set calaphot(init,type_images)          "non_recalees"
+        set calaphot(init,pose_minute)          "seconde"
+        set calaphot(init,date_images)          "debut_pose"
+        set calaphot(init,reprise_astres)       "non"
+        set calaphot(init,format_sortie)        "cdr"
+        set calaphot(init,signal_bruit)         20
+        set calaphot(init,type_objet)           0
+        set calaphot(init,version_ini)          $numero_version
     }
 
-
-    #*************************************************************************#
-    #*************  Principal  ***********************************************#
-    #*************************************************************************#
+    ##
+    # @brief Programme principal (séquenceur)
+    # @return 0 si tout va bien
+    # @return !=0 en cas de demande d'arret, ou d'erreur dans le script
     proc Principal {} {
-
         global audace color conf
         variable demande_arret
         variable parametres
@@ -129,6 +157,9 @@ namespace eval ::CalaPhot {
         variable liste_image
         variable calaphot
 
+        # Initialisation generale
+        InitialisationStatique
+
         # Chargement des librairies ressources
         set librairie [Ressources]
         if {$librairie != 0} {return}
@@ -139,7 +170,7 @@ namespace eval ::CalaPhot {
         # Lecture du fichier de parametres
         RecuperationParametres
 
-        Console notice "%s %s\n" $calaphot(texte,titre) $::CalaPhot::numero_version
+        Console notice "%s %s\n" $calaphot(texte,titre) $calaphot(init,version_ini)
         Console notice "%s\n" $calaphot(texte,copyright)
 
         set demande_arret 0
@@ -148,7 +179,7 @@ namespace eval ::CalaPhot {
 
         catch {file delete [file join $audace(rep_images) $parametres(sortie)]}
 
-        TraceFichier notice "%s %s\n" $calaphot(texte,titre) $::CalaPhot::numero_version
+        TraceFichier notice "%s %s\n" $calaphot(texte,titre) $calaphot(init,version_ini)
         TraceFichier notice "%s\n" $calaphot(texte,copyright)
 
         if {$demande_arret == 1} {
@@ -463,9 +494,9 @@ namespace eval ::CalaPhot {
 
     }
 
-    #*************************************************************************#
-    #*************  AffichageCanopus  ****************************************#
-    #*************************************************************************#
+    ##
+    # @brief Affichage au format Canopus
+    # @return
     proc AffichageCanopus {} {
         variable calaphot
         variable parametres
@@ -499,9 +530,10 @@ namespace eval ::CalaPhot {
         # Fin de la boucle sur les images
     }
 
-    #*************************************************************************#
-    #*************  AffichageCDR  ********************************************#
-    #*************************************************************************#
+    ##
+    # @brief Affichage avec le format CDR (cf site de Raoul Behrend)
+    # @details Le resultat de cet affichage peut directement etre exporté pour le logiciel Courbrot
+    # @return toujours 0
     proc AffichageCDR {} {
         variable data_image
         variable parametres
@@ -529,7 +561,7 @@ namespace eval ::CalaPhot {
         Message notice "TEL %s %s %s\n" $parametres(diametre_telescope) $parametres(focale_telescope) $parametres(type_telescope)
         Message notice "CAT %s\n" $parametres(catalogue_reference)
         Message notice "FIL %s\n" $parametres(filtre_optique)
-        Message notice "; %s %s %s\n" $calaphot(texte,banniere_CDR_1) $::CalaPhot::numero_version $calaphot(texte,banniere_CDR_2)
+        Message notice "; %s %s %s\n" $calaphot(texte,banniere_CDR_1) $calaphot(init,version_ini) $calaphot(texte,banniere_CDR_2)
         set image 0
 
         foreach i $liste_image {
@@ -554,9 +586,13 @@ namespace eval ::CalaPhot {
         Message notice "---------------------------------------------------------------------------------------\n"
     }
 
-    #*************************************************************************#
-    #*************  Console  *************************************************#
-    #*************************************************************************#
+    ##
+    # @brief Affichage dans la console
+    # @details Le niveau d'affichage est comparé au niveau defini dans la saisie des parametres. S'il est plus faible (plus grande priorite)
+    # le message sera affiche. Les couleurs d'affichage sont definies par des 'tags' (cf InitialisationStatique)
+    # @param[in] niveau_info : le niveau d'affichage
+    # @param[in] args : le message formatte a afficher
+    # @return
     proc Console {niveau_info args} {
         global audace
         variable trace_log
@@ -579,9 +615,12 @@ namespace eval ::CalaPhot {
         }
     }
 
-    #*************************************************************************#
-    #*************  DateImage  ***********************************************#
-    #*************************************************************************#
+    ##
+    # @brief Extraction de la date et du temps d'exposition d'une image a partir de l'entete FITS
+    # @param[in] i : numero de l'image dans la sequence
+    # @retval data_image($i,date) : date en jour julien
+    # @retval data_image($i,temps_expo) : temps d'exposition en s
+    # @return
     proc DateImage {i} {
         global audace
         variable data_image
@@ -635,15 +674,13 @@ namespace eval ::CalaPhot {
         }
     }
 
-    #*************************************************************************#
-    #*************  DateReferences  ******************************************#
-    #*************************************************************************#
-    # Entree : liste_image                                                      #
-    #          parametres(source)                                              #
-    # Sortie : liste du JJ de la premiere image, de la derniere et de la      #
-    #          difference en JJ.                                                  #
-    # Algo :                                                                  #
-    #*************************************************************************#
+
+    ##
+    # @brief Recherche des dates de la 1ere et de la derniere image de la sequence et calcul de la difference
+    # @retval data_script(jd_premier) : date en jour julien de la 1ere image
+    # @retval data_script(jd_dernier) : date en jour julien de la derniere image
+    # @retval data_script(jd_delta) : difference des dates precedentes
+    # @return liste des 3 parametres de sortie
     proc DatesReferences {} {
         global audace
         variable parametres
@@ -672,27 +709,24 @@ namespace eval ::CalaPhot {
         return [list $jdFirst $jdLast $delta_jd]
     }
 
-    #*************************************************************************#
-    #*************  DecalageImage  *******************************************#
-    #*************************************************************************#
-    # Entr�e : image : no de l'image                                          #
-    # Sortie : liste de d�calage en x et en y                                 #
-    # Algo : Lecture de l'ent�te FITS                                          #
-    #*************************************************************************#
+    ##
+    # @brief Lecture du decalage en (x,y) de l'image recalee prealablement
+    # @details Le decalage est lu a partir du mot cle IMA/SERIES REGISTER dans l'entete FITS de l'image
+    # @param[in] image : no de l'image dans la sequence
+    # @return liste contenant le decalage en x et y
     proc DecalageImage {image} {
         global audace
-        variable trace_log
 
         Message debug "%s\n" [info level [info level]]
 
-        # --- recupere la liste des mots cl�  de l'image FITS
+        # --- recupere la liste des mots cle  de l'image FITS
         set listkey [lsort -dictionary [buf$audace(bufNo) getkwds]]
-        # --- on �value chaque mot cl�
+        # --- on evalue chaque mot cle
         foreach key $listkey {
             # --- on extrait les infos de la ligne FITS
             # --- qui correspond au mot cle...
             set listligne [buf$audace(bufNo) getkwd $key]
-            # --- on �value la valeur de la ligne FITS
+            # --- on evalue la valeur de la ligne FITS
             set value [lindex $listligne 1]
             # --- si la valeur vaut IMA/SERIES REGISTER ...
             if {$value == "IMA/SERIES REGISTER"} {
@@ -710,11 +744,11 @@ namespace eval ::CalaPhot {
             incr indice
             set listligne [buf$audace(bufNo) getkwd "TT$indice"]
 
-            # --- on �value la valeur de la ligne FITS
+            # --- on evalue la valeur de la ligne FITS
             set param1 [lindex $listligne 1]
             set dx [lindex [split $param1] 3]
 
-            # --- on recherche la ligne FITS contenant le mot cl� indice+2
+            # --- on recherche la ligne FITS contenant le mot cle indice+2
             incr indice
             set listligne [buf$audace(bufNo) getkwd "TT$indice"]
 
@@ -728,9 +762,10 @@ namespace eval ::CalaPhot {
         return $dec
     }
 
-    #**************************************************************************#
-    #*************  DmsDd  ****************************************************#
-    #**************************************************************************#
+    ##
+    # @brief Conversion de degres sexagesimaux en degres decimaux
+    # @param[in] dms : valeur en degres sexagesimaux a convertir
+    # @return valeur en degres decimaux
     proc DmsDd {dms} {
 
         Message debug "%s\n" [info level [info level]]
@@ -741,9 +776,11 @@ namespace eval ::CalaPhot {
         return [expr ($d + $m/60.0 + $s/3600)]
     }
 
-    #*************************************************************************#
-    #*************  FermetureFichier  ****************************************#
-    #*************************************************************************#
+    ##
+    # @brief Fermeture de fichier
+    # @details L'interet de ce code est de pouvoir tracer le nombre de fichier ouverts à un moment donne. Cela sert a detecter les "fuites de fileid", c'est-a-dire les fichiers qui sont ouverts et jamais fermes. On peut aussi tracer les fichiers qu'on tente de fermer alors qu'ils n'ont pas été ouverts.
+    # @param[in] fid : 'channel' a fermer
+    # @return
     proc FermetureFichier {fid} {
         variable data_script
 
@@ -753,14 +790,15 @@ namespace eval ::CalaPhot {
             Message erreur $retour
         } else {
             incr data_script(nombre_fichier_ouvert) -1
-            # A ne pas retablir sans modifir Message (risque de re-entrance infinie)
+            # A ne pas retablir sans modifier Message (risque de re-entrance infinie)
 #            Message debug "nombre fichier ouvert : %d\n" $data_script(nombre_fichier_ouvert)
         }
     }
 
-    #*************************************************************************#
-    #*************  InformationsImages  **************************************#
-    #*************************************************************************#
+    ##
+    # @brief Lecture de la taille d'une image affichée par AudACE
+    # @retval data_script(naxis1) : taille de l'image sur l'axe 1 (X)
+    # @retval data_script(naxis2) : taille de l'image sur l'axe 2 (Y)
     proc InformationsImages {} {
         global audace
         variable data_script
@@ -771,11 +809,15 @@ namespace eval ::CalaPhot {
         set data_script(naxis2) [lindex [buf$audace(bufNo) getkwd NAXIS2] 1]
     }
 
-    #*************************************************************************#
-    #*************  Initialisations  *****************************************#
-    #*************************************************************************#
-    #  Initialisation des vecteurs. Suppression de fenetres restantes          #
-    #*************************************************************************#
+    ##
+    # @brief Initialisation de données diverses
+    # @details
+    # - Initialisation des vecteurs graphiques
+    # - Suppression de fenetres restantes.
+    # - Initialisation de divers compteurs d'objets
+    # .
+    # @return
+    # @todo Voir si cette routine ne peut etre refondue dans InitialisationStatique
     proc Initialisations {} {
         global audace
         variable vx_temp
@@ -811,36 +853,25 @@ namespace eval ::CalaPhot {
 
     }
 
-    #**************************************************************************
-    #*************************************************************************#
-    #*************  JourJulienImage  *****************************************#
+    ##
+    # @brief Calcul le jour julien de la date d'exposition d'une image affichée par AudACE
+    #
+    # @details La date d'exposition d'une image est definie comme etant l'instant du milieu de la pose
+    #
     # Cette procedure recupere le jour julien de l'image active.
     # Elle marche pour les images des logiciels suivants:
-    # 1/ CCDSoft v5: DATE-OBS = la date uniquement,
-    #               TIME-OBS = l'heure de d� ut en TU,
-    #                 EXPOSURE = le temps d'exposition en secondes!
-    # 2/ PRISM v4  : DATE-OBS = date & heure de d� ut de pose
-    #                 (formt Y2K: 'aaaa-mm-jjThh:mm:ss.sss')
-    #                 UT-START & UT-END sont valides mais non utilis�
-    #                 EXPOSURE = le temps d'exposition en minutes!
-    #*************************************************************************#
-
-            # Recherche du mot clef DATE-OBS dans l'ent�te FITS
-#        set date [buf$audace(bufNo) getkwd DATE-OBS]
-#        set date [lindex $date 1]
-        # Si la date n'est pas au format Y2K (date+heure)...
-#        if {[string range $date 10 10] != "T"} {
-#            # Recherche mot clef TIME-OBS
-#            set time [buf$audace(bufNo) getkwd TIME-OBS]
-#            set time [lindex $time 1]
-#            if {[string length $time] != 0} {
-#                # ...convertit en format Y2K!
-#                set date [string range $date 0 9]
-#                set time [string range $time 0 7]
-#                append date "T"
-#                append date $time
-#            }
-#        }
+    # - CCDSoft v5, Audela et Maxim-DL:
+    #   - DATE-OBS = la date uniquement,
+    #   - TIME-OBS = l'heure de debut en TU,
+    #   - EXPOSURE = le temps d'exposition en secondes
+    #   .
+    # - PRISM v4  :
+    #   - DATE-OBS = date & heure de debut de pose (formt Y2K: 'aaaa-mm-jjThh:mm:ss.sss')
+    #   - UT-START & UT-END sont valides mais non utilise
+    #   - EXPOSURE = le temps d'exposition en minutes!
+    #   .
+    # .
+    # @return la date exprimee en jour julien
     proc JourJulienImage {} {
         global audace
 
@@ -884,9 +915,12 @@ namespace eval ::CalaPhot {
         return $jd_instant
     }
 
-    #*************************************************************************#
-    #*************  Message  *************************************************#
-    #*************************************************************************#
+    ##
+    # @brief Sortie de valeur aur la console et le fichier de log
+    # @details @see @ref Console
+    # @param[in] niveau_info : le niveau d'affichage
+    # @param[in] args : le message formatte a afficher
+    # @return
     proc Message {niveau_info args} {
         global audace
 
@@ -895,9 +929,16 @@ namespace eval ::CalaPhot {
         TraceFichier $niveau_info $param
     }
 
-    #*************************************************************************#
-    #*************  MesureDecalage  ******************************************#
-    #*************************************************************************#
+    ##
+    # @brief Mesure du decalage (x,y) entre 2 images par recalage entre elles
+    # @details Si cette valeur a ete mesuree auparavant dans une session precedente de Calaphot
+    # cette valeur sera extraite du fichier de decalage
+    # Sinon le decalage est effectue par recalage (register) de l'image par rapport à une image t1.fit
+    # La valeur du recalage est stockee dans l'entete FITS de l'image
+    # @param[in] i : numero de l'image dans la sequence
+    # @retval data_image($i,decalage_x) : decalage en x
+    # @retval data_image($i,decalage_y) : decalage en y
+    # @return
     proc MesureDecalage {i} {
         variable parametres
         variable liste_decalage
@@ -927,18 +968,24 @@ namespace eval ::CalaPhot {
                 loadima $parametres(source)$i
             }
         } else {
-            # Les images sont recalees, pas de decalage entre elles
+            # Les images sont deja recalees, pas de decalage entre elles
             Message debug "Les images sont toutes recalees\n"
             set data_image($i,decalage_x) 0.0
             set data_image($i,decalage_y) 0.0
         }
-        Message debug "image %d: decalage_x=%10.4f d�calage_y=%10.4f\n" $i $data_image($i,decalage_x) $data_image($i,decalage_y)
+        Message debug "image %d: decalage_x=%10.4f decalage_y=%10.4f\n" $i $data_image($i,decalage_x) $data_image($i,decalage_y)
     }
 
 
-    #*************************************************************************#
-    #*************  OuvertureFichier  ****************************************#
-    #*************************************************************************#
+    ##
+    # @brief Ouverture de fichier
+    # @details L'interet de ce code est de pouvoir tracer le nombre de fichier ouverts à un moment donne. Cela sert a detecter les "fuites de fileid", c'est-a-dire les fichiers qui sont ouverts et jamais fermes. On peut aussi tracer les fichiers qu'on tente de fermer alors qu'ils n'ont pas été ouverts.
+    # @param[in] nom_fichier : nom du fichier
+    # @param[in] mode : mode d'ouverture comme defini par TCL
+    # @param[in] fatal : drapeau. Si fatal = oui(defaut), affichage d'un message d'ereeur dans la console
+    # @retval data_script(nombre_fichier_ouvert) : nombre de fichiers ouverts par ce script
+    # @return 'channel' du fichier ouvert si l'ouverture a eu lieu
+    # @return "" si l'ouverture a echoue
     proc OuvertureFichier {nom_fichier mode {fatal "oui"} } {
         variable data_script
 
@@ -957,9 +1004,9 @@ namespace eval ::CalaPhot {
         }
     }
 
-    #*************************************************************************#
-    #*************  RecapitulationOptions  ***********************************#
-    #*************************************************************************#
+    ##
+    # @brief Affichage des options et parametres qui ont ete saisis
+    # @return
     proc RecapitulationOptions {} {
         variable parametres
         variable calaphot
@@ -988,9 +1035,10 @@ namespace eval ::CalaPhot {
         Message notice "\n--------------------------\n"
     }
 
-    #*************************************************************************#
-    #*************  RecherchePlusBrillante  **********************************#
-    #*************************************************************************#
+    ##
+    # @brief Recherche de l'etoile selectionne la plus brillante
+    # @details Parcours de la liste pos_theo(ref,i)
+    # @return indice de l'etoile la plus brillante de la liste
     proc RecherchePlusBrillante {} {
         variable parametres
         variable data_script
@@ -1009,9 +1057,9 @@ namespace eval ::CalaPhot {
         return $plus_brillante
     }
 
-    #*************************************************************************#
-    #*************  RecuperationDecalages  ***********************************#
-    #*************************************************************************#
+    ##
+    # @brief Lecture du fichier .lst qui,s'il existe, contient les decalages entre images calcules lors d'une session precedente de Calaphot
+    # @return
     proc RecuperationDecalages {} {
         global audace
         variable parametres
@@ -1036,6 +1084,13 @@ namespace eval ::CalaPhot {
     #*************************************************************************#
     #*************  RecuperationParametres  **********************************#
     #*************************************************************************#
+    ##
+    # @brief Lecture des parametres stockés dans calaphot.ini et initialisations
+    # @details Si certains parametres n'existent pas dans ce fichier, ou si ce fichier n'existe pas lui-meme,
+    # ou encore si on a changé de version de Calaphot,
+    # les parametres sont initialises avec des valeurs par defaut (cf Calaphot::InitialisationStatique )
+    # @retval parametres
+    # @return 0
     proc RecuperationParametres {} {
         global audace
         variable parametres
@@ -1098,9 +1153,10 @@ namespace eval ::CalaPhot {
         }
     }
 
-    #*************************************************************************#
-    #*************  Ressources  **********************************************#
-    #*************************************************************************#
+    ##
+    # @brief Verification que la libjm charge est d'une version correcte
+    # @return 0 la libjm est de la bonne version
+    # @return 1 cas contraire
     proc Ressources {} {
         global blt_version
         global audace
@@ -1120,21 +1176,11 @@ namespace eval ::CalaPhot {
         return 0
     }
 
-    #*************************************************************************#
-    #*************  Retour  **************************************************#
-    #*************************************************************************#
-    proc Retour {nom_image} {
-        global audace
-
-        Message debug "%s\n" [info level [info level]]
-
-        destroy $audace(base).selection_aster
-        AffichageMenuAsteroide 1 $nom_image
-    }
-
-    #*************************************************************************#
-    #*************  SauvegardeDecalages  *************************************#
-    #*************************************************************************#
+    ##
+    # @brief Sauvegarde dans un fichier des decalages entre images
+    # @details Le but de ceci est d'accelerer les traitements lors d'un session Calaphot qui porterait sur les memes images
+    # Le nom du fichier depend du repertoire d'images et du nom generique des images
+    # @return
     proc SauvegardeDecalages {} {
         global audace
         variable parametres
@@ -1157,9 +1203,11 @@ namespace eval ::CalaPhot {
         }
     }
 
-    #*************************************************************************#
-    #*************  SauvegardeParametres  ************************************#
-    #*************************************************************************#
+    ##
+    # @brief Sauvegarde dans un fichier des parametre de la session courante
+    # @details Ces parametres ont ete lus dans le fichier calaphot.ini, et eventuellement
+    # modifies dans l'ecran de saisie
+    # @return
     proc SauvegardeParametres {} {
         global audace
         variable parametres
@@ -1192,9 +1240,13 @@ namespace eval ::CalaPhot {
         FermetureFichier $fichier
     }
 
-    #*************************************************************************#
-    #*************  ScriptCourbeLumiere  *************************************#
-    #*************************************************************************#
+    ##
+    # @brief Generation d'un script pour recreer la courbe de lumiere
+    # @deprecated
+    # @param[in] x : vecteur sur l'axe X
+    # @param[in] y1 : vecteur sur l'axe Y
+    # @param[in] y2 : vecteur sur l'axe Y
+    # @param[in] y3 : vecteur sur l'axe Y
     proc ScriptCourbeLumiere {x y1 y2 y3} {
         set liste_commande [list { \
                       {package require BLT} \
@@ -1212,9 +1264,12 @@ namespace eval ::CalaPhot {
         }
     }
 
-    #*************************************************************************#
-    #*************  TraceFichier  ********************************************#
-    #*************************************************************************#
+    ##
+    # @brief Ecrit des messages dans un fichier de log
+    # @details @see @ref Console
+    # @param[in] niveau_info : le niveau d'affichage
+    # @param[in] args : le message formatte a afficher
+    # @return
     proc TraceFichier {niveau_info args} {
         global audace
         variable calaphot
@@ -1227,19 +1282,12 @@ namespace eval ::CalaPhot {
         }
     }
 
-    #*************************************************************************#
-    #*************  TriDateImage  ********************************************#
-    #*************************************************************************#
-    # Sert a trier les images par dates croissantes, et eliminant les doublons#
-    # Retourne une liste de numero d'images triees                              #
-    #**************************************************************************
-    # Entree : parametres(tri_image) : indication si on doit trier les images #
-    #  ou pas                                                                 #
-    # Sortie : liste_image : liste trieee de tous les indices des images      #
-    #          data_script(premier_liste) : indice de la premiere image       #
-    #          data_script(dernier_liste) : indice de la derniere image       #
-    # Algo : voir le code                                                     #
-    #*************************************************************************#
+    ##
+    # @brief Tri des images par dates croissantes, et eliminant les doublons
+    # @retval liste_image : liste trieee de tous les indices des images
+    # @retval data_script(premier_liste) : indice de la premiere image
+    # @retval data_script(dernier_liste) : indice de la derniere image
+    # @return
     proc TriDateImage {} {
         global audace
         variable parametres
@@ -1287,9 +1335,9 @@ namespace eval ::CalaPhot {
         set liste_image $liste_image_triee
     }
 
-    #*************************************************************************#
-    #*************  Verification  ********************************************#
-    #*************************************************************************#
+    ##
+    # @brief Verification que tous les fichiers images de la sequence existent
+    # @return
     proc Verification {} {
         global audace conf
         variable parametres
@@ -1322,9 +1370,11 @@ namespace eval ::CalaPhot {
         return 0
     }
 
-    #*************************************************************************#
-    #*************  Visualisation  *******************************************#
-    #*************************************************************************#
+    ##
+    # @brief Reglage des seuils de visualisation d'une image dans AudACE
+    # @deprecated
+    # @param[in] mode : optimal ou rapide
+    # @bug : les 2 valeurs de mode sont identiques
     proc Visualisation {mode} {
         global audace
         variable data_script
@@ -1347,6 +1397,10 @@ namespace eval ::CalaPhot {
         update
     }
 
+    # couleur des affichages console
+    foreach niveau { debug info notice probleme erreur } couleur_style { green orange blue purple red } {
+        $audace(Console).txt1 tag configure calaphot(style_$niveau) -foreground $couleur_style
+    }
 
 }
 # Fin du namespace Calaphot
@@ -1381,6 +1435,8 @@ if {$erreur != "2.4"} {
 } else {
     namespace import -force blt::*
 }
+
+
 
 ::CalaPhot::Principal
 
