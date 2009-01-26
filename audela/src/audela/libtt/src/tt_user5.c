@@ -1969,7 +1969,201 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
             r11=r1*r1;
             r22=r2*r2;
             r33=r3*r3;
-            /* --- fond de ciel precis (fmoy,fmed,sigma) ---*/
+            
+			if (r1<5) r1=5;
+			//fitte une gaussienne pour la recherche du centroide
+			xx1=(int)(xcc-r1-9);
+            xx2=(int)(xcc+r1+9);
+            yy1=(int)(ycc-r1-5);
+            yy2=(int)(ycc+r1+5);
+            if (xx1<0) xx1=0;
+            if (xx1>=naxis1) xx1=naxis1-1;
+            if (xx2<0) xx2=0;
+            if (xx2>=naxis1) xx2=naxis1-1;
+            if (yy1<0) yy1=0;
+            if (yy1>=naxis2) yy1=naxis2-1;
+            if (yy2<0) yy2=0;
+            if (yy2>=naxis2) yy2=naxis2-1;
+  
+			pp = (double*)calloc(6,sizeof(double));
+			ecart = (double*)calloc(1,sizeof(double));
+			sizex=xx2-xx1+1;
+			sizey=yy2-yy1+1;
+			iX = (TYPE_PIXELS*)calloc(sizex,sizeof(TYPE_PIXELS));
+			dX = (double*)calloc(sizex,sizeof(double));
+			iY = (TYPE_PIXELS*)calloc(sizey,sizeof(TYPE_PIXELS));
+			dY = (double*)calloc(sizey,sizeof(double));	
+					
+			for(i=0;i<sizex;i++) *(iX+i) = (double)0.;
+			for(i=0;i<sizey;i++) *(iY+i) = (double)0.;
+
+			for(j=0;j<sizey;j++) {
+			   for(i=0;i<sizex;i++) {
+					pixel = p_in->p[naxis1*(j+yy1)+i+xx1];
+					*(iX+i) += pixel;
+					*(iY+j) += pixel;
+			   }
+			}
+
+			for(i=0;i<sizex;i++) dX[i] = (double)*(iX+i);
+			for(i=0;i<sizey;i++) dY[i] = (double)*(iY+i);
+
+			tt_fitgauss1d(sizex,dX,pp,ecart);      
+			xcc=pp[1]+xx1;  
+			fwhmx=pp[2];
+			tt_fitgauss1d(sizey,dY,pp,ecart); 
+			ycc=pp[1]+yy1;
+			fwhmy=pp[2];
+			free(iX);
+			free(dX);
+			free(iY);
+			free(dY);
+			free(pp);
+			free(ecart);
+
+			/* ---  elimine les cosmiques  --- */
+			if (((p_in->p[naxis1*(int)y0+(int)x0-1]<=pseries->bgmean+6*pseries->bgsigma)&&(p_in->p[naxis1*(int)y0+(int)x0+1]<=pseries->bgmean+6*pseries->bgsigma))||((p_in->p[naxis1*((int)y0-1)+(int)x0]<=pseries->bgmean+6*pseries->bgsigma)&&(p_in->p[naxis1*((int)y0+1)+(int)x0]<=pseries->bgmean+6*pseries->bgsigma))) {
+				if (p_in->p[naxis1*(int)y0+(int)x0]>pseries->bgmean+10*pseries->bgsigma) {	break; 	}
+			}
+			/* ---  elimine les traînées d'étoiles --- */
+			if ((fwhmx>4*fwhmy)&&((fwhmx>0.5)&&(fwhmy>0.5))) break;
+			if ((fwhmx>3.5*fwhmy)&&((fwhmx>1)&&(fwhmy>1))) break;
+			if ((fwhmx>3*fwhmy)&&((fwhmx>2)&&(fwhmy>2))) break;
+
+			fwhmxy=(fwhmx>fwhmy)?fwhmx:fwhmy;
+			//la première fenêtre semble trop grande
+			if ((fabs(xcc-x0)>=1.0*fwhmxy)||(fabs(ycc-y0)>=1.0*fwhmxy)) {
+				xcc=x0;
+				ycc=y0;
+				xx1=(int)(xcc-r1);
+				xx2=(int)(xcc+r1);
+				yy1=(int)(ycc-r1);
+				yy2=(int)(ycc+r1);
+				if (xx1<0) xx1=0;
+				if (xx1>=naxis1) xx1=naxis1-1;
+				if (xx2<0) xx2=0;
+				if (xx2>=naxis1) xx2=naxis1-1;
+				if (yy1<0) yy1=0;
+				if (yy1>=naxis2) yy1=naxis2-1;
+				if (yy2<0) yy2=0;
+				if (yy2>=naxis2) yy2=naxis2-1;
+  
+				pp = (double*)calloc(6,sizeof(double));
+				ecart = (double*)calloc(1,sizeof(double));
+				sizex=xx2-xx1+1;
+				sizey=yy2-yy1+1;
+
+				iX = (TYPE_PIXELS*)calloc(sizex,sizeof(TYPE_PIXELS));
+				dX = (double*)calloc(sizex,sizeof(double));
+				iY = (TYPE_PIXELS*)calloc(sizey,sizeof(TYPE_PIXELS));
+				dY = (double*)calloc(sizey,sizeof(double));	
+					
+				for(i=0;i<sizex;i++) *(iX+i) = (double)0.;
+				for(i=0;i<sizey;i++) *(iY+i) = (double)0.;
+
+				for(j=0;j<sizey;j++) {
+				   for(i=0;i<sizex;i++) {
+						pixel = p_in->p[naxis1*(j+yy1)+i+xx1];
+						*(iX+i) += pixel;
+						*(iY+j) += pixel;
+				   }
+				}
+
+				for(i=0;i<sizex;i++) dX[i] = (double)*(iX+i);
+				for(i=0;i<sizey;i++) dY[i] = (double)*(iY+i);
+
+				tt_fitgauss1d(sizex,dX,pp,ecart);      
+				xcc=pp[1]+xx1;  
+				fwhmx=pp[2];
+				tt_fitgauss1d(sizey,dY,pp,ecart); 
+				ycc=pp[1]+yy1;
+				fwhmy=pp[2];			
+				free(iX);
+				free(dX);
+				free(iY);
+				free(dY);
+				free(pp);
+				free(ecart);
+
+			} else if (((2*r1-fwhmx)<2)||((r1-fwhmy)<2)||(r1<fwhmy)||(2*r1<fwhmx)) { //la première fenêtre semble trop petite
+				r1=(fwhmx>fwhmy)?1.2*fwhmx:1.2*fwhmy;
+				//if (r1<10) r1=10;
+				//re-fitte une gaussienne avec une fenêtre plus grande
+				//fitte une gaussienne pour la recherche du centroide			
+				xx1=(int)(xcc-r1-10);
+				xx2=(int)(xcc+r1+10);
+				yy1=(int)(ycc-r1-3);
+				yy2=(int)(ycc+r1+3);
+				if (xx1<0) xx1=0;
+				if (xx1>=naxis1) xx1=naxis1-1;
+				if (xx2<0) xx2=0;
+				if (xx2>=naxis1) xx2=naxis1-1;
+				if (yy1<0) yy1=0;
+				if (yy1>=naxis2) yy1=naxis2-1;
+				if (yy2<0) yy2=0;
+				if (yy2>=naxis2) yy2=naxis2-1;
+  
+				pp = (double*)calloc(6,sizeof(double));
+				ecart = (double*)calloc(1,sizeof(double));
+				sizex=xx2-xx1+1;
+				sizey=yy2-yy1+1;
+
+				iX = (TYPE_PIXELS*)calloc(sizex,sizeof(TYPE_PIXELS));
+				dX = (double*)calloc(sizex,sizeof(double));
+				iY = (TYPE_PIXELS*)calloc(sizey,sizeof(TYPE_PIXELS));
+				dY = (double*)calloc(sizey,sizeof(double));	
+					
+				for(i=0;i<sizex;i++) *(iX+i) = (double)0.;
+				for(i=0;i<sizey;i++) *(iY+i) = (double)0.;
+
+				for(j=0;j<sizey;j++) {
+				   for(i=0;i<sizex;i++) {
+						pixel = p_in->p[naxis1*(j+yy1)+i+xx1];
+						*(iX+i) += pixel;
+						*(iY+j) += pixel;
+				   }
+				}
+
+				for(i=0;i<sizex;i++) dX[i] = (double)*(iX+i);
+				for(i=0;i<sizey;i++) dY[i] = (double)*(iY+i);
+
+				tt_fitgauss1d(sizex,dX,pp,ecart);      
+				xcc=pp[1]+xx1;  
+				fwhmx=pp[2];
+				tt_fitgauss1d(sizey,dY,pp,ecart); 
+				ycc=pp[1]+yy1;
+				fwhmy=pp[2];
+				free(iX);
+				free(dX);
+				free(iY);
+				free(dY);
+				free(pp);
+				free(ecart);
+			}
+				
+			/* elimine les bouts d'étoiles  : xcc et ycc eloignés de x et y de plus de r1 */
+			if (((fabs(xcc-x0)>1.2*fwhmxy)||(fabs(ycc-y0)>1.2*fwhmxy))&&(fwhmxy>2.5)) break;
+			if (((fabs(xcc-x0)>1.5*fwhmxy)||(fabs(ycc-y0)>1.5*fwhmxy))&&(fwhmxy<=2.5)) break;
+			/* --- elimine les bouts d'étoiles --- */
+			if ((fwhmx>5*fwhmy)&&((fwhmx>0.5)&&(fwhmy>0.5))) break;
+			if ((fwhmx>4*fwhmy)&&((fwhmx>1)&&(fwhmy>1))) break;
+			if ((fwhmx>3*fwhmy)&&((fwhmx>2)&&(fwhmy>2))) break;
+			
+			nb=0;
+			for(i=(int)xcc;i<naxis1-x1;i++) {
+				if (p_in->p[naxis1*(int)ycc+i]>=pseries->bgmean+4*pseries->bgsigma) nb++;
+				else break;
+			}
+			for(i=(int)xcc;i>x1;i--) {
+				if (p_in->p[naxis1*(int)ycc+i]>=pseries->bgmean+4*pseries->bgsigma) nb++;
+				else break;
+			}
+			if (nb>(int)(0.6*0.004180983*pseries->exposure/(9.1441235255136e-4))) break;
+		
+			
+			fwhmxy=(fwhmx>fwhmy)?fwhmx:fwhmy;
+            r2=2.5*fwhmxy;	
+			/* --- fond de ciel precis (fmoy,fmed,sigma) ---*/
             xx1=(int)(xcc-r3);
             xx2=(int)(xcc+r3);
             yy1=(int)(ycc-r3);
@@ -2025,197 +2219,6 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
                sigma=sqrt(sigma/(n23f-n23d));
             }
             free(vec);
-			if (r1<5) r1=5;
-			//fitte une gaussienne pour la recherche du centroide
-			xx1=(int)(xcc-2.5*r1);
-            xx2=(int)(xcc+2.5*r1);
-            yy1=(int)(ycc-r1);
-            yy2=(int)(ycc+r1);
-            if (xx1<0) xx1=0;
-            if (xx1>=naxis1) xx1=naxis1-1;
-            if (xx2<0) xx2=0;
-            if (xx2>=naxis1) xx2=naxis1-1;
-            if (yy1<0) yy1=0;
-            if (yy1>=naxis2) yy1=naxis2-1;
-            if (yy2<0) yy2=0;
-            if (yy2>=naxis2) yy2=naxis2-1;
-  
-			pp = (double*)calloc(6,sizeof(double));
-			ecart = (double*)calloc(1,sizeof(double));
-			sizex=xx2-xx1+1;
-			sizey=yy2-yy1+1;
-			iX = (TYPE_PIXELS*)calloc(sizex,sizeof(TYPE_PIXELS));
-			dX = (double*)calloc(sizex,sizeof(double));
-			iY = (TYPE_PIXELS*)calloc(sizey,sizeof(TYPE_PIXELS));
-			dY = (double*)calloc(sizey,sizeof(double));	
-					
-			for(i=0;i<sizex;i++) *(iX+i) = (double)0.;
-			for(i=0;i<sizey;i++) *(iY+i) = (double)0.;
-
-			for(j=0;j<sizey;j++) {
-			   for(i=0;i<sizex;i++) {
-					pixel = p_in->p[naxis1*(j+yy1)+i+xx1];
-					*(iX+i) += pixel;
-					*(iY+j) += pixel;
-			   }
-			}
-
-			for(i=0;i<sizex;i++) dX[i] = (double)*(iX+i);
-			for(i=0;i<sizey;i++) dY[i] = (double)*(iY+i);
-
-			tt_fitgauss1d(sizex,dX,pp,ecart);      
-			xcc=pp[1]+xx1;  
-			fwhmx=pp[2];
-			tt_fitgauss1d(sizey,dY,pp,ecart); 
-			ycc=pp[1]+yy1;
-			fwhmy=pp[2];
-			free(iX);
-			free(dX);
-			free(iY);
-			free(dY);
-			free(pp);
-			free(ecart);
-
-			//elimine les traînées d'étoiles 
-			if ((fwhmx>4*fwhmy)&&((fwhmx>0.5)&&(fwhmy>0.5))) break;
-			if ((fwhmx>3.5*fwhmy)&&((fwhmx>1)&&(fwhmy>1))) break;
-			if ((fwhmx>3*fwhmy)&&((fwhmx>2)&&(fwhmy>2))) break;
-
-			fwhmxy=(fwhmx>fwhmy)?fwhmx:fwhmy;
-			//la première fenêtre semble trop grande
-			if ((fabs(xcc-x0)>=1.0*fwhmxy)||(fabs(ycc-y0)>=1.0*fwhmxy)) {
-				xcc=x0;
-				ycc=y0;
-				xx1=(int)(xcc-r1);
-				xx2=(int)(xcc+r1);
-				yy1=(int)(ycc-r1/1.5);
-				yy2=(int)(ycc+r1/1.5);
-				if (xx1<0) xx1=0;
-				if (xx1>=naxis1) xx1=naxis1-1;
-				if (xx2<0) xx2=0;
-				if (xx2>=naxis1) xx2=naxis1-1;
-				if (yy1<0) yy1=0;
-				if (yy1>=naxis2) yy1=naxis2-1;
-				if (yy2<0) yy2=0;
-				if (yy2>=naxis2) yy2=naxis2-1;
-  
-				pp = (double*)calloc(6,sizeof(double));
-				ecart = (double*)calloc(1,sizeof(double));
-				sizex=xx2-xx1+1;
-				sizey=yy2-yy1+1;
-
-				iX = (TYPE_PIXELS*)calloc(sizex,sizeof(TYPE_PIXELS));
-				dX = (double*)calloc(sizex,sizeof(double));
-				iY = (TYPE_PIXELS*)calloc(sizey,sizeof(TYPE_PIXELS));
-				dY = (double*)calloc(sizey,sizeof(double));	
-					
-				for(i=0;i<sizex;i++) *(iX+i) = (double)0.;
-				for(i=0;i<sizey;i++) *(iY+i) = (double)0.;
-
-				for(j=0;j<sizey;j++) {
-				   for(i=0;i<sizex;i++) {
-						pixel = p_in->p[naxis1*(j+yy1)+i+xx1];
-						*(iX+i) += pixel;
-						*(iY+j) += pixel;
-				   }
-				}
-
-				for(i=0;i<sizex;i++) dX[i] = (double)*(iX+i);
-				for(i=0;i<sizey;i++) dY[i] = (double)*(iY+i);
-
-				tt_fitgauss1d(sizex,dX,pp,ecart);      
-				xcc=pp[1]+xx1;  
-				fwhmx=pp[2];
-				tt_fitgauss1d(sizey,dY,pp,ecart); 
-				ycc=pp[1]+yy1;
-				fwhmy=pp[2];
-				free(iX);
-				free(dX);
-				free(iY);
-				free(dY);
-				free(pp);
-				free(ecart);
-
-			} else if (((2*r1-fwhmx)<2)||((r1-fwhmy)<2)||(r1<fwhmy)||(2*r1<fwhmx)) { //la première fenêtre semble trop petite
-				r1=(fwhmx>fwhmy)?1.2*fwhmx:1.2*fwhmy;
-				//if (r1<10) r1=10;
-				//re-fitte une gaussienne avec une fenêtre plus grande
-				//fitte une gaussienne pour la recherche du centroide			
-				xx1=(int)(xcc-1.2*r1);
-				xx2=(int)(xcc+1.2*r1);
-				yy1=(int)(ycc-r1);
-				yy2=(int)(ycc+r1);
-				if (xx1<0) xx1=0;
-				if (xx1>=naxis1) xx1=naxis1-1;
-				if (xx2<0) xx2=0;
-				if (xx2>=naxis1) xx2=naxis1-1;
-				if (yy1<0) yy1=0;
-				if (yy1>=naxis2) yy1=naxis2-1;
-				if (yy2<0) yy2=0;
-				if (yy2>=naxis2) yy2=naxis2-1;
-  
-				pp = (double*)calloc(6,sizeof(double));
-				ecart = (double*)calloc(1,sizeof(double));
-				sizex=xx2-xx1+1;
-				sizey=yy2-yy1+1;
-
-				iX = (TYPE_PIXELS*)calloc(sizex,sizeof(TYPE_PIXELS));
-				dX = (double*)calloc(sizex,sizeof(double));
-				iY = (TYPE_PIXELS*)calloc(sizey,sizeof(TYPE_PIXELS));
-				dY = (double*)calloc(sizey,sizeof(double));	
-					
-				for(i=0;i<sizex;i++) *(iX+i) = (double)0.;
-				for(i=0;i<sizey;i++) *(iY+i) = (double)0.;
-
-				for(j=0;j<sizey;j++) {
-				   for(i=0;i<sizex;i++) {
-						pixel = p_in->p[naxis1*(j+yy1)+i+xx1];
-						*(iX+i) += pixel;
-						*(iY+j) += pixel;
-				   }
-				}
-
-				for(i=0;i<sizex;i++) dX[i] = (double)*(iX+i);
-				for(i=0;i<sizey;i++) dY[i] = (double)*(iY+i);
-
-				tt_fitgauss1d(sizex,dX,pp,ecart);      
-				xcc=pp[1]+xx1;  
-				fwhmx=pp[2];
-				tt_fitgauss1d(sizey,dY,pp,ecart); 
-				ycc=pp[1]+yy1;
-				fwhmy=pp[2];
-				free(iX);
-				free(dX);
-				free(iY);
-				free(dY);
-				free(pp);
-				free(ecart);
-			}
-				
-			// elimine les bouts d'étoiles  : xcc et ycc eloignés de x et y de plus de r1; 
-			if (((fabs(xcc-x0)>1.2*fwhmxy)||(fabs(ycc-y0)>1.2*fwhmxy))&&(fwhmxy>2.5)) break;
-			if (((fabs(xcc-x0)>1.5*fwhmxy)||(fabs(ycc-y0)>1.5*fwhmxy))&&(fwhmxy<=2.5)) break;
-			// elimine les cosmiques
-			//if (((fwhmx<0.8)&&(fwhmy<0.8))||(fwhmx<0.3)||(fwhmy<0.3)) break;
-			/* --- elimine les bouts d'étoiles --- */
-			if ((fwhmx>5*fwhmy)&&((fwhmx>0.5)&&(fwhmy>0.5))) break;
-			if ((fwhmx>4*fwhmy)&&((fwhmx>1)&&(fwhmy>1))) break;
-			if ((fwhmx>3*fwhmy)&&((fwhmx>2)&&(fwhmy>2))) break;
-			
-			nb=0;
-			for(i=(int)xcc;i<naxis1-x1;i++) {
-				if (p_in->p[naxis1*(int)ycc+i]>=pseries->bgmean+4*pseries->bgsigma) nb++;
-				else break;
-			}
-			for(i=(int)xcc;i>x1;i--) {
-				if (p_in->p[naxis1*(int)ycc+i]>=pseries->bgmean+4*pseries->bgsigma) nb++;
-				else break;
-			}
-			if (nb>(int)(0.6*0.004180983*pseries->exposure/(9.1441235255136e-4))) break;
-		
-			
-			fwhmxy=(fwhmx>fwhmy)?fwhmx:fwhmy;
-            r2=2.5*fwhmxy;	
 			/* --- photometrie (flux) ---*/
             xx1=(int)(xcc-r2);
             xx2=(int)(xcc+r2);
