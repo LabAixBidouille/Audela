@@ -68,7 +68,30 @@ struct camini CAM_INI[] = {
      0,				/* default overscan taken in acquisition (0=no) */
      1.				/* default focal lenght of front optic system */
      },
-    CAM_INI_NULL
+     {
+     "MicroLine 1603",		/* camera name */
+     "fingerlakes",	/* camera product */
+     "KAF-1603",		/* ccd name */
+     1536, 1024,		/* maxx maxy */// 1056 x 1027 !! l'overscan est integre ici
+     14, 0,			/* overscans x */
+     4, 0,			/* overscans y */
+     9e-6, 9e-6,		/* photosite dim (m) */
+     32767,			/* observed saturation */
+     1.,			/* filling factor */
+     11.,			/* gain (e/adu) */
+     11.,			/* readnoise (e) */
+     1, 1,			/* default bin x,y */
+     1.,			/* default exptime */
+     1,				/* default state of shutter (1=synchro) */
+     1,				/* default num buf for the image */
+     1,				/* default num tel for the coordinates taken */
+     0,				/* default port index (0=lpt1) */
+     1,				/* default cooler index (1=on) */
+     -15.,			/* default value for temperature checked */
+     1,				/* default color mask if exists (1=cfa) */
+     0,				/* default overscan taken in acquisition (0=no) */
+     1.				/* default focal lenght of front optic system */
+     }
 };
 
 static int cam_init(struct camprop *cam, int argc, char **argv);
@@ -133,10 +156,11 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 /* --------------------------------------------------------- */
 /* --------------------------------------------------------- */
 {
-    int err, i;
+    int err, i, k;
     char **camlist, *fliname, *semicolon;
-    char s[100], t[100];
+    char s[100], t[100], headref[6];
     long hwrev, fwrev;
+	double pixsizex, pixsizey; 
 
     logfile("***\n");
     logfile("CAM_INIT: entree\n");
@@ -199,6 +223,33 @@ int cam_init(struct camprop *cam, int argc, char **argv)
     sprintf(s, "cam_init: model = \"%s\"\n", t);
     logfile(s);
 
+	/* rajout Myrtille pour faire marcher la FLI MicroLine 1603 */
+
+	strcpy(CAM_INI[cam->index_cam].name,t);
+	for (k=0;k<=4;k++) {
+		headref[k]=CAM_INI[cam->index_cam].name[k];
+	}
+	headref[k]='\0';
+	if (strcmp(headref,"Micro")==0) {
+	   strcpy(CAM_INI[cam->index_cam].ccd,"KAF-1603");
+	} else if (strcmp(headref,"MC2-1")==0) {
+		strcpy(CAM_INI[cam->index_cam].ccd,"Marconi 47-10");
+	} else {
+		strcpy(CAM_INI[cam->index_cam].ccd,"Unknown");
+	}
+
+	// taille des pixels
+	pixsizex=pixsizey=0;
+    if ((err = FLIGetPixelSize(cam->device, &pixsizex, &pixsizey))) {
+		logfile("cam_init: erreur dans FLIGetPixelSize\n");
+		return -1;
+    }
+	CAM_INI[cam->index_cam].celldimx=(double)(pixsizex)*1e-6;
+    CAM_INI[cam->index_cam].celldimy=(double)(pixsizey)*1e-6;
+	cam->celldimx = CAM_INI[cam->index_cam].celldimx;    // taille d'un photosite sur X (en metre) 
+	cam->celldimy = CAM_INI[cam->index_cam].celldimy;    // taille d'un photosite sur Y (en metre) 
+	/* fin rajout Myrtille */
+
     // Version du Hardware
     if ((err = FLIGetHWRevision(cam->device, &hwrev))) {
 	logfile("cam_init: erreur dans FLIGetHWRevision\n");
@@ -240,6 +291,56 @@ void cam_update_window(struct camprop *cam)
     long a, b, c, d;
     char s[100];
 
+    // rajout Myrtille pour faire marcher la FLI MicroLine 1603 //
+	//intialisation of elements of the structure cam 
+	if ((err = FLIGetArrayArea(cam->device, &a, &b, &c, &d))) {
+		sprintf(s,
+		"cam_update_window: impossible de recuperer la array area\n");
+		logfile(s);
+		return;
+    }
+    sprintf(s, "cam_update_window: ArrayArea=(%ld,%ld)-(%ld,%ld)\n", a, b, c, d);
+    logfile(s);
+
+	
+	if ((err = FLIGetVisibleArea(cam->device, &a, &b, &c, &d))) {
+	sprintf(s,
+		"cam_update_window: impossible de recuperer la visible area\n");
+	logfile(s);
+	return;
+	}
+	sprintf(s, "cam_update_window: VisibleArea=(%ld,%ld)-(%ld,%ld)\n", a, b, c, d);
+	logfile(s);
+	cam->nb_photox = c-a; // nombre de photosites sur X 
+	cam->nb_photoy = d-b; // nombre de photosites sur Y 
+
+	CAM_INI[cam->index_cam].overscanxbeg=a;
+	CAM_INI[cam->index_cam].overscanxend=a;
+	CAM_INI[cam->index_cam].overscanybeg=b;
+	CAM_INI[cam->index_cam].overscanyend=b;
+	x1=a;
+	y1=b;
+	x2=c;
+	y2=d;
+
+	if (cam->overscanindex == 0) {
+      /* nb photosites masques autour du CCD */
+      cam->nb_deadbeginphotox = CAM_INI[cam->index_cam].overscanxbeg;
+      cam->nb_deadendphotox = CAM_INI[cam->index_cam].overscanxend;
+      cam->nb_deadbeginphotoy = CAM_INI[cam->index_cam].overscanybeg;
+      cam->nb_deadendphotoy = CAM_INI[cam->index_cam].overscanyend;
+   } else {
+      cam->nb_photox += (CAM_INI[cam->index_cam].overscanxbeg + CAM_INI[cam->index_cam].overscanxend);
+      cam->nb_photoy += (CAM_INI[cam->index_cam].overscanybeg + CAM_INI[cam->index_cam].overscanyend);
+      /* nb photosites masques autour du CCD */
+      cam->nb_deadbeginphotox = 0;
+      cam->nb_deadendphotox = 0;
+      cam->nb_deadbeginphotoy = 0;
+      cam->nb_deadendphotoy = 0;
+   }
+	cam->x2=cam->nb_photox-1;
+	cam->y2=cam->nb_photoy-1;
+// fin rajout Myrtille //
     maxx = cam->nb_photox;
     maxy = cam->nb_photoy;
 
@@ -276,6 +377,7 @@ void cam_update_window(struct camprop *cam)
     y1 = cam->y1;
     x2 = CAM_INI[cam->index_cam].overscanxbeg + cam->x1 + cam->w;
     y2 = cam->y1 + cam->h;
+
 
     if ((err = FLIGetVisibleArea(cam->device, &a, &b, &c, &d))) {
 	sprintf(s,
