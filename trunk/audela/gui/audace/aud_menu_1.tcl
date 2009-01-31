@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.25 2008-12-22 09:24:03 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.26 2009-01-31 19:36:23 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -183,23 +183,39 @@ namespace eval ::audace {
    proc quitter { } {
       global audace caption conf tmp
 
+      #--- je sors de la procedure si une fermeture est deja en cours
+      if { $audace(quitterEnCours) == "1" } {
+         return
+      }
+      #--- j'initialise la variable de fermeture
+      set audace(quitterEnCours) "1"
       #---
       menustate disabled
       set catchError [ catch {
-         wm protocol $audace(base) WM_DELETE_WINDOW ::audace::rien
-         wm protocol $audace(Console) WM_DELETE_WINDOW ::audace::rien
          #--- Positions et tailles des fenetres
          set conf(audace,visu1,wmgeometry) [ wm geometry $audace(base) ]
          set conf(console,wmgeometry)      [ wm geometry $audace(Console) ]
 
          #--- tous les outils de la visu 1
-         ::confVisu::stopTool 1
+         if { [ ::confVisu::stopTool 1 ] == "-1" } {
+            tk_messageBox -title "$caption(audace,attention)" -icon error \
+               -message "$caption(audace,fermeture_impossible) [ [ ::confVisu::getTool 1 ]::getPluginTitle ]"
+            set audace(quitterEnCours) "0"
+            menustate normal
+            return
+         }
          #--- tous les outils des autres visu
          foreach visuName [winfo children .] {
             set visuNo ""
             scan $visuName ".visu%d" visuNo
             if { $visuNo != "" } {
-               ::confVisu::stopTool $visuNo
+               if { [ ::confVisu::stopTool $visuNo ] == "-1" } {
+                  tk_messageBox -title "$caption(audace,attention)" -icon error \
+                     -message "$caption(audace,fermeture_impossible) [ [ ::confVisu::getTool 1 ]::getPluginTitle ]"
+                  set audace(quitterEnCours) "0"
+                  menustate normal
+                  return
+               }
             }
          }
          #--- Arrete les plugins camera
@@ -266,7 +282,6 @@ namespace eval ::audace {
                ::audace::shutdown_devices
                exit
             } else {
-               wm protocol $audace(Console) WM_DELETE_WINDOW " ::audace::quitter "
                set visuNo [ ::audace::createDialog ]
                ::audace::createMenu
                ::audace::initLastEnv $visuNo
@@ -281,7 +296,6 @@ namespace eval ::audace {
                exit
             }
             ::console::affiche_resultat "$caption(audace,enregistrer_config_4)\n\n"
-            wm protocol $audace(Console) WM_DELETE_WINDOW " ::audace::quitter "
             set visuNo [ ::audace::createDialog ]
             ::audace::createMenu
             ::audace::initLastEnv $visuNo
@@ -293,6 +307,7 @@ namespace eval ::audace {
          ::console::affiche_erreur "$::errorInfo\n"
          tk_messageBox -message "$catchMessage" -title "$caption(audace,enregistrer_config_3)" -icon error
       }
+      set audace(quitterEnCours) "0"
       menustate normal
    }
 
