@@ -1,16 +1,17 @@
 #
 # Fichier : aud_menu_5.tcl
 # Description : Script regroupant les fonctionnalites du menu Analyse
-# Mise a jour $Id: aud_menu_5.tcl,v 1.3 2006-11-12 16:08:10 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_5.tcl,v 1.4 2009-01-31 08:46:47 robertdelmas Exp $
 #
 
 namespace eval ::audace {
+}
 
    #
-   # ::audace::Histo visuNo
+   # Histo visuNo
    # Visualisation de l'histogramme de l'image affichee dans la visu
    #
-   proc Histo { visuNo } {
+   proc ::audace::Histo { visuNo } {
       global caption
 
       #---
@@ -29,7 +30,30 @@ namespace eval ::audace {
       }
    }
 
-}
+   #
+   # afficheOutilsAnalyse visuNo
+   # Fonction qui permet d'afficher tous les outils du menu Analyse
+   #
+   proc ::audace::afficheOutilsAnalyse { visuNo } {
+      global caption panneau
+
+      set i "0"
+      set liste ""
+      foreach m [array names panneau menu_name,*] {
+         lappend liste [list "$panneau($m) " $m]
+      }
+      foreach m [lsort $liste] {
+         set m [lindex $m 1]
+         set i [expr $i + 1]
+         #---
+         if { [scan "$m" "menu_name,%s" ns] == "1" } {
+            if { [ ::$ns\::getPluginProperty function ] == "analysis" } {
+               Menu_Command $visuNo "$caption(audace,menu,analyse)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$ns"
+            }
+         }
+      }
+   }
+
 ############################# Fin du namespace audace #############################
 
 #
