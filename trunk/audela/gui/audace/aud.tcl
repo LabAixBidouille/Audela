@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.94 2009-01-25 19:21:43 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.95 2009-01-31 08:42:37 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -32,9 +32,6 @@ source iris.tcl
 source poly.tcl
 source filtrage.tcl
 source mauclaire.tcl
-source afrho.tcl
-source astrometry.tcl
-source fieldchart.tcl
 source help.tcl
 source vo_tools.tcl
 source sectiongraph.tcl
@@ -146,13 +143,10 @@ namespace eval ::audace {
       source [ file join $audace(rep_caption) confgene.cap ]
       source [ file join $audace(rep_caption) confgene_en-tete.cap ]
       source [ file join $audace(rep_caption) confgene_touche.cap ]
-      source [ file join $audace(rep_caption) afrho.cap ]
-      source [ file join $audace(rep_caption) astrometry.cap ]
       source [ file join $audace(rep_caption) bifsconv.cap ]
       source [ file join $audace(rep_caption) compute_stellaire.cap ]
       source [ file join $audace(rep_caption) divers.cap ]
       source [ file join $audace(rep_caption) iris.cap ]
-      source [ file join $audace(rep_caption) fieldchart.cap ]
       source [ file join $audace(rep_caption) filtrage.cap ]
       source [ file join $audace(rep_caption) poly.cap ]
 
@@ -727,12 +721,9 @@ namespace eval ::audace {
       Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,subfitgauss)" "subfitgauss $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,scar)" "scar $visuNo"
       Menu_Separator $visuNo "$caption(audace,menu,analyse)"
-      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,astrometry)..." \
-         "::astrometry::create $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,carte_champ)..." \
-         { ::mapWindow::run "$audace(base).mapWindow" }
-      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,afrho)..." \
-         { ::afRho::run "$audace(base).afRho" }
+      #--- Affichage des outils du menu deroulant Analyse
+      ::audace::afficheOutilsAnalyse $visuNo
+      Menu_Separator $visuNo "$caption(audace,menu,analyse)"
       Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,carte)" \
          { ::carte::showMapFromBuffer buf$audace(bufNo) }
 
@@ -742,7 +733,7 @@ namespace eval ::audace {
       Menu_Separator $visuNo "$caption(audace,menu,outils)"
       Menu_Command   $visuNo "$caption(audace,menu,outils)" "$caption(audace,menu,pas_outil)" { ::audace::pas_Outil }
       Menu_Separator $visuNo "$caption(audace,menu,outils)"
-      #--- Affichage des outils du menu Outils
+      #--- Affichage des outils du menu deroulant Outils
       ::audace::affiche_Outil $visuNo
 
       Menu           $visuNo "$caption(audace,menu,configuration)"
