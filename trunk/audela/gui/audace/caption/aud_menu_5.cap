@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_5.cap
-# Mise a jour $Id: aud_menu_5.cap,v 1.8 2008-11-10 22:03:49 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_5.cap,v 1.9 2009-01-31 09:00:05 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -21,9 +21,6 @@ set caption(audace,menu,centro)                       "Photocenter"
 set caption(audace,menu,phot)                         "Integrated Photometry"
 set caption(audace,menu,subfitgauss)                  "Fit and subtract a gaussian"
 set caption(audace,menu,scar)                         "Cosmetic Repair"
-set caption(audace,menu,astrometry)                   "Astrometric Calibration"
-set caption(audace,menu,carte_champ)                  "Field Chart"
-set caption(audace,menu,afrho)                        "AfRho"
 
 set caption(audace,histo_titre)                       "Image Histogram"
 set caption(audace,histo_adu)                         "ADU"
@@ -69,9 +66,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,phot)                      "Photométrie intégrale"
    set caption(audace,menu,subfitgauss)               "Ajuster et soustraire une gaussienne"
    set caption(audace,menu,scar)                      "Cicatriser"
-   set caption(audace,menu,astrometry)                "Calibration astrométrique"
-   set caption(audace,menu,carte_champ)               "Carte de champ"
-   set caption(audace,menu,afrho)                     "AfRho"
 
    set caption(audace,histo_titre)                    "Histogramme de l'image"
    set caption(audace,histo_adu)                      "ADU"
@@ -117,9 +111,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,phot)                      "Fotometria integrale"
    set caption(audace,menu,subfitgauss)               "Applicare e sottrarre una gaussiana"
    set caption(audace,menu,scar)                      "Mascherare"
-   set caption(audace,menu,astrometry)                "Calibrazione astrometrica"
-   set caption(audace,menu,carte_champ)               "Mappa del campo"
-   set caption(audace,menu,afrho)                     "AfRho"
 
    set caption(audace,histo_titre)                    "Istogramma dell'immagine"
    set caption(audace,histo_adu)                      "ADU"
@@ -165,9 +156,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,phot)                      "Fotometría integrada"
    set caption(audace,menu,subfitgauss)               "Ajustar y restar perfil gaussiano"
    set caption(audace,menu,scar)                      "Scar"
-   set caption(audace,menu,astrometry)                "Calibración Astrométrica"
-   set caption(audace,menu,carte_champ)               "Mapa de campo"
-   set caption(audace,menu,afrho)                     "AfRho"
 
    set caption(audace,histo_titre)                    "Histograma de la imagen"
    set caption(audace,histo_adu)                      "Unidades digitales (ADU)"
@@ -213,9 +201,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,phot)                      "Integrale Photomessung"
    set caption(audace,menu,subfitgauss)               "Eine Gauss Kurve einstellen und abziehen"
    set caption(audace,menu,scar)                      "Verheilen"
-   set caption(audace,menu,astrometry)                "Astrometrische Kalibration"
-   set caption(audace,menu,carte_champ)               "Feld Karte"
-   set caption(audace,menu,afrho)                     "AfRho"
 
    set caption(audace,histo_titre)                    "Historische Kurve des Bild"
    set caption(audace,histo_adu)                      "ADU"
@@ -261,9 +246,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,phot)                      "Fotometria integrada"
    set caption(audace,menu,subfitgauss)               "Ajustar e subtrair perfil gaussiano"
    set caption(audace,menu,scar)                      "Reparação cosmética (scar)"
-   set caption(audace,menu,astrometry)                "Calibração astrométrica"
-   set caption(audace,menu,carte_champ)               "Mapa de campo"
-   set caption(audace,menu,afrho)                     "AfRho"
 
    set caption(audace,histo_titre)                    "Histograma de imagens"
    set caption(audace,histo_adu)                      "Unidades digitais (ADU)"
@@ -309,9 +291,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,phot)                      "Integreret fotometri"
    set caption(audace,menu,subfitgauss)               "Tilpas og subtraher en gausskurve"
    set caption(audace,menu,scar)                      "Kosmetisk reparering"
-   set caption(audace,menu,astrometry)                "Astrometrisk kalibrering"
-   set caption(audace,menu,carte_champ)               "Felt kort"
-   set caption(audace,menu,afrho)                     "AfRho"
 
    set caption(audace,histo_titre)                    "Billed-histogram"
    set caption(audace,histo_adu)                      "ADU"
