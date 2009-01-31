@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.53 2009-01-13 16:23:45 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.54 2009-01-31 19:34:18 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -73,6 +73,7 @@ set caption(confVisu,vert)                            "G:"
 set caption(confVisu,bleu)                            "B:"
 set caption(confVisu,non_connecte)                    "Not connected"
 set caption(confVisu,fitsHduList)                     "HDU"
+set caption(confVisu,fermeture_impossible)            "Aud'ACE cannot be stopped because of an on-going action in the tool:"
 
 set caption(plotxy,figure)                            "Figure"
 
@@ -143,6 +144,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,bleu)                         "B:"
    set caption(confVisu,non_connecte)                 "Non connectée"
    set caption(confVisu,fitsHduList)                  "HDU"
+   set caption(confVisu,fermeture_impossible)         "Impossible d'arrêter Aud'ACE car une opération est en cours dans l'outil :"
 
    set caption(plotxy,figure)                         "Figure"
 
@@ -213,6 +215,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,bleu)                         "B:"
    set caption(confVisu,non_connecte)                 "Non connessa"
    set caption(confVisu,fitsHduList)                  "HDU"
+   set caption(confVisu,fermeture_impossible)         "# Impossible d'arrêter Aud'ACE car une opération est en cours dans l'outil :"
 
    set caption(plotxy,figure)                         "Figura"
 
@@ -283,6 +286,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,bleu)                         "A:"
    set caption(confVisu,non_connecte)                 "No conectado"
    set caption(confVisu,fitsHduList)                  "HDU"
+   set caption(confVisu,fermeture_impossible)         "# Impossible d'arrêter Aud'ACE car une opération est en cours dans l'outil :"
 
    set caption(plotxy,figure)                         "Figura"
 
@@ -353,6 +357,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,bleu)                         "B:"
    set caption(confVisu,non_connecte)                 "Nicht verbun"
    set caption(confVisu,fitsHduList)                  "HDU"
+   set caption(confVisu,fermeture_impossible)         "# Impossible d'arrêter Aud'ACE car une opération est en cours dans l'outil :"
 
    set caption(plotxy,figure)                         "Figur"
 
@@ -423,6 +428,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,bleu)                         "B:"
    set caption(confVisu,non_connecte)                 "Não conectado"
    set caption(confVisu,fitsHduList)                  "HDU"
+   set caption(confVisu,fermeture_impossible)         "# Impossible d'arrêter Aud'ACE car une opération est en cours dans l'outil :"
 
    set caption(plotxy,figure)                         "Figura"
 
@@ -493,6 +499,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,bleu)                         "B:"
    set caption(confVisu,non_connecte)                 "Ikke tilsluttet"
    set caption(confVisu,fitsHduList)                  "HDU"
+   set caption(confVisu,fermeture_impossible)         "# Impossible d'arrêter Aud'ACE car une opération est en cours dans l'outil :"
 
    set caption(plotxy,figure)                         "Figur"
 

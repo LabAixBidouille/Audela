@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_1.cap
-# Mise a jour $Id: aud_menu_1.cap,v 1.6 2009-01-11 12:07:11 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.cap,v 1.7 2009-01-31 19:34:06 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -24,6 +24,7 @@ set caption(audace,menu,lancer_script)       "Run a script"
 set caption(audace,menu,quitter)             "Exit"
 
 set caption(audace,pas_ouvrir_fichier)       "Cannot open file:"
+set caption(audace,fermeture_impossible)     "Aud'ACE cannot be stopped because of an on-going action in the tool:"
 
 set caption(audace,console_gagne)            "Access OK"
 set caption(audace,console_annule)           "Cancelled"
@@ -65,6 +66,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,quitter)          "Quitter"
 
    set caption(audace,pas_ouvrir_fichier)    "Impossible d'ouvrir le fichier :"
+   set caption(audace,fermeture_impossible)  "Impossible d'arrêter Aud'ACE car une opération est en cours dans l'outil :"
 
    set caption(audace,console_gagne)         "Accès réussi"
    set caption(audace,console_annule)        "Annulé"
@@ -106,6 +108,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,quitter)          "Esci"
 
    set caption(audace,pas_ouvrir_fichier)    "Impossibile aprire il file:"
+   set caption(audace,fermeture_impossible)  "# Impossible d'arrêter Aud'ACE car une opération est en cours dans l'outil :"
 
    set caption(audace,console_gagne)         "Accesso riuscito"
    set caption(audace,console_annule)        "Cancellato"
@@ -147,6 +150,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,quitter)          "Salir"
 
    set caption(audace,pas_ouvrir_fichier)    "No se puede abrir fichero:"
+   set caption(audace,fermeture_impossible)  "# Impossible d'arrêter Aud'ACE car une opération est en cours dans l'outil :"
 
    set caption(audace,console_gagne)         "Acceso correcto"
    set caption(audace,console_annule)        "Cancelado"
@@ -188,6 +192,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,quitter)          "Programm beenden"
 
    set caption(audace,pas_ouvrir_fichier)    "Es ist unmöglich die Datei zu öffnen:"
+   set caption(audace,fermeture_impossible)  "# Impossible d'arrêter Aud'ACE car une opération est en cours dans l'outil :"
 
    set caption(audace,console_gagne)         "Zugriff gelungen"
    set caption(audace,console_annule)        "Annulliert"
@@ -229,6 +234,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,quitter)          "Sair"
 
    set caption(audace,pas_ouvrir_fichier)    "Impossível abrir ficheiro:"
+   set caption(audace,fermeture_impossible)  "# Impossible d'arrêter Aud'ACE car une opération est en cours dans l'outil :"
 
    set caption(audace,console_gagne)         "Acesso OK"
    set caption(audace,console_annule)        "Cancelado"
@@ -270,6 +276,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,quitter)          "Afbryd"
 
    set caption(audace,pas_ouvrir_fichier)    "Fil kan ikke åbnes:"
+   set caption(audace,fermeture_impossible)  "# Impossible d'arrêter Aud'ACE car une opération est en cours dans l'outil :"
 
    set caption(audace,console_gagne)         "Adgang: OK!"
    set caption(audace,console_annule)        "Annulleret"
