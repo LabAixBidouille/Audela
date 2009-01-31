@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.19 2009-01-11 11:49:25 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.20 2009-01-31 19:39:37 robertdelmas Exp $
 #
 
 #============================================================
@@ -153,6 +153,7 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
    set private($visuNo,mode)              "acq"
    set private($visuNo,acquisitionResult) ""
    set private($visuNo,acquisitionResult) ""
+   set private($visuNo,pose_en_cours)     "0"
 
    #--- Coordonnees J2000.0 de M104
    setRaDec $visuNo [list "12h40m0s" "-11d37m22"]  "M104" "J2000.0" ""
@@ -619,6 +620,11 @@ proc ::tlscp::startTool { visuNo } {
 proc ::tlscp::stopTool { visuNo } {
    variable private
 
+   #--- Je verifie si une operation est en cours
+   if { $private($visuNo,pose_en_cours) == 1 } {
+      return -1
+   }
+
    #--- je masque les axes
    ::tlscp::deleteAlphaDeltaAxis $visuNo
    #--- j'efface les cercles autour des etoiles
@@ -881,6 +887,9 @@ proc ::tlscp::startAcquisition { visuNo  } {
       return
    }
 
+   #--- j'identifie le debut d'une acquisition
+   set private($visuNo,pose_en_cours)     "1"
+
    #--- je configure le type d'acquisition
    set private($visuNo,acquisitionState) "acquisition"
 
@@ -900,6 +909,9 @@ proc ::tlscp::startAcquisition { visuNo  } {
    foreach keyword [ ::keyword::getKeywords $visuNo ] {
       buf$bufNo setkwd $keyword
    }
+
+   #--- j'identifie la fin d'une acquisition
+   set private($visuNo,pose_en_cours)     "0"
 
    #--- j'affiche le bouton GO CCD
    $private($visuNo,This).camera.goccd configure -text $::caption(tlscp,goccd) -command "::tlscp::startAcquisition $visuNo" -state normal

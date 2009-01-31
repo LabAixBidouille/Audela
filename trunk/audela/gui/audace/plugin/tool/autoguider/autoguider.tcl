@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.33 2008-12-20 22:59:33 robertdelmas Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.34 2009-01-31 19:39:13 robertdelmas Exp $
 #
 
 #==============================================================
@@ -146,7 +146,7 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
    set private($visuNo,updateAxis)        "0"
    set private($visuNo,camBufNo)          "0"
    set private($visuNo,cumulCounter)      "0"
-  ### set private($visuNo,cumulFileName)  "autoguider_cumul_visu$visuNo"
+   ###set private($visuNo,cumulFileName)     "autoguider_cumul_visu$visuNo"
 
    #--- Petit raccourci bien pratique
    set This $private($visuNo,This)
@@ -388,6 +388,11 @@ proc ::autoguider::startTool { { visuNo 1 } } {
 proc ::autoguider::stopTool { { visuNo 1 } } {
    variable private
 
+   #--- je verifie si une operation est en cours
+   if { $private($visuNo,acquisitionState) == 1 } {
+      return -1
+   }
+
    #--- j'arrete le suivi
    stopAcquisition $visuNo
 
@@ -446,9 +451,9 @@ proc ::autoguider::startSearch { visuNo } {
       return 1
    }
 
-   ###set ::conf(autoguider,detection) "PSF"
+   ###set ::conf(autoguider,detection)       "PSF"
    set private($visuNo,acquisitionState)  1
-   set private($visuNo,acquisitionResult)   ""
+   set private($visuNo,acquisitionResult) ""
    ::autoguider::createTarget $visuNo
 
    #--- J'affiche le bouton "STOP" et l'associe a la commande d'arret
@@ -462,7 +467,7 @@ proc ::autoguider::startSearch { visuNo } {
    clearSearchStar $visuNo
 
    #--- je lance la recherche
-   ##set binning [list [string range $::conf(autoguider,binning) 0 0] [string range $::conf(autoguider,binning) 2 2]]
+   ###set binning [list [string range $::conf(autoguider,binning) 0 0] [string range $::conf(autoguider,binning) 2 2]]
    set targetBoxSize 0
    ::camera::searchBrightestStar $camItem \
       "::autoguider::callbackAcquisition $visuNo" \
@@ -550,9 +555,9 @@ proc ::autoguider::startCenter { visuNo } {
       ::telescope::setSpeed 1
    }
 
-   ###set ::conf(autoguider,detection) "PSF"
+   ###set ::conf(autoguider,detection)       "PSF"
    set private($visuNo,acquisitionState)  1
-   set private($visuNo,acquisitionResult)   ""
+   set private($visuNo,acquisitionResult) ""
    ::autoguider::createTarget $visuNo
 
    #--- J'affiche le bouton "STOP" et l'associe a la commande d'arret
@@ -563,7 +568,7 @@ proc ::autoguider::startCenter { visuNo } {
    bind all <Key-Escape> "::autoguider::stopAcquisition $visuNo"
 
    #--- je lance le centrage
-   ####set binning [list [string range $::conf(autoguider,binning) 0 0] [string range $::conf(autoguider,binning) 2 2]]
+   ###set binning [list [string range $::conf(autoguider,binning) 0 0] [string range $::conf(autoguider,binning) 2 2]]
    ::camera::centerBrightestStar $camItem "::autoguider::callbackAcquisition $visuNo" $::conf(autoguider,pose) $::conf(autoguider,originCoord) $private($visuNo,targetCoord) $::conf(autoguider,angle) $::conf(autoguider,targetBoxSize) $private($visuNo,mountEnabled) $::conf(autoguider,alphaSpeed) $::conf(autoguider,deltaSpeed) $::conf(autoguider,alphaReverse) $::conf(autoguider,deltaReverse) $::conf(autoguider,seuilx) $::conf(autoguider,seuily)
 
    #--- j'attends la fin du centrage
@@ -604,9 +609,9 @@ proc ::autoguider::startGuiding { visuNo } {
    #--- J'associe la commande d'arret a la touche ESCAPE
    bind all <Key-Escape> "::autoguider::stopAcquisition $visuNo"
 
-   #--- j'initialise les valeurs affichee
-   set private($visuNo,acquisitionState) 1
-   set private($visuNo,acquisitionResult)   ""
+   #--- j'initialise les valeurs affichees
+   set private($visuNo,acquisitionState)  1
+   set private($visuNo,acquisitionResult) ""
 
    #--- j'active l'envoi des commandes a la monture si c'est demande
    if { $private($visuNo,mountEnabled) == 1 } {
@@ -645,7 +650,7 @@ proc ::autoguider::callbackAcquisition { visuNo command args } {
       "autovisu" {
          if { $::conf(autoguider,showImage) == "1" } {
             ::confVisu::autovisu $visuNo
-            ##visu1 disp
+            ###visu1 disp
          }
          #--- j'affiche les axes si ce n'est pas deja fait
          if {  [$private($visuNo,hCanvas) gettags axis ] == "" } {
@@ -654,7 +659,7 @@ proc ::autoguider::callbackAcquisition { visuNo command args } {
          set private($visuNo,interval) [format "%###0d ms" [lindex $args 0]]
       }
       "error" {
-        ## console::disp "callbackGuide visu=$visuNo command=$command $args\n"
+         ###console::disp "callbackGuide visu=$visuNo command=$command $args\n"
          ::autoguider::stopAcquisition $visuNo
       }
       "targetCoord" {
@@ -689,7 +694,7 @@ proc ::autoguider::stopAcquisition { visuNo } {
       #--- je demande l'arret des acquisitions
       set camItem [ ::confVisu::getCamItem $visuNo ]
       if { $camItem != "" } {
-         ::camera::stopAcquisition  $camItem
+         ::camera::stopAcquisition $camItem
       }
       $private($visuNo,This).go_stop.but configure \
          -text "$::caption(autoguider,GO)" \
@@ -704,8 +709,8 @@ proc ::autoguider::stopAcquisition { visuNo } {
       #--- je supprime l'association du bouton escape
       bind all <Key-Escape> ""
       #--- j'efface le fichier de cumul
-      ##file delete -force [file join $::audace(rep_images) $private($visuNo,cumulFileName)]]
-      #---
+      ###file delete -force [file join $::audace(rep_images) $private($visuNo,cumulFileName)]]
+      #--- j'initialise la variable
       set private($visuNo,acquisitionState) 0
 
    }
@@ -1028,7 +1033,7 @@ proc ::autoguider::drawAxis { visuNo coord angle label1 label2} {
    }
 
    #--- j'inverse le signe de l'angle
-   ##set angle [expr $angle * (-1) ]
+   ###set angle [expr $angle * (-1) ]
    set margin 8
    set windowCoords [::confVisu::getWindow $visuNo]
    set xmin [expr [lindex $windowCoords 0] + $margin]
@@ -1287,7 +1292,7 @@ proc ::autoguider::moveTelescope { visuNo direction delay} {
    update
 
    #--- je demarre le deplacement
-   ##::telescope::move $direction
+   ###::telescope::move $direction
    tel$::audace(telNo) radec move $direction $::audace(telescope,rate)
 
    #--- j'attend l'expiration du delai par tranche de 1 seconde
@@ -1307,7 +1312,7 @@ proc ::autoguider::moveTelescope { visuNo direction delay} {
    }
 
    #--- j'arrete le deplacement
-   ##::telescope::stop $direction
+   ###::telescope::stop $direction
    tel$::audace(telNo) radec stop $direction
 }
 
