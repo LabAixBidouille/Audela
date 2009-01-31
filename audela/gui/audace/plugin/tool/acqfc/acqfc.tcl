@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.81 2009-01-10 10:43:56 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.82 2009-01-31 19:38:58 robertdelmas Exp $
 #
 
 #==============================================================
@@ -509,6 +509,11 @@ proc ::acqfc::startTool { { visuNo 1 } } {
 #***** Procedure stopTool **************************************
 proc ::acqfc::stopTool { { visuNo 1 } } {
    global panneau
+
+   #--- Je verifie si une operation est en cours
+   if { $panneau(acqfc,$visuNo,pose_en_cours) == 1 } {
+      return -1
+   }
 
    #--- Sauvegarde de la configuration de prise de vue
    ::acqfc::Enregistrement_Var $visuNo
@@ -1070,7 +1075,7 @@ proc ::acqfc::startAcquisitionSerieImage { visuNo expTime binning fileName image
 
 #------------------------------------------------------------
 # stopAcquisition
-#   arret une acquisition en cours (procedure appelee depuis un autre outil)
+#   arrete une acquisition en cours (procedure appelee depuis un autre outil)
 #
 # Parameters
 #   visuNo
@@ -1740,7 +1745,7 @@ proc ::acqfc::dispTime { visuNo } {
    }
 
    set t [cam$panneau(acqfc,$visuNo,camNo) timer -1 ]
-   #--- je met a jour le status
+   #--- je mets a jour le status
    if { $panneau(acqfc,$visuNo,pose_en_cours) == 0 } {
       #--- je supprime la fenetre s'il n'y a plus de pose en cours
       set status ""

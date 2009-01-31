@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise a jour $Id: foc.tcl,v 1.24 2009-01-11 11:49:38 robertdelmas Exp $
+# Mise a jour $Id: foc.tcl,v 1.25 2009-01-31 19:39:24 robertdelmas Exp $
 #
 
 set ::graphik(compteur) {}
@@ -193,7 +193,12 @@ namespace eval ::foc {
    #------------------------------------------------------------
    proc stopTool { visuNo } {
       variable This
-      global audace
+      global audace panneau
+
+      #--- Je verifie si une operation est en cours
+      if { $panneau(foc,pose_en_cours) == 1 } {
+         return -1
+      }
 
       #--- Initialisation du fenetrage
       catch {
