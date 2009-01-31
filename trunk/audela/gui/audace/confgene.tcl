@@ -5,7 +5,7 @@
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.53 2009-01-10 11:23:46 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.54 2009-01-31 08:58:15 robertdelmas Exp $
 #
 
 #
@@ -2084,46 +2084,50 @@ namespace eval ::confChoixOutil {
             $caption(touche,controle,R) $caption(touche,controle,T) $caption(touche,controle,U) \
             $caption(touche,controle,V) $caption(touche,controle,W) $caption(touche,controle,X) \
             $caption(touche,controle,Y) $caption(touche,controle,Z) ]
-         if { $colonne == "0" } {
-            frame $This.framea$num -borderwidth 0
-               #--- Selection d'un outil a afficher
-               checkbutton $This.panneau$num -text "$panneau($m)" -highlightthickness 0 \
-                  -variable confgene(Choix_Outil,n$i)
-               pack $This.panneau$num -in $This.framea$num -side left -padx 5 -pady 0
-               #--- Selection d'un raccourci
-               set hauteur [llength $list_combobox]
-               if { $hauteur > "5" } {
-                  set hauteur "5"
+         if { [scan "$m" "menu_name,%s" ns] == "1" } {
+            if { [ ::$ns\::getPluginProperty function ] != "analysis" } {
+               if { $colonne == "0" } {
+                  frame $This.framea$num -borderwidth 0
+                     #--- Selection d'un outil a afficher
+                     checkbutton $This.panneau$num -text "$panneau($m)" -highlightthickness 0 \
+                        -variable confgene(Choix_Outil,n$i)
+                     pack $This.panneau$num -in $This.framea$num -side left -padx 5 -pady 0
+                     #--- Selection d'un raccourci
+                     set hauteur [llength $list_combobox]
+                     if { $hauteur > "5" } {
+                        set hauteur "5"
+                     }
+                     ComboBox $This.raccourci$num \
+                        -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
+                        -height $hauteur  \
+                        -relief sunken    \
+                        -borderwidth 1    \
+                        -editable 0       \
+                        -textvariable confgene(Choix_Outil,raccourci_n$i) \
+                        -values $list_combobox
+                     pack $This.raccourci$num -in $This.framea$num -side right -padx 5 -pady 0
+                  pack $This.framea$num -in $This.frame5 -side top -fill both -expand 1
+                  set colonne "1"
+               } else {
+                  frame $This.frameb$num -borderwidth 0
+                     #--- Selection d'un outil a afficher
+                     checkbutton $This.panneau$num -text "$panneau($m)" -highlightthickness 0 \
+                        -variable confgene(Choix_Outil,n$i)
+                     pack $This.panneau$num -in $This.frameb$num -side left -padx 5 -pady 0
+                     #--- Selection d'un raccourci
+                     ComboBox $This.raccourci$num \
+                        -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
+                        -height $hauteur  \
+                        -relief sunken    \
+                        -borderwidth 1    \
+                        -editable 0       \
+                        -textvariable confgene(Choix_Outil,raccourci_n$i) \
+                        -values $list_combobox
+                     pack $This.raccourci$num -in $This.frameb$num -side right -padx 5 -pady 0
+                  pack $This.frameb$num -in $This.frame6 -side top -fill both -expand 1
+                  set colonne "0"
                }
-               ComboBox $This.raccourci$num \
-                  -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
-                  -height $hauteur  \
-                  -relief sunken    \
-                  -borderwidth 1    \
-                  -editable 0       \
-                  -textvariable confgene(Choix_Outil,raccourci_n$i) \
-                  -values $list_combobox
-               pack $This.raccourci$num -in $This.framea$num -side right -padx 5 -pady 0
-            pack $This.framea$num -in $This.frame5 -side top -fill both -expand 1
-            set colonne "1"
-         } else {
-            frame $This.frameb$num -borderwidth 0
-               #--- Selection d'un outil a afficher
-               checkbutton $This.panneau$num -text "$panneau($m)" -highlightthickness 0 \
-                  -variable confgene(Choix_Outil,n$i)
-               pack $This.panneau$num -in $This.frameb$num -side left -padx 5 -pady 0
-               #--- Selection d'un raccourci
-               ComboBox $This.raccourci$num \
-                  -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
-                  -height $hauteur  \
-                  -relief sunken    \
-                  -borderwidth 1    \
-                  -editable 0       \
-                  -textvariable confgene(Choix_Outil,raccourci_n$i) \
-                  -values $list_combobox
-               pack $This.raccourci$num -in $This.frameb$num -side right -padx 5 -pady 0
-            pack $This.frameb$num -in $This.frame6 -side top -fill both -expand 1
-            set colonne "0"
+            }
          }
       }
 
