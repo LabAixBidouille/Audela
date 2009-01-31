@@ -2,7 +2,7 @@
 # Fichier : vo_tools_go.tcl
 # Description : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur : Robert DELMAS
-# Mise a jour $Id: vo_tools_go.tcl,v 1.11 2007-10-05 16:57:43 robertdelmas Exp $
+# Mise a jour $Id: vo_tools_go.tcl,v 1.12 2009-01-31 09:29:48 robertdelmas Exp $
 #
 
 #============================================================
@@ -69,7 +69,7 @@ proc ::vo_tools::getPluginOS { } {
 #------------------------------------------------------------
 proc ::vo_tools::getPluginProperty { propertyName } {
    switch $propertyName {
-      function     { return "analisys" }
+      function     { return "analysis" }
       subfunction1 { return "solar system" }
       display      { return "panel" }
    }
