@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.97 2009-01-13 16:24:09 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.98 2009-01-31 19:37:53 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -117,12 +117,13 @@ namespace eval ::confVisu {
       set private($visuNo,pluginInstanceList) [list ]
 
       #--- Initialisation de variables pour le trace de repere
-      set private($visuNo,boxSize)   ""
-      set private($visuNo,hBox)      ""
+      set private($visuNo,boxSize)      ""
+      set private($visuNo,hBox)         ""
 
-      set private($visuNo,camItem)   ""
-
-      set private($visuNo,intensity) "1"
+      #--- Initialisation d'autres variables
+      set private($visuNo,camItem)      ""
+      set private($visuNo,intensity)    "1"
+      set private($visuNo,closeEnCours) "0"
 
       #--- initialisation des bind de touches et de la souris
       set private($visuNo,MouseState) rien
@@ -185,13 +186,27 @@ namespace eval ::confVisu {
       variable private
       global audace caption conf
 
+      #--- je sors de la procedure si une fermeture est deja en cours
+      if { $private($visuNo,closeEnCours) == "1" } {
+         return
+      }
+
+      #--- je change la valeur de la variable de fermeture
+      set private($visuNo,closeEnCours) "1"
+
       #--- je verifie que la visu existe
       if { [info commands "::visu$visuNo" ] == "::visu$visuNo" } {
          set bufNo [visu$visuNo buf]
 
          #--- je ferme l'outil courant
          if { [getTool $visuNo] != "" } {
-            ::[getTool $visuNo]::stopTool $visuNo
+            set result [::[getTool $visuNo]::stopTool $visuNo]
+            if { $result == "-1" } {
+               tk_messageBox -title "$caption(confVisu,attention)" -icon error \
+                  -message "$caption(confVisu,fermeture_impossible) [ [ ::confVisu::getTool 1 ]::getPluginTitle ]"
+               set private($visuNo,closeEnCours) "0"
+               return
+            }
          }
 
          #--- je ferme la camera associee a la visu
@@ -228,6 +243,9 @@ namespace eval ::confVisu {
          #--- je supprime les graphes des coupes
          ::sectiongraph::closeToplevel $visuNo
       }
+
+      #--- j'initialise la variable de fermeture
+      set private($visuNo,closeEnCours) "0"
 
       #--- je supprime la fenetre et la variable
       destroy $private($visuNo,This)
@@ -1363,10 +1381,15 @@ namespace eval ::confVisu {
    proc stopTool { visuNo } {
       variable private
 
+      set result ""
       if { $private($visuNo,currentTool) != "" } {
-         $private($visuNo,currentTool)::stopTool $visuNo
+         set result [ $private($visuNo,currentTool)::stopTool $visuNo ]
       }
-      grid forget $private($visuNo,This).tool
+      if { $result != "-1" } {
+         grid forget $private($visuNo,This).tool
+      }
+
+      return $result
    }
 
    #------------------------------------------------------------
@@ -1652,7 +1675,7 @@ namespace eval ::confVisu {
       bind $This.fra1.sca1 <ButtonRelease> "::confVisu::onCutScaleRelease $visuNo"
       bind $This.fra1.sca2 <ButtonRelease> "::confVisu::onCutScaleRelease $visuNo"
 
-      #--- bind du canvas avec la souris, j'ative les valeurs par defaut
+      #--- bind du canvas avec la souris, j'active les valeurs par defaut
       createBindCanvas $visuNo <ButtonPress-1>   "default"
       createBindCanvas $visuNo <ButtonRelease-1> "default"
       createBindCanvas $visuNo <B1-Motion>       "default"
