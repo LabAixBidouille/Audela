@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.17 2009-01-22 00:28:22 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.18 2009-02-01 15:09:50 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -113,27 +113,35 @@ proc socket_client_send_gcn { name ipserver portserver {data {3 2008 07 07 23 45
 	set line [binary format I* $longs]
 	#::console::affiche_resultat "line=<$line>\n"
 	# --- open socket connexion
-   if {[info exists audace(socket,client,$name)]==0} {
-		#::console::affiche_resultat "$ipserver $portserver\n"
-	   set errno [ catch {
-	      set fid [socket $ipserver $portserver ]
-   		#::console::affiche_resultat "fid=$fid\n"
-	   } msg]
-	   if {$errno==1} {
-	      error $msg
-	   } else {
-			set audace(socket,client,$name) $fid
-	   }
-   }
-   set fid $audace(socket,client,$name)
-	#::console::affiche_resultat "fid=<$fid>\n"
-   fconfigure $fid -buffering full -translation binary -encoding binary -buffersize 160
-	# --- send packet
-   set errsoc [ catch {
-	   puts -nonewline $fid $line
-   } msgsoc ]
-   if {$errsoc==1} {
-      gcn_print "socket error : $msgsoc"
+	for {set k 0} {$k<2} {incr k} {
+      if {[info exists audace(socket,client,$name)]==0} {
+   		#::console::affiche_resultat "$ipserver $portserver\n"
+   	   set errno [ catch {
+   	      set fid [socket $ipserver $portserver ]
+      		#::console::affiche_resultat "fid=$fid\n"
+   	   } msg]
+   	   if {$errno==1} {
+   	      error $msg
+   	   } else {
+   			set audace(socket,client,$name) $fid
+   	   }
+      }
+      set fid $audace(socket,client,$name)
+   	#::console::affiche_resultat "fid=<$fid>\n"
+      fconfigure $fid -buffering full -translation binary -encoding binary -buffersize 160
+   	# --- send packet
+      set errsoc [ catch {
+   	   puts -nonewline $fid $line
+      } msgsoc ]
+      if {$errsoc==1} {
+         gcn_print "socket error : $msgsoc"
+         catch {
+      		close $audace(socket,client,$name)
+      		unset audace(socket,client,$name)
+   		}
+      } else {
+         break
+      }
    }
 	#close $fid
 }
@@ -153,7 +161,7 @@ proc socket_client_close_gcn { name } {
 # e.g. source audace/gcn_tools.tcl ; socket_server_open_gcn server1 5269 60000 "C:/Program Files/Apache Group/Apache2/htdocs/grb.txt"
 #      source audace/socket_tools.tcl ; socket_client_open client1 localhost 60000 ; after 100 ; socket_client_put client1 z ; after 800 ; set res [socket_client_get client1] ; socket_client_close client1
 #      source audace/socket_tools.tcl ; socket_server_open server1 60000
-proc socket_server_open_gcn { name portgcn {portout 0} {index_html ""}} {
+proc socket_server_open_gcn { name portgcn {portout 0} {index_html ""} {redir_hosts ""} {redir_ports 0} } {
    global audace
    global gcn
    set proc_accept socket_server_accept_gcn_${name}
@@ -169,7 +177,8 @@ proc socket_server_open_gcn { name portgcn {portout 0} {index_html ""}} {
    set sockname $name
    # ==========================================================================================
    # socket_server_accept_gcn : this is called by  the GCN socket server
-   set ligne "proc ::socket_server_accept_gcn_${name} {fid ip port} { global audace ; fconfigure \$fid -buffering full -translation binary -encoding binary -buffersize 160 ; fileevent \$fid readable \[list socket_server_respons_gcn \$fid $name\] ; }"
+   set ligne "proc ::socket_server_accept_gcn_${name} {fid ip port} { global audace ; fconfigure \$fid -buffering full -translation binary -encoding binary -buffersize 160 ; fileevent \$fid readable \[list socket_server_respons_gcn \$fid \"$name\" \"$redir_hosts\" \"$redir_ports\"\] ; }"
+   gcn_print "ligne=$ligne"
    eval $ligne
    # ==========================================================================================
    if {$portout!=0} {
@@ -185,7 +194,7 @@ proc socket_server_open_gcn { name portgcn {portout 0} {index_html ""}} {
          error $msg
       }
       # ==========================================================================================
-      # socket_server_accept_out : this is called by  the GCN socket server
+      # socket_server_accept_out : this is called by a client who want to get informations
       set ligne "proc ::socket_server_accept_out_${name} {fid ip port} { global audace ; fconfigure \$fid -buffering full -translation binary -encoding binary -buffersize 160 ; fileevent \$fid readable \[list socket_server_respons_out \$fid $name\] ; }"
       eval $ligne
       # ==========================================================================================
@@ -208,6 +217,7 @@ proc socket_server_open_gcn { name portgcn {portout 0} {index_html ""}} {
          gcn_print "Error: $msg"
       }
    }
+   return ""
 }
 # ==========================================================================================
 
@@ -222,12 +232,64 @@ proc socket_server_open_gcn { name portgcn {portout 0} {index_html ""}} {
 
 # ==========================================================================================
 # socket_server_respons_gcn : decode the GCN stream
-proc socket_server_respons_gcn {fid {sockname dummy} } {
+proc socket_server_respons_gcn {fid {sockname dummy} {redir_hosts ""} {redir_ports 0} } {
    global gcn
+   set gcn(gcn_${sockname},redir_msg) ""
    set errsoc [ catch {
       if {[eof $fid] || [catch {set line [read $fid 160]}] } {
          close $fid
       } else {
+         # --- redir if needed
+         set kredir 0  
+         set gcn(gcn_${sockname},redir_msg) ""
+         foreach redir_host $redir_hosts {
+            set ipserver [lindex $redir_hosts $kredir]
+            set portserver [lindex $redir_ports $kredir]               
+            #gcn_print "ETAPE 1 ipserver=$ipserver portserver=$portserver"
+            #catch {gren_info "ETAPE 1 ipserver=$ipserver portserver=$portserver"}
+            incr kredir
+            set name redir${kredir}_${sockname}
+         	# --- open socket connexion
+         	catch {
+            	# --- open socket connexion
+            	for {set k 0} {$k<2} {incr k} {
+                  if {[info exists audace(socket,client,$name)]==0} {
+               		#::console::affiche_resultat "$ipserver $portserver\n"
+               	   set errno [ catch {
+               	      set fid [socket $ipserver $portserver ]
+                  		#::console::affiche_resultat "fid=$fid\n"
+               	   } msg]
+               	   if {$errno==1} {
+               	      error $msg
+               	   } else {
+               			set audace(socket,client,$name) $fid
+               	   }
+                  }
+                  set fid $audace(socket,client,$name)
+               	#::console::affiche_resultat "fid=<$fid>\n"
+                  fconfigure $fid -buffering full -translation binary -encoding binary -buffersize 160
+               	# --- send packet
+                  set errsoc [ catch {
+               	   puts -nonewline $fid $line
+               	   flush $fid
+                  } msgsoc ]
+                  #catch {gren_info "ETAPE 2 errsoc=$errsoc msgsoc=$msgsoc line=<$line>"}
+                  if {$errsoc==1} {
+                     #gcn_print "socket error : $msgsoc"
+                     catch {
+                  		close $audace(socket,client,$name)
+                  		unset audace(socket,client,$name)
+               		}
+                  } else {
+                     set texte "REDIR OK for ipserver=$ipserver portserver=$portserver"
+                     append gcn(gcn_${sockname},redir_msg) "$texte. "
+                     #catch {gren_info "ETAPE 3 gcn(gcn_${sockname},redir_msg)=$gcn(gcn_${sockname},redir_msg)"}
+                     gcn_print "$texte"
+                     break
+                  }
+               }
+            }
+         }
          #::console::affiche_resultat "$fid received \"$line\"\n"
          # --- convert the binary stream into longs
          binary scan $line I* longs
