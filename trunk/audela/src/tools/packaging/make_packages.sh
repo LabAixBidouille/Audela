@@ -7,9 +7,22 @@
 # Version initiale : Denis Marchais
 # Version actuelle : Benjamin Mauclaire
 #
+########################################################################################
+
+# Mise a jour $Id: make_packages.sh,v 1.2 2009-02-01 12:11:42 bmauclaire Exp $
+
+
+#--- Utilisation :
+#-- Exemple :
+# make_packages nom_distribution_linux (debian ou ubuntu ou mandriva)
+#-- Prerecquis :
+# Avoir disponible libtcl8.4.so et libtk8.4.so multithreadés dans le repetoire bin d'Audela pour fabriquer la version multithreadée.
+# Avoir disponible libtcl8.4.so dans le repertoire bin d'Audela pour fabriquer la version multithreadée.
+# La version fabriquee notee comme multithreadee si ces 3 fichiers dont presents dans le rep d'Audela.
 
 
 #--- Variables de focntionnement :
+#-- Dependances Linux du paquet :
 depends_debian="tk8.4, libstdc++6, libgsl0, gnuplot-x11, gzip, libusb-0.1-4, tclxml, tcllib, tclvfs, libtk-img, blt"
 # depends_debian="libc6, libgcc1, libgsl0, libstdc++6, libusb-0.1-4, tcl8.4, tk8.4, tclthread, libx11-6, libxau6, gnuplot-x11, gzip, tclxml, tcllib, tclvfs, libtk-img, blt"
 depends_ubuntu="tk8.4, libstdc++6, libgsl0ldbl, gnuplot-x11, gzip, libusb-0.1-4, tclxml, tcllib, tclvfs, libtk-img, blt"
@@ -17,6 +30,15 @@ depends_ubuntu="tk8.4, libstdc++6, libgsl0ldbl, gnuplot-x11, gzip, libusb-0.1-4,
 depends_mandriva="libtk8.4, gsl, libstdc++6, gnuplot, gzip, libusb, tcl-tcllib, blt"
 # depends_mandriva="glibc, libgcc1, libgphoto, gsl, libstdc++6, libusb, libtcl8.4, libtk8.4, gnuplot, gzip, tcl-tcllib, blt"
 # unfound : gnuplot-x11 tclxml tclvfs, libtk-img
+
+#-- Variables d'environnement :
+rep_audela_ready="../../.."
+rep_bin="$rep_audela_ready/bin"
+rep_audela_src="../.."
+#-- Sont aussi definis apres les choix :
+# BUILD_DIR=audela-$DAILY
+# INST_DIR=/usr/lib/audela-$DAILY
+# DIRECTORY=$BUILD_DIR$INST_DIR
 
 
 #--- Choix de la distro et parametrage en consequence :
@@ -69,9 +91,9 @@ fi
 #--- Construit ne numero de version :
 #DAILY=20080509
 #DAILY=`date +"%Y%m%d"`
-noteversion=`grep "audela(version)" ../../bin/version.tcl | tr -d '"'`
+noteversion=`grep "audela(version)" $rep_bin/version.tcl | tr -d '"'`
 laversion=`expr "$noteversion" : '.*\s\([0-9]*\.[0-9]*\.[0-9]*\).*'`
-info_audela=`ls -gG ../../bin/audela`
+info_audela=`ls -gG $rep_bin/audela`
 ladate=`expr "$info_audela" : '.*\([0-9][0-9][0-9][0-9]\-[0-9][0-9]\-[0-9][0-9]\).*'`
 DAILY=$laversion.`echo $ladate | tr -d '-'`
 echo "Creation des paquets AudeLA version $DAILY :"
@@ -89,7 +111,7 @@ rm -rf rpm
 #--- Creation des fichiers necessaire a l'empaquetage :
 echo "Creation des fichiers necessaire a l'empaquetage..."
 
-if test -e ../../bin/libtcl8.4.so
+if test -e $rep_bin/libtcl8.4.so
 then
     nom_paquet="audela-thread"
     lesuffixe="thread"
@@ -132,11 +154,14 @@ set -e
 if test -h /usr/bin/audela ; then rm -f /usr/bin/audela ; fi
 ln -s $INST_DIR/bin/audela.sh /usr/bin/audela
 $liens
+
+if [ "$1" -ne "" ] ; then
 # Automatically added by dh_installmenu
 if [ "$1" = "configure" ] && [ -x "`which update-menus 2>/dev/null`" ]; then
         update-menus
 fi
 # End automatically added section
+fi
 " > $BUILD_DIR/DEBIAN/postinst
 chmod 555 $BUILD_DIR/DEBIAN/postinst
 
@@ -154,14 +179,14 @@ chmod 555 $BUILD_DIR/DEBIAN/postrm
 #--- Creation de l'arborescence, copie des repertoires entiers :
 echo "Creation de l'arborescence, copie des repertoires entiers..."
 mkdir -p $DIRECTORY
-cp -r ../../bin $DIRECTORY
-cp -r ../../lib $DIRECTORY
-cp -r ../../gui $DIRECTORY
-cp -r ../../images $DIRECTORY
+cp -r $rep_audela_ready/bin $DIRECTORY
+cp -r $rep_audela_ready/lib $DIRECTORY
+cp -r $rep_audela_ready/gui $DIRECTORY
+cp -r $rep_audela_ready/images $DIRECTORY
 
 #--- Petit menage :
-cp ../COPYING $DIRECTORY
-cp ../../readme.txt $DIRECTORY
+cp $rep_audela_src/COPYING $DIRECTORY
+cp $rep_audela_ready/readme.txt $DIRECTORY
 rm -f $DIRECTORY/bin/version.tcl.in
 find $DIRECTORY | grep CVS | xargs rm -rf
 rm -f $DIRECTORY/bin/Makefile
