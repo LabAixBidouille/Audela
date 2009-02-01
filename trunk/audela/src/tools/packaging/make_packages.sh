@@ -9,16 +9,29 @@
 #
 ########################################################################################
 
-# Mise a jour $Id: make_packages.sh,v 1.2 2009-02-01 12:11:42 bmauclaire Exp $
+# Mise a jour $Id: make_packages.sh,v 1.3 2009-02-01 15:45:40 bmauclaire Exp $
 
 
 #--- Utilisation :
-#-- Exemple :
-# make_packages nom_distribution_linux (debian ou ubuntu ou mandriva)
-#-- Prerecquis :
+#-- Exemple (les actions root sont faites via sudo) :
+# chmod u+x ./make_packages.sh
+# ./make_packages.sh nom_distribution_linux (debian ou ubuntu ou mandriva)
+#
+#-- Prerequis :
+# Il faut qu'Audela soit deja compilé : chmod u+x ./configure ; ./configure && make external && make contrib && make // ou make all.
+# Que la version soit multithreadee ou non, il faut que les fichiers libtcl8.4.so et libtcl8.4.so soient presents dans /usr/lib/ de la machine destination pour que BLT fonctionne.
+#
+#-- Compilation multithreadee :
+# Avoir, dans cet exemple, un repetoire lib contenantles .a de tcltk multithreade au meme niveaud e que le repertoire audela issu de CVS.
+# Avoir les fichiers speciaux libthread2.6.5.1.so_debian et Thread2.6.5.1.so_mandriva dans le repertoire audela/lib/thread2.6.
+#- Compiler tcl/tk avec les options de multithread
+# ./configure --with-tcl=/home/mauclaire/audela/lib/lib --with-tk=/home/mauclaire/audela/lib/lib
+#
+#-- Fabrication du package multithreade :
 # Avoir disponible libtcl8.4.so et libtk8.4.so multithreadés dans le repetoire bin d'Audela pour fabriquer la version multithreadée.
 # Avoir disponible libtcl8.4.so dans le repertoire bin d'Audela pour fabriquer la version multithreadée.
 # La version fabriquee notee comme multithreadee si ces 3 fichiers dont presents dans le rep d'Audela.
+#------------------------------------------------------------------------------#
 
 
 #--- Variables de focntionnement :
@@ -155,12 +168,12 @@ if test -h /usr/bin/audela ; then rm -f /usr/bin/audela ; fi
 ln -s $INST_DIR/bin/audela.sh /usr/bin/audela
 $liens
 
-if [ "$1" -ne "" ] ; then
-# Automatically added by dh_installmenu
-if [ "$1" = "configure" ] && [ -x "`which update-menus 2>/dev/null`" ]; then
+if [ \"\$1\" -ne \"\" ] ; then
+  # Automatically added by dh_installmenu
+  if [ "\$1" = "configure" ] && [ -x "`which update-menus 2>/dev/null`" ]; then
         update-menus
-fi
-# End automatically added section
+  fi
+  # End automatically added section
 fi
 " > $BUILD_DIR/DEBIAN/postinst
 chmod 555 $BUILD_DIR/DEBIAN/postinst
