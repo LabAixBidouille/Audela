@@ -9,7 +9,7 @@
 #
 ########################################################################################
 
-# Mise a jour $Id: make_packages.sh,v 1.3 2009-02-01 15:45:40 bmauclaire Exp $
+# Mise a jour $Id: make_packages.sh,v 1.4 2009-02-01 19:02:57 bmauclaire Exp $
 
 
 #--- Utilisation :
@@ -168,13 +168,23 @@ if test -h /usr/bin/audela ; then rm -f /usr/bin/audela ; fi
 ln -s $INST_DIR/bin/audela.sh /usr/bin/audela
 $liens
 
-if [ \"\$1\" -ne \"\" ] ; then
-  # Automatically added by dh_installmenu
-  if [ "\$1" = "configure" ] && [ -x "`which update-menus 2>/dev/null`" ]; then
+case \"\$1\" in
+  configure)
+    # Automatically added by dh_installmenu
+    if [ -x \"`which update-menus 2>/dev/null`\" ]; then
         update-menus
-  fi
-  # End automatically added section
-fi
+    fi
+    # End automatically added section
+    ;;
+  abord-upgrade|abord-remove|abord-deconfigure)
+
+    ;;
+  *)
+    echo \"postinst called with unknown argument \'\$1'\" >&2
+    exit 1
+    ;;
+esac
+
 " > $BUILD_DIR/DEBIAN/postinst
 chmod 555 $BUILD_DIR/DEBIAN/postinst
 
@@ -183,7 +193,7 @@ set -e
 rm -f /usr/bin/audela
 if test -h $INST_DIR/bin/libtcl8.4.so.0 ; then rm -rf $INST_DIR ; fi
 # Automatically added by dh_installmenu
-if [ -x "`which update-menus 2>/dev/null`" ]; then update-menus ; fi
+if [ -x \"`which update-menus 2>/dev/null`\" ]; then update-menus ; fi
 # End automatically added section
 " > $BUILD_DIR/DEBIAN/postrm
 chmod 555 $BUILD_DIR/DEBIAN/postrm
