@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.18 2009-02-01 15:09:50 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.19 2009-02-01 19:42:07 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -177,7 +177,7 @@ proc socket_server_open_gcn { name portgcn {portout 0} {index_html ""} {redir_ho
    set sockname $name
    # ==========================================================================================
    # socket_server_accept_gcn : this is called by  the GCN socket server
-   set ligne "proc ::socket_server_accept_gcn_${name} {fid ip port} { global audace ; fconfigure \$fid -buffering full -translation binary -encoding binary -buffersize 160 ; fileevent \$fid readable \[list socket_server_respons_gcn \$fid \"$name\" \"$redir_hosts\" \"$redir_ports\"\] ; }"
+   set ligne "proc ::socket_server_accept_gcn_${name} {fid ip port} { global audace ; fconfigure \$fid -buffering full -translation binary -encoding binary -buffersize 160 ; fileevent \$fid readable \[list socket_server_respons_gcn \$fid \"$name\" $redir_hosts $redir_ports\] ; }"
    gcn_print "ligne=$ligne"
    eval $ligne
    # ==========================================================================================
