@@ -2,11 +2,11 @@
 # Fichier : updateaudela.tcl
 # Description : Outil de fabrication des fichiers Kit et de deploiement des plugins
 # Auteur : Michel Pujol
-# Mise a jour $Id: updateaudela.tcl,v 1.16 2007-11-02 23:20:50 michelpujol Exp $
+# Mise a jour $Id: updateaudela.tcl,v 1.17 2009-02-04 18:08:43 michelpujol Exp $
 #
 
 namespace eval ::updateaudela {
-   package provide updateaudela 1.1
+   package provide updateaudela 1.2
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] updateaudela.cap ]
@@ -267,6 +267,9 @@ proc ::updateaudela::getTypeDirectory { pluginType pluginName } {
          set typeDirectory "$::audace(rep_plugin)/$pluginType/$pluginName"
       }
       "focuser" {
+         set typeDirectory "$::audace(rep_plugin)/equipment/$pluginName"
+      }
+      "spectroscope" {
          set typeDirectory "$::audace(rep_plugin)/equipment/$pluginName"
       }
       "libtcl" {
