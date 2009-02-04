@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.19 2009-02-01 19:42:07 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.20 2009-02-04 08:45:25 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -548,6 +548,9 @@ proc gcn_decode { longs sockname } {
          set gcn($sockname,descr,grb_error) [expr 0.0001*$gcn($sockname,long,burst_error)*60.]; # boite d'erreur en arcmin
          set gcn($sockname,descr,burst_flue) $gcn($sockname,long,9)
          set gcn($sockname,descr,integ_time) [expr $gcn($sockname,long,14)*4e-3]
+         if {$pkt_type=="901"} {
+            set gcn($sockname,descr,def_not_grb) 0
+         }
       }
       if {$gcn($sockname,descr,satellite)=="LOOCUP"} {
          set gcn($sockname,descr,burst_ra) [expr $gcn($sockname,long,burst_ra)*0.0001]
@@ -559,6 +562,9 @@ proc gcn_decode { longs sockname } {
          set gcn($sockname,descr,grb_error) [expr 0.0001*$gcn($sockname,long,burst_error)*60.]; # boite d'erreur en arcmin
          set gcn($sockname,descr,burst_flue) $gcn($sockname,long,9)
          set gcn($sockname,descr,integ_time) [expr $gcn($sockname,long,14)*4e-3]
+         if {$pkt_type=="905"} {
+            set gcn($sockname,descr,def_not_grb) 0
+         }
       }
       # --- update status
       set gcn($sockname,status,last,last,jd_send) "$gcn($sockname,descr,jd_pkt)"
