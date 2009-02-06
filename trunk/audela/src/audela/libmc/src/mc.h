@@ -653,6 +653,7 @@ int mc_htm_testin(double *v0, double *v1, double *v2, double *v);
 int mc_radec2htm(double ra,double dec,int niter,char *htm);
 int mc_htm2radec(char *htm,double *ra,double *dec,int *niter,double *ra0,double *dec0,double *ra1,double *dec1,double *ra2,double *dec2);
 
+int intersect_triangle(double orig[3], double dir[3],double vert0[3], double vert1[3], double vert2[3], double *t, double *u, double *v);
 /***************************************************************************/
 /* Transformations du temps (jour julien, temps dynamique ...)             */
 /***************************************************************************/
@@ -1014,6 +1015,7 @@ int mc_radec2htm(double ra,double dec,int niter,char *htm)
 int mc_htm2radec(char *htm,double *ra,double *dec,int *niter,double *ra0,double *dec0,double *ra1,double *dec1,double *ra2,double *dec2)
    Retourne le ra,dec a paertir du code Hierarchical Triangle Mesh.
 */
+
 
 /***************************************************************************/
 /* Transformations du temps (jour julien, temps dynamique ...)             */

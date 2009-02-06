@@ -48,6 +48,17 @@
 # include <errno.h>
 #endif
 
+
+typedef struct {
+	double x;
+	double y;
+	double z;
+	double lon;
+	double lat;
+	double r;
+} struct_point ;
+
+
 /* fonctions mc propres a libmc pour Tcl */
  int mctcl_decode_angle(Tcl_Interp *interp, char *argv0,double *angledeg);
  int mctcl_decode_date(Tcl_Interp *interp, char *argv,double *jj);
@@ -134,6 +145,8 @@
  int Cmd_mctcl_lonlat2xy(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
  int Cmd_mctcl_simurelief(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+ int Cmd_mctcl_simurelief_from_stl(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+
  int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
  int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
  int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);

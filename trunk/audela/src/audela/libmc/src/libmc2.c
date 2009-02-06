@@ -2583,6 +2583,289 @@ int Cmd_mctcl_simurelief(ClientData clientData, Tcl_Interp *interp, int argc, ch
    return TCL_OK;
 }
 
+int Cmd_mctcl_simurelief_from_stl(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Synthese de cartes de relief et d'albedo pour courbes de rotations.      */
+/****************************************************************************/
+/* Cette fonction prepare une carte de relief et une carte d'albedo pour    */
+/* etre utilisées par mc_simulc.                                            */
+/*																			*/
+/*	ENTREES               											        */
+/*	=======               											        */                                          
+/* filename_stl : fichier geométrique stl					                */
+/* filename_relief : carte de relief creee avec mc_simurelief               */
+/* albedo : valeur de l'albedo geometrique.                                 */
+/* filename_albedo : carte d'albedo creee avec mc_simurelief                */
+/*																			*/
+/*	SORTIES               											        */
+/*	=======               											        */
+/* Deux fichiers ASCII avec une resolution de 1 deg/point                   */
+/****************************************************************************/
+{
+   char s[1024], ligne[2000];
+   double *relief=NULL,albedo;
+   FILE *fichier_stl=NULL;
+   FILE *fichier_relief=NULL;
+   FILE *fichier_albedo=NULL;
+   int klon,klat,nlon,nlat,k, k1,k2,a, n_in;
+   double alt, c, b, d, klonr,klatr;
+   struct_point *point1, *point2, *point3, *point4;
+   double vert1[3], vert2[3],vert3[3], origin[3],dir[3];
+   double *t, *u, *v;
+   
+
+   if(argc<5) {
+		sprintf(s,"Usage: %s filename_stl filename_relief albedo filename_albedo", argv[0]);
+		Tcl_SetResult(interp,s,TCL_VOLATILE);
+ 		return TCL_ERROR;
+	} else {
+      
+		n_in=0;
+		/* --- lecture du nombre de lignes dans le fichier d'entree ---*/
+		fichier_stl=fopen(argv[1],"rt");
+		if (fichier_stl==NULL) {
+			sprintf(s,"file %s not found",argv[1]);
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
+			return TCL_ERROR;
+		}
+
+		while (feof(fichier_stl)==0) {
+			if (fgets(ligne,sizeof(ligne),fichier_stl)!=NULL) {
+				n_in++;
+			}
+		}
+		fclose(fichier_stl);
+
+		/* --- dimensionne la structure des donnees d'entree ---*/
+		n_in=(n_in-2)/7;
+		point1=(struct_point*)malloc(n_in*sizeof(struct_point));
+		 if (point1==NULL) {
+			 sprintf(s,"error : point1 pointer out of memory (%d elements)",n_in);
+			 Tcl_SetResult(interp,s,TCL_VOLATILE);
+			 return TCL_ERROR;
+		}
+		point2=(struct_point*)malloc(n_in*sizeof(struct_point));
+		if (point2==NULL) {
+			 sprintf(s,"error : point2 pointer out of memory (%d elements)",n_in);
+			 Tcl_SetResult(interp,s,TCL_VOLATILE);
+			 return TCL_ERROR;
+		}
+		point3=(struct_point*)malloc(n_in*sizeof(struct_point));
+		if (point3==NULL) {
+			 sprintf(s,"error : point3 pointer out of memory (%d elements)",n_in);
+			 Tcl_SetResult(interp,s,TCL_VOLATILE);
+			 return TCL_ERROR;
+		}
+		point4=(struct_point*)malloc(n_in*sizeof(struct_point));
+		if (point4==NULL) {
+			 sprintf(s,"error : point4 pointer out of memory (%d elements)",n_in);
+			 Tcl_SetResult(interp,s,TCL_VOLATILE);
+			 return TCL_ERROR;
+		}
+		n_in=0;
+		/* recupère les données du fichiers stl*/
+		fichier_stl=fopen(argv[1],"rt");
+		if (fichier_stl==NULL) {
+			sprintf(s,"file %s not found",argv[1]);
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
+			return TCL_ERROR;
+		}
+	
+		while (feof(fichier_stl)==0) {
+			if (fgets(ligne,sizeof(ligne),fichier_stl)!=NULL) {
+				if (ligne[2]=='f') {//vecteur normal de la facette
+					k1=25; k2=28; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					a=atoi(s);
+					k1=15; k2=23; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					point4[n_in].x=atof(s)*pow(10,a) ;
+
+					k1=40; k2=44; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					a=atoi(s);
+					k1=30; k2=38; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					point4[n_in].y=atof(s)*pow(10,a);
+
+					k1=55; k2=58; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					a=atoi(s);
+					k1=45; k2=53; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					point4[n_in].z=atof(s)*pow(10,a);
+				}
+				if (ligne[6]!='v') continue;
+					/// attention aux unités/echelles
+					k1=23; k2=26; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					a=atoi(s);
+					k1=13; k2=21; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					point1[n_in].x=atof(s)*pow(10,a) ;
+
+					k1=38; k2=41; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					a=atoi(s);
+					k1=28; k2=36; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					point1[n_in].y=atof(s)*pow(10,a);
+
+					k1=53; k2=56; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					a=atoi(s);
+					k1=43; k2=51; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					point1[n_in].z=atof(s)*pow(10,a);
+				
+					if (fgets(ligne,sizeof(ligne),fichier_stl)!=NULL) {
+						if (ligne[6]!='v') {
+							strcpy(s,"Error : problem in the file stl");
+							Tcl_SetResult(interp,s,TCL_VOLATILE);
+							return TCL_ERROR;
+						}
+
+						k1=23; k2=26; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+						a=atoi(s);
+						k1=13; k2=21; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+						point2[n_in].x=atof(s)*pow(10,a);
+
+						k1=38; k2=41; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+						a=atoi(s);
+						k1=28; k2=36; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+						point2[n_in].y=atof(s)*pow(10,a);
+
+						k1=53; k2=56; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+						a=atoi(s);
+						k1=43; k2=51; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+						point2[n_in].z=atof(s)*pow(10,a);
+
+						if (fgets(ligne,sizeof(ligne),fichier_stl)!=NULL) {
+							if (ligne[6]!='v') {
+								strcpy(s,"Error : problem in the file stl");
+								Tcl_SetResult(interp,s,TCL_VOLATILE);
+								return TCL_ERROR;
+							}
+
+							k1=23; k2=26; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+							a=atoi(s);
+							k1=13; k2=21; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+							point3[n_in].x=atof(s)*pow(10,a) ;
+
+							k1=38; k2=41; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+							a=atoi(s);
+							k1=28; k2=36; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+							point3[n_in].y=atof(s)*pow(10,a);
+
+							k1=53; k2=56; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+							a=atoi(s);
+							k1=43; k2=51; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+							point3[n_in].z=atof(s)*pow(10,a);
+
+
+						}
+
+					}
+
+				n_in++;
+			}
+		}
+		fclose(fichier_stl);
+
+		/* === */
+		/* === Calcul de la carte de relief ===*/
+		/* === */
+		nlon=360;
+		nlat=181;
+		relief=(double*)calloc(nlon*nlat,sizeof(double));
+		if (relief==NULL) {
+			strcpy(s,"Error : memory allocation for relief");
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
+			return TCL_ERROR;
+		}
+		origin[0]=0; origin[1]=0; origin[2]=0;
+		u=(double*)calloc(1,sizeof(double));
+		t=(double*)calloc(1,sizeof(double));
+		v=(double*)calloc(1,sizeof(double));
+		for (klon=0;klon<nlon;klon++) { 
+			for (klat=0;klat<nlat;klat++) {
+				// recherche appartenance du point klon, klat à un triangle du fichier stl
+				alt=b=c=d=0;
+				klatr=klat*(DR);
+				klonr=klon*(DR);
+				for (k=0; k<n_in; k++) {
+					vert1[0]=point1[k].x;
+					vert1[1]=point1[k].y;
+					vert1[2]=point1[k].z;
+					vert2[0]=point2[k].x;
+					vert2[1]=point2[k].y;
+					vert2[2]=point2[k].z;
+					vert3[0]=point3[k].x;
+					vert3[1]=point3[k].y;
+					vert3[2]=point3[k].z;
+					// calcul de dir= vecteur directeur de la droite klat, klon
+					dir[0]=sin(klonr)*cos(klatr);
+					dir[1]=sin(klonr)*sin(klatr);
+					dir[2]=cos(klonr);
+
+					if ((intersect_triangle(origin,dir,vert1,vert2,vert3, t,u,v))==1) {
+						//point appartient au triangle
+						// calcul de l'altitude du point
+						b=point4[k].x*sin(klatr)*cos(klatr)+point4[k].y*sin(klonr)*sin(klatr)+point4[k].z*cos(klatr);
+						if (b!=0) {
+							alt=(point4[k].x*point1[k].x+point4[k].y*point1[k].y+point4[k].z*point1[k].z)/b;
+						} else {
+							alt=0; // a revoir
+						}
+						break;
+
+					} 
+				
+				}
+
+				//calcul de la distance
+				relief[klon*nlat+klat]=alt;
+			}
+		}
+
+		free(point1);
+		free(point2);
+		free(point3);
+		free(u);
+		free(t);
+		free(v);
+
+      /* === */
+	   /* === Enregistre sur disque la carte de relief ===*/
+      /* === */
+      if ((fichier_relief=fopen(argv[2],"wt") ) == NULL) {
+         free(relief);
+         sprintf(s,"Error : file %s cannot be created",argv[2]);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+
+      }
+      for (klat=0;klat<nlat;klat++) {
+         for (klon=0;klon<nlon;klon++) {
+            fprintf(fichier_relief,"%e ",relief[klon*nlat+klat]);
+         }
+         fprintf(fichier_relief,"\n");
+      }
+      fclose(fichier_relief);
+      /* === */
+	   /* === Enregistre sur disque la carte d'albedo ===*/
+      /* === */
+      if ((fichier_albedo=fopen(argv[4],"wt") ) == NULL) {
+         free(relief);
+         sprintf(s,"Error : file %s cannot be created",argv[4]);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+
+      }
+      albedo=atof(argv[3]);
+      if (albedo<0.) { albedo=0.; }
+      if (albedo>1.) { albedo=1.; }
+      for (klat=0;klat<nlat;klat++) {
+         for (klon=0;klon<nlon;klon++) {
+              fprintf(fichier_albedo,"%f ",albedo);
+         }
+         fprintf(fichier_albedo,"\n");
+      }
+      fclose(fichier_albedo);
+      /* === sortie et destructeurs ===*/
+      free(relief);
+      Tcl_SetResult(interp,"",TCL_VOLATILE);
+   }
+   return TCL_OK;
+}
 int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /****************************************************************************/
 /* Simulation de la courbe de lumiere d'un asteroide                        */

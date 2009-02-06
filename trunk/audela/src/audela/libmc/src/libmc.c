@@ -98,6 +98,7 @@
    Tcl_CreateCommand(interp,"mc_tt2bary",(Tcl_CmdProc *)Cmd_mctcl_tt2bary,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_dates_ut2bary",(Tcl_CmdProc *)Cmd_mctcl_dates_ut2bary,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_simurelief",(Tcl_CmdProc *)Cmd_mctcl_simurelief,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"mc_simurelieffromstl",(Tcl_CmdProc *)Cmd_mctcl_simurelief_from_stl,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_simulc",(Tcl_CmdProc *)Cmd_mctcl_simulc,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_simulcbin",(Tcl_CmdProc *)Cmd_mctcl_simulcbin,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_simumagbin",(Tcl_CmdProc *)Cmd_mctcl_simumagbin,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
