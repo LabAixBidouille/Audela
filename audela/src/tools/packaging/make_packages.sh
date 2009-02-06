@@ -9,7 +9,7 @@
 #
 ########################################################################################
 
-# Mise a jour $Id: make_packages.sh,v 1.4 2009-02-01 19:02:57 bmauclaire Exp $
+# Mise a jour $Id: make_packages.sh,v 1.5 2009-02-06 00:47:11 bmauclaire Exp $
 
 
 #--- Utilisation :
@@ -23,7 +23,7 @@
 #
 #-- Compilation multithreadee :
 # Avoir, dans cet exemple, un repetoire lib contenantles .a de tcltk multithreade au meme niveaud e que le repertoire audela issu de CVS.
-# Avoir les fichiers speciaux libthread2.6.5.1.so_debian et Thread2.6.5.1.so_mandriva dans le repertoire audela/lib/thread2.6.
+# Avoir les fichiers speciaux libthread2.6.5.1.so_debian (issu de la compilation) et Thread2.6.5.1.so_mandriva dans le repertoire audela/lib/thread2.6.5.1
 #- Compiler tcl/tk avec les options de multithread
 # ./configure --with-tcl=/home/mauclaire/audela/lib/lib --with-tk=/home/mauclaire/audela/lib/lib
 #
@@ -44,17 +44,21 @@ depends_mandriva="libtk8.4, gsl, libstdc++6, gnuplot, gzip, libusb, tcl-tcllib, 
 # depends_mandriva="glibc, libgcc1, libgphoto, gsl, libstdc++6, libusb, libtcl8.4, libtk8.4, gnuplot, gzip, tcl-tcllib, blt"
 # unfound : gnuplot-x11 tclxml tclvfs, libtk-img
 
-#-- Variables d'environnement :
+#-- Variables d'environnement a parametrer avant utilisation du script :
 rep_audela_ready="../../.."
 rep_bin="$rep_audela_ready/bin"
 rep_audela_src="../.."
+sous_rep_libthread="lib/thread2.6.5.1"
+version_tcltk="8.4"
 #-- Sont aussi definis apres les choix :
 # BUILD_DIR=audela-$DAILY
 # INST_DIR=/usr/lib/audela-$DAILY
 # DIRECTORY=$BUILD_DIR$INST_DIR
+# rep_libtcltk="/usr/lib" ou rep_libtcltk="$INST_DIR/bin"
 
 
-#--- Choix de la distro et parametrage en consequence :
+
+#--- Choix de la distro et parametrages en consequence :
 if test "$1" = "debian"
 then
     echo "La distribution est une Debian."
@@ -117,33 +121,44 @@ INST_DIR=/usr/lib/audela-$DAILY
 DIRECTORY=$BUILD_DIR$INST_DIR
 
 #--- Menage :
+#-- Efface les paquets et le repertoire BUIL_DIR :
+#- rm -rf $BUILD_DIR
 sudo rm -rf audela-*
-#rm -f $BUILD_DIR.deb
+#- rm -f $BUILD_DIR.deb
 rm -rf rpm
+#-- Cree le repertoire de fabrication du paquet :
+mkdir -p $BUILD_DIR
+
 
 #--- Creation des fichiers necessaire a l'empaquetage :
 echo "Creation des fichiers necessaire a l'empaquetage..."
-
-if test -e $rep_bin/libtcl8.4.so
+#-- Gesion multithreadee avec la variable $liens qui seront a realiser en postinst :
+if test -e $rep_bin/libtcl$version_tcltk.so
 then
     nom_paquet="audela-thread"
     lesuffixe="thread"
-    # liens="#
-# Libs .so.0 necessaires pour BLT :
-#ln -s $INST_DIR/bin/libtcl8.4.so $INST_DIR/bin/libtcl8.4.so.0
-#ln -s $INST_DIR/bin/libtk8.4.so $INST_DIR/bin/libtk8.4.so.0
-#"
-    liens="#"
+    rep_libtcltk="$INST_DIR/bin"
+    liens="#
+#- Fichiers libs .so.0 necessaires pour BLT :
+ln -s $rep_libtcltk/libtcl$version_tcltk.so $rep_libtcltk/libtcl$version_tcltk.so.0
+ln -s $rep_libtcltk/libtk$version_tcltk.so $rep_libtcltk/libtk$version_tcltk.so.0
+"
+    #liens="#"
 else
     nom_paquet="audela-mono"
     lesuffixe="mono"
+    rep_libtcltk="/usr/lib"
     liens="#
-# Compense un probleme dans l'edition de lien d'Audela : il faut a Audela les lib.so (lien realise par le paquet de tk-dev) au lieu de .so.0 (pour BLT et dispo ds paquet binaire) Mais c'est MAL de faire ainsi !
-if test -e /usr/lib/libtcl8.4.so || test -h /usr/lib/libtcl8.4.so ; then echo "" ; elif test -e /usr/lib/libtcl8.4.so.0 ; then ln -s /usr/lib/libtcl8.4.so.0 /usr/lib/libtcl8.4.so ; fi
-if test -e /usr/lib/libtk8.4.so || test -h /usr/lib/libtk8.4.so ; then echo "" ; elif test -e /usr/lib/libtk8.4.so.0 ; then ln -s /usr/lib/libtk8.4.so.0 /usr/lib/libtk8.4.so ; fi
+#- Compense un probleme dans l'edition de lien d'Audela :
+#- il faut a Audela les lib.so (lien realise par le paquet de tk-dev) au lieu de .so.0
+#- (pour BLT et dispo ds paquet binaire) Mais c'est MAL de faire ainsi !
+if test -e $rep_libtcltk/libtcl$version_tcltk.so || test -h $rep_libtcltk/libtcl$version_tcltk.so ; then echo "" ; elif test -e $rep_libtcltk/libtcl$version_tcltk.so.0 ; then ln -s $rep_libtcltk/libtcl$version_tcltk.so.0 $rep_libtcltk/libtcl$version_tcltk.so ; fi
+if test -e $rep_libtcltk/libtk$version_tcltk.so || test -h $rep_libtcltk/libtk$version_tcltk.so ; then echo "" ; elif test -e $rep_libtcltk/libtk$version_tcltk.so.0 ; then ln -s $rep_libtcltk/libtk$version_tcltk.so.0 $rep_libtcltk/libtk$version_tcltk.so ; fi
 "
 fi
 
+
+#-- Creation du fichier "control" pour Debian :
 mkdir -p $BUILD_DIR/DEBIAN
 echo "Package: $nom_paquet
 Version: $DAILY
@@ -161,9 +176,10 @@ Description: Logiciel libre multiplateforme (Win32, Linux, Mac), permettant les 
 # AudeLA is a TCL extension aimed at providing amateur astronomers with image processing, telescope controling, ccd camera driving, and various astronomical algorithms.
 
 
+#-- Creation du fichier "postinst" pour Debian :
 echo "#!/bin/sh
 set -e
-# Cree un lien symbolique pour la derniere version d'Audela instalee :
+#- Cree un lien symbolique pour la derniere version d'Audela instalee :
 if test -h /usr/bin/audela ; then rm -f /usr/bin/audela ; fi
 ln -s $INST_DIR/bin/audela.sh /usr/bin/audela
 $liens
@@ -184,19 +200,20 @@ case \"\$1\" in
     exit 1
     ;;
 esac
-
 " > $BUILD_DIR/DEBIAN/postinst
 chmod 555 $BUILD_DIR/DEBIAN/postinst
 
+#-- Creation du fichier "postrm" pour Debian :
 echo "#!/bin/sh
 set -e
 rm -f /usr/bin/audela
-if test -h $INST_DIR/bin/libtcl8.4.so.0 ; then rm -rf $INST_DIR ; fi
+if test -h $rep_libtcltk/libtcl$version_tcltk.so.0 ; then rm -rf $INST_DIR ; fi
 # Automatically added by dh_installmenu
 if [ -x \"`which update-menus 2>/dev/null`\" ]; then update-menus ; fi
 # End automatically added section
 " > $BUILD_DIR/DEBIAN/postrm
 chmod 555 $BUILD_DIR/DEBIAN/postrm
+
 
 
 #--- Creation de l'arborescence, copie des repertoires entiers :
@@ -221,7 +238,7 @@ cp $DIRECTORY/readme.txt $DIRECTORY/bin/audela.txt
 
 #--- Gestion de libthread :
 dirlocal=`pwd`
-cd $DIRECTORY/lib/thread2.6
+cd $DIRECTORY/$sous_rep_libthread
 if [ "$ladistro" = "debian" ] || [ "$ladistro" = "ubuntu" ]
 then
     ln -s libthread2.6.5.1.so_debian libthread2.6.5.1.so
