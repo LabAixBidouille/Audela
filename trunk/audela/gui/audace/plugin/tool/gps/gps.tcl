@@ -2,7 +2,7 @@
 # Fichier : gps.tcl
 # Description : Outil de synchronisation GPS
 # Auteur : Jacques MICHELET
-# Mise a jour $Id: gps.tcl,v 1.13 2008-12-14 13:41:14 jacquesmichelet Exp $
+# Mise a jour $Id: gps.tcl,v 1.14 2009-02-07 11:09:13 robertdelmas Exp $
 #
 
 namespace eval ::gps {
@@ -840,9 +840,10 @@ namespace eval ::gps {
 	##############################################################
 	proc getPluginProperty { propertyName } {
 		switch $propertyName {
-			function	 { return "utility" }
+			menu         { return "tool" }
+			function     { return "utility" }
 			subfunction1 { return "gps" }
-			display	  { return "panel" }
+			display      { return "panel" }
 		}
 	}
 

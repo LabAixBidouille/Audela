@@ -2,7 +2,7 @@
 # Fichier : animate.tcl
 # Description : Outil pour le controle des animations d'images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: animate.tcl,v 1.19 2008-12-16 16:33:46 robertdelmas Exp $
+# Mise a jour $Id: animate.tcl,v 1.20 2009-02-07 11:00:34 robertdelmas Exp $
 #
 
 #============================================================
@@ -69,6 +69,7 @@ proc ::animate::getPluginOS { } {
 #------------------------------------------------------------
 proc ::animate::getPluginProperty { propertyName } {
    switch $propertyName {
+      menu         { return "tool" }
       function     { return "utility" }
       subfunction1 { return "animate" }
       display      { return "panel" }

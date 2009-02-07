@@ -2,7 +2,7 @@
 # Fichier : acqvideo.tcl
 # Description : Outil d'acquisition video
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: acqvideo.tcl,v 1.9 2008-12-16 19:22:34 robertdelmas Exp $
+# Mise a jour $Id: acqvideo.tcl,v 1.10 2009-02-07 10:59:34 robertdelmas Exp $
 #
 
 #==============================================================
@@ -132,9 +132,11 @@ namespace eval ::acqvideo {
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
-         function  { return "acquisition" }
-         multivisu { return 1 }
-         display   { return "panel" }
+         menu         { return "tool" }
+         function     { return "acquisition" }
+         subfunction1 { return "video" }
+         display      { return "panel" }
+         multivisu    { return 1 }
       }
    }
 

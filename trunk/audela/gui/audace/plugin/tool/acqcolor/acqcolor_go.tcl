@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition d'images en couleur
 # Compatibilite : Cameras Audine Couleur et SCR1300XTC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: acqcolor_go.tcl,v 1.13 2007-10-05 15:58:58 robertdelmas Exp $
+# Mise a jour $Id: acqcolor_go.tcl,v 1.14 2009-02-07 10:58:53 robertdelmas Exp $
 #
 
 #============================================================
@@ -70,6 +70,7 @@ proc ::acqcolor::getPluginOS { } {
 #------------------------------------------------------------
 proc ::acqcolor::getPluginProperty { propertyName } {
    switch $propertyName {
+      menu         { return "tool" }
       function     { return "acquisition" }
       subfunction1 { return "color" }
       display      { return "panel" }

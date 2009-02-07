@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Outil d'acquisition pour APN Nikon CoolPix
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.36 2009-01-17 18:17:20 robertdelmas Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.37 2009-02-07 10:58:39 robertdelmas Exp $
 #
 
 #============================================================
@@ -68,6 +68,7 @@ namespace eval ::acqapn {
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
+         menu         { return "tool" }
          function     { return "acquisition" }
          subfunction1 { return "coolpix" }
          display      { return "panel" }

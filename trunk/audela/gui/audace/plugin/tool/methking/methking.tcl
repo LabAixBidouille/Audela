@@ -2,7 +2,7 @@
 # Fichier : methking.tcl
 # Description : Outil d'aide a la mise en station par la methode de King
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: methking.tcl,v 1.23 2008-12-14 12:43:36 jacquesmichelet Exp $
+# Mise a jour $Id: methking.tcl,v 1.24 2009-02-07 11:09:26 robertdelmas Exp $
 #
 
 #============================================================
@@ -1083,6 +1083,7 @@ namespace eval ::methking {
    #--------------------------------------------------------------------------#
    proc getPluginProperty { propertyName } {
       switch $propertyName {
+         menu         { return "tool" }
          function     { return "utility" }
          subfunction1 { return "aiming" }
          display      { return "panel" }

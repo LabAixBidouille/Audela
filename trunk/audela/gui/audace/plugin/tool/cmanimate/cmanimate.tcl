@@ -2,7 +2,7 @@
 # Fichier : cmanimate.tcl
 # Description : Animation/slides control panel for Cloud Monitor
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmanimate.tcl,v 1.14 2008-12-20 15:13:29 robertdelmas Exp $
+# Mise a jour $Id: cmanimate.tcl,v 1.15 2009-02-07 11:01:02 robertdelmas Exp $
 #
 
 #****************************************************************
@@ -82,6 +82,7 @@ namespace eval ::cmanimate {
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
+         menu         { return "tool" }
          function     { return "utility" }
          subfunction1 { return "animate" }
          display      { return "panel" }
