@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.28 2009-01-10 10:40:39 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.29 2009-02-07 11:18:46 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -95,9 +95,8 @@ set caption(confgene,temps_tsl)                             "Local Sidereal Time
 set caption(confgene,caractere_2points)                     ":"
 
 set caption(confgene,choix_outils)                          "Tool Selection"
-set caption(confgene,choix_outils_1)                        "Choose the tools you want available in the"
-set caption(confgene,choix_outils_2)                        "Tools menu with their associated shortcuts:"
-set caption(confgene,choix_outils_3)                        "The tool associated with the F2 shortcut opens automatically."
+set caption(confgene,choix_outils_1)                        "Choose the tools you want available in menus with their associated shortcuts:"
+set caption(confgene,choix_outils_2)                        "The tool associated with the F2 shortcut opens automatically."
 
 set caption(confgene,langue_titre)                          "Language"
 set caption(confgene,langue_selection)                      "Language Selection:"
@@ -190,9 +189,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,caractere_2points)                  ":"
 
    set caption(confgene,choix_outils)                       "Sélection des outils"
-   set caption(confgene,choix_outils_1)                     "Vous pouvez sélectionner ici les outils que vous voulez afficher"
-   set caption(confgene,choix_outils_2)                     "dans le menu Outils avec leurs raccourcis :"
-   set caption(confgene,choix_outils_3)                     "L'outil associé au raccourci F2 s'ouvre automatiquement."
+   set caption(confgene,choix_outils_1)                     "Vous pouvez sélectionner ici les outils que vous voulez afficher dans les menus avec leurs raccourcis :"
+   set caption(confgene,choix_outils_2)                     "L'outil associé au raccourci F2 s'ouvre automatiquement."
 
    set caption(confgene,langue_titre)                       "Langue"
    set caption(confgene,langue_selection)                   "Sélection de la langue :"
@@ -285,9 +283,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,caractere_2points)                  ":"
 
    set caption(confgene,choix_outils)                       "Selezione degli accessori"
-   set caption(confgene,choix_outils_1)                     "Scegliere gli accessori disponibili nel"
-   set caption(confgene,choix_outils_2)                     "menu Accessori con i loro collegamenti:"
-   set caption(confgene,choix_outils_3)                     "L'accessorio associato con F2 si apre automaticamente."
+   set caption(confgene,choix_outils_1)                     "Scegliere gli accessori disponibili nel menu con i loro collegamenti:"
+   set caption(confgene,choix_outils_2)                     "L'accessorio associato con F2 si apre automaticamente."
 
    set caption(confgene,langue_titre)                       "Lingue"
    set caption(confgene,langue_selection)                   "Scelta delle lingue:"
@@ -380,9 +377,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,caractere_2points)                  ":"
 
    set caption(confgene,choix_outils)                       "Selcción de herramienta"
-   set caption(confgene,choix_outils_1)                     "Escoge las herramientas que quieres que estén disponibles"
-   set caption(confgene,choix_outils_2)                     "en el menú Herramientas junto a sus atajos de teclado:"
-   set caption(confgene,choix_outils_3)                     "La herramienta asociada con la tecla F2 se abre automáticamente."
+   set caption(confgene,choix_outils_1)                     "Escoge las herramientas que quieres que estén disponibles en los menús junto a sus atajos de teclado:"
+   set caption(confgene,choix_outils_2)                     "La herramienta asociada con la tecla F2 se abre automáticamente."
 
    set caption(confgene,langue_titre)                       "Idioma"
    set caption(confgene,langue_selection)                   "Selecció de idioma:"
@@ -475,9 +471,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,caractere_2points)                  ":"
 
    set caption(confgene,choix_outils)                       "Gerät Wahl"
-   set caption(confgene,choix_outils_1)                     "Sie können hier die Geräte mit eure gebundene"
-   set caption(confgene,choix_outils_2)                     "Abkürzung die sie in dem Menü wollen wählen:"
-   set caption(confgene,choix_outils_3)                     "Das Gerät mit die F2 gebundene Abkürzung öffnet sich vollautomatisch."
+   set caption(confgene,choix_outils_1)                     "Sie können hier die Geräte mit eure gebundene Abkürzung die sie in den Menüs wollen wählen:"
+   set caption(confgene,choix_outils_2)                     "Das Gerät mit die F2 gebundene Abkürzung öffnet sich vollautomatisch."
 
    set caption(confgene,langue_titre)                       "Sprache"
    set caption(confgene,langue_selection)                   "Sprache Wahl:"
@@ -570,9 +565,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,caractere_2points)                  ":"
 
    set caption(confgene,choix_outils)                       "Selecção de ferramenta"
-   set caption(confgene,choix_outils_1)                     "Escolha as ferramentas pretendidas e que estejam disponíveis"
-   set caption(confgene,choix_outils_2)                     "no menu Ferramentas com os respectivos atalhos:"
-   set caption(confgene,choix_outils_3)                     "A ferramenta associada com a tecla F2 abre automaticamente."
+   set caption(confgene,choix_outils_1)                     "Escolha as ferramentas pretendidas e que estejam disponíveis nos menus com os respectivos atalhos:"
+   set caption(confgene,choix_outils_2)                     "A ferramenta associada com a tecla F2 abre automaticamente."
 
    set caption(confgene,langue_titre)                       "Idioma"
    set caption(confgene,langue_selection)                   "Selecção de idioma:"
@@ -665,9 +659,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,caractere_2points)                  ":"
 
    set caption(confgene,choix_outils)                       "Valg af værktøj"
-   set caption(confgene,choix_outils_1)                     "Vælg de værktøjer, du ønsker i Værktøj-menuen"
-   set caption(confgene,choix_outils_2)                     "med de tilsvarende genveje:"
-   set caption(confgene,choix_outils_3)                     "Værktøj tilknyttet F2-genvej åbner automatisk."
+   set caption(confgene,choix_outils_1)                     "Vælg de værktøjer, du ønsker i menuer med de tilsvarende genveje:"
+   set caption(confgene,choix_outils_2)                     "Værktøj tilknyttet F2-genvej åbner automatisk."
 
    set caption(confgene,langue_titre)                       "Sprog"
    set caption(confgene,langue_selection)                   "Valg af sprog:"
