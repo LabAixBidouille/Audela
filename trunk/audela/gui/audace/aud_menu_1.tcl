@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.26 2009-01-31 19:36:23 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.27 2009-02-07 11:20:40 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -285,7 +285,7 @@ namespace eval ::audace {
                set visuNo [ ::audace::createDialog ]
                ::audace::createMenu
                ::audace::initLastEnv $visuNo
-               ::audace::affiche_Outil_F2
+               ::audace::afficheOutilF2
             }
             focus $old_focus
          } else {
@@ -299,7 +299,7 @@ namespace eval ::audace {
             set visuNo [ ::audace::createDialog ]
             ::audace::createMenu
             ::audace::initLastEnv $visuNo
-            ::audace::affiche_Outil_F2
+            ::audace::afficheOutilF2
          }
       #---
       } catchMessage ]
