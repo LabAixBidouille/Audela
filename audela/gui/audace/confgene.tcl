@@ -2,10 +2,10 @@
 # Fichier : confgene.tcl
 # Description : Configuration generale d'AudeLA et d'Aud'ACE (langage, editeurs, repertoires, position
 #               de l'observateur, temps (heure systeme ou TU), fichiers image, alarme sonore de fin de
-#               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
+#               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.54 2009-01-31 08:58:15 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.55 2009-02-07 11:37:40 robertdelmas Exp $
 #
 
 #
@@ -1959,21 +1959,93 @@ namespace eval ::confChoixOutil {
    # Fonction 'Appliquer' pour memoriser et appliquer la configuration
    #
    proc appliquer { } {
-      global audace caption
+      variable private
+      global audace caption conf panneau
 
-      widgetToConf
-      #--- Je supprime toutes les entrees du menu Outil
-      Menu_Delete $audace(visuNo) "$caption(audace,menu,outils)" entries
-      #--- Rafraichissement du menu Outil
-      Menu_Command $audace(visuNo)  "$caption(audace,menu,outils)" "$caption(audace,menu,pas_outil)" "::confVisu::stopTool $audace(visuNo)"
-      Menu_Separator $audace(visuNo) "$caption(audace,menu,outils)"
-      ::audace::affiche_Outil $audace(visuNo)
-      Menu_Separator $audace(visuNo) "$caption(audace,menu,outils)"
-      Menu_Command $audace(visuNo) "$caption(audace,menu,outils)" "$caption(confgene,choix_outils)" \
-         { ::confChoixOutil::run "$audace(base).confChoixOutil" }
+      #---
+      set conf(afficheOutils) ""
+      foreach m [array names panneau menu_name,*] {
+         set namespace [ lindex [ split $m "," ] 1 ]
+         if { $private(affiche,$namespace) == "1" } {
+            lappend conf(afficheOutils) $namespace $private(raccourci,$namespace)
+         }
+      }
+
+      #--- Je supprime toutes les entrees du menu Fichier
+      Menu_Delete $audace(visuNo) "$caption(audace,menu,file)" entries
+      #--- Rafraichissement du menu Fichier
+      Menu_Command   $audace(visuNo) "$caption(audace,menu,file)" "$caption(audace,menu,charger)..." \
+         "::audace::charger $audace(visuNo)"
+      Menu_Command   $audace(visuNo) "$caption(audace,menu,file)" "$caption(audace,menu,enregistrer)" \
+         "::audace::enregistrer $audace(visuNo)"
+      Menu_Command   $audace(visuNo) "$caption(audace,menu,file)" "$caption(audace,menu,enregistrer_sous)..." \
+         "::audace::enregistrer_sous $audace(visuNo)"
+      Menu_Command   $audace(visuNo) "$caption(audace,menu,file)" "$caption(audace,menu,copyjpeg)..." \
+         "::audace::copyjpeg $audace(visuNo)"
+      Menu_Separator $audace(visuNo) "$caption(audace,menu,file)"
+      Menu_Command   $audace(visuNo) "$caption(audace,menu,file)" "$caption(audace,menu,entete)" \
+         "::keyword::header $audace(visuNo)"
+      Menu_Separator $audace(visuNo) "$caption(audace,menu,file)"
+      ::confChoixOutil::displayPlugin $audace(visuNo) file
+      Menu_Separator $audace(visuNo) "$caption(audace,menu,file)"
+      Menu_Command   $audace(visuNo) "$caption(audace,menu,file)" "$caption(audace,menu,nouveau_script)..." \
+         "::audace::newScript"
+      Menu_Command   $audace(visuNo) "$caption(audace,menu,file)" "$caption(audace,menu,editer_script)..." \
+         "::audace::editScript"
+      Menu_Command   $audace(visuNo) "$caption(audace,menu,file)" "$caption(audace,menu,lancer_script)..." \
+         "::audace::runScript"
+      Menu_Separator $audace(visuNo) "$caption(audace,menu,file)"
+      Menu_Command   $audace(visuNo) "$caption(audace,menu,file)" "$caption(audace,menu,quitter)" \
+         "::audace::quitter"
+
+      #--- Je supprime toutes les entrees du menu Analyse
+      Menu_Delete $audace(visuNo) "$caption(audace,menu,analysis)" entries
+      #--- Rafraichissement du menu Analyse
+      Menu_Command   $audace(visuNo) "$caption(audace,menu,analysis)" "$caption(audace,menu,histo)" \
+         "::audace::Histo $audace(visuNo)"
+      Menu_Command   $audace(visuNo) "$caption(audace,menu,analysis)" "$caption(audace,menu,coupe)" \
+         "::sectiongraph::init $audace(visuNo)"
+      Menu_Command   $audace(visuNo) "$caption(audace,menu,analysis)" "$caption(audace,menu,statwin)" \
+         "statwin $audace(visuNo)"
+      Menu_Command   $audace(visuNo) "$caption(audace,menu,analysis)" "$caption(audace,menu,fwhm)" \
+         "fwhm $audace(visuNo)"
+      Menu_Command   $audace(visuNo) "$caption(audace,menu,analysis)" "$caption(audace,menu,fitgauss)" \
+         "fitgauss $audace(visuNo)"
+      Menu_Command   $audace(visuNo) "$caption(audace,menu,analysis)" "$caption(audace,menu,centro)" \
+         "center $audace(visuNo)"
+      Menu_Command   $audace(visuNo) "$caption(audace,menu,analysis)" "$caption(audace,menu,phot)" \
+         "photom $audace(visuNo)"
+      Menu_Command   $audace(visuNo) "$caption(audace,menu,analysis)" "$caption(audace,menu,subfitgauss)" \
+         "subfitgauss $audace(visuNo)"
+      Menu_Command   $audace(visuNo) "$caption(audace,menu,analysis)" "$caption(audace,menu,scar)" \
+         "scar $audace(visuNo)"
+      Menu_Separator $audace(visuNo) "$caption(audace,menu,analysis)"
+      ::confChoixOutil::displayPlugin $audace(visuNo) analysis
+      Menu_Separator $audace(visuNo) "$caption(audace,menu,analysis)"
+      Menu_Command   $audace(visuNo) "$caption(audace,menu,analysis)" "$caption(audace,menu,carte)" \
+         "::carte::showMapFromBuffer buf$audace(bufNo)"
+
+      #--- Je supprime toutes les entrees du menu Outils
+      Menu_Delete $audace(visuNo) "$caption(audace,menu,tool)" entries
+      #--- Rafraichissement du menu Outils
+      Menu_Command   $audace(visuNo) "$caption(audace,menu,tool)" "$caption(audace,menu,pas_outil)" \
+         "::audace::pasOutil"
+      Menu_Separator $audace(visuNo) "$caption(audace,menu,tool)"
+      ::confChoixOutil::displayPlugin $audace(visuNo) tool
+
       #---
       set This "$audace(base)"
-      Menu_Bind $audace(visuNo) $This <F12> "$caption(audace,menu,outils)" "$caption(audace,menu,pas_outil)" "$caption(touche,F12)"
+      Menu_Bind $audace(visuNo) $This <Control-o> "$caption(audace,menu,file)" "$caption(audace,menu,charger)..." \
+         "$caption(touche,controle,O)"
+      bind $audace(Console) <Control-o> "focus $audace(base) ; ::audace::charger $audace(visuNo)"
+      Menu_Bind $audace(visuNo) $This <Control-s> "$caption(audace,menu,file)" "$caption(audace,menu,enregistrer)" \
+         "$caption(touche,controle,S)"
+      bind $audace(Console) <Control-s> "focus $audace(base) ; ::audace::enregistrer"
+      Menu_Bind $audace(visuNo) $This <Control-q> "$caption(audace,menu,file)" "$caption(audace,menu,quitter)" \
+         "$caption(touche,controle,Q)"
+      bind $audace(Console) <Control-q> "focus $audace(base) ; ::audace::quitter"
+      Menu_Bind $audace(visuNo) $This <F12> "$caption(audace,menu,tool)" "$caption(audace,menu,pas_outil)" \
+         "$caption(touche,F12)"
    }
 
    #
@@ -1999,18 +2071,8 @@ namespace eval ::confChoixOutil {
 
    proc createDialog { } {
       variable This
-      global caption color conf confgene panneau
-
-      #--- initConf
-      #--- Initialisation indispensable dans aud.tcl --> ::audace::affiche_Outil
-
-      #--- confToWidget
-      for { set i 1 } { $i <= $confgene(Choix_Outil,nbre) } { incr i } {
-         catch {
-            set confgene(Choix_Outil,n$i)           $conf(panneau,n$i)
-            set confgene(Choix_Outil,raccourci_n$i) $conf(raccourci,n$i)
-         }
-      }
+      variable private
+      global caption color conf panneau
 
       #---
       if { [winfo exists $This] } {
@@ -2052,25 +2114,30 @@ namespace eval ::confChoixOutil {
 
       #--- Initialisation des variables
       set num     "0"
-      set i       "0"
       set colonne "0"
       set liste   ""
 
       #--- Cree le frame pour les commentaires
       label $This.lab1 -text "$caption(confgene,choix_outils_1)"
-      pack $This.lab1 -in $This.frame1 -side top -fill both -expand 1 -padx 5 -pady 2
-
-      label $This.lab2 -text "$caption(confgene,choix_outils_2)"
-      pack $This.lab2 -in $This.frame1 -side top -fill both -expand 1 -padx 5 -pady 2
+      pack $This.lab1 -in $This.frame1 -side top -fill both -expand 1 -padx 5 -pady 8
 
       #--- Ouvre le choix a l'affichage ou non des outils dans le menu Outil
       foreach m [array names panneau menu_name,*] {
          lappend liste [list "$panneau($m) " $m]
       }
+      #--- Je copie la liste dans un tableau affiche(namespace)
+      array set affiche $conf(afficheOutils)
+      #---
       foreach m [lsort $liste] {
-         set m [lindex $m 1]
+         set namespace [lindex [ split $m "," ] 1]
          set num [expr $num + 1]
-         set i [expr $i + 1]
+         if { [ info exist affiche($namespace) ] } {
+            set private(affiche,$namespace)   "1"
+            set private(raccourci,$namespace) $affiche($namespace)
+         } else {
+            set private(affiche,$namespace)   "0"
+            set private(raccourci,$namespace) ""
+         }
          #--- Affichage des noms des outils a gauche, puis a droite, ...
          set list_combobox [ list $caption(touche,pas_de_raccourci) \
             $caption(touche,F2) $caption(touche,F3) $caption(touche,F4) $caption(touche,F5) \
@@ -2084,55 +2151,53 @@ namespace eval ::confChoixOutil {
             $caption(touche,controle,R) $caption(touche,controle,T) $caption(touche,controle,U) \
             $caption(touche,controle,V) $caption(touche,controle,W) $caption(touche,controle,X) \
             $caption(touche,controle,Y) $caption(touche,controle,Z) ]
-         if { [scan "$m" "menu_name,%s" ns] == "1" } {
-            if { [ ::$ns\::getPluginProperty function ] != "analysis" } {
-               if { $colonne == "0" } {
-                  frame $This.framea$num -borderwidth 0
-                     #--- Selection d'un outil a afficher
-                     checkbutton $This.panneau$num -text "$panneau($m)" -highlightthickness 0 \
-                        -variable confgene(Choix_Outil,n$i)
-                     pack $This.panneau$num -in $This.framea$num -side left -padx 5 -pady 0
-                     #--- Selection d'un raccourci
-                     set hauteur [llength $list_combobox]
-                     if { $hauteur > "5" } {
-                        set hauteur "5"
-                     }
-                     ComboBox $This.raccourci$num \
-                        -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
-                        -height $hauteur  \
-                        -relief sunken    \
-                        -borderwidth 1    \
-                        -editable 0       \
-                        -textvariable confgene(Choix_Outil,raccourci_n$i) \
-                        -values $list_combobox
-                     pack $This.raccourci$num -in $This.framea$num -side right -padx 5 -pady 0
-                  pack $This.framea$num -in $This.frame5 -side top -fill both -expand 1
-                  set colonne "1"
-               } else {
-                  frame $This.frameb$num -borderwidth 0
-                     #--- Selection d'un outil a afficher
-                     checkbutton $This.panneau$num -text "$panneau($m)" -highlightthickness 0 \
-                        -variable confgene(Choix_Outil,n$i)
-                     pack $This.panneau$num -in $This.frameb$num -side left -padx 5 -pady 0
-                     #--- Selection d'un raccourci
-                     ComboBox $This.raccourci$num \
-                        -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
-                        -height $hauteur  \
-                        -relief sunken    \
-                        -borderwidth 1    \
-                        -editable 0       \
-                        -textvariable confgene(Choix_Outil,raccourci_n$i) \
-                        -values $list_combobox
-                     pack $This.raccourci$num -in $This.frameb$num -side right -padx 5 -pady 0
-                  pack $This.frameb$num -in $This.frame6 -side top -fill both -expand 1
-                  set colonne "0"
+         if { $colonne == "0" } {
+            frame $This.framea$num -borderwidth 0
+               #--- Selection d'un outil a afficher et menu deroulant d'appartenance
+               set menu [ ::$namespace\::getPluginProperty menu ]
+               checkbutton $This.panneau$num -text "($caption(audace,menu,$menu))   $panneau(menu_name,$namespace)" \
+               -highlightthickness 0 -variable ::confChoixOutil::private(affiche,$namespace)
+               pack $This.panneau$num -in $This.framea$num -side left -padx 5 -pady 0
+               #--- Selection d'un raccourci
+               set hauteur [llength $list_combobox]
+               if { $hauteur > "5" } {
+                  set hauteur "5"
                }
-            }
+               ComboBox $This.raccourci$num \
+                  -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
+                  -height $hauteur  \
+                  -relief sunken    \
+                  -borderwidth 1    \
+                  -editable 0       \
+                  -textvariable ::confChoixOutil::private(raccourci,$namespace) \
+                  -values $list_combobox
+               pack $This.raccourci$num -in $This.framea$num -side right -padx 5 -pady 0
+            pack $This.framea$num -in $This.frame5 -side top -fill both -expand 1
+            set colonne "1"
+         } else {
+            frame $This.frameb$num -borderwidth 0
+               #--- Selection d'un outil a afficher et menu deroulant d'appartenance
+               set menu [ ::$namespace\::getPluginProperty menu ]
+               checkbutton $This.panneau$num -text "($caption(audace,menu,$menu))   $panneau(menu_name,$namespace)" \
+                  -highlightthickness 0 -variable ::confChoixOutil::private(affiche,$namespace)
+               pack $This.panneau$num -in $This.frameb$num -side left -padx 5 -pady 0
+               #--- Selection d'un raccourci
+               ComboBox $This.raccourci$num \
+                  -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
+                  -height $hauteur  \
+                  -relief sunken    \
+                  -borderwidth 1    \
+                  -editable 0       \
+                  -textvariable ::confChoixOutil::private(raccourci,$namespace) \
+                  -values $list_combobox
+               pack $This.raccourci$num -in $This.frameb$num -side right -padx 5 -pady 0
+            pack $This.frameb$num -in $This.frame6 -side top -fill both -expand 1
+            set colonne "0"
          }
       }
 
       #--- Cree le frame pour les commentaires
-      label $This.labURL3 -text "$caption(confgene,choix_outils_3)" -fg $color(red)
+      label $This.labURL3 -text "$caption(confgene,choix_outils_2)" -fg $color(red)
       pack $This.labURL3 -in $This.frame3 -side bottom -fill both -expand 1 -padx 5 -pady 2
 
       #--- Cree le bouton 'OK'
@@ -2168,20 +2233,46 @@ namespace eval ::confChoixOutil {
    }
 
    #
-   # confChoixOutil::widgetToConf
-   # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
+   # confChoixOutil::displayPlugin visuNo menu
+   # Fonction qui permet d'afficher les plugins dans le bon menu deroulant
    #
-   proc widgetToConf { } {
-      variable This
-      global conf confgene
+   proc displayPlugin { visuNo menu } {
+      global audace caption conf panneau
 
-      for { set i 1 } { $i <= $confgene(Choix_Outil,nbre) } { incr i } {
-         catch {
-            set conf(panneau,n$i) $confgene(Choix_Outil,n$i)
-            if { [expr fmod($i,2)] == "1.0" } {
-               set conf(raccourci,n$i) [ $This.raccourci$i get ]
-            } else {
-               set conf(raccourci,n$i) [ $This.raccourci$i get ]
+      #--- Initialisation des variables
+      if { ! [ info exists conf(afficheOutils) ] } {
+         set conf(afficheOutils) ""
+         foreach m [array names panneau menu_name,*] {
+            set namespace [ lindex [ split $m "," ] 1 ]
+            lappend conf(afficheOutils) $namespace ""
+         }
+      }
+      set liste ""
+      #--- Je copie la liste dans un tableau affiche(namespace)
+      array set affiche $conf(afficheOutils)
+      #---
+      foreach m [array names panneau menu_name,*] {
+         set namespace [ lindex [ split $m "," ] 1 ]
+         lappend liste [list "$panneau($m) " $namespace]
+      }
+      foreach m [lsort $liste] {
+         set namespace [lindex $m 1]
+         #---
+         if { [ info exist affiche($namespace) ] } {
+            if { [ ::$namespace\::getPluginProperty menu ] == "$menu" } {
+               Menu_Command $visuNo "$caption(audace,menu,$menu)" "$panneau(menu_name,$namespace)" "::confVisu::selectTool $visuNo ::$namespace"
+               if { $affiche($namespace) != "" } {
+                  if { [string range $affiche($namespace) 0 3] == "Alt+" } {
+                     set event "Alt-[string tolower [string range $affiche($namespace) 4 4]]"
+                  } elseif { [string range $affiche($namespace) 0 4] == "Ctrl+" } {
+                     set event "Control-[string tolower [string range $affiche($namespace) 5 5]]"
+                  } else {
+                     set event $affiche($namespace)
+                  }
+                  #---
+                  Menu_Bind $visuNo $audace(base) <$event> "$caption(audace,menu,$menu)" "$panneau(menu_name,$namespace)" "$affiche($namespace)"
+                     bind $audace(Console) <$event> "focus $audace(base) ; ::confVisu::selectTool $visuNo ::$namespace"
+               }
             }
          }
       }
