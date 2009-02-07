@@ -2,7 +2,7 @@
 # Fichier : modpoi_go.tcl
 # Description : Outil pour la determination du modele de pointage
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi_go.tcl,v 1.12 2007-10-05 16:33:03 robertdelmas Exp $
+# Mise a jour $Id: modpoi_go.tcl,v 1.13 2009-02-07 11:01:41 robertdelmas Exp $
 #
 
 #============================================================
@@ -69,6 +69,7 @@ proc ::modpoi::getPluginOS { } {
 #------------------------------------------------------------
 proc ::modpoi::getPluginProperty { propertyName } {
    switch $propertyName {
+      menu         { return "tool" }
       function     { return "utility" }
       subfunction1 { return "aiming" }
       display      { return "panel" }

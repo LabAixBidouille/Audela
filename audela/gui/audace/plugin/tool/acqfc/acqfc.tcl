@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.82 2009-01-31 19:38:58 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.83 2009-02-07 10:59:07 robertdelmas Exp $
 #
 
 #==============================================================
@@ -153,9 +153,11 @@ proc ::acqfc::deletePluginInstance { visuNo } {
 #------------------------------------------------------------
 proc ::acqfc::getPluginProperty { propertyName } {
    switch $propertyName {
-      function  { return "acquisition" }
-      multivisu { return 1 }
-      display   { return "panel" }
+      menu         { return "tool" }
+      function     { return "acquisition" }
+      subfunction1 { return "" }
+      display      { return "panel" }
+      multivisu    { return 1 }
    }
 }
 

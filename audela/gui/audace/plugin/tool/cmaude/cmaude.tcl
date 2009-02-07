@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude.tcl,v 1.17 2008-12-20 15:13:18 robertdelmas Exp $
+# Mise a jour $Id: cmaude.tcl,v 1.18 2009-02-07 11:01:14 robertdelmas Exp $
 #
 # Remarks :
 # The definition of some variables (binning, exp. time, rythm, etc.)
@@ -75,7 +75,9 @@ namespace eval ::cmaude {
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
+         menu         { return "tool" }
          function     { return "acquisition" }
+         subfunction1 { return "" }
          display      { return "panel" }
       }
    }

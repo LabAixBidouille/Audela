@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.21 2008-12-29 22:06:22 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.22 2009-02-07 10:59:21 robertdelmas Exp $
 #
 
 # =========================================================
@@ -72,6 +72,7 @@ namespace eval ::acqfen {
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
+         menu         { return "tool" }
          function     { return "acquisition" }
          subfunction1 { return "windowed" }
          display      { return "panel" }

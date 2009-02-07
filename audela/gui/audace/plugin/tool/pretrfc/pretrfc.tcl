@@ -2,7 +2,7 @@
 # Fichier : pretrfc.tcl
 # Description : Outil pour le pretraitement automatique
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: pretrfc.tcl,v 1.21 2008-12-18 23:07:21 robertdelmas Exp $
+# Mise a jour $Id: pretrfc.tcl,v 1.22 2009-02-07 11:02:06 robertdelmas Exp $
 #
 
 #============================================================
@@ -133,6 +133,7 @@ proc getPluginHelp { } {
 #***** Procedure getPluginProperty************************************
    proc getPluginProperty { propertyName } {
       switch $propertyName {
+         menu         { return "tool" }
          function     { return "utility" }
          subfunction1 { return "preprocessing" }
          display      { return "window" }
