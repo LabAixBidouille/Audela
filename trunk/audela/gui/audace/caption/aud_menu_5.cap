@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_5.cap
-# Mise a jour $Id: aud_menu_5.cap,v 1.9 2009-01-31 09:00:05 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_5.cap,v 1.10 2009-02-07 11:14:00 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,7 +11,7 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(audace,menu,analyse)                      "Analysis"
+set caption(audace,menu,analysis)                     "Analysis"
 set caption(audace,menu,histo)                        "Histogram"
 set caption(audace,menu,coupe)                        "Section"
 set caption(audace,menu,statwin)                      "Statistics in Window"
@@ -56,7 +56,7 @@ set caption(audace,calculer)                          "Calculate"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(audace,menu,analyse)                   "Analyse"
+   set caption(audace,menu,analysis)                  "Analyse"
    set caption(audace,menu,histo)                     "Histogramme"
    set caption(audace,menu,coupe)                     "Coupe"
    set caption(audace,menu,statwin)                   "Statistiques dans la fenêtre"
@@ -101,7 +101,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(audace,menu,analyse)                   "Analisi"
+   set caption(audace,menu,analysis)                  "Analisi"
    set caption(audace,menu,histo)                     "Istogramma"
    set caption(audace,menu,coupe)                     "Sezione"
    set caption(audace,menu,statwin)                   "Statistiche zona selezionata"
@@ -146,7 +146,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(audace,menu,analyse)                   "Análisis"
+   set caption(audace,menu,analysis)                  "Análisis"
    set caption(audace,menu,histo)                     "Histograma"
    set caption(audace,menu,coupe)                     "Sección"
    set caption(audace,menu,statwin)                   "Ventana de estadísticas"
@@ -191,7 +191,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(audace,menu,analyse)                   "Analyse"
+   set caption(audace,menu,analysis)                  "Analyse"
    set caption(audace,menu,histo)                     "Historische Kurve"
    set caption(audace,menu,coupe)                     "Abschnitt"
    set caption(audace,menu,statwin)                   "Statistiken in das Fenster"
@@ -236,7 +236,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(audace,menu,analyse)                   "Análise"
+   set caption(audace,menu,analysis)                  "Análise"
    set caption(audace,menu,histo)                     "Histograma"
    set caption(audace,menu,coupe)                     "Secção"
    set caption(audace,menu,statwin)                   "Janela de estatísticas"
@@ -281,7 +281,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(audace,menu,analyse)                   "Analyse"
+   set caption(audace,menu,analysis)                  "Analyse"
    set caption(audace,menu,histo)                     "Histogram"
    set caption(audace,menu,coupe)                     "Udsnit"
    set caption(audace,menu,statwin)                   "Statistik in Vindue"
