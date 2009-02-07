@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_1.cap
-# Mise a jour $Id: aud_menu_1.cap,v 1.7 2009-01-31 19:34:06 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.cap,v 1.8 2009-02-07 11:13:09 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,13 +11,12 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(audace,menu,fichier)             "File"
+set caption(audace,menu,file)                "File"
 set caption(audace,menu,charger)             "Open"
 set caption(audace,menu,enregistrer)         "Save"
 set caption(audace,menu,enregistrer_sous)    "Save as"
 set caption(audace,menu,copyjpeg)            "Save as Jpeg"
 set caption(audace,menu,entete)              "FITS Header"
-set caption(audace,menu,select)              "Image Selection"
 set caption(audace,menu,nouveau_script)      "New Script"
 set caption(audace,menu,editer_script)       "Edit a script"
 set caption(audace,menu,lancer_script)       "Run a script"
@@ -53,13 +52,12 @@ set caption(newscript,aide)                  "Help"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(audace,menu,fichier)          "Fichier"
+   set caption(audace,menu,file)             "Fichier"
    set caption(audace,menu,charger)          "Ouvrir"
    set caption(audace,menu,enregistrer)      "Enregistrer"
    set caption(audace,menu,enregistrer_sous) "Enregistrer sous"
    set caption(audace,menu,copyjpeg)         "Enregistrer en Jpeg"
    set caption(audace,menu,entete)           "En-tête FITS"
-   set caption(audace,menu,select)           "Sélection d'images"
    set caption(audace,menu,nouveau_script)   "Nouveau script"
    set caption(audace,menu,editer_script)    "Editer un script"
    set caption(audace,menu,lancer_script)    "Lancer un script"
@@ -95,13 +93,12 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(audace,menu,fichier)          "File"
+   set caption(audace,menu,file)             "File"
    set caption(audace,menu,charger)          "Aprire"
    set caption(audace,menu,enregistrer)      "Salvare"
    set caption(audace,menu,enregistrer_sous) "Salvare come"
    set caption(audace,menu,copyjpeg)         "Salvare in JPEG"
    set caption(audace,menu,entete)           "Intestazione FITS"
-   set caption(audace,menu,select)           "Selezione immagini"
    set caption(audace,menu,nouveau_script)   "Nuovo script"
    set caption(audace,menu,editer_script)    "Edita uno script"
    set caption(audace,menu,lancer_script)    "Esegui uno script"
@@ -137,13 +134,12 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(audace,menu,fichier)          "Fichero"
+   set caption(audace,menu,file)             "Fichero"
    set caption(audace,menu,charger)          "Abrir"
    set caption(audace,menu,enregistrer)      "Guardar"
    set caption(audace,menu,enregistrer_sous) "Guardar como"
    set caption(audace,menu,copyjpeg)         "Guardar JPEG"
    set caption(audace,menu,entete)           "Cabecera FITS"
-   set caption(audace,menu,select)           "Selección de imagen"
    set caption(audace,menu,nouveau_script)   "Nuevo script"
    set caption(audace,menu,editer_script)    "Editar un script"
    set caption(audace,menu,lancer_script)    "Ejecutar un script"
@@ -179,13 +175,12 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(audace,menu,fichier)          "Datei"
+   set caption(audace,menu,file)             "Datei"
    set caption(audace,menu,charger)          "Öffnen"
    set caption(audace,menu,enregistrer)      "Speichern"
    set caption(audace,menu,enregistrer_sous) "Speichern mit"
    set caption(audace,menu,copyjpeg)         "In JPEG speichern"
    set caption(audace,menu,entete)           "FITS Vorsatz"
-   set caption(audace,menu,select)           "Bilder Auswahl"
    set caption(audace,menu,nouveau_script)   "Neuen Skript"
    set caption(audace,menu,editer_script)    "Ein Skript editieren"
    set caption(audace,menu,lancer_script)    "Ein Skript ausführen"
@@ -221,13 +216,12 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(audace,menu,fichier)          "Ficheiro"
+   set caption(audace,menu,file)             "Ficheiro"
    set caption(audace,menu,charger)          "Abrir"
    set caption(audace,menu,enregistrer)      "Guardar"
    set caption(audace,menu,enregistrer_sous) "Guardar como"
    set caption(audace,menu,copyjpeg)         "Guardar como JPEG"
    set caption(audace,menu,entete)           "Cabeçalho FITS"
-   set caption(audace,menu,select)           "Selecção de imagem"
    set caption(audace,menu,nouveau_script)   "Novo Script"
    set caption(audace,menu,editer_script)    "Editar um script"
    set caption(audace,menu,lancer_script)    "Executar um script"
@@ -263,20 +257,19 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(audace,menu,fichier)          "Fil"
+   set caption(audace,menu,file)             "Fil"
    set caption(audace,menu,charger)          "Åbn"
    set caption(audace,menu,enregistrer)      "Gem"
    set caption(audace,menu,enregistrer_sous) "Gem som"
    set caption(audace,menu,copyjpeg)         "Gem som Jpeg"
    set caption(audace,menu,entete)           "FITS Header"
-   set caption(audace,menu,select)           "Billedvalg"
    set caption(audace,menu,nouveau_script)   "Ny skript"
    set caption(audace,menu,editer_script)    "Rediger en skript"
    set caption(audace,menu,lancer_script)    "Kør en skript"
    set caption(audace,menu,quitter)          "Afbryd"
 
    set caption(audace,pas_ouvrir_fichier)    "Fil kan ikke åbnes:"
-   set caption(audace,fermeture_impossible)  "# Impossible d'arrêter Aud'ACE car une opération est en cours dans l'outil :"
+   set caption(audace,fermeture_impossible)  "Aud'ACE kan ikke afsluttes, da anden proces kører i værktøjet:"
 
    set caption(audace,console_gagne)         "Adgang: OK!"
    set caption(audace,console_annule)        "Annulleret"
