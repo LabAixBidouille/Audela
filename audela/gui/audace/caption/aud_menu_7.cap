@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_7.cap
-# Mise a jour $Id: aud_menu_7.cap,v 1.13 2009-01-10 10:40:28 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.cap,v 1.14 2009-02-07 11:17:02 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -31,6 +31,7 @@ set caption(audace,menu,optique)                "Optical"
 set caption(audace,menu,equipement)             "Equipment"
 set caption(audace,menu,raquette)               "Hand Controller"
 set caption(audace,menu,carte)                  "Chart"
+set caption(audace,menu,choix_outils)           "Tool Selection"
 set caption(audace,menu,sauve_config)           "Save Setup"
 
 set caption(cwdWindow,repertoire)               "Folders"
@@ -81,6 +82,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,equipement)          "Equipement"
    set caption(audace,menu,raquette)            "Raquette"
    set caption(audace,menu,carte)               "Carte"
+   set caption(audace,menu,choix_outils)        "Sélection des outils"
    set caption(audace,menu,sauve_config)        "Enregistrer la configuration"
 
    set caption(cwdWindow,repertoire)            "Répertoires"
@@ -131,6 +133,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,equipement)          "Equipaggiamento"
    set caption(audace,menu,raquette)            "Pulsantiera"
    set caption(audace,menu,carte)               "Mappa"
+   set caption(audace,menu,choix_outils)        "Selezione degli accessori"
    set caption(audace,menu,sauve_config)        "Salvare la configurazione"
 
    set caption(cwdWindow,repertoire)            "Directories"
@@ -181,6 +184,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,equipement)          "Equipo"
    set caption(audace,menu,raquette)            "Controlador de mano"
    set caption(audace,menu,carte)               "Mapa"
+   set caption(audace,menu,choix_outils)        "Selcción de herramienta"
    set caption(audace,menu,sauve_config)        "Guardar preferencias"
 
    set caption(cwdWindow,repertoire)            "Directorios"
@@ -231,6 +235,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,equipement)          "Einrichtung"
    set caption(audace,menu,raquette)            "Hand Kontroller"
    set caption(audace,menu,carte)               "Karte"
+   set caption(audace,menu,choix_outils)        "Gerät Wahl"
    set caption(audace,menu,sauve_config)        "Gestalt speichern"
 
    set caption(cwdWindow,repertoire)            "Verzeichnis"
@@ -281,6 +286,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,equipement)          "Equipamento"
    set caption(audace,menu,raquette)            "Controlador de mão"
    set caption(audace,menu,carte)               "Mapa"
+   set caption(audace,menu,choix_outils)        "Selecção de ferramenta"
    set caption(audace,menu,sauve_config)        "Guardar configuração"
 
    set caption(cwdWindow,repertoire)            "Pastas"
@@ -331,6 +337,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,equipement)          "Udstyr"
    set caption(audace,menu,raquette)            "Håndkontrol"
    set caption(audace,menu,carte)               "Kort"
+   set caption(audace,menu,choix_outils)        "Valg af værktøj"
    set caption(audace,menu,sauve_config)        "Gem opsætning"
 
    set caption(cwdWindow,repertoire)            "Mappe"
