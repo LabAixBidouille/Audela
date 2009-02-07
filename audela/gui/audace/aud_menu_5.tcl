@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_5.tcl
 # Description : Script regroupant les fonctionnalites du menu Analyse
-# Mise a jour $Id: aud_menu_5.tcl,v 1.4 2009-01-31 08:46:47 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_5.tcl,v 1.5 2009-02-07 11:23:26 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -27,30 +27,6 @@ namespace eval ::audace {
          ::plotxy::xlabel "$caption(audace,histo_adu)"
          ::plotxy::ylabel "$caption(audace,histo_nbpix)"
          ::plotxy::title "$caption(audace,histo_titre) (visu$visuNo)"
-      }
-   }
-
-   #
-   # afficheOutilsAnalyse visuNo
-   # Fonction qui permet d'afficher tous les outils du menu Analyse
-   #
-   proc ::audace::afficheOutilsAnalyse { visuNo } {
-      global caption panneau
-
-      set i "0"
-      set liste ""
-      foreach m [array names panneau menu_name,*] {
-         lappend liste [list "$panneau($m) " $m]
-      }
-      foreach m [lsort $liste] {
-         set m [lindex $m 1]
-         set i [expr $i + 1]
-         #---
-         if { [scan "$m" "menu_name,%s" ns] == "1" } {
-            if { [ ::$ns\::getPluginProperty function ] == "analysis" } {
-               Menu_Command $visuNo "$caption(audace,menu,analyse)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$ns"
-            }
-         }
       }
    }
 
