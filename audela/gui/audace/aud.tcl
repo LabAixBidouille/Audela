@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.95 2009-01-31 08:42:37 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.96 2009-02-07 11:33:37 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -55,7 +55,7 @@ namespace eval ::audace {
 
       initLastEnv $visuNo
       dispClock1
-      affiche_Outil_F2
+      afficheOutilF2
    }
 
    proc initEnv { } {
@@ -157,7 +157,6 @@ namespace eval ::audace {
       uplevel #0 "source \"[ file join $audace(rep_audela) audace confcolor.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace conffont.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace tkutil.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_audela) audace select.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace camera.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace telescope.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace focus.tcl ]\""
@@ -527,29 +526,30 @@ namespace eval ::audace {
 
       set ::confVisu::private($visuNo,menu) "$This.menubar"
 
-      Menu           $visuNo "$caption(audace,menu,fichier)"
-      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,charger)..." \
+      Menu           $visuNo "$caption(audace,menu,file)"
+      Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,charger)..." \
          "::audace::charger $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,enregistrer)" \
+      Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,enregistrer)" \
          "::audace::enregistrer $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,enregistrer_sous)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,enregistrer_sous)..." \
          "::audace::enregistrer_sous $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,copyjpeg)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,copyjpeg)..." \
          "::audace::copyjpeg $visuNo"
 
-      Menu_Separator $visuNo "$caption(audace,menu,fichier)"
-      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,entete)" "::keyword::header $visuNo"
-      Menu_Separator $visuNo "$caption(audace,menu,fichier)"
-      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,select)..." ::selectWindow::run
-      Menu_Separator $visuNo "$caption(audace,menu,fichier)"
-      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,nouveau_script)..." ::audace::newScript
-      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,editer_script)..." ::audace::editScript
-      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,lancer_script)..." ::audace::runScript
-      Menu_Separator $visuNo "$caption(audace,menu,fichier)"
-      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,quitter)" ::audace::quitter
+      Menu_Separator $visuNo "$caption(audace,menu,file)"
+      Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,entete)" "::keyword::header $visuNo"
+      Menu_Separator $visuNo "$caption(audace,menu,file)"
+      #--- Affichage des plugins de type tool du menu deroulant Fichier
+      ::confChoixOutil::displayPlugin $visuNo file
+      Menu_Separator $visuNo "$caption(audace,menu,file)"
+      Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,nouveau_script)..." "::audace::newScript"
+      Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,editer_script)..." "::audace::editScript"
+      Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,lancer_script)..." "::audace::runScript"
+      Menu_Separator $visuNo "$caption(audace,menu,file)"
+      Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,quitter)" "::audace::quitter"
 
       Menu           $visuNo "$caption(audace,menu,affichage)"
-      Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,nouvelle_visu)" ::confVisu::create
+      Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,nouvelle_visu)" "::confVisu::create"
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_grise)" \
               "1" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
@@ -710,31 +710,28 @@ namespace eval ::audace {
       Menu_Command   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,log)..." \
          { ::traiteFilters::run "$caption(audace,menu,log)" "$audace(base).traiteFilters" }
 
-      Menu           $visuNo "$caption(audace,menu,analyse)"
-      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,histo)" "::audace::Histo $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,coupe)" "::sectiongraph::init $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,statwin)" "statwin $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,fwhm)" "fwhm $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,fitgauss)" "fitgauss $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,centro)" "center $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,phot)" "photom $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,subfitgauss)" "subfitgauss $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,scar)" "scar $visuNo"
-      Menu_Separator $visuNo "$caption(audace,menu,analyse)"
-      #--- Affichage des outils du menu deroulant Analyse
-      ::audace::afficheOutilsAnalyse $visuNo
-      Menu_Separator $visuNo "$caption(audace,menu,analyse)"
-      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,carte)" \
-         { ::carte::showMapFromBuffer buf$audace(bufNo) }
+      Menu           $visuNo "$caption(audace,menu,analysis)"
+      Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,histo)" "::audace::Histo $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,coupe)" "::sectiongraph::init $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,statwin)" "statwin $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,fwhm)" "fwhm $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,fitgauss)" "fitgauss $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,centro)" "center $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,phot)" "photom $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,subfitgauss)" "subfitgauss $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,scar)" "scar $visuNo"
+      Menu_Separator $visuNo "$caption(audace,menu,analysis)"
+      #--- Affichage des plugins de type tool du menu deroulant Analyse
+      ::confChoixOutil::displayPlugin $visuNo analysis
+      Menu_Separator $visuNo "$caption(audace,menu,analysis)"
+      Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,carte)" \
+         "::carte::showMapFromBuffer buf$audace(bufNo)"
 
-      Menu           $visuNo "$caption(audace,menu,outils)"
-      Menu_Command   $visuNo "$caption(audace,menu,outils)" "$caption(audace,menu,choix_outils)..." \
-         { ::confChoixOutil::run "$audace(base).confChoixOutil" }
-      Menu_Separator $visuNo "$caption(audace,menu,outils)"
-      Menu_Command   $visuNo "$caption(audace,menu,outils)" "$caption(audace,menu,pas_outil)" { ::audace::pas_Outil }
-      Menu_Separator $visuNo "$caption(audace,menu,outils)"
-      #--- Affichage des outils du menu deroulant Outils
-      ::audace::affiche_Outil $visuNo
+      Menu           $visuNo "$caption(audace,menu,tool)"
+      Menu_Command   $visuNo "$caption(audace,menu,tool)" "$caption(audace,menu,pas_outil)" "::audace::pasOutil"
+      Menu_Separator $visuNo "$caption(audace,menu,tool)"
+      #--- Affichage des plugins de type tool du menu deroulant Outils
+      ::confChoixOutil::displayPlugin $visuNo tool
 
       Menu           $visuNo "$caption(audace,menu,configuration)"
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,langue)..." \
@@ -773,6 +770,8 @@ namespace eval ::audace {
          "::confPad::run"
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,carte)..." \
          "::confCat::run"
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,choix_outils)..." \
+         { ::confChoixOutil::run "$audace(base).confChoixOutil" }
       Menu_Separator $visuNo "$caption(audace,menu,configuration)"
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,sauve_config)" \
          "::audace::enregistrerConfiguration $visuNo"
@@ -795,18 +794,18 @@ namespace eval ::audace {
          { ::confVersion::run "$audace(base).confVersion" }
 
       #--- Exemple d'association d'une touche du clavier avec une option d'un menu deroulant ou un outil
-      Menu_Bind $visuNo $This <Control-o> "$caption(audace,menu,fichier)" "$caption(audace,menu,charger)..." \
+      Menu_Bind $visuNo $This <Control-o> "$caption(audace,menu,file)" "$caption(audace,menu,charger)..." \
          "$caption(touche,controle,O)"
-      bind $audace(Console) <Control-o> " focus $audace(base) ; ::audace::charger $visuNo "
-      Menu_Bind $visuNo $This <Control-s> "$caption(audace,menu,fichier)" "$caption(audace,menu,enregistrer)" \
+      bind $audace(Console) <Control-o> "focus $audace(base) ; ::audace::charger $visuNo"
+      Menu_Bind $visuNo $This <Control-s> "$caption(audace,menu,file)" "$caption(audace,menu,enregistrer)" \
          "$caption(touche,controle,S)"
-      bind $audace(Console) <Control-s> " focus $audace(base) ; ::audace::enregistrer "
-      Menu_Bind $visuNo $This <Control-q> "$caption(audace,menu,fichier)" "$caption(audace,menu,quitter)" \
+      bind $audace(Console) <Control-s> "focus $audace(base) ; ::audace::enregistrer"
+      Menu_Bind $visuNo $This <Control-q> "$caption(audace,menu,file)" "$caption(audace,menu,quitter)" \
          "$caption(touche,controle,Q)"
-      bind $audace(Console) <Control-q> " focus $audace(base) ; ::audace::quitter "
-      Menu_Bind $visuNo $This <F12>       "$caption(audace,menu,outils)" "$caption(audace,menu,pas_outil)" \
+      bind $audace(Console) <Control-q> "focus $audace(base) ; ::audace::quitter"
+      Menu_Bind $visuNo $This <F12>       "$caption(audace,menu,tool)" "$caption(audace,menu,pas_outil)" \
          "$caption(touche,F12)"
-      bind $audace(Console) <F12> " focus $audace(base) ; ::audace::pas_Outil "
+      bind $audace(Console) <F12> "focus $audace(base) ; ::audace::pasOutil"
    }
 
    proc initLastEnv { visuNo } {
