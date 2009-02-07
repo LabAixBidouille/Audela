@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.98 2009-01-31 19:37:53 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.99 2009-02-07 11:30:30 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -586,11 +586,19 @@ namespace eval ::confVisu {
                 $tkgraph element create line$visuNo -symbol none -smooth natural
             }
 
-            #--- je recupere les most clefs
+            #--- je recupere les mots clefs
             set bufNo [getBufNo $visuNo]
             set size   [lindex [buf$bufNo getkwd NAXIS1] 1]
             set crval1 [lindex [buf$bufNo getkwd CRVAL1] 1]
             set cdelt1 [lindex [buf$bufNo getkwd CDELT1] 1]
+
+            #--- si l'image n'est pas calibree en longueur d'ondes
+            if { $crval1 == "" } {
+               set crval1 0
+            }
+            if { $cdelt1 == "" } {
+               set cdelt1 1
+            }
 
             #--- je recupere les ordonnees
             set ydata2 ""
@@ -1792,19 +1800,19 @@ namespace eval ::confVisu {
 
       Menu_Setup $visuNo $private($visuNo,menu)
 
-      Menu           $visuNo "$caption(audace,menu,fichier)"
-      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,charger)..." \
+      Menu           $visuNo "$caption(audace,menu,file)"
+      Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,charger)..." \
          "::audace::charger $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,enregistrer)" \
+      Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,enregistrer)" \
          "::audace::enregistrer $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,enregistrer_sous)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,enregistrer_sous)..." \
          "::audace::enregistrer_sous $visuNo"
 
-      Menu_Separator $visuNo "$caption(audace,menu,fichier)"
-      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,entete)" " ::keyword::header $visuNo "
+      Menu_Separator $visuNo "$caption(audace,menu,file)"
+      Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,entete)" " ::keyword::header $visuNo "
 
-      Menu_Separator $visuNo "$caption(audace,menu,fichier)"
-      Menu_Command   $visuNo  "$caption(audace,menu,fichier)" "$caption(confVisu,fermer)" \
+      Menu_Separator $visuNo "$caption(audace,menu,file)"
+      Menu_Command   $visuNo  "$caption(audace,menu,file)" "$caption(confVisu,fermer)" \
          " ::confVisu::close $visuNo "
 
       Menu           $visuNo "$caption(audace,menu,affichage)"
@@ -1879,20 +1887,20 @@ namespace eval ::confVisu {
       Menu_Command   $visuNo "$caption(audace,menu,affichage)" "[::Crosshair::getLabel]..." \
               "::Crosshair::run $visuNo"
 
-      Menu           $visuNo "$caption(audace,menu,analyse)"
-      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,histo)" "::audace::Histo $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,coupe)" "::sectiongraph::init $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,statwin)" "statwin $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,fwhm)" "fwhm $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,fitgauss)" "fitgauss $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,centro)" "center $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,phot)" "photom $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,subfitgauss)" "subfitgauss $visuNo"
-      Menu_Command   $visuNo "$caption(audace,menu,analyse)" "$caption(audace,menu,scar)" "scar $visuNo"
+      Menu           $visuNo "$caption(audace,menu,analysis)"
+      Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,histo)" "::audace::Histo $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,coupe)" "::sectiongraph::init $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,statwin)" "statwin $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,fwhm)" "fwhm $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,fitgauss)" "fitgauss $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,centro)" "center $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,phot)" "photom $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,subfitgauss)" "subfitgauss $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,scar)" "scar $visuNo"
 
-      Menu           $visuNo "$caption(audace,menu,outils)"
-      Menu_Command   $visuNo "$caption(audace,menu,outils)" "$caption(audace,menu,pas_outil)" "::confVisu::stopTool $visuNo"
-      Menu_Separator $visuNo "$caption(audace,menu,outils)"
+      Menu           $visuNo "$caption(audace,menu,tool)"
+      Menu_Command   $visuNo "$caption(audace,menu,tool)" "$caption(audace,menu,pas_outil)" "::confVisu::stopTool $visuNo"
+      Menu_Separator $visuNo "$caption(audace,menu,tool)"
       #--- Remplissage du menu deroulant outils
       set liste ""
       foreach m [array names panneau menu_name,*] {
@@ -1909,7 +1917,7 @@ namespace eval ::confVisu {
                #--- Lancement automatique du premier outil de la liste
                ::confVisu::selectTool $visuNo ::$firstTool
             }
-            Menu_Command $visuNo "$caption(audace,menu,outils)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$pluginName"
+            Menu_Command $visuNo "$caption(audace,menu,tool)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$pluginName"
          }
       }
 
@@ -2104,12 +2112,7 @@ namespace eval ::confVisu {
       variable private
       global audace caption
 
-      if { $visuNo == 1 } {
-         set menuName "$caption(audace,menu,analyse)"
-      } else {
-         set menuName "$caption(audace,menu,analyse)"
-      }
-
+      set menuName "$caption(audace,menu,analysis)"
       if { [string compare $::confVisu::private($visuNo,MouseState) rien] == 0 } {
          [MenuGet $visuNo $menuName] post $X $Y
          set ::confVisu::private($visuNo,MouseState) context
