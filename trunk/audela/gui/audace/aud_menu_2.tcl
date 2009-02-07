@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_2.tcl
 # Description : Script regroupant les fonctionnalites du menu Affichage
-# Mise a jour $Id: aud_menu_2.tcl,v 1.15 2008-12-09 16:18:30 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.tcl,v 1.16 2009-02-07 11:22:25 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -775,7 +775,7 @@ namespace eval ::seuilWindow {
    # Procedure correspondant a l'appui sur le bouton Appliquer
    #
    proc cmdApply { visuNo } {
-      global audace conf selectWindow seuilWindow tmp
+      global audace conf select seuilWindow tmp
 
       #--- Copie des seuils manuels maxi et mini
       if { $seuilWindow($visuNo,seuilWindowAuto_Manuel) == "2" } {
@@ -796,7 +796,7 @@ namespace eval ::seuilWindow {
       ::confVisu::autovisu $visuNo
       #--- Visualisation avec les reglages courants dans la fenetre de selection des images si elle existe
       if [ winfo exists $audace(base).select ] {
-         ::audace::autovisu $selectWindow(visuNo)
+         ::audace::autovisu $select(visuNo)
       }
       #--- Recuperation de la position de la fenetre de reglages
       seuils_recup_position $visuNo
