@@ -24,6 +24,8 @@
 #define __TELTCL_H__
 
 /* ----- defines specifiques aux fonctions de cette camera ----*/
-
+int cmdTelPut(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelProperties(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelMethods(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif
