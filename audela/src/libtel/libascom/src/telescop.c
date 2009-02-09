@@ -125,6 +125,7 @@ int tel_close(struct telprop *tel)
 /* ------------------------------ */
 {
    char s[1024];
+   strcpy(s,"set telcmd $::ascom_variable(1)"); mytel_tcleval(tel,s);
    strcpy(s,"$telcmd Connected 0"); mytel_tcleval(tel,s);
    sprintf(s,"unset ::ascom_variable(1)"); mytel_tcleval(tel,s);
    return 0;

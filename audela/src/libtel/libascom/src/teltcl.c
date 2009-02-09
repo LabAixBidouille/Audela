@@ -37,3 +37,73 @@
 /*
  *   structure pour les fonctions étendues
  */
+
+/*
+ *   fonctions étendues
+ */
+
+int cmdTelPut(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+/***************************************************************************************/
+/* execute une fonction                                                                */
+/***************************************************************************************/
+   char s[256];
+   int result = TCL_OK,k;
+   struct telprop *tel;
+   Tcl_DString dsptr;
+   tel = (struct telprop *)clientData;
+
+   if(argc<2) {
+      sprintf(s,"Usage: %s args", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_ERROR;
+	   return(result);
+   } else {
+	   result=TCL_OK;
+	   strcpy(s,"set telcmd $::ascom_variable(1)"); mytel_tcleval(tel,s);
+	   Tcl_DStringInit(&dsptr);
+		Tcl_DStringAppend(&dsptr,"$telcmd ",-1);
+		for (k=2;k<argc;k++) {
+			Tcl_DStringAppend(&dsptr,argv[k],-1);
+			Tcl_DStringAppend(&dsptr," ",-1);
+		}
+		result=mytel_tcleval(tel,Tcl_DStringValue(&dsptr));
+		Tcl_DStringFree(&dsptr);
+   }
+   return result;
+}
+
+int cmdTelProperties(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+/***************************************************************************************/
+/* Retourne toutes les propriétés                                                      */
+/***************************************************************************************/
+   char s[256];
+   int result = TCL_OK;
+   struct telprop *tel;
+   Tcl_DString dsptr;
+   tel = (struct telprop *)clientData;
+
+	strcpy(s,"set telcmd $::ascom_variable(1)"); mytel_tcleval(tel,s);
+	Tcl_DStringInit(&dsptr);
+	Tcl_DStringAppend(&dsptr,"[::tcom::info interface $telcmd] properties",-1);
+	result=mytel_tcleval(tel,Tcl_DStringValue(&dsptr));
+	Tcl_DStringFree(&dsptr);
+   return result;
+}
+
+int cmdTelMethods(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+/***************************************************************************************/
+/* Retourne toutes les methodes                                                        */
+/***************************************************************************************/
+   char s[256];
+   int result = TCL_OK;
+   struct telprop *tel;
+   Tcl_DString dsptr;
+   tel = (struct telprop *)clientData;
+
+	strcpy(s,"set telcmd $::ascom_variable(1)"); mytel_tcleval(tel,s);
+	Tcl_DStringInit(&dsptr);
+	Tcl_DStringAppend(&dsptr,"[::tcom::info interface $telcmd] methods",-1);
+	result=mytel_tcleval(tel,Tcl_DStringValue(&dsptr));
+	Tcl_DStringFree(&dsptr);
+   return result;
+}
