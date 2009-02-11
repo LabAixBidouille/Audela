@@ -49,14 +49,6 @@
 #endif
 
 
-typedef struct {
-	double x;
-	double y;
-	double z;
-	double lon;
-	double lat;
-	double r;
-} struct_point ;
 
 
 /* fonctions mc propres a libmc pour Tcl */
@@ -147,6 +139,7 @@ typedef struct {
  int Cmd_mctcl_simurelief(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
  int Cmd_mctcl_simurelief_from_stl(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
+ int Cmd_mctcl_simulc_sat_stl(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
  int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
  int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
  int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);

@@ -2584,23 +2584,23 @@ int Cmd_mctcl_simurelief(ClientData clientData, Tcl_Interp *interp, int argc, ch
 }
 
 int Cmd_mctcl_simurelief_from_stl(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
-/****************************************************************************/
-/* Synthese de cartes de relief et d'albedo pour courbes de rotations.      */
-/****************************************************************************/
-/* Cette fonction prepare une carte de relief et une carte d'albedo pour    */
-/* etre utilisées par mc_simulc.                                            */
-/*																			*/
-/*	ENTREES               											        */
-/*	=======               											        */                                          
-/* filename_stl : fichier geométrique stl					                */
-/* filename_relief : carte de relief creee avec mc_simurelief               */
-/* albedo : valeur de l'albedo geometrique.                                 */
-/* filename_albedo : carte d'albedo creee avec mc_simurelief                */
-/*																			*/
-/*	SORTIES               											        */
-/*	=======               											        */
-/* Deux fichiers ASCII avec une resolution de 1 deg/point                   */
-/****************************************************************************/
+/****************************************************************************************************/
+/* Synthese de cartes de relief et d'albedo pour courbes de rotations à partir de fichier .stl      */
+/****************************************************************************************************/
+/* Cette fonction prepare une carte de relief et une carte d'albedo pour							*/
+/* etre utilisées par mc_simulc.																	*/
+/*																									*/
+/*	ENTREES               																			*/
+/*	=======               																			*/                                          
+/* filename_stl : fichier geométrique stl															*/
+/* filename_relief : carte de relief creee avec mc_simurelief										*/
+/* albedo : valeur de l'albedo geometrique.															*/
+/* filename_albedo : carte d'albedo creee avec mc_simurelief										*/
+/*																									*/
+/*	SORTIES               																			*/
+/*	=======               																			*/
+/* Deux fichiers ASCII avec une resolution de 1 deg/point											*/
+/****************************************************************************************************/
 {
    char s[1024], ligne[2000];
    double *relief=NULL,albedo;
@@ -2801,7 +2801,8 @@ int Cmd_mctcl_simurelief_from_stl(ClientData clientData, Tcl_Interp *interp, int
 						// calcul de l'altitude du point
 						b=point4[k].x*sin(klatr)*cos(klatr)+point4[k].y*sin(klonr)*sin(klatr)+point4[k].z*cos(klatr);
 						if (b!=0) {
-							alt=(point4[k].x*point1[k].x+point4[k].y*point1[k].y+point4[k].z*point1[k].z)/b;
+							// attention aux unités dans les fichiers stl a faire en mètres!!! /10 pour être en metre
+							alt=(point4[k].x*point1[k].x+point4[k].y*point1[k].y+point4[k].z*point1[k].z)/(10*b);
 						} else {
 							alt=0; // a revoir
 						}
@@ -2815,7 +2816,7 @@ int Cmd_mctcl_simurelief_from_stl(ClientData clientData, Tcl_Interp *interp, int
 				relief[klon*nlat+klat]=alt;
 			}
 		}
-
+		free(point4);
 		free(point1);
 		free(point2);
 		free(point3);
@@ -2866,6 +2867,506 @@ int Cmd_mctcl_simurelief_from_stl(ClientData clientData, Tcl_Interp *interp, int
    }
    return TCL_OK;
 }
+
+int Cmd_mctcl_simulc_sat_stl(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Simulation de la courbe de lumiere d'un satellite                        */
+/****************************************************************************/
+/* Cette fonction simule la courbe de rotation d'un satellite dans          */
+/* l'intevalle [Date_phase0;Date_phase0+sideral_period_h].                  */
+/* Il faut préalablement avoir utilisé mc_simurelief                        */
+/*																		    */
+/*	ENTREES               													*/
+/*	=======               											        */
+/* Planet                   											    */
+/*   Le 1er element contient le nom de la planete :							*/
+/*    Name pour un astre dont les elements sont definis par les 2eme et     */
+/*     et 3eme elements :													*/
+/*   Le 2eme element contient le format des elements d'orbite               */
+/*    INTERNAL (defaut) pour les planetes classiques.						*/
+/*    BOWELL pour le format de Bowell 									    */
+/*    BOWELLFILE pour le format de Bowell sous forme d'un fichier			*/
+/*    DAILYMPECFILE Daily MPEC sous forme d'un fichier						*/
+/*    DAILYMPEC Daily MPEC													*/
+/*   Le 3eme element contient la definition des elements d'orbite :			*/
+/*    Rien pour INTERNAL													*/
+/*    NameFile pour designer le fichier des elements						*/
+/*    String pour la chaine qui contient les elements.						*/
+/* Date 													                */
+/*  Le 1er element contient le debut de la date.                            */
+/*    NOW (defauf) pour designer l'instant actuel. 							*/
+/*    NOW0 : Pour designer la date actuelle a 0h   							*/
+/*    NOW1 : Pour designer la date de demain a 0h   						*/
+/*    YYYY-MM-DDThh:mm:ss.ss : Format Iso du Fits.						    */
+/*    nombre decimal >= 1000000 : Jour Julien								*/
+/*    nombre decimal <  1000000 : Jour Julien Modifie						*/
+/*    Year : suivi des elements facultatifs suivants, dans l'ordre :		*/
+/*     Month Day Hour Minute Second (Format style Iso mais avec les espaces)*/
+/* Home : localisation topocentrique                                        */
+/* HTM_level  : niveau du découpage HTM                                     */
+/* filename_relief : carte de relief creee avec mc_simurelief               */
+/* filename_albedo : carte d'albedo creee avec mc_simurelief                */
+/* frame_coord : referentiel de coordonnees (=0=ecliptique =1=equatorial)   */
+/* frame_center : referentiel de coordonnees (=0=helio =1=geo)              */
+/* lon_phase0 : longitude de la phase nulle de la cdr (deg)                 */
+/* Date_phase0 : Date de reference de la phase nulle de la cdr (Date)       */
+/* sideral_period_h : periode de rotation sidérale (h)                      */
+/* lonpole     : longitude du pole (deg) dans frame_coord                   */
+/* latpole     : latitude du pole (deg) dans frame_coord                    */
+/* density_g/cm3 : masse volumique de la planete (g/cm3)                    */
+/* ?genefilename? : nom generique des images de simulation de l'astre.      */
+/*																			*/
+/*	SORTIES               											        */
+/*	=======               											        */
+/* Liste jd : liste des jours juliens                                       */
+/* Liste phases : liste des phases                                          */
+/* Liste mag1 : liste des magnitudes pour un diffuseur lambertien           */
+/* Liste mag2 : liste des magnitudes pour un diffuseur Lommel-Seeliger      */
+/****************************************************************************/
+{
+   double jj;
+   int planetnum, n_in, k1,k2,a;
+   char s[65000],ligne[2000];
+   char objename[100],orbitformat[15],orbitfile[1024],filename_stl[1024],orbitstring[300];
+   double asd,dec,delta,albedo;
+   double mag,phase,elong,diamapp,r;
+   double longmpc=0.,rhocosphip=0.,rhosinphip=0.;
+   int orbitfilefound=YES,orbitisgood=NO;
+   struct asterident aster;
+   struct elemorb elem;
+   FILE *fichier_in=NULL;
+   FILE *fichier_stl=NULL;
+   char *genefilename=NULL;
+   Tcl_DString dsptr;
+   struct_point *point1, *point2, *point3, *point4;
+   double xearth,yearth,zearth,xaster,yaster,zaster;
+   double dl,phi;
+   int n,k;
+   mc_cdrpos *cdrpos;
+   mc_cdr cdr;
+   int valid;
+   double *jds,jdk;
+//double dlt;
+
+   if(argc<15) {
+      sprintf(s,"Usage: %s Nom_sat Date_TT Home filename_stl valeur_albedo frame_coord frame_center lon_phase0 Date_phase0_TT sideral_period_h lonpole latpole density_g/cm3 ?genefilename?", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+ 	   return TCL_ERROR;
+   } else {
+	   Tcl_DStringInit(&dsptr);
+      /* === */
+	   /* === Decode des arguments de la ligne de commande ===*/
+      /* === */
+	   /* --- decode la planete ---*/
+      mctcl_decode_planet(interp,argv[1],&planetnum,objename,orbitformat,orbitfile);
+	   if (planetnum!=OTHERPLANET) {
+         /* --- pb planete non reconnue ---*/
+         sprintf(s,"Error : Planet %s (type %d) not found",objename,planetnum);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+      /* --- decode la date ---*/
+	  	mctcl_decode_date(interp,argv[2],&jj);
+      /* --- decode le Home ---*/
+      longmpc=0.;
+      rhocosphip=0.;
+      rhosinphip=0.;
+      mctcl_decode_topo(interp,argv[3],&longmpc,&rhocosphip,&rhosinphip);
+      /* --- decode les parametres physiques ---*/
+      strcpy(filename_stl,argv[4]);
+      albedo=atof(argv[5]);
+      cdr.frame_coord=atoi(argv[6]);  /* =0 pole defined /ecliptic.  =1 pole defined /equator. */
+      cdr.frame_center=atoi(argv[7]);  /* =0 heliocentric.  =1 geocentric. */
+      cdr.lon_phase0=atof(argv[8]);
+      mctcl_decode_date(interp,argv[9],&cdr.jd_phase0);
+      cdr.period=atof(argv[10])/24.;
+      cdr.lonpole=atof(argv[11]);
+      cdr.latpole=atof(argv[12]);
+      cdr.density=atof(argv[13]); /* density g/cm3 */
+      if (argc>=14) {
+         genefilename=argv[14];
+      } else {
+         genefilename=NULL;
+      }
+      /* --- */
+      //dl=0.5*sqrt(41253./(8*pow(4,cdr.htmlevel)));
+      //dl=3;
+      /* === */
+	   /* === Lecture du fichier stl ===*/
+      /* === */
+      if ((fichier_stl=fopen(filename_stl,"rt") ) == NULL) {
+         sprintf(s,"Error : file %s cannot be read",argv[5]);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+	  }
+	  n_in=0;
+	  while (feof(fichier_stl)==0) {
+		  if (fgets(ligne,sizeof(ligne),fichier_stl)!=NULL) {
+			n_in++;
+		  }
+	  }	
+      fclose(fichier_stl);
+      
+	  /* --- dimensionne la structure des donnees d'entree ---*/
+	  n_in=(n_in-2)/7;
+	  point1=(struct_point*)malloc(n_in*sizeof(struct_point));
+	  if (point1==NULL) {
+		 sprintf(s,"error : point1 pointer out of memory (%d elements)",n_in);
+		 Tcl_SetResult(interp,s,TCL_VOLATILE);
+		 return TCL_ERROR;
+	  }
+	  point2=(struct_point*)malloc(n_in*sizeof(struct_point));
+	  if (point2==NULL) {
+		 sprintf(s,"error : point2 pointer out of memory (%d elements)",n_in);
+		 Tcl_SetResult(interp,s,TCL_VOLATILE);
+		 return TCL_ERROR;
+	  }
+	  point3=(struct_point*)malloc(n_in*sizeof(struct_point));
+	  if (point3==NULL) {
+		 sprintf(s,"error : point3 pointer out of memory (%d elements)",n_in);
+		 Tcl_SetResult(interp,s,TCL_VOLATILE);
+		 return TCL_ERROR;
+	  }
+	  point4=(struct_point*)malloc(n_in*sizeof(struct_point));
+  	  if (point4==NULL) {
+		 sprintf(s,"error : point4 pointer out of memory (%d elements)",n_in);
+		 Tcl_SetResult(interp,s,TCL_VOLATILE);
+		 return TCL_ERROR;
+	  }
+	  n_in=0;
+	  /* recupère les données du fichiers stl*/
+	  if ((fichier_stl=fopen(filename_stl,"rt") ) == NULL) {
+         sprintf(s,"Error : file %s cannot be read",argv[5]);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+	  }
+	
+		while (feof(fichier_stl)==0) {
+			if (fgets(ligne,sizeof(ligne),fichier_stl)!=NULL) {
+				if (ligne[2]=='f') {//vecteur normal de la facette
+					k1=25; k2=28; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					a=atoi(s);
+					k1=15; k2=23; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					point4[n_in].x=atof(s)*pow(10,a) ;
+
+					k1=40; k2=44; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					a=atoi(s);
+					k1=30; k2=38; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					point4[n_in].y=atof(s)*pow(10,a);
+
+					k1=55; k2=58; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					a=atoi(s);
+					k1=45; k2=53; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					point4[n_in].z=atof(s)*pow(10,a);
+				}
+				if (ligne[6]!='v') continue; // trois points formant le triangle
+					/// attention aux unités/echelles
+					k1=23; k2=26; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					a=atoi(s);
+					k1=13; k2=21; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					point1[n_in].x=atof(s)*pow(10,a) ;
+
+					k1=38; k2=41; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					a=atoi(s);
+					k1=28; k2=36; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					point1[n_in].y=atof(s)*pow(10,a);
+
+					k1=53; k2=56; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					a=atoi(s);
+					k1=43; k2=51; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					point1[n_in].z=atof(s)*pow(10,a);
+				
+					if (fgets(ligne,sizeof(ligne),fichier_stl)!=NULL) {
+						if (ligne[6]!='v') {
+							strcpy(s,"Error : problem in the file stl");
+							Tcl_SetResult(interp,s,TCL_VOLATILE);
+							return TCL_ERROR;
+						}
+
+						k1=23; k2=26; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+						a=atoi(s);
+						k1=13; k2=21; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+						point2[n_in].x=atof(s)*pow(10,a);
+
+						k1=38; k2=41; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+						a=atoi(s);
+						k1=28; k2=36; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+						point2[n_in].y=atof(s)*pow(10,a);
+
+						k1=53; k2=56; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+						a=atoi(s);
+						k1=43; k2=51; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+						point2[n_in].z=atof(s)*pow(10,a);
+
+						if (fgets(ligne,sizeof(ligne),fichier_stl)!=NULL) {
+							if (ligne[6]!='v') {
+								strcpy(s,"Error : problem in the file stl");
+								Tcl_SetResult(interp,s,TCL_VOLATILE);
+								return TCL_ERROR;
+							}
+
+							k1=23; k2=26; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+							a=atoi(s);
+							k1=13; k2=21; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+							point3[n_in].x=atof(s)*pow(10,a) ;
+
+							k1=38; k2=41; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+							a=atoi(s);
+							k1=28; k2=36; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+							point3[n_in].y=atof(s)*pow(10,a);
+
+							k1=53; k2=56; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+							a=atoi(s);
+							k1=43; k2=51; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+							point3[n_in].z=atof(s)*pow(10,a);
+
+
+						}
+
+					}
+
+				n_in++;
+			}
+		}
+		fclose(fichier_stl);
+
+      /* === */
+	   /* === Lecture des elements d'orbite de la planete ===*/
+      /* === */
+       /* --- ouverture du fichier de la base d'orbite ---*/
+  		if ((strcmp(orbitformat,"BOWELLFILE")==0)||(strcmp(orbitformat,"MPCFILE")==0)) {
+         if ((fichier_in=fopen(orbitfile,"rt") ) == NULL) {
+  	   	   orbitfilefound=NO;
+		      orbitisgood=NO;
+            /* --- le fichier d'orbite n'est pas trouve : il faut sortir ---*/
+            sprintf(s,"Error : Orbit file %s (type=%s) not found",orbitfile,orbitformat);
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            return TCL_ERROR;
+		   }
+         do {
+            /* --- lecture d'une ligne de la base d'orbite ---*/
+  			   orbitisgood=NO;
+   		   if (strcmp(orbitformat,"BOWELLFILE")==0) {
+               if (fgets(orbitstring,300,fichier_in)==0) {
+		            strcpy(orbitstring,"");
+   	         }
+               mc_bow_dec1(orbitstring,&aster);
+   	         if ((strcmp(aster.name,objename)==0)||(aster.num==atoi(objename))) {
+     			      orbitisgood=YES;
+                  break;
+			      }
+  			   } else if (strcmp(orbitformat,"MPCFILE")==0) {
+               if (fgets(orbitstring,300,fichier_in)==0) {
+   		         strcpy(orbitstring,"");
+		         }
+			      mc_mpc_dec1(orbitstring,&aster);
+   	         if ((strcmp(aster.name,objename)==0)||(aster.num==atoi(objename))) {
+     			      orbitisgood=YES;
+                  break;
+			      }
+            } else {
+               break;
+            }
+         } while (feof(fichier_in)==0);
+         fclose(fichier_in);
+         if (orbitisgood==NO) {
+            mc_aster2elem(aster,&elem);
+         }
+      }
+  		if (strcmp(orbitformat,"TLE")==0) {
+         fichier_in=fopen(orbitfile,"rt");
+         if (fichier_in != NULL) {
+            while (feof(fichier_in)==0) {
+               mc_tle_decnext1(fichier_in,&elem,objename,&valid);
+               if (valid==1) {
+                  orbitisgood=YES;
+                  break;
+               }
+            }
+            fclose(fichier_in);
+         }
+      }
+  
+      if (orbitisgood==NO) {
+         /* --- la planete n'a pas ete trouvee dans fichier d'orbite : il faut sortir ---*/
+         sprintf(s,"Error : Planet %s (type %d) not found in the file %s",objename,planetnum,orbitfile);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+		 free(point4);
+		 free(point1);
+		 free(point2);
+		 free(point3);
+         return TCL_ERROR;
+      }
+
+      /* === */
+	   /* === Calcul des coordonnes heliocentriques de la planete et de la Terre pour chaque phase ===*/
+      /* === */
+	  dl=3; // ????????????????
+      n=(int)ceil(360./dl);
+      cdrpos=(mc_cdrpos*)malloc(n*sizeof(mc_cdrpos));
+      if (cdrpos==NULL) {
+         strcpy(s,"Error : memory allocation for cdrpos");
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+		 free(point4);
+		 free(point1);
+		 free(point2);
+		 free(point3);
+         return TCL_ERROR;
+      }
+      phi=cdr.jd_phase0+cdr.period*floor((jj-cdr.jd_phase0)/cdr.period);
+      jds=(double*)calloc(n,sizeof(double));
+      if (jds==NULL) {
+		 free(point4);
+		 free(point1);
+		 free(point2);
+		 free(point3);
+         return TCL_ERROR;
+      }
+      for (k=0;k<n;k++) {
+         cdrpos[k].phase=1.*k/n;
+         cdrpos[k].jd=phi+1.*k/n*cdr.period;
+         jds[k]=cdrpos[k].jd;
+      }
+      for (k=0;k<n;k++) {
+   		mc_xyzasaaphelio(cdrpos[k].jd,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+         if (cdr.frame_time==1) {
+            /* cdrpos[k].jd etait entre dans le repere de l'asteroide */
+            /* Il faut donc soustraire la duree -delta pour savoir quand on l'a vu depuis la Terre en TT */
+            mc_aberpla(cdrpos[k].jd,-delta,&jdk);
+            cdrpos[k].jdtt=jdk;
+   		   mc_xyzasaaphelio(jdk,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+            cdrpos[k].jd=jds[k];
+         } else {
+            cdrpos[k].jdtt=cdrpos[k].jd;
+            /* On transforme JD dans le repere de l'asteroide */
+            mc_aberpla(cdrpos[k].jd,delta,&cdrpos[k].jd);
+         }
+         /* --- la phase est calculee dans le repere de l'asteroide ---*/
+         cdrpos[k].phase=(cdrpos[k].jd-cdr.jd_phase0)/cdr.period;
+         cdrpos[k].phase=cdrpos[k].phase-floor(cdrpos[k].phase);
+         /* --- la phase est calculee dans le repere terrestre ---*/
+         cdrpos[k].phasett=(cdrpos[k].jdtt-cdr.jd_phase0tt)/cdr.period;
+         cdrpos[k].phasett=cdrpos[k].phasett-floor(cdrpos[k].phasett);
+         /*
+          xearth=1.;
+          yearth=0.;
+          zearth=0.;
+          delta=1.;
+          dlt=0.*(DR);
+          xaster=xearth+delta*cos(dlt);
+          yaster=yearth+delta*sin(dlt);
+          zaster=zearth;
+          */
+         cdrpos[k].xaster=xaster;
+         cdrpos[k].yaster=yaster;
+         cdrpos[k].zaster=zaster;
+         cdrpos[k].r=r;
+         cdrpos[k].angelong=elong;
+         cdrpos[k].angphase=phase;
+         cdrpos[k].mag0=mag;
+         cdrpos[k].mag1=mag;
+         cdrpos[k].mag2=mag;
+         if (cdr.frame_center==0) { 
+            /* heliocentric */
+            cdrpos[k].xearth=0.;
+            cdrpos[k].yearth=0.;
+            cdrpos[k].zearth=0.;
+            cdrpos[k].delta=r;
+         } else {
+            /* geocentric */
+            cdrpos[k].xearth=xearth;
+            cdrpos[k].yearth=yearth;
+            cdrpos[k].zearth=zearth;
+            cdrpos[k].delta=delta;
+         }
+         cdrpos[k].eclipsed=diamapp; /* =0 if in the shadow of the Earth. Else =1 */
+      }
+      /* === */
+	   /* === Calcul de la courbe de lumiere ===*/
+      /* === */
+      mc_simulc_sat_stl(cdr,point1,point2,point3,point4,n_in,albedo,cdrpos,n,genefilename);
+      /* === */
+	   /* === Sortie des resultats ===*/
+      /* === */
+      Tcl_DStringAppend(&dsptr,"{",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].jd);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].phase);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].mag1);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].mag2);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].mag0);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].xearth);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].yearth);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].zearth);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].xaster);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].yaster);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].zaster);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].angelong/(DR));
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].angphase/(DR));
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} ",-1);
+      /* === sortie et destructeurs ===*/
+      free(cdrpos);
+      free(jds);
+	  free(point4);
+	  free(point1);
+	  free(point2);
+	  free(point3);
+      Tcl_DStringResult(interp,&dsptr);
+      Tcl_DStringFree(&dsptr);
+   }
+   return TCL_OK;
+}
+
 int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /****************************************************************************/
 /* Simulation de la courbe de lumiere d'un asteroide                        */

@@ -473,6 +473,16 @@ typedef struct {
    double a; /* demi grand axe pour les asteroides doubles */
 } mc_cdr;
 
+typedef struct {
+	double x;
+	double y;
+	double z;
+	double lon;
+	double lat;
+	double r;
+} struct_point ;
+
+
 /* --- Modele de pointage de telescopes */
 typedef struct {
    int kl;
@@ -605,6 +615,7 @@ void mc_ephem2(char *nom_fichier_ele,double jj, double rangetq, double pastq, do
 void mc_paradist(char *nom_fichier_obs,char *nom_fichier_ele,char *nom_fichier_out);
 void mc_paradist_calc(struct observ *obs,int k1, int k2,double *parallaxe,double *corde,double *dist);
 void mc_simulc(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int n,char *genefilename);
+void mc_simulc_sat_stl(mc_cdr cdr,struct_point *point1,struct_point *point2,struct_point *point3,struct_point *point4,int n_in,double albedo,mc_cdrpos *cdrpos,int n,char *genefilename);
 void mc_simulcbin(mc_cdr cdr,double *relief1,double *albedo1,double *relief2,double *albedo2,mc_cdrpos *cdrpos,int n,char *genefilename);
 char *mc_savefits(float *mat,int naxis1, int naxis2,char *filename,mc_wcs *wcs);
 
@@ -654,6 +665,7 @@ int mc_radec2htm(double ra,double dec,int niter,char *htm);
 int mc_htm2radec(char *htm,double *ra,double *dec,int *niter,double *ra0,double *dec0,double *ra1,double *dec1,double *ra2,double *dec2);
 
 int intersect_triangle(double orig[3], double dir[3],double vert0[3], double vert1[3], double vert2[3], double *t, double *u, double *v);
+
 /***************************************************************************/
 /* Transformations du temps (jour julien, temps dynamique ...)             */
 /***************************************************************************/
@@ -918,6 +930,8 @@ void mc_paradist_calc(struct observ *obs,int k1, int k2,double *parallaxe,double
    en seux sites differents. Methode de la parallaxe.
 void mc_simulc(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int n,char *genefilename);
    Simulation de la courbe de lumiere d'un asteroide.
+void mc_simulc_sat(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int n,char *genefilename);
+   Simulation de la courbe de lumiere d'un satellite.
 void mc_simulcbin(mc_cdr cdr,double *relief1,double *albedo1,double *relief2,double *albedo2,mc_cdrpos *cdrpos,int n,char *genefilename);
    Simulation de la courbe de lumiere d'un asteroide SSB.
 char *mc_savefits(float *mat,int naxis1, int naxis2,char *filename,mc_wcs *wcs);

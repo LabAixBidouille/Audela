@@ -101,6 +101,7 @@
    Tcl_CreateCommand(interp,"mc_simurelieffromstl",(Tcl_CmdProc *)Cmd_mctcl_simurelief_from_stl,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_simulc",(Tcl_CmdProc *)Cmd_mctcl_simulc,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_simulcbin",(Tcl_CmdProc *)Cmd_mctcl_simulcbin,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"mc_simulc_sat_stl",(Tcl_CmdProc *)Cmd_mctcl_simulc_sat_stl,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_simumagbin",(Tcl_CmdProc *)Cmd_mctcl_simumagbin,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_optiparamlc",(Tcl_CmdProc *)Cmd_mctcl_optiparamlc,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_lightmap",(Tcl_CmdProc *)Cmd_mctcl_lightmap,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
