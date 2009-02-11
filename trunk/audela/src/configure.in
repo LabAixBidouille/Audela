@@ -186,7 +186,7 @@ if test x"$WEBCAM_ENABLE" = x"1" ; then
 	LIBCAMS="$LIBCAMS libwebcam"
 fi
 
-LIBTELS="libaudecom libcelestron libcombit libdeltatau libdfm liblx200 liblxnet libouranos libtemma"
+LIBTELS="libaudecom libcelestron libcombit libdeltatau libdfm libeqmod liblx200 liblxnet libouranos libtemma"
 
 LIBLINKS="libparallelport libquickremote"
 
