@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: camera.tcl,v 1.27 2009-01-10 21:09:00 robertdelmas Exp $
+# Mise a jour $Id: camera.tcl,v 1.28 2009-02-11 19:02:05 robertdelmas Exp $
 #
 # Procedures utilisees par confCam
 #   ::camera::create : cree une camera
@@ -393,6 +393,24 @@ proc ::camera::gestionPose { Exposure GO_Stop { CameraName "" } { BufferName "" 
       #--- Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
       ::camera::Avancement_pose "1"
 
+   }
+}
+
+#
+# ::camera::dispTime_1 CameraName Proc_Avancement_pose
+# Decompte du temps d'exposition
+# Utilisation dans les scripts : acqfen.tcl + snacq.tcl
+#
+proc ::camera::dispTime_1 { CameraName { Proc_Avancement_pose "" } } {
+
+   set t "[ $CameraName timer -1 ]"
+
+   if { $t > "1" } {
+      after 1000 ::camera::dispTime_1 $CameraName $Proc_Avancement_pose
+   }
+
+   if { $Proc_Avancement_pose != "" } {
+      $Proc_Avancement_pose $t
    }
 }
 
