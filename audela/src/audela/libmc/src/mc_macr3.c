@@ -1296,6 +1296,549 @@ void mc_simulc(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int n,
    free(kdist);
 }
 
+void mc_simulc_sat_stl(mc_cdr cdr,struct_point *point1,struct_point *point2,struct_point *point3,struct_point *point4,int n_in,double albedo,mc_cdrpos *cdrpos,int n,char *genefilename)
+/***************************************************************************/
+/* simulation de la courbe de lumiere d'un satellite                       */
+/***************************************************************************/
+/***************************************************************************/
+{
+   int nhtm,k,kt;
+   char *htm;
+   double l1,l2,l3;
+   double cosb,sinb,coslcosb,sinlcosb;
+   double dl;
+   double x1,x2,x3,y1,y2,y3,z1,z2,z3;
+   double px12,py12,pz12,px13,py13,pz13;
+   double px,py,pz;
+   double npx,npy,npz,nx,ny,nz;
+   double np,tr,q;
+   double coslp,sinlp,coslpcosi,sinlpcosi,coslpsini,sinlpsini,sini,cosi;
+   double r,rr,delta,delta2,dx,dy,dz;
+   double nsx,nsy,nsz;  
+   double e0,pa,pr,i,cosths,costht,e,etotlamb,etotls,pe;
+   double fourpi;
+   double trtot=0.;
+   double trtotmin,trtotmax;
+   int khtms,nhtms;
+   mc_htm *htms;
+   double pmaxi,rmini;
+   double rsx,rsy,rsz,lrs,brs,lc,bc,rs;
+   double field;
+   int k1,k2;
+   float *image=NULL;
+   double elamb,els;
+   mc_wcs wcs;
+   char filename[1024];
+   double *dist=NULL;
+   int *kdist=NULL;
+   double pixx[3],pixy[3],x,y,z,frac;
+   double volume,volumetot,masstot,xg,yg,zg;
+
+   int level;
+   double l0,date0,period,lp,bp;
+   int frame_center; /* =0 sun =1 earth */
+
+
+   date0=cdr.jd_phase0;
+   level=cdr.htmlevel;
+   l0=cdr.lon_phase0;
+   period=cdr.period;
+   lp=cdr.lonpole;
+   bp=cdr.latpole;
+   frame_center=cdr.frame_center;
+
+   htm=(char*)calloc(level+3,sizeof(char));
+   l0=l0*(DR);
+   lp=lp*(DR);
+   bp=bp*(DR);
+   /* - F6 -*/
+   i=bp-(PI)/2;
+   cosi=cos(i);
+   sini=sin(i);
+   coslp=cos(lp);
+   sinlp=sin(lp);
+   coslpcosi=coslp*cosi;
+   sinlpcosi=sinlp*cosi;
+   coslpsini=coslp*sini;
+   sinlpsini=sinlp*sini;
+  
+   e0=1400.; /* W/m2 at 1 A.U. */
+   fourpi=4.*(PI);
+
+
+
+   /* --- total number of triangles in each hemsiphere ---*/
+   nhtm=(int)(n_in)/2;
+   /* --- total number of triangles ---*/
+   nhtms=n_in;
+   htms=(mc_htm*)calloc(nhtms,sizeof(mc_htm));
+   if (htms==NULL) {
+      return;
+   }
+   dist=(double*)calloc(nhtms,sizeof(double));
+   if (dist==NULL) {
+      free(htms);
+      return;
+   }
+   kdist=(int*)calloc(nhtms,sizeof(int));
+   if (kdist==NULL) {
+      free(htms);
+      free(dist);
+      return;
+   }
+   khtms=0;
+   volumetot=0;
+   masstot=0;
+   x=y=z=0.;
+   xg=yg=zg=0.;
+   /* --- fill the HTM structure by the corner coordinates ---*/
+   // /10 pour avoir des metres!
+   for (khtms=0;khtms<nhtms;khtms++) {
+	  x1=htms[khtms].x1=point1[khtms].x/10;
+      y1=htms[khtms].y1=point1[khtms].y/10;
+      z1=htms[khtms].z1=point1[khtms].z/10;
+      x2=htms[khtms].x2=point2[khtms].x/10;
+      y2=htms[khtms].y2=point2[khtms].y/10;
+      z2=htms[khtms].z2=point2[khtms].z/10;
+	  x3=htms[khtms].x3=point3[khtms].x/10;
+      y3=htms[khtms].y3=point3[khtms].y/10;
+      z3=htms[khtms].z3=point3[khtms].z/10;
+    
+      /* --- center of gravity of the tetraedron --- */
+      volume=-1./6.*(-x1*(y2*z3-y3*z2)+x2*(y1*z3-y3*z1)-x3*(y1*z2-y2*z1));
+      htms[khtms].volume=volume;
+      htms[khtms].density=cdr.density;
+      htms[khtms].mass=volume*htms[khtms].density;
+      htms[khtms].xg=2./3.*(x1+x2+x3)/3.;
+      htms[khtms].yg=2./3.*(y1+y2+y3)/3.;
+      htms[khtms].zg=2./3.*(z1+z2+z3)/3.;
+      /* --- add to determine the center of gravity of the body --- */
+      x+=(htms[khtms].xg*htms[khtms].mass);
+      y+=(htms[khtms].yg*htms[khtms].mass);
+      z+=(htms[khtms].zg*htms[khtms].mass);
+      masstot+=htms[khtms].mass;
+      volumetot+=volume;
+   }
+   /* --- center of gravity (m) --- */
+   xg=x/masstot;
+   yg=y/masstot;
+   zg=z/masstot;
+
+   /* --- iterating corrections due to the offcentering of the center of gravity --- */
+   for (kt=0;kt<4;kt++) {
+      x=y=z=0.;
+      volumetot=0;
+      masstot=0;
+      for (khtms=0;khtms<nhtms;khtms++) {
+         htms[khtms].x1-=xg;
+         htms[khtms].y1-=yg;
+         htms[khtms].z1-=zg;
+         x1=htms[khtms].x1;
+         y1=htms[khtms].y1;
+         z1=htms[khtms].z1;
+         htms[khtms].r1=sqrt(x1*x1+y1*y1+z1*z1);
+         htms[khtms].l1=atan2(htms[khtms].y1,htms[khtms].x1);
+         htms[khtms].b1=asin(htms[khtms].z1/htms[khtms].r1);
+         htms[khtms].x2-=xg;
+         htms[khtms].y2-=yg;
+         htms[khtms].z2-=zg;
+         x2=htms[khtms].x2;
+         y2=htms[khtms].y2;
+         z2=htms[khtms].z2;
+         htms[khtms].r2=sqrt(x2*x2+y2*y2+z2*z2);
+         htms[khtms].l2=atan2(htms[khtms].y2,htms[khtms].x2);
+         htms[khtms].b2=asin(htms[khtms].z2/htms[khtms].r2);
+         htms[khtms].x3-=xg;
+         htms[khtms].y3-=yg;
+         htms[khtms].z3-=zg;
+         x3=htms[khtms].x3;
+         y3=htms[khtms].y3;
+         z3=htms[khtms].z3;
+         htms[khtms].r3=sqrt(x3*x3+y3*y3+z3*z3);
+         htms[khtms].l3=atan2(htms[khtms].y3,htms[khtms].x3);
+         htms[khtms].b3=asin(htms[khtms].z3/htms[khtms].r3);
+         /* --- center of gravity of the tetraedron --- */
+         volume=-1./6.*(-x1*(y2*z3-y3*z2)+x2*(y1*z3-y3*z1)-x3*(y1*z2-y2*z1));
+         htms[khtms].volume=volume;
+         htms[khtms].density=cdr.density;
+         htms[khtms].mass=volume*htms[khtms].density;
+         htms[khtms].xg=2./3.*(x1+x2+x3)/3.;
+         htms[khtms].yg=2./3.*(y1+y2+y3)/3.;
+         htms[khtms].zg=2./3.*(z1+z2+z3)/3.;
+         /* --- add to determine the center of gravity of the body --- */
+         x+=(htms[khtms].xg*htms[khtms].mass);
+         y+=(htms[khtms].yg*htms[khtms].mass);
+         z+=(htms[khtms].zg*htms[khtms].mass);
+         masstot+=htms[khtms].mass;
+         volumetot+=volume;
+      }
+      /* --- center of gravity should converge to (0,0,0) --- */
+      xg=x/masstot;
+      yg=y/masstot;
+      zg=z/masstot;
+   }
+   /* --- searching for the largest altitude from the gravity center ---*/
+   pmaxi=0.;
+   for (khtms=0;khtms<nhtms;khtms++) {
+      if (htms[khtms].r1>pmaxi) {pmaxi=htms[khtms].r1;}
+      if (htms[khtms].r2>pmaxi) {pmaxi=htms[khtms].r2;}
+      if (htms[khtms].r3>pmaxi) {pmaxi=htms[khtms].r3;}
+   }
+   /* --- allocate an image matrix ---*/
+   /* --- the image is centered on the gravity center: cdrpos[].?aster ---*/
+   rmini=1e21;
+   for (kt=0;kt<n;kt++) {
+      dx=cdrpos[kt].xaster;
+      dy=cdrpos[kt].yaster;
+      dz=cdrpos[kt].zaster;
+      if (frame_center==1) {
+         dx-=cdrpos[kt].xearth;
+         dy-=cdrpos[kt].yearth;
+         dz-=cdrpos[kt].zearth;
+      }
+      rr=dx*dx+dy*dy+dz*dz;
+      rr+=(xg*xg+yg*yg+zg*zg)/(UA)/(UA);
+      r=sqrt(rr);
+      if (r<rmini) {rmini=r;}
+   }
+   wcs.naxis1=200;
+   wcs.naxis2=200;
+   field=atan(2*pmaxi/(UA)/rmini)*1.5;
+   wcs.cdelt1=field/wcs.naxis1;
+   wcs.cdelt2=field/wcs.naxis2;
+   wcs.crpix1=wcs.naxis1/2+.5;
+   wcs.crpix2=wcs.naxis2/2+.5;
+   wcs.crota2=0.;
+   if (genefilename!=NULL) {
+      image=(float*)calloc(wcs.naxis1*wcs.naxis2,sizeof(float));
+      if (image==NULL) {
+         /* --- TBD error */
+         free(htms);
+         free(dist);
+         free(kdist);
+      }
+   }
+   /* --- loop over the phase dates ---*/
+   for (kt=0;kt<n;kt++) {
+      etotlamb=etotls=0.;
+      dl=fmod(l0/(DR)+360.*(cdrpos[kt].jd-date0)/period,360.)*(DR);
+      trtot=0.;
+      /* --- distances from the gravity center ---*/
+      rr=cdrpos[kt].xaster*cdrpos[kt].xaster+cdrpos[kt].yaster*cdrpos[kt].yaster+cdrpos[kt].zaster*cdrpos[kt].zaster;
+      r=sqrt(rr);
+      dx=cdrpos[kt].xaster-cdrpos[kt].xearth;
+      dy=cdrpos[kt].yaster-cdrpos[kt].yearth;
+      dz=cdrpos[kt].zaster-cdrpos[kt].zearth;
+      delta2=dx*dx+dy*dy+dz*dz;
+      delta=sqrt(delta2);
+      /* --- defines the center for the projection ---*/
+      bc=0.;
+      lc=0.;
+      if (frame_center==0) {
+         lc=atan2(cdrpos[kt].yaster,cdrpos[kt].xaster);
+         bc=asin(cdrpos[kt].zaster/r);
+      } else if (frame_center==1) {
+         lc=atan2(cdrpos[kt].yaster-cdrpos[kt].yearth,cdrpos[kt].xaster-cdrpos[kt].xearth);
+         bc=asin((cdrpos[kt].zaster-cdrpos[kt].zearth)/delta);
+      }
+      wcs.crval1=fmod(lc/(DR)+360.,360.)*(DR);
+      wcs.crval2=bc;
+      /* --- initialize the projected image ---*/
+      if (image!=NULL) {
+         for (k=0;k<wcs.naxis1*wcs.naxis2;k++) {image[k]=(float)0.;}
+      }
+      /* --- loop over the triangles ---*/
+      for (khtms=0;khtms<nhtms;khtms++) {
+         /* --- F5 : take account for the rotation ---*/
+         l1=htms[khtms].l1+dl;
+         l2=htms[khtms].l2+dl;
+         l3=htms[khtms].l3+dl;
+         /* --- F3 : convert corners into cart. coord. in the frame of asteroid ---*/
+         /*          take account for the gravity center ---*/
+         cosb=cos(htms[khtms].b1);
+         sinb=sin(htms[khtms].b1);
+         coslcosb=cos(l1)*cosb;
+         sinlcosb=sin(l1)*cosb;
+         x1=htms[khtms].r1*coslcosb;
+         y1=htms[khtms].r1*sinlcosb;
+         z1=htms[khtms].r1*sinb;
+         cosb=cos(htms[khtms].b2);
+         sinb=sin(htms[khtms].b2);
+         coslcosb=cos(l2)*cosb;
+         sinlcosb=sin(l2)*cosb;
+         x2=htms[khtms].r2*coslcosb;
+         y2=htms[khtms].r2*sinlcosb;
+         z2=htms[khtms].r2*sinb;
+         cosb=cos(htms[khtms].b3);
+         sinb=sin(htms[khtms].b3);
+         coslcosb=cos(l3)*cosb;
+         sinlcosb=sin(l3)*cosb;
+         x3=htms[khtms].r3*coslcosb;
+         y3=htms[khtms].r3*sinlcosb;
+         z3=htms[khtms].r3*sinb;
+         /* --- F4 : external normal vector to the triangular surface in the frame of asteroid ---*/
+         px12=x2-x1;
+         py12=y2-y1;
+         pz12=z2-z1;
+         px13=x3-x1;
+         py13=y3-y1;
+         pz13=z3-z1;
+         px=(x1+x2+x3)/3.;
+         py=(y1+y2+y3)/3.;
+         pz=(z1+z2+z3)/3.;
+         npx=(py12*pz13-py13*pz12);
+         npy=-(px12*pz13-px13*pz12);
+         npz=(px12*py13-px13*py12);
+         np=sqrt(npx*npx+npy*npy+npz*npz);
+         tr=0.5*np;
+         nx=npx/np;
+         ny=npy/np;
+         nz=npz/np;
+         q=px*nx+py*ny+pz*nz;
+         if (q<0) {
+            nx=-nx;
+            ny=-ny;
+            nz=-nz;
+         }
+         /* --- F7 : rotations to take account for the pole orientation / frame ---*/
+         nsx=coslpcosi*nx-sinlp*ny-coslpsini*nz;
+         nsy=sinlpcosi*nx+coslp*ny-sinlpsini*nz;
+         nsz=sini*nx+cosi*nz;
+         htms[khtms].x=coslpcosi*px-sinlp*py-coslpsini*pz;
+         htms[khtms].y=sinlpcosi*px+coslp*py-sinlpsini*pz;
+         htms[khtms].z=sini*px+cosi*pz;
+         htms[khtms].x1=coslpcosi*x1-sinlp*y1-coslpsini*z1;
+         htms[khtms].y1=sinlpcosi*x1+coslp*y1-sinlpsini*z1;
+         htms[khtms].z1=sini*x1+cosi*z1;
+         htms[khtms].x2=coslpcosi*x2-sinlp*y2-coslpsini*z2;
+         htms[khtms].y2=sinlpcosi*x2+coslp*y2-sinlpsini*z2;
+         htms[khtms].z2=sini*x2+cosi*z2;
+         htms[khtms].x3=coslpcosi*x3-sinlp*y3-coslpsini*z3;
+         htms[khtms].y3=sinlpcosi*x3+coslp*y3-sinlpsini*z3;
+         htms[khtms].z3=sini*x3+cosi*z3;
+         /* --- defines the (dl,db) of the triangle projection in a plane perpendicular to the observer ---*/
+         rsx=(htms[khtms].x)/(UA)+cdrpos[kt].xaster;
+         rsy=(htms[khtms].y)/(UA)+cdrpos[kt].yaster;
+         rsz=(htms[khtms].z)/(UA)+cdrpos[kt].zaster;
+         if (frame_center==1) {
+            rsx-=cdrpos[kt].xearth;
+            rsy-=cdrpos[kt].yearth;
+            rsz-=cdrpos[kt].zearth;
+         }
+         rs=sqrt(rsx*rsx+rsy*rsy+rsz*rsz);
+         dist[khtms]=rs;
+         kdist[khtms]=khtms;
+         lrs=atan2(rsy,rsx);
+         brs=asin(rsz/rs);
+         htms[khtms].rs=rs;
+         htms[khtms].db=brs-bc;
+         htms[khtms].dl=-(lrs-lc)*cos(bc);
+         rsx=(htms[khtms].x1)/(UA)+cdrpos[kt].xaster;
+         rsy=(htms[khtms].y1)/(UA)+cdrpos[kt].yaster;
+         rsz=(htms[khtms].z1)/(UA)+cdrpos[kt].zaster;
+         if (frame_center==1) {
+            rsx-=cdrpos[kt].xearth;
+            rsy-=cdrpos[kt].yearth;
+            rsz-=cdrpos[kt].zearth;
+         }
+         rs=sqrt(rsx*rsx+rsy*rsy+rsz*rsz);
+         lrs=atan2(rsy,rsx);
+         brs=asin(rsz/rs);
+         htms[khtms].rs1=rs;
+         htms[khtms].db1=brs-bc;
+         htms[khtms].dl1=-(lrs-lc)*cos(bc);
+         rsx=(htms[khtms].x2)/(UA)+cdrpos[kt].xaster;
+         rsy=(htms[khtms].y2)/(UA)+cdrpos[kt].yaster;
+         rsz=(htms[khtms].z2)/(UA)+cdrpos[kt].zaster;
+         if (frame_center==1) {
+            rsx-=cdrpos[kt].xearth;
+            rsy-=cdrpos[kt].yearth;
+            rsz-=cdrpos[kt].zearth;
+         }
+         rs=sqrt(rsx*rsx+rsy*rsy+rsz*rsz);
+         lrs=atan2(rsy,rsx);
+         brs=asin(rsz/rs);
+         htms[khtms].rs2=rs;
+         htms[khtms].db2=brs-bc;
+         htms[khtms].dl2=-(lrs-lc)*cos(bc);
+         rsx=(htms[khtms].x3)/(UA)+cdrpos[kt].xaster;
+         rsy=(htms[khtms].y3)/(UA)+cdrpos[kt].yaster;
+         rsz=(htms[khtms].z3)/(UA)+cdrpos[kt].zaster;
+         if (frame_center==1) {
+            rsx-=cdrpos[kt].xearth;
+            rsy-=cdrpos[kt].yearth;
+            rsz-=cdrpos[kt].zearth;
+         }
+         rs=sqrt(rsx*rsx+rsy*rsy+rsz*rsz);
+         lrs=atan2(rsy,rsx);
+         brs=asin(rsz/rs);
+         htms[khtms].rs3=rs;
+         htms[khtms].db3=brs-bc;
+         htms[khtms].dl3=-(lrs-lc)*cos(bc);
+         /* --- F8 : absorbed and reflected powers (W) ---*/
+         cosths=(cdrpos[kt].xaster*nsx+cdrpos[kt].yaster*nsy+cdrpos[kt].zaster*nsz)/r;
+         if (cosths<0) {
+            pa=-e0/rr*tr*cosths*(1.-albedo);
+            pr=-e0/rr*tr*cosths*albedo;
+         } else {
+            pa=0.;
+            pr=0.;
+         }
+         /* --- F9 : eclairement recu sur terre ---*/
+         costht=(dx*nsx+dy*nsy+dz*nsz)/delta;
+         if (costht<0) {
+            pe=-1./fourpi*pr*costht;
+            e=pe/fourpi/delta2;
+         } else {
+            pe=0.;
+            e=0.;
+         }
+         /* --- surface exposée vers la Terre (m2) ---*/
+         if (costht<0) {
+            trtot+=(-tr*costht);
+         }
+         /* --- contribution to the total E (Lambert) ---*/
+         elamb=e;
+         etotlamb+=elamb;
+         /* --- contribution to the total E (Lommel-Seeliger) ---*/
+         els=-e/(cosths+costht);
+         etotls+=els;
+         /* --- infos for plots ---*/
+         htms[khtms].pr=pr/tr;
+         htms[khtms].elamb=elamb/tr;
+         htms[khtms].els=els/tr;
+      }
+      /* --- fill the projected image ---*/
+      if (image!=NULL) {
+         /* --- sort the distances observer-triangles ---*/
+         mc_quicksort_double(dist,0,nhtms-1,kdist);
+         /* --- fill image pixels, triangle by triangle from the farest to the nearest ---*/
+         for (khtms=nhtms-1;khtms>=0;khtms--) {
+            if (frame_center==0) {
+               e=htms[kdist[khtms]].pr;
+            } else {
+               e=htms[kdist[khtms]].els;
+            }
+            if (e==0.) { continue; }
+            pixx[0]=htms[kdist[khtms]].dl1/wcs.cdelt1+wcs.crpix1;
+            pixy[0]=htms[kdist[khtms]].db1/wcs.cdelt2+wcs.crpix2;
+            pixx[1]=htms[kdist[khtms]].dl2/wcs.cdelt1+wcs.crpix1;
+            pixy[1]=htms[kdist[khtms]].db2/wcs.cdelt2+wcs.crpix2;
+            pixx[2]=htms[kdist[khtms]].dl3/wcs.cdelt1+wcs.crpix1;
+            pixy[2]=htms[kdist[khtms]].db3/wcs.cdelt2+wcs.crpix2;
+            /* --- sort as x1<x2<x3 ---*/
+            for (k1=0;k1<2;k1++) {
+               for (k2=k1+1;k2<3;k2++) {
+                  if (pixx[k1]>pixx[k2]) {
+                     x=pixx[k1];
+                     pixx[k1]=pixx[k2];
+                     pixx[k2]=x;
+                     x=pixy[k1];
+                     pixy[k1]=pixy[k2];
+                     pixy[k2]=x;
+                  }
+               }
+            }
+            /* --- first half triangle (1-2) ---*/
+            x1=floor(pixx[0]+.5);
+            if (x1>=wcs.naxis1) { continue; }
+            x2=floor(pixx[1]+.5);
+            if (x2<0) { continue; }
+            if (x1<0) { x1=0; }
+            if (x2>=wcs.naxis1) { x2=wcs.naxis1-1; }
+            for (k1=(int)x1;k1<=(int)x2;k1++) {
+               if (pixx[1]==pixx[0]) { y2=pixy[1]; }
+               else { 
+                  frac=(k1-pixx[0])/(pixx[1]-pixx[0]);
+                  if (frac<0) {frac=0;}
+                  if (frac>1) {frac=1.;}
+                  y2=pixy[0]+(pixy[1]-pixy[0])*frac;
+               }
+               if (pixx[2]==pixx[0]) { y3=pixy[2]; }
+               else { 
+                  frac=(k1-pixx[0])/(pixx[2]-pixx[0]);
+                  if (frac<0) {frac=0.;}
+                  if (frac>1) {frac=1.;}
+                  y3=pixy[0]+(pixy[2]-pixy[0])*frac;
+               }
+               if (y2>y3) { y=y2; y2=y3; y3=y; }
+               y2=floor(y2+.5);
+               if (y2>=wcs.naxis2) { continue; }
+               y3=floor(y3+.5);
+               if (y3<0) { continue; }
+               if (y2<0) { y2=0; }
+               if (y3>=wcs.naxis2) { y3=wcs.naxis2-1; }
+               for (k2=(int)y2;k2<=(int)y3;k2++) {
+                  image[k2*wcs.naxis1+k1]=(float)e;
+               }
+            }            
+            /* --- second half triangle (2-3) ---*/
+            x2=floor(pixx[1]+.5);
+            if (x2>=wcs.naxis1) { continue; }
+            x3=floor(pixx[2]+.5);
+            if (x3<0) { continue; }
+            if (x2<0) { x2=0; }
+            if (x3>=wcs.naxis1) { x3=wcs.naxis1-1; }
+            for (k1=(int)x2;k1<=(int)x3;k1++) {
+               if (pixx[0]==pixx[2]) { y2=pixy[0]; }
+               else { 
+                  frac=(k1-pixx[2])/(pixx[0]-pixx[2]);
+                  if (frac<0) {frac=0.;}
+                  if (frac>1) {frac=1.;}
+                  y2=pixy[2]+(pixy[0]-pixy[2])*frac;
+               }
+               if (pixx[1]==pixx[2]) { y3=pixy[1]; }
+               else { 
+                  frac=(k1-pixx[2])/(pixx[1]-pixx[2]);
+                  if (frac<0) {frac=0.;}
+                  if (frac>1) {frac=1.;}
+                  y3=pixy[2]+(pixy[1]-pixy[2])*frac;
+               }
+               if (y2>y3) { y=y2; y2=y3; y3=y; }
+               y2=floor(y2+.5);
+               if (y2>=wcs.naxis2) { continue; }
+               y3=floor(y3+.5);
+               if (y3<0) { continue; }
+               if (y2<0) { y2=0; }
+               if (y3>=wcs.naxis2) { y3=wcs.naxis2-1; }
+               for (k2=(int)y2;k2<=(int)y3;k2++) {
+                  image[k2*wcs.naxis1+k1]=(float)e;
+               }
+            }            
+         }
+         sprintf(filename,"%s%d.fit",genefilename,kt+1);
+         mc_savefits(image,wcs.naxis1,wcs.naxis2,filename,&wcs);
+      }
+      /* --- cas when the object in the shadow of the Earth ---*/
+      etotlamb*=cdrpos[kt].eclipsed;
+      etotls*=cdrpos[kt].eclipsed;
+      /* --- mag1 take account for a pure Lambert law ---*/
+      if (etotlamb==0) {
+         cdrpos[kt].mag1=99.99;
+      } else {
+         cdrpos[kt].mag1=32.2800-2.5*log10(etotlamb);
+      }
+      /* --- mag2 take account for a pure Lommel-Seeliger law ---*/
+      if (etotls==0) {
+         cdrpos[kt].mag2=99.99;
+      } else {
+         cdrpos[kt].mag2=31.9665-2.5*log10(etotls);
+      }
+      /**/
+      if (kt==0) {
+         trtotmin=trtot;
+         trtotmax=trtot;
+      } else {
+         if (trtot>trtotmax) { trtotmax=trtot; }
+         if (trtot<trtotmin) { trtotmin=trtot; }
+      }
+   }
+   free(htms);
+   if (image!=NULL) {free(image);}
+   free(dist);
+   free(kdist);
+
+}
 void mc_simulcbin(mc_cdr cdr,double *relief1,double *albedo1,double *relief2,double *albedo2,mc_cdrpos *cdrpos,int n,char *genefilename)
 /***************************************************************************/
 /* simulation de la courbe de lumiere d'un asteroide SSB                   */
