@@ -1,0 +1,128 @@
+#
+# Fichier : eqmod.cap
+# Mise a jour $Id: eqmod.cap,v 1.1 2009-02-13 16:09:42 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(eqmod,monture)                   "EQMOD"
+set caption(eqmod,port)                      "Port"
+set caption(eqmod,configurer)                "Set up"
+set caption(eqmod,controle)                  "Control"
+set caption(eqmod,maj_eqmod)                 "Update longitude, latitude and altitude of EQMOD"
+set caption(eqmod,raquette_tel)              "Hand controller on screen"
+
+set caption(eqmod,port_eqmod)                "EQMOD Port"
+set caption(eqmod,2points)                   ":"
+
+set caption(eqmod,titre_site_web)            "Reference Web Site:"
+set caption(eqmod,site_eqmod)                "http://eq-mod.sourceforge.net/introindex.html"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(eqmod,monture)                "EQMOD"
+   set caption(eqmod,port)                   "Port"
+   set caption(eqmod,configurer)             "Configurer"
+   set caption(eqmod,controle)               "Contrôle"
+   set caption(eqmod,maj_eqmod)              "Mise à jour longitude, latitude et altitude de l'EQMOD"
+   set caption(eqmod,raquette_tel)           "Raquette à l'écran"
+
+   set caption(eqmod,port_eqmod)             "Port EQMOD"
+   set caption(eqmod,2points)                ":"
+
+   set caption(eqmod,titre_site_web)         "Site Web de référence :"
+   set caption(eqmod,site_eqmod)             "http://www.freewebs.com/eq6modfr/"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(eqmod,monture)                "EQMOD"
+   set caption(eqmod,port)                   "Porta"
+   set caption(eqmod,configurer)             "Configurare"
+   set caption(eqmod,controle)               "Controllo"
+   set caption(eqmod,maj_eqmod)              "Aggiornamento longitudine, latitudine ed altitudine dell' EQMOD"
+   set caption(eqmod,raquette_tel)           "Pulsantiera a schermo"
+
+   set caption(eqmod,port_eqmod)             "Porta EQMOD"
+   set caption(eqmod,2points)                ":"
+
+   set caption(eqmod,titre_site_web)         "Sito Web di riferimento:"
+   set caption(eqmod,site_eqmod)             "http://eq-mod.sourceforge.net/introindex.html"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(eqmod,monture)                "EQMOD"
+   set caption(eqmod,port)                   "Puerto"
+   set caption(eqmod,configurer)             "Configurar"
+   set caption(eqmod,controle)               "Control"
+   set caption(eqmod,maj_eqmod)              "Actualizar longitud, latitud y altitud del EQMOD"
+   set caption(eqmod,raquette_tel)           "Controlador virtual"
+
+   set caption(eqmod,port_eqmod)             "Puerto EQMOD"
+   set caption(eqmod,2points)                ":"
+
+   set caption(eqmod,titre_site_web)         "Sitio Web de referencia:"
+   set caption(eqmod,site_eqmod)             "http://eq-mod.sourceforge.net/introindex.html"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(eqmod,monture)                "EQMOD"
+   set caption(eqmod,port)                   "Port"
+   set caption(eqmod,configurer)             "Konfigurieren"
+   set caption(eqmod,controle)               "Kontroll"
+   set caption(eqmod,maj_eqmod)              "Länge, Breite, Höhe des EQMOD Aktualisierung"
+   set caption(eqmod,raquette_tel)           "Hand Kontroller am Bildschirm"
+
+   set caption(eqmod,port_eqmod)             "EQMOD Port"
+   set caption(eqmod,2points)                ":"
+
+   set caption(eqmod,titre_site_web)         "Referenz Webseite:"
+   set caption(eqmod,site_eqmod)             "http://eq-mod.sourceforge.net/introindex.html"
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(eqmod,monture)                "EQMOD"
+   set caption(eqmod,port)                   "Porta"
+   set caption(eqmod,configurer)             "Configuração"
+   set caption(eqmod,controle)               "Controlo"
+   set caption(eqmod,maj_eqmod)              "Actualizar longitude, latitude e altitude do EQMOD"
+   set caption(eqmod,raquette_tel)           "Controlador de mão no ecrã"
+
+   set caption(eqmod,port_eqmod)             "Porta EQMOD"
+   set caption(eqmod,2points)                ":"
+
+   set caption(eqmod,titre_site_web)         "Site Web de referência:"
+   set caption(eqmod,site_eqmod)             "http://eq-mod.sourceforge.net/introindex.html"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(eqmod,monture)                "EQMOD"
+   set caption(eqmod,port)                   "Port"
+   set caption(eqmod,configurer)             "Set up"
+   set caption(eqmod,controle)               "Control"
+   set caption(eqmod,maj_eqmod)              "Update longitude, latitude and altitude of EQMOD"
+   set caption(eqmod,raquette_tel)           "Hand controller on screen"
+
+   set caption(eqmod,port_eqmod)             "EQMOD Port"
+   set caption(eqmod,2points)                ":"
+
+   set caption(eqmod,titre_site_web)         "Reference Web Site:"
+   set caption(eqmod,site_eqmod)             "http://eq-mod.sourceforge.net/introindex.html"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
