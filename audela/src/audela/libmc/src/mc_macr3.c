@@ -1302,7 +1302,7 @@ void mc_simulc_sat_stl(mc_cdr cdr,struct_point *point1,struct_point *point2,stru
 /***************************************************************************/
 /***************************************************************************/
 {
-   int nhtm,k,kt;
+   int nhtm,k,kt,nrug;
    char *htm;
    double l1,l2,l3;
    double cosb,sinb,coslcosb,sinlcosb;
@@ -1315,7 +1315,7 @@ void mc_simulc_sat_stl(mc_cdr cdr,struct_point *point1,struct_point *point2,stru
    double coslp,sinlp,coslpcosi,sinlpcosi,coslpsini,sinlpsini,sini,cosi;
    double r,rr,delta,delta2,dx,dy,dz;
    double nsx,nsy,nsz;  
-   double e0,pa,pr,i,cosths,costht,e,etotlamb,etotls,pe;
+   double e0,pa,pr,i,cosths,costht,e,etotlamb,etotls,etotmin, etotphong, ephong, emin, pe,cosalpha;
    double fourpi;
    double trtot=0.;
    double trtotmin,trtotmax;
@@ -1520,7 +1520,7 @@ void mc_simulc_sat_stl(mc_cdr cdr,struct_point *point1,struct_point *point2,stru
    }
    /* --- loop over the phase dates ---*/
    for (kt=0;kt<n;kt++) {
-      etotlamb=etotls=0.;
+      etotlamb=etotls=etotmin=etotphong=0.;
       dl=fmod(l0/(DR)+360.*(cdrpos[kt].jd-date0)/period,360.)*(DR);
       trtot=0.;
       /* --- distances from the gravity center ---*/
@@ -1693,6 +1693,7 @@ void mc_simulc_sat_stl(mc_cdr cdr,struct_point *point1,struct_point *point2,stru
             pe=0.;
             e=0.;
          }
+		 cosalpha=-(cdrpos[kt].xaster*dx+cdrpos[kt].yaster*dy+cdrpos[kt].zaster*dz)/(delta*r);
          /* --- surface exposée vers la Terre (m2) ---*/
          if (costht<0) {
             trtot+=(-tr*costht);
@@ -1703,10 +1704,19 @@ void mc_simulc_sat_stl(mc_cdr cdr,struct_point *point1,struct_point *point2,stru
          /* --- contribution to the total E (Lommel-Seeliger) ---*/
          els=-e/(cosths+costht);
          etotls+=els;
+		  /* --- contribution to the total E (Minnaert) ---*/
+		 nrug=6;
+         emin=-e*(pow(cosths,nrug))*(pow(costht,nrug-1));
+         etotmin+=emin;
+		  /* --- contribution to the total E (Phong) ---*/
+         ephong=e*(pow(cos(acos(cosths)-acos(costht)),n));
+         etotphong+=ephong;
          /* --- infos for plots ---*/
          htms[khtms].pr=pr/tr;
          htms[khtms].elamb=elamb/tr;
          htms[khtms].els=els/tr;
+		 htms[khtms].emin=emin/tr;
+         htms[khtms].ephong=ephong/tr;
       }
       /* --- fill the projected image ---*/
       if (image!=NULL) {
@@ -1812,6 +1822,8 @@ void mc_simulc_sat_stl(mc_cdr cdr,struct_point *point1,struct_point *point2,stru
       /* --- cas when the object in the shadow of the Earth ---*/
       etotlamb*=cdrpos[kt].eclipsed;
       etotls*=cdrpos[kt].eclipsed;
+	  etotmin*=cdrpos[kt].eclipsed;
+	  etotphong*=cdrpos[kt].eclipsed;
       /* --- mag1 take account for a pure Lambert law ---*/
       if (etotlamb==0) {
          cdrpos[kt].mag1=99.99;
@@ -1823,6 +1835,18 @@ void mc_simulc_sat_stl(mc_cdr cdr,struct_point *point1,struct_point *point2,stru
          cdrpos[kt].mag2=99.99;
       } else {
          cdrpos[kt].mag2=31.9665-2.5*log10(etotls);
+      }
+	  /* --- mag3 take account for a pure Minnaert law ---*/
+      if (etotmin==0) {
+         cdrpos[kt].mag3=99.99;
+      } else {
+         cdrpos[kt].mag3=32-2.5*log10(etotmin);
+      }
+	  /* --- mag3 take account for a pure Phong law ---*/
+      if (etotphong==0) {
+         cdrpos[kt].mag4=99.99;
+      } else {
+         cdrpos[kt].mag4=32-2.5*log10(etotphong);
       }
       /**/
       if (kt==0) {

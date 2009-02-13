@@ -3266,6 +3266,8 @@ int Cmd_mctcl_simulc_sat_stl(ClientData clientData, Tcl_Interp *interp, int argc
          cdrpos[k].mag0=mag;
          cdrpos[k].mag1=mag;
          cdrpos[k].mag2=mag;
+		 cdrpos[k].mag3=mag;
+         cdrpos[k].mag4=mag;
          if (cdr.frame_center==0) { 
             /* heliocentric */
             cdrpos[k].xearth=0.;
@@ -3306,6 +3308,16 @@ int Cmd_mctcl_simulc_sat_stl(ClientData clientData, Tcl_Interp *interp, int argc
       Tcl_DStringAppend(&dsptr,"} {",-1);
       for (k=0;k<n;k++) {
          sprintf(s,"%f ",cdrpos[k].mag2);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+	  Tcl_DStringAppend(&dsptr,"} {",-1);
+	  for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].mag3);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+	  Tcl_DStringAppend(&dsptr,"} {",-1);
+	  for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].mag4);
          Tcl_DStringAppend(&dsptr,s,-1);
       }
       Tcl_DStringAppend(&dsptr,"} {",-1);

@@ -387,6 +387,8 @@ typedef struct {
    double pr;
    double elamb;
    double els;
+   double emin;
+   double ephong;
    /* --- coordinates of each triangle / heliocentric frame / center of asteroid */
    double x;
    double y;
@@ -451,6 +453,8 @@ typedef struct {
    double mag0;
    double mag1;
    double mag2;
+   double mag3;
+   double mag4;
    double eclipsed;
 } mc_cdrpos;
 
