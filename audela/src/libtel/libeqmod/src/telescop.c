@@ -42,9 +42,9 @@
  */
 
 struct telini tel_ini[] = {
-   {"Eq Mod",    /* telescope name */
-    "Eq Mod",    /* protocol name */
-    "eq mod",    /* product */
+   {"EQMOD",    /* telescope name */
+    "EQMOD",    /* protocol name */
+    "eqmod",    /* product */
      1.         /* default focal lenght of optic system */
    },
    {"",       /* telescope name */
