@@ -49,6 +49,7 @@ Regulus              Alpha Leo      10 08 22.3    +11 58 02     1.35
 Algieba              Gamma1 Leo     10 19 58.3    +19 50 30     2.61
 .                    Mu  Vel        10 46 46.2    -49 25 12     2.69
 Merak                Bêta UMa       11 01 50.5    +56 22 57     2.37
+Dubhe                Alpha UMa      11 03 43.7    +61 45 03     1 79
 Zosma                Delta Leo      11 14 06.5    +20 31 25     2.56
 Denebola             Bêta Leo       11 49 03.6    +14 34 19     2.14
 Phad                 Gamma UMa      11 53 49.8    +53 41 41     2.44
