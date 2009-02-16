@@ -196,6 +196,10 @@ SOURCE=..\src\mc_time1.c
 
 SOURCE=..\src\mc_util1.c
 # End Source File
+# Begin Source File
+
+SOURCE=..\src\mc_util2.c
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
