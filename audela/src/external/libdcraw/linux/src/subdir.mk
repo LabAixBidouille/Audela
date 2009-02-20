@@ -2,14 +2,14 @@
 # Automatically-generated file. Do not edit!
 ################################################################################
 
-# Add inputs and outputs from these tool invocations to the build variables 
+# Add inputs and outputs from these tool invocations to the build variables
 C_SRCS += \
 $(ROOT)/src/dcraw.c \
-$(ROOT)/src/libdcraw.c 
+$(ROOT)/src/libdcraw.c
 
 OBJS += \
 ./src/dcraw.o \
-./src/libdcraw.o 
+./src/libdcraw.o
 
 DEPS += \
 ${addprefix ./src/, \
@@ -22,10 +22,10 @@ libdcraw.d \
 src/%.o: $(ROOT)/src/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C Compiler'
-	@echo gcc -O3 -Wall -c -fmessage-length=0 -o$@ $<
-	@gcc -O3 -Wall -c -fmessage-length=0 -o$@ $< && \
+	@echo gcc -O3 -Wall -c -fmessage-length=0 -fPIC -o$@ $<
+	@gcc -O3 -Wall -c -fmessage-length=0 -fPIC -o$@ $< && \
 	echo -n $(@:%.o=%.d) $(dir $@) > $(@:%.o=%.d) && \
-	gcc -MM -MG -P -w -O3 -Wall -c -fmessage-length=0  $< >> $(@:%.o=%.d)
+	gcc -MM -MG -P -w -O3 -Wall -c -fmessage-length=0 -fPIC  $< >> $(@:%.o=%.d)
 	@echo 'Finished building: $<'
 	@echo ' '
 

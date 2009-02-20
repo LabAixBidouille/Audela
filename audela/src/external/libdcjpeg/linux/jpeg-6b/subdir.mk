@@ -157,7 +157,7 @@ jpeg-6b/%.o: $(ROOT)/jpeg-6b/%.c
 	@echo gcc -I../jpeg-6b -O3 -Wall -c -fmessage-length=0 -fPIC -o$@ $<
 	@gcc -I../jpeg-6b -O3 -Wall -c -fmessage-length=0 -fPIC -o$@ $< && \
 	echo -n $(@:%.o=%.d) $(dir $@) > $(@:%.o=%.d) && \
-	gcc -MM -MG -P -w -I../jpeg-6b -O3 -Wall -c -fmessage-length=0  $< >> $(@:%.o=%.d)
+	gcc -MM -MG -P -w -I../jpeg-6b -O3 -Wall -c -fmessage-length=0 -fPIC  $< >> $(@:%.o=%.d)
 	@echo 'Finished building: $<'
 	@echo ' '
 

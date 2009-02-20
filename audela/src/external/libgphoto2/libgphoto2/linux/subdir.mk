@@ -2,7 +2,7 @@
 # Automatically-generated file. Do not edit!
 ################################################################################
 
-# Add inputs and outputs from these tool invocations to the build variables 
+# Add inputs and outputs from these tool invocations to the build variables
 C_SRCS += \
 ../bayer.c \
 ../exif.c \
@@ -19,7 +19,7 @@ C_SRCS += \
 ../gphoto2-version.c \
 ../gphoto2-widget.c \
 ../jpeg.c \
-../libgphoto2.c 
+../libgphoto2.c
 
 OBJS += \
 ./bayer.o \
@@ -37,7 +37,7 @@ OBJS += \
 ./gphoto2-version.o \
 ./gphoto2-widget.o \
 ./jpeg.o \
-./libgphoto2.o 
+./libgphoto2.o
 
 C_DEPS += \
 ./bayer.d \
@@ -55,14 +55,14 @@ C_DEPS += \
 ./gphoto2-version.d \
 ./gphoto2-widget.d \
 ./jpeg.d \
-./libgphoto2.d 
+./libgphoto2.d
 
 
 # Each subdirectory must supply rules for building sources it contributes
 %.o: ../%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C Compiler'
-	gcc -I../../linux -I../../libltdl -I../../libgphoto2_port/libgphoto2_port -I.. -O3 -w -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+	gcc -I../../linux -I../../libltdl -I../../libgphoto2_port/libgphoto2_port -I.. -O3 -w -c -fmessage-length=0 -fPIC -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
