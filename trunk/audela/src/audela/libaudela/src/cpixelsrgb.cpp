@@ -597,7 +597,9 @@ int CPixelsRgb::GetHeight(void) {
 // 
 //}
 
-void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFormat, TColorPlane plane, int pixels) {
+// Yassine
+//void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFormat, TColorPlane plane, int pixels) {
+void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFormat, TColorPlane plane, long pixels) {
    int x, y;
    int width  = x2-x1+1;
    TYPE_PIXELS_RGB  *ptr;
@@ -878,8 +880,9 @@ void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFo
    }
 }
 
-
-void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, int pixels) {
+// Yassine
+// void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, int pixels) {
+void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, long pixels) {
    int x, y;
    int width  = x2-x1+1;
    TYPE_PIXELS_RGB  *ptr;

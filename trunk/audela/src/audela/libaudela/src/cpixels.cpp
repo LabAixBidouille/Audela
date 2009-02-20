@@ -63,7 +63,9 @@ void CPixels::AstroBaricenter(int x1, int y1, int x2, int y2, double *xc, double
    naxis1 = x2-x1+1;
    naxis2 = y2-y1+1;
    pixTemp = (TYPE_PIXELS *) malloc(naxis1 * naxis2 * sizeof(float));
-   GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
+   // Yassine
+   // GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
+   GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (long) pixTemp);
 
    *yc=0.;
    *xc=0.;
@@ -113,7 +115,9 @@ void CPixels::AstroCentro(int x1, int y1, int x2, int y2, int xmax, int ymax,
    naxis1 = x2-x1+1;
    naxis2 = y2-y1+1;
    pixTemp = (TYPE_PIXELS *) malloc(naxis1 * naxis2 * sizeof(float));
-   GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
+   // Yassine
+   // GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
+   GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (long) pixTemp);
 
    //changement de coordonnees  (image entiere -> fenetre)
    xmax -= x1;
@@ -170,7 +174,9 @@ void CPixels::AstroFlux(int x1, int y1, int x2, int y2,
    naxis1 = x2-x1+1;
    naxis2 = y2-y1+1;
    pixTemp = (TYPE_PIXELS *) malloc(naxis1 * naxis2 * sizeof(float));
-   GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
+   // Yassine
+   // GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
+   GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (long) pixTemp);
 
    *nbpix=naxis1 * naxis2;
 
@@ -236,7 +242,9 @@ void CPixels::AstroPhoto(int x1, int y1, int x2, int y2, int xmax, int ymax,
    naxis1 = x2-x1+1;
    naxis2 = y2-y1+1;
    pixTemp = (TYPE_PIXELS *) malloc(naxis1 * naxis2 * sizeof(float));
-   GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
+   // Yassine
+   // GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
+   GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (long) pixTemp);
 
    //changement de coordonnees  (image entiere -> fenetre)
    xmax -= x1;
@@ -324,7 +332,9 @@ void CPixels::AstroPhotometry(int x1, int y1, int x2, int y2,
    naxis1 = x2-x1+1;
    naxis2 = y2-y1+1;
    pixTemp = (TYPE_PIXELS *) malloc(naxis1 * naxis2 * sizeof(float));
-   GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
+   // Yassine
+   //GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
+   GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (long) pixTemp);
 
    if (method==0) {
       r1/=2;
@@ -816,7 +826,9 @@ void CPixels::Fwhm(int x1, int y1, int x2, int y2,
    width = x2-x1+1;
    height = y2-y1+1;
    ppixels = (TYPE_PIXELS *) malloc(width * height * sizeof(TYPE_PIXELS));
-   GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) ppixels);
+   // Yassine
+   // GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) ppixels);
+   GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (long) ppixels);
 
    iX = (TYPE_PIXELS*)calloc(width,sizeof(TYPE_PIXELS));
    dX = (double*)calloc(width,sizeof(double));
@@ -907,7 +919,9 @@ void CPixels::Fwhm2d(int x1, int y1, int x2, int y2,
    width = x2-x1+1;
    height = y2-y1+1;
    ppixels = (TYPE_PIXELS *) malloc(width * height * sizeof(TYPE_PIXELS));
-   GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) ppixels);
+   // Yassine
+   //GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) ppixels);
+   GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (long) ppixels);
    iXY = (double**)calloc(width,sizeof(double));
    for(i=0;i<width;i++) {
       *(iXY+i) = (double*)calloc(height,sizeof(double));
@@ -1106,7 +1120,9 @@ void CPixels::Histogram(int n, float *adus, float *meanadus, long *histo,
    naxis1 = this->GetWidth();
    naxis2 = this->GetHeight();
    pixTemp = (TYPE_PIXELS *) malloc(naxis1 * naxis2 * sizeof(float));
-   GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
+   // Yassine
+   // GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
+   GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (long) pixTemp);
    nelem=naxis1*naxis2;
 
 #ifndef FLT_MAX

@@ -3100,7 +3100,9 @@ int cmdPointer(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
       // Appel a la methode du buffer
       buffer = (CBuffer*)clientData;
       buffer->GetPixelsPointer(&pixelsPointer);
-      sprintf(ligne,"%d",(int) pixelsPointer);
+      //Yassine
+      //sprintf(ligne,"%d",(int) pixelsPointer);
+      sprintf(ligne,"%ld",(long) pixelsPointer);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    }
 

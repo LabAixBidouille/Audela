@@ -221,9 +221,13 @@ void CFile::saveFits(char * filename, int dataTypeOut, CPixels *pixels, CFitsKey
          pixelsB = pixelsR + naxis1*naxis2*2; 
 
          // je recupere l'image RGB a traiter en séparant les 3 plans
-         pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_R, (int) pixelsR);
-         pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_G, (int) pixelsG);
-         pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_B, (int) pixelsB);
+         // Yassine
+         //pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_R, (int) pixelsR);
+         //pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_G, (int) pixelsG);
+         //pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_B, (int) pixelsB);
+         pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_R, (long) pixelsR);
+         pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_G, (long) pixelsG);
+         pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_B, (long) pixelsB);
    
          // format des pixels en entree de libtt
          datatype = TSHORT;
@@ -231,7 +235,9 @@ void CFile::saveFits(char * filename, int dataTypeOut, CPixels *pixels, CFitsKey
       default : 
          // je recupere l'image GREY a traiter 
          ppix = malloc(naxis1* naxis2 * sizeof(float));
-         pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (int) ppix);
+         // Yassine
+         //pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (int) ppix);
+         pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (long) ppix);
          
          // format des pixels en entree de libtt
          datatype = TFLOAT;         
@@ -523,7 +529,9 @@ void CFile::cfa2Rgb(CPixels *cfaPixels, CFitsKeywords *cfaKeywords, int interpol
    if( cfaData == NULL ) {
       CError("CFile::cfa2Rgb: enougth memory");
    }
-   cfaPixels->GetPixels(0, 0, cfaPixels->GetWidth() -1,  cfaPixels->GetHeight() -1, FORMAT_USHORT, PLANE_GREY, (int) cfaData );
+   // Yassine
+   //cfaPixels->GetPixels(0, 0, cfaPixels->GetWidth() -1,  cfaPixels->GetHeight() -1, FORMAT_USHORT, PLANE_GREY, (int) cfaData );
+   cfaPixels->GetPixels(0, 0, cfaPixels->GetWidth() -1,  cfaPixels->GetHeight() -1, FORMAT_USHORT, PLANE_GREY, (long) cfaData );
 
    // je convertis l'image CFA en RGB
    result = libdcraw_bufferCfa2Rgb(cfaData, &dataInfo, method, &rgbData);
