@@ -517,6 +517,7 @@ void EthernaudeScanTransfer(ClientData clientData)
    int status;
    char dateobs_tu[50], dateend_tu[50];
    int nbpix;
+   int gps_non_synchro = 0;
 
    interp = TheScanStruct->interp;
    cam = (struct camprop *) clientData;
@@ -580,6 +581,8 @@ void EthernaudeScanTransfer(ClientData clientData)
    Tcl_Eval(interp, s);
    sprintf(s, "buf%d setkwd {CAMERA \"%s %s %s\" string \"\" \"\"}", cam->bufno, CAM_INI[cam->index_cam].name, CAM_INI[cam->index_cam].ccd, CAM_LIBNAME);
    Tcl_Eval(interp, s);
+   sprintf(s, "buf%d setkwd [list GPS-DATE 0 int {1 if datation is derived from GPS, else 0} {}]", cam->bufno);
+   Tcl_Eval(cam->interp, s);
 
    /* Recuperation des coordonnees telescope le cas echeant */
    libcam_get_tel_coord(interp, &ra, &dec, cam, &status);
@@ -597,8 +600,6 @@ void EthernaudeScanTransfer(ClientData clientData)
    }
 
    /* --- Datation GPS si eventaude present --- */
-   sprintf(s, "buf%d setkwd [list GPS-DATE 0 int {1 if datation is derived from GPS, else 0} {}]", cam->bufno);
-   Tcl_Eval(cam->interp, s);
    if (cam->ethvar.InfoCCD_HasGPSDatation == 1) {
       sprintf(s, "buf%d setkwd {CAMERA \"%s+GPS %s %s\" string \"\" \"\"}", cam->bufno, CAM_INI[cam->index_cam].name, CAM_INI[cam->index_cam].ccd, CAM_LIBNAME);
       Tcl_Eval(interp, s);
@@ -609,18 +610,22 @@ void EthernaudeScanTransfer(ClientData clientData)
       paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
       AskForExecuteCCDCommand_Dump(&ParamCCDIn, &ParamCCDOut);
       if (util_param_search(&ParamCCDOut, "Date", value, &paramtype) == 0) {
-         sprintf(ligne, "mc_date2iso8601 %s", value);
-         if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
-            sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
-            util_log(ligne, 0);
-            return;
-         }
-         strcpy(cam->date_obs, cam->interp->result);
-         sprintf(ligne, "buf%d setkwd {DATE-OBS %s string \"Begin of scan exposure (GPS).\" \"\"}", cam->bufno, cam->date_obs);
-         if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
-            sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
-            util_log(ligne, 0);
-            return;
+         if ( strcmp(value,"0") ) {
+            sprintf(ligne, "mc_date2iso8601 %s", value);
+            if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
+               sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
+               util_log(ligne, 0);
+               return;
+            }
+            strcpy(cam->date_obs, cam->interp->result);
+            sprintf(ligne, "buf%d setkwd {DATE-OBS %s string \"Begin of scan exposure (GPS).\" \"\"}", cam->bufno, cam->date_obs);
+            if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
+               sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
+               util_log(ligne, 0);
+               return;
+            }
+         } else {
+            gps_non_synchro = 1;
          }
       } else {
          sprintf(ligne, "buf%d setkwd [list GPS_BEG -1 float {Error, could not get the value from ethernaude} {}]", cam->bufno);
@@ -637,18 +642,22 @@ void EthernaudeScanTransfer(ClientData clientData)
       paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
       AskForExecuteCCDCommand_Dump(&ParamCCDIn, &ParamCCDOut);
       if (util_param_search(&ParamCCDOut, "Date", value, &paramtype) == 0) {
-         sprintf(ligne, "mc_date2iso8601 %s", value);
-         if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
-            sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
-            util_log(ligne, 0);
-            return;
-         }
-         strcpy(cam->date_end, cam->interp->result);
-         sprintf(ligne, "buf%d setkwd {DATE-END %s string \"End of scan exposure (GPS).\" \"\"}", cam->bufno, cam->date_end);
-         if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
-            sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
-            util_log(ligne, 0);
-            return;
+         if ( strcmp(value,"0") ) {
+            sprintf(ligne, "mc_date2iso8601 %s", value);
+            if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
+               sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
+               util_log(ligne, 0);
+               return;
+            }
+            strcpy(cam->date_end, cam->interp->result);
+            sprintf(ligne, "buf%d setkwd {DATE-END %s string \"End of scan exposure (GPS).\" \"\"}", cam->bufno, cam->date_end);
+            if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
+               sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
+               util_log(ligne, 0);
+               return;
+            }
+         } else {
+            gps_non_synchro = 1;
          }
       } else {
          sprintf(ligne, "buf%d setkwd [list GPS_END -1 float {Error, could not get the value from ethernaude} {}]", cam->bufno);
@@ -659,8 +668,10 @@ void EthernaudeScanTransfer(ClientData clientData)
          }
       }
 
-      sprintf(s, "buf%d setkwd [list GPS-DATE 1 int {1 if datation is derived from GPS, else 0} {}]", cam->bufno);
-      Tcl_Eval(cam->interp, s);
+      if ( gps_non_synchro == 0 ) {
+         sprintf(s, "buf%d setkwd [list GPS-DATE 1 int {1 if datation is derived from GPS, else 0} {}]", cam->bufno);
+         Tcl_Eval(cam->interp, s);
+      }
    }
 
    //sprintf(s, "status_cam%d", cam->camno);
