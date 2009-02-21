@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib tkstub84.lib tclstub84.lib wsock32.lib version.lib libdcjpeg.lib libdcraw.lib pthread.lib /nologo /dll /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"..\..\..\..\bin\libaudela.dll" /libpath:"..\..\..\external\lib"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib tkstub85.lib tclstub85.lib wsock32.lib version.lib libdcjpeg.lib libdcraw.lib pthread.lib /nologo /dll /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"..\..\..\..\bin\libaudela.dll" /libpath:"..\..\..\external\lib"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PostBuild_Cmds=echo on	if not exist ..\..\lib (mkdir ..\..\lib)	copy release\libaudela.lib ..\..\lib	if not exist ..\..\include (mkdir ..\..\include)	copy ..\src\audela.h ..\..\include	copy ..\src\cbuffer.h ..\..\include	copy ..\src\cdevice.h ..\..\include	copy ..\src\cerror.h ..\..\include	copy ..\src\cpixels.h ..\..\include	copy ..\src\cpool.h ..\..\include	copy ..\src\fitskw.h ..\..\include	copy ..\src\libstd.h ..\..\include	copy ..\src\libtt.h ..\..\include	copy ..\src\palette.h ..\..\include	copy ..\src\cpixelsgray.h ..\..\include	copy ..\src\cpixelsrgb.h ..\..\include
@@ -83,7 +83,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib advapi32.lib wsock32.lib tclstub84.lib version.lib libdcraw.lib libdcjpeg.lib pthread.lib /nologo /dll /debug /machine:I386 /nodefaultlib:"msvcrt" /out:"..\..\..\..\bin\libaudela.dll " /pdbtype:sept /libpath:"..\..\..\external\lib"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib advapi32.lib wsock32.lib tclstub85.lib version.lib libdcraw.lib libdcjpeg.lib pthread.lib /nologo /dll /debug /machine:I386 /nodefaultlib:"msvcrt" /out:"..\..\..\..\bin\libaudela.dll " /pdbtype:sept /libpath:"..\..\..\external\lib"
 # SUBTRACT LINK32 /pdb:none /nodefaultlib
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
