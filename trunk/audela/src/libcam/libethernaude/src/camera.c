@@ -481,6 +481,7 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
    int k, pdim;
    double t0, t1, dt, timeout = 60.;
    FILE *fwipe;
+   int gps_non_synchro = 0;
 
    if (p == NULL)
       return;
@@ -571,13 +572,17 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
       paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
       AskForExecuteCCDCommand_Dump(&ParamCCDIn, &ParamCCDOut);
       if (util_param_search(&ParamCCDOut, "Date", value, &paramtype) == 0) {
-         sprintf(ligne, "mc_date2iso8601 %s", value);
-         if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
-            sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
-            util_log(ligne, 0);
-            return;
+         if (strcmp(value,"0")) {
+            sprintf(ligne, "mc_date2iso8601 %s", value);
+            if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
+               sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
+               util_log(ligne, 0);
+               return;
+            }
+            strcpy(cam->date_obs, cam->interp->result);
+         } else {
+            gps_non_synchro = 1;
          }
-         strcpy(cam->date_obs, cam->interp->result);
       } else {
          sprintf(ligne,"Keyword 'Date' not found");
          util_log(ligne, 0);
@@ -589,20 +594,26 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
       paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
       AskForExecuteCCDCommand_Dump(&ParamCCDIn, &ParamCCDOut);
       if (util_param_search(&ParamCCDOut, "Date", value, &paramtype) == 0) {
-         sprintf(ligne, "mc_date2iso8601 %s", value);
-         if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
-            sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
-            util_log(ligne, 0);
-            return;
+         if (strcmp(value,"0")) {
+            sprintf(ligne, "mc_date2iso8601 %s", value);
+            if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
+                sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
+                util_log(ligne, 0);
+                return;
+            }
+            strcpy(cam->date_end, cam->interp->result);
+         } else {
+            gps_non_synchro = 1;
          }
-         strcpy(cam->date_end, cam->interp->result);
       } else {
          sprintf(ligne,"Keyword 'Date' not found");
          util_log(ligne, 0);
       }
       
-      sprintf(ligne, "buf%d setkwd [list GPS-DATE 1 int {1 if datation is derived from GPS, else 0} {}]", cam->bufno);
-      Tcl_Eval(cam->interp, ligne);
+      if ( gps_non_synchro == 0 ) {
+         sprintf(ligne, "buf%d setkwd [list GPS-DATE 1 int {1 if datation is derived from GPS, else 0} {}]", cam->bufno);
+         Tcl_Eval(cam->interp, ligne);
+      }
    } else {
       // Sans eventaude, en cas d'arret premature il faut mettre a jour date_end car c'est lui qui permet de calculer
       // le temps de pose reel.
