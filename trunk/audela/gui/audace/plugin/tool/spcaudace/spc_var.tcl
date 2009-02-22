@@ -3,7 +3,7 @@
 #
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.6 2009-01-02 20:56:03 bmauclaire Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.7 2009-02-22 12:02:20 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -48,8 +48,19 @@ set spcaudace(filetelluric) "$spcaudace(reptelluric)/h2o_calibrage.txt"
 #set spcaudace(filetelluric) "$spcaudace(reptelluric)/h2o_calibrage_140b.txt"
 #-- Liste des methodes de calibrations telluriques :
 set spcaudace(calo_meths) { 1 2 4 5 6 }
+#- 1 : spectre initial juste linearise ; toutes configs ; ne pas enlever de la liste.
+#- 2 : decalage d'une valeur egale au decalage moyen mean_shift mesure ; toutes configs.
+#- 3 : recallibrage de degre 3 avec les raies telluriques, puis decalage de RMS et linearisation ; kaf1600.
+#- 4 : recallibrage de degre 2 avec les raies telluriques, reechantillonne et linearisation a la volee ; que kaf400.
+#- 5 : decalage d'une valeur egale au RMS mesure des raies ; toutes configs.
+#- 6 : decalage d'une valeur egale au RMS*0.5 mesure des raies ; kaf1600.
+#- 7 : Recalage progressif par iterations pour minimiser le RMS mesure ; kaf1600 optionnel.
+
 #-- Effacement des profils des differentes methodes de calibration tellurique :
 set spcaudace(flag_rmcalo) "o"
+
+#-- Superflat binne et normalise :
+set spcaudace(binned_flat) "o"
 
 #-- Répertoire de la bibliothèque spectrale :
 set spcaudace(rep_spcbib) [ file join $spcaudace(rep_spc) data bibliotheque_spectrale ]
