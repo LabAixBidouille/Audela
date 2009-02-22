@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.12 2009-01-02 21:16:32 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.13 2009-02-22 12:03:27 bmauclaire Exp $
 
 
 
@@ -438,30 +438,32 @@ proc spc_pretrait { args } {
            delete2 "${pref_flat}_moinsnoir-" $nb_flat
        }
 
-       #-- Normalisation des flats pour les spectres sur la bande horizontale (naxis1) d'étude :
-       if { $flag_nonstellaire==1 } {
-          # Ne pas faire de superflat normalisé ? A tester.
-           set hauteur [ expr [ lindex $spc_windowcoords 3 ] - [ lindex $spc_windowcoords 1 ] ]
-           set ycenter [ expr round(0.5*$hauteur)+[ lindex $spc_windowcoords 1 ] ]
-           set flatnorma [ spc_normaflat "${pref_flat}-smd$nb_flat" $ycenter $hauteur ]
-           file rename -force "$audace(rep_images)/$flatnorma$conf(extension,defaut)" "$audace(rep_images)/${pref_flat}-smd$nb_flat$conf(extension,defaut)"
-       } else {
-           set fmean [ bm_smean $nom_stellaire ]
-           set spc_params [ spc_detect $fmean ]
-           set ycenter [ lindex $spc_params 0 ]
-           set hauteur [ lindex $spc_params 1 ]
-           if { $hauteur <= $spcaudace(largeur_binning) } {
-               # set fpretraitbis [ bm_pretrait "$nom_stellaire" "${pref_dark}-smd$nb_dark" "$nom_flat" "${pref_darkflat}-smd$nb_darkflat" ]
-               # set fsmean [ bm_smean "$fpretraitbis" ]
-               # set hauteur [ lindex [ spc_detect "$fsmean" ] 1 ]
-               # delete2 "fpretraitbis" $nb_stellaire
-               # file delete -force "$audace(rep_images)/$fsmean$conf(extension,defaut)"
-               #-- Met a 21 pixels la hauteur de binning du flat :
-               set hauteur [ expr 3*$spcaudace(largeur_binning) ]
-           }
-           file delete -force "$audace(rep_images)/$fmean$conf(extension,defaut)"
-           set flatnorma [ spc_normaflat "${pref_flat}-smd$nb_flat" $ycenter $hauteur ]
-           file rename -force "$audace(rep_images)/$flatnorma$conf(extension,defaut)" "$audace(rep_images)/${pref_flat}-smd$nb_flat$conf(extension,defaut)"
+       #-- Normalisation et binning des flats pour les spectres sur la bande horizontale (naxis1) d'étude :
+       if { $spcaudace(binned_flat) == "o" } {
+          if { $flag_nonstellaire==1 } {
+             #- Ne pas faire de superflat normalisé ? A tester.
+             set hauteur [ expr [ lindex $spc_windowcoords 3 ] - [ lindex $spc_windowcoords 1 ] ]
+             set ycenter [ expr round(0.5*$hauteur)+[ lindex $spc_windowcoords 1 ] ]
+             set flatnorma [ spc_normaflat "${pref_flat}-smd$nb_flat" $ycenter $hauteur ]
+             file rename -force "$audace(rep_images)/$flatnorma$conf(extension,defaut)" "$audace(rep_images)/${pref_flat}-smd$nb_flat$conf(extension,defaut)"
+          } else {
+             set fmean [ bm_smean $nom_stellaire ]
+             set spc_params [ spc_detect $fmean ]
+             set ycenter [ lindex $spc_params 0 ]
+             set hauteur [ lindex $spc_params 1 ]
+             if { $hauteur <= $spcaudace(largeur_binning) } {
+                # set fpretraitbis [ bm_pretrait "$nom_stellaire" "${pref_dark}-smd$nb_dark" "$nom_flat" "${pref_darkflat}-smd$nb_darkflat" ]
+                # set fsmean [ bm_smean "$fpretraitbis" ]
+                # set hauteur [ lindex [ spc_detect "$fsmean" ] 1 ]
+                # delete2 "fpretraitbis" $nb_stellaire
+                # file delete -force "$audace(rep_images)/$fsmean$conf(extension,defaut)"
+                #-- Met a 21 pixels la hauteur de binning du flat :
+                set hauteur [ expr 3*$spcaudace(largeur_binning) ]
+             }
+             file delete -force "$audace(rep_images)/$fmean$conf(extension,defaut)"
+             set flatnorma [ spc_normaflat "${pref_flat}-smd$nb_flat" $ycenter $hauteur ]
+             file rename -force "$audace(rep_images)/$flatnorma$conf(extension,defaut)" "$audace(rep_images)/${pref_flat}-smd$nb_flat$conf(extension,defaut)"
+          }
        }
 
        #--- Prétraitement des images stellaires :
@@ -491,7 +493,7 @@ proc spc_pretrait { args } {
 
        #-- Calcul du niveau moyen de la PLU traitée :
        buf$audace(bufNo) load "${pref_flat}-smd$nb_flat"
-       set intensite_moyenne [lindex [stat] 4]
+       set intensite_moyenne [ lindex [stat] 4 ]
 
        #-- Division des images stellaires par la PLU :
        ::console::affiche_resultat "Division des images stellaires par la PLU normalisée...\n"
