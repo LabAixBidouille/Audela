@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.20 2009-02-04 08:45:25 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.21 2009-02-22 13:22:49 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -706,7 +706,7 @@ proc gcn_pkt_type { pkt_type } {
      22       BATSE_FINAL       NO LONGER AVAILABLE
      24       BATSE_LOCBURST    NO LONGER AVAILABLE
      25       ALEXIS
-     26       RXTE-PCA_ALERT
+     26       RXTE-PCA_ALERT    NO LONGER AVAILABLE
      27       RXTE-PCA
      28       RXTE-ASM_ALERT
      29       RXTE-ASM
@@ -717,7 +717,7 @@ proc gcn_pkt_type { pkt_type } {
      34       SAX-WFC           NO LONGER AVAILABLE
      35       SAX-NFI_ALERT     NOT AVAILABLE
      36       SAX-NFI           NO LONGER AVAILABLE
-     37       RXTE-ASM_XTRANS
+     37       RXTE-ASM_XTRANS   NO LONGER AVAILABLE
      38       spare/unused
      39       IPN_POSITION
      40       HETE_S/C_ALERT    NO LONGER AVAILABLE
@@ -726,6 +726,8 @@ proc gcn_pkt_type { pkt_type } {
      43       HETE_GNDANA       NO LONGER AVAILABLE
      44       HETE_Test
      45       GRB_COUNTERPART
+     46       SWIFT_TOO_FOM_OBSERVE
+     47       SWIFT_TOO_SC_SLEW
      51       INTEGRAL_POINTDIR
      52       INTEGRAL_SPIACS
      53       INTEGRAL_WAKEUP
@@ -734,7 +736,7 @@ proc gcn_pkt_type { pkt_type } {
      57       OGLE                             NOT YET AVAILABLE
      57       SNEWS                            NOT YET AVAILABLE
      58       MILAGRO                          NO LONGER AVAILABLE
-     59       KONUS_LIGHTCURVE
+     59       KONUS_LIGHTCURVE                 NOT YET AVAILABLE
      60       SWIFT_BAT_GRB_ALERT
      61       SWIFT_BAT_GRB_POSITION
      62       SWIFT_BAT_GRB_NACK_POSITION
@@ -773,9 +775,9 @@ proc gcn_pkt_type { pkt_type } {
      108      AGILE_POINTDIR
      108      SuperAGILE_TRANS                 NOT YET AVAILABLE
      109      SuperAGILE_GRB_POS_TEST
-     110      FERMI_GBM_ALERT                  NOT YET AVAILABLE TO THE PUBLIC
-     111      FERMI_GBM_FLT_POS                NOT YET AVAILABLE TO THE PUBLIC
-     112      FERMI_GBM_GND_POSD               NOT YET AVAILABLE TO THE PUBLIC
+     110      FERMI_GBM_ALERT
+     111      FERMI_GBM_FLT_POS
+     112      FERMI_GBM_GND_POS
      113      FERMI_GBM_LC                     NOT YET AVAILABLE TO THE PUBLIC
      118      FERMI_GBM_TRANS                  NOT YET AVAILABLE TO THE PUBLIC
      119      FERMI_GBM_POS_TEST
@@ -788,7 +790,7 @@ proc gcn_pkt_type { pkt_type } {
      126      FERMI_SC_SLEW                    NOT YET AVAILABLE
      127      FERMI_LAT_GND_REF                NOT YET AVAILABLE TO THE PUBLIC
      128      FERMI_LAT_GND_TRIG               NOT YET AVAILABLE TO THE PUBLIC
-     129      FERMI_POINTDIR                   NOT YET AVAILABLE
+     129      FERMI_POINTDIR
      130      SIMBAD/NED_SEARCH_RESULTS
      901      ANTARES_GRB_POSITION             AVAILABLE ONLY FOR TAROT COLLABORATION
      902      ANTARES_GRB_POS_TEST             AVAILABLE ONLY FOR TAROT COLLABORATION
@@ -872,7 +874,7 @@ proc gcn_pkt_type { pkt_type } {
    # --- prompt identification
    # =-1 informations only, =0 pointdir, =1 prompt, =2 refined
    set prompt -1
-   if {($pkt_type==108)||($pkt_type==126)||($pkt_type==83)||($pkt_type==51)||($pkt_type==902)||($pkt_type==906)} {
+   if {($pkt_type==108)||($pkt_type==129)||($pkt_type==83)||($pkt_type==51)||($pkt_type==902)||($pkt_type==906)} {
       set prompt 0
    }
    if {($pkt_type==100)||($pkt_type==120)||($pkt_type==61)||($pkt_type==58)||($pkt_type==53)||($pkt_type==40)||($pkt_type==33)||($pkt_type==35)||($pkt_type==30)||($pkt_type==26)||($pkt_type==28)||($pkt_type==1)||($pkt_type==901)||($pkt_type==905)} {
