@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.6 2009-01-02 21:39:40 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.7 2009-02-22 12:06:01 bmauclaire Exp $
 
 
 
@@ -2272,7 +2272,7 @@ proc spc_calibretelluric { args } {
           foreach x $listexmesures {
              lappend listexlin [ expr $a + $b*$x + $c*$x*$x + $d*$x*$x*$x ]
           }
-          #-- je charge l'image calibree avec le neon
+          #-- je charge l'image calibree avec le neon :
           buf$audace(bufNo) load "$audace(rep_images)/$filename"
           #-- Rééchantillonnage pour obtenir une loi de calibration linéaire :
           set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
@@ -2288,7 +2288,7 @@ proc spc_calibretelluric { args } {
           for {set x 0 } {$x<$naxis1} {incr x} {
              buf$audace(bufNo) setpix [ list [expr $x +1] 1 ] [lindex $newIntensities $x]
           }
-          #-- je calcule les coefficients de la droite moyenne lambda=f(xlin)
+          #-- je calcule les coefficients de la droite moyenne lambda=f(xlin) :
           set sortie [ spc_ajustdeg1hp $listexlin $listeraies $errors ]
           #- lambda0 : lambda pour x=0
           set lambda0 [lindex [ lindex $sortie 0 ] 0]
@@ -2306,10 +2306,10 @@ proc spc_calibretelluric { args } {
 		buf$audace(bufNo) delkwd "SPC_D"
              }
           }
-          #-- j'enregistre l'image
+          #-- j'enregistre l'image :
           set spectre_ocallinbis "${filename}_caloshift2"
           buf$audace(bufNo) bitpix float
-          buf$audace(bufNo) save "$audace(rep_images)/$spectre_caloshift2"
+          buf$audace(bufNo) save "$audace(rep_images)/$spectre_ocallinbis"
           buf$audace(bufNo) bitpix short
           #-- Calcul le décalage moyen+rms du spectre final :
           set infos_cal   [ spc_rms $spectre_ocallinbis $listeraies ]
