@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.21 2009-02-22 13:22:49 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.22 2009-02-23 22:07:51 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -278,6 +278,8 @@ proc socket_server_respons_gcn {fid {sockname dummy} {redir_hosts ""} {redir_por
                      #gcn_print "socket error : $msgsoc"
                      catch {
                   		close $audace(socket,client,$name)
+               		}
+               		catch {
                   		unset audace(socket,client,$name)
                		}
                   } else {
