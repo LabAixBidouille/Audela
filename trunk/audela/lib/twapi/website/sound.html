@@ -1,0 +1,267 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Sound</h2>
+<p>Basic sound functions</p>
+<h3><a name="synopsis" id="synopsis">SYNOPSIS</a></h3>
+package require <b>twapi</b><br />
+<table class="commandsummary" summary="Table">
+<tr valign="top">
+<td><a href="#beep"><b class='cmd'>beep</b> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#play_sound"><b class='cmd'>play_sound</b> <i class=
+'arg'>NAME</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#stop_sound"><b class='cmd'>stop_sound</b></a></td>
+</tr>
+</table>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>This package provides commands for playing sounds on Windows
+platforms. <b>Overview</b> The commands <a href="#beep"><b class=
+'cmd'>beep</b></a>, <a href="#play_sound"><b class=
+'cmd'>play_sound</b></a> and <a href="#stop_sound"><b class=
+'cmd'>stop_sound</b></a> provide basic functions for generating
+sound. For more sophisticated needs, there are other Tcl extensions
+available, such as the <a href=
+"http://www.speech.kth.se/snack">Snack Sound Toolkit</a>.</p>
+<h3><a name="commands" id="commands">Commands</a></h3>
+<dl class="noclass">
+<dt><a name="beep" id="beep"><b class='cmd'>beep</b> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Generates a sound on the system speaker. The following options
+may be specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-frequency</b></span> <i class='arg'>FREQUENCY</i></td>
+<td class="opt">The frequency of the sound to be produced (default
+1000 Hz).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-duration</b></span> <i class='arg'>MILLISECONDS</i></td>
+<td class="opt">The duration of the sound to be produced (default
+100 milliseconds).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-type</b></span> <i class='arg'>SOUNDIDENTIFIER</i></td>
+<td class="opt">Specifies the type of sound to produce. <i class=
+'arg'>SOUNDIDENTIFIER</i> may be one of <span class=
+"strong">ok</span>, <span class="strong">hand</span>, <span class=
+"strong">question</span>, <span class="strong">exclamation</span>
+or <span class="strong">asterisk</span>. These will produce the
+corresponding sounds configured in the Windows control panel. If
+this option is specified, the options <b class='cmd'>-duration</b>
+and <b class='cmd'>-frequency</b> are ignored.</td>
+</tr>
+</table>
+<a href="beep.example">Example: Generate a continuous tone</a></dd>
+<dt><a name="play_sound" id="play_sound"><b class=
+'cmd'>play_sound</b> <i class='arg'>NAME</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Plays a sound on the system audio device. The sound may either
+be a WAV file or a system defined sound (if the <b class=
+'cmd'>-alias</b> option is specified). The command returns
+<span class="strong">1</span> if successful else <span class=
+"strong">0</span>.<br />
+<br />
+The following options may be specified to control the sound:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-alias</b></span></td>
+<td class="opt">By default, <i class='arg'>NAME</i> is assumed to
+be the path of a WAV file. If <b class='cmd'>-alias</b> is
+specified, <i class='arg'>NAME</i> is assumed to be the name of a
+system sound. The following system defined sounds are guaranteed to
+be present on all systems: <span class=
+"strong">SystemAsterisk</span>, <span class=
+"strong">SystemExclamation</span>, <span class=
+"strong">SystemExit</span>, <span class="strong">SystemHand</span>,
+<span class="strong">SystemQuestion</span> and <span class=
+"strong">SystemStart</span>. Other system defined names can be
+located under the <span class=
+"strong">HKEY_CURRENT_USER\AppEvents\EventLabels</span> registry
+key. Note that a sound will only be played if a WAV file has been
+associated with it through the control panel.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-async</b></span></td>
+<td class="opt">If specified, the sound is played asynchronously
+and command will return immediately. By default, the command will
+return only after the sound has completed playing.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-loop</b></span></td>
+<td class="opt">Specification of this option causes the sound to be
+played repeatedly until stopped through a <b class=
+'cmd'>stop_sound</b> command. This option also automatically
+enables the <b class='cmd'>-async</b> option.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-nodefault</b></span></td>
+<td class="opt">If the system cannot find the specified sound, it
+plays a default sound file. If this option is specified, the
+command will return without playing any sound if the specified
+sound file is not found.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-nostop</b></span></td>
+<td class="opt">Normally, the audio device is playing some other
+file, the command will attempt to stop the currently playing sound.
+If <b class='cmd'>-nostop</b> is specified, the command will return
+immediately without attempting to stop the current sound.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-wait</b></span></td>
+<td class="opt">If the audio driver is busy, the command will
+return right away. If this option is specified, the command will
+wait for the driver to become available.</td>
+</tr>
+</table>
+<a href="playsystemsound.example">Example: Play a system
+sound</a><br />
+<br />
+<a href="continuoussystemsound.example">Example: Play a continous
+system sound</a><br />
+<br />
+<a href="playwavfile.example">Example: Play a WAV file</a></dd>
+<dt><a name="stop_sound" id="stop_sound"><b class=
+'cmd'>stop_sound</b></a></dt>
+<dd>Stops all currently playing sounds that have been started by
+the current task. Returns <span class="strong">1</span> if
+successful, else <span class="strong">0</span>.<br />
+<br />
+<a href="continuoussystemsound.example">Example: Play a continous
+system sound</a><br />
+<br /></dd>
+</dl>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2003, Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

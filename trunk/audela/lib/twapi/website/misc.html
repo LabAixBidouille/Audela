@@ -1,0 +1,432 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Miscellaneous</h2>
+<p>Various TWAPI ancillary commands</p>
+<h3><a name="synopsis" id="synopsis">SYNOPSIS</a></h3>
+package require <b>twapi</b><br />
+<table class="commandsummary" summary="Table">
+<tr valign="top">
+<td><a href="#expand_environment_strings"><b class=
+'cmd'>expand_environment_strings</b> <i class=
+'arg'>STRING</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#format_message"><b class='cmd'>format_message</b>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_command_line"><b class=
+'cmd'>get_command_line</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_command_line_args"><b class=
+'cmd'>get_command_line_args</b> <i class=
+'arg'>COMMANDLINE</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_version"><b class='cmd'>get_version</b>
+?<b class='cmd'>-patchlevel</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#large_system_time_to_secs_since_1970"><b class=
+'cmd'>large_system_time_to_secs_since_1970</b> <i class=
+'arg'>SYSTEMTIMEVALUE</i> ?BOOLEAN?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#large_system_time_to_timelist"><b class=
+'cmd'>large_system_time_to_timelist</b> <i class=
+'arg'>SYSTEMTIMEVALUE</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#parseargs"><b class='cmd'>parseargs</b> <i class=
+'arg'>ARGLISTVAR</i> <i class='arg'>OPTLIST</i> ?<b class=
+'cmd'>-ignoreunknown</b>? ?<b class='cmd'>-nulldefault</b>?
+?<b class='cmd'>-maxleftover</b> <i class=
+'arg'>MAXLEFTOVER</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#secs_since_1970_to_large_system_time"><b class=
+'cmd'>secs_since_1970_to_large_system_time</b> <i class=
+'arg'>SECONDS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#timelist_to_large_system_time"><b class=
+'cmd'>timelist_to_large_system_time</b> <i class=
+'arg'>TIMELIST</i></a></td>
+</tr>
+</table>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>This module provides miscellaneous utility commands.</p>
+<p><a href="#get_version"><b class='cmd'>get_version</b></a>
+returns TWAPI version information. <a href="#parseargs"><b class=
+'cmd'>parseargs</b></a> parses an argument list based on specified
+options. <a href="#get_command_line"><b class=
+'cmd'>get_command_line</b></a> retrieves the command line passed to
+the process. <a href="#get_command_line_args"><b class=
+'cmd'>get_command_line_args</b></a> parses a command line using
+Windows conventions. The command <a href=
+"#expand_environment_strings"><b class=
+'cmd'>expand_environment_strings</b></a> replaces environment
+variables in a string with their values. <a href=
+"#format_message"><b class='cmd'>format_message</b></a> formats a
+operating system or application message.</p>
+<h3><a name="commands" id="commands">Commands</a></h3>
+<dl class="noclass">
+<dt><a name="expand_environment_strings" id=
+"expand_environment_strings"><b class=
+'cmd'>expand_environment_strings</b> <i class=
+'arg'>STRING</i></a></dt>
+<dd>Returns the string formed by replacing all environment variable
+references in <i class='arg'>STRING</i> with their values.
+Environment variable references are in the form <i class=
+'arg'>%ENVIRONMENTVAR%</i>. References to undefined environment
+variables are not replaced.</dd>
+<dt><a name="format_message" id="format_message"><b class=
+'cmd'>format_message</b> ?<i class='arg'>options</i>?</a></dt>
+<dd>Formats and returns a message string based on a format string.
+The format string may be directly supplied, obtained from a loaded
+library or module, or the system message tables. The format string
+may contain format insert specifiers of the form <i class=
+'arg'>%N</i> where N is a number between 1 and 99. The format
+specifier is replaced by the corresponding positional parameter.
+The format specifier <span class="strong">%0</span> is treated
+specially as indicating that a newline character is not to be
+appended to the result. See <b class='cmd'>FormatMessage</b> in the
+Windows SDK for more details regarding this command including
+format specifiers. The command takes the following options:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-module</b></span> <i class='arg'>MODULE</i></td>
+<td class="opt">Specifies that the format string is to be loaded
+from the module identified by <i class='arg'>MODULE</i>. <i class=
+'arg'>MODULE</i> may either be a handle returned from a command
+such as <b class='cmd'>load_library</b> or the path to a DLL. If
+this option is specified, options <b class='cmd'>-messageid</b> and
+<b class='cmd'>-langid</b> must also be specified. This option
+cannot be used with the <b class='cmd'>-fmtstring</b> option.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-fmtstring</b></span> <i class='arg'>FORMATSTRING</i></td>
+<td class="opt">Specifies that <i class='arg'>FORMATSTRING</i>
+should be used as the format string for the message. Cannot be used
+with the <b class='cmd'>-module</b> option.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-messageid</b></span> <i class='arg'>MESSAGEID</i></td>
+<td class="opt">Specifies the message identifier of the format
+string. This option cannot be used with the <b class=
+'cmd'>-fmtstring</b> option.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-langid</b></span> <i class='arg'>LANGID</i></td>
+<td class="opt">Specifies the language identifier to be used in
+constructing the message. This option cannot be used with the
+<b class='cmd'>-fmtstring</b> option.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-includesystem</b></span></td>
+<td class="opt">Specifies that the system message tables should
+also be searched in addition to the message tables in the module
+specified by <b class='cmd'>-module</b>. This option cannot be used
+with the <b class='cmd'>-fmtstring</b> option.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-params</b></span> <i class='arg'>PARAMLIST</i></td>
+<td class="opt">Specifies a list of positional parameters that are
+to be used to replace the <i class='arg'>%N</i> format insert
+sequences in the format string. If the number of parameters does
+not match the number of escape sequences, a Tcl exception may be
+generated unless the <b class='cmd'>-ignoreinserterrors</b> is
+specified.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-ignoreinserterrors</b></span></td>
+<td class="opt">Normally, a Tcl exception is raised if the number
+of parameters specified through the <b class='cmd'>-params</b>
+option does not match the <i class='arg'>%N</i> specifiers in the
+format string. If this option is specified, instead of generating
+an exception, the command behaves as though <b class=
+'cmd'>-ignoreinserts</b> was specified.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-ignoreinserts</b></span></td>
+<td class="opt">If specified, the <i class='arg'>%N</i> format
+insert sequences are not replaced in the returned string.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-width</b></span> <i class='arg'>MAXLINEWIDTH</i></td>
+<td class="opt">By default, the returned string contains the same
+line breaks as in the original format string. The <b class=
+'cmd'>-width</b> option may be used to control the maximum line
+width in the created message. If <i class='arg'>MAXLINEWIDTH</i> is
+between 1 and 255, the command will insert line end characters at
+appropriate points in the message. In this case, line end
+characters in the original message are ignored. However, hard coded
+line end characters, specified as <span class="strong">%n</span> in
+the format string are kept. A negative value of <i class=
+'arg'>MAXLINEWIDTH</i> also ignores line end characters while
+keeping the hard coded <span class="strong">%n</span> line end
+specifiers, but does not insert and line end characters to limit
+the line length. A value of 0 for <i class='arg'>MAXLINEWIDTH</i>
+is identical to the default behaviour.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_command_line" id="get_command_line"><b class=
+'cmd'>get_command_line</b></a></dt>
+<dd>Returns the command line of the current process. This may be
+passed to the <a href="#get_command_line_args"><b class=
+'cmd'>get_command_line_args</b></a> function to split the line into
+arguments.</dd>
+<dt><a name="get_command_line_args" id=
+"get_command_line_args"><b class='cmd'>get_command_line_args</b>
+<i class='arg'>COMMANDLINE</i></a></dt>
+<dd>Parses <i class='arg'>COMMANDLINE</i> as per Windows command
+line conventions and returns a list of the parsed arguments. The
+main advantage of this over using the <b class='cmd'>argv</b> and
+<b class='cmd'>argv0</b> variables in <b class='cmd'>tclsh</b> and
+<b class='cmd'>wish</b> is that this call will correctly handle
+Unicode arguments.</dd>
+<dt><a name="get_version" id="get_version"><b class=
+'cmd'>get_version</b> ?<b class='cmd'>-patchlevel</b>?</a></dt>
+<dd>Without any arguments, the command returns the major/minor
+TWAPI version number in the form <i class='arg'>MAJOR.MINOR</i>. If
+the option <b class='cmd'>-patchlevel</b> is specified, the
+returned string includes patchlevel and release information similar
+to the Tcl <b class='cmd'>info patchlevel</b> command, for example,
+<span class="strong">1.0.2</span> for final release of version 1.0
+patch 2, <span class="strong">1.0b3</span> for the third beta
+release of version 1.0 and <span class="strong">1.0a3</span> for
+the third alpha release of version 1.0.</dd>
+<dt><a name="large_system_time_to_secs_since_1970" id=
+"large_system_time_to_secs_since_1970"><b class=
+'cmd'>large_system_time_to_secs_since_1970</b> <i class=
+'arg'>SYSTEMTIMEVALUE</i> ?BOOLEAN?</a></dt>
+<dd>Some Windows functions return time as the number of 100
+nanosecond units since Jan 1, 1601. The command converts such time
+values to seconds since the epoch Jan 1, 1970. If <i class=
+'arg'>BOOLEAN</i> is false (default), an integral number of seconds
+is returned. Otherwise, the fractional part is also returned.</dd>
+<dt><a name="large_system_time_to_timelist" id=
+"large_system_time_to_timelist"><b class=
+'cmd'>large_system_time_to_timelist</b> <i class=
+'arg'>SYSTEMTIMEVALUE</i></a></dt>
+<dd>Some Windows functions return time as the number of 100
+nanosecond units since Jan 1, 1601. The command converts such time
+values to a list of 7 elements representing the year, month, day,
+hour, minutes, seconds and milliseconds.</dd>
+<dt><a name="parseargs" id="parseargs"><b class='cmd'>parseargs</b>
+<i class='arg'>ARGLISTVAR</i> <i class='arg'>OPTLIST</i> ?<b class=
+'cmd'>-ignoreunknown</b>? ?<b class='cmd'>-nulldefault</b>?
+?<b class='cmd'>-maxleftover</b> <i class=
+'arg'>MAXLEFTOVER</i>?</a></dt>
+<dd>Parses the options specified in a list of arguments. <i class=
+'arg'>ARGLISTVAR</i> is the name of a variable in the caller's
+scope that contains a list of arguments. Option names are
+case-sensitive.<br />
+<br />
+<i class='arg'>OPTLIST</i> specifies the valid options allowed and
+is list of option specifiers. Each option specifier is a list of up
+to 3 elements and takes the following form:<br />
+<br />
+<i class='arg'>OPTNAME?<b class='cmd'>.</b>OPTTYPE?</i> <i class=
+'arg'>?DEFAULTVALUE ?VALIDVALUELIST??</i><br />
+<br />
+<i class='arg'>OPTNAME</i> is the name of the option (without a
+leading <b class='cmd'>-</b>) and is required. <i class=
+'arg'>OPTTYPE</i> should be separated from the name with a
+<b class='cmd'>.</b> and specifies the type of the option. It must
+have one of the following values: <b class='cmd'>arg</b>, <b class=
+'cmd'>bool</b>, <b class='cmd'>int</b>, or <b class=
+'cmd'>switch</b>. In the first three cases, the argument following
+the option is taken as the value of the option and must be of an
+appropriate type: an arbitrary string, a boolean value
+(<span class="strong">0, 1, off, on, false, true</span>) or an
+integer respectively. If the option type is <b class=
+'cmd'>switch</b>, or is not specified at all, then the option is
+not associated with any value and is treated as a binary
+switch.<br />
+<br />
+<i class='arg'>DEFAULTVALUE</i>, specifies a default value to be
+assumed for the option if it is not present in <i class=
+'arg'>ARGLISTVAR</i>. This is ignored for options of type <b class=
+'cmd'>switch</b>.<br />
+<br />
+If <i class='arg'>VALIDVALUELIST</i> is specified, it is treated as
+a list of allowed values for the option. If an option's value is
+not in the list, the command will return an error. <i class=
+'arg'>VALIDVALUELIST</i> is ignored if the option type is <b class=
+'cmd'>bool</b> or <b class='cmd'>switch</b>.<br />
+<br />
+The command returns a list of the form <i class='arg'>OPTION VALUE
+OPTION VALUE...</i>. If the <b class='cmd'>-nulldefault</b> option
+is not present, only options that are present in <i class=
+'arg'>ARGLISTVAR</i>, or have a default value specified, or are of
+type <b class='cmd'>switch</b> are included in the returned result.
+If the <b class='cmd'>-nulldefault</b> option is present, then the
+returned list also includes values for options that are not present
+- <span class="strong">0</span> for options of type <b class=
+'cmd'>int</b> and <b class='cmd'>bool</b>, and an empty string for
+arguments of type <b class='cmd'>arg</b>.<br />
+<br />
+As a side effect, the variable <i class='arg'>ARGLISTVAR</i> is
+modified to remove the parsed options and associated values. If the
+<b class='cmd'>-maxleftover</b> option is specified, the command
+will raise a Tcl error if the number of arguments left over after
+parsing the options is more than <i class=
+'arg'>MAXLEFTOVER</i>.<br />
+<br />
+The command will normally generate a Tcl error if the arguments
+include an unknown option (an argument that begins with a
+<span class="strong">-</span> character and is not in <i class=
+'arg'>OPTLIST</i>). If the <b class='cmd'>-ignoreunknown</b> option
+is specified to the command, unknown options in <i class=
+'arg'>ARGLISTVAR</i> are ignored instead of an error being
+generated and are not removed from <i class=
+'arg'>ARGLISTVAR</i>.</dd>
+<dt><a name="secs_since_1970_to_large_system_time" id=
+"secs_since_1970_to_large_system_time"><b class=
+'cmd'>secs_since_1970_to_large_system_time</b> <i class=
+'arg'>SECONDS</i></a></dt>
+<dd>This command converts <i class='arg'>SECONDS</i> which is the
+number of seconds since the epoch Jan 1, 1970 to the number of 100
+nanoseconds since Jan 1, 1601.</dd>
+<dt><a name="timelist_to_large_system_time" id=
+"timelist_to_large_system_time"><b class=
+'cmd'>timelist_to_large_system_time</b> <i class=
+'arg'>TIMELIST</i></a></dt>
+<dd>Converts <i class='arg'>TIMELIST</i> to the number of 100
+nanoseconds since Jan 1, 1601. <i class='arg'>TIMELIST</i> must be
+a list of 7 elements representing the year, month, day, hour,
+minutes, seconds and milliseconds.</dd>
+</dl>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2004-2007 Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

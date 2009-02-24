@@ -1,0 +1,1081 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Network shares and Lan Manager</h2>
+<p>Commands related to management of network shares and Lan Manager
+sessions</p>
+<h3><a name="synopsis" id="synopsis">SYNOPSIS</a></h3>
+package require <b>twapi</b><br />
+<table class="commandsummary" summary="Table">
+<tr valign="top">
+<td><a href="#close_lm_open_file"><b class=
+'cmd'>close_lm_open_file</b> <i class='arg'>FILEID</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#connect_share"><b class='cmd'>connect_share</b>
+<i class='arg'>SERVERSHARE</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#delete_share"><b class='cmd'>delete_share</b>
+<i class='arg'>SHARENAME</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#disconnect_share"><b class='cmd'>disconnect_share</b>
+<i class='arg'>SHARE</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#end_lm_sessions"><b class='cmd'>end_lm_sessions</b>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#find_lm_connections"><b class=
+'cmd'>find_lm_connections</b> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#find_lm_open_files"><b class=
+'cmd'>find_lm_open_files</b> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#find_lm_sessions"><b class='cmd'>find_lm_sessions</b>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_client_share_info"><b class=
+'cmd'>get_client_share_info</b> <i class='arg'>SHAREPATH</i>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_client_shares"><b class=
+'cmd'>get_client_shares</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_mapped_share_info"><b class=
+'cmd'>get_mapped_share_info</b> <i class='arg'>SHAREPATH</i>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_share_info"><b class='cmd'>get_share_info</b>
+<i class='arg'>SHARENAME</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_shares"><b class='cmd'>get_shares</b> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_lm_open_file_info"><b class=
+'cmd'>get_lm_open_file_info</b> <i class='arg'>FILEID</i>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_lm_session_info"><b class=
+'cmd'>get_lm_session_info</b> <i class='arg'>CLIENTSYSTEM</i>
+<i class='arg'>USER</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#new_share"><b class='cmd'>new_share</b> <i class=
+'arg'>SHARENAME</i> <i class='arg'>RESOURCE</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_share_info"><b class='cmd'>set_share_info</b>
+<i class='arg'>SHARENAME</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+</table>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>This module provides commands related to management of Windows
+network shares and the Lan Manager sessions over which they are
+implemented.</p>
+<h3><a name="lanmanagersessions" id="lanmanagersessions">Lan
+Manager sessions</a></h3>
+<p>A Lan Manager (LM) session is a logical connection between the
+client and server over which all communications related to shares
+takes place. LM sessions are created and terminated on the fly by
+the client as and when needed.</p>
+<p>Lan Manager sessions on a server can be enumerated through the
+<a href="#find_lm_sessions"><b class='cmd'>find_lm_sessions</b></a>
+command. Information about individual sessions can be obtained
+through the <a href="#get_lm_session_info"><b class=
+'cmd'>get_lm_session_info</b></a> command. Existing sessions can be
+deleted using <a href="#end_lm_sessions"><b class=
+'cmd'>end_lm_sessions</b></a>.</p>
+<p>The files and resource opened within a Lan Manager session can
+be enumerated through the <a href="#find_lm_open_files"><b class=
+'cmd'>find_lm_open_files</b></a> command. Information about
+individual open files can be obtained through <a href=
+"#get_lm_open_file_info"><b class=
+'cmd'>get_lm_open_file_info</b></a> and closed using <a href=
+"#close_lm_open_file"><b class=
+'cmd'>close_lm_open_file</b></a>.</p>
+<p>Information about the connections to a shared resource on a
+system can be obtained through <a href=
+"#find_lm_connections"><b class=
+'cmd'>find_lm_connections</b></a>.</p>
+<h3><a name="networksharesserver" id="networksharesserver">Network
+Shares - Server</a></h3>
+<p>These commands work with all types of Windows network shares
+exported from a server including files and disks, printers, devices
+and IPC.</p>
+<p>The command <a href="#new_share"><b class=
+'cmd'>new_share</b></a> creates a new share of the specified type.
+The command <a href="#delete_share"><b class=
+'cmd'>delete_share</b></a> removes an existing share.</p>
+<p>The commands <a href="#get_shares"><b class=
+'cmd'>get_shares</b></a> and <a href="#get_share_info"><b class=
+'cmd'>get_share_info</b></a> allow enumeration and retrieval of
+detailed information about a share. The command <a href=
+"#set_share_info"><b class='cmd'>set_share_info</b></a> allows
+attributes of an existing share to be modified.</p>
+<h3><a name="networksharesclient" id="networksharesclient">Network
+Shares - Client</a></h3>
+<p>The following commands deal with client side of network share
+connections.</p>
+<p>The commands <a href="#connect_share"><b class=
+'cmd'>connect_share</b></a> and <a href=
+"#disconnect_share"><b class='cmd'>disconnect_share</b></a> are
+used to establish and remove client side connections to network
+shares. The command <a href="#get_client_shares"><b class=
+'cmd'>get_client_shares</b></a> lists all current connections to
+any network share. Details about a particular connected share can
+be obtained through the <a href="#get_client_share_info"><b class=
+'cmd'>get_client_share_info</b></a> command.</p>
+<p>When a local device (for example, a printer port or a drive
+letter) is mapped to a network drive, information about the mapping
+may be obtained through the <a href=
+"#get_mapped_share_info"><b class=
+'cmd'>get_mapped_share_info</b></a> command.</p>
+<h3><a name="sharetypes" id="sharetypes">Share Types</a></h3>
+<p>The type of a network share is indicated by a token that
+indicates the basic type, such as file or print queue, followed by
+one or more tokens that indicate additional attributes such as
+whether it is a temporary share. The basic share type token is one
+of <span class="strong">file</span>, <span class=
+"strong">print</span>, <span class="strong">ipc</span> or
+<span class="strong">device</span> corresponding to a file, print
+queue, interprocess communication, and a communication device
+respectively. Additional type information may contain the tokens
+<span class="strong">temporary</span>, which indicates a temporary
+share, and <span class="strong">special</span>, which indicates a
+administrative share.</p>
+<h3><a name="commands" id="commands">Commands</a></h3>
+<dl class="noclass">
+<dt><a name="close_lm_open_file" id="close_lm_open_file"><b class=
+'cmd'>close_lm_open_file</b> <i class='arg'>FILEID</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Closed the file or resource associated with <i class=
+'arg'>FILEID</i>. The file ids open within a Lan Manager session
+may be obtained through the <a href="#find_lm_open_files"><b class=
+'cmd'>find_lm_open_files</b></a> command. Option <b class=
+'cmd'>-system</b> may be specified to indicate the system on which
+the command is to be executed. By default, this is the local
+system.</dd>
+<dt><a name="connect_share" id="connect_share"><b class=
+'cmd'>connect_share</b> <i class='arg'>SERVERSHARE</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Establishes a new connection to a network share, optionally
+mapping it to a local device. <i class='arg'>SERVERSHARE</i> is of
+the form <i class='arg'>\\SERVERNAME\SHARE</i> and is the name of
+the share to connect to. The following options may be specified to
+control the connection characterisics:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-type</b></span></td>
+<td class="opt">Specifies the type of network share. This must be
+one of <span class="strong">any</span> (default), <span class=
+"strong">file</span> for file and disk shares or <span class=
+"strong">printer</span> for print shares.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-localdevice</b></span> <i class='arg'>DEVICENAME</i></td>
+<td class="opt">By default, the command establishes a connection to
+<i class='arg'>SERVERSHARE</i> but does not map it to a local
+device. Specifying this option maps the network share connection to
+a local device, for example a drive letter or printer port.<br />
+<br />
+Note that if this option is specified, the <b class='cmd'>-type</b>
+option must also be specified with a value of <span class=
+"strong">disk</span> or <span class="strong">printer</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-provider</b></span> <i class='arg'>PROVIDERNAME</i></td>
+<td class="opt">This option allows specification of a network
+provider to be used for the connection. Generally, this option
+should not be specified allowing Windows to select the appropriate
+network provider based on <i class='arg'>SERVERSHARE</i>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-user</b></span> <i class='arg'>USERNAME</i></td>
+<td class="opt">Specifies the user account to use to connect to the
+network share. By default, this is the current user account.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-password</b></span> <i class='arg'>PASSWORD</i></td>
+<td class="opt">Specifies the password to be used for connecting to
+the network share. This option is ignored if either <b class=
+'cmd'>-defaultpassword</b> or <b class='cmd'>-nopassword</b> is
+specified.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-defaultpassword</b></span></td>
+<td class="opt">Specifies that the password for the current user
+account is to be used for connecting. This option cannot be used
+with the -nopassword option.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-nopassword</b></span></td>
+<td class="opt">Specifies that no password is to be used for
+connecting. This option cannot be used with the -defaultpassword
+option.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-interactive</b></span></td>
+<td class="opt">Specifies that a user name and password dialog
+should be displayed to the user if the network share login fails.
+The connection is retried using the values entered by the
+user.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-prompt</b></span></td>
+<td class="opt">Displays a dialog allowing the user to change the
+user name and password <span class="em">before</span> the
+connection attempt is made. This option has no effect if <b class=
+'cmd'>-interactive</b> is not specified.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-commandline</b></span></td>
+<td class="opt">If this option is specified, the operating system
+will prompt the user for the password on the command line rather
+than showing the password dialog. This option has no effect if
+<b class='cmd'>-interactive</b> is not specified. <span class=
+"em">This option is not supported on Windows 2000</span>. An error
+will be generated if this option is specified on those
+platforms.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-window</b></span> <i class='arg'>HWIN</i></td>
+<td class="opt">Specifies that the window identified by <i class=
+'arg'>HWIN</i> is to be used as the owner window for any password
+dialogs that are displayed.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-updateprofile</b></span></td>
+<td class="opt">If this option is specified, the user's profile is
+updated so that the network share connection will be reestablished
+every time the user logs in.</td>
+</tr>
+</table>
+<a href="connectfileshare.example">Example: Map a drive to a
+network share</a></dd>
+<dt><a name="delete_share" id="delete_share"><b class=
+'cmd'>delete_share</b> <i class='arg'>SHARENAME</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?</a></dt>
+<dd>Deletes a share. By default the share is assumed to be on the
+local system unless the <b class='cmd'>-system</b> option is
+specified.</dd>
+<dt><a name="disconnect_share" id="disconnect_share"><b class=
+'cmd'>disconnect_share</b> <i class='arg'>SHARE</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Disconnects the network share <i class='arg'>SHARE</i>. The
+following options may be specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-force</b></span></td>
+<td class="opt">Forces the network share connection to be closed
+even if there are open files or print jobs on the connection.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-updateprofile</b></span></td>
+<td class="opt">If this option is specified, the user's profile is
+updated so that the network share connection will not be
+reestablished every time the user logs in.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="end_lm_sessions" id="end_lm_sessions"><b class=
+'cmd'>end_lm_sessions</b> ?<i class='arg'>options</i>?</a></dt>
+<dd>Terminates all <a href="#lanmanagersessions">Lan Manager
+sessions</a> matching the specified options. <i class=
+'arg'>options</i> may include the following matching criteria:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-system</b></span> <i class='arg'>SYSTEMNAME</i></td>
+<td class="opt">Specifies the name of the system on which the
+command is to be executed. By default, this is the local
+system.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-client</b></span> <i class='arg'>SYSTEMNAME</i></td>
+<td class="opt">Specifies the name of the client system whose
+sessions are to be terminated.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-user</b></span> <i class='arg'>USERNAME</i></td>
+<td class="opt">Specifies the name of the user whose sessions are
+to be terminated.</td>
+</tr>
+</table>
+Note that at least one of the options <b class='cmd'>-user</b> or
+<b class='cmd'>-client</b> must be specified.</dd>
+<dt><a name="find_lm_connections" id=
+"find_lm_connections"><b class='cmd'>find_lm_connections</b>
+?<i class='arg'>options</i>?</a></dt>
+<dd>Returns information about the connections to a share on a
+server or established from a particular client system. The return
+value is a list of sublists containing information about each
+connection. The actual data included depends on the options
+specified.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-activeseconds</b></span></td>
+<td class="opt">Returns the number of seconds the connection has
+been established.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns all data fields for each connection.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-client</b></span> <i class='arg'>CLIENTNAME</i></td>
+<td class="opt">Specifies that only connections from client
+<i class='arg'>CLIENTNAME</i> should be included in the returned
+list. This option and option <b class='cmd'>-share</b> are mutually
+exclusive.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-clientname</b></span></td>
+<td class="opt">Returns the name of the client computer for the
+connection.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-id</b></span></td>
+<td class="opt">Returns the connection id.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-opencount</b></span></td>
+<td class="opt">Returns number of resources currently opened
+through the connection.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-share</b></span> <i class='arg'>SHARENAME</i></td>
+<td class="opt">Specifies that only connections to the share
+identified by <i class='arg'>SHARENAME</i> should be included in
+the returned list. This option and option <b class=
+'cmd'>-client</b> are mutually exclusive.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sharename</b></span></td>
+<td class="opt">Returns the name of the share to which the
+connection is attached.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-system</b></span> <i class='arg'>SYSTEMNAME</i></td>
+<td class="opt">Specifies the name of the system on which the
+command is to be executed. By default, this is the local
+system.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-type</b></span></td>
+<td class="opt">Returns the share type of the resource to which the
+connection is made (see <a href="#sharetypes">Share
+Types</a>).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-usercount</b></span></td>
+<td class="opt">Returns number of users currently using the
+connection.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-username</b></span></td>
+<td class="opt">Returns name of the user that made the
+connection.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="find_lm_open_files" id="find_lm_open_files"><b class=
+'cmd'>find_lm_open_files</b> ?<i class='arg'>options</i>?</a></dt>
+<dd>Returns a list of sublists containing information about files
+and devices opened through a Lan Manager session. The actual data
+included depends on the options specified.<br />
+<br />
+The following <i class='arg'>options</i> specify matching criteria
+that control which sessions are returned:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-system</b></span> <i class='arg'>SYSTEMNAME</i></td>
+<td class="opt">Specifies the name of the system on which the
+command is to be executed. By default, this is the local
+system.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-basepath</b></span> <i class='arg'>PATHPREFIX</i></td>
+<td class="opt">Specifies that all returned files should have begin
+with <i class='arg'>PATHPREFIX</i>. If <i class=
+'arg'>PATHPREFIX</i> is an empty string (default), all open files
+are included.</td>
+</tr>
+</table>
+Additional options control the data returned for each open file.
+Refer to <a href="#get_lm_open_file_info"><b class=
+'cmd'>get_lm_open_file_info</b></a> for a list of these
+options.</dd>
+<dt><a name="find_lm_sessions" id="find_lm_sessions"><b class=
+'cmd'>find_lm_sessions</b> ?<i class='arg'>options</i>?</a></dt>
+<dd>Returns a list of <a href="#lanmanagersessions">Lan Manager
+sessions</a> matching the specified options. The list contains
+sublists containing data for each session. The actual data included
+depends on the options specified.<br />
+<br />
+The following <i class='arg'>options</i> specify matching criteria
+that control which sessions are returned:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-system</b></span> <i class='arg'>SYSTEMNAME</i></td>
+<td class="opt">Specifies the name of the system on which the
+command is to be executed. By default, this is the local
+system.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-client</b></span> <i class='arg'>SYSTEMNAME</i></td>
+<td class="opt">Specifies the name of the client system whose
+sessions are to be included. If <i class='arg'>SYSTEMNAME</i> is an
+empty string (default), all client systems are included.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-user</b></span> <i class='arg'>USERNAME</i></td>
+<td class="opt">Specifies the name of the user whose sessions are
+to be included. If <i class='arg'>USERNAME</i> is an empty string
+(default), all users are included.</td>
+</tr>
+</table>
+Additional options control the data returned for each session.
+Refer to <a href="#get_lm_session_info"><b class=
+'cmd'>get_lm_session_info</b></a> for a list of these options.</dd>
+<dt><a name="get_client_share_info" id=
+"get_client_share_info"><b class='cmd'>get_client_share_info</b>
+<i class='arg'>SHAREPATH</i> ?<i class='arg'>options</i>?</a></dt>
+<dd>Returns information about the connected network share
+identified by <i class='arg'>SHAREPATH</i>. <i class=
+'arg'>SHAREPATH</i> may be either a UNC format share or a locally
+mapped device.<br />
+<br />
+The information returned depends on the specified options and is in
+the form of a flat list of "<i class='arg'>option</i> <i class=
+'arg'>value</i>" pairs.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns all configuration data for the connected
+share.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-comment</b></span></td>
+<td class="opt">Returns the comment describing the connected share,
+if any</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-domain</b></span></td>
+<td class="opt">Returns the domain name of the connected
+share.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-localdevice</b></span></td>
+<td class="opt">Returns the local device to which the share is
+mapped and an empty string otherwise.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-opencount</b></span></td>
+<td class="opt">Returns the number of open handles that are open to
+resources on the remote share.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-provider</b></span></td>
+<td class="opt">Returns the name of the network service provider
+that owns the share.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-remoteshare</b></span></td>
+<td class="opt">Returns the name of the remote share.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-status</b></span></td>
+<td class="opt">Returns the status of the share. This may be one of
+<span class="strong">connected</span>, <span class=
+"strong">paused</span>, <span class="strong">lostsession</span>,
+<span class="strong">disconnected</span>, <span class=
+"strong">networkerror</span>, <span class=
+"strong">connecting</span>, <span class=
+"strong">reconnecting</span> or <span class=
+"strong">unknown</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-type</b></span></td>
+<td class="opt">Returns the type of the network share. This may be
+one of <span class="strong">file</span>, <span class=
+"strong">printer</span>, <span class="strong">char</span>,
+<span class="strong">ipc</span> or <span class=
+"strong">unknown</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-usecount</b></span></td>
+<td class="opt">Returns the number of references to the remote
+share. Note the remote share may be connected multiple times with
+and without local device mappings.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-user</b></span></td>
+<td class="opt">The name of the user who initiated the
+connection.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_client_shares" id="get_client_shares"><b class=
+'cmd'>get_client_shares</b></a></dt>
+<dd>Returns a list of currently connected network shares. The
+returned list consists of sublists corresponding to each connected
+network share. The first element of each sublist is the local
+device (for example <span class="strong">X:</span>). This may be an
+empty string if the connection has not been mapped to a local
+device. The second element of the sublist is the name of the server
+share for the connection.<br />
+<br />
+<a href="listconnectedshares.example">Example: List connected
+shares</a></dd>
+<dt><a name="get_mapped_share_info" id=
+"get_mapped_share_info"><b class='cmd'>get_mapped_share_info</b>
+<i class='arg'>SHAREPATH</i> ?<i class='arg'>options</i>?</a></dt>
+<dd><span class="em">This command is now deprecated. Use <a href=
+"#get_client_share_info"><b class=
+'cmd'>get_client_share_info</b></a> instead.</span><br />
+<br />
+Retrieves various information about a network share. <i class=
+'arg'>SHAREPATH</i> can be any path under a network share but the
+path must begin with the local device name, for example
+<span class="strong">C:</span>, if it was mapped to a local device
+and the share name, for example, <span class=
+"strong">\\SERVERNAME\SHARENAME</span>, if no local device was
+mapped to it.<br />
+<br />
+The information returned depends on the specified options and is in
+the form of a flat list of "<i class='arg'>option</i> <i class=
+'arg'>value</i>" pairs.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns all configuration data for the share
+connection.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-user</b></span></td>
+<td class="opt">Returns the user account name under which the
+connection was established.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-uncpath</b></span></td>
+<td class="opt">Returns the UNC format path corresponding to
+<i class='arg'>SHAREPATH</i></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-uncvolume</b></span></td>
+<td class="opt">Returns the UNC format name of the server
+share</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-relative_path</b></span></td>
+<td class="opt">Returns the relative path component of <i class=
+'arg'>SHAREPATH</i> under the server share.</td>
+</tr>
+</table>
+For example, assume <span class=
+"strong">\\myfileserver\userdata</span> is mapped to drive
+<span class="strong">X:</span>. Then the command
+<pre class="sample">
+twapi::get_mapped_share_info X:\dir\file -uncpath -uncvolume -relativepath
+</pre>
+will return
+<pre class="sample">
+-uncpath \\myfileserver\userdata\dir\file -uncvolume \\myfileserver\userdata -relativepath \dir\file
+</pre>
+<a href="showmappeddrive.example">Example: Show mapped drive
+information</a></dd>
+<dt><a name="get_share_info" id="get_share_info"><b class=
+'cmd'>get_share_info</b> <i class='arg'>SHARENAME</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Retrieves information pertaining to the specified share. By
+default, the share is assumed to be on the local system. The
+<b class='cmd'>-system</b> may be used to specify the name of a
+remote system.<br />
+<br />
+The information returned depends on the specified options and is in
+the form of a flat list of "<i class='arg'>option</i> <i class=
+'arg'>value</i>" pairs.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns all configuration data for the share.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-name</b></span></td>
+<td class="opt">Returns the name of the share as configured. This
+is generally <i class='arg'>SHARENAME</i> but may differ in the
+character case.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-type</b></span></td>
+<td class="opt">Returns the type of the share. See <a href=
+"#sharetypes">Share Types</a> for details.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-path</b></span></td>
+<td class="opt">Returns the path or name of the resource being
+shared.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-comment</b></span></td>
+<td class="opt">Returns the comment associated with the share.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-max_conn</b></span></td>
+<td class="opt">Returns the maximum number of connections that are
+permitted for the share. A value of -1 indicates that there is no
+limit.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-current_conn</b></span></td>
+<td class="opt">Returns the current number of connections to the
+share.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-secd</b></span></td>
+<td class="opt">Returns the security descriptor attached to the
+share.</td>
+</tr>
+</table>
+<a href="listexportedshares.example">Example: List shares exported
+from a system</a></dd>
+<dt><a name="get_shares" id="get_shares"><b class=
+'cmd'>get_shares</b> ?<i class='arg'>options</i>?</a></dt>
+<dd>This command enumerates all the shares exported on a system.
+The following options control the shares that are enumerated.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-system</b></span> <i class='arg'>SYSTEMNAME</i></td>
+<td class="opt">Specifies the name of the system whose shares are
+to be enumerated. By default, this is the local system.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-type</b></span> <i class='arg'>SHARETYPE</i></td>
+<td class="opt">Specifies the type of the share to include in the
+enumeration. <i class='arg'>SHARETYPE</i> must be one of base share
+types listed in <a href="#sharetypes">Share Types</a>. By default,
+all share types are enumerated.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-excludespecial</b></span></td>
+<td class="opt">Specifying this option causes special shares (see
+<a href="#sharetypes">Share Types</a>) not to be included in the
+enumeration.</td>
+</tr>
+</table>
+<a href="listexportedshares.example">Example: List shares exported
+from a system</a></dd>
+<dt><a name="get_lm_open_file_info" id=
+"get_lm_open_file_info"><b class='cmd'>get_lm_open_file_info</b>
+<i class='arg'>FILEID</i> ?<i class='arg'>options</i>?</a></dt>
+<dd>Returns a list of field values pairs containing data for a file
+or resource opened in a Lan Manager session. The file is identified
+by <i class='arg'>FILEID</i>. <a href=
+"#find_lm_open_files"><b class='cmd'>find_lm_open_files</b></a>
+returns a list of all such ids. The command will generate an error
+there is no file open with the specified id.<br />
+<br />
+The actual data returned depends on the options specified. The
+following <i class='arg'>options</i> may be specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-system</b></span> <i class='arg'>SYSTEMNAME</i></td>
+<td class="opt">Specifies the name of the system on which the
+command is to be executed. By default, this is the local
+system.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns all data fields.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong">-id</span></td>
+<td class="opt">Returns the file id of the open resource.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">-lockcount</span></td>
+<td class="opt">Returns the number of locks on the open
+resource.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong">-path</span></td>
+<td class="opt">Returns the path of the open resource.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">-permissions</span></td>
+<td class="opt">Returns a list of zero or more from among
+<span class="strong">read</span>, <span class="strong">write</span>
+and <span class="strong">create</span> corresponding to the access
+permissions for the opening application.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">-username</span></td>
+<td class="opt">Returns the name of the user that opened the
+resource.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_lm_session_info" id=
+"get_lm_session_info"><b class='cmd'>get_lm_session_info</b>
+<i class='arg'>CLIENTSYSTEM</i> <i class='arg'>USER</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Returns a list of field values pairs containing data for a Lan
+Manager session. The Lan Manager session is identified by <i class=
+'arg'>CLIENTSYSTEM</i> which identifies a client system and
+<i class='arg'>USER</i> which identifies the user that
+authenticated the session. The actual data returned depends on the
+options specified. The command will generate an error if no
+matching connection is found.<br />
+<br />
+The following <i class='arg'>options</i> may be specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-system</b></span> <i class='arg'>SYSTEMNAME</i></td>
+<td class="opt">Specifies the name of the system on which the
+command is to be executed. By default, this is the local
+system.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns all data fields.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-activeseconds</b></span></td>
+<td class="opt">Returns the number of seconds session has been
+active.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-attrs</b></span></td>
+<td class="opt">Returns a list of tokens describing the session
+attributes. The tokens may include <span class=
+"strong">guest</span>, indicating the session was established using
+a guest account, and <span class="strong">noencryption</span>,
+indicating the session was established without using password
+encryption.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-clientname</b></span></td>
+<td class="opt">Returns the UNC name of the client system.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-clienttype</b></span></td>
+<td class="opt">Returns a string identifying the type of client
+system.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-idleseconds</b></span></td>
+<td class="opt">Returns the number of seconds the session has been
+idle.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-opencount</b></span></td>
+<td class="opt">Returns the number of open files, devices and pipes
+opened in the session.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-transport</b></span></td>
+<td class="opt">Returns the name of the underlying transport over
+which the session runs.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-username</b></span></td>
+<td class="opt">Returns the name of the user account under which
+the session was established.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="new_share" id="new_share"><b class='cmd'>new_share</b>
+<i class='arg'>SHARENAME</i> <i class='arg'>RESOURCE</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Creates a new share with name <i class='arg'>SHARENAME</i> that
+exports the specified resource <i class='arg'>RESOURCE</i>. Unless
+specified through the <b class='cmd'>-type</b> option, the share is
+assumed to be a file share and <i class='arg'>RESOURCE</i> is
+assumed to be the directory path.<br />
+<br />
+The following options control the various attributes of the share:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-system</b></span> <i class='arg'>SYSTEMNAME</i></td>
+<td class="opt">Specifies the name of the system on which the share
+is to be created. By default, this is the local system.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-comment</b></span> <i class='arg'>COMMENT</i></td>
+<td class="opt">Specifies a comment to be associated with the
+share. This is displayed to users connecting to the share. If
+unspecified or empty, this defaults to the share name.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-max_conn</b></span> <i class=
+'arg'>MAX_NUM_CONNECTION</i></td>
+<td class="opt">Specifies the maximum number of connections to be
+allowed. If this is not specified, or is specified as <span class=
+"strong">-1</span>, there is no limit to the number of connections
+allowed to the share.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-secd</b></span> <i class='arg'>SECURITY_DESCRIPTOR</i></td>
+<td class="opt">Specifies the security descriptor to be attached to
+the share. If unspecified, it defaults to allowing group
+<span class="strong">Everyone</span> (well-known SID <span class=
+"strong">S-1-1-0</span>) read access similar to default permissions
+when creating a share from Windows Explorer.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-type</b></span> <i class='arg'>SHARETYPE</i></td>
+<td class="opt">Specifies the type of the share. See <a href=
+"#sharetypes">Share Types</a> for details. This defaults to a file
+share.</td>
+</tr>
+</table>
+<a href="exportfileshare.example">Example: Export a network
+share</a></dd>
+<dt><a name="set_share_info" id="set_share_info"><b class=
+'cmd'>set_share_info</b> <i class='arg'>SHARENAME</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Changes the configuration of the specified share. By default,
+the share is assumed to be on the local system. The <b class=
+'cmd'>-system</b> may be used to specify the name of a remote
+system.<br />
+<br />
+The configuration data that is to be modified is specified through
+the following options:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-comment</b></span> <i class='arg'>STRING</i></td>
+<td class="opt">Sets the comment associated with the share.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-max_conn</b></span> <i class='arg'>INTEGER</i></td>
+<td class="opt">Sets the maximum number of connections that are
+permitted for the share. A value of -1 indicates that there is not
+limit.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-secd</b></span> <i class='arg'>SECD</i></td>
+<td class="opt">Sets the security descriptor attached to the
+share.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2003-2007 Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

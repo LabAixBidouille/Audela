@@ -1,0 +1,990 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Internationalization</h2>
+<p>Commands related to internationalization</p>
+<h3><a name="synopsis" id="synopsis">SYNOPSIS</a></h3>
+package require <b>twapi</b><br />
+<table class="commandsummary" summary="Table">
+<tr valign="top">
+<td><a href="#extract_primary_langid"><b class=
+'cmd'>extract_primary_langid</b> <i class='arg'>LANGID</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#extract_sublanguage_langid"><b class=
+'cmd'>extract_sublanguage_langid</b> <i class=
+'arg'>LANGID</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#format_currency"><b class='cmd'>format_currency</b>
+<i class='arg'>NUMBER</i> <i class='arg'>LCID</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#format_number"><b class='cmd'>format_number</b>
+<i class='arg'>NUMBER</i> <i class='arg'>LCID</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_locale_info"><b class='cmd'>get_locale_info</b>
+<i class='arg'>LCID</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_system_default_langid"><b class=
+'cmd'>get_system_default_langid</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_system_default_lcid"><b class=
+'cmd'>get_system_default_lcid</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_system_ui_langid"><b class=
+'cmd'>get_system_ui_langid</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_user_default_langid"><b class=
+'cmd'>get_user_default_langid</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_user_default_lcid"><b class=
+'cmd'>get_user_default_lcid</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_user_ui_langid"><b class=
+'cmd'>get_user_ui_langid</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#map_code_page_to_name"><b class=
+'cmd'>map_code_page_to_name</b> <i class=
+'arg'>CODEPAGENUM</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#map_langid_to_name"><b class=
+'cmd'>map_langid_to_name</b> <i class='arg'>LANGID</i></a></td>
+</tr>
+</table>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>This package provides procedures related to internationalization
+capabilities on Windows platforms.</p>
+<h3><a name="locales" id="locales">Locales</a></h3>
+<p>A <span class="em">locale</span> defines user preferences
+related to languages and culture-dependent formatting of numbers,
+currencies etc.. A locale identifier (<b class='cmd'>LCID</b>) is
+an integer or one of the keywords <span class=
+"strong">systemdefault</span> or <span class=
+"strong">userdefault</span> corresponding to the system and user
+default locales respectively.</p>
+<p>The system maintains locale settings for the system as well as
+the user. These can be retrieved through the commands <a href=
+"#get_system_default_lcid"><b class=
+'cmd'>get_system_default_lcid</b></a> and <a href=
+"#get_user_default_lcid"><b class=
+'cmd'>get_user_default_lcid</b></a> respectively.</p>
+<p>The command <a href="#get_locale_info"><b class=
+'cmd'>get_locale_info</b></a> can be used to retrieve the settings
+associated with a particular locale.</p>
+<h3><a name="languages" id="languages">Languages</a></h3>
+<p>Languages are identified by a 16 bit integer (<b class=
+'cmd'>LANGID</b>) that includes the primary and sublanguage
+information. The commands <a href=
+"#extract_primary_langid"><b class=
+'cmd'>extract_primary_langid</b></a> and <a href=
+"#extract_sublanguage_langid"><b class=
+'cmd'>extract_sublanguage_langid</b></a> may be used to retrieve
+these from the language identifier.</p>
+<p>The system maintains several language settings. These can be
+retrieved through the commands <a href=
+"#get_system_default_langid"><b class=
+'cmd'>get_system_default_langid</b></a>, <a href=
+"#get_system_ui_langid"><b class=
+'cmd'>get_system_ui_langid</b></a>, <a href=
+"#get_user_default_langid"><b class=
+'cmd'>get_user_default_langid</b></a> and <a href=
+"#get_user_ui_langid"><b class='cmd'>get_user_ui_langid</b></a>.
+Information related to a <b class='cmd'>LANGID</b>, such as it full
+name, can be retrieved by passing it to <a href=
+"#get_locale_info"><b class='cmd'>get_locale_info</b></a>.</p>
+<h3><a name="formatting" id="formatting">Formatting</a></h3>
+<p>Windows provides functions for formatting data as per local
+conventions. The command <a href="#format_number"><b class=
+'cmd'>format_number</b></a> formats numbers using a given locale as
+a base and with the ability to override particular format
+settings.</p>
+<h3><a name="commands" id="commands">Commands</a></h3>
+<dl class="noclass">
+<dt><a name="extract_primary_langid" id=
+"extract_primary_langid"><b class='cmd'>extract_primary_langid</b>
+<i class='arg'>LANGID</i></a></dt>
+<dd>Returns the primary language identifier for the language
+identifier specified by <i class='arg'>LANGID</i>.</dd>
+<dt><a name="extract_sublanguage_langid" id=
+"extract_sublanguage_langid"><b class=
+'cmd'>extract_sublanguage_langid</b> <i class=
+'arg'>LANGID</i></a></dt>
+<dd>Returns the sublanguage identifier for the language identifier
+specified by <i class='arg'>LANGID</i>.</dd>
+<dt><a name="format_currency" id="format_currency"><b class=
+'cmd'>format_currency</b> <i class='arg'>NUMBER</i> <i class=
+'arg'>LCID</i> ?<i class='arg'>options</i>?</a></dt>
+<dd>Formats <i class='arg'>NUMBER</i> as a currency string per the
+given formatting specifications. <i class='arg'>LCID</i> is a
+<a href="#Locales">locale identifier</a>. <i class='arg'>NUMBER</i>
+must be in decimal format (the fractional part is optional) and may
+have a leading negative sign.<br />
+<br />
+If no options are specified, the settings in the locale identified
+by <i class='arg'>LCID</i> are used for formatting <i class=
+'arg'>NUMBER</i>.<br />
+<br />
+If one or more of the following options are specified, they
+override the settings in the locale given by <i class=
+'arg'>LCID</i>.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-icurrency</b></span> <i class='arg'>CURRENCYFORMAT</i></td>
+<td class="opt">Controls how positive currency numbers are
+formatted including spacing, position of the currency symbol etc..
+See the documentation for <b class='cmd'>LOCALE_ICURRENCY</b> in
+the Windows SDK for possible values of <i class=
+'arg'>CURRENCYFORMAT</i>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-idigits</b></span> <i class='arg'>DECIMALPLACES</i></td>
+<td class="opt">Indicates the number of digits after the decimal
+point to include in the result. If specified as <span class=
+"strong">-1</span>, the number of decimal places in the result is
+the same as in <i class='arg'>NUMBER</i>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-ilzero</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">Specifies whether the result includes leading
+zeroes (true) or not (false) when <i class='arg'>NUMBER</i> is a
+pure fraction.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-inegcurr</b></span> <i class='arg'>NEGFORMAT</i></td>
+<td class="opt">Controls how negative numbers are formatted
+including location of the currency symbol, the negative number
+indicator etc.. See the documentation for <b class=
+'cmd'>LOCALE_INEGCURR</b> in the Windows SDK for possible values of
+<i class='arg'>NEGFORMAT</i>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-scurrency</b></span> <i class='arg'>SYMBOL</i></td>
+<td class="opt">Specifies that the string <i class='arg'>SYMBOL</i>
+should be used as the monetary symbol.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-sdecimal</b></span> <i class='arg'>DECIMALSEPARATOR</i></td>
+<td class="opt">Specifies the string to be used to represent the
+decimal point.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-sgrouping</b></span> <i class='arg'>GROUPNUM</i></td>
+<td class="opt">Specifies the size of each group of digits to the
+left of the decimal point. <i class='arg'>GROUPNUM</i> may be any
+integer between <span class="strong">0</span> and <span class=
+"strong">9</span> or the value <span class="strong">32</span> which
+indicates the Indic convention of the grouping by the first
+thousand (3 digits) followed by groups of 2 digits.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-sthousand</b></span> <i class=
+'arg'>THOUSANDSEPARATOR</i></td>
+<td class="opt">Specifies the string to be used as the thousands'
+separator.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="format_number" id="format_number"><b class=
+'cmd'>format_number</b> <i class='arg'>NUMBER</i> <i class=
+'arg'>LCID</i> ?<i class='arg'>options</i>?</a></dt>
+<dd>Formats the number <i class='arg'>NUMBER</i> as per the given
+formatting specifications. <i class='arg'>LCID</i> is a <a href=
+"#Locales">locale identifier</a>. <i class='arg'>NUMBER</i> must be
+in decimal format (the fractional part is optional) and may have a
+leading negative sign.<br />
+<br />
+If no options are specified, the settings in the locale identified
+by <i class='arg'>LCID</i> are used for formatting <i class=
+'arg'>NUMBER</i>.<br />
+<br />
+If one or more of the following options are specified, they
+override the settings in the locale given by <i class=
+'arg'>LCID</i>.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-idigits</b></span> <i class='arg'>DECIMALPLACES</i></td>
+<td class="opt">Indicates the number of digits after the decimal
+point to include in the result. If specified as <span class=
+"strong">-1</span>, the number of decimal places in the result is
+the same as in <i class='arg'>NUMBER</i>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-ilzero</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">Specifies whether the result the result includes
+leading zeroes (true) or not (false).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-inegnumber</b></span> <i class='arg'>NEGFORMAT</i></td>
+<td class="opt">Controls how negative numbers are formatted. See
+the documentation for <b class='cmd'>LOCALE_INEGNUMBER</b> in the
+Windows SDK for possible values of <i class=
+'arg'>NEGFORMAT</i>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-sgrouping</b></span> <i class='arg'>GROUPNUM</i></td>
+<td class="opt">Specifies the size of each group of digits to the
+left of the decimal point. <i class='arg'>GROUPNUM</i> may be any
+integer between <span class="strong">0</span> and <span class=
+"strong">9</span> or the value <span class="strong">32</span> which
+indicates the Indic convention of the grouping by the first
+thousand (3 digits) followed by groups of 2 digits.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-sdecimal</b></span> <i class='arg'>DECIMALSEPARATOR</i></td>
+<td class="opt">Specifies the string to be used to represent the
+decimal point.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-sthousand</b></span> <i class=
+'arg'>THOUSANDSEPARATOR</i></td>
+<td class="opt">Specifies the string to be used as the thousands'
+separator.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_locale_info" id="get_locale_info"><b class=
+'cmd'>get_locale_info</b> <i class='arg'>LCID</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Returns a list containing information about the <a href=
+"#Locales">locale</a> identified by <i class='arg'>LCID</i>. The
+information returned depends on the options specified and is
+formatted as a list of the form "<i class='arg'>option</i>
+<i class='arg'>VALUE</i>...".
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-ilanguage</b></span></td>
+<td class="opt">language id</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-slanguage</b></span></td>
+<td class="opt">localized name of language</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-senglanguage</b></span></td>
+<td class="opt">English name of language</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sabbrevlangname</b></span></td>
+<td class="opt">abbreviated language name</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-snativelangname</b></span></td>
+<td class="opt">native name of language</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-icountry</b></span></td>
+<td class="opt">country code</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-scountry</b></span></td>
+<td class="opt">localized name of country</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sengcountry</b></span></td>
+<td class="opt">English name of country</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sabbrevctryname</b></span></td>
+<td class="opt">abbreviated country name</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-snativectryname</b></span></td>
+<td class="opt">native name of country</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-idefaultlanguage</b></span></td>
+<td class="opt">default language id</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-idefaultcountry</b></span></td>
+<td class="opt">default country code</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-idefaultcodepage</b></span></td>
+<td class="opt">default oem code page</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-idefaultansicodepage</b></span></td>
+<td class="opt">default ansi code page</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-idefaultmaccodepage</b></span></td>
+<td class="opt">default mac code page</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-slist</b></span></td>
+<td class="opt">list item separator</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-imeasure</b></span></td>
+<td class="opt">0 = metric, 1 = US</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sdecimal</b></span></td>
+<td class="opt">decimal separator</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sthousand</b></span></td>
+<td class="opt">thousand separator</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sgrouping</b></span></td>
+<td class="opt">digit grouping</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-idigits</b></span></td>
+<td class="opt">number of fractional digits</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-ilzero</b></span></td>
+<td class="opt">leading zeros for decimal</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-inegnumber</b></span></td>
+<td class="opt">negative number mode</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-snativedigits</b></span></td>
+<td class="opt">native ascii 0-9</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-scurrency</b></span></td>
+<td class="opt">local monetary symbol</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sintlsymbol</b></span></td>
+<td class="opt">intl monetary symbol</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-smondecimalsep</b></span></td>
+<td class="opt">monetary decimal separator</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-smonthousandsep</b></span></td>
+<td class="opt">monetary thousand separator</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-smongrouping</b></span></td>
+<td class="opt">monetary grouping</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-icurrdigits</b></span></td>
+<td class="opt"># local monetary digits</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-iintlcurrdigits</b></span></td>
+<td class="opt"># intl monetary digits</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-icurrency</b></span></td>
+<td class="opt">positive currency mode</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-inegcurr</b></span></td>
+<td class="opt">negative currency mode</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sdate</b></span></td>
+<td class="opt">date separator</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-stime</b></span></td>
+<td class="opt">time separator</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sshortdate</b></span></td>
+<td class="opt">short date format string</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-slongdate</b></span></td>
+<td class="opt">long date format string</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-stimeformat</b></span></td>
+<td class="opt">time format string</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-idate</b></span></td>
+<td class="opt">short date format ordering</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-ildate</b></span></td>
+<td class="opt">long date format ordering</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-itime</b></span></td>
+<td class="opt">time format specifier</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-itimemarkposn</b></span></td>
+<td class="opt">time marker position</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-icentury</b></span></td>
+<td class="opt">century format specifier (short date)</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-itlzero</b></span></td>
+<td class="opt">leading zeros in time field</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-idaylzero</b></span></td>
+<td class="opt">leading zeros in day field (short date)</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-imonlzero</b></span></td>
+<td class="opt">leading zeros in month field (short date)</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-s1159</b></span></td>
+<td class="opt">AM designator</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-s2359</b></span></td>
+<td class="opt">PM designator</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-icalendartype</b></span></td>
+<td class="opt">type of calendar specifier</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-ioptionalcalendar</b></span></td>
+<td class="opt">additional calendar types specifier</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-ifirstdayofweek</b></span></td>
+<td class="opt">first day of week specifier</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-ifirstweekofyear</b></span></td>
+<td class="opt">first week of year specifier</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sdayname1</b></span></td>
+<td class="opt">long name for Monday</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sdayname2</b></span></td>
+<td class="opt">long name for Tuesday</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sdayname3</b></span></td>
+<td class="opt">long name for Wednesday</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sdayname4</b></span></td>
+<td class="opt">long name for Thursday</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sdayname5</b></span></td>
+<td class="opt">long name for Friday</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sdayname6</b></span></td>
+<td class="opt">long name for Saturday</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sdayname7</b></span></td>
+<td class="opt">long name for Sunday</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sabbrevdayname1</b></span></td>
+<td class="opt">abbreviation for Monday</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sabbrevdayname2</b></span></td>
+<td class="opt">abbreviation for Tuesday</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sabbrevdayname3</b></span></td>
+<td class="opt">abbreviation for Wednesday</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sabbrevdayname4</b></span></td>
+<td class="opt">abbreviation for Thursday</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sabbrevdayname5</b></span></td>
+<td class="opt">abbreviation for Friday</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sabbrevdayname6</b></span></td>
+<td class="opt">abbreviation for Saturday</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sabbrevdayname7</b></span></td>
+<td class="opt">abbreviation for Sunday</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-smonthname1</b></span></td>
+<td class="opt">long name for January</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-smonthname2</b></span></td>
+<td class="opt">long name for February</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-smonthname3</b></span></td>
+<td class="opt">long name for March</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-smonthname4</b></span></td>
+<td class="opt">long name for April</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-smonthname5</b></span></td>
+<td class="opt">long name for May</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-smonthname6</b></span></td>
+<td class="opt">long name for June</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-smonthname7</b></span></td>
+<td class="opt">long name for July</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-smonthname8</b></span></td>
+<td class="opt">long name for August</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-smonthname9</b></span></td>
+<td class="opt">long name for September</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-smonthname10</b></span></td>
+<td class="opt">long name for October</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-smonthname11</b></span></td>
+<td class="opt">long name for November</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-smonthname12</b></span></td>
+<td class="opt">long name for December</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-smonthname13</b></span></td>
+<td class="opt">long name for 13th month (if exists)</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sabbrevmonthname1</b></span></td>
+<td class="opt">abbreviation for January</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sabbrevmonthname2</b></span></td>
+<td class="opt">abbreviation for February</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sabbrevmonthname3</b></span></td>
+<td class="opt">abbreviation for March</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sabbrevmonthname4</b></span></td>
+<td class="opt">abbreviation for April</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sabbrevmonthname5</b></span></td>
+<td class="opt">abbreviation for May</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sabbrevmonthname6</b></span></td>
+<td class="opt">abbreviation for June</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sabbrevmonthname7</b></span></td>
+<td class="opt">abbreviation for July</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sabbrevmonthname8</b></span></td>
+<td class="opt">abbreviation for August</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sabbrevmonthname9</b></span></td>
+<td class="opt">abbreviation for September</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sabbrevmonthname10</b></span></td>
+<td class="opt">abbreviation for October</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sabbrevmonthname11</b></span></td>
+<td class="opt">abbreviation for November</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sabbrevmonthname12</b></span></td>
+<td class="opt">abbreviation for December</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sabbrevmonthname13</b></span></td>
+<td class="opt">abbreviation for 13th month (if exists)</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-spositivesign</b></span></td>
+<td class="opt">positive sign</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-snegativesign</b></span></td>
+<td class="opt">negative sign</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-ipossignposn</b></span></td>
+<td class="opt">positive sign position</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-inegsignposn</b></span></td>
+<td class="opt">negative sign position</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-ipossymprecedes</b></span></td>
+<td class="opt">mon sym precedes pos amt</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-ipossepbyspace</b></span></td>
+<td class="opt">mon sym sep by space from pos amt</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-inegsymprecedes</b></span></td>
+<td class="opt">mon sym precedes neg amt</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-inegsepbyspace</b></span></td>
+<td class="opt">mon sym sep by space from neg amt</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-fontsignature</b></span></td>
+<td class="opt">font signature</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-siso639langname</b></span></td>
+<td class="opt">ISO language abbreviation</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-siso3166ctryname</b></span></td>
+<td class="opt">ISO country name abbreviation</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-idefaultebcdiccodepage</b></span></td>
+<td class="opt">default ebcdic code page</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-ipapersize</b></span></td>
+<td class="opt">1 = letter, 5 = legal, 8 = a3, 9 = a4</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sengcurrname</b></span></td>
+<td class="opt">english name of currency</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-snativecurrname</b></span></td>
+<td class="opt">native name of currency</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-syearmonth</b></span></td>
+<td class="opt">year month format string</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-ssortname</b></span></td>
+<td class="opt">sort name</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-idigitsubstitution</b></span></td>
+<td class="opt">0 = context, 1 = none, 2 = national</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_system_default_langid" id=
+"get_system_default_langid"><b class=
+'cmd'>get_system_default_langid</b></a></dt>
+<dd>Returns the default <a href="#Languages">language
+identifier</a> for the system.</dd>
+<dt><a name="get_system_default_lcid" id=
+"get_system_default_lcid"><b class=
+'cmd'>get_system_default_lcid</b></a></dt>
+<dd>Returns the default <a href="#Locales">locale identifier</a>
+for the system.</dd>
+<dt><a name="get_system_ui_langid" id=
+"get_system_ui_langid"><b class=
+'cmd'>get_system_ui_langid</b></a></dt>
+<dd>Returns the <a href="#Languages">language identifier</a> for
+the system default UI language.</dd>
+<dt><a name="get_user_default_langid" id=
+"get_user_default_langid"><b class=
+'cmd'>get_user_default_langid</b></a></dt>
+<dd>Returns the default <a href="#Languages">user language
+identifier</a>.</dd>
+<dt><a name="get_user_default_lcid" id=
+"get_user_default_lcid"><b class=
+'cmd'>get_user_default_lcid</b></a></dt>
+<dd>Returns the default <a href="#Locales">user-locale
+identifier</a>.</dd>
+<dt><a name="get_user_ui_langid" id="get_user_ui_langid"><b class=
+'cmd'>get_user_ui_langid</b></a></dt>
+<dd>Returns the <a href="#Languages">language identifier</a> for
+the user's UI language.</dd>
+<dt><a name="map_code_page_to_name" id=
+"map_code_page_to_name"><b class='cmd'>map_code_page_to_name</b>
+<i class='arg'>CODEPAGENUM</i></a></dt>
+<dd>Returns the name of the code page identified by <i class=
+'arg'>CODEPAGENUM</i>.</dd>
+<dt><a name="map_langid_to_name" id="map_langid_to_name"><b class=
+'cmd'>map_langid_to_name</b> <i class='arg'>LANGID</i></a></dt>
+<dd>Returns the name of the language identified by <i class=
+'arg'>LANGID</i>.</dd>
+</dl>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2005-2006 Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

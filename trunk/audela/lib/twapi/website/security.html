@@ -1,0 +1,2025 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Security and access control</h2>
+<p>Commands related to authentication and access control</p>
+<h3><a name="synopsis" id="synopsis">SYNOPSIS</a></h3>
+package require <b>twapi</b><br />
+<table class="commandsummary" summary="Table">
+<tr valign="top">
+<td><a href="#append_acl_aces"><b class='cmd'>append_acl_aces</b>
+<i class='arg'>ACL</i> <i class='arg'>ACELIST</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#check_enabled_privileges"><b class=
+'cmd'>check_enabled_privileges</b> <i class='arg'>PRIVILEGES</i>
+?<b class='cmd'>-any</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#close_token"><b class='cmd'>close_token</b> <i class=
+'arg'>token</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#disable_all_token_privileges"><b class=
+'cmd'>disable_all_token_privileges</b> <i class=
+'arg'>token</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#disable_privileges"><b class=
+'cmd'>disable_privileges</b> <i class='arg'>PRIVLIST</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#disable_token_privileges"><b class=
+'cmd'>disable_token_privileges</b> <i class='arg'>token</i>
+<i class='arg'>PRIVLIST</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#enable_privileges"><b class=
+'cmd'>enable_privileges</b> <i class='arg'>PRIVLIST</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#enable_token_privileges"><b class=
+'cmd'>enable_token_privileges</b> <i class='arg'>token</i>
+<i class='arg'>PRIVLIST</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#eval_with_privileges"><b class=
+'cmd'>eval_with_privileges</b> <i class='arg'>SCRIPT</i> <i class=
+'arg'>PRIVLIST</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#find_logon_sessions"><b class=
+'cmd'>find_logon_sessions</b> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_ace_inheritance"><b class=
+'cmd'>get_ace_inheritance</b> <i class='arg'>ACE</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_ace_rights"><b class='cmd'>get_ace_rights</b>
+<i class='arg'>ACE</i> ?<b class='cmd'>-type</b> <i class=
+'arg'>RESOURCETYPE</i>? ?<b class='cmd'>-raw</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_ace_sid"><b class='cmd'>get_ace_sid</b> <i class=
+'arg'>ACE</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_ace_text"><b class='cmd'>get_ace_text</b>
+<i class='arg'>ACE</i> ?<b class='cmd'>-resourcetype</b> <i class=
+'arg'>RESOURCETYPE</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_ace_type"><b class='cmd'>get_ace_type</b>
+<i class='arg'>ACE</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_acl_aces"><b class='cmd'>get_acl_aces</b>
+<i class='arg'>ACL</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_acl_rev"><b class='cmd'>get_acl_rev</b> <i class=
+'arg'>ACL</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_current_user"><b class='cmd'>get_current_user</b>
+?<b class='cmd'>-sid</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_logon_session_info"><b class=
+'cmd'>get_logon_session_info</b> <i class='arg'>SESSIONLUID</i>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_privilege_description"><b class=
+'cmd'>get_privilege_description</b> <i class=
+'arg'>PRIVILEGE</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_resource_security_descriptor"><b class=
+'cmd'>get_resource_security_descriptor</b> <i class=
+'arg'>RESTYPE</i> <i class='arg'>NAME</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_security_descriptor_control"><b class=
+'cmd'>get_security_descriptor_control</b> <i class=
+'arg'>SECD</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_security_descriptor_dacl"><b class=
+'cmd'>get_security_descriptor_dacl</b> <i class=
+'arg'>SECD</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_security_descriptor_group"><b class=
+'cmd'>get_security_descriptor_group</b> <i class=
+'arg'>SECD</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_security_descriptor_owner"><b class=
+'cmd'>get_security_descriptor_owner</b> <i class=
+'arg'>SECD</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_security_descriptor_sacl"><b class=
+'cmd'>get_security_descriptor_sacl</b> <i class=
+'arg'>SECD</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_security_descriptor_text"><b class=
+'cmd'>get_security_descriptor_text</b> <i class='arg'>SECD</i>
+?<b class='cmd'>-resourcetype</b> <i class=
+'arg'>RESOURCETYPE</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_token_groups"><b class='cmd'>get_token_groups</b>
+<i class='arg'>token</i> ?<b class='cmd'>-name</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_token_groups_and_attrs"><b class=
+'cmd'>get_token_groups_and_attrs</b> <i class=
+'arg'>token</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_token_impersonation_level"><b class=
+'cmd'>get_token_impersonation_level</b> <i class=
+'arg'>token</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_token_owner"><b class='cmd'>get_token_owner</b>
+<i class='arg'>token</i> ?<b class='cmd'>-name</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_token_primary_group"><b class=
+'cmd'>get_token_primary_group</b> <i class='arg'>token</i>
+?<b class='cmd'>-name</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_token_privileges"><b class=
+'cmd'>get_token_privileges</b> <i class='arg'>token</i> ?<b class=
+'cmd'>-all</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_token_privileges_and_attrs"><b class=
+'cmd'>get_token_privileges_and_attrs</b> <i class=
+'arg'>token</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_token_source"><b class='cmd'>get_token_source</b>
+<i class='arg'>token</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_token_statistics"><b class=
+'cmd'>get_token_statistics</b> <i class='arg'>token</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_token_type"><b class='cmd'>get_token_type</b>
+<i class='arg'>token</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_token_user"><b class='cmd'>get_token_user</b>
+<i class='arg'>token</i> ?<b class='cmd'>-name</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#impersonate_self"><b class='cmd'>impersonate_self</b>
+<i class='arg'>IMPERSONATIONLEVEL</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#impersonate_token"><b class=
+'cmd'>impersonate_token</b> <i class='arg'>TOKEN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#impersonate_user"><b class='cmd'>impersonate_user</b>
+<i class='arg'>USERNAME</i> <i class='arg'>PASSWORD</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#is_valid_luid_syntax"><b class=
+'cmd'>is_valid_luid_syntax</b> <i class='arg'>LUID</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#is_valid_sid_syntax"><b class=
+'cmd'>is_valid_sid_syntax</b> <i class='arg'>sid</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#map_luid_to_privilege"><b class=
+'cmd'>map_luid_to_privilege</b> <i class='arg'>LUID</i> ?<b class=
+'cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>? ?<b class=
+'cmd'>-mapunknown</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#map_privilege_to_luid"><b class=
+'cmd'>map_privilege_to_luid</b> <i class='arg'>PRIVILEGE</i>
+?<b class='cmd'>-system</b> <i class='arg'>SYSTEMNAME</i>?
+?<b class='cmd'>-mapunknown</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#new_ace"><b class='cmd'>new_ace</b> <i class=
+'arg'>ACETYPE</i> <i class='arg'>ACCOUNT</i> <i class=
+'arg'>ACCESSRIGHTS</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#new_acl"><b class='cmd'>new_acl</b> ?<i class=
+'arg'>ACELIST</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#new_luid"><b class='cmd'>new_luid</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#new_security_descriptor"><b class=
+'cmd'>new_security_descriptor</b> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#new_uuid"><b class='cmd'>new_uuid</b> ?<b class=
+'cmd'>-localok</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#nil_uuid"><b class='cmd'>nil_uuid</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#open_process_token"><b class=
+'cmd'>open_process_token</b> ?<b class='cmd'>-pid</b> <i class=
+'arg'>PID</i>? ?<b class='cmd'>-access</b> <i class=
+'arg'>DESIREDACCESS</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#open_thread_token"><b class=
+'cmd'>open_thread_token</b> ?<b class='cmd'>-tid</b> <i class=
+'arg'>TID</i>? ?<b class='cmd'>-access</b> <i class=
+'arg'>DESIREDACCESS</i>? ?<b class='cmd'>-self</b> <i class=
+'arg'>BOOLEAN</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#open_user_token"><b class='cmd'>open_user_token</b>
+<i class='arg'>USERNAME</i> <i class='arg'>PASSWORD</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#prepend_acl_aces"><b class='cmd'>prepend_acl_aces</b>
+<i class='arg'>ACL</i> <i class='arg'>ACELIST</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#reset_thread_token"><b class=
+'cmd'>reset_thread_token</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#revert_to_self"><b class=
+'cmd'>revert_to_self</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_ace_inheritance"><b class=
+'cmd'>set_ace_inheritance</b> <i class='arg'>ACE</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_ace_rights"><b class='cmd'>set_ace_rights</b>
+<i class='arg'>ACE</i> <i class='arg'>ACCESSRIGHTS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_ace_sid"><b class='cmd'>set_ace_sid</b> <i class=
+'arg'>ACE</i> <i class='arg'>ACCOUNT</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_ace_type"><b class='cmd'>set_ace_type</b>
+<i class='arg'>ACE</i> <i class='arg'>ACETYPE</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_acl_aces"><b class='cmd'>set_acl_aces</b>
+<i class='arg'>ACL</i> <i class='arg'>ACELIST</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_resource_security_descriptor"><b class=
+'cmd'>set_resource_security_descriptor</b> <i class=
+'arg'>RESTYPE</i> <i class='arg'>NAME</i> <i class='arg'>SECD</i>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_security_descriptor_dacl"><b class=
+'cmd'>set_security_descriptor_dacl</b> <i class='arg'>SECD</i>
+<i class='arg'>ACL</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_security_descriptor_group"><b class=
+'cmd'>set_security_descriptor_group</b> <i class='arg'>SECD</i>
+<i class='arg'>ACCOUNT</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_security_descriptor_owner"><b class=
+'cmd'>set_security_descriptor_owner</b> <i class='arg'>SECD</i>
+<i class='arg'>ACCOUNT</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_security_descriptor_sacl"><b class=
+'cmd'>set_security_descriptor_sacl</b> <i class='arg'>SECD</i>
+<i class='arg'>ACL</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_thread_token"><b class='cmd'>set_thread_token</b>
+<i class='arg'>TOKEN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#sort_aces"><b class='cmd'>sort_aces</b> <i class=
+'arg'>ACELIST</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#sort_acl_aces"><b class='cmd'>sort_acl_aces</b>
+<i class='arg'>ACL</i></a></td>
+</tr>
+</table>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>This module provides procedures related to access control in
+Windows operating systems.</p>
+<h3><a name="uniqueidentifiers" id="uniqueidentifiers">Unique
+Identifiers</a></h3>
+<p>A <span class="em">Locally Unique Identifier (LUID)</span> is a
+string generated by the command <a href="#new_luid"><b class=
+'cmd'>new_luid</b></a> that is guaranteed to be unique on that
+system for that boot session.</p>
+<p>A <span class="em">Universally Unique Identifier (UUID)</span>
+is a string generated by the command <a href="#new_uuid"><b class=
+'cmd'>new_uuid</b></a> that is guaranteed to be unique on any
+system at any time.</p>
+<p>In both instances, unique means it will not be generated by some
+other call to that command.</p>
+<h3><a name="accesstokensandprivileges" id=
+"accesstokensandprivileges">Access Tokens and Privileges</a></h3>
+<p>An access token is associated with a process or a thread and
+contains various elements that determine the security context for
+the process or thread.</p>
+<p>The commands <a href="#open_process_token"><b class=
+'cmd'>open_process_token</b></a> and <a href=
+"#open_thread_token"><b class='cmd'>open_thread_token</b></a>
+retrieve the access tokens associated with a process and thread
+respectively. An access token for a specific user account may be
+obtained using <a href="#open_user_token"><b class=
+'cmd'>open_user_token</b></a>. The returned tokens can be passed to
+other functions to retrieve or set information for the process or
+thread's privileges and other security related information. When no
+longer required, the tokens must be passed to <a href=
+"#close_token"><b class='cmd'>close_token</b></a> in order to
+release resources.</p>
+<p>The commands <a href="#get_token_user"><b class=
+'cmd'>get_token_user</b></a>, <a href="#get_token_groups"><b class=
+'cmd'>get_token_groups</b></a>, <a href=
+"#get_token_primary_group"><b class=
+'cmd'>get_token_primary_group</b></a>, <a href=
+"#get_token_owner"><b class='cmd'>get_token_owner</b></a> and
+<a href="#get_token_group_sids_and_attrs"><b class=
+'cmd'>get_token_group_sids_and_attrs</b></a> retrieve information
+related to the user and group accounts associated with a token.</p>
+<p>The commands <a href="#get_token_privileges"><b class=
+'cmd'>get_token_privileges</b></a>, <a href=
+"#check_enabled_token_privileges"><b class=
+'cmd'>check_enabled_token_privileges</b></a> and <a href=
+"#get_token_privileges_and_attrs"><b class=
+'cmd'>get_token_privileges_and_attrs</b></a> retrieve information
+related to the privileges associated with a token. The commands
+<a href="#enable_token_privileges"><b class=
+'cmd'>enable_token_privileges</b></a>, <a href=
+"#disable_token_privileges"><b class=
+'cmd'>disable_token_privileges</b></a> and <a href=
+"#disable_all_token_privileges"><b class=
+'cmd'>disable_all_token_privileges</b></a> allow manipulation of
+the same. Similarly, <a href="#enable_privileges"><b class=
+'cmd'>enable_privileges</b></a> and <a href=
+"#disable_privileges"><b class='cmd'>disable_privileges</b></a> can
+be used to enable and disable privileges for the current process.
+<a href="#eval_with_privileges"><b class=
+'cmd'>eval_with_privileges</b></a> evaluates a script after
+enabling specified privileges.</p>
+<p>The command <a href="#get_privilege_description"><b class=
+'cmd'>get_privilege_description</b></a> returns a description of a
+privilege.</p>
+<p>The commands <a href="#get_token_type"><b class=
+'cmd'>get_token_type</b></a> and <a href=
+"#get_token_impersonation_level"><b class=
+'cmd'>get_token_impersonation_level</b></a> return information
+related to impersonation.</p>
+<p><a href="#get_token_source"><b class=
+'cmd'>get_token_source</b></a> returns the source of a token.
+<a href="#get_token_statistics"><b class=
+'cmd'>get_token_statistics</b></a> returns various other pieces of
+information, such as expiration, memory usage etc.</p>
+<p>The commands <a href="#map_luid_to_privilege"><b class=
+'cmd'>map_luid_to_privilege</b></a> and <a href=
+"#map_privilge_to_luid"><b class='cmd'>map_privilge_to_luid</b></a>
+map LUID's to privilege names. The command <a href=
+"#is_valid_luid_syntax"><b class='cmd'>is_valid_luid_syntax</b></a>
+can be used to check the syntactic validity of a LUID.</p>
+<h3><a name="impersonation" id=
+"impersonation">Impersonation</a></h3>
+<p>Windows allows a thread or process to impersonate a user
+different from the account in which it was started (given the
+proper privileges). The functions for impersonation and reverting
+back are <a href="#impersonate_token"><b class=
+'cmd'>impersonate_token</b></a>, <a href=
+"#impersonate_user"><b class='cmd'>impersonate_user</b></a>,
+<a href="#impersonate_self"><b class=
+'cmd'>impersonate_self</b></a>, <a href=
+"#set_thread_token"><b class='cmd'>set_thread_token</b></a> and
+<a href="#revert_to_self"><b class=
+'cmd'>revert_to_self</b></a>.</p>
+<p>The command <a href="#get_current_user"><b class=
+'cmd'>get_current_user</b></a> returns the user account for the
+thread taking into consideration any ongoing impersonation.</p>
+<p>Impersonation may be done at several levels. These levels
+control the degree to which the impersonator takes on the identity
+of the impersonated client. The following constants define the
+different levels:</p>
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">anonymous</span></span></td>
+<td class="opt">The impersonating process cannot obtain
+identification information about the client or impersonate it.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">identification</span></span></td>
+<td class="opt">The impersonating process cannot impersonate the
+client (ie. access resources using the client's credentials) but
+can obtain identity and privilege information about the client.
+This can be used for controlling access to its own objects (as
+opposed to operating system resources).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">impersonation</span></span></td>
+<td class="opt">The impersonating process can impersonate the
+client only on the local system. The client credentials cannot be
+used to access other resources on the network.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">delegation</span></span></td>
+<td class="opt">The impersonating process can use the client's
+credentials for accessing network resources.</td>
+</tr>
+</table>
+<h3><a name="accessrights" id="accessrights">Access Rights</a></h3>
+<p>Access rights in the Windows API take the form of a bit mask
+with each bit signifying a specific desired or granted right.
+Access rights may be specified to TWAPI functions in the form of a
+single element or list of elements, each of which is an integer or
+a symbolic constant. The access rights bit mask passed to the
+underlying function is formed by OR'ing together the individual
+elements in the list. In the case of a symbolic constant, the
+access right is mapped to the appropriate bits before being OR'ed
+with the other elements.</p>
+<p>The following symbolic constants define generic access rights
+that are mapped by each object type into its own specific rights:
+<span class="strong">generic_read</span>, <span class=
+"strong">generic_write</span>, <span class=
+"strong">generic_execute</span> and <span class=
+"strong">generic_all</span>.</p>
+<p>The following symbolic constants define access rights that are
+common to all securable object types: <span class=
+"strong">delete</span>, <span class="strong">read_control</span>,
+<span class="strong">write_dac</span>, <span class=
+"strong">write_owner</span>, <span class=
+"strong">synchronize</span>, <span class=
+"strong">standard_rights_read</span>, <span class=
+"strong">standard_rights_write</span>, <span class=
+"strong">standard_rights_execute</span>, <span class=
+"strong">standard_rights_required</span> and <span class=
+"strong">standard_rights_all</span>. Refer to the Windows SDK for a
+definition of these access rights.</p>
+<p>In addition to the standard rights, specific object types may
+have other access rights associated with them as described in the
+following table.</p>
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">Desktops</span></td>
+<td class="opt"><span class="strong">desktop_readobjects</span>,
+<span class="strong">desktop_createwindow</span>, <span class=
+"strong">desktop_createmenu</span>, <span class=
+"strong">desktop_hookcontrol</span>, <span class=
+"strong">desktop_journalrecord</span>, <span class=
+"strong">desktop_journalplayback</span>, <span class=
+"strong">desktop_enumerate</span>, <span class=
+"strong">desktop_writeobjects</span>, <span class=
+"strong">desktop_switchdesktop</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong">Events</span></td>
+<td class="opt"><span class="strong">event_all_access</span>,
+<span class="strong">event_modify_state</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong">Files</span></td>
+<td class="opt"><span class="strong">file_all_access</span>,
+<span class="strong">file_generic_read</span>, <span class=
+"strong">file_generic_write</span>, <span class=
+"strong">file_generic_execute</span>, <span class=
+"strong">file_read_data</span>, <span class=
+"strong">file_write_data</span>, <span class=
+"strong">file_append_data</span>, <span class=
+"strong">file_read_ea</span>, <span class=
+"strong">file_write_ea</span>, <span class=
+"strong">file_execute</span>, <span class=
+"strong">file_delete_child</span>, <span class=
+"strong">file_read_attributes</span>, <span class=
+"strong">file_write_attributes</span></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">Mutexes</span></td>
+<td class="opt"><span class="strong">mutex_all_access</span>,
+<span class="strong">mutex_modify_state</span></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong">Named
+pipes</span></td>
+<td class="opt"><span class="strong">file_all_access</span>,
+<span class="strong">file_read_data</span>, <span class=
+"strong">file_write_data</span>, <span class=
+"strong">file_create_pipe_instance</span>, <span class=
+"strong">file_read_attributes</span>, <span class=
+"strong">file_write_attributes</span></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">Processes</span></td>
+<td class="opt"><span class="strong">process_all_access</span>,
+<span class="strong">process_terminate</span>, <span class=
+"strong">process_create_thread</span>, <span class=
+"strong">process_set_sessionid</span>, <span class=
+"strong">process_vm_operation</span>, <span class=
+"strong">process_vm_read</span>, <span class=
+"strong">process_vm_write</span>, <span class=
+"strong">process_dup_handle</span>, <span class=
+"strong">process_create_process</span>, <span class=
+"strong">process_set_quota</span>, <span class=
+"strong">process_set_information</span>, <span class=
+"strong">process_query_information</span>, <span class=
+"strong">process_suspend_resume</span></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">Registry</span></td>
+<td class="opt"><span class="strong">key_all_access</span>,
+<span class="strong">key_read</span>, <span class=
+"strong">key_write</span>, <span class="strong">key_execute</span>,
+<span class="strong">key_query_value</span>, <span class=
+"strong">key_set_value</span>, <span class=
+"strong">key_create_sub_key</span>, <span class=
+"strong">key_enumerate_sub_keys</span>, <span class=
+"strong">key_notify</span>, <span class=
+"strong">key_create_link</span>, <span class=
+"strong">key_wow64_32key</span>, <span class=
+"strong">key_wow64_64key</span>, <span class=
+"strong">key_wow64_res</span></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">Semaphores</span></td>
+<td class="opt"><span class="strong">semaphore_all_access</span>,
+<span class="strong">semaphore_modify_state</span></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">Services</span></td>
+<td class="opt"><span class="strong">service_all_access</span>,
+<span class="strong">service_query_config</span>, <span class=
+"strong">service_change_config</span>, <span class=
+"strong">service_query_status</span>, <span class=
+"strong">service_enumerate_dependents</span>, <span class=
+"strong">service_start</span>, <span class=
+"strong">service_stop</span>, <span class=
+"strong">service_pause_continue</span>, <span class=
+"strong">service_interrogate</span>, <span class=
+"strong">service_user_defined_control</span></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">Threads</span></td>
+<td class="opt"><span class="strong">thread_all_access</span>,
+<span class="strong">thread_terminate</span>, <span class=
+"strong">thread_suspend_resume</span>, <span class=
+"strong">thread_get_context</span>, <span class=
+"strong">thread_set_context</span>, <span class=
+"strong">thread_set_information</span>, <span class=
+"strong">thread_query_information</span>, <span class=
+"strong">thread_set_thread_token</span>, <span class=
+"strong">thread_impersonate</span>, <span class=
+"strong">thread_direct_impersonation</span></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong">Timers</span></td>
+<td class="opt"><span class="strong">timer_all_access</span>,
+<span class="strong">timer_query_state</span>, <span class=
+"strong">timer_modify_state</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong">Tokens</span></td>
+<td class="opt"><span class="strong">token_all_access</span>,
+<span class="strong">token_assign_primary</span>, <span class=
+"strong">token_duplicate</span>, <span class=
+"strong">token_impersonate</span>, <span class=
+"strong">token_query</span>, <span class=
+"strong">token_query_source</span>, <span class=
+"strong">token_adjust_privileges</span>, <span class=
+"strong">token_adjust_groups</span>, <span class=
+"strong">token_adjust_default</span>, <span class=
+"strong">token_adjust_sessionid</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong">Window
+stations</span></td>
+<td class="opt"><span class="strong">winsta_enumdesktops</span>,
+<span class="strong">winsta_readattributes</span>, <span class=
+"strong">winsta_accessclipboard</span>, <span class=
+"strong">winsta_createdesktop</span>, <span class=
+"strong">winsta_writeattributes</span>, <span class=
+"strong">winsta_accessglobalatoms</span>, <span class=
+"strong">winsta_exitwindows</span>, <span class=
+"strong">winsta_enumerate</span>, <span class=
+"strong">winsta_readscreen</span>, <span class=
+"strong">winsta_all</span>.</td>
+</tr>
+</table>
+<p>Note that some of the symbolic access rights are a combination
+of other access rights. For example, <span class=
+"strong">file_all_access</span> includes all other rights
+associated with a file object. When an access rights list is
+returned from a command, it includes both the individual symbolic
+rights as well as all valid symbols for combined rights.</p>
+<h3><a name="accesscontrolentries" id="accesscontrolentries">Access
+Control Entries</a></h3>
+<p>Several functions deal with access control entries (ACE) either
+directly or as part of the more complex structures. A new ACE may
+be created through the <a href="#new_ace"><b class=
+'cmd'>new_ace</b></a> command. The structure of an ACE should be
+treated as opaque and the fields should be manipulated only through
+the access control entry functions. An access control entry
+contains the fields described below.</p>
+<p>The type of an ACE may be one of the following values:
+<span class="strong">allow</span>, <span class=
+"strong">deny</span>, <span class="strong">audit</span>,
+<span class="strong">alarm</span>, <span class=
+"strong">allow_compound</span>, <span class=
+"strong">allow_object</span>, <span class=
+"strong">deny_object</span>, <span class=
+"strong">audit_object</span>, <span class=
+"strong">alarm_object</span>, <span class=
+"strong">allow_callback</span>, <span class=
+"strong">deny_callback</span>, <span class=
+"strong">allow_callback_object</span>, <span class=
+"strong">deny_callback_object</span>, <span class=
+"strong">audit_callback</span>, <span class=
+"strong">alarm_callback</span>, <span class=
+"strong">audit_callback_object</span>, <span class=
+"strong">alarm_callback_object</span>. Currently, only the
+<span class="strong">allow</span>, <span class="strong">deny</span>
+and <span class="strong">audit</span> type ACE's are supported. The
+type of an ACE may be manipulated through the <a href=
+"#get_ace_type"><b class='cmd'>get_ace_type</b></a> and <a href=
+"#set_ace_type"><b class='cmd'>set_ace_type</b></a> commands.</p>
+<p>Each ACE has an SID associated with it that indicates the user
+or group that the ACE applies to. This may be retrieved or set
+using the <a href="#get_ace_sid"><b class='cmd'>get_ace_sid</b></a>
+and <a href="#set_ace_sid"><b class='cmd'>set_ace_sid</b></a>
+functions.</p>
+<p>The <a href="#accessrights">access rights</a> granted or
+restricted by an ACE can be manipulated through the <a href=
+"#get_ace_rights"><b class='cmd'>get_ace_rights</b></a> and
+<a href="#set_ace_rights"><b class='cmd'>set_ace_rights</b></a>
+functions.</p>
+<p>An ACE may be recursively applied to objects within a container.
+This is controlled through the <a href=
+"#get_ace_inheritance"><b class='cmd'>get_ace_inheritance</b></a>
+and <a href="#set_ace_inheritance"><b class=
+'cmd'>set_ace_inheritance</b></a> commands.</p>
+<p>The command <a href="#sort_aces"><b class=
+'cmd'>sort_aces</b></a> may be used to sort a list of ACE elements
+into the order recommended by Windows.</p>
+<p>The command <a href="#get_ace_text"><b class=
+'cmd'>get_ace_text</b></a> returns a textual description of an
+ACE.</p>
+<h3><a name="accesscontrollist" id="accesscontrollist">Access
+Control List</a></h3>
+<p>An access control list (ACL) is an ordered list of <a href=
+"#accesscontrolentries">access control entries</a> that is applied
+to a resource. The command <a href="#new_acl"><b class=
+'cmd'>new_acl</b></a> creates a new ACL with an optional set of ACE
+elements.</p>
+<p>The commands <a href="#get_acl_aces"><b class=
+'cmd'>get_acl_aces</b></a> and <a href="#set_acl_aces"><b class=
+'cmd'>set_acl_aces</b></a> may be used to retrieve or set the
+access control entries in the ACL. Alternatively, the commands
+<a href="#prepend_acl_aces"><b class='cmd'>prepend_acl_aces</b></a>
+and <a href="#append_acl_aces"><b class=
+'cmd'>append_acl_aces</b></a> may be used to place additional ACEs
+in front of or after, respectively, of the current entries in an
+ACL.</p>
+<p>Access control lists are of two types - a discretionary access
+control list (DACL) controls the operations that may be invoked on
+a resource based on the identity of the accessor, while a system
+access control list (SACL) controls the audit events that are
+generated when the resource is accessed. A SACL should contain only
+ACE elements of types prefixed with <span class=
+"strong">audit</span> while a DACL should only contain ACE elements
+of other types.</p>
+<p>The list of ACE elements in an ACL may be resorted to conform to
+the Windows recommended order through the <a href=
+"#sort_acl_aces"><b class='cmd'>sort_acl_aces</b></a> command.</p>
+<h3><a name="securitydescriptors" id="securitydescriptors">Security
+Descriptors</a></h3>
+<p>A security descriptor is associated with a resource and ties
+together various information that controls access to the resource
+including the SID of the owner of the resource, the SID of the
+primary group, a discretionary access control list (DACL) and a
+system access control list (SACL).</p>
+<p>A new security descriptor may be created through the command
+<a href="#new_security_descriptor"><b class=
+'cmd'>new_security_descriptor</b></a>.</p>
+<p>The commands <a href="#get_security_descriptor_owner"><b class=
+'cmd'>get_security_descriptor_owner</b></a>, <a href=
+"#get_security_descriptor_group"><b class=
+'cmd'>get_security_descriptor_group</b></a>, <a href=
+"#set_security_descriptor_owner"><b class=
+'cmd'>set_security_descriptor_owner</b></a> and <a href=
+"#set_security_descriptor_group"><b class=
+'cmd'>set_security_descriptor_group</b></a> retrieve and set the
+owner and group attributes of a security descriptor.</p>
+<p>The commands <a href="#get_security_descriptor_dacl"><b class=
+'cmd'>get_security_descriptor_dacl</b></a>, <a href=
+"#get_security_descriptor_sacl"><b class=
+'cmd'>get_security_descriptor_sacl</b></a>, <a href=
+"#set_security_descriptor_dacl"><b class=
+'cmd'>set_security_descriptor_dacl</b></a> and <a href=
+"#set_security_descriptor_sacl"><b class=
+'cmd'>set_security_descriptor_sacl</b></a> retrieve and set the
+DACL and SACL fields of a security descriptor. It is important to
+distinguish between the absence of a DACL (or SACL) in a security
+descriptor and an empty DACL (or SACL). The former results in
+everyone being allowed to access the object whereas the latter
+results in no one being allowed to access the object. When
+modifying or creating a security descriptor, pass the literal
+string <span class="strong">null</span> to indicate that the
+security descriptor has no DACL (or SACL). An empty DACL (or SACL)
+on the other hand is indicated simply by passing an ACL that does
+not contain any ACEs.</p>
+<p>The command <a href="#get_security_descriptor_control"><b class=
+'cmd'>get_security_descriptor_control</b></a> returns the control
+flags associated with the security descriptor.</p>
+<p>Note that not all fields in a security descriptor need to be
+initialized. For example, to change the owner of a resource, you
+only need to create a descriptor with the owner field initialized
+either at creation time or through a subsequent call to <a href=
+"#set_security_descriptor_owner"><b class=
+'cmd'>set_security_descriptor_owner</b></a>. Then this can be
+passed to the appropriate function to set a resource's security
+with an option indicating that only the owner field should be
+changed.</p>
+<p>The security information associated with each resource type can
+be retrieved and modified through functions <a href=
+"#get_resource_security_descriptor"><b class=
+'cmd'>get_resource_security_descriptor</b></a> and <a href=
+"#set_resource_security_descriptor"><b class=
+'cmd'>set_resource_security_descriptor</b></a>.</p>
+<p>The command <a href="#get_security_descriptor_text"><b class=
+'cmd'>get_security_descriptor_text</b></a> returns a textual
+description of a security descriptor.</p>
+<h3><a name="logonsessions" id="logonsessions">Logon
+sessions</a></h3>
+<p>A logon session is identified by an <a href=
+"#uniqueidentifiers">LUID</a> and provides the context for a
+particular instance of an authenticated security principal where
+the principal may be a user, a computer, a service etc. A single
+principal, for example a user, may have multiple logon sessions
+concurrently present at any time. The command <a href=
+"#find_logon_sessions"><b class='cmd'>find_logon_sessions</b></a>
+allows enumeration of logon sessions. The details associated with
+each can be obtained through the <a href=
+"#get_logon_session_info"><b class=
+'cmd'>get_logon_session_info</b></a> command.</p>
+<h3><a name="commands" id="commands">Commands</a></h3>
+<dl class="noclass">
+<dt><a name="append_acl_aces" id="append_acl_aces"><b class=
+'cmd'>append_acl_aces</b> <i class='arg'>ACL</i> <i class=
+'arg'>ACELIST</i></a></dt>
+<dd>Appends the list of ACEs in <i class='arg'>ACELIST</i> to the
+entries in the given ACL. Returns the modified ACL.</dd>
+<dt><a name="check_enabled_privileges" id=
+"check_enabled_privileges"><b class=
+'cmd'>check_enabled_privileges</b> <i class='arg'>PRIVILEGES</i>
+?<b class='cmd'>-any</b>?</a></dt>
+<dd>Without the <b class='cmd'>-any</b> option, the command returns
+1 if the given list of privileges is enabled in the token, and 0
+otherwise. If the option <b class='cmd'>-any</b> is specified, the
+command returns 1 if at least one of the privileges is enabled, and
+0 otherwise. <i class='arg'>PRIVLIST</i> is a list of privilege
+names or LUIDs.</dd>
+<dt><a name="close_token" id="close_token"><b class=
+'cmd'>close_token</b> <i class='arg'>token</i></a></dt>
+<dd>Frees resources associated with an access token.</dd>
+<dt><a name="disable_all_token_privileges" id=
+"disable_all_token_privileges"><b class=
+'cmd'>disable_all_token_privileges</b> <i class=
+'arg'>token</i></a></dt>
+<dd>This command disables all privileges in the token. An error
+will be raised if the privilege does not exist or cannot be
+disabled because of lack of rights to the token handle.<br />
+<br />
+The command returns a list of privileges that were modified by the
+command because they were not previously disabled. This list can be
+passed to <a href="#enable_token_privileges"><b class=
+'cmd'>enable_token_privileges</b></a> to undo the privilege
+modifications made by this call.</dd>
+<dt><a name="disable_privileges" id="disable_privileges"><b class=
+'cmd'>disable_privileges</b> <i class='arg'>PRIVLIST</i></a></dt>
+<dd>This command disables one or more privileges in the current
+process. <i class='arg'>PRIVLIST</i> is a list of privileges each
+of which may be either a symbolic privilege such as <span class=
+"strong">SeLoadDriverPrivilege</span> or a LUID corresponding to a
+privilege.<br />
+<br />
+An error will be raised if the privilege does not exist or cannot
+be disabled because of lack of rights to the token handle.<br />
+<br />
+The command returns a list of privileges that were modified by the
+command because they were not previously disabled. This list can be
+passed to <a href="#enable_privileges"><b class=
+'cmd'>enable_privileges</b></a> to undo the privilege modifications
+made by this call.</dd>
+<dt><a name="disable_token_privileges" id=
+"disable_token_privileges"><b class=
+'cmd'>disable_token_privileges</b> <i class='arg'>token</i>
+<i class='arg'>PRIVLIST</i></a></dt>
+<dd>This command disables one or more privileges in the token.
+<i class='arg'>PRIVLIST</i> is a list of privileges each of which
+may be either a symbolic privilege such as <span class=
+"strong">SeLoadDriverPrivilege</span> or a LUID corresponding to a
+privilege.<br />
+<br />
+An error will be raised if the privilege does not exist or cannot
+be disabled because of lack of rights to the token handle.<br />
+<br />
+The command returns a list of privileges that were modified by the
+command because they were not previously disabled. This list can be
+passed to <a href="#enable_token_privileges"><b class=
+'cmd'>enable_token_privileges</b></a> to restore the token
+privileges to their original value.</dd>
+<dt><a name="enable_privileges" id="enable_privileges"><b class=
+'cmd'>enable_privileges</b> <i class='arg'>PRIVLIST</i></a></dt>
+<dd>This command enables one or more privileges in the current
+process. <i class='arg'>PRIVLIST</i> is a list of privileges each
+of which may be either a symbolic privilege such as <span class=
+"strong">SeLoadDriverPrivilege</span> or a LUID corresponding to a
+privilege.<br />
+<br />
+An error will be raised if a privilege does not exist or cannot be
+enabled because of lack of rights to the token handle.<br />
+<br />
+The command returns a list of privileges that were modified by the
+command because they were not previously enabled. This list can be
+passed to <a href="#disable_privileges"><b class=
+'cmd'>disable_privileges</b></a> to undo the privilege
+modifications made by this call.</dd>
+<dt><a name="enable_token_privileges" id=
+"enable_token_privileges"><b class=
+'cmd'>enable_token_privileges</b> <i class='arg'>token</i>
+<i class='arg'>PRIVLIST</i></a></dt>
+<dd>This command enables one or more privileges in the token.
+<i class='arg'>PRIVLIST</i> is a list of privileges each of which
+may be either a symbolic privilege such as <span class=
+"strong">SeLoadDriverPrivilege</span> or a LUID corresponding to a
+privilege.<br />
+<br />
+An error will be raised if a privilege does not exist or cannot be
+enabled because of lack of rights to the token handle.<br />
+<br />
+The command returns a list of privileges that were modified by the
+command because they were not previously enabled. This list can be
+passed to <a href="#disable_token_privileges"><b class=
+'cmd'>disable_token_privileges</b></a> to undo the privilege
+modifications made by this call.</dd>
+<dt><a name="eval_with_privileges" id=
+"eval_with_privileges"><b class='cmd'>eval_with_privileges</b>
+<i class='arg'>SCRIPT</i> <i class='arg'>PRIVLIST</i></a></dt>
+<dd>The command enables the privileges specified in <i class=
+'arg'>PRIVLIST</i>, if they were not already enabled, and then
+evaluates <i class='arg'>SCRIPT</i> in the caller's context. The
+command returns the result of <i class='arg'>SCRIPT</i> after
+restoring the privileges in effect when the command was
+called.</dd>
+<dt><a name="find_logon_sessions" id=
+"find_logon_sessions"><b class='cmd'>find_logon_sessions</b>
+?<i class='arg'>options</i>?</a></dt>
+<dd>Returns a list of <a href="#uniqueidentifiers">LUID</a> values
+that identify the logon sessions on the system. By default, all
+logon sessions are returned. One or more of the following options
+may be specified to restrict the set of logon sessions that are
+returned.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-user</b></span> <i class='arg'>ACCOUNT</i></td>
+<td class="opt">Only returns logon sessions for the specified user.
+<i class='arg'>ACCOUNT</i> may be either the account name or the
+SID for the user.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-type</b></span> <i class='arg'>SESSIONTYPELIST</i></td>
+<td class="opt">Only returns logon sessions that match one of the
+specified types. <i class='arg'>SESSIONTYPELIST</i> is a list of
+integer logon session types defined in the Windows SDK or the
+following equivalent tokens: <span class=
+"strong">interactive</span>, <span class="strong">network</span>,
+<span class="strong">batch</span>, <span class=
+"strong">service</span>, <span class="strong">proxy</span>,
+<span class="strong">unlockworkstation</span>, <span class=
+"strong">networkclear</span>, <span class=
+"strong">newcredentials</span>, <span class=
+"strong">remoteinteractive</span>, <span class=
+"strong">cachedinteractive</span>, <span class=
+"strong">cachedremoteinteractive</span> or <span class=
+"strong">cachedunlockworkstation</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-tssession</b></span> <i class='arg'>TSSESSION</i></td>
+<td class="opt">Only returns those logon sessions belonging to the
+terminal services session identified by <i class=
+'arg'>TSSESSION</i>.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_ace_inheritance" id=
+"get_ace_inheritance"><b class='cmd'>get_ace_inheritance</b>
+<i class='arg'>ACE</i></a></dt>
+<dd>Returns a flat list of "<i class='arg'>option</i> <i class=
+'arg'>value</i>" pairs that indicate the inheritance
+characteristics of the ACE. The <i class='arg'>option</i> elements
+are <b class='cmd'>-self</b>, <b class=
+'cmd'>-recursecontainers</b>, <b class='cmd'>-recurseobjects</b>
+and <b class='cmd'>-recurseonelevelonly</b> as described in the
+documentation for <b class='cmd'>new_ace</b>. In addition, the
+read-only option <b class='cmd'>-inherited</b> indicates whether
+the ACE has been inherited from an ancestor or not.</dd>
+<dt><a name="get_ace_rights" id="get_ace_rights"><b class=
+'cmd'>get_ace_rights</b> <i class='arg'>ACE</i> ?<b class=
+'cmd'>-type</b> <i class='arg'>RESOURCETYPE</i>? ?<b class=
+'cmd'>-raw</b>?</a></dt>
+<dd>Returns a list of access rights contained within an ACE. This
+is a list of symbolic constants and bit masks as described in
+<a href="#accessrights">Access Rights</a>. The option <b class=
+'cmd'>-type</b> may be used to map the access rights to symbolic
+constants for a specific type of resource. <i class=
+'arg'>RESOURCETYPE</i> must be one of <span class=
+"strong">file</span>, <span class="strong">pipe</span>,
+<span class="strong">service</span>, <span class=
+"strong">registry</span>, <span class="strong">process</span>,
+<span class="strong">thread</span> or <span class=
+"strong">token</span>.<br />
+<br />
+If the <b class='cmd'>-raw</b> option is specified, the access
+rights are returned as a single hex bitmask.</dd>
+<dt><a name="get_ace_sid" id="get_ace_sid"><b class=
+'cmd'>get_ace_sid</b> <i class='arg'>ACE</i></a></dt>
+<dd>Returns the SID of the given ACE.</dd>
+<dt><a name="get_ace_text" id="get_ace_text"><b class=
+'cmd'>get_ace_text</b> <i class='arg'>ACE</i> ?<b class=
+'cmd'>-resourcetype</b> <i class='arg'>RESOURCETYPE</i>?</a></dt>
+<dd>Returns a textual description of the specified ACE. The option
+<b class='cmd'>-resourcetype</b> may be specified to indicate that
+the ACE is for a particular resource type. <i class=
+'arg'>RESOURCETYPE</i> must be one of the resource type values
+defined for the <a href="#get_ace_rights"><b class=
+'cmd'>get_ace_rights</b></a> command. This command is primarily
+useful for debugging and troubleshooting purposes.</dd>
+<dt><a name="get_ace_type" id="get_ace_type"><b class=
+'cmd'>get_ace_type</b> <i class='arg'>ACE</i></a></dt>
+<dd>Returns the type of the given ACE. See <a href=
+"#accesscontrolentries">Access Control Entries</a> for the possible
+types.</dd>
+<dt><a name="get_acl_aces" id="get_acl_aces"><b class=
+'cmd'>get_acl_aces</b> <i class='arg'>ACL</i></a></dt>
+<dd>Returns the ordered list of ACE elements in the given ACL.</dd>
+<dt><a name="get_acl_rev" id="get_acl_rev"><b class=
+'cmd'>get_acl_rev</b> <i class='arg'>ACL</i></a></dt>
+<dd>Returns the revision level of an ACL. Note that this is
+controlled by the ACEs in the ACL and cannot be set directly.</dd>
+<dt><a name="get_current_user" id="get_current_user"><b class=
+'cmd'>get_current_user</b> ?<b class='cmd'>-sid</b>?</a></dt>
+<dd>Returns the user account for the current thread. If the thread
+is impersonating, this command returns the account being
+impersonated. By default, the command returns the name of the user
+account. The option <b class='cmd'>-sid</b> may be specified to
+retrieve the SID instead. Note this is <span class="em">not</span>
+the same as the <b class='cmd'>$::env(USERNAME)</b> variable as the
+latter does not take impersonation into account.</dd>
+<dt><a name="get_logon_session_info" id=
+"get_logon_session_info"><b class='cmd'>get_logon_session_info</b>
+<i class='arg'>SESSIONLUID</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Returns details for the logon session identified by <i class=
+'arg'>SESSIONLUID</i>. The information is returned as a flat list
+of option value pairs and depends on the specified options:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns the values for all options.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-authpackage</b></span></td>
+<td class="opt">Returns the name of the package that authenticated
+the session.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-dnsdomain</b></span></td>
+<td class="opt">Returns the DNS name for the owner of the logon
+session. This is always empty on Windows 2000.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-logondomain</b></span></td>
+<td class="opt">Returns the name of the domain used to authenticate
+the session.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-logonid</b></span></td>
+<td class="opt">Returns the <a href="#uniqueidentifiers">LUID</a>
+for the session (same as <i class='arg'>SESSIONLUID</i>).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-logonserver</b></span></td>
+<td class="opt">Returns the name of the server used to authenticate
+the session. This is always an empty string on Windows 2000.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-logontime</b></span></td>
+<td class="opt">Returns the time session owner logged on.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-type</b></span></td>
+<td class="opt">Returns the logon session type (see <a href=
+"#find_logon_sessions"><b class=
+'cmd'>find_logon_sessions</b></a>).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sid</b></span></td>
+<td class="opt">Returns the SID for the session owner.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-tssession</b></span></td>
+<td class="opt">Returns the terminal session identifier for the
+logon session.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-user</b></span></td>
+<td class="opt">Returns the user name for the session owner.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-userprincipal</b></span></td>
+<td class="opt">Returns the user principal name for the session
+owner. This is always an empty string on Windows 2000.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_privilege_description" id=
+"get_privilege_description"><b class=
+'cmd'>get_privilege_description</b> <i class=
+'arg'>PRIVILEGE</i></a></dt>
+<dd>Returns a string description of the specified privilege.</dd>
+<dt><a name="get_resource_security_descriptor" id=
+"get_resource_security_descriptor"><b class=
+'cmd'>get_resource_security_descriptor</b> <i class=
+'arg'>RESTYPE</i> <i class='arg'>NAME</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Retrieves the security descriptor attached to a operating
+system resource. <i class='arg'>RESTYPE</i> specifies the resource
+type and if option <b class='cmd'>-handle</b> is not specified,
+must be one of <span class="strong">file</span>, <span class=
+"strong">service</span> (Windows service), <span class=
+"strong">printer</span>, <span class="strong">registry</span>,
+<span class="strong">share</span> (Network shares) or <span class=
+"strong">kernelobj</span> (kernel objects such as mutexes,
+semaphores and events). If option <b class='cmd'>-handle</b> is
+specified, then <i class='arg'>RESTYPE</i> may also be one of
+<span class="strong">windowstation</span>, <span class=
+"strong">directoryservice</span>, <span class=
+"strong">directoryserviceall</span>, <span class=
+"strong">providerdefined</span>, <span class=
+"strong">wmiguid</span> or <span class=
+"strong">registrywow6432key</span>.<br />
+<br />
+<i class='arg'>NAME</i> specifies the name of the resource, for
+example, the path of a file unless option <b class=
+'cmd'>-handle</b> is specified in which case it is the handle to
+the resource.<br />
+<br />
+Without any options being specified, the returned security
+descriptor will contain only the owner, group and DACL fields. The
+SACL field will not contain valid data. The following options may
+be specified to control which fields are returned in the security
+descriptor:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Includes all fields in the security descriptor.
+This requires the caller to have the <span class=
+"strong">SeSecurityPrivilege</span> privilege enabled.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-dacl</b></span></td>
+<td class="opt">Includes the DACL in the returned security
+descriptor.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-group</b></span></td>
+<td class="opt">Includes the group information in the returned
+security descriptor.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-owner</b></span></td>
+<td class="opt">Includes the owner information in the returned
+security descriptor.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sacl</b></span></td>
+<td class="opt">Includes the SACL in the returned security
+descriptor. This requires the caller to have the <span class=
+"strong">SeSecurityPrivilege</span> privilege enabled.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_security_descriptor_control" id=
+"get_security_descriptor_control"><b class=
+'cmd'>get_security_descriptor_control</b> <i class=
+'arg'>SECD</i></a></dt>
+<dd>Returns the control flags contained in the given security
+descriptor <i class='arg'>SECD</i>. The flags are returned as a
+list of zero or more tokens from the following: <span class=
+"strong">owner_defaulted</span>, <span class=
+"strong">group_defaulted</span>, <span class=
+"strong">dacl_present</span>, <span class=
+"strong">dacl_defaulted</span>, <span class=
+"strong">sacl_present</span>, <span class=
+"strong">sacl_defaulted</span>, <span class=
+"strong">dacl_auto_inherit_req</span>, <span class=
+"strong">sacl_auto_inherit_req</span>, <span class=
+"strong">dacl_auto_inherited</span>, <span class=
+"strong">sacl_auto_inherited</span>, <span class=
+"strong">dacl_protected</span>, <span class=
+"strong">sacl_protected</span>, <span class=
+"strong">rm_control_valid</span>, <span class=
+"strong">self_relative</span>. Refer to the Windows Platform SDK
+for details.</dd>
+<dt><a name="get_security_descriptor_dacl" id=
+"get_security_descriptor_dacl"><b class=
+'cmd'>get_security_descriptor_dacl</b> <i class=
+'arg'>SECD</i></a></dt>
+<dd>Returns the DACL contained in the given security descriptor
+<i class='arg'>SECD</i>.</dd>
+<dt><a name="get_security_descriptor_group" id=
+"get_security_descriptor_group"><b class=
+'cmd'>get_security_descriptor_group</b> <i class=
+'arg'>SECD</i></a></dt>
+<dd>Returns the group SID for the given security descriptor
+<i class='arg'>SECD</i>.</dd>
+<dt><a name="get_security_descriptor_owner" id=
+"get_security_descriptor_owner"><b class=
+'cmd'>get_security_descriptor_owner</b> <i class=
+'arg'>SECD</i></a></dt>
+<dd>Returns the owner SID for the given security descriptor
+<i class='arg'>SECD</i>.</dd>
+<dt><a name="get_security_descriptor_sacl" id=
+"get_security_descriptor_sacl"><b class=
+'cmd'>get_security_descriptor_sacl</b> <i class=
+'arg'>SECD</i></a></dt>
+<dd>Returns the SACL contained in the given security descriptor
+<i class='arg'>SECD</i>.</dd>
+<dt><a name="get_security_descriptor_text" id=
+"get_security_descriptor_text"><b class=
+'cmd'>get_security_descriptor_text</b> <i class='arg'>SECD</i>
+?<b class='cmd'>-resourcetype</b> <i class=
+'arg'>RESOURCETYPE</i>?</a></dt>
+<dd>Returns a textual description of the specified security
+descriptor <i class='arg'>SECD</i>. The option <b class=
+'cmd'>-resourcetype</b> may be specified to indicate that the
+security descriptor is for a particular resource type. <i class=
+'arg'>RESOURCETYPE</i> must be one of the resource type values
+defined for the <a href="#get_ace_rights"><b class=
+'cmd'>get_ace_rights</b></a> command. This command is primarily
+useful for debugging and troubleshooting purposes.</dd>
+<dt><a name="get_token_groups" id="get_token_groups"><b class=
+'cmd'>get_token_groups</b> <i class='arg'>token</i> ?<b class=
+'cmd'>-name</b>?</a></dt>
+<dd>Returns the list of group SID's for the token. If <b class=
+'cmd'>-name</b> is specified, returns the group names instead of
+the SID's.</dd>
+<dt><a name="get_token_groups_and_attrs" id=
+"get_token_groups_and_attrs"><b class=
+'cmd'>get_token_groups_and_attrs</b> <i class=
+'arg'>token</i></a></dt>
+<dd>Returns the list of group SID's for the token together with the
+attributes for each group. The returned list is of the form
+<i class='arg'>SID ATTRIBUTELIST SID ATTRIBUTELIST...</i> where
+<i class='arg'>ATTRIBUTELIST</i> is a list of zero or more of the
+following attributes: <span class="strong">enabled</span>,
+<span class="strong">enabled_by_default</span>, <span class=
+"strong">logon_id</span>, <span class="strong">mandatory</span>,
+<span class="strong">owner</span>, <span class=
+"strong">resource</span>, and <span class=
+"strong">use_for_deny_only</span>. Refer to the Windows Platform
+SDK for details.</dd>
+<dt><a name="get_token_impersonation_level" id=
+"get_token_impersonation_level"><b class=
+'cmd'>get_token_impersonation_level</b> <i class=
+'arg'>token</i></a></dt>
+<dd>Gets the current impersonation level for the token. This may
+have one of the following values: <span class=
+"strong">anonymous</span>, <span class=
+"strong">identification</span>, <span class=
+"strong">impersonation</span>, or <span class=
+"strong">delegation</span>. See <a href=
+"#impersonation">Impersonation</a> for details.</dd>
+<dt><a name="get_token_owner" id="get_token_owner"><b class=
+'cmd'>get_token_owner</b> <i class='arg'>token</i> ?<b class=
+'cmd'>-name</b>?</a></dt>
+<dd>Returns the SID of the entity (user, group, etc.) that will be
+used as the owner for objects created using this token. If
+<b class='cmd'>-name</b> is specified, the name of the entity is
+returned instead of the SID.</dd>
+<dt><a name="get_token_primary_group" id=
+"get_token_primary_group"><b class=
+'cmd'>get_token_primary_group</b> <i class='arg'>token</i>
+?<b class='cmd'>-name</b>?</a></dt>
+<dd>Returns the SID of the group that will be used as the primary
+group for objects created using this token. If <b class=
+'cmd'>-name</b> is specified, the name of the group is returned
+instead of the SID.</dd>
+<dt><a name="get_token_privileges" id=
+"get_token_privileges"><b class='cmd'>get_token_privileges</b>
+<i class='arg'>token</i> ?<b class='cmd'>-all</b>?</a></dt>
+<dd>Returns the list of enabled privileges in the token. If the
+option <b class='cmd'>-all</b> is specified, returns a list of two
+sublists. The first containing the enabled privileges and the
+second the disabled privileges.</dd>
+<dt><a name="get_token_privileges_and_attrs" id=
+"get_token_privileges_and_attrs"><b class=
+'cmd'>get_token_privileges_and_attrs</b> <i class=
+'arg'>token</i></a></dt>
+<dd>Returns the list of privileges in the token together with the
+attributes for each. The returned list is of the form <i class=
+'arg'>PRIVILEGE ATTRIBUTELIST PRIVILEGE ATTRIBUTELIST...</i> where
+<i class='arg'>ATTRIBUTELIST</i> is a list of zero or more of the
+following attributes: <span class="strong">enabled</span>,
+<span class="strong">enabled_by_default</span> and <span class=
+"strong">used_for_access</span>.</dd>
+<dt><a name="get_token_source" id="get_token_source"><b class=
+'cmd'>get_token_source</b> <i class='arg'>token</i></a></dt>
+<dd>Returns the source of an access token.</dd>
+<dt><a name="get_token_statistics" id=
+"get_token_statistics"><b class='cmd'>get_token_statistics</b>
+<i class='arg'>token</i></a></dt>
+<dd>Returns various token statistics as a list of field value
+pairs. The following fields are returned:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">authluid</span></td>
+<td class="opt">The <a href="#uniqueidentifiers">LUID</a> for the
+session represented by the token.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">expiration</span></td>
+<td class="opt">Expiration time for the token. Windows does not
+currently support expiration for access tokens.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">dynamicavailable</span></td>
+<td class="opt">Number of free bytes available for storing default
+protection and primary group identifier for the token.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">dynamiccharged</span></td>
+<td class="opt">Number of bytes allocated for storing default
+protection and primary group identifier for the token.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">groupcount</span></td>
+<td class="opt">Number of group SID's included in the token.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">impersonationlevel</span></td>
+<td class="opt">The <a href="#impersonation">impersonation
+level</a> of the token. This value is only valid if the field
+<b class='cmd'>type</b> has the value <span class=
+"strong">impersonation</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong">luid</span></td>
+<td class="opt">An <a href="#uniqueidentifiers">LUID</a> that
+identifies the instance of the token.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">modificationluid</span></td>
+<td class="opt">An <a href="#uniqueidentifiers">LUID</a> that
+changes every time the token is modified.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class=
+"strong">privilegecount</span></td>
+<td class="opt">The number of privileges (including disabled ones)
+that are included in the token.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong">type</span></td>
+<td class="opt">The type of the token - <span class=
+"strong">primary</span> or <span class=
+"strong">impersonation</span>.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_token_type" id="get_token_type"><b class=
+'cmd'>get_token_type</b> <i class='arg'>token</i></a></dt>
+<dd>Returns the type of the token: either <span class=
+"strong">primary</span>, or <span class=
+"strong">impersonation</span>.</dd>
+<dt><a name="get_token_user" id="get_token_user"><b class=
+'cmd'>get_token_user</b> <i class='arg'>token</i> ?<b class=
+'cmd'>-name</b>?</a></dt>
+<dd>Returns the SID of the user account associated with the token.
+If <b class='cmd'>-name</b> is specified, returns the name of the
+account instead of its SID. <a href=
+"showprocessowners.example">Example: Show the user account for each
+process</a></dd>
+<dt><a name="impersonate_self" id="impersonate_self"><b class=
+'cmd'>impersonate_self</b> <i class=
+'arg'>IMPERSONATIONLEVEL</i></a></dt>
+<dd>Assigns an impersonation token to the current thread based on
+the security context of the process. The security characteristics
+of the thread can then be changed (for example by modifying the
+privileges of its token) without impacting the security context of
+the remaining threads in the process.<br />
+<br />
+<i class='arg'>IMPERSONATIONLEVEL</i> may have any of the values
+allowed for impersonation levels (see <a href=
+"#impersonation">Impersonation</a>).</dd>
+<dt><a name="impersonate_token" id="impersonate_token"><b class=
+'cmd'>impersonate_token</b> <i class='arg'>TOKEN</i></a></dt>
+<dd>Changes the security context of the calling thread to that of
+the user account associated with the specified token. <i class=
+'arg'>TOKEN</i> is a token returned from a command such as
+<b class='cmd'>open_user_token</b>, <b class=
+'cmd'>open_process_token</b> or <b class=
+'cmd'>open_thread_token</b>.<br />
+<br />
+The caller must be careful that exceptions raised by this command
+are handled correctly. It should not continue with normal
+processing as though the security context was changed to that of
+the token.</dd>
+<dt><a name="impersonate_user" id="impersonate_user"><b class=
+'cmd'>impersonate_user</b> <i class='arg'>USERNAME</i> <i class=
+'arg'>PASSWORD</i> ?<i class='arg'>options</i>?</a></dt>
+<dd>Changes the security context of the calling thread to that of
+the specified user account. This is essentially a wrapper around
+<b class='cmd'>open_user_token</b> and <b class=
+'cmd'>impersonate_token</b>. Refer to the documentation of
+<b class='cmd'>open_user_token</b> for a description of the
+arguments.<br />
+<br />
+The caller must be careful that exceptions raised by this command
+are handled correctly. It should not continue with normal
+processing as though the security context was changed to that of
+the user account.</dd>
+<dt><a name="is_valid_luid_syntax" id=
+"is_valid_luid_syntax"><b class='cmd'>is_valid_luid_syntax</b>
+<i class='arg'>LUID</i></a></dt>
+<dd>Returns if <i class='arg'>LUID</i> is a syntactically valid
+LUID, else 0.</dd>
+<dt><a name="is_valid_sid_syntax" id=
+"is_valid_sid_syntax"><b class='cmd'>is_valid_sid_syntax</b>
+<i class='arg'>sid</i></a></dt>
+<dd>Returns true or false depending on whether <i class=
+'arg'>sid</i> is a valid SID or not. Note this only checks the
+syntax of the SID, not whether it corresponds to a real
+account.</dd>
+<dt><a name="map_luid_to_privilege" id=
+"map_luid_to_privilege"><b class='cmd'>map_luid_to_privilege</b>
+<i class='arg'>LUID</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>? ?<b class='cmd'>-mapunknown</b>?</a></dt>
+<dd>Returns the privilege name corresponding to the given LUID. If
+<i class='arg'>LUID</i> does not correspond to a system defined
+privilege, an exception is raised unless the <b class=
+'cmd'>-mapunknown</b> option is specified. In this case, the
+command will return a string of the form <span class=
+"strong">Privilege-</span><i class='arg'>LUID</i>. As a special
+case, if <i class='arg'>LUID</i> is a privilege name (and not a
+LUID), returns it as is. The option <b class='cmd'>-system</b> may
+be used to specify a system as described in <a href=
+"#standardoptions">Standard Options</a>.</dd>
+<dt><a name="map_privilege_to_luid" id=
+"map_privilege_to_luid"><b class='cmd'>map_privilege_to_luid</b>
+<i class='arg'>PRIVILEGE</i> ?<b class='cmd'>-system</b> <i class=
+'arg'>SYSTEMNAME</i>? ?<b class='cmd'>-mapunknown</b>?</a></dt>
+<dd>Returns the LUID corresponding to the given privilege name. If
+<i class='arg'>PRIVILEGE</i> does not correspond to a system
+defined privilege name or a constructed privilege name of the form
+<span class="strong">Privilege-</span><i class='arg'>LUID</i>, an
+exception is raised. As a special case, if <i class=
+'arg'>PRIVILEGE</i> is itself a LUID, it is returned. The option
+<b class='cmd'>-system</b> may be used to specify a system as
+described in <a href="#standardoptions">Standard Options</a>.</dd>
+<dt><a name="new_ace" id="new_ace"><b class='cmd'>new_ace</b>
+<i class='arg'>ACETYPE</i> <i class='arg'>ACCOUNT</i> <i class=
+'arg'>ACCESSRIGHTS</i> ?<i class='arg'>options</i>?</a></dt>
+<dd>Creates and returns a new ACE. <i class='arg'>ACETYPE</i> is
+the type of the ACE and should be one of supported values described
+in <a href="#accesscontrolentries">Access Control Entries</a>. The
+user or group that the ACE pertains to is given by <i class=
+'arg'>ACCOUNT</i> which may be either a name or a SID. <i class=
+'arg'>ACCESSRIGHTS</i> determines the rights to be granted or
+denied by the ACE and should be a list of one or more constants
+described in <a href="#accessrights">Access Rights</a>.<br />
+<br />
+The following options may be specified when creating an ACE:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-self</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If the specified value is 1 (default), the ACE
+applies to the object to which it is attached. If the specified
+value is 0, then the created ACE does not apply to the object with
+which it is attached. In this case, it only applies to the
+descendents of that object as indicated by the other options.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-recursecontainers</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If the specified value is 1, the ACE is also
+applied to all descendents of the object to which the ACE is
+attached that are themselves containers. For example, in the case
+of a file ACE, this would indicate that the ACE also apply to all
+subdirectories. If 0 (default), the ACE does not apply to
+descendents that are containers.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-recurseobjects</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If the specified value is 1, the ACE is also
+applied to all descendents of the object to which the ACE is
+attached that are <span class="em">not</span> themselves
+containers. For example, in the case of a file ACE, this would
+indicate that the ACE also apply to all files under all
+subdirectories below a directory but not to the subdirectories
+themselves. If 0 (default), the ACE does not apply to descendents
+that are not containers.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-recurseonelevelonly</b></span> <i class=
+'arg'>BOOLEAN</i></td>
+<td class="opt">If the specified value is 0 (default), the
+<b class='cmd'>-recursecontainers</b> and <b class=
+'cmd'>-recurseobjects</b> options have effect at all levels below
+the container object to which the ACE is applied. If the value is
+1, the ACE is only applied to the immediate children of the
+container object. This option has no effect if neither <b class=
+'cmd'>-recurseobjects</b> nor <b class='cmd'>-recursecontainers</b>
+is specified.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="new_acl" id="new_acl"><b class='cmd'>new_acl</b>
+?<i class='arg'>ACELIST</i>?</a></dt>
+<dd>Returns a new ACL initialized. <i class='arg'>ACELIST</i> may
+be optionally specified to prepopulate the ACL with a list of ACE
+elements.</dd>
+<dt><a name="new_luid" id="new_luid"><b class=
+'cmd'>new_luid</b></a></dt>
+<dd>Returns a <a href="#uniqueidentifiers">LUID</a>.</dd>
+<dt><a name="new_security_descriptor" id=
+"new_security_descriptor"><b class=
+'cmd'>new_security_descriptor</b> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Returns a new <a href="#securitydescriptors">security
+descriptor</a>. The following options may be specified to
+initialize various fields of the security descriptor:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-owner</b></span> <i class='arg'>ACCOUNT</i></td>
+<td class="opt">The owner field of the security descriptor is set
+to the SID for the specified account. <i class='arg'>ACCOUNT</i>
+may be the SID itself or the name of the user or group
+account.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-group</b></span> <i class='arg'>ACCOUNT</i></td>
+<td class="opt">The primary group field of the security descriptor
+is set to the SID for the specified account. <i class=
+'arg'>ACCOUNT</i> may be the SID itself or the name of the
+group.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-dacl</b></span> <i class='arg'>ACL</i></td>
+<td class="opt">The DACL field of the security descriptor is set to
+<i class='arg'>ACL</i>. If <i class='arg'>ACL</i> is the string
+<span class="strong">"null"</span>, no DACL will be present in the
+security descriptor.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-sacl</b></span> <i class='arg'>ACL</i></td>
+<td class="opt">The SACL field of the security descriptor is set to
+<i class='arg'>ACL</i>. If <i class='arg'>ACL</i> is the string
+<span class="strong">"null"</span>, no SACL will be present in the
+security descriptor.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="new_uuid" id="new_uuid"><b class='cmd'>new_uuid</b>
+?<b class='cmd'>-localok</b>?</a></dt>
+<dd>Returns a <a href="#uniqueidentifiers">UUID</a>. If the system
+does not contain a network card, the operating system may return an
+error as it cannot guarantee uniqueness across systems. Specifying
+the <b class='cmd'>-localok</b> option causes this to be ignored
+and a identifier value to be returned anyways.</dd>
+<dt><a name="nil_uuid" id="nil_uuid"><b class=
+'cmd'>nil_uuid</b></a></dt>
+<dd>Returns a nil <a href="#uniqueidentifiers">UUID</a>.</dd>
+<dt><a name="open_process_token" id="open_process_token"><b class=
+'cmd'>open_process_token</b> ?<b class='cmd'>-pid</b> <i class=
+'arg'>PID</i>? ?<b class='cmd'>-access</b> <i class=
+'arg'>DESIREDACCESS</i>?</a></dt>
+<dd>Returns a process token that can passed to other functions for
+querying and modifying security related data for a process. By
+default, the current process is assumed. The <b class=
+'cmd'>-pid</b> option may be used to retrieve the token for another
+process.<br />
+<br />
+By <b class='cmd'>-access</b> option may be used to specify a list
+of desired access rights. If this option is not specified, access
+rights default to <span class="strong">token_query</span>. See
+<a href="#accessrights">Access Rights</a> for a description of the
+format of this list and for a description of standard access
+rights.<br />
+<br />
+In addition, the following symbols may be specified in the list:
+<span class="strong">token_adjust_default</span>, <span class=
+"strong">token_adjust_groups</span>, <span class=
+"strong">token_adjust_privileges</span>, <span class=
+"strong">token_adjust_sessionid</span>, <span class=
+"strong">token_assign_primary</span>, <span class=
+"strong">token_duplicate</span>, <span class=
+"strong">token_execute</span>, <span class=
+"strong">token_impersonate</span>, <span class=
+"strong">token_query</span>, <span class=
+"strong">token_query_source</span>, <span class=
+"strong">token_read</span>, <span class="strong">token_write</span>
+and <span class="strong">token_all_access</span>. See the
+documentation of <span class="strong">OpenProcessToken</span> in
+the Windows SDK for a description of each of these.<br />
+<br />
+When no longer required, this token must be passed to <a href=
+"#close_token"><b class='cmd'>close_token</b></a>.<br />
+<br />
+<a href="showprocessowners.example">Example: Show the user account
+for each process</a></dd>
+<dt><a name="open_thread_token" id="open_thread_token"><b class=
+'cmd'>open_thread_token</b> ?<b class='cmd'>-tid</b> <i class=
+'arg'>TID</i>? ?<b class='cmd'>-access</b> <i class=
+'arg'>DESIREDACCESS</i>? ?<b class='cmd'>-self</b> <i class=
+'arg'>BOOLEAN</i>?</a></dt>
+<dd>Returns a thread access token that can passed to other
+functions for querying and modifying security related data for a
+thread. By default, the current process is assumed. The <b class=
+'cmd'>-pid</b> option may be used to retrieve the token for another
+process. Note that the command will generate an error if the thread
+does not have a token. In this case, <b class='cmd'>::errorCode</b>
+facility and code are set to <span class="strong">WINDOWS</span>
+and <span class="strong">1008</span> respectively. The caller can
+retrieve the process token instead.<br />
+<br />
+The <b class='cmd'>-access</b> option specifies the desired access
+mode. See <a href="#open_process_token"><b class=
+'cmd'>open_process_token</b></a> for more details.<br />
+<br />
+The <b class='cmd'>-self</b> option controls whether the access
+check is to be made against the security context of the thread or
+against the security context of the process. If specified as false,
+the security context of the thread is used, else that of the
+process.<br />
+<br />
+When no longer required, this token must be passed to <a href=
+"#close_token"><b class='cmd'>close_token</b></a>.</dd>
+<dt><a name="open_user_token" id="open_user_token"><b class=
+'cmd'>open_user_token</b> <i class='arg'>USERNAME</i> <i class=
+'arg'>PASSWORD</i> ?<i class='arg'>options</i>?</a></dt>
+<dd>Returns a token corresponding to a logon session for the
+<i class='arg'>USERNAME</i> account. This token may be used for
+impersonation or starting processes under a different account. When
+no longer required, this token must be passed to <a href=
+"#close_token"><b class='cmd'>close_token</b></a>.<br />
+<br />
+<i class='arg'>USERNAME</i> is the name of the account and may be
+specified either as just the account name, or in UPN format as
+<i class='arg'>user@DNS_domain_name</i>.<br />
+<br />
+The following options may be specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-domain</b></span> <i class='arg'>DOMAIN</i></td>
+<td class="opt">Specifies the domain for the user. This option must
+not be specified if <i class='arg'>USERNAME</i> is in UPN format
+<i class='arg'>user@DNS_domain_name</i> which includes a domain
+name. If <i class='arg'>USERNAME</i> is not in UPN format and
+<b class='cmd'>-domain</b> is not specified, the account validation
+is done only using the local account database.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-type</b></span> <i class='arg'>LOGONTYPE</i></td>
+<td class="opt">Indicates the logon type. <i class=
+'arg'>LOGONTYPE</i> must be one of <span class=
+"strong">batch</span>, <span class="strong">interactive</span>,
+<span class="strong">network</span>, <span class=
+"strong">network_cleartext</span>, <span class=
+"strong">new_credentials</span>, <span class=
+"strong">service</span> or <span class="strong">unlock</span>.
+Refer to the Windows SDK documentation of <b class=
+'cmd'>LogonUser</b> for details.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-provider</b></span> <i class='arg'>PROVIDER</i></td>
+<td class="opt">Selects a logon provider. <i class=
+'arg'>PROVIDER</i> must be one of <span class=
+"strong">winnt50</span>, <span class="strong">winnt40</span> or
+<span class="strong">winnt35</span>. If this option is not
+specified, the operating system picks the standard (version
+dependent) logon provider for the system. Specify <span class=
+"strong">winnt40</span> to select the NTLM provider and
+<span class="strong">winnt50</span> (only valid for Windows 2000
+and up) for the negotiate logon provider.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="prepend_acl_aces" id="prepend_acl_aces"><b class=
+'cmd'>prepend_acl_aces</b> <i class='arg'>ACL</i> <i class=
+'arg'>ACELIST</i></a></dt>
+<dd>Prepends the list of ACEs in <i class='arg'>ACELIST</i> to the
+entries in the given ACL. Returns the modified ACL.</dd>
+<dt><a name="reset_thread_token" id="reset_thread_token"><b class=
+'cmd'>reset_thread_token</b></a></dt>
+<dd>Ends the current thread's impersonation state.</dd>
+<dt><a name="revert_to_self" id="revert_to_self"><b class=
+'cmd'>revert_to_self</b></a></dt>
+<dd>Calling this function will restore the original security
+context for the process thereby ending any impersonation initiated
+by prior impersonation commands such as <b class=
+'cmd'>impersonate_user</b>.<br />
+<br />
+Any exceptions raised by this command will result in the process
+continuing to run in the impersonation context. This is dangerous
+from a security perspective and the caller should normally
+immediately exit.</dd>
+<dt><a name="set_ace_inheritance" id=
+"set_ace_inheritance"><b class='cmd'>set_ace_inheritance</b>
+<i class='arg'>ACE</i> ?<i class='arg'>options</i>?</a></dt>
+<dd>Returns a new ACE constructed from <i class='arg'>ACE</i> with
+inheritance attributes defined by <i class='arg'>options</i>. These
+may be one or more of <b class='cmd'>-self</b>, <b class=
+'cmd'>-recursecontainers</b>, <b class='cmd'>-recurseobjects</b>
+and <b class='cmd'>-recurseonelevelonly</b> as described in the
+documentation for <b class='cmd'>new_ace</b>.</dd>
+<dt><a name="set_ace_rights" id="set_ace_rights"><b class=
+'cmd'>set_ace_rights</b> <i class='arg'>ACE</i> <i class=
+'arg'>ACCESSRIGHTS</i></a></dt>
+<dd>Returns a new ACE containing the access rights specified in
+<i class='arg'>ACCESSRIGHTS</i>. This should be a list of symbolic
+constants and bit masks as described in <a href=
+"#accessrights">Access Rights</a>.</dd>
+<dt><a name="set_ace_sid" id="set_ace_sid"><b class=
+'cmd'>set_ace_sid</b> <i class='arg'>ACE</i> <i class=
+'arg'>ACCOUNT</i></a></dt>
+<dd>Returns a new ACE constructed from <i class='arg'>ACE</i> but
+with its SID field set to be the SID for account <i class=
+'arg'>ACCOUNT</i>. <i class='arg'>ACCOUNT</i> may be either the
+name or the SID of a user or group account.</dd>
+<dt><a name="set_ace_type" id="set_ace_type"><b class=
+'cmd'>set_ace_type</b> <i class='arg'>ACE</i> <i class=
+'arg'>ACETYPE</i></a></dt>
+<dd>Returns a new ACE constructed from <i class='arg'>ACE</i> but
+with the type <i class='arg'>ACETYPE</i>. See <a href=
+"#accesscontrolentries">Access Control Entries</a> for valid values
+of <i class='arg'>ACETYPE</i>.</dd>
+<dt><a name="set_acl_aces" id="set_acl_aces"><b class=
+'cmd'>set_acl_aces</b> <i class='arg'>ACL</i> <i class=
+'arg'>ACELIST</i></a></dt>
+<dd>Sets the list of ACEs within an ACL to those given in <i class=
+'arg'>ACELIST</i>. Returns the modified ACL.</dd>
+<dt><a name="set_resource_security_descriptor" id=
+"set_resource_security_descriptor"><b class=
+'cmd'>set_resource_security_descriptor</b> <i class=
+'arg'>RESTYPE</i> <i class='arg'>NAME</i> <i class='arg'>SECD</i>
+?<i class='arg'>options</i>?</a></dt>
+<dd>Modifies the security descriptor attached to a operating system
+resource. <i class='arg'>RESTYPE</i> specifies the resource type
+and if option <b class='cmd'>-handle</b> is not specified, must be
+one of <span class="strong">file</span>, <span class=
+"strong">service</span> (Windows service), <span class=
+"strong">printer</span>, <span class="strong">registry</span>,
+<span class="strong">share</span> (Network shares) or <span class=
+"strong">kernelobj</span> (kernel objects such as mutexes,
+semaphores and events). If option <b class='cmd'>-handle</b> is
+specified, then <i class='arg'>RESTYPE</i> may also be one of
+<span class="strong">windowstation</span>, <span class=
+"strong">directoryservice</span>, <span class=
+"strong">directoryserviceall</span>, <span class=
+"strong">providerdefined</span>, <span class=
+"strong">wmiguid</span> or <span class=
+"strong">registrywow6432key</span>.<br />
+<br />
+<i class='arg'>NAME</i> specifies the name of the resource, for
+example, the path of a file unless option <b class=
+'cmd'>-handle</b> is specified in which case it is the handle to
+the resource.<br />
+<br />
+The fields of the resource's security descriptor are modified based
+on the contents of <i class='arg'>SECD</i>. The specific fields
+modified depend on the options specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-all</span></span></td>
+<td class="opt">All fields in the security descriptor are modified.
+This requires the caller to have the <span class=
+"strong">SeSecurityPrivilege</span> privilege enabled.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-owner</span></span></td>
+<td class="opt">The resource's owner is modified.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-group</span></span></td>
+<td class="opt">The resource's group is modified.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-dacl</span></span></td>
+<td class="opt">Changes the DACL attached to the resource.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-sacl</span></span></td>
+<td class="opt">Changes the SACL attached to the resource. This
+requires the caller to have the <span class=
+"strong">SeSecurityPrivilege</span> privilege enabled.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-protect_dacl</span></span></td>
+<td class="opt">If this option is specified, the resource will not
+inherit any DACL's from its parent. Otherwise, the parent's DACL's
+flow down to the resource. This option only has effect if the
+<span class="strong">-dacl</span> option is specified. This option
+cannot be specified with <span class=
+"strong">-unprotect_dacl</span>. If neither is specified, the
+current DACL inherit settings are preserved.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-protect_sacl</span></span></td>
+<td class="opt">If this option is specified, the resource will not
+inherit any SACL's from its parent. Otherwise, the parent's SACL's
+flow down to the resource. This option only has effect if the
+<span class="strong">-sacl</span> option is specified. This option
+cannot be specified with <span class=
+"strong">-unprotect_sacl</span>. If neither is specified, the
+current SACL inherit settings are preserved.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-unprotect_dacl</span></span></td>
+<td class="opt">If this option is specified, the resource will
+inherit any DACL's from its parent. This option only has effect if
+the <span class="strong">-dacl</span> option is specified. This
+option cannot be specified with <span class=
+"strong">-protect_dacl</span>. If neither is specified, the current
+DACL inherit settings are preserved.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-unprotect_sacl</span></span></td>
+<td class="opt">If this option is specified, the resource will
+inherit any SACL's from its parent. This option only has effect if
+the <span class="strong">-sacl</span> option is specified. This
+option cannot be specified with <span class=
+"strong">-protect_sacl</span>. If neither is specified, the current
+SACL inherit settings are preserved.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="set_security_descriptor_dacl" id=
+"set_security_descriptor_dacl"><b class=
+'cmd'>set_security_descriptor_dacl</b> <i class='arg'>SECD</i>
+<i class='arg'>ACL</i></a></dt>
+<dd>Returns a security descriptor identical to <i class=
+'arg'>SECD</i> except for the DACL field which is set to <i class=
+'arg'>ACL</i>. If <i class='arg'>ACL</i> is the string <span class=
+"strong">"null"</span>, the security descriptor is set to have no
+DACL. If <i class='arg'>ACL</i> is an empty list, the security
+descriptor has an empty DACL, which is <span class="em">not</span>
+the same not having a DACL.</dd>
+<dt><a name="set_security_descriptor_group" id=
+"set_security_descriptor_group"><b class=
+'cmd'>set_security_descriptor_group</b> <i class='arg'>SECD</i>
+<i class='arg'>ACCOUNT</i></a></dt>
+<dd>Returns a security descriptor identical to <i class=
+'arg'>SECD</i> except for the group field which is set to the SID
+for account <i class='arg'>ACCOUNT</i>. <i class='arg'>ACCOUNT</i>
+may be the SID itself or the name of the group.</dd>
+<dt><a name="set_security_descriptor_owner" id=
+"set_security_descriptor_owner"><b class=
+'cmd'>set_security_descriptor_owner</b> <i class='arg'>SECD</i>
+<i class='arg'>ACCOUNT</i></a></dt>
+<dd>Returns a security descriptor identical to <i class=
+'arg'>SECD</i> except for the owner field which is set to the SID
+for account <i class='arg'>ACCOUNT</i>. <i class='arg'>ACCOUNT</i>
+may be the SID itself or the name of the user or group.</dd>
+<dt><a name="set_security_descriptor_sacl" id=
+"set_security_descriptor_sacl"><b class=
+'cmd'>set_security_descriptor_sacl</b> <i class='arg'>SECD</i>
+<i class='arg'>ACL</i></a></dt>
+<dd>Returns a security descriptor identical to <i class=
+'arg'>SECD</i> except for the SACL field which is set to <i class=
+'arg'>ACL</i>. If <i class='arg'>ACL</i> is the string <span class=
+"strong">"null"</span>, the security descriptor is set to have no
+SACL.</dd>
+<dt><a name="set_thread_token" id="set_thread_token"><b class=
+'cmd'>set_thread_token</b> <i class='arg'>TOKEN</i></a></dt>
+<dd>Changes the security context of the current thread by
+associating it with the given token. This is generally used in
+combination with <a href="#open_thread_token"><b class=
+'cmd'>open_thread_token</b></a> to implement an impersonation
+stack.</dd>
+<dt><a name="sort_aces" id="sort_aces"><b class='cmd'>sort_aces</b>
+<i class='arg'>ACELIST</i></a></dt>
+<dd>Although not enforced by the operating system, Windows has a
+recommended order in which multiple ACEs should be applied. The
+<b class='cmd'>sort_aces</b> command takes a list of ACE elements
+and returns a list that has been sorted as per the Windows
+recommendation. This sort order places all inherited ACEs after all
+non-inherited ACEs. Within each group, deny ACEs are placed before
+allow ACEs.</dd>
+<dt><a name="sort_acl_aces" id="sort_acl_aces"><b class=
+'cmd'>sort_acl_aces</b> <i class='arg'>ACL</i></a></dt>
+<dd>Rearranges the ACEs in the given ACL to conform to the Windows
+recommended order. Returns the modified ACL.</dd>
+</dl>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2003-2006, Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,741 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Version History</h2>
+<p>Tcl Windows API extension version history</p>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>Summarizes the list of changes for each version of TWAPI.</p>
+<h3><a name="version20" id="version20">Version 2.0</a></h3>
+<ul class="noclass">
+<li><span class="em">INCOMPATIBLE CHANGE</span> Windows NT 4.0 is
+no longer a supported platform.</li>
+<li>Added support for distribution as a single file Tcl module for
+Tcl 8.5.</li>
+<li>Added support for <a href=
+"services.html#writingservicesintcl">Tcl-based Windows
+services</a>.</li>
+<li>Added <a href="msi.html">Microsoft Windows Installer</a>
+interface support.</li>
+<li>Added <a href="crypto.html">SSPI</a> support
+(experimental).</li>
+<li>Added <a href="power.html">Power Management</a> module.</li>
+<li>Added <a href=
+"device.html#start_device_change_monitor"><b class=
+'cmd'>start_device_change_monitor</b></a> and <a href=
+"device.html#stop_device_change_monitor"><b class=
+'cmd'>stop_device_change_monitor</b></a>.</li>
+<li>Added <a href=
+"clipboard.html#start_clipboard_monitor"><b class='cmd'>start_clipboard_monitor</b></a>
+and <a href="clipboard.html#stop_clipboard_monitor"><b class=
+'cmd'>stop_clipboard_monitor</b></a>.</li>
+<li>Added <b class='cmd'>-patterns</b> option to <a href=
+"disk.html#begin_filesystem_monitor"><b class=
+'cmd'>begin_filesystem_monitor</b></a>.</li>
+<li>Added <a href="process.html#get_priority_class"><b class=
+'cmd'>get_priority_class</b></a>, <a href=
+"process.html#set_priority_class"><b class=
+'cmd'>set_priority_class</b></a>, <a href=
+"process.html#get_thread_relative_priority"><b class=
+'cmd'>get_thread_relative_priority</b></a> and <a href=
+"process.html#set_thread_relative_priority"><b class=
+'cmd'>set_thread_relative_priority</b></a>.</li>
+<li>Added commands <a href=
+"network.html#get_outgoing_interface"><b class=
+'cmd'>get_outgoing_interface</b></a>, <a href=
+"network.html#get_route"><b class='cmd'>get_route</b></a> and
+<a href="network.html#get_routing_table"><b class=
+'cmd'>get_routing_table</b></a>.</li>
+<li>Added commands <a href="ui.html#get_display_devices"><b class=
+'cmd'>get_display_devices</b></a>, <a href=
+"ui.html#get_display_monitors"><b class=
+'cmd'>get_display_monitors</b></a>, <a href=
+"ui.html#get_display_monitor_from_window"><b class=
+'cmd'>get_display_monitor_from_window</b></a>, <a href=
+"ui.html#get_display_monitor_from_point"><b class=
+'cmd'>get_display_monitor_from_point</b></a>, <a href=
+"ui.html#get_display_monitor_from_rect"><b class=
+'cmd'>get_display_monitor_from_rect</b></a>, <a href=
+"ui.html#get_display_monitor_info"><b class=
+'cmd'>get_display_monitor_info</b></a>.</li>
+<li>Added commands <a href=
+"disk.html#find_physical_disks"><b class='cmd'>find_physical_disks</b></a>
+and <a href="disk.html#get_physical_disk_info"><b class=
+'cmd'>get_physical_disk_info</b></a>.</li>
+<li>Added <a href="handles.html#create_file"><b class=
+'cmd'>create_file</b></a>.</li>
+<li>Added <a href="device.html#device_ioctl"><b class=
+'cmd'>device_ioctl</b></a>.</li>
+<li>Added <b class='cmd'>-extents</b> option to <a href=
+"disk.html#get_volume_info"><b class=
+'cmd'>get_volume_info</b></a>.</li>
+<li>Added <b class='cmd'>-isnull</b> subcommand to <a href=
+"com.html">COM</a> objects.</li>
+<li>Added <a href="input.html#get_input_idle_time"><b class=
+'cmd'>get_input_idle_time</b></a>.</li>
+<li>Added <a href=
+"misc.html#large_system_time_to_timelist"><b class=
+'cmd'>large_system_time_to_timelist</b></a> and <a href=
+"misc.html#timelist_to_large_system_time"><b class=
+'cmd'>timelist_to_large_system_time</b></a>.</li>
+<li>Added <b class='cmd'>-modulename</b>, <b class=
+'cmd'>-modulepath</b>, <b class='cmd'>-bindtime</b> options to
+<a href="network.html#get_tcp_connections"><b class=
+'cmd'>get_tcp_connections</b></a> and <a href=
+"network.html#get_udp_connections"><b class=
+'cmd'>get_udp_connections</b></a>. Modified <b class=
+'cmd'>-matchremoteaddr</b> and <b class='cmd'>-matchlocaladdr</b>
+options to allow DNS names and accept multiple addresses.</li>
+<li>Added <b class='cmd'>-messageonlywindow</b> option to <a href=
+"ui.html#find_windows"><b class='cmd'>find_windows</b></a>.</li>
+<li>Added options <b class='cmd'>-noexist</b> and <b class=
+'cmd'>-noaccess</b> to <a href=
+"process.html#get_thread_info"><b class=
+'cmd'>get_thread_info</b></a>. <span class="em">INCOMPATIBLE
+CHANGE</span> The command no longer raises an exception if a thread
+does not exist or cannot be accessed.</li>
+<li>Additional performance optimizations.</li>
+</ul>
+<h3><a name="version11" id="version11">Version 1.1</a></h3>
+<ul class="noclass">
+<li>Added enhanced <a href="schedule.html">Windows task
+scheduler</a> interface.</li>
+<li>Added commands <a href="share.html#find_lm_sessions"><b class=
+'cmd'>find_lm_sessions</b></a>, <a href=
+"share.html#end_lm_sessions"><b class=
+'cmd'>end_lm_sessions</b></a>, <a href=
+"share.html#get_lm_session_info"><b class=
+'cmd'>get_lm_session_info</b></a> and <a href=
+"share.html#find_lm_connections"><b class=
+'cmd'>find_lm_connections</b></a> dealing with Lan Manager sessions
+and connections.</li>
+<li>Added commands <a href=
+"share.html#find_lm_open_files"><b class='cmd'>find_lm_open_files</b></a>,
+<a href="share.html#close_lm_open_file"><b class=
+'cmd'>close_lm_open_file</b></a> and <a href=
+"share.html#get_lm_open_file_info"><b class=
+'cmd'>get_lm_open_file_info</b></a> dealing with files opened in
+Lan Manager sessions.</li>
+<li>Added <a href="osinfo.html#find_domain_controller"><b class=
+'cmd'>find_domain_controller</b></a> command.</li>
+<li>Added <a href="disk.html#get_file_times"><b class=
+'cmd'>get_file_times</b></a> and <a href=
+"disk.html#set_file_times"><b class='cmd'>set_file_times</b></a>
+dealing with file timestamps.</li>
+<li>Enhanced <a href="process.html#get_process_info"><b class=
+'cmd'>get_process_info</b></a> and <a href=
+"process.html#get_thread_info"><b class=
+'cmd'>get_thread_info</b></a> return additional process and thread
+information.</li>
+<li>Enhanced <a href="osinfo.html#get_processor_info"><b class=
+'cmd'>get_processor_info</b></a> to return additional processor
+information.</li>
+<li>Enhanced <a href="osinfo.html#get_memory_info"><b class=
+'cmd'>get_memory_info</b></a> to return additional swap file
+information.</li>
+<li>Replaced Windows performance counter calls with native Win32
+calls resulting in almost two orders of magnitude better
+performance in retrieving process, thread and system
+information.</li>
+<li>Added <a href="osinfo.html#get_system_time"><b class=
+'cmd'>get_system_time</b></a>.</li>
+<li>Added <a href=
+"misc.html#secs_since_1970_to_large_system_time"><b class=
+'cmd'>secs_since_1970_to_large_system_time</b></a>.</li>
+<li>Added <a href="com.html#variant_time_to_timelist"><b class=
+'cmd'>variant_time_to_timelist</b></a> and <a href=
+"com.html#timelist_to_variant_time"><b class=
+'cmd'>timelist_to_variant_time</b></a>.</li>
+<li>Added <b class='cmd'>-handle</b> option to <a href=
+"security.html#get_resource_security_descriptor"><b class=
+'cmd'>get_resource_security_descriptor</b></a> and options
+<b class='cmd'>-handle</b>, <b class='cmd'>-unprotect_dacl</b> and
+<b class='cmd'>-unprotect_sacl</b> to <a href=
+"security.html#set_resource_security_descriptor"><b class=
+'cmd'>set_resource_security_descriptor</b></a>.</li>
+<li>Added <b class='cmd'>-logonsession</b> option to <a href=
+"process.html#get_process_ids"><b class=
+'cmd'>get_process_ids</b></a>.</li>
+<li>Include process id and attribute information (if available) in
+data returned by <a href=
+"services.html#get_service_status"><b class=
+'cmd'>get_service_status</b></a> and <a href=
+"services.html#get_multiple_service_status"><b class=
+'cmd'>get_multiple_service_status</b></a>.</li>
+<li><span class="em">INCOMPATIBLE CHANGE</span> Changed default
+value of <a href="share.html#new_share"><b class=
+'cmd'>new_share</b></a> option <b class='cmd'>-secd</b>.</li>
+<li>Bug fixes.</li>
+</ul>
+<h3><a name="version10" id="version10">Version 1.0</a></h3>
+<ul class="noclass">
+<li>Added <a href="inifile.html#read_inifile_section"><b class=
+'cmd'>read_inifile_section</b></a> and <a href=
+"inifile.html#read_inifile_section_names"><b class=
+'cmd'>read_inifile_section_names</b></a>.</li>
+<li><span class="em">INCOMPATIBLE CHANGE</span> Removed unsupported
+commands <b class='cmd'>get_open_handles</b> and <b class=
+'cmd'>get_open_handle_pids</b>. They used undocumented system
+functions and caused some nasty behaviour with the latest service
+packs.</li>
+<li>Added option <b class='cmd'>-stdchannels</b> to <a href=
+"process.html#create_process"><b class=
+'cmd'>create_process</b></a>.</li>
+</ul>
+<h3><a name="version10beta" id="version10beta">Version 1.0
+Beta</a></h3>
+<ul class="noclass">
+<li><span class="em">INCOMPATIBLE CHANGE</span> The error class
+stored in <b class='cmd'>errorCode</b> when Windows encounters an
+error has changed. In V0.9 and before, the error class was
+<span class="strong">WINDOWS</span>. To prevent clashes with other
+extensions, the error class now used is <span class=
+"strong">TWAPI_WIN32</span>. Code that traps errors using pattern
+matching in <a href="errors.html#try"><b class='cmd'>try</b></a> or
+otherwise parses <b class='cmd'>errorCode</b> will need to be
+modified accordingly.</li>
+<li>Added <a href="com.html">COM</a> module.</li>
+<li>Added <a href=
+"osinfo.html#get_system_parameters_info"><b class='cmd'>get_system_parameters_info</b></a>
+and <a href="osinfo.html#set_system_parameters_info"><b class=
+'cmd'>set_system_parameters_info</b></a>.</li>
+<li>Added <a href="disk.html#get_file_version_resource"><b class=
+'cmd'>get_file_version_resource</b></a>.</li>
+<li>Added <a href="nls.html#map_langid_to_name"><b class=
+'cmd'>map_langid_to_name</b></a>.</li>
+</ul>
+<h3><a name="version09" id="version09">Version 0.9</a></h3>
+<p>Note: only bug fixes that are incompatible with previous
+releases are mentioned here.</p>
+<ul class="noclass">
+<li><span class="em">INCOMPATIBLE CHANGE</span> Remote file shares
+now have type <span class="strong">file</span> instead of
+<span class="strong">disk</span> for consistency with local file
+shares.</li>
+<li>Added <a href="shell.html#write_shortcut"><b class=
+'cmd'>write_shortcut</b></a> and <a href=
+"shell.html#read_shortcut"><b class=
+'cmd'>read_shortcut</b></a>.</li>
+<li>Added <a href="shell.html#write_url_shortcut"><b class=
+'cmd'>write_url_shortcut</b></a>, <a href=
+"shell.html#read_url_shortcut"><b class=
+'cmd'>read_url_shortcut</b></a> and <a href=
+"shell.html#invoke_url_shortcut"><b class=
+'cmd'>invoke_url_shortcut</b></a>.</li>
+<li>Added <a href="osinfo.html#get_primary_domain_info"><b class=
+'cmd'>get_primary_domain_info</b></a>.</li>
+<li>Added commands <a href=
+"network.html#address_to_hostname"><b class=
+'cmd'>address_to_hostname</b></a>, <a href=
+"network.html#hostname_to_address"><b class=
+'cmd'>hostname_to_address</b></a>, <a href=
+"network.html#port_to_service"><b class=
+'cmd'>port_to_service</b></a> and <a href=
+"network.html#service_to_port"><b class=
+'cmd'>service_to_port</b></a>.</li>
+<li>Added command <a href="osinfo.html#get_system_info"><b class=
+'cmd'>get_system_info</b></a>.</li>
+<li>Added <a href="osinfo.html#get_computer_name"><b class=
+'cmd'>get_computer_name</b></a>.</li>
+<li>Added <b class='cmd'>-logonsession</b> option to <a href=
+"process.html#get_process_info"><b class=
+'cmd'>get_process_info</b></a>.</li>
+<li>Added Windows 2000 support for <a href=
+"shell.html#shell_object_properties_dialog"><b class=
+'cmd'>shell_object_properties_dialog</b></a>, <a href=
+"disk.html#volume_properties_dialog"><b class=
+'cmd'>volume_properties_dialog</b></a>, <a href=
+"disk.html#file_properties_dialog"><b class=
+'cmd'>file_properties_dialog</b></a>, <a href=
+"printer.html#printer_properties_dialog"><b class=
+'cmd'>printer_properties_dialog</b></a>.</li>
+<li>Added <b class='cmd'>-user</b> option to <a href=
+"process.html#get_process_ids"><b class=
+'cmd'>get_process_ids</b></a>.</li>
+<li>Added <a href=
+"users.html#get_user_local_groups_recursive"><b class=
+'cmd'>get_user_local_groups_recursive</b></a>.</li>
+<li>Added command <a href=
+"security.html#get_security_descriptor_control"><b class=
+'cmd'>get_security_descriptor_control</b></a>.</li>
+<li>Added commands <a href="security.html#get_ace_text"><b class=
+'cmd'>get_ace_text</b></a> and <a href=
+"security.html#get_security_descriptor_text"><b class=
+'cmd'>get_security_descriptor_text</b></a>.</li>
+</ul>
+<h3><a name="version08" id="version08">Version 0.8</a></h3>
+<ul class="noclass">
+<li><span class="em">INCOMPATIBLE CHANGE</span> Changed to require
+at least Service Pack 4 on Windows NT 4.0. The extension will no
+longer load on otherwise. This was required to support the LSA
+related functions.</li>
+<li>Added commands <a href=
+"security.html#find_logon_sessions"><b class=
+'cmd'>find_logon_sessions</b></a> and <a href=
+"security.html#get_logon_session_info"><b class=
+'cmd'>get_logon_session_info</b></a> for dealing with logon
+sessions.</li>
+<li>Added commands to retrieve information related to Windows shell
+<a href="shell.html#Themes">Themes</a>.</li>
+<li>Added commands <a href=
+"users.html#get_global_group_info"><b class=
+'cmd'>get_global_group_info</b></a> and <a href=
+"users.html#get_local_group_info"><b class=
+'cmd'>get_local_group_info</b></a>.</li>
+<li>Added commands <a href=
+"network.html#get_tcp_connections"><b class=
+'cmd'>get_tcp_connections</b></a> and <a href=
+"network.html#get_udp_connections"><b class=
+'cmd'>get_udp_connections</b></a> and <a href=
+"network.html#terminate_tcp_connections"><b class=
+'cmd'>terminate_tcp_connections</b></a>.</li>
+<li>Added LSA related commands <a href=
+"users.html#add_account_rights"><b class=
+'cmd'>add_account_rights</b></a>, <a href=
+"users.html#remove_account_rights"><b class=
+'cmd'>remove_account_rights</b></a>, <a href=
+"users.html#find_accounts_with_right"><b class=
+'cmd'>find_accounts_with_right</b></a>, <a href=
+"users.html#get_account_rights"><b class=
+'cmd'>get_accounts_with_rights</b></a>,</li>
+<li>Modified commands <a href="users.html#delete_user"><b class=
+'cmd'>delete_user</b></a>, <a href=
+"users.html#delete_global_group"><b class=
+'cmd'>delete_global_group</b></a> and <a href=
+"users.html#delete_local_group"><b class=
+'cmd'>delete_local_group</b></a> to remove account rights before
+deleting the account.</li>
+<li>Added <a href="printer.html#enumerate_printers"><b class=
+'cmd'>enumerate_printers</b></a>.</li>
+<li>Added <a href=
+"shell.html#shell_object_properties_dialog"><b class=
+'cmd'>shell_object_properties_dialog</b></a>, <a href=
+"disk.html#volume_properties_dialog"><b class=
+'cmd'>volume_properties_dialog</b></a>, <a href=
+"disk.html#file_properties_dialog"><b class=
+'cmd'>file_properties_dialog</b></a>, <a href=
+"printer.html#printer_properties_dialog"><b class=
+'cmd'>printer_properties_dialog</b></a>.</li>
+<li>Added <a href="osinfo.html#get_system_uptime"><b class=
+'cmd'>get_system_uptime</b></a>.</li>
+<li>Added <a href="misc.html#large_system_time_to_secs"><b class=
+'cmd'>large_system_time_to_secs</b></a>.</li>
+<li>Added <a href="ui.html#configure_window_titlebar"><b class=
+'cmd'>configure_window_titlebar</b></a>.</li>
+<li>Added <a href="share.html#get_client_share_info"><b class=
+'cmd'>get_client_share_info</b></a>. <b class=
+'cmd'>get_mapped_share_info</b> is now deprecated.</li>
+<li>Added <a href="osinfo.html#suspend_system"><b class=
+'cmd'>suspend_system</b></a>.</li>
+<li>Added <a href=
+"security.html#get_privilege_description"><b class=
+'cmd'>get_privilege_description</b></a>,</li>
+<li>Added option <b class='cmd'>-description</b> to <a href=
+"services.html#get_service_configuration"><b class=
+'cmd'>get_service_configuration</b></a>.</li>
+<li>Added options <b class='cmd'>-noaccess</b> and <b class=
+'cmd'>-noexist</b> to commands <a href=
+"process.html#get_process_info"><b class=
+'cmd'>get_process_info</b></a>, <a href=
+"process.html#get_process_parent"><b class=
+'cmd'>get_process_parent</b></a> and <a href=
+"process.html#get_process_commandline"><b class=
+'cmd'>get_process_commandline</b></a>. <span class=
+"em">INCOMPATIBLE CHANGE</span> These commands no longer raise a
+Tcl error if the process does not exist or if access is denied to
+the process.</li>
+<li>Added command <a href=
+"nls.html#map_code_page_to_name"><b class='cmd'>map_code_page_to_name</b></a></li>
+<li>Added option <b class='cmd'>-sid</b> to <a href=
+"security.html#get_user_account_info"><b class=
+'cmd'>get_user_account_info</b></a>.</li>
+<li>Added commands <a href="process.html#is_system_pid"><b class=
+'cmd'>is_system_pid</b></a> and <a href=
+"process.html#is_idle_pid"><b class='cmd'>is_idle_pid</b></a>.</li>
+<li>Added commands <a href=
+"nls.html#extract_primary_langid"><b class=
+'cmd'>extract_primary_langid</b></a> and <a href=
+"nls.html#extract_sublanguage_langid"><b class=
+'cmd'>extract_sublanguage_langid</b></a>.</li>
+<li>Significant improvement in retrieval of performance related
+data.</li>
+<li><span class="em">INCOMPATIBLE CHANGE</span> The format of
+return value of the <a href=
+"security.html#get_token_privileges"><b class=
+'cmd'>get_token_privileges</b></a> command has changed when the
+<b class='cmd'>-all</b> option is specified. The value returned by
+the <b class='cmd'>-privileges</b> option of the <a href=
+"process.html#get_process_info"><b class=
+'cmd'>get_process_info</b></a> has changed accordingly.</li>
+<li><span class="em">INCOMPATIBLE CHANGE</span> <a href=
+"disk.html#get_drive_type"><b class='cmd'>get_drive_type</b></a>
+now returns <span class="strong">invalid</span> as the drive type
+for non-existent drives instead of generating an error.</li>
+</ul>
+<h3><a name="version07" id="version07">Version 0.7</a></h3>
+<ul class="noclass">
+<li>Added high level Tcl interface for console access to replace
+direct Win32 API calls.</li>
+<li>Added volume and mount point related commands (see <a href=
+"disk.html">disk.html</a>)</li>
+<li><span class="em">INCOMPATIBLE CHANGE</span> Enhanced <a href=
+"disk.html#begin_filesystem_monitor"><b class=
+'cmd'>begin_filesystem_monitor</b></a> to return more detail.</li>
+<li>Enhanced <a href="services.html#get_service_status"><b class=
+'cmd'>get_service_status</b></a> to return the process id of the
+service.</li>
+<li>For consistency, renamed <a href=
+"disk.html#get_drive_info"><b class='cmd'>get_drive_info</b></a> to
+<a href="disk.html#get_volume_info"><b class=
+'cmd'>get_volume_info</b></a> and <b class=
+'cmd'>get_logical_drives</b> to <a href=
+"disk.html#find_logical_drives"><b class=
+'cmd'>find_logical_drives</b></a>. Older names will still
+work.</li>
+<li>Miscellaneous bug fixes.</li>
+</ul>
+<h3><a name="version06" id="version06">Version 0.6</a></h3>
+<ul class="noclass">
+<li>Added commands <a href=
+"disk.html#begin_filesystem_monitor"><b class=
+'cmd'>begin_filesystem_monitor</b></a> and <a href=
+"disk.html#end_filesystem_monitor"><b class=
+'cmd'>end_filesystem_monitor</b></a> for monitoring file system
+changes.</li>
+<li>Added module <a href="desktop.html">Desktops and Window
+Stations</a>.</li>
+<li>Added module <a href="nls.html">Internationalization</a>.</li>
+<li>Added command <a href="shell.html#get_shell_folder"><b class=
+'cmd'>get_shell_folder</b></a>.</li>
+<li>Added command <a href="ui.html#get_desktop_workarea"><b class=
+'cmd'>get_desktop_workarea</b></a>.</li>
+<li>Added commands <a href=
+"ui.html#get_desktop_wallpaper"><b class='cmd'>get_desktop_wallpaper</b></a>
+and <a href="ui.html#set_desktop_wallpaper"><b class=
+'cmd'>set_desktop_wallpaper</b></a>.</li>
+</ul>
+<h3><a name="version05" id="version05">Version 0.5</a></h3>
+<ul class="noclass">
+<li>Removed dependencies on the external <b class='cmd'>cmdline</b>
+and <b class='cmd'>TclExcept</b> packages. These are no longer
+required.</li>
+<li>Added the <a href="schedule.html">Task Scheduler</a>
+module</li>
+<li>Added <a href="handles.html#duplicate_handle"><b class=
+'cmd'>duplicate_handle</b></a></li>
+<li>Added <a href=
+"osinfo.html#get_primary_domain_controller"><b class=
+'cmd'>get_primary_domain_controller</b></a></li>
+<li>Added options <b class='cmd'>-groups</b>, <b class=
+'cmd'>-primarygroup</b>, <b class='cmd'>-user</b> and <b class=
+'cmd'>-privileges</b> to commands <a href=
+"process.html#get_process_info"><b class=
+'cmd'>get_process_info</b></a> and <a href=
+"process.html#get_thread_info"><b class=
+'cmd'>get_thread_info</b></a></li>
+<li>Added <a href="misc.html#parseargs"><b class=
+'cmd'>parseargs</b></a> for option parsing</li>
+<li>Added <a href="process.html#get_process_parent"><b class=
+'cmd'>get_process_parent</b></a></li>
+<li>Added <a href="process.html#get_process_commandline"><b class=
+'cmd'>get_process_commandline</b></a> and option <b class=
+'cmd'>-commandline</b> to <a href=
+"process.html#get_process_info"><b class=
+'cmd'>get_process_info</b></a></li>
+<li>Added command <a href=
+"process.html#get_process_exit_code"><b class=
+'cmd'>get_process_exit_code</b></a></li>
+<li>Added command <a href="ui.html#get_display_size"><b class=
+'cmd'>get_display_size</b></a></li>
+<li>Added commands <a href="misc.html#get_command_line"><b class=
+'cmd'>get_command_line</b></a> and <a href=
+"misc.html#get_command_line_args"><b class=
+'cmd'>get_command_line_args</b></a></li>
+<li>Added <a href="misc.html.#try"><b class='cmd'>try</b></a>
+command</li>
+<li>Added <a href="misc.html#get_version"><b class=
+'cmd'>get_version</b></a> to get TWAPI version information</li>
+<li>Added <a href="security.html#eval_with_privileges"><b class=
+'cmd'>eval_with_privileges</b></a>, <a href=
+"security.html#enable_privileges"><b class=
+'cmd'>enable_privileges</b></a> and <a href=
+"security.html#disable_privileges"><b class=
+'cmd'>disable_privileges</b></a></li>
+<li>Added <b class='cmd'>-sync</b> option to <a href=
+"ui.html#move_window"><b class='cmd'>move_window</b></a> and
+<a href="ui.html#resize_window"><b class=
+'cmd'>resize_window</b></a> commands.</li>
+<li><span class="em">INCOMPATIBLE CHANGE</span> Return values from
+<a href="security.html#enable_token_privileges"><b class=
+'cmd'>enable_token_privileges</b></a>, <a href=
+"security.html#disable_token_privileges"><b class=
+'cmd'>disable_token_privileges</b></a> and <a href=
+"security.html#disable_all_token_privileges"><b class=
+'cmd'>disable_all_token_privileges</b></a> have changed.</li>
+<li><span class="em">INCOMPATIBLE CHANGE</span> Command arguments
+for <a href="security.html#open_process_token"><b class=
+'cmd'>open_process_token</b></a> and <a href=
+"security.html#open_thread_token"><b class=
+'cmd'>open_thread_token</b></a> have changed.</li>
+<li><span class="em">INCOMPATIBLE CHANGE</span> <a href=
+"sound.html#stop_sound"><b class='cmd'>stop_sound</b></a> usage has
+changed.</li>
+<li><span class="em">INCOMPATIBLE CHANGE</span> Usage and semantics
+of the <b class='cmd'>-toplevel</b> option for <a href=
+"ui.html#find_windows"><b class='cmd'>find_windows</b></a> has
+changed.</li>
+<li><span class="em">INCOMPATIBLE CHANGE</span> Removed <b class=
+'cmd'>-dpcbypassrate</b> and <b class='cmd'>-apcbypassrate</b>
+options from command <a href=
+"osinfo.html#get_processor_info"><b class=
+'cmd'>get_processor_info</b></a> as they are not present on XP and
+Windows 2003.</li>
+<li>Greatly expanded test coverage.</li>
+</ul>
+<h3><a name="version04" id="version04">Version 0.4</a></h3>
+<ul class="noclass">
+<li>Added support to be sourced as a single file Starkit</li>
+<li>Added the <a href="network.html">Network configuration</a>
+module</li>
+<li>Added the <a href="clipboard.html">Clipboard</a> module</li>
+<li>Added <b class='cmd'>get_memory_info</b> to retrieve system
+physical and virtual memory information</li>
+<li>Added <b class='cmd'>get_open_handle_pids</b> to retrieve a
+list of processes that have an open handle to a resource.</li>
+<li>Added option <b class='cmd'>-handles</b> to <b class=
+'cmd'>get_process_info</b> to retrieve a list of open handles in a
+process.</li>
+<li>Added <b class='cmd'>get_open_handles</b> to retrieve
+information about open handles in the system.</li>
+<li>Added <b class='cmd'>-device</b> option to <b class=
+'cmd'>get_drive_info</b> command</li>
+<li><span class="em">INCOMPATIBLE CHANGE</span> Changed <b class=
+'cmd'>set_drive_volumename</b> to <b class=
+'cmd'>set_drive_label</b> and changed option <b class=
+'cmd'>-volumename</b> of <b class='cmd'>get_drive_info</b> to
+<b class='cmd'>-label</b>. This is to avoid future confusion with
+logical volumes as defined by Windows.</li>
+<li>Added options <b class='cmd'>-processormodel</b>, <b class=
+'cmd'>-processorname</b> and <b class='cmd'>-processorspeed</b> to
+<b class='cmd'>get_processor_info</b>.</li>
+<li><span class="em">INCOMPATIBLE CHANGE</span> Changed the
+arguments to commands <b class='cmd'>get_process_handle</b> and
+<b class='cmd'>get_thread_handle</b>.</li>
+<li><span class="em">INCOMPATIBLE CHANGE</span> Changed <b class=
+'cmd'>get_os_info</b> to not return memory related information.
+<b class='cmd'>get_memory_info</b> provides a superset of the same
+information.</li>
+<li>Documentation is now in Windows compiled help format with index
+and search.</li>
+</ul>
+<h3><a name="version03" id="version03">Version 0.3</a></h3>
+<ul class="noclass">
+<li>Added the <a href="eventlog.html">Event log</a> module</li>
+<li>Added the <a href="console.html">Console</a> module</li>
+<li>Added <b class='cmd'>register_hotkey</b> and <b class=
+'cmd'>unregister_hotkey</b></li>
+<li>Added <b class='cmd'>create_process</b>, <b class=
+'cmd'>get_process_handle</b> and <b class=
+'cmd'>get_thread_handle</b></li>
+<li>Added <b class='cmd'>suspend_thread</b> and <b class=
+'cmd'>resume_thread</b></li>
+<li>Added <b class='cmd'>shutdown_system</b> and <b class=
+'cmd'>abort_system_shutdown</b></li>
+<li>Added <b class='cmd'>format_message</b> and <b class=
+'cmd'>map_windows_error</b></li>
+<li>Added <b class='cmd'>logoff_user</b> and <b class=
+'cmd'>lock_workstation</b></li>
+<li>Added <b class='cmd'>get_current_user</b></li>
+<li>Added <b class='cmd'>expand_environment_strings</b></li>
+<li>Added <b class='cmd'>load_library</b> and <b class=
+'cmd'>free_library</b></li>
+<li>Added <b class='cmd'>get_processor_count</b> and <b class=
+'cmd'>get_active_processor_mask</b></li>
+<li>Enhanced <b class='cmd'>get_os_info</b> to return additional OS
+information</li>
+<li>Enhanced <b class='cmd'>get_processor_info</b> to return
+additional processor information</li>
+<li>Added commands <b class='cmd'>read_inifile_key</b>, <b class=
+'cmd'>write_inifile_key</b>, <b class='cmd'>delete_inifile_key</b>
+and <b class='cmd'>delete_inifile_section</b> for manipulating INI
+files.</li>
+<li>Added <b class='cmd'>process_waiting_for_input</b></li>
+<li>Added <b class='cmd'>block_input</b></li>
+<li>Added <b class='cmd'>close_handles</b></li>
+<li>Added <b class='cmd'>get_tcl_channel_handle</b></li>
+<li>Bug fixes to <b class='cmd'>delete_share</b>, <b class=
+'cmd'>close_window</b></li>
+</ul>
+<h3><a name="version02" id="version02">Version 0.2</a></h3>
+<ul class="noclass">
+<li>Added the <a href="security.html">Security</a> module
+containing commands for user/group management, resource protection,
+access control, authorization and impersonation</li>
+<li>Added the <a href="share.html">Network shares</a> module
+containing commands for configuration of network shares</li>
+<li>Added <b class='cmd'>play_sound</b> for basic audio
+playback</li>
+<li>Added <b class='cmd'>send_keys</b> command (clone of Visual
+Basic SendKeys using same syntax) for generating keystrokes</li>
+<li>Added <b class='cmd'>find_windows</b></li>
+<li>Added <b class='cmd'>get_logical_drives</b></li>
+<li>Added <b class='cmd'>get_drive_type</b></li>
+<li>Added <b class='cmd'>set_drive_volumename</b></li>
+<li>Added <b class='cmd'>get_mouse_location</b></li>
+<li>Added <b class='cmd'>get_computer_netbios_name</b></li>
+<li><span class="em">INCOMPATIBLE CHANGE</span> Changed parameters
+and return format for <b class='cmd'>get_process_modules</b>.</li>
+<li><span class="em">INCOMPATIBLE CHANGE</span> Changed the
+<b class='cmd'>-machine</b> and <b class='cmd'>-display_name</b>
+options in the services module to <b class='cmd'>-system</b> and
+<b class='cmd'>-displayname</b> for consistency with other
+modules.</li>
+<li><span class="em">INCOMPATIBLE CHANGE</span> Several commands
+that used to return multiple values in <span class="em">fieldname
+value</span> format have been changed so that the <span class=
+"em">fieldname</span> matches the option specified to retrieve the
+field (to include the <span class="em">-</span> prefix). These
+commands include <b class='cmd'>get_device_drivers</b>, <b class=
+'cmd'>get_process_info</b>, <b class='cmd'>get_disk_info</b>,
+<b class='cmd'>get_user_account_info</b>, <b class=
+'cmd'>lookup_account_name</b></li>
+<li><span class="em">INCOMPATIBLE CHANGE</span>
+get_service_configuration options and return format has
+changed.</li>
+<li><span class="em">INCOMPATIBLE CHANGE</span> The return values
+from the commands <b class='cmd'>start_service</b>, <b class=
+'cmd'>stop_service</b>, <b class='cmd'>pause_service</b>, <b class=
+'cmd'>resume_service</b> and <b class='cmd'>interrogate_service</b>
+have changed. Moreover, <b class='cmd'>start_service</b> and
+<b class='cmd'>stop_service</b> will no longer throw an exception
+if the service is already running or stopped respectively.</li>
+<li>Allow window styles to be expressed as symbols in addition to
+bitmasks</li>
+<li>The commands <b class='cmd'>start_service</b>, <b class=
+'cmd'>stop_service</b>, <b class='cmd'>pause_service</b>, <b class=
+'cmd'>resume_service</b> now take an additional <b class=
+'cmd'>-wait</b> option.</li>
+</ul>
+<h3><a name="version01" id="version01">Version 0.1</a></h3>
+<ul class="noclass">
+<li>Initial release</li>
+</ul>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2003-2007 Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

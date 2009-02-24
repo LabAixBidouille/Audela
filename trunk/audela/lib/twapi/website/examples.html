@@ -1,0 +1,306 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Examples</h2>
+<p>Tcl Windows API usage examples</p>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>The examples in this section are broken out by area. Note that
+many of these will require administrative privileges to run. For
+clarity, the examples do minimal validation and error checking.</p>
+<p>The examples may be run by passing to a Tcl interpreter. For
+example,</p>
+<pre class="sample">
+tclsh checkservicepack.example 3
+</pre>
+<p>will print whether service pack 3 is installed.</p>
+<p>The examples are broken up into the following categories:
+<a href="#systeminformation">System information</a>, <a href=
+"#filemonitoring">File monitoring</a>, <a href=
+"#windowmanagement">Window management</a>, <a href=
+"#simulatinguserinput">Simulating user input</a>, <a href=
+"#playingsounds">Playing sounds</a>, <a href=
+"#diskconfiguration">Disk configuration</a>, <a href=
+"#networkshares">Network shares</a>, <a href=
+"#processesandthreads">Processes and threads</a>, <a href=
+"#windowsservices">Windows services</a>, <a href=
+"#usersandgroups">Users and groups</a>, <a href=
+"#accesscontrol">Access control</a>, <a href=
+"#clipboardaccess">Clipboard access</a>, <a href=
+"#networkconfiguration">Network configuration</a>, <a href=
+"#eventlog">Event log</a> and <a href=
+"#performancemonitoring">Performance monitoring</a>.</p>
+<h3><a name="systeminformation" id="systeminformation">System
+information</a></h3>
+<p><a href="printsysteminfo.example">Print OS version and
+configuration</a></p>
+<p><a href="verifyTS.example">Verify if Terminal Services are
+present</a></p>
+<p><a href="verifyservicepack.example">Verify a service pack is
+installed</a></p>
+<p><a href="printcomputername.example">Print the NETBIOS name of
+the computer</a></p>
+<h3><a name="filemonitoring" id="filemonitoring">File
+monitoring</a></h3>
+<p><a href="monitordir.example">Monitor changes in a
+directory</a></p>
+<h3><a name="windowmanagement" id="windowmanagement">Window
+management</a></h3>
+<p><a href="minimizeapp.example">Minimize all windows for a given
+application</a></p>
+<p><a href="hidewindows.example">Hide all windows for a given
+application</a></p>
+<p><a href="showwindows.example">Show all windows for a given
+application</a></p>
+<p><a href="movewindowtoorigin.example">Move a window to the top
+left corner of the screen</a></p>
+<p><a href="removetitlebar.example">Remove the title bar from a
+window</a></p>
+<p><a href="bringtoforeground.example">Bring a specified window to
+the foreground</a></p>
+<p><a href="keepontop.example">Keep a window on top of all other
+windows</a></p>
+<p><a href="changewindowcaption.example">Change the caption of a
+window</a></p>
+<h3><a name="simulatinguserinput" id=
+"simulatinguserinput">Simulating user input</a></h3>
+<p><a href="sendtext.example">Send text string to a specified
+window</a></p>
+<p><a href="sendmenuexit.example">Send menu shortcut keys to a
+specified window</a></p>
+<p><a href="opensysmenuwithmouse.example">Open the system menu of
+the specified window with the mouse</a></p>
+<p><a href="hotkey.example">Start a program when a hotkey is
+pressed</a></p>
+<p><a href="sendmouseinput.example">Example: Draw a square in MS
+Paint using the mouse</a></p>
+<h3><a name="playingsounds" id="playingsounds">Playing
+sounds</a></h3>
+<p><a href="beep.example">Generate a continuous tone on the system
+speaker</a></p>
+<p><a href="playsystemsound.example">Play a system sound</a></p>
+<p><a href="continuoussystemsound.example">Play a system sound
+continuously for 10 seconds</a></p>
+<p><a href="playwavfile.example">Play a WAV sound file</a></p>
+<h3><a name="diskconfiguration" id="diskconfiguration">Disk
+configuration</a></h3>
+<p><a href="listdrives.example">List all the drives on the
+system</a></p>
+<p><a href="listremotedrives.example">List all remote drives on the
+system</a></p>
+<p><a href="listfulldrives.example">List all fixed drives that have
+less than 10% free space</a></p>
+<p><a href="changedrivelabel.example">Modify the volume label for a
+drive</a></p>
+<p><a href="checkunicodefilenames.example">Check if the given drive
+supports Unicode file names</a></p>
+<p><a href="checkavailablespace.example">Check if the given drive
+has sufficient free space</a></p>
+<h3><a name="networkshares" id="networkshares">Network
+shares</a></h3>
+<p><a href="exportfileshare.example">Export a file share that can
+be connected to from remote clients</a></p>
+<p><a href="mapdrive.example">Map a drive to a file share exported
+from a server</a></p>
+<p><a href="listexportedshares.example">List all network shares
+exported on the system</a></p>
+<p><a href="listconnectedshares.example">List all network shares to
+which the system is connected</a></p>
+<p><a href="showmappeddrive.example">Show information related to a
+mapped drive</a></p>
+<h3><a name="processesandthreads" id=
+"processesandthreads">Processes and threads</a></h3>
+<p><a href="exitprograms.example">Ask all invocations of a given
+program to gracefully exit</a></p>
+<p><a href="killprograms.example">Forcibly terminate all
+invocations of a given program</a></p>
+<p><a href="showprocessowners.example">Show the user account under
+which each process is running</a></p>
+<p><a href="showprocessmodules.example">Show the DLL's loaded in a
+process</a></p>
+<h3><a name="windowsservices" id="windowsservices">Windows
+services</a></h3>
+<p><a href="showrunningservices.example">Show all Windows services
+that are currently running</a></p>
+<p><a href="showautostartservices.example">Show all Windows
+services that start automatically at boot time</a></p>
+<p><a href="restartservice.example">Stop and restart a Windows
+service</a></p>
+<p><a href="changeserviceaccount.example">Change a service
+configuration to start under a specific user account</a></p>
+<p><a href="showservicedependents.example">Show the services that
+depend on the specified service</a></p>
+<p><a href="showservicedependencies.example">Show the services that
+the specified service depends on</a></p>
+<p><a href="installservice.example">Install a service</a></p>
+<p><a href="uninstallservice.example">Remove a service</a></p>
+<h3><a name="usersandgroups" id="usersandgroups">Users and
+groups</a></h3>
+<p><a href="listusers.example">List the users on a system</a></p>
+<p><a href="listgroupsforuser.example">List the group membership
+for a user</a></p>
+<p><a href="listusersingroup.example">List the users in a
+group</a></p>
+<p><a href="showuser.example">Show properties of a user
+account</a></p>
+<p><a href="adduser.example">Create a new user account</a></p>
+<p><a href="deleteuser.example">Delete a user account</a></p>
+<p><a href="addusertolocalgroup.example">Add a user to a local
+group</a></p>
+<p><a href="removeuserfromlocalgroup.example">Remove a user from a
+local group</a></p>
+<p><a href="addlocalgroup.example">Add a local group
+account</a></p>
+<p><a href="deletelocalgroup.example">Delete a local group
+account</a></p>
+<h3><a name="accesscontrol" id="accesscontrol">Access
+control</a></h3>
+<p><a href="protectfilefromuser.example">Protect a file from access
+by a specific user</a></p>
+<p><a href="showacls.example">Show the access control entries on
+the specified file</a></p>
+<h3><a name="clipboardaccess" id="clipboardaccess">Clipboard
+access</a></h3>
+<p><a href="getclipboard.example">Copy contents of the clipboard to
+standard output</a></p>
+<p><a href="putclipboard.example">Copy standard input to the
+clipboard</a></p>
+<p><a href="transformclipboard.example">Transform the data in the
+clipboard</a></p>
+<p><a href="gethtmlfromclipboard.example">Get HTML format data from
+the clipboard</a></p>
+<h3><a name="networkconfiguration" id=
+"networkconfiguration">Network configuration</a></h3>
+<p><a href="showinterfaces.example">Show network interfaces</a></p>
+<p><a href="showphysicaladdress.example">Map an IP address to a
+physical address</a></p>
+<h3><a name="eventlog" id="eventlog">Event log</a></h3>
+<p><a href="dumpeventlog.example">Dump event log to standard
+output</a></p>
+<h3><a name="performancemonitoring" id=
+"performancemonitoring">Performance monitoring</a></h3>
+<p><a href="showcpuutilization.example">Chart CPU
+utilization</a></p>
+<p><a href="showvmstats.example">Show virtual memory statistics
+usage</a></p>
+<p><a href="shownetworkstats.example">Show network
+statistics</a></p>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2003, Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

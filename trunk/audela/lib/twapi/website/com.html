@@ -1,0 +1,582 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>COM</h2>
+<p>Commands for accessing COM servers</p>
+<h3><a name="synopsis" id="synopsis">SYNOPSIS</a></h3>
+package require <b>twapi</b><br />
+<table class="commandsummary" summary="Table">
+<tr valign="top">
+<td><a href="#comobj"><b class='cmd'>comobj</b> <i class=
+'arg'>PROGID_OR_CLSID</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#comobj_uc"><b class='cmd'>COMOBJ</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#name_uc"><i class='arg'>COMOBJ</i> <b class=
+'cmd'>NAME</b> ?<i class='arg'>parameter</i> ...?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#x-bind"><i class='arg'>COMOBJ</i> <b class=
+'cmd'>-bind</b> <i class='arg'>SCRIPT</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#x-call"><i class='arg'>COMOBJ</i> <b class=
+'cmd'>-call</b> <i class='arg'>METHOD</i> ?<i class=
+'arg'>parameter</i> ...?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#x-destroy"><i class='arg'>COMOBJ</i> <b class=
+'cmd'>-destroy</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#x-get"><i class='arg'>COMOBJ</i> <b class=
+'cmd'>-get</b> <i class='arg'>PROPERTY</i> ?<i class=
+'arg'>parameter</i> ...?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#x-interface"><i class='arg'>COMOBJ</i> <b class=
+'cmd'>-interface</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#x-isnull"><i class='arg'>COMOBJ</i> <b class=
+'cmd'>-isnull</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#x-iterate"><i class='arg'>COMOBJ</i> <b class=
+'cmd'>-iterate</b> <i class='arg'>VARNAME</i> <i class=
+'arg'>SCRIPT</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#x-print"><i class='arg'>COMOBJ</i> <b class=
+'cmd'>-print</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#x-queryinterface"><i class='arg'>COMOBJ</i> <b class=
+'cmd'>-queryinterface</b> IID</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#x-set"><i class='arg'>COMOBJ</i> <b class=
+'cmd'>-set</b> <i class='arg'>PROPERTY</i> <i class='arg'>VALUE</i>
+?<i class='arg'>parameter</i> ...?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#x-unbind"><i class='arg'>COMOBJ</i> <b class=
+'cmd'>-unbind</b> <i class='arg'>BINDID</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#x-with"><i class='arg'>COMOBJ</i> <b class=
+'cmd'>-with</b> <i class='arg'>METHODLIST</i> ?<i class=
+'arg'>parameters</i> ...?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#timelist_to_variant_time"><b class=
+'cmd'>timelist_to_variant_time</b> <i class=
+'arg'>TIMELIST</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#variant_time_to_timelist"><b class=
+'cmd'>variant_time_to_timelist</b> <i class=
+'arg'>DOUBLE</i></a></td>
+</tr>
+</table>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>This module provides commands for supporting COM clients.
+TWAPI's COM support is limited to client side calls only and is not
+intended to compete with the OpTcl or TCOM packages. It was added
+to allow TWAPI access to some of the simpler COM based API's in
+Windows including WMI and ADSI.</p>
+<h3><a name="creationanddestructionofcomobjects" id=
+"creationanddestructionofcomobjects">Creation and Destruction of
+COM objects</a></h3>
+<p>A COM object can be created through the command <a href=
+"#comobj"><b class='cmd'>comobj</b></a> using the PROGID or CLSID
+of the corresponding COM class. This returns a Tcl command that may
+be used to access the object through subcommands.</p>
+<p>When the object is no longer required, it must be explicitly
+destroyed by calling the command with the <b class=
+'cmd'>-destroy</b> subcommand.</p>
+<h3><a name="propertiesandmethods" id=
+"propertiesandmethods">Properties and Methods</a></h3>
+<p>The properties and methods of a COM object can be accessed as
+subcommands of the Tcl command representing that object. The names
+of properties and methods can in theory overlap. Althouth TWAPI can
+usually figure out whether a property is being retrieved/set or a
+method is being called, you can explicitly control this by using
+the <b class='cmd'>-get</b>, <b class='cmd'>-set</b> or <b class=
+'cmd'>-call</b> subcommands followed by the actual name. The
+following sequence of commands shows a sample session that drives
+Internet Explorer through its properties and methods.</p>
+<p>Start up Internet Explorer (note it will not be visible yet)</p>
+<pre class="sample">
+set ie [comobj InternetExplorer.Application -enableaaa]
+</pre>
+<p>Make its window visible by changing its <span class=
+"strong">Visible</span> property.</p>
+<pre class="sample">
+$ie Visible true
+</pre>
+<p>This could also have been written as</p>
+<pre class="sample">
+$ie -set Visible true
+</pre>
+<p>to explicitly indicate we want to set the property called
+<span class="strong">Visible</span> as opposed to making a call to
+the COM object's method of the same name (if there was one).</p>
+<p>To go to the TWAPI home page, invoke the <span class=
+"strong">Navigate</span> method</p>
+<pre class="sample">
+$ie Navigate http://twapi.sf.net
+</pre>
+<p>Get the <span class="strong">LocationURL</span> property to find
+the URL after redirection</p>
+<pre class="sample">
+$ie LocationURL
+</pre>
+<p>Not specifying any parameters gets the default value of the
+object. This is the property marked as the default value in the COM
+object's IDL definition.</p>
+<pre class="sample">
+$ie
+</pre>
+<p>Ask the application to exit by calling its <span class=
+"strong">Quit</span> method.</p>
+<pre class="sample">
+$ie Quit
+</pre>
+<p>Finally, destroy the COM object.</p>
+<pre class="sample">
+$ie -destroy
+</pre>
+<h3><a name="comcollections" id="comcollections">COM
+Collections</a></h3>
+<p>Some COM objects are collection of items which may even be other
+COM objects. The items within these collections can be accessed by
+their index (which is not necessarily an integer) but it is often
+easier to iterate over them using the <b class='cmd'>-iterate</b>
+operator on the collection object. The following example
+illustrates this.</p>
+<pre class="sample">
+set fso_obj [comobj Scripting.FileSystemObject]
+set drives_obj [$fso_obj Drives]
+$drives_obj -iterate drive_obj {
+    puts [$drive_obj DriveLetter]
+    $drive_obj -destroy
+}
+$drives_obj -destroy
+$fso_obj -destroy
+</pre>
+<p>The <span class="strong">Drives</span> method of the
+<span class="strong">Scripting.FileSystemObject</span> returns a
+collection <span class="strong">drives_obj</span>. The <b class=
+'cmd'>-iterate</b> operator on the collection then loops through
+each item in the collection, assigning the item to <span class=
+"strong">drive_obj</span>. In this case, each item is itself a COM
+object from which we get the <span class=
+"strong">DriveLetter</span> property. Note that the <span class=
+"strong">drive_obj</span> object generated in each iteration has to
+be explicitly destroyed.</p>
+<h3><a name="navigatingobjects" id="navigatingobjects">Navigating
+Objects</a></h3>
+<p>In many cases, the desired objects have to be created by
+navigating through other objects. For example, the following
+example sets all cells within a range in a spreadsheet to
+12345.</p>
+<pre class="sample">
+set xl [comobj Excel.Application]
+$xl Visible true
+set workbooks [$xl Workbooks]
+set workbook [$workbooks Add]
+set sheets [$workbook Sheets]
+set sheet [$sheets Item 1]
+set cells [$sheet range a1 c3]
+$cells Value 12345
+$cells -destroy
+$sheet -destroy
+$sheets -destroy
+$workbook -destroy
+$workbooks -destroy
+$xl Quit
+$xl -destroy
+</pre>
+<p>In the above example, in order to get to the range we have to
+navigate through a hierarchy of objects, starting with the
+application, the workbook collection, a workbook within the
+collection, the worksheets collection, a worksheet within that
+collection and finally the cell range. After setting the value, all
+the created objects have to be deleted.</p>
+<p>As an alternative, the <b class='cmd'>-with</b> subcommand can
+be used to navigate through the intermediate objects as
+follows:</p>
+<pre class="sample">
+set xl [comobj Excel.Application]
+$xl Visible true
+$xl -with {
+    Workbooks
+    Add
+    Sheets
+    {Item 1}
+    {range a1 c3}
+} Value 12345
+$xl -destroy
+</pre>
+<p>The <b class='cmd'>-with</b> subcommand takes a list of
+intermediate methods and associated parameters each of which should
+return a new object. Each element in the list is invoked on the
+previously created object and in turn should return a new COM
+object. The final object created from this list is passed the
+remaining arguments in the command. All intermediate objects are
+automatically destroyed.</p>
+<h3><a name="comevents" id="comevents">COM Events</a></h3>
+<p>Some COM objects may generate notifications when certain events
+occur. A callback script may be registered using the <b class=
+'cmd'>-bind</b> subcommand on a <i class='arg'>COMOBJ</i> object.
+This script is invoked for every notification event generated by
+the COM object. The event name and parameters provided by the COM
+event source are appended to the script.</p>
+<p>The following example receives events from Internet Explorer and
+prints them.</p>
+<pre class="sample">
+proc print_event args {puts "Received: [join $args ,]"}
+set ie [comobj InternetExplorer.Application -enableaaa]
+$ie Visible true
+set bind_id [$ie -bind print_event]
+$ie Navigate http://www.tcl.tk
+after 2000
+$ie -unbind $bind_id
+$ie Quit
+$ie -destroy
+</pre>
+<p>Note that the script is unregistered using the <b class=
+'cmd'>-unbind</b> subcommand when no longer needed.</p>
+<h3><a name="commands" id="commands">Commands</a></h3>
+<dl class="noclass">
+<dt><a name="comobj" id="comobj"><b class='cmd'>comobj</b>
+<i class='arg'>PROGID_OR_CLSID</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Creates a COM object and returns the name of a Tcl command that
+can be used to access it. <i class='arg'>PROGID_OR_CLSID</i> is
+either the PROGID or the CLSID for the COM object.<br />
+<br />
+The returned value <i class='arg'>COMOBJ</i> is itself a Tcl
+command object that can be used to access the COM object. When the
+object is no longer required it should be deleted by calling the
+command with the <b class='cmd'>-destroy</b> subcommand. You should
+not delete the command simply by calling the Tcl <b class=
+'cmd'>rename</b> command as this will lead to memory and resource
+leaks. <i class='arg'>options</i> may contain one or more of the
+options in the table below. Refer to the <a href=
+"http://msdn.microsoft.com/library/default.asp?url=/library/en-us/com/html/dcb82ff2-56e4-4c7e-a621-7ffd0f1a9d8e.asp">
+CLSCTX documentation</a> in the <a href=
+"http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dnanchor/html/anch_win32com.asp">
+Windows SDK</a> for details regarding these options.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-disablelog</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If specified as true, disables logging of failures.
+Corresponds to the flag <a href=
+"http://msdn.microsoft.com/library/default.asp?url=/library/en-us/com/html/dcb82ff2-56e4-4c7e-a621-7ffd0f1a9d8e.asp">
+<span class="strong">CLSCTX_NO_FAILURE_LOG</span></a> in the
+SDK.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-download</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If specified as true, allows downloading of code
+from the Internet or Directory Service. This corresponds to setting
+the flag <a href=
+"http://msdn.microsoft.com/library/default.asp?url=/library/en-us/com/html/dcb82ff2-56e4-4c7e-a621-7ffd0f1a9d8e.asp">
+<span class="strong">CLSCTX_ENABLE_CODE_DOWNLOAD</span></a>. If
+specified as false, disallows downloading of code from the Internet
+or Directory Service. This corresponds to setting the flag <a href=
+"http://msdn.microsoft.com/library/default.asp?url=/library/en-us/com/html/dcb82ff2-56e4-4c7e-a621-7ffd0f1a9d8e.asp">
+<span class="strong">CLSCTX_DISABLE_CODE_DOWNLOAD</span></a>.<br />
+<br />
+If this option is not specified, neither of the flags is set in the
+underlying call to <b class='cmd'>CoCreateInstance</b>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-enableaaa</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If specified as true, enables activate-as-activator
+activations where a server process is launched under the caller's
+identity. This corresponds to setting the flag <a href=
+"http://msdn.microsoft.com/library/default.asp?url=/library/en-us/com/html/dcb82ff2-56e4-4c7e-a621-7ffd0f1a9d8e.asp">
+<span class="strong">CLSCTX_ENABLE_AAA</span></a>. If specified as
+false, disables activate-as-activator activations. This corresponds
+to setting the flag <a href=
+"http://msdn.microsoft.com/library/default.asp?url=/library/en-us/com/html/dcb82ff2-56e4-4c7e-a621-7ffd0f1a9d8e.asp">
+<span class="strong">CLSCTX_DISABLE_AAA</span></a>.<br />
+<br />
+If this option is not specified, neither of the flags is set in the
+underlying call to <b class='cmd'>CoCreateInstance</b>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-model</b></span> <i class='arg'>MODELLIST</i></td>
+<td class="opt">Specifies which of the COM hosting models are
+acceptable. <i class='arg'>MODELLIST</i> must be a list containing
+one or more of the symbols <span class="strong">localserver</span>,
+<span class="strong">remoteserver</span>, <span class=
+"strong">inprocserver</span>, <span class=
+"strong">inprochandler</span>, or <span class="strong">any</span>
+signifying any model is acceptable.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-nocustommarshal</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If true, the object creation will fail if it uses
+custom marshalling. Corresponds to the flag <a href=
+"http://msdn.microsoft.com/library/default.asp?url=/library/en-us/com/html/dcb82ff2-56e4-4c7e-a621-7ffd0f1a9d8e.asp">
+<span class="strong">CLSCTX_NO_CUSTOM_MARSHAL</span></a>.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="comobj_uc" id="comobj_uc"><b class=
+'cmd'>COMOBJ</b></a></dt>
+<dd>Without any arguments, returns the value of the default
+property of the COM object.</dd>
+<dt><a name="name_uc" id="name_uc"><i class='arg'>COMOBJ</i>
+<b class='cmd'>NAME</b> ?<i class='arg'>parameter</i> ...?</a></dt>
+<dd>The command interprets <i class='arg'>NAME</i> as a property or
+method name of the COM object. In case of ambiguity (the object has
+read and write properties or a method of the same name), the
+command is interpreted as a property get if no additional
+parameters are specified, as a property put if exactly one
+additional parameters is specified and a method invocation
+otherwise.</dd>
+<dt><a name="x-bind" id="x-bind"><i class='arg'>COMOBJ</i>
+<b class='cmd'>-bind</b> <i class='arg'>SCRIPT</i></a></dt>
+<dd>Registers <i class='arg'>SCRIPT</i> as a script to be invoked
+in the global scope whenever <i class='arg'>COMOBJ</i> generates an
+event notification. The name of the event and any additional
+parameters in the notification are appended to the script.<br />
+<br />
+The command returns an id. This id must be passed to the <b class=
+'cmd'>-unbind</b> subcommand to unregister the script.<br />
+<br />
+The binding is automatically deleted when <i class='arg'>COMOBJ</i>
+is destroyed or may be removed explicitly through the <b class=
+'cmd'>-unbind</b> subcommand.<br />
+<br />
+See <a href="#comevents">COM Events</a> for an example.</dd>
+<dt><a name="x-call" id="x-call"><i class='arg'>COMOBJ</i>
+<b class='cmd'>-call</b> <i class='arg'>METHOD</i> ?<i class=
+'arg'>parameter</i> ...?</a></dt>
+<dd>Calls the specified COM object method with the given parameters
+and returns the result if any.</dd>
+<dt><a name="x-destroy" id="x-destroy"><i class='arg'>COMOBJ</i>
+<b class='cmd'>-destroy</b></a></dt>
+<dd>Destroys the COM object, removing any bindings and releasing
+resources.</dd>
+<dt><a name="x-get" id="x-get"><i class='arg'>COMOBJ</i> <b class=
+'cmd'>-get</b> <i class='arg'>PROPERTY</i> ?<i class=
+'arg'>parameter</i> ...?</a></dt>
+<dd>Returns the value of the specified property. Optional
+parameters may be specified if the property is an indexed
+property.</dd>
+<dt><a name="x-interface" id="x-interface"><i class=
+'arg'>COMOBJ</i> <b class='cmd'>-interface</b></a></dt>
+<dd>Returns the internal <b class='cmd'>IDispatch</b> pointer. Used
+for debugging purposes.</dd>
+<dt><a name="x-isnull" id="x-isnull"><i class='arg'>COMOBJ</i>
+<b class='cmd'>-isnull</b></a></dt>
+<dd>Returns <span class="strong">true</span> if the object is a
+NULL COM object, false otherwise. This corresponds to a NULL
+IDispatch pointer that might be returned in some COM operations,
+for example, to indicate the end of a collection.</dd>
+<dt><a name="x-iterate" id="x-iterate"><i class='arg'>COMOBJ</i>
+<b class='cmd'>-iterate</b> <i class='arg'>VARNAME</i> <i class=
+'arg'>SCRIPT</i></a></dt>
+<dd>Iterates over items in <i class='arg'>COMOBJ</i> which must be
+a COM collection. In each iteration, <i class='arg'>SCRIPT</i> is
+executed in the caller's context with <i class='arg'>VARNAME</i>
+being set to the value of the current item.<br />
+<br />
+Note that if the item is itself a COM object, <i class=
+'arg'>VARNAME</i> will contain the name of a TCL command
+corresponding to that object and must be destroyed when no longer
+needed (not necessarily within <i class='arg'>SCRIPT</i>).<br />
+<br />
+See <a href="#comcollections">COM Collections</a> for an
+example.</dd>
+<dt><a name="x-print" id="x-print"><i class='arg'>COMOBJ</i>
+<b class='cmd'>-print</b></a></dt>
+<dd>Prints to stdout the methods and properties of the object. Used
+for debugging.</dd>
+<dt><a name="x-queryinterface" id="x-queryinterface"><i class=
+'arg'>COMOBJ</i> <b class='cmd'>-queryinterface</b> IID</a></dt>
+<dd>Queries the object for a pointer to another interface for the
+object. Returns a raw handle to the interface.</dd>
+<dt><a name="x-set" id="x-set"><i class='arg'>COMOBJ</i> <b class=
+'cmd'>-set</b> <i class='arg'>PROPERTY</i> <i class='arg'>VALUE</i>
+?<i class='arg'>parameter</i> ...?</a></dt>
+<dd>Sets the value of the specified property. The optional
+parameters may be specified if the property is an indexed
+property.</dd>
+<dt><a name="x-unbind" id="x-unbind"><i class='arg'>COMOBJ</i>
+<b class='cmd'>-unbind</b> <i class='arg'>BINDID</i></a></dt>
+<dd>Deletes the COM event binding identified by <i class=
+'arg'>BINDID</i>.</dd>
+<dt><a name="x-with" id="x-with"><i class='arg'>COMOBJ</i>
+<b class='cmd'>-with</b> <i class='arg'>METHODLIST</i> ?<i class=
+'arg'>parameters</i> ...?</a></dt>
+<dd>The <b class='cmd'>-with</b> subcommand takes a list of
+intermediate methods and associated parameters. Each element of
+this list should itself be a list the first element being the
+method or property name and remaining elements being the parameters
+to pass when that method/property is invoked. The method or
+property should return a new object and the next element in the
+list is invoked on the previously returned object. The final object
+created from this list is passed the remaining arguments in the
+command.<br />
+<br />
+All the intermediate objects created are automatically
+destroyed.<br />
+<br />
+See <a href="#navigatingobjects">Navigating Objects</a> for an
+example.</dd>
+<dt><a name="timelist_to_variant_time" id=
+"timelist_to_variant_time"><b class=
+'cmd'>timelist_to_variant_time</b> <i class=
+'arg'>TIMELIST</i></a></dt>
+<dd>Several COM applications store date and time information as
+type double with the integral part representing the number of days
+since an epoch and the fractional part representing the time in the
+day. This command converts <i class='arg'>TIMELIST</i> to this
+format. <i class='arg'>TIMELIST</i> must be a list of 7 elements
+representing the year, month, day, hour, minutes, seconds and
+milliseconds.</dd>
+<dt><a name="variant_time_to_timelist" id=
+"variant_time_to_timelist"><b class=
+'cmd'>variant_time_to_timelist</b> <i class=
+'arg'>DOUBLE</i></a></dt>
+<dd>Several COM applications store date and time information as
+type double with the integral part representing the number of days
+since an epoch and the fractional part representing the time in the
+day. This command takes such a time value and returns a list of 7
+elements representing the year, month, day, hour, minutes, seconds
+and milliseconds.</dd>
+</dl>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2006 Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>
