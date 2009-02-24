@@ -1,0 +1,246 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Error generation and handling</h2>
+<p>TWAPI error generation and handling</p>
+<h3><a name="synopsis" id="synopsis">SYNOPSIS</a></h3>
+<table class="commandsummary" summary="Table">
+<tr valign="top">
+<td><a href="#map_windows_error"><b class=
+'cmd'>map_windows_error</b> <i class='arg'>ERRORCODE</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#try"><b class='cmd'>try</b> <i class='arg'>SCRIPT</i>
+?<b class='cmd'>onerror</b> <i class='arg'>ERRORPATTERN</i>
+<i class='arg'>ERRORSCRIPT</i>?... ?<b class='cmd'>finally</b>
+<i class='arg'>FINALSCRIPT</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#win32_error"><b class='cmd'>win32_error</b> <i class=
+'arg'>WINERROR</i> ?<i class='arg'>MESSAGE</i>?</a></td>
+</tr>
+</table>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>This module provides various facilities for generating and
+handing errors and Tcl exceptions.</p>
+<h3><a name="errorgeneration" id="errorgeneration">Error
+generation</a></h3>
+<p>TWAPI generates Tcl exceptions when errors are encountered.
+Information pertaining to the error is stored in Tcl global
+variables as with any standard Tcl errors. The global variable
+<b class='cmd'>errorInfo</b> contains a traceback of the Tcl stack
+when the error occured. The global <b class='cmd'>errorCode</b>
+contains a list with additional information about the error. The
+first element is the error class and determines the format of the
+rest of the list. This may take one of the following values:</p>
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">TWAPI_WIN32</span></span></td>
+<td class="opt">This error class corresponds to Windows error
+codes. The second element of the list is the integer Windows error
+code. The third element is the corresponding localized text string
+describing the error. The fourth element is optional and its format
+is dependent on the specific error code.<br />
+<br />
+The command <a href="#win32_error"><b class=
+'cmd'>win32_error</b></a> can be used to generate an error in this
+format.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">TWAPI</span></span></td>
+<td class="opt">This error class is used for non-Windows related
+errors, for example invalid options to commands. The format is
+similar to that of <span class="strong">TWAPI_WIN32</span> except
+that the error code is an internal TWAPI error code and the text is
+not localized.</td>
+</tr>
+</table>
+<h3><a name="errorhandling" id="errorhandling">Error
+handling</a></h3>
+<p>Several TWAPI commands pertain to error handling. <a href=
+"#map_windows_error"><b class='cmd'>map_windows_error</b></a>
+returns the text description of an operating system error code.</p>
+<p><a href="#try"><b class='cmd'>try</b></a> provides exception
+handling with finalization features.</p>
+<h3><a name="commands" id="commands">Commands</a></h3>
+<dl class="noclass">
+<dt><a name="map_windows_error" id="map_windows_error"><b class=
+'cmd'>map_windows_error</b> <i class='arg'>ERRORCODE</i></a></dt>
+<dd>Returns the text string corresponding to a Windows error
+code.</dd>
+<dt><a name="try" id="try"><b class='cmd'>try</b> <i class=
+'arg'>SCRIPT</i> ?<b class='cmd'>onerror</b> <i class=
+'arg'>ERRORPATTERN</i> <i class='arg'>ERRORSCRIPT</i>?...
+?<b class='cmd'>finally</b> <i class=
+'arg'>FINALSCRIPT</i>?</a></dt>
+<dd>The command executes <i class='arg'>SCRIPT</i> in the caller's
+context. If the script completes without generating any Tcl
+exceptions, the command executes the script <i class=
+'arg'>FINALSCRIPT</i> if specified. The result of the command is
+the result of <i class='arg'>SCRIPT</i>.<br />
+<br />
+If <i class='arg'>SCRIPT</i> generates any errors, the command
+matches the Tcl global <b class='cmd'>::errorCode</b> variable
+against each specified <i class='arg'>ERRORPATTERN</i> in turn.
+When the first match is found, the corresponding <i class=
+'arg'>ERRORSCRIPT</i> is executed. Then <i class=
+'arg'>FINALSCRIPT</i> is executed if specified. The return value
+from the command is the result of the executed <i class=
+'arg'>ERRORSCRIPT</i> script.<br />
+<br />
+If the none of the <i class='arg'>ERRORPATTERN</i> arguments match
+when an error occurs in <i class='arg'>SCRIPT</i>, the command
+executes <i class='arg'>FINALSCRIPT</i> if specified, and then
+regenerates the original error.<br />
+<br />
+Each <i class='arg'>ERRORPATTERN</i> should be a list and is
+matched against the first (facility) and second (code) elements of
+<b class='cmd'>::errorCode</b>. If <i class='arg'>ERRORPATTERN</i>
+is empty, it matches any value of <b class='cmd'>::errorCode</b>.
+If <i class='arg'>ERRORPATTERN</i> contains only one element, it is
+matched against the first element of <b class='cmd'>::errorCode</b>
+with the second field of <b class='cmd'>::errorCode</b> not used
+for matching. When matching against the second element of <b class=
+'cmd'>::errorCode</b>, first a exact string match is tried and if
+that fails, an integer match is tried if both operands being
+compared are valid integers.<br />
+<br />
+When a <i class='arg'>ERRORSCRIPT</i> script is run, the global Tcl
+variables <b class='cmd'>::errorCode</b>, <b class=
+'cmd'>::errorInfo</b> are automatically brought into scope without
+needing a <b class='cmd'>global</b> statement in the script and
+contain the values set when <i class='arg'>SCRIPT</i> generated the
+error. In addition, the variable <b class='cmd'>::errorResult</b>
+is set to the error message set by the original error. This
+behavior is similar to the <b class='cmd'>try_eval</b> command from
+<a href="http://tclx.sf.net">TclX</a>.</dd>
+<dt><a name="win32_error" id="win32_error"><b class=
+'cmd'>win32_error</b> <i class='arg'>WINERROR</i> ?<i class=
+'arg'>MESSAGE</i>?</a></dt>
+<dd>Generates a Tcl exception corresponding to the Windows error
+code WINERROR. <i class='arg'>MESSAGE</i> may be specified as the
+error message in which case the system error message for <i class=
+'arg'>WINERROR</i> is appended to it.</dd>
+</dl>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2003-2006 Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

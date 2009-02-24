@@ -1,0 +1,360 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Power management</h2>
+<p>Power management</p>
+<h3><a name="synopsis" id="synopsis">SYNOPSIS</a></h3>
+package require <b>twapi</b><br />
+<table class="commandsummary" summary="Table">
+<tr valign="top">
+<td><a href="#get_device_power_state"><b class=
+'cmd'>get_device_power_state</b> <i class=
+'arg'>DEVICEHANDLE</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_power_status"><b class=
+'cmd'>get_power_status</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#setthreadexecutionstate"><b class=
+'cmd'>SetThreadExecutionState</b> <i class=
+'arg'>EXECUTIONSTATE</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#start_power_monitor"><b class=
+'cmd'>start_power_monitor</b> <i class='arg'>SCRIPT</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#stop_power_monitor"><b class=
+'cmd'>stop_power_monitor</b> <i class='arg'>POWER_ID</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#suspend_system"><b class='cmd'>suspend_system</b>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+</table>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>This module provides commands related to power management in a
+Windows system.</p>
+<h3><a name="overview" id="overview">Overview</a></h3>
+<p>The command <a href="#suspend_system"><b class=
+'cmd'>suspend_system</b></a> may be used to put the system in stand
+by or hibernate states. You can prevent the system from being
+suspended due to inactivity through the <a href=
+"#SetThreadExecutionState"><b class=
+'cmd'>SetThreadExecutionState</b></a> command.</p>
+<p>The current state of the power subsystem, including battery
+status, can be obtained through the <a href=
+"#get_power_status"><b class='cmd'>get_power_status</b></a>
+command. The state of an individual device can be obtained through
+the <a href="#get_device_power_state"><b class=
+'cmd'>get_device_power_state</b></a> command.</p>
+<p>Changes in the power subsystem state can be monitored through
+the <a href="#start_power_monitor"><b class=
+'cmd'>start_power_monitor</b></a> and <a href=
+"#stop_power_monitor"><b class=
+'cmd'>stop_power_monitor</b></a>.</p>
+<h3><a name="commands" id="commands">Commands</a></h3>
+<dl class="noclass">
+<dt><a name="get_device_power_state" id=
+"get_device_power_state"><b class='cmd'>get_device_power_state</b>
+<i class='arg'>DEVICEHANDLE</i></a></dt>
+<dd>Returns 1 if the device indicated by <i class=
+'arg'>DEVICEHANDLE</i> is fully powered up and 0 if it is in a
+low-power state. <i class='arg'>DEVICEHANDLE</i> is a handle to the
+device or to an object on the device. For example, it can be the
+handle returned by a <a href=
+"handles.html#get_tcl_channel_handle"><b class=
+'cmd'>get_tcl_channel_handle</b></a> command corresponding to a Tcl
+file handle.<br />
+<br />
+<i class='arg'>DEVICEHANDLE</i> must not be a handle to a display
+device.</dd>
+<dt><a name="get_power_status" id="get_power_status"><b class=
+'cmd'>get_power_status</b></a></dt>
+<dd>Returns a keyed list containing information about the state of
+the power system. The list includes the fields in the table below.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-acstatus</span></span></td>
+<td class="opt">Indicates the state of the AC power. May have the
+values <span class="strong">on</span>, <span class=
+"strong">off</span> or <span class="strong">unknown</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-batterystate</span></span></td>
+<td class="opt">Indicates the state of the battery charge. May be
+<span class="strong">critical</span>, <span class=
+"strong">low</span>, <span class="strong">high</span> or
+<span class="strong">unknown</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-batterycharging</span></span></td>
+<td class="opt">Indicates whether the battery is being charged. May
+have the values <span class="strong">true</span>, <span class=
+"strong">false</span> or <span class="strong">unknown</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-batterylifepercent</span></span></td>
+<td class="opt">Indicates the percentage of the full battery life
+remaining or has the value <span class=
+"strong">unknown</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-batterylifetime</span></span></td>
+<td class="opt">Indicates the remaining battery life time in
+seconds, if known, or has the value <span class=
+"strong">unknown</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">-batteryfulllifetime</span></span></td>
+<td class="opt">Indicates the number of seconds of battery life
+when it is full, or has the value <span class=
+"strong">unknown</span>.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="setthreadexecutionstate" id=
+"setthreadexecutionstate"><b class=
+'cmd'>SetThreadExecutionState</b> <i class=
+'arg'>EXECUTIONSTATE</i></a></dt>
+<dd>Refer to the Windows SDK documentation for details.</dd>
+<dt><a name="start_power_monitor" id=
+"start_power_monitor"><b class='cmd'>start_power_monitor</b>
+<i class='arg'>SCRIPT</i></a></dt>
+<dd>Begins monitoring of power state changes. <i class=
+'arg'>SCRIPT</i> will be invoked when the state of the power
+subsystem changes, for example, when the system switches to battery
+power.<br />
+<br />
+The command returns a handle. When no longer required, this handle
+must be passed to the command <a href=
+"#stop_power_monitor"><b class=
+'cmd'>stop_power_monitor</b></a>.<br />
+<br />
+Multiple monitoring scripts may be active at the same time.
+However, all returned handles must be passed to <a href=
+"#stop_power_monitor"><b class='cmd'>stop_power_monitor</b></a>.
+before the application exits.<br />
+<br />
+The callback script is invoked with two additional arguments. The
+first argument indicates the type of event and has one of the
+values in the table below.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">apmbatterylow</span></span></td>
+<td class="opt">Indicates that the system battery is low.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">apmoemevent</span></span></td>
+<td class="opt">Indicates an OEM-defined event.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">apmpowerstatuschange</span></span></td>
+<td class="opt">Indicates a change in the power status. Details may
+be obtained by calling <a href="#get_power_status"><b class=
+'cmd'>get_power_status</b></a>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">apmquerysuspendfailed</span></span></td>
+<td class="opt">Indicates that a query to suspend the computer was
+denied.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">apmresumeautomatic</span></span></td>
+<td class="opt">Indicates that the system has woken up to handle an
+event.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">apmresumecritical</span></span></td>
+<td class="opt">Indicates the system has woken up after a critical
+system suspension (e.g. due to very low battery) where it was not
+possible to notify all applications before the suspension.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">apmresumesuspend</span></span></td>
+<td class="opt">Indicates that the system has resumed normal
+operation after a suspension.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">apmsuspend</span></span></td>
+<td class="opt">Indicates the system is about to be suspended and
+applications should save state and data if necessary.</td>
+</tr>
+</table>
+The second argument passed to the callback is only meaningful when
+the event is <span class="strong">apmoemevent</span>. The value of
+the argument is an OEM-defined event code.</dd>
+<dt><a name="stop_power_monitor" id="stop_power_monitor"><b class=
+'cmd'>stop_power_monitor</b> <i class='arg'>POWER_ID</i></a></dt>
+<dd>Stops a previously registered script that monitors the power
+subsystem. <i class='arg'>POWER_ID</i> is monitoring handle
+previously returned by <a href="#start_power_monitor"><b class=
+'cmd'>start_power_monitor</b></a>.</dd>
+<dt><a name="suspend_system" id="suspend_system"><b class=
+'cmd'>suspend_system</b> ?<i class='arg'>options</i>?</a></dt>
+<dd>Places the system in a stand by or hibernate state. The command
+takes the following options:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-state</b></span> <i class='arg'>STATE</i></td>
+<td class="opt"><i class='arg'>STATE</i> must be one of
+<span class="strong">standby</span> (default) or <span class=
+"strong">hibernate</span> depending on whether the state into which
+the system is to be placed.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-force</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If <span class="strong">false</span> (default), the
+system sends a PBT_ATMQUERYSUSPEND message to all applications
+before placing the system in stand by or hibernate states. If this
+option is specified as <span class="strong">true</span>, the
+message is not sent and the system is immediately placed into the
+appropriate state.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-disablewakeevents</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If <span class="strong">false</span> (default),
+system wake events remain enabled. If <span class=
+"strong">true</span> they are disabled.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2008 Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

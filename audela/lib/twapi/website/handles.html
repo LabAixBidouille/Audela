@@ -1,0 +1,318 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Handles</h2>
+<p>Commands for managing operating system handles</p>
+<h3><a name="synopsis" id="synopsis">SYNOPSIS</a></h3>
+package require <b>twapi</b><br />
+<table class="commandsummary" summary="Table">
+<tr valign="top">
+<td><a href="#close_handles"><b class='cmd'>close_handles</b>
+?<i class='arg'>HANDLELIST</i> <i class=
+'arg'>HANDLELIST</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#create_file"><b class='cmd'>create_file</b> <i class=
+'arg'>PATH</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#duplicate_handle"><b class='cmd'>duplicate_handle</b>
+<i class='arg'>HANDLE</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_tcl_channel_handle"><b class=
+'cmd'>get_tcl_channel_handle</b> <i class='arg'>CHANNEL</i>
+<i class='arg'>DIRECTION</i></a></td>
+</tr>
+</table>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>This module provides commands that deal with operating system
+handles.</p>
+<h3><a name="overview" id="overview">Overview</a></h3>
+<p>Several Win32 and TWAPI commands return operating system handles
+to various types of resources. The following commands allow
+manipulation and retrieval of information regarding handles.</p>
+<p>The command <a href="#create_file"><b class=
+'cmd'>create_file</b></a> returns a handle to a file or device.</p>
+<p>The operating system associated with a Tcl channel can be
+retrieved using the <a href="#get_tcl_channel_handle"><b class=
+'cmd'>get_tcl_channel_handle</b></a> command.</p>
+<p>The command <a href="#duplicate_handle"><b class=
+'cmd'>duplicate_handle</b></a> can be used to duplicate a handle,
+for example to pass down to a child process with different access
+rights.</p>
+<p>The command <a href="#close_handle"><b class=
+'cmd'>close_handle</b></a> closes a operating system handle and
+frees resources associated with it.</p>
+<h3><a name="commands" id="commands">Commands</a></h3>
+<dl class="noclass">
+<dt><a name="close_handles" id="close_handles"><b class=
+'cmd'>close_handles</b> ?<i class='arg'>HANDLELIST</i> <i class=
+'arg'>HANDLELIST</i>?</a></dt>
+<dd>This command concatenates its arguments and treats the result
+as a list of operating system handles. It closes each handle in
+this list. In case of errors, closing any handles, it continues to
+try and close the remaining handles before generating an
+exception.</dd>
+<dt><a name="create_file" id="create_file"><b class=
+'cmd'>create_file</b> <i class='arg'>PATH</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>This is a thin wrapper around the Win32 <b class=
+'cmd'>CreateFile</b> function that returns a handle to a file or
+device. The wrapper primarily provides mnemonics and defaults for
+the <b class='cmd'>CreateFile</b> parameters. <i class=
+'arg'>PATH</i> specifies the file or device path. Additional
+options and default values are shown below.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-access</b></span> <i class='arg'>ACCESSRIGHTS</i></td>
+<td class="opt">Specifies the desired access rights and may be
+specified as a list of integer access rights flags or symbols as
+described in <a href="security.html#accessrights">Access
+Rights</a>. Defaults to <span class=
+"strong">generic_read</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-createdisposition</b></span> <i class=
+'arg'>DISPOSITION</i></td>
+<td class="opt"><i class='arg'>DISPOSITION</i> must be one of
+<span class="strong">create_always</span>, <span class=
+"strong">create_new</span>, <span class=
+"strong">open_always</span>, <span class=
+"strong">open_existing</span> or <span class=
+"strong">truncate_existing</span>. Refer to the Windows SDK for the
+meaning. Defaults to <span class="strong">open_always</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-flags</b></span> <i class='arg'>FLAGS</i></td>
+<td class="opt">An integer bit mask corresponding to the <i class=
+'arg'>dwFlagsAndAttributes</i> parameter to <b class=
+'cmd'>CreateFile</b> function. See the Windows SDK for detail.
+Defaults to 0.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-inherit</b></span> <i class='arg'>BOOL</i></td>
+<td class="opt">If true, the returned handle is inheritable by
+child processes. Defaults to <span class=
+"strong">false</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-secd</b></span> <i class='arg'>SECURITY_DESCRIPTOR</i></td>
+<td class="opt">Specifies a <a href=
+"security.html#securitydescriptors">security descriptor</a> to be
+attached to the file or device if it has to be created. Defaults to
+a null security descriptor which results in the process' default
+security descriptor being applied.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-share</b></span></td>
+<td class="opt">Specifies the sharing mode of the object. This is
+list containing zero or more of the constants <span class=
+"strong">read</span>, <span class="strong">write</span> and
+<span class="strong">delete</span> that control what kind of shared
+access should be allowed while the file or device is open. Defaults
+to <span class="strong">{read write delete}</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-templatefile</b></span></td>
+<td class="opt">A handle to a template file with the GENERIC_READ
+access right from which file attributes and extended attributes are
+to be copied for the file that is being created. Defaults to
+NULL.</td>
+</tr>
+</table>
+Refer to the Windows SDK for additional details.</dd>
+<dt><a name="duplicate_handle" id="duplicate_handle"><b class=
+'cmd'>duplicate_handle</b> <i class='arg'>HANDLE</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Duplicates an operating system handle. <i class=
+'arg'>HANDLE</i> may be either in the form returned by commands
+such as <a href="#get_tcl_channel_handle"><b class=
+'cmd'>get_tcl_channel_handle</b></a> or <a href=
+"process.html#get_process_handle"><b class=
+'cmd'>get_process_handle</b></a> or may be an actual address
+(integer) literal corresponding to the handle. The following
+options specify the context of the handle and control attributes of
+the duplicated handle:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-access</b></span> <i class='arg'>ACCESSRIGHTS</i></td>
+<td class="opt">Specifies the access rights desired for the new
+handle. If unspecified, the new handle is created with the same
+access rights as the original one. <i class='arg'>ACCESSRIGHTS</i>
+is a list of symbolic constants and bit masks as specified in
+<a href="security.html#accessrights">Access Rights</a>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-closesource</b></span></td>
+<td class="opt">If specified, <i class='arg'>HANDLE</i> is closed
+after it is duplicated.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-inherit</b></span></td>
+<td class="opt">If specified, the new handle marked as inheritable.
+By default, the duplicated handle cannot be inherited by child
+processes.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-sourcepid</b></span> <i class='arg'>SOURCEPID</i></td>
+<td class="opt">Specifies the PID of the process in whose context
+<i class='arg'>HANDLE</i> is a valid handle. Defaults to the
+current process.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-targetpid</b></span> <i class='arg'>TARGETPID</i></td>
+<td class="opt">Specifies the PID of the process in whose context
+the new handle is to be created. Specifying this also impacts the
+format of the returned handle value.</td>
+</tr>
+</table>
+If option <b class='cmd'>-targetpid</b> is not specified, the
+command returns the duplicated handle in symbolic form that can be
+passed to functions such as <a href="#close_handle"><b class=
+'cmd'>close_handle</b></a>. If <b class='cmd'>-targetpid</b> is
+specified, the command returns the literal value of the handle.
+This is true even if the target PID is that of the current
+process.</dd>
+<dt><a name="get_tcl_channel_handle" id=
+"get_tcl_channel_handle"><b class='cmd'>get_tcl_channel_handle</b>
+<i class='arg'>CHANNEL</i> <i class='arg'>DIRECTION</i></a></dt>
+<dd>Returns the operating system handle corresponding to a Tcl
+channel identifier (for example, returned by the Tcl <b class=
+'cmd'>open</b> command). If <i class='arg'>DIRECTION</i> is
+<span class="strong">write</span>, the write-side handle is
+returned, otherwise the read-side handle is returned. (For many
+channel types, the two are identical.)</dd>
+</dl>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2004-2005 Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

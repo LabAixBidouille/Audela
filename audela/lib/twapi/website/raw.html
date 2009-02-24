@@ -1,0 +1,600 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Win32 raw API</h2>
+<p>Direct access to the Win32 API</p>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>The Windows API may be directly accessed by Tcl commands that
+map to Windows functions. This interface is not documented in the
+TWAPI documentation. Refer to the Microsoft Windows SDK for a
+description of the functions and parameters.</p>
+<p>It is recommended that the higher level documented TWAPI Tcl
+functions be used instead. These provide an easier and more
+flexible interface in addition to hiding platform-specific
+differences.</p>
+<h3><a name="commands" id="commands">Commands</a></h3>
+<p>The Windows functions which may be directly accessed are shown
+below. This list may be obtained by executing the command <b class=
+'cmd'>twapi::list_raw_api</b>.</p>
+<ul class="noclass">
+<li>AbortSystemShutdown</li>
+<li>AcceptSecurityContext</li>
+<li>AcquireCredentialsHandle</li>
+<li>AddFontResourceEx</li>
+<li>AllocateAndGetTcpExTableFromStack</li>
+<li>AllocateAndGetUdpExTableFromStack</li>
+<li>AllocateLocallyUniqueId</li>
+<li>AllocConsole</li>
+<li>ArrangeIconicWindows</li>
+<li>AttachThreadInput</li>
+<li>BackupEventLog</li>
+<li>Beep</li>
+<li>BlockInput</li>
+<li>CastToHANDLE</li>
+<li>ChangeServiceConfig</li>
+<li>ClearEventLog</li>
+<li>CloseClipboard</li>
+<li>CloseDesktop</li>
+<li>CloseEventLog</li>
+<li>CloseHandle</li>
+<li>CloseServiceHandle</li>
+<li>CloseThemeData</li>
+<li>CloseWindow</li>
+<li>CloseWindowStation</li>
+<li>CLSIDFromProgID</li>
+<li>CLSIDFromString</li>
+<li>ComEventSink</li>
+<li>CommandLineToArgv</li>
+<li>ControlService</li>
+<li>ConvertToIUnknown</li>
+<li>CreateBindCtx</li>
+<li>CreateConsoleScreenBuffer</li>
+<li>CreateDesktop</li>
+<li>CreateFile</li>
+<li>CreateFileMoniker</li>
+<li>CreateMutex</li>
+<li>CreateProcess</li>
+<li>CreateProcessAsUser</li>
+<li>CreateScalableFontResource</li>
+<li>CreateSemaphore</li>
+<li>CreateService</li>
+<li>CreateWindowEx</li>
+<li>CreateWindowStation</li>
+<li>DecryptMessage</li>
+<li>DefineDosDevice</li>
+<li>DeleteSecurityContext</li>
+<li>DeleteService</li>
+<li>DeleteVolumeMountPoint</li>
+<li>DeregisterEventSource</li>
+<li>DestroyWindow</li>
+<li>DeviceIoControl</li>
+<li>DsGetDcName</li>
+<li>DuplicateHandle</li>
+<li>DuplicateTokenEx</li>
+<li>EmptyClipboard</li>
+<li>EnableWindow</li>
+<li>EncryptMessage</li>
+<li>EnumChildWindows</li>
+<li>EnumDependentServices</li>
+<li>EnumDesktops</li>
+<li>EnumDesktopWindows</li>
+<li>EnumDeviceDrivers</li>
+<li>EnumDisplayDevices</li>
+<li>EnumDisplayMonitors</li>
+<li>EnumerateSecurityPackages</li>
+<li>EnumProcesses</li>
+<li>EnumProcessModules</li>
+<li>EnumServicesStatus</li>
+<li>EnumServicesStatusEx</li>
+<li>EnumWindows</li>
+<li>EnumWindowStations</li>
+<li>ExitWindowsEx</li>
+<li>ExpandEnvironmentStrings</li>
+<li>FileTimeToSystemTime</li>
+<li>FillConsoleOutputAttribute</li>
+<li>FillConsoleOutputCharacter</li>
+<li>FindFirstVolume</li>
+<li>FindFirstVolumeMountPoint</li>
+<li>FindNextVolume</li>
+<li>FindNextVolumeMountPoint</li>
+<li>FindVolumeClose</li>
+<li>FindVolumeMountPointClose</li>
+<li>FindWindow</li>
+<li>FindWindowEx</li>
+<li>FlashWindow</li>
+<li>FlushConsoleInputBuffer</li>
+<li>FlushIpNetTable</li>
+<li>FormatMessageFromModule</li>
+<li>FormatMessageFromString</li>
+<li>FreeConsole</li>
+<li>FreeCredentialsHandle</li>
+<li>FreeLibrary</li>
+<li>GenerateConsoleCtrlEvent</li>
+<li>GetACP</li>
+<li>GetActiveObject</li>
+<li>GetActiveWindow</li>
+<li>GetAdapterIndex</li>
+<li>GetAdaptersInfo</li>
+<li>GetAncestor</li>
+<li>GetAsyncKeyState</li>
+<li>GetBestInterface</li>
+<li>GetBestRoute</li>
+<li>GetCaretBlinkTime</li>
+<li>GetCaretPos</li>
+<li>GetClassName</li>
+<li>GetClientRect</li>
+<li>GetClipboardData</li>
+<li>GetClipboardFormatName</li>
+<li>GetClipboardOwner</li>
+<li>GetCommandLineW</li>
+<li>GetComputerName</li>
+<li>GetComputerNameEx</li>
+<li>GetConsoleCP</li>
+<li>GetConsoleMode</li>
+<li>GetConsoleOutputCP</li>
+<li>GetConsoleScreenBufferInfo</li>
+<li>GetConsoleTitle</li>
+<li>GetConsoleWindow</li>
+<li>GetCurrencyFormat</li>
+<li>GetCurrentProcess</li>
+<li>GetCurrentThemeName</li>
+<li>GetCurrentThread</li>
+<li>GetCurrentThreadId</li>
+<li>GetCursorPos</li>
+<li>GetDC</li>
+<li>GetDesktopWindow</li>
+<li>GetDeviceCaps</li>
+<li>GetDeviceDriverBaseName</li>
+<li>GetDeviceDriverFileName</li>
+<li>GetDevicePowerState</li>
+<li>GetDiskFreeSpaceEx</li>
+<li>GetDoubleClickTime</li>
+<li>GetDriveType</li>
+<li>GetExitCodeProcess</li>
+<li>GetExtendedTcpTable</li>
+<li>GetExtendedUdpTable</li>
+<li>GetFileTime</li>
+<li>GetFileType</li>
+<li>GetForegroundWindow</li>
+<li>GetGUIThreadInfo</li>
+<li>GetHandleInformation</li>
+<li>GetIfEntry</li>
+<li>GetIfTable</li>
+<li>GetInterfaceInfo</li>
+<li>GetIpAddrTable</li>
+<li>GetIpForwardTable</li>
+<li>GetIpNetTable</li>
+<li>GetKeyState</li>
+<li>GetLargestConsoleWindowSize</li>
+<li>GetLastInputInfo</li>
+<li>GetLocaleInfo</li>
+<li>GetLogicalDrives</li>
+<li>GetModuleBaseName</li>
+<li>GetModuleFileNameEx</li>
+<li>GetModuleInformation</li>
+<li>GetMonitorInfo</li>
+<li>GetNetworkParams</li>
+<li>GetNumberFormat</li>
+<li>GetNumberOfConsoleInputEvents</li>
+<li>GetNumberOfConsoleMouseButtons</li>
+<li>GetNumberOfEventLogRecords</li>
+<li>GetNumberOfInterfaces</li>
+<li>GetObject</li>
+<li>GetOEMCP</li>
+<li>GetOldestEventLogRecord</li>
+<li>GetOpenClipboardWindow</li>
+<li>GetParent</li>
+<li>GetPerAdapterInfo</li>
+<li>GetPrivateProfileInt</li>
+<li>GetPrivateProfileSection</li>
+<li>GetPrivateProfileSectionNames</li>
+<li>GetPrivateProfileString</li>
+<li>GetProcessWindowStation</li>
+<li>GetProfileInt</li>
+<li>GetProfileString</li>
+<li>GetProfileType</li>
+<li>GetRecordInfoFromGuids</li>
+<li>GetRecordInfoFromTypeInfo</li>
+<li>GetServiceDisplayName</li>
+<li>GetServiceKeyName</li>
+<li>GetShellWindow</li>
+<li>GetStdHandle</li>
+<li>GetSystemDefaultLangID</li>
+<li>GetSystemDefaultLCID</li>
+<li>GetSystemDefaultUILanguage</li>
+<li>GetSystemInfo</li>
+<li>GetSystemPowerStatus</li>
+<li>GetSystemTimeAsFileTime</li>
+<li>GetThemeColor</li>
+<li>GetThemeFont</li>
+<li>GetThreadDesktop</li>
+<li>GetThreadLocale</li>
+<li>GetTickCount</li>
+<li>GetTokenInformation</li>
+<li>GetUserDefaultLangID</li>
+<li>GetUserDefaultLCID</li>
+<li>GetUserDefaultUILanguage</li>
+<li>GetUserName</li>
+<li>GetVersionEx</li>
+<li>GetVolumeInformation</li>
+<li>GetVolumeNameForVolumeMountPoint</li>
+<li>GetVolumePathName</li>
+<li>GetWindow</li>
+<li>GetWindowDC</li>
+<li>GetWindowInfo</li>
+<li>GetWindowLong</li>
+<li>GetWindowPlacement</li>
+<li>GetWindowRect</li>
+<li>GetWindowText</li>
+<li>GetWindowThreadProcessId</li>
+<li>GlobalAlloc</li>
+<li>GlobalFree</li>
+<li>GlobalLock</li>
+<li>GlobalMemoryStatus</li>
+<li>GlobalReAlloc</li>
+<li>GlobalSize</li>
+<li>GlobalUnlock</li>
+<li>GUITHREADINFO</li>
+<li>HideCaret</li>
+<li>IIDFromString</li>
+<li>ImpersonateLoggedOnUser</li>
+<li>ImpersonateSecurityContext</li>
+<li>ImpersonateSelf</li>
+<li>InitializeSecurityContext</li>
+<li>InitiateSystemShutdown</li>
+<li>InvalidateRect</li>
+<li>IsAppThemed</li>
+<li>IsChild</li>
+<li>IsClipboardFormatAvailable</li>
+<li>IsIconic</li>
+<li>IsThemeActive</li>
+<li>IsValidAcl</li>
+<li>IsValidSecurityDescriptor</li>
+<li>IsValidSid</li>
+<li>IsWindow</li>
+<li>IsWindowEnabled</li>
+<li>IsWindowUnicode</li>
+<li>IsWindowVisible</li>
+<li>IsZoomed</li>
+<li>LoadLibraryEx</li>
+<li>LoadRegTypeLib</li>
+<li>LoadTypeLibEx</li>
+<li>LockServiceDatabase</li>
+<li>LockWorkStation</li>
+<li>LogonUser</li>
+<li>LookupAccountName</li>
+<li>LookupAccountSid</li>
+<li>LookupPrivilegeDisplayName</li>
+<li>LookupPrivilegeName</li>
+<li>LookupPrivilegeValue</li>
+<li>LsaClose</li>
+<li>LsaEnumerateLogonSessions</li>
+<li>LsaGetLogonSessionData</li>
+<li>MakeSignature</li>
+<li>MapVirtualKey</li>
+<li>MessageBeep</li>
+<li>MonitorClipboardStart</li>
+<li>MonitorClipboardStop</li>
+<li>MonitorFromPoint</li>
+<li>MonitorFromRect</li>
+<li>MonitorFromWindow</li>
+<li>MoveFileEx</li>
+<li>MoveWindow</li>
+<li>NetConnectionEnum</li>
+<li>NetFileClose</li>
+<li>NetFileEnum</li>
+<li>NetFileGetInfo</li>
+<li>NetGetDCName</li>
+<li>NetGroupAdd</li>
+<li>NetGroupAddUser</li>
+<li>NetGroupDel</li>
+<li>NetGroupDelUser</li>
+<li>NetGroupEnum</li>
+<li>NetGroupGetInfo</li>
+<li>NetGroupGetUsers</li>
+<li>NetLocalGroupAdd</li>
+<li>NetLocalGroupDel</li>
+<li>NetLocalGroupEnum</li>
+<li>NetLocalGroupGetInfo</li>
+<li>NetLocalGroupGetMembers</li>
+<li>NetScheduleJobAdd</li>
+<li>NetScheduleJobDel</li>
+<li>NetScheduleJobEnum</li>
+<li>NetScheduleJobGetInfo</li>
+<li>NetSessionDel</li>
+<li>NetSessionEnum</li>
+<li>NetSessionGetInfo</li>
+<li>NetShareAdd</li>
+<li>NetShareDel</li>
+<li>NetShareGetInfo</li>
+<li>NetShareSetInfo</li>
+<li>NetUseEnum</li>
+<li>NetUserAdd</li>
+<li>NetUserDel</li>
+<li>NetUserGetGroups</li>
+<li>NetUserGetInfo</li>
+<li>NetUserGetLocalGroups</li>
+<li>OleRun</li>
+<li>OpenBackupEventLog</li>
+<li>OpenClipboard</li>
+<li>OpenDesktop</li>
+<li>OpenEventLog</li>
+<li>OpenIcon</li>
+<li>OpenInputDesktop</li>
+<li>OpenMutex</li>
+<li>OpenProcess</li>
+<li>OpenProcessToken</li>
+<li>OpenSCManager</li>
+<li>OpenSemaphore</li>
+<li>OpenService</li>
+<li>OpenThemeData</li>
+<li>OpenThread</li>
+<li>OpenThreadToken</li>
+<li>OpenWindowStation</li>
+<li>OSVERSIONINFOEXW</li>
+<li>PdhAddCounter</li>
+<li>PdhBrowseCounters</li>
+<li>PdhCloseQuery</li>
+<li>PdhCollectQueryData</li>
+<li>PdhConnectMachine</li>
+<li>PdhEnumObjectItems</li>
+<li>PdhEnumObjects</li>
+<li>PdhGetDllVersion</li>
+<li>PdhGetFormattedCounterValue</li>
+<li>PdhLookupPerfNameByIndex</li>
+<li>PdhMakeCounterPath</li>
+<li>PdhOpenQuery</li>
+<li>PdhParseCounterPath</li>
+<li>PdhRemoveCounter</li>
+<li>PdhSetDefaultRealTimeDataSource</li>
+<li>PdhValidatePath</li>
+<li>PlaySound</li>
+<li>POINT</li>
+<li>PostMessage</li>
+<li>ProcessIdToSessionId</li>
+<li>ProgIDFromCLSID</li>
+<li>QueryContextAttributes</li>
+<li>QueryDosDevice</li>
+<li>QueryPathOfRegTypeLib</li>
+<li>QuerySecurityContextToken</li>
+<li>QueryServiceConfig</li>
+<li>QueryServiceLockStatus</li>
+<li>QueryServiceStatus</li>
+<li>QueryServiceStatusEx</li>
+<li>ReadConsole</li>
+<li>ReadEventLog</li>
+<li>ReadProcessMemory</li>
+<li>RealGetWindowClass</li>
+<li>RECT</li>
+<li>RegisterClipboardFormat</li>
+<li>RegisterConsoleEventNotifier</li>
+<li>RegisterDirChangeNotifier</li>
+<li>RegisterEventSource</li>
+<li>RegisterHotKey</li>
+<li>RegisterTypeLib</li>
+<li>ReleaseDC</li>
+<li>ReleaseMutex</li>
+<li>ReleaseSemaphore</li>
+<li>RemoveFontResourceEx</li>
+<li>ReportEvent</li>
+<li>ResumeThread</li>
+<li>RevertToSelf</li>
+<li>SendInput</li>
+<li>SendMessageTimeout</li>
+<li>SendNotifyMessage</li>
+<li>SetActiveWindow</li>
+<li>SetCaretBlinkTime</li>
+<li>SetCaretPos</li>
+<li>SetClipboardData</li>
+<li>SetConsoleActiveScreenBuffer</li>
+<li>SetConsoleCP</li>
+<li>SetConsoleCursorPosition</li>
+<li>SetConsoleMode</li>
+<li>SetConsoleOutputCP</li>
+<li>SetConsoleScreenBufferSize</li>
+<li>SetConsoleTextAttribute</li>
+<li>SetConsoleTitle</li>
+<li>SetConsoleWindowInfo</li>
+<li>SetCursorPos</li>
+<li>SetFileTime</li>
+<li>SetFocus</li>
+<li>SetForegroundWindow</li>
+<li>SetHandleInformation</li>
+<li>SetLayeredWindowAttributes</li>
+<li>SetNamedSecurityInfo</li>
+<li>SetProcessWindowStation</li>
+<li>SetSecurityInfo</li>
+<li>SetStdHandle</li>
+<li>SetSuspendState</li>
+<li>SetTcpEntry</li>
+<li>SetThreadDesktop</li>
+<li>SetThreadExecutionState</li>
+<li>SetThreadToken</li>
+<li>SetupDiClassGuidsFromNameEx</li>
+<li>SetupDiClassNameFromGuidEx</li>
+<li>SetupDiCreateDeviceInfoListEx</li>
+<li>SetupDiDestroyDeviceInfoList</li>
+<li>SetupDiEnumDeviceInfo</li>
+<li>SetupDiEnumDeviceInterfaces</li>
+<li>SetupDiGetClassDevsEx</li>
+<li>SetupDiGetDeviceInstanceId</li>
+<li>SetupDiGetDeviceInterfaceDetail</li>
+<li>SetupDiGetDeviceRegistryProperty</li>
+<li>SetVolumeLabel</li>
+<li>SetVolumeMountPoint</li>
+<li>SetWindowLong</li>
+<li>SetWindowPlacement</li>
+<li>SetWindowPos</li>
+<li>SetWindowText</li>
+<li>SHGetFolderPath</li>
+<li>SHGetPathFromIDList</li>
+<li>SHGetSpecialFolderLocation</li>
+<li>SHGetSpecialFolderPath</li>
+<li>SHInvokePrinterCommand</li>
+<li>SHObjectProperties</li>
+<li>ShowCaret</li>
+<li>ShowOwnedPopups</li>
+<li>ShowWindow</li>
+<li>ShowWindowAsync</li>
+<li>StartService</li>
+<li>SuspendThread</li>
+<li>SwitchDesktop</li>
+<li>SystemParametersInfo</li>
+<li>SystemTimeToFileTime</li>
+<li>SystemTimeToVariantTime</li>
+<li>TerminateProcess</li>
+<li>TwapiGetSidStringRep</li>
+<li>TwapiThemeDefineValue</li>
+<li>UnloadUserProfile</li>
+<li>UnlockServiceDatabase</li>
+<li>UnregisterConsoleEventNotifier</li>
+<li>UnregisterDirChangeNotifier</li>
+<li>UnregisterHotKey</li>
+<li>UnRegisterTypeLib</li>
+<li>UpdateWindow</li>
+<li>UuidCreate</li>
+<li>UuidCreateNil</li>
+<li>VariantTimeToSystemTime</li>
+<li>VerifySignature</li>
+<li>VerLanguageName</li>
+<li>WaitForInputIdle</li>
+<li>WaitForMultipleObjects</li>
+<li>WindowFromPoint</li>
+<li>WINDOWINFO</li>
+<li>WINDOWPLACEMENT</li>
+<li>WNetCancelConnection2</li>
+<li>WNetGetUniversalName</li>
+<li>WNetGetUser</li>
+<li>WriteConsole</li>
+<li>WriteConsoleOutputCharacter</li>
+<li>WritePrivateProfileString</li>
+<li>WriteProfileString</li>
+<li>WTSCloseServer</li>
+<li>WTSDisconnectSession</li>
+<li>WTSEnumerateProcesses</li>
+<li>WTSEnumerateSessions</li>
+<li>WTSLogoffSession</li>
+<li>WTSOpenServer</li>
+<li>WTSQuerySessionInformation</li>
+<li>WTSSendMessage</li>
+</ul>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2003-2008 Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,958 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Microsoft Windows Installer</h2>
+<p>Commands for accessing Microsoft Windows Installer</p>
+<h3><a name="synopsis" id="synopsis">SYNOPSIS</a></h3>
+package require <b>twapi</b><br />
+<table class="commandsummary" summary="Table">
+<tr valign="top">
+<td><a href="#load_msi_prototypes"><b class=
+'cmd'>load_msi_prototypes</b> <i class='arg'>MSICOMOBJ</i>
+<i class='arg'>MSITYPE</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#addsource"><i class='arg'>INSTALLEROBJ</i> <b class=
+'cmd'>AddSource</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#clearsourcelist"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>ClearSourceList</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#collectuserinfo"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>CollectUserInfo</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#componentclients"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>ComponentClients</b> <i class=
+'arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#componentpath"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>ComponentPath</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#componentqualifiers"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>ComponentQualifiers</b> <i class=
+'arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#components"><i class='arg'>INSTALLEROBJ</i> <b class=
+'cmd'>Components</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#configurefeature"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>ConfigureFeature</b> <i class=
+'arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#configureproduct"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>ConfigureProduct</b> <i class=
+'arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#createrecord"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>CreateRecord</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#enablelog"><i class='arg'>INSTALLEROBJ</i> <b class=
+'cmd'>EnableLog</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#environment"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>Environment</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#extractpatchxmldata"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>ExtractPatchXMLData</b> <i class=
+'arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#featureparent"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>FeatureParent</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#features"><i class='arg'>INSTALLEROBJ</i> <b class=
+'cmd'>Features</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#featurestate"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>FeatureState</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#featureusagecount"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>FeatureUsageCount</b> <i class=
+'arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#featureusagedate"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>FeatureUsageDate</b> <i class=
+'arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#fileattributes"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>FileAttributes</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#filesize"><i class='arg'>INSTALLEROBJ</i> <b class=
+'cmd'>FileSize</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#fileversion"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>FileVersion</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#installproduct"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>InstallProduct</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#lasterrorrecord"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>LastErrorRecord</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#openpackage"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>OpenPackage</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#opendatabase"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>OpenDatabase</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#openproduct"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>OpenProduct</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#patches"><i class='arg'>INSTALLEROBJ</i> <b class=
+'cmd'>Patches</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#patchesex"><i class='arg'>INSTALLEROBJ</i> <b class=
+'cmd'>PatchesEx</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#productinfo"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>ProductInfo</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#productsex"><i class='arg'>INSTALLEROBJ</i> <b class=
+'cmd'>ProductsEx</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#products"><i class='arg'>INSTALLEROBJ</i> <b class=
+'cmd'>Products</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#productstate"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>ProductState</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#providecomponent"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>ProvideComponent</b> <i class=
+'arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#registryvalue"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>RegistryValue</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#reinstallfeature"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>ReinstallFeature</b> <i class=
+'arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#reinstallproduct"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>ReinstallProduct</b> <i class=
+'arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#relatedproducts"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>RelatedProducts</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#removepatches"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>RemovePatches</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#shortcuttarget"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>ShortcutTarget</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#summaryinformation"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>SummaryInformation</b> <i class=
+'arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#uilevel"><i class='arg'>INSTALLEROBJ</i> <b class=
+'cmd'>UILevel</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#usefeature"><i class='arg'>INSTALLEROBJ</i> <b class=
+'cmd'>UseFeature</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#version"><i class='arg'>INSTALLEROBJ</i> <b class=
+'cmd'>Version</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#applytransform"><i class='arg'>MSIDBOBJ</i> <b class=
+'cmd'>ApplyTransform</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#commit"><i class='arg'>MSIDBOBJ</i> <b class=
+'cmd'>Commit</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#createtransformsummaryinfo"><i class=
+'arg'>MSIDBOBJ</i> <b class='cmd'>CreateTransformSummaryInfo</b>
+<i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#databasestate"><i class='arg'>MSIDBOBJ</i> <b class=
+'cmd'>DatabaseState</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#enableuipreview"><i class='arg'>MSIDBOBJ</i>
+<b class='cmd'>EnableUIPreview</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#export"><i class='arg'>MSIDBOBJ</i> <b class=
+'cmd'>Export</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#generatetransform"><i class='arg'>MSIDBOBJ</i>
+<b class='cmd'>GenerateTransform</b> <i class=
+'arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#import"><i class='arg'>MSIDBOBJ</i> <b class=
+'cmd'>Import</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#merge"><i class='arg'>MSIDBOBJ</i> <b class=
+'cmd'>Merge</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#openview"><i class='arg'>MSIDBOBJ</i> <b class=
+'cmd'>OpenView</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#primarykeys"><i class='arg'>MSIDBOBJ</i> <b class=
+'cmd'>PrimaryKeys</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#tablepersistent"><i class='arg'>MSIDBOBJ</i>
+<b class='cmd'>TablePersistent</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#cleardata"><i class='arg'>MSIRECORDOBJ</i> <b class=
+'cmd'>ClearData</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#datasize"><i class='arg'>MSIRECORDOBJ</i> <b class=
+'cmd'>DataSize</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#fieldcount"><i class='arg'>MSIRECORDOBJ</i> <b class=
+'cmd'>FieldCount</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#formattext"><i class='arg'>MSIRECORDOBJ</i> <b class=
+'cmd'>FormatText</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#integerdata"><i class='arg'>MSIRECORDOBJ</i>
+<b class='cmd'>IntegerData</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#isnull"><i class='arg'>MSIRECORDOBJ</i> <b class=
+'cmd'>IsNull</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#readstream"><i class='arg'>MSIRECORDOBJ</i> <b class=
+'cmd'>ReadStream</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#setstream"><i class='arg'>MSIRECORDOBJ</i> <b class=
+'cmd'>SetStream</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#stringdata"><i class='arg'>MSIRECORDOBJ</i> <b class=
+'cmd'>StringData</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#persist"><i class='arg'>MSISUMMARYOBJ</i> <b class=
+'cmd'>Persist</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#property"><i class='arg'>MSISUMMARYOBJ</i> <b class=
+'cmd'>Property</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#propertycount"><i class='arg'>MSISUMMARYOBJ</i>
+<b class='cmd'>PropertyCount</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#count"><i class='arg'>MSISTRINGLISTOBJ</i> <b class=
+'cmd'>Count</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#item"><i class='arg'>MSISTRINGLISTOBJ</i> <b class=
+'cmd'>Item</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#close"><i class='arg'>MSIVIEWOBJ</i> <b class=
+'cmd'>Close</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#columninfo"><i class='arg'>MSIVIEWOBJ</i> <b class=
+'cmd'>ColumnInfo</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#execute"><i class='arg'>MSIVIEWOBJ</i> <b class=
+'cmd'>Execute</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#fetch"><i class='arg'>MSIVIEWOBJ</i> <b class=
+'cmd'>Fetch</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#geterror"><i class='arg'>MSIVIEWOBJ</i> <b class=
+'cmd'>GetError</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#modify"><i class='arg'>MSIVIEWOBJ</i> <b class=
+'cmd'>Modify</b> <i class='arg'>ARGS</i></a></td>
+</tr>
+</table>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>This module provides commands for accessing the Microsoft
+Windows Installer (MSI) component through its COM interfaces. The
+primary motivation for this module is that although the Installer
+provides a COM type library, its type library may not be available
+on the target system. This module provides the required type
+definitions for the various interfaces.</p>
+<h3><a name="creationanddestructionofmsiobjects" id=
+"creationanddestructionofmsiobjects">Creation and Destruction of
+MSI objects</a></h3>
+<p>MSI objects are created through TWAPI's COM interface commands.
+The Installer object is created through the command</p>
+<pre class="sample">
+set msiobj [comobj WindowsInstaller.Installer]
+</pre>
+<p>Once an MSI object is no longer needed, it must be deleted like
+any other COM object.</p>
+<pre class="sample">
+$msiobj -destroy
+</pre>
+<p><span class="em">Note a final call to <b class='cmd'>$MSIOBJ
+-destroy</b> is required for all MSI objects, not just the
+top-level Installer object</span>.</p>
+<p>Once an MSI object is created, its type library must be
+explicitly loaded by calling <b class='cmd'>load_msi_prototypes</b>
+with the object command and the object type.</p>
+<pre class="sample">
+twapi::load_msi_prototypes $msiobj Installer
+</pre>
+<p><a href="msilistproducts.example">Example: List installed
+products</a></p>
+<dl class="noclass">
+<dt><a name="load_msi_prototypes" id=
+"load_msi_prototypes"><b class='cmd'>load_msi_prototypes</b>
+<i class='arg'>MSICOMOBJ</i> <i class='arg'>MSITYPE</i></a></dt>
+<dd>Loads the type information corresponding to the MSI type
+<i class='arg'>MSITYPE</i> into the COM object command <i class=
+'arg'>MSICOMOBJ</i>. The sections below describe the various types
+of MSI objects that can be loaded. When an object of a type is
+created, it should be passed to <b class=
+'cmd'>load_msi_prototypes</b> along with the type before making any
+method calls on the objects.</dd>
+</dl>
+<h3><a name="installerobject" id="installerobject">Installer
+object</a></h3>
+<p>An <b class='cmd'>Installer</b> object supports the following
+methods:</p>
+<dl class="noclass">
+<dt><a name="addsource" id="addsource"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>AddSource</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="clearsourcelist" id="clearsourcelist"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>ClearSourceList</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="collectuserinfo" id="collectuserinfo"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>CollectUserInfo</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="componentclients" id="componentclients"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>ComponentClients</b>
+<i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="componentpath" id="componentpath"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>ComponentPath</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="componentqualifiers" id=
+"componentqualifiers"><i class='arg'>INSTALLEROBJ</i> <b class=
+'cmd'>ComponentQualifiers</b> <i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="components" id="components"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>Components</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="configurefeature" id="configurefeature"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>ConfigureFeature</b>
+<i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="configureproduct" id="configureproduct"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>ConfigureProduct</b>
+<i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="createrecord" id="createrecord"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>CreateRecord</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="enablelog" id="enablelog"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>EnableLog</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="environment" id="environment"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>Environment</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="extractpatchxmldata" id=
+"extractpatchxmldata"><i class='arg'>INSTALLEROBJ</i> <b class=
+'cmd'>ExtractPatchXMLData</b> <i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="featureparent" id="featureparent"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>FeatureParent</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="features" id="features"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>Features</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="featurestate" id="featurestate"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>FeatureState</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="featureusagecount" id="featureusagecount"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>FeatureUsageCount</b>
+<i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="featureusagedate" id="featureusagedate"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>FeatureUsageDate</b>
+<i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="fileattributes" id="fileattributes"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>FileAttributes</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="filesize" id="filesize"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>FileSize</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="fileversion" id="fileversion"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>FileVersion</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="installproduct" id="installproduct"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>InstallProduct</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="lasterrorrecord" id="lasterrorrecord"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>LastErrorRecord</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="openpackage" id="openpackage"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>OpenPackage</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="opendatabase" id="opendatabase"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>OpenDatabase</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="openproduct" id="openproduct"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>OpenProduct</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="patches" id="patches"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>Patches</b> <i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="patchesex" id="patchesex"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>PatchesEx</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="productinfo" id="productinfo"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>ProductInfo</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="productsex" id="productsex"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>ProductsEx</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="products" id="products"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>Products</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="productstate" id="productstate"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>ProductState</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="providecomponent" id="providecomponent"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>ProvideComponent</b>
+<i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="registryvalue" id="registryvalue"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>RegistryValue</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="reinstallfeature" id="reinstallfeature"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>ReinstallFeature</b>
+<i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="reinstallproduct" id="reinstallproduct"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>ReinstallProduct</b>
+<i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="relatedproducts" id="relatedproducts"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>RelatedProducts</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="removepatches" id="removepatches"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>RemovePatches</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="shortcuttarget" id="shortcuttarget"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>ShortcutTarget</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="summaryinformation" id="summaryinformation"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>SummaryInformation</b>
+<i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="uilevel" id="uilevel"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>UILevel</b> <i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="usefeature" id="usefeature"><i class=
+'arg'>INSTALLEROBJ</i> <b class='cmd'>UseFeature</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="version" id="version"><i class='arg'>INSTALLEROBJ</i>
+<b class='cmd'>Version</b> <i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+</dl>
+<h3><a name="databaseobject" id="databaseobject">Database
+object</a></h3>
+<p>A MSI <b class='cmd'>Database</b> object supports the following
+methods:</p>
+<dl class="noclass">
+<dt><a name="applytransform" id="applytransform"><i class=
+'arg'>MSIDBOBJ</i> <b class='cmd'>ApplyTransform</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="commit" id="commit"><i class='arg'>MSIDBOBJ</i>
+<b class='cmd'>Commit</b> <i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="createtransformsummaryinfo" id=
+"createtransformsummaryinfo"><i class='arg'>MSIDBOBJ</i> <b class=
+'cmd'>CreateTransformSummaryInfo</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="databasestate" id="databasestate"><i class=
+'arg'>MSIDBOBJ</i> <b class='cmd'>DatabaseState</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="enableuipreview" id="enableuipreview"><i class=
+'arg'>MSIDBOBJ</i> <b class='cmd'>EnableUIPreview</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="export" id="export"><i class='arg'>MSIDBOBJ</i>
+<b class='cmd'>Export</b> <i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="generatetransform" id="generatetransform"><i class=
+'arg'>MSIDBOBJ</i> <b class='cmd'>GenerateTransform</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="import" id="import"><i class='arg'>MSIDBOBJ</i>
+<b class='cmd'>Import</b> <i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="merge" id="merge"><i class='arg'>MSIDBOBJ</i>
+<b class='cmd'>Merge</b> <i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="openview" id="openview"><i class='arg'>MSIDBOBJ</i>
+<b class='cmd'>OpenView</b> <i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="primarykeys" id="primarykeys"><i class=
+'arg'>MSIDBOBJ</i> <b class='cmd'>PrimaryKeys</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="tablepersistent" id="tablepersistent"><i class=
+'arg'>MSIDBOBJ</i> <b class='cmd'>TablePersistent</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+</dl>
+<h3><a name="recordobject" id="recordobject">Record object</a></h3>
+<p>A MSI <b class='cmd'>Record</b> object supports the following
+methods:</p>
+<dl class="noclass">
+<dt><a name="cleardata" id="cleardata"><i class=
+'arg'>MSIRECORDOBJ</i> <b class='cmd'>ClearData</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="datasize" id="datasize"><i class=
+'arg'>MSIRECORDOBJ</i> <b class='cmd'>DataSize</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="fieldcount" id="fieldcount"><i class=
+'arg'>MSIRECORDOBJ</i> <b class='cmd'>FieldCount</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="formattext" id="formattext"><i class=
+'arg'>MSIRECORDOBJ</i> <b class='cmd'>FormatText</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="integerdata" id="integerdata"><i class=
+'arg'>MSIRECORDOBJ</i> <b class='cmd'>IntegerData</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="isnull" id="isnull"><i class='arg'>MSIRECORDOBJ</i>
+<b class='cmd'>IsNull</b> <i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="readstream" id="readstream"><i class=
+'arg'>MSIRECORDOBJ</i> <b class='cmd'>ReadStream</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="setstream" id="setstream"><i class=
+'arg'>MSIRECORDOBJ</i> <b class='cmd'>SetStream</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="stringdata" id="stringdata"><i class=
+'arg'>MSIRECORDOBJ</i> <b class='cmd'>StringData</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+</dl>
+<h3><a name="summaryinfoobject" id="summaryinfoobject">SummaryInfo
+object</a></h3>
+<p>A MSI <b class='cmd'>SummaryInfo</b> object supports the
+following methods:</p>
+<dl class="noclass">
+<dt><a name="persist" id="persist"><i class='arg'>MSISUMMARYOBJ</i>
+<b class='cmd'>Persist</b> <i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="property" id="property"><i class=
+'arg'>MSISUMMARYOBJ</i> <b class='cmd'>Property</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="propertycount" id="propertycount"><i class=
+'arg'>MSISUMMARYOBJ</i> <b class='cmd'>PropertyCount</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+</dl>
+<h3><a name="stringlistobject" id="stringlistobject">StringList
+object</a></h3>
+<p>A MSI <b class='cmd'>StringList</b> object supports the
+following methods:</p>
+<dl class="noclass">
+<dt><a name="count" id="count"><i class='arg'>MSISTRINGLISTOBJ</i>
+<b class='cmd'>Count</b> <i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="item" id="item"><i class='arg'>MSISTRINGLISTOBJ</i>
+<b class='cmd'>Item</b> <i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+</dl>
+<h3><a name="viewobject" id="viewobject">View object</a></h3>
+<p>A MSI <b class='cmd'>View</b> object supports the following
+methods:</p>
+<dl class="noclass">
+<dt><a name="close" id="close"><i class='arg'>MSIVIEWOBJ</i>
+<b class='cmd'>Close</b> <i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="columninfo" id="columninfo"><i class=
+'arg'>MSIVIEWOBJ</i> <b class='cmd'>ColumnInfo</b> <i class=
+'arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="execute" id="execute"><i class='arg'>MSIVIEWOBJ</i>
+<b class='cmd'>Execute</b> <i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="fetch" id="fetch"><i class='arg'>MSIVIEWOBJ</i>
+<b class='cmd'>Fetch</b> <i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="geterror" id="geterror"><i class='arg'>MSIVIEWOBJ</i>
+<b class='cmd'>GetError</b> <i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+<dt><a name="modify" id="modify"><i class='arg'>MSIVIEWOBJ</i>
+<b class='cmd'>Modify</b> <i class='arg'>ARGS</i></a></dt>
+<dd>Refer to <a href=
+"http://msdn2.microsoft.com/en-us/library/aa372860.aspx">Windows
+Installer Reference</a> for a description and parameters.</dd>
+</dl>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2007 Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

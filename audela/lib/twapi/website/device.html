@@ -1,0 +1,254 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Device management</h2>
+<p>Commands related to devices and device interfaces</p>
+<h3><a name="synopsis" id="synopsis">SYNOPSIS</a></h3>
+package require <b>twapi</b><br />
+<table class="commandsummary" summary="Table">
+<tr valign="top">
+<td><a href="#device_ioctl"><b class='cmd'>device_ioctl</b>
+<i class='arg'>DEVICEHANDLE</i> <i class=
+'arg'>IOCTLCODE</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#start_device_change_monitor"><b class=
+'cmd'>start_device_change_monitor</b> <i class='arg'>SCRIPT</i>
+?<b class='cmd'>-deviceinterface</b> <i class=
+'arg'>DEVICEINTERFACE</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#stop_device_change_monitor"><b class=
+'cmd'>stop_device_change_monitor</b> <i class=
+'arg'>MONITORID</i></a></td>
+</tr>
+</table>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>This package provides procedures related to device information
+and management in Windows operating systems.</p>
+<h3><a name="deviceioctls" id="deviceioctls">Device ioctls</a></h3>
+<p>The <a href="#device_ioctl"><b class='cmd'>device_ioctl</b></a>
+command provides thin wrapper around the DeviceIoControl Win32
+function. This allows for device specific control commands to be
+issued to devices.</p>
+<h3><a name="devicedetection" id="devicedetection">Device
+detection</a></h3>
+<p>The commands <a href="#start_device_change_monitor"><b class=
+'cmd'>start_device_change_monitor</b></a> and <a href=
+"#stop_device_change_monitor"><b class=
+'cmd'>stop_device_change_monitor</b></a> allow monitoring of
+changes to the device tree, including insertion of CD-ROM's or USB
+drives.</p>
+<h3><a name="commands" id="commands">Commands</a></h3>
+<dl class="noclass">
+<dt><a name="device_ioctl" id="device_ioctl"><b class=
+'cmd'>device_ioctl</b> <i class='arg'>DEVICEHANDLE</i> <i class=
+'arg'>IOCTLCODE</i></a></dt>
+<dd>This is a thin wrapper around the Win32 <b class=
+'cmd'>DeviceIoControl</b> function. Primary role of the wrapper is
+to do automatic output buffer management for the caller. <i class=
+'arg'>DEVICEHANDLE</i>, usually obtained through <a href=
+"handles.html#create_file"><b class='cmd'>create_file</b></a>, is a
+handle to the device of interest. <i class='arg'>IOCTLCODE</i> is
+the IOCTL code to be sent to the device. The command returns the
+result as a Tcl binary value that should in general be parsed with
+the Tcl <b class='cmd'>binary scan</b> command.<br />
+<br /></dd>
+<dt><a name="start_device_change_monitor" id=
+"start_device_change_monitor"><b class=
+'cmd'>start_device_change_monitor</b> <i class='arg'>SCRIPT</i>
+?<b class='cmd'>-deviceinterface</b> <i class=
+'arg'>DEVICEINTERFACE</i>?</a></dt>
+<dd>Registers <i class='arg'>SCRIPT</i> to be invoked when the
+changes of the specified type occur in the device tree.<br />
+<br />
+The command returns an identifier corresponding to the monitoring
+callback. When no longer interested in the specified changes, the
+returned identifier should be passed to <a href=
+"#stop_device_change_monitor"><b class=
+'cmd'>stop_device_change_monitor</b></a> to end the
+monitoring.<br />
+<br />
+If no additional options were specified to the command, or if the
+<b class='cmd'>-deviceinterface</b> option was specified with
+<i class='arg'>DEVICEINTERFACE</i> as an empty string, all device
+interfaces are monitored. If <i class='arg'>DEVICEINTERFACE</i> is
+one of the keywords <span class="strong">port</span> or
+<span class="strong">volume</span>, then all ports and all volumes
+respectively are monitored. Otherwise, <i class=
+'arg'>DEVICEINTERFACE</i> must be the GUID for a particular device
+interface class, and only that interface class is monitored.<br />
+<br />
+The callback <i class='arg'>SCRIPT</i> is invoked with additional
+arguments. The first argument indicates the event type an may be
+one of <span class="strong">devnodes_changed</span>, <span class=
+"strong">devicearrival</span>, or <span class=
+"strong">deviceremovecomplete</span>. (These constants have the
+same name as in the Windows SDK; refer there for exact
+semantics).<br />
+<br />
+Event type <span class="strong">devnodes_changed</span> indicates
+that the device tree has been modified. No additional arguments are
+present that indicate the exact nature of the change.<br />
+<br />
+Event type <span class="strong">devicearrival</span> indicates a
+new device has been detected by the system. If device interfaces
+are being monitored (<i class='arg'>DEVICEINTERFACE</i> is
+unspecified, an empty string, or a device interface GUID), the
+second argument passed to <i class='arg'>SCRIPT</i> is <span class=
+"strong">devtyp_deviceinterface</span>, the third argument is the
+device interface class GUID for the new device interface, and the
+fourth argument is the device interface class name.<br />
+<br />
+When <i class='arg'>DEVICEINTERFACE</i> was specified as
+<span class="strong">volume</span>, <span class=
+"strong">devicearrival</span> events have the second argument
+<span class="strong">devtyp_volume</span>. The third argument is a
+list of drive letters corresponding to the new detected volumes
+(note there may be more than one). The fourth argument is a list of
+attributes. If the list includes <span class=
+"strong">mediachange</span>, it indicates that new media was
+inserted (e.g. a CD-ROM); otherwise, it indicates a new physical
+device (e.g. a USB pen drive). If the list includes <span class=
+"strong">networkvolume</span>, it indicates the new volume is
+accessed over the network.<br />
+<br />
+When <i class='arg'>DEVICEINTERFACE</i> was specified as
+<span class="strong">port</span>, <span class=
+"strong">devicearrival</span> events have the second argument
+<span class="strong">devtyp_port</span>. The third argument is the
+name of the port.<br />
+<br />
+The third event <span class="strong">deviceremovecomplete</span> is
+generated when a device is remove from the system. The additional
+arguments are identical to those for <span class=
+"strong">devicearrival</span>.</dd>
+<dt><a name="stop_device_change_monitor" id=
+"stop_device_change_monitor"><b class=
+'cmd'>stop_device_change_monitor</b> <i class=
+'arg'>MONITORID</i></a></dt>
+<dd>Cancels monitoring of device changes. <i class=
+'arg'>MONITORID</i> which must be an identifier previously returned
+by <a href="#start_device_change_monitor"><b class=
+'cmd'>start_device_change_monitor</b></a>.</dd>
+</dl>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2008 Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

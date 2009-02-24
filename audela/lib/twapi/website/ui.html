@@ -1,0 +1,1873 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Window management</h2>
+<p>Commands related to management of windows</p>
+<h3><a name="synopsis" id="synopsis">SYNOPSIS</a></h3>
+package require <b>twapi</b><br />
+<table class="commandsummary" summary="Table">
+<tr valign="top">
+<td><a href="#arrange_icons"><b class='cmd'>arrange_icons</b>
+?<i class='arg'>HWIN</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#close_window"><b class='cmd'>close_window</b>
+<i class='arg'>HWIN</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#configure_window_titlebar"><b class=
+'cmd'>configure_window_titlebar</b> <i class='arg'>HWIN</i>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#disable_window_input"><b class=
+'cmd'>disable_window_input</b> <i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#enable_window_input"><b class=
+'cmd'>enable_window_input</b> <i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#find_windows"><b class='cmd'>find_windows</b>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#flash_window_caption"><b class=
+'cmd'>flash_window_caption</b> <i class='arg'>HWIN</i> ?<b class=
+'cmd'>-toggle</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_active_window_for_current_thread"><b class=
+'cmd'>get_active_window_for_current_thread</b> <i class=
+'arg'>TID</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_active_window_for_thread"><b class=
+'cmd'>get_active_window_for_thread</b> <i class=
+'arg'>TID</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_caret_blink_time"><b class=
+'cmd'>get_caret_blink_time</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_caret_location"><b class=
+'cmd'>get_caret_location</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_child_windows"><b class=
+'cmd'>get_child_windows</b> <i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_color_depth"><b class='cmd'>get_color_depth</b>
+?<i class='arg'>HWIN</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_descendent_windows"><b class=
+'cmd'>get_descendent_windows</b> <i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_desktop_window"><b class=
+'cmd'>get_desktop_window</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_desktop_wallpaper"><b class=
+'cmd'>get_desktop_wallpaper</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_desktop_workarea"><b class=
+'cmd'>get_desktop_workarea</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_display_devices"><b class=
+'cmd'>get_display_devices</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_display_monitor_from_point"><b class=
+'cmd'>get_display_monitor_from_point</b> <i class='arg'>X</i>
+<i class='arg'>Y</i> ?<b class='cmd'>-default</b> <i class=
+'arg'>DEFAULTMONITOR</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_display_monitor_from_rect"><b class=
+'cmd'>get_display_monitor_from_rect</b> <i class='arg'>RECT</i>
+?<b class='cmd'>-default</b> <i class=
+'arg'>DEFAULTMONITOR</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_display_monitor_from_window"><b class=
+'cmd'>get_display_monitor_from_window</b> <i class='arg'>HWIN</i>
+?<b class='cmd'>-default</b> <i class=
+'arg'>DEFAULTMONITOR</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_display_monitors"><b class=
+'cmd'>get_display_monitors</b> ?<b class='cmd'>-device</b>
+<i class='arg'>DEVICENAME</i>? ?<b class=
+'cmd'>-activeonly</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_display_monitor_info"><b class=
+'cmd'>get_display_monitor_info</b> <i class=
+'arg'>HMONITOR</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_display_size"><b class=
+'cmd'>get_display_size</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_first_child"><b class='cmd'>get_first_child</b>
+<i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_first_sibling_window"><b class=
+'cmd'>get_first_sibling_window</b> <i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_focus_window_for_thread"><b class=
+'cmd'>get_focus_window_for_thread</b> <i class=
+'arg'>TID</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_foreground_window"><b class=
+'cmd'>get_foreground_window</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_last_sibling_window"><b class=
+'cmd'>get_last_sibling_window</b> <i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_multiple_display_monitor_info"><b class=
+'cmd'>get_multiple_display_monitor_info</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_next_sibling_window"><b class=
+'cmd'>get_next_sibling_window</b> <i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_owner_window"><b class='cmd'>get_owner_window</b>
+<i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_parent_window"><b class=
+'cmd'>get_parent_window</b> <i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_prev_sibling_window"><b class=
+'cmd'>get_prev_sibling_window</b> <i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_shell_window"><b class=
+'cmd'>get_shell_window</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_toplevel_windows"><b class=
+'cmd'>get_toplevel_windows</b> ?<b class='cmd'>-pid</b> <i class=
+'arg'>PID</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_window_application"><b class=
+'cmd'>get_window_application</b> <i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_window_at_location"><b class=
+'cmd'>get_window_at_location</b> <i class='arg'>X</i> <i class=
+'arg'>Y</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_window_class"><b class='cmd'>get_window_class</b>
+<i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_window_client_area_size"><b class=
+'cmd'>get_window_client_area_size</b> <i class=
+'arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_window_coordinates"><b class=
+'cmd'>get_window_coordinates</b> <i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_window_id"><b class='cmd'>get_window_id</b>
+<i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_window_long"><b class='cmd'>get_window_long</b>
+<i class='arg'>HWIN</i> <i class='arg'>INDEX</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_window_process"><b class=
+'cmd'>get_window_process</b> <i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_window_real_class"><b class=
+'cmd'>get_window_real_class</b> <i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_window_style"><b class='cmd'>get_window_style</b>
+<i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_window_text"><b class='cmd'>get_window_text</b>
+<i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_window_thread"><b class=
+'cmd'>get_window_thread</b> <i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_window_userdata"><b class=
+'cmd'>get_window_userdata</b> <i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#hide_caret"><b class='cmd'>hide_caret</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#hide_owned_popups"><b class=
+'cmd'>hide_owned_popups</b> <i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#hide_window"><b class='cmd'>hide_window</b> <i class=
+'arg'>HWIN</i> ?<b class='cmd'>-sync</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#invalidate_screen_region"><b class=
+'cmd'>invalidate_screen_region</b> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#maximize_window"><b class='cmd'>maximize_window</b>
+<i class='arg'>HWIN</i> ?<b class='cmd'>-sync</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#minimize_window"><b class='cmd'>minimize_window</b>
+<i class='arg'>HWIN</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#move_window"><b class='cmd'>move_window</b> <i class=
+'arg'>HWIN</i> <i class='arg'>X</i> <i class='arg'>Y</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#redraw_window"><b class='cmd'>redraw_window</b>
+<i class='arg'>HWIN</i> ?<b class='cmd'>-force</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#redraw_window_frame"><b class=
+'cmd'>redraw_window_frame</b> <i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#resize_window"><b class='cmd'>resize_window</b>
+<i class='arg'>HWIN</i> <i class='arg'>W</i> <i class='arg'>H</i>
+?<b class='cmd'>-sync</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#restore_window"><b class='cmd'>restore_window</b>
+<i class='arg'>HWIN</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_active_window_for_thread"><b class=
+'cmd'>set_active_window_for_thread</b> <i class=
+'arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_caret_blink_time"><b class=
+'cmd'>set_caret_blink_time</b> <i class=
+'arg'>MILLISECONDS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_caret_location"><b class=
+'cmd'>set_caret_location</b> <i class='arg'>POINT</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_desktop_wallpaper"><b class=
+'cmd'>set_desktop_wallpaper</b> <i class='arg'>PATH</i> ?<b class=
+'cmd'>-persist</b>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_focus"><b class='cmd'>set_focus</b> <i class=
+'arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_foreground_window"><b class=
+'cmd'>set_foreground_window</b> <i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_window_long"><b class='cmd'>set_window_long</b>
+<i class='arg'>HWIN</i> <i class='arg'>INDEX</i> <i class=
+'arg'>VALUE</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_window_style"><b class='cmd'>set_window_style</b>
+<i class='arg'>HWIN</i> <i class='arg'>style</i> <i class=
+'arg'>exstyle</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_window_text"><b class='cmd'>set_window_text</b>
+<i class='arg'>HWIN</i> <i class='arg'>TEXT</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_window_userdata"><b class=
+'cmd'>set_window_userdata</b> <i class='arg'>HWIN</i> <i class=
+'arg'>INTEGER</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_window_zorder"><b class=
+'cmd'>set_window_zorder</b> <i class='arg'>HWIN</i> <i class=
+'arg'>POS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#show_caret"><b class='cmd'>show_caret</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#show_owned_popups"><b class=
+'cmd'>show_owned_popups</b> <i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#show_window"><b class='cmd'>show_window</b> <i class=
+'arg'>HWIN</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#window_exists"><b class='cmd'>window_exists</b>
+<i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#window_input_enabled"><b class=
+'cmd'>window_input_enabled</b> <i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#window_is_child"><b class='cmd'>window_is_child</b>
+<i class='arg'>PARENTHWIN</i> <i class='arg'>CHILDHWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#window_maximized"><b class='cmd'>window_maximized</b>
+<i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#window_minimized"><b class='cmd'>window_minimized</b>
+<i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#window_visible"><b class='cmd'>window_visible</b>
+<i class='arg'>HWIN</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#window_unicode_enabled"><b class=
+'cmd'>window_unicode_enabled</b> <i class='arg'>HWIN</i></a></td>
+</tr>
+</table>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>This package provides procedures related to window management on
+Windows platforms.</p>
+<h3><a name="windowmanagement" id="windowmanagement">Window
+Management</a></h3>
+<p>Windows are identified using window <span class=
+"em">handles</span>. A window handle consisting of an empty string
+represents an invalid or non-existent window when returned from a
+command.</p>
+<p>The commands <a href="#get_toplevel_windows"><b class=
+'cmd'>get_toplevel_windows</b></a>, <a href=
+"#get_descendent_windows"><b class=
+'cmd'>get_descendent_windows</b></a> and <a href=
+"#get_child_windows"><b class='cmd'>get_child_windows</b></a>
+enumerate the windows on the system. <a href=
+"#get_desktop_window"><b class='cmd'>get_desktop_window</b></a> and
+<a href="#get_shell_window"><b class='cmd'>get_shell_window</b></a>
+return handles to the desktop window and the shell window
+respectively. <a href="#find_windows"><b class=
+'cmd'>find_windows</b></a> returns a list of windows that satisfy
+matching multiple matching criteria. The command <a href=
+"#window_exists"><b class='cmd'>window_exists</b></a> can be used
+to check if a specific window exists.</p>
+<p>The commands <a href="#get_parent_window"><b class=
+'cmd'>get_parent_window</b></a>, <a href=
+"#get_owner_window"><b class='cmd'>get_owner_window</b></a>,
+<a href="#get_first_child"><b class='cmd'>get_first_child</b></a>,
+<a href="#get_next_sibling_window"><b class=
+'cmd'>get_next_sibling_window</b></a>, <a href=
+"#get_prev_sibling_window"><b class=
+'cmd'>get_prev_sibling_window</b></a>, <a href=
+"#get_first_sibling_window"><b class=
+'cmd'>get_first_sibling_window</b></a>, <a href=
+"#get_last_sibling_window"><b class=
+'cmd'>get_last_sibling_window</b></a> retrieve handles to windows
+with the appropriate relationship to the specified window. The
+command <a href="#window_is_child"><b class=
+'cmd'>window_is_child</b></a> can be used to check parent-child
+relationships between windows.</p>
+<p>The commands <a href="#get_window_process"><b class=
+'cmd'>get_window_process</b></a> and <a href=
+"#get_window_thread"><b class='cmd'>get_window_thread</b></a>
+retrieve the process and thread respectively that own the specified
+window. <a href="#get_window_application"><b class=
+'cmd'>get_window_application</b></a> returns the application
+instance for the specified window.</p>
+<p>The commands <a href="#get_foreground_window"><b class=
+'cmd'>get_foreground_window</b></a>, <a href=
+"#set_foreground_window"><b class=
+'cmd'>set_foreground_window</b></a> and <a href=
+"#set_window_zorder"><b class='cmd'>set_window_zorder</b></a> deal
+with the position of windows in the display Z-order.</p>
+<p>The commands <a href="#show_window"><b class=
+'cmd'>show_window</b></a>, <a href="#hide_window"><b class=
+'cmd'>hide_window</b></a>, <a href="#restore_window"><b class=
+'cmd'>restore_window</b></a>, <a href="#minimize_window"><b class=
+'cmd'>minimize_window</b></a>, <a href="#maximize_window"><b class=
+'cmd'>maximize_window</b></a>, <a href=
+"#show_owned_popups"><b class='cmd'>show_owned_popups</b></a>, and
+<a href="#hide_owned_popups"><b class=
+'cmd'>hide_owned_popups</b></a> control the visibility of windows.
+The commands <a href="#window_minimized"><b class=
+'cmd'>window_minimized</b></a>, <a href=
+"#window_maximized"><b class='cmd'>window_maximized</b></a>,
+<a href="#window_visible"><b class='cmd'>window_visible</b></a>
+check the visibility state of a window. <a href=
+"#close_window"><b class='cmd'>close_window</b></a> closes the
+specified window.</p>
+<p>The commands <a href="#get_window_style"><b class=
+'cmd'>get_window_style</b></a>, <a href=
+"#set_window_style"><b class='cmd'>set_window_style</b></a>,
+<a href="#get_window_class"><b class=
+'cmd'>get_window_class</b></a>, <a href=
+"#get_window_real_class"><b class=
+'cmd'>get_window_real_class</b></a>, <a href=
+"#get_window_long"><b class='cmd'>get_window_long</b></a>, <a href=
+"#set_window_long"><b class='cmd'>set_window_long</b></a> <a href=
+"#get_window_userdata"><b class='cmd'>get_window_userdata</b></a>
+and <a href="#set_window_userdata"><b class=
+'cmd'>set_window_userdata</b></a> retrieve and modify various
+attributes associated with windows.</p>
+<p>The visibility and buttons displayed on the title bar of a
+window can be controlled through the command <a href=
+"#configure_window_titlebar"><b class=
+'cmd'>configure_window_titlebar</b></a>.</p>
+<p>The command <a href="#get_window_id"><b class=
+'cmd'>get_window_id</b></a> returns the window id of the specified
+window.</p>
+<p><a href="#redraw_window"><b class='cmd'>redraw_window</b></a>
+and <a href="#redraw_window_frame"><b class=
+'cmd'>redraw_window_frame</b></a> cause the window and the frame of
+a window to be redrawn respectively.</p>
+<p>The commands <a href="#move_window"><b class=
+'cmd'>move_window</b></a>, <a href="#resize_window"><b class=
+'cmd'>resize_window</b></a> and <a href="#arrange_icons"><b class=
+'cmd'>arrange_icons</b></a> can be used to position and resize
+windows. The commands <a href=
+"#get_window_client_area_size"><b class=
+'cmd'>get_window_client_area_size</b></a> and <a href=
+"#get_window_coordinates"><b class=
+'cmd'>get_window_coordinates</b></a> can be used to get window
+location and size. The command <a href=
+"#get_window_at_location"><b class=
+'cmd'>get_window_at_location</b></a> returns the window at a given
+screen location.</p>
+<p>The commands <a href="#set_active_window_for_thread"><b class=
+'cmd'>set_active_window_for_thread</b></a>, <a href=
+"#get_active_window_for_thread"><b class=
+'cmd'>get_active_window_for_thread</b></a>, <a href=
+"#get_focus_window_for_thread"><b class=
+'cmd'>get_focus_window_for_thread</b></a>, <a href=
+"#get_active_window_for_current_thread"><b class=
+'cmd'>get_active_window_for_current_thread</b></a> deal with the
+active window state and focus for a particular thread.</p>
+<p>The commands <a href="#enable_window_input"><b class=
+'cmd'>enable_window_input</b></a>, <a href=
+"#disable_window_input"><b class='cmd'>disable_window_input</b></a>
+and <a href="#set_focus"><b class='cmd'>set_focus</b></a> deal with
+controlling input to windows. The command <a href=
+"#window_input_enabled"><b class='cmd'>window_input_enabled</b></a>
+can be used to check if input to a window is enabled or not.
+<a href="#window_unicode_enabled"><b class=
+'cmd'>window_unicode_enabled</b></a> checks if a window is
+Unicode-enabled or not.</p>
+<p>The command <a href="#flash_window_caption"><b class=
+'cmd'>flash_window_caption</b></a> can be used to grab the user's
+attention by flashing a window or generating a sound.</p>
+<p>The commands <a href="#get_window_text"><b class=
+'cmd'>get_window_text</b></a> and <a href=
+"#set_window_text"><b class='cmd'>set_window_text</b></a> retrieve
+and modify the title bar of a window or the text associated with a
+control. In the latter case, only controls in the same application
+are supported.</p>
+<p>The commands <a href="#get_caret_blink_time"><b class=
+'cmd'>get_caret_blink_time</b></a>, <a href=
+"#set_caret_blink_time"><b class=
+'cmd'>set_caret_blink_time</b></a>, <a href="#hide_caret"><b class=
+'cmd'>hide_caret</b></a>, <a href="#show_caret"><b class=
+'cmd'>show_caret</b></a>, <a href="#get_caret_location"><b class=
+'cmd'>get_caret_location</b></a> and <a href=
+"#set_caret_location"><b class='cmd'>set_caret_location</b></a>
+allow manipulation of the caret and its position.</p>
+<p>The command <a href="#get_desktop_workarea"><b class=
+'cmd'>get_desktop_workarea</b></a> returns the actual usable
+desktop area (not used by the taskbar etc.). <a href=
+"#get_color_depth"><b class='cmd'>get_color_depth</b></a> returns
+the color depth of the display.</p>
+<p>The commands <a href="#get_desktop_wallpaper"><b class=
+'cmd'>get_desktop_wallpaper</b></a> and <a href=
+"#set_desktop_wallpaper"><b class=
+'cmd'>set_desktop_wallpaper</b></a> can be used to manipulate the
+wallpaper setting for the desktop.</p>
+<h3><a name="displays" id="displays">Displays</a></h3>
+<p>Command <a href="#get_display_devices"><b class=
+'cmd'>get_display_devices</b></a> returns a list of display devices
+in the system. Command <a href="#get_display_monitors"><b class=
+'cmd'>get_display_monitors</b></a> returns a list of monitors in
+the system. The command <a href="#get_display_size"><b class=
+'cmd'>get_display_size</b></a> returns the size of the display.</p>
+<p>The monitor corresponing to a window, virtual screen coordinates
+or virtual screen rectangle be obtained from <a href=
+"#get_display_monitor_from_window"><b class=
+'cmd'>get_display_monitor_from_window</b></a>, <a href=
+"#get_display_monitor_from_point"><b class=
+'cmd'>get_display_monitor_from_point</b></a>, <a href=
+"#get_display_monitor_from_rect"><b class=
+'cmd'>get_display_monitor_from_rect</b></a> respectively.</p>
+<p>The command <a href="#get_display_monitor_info"><b class=
+'cmd'>get_display_monitor_info</b></a> returns location and
+attributes of a specific display monitor. <a href=
+"#get_multiple_display_monitor_info"><b class=
+'cmd'>get_multiple_display_monitor_info</b></a> returns the same
+information for all display monitors in the system.</p>
+<h3><a name="commands" id="commands">Commands</a></h3>
+<dl class="noclass">
+<dt><a name="arrange_icons" id="arrange_icons"><b class=
+'cmd'>arrange_icons</b> ?<i class='arg'>HWIN</i>?</a></dt>
+<dd>Arranges all the minimized (iconized) child windows of the
+specified window. If <i class='arg'>HWIN</i> is not specified, it
+defaults to the desktop window. The command returns the height of
+one row of icons.</dd>
+<dt><a name="close_window" id="close_window"><b class=
+'cmd'>close_window</b> <i class='arg'>HWIN</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Closes the window specified by <i class='arg'>HWIN</i> by
+sending it a WM_CLOSE message. The following options may be
+specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-block</b></span></td>
+<td class="opt">If this option is specified, Windows will block the
+calling thread from processing any other requests until the command
+returns.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-wait</b></span> <i class='arg'>TIMEOUT</i></td>
+<td class="opt">Specifies the number of milliseconds to wait for
+the window to process the message (default 10 milliseconds).</td>
+</tr>
+</table>
+</dd>
+<dt><a name="configure_window_titlebar" id=
+"configure_window_titlebar"><b class=
+'cmd'>configure_window_titlebar</b> <i class='arg'>HWIN</i>
+?<i class='arg'>options</i>?</a></dt>
+<dd>Configures the title bar of the specified window to show or
+hide specific buttons. The following options control what buttons
+are displayed. If a particular option is not specified, the
+corresponding button is unaffected. Note however that the minimize,
+maximize and context help buttons are shown only if the system menu
+is also visible. Also, the minimize and maximize buttons are hidden
+and displayed as a single group. If one is configured to be hidden
+and the other is not, both buttons are shown but the hidden one is
+disabled.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>visible</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">Controls whether the title bar is displayed.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>sysmenu</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">Controls whether the system menu button is
+displayed.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>minimizebox</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">Controls whether the minimize button is
+displayed.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>maximizebox</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">Controls whether the maximize button is
+displayed.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>contexthelp</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">Controls whether the context help button is
+displayed.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="disable_window_input" id=
+"disable_window_input"><b class='cmd'>disable_window_input</b>
+<i class='arg'>HWIN</i></a></dt>
+<dd>Disables mouse and keyboard input to the specified window.
+Returns 1 if the window was previously disabled, else 0.</dd>
+<dt><a name="enable_window_input" id=
+"enable_window_input"><b class='cmd'>enable_window_input</b>
+<i class='arg'>HWIN</i></a></dt>
+<dd>Enables mouse and keyboard input to the specified window.
+Returns 1 if the window was previously disabled, else 0.</dd>
+<dt><a name="find_windows" id="find_windows"><b class=
+'cmd'>find_windows</b> ?<i class='arg'>options</i>?</a></dt>
+<dd>Returns a list of handles corresponding to all windows that
+match the specified criteria.<br />
+<br />
+The options below control the matching criteria. Note that the
+boolean options work in tri-state fashion. If the option is not
+specified, then the corresponding window attribute is not used in
+the matching at all. If the option value is specified as
+<span class="strong">true</span>, then only windows having that
+attribute are selected. If the option value is <span class=
+"strong">false</span>, only windows without that attribute are
+selected.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-ancestor</b></span> <i class='arg'>HWIN</i></td>
+<td class="opt">The window with handle <i class='arg'>HWIN</i> must
+be an ancestor of the window.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-caption</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">The window must or must not have a caption/title
+bar depending on whether <i class='arg'>BOOLEAN</i> is true or
+false.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-child</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">The window must or must not be an child window
+depending on whether <i class='arg'>BOOLEAN</i> is true or
+false.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-class</b></span> <i class='arg'>CLASS</i></td>
+<td class="opt">The window must belong to the specified class.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-match</b></span> <i class='arg'>MATCHTYPE</i></td>
+<td class="opt">Specifies the method used for matching <i class=
+'arg'>PATTERN</i> in the <b class='cmd'>-text</b> option. This may
+be one of <span class="strong">string</span> for an straight
+character match, <span class="strong">glob</span> for matching as
+in the <b class='cmd'>string match</b> command or <span class=
+"strong">regexp</span> for regular expression based matching. In
+all cases, the comparisons are case-insensitive.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-maximize</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">The window must or must not be maximized depending
+on whether <i class='arg'>BOOLEAN</i> is true or false.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-maximizebox</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">The window must or must not have a maximize box on
+the title bar depending on whether <i class='arg'>BOOLEAN</i> is
+true or false.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-messageonlywindow</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">The window must or must not be a message-only
+window depending on whether <i class='arg'>BOOLEAN</i> is true or
+false.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-minimize</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">The window must or must not be minimized depending
+on whether <i class='arg'>BOOLEAN</i> is true or false.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-minimizebox</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">The window must or must not have a minimize box on
+the title bar depending on whether <i class='arg'>BOOLEAN</i> is
+true or false.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-overlapped</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">The window must or must not be an overlapped window
+depending on whether <i class='arg'>BOOLEAN</i> is true or
+false.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-pids</b></span> <i class='arg'>PIDLIST</i></td>
+<td class="opt">The window must be owned by a process whose id is
+in <i class='arg'>PIDLIST</i>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-popup</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">The window must or must not be an popup window
+depending on whether <i class='arg'>BOOLEAN</i> is true or
+false.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-single</b></span></td>
+<td class="opt">Returns the first window found without looking for
+additional windows.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-style</b></span> <i class='arg'>STYLE</i></td>
+<td class="opt">The window must have the specified style. <i class=
+'arg'>STYLE</i> must be specified as a list of two integer values
+corresponding to the style and extended style for the window. See
+<b class='cmd'>get_window_style</b>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-text</b></span> <i class='arg'>PATTERN</i></td>
+<td class="opt">The text associated with the window (generally the
+window title) must match <i class='arg'>PATTERN</i>. The matching
+is done based on the <b class='cmd'>-match</b> option.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-toplevel</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">The window must or must not be a toplevel window
+depending on whether <i class='arg'>BOOLEAN</i> is true or
+false.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-visible</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">The window must be visible if <i class=
+'arg'>BOOLEAN</i> is true and hidden if it is false.</td>
+</tr>
+</table>
+<a href="minimizeapp.example">Example: Find all windows for an
+application</a><br />
+<br />
+<a href="movewindowtoorigin.example">Example: Find all windows with
+a given title</a></dd>
+<dt><a name="flash_window_caption" id=
+"flash_window_caption"><b class='cmd'>flash_window_caption</b>
+<i class='arg'>HWIN</i> ?<b class='cmd'>-toggle</b>?</a></dt>
+<dd>Flashes the window's title bar. If <b class='cmd'>-toggle</b>
+is not specified, the window's title bar reverts back to the
+original state. If <b class='cmd'>-toggle</b> is specified, the
+title bar stays in the new state.</dd>
+<dt><a name="get_active_window_for_current_thread" id=
+"get_active_window_for_current_thread"><b class=
+'cmd'>get_active_window_for_current_thread</b> <i class=
+'arg'>TID</i></a></dt>
+<dd>Returns the current active window for the current thread. If
+the thread does not have a active window, returns <b class=
+'cmd'>$twapi::null_hwin</b>.</dd>
+<dt><a name="get_active_window_for_thread" id=
+"get_active_window_for_thread"><b class=
+'cmd'>get_active_window_for_thread</b> <i class=
+'arg'>TID</i></a></dt>
+<dd>Returns the current active window for the thread with id
+<i class='arg'>TID</i>. If the thread does not have a active
+window, returns <b class='cmd'>$twapi::null_hwin</b>.</dd>
+<dt><a name="get_caret_blink_time" id=
+"get_caret_blink_time"><b class=
+'cmd'>get_caret_blink_time</b></a></dt>
+<dd>Returns the blink time of the caret in milliseconds.</dd>
+<dt><a name="get_caret_location" id="get_caret_location"><b class=
+'cmd'>get_caret_location</b></a></dt>
+<dd>Returns a list of two integers specifying the caret's
+coordinates. These are always with respect to the client area of
+the window that owns the caret.</dd>
+<dt><a name="get_child_windows" id="get_child_windows"><b class=
+'cmd'>get_child_windows</b> <i class='arg'>HWIN</i></a></dt>
+<dd>Returns a list of handles to all windows that are immediate
+child windows of the specified window.</dd>
+<dt><a name="get_color_depth" id="get_color_depth"><b class=
+'cmd'>get_color_depth</b> ?<i class='arg'>HWIN</i>?</a></dt>
+<dd>Returns the number of bits per pixel in the device context of
+the window identified by <i class='arg'>HWIN</i>. If <i class=
+'arg'>HWIN</i> is not specified, the color depth of the entire
+screen is returned.</dd>
+<dt><a name="get_descendent_windows" id=
+"get_descendent_windows"><b class='cmd'>get_descendent_windows</b>
+<i class='arg'>HWIN</i></a></dt>
+<dd>Returns a list of handles to all descendent windows of the
+specified window.</dd>
+<dt><a name="get_desktop_window" id="get_desktop_window"><b class=
+'cmd'>get_desktop_window</b></a></dt>
+<dd>Returns a handle to the desktop window.</dd>
+<dt><a name="get_desktop_wallpaper" id=
+"get_desktop_wallpaper"><b class=
+'cmd'>get_desktop_wallpaper</b></a></dt>
+<dd>Returns the path to the file containing the current wallpaper
+for the desktop or an empty string if no wallpaper is in use.</dd>
+<dt><a name="get_desktop_workarea" id=
+"get_desktop_workarea"><b class=
+'cmd'>get_desktop_workarea</b></a></dt>
+<dd>Returns the screen coordinates of the usable area of the
+desktop as a list of four integers corresponding to the left, top,
+right and bottom coordinates on the display. The usable area is
+that area that is not covered by the taskbar and any application
+desktop toolbars.</dd>
+<dt><a name="get_display_devices" id=
+"get_display_devices"><b class='cmd'>get_display_devices</b></a></dt>
+<dd>Returns a list of display devices in the system. Each element
+in the list is a keyed list of key value pairs with the following
+fields:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-description</b></span></td>
+<td class="opt">A string describing the device.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-desktop</b></span></td>
+<td class="opt">If the value is <span class="strong">true</span>,
+the device is attached to the desktop.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-disconnect</b></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-flags</b></span></td>
+<td class="opt">An integer value containing the device flags. These
+are also returned as the boolean fields described here.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-id</b></span></td>
+<td class="opt">The value is the device id for the device.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-key</b></span></td>
+<td class="opt">The registry key for the device.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-mirroring</b></span></td>
+<td class="opt">If <span class="strong">true</span>, the device is
+a mirroring pseudo driver such as that used for NetMeeting.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-modespruned</b></span></td>
+<td class="opt">If <span class="strong">true</span>, not all the
+device modes are supported by its output.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-multidriver</b></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-name</b></span></td>
+<td class="opt">The device name.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-primary</b></span></td>
+<td class="opt">If <span class="strong">true</span>, the primary
+desktop is displayed on this device.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-remote</b></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-removable</b></span></td>
+<td class="opt">If <span class="strong">true</span>, the device is
+removable.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-vgacompatible</b></span></td>
+<td class="opt">If <span class="strong">true</span>, the device is
+VGA compatible.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_display_monitor_from_point" id=
+"get_display_monitor_from_point"><b class=
+'cmd'>get_display_monitor_from_point</b> <i class='arg'>X</i>
+<i class='arg'>Y</i> ?<b class='cmd'>-default</b> <i class=
+'arg'>DEFAULTMONITOR</i>?</a></dt>
+<dd>Returns a handle to the monitor corresponding the virtual
+screen coordinates (<i class='arg'>X</i>,<i class='arg'>Y</i>). If
+the coordinates lie outside the extents of any monitor, the command
+will generate an error unless the <b class='cmd'>-default</b>
+option is specified. If <b class='cmd'>-default</b> is specified
+with a value of <span class="strong">primary</span>, then a handle
+to the primary display monitor is returned. If the value is
+<span class="strong">nearest</span>, the handle of the monitor
+whose extent is closest to the screen coordinates is
+returned.<br />
+<br />
+Note that the returned monitor handle is not a Win32 handle and
+should not be closed.</dd>
+<dt><a name="get_display_monitor_from_rect" id=
+"get_display_monitor_from_rect"><b class=
+'cmd'>get_display_monitor_from_rect</b> <i class='arg'>RECT</i>
+?<b class='cmd'>-default</b> <i class=
+'arg'>DEFAULTMONITOR</i>?</a></dt>
+<dd>Returns a handle to the monitor that has the largest area of
+intersection with the rectangle specified by <i class=
+'arg'>RECT</i>. <i class='arg'>RECT</i> indicates a virtual screen
+region and should be specified as a list of four integers
+indicating the coordinates of the left, top, right, bottom edges.
+If the rectangle does not intersect any monitor, the command will
+generate an error unless the <b class='cmd'>-default</b> option is
+specified. If <b class='cmd'>-default</b> is specified with a value
+of <span class="strong">primary</span>, then a handle to the
+primary display monitor is returned. If the value is <span class=
+"strong">nearest</span>, the handle of the monitor whose extent is
+closest to the rectangle is returned.<br />
+<br />
+Note that the returned monitor handle is not a Win32 handle and
+should not be closed.</dd>
+<dt><a name="get_display_monitor_from_window" id=
+"get_display_monitor_from_window"><b class=
+'cmd'>get_display_monitor_from_window</b> <i class='arg'>HWIN</i>
+?<b class='cmd'>-default</b> <i class=
+'arg'>DEFAULTMONITOR</i>?</a></dt>
+<dd>Returns a handle to the monitor on which the window identified
+by <i class='arg'>HWIN</i> is displayed. If the window is not
+displayed on any monitor, because it is iconified or is placed
+outside of any monitor extents for example, the command will
+generate an error unless the <b class='cmd'>-default</b> option is
+specified. If <b class='cmd'>-default</b> is specified with a value
+of <span class="strong">primary</span>, then a handle to the
+primary display monitor is returned if the window is not currently
+displayed. If the value is <span class="strong">nearest</span>, the
+handle of the monitor whose extent is closest to the window is
+returned.<br />
+<br />
+Note that the returned monitor handle is not a Win32 handle and
+should not be closed.</dd>
+<dt><a name="get_display_monitors" id=
+"get_display_monitors"><b class='cmd'>get_display_monitors</b>
+?<b class='cmd'>-device</b> <i class='arg'>DEVICENAME</i>?
+?<b class='cmd'>-activeonly</b>?</a></dt>
+<dd>Returns a list of display monitors in the system. If <b class=
+'cmd'>-device</b> is specified, only monitors attached to the
+device with name <i class='arg'>DEVICENAME</i> are returned. If
+<b class='cmd'>-activeonly</b> is specified, only monitors marked
+as active are returned.<br />
+<br />
+Each element in the returned list is a keyed list of key value
+pairs with the following fields:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-active</b></span></td>
+<td class="opt">The monitor is active.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-attached</b></span></td>
+<td class="opt"></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-description</b></span></td>
+<td class="opt">A string describing the device.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-flags</b></span></td>
+<td class="opt">An integer value containing the display monitor
+flags. These are also returned as the boolean fields described
+here.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-id</b></span></td>
+<td class="opt">The value is the device id for the device.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-key</b></span></td>
+<td class="opt">The registry key for the device.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-name</b></span></td>
+<td class="opt">The monitor name.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_display_monitor_info" id=
+"get_display_monitor_info"><b class=
+'cmd'>get_display_monitor_info</b> <i class=
+'arg'>HMONITOR</i></a></dt>
+<dd>Returns information about the display monitor identified by
+<i class='arg'>HMONITOR</i> which is a monitor handle. The
+following fields are returned in a keyed list:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-extent</b></span></td>
+<td class="opt">A list of four integers indicating the monitor
+extent corresponding to the left, top, right and bottom edges of
+the monitor's display area in virtual screen coordinates.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-name</b></span></td>
+<td class="opt">The name identifying the display monitor.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-primary</b></span></td>
+<td class="opt">A boolean indicating whether the monitor is the
+primary display monitor.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-workarea</b></span></td>
+<td class="opt">A list of four integers indicating the usable
+monitor extent corresponding to the left, top, right and bottom
+edges of the monitor's display area in virtual screen coordinates
+excluding any space taken up by desktop toolbars and the
+taskbar.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_display_size" id="get_display_size"><b class=
+'cmd'>get_display_size</b></a></dt>
+<dd>Returns a list of two integers specifying the width and height
+of the display.</dd>
+<dt><a name="get_first_child" id="get_first_child"><b class=
+'cmd'>get_first_child</b> <i class='arg'>HWIN</i></a></dt>
+<dd>Returns a handle to the child window of the specified window
+that is the first (highest) in the display Z-order.</dd>
+<dt><a name="get_first_sibling_window" id=
+"get_first_sibling_window"><b class=
+'cmd'>get_first_sibling_window</b> <i class='arg'>HWIN</i></a></dt>
+<dd>Returns a handle to a sibling window (ie. having the same
+parent) of the specified window that is the highest in the display
+Z-order.</dd>
+<dt><a name="get_focus_window_for_thread" id=
+"get_focus_window_for_thread"><b class=
+'cmd'>get_focus_window_for_thread</b> <i class=
+'arg'>TID</i></a></dt>
+<dd>Returns the window which has the focus the thread with id
+<i class='arg'>TID</i>. If the thread does not have a active
+window, returns <b class='cmd'>$twapi::null_hwin</b>.</dd>
+<dt><a name="get_foreground_window" id=
+"get_foreground_window"><b class=
+'cmd'>get_foreground_window</b></a></dt>
+<dd>Returns the current foreground window on the desktop.</dd>
+<dt><a name="get_last_sibling_window" id=
+"get_last_sibling_window"><b class=
+'cmd'>get_last_sibling_window</b> <i class='arg'>HWIN</i></a></dt>
+<dd>Returns a handle to a sibling window (ie. having the same
+parent) of the specified window that is the lowest (least visible)
+in the display Z-order.</dd>
+<dt><a name="get_multiple_display_monitor_info" id=
+"get_multiple_display_monitor_info"><b class=
+'cmd'>get_multiple_display_monitor_info</b></a></dt>
+<dd>Returns a list containing information for every monitor in the
+system. The information is in the same format as that returned by
+<a href="#get_display_monitor_info"><b class=
+'cmd'>get_display_monitor_info</b></a>.</dd>
+<dt><a name="get_next_sibling_window" id=
+"get_next_sibling_window"><b class=
+'cmd'>get_next_sibling_window</b> <i class='arg'>HWIN</i></a></dt>
+<dd>Returns a handle to a sibling window (ie. having the same
+parent) of the specified window that is next in the display
+Z-order.</dd>
+<dt><a name="get_owner_window" id="get_owner_window"><b class=
+'cmd'>get_owner_window</b> <i class='arg'>HWIN</i></a></dt>
+<dd>Returns a handle to the owner window of the specified window or
+null handle if the window does not have a owner.</dd>
+<dt><a name="get_parent_window" id="get_parent_window"><b class=
+'cmd'>get_parent_window</b> <i class='arg'>HWIN</i></a></dt>
+<dd>Returns a handle to the parent window of the specified
+window.</dd>
+<dt><a name="get_prev_sibling_window" id=
+"get_prev_sibling_window"><b class=
+'cmd'>get_prev_sibling_window</b> <i class='arg'>HWIN</i></a></dt>
+<dd>Returns a handle to a sibling window (ie. having the same
+parent) of the specified window that is previous (immediately
+higher) in the display Z-order.</dd>
+<dt><a name="get_shell_window" id="get_shell_window"><b class=
+'cmd'>get_shell_window</b></a></dt>
+<dd>Returns a handle to the Windows shell process' window.</dd>
+<dt><a name="get_toplevel_windows" id=
+"get_toplevel_windows"><b class='cmd'>get_toplevel_windows</b>
+?<b class='cmd'>-pid</b> <i class='arg'>PID</i>?</a></dt>
+<dd>Returns a list of handles to toplevel windows in the system. If
+no options are specified, this includes all toplevel windows. If
+the <b class='cmd'>-pid</b> option is specified with a numeric
+value of <i class='arg'>PID</i>, then only toplevel windows owned
+by the process with id <i class='arg'>PID</i> are returned. If
+<i class='arg'>PID</i> is non-numeric, it is treated as a process
+name. In this case, the toplevel windows owned by all processes
+whose name is <i class='arg'>PID</i> are returned.</dd>
+<dt><a name="get_window_application" id=
+"get_window_application"><b class='cmd'>get_window_application</b>
+<i class='arg'>HWIN</i></a></dt>
+<dd>Returns the application instance associated with the specified
+window.</dd>
+<dt><a name="get_window_at_location" id=
+"get_window_at_location"><b class='cmd'>get_window_at_location</b>
+<i class='arg'>X</i> <i class='arg'>Y</i></a></dt>
+<dd>Returns the highest window in the X-order that contains the
+screen coordinates (<i class='arg'>X</i>,<i class='arg'>Y</i>).
+Windows that are disabled or hidden are not ignored.</dd>
+<dt><a name="get_window_class" id="get_window_class"><b class=
+'cmd'>get_window_class</b> <i class='arg'>HWIN</i></a></dt>
+<dd>Returns the class of a window. This is simple wrapper around
+the <b class='cmd'>GetClassName</b> Windows function.</dd>
+<dt><a name="get_window_client_area_size" id=
+"get_window_client_area_size"><b class=
+'cmd'>get_window_client_area_size</b> <i class=
+'arg'>HWIN</i></a></dt>
+<dd>Returns a list of two integers containing the width and height
+in pixels of the client area of the window.</dd>
+<dt><a name="get_window_coordinates" id=
+"get_window_coordinates"><b class='cmd'>get_window_coordinates</b>
+<i class='arg'>HWIN</i></a></dt>
+<dd>Returns the screen coordinates of the window as a list of four
+integers corresponding to the left, top, right and bottom sides of
+the window.<br />
+<br />
+<a href="opensysmenuwithmouse.example">Example: Move mouse to
+system menu</a></dd>
+<dt><a name="get_window_id" id="get_window_id"><b class=
+'cmd'>get_window_id</b> <i class='arg'>HWIN</i></a></dt>
+<dd>Returns the window id of the specified window. Note that this
+is different than the window handles.</dd>
+<dt><a name="get_window_long" id="get_window_long"><b class=
+'cmd'>get_window_long</b> <i class='arg'>HWIN</i> <i class=
+'arg'>INDEX</i></a></dt>
+<dd>This is a direct call to the GetWindowsLong function. Refer to
+Windows SDK documentation for details. Several other TWAPI
+functions act as wrappers provide more straightforward access to
+the values retrieved by this function.</dd>
+<dt><a name="get_window_process" id="get_window_process"><b class=
+'cmd'>get_window_process</b> <i class='arg'>HWIN</i></a></dt>
+<dd>Returns the id of the process that owns the specified
+window.</dd>
+<dt><a name="get_window_real_class" id=
+"get_window_real_class"><b class='cmd'>get_window_real_class</b>
+<i class='arg'>HWIN</i></a></dt>
+<dd>Returns the real class of a window for classes that are wrapped
+by applications into their own set of classes. This is simple
+wrapper around the <b class='cmd'>RealGetWindowClass</b> Windows
+function. Windows function.</dd>
+<dt><a name="get_window_style" id="get_window_style"><b class=
+'cmd'>get_window_style</b> <i class='arg'>HWIN</i></a></dt>
+<dd>Returns a list containing the style and the extended style bits
+respectively followed by symbolic window style attributes
+corresponding to the style bits. The window styles attributes that
+may be returned are shown below. Refer to the Windows SDK
+documentation for the meaning of these styles.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">overlapped</span></span></td>
+<td class="opt">The window is an overlapped window - this is a
+toplevel window without a parent. This attribute is mutually
+exclusive with <span class="strong">popup</span> and <span class=
+"strong">child</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">popup</span></span></td>
+<td class="opt">The window is popup window like a dialog box. This
+attribute is mutually exclusive with <span class=
+"strong">overlapped</span> and <span class=
+"strong">child</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">child</span></span></td>
+<td class="opt">The window is the child of some other window. This
+attribute is mutually exclusive with <span class=
+"strong">popup</span> and <span class=
+"strong">overlapped</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">caption</span></span></td>
+<td class="opt">The window has a caption or title bar and a
+border.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">border</span></span></td>
+<td class="opt">The window has a normal border and no title
+bar.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">dlgframe</span></span></td>
+<td class="opt">The window has a double border as used for dialogs
+and no title bar.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">dlgmodalframe</span></span></td>
+<td class="opt">The window has a double border as used for a dialog
+and may have a caption as well.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">minimize</span></span></td>
+<td class="opt">The window is minimized. Windows with neither
+<span class="strong">minimize</span> or <span class=
+"strong">maximize</span> attributes are normal windows.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">minimizebutton</span></span></td>
+<td class="opt">The window has a minimize button on the title
+bar.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">maximize</span></span></td>
+<td class="opt">The window is maximized. Windows with neither
+<span class="strong">minimize</span> or <span class=
+"strong">maximize</span> attributes are normal windows.
+<span class="strong">maximize</span> attributes are normal
+windows.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">maximizebutton</span></span></td>
+<td class="opt">The window has a maximize button on the title
+bar.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">visible</span></span></td>
+<td class="opt">The window is visible. If this border is not
+present, the window is hidden.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">disabled</span></span></td>
+<td class="opt">The window is disabled and does not accept
+input.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">clipsiblings</span></span></td>
+<td class="opt">Indicates that the screen area occupied by sibling
+windows that overlap will not be overwritten when the window is
+drawn.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">clipchildren</span></span></td>
+<td class="opt">Indicates that the screen area occupied by child
+windows will not be overwritten when the window is drawn.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">vscroll</span></span></td>
+<td class="opt">The window displays a vertical scrollbar.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">hscroll</span></span></td>
+<td class="opt">The window displays a horizontal scrollbar.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">sysmenu</span></span></td>
+<td class="opt">The window displays a system menu.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">thickframe</span></span></td>
+<td class="opt">The window has a thick border that allows for
+resizing.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">noparentnotify</span></span></td>
+<td class="opt">The window is a child window that does not send
+WM_PARENTNOTIFY messages to its parent.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">topmost</span></span></td>
+<td class="opt">The window is a topmost window that is displayed
+above all non-topmost windows even when it is not active.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">acceptfiles</span></span></td>
+<td class="opt">The window accepts files that are dragged and
+dropped into it.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">transparent</span></span></td>
+<td class="opt">The window is transparent and does not obscure
+windows below it.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">mdichild</span></span></td>
+<td class="opt">The window is an MDI child window.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">toolwindow</span></span></td>
+<td class="opt">The window is a floating toolbar. The title bar and
+caption are shrunk. The window does not appear in the task bar and
+will not show up with the <span class="strong">ALT-TAB</span>
+hotkey.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">windowedge</span></span></td>
+<td class="opt">The window has a border with a raised edge.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">clientedge</span></span></td>
+<td class="opt">The window has a border with a sunken edge.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">contexthelp</span></span></td>
+<td class="opt">The window has a context help button in the caption
+bar.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">controlparent</span></span></td>
+<td class="opt">The window allows navigation between child windows
+using the <span class="strong">TAB</span> key.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">staticedge</span></span></td>
+<td class="opt">The window has a 3-D border.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">appwindow</span></span></td>
+<td class="opt">The window is forced on the task bar when visible.
+Note that this does not mean that windows without this attribute
+will not show up on the task bar. It does mean that windows with
+this attribute will definitely show up on the task bar.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_window_text" id="get_window_text"><b class=
+'cmd'>get_window_text</b> <i class='arg'>HWIN</i></a></dt>
+<dd>Gets the title of a window or the text associated with a
+control. In the latter case, the control must belong to the same
+application.</dd>
+<dt><a name="get_window_thread" id="get_window_thread"><b class=
+'cmd'>get_window_thread</b> <i class='arg'>HWIN</i></a></dt>
+<dd>Returns the id of the thread that owns the specified
+window.</dd>
+<dt><a name="get_window_userdata" id=
+"get_window_userdata"><b class='cmd'>get_window_userdata</b>
+<i class='arg'>HWIN</i></a></dt>
+<dd>Returns the longword associated as user data with the specified
+window. This maps to the Windows <b class='cmd'>GetWindowLong</b>
+call with an argument of <span class=
+"strong">GWL_USERDATA</span>.</dd>
+<dt><a name="hide_caret" id="hide_caret"><b class=
+'cmd'>hide_caret</b></a></dt>
+<dd>Hides the caret. Note that calls to <b class=
+'cmd'>hide_caret</b> or <b class='cmd'>twapi::HideCaret</b> must be
+matched by an equivalent number of calls to <a href=
+"#show_caret"><b class='cmd'>show_caret</b></a> or <b class=
+'cmd'>twapi::ShowCaret</b>.</dd>
+<dt><a name="hide_owned_popups" id="hide_owned_popups"><b class=
+'cmd'>hide_owned_popups</b> <i class='arg'>HWIN</i></a></dt>
+<dd>Hides all popup windows that are owned by the specified
+window.</dd>
+<dt><a name="hide_window" id="hide_window"><b class=
+'cmd'>hide_window</b> <i class='arg'>HWIN</i> ?<b class=
+'cmd'>-sync</b>?</a></dt>
+<dd>Hides the specified window so it does not appear on the display
+or as an icon. If option <b class='cmd'>-sync</b> is specified, the
+command will execute synchronously and only return when the window
+procedure of the target window has handled the request. Note that
+if the target window is hung, the command will never return.<br />
+<br />
+Returns 1 if the window was previously visible, else 0. The return
+value is valid only if the <b class='cmd'>-sync</b> option is
+specified.<br />
+<br />
+<a href="hidewindows.example">Example: Hide all windows for an
+application</a></dd>
+<dt><a name="invalidate_screen_region" id=
+"invalidate_screen_region"><b class=
+'cmd'>invalidate_screen_region</b> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Marks a region of the screen as invalid. If no options are
+specified, all windows are marked invalid, forcing them to be
+redrawn. The following options may be used with the command:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-hwin</b></span> <i class='arg'>HWIN</i></td>
+<td class="opt">Indicates the specific window whose client region
+is to be invalidated.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-rect</b></span> <i class='arg'>RECT</i></td>
+<td class="opt">If specified, this should be a list of four
+integers indicating the coordinates of the left, top, right, bottom
+sides of the region in the window's client area that is to be
+invalidated. If unspecified or an empty list, the entire client
+region is marked invalid.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-bgerase</b></span></td>
+<td class="opt">If specified, the background within the invalidated
+region is erased. Otherwise, it remains unchanged.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="maximize_window" id="maximize_window"><b class=
+'cmd'>maximize_window</b> <i class='arg'>HWIN</i> ?<b class=
+'cmd'>-sync</b>?</a></dt>
+<dd>Maximizes the specified window. If option <b class=
+'cmd'>-sync</b> is specified, the command will execute
+synchronously and only return when the window procedure of the
+target window has handled the request. Note that if the target
+window is hung, the command will never return.<br />
+<br />
+The command returns 1 if the window was previously visible, else 0.
+The return value is valid only if the <b class='cmd'>-sync</b>
+option is specified.</dd>
+<dt><a name="minimize_window" id="minimize_window"><b class=
+'cmd'>minimize_window</b> <i class='arg'>HWIN</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Minimizes the specified window.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sync</b></span></td>
+<td class="opt">If specified, the command will execute
+synchronously and only return when the window procedure of the
+target window has handled the request. Note that if the target
+window is hung, the command will never return.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-activate</b></span></td>
+<td class="opt">If specified, in addition to being shown, the
+window is also activated.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-shownext</b></span></td>
+<td class="opt">If specified, the next window in the Z-order is
+activated.</td>
+</tr>
+</table>
+The command returns 1 if the window was previously visible, else 0.
+The return value is valid only if the <b class='cmd'>-sync</b>
+option is specified.<br />
+<br />
+<a href="minimizeapp.example">Example: Minimize all windows for an
+application</a></dd>
+<dt><a name="move_window" id="move_window"><b class=
+'cmd'>move_window</b> <i class='arg'>HWIN</i> <i class='arg'>X</i>
+<i class='arg'>Y</i></a></dt>
+<dd>Moves the specified window such that it's left side is at
+position <i class='arg'>X</i> and its top side is at position
+<i class='arg'>Y</i>. The window is moved asynchronously unless the
+<b class='cmd'>-sync</b> option is specified. Note that in this
+case, the command will never return if the target window is
+hung.<br />
+<br />
+<a href="movewindowtoorigin.example">Example: Move a window to top
+left corner of the screen</a></dd>
+<dt><a name="redraw_window" id="redraw_window"><b class=
+'cmd'>redraw_window</b> <i class='arg'>HWIN</i> ?<b class=
+'cmd'>-force</b>?</a></dt>
+<dd>This command causes the invalidate regions of the specified
+window to be redrawn. If <b class='cmd'>-force</b> is specified,
+the entire window is redrawn.</dd>
+<dt><a name="redraw_window_frame" id=
+"redraw_window_frame"><b class='cmd'>redraw_window_frame</b>
+<i class='arg'>HWIN</i></a></dt>
+<dd>This command causes the frame of the specified window to be
+redrawn.</dd>
+<dt><a name="resize_window" id="resize_window"><b class=
+'cmd'>resize_window</b> <i class='arg'>HWIN</i> <i class=
+'arg'>W</i> <i class='arg'>H</i> ?<b class=
+'cmd'>-sync</b>?</a></dt>
+<dd>Resizes the specified window to be <i class='arg'>W</i> pixels
+in width and <i class='arg'>H</i> pixels in height. The resizing is
+done asynchronously unless the <b class='cmd'>-sync</b> option is
+specified. Note that in this case, the command will never return if
+the target window is hung.</dd>
+<dt><a name="restore_window" id="restore_window"><b class=
+'cmd'>restore_window</b> <i class='arg'>HWIN</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Restores a window to its original size and position if it is
+maximized or minimized. The command returns 1 if the window was
+previously visible, else 0. The return value is valid only if the
+<b class='cmd'>-sync</b> option is specified.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sync</b></span></td>
+<td class="opt">If specified, the command will execute
+synchronously and only return when the window procedure of the
+target window has handled the request. Note that if the target
+window is hung, the command will never return.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-activate</b></span></td>
+<td class="opt">In addition to being shown, the window is also
+activated.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="set_active_window_for_thread" id=
+"set_active_window_for_thread"><b class=
+'cmd'>set_active_window_for_thread</b> <i class=
+'arg'>HWIN</i></a></dt>
+<dd>Sets the specified window to be the active window for its
+owning thread. The window is brought to the foreground if the
+owning thread belongs to the foreground application. Returns the
+handle of the window that was previously active.</dd>
+<dt><a name="set_caret_blink_time" id=
+"set_caret_blink_time"><b class='cmd'>set_caret_blink_time</b>
+<i class='arg'>MILLISECONDS</i></a></dt>
+<dd>Sets the blink time of the caret to <i class=
+'arg'>MILLISECONDS</i> milliseconds.</dd>
+<dt><a name="set_caret_location" id="set_caret_location"><b class=
+'cmd'>set_caret_location</b> <i class='arg'>POINT</i></a></dt>
+<dd>Sets the caret's location to <i class='arg'>POINT</i> which
+must be a list of two integers specifying the caret's
+coordinates.</dd>
+<dt><a name="set_desktop_wallpaper" id=
+"set_desktop_wallpaper"><b class='cmd'>set_desktop_wallpaper</b>
+<i class='arg'>PATH</i> ?<b class='cmd'>-persist</b>?</a></dt>
+<dd>Sets the desktop wallpaper to that specified by the file
+<i class='arg'>PATH</i>. The file must be in BMP format. If
+<i class='arg'>PATH</i> is specified as an empty string or
+<span class="strong">none</span>, no wallpaper is displayed on the
+desktop. If <i class='arg'>PATH</i> is <span class=
+"strong">default</span>, the default wallpaper is restored to the
+desktop. If the option <b class='cmd'>-persist</b> is specified,
+the new setting is written to the user's profile.</dd>
+<dt><a name="set_focus" id="set_focus"><b class='cmd'>set_focus</b>
+<i class='arg'>HWIN</i></a></dt>
+<dd>Sets the focus to the specified window. The window, or its
+parent, is also activated. The command returns the window that
+previously had the focus.</dd>
+<dt><a name="set_foreground_window" id=
+"set_foreground_window"><b class='cmd'>set_foreground_window</b>
+<i class='arg'>HWIN</i></a></dt>
+<dd>Sets the specified window to be the foreground window. Returns
+<span class="strong">1</span> if successful, and <span class=
+"strong">0</span> otherwise.<br />
+<br />
+<a href="bringtoforeground.example">Example: Bring a window to the
+foreground</a></dd>
+<dt><a name="set_window_long" id="set_window_long"><b class=
+'cmd'>set_window_long</b> <i class='arg'>HWIN</i> <i class=
+'arg'>INDEX</i> <i class='arg'>VALUE</i></a></dt>
+<dd>This is a direct call to the SetWindowsLong function. Refer to
+Windows SDK documentation for details. Several other TWAPI
+functions act as wrappers and provide more straightforward access
+to the values set by this function.</dd>
+<dt><a name="set_window_style" id="set_window_style"><b class=
+'cmd'>set_window_style</b> <i class='arg'>HWIN</i> <i class=
+'arg'>style</i> <i class='arg'>exstyle</i></a></dt>
+<dd>Sets the style and extended style bits for the specified
+window. <i class='arg'>style</i> and <i class='arg'>exstyle</i> are
+bitmasks. Refer to the Windows SDK documentation for details.<br />
+<br />
+<a href="removetitlebar.example">Example: Remove the title bar from
+a window</a></dd>
+<dt><a name="set_window_text" id="set_window_text"><b class=
+'cmd'>set_window_text</b> <i class='arg'>HWIN</i> <i class=
+'arg'>TEXT</i></a></dt>
+<dd>Sets the title of a window or the text associated with a
+control. In the latter case, the control must belong to the same
+application.<br />
+<br />
+<a href="changewindowcaption.example">Example: Change the title bar
+of a window</a></dd>
+<dt><a name="set_window_userdata" id=
+"set_window_userdata"><b class='cmd'>set_window_userdata</b>
+<i class='arg'>HWIN</i> <i class='arg'>INTEGER</i></a></dt>
+<dd>Sets the longword associated as user data with the specified
+window. This maps to the Windows <b class='cmd'>SetWindowLong</b>
+call with an argument of <span class=
+"strong">GWL_USERDATA</span>.</dd>
+<dt><a name="set_window_zorder" id="set_window_zorder"><b class=
+'cmd'>set_window_zorder</b> <i class='arg'>HWIN</i> <i class=
+'arg'>POS</i></a></dt>
+<dd>Sets the position of the specified window in the Z-order.
+<i class='arg'>POS</i> may be either a window handle or a keyword.
+In the former case, the window is placed right after the window
+specified by <i class='arg'>POS</i>. Otherwise, <i class=
+'arg'>POS</i> must be one of the following keywords:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">top</span></span></td>
+<td class="opt">Places the window at the top of the Z-order.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">bottom</span></span></td>
+<td class="opt">Places the window at the bottom of the
+Z-order.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">toplayer</span></span></td>
+<td class="opt">Refer to explanation of HWND_TOPMOST in the
+documentation of the function <b class='cmd'>SetWindowsPos</b> in
+the Windows SDK.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><span class=
+"strong">bottomlayer</span></span></td>
+<td class="opt">Refer to explanation of HWND_NOTOPMOST in the
+documentation of the function <b class='cmd'>SetWindowsPos</b> in
+the Windows SDK.</td>
+</tr>
+</table>
+<a href="keepontop.example">Example: Keep a window on top</a></dd>
+<dt><a name="show_caret" id="show_caret"><b class=
+'cmd'>show_caret</b></a></dt>
+<dd>Shows the caret. Note that calls to <a href=
+"#hide_caret"><b class='cmd'>hide_caret</b></a> or <b class=
+'cmd'>twapi::HideCaret</b> must be matched by an equivalent number
+of calls to <b class='cmd'>show_caret</b> or <b class=
+'cmd'>twapi::ShowCaret</b> to make the caret visible.</dd>
+<dt><a name="show_owned_popups" id="show_owned_popups"><b class=
+'cmd'>show_owned_popups</b> <i class='arg'>HWIN</i></a></dt>
+<dd>Shows all popup windows owned by the specified window that were
+hidden by a previous call to <b class='cmd'>hide_owned_popups</b>.
+Note that popups that were hidden using other functions such as
+<a href="#hide_window"><b class='cmd'>hide_window</b></a> will not
+be shown by this call.</dd>
+<dt><a name="show_window" id="show_window"><b class=
+'cmd'>show_window</b> <i class='arg'>HWIN</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Makes the specified window visible. Note that a visible window
+may still be obscured by other windows or clipped. The command
+returns 1 if the window was previously visible, else 0. The return
+value is valid only if the <b class='cmd'>-sync</b> option is
+specified.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-sync</b></span></td>
+<td class="opt">If specified, the command will execute
+synchronously and only return when the window procedure of the
+target window has handled the request. Note that if the target
+window is hung, the command will never return.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-activate</b></span></td>
+<td class="opt">In addition to being shown, the window is also
+activated.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-normal</b></span></td>
+<td class="opt">If a window is minimized or maximized, restores it
+to its original position.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-startup</b></span></td>
+<td class="opt">Shows the window based on the contents of the
+<b class='cmd'>STARTUPINFO</b> structure when the process was
+created.</td>
+</tr>
+</table>
+<br />
+<br />
+If both <b class='cmd'>-normal</b> and <b class='cmd'>-startup</b>
+are specified, <b class='cmd'>-startup</b> takes precedence. If
+neither is specified, the window is shown in its current form,
+which may be minimized, maximized or normal.<br />
+<br />
+<a href="showwindows.example">Example: Show all windows for an
+application</a></dd>
+<dt><a name="window_exists" id="window_exists"><b class=
+'cmd'>window_exists</b> <i class='arg'>HWIN</i></a></dt>
+<dd>Returns 1 if the specified window exists, else 0.</dd>
+<dt><a name="window_input_enabled" id=
+"window_input_enabled"><b class='cmd'>window_input_enabled</b>
+<i class='arg'>HWIN</i></a></dt>
+<dd>Returns 1 if the specified window has mouse and keyboard input
+enabled, else 0.</dd>
+<dt><a name="window_is_child" id="window_is_child"><b class=
+'cmd'>window_is_child</b> <i class='arg'>PARENTHWIN</i> <i class=
+'arg'>CHILDHWIN</i></a></dt>
+<dd>Returns 1 if the window <i class='arg'>CHILDHWIN</i> is a child
+of the window <i class='arg'>PARENTHWIN</i>, else 0.</dd>
+<dt><a name="window_maximized" id="window_maximized"><b class=
+'cmd'>window_maximized</b> <i class='arg'>HWIN</i></a></dt>
+<dd>Returns 1 if the specified window is maximized, else 0.</dd>
+<dt><a name="window_minimized" id="window_minimized"><b class=
+'cmd'>window_minimized</b> <i class='arg'>HWIN</i></a></dt>
+<dd>Returns 1 if the specified window has been minimized, else
+0.</dd>
+<dt><a name="window_visible" id="window_visible"><b class=
+'cmd'>window_visible</b> <i class='arg'>HWIN</i></a></dt>
+<dd>Returns 1 if the specified window is visible, else 0. Note that
+visible does not imply user can actually see the window (it may be
+obscured or clipped).</dd>
+<dt><a name="window_unicode_enabled" id=
+"window_unicode_enabled"><b class='cmd'>window_unicode_enabled</b>
+<i class='arg'>HWIN</i></a></dt>
+<dd>Returns 1 if the specified window is a native Unicode window,
+else 0.</dd>
+</dl>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2003-2006 Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

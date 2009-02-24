@@ -1,0 +1,1657 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Processes, threads and DLLs</h2>
+<p>Commands related to processes, threads and dynamic link
+libraries</p>
+<h3><a name="synopsis" id="synopsis">SYNOPSIS</a></h3>
+package require <b>twapi</b><br />
+<table class="commandsummary" summary="Table">
+<tr valign="top">
+<td><a href="#create_process"><b class='cmd'>create_process</b>
+<i class='arg'>PROGRAM</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#end_process"><b class='cmd'>end_process</b> <i class=
+'arg'>PID</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#free_library"><b class='cmd'>free_library</b>
+<i class='arg'>HMODULE</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_current_process_id"><b class=
+'cmd'>get_current_process_id</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_current_thread_id"><b class=
+'cmd'>get_current_thread_id</b></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_device_drivers"><b class=
+'cmd'>get_device_drivers</b> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_priority_class"><b class=
+'cmd'>get_priority_class</b> <i class='arg'>PID</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_process_commandline"><b class=
+'cmd'>get_process_commandline</b> <i class='arg'>PID</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_process_exit_code"><b class=
+'cmd'>get_process_exit_code</b> <i class=
+'arg'>HPROCESS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_process_handle"><b class=
+'cmd'>get_process_handle</b> <i class='arg'>PID</i> <i class=
+'arg'>ACCESSRIGHTS</i> ?<i class='arg'>INHERITMODE</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_process_ids"><b class='cmd'>get_process_ids</b>
+?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_process_info"><b class='cmd'>get_process_info</b>
+<i class='arg'>PID</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_process_modules"><b class=
+'cmd'>get_process_modules</b> <i class='arg'>PID</i> ?<i class=
+'arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_process_name"><b class='cmd'>get_process_name</b>
+<i class='arg'>PID</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_process_parent"><b class=
+'cmd'>get_process_parent</b> <i class='arg'>PID</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_process_path"><b class='cmd'>get_process_path</b>
+<i class='arg'>PID</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_process_thread_ids"><b class=
+'cmd'>get_process_thread_ids</b> <i class='arg'>PID</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_thread_handle"><b class=
+'cmd'>get_thread_handle</b> <i class='arg'>TID</i> <i class=
+'arg'>ACCESSMODE</i> ?<i class='arg'>INHERITMODE</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_thread_info"><b class='cmd'>get_thread_info</b>
+<i class='arg'>TID</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_thread_relative_priority"><b class=
+'cmd'>get_thread_relative_priority</b> <i class=
+'arg'>TID</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#get_thread_parent_process_id"><b class=
+'cmd'>get_thread_parent_process_id</b> <i class=
+'arg'>TID</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#is_idle_pid"><b class='cmd'>is_idle_pid</b> <i class=
+'arg'>PID</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#is_system_pid"><b class='cmd'>is_system_pid</b>
+<i class='arg'>PID</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#load_library"><b class='cmd'>load_library</b>
+<i class='arg'>FILEPATH</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#process_exists"><b class='cmd'>process_exists</b>
+<i class='arg'>PID</i> ?<i class='arg'>options</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#process_waiting_for_input"><b class=
+'cmd'>process_waiting_for_input</b> <i class='arg'>PID</i>
+?<b class='cmd'>-wait</b> <i class='arg'>MILLISECONDS</i>?</a></td>
+</tr>
+<tr valign="top">
+<td><a href="#resume_thread"><b class='cmd'>resume_thread</b>
+<i class='arg'>TID</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_priority_class"><b class=
+'cmd'>set_priority_class</b> <i class='arg'>PID</i> <i class=
+'arg'>PRIORITYCLASS</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#set_thread_relative_priority"><b class=
+'cmd'>set_thread_relative_priority</b> <i class='arg'>TID</i>
+<i class='arg'>PRIORITY</i></a></td>
+</tr>
+<tr valign="top">
+<td><a href="#suspend_thread"><b class='cmd'>suspend_thread</b>
+<i class='arg'>TID</i></a></td>
+</tr>
+</table>
+<h3><a name="description" id="description">DESCRIPTION</a></h3>
+<p>This module provides procedures related to process, thread and
+shared library management.</p>
+<h3><a name="overview" id="overview">Overview</a></h3>
+<p>The commands <a href="#get_process_ids"><b class=
+'cmd'>get_process_ids</b></a> and <a href=
+"#get_current_process_id"><b class=
+'cmd'>get_current_process_id</b></a> retrieve process id (PID)
+information. <a href="#get_process_parent"><b class=
+'cmd'>get_process_parent</b></a> returns the PID for the parent
+process. The commands <a href="#is_system_pid"><b class=
+'cmd'>is_system_pid</b></a> and <a href="#is_idle_pid"><b class=
+'cmd'>is_idle_pid</b></a> determine if the given PID is that of the
+system or idle process.</p>
+<p>The command <a href="#get_current_thread_id"><b class=
+'cmd'>get_current_thread_id</b></a> retrieves the current thread id
+(TID). <a href="#get_thread_parent_process_id"><b class=
+'cmd'>get_thread_parent_process_id</b></a> retrieves the PID of the
+process containing the specified thread. <a href=
+"#get_process_thread_ids"><b class=
+'cmd'>get_process_thread_ids</b></a> retrieves the TID's of all
+threads in the specified process.</p>
+<p>Process and thread handles with the appropriate access rights
+may retrieved through the <a href="#get_process_handle"><b class=
+'cmd'>get_process_handle</b></a> and <a href=
+"#get_thread_handle"><b class='cmd'>get_thread_handle</b></a>
+commands respectively.</p>
+<p><a href="#get_process_name"><b class=
+'cmd'>get_process_name</b></a> and <a href=
+"#get_process_path"><b class='cmd'>get_process_path</b></a> get the
+name and path respectively for a process. The command <a href=
+"#get_process_info"><b class='cmd'>get_process_info</b></a>
+retrieves detailed information about internal process data.
+Similarly, <a href="#get_thread_info"><b class=
+'cmd'>get_thread_info</b></a> retrieves detailed information about
+a thread.</p>
+<p><a href="#get_process_commandline"><b class=
+'cmd'>get_process_commandline</b></a> retrieves the command line
+with which a process was invoked.</p>
+<p><a href="#process_exists"><b class='cmd'>process_exists</b></a>
+checks for the existence of a process. The command <a href=
+"#process_waiting_for_input"><b class=
+'cmd'>process_waiting_for_input</b></a> can be used to check if a
+process is waiting for input, and more specifically if it has
+finished initialization.</p>
+<p><a href="#get_process_modules"><b class=
+'cmd'>get_process_modules</b></a> retrieves information pertaining
+to the modules and DLL's loaded into a process. The commands
+<a href="#load_library"><b class='cmd'>load_library</b></a> and
+<a href="#free_library"><b class='cmd'>free_library</b></a> can be
+used to load and free DLL's.</p>
+<p>The commands <a href="#create_process"><b class=
+'cmd'>create_process</b></a> and <a href="#end_process"><b class=
+'cmd'>end_process</b></a> allow creation and termination of a
+process. The exit code from a process can be retrieved with the
+<a href="#get_process_exit_code"><b class=
+'cmd'>get_process_exit_code</b></a> command.</p>
+<p>The commands <a href="#suspend_thread"><b class=
+'cmd'>suspend_thread</b></a> and <a href="#resume_thread"><b class=
+'cmd'>resume_thread</b></a> allow threads to be suspended and
+resumed.</p>
+<p>The commands <a href="#get_priority_class"><b class=
+'cmd'>get_priority_class</b></a>, <a href=
+"#set_priority_class"><b class='cmd'>set_priority_class</b></a>,
+<a href="#get_thread_relative_priority"><b class=
+'cmd'>get_thread_relative_priority</b></a> and <a href=
+"#set_thread_relative_priority"><b class=
+'cmd'>set_thread_relative_priority</b></a> deal with retrieving and
+setting process and thread scheduling priorities.</p>
+<p><a href="#get_device_drivers"><b class=
+'cmd'>get_device_drivers</b></a> retrieves information about the
+device drivers loaded on the system.</p>
+<h3><a name="commands" id="commands">Commands</a></h3>
+<dl class="noclass">
+<dt><a name="create_process" id="create_process"><b class=
+'cmd'>create_process</b> <i class='arg'>PROGRAM</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Creates a new child process. <i class='arg'>PROGRAM</i>
+specifies the program to be run and must either include the full
+path to the program or the program must be in the current working
+directory. The function does not search the <span class=
+"strong">PATH</span> environment variable to locate the program.
+<i class='arg'>PROGRAM</i> may be specified as an empty string if
+the <b class='cmd'>-cmdline</b> option is specified and includes
+the path to the program as the first argument.<br />
+<br />
+The command returns a list of two elements - the process id and the
+thread id of the child process. If the <b class=
+'cmd'>-returnhandles</b> option is specified, two additional
+elements are returned - handles to the child process and thread.
+Both these handles must be closed when no longer required by
+calling <a href="handles.html#close_handles"><b class=
+'cmd'>close_handles</b></a>.<br />
+<br />
+The following arguments control various characteristics of the
+child process. For all options that take a boolean argument, the
+default is <span class="strong">0</span> (false) unless stated
+otherwise.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-background</b></span> <i class='arg'>COLORLIST</i></td>
+<td class="opt">Specifies the background color if the child process
+receives a new console. <i class='arg'>COLORLIST</i> is a list of
+one or more of the following values: <span class=
+"strong">blue</span>, <span class="strong">red</span>, <span class=
+"strong">green</span>, <span class="strong">bright</span>,
+<span class="strong">white</span> and <span class=
+"strong">black</span>. The specified colors are combined to form
+the foreground color. The default is <span class=
+"strong">black</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-cmdline</b></span> <i class='arg'>CMDLINE</i></td>
+<td class="opt">Specifies the command line to be passed to the
+created process. This generally includes the program being executed
+as the first token in <i class='arg'>CMDLINE</i>. Caller should
+ensure that <i class='arg'>CMDLINE</i> is quoted appropriately. The
+<b class='cmd'>-cmdline</b> option must be specified if the
+<i class='arg'>PROGRAM</i> parameter is empty.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-childprocesssecd</b></span> <i class=
+'arg'>SECURITY_DESCRIPTOR</i></td>
+<td class="opt">Specifies a security descriptor for the child
+process. If unspecified, the default security descriptor is
+used.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-childthreadsecd</b></span> <i class=
+'arg'>SECURITY_DESCRIPTOR</i></td>
+<td class="opt">Specifies a security descriptor for the child
+thread. If unspecified, the default security descriptor is
+used.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-createsuspended</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If <i class='arg'>BOOLEAN</i> is true, the process
+and thread are created suspended. The process will not run until
+the thread is resumed with a call to <b class=
+'cmd'>resume_thread</b>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-debugchild</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If <i class='arg'>BOOLEAN</i> is true, indicates
+that the calling thread will be debugging the child process being
+created. The thread is notified of debug events in the child
+process. <span class="em">There is currently no way to receive
+these events</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-dontdebugchild</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If the calling process is itself being debugged,
+then any debug events from the child process are sent to the
+debugger if <i class='arg'>BOOLEAN</i> is false. Otherwise, the
+child process has no interaction with the debugger.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-desktop</b></span> <i class='arg'>DESKTOPNAME</i></td>
+<td class="opt">Specifies the desktop, optionally along with the
+window station, for the new process. By default, this is the same
+as the current process. If <i class='arg'>DESKTOPNAME</i> is the
+empty string, the system determines if a new desktop and window
+station need to be created.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-detached</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">This option only affects console processes. If
+<i class='arg'>BOOLEAN</i> is 0, the child process inherits the
+current process' console. If <i class='arg'>BOOLEAN</i> is 1, the
+console is not inherited.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-env</b></span> <i class='arg'>LIST</i></td>
+<td class="opt">Specifies the environment variables inherited by
+the child process. <i class='arg'>LIST</i> is a flat list of the
+form returned by <b class='cmd'>array get</b> consisting of
+<i class='arg'>ENVVARNAME VALUE</i> pairs. By default, the child
+process inherits the same environment variables as the current
+process.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-feedbackcursoron</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If true, specifies that the feedback cursor
+(normally a pointer with an hourglass) is shown while the new
+process starts up.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-feedbackcursoroff</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If true, specifies that the feedback cursor is not
+shown while the new process starts up.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-foreground</b></span> <i class='arg'>COLORLIST</i></td>
+<td class="opt">Specifies the foreground color if the child process
+receives a new console. <i class='arg'>COLORLIST</i> is a list of
+one or more of the following values: <span class=
+"strong">blue</span>, <span class="strong">red</span>, <span class=
+"strong">green</span>, <span class="strong">bright</span>,
+<span class="strong">white</span> and <span class=
+"strong">black</span>. The specified colors are combined to form
+the foreground color. The default is <span class=
+"strong">white</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-fullscreen</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If true, the child process is run in full screen
+mode if it is a console process.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-inheritablechildprocess</b></span> <i class=
+'arg'>BOOLEAN</i></td>
+<td class="opt">If true, the handle to the child process is
+inheritable by other child processes spawned off later.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-inheritablechildthread</b></span> <i class=
+'arg'>BOOLEAN</i></td>
+<td class="opt">If true, the handle to the thread in the child
+process is inheritable by other child processes spawned off
+later.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-inheriterrormode</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If true (default), the child process inherits the
+error mode setting of the current process.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-inherithandles</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If true, the child process will inherit all
+inheritable handles of the current process.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-newconsole</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If true, a new console is created for the child
+process if it is a console mode program. By default, the child
+process inherites the console of the current process if that latter
+is also a console mode program. This option cannot be used with the
+<b class='cmd'>-detached</b> option.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-priority</b></span> <i class='arg'>PRIORITY</i></td>
+<td class="opt">Specifies the priority of the child process. This
+should have one of the values <span class="strong">normal</span>,
+<span class="strong">abovenormal</span>, <span class=
+"strong">belownormal</span>, <span class="strong">high</span>,
+<span class="strong">realtime</span>, or <span class=
+"strong">idle</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-returnhandles</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">Normally the <b class='cmd'>create_process</b>
+command returns only the ids of the created process and thread. If
+this option is specified as true, the command appends handles of
+the child process and thread to the return value. These must later
+be closed by calling the <b class='cmd'>close_handles</b>
+command.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-screenbuffersize</b></span> <i class='arg'>XY</i></td>
+<td class="opt">For console processes, this controls the initial
+width and height of the screen buffer in characters. <i class=
+'arg'>XY</i> can be specified as either a list of two integers or
+as a <i class='arg'>X,Y</i> string.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-separatevdm</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If true, child processes that are 16-bit
+executables are started in a separate virtual machine. By default,
+the system will follow the setting specified in the registry.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-sharedvdm</b></span> <i class='arg'>BOOLEAN</i></td>
+<td class="opt">If true, child processes that are 16-bit
+executables are started in a common virtual machine. By default,
+the system will follow the setting specified in the registry.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-showwindow</b></span> <i class='arg'>WINDOWMODE</i></td>
+<td class="opt">Specifies the mode in which the first window of the
+child process is displayed. <i class='arg'>WINDOWMODE</i> must be
+one of <span class="strong">normal</span>, <span class=
+"strong">minimized</span>, <span class="strong">maximized</span> or
+<span class="strong">hidden</span>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-startdir</b></span> <i class='arg'>PATH</i></td>
+<td class="opt">Specifies the initial starting directory of the
+child process. By default the child process starts in the calling
+thread's current directory.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-stdhandles</b></span> <i class='arg'>HANDLELIST</i></td>
+<td class="opt">Specifies the standard input and output handles for
+the child process. <i class='arg'>HANDLELIST</i> is a list of three
+elements corresponding to the handles to be used for standard
+input, standard output and standard error respectively. The handle
+values passed must be Windows handles and must be inheritable.
+Also, the <b class='cmd'>-inherithandles</b> option must be true if
+<b class='cmd'>-stdhandles</b> is specified. Note that if these
+handles correspond to files, the file position pointer is shared
+with the child process.<br />
+<br />
+This option cannot be used together with the <b class=
+'cmd'>-stdchannels</b> option.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-stdchannels</b></span> <i class='arg'>CHANNELS</i></td>
+<td class="opt">Specifies the standard input and output handles for
+the child process. <i class='arg'>CHANNELS</i> is a list of three
+elements corresponding to the Tcl channels to be used for standard
+input, standard output and standard error respectively. Note that
+if these channels correspond to files, the file position pointer is
+shared with the child process.<br />
+<br />
+This option cannot be used together with the <b class=
+'cmd'>-stdhandles</b> option. Also, the <b class=
+'cmd'>-inherithandles</b> option must be true if <b class=
+'cmd'>-stdchannels</b> is specified.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-title</b></span> <i class='arg'>TITLE</i></td>
+<td class="opt">Specifies the text to diaplay in the title bar if
+the child process is a console program and receives a new console.
+By default, the name of the executable is displayed.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-windowpos</b></span> <i class='arg'>XY</i></td>
+<td class="opt">Specifies the initial position in pixels of the top
+left corner of the main window of the child process if the child
+creates the window using defaults. <i class='arg'>XY</i> can be
+specified as either a list of two integers or as a <i class=
+'arg'>X,Y</i> string.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-windowsize</b></span> <i class='arg'>XY</i></td>
+<td class="opt">Specifies the initial size in pixels of the main
+window of the child process if the child creates the window using
+defaults. <i class='arg'>XY</i> can be specified as either a list
+of two integers or as a <i class='arg'>X,Y</i> string.</td>
+</tr>
+</table>
+For further details, see the documentation of <b class=
+'cmd'>CreateProcess</b> in the Windows SDK documentation.</dd>
+<dt><a name="end_process" id="end_process"><b class=
+'cmd'>end_process</b> <i class='arg'>PID</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Terminates the process with id <i class='arg'>PID</i>. This
+function will first try to gracefully end the process by sending
+all its toplevel windows a <span class="strong">WM_CLOSE</span>
+command. If the process does not have any toplevels or if it does
+not end by this means and the <b class='cmd'>-force</b> option is
+specified, it is forcibly terminated.<br />
+<br />
+The function returns <span class="strong">1</span> if the process
+ended and <span class="strong">0</span> otherwise. Note that if
+<b class='cmd'>-wait</b> has not been specified, or is too short,
+the function may return a value of 0 in the case where the process
+is in the process of terminating but has not fully exited by the
+time the command returns.<br />
+<br />
+The following options may be specified with this command:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-force</b></span></td>
+<td class="opt">If this option is specified, the process will be
+forcibly terminated if it does not terminate in response to
+<span class="strong">WM_CLOSE</span> messages.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-wait</b></span> <i class='arg'>MS</i></td>
+<td class="opt">Normally, the function will return without actually
+waiting for the process to end. If this option is specified, the
+function returns after waiting for <i class='arg'>MS</i>
+milliseconds for the process to end.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-exitcode</b></span> <i class='arg'>EXITCODE</i></td>
+<td class="opt">Specifies the exit code that should be returned by
+the terminating process. This is <span class="strong">1</span> by
+default. Depending on the application being terminated, this may
+not be the actual exit code returned on application exit. Caller
+should not rely on this.</td>
+</tr>
+</table>
+<a href="exitprograms.example">Example: Gracefully exit all
+programs with a given name or path</a><br />
+<br />
+<a href="killprograms.example">Example: Forcibly kill all programs
+with a given name or path</a></dd>
+<dt><a name="free_library" id="free_library"><b class=
+'cmd'>free_library</b> <i class='arg'>HMODULE</i></a></dt>
+<dd>Frees a loaded module. <i class='arg'>HMODULE</i> must be a
+handle previously returned through <a href=
+"#load_library"><b class='cmd'>load_library</b></a>.</dd>
+<dt><a name="get_current_process_id" id=
+"get_current_process_id"><b class=
+'cmd'>get_current_process_id</b></a></dt>
+<dd>Returns the PID of the current process.</dd>
+<dt><a name="get_current_thread_id" id=
+"get_current_thread_id"><b class=
+'cmd'>get_current_thread_id</b></a></dt>
+<dd>Returns the TID of the current thread.</dd>
+<dt><a name="get_device_drivers" id="get_device_drivers"><b class=
+'cmd'>get_device_drivers</b> ?<i class='arg'>options</i>?</a></dt>
+<dd>This command returns information about the device drivers
+loaded in the system. The returned information is in the form of a
+list of sublist with each sublist corresponding to a loaded driver.
+Each sublist is a flat list of "<i class='arg'>option</i> <i class=
+'arg'>value</i>" pairs. The following options may be specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns all device driver attributes below.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-base</b></span></td>
+<td class="opt">Returns the base address in memory where the driver
+is loaded</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-path</b></span></td>
+<td class="opt">Returns the path to the file from which the driver
+was loaded. In some cases, this may not contain a fully qualified
+path.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-name</b></span></td>
+<td class="opt">Returns the name of the driver - generally the file
+name portion of the file from which the driver was loaded.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_priority_class" id="get_priority_class"><b class=
+'cmd'>get_priority_class</b> <i class='arg'>PID</i></a></dt>
+<dd>Returns the scheduling priority class of the process with id
+<i class='arg'>PID</i>.</dd>
+<dt><a name="get_process_commandline" id=
+"get_process_commandline"><b class=
+'cmd'>get_process_commandline</b> <i class='arg'>PID</i></a></dt>
+<dd>Returns the command line with which the process with id
+<i class='arg'>PID</i> was invoked. The following options may be
+specified with the command.
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-noaccess</b></span> <i class='arg'>DEFAULTVALUE</i></td>
+<td class="opt">If a process exists but cannot be accessed to
+retrieve the name, the command normally returns the string
+<span class="strong">"(unknown)"</span>. This option may be used to
+specify a different string to be returned in such cases.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_process_exit_code" id=
+"get_process_exit_code"><b class='cmd'>get_process_exit_code</b>
+<i class='arg'>HPROCESS</i></a></dt>
+<dd>Returns the exit code for a process. <i class=
+'arg'>HPROCESS</i> is a handle to the process of interest. If the
+process is still running, a null string is returned.</dd>
+<dt><a name="get_process_handle" id="get_process_handle"><b class=
+'cmd'>get_process_handle</b> <i class='arg'>PID</i> <i class=
+'arg'>ACCESSRIGHTS</i> ?<i class='arg'>INHERITMODE</i>?</a></dt>
+<dd>Returns a handle to the process with id <i class='arg'>PID</i>.
+<i class='arg'>ACCESSRIGHTS</i> specifies the desired access rights
+and may be specified as a list of integer access rights flags or
+symbols as described in <a href="security.html#accessrights">Access
+Rights</a>. If <i class='arg'>INHERITMODE</i> is non-0, the
+returned handle can be inherited by child processes. If it is 0
+(default), the handle cannot be inherited by child processes.</dd>
+<dt><a name="get_process_ids" id="get_process_ids"><b class=
+'cmd'>get_process_ids</b> ?<i class='arg'>options</i>?</a></dt>
+<dd>This command returns a list of the process ids. If no options
+are specified, the list includes all processes on the system. The
+following options may be specified to return a subset of these:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-glob</b></span></td>
+<td class="opt">This option modifies the meaning of the <b class=
+'cmd'>-path</b> and <b class='cmd'>-name</b> options. Normally, the
+match is done using case-insensitive, exact comparison. If
+<b class='cmd'>-glob</b> is specified, the <i class=
+'arg'>PROCESSNAME</i> and <i class='arg'>EXECUTABLEPATH</i> are
+matched using glob-style pattern matching as in Tcl's <b class=
+'cmd'>string match</b> command.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-name</b></span> <i class='arg'>PROCESSNAME</i></td>
+<td class="opt">If this option is specified, the returned list only
+includes those processes whose name matches <i class=
+'arg'>PROCESSNAME</i>. Generally the name is the same as the
+filename portion of the executable file path. If this information
+is not available for a process, it is not included in the returned
+list. This option cannot be used with the <b class='cmd'>-path</b>
+option.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-path</b></span> <i class='arg'>EXECUTABLEPATH</i></td>
+<td class="opt">If this option is specified, the returned list only
+includes those processes created from the executable file matching
+<i class='arg'>EXECUTABLEPATH</i>. If this information is not
+available for a process, it is not included in the returned list.
+This option cannot be used with the <b class='cmd'>-name</b>
+option.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-logonsession</b></span> <i class='arg'>LUID</i></td>
+<td class="opt">If this option is specified, the returned list only
+includes those processes running inside the <a href=
+"security.html#logonsessions">logon session</a> identified by the
+specified <a href="security.html#uniqueidentifiers">LUID</a>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-user</b></span> <i class='arg'>ACCOUNT</i></td>
+<td class="opt">If this option is specified, the returned list only
+includes those processes running under the specified account.
+<i class='arg'>ACCOUNT</i> may be either a user name or its
+SID.</td>
+</tr>
+</table>
+<a href="minimizeapp.example">Example: Minimize all windows for an
+application</a><br />
+<br />
+<a href="exitprograms.example">Example: Exit all programs with a
+given name or path</a></dd>
+<dt><a name="get_process_info" id="get_process_info"><b class=
+'cmd'>get_process_info</b> <i class='arg'>PID</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Returns various pieces of information related to the process
+whose id is <i class='arg'>PID</i>. The information returned
+depends on the options specified and is in the form of a flat list
+of the form "<i class='arg'>option1</i> <i class='arg'>value1</i>
+...". The values returned may be scalars (e.g. <span class=
+"strong">-name</span>) or rate based measured over an interval
+(e.g. <b class='cmd'>-processorutilization</b>). The option
+<b class='cmd'>-interval</b> may be used to indicate the interval
+over which the rate based fields are measured. One of more of the
+following options may be specified with the command:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns all values except those for unsupported
+options.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-basepriority</b></span></td>
+<td class="opt">Returns the base priority of the process.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-commandline</b></span></td>
+<td class="opt">Returns the command line with which the process was
+invoked.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-createtime</b></span></td>
+<td class="opt">Returns the time the process was created as the
+number of 100ns units since Jan 1, 1601. This can be converted to a
+date and time string by passing it to <a href=
+"misc.html#large_system_time_to_secs"><b class=
+'cmd'>large_system_time_to_secs</b></a> and formatting the result
+using <b class='cmd'>clock format</b>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-elapsedtime</b></span></td>
+<td class="opt">Returns the total time (seconds) that the process
+has been running.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-groups</b></span></td>
+<td class="opt">Returns the list of groups that the process belongs
+to.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-handlecount</b></span></td>
+<td class="opt">Returns the number of handles that the process
+currently has open.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-handles</b></span></td>
+<td class="opt">Returns the list of open handles in the process as
+a list of lists. Each sublist contains three elements - the handle
+value, the type of the handle, and name of the corresponding
+resource. <span class="em">This an unsupported option that uses
+undocumented Windows functions and should not be used for
+production systems.</span></td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-interval</b></span> <i class='arg'>INTERVAL</i></td>
+<td class="opt">Specifies the number of milliseconds over which
+rate based fields are to be measured. The command will not return
+until this time has elapsed. By default this is 100ms. If none of
+the fields requested is a rate based field, this option is ignored
+and the command returns immediately.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-iodatabytesrate</b></span></td>
+<td class="opt">Returns the rate at which the process is reading
+and writing bytes.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-iodataopsrate</b></span></td>
+<td class="opt">Returns the rate at which the process is issuing
+I/O operation.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-iootherbytes</b></span></td>
+<td class="opt">Returns number of non-data bytes the process has
+read or written through I/O operations.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-iootherbytesrate</b></span></td>
+<td class="opt">Returns the rate at which the process is reading
+and writing non-data bytes (such as control bytes).</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-iootherops</b></span></td>
+<td class="opt">Returns number of non-data I/O operations the
+process has executed.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-iootheropsrate</b></span></td>
+<td class="opt">Returns the rate at which the process is issuing
+non-data I/O operations.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-ioreadbytes</b></span></td>
+<td class="opt">Returns number of data bytes the process has read
+through I/O operations.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-ioreadbytesrate</b></span></td>
+<td class="opt">Returns the rate at which the process is reading
+bytes through I/O operations.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-ioreadops</b></span></td>
+<td class="opt">Returns number of data read I/O operations the
+process has executed.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-ioreadopsrate</b></span></td>
+<td class="opt">Returns the rate at which the process is issuing
+read I/O operations.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-iowritebytes</b></span></td>
+<td class="opt">Returns number of data bytes the process has
+written through I/O operations.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-iowritebytesrate</b></span></td>
+<td class="opt">Returns the rate at which the process is writing
+bytes through I/O operations. All types of I/O operations are
+including in this rate.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-iowriteops</b></span></td>
+<td class="opt">Returns number of data write I/O operations the
+process has executed.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-iowriteopsrate</b></span></td>
+<td class="opt">Returns the rate at which the process is issuing
+write I/O operations.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-logonsession</b></span></td>
+<td class="opt">Returns the <a href=
+"security.html#uniqueidentifiers">LUID</a> of the <a href=
+"security.html#logonsessions">logon session</a> for the
+process.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-name</b></span></td>
+<td class="opt">Returns the name of the process. This is identical
+to the value returned by the <b class='cmd'>get_process_name</b>
+function.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-noaccess</b></span> <i class='arg'>DEFAULTVALUE</i></td>
+<td class="opt">If a process exists but cannot be accessed to
+retrieve the name, the command normally returns the string
+<span class="strong">"(unknown)"</span>. This option may be used to
+specify a different string to be returned in such cases.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-noexist</b></span> <i class='arg'>DEFAULTVALUE</i></td>
+<td class="opt">If a process does not exist, the command returns
+the string <span class="strong">"(no such process)"</span>. This
+option may be used to specify a different string to be returned for
+non-existent processes.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-pagefaultrate</b></span></td>
+<td class="opt">Returns the rate at which the process is generating
+page faults.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-pagefilebytes</b></span></td>
+<td class="opt">Returns total number of bytes in use for this
+process in all the system paging files.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-pagefilebytespeak</b></span></td>
+<td class="opt">Returns the maximum number of bytes that have been
+used for this process in the system paging file since the process
+started.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-parent</b></span></td>
+<td class="opt">Returns id of the process that invoked this
+process. For the system and system idle processes, an empty string
+is returned since they have no parent process.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-path</b></span></td>
+<td class="opt">Returns the path to the executable file from which
+this process was invoked. This value is the same as that returned
+by the <b class='cmd'>get_process_path</b> command.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-pid</b></span></td>
+<td class="opt">Returns the process id of this process (which
+should be identical to that passed in as the <i class='arg'>PID</i>
+argument.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-poolnonpagedbytes</b></span></td>
+<td class="opt">Returns the number of bytes of nonpaged pool memory
+in use for the process.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-poolpagedbytes</b></span></td>
+<td class="opt">Returns the number of bytes of paged pool memory in
+use for the process.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-primarygroup</b></span></td>
+<td class="opt">Returns the primary group that the process belongs
+to.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-priorityclass</b></span></td>
+<td class="opt">Returns the priority class of the process.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-privatebytes</b></span></td>
+<td class="opt">Returns the number of bytes allocated for this
+process' private use.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-privilegedtime</b></span></td>
+<td class="opt">The amount of privileged context CPU time used by
+the process in 100ns units.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-privilegedutilization</b></span></td>
+<td class="opt">Returns the percentage of elapsed time that this
+process has spent executing in privileged mode.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-privileges</b></span></td>
+<td class="opt">Returns the list of enabled and disabled process
+privileges in the same format as <a href=
+"security.html#get_token_privileges"><b class=
+'cmd'>get_token_privileges</b></a>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-processorutilization</b></span></td>
+<td class="opt">Returns the percentage of CPU time that this
+process has used.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-threadcount</b></span></td>
+<td class="opt">Returns the total number of threads in the
+process.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-tids</b></span></td>
+<td class="opt">Returns a list of ids of the threads in the
+process.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-toplevels</b></span></td>
+<td class="opt">Returns a list of the window handles of all
+toplevel windows owned by the process.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-tssession</b></span></td>
+<td class="opt">Returns the terminal server session id of the
+process.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-user</b></span></td>
+<td class="opt">Returns the user account under which the process is
+running.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-usertime</b></span></td>
+<td class="opt">The amount of user context CPU time used by the
+process in 100ns units.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-userutilization</b></span></td>
+<td class="opt">Returns the percentage of elapsed time that this
+process has spent executing in user mode.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-virtualbytes</b></span></td>
+<td class="opt">Returns the current size of the process' virtual
+address space.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-virtualbytespeak</b></span></td>
+<td class="opt">Returns the maximum amount of virtual address space
+that the process has used in the course of its execution.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-workingset</b></span></td>
+<td class="opt">Returns the number of bytes currently in the
+process' working set.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-workingsetpeak</b></span></td>
+<td class="opt">Returns the maximum number of bytes in the process'
+working set since it began execution.</td>
+</tr>
+</table>
+Note that all the information is not retrieved in a single snapshot
+so there may be discrepancies between various values. For example,
+the number of thread ids returned via <b class='cmd'>-tids</b> may
+not match the thread count returned via <b class=
+'cmd'>-threadcount</b>.<br />
+<br />
+The <b class='cmd'>get_process_info</b> command is intended for
+one-time retrieval of information and is too inefficient for usage
+in an application like performance monitoring. Direct access to the
+performance data should be used in those cases.</dd>
+<dt><a name="get_process_modules" id=
+"get_process_modules"><b class='cmd'>get_process_modules</b>
+<i class='arg'>PID</i> ?<i class='arg'>options</i>?</a></dt>
+<dd>This command returns information about the modules loaded in
+the process with id <i class='arg'>PID</i>. If no options are
+specified, the command returns a list of handles to the
+modules.<br />
+<br />
+If any options are specified, the returned information is in the
+form of a list of sublists each of which corresponds to a loaded
+module. The sublist for each module is in the form "<i class=
+'arg'>option</i> <i class='arg'>VALUE</i>". The following options
+may be specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns the data for all options described
+below.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-handle</b></span></td>
+<td class="opt">Includes the handle to the module in the returned
+data for each module.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-path</b></span></td>
+<td class="opt">Includes the full path from which the module was
+loaded.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-name</b></span></td>
+<td class="opt">Includes the name of the module - generally the
+file name portion of the path.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-imagedata</b></span></td>
+<td class="opt">Includes the base address in memory where the
+module is loaded, the size of the module in memory and the address
+of the entry point to the module as a sublist for each module.</td>
+</tr>
+</table>
+<a href="showprocessmodules.example">Example: Show the DLL's loaded
+in a process</a></dd>
+<dt><a name="get_process_name" id="get_process_name"><b class=
+'cmd'>get_process_name</b> <i class='arg'>PID</i></a></dt>
+<dd>Returns the name of the process with id <i class='arg'>PID</i>.
+This is generally the file name component of the full path of the
+executable file from which the process was loaded. The following
+options may be specified to with the command:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-noexist</b></span> <i class='arg'>DEFAULTVALUE</i></td>
+<td class="opt">If a process does not exist, the command returns
+the string <span class="strong">"(no such process)"</span>. This
+option may be used to specify a different string to be returned for
+non-existent processes.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-noaccess</b></span> <i class='arg'>DEFAULTVALUE</i></td>
+<td class="opt">If a process exists but cannot be accessed to
+retrieve the name, the command normally returns the string
+<span class="strong">"(unknown)"</span>. This option may be used to
+specify a different string to be returned in such cases.</td>
+</tr>
+</table>
+<a href="showprocessowners.example">Example: Show the user account
+for each process</a></dd>
+<dt><a name="get_process_parent" id="get_process_parent"><b class=
+'cmd'>get_process_parent</b> <i class='arg'>PID</i></a></dt>
+<dd>Returns the PID of the process from whom the process with id
+<i class='arg'>PID</i> inherited handles and environment. The
+following options may be specified to with the command:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-noexist</b></span> <i class='arg'>DEFAULTVALUE</i></td>
+<td class="opt">If a process does not exist, the command returns
+the string <span class="strong">"(no such process)"</span>. This
+option may be used to specify a different string to be returned for
+non-existent processes.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-noaccess</b></span> <i class='arg'>DEFAULTVALUE</i></td>
+<td class="opt">If a process exists but cannot be accessed to
+retrieve the parent, the command normally returns the string
+<span class="strong">"(unknown)"</span>. This option may be used to
+specify a different string to be returned in such cases.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_process_path" id="get_process_path"><b class=
+'cmd'>get_process_path</b> <i class='arg'>PID</i></a></dt>
+<dd>Returns the full path of the executable file from which the
+process with id <i class='arg'>PID</i> was loaded. The following
+options may be specified to with the command:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-noexist</b></span> <i class='arg'>DEFAULTVALUE</i></td>
+<td class="opt">If a process does not exist, the command returns
+the string <span class="strong">(no such process)</span>. This
+option may be used to specify a different string to be returned for
+non-existent processes.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-noaccess</b></span> <i class='arg'>DEFAULTVALUE</i></td>
+<td class="opt">If a process exists but cannot be accessed to
+retrieve the path information, the command normally returns the
+string <span class="strong">(unknown)</span>. This option may be
+used to specify a different string to be returned in such
+cases.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="get_process_thread_ids" id=
+"get_process_thread_ids"><b class='cmd'>get_process_thread_ids</b>
+<i class='arg'>PID</i></a></dt>
+<dd>Returns a list of ids of all threads in the process whose id is
+<i class='arg'>PID</i>.</dd>
+<dt><a name="get_thread_handle" id="get_thread_handle"><b class=
+'cmd'>get_thread_handle</b> <i class='arg'>TID</i> <i class=
+'arg'>ACCESSMODE</i> ?<i class='arg'>INHERITMODE</i>?</a></dt>
+<dd>Returns a handle to the thread with id <i class='arg'>TID</i>.
+<i class='arg'>ACCESSMODE</i> specifies the desired access rights
+and may be specified as a list of integer access rights flags or
+symbols. Refer to the documentation of TWAPI Security module for
+more details. If <i class='arg'>INHERITMODE</i> is non-0, the
+returned handle can be inherited by child processes. If it is 0
+(default), the handle cannot be inherited by child processes.</dd>
+<dt><a name="get_thread_info" id="get_thread_info"><b class=
+'cmd'>get_thread_info</b> <i class='arg'>TID</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Returns various pieces of information related to the thread
+whose id is <i class='arg'>TID</i>. The information returned
+depends on the options specified and is in the form of a flat list
+of the form "<i class='arg'>option1</i> <i class='arg'>value1</i>
+...". The values returned may be scalars (e.g. <span class=
+"strong">-name</span>) or rate based measured over an interval
+(e.g. <b class='cmd'>-processorutilization</b>). The option
+<b class='cmd'>-interval</b> may be used to indicate the interval
+over which the rate based fields are measured. One of more of the
+following options may be specified with the command:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-all</b></span></td>
+<td class="opt">Returns all values.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-basepriority</b></span></td>
+<td class="opt">Returns the base priority of the thread.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-contextswitches</b></span></td>
+<td class="opt">Returns the number of context switches done by the
+thread.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-contextswitchrate</b></span></td>
+<td class="opt">Returns the rate of context switches for the
+thread.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-createtime</b></span></td>
+<td class="opt">Returns the time the thread was created as the
+number of 100ns units since Jan 1, 1601. This can be converted to a
+date and time string by passing it to <a href=
+"misc.html#large_system_time_to_secs"><b class=
+'cmd'>large_system_time_to_secs</b></a> and formatting the result
+using <b class='cmd'>clock format</b>.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-elapsedtime</b></span></td>
+<td class="opt">Returns the total time (seconds) that the thread
+has been running.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-groups</b></span></td>
+<td class="opt">Returns the list of groups that the thread belongs
+to.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-interval</b></span> <i class='arg'>INTERVAL</i></td>
+<td class="opt">Specifies the number of milliseconds over which
+rate based fields are to be measured. The command will not return
+until this time has elapsed. By default this is 100ms. If none of
+the fields requested is a rate based field, this option is ignored
+and the command returns immediately.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-noaccess</b></span> <i class='arg'>DEFAULTVALUE</i></td>
+<td class="opt">If a thread but cannot be accessed, the command
+normally returns the string <span class=
+"strong">"(unknown)"</span>. This option may be used to specify a
+different string to be returned in such cases.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-noexist</b></span> <i class='arg'>DEFAULTVALUE</i></td>
+<td class="opt">If a thread does not exist, the command returns the
+string <span class="strong">"(no such thread)"</span>. This option
+may be used to specify a different string to be returned for
+non-existent threads.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-pid</b></span></td>
+<td class="opt">Returns the id of the process the thread belongs
+to.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-primarygroup</b></span></td>
+<td class="opt">Returns the primary group that the thread belongs
+to.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-priority</b></span></td>
+<td class="opt">Returns the current priority of the thread.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-privilegedtime</b></span></td>
+<td class="opt">The amount of privileged context CPU time used by
+the thread in 100ns units.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-privilegedutilization</b></span></td>
+<td class="opt">Returns the percentage of elapsed time that this
+process has spent executing in privileged mode.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-privileges</b></span></td>
+<td class="opt">Returns the list of the current thread
+privileges.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-processorutilization</b></span></td>
+<td class="opt">Returns the percentage of CPU time that this
+process has used.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-relativepriority</b></span></td>
+<td class="opt">Returns the priority level of the thread relative
+to the priority class of the containing process.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-startaddress</b></span></td>
+<td class="opt">Returns the address at which the thread began
+execution.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-state</b></span></td>
+<td class="opt">Returns the current state of the thread.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-tid</b></span></td>
+<td class="opt">Returns the thread id of this process (which should
+be identical to that passed in as the <i class='arg'>TID</i>
+argument.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-user</b></span></td>
+<td class="opt">Returns the user account under which the thread is
+running.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-usertime</b></span></td>
+<td class="opt">The amount of user context CPU time used by the
+thread in 100ns units.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-userutilization</b></span></td>
+<td class="opt">Returns the percentage of elapsed time that this
+process has spent executing in user mode.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-waitreason</b></span></td>
+<td class="opt">Returns the reason a thread is in wait state. This
+is only valid when the <b class='cmd'>state</b> field is 5
+indicating the thread is in a wait state.</td>
+</tr>
+</table>
+Note that all the information is not retrieved in a single snapshot
+so there may be discrepancies between various values.<br />
+<br />
+Like the <a href="#get_process_info"><b class=
+'cmd'>get_process_info</b></a> command, <b class=
+'cmd'>get_thread_info</b> is intended for one-time retrieval of
+information and is too inefficient for usage in an application like
+performance monitoring. Direct access to the performance data
+should be used in those cases.</dd>
+<dt><a name="get_thread_relative_priority" id=
+"get_thread_relative_priority"><b class=
+'cmd'>get_thread_relative_priority</b> <i class=
+'arg'>TID</i></a></dt>
+<dd>Returns the scheduling priority value of the thread with id
+<i class='arg'>TID</i>. This is an integer value relative to the
+process' priority class as described in the Windows SDK.</dd>
+<dt><a name="get_thread_parent_process_id" id=
+"get_thread_parent_process_id"><b class=
+'cmd'>get_thread_parent_process_id</b> <i class=
+'arg'>TID</i></a></dt>
+<dd>Returns the id of the parent process of the thread with id
+<i class='arg'>TID</i>.</dd>
+<dt><a name="is_idle_pid" id="is_idle_pid"><b class=
+'cmd'>is_idle_pid</b> <i class='arg'>PID</i></a></dt>
+<dd>Returns true if the passed <i class='arg'>PID</i> is that of
+the system idle process.</dd>
+<dt><a name="is_system_pid" id="is_system_pid"><b class=
+'cmd'>is_system_pid</b> <i class='arg'>PID</i></a></dt>
+<dd>Returns true if the passed <i class='arg'>PID</i> is that of
+the system process.</dd>
+<dt><a name="load_library" id="load_library"><b class=
+'cmd'>load_library</b> <i class='arg'>FILEPATH</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>Loads a DLL and returns a handle to it. This handle may be
+passed to other commands, such as <a href=
+"misc.html#format_message"><b class='cmd'>format_message</b></a>
+that expect a module handle as a parameter. The handle must later
+be released by calling <a href="#free_library"><b class=
+'cmd'>free_library</b></a>. The following options may be specified:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-dontresolverefs</b></span></td>
+<td class="opt">Normally, if the module being loaded is a DLL, the
+system will load any other modules referenced by it and also call
+its <b class='cmd'>DllMain</b> function to initialize it. If this
+option is specified, neither of these actions will be done.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-datafile</b></span></td>
+<td class="opt">If specified, the module is loaded as a data file
+as opposed to an executable module. This is useful when the file is
+being loaded only to extract resources or messages.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-alteredpath</b></span></td>
+<td class="opt">Uses an alternative search strategy to find modules
+referenced by this module. See the Windows SDK for more
+details.</td>
+</tr>
+</table>
+<br />
+<br />
+See <b class='cmd'>LoadLibraryEx</b> in the Windows SDK for more
+details regarding this command.</dd>
+<dt><a name="process_exists" id="process_exists"><b class=
+'cmd'>process_exists</b> <i class='arg'>PID</i> ?<i class=
+'arg'>options</i>?</a></dt>
+<dd>This command returns <span class="strong">1</span> if a process
+with id <i class='arg'>PID</i> exists and <span class=
+"strong">0</span> otherwise. The following options may be specified
+to further restrict the match:
+<table class="opt" summary="Table">
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-path</b></span> <i class='arg'>EXECUTABLEPATH</i></td>
+<td class="opt">If this option is specified, the matched process
+must have been created from the executable file matching <i class=
+'arg'>EXECUTABLEPATH</i>. This option cannot be used with the
+<b class='cmd'>-name</b> option.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="30%"><span class="strong"><b class=
+'cmd'>-name</b></span> <i class='arg'>PROCESSNAME</i></td>
+<td class="opt">If this option is specified, the matched process
+must have a name that matches <i class='arg'>PROCESSNAME</i>.
+Generally the name is the same as the filename portion of the
+executable file path. This option cannot be used with the <b class=
+'cmd'>-path</b> option.</td>
+</tr>
+<tr class="opt">
+<td class="opt" width="20%"><span class="strong"><b class=
+'cmd'>-glob</b></span></td>
+<td class="opt">This option modifies the meaning of the <b class=
+'cmd'>-path</b> and <b class='cmd'>-name</b> options. Normally, the
+match is done using case-insensitive, exact comparison. If
+<b class='cmd'>-glob</b> is specified, the <i class=
+'arg'>PROCESSNAME</i> and <i class='arg'>EXECUTABLEPATH</i> are
+matched using glob-style pattern matching.</td>
+</tr>
+</table>
+</dd>
+<dt><a name="process_waiting_for_input" id=
+"process_waiting_for_input"><b class=
+'cmd'>process_waiting_for_input</b> <i class='arg'>PID</i>
+?<b class='cmd'>-wait</b> <i class='arg'>MILLISECONDS</i>?</a></dt>
+<dd>Returns 1 if the specified process is idle, waiting for input,
+and 0 otherwise. The main use of this command is to detect when a
+process (for example, a child process that has just been created)
+has finished initialization. Note that a console process will
+always return 1.<br />
+<br />
+The command normally returns right away. Specifying the <b class=
+'cmd'>-wait</b> option causes the command to wait until either
+<i class='arg'>MILLISECONDS</i> have passed or the process is idle
+before returning. Specifying a value of -1 will cause the command
+to wait without timing out.</dd>
+<dt><a name="resume_thread" id="resume_thread"><b class=
+'cmd'>resume_thread</b> <i class='arg'>TID</i></a></dt>
+<dd>The command checks the suspend count (see <a href=
+"#suspend_thread"><b class='cmd'>suspend_thread</b></a>) of the
+specified thread. If it is 0, the thread is not suspended and the
+command has no effect. Otherwise, the suspend count is decremented.
+If the value is now 0, the thread resumes execution. The command
+returns thread's previous suspend count - a value of 0 meaning the
+thread was not suspended, 1 meaning the suspending thread is not
+resumed, and other values signifying that the thread is still
+suspended.</dd>
+<dt><a name="set_priority_class" id="set_priority_class"><b class=
+'cmd'>set_priority_class</b> <i class='arg'>PID</i> <i class=
+'arg'>PRIORITYCLASS</i></a></dt>
+<dd>Sets the scheduling priority class of the process with id
+<i class='arg'>PID</i> to <i class='arg'>PRIORITYCLASS</i>.
+<i class='arg'>PRIORITYCLASS</i> is an integer value identifying a
+priority class as described in the Windows SDK.</dd>
+<dt><a name="set_thread_relative_priority" id=
+"set_thread_relative_priority"><b class=
+'cmd'>set_thread_relative_priority</b> <i class='arg'>TID</i>
+<i class='arg'>PRIORITY</i></a></dt>
+<dd>Sets the scheduling priority value of the thread with id
+<i class='arg'>TID</i> to <i class='arg'>PRIORITY</i>. <i class=
+'arg'>PRIORITY</i> is an integer value relative to the process'
+priority class as described in the Windows SDK.</dd>
+<dt><a name="suspend_thread" id="suspend_thread"><b class=
+'cmd'>suspend_thread</b> <i class='arg'>TID</i></a></dt>
+<dd>Suspends execution of the thread with id <i class=
+'arg'>TID</i>. The system keeps track of a suspend count for each
+thread. This is incremented every time a call is made to suspend
+the thread, and decremented every time a call is made to resume it.
+The command returns thread's previous suspend count.</dd>
+</dl>
+<h3><a name="copyright" id="copyright">COPYRIGHT</a></h3>
+<p>Copyright &copy; 2003-2007 Ashok P. Nadkarni</p>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,4366 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 22 March 2008), see www.w3.org" />
+<title>Tcl Windows API extension</title>
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href=
+"http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<div id="doc" class="yui-t4">
+<div id='hd'>
+<div class='searchbox'><!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target=
+"_top">
+<table border="0" bgcolor="#FFFFFF" summary="Search">
+<tr>
+<td nowrap="nowrap" valign="top" align="left" height="32"><br />
+<input type="hidden" name="domains" value="magicsplat.com" />
+<label for="sbi" style="display: none">Enter your search
+terms</label> <input type="text" name="q" size="31" maxlength="255"
+value="" id="sbi" /></td>
+</tr>
+<tr>
+<td nowrap="nowrap">
+<table summary="Search buttons">
+<tr>
+<td><input type="radio" name="sitesearch" value="" checked=
+"checked" id="ss0" /> <label for="ss0" title=
+"Search the Web"><font size="-1" color=
+"#000000">Web</font></label></td>
+<td><input type="radio" name="sitesearch" value="magicsplat.com"
+id="ss1" /> <label for="ss1" title=
+"Search magicsplat.com"><font size="-1" color=
+"#000000">magicsplat.com</font></label></td>
+</tr>
+</table>
+<label for="sbb" style="display: none">Submit search form</label>
+<input type="submit" name="sa" value="Google Search" id="sbb" />
+<input type="hidden" name="client" value="pub-4771202757544410" />
+<input type="hidden" name="forid" value="1" /> <input type="hidden"
+name="ie" value="ISO-8859-1" /> <input type="hidden" name="oe"
+value="ISO-8859-1" /> <input type="hidden" name="safe" value=
+"active" /> <input type="hidden" name="cof" value=
+"GALT:#008000;GL:1;DIV:#808080;VLC:663399;AH:center;BGC:FFFFFF;LBGC:ffffff;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:36;LW:82;L:http://www.magicsplat.com/magicsplat.png;S:http://www.magicsplat.com;LP:1;FORID:1" />
+ <input type="hidden" name="hl" value="en" /></td>
+</tr>
+</table>
+</form>
+<!-- SiteSearch Google --></div>
+<div class='headingbar'><a href=
+'http://www.magicsplat.com'><img style=
+'float:right; padding-right: 5px;' src='magicsplat.png' alt=
+'site logo' /></a>
+<p><a href='index.html'>Tcl Windows API extension</a></p>
+</div>
+</div>
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b">
+<div class="yui-gf">
+<div class="yui-u content">
+<h2>Index</h2>
+<p><a href='#A'>A</a> <a href='#B'>B</a> <a href='#C'>C</a>
+<a href='#D'>D</a> <a href='#E'>E</a> <a href='#F'>F</a> <a href=
+'#G'>G</a> <a href='#H'>H</a> <a href='#I'>I</a> <a href='#J'>J</a>
+<a href='#K'>K</a> <a href='#L'>L</a> <a href='#M'>M</a> <a href=
+'#N'>N</a> <a href='#O'>O</a> <a href='#P'>P</a> <a href='#Q'>Q</a>
+<a href='#R'>R</a> <a href='#S'>S</a> <a href='#T'>T</a> <a href=
+'#U'>U</a> <a href='#V'>V</a> <a href='#W'>W</a> <a href='#X'>X</a>
+<a href='#Y'>Y</a> <a href='#Z'>Z</a></p>
+<table summary='Index' class='index'>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='A' id="A"><span class='indexsection'>A</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>abort_system_shutdown</td>
+<td><a href='osinfo.html#abort_system_shutdown'>System</a></td>
+</tr>
+<tr>
+<td>access control</td>
+<td><a href='security.html#accesscontrol'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>access control entry</td>
+<td><a href='security.html#accesscontrolentry'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>access control list</td>
+<td><a href='security.html#accesscontrollist'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>access tokens</td>
+<td><a href='security.html#accesstokens'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>account privileges</td>
+<td><a href='users.html#accountprivileges'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>account rights</td>
+<td><a href='users.html#accountrights'>Users and Groups</a></td>
+</tr>
+<tr>
+<td>ACE</td>
+<td><a href='security.html#ACE'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>ACL</td>
+<td><a href='security.html#ACL'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>add_account_rights</td>
+<td><a href='users.html#add_account_rights'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>add_member_to_local_group</td>
+<td><a href='users.html#add_member_to_local_group'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>add_user_to_global_group</td>
+<td><a href='users.html#add_user_to_global_group'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>address resolution</td>
+<td><a href='network.html#addressresolution'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>Address resolution protocol</td>
+<td><a href='network.html#Addressresolutionprotocol'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>address_to_hostname</td>
+<td><a href='network.html#address_to_hostname'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>addresses</td>
+<td><a href='network.html#addresses'>Network configuration</a></td>
+</tr>
+<tr>
+<td>AddSource</td>
+<td><a href='msi.html#AddSource'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>allocate_console</td>
+<td><a href='console.html#allocate_console'>Console</a></td>
+</tr>
+<tr>
+<td>append_acl_aces</td>
+<td><a href='security.html#append_acl_aces'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>ApplyTransform</td>
+<td><a href='msi.html#ApplyTransform'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>argument parsing</td>
+<td><a href='misc.html#argumentparsing'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>ARP table</td>
+<td><a href='network.html#ARPtable'>Network configuration</a></td>
+</tr>
+<tr>
+<td>arrange_icons</td>
+<td><a href='ui.html#arrange_icons'>Window management</a></td>
+</tr>
+<tr>
+<td>authentication</td>
+<td><a href='crypto.html#authentication'>Cryptographic API</a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='B' id="B"><span class='indexsection'>B</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>battery</td>
+<td><a href='power.html#battery'>Power management</a></td>
+</tr>
+<tr>
+<td>beep</td>
+<td><a href='sound.html#beep'>Sound</a></td>
+</tr>
+<tr>
+<td>begin_filesystem_monitor</td>
+<td><a href='disk.html#begin_filesystem_monitor'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>block_input</td>
+<td><a href='input.html#block_input'>Keyboard and mouse
+input</a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='C' id="C"><span class='indexsection'>C</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>cancel_filesystem_monitor</td>
+<td><a href='disk.html#cancel_filesystem_monitor'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>CD-ROM insertion</td>
+<td><a href='device.html#CD-ROMinsertion'>Device
+management</a></td>
+</tr>
+<tr>
+<td>channel handle</td>
+<td><a href='handles.html#channelhandle'>Handles</a></td>
+</tr>
+<tr>
+<td>check_enabled_privileges</td>
+<td><a href='security.html#check_enabled_privileges'>Security and
+access control</a></td>
+</tr>
+<tr>
+<td>clear_console</td>
+<td><a href='console.html#clear_console'>Console</a></td>
+</tr>
+<tr>
+<td>ClearData</td>
+<td><a href='msi.html#ClearData'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>ClearSourceList</td>
+<td><a href='msi.html#ClearSourceList'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>click_mouse_button</td>
+<td><a href='input.html#click_mouse_button'>Keyboard and mouse
+input</a></td>
+</tr>
+<tr>
+<td>clipboard</td>
+<td><a href='clipboard.html#clipboard'>Clipboard</a></td>
+</tr>
+<tr>
+<td>clipboard formats</td>
+<td><a href='clipboard.html#clipboardformats'>Clipboard</a></td>
+</tr>
+<tr>
+<td>clipboard_format_available</td>
+<td><a href=
+'clipboard.html#clipboard_format_available'>Clipboard</a></td>
+</tr>
+<tr>
+<td>Close</td>
+<td><a href='msi.html#Close'>Microsoft Windows Installer</a></td>
+</tr>
+<tr>
+<td>close_clipboard</td>
+<td><a href='clipboard.html#close_clipboard'>Clipboard</a></td>
+</tr>
+<tr>
+<td>close_desktop_handle</td>
+<td><a href='desktop.html#close_desktop_handle'>Desktops and Window
+stations</a></td>
+</tr>
+<tr>
+<td>close_handles</td>
+<td><a href='handles.html#close_handles'>Handles</a></td>
+</tr>
+<tr>
+<td>close_lm_open_file</td>
+<td><a href='share.html#close_lm_open_file'>Network shares and Lan
+Manager</a></td>
+</tr>
+<tr>
+<td>close_token</td>
+<td><a href='security.html#close_token'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>close_window</td>
+<td><a href='ui.html#close_window'>Window management</a></td>
+</tr>
+<tr>
+<td>close_window_station_handle</td>
+<td><a href='desktop.html#close_window_station_handle'>Desktops and
+Window stations</a></td>
+</tr>
+<tr>
+<td>CloseThemeData</td>
+<td><a href='shell.html#CloseThemeData'>Windows Shell</a></td>
+</tr>
+<tr>
+<td>code page</td>
+<td><a href='nls.html#codepage'>Internationalization</a></td>
+</tr>
+<tr>
+<td>CollectUserInfo</td>
+<td><a href='msi.html#CollectUserInfo'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>ColumnInfo</td>
+<td><a href='msi.html#ColumnInfo'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>COM</td>
+<td><a href='com.html#COM'>COM</a></td>
+</tr>
+<tr>
+<td>command line</td>
+<td><a href='misc.html#commandline'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>command line</td>
+<td><a href='process.html#commandline'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>Commit</td>
+<td><a href='msi.html#Commit'>Microsoft Windows Installer</a></td>
+</tr>
+<tr>
+<td>COMOBJ</td>
+<td><a href='com.html#COMOBJ'>COM</a></td>
+</tr>
+<tr>
+<td>comobj</td>
+<td><a href='com.html#comobj'>COM</a></td>
+</tr>
+<tr>
+<td>ComponentClients</td>
+<td><a href='msi.html#ComponentClients'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>ComponentPath</td>
+<td><a href='msi.html#ComponentPath'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>ComponentQualifiers</td>
+<td><a href='msi.html#ComponentQualifiers'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>Components</td>
+<td><a href='msi.html#Components'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>computer name</td>
+<td><a href='osinfo.html#computername'>System</a></td>
+</tr>
+<tr>
+<td>configure_window_titlebar</td>
+<td><a href='ui.html#configure_window_titlebar'>Window
+management</a></td>
+</tr>
+<tr>
+<td>ConfigureFeature</td>
+<td><a href='msi.html#ConfigureFeature'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>ConfigureProduct</td>
+<td><a href='msi.html#ConfigureProduct'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>connect_share</td>
+<td><a href='share.html#connect_share'>Network shares and Lan
+Manager</a></td>
+</tr>
+<tr>
+<td>connections</td>
+<td><a href='network.html#connections'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>console code page</td>
+<td><a href='console.html#consolecodepage'>Console</a></td>
+</tr>
+<tr>
+<td>console commands</td>
+<td><a href='console.html#consolecommands'>Console</a></td>
+</tr>
+<tr>
+<td>console control handlers</td>
+<td><a href='console.html#consolecontrolhandlers'>Console</a></td>
+</tr>
+<tr>
+<td>console input</td>
+<td><a href='console.html#consoleinput'>Console</a></td>
+</tr>
+<tr>
+<td>console modes</td>
+<td><a href='console.html#consolemodes'>Console</a></td>
+</tr>
+<tr>
+<td>console text attributes</td>
+<td><a href='console.html#consoletextattributes'>Console</a></td>
+</tr>
+<tr>
+<td>console_read</td>
+<td><a href='console.html#console_read'>Console</a></td>
+</tr>
+<tr>
+<td>context help button</td>
+<td><a href='ui.html#contexthelpbutton'>Window management</a></td>
+</tr>
+<tr>
+<td>continue_service</td>
+<td><a href='services.html#continue_service'>Services</a></td>
+</tr>
+<tr>
+<td>Count</td>
+<td><a href='msi.html#Count'>Microsoft Windows Installer</a></td>
+</tr>
+<tr>
+<td>CPU utilization</td>
+<td><a href='osinfo.html#CPUutilization'>System</a></td>
+</tr>
+<tr>
+<td>CPU utilization</td>
+<td><a href='process.html#CPUutilization'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>create_console_screen_buffer</td>
+<td><a href=
+'console.html#create_console_screen_buffer'>Console</a></td>
+</tr>
+<tr>
+<td>create_file</td>
+<td><a href='handles.html#create_file'>Handles</a></td>
+</tr>
+<tr>
+<td>create_process</td>
+<td><a href='process.html#create_process'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>create_service</td>
+<td><a href='services.html#create_service'>Services</a></td>
+</tr>
+<tr>
+<td>CreateRecord</td>
+<td><a href='msi.html#CreateRecord'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>CreateTransformSummaryInfo</td>
+<td><a href='msi.html#CreateTransformSummaryInfo'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>CSIDL</td>
+<td><a href='shell.html#CSIDL'>Windows Shell</a></td>
+</tr>
+<tr>
+<td>currency formatting</td>
+<td><a href=
+'nls.html#currencyformatting'>Internationalization</a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='D' id="D"><span class='indexsection'>D</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>DACL</td>
+<td><a href='security.html#DACL'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>DatabaseState</td>
+<td><a href='msi.html#DatabaseState'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>DataSize</td>
+<td><a href='msi.html#DataSize'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>decryption</td>
+<td><a href='crypto.html#decryption'>Cryptographic API</a></td>
+</tr>
+<tr>
+<td>delete_global_group</td>
+<td><a href='users.html#delete_global_group'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>delete_inifile_key</td>
+<td><a href='inifile.html#delete_inifile_key'>Windows INI
+file</a></td>
+</tr>
+<tr>
+<td>delete_inifile_section</td>
+<td><a href='inifile.html#delete_inifile_section'>Windows INI
+file</a></td>
+</tr>
+<tr>
+<td>delete_local_group</td>
+<td><a href='users.html#delete_local_group'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>delete_service</td>
+<td><a href='services.html#delete_service'>Services</a></td>
+</tr>
+<tr>
+<td>delete_share</td>
+<td><a href='share.html#delete_share'>Network shares and Lan
+Manager</a></td>
+</tr>
+<tr>
+<td>delete_user</td>
+<td><a href='users.html#delete_user'>Users and Groups</a></td>
+</tr>
+<tr>
+<td>desktop</td>
+<td><a href='ui.html#desktop'>Window management</a></td>
+</tr>
+<tr>
+<td>desktop wallpaper</td>
+<td><a href='ui.html#desktopwallpaper'>Window management</a></td>
+</tr>
+<tr>
+<td>desktop workarea</td>
+<td><a href='ui.html#desktopworkarea'>Window management</a></td>
+</tr>
+<tr>
+<td>desktops</td>
+<td><a href='desktop.html#desktops'>Desktops and Window
+stations</a></td>
+</tr>
+<tr>
+<td>device</td>
+<td><a href='device.html#device'>Device management</a></td>
+</tr>
+<tr>
+<td>device change</td>
+<td><a href='device.html#devicechange'>Device management</a></td>
+</tr>
+<tr>
+<td>device driver</td>
+<td><a href='process.html#devicedriver'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>device ioctl</td>
+<td><a href='device.html#deviceioctl'>Device management</a></td>
+</tr>
+<tr>
+<td>device_ioctl</td>
+<td><a href='device.html#device_ioctl'>Device management</a></td>
+</tr>
+<tr>
+<td>DHCP information</td>
+<td><a href='network.html#DHCPinformation'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>disable_all_token_privileges</td>
+<td><a href='security.html#disable_all_token_privileges'>Security
+and access control</a></td>
+</tr>
+<tr>
+<td>disable_privileges</td>
+<td><a href='security.html#disable_privileges'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>disable_token_privileges</td>
+<td><a href='security.html#disable_token_privileges'>Security and
+access control</a></td>
+</tr>
+<tr>
+<td>disable_user</td>
+<td><a href='users.html#disable_user'>Users and Groups</a></td>
+</tr>
+<tr>
+<td>disable_window_input</td>
+<td><a href='ui.html#disable_window_input'>Window
+management</a></td>
+</tr>
+<tr>
+<td>disconnect_share</td>
+<td><a href='share.html#disconnect_share'>Network shares and Lan
+Manager</a></td>
+</tr>
+<tr>
+<td>discretionary access control list</td>
+<td><a href='security.html#discretionaryaccesscontrollist'>Security
+and access control</a></td>
+</tr>
+<tr>
+<td>disk</td>
+<td><a href='disk.html#disk'>Files, Disks and Volumes</a></td>
+</tr>
+<tr>
+<td>disk geometry</td>
+<td><a href='disk.html#diskgeometry'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>disk serial number</td>
+<td><a href='disk.html#diskserialnumber'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>disk space</td>
+<td><a href='disk.html#diskspace'>Files, Disks and Volumes</a></td>
+</tr>
+<tr>
+<td>display devices</td>
+<td><a href='ui.html#displaydevices'>Window management</a></td>
+</tr>
+<tr>
+<td>display size</td>
+<td><a href='ui.html#displaysize'>Window management</a></td>
+</tr>
+<tr>
+<td>DLL</td>
+<td><a href='process.html#DLL'>Processes, threads and DLLs</a></td>
+</tr>
+<tr>
+<td>DNS lookup</td>
+<td><a href='network.html#DNSlookup'>Network configuration</a></td>
+</tr>
+<tr>
+<td>DNS server addresses</td>
+<td><a href='network.html#DNSserveraddresses'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>domain</td>
+<td><a href='osinfo.html#domain'>System</a></td>
+</tr>
+<tr>
+<td>domain controller</td>
+<td><a href='osinfo.html#domaincontroller'>System</a></td>
+</tr>
+<tr>
+<td>drive</td>
+<td><a href='disk.html#drive'>Files, Disks and Volumes</a></td>
+</tr>
+<tr>
+<td>drive attributes</td>
+<td><a href='disk.html#driveattributes'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>drive label</td>
+<td><a href='disk.html#drivelabel'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>drive list</td>
+<td><a href='disk.html#drivelist'>Files, Disks and Volumes</a></td>
+</tr>
+<tr>
+<td>duplicate_handle</td>
+<td><a href='handles.html#duplicate_handle'>Handles</a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='E' id="E"><span class='indexsection'>E</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>enable_privileges</td>
+<td><a href='security.html#enable_privileges'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>enable_token_privileges</td>
+<td><a href='security.html#enable_token_privileges'>Security and
+access control</a></td>
+</tr>
+<tr>
+<td>enable_user</td>
+<td><a href='users.html#enable_user'>Users and Groups</a></td>
+</tr>
+<tr>
+<td>enable_window_input</td>
+<td><a href='ui.html#enable_window_input'>Window
+management</a></td>
+</tr>
+<tr>
+<td>EnableLog</td>
+<td><a href='msi.html#EnableLog'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>EnableUIPreview</td>
+<td><a href='msi.html#EnableUIPreview'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>encryption</td>
+<td><a href='crypto.html#encryption'>Cryptographic API</a></td>
+</tr>
+<tr>
+<td>end_lm_sessions</td>
+<td><a href='share.html#end_lm_sessions'>Network shares and Lan
+Manager</a></td>
+</tr>
+<tr>
+<td>end_process</td>
+<td><a href='process.html#end_process'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>enumerate_printers</td>
+<td><a href='printer.html#enumerate_printers'>Printers</a></td>
+</tr>
+<tr>
+<td>Environment</td>
+<td><a href='msi.html#Environment'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>environment string</td>
+<td><a href='misc.html#environmentstring'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>error handling</td>
+<td><a href='errors.html#errorhandling'>Error generation and
+handling</a></td>
+</tr>
+<tr>
+<td>error handling</td>
+<td><a href='misc.html#errorhandling'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>errorCode</td>
+<td><a href='errors.html#errorCode'>Error generation and
+handling</a></td>
+</tr>
+<tr>
+<td>eval_with_privileges</td>
+<td><a href='security.html#eval_with_privileges'>Security and
+access control</a></td>
+</tr>
+<tr>
+<td>event log</td>
+<td><a href='eventlog.html#eventlog'>Event log</a></td>
+</tr>
+<tr>
+<td>eventlog_backup</td>
+<td><a href='eventlog.html#eventlog_backup'>Event log</a></td>
+</tr>
+<tr>
+<td>eventlog_clear</td>
+<td><a href='eventlog.html#eventlog_clear'>Event log</a></td>
+</tr>
+<tr>
+<td>eventlog_close</td>
+<td><a href='eventlog.html#eventlog_close'>Event log</a></td>
+</tr>
+<tr>
+<td>eventlog_count</td>
+<td><a href='eventlog.html#eventlog_count'>Event log</a></td>
+</tr>
+<tr>
+<td>eventlog_format_category</td>
+<td><a href='eventlog.html#eventlog_format_category'>Event
+log</a></td>
+</tr>
+<tr>
+<td>eventlog_format_message</td>
+<td><a href='eventlog.html#eventlog_format_message'>Event
+log</a></td>
+</tr>
+<tr>
+<td>eventlog_is_full</td>
+<td><a href='eventlog.html#eventlog_is_full'>Event log</a></td>
+</tr>
+<tr>
+<td>eventlog_log</td>
+<td><a href='eventlog.html#eventlog_log'>Event log</a></td>
+</tr>
+<tr>
+<td>eventlog_oldest</td>
+<td><a href='eventlog.html#eventlog_oldest'>Event log</a></td>
+</tr>
+<tr>
+<td>eventlog_open</td>
+<td><a href='eventlog.html#eventlog_open'>Event log</a></td>
+</tr>
+<tr>
+<td>eventlog_read</td>
+<td><a href='eventlog.html#eventlog_read'>Event log</a></td>
+</tr>
+<tr>
+<td>eventlog_write</td>
+<td><a href='eventlog.html#eventlog_write'>Event log</a></td>
+</tr>
+<tr>
+<td>exception handling</td>
+<td><a href='errors.html#exceptionhandling'>Error generation and
+handling</a></td>
+</tr>
+<tr>
+<td>exception handling</td>
+<td><a href='misc.html#exceptionhandling'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>executable path</td>
+<td><a href='process.html#executablepath'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>Execute</td>
+<td><a href='msi.html#Execute'>Microsoft Windows Installer</a></td>
+</tr>
+<tr>
+<td>exit code</td>
+<td><a href='process.html#exitcode'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>expand environment strings</td>
+<td><a href=
+'misc.html#expandenvironmentstrings'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>expand_environment_strings</td>
+<td><a href=
+'misc.html#expand_environment_strings'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>Export</td>
+<td><a href='msi.html#Export'>Microsoft Windows Installer</a></td>
+</tr>
+<tr>
+<td>export</td>
+<td><a href='share.html#export'>Network shares and Lan
+Manager</a></td>
+</tr>
+<tr>
+<td>extract_primary_langid</td>
+<td><a href=
+'nls.html#extract_primary_langid'>Internationalization</a></td>
+</tr>
+<tr>
+<td>extract_sublanguage_langid</td>
+<td><a href=
+'nls.html#extract_sublanguage_langid'>Internationalization</a></td>
+</tr>
+<tr>
+<td>ExtractPatchXMLData</td>
+<td><a href='msi.html#ExtractPatchXMLData'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='F' id="F"><span class='indexsection'>F</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>fax</td>
+<td><a href='printer.html#fax'>Printers</a></td>
+</tr>
+<tr>
+<td>FeatureParent</td>
+<td><a href='msi.html#FeatureParent'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>Features</td>
+<td><a href='msi.html#Features'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>FeatureState</td>
+<td><a href='msi.html#FeatureState'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>FeatureUsageCount</td>
+<td><a href='msi.html#FeatureUsageCount'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>FeatureUsageDate</td>
+<td><a href='msi.html#FeatureUsageDate'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>Fetch</td>
+<td><a href='msi.html#Fetch'>Microsoft Windows Installer</a></td>
+</tr>
+<tr>
+<td>FieldCount</td>
+<td><a href='msi.html#FieldCount'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>file access time</td>
+<td><a href='disk.html#fileaccesstime'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>file change notifications</td>
+<td><a href='disk.html#filechangenotifications'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>file create time</td>
+<td><a href='disk.html#filecreatetime'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>file modification time</td>
+<td><a href='disk.html#filemodificationtime'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>file property dialog</td>
+<td><a href='disk.html#filepropertydialog'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>file property dialog</td>
+<td><a href='shell.html#filepropertydialog'>Windows Shell</a></td>
+</tr>
+<tr>
+<td>file shares</td>
+<td><a href='share.html#fileshares'>Network shares and Lan
+Manager</a></td>
+</tr>
+<tr>
+<td>file system type</td>
+<td><a href='disk.html#filesystemtype'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>file version</td>
+<td><a href='disk.html#fileversion'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>file_properties_dialog</td>
+<td><a href='disk.html#file_properties_dialog'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>FileAttributes</td>
+<td><a href='msi.html#FileAttributes'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>FileSize</td>
+<td><a href='msi.html#FileSize'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>FileVersion</td>
+<td><a href='msi.html#FileVersion'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>fill_console</td>
+<td><a href='console.html#fill_console'>Console</a></td>
+</tr>
+<tr>
+<td>find_accounts_with_right</td>
+<td><a href='users.html#find_accounts_with_right'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>find_desktops</td>
+<td><a href='desktop.html#find_desktops'>Desktops and Window
+stations</a></td>
+</tr>
+<tr>
+<td>find_domain_controller</td>
+<td><a href='osinfo.html#find_domain_controller'>System</a></td>
+</tr>
+<tr>
+<td>find_lm_connections</td>
+<td><a href='share.html#find_lm_connections'>Network shares and Lan
+Manager</a></td>
+</tr>
+<tr>
+<td>find_lm_open_files</td>
+<td><a href='share.html#find_lm_open_files'>Network shares and Lan
+Manager</a></td>
+</tr>
+<tr>
+<td>find_lm_sessions</td>
+<td><a href='share.html#find_lm_sessions'>Network shares and Lan
+Manager</a></td>
+</tr>
+<tr>
+<td>find_logical_drives</td>
+<td><a href='disk.html#find_logical_drives'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>find_logon_sessions</td>
+<td><a href='security.html#find_logon_sessions'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>find_physical_disks</td>
+<td><a href='disk.html#find_physical_disks'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>find_volume_mount_points</td>
+<td><a href='disk.html#find_volume_mount_points'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>find_volumes</td>
+<td><a href='disk.html#find_volumes'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>find_window_stations</td>
+<td><a href='desktop.html#find_window_stations'>Desktops and Window
+stations</a></td>
+</tr>
+<tr>
+<td>find_windows</td>
+<td><a href='ui.html#find_windows'>Window management</a></td>
+</tr>
+<tr>
+<td>flash_window_caption</td>
+<td><a href='ui.html#flash_window_caption'>Window
+management</a></td>
+</tr>
+<tr>
+<td>flush_arp_table</td>
+<td><a href='network.html#flush_arp_table'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>flush_console_input</td>
+<td><a href='console.html#flush_console_input'>Console</a></td>
+</tr>
+<tr>
+<td>format messages</td>
+<td><a href='misc.html#formatmessages'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>format, clipboard</td>
+<td><a href='clipboard.html#format,clipboard'>Clipboard</a></td>
+</tr>
+<tr>
+<td>format_currency</td>
+<td><a href=
+'nls.html#format_currency'>Internationalization</a></td>
+</tr>
+<tr>
+<td>format_message</td>
+<td><a href='misc.html#format_message'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>format_number</td>
+<td><a href='nls.html#format_number'>Internationalization</a></td>
+</tr>
+<tr>
+<td>FormatText</td>
+<td><a href='msi.html#FormatText'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>formatting</td>
+<td><a href='nls.html#formatting'>Internationalization</a></td>
+</tr>
+<tr>
+<td>FQDN</td>
+<td><a href='network.html#FQDN'>Network configuration</a></td>
+</tr>
+<tr>
+<td>free shared library</td>
+<td><a href='process.html#freesharedlibrary'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>free_console</td>
+<td><a href='console.html#free_console'>Console</a></td>
+</tr>
+<tr>
+<td>free_library</td>
+<td><a href='process.html#free_library'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='G' id="G"><span class='indexsection'>G</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>generate_console_control_event</td>
+<td><a href=
+'console.html#generate_console_control_event'>Console</a></td>
+</tr>
+<tr>
+<td>GenerateTransform</td>
+<td><a href='msi.html#GenerateTransform'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>get_account_rights</td>
+<td><a href='users.html#get_account_rights'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>get_ace_inheritance</td>
+<td><a href='security.html#get_ace_inheritance'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>get_ace_rights</td>
+<td><a href='security.html#get_ace_rights'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>get_ace_sid</td>
+<td><a href='security.html#get_ace_sid'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>get_ace_text</td>
+<td><a href='security.html#get_ace_text'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>get_ace_type</td>
+<td><a href='security.html#get_ace_type'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>get_acl_aces</td>
+<td><a href='security.html#get_acl_aces'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>get_acl_rev</td>
+<td><a href='security.html#get_acl_rev'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>get_active_processor_mask</td>
+<td><a href='osinfo.html#get_active_processor_mask'>System</a></td>
+</tr>
+<tr>
+<td>get_active_window_for_current_thread</td>
+<td><a href='ui.html#get_active_window_for_current_thread'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_active_window_for_thread</td>
+<td><a href='ui.html#get_active_window_for_thread'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_arp_table</td>
+<td><a href='network.html#get_arp_table'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>get_caret_blink_time</td>
+<td><a href='ui.html#get_caret_blink_time'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_caret_location</td>
+<td><a href='ui.html#get_caret_location'>Window management</a></td>
+</tr>
+<tr>
+<td>get_child_windows</td>
+<td><a href='ui.html#get_child_windows'>Window management</a></td>
+</tr>
+<tr>
+<td>get_client_share_info</td>
+<td><a href='share.html#get_client_share_info'>Network shares and
+Lan Manager</a></td>
+</tr>
+<tr>
+<td>get_client_shares</td>
+<td><a href='share.html#get_client_shares'>Network shares and Lan
+Manager</a></td>
+</tr>
+<tr>
+<td>get_clipboard_formats</td>
+<td><a href=
+'clipboard.html#get_clipboard_formats'>Clipboard</a></td>
+</tr>
+<tr>
+<td>get_color_depth</td>
+<td><a href='ui.html#get_color_depth'>Window management</a></td>
+</tr>
+<tr>
+<td>get_command_line</td>
+<td><a href='misc.html#get_command_line'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>get_command_line_args</td>
+<td><a href=
+'misc.html#get_command_line_args'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>get_computer_name</td>
+<td><a href='osinfo.html#get_computer_name'>System</a></td>
+</tr>
+<tr>
+<td>get_computer_netbios_name</td>
+<td><a href='osinfo.html#get_computer_netbios_name'>System</a></td>
+</tr>
+<tr>
+<td>get_console_handle</td>
+<td><a href='console.html#get_console_handle'>Console</a></td>
+</tr>
+<tr>
+<td>get_console_input_codepage</td>
+<td><a href=
+'console.html#get_console_input_codepage'>Console</a></td>
+</tr>
+<tr>
+<td>get_console_input_mode</td>
+<td><a href='console.html#get_console_input_mode'>Console</a></td>
+</tr>
+<tr>
+<td>get_console_output_mode</td>
+<td><a href='console.html#get_console_output_mode'>Console</a></td>
+</tr>
+<tr>
+<td>get_console_pending_input_count</td>
+<td><a href=
+'console.html#get_console_pending_input_count'>Console</a></td>
+</tr>
+<tr>
+<td>get_console_screen_buffer_info</td>
+<td><a href=
+'console.html#get_console_screen_buffer_info'>Console</a></td>
+</tr>
+<tr>
+<td>get_console_title</td>
+<td><a href='console.html#get_console_title'>Console</a></td>
+</tr>
+<tr>
+<td>get_console_window</td>
+<td><a href='console.html#get_console_window'>Console</a></td>
+</tr>
+<tr>
+<td>get_console_window_maxsize</td>
+<td><a href=
+'console.html#get_console_window_maxsize'>Console</a></td>
+</tr>
+<tr>
+<td>get_current_process_id</td>
+<td><a href='process.html#get_current_process_id'>Processes,
+threads and DLLs</a></td>
+</tr>
+<tr>
+<td>get_current_thread_id</td>
+<td><a href='process.html#get_current_thread_id'>Processes, threads
+and DLLs</a></td>
+</tr>
+<tr>
+<td>get_current_user</td>
+<td><a href='security.html#get_current_user'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>get_current_window_station_handle</td>
+<td><a href=
+'desktop.html#get_current_window_station_handle'>Desktops and
+Window stations</a></td>
+</tr>
+<tr>
+<td>get_dependent_service_status</td>
+<td><a href=
+'services.html#get_dependent_service_status'>Services</a></td>
+</tr>
+<tr>
+<td>get_descendent_windows</td>
+<td><a href='ui.html#get_descendent_windows'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_desktop_handle</td>
+<td><a href='desktop.html#get_desktop_handle'>Desktops and Window
+stations</a></td>
+</tr>
+<tr>
+<td>get_desktop_wallpaper</td>
+<td><a href='ui.html#get_desktop_wallpaper'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_desktop_window</td>
+<td><a href='ui.html#get_desktop_window'>Window management</a></td>
+</tr>
+<tr>
+<td>get_desktop_workarea</td>
+<td><a href='ui.html#get_desktop_workarea'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_device_drivers</td>
+<td><a href='process.html#get_device_drivers'>Processes, threads
+and DLLs</a></td>
+</tr>
+<tr>
+<td>get_device_power_state</td>
+<td><a href='power.html#get_device_power_state'>Power
+management</a></td>
+</tr>
+<tr>
+<td>get_display_devices</td>
+<td><a href='ui.html#get_display_devices'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_display_monitor_from_point</td>
+<td><a href='ui.html#get_display_monitor_from_point'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_display_monitor_from_rect</td>
+<td><a href='ui.html#get_display_monitor_from_rect'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_display_monitor_from_window</td>
+<td><a href='ui.html#get_display_monitor_from_window'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_display_monitor_info</td>
+<td><a href='ui.html#get_display_monitor_info'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_display_monitors</td>
+<td><a href='ui.html#get_display_monitors'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_display_size</td>
+<td><a href='ui.html#get_display_size'>Window management</a></td>
+</tr>
+<tr>
+<td>get_drive_info</td>
+<td><a href='disk.html#get_drive_info'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>get_drive_type</td>
+<td><a href='disk.html#get_drive_type'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>get_file_times</td>
+<td><a href='disk.html#get_file_times'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>get_file_version_resource</td>
+<td><a href='disk.html#get_file_version_resource'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>get_first_child</td>
+<td><a href='ui.html#get_first_child'>Window management</a></td>
+</tr>
+<tr>
+<td>get_first_sibling_window</td>
+<td><a href='ui.html#get_first_sibling_window'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_focus_window_for_thread</td>
+<td><a href='ui.html#get_focus_window_for_thread'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_foreground_window</td>
+<td><a href='ui.html#get_foreground_window'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_global_group_info</td>
+<td><a href='users.html#get_global_group_info'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>get_global_group_members</td>
+<td><a href='users.html#get_global_group_members'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>get_global_groups</td>
+<td><a href='users.html#get_global_groups'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>get_input_idle_time</td>
+<td><a href='input.html#get_input_idle_time'>Keyboard and mouse
+input</a></td>
+</tr>
+<tr>
+<td>get_ip_addresses</td>
+<td><a href='network.html#get_ip_addresses'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>get_last_sibling_window</td>
+<td><a href='ui.html#get_last_sibling_window'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_lm_open_file_info</td>
+<td><a href='share.html#get_lm_open_file_info'>Network shares and
+Lan Manager</a></td>
+</tr>
+<tr>
+<td>get_lm_session_info</td>
+<td><a href='share.html#get_lm_session_info'>Network shares and Lan
+Manager</a></td>
+</tr>
+<tr>
+<td>get_local_group_info</td>
+<td><a href='users.html#get_local_group_info'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>get_local_group_members</td>
+<td><a href='users.html#get_local_group_members'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>get_local_groups</td>
+<td><a href='users.html#get_local_groups'>Users and Groups</a></td>
+</tr>
+<tr>
+<td>get_locale_info</td>
+<td><a href=
+'nls.html#get_locale_info'>Internationalization</a></td>
+</tr>
+<tr>
+<td>get_logon_session_info</td>
+<td><a href='security.html#get_logon_session_info'>Security and
+access control</a></td>
+</tr>
+<tr>
+<td>get_mapped_share_info</td>
+<td><a href='share.html#get_mapped_share_info'>Network shares and
+Lan Manager</a></td>
+</tr>
+<tr>
+<td>get_memory_info</td>
+<td><a href='osinfo.html#get_memory_info'>System</a></td>
+</tr>
+<tr>
+<td>get_mounted_volume_name</td>
+<td><a href='disk.html#get_mounted_volume_name'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>get_mouse_location</td>
+<td><a href='input.html#get_mouse_location'>Keyboard and mouse
+input</a></td>
+</tr>
+<tr>
+<td>get_multiple_display_monitor_info</td>
+<td><a href='ui.html#get_multiple_display_monitor_info'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_multiple_service_status</td>
+<td><a href=
+'services.html#get_multiple_service_status'>Services</a></td>
+</tr>
+<tr>
+<td>get_netif_count</td>
+<td><a href='network.html#get_netif_count'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>get_netif_indices</td>
+<td><a href='network.html#get_netif_indices'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>get_netif_info</td>
+<td><a href='network.html#get_netif_info'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>get_network_info</td>
+<td><a href='network.html#get_network_info'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>get_next_sibling_window</td>
+<td><a href='ui.html#get_next_sibling_window'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_os_description</td>
+<td><a href='osinfo.html#get_os_description'>System</a></td>
+</tr>
+<tr>
+<td>get_os_info</td>
+<td><a href='osinfo.html#get_os_info'>System</a></td>
+</tr>
+<tr>
+<td>get_os_version</td>
+<td><a href='osinfo.html#get_os_version'>System</a></td>
+</tr>
+<tr>
+<td>get_outgoing_interface</td>
+<td><a href='network.html#get_outgoing_interface'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>get_owner_window</td>
+<td><a href='ui.html#get_owner_window'>Window management</a></td>
+</tr>
+<tr>
+<td>get_parent_window</td>
+<td><a href='ui.html#get_parent_window'>Window management</a></td>
+</tr>
+<tr>
+<td>get_physical_disk_info</td>
+<td><a href='disk.html#get_physical_disk_info'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>get_power_status</td>
+<td><a href='power.html#get_power_status'>Power management</a></td>
+</tr>
+<tr>
+<td>get_prev_sibling_window</td>
+<td><a href='ui.html#get_prev_sibling_window'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_primary_domain_controller</td>
+<td><a href=
+'osinfo.html#get_primary_domain_controller'>System</a></td>
+</tr>
+<tr>
+<td>get_primary_domain_info</td>
+<td><a href='osinfo.html#get_primary_domain_info'>System</a></td>
+</tr>
+<tr>
+<td>get_priority_class</td>
+<td><a href='process.html#get_priority_class'>Processes, threads
+and DLLs</a></td>
+</tr>
+<tr>
+<td>get_privilege_description</td>
+<td><a href='security.html#get_privilege_description'>Security and
+access control</a></td>
+</tr>
+<tr>
+<td>get_process_commandline</td>
+<td><a href='process.html#get_process_commandline'>Processes,
+threads and DLLs</a></td>
+</tr>
+<tr>
+<td>get_process_exit_code</td>
+<td><a href='process.html#get_process_exit_code'>Processes, threads
+and DLLs</a></td>
+</tr>
+<tr>
+<td>get_process_handle</td>
+<td><a href='process.html#get_process_handle'>Processes, threads
+and DLLs</a></td>
+</tr>
+<tr>
+<td>get_process_ids</td>
+<td><a href='process.html#get_process_ids'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>get_process_info</td>
+<td><a href='process.html#get_process_info'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>get_process_modules</td>
+<td><a href='process.html#get_process_modules'>Processes, threads
+and DLLs</a></td>
+</tr>
+<tr>
+<td>get_process_name</td>
+<td><a href='process.html#get_process_name'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>get_process_parent</td>
+<td><a href='process.html#get_process_parent'>Processes, threads
+and DLLs</a></td>
+</tr>
+<tr>
+<td>get_process_path</td>
+<td><a href='process.html#get_process_path'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>get_process_thread_ids</td>
+<td><a href='process.html#get_process_thread_ids'>Processes,
+threads and DLLs</a></td>
+</tr>
+<tr>
+<td>get_processor_count</td>
+<td><a href='osinfo.html#get_processor_count'>System</a></td>
+</tr>
+<tr>
+<td>get_processor_info</td>
+<td><a href='osinfo.html#get_processor_info'>System</a></td>
+</tr>
+<tr>
+<td>get_registered_clipboard_format_name</td>
+<td><a href=
+'clipboard.html#get_registered_clipboard_format_name'>Clipboard</a></td>
+</tr>
+<tr>
+<td>get_resource_security_descriptor</td>
+<td><a href=
+'security.html#get_resource_security_descriptor'>Security and
+access control</a></td>
+</tr>
+<tr>
+<td>get_route</td>
+<td><a href='network.html#get_route'>Network configuration</a></td>
+</tr>
+<tr>
+<td>get_routing_table</td>
+<td><a href='network.html#get_routing_table'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>get_security_descriptor_control</td>
+<td><a href=
+'security.html#get_security_descriptor_control'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>get_security_descriptor_dacl</td>
+<td><a href='security.html#get_security_descriptor_dacl'>Security
+and access control</a></td>
+</tr>
+<tr>
+<td>get_security_descriptor_group</td>
+<td><a href='security.html#get_security_descriptor_group'>Security
+and access control</a></td>
+</tr>
+<tr>
+<td>get_security_descriptor_owner</td>
+<td><a href='security.html#get_security_descriptor_owner'>Security
+and access control</a></td>
+</tr>
+<tr>
+<td>get_security_descriptor_sacl</td>
+<td><a href='security.html#get_security_descriptor_sacl'>Security
+and access control</a></td>
+</tr>
+<tr>
+<td>get_security_descriptor_text</td>
+<td><a href='security.html#get_security_descriptor_text'>Security
+and access control</a></td>
+</tr>
+<tr>
+<td>get_service_configuration</td>
+<td><a href=
+'services.html#get_service_configuration'>Services</a></td>
+</tr>
+<tr>
+<td>get_service_display_name</td>
+<td><a href=
+'services.html#get_service_display_name'>Services</a></td>
+</tr>
+<tr>
+<td>get_service_internal_name</td>
+<td><a href=
+'services.html#get_service_internal_name'>Services</a></td>
+</tr>
+<tr>
+<td>get_service_state</td>
+<td><a href='services.html#get_service_state'>Services</a></td>
+</tr>
+<tr>
+<td>get_service_status</td>
+<td><a href='services.html#get_service_status'>Services</a></td>
+</tr>
+<tr>
+<td>get_share_info</td>
+<td><a href='share.html#get_share_info'>Network shares and Lan
+Manager</a></td>
+</tr>
+<tr>
+<td>get_shares</td>
+<td><a href='share.html#get_shares'>Network shares and Lan
+Manager</a></td>
+</tr>
+<tr>
+<td>get_shell_folder</td>
+<td><a href='shell.html#get_shell_folder'>Windows Shell</a></td>
+</tr>
+<tr>
+<td>get_shell_window</td>
+<td><a href='ui.html#get_shell_window'>Window management</a></td>
+</tr>
+<tr>
+<td>get_standard_handle</td>
+<td><a href='console.html#get_standard_handle'>Console</a></td>
+</tr>
+<tr>
+<td>get_system_default_langid</td>
+<td><a href=
+'nls.html#get_system_default_langid'>Internationalization</a></td>
+</tr>
+<tr>
+<td>get_system_default_lcid</td>
+<td><a href=
+'nls.html#get_system_default_lcid'>Internationalization</a></td>
+</tr>
+<tr>
+<td>get_system_info</td>
+<td><a href='osinfo.html#get_system_info'>System</a></td>
+</tr>
+<tr>
+<td>get_system_parameters_info</td>
+<td><a href=
+'osinfo.html#get_system_parameters_info'>System</a></td>
+</tr>
+<tr>
+<td>get_system_time</td>
+<td><a href='osinfo.html#get_system_time'>System</a></td>
+</tr>
+<tr>
+<td>get_system_ui_langid</td>
+<td><a href=
+'nls.html#get_system_ui_langid'>Internationalization</a></td>
+</tr>
+<tr>
+<td>get_system_uptime</td>
+<td><a href='osinfo.html#get_system_uptime'>System</a></td>
+</tr>
+<tr>
+<td>get_tcl_channel_handle</td>
+<td><a href='handles.html#get_tcl_channel_handle'>Handles</a></td>
+</tr>
+<tr>
+<td>get_tcp_connections</td>
+<td><a href='network.html#get_tcp_connections'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>get_thread_handle</td>
+<td><a href='process.html#get_thread_handle'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>get_thread_info</td>
+<td><a href='process.html#get_thread_info'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>get_thread_parent_process_id</td>
+<td><a href='process.html#get_thread_parent_process_id'>Processes,
+threads and DLLs</a></td>
+</tr>
+<tr>
+<td>get_thread_relative_priority</td>
+<td><a href='process.html#get_thread_relative_priority'>Processes,
+threads and DLLs</a></td>
+</tr>
+<tr>
+<td>get_token_groups</td>
+<td><a href='security.html#get_token_groups'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>get_token_groups_and_attrs</td>
+<td><a href='security.html#get_token_groups_and_attrs'>Security and
+access control</a></td>
+</tr>
+<tr>
+<td>get_token_impersonation_level</td>
+<td><a href='security.html#get_token_impersonation_level'>Security
+and access control</a></td>
+</tr>
+<tr>
+<td>get_token_owner</td>
+<td><a href='security.html#get_token_owner'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>get_token_primary_group</td>
+<td><a href='security.html#get_token_primary_group'>Security and
+access control</a></td>
+</tr>
+<tr>
+<td>get_token_privileges</td>
+<td><a href='security.html#get_token_privileges'>Security and
+access control</a></td>
+</tr>
+<tr>
+<td>get_token_privileges_and_attrs</td>
+<td><a href='security.html#get_token_privileges_and_attrs'>Security
+and access control</a></td>
+</tr>
+<tr>
+<td>get_token_source</td>
+<td><a href='security.html#get_token_source'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>get_token_statistics</td>
+<td><a href='security.html#get_token_statistics'>Security and
+access control</a></td>
+</tr>
+<tr>
+<td>get_token_type</td>
+<td><a href='security.html#get_token_type'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>get_token_user</td>
+<td><a href='security.html#get_token_user'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>get_toplevel_windows</td>
+<td><a href='ui.html#get_toplevel_windows'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_udp_connections</td>
+<td><a href='network.html#get_udp_connections'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>get_user_account_info</td>
+<td><a href='users.html#get_user_account_info'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>get_user_default_langid</td>
+<td><a href=
+'nls.html#get_user_default_langid'>Internationalization</a></td>
+</tr>
+<tr>
+<td>get_user_default_lcid</td>
+<td><a href=
+'nls.html#get_user_default_lcid'>Internationalization</a></td>
+</tr>
+<tr>
+<td>get_user_local_groups_recursive</td>
+<td><a href='users.html#get_user_local_groups_recursive'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>get_user_ui_langid</td>
+<td><a href=
+'nls.html#get_user_ui_langid'>Internationalization</a></td>
+</tr>
+<tr>
+<td>get_users</td>
+<td><a href='users.html#get_users'>Users and Groups</a></td>
+</tr>
+<tr>
+<td>get_version</td>
+<td><a href='misc.html#get_version'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>get_volume_info</td>
+<td><a href='disk.html#get_volume_info'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>get_volume_mount_point_for_path</td>
+<td><a href='disk.html#get_volume_mount_point_for_path'>Files,
+Disks and Volumes</a></td>
+</tr>
+<tr>
+<td>get_window_application</td>
+<td><a href='ui.html#get_window_application'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_window_at_location</td>
+<td><a href='ui.html#get_window_at_location'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_window_class</td>
+<td><a href='ui.html#get_window_class'>Window management</a></td>
+</tr>
+<tr>
+<td>get_window_client_area_size</td>
+<td><a href='ui.html#get_window_client_area_size'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_window_coordinates</td>
+<td><a href='ui.html#get_window_coordinates'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_window_id</td>
+<td><a href='ui.html#get_window_id'>Window management</a></td>
+</tr>
+<tr>
+<td>get_window_long</td>
+<td><a href='ui.html#get_window_long'>Window management</a></td>
+</tr>
+<tr>
+<td>get_window_process</td>
+<td><a href='ui.html#get_window_process'>Window management</a></td>
+</tr>
+<tr>
+<td>get_window_real_class</td>
+<td><a href='ui.html#get_window_real_class'>Window
+management</a></td>
+</tr>
+<tr>
+<td>get_window_station_handle</td>
+<td><a href='desktop.html#get_window_station_handle'>Desktops and
+Window stations</a></td>
+</tr>
+<tr>
+<td>get_window_style</td>
+<td><a href='ui.html#get_window_style'>Window management</a></td>
+</tr>
+<tr>
+<td>get_window_text</td>
+<td><a href='ui.html#get_window_text'>Window management</a></td>
+</tr>
+<tr>
+<td>get_window_thread</td>
+<td><a href='ui.html#get_window_thread'>Window management</a></td>
+</tr>
+<tr>
+<td>get_window_userdata</td>
+<td><a href='ui.html#get_window_userdata'>Window
+management</a></td>
+</tr>
+<tr>
+<td>GetCurrentThemeName</td>
+<td><a href='shell.html#GetCurrentThemeName'>Windows Shell</a></td>
+</tr>
+<tr>
+<td>GetError</td>
+<td><a href='msi.html#GetError'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>GetThemeColor</td>
+<td><a href='shell.html#GetThemeColor'>Windows Shell</a></td>
+</tr>
+<tr>
+<td>GetThemeFont</td>
+<td><a href='shell.html#GetThemeFont'>Windows Shell</a></td>
+</tr>
+<tr>
+<td>globalization</td>
+<td><a href='nls.html#globalization'>Internationalization</a></td>
+</tr>
+<tr>
+<td>group accounts</td>
+<td><a href='users.html#groupaccounts'>Users and Groups</a></td>
+</tr>
+<tr>
+<td>group members</td>
+<td><a href='users.html#groupmembers'>Users and Groups</a></td>
+</tr>
+<tr>
+<td>groups</td>
+<td><a href='users.html#groups'>Users and Groups</a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='H' id="H"><span class='indexsection'>H</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>handles</td>
+<td><a href='handles.html#handles'>Handles</a></td>
+</tr>
+<tr>
+<td>hibernate</td>
+<td><a href='osinfo.html#hibernate'>System</a></td>
+</tr>
+<tr>
+<td>hibernate</td>
+<td><a href='power.html#hibernate'>Power management</a></td>
+</tr>
+<tr>
+<td>hide_caret</td>
+<td><a href='ui.html#hide_caret'>Window management</a></td>
+</tr>
+<tr>
+<td>hide_owned_popups</td>
+<td><a href='ui.html#hide_owned_popups'>Window management</a></td>
+</tr>
+<tr>
+<td>hide_window</td>
+<td><a href='ui.html#hide_window'>Window management</a></td>
+</tr>
+<tr>
+<td>hostname_to_address</td>
+<td><a href='network.html#hostname_to_address'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>hotkeys</td>
+<td><a href='input.html#hotkeys'>Keyboard and mouse input</a></td>
+</tr>
+<tr>
+<td>hwaddr_to_ipaddr</td>
+<td><a href='network.html#hwaddr_to_ipaddr'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='I' id="I"><span class='indexsection'>I</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>I/O rates</td>
+<td><a href='process.html#I/Orates'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>ICMP</td>
+<td><a href='network.html#ICMP'>Network configuration</a></td>
+</tr>
+<tr>
+<td>idle</td>
+<td><a href='process.html#idle'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>idle input</td>
+<td><a href='input.html#idleinput'>Keyboard and mouse
+input</a></td>
+</tr>
+<tr>
+<td>idle time</td>
+<td><a href='input.html#idletime'>Keyboard and mouse input</a></td>
+</tr>
+<tr>
+<td>idle time</td>
+<td><a href='osinfo.html#idletime'>System</a></td>
+</tr>
+<tr>
+<td>impersonate_self</td>
+<td><a href='security.html#impersonate_self'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>impersonate_token</td>
+<td><a href='security.html#impersonate_token'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>impersonate_user</td>
+<td><a href='security.html#impersonate_user'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>impersonation</td>
+<td><a href='security.html#impersonation'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>Import</td>
+<td><a href='msi.html#Import'>Microsoft Windows Installer</a></td>
+</tr>
+<tr>
+<td>INI file</td>
+<td><a href='inifile.html#INIfile'>Windows INI file</a></td>
+</tr>
+<tr>
+<td>input</td>
+<td><a href='input.html#input'>Keyboard and mouse input</a></td>
+</tr>
+<tr>
+<td>installation</td>
+<td><a href='installation.html#installation'>Installation</a></td>
+</tr>
+<tr>
+<td>installer</td>
+<td><a href='msi.html#installer'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>InstallProduct</td>
+<td><a href='msi.html#InstallProduct'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>IntegerData</td>
+<td><a href='msi.html#IntegerData'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>internationalization</td>
+<td><a href=
+'nls.html#internationalization'>Internationalization</a></td>
+</tr>
+<tr>
+<td>Internet addresses</td>
+<td><a href='network.html#Internetaddresses'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>interrogate_service</td>
+<td><a href='services.html#interrogate_service'>Services</a></td>
+</tr>
+<tr>
+<td>interrupt time</td>
+<td><a href='osinfo.html#interrupttime'>System</a></td>
+</tr>
+<tr>
+<td>interrupts</td>
+<td><a href='osinfo.html#interrupts'>System</a></td>
+</tr>
+<tr>
+<td>invalidate_screen_region</td>
+<td><a href='ui.html#invalidate_screen_region'>Window
+management</a></td>
+</tr>
+<tr>
+<td>invoke_url_shortcut</td>
+<td><a href='shell.html#invoke_url_shortcut'>Windows Shell</a></td>
+</tr>
+<tr>
+<td>ioctl</td>
+<td><a href='device.html#ioctl'>Device management</a></td>
+</tr>
+<tr>
+<td>IP</td>
+<td><a href='network.html#IP'>Network configuration</a></td>
+</tr>
+<tr>
+<td>IP addresses</td>
+<td><a href='network.html#IPaddresses'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>ipaddr_to_hwaddr</td>
+<td><a href='network.html#ipaddr_to_hwaddr'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>is_idle_pid</td>
+<td><a href='process.html#is_idle_pid'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>is_system_pid</td>
+<td><a href='process.html#is_system_pid'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>is_valid_luid_syntax</td>
+<td><a href='security.html#is_valid_luid_syntax'>Security and
+access control</a></td>
+</tr>
+<tr>
+<td>is_valid_sid_syntax</td>
+<td><a href='security.html#is_valid_sid_syntax'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>IsAppThemed</td>
+<td><a href='shell.html#IsAppThemed'>Windows Shell</a></td>
+</tr>
+<tr>
+<td>IsNull</td>
+<td><a href='msi.html#IsNull'>Microsoft Windows Installer</a></td>
+</tr>
+<tr>
+<td>IsThemeActive</td>
+<td><a href='shell.html#IsThemeActive'>Windows Shell</a></td>
+</tr>
+<tr>
+<td>itask_configure</td>
+<td><a href='schedule.html#itask_configure'>Task Scheduler</a></td>
+</tr>
+<tr>
+<td>itask_delete_itasktrigger</td>
+<td><a href='schedule.html#itask_delete_itasktrigger'>Task
+Scheduler</a></td>
+</tr>
+<tr>
+<td>itask_edit_dialog</td>
+<td><a href='schedule.html#itask_edit_dialog'>Task
+Scheduler</a></td>
+</tr>
+<tr>
+<td>itask_end</td>
+<td><a href='schedule.html#itask_end'>Task Scheduler</a></td>
+</tr>
+<tr>
+<td>itask_get_info</td>
+<td><a href='schedule.html#itask_get_info'>Task Scheduler</a></td>
+</tr>
+<tr>
+<td>itask_get_itasktrigger</td>
+<td><a href='schedule.html#itask_get_itasktrigger'>Task
+Scheduler</a></td>
+</tr>
+<tr>
+<td>itask_get_itasktrigger_count</td>
+<td><a href='schedule.html#itask_get_itasktrigger_count'>Task
+Scheduler</a></td>
+</tr>
+<tr>
+<td>itask_get_itasktrigger_string</td>
+<td><a href='schedule.html#itask_get_itasktrigger_string'>Task
+Scheduler</a></td>
+</tr>
+<tr>
+<td>itask_get_runtimes_within_interval</td>
+<td><a href='schedule.html#itask_get_runtimes_within_interval'>Task
+Scheduler</a></td>
+</tr>
+<tr>
+<td>itask_new_itasktrigger</td>
+<td><a href='schedule.html#itask_new_itasktrigger'>Task
+Scheduler</a></td>
+</tr>
+<tr>
+<td>itask_release</td>
+<td><a href='schedule.html#itask_release'>Task Scheduler</a></td>
+</tr>
+<tr>
+<td>itask_run</td>
+<td><a href='schedule.html#itask_run'>Task Scheduler</a></td>
+</tr>
+<tr>
+<td>itask_save</td>
+<td><a href='schedule.html#itask_save'>Task Scheduler</a></td>
+</tr>
+<tr>
+<td>itaskscheduler_delete_task</td>
+<td><a href='schedule.html#itaskscheduler_delete_task'>Task
+Scheduler</a></td>
+</tr>
+<tr>
+<td>itaskscheduler_get_itask</td>
+<td><a href='schedule.html#itaskscheduler_get_itask'>Task
+Scheduler</a></td>
+</tr>
+<tr>
+<td>itaskscheduler_get_target_system</td>
+<td><a href='schedule.html#itaskscheduler_get_target_system'>Task
+Scheduler</a></td>
+</tr>
+<tr>
+<td>itaskscheduler_get_tasks</td>
+<td><a href='schedule.html#itaskscheduler_get_tasks'>Task
+Scheduler</a></td>
+</tr>
+<tr>
+<td>itaskscheduler_new</td>
+<td><a href='schedule.html#itaskscheduler_new'>Task
+Scheduler</a></td>
+</tr>
+<tr>
+<td>itaskscheduler_new_itask</td>
+<td><a href='schedule.html#itaskscheduler_new_itask'>Task
+Scheduler</a></td>
+</tr>
+<tr>
+<td>itaskscheduler_release</td>
+<td><a href='schedule.html#itaskscheduler_release'>Task
+Scheduler</a></td>
+</tr>
+<tr>
+<td>itaskscheduler_set_target_system</td>
+<td><a href='schedule.html#itaskscheduler_set_target_system'>Task
+Scheduler</a></td>
+</tr>
+<tr>
+<td>itaskscheduler_task_exists</td>
+<td><a href='schedule.html#itaskscheduler_task_exists'>Task
+Scheduler</a></td>
+</tr>
+<tr>
+<td>itasktrigger_configure</td>
+<td><a href='schedule.html#itasktrigger_configure'>Task
+Scheduler</a></td>
+</tr>
+<tr>
+<td>itasktrigger_get_info</td>
+<td><a href='schedule.html#itasktrigger_get_info'>Task
+Scheduler</a></td>
+</tr>
+<tr>
+<td>itasktrigger_release</td>
+<td><a href='schedule.html#itasktrigger_release'>Task
+Scheduler</a></td>
+</tr>
+<tr>
+<td>Item</td>
+<td><a href='msi.html#Item'>Microsoft Windows Installer</a></td>
+</tr>
+<tr>
+<td>item identifier list</td>
+<td><a href='shell.html#itemidentifierlist'>Windows Shell</a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='J' id="J"><span class='indexsection'>J</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='K' id="K"><span class='indexsection'>K</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>keyboard input</td>
+<td><a href='input.html#keyboardinput'>Keyboard and mouse
+input</a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='L' id="L"><span class='indexsection'>L</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Lan Manager</td>
+<td><a href='share.html#LanManager'>Network shares and Lan
+Manager</a></td>
+</tr>
+<tr>
+<td>Lan Manager session</td>
+<td><a href='share.html#LanManagersession'>Network shares and Lan
+Manager</a></td>
+</tr>
+<tr>
+<td>LANGID</td>
+<td><a href='nls.html#LANGID'>Internationalization</a></td>
+</tr>
+<tr>
+<td>language</td>
+<td><a href='nls.html#language'>Internationalization</a></td>
+</tr>
+<tr>
+<td>large_system_time_to_secs_since_1970</td>
+<td><a href=
+'misc.html#large_system_time_to_secs_since_1970'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>large_system_time_to_timelist</td>
+<td><a href=
+'misc.html#large_system_time_to_timelist'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>LastErrorRecord</td>
+<td><a href='msi.html#LastErrorRecord'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>LCID</td>
+<td><a href='nls.html#LCID'>Internationalization</a></td>
+</tr>
+<tr>
+<td>LM session</td>
+<td><a href='share.html#LMsession'>Network shares and Lan
+Manager</a></td>
+</tr>
+<tr>
+<td>load shared library</td>
+<td><a href='process.html#loadsharedlibrary'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>load_library</td>
+<td><a href='process.html#load_library'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>load_msi_prototypes</td>
+<td><a href='msi.html#load_msi_prototypes'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>locales</td>
+<td><a href='nls.html#locales'>Internationalization</a></td>
+</tr>
+<tr>
+<td>localization</td>
+<td><a href='nls.html#localization'>Internationalization</a></td>
+</tr>
+<tr>
+<td>locally unique identifiers</td>
+<td><a href='security.html#locallyuniqueidentifiers'>Security and
+access control</a></td>
+</tr>
+<tr>
+<td>locally unique identifiers</td>
+<td><a href='users.html#locallyuniqueidentifiers'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>lock workstation</td>
+<td><a href='osinfo.html#lockworkstation'>System</a></td>
+</tr>
+<tr>
+<td>lock_scm_db</td>
+<td><a href='services.html#lock_scm_db'>Services</a></td>
+</tr>
+<tr>
+<td>lock_workstation</td>
+<td><a href='osinfo.html#lock_workstation'>System</a></td>
+</tr>
+<tr>
+<td>logoff</td>
+<td><a href='osinfo.html#logoff'>System</a></td>
+</tr>
+<tr>
+<td>logon session</td>
+<td><a href='security.html#logonsession'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>lookup_account_name</td>
+<td><a href='users.html#lookup_account_name'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>lookup_account_sid</td>
+<td><a href='users.html#lookup_account_sid'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>LUID</td>
+<td><a href='security.html#LUID'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='M' id="M"><span class='indexsection'>M</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>map drive</td>
+<td><a href='disk.html#mapdrive'>Files, Disks and Volumes</a></td>
+</tr>
+<tr>
+<td>map_account_to_name</td>
+<td><a href='users.html#map_account_to_name'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>map_account_to_sid</td>
+<td><a href='users.html#map_account_to_sid'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>map_code_page_to_name</td>
+<td><a href=
+'nls.html#map_code_page_to_name'>Internationalization</a></td>
+</tr>
+<tr>
+<td>map_drive_local</td>
+<td><a href='disk.html#map_drive_local'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>map_langid_to_name</td>
+<td><a href=
+'nls.html#map_langid_to_name'>Internationalization</a></td>
+</tr>
+<tr>
+<td>map_luid_to_privilege</td>
+<td><a href='security.html#map_luid_to_privilege'>Security and
+access control</a></td>
+</tr>
+<tr>
+<td>map_privilege_to_luid</td>
+<td><a href='security.html#map_privilege_to_luid'>Security and
+access control</a></td>
+</tr>
+<tr>
+<td>map_windows_error</td>
+<td><a href='errors.html#map_windows_error'>Error generation and
+handling</a></td>
+</tr>
+<tr>
+<td>maximize button</td>
+<td><a href='ui.html#maximizebutton'>Window management</a></td>
+</tr>
+<tr>
+<td>maximize_window</td>
+<td><a href='ui.html#maximize_window'>Window management</a></td>
+</tr>
+<tr>
+<td>media change</td>
+<td><a href='device.html#mediachange'>Device management</a></td>
+</tr>
+<tr>
+<td>memory</td>
+<td><a href='osinfo.html#memory'>System</a></td>
+</tr>
+<tr>
+<td>memory commit charge</td>
+<td><a href='osinfo.html#memorycommitcharge'>System</a></td>
+</tr>
+<tr>
+<td>memory usage</td>
+<td><a href='process.html#memoryusage'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>Merge</td>
+<td><a href='msi.html#Merge'>Microsoft Windows Installer</a></td>
+</tr>
+<tr>
+<td>message digest</td>
+<td><a href='crypto.html#messagedigest'>Cryptographic API</a></td>
+</tr>
+<tr>
+<td>messages</td>
+<td><a href='misc.html#messages'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>min_os_version</td>
+<td><a href='osinfo.html#min_os_version'>System</a></td>
+</tr>
+<tr>
+<td>minimize button</td>
+<td><a href='ui.html#minimizebutton'>Window management</a></td>
+</tr>
+<tr>
+<td>minimize_window</td>
+<td><a href='ui.html#minimize_window'>Window management</a></td>
+</tr>
+<tr>
+<td>Modify</td>
+<td><a href='msi.html#Modify'>Microsoft Windows Installer</a></td>
+</tr>
+<tr>
+<td>modify_console_input_mode</td>
+<td><a href=
+'console.html#modify_console_input_mode'>Console</a></td>
+</tr>
+<tr>
+<td>modify_console_output_mode</td>
+<td><a href=
+'console.html#modify_console_output_mode'>Console</a></td>
+</tr>
+<tr>
+<td>monitor file changes</td>
+<td><a href='disk.html#monitorfilechanges'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>monitors</td>
+<td><a href='ui.html#monitors'>Window management</a></td>
+</tr>
+<tr>
+<td>mount_volume</td>
+<td><a href='disk.html#mount_volume'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>mouse input</td>
+<td><a href='input.html#mouseinput'>Keyboard and mouse
+input</a></td>
+</tr>
+<tr>
+<td>move_mouse</td>
+<td><a href='input.html#move_mouse'>Keyboard and mouse
+input</a></td>
+</tr>
+<tr>
+<td>move_window</td>
+<td><a href='ui.html#move_window'>Window management</a></td>
+</tr>
+<tr>
+<td>MSI</td>
+<td><a href='msi.html#MSI'>Microsoft Windows Installer</a></td>
+</tr>
+<tr>
+<td>mstask_create</td>
+<td><a href='schedule.html#mstask_create'>Task Scheduler</a></td>
+</tr>
+<tr>
+<td>mstask_delete</td>
+<td><a href='schedule.html#mstask_delete'>Task Scheduler</a></td>
+</tr>
+<tr>
+<td>multiple monitors</td>
+<td><a href='ui.html#multiplemonitors'>Window management</a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='N' id="N"><span class='indexsection'>N</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>NAME</td>
+<td><a href='com.html#NAME'>COM</a></td>
+</tr>
+<tr>
+<td>name resolution</td>
+<td><a href='network.html#nameresolution'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>netstat</td>
+<td><a href='network.html#netstat'>Network configuration</a></td>
+</tr>
+<tr>
+<td>network adapters</td>
+<td><a href='network.html#networkadapters'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>network address</td>
+<td><a href='network.html#networkaddress'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>network information</td>
+<td><a href='network.html#networkinformation'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>network interface configuration</td>
+<td><a href='network.html#networkinterfaceconfiguration'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>network routes</td>
+<td><a href='network.html#networkroutes'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>network sessions</td>
+<td><a href='share.html#networksessions'>Network shares and Lan
+Manager</a></td>
+</tr>
+<tr>
+<td>network shares</td>
+<td><a href='share.html#networkshares'>Network shares and Lan
+Manager</a></td>
+</tr>
+<tr>
+<td>network statistics</td>
+<td><a href='network.html#networkstatistics'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>new_ace</td>
+<td><a href='security.html#new_ace'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>new_acl</td>
+<td><a href='security.html#new_acl'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>new_global_group</td>
+<td><a href='users.html#new_global_group'>Users and Groups</a></td>
+</tr>
+<tr>
+<td>new_local_group</td>
+<td><a href='users.html#new_local_group'>Users and Groups</a></td>
+</tr>
+<tr>
+<td>new_luid</td>
+<td><a href='security.html#new_luid'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>new_security_descriptor</td>
+<td><a href='security.html#new_security_descriptor'>Security and
+access control</a></td>
+</tr>
+<tr>
+<td>new_share</td>
+<td><a href='share.html#new_share'>Network shares and Lan
+Manager</a></td>
+</tr>
+<tr>
+<td>new_user</td>
+<td><a href='users.html#new_user'>Users and Groups</a></td>
+</tr>
+<tr>
+<td>new_uuid</td>
+<td><a href='security.html#new_uuid'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>nil_uuid</td>
+<td><a href='security.html#nil_uuid'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>num_console_mouse_buttons</td>
+<td><a href=
+'console.html#num_console_mouse_buttons'>Console</a></td>
+</tr>
+<tr>
+<td>number formatting</td>
+<td><a href=
+'nls.html#numberformatting'>Internationalization</a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='O' id="O"><span class='indexsection'>O</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>open_clipboard</td>
+<td><a href='clipboard.html#open_clipboard'>Clipboard</a></td>
+</tr>
+<tr>
+<td>open_process_token</td>
+<td><a href='security.html#open_process_token'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>open_thread_token</td>
+<td><a href='security.html#open_thread_token'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>open_user_token</td>
+<td><a href='security.html#open_user_token'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>OpenDatabase</td>
+<td><a href='msi.html#OpenDatabase'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>OpenPackage</td>
+<td><a href='msi.html#OpenPackage'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>OpenProduct</td>
+<td><a href='msi.html#OpenProduct'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>OpenThemeData</td>
+<td><a href='shell.html#OpenThemeData'>Windows Shell</a></td>
+</tr>
+<tr>
+<td>OpenView</td>
+<td><a href='msi.html#OpenView'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>operating system components</td>
+<td><a href='osinfo.html#operatingsystemcomponents'>System</a></td>
+</tr>
+<tr>
+<td>operating system handles</td>
+<td><a href='handles.html#operatingsystemhandles'>Handles</a></td>
+</tr>
+<tr>
+<td>operating system version</td>
+<td><a href='osinfo.html#operatingsystemversion'>System</a></td>
+</tr>
+<tr>
+<td>option parsing</td>
+<td><a href='misc.html#optionparsing'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='P' id="P"><span class='indexsection'>P</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>package dependencies</td>
+<td><a href=
+'installation.html#packagedependencies'>Installation</a></td>
+</tr>
+<tr>
+<td>parseargs</td>
+<td><a href='misc.html#parseargs'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>partitions</td>
+<td><a href='disk.html#partitions'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>passwords</td>
+<td><a href='users.html#passwords'>Users and Groups</a></td>
+</tr>
+<tr>
+<td>Patches</td>
+<td><a href='msi.html#Patches'>Microsoft Windows Installer</a></td>
+</tr>
+<tr>
+<td>PatchesEx</td>
+<td><a href='msi.html#PatchesEx'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>pause_service</td>
+<td><a href='services.html#pause_service'>Services</a></td>
+</tr>
+<tr>
+<td>performance</td>
+<td><a href='osinfo.html#performance'>System</a></td>
+</tr>
+<tr>
+<td>performance</td>
+<td><a href='process.html#performance'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>Persist</td>
+<td><a href='msi.html#Persist'>Microsoft Windows Installer</a></td>
+</tr>
+<tr>
+<td>physical address</td>
+<td><a href='network.html#physicaladdress'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>physical memory</td>
+<td><a href='osinfo.html#physicalmemory'>System</a></td>
+</tr>
+<tr>
+<td>play_sound</td>
+<td><a href='sound.html#play_sound'>Sound</a></td>
+</tr>
+<tr>
+<td>port_to_service</td>
+<td><a href='network.html#port_to_service'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>power management</td>
+<td><a href='power.html#powermanagement'>Power management</a></td>
+</tr>
+<tr>
+<td>prepend_acl_aces</td>
+<td><a href='security.html#prepend_acl_aces'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>primary domain</td>
+<td><a href='osinfo.html#primarydomain'>System</a></td>
+</tr>
+<tr>
+<td>primary domain controller</td>
+<td><a href='osinfo.html#primarydomaincontroller'>System</a></td>
+</tr>
+<tr>
+<td>primary language</td>
+<td><a href=
+'nls.html#primarylanguage'>Internationalization</a></td>
+</tr>
+<tr>
+<td>PrimaryKeys</td>
+<td><a href='msi.html#PrimaryKeys'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>printer properties dialog</td>
+<td><a href=
+'printer.html#printerpropertiesdialog'>Printers</a></td>
+</tr>
+<tr>
+<td>printer property dialog</td>
+<td><a href='shell.html#printerpropertydialog'>Windows
+Shell</a></td>
+</tr>
+<tr>
+<td>printer shares</td>
+<td><a href='share.html#printershares'>Network shares and Lan
+Manager</a></td>
+</tr>
+<tr>
+<td>printer_properties_dialog</td>
+<td><a href=
+'printer.html#printer_properties_dialog'>Printers</a></td>
+</tr>
+<tr>
+<td>printers</td>
+<td><a href='printer.html#printers'>Printers</a></td>
+</tr>
+<tr>
+<td>priority</td>
+<td><a href='process.html#priority'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>privileges</td>
+<td><a href='security.html#privileges'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>privileges</td>
+<td><a href='users.html#privileges'>Users and Groups</a></td>
+</tr>
+<tr>
+<td>process</td>
+<td><a href='process.html#process'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>process creation</td>
+<td><a href='process.html#processcreation'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>process existence</td>
+<td><a href='process.html#processexistence'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>process modules</td>
+<td><a href='process.html#processmodules'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>process priority</td>
+<td><a href='process.html#processpriority'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>process privileges</td>
+<td><a href='security.html#processprivileges'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>process termination</td>
+<td><a href='process.html#processtermination'>Processes, threads
+and DLLs</a></td>
+</tr>
+<tr>
+<td>process token</td>
+<td><a href='security.html#processtoken'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>process_exists</td>
+<td><a href='process.html#process_exists'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>process_waiting_for_input</td>
+<td><a href='process.html#process_waiting_for_input'>Processes,
+threads and DLLs</a></td>
+</tr>
+<tr>
+<td>processor model</td>
+<td><a href='osinfo.html#processormodel'>System</a></td>
+</tr>
+<tr>
+<td>processor speed</td>
+<td><a href='osinfo.html#processorspeed'>System</a></td>
+</tr>
+<tr>
+<td>ProductInfo</td>
+<td><a href='msi.html#ProductInfo'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>Products</td>
+<td><a href='msi.html#Products'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>ProductsEx</td>
+<td><a href='msi.html#ProductsEx'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>ProductState</td>
+<td><a href='msi.html#ProductState'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>profile</td>
+<td><a href='inifile.html#profile'>Windows INI file</a></td>
+</tr>
+<tr>
+<td>Property</td>
+<td><a href='msi.html#Property'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>PropertyCount</td>
+<td><a href='msi.html#PropertyCount'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>ProvideComponent</td>
+<td><a href='msi.html#ProvideComponent'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='Q' id="Q"><span class='indexsection'>Q</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>query_scm_db_lock_status</td>
+<td><a href=
+'services.html#query_scm_db_lock_status'>Services</a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='R' id="R"><span class='indexsection'>R</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>read clipboard</td>
+<td><a href='clipboard.html#readclipboard'>Clipboard</a></td>
+</tr>
+<tr>
+<td>read_clipboard</td>
+<td><a href='clipboard.html#read_clipboard'>Clipboard</a></td>
+</tr>
+<tr>
+<td>read_clipboard_text</td>
+<td><a href='clipboard.html#read_clipboard_text'>Clipboard</a></td>
+</tr>
+<tr>
+<td>read_inifile_key</td>
+<td><a href='inifile.html#read_inifile_key'>Windows INI
+file</a></td>
+</tr>
+<tr>
+<td>read_inifile_section</td>
+<td><a href='inifile.html#read_inifile_section'>Windows INI
+file</a></td>
+</tr>
+<tr>
+<td>read_inifile_section_names</td>
+<td><a href='inifile.html#read_inifile_section_names'>Windows INI
+file</a></td>
+</tr>
+<tr>
+<td>read_shortcut</td>
+<td><a href='shell.html#read_shortcut'>Windows Shell</a></td>
+</tr>
+<tr>
+<td>read_url_shortcut</td>
+<td><a href='shell.html#read_url_shortcut'>Windows Shell</a></td>
+</tr>
+<tr>
+<td>ReadStream</td>
+<td><a href='msi.html#ReadStream'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>reboot</td>
+<td><a href='osinfo.html#reboot'>System</a></td>
+</tr>
+<tr>
+<td>redraw_window</td>
+<td><a href='ui.html#redraw_window'>Window management</a></td>
+</tr>
+<tr>
+<td>redraw_window_frame</td>
+<td><a href='ui.html#redraw_window_frame'>Window
+management</a></td>
+</tr>
+<tr>
+<td>register_clipboard_format</td>
+<td><a href=
+'clipboard.html#register_clipboard_format'>Clipboard</a></td>
+</tr>
+<tr>
+<td>register_hotkey</td>
+<td><a href='input.html#register_hotkey'>Keyboard and mouse
+input</a></td>
+</tr>
+<tr>
+<td>RegistryValue</td>
+<td><a href='msi.html#RegistryValue'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>ReinstallFeature</td>
+<td><a href='msi.html#ReinstallFeature'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>ReinstallProduct</td>
+<td><a href='msi.html#ReinstallProduct'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>RelatedProducts</td>
+<td><a href='msi.html#RelatedProducts'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>remove_account_rights</td>
+<td><a href='users.html#remove_account_rights'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>remove_member_from_local_group</td>
+<td><a href='users.html#remove_member_from_local_group'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>remove_user_from_global_group</td>
+<td><a href='users.html#remove_user_from_global_group'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>RemovePatches</td>
+<td><a href='msi.html#RemovePatches'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>reset_thread_token</td>
+<td><a href='security.html#reset_thread_token'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>resize_window</td>
+<td><a href='ui.html#resize_window'>Window management</a></td>
+</tr>
+<tr>
+<td>restore_window</td>
+<td><a href='ui.html#restore_window'>Window management</a></td>
+</tr>
+<tr>
+<td>resume_thread</td>
+<td><a href='process.html#resume_thread'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>revert_to_self</td>
+<td><a href='security.html#revert_to_self'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>routing</td>
+<td><a href='network.html#routing'>Network configuration</a></td>
+</tr>
+<tr>
+<td>run program</td>
+<td><a href='process.html#runprogram'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>run_as_service</td>
+<td><a href='services.html#run_as_service'>Services</a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='S' id="S"><span class='indexsection'>S</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>SACL</td>
+<td><a href='security.html#SACL'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>scheduler</td>
+<td><a href='schedule.html#scheduler'>Task Scheduler</a></td>
+</tr>
+<tr>
+<td>SCM</td>
+<td><a href='services.html#SCM'>Services</a></td>
+</tr>
+<tr>
+<td>screen buffers</td>
+<td><a href='console.html#screenbuffers'>Console</a></td>
+</tr>
+<tr>
+<td>secs_since_1970_to_large_system_time</td>
+<td><a href=
+'misc.html#secs_since_1970_to_large_system_time'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>security</td>
+<td><a href='security.html#security'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>security descriptor</td>
+<td><a href='security.html#securitydescriptor'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>send_input</td>
+<td><a href='input.html#send_input'>Keyboard and mouse
+input</a></td>
+</tr>
+<tr>
+<td>send_input_text</td>
+<td><a href='input.html#send_input_text'>Keyboard and mouse
+input</a></td>
+</tr>
+<tr>
+<td>send_keys</td>
+<td><a href='input.html#send_keys'>Keyboard and mouse
+input</a></td>
+</tr>
+<tr>
+<td>service control manager</td>
+<td><a href='services.html#servicecontrolmanager'>Services</a></td>
+</tr>
+<tr>
+<td>service_exists</td>
+<td><a href='services.html#service_exists'>Services</a></td>
+</tr>
+<tr>
+<td>service_to_port</td>
+<td><a href='network.html#service_to_port'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>services</td>
+<td><a href='services.html#services'>Services</a></td>
+</tr>
+<tr>
+<td>session</td>
+<td><a href='security.html#session'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>set_ace_inheritance</td>
+<td><a href='security.html#set_ace_inheritance'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>set_ace_rights</td>
+<td><a href='security.html#set_ace_rights'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>set_ace_sid</td>
+<td><a href='security.html#set_ace_sid'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>set_ace_type</td>
+<td><a href='security.html#set_ace_type'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>set_acl_aces</td>
+<td><a href='security.html#set_acl_aces'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>set_active_window_for_thread</td>
+<td><a href='ui.html#set_active_window_for_thread'>Window
+management</a></td>
+</tr>
+<tr>
+<td>set_caret_blink_time</td>
+<td><a href='ui.html#set_caret_blink_time'>Window
+management</a></td>
+</tr>
+<tr>
+<td>set_caret_location</td>
+<td><a href='ui.html#set_caret_location'>Window management</a></td>
+</tr>
+<tr>
+<td>set_console_active_screen_buffer</td>
+<td><a href=
+'console.html#set_console_active_screen_buffer'>Console</a></td>
+</tr>
+<tr>
+<td>set_console_control_handler</td>
+<td><a href=
+'console.html#set_console_control_handler'>Console</a></td>
+</tr>
+<tr>
+<td>set_console_cursor_position</td>
+<td><a href=
+'console.html#set_console_cursor_position'>Console</a></td>
+</tr>
+<tr>
+<td>set_console_default_attr</td>
+<td><a href=
+'console.html#set_console_default_attr'>Console</a></td>
+</tr>
+<tr>
+<td>set_console_input_codepage</td>
+<td><a href=
+'console.html#set_console_input_codepage'>Console</a></td>
+</tr>
+<tr>
+<td>set_console_input_mode</td>
+<td><a href='console.html#set_console_input_mode'>Console</a></td>
+</tr>
+<tr>
+<td>set_console_output_codepage</td>
+<td><a href=
+'console.html#set_console_output_codepage'>Console</a></td>
+</tr>
+<tr>
+<td>set_console_output_mode</td>
+<td><a href='console.html#set_console_output_mode'>Console</a></td>
+</tr>
+<tr>
+<td>set_console_screen_buffer_size</td>
+<td><a href=
+'console.html#set_console_screen_buffer_size'>Console</a></td>
+</tr>
+<tr>
+<td>set_console_title</td>
+<td><a href='console.html#set_console_title'>Console</a></td>
+</tr>
+<tr>
+<td>set_console_window_location</td>
+<td><a href=
+'console.html#set_console_window_location'>Console</a></td>
+</tr>
+<tr>
+<td>set_desktop_wallpaper</td>
+<td><a href='ui.html#set_desktop_wallpaper'>Window
+management</a></td>
+</tr>
+<tr>
+<td>set_drive_label</td>
+<td><a href='disk.html#set_drive_label'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>set_file_times</td>
+<td><a href='disk.html#set_file_times'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>set_focus</td>
+<td><a href='ui.html#set_focus'>Window management</a></td>
+</tr>
+<tr>
+<td>set_foreground_window</td>
+<td><a href='ui.html#set_foreground_window'>Window
+management</a></td>
+</tr>
+<tr>
+<td>set_priority_class</td>
+<td><a href='process.html#set_priority_class'>Processes, threads
+and DLLs</a></td>
+</tr>
+<tr>
+<td>set_process_window_station</td>
+<td><a href='desktop.html#set_process_window_station'>Desktops and
+Window stations</a></td>
+</tr>
+<tr>
+<td>set_resource_security_descriptor</td>
+<td><a href=
+'security.html#set_resource_security_descriptor'>Security and
+access control</a></td>
+</tr>
+<tr>
+<td>set_security_descriptor_dacl</td>
+<td><a href='security.html#set_security_descriptor_dacl'>Security
+and access control</a></td>
+</tr>
+<tr>
+<td>set_security_descriptor_group</td>
+<td><a href='security.html#set_security_descriptor_group'>Security
+and access control</a></td>
+</tr>
+<tr>
+<td>set_security_descriptor_owner</td>
+<td><a href='security.html#set_security_descriptor_owner'>Security
+and access control</a></td>
+</tr>
+<tr>
+<td>set_security_descriptor_sacl</td>
+<td><a href='security.html#set_security_descriptor_sacl'>Security
+and access control</a></td>
+</tr>
+<tr>
+<td>set_service_configuration</td>
+<td><a href=
+'services.html#set_service_configuration'>Services</a></td>
+</tr>
+<tr>
+<td>set_share_info</td>
+<td><a href='share.html#set_share_info'>Network shares and Lan
+Manager</a></td>
+</tr>
+<tr>
+<td>set_standard_handle</td>
+<td><a href='console.html#set_standard_handle'>Console</a></td>
+</tr>
+<tr>
+<td>set_system_parameters_info</td>
+<td><a href=
+'osinfo.html#set_system_parameters_info'>System</a></td>
+</tr>
+<tr>
+<td>set_thread_relative_priority</td>
+<td><a href='process.html#set_thread_relative_priority'>Processes,
+threads and DLLs</a></td>
+</tr>
+<tr>
+<td>set_thread_token</td>
+<td><a href='security.html#set_thread_token'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>set_user_account_info</td>
+<td><a href='users.html#set_user_account_info'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>set_user_comment</td>
+<td><a href='users.html#set_user_comment'>Users and Groups</a></td>
+</tr>
+<tr>
+<td>set_user_country_code</td>
+<td><a href='users.html#set_user_country_code'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>set_user_expiration</td>
+<td><a href='users.html#set_user_expiration'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>set_user_full_name</td>
+<td><a href='users.html#set_user_full_name'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>set_user_home_dir</td>
+<td><a href='users.html#set_user_home_dir'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>set_user_home_dir_drive</td>
+<td><a href='users.html#set_user_home_dir_drive'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>set_user_name</td>
+<td><a href='users.html#set_user_name'>Users and Groups</a></td>
+</tr>
+<tr>
+<td>set_user_password</td>
+<td><a href='users.html#set_user_password'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>set_user_priv_level</td>
+<td><a href='users.html#set_user_priv_level'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>set_user_profile</td>
+<td><a href='users.html#set_user_profile'>Users and Groups</a></td>
+</tr>
+<tr>
+<td>set_user_script_path</td>
+<td><a href='users.html#set_user_script_path'>Users and
+Groups</a></td>
+</tr>
+<tr>
+<td>set_window_long</td>
+<td><a href='ui.html#set_window_long'>Window management</a></td>
+</tr>
+<tr>
+<td>set_window_style</td>
+<td><a href='ui.html#set_window_style'>Window management</a></td>
+</tr>
+<tr>
+<td>set_window_text</td>
+<td><a href='ui.html#set_window_text'>Window management</a></td>
+</tr>
+<tr>
+<td>set_window_userdata</td>
+<td><a href='ui.html#set_window_userdata'>Window
+management</a></td>
+</tr>
+<tr>
+<td>set_window_zorder</td>
+<td><a href='ui.html#set_window_zorder'>Window management</a></td>
+</tr>
+<tr>
+<td>SetStream</td>
+<td><a href='msi.html#SetStream'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>SetThreadExecutionState</td>
+<td><a href='power.html#SetThreadExecutionState'>Power
+management</a></td>
+</tr>
+<tr>
+<td>shared library</td>
+<td><a href='process.html#sharedlibrary'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>shares</td>
+<td><a href='share.html#shares'>Network shares and Lan
+Manager</a></td>
+</tr>
+<tr>
+<td>shell</td>
+<td><a href='shell.html#shell'>Windows Shell</a></td>
+</tr>
+<tr>
+<td>shell folders</td>
+<td><a href='shell.html#shellfolders'>Windows Shell</a></td>
+</tr>
+<tr>
+<td>shell link</td>
+<td><a href='shell.html#shelllink'>Windows Shell</a></td>
+</tr>
+<tr>
+<td>shell_object_properties_dialog</td>
+<td><a href='shell.html#shell_object_properties_dialog'>Windows
+Shell</a></td>
+</tr>
+<tr>
+<td>shortcut</td>
+<td><a href='shell.html#shortcut'>Windows Shell</a></td>
+</tr>
+<tr>
+<td>ShortcutTarget</td>
+<td><a href='msi.html#ShortcutTarget'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>show_caret</td>
+<td><a href='ui.html#show_caret'>Window management</a></td>
+</tr>
+<tr>
+<td>show_owned_popups</td>
+<td><a href='ui.html#show_owned_popups'>Window management</a></td>
+</tr>
+<tr>
+<td>show_window</td>
+<td><a href='ui.html#show_window'>Window management</a></td>
+</tr>
+<tr>
+<td>shutdown</td>
+<td><a href='osinfo.html#shutdown'>System</a></td>
+</tr>
+<tr>
+<td>shutdown abort</td>
+<td><a href='osinfo.html#shutdownabort'>System</a></td>
+</tr>
+<tr>
+<td>shutdown_system</td>
+<td><a href='osinfo.html#shutdown_system'>System</a></td>
+</tr>
+<tr>
+<td>SID</td>
+<td><a href='security.html#SID'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>SID</td>
+<td><a href='users.html#SID'>Users and Groups</a></td>
+</tr>
+<tr>
+<td>sort_aces</td>
+<td><a href='security.html#sort_aces'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>sort_acl_aces</td>
+<td><a href='security.html#sort_acl_aces'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>sound</td>
+<td><a href='sound.html#sound'>Sound</a></td>
+</tr>
+<tr>
+<td>SSPI</td>
+<td><a href='crypto.html#SSPI'>Cryptographic API</a></td>
+</tr>
+<tr>
+<td>sspi_client_new_context</td>
+<td><a href='crypto.html#sspi_client_new_context'>Cryptographic
+API</a></td>
+</tr>
+<tr>
+<td>sspi_close_security_context</td>
+<td><a href='crypto.html#sspi_close_security_context'>Cryptographic
+API</a></td>
+</tr>
+<tr>
+<td>sspi_decrypt</td>
+<td><a href='crypto.html#sspi_decrypt'>Cryptographic API</a></td>
+</tr>
+<tr>
+<td>sspi_encrypt</td>
+<td><a href='crypto.html#sspi_encrypt'>Cryptographic API</a></td>
+</tr>
+<tr>
+<td>sspi_enumerate_packages</td>
+<td><a href='crypto.html#sspi_enumerate_packages'>Cryptographic
+API</a></td>
+</tr>
+<tr>
+<td>sspi_free_credentials</td>
+<td><a href='crypto.html#sspi_free_credentials'>Cryptographic
+API</a></td>
+</tr>
+<tr>
+<td>sspi_generate_signature</td>
+<td><a href='crypto.html#sspi_generate_signature'>Cryptographic
+API</a></td>
+</tr>
+<tr>
+<td>sspi_get_security_context_features</td>
+<td><a href=
+'crypto.html#sspi_get_security_context_features'>Cryptographic
+API</a></td>
+</tr>
+<tr>
+<td>sspi_get_security_context_sizes</td>
+<td><a href=
+'crypto.html#sspi_get_security_context_sizes'>Cryptographic
+API</a></td>
+</tr>
+<tr>
+<td>sspi_get_security_context_username</td>
+<td><a href=
+'crypto.html#sspi_get_security_context_username'>Cryptographic
+API</a></td>
+</tr>
+<tr>
+<td>sspi_new_credentials</td>
+<td><a href='crypto.html#sspi_new_credentials'>Cryptographic
+API</a></td>
+</tr>
+<tr>
+<td>sspi_security_context_next</td>
+<td><a href='crypto.html#sspi_security_context_next'>Cryptographic
+API</a></td>
+</tr>
+<tr>
+<td>sspi_server_new_context</td>
+<td><a href='crypto.html#sspi_server_new_context'>Cryptographic
+API</a></td>
+</tr>
+<tr>
+<td>sspi_verify_signature</td>
+<td><a href='crypto.html#sspi_verify_signature'>Cryptographic
+API</a></td>
+</tr>
+<tr>
+<td>stand by</td>
+<td><a href='osinfo.html#standby'>System</a></td>
+</tr>
+<tr>
+<td>standard input</td>
+<td><a href='console.html#standardinput'>Console</a></td>
+</tr>
+<tr>
+<td>standard output</td>
+<td><a href='console.html#standardoutput'>Console</a></td>
+</tr>
+<tr>
+<td>starkit</td>
+<td><a href='installation.html#starkit'>Installation</a></td>
+</tr>
+<tr>
+<td>start_clipboard_monitor</td>
+<td><a href=
+'clipboard.html#start_clipboard_monitor'>Clipboard</a></td>
+</tr>
+<tr>
+<td>start_device_change_monitor</td>
+<td><a href='device.html#start_device_change_monitor'>Device
+management</a></td>
+</tr>
+<tr>
+<td>start_power_monitor</td>
+<td><a href='power.html#start_power_monitor'>Power
+management</a></td>
+</tr>
+<tr>
+<td>start_service</td>
+<td><a href='services.html#start_service'>Services</a></td>
+</tr>
+<tr>
+<td>stop_clipboard_monitor</td>
+<td><a href=
+'clipboard.html#stop_clipboard_monitor'>Clipboard</a></td>
+</tr>
+<tr>
+<td>stop_device_change_monitor</td>
+<td><a href='device.html#stop_device_change_monitor'>Device
+management</a></td>
+</tr>
+<tr>
+<td>stop_power_monitor</td>
+<td><a href='power.html#stop_power_monitor'>Power
+management</a></td>
+</tr>
+<tr>
+<td>stop_service</td>
+<td><a href='services.html#stop_service'>Services</a></td>
+</tr>
+<tr>
+<td>stop_sound</td>
+<td><a href='sound.html#stop_sound'>Sound</a></td>
+</tr>
+<tr>
+<td>StringData</td>
+<td><a href='msi.html#StringData'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>styles</td>
+<td><a href='ui.html#styles'>Window management</a></td>
+</tr>
+<tr>
+<td>sublanguage</td>
+<td><a href='nls.html#sublanguage'>Internationalization</a></td>
+</tr>
+<tr>
+<td>SummaryInformation</td>
+<td><a href='msi.html#SummaryInformation'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>Supported Win32 functions</td>
+<td><a href='raw.html#SupportedWin32functions'>Win32 raw
+API</a></td>
+</tr>
+<tr>
+<td>suspend</td>
+<td><a href='osinfo.html#suspend'>System</a></td>
+</tr>
+<tr>
+<td>suspend</td>
+<td><a href='power.html#suspend'>Power management</a></td>
+</tr>
+<tr>
+<td>suspend_system</td>
+<td><a href='osinfo.html#suspend_system'>System</a></td>
+</tr>
+<tr>
+<td>suspend_system</td>
+<td><a href='power.html#suspend_system'>Power management</a></td>
+</tr>
+<tr>
+<td>suspend_thread</td>
+<td><a href='process.html#suspend_thread'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>swap files</td>
+<td><a href='osinfo.html#swapfiles'>System</a></td>
+</tr>
+<tr>
+<td>system access control list</td>
+<td><a href='security.html#systemaccesscontrollist'>Security and
+access control</a></td>
+</tr>
+<tr>
+<td>system menu</td>
+<td><a href='ui.html#systemmenu'>Window management</a></td>
+</tr>
+<tr>
+<td>system messages</td>
+<td><a href='misc.html#systemmessages'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>system requirements</td>
+<td><a href=
+'installation.html#systemrequirements'>Installation</a></td>
+</tr>
+<tr>
+<td>system time conversion</td>
+<td><a href='misc.html#systemtimeconversion'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='T' id="T"><span class='indexsection'>T</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>TablePersistent</td>
+<td><a href='msi.html#TablePersistent'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>task</td>
+<td><a href='schedule.html#task'>Task Scheduler</a></td>
+</tr>
+<tr>
+<td>task scheduler</td>
+<td><a href='schedule.html#taskscheduler'>Task Scheduler</a></td>
+</tr>
+<tr>
+<td>task trigger</td>
+<td><a href='schedule.html#tasktrigger'>Task Scheduler</a></td>
+</tr>
+<tr>
+<td>Tcl module</td>
+<td><a href='installation.html#Tclmodule'>Installation</a></td>
+</tr>
+<tr>
+<td>TCP</td>
+<td><a href='network.html#TCP'>Network configuration</a></td>
+</tr>
+<tr>
+<td>terminate connections</td>
+<td><a href='network.html#terminateconnections'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>terminate_tcp_connections</td>
+<td><a href='network.html#terminate_tcp_connections'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>themes</td>
+<td><a href='shell.html#themes'>Windows Shell</a></td>
+</tr>
+<tr>
+<td>thread</td>
+<td><a href='process.html#thread'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>time conversion</td>
+<td><a href='misc.html#timeconversion'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>timelist_to_large_system_time</td>
+<td><a href=
+'misc.html#timelist_to_large_system_time'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>timelist_to_variant_time</td>
+<td><a href='com.html#timelist_to_variant_time'>COM</a></td>
+</tr>
+<tr>
+<td>title bar</td>
+<td><a href='ui.html#titlebar'>Window management</a></td>
+</tr>
+<tr>
+<td>tokens</td>
+<td><a href='security.html#tokens'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>trigger</td>
+<td><a href='schedule.html#trigger'>Task Scheduler</a></td>
+</tr>
+<tr>
+<td>try</td>
+<td><a href='errors.html#try'>Error generation and
+handling</a></td>
+</tr>
+<tr>
+<td>turn_mouse_wheel</td>
+<td><a href='input.html#turn_mouse_wheel'>Keyboard and mouse
+input</a></td>
+</tr>
+<tr>
+<td>TWAPI version</td>
+<td><a href='misc.html#TWAPIversion'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='U' id="U"><span class='indexsection'>U</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>UDP</td>
+<td><a href='network.html#UDP'>Network configuration</a></td>
+</tr>
+<tr>
+<td>UILevel</td>
+<td><a href='msi.html#UILevel'>Microsoft Windows Installer</a></td>
+</tr>
+<tr>
+<td>unblock_input</td>
+<td><a href='input.html#unblock_input'>Keyboard and mouse
+input</a></td>
+</tr>
+<tr>
+<td>universally unique identifiers</td>
+<td><a href='security.html#universallyuniqueidentifiers'>Security
+and access control</a></td>
+</tr>
+<tr>
+<td>unlock_scm_db</td>
+<td><a href='services.html#unlock_scm_db'>Services</a></td>
+</tr>
+<tr>
+<td>unlock_user</td>
+<td><a href='users.html#unlock_user'>Users and Groups</a></td>
+</tr>
+<tr>
+<td>unmap_drive_local</td>
+<td><a href='disk.html#unmap_drive_local'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>unmount_volume</td>
+<td><a href='disk.html#unmount_volume'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>unregister_hotkey</td>
+<td><a href='input.html#unregister_hotkey'>Keyboard and mouse
+input</a></td>
+</tr>
+<tr>
+<td>up time</td>
+<td><a href='osinfo.html#uptime'>System</a></td>
+</tr>
+<tr>
+<td>update_service_status</td>
+<td><a href='services.html#update_service_status'>Services</a></td>
+</tr>
+<tr>
+<td>USB devices</td>
+<td><a href='device.html#USBdevices'>Device management</a></td>
+</tr>
+<tr>
+<td>UseFeature</td>
+<td><a href='msi.html#UseFeature'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>user accounts</td>
+<td><a href='users.html#useraccounts'>Users and Groups</a></td>
+</tr>
+<tr>
+<td>user_drive_space_available</td>
+<td><a href='disk.html#user_drive_space_available'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>users</td>
+<td><a href='users.html#users'>Users and Groups</a></td>
+</tr>
+<tr>
+<td>UUID</td>
+<td><a href='security.html#UUID'>Security and access
+control</a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='V' id="V"><span class='indexsection'>V</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>variant_time_to_timelist</td>
+<td><a href='com.html#variant_time_to_timelist'>COM</a></td>
+</tr>
+<tr>
+<td>Version</td>
+<td><a href='msi.html#Version'>Microsoft Windows Installer</a></td>
+</tr>
+<tr>
+<td>version</td>
+<td><a href='misc.html#version'>Miscellaneous</a></td>
+</tr>
+<tr>
+<td>version resource</td>
+<td><a href='disk.html#versionresource'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>virtual memory</td>
+<td><a href='osinfo.html#virtualmemory'>System</a></td>
+</tr>
+<tr>
+<td>virtual memory</td>
+<td><a href='process.html#virtualmemory'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>volume</td>
+<td><a href='disk.html#volume'>Files, Disks and Volumes</a></td>
+</tr>
+<tr>
+<td>volume extents</td>
+<td><a href='disk.html#volumeextents'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>volume mount points</td>
+<td><a href='disk.html#volumemountpoints'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>volume property dialog</td>
+<td><a href='disk.html#volumepropertydialog'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>volume property dialog</td>
+<td><a href='shell.html#volumepropertydialog'>Windows
+Shell</a></td>
+</tr>
+<tr>
+<td>volume_properties_dialog</td>
+<td><a href='disk.html#volume_properties_dialog'>Files, Disks and
+Volumes</a></td>
+</tr>
+<tr>
+<td>volumes</td>
+<td><a href='disk.html#volumes'>Files, Disks and Volumes</a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='W' id="W"><span class='indexsection'>W</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>waiting for input</td>
+<td><a href='process.html#waitingforinput'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>wallpaper</td>
+<td><a href='ui.html#wallpaper'>Window management</a></td>
+</tr>
+<tr>
+<td>Win32 API</td>
+<td><a href='raw.html#Win32API'>Win32 raw API</a></td>
+</tr>
+<tr>
+<td>win32_error</td>
+<td><a href='errors.html#win32_error'>Error generation and
+handling</a></td>
+</tr>
+<tr>
+<td>window attributes</td>
+<td><a href='ui.html#windowattributes'>Window management</a></td>
+</tr>
+<tr>
+<td>window geometry</td>
+<td><a href='ui.html#windowgeometry'>Window management</a></td>
+</tr>
+<tr>
+<td>window management</td>
+<td><a href='ui.html#windowmanagement'>Window management</a></td>
+</tr>
+<tr>
+<td>window stations</td>
+<td><a href='desktop.html#windowstations'>Desktops and Window
+stations</a></td>
+</tr>
+<tr>
+<td>window styles</td>
+<td><a href='ui.html#windowstyles'>Window management</a></td>
+</tr>
+<tr>
+<td>window visibility</td>
+<td><a href='ui.html#windowvisibility'>Window management</a></td>
+</tr>
+<tr>
+<td>window_exists</td>
+<td><a href='ui.html#window_exists'>Window management</a></td>
+</tr>
+<tr>
+<td>window_input_enabled</td>
+<td><a href='ui.html#window_input_enabled'>Window
+management</a></td>
+</tr>
+<tr>
+<td>window_is_child</td>
+<td><a href='ui.html#window_is_child'>Window management</a></td>
+</tr>
+<tr>
+<td>window_maximized</td>
+<td><a href='ui.html#window_maximized'>Window management</a></td>
+</tr>
+<tr>
+<td>window_minimized</td>
+<td><a href='ui.html#window_minimized'>Window management</a></td>
+</tr>
+<tr>
+<td>window_unicode_enabled</td>
+<td><a href='ui.html#window_unicode_enabled'>Window
+management</a></td>
+</tr>
+<tr>
+<td>window_visible</td>
+<td><a href='ui.html#window_visible'>Window management</a></td>
+</tr>
+<tr>
+<td>windows</td>
+<td><a href='input.html#windows'>Keyboard and mouse input</a></td>
+</tr>
+<tr>
+<td>Windows Installer</td>
+<td><a href='msi.html#WindowsInstaller'>Microsoft Windows
+Installer</a></td>
+</tr>
+<tr>
+<td>Windows services</td>
+<td><a href='services.html#Windowsservices'>Services</a></td>
+</tr>
+<tr>
+<td>Windows shell</td>
+<td><a href='shell.html#Windowsshell'>Windows Shell</a></td>
+</tr>
+<tr>
+<td>WINS servers addresses</td>
+<td><a href='network.html#WINSserversaddresses'>Network
+configuration</a></td>
+</tr>
+<tr>
+<td>workgroup</td>
+<td><a href='osinfo.html#workgroup'>System</a></td>
+</tr>
+<tr>
+<td>working set</td>
+<td><a href='process.html#workingset'>Processes, threads and
+DLLs</a></td>
+</tr>
+<tr>
+<td>write clipboard</td>
+<td><a href='clipboard.html#writeclipboard'>Clipboard</a></td>
+</tr>
+<tr>
+<td>write_clipboard</td>
+<td><a href='clipboard.html#write_clipboard'>Clipboard</a></td>
+</tr>
+<tr>
+<td>write_clipboard_text</td>
+<td><a href=
+'clipboard.html#write_clipboard_text'>Clipboard</a></td>
+</tr>
+<tr>
+<td>write_console</td>
+<td><a href='console.html#write_console'>Console</a></td>
+</tr>
+<tr>
+<td>write_inifile_key</td>
+<td><a href='inifile.html#write_inifile_key'>Windows INI
+file</a></td>
+</tr>
+<tr>
+<td>write_shortcut</td>
+<td><a href='shell.html#write_shortcut'>Windows Shell</a></td>
+</tr>
+<tr>
+<td>write_url_shortcut</td>
+<td><a href='shell.html#write_url_shortcut'>Windows Shell</a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='X' id="X"><span class='indexsection'>X</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='Y' id="Y"><span class='indexsection'>Y</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><a name='Z' id="Z"><span class='indexsection'>Z</span></a></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+</table>
+</div>
+<div class='yui-u first navigation'><a class='imgbutton' href=
+'http://sourceforge.net/project/showfiles.php?group_id=90123'><img title='Download button'
+alt='Download' src='download.png' onmouseover=
+'javascript:this.src="download_active.png"' onmouseout=
+'javascript:this.src="download.png"' /></a>
+<hr style='width: 100px; margin-left: 0pt;' />
+<h2>TWAPI 2.0.12 Documentation</h2>
+<ul>
+<li><a href='overview.html'>Overview</a></li>
+<li><a href='installation.html'>Installation</a></li>
+<li><a href='raw.html'>Win32 raw API</a></li>
+<li><a href='ui.html'>Window management</a></li>
+<li><a href='desktop.html'>Desktops and Window stations</a></li>
+<li><a href='com.html'>COM</a></li>
+<li><a href='shell.html'>Windows Shell</a></li>
+<li><a href='input.html'>Keyboard and mouse input</a></li>
+<li><a href='sound.html'>Sound</a></li>
+<li><a href='clipboard.html'>Clipboard</a></li>
+<li><a href='osinfo.html'>System</a></li>
+<li><a href='process.html'>Processes, threads and DLLs</a></li>
+<li><a href='handles.html'>Handles</a></li>
+<li><a href='services.html'>Services</a></li>
+<li><a href='network.html'>Network configuration</a></li>
+<li><a href='disk.html'>Files, Disks and Volumes</a></li>
+<li><a href='share.html'>Network shares and Lan Manager</a></li>
+<li><a href='users.html'>Users and Groups</a></li>
+<li><a href='security.html'>Security and access control</a></li>
+<li><a href='crypto.html'>Cryptographic API</a></li>
+<li><a href='eventlog.html'>Event log</a></li>
+<li><a href='inifile.html'>Windows INI file</a></li>
+<li><a href='console.html'>Console</a></li>
+<li><a href='schedule.html'>Task Scheduler</a></li>
+<li><a href='msi.html'>Microsoft Windows Installer</a></li>
+<li><a href='nls.html'>Internationalization</a></li>
+<li><a href='printer.html'>Printers</a></li>
+<li><a href='device.html'>Device management</a></li>
+<li><a href='power.html'>Power management</a></li>
+<li><a href='errors.html'>Error generation and handling</a></li>
+<li><a href='misc.html'>Miscellaneous</a></li>
+<li><a href='examples.html'>Examples</a></li>
+<li><a href='versionhistory.html'>Version History</a></li>
+<li><a href='idx.html'>Index</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id='ft'>Tcl Windows API 2.0.12
+<div class='copyright'>&copy; 2002-2008 Ashok P. Nadkarni</div>
+<a href='http://www.magicsplat.com/privacy.html'>Privacy
+policy</a></div>
+</div>
+</body>
+</html>
