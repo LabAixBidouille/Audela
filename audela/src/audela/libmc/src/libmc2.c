@@ -3201,7 +3201,7 @@ int Cmd_mctcl_simulc_sat_stl(ClientData clientData, Tcl_Interp *interp, int argc
       /* === */
 	   /* === Calcul des coordonnes heliocentriques de la planete et de la Terre pour chaque phase ===*/
       /* === */
-	  dl=3; // ????????????????
+	  dl=1; // ????????????????
       n=(int)ceil(360./dl);
       cdrpos=(mc_cdrpos*)malloc(n*sizeof(mc_cdrpos));
       if (cdrpos==NULL) {
