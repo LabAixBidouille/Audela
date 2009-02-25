@@ -1335,9 +1335,8 @@ void mc_simulc_sat_stl(mc_cdr cdr,struct_point *point1,struct_point *point2,stru
    double volume,volumetot,masstot,xg,yg,zg;
 
    int level;
-   double l0,date0,period,lp,bp;
+   double l0,date0,period,lp,bp, ks, ksp;
    int frame_center; /* =0 sun =1 earth */
-
 
    date0=cdr.jd_phase0;
    level=cdr.htmlevel;
@@ -1693,7 +1692,7 @@ void mc_simulc_sat_stl(mc_cdr cdr,struct_point *point1,struct_point *point2,stru
             pe=0.;
             e=0.;
          }
-		 cosalpha=-(cdrpos[kt].xaster*dx+cdrpos[kt].yaster*dy+cdrpos[kt].zaster*dz)/(delta*r);
+		 cosalpha=(cdrpos[kt].xaster*dx+cdrpos[kt].yaster*dy+cdrpos[kt].zaster*dz)/(delta*r);
          /* --- surface exposée vers la Terre (m2) ---*/
          if (costht<0) {
             trtot+=(-tr*costht);
@@ -1704,12 +1703,14 @@ void mc_simulc_sat_stl(mc_cdr cdr,struct_point *point1,struct_point *point2,stru
          /* --- contribution to the total E (Lommel-Seeliger) ---*/
          els=-e/(cosths+costht);
          etotls+=els;
-		  /* --- contribution to the total E (Minnaert) ---*/
-		 nrug=6;
-         emin=-e*(pow(cosths,nrug))*(pow(costht,nrug-1));
+		  /* --- contribution to the total E (Minnaert) ---*/	 
+         emin=-e*(pow(cosths,6))*(pow(costht,5));
          etotmin+=emin;
 		  /* --- contribution to the total E (Phong) ---*/
-         ephong=e*(pow(cos(acos(cosths)-acos(costht)),n));
+		 ks=500;
+		 nrug=150;
+		 ksp=ks/(albedo);
+		 ephong=e*(1+ksp*pow(cosalpha,nrug));
          etotphong+=ephong;
          /* --- infos for plots ---*/
          htms[khtms].pr=pr/tr;
