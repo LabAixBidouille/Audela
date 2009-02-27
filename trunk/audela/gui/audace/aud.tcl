@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.96 2009-02-07 11:33:37 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.97 2009-02-27 07:14:49 michelpujol Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -1309,6 +1309,9 @@ namespace eval ::audace {
             source  "$pkgIndexFileName"
             #--- je recupere le nom du plugin
             set pluginName [lindex [package names ] 0]
+            if { $pluginName == "tcl::tommath" } {
+               set pluginName [lindex [package names ] 1]
+            }
             #--- je recupere la version du plugin
             set pluginVersion [package versions $pluginName]
             #--- je recupere la version de AudeLA requise par le plugin
