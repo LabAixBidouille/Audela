@@ -1,7 +1,7 @@
 #
 # Fichier : socket_tools.tcl
 # Description : This tool box allow to connect ASCII sockets where messages termination is \n
-# Mise a jour $Id: socket_tools.tcl,v 1.2 2007-04-01 21:23:13 robertdelmas Exp $
+# Mise a jour $Id: socket_tools.tcl,v 1.3 2009-02-27 23:23:17 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -37,9 +37,10 @@ proc socket_server_accept {fid ip port} {
 proc socket_server_respons {fid} {
    global audace
    set errsoc [ catch {
-      if {[eof $fid] || [catch {gets $fid line}]} {
+      gets $fid line
+      if {[eof $fid]} {
          close $fid
-      } else {
+      } elseif {![fblocked $fid]} {
          ::console::affiche_resultat "$fid received \"$line\" and returned it to the client\n"
          puts $fid "$line"
       }
@@ -63,12 +64,13 @@ proc socket_server_respons_debug {fid} {
          incr audace(socket,server,connected)
       }
       set stepsoc 1
-      if {[eof $fid] || [catch {gets $fid line}]} {
+      gets $fid line
+      if {[eof $fid]} {
          ::console::affiche_resultat "close the connexion : connected=$audace(socket,server,connected)\n"
          incr audace(socket,server,connected) -1
          set stepsoc 2
          close $fid
-      } else {
+      } elseif {![fblocked $fid]} {
          if {$audace(socket,server,connected)>20} {
             ::console::affiche_resultat " connected=$audace(socket,server,connected) DEPASSE\n"
             #incr audace(socket,server,connected) -1
