@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.22 2009-02-23 22:07:51 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.23 2009-02-27 07:27:05 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -236,9 +236,10 @@ proc socket_server_respons_gcn {fid {sockname dummy} {redir_hosts ""} {redir_por
    global gcn
    set gcn(gcn_${sockname},redir_msg) ""
    set errsoc [ catch {
-      if {[eof $fid] || [catch {set line [read $fid 160]}] } {
+      set line [read $fid 160]
+      if {[eof $fid]} {
          close $fid
-      } else {
+      } elseif {![fblocked $fid]} {
          # --- redir if needed
          set kredir 0  
          set gcn(gcn_${sockname},redir_msg) ""
@@ -339,9 +340,10 @@ proc socket_server_respons_out {fid {$sockname dummy} } {
    global audace
    global gcn
    set errsoc [ catch {
-      if {[eof $fid] || [catch {gets $fid line}]} {
+      set line [read $fid 160]
+      if {[eof $fid]} {
          close $fid
-      } else {
+      } elseif {![fblocked $fid]} {
          set lignes ""
          if {[info commands ::audace::date_sys2ut]=="::audace::date_sys2ut"} {
             set date [mc_date2iso8601 [::audace::date_sys2ut now]]
