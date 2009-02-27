@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.127 2008-12-20 14:55:09 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.128 2009-02-27 07:31:37 michelpujol Exp $
 #
 
 namespace eval ::confCam {
@@ -355,7 +355,8 @@ proc ::confCam::createDialog { } {
       set notebook [ NoteBook $private(frm).usr.onglet ]
       foreach namespace $private(pluginNamespaceList) {
          set title [ ::$namespace\::getPluginTitle ]
-         set frm   [ $notebook insert end $namespace -text "$title " -raisecmd "::confCam::onRaiseNotebook $namespace" ]
+         set frm   [ $notebook insert end $namespace -text "$title " ]
+         ### -raisecmd "::confCam::onRaiseNotebook $namespace"
          ::$namespace\::fillConfigPage $frm $private(currentCamItem)
       }
       pack $notebook -fill both -expand 1 -padx 4 -pady 4
