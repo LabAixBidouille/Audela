@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.23 2009-02-27 07:27:05 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.24 2009-02-27 23:23:17 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -143,7 +143,6 @@ proc socket_client_send_gcn { name ipserver portserver {data {3 2008 07 07 23 45
          break
       }
    }
-	#close $fid
 }
 # ==========================================================================================
 
