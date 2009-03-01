@@ -8,9 +8,9 @@ build:
 
 install:
 	@if [ ! -d ../include/linux ]; then mkdir ../include/linux; fi
-	cp -f include/linux/*.h ../include/linux
-	cp -f lib/libftd2xx.so.0.4.10    ../lib/libftd2xx.so
-	cp -f lib/libftd2xx.so.0.4.10    ../../../bin/libftd2xx.so.0
+	cp -f include/linux/0.4.16/*.h ../include/linux
+	cp -f lib/libftd2xx.so.0.4.16    ../lib/libftd2xx.so
+	cp -f lib/libftd2xx.so.0.4.16    ../../../bin/libftd2xx.so.0
 	chmod +x ../../../bin/libftd2xx.so.0
 
 clean:
