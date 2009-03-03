@@ -983,3 +983,27 @@ int cmdEthernaudeGetCCDInfos(ClientData clientData, Tcl_Interp * interp, int arg
 
    return retour;
 }
+
+int cmdEthernaudeHasEventaude(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+   struct camprop *cam = (struct camprop *) clientData;
+   
+   if (cam->ethvar.InfoCCD_HasGPSDatation==1) {
+      Tcl_SetResult(interp,"1",TCL_STATIC);
+   } else {
+      Tcl_SetResult(interp,"0",TCL_STATIC);
+   }
+   return TCL_OK;
+}
+
+int cmdEthernaudeHasRegulation(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+   struct camprop *cam = (struct camprop *) clientData;
+   
+   if (cam->ethvar.InfoCCD_HasRegulationTempCaps==1) {
+      Tcl_SetResult(interp,"1",TCL_STATIC);
+   } else {
+      Tcl_SetResult(interp,"0",TCL_STATIC);
+   }
+   return TCL_OK;
+}

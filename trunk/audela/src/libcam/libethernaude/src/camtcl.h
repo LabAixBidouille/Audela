@@ -20,7 +20,9 @@
     {"directidentity", (Tcl_CmdProc *) cmdEthernaudeDirectIdentity}, \
     {"debug_eth", (Tcl_CmdProc *) cmdEthernaudeDebug}, \
     {"gps", (Tcl_CmdProc *) cmdEthernaudeGPS}, \
-    {"getccd_infos", (Tcl_CmdProc *) cmdEthernaudeGetCCDInfos},
+    {"getccd_infos", (Tcl_CmdProc *) cmdEthernaudeGetCCDInfos}, \
+    {"hasEventaude", (Tcl_CmdProc *) cmdEthernaudeHasEventaude}, \
+    {"hasRegulation", (Tcl_CmdProc *) cmdEthernaudeHasRegulation},
 
 
  /* === Specific commands for that camera === */
@@ -36,5 +38,7 @@ int cmdEthernaudeBreakScan(ClientData clientData, Tcl_Interp * interp, int argc,
 int cmdEthernaudeDebug(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdEthernaudeGPS(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdEthernaudeGetCCDInfos(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdEthernaudeHasEventaude(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdEthernaudeHasRegulation(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 
 #endif
