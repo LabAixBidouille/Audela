@@ -2,7 +2,7 @@
 # Fichier : eventaude_gps.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: eventaude_gps.tcl,v 1.12 2008-12-20 11:06:28 robertdelmas Exp $
+# Mise a jour $Id: eventaude_gps.tcl,v 1.13 2009-03-03 22:13:41 robertdelmas Exp $
 #
 
 namespace eval eventAude_GPS {
@@ -17,7 +17,6 @@ namespace eval eventAude_GPS {
 
       set This $this
       createDialog
-      tkwait visibility $This
    }
 
    #
@@ -81,6 +80,9 @@ namespace eval eventAude_GPS {
       variable private
       global audace caption color conf
 
+      #--- Chargement des captions
+      source [ file join $audace(rep_plugin) link ethernaude eventaude_gps.cap ]
+
       #--- initConf
       if { ! [ info exists conf(eventaude_gps,position) ] } { set conf(eventaude_gps,position) "+600+490" }
 
@@ -89,6 +91,24 @@ namespace eval eventAude_GPS {
       set private(longi_GPS_Observateur) ""
       set private(lati_GPS_Observateur)  ""
       set private(alti_GPS_Observateur)  ""
+
+      #--- Recupere le camNo de la camera
+      set camNo [ ::confCam::getCamNo [ ::confCam::getCurrentCamItem ] ]
+
+      #--- Verifie si l'EventAude existe et si elle est sous tension
+      if { [ cam$camNo hasEventaude ] != "1" } {
+         tk_messageBox -title "$caption(eventaude_gps,attention)" -icon error \
+            -message "$caption(eventaude_gps,message_1)\n$caption(eventaude_gps,message_2)"
+         return
+      }
+
+      #--- Verifie que le GPS est connecte et synchronise
+      set coordGPS [ cam$camNo gps ]
+      if { ( [ lindex $coordGPS 1 ] == "572900.5" ) || ( [ lindex $coordGPS 3 ] == "572900.5" ) || ( [ lindex $coordGPS 4 ] == "9999.0" ) } {
+         tk_messageBox -title "$caption(eventaude_gps,attention)" -icon error \
+            -message "$caption(eventaude_gps,message_3)"
+         return
+      }
 
       #---
       if { [ winfo exists $This ] } {
@@ -107,9 +127,6 @@ namespace eval eventAude_GPS {
          set fin [ string length $private(geometry) ]
          set private(position) "+[ string range $private(geometry) $deb $fin ]"
       }
-
-      #--- Chargement des captions
-      source [ file join $audace(rep_plugin) link ethernaude eventaude_gps.cap ]
 
       #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
@@ -253,21 +270,23 @@ namespace eval eventAude_GPS {
 
       #--- Remarque : La commande [set $xxx] permet de recuperer le contenu d'une variable
       set camNo [ ::confCam::getCamNo [ ::confCam::getCurrentCamItem ] ]
-      set statusVariableName "::status_cam$camNo"
-      if { [set $statusVariableName] != "exp" } {
-         set private(coord_GPS_Observateur) [ cam$camNo gps ]
-         set private(long_GPS_Observateur) [ mc_angle2dms [ lindex $private(coord_GPS_Observateur) 1 ] 180 ]
-         set longi_est_ouest [ lindex $private(coord_GPS_Observateur) 2 ]
-         if { $longi_est_ouest == "W" } {
-            set longi_est_ouest "$caption(eventaude_gps,ouest)"
-         } elseif { $longi_est_ouest == "E" } {
-            set longi_est_ouest "$caption(eventaude_gps,est)"
+      if { $camNo != "0" } {
+         set statusVariableName "::status_cam$camNo"
+         if { [set $statusVariableName] != "exp" } {
+            set private(coord_GPS_Observateur) [ cam$camNo gps ]
+            set private(long_GPS_Observateur) [ mc_angle2dms [ lindex $private(coord_GPS_Observateur) 1 ] 180 ]
+            set longi_est_ouest [ lindex $private(coord_GPS_Observateur) 2 ]
+            if { $longi_est_ouest == "W" } {
+               set longi_est_ouest "$caption(eventaude_gps,ouest)"
+            } elseif { $longi_est_ouest == "E" } {
+               set longi_est_ouest "$caption(eventaude_gps,est)"
+            }
+            set private(longi_GPS_Observateur) "$longi_est_ouest [ format "%2d° %2d' %4.2f''" [ lindex $private(long_GPS_Observateur) 0 ] [ lindex $private(long_GPS_Observateur) 1 ] [ lindex $private(long_GPS_Observateur) 2 ] ]"
+            set private(lat_GPS_Observateur) [ mc_angle2dms [ lindex $private(coord_GPS_Observateur) 3 ] 90 ]
+            set private(lati_GPS_Observateur) [ format "%2d° %2d' %4.2f''" [ lindex $private(lat_GPS_Observateur) 0 ] [ lindex $private(lat_GPS_Observateur) 1 ] [ lindex $private(lat_GPS_Observateur) 2 ] ]
+            set private(alt_GPS_Observateur) [ lindex $private(coord_GPS_Observateur) 4 ]
+            set private(alti_GPS_Observateur) [ format "%5.0f m" $private(alt_GPS_Observateur) ]
          }
-         set private(longi_GPS_Observateur) "$longi_est_ouest [ format "%2d° %2d' %4.2f''" [ lindex $private(long_GPS_Observateur) 0 ] [ lindex $private(long_GPS_Observateur) 1 ] [ lindex $private(long_GPS_Observateur) 2 ] ]"
-         set private(lat_GPS_Observateur) [ mc_angle2dms [ lindex $private(coord_GPS_Observateur) 3 ] 90 ]
-         set private(lati_GPS_Observateur) [ format "%2d° %2d' %4.2f''" [ lindex $private(lat_GPS_Observateur) 0 ] [ lindex $private(lat_GPS_Observateur) 1 ] [ lindex $private(lat_GPS_Observateur) 2 ] ]
-         set private(alt_GPS_Observateur) [ lindex $private(coord_GPS_Observateur) 4 ]
-         set private(alti_GPS_Observateur) [ format "%5.0f m" $private(alt_GPS_Observateur) ]
       }
    }
 
