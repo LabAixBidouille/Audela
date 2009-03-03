@@ -2,7 +2,7 @@
 # Fichier : alaudine_nt.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: alaudine_nt.tcl,v 1.18 2008-12-20 11:05:52 robertdelmas Exp $
+# Mise a jour $Id: alaudine_nt.tcl,v 1.19 2009-03-03 22:12:53 robertdelmas Exp $
 #
 
 namespace eval AlAudine_NT {
@@ -17,7 +17,6 @@ namespace eval AlAudine_NT {
 
       set This $this
       createDialog
-      tkwait visibility $This
    }
 
    #
@@ -99,6 +98,16 @@ namespace eval AlAudine_NT {
 
       #--- Initialisation
       set private(temp_ccd_mesure)   $caption(alaudine_nt,temp_ccd_mesure)
+
+      #--- Recupere le camNo de la camera
+      set camNo [ ::confCam::getCamNo [ ::confCam::getCurrentCamItem ] ]
+
+      #--- Verifie si le controle de la regulation existe
+      if { [ cam$camNo hasRegulation ] != "1" } {
+         tk_messageBox -title "$caption(alaudine_nt,attention)" -icon error \
+            -message "$caption(alaudine_nt,message)"
+         return
+      }
 
       #---
       if { [ winfo exists $This ] } {
