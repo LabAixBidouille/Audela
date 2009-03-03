@@ -1,6 +1,6 @@
 #
 # Fichier : eventaude_gps.cap
-# Mise a jour $Id: eventaude_gps.cap,v 1.16 2007-01-27 14:43:02 robertdelmas Exp $
+# Mise a jour $Id: eventaude_gps.cap,v 1.17 2009-03-03 22:11:57 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,6 +12,11 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(eventaude_gps,titre)                      "GPS Coordinates of the Observer"
+
+set caption(eventaude_gps,attention)                  "Warning"
+set caption(eventaude_gps,message_1)                  "This feature can only be accessed through EventAude."
+set caption(eventaude_gps,message_2)                  "If you have this equipment, check it is on."
+set caption(eventaude_gps,message_3)                  "Check the GPS is connected and in sync."
 
 set caption(eventaude_gps,rafraichir)                 "Update GPS Coordinates"
 set caption(eventaude_gps,position_gps)               "GPS Format (WGS84):"
@@ -40,6 +45,11 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(eventaude_gps,titre)                   "Coordonnées GPS de l'observateur"
 
+   set caption(eventaude_gps,attention)               "Attention"
+   set caption(eventaude_gps,message_1)               "Cette fonctionnalité est uniquement accessible par l'EventAude."
+   set caption(eventaude_gps,message_2)               "Si vous avez cet équipement, vérifier qu'il est sous tension."
+   set caption(eventaude_gps,message_3)               "Vérifier que le GPS est connecté et synchronisé."
+
    set caption(eventaude_gps,rafraichir)              "Rafraîchir les coordonnées GPS"
    set caption(eventaude_gps,position_gps)            "Format GPS (WGS84) :"
    set caption(eventaude_gps,longitude)               "Longitude :"
@@ -66,6 +76,11 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(eventaude_gps,titre)                   "Coordinate GPS dell'osservatore"
+
+   set caption(eventaude_gps,attention)               "Attenzione"
+   set caption(eventaude_gps,message_1)               "# Cette fonctionnalité est uniquement accessible par l'EventAude."
+   set caption(eventaude_gps,message_2)               "# Si vous avez cet équipement, vérifier qu'il est sous tension."
+   set caption(eventaude_gps,message_3)               "# Vérifier que le GPS est connecté et synchronisé."
 
    set caption(eventaude_gps,rafraichir)              "Aggiornamento Coordinate GPS"
    set caption(eventaude_gps,position_gps)            "Formato GPS (WGS84):"
@@ -94,6 +109,11 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(eventaude_gps,titre)                   "Coordenadas GPS del observador"
 
+   set caption(eventaude_gps,attention)               "Aviso"
+   set caption(eventaude_gps,message_1)               "# Cette fonctionnalité est uniquement accessible par l'EventAude."
+   set caption(eventaude_gps,message_2)               "# Si vous avez cet équipement, vérifier qu'il est sous tension."
+   set caption(eventaude_gps,message_3)               "# Vérifier que le GPS est connecté et synchronisé."
+
    set caption(eventaude_gps,rafraichir)              "Actualizar las coordenadas GPS"
    set caption(eventaude_gps,position_gps)            "Formato GPS (WGS84):"
    set caption(eventaude_gps,longitude)               "Longitud:"
@@ -120,6 +140,11 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(eventaude_gps,titre)                   "Beobachter GPS Koordinaten"
+
+   set caption(eventaude_gps,attention)               "Achtung"
+   set caption(eventaude_gps,message_1)               "# Cette fonctionnalité est uniquement accessible par l'EventAude."
+   set caption(eventaude_gps,message_2)               "# Si vous avez cet équipement, vérifier qu'il est sous tension."
+   set caption(eventaude_gps,message_3)               "# Vérifier que le GPS est connecté et synchronisé."
 
    set caption(eventaude_gps,rafraichir)              "GPS Koordinaten Aktualisierung"
    set caption(eventaude_gps,position_gps)            "GPS Format (WGS84):"
@@ -148,6 +173,11 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(eventaude_gps,titre)                   "Coordenadas GPS do observador"
 
+   set caption(eventaude_gps,attention)               "Aviso"
+   set caption(eventaude_gps,message_1)               "# Cette fonctionnalité est uniquement accessible par l'EventAude."
+   set caption(eventaude_gps,message_2)               "# Si vous avez cet équipement, vérifier qu'il est sous tension."
+   set caption(eventaude_gps,message_3)               "# Vérifier que le GPS est connecté et synchronisé."
+
    set caption(eventaude_gps,rafraichir)              "Actualizar as coordenadas GPS"
    set caption(eventaude_gps,position_gps)            "Formato GPS (WGS84):"
    set caption(eventaude_gps,longitude)               "Longitude:"
@@ -174,6 +204,11 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(eventaude_gps,titre)                   "GPS Coordinates of the Observer"
+
+   set caption(eventaude_gps,attention)               "Warning"
+   set caption(eventaude_gps,message_1)               "This feature can only be accessed through EventAude."
+   set caption(eventaude_gps,message_2)               "If you have this equipment, check it is on."
+   set caption(eventaude_gps,message_3)               "Check the GPS is connected and in sync."
 
    set caption(eventaude_gps,rafraichir)              "Update GPS Coordinates"
    set caption(eventaude_gps,position_gps)            "GPS Format (WGS84):"
