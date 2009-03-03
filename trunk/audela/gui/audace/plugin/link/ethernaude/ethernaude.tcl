@@ -2,7 +2,7 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: ethernaude.tcl,v 1.25 2008-12-23 17:56:15 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.tcl,v 1.26 2009-03-03 22:20:11 robertdelmas Exp $
 #
 
 namespace eval ethernaude {
@@ -27,7 +27,6 @@ proc ::ethernaude::ConfEthernAude { } {
 
    if { [info exists widget(frm) ] } {
       set frm $widget(frm)
-
       if { [ winfo exists $frm.coord_gps ] } {
          if { $private(started) == "1" } {
             #--- Boutons actifs
@@ -85,7 +84,7 @@ proc ::ethernaude::createPluginInstance { linkLabel deviceId usage comment } {
    variable private
 
    set private(started) "1"
-   ConfEthernAude
+   ::ethernaude::ConfEthernAude
    return
 }
 
@@ -100,7 +99,7 @@ proc ::ethernaude::deletePluginInstance { linkLabel deviceId usage } {
    variable private
 
    set private(started) "0"
-   ConfEthernAude
+   ::ethernaude::ConfEthernAude
    return
 }
 
@@ -374,9 +373,9 @@ proc ::ethernaude::testping { ip } {
    set res1 [ lindex $res 0 ]
    set res2 [ lindex $res 1 ]
    if { $res1 == "1" } {
-        set tres1 "$caption(ethernaude,appareil_connecte) $ip"
+      set tres1 "$caption(ethernaude,appareil_connecte) $ip"
    } else {
-        set tres1 "$caption(ethernaude,pas_appareil_connecte) $ip"
+      set tres1 "$caption(ethernaude,pas_appareil_connecte) $ip"
    }
    set tres2 "$caption(ethernaude,message_ping)"
    tk_messageBox -message "$tres1.\n$tres2 $res2" -icon info
