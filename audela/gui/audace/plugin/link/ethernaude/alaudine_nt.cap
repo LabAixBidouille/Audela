@@ -1,6 +1,6 @@
 #
 # Fichier : alaudine_nt.cap
-# Mise a jour $Id: alaudine_nt.cap,v 1.7 2008-03-30 18:04:50 robertdelmas Exp $
+# Mise a jour $Id: alaudine_nt.cap,v 1.8 2009-03-03 22:11:25 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,6 +12,10 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(alaudine_nt,titre)                  "AlAudine NT Supply with I2C Port"
+
+set caption(alaudine_nt,attention)              "Warning"
+set caption(alaudine_nt,message)                "Control and thermal control are not available."
+
 set caption(alaudine_nt,evaluation)             "Assessment of ambient temperature around CCD camera:"
 set caption(alaudine_nt,degres)                 "°C"
 set caption(alaudine_nt,delta_t)                "Maximum Delta t possible (ambient temperature - CCD temperature):"
@@ -29,6 +33,10 @@ set caption(alaudine_nt,site_alaudine_nt)       "http://www.astrosurf.com/soubie
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(alaudine_nt,titre)               "Alimentation AlAudine NT avec port I2C"
+
+   set caption(alaudine_nt,attention)           "Attention"
+   set caption(alaudine_nt,message)             "Le contrôle et la régulation de la température ne sont pas disponibles."
+
    set caption(alaudine_nt,evaluation)          "Estimation de la température ambiante autour de la caméra CCD :"
    set caption(alaudine_nt,degres)              "°C"
    set caption(alaudine_nt,delta_t)             "Delta t (température ambiante - température CCD) maximum possible :"
@@ -46,6 +54,10 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(alaudine_nt,titre)               "Alimentazione AlAudine NT con porta I2C"
+
+   set caption(alaudine_nt,attention)           "Attenzione"
+   set caption(alaudine_nt,message)             "# Le contrôle et la régulation de la température ne sont pas disponibles."
+
    set caption(alaudine_nt,evaluation)          "Valutazione della temperatura ambiente attorno alla camera CCD:"
    set caption(alaudine_nt,degres)              "°C"
    set caption(alaudine_nt,delta_t)             "Delta t massimo possibile (temperatura ambiente - temperatura CCD):"
@@ -63,6 +75,10 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(alaudine_nt,titre)               "Alimentación AlAudine NT con puerto I2C"
+
+   set caption(alaudine_nt,attention)           "Aviso"
+   set caption(alaudine_nt,message)             "# Le contrôle et la régulation de la température ne sont pas disponibles."
+
    set caption(alaudine_nt,evaluation)          "Estimación de la temperatura ambiente cerca de la cámara CCD:"
    set caption(alaudine_nt,degres)              "°C"
    set caption(alaudine_nt,delta_t)             "Delta t máximo posible (temperatura ambiente - temperatura CCD):"
@@ -80,6 +96,10 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(alaudine_nt,titre)               "AlAudine NT mit I2C Port Stromversorgung"
+
+   set caption(alaudine_nt,attention)           "Achtung"
+   set caption(alaudine_nt,message)             "# Le contrôle et la régulation de la température ne sont pas disponibles."
+
    set caption(alaudine_nt,evaluation)          "CCD Kamera umgehende Temperatur Taxierung:"
    set caption(alaudine_nt,degres)              "°C"
    set caption(alaudine_nt,delta_t)             "Maximales mögliches Delta t (umgehende Temperatur - CCD Temperatur):"
@@ -97,6 +117,10 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(alaudine_nt,titre)               "Alimentação AlAudine NT com porta I2C"
+
+   set caption(alaudine_nt,attention)           "Aviso"
+   set caption(alaudine_nt,message)             "# Le contrôle et la régulation de la température ne sont pas disponibles."
+
    set caption(alaudine_nt,evaluation)          "Estimação da temperatura ambiente envolvente à câmara CCD:"
    set caption(alaudine_nt,degres)              "°C"
    set caption(alaudine_nt,delta_t)             "Delta t (temperatura ambiente - temperatura CCD) máximo possível:"
@@ -114,6 +138,10 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(alaudine_nt,titre)               "AlAudine NT Supply with I2C Port"
+
+   set caption(alaudine_nt,attention)           "Warning"
+   set caption(alaudine_nt,message)             "Control and thermal control are not available."
+
    set caption(alaudine_nt,evaluation)          "Assessment of ambient temperature around CCD camera:"
    set caption(alaudine_nt,degres)              "°C"
    set caption(alaudine_nt,delta_t)             "Maximum Delta t possible (ambient temperature - CCD temperature):"
