@@ -1080,7 +1080,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 
 	tt_morphomath_1(pseries);	
 	//pour visualiser le tophat 
-	tt_imasaver(p_out,"D:/tophat.fit",16);	
+	//tt_imasaver(p_out,"D:/tophat.fit",16);	
 
 	/* --- lit les parametres astrometriques de l'image ---*/
 	valid_ast=1;
@@ -1108,7 +1108,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	for (kk=0;kk<2;kk++) {//kk=1 pour imagette décalée, c'est le deuxième passage
 		k=0;
 		k3=0;k5=0;
-		for (kkk=0;kkk<(nb_ss_image1-2*kk)*(nb_ss_image2-2*kk);kkk++) {	
+		for (kkk=0;kkk<(nb_ss_image1-kk)*(nb_ss_image2-kk);kkk++) {	
 			//gestion des bord du chapeau haut de forme = fausse détections
 			yy1=0, yy2=0, xx1=0, xx2=0, x0=0,y0=0;
 			if (kk==0) {
@@ -1241,7 +1241,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	/* ----------------------------------------------------- */
 					xdebut=0;ydebut=0;xfin=0;yfin=0;
 					//  seuil pour recherche des extrémitées de la traînées
-					seuil_nbnul= 25*(4*largx);
+					seuil_nbnul= 30*(4*largx);
 
 					nbnul=0;nb=0;
 					if ((eq[0]<=1.0)&&(eq[0]>=-1.0)) {//droites faibles pentes 
@@ -1825,6 +1825,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 								//dvalue=yfin;
 								yfin=(eq[1]/(eq[0]*eq[0])+yfin+xfin/eq[0])/(1+1/(eq[0]*eq[0]));
 								xfin=(yfin-eq[1])/eq[0];
+								//gestion des bords d'images !!
 							} else {
 								ydebut=eq[1];
 								yfin=eq[1];
@@ -1893,8 +1894,8 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 				}
 			}	
 			k=k+n1;
-			k3=(int)(kkk+1)/(8-2*kk);
-			k5=k-k3*(naxis1-2*kk*n1);	
+			k3=(int)(kkk+1)/(8-kk);
+			k5=k-k3*(naxis1-kk*n1);	
 		}
 	}
 	
@@ -2028,15 +2029,14 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 
 			fwhmxy=(fwhmx>fwhmy)?fwhmx:fwhmy;
 			
-			for (k=0; k<3; k++) {
-				k++;
-				if ((fabs(xcc-x0)>=1.0*fwhmxy)||(fabs(ycc-y0)>=1.0*fwhmxy)) {//la première fenêtre semble trop grande
+			for (k=1; k<4; k++) {
+				if ((fabs(xcc-x0)>=1.0*fwhmxy)||(fabs(ycc-y0)>=1.0*fwhmxy)||(ycc>=yy2)||(ycc<=yy1)||(xcc>=xx2)||(xcc<=xx1)) {//la première fenêtre semble trop grande
 					xcc=x0;
 					ycc=y0;
-					xx1=(int)(xcc-1.1*r1/(1+0.1*k));
-					xx2=(int)(xcc+1.1*r1/(1+0.1*k));
-					yy1=(int)(ycc-1.1*r1/(1+0.1*k));
-					yy2=(int)(ycc+1.1*r1/(1+0.1*k));
+					xx1=(int)(xcc-1.2*r1/(1.2*k));
+					xx2=(int)(xcc+1.2*r1/(1.2*k));
+					yy1=(int)(ycc-1.2*r1/(1.2*k));
+					yy2=(int)(ycc+1.2*r1/(1.2*k));
 					if (xx1<0) xx1=0;
 					if (xx1>=naxis1) xx1=naxis1-1;
 					if (xx2<0) xx2=0;
@@ -2082,7 +2082,6 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					free(dY);
 					free(pp);
 					free(ecart);
-
 				} else if (((2*r1-fwhmx)<2)||((r1-fwhmy)<2)||(r1<fwhmy)||(2*r1<fwhmx)) { //la première fenêtre semble trop petite
 					r1=(fwhmx>fwhmy)?1.2*fwhmx:1.2*fwhmy;
 					//if (r1<10) r1=10;
@@ -2259,6 +2258,16 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 				strcpy(centro,"fittegauss");
 			} else {
 				strcpy(centro,"barycentre");
+			}
+			/* --- mise a zéro de pout pour éviter les doublons --- */
+			for (k1=(int)floor(xcc-fwhmx-3);k1<(int)ceil(xcc+fwhmx+4);k1++) {
+					if (k1>=naxis1) break;	
+					if (k1<0) continue;
+					for (k2=(int)floor(ycc-fwhmy-3);k2<(int)ceil(ycc+fwhmy+4);k2++) {
+							if (k2<0) continue;
+							if (k2>=naxis2) break;
+							p_out->p[naxis1*(k2)+k1]=0;
+					}	
 			}
             /* --- sortie du resultat ---*/
 			//fprintf(fic,"%d %f %f %f %f %f %f %f %f\n",nsats,xcc+1.,ycc+1.,flux,fmed,ra,dec,fwhmx,fwhmy);
@@ -2629,7 +2638,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 		tt_util_cuts(p_in,pseries,&(pseries->hicut),&(pseries->locut),TT_YES);
 		mode1=pseries->bgmean;
 
-		tt_imasaver(p_out,"D:/ouv_de_ferm.fit",16);
+		//tt_imasaver(p_out,"D:/ouv_de_ferm.fit",16);
 		/* --- detection des geo et des traînées du bruit --- */
 		/* --- réduction de la dynamique des images --- */
 		if ((4+(pseries->hicut-pseries->locut)/100)<8) {
