@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.12 2009-01-13 16:34:31 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.13 2009-03-06 23:59:40 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -205,7 +205,7 @@ proc ::keyword::init { } {
    lappend private(infosMotsClefs) [ list "EXPTIME"  $::caption(keyword,acquisition) ::keyword::private(expTime)             normal   ""                             ""                                             "float"  "Exposure time" "s" ]
    lappend private(infosMotsClefs) [ list "SWCREATE" $::caption(keyword,logiciel)    ::keyword::private(name_software)       readonly ""                             ""                                             "string" "Acquisition software: http://www.audela.org/" "" ]
    lappend private(infosMotsClefs) [ list "SWMODIFY" $::caption(keyword,logiciel)    ::keyword::private(name_software)       readonly ""                             ""                                             "string" "Processing software: http://www.audela.org/" "" ]
-   lappend private(infosMotsClefs) [ list "CONFNAME" $::caption(keyword,instrument)  ::keyword::private(confName)         normal      ""                             ""                                             "string" "Configuration name" "" ]
+   lappend private(infosMotsClefs) [ list "CONFNAME" $::caption(keyword,instrument)  ::keyword::private(confName)            normal   ""                             ""                                             "string" "Configuration name" "" ]
    lappend private(infosMotsClefs) [ list "COMMENT"  $::caption(keyword,divers)      ::keyword::private(commentaire)         normal   ""                             ""                                             "string" "Comment" "" ]
 }
 
@@ -235,8 +235,6 @@ proc ::keyword::run { visuNo } {
    #--- j'ajoute des listeners sur la camera et l'AlAudine
    ::confVisu::addCameraListener $visuNo [list ::keyword::onChangeConfOptic $visuNo]
    ::confVisu::addCameraListener $visuNo [list ::keyword::onChangeCellDim $visuNo]
-   ::confVisu::addCameraListener $visuNo [list ::keyword::onChangeSetTemperature $visuNo]
-   ::AlAudine_NT::addAlAudineNTListener  [list ::keyword::onChangeSetTemperature $visuNo]
    ::confVisu::addCameraListener $visuNo [list ::keyword::onChangeTemperature $visuNo]
 
    #--- je recupere la configuration de l'observateur et de l'observatoire
@@ -248,7 +246,7 @@ proc ::keyword::run { visuNo } {
    #--- je recupere les dimensions des photosites
    onChangeCellDim $visuNo
 
-   #--- je recupere la temperature du CCD
+   #--- je recupere la consigne et la temperature du CCD
    onChangeTemperature $visuNo
 
    #--- je mets a jour la procedure a appeler pour rafraichir CCD_TEMP
@@ -260,9 +258,6 @@ proc ::keyword::run { visuNo } {
          break
       }
    }
-
-   #--- je recupere la consigne de temperature du CCD
-   onChangeSetTemperature $visuNo
 
    #--- je mets a jour la procedure a appeler pour ouvrir la fenetre de consigne de temperature
    for { set i 0 } { $i < [ llength $private(infosMotsClefs) ] } { incr i } {
@@ -344,25 +339,8 @@ proc ::keyword::onChangeTemperature { visuNo args } {
 
    set camItem [ ::confVisu::getCamItem $visuNo ]
 
-   set private(temperature_ccd) [ ::confCam::getTempCCD $camItem ]
-}
-
-#------------------------------------------------------------------------------
-# onChangeSetTemperature
-#    met a jour le mot cles de la consigne de temperature
-#
-# Parametres :
-#    visuNo
-#    args : valeurs fournies par le gestionnaire de listener
-# Return :
-#    rien
-#------------------------------------------------------------------------------
-proc ::keyword::onChangeSetTemperature { visuNo args } {
-   variable private
-
-   set camItem [ ::confVisu::getCamItem $visuNo ]
-
    set private(set_temperature_ccd) [ ::confCam::setTempCCD $camItem ]
+   set private(temperature_ccd) [ ::confCam::getTempCCD $camItem ]
 }
 
 #------------------------------------------------------------------------------
@@ -721,8 +699,6 @@ proc ::keyword::cmdClose { visuNo } {
 
    #--- je supprime des listeners sur la camera et l'AlAudine
    ::confVisu::removeCameraListener $visuNo [list ::keyword::onChangeTemperature $visuNo]
-   ::AlAudine_NT::removeAlAudineNTListener  [list ::keyword::onChangeSetTemperature $visuNo]
-   ::confVisu::removeCameraListener $visuNo [list ::keyword::onChangeSetTemperature $visuNo]
    ::confVisu::removeCameraListener $visuNo [list ::keyword::onChangeCellDim $visuNo]
    ::confVisu::removeCameraListener $visuNo [list ::keyword::onChangeConfOptic $visuNo]
 
