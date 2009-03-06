@@ -2,7 +2,7 @@
 # Fichier : alaudine_nt.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: alaudine_nt.tcl,v 1.19 2009-03-03 22:12:53 robertdelmas Exp $
+# Mise a jour $Id: alaudine_nt.tcl,v 1.20 2009-03-06 23:56:09 robertdelmas Exp $
 #
 
 namespace eval AlAudine_NT {
@@ -331,28 +331,6 @@ namespace eval AlAudine_NT {
             }
          }
       }
-   }
-
-   #------------------------------------------------------------
-   #  addAlAudineNTListener
-   #     ajoute une procedure a appeler si on change un parametre
-   #
-   #  parametres :
-   #     cmd : commande TCL a lancer quand la temperature de consigne change
-   #------------------------------------------------------------
-   proc addAlAudineNTListener { cmd } {
-      trace add variable "::conf(alaudine_nt,temp_ccd_souhaite)" write $cmd
-   }
-
-   #------------------------------------------------------------
-   #  removeAlAudineNTListener
-   #     supprime une procedure a appeler si on change un parametre
-   #
-   #  parametres :
-   #     cmd : commande TCL a lancer quand la temperature de consigne change
-   #------------------------------------------------------------
-   proc removeAlAudineNTListener { cmd } {
-      trace remove variable "::conf(alaudine_nt,temp_ccd_souhaite)" write $cmd
    }
 
 }
