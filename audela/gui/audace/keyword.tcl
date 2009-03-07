@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.13 2009-03-06 23:59:40 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.14 2009-03-07 09:20:00 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -340,7 +340,7 @@ proc ::keyword::onChangeTemperature { visuNo args } {
    set camItem [ ::confVisu::getCamItem $visuNo ]
 
    set private(set_temperature_ccd) [ ::confCam::setTempCCD $camItem ]
-   set private(temperature_ccd) [ ::confCam::getTempCCD $camItem ]
+   set private(temperature_ccd)     [ ::confCam::getTempCCD $camItem ]
 }
 
 #------------------------------------------------------------------------------
