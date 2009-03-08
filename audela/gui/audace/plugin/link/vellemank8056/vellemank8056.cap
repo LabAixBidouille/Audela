@@ -1,0 +1,88 @@
+#
+# Fichier : vellemank8056.cap
+# Mise a jour $Id: vellemank8056.cap,v 1.1 2009-03-08 11:02:11 michelpujol Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(vellemank8056,titre)           "Velleman K8056"
+set caption(vellemank8056,serialPort)      "Serial port"
+set caption(vellemank8056,refresh)         "Reload"
+set caption(vellemank8056,test)            "Test"
+set caption(vellemank8056,stop)            "Stop"
+
+
+set caption(vellemank8056,available)       "Serial Ports Available"
+set caption(vellemank8056,used)            "Used Serial Ports"
+set caption(vellemank8056,port_exclus)     "COM port to be excluded (internal modem, etc.)"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(vellemank8056,titre)        "Velleman K8056"
+   set caption(vellemank8056,serialPort)   "port serie"
+   set caption(vellemank8056,refresh)      "Rafraîchir"
+   set caption(vellemank8056,test)         "Test"
+   set caption(vellemank8056,stop)         "Arreter"
+
+   set caption(vellemank8056,available)    "Velleman K8056 disponibles"
+   set caption(vellemank8056,used)         "Velleman K8056 utilisés"
+   set caption(vellemank8056,port_exclus)  "Port COM à exclure (modem interne, etc.)"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(vellemank8056,titre)        "Velleman K8056"
+   set caption(vellemank8056,available)    "Velleman K8056disponibile"
+   set caption(vellemank8056,used)         "Velleman K8056 utilizzate"
+   set caption(vellemank8056,refresh)      "Rinfresca"
+   set caption(vellemank8056,port_exclus)  "Porta COM da escludere (modem interno, ecc.)"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(vellemank8056,titre)        "Velleman K8056"
+   set caption(vellemank8056,available)    "Velleman K8056 disponibles"
+   set caption(vellemank8056,used)         "Velleman K8056 utilizados"
+   set caption(vellemank8056,refresh)      "Recargar"
+   set caption(vellemank8056,port_exclus)  "Puerto COM a excluir (modem interno, etc.)"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(vellemank8056,titre)        "Velleman K8056"
+   set caption(vellemank8056,available)    "Velleman K8056 verfügbar"
+   set caption(vellemank8056,used)         "Velleman K8056Schnittstelle"
+   set caption(vellemank8056,refresh)      "Aktualisieren"
+   set caption(vellemank8056,port_exclus)  "COM Port zu ausschließen (inneren Modem, etc.)"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(vellemank8056,titre)        "Velleman K8056"
+   set caption(vellemank8056,available)    "Velleman K8056 disponiveis"
+   set caption(vellemank8056,used)         "Velleman K8056 utilizadas"
+   set caption(vellemank8056,refresh)      "Actualizar"
+   set caption(vellemank8056,port_exclus)  "Porta COM a excluir (modem interno, etc.)"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(vellemank8056,titre)        "Velleman K8056"
+   set caption(vellemank8056,available)    "Velleman K8056 disponible"
+   set caption(vellemank8056,used)         "Anvendte Velleman K8056"
+   set caption(vellemank8056,refresh)      "Genindlæs"
+   set caption(vellemank8056,port_exclus)  "COM-port som fravælges (indbygget modem osv.)"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
