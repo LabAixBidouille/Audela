@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.99 2009-02-07 11:30:30 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.100 2009-03-13 23:48:09 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -591,6 +591,18 @@ namespace eval ::confVisu {
             set size   [lindex [buf$bufNo getkwd NAXIS1] 1]
             set crval1 [lindex [buf$bufNo getkwd CRVAL1] 1]
             set cdelt1 [lindex [buf$bufNo getkwd CDELT1] 1]
+            set crpix1 [lindex [buf$bufNo getkwd CRPIX1] 1]
+            if { $crpix1 == "" } {
+               set crpix1 1
+            }
+            #--- je recupere le nom des unites des abcisses
+            set private($visuNo,graph,xUnit) [lindex [buf$bufNo getkwd CUNIT1] 1]
+            if { $private($visuNo,graph,xUnit) == "" } {
+               #--- si l'unite n'est pas précise, je choisis "pixel" par defaut
+               set private($visuNo,graph,xUnit) "pixel"
+            }
+            #--- je donne le nom des unites des ordonnees
+            set private($visuNo,graph,yUnit) "ADU"
 
             #--- si l'image n'est pas calibree en longueur d'ondes
             if { $crval1 == "" } {
@@ -1630,8 +1642,8 @@ namespace eval ::confVisu {
       $This.can1.canvas configure -relief flat
 
       #--- creation du graphe
-      createGraph $visuNo
-      createTable $visuNo
+      ##createGraph $visuNo
+      ##createTable $visuNo
 
       grid $This.tool -row 0 -column 0 -rowspan 2 -sticky ns
       grid $This.bar  -row 0 -column 1 -sticky ew
@@ -2797,6 +2809,7 @@ proc ::confVisu::setMode { visuNo mode} {
 proc ::confVisu::createGraph { visuNo } {
    variable private
 
+   package require BLT
    set This $private($visuNo,This)
 
    if { [winfo exists $This.graph ] } {
@@ -2818,7 +2831,11 @@ proc ::confVisu::createGraph { visuNo } {
    bind $This.graph <ButtonRelease-1> "::confVisu::onGraphRegionEnd $visuNo %W %x %y"
    bind $This.graph <ButtonRelease-3> "::confVisu::onGraphUnzoom $visuNo"
 
-   ###::confVisu::selectTool 1 ""
+   #--- je cree la zone d'affichage des coordonnees
+   set private($visuNo,graph,coordinate) ""
+   frame $This.graphConfig -borderwidth 2 -cursor arrow -relief groove
+      label $This.graphConfig.coordinates -textvariable ::confVisu::private($visuNo,graph,coordinate) -borderwidth 0
+      pack $This.graphConfig.coordinates -side top -anchor center -fill none
 }
 
 #------------------------------------------------------------
@@ -2857,8 +2874,8 @@ proc ::confVisu::onGraphMotion { visuNo graph xScreen yScreen } {
    set ly [string length $y]
    if {$ly>8} { set y [string range $y 0 7] }
    $graph  crosshairs configure -position @$xScreen,$yScreen
-  ### $This.status1.coords configure -text "$x $private($visuNo,xunit)   $y $private($visuNo,yunit)"
-  ### $This.status1.coords configure -text "$x  $y "
+   #--- je met a jour la variable des coordonnnees
+   set private($visuNo,graph,coordinate) "$x $private($visuNo,graph,xUnit) $y $private($visuNo,graph,yUnit)"
 }
 
 #------------------------------------------------------------
