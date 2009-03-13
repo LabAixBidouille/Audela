@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.53 2008-12-22 09:28:01 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.54 2009-03-13 23:45:14 michelpujol Exp $
 #
 
 namespace eval ::confTel {
@@ -211,7 +211,8 @@ proc ::confTel::createDialog { } {
       set notebook [ NoteBook $private(frm).usr.onglet ]
       foreach namespace $private(pluginNamespaceList) {
          set title [ ::$namespace\::getPluginTitle ]
-         set frm   [ $notebook insert end $namespace -text "$title " -raisecmd "::confTel::onRaiseNotebook $namespace" ]
+         set frm   [ $notebook insert end $namespace -text "$title "  ]
+         ### -raisecmd "::confTel::onRaiseNotebook $namespace"
          ::$namespace\::fillConfigPage $frm
       }
       pack $notebook -fill both -expand 1 -padx 4 -pady 4

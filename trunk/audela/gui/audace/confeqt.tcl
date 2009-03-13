@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'equipment'
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.36 2008-12-19 18:50:41 robertdelmas Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.37 2009-03-13 23:43:10 michelpujol Exp $
 #
 
 namespace eval ::confEqt {
@@ -288,7 +288,8 @@ proc ::confEqt::createDialog { } {
       set notebook [ NoteBook $private(frm).usr.onglet ]
       foreach namespace $private(notebookNameList) {
          set title [ ::$namespace\::getPluginTitle ]
-         set frm   [ $notebook insert end $namespace -text "$title    " -raisecmd "::confEqt::onRaiseNotebook $namespace" ]
+         set frm   [ $notebook insert end $namespace -text "$title    "  ]
+         ### -raisecmd "::confEqt::onRaiseNotebook $namespace"
          ::$namespace\::fillConfigPage $frm
       }
       pack $notebook -fill both -expand 1 -padx 4 -pady 4
