@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration des systemes optiques associes aux cameras A, B et C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.31 2008-12-20 10:53:28 robertdelmas Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.32 2009-03-13 23:44:20 michelpujol Exp $
 #
 
 namespace eval ::confOptic {
@@ -388,7 +388,7 @@ namespace eval ::confOptic {
       variable widget
 
       #--- Affiche en gras le titre de l'onglet
-      ::confOptic::onRaiseNotebook [ $This.usr.onglet raise "fillConfigCameraA" ]
+      ###::confOptic::onRaiseNotebook [ $This.usr.onglet raise "fillConfigCameraA" ]
       #--- Mise a jour des parametres de la camera CCD A
       ::confOptic::MAJ_Conf_Camera A $widget(frm)
    }
@@ -402,7 +402,7 @@ namespace eval ::confOptic {
       variable widget
 
       #--- Affiche en gras le titre de l'onglet
-      ::confOptic::onRaiseNotebook [ $This.usr.onglet raise "fillConfigCameraB" ]
+      ###::confOptic::onRaiseNotebook [ $This.usr.onglet raise "fillConfigCameraB" ]
       #--- Mise a jour des parametres de la camera CCD B
       ::confOptic::MAJ_Conf_Camera B $widget(frm)
    }
@@ -416,7 +416,7 @@ namespace eval ::confOptic {
       variable widget
 
       #--- Affiche en gras le titre de l'onglet
-      ::confOptic::onRaiseNotebook [ $This.usr.onglet raise "fillConfigCameraC" ]
+      ###::confOptic::onRaiseNotebook [ $This.usr.onglet raise "fillConfigCameraC" ]
       #--- Mise a jour des parametres de la camera CCD C
       ::confOptic::MAJ_Conf_Camera C $widget(frm)
    }

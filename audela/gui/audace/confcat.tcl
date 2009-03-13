@@ -2,7 +2,7 @@
 # Fichier : confcat.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'chart'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confcat.tcl,v 1.27 2008-12-20 10:53:16 robertdelmas Exp $
+# Mise a jour $Id: confcat.tcl,v 1.28 2009-03-13 23:42:50 michelpujol Exp $
 #
 
 namespace eval ::confCat {
@@ -234,7 +234,8 @@ proc ::confCat::createDialog { } {
       set notebook [ NoteBook $private(frm).usr.onglet ]
       foreach namespace $private(pluginNamespaceList) {
          set title [ ::$namespace\::getPluginTitle ]
-         set frm   [ $notebook insert end $namespace -text "$title    " -raisecmd "::confCat::onRaiseNotebook $namespace" ]
+         set frm   [ $notebook insert end $namespace -text "$title    " ]
+         ### -raisecmd "::confCat::onRaiseNotebook $namespace"
          ::$namespace\::fillConfigPage $frm
       }
       pack $notebook -fill both -expand 1 -padx 4 -pady 4
