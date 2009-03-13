@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.35 2008-12-20 14:52:39 robertdelmas Exp $
+# Mise a jour $Id: dslr.tcl,v 1.36 2009-03-13 23:49:24 michelpujol Exp $
 #
 
 namespace eval ::dslr {
@@ -257,10 +257,32 @@ proc ::dslr::fillConfigPage { frm camItem } {
             button $frm.frame1.frame7.frame8.configure_longuepose -text "$caption(dslr,configurer)" -relief raised \
                -command {
                   ::dslr::configureAPNLinkLonguePose
-                  ::confLink::run ::dslr::private(longueposeport) { parallelport quickremote external } \
+                  ::confLink::run ::dslr::private(longueposeport) { parallelport quickremote serialport external } \
                      "- $caption(dslr,longuepose) - $caption(dslr,camera)"
                }
             pack $frm.frame1.frame7.frame8.configure_longuepose -side left -pady 10 -ipadx 10 -ipady 1
+
+            #--- Je constitue la liste des liaisons pour la longuepose
+            set list_combobox2 [ ::confLink::getLinkLabels { "parallelport" "quickremote" "serialport" } ]
+
+            #--- Je verifie le contenu de la liste
+            if { [ llength $list_combobox2 ] > 0 } {
+               #--- Si la liste n'est pas vide,
+               #--- Je verifie que la valeur par defaut existe dans la liste
+               if { [ lsearch -exact $list_combobox2 $private(longueposeport) ] == -1 } {
+                  #--- Si la valeur par defaut n'existe pas dans la liste,
+                  #--- Je la remplace par le premier item de la liste
+                  set private(longueposeport) [ lindex $list_combobox2 0 ]
+               }
+            } else {
+               #--- Si la liste est vide
+               #--- Je desactive l'option longue pose
+               set private(longueposeport) ""
+               set private(longuepose) 0
+               #--- J'empeche de selectionner l'option longue
+               $frm.frame1.frame7.frame8.moyen_longuepose configure -state disable
+            }
+
 
             #--- Choix du port ou de la liaison
             ComboBox $frm.frame1.frame7.frame8.moyen_longuepose \
@@ -285,15 +307,20 @@ proc ::dslr::fillConfigPage { frm camItem } {
             label $frm.frame1.frame7.frame9.lab4 -text "$caption(dslr,longueposebit)"
             pack $frm.frame1.frame7.frame9.lab4 -anchor center -side left -padx 3 -pady 5
 
-            set list_combobox [ list 0 1 2 3 4 5 6 7 ]
+            set bitList [ ::confLink::getPluginProperty $private(longueposeport) "bitList" ]
             ComboBox $frm.frame1.frame7.frame9.longueposelinkbit \
-               -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
-               -height [ llength $list_combobox ] \
+               -width [ ::tkutil::lgEntryComboBox $bitList ] \
+               -height [ llength $bitList ] \
                -relief sunken \
                -borderwidth 1 \
                -textvariable ::dslr::private(longueposelinkbit) \
                -editable 0    \
-               -values $list_combobox
+               -values $bitList
+            if { [lsearch $bitList $private(longueposelinkbit)] == -1 } {
+               #--- si le bit n'existe pas dans la liste, je selectionne le premier element de la liste
+               set private(longueposelinkbit) [lindex $bitList 0 ]
+            }
+
             pack $frm.frame1.frame7.frame9.longueposelinkbit -anchor center -side right -padx 20 -pady 5
 
          pack $frm.frame1.frame7.frame9 -anchor n -side top -fill x
@@ -396,6 +423,7 @@ proc ::dslr::configureCamera { camItem bufNo } {
       if { $conf(dslr,longuepose) == "1" } {
          switch [ ::confLink::getLinkNamespace $conf(dslr,longueposeport) ] {
             parallelport -
+            serialport -
             quickremote {
                #--- Je cree la liaison longue pose
               ### set linkNo [ ::confLink::create $conf(dslr,longueposeport) "cam$camNo" "longuepose" "bit $conf(dslr,longueposelinkbit)" ]
@@ -559,17 +587,30 @@ proc ::dslr::confDSLRInactif { camItem } {
 proc ::dslr::configureAPNLinkLonguePose { } {
    variable private
 
-   #--- Je positionne startvalue par defaut en fonction du type de liaison
-   if { [ ::confLink::getLinkNamespace $private(longueposeport) ] == "parallelport" } {
-      set private(longueposestartvalue) "0"
-     ### set private(longueposestopvalue)  "1"
-   } elseif { [ ::confLink::getLinkNamespace $private(longueposeport) ] == "quickremote" } {
-      set private(longueposestartvalue) "1"
-     ### set private(longueposestopvalue)  "0"
-   } else {
-      set private(longueposestartvalue) "0"
-     ### set private(longueposestopvalue)  "1"
+   set frm $private(frm)
+
+   #--- je rafraichis la liste des bits disponibles pour la command de la longue pose
+   set bitList [ ::confLink::getPluginProperty $private(longueposeport) "bitList" ]
+   $frm.frame1.frame7.frame9.longueposelinkbit configure -values $bitList -height [ llength $bitList ] -width [::tkutil::lgEntryComboBox $bitList]
+   if { [lsearch $bitList $private(longueposelinkbit)] == -1 } {
+      #--- si le bit n'existe pas dans la liste, je selectionne le premier element de la liste
+      set private(longueposelinkbit) [lindex $bitList 0 ]
    }
+
+
+   #--- Je positionne startvalue par defaut en fonction du type de liaison
+   switch [ ::confLink::getLinkNamespace $private(longueposeport) ] {
+      "parallelport" {
+         set private(longueposestartvalue) "0"
+      }
+      "quickremote" {
+         set private(longueposestartvalue) "1"
+      }
+      "serialport" {
+         set private(longueposestartvalue) "1"
+      }
+   }
+
 }
 
 #

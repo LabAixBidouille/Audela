@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.51 2008-12-30 15:10:10 michelpujol Exp $
+# Mise a jour $Id: webcam.tcl,v 1.52 2009-03-13 23:49:24 michelpujol Exp $
 #
 
 namespace eval ::webcam {
@@ -317,7 +317,8 @@ proc ::webcam::fillConfigPage { frm camItem } {
 
    #--- Choix du mode video
    if { $::tcl_platform(platform) == "windows" } {
-      set list_combobox [ list "vfw" "directx" ]
+      ###set list_combobox [ list "vfw" "directx" ]
+      set list_combobox [ list "vfw" ]
       #--- video mode
       ComboBox $frm.videomode \
          -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
@@ -388,11 +389,11 @@ proc ::webcam::fillConfigPage { frm camItem } {
    button $frm.configure -text "$caption(webcam,configurer)" -relief raised \
       -command "::webcam::configureLinkLonguePose $camItem ; \
          ::confLink::run ::webcam::private($camItem,longueposeport) \
-         { parallelport quickremote } \"- $caption(webcam,longuepose1) - $caption(webcam,camera)\""
+         { parallelport quickremote serialport } \"- $caption(webcam,longuepose1) - $caption(webcam,camera)\""
    pack $frm.configure -in $frm.frame11 -side left -pady 0 -ipadx 10 -ipady 1
 
    #--- Je constitue la liste des liaisons pour la longuepose
-   set list_combobox [ ::confLink::getLinkLabels { "parallelport" "quickremote" } ]
+   set list_combobox [ ::confLink::getLinkLabels { "parallelport" "quickremote" "serialport" } ]
 
    #--- Je verifie le contenu de la liste
    if { [ llength $list_combobox ] > 0 } {
@@ -427,15 +428,19 @@ proc ::webcam::fillConfigPage { frm camItem } {
    label $frm.lab3 -text "$caption(webcam,longueposebit)"
    pack $frm.lab3 -in $frm.frame12 -anchor center -side left -padx 3 -pady 5
 
-   set list_combobox [ list 0 1 2 3 4 5 6 7 ]
+   set bitList [ ::confLink::getPluginProperty $private($camItem,longueposeport) "bitList" ]
    ComboBox $frm.longueposelinkbit \
-      -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
-      -height [ llength $list_combobox ] \
+      -width [ ::tkutil::lgEntryComboBox $bitList ] \
+      -height [ llength $bitList ] \
       -relief sunken               \
       -borderwidth 1               \
       -textvariable ::webcam::private($camItem,longueposelinkbit) \
       -editable 0                  \
-      -values $list_combobox
+      -values $bitList
+   if { [lsearch $bitList $private($camItem,longueposelinkbit)] == -1 } {
+      #--- si le bit n'existe pas dans la liste, je selectionne le premier element de la liste
+      set private($camItem,longueposelinkbit) [lindex $bitList 0 ]
+   }
    pack $frm.longueposelinkbit -in $frm.frame12 -anchor center -side right -padx 10 -pady 5
 
    label $frm.lab4 -text "$caption(webcam,longueposestart)"
@@ -770,11 +775,27 @@ proc ::webcam::checkConfigCCDN&B { camItem } {
 proc ::webcam::configureLinkLonguePose { camItem } {
    variable private
 
+   set frm $private(frm)
+
+   #--- je rafraichis la liste des bits disponibles pour la command de la longue pose
+   set bitList [ ::confLink::getPluginProperty $private($camItem,longueposeport) "bitList" ]
+   $frm.longueposelinkbit configure -values $bitList -height [ llength $bitList ] -width [::tkutil::lgEntryComboBox $bitList]
+   if { [lsearch $bitList $private($camItem,longueposelinkbit)] == -1 } {
+      #--- si le bit n'existe pas dans la liste, je selectionne le premier element de la liste
+      set private($camItem,longueposelinkbit) [lindex $bitList 0 ]
+   }
+
    #--- Je positionne startvalue par defaut en fonction du type de liaison
-   if { [ ::confLink::getLinkNamespace $private($camItem,longueposeport) ] == "parallelport" } {
-      set private($camItem,longueposestartvalue) "0"
-   } elseif { [ ::confLink::getLinkNamespace $private($camItem,longueposeport) ] == "quickremote" } {
-      set private($camItem,longueposestartvalue) "1"
+   switch [ ::confLink::getLinkNamespace $private($camItem,longueposeport) ] {
+      "parallelport" {
+         set private($camItem,longueposestartvalue) "0"
+      }
+      "quickremote" {
+         set private($camItem,longueposestartvalue) "1"
+      }
+      "serialport" {
+         set private($camItem,longueposestartvalue) "1"
+      }
    }
 }
 
