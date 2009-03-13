@@ -2,7 +2,7 @@
 # Fichier : quickremote.tcl
 # Description : Interface de liaison QuickRemote
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickremote.tcl,v 1.20 2007-12-04 22:43:32 robertdelmas Exp $
+# Mise a jour $Id: quickremote.tcl,v 1.21 2009-03-13 23:51:36 michelpujol Exp $
 #
 
 namespace eval quickremote {
@@ -60,7 +60,7 @@ proc ::quickremote::confToWidget { } {
 #   ::quickremote::create "quickremote2" "cam2" "longuepose" "bit 2"
 #     2
 #------------------------------------------------------------
-proc ::quickremote::createPluginInstance { linkLabel deviceId usage comment } {
+proc ::quickremote::createPluginInstance { linkLabel deviceId usage comment args } {
    global audace
 
    set linkIndex [getLinkIndex $linkLabel]
@@ -109,7 +109,9 @@ proc ::quickremote::deletePluginInstance { linkLabel deviceId usage } {
 #------------------------------------------------------------
 proc ::quickremote::getPluginProperty { propertyName } {
    switch $propertyName {
-
+      bitList {
+         return [list 0 1 2 3 4 5 6 7]
+      }
    }
 }
 

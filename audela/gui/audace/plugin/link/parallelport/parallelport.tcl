@@ -2,7 +2,7 @@
 # Fichier : parallelport.tcl
 # Description : Interface de liaison Port Parallele
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: parallelport.tcl,v 1.21 2008-05-12 16:55:49 robertdelmas Exp $
+# Mise a jour $Id: parallelport.tcl,v 1.22 2009-03-13 23:51:36 michelpujol Exp $
 #
 
 namespace eval parallelport {
@@ -28,7 +28,9 @@ namespace eval parallelport {
 #------------------------------------------------------------
 proc ::parallelport::getPluginProperty { propertyName } {
    switch $propertyName {
-
+      bitList {
+         return [list 0 1 2 3 4 5 6 7]
+      }
    }
 }
 
@@ -166,7 +168,7 @@ proc ::parallelport::confToWidget { } {
 #    ::parallelport::createPluginInstance "LPT2:" "cam2" "longuepose" "bit 2"
 #      2
 #------------------------------------------------------------
-proc ::parallelport::createPluginInstance { linkLabel deviceId usage comment } {
+proc ::parallelport::createPluginInstance { linkLabel deviceId usage comment args } {
    global audace
 
    set linkIndex [getLinkIndex $linkLabel]

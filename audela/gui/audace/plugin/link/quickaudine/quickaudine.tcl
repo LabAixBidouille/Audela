@@ -2,7 +2,7 @@
 # Fichier : quickaudine.tcl
 # Description : Interface de liaison QuickAudine
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickaudine.tcl,v 1.21 2007-12-04 22:43:08 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.tcl,v 1.22 2009-03-13 23:51:36 michelpujol Exp $
 #
 
 namespace eval quickaudine {
@@ -52,7 +52,7 @@ proc ::quickaudine::confToWidget { } {
 #
 #  return rien
 #------------------------------------------------------------
-proc ::quickaudine::createPluginInstance { linkLabel deviceId usage comment } {
+proc ::quickaudine::createPluginInstance { linkLabel deviceId usage comment args } {
    global audace
 
    #--- je rafraichis la liste

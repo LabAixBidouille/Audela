@@ -2,7 +2,7 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: ethernaude.tcl,v 1.26 2009-03-03 22:20:11 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.tcl,v 1.27 2009-03-13 23:51:36 michelpujol Exp $
 #
 
 namespace eval ethernaude {
@@ -51,7 +51,7 @@ proc ::ethernaude::configurePlugin { } {
    global conf
 
    if { $conf(ethernaude,ipsetting) == "1" } {
-     ### ::ethernaude::initHostEthernAude "$conf(ethernaude,host)"
+      ::ethernaude::initHostEthernAude "$conf(ethernaude,host)"
    } else {
       return
    }
@@ -79,12 +79,12 @@ proc ::ethernaude::confToWidget { } {
 #
 #  return nothing
 #------------------------------------------------------------
-proc ::ethernaude::createPluginInstance { linkLabel deviceId usage comment } {
+proc ::ethernaude::createPluginInstance { linkLabel deviceId usage comment args } {
    #--- Pour l'instant, la liaison ethernaude est demarree par le pilote de la camera
    variable private
 
    set private(started) "1"
-   ::ethernaude::ConfEthernAude
+   ###::ethernaude::ConfEthernAude
    return
 }
 

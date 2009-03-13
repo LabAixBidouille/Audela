@@ -2,7 +2,7 @@
 # Fichier : gphoto2.tcl
 # Description : Interface de liaison GPhoto2
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: gphoto2.tcl,v 1.13 2007-12-04 22:40:15 robertdelmas Exp $
+# Mise a jour $Id: gphoto2.tcl,v 1.14 2009-03-13 23:51:36 michelpujol Exp $
 #
 
 namespace eval gphoto2 {
@@ -51,7 +51,7 @@ proc ::gphoto2::confToWidget { } {
 #
 #  return nothing
 #------------------------------------------------------------
-proc ::gphoto2::createPluginInstance { linkLabel deviceId usage comment } {
+proc ::gphoto2::createPluginInstance { linkLabel deviceId usage comment args } {
    #--- pour l'instant, la liaison est demarree par le pilote de la camera
    return
 }

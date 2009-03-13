@@ -2,7 +2,7 @@
 # Fichier : vellemank8056.tcl
 # Description : Interface pour carte Velleman K8056
 # Auteurs : Michel PUJOL
-# Mise a jour $Id: vellemank8056.tcl,v 1.1 2009-03-08 11:02:11 michelpujol Exp $
+# Mise a jour $Id: vellemank8056.tcl,v 1.2 2009-03-13 23:51:36 michelpujol Exp $
 #
 
 namespace eval vellemank8056 {
@@ -150,7 +150,7 @@ proc ::vellemank8056::stopPlugin { } {
 #  return
 #     numero du link
 #------------------------------------------------------------
-proc ::vellemank8056::createPluginInstance { linkLabel deviceId usage comment } {
+proc ::vellemank8056::createPluginInstance { linkLabel deviceId usage comment args } {
    variable private
    global audace
 
@@ -167,7 +167,7 @@ proc ::vellemank8056::createPluginInstance { linkLabel deviceId usage comment } 
       ###fconfigure $private(portHandle) -mode "2400,n,8,1" -blocking 0
       fconfigure $private(portHandle) -mode "2400,n,8,1" -buffering none -blocking 0 -translation binary
       #--- j'ajoute l'utilisation du port serie
-      ::serialport::createPluginInstance $::conf(vellemank8056,serialPort) $linkLabel "command" ""
+      ::serialport::createPluginInstance $::conf(vellemank8056,serialPort) $linkLabel "command" "" ""
 
       #--- je cree le lien ::link$linkno  (simule la presence de la librairie dynamique)
       set linkNo [::vellemank8056::simulLibraryCreateLink vellemank8056 $linkIndex ]

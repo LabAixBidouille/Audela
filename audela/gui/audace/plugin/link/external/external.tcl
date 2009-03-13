@@ -2,7 +2,7 @@
 # Fichier : external.tcl
 # Description : Interface de liaison manuelle
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: external.tcl,v 1.10 2007-12-04 22:38:41 robertdelmas Exp $
+# Mise a jour $Id: external.tcl,v 1.11 2009-03-13 23:51:36 michelpujol Exp $
 #
 
 namespace eval external {
@@ -50,7 +50,7 @@ proc ::external::confToWidget { } {
 #
 #  return nothing
 #------------------------------------------------------------
-proc ::external::createPluginInstance { linkLabel deviceId usage comment } {
+proc ::external::createPluginInstance { linkLabel deviceId usage comment args } {
    #--- pour l'instant, la liaison est demarree par le pilote de la camera
    return
 }

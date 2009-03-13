@@ -2,7 +2,7 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: serialport.tcl,v 1.21 2008-11-21 16:43:47 michelpujol Exp $
+# Mise a jour $Id: serialport.tcl,v 1.22 2009-03-13 23:51:36 michelpujol Exp $
 #
 
 namespace eval serialport {
@@ -27,7 +27,9 @@ namespace eval serialport {
 #------------------------------------------------------------
 proc ::serialport::getPluginProperty { propertyName } {
    switch $propertyName {
-
+      bitList {
+         return [list DTR RTS]
+      }
    }
 }
 
@@ -130,20 +132,22 @@ proc ::serialport::confToWidget { } {
 #
 #  return rien
 #------------------------------------------------------------
-proc ::serialport::createPluginInstance { linkLabel deviceId usage comment } {
+proc ::serialport::createPluginInstance { linkLabel deviceId usage comment args } {
    variable private
    global audace
 
    #--- pour l'instant, la liaison est cree par la librairie du peripherique
-
-   #--- je stocke le commentaire d'utilisation
-   set private(serialLink,$linkLabel,$deviceId,$usage) "$comment"
+   set linkIndex [getLinkIndex $linkLabel]
+   #--- je cree le lien
+   set linkNo [::link::create serialport $linkIndex $args ]
+   #--- j'ajoute l'utilisation
+   link$linkNo use add $deviceId $usage $comment
    #--- je rafraichis la liste
    ::serialport::refreshAvailableList
    #--- je selectionne le link
    ::serialport::selectConfigLink $linkLabel
    #---
-   return
+   return $linkNo
 }
 
 #------------------------------------------------------------
@@ -154,16 +158,25 @@ proc ::serialport::createPluginInstance { linkLabel deviceId usage comment } {
 #------------------------------------------------------------
 proc ::serialport::deletePluginInstance { linkLabel deviceId usage } {
    variable private
-   global audace
 
    #--- pour l'instant, la liaison est arretee par le pilote du peripherique
+   set linkno [::confLink::getLinkNo $linkLabel]
+   if { $linkno != "" } {
+      link$linkno use remove $deviceId $usage
+      if { [link$linkno use get] == "" } {
+         #--- je supprime la liaison si elle n'est plus utilisee par aucun peripherique
+         ::link::delete $linkno
+      }
+      #--- je rafraichis la liste
+      refreshAvailableList
+   }
 
    #--- je supprime le commentaire d'utilisation
-   if { [info exists private(serialLink,$linkLabel,$deviceId,$usage)] } {
-      unset private(serialLink,$linkLabel,$deviceId,$usage)
-   }
+   ###if { [info exists private(serialLink,$linkLabel,$deviceId,$usage)] } {
+   ###   unset private(serialLink,$linkLabel,$deviceId,$usage)
+   ###}
    #--- je rafraichis la liste
-   ::serialport::refreshAvailableList
+   ###::serialport::refreshAvailableList
    #---
    return
 }
@@ -348,7 +361,7 @@ proc ::serialport::refreshAvailableList { } {
    foreach linkLabel [lsort $linkList] {
       $private(frm).available.list insert end $linkLabel
    }
-   
+
 
    #--- je selectionne le linkLabel comme avant le rafraichissement
    selectConfigLink $selectedLinkLabel
