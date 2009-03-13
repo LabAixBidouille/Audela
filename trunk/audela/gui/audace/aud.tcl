@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.97 2009-02-27 07:14:49 michelpujol Exp $
+# Mise a jour $Id: aud.tcl,v 1.98 2009-03-13 23:41:36 michelpujol Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -1506,9 +1506,9 @@ proc startdebug { } {
       #--- Chargement statique de la librairie TK pour RamDebugger
       if { $::tcl_platform(os) == "Linux" } {
          #--- Pour LINUX, il faut inserer le prefixe "lib" devant le nom de la librairie
-         load [file join "$::audela_start_dir" libtk8.4.so ]
+         load [file join "$::audela_start_dir" libtk8.5.so ]
       } else {
-         load [file join "$::audela_start_dir" tk84t.dll ]
+         load [file join "$::audela_start_dir" tk85t.dll ]
       }
    }
    package require RamDebugger
