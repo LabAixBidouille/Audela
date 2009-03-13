@@ -2,12 +2,11 @@
 # Fichier : ros.tcl
 # Description : Function to launch Robotic Observatory Software installation
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: ros.tcl,v 1.12 2009-01-08 05:17:46 alainklotz Exp $
+# Mise a jour $Id: ros.tcl,v 1.13 2009-03-13 22:17:37 alainklotz Exp $
 #
 
 proc ros { args } {
    global ros
-   global rosmodpoi
    global meo
    
    set ros(withtk) 1
@@ -33,10 +32,10 @@ proc ros { args } {
       set ros(falsenameofexecutable) majordome
       source "$ros(root,ros)/src/common/variables_globales.tcl"
       unset ros(falsenameofexecutable)
-      set req(gardien,gar,host) $req(majordome,gar,host)
-      set req(gardien,gar,port) $req(majordome,gar,port)
+      set ros(req,gardien,gar,host) $ros(req,majordome,gar,host)
+      set ros(req,gardien,gar,port) $ros(req,majordome,gar,port)
       set err [catch {source "[pwd]/../gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,audela)/gui/audace/socket_tools.tcl" }
-      set err [catch {socket_client_open clientgar2 $req(gardien,gar,host) [expr $req(gardien,gar,port)+1]} msg]
+      set err [catch {socket_client_open clientgar2 $ros(req,gardien,gar,host) [expr $ros(req,gardien,gar,port)+1]} msg]
       if {$err==1} {
          set texte $msg
 	      if {($ros(withtk)==0)||([info commands ::console::affiche_resultat]!="::console::affiche_resultat")} {
@@ -84,10 +83,10 @@ proc ros { args } {
       set ros(falsenameofexecutable) majordome
       source "$ros(root,ros)/src/common/variables_globales.tcl"
       unset ros(falsenameofexecutable)
-      set req(telescope,tel,host) $req(majordome,tel,host)
-      set req(telescope,tel,port) $req(majordome,tel,port)
+      set ros(req,telescope,tel,host) $ros(req,majordome,tel,host)
+      set ros(req,telescope,tel,port) $ros(req,majordome,tel,port)
       set err [catch {source "[pwd]/../gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,audela)/gui/audace/socket_tools.tcl" }
-      set err [catch {socket_client_open clienttel2 $req(telescope,tel,host) [expr $req(telescope,tel,port)+1]} msg]
+      set err [catch {socket_client_open clienttel2 $ros(req,telescope,tel,host) [expr $ros(req,telescope,tel,port)+1]} msg]
       if {$err==1} {
          set texte $msg
 	      if {($ros(withtk)==0)||([info commands ::console::affiche_resultat]!="::console::affiche_resultat")} {
@@ -136,10 +135,10 @@ proc ros { args } {
       set ros(falsenameofexecutable) majordome
       source "$ros(root,ros)/src/common/variables_globales.tcl"
       unset ros(falsenameofexecutable)
-      set req(camera,cam,host) $req(majordome,cam,host)
-      set req(camera,cam,port) $req(majordome,cam,port)
+      set ros(req,camera,cam,host) $ros(req,majordome,cam,host)
+      set ros(req,camera,cam,port) $ros(req,majordome,cam,port)
       set err [catch {source "[pwd]/../gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,audela)/gui/audace/socket_tools.tcl" }
-      set err [catch {socket_client_open clientcam2 $req(camera,cam,host) [expr $req(camera,cam,port)+1]} msg]
+      set err [catch {socket_client_open clientcam2 $ros(req,camera,cam,host) [expr $ros(req,camera,cam,port)+1]} msg]
       if {$err==1} {
          set texte $msg
 	      if {($ros(withtk)==0)||([info commands ::console::affiche_resultat]!="::console::affiche_resultat")} {
@@ -186,10 +185,10 @@ proc ros { args } {
       set ros(falsenameofexecutable) majordome
       source "$ros(root,ros)/src/common/variables_globales.tcl"
       unset ros(falsenameofexecutable)
-      set req(majordome,maj,host) $req(majordome,maj,host)
-      set req(majordome,maj,port) $req(majordome,maj,port)
+      set ros(req,majordome,maj,host) $ros(req,majordome,maj,host)
+      set ros(req,majordome,maj,port) $ros(req,majordome,maj,port)
       set err [catch {source "[pwd]/../gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,audela)/gui/audace/socket_tools.tcl" }
-      set err [catch {socket_client_open clientmaj2 $req(majordome,maj,host) [expr $req(majordome,maj,port)+1]} msg]
+      set err [catch {socket_client_open clientmaj2 $ros(req,majordome,maj,host) [expr $ros(req,majordome,maj,port)+1]} msg]
       if {$err==1} {
          set texte $msg
 	      if {($ros(withtk)==0)||([info commands ::console::affiche_resultat]!="::console::affiche_resultat")} {
@@ -228,6 +227,259 @@ proc ros { args } {
       set ros(audela,maj_result) $texte
       socket_client_close clientmaj2
       
+   } elseif {$action=="var"} {
+      set action2 [lindex $args 1]
+      set params [lrange $args 2 end]
+      set err [catch {source "[pwd]/../ros/root.tcl"}] ; if {$err==1} { source "$ros(root,ros)/../ros/root.tcl" }
+      if {$action2=="files"} {
+         set fout [lindex $params 0]
+         global result
+         set fichiers "$ros(root,audela)/gui/audace/ros.tcl\n"
+         set filtre ""
+         set result ""
+         ros_analdir $ros(root,conf) $filtre
+         append fichiers $result
+         set result ""
+         ros_analdir $ros(root,ros) $filtre
+         append fichiers $result
+         set fichiers [lsort [split $fichiers \n] ]
+         set ros(audela,var,fichiers) [lrange $fichiers 0 end-1]
+         set n [llength $ros(audela,var,fichiers)]
+         if {$fout!=""} {
+            set textes ""
+            foreach fichier $ros(audela,var,fichiers) {
+               append textes "$fichier\n"
+            }
+            set f [open $fout w]
+            puts -nonewline $f $textes
+            close $f
+         }         
+         return $n
+      } elseif {$action2=="find"} {
+         # ros var find ros(toto)
+         set var [lindex $params 0]
+         if {$var==""} {
+            set msg "$syntax\nERROR: Params must be: var ?file_out?"
+            error $msg
+         }
+         set fout [lindex $params 1]
+         ::console::affiche_resultat "Find $var:\n"
+         set textes ""
+         foreach fichier $ros(audela,var,fichiers) {
+            set ext [file extension $fichier]
+            if {$ext!=".tcl"} {
+               continue
+            }
+            set err [catch {set f [open $fichier r]}]
+            if {$err==1} { continue }
+            set lignes [split [read $f] \n]
+            close $f
+            set n [llength $lignes]
+            #::console::affiche_resultat "$fichier : $n\n"
+            for {set k 0} {$k<$n} {incr k} {
+               set ligne [lindex $lignes $k]
+               set col0 0
+               set col [string first $var $ligne $col0]
+               if {$col>=0} {
+                  ::console::affiche_resultat "$fichier ($k) => $ligne\n"
+                  append textes "$fichier ($k) => $ligne\n"
+               }
+            }
+         }
+         if {$fout!=""} {
+            set f [open $fout w]
+            puts -nonewline $f $textes
+            close $f
+         }         
+      } elseif {$action2=="findarray"} {
+         # ros var findarray info => copier/coller dans globales.txt
+         set var [lindex $params 0]
+         if {$var==""} {
+            set msg "$syntax\nERROR: Params must be: var ?file_out?"
+            error $msg
+         }
+         set fout [lindex $params 1]
+         ::console::affiche_resultat "Find $var:\n"
+         set textes ""
+         set thearrays ""
+         foreach fichier $ros(audela,var,fichiers) {
+            set ext [file extension $fichier]
+            if {$ext!=".tcl"} {
+               continue
+            }
+            set err [catch {set f [open $fichier r]}]
+            if {$err==1} { continue }
+            set lignes [split [read $f] \n]
+            close $f
+            set n [llength $lignes]
+            #::console::affiche_resultat "$fichier : $n\n"
+            for {set k 0} {$k<$n} {incr k} {
+               set ligne [lindex $lignes $k]
+               set col0 0
+               set col [string first "${var}(" $ligne $col0]
+               if {$col>=0} {
+                  set colfin [string first ) $ligne $col]
+                  set thearray [string range $ligne $col $colfin]
+                  ::console::affiche_resultat "$fichier ($k) $thearray => $ligne\n"
+                  append textes "$fichier ($k) $thearray => $ligne\n"
+                  lappend thearrays "$thearray"
+               }
+            }
+         }
+         set thearrays [lsort $thearrays]
+         set thearray0 ""
+         set textes ""
+         foreach thearray $thearrays {
+            if {$thearray!=$thearray0} {
+               append textes "$thearray\n"
+               ::console::affiche_resultat "ARRAY $thearray\n"
+               set thearray0 $thearray
+            }
+         }
+         if {$fout!=""} {
+            set f [open $fout w]
+            puts -nonewline $f $textes
+            close $f
+         }         
+      } elseif {$action2=="array2ros"} {
+         # ros var array2ros globales.txt rosvar.txt
+         set fin [lindex $params 0]
+         set fout [lindex $params 1]
+         if {($fin=="")||($fout=="")} {
+            set msg "$syntax\nERROR: Params must be: file_in file_out"
+            error $msg
+         }         
+         set err [catch {set f [open $fin r]} msg]
+         if {$err==1} {
+            error $msg
+         }         
+         set lignes [split [read $f] \n]
+         close $f
+         set n [llength $lignes]
+         set textes ""
+         for {set k 0} {$k<$n} {incr k} {
+            set ligne [lindex $lignes $k]
+            set nc [llength $ligne]
+            if {$nc!=3} { 
+               append textes "$ligne\n"
+               continue 
+            }
+            set car [lindex $ligne 0]
+            if {$car=="##"} {
+               append textes "$ligne\n"
+               continue 
+            }               
+            set var [lindex $ligne 2]
+            set colfin [string first ( $var 0]
+            set array0 [string range $var 0 [expr $colfin-1]]
+            if {$array0=="ros"} {
+               set var ""
+            } elseif {$array0=="roc"} {
+               regsub "${array0}\\(" $var common( a
+               set var $a
+            } elseif {$array0=="gren"} {
+               regsub "${array0}\\(" $var common( a
+               set var $a
+            } elseif {$array0=="info"} {
+               regsub "${array0}\\(" $var caption( a
+               set var $a
+            }           
+            #::console::affiche_resultat "var=$var\n"
+            if {$var!=""} {
+               regsub \\( $var , a
+               set var "ros($a"
+            }
+            append textes "$ligne $var\n"
+         }
+         if {$fout!=""} {
+            set f [open $fout w]
+            puts -nonewline $f $textes
+            close $f
+         }         
+      } elseif {$action2=="ros2map"} {
+         # ros var ros2map rosvar.txt
+         set fin [lindex $params 0]
+         if {($fin=="")} {
+            set msg "$syntax\nERROR: Params must be: file_in"
+            error $msg
+         }         
+         set err [catch {set f [open $fin r]} msg]
+         if {$err==1} {
+            error $msg
+         }         
+         set lignes [split [read $f] \n]
+         close $f
+         set ros(audela,var,map) ""
+         set n [llength $lignes]
+         set textes ""
+         set array00 ""
+         set ros(audela,var,arrays) ""         
+         for {set k 0} {$k<$n} {incr k} {
+            set ligne [lindex $lignes $k]
+            set nc [llength $ligne]
+            if {$nc<=3} { 
+               append textes "$ligne\n"
+               continue 
+            }
+            set car [lindex $ligne 0]
+            if {$car=="##"} {
+               append textes "$ligne\n"
+               continue 
+            }               
+            set varin [lindex $ligne 2]
+            set varout [lindex $ligne 3]
+            set colfin [string first ( $varin 0]
+            set array0 [string range $varin 0 [expr $colfin-1]]
+            if {$array0!=$array00} {
+               lappend ros(audela,var,arrays) $array0
+               set array00 $array0
+            }
+            append ros(audela,var,map) "$varin $varout "
+         }
+         foreach array0 $ros(audela,var,arrays) {
+            append ros(audela,var,map) "\"global $array0\" \"global ros\" "
+         }
+         ::console::affiche_resultat "$ros(audela,var,map)\n"
+      } elseif {$action2=="replacearrays"} {
+         # ros var replacearrays
+         if {[info exists ros(audela,var,map)]==0} {
+            set msg "$syntax\nERROR: Execute ros var var ros2map before..."
+            error $msg
+         }
+         set textes ""
+         set thearrays ""
+         foreach fichier $ros(audela,var,fichiers) {
+            set ext [file extension $fichier]
+            if {$ext!=".tcl"} {
+               continue
+            }
+            set err [catch {set f [open $fichier r]}]
+            if {$err==1} { continue }
+            set lignes [split [read $f] \n]
+            close $f
+            set n [llength $lignes]
+            set nmap 0
+            set ligne2s ""
+            #::console::affiche_resultat "$fichier : $n\n"
+            for {set k 0} {$k<$n} {incr k} {
+               set ligne [lindex $lignes $k]
+               set ligne2 [string map $ros(audela,var,map) $ligne]
+               if {[string compare $ligne $ligne2]!=0} {
+                  incr nmap
+               }
+               append ligne2s "$ligne2\n"
+            }
+            if {$nmap>0} {
+               ::console::affiche_resultat "$fichier => $nmap\n"
+               set f [open $fichier w]
+               puts -nonewline $f "$ligne2s"
+               close $f
+            }
+         }
+      } else {
+         set msg "$syntax\nERROR: Action must be amongst files find findarray ros2map replacearrays"
+      }
+      
    } elseif {$action=="modpoi"} {
       # source ../gui/audace/ros.tcl
       # ros modpoi make_doc
@@ -237,72 +489,72 @@ proc ros { args } {
       set ros(falsenameofexecutable) trireq
       source "$ros(root,ros)/src/common/variables_globales.tcl"
       unset ros(falsenameofexecutable)      
-		set rosmodpoi(home) $gren(home)
-		set meo(home) $gren(home)
+		set ros(rosmodpoi,home) $ros(common,home)
+		set meo(home) $ros(common,home)
 		# quid du UTC-TT ?
-		set rosmodpoi_modpoi(var,home) $rosmodpoi(home)
-		set rosmodpoi(cathipmain) hip_main.dat ; # catalogue Hipparcos original
-		set rosmodpoi(cathipshort) hip.txt ; # catalogue Hipparcos simplifie pour MEO
-		set rosmodpoi(path) "[pwd]"
-		set rosmodpoi(source) "[pwd]/../gui/audace/ros.tcl"
-		catch {load "$rosmodpoi(path)/libmc[info sharedlibextension]"}
-		catch {load "$rosmodpoi(path)/libgsltcl[info sharedlibextension]"}
-		set rosmodpoi(file,log) "$rosmodpoi(path)/rosmodpoi_log.txt"
-		set rosmodpoi(mount) "equatorial"
-		if {$rosmodpoi(mount)=="altaz"} {
-			set rosmodpoi(modpoi,coefs,symbs)     {IA                      IE                     NPAE                       CA                               AN                        AW                        ACEC                    ECEC                               ACES                     ECES NRX NRY ACEC2 ACES2 ACEC3 ACES3 AN2 AW2 AN3 AW3 ACEC4 ACES4 AN4 AW4 ACEC5 ACES5 AN5 AW5 ACEC6 ACES6 AN6 AW6}
-			set rosmodpoi(modpoi,coefs,intitules) {"Décalage du codeur A" "Décalage du codeur E" "Non perpendicularité A/E" "Non perpendicularité A/optique" "Décalage N-S de l'axe A" "Décalage E-W de l'axe A" "Décentrement A en cos" "Décentrement E en cos (flexion)"  "Décentrement A en sin"  "Décentrement E en sin" "Déplacement vertical du Nasmyth" "Déplacement vertical du Nasmyth" "Décentrement 2A en cos" "Décentrement 2A en sin" "Décentrement 3A en cos" "Décentrement 3A en sin" "décalage N-S de l'axe 2A" "Décalage E-W de l'axe 2A" "décalage N-S de l'axe 3A" "Décalage E-W de l'axe 3A" "Décentrement 4A en cos" "Décentrement 4A en sin" "décalage N-S de l'axe 4A" "Décalage E-W de l'axe 4A" "Décentrement 5A en cos" "Décentrement 5A en sin" "décalage N-S de l'axe 5A" "Décalage E-W de l'axe 5A" "Décentrement 6A en cos" "Décentrement 6A en sin" "décalage N-S de l'axe 6A" "Décalage E-W de l'axe 6A"}
+		set rosmodpoi_modpoi(var,home) $ros(rosmodpoi,home)
+		set ros(rosmodpoi,cathipmain) hip_main.dat ; # catalogue Hipparcos original
+		set ros(rosmodpoi,cathipshort) hip.txt ; # catalogue Hipparcos simplifie pour MEO
+		set ros(rosmodpoi,path) "[pwd]"
+		set ros(rosmodpoi,source) "[pwd]/../gui/audace/ros.tcl"
+		catch {load "$ros(rosmodpoi,path)/libmc[info sharedlibextension]"}
+		catch {load "$ros(rosmodpoi,path)/libgsltcl[info sharedlibextension]"}
+		set ros(rosmodpoi,file,log) "$ros(rosmodpoi,path)/rosmodpoi_log.txt"
+		set ros(rosmodpoi,mount) "equatorial"
+		if {$ros(rosmodpoi,mount)=="altaz"} {
+			set ros(rosmodpoi,modpoi,coefs,symbs)     {IA                      IE                     NPAE                       CA                               AN                        AW                        ACEC                    ECEC                               ACES                     ECES NRX NRY ACEC2 ACES2 ACEC3 ACES3 AN2 AW2 AN3 AW3 ACEC4 ACES4 AN4 AW4 ACEC5 ACES5 AN5 AW5 ACEC6 ACES6 AN6 AW6}
+			set ros(rosmodpoi,modpoi,coefs,intitules) {"Décalage du codeur A" "Décalage du codeur E" "Non perpendicularité A/E" "Non perpendicularité A/optique" "Décalage N-S de l'axe A" "Décalage E-W de l'axe A" "Décentrement A en cos" "Décentrement E en cos (flexion)"  "Décentrement A en sin"  "Décentrement E en sin" "Déplacement vertical du Nasmyth" "Déplacement vertical du Nasmyth" "Décentrement 2A en cos" "Décentrement 2A en sin" "Décentrement 3A en cos" "Décentrement 3A en sin" "décalage N-S de l'axe 2A" "Décalage E-W de l'axe 2A" "décalage N-S de l'axe 3A" "Décalage E-W de l'axe 3A" "Décentrement 4A en cos" "Décentrement 4A en sin" "décalage N-S de l'axe 4A" "Décalage E-W de l'axe 4A" "Décentrement 5A en cos" "Décentrement 5A en sin" "décalage N-S de l'axe 5A" "Décalage E-W de l'axe 5A" "Décentrement 6A en cos" "Décentrement 6A en sin" "décalage N-S de l'axe 6A" "Décalage E-W de l'axe 6A"}
 		} else {
-			set rosmodpoi(modpoi,coefs,symbs)     {IH                      ID                     NP                         CH                               ME                              MA                              TF                          FO                    DAF                 HF                        TX                          DNP                              FARHC         FARHS         FARDC         FARDS         FARHC2         FARHS2         FARHC3         FARHS3         FARDC2         FARDS2         IHDEG               IHATAN         FARHCATAN           FARHSATAN}
-			set rosmodpoi(modpoi,coefs,intitules) {"Décalage du codeur H" "Décalage du codeur D" "Non perpendicularité H/D" "Non perpendicularité D/optique" "Décalage N-S de l'axe polaire" "Décalage E-W de l'axe polaire" "Flexion de tube en sin(z)" "Flexion de fourche"  "Flexion de l'axe D" "Flexion du fer a cheval" "Flexion de tube en tan(z)" "Non perpendicularite dynamique" "FARO H cosh" "FARO H sinh" "FARO D cosh" "FARO D sinh" "FARO H cos2h" "FARO H sin2h" "FARO H cos3h" "FARO H sin3h" "FARO D cos2h" "FARO D sin2h" "FARO H drift/Hdeg" "FARO IH*atan" "FARO cos(ha)*atan" "FARO sin(ha)*atan"}
+			set ros(rosmodpoi,modpoi,coefs,symbs)     {IH                      ID                     NP                         CH                               ME                              MA                              TF                          FO                    DAF                 HF                        TX                          DNP                              FARHC         FARHS         FARDC         FARDS         FARHC2         FARHS2         FARHC3         FARHS3         FARDC2         FARDS2         IHDEG               IHATAN         FARHCATAN           FARHSATAN}
+			set ros(rosmodpoi,modpoi,coefs,intitules) {"Décalage du codeur H" "Décalage du codeur D" "Non perpendicularité H/D" "Non perpendicularité D/optique" "Décalage N-S de l'axe polaire" "Décalage E-W de l'axe polaire" "Flexion de tube en sin(z)" "Flexion de fourche"  "Flexion de l'axe D" "Flexion du fer a cheval" "Flexion de tube en tan(z)" "Non perpendicularite dynamique" "FARO H cosh" "FARO H sinh" "FARO D cosh" "FARO D sinh" "FARO H cos2h" "FARO H sin2h" "FARO H cos3h" "FARO H sin3h" "FARO D cos2h" "FARO D sin2h" "FARO H drift/Hdeg" "FARO IH*atan" "FARO cos(ha)*atan" "FARO sin(ha)*atan"}
 		}
-		set rosmodpoi(pi) [expr 4.*atan(1)]
+		set ros(rosmodpoi,pi) [expr 4.*atan(1)]
 		set argus [lrange $args 2 end]
 		#
 		if {$action2=="path"} {
-		   rosmodpoi_info "$rosmodpoi(path)"
+		   rosmodpoi_info "$ros(rosmodpoi,path)"
 		} elseif {$action2=="hip"} {
 			if {[llength $argus]<1} {
 		      error "Erreur: ros modpoi hip maglim."
 	      }
 	      set maglim [lindex $argus 0]
-			rosmodpoi_convcat_hip "c:/d/faro/$rosmodpoi(cathipmain)" "$rosmodpoi(path)/hip.txt" 2 $maglim
+			rosmodpoi_convcat_hip "c:/d/faro/$ros(rosmodpoi,cathipmain)" "$ros(rosmodpoi,path)/hip.txt" 2 $maglim
 		} elseif {$action2=="reset"} {
 			# ros modpoi reset 3 7 ecarts.txt
 			if {[llength $argus]<3} {
 		      error "Erreur: ros modpoi reset nsites ngisements fichier_ecarts."
 	      }
-			set rosmodpoi(nsites) [lindex $argus 0]
-			set rosmodpoi(ngisements) [lindex $argus 1]
-			set rosmodpoi(fichier_ecarts) [lindex $argus 2]
-			set rosmodpoi(index_etoile) -1
-		   rosmodpoi_info "gren(mode)=$gren(mode)"
-		   rosmodpoi_info "ngisements=$rosmodpoi(ngisements)"
-		   rosmodpoi_info "nsites=$rosmodpoi(nsites)"
-		   rosmodpoi_info "fichier_ecarts=$rosmodpoi(path)/$rosmodpoi(fichier_ecarts) EFFACE"
-			rosmodpoi_modpoi_reset_stars "$rosmodpoi(path)/$rosmodpoi(fichier_ecarts)" ; # efface le fichier d'ecarts actuel
+			set ros(rosmodpoi,nsites) [lindex $argus 0]
+			set ros(rosmodpoi,ngisements) [lindex $argus 1]
+			set ros(rosmodpoi,fichier_ecarts) [lindex $argus 2]
+			set ros(rosmodpoi,index_etoile) -1
+		   rosmodpoi_info "ros(common,mode)=$ros(common,mode)"
+		   rosmodpoi_info "ngisements=$ros(rosmodpoi,ngisements)"
+		   rosmodpoi_info "nsites=$ros(rosmodpoi,nsites)"
+		   rosmodpoi_info "fichier_ecarts=$ros(rosmodpoi,path)/$ros(rosmodpoi,fichier_ecarts) EFFACE"
+			rosmodpoi_modpoi_reset_stars "$ros(rosmodpoi,path)/$ros(rosmodpoi,fichier_ecarts)" ; # efface le fichier d'ecarts actuel
 		   rosmodpoi_info "Next function: ros modpoi star next"
 		} elseif {$action2=="star"} {
 			if {[llength $argus]<1} {
-		      error "Erreur: ros modpoi goto index(0...[expr $rosmodpoi(ngisements)*$rosmodpoi(nsites)])|next\nUse this function after ros modpoi reset."
+		      error "Erreur: ros modpoi goto index(0...[expr $ros(rosmodpoi,ngisements)*$ros(rosmodpoi,nsites)])|next\nUse this function after ros modpoi reset."
 	      }
 			set k [lindex $argus 0]
 			if {$k!="next"} {
-				set rosmodpoi(index_etoile) $k
+				set ros(rosmodpoi,index_etoile) $k
 			}
-			set n [expr $rosmodpoi(ngisements)*$rosmodpoi(nsites)]
+			set n [expr $ros(rosmodpoi,ngisements)*$ros(rosmodpoi,nsites)]
 			set sortie 0
 			while {$sortie==0} {
 				if {$k=="next"} {
-				   if {$rosmodpoi(index_etoile)>$n} {
+				   if {$ros(rosmodpoi,index_etoile)>$n} {
 					   rosmodpoi_info "List complete !!!"
 					   rosmodpoi_info "Next function: ros modpoi compute"
 					   return
 				   } else {	
-						incr rosmodpoi(index_etoile)
+						incr ros(rosmodpoi,index_etoile)
 					}
 				}
-				set etoile [rosmodpoi_modpoi_choose_star $rosmodpoi(index_etoile) $rosmodpoi(nsites) $rosmodpoi(ngisements) "$rosmodpoi(path)/hip.txt" now]
+				set etoile [rosmodpoi_modpoi_choose_star $ros(rosmodpoi,index_etoile) $ros(rosmodpoi,nsites) $ros(rosmodpoi,ngisements) "$ros(rosmodpoi,path)/hip.txt" now]
 				#
 				set etoile "[lindex $etoile 0]"
 				set date_deb [mc_datescomp now + [expr 0/86400.]]
@@ -337,8 +589,8 @@ proc ros { args } {
 				   rosmodpoi_info "Problem: Star HA > $ros(trireq,ha,lim_set)"
 					set valid 0
 				}
-				set rosmodpoi(etoile) "$etoile"
-			   rosmodpoi_info "index=$rosmodpoi(index_etoile): $rosmodpoi(etoile) valid=$valid"
+				set ros(rosmodpoi,etoile) "$etoile"
+			   rosmodpoi_info "index=$ros(rosmodpoi,index_etoile): $ros(rosmodpoi,etoile) valid=$valid"
 				if {$k!="next"} {
 					set sortie 1
 					break
@@ -359,14 +611,14 @@ proc ros { args } {
 			set date_fin [mc_datescomp now + [expr 1/86400.]]
 			set temperature 290
 			set pression 101325
-			set res [rosmodpoi_corrected_positions "" $date_deb $date_fin STAR_COORD_ONEPOS_TCL [lrange $rosmodpoi(etoile) 2 end] $temperature $pression ""]
-			set rosmodpoi(rao) [lindex $res 6]
-			set rosmodpoi(deco) [lindex $res 8]
+			set res [rosmodpoi_corrected_positions "" $date_deb $date_fin STAR_COORD_ONEPOS_TCL [lrange $ros(rosmodpoi,etoile) 2 end] $temperature $pression ""]
+			set ros(rosmodpoi,rao) [lindex $res 6]
+			set ros(rosmodpoi,deco) [lindex $res 8]
 			ros telescope send TEL radec motor on
 			after 1000
-		   rosmodpoi_info "ros telescope send GOTO $rosmodpoi(rao) $rosmodpoi(deco)"
-			ros telescope send GOTO $rosmodpoi(rao) $rosmodpoi(deco)
-		   rosmodpoi_info "index=$rosmodpoi(index_etoile): $rosmodpoi(etoile)"
+		   rosmodpoi_info "ros telescope send GOTO $ros(rosmodpoi,rao) $ros(rosmodpoi,deco)"
+			ros telescope send GOTO $ros(rosmodpoi,rao) $ros(rosmodpoi,deco)
+		   rosmodpoi_info "index=$ros(rosmodpoi,index_etoile): $ros(rosmodpoi,etoile)"
 		   rosmodpoi_info "$res"
 		   rosmodpoi_info "NOW CENTER THE STAR WITH THE PAD..."
 		   rosmodpoi_info "Next function: ros modpoi add"
@@ -375,28 +627,28 @@ proc ros { args } {
 			if {$ros(audela,tel_result)==""} {
 				ros telescope send DO socket audela ; # reboot le socket si necessaire
 			}
-			#set ros(audela,tel_result) [list $rosmodpoi(rao) $rosmodpoi(deco)]
+			#set ros(audela,tel_result) [list $ros(rosmodpoi,rao) $ros(rosmodpoi,deco)]
 			set ra [lindex $ros(audela,tel_result) 0]
 			set dec [lindex $ros(audela,tel_result) 1]
-			rosmodpoi_info "calcul [mc_angle2hms $rosmodpoi(rao) 360 zero 2 auto string] [mc_angle2dms $rosmodpoi(deco) 90 zero 1 + string] ET observe $ra $dec"
-			set dha  [expr ([mc_angle2deg $ra] -[mc_angle2deg $rosmodpoi(rao)] )*60.]
-			set ddec [expr ([mc_angle2deg $dec]-[mc_angle2deg $rosmodpoi(deco)])*60.]
+			rosmodpoi_info "calcul [mc_angle2hms $ros(rosmodpoi,rao) 360 zero 2 auto string] [mc_angle2dms $ros(rosmodpoi,deco) 90 zero 1 + string] ET observe $ra $dec"
+			set dha  [expr ([mc_angle2deg $ra] -[mc_angle2deg $ros(rosmodpoi,rao)] )*60.]
+			set ddec [expr ([mc_angle2deg $dec]-[mc_angle2deg $ros(rosmodpoi,deco)])*60.]
 			set dsite [format %.5f $dha]
 			set dgise [format %.5f $ddec]
 			set temperature 290
 			set pression 101325
-			set res [rosmodpoi_modpoi_add_star "$rosmodpoi(etoile)" $dsite $dgise "$rosmodpoi(fichier_ecarts)" [mc_date2jd now] $temperature $pression]
-		   rosmodpoi_info "index=$rosmodpoi(index_etoile): $rosmodpoi(etoile)"
-		   rosmodpoi_info "Star shift recorded with success in $rosmodpoi(fichier_ecarts)"
-		   set n [expr $rosmodpoi(ngisements)*$rosmodpoi(nsites)]]
-		   if {$rosmodpoi(index_etoile)==$n} {
+			set res [rosmodpoi_modpoi_add_star "$ros(rosmodpoi,etoile)" $dsite $dgise "$ros(rosmodpoi,fichier_ecarts)" [mc_date2jd now] $temperature $pression]
+		   rosmodpoi_info "index=$ros(rosmodpoi,index_etoile): $ros(rosmodpoi,etoile)"
+		   rosmodpoi_info "Star shift recorded with success in $ros(rosmodpoi,fichier_ecarts)"
+		   set n [expr $ros(rosmodpoi,ngisements)*$ros(rosmodpoi,nsites)]]
+		   if {$ros(rosmodpoi,index_etoile)==$n} {
 			   rosmodpoi_info "Next function: ros modpoi compute modele.txt {ID IH ME MA HF FO}"
 		   } else {
 			   rosmodpoi_info "Next function: ros modpoi star next"
 		   }
 		} elseif {$action2=="readfile"} {
-		   rosmodpoi_info "File $rosmodpoi(fichier_ecarts):"
-		   set f [open "$rosmodpoi(fichier_ecarts)" r]
+		   rosmodpoi_info "File $ros(rosmodpoi,fichier_ecarts):"
+		   set f [open "$ros(rosmodpoi,fichier_ecarts)" r]
 		   set contents [read $f]
 		   close $f
 		   rosmodpoi_info "\n$contents"		   
@@ -404,10 +656,10 @@ proc ros { args } {
 			if {[llength $argus]<2} {
 		      error "Erreur: ros modpoi compute model_file symbols."
 	      }
-			set fichier_ecarts "$rosmodpoi(fichier_ecarts)"
-			set rosmodpoi(fichier_modele) [lindex $argus 0]
-			set rosmodpoi(model_symbols) [lindex $argus 1]
-			rosmodpoi_modpoi_compute_model "$fichier_ecarts" "$rosmodpoi(fichier_modele)" $rosmodpoi(model_symbols)
+			set fichier_ecarts "$ros(rosmodpoi,fichier_ecarts)"
+			set ros(rosmodpoi,fichier_modele) [lindex $argus 0]
+			set ros(rosmodpoi,model_symbols) [lindex $argus 1]
+			rosmodpoi_modpoi_compute_model "$fichier_ecarts" "$ros(rosmodpoi,fichier_modele)" $ros(rosmodpoi,model_symbols)
 		} else {
 			set function [lindex $action2 0]
 		   rosmodpoi_info "function=$function"
@@ -429,7 +681,7 @@ proc ros { args } {
       
    } else {
       set texte "$syntax"
-      append texte "\nERROR: Software must amongst install gardien telescope camera majordome modpoi"
+      append texte "\nERROR: Software must amongst install gardien telescope camera majordome var modpoi"
       if {$ros(withtk)==0} {
          puts "$texte"
       } else {
@@ -439,6 +691,44 @@ proc ros { args } {
    }
 }
 
+proc  ros_analdir { base {filefilter *} } {
+   global result resultfile
+   set listfiles ""
+   set a [catch {set listfiles [glob ${base}/${filefilter}]} msg]
+   if {$a==0} {
+      # --- tri des fichiers dans l'ordre chrono decroissant
+      set listdatefiles ""
+      foreach thisfile $listfiles {
+         set a [file isdirectory $thisfile]
+         if {($a>=0) && ([file tail $thisfile] != ".svn") && ([file tail $thisfile] != "CVS")} {
+            set datename [file mtime $thisfile]
+            lappend listdatefiles [list $datename $thisfile]
+         }
+      }
+      set listdatefiles [lsort -decreasing $listdatefiles]
+      # --- isole les fichiers
+      foreach thisdatefile $listdatefiles {
+         set thisfile [lindex $thisdatefile 1]
+         set a [file isdirectory $thisfile]
+         if {($a>=0) && ([file tail $thisfile] != ".svn") && ([file tail $thisfile] != "CVS")} {
+            append result "$thisfile\n"
+         }
+      }
+      #set f [open $resultfile a]
+      #puts -nonewline $f "$result"
+      #close $f
+      #set result ""
+      # --- recursivite sur les dossiers
+      foreach thisfile $listfiles {
+         set a [file isdirectory $thisfile]
+         if {$a==1} {
+				if {([file tail $thisfile] != "CVS") && ([file tail $thisfile] != ".svn")} {
+					ros_analdir $thisfile
+				}
+         }
+      }
+   }
+}
 
 ####################################################################################"
 ####################################################################################"
@@ -473,13 +763,13 @@ proc rosmodpoi_info { msg } {
 #
 # INPUTS : Chaine
 #
-# OUTPUTS : fichier rosmodpoi(file,log)
+# OUTPUTS : fichier ros(rosmodpoi,file,log)
 #
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_log { msg } {
-	global rosmodpoi
+	global ros
 	catch {
-		set f [open "$rosmodpoi(file,log)" a]
+		set f [open "$ros(rosmodpoi,file,log)" a]
 		set date [mc_date2jd now]
 		puts $f "$date : $msg"
 		close $f
@@ -540,12 +830,12 @@ proc rosmodpoi_sitegise2azimelev { site gisement } {
 #
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_make_doc { {fichier_doc ""} } {
-	global rosmodpoi
+	global ros
 	if {$fichier_doc==""} {
-		set fichier_doc "$rosmodpoi(path)/rosmodpoi_doc.txt"
+		set fichier_doc "$ros(rosmodpoi,path)/rosmodpoi_doc.txt"
 	}
 	# --- on scane le fichier Tcl
-	set f [open "$rosmodpoi(source)" r]
+	set f [open "$ros(rosmodpoi,source)" r]
 	set lignes [split [read $f] \n]
 	close $f
 	set newproc 0
@@ -687,7 +977,7 @@ proc rosmodpoi_make_doc { {fichier_doc ""} } {
 	puts -nonewline $f "\n"
 	puts -nonewline $f "\n"
 	puts -nonewline $f "#####################################################\n"
-	puts -nonewline $f "### LISTE DES PROCS DE [file tail $rosmodpoi(source)]\n"
+	puts -nonewline $f "### LISTE DES PROCS DE [file tail $ros(rosmodpoi,source)]\n"
 	puts -nonewline $f "#####################################################\n\n"
 	puts -nonewline $f $txts
 	puts -nonewline $f "\n"
@@ -721,14 +1011,14 @@ proc rosmodpoi_make_doc { {fichier_doc ""} } {
 #
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_nextlevercoucher {ra dec date {altmin 0} } {
-	global rosmodpoi
+	global ros
 	# --- transcodage des arguments
 	set ra [mc_angle2deg $ra]
 	set dec [mc_angle2deg $dec 90]
 	set altmin [mc_angle2deg $altmin]
    # --- parametres temporels
    set jminuit [mc_date2jd $date]
-   set lst0 [mc_angle2deg "[mc_date2lst $jminuit $rosmodpoi(home)] h" 360]
+   set lst0 [mc_angle2deg "[mc_date2lst $jminuit $ros(rosmodpoi,home)] h" 360]
    set m0 [mc_angle2deg [expr $ra-$lst0] 360]
    if {$m0<0} {
 	   set m0 [expr $m0+360.]
@@ -736,7 +1026,7 @@ proc rosmodpoi_nextlevercoucher {ra dec date {altmin 0} } {
    # --- conditions d'invisibilite de l'astre
 	set status visible
    set degrad [expr atan(1)/45.]
-   set phideg [lindex $rosmodpoi(home) 3]
+   set phideg [lindex $ros(rosmodpoi,home) 3]
    if {$phideg>0} {
       set dec_circ [expr 90.-$phideg] ; # circumpolaire
    } else {
@@ -822,11 +1112,11 @@ proc rosmodpoi_nextlevercoucher {ra dec date {altmin 0} } {
 #
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_sunmoon {date {altmin 0} } {
-	global rosmodpoi
+	global ros
 	set date [mc_date2jd $date]
 	#
 	set datex [expr $date-1.]
-   set res [lindex [mc_ephem {sun} [list [list $datex]] {RA DEC ALTITUDE} -topo $rosmodpoi(home)] 0]
+   set res [lindex [mc_ephem {sun} [list [list $datex]] {RA DEC ALTITUDE} -topo $ros(rosmodpoi,home)] 0]
    #rosmodpoi_info "rosmodpoi_nextlevercoucher [lindex $res 0] [lindex $res 1] $datex $altmin"
    set res [rosmodpoi_nextlevercoucher [lindex $res 0] [lindex $res 1] $datex $altmin]
    if {[lindex $res 0]>0} {
@@ -841,7 +1131,7 @@ proc rosmodpoi_sunmoon {date {altmin 0} } {
    }
    #
 	set datex [expr $date-0.0]
-   set res [lindex [mc_ephem {sun} [list [list $datex]] {RA DEC ALTITUDE} -topo $rosmodpoi(home)] 0]
+   set res [lindex [mc_ephem {sun} [list [list $datex]] {RA DEC ALTITUDE} -topo $ros(rosmodpoi,home)] 0]
    set h_sun [lindex $res 2]
    set res [rosmodpoi_nextlevercoucher [lindex $res 0] [lindex $res 1] $datex $altmin]
    if {[lindex $res 0]>0} {
@@ -856,7 +1146,7 @@ proc rosmodpoi_sunmoon {date {altmin 0} } {
    }
    #
 	set datex [expr $date+1.]
-   set res [lindex [mc_ephem {sun} [list [list $datex]] {RA DEC ALTITUDE} -topo $rosmodpoi(home)] 0]
+   set res [lindex [mc_ephem {sun} [list [list $datex]] {RA DEC ALTITUDE} -topo $ros(rosmodpoi,home)] 0]
    set res [rosmodpoi_nextlevercoucher [lindex $res 0] [lindex $res 1] $datex $altmin]
    if {[lindex $res 0]>0} {
 	   set jd_lev2 [lindex $res 0]
@@ -918,7 +1208,7 @@ proc rosmodpoi_sunmoon {date {altmin 0} } {
    # --- Lune
    set datex [expr ($jd_lev+$jd_cou)/2.]
    set midnextnight $datex
-   set res [mc_ephem {moon} [list [list $datex]] {RA DEC ALTITUDE} -topo $rosmodpoi(home)]
+   set res [mc_ephem {moon} [list [list $datex]] {RA DEC ALTITUDE} -topo $ros(rosmodpoi,home)]
    set ra_moon   [lindex [lindex $res 0] 0]
    set dec_moon  [lindex [lindex $res 0] 1]
    #return [list [mc_date2iso8601 $date] [mc_date2iso8601 $jd_lev] [mc_date2iso8601 $jd_mer] [mc_date2iso8601 $jd_cou] [mc_date2iso8601 $midnextnight] $h_sun]
@@ -943,7 +1233,7 @@ proc rosmodpoi_sunmoon {date {altmin 0} } {
 #
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_radeclevercoucher { ra dec date jd_sunset jd_sunrise {altmin 0} } {
-	global rosmodpoi
+	global ros
    #
 	set ra [mc_angle2deg $ra]
 	set dec [mc_angle2deg $dec]
@@ -1091,8 +1381,8 @@ proc rosmodpoi_radeclevercoucher { ra dec date jd_sunset jd_sunrise {altmin 0} }
    # --- cas ou l'astre ne passe pas au meridien dans la nuit
    #     on calcule l'heure de meilleur visibilite
    if {$jd_mer>$jd_cou} {
-	   set hlev [lindex [mc_radec2altaz $ra $dec $rosmodpoi(home) $jd_lev] 1]
-	   set hcou [lindex [mc_radec2altaz $ra $dec $rosmodpoi(home) $jd_cou] 1]
+	   set hlev [lindex [mc_radec2altaz $ra $dec $ros(rosmodpoi,home) $jd_lev] 1]
+	   set hcou [lindex [mc_radec2altaz $ra $dec $ros(rosmodpoi,home) $jd_cou] 1]
 	   if {$hlev>$hcou} {
 		   set jd_mer $jd_lev
 	   } else {
@@ -1123,12 +1413,12 @@ proc rosmodpoi_radeclevercoucher { ra dec date jd_sunset jd_sunrise {altmin 0} }
 #
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_modpoi_load { PointingModelFile } {
-	global rosmodpoi
+	global ros
 	source "$PointingModelFile"
-	set model $rosmodpoi(modpoi,matrices)
-   set rosmodpoi(modpoi,vec) [lindex $model 0]
-   set rosmodpoi(modpoi,chisq) [lindex $model 1]
-   set rosmodpoi(modpoi,covar) [lindex $model 2]
+	set model $ros(rosmodpoi,modpoi,matrices)
+   set ros(rosmodpoi,modpoi,vec) [lindex $model 0]
+   set ros(rosmodpoi,modpoi,chisq) [lindex $model 1]
+   set ros(rosmodpoi,modpoi,covar) [lindex $model 2]
    return $model
 }
 
@@ -1174,8 +1464,8 @@ proc rosmodpoi_modpoi_obs2tel { azimo elevo {rao ""} } {
 #
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_modpoi_passage { azim elev sens } {
-   global rosmodpoi_modpoi gren
-   global rosmodpoi
+   global ros_modpoi gren
+   global ros
    if {$sens=="cat2tel"} {
       set signe +
    } else {
@@ -1192,10 +1482,10 @@ proc rosmodpoi_modpoi_passage { azim elev sens } {
    set vecW ""
    set res [rosmodpoi_modpoi_addobs "$vecY" "$matX" "$vecW" $delev $dazim $azim $elev]
    set matX [lindex $res 1]
-   #gren_info "  vecY = $rosmodpoi(modpoi,vec)"
+   #gren_info "  vecY = $ros(rosmodpoi,modpoi,vec)"
    #gren_info "  matX = $matX"
    # --- calcul direct
-   set res [gsl_mmult $matX $rosmodpoi(modpoi,vec)]
+   set res [gsl_mmult $matX $ros(rosmodpoi,modpoi,vec)]
    set dazim [expr [lindex $res 0]/60.]
    set delev [expr [lindex $res 1]/60.]
    set azim [mc_angle2deg [mc_anglescomp $azim0 $signe $dazim] 360 nozero 1 auto string]
@@ -1210,7 +1500,7 @@ proc rosmodpoi_modpoi_passage { azim elev sens } {
 	   set res [rosmodpoi_modpoi_addobs "$vecY" "$matX" "$vecW" $delev $dazim $azim $elev]
 	   set matX [lindex $res 1]
 	   # --- calcul direct
-	   set res [gsl_mmult $matX $rosmodpoi(modpoi,vec)]
+	   set res [gsl_mmult $matX $ros(rosmodpoi,modpoi,vec)]
 	   set dazim [expr [lindex $res 0]/60.]
 	   set delev [expr [lindex $res 1]/60.]
 	   set azim [mc_angle2deg [mc_anglescomp $azim0 $signe $dazim] 360 nozero 1 auto string]
@@ -1235,10 +1525,10 @@ proc rosmodpoi_modpoi_passage { azim elev sens } {
 #
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_modpoi_symbols { } {
-	global rosmodpoi
+	global ros
 	set k 0
-	foreach sym $rosmodpoi(modpoi,coefs,symbs) {
-		set intitule [lindex $rosmodpoi(modpoi,coefs,intitules) $k]
+	foreach sym $ros(rosmodpoi,modpoi,coefs,symbs) {
+		set intitule [lindex $ros(rosmodpoi,modpoi,coefs,intitules) $k]
 		rosmodpoi_info "[format %6s $sym] : $intitule"
 		incr k
 	}
@@ -1272,28 +1562,28 @@ proc rosmodpoi_modpoi_symbols { } {
 # 04 93 40 54 28
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_modpoi_compute_model { FileObs FileModel {symbos ""} } {
-	global rosmodpoi
+	global ros
 	# --- Lecture des observations + decalages
 	set f [open "$FileObs" r]
 	set lignes [split [read $f] \n]
 	close $f
 	# --- Lecture des symbols a calculer
 	if {$symbos==""} {
-		if {$rosmodpoi(mount)=="altaz"} {			
-		   set rosmodpoi(modpoi,coefs,symbos) {IA IE CA AN AW AN2 AW2 AN3 AW3 ACEC2 ACES2 ACEC3 ACES3 }
+		if {$ros(rosmodpoi,mount)=="altaz"} {			
+		   set ros(rosmodpoi,modpoi,coefs,symbos) {IA IE CA AN AW AN2 AW2 AN3 AW3 ACEC2 ACES2 ACEC3 ACES3 }
 	   } else {
-		   set rosmodpoi(modpoi,coefs,symbos) {IH ID NP CH ME MA TF FO DAF}
+		   set ros(rosmodpoi,modpoi,coefs,symbos) {IH ID NP CH ME MA TF FO DAF}
 	   }
    } else {
-	   set rosmodpoi(modpoi,coefs,symbos) $symbos
+	   set ros(rosmodpoi,modpoi,coefs,symbos) $symbos
    }
    set textes ""
    # --- Mise en forme des commentaires en clair du modèle
 	append textes "# POINTING MODEL $FileModel\n"
 	append textes "#\n"
 	append textes "# DATE [mc_date2iso8601 now]\n"
-	append textes "# MOUNT $rosmodpoi(mount)\n"
-	append textes "# COEFS $rosmodpoi(modpoi,coefs,symbos)\n"	
+	append textes "# MOUNT $ros(rosmodpoi,mount)\n"
+	append textes "# COEFS $ros(rosmodpoi,modpoi,coefs,symbos)\n"	
 	# --- Boucle d'iteration pour eliminer les valeurs aberrantes
    set sortie 0
    set iteration 0
@@ -1331,7 +1621,7 @@ proc rosmodpoi_modpoi_compute_model { FileObs FileModel {symbos ""} } {
 				continue
 			}
 			# --- conversion azim elev
-			if {$rosmodpoi(mount)=="altaz"} {			
+			if {$ros(rosmodpoi,mount)=="altaz"} {			
 				set res [rosmodpoi_sitegise2azimelev $site $gise]
 				set azim [lindex $res 0]
 				set elev [lindex $res 1]
@@ -1348,7 +1638,7 @@ proc rosmodpoi_modpoi_compute_model { FileObs FileModel {symbos ""} } {
 		}
 		# --- verifie qu'il y a assez d'etoiles
 		set n $k
-		if {[expr 2*$nval]<[llength $rosmodpoi(modpoi,coefs,symbos)]} {
+		if {[expr 2*$nval]<[llength $ros(rosmodpoi,modpoi,coefs,symbos)]} {
 			append textes " PAS ASSEZ D'ETOILES VALIDES !!!\n"
 			break
 		}
@@ -1361,9 +1651,9 @@ proc rosmodpoi_modpoi_compute_model { FileObs FileModel {symbos ""} } {
 		append textes "#\n"
 		append textes "# COEFS (iteration $iteration)\n"
 	   set k 0
-	   foreach sym $rosmodpoi(modpoi,coefs,symbos) {
-		   set kk [lsearch -exact $rosmodpoi(modpoi,coefs,symbs) $sym]
-		   set intitule [lindex $rosmodpoi(modpoi,coefs,intitules) $kk]
+	   foreach sym $ros(rosmodpoi,modpoi,coefs,symbos) {
+		   set kk [lsearch -exact $ros(rosmodpoi,modpoi,coefs,symbs) $sym]
+		   set intitule [lindex $ros(rosmodpoi,modpoi,coefs,intitules) $kk]
 		   set val [lindex $vec $k]
 		   set texte "[format %6s $sym] [format %+10.4f $val] arcmin (${intitule})"
 		   append textes "#  $texte\n"
@@ -1396,7 +1686,7 @@ proc rosmodpoi_modpoi_compute_model { FileObs FileModel {symbos ""} } {
 				continue
 			}
 			# --- conversion azim elev
-			if {$rosmodpoi(mount)=="altaz"} {			
+			if {$ros(rosmodpoi,mount)=="altaz"} {			
 				set res [rosmodpoi_sitegise2azimelev $site $gise]
 				set azim [lindex $res 0]
 				set elev [lindex $res 1]
@@ -1431,7 +1721,7 @@ proc rosmodpoi_modpoi_compute_model { FileObs FileModel {symbos ""} } {
 			set tot_gises [expr $tot_gises+$dgiseoc]
 			set texte "#   Star-$n ($valid) [format %+7.3f $dsiteoc] [format %+7.3f $dgiseoc] (arcmin) [format %+7.1f [expr 60.*$dsiteoc]] [format %+7.1f [expr 60.*$dgiseoc]] (arcsec)"
 			append textes "$texte\n"
-			set coselev [expr cos($rosmodpoi(pi)/180.*[mc_angle2deg $elev])]
+			set coselev [expr cos($ros(rosmodpoi,pi)/180.*[mc_angle2deg $elev])]
 			set dgiseoc [expr $dgiseoc*$coselev]
 			set doc [expr sqrt($dsiteoc*$dsiteoc+$dgiseoc*$dgiseoc)]
 			set residus [expr $residus+$doc*$doc]
@@ -1487,8 +1777,8 @@ proc rosmodpoi_modpoi_compute_model { FileObs FileModel {symbos ""} } {
 	# --- Ecriture du fichier du modele
 	rosmodpoi_info "$textes"
 	append textes "# MATRIX\n"
-	append textes "set rosmodpoi(modpoi,matrices) \{$resmodels\}\n"
-	append textes "set rosmodpoi(modpoi,coefs,symbos) \{$rosmodpoi(modpoi,coefs,symbos)\}\n"
+	append textes "set ros(rosmodpoi,modpoi,matrices) \{$resmodels\}\n"
+	append textes "set ros(rosmodpoi,modpoi,coefs,symbos) \{$ros(rosmodpoi,modpoi,coefs,symbos)\}\n"
 	set f [open "$FileModel" w]
 	puts -nonewline $f $textes
 	close $f
@@ -1511,9 +1801,9 @@ proc rosmodpoi_modpoi_compute_model { FileObs FileModel {symbos ""} } {
 #
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_modpoi_addobs { vecY matX vecW dazim delev azim elev} {
-	global rosmodpoi
+	global ros
 	rosmodpoi_log "rosmodpoi_modpoi_addobs : $dazim $delev $azim $elev"
-	if {$rosmodpoi(mount)=="altaz"} {
+	if {$ros(rosmodpoi,mount)=="altaz"} {
 	   set tane [expr tan([mc_angle2rad $elev]) ]
 	   set cosa [expr cos([mc_angle2rad $azim]) ]
 	   set sina [expr sin([mc_angle2rad $azim]) ]
@@ -1533,7 +1823,7 @@ proc rosmodpoi_modpoi_addobs { vecY matX vecW dazim delev azim elev} {
 	   #
 	   # --- dazim
 	   set res ""
-	   foreach sym $rosmodpoi(modpoi,coefs,symbos) {
+	   foreach sym $ros(rosmodpoi,modpoi,coefs,symbos) {
 		   if {$sym=="IA"}    { lappend res 1 }
 		   if {$sym=="IE"}    { lappend res 0 }
 		   if {$sym=="NPAE"}  { lappend res $tane }
@@ -1573,7 +1863,7 @@ proc rosmodpoi_modpoi_addobs { vecY matX vecW dazim delev azim elev} {
 	   lappend vecW 0.5
 	   # --- delev
 	   set res ""
-	   foreach sym $rosmodpoi(modpoi,coefs,symbos) {
+	   foreach sym $ros(rosmodpoi,modpoi,coefs,symbos) {
 		   if {$sym=="IA"}    { lappend res 0 }
 		   if {$sym=="IE"}    { lappend res 1 }
 		   if {$sym=="NPAE"}  { lappend res 0 }
@@ -1609,8 +1899,8 @@ proc rosmodpoi_modpoi_addobs { vecY matX vecW dazim delev azim elev} {
 	   }
 	   #
 	   #set k 0
-	   #foreach sym $rosmodpoi(modpoi,coefs,symbos) {
-		#	rosmodpoi_info "XXX $sym [lindex $rosmodpoi(modpoi,vec) $k] [lindex $res $k]"
+	   #foreach sym $ros(rosmodpoi,modpoi,coefs,symbos) {
+		#	rosmodpoi_info "XXX $sym [lindex $ros(rosmodpoi,modpoi,vec) $k] [lindex $res $k]"
 		#	incr k
 		#}
 	   #
@@ -1621,7 +1911,7 @@ proc rosmodpoi_modpoi_addobs { vecY matX vecW dazim delev azim elev} {
 	   set cosd [expr cos([mc_angle2rad $elev]) ]
 	   set sind [expr sin([mc_angle2rad $elev]) ]
 	   set secd [expr 1./cos([mc_angle2rad $elev]) ]
-		set lati [lindex $rosmodpoi(home) 3]
+		set lati [lindex $ros(rosmodpoi,home) 3]
 	   set cosl [expr cos([mc_angle2rad $lati]) ]
 	   set sinl [expr sin([mc_angle2rad $lati]) ]
 	   set cos2h [expr cos([mc_angle2rad [expr 2.*$azim]]) ]
@@ -1636,7 +1926,7 @@ proc rosmodpoi_modpoi_addobs { vecY matX vecW dazim delev azim elev} {
 	   #
 	   # --- dha
 	   set res ""
-	   foreach sym $rosmodpoi(modpoi,coefs,symbos) {
+	   foreach sym $ros(rosmodpoi,modpoi,coefs,symbos) {
 		   if {$sym=="IH"}    { lappend res 1 }
 		   if {$sym=="ID"}    { lappend res 0 }
 		   if {$sym=="NP"}    { lappend res $tand }
@@ -1660,9 +1950,9 @@ proc rosmodpoi_modpoi_addobs { vecY matX vecW dazim delev azim elev} {
 		   if {$sym=="FARDS"} { lappend res 0 }
 		   if {$sym=="FARDC2"} { lappend res 0 }
 		   if {$sym=="FARDS2"} { lappend res 0 }
-		   if {$sym=="FARHCATAN"} { set coefha [expr 0.9+(1-0.9)*atan(3*($decdeg-30.)*$rosmodpoi(pi)/180.)/($rosmodpoi(pi)/2.)] ; lappend res [expr $cosh*$coefha] }
-		   if {$sym=="FARHSATAN"} { set coefha [expr 0.9+(1-0.9)*atan(3*($decdeg-30.)*$rosmodpoi(pi)/180.)/($rosmodpoi(pi)/2.)] ; lappend res [expr $sinh*$coefha] }
-		   if {$sym=="IHATAN"} { set coefih [expr (1.-1.*atan(3*($decdeg-10.)*$rosmodpoi(pi)/180.)/($rosmodpoi(pi)/2.))] ; lappend res [expr $coefih] }
+		   if {$sym=="FARHCATAN"} { set coefha [expr 0.9+(1-0.9)*atan(3*($decdeg-30.)*$ros(rosmodpoi,pi)/180.)/($ros(rosmodpoi,pi)/2.)] ; lappend res [expr $cosh*$coefha] }
+		   if {$sym=="FARHSATAN"} { set coefha [expr 0.9+(1-0.9)*atan(3*($decdeg-30.)*$ros(rosmodpoi,pi)/180.)/($ros(rosmodpoi,pi)/2.)] ; lappend res [expr $sinh*$coefha] }
+		   if {$sym=="IHATAN"} { set coefih [expr (1.-1.*atan(3*($decdeg-10.)*$ros(rosmodpoi,pi)/180.)/($ros(rosmodpoi,pi)/2.))] ; lappend res [expr $coefih] }
 	   }
 	   #
 	   lappend matX $res
@@ -1670,7 +1960,7 @@ proc rosmodpoi_modpoi_addobs { vecY matX vecW dazim delev azim elev} {
 	   lappend vecW 0.5
 	   # --- ddec
 	   set res ""
-	   foreach sym $rosmodpoi(modpoi,coefs,symbos) {
+	   foreach sym $ros(rosmodpoi,modpoi,coefs,symbos) {
 		   if {$sym=="IH"}    { lappend res 0 }
 		   if {$sym=="ID"}    { lappend res 1 }
 		   if {$sym=="NP"}    { lappend res 0 }
@@ -1726,11 +2016,11 @@ proc rosmodpoi_modpoi_catalogmean2apparent { rae dece equinox date home {epoch "
 # Input
 # rae,dece : coordinates J2000.0 (degrees)
 # Output
-	global rosmodpoi
+	global ros
    # --- aberration annuelle
    set radec [mc_aberrationradec annual [list $rae $dece] $date ]
    # --- correction de precession
-	set cosdec [expr cos($rosmodpoi(pi)/180.*[mc_angle2deg $dece])]
+	set cosdec [expr cos($ros(rosmodpoi,pi)/180.*[mc_angle2deg $dece])]
 	if {($epoch=="")&&($mu_racosd=="")&&($mu_dec=="")} {
 	   set radec [mc_precessradec $radec $equinox $date]
 	} else {
@@ -1811,12 +2101,12 @@ proc rosmodpoi_modpoi_apparent2observed { listvdt {temperature 290} {pressure 10
 #
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_convcat_hip { {fichier_in ""} {fichier_out ""} {method 1} {params ""} } {
-	global rosmodpoi
+	global ros
 	if {$fichier_in==""} {
-		set fichier_in "$rosmodpoi(path)/$rosmodpoi(cathipmain)"
+		set fichier_in "$ros(rosmodpoi,path)/$ros(rosmodpoi,cathipmain)"
 	}
 	if {$fichier_out==""} {
-		set fichier_out "$rosmodpoi(path)/$rosmodpoi(cathipshort)"
+		set fichier_out "$ros(rosmodpoi,path)/$ros(rosmodpoi,cathipshort)"
 	}
 	set f [open ${fichier_in} r]
 	set textes ""
@@ -1919,9 +2209,9 @@ proc rosmodpoi_convcat_hip { {fichier_in ""} {fichier_out ""} {method 1} {params
 #
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_modpoi_liste_amers { {nsite 3} {ngise 4} } {
-	global rosmodpoi
-	rosmodpoi_log "rosmodpoi_modpoi_liste_amers $rosmodpoi(mount) : $nsite $ngise"
-	if {$rosmodpoi(mount)=="altaz"} {
+	global ros
+	rosmodpoi_log "rosmodpoi_modpoi_liste_amers $ros(rosmodpoi,mount) : $nsite $ngise"
+	if {$ros(rosmodpoi,mount)=="altaz"} {
 		set smax 90.
 		set smin 10.
 		set gmin 0.
@@ -1948,7 +2238,7 @@ proc rosmodpoi_modpoi_liste_amers { {nsite 3} {ngise 4} } {
 			set ha [expr $hmin+$dh*(0.5+$kh)]
 			for {set kd 0} {$kd<$nsite} {incr kd} {
 				set dec [expr $dmin+$dd*(0.5+$kd)]
-				set ress [mc_hadec2altaz $ha $dec $rosmodpoi(home)]
+				set ress [mc_hadec2altaz $ha $dec $ros(rosmodpoi,home)]
 				set azim [lindex $ress 0]
 				set elev [lindex $ress 1]
 				#if {$elev>15} { }
@@ -1977,9 +2267,9 @@ proc rosmodpoi_modpoi_liste_amers { {nsite 3} {ngise 4} } {
 #
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_amer_hip { {fichier_in ""} {amers {{45 180}}} {kamer 0} {nstars 1} {sepmax 180} {date now} } {
-	global rosmodpoi
+	global ros
 	if {$fichier_in==""} {
-		set fichier_in "$rosmodpoi(path)/$rosmodpoi(cathipshort)"
+		set fichier_in "$ros(rosmodpoi,path)/$ros(rosmodpoi,cathipshort)"
 	}
 	
 	rosmodpoi_log "rosmodpoi_amer_hip : fichier_in=\"$fichier_in\" amers=$amers kamer=$kamer nstars=$nstars sepmax=$sepmax date=$date"
@@ -1992,7 +2282,7 @@ proc rosmodpoi_amer_hip { {fichier_in ""} {amers {{45 180}}} {kamer 0} {nstars 1
 	set azim [lindex $res 0]
 	set elev [lindex $res 1]
 	#rosmodpoi_info "site=$site gise=$gise"
-	set res [mc_altaz2radec $azim $elev $rosmodpoi(home) $date]
+	set res [mc_altaz2radec $azim $elev $ros(rosmodpoi,home) $date]
 	set equinox [mc_date2jd J2000.0]
 	#rosmodpoi_info "res=$res"
 	set res [mc_precessradec $res $date $equinox]
@@ -2014,7 +2304,7 @@ proc rosmodpoi_amer_hip { {fichier_in ""} {amers {{45 180}}} {kamer 0} {nstars 1
 		if {$ra==""} {
 			continue
 		}
-		set res [mc_radec2altaz $ra $dec $rosmodpoi(home) $date]
+		set res [mc_radec2altaz $ra $dec $ros(rosmodpoi,home) $date]
 		set elev [lindex $res 1]
 		if {$elev<10} {
 			continue ; # on ne prend pas les etoiles trop basses
@@ -2056,9 +2346,9 @@ proc rosmodpoi_amer_hip { {fichier_in ""} {amers {{45 180}}} {kamer 0} {nstars 1
 #
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_id_hip { {fichier_in ""} {id0 ""} } {
-	global rosmodpoi
+	global ros
 	if {$fichier_in==""} {
-		set fichier_in "$rosmodpoi(path)/$rosmodpoi(cathipshort)"
+		set fichier_in "$ros(rosmodpoi,path)/$ros(rosmodpoi,cathipshort)"
 	}
 	# --- on scane le fichier hipparcos
 	set f [open ${fichier_in} r]
@@ -2115,7 +2405,7 @@ proc rosmodpoi_id_hip { {fichier_in ""} {id0 ""} } {
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_infoscelestes { {date now} {site 0} {gisement 0} } {
 
-	global rosmodpoi
+	global ros
 	
 	set result "[list DATE [mc_date2iso8601 $date] ISO8601]\n"
 	set jdnow [mc_date2jd $date]
@@ -2135,7 +2425,7 @@ proc rosmodpoi_infoscelestes { {date now} {site 0} {gisement 0} } {
 	append result "[list SUN_SET $cou ISO8601]\n"
 	append result "[list SUN_RISE $lev ISO8601]\n"
 	
-	set res [mc_ephem {sun moon} $date {RA DEC AZIMUT ALTITUDE DELTA PHASE} -topo $rosmodpoi(home)]
+	set res [mc_ephem {sun moon} $date {RA DEC AZIMUT ALTITUDE DELTA PHASE} -topo $ros(rosmodpoi,home)]
 	set sun_ephem [lindex $res 0]
 	set moon_ephem [lindex $res 1]
 	append result "[list SUN_RA2000 [lindex $sun_ephem 0] Deg]\n"
@@ -2168,9 +2458,9 @@ proc rosmodpoi_infoscelestes { {date now} {site 0} {gisement 0} } {
 #
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_modpoi_reset_stars { {fichier_stars ""} } {
-	global rosmodpoi
+	global ros
 	if {$fichier_stars==""} {
-		set fichier_stars "$rosmodpoi(path)/stars.txt"
+		set fichier_stars "$ros(rosmodpoi,path)/stars.txt"
 	}
 	file delete -force -- "$fichier_stars"
 }
@@ -2187,9 +2477,9 @@ proc rosmodpoi_modpoi_reset_stars { {fichier_stars ""} } {
 #
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_modpoi_choose_star { starindex {nsite 3} {ngise 4} {fichier_in ""} {date now} } {
-	global rosmodpoi
+	global ros
 	if {$fichier_in==""} {
-		set fichier_in "$rosmodpoi(path)/$rosmodpoi(cathipshort)"
+		set fichier_in "$ros(rosmodpoi,path)/$ros(rosmodpoi,cathipshort)"
 	}
 	set date [mc_date2jd $date]
 	rosmodpoi_log "rosmodpoi_modpoi_choose_star : starindex=$starindex nsite=$nsite ngise=$ngise fichier_in=\"$fichier_in\"  date=$date"
@@ -2252,7 +2542,7 @@ proc rosmodpoi_modpoi_choose_star { starindex {nsite 3} {ngise 4} {fichier_in ""
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_corrected_positions { OutputFile DateDeb DateFin InputType InputData {temperature 290} {pressure 101325} {PointingModelFile ""} } {
 
-	global rosmodpoi
+	global ros
 	
 	set result ""
 	set jddeb [mc_date2jd $DateDeb]
@@ -2263,7 +2553,7 @@ proc rosmodpoi_corrected_positions { OutputFile DateDeb DateFin InputType InputD
 		error "DateDeb($DateDeb) > DateFin($DateFin)"
 	}
 	set date [expr ($jddeb+$jdfin)/2.]
-	set res [mc_ephem {sun moon} $date {RA DEC AZIMUT ALTITUDE DELTA PHASE} -topo $rosmodpoi(home)]
+	set res [mc_ephem {sun moon} $date {RA DEC AZIMUT ALTITUDE DELTA PHASE} -topo $ros(rosmodpoi,home)]
 	set sun_ephem [lindex $res 0]
 	set moon_ephem [lindex $res 1]
 	set res [rosmodpoi_azimelev2sitegise [lindex $sun_ephem 2] [lindex $sun_ephem 3]]
@@ -2291,14 +2581,14 @@ proc rosmodpoi_corrected_positions { OutputFile DateDeb DateFin InputType InputD
 		#set mudec [expr [lindex $InputData 5]*1e-3/86400]
 		set parallax [lindex $InputData 6]
 		# --- appel a la fonction C
-		set nlig [mc_meo corrected_positions STAR_COORD "$OutputFile" $DateDeb $DateFin $ra $dec $equinox $epoch [lindex $InputData 4] [lindex $InputData 5] $parallax $rosmodpoi(home) $temperature $pressure $PointingModelFile ]
+		set nlig [mc_meo corrected_positions STAR_COORD "$OutputFile" $DateDeb $DateFin $ra $dec $equinox $epoch [lindex $InputData 4] [lindex $InputData 5] $parallax $ros(rosmodpoi,home) $temperature $pressure $PointingModelFile ]
 	}
 	if {$InputType=="STAR_COORD_TCL"} {
 		#::console::affiche_resultat "InputData=$InputData"
 		set ra [lindex $InputData 0]
 		set dec [lindex $InputData 1]
 		#::console::affiche_resultat "ra=$ra dec=$dec"
-		set cosdec [expr cos($rosmodpoi(pi)/180.*[mc_angle2deg $dec 90])]
+		set cosdec [expr cos($ros(rosmodpoi,pi)/180.*[mc_angle2deg $dec 90])]
 		set equinox [lindex $InputData 2]
 		set epoch [lindex $InputData 3]
 		set mura [expr [lindex $InputData 4]*1e-3/86400/$cosdec]
@@ -2313,11 +2603,11 @@ proc rosmodpoi_corrected_positions { OutputFile DateDeb DateFin InputType InputD
 			set djd [expr $dt*$kl/86400.]
 			set jd [mc_datescomp $jddeb + $djd]
 			# --- Transforme les coordonnées moyennes en coordonnees observées
-			set listv [rosmodpoi_modpoi_catalogmean2apparent $ra $dec $equinox $jd $rosmodpoi(home) $epoch $mura $mudec $parallax]
-		   set listo [rosmodpoi_modpoi_apparent2observed $listv $temperature $pressure $jd $rosmodpoi(home)]
+			set listv [rosmodpoi_modpoi_catalogmean2apparent $ra $dec $equinox $jd $ros(rosmodpoi,home) $epoch $mura $mudec $parallax]
+		   set listo [rosmodpoi_modpoi_apparent2observed $listv $temperature $pressure $jd $ros(rosmodpoi,home)]
 			set rao [lindex $listo 0]
 			set deco [lindex $listo 1]
-			set altaz [mc_radec2altaz $rao $deco $rosmodpoi(home) $jd]
+			set altaz [mc_radec2altaz $rao $deco $ros(rosmodpoi,home) $jd]
 			set star_rotateur [lindex $altaz 3]
 			# --- Calcule la sépration avec le Soleil
 			set res [rosmodpoi_azimelev2sitegise [lindex $altaz 0] [lindex $altaz 1]]
@@ -2359,7 +2649,7 @@ proc rosmodpoi_corrected_positions { OutputFile DateDeb DateFin InputType InputD
 		set ra [lindex $InputData 0]
 		set dec [lindex $InputData 1]
 		#::console::affiche_resultat "ra=$ra dec=$dec"
-		set cosdec [expr cos($rosmodpoi(pi)/180.*[mc_angle2deg $dec 90])]
+		set cosdec [expr cos($ros(rosmodpoi,pi)/180.*[mc_angle2deg $dec 90])]
 		set equinox [lindex $InputData 2]
 		set epoch [lindex $InputData 3]
 		set mura [expr [lindex $InputData 4]*1e-3/86400/$cosdec]
@@ -2375,12 +2665,12 @@ proc rosmodpoi_corrected_positions { OutputFile DateDeb DateFin InputType InputD
 			set djd [expr $dt*$kl/86400.]
 			set jd [mc_datescomp $jddeb + $djd]
 			# --- Transforme les coordonnées moyennes en coordonnees observées
-			set listv [rosmodpoi_modpoi_catalogmean2apparent $ra $dec $equinox $jd $rosmodpoi(home) $epoch $mura $mudec $parallax]
-		   set listo [rosmodpoi_modpoi_apparent2observed $listv $temperature $pressure $jd $rosmodpoi(home)]
+			set listv [rosmodpoi_modpoi_catalogmean2apparent $ra $dec $equinox $jd $ros(rosmodpoi,home) $epoch $mura $mudec $parallax]
+		   set listo [rosmodpoi_modpoi_apparent2observed $listv $temperature $pressure $jd $ros(rosmodpoi,home)]
 			set rao [lindex $listo 0]
 			set deco [lindex $listo 1]
 			set hao [lindex $listo 2]
-			set altaz [mc_radec2altaz $rao $deco $rosmodpoi(home) $jd]
+			set altaz [mc_radec2altaz $rao $deco $ros(rosmodpoi,home) $jd]
 			set star_rotateur [lindex $altaz 3]
 			# --- Calcule la sépration avec le Soleil
 			set res [rosmodpoi_azimelev2sitegise [lindex $altaz 0] [lindex $altaz 1]]
@@ -2397,7 +2687,7 @@ proc rosmodpoi_corrected_positions { OutputFile DateDeb DateFin InputType InputD
 			set star_site [lindex $res 0]
 			set star_gise [lindex $res 1]
 			if {$PointingModelFile!=""} {
-				if {$rosmodpoi(mount)=="altaz"} {
+				if {$ros(rosmodpoi,mount)=="altaz"} {
 					set azim [lindex $altaz 0]
 					set elev [lindex $altaz 1]
 					set altaz [rosmodpoi_modpoi_obs2tel $azim $elev]
@@ -2432,7 +2722,7 @@ proc rosmodpoi_corrected_positions { OutputFile DateDeb DateFin InputType InputD
 	if {$InputType=="SATEL_EPHEM_FILE"} {
 		set InputFile [lindex $InputData 0]
 		# --- appel a la fonction C
-		set nlig [mc_meo corrected_positions SATEL_EPHEM_FILE "$OutputFile" $DateDeb $DateFin "$InputFile" $rosmodpoi(home) $temperature $pressure $PointingModelFile ]
+		set nlig [mc_meo corrected_positions SATEL_EPHEM_FILE "$OutputFile" $DateDeb $DateFin "$InputFile" $ros(rosmodpoi,home) $temperature $pressure $PointingModelFile ]
 	}
 	if {$InputType=="SATEL_EPHEM_FILE_TCL"} {
 		set f [open $InputData r]
@@ -2465,8 +2755,8 @@ proc rosmodpoi_corrected_positions { OutputFile DateDeb DateFin InputType InputD
 			set res [rosmodpoi_sitegise2azimelev $site $gise]
 			set azim [lindex $res 0]
 			set elev [lindex $res 1]
-			set radec [mc_altaz2radec $azim $elev $rosmodpoi(home) $jd]
-			set altaz [mc_radec2altaz [lindex $radec 0] [lindex $radec 1] $rosmodpoi(home) $jd]
+			set radec [mc_altaz2radec $azim $elev $ros(rosmodpoi,home) $jd]
+			set altaz [mc_radec2altaz [lindex $radec 0] [lindex $radec 1] $ros(rosmodpoi,home) $jd]
 			set star_rotateur [lindex $altaz 3]
 			# --- Calcule la sépration avec le Soleil
 			set res [list $site $gise]
@@ -2531,9 +2821,9 @@ proc rosmodpoi_corrected_positions { OutputFile DateDeb DateFin InputType InputD
 #
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_modpoi_add_star { star dsiteo dgiseo fichier_stars {date now} {temperature 273} {pressure 101325} } {
-	global rosmodpoi
+	global ros
 	if {$fichier_stars==""} {
-		set fichier_stars "$rosmodpoi(path)/stars.txt"
+		set fichier_stars "$ros(rosmodpoi,path)/stars.txt"
 	}
 	set jd [mc_date2jd $date]
 	set starid [lindex $star 0]
@@ -2541,24 +2831,24 @@ proc rosmodpoi_modpoi_add_star { star dsiteo dgiseo fichier_stars {date now} {te
 	set InputData [lrange $star 2 end]
 	set ra [lindex $InputData 0]
 	set dec [lindex $InputData 1]
-	set cosdec [expr cos($rosmodpoi(pi)/180.*[mc_angle2deg $dec 90])]
+	set cosdec [expr cos($ros(rosmodpoi,pi)/180.*[mc_angle2deg $dec 90])]
 	set equinox [lindex $InputData 2]
 	set epoch [lindex $InputData 3]
 	set mura [expr [lindex $InputData 4]*1e-3/86400/$cosdec]
 	set mudec [expr [lindex $InputData 5]*1e-3/86400]
 	set parallax [lindex $InputData 6]
 	# --- Transforme les coordonnées moyennes en coordonnees observées
-	set listv [rosmodpoi_modpoi_catalogmean2apparent $ra $dec $equinox $jd $rosmodpoi(home) $epoch $mura $mudec $parallax]
-   set listo [rosmodpoi_modpoi_apparent2observed $listv $temperature $pressure $jd $rosmodpoi(home)]
+	set listv [rosmodpoi_modpoi_catalogmean2apparent $ra $dec $equinox $jd $ros(rosmodpoi,home) $epoch $mura $mudec $parallax]
+   set listo [rosmodpoi_modpoi_apparent2observed $listv $temperature $pressure $jd $ros(rosmodpoi,home)]
 	set rao [lindex $listo 0]
 	set deco [lindex $listo 1]
 	set hao [lindex $listo 2]
-	set altaz [mc_radec2altaz $rao $deco $rosmodpoi(home) $jd]
+	set altaz [mc_radec2altaz $rao $deco $ros(rosmodpoi,home) $jd]
 	set res [rosmodpoi_azimelev2sitegise [lindex $altaz 0] [lindex $altaz 1]]
 	set star_site [lindex $res 0]
 	set star_gise [lindex $res 1]
 	# --- Mise en forme de la ligne
-	if {$rosmodpoi(mount)=="altaz"} {
+	if {$ros(rosmodpoi,mount)=="altaz"} {
 		set texte "$starid $date $star_site $star_gise $dsiteo $dgiseo $pressure $temperature 0 0"
 	} else {
 		set texte "$starid $date $deco $hao $dsiteo $dgiseo $pressure $temperature 0 0"
@@ -2581,9 +2871,9 @@ proc rosmodpoi_modpoi_add_star { star dsiteo dgiseo fichier_stars {date now} {te
 #
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_close_star { site gisement {fichier_in ""} {nstars 1} {sepmax 360} {date now} } {
-	global rosmodpoi
+	global ros
 	if {$fichier_in==""} {
-		set fichier_in "$rosmodpoi(path)/$rosmodpoi(cathipshort)"
+		set fichier_in "$ros(rosmodpoi,path)/$ros(rosmodpoi,cathipshort)"
 	}
 	set date [mc_date2jd $date]
 	set res [mc_meo amer_hip $fichier_in [list [list $site $gisement]] 0 $nstars $sepmax $date]
@@ -2617,7 +2907,7 @@ proc rosmodpoi_close_star { site gisement {fichier_in ""} {nstars 1} {sepmax 360
 #
 # ------------------------------------------------------------------------------------
 proc rosmodpoi_modpoi_verify_model { FileObs FileModel } {
-	global rosmodpoi
+	global ros
 	# --- Lecture des observations + decalages
 	set f [open "$FileObs" r]
 	set lignes [split [read $f] \n]
@@ -2674,4 +2964,6 @@ if {1==0} {
 	set etoile [rosmodpoi_modpoi_choose_star 1 3 4]
 	rosmodpoi_corrected_positions "c:/d/meo/positions.txt" [mc_date2jd now] [mc_datescomp now + [expr 1/86400.]] STAR_COORD [lrange $etoile 2 end] 290 10325  "c:/d/meo/model.txt"
 }
+
+
 
