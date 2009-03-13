@@ -2,7 +2,7 @@
 # Fichier : audinet.tcl
 # Description : Interface de liaison AudiNet
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: audinet.tcl,v 1.16 2008-12-20 11:06:07 robertdelmas Exp $
+# Mise a jour $Id: audinet.tcl,v 1.17 2009-03-13 23:51:36 michelpujol Exp $
 #
 
 namespace eval audinet {
@@ -60,7 +60,7 @@ proc ::audinet::confToWidget { } {
 #
 #  return nothing
 #------------------------------------------------------------
-proc ::audinet::createPluginInstance { linkLabel deviceId usage comment } {
+proc ::audinet::createPluginInstance { linkLabel deviceId usage comment args } {
    #--- pour l'instant, la liaison est demarree par le pilote de la camera
    return
 }
