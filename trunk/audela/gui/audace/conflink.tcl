@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.33 2008-12-30 12:38:58 michelpujol Exp $
+# Mise a jour $Id: conflink.tcl,v 1.34 2009-03-13 23:43:57 michelpujol Exp $
 #
 
 namespace eval ::confLink {
@@ -227,7 +227,8 @@ proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
       set notebook [ NoteBook $private(frm).usr.onglet ]
       foreach namespace $authorizedNamespaces {
          set title [ ::$namespace\::getPluginTitle ]
-         set frm   [ $notebook insert end $namespace -text "$title    " -raisecmd "::confLink::onRaiseNotebook $namespace" ]
+         set frm   [ $notebook insert end $namespace -text "$title    "  ]
+         ### -raisecmd "::confLink::onRaiseNotebook $namespace"
          ::$namespace\::fillConfigPage $frm
       }
       pack $notebook -fill both -expand 1 -padx 4 -pady 4
@@ -250,7 +251,12 @@ proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
 # ::confLink::create
 #    Cree une liaison
 #
-#    Retourne le numero du link
+# @param linkLabel  identifiant de la liaison
+# @param deviceId   identifiant du peripherique qui utilise la liaison
+# @param usage      type d'utilisation
+# @param comment    commentaire facultatif
+# @param args       arguments optionnels (depend du type de liaison)s
+# @return linkno    Retourne le numero du link
 #      Le numero du link est attribue automatiquement
 #      Si ce link est deja cree, on retourne le numero du link existant
 #
@@ -263,10 +269,10 @@ proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
 #    ::confLink::create "quickremote1" "cam2" "longuepose" "bit 2"
 #    2
 #------------------------------------------------------------
-proc ::confLink::create { linkLabel deviceId usage comment } {
+proc ::confLink::create { linkLabel deviceId usage comment args } {
    set linkNamespace [getLinkNamespace $linkLabel]
    if { $linkNamespace != "" } {
-      set linkno [$linkNamespace\::createPluginInstance $linkLabel $deviceId $usage $comment]
+      set linkno [$linkNamespace\::createPluginInstance $linkLabel $deviceId $usage $comment $args ]
    } else {
       set linkno ""
    }
@@ -528,6 +534,34 @@ proc ::confLink::getLinkNo { linkLabel } {
    }
    #--- je retourne une chaine vide si la liaison n'a pas de numero
    return ""
+}
+
+#------------------------------------------------------------
+# getPluginProperty
+# Retourne la valeur d'une propriete d'une liaison
+#
+# Parametres :
+#    linkLabel    : nom du link (exemple: LPT1 ou QUICKREMOTE1 )
+#    propertyName : Propriete
+#
+#------------------------------------------------------------
+proc ::confLink::getPluginProperty { linkLabel propertyName } {
+   variable private
+
+   #--- je recherche la valeur par defaut de la propriete
+   #--- si la valeur par defaut de la propriete n'existe pas , je retourne une chaine vide
+   switch $propertyName {
+      bitList          { set result [ list "" ] }
+      default          { set result "" }
+   }
+
+   set linkNamespace [::confLink::getLinkNamespace $linkLabel]
+
+   #--- si une camera est selectionnee, je recherche la valeur propre a la camera
+   if { $linkNamespace != "" } {
+      set result [ ::$linkNamespace\::getPluginProperty $propertyName ]
+   }
+   return $result
 }
 
 #------------------------------------------------------------
