@@ -2,7 +2,7 @@
 # Fichier : celestron.tcl
 # Description : Configuration de la monture Celestron
 # Auteur : Robert DELMAS
-# Mise a jour $Id: celestron.tcl,v 1.13 2008-12-22 09:26:14 robertdelmas Exp $
+# Mise a jour $Id: celestron.tcl,v 1.14 2009-03-14 00:01:42 michelpujol Exp $
 #
 
 namespace eval ::celestron {
@@ -264,7 +264,7 @@ proc ::celestron::configureMonture { } {
          tel$telNo longformat on
       }
       #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
-      set linkNo [ ::confLink::create $conf(celestron,port) "tel$telNo" "control" [ tel$telNo product ] ]
+      set linkNo [ ::confLink::create $conf(celestron,port) "tel$telNo" "control" [ tel$telNo product ] -noopen ]
       #--- Je change de variable
       set private(telNo) $telNo
       #--- Gestion du bouton actif/inactif

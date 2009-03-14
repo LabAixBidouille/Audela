@@ -2,7 +2,7 @@
 # Fichier : temma.tcl
 # Description : Fenetre de configuration pour le parametrage du suivi d'objets mobiles pour la monture Temma
 # Auteur : Robert DELMAS
-# Mise a jour $Id: temma.tcl,v 1.21 2008-12-22 09:27:20 robertdelmas Exp $
+# Mise a jour $Id: temma.tcl,v 1.22 2009-03-14 00:01:43 michelpujol Exp $
 #
 
 namespace eval ::temma {
@@ -430,7 +430,7 @@ proc ::temma::configureMonture { } {
          ::telescope::monture_allemande
       }
       #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
-      set linkNo [ ::confLink::create $conf(temma,port) "tel$telNo" "control" [ tel$telNo product ] ]
+      set linkNo [ ::confLink::create $conf(temma,port) "tel$telNo" "control" [ tel$telNo product ] -noopen ]
       #--- Je change de variable
       set private(telNo) $telNo
       #--- Gestion des boutons actifs/inactifs
