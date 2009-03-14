@@ -19,6 +19,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "external_fitstcl"=".\external\fitstcl\vc60\external_fitstcl.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "libdcjpeg"=".\external\libdcjpeg\vc60\libdcjpeg.dsp" - Package Owner=<4>
 
 Package=<5>
@@ -92,6 +104,18 @@ Package=<4>
 ###############################################################################
 
 Project: "libgphoto2_canon"=".\external\libgphoto2\camlibs\canon\vc60\libgphoto2_canon.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "external_libthread"=".\external\libthread\thread26\win\vc\external_libthread.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -545,6 +569,18 @@ Package=<4>
 ###############################################################################
 
 Project: "libparallel"=".\liblink\libparallelport\vc60\libparallelport.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "libserialport"=".\liblink\libserialport\vc60\libserialport.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
