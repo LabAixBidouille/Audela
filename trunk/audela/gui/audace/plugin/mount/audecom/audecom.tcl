@@ -2,7 +2,7 @@
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audecom.tcl,v 1.23 2008-12-22 09:26:02 robertdelmas Exp $
+# Mise a jour $Id: audecom.tcl,v 1.24 2009-03-14 00:01:42 michelpujol Exp $
 #
 
 namespace eval ::audecom {
@@ -633,7 +633,7 @@ proc ::audecom::configureMonture { } {
       #--- Affichage de la position du telescope sur la monture
      ### ::telescope::monture_allemande
       #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
-      set linkNo [ ::confLink::create $conf(audecom,port) "tel$telNo" "control" [ tel$telNo product ] ]
+      set linkNo [ ::confLink::create $conf(audecom,port) "tel$telNo" "control" [ tel$telNo product ] -noopen ]
       #--- Je change de variable
       set private(telNo) $telNo
       #--- Gestion du bouton actif/inactif

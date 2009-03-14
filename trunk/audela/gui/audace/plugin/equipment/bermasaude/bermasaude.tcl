@@ -2,7 +2,7 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: bermasaude.tcl,v 1.24 2008-11-01 15:58:05 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.tcl,v 1.25 2009-03-14 00:01:42 michelpujol Exp $
 #
 
 #
@@ -350,7 +350,7 @@ namespace eval bermasaude {
             $nbr_filtres $caption(bermasaude,bermasaude_nbr_filtres_2)\n\n"
          set bermasaude(connect) "1"
          #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par l'equipement)
-         set linkNo [ ::confLink::create $conf(bermasaude,port) "bermasaude" "control" "" ]
+         set linkNo [ ::confLink::create $conf(bermasaude,port) "bermasaude" "control" "" -noopen ]
          #--- Gestion des boutons actifs/inactifs
          ::bermasaude::connectBerMasAude
       } else {

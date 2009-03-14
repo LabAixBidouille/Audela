@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Outil d'acquisition pour APN Nikon CoolPix
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.37 2009-02-07 10:58:39 robertdelmas Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.38 2009-03-14 00:01:43 michelpujol Exp $
 #
 
 #============================================================
@@ -403,7 +403,7 @@ namespace eval ::acqapn {
          ::console::affiche_saut "\n"
          ::confVisu::setCamera "$audace(visuNo)" "$camItem" "$conf(coolpix,model)"
          #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la camera)
-         set linkNo [ ::confLink::create $port "cam" "control" $conf(coolpix,model) ]
+         set linkNo [ ::confLink::create $port "cam" "control" $conf(coolpix,model) -noopen ]
       } else {
          $This.fra4.connect configure -text $caption(acqapn,sw_connect,on) -command { ::acqapn::connect }
          if { $port=="not found" } { set msg 1 } else { set msg 2 }

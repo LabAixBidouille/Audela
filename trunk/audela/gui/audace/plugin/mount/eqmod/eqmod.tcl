@@ -2,7 +2,7 @@
 # Fichier : eqmod.tcl
 # Description : Configuration de la monture EQMOD
 # Auteur : Robert DELMAS
-# Mise a jour $Id: eqmod.tcl,v 1.1 2009-02-13 16:09:52 robertdelmas Exp $
+# Mise a jour $Id: eqmod.tcl,v 1.2 2009-03-14 00:01:42 michelpujol Exp $
 #
 
 namespace eval ::eqmod {
@@ -240,7 +240,7 @@ proc ::eqmod::configureMonture { } {
          $caption(eqmod,2points) $conf(eqmod,port)\n"
       ::console::affiche_saut "\n"
       #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
-      set linkNo [ ::confLink::create $conf(eqmod,port) "tel$telNo" "control" [ tel$telNo product ] ]
+      set linkNo [ ::confLink::create $conf(eqmod,port) "tel$telNo" "control" [ tel$telNo product ] -noopen ]
       #--- Je change de variable
       set private(telNo) $telNo
       #--- Gestion du bouton actif/inactif

@@ -2,7 +2,7 @@
 # Fichier : ouranos.tcl
 # Description : Configuration de la monture Ouranos
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ouranos.tcl,v 1.15 2008-12-22 09:27:10 robertdelmas Exp $
+# Mise a jour $Id: ouranos.tcl,v 1.16 2009-03-14 00:01:43 michelpujol Exp $
 #
 
 namespace eval ::ouranos {
@@ -411,7 +411,7 @@ proc ::ouranos::configureMonture { } {
       #--- J'affiche le statut du port
       set private(status) $caption(ouranos,on)
       #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
-      set linkNo [ ::confLink::create $conf(ouranos,port) "tel$telNo" "control" [ tel$telNo product ] ]
+      set linkNo [ ::confLink::create $conf(ouranos,port) "tel$telNo" "control" [ tel$telNo product ] -noopen ]
       #--- Je change de variable
       set private(telNo) $telNo
       #--- Gestion des boutons actifs/inactifs

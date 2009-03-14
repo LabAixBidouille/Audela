@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise a jour $Id: lx200.tcl,v 1.19 2008-12-22 09:26:57 robertdelmas Exp $
+# Mise a jour $Id: lx200.tcl,v 1.20 2009-03-14 00:01:42 michelpujol Exp $
 #
 
 namespace eval ::lx200 {
@@ -355,7 +355,7 @@ proc ::lx200::configureMonture { } {
                tel$telNo longformat on
             }
             #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
-            set linkNo [ ::confLink::create $conf(lx200,port) "tel$telNo" "control" [ tel$telNo product ] ]
+            set linkNo [ ::confLink::create $conf(lx200,port) "tel$telNo" "control" [ tel$telNo product ] -noopen ]
             #--- Je change de variable
             set private(telNo) $telNo
          }
@@ -375,7 +375,7 @@ proc ::lx200::configureMonture { } {
                tel$telNo tempo $conf(lx200,ite-lente_tempo)
             }
             #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
-            set linkNo [ ::confLink::create $conf(lx200,port) "tel$telNo" "control" [ tel$telNo product ] ]
+            set linkNo [ ::confLink::create $conf(lx200,port) "tel$telNo" "control" [ tel$telNo product ] -noopen ]
             #--- Je change de variable
             set private(telNo) $telNo
          }
@@ -424,7 +424,7 @@ proc ::lx200::stop { } {
    #--- J'arrete la monture
    tel::delete $private(telNo)
    #--- J'arrete le link
-   ::confLink::delete $telPort "tel$private(telNo)" "control"
+    ::confLink::delete $telPort "tel$private(telNo)" "control"
    set private(telNo) "0"
 
    #--- Deconnexion des codeurs Ouranos si la monture secondaire existe
