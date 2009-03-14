@@ -327,12 +327,12 @@ TCL_DOTVERSION	= 8.5
 TCL_VERSION	= $(TCL_DOTVERSION:.=)
 
 !if $(TCLINSTALL)
-TCLSH		= "$(_INSTALLDIR)\bin\tclsh$(TCL_VERSION)$(SUFX).exe"
-TCLSTUBLIB	= "$(_INSTALLDIR)\lib\tclstub$(TCL_VERSION).lib"
-TCLIMPLIB	= "$(_INSTALLDIR)\lib\tcl$(TCL_VERSION)$(SUFX).lib"
-TCL_LIBRARY	= $(_INSTALLDIR)\lib
-TCLREGLIB	= "$(_INSTALLDIR)\lib\tclreg11$(SUFX:t=).lib"
-TCLDDELIB	= "$(_INSTALLDIR)\lib\tcldde12$(SUFX:t=).lib"
+TCLSH		= "$(_TCLDIR)\bin\tclsh$(TCL_VERSION)$(SUFX).exe"
+TCLSTUBLIB	= "$(_TCLDIR)\lib\tclstub$(TCL_VERSION).lib"
+TCLIMPLIB	= "$(_TCLDIR)\lib\tcl$(TCL_VERSION)$(SUFX).lib"
+TCL_LIBRARY	= $(_TCLDIR)\lib
+TCLREGLIB	= "$(_TCLDIR)\lib\tclreg11$(SUFX:t=).lib"
+TCLDDELIB	= "$(_TCLDIR)\lib\tcldde12$(SUFX:t=).lib"
 COFFBASE	= \must\have\tcl\sources\to\build\this\target
 TCLTOOLSDIR	= \must\have\tcl\sources\to\build\this\target
 !else
@@ -345,6 +345,8 @@ TCLDDELIB	= "$(_TCLDIR)\win\$(BUILDDIRTOP)\tcldde12$(SUFX:t=).lib"
 COFFBASE	= "$(_TCLDIR)\win\coffbase.txt"
 TCLTOOLSDIR	= $(_TCLDIR)\tools
 !endif
+
+
 
 !endif
 

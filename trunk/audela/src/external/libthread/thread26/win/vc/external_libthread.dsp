@@ -41,7 +41,7 @@ CFG=external_libthread - Win32 Debug
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir "Release"
 # PROP Intermediate_Dir "Release"
-# PROP Cmd_Line "nmake -f makefile.vc TCLDIR=..\..\..\.. INSTALLDIR=..\..\..\.. MSVCDIR=IDE OPTS=thread  OUT_DIR=..\..\..\..\..\..\lib\libthreadtest"
+# PROP Cmd_Line "nmake -nologo -f makefile.vc TCLDIR=..\..\..\..  INSTALLDIR=..\..\..\..\..\.. MSVCDIR=IDE OPTS=thread  DOTVERSION=2.6.5.1"
 # PROP Rebuild_Opt "-a"
 # PROP Target_File "Release\libthread2651.dll"
 # PROP Bsc_Name ""
@@ -230,6 +230,10 @@ SOURCE=.\nmakehlp.c
 # Begin Source File
 
 SOURCE=.\pkg.vc
+# End Source File
+# Begin Source File
+
+SOURCE=.\pkgIndex.tcl
 # End Source File
 # Begin Source File
 

@@ -147,7 +147,7 @@ GENERICDIR	= $(SOURCEROOT)\generic
 TESTDIR		= $(SOURCEROOT)\tests
 WINDIR		= $(SOURCEROOT)\win
 
-THREADLIBBASE	= $(OUT_DIR)\thread$(PACKAGE_MAJOR)$(PACKAGE_MINOR)$(SUFX:t=)
+THREADLIBBASE	= $(OUT_DIR)\libthread$(DOTVERSION)
 THREADLIB	= $(THREADLIBBASE).$(EXT)
 
 THREADOBJS	= \
@@ -165,7 +165,7 @@ THREADOBJS	= \
 !endif
 
 !if $(TCLINSTALL)
-TCL_INCLUDES	= -I "$(_TCLDIR)\include"
+TCL_INCLUDES	= -I "$(_TCLDIR)\include\win"
 !else
 TCL_INCLUDES	= -I "$(_TCLDIR)\generic"
 !endif
@@ -259,7 +259,8 @@ baselibs  = kernel32.lib advapi32.lib user32.lib
 #---------------------------------------------------------------------
 
 
-all: setup $(THREADLIB)
+all: setup $(THREADLIB) install-libraries
+
 install:  install-binaries install-libraries
 
 setup:
@@ -279,7 +280,7 @@ $(THREADLIB) : $(THREADOBJS)
 	@echo Creating Static Library...
 	$(lib32) -nologo -machine:$(MACHINE) -out:$@ @<<
 !else
-$(THREADLIB) : $(THREADOBJS) $(TCLSTUBSLIB)
+$(THREADLIB) : $(THREADOBJS) $(TCLSTUBLIB)
 	@echo Linking...
 	$(link32) $(dlllflags) -out:$@ $(TCLSTUBLIB) $(baselibs) @<<
 !endif
@@ -298,7 +299,9 @@ install-binaries:
 #	@$(CPY) "$(THREADIMPLIB)" "$(LIB_INSTALL_DIR)\"
 
 install-libraries:
-
+	@if not exist $(SCRIPT_INSTALL_DIR)\nul mkdir $(SCRIPT_INSTALL_DIR)
+    $(CPY) "$(THREADLIB)" "$(SCRIPT_INSTALL_DIR)\"
+    $(CPY) "pkgindex.tcl" "$(SCRIPT_INSTALL_DIR)\"
 
 #---------------------------------------------------------------------
 # Inference rules.  Use batch-mode.
@@ -352,6 +355,8 @@ $(GENERICDIR)\threadSvKeylistCmd.c : $(GENERICDIR)\tclThread.h
 clean:
 	@echo Cleaning non-output build files...
 	@$(RMDIR) $(TMP_DIR)
+	@echo Deleting output file $(THREADLIB) ...
+	@del $(THREADLIB)
 
 hose: clean
 	@echo Deleting output file $(THREADLIB) ...
