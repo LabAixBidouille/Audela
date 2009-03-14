@@ -5,12 +5,7 @@ if not "%1" == "" set CONFIG=%1
 if "%1" == "" set CONFIG=Release
 
 set sourceDir=..\blt2.4z
-set destDir=..\..\..\..\lib\blt2.4
+set destDir=..\..\..\..\lib\thread2.6
 
 mkdir %destDir%
-mkdir %destDir%\dd_protocols
-
-copy /Y %sourceDir%\library\*.* %destDir%
-copy /Y %sourceDir%\library\dd_protocols\* %destDir%
-echo on
-copy %CONFIG%\blt24.dll  %destDir%
+copy %CONFIG%\thread2651.dll  %destDir%
