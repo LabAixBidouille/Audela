@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: camtcl.c,v 1.8 2008-05-07 11:27:29 denismarchais Exp $
+// $Id: camtcl.c,v 1.9 2009-03-14 14:49:43 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -34,6 +34,8 @@
 #include <libcam/libcam.h>
 #include "camtcl.h"
 
+// definition STRNCPY : copie de chaine avec protection contre les debordements
+#define STRNCPY(_d,_s)  strncpy(_d,_s,sizeof _d) ; _d[sizeof _d-1] = 0
 
 extern struct camini CAM_INI[];
 
@@ -561,11 +563,7 @@ int cmdCamLonguePoseLinkbit(ClientData clientData, Tcl_Interp * interp,
       result = TCL_ERROR;
    } else {
       // je memorise le numero du bit
-      if(Tcl_GetInt(interp,argv[2],&cam->longueposelinkbit)!=TCL_OK) {
-         sprintf(ligne,"Usage: %s %s  numbit\n numbit = must be an integer > 0",argv[0],argv[1]);
-         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-         result = TCL_ERROR;
-      } 
+      STRNCPY(cam->longueposelinkbit, argv[2] );
    }
    return result;
 }

@@ -45,6 +45,8 @@
 #include <libcam/libcam.h>
 #include "camera.h"
 
+// definition STRNCPY : copie de chaine avec protection contre les debordements
+#define STRNCPY(_d,_s)  strncpy(_d,_s,sizeof _d) ; _d[sizeof _d-1] = 0
 
 /**
  * Definition of different cameras supported by this driver
@@ -248,6 +250,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    strcpy(formatname, "VGA");
    cam->longuepose = 0;
    cam->longueposelinkno = 0;
+   strcpy(cam->longueposelinkbit,"");
    cam->longueposestart = 0;
    cam->sensorColor = 1;
    cam->videoStatusVarNamePtr[0] = 0;
@@ -273,7 +276,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
             cam->longueposelinkno = atoi(argv[kk + 1]);
          }
          if (strcmp(argv[kk], "-longueposelinkbit") == 0) {
-            cam->longueposelinkbit = atoi(argv[kk + 1]);
+            STRNCPY(cam->longueposelinkbit, argv[kk + 1]);
          }
          if (strcmp(argv[kk], "-longueposestart") == 0) {
             cam->longueposestart = atoi(argv[kk + 1]);
@@ -789,7 +792,7 @@ int webcam_setLongExposureDevice(struct camprop *cam, unsigned char value)
    int result = 0;
    char ligne[256];
 
-   sprintf(ligne, "link%d bit %d %d", cam->longueposelinkno, cam->longueposelinkbit, value);
+   sprintf(ligne, "link%d bit %s %d", cam->longueposelinkno, cam->longueposelinkbit, value);
 
    if( Tcl_Eval(cam->interpCam, ligne) == TCL_ERROR) {
       result = 1;

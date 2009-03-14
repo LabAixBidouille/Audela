@@ -58,8 +58,8 @@ struct camprop {
    
    char longuepose;              // 0=interne, 1=link (quickremote or parallel, ..)  , 2= manual remote
    int  longueposelinkno;
-   int  longueposelinkbit;
-   char longueposestart;
+   char longueposelinkbit[9]; // nom du bit de commande de longue pose : 0, 1, ..,DTR, RTS ..
+   char longueposestart;      // valeur demarrage : 0 ou 1
    char longueposestop;
    
    
