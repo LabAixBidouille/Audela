@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.100 2009-03-13 23:48:09 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.101 2009-03-14 14:55:17 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -16,13 +16,13 @@ namespace eval ::confVisu {
       variable private
       global conf
 
-      #--- je charge la librairie fitstcl
+      #--- je charge la librairie libfitstcl
       #--- (ne fonctionne pas encore sur linux)
       if { $::tcl_platform(os) != "Linux" } {
          set oldPath "[pwd]"
          set catchResult [ catch {
             cd $::audela_start_dir
-            load fitstcl[info sharedlibextension]
+            load libfitstcl[info sharedlibextension]
          } ]
          cd "$oldPath"
          if { $catchResult == 1 } {
@@ -1642,8 +1642,8 @@ namespace eval ::confVisu {
       $This.can1.canvas configure -relief flat
 
       #--- creation du graphe
-      ##createGraph $visuNo
-      ##createTable $visuNo
+      ###createGraph $visuNo
+      ###createTable $visuNo
 
       grid $This.tool -row 0 -column 0 -rowspan 2 -sticky ns
       grid $This.bar  -row 0 -column 1 -sticky ew
@@ -1919,7 +1919,7 @@ namespace eval ::confVisu {
          lappend liste [list "$panneau($m) " $m]
       }
       set firstTool ""
-      set liste [lsort $liste]
+      set liste [lsort -dictionary $liste]
       foreach m $liste {
          set m [lindex $m 1]
          scan "$m" "menu_name,%s" pluginName
@@ -2726,7 +2726,6 @@ proc ::confVisu::loadIma { visuNo fileName { hduName "" } } {
    variable private
 
    set catchResult [catch {
-      ###buf[::confVisu::getBufNo $visuNo] load $fileName
       ::confVisu::autovisu $visuNo "-no" $fileName $hduName
    }]
 
@@ -2753,20 +2752,14 @@ proc ::confVisu::setMode { visuNo mode} {
    #--- j'arrete le mode precedent
    switch $private($visuNo,mode) {
       "image" {
-         #pack forget $This.fra1
-         #pack forget $This.can1
          grid forget $This.fra1
          grid forget $This.can1
       }
       "graph" {
-         #pack forget $This.graph
-         #destroy $This.graph
          grid forget $This.graph
+         grid forget $This.graphConfig
       }
-
       "table" {
-         #pack forget $This.ftable
-         #destroy $This.ftable
          grid forget $This.ftable
       }
    }
@@ -2775,20 +2768,16 @@ proc ::confVisu::setMode { visuNo mode} {
    switch $mode {
       "image" {
          #--- j'affiche le canvas photo et la frame des seuils
-         ##set tkTool [lindex [winfo children $This] end]
-         ##pack $This.fra1 -side bottom -anchor center -expand 0 -fill x -before $This.tool ; ##-before $tkTool
-         ##pack $This.can1 -side right  -anchor center -expand 1 -fill both -after $This.bar
          grid $This.fra1 -row 2 -column 0 -columnspan 2 -sticky ew
          grid $This.can1 -row 1 -column 1 -sticky nsew
       }
       "graph" {
          createGraph $visuNo
-         #pack $This.graph -side right -anchor center -expand 1 -fill both
          grid $This.graph -row 1 -column 1 -sticky nsew
+         grid $This.graphConfig  -row 2 -column 0 -columnspan 2 -sticky ew
       }
       "table" {
          createTable $visuNo
-         #pack $This.ftable -side right -anchor center -expand 1 -fill both
          grid $This.ftable -row 1 -column 1 -sticky nsew
       }
 
@@ -2965,7 +2954,7 @@ proc ::confVisu::onGraphRegionEnd { visuNo graph x y } {
 proc ::confVisu::onGraphZoom { visuNo x1 y1 x2 y2 } {
    variable private
 
-   set graph $private($visuNo,This).graph
+   set graph [::confVisu::getGraph $visuNo]
 
    if { $x1 > $x2 } {
       $graph axis configure x -min $x2 -max $x1
