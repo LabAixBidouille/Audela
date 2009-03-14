@@ -96,8 +96,8 @@ typedef struct _PrivateParams PrivateParams;
    int driver;
    int longuepose;
    int longueposelinkno;
-   int longueposelinkbit;
-   char longueposestart;
+   char longueposelinkbit[9]; // nom du bit de commande de longue pose : 0, 1, ..,DTR, RTS ..
+   char longueposestart;      // valeur demarrage : 0 ou 1
    //char longueposestop;
 
 
