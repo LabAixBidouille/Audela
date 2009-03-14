@@ -2,7 +2,7 @@
 # Fichier : obj_lune.tcl
 # Description : Outil dedie a la Lune, avec Goto vers un site choisi, ephemerides et cartographie
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune.tcl,v 1.16 2008-12-16 17:01:21 robertdelmas Exp $
+# Mise a jour $Id: obj_lune.tcl,v 1.17 2009-03-14 00:02:25 michelpujol Exp $
 #
 
 global audace
@@ -207,7 +207,7 @@ namespace eval ::obj_lune {
       global obj_lune
 
       #--- Affiche en gras le titre de l'onglet
-      ::obj_lune::onRaiseNotebook [ $This.usr.onglet raise "gotoPage" ]
+      ###::obj_lune::onRaiseNotebook [ $This.usr.onglet raise "gotoPage" ]
       #--- Efface les rectangles bleus et rouges
       ::obj_lune::EffaceRectangleBleu_Rouge
       #--- Reaffiche les rectangles bleus uniquement
@@ -230,7 +230,7 @@ namespace eval ::obj_lune {
       global obj_lune
 
       #--- Affiche en gras le titre de l'onglet
-      ::obj_lune::onRaiseNotebook [ $This.usr.onglet raise "ephemeridesPage" ]
+      ###::obj_lune::onRaiseNotebook [ $This.usr.onglet raise "ephemeridesPage" ]
       #--- Efface les numeros des cartes courantes
       $obj_lune(onglet3).frame8.labURL7 configure -text "-"
       $obj_lune(onglet4).frame8.labURL7 configure -text "-"
@@ -245,7 +245,7 @@ namespace eval ::obj_lune {
       global obj_lune
 
       #--- Affiche en gras le titre de l'onglet
-      ::obj_lune::onRaiseNotebook [ $This.usr.onglet raise "cartePage" ]
+      ###::obj_lune::onRaiseNotebook [ $This.usr.onglet raise "cartePage" ]
       #--- Efface les numeros des cartes courantes
       $obj_lune(onglet3).frame8.labURL7 configure -text "-"
       $obj_lune(onglet4).frame8.labURL7 configure -text "-"
@@ -260,7 +260,7 @@ namespace eval ::obj_lune {
       global obj_lune
 
       #--- Affiche en gras le titre de l'onglet
-      ::obj_lune::onRaiseNotebook [ $This.usr.onglet raise "carteLibrationPage" ]
+      ###::obj_lune::onRaiseNotebook [ $This.usr.onglet raise "carteLibrationPage" ]
       #--- Efface les numeros des cartes courantes
       $obj_lune(onglet3).frame8.labURL7 configure -text "-"
       $obj_lune(onglet4).frame8.labURL7 configure -text "-"
@@ -275,7 +275,7 @@ namespace eval ::obj_lune {
       global obj_lune
 
       #--- Affiche en gras le titre de l'onglet
-      ::obj_lune::onRaiseNotebook [ $This.usr.onglet raise "meilleurMomentPage" ]
+      ###::obj_lune::onRaiseNotebook [ $This.usr.onglet raise "meilleurMomentPage" ]
       #--- Efface les numeros des cartes courantes
       $obj_lune(onglet3).frame8.labURL7 configure -text "-"
       $obj_lune(onglet4).frame8.labURL7 configure -text "-"
