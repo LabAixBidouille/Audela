@@ -5,7 +5,7 @@
 # Auteurs     : François Cochard (francois.cochard@wanadoo.fr)
 #               Sur la forme, je suis parti du script calaphot de Jacques Michelet (jacques.michelet@laposte.net)
 #               Par ailleurs, je m'appuie sur les routines spc_audace de Benjamin Mauclaire
-# Mise a jour $Id: bess_module.tcl,v 1.8 2009-01-22 16:19:46 bmauclaire Exp $
+# Mise a jour $Id: bess_module.tcl,v 1.9 2009-03-15 22:06:27 bmauclaire Exp $
 # Mise à jour FC mars 2007
 # Dernière mise à jour: 24 mars 2007 - 11h00
 #
@@ -659,6 +659,9 @@ namespace eval ::bess {
             }
             if { [ lsearch $listemotsclef "DETNAM" ] != -1 } {
                buf$audace(bufNo) delkwd "DETNAM"
+            }
+            if { [ lsearch $listemotsclef "RADECSYS" ] != -1 } {
+               buf$audace(bufNo) delkwd "RADECSYS"
             }
 
 	     #-- Complete les mots clefs vides :
