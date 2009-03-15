@@ -1123,10 +1123,10 @@ int Cmd_ydtcl_updatezmg(ClientData clientData, Tcl_Interp *interp, int argc, cha
                if (val[k]>magsaturated) {
                   kk++;
                }
+               magmax=val[k];
                if (kk>12) {
-                  magmax=val[k];
                   break;
-               }
+			   }
             }
             /* --- CMAG = valeur mediane de la difference de magnitudes */
             /*     (mediane - instrumentale) des etoiles selectionnees ---*/
@@ -1167,8 +1167,15 @@ int Cmd_ydtcl_updatezmg(ClientData clientData, Tcl_Interp *interp, int argc, cha
                   }
                }
                n=kk;
-               if (n<5) {
+			   /* --- on coupe à une seule étoile de reference (avant c'etait 5) --- */
+               if (n<1) {
                   htmzmgs[kkzmg].cmag=(float)-99.9;
+               } else if (n<5) {
+				  cmag=0.;
+                  for (kk=0;kk<n;kk++) {
+					 cmag+=val[kk];
+				  }
+                  htmzmgs[kkzmg].cmag=(float)(cmag/n);
                } else {
                   /* --- on trie les donnees ---*/
                   yd_util_qsort_double(val,0,n,NULL);
