@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.13 2009-02-22 12:03:27 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.14 2009-03-15 22:07:32 bmauclaire Exp $
 
 
 
@@ -427,7 +427,7 @@ proc spc_pretrait { args } {
        } else {
            # Calcul du niveau moyen de la première image
            buf$audace(bufNo) load "$flat_moinsnoir_1"
-           set intensite_moyenne [lindex [stat] 4]
+           set intensite_moyenne [ lindex [stat] 4 ]
            # Mise au même niveau de toutes les images de PLU
            ::console::affiche_resultat "Mise au même niveau de toutes les images de PLU...\n"
            ngain2 "${pref_flat}_moinsnoir-" "${pref_flat}_auniveau-" $intensite_moyenne $nb_flat
@@ -464,6 +464,13 @@ proc spc_pretrait { args } {
              set flatnorma [ spc_normaflat "${pref_flat}-smd$nb_flat" $ycenter $hauteur ]
              file rename -force "$audace(rep_images)/$flatnorma$conf(extension,defaut)" "$audace(rep_images)/${pref_flat}-smd$nb_flat$conf(extension,defaut)"
           }
+       } elseif { $spcaudace(binned_flat) == "n" } {
+          buf$audace(bufNo) load "$audace(rep_images)/${pref_flat}-smd$nb_flat"
+          set intensite_moy [ lindex [ buf$audace(bufNo) stat ] 4 ]
+          buf$audace(bufNo) mult [ expr 1./$intensite_moy ]
+          buf$audace(bufNo) bitpix float
+          buf$audace(bufNo) save "$audace(rep_images)/${pref_flat}-smd$nb_flat"
+          buf$audace(bufNo) bitpix short
        }
 
        #--- Prétraitement des images stellaires :
