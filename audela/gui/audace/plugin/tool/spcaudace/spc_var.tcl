@@ -3,7 +3,7 @@
 #
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.7 2009-02-22 12:02:20 bmauclaire Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.8 2009-03-15 22:07:32 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -12,8 +12,7 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "1.5.0 - 20/12/2008"
-#set spcaudace(version) "1.2.0 - 10/10/2007"
+set spcaudace(version) "1.5.1 - 01/03/2009"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
 
@@ -50,7 +49,7 @@ set spcaudace(filetelluric) "$spcaudace(reptelluric)/h2o_calibrage.txt"
 set spcaudace(calo_meths) { 1 2 4 5 6 }
 #- 1 : spectre initial juste linearise ; toutes configs ; ne pas enlever de la liste.
 #- 2 : decalage d'une valeur egale au decalage moyen mean_shift mesure ; toutes configs.
-#- 3 : recallibrage de degre 3 avec les raies telluriques, puis decalage de RMS et linearisation ; kaf1600.
+#- 3 : recallibrage de degre 3 avec les raies telluriques, puis decalage de RMS et linearisation ; que kaf1600.
 #- 4 : recallibrage de degre 2 avec les raies telluriques, reechantillonne et linearisation a la volee ; que kaf400.
 #- 5 : decalage d'une valeur egale au RMS mesure des raies ; toutes configs.
 #- 6 : decalage d'une valeur egale au RMS*0.5 mesure des raies ; kaf1600.
@@ -60,7 +59,7 @@ set spcaudace(calo_meths) { 1 2 4 5 6 }
 set spcaudace(flag_rmcalo) "o"
 
 #-- Superflat binne et normalise :
-set spcaudace(binned_flat) "o"
+set spcaudace(binned_flat) "n"
 
 #-- Répertoire de la bibliothèque spectrale :
 set spcaudace(rep_spcbib) [ file join $spcaudace(rep_spc) data bibliotheque_spectrale ]
