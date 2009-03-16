@@ -35,7 +35,7 @@
 #include <libtel/util.h>
 
 /*
- *   structure pour les fonctions étendues
+ *   structure pour les fonctions ï¿½tendues
  */
 
 
@@ -83,7 +83,7 @@ int cmdTelRead(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
  *   Envoie une commande et retourne la reponse
  */
 int cmdTelPutread(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
-   char ligne[2048],s[1024];
+   char ligne[2048];
    int result = TCL_OK,res;
    struct telprop *tel;
    tel = (struct telprop *)clientData;
@@ -92,9 +92,7 @@ int cmdTelPutread(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       result = TCL_ERROR;
    } else {
-      res=eqmod_put(tel,argv[2]);
-      sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-      res=eqmod_read(tel,ligne);
+      res=eqmod_putread(tel,argv[2],ligne);
       if (res==1) {
          Tcl_SetResult(interp,"connection problem",TCL_VOLATILE);
          result = TCL_ERROR;
@@ -247,12 +245,15 @@ int cmdTelLst(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 }
 
 /*
- *   Pointage en coordonnées horaires
+ *   Pointage en coordonnï¿½es horaires
  */
 int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char ligne[2256],texte[256];
    int result = TCL_OK,k;
    struct telprop *tel;
+   int h,m;
+   double sec;
+   double lst;
    char comment[]="Usage: %s %s ?goto|stop|move|coord|motor|init|state? ?options?";
    if (argc<3) {
       sprintf(ligne,comment,argv[0],argv[1]);
@@ -261,20 +262,20 @@ int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    } else {
       tel = (struct telprop*)clientData;
       if (strcmp(argv[2],"init")==0) {
-         /* --- init ---*/
+         // --- init --- //
          if (argc>=4) {
-			 /* - call the pointing model if exists -*/
+            // - call the pointing model if exists - //
             sprintf(ligne,"set libtel(radec) {%s}",argv[3]);
             Tcl_Eval(interp,ligne);
-			if (strcmp(tel->model_cat2tel,"")!=0) {
+            if (strcmp(tel->model_cat2tel,"")!=0) {
                sprintf(ligne,"catch {set libtel(radec) [%s {%s}]}",tel->model_cat2tel,argv[3]);
                Tcl_Eval(interp,ligne);
-			}
+            }
             Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
             strcpy(ligne,interp->result);
-			 /* - end of pointing model-*/
+            // - end of pointing model - //
             libtel_Getradec(interp,argv[3],&tel->ra0,&tel->dec0);
-            mytel_hadec_init(tel);
+	    eqmod_hadec_match(tel);
             Tcl_SetResult(interp,"",TCL_VOLATILE);
          } else {
             sprintf(ligne,"Usage: %s %s init {angle_ha angle_dec}",argv[0],argv[1]);
@@ -282,34 +283,34 @@ int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             result = TCL_ERROR;
          }
       } else if (strcmp(argv[2],"coord")==0) {
-         /* --- coord ---*/
-			mytel_hadec_coord(tel,texte);
-			 /* - call the pointing model if exists -*/
+         // --- coord --- //
+         eqmod_hadec_coord(tel,texte);
+         // - call the pointing model if exists - //
          sprintf(ligne,"set libtel(radec) {%s}",texte);
          Tcl_Eval(interp,ligne);
          sprintf(ligne,"catch {set libtel(radec) [%s {%s}]}",tel->model_tel2cat,texte);
          Tcl_Eval(interp,ligne);
-            Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
-            strcpy(ligne,interp->result);
-			 /* - end of pointing model-*/
+         Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
+         strcpy(ligne,interp->result);
+         // - end of pointing model- //
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       } else if (strcmp(argv[2],"state")==0) {
-         /* --- state ---*/
-			tel_radec_state(tel,texte);
-            Tcl_SetResult(interp,texte,TCL_VOLATILE);
+         // --- state --- //
+         tel_radec_state(tel,texte);
+         Tcl_SetResult(interp,texte,TCL_VOLATILE);
       } else if (strcmp(argv[2],"goto")==0) {
-         /* --- goto ---*/
+         // --- goto --- //
          if (argc>=4) {
-			 /* - call the pointing model if exists -*/
+            // - call the pointing model if exists - //
             sprintf(ligne,"set libtel(radec) {%s}",argv[3]);
             Tcl_Eval(interp,ligne);
-			if (strcmp(tel->model_cat2tel,"")!=0) {
+            if (strcmp(tel->model_cat2tel,"")!=0) {
                sprintf(ligne,"catch {set libtel(radec) [%s {%s}]}",tel->model_cat2tel,argv[3]);
                Tcl_Eval(interp,ligne);
-			}
+            }
             Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
             strcpy(ligne,interp->result);
-			 /* - end of pointing model-*/
+            // - end of pointing model - //
             libtel_Getradec(interp,ligne,&tel->ra0,&tel->dec0);
             if (argc>=5) {
                for (k=4;k<=argc-1;k++) {
@@ -321,7 +322,15 @@ int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   }
                }
             }
-            mytel_hadec_goto(tel);
+            tel->ha_pointing = 1;
+            // Conversion de l'AH (dans tel->ra0) en vrai RA
+	    // le goto fera l'operation inverse: ca permet d'utiliser la meme fonction
+            lst=eqmod_tsl(tel,&h,&m,&sec);
+            lst=lst+4./86400*360.; // ajout empirique de 4 secondes pour tenir compte du temps mort de reponse de la monture
+            tel->ra0=lst-tel->ra0+360*5;
+            tel->ra0=fmod(tel->ra0,360.);
+            if (tel->ra0>180) tel->ra0 -= 360.;
+            eqmod2_action_goto(tel);
             Tcl_SetResult(interp,"",TCL_VOLATILE);
          } else {
             sprintf(ligne,"Usage: %s %s goto {angle_ha angle_dec} ?-rate value? ?-blocking boolean?",argv[0],argv[1]);
@@ -329,7 +338,7 @@ int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             result = TCL_ERROR;
          }
       } else if (strcmp(argv[2],"move")==0) {
-         /* --- move ---*/
+         // --- move --- //
          if (argc>=4) {
             if (argc>=5) {
                tel->radec_move_rate=atof(argv[4]);
@@ -342,14 +351,14 @@ int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             result = TCL_ERROR;
          }
       } else if (strcmp(argv[2],"stop")==0) {
-         /* --- stop ---*/
+         // --- stop --- //
          if (argc>=4) {
             tel_radec_stop(tel,argv[3]);
          } else {
             tel_radec_stop(tel,"");
          }
       } else if (strcmp(argv[2],"motor")==0) {
-         /* --- motor ---*/
+         // --- motor --- //
          if (argc>=4) {
             tel->radec_motor=0;
             if ((strcmp(argv[3],"off")==0)||(strcmp(argv[3],"0")==0)) {
@@ -363,7 +372,7 @@ int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             result = TCL_ERROR;
          }
       } else {
-         /* --- sub command not found ---*/
+         // --- sub command not found --- //
          sprintf(ligne,comment,argv[0],argv[1]);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          result = TCL_ERROR;
@@ -389,22 +398,22 @@ int cmdTelLimits(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
    }
    if (argc>=4) {
       sprintf(s,"mc_angle2deg %s",argv[2]); mytel_tcleval(tel,s);
-		value=atof(tel->interp->result);
-		if (value<90) {
-			sprintf(ligne,"Error, Eastern limit asked = %f degrees (must be in the range 180-360)",value);
-			Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-			return TCL_ERROR;
-		}
-		value-=360;
+      value=atof(tel->interp->result);
+      if (value<90) {
+         sprintf(ligne,"Error, Eastern limit asked = %f degrees (must be in the range 180-360)",value);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+      value-=360;
       value*=fabs(tel->radec_position_conversion);
       tel->stop_e_uc=(int)value;
       sprintf(s,"mc_angle2deg %s",argv[3]); mytel_tcleval(tel,s);
-		value=atof(tel->interp->result);
-		if (value>270) {
-			sprintf(ligne,"Error, Western limit asked = %f degrees (must be in the range 0-270)",value);
-			Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-			return TCL_ERROR;
-		}
+      value=atof(tel->interp->result);
+      if (value>270) {
+         sprintf(ligne,"Error, Western limit asked = %f degrees (must be in the range 0-270)",value);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
       value*=fabs(tel->radec_position_conversion);
       tel->stop_w_uc=(int)value;
    }
@@ -416,3 +425,69 @@ int cmdTelLimits(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
    Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    return result;
 }
+
+
+/*
+ *  Orientation du tube
+ */
+int cmdTelOrientation(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+	char s[100];
+	struct telprop *tel;
+	char comment[]="Usage: %s %s ?east|west?";
+	
+	if (argc>3) {
+		sprintf(s,comment,argv[0],argv[1]);
+		Tcl_SetResult(interp,s,TCL_VOLATILE);
+		return TCL_ERROR;
+	}
+	tel = (struct telprop*)clientData;
+	if (argc == 2) {
+		if (tel->retournement == 0) {
+			Tcl_SetResult(interp,"west",TCL_STATIC);
+		} else {
+			Tcl_SetResult(interp,"east",TCL_STATIC);
+		}
+		return TCL_OK;
+	}
+	if ( !strcmp(argv[2],"west") ) {
+		tel->retournement = 0;
+		Tcl_ResetResult(interp);
+		return TCL_OK;
+	} else if ( !strcmp(argv[2],"east") ) {
+		tel->retournement = 1;
+		Tcl_ResetResult(interp);
+		return TCL_OK;
+	}
+	sprintf(s,comment,argv[0],argv[1]);
+	strcat(s," invalid direction");
+	Tcl_SetResult(interp,s,TCL_VOLATILE);
+	return TCL_ERROR;
+}
+
+/*
+ *  Temporisation pour les acces au port serie
+ */
+int cmdTelTempo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+	char s[100];
+	struct telprop *tel;
+	char comment[]="Usage: %s %s ?ms?";
+	
+	if (argc>3) {
+		sprintf(s,comment,argv[0],argv[1]);
+		Tcl_SetResult(interp,s,TCL_VOLATILE);
+		return TCL_ERROR;
+	}
+	tel = (struct telprop*)clientData;
+	if (argc == 2) {
+		sprintf(s,"%d",tel->tempo);
+		return TCL_OK;
+	}
+	if ( ! Tcl_GetInt(interp,argv[2],&(tel->tempo)) ) {
+		return TCL_ERROR;
+	}
+	Tcl_ResetResult(interp);
+	return TCL_OK;
+}
+
+
+

@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.25 2009-01-12 18:48:00 michelpujol Exp $
+ * $Id: libcam.c,v 1.26 2009-03-16 22:42:18 alainklotz Exp $
  */
 
 #include "sysexp.h"
@@ -617,17 +617,27 @@ void libcam_GetCurrentFITSDate_function(Tcl_Interp * interp, char *s, char *func
  */
 void libcam_get_tel_coord(Tcl_Interp * interp, double *ra, double *dec, struct camprop *cam, int *status)
 {
-   char s[200];
+   char s[500];
    int k, argcc;
    char **argvv = NULL;
    /* Try to read telescop coordinates (k!=-1 if telescop exists) */
-   strcpy(s, "tel::list");
+   //strcpy(s, "tel::list");
+   //Tcl_Eval(interp, s);
+   sprintf(s,"if { $::camerathread::private(mainThreadNo)==0 } { \n\
+         ::tel::list \n\
+      } else { \n\
+         ::thread::send $::camerathread::private(mainThreadNo) ::tel::list \n\
+      }");
    Tcl_Eval(interp, s);
+
    *status = 1;
    k = -1;
+   //printf("libcam.c: libcam_get_tel_coord: interp->result=%s\n",interp->result);
    if (Tcl_SplitList(interp, interp->result, &argcc, &argvv) == TCL_OK) {
+      //printf("libcam.c: libcam_get_tel_coord: argcc=%d\n",argcc);
       if (argcc > 0) {
          for (k = 0; k < argcc; k++) {
+            //printf("libcam.c: libcam_get_tel_coord: k=%d\n",k);
             if (atoi(argvv[k]) == cam->telno) {
                break;
             }
@@ -638,22 +648,39 @@ void libcam_get_tel_coord(Tcl_Interp * interp, double *ra, double *dec, struct c
       }
       Tcl_Free((char *) argvv);
    }
+   //printf("libcam.c: libcam_get_tel_coord: definitive k=%d\n",k);
+
    *ra = 0.;
    *dec = 0.;
    if (k != -1) {
       /* Read the coordinates */
-      sprintf(s, "tel%d coord", cam->telno);
+      sprintf(s,"if { $::camerathread::private(mainThreadNo)==0 } { \n\
+            tel%d coord \n\
+         } else { \n\
+            ::thread::send $::camerathread::private(mainThreadNo) [ list tel%d coord ] \n\
+         }",cam->telno, cam->telno);
       Tcl_Eval(interp, s);
+      //printf("libcam.c / libcam_get_tel_coord: %s = %s\n",s,interp->result);
       *ra = 0.;
       *dec = 0.;
       if (Tcl_SplitList(interp, interp->result, &argcc, &argvv) == TCL_OK) {
          if (argcc >= 2) {
             *status = 0;
-            sprintf(s, "mc_angle2deg %s", argvv[0]);
+            sprintf(s,"if { $::camerathread::private(mainThreadNo)==0 } { \n\
+                  mc_angle2deg %s \n\
+               } else { \n\
+                  ::thread::send $::camerathread::private(mainThreadNo) [ list mc_angle2deg %s ] \n\
+               }", argvv[0], argvv[0]);
             Tcl_Eval(interp, s);
+            //printf("libcam.c / libcam_get_tel_coord: %s = %s\n",s,interp->result);
             *ra = (double) atof(interp->result);
-            sprintf(s, "mc_angle2deg %s 90", argvv[1]);
+            sprintf(s,"if { $::camerathread::private(mainThreadNo)==0 } { \n\
+                  mc_angle2deg %s 90 \n\
+               } else { \n\
+                  ::thread::send $::camerathread::private(mainThreadNo) [ list mc_angle2deg %s 90 ] \n\
+               }", argvv[1], argvv[1]);
             Tcl_Eval(interp, s);
+            //printf("libcam.c / libcam_get_tel_coord: %s = %s\n",s,interp->result);
             *dec = (double) atof(interp->result);
          }
          Tcl_Free((char *) argvv);
@@ -1163,10 +1190,11 @@ static void AcqRead(ClientData clientData )
             libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
          }
       }
-
+      //printf("libcam.c: cam->radecFromTel=%d\n", cam->radecFromTel);
       if ( cam->radecFromTel  == 1 ) {
          libcam_get_tel_coord(interp, &ra, &dec, cam, &status);
-         if (status == 0) {
+	 //printf("libcam.c: libcam_get_tel_coord:status=%d\n", status);
+	 if (status == 0) {
             // Add FITS keywords
             sprintf(s, "buf%d setkwd {RA %7.3f float \"Right ascension telescope encoder\" \"\"}", cam->bufno, ra);
             Tcl_Eval(interp, s);

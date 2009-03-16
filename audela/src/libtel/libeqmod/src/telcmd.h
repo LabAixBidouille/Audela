@@ -35,5 +35,7 @@ static struct cmditem cmdlist[] = {
    {"encode",(Tcl_CmdProc *)cmdTelEncode},\
    {"hadec",(Tcl_CmdProc *)cmdTelHaDec},\
    {"limits",(Tcl_CmdProc *)cmdTelLimits},\
+   {"orientation",(Tcl_CmdProc *)cmdTelOrientation},\
+   {"tempo",(Tcl_CmdProc *)cmdTelTempo},\
    {NULL, NULL}
 };

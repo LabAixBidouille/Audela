@@ -35,8 +35,8 @@ struct telprop {
    COMMON_TELSTRUCT
    /* Ajoutez ici les variables necessaires a votre telescope */
    int tempo;
-	int type; /* =0:UMAC =1:PMAC-PCI */
-   char ip[50];
+	//int type; /* =0:UMAC =1:PMAC-PCI */
+   //char ip[50];
    char home0[60]; /* home used by tel1 home */
    char home[60]; /* home */
    double latitude; /* degrees */
@@ -67,6 +67,11 @@ struct telprop {
    int stop_e_uc; /* butee mecanique est */
    int stop_w_uc; /* butee mecanique ouest */
    double radec_move_rate_max; /* vitesse max (deg/s) pour move -rate 1 */
+   int state;
+   int old_state;
+   int slew_axis; // variable qui indique que est l'axe en cours de slew 0: aucun, 1: RA, 2: DEC, 3: RA+DEC.
+   int retournement; // 0: tube a l'est ; 1: tube a l'
+   int ha_pointing;
 };
 
 int tel_init(struct telprop *tel, int argc, char **argv);
@@ -92,31 +97,31 @@ int tel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s);
 int tel_home_get(struct telprop *tel,char *ligne);
 int tel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,double altitude);
 
-int mytel_radec_init(struct telprop *tel);
-int mytel_hadec_init(struct telprop *tel);
-int mytel_radec_goto(struct telprop *tel);
-int mytel_radec_state(struct telprop *tel,char *result);
-int mytel_radec_coord(struct telprop *tel,char *result);
-int mytel_radec_move(struct telprop *tel,char *direction);
-int mytel_radec_stop(struct telprop *tel,char *direction);
-int mytel_radec_motor(struct telprop *tel);
-int mytel_focus_init(struct telprop *tel);
-int mytel_focus_goto(struct telprop *tel);
-int mytel_focus_coord(struct telprop *tel,char *result);
-int mytel_focus_move(struct telprop *tel,char *direction);
-int mytel_focus_stop(struct telprop *tel,char *direction);
-int mytel_focus_motor(struct telprop *tel);
-int mytel_date_get(struct telprop *tel,char *ligne);
-int mytel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s);
-int mytel_home_get(struct telprop *tel,char *ligne);
-int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,double altitude);
-int mytel_hadec_coord(struct telprop *tel,char *result);
-int mytel_hadec_goto(struct telprop *tel);
+//int mytel_radec_init(struct telprop *tel);
+//int mytel_radec_goto(struct telprop *tel);
+//int mytel_radec_state(struct telprop *tel,char *result);
+//int mytel_radec_coord(struct telprop *tel,char *result);
+//int mytel_radec_move(struct telprop *tel,char *direction);
+//int mytel_radec_stop(struct telprop *tel,char *direction);
+//int mytel_radec_motor(struct telprop *tel);
+//int mytel_focus_init(struct telprop *tel);
+//int mytel_focus_goto(struct telprop *tel);
+//int mytel_focus_coord(struct telprop *tel,char *result);
+//int mytel_focus_move(struct telprop *tel,char *direction);
+//int mytel_focus_stop(struct telprop *tel,char *direction);
+//int mytel_focus_motor(struct telprop *tel);
+//int mytel_date_get(struct telprop *tel,char *ligne);
+//int mytel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s);
+//int mytel_home_get(struct telprop *tel,char *ligne);
+//int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,double altitude);
+//int mytel_hadec_init(struct telprop *tel);
+//int mytel_hadec_coord(struct telprop *tel,char *result);
+//int mytel_hadec_goto(struct telprop *tel);
 
-int mytel_get_format(struct telprop *tel);
-int mytel_set_format(struct telprop *tel,int longformatindex);
-int mytel_flush(struct telprop *tel);
-int mytel_tcleval(struct telprop *tel,char *ligne);
+//int mytel_get_format(struct telprop *tel);
+//int mytel_set_format(struct telprop *tel,int longformatindex);
+//int mytel_flush(struct telprop *tel);
+//int mytel_tcleval(struct telprop *tel,char *ligne);
 
 int eqmod_put(struct telprop *tel,char *cmd);
 int eqmod_putread(struct telprop *tel,char *cmd, char *res);
@@ -125,40 +130,30 @@ int eqmod_delete(struct telprop *tel);
 int eqmod_decode(struct telprop *tel,char *chars,int *num);
 int eqmod_encode(struct telprop *tel,int num,char *chars);
 
-int eqmod_position_tube(struct telprop *tel,char *sens);
-int eqmod_setlatitude(struct telprop *tel,double latitude);
-int eqmod_getlatitude(struct telprop *tel,double *latitude);
-int eqmod_gettsl(struct telprop *tel,double *tsl);
-int eqmod_LA (struct telprop *tel, int value);
-int eqmod_LB (struct telprop *tel, int value);
-int eqmod_lg (struct telprop *tel, int *vra, int *vdec);
-int eqmod_v_firmware (struct telprop *tel) ;
-int eqmod_arret_pointage(struct telprop *tel) ;
-int eqmod_suivi_arret (struct telprop *tel);
-int eqmod_suivi_marche (struct telprop *tel);
+int mytel_tcleval(struct telprop *tel,char *ligne);
+
+//int eqmod_setlatitude(struct telprop *tel,double latitude);
+//int eqmod_getlatitude(struct telprop *tel,double *latitude);
+//int eqmod_arret_pointage(struct telprop *tel) ;
 int eqmod_coord(struct telprop *tel,char *result);
-int eqmod_match(struct telprop *tel);
-int eqmod_goto(struct telprop *tel);
-int eqmod_initzenith(struct telprop *tel);
-int eqmod_stopgoto(struct telprop *tel);
-int eqmod_stategoto(struct telprop *tel,int *state);
+//int eqmod_match(struct telprop *tel);
+//int eqmod_goto(struct telprop *tel);
 int eqmod_positions12(struct telprop *tel,int *p1,int *p2);
-int eqmod_hadec_coord(struct telprop *tel,char *result);
-int eqmod_hadec_goto(struct telprop *tel);
 int eqmod_hadec_match(struct telprop *tel);
+int eqmod_hadec_coord(struct telprop *tel,char *result);
 
-int eqmod_angle_ra2hms(char *in, char *out);
-int eqmod_angle_dec2dms(char *in, char *out);
-int eqmod_angle_hms2ra(struct telprop *tel, char *in, char *out);
-int eqmod_angle_dms2dec(struct telprop *tel, char *in, char *out);
-
-int eqmod_setderive(struct telprop *tel,int var,int vdec);
-int eqmod_getderive(struct telprop *tel,int *var,int *vdec);
 
 int eqmod_settsl(struct telprop *tel);
 int eqmod_home(struct telprop *tel, char *home_default);
 double eqmod_tsl(struct telprop *tel,int *h, int *m,double *sec);
 void eqmod_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function);
+
+int eqmod2_match(struct telprop *tel, char dir);
+
+int eqmod2_action_move(struct telprop *tel, char *direction);
+int eqmod2_action_stop(struct telprop *tel, char *direction);
+int eqmod2_action_motor(struct telprop *tel);
+int eqmod2_action_goto(struct telprop *tel);
 
 #endif
 

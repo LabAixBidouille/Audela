@@ -1,3 +1,4 @@
+%%BeginProlog
 %
 % PostScript prolog file of the BLT graph widget.
 %
@@ -36,7 +37,7 @@
 /DrawSymbolProc 0 def			% Routine to draw symbol outline/fill
 /StippleProc 0 def			% Stipple routine (bar segments)
 /DashesProc 0 def			% Dashes routine (line segments)
- 
+  
 % Define the array ISOLatin1Encoding (which specifies how characters are 
 % encoded for ISO-8859-1 fonts), if it isn't already present (Postscript 
 % level 2 is supposed to define it, but level 1 doesn't). 
@@ -88,7 +89,7 @@ systemdict /ISOLatin1Encoding known not {
 
 % font ISOEncode font 
 % This procedure changes the encoding of a font from the default 
-% Postscript encoding to ISOLatin1.  It's typically invoked just 
+% Postscript encoding to ISOLatin1.  It is typically invoked just 
 % before invoking "setfont".  The body of this procedure comes from 
 % Section 5.6.1 of the Postscript book. 
 
@@ -304,7 +305,7 @@ systemdict /ISOLatin1Encoding known not {
     2 copy true 3 -1 roll 0 0 5 -1 roll 0 0 6 array astore 5 -1 roll
     imagemask
   grestore
-}def
+} def
 
 % Symbols:
 
@@ -372,28 +373,34 @@ systemdict /ISOLatin1Encoding known not {
 % Circle
 /Ci {
   % Stack: x y symbolSize
-  3 copy pop
-  moveto newpath
-  2 div 0 360 arc
-  closepath DrawSymbolProc
+  gsave
+    3 copy pop
+    moveto newpath
+    2 div 0 360 arc
+    closepath DrawSymbolProc
+  grestore
 } def
 
 % Square
 /Sq {
   % Stack: x y symbolSize
-  dup dup 2 div dup
-  6 -1 roll exch sub exch
-  5 -1 roll exch sub 4 -2 roll Box
-  DrawSymbolProc
+  gsave
+    dup dup 2 div dup
+    6 -1 roll exch sub exch
+    5 -1 roll exch sub 4 -2 roll Box
+    DrawSymbolProc
+  grestore
 } def
 
 % Line
 /Li {
   % Stack: x y symbolSize
-  3 1 roll exch 3 -1 roll 2 div 3 copy
-  newpath
-  sub exch moveto add exch lineto
-  stroke
+  gsave
+    3 1 roll exch 3 -1 roll 2 div 3 copy
+    newpath
+    sub exch moveto add exch lineto
+    stroke
+  grestore
 } def
 
 % Diamond
@@ -446,7 +453,9 @@ systemdict /ISOLatin1Encoding known not {
     3 1 roll translate pop DrawSymbolProc
   grestore
 } def
-    
+
+%%EndProlog
+
 %%BeginSetup
 gsave					% Save the graphics state
 
