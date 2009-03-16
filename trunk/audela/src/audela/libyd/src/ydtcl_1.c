@@ -1170,12 +1170,8 @@ int Cmd_ydtcl_updatezmg(ClientData clientData, Tcl_Interp *interp, int argc, cha
 			   /* --- on coupe à une seule étoile de reference (avant c'etait 5) --- */
                if (n<1) {
                   htmzmgs[kkzmg].cmag=(float)-99.9;
-               } else if (n<5) {
-				  cmag=0.;
-                  for (kk=0;kk<n;kk++) {
-					 cmag+=val[kk];
-				  }
-                  htmzmgs[kkzmg].cmag=(float)(cmag/n);
+               } else if (n<3) {
+                  htmzmgs[kkzmg].cmag=(float)(0);
                } else {
                   /* --- on trie les donnees ---*/
                   yd_util_qsort_double(val,0,n,NULL);
