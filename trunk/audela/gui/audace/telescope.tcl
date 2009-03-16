@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.31 2008-10-21 18:03:52 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.32 2009-03-16 22:42:18 alainklotz Exp $
 #
 
 namespace eval ::telescope {
@@ -213,7 +213,7 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
       if { $audace(telescope,stopgoto) == "1" } {
          return 0
       }
-      #--- Goto
+#--- Goto0
       tel$audace(telNo) radec goto $list_radec -blocking $blocking
       #--- Boucle tant que la monture n'est pas arretee
       set audace(telescope,goto) "1"
@@ -246,7 +246,9 @@ proc ::telescope::surveille_goto { radec0 { But_Goto "" } { But_Match "" } } {
 
    set radec1 [ tel$audace(telNo) radec coord ]
    afficheCoord
-   if { $radec1 != $radec0 } {
+# if { $radec1 != $radec0 } { }
+   set sepangle [ mc_sepangle [ mc_angle2deg [ lindex $radec0 0 ] ] [ mc_angle2deg [ lindex $radec0 1 ] ] [ mc_angle2deg [ lindex $radec1 0 ] ] [ mc_angle2deg [ lindex $radec1 1 ] ] ]
+   if { [ lindex $sepangle 0 ] > 0.1 } {
       after 1000 ::telescope::surveille_goto [ list $radec1 ] $But_Goto $But_Match
    } else {
       if { $But_Goto != "" } {
@@ -311,6 +313,8 @@ proc ::telescope::getSpeedLabelList { } {
       set speedList "$caption(telescope,x1) $caption(telescope,x5) $caption(telescope,200)"
    } elseif { $conf(telescope) == "temma" } {
       set speedList "$caption(telescope,NS) $caption(telescope,HS)"
+   } elseif { $conf(telescope) == "eqmod" } {
+      set speedList "1 2 3 4 5 6 7"
    } else {
       set speedList "1 2 3 4"
    }
@@ -333,6 +337,8 @@ proc ::telescope::getSpeedValueList { } {
       set speedList "1 2 3"
    } elseif { $conf(telescope) == "temma" } {
       set speedList "1 2"
+   } elseif { $conf(telescope) == "eqmod" } {
+      set speedList "1 2 3 4 5 6 7"
    } else {
       set speedList "1 2 3 4"
    }
@@ -369,6 +375,16 @@ proc ::telescope::decodeSpeedDlgShift { } {
             setSpeed "3"
          } elseif { $panneau(DlgShift,shiftSpeed) == "4" } {
             setSpeed "4"
+         }
+      } elseif { $conf(telescope) == "eqmod" } {
+         switch $panneau(DlgShift,shiftSpeed) {
+            "1" { setSpeed "1" }
+            "2" { setSpeed "2" }
+            "3" { setSpeed "3" }
+            "4" { setSpeed "4" }
+            "5" { setSpeed "5" }
+            "6" { setSpeed "6" }
+            "7" { setSpeed "7" }
          }
       } elseif { $conf(telescope) == "temma" } {
          if { $panneau(DlgShift,shiftSpeed) == "$caption(telescope,NS)" } {
@@ -423,6 +439,16 @@ proc ::telescope::decodeSpeedDlgShiftVideo { } {
             setSpeed "1"
          } elseif { $panneau(DlgShiftVideo,shiftSpeed) == "$caption(telescope,HS)" } {
             setSpeed "2"
+         }
+      } elseif { $conf(telescope) == "eqmod" } {
+         switch $panneau(DlgShift,shiftSpeed) {
+            "1" { setSpeed "1" }
+            "2" { setSpeed "2" }
+            "3" { setSpeed "3" }
+            "4" { setSpeed "4" }
+            "5" { setSpeed "5" }
+            "6" { setSpeed "6" }
+            "7" { setSpeed "7" }
          }
       } else {
          #--- Inactif pour autres telescopes
@@ -494,6 +520,17 @@ proc ::telescope::incrementSpeed { } {
             setSpeed "1"
          } else {
             setSpeed "1"
+         }
+      } elseif { $conf(telescope) == "eqmod" } {
+         #--- Pour l'eqmod, l'increment peut prendre 4 valeurs ( 1 2 3 4 )
+         switch $audace(telescope,speed) {
+            "1" { setSpeed "2" }
+            "2" { setSpeed "3" }
+            "3" { setSpeed "4" }
+            "4" { setSpeed "5" }
+            "5" { setSpeed "6" }
+            "6" { setSpeed "7" }
+            default { setSpeed "1" }
          }
       } else {
          #--- Inactif pour les autres montures
@@ -616,6 +653,52 @@ proc ::telescope::setSpeed { { value "2" } } {
             set audace(telescope,rate) "0"
             set statustel(speed) "0"
          }
+      } elseif { $conf(telescope) == "eqmod" } {
+         switch $value {
+            "1" {
+               set audace(telescope,speed) "1"
+               set audace(telescope,labelspeed) "1"
+               set audace(telescope,rate) [ expr 360.0 / 86164. ]
+               set statustel(speed) [ expr 360.0 / 86164. ]
+               tel$audace(telNo) focus fast
+            }
+            "2" {
+               set audace(telescope,speed) "2"
+               set audace(telescope,labelspeed) "2"
+               set audace(telescope,rate) [ expr 4 * 360.0 / 86164. ]
+               set statustel(speed) [ expr 4 * 360.0 / 86164. ]
+            }
+            "3" {
+               set audace(telescope,speed) "3"
+               set audace(telescope,labelspeed) "3"
+               set audace(telescope,rate) [ expr 64 * 360.0 / 86164. ]
+               set statustel(speed) [ expr 64 * 360.0 / 86164. ]
+            }
+            "4" {
+               set audace(telescope,speed) "4"
+               set audace(telescope,labelspeed) "4"
+               set audace(telescope,rate) "1"
+               set statustel(speed) "1"
+            }
+            "5" {
+               set audace(telescope,speed) "5"
+               set audace(telescope,labelspeed) "5"
+               set audace(telescope,rate) "2"
+               set statustel(speed) "2"
+            }
+            "6" {
+               set audace(telescope,speed) "6"
+               set audace(telescope,labelspeed) "6"
+               set audace(telescope,rate) "3"
+               set statustel(speed) "3"
+            }
+            "7" {
+               set audace(telescope,speed) "7"
+               set audace(telescope,labelspeed) "7"
+               set audace(telescope,rate) "10"
+               set statustel(speed) "10"
+            }
+         }
       } else {
          set audace(telescope,speed) "1"
          set audace(telescope,labelspeed) "$caption(telescope,interro)"
@@ -644,7 +727,7 @@ proc ::telescope::controleSuivi { { value " " } } {
    global audace caption conf
 
    if { [ ::tel::list ] != "" } {
-      if { ( $conf(telescope) == "audecom" ) || ( $conf(telescope) == "temma" ) } {
+      if { ( $conf(telescope) == "audecom" ) || ( $conf(telescope) == "temma" ) || ( $conf(telescope) == "eqmod" ) } {
          if { $value == " " } {
             if { $audace(telescope,controle) == "$caption(telescope,suivi_marche)" } {
                tel$audace(telNo) radec motor off
@@ -655,10 +738,10 @@ proc ::telescope::controleSuivi { { value " " } } {
             }
          } else {
             if { $value == "$caption(telescope,suivi_marche)" } {
-               tel$audace(telNo) radec motor off
+               tel$audace(telNo) radec motor on
                set audace(telescope,controle) "$caption(telescope,suivi_arret)"
             } elseif { $value == "$caption(telescope,suivi_arret)" } {
-               tel$audace(telNo) radec motor on
+               tel$audace(telNo) radec motor off
                set audace(telescope,controle) "$caption(telescope,suivi_marche)"
             }
          }

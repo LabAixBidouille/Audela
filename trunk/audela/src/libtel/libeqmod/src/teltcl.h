@@ -34,5 +34,7 @@ int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 int cmdTelDecode(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelEncode(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelLimits(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelOrientation(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelTempo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif

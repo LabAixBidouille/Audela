@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.26 2009-03-04 00:18:54 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.27 2009-03-16 22:42:18 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -980,7 +980,7 @@ proc grb_copy { {first 1} {date_trigger ""} } {
 				#set yc [expr $naxis2/2]
 				set xc [lindex $xy 0]
 				set yc [lindex $xy 1]
-				set fen 100
+				set fen 300
 			} else {
 				set fen 125
 				set xc [expr 129./2]

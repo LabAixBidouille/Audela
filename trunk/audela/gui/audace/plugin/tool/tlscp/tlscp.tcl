@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.21 2009-02-07 11:03:38 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.22 2009-03-16 22:42:18 alainklotz Exp $
 #
 
 #============================================================
@@ -712,7 +712,7 @@ proc ::tlscp::cmdGoto { visuNo } {
    }
 
    #--- Goto
-   ::telescope::goto $private($visuNo,list_radec) "0" \
+   ::telescope::goto $private($visuNo,list_radec) "1" \
       $private($visuNo,This).fra2.fra2a.but1 \
       $private($visuNo,This).fra2.fra1a.match \
       $private($visuNo,nomObjet) \
