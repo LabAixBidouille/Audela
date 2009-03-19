@@ -809,9 +809,9 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 						k1=38; k2=60; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 						strcpy(im,s); /* date_obs */
 						k1=104; k2=113; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
-						lignes2[n_in1].dec=atof(s);
+						lignes2[n_in1].dec1=atof(s);
 						k1=93 ; k2=101; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
-						lignes2[n_in1].ra=atof(s);
+						lignes2[n_in1].ra1=atof(s);
 
 						/* transforme le fichier de tle en ephemeride */						
 						sprintf(lign,"mc_tle2ephem {%s} {%s} {%s}",im,pathTle2,home);
@@ -844,8 +844,8 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 							kmini=-1;
 							distmin=1e20;
 							anglmin=0;
-							ra0=lignes2[n_in1].ra;
-							dec0=lignes2[n_in1].dec;
+							ra0=lignes2[n_in1].ra1;
+							dec0=lignes2[n_in1].dec1;
 							for (k=0;k<argcc;k++) {
 								result=strlen(argvv[k]);
 								if (result<111) {
@@ -1500,9 +1500,9 @@ int Cmd_mltcl_geostatident2(ClientData clientData, Tcl_Interp *interp, int argc,
 						k1=38; k2=60; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 						strcpy(im,s); /* date_obs */
 						k1=149; k2=158; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
-						lignes2[n_in1].dec=atof(s);
+						lignes2[n_in1].dec1=atof(s);
 						k1=138 ; k2=147; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
-						lignes2[n_in1].ra=atof(s);
+						lignes2[n_in1].ra1=atof(s);
 
 						/* transforme le fichier de tle en ephemeride */						
 						sprintf(lign,"mc_tle2ephem {%s} {%s} {%s}",im,pathTle2,home);
@@ -1535,8 +1535,8 @@ int Cmd_mltcl_geostatident2(ClientData clientData, Tcl_Interp *interp, int argc,
 							kmini=-1;
 							distmin=1e20;
 							anglmin=0;
-							ra0=lignes2[n_in1].ra;
-							dec0=lignes2[n_in1].dec;
+							ra0=lignes2[n_in1].ra1;
+							dec0=lignes2[n_in1].dec1;
 							for (k=0;k<argcc;k++) {
 								result=strlen(argvv[k]);
 								if (result<111) {
@@ -1865,11 +1865,11 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
             }
             if (lignes[n_in].comment==0) {
 			   k1=93 ; k2=101; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
-			   lignes[n_in].ra=atof(s);
+			   lignes[n_in].ra1=atof(s);
                k1=115 ; k2=123 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
-               lignes[n_in].ha=atof(s);
+               lignes[n_in].ha1=atof(s);
                k1=104 ; k2=113 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
-               lignes[n_in].dec=atof(s);
+               lignes[n_in].dec1=atof(s);
                k1= 83 ; k2= 91 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
                lignes[n_in].mag=atof(s);
                k1= 38 ; k2= 41 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
@@ -1897,8 +1897,8 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
                strcpy(im0,im);
                kobject++;
             } else {
-               lignes[n_in].ha=0.;
-               lignes[n_in].dec=0.;
+               lignes[n_in].ha1=0.;
+               lignes[n_in].dec1=0.;
                lignes[n_in].jd=0.;
                lignes[n_in].mag=99.;
                lignes[n_in].kimage=-1;
@@ -1954,14 +1954,14 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
             if (lignes[k1].comment!=0) {
                continue;
             }
-            ha1=lignes[k1].ha;
-            dec1=lignes[k1].dec;
+            ha1=lignes[k1].ha1;
+            dec1=lignes[k1].dec1;
             for (k2=k1+1;k2<=kfins[k];k2++) {
                if (lignes[k2].comment!=0) {
                   continue;
                }
-               ha2=lignes[k2].ha;
-               dec2=lignes[k2].dec;
+               ha2=lignes[k2].ha1;
+               dec2=lignes[k2].dec1;
                ml_sepangle(ha1*dr,ha2*dr,dec1*dr,dec2*dr,&sep,&pos);
                sep=sep/dr;
                if (sep<sepmin) {
@@ -1992,9 +1992,9 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
                continue;
             }
             jd1=lignes[k1].jd;
-            ha1=lignes[k1].ha;
-			ra1=lignes[k1].ra;
-            dec1=lignes[k1].dec;
+            ha1=lignes[k1].ha1;
+			ra1=lignes[k1].ra1;
+            dec1=lignes[k1].dec1;
             for (ki2=ki1+1;ki2<nimages-nifin2;ki2++) {
                for (k2=kdebs[ki2];k2<=kfins[ki2];k2++) {
                   if (lignes[k2].comment!=0) {
@@ -2004,9 +2004,9 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
                   if (fabs(jd2-jd1)>jjdifmin) {
                      continue;
                   }
-                  ha2=lignes[k2].ha;
-				  ra2=lignes[k2].ra;
-                  dec2=lignes[k2].dec;
+                  ha2=lignes[k2].ha1;
+				  ra2=lignes[k2].ra1;
+                  dec2=lignes[k2].dec1;
                   ml_sepangle(ha1*dr,ha2*dr,dec1*dr,dec2*dr,&sep12,&pos12);
                   sep12=sep12/dr;
 					// calcul pour evaluer la vitesse angulaire des géo
@@ -2046,9 +2046,9 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
                         if (fabs(jd3-jd2)>jjdifmin) {
                            continue;
                         }
-                        ha3=lignes[k3].ha;
-						ra3=lignes[k3].ra;
-                        dec3=lignes[k3].dec;
+                        ha3=lignes[k3].ha1;
+						ra3=lignes[k3].ra1;
+                        dec3=lignes[k3].dec1;
                         ml_sepangle(ha2*dr,ha3*dr,dec2*dr,dec3*dr,&sep23,&pos23);
                         sep23=sep23/dr;
 					
@@ -2173,6 +2173,7 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
    double ra1,ra2,ra3,ha1,ha2,ha3,dec1,dec2,dec3,sep,pos,jd1,jd2,jd3,sep12,pos12,sep23,pos23,dec30,ha30,sep1,pos1,sep2,pos2,pos3,sep3,dha,ddec;
    int ki1,ki2,ki3;
    int matching_poursuit=1,nifin1,nifin2,matching_id;
+   double x11, x21, y11, y21 ,x12, x22, y12, y22, ba, bb;
 
    if(argc<3) {
       sprintf(s,"Usage: %s file_00 file_0 ?sepmin? ?sepmax? ?jjdifmin? ?matching_poursuit?", argv[0]);
@@ -2187,15 +2188,17 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
          retour = Tcl_GetDouble(interp,argv[3],&sepmin);
          if(retour!=TCL_OK) return retour;
       }
-      sepmax=120./3600.; /* default value = 120 arcsec pour TAROT */
+      sepmax=300./3600.; /* default value = 120 arcsec pour TAROT */
       if (argc>=5) {
          retour = Tcl_GetDouble(interp,argv[4],&sepmax);
          if(retour!=TCL_OK) return retour;
       }
+	  jjdifmin=0.014;
       if (argc>=6) {
          retour = Tcl_GetDouble(interp,argv[5],&jjdifmin);
          if(retour!=TCL_OK) return retour;
       }
+	  matching_poursuit=1;
       if (argc>=7) {
          retour = Tcl_GetInt(interp,argv[6],&matching_poursuit);
          if(retour!=TCL_OK) return retour;
@@ -2236,7 +2239,7 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
       kimage=-1;
       while (feof(f_in)==0) {
          if (fgets(ligne,sizeof(ligne),f_in)!=NULL) {
-            strcpy(lignes[n_in].texte,ligne);
+			strcpy(lignes[n_in].texte,ligne);
             lignes[n_in].comment=1;
             lignes[n_in].kimage1=-1;
             lignes[n_in].kobject1=-1;
@@ -2256,55 +2259,87 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
 			if (lignes[n_in].comment==0) {
 			   k1=269 ; for (k=k1;k<k1+1;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 			   lignes[n_in].typesatellite=atoi(s);
-			   if (lignes[n_in].typesatellite==2) { 
-					lignes[n_in].matched=1;
-					lignes[n_in].kimage=0;
+				strcpy(lignes[n_in].texte,"");
+				k1=0 ; k2=270; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+				strcpy(lignes[n_in].texte,s);
+			   if ((lignes[n_in].typesatellite==2)||(lignes[n_in].typesatellite==3)) { 
+					
 					strcpy(lignes[n_in].texte,"");
-					k1=0 ; k2=270; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					k1=0 ; k2=84; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 					strcpy(lignes[n_in].texte,s);
+					k1=86 ; k2=95; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					lignes[n_in].gisement1=atof(s);
+					k1=97 ; k2=105; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					lignes[n_in].site1=atof(s);
+					k1=107 ; k2=116; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					lignes[n_in].gisement2=atof(s);
+					k1=118 ; k2=126; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					lignes[n_in].site2=atof(s);
+					k1=171 ; k2=181; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					lignes[n_in].ra2=atof(s);
+					k1=182 ; k2=191 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					lignes[n_in].dec2=atof(s);
+					k1=193 ; k2=202 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					lignes[n_in].ha2=atof(s);
+					k1=204 ; k2=212; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					lignes[n_in].x1=atof(s);
+					k1=214 ; k2=223; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					lignes[n_in].y1=atof(s);
+					k1=224 ; k2=232; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					lignes[n_in].x2=atof(s);
+					k1=234 ; k2=242; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					lignes[n_in].y2=atof(s);
+					k1=244 ; k2=268; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					strcpy(lignes[n_in].texte2,s);
 					k1=285 ; k2=290; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 					lignes[n_in].sep=atof(s);
 					k1=292 ; k2=297; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 					lignes[n_in].pos=atof(s);
-			   } else {
-				   k1=138 ; k2=146; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
-				   lignes[n_in].ra=atof(s);
-				   k1=160 ; k2=168 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
-				   lignes[n_in].ha=atof(s);
-				   k1=149 ; k2=158 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
-				   lignes[n_in].dec=atof(s);
-				   k1=128 ; k2=136 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
-				   lignes[n_in].mag=atof(s);
-				   k1= 38 ; k2= 41 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
-				   annee=atof(s);
-				   k1= 43 ; k2= 44 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
-				   mois=atof(s);
-				   k1= 46 ; k2= 47 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
-				   jour=atof(s); lignes[n_in].jour=atof(s);
-				   k1= 49 ; k2= 50 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
-				   heure=atof(s); lignes[n_in].heure=atof(s);
-				   k1= 52 ; k2= 53 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
-				   minute=atof(s); lignes[n_in].minute=atof(s);
-				   k1= 55 ; k2= 60 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
-				   seconde=atof(s); lignes[n_in].seconde=atof(s);
-				   ml_date2jd(annee,mois,jour,heure,minute,seconde,&jd);
-				   lignes[n_in].jd=jd;
-				   
-			   }
-			   k1=  0 ; k2= 36 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
-			   strcpy(im,s);
-			   if (strcmp(im,im0)!=0) {
-				  kimage++;
-				  kobject=0;
-			   }
-			   strcpy(im0,im);
-			   lignes[n_in].kimage=kimage;
-			   lignes[n_in].kobject=kobject;
-			   kobject++;
+					
+					if ((fabs(lignes[n_in].x1-lignes[n_in].x2)>20)||(fabs(lignes[n_in].y1-lignes[n_in].y2)>20)) {
+						lignes[n_in].matched=1; // mettre a 1 pour qu'il soit tjrs dans le bdd final
+						lignes[n_in].kimage=0; // mettre à 0 si on ne le passe pas dans le matching	
+					} else {
+						lignes[n_in].typesatellite=3; // Défilant qui passent dans la matching poursuite
+					}
+			   } 
+			   	
+				k1= 38 ; k2= 41 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+				annee=atof(s);
+				k1= 43 ; k2= 44 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+				mois=atof(s);
+				k1= 46 ; k2= 47 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+				jour=atof(s); lignes[n_in].jour=atof(s);
+				k1= 49 ; k2= 50 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+				heure=atof(s); lignes[n_in].heure=atof(s);
+				k1= 52 ; k2= 53 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+				minute=atof(s); lignes[n_in].minute=atof(s);
+				k1= 55 ; k2= 60 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+				seconde=atof(s); lignes[n_in].seconde=atof(s);
+				ml_date2jd(annee,mois,jour,heure,minute,seconde,&jd);
+				lignes[n_in].jd=jd;
+				k1=128 ; k2=136 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+				lignes[n_in].mag=atof(s);
+				k1=138 ; k2=146; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+				lignes[n_in].ra1=atof(s);
+				k1=149 ; k2=158 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+				lignes[n_in].dec1=atof(s);
+				k1=160 ; k2=169 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+				lignes[n_in].ha1=atof(s);
+				k1=  0 ; k2= 36 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+				strcpy(im,s);
+				if (strcmp(im,im0)!=0) {
+					kimage++;
+					kobject=0;
+				}
+				strcpy(im0,im);
+				lignes[n_in].kimage=kimage;
+				lignes[n_in].kobject=kobject;
+				kobject++;
 
             } else {
-               lignes[n_in].ha=0.;
-               lignes[n_in].dec=0.;
+               lignes[n_in].ha1=0.;
+               lignes[n_in].dec1=0.;
                lignes[n_in].jd=0.;
                lignes[n_in].mag=99.;
                lignes[n_in].kimage=-1;
@@ -2358,27 +2393,82 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
 	  dr=pi/180.;
 	  for (k=0;k<nimages;k++) {
 		 for (k1=kdebs[k];k1<=kfins[k]-1;k1++) {
-			if ((lignes[k1].comment!=0)||(lignes[k1].typesatellite==2)) {
+			if (lignes[k1].comment!=0) {
 			   continue;
-			}
-			ha1=lignes[k1].ha;
-			dec1=lignes[k1].dec;
-			for (k2=k1+1;k2<=kfins[k];k2++) {
-			   if ((lignes[k2].comment!=0)||(lignes[k2].typesatellite==2)) {
-				  continue;
-			   }
-			   ha2=lignes[k2].ha;
-			   dec2=lignes[k2].dec;
-			   ml_sepangle(ha1*dr,ha2*dr,dec1*dr,dec2*dr,&sep,&pos);
-			   sep=sep/dr;
-			   if (sep<sepmin) {
-				  /* --- on elimine le moins brillant ---*/
-				  if (lignes[k1].mag<lignes[k2].mag) {
-					 lignes[k2].comment=2;
-				  } else {
-					 lignes[k1].comment=2;
-				  }
-			   }
+			}	
+			if (lignes[k1].typesatellite!=2) {/* pour les geo */
+				ha1=lignes[k1].ha1;
+				dec1=lignes[k1].dec1;
+				for (k2=k1+1;k2<=kfins[k];k2++) {
+				   if ((lignes[k2].comment!=0)||(lignes[k2].typesatellite==2)) {
+					  continue;
+				   }
+				   ha2=lignes[k2].ha1;
+				   dec2=lignes[k2].dec1;
+				   ml_sepangle(ha1*dr,ha2*dr,dec1*dr,dec2*dr,&sep,&pos);
+				   sep=sep/dr;
+				   if (sep<sepmin) {
+					  /* --- on elimine le moins brillant ---*/
+					  if (lignes[k1].mag<lignes[k2].mag) {
+						 lignes[k2].comment=2;
+					  } else {
+						 lignes[k1].comment=2;
+					  }
+				   }
+				}
+			} else {/* pour les defilants */
+				pos1=lignes[k1].pos;
+				x11=lignes[k1].x1;
+				y11=lignes[k1].y1;
+				x21=lignes[k1].x2;
+				y21=lignes[k1].y2;
+				for (k2=k1+1;k2<=kfins[k];k2++) {
+					if ((lignes[k2].comment!=0)||(lignes[k2].typesatellite!=2)) {
+						continue;
+					}
+					pos2=lignes[k2].pos;
+					x12=lignes[k2].x1;
+					y12=lignes[k2].y1;
+					x22=lignes[k2].x2;
+					y22=lignes[k2].y2;
+				   if (fabs(pos1-pos2)<=10) {
+					   if ((x11!=0.0)||(x21!=0.0)) {
+							ba=(y21-y11*x21/x11)/(1-x21/x11);
+						} else {
+						   if (x11==0.0) ba=y11;
+						   if (x21==0.0) ba=y21;
+						}
+						if ((x12!=0.0)||(x22!=0.0)) {
+							bb=(y22-y12*x22/x12)/(1-x22/x12);
+						} else {
+						   if (x12==0.0) bb=y12;
+						   if (x22==0.0) bb=y22;
+						}
+						if (fabs(ba-bb)<=fabs(ba+bb)/100) { /* on apparie les mesures */
+							lignes[k2].comment=2;
+							lignes[k1].pos=(pos1+pos2)/2;
+							// recalculer sep 
+							// ra, dec
+							if (x11<=x12) {
+								lignes[k1].x2=x22;
+								lignes[k1].y2=y22;
+								lignes[k1].site2=lignes[k2].site2;
+								lignes[k1].gisement2=lignes[k2].gisement2;
+								lignes[k1].ra2=lignes[k2].ra2;
+								lignes[k1].dec2=lignes[k2].dec2;
+								lignes[k1].ha2=lignes[k2].ha2;
+							} else {
+								lignes[k1].x1=x12;
+								lignes[k1].y1=y12;
+								lignes[k1].site1=lignes[k2].site1;
+								lignes[k1].gisement1=lignes[k2].gisement1;
+								lignes[k1].ra1=lignes[k2].ra1;
+								lignes[k1].dec1=lignes[k2].dec1;
+								lignes[k1].ha1=lignes[k2].ha1;
+							}
+						}
+				   }
+				}
 			}
 		 }
 	  }
@@ -2395,13 +2485,12 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
 	  matching_id=0;
 	  for (ki1=0;ki1<nimages-nifin1;ki1++) {
 		 for (k1=kdebs[ki1];k1<=kfins[ki1];k1++) {
-			if ((lignes[k1].comment!=0)||(lignes[k1].typesatellite==2)) {
-			   continue;
-			}
+			if ((lignes[k1].comment!=0)||(lignes[k1].typesatellite==2)) continue;
+			if ((lignes[k1].typesatellite==2)&&(lignes[k1].sep>5)) continue;
 			jd1=lignes[k1].jd;
-			ha1=lignes[k1].ha;
-			ra1=lignes[k1].ra;
-			dec1=lignes[k1].dec;
+			ha1=lignes[k1].ha1;
+			ra1=lignes[k1].ra1;
+			dec1=lignes[k1].dec1;
 			for (ki2=ki1+1;ki2<nimages-nifin2;ki2++) {
 			   for (k2=kdebs[ki2];k2<=kfins[ki2];k2++) {
 				  if ((lignes[k2].comment!=0)||(lignes[k2].typesatellite==2)) {
@@ -2411,9 +2500,9 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
 				  if (fabs(jd2-jd1)>jjdifmin) {
 					 continue;
 				  }
-				  ha2=lignes[k2].ha;
-				  ra2=lignes[k2].ra;
-				  dec2=lignes[k2].dec;
+				  ha2=lignes[k2].ha1;
+				  ra2=lignes[k2].ra1;
+				  dec2=lignes[k2].dec1;
 				  ml_sepangle(ha1*dr,ha2*dr,dec1*dr,dec2*dr,&sep12,&pos12);
 				  sep12=sep12/dr;
 					// calcul pour evaluer la vitesse angulaire des géo
@@ -2453,9 +2542,9 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
 						if (fabs(jd3-jd2)>jjdifmin) {
 						   continue;
 						}
-						ha3=lignes[k3].ha;
-						ra3=lignes[k3].ra;
-						dec3=lignes[k3].dec;
+						ha3=lignes[k3].ha1;
+						ra3=lignes[k3].ra1;
+						dec3=lignes[k3].dec1;
 						ml_sepangle(ha2*dr,ha3*dr,dec2*dr,dec3*dr,&sep23,&pos23);
 						sep23=sep23/dr;
 					
@@ -2474,8 +2563,8 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
 						dec30=dec1+(dec2-dec1)*(jd3-jd1)/(jd2-jd1);
 						ml_sepangle(ha30*dr,ha3*dr,dec30*dr,dec3*dr,&sep,&pos);
 						sep=sep/dr;
-						//if (sep*3600>10.) {
-						if (sep>sepmax) {
+						if (sep*3600>36.) {
+						//if (sep>sepmax) {
 						   continue;
 						}
 						ml_sepangle(ra1*dr,ra3*dr,dec1*dr,dec3*dr,&sep3,&pos3);
@@ -2494,6 +2583,15 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
 						lignes[k2].pos=pos2;
 						lignes[k3].sep=sep3*3600/(jd3-jd1)/86400;
 						lignes[k3].pos=pos3;
+						if (lignes[k1].typesatellite==3) {
+							lignes[k1].typesatellite=4;
+						}
+						if (lignes[k2].typesatellite==3) {
+							lignes[k2].typesatellite=4;
+						}
+						if (lignes[k3].typesatellite==3) {
+							lignes[k3].typesatellite=4;
+						}
 						if (strcmp(lignes[k1].matching_id,"")!=0) {
 						   strcpy(lignes[k2].matching_id,lignes[k1].matching_id);
 						   strcpy(lignes[k3].matching_id,lignes[k1].matching_id);
@@ -2529,24 +2627,37 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
             if ((lignes[k].kimage!=kimage)&&(kimage!=-1)) {
                fprintf(f_in,"\n");
             }
-			ns=(int)(strlen(lignes[k].texte));
-			texte=lignes[k].texte;
-			if (ns>=2) {
-				texte[ns-1]='\0';
-			}
-			if (lignes[k].typesatellite==2) {
-				strcat(lignes[k].texte," -------------");
-				sprintf(s,"%s %06.2f %06.2f\n",lignes[k].texte,lignes[k].sep,lignes[k].pos);
-				fprintf(f_in,"%s %06.2f %06.2f\n",lignes[k].texte,lignes[k].sep,lignes[k].pos);
-			} else {
+			if ((lignes[k].typesatellite==2)&&(lignes[k].comment==0)) {
+				sprintf(s,"%1d",lignes[k].typesatellite);
+				strcat(lignes[k].texte2,s);
+				strcat(lignes[k].texte2," -------------");
+				sprintf(s,"%s %010.6f %09.6f %010.6f %09.6f %09.6f %010.6f %+010.6f %010.6f %010.6f %+010.6f %010.6f %09.4f %09.4f %09.4f %09.4f %s %06.2f %06.2f\n",lignes[k].texte,lignes[k].gisement1, lignes[k].site1, lignes[k].gisement2, lignes[k].site2, lignes[k].mag, lignes[k].ra1, lignes[k].dec1, lignes[k].ha1, lignes[k].ra2, lignes[k].dec2,lignes[k].ha2,lignes[k].x1,lignes[k].y1,lignes[k].x2,lignes[k].y2,lignes[k].texte2,lignes[k].sep,lignes[k].pos);
+				fprintf(f_in,"%s %010.6f %09.6f %010.6f %09.6f %09.6f %010.6f %+010.6f %010.6f %010.6f %+010.6f %010.6f %09.4f %09.4f %09.4f %09.4f %s %06.2f %06.2f\n",lignes[k].texte,lignes[k].gisement1, lignes[k].site1, lignes[k].gisement2, lignes[k].site2, lignes[k].mag, lignes[k].ra1, lignes[k].dec1, lignes[k].ha1, lignes[k].ra2, lignes[k].dec2,lignes[k].ha2,lignes[k].x1,lignes[k].y1,lignes[k].x2,lignes[k].y2,lignes[k].texte2,lignes[k].sep,lignes[k].pos);
+			} else if (lignes[k].typesatellite==4) {
+				sprintf(s,"%1d",lignes[k].typesatellite);
+				strcat(lignes[k].texte2,s);
+				sprintf(s,"%s %010.6f %09.6f %010.6f %09.6f %09.6f %010.6f %+010.6f %010.6f %010.6f %+010.6f %010.6f %09.4f %09.4f %09.4f %09.4f %s %s %06.2f %06.2f\n",lignes[k].texte,lignes[k].gisement1, lignes[k].site1, lignes[k].gisement2, lignes[k].site2, lignes[k].mag, lignes[k].ra1, lignes[k].dec1, lignes[k].ha1, lignes[k].ra2, lignes[k].dec2,lignes[k].ha2,lignes[k].x1,lignes[k].y1,lignes[k].x2,lignes[k].y2,lignes[k].texte2,lignes[k].matching_id,lignes[k].sep,lignes[k].pos);
+				fprintf(f_in,"%s %010.6f %09.6f %010.6f %09.6f %09.6f %010.6f %+010.6f %010.6f %010.6f %+010.6f %010.6f %09.4f %09.4f %09.4f %09.4f %s %s %06.2f %06.2f\n",lignes[k].texte,lignes[k].gisement1, lignes[k].site1, lignes[k].gisement2, lignes[k].site2, lignes[k].mag, lignes[k].ra1, lignes[k].dec1, lignes[k].ha1, lignes[k].ra2, lignes[k].dec2,lignes[k].ha2,lignes[k].x1,lignes[k].y1,lignes[k].x2,lignes[k].y2,lignes[k].texte2,lignes[k].matching_id,lignes[k].sep,lignes[k].pos);
+			} else if (lignes[k].comment==0) {
+				ns=(int)(strlen(lignes[k].texte));
+				texte=lignes[k].texte;
+				if (ns>=2) {
+					texte[ns-1]='\0';
+				}
 				sprintf(s,"%s %s %06.2f %06.2f\n",lignes[k].texte,lignes[k].matching_id,lignes[k].sep,lignes[k].pos);
 				fprintf(f_in,"%s %s %06.2f %06.2f\n",lignes[k].texte,lignes[k].matching_id,lignes[k].sep,lignes[k].pos);
-			}
+			} 
 			//strcat(lignes[k].texte,lignes[k].matching_id);
 			//fprintf(f_in,"%s",lignes[k].texte);
             //fprintf(f_in," K=%d => matching_id=%s => matched=%d\n",k,lignes[k].matching_id,lignes[k].matched);
             kimage=lignes[k].kimage;
-         }
+         } else if (lignes[k].typesatellite==3) {
+				sprintf(s,"%1d",lignes[k].typesatellite);
+				strcat(lignes[k].texte2,s);
+				strcat(lignes[k].texte2," -------------");
+				sprintf(s,"%s %010.6f %09.6f %010.6f %09.6f %09.6f %010.6f %+010.6f %010.6f %010.6f %+010.6f %010.6f %09.4f %09.4f %09.4f %09.4f %s %06.2f %06.2f\n",lignes[k].texte,lignes[k].gisement1, lignes[k].site1, lignes[k].gisement2, lignes[k].site2, lignes[k].mag, lignes[k].ra1, lignes[k].dec1, lignes[k].ha1, lignes[k].ra2, lignes[k].dec2,lignes[k].ha2,lignes[k].x1,lignes[k].y1,lignes[k].x2,lignes[k].y2,lignes[k].texte2,lignes[k].sep,lignes[k].pos);
+				fprintf(f_in,"%s %010.6f %09.6f %010.6f %09.6f %09.6f %010.6f %+010.6f %010.6f %010.6f %+010.6f %010.6f %09.4f %09.4f %09.4f %09.4f %s %06.2f %06.2f\n",lignes[k].texte,lignes[k].gisement1, lignes[k].site1, lignes[k].gisement2, lignes[k].site2, lignes[k].mag, lignes[k].ra1, lignes[k].dec1, lignes[k].ha1, lignes[k].ra2, lignes[k].dec2,lignes[k].ha2,lignes[k].x1,lignes[k].y1,lignes[k].x2,lignes[k].y2,lignes[k].texte2,lignes[k].sep,lignes[k].pos);
+		 }
       }
       fclose(f_in);
 

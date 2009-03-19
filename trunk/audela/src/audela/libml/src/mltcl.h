@@ -62,10 +62,22 @@
 
 typedef struct {
    char texte[ML_STAT_LIG_MAX];
+   char texte2[200];
    int comment;
-   double ha;
-   double ra;
-   double dec;
+   double x1;
+   double y1;
+   double x2;
+   double y2;
+   double ha1;
+   double ra1;
+   double dec1;
+   double ha2;
+   double ra2;
+   double dec2;
+   double gisement1;
+   double site1;
+   double gisement2;
+   double site2;
    double jd;
    double mag;
    double distance;
