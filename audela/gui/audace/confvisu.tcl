@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.101 2009-03-14 14:55:17 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.102 2009-03-21 08:14:28 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -2827,27 +2827,32 @@ proc ::confVisu::createGraph { visuNo } {
       pack $This.graphConfig.coordinates -side top -anchor center -fill none
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # getGraph
-#    retourne le nom tk du graphe
+#    retourne le nom tk du graphe servant a afficher les profils
 #
+# @param visuNo  numero de la visu
+# @return nom du widget TK du graphe
 #------------------------------------------------------------
 proc ::confVisu::getGraph { visuNo } {
    variable private
 
+   if { ! [winfo exists $private($visuNo,This).graph ] } {
+      createGraph $visuNo
+   }
+
    return $private($visuNo,This).graph
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # onGraphMotion
 #  affiche les coordonnees du curseur de la souris
 #  apres chaque deplacement de la souris
 #
-# Parameters
-#    visuNo  numero de la fenetre
-#    xScreen yScreen  coordoonnees ecran de la souris
-#  @return
-#     rien
+# @param  visuNo  numero de la fenetre
+# @param  xScreen abcisse de la souris (referentiel screen)
+# @param  yScreen ordoonnee de la souris (referentiel screen)
+# @return rien
 #------------------------------------------------------------
 proc ::confVisu::onGraphMotion { visuNo graph xScreen yScreen } {
    variable private
