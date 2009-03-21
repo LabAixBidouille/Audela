@@ -2,7 +2,7 @@
 # Fichier : gps.tcl
 # Description : Outil de synchronisation GPS
 # Auteur : Jacques MICHELET
-# Mise a jour $Id: gps.tcl,v 1.14 2009-02-07 11:09:13 robertdelmas Exp $
+# Mise a jour $Id: gps.tcl,v 1.15 2009-03-21 09:16:49 jacquesmichelet Exp $
 #
 
 namespace eval ::gps {
@@ -15,10 +15,34 @@ namespace eval ::gps {
 
 	source [file join [file dirname [info script]] gps.cap]
 
+    ##############################################################
+    ### AffichageAltitudeGPGGA ###################################
+    ##############################################################
+    proc AffichageAltitudeGPGGA {ligne} {
+        variable position
+        variable gps
+        variable couleur
+        variable base
+
+        # Recuperation des infos dans la ligne
+        regexp {([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),([^,]+)} \
+        $ligne match type heure lat_brute nord_sud long_brute est_ouest qualite sat hdop altitude unite
+
+        # Recuperation des infos dans la ligne
+        if { ([info exists unite]) && ($unite == "M") && ([string is double -strict $altitude]) } {
+            set gps(somme_altitude) [expr $gps(somme_altitude) + $altitude]
+            incr gps(nombre_altitude)
+            set position(altitude) [expr round($gps(somme_altitude) / $gps(nombre_altitude))]
+            $base.tableau_bord.trame1.color_invariant_altitude configure -text [format "%d" $position(altitude)] -fg $couleur(donnee,valide)
+        } else {
+            $base.tableau_bord.trame1.color_invariant_altitude configure -text [format "%d" $position(altitude)] -fg $couleur(donnee,invalide)
+        }
+    }
+
+    ##############################################################
+	### AffichageAltitudePGRMZ ###################################
 	##############################################################
-	### AffichageAltitude ########################################
-	##############################################################
-	proc AffichageAltitude {ligne} {
+	proc AffichageAltitudePGRMZ {ligne} {
 		variable position
 		variable gps
 		variable couleur
@@ -36,7 +60,7 @@ namespace eval ::gps {
 			set position(altitude) [expr round($gps(somme_altitude) / $gps(nombre_altitude))]
 			$base.tableau_bord.trame1.color_invariant_altitude configure -text [format "%d" $position(altitude)] -fg $couleur(donnee,valide)
 		} else {
-			$base.tableau_bord.color_invariant_altitude configure -text [format "%d" $position(altitude)] -fg $couleur(donnee,invalide)
+			$base.tableau_bord.trame1.color_invariant_altitude configure -text [format "%d" $position(altitude)] -fg $couleur(donnee,invalide)
 		}
 	}
 
@@ -679,6 +703,7 @@ namespace eval ::gps {
 
 		set gps(message_GPRMC) "\$GPRMC"
 		set gps(message_PGRMZ) "\$PGRMZ"
+        set gps(message_GPGGA) "\$GPGGA"
 
 		Message infos $caption(gps,attente_nmea)
 		Message log "%s %s\n" $caption(gps,ouverture_serie) $parametres(port_serie)
@@ -1027,6 +1052,7 @@ namespace eval ::gps {
 
 		set gps(message_GPRMC) "\$GPRMC"
 		set gps(message_PGRMZ) "\$PGRMZ"
+        set gps(message_GPGGA) "\$GPGGA"
 
 		Message infos $caption(gps,attente_nmea)
 		Message consolog "%s %s\n" $caption(gps,ouverture_serie) $parametres(port_serie)
@@ -1436,8 +1462,11 @@ namespace eval ::gps {
 					AffichagePosition $ligne
 				}
 				if {[string compare $entete_gps $gps(message_PGRMZ)] == 0} {
-					AffichageAltitude $ligne
+					AffichageAltitudePGRMZ $ligne
 				}
+                if {[string compare $entete_gps $gps(message_GPGGA)] == 0} {
+                    AffichageAltitudeGPGGA $ligne
+                }
 				if {[string index $entete_gps 0] == "\$"} {
 					Message infos $entete_gps
 				}
