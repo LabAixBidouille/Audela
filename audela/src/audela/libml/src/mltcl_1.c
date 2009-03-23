@@ -2422,6 +2422,7 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
 				y11=lignes[k1].y1;
 				x21=lignes[k1].x2;
 				y21=lignes[k1].y2;
+				bb=ba=0;
 				for (k2=k1+1;k2<=kfins[k];k2++) {
 					if ((lignes[k2].comment!=0)||(lignes[k2].typesatellite!=2)) {
 						continue;
