@@ -1110,7 +1110,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 		k3=0;k5=0;
 		for (kkk=0;kkk<(nb_ss_image1-kk)*(nb_ss_image2-kk);kkk++) {	
 			//gestion des bord du chapeau haut de forme = fausse détections
-			yy1=0, yy2=0, xx1=0, xx2=0, x0=0,y0=0;
+			yy1=0, yy2=0, xx1=0, xx2=0, x0=0,y0=0;dvalue=0;
 			if (kk==0) {
 				if (kkk<nb_ss_image1) {
 					yy1=y1+1;
@@ -1164,7 +1164,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 
 				/* --- recherche des paramètres du défilant --- */
 				/* -------------------------------------------- */
-				somme_value=0;somme_x=0;somme_y=0;xdebut=0;ydebut=0;xfin=0;yfin=0;largx=0;nb=0;fwhmx=0;fwhmy=0;bordh=0;bordd=0;bord=0;		
+				somme_value=0;somme_x=0;somme_y=0;sommex=0;sommey=0;xdebut=0;ydebut=0;xfin=0;yfin=0;largx=0;nb=0;fwhmx=0;fwhmy=0;bordh=0;bordd=0;bord=0;		
 				for (k1=0;k1<n1;k1++) {	
 					largxx=0;
 					for (k2=(int)(eq[0]*k1+eq[1]-8);k2<=(int)(eq[0]*k1+eq[1]+8);k2++) {
@@ -1224,8 +1224,8 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 				if (((kk==0)&&(bordd==1)&&(somme_x>=n1-20)&&(kkk%nb_ss_image1!=7))||((kk==0)&&(bordh==1)&&(somme_y>=n2-20)&&(kkk<nb_ss_image1*(nb_ss_image1-1)))) {
 					//nouvelle imagette centrée sur somme_x,somme_y
 					bord=1;
-						sommex=somme_x-n1/2;
-						sommey=somme_y-n2/2;
+					sommex=somme_x-n1/2;
+					sommey=somme_y-n2/2;
 					if (kkk%nb_ss_image1==7) {
 						sommex=0;
 					} else if (kkk>=nb_ss_image1*(nb_ss_image1-1)) {
