@@ -1224,8 +1224,13 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 				if (((kk==0)&&(bordd==1)&&(somme_x>=n1-20)&&(kkk%nb_ss_image1!=7))||((kk==0)&&(bordh==1)&&(somme_y>=n2-20)&&(kkk<nb_ss_image1*(nb_ss_image1-1)))) {
 					//nouvelle imagette centrée sur somme_x,somme_y
 					bord=1;
-					sommex=somme_x-n1/2;
-					sommey=somme_y-n2/2;
+						sommex=somme_x-n1/2;
+						sommey=somme_y-n2/2;
+					if (kkk%nb_ss_image1==7) {
+						sommex=0;
+					} else if (kkk>=nb_ss_image1*(nb_ss_image1-1)) {
+						sommey=0;
+					} 
 					if (sommex<0) sommex=n1/2;
 					if (sommex>n1) sommex=n1-1;
 					if (sommey<0) sommey=n2/2;
