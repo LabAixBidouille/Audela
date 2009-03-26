@@ -1080,7 +1080,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 
 	tt_morphomath_1(pseries);	
 	//pour visualiser le tophat 
-	tt_imasaver(p_out,"D:/tophat.fit",16);	
+	//tt_imasaver(p_out,"D:/tophat.fit",16);	
 
 	/* --- lit les parametres astrometriques de l'image ---*/
 	valid_ast=1;
@@ -1136,7 +1136,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					}
 				}
 			}
-			tt_imasaver(p_tmp3,"D:/gtopetite.fit",16);
+			//tt_imasaver(p_tmp3,"D:/gtopetite.fit",16);
 			tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
 			
 			//recupère les coordonnées de la droite détectée y=a0*x+b0 y=eq[0]*x+eq[1] et eq[2]=0, si la droite est verticale x=eq[2] et eq[0]=eq[1]=0
@@ -1151,13 +1151,14 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					for (k1=0;k1<n1;k1++) {
 						for (k2=0;k2<n2;k2++) {
 							if ((k1<=xx1)||(k1>=n1-xx2)||(k2>=n2-yy2)||(k2<=yy1)) {
-								p_tmp3->p[n1*k1+255-k2]=0;
+								p_tmp3->p[n1*k1+(n2-1)-k2]=0;
 							} else {
 								dvalue=(double)p_out->p[naxis1*(k2+k3*n2+kk*n2/2)+k1+k5+kk*n1/2];
-								p_tmp3->p[n1*k1+255-k2]=(TT_PTYPE)(dvalue); //rotation de +90° de l'imagette (sens trigo)
+								p_tmp3->p[n1*k1+(n2-1)-k2]=(TT_PTYPE)(dvalue); //rotation de +90° de l'imagette (sens trigo)
 							}
 						}
 					}
+					//tt_imasaver(p_tmp3,"D:/gtopetite_rot.fit",16);
 					tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
 					rotation=1;
 				}
@@ -1245,7 +1246,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 							}
 						}
 					}
-					tt_imasaver(p_tmp3,"D:/gtopetite.fit",16);
+					//tt_imasaver(p_tmp3,"D:/gtopetite.fit",16);
 					tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
 
 					somme_value=0;somme_x=0;somme_y=0;		
@@ -1313,14 +1314,14 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						if (eq[0]!=0.0) {
 							dvalue=eq[0];
 							eq[0]=-1.0/eq[0];
-							eq[1]=255+eq[1]/dvalue;
+							eq[1]=n2+eq[1]/dvalue;
 						} else {
-							eq[2]=255-eq[1];
+							eq[2]=n2-eq[1];
 							eq[0]=eq[1]=0;						
 						}
 						dvalue=somme_x;
 						somme_x=somme_y;
-						somme_y=255-dvalue;
+						somme_y=n2-dvalue;
 					}
 					if (bord==1) {
 						if (eq[2]==0) {
@@ -1347,7 +1348,35 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	/* ----------------------------------------------------- */
 					xdebut=0;ydebut=0;xfin=0;yfin=0;
 					//  seuil pour recherche des extrémitées de la traînées
-					seuil_nbnul= 30*(4*largx);
+					/* --- recherche du maximun local --- */
+					x=(int)somme_x;
+					y=(int)somme_y;
+					somme_value=p_in->p[y*naxis1+x];
+					while ((x<naxis1)&&(y<naxis2)&&(x>0)&&(y>0)) { 
+						i=0;
+						for (k1=-1;k1<=2;k1++) {
+							for (k2=-1;k2<=2;k2++) {
+								if ((y+k1<y1)||(y+k1>=naxis2-y1)||(x+k2<x1)||(x+k2>=naxis1-x1)) continue;
+								if (p_in->p[(y+k1)*naxis1+x+k2]>somme_value) {
+									somme_value=p_in->p[(y+k1)*naxis1+x+k2];
+									x=x+k2;
+									y=y+k1;
+									i=1;
+								}
+							}
+						}
+						if (i==0) break;
+					}
+					somme_x=x;
+					somme_y=y;
+					dvalue=p_in->p[naxis1*(int)somme_y+(int)somme_x];
+					if (dvalue>pseries->bgmean+20*pseries->bgsigma) {
+						seuil_nbnul= 6*(4*largx);
+					} else if (dvalue>pseries->bgmean+15*pseries->bgsigma) {
+						seuil_nbnul= 20*(4*largx);
+					} else {
+						seuil_nbnul= 30*(4*largx);
+					}
 
 					nbnul=0;nb=0;
 					if ((eq[0]<=1.0)&&(eq[0]>=-1.0)) {//droites faibles pentes 
@@ -2016,19 +2045,19 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	for (y=y1+1;y<naxis2-y1-1;y++) {
 		for (x=x1+1;x<naxis1-x1-1;x++) {
 			if (p_out->p[y*naxis1+x]<=0) {	continue;}
-			
-			/* --- recherche du maximun local --- */
 			x0=x;
 			y0=y;
+			/* --- recherche du maximun local --- */	
 			somme_value=p_in->p[y*naxis1+x];
-			while ((x<naxis1)&&(y<naxis2)&&(x>0)&&(y>0)) { 
+			while ((x0<naxis1)&&(y0<naxis2)&&(x0>0)&&(y0>0)) { 
 				k=0;
 				for (k1=-1;k1<=2;k1++) {
 					for (k2=-1;k2<=2;k2++) {
-						if (p_in->p[(y+k1)*naxis1+x+k2]>somme_value) {
-							somme_value=p_in->p[(y+k1)*naxis1+x+k2];
-							x0=x+k2;
-							y0=y+k1;
+						if ((y0+k1<y1+1)||(y0+k1>=naxis2-y1-1)||(x0+k2<x1+1)||(x0+k2>=naxis1-x1-1)) continue;
+						if (p_in->p[(y0+k1)*naxis1+x0+k2]>somme_value) {
+							somme_value=p_in->p[(y0+k1)*naxis1+x0+k2];
+							x0=x0+k2;
+							y0=y0+k1;
 							k=1;
 						}
 					}
@@ -2036,7 +2065,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 				if (k==0) break;
 			}
 			/* ---  elimine les cosmiques  --- */
-			if (((p_in->p[naxis1*(int)y0+(int)x0-1]<=pseries->bgmean+6*pseries->bgsigma)&&(p_in->p[naxis1*(int)y0+(int)x0+1]<=pseries->bgmean+6*pseries->bgsigma))||((p_in->p[naxis1*((int)y0-1)+(int)x0]<=pseries->bgmean+6*pseries->bgsigma)&&(p_in->p[naxis1*((int)y0+1)+(int)x0]<=pseries->bgmean+6*pseries->bgsigma))) {
+			if (((p_in->p[naxis1*(int)y0+(int)x0-1]<=pseries->bgmean+5*pseries->bgsigma)&&(p_in->p[naxis1*(int)y0+(int)x0+1]<=pseries->bgmean+5*pseries->bgsigma))||((p_in->p[naxis1*((int)y0-1)+(int)x0]<=pseries->bgmean+5*pseries->bgsigma)&&(p_in->p[naxis1*((int)y0+1)+(int)x0]<=pseries->bgmean+5*pseries->bgsigma))) {
 				if (p_in->p[naxis1*(int)y0+(int)x0]>pseries->bgmean+10*pseries->bgsigma) {	break; 	}
 			}
 
