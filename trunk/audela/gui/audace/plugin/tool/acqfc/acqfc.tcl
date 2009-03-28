@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.83 2009-02-07 10:59:07 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.84 2009-03-28 10:27:24 michelpujol Exp $
 #
 
 #==============================================================
@@ -10,7 +10,7 @@
 #==============================================================
 
 namespace eval ::acqfc {
-   package provide acqfc 4.0
+   package provide acqfc 4.1
    package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
@@ -744,7 +744,7 @@ proc ::acqfc::testParametreAcquisition { visuNo } {
                   set integre non
                }
                #--- Envoyer un warning si l'index n'est pas a 1
-               if { $panneau(acqfc,$visuNo,index) != "1" } {
+               if { $panneau(acqfc,$visuNo,index) != "1" && $panneau(acqfc,$visuNo,verifier_index_depart) == 1 } {
                   set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
                      -message $caption(acqfc,indpasun)]
                   if { $confirmation == "no" } {
@@ -1297,6 +1297,20 @@ proc ::acqfc::Go { visuNo } {
          #--- j'attends la fin de l'acquisition (voir ::acqfc::callbackAcquisition)
          vwait panneau(acqfc,$visuNo,acquisitionState)
 
+         if { $panneau(acqfc,$visuNo,acquisitionState) == "error" } {
+            #--- j'interromps la boucle des acquisitions dans la thread de la camera
+            ::acqfc::stopAcquisition $visuNo
+            #--- je ferme la fenetre de décompte
+            if { $panneau(acqfc,$visuNo,dispTimeAfterId) != "" } {
+               after cancel $panneau(acqfc,$visuNo,dispTimeAfterId)
+               set panneau(acqfc,$visuNo,dispTimeAfterId) ""
+            }
+            #--- j'affiche le message d'erreur
+            tk_messageBox -message $::caption(acqfc,acquisitionError) -title $::caption(acqfc,pb) -icon error
+            break
+         }
+
+
          #--- Chargement de l'image precedente (si telecharge_mode = 3 et si mode = serie, continu, continu 1 ou continu 2)
          if { $loadMode == "3" && $panneau(acqfc,$visuNo,mode) >= "1" && $panneau(acqfc,$visuNo,mode) <= "5" } {
             after 10 ::acqfc::loadLastImage $visuNo $camNo
@@ -1337,7 +1351,7 @@ proc ::acqfc::Go { visuNo } {
                   set nom1 "$nom"
                   append nom1 $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)
                   set sauvegardeValidee "1"
-                  if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                  if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" &&  $panneau(acqfc,$visuNo,verifier_ecraser_fichier) == 1 } {
                      #--- Dans ce cas, le fichier existe deja...
                      set lastFile [ ::acqfc::dernierFichier $visuNo ]
                      set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
@@ -1374,7 +1388,7 @@ proc ::acqfc::Go { visuNo } {
                   set nom1 "$nom"
                   append nom1 $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)
                   set sauvegardeValidee "1"
-                  if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                  if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" &&  $panneau(acqfc,$visuNo,verifier_ecraser_fichier) == 1} {
                      #--- Dans ce cas, le fichier existe deja...
                      set lastFile [ ::acqfc::dernierFichier $visuNo ]
                      set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
@@ -1407,7 +1421,7 @@ proc ::acqfc::Go { visuNo } {
                   set nom1 "$nom"
                   append nom1 $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)
                   set sauvegardeValidee "1"
-                  if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                  if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" &&  $panneau(acqfc,$visuNo,verifier_ecraser_fichier) == 1 } {
                      #--- Dans ce cas, le fichier existe deja...
                      set lastFile [ ::acqfc::dernierFichier $visuNo ]
                      set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
@@ -1467,7 +1481,7 @@ proc ::acqfc::Go { visuNo } {
                   set nom1 "$nom"
                   append nom1 $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)
                   set sauvegardeValidee "1"
-                  if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                  if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" &&  $panneau(acqfc,$visuNo,verifier_ecraser_fichier) == 1 } {
                      #--- Dans ce cas, le fichier existe deja...
                      set lastFile [ ::acqfc::dernierFichier $visuNo ]
                      set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
@@ -1678,9 +1692,8 @@ proc ::acqfc::callbackAcquisition { visuNo message args } {
          #--- ce message signale qu'une erreur est survenue dans la thread de la camera
          #--- j'affiche l'erreur dans la console
          ::console::affiche_erreur "acqfc::acq error: $args\n"
-         set ::panneau(acqfc,$visuNo,acquisitionState) "acquisitionResult"
+         set ::panneau(acqfc,$visuNo,acquisitionState) "error"
       }
-
    }
 }
 
@@ -1702,24 +1715,31 @@ proc ::acqfc::Stop { visuNo } {
       #--- J'arrete la capture de l'image
       ::camera::stopAcquisition [::confVisu::getCamItem $visuNo]
    } else {
-       if { [cam$panneau(acqfc,$visuNo,camNo) timer -1 ] > 5 } {
-          #--- s'il reste plus de 5 seconde , je demande si on interromp immediatement
-          set choix [ tk_messageBox -title $caption(acqfc,serie) -type yesno -icon info \
-              -message $caption(acqfc,arret_serie) \
-          ]
-         if { $choix == "no" } {
-            #--- Je positionne l'indicateur d'enregistrement d'image interrompue
-            set panneau(acqfc,$visuNo,sauve_img_interrompue) "1"
-            #--- J'arrete la capture de l'image
-            ::camera::stopAcquisition [::confVisu::getCamItem $visuNo]
+      if { $panneau(acqfc,$visuNo,enregistrer_acquisiton_interrompue) == 1 } {
+         if { [cam$panneau(acqfc,$visuNo,camNo) timer -1 ] > 10 } {
+             #--- s'il reste plus de 10 seconde , je demande si on interromp la pose courante
+             set choix [ tk_messageBox -title $caption(acqfc,serie) -type yesno -icon info \
+                 -message $caption(acqfc,arret_serie) \
+             ]
+            if { $choix == "no" } {
+               #--- Je positionne l'indicateur d'enregistrement d'image interrompue
+               set panneau(acqfc,$visuNo,sauve_img_interrompue) "1"
+               #--- J'arrete l'acquisition courante
+               ::camera::stopAcquisition [::confVisu::getCamItem $visuNo]
+            } else {
+               #--- Je positionne l'indicateur d'enregistrement d'image interrompue
+               set panneau(acqfc,$visuNo,sauve_img_interrompue) "0"
+            }
          } else {
-            #--- Je positionne l'indicateur d'enregistrement d'image interrompue
+            #--- s'il reste moins de 10 secondes, je ne pose pas de question a l'utilisateur
+            #--- la serie s'arretera a la fin de l'image en cours
             set panneau(acqfc,$visuNo,sauve_img_interrompue) "0"
          }
       } else {
-         #--- s'il reste moins de 5 seocndes, je ne pose pas de question a l'utilisateur
-         #--- la serie s'arretera a la fin de l'image en cours
-         set panneau(acqfc,$visuNo,sauve_img_interrompue) "0"
+         #--- Je positionne l'indicateur d'enregistrement d'image interrompue
+         set panneau(acqfc,$visuNo,sauve_img_interrompue) "1"
+         #--- J'arrete l'acquisition courante
+         ::camera::stopAcquisition [::confVisu::getCamItem $visuNo]
       }
    }
 }
@@ -1979,7 +1999,7 @@ proc ::acqfc::SauveUneImage { visuNo } {
    #--- Verifier que le nom du fichier n'existe pas
    set nom1 "$nom"
    append nom1 $panneau(acqfc,$visuNo,extension)
-   if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+   if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" &&  $panneau(acqfc,$visuNo,verifier_ecraser_fichier) == 1 } {
       #--- Dans ce cas, le fichier existe deja...
       set lastFile [ ::acqfc::dernierFichier $visuNo ]
       set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
