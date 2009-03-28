@@ -40,6 +40,7 @@ AudeLA est capable de piloter les cameras CCD suivantes :
 - Hi-SIS 44,
 - Hi-SIS 48,
 - Kitty 2,
+- QSI (tous les modeles),
 - SBIG (tous les modeles),
 - SCR1300XTC,
 - MX516,
@@ -55,6 +56,7 @@ AudeLA est capable de piloter les montures suivantes :
 - Celestron,
 - Delta Tau,
 - DFM,
+- EQMOD,
 - Etel,
 - LX200 ou n'importe quelle monture repondant au protocole LX200,
 - Ouranos (codeurs absolus),
@@ -69,7 +71,8 @@ AudeLA est capable de piloter les interfaces de communication suivantes :
 - Port serie,
 - QuickAudine (interface USB pour cameras Audine),
 - QuickRemote (interface USB pour APN, WebCam longue pose, raquette de telescope,
-  mise au point, etc.).
+  mise au point, etc.),
+- Velleman K8056.
 
 AudeLA est capable de piloter les equipements suivants :
 - Focaliseur AudeCom,
