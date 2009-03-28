@@ -1,0 +1,63 @@
+#
+# Fichier :qsi.cap
+# Mise a jour $Id: qsi.cap,v 1.1 2009-03-28 14:34:53 michelpujol Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(qsi,camera)                       "QSI"
+
+set caption(qsi,miroir_x)                     "Horizontal Mirror"
+set caption(qsi,miroir_y)                     "Vertical Mirror"
+
+set caption(qsi,port_camera)                  "QSI driver"
+set caption(qsi,2points)                      ":"
+
+set caption(qsi,refroidissement)              "Cooling to Temperature"
+set caption(qsi,deg_c)                        "°C"
+set caption(qsi,refroidissement_1)            ""
+set caption(qsi,puissance_peltier_--)         "Peltier Stage Power: --"
+set caption(qsi,puissance_peltier)            "Peltier Stage Power: "
+set caption(qsi,ccdTemp)                      "CCD Temperature:"
+set caption(qsi,setTemp)                      "set Temperature"
+set caption(qsi,filters)                      "Filters"
+
+set caption(qsi,obtu_ferme)                   "Ferme"
+set caption(qsi,obtu_synchro)                 "Synchro"
+
+set caption(qsi,titre_site_web)               "Reference Web Site:"
+set caption(qsi,site_web_ref)                 "http://www.qsimaging.com"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
