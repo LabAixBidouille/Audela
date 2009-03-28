@@ -1,6 +1,6 @@
 #
 # Fichier : acqfcSetup.cap
-# Mise a jour $Id: acqfcSetup.cap,v 1.11 2009-01-10 10:39:34 robertdelmas Exp $
+# Mise a jour $Id: acqfcSetup.cap,v 1.12 2009-03-28 10:27:26 michelpujol Exp $
 #
 
 #=========================================================================
@@ -16,6 +16,9 @@ set caption(acqfcSetup,en-tete_fits)              "FITS Keywords"
 set caption(acqfcSetup,texte1)                    "Display messages on the Terminal:"
 set caption(acqfcSetup,texte2)                    "Record dates in the log file:"
 set caption(acqfcSetup,texte3)                    "Aural warning when the series ends:"
+set caption(acqfcSetup,texte4)                    "Ask permission to overwrite existing file :"
+set caption(acqfcSetup,texte5)                    "Alert starting index is different than 1"
+   set caption(acqfcSetup,texte6)                 "Save cancelled acquisition : "
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -25,6 +28,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfcSetup,texte1)                 "Afficher les messages sur la Console :"
    set caption(acqfcSetup,texte2)                 "Enregistrer les dates dans le fichier log :"
    set caption(acqfcSetup,texte3)                 "Alarme sonore de fin de série :"
+   set caption(acqfcSetup,texte4)                 "Demander l'autorisation de remplacer un fichier existant :"
+   set caption(acqfcSetup,texte5)                 "Signaler que l'index de départ est différent de 1 :"
+   set caption(acqfcSetup,texte6)                 "Enregistrer une acquisition interrompue : "
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {

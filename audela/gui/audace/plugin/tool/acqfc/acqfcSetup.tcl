@@ -2,7 +2,7 @@
 # Fichier : acqfcSetup.tcl
 # Description : Configuration de certains parametres de l'outil Acquisition
 # Auteur : Robert DELMAS
-# Mise a jour $Id: acqfcSetup.tcl,v 1.15 2009-01-10 10:43:21 robertdelmas Exp $
+# Mise a jour $Id: acqfcSetup.tcl,v 1.16 2009-03-28 10:27:27 michelpujol Exp $
 #
 
 namespace eval ::acqfcSetup {
@@ -29,6 +29,10 @@ namespace eval ::acqfcSetup {
       if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,messages) ] }         { set ::acqfc::parametres(acqfc,$visuNo,messages)         "1" }
       if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,save_file_log) ] }    { set ::acqfc::parametres(acqfc,$visuNo,save_file_log)    "1" }
       if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,alarme_fin_serie) ] } { set ::acqfc::parametres(acqfc,$visuNo,alarme_fin_serie) "1" }
+      if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,verifier_ecraser_fichier) ] } { set ::acqfc::parametres(acqfc,$visuNo,verifier_ecraser_fichier) "1" }
+      if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,verifier_index_depart) ] } { set ::acqfc::parametres(acqfc,$visuNo,verifier_index_depart) "1" }
+      if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,enregistrer_acquisiton_interrompue) ] } { set ::acqfc::parametres(acqfc,$visuNo,enregistrer_acquisiton_interrompue) "1" }
+
    }
 
    #
@@ -43,6 +47,9 @@ namespace eval ::acqfcSetup {
       set panneau(acqfc,$visuNo,messages)         $::acqfc::parametres(acqfc,$visuNo,messages)
       set panneau(acqfc,$visuNo,save_file_log)    $::acqfc::parametres(acqfc,$visuNo,save_file_log)
       set panneau(acqfc,$visuNo,alarme_fin_serie) $::acqfc::parametres(acqfc,$visuNo,alarme_fin_serie)
+      set panneau(acqfc,$visuNo,verifier_ecraser_fichier) $::acqfc::parametres(acqfc,$visuNo,verifier_ecraser_fichier)
+      set panneau(acqfc,$visuNo,verifier_index_depart)    $::acqfc::parametres(acqfc,$visuNo,verifier_index_depart)
+      set panneau(acqfc,$visuNo,enregistrer_acquisiton_interrompue)    $::acqfc::parametres(acqfc,$visuNo,enregistrer_acquisiton_interrompue)
    }
 
    #
@@ -57,6 +64,9 @@ namespace eval ::acqfcSetup {
       set ::acqfc::parametres(acqfc,$visuNo,messages)         $panneau(acqfc,$visuNo,messages)
       set ::acqfc::parametres(acqfc,$visuNo,save_file_log)    $panneau(acqfc,$visuNo,save_file_log)
       set ::acqfc::parametres(acqfc,$visuNo,alarme_fin_serie) $panneau(acqfc,$visuNo,alarme_fin_serie)
+      set ::acqfc::parametres(acqfc,$visuNo,verifier_ecraser_fichier) $panneau(acqfc,$visuNo,verifier_ecraser_fichier)
+      set ::acqfc::parametres(acqfc,$visuNo,verifier_index_depart)    $panneau(acqfc,$visuNo,verifier_index_depart)
+      set ::acqfc::parametres(acqfc,$visuNo,enregistrer_acquisiton_interrompue)    $panneau(acqfc,$visuNo,enregistrer_acquisiton_interrompue)
    }
 
    #
@@ -135,7 +145,7 @@ namespace eval ::acqfcSetup {
          #--- Bouton du configurateur d'en-tete FITS
          button $panneau(acqfc,$visuNo,acqfcSetup).frame3.but -text $caption(acqfcSetup,en-tete_fits) \
             -command "::keyword::run $visuNo"
-         pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.but -side top -fill x
+         pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.but -side top -fill x -padx 10
 
          #--- Frame pour le commentaire 1
          frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame4 -borderwidth 0
@@ -193,6 +203,63 @@ namespace eval ::acqfcSetup {
             pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame6.frame12 -side right -fill both -expand 1
 
          pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame6 -side top -fill both -expand 1
+
+         #--- Frame pour le commentaire 4 : verifier_ecraser_fichier
+         frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame7 -borderwidth 0
+
+            #--- Cree le label pour le commentaire 4
+            frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame7.frame11 -borderwidth 0
+               label $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame7.frame11.lab3 -text "$caption(acqfcSetup,texte4)"
+               pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame7.frame11.lab3 -side left -fill both \
+                  -expand 0 -padx 5 -pady 5
+            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame7.frame11 -side left -fill both -expand 1
+
+            #--- Cree le checkbutton pour le commentaire 3
+            frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame7.frame12 -borderwidth 0
+               checkbutton $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame7.frame12.check3 -highlightthickness 0 \
+                  -variable panneau(acqfc,$visuNo,verifier_ecraser_fichier)
+               pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame7.frame12.check3 -side right -padx 5 -pady 0
+            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame7.frame12 -side right -fill both -expand 1
+
+         pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame7 -side top -fill both -expand 1
+
+         #--- Frame pour le commentaire 5 : verifier_index_depart
+         frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame8 -borderwidth 0
+
+            #--- Cree le label pour le commentaire 5
+            frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame8.frame11 -borderwidth 0
+               label $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame8.frame11.lab3 -text "$caption(acqfcSetup,texte5)"
+               pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame8.frame11.lab3 -side left -fill both \
+                  -expand 0 -padx 5 -pady 5
+            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame8.frame11 -side left -fill both -expand 1
+
+            #--- Cree le checkbutton pour le commentaire 5
+            frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame8.frame12 -borderwidth 0
+               checkbutton $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame8.frame12.check3 -highlightthickness 0 \
+                  -variable panneau(acqfc,$visuNo,verifier_index_depart)
+               pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame8.frame12.check3 -side right -padx 5 -pady 0
+            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame8.frame12 -side right -fill both -expand 1
+
+         pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame8 -side top -fill both -expand 1
+
+         #--- Frame pour le commentaire 6 : enregistrer_acquisiton_interrompue
+         frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame9 -borderwidth 0
+
+            #--- Cree le label pour le commentaire 6
+            frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame9.frame11 -borderwidth 0
+               label $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame9.frame11.lab3 -text "$caption(acqfcSetup,texte6)"
+               pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame9.frame11.lab3 -side left -fill both \
+                  -expand 0 -padx 5 -pady 5
+            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame9.frame11 -side left -fill both -expand 1
+
+            #--- Cree le checkbutton pour le commentaire 6
+            frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame9.frame12 -borderwidth 0
+               checkbutton $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame9.frame12.check3 -highlightthickness 0 \
+                  -variable panneau(acqfc,$visuNo,enregistrer_acquisiton_interrompue)
+               pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame9.frame12.check3 -side right -padx 5 -pady 0
+            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame9.frame12 -side right -fill both -expand 1
+
+         pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame9 -side top -fill both -expand 1
 
       pack $panneau(acqfc,$visuNo,acqfcSetup).frame3 -side top -fill both -expand 1
    }
