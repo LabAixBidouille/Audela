@@ -2,7 +2,7 @@
 # Fichier : eqmod.tcl
 # Description : Configuration de la monture EQMOD
 # Auteur : Robert DELMAS
-# Mise a jour $Id: eqmod.tcl,v 1.3 2009-03-16 22:42:18 alainklotz Exp $
+# Mise a jour $Id: eqmod.tcl,v 1.4 2009-03-28 10:11:44 robertdelmas Exp $
 #
 
 namespace eval ::eqmod {
@@ -89,9 +89,9 @@ proc ::eqmod::initPlugin { } {
    set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
 
    #--- Initialise les variables de la monture EQMOD
-   if { ! [ info exists conf(eqmod,port) ] } { set conf(eqmod,port) [ lindex $list_connexion 0 ] }
-   if { ! [ info exists conf(eqmod,tube_e_w) ] } { set conf(eqmod,tube_e_w) -west }
-   if { ! [ info exists conf(eqmod,startmotor) ] } { set conf(eqmod,startmotor) 1 }
+   if { ! [ info exists conf(eqmod,port) ] }       { set conf(eqmod,port)       [ lindex $list_connexion 0 ] }
+   if { ! [ info exists conf(eqmod,tube_e_w) ] }   { set conf(eqmod,tube_e_w)   "-west" }
+   if { ! [ info exists conf(eqmod,startmotor) ] } { set conf(eqmod,startmotor) "1" }
 }
 
 #
@@ -100,26 +100,21 @@ proc ::eqmod::initPlugin { } {
 #
 proc ::eqmod::confToWidget { } {
    variable private
-   global caption conf
+   global conf
 
    #--- Recupere la configuration de la monture EQMOD dans le tableau private(...)
-#catch {set private(port)     $conf(eqmod,port)}
-#catch {set private(tube_e_w) $conf(eqmod,tube_e_w)}
-#catch {set private(raquette) $conf(raquette)}
-
    foreach varname [ list raquette eqmod,port eqmod,tube_e_w eqmod,startmotor ] {
       if { [ catch { set private($varname) [ set conf($varname) ] } m ] } {
          ::console::affiche_resultat "$varname: $m"
          switch $varname {
-            eqmod,port { set private($varname) "COM1" }
-            eqmod,tube_e_w { set private($varname) "-west" }
-            raquette { set private($varname) "0" }
+            eqmod,port       { set private($varname) "COM1" }
+            eqmod,tube_e_w   { set private($varname) "-west" }
             eqmod,startmotor { set private($varname) "1" }
+            raquette         { set private($varname) "0" }
          }
          ::console::affiche_resultat " valeur par defaut: $private($varname)\n"
       }
    }
-
 }
 
 #
@@ -128,13 +123,13 @@ proc ::eqmod::confToWidget { } {
 #
 proc ::eqmod::widgetToConf { } {
    variable private
-   global caption conf
+   global conf
 
    #--- Memorise la configuration de la monture EQMOD dans le tableau conf(eqmod,...)
-   set conf(eqmod,port) $private(eqmod,port)
-   set conf(raquette)   $private(raquette)
+   set conf(eqmod,port)       $private(eqmod,port)
+   set conf(raquette)         $private(raquette)
    set conf(eqmod,tube_e_w)   $private(eqmod,tube_e_w)
-   set conf(eqmod,startmotor)   $private(eqmod,startmotor)
+   set conf(eqmod,startmotor) $private(eqmod,startmotor)
 }
 
 #
@@ -221,23 +216,18 @@ proc ::eqmod::fillConfigPage { frm } {
       -values $list_connexion
    pack $frm.port -in $frm.frame6 -anchor center -side left -padx 10 -pady 10
 
-   #--- Le bouton de commande maj position du EQMOD
-   radiobutton $frm.tube_West -text "Tube a l'ouest" \
+   #--- Les radiobuttons de commande maj position du EQMOD
+   radiobutton $frm.tube_West -text "$caption(eqmod,tube_ouest)" \
       -highlightthickness 0 -variable ::eqmod::private(eqmod,tube_e_w) -value "-west"
    pack $frm.tube_West -in $frm.frame2 -anchor center -side left -padx 10 -pady 10
-   
-   radiobutton $frm.tube_East -text "Tube a l'est" \
+
+   radiobutton $frm.tube_East -text "$caption(eqmod,tube_est)" \
       -highlightthickness 0 -variable ::eqmod::private(eqmod,tube_e_w) -value "-east"
    pack $frm.tube_East -in $frm.frame2 -anchor center -side right -padx 10 -pady 10
 
    #--- Le checkbutton pour le demarrage du suivi sideral a l'init
-   checkbutton $frm.startmotor -text "Motor On" -highlightthickness 0 -variable ::eqmod::private(eqmod,startmotor)
+   checkbutton $frm.startmotor -text "$caption(eqmod,moteur_on)" -highlightthickness 0 -variable ::eqmod::private(eqmod,startmotor)
    pack $frm.startmotor -in $frm.frame2b -anchor center -side left -padx 10 -pady 10
-
-#button $frm.majpara -text "$caption(eqmod,maj_eqmod)" -relief raised -command {
-#     tel$::eqmod::private(telNo) home $audace(posobs,observateur,gps)
-#  }
-#   pack $frm.majpara -in $frm.frame2 -anchor center -side top -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
 
    #--- Le checkbutton pour la visibilite de la raquette a l'ecran
    checkbutton $frm.raquette -text "$caption(eqmod,raquette_tel)" -highlightthickness 0 -variable ::eqmod::private(raquette)
@@ -248,21 +238,20 @@ proc ::eqmod::fillConfigPage { frm } {
    pack $frm.nom_raquette -in $frm.frame3 -anchor center -side left -padx 0 -pady 10
 
    #--- Affichage des coordonnees
-   label $frm.lab_coordHA -text "Angle horaire = N/A"
+   label $frm.lab_coordHA -text "$caption(eqmod,angle_horaire) $caption(eqmod,N/A)"
    pack $frm.lab_coordHA -in $frm.frame4 -anchor center -side left -padx 10 -pady 10
 
-   label $frm.lab_coordDEC -text "Declinaison = N/A"
+   label $frm.lab_coordDEC -text "$caption(eqmod,DEC) $caption(eqmod,N/A)"
    pack $frm.lab_coordDEC -in $frm.frame4 -anchor center -side right -padx 10 -pady 10
 
-   label $frm.lab_coordRA -text "Asc. droite = N/A" 
+   label $frm.lab_coordRA -text "$caption(eqmod,AD) $caption(eqmod,N/A)"
    pack $frm.lab_coordRA -in $frm.frame4 -anchor center -side top -padx 10 -pady 10
 
-   label $frm.lab_MotorRA -text "Pos RA = N/A"
+   label $frm.lab_MotorRA -text "$caption(eqmod,position_AD) $caption(eqmod,N/A)"
    pack $frm.lab_MotorRA -in $frm.frame4b -anchor center -side left -padx 10 -pady 10
 
-   label $frm.lab_MotorDEC -text "Pos DEC = N/A"
+   label $frm.lab_MotorDEC -text "$caption(eqmod,position_DEC) $caption(eqmod,N/A)"
    pack $frm.lab_MotorDEC -in $frm.frame4b -anchor center -side right -padx 10 -pady 10
-
 
    #--- Site web officiel du EQMOD
    label $frm.lab103 -text "$caption(eqmod,titre_site_web)"
@@ -271,9 +260,6 @@ proc ::eqmod::fillConfigPage { frm } {
    set labelName [ ::confTel::createUrlLabel $frm.frame5 "$caption(eqmod,site_eqmod)" \
       "$caption(eqmod,site_eqmod)" ]
    pack $labelName -side top -fill x -pady 2
-
-   #--- Gestion du bouton actif/inactif
-   ::eqmod::confEQMOD
 
    #--- Affichage des positions moteurs si le telescope est deja operationnel
    ::eqmod::dispCoord
@@ -293,7 +279,7 @@ proc ::eqmod::configureMonture { } {
          set telNo [ tel::create eqmod $conf(eqmod,port) $::eqmod::private(eqmod,tube_e_w) -startmotor ]
       } else {
          set telNo [ tel::create eqmod $conf(eqmod,port) $::eqmod::private(eqmod,tube_e_w) ]
-}
+      }
       #--- J'affiche un message d'information dans la Console
       ::console::affiche_entete "$caption(eqmod,port_eqmod)\
          $caption(eqmod,2points) $conf(eqmod,port)\n"
@@ -302,9 +288,7 @@ proc ::eqmod::configureMonture { } {
       set linkNo [ ::confLink::create $conf(eqmod,port) "tel$telNo" "control" [ tel$telNo product ] ]
       #--- Je change de variable
       set private(telNo) $telNo
-      #--- Gestion du bouton actif/inactif
-      ::eqmod::confEQMOD
-
+      #--- Affichage des positions moteurs
       ::eqmod::dispCoord
    } ]
 
@@ -328,9 +312,6 @@ proc ::eqmod::stop { } {
       return
    }
 
-   #--- Gestion du bouton actif/inactif
-   ::eqmod::confEQMODInactif
-
    #--- Je memorise le port
    set telPort [ tel$private(telNo) port ]
    #--- J'arrete la monture
@@ -342,44 +323,27 @@ proc ::eqmod::stop { } {
 }
 
 #
-# confEQMOD
-# Permet d'activer ou de d�sactiver le bouton
+# dispCoord
+#    Affichage des positions moteurs
 #
-proc ::eqmod::confEQMOD { } {
+proc ::eqmod::dispCoord { } {
    variable private
+   global caption
 
-   if { [ info exists private(frm) ] } {
-      set frm $private(frm)
-      if { [ winfo exists $frm ] } {
-         if { [ ::eqmod::isReady ] == 1 } {
-            if { [ ::confTel::getPluginProperty hasUpdateDate ] == "1" } {
-               #--- Bouton Mise a jour du lieu actif
-#$frm.majpara configure -state normal
-            }
-         } else {
-            #--- Bouton Mise a jour du lieu inactif
-#$frm.majpara configure -state disabled
-         }
-      }
+   if { ! [ winfo exists $private(frm) ] || ! [ ::eqmod::isReady ] } {
+      return
    }
-}
+   set radec [ tel$private(telNo) radec coord ]
+   set hadec [ tel$private(telNo) hadec coord ]
 
-#
-# confEQMODInactif
-#    Permet de desactiver le bouton a l'arret de la monture
-#
-proc ::eqmod::confEQMODInactif { } {
-   variable private
+   $private(frm).lab_coordHA configure -text "$caption(eqmod,angle_horaire) [ lindex $hadec 0 ]"
+   $private(frm).lab_coordRA configure -text "$caption(eqmod,AD) [ lindex $radec 0 ]"
+   $private(frm).lab_coordDEC configure -text "$caption(eqmod,DEC) [ lindex $radec 1 ]"
 
-   if { [ info exists private(frm) ] } {
-      set frm $private(frm)
-      if { [ winfo exists $frm ] } {
-         if { [ ::eqmod::isReady ] == 1 } {
-            #--- Bouton Mise a jour du lieu inactif
-#$frm.majpara configure -state disabled
-         }
-      }
-   }
+   $private(frm).lab_MotorRA configure -text "$caption(eqmod,position_AD) [ tel$private(telNo) putread :j1 ]"
+   $private(frm).lab_MotorDEC configure -text "$caption(eqmod,position_DEC) [ tel$private(telNo) putread :j2 ]"
+
+   after 500 ::eqmod::dispCoord
 }
 
 #
@@ -433,26 +397,8 @@ proc ::eqmod::getPluginProperty { propertyName } {
       hasModel                { return 0 }
       hasPark                 { return 1 }
       hasUnpark               { return 1 }
-      hasUpdateDate           { return 1 }
+      hasUpdateDate           { return 0 }
       backlash                { return 0 }
    }
-}
-
-proc ::eqmod::dispCoord { } {
-   variable private
-   if { ! [ winfo exists $private(frm) ] || ! [ ::eqmod::isReady ] } {
-      return
-   }
-   set radec [ tel$private(telNo) radec coord ]
-   set hadec [ tel$private(telNo) hadec coord ]
-
-   $private(frm).lab_coordHA configure -text "AH = [ lindex $hadec 0 ]"
-   $private(frm).lab_coordRA configure -text "AD = [ lindex $radec 0 ]"
-   $private(frm).lab_coordDEC configure -text "DEC = [ lindex $radec 1 ]"
-
-   $private(frm).lab_MotorRA configure -text "Pos RA = [ tel$private(telNo) putread :j1 ]"
-   $private(frm).lab_MotorDEC configure -text "Pos DEC = [ tel$private(telNo) putread :j2 ]"
-
-   after 500 ::eqmod::dispCoord
 }
 
