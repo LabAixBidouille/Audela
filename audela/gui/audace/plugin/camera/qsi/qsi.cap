@@ -1,6 +1,6 @@
 #
 # Fichier :qsi.cap
-# Mise a jour $Id: qsi.cap,v 1.1 2009-03-28 14:34:53 michelpujol Exp $
+# Mise a jour $Id: qsi.cap,v 1.2 2009-03-28 15:19:48 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -15,21 +15,20 @@ set caption(qsi,camera)                       "QSI"
 
 set caption(qsi,miroir_x)                     "Horizontal Mirror"
 set caption(qsi,miroir_y)                     "Vertical Mirror"
-
-set caption(qsi,port_camera)                  "QSI driver"
-set caption(qsi,2points)                      ":"
-
 set caption(qsi,refroidissement)              "Cooling to Temperature"
 set caption(qsi,deg_c)                        "°C"
 set caption(qsi,refroidissement_1)            ""
 set caption(qsi,puissance_peltier_--)         "Peltier Stage Power: --"
 set caption(qsi,puissance_peltier)            "Peltier Stage Power: "
 set caption(qsi,ccdTemp)                      "CCD Temperature:"
-set caption(qsi,setTemp)                      "set Temperature"
-set caption(qsi,filters)                      "Filters"
+set caption(qsi,setTemp)                      "Set Temperature:"
+set caption(qsi,filters)                      "Filter"
 
-set caption(qsi,obtu_ferme)                   "Ferme"
+set caption(qsi,obtu_ferme)                   "Closed"
 set caption(qsi,obtu_synchro)                 "Synchro"
+
+set caption(qsi,port_camera)                  "QSI Driver"
+set caption(qsi,2points)                      ":"
 
 set caption(qsi,titre_site_web)               "Reference Web Site:"
 set caption(qsi,site_web_ref)                 "http://www.qsimaging.com"
@@ -37,23 +36,152 @@ set caption(qsi,site_web_ref)                 "http://www.qsimaging.com"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
+   set caption(qsi,camera)                    "QSI"
+
+   set caption(qsi,miroir_x)                  "Miroir horizontal"
+   set caption(qsi,miroir_y)                  "Miroir vertical"
+   set caption(qsi,refroidissement)           "Refroidissement à la température de"
+   set caption(qsi,deg_c)                     "°C"
+   set caption(qsi,refroidissement_1)         ""
+   set caption(qsi,puissance_peltier_--)      "Puissance Peltier : --"
+   set caption(qsi,puissance_peltier)         "Puissance Peltier : "
+   set caption(qsi,ccdTemp)                   "Température du CCD :"
+   set caption(qsi,setTemp)                   "Consigne de température :"
+   set caption(qsi,filters)                   "Filtre"
+
+   set caption(qsi,obtu_ferme)                "Fermé"
+   set caption(qsi,obtu_synchro)              "Synchro"
+
+   set caption(qsi,port_camera)               "Driver QSI"
+   set caption(qsi,2points)                   ":"
+
+   set caption(qsi,titre_site_web)            "Site Web de référence :"
+   set caption(qsi,site_web_ref)              "http://www.qsimaging.com"
+
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(qsi,camera)                    "QSI"
+
+   set caption(qsi,miroir_x)                  "Specchio orizzontale"
+   set caption(qsi,miroir_y)                  "Specchio verticale"
+   set caption(qsi,refroidissement)           "Raffreddamento alla temperatura di"
+   set caption(qsi,deg_c)                     "°C"
+   set caption(qsi,refroidissement_1)         ""
+   set caption(qsi,puissance_peltier_--)      "Potenza stadio Peltier: --"
+   set caption(qsi,puissance_peltier)         "Potenza stadio Peltier: "
+   set caption(qsi,ccdTemp)                   "CCD Temperatura:"
+   set caption(qsi,setTemp)                   "Set Temperatura:"
+   set caption(qsi,filters)                   "Filtro"
+
+   set caption(qsi,obtu_ferme)                "Chiuso"
+   set caption(qsi,obtu_synchro)              "Sincronizza"
+
+   set caption(qsi,port_camera)               "Driver QSI"
+   set caption(qsi,2points)                   ":"
+
+   set caption(qsi,titre_site_web)            "Sito Web di riferimento:"
+   set caption(qsi,site_web_ref)              "http://www.qsimaging.com"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
+   set caption(qsi,camera)                    "QSI"
+
+   set caption(qsi,miroir_x)                  "Espejo horizontal"
+   set caption(qsi,miroir_y)                  "Espejo vertical"
+   set caption(qsi,refroidissement)           "Enfriar hasta temperatura"
+   set caption(qsi,deg_c)                     "°C"
+   set caption(qsi,refroidissement_1)         ""
+   set caption(qsi,puissance_peltier_--)      "Alimentación Etapa Peltier: --"
+   set caption(qsi,puissance_peltier)         "Alimentación Etapa Peltier: "
+   set caption(qsi,ccdTemp)                   "Temperatura CCD:"
+   set caption(qsi,setTemp)                   "Establezca la temperatura:"
+   set caption(qsi,filters)                   "Filtro"
+
+   set caption(qsi,obtu_ferme)                "Cerrado"
+   set caption(qsi,obtu_synchro)              "Sincro"
+
+   set caption(qsi,port_camera)               "Driver QSI"
+   set caption(qsi,2points)                   ":"
+
+   set caption(qsi,titre_site_web)            "Sitio Web de referencia:"
+   set caption(qsi,site_web_ref)              "http://www.qsimaging.com"
+
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
+   set caption(qsi,camera)                    "QSI"
+
+   set caption(qsi,miroir_x)                  "Horizontale Spiegel"
+   set caption(qsi,miroir_y)                  "Verticale Spiegel"
+   set caption(qsi,refroidissement)           "Temperatur bis zu"
+   set caption(qsi,deg_c)                     "°C"
+   set caption(qsi,refroidissement_1)         ""
+   set caption(qsi,puissance_peltier_--)      "Peltier Stärke: --"
+   set caption(qsi,puissance_peltier)         "Peltier Stärke: "
+   set caption(qsi,ccdTemp)                   "Temperatur CCD:"
+   set caption(qsi,setTemp)                   "Temperatur Einstellung:"
+   set caption(qsi,filters)                   "Filter"
+
+   set caption(qsi,obtu_ferme)                "Geschlossen"
+   set caption(qsi,obtu_synchro)              "Synchro"
+
+   set caption(qsi,port_camera)               "QSI Treiber"
+   set caption(qsi,2points)                   ":"
+
+   set caption(qsi,titre_site_web)            "Referenz Webseite:"
+   set caption(qsi,site_web_ref)              "http://www.qsimaging.com"
 
 # *************** Version portugaise ***************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
+   set caption(qsi,camera)                    "QSI"
+
+   set caption(qsi,miroir_x)                  "Espelho Horizontal"
+   set caption(qsi,miroir_y)                  "Espelho Vertical"
+   set caption(qsi,refroidissement)           "Arrefecendo até Temperatura"
+   set caption(qsi,deg_c)                     "°C"
+   set caption(qsi,refroidissement_1)         ""
+   set caption(qsi,puissance_peltier_--)      "Nível de Potência do Peltier: --"
+   set caption(qsi,puissance_peltier)         "Nível de Potência do Peltier: "
+   set caption(qsi,ccdTemp)                   "Temperatura do CCD:"
+   set caption(qsi,setTemp)                   "Definir temperatura:"
+   set caption(qsi,filters)                   "Filtro"
+
+   set caption(qsi,obtu_ferme)                "Fechado"
+   set caption(qsi,obtu_synchro)              "Sincro"
+
+   set caption(qsi,port_camera)               "Driver QSI"
+   set caption(qsi,2points)                   ":"
+
+   set caption(qsi,titre_site_web)            "Site Web de referência:"
+   set caption(qsi,site_web_ref)              "http://www.qsimaging.com"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
+   set caption(qsi,camera)                    "QSI"
+
+   set caption(qsi,miroir_x)                  "Horizontal Mirror"
+   set caption(qsi,miroir_y)                  "Vertical Mirror"
+   set caption(qsi,refroidissement)           "Cooling to Temperature"
+   set caption(qsi,deg_c)                     "°C"
+   set caption(qsi,refroidissement_1)         ""
+   set caption(qsi,puissance_peltier_--)      "Peltier Stage Power: --"
+   set caption(qsi,puissance_peltier)         "Peltier Stage Power: "
+   set caption(qsi,ccdTemp)                   "CCD Temperature:"
+   set caption(qsi,setTemp)                   "Set Temperature"
+   set caption(qsi,filters)                   "Filter"
+
+   set caption(qsi,obtu_ferme)                "Closed"
+   set caption(qsi,obtu_synchro)              "Synchro"
+
+   set caption(qsi,port_camera)               "QSI Driver"
+   set caption(qsi,2points)                   ":"
+
+   set caption(qsi,titre_site_web)            "Reference Web Site:"
+   set caption(qsi,site_web_ref)              "http://www.qsimaging.com"
 
 }
 
