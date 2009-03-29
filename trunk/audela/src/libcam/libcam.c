@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.26 2009-03-16 22:42:18 alainklotz Exp $
+ * $Id: libcam.c,v 1.27 2009-03-29 19:11:10 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -323,7 +323,7 @@ static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, ch
       if ( strcmp(argv[argc-2],"mainThreadId") != 0 ) {
          if ( strcmp(threaded,"1") == 0 ) {
             // Cas de l'environnement multi-thread : je cree un thread dediee a la camera ,
-            if ( !( strcmp(argv[0],"webcam") == 0 && strcmp(platform,"windows")==0) ) {
+            if ( !( strcmp(argv[0],"webcam") == 0 && strcmp(platform,"windows")==0) && ! (strcmp(argv[0],"qsi") == 0 && strcmp(platform,"windows")==0)  ) {
                // Cas normal en mutlti-thread
 
                // je recupere l'indentifiant de la thread principale
@@ -436,7 +436,8 @@ static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, ch
 
       // cas du mutltithread
       if ( cam->camThreadId[0] != 0 ) {
-         if ( !(strcmp(argv[0],"webcam") == 0 && strcmp(platform,"windows")==0) ) {
+         if ( !(strcmp(argv[0],"webcam") == 0 && strcmp(platform,"windows")==0) 
+           && !(strcmp(argv[0],"qsi") == 0 && strcmp(platform,"windows")==0)) {
             // je duplique la commande de la camera dans la thread principale
             sprintf(s,"thread::copycommand %s %s ",mainThreadId, argv[1]);
             Tcl_Eval(interp, s);
@@ -503,7 +504,7 @@ static int cmdCam(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
          //if ( strcmp(CAM_INI[0].product,"webcam") != 0 ) {
          if ( (strcmp(argv[1],"timer") == 0 )  
 #if defined(OS_WIN)
-              // ces commandes de webcam doivent s'executer dans l thread principale sous Windows car elles ouvrer une fenetre.
+              // ces commandes de webcam doivent s'executer dans la thread principale sous Windows car elles ouvrer une fenetre.
               || (strcmp(CAM_INI[0].product,"webcam") == 0 && (strcmp(argv[1],"close") == 0 || strcmp(argv[1],"videoformat") == 0|| strcmp(argv[1],"videosource") == 0 || strcmp(argv[1],"startvideoview") == 0 || strcmp(argv[1],"stopvideoview") == 0 || strcmp(argv[1],"startvideocapture") == 0 || strcmp(argv[1],"stopvideocapture") == 0 || strcmp(argv[1],"startvideocrop") == 0 || strcmp(argv[1],"stopvideocrop") == 0 )) 
 #endif
               )
@@ -725,10 +726,16 @@ static int cmdCamBin(ClientData clientData, Tcl_Interp * interp, int argc, char 
             result = TCL_ERROR;
          } else {
             cam = (struct camprop *) clientData;
+            cam->msg[0]=0;
             CAM_DRV.set_binning(i_binx, i_biny, cam);
-            CAM_DRV.update_window(cam);
-            sprintf(ligne, "%d %d", cam->binx, cam->biny);
-            Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+            if ( cam->msg[0] == 0 ) {
+               CAM_DRV.update_window(cam);
+               sprintf(ligne, "%d %d", cam->binx, cam->biny);
+               Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+            } else {
+               Tcl_SetResult(interp, cam->msg, TCL_VOLATILE);
+               result = TCL_ERROR;
+            }
          }
          Tcl_Free((char *) listArgv);
       }
