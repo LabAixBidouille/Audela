@@ -72,7 +72,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\..\external\lib\tclstub84.lib"
+				AdditionalDependencies="..\..\..\external\lib\tclstub85.lib"
 				OutputFile="..\..\..\..\bin\libqsi.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -165,7 +165,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\..\external\lib\tclstub84.lib"
+				AdditionalDependencies="..\..\..\external\lib\tclstub85.lib"
 				OutputFile="..\..\..\..\bin\libqsi.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
