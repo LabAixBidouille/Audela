@@ -25,6 +25,7 @@
 #if defined(OS_WIN)
 #include <windows.h>
 #include <wchar.h>   // pour BSTR
+#include <exception>
 #endif
 
 #if defined(OS_LIN)
@@ -348,6 +349,11 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 
    if (cam->authorized == 1) {
       try {
+         float exptime = cam->exptime ;
+         if ( cam->exptime <= 0.03f ) {
+            exptime = 0.03f;
+         }
+
          // je lance l'acquisition
          if (cam->shutterindex == 0) {
             // acquisition avec obturateur ferme
@@ -579,11 +585,14 @@ void cam_set_binning(int binx, int biny, struct camprop *cam)
       cam_log(LOG_DEBUG,"cam_set_binning apres binx=%d biny=%d",binx, biny);
       cam->binx = binx;
       cam->biny = biny;
+      cam_log(LOG_DEBUG,"cam_set_binning fin OK");
+   } catch (std::exception error) {
+      cam_log(LOG_ERROR, "cam_set_binning error exception");
+      sprintf(cam->msg, "cam_set_binning error exception");
    } catch (...) {
       cam_log(LOG_ERROR,"cam_set_binning error exception");
       sprintf(cam->msg, "cam_set_binning error exception");
    }
-   cam_log(LOG_DEBUG,"cam_set_binning fin OK");
 }
 
 void cam_update_window(struct camprop *cam)
