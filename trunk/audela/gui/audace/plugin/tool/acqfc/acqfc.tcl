@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.84 2009-03-28 10:27:24 michelpujol Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.85 2009-03-29 19:28:20 michelpujol Exp $
 #
 
 #==============================================================
@@ -1539,6 +1539,8 @@ proc ::acqfc::Go { visuNo } {
          #--- je deverrouille des widgets selon le mode d'acquisition
          switch $panneau(acqfc,$visuNo,mode) {
             1  {
+               #--- je mets a jour le nom du fichier dans le titre de la fenetre et dans la fenetre des header
+               ::confVisu::setFileName $visuNo ""
                #--- Deverrouille les boutons du mode "une image"
                $panneau(acqfc,$visuNo,This).mode.une.nom.entr configure -state normal
                $panneau(acqfc,$visuNo,This).mode.une.index.case configure -state normal
