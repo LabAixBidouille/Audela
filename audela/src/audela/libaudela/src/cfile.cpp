@@ -435,15 +435,16 @@ void CFile::loadRaw(char * filename, int dataTypeOut, CPixels **pixels, CFitsKey
       naxis = 2;
       width  = dataInfo.width;
       height = dataInfo.height;
+      // je recupere le seuil bas et le seuil haut
       initialMipsLo = (float)dataInfo.black ;
       initialMipsHi = (float)dataInfo.maximum;
-      // je recupere la date en temps GMT
+      // je recupere la date et je la convertis en temps GMT
       tmtime = gmtime( (const time_t *)&dataInfo.timestamp);
       strftime( gmtDate, 70, "%Y-%m-%dT%H:%M:%S", tmtime );
       // je recupere le nom de la camera
       sprintf(camera, "%s %s",dataInfo.make,dataInfo.model);  
       // je recupere le filtre 
-      // la valeur du filtre est convertie en chaine de caracteres 
+      // la valeur du filtre est convertie en chaine de caracteres Hexadecimale
       // car les mots cles ne supportent pas les entiers non signés sur 4 octets
       sprintf(filter, "%u",dataInfo.filters); 
       
