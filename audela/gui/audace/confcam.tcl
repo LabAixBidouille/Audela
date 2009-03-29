@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.128 2009-02-27 07:31:37 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.129 2009-03-29 19:20:08 michelpujol Exp $
 #
 
 namespace eval ::confCam {
@@ -576,10 +576,6 @@ proc ::confCam::setShutter { camItem shutterState  { mode "increment" } } {
          }
       }
       ::$private($camItem,camName)::setShutter $camItem $shutterState $ShutterOptionList
-   } else {
-      tk_messageBox -title $caption(confcam,pb) -type ok \
-         -message $caption(confcam,onlycam+obt)
-      return -1
    }
    return $shutterState
 }
