@@ -5,7 +5,7 @@
 #               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.55 2009-02-07 11:37:40 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.56 2009-03-29 19:22:55 michelpujol Exp $
 #
 
 #
@@ -2128,7 +2128,7 @@ namespace eval ::confChoixOutil {
       #--- Je copie la liste dans un tableau affiche(namespace)
       array set affiche $conf(afficheOutils)
       #---
-      foreach m [lsort $liste] {
+      foreach m [lsort -dictionary $liste] {
          set namespace [lindex [ split $m "," ] 1]
          set num [expr $num + 1]
          if { [ info exist affiche($namespace) ] } {
@@ -2255,7 +2255,7 @@ namespace eval ::confChoixOutil {
          set namespace [ lindex [ split $m "," ] 1 ]
          lappend liste [list "$panneau($m) " $namespace]
       }
-      foreach m [lsort $liste] {
+      foreach m [lsort -dictionary $liste] {
          set namespace [lindex $m 1]
          #---
          if { [ info exist affiche($namespace) ] } {
