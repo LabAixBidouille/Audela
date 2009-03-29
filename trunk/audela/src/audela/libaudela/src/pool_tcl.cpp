@@ -324,7 +324,7 @@ int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
   //          if((toto!=NULL)&&(dontCreateCommand==0)) ENREGISTRER_CMD(CmdTel);
          }
       case CASE_LINK :
-         if(argc!=3) {
+         if(argc<3) {
             sprintf(ligne,"Usage: %s liblink_driver ?options?",argv[0]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             free(ligne);
