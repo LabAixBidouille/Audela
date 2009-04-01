@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.22 2009-03-16 22:42:18 alainklotz Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.23 2009-04-01 20:47:34 robertdelmas Exp $
 #
 
 #============================================================
@@ -1886,9 +1886,11 @@ proc ::tlscp::config::fillConfigPage { frm visuNo } {
 
    #--- Frame camera
    frame $frm.fits
-      button $frm.fits.buttonFits -text "$caption(tlscp,en-tete_fits)" \
+      label $frm.fits.labFits -text "$caption(tlscp,en-tete_fits)"
+      button $frm.fits.buttonFits -text "$caption(tlscp,mots_cles)" \
          -command "::keyword::run $visuNo"
-      pack $frm.fits.buttonFits -anchor n -side top -fill x
+      pack $frm.fits.labFits -anchor n -side left -pady 10
+      pack $frm.fits.buttonFits -anchor n -side left -padx 6 -pady 10 -ipadx 20
 
    TitleFrame $frm.camera -borderwidth 2 -text "$caption(tlscp,camera)"
       LabelEntry $frm.camera.angle -label "$caption(tlscp,angle)" \
