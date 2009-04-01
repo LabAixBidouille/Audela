@@ -1,6 +1,6 @@
 #
 # Fichier : tlscp.cap
-# Mise a jour $Id: tlscp.cap,v 1.11 2009-01-10 10:42:05 robertdelmas Exp $
+# Mise a jour $Id: tlscp.cap,v 1.12 2009-04-01 20:46:43 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -70,7 +70,8 @@ set caption(tlscp,searchFwhm)            "Min. Fwhm"
 set caption(tlscp,searchRadius)          "Search Radius (pixel)"
 set caption(tlscp,searchThreshold)       "Min. Luminosity (2)"
 
-set caption(tlscp,en-tete_fits)          "FITS Keywords"
+set caption(tlscp,en-tete_fits)          "FITS Header"
+set caption(tlscp,mots_cles)             "Keywords"
 set caption(tlscp,ret_nord)              "North"
 set caption(tlscp,ret_sud)               "South"
 set caption(tlscp,ret_est)               "East"
@@ -159,7 +160,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,searchRadius)       "Rayon de recherche (pixel)"
    set caption(tlscp,searchThreshold)    "Intensité mini (2)"
 
-   set caption(tlscp,en-tete_fits)       "Mots clés FITS"
+   set caption(tlscp,en-tete_fits)       "En-tête FITS"
+   set caption(tlscp,mots_cles)          "Mots clés"
    set caption(tlscp,ret_nord)           "Nord"
    set caption(tlscp,ret_sud)            "Sud"
    set caption(tlscp,ret_est)            "Est"
@@ -248,7 +250,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,searchRadius)       "Raggio di ricerca (pixel)"
    set caption(tlscp,searchThreshold)    "Intensita` minima (2)"
 
-   set caption(tlscp,en-tete_fits)       "Parole chiave FITS"
+   set caption(tlscp,en-tete_fits)       "Intestazione FITS"
+   set caption(tlscp,mots_cles)          "Parole chiave"
    set caption(tlscp,ret_nord)           "Nord"
    set caption(tlscp,ret_sud)            "Sud"
    set caption(tlscp,ret_est)            "Est"
@@ -337,7 +340,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,searchRadius)       "Radio de búsqueda (pixel)"
    set caption(tlscp,searchThreshold)    "Mínima luminosidad (2)"
 
-   set caption(tlscp,en-tete_fits)       "Palabras clave FITS"
+   set caption(tlscp,en-tete_fits)       "Cabecera FITS"
+   set caption(tlscp,mots_cles)          "Palabras clave"
    set caption(tlscp,ret_nord)           "Norte"
    set caption(tlscp,ret_sud)            "Sur"
    set caption(tlscp,ret_est)            "Este"
@@ -426,7 +430,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,searchRadius)       "Radius Durchsuchung (Pixel)"
    set caption(tlscp,searchThreshold)    "Min. Licht (2)"
 
-   set caption(tlscp,en-tete_fits)       "FITS Stichwörter"
+   set caption(tlscp,en-tete_fits)       "FITS Vorsatz"
+   set caption(tlscp,mots_cles)          "Stichwörter"
    set caption(tlscp,ret_nord)           "Nord"
    set caption(tlscp,ret_sud)            "Sud"
    set caption(tlscp,ret_est)            "Ost"
@@ -515,7 +520,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,searchRadius)       "Raio de pesquisa (pixel)"
    set caption(tlscp,searchThreshold)    "Luminosidade min. (2)"
 
-   set caption(tlscp,en-tete_fits)       "Palavras-chave FITS"
+   set caption(tlscp,en-tete_fits)       "Cabeçalho FITS"
+   set caption(tlscp,mots_cles)          "Palavras-chave"
    set caption(tlscp,ret_nord)           "Norte"
    set caption(tlscp,ret_sud)            "Sul"
    set caption(tlscp,ret_est)            "Este"
@@ -604,7 +610,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,searchRadius)       "Search Radius (pixel)"
    set caption(tlscp,searchThreshold)    "Min. Luminosity (2)"
 
-   set caption(tlscp,en-tete_fits)       "FITS Keywords"
+   set caption(tlscp,en-tete_fits)       "FITS Header"
+   set caption(tlscp,mots_cles)          "Keywords"
    set caption(tlscp,ret_nord)           "North"
    set caption(tlscp,ret_sud)            "South"
    set caption(tlscp,ret_est)            "East"
