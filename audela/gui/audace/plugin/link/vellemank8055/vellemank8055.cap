@@ -1,0 +1,156 @@
+#
+# Fichier : vellemank8055.cap
+# Mise a jour $Id: vellemank8055.cap,v 1.1 2009-04-01 16:59:20 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(vellemank8055,titre)               "Velleman K8055"
+set caption(vellemank8055,USBPort)             "USB Link"
+set caption(vellemank8055,selectAdresse)       "Select Card Number"
+set caption(vellemank8055,SK5)                 "SK5"
+set caption(vellemank8055,SK6)                 "SK6"
+set caption(vellemank8055,adresse)             "Card Number:"
+set caption(vellemank8055,test8sorties)        "Test 8 Digital Outputs"
+set caption(vellemank8055,test5entrees)        "Test 5 Digital Inputs"
+set caption(vellemank8055,tous)                "All"
+set caption(vellemank8055,chenillard)          "Auto Test"
+set caption(vellemank8055,raz)                 "Reset"
+set caption(vellemank8055,lire)                "Read Entries"
+set caption(vellemank8055,stop)                "Stop"
+set caption(vellemank8055,attention)           "Warning"
+set caption(vellemank8055,cannotcreatelink)    "The link can not be created."
+set caption(vellemank8055,seeconsole)          "See details in the Terminal screen."
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(vellemank8055,titre)            "Velleman K8055"
+   set caption(vellemank8055,USBPort)          "Liaison USB"
+   set caption(vellemank8055,selectAdresse)    "Sélectionner le numéro de la carte"
+   set caption(vellemank8055,SK5)              "SK5"
+   set caption(vellemank8055,SK6)              "SK6"
+   set caption(vellemank8055,adresse)          "Numéro de la carte :"
+   set caption(vellemank8055,test8sorties)     "Tester les 8 sorties numériques"
+   set caption(vellemank8055,test5entrees)     "Tester les 5 entrées numériques"
+   set caption(vellemank8055,tous)             "Toutes"
+   set caption(vellemank8055,chenillard)       "Test auto"
+   set caption(vellemank8055,raz)              "Remise à zéro"
+   set caption(vellemank8055,lire)             "Lire les entrées"
+   set caption(vellemank8055,stop)             "Arrêter"
+   set caption(vellemank8055,attention)        "Attention"
+   set caption(vellemank8055,cannotcreatelink) "La liaison ne peut pas être créée."
+   set caption(vellemank8055,seeconsole)       "Détails dans la Console."
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(vellemank8055,titre)            "Velleman K8055"
+   set caption(vellemank8055,USBPort)          "# Liaison USB"
+   set caption(vellemank8055,selectAdresse)    "# Sélectionner le numéro de la carte"
+   set caption(vellemank8055,SK5)              "SK5"
+   set caption(vellemank8055,SK6)              "SK6"
+   set caption(vellemank8055,adresse)          "# Numéro de la carte :"
+   set caption(vellemank8055,test8sorties)     "# Tester les 8 sorties numériques"
+   set caption(vellemank8055,test5entrees)     "# Tester les 5 entrées numériques"
+   set caption(vellemank8055,tous)             "# Toutes"
+   set caption(vellemank8055,chenillard)       "# Test auto"
+   set caption(vellemank8055,raz)              "# Remise à zéro"
+   set caption(vellemank8055,lire)             "# Lire les entrées"
+   set caption(vellemank8055,stop)             "Ferma"
+   set caption(vellemank8055,attention)        "Attenzione"
+   set caption(vellemank8055,cannotcreatelink) "Il collegamento non e' stata creata."
+   set caption(vellemank8055,seeconsole)       "Vedere i dettagli sul Console."
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(vellemank8055,titre)            "Velleman K8055"
+   set caption(vellemank8055,USBPort)          "# Liaison USB"
+   set caption(vellemank8055,selectAdresse)    "# Sélectionner le numéro de la carte"
+   set caption(vellemank8055,SK5)              "SK5"
+   set caption(vellemank8055,SK6)              "SK6"
+   set caption(vellemank8055,adresse)          "# Numéro de la carte :"
+   set caption(vellemank8055,test8sorties)     "# Tester les 8 sorties numériques"
+   set caption(vellemank8055,test5entrees)     "# Tester les 5 entrées numériques"
+   set caption(vellemank8055,tous)             "# Toutes"
+   set caption(vellemank8055,chenillard)       "# Test auto
+   set caption(vellemank8055,raz)              "# Remise à zéro"
+   set caption(vellemank8055,lire)             "# Lire les entrées"
+   set caption(vellemank8055,stop)             "Parar"
+   set caption(vellemank8055,attention)        "!Cuidado¡"
+   set caption(vellemank8055,cannotcreatelink) "Enlace no puede ser creada."
+   set caption(vellemank8055,seeconsole)       "Ver detalles en la Consola."
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(vellemank8055,titre)            "Velleman K8055"
+   set caption(vellemank8055,USBPort)          "# Liaison USB"
+   set caption(vellemank8055,selectAdresse)    "# Sélectionner le numéro de la carte"
+   set caption(vellemank8055,SK5)              "SK5"
+   set caption(vellemank8055,SK6)              "SK6"
+   set caption(vellemank8055,adresse)          "# Numéro de la carte :"
+   set caption(vellemank8055,test8sorties)     "# Tester les 8 sorties numériques"
+   set caption(vellemank8055,test5entrees)     "# Tester les 5 entrées numériques"
+   set caption(vellemank8055,tous)             "# Toutes"
+   set caption(vellemank8055,chenillard)       "# Test auto"
+   set caption(vellemank8055,raz)              "# Remise à zéro"
+   set caption(vellemank8055,lire)             "# Lire les entrées"
+   set caption(vellemank8055,stop)             "Halten"
+   set caption(vellemank8055,attention)        "Achtung"
+   set caption(vellemank8055,cannotcreatelink) "Der Link kann nicht hergestellt werden."
+   set caption(vellemank8055,seeconsole)       "Siehe Details auf der Konsole."
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(vellemank8055,titre)            "Velleman K8055"
+   set caption(vellemank8055,USBPort)          "# Liaison USB"
+   set caption(vellemank8055,selectAdresse)    "# Sélectionner le numéro de la carte"
+   set caption(vellemank8055,SK5)              "SK5"
+   set caption(vellemank8055,SK6)              "SK6"
+   set caption(vellemank8055,adresse)          "# Numéro de la carte :"
+   set caption(vellemank8055,test8sorties)     "# Tester les 8 sorties numériques"
+   set caption(vellemank8055,test5entrees)     "# Tester les 5 entrées numériques"
+   set caption(vellemank8055,tous)             "# Toutes"
+   set caption(vellemank8055,chenillard)       "# Test auto"
+   set caption(vellemank8055,raz)              "# Remise à zéro"
+   set caption(vellemank8055,lire)             "# Lire les entrées"
+   set caption(vellemank8055,stop)             "Parar"
+   set caption(vellemank8055,attention)        "Aviso"
+   set caption(vellemank8055,cannotcreatelink) "Ligação não pode ser criada."
+   set caption(vellemank8055,seeconsole)       "Ver detalhes na Consola."
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(vellemank8055,titre)            "Velleman K8055"
+   set caption(vellemank8055,USBPort)          "USB Link"
+   set caption(vellemank8055,selectAdresse)    "Select Card Number"
+   set caption(vellemank8055,SK5)              "SK5"
+   set caption(vellemank8055,SK6)              "SK6"
+   set caption(vellemank8055,adresse)          "Card Number:"
+   set caption(vellemank8055,test8sorties)     "Test 8 Digital Outputs"
+   set caption(vellemank8055,test5entrees)     "Test 5 Digital Inputs"
+   set caption(vellemank8055,tous)             "All"
+   set caption(vellemank8055,chenillard)       "Auto Test"
+   set caption(vellemank8055,raz)              "Reset"
+   set caption(vellemank8055,lire)             "Read Entries"
+   set caption(vellemank8055,stop)             "Stop"
+   set caption(vellemank8055,attention)        "Warning"
+   set caption(vellemank8055,cannotcreatelink) "The link can not be created."
+   set caption(vellemank8055,seeconsole)       "See details in the Terminal screen."
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
