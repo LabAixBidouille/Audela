@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.22 2009-02-07 10:59:21 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.23 2009-04-01 18:04:18 robertdelmas Exp $
 #
 
 # =========================================================
@@ -1756,10 +1756,19 @@ proc Creefenreglfen { } {
       set panneau(acqfen,oldfenreglfen3)  $panneau(acqfen,fenreglfen3)
       set panneau(acqfen,oldfenreglfen4)  $panneau(acqfen,fenreglfen4)
 
-      #--- Bouton du configurateur d'en-tete FITS
-      button $audace(base).fenreglfen.but1 -text "$caption(acqfen,en-tete_fits)" \
-         -command "::keyword::run $audace(visuNo)"
-      pack $audace(base).fenreglfen.but1 -side top -fill x
+      #--- Frame pour l'en-tete FITS
+      frame $audace(base).fenreglfen.setup -borderwidth 0 -relief raise
+
+         #--- Label de l'en-tete FITS
+         label $audace(base).fenreglfen.setup.lab -text "$caption(acqfen,en-tete_fits)"
+         pack $audace(base).fenreglfen.setup.lab -side left -padx 6
+
+         #--- Bouton d'acces aux mots cles
+         button $audace(base).fenreglfen.setup.but1 -text "$caption(acqfen,mots_cles)" \
+            -command "::keyword::run $audace(visuNo)"
+         pack $audace(base).fenreglfen.setup.but1 -side left -padx 6 -pady 10 -ipadx 20
+
+      pack $audace(base).fenreglfen.setup -side top -fill both -expand 1
 
       #--- Trame reglages
       frame $audace(base).fenreglfen.1
