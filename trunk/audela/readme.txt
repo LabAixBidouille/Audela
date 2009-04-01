@@ -1,4 +1,4 @@
-AudeLA-1.5.0 (20090118)
+AudeLA-1.5.0 (20090401)
 
 
 1. Introduction
@@ -72,6 +72,7 @@ AudeLA est capable de piloter les interfaces de communication suivantes :
 - QuickAudine (interface USB pour cameras Audine),
 - QuickRemote (interface USB pour APN, WebCam longue pose, raquette de telescope,
   mise au point, etc.),
+- Velleman K8055,
 - Velleman K8056.
 
 AudeLA est capable de piloter les equipements suivants :
