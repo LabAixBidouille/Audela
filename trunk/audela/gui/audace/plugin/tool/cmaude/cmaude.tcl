@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude.tcl,v 1.18 2009-02-07 11:01:14 robertdelmas Exp $
+# Mise a jour $Id: cmaude.tcl,v 1.19 2009-04-01 17:52:25 robertdelmas Exp $
 #
 # Remarks :
 # The definition of some variables (binning, exp. time, rythm, etc.)
@@ -763,13 +763,17 @@ namespace eval ::cmaude::config {
       variable This
       global audace caption
 
-      #--- Frame pour le bouton
+      #--- Frame pour l'en-tete FITS
       frame $This.frame3 -borderwidth 1 -relief raise
 
-         #--- Bouton du configurateur d'en-tete FITS
-         button $This.frame3.but -text $caption(cmaude,en-tete_fits) \
+         #--- Label de l'en-tete FITS
+         label $This.frame3.lab -text $caption(cmaude,en-tete_fits)
+         pack $This.frame3.lab -side left -padx 6
+
+         #--- Bouton d'acces aux mots cles
+         button $This.frame3.but -text $caption(cmaude,mots_cles) \
             -command "::keyword::run $audace(visuNo)"
-         pack $This.frame3.but -side top -fill x
+         pack $This.frame3.but -side left -padx 6 -pady 10 -ipadx 20
 
       pack $This.frame3 -side top -fill both -expand 1
    }
