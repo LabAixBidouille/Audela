@@ -9,7 +9,7 @@
 #
 ########################################################################################
 
-# Mise a jour $Id: make_packages.sh,v 1.5 2009-02-06 00:47:11 bmauclaire Exp $
+# Mise a jour $Id: make_packages.sh,v 1.6 2009-04-01 18:01:00 bmauclaire Exp $
 
 
 #--- Utilisation :
@@ -276,13 +276,12 @@ chmod a+r $BUILD_DIR/usr/share/applications/audela.desktop
 sudo chown -R root.root $BUILD_DIR/usr/share/*
 
 mkdir $BUILD_DIR/usr/share/menu
-echo "?package(audela):needs="X11" section="Apps/Science" \
-  section="Apps/Science" \
-  title="AudeLA" \
-  longtitle="AudeLA: astronomy software" \
-  hints="AudeLA: astronomy software" \
-  command="/usr/bin/audela" \
-  icon="/usr/share/pixmaps/audela.xpm"
+echo "?package(audela):needs=\"X11\" section=\"Applications/Science\" \\
+  title=\"AudeLA\" \\
+  longtitle=\"AudeLA: astronomy software\" \\
+  hints=\"AudeLA: astronomy software\" \\
+  command=\"/usr/bin/audela\" \\
+  icon=\"/usr/share/pixmaps/audela.xpm\"
 " > $BUILD_DIR/usr/share/menu/audela
 
 mkdir $BUILD_DIR/usr/share/pixmaps
