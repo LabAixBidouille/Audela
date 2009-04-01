@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_1.cap
-# Mise a jour $Id: aud_menu_1.cap,v 1.8 2009-02-07 11:13:09 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.cap,v 1.9 2009-04-01 17:12:19 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -146,7 +146,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,quitter)          "Salir"
 
    set caption(audace,pas_ouvrir_fichier)    "No se puede abrir fichero:"
-   set caption(audace,fermeture_impossible)  "# Impossible d'arrêter Aud'ACE car une opération est en cours dans l'outil :"
+   set caption(audace,fermeture_impossible)  "Imposible detener Aud'ACE debido a una operción en curso en la herramienta:"
 
    set caption(audace,console_gagne)         "Acceso correcto"
    set caption(audace,console_annule)        "Cancelado"
