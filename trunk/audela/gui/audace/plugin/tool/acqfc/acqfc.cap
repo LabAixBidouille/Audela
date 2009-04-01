@@ -1,6 +1,6 @@
 #
 # Fichier : acqfc.cap
-# Mise a jour $Id: acqfc.cap,v 1.37 2009-03-28 10:27:24 michelpujol Exp $
+# Mise a jour $Id: acqfc.cap,v 1.38 2009-04-01 17:12:28 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -95,7 +95,7 @@ set caption(acqfc,fin_simu)                  "Stop the Simulation.\n"
 set caption(acqfc,avancement_acq)            "Acquisition\nProgress"
 set caption(acqfc,buttonShiftConfig)         "Shift"
 set caption(acqfc,acquisition)               "Aud'ACE - Acquisition of"
-set caption(acqfc,acquisitionError)          "Acquisition error. See console."
+set caption(acqfc,acquisitionError)          "Acquisition Error. See details in the Terminal screen."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -185,7 +185,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,avancement_acq)         "Avancement de\nl'acquisition"
    set caption(acqfc,buttonShiftConfig)      "Décalage"
    set caption(acqfc,acquisition)            "Aud'ACE - Acquisition de"
-   set caption(acqfc,acquisitionError)       "Erreur d'acquisition. Voir la console"
+   set caption(acqfc,acquisitionError)       "Erreur à l'acquisition. Détails dans la Console."
+
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
@@ -274,7 +275,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,avancement_acq)         "Avanzamento\nacquisizione"
    set caption(acqfc,buttonShiftConfig)      "Spostamento"
    set caption(acqfc,acquisition)            "Aud'ACE - Acquisizione di"
-   set caption(acqfc,acquisitionError)       "#Erreur d'acquisition. Voir la console"
+   set caption(acqfc,acquisitionError)       "# Erreur à l'acquisition. Vedere i dettagli sul Console."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -364,7 +365,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,avancement_acq)         "Progreso de la\nadquisición"
    set caption(acqfc,buttonShiftConfig)      "Desplazam."
    set caption(acqfc,acquisition)            "Aud'ACE - Adquisición de"
-   set caption(acqfc,acquisitionError)       "#Erreur d'acquisition. Voir la console"
+   set caption(acqfc,acquisitionError)       "Error de adquisición. Ver detalles en la Consola."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -454,7 +455,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,avancement_acq)         "Belichtung\nim Gange"
    set caption(acqfc,buttonShiftConfig)      "Verschiebung"
    set caption(acqfc,image,acquisition)      "Aud'ACE - Belichtung von"
-   set caption(acqfc,acquisitionError)       "#Erreur d'acquisition. Voir la console"
+   set caption(acqfc,acquisitionError)       "# Erreur à l'acquisition. Siehe Details auf der Konsole."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -544,7 +545,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,avancement_acq)         "Adiantamento da\naquisição"
    set caption(acqfc,buttonShiftConfig)      "Deslocamento"
    set caption(acqfc,acquisition)            "Aud'ACE - Aquisição de"
-   set caption(acqfc,acquisitionError)       "#Erreur d'acquisition. Voir la console"
+   set caption(acqfc,acquisitionError)       "# Erreur à l'acquisition. Ver detalhes na Consola."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -633,7 +634,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,avancement_acq)         "Acquisition\nProgress"
    set caption(acqfc,buttonShiftConfig)      "Shift"
    set caption(acqfc,acquisition)            "Aud'ACE - Eksponeringer slut"
-   set caption(acqfc,acquisitionError)       "#Erreur d'acquisition. Voir la console"
+   set caption(acqfc,acquisitionError)       "Acquisition Error. See details in the Terminal screen."
 
 }
 

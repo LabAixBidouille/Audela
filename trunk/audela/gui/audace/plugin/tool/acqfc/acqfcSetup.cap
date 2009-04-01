@@ -1,6 +1,6 @@
 #
 # Fichier : acqfcSetup.cap
-# Mise a jour $Id: acqfcSetup.cap,v 1.12 2009-03-28 10:27:26 michelpujol Exp $
+# Mise a jour $Id: acqfcSetup.cap,v 1.13 2009-04-01 17:12:28 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,70 +12,92 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(acqfcSetup,titre)                     "Acquisition - Setup"
-set caption(acqfcSetup,en-tete_fits)              "FITS Keywords"
-set caption(acqfcSetup,texte1)                    "Display messages on the Terminal:"
-set caption(acqfcSetup,texte2)                    "Record dates in the log file:"
-set caption(acqfcSetup,texte3)                    "Aural warning when the series ends:"
-set caption(acqfcSetup,texte4)                    "Ask permission to overwrite existing file :"
-set caption(acqfcSetup,texte5)                    "Alert starting index is different than 1"
-   set caption(acqfcSetup,texte6)                 "Save cancelled acquisition : "
+set caption(acqfcSetup,en-tete_fits)              "FITS Header"
+set caption(acqfcSetup,mots_cles)                 "Keywords"
+set caption(acqfcSetup,texte1)                    "Display messages on the Terminal"
+set caption(acqfcSetup,texte2)                    "Record dates in the log file"
+set caption(acqfcSetup,texte3)                    "Aural warning when the series ends"
+set caption(acqfcSetup,texte4)                    "Ask whether the user wants existing file to be replaced"
+set caption(acqfcSetup,texte5)                    "Prompt the user if the index starts with a value different from 1"
+set caption(acqfcSetup,texte6)                    "Save an interrupted acquisition"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqfcSetup,titre)                  "Acquisition - Configuration"
-   set caption(acqfcSetup,en-tete_fits)           "Mots clés FITS"
-   set caption(acqfcSetup,texte1)                 "Afficher les messages sur la Console :"
-   set caption(acqfcSetup,texte2)                 "Enregistrer les dates dans le fichier log :"
-   set caption(acqfcSetup,texte3)                 "Alarme sonore de fin de série :"
-   set caption(acqfcSetup,texte4)                 "Demander l'autorisation de remplacer un fichier existant :"
-   set caption(acqfcSetup,texte5)                 "Signaler que l'index de départ est différent de 1 :"
-   set caption(acqfcSetup,texte6)                 "Enregistrer une acquisition interrompue : "
+   set caption(acqfcSetup,en-tete_fits)           "En-tête FITS"
+   set caption(acqfcSetup,mots_cles)              "Mots clés"
+   set caption(acqfcSetup,texte1)                 "Afficher les messages dans la Console"
+   set caption(acqfcSetup,texte2)                 "Enregistrer les dates dans le fichier log"
+   set caption(acqfcSetup,texte3)                 "Alarme sonore de fin de série"
+   set caption(acqfcSetup,texte4)                 "Demander l'autorisation de remplacer un fichier existant"
+   set caption(acqfcSetup,texte5)                 "Signaler que l'index de départ est différent de 1"
+   set caption(acqfcSetup,texte6)                 "Enregistrer une acquisition interrompue"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(acqfcSetup,titre)                  "Acquisizione - Configurazione"
-   set caption(acqfcSetup,en-tete_fits)           "Parole chiave FITS"
-   set caption(acqfcSetup,texte1)                 "Mostra messaggio sul terminale:"
-   set caption(acqfcSetup,texte2)                 "Salvataggio date nel file di log:"
-   set caption(acqfcSetup,texte3)                 "Segnale acustico quando finisce la serie:"
+   set caption(acqfcSetup,en-tete_fits)           "Intestazione FITS"
+   set caption(acqfcSetup,mots_cles)              "Parole chiave"
+   set caption(acqfcSetup,texte1)                 "Mostra messaggio sul terminale"
+   set caption(acqfcSetup,texte2)                 "Salvataggio date nel file di log"
+   set caption(acqfcSetup,texte3)                 "Segnale acustico quando finisce la serie"
+   set caption(acqfcSetup,texte4)                 "# Demander l'autorisation de remplacer un fichier existant"
+   set caption(acqfcSetup,texte5)                 "# Signaler que l'index de départ est différent de 1"
+   set caption(acqfcSetup,texte6)                 "# Enregistrer une acquisition interrompue"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(acqfcSetup,titre)                  "Adquisición - Configuración"
-   set caption(acqfcSetup,en-tete_fits)           "Palabras clave FITS"
-   set caption(acqfcSetup,texte1)                 "Mostrar mensajes en la Consola:"
-   set caption(acqfcSetup,texte2)                 "Grabar fechas en el fichero de log:"
-   set caption(acqfcSetup,texte3)                 "Alarma sonora cuando la serie termina:"
+   set caption(acqfcSetup,en-tete_fits)           "Cabecera FITS"
+   set caption(acqfcSetup,mots_cles)              "Palabras clave"
+   set caption(acqfcSetup,texte1)                 "Mostrar mensajes en la Consola"
+   set caption(acqfcSetup,texte2)                 "Grabar fechas en el fichero de log"
+   set caption(acqfcSetup,texte3)                 "Alarma sonora cuando la serie termina"
+   set caption(acqfcSetup,texte4)                 "Pedir autorización para reemplazar un fichero existente"
+   set caption(acqfcSetup,texte5)                 "Avisar que el indice empieza con un valor diferente de 1"
+   set caption(acqfcSetup,texte6)                 "Guardar una adquisición interrumpida"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(acqfcSetup,titre)                  "Belichtung - Konfiguration"
-   set caption(acqfcSetup,en-tete_fits)           "FITS Stichwörter"
-   set caption(acqfcSetup,texte1)                 "Die Nachrichten am Bildschirm zeigen:"
-   set caption(acqfcSetup,texte2)                 "Die Zeit in die Log Datei speichern:"
-   set caption(acqfcSetup,texte3)                 "Ton Alarm wenn die Serie endet:"
+   set caption(acqfcSetup,en-tete_fits)           "FITS Vorsatz"
+   set caption(acqfcSetup,mots_cles)              "Stichwörter"
+   set caption(acqfcSetup,texte1)                 "Die Nachrichten am Bildschirm zeigen"
+   set caption(acqfcSetup,texte2)                 "Die Zeit in die Log Datei speichern"
+   set caption(acqfcSetup,texte3)                 "Ton Alarm wenn die Serie endet"
+   set caption(acqfcSetup,texte4)                 "# Demander l'autorisation de remplacer un fichier existant"
+   set caption(acqfcSetup,texte5)                 "# Signaler que l'index de départ est différent de 1"
+   set caption(acqfcSetup,texte6)                 "# Enregistrer une acquisition interrompue"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(acqfcSetup,titre)                  "Aquisição - Configuração"
-   set caption(acqfcSetup,en-tete_fits)           "Palavras-chave FITS"
-   set caption(acqfcSetup,texte1)                 "Mostrar mensagens na Consola:"
-   set caption(acqfcSetup,texte2)                 "Guardar datas no ficheiro log:"
-   set caption(acqfcSetup,texte3)                 "Alarme sonoro quando a série terminar:"
+   set caption(acqfcSetup,en-tete_fits)           "Cabeçalho FITS"
+   set caption(acqfcSetup,mots_cles)              "Palavras-chave"
+   set caption(acqfcSetup,texte1)                 "Mostrar mensagens na Consola"
+   set caption(acqfcSetup,texte2)                 "Guardar datas no ficheiro log"
+   set caption(acqfcSetup,texte3)                 "Alarme sonoro quando a série terminar"
+   set caption(acqfcSetup,texte4)                 "# Demander l'autorisation de remplacer un fichier existant"
+   set caption(acqfcSetup,texte5)                 "# Signaler que l'index de départ est différent de 1"
+   set caption(acqfcSetup,texte6)                 "# Enregistrer une acquisition interrompue"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(acqfcSetup,titre)                  "Acquisition - Setup"
-   set caption(acqfcSetup,en-tete_fits)           "FITS Keywords"
-   set caption(acqfcSetup,texte1)                 "Display messages on the Terminal:"
-   set caption(acqfcSetup,texte2)                 "Record dates in the log file:"
-   set caption(acqfcSetup,texte3)                 "Aural warning when the series ends:"
+   set caption(acqfcSetup,en-tete_fits)           "FITS Header"
+   set caption(acqfcSetup,mots_cles)              "Keywords"
+   set caption(acqfcSetup,texte1)                 "Display messages on the Terminal"
+   set caption(acqfcSetup,texte2)                 "Record dates in the log file"
+   set caption(acqfcSetup,texte3)                 "Aural warning when the series ends"
+   set caption(acqfcSetup,texte4)                 "Ask whether the user wants existing file to be replaced"
+   set caption(acqfcSetup,texte5)                 "Prompt the user if the index starts with a value different from 1"
+   set caption(acqfcSetup,texte6)                 "Save an interrupted acquisition"
 
 }
 
