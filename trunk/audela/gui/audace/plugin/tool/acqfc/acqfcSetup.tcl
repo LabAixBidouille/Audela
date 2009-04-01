@@ -2,7 +2,7 @@
 # Fichier : acqfcSetup.tcl
 # Description : Configuration de certains parametres de l'outil Acquisition
 # Auteur : Robert DELMAS
-# Mise a jour $Id: acqfcSetup.tcl,v 1.16 2009-03-28 10:27:27 michelpujol Exp $
+# Mise a jour $Id: acqfcSetup.tcl,v 1.17 2009-04-01 17:27:23 robertdelmas Exp $
 #
 
 namespace eval ::acqfcSetup {
@@ -26,13 +26,12 @@ namespace eval ::acqfcSetup {
       variable parametres
 
       #--- Creation des variables de la boite de configuration si elles n'existent pas
-      if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,messages) ] }         { set ::acqfc::parametres(acqfc,$visuNo,messages)         "1" }
-      if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,save_file_log) ] }    { set ::acqfc::parametres(acqfc,$visuNo,save_file_log)    "1" }
-      if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,alarme_fin_serie) ] } { set ::acqfc::parametres(acqfc,$visuNo,alarme_fin_serie) "1" }
-      if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,verifier_ecraser_fichier) ] } { set ::acqfc::parametres(acqfc,$visuNo,verifier_ecraser_fichier) "1" }
-      if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,verifier_index_depart) ] } { set ::acqfc::parametres(acqfc,$visuNo,verifier_index_depart) "1" }
+      if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,messages) ] }                           { set ::acqfc::parametres(acqfc,$visuNo,messages)                           "1" }
+      if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,save_file_log) ] }                      { set ::acqfc::parametres(acqfc,$visuNo,save_file_log)                      "1" }
+      if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,alarme_fin_serie) ] }                   { set ::acqfc::parametres(acqfc,$visuNo,alarme_fin_serie)                   "1" }
+      if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,verifier_ecraser_fichier) ] }           { set ::acqfc::parametres(acqfc,$visuNo,verifier_ecraser_fichier)           "1" }
+      if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,verifier_index_depart) ] }              { set ::acqfc::parametres(acqfc,$visuNo,verifier_index_depart)              "1" }
       if { ! [ info exists ::acqfc::parametres(acqfc,$visuNo,enregistrer_acquisiton_interrompue) ] } { set ::acqfc::parametres(acqfc,$visuNo,enregistrer_acquisiton_interrompue) "1" }
-
    }
 
    #
@@ -44,12 +43,12 @@ namespace eval ::acqfcSetup {
       global panneau
 
       #--- confToWidget
-      set panneau(acqfc,$visuNo,messages)         $::acqfc::parametres(acqfc,$visuNo,messages)
-      set panneau(acqfc,$visuNo,save_file_log)    $::acqfc::parametres(acqfc,$visuNo,save_file_log)
-      set panneau(acqfc,$visuNo,alarme_fin_serie) $::acqfc::parametres(acqfc,$visuNo,alarme_fin_serie)
-      set panneau(acqfc,$visuNo,verifier_ecraser_fichier) $::acqfc::parametres(acqfc,$visuNo,verifier_ecraser_fichier)
-      set panneau(acqfc,$visuNo,verifier_index_depart)    $::acqfc::parametres(acqfc,$visuNo,verifier_index_depart)
-      set panneau(acqfc,$visuNo,enregistrer_acquisiton_interrompue)    $::acqfc::parametres(acqfc,$visuNo,enregistrer_acquisiton_interrompue)
+      set panneau(acqfc,$visuNo,messages)                           $::acqfc::parametres(acqfc,$visuNo,messages)
+      set panneau(acqfc,$visuNo,save_file_log)                      $::acqfc::parametres(acqfc,$visuNo,save_file_log)
+      set panneau(acqfc,$visuNo,alarme_fin_serie)                   $::acqfc::parametres(acqfc,$visuNo,alarme_fin_serie)
+      set panneau(acqfc,$visuNo,verifier_ecraser_fichier)           $::acqfc::parametres(acqfc,$visuNo,verifier_ecraser_fichier)
+      set panneau(acqfc,$visuNo,verifier_index_depart)              $::acqfc::parametres(acqfc,$visuNo,verifier_index_depart)
+      set panneau(acqfc,$visuNo,enregistrer_acquisiton_interrompue) $::acqfc::parametres(acqfc,$visuNo,enregistrer_acquisiton_interrompue)
    }
 
    #
@@ -61,12 +60,12 @@ namespace eval ::acqfcSetup {
       global panneau
 
       #--- widgetToConf
-      set ::acqfc::parametres(acqfc,$visuNo,messages)         $panneau(acqfc,$visuNo,messages)
-      set ::acqfc::parametres(acqfc,$visuNo,save_file_log)    $panneau(acqfc,$visuNo,save_file_log)
-      set ::acqfc::parametres(acqfc,$visuNo,alarme_fin_serie) $panneau(acqfc,$visuNo,alarme_fin_serie)
-      set ::acqfc::parametres(acqfc,$visuNo,verifier_ecraser_fichier) $panneau(acqfc,$visuNo,verifier_ecraser_fichier)
-      set ::acqfc::parametres(acqfc,$visuNo,verifier_index_depart)    $panneau(acqfc,$visuNo,verifier_index_depart)
-      set ::acqfc::parametres(acqfc,$visuNo,enregistrer_acquisiton_interrompue)    $panneau(acqfc,$visuNo,enregistrer_acquisiton_interrompue)
+      set ::acqfc::parametres(acqfc,$visuNo,messages)                           $panneau(acqfc,$visuNo,messages)
+      set ::acqfc::parametres(acqfc,$visuNo,save_file_log)                      $panneau(acqfc,$visuNo,save_file_log)
+      set ::acqfc::parametres(acqfc,$visuNo,alarme_fin_serie)                   $panneau(acqfc,$visuNo,alarme_fin_serie)
+      set ::acqfc::parametres(acqfc,$visuNo,verifier_ecraser_fichier)           $panneau(acqfc,$visuNo,verifier_ecraser_fichier)
+      set ::acqfc::parametres(acqfc,$visuNo,verifier_index_depart)              $panneau(acqfc,$visuNo,verifier_index_depart)
+      set ::acqfc::parametres(acqfc,$visuNo,enregistrer_acquisiton_interrompue) $panneau(acqfc,$visuNo,enregistrer_acquisiton_interrompue)
    }
 
    #
@@ -142,122 +141,89 @@ namespace eval ::acqfcSetup {
       #--- Frame pour les commentaires
       frame $panneau(acqfc,$visuNo,acqfcSetup).frame3 -borderwidth 1 -relief raise
 
-         #--- Bouton du configurateur d'en-tete FITS
-         button $panneau(acqfc,$visuNo,acqfcSetup).frame3.but -text $caption(acqfcSetup,en-tete_fits) \
-            -command "::keyword::run $visuNo"
-         pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.but -side top -fill x -padx 10
+         #--- Frame pour l'en-tete FITS
+         frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.en-tete -borderwidth 0
+
+            #--- Label de l'en-tete FITS
+            label $panneau(acqfc,$visuNo,acqfcSetup).frame3.en-tete.lab -text $caption(acqfcSetup,en-tete_fits)
+            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.en-tete.lab -side left -padx 6
+
+            #--- Bouton d'acces aux mots cles
+            button $panneau(acqfc,$visuNo,acqfcSetup).frame3.en-tete.but -text $caption(acqfcSetup,mots_cles) \
+               -command "::keyword::run $visuNo"
+            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.en-tete.but -side left -padx 6 -pady 10 -ipadx 20
+
+         pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.en-tete -side top -fill both -expand 1
 
          #--- Frame pour le commentaire 1
          frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame4 -borderwidth 0
 
-            #--- Cree le label pour le commentaire 1
-            frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame4.frame7
-               label $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame4.frame7.lab1 -text "$caption(acqfcSetup,texte1)"
-               pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame4.frame7.lab1 -side left -fill both \
-                  -expand 0 -padx 5 -pady 5
-            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame4.frame7 -side left -fill both -expand 1
-
             #--- Cree le checkbutton pour le commentaire 1
             frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame4.frame8 -borderwidth 0
                checkbutton $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame4.frame8.check1 -highlightthickness 0 \
-                  -variable panneau(acqfc,$visuNo,messages)
+                  -text "$caption(acqfcSetup,texte1)" -variable panneau(acqfc,$visuNo,messages)
                pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame4.frame8.check1 -side right -padx 5 -pady 0
-            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame4.frame8 -side right -fill both -expand 1
+            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame4.frame8 -side left
 
          pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame4 -side top -fill both -expand 1
 
          #--- Frame pour le commentaire 2
          frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame5 -borderwidth 0
 
-            #--- Cree le label pour le commentaire 2
-            frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame5.frame9 -borderwidth 0
-               label $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame5.frame9.lab2 -text "$caption(acqfcSetup,texte2)"
-               pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame5.frame9.lab2 -side left -fill both \
-                  -expand 0 -padx 5 -pady 5
-            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame5.frame9 -side left -fill both -expand 1
-
             #--- Cree le checkbutton pour le commentaire 2
             frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame5.frame10 -borderwidth 0
                checkbutton $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame5.frame10.check2 -highlightthickness 0 \
-                  -variable panneau(acqfc,$visuNo,save_file_log)
+                  -text "$caption(acqfcSetup,texte2)" -variable panneau(acqfc,$visuNo,save_file_log)
                pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame5.frame10.check2 -side right -padx 5 -pady 0
-            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame5.frame10 -side right -fill both -expand 1
+            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame5.frame10 -side left
 
          pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame5 -side top -fill both -expand 1
 
          #--- Frame pour le commentaire 3
          frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame6 -borderwidth 0
 
-            #--- Cree le label pour le commentaire 3
-            frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame6.frame11 -borderwidth 0
-               label $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame6.frame11.lab3 -text "$caption(acqfcSetup,texte3)"
-               pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame6.frame11.lab3 -side left -fill both \
-                  -expand 0 -padx 5 -pady 5
-            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame6.frame11 -side left -fill both -expand 1
-
             #--- Cree le checkbutton pour le commentaire 3
             frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame6.frame12 -borderwidth 0
                checkbutton $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame6.frame12.check3 -highlightthickness 0 \
-                  -variable panneau(acqfc,$visuNo,alarme_fin_serie)
+                  -text "$caption(acqfcSetup,texte3)" -variable panneau(acqfc,$visuNo,alarme_fin_serie)
                pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame6.frame12.check3 -side right -padx 5 -pady 0
-            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame6.frame12 -side right -fill both -expand 1
+            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame6.frame12 -side left
 
          pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame6 -side top -fill both -expand 1
 
          #--- Frame pour le commentaire 4 : verifier_ecraser_fichier
          frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame7 -borderwidth 0
 
-            #--- Cree le label pour le commentaire 4
-            frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame7.frame11 -borderwidth 0
-               label $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame7.frame11.lab3 -text "$caption(acqfcSetup,texte4)"
-               pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame7.frame11.lab3 -side left -fill both \
-                  -expand 0 -padx 5 -pady 5
-            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame7.frame11 -side left -fill both -expand 1
-
-            #--- Cree le checkbutton pour le commentaire 3
+            #--- Cree le checkbutton pour le commentaire 4
             frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame7.frame12 -borderwidth 0
                checkbutton $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame7.frame12.check3 -highlightthickness 0 \
-                  -variable panneau(acqfc,$visuNo,verifier_ecraser_fichier)
+                  -text "$caption(acqfcSetup,texte4)" -variable panneau(acqfc,$visuNo,verifier_ecraser_fichier)
                pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame7.frame12.check3 -side right -padx 5 -pady 0
-            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame7.frame12 -side right -fill both -expand 1
+            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame7.frame12 -side left
 
          pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame7 -side top -fill both -expand 1
 
          #--- Frame pour le commentaire 5 : verifier_index_depart
          frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame8 -borderwidth 0
 
-            #--- Cree le label pour le commentaire 5
-            frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame8.frame11 -borderwidth 0
-               label $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame8.frame11.lab3 -text "$caption(acqfcSetup,texte5)"
-               pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame8.frame11.lab3 -side left -fill both \
-                  -expand 0 -padx 5 -pady 5
-            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame8.frame11 -side left -fill both -expand 1
-
             #--- Cree le checkbutton pour le commentaire 5
             frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame8.frame12 -borderwidth 0
                checkbutton $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame8.frame12.check3 -highlightthickness 0 \
-                  -variable panneau(acqfc,$visuNo,verifier_index_depart)
+                  -text "$caption(acqfcSetup,texte5)" -variable panneau(acqfc,$visuNo,verifier_index_depart)
                pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame8.frame12.check3 -side right -padx 5 -pady 0
-            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame8.frame12 -side right -fill both -expand 1
+            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame8.frame12 -side left
 
          pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame8 -side top -fill both -expand 1
 
          #--- Frame pour le commentaire 6 : enregistrer_acquisiton_interrompue
          frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame9 -borderwidth 0
 
-            #--- Cree le label pour le commentaire 6
-            frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame9.frame11 -borderwidth 0
-               label $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame9.frame11.lab3 -text "$caption(acqfcSetup,texte6)"
-               pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame9.frame11.lab3 -side left -fill both \
-                  -expand 0 -padx 5 -pady 5
-            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame9.frame11 -side left -fill both -expand 1
-
             #--- Cree le checkbutton pour le commentaire 6
             frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame9.frame12 -borderwidth 0
                checkbutton $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame9.frame12.check3 -highlightthickness 0 \
-                  -variable panneau(acqfc,$visuNo,enregistrer_acquisiton_interrompue)
+                  -text "$caption(acqfcSetup,texte6)" -variable panneau(acqfc,$visuNo,enregistrer_acquisiton_interrompue)
                pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame9.frame12.check3 -side right -padx 5 -pady 0
-            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame9.frame12 -side right -fill both -expand 1
+            pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame9.frame12 -side left
 
          pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame9 -side top -fill both -expand 1
 
