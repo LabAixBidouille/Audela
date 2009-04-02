@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.35 2009-02-07 11:00:49 robertdelmas Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.36 2009-04-02 16:47:29 michelpujol Exp $
 #
 
 #==============================================================
@@ -1266,7 +1266,7 @@ proc ::autoguider::selectBinning { visuNo } {
       }
    } else {
       set binning [list [string range $::conf(autoguider,binning) 0 0] [string range $::conf(autoguider,binning) 2 2]]
-      camNo bin $binning
+      cam$camNo bin $binning
    }
 
    #--- je position l'indicateur qui doit mettre a jour les axes
