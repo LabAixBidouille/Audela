@@ -2,7 +2,7 @@
 # Fichier : snmacros.tcl
 # Description : Macros des scripts pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snmacros.tcl,v 1.7 2007-08-19 00:29:38 alainklotz Exp $
+# Mise a jour $Id: snmacros.tcl,v 1.8 2009-04-05 15:08:26 robertdelmas Exp $
 #
 
 proc globgalsn { args } {
@@ -180,7 +180,7 @@ proc sunrise { {hauteurlim "0"} {localite "GPS 2.33 e 48.8 67"} } {
 
 # ==========================================================================================
 proc snconfacq_verif { } {
-   global snconf
+   global conf snconf
 
    if { [info exists snconf(position)] == "0" } {
       set snconf(position) "+80+40"
@@ -230,28 +230,16 @@ proc snconfacq_verif { } {
    if { [info exists snconf(foclen)] == "0" } {
       set snconf(foclen) "1.2"
    }
-   if { [info exists snconf(fits,COMMENT1)] == "0" } {
-      set snconf(fits,COMMENT1) "Focal reducer"
-   }
-   if { [info exists snconf(fits,COMMENT2)] == "0" } {
-      set snconf(fits,COMMENT2) "Kaf-0401E Kodak CCD"
-   }
-   if { [info exists snconf(fits,INSTRUME)] == "0" } {
-      set snconf(fits,INSTRUME) "CCD camera"
-   }
-   if { [info exists snconf(fits,TELESCOP)] == "0" } {
-      set snconf(fits,TELESCOP) "LX200"
-   }
    if { [info exists snconf(fits,OBSERVER)] == "0" } {
-      set snconf(fits,OBSERVER) "SUPER Man"
+      set snconf(fits,OBSERVER) "$conf(posobs,nom_observateur)"
    }
 }
 # ==========================================================================================
 
 # ==========================================================================================
 proc snconfacq_save { } {
-   global snconf
-   global conf
+   global conf snconf
+
    set result ""
    # === Basic parameters ===
    #--- Position
@@ -290,19 +278,13 @@ proc snconfacq_save { } {
    set conf(snconfacq,telescope)     $snconf(telescope)
    #--- FITS Keywords
    set conf(snconfacq,fits,OBSERVER) $snconf(fits,OBSERVER)
-   # === Extended parameters ===
-   #--- FITS Keywords
-   set conf(snconfacq,fits,COMMENT1) $snconf(fits,COMMENT1)
-   set conf(snconfacq,fits,COMMENT2) $snconf(fits,COMMENT2)
-   set conf(snconfacq,fits,INSTRUME) $snconf(fits,INSTRUME)
-   set conf(snconfacq,fits,TELESCOP) $snconf(fits,TELESCOP)
 }
 # ==========================================================================================
 
 # ==========================================================================================
 proc snconfacq_load { } {
-   global snconf
-   global conf
+   global conf snconf
+
    set result ""
    # === Basic parameters ===
    #--- Position
@@ -341,19 +323,13 @@ proc snconfacq_load { } {
    set snconf(telescope)     $conf(snconfacq,telescope)
    #--- FITS Keywords
    set snconf(fits,OBSERVER) $conf(snconfacq,fits,OBSERVER)
-   # === Extended parameters ===
-   #--- FITS Keywords
-   set snconf(fits,COMMENT1) $conf(snconfacq,fits,COMMENT1)
-   set snconf(fits,COMMENT2) $conf(snconfacq,fits,COMMENT2)
-   set snconf(fits,INSTRUME) $conf(snconfacq,fits,INSTRUME)
-   set snconf(fits,TELESCOP) $conf(snconfacq,fits,TELESCOP)
 }
 # ==========================================================================================
 
 # ==========================================================================================
 proc sninfo { {result ""} } {
-   global zone
-   global sn
+   global sn zone
+
    if { $sn(exit) != "1" } {
       $zone(status_list) insert end "$result\n"
       $zone(status_list) yview moveto 1.0
@@ -364,10 +340,7 @@ proc sninfo { {result ""} } {
 
 # ==========================================================================================
 proc makebias {} {
-   global audace
-   global snconf
-   global sn
-   global caption
+   global audace caption sn snconf
 
    set sn(stop) "0"
 
@@ -463,10 +436,7 @@ proc makebias {} {
 
 # ==========================================================================================
 proc makedark {} {
-   global audace
-   global snconf
-   global sn
-   global caption
+   global audace caption sn snconf
 
    set sn(stop) "0"
 
@@ -562,9 +532,7 @@ proc makedark {} {
 
 # ==========================================================================================
 proc snprism { } {
-   global snconf
-   global caption
-   global audace
+   global audace caption snconf
 
    set date_obs [lindex [buf$audace(bufNo) getkwd DATE-OBS] 1]
    set exposure [lindex [buf$audace(bufNo) getkwd EXPOSURE] 1]
@@ -572,13 +540,6 @@ proc snprism { } {
    set jfin [expr $jdeb+$exposure/86400.]
    set jmil [expr ($jdeb+$jfin)/2.]
    set df [mc_date2ymdhms $jfin]
-   set lon [lindex $snconf(localite) 1]
-   set sens [lindex $snconf(localite) 2]
-   if {[string toupper $sens]=="$caption(snmacros,est)"} {
-      set lon [expr -1.*$lon]
-   }
-   set lon [mc_angle2dms $lon 180]
-   set lat [mc_angle2dms [lindex $snconf(localite) 3] 90]
    set ra [lindex [buf$audace(bufNo) getkwd RA] 1]
    set dec [lindex [buf$audace(bufNo) getkwd DEC] 1]
    set focmm [expr $snconf(foclen)*1000.]
@@ -589,12 +550,10 @@ proc snprism { } {
    set ut_start $ut
    set ut_end [format "%02.0f:%02.0f:%05.2f" [lindex $df 3] [lindex $df 4] [lindex $df 5]]
    set jday [mc_date2jd $jmil]
-   set xpixelsz 9
-   set ypixelsz 9
-   set cdeltm1 0.009
-   set cdeltm2 0.009
-   set sitelat [format "%+02.0f:%02.0f:%05.2f" [lindex $lat 0] [lindex $lat 1] [lindex $lat 2]]
-   set sitelon [format "%+03.0f:%02.0f:%05.2f" [lindex $lon 0] [lindex $lon 1] [lindex $lon 2]]
+   set xpixelsz [ lindex [ buf$audace(bufNo) getkwd XPIXSZ ] 1 ]
+   set ypixelsz [ lindex [ buf$audace(bufNo) getkwd YPIXSZ ] 1 ]
+   set cdeltm1 [ expr $xpixelsz / 1000. ]
+   set cdeltm2 [ expr $ypixelsz / 1000. ]
    set binx $snconf(binning)
    set biny $snconf(binning)
    set crval1 $ra
@@ -606,9 +565,7 @@ proc snprism { } {
    set y1 1
    set x2 $naxis1
    set y2 $naxis2
-   set compress 0
    #---
-   buf$audace(bufNo) setkwd [list EXPOSURE "[expr $exposure/60.]" float "Exposure time in minutes" "min"]
    buf$audace(bufNo) setkwd [list UT $ut string "UT time of observation" ""]
    buf$audace(bufNo) setkwd [list UT-START $ut_start string "UT start" ""]
    buf$audace(bufNo) setkwd [list UT-END $ut_end string "UT end" ""]
@@ -617,33 +574,25 @@ proc snprism { } {
    buf$audace(bufNo) setkwd [list YPIXELSZ $ypixelsz float "Y pixel size microns" "um"]
    buf$audace(bufNo) setkwd [list CDELTM1 $cdeltm1 float "size of a pixel (x) in mm" "mm"]
    buf$audace(bufNo) setkwd [list CDELTM2 $cdeltm2 float "size of a pixel (y) in mm" "mm"]
-   buf$audace(bufNo) setkwd [list INSTRUME $snconf(fits,INSTRUME) string "System which created data" ""]
-   buf$audace(bufNo) setkwd [list TELESCOP $snconf(fits,TELESCOP) string "Telescop" ""]
    buf$audace(bufNo) setkwd [list OBSERVER $snconf(fits,OBSERVER) string "Observer name" ""]
-   buf$audace(bufNo) setkwd [list SITELAT $sitelat string "Latitude observatory" ""]
-   buf$audace(bufNo) setkwd [list SITELONG $sitelon string "Longitude observatory" ""]
    buf$audace(bufNo) setkwd [list BINX $binx int "X binning" ""]
    buf$audace(bufNo) setkwd [list BINY $biny int "Y binning" ""]
    buf$audace(bufNo) setkwd [list CRVAL1 $crval1 float "Approx.centre coord. in R.A." "deg"]
    buf$audace(bufNo) setkwd [list CRVAL2 $crval2 float "Approx.centre coord. in DECL" "deg"]
    buf$audace(bufNo) setkwd [list CDELT1 $cdelt1 float "scaleX in rad/pix" "rad"]
    buf$audace(bufNo) setkwd [list CDELT2 $cdelt2 float "scaleY in rad/pix" "rad"]
-   buf$audace(bufNo) setkwd [list MIRRORX F string "X mirror applied to image" ""]
-   buf$audace(bufNo) setkwd [list MIRRORY F string "Y mirror applied to image" ""]
    buf$audace(bufNo) setkwd [list FOCAL $focal float "Focal length in mm" "mm"]
    buf$audace(bufNo) setkwd [list X1 $x1 int "X1 image windowing" ""]
    buf$audace(bufNo) setkwd [list Y1 $y1 int "Y1 image windowing" ""]
    buf$audace(bufNo) setkwd [list X2 $x2 int "X2 image windowing" ""]
    buf$audace(bufNo) setkwd [list Y2 $y2 int "Y2 image windowing" ""]
-   buf$audace(bufNo) setkwd [list COMPRESS $compress int "number of compression" ""]
-   buf$audace(bufNo) setkwd [list COMMENT1 $snconf(fits,COMMENT1) string "" ""]
-   buf$audace(bufNo) setkwd [list COMMENT2 $snconf(fits,COMMENT2) string "" ""]
 }
 # ==========================================================================================
 
 # ==========================================================================================
 proc snconfvisu_verif { } {
    global snconfvisu
+
    if { [ info exists snconfvisu(rep1) ] == "0" } {
       set snconfvisu(rep1) ""
    }
@@ -688,8 +637,8 @@ proc snconfvisu_verif { } {
 
 # ==========================================================================================
 proc snconfvisu_load { } {
-   global snconfvisu
-   global conf
+   global conf snconfvisu
+
    set result ""
    #--- Folder of night images
    set snconfvisu(rep1)              "$conf(snconfvisu,rep1)"
@@ -722,8 +671,8 @@ proc snconfvisu_load { } {
 
 # ==========================================================================================
 proc snconfvisu_save { } {
-   global snconfvisu
-   global conf
+   global conf snconfvisu
+
    set result ""
    #--- Folder of night images
    set conf(snconfvisu,rep1)         "$snconfvisu(rep1)"
@@ -736,8 +685,8 @@ proc snconfvisu_save { } {
 
 # ==========================================================================================
 proc snvisuconfiguration_save { } {
-   global snconfvisu
-   global conf
+   global conf snconfvisu
+
    set result ""
    #--- Cuts change by motion or release
    set conf(snconfvisu,cuts_change)  "$snconfvisu(cuts_change)"
