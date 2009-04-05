@@ -1,6 +1,6 @@
 #
 # Fichier : keyword.cap
-# Mise a jour $Id: keyword.cap,v 1.9 2009-04-01 17:12:23 robertdelmas Exp $
+# Mise a jour $Id: keyword.cap,v 1.10 2009-04-05 06:39:34 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -305,7 +305,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,SERIESID)           "Reihen Ausweis"
    set caption(keyword,description,SWCREATE)           "Software Belichtung"
    set caption(keyword,description,SWMODIFY)           "Aufbereitung Software"
-   set caption(keyword,description,CONFNAME)           "# Configuration instrumentale"
+   set caption(keyword,description,CONFNAME)           "Instrument Konfiguration"
    set caption(keyword,description,COMMENT)            "Kommentar"
 
 # *************** Version portugaise ***************************

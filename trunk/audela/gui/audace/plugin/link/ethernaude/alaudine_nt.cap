@@ -1,6 +1,6 @@
 #
 # Fichier : alaudine_nt.cap
-# Mise a jour $Id: alaudine_nt.cap,v 1.9 2009-04-01 17:12:24 robertdelmas Exp $
+# Mise a jour $Id: alaudine_nt.cap,v 1.10 2009-04-05 06:38:12 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -98,7 +98,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(alaudine_nt,titre)               "AlAudine NT mit I2C Port Stromversorgung"
 
    set caption(alaudine_nt,attention)           "Achtung"
-   set caption(alaudine_nt,message)             "# Le contrôle et la régulation de la température ne sont pas disponibles."
+   set caption(alaudine_nt,message)             "Thermische Regulation und Kontrolle sind nicht verfügbar."
 
    set caption(alaudine_nt,evaluation)          "CCD Kamera umgehende Temperatur Taxierung:"
    set caption(alaudine_nt,degres)              "°C"

@@ -1,6 +1,6 @@
 #
 # Fichier : eventaude_gps.cap
-# Mise a jour $Id: eventaude_gps.cap,v 1.18 2009-04-01 17:12:26 robertdelmas Exp $
+# Mise a jour $Id: eventaude_gps.cap,v 1.19 2009-04-05 06:39:17 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -142,9 +142,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eventaude_gps,titre)                   "Beobachter GPS Koordinaten"
 
    set caption(eventaude_gps,attention)               "Achtung"
-   set caption(eventaude_gps,message_1)               "# Cette fonctionnalité est uniquement accessible par l'EventAude."
-   set caption(eventaude_gps,message_2)               "# Si vous avez cet équipement, vérifier qu'il est sous tension."
-   set caption(eventaude_gps,message_3)               "# Vérifier que le GPS est connecté et synchronisé."
+   set caption(eventaude_gps,message_1)               "Dieser Zug kann nur durch EventAude Zugegriffen sein."
+   set caption(eventaude_gps,message_2)               "Falls sie diese Einrichtung haben, kontrollieren sie ob er an ist."
+   set caption(eventaude_gps,message_3)               "Bitte kontrollieren ob der GPS verbunden und synchronisiert ist."
 
    set caption(eventaude_gps,rafraichir)              "GPS Koordinaten Aktualisierung"
    set caption(eventaude_gps,position_gps)            "GPS Format (WGS84):"
