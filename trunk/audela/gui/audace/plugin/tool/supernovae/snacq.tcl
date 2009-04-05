@@ -2,7 +2,7 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snacq.tcl,v 1.14 2008-12-20 15:10:26 robertdelmas Exp $
+# Mise a jour $Id: snacq.tcl,v 1.15 2009-04-05 15:07:36 robertdelmas Exp $
 #
 
 # ===================================================================
@@ -84,7 +84,7 @@ if { [ info exists snconf(geometry) ] } {
 
 #---
 toplevel $audace(base).snacq -class Toplevel
-wm geometry $audace(base).snacq 570x420$snconf(position)
+wm geometry $audace(base).snacq 570x460$snconf(position)
 wm resizable $audace(base).snacq 1 1
 wm minsize $audace(base).snacq 510 420
 wm title $audace(base).snacq $caption(snacq,main_title)
@@ -113,14 +113,14 @@ pack $audace(base).snacq.frame1 \
    #--- Cree un label pour le telescope
    set snconf(telescope) $conf(telescope)
    if {[::tel::list]!=""} {
-      set cap1 "$caption(snacq,typetel) [ tel$audace(telNo) name ]"
+      set cap2 "$caption(snacq,typetel) [ tel$audace(telNo) name ]"
       set fg $color(blue)
    } else {
-      set cap1 $caption(snacq,notel)
+      set cap2 $caption(snacq,notel)
       set fg $color(red)
    }
    label $audace(base).snacq.frame1.labURL_tel \
-      -text $cap1 -borderwidth 0 -relief flat -fg $fg
+      -text $cap2 -borderwidth 0 -relief flat -fg $fg
    pack $audace(base).snacq.frame1.labURL_tel \
       -in $audace(base).snacq.frame1 -side left \
       -padx 8 -pady 3
@@ -295,6 +295,24 @@ pack $audace(base).snacq.frame13 \
 
    #--- Create a label
    #--- Cree un label
+   label $audace(base).snacq.frame13.label_binning \
+      -text "$caption(snacq,binning)" \
+      -borderwidth 0 -relief flat
+   pack $audace(base).snacq.frame13.label_binning \
+      -in $audace(base).snacq.frame13 -side left \
+      -padx 3 -pady 3
+
+   #--- Create an entry line
+   #--- Cree une ligne d'entree
+   entry $audace(base).snacq.frame13.entry_binning \
+      -textvariable snconf(binning) \
+      -borderwidth 1 -relief groove -width 3
+   pack $audace(base).snacq.frame13.entry_binning \
+      -in $audace(base).snacq.frame13 -side left \
+      -padx 3 -pady 3
+
+   #--- Create a label
+   #--- Cree un label
    label $audace(base).snacq.frame13.label_nbimages \
       -text "$caption(snacq,nbimages)" \
       -borderwidth 0 -relief flat
@@ -413,24 +431,6 @@ pack $audace(base).snacq.frame15 \
 
    #--- Create a label
    #--- Cree un label
-   label $audace(base).snacq.frame15.label_binning \
-      -text "$caption(snacq,binning)" \
-      -borderwidth 0 -relief flat
-   pack $audace(base).snacq.frame15.label_binning \
-      -in $audace(base).snacq.frame15 -side left \
-      -padx 3 -pady 3
-
-   #--- Create an entry line
-   #--- Cree une ligne d'entree
-   entry $audace(base).snacq.frame15.entry_binning \
-      -textvariable snconf(binning) \
-      -borderwidth 1 -relief groove -width 3
-   pack $audace(base).snacq.frame15.entry_binning \
-      -in $audace(base).snacq.frame15 -side left \
-      -padx 3 -pady 3
-
-   #--- Create a label
-   #--- Cree un label
    label $audace(base).snacq.frame15.label_foclen \
       -text "$caption(snacq,foclen)" \
       -borderwidth 0 -relief flat
@@ -438,12 +438,21 @@ pack $audace(base).snacq.frame15 \
       -in $audace(base).snacq.frame15 -side left \
       -padx 3 -pady 3
 
-   #--- Create an entry line
-   #--- Cree une ligne d'entree
-   entry $audace(base).snacq.frame15.entry_foclen \
-      -textvariable snconf(foclen) \
-      -borderwidth 1 -relief groove -width 6
-   pack $audace(base).snacq.frame15.entry_foclen \
+   #--- Create a label
+   #--- Cree un label
+   if {[::cam::list]!=""} {
+      ::keyword::onChangeConfOptic $audace(visuNo)
+      set snconf(foclen) $::keyword::private(focale_resultante)
+      set cap3 "$snconf(foclen)"
+      set fg $color(blue)
+   } else {
+      set cap3 "------"
+      set fg $color(red)
+   }
+   label $audace(base).snacq.frame15.labURL_foclen \
+      -textvariable cap3 \
+      -borderwidth 0 -relief flat -fg $fg
+   pack $audace(base).snacq.frame15.labURL_foclen \
       -in $audace(base).snacq.frame15 -side left \
       -padx 3 -pady 3
 
@@ -465,6 +474,30 @@ pack $audace(base).snacq.frame15 \
       -in $audace(base).snacq.frame15 -side left \
       -padx 3 -pady 3
 
+#--- Cree un frame
+frame $audace(base).snacq.frame16 \
+   -borderwidth 0 -cursor arrow
+pack $audace(base).snacq.frame16 \
+   -in $audace(base).snacq -anchor s -side top -expand 0 -fill x
+
+   #--- Create a label
+   #--- Cree un label
+   label $audace(base).snacq.frame16.label_en-tete_fits \
+      -text "$caption(snacq,en-tete_fits)" \
+      -borderwidth 0 -relief flat
+   pack $audace(base).snacq.frame16.label_en-tete_fits \
+      -in $audace(base).snacq.frame16 -side left \
+      -padx 3 -pady 3
+
+   #--- Create a button
+   #--- Cree un boutton
+   button $audace(base).snacq.frame16.but_mots_cles \
+      -text "$caption(snacq,mots_cles)" -borderwidth 2 \
+      -command { ::keyword::run $audace(visuNo) }
+   pack $audace(base).snacq.frame16.but_mots_cles \
+      -in $audace(base).snacq.frame16 -side left -anchor w \
+      -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
 #--- Create a frame to put buttons in it
 #--- Cree un frame pour y mettre des boutons
 frame $audace(base).snacq.frame2 \
@@ -473,12 +506,12 @@ pack $audace(base).snacq.frame2 \
    -in $audace(base).snacq -anchor s -side bottom -expand 0 -fill x
 
 #--- Create the button GO and ...
-#--- Create the button GO and ...
+#--- Cree le boutton GO et ...
 button $audace(base).snacq.frame2.but_go2 \
    -text $caption(snacq,go2) -borderwidth 2 \
    -command { snacq_go 1 }
 pack $audace(base).snacq.frame2.but_go2 \
-   -in $audace(base).snacq.frame2 -side left  -anchor w \
+   -in $audace(base).snacq.frame2 -side left -anchor w \
    -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 button $audace(base).snacq.frame2.but_go \
    -text $caption(snacq,go) -borderwidth 2 \
@@ -556,12 +589,18 @@ bind $audace(base).snacq.frame1.labURL_cam <ButtonPress-1> {
    tkwait window $audace(base).confCam
    if {[::cam::list]!=""} {
       set cap1 "$caption(snacq,typecam) [lindex [cam$audace(camNo) info] 1]"
+      ::keyword::onChangeConfOptic $audace(visuNo)
+      set snconf(foclen) $::keyword::private(focale_resultante)
+      set cap3 "$snconf(foclen)"
       set fg $color(blue)
    } else {
       set cap1 $caption(snacq,nocam)
+      set cap3 "------"
       set fg $color(red)
    }
    catch { $audace(base).snacq.frame1.labURL_cam configure -text $cap1 -fg $fg }
+   catch { $audace(base).snacq.frame15.labURL_foclen configure -text $cap3 -fg $fg }
+
    update
 }
 
@@ -570,13 +609,13 @@ bind $audace(base).snacq.frame1.labURL_tel <ButtonPress-1> {
    tkwait window $audace(base).confTel
    set snconf(telescope) $conf(telescope)
    if {[::tel::list]!=""} {
-      set cap1 "$caption(snacq,typetel) [ tel$audace(telNo) name ]"
+      set cap2 "$caption(snacq,typetel) [ tel$audace(telNo) name ]"
       set fg $color(blue)
    } else {
-      set cap1 $caption(snacq,notel)
+      set cap2 $caption(snacq,notel)
       set fg $color(red)
    }
-   catch { $audace(base).snacq.frame1.labURL_tel configure -text $cap1 -fg $fg }
+   catch { $audace(base).snacq.frame1.labURL_tel configure -text $cap2 -fg $fg }
    update
 }
 
@@ -585,7 +624,7 @@ bind $audace(base).snacq.frame9.labURL_chemin_rep <ButtonPress-1> {
    tkwait window $audace(base).cwdWindow
    set snconf(dossier) "$conf(rep_images)"
    set audace(rep_images) "$conf(rep_images)"
-   catch { $audace(base).snacq.frame9.labURL_chemin_rep configure -text $snconf(dossier) }
+  catch { $audace(base).snacq.frame9.labURL_chemin_rep configure -text $snconf(dossier) }
    update
 }
 
@@ -595,6 +634,32 @@ bind $audace(base).snacq.frame10.labURL_position_localite <ButtonPress-1> {
    set snconf(localite) $conf(posobs,observateur,gps)
    set audace(posobs,observateur,gps) $conf(posobs,observateur,gps)
    catch { $audace(base).snacq.frame10.labURL_position_localite configure -text $snconf(localite) }
+   update
+}
+
+bind $audace(base).snacq.frame15.labURL_foclen <ButtonPress-1> {
+   if {[::cam::list]!=""} {
+      ::keyword::run $audace(visuNo)
+      tkwait window $audace(base).keyword
+      set snconf(foclen) $::keyword::private(focale_resultante)
+      set cap3 "$snconf(foclen)"
+      set fg $color(blue)
+   } else {
+      ::confCam::run
+      tkwait window $audace(base).confCam
+      if {[::cam::list]!=""} {
+         set cap1 "$caption(snacq,typecam) [lindex [cam$audace(camNo) info] 1]"
+         ::keyword::onChangeConfOptic $audace(visuNo)
+         set snconf(foclen) $::keyword::private(focale_resultante)
+         set cap3 "$snconf(foclen)"
+         set fg $color(blue)
+         catch { $audace(base).snacq.frame1.labURL_cam configure -text $cap1 -fg $fg }
+      } else {
+         set cap3 "------"
+         set fg $color(red)
+      }
+   }
+   catch { $audace(base).snacq.frame15.labURL_foclen configure -text $cap3 -fg $fg }
    update
 }
 
@@ -927,7 +992,7 @@ proc snacq_go { {sndebug 0} } {
          if {$sndebug==0} {
             #--- Pointe le telescope
             if {$indice_image==1} {
-                ::telescope::goto [ list $ra $dec ] "1"
+               ::telescope::goto [ list $ra $dec ] "1"
             }
 
             #--- Delai d'attente a la demande de Robin
@@ -990,15 +1055,16 @@ proc snacq_go { {sndebug 0} } {
                set name "[lindex $ligne 0]"
             }
 
-            #--- On ajoute des mots cle a l'image
+            #--- Formatage de l'ascension droite et de la declinaison
             set rad [mc_angle2deg [lindex $ligne 1]h[lindex $ligne 2]m[lindex $ligne 3]s ]
             set decd [mc_angle2deg [lindex $ligne 4]d[lindex $ligne 5]m[lindex $ligne 6]s 90 ]
+            #--- Rajoute des mots clefs dans l'en-tete FITS
+            foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
+               buf$audace(bufNo) setkwd $keyword
+            }
             #---
             $buffer setkwd [list RA $rad float "right ascension" deg]
             $buffer setkwd [list DEC $decd float "declination" deg]
-            $buffer setkwd [list FOCLEN $snconf(foclen) float "focal length" m]
-            $buffer setkwd [list PIXSIZE1 9 float "pixel size" um]
-            $buffer setkwd [list PIXSIZE2 9 float "pixel size" um]
             #--- Mot cles pour compatibilité Prism
             snprism
 
@@ -1205,13 +1271,12 @@ proc UpdateSnAcq { } {
    $audace(base).snacq.frame12.entry_decinf configure -textvariable snconf(decinf)
    $audace(base).snacq.frame12.entry_decsup configure -textvariable snconf(decsup)
    $audace(base).snacq.frame13.entry_exptime configure -textvariable snconf(exptime)
+   $audace(base).snacq.frame13.entry_binning configure -textvariable snconf(binning)
    $audace(base).snacq.frame13.entry_nbimages configure -textvariable snconf(nbimages)
    $audace(base).snacq.frame13.entry_unsmearing configure -textvariable snconf(unsmearing)
    $audace(base).snacq.frame14.combobox_fichier_sn configure -textvariable snconf(fichier_sn)
    $audace(base).snacq.frame14.entry_magsup configure -textvariable snconf(magsup)
    $audace(base).snacq.frame14.entry_maginf configure -textvariable snconf(maginf)
-   $audace(base).snacq.frame15.entry_binning configure -textvariable snconf(binning)
-   $audace(base).snacq.frame15.entry_foclen configure -textvariable snconf(foclen)
    update
 }
 
