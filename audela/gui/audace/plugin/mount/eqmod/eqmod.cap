@@ -1,6 +1,6 @@
 #
 # Fichier : eqmod.cap
-# Mise a jour $Id: eqmod.cap,v 1.3 2009-04-01 17:12:27 robertdelmas Exp $
+# Mise a jour $Id: eqmod.cap,v 1.4 2009-04-05 06:38:58 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -67,9 +67,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,controle)               "Controllo"
    set caption(eqmod,raquette_tel)           "Pulsantiera a schermo"
 
-   set caption(eqmod,port_eqmod)             "Porta EQMOD"
-   set caption(eqmod,2points)                ":"
-
    set caption(eqmod,tube_ouest)             "# Tube à l'ouest"
    set caption(eqmod,tube_est)               "# Tube à l'est"
    set caption(eqmod,moteur_on)              "Motore On"
@@ -79,6 +76,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,DEC)                    "Declinazione:"
    set caption(eqmod,position_AD)            "# Position AD:"
    set caption(eqmod,position_DEC)           "# Position Déc.:"
+
+   set caption(eqmod,port_eqmod)             "Porta EQMOD"
+   set caption(eqmod,2points)                ":"
 
    set caption(eqmod,titre_site_web)         "Sito Web di riferimento:"
    set caption(eqmod,site_eqmod)             "http://eq-mod.sourceforge.net/introindex.html"
@@ -117,15 +117,15 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,controle)               "Kontroll"
    set caption(eqmod,raquette_tel)           "Hand Kontroller am Bildschirm"
 
-   set caption(eqmod,tube_ouest)             "# Tube à l'ouest"
-   set caption(eqmod,tube_est)               "# Tube à l'est"
+   set caption(eqmod,tube_ouest)             "Rohr nach West"
+   set caption(eqmod,tube_est)               "Rohr nach Ost"
    set caption(eqmod,moteur_on)              "Motor On"
    set caption(eqmod,N/A)                    "------"
    set caption(eqmod,angle_horaire)          "Zeit Winkel:"
    set caption(eqmod,AD)                     "Rektaszension:"
    set caption(eqmod,DEC)                    "Deklination:"
-   set caption(eqmod,position_AD)            "# Position AD:"
-   set caption(eqmod,position_DEC)           "# Position Déc.:"
+   set caption(eqmod,position_AD)            "Rek. Position:"
+   set caption(eqmod,position_DEC)           "Dek. Position:"
 
    set caption(eqmod,port_eqmod)             "EQMOD Port"
    set caption(eqmod,2points)                ":"
