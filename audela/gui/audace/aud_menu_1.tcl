@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.27 2009-02-07 11:20:40 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.28 2009-04-05 06:41:25 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -199,7 +199,7 @@ namespace eval ::audace {
          #--- tous les outils de la visu 1
          if { [ ::confVisu::stopTool 1 ] == "-1" } {
             tk_messageBox -title "$caption(audace,attention)" -icon error \
-               -message "$caption(audace,fermeture_impossible) [ [ ::confVisu::getTool 1 ]::getPluginTitle ]"
+               -message "$caption(audace,fermeture_impossible) [ [ ::confVisu::getTool 1 ]::getPluginTitle ]$caption(audace,fermeture_impossible1)"
             set audace(quitterEnCours) "0"
             menustate normal
             return
@@ -211,7 +211,7 @@ namespace eval ::audace {
             if { $visuNo != "" } {
                if { [ ::confVisu::stopTool $visuNo ] == "-1" } {
                   tk_messageBox -title "$caption(audace,attention)" -icon error \
-                     -message "$caption(audace,fermeture_impossible) [ [ ::confVisu::getTool 1 ]::getPluginTitle ]"
+                     -message "$caption(audace,fermeture_impossible) [ [ ::confVisu::getTool 1 ]::getPluginTitle ]$caption(audace,fermeture_impossible1)"
                   set audace(quitterEnCours) "0"
                   menustate normal
                   return
