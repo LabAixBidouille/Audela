@@ -18,7 +18,7 @@ CXXFLAGS += -I$(EXTINC) -Wno-deprecated
 
 # Remarque : ajout de l'option "-rpath ."
 # L'option -rpath permet d'eviter l'utilisation deconseillee de la variable
-# LB_LIBRARY_PATH au runtime.
+# LD_LIBRARY_PATH au runtime.
 # L'option -rpath indique les repertoires dans lesquels les librairies
 # dynamiques libdcraw.so et libdcjpeg.so seront recherchees en priorite au runtime.
 # L'option -rpath ne peut pas etre passee directement en parametre sur la ligne de
