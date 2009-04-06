@@ -1723,11 +1723,11 @@ int cmdSetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
    TPixelFormat pixelFormat;
    TPixelCompression compression;
    int  pixelData;           // pointeur vers le le tableau de pixels
-   long pixelSize;           // taille du tableau de pixels
+   long pixelSize = 0;           // taille du tableau de pixels
    int keep_keywords;
    int i;
-   int reverse_x =0;
-   int reverse_y =0;
+   int reverse_x = 0;
+   int reverse_y = 0;
    char comment[]="class width height format compression pixelData ?-keep_keywords? ?-pixels_size? ?-reverse_x? ?-reverse_y?";
 
    ligne = (char*)calloc(1000,sizeof(char));
@@ -4303,6 +4303,7 @@ int cmdA_StarList(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 		   if(argc>=4) filename = argv[3];
 
 		   if(argc>=5)
+           {
 			   if(strlen(argv[4])==1 && (argv[4][0]=='y' || argv[4][0]=='n'))
 			   {
 				   if(argv[4][0]=='y')
@@ -4314,6 +4315,7 @@ int cmdA_StarList(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 				   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 				   retour = TCL_ERROR;
 			   }
+           }
 		   if(argc>=6 && retour == TCL_OK)
 			   if(Tcl_GetDouble(interp,argv[5],&fwhm)!=TCL_OK)
 			   {
@@ -4373,20 +4375,23 @@ int cmdA_StarList(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
             }
          }
 		   if(argc>=11 && retour == TCL_OK)
+           {
 			   if(Tcl_GetInt(interp,argv[10],&fileFormat)!=TCL_OK)
 			   {
 				   sprintf(ligne,usage,argv[0],argv[1],"output format must be 1 or 2 (defaut=1)");
 				   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 				   retour = TCL_ERROR;
-            } else {
-               if ( fileFormat < 1 || fileFormat > 2 ) {
+               } 
+               else 
+               {
+                   if ( fileFormat < 1 || fileFormat > 2 ) 
+                   {
 				      sprintf(ligne,usage,argv[0],argv[1],"output format must be 1 or 2 (defaut=1)");
 				      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 				      retour = TCL_ERROR;
-
+                   }
                }
-            }
-
+           }
 		   if(retour == TCL_OK)
 		   {
             try {

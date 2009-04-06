@@ -1519,7 +1519,7 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
                   size_t sizeWritten;
                   // Yassine
                   // sprintf(temporaryRawFileName,"rawFileBuf%d.dat",(int)this);
-                  sprintf(temporaryRawFileName,"rawFileBuf%d.dat",(long)this);
+                  sprintf(temporaryRawFileName,"rawFileBuf%ld.dat",(long)this);
                   ofp = fopen (temporaryRawFileName, "wb");
                   if (ofp) {
                      sizeWritten = fwrite ( pixels, pixelSize, 1, ofp);
