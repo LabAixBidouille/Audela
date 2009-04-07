@@ -2,23 +2,23 @@
 # Fichier : filtrage.tcl
 # Description : Scripts pour un usage aise des fonctions d'AudeLA
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
-# Mise a jour $Id: filtrage.tcl,v 1.6 2009-04-07 09:20:02 jacquesmichelet Exp $
+# Mise a jour $Id: filtrage.tcl,v 1.7 2009-04-07 10:49:04 jacquesmichelet Exp $
 #
 
 #--------------------- Liste des fonctions -----------------------------------#
 #
 # bm_masque_flou     : Convolution par un filtre passe-bas effectuant un masque flou d'une image
-# bm_passe_bas       : Convolution par un filtre passe-bas "�liminant le bruit"
-# bm_passe_haut      : Convolution par un filtre passe-haut "�liminant les formes"
+# bm_passe_bas       : Convolution par un filtre passe-bas "eliminant le bruit"
+# bm_passe_haut      : Convolution par un filtre passe-haut "eliminant les formes"
 # bm_filtre_median   : Convolution par un filtre median effectuant un genre de "moyenne"
 # bm_filtre_min      : Convolution par un filtre minimum
 # bm_filtre_max      : Convolution par un filtre maximum
 # bm_filtre_gauss    : Convolution d'image par un filtre de forme gaussienne (lisse l'image)
 # bm_ondelette_mor   : Convolution d'image par un filtre de forme chapeau type morlet
-#                      (met en �vidence les d�tails noy�s dans la n�bulosit�)
+#                      (met en evidence les details noyes dans la nebulosite)
 # bm_ondelette_mex   : Convolution d'image par un filtre de forme chapeau type mexicain
-#                      (met en �vidence les d�tails noy�s dans la n�bulosit�)
-# bm_logima          : Logarithme d'une image avec des coeficients adpat�s a une image brillante
+#                      (met en evidence les details noyes dans la nebulosite)
+# bm_logima          : Logarithme d'une image avec des coeficients adaptes a une image brillante
 #
 #-----------------------------------------------------------------------------#
 
@@ -26,7 +26,7 @@
 #
 #--- La variable "audace(artifice)" vaut toujours "@@@@" c'est un artifice qui
 #--- permet d'attribuer cette valeur � la variable "fichier" dans le cas d'une
-#--- image charg�e en m�moire
+#--- image chargee en memoire
 #--- Cette variable "audace(artifice)" est d�finie dans le script "aud_menu_4.tcl"
 #
 #-----------------------------------------------------------------------------#
@@ -112,29 +112,39 @@ proc bm_masque_flou { args } {
 
 proc bm_filter { args } {
    #--- arg : type_filtre fichier efficacite
-   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
+   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=aucun effet)
    #--- Les variables nommees audace_* sont globales
    global audace
    global conf
    global caption
    global traiteFilters
 
-   if { [llength $args] == 3 } {
+   if { ( [llength $args] == 3 ) || ( [llength $args] == 4 ) } {
       set type_filtre [ lindex $args 0 ]
       set fichier [ lindex $args 1 ]
       set efficacite [ lindex $args 2 ]
 
+      set taille_noyau 3
+      if { [llength $args] == 4 } {
+         set taille_noyau [ lindex $args 3 ]
+      }
+
+      if { $taille_noyau < 3 } {
+         set taille_noyau 3
+         ::console::affiche_erreur "kernel_size set to 3"
+      }
+
       if { ($fichier == "") || ($efficacite == "") } {
          if { $type_filtre == "fb" } {
-            ::console::affiche_erreur "Usage: bm_passe_bas filename \[efficiency 0.1\]\n"
+            ::console::affiche_erreur "Usage: bm_passe_bas filename \[efficiency 0...1 \[kernel_size\]\]\n"
          } elseif { $type_filtre == "fh" } {
-            ::console::affiche_erreur "Usage: bm_passe_haut filename \[efficiency 0.1\]\n"
+            ::console::affiche_erreur "Usage: bm_passe_haut filename \[efficiency 0...1 \[kernel_size\]\]\n"
          } elseif { $type_filtre == "med" } {
-            ::console::affiche_erreur "Usage: bm_filtre_median filename \[efficiency 0.1\]\n"
+            ::console::affiche_erreur "Usage: bm_filtre_median filename \[efficiency 0...1 \[kernel_size\]\]\n"
          } elseif { $type_filtre == "min" } {
-            ::console::affiche_erreur "Usage: bm_filtre_min filename \[efficiency 0.1\]\n"
+            ::console::affiche_erreur "Usage: bm_filtre_min filename \[efficiency 0...1 \[kernel_size\]\]\n"
          } elseif { $type_filtre == "max" } {
-            ::console::affiche_erreur "Usage: bm_filtre_max filename \[efficiency 0.1\]\n"
+            ::console::affiche_erreur "Usage: bm_filtre_max filename \[efficiency 0...1 \[kernel_size\]\]\n"
          }
       } else {
          if { $type_filtre == "fb" } {
@@ -148,6 +158,7 @@ proc bm_filter { args } {
          } elseif { $type_filtre == "max" } {
             set filter "filtre_maximum"
          }
+
          #--- Verif existence
          set filein  "$fichier$conf(extension,defaut)"
          #--- Algo
@@ -156,7 +167,18 @@ proc bm_filter { args } {
             if { [ file exist $filein ] == "1" } {
                ::console::affiche_resultat "$caption(filtrage,chargement) $fichier$conf(extension,defaut)\n\n"
                buf$audace(bufNo) load "$filein"
-               buf$audace(bufNo) imaseries "FILTER kernel_type=$type_filtre kernel_coef=$efficacite"
+               set naxis1 [lindex [buf$audace(bufNo) getkwd NAXIS1] 1]
+               set naxis2 [lindex [buf$audace(bufNo) getkwd NAXIS2] 1]
+               if { $naxis1 > $naxis2 } {
+                  set taille_max [ expr $naxis2 / 10 ]
+               } else {
+                  set taille_max [ expr $naxis1 / 10 ]
+               }
+               if { $taille_noyau > $taille_max } {
+                  set taille_noyau $taille_max
+                  ::console::affiche_erreur "The kernel size is too big and has been clipped to $taille_noyau\n\n"
+               }
+               buf$audace(bufNo) imaseries "FILTER kernel_type=$type_filtre kernel_coef=$efficacite kernel_width=$taille_noyau"
                ::audace::autovisu $audace(visuNo)
                set traiteFilters(avancement) $caption(filtrage,fin_traitement)
             } else {
@@ -182,70 +204,80 @@ proc bm_filter { args } {
 
 proc bm_passe_bas { args } {
    #--- arg : fichier efficacite
-   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
+   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=aucun effet)
 
-   if { [llength $args] == 2 } {
+   if { ( [llength $args] == 2 ) || ( [llength $args] == 3 ) } {
       set fichier [ lindex $args 0 ]
       set efficacite [ lindex $args 1 ]
-      bm_filter fb $fichier $efficacite
+      set taille_noyau 3
+      if { [llength $args] == 3 } {set taille_noyau [lindex $args 2]}
+      bm_filter fb $fichier $efficacite $taille_noyau
    } else {
-      ::console::affiche_erreur "Usage: bm_passe_bas filename \[efficiency 0.1\]\n"
+      ::console::affiche_erreur "Usage: bm_passe_bas filename \[efficiency 0...1 \[kernel size\]\]\n"
    }
 }
 #-----------------------------------------------------------------------------#
 
 proc bm_passe_haut { args } {
    #--- arg : fichier efficacite
-   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
+   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=aucun effet)
 
-   if { [llength $args] == 2 } {
+   if { ( [llength $args] == 2 ) || ( [llength $args] == 3 ) } {
       set fichier [ lindex $args 0 ]
       set efficacite [ lindex $args 1 ]
-      bm_filter fh $fichier $efficacite
+      set taille_noyau 3
+      if { [llength $args] == 3 } {set taille_noyau [lindex $args 2]}
+      bm_filter fh $fichier $efficacite $taille_noyau
    } else {
-      ::console::affiche_erreur "Usage: bm_passe_haut filename \[efficiency 0.1\]\n"
+      ::console::affiche_erreur "Usage: bm_passe_haut filename \[efficiency 0...1 \[kernel size\]\]\n"
    }
 }
 #-----------------------------------------------------------------------------#
 
 proc bm_filtre_median { args } {
    #--- arg : fichier efficacite
-   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
+   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=aucun effet)
 
-   if { [llength $args] == 2 } {
+   if { ( [llength $args] == 2 ) || ( [llength $args] == 3 ) } {
       set fichier [ lindex $args 0 ]
       set efficacite [ lindex $args 1 ]
-      bm_filter med $fichier $efficacite
+      set taille_noyau 3
+      if { [llength $args] == 3 } {set taille_noyau [lindex $args 2]}
+      bm_filter med $fichier $efficacite $taille_noyau
    } else {
-      ::console::affiche_erreur "Usage: bm_filtre_median filename \[efficiency 0.1\]\n"
+      ::console::affiche_erreur "Usage: bm_filtre_median filename \[efficiency 0...1 \[kernel size\]\]\n"
    }
 }
 #-----------------------------------------------------------------------------#
 
 proc bm_filtre_min { args } {
    #--- arg : fichier efficacite
-   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
+   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=aucun effet)
 
-   if { [llength $args] == 2 } {
+   if { ( [llength $args] == 2 ) || ( [llength $args] == 3 ) } {
       set fichier [ lindex $args 0 ]
       set efficacite [ lindex $args 1 ]
-      bm_filter min $fichier $efficacite
+      set taille_noyau 3
+      if { [llength $args] == 3 } {set taille_noyau [lindex $args 2]}
+      bm_filter min $fichier $efficacite $taille_noyau
    } else {
-      ::console::affiche_erreur "Usage: bm_filtre_min filename \[efficiency 0.1\]\n"
+      ::console::affiche_erreur "Usage: bm_filtre_min filename \[efficiency 0...1 \[kernel size\]\]\n"
    }
 }
 #-----------------------------------------------------------------------------#
 
 proc bm_filtre_max { args } {
    #--- arg : fichier efficacite
-   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
+   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=aucun effet)
 
-   if { [llength $args] == 2 } {
+   if { ( [llength $args] == 2 ) || ( [llength $args] == 3 ) } {
       set fichier [ lindex $args 0 ]
       set efficacite [ lindex $args 1 ]
-      bm_filter max $fichier $efficacite
+      set taille_noyau 3
+      if { [llength $args] == 3 } {set taille_noyau [lindex $args 2]}
+      bm_filter max $fichier $efficacite $taille_noyau
    } else {
-      ::console::affiche_erreur "Usage: bm_filtre_max filename \[efficiency 0.1\]\n"
+      ::console::affiche_erreur "Usage: bm_filtre_max filename \[efficiency 0.1 \[kernel size\]\]\n"
    }
 }
 #-----------------------------------------------------------------------------#
@@ -258,7 +290,7 @@ proc bm_filtre_max { args } {
 
 proc bm_convo { args } {
    #--- arg : fichier efficacite
-   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=auncun effet)
+   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=aucun effet)
    #--- Les variables nommees audace_* sont globales
    global audace
    global conf
@@ -381,7 +413,7 @@ proc bm_ondelette_mex { args } {
 
 #*****************************************************************************#
 #
-# Description : Logarithme d'une image avec des coeficients adpates a une image
+# Description : Logarithme d'une image avec des coeficients adaptes a une image
 # brillante
 # Evolution future : Fenetre avec reglage des coefficients a l'aide d'ascenseurs
 #
