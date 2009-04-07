@@ -2,32 +2,32 @@
 # Fichier : filtrage.tcl
 # Description : Scripts pour un usage aise des fonctions d'AudeLA
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
-# Mise a jour $Id: filtrage.tcl,v 1.5 2007-03-18 16:06:48 robertdelmas Exp $
+# Mise a jour $Id: filtrage.tcl,v 1.6 2009-04-07 09:20:02 jacquesmichelet Exp $
 #
 
 #--------------------- Liste des fonctions -----------------------------------#
 #
 # bm_masque_flou     : Convolution par un filtre passe-bas effectuant un masque flou d'une image
-# bm_passe_bas       : Convolution par un filtre passe-bas "éliminant le bruit"
-# bm_passe_haut      : Convolution par un filtre passe-haut "éliminant les formes"
+# bm_passe_bas       : Convolution par un filtre passe-bas "ï¿½liminant le bruit"
+# bm_passe_haut      : Convolution par un filtre passe-haut "ï¿½liminant les formes"
 # bm_filtre_median   : Convolution par un filtre median effectuant un genre de "moyenne"
 # bm_filtre_min      : Convolution par un filtre minimum
 # bm_filtre_max      : Convolution par un filtre maximum
 # bm_filtre_gauss    : Convolution d'image par un filtre de forme gaussienne (lisse l'image)
 # bm_ondelette_mor   : Convolution d'image par un filtre de forme chapeau type morlet
-#                      (met en évidence les détails noyés dans la nébulosité)
+#                      (met en ï¿½vidence les dï¿½tails noyï¿½s dans la nï¿½bulositï¿½)
 # bm_ondelette_mex   : Convolution d'image par un filtre de forme chapeau type mexicain
-#                      (met en évidence les détails noyés dans la nébulosité)
-# bm_logima          : Logarithme d'une image avec des coeficients adpatés a une image brillante
+#                      (met en ï¿½vidence les dï¿½tails noyï¿½s dans la nï¿½bulositï¿½)
+# bm_logima          : Logarithme d'une image avec des coeficients adpatï¿½s a une image brillante
 #
 #-----------------------------------------------------------------------------#
 
 #---------------------- Artifice ---------------------------------------------#
 #
 #--- La variable "audace(artifice)" vaut toujours "@@@@" c'est un artifice qui
-#--- permet d'attribuer cette valeur à la variable "fichier" dans le cas d'une
-#--- image chargée en mémoire
-#--- Cette variable "audace(artifice)" est définie dans le script "aud_menu_4.tcl"
+#--- permet d'attribuer cette valeur ï¿½ la variable "fichier" dans le cas d'une
+#--- image chargï¿½e en mï¿½moire
+#--- Cette variable "audace(artifice)" est dï¿½finie dans le script "aud_menu_4.tcl"
 #
 #-----------------------------------------------------------------------------#
 
@@ -62,7 +62,7 @@ proc bm_masque_flou { args } {
          set filetmp  "${fichier}_tmp$conf(extension,defaut)"
          set filetmp1 "${fichier}_tmp1$conf(extension,defaut)"
          #--- Algo
-         if { $fichier != "$audace(artifice)" } {
+         if { ( ![info exists audace(artifice)] ) || ( $fichier != "$audace(artifice)" ) } {
             if { [ file exist $filein ] == "1" } {
                ::console::affiche_resultat "$caption(filtrage,chargement) $fichier$conf(extension,defaut)\n\n"
                buf$audace(bufNo) load "$filein"
@@ -151,7 +151,8 @@ proc bm_filter { args } {
          #--- Verif existence
          set filein  "$fichier$conf(extension,defaut)"
          #--- Algo
-         if { $fichier != "$audace(artifice)" } {
+
+         if {  ( ![info exists audace(artifice)] ) || ( $fichier != "$audace(artifice)" ) } {
             if { [ file exist $filein ] == "1" } {
                ::console::affiche_resultat "$caption(filtrage,chargement) $fichier$conf(extension,defaut)\n\n"
                buf$audace(bufNo) load "$filein"
@@ -288,7 +289,7 @@ proc bm_convo { args } {
          #--- Verif existence
          set filein  "$fichier$conf(extension,defaut)"
          #--- Algo
-         if { $fichier != "$audace(artifice)" } {
+         if { ( ![info exists audace(artifice)] ) || ( $fichier != "$audace(artifice)" ) } {
             if { [ file exist $filein ] == "1" } {
                ::console::affiche_resultat "$caption(filtrage,chargement) $fichier$conf(extension,defaut)\n\n"
                buf$audace(bufNo) load "$filein"
@@ -403,7 +404,7 @@ proc bm_logima { args } {
          #--- Verif existence
          set filein  "$fichier$conf(extension,defaut)"
          #--- Algo
-         if { $fichier != "$audace(artifice)" } {
+         if { ( ![info exists audace(artifice)] ) || ( $fichier != "$audace(artifice)" ) } {
             if { [ file exist $filein ] == "1" } {
                ::console::affiche_resultat "$caption(filtrage,chargement) $fichier$conf(extension,defaut)\n\n"
                buf$audace(bufNo) load "$filein"
