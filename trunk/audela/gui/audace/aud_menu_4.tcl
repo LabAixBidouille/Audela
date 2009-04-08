@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_4.tcl
 # Description : Script regroupant les fonctionnalites du menu Traitement
-# Mise a jour $Id: aud_menu_4.tcl,v 1.14 2009-04-08 11:41:26 jacquesmichelet Exp $
+# Mise a jour $Id: aud_menu_4.tcl,v 1.15 2009-04-08 15:21:25 robertdelmas Exp $
 #
 
 namespace eval ::traiteFilters {
@@ -258,12 +258,12 @@ namespace eval ::traiteFilters {
 
          frame $This.usr.10 -borderwidth 0 -relief raised
             frame $This.usr.10.1 -borderwidth 0 -relief flat
-               label $This.usr.10.1.l -text "Taille du noyau (pixels)"
+               label $This.usr.10.1.l -text "$caption(traiteFilters,taille_noyau)"
                pack $This.usr.10.1.l -side top -padx 5 -pady 5
             pack $This.usr.10.1 -side left -fill both
             frame $This.usr.10.2 -borderwidth 0 -relief flat
                foreach champ [list 3 5 7 9 11 13 15 17 19 21] {
-                  radiobutton $This.usr.10.2.$champ -text $champ -value $champ -variable "$caption(traiteFilters,taille_noyau)"
+                  radiobutton $This.usr.10.2.$champ -text $champ -value $champ -variable traiteFilters(taille_noyau)
                   pack $This.usr.10.2.$champ -side left
                }
             pack $This.usr.10.2 -side right -fill both
