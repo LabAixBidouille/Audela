@@ -1080,7 +1080,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 
 	tt_morphomath_1(pseries);	
 	//pour visualiser le tophat 
-	//tt_imasaver(p_out,"D:/tophat.fit",16);	
+	tt_imasaver(p_out,"D:/tophat.fit",16);	
 
 	/* --- lit les parametres astrometriques de l'image ---*/
 	valid_ast=1;
@@ -1136,7 +1136,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					}
 				}
 			}
-			//tt_imasaver(p_tmp3,"D:/gtopetite.fit",16);
+			tt_imasaver(p_tmp3,"D:/gtopetite.fit",16);
 			tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
 			
 			//recupère les coordonnées de la droite détectée y=a0*x+b0 y=eq[0]*x+eq[1] et eq[2]=0, si la droite est verticale x=eq[2] et eq[0]=eq[1]=0
@@ -1158,7 +1158,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 							}
 						}
 					}
-					//tt_imasaver(p_tmp3,"D:/gtopetite_rot.fit",16);
+					tt_imasaver(p_tmp3,"D:/gtopetite_rot.fit",16);
 					tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
 					rotation=1;
 				}
@@ -1236,17 +1236,30 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					if (sommex>n1) sommex=n1-1;
 					if (sommey<0) sommey=n2/2;
 					if (sommey>n2) sommey=n2-1;
-					for (k1=0;k1<n1;k1++) {
-						for (k2=0;k2<n2;k2++) {
-							if ((k1>=n1-xx2)||(k1<=xx1)||(k2<=yy1)||(k2>=n2-yy2)) {
-								p_tmp3->p[n1*k2+k1]=0;
-							} else {
-								dvalue=(double)p_out->p[naxis1*(k2+k3*n2+(int)sommey)+k1+k5+(int)sommex];
-								p_tmp3->p[n1*k2+k1]=(TT_PTYPE)(dvalue);
+					if (rotation==0) {
+						for (k1=0;k1<n1;k1++) {
+							for (k2=0;k2<n2;k2++) {
+								if ((k1>=n1-xx2)||(k1<=xx1)||(k2<=yy1)||(k2>=n2-yy2)) {
+									p_tmp3->p[n1*k2+k1]=0;
+								} else {
+									dvalue=(double)p_out->p[naxis1*(k2+k3*n2+(int)sommey)+k1+k5+(int)sommex];
+									p_tmp3->p[n1*k2+k1]=(TT_PTYPE)(dvalue);
+								}
+							}
+						}
+					} else {
+						for (k1=0;k1<n1;k1++) {
+							for (k2=0;k2<n2;k2++) {
+								if ((k1>=n1-xx2)||(k1<=xx1)||(k2<=yy1)||(k2>=n2-yy2)) {
+									p_tmp3->p[n1*k1+(n2-1)-k2]=0;
+								} else {
+									dvalue=(double)p_out->p[naxis1*(k2+k3*n2+(int)sommey)+k1+k5+(int)sommex];
+									p_tmp3->p[n1*k1+(n2-1)-k2]=(TT_PTYPE)(dvalue); //rotation de +90° de l'imagette (sens trigo)
+								}
 							}
 						}
 					}
-					//tt_imasaver(p_tmp3,"D:/gtopetite.fit",16);
+					tt_imasaver(p_tmp3,"D:/gtopetite2.fit",16);
 					tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
 
 					somme_value=0;somme_x=0;somme_y=0;		
@@ -1321,9 +1334,14 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						}
 						dvalue=somme_x;
 						somme_x=somme_y;
-						somme_y=n2-dvalue;
+						somme_y=n2-dvalue;	
 					}
 					if (bord==1) {
+						if (rotation==1) {
+							dvalue=sommex;
+							sommex=sommey;
+							sommey=n2-dvalue;
+						}
 						if (eq[2]==0) {
 							eq[1]=eq[1]-(sommex)*eq[0]+sommey;
 						} else {
@@ -1806,7 +1824,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						}
 						/* --- cas des droites faibles pentes ou horizontales --- */
 						i=0;j=0; flux=0;
-						if ((((eq[0]<=0.8)&&(eq[0]>=-0.8))||(eq[0]==0))&&(eq[2]==0)) {
+						if ((((eq[0]<=0.8)&&(eq[0]>=-0.8))||(eq[0]==0))&&(eq[2]==0)) {		
 							for (k1=(int)xdebut;k1<=(int)xfin;k1++) {										
 								for (k2=(int)(eq[0]*k1+eq[1]-largx-3);k2<=(int)(eq[0]*k1+eq[1]+largx+3);k2++) {
 									if (k2<0) continue;
@@ -1818,14 +1836,12 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 									}
 									/* --- photometrie (flux) ---*/	
 									dvalue=(double)p_in->p[naxis1*k2+k1]-fmed;
-									flux += dvalue;
+									if (dvalue>0) {
+										flux += dvalue;
+									}
 								}								
-								if (somme[i]!=0) {
-									j++;
-								}
 								i++;
 							}
-							
 							sommexy=0;sommex=0;sommey=0;sommexx=0;							
 							for (nb=0; nb<i; nb++) {
 								if (bary_y[nb]==0) continue;
@@ -1835,6 +1851,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 									sommexy=sommexy+(xdebut+nb)*bary_y[nb];
 									sommex=sommex+(xdebut+nb);
 									sommexx=sommexx+(xdebut+nb)*(xdebut+nb);
+									j++;
 								} else {
 									bary_y[nb]=0;
 								}
@@ -1843,7 +1860,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 
 						/* --- cas des droites fortes pentes ou verticales --- */
 						else { 		
-							if (eq[0]>0.8) { // droite forte pente positive
+							if (eq[0]>0) { // droite forte pente positive
 								for (k2=(int)ydebut;k2<=(int)yfin;k2++) {
 									for (k1=(int)((k2-eq[1])/eq[0]-largx-3);k1<=(int)((k2-eq[1])/eq[0]+largx+3);k1++) {
 										if (k1<0) continue;
@@ -1855,14 +1872,13 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 										}
 										/* --- photometrie (flux) ---*/	
 										dvalue=(double)p_in->p[naxis1*k2+k1]-fmed;
-										flux += dvalue;
-									}								
-									if (somme[i]!=0) {
-										j++;
-									}
+										if (dvalue>0) {
+											flux += dvalue;
+										}
+									}									
 									i++;
 								}
-							} else if (eq[0]<-0.8) { // droite forte pente négative
+							} else if (eq[0]<0) { // droite forte pente négative
 								for (k2=(int)ydebut;k2>=(int)yfin;k2--) {
 									for (k1=(int)((k2-eq[1])/eq[0]-largx-3);k1<=(int)((k2-eq[1])/eq[0]+largx+3);k1++) {
 										if (k1<0) continue;
@@ -1874,10 +1890,9 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 										}
 										/* --- photometrie (flux) ---*/	
 										dvalue=(double)p_in->p[naxis1*k2+k1]-fmed;
-										flux += dvalue;
-									}
-									if (somme[i]!=0) {
-										j++;
+										if (dvalue>0) {
+											flux += dvalue;
+										}
 									}
 									i++;
 								}
@@ -1893,10 +1908,9 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 										}
 										/* --- photometrie (flux) ---*/	
 										dvalue=(double)p_in->p[naxis1*k2+k1]-fmed;
-										flux += dvalue;
-									}
-									if (somme[i]!=0) {
-										j++;
+										if (dvalue>0) {
+											flux += dvalue;
+										}
 									}
 									i++;
 								}									
@@ -1915,6 +1929,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 										sommexy=sommexy+bary_x[nb]*(ydebut+nb);
 										sommey=sommey+(ydebut+nb);
 									}
+									j++;
 								} else {
 									bary_x[nb]=0;
 								}
@@ -1927,7 +1942,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 								eq[0]=(j*sommexy-sommex*sommey)/(j*sommexx-sommex*sommex);		
 								eq[1]=(sommey*sommexx-sommex*sommexy)/(j*sommexx-sommex*sommex);
 							} else {
-								eq[2]=sommex/j;
+								eq[2]=sommex/(j);
 								eq[0]=eq[1]=0;
 								if (ydebut<yfin) {
 									dvalue = yfin;
@@ -1935,8 +1950,8 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 									ydebut=dvalue;
 								}
 							}
-						} else if (j!=0) {
-							eq[2]=sommex/j;
+						} else if (j>0) {
+							eq[2]=sommex/(j);
 							somme_value=eq[0]=eq[1]=0;
 							if (ydebut<yfin) {
 								dvalue = yfin;
@@ -1969,6 +1984,14 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 							xdebut=eq[2];
 							xfin=eq[2];
 						}
+						if (xdebut<0) {xdebut=0;}
+						if (xfin<0) {xfin=0; xdebut=0;}
+						if (ydebut<0) {ydebut=0;}
+						if (yfin<0) {yfin=0; ydebut=0;}
+						if (xfin>naxis1) {xfin=naxis1-1;}
+						if (xdebut>naxis1) {xfin=naxis1-1;xdebut=naxis1-1;}
+						if (yfin>naxis2) {yfin=naxis2-1;}
+						if (ydebut>naxis2) {yfin=naxis2-1;ydebut=naxis2-1;}
 
 						/* --- astrometrie (ra,dec) ---*/
 						radebut=0.;rafin=0.;
