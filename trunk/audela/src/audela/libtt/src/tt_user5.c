@@ -1985,13 +1985,13 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 							xfin=eq[2];
 						}
 						if (xdebut<0) {xdebut=0;}
-						if (xfin<0) {xfin=0; xdebut=0;}
+						if (xfin<0) {xfin=0;}
 						if (ydebut<0) {ydebut=0;}
-						if (yfin<0) {yfin=0; ydebut=0;}
+						if (yfin<0) {yfin=0;}
 						if (xfin>naxis1) {xfin=naxis1-1;}
-						if (xdebut>naxis1) {xfin=naxis1-1;xdebut=naxis1-1;}
+						if (xdebut>naxis1) {xdebut=naxis1-1;}
 						if (yfin>naxis2) {yfin=naxis2-1;}
-						if (ydebut>naxis2) {yfin=naxis2-1;ydebut=naxis2-1;}
+						if (ydebut>naxis2) {ydebut=naxis2-1;}
 
 						/* --- astrometrie (ra,dec) ---*/
 						radebut=0.;rafin=0.;
