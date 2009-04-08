@@ -1,8 +1,9 @@
+##
+# @file filtrage.tcl
+# @briefScripts pour un usage aise des fonctions d'AudeLA
+# @author Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# Fichier : filtrage.tcl
-# Description : Scripts pour un usage aise des fonctions d'AudeLA
-# Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
-# Mise a jour $Id: filtrage.tcl,v 1.7 2009-04-07 10:49:04 jacquesmichelet Exp $
+# $Id: filtrage.tcl,v 1.8 2009-04-08 07:46:30 jacquesmichelet Exp $
 #
 
 #--------------------- Liste des fonctions -----------------------------------#
@@ -19,17 +20,121 @@
 # bm_ondelette_mex   : Convolution d'image par un filtre de forme chapeau type mexicain
 #                      (met en evidence les details noyes dans la nebulosite)
 # bm_logima          : Logarithme d'une image avec des coeficients adaptes a une image brillante
-#
+# gradient_nose      : Maximum des 4 gradients N,O,S et E.
 #-----------------------------------------------------------------------------#
 
 #---------------------- Artifice ---------------------------------------------#
 #
 #--- La variable "audace(artifice)" vaut toujours "@@@@" c'est un artifice qui
-#--- permet d'attribuer cette valeur � la variable "fichier" dans le cas d'une
+#--- permet d'attribuer cette valeur a la variable "fichier" dans le cas d'une
 #--- image chargee en memoire
-#--- Cette variable "audace(artifice)" est d�finie dans le script "aud_menu_4.tcl"
+#--- Cette variable "audace(artifice)" est definie dans le script "aud_menu_4.tcl"
 #
 #-----------------------------------------------------------------------------#
+
+
+##
+# @brief calcul du gradient
+# @details : le calcul est fait suivant les 4 directions N,O,S et E, puis chaque pixel est affecté du pixel maximal de chaque image
+# @param args : liste contenant
+# - le nom de l'image à traiter
+# - la taille du noyau à appliquer sur les gradients
+proc gradient_nose { args } {
+
+    global audace
+    global conf
+    global caption
+    global traiteFilters
+
+    if { ([llength $args] == 1) || ([llength $args] == 2) } {
+        set fichier [ lindex $args 0 ]
+        set taille_noyau 3
+        if {[llength $args] == 2} {
+            set taille_noyau [ lindex $args 1 ]
+        }
+        if { ($fichier == "") } {
+            ::console::affiche_erreur "Usage: gradient_nose filename \[kernel size\]\n"
+        } else {
+            #--- Verif existence
+            set filein   "$fichier$conf(extension,defaut)"
+            set filetmp "${fichier}_tmp$conf(extension,defaut)"
+            set filetmp0 "${fichier}_tmp0$conf(extension,defaut)"
+            set filetmp1 "${fichier}_tmp1$conf(extension,defaut)"
+            set filetmp2 "${fichier}_tmp2$conf(extension,defaut)"
+            set filetmp3 "${fichier}_tmp3$conf(extension,defaut)"
+            set filetmp4 "${fichier}_tmp4$conf(extension,defaut)"
+
+
+            #--- Algo
+            if { ( ![info exists audace(artifice)] ) || ( $fichier != "$audace(artifice)" ) } {
+                if { [ file exist $filein ] == "1" } {
+                    ::console::affiche_resultat "$caption(filtrage,chargement) $fichier$conf(extension,defaut)\n\n"
+                    buf$audace(bufNo) load "$filein"
+                    buf$audace(bufNo) imaseries "FILTER kernel_type=gradup kernel_coef=0 kernel_width=$taille_noyau"
+                    buf$audace(bufNo) save "$filetmp1"
+                    buf$audace(bufNo) load "$filein"
+                    buf$audace(bufNo) imaseries "FILTER kernel_type=graddown kernel_coef=0 kernel_width=$taille_noyau"
+                    buf$audace(bufNo) save "$filetmp2"
+                    buf$audace(bufNo) load "$filein"
+                    buf$audace(bufNo) imaseries "FILTER kernel_type=gradleft kernel_coef=0 kernel_width=$taille_noyau"
+                    buf$audace(bufNo) save "$filetmp3"
+                    buf$audace(bufNo) load "$filein"
+                    buf$audace(bufNo) imaseries "FILTER kernel_type=gradright kernel_coef=0 kernel_width=$taille_noyau"
+                    buf$audace(bufNo) save "$filetmp4"
+
+                    set rep [file dirname $filetmp]
+                    set nom [file rootname [file tail $filetmp]]
+                    ttscript2 "IMA/STACK \"$rep\" \"$nom\" \"1\" \"4\" \".fit\" \"$rep\" \"$nom\" \"0\" \".fit\" SORT percent=100 nullpixel=-5000"
+                    buf$audace(bufNo) load "$filetmp0"
+                    ::audace::autovisu $audace(visuNo)
+                    catch {file delete -force "$filetmp0"}
+                    catch {file delete -force "$filetmp1"}
+                    catch {file delete -force "$filetmp2"}
+                    catch {file delete -force "$filetmp3"}
+                    catch {file delete -force "$filetmp4"}
+                    set traiteFilters(avancement) $caption(filtrage,fin_traitement)
+                } else {
+                    tk_messageBox -title $caption(filtrage,attention) -type ok -message $caption(filtrage,pas_de_fichier)
+                    set traiteFilters(avancement) ""
+                }
+            } else {
+                if { [ buf[ ::confVisu::getBufNo $audace(visuNo) ] imageready ] == "0" } {
+                    tk_messageBox -title $caption(filtrage,attention) -type ok -message $caption(filtrage,pas_image_memoire)
+                    set traiteFilters(avancement) ""
+                } else {
+                    buf$audace(bufNo) save "$filein"
+                    buf$audace(bufNo) imaseries "FILTER kernel_type=gradup kernel_coef=0 kernel_width=$taille_noyau"
+                    buf$audace(bufNo) save "$filetmp1"
+                    buf$audace(bufNo) load "$filein"
+                    buf$audace(bufNo) imaseries "FILTER kernel_type=graddown kernel_coef=0 kernel_width=$taille_noyau"
+                    buf$audace(bufNo) save "$filetmp2"
+                    buf$audace(bufNo) load "$filein"
+                    buf$audace(bufNo) imaseries "FILTER kernel_type=gradleft kernel_coef=0 kernel_width=$taille_noyau"
+                    buf$audace(bufNo) save "$filetmp3"
+                    buf$audace(bufNo) load "$filein"
+                    buf$audace(bufNo) imaseries "FILTER kernel_type=gradright kernel_coef=0 kernel_width=$taille_noyau"
+                    buf$audace(bufNo) save "$filetmp4"
+
+                    set rep [file dirname $filetmp]
+                    set nom [file rootname [file tail $filetmp]]
+                    ttscript2 "IMA/STACK \"$rep\" \"$nom\" \"1\" \"4\" \".fit\" \"$rep\" \"$nom\" \"0\" \".fit\" SORT percent=100 nullpixel=-5000"
+                    buf$audace(bufNo) load "$filetmp0"
+                    ::audace::autovisu $audace(visuNo)
+                    catch {file delete -force "$filetmp0"}
+                    catch {file delete -force "$filetmp1"}
+                    catch {file delete -force "$filetmp2"}
+                    catch {file delete -force "$filetmp3"}
+                    catch {file delete -force "$filetmp4"}
+                    catch {file delete -force "$filein"}
+                    set traiteFilters(avancement) $caption(filtrage,fin_traitement)
+                }
+            }
+        }
+
+    } else {
+        ::console::affiche_erreur "Usage: gradient_nose filename \[kernel size\]\n"
+    }
+}
 
 #*****************************************************************************#
 #
@@ -104,12 +209,14 @@ proc bm_masque_flou { args } {
 }
 #-----------------------------------------------------------------------------#
 
-#*****************************************************************************#
-#
-# Description : Filtres passe-bas, passe-haut, median, min, max
-#
-#*****************************************************************************#
-
+##
+#@brief : Filtres passe-bas, passe-haut, median, min, max
+#@param args : liste contenant
+# - le type du filtre
+# - le nom du fichier
+# - l'efficacité (0=intense, 1=aucun effet)
+# - la taille du noyau
+# .
 proc bm_filter { args } {
    #--- arg : type_filtre fichier efficacite
    #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=aucun effet)
@@ -202,9 +309,13 @@ proc bm_filter { args } {
 }
 #-----------------------------------------------------------------------------#
 
+##
+# @brief : filtre passe-bas
+# @param args : liste contenant
+# - le nom du fichier
+# - l'efficacite du filtre (0=intense, 1=aucun effet)
+# - la taille du noyau
 proc bm_passe_bas { args } {
-   #--- arg : fichier efficacite
-   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=aucun effet)
 
    if { ( [llength $args] == 2 ) || ( [llength $args] == 3 ) } {
       set fichier [ lindex $args 0 ]
@@ -218,9 +329,13 @@ proc bm_passe_bas { args } {
 }
 #-----------------------------------------------------------------------------#
 
+##
+# @brief : filtre passe-haut
+# @param args : liste contenant
+# - le nom du fichier
+# - l'efficacite du filtre (0=intense, 1=aucun effet)
+# - la taille du noyau
 proc bm_passe_haut { args } {
-   #--- arg : fichier efficacite
-   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=aucun effet)
 
    if { ( [llength $args] == 2 ) || ( [llength $args] == 3 ) } {
       set fichier [ lindex $args 0 ]
@@ -234,9 +349,13 @@ proc bm_passe_haut { args } {
 }
 #-----------------------------------------------------------------------------#
 
+##
+# @brief : filtre median
+# @param args : liste contenant
+# - le nom du fichier
+# - l'efficacite du filtre (0=intense, 1=aucun effet)
+# - la taille du noyau
 proc bm_filtre_median { args } {
-   #--- arg : fichier efficacite
-   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=aucun effet)
 
    if { ( [llength $args] == 2 ) || ( [llength $args] == 3 ) } {
       set fichier [ lindex $args 0 ]
@@ -250,9 +369,13 @@ proc bm_filtre_median { args } {
 }
 #-----------------------------------------------------------------------------#
 
+##
+# @brief : filtre minimal (erosion en morphologie mathematique)
+# @param args : liste contenant
+# - le nom du fichier
+# - l'efficacite du filtre (0=intense, 1=aucun effet)
+# - la taille du noyau
 proc bm_filtre_min { args } {
-   #--- arg : fichier efficacite
-   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=aucun effet)
 
    if { ( [llength $args] == 2 ) || ( [llength $args] == 3 ) } {
       set fichier [ lindex $args 0 ]
@@ -266,9 +389,13 @@ proc bm_filtre_min { args } {
 }
 #-----------------------------------------------------------------------------#
 
+##
+# @brief : filtre minimal (dilatation en morphologie mathematique)
+# @param args : liste contenant
+# - le nom du fichier
+# - l'efficacite du filtre (0=intense, 1=aucun effet)
+# - la taille du noyau
 proc bm_filtre_max { args } {
-   #--- arg : fichier efficacite
-   #--- Arguments : efficacite = efficacite du filtre (0=intense, 1=aucun effet)
 
    if { ( [llength $args] == 2 ) || ( [llength $args] == 3 ) } {
       set fichier [ lindex $args 0 ]
