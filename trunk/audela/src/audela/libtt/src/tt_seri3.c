@@ -495,15 +495,21 @@ int tt_ima_series_filter_1(TT_IMA_SERIES *pseries)
 	 for (kx=0;kx<=2*bordure;kx++) {
 	    val2=(kx-bordure);
 	    val2=val2*val2+val1*val1;
-	    value=exp(-val2/bordure*2);
+	    if (val2<1) {
+	       continue;
+	    }
+	    value=-exp(-val2/bordure*2);
 	    k=(kx+1)+(ky)*kernel_width;
 	    kpatern[k]=value;
 	    val0+=value;
 	 }
       }
-      for (k=1;k<=nb;k++) {
-	 kpatern[k]/=val0;
-      }
+      /* pixel du milieu positif */
+      kx=bordure;
+      ky=bordure;
+      value=1-val0; /* sum = 1 */
+      k=(kx+1)+(ky)*kernel_width;
+      kpatern[k]=value;
    } else if (kernel_type==TT_KERNELTYPE_FB) {
       for (val0=0,ky=0;ky<=2*bordurey;ky++) {
          val1=(ky-bordurey);
