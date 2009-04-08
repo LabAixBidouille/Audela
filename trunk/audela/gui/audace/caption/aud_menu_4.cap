@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_4.cap
-# Mise a jour $Id: aud_menu_4.cap,v 1.7 2007-03-10 13:57:33 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_4.cap,v 1.8 2009-04-08 11:41:27 jacquesmichelet Exp $
 #
 
 #=========================================================================
@@ -38,6 +38,7 @@ set caption(traiteFilters,efficacite_min)               "1: No Effect"
 set caption(traiteFilters,efficacite_max)               "0: Maximum Efficiency"
 set caption(traiteFilters,offset)                       "Offset:"
 set caption(traiteFilters,afficher_image_fin)           "Display image when processing is completed"
+set caption(traiteFilters,taille_noyau)                 "Kernel size (pixels)"
 
 set caption(traiteFilters,ok)                           "OK"
 set caption(traiteFilters,appliquer)                    "Apply"
@@ -85,6 +86,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,efficacite_max)            "0 : Maximale"
    set caption(traiteFilters,offset)                    "Offset :"
    set caption(traiteFilters,afficher_image_fin)        "Afficher l'image à la fin du traitement"
+   set caption(traiteFilters,taille_noyau)              "Taille du noyau (pixels)"
 
    set caption(traiteFilters,ok)                        "OK"
    set caption(traiteFilters,appliquer)                 "Appliquer"
@@ -132,6 +134,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,efficacite_max)            "0: Efficenza massima"
    set caption(traiteFilters,offset)                    "Offset:"
    set caption(traiteFilters,afficher_image_fin)        "Mostra immagine al termine dell'elaborazione"
+   ## JM 20090408
+   set caption(traiteFilters,taille_noyau)              "Kernel size (pixels)"
 
    set caption(traiteFilters,ok)                        "OK"
    set caption(traiteFilters,appliquer)                 "Applica"
@@ -179,6 +183,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,efficacite_max)            "0: Eficiencia máxima"
    set caption(traiteFilters,offset)                    "Pedestal:"
    set caption(traiteFilters,afficher_image_fin)        "Moastrar imagen al completar el proceso"
+   ## JM 20090408
+   set caption(traiteFilters,taille_noyau)              "Kernel size (pixels)"
 
    set caption(traiteFilters,ok)                        "OK"
    set caption(traiteFilters,appliquer)                 "Aplicar"
@@ -226,6 +232,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,efficacite_max)            "0: Maximale Wirksamkeit"
    set caption(traiteFilters,offset)                    "Offset:"
    set caption(traiteFilters,afficher_image_fin)        "Das Bild nach die Behandlung anzeigen"
+   ## JM 20090408
+   set caption(traiteFilters,taille_noyau)              "Kernel size (pixels)"
 
    set caption(traiteFilters,ok)                        "OK"
    set caption(traiteFilters,appliquer)                 "Anwenden"
@@ -273,6 +281,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,efficacite_max)            "0: Máxima Eficiência"
    set caption(traiteFilters,offset)                    "Offset:"
    set caption(traiteFilters,afficher_image_fin)        "Apresentar imagem no fim do processamento"
+   ## JM 20090408
+   set caption(traiteFilters,taille_noyau)              "Kernel size (pixels)"
 
    set caption(traiteFilters,ok)                        "OK"
    set caption(traiteFilters,appliquer)                 "Aplicar"
@@ -320,6 +330,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,efficacite_max)            "0: Maksimal virkning"
    set caption(traiteFilters,offset)                    "Offset:"
    set caption(traiteFilters,afficher_image_fin)        "Vis billede når behandling er udført"
+   ## JM 20090408
+   set caption(traiteFilters,taille_noyau)              "Kernel size (pixels)"
 
    set caption(traiteFilters,ok)                        "OK"
    set caption(traiteFilters,appliquer)                 "Anvend"

@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_4.tcl
 # Description : Script regroupant les fonctionnalites du menu Traitement
-# Mise a jour $Id: aud_menu_4.tcl,v 1.13 2008-12-18 23:24:51 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_4.tcl,v 1.14 2009-04-08 11:41:26 jacquesmichelet Exp $
 #
 
 namespace eval ::traiteFilters {
@@ -47,6 +47,7 @@ namespace eval ::traiteFilters {
       if { ! [ info exists conf(coef_etal) ] }              { set conf(coef_etal)              "2.0" }
       if { ! [ info exists conf(coef_mult) ] }              { set conf(coef_mult)              "5.0" }
       if { ! [ info exists conf(traiteFilters,position) ] } { set conf(traiteFilters,position) "+350+75" }
+      if { ! [ info exists conf(taille_noyau) ] }           { set conf(taille_noyau)           "3" }
 
       return
    }
@@ -255,6 +256,18 @@ namespace eval ::traiteFilters {
             pack $This.usr.9.1 -side top -fill both
         # pack $This.usr.9 -side top -fill both
 
+         frame $This.usr.10 -borderwidth 0 -relief raised
+            frame $This.usr.10.1 -borderwidth 0 -relief flat
+               label $This.usr.10.1.l -text "Taille du noyau (pixels)"
+               pack $This.usr.10.1.l -side top -padx 5 -pady 5
+            pack $This.usr.10.1 -side left -fill both
+            frame $This.usr.10.2 -borderwidth 0 -relief flat
+               foreach champ [list 3 5 7 9 11 13 15 17 19 21] {
+                  radiobutton $This.usr.10.2.$champ -text $champ -value $champ -variable "$caption(traiteFilters,taille_noyau)"
+                  pack $This.usr.10.2.$champ -side left
+               }
+            pack $This.usr.10.2 -side right -fill both
+
       pack $This.usr -side top -fill both -expand 1
 
       frame $This.cmd -borderwidth 1 -relief raised
@@ -313,15 +326,17 @@ namespace eval ::traiteFilters {
       set traiteFilters(avancement) "$caption(traiteFilters,traitement_en_cours)"
       #---
       set audace(artifice) "@@@@"
-      set image_in   $traiteFilters(image_in)
-      set image_out  $traiteFilters(image_out)
-      set coef_etal  $traiteFilters(coef_etal)
-      set coef_mult  $traiteFilters(coef_mult)
-      set efficacite $traiteFilters(efficacite)
-      set offset     $traiteFilters(offset)
+      set image_in     $traiteFilters(image_in)
+      set image_out    $traiteFilters(image_out)
+      set coef_etal    $traiteFilters(coef_etal)
+      set coef_mult    $traiteFilters(coef_mult)
+      set efficacite   $traiteFilters(efficacite)
+      set offset       $traiteFilters(offset)
+      set taille_noyau $traiteFilters(taille_noyau)
       #--- Sauvegarde des reglages
-      set conf(coef_etal) $traiteFilters(coef_etal)
-      set conf(coef_mult) $traiteFilters(coef_mult)
+      set conf(coef_etal)    $traiteFilters(coef_etal)
+      set conf(coef_mult)    $traiteFilters(coef_mult)
+      set conf(taille_noyau) $traiteFilters(taille_noyau)
       #--- Il faut saisir la constante
       if { $traiteFilters(choix_mode) == "0" } {
          if { [ buf$audace(bufNo) imageready ] == "0" } {
@@ -406,10 +421,10 @@ namespace eval ::traiteFilters {
             #---
             if { $traiteFilters(choix_mode) == "1" } {
                ::console::affiche_resultat "bm_passe_bas $image_in $efficacite\n\n"
-               bm_passe_bas $image_in $efficacite
+               bm_passe_bas $image_in $efficacite $taille_noyau
             } else {
                ::console::affiche_resultat "bm_passe_bas $caption(traiteFilters,_image_affichee_) $efficacite\n\n"
-               bm_passe_bas "$audace(artifice)" $efficacite
+               bm_passe_bas "$audace(artifice)" $efficacite $taille_noyau
             }
          } \
          "$caption(audace,menu,filtre_passe-haut)" {
@@ -423,10 +438,10 @@ namespace eval ::traiteFilters {
             #---
             if { $traiteFilters(choix_mode) == "1" } {
                ::console::affiche_resultat "bm_passe_haut $image_in $efficacite\n\n"
-               bm_passe_haut $image_in $efficacite
+               bm_passe_haut $image_in $efficacite $taille_noyau
             } else {
                ::console::affiche_resultat "bm_passe_haut $caption(traiteFilters,_image_affichee_) $efficacite\n\n"
-               bm_passe_haut "$audace(artifice)" $efficacite
+               bm_passe_haut "$audace(artifice)" $efficacite $taille_noyau
             }
          } \
          "$caption(audace,menu,filtre_median)" {
@@ -440,10 +455,10 @@ namespace eval ::traiteFilters {
             #---
             if { $traiteFilters(choix_mode) == "1" } {
                ::console::affiche_resultat "bm_filtre_median $image_in $efficacite\n\n"
-               bm_filtre_median $image_in $efficacite
+               bm_filtre_median $image_in $efficacite $taille_noyau
             } else {
                ::console::affiche_resultat "bm_filtre_median $caption(traiteFilters,_image_affichee_) $efficacite\n\n"
-               bm_filtre_median "$audace(artifice)" $efficacite
+               bm_filtre_median "$audace(artifice)" $efficacite $taille_noyau
             }
          } \
          "$caption(audace,menu,filtre_minimum)" {
@@ -457,10 +472,10 @@ namespace eval ::traiteFilters {
             #---
             if { $traiteFilters(choix_mode) == "1" } {
                ::console::affiche_resultat "bm_filtre_min $image_in $efficacite\n\n"
-               bm_filtre_min $image_in $efficacite
+               bm_filtre_min $image_in $efficacite $taille_noyau
             } else {
                ::console::affiche_resultat "bm_filtre_min $caption(traiteFilters,_image_affichee_) $efficacite\n\n"
-               bm_filtre_min "$audace(artifice)" $efficacite
+               bm_filtre_min "$audace(artifice)" $efficacite $taille_noyau
             }
          } \
          "$caption(audace,menu,filtre_maximum)" {
@@ -474,10 +489,10 @@ namespace eval ::traiteFilters {
             #---
             if { $traiteFilters(choix_mode) == "1" } {
                ::console::affiche_resultat "bm_filtre_max $image_in $efficacite\n\n"
-               bm_filtre_max $image_in $efficacite
+               bm_filtre_max $image_in $efficacite $taille_noyau
             } else {
                ::console::affiche_resultat "bm_filtre_max $caption(traiteFilters,_image_affichee_) $efficacite\n\n"
-               bm_filtre_max "$audace(artifice)" $efficacite
+               bm_filtre_max "$audace(artifice)" $efficacite $taille_noyau
             }
          } \
          "$caption(audace,menu,filtre_gaussien)" {
@@ -663,8 +678,9 @@ namespace eval ::traiteFilters {
 
       #--- Initialisation des variables
       set traiteFilters(avancement) ""
-      set traiteFilters(coef_etal)  $conf(coef_etal)
-      set traiteFilters(coef_mult)  $conf(coef_mult)
+      set traiteFilters(coef_etal)    $conf(coef_etal)
+      set traiteFilters(coef_mult)    $conf(coef_mult)
+      set traiteFilters(taille_noyau) $conf(taille_noyau)
       #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
       #--- des choix du switch sont supprimees pour permettre l'interpretation des variables TCL
       #--- a l'interieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
@@ -678,6 +694,7 @@ namespace eval ::traiteFilters {
                pack $This.usr.5 -in $This.usr.2 -side top -fill both
                pack forget $This.usr.5.1.but_defaut
                pack forget $This.usr.6
+               pack forget $This.usr.10
                pack forget $This.usr.7
                pack $This.usr.8 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -688,6 +705,7 @@ namespace eval ::traiteFilters {
                pack $This.usr.5 -in $This.usr.2 -side top -fill both
                pack forget $This.usr.5.1.but_defaut
                pack forget $This.usr.6
+               pack forget $This.usr.10
                pack forget $This.usr.7
                pack $This.usr.8 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -701,6 +719,7 @@ namespace eval ::traiteFilters {
                pack forget $This.usr.5
                pack forget $This.usr.5.1.but_defaut
                pack $This.usr.6 -in $This.usr.2 -side top -fill both
+               pack $This.usr.10 -in $This.usr.2 -side top -fill both
                pack forget $This.usr.7
                pack $This.usr.8 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -711,6 +730,7 @@ namespace eval ::traiteFilters {
                pack forget $This.usr.5
                pack forget $This.usr.5.1.but_defaut
                pack $This.usr.6 -in $This.usr.2 -side top -fill both
+               pack $This.usr.10 -in $This.usr.2 -side top -fill both
                pack forget $This.usr.7
                pack $This.usr.8 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -724,6 +744,7 @@ namespace eval ::traiteFilters {
                pack forget $This.usr.5
                pack forget $This.usr.5.1.but_defaut
                pack $This.usr.6 -in $This.usr.2 -side top -fill both
+               pack $This.usr.10 -in $This.usr.2 -side top -fill both
                pack forget $This.usr.7
                pack $This.usr.8 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -734,6 +755,7 @@ namespace eval ::traiteFilters {
                pack forget $This.usr.5
                pack forget $This.usr.5.1.but_defaut
                pack $This.usr.6 -in $This.usr.2 -side top -fill both
+               pack $This.usr.10 -in $This.usr.2 -side top -fill both
                pack forget $This.usr.7
                pack $This.usr.8 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -747,6 +769,7 @@ namespace eval ::traiteFilters {
                pack forget $This.usr.5
                pack forget $This.usr.5.1.but_defaut
                pack $This.usr.6 -in $This.usr.2 -side top -fill both
+               pack $This.usr.10 -in $This.usr.2 -side top -fill both
                pack forget $This.usr.7
                pack $This.usr.8 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -757,6 +780,7 @@ namespace eval ::traiteFilters {
                pack forget $This.usr.5
                pack forget $This.usr.5.1.but_defaut
                pack $This.usr.6 -in $This.usr.2 -side top -fill both
+               pack $This.usr.10 -in $This.usr.2 -side top -fill both
                pack forget $This.usr.7
                pack $This.usr.8 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -770,6 +794,7 @@ namespace eval ::traiteFilters {
                pack forget $This.usr.5
                pack forget $This.usr.5.1.but_defaut
                pack $This.usr.6 -in $This.usr.2 -side top -fill both
+               pack $This.usr.10 -in $This.usr.2 -side top -fill both
                pack forget $This.usr.7
                pack $This.usr.8 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -780,6 +805,7 @@ namespace eval ::traiteFilters {
                pack forget $This.usr.5
                pack forget $This.usr.5.1.but_defaut
                pack $This.usr.6 -in $This.usr.2 -side top -fill both
+               pack $This.usr.10 -in $This.usr.2 -side top -fill both
                pack forget $This.usr.7
                pack $This.usr.8 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -793,6 +819,7 @@ namespace eval ::traiteFilters {
                pack forget $This.usr.5
                pack forget $This.usr.5.1.but_defaut
                pack $This.usr.6 -in $This.usr.2 -side top -fill both
+               pack $This.usr.10 -in $This.usr.2 -side top -fill both
                pack forget $This.usr.7
                pack $This.usr.8 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -803,6 +830,7 @@ namespace eval ::traiteFilters {
                pack forget $This.usr.5
                pack forget $This.usr.5.1.but_defaut
                pack $This.usr.6 -in $This.usr.2 -side top -fill both
+               pack $This.usr.10 -in $This.usr.2 -side top -fill both
                pack forget $This.usr.7
                pack $This.usr.8 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -816,6 +844,7 @@ namespace eval ::traiteFilters {
                pack forget $This.usr.5
                pack forget $This.usr.5.1.but_defaut
                pack forget $This.usr.6
+               pack forget $This.usr.10
                pack forget $This.usr.7
                pack $This.usr.8 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -826,6 +855,7 @@ namespace eval ::traiteFilters {
                pack forget $This.usr.5
                pack forget $This.usr.5.1.but_defaut
                pack forget $This.usr.6
+               pack forget $This.usr.10
                pack forget $This.usr.7
                pack $This.usr.8 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -839,6 +869,7 @@ namespace eval ::traiteFilters {
                pack forget $This.usr.5
                pack forget $This.usr.5.1.but_defaut
                pack forget $This.usr.6
+               pack forget $This.usr.10
                pack forget $This.usr.7
                pack $This.usr.8 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -849,6 +880,7 @@ namespace eval ::traiteFilters {
                pack forget $This.usr.5
                pack forget $This.usr.5.1.but_defaut
                pack forget $This.usr.6
+               pack forget $This.usr.10
                pack forget $This.usr.7
                pack $This.usr.8 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -862,6 +894,7 @@ namespace eval ::traiteFilters {
                pack forget $This.usr.5
                pack forget $This.usr.5.1.but_defaut
                pack forget $This.usr.6
+               pack forget $This.usr.10
                pack forget $This.usr.7
                pack $This.usr.8 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -872,6 +905,7 @@ namespace eval ::traiteFilters {
                pack forget $This.usr.5
                pack forget $This.usr.5.1.but_defaut
                pack forget $This.usr.6
+               pack forget $This.usr.10
                pack forget $This.usr.7
                pack $This.usr.8 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -888,6 +922,7 @@ namespace eval ::traiteFilters {
                pack $This.usr.5 -in $This.usr.2 -side top -fill both
                pack $This.usr.5.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
                pack forget $This.usr.6
+               pack forget $This.usr.10
                pack $This.usr.7 -in $This.usr.2 -side top -fill both
                pack $This.usr.8 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -898,6 +933,7 @@ namespace eval ::traiteFilters {
                pack $This.usr.5 -in $This.usr.2 -side top -fill both
                pack $This.usr.5.1.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
                pack forget $This.usr.6
+               pack forget $This.usr.10
                pack $This.usr.7 -in $This.usr.2 -side top -fill both
                pack $This.usr.8 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
