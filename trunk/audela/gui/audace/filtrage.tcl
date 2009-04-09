@@ -3,7 +3,7 @@
 # @briefScripts pour un usage aise des fonctions d'AudeLA
 # @author Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# $Id: filtrage.tcl,v 1.8 2009-04-08 07:46:30 jacquesmichelet Exp $
+# $Id: filtrage.tcl,v 1.9 2009-04-09 18:48:57 jacquesmichelet Exp $
 #
 
 #--------------------- Liste des fonctions -----------------------------------#
@@ -19,7 +19,7 @@
 #                      (met en evidence les details noyes dans la nebulosite)
 # bm_ondelette_mex   : Convolution d'image par un filtre de forme chapeau type mexicain
 #                      (met en evidence les details noyes dans la nebulosite)
-# bm_logima          : Logarithme d'une image avec des coeficients adaptes a une image brillante
+# bm_logima          : Logarithme d'une image avec des coefficients adaptes a une image brillante
 # gradient_nose      : Maximum des 4 gradients N,O,S et E.
 #-----------------------------------------------------------------------------#
 
@@ -35,10 +35,10 @@
 
 ##
 # @brief calcul du gradient
-# @details : le calcul est fait suivant les 4 directions N,O,S et E, puis chaque pixel est affecté du pixel maximal de chaque image
+# @details : le calcul est fait suivant les 4 directions N,O,S et E, puis chaque pixel est affecte du pixel maximal de chaque image
 # @param args : liste contenant
-# - le nom de l'image à traiter
-# - la taille du noyau à appliquer sur les gradients
+# - le nom de l'image a traiter
+# - la taille du noyau a appliquer sur les gradients
 proc gradient_nose { args } {
 
     global audace
@@ -214,7 +214,7 @@ proc bm_masque_flou { args } {
 #@param args : liste contenant
 # - le type du filtre
 # - le nom du fichier
-# - l'efficacité (0=intense, 1=aucun effet)
+# - l'efficacite (0=intense, 1=aucun effet)
 # - la taille du noyau
 # .
 proc bm_filter { args } {
@@ -540,7 +540,7 @@ proc bm_ondelette_mex { args } {
 
 #*****************************************************************************#
 #
-# Description : Logarithme d'une image avec des coeficients adaptes a une image
+# Description : Logarithme d'une image avec des coefficients adaptes a une image
 # brillante
 # Evolution future : Fenetre avec reglage des coefficients a l'aide d'ascenseurs
 #
