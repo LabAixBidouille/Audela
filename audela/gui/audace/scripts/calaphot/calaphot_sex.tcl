@@ -1,4 +1,11 @@
-# Mise a jour $Id: calaphot_sex.tcl,v 1.3 2009-01-04 16:40:42 jacquesmichelet Exp $
+##
+# @file calaphot_sex.tcl
+#
+# @author Olivier Thizy (thizy@free.fr) & Jacques Michelet (jacques.michelet@laposte.net)
+#
+# @brief Routines d'appel et de configuration de sextractor pour Calaphot
+#
+# Mise a jour $Id: calaphot_sex.tcl,v 1.4 2009-04-09 08:01:04 jacquesmichelet Exp $
 
 
 proc FichierNeuronalSex { {filename default.nnw} } {
