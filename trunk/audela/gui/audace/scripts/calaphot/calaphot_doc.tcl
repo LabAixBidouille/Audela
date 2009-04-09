@@ -5,7 +5,7 @@
 #
 # @brief Documentation generale de Calaphot
 #
-# $Id: calaphot_doc.tcl,v 1.1 2009-04-09 08:11:57 jacquesmichelet Exp $
+# $Id: calaphot_doc.tcl,v 1.2 2009-04-09 10:04:05 jacquesmichelet Exp $
 #
 #
 
@@ -50,48 +50,49 @@
 #
 # L'écran est divisé en 3 parties, les 2 premières etant générales pour le script, la dernière dépendant du mode de calcul choisi (ouverture, modélisation ou via sextractor)
 # @subsection calaphot_saisie_parametres_generaux Parametres généraux
-# - <b>nom de l'objet</b> : l'utilisateur peut mettre là le nom de l'astéroïde dont il veut la courbe de photométrie.  Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
-# - <b>nom de l'opérateur</b> : l'utilisateur peut indiquer le nom de l'auteur des travaux. Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
-# - <b>code UAI de l'observatoire</b> : permet de repérer l'endroit des prises de vue. Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
-# - <b>type du capteur</b> : il s'agit d'indiquer, s'il est connu, le type du capteur d'image. Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
-# - <b>type du télescope</b> : l'utilisateur peut indiquer le type de l'optique principale utilisée (telescope, lunette ou objectif photo). Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
-# - <b>diamètre du telescope</b> : il convient de preciser le diamètre en mètre de l'optique principale (lentille ou miroir). Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
-# - <b>focale du telescope</b> : on mentionne là distance focale de l'optique utilisée, incluant toutes les optiques secondaires (aplanisseur de champ, réducteur de focale, lentille de Barlow, etc...). Ce champ sera repris tel quel dans le champ CDR correspondant (cf ).
-# - <b>filtre optique</b> : l'utilisateur peut indiquer le ou les filtres utilisés durant la prise de vue (R, V, B ou I). Ne rien mettre en l'absence de filtre. Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
-# - <b>nom générique des images</b> : il s'agit du nom des fichiers d'image, sans le chemin d'accès, ni le suffixe numéral, ni l'extension. Exemple : si les fichiers s'appellent @c /tmp/kandrup_18.fit, @c /tmp/kandrup_19.fit, ..., @c /tmp/kandrup_63.fit, on mettra @c kandrup_ dans ce champ.
-# - <b>indice de la première image</b> : en reprenant l'exemple précédent, on met @c 18 dans ce champ.
-# - <b>indice de la dernière image</b> : en reprenant l'exemple précédent, on met @c 63 dans ce champ.
-# - <b>demi-largeur de la fenêtre</b> : la valeur en pixels donnée dans ce champ va définir une fenêtre à l'intérieur de laquelle on va charcher le centroïde des astres. Une largeur faible va accélérer les calculs, mais si les images sont mal recalées, certains astres risquent d'être mal identifiés. A l'inverse, une trop grande fenêtre pourrait faire que 2 astres se trouvent dans la même fenêtre, et fausser les calculs. Par expérience, une valeur égale à 2 ou 3 fois le FWHM moyen des images suffit généralement.
-# - <b>rapport S/B limite</b> : il s'agit de la valeur du rapport signal sur bruit éliminatoire : si au moins un astre (astéroïde ou étoile de référence) a une mesure de rapport S/B en dessous de cette limite dans une image donnée, l'image sera invalidée, c'est-à-dire que que toutes les mesures faites sur cette image seront éliminées. cf @reference_dans_la_doc_technique.
-# - <b>gain de la caméra</b> : il faut indiquer là la valeur du gain en électron/ADU de la caméra. Cette valeur sert pour certains @ref doc_tech_incert_mag_ouv "calculs d'incertitude".
-# - <b>bruit de lecture</b> : il faut indiquer là la valeur du bruit de lecture en électron de la caméra. Cette valeur sert pour certains @ref doc_tech_incert_mag_ouv "calculs d'incertitude".
-# - <b>nom du fichier texte résultat</b> : nom du fichier (sans chemin d'accès) qui contiendra l'ensemble des résultats numériques des mesures.
-# - <b>nom du fichier Postscript résultat</b> : nom du fichier au format Postscript (sans chemin d'accès) qui contiendra le graphique de la courbe de lumière.
-# - <b>affichage des calculs</b> : les boutons définissent le niveau de verbiage des messages dans la console de l'interface Audela. Depuis "Erreur", mode le moins bavard à "Info", mode très bavard.
-# - <b>mode de calcul</b> : on indique là le mode de calcul de photométrie retenu pour la séquence. Le détail des calculs effectués pour chacun de ces modes est décrit dans la @ref calaphot_documentation_technique_fr. Le fait de sélectionner une des modes va changer l'aspect de la sous-fenêtre des @ref calaphot_saisie_parametres_specifiques .
-# - <b>type des images</b> : on indique là si les images ont été préalablement recalées ou pas, c'est à dire si les coordonnées en pixels des étoiles sont constantes ou pas dans toute la séquence.
+# - <b>Nom de l'objet</b> : l'utilisateur peut mettre là le nom de l'astéroïde dont il veut la courbe de photométrie.  Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
+# - <b>Nom de l'opérateur</b> : l'utilisateur peut indiquer le nom de l'auteur des travaux. Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
+# - <b>Code UAI de l'observatoire</b> : permet de repérer l'endroit des prises de vue. Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
+# - <b>Type du capteur</b> : il s'agit d'indiquer, s'il est connu, le type du capteur d'image. Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
+# - <b>Type du télescope</b> : l'utilisateur peut indiquer le type de l'optique principale utilisée (telescope, lunette ou objectif photo). Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
+# - <b>Diamètre du telescope</b> : il convient de preciser le diamètre en mètre de l'optique principale (lentille ou miroir). Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
+# - <b>Focale du telescope</b> : on mentionne là distance focale de l'optique utilisée, incluant toutes les optiques secondaires (aplanisseur de champ, réducteur de focale, lentille de Barlow, etc...). Ce champ sera repris tel quel dans le champ CDR correspondant (cf ).
+# - <b>Filtre optique</b> : l'utilisateur peut indiquer le ou les filtres utilisés durant la prise de vue (R, V, B ou I). Ne rien mettre en l'absence de filtre. Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
+# - <b>Nom générique des images</b> : il s'agit du nom des fichiers d'image, sans le chemin d'accès, ni le suffixe numéral, ni l'extension. Exemple : si les fichiers s'appellent @c /tmp/kandrup_18.fit, @c /tmp/kandrup_19.fit, ..., @c /tmp/kandrup_63.fit, on mettra @c kandrup_ dans ce champ.
+# - <b>Indice de la première image</b> : en reprenant l'exemple précédent, on met @c 18 dans ce champ.
+# - <b>Indice de la dernière image</b> : en reprenant l'exemple précédent, on met @c 63 dans ce champ.
+# - <b>Demi-largeur de la fenêtre</b> : la valeur en pixels donnée dans ce champ va définir une fenêtre à l'intérieur de laquelle on va charcher le centroïde des astres. Une largeur faible va accélérer les calculs, mais si les images sont mal recalées, certains astres risquent d'être mal identifiés. A l'inverse, une trop grande fenêtre pourrait faire que 2 astres se trouvent dans la même fenêtre, et fausser les calculs. Par expérience, une valeur égale à 2 ou 3 fois le FWHM moyen des images suffit généralement.
+# - <b>Rapport S/B limite</b> : il s'agit de la valeur du rapport signal sur bruit éliminatoire : si au moins un astre (astéroïde ou étoile de référence) a une mesure de rapport S/B en dessous de cette limite dans une image donnée, l'image sera invalidée, c'est-à-dire que que toutes les mesures faites sur cette image seront éliminées. cf @reference_dans_la_doc_technique.
+# - <b>Gain de la caméra</b> : il faut indiquer là la valeur du gain @i inverse en électron/ADU de la caméra. Cette valeur sert pour certains @ref doc_tech_incert_mag_ouv "calculs d'incertitude".
+# - <b>Bruit de lecture</b> : il faut indiquer là la valeur du bruit de lecture en électron de la caméra. Cette valeur sert pour certains @ref doc_tech_incert_mag_ouv "calculs d'incertitude".
+# - <b>Nom du fichier texte résultat</b> : nom du fichier (sans chemin d'accès) qui contiendra l'ensemble des résultats numériques des mesures.
+# - <b>Nom du fichier Postscript résultat</b> : nom du fichier au format Postscript (sans chemin d'accès) qui contiendra le graphique de la courbe de lumière.
+# - <b>Affichage des calculs</b> : les boutons définissent le niveau de verbiage des messages dans la console de l'interface Audela. Depuis "Erreur", mode le moins bavard à "Info", mode très bavard.
+# - <b>Mode de calcul</b> : on indique là le mode de calcul de photométrie retenu pour la séquence. Le détail des calculs effectués pour chacun de ces modes est décrit dans la @ref calaphot_documentation_technique_fr. Le fait de sélectionner une des modes va changer l'aspect de la sous-fenêtre des @ref calaphot_saisie_parametres_specifiques .
+# - <b>Type des images</b> : on indique là si les images ont été préalablement recalées ou pas, c'est à dire si les coordonnées en pixels des étoiles sont constantes ou pas dans toute la séquence.
 #   - images recalées : le mentionner va accélérer les calculs. Sinon les images seront considérés comme non recalées, et un recalage inutile va être systématiquement fait.
 #@note : Si les images sont en fait non recalées, alors qu'on a mentionné qu'elles l'étaient, le script va travailler sur les astres "aléatoires" et va vraisemblablement calculer l'âge du capitaine.
 #   - images non recalées : les images vont être alors recalées pour connaître le déplacement de toutes les étoiles, déplacement relatif à la 1ère image de la séquence. Une fois le vecteur translation connu, on en déduit les coordonnées des étoiles dans les images non recalées. <b><i>Tous les calculs de photométrie sont faits sur les images non-recalées.</i></b>
 #@note Les algorithmes de recalage procèdent parfois à des filtrages passe-bas destinés à gommer certains effets visuels du au changement d'échantillonage, ce qui peut nuire à la justesse des calculs de photométrie. Pour cette raison, <b><i>il est recommandé de travailler sur des séquences d'images non-recalées</i></b>.
 #@note Pour accélérer les calculs, les résultats du recalage sont stockés, et sont donc ré-utilisés si l'utilisateur est amené à relancer le script sur la même séquence. Ainsi l'utilisateur n'est "pénalisé" qu'une seule fois.
-# - <b>date des images</b> : il faut indiquer à quoi correspond la date indiquée dans les entêtes FITS des images (début ou milieu de la pose). Le faible degré de normalisation des entêtes FITS est la cause de cette entrée.
-# - <b>tri des images par date croissante</b> : il faut répondre @c 'oui' dans le cas où l'ordre de numérotation des images de la séquence ne correspond à l'ordre croissant de leur date d'acquisition. En effet, il est nécessaire que le traitement se fasse suivant l'ordre des dates, de façon à pouvoir calculer la position mouvante par essence de l'astéroïde par interpolation linéaire sur les dates précises des images.
-# - <b>durée de la pose</b> : il faut indiquer l'unité du temps de pose des images. Le faible degré de normalisation des entêtes FITS est la cause de cette entrée.
-# - <b>format des données</b> : on definit là le type des informations générées dans le fichier texte résultat. cf @ref calaphot_exploitation_resultats.
-# - <b>reprise des objets déjà saisis</b> : en répondant @c 'oui', on saute l'étape de @ref calaphot_reperage_astres , sous réserve que les astres aient été saisis au moins une fois évidemment.
+# - <b>Date des images</b> : il faut indiquer à quoi correspond la date indiquée dans les entêtes FITS des images (début ou milieu de la pose). Le faible degré de normalisation des entêtes FITS est la cause de cette entrée.
+# - <b>Tri des images par date croissante</b> : il faut répondre @c 'oui' dans le cas où l'ordre de numérotation des images de la séquence ne correspond à l'ordre croissant de leur date d'acquisition. En effet, il est nécessaire que le traitement se fasse suivant l'ordre des dates, de façon à pouvoir calculer la position mouvante par essence de l'astéroïde par interpolation linéaire sur les dates précises des images.
+# - <b>Durée de la pose</b> : il faut indiquer l'unité du temps de pose des images. Le faible degré de normalisation des entêtes FITS est la cause de cette entrée.
+# - <b>Format des données</b> : on definit là le type des informations générées dans le fichier texte résultat. cf @ref calaphot_exploitation_resultats.
+# - <b>Reprise des objets déjà saisis</b> : en répondant @c 'oui', on saute l'étape de @ref calaphot_reperage_astres , sous réserve que les astres aient été saisis au moins une fois évidemment.
 # @note Si la séquence d'image a changé, il faut impérativement répondre @c 'non' à ce champ, pour éviter que le script ne travaille sur des étoiles inexistantes et ne calcule l'âge du capitaine.
 #
 # .
 # @subsection calaphot_saisie_parametres_specifiques Paramètres dépendant du mode de calcul.
 # -# <b> @anchor calaphot_saisie_parametres_specifiques_ouverture Mode photométrie par ouverture </b>
-#   - <b>facteur de division des pixels</b> : pour augmenter la précision des calculs, les pixels sont divisés en sous-pixels (voir @ref doc_tech_mesure_flux_ouv_division_pixels "les explications techniques"). Il faut noter que le temps de calcul du flux d'une étoile va croître comme le carré de ce facteur.
-#   - <b>rayon de l'ovale intérieur (en fwhm)</b> : on définit une distance exprimée en fwhm qui va permettre de calculer le flux de l'astre dans une ellipse (voir @ref doc_tech_mesure_flux_ouv_disque_interne "la mesure du flux dans la fenêtre" ).
-#   - <b>rayon interne de la couronne (en fwhm)</b> : on définit une distance exprimée en fwhm d'une couronne qui va permettre de calculer le niveau moyen du fond de ciel (voir @ref doc_tech_mesure_flux_ouv_couronne_externe "la mesure du flux dans la couronne" ).
-#   - <b>rayon externe de la couronne (en fwhm)</b> : on définit une distance exprimée en fwhm d'une couronne qui va permettre de calculer le niveau moyen du fond de ciel (voir @ref doc_tech_mesure_flux_ouv_couronne_externe "la mesure du flux dans la couronne" ).
+#   - <b>Facteur de division des pixels</b> : pour augmenter la précision des calculs, les pixels sont divisés en sous-pixels (voir @ref doc_tech_mesure_flux_ouv_division_pixels "les explications techniques"). Il faut noter que le temps de calcul du flux d'une étoile va croître comme le carré de ce facteur.
+#   - <b>Rayon de l'ovale intérieur (en fwhm)</b> : on définit une distance exprimée en fwhm qui va permettre de calculer le flux de l'astre dans une ellipse (voir @ref doc_tech_mesure_flux_ouv_disque_interne "la mesure du flux dans la fenêtre" ).
+#   - <b>Rayon interne de la couronne (en fwhm)</b> : on définit une distance exprimée en fwhm d'une couronne qui va permettre de calculer le niveau moyen du fond de ciel (voir @ref doc_tech_mesure_flux_ouv_couronne_externe "la mesure du flux dans la couronne" ).
+#   - <b>Rayon externe de la couronne (en fwhm)</b> : on définit une distance exprimée en fwhm d'une couronne qui va permettre de calculer le niveau moyen du fond de ciel (voir @ref doc_tech_mesure_flux_ouv_couronne_externe "la mesure du flux dans la couronne" ).
 #   .
 # -# <b> @anchor calaphot_saisie_parametres_specifiques_modelisation Mode photométrie par modélisation </b> : il n'y a pas de paramètre spécifique pour ce mode de calcul.
 # -# <b> @anchor calaphot_saisie_parametres_specifiques_sextractor Mode photométrie par Sextractor </b>
+#   - <b>Niveau de saturation (en ADU)</b> : Sextractor a besoin de savoir quel est la plus grande valeur possible d'un niveau de gris. Pour une séquence d'images 16 bits issues d'une caméra d'une linéarité parfaite, ce niveau correspond à \f$ \displaystyle 2^{16} - 1 = 65535 \f$.
 # .
 #
 # @section calaphot_reperage_astres Repérage des astres
