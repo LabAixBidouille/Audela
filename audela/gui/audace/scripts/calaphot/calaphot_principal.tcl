@@ -5,13 +5,11 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.1 2009-04-09 07:57:03 jacquesmichelet Exp $
+# $Id: calaphot_principal.tcl,v 1.2 2009-04-09 10:04:05 jacquesmichelet Exp $
 #
 
 ###catch {namespace delete ::Calaphot}
 
-source [file join $audace(rep_scripts) calaphot calaphot_graph.tcl]
-source [file join $audace(rep_scripts) calaphot calaphot_calcul.tcl]
 
 ##
 # @defgroup calaphot_notice_fr Calaphot
@@ -59,6 +57,8 @@ source [file join $audace(rep_scripts) calaphot calaphot_calcul.tcl]
 # @brief Calaphot est un script permettant de faire de la photometrie differentielle sur un lot d'images
 # @namespace CalaPhot
 namespace eval ::CalaPhot {
+    source [file join $audace(rep_scripts) calaphot calaphot_graph.tcl]
+    source [file join $audace(rep_scripts) calaphot calaphot_calcul.tcl]
     source [file join $audace(rep_scripts) calaphot calaphot_sex.tcl]
 
     ##
@@ -1023,14 +1023,16 @@ namespace eval ::CalaPhot {
             Message notice "\t%s : %s\n" $calaphot(texte,$champ) $parametres($champ)
         }
         if {$parametres(mode) == "ouverture"} {
-            # Cas ouverture
             foreach champ {surechantillonage rayon1 rayon2 rayon3} {
                 Message notice "\t%s : %s\n" $calaphot(texte,o_$champ) $parametres($champ)
             }
-        } else {
-            # Cas modelisation
-            foreach champ {rayon1 rayon2 rayon3} {
-                Message notice "\t%s : %s\n" $calaphot(texte,m_$champ) $parametres($champ)
+        }
+        # pas de parametre specifique a la modelisation
+#        if {$parametres(mode) == "modelisation"} {
+#        }
+        if {$parametres(mode) == "sextractor"} {
+            foreach champ {saturation} {
+                Message notice "\t%s : %s\n" $calaphot(texte,s_$champ) $parametres($champ)
             }
         }
         Message notice "\n--------------------------\n"
