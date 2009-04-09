@@ -1,10 +1,32 @@
-    #*************************************************************************#
-    #*************  CalculEllipses  ******************************************#
-    #*************************************************************************#
-    # Calcul des parametres des ellipses des etoiles de reference              #
-    #  Retourne la moyenne de ces parametres, ou une liste nulle si toutes      #
-    #  les modelisations ont echoues                                          #
-    #*************************************************************************#
+##
+# @file calaphot_calcul.tcl
+#
+# @author Olivier Thizy (thizy@free.fr) & Jacques Michelet (jacques.michelet@laposte.net)
+#
+# @brief Routines de calcul de photometrie de Calaphot
+#
+# $Id: calaphot_calcul.tcl,v 1.2 2009-04-09 08:01:02 jacquesmichelet Exp $
+
+namespace eval ::CalaPhot {
+
+    ##
+    # @brief Calcul d'une ellipse moyenne pour déterminer la fenêtre d'ouverture
+    # @details
+    # Toutes les étoiles de référence ayant été modélisée, on calcule alors une fenêtre d'ouverture moyenne.@n
+    # Formules generales : voir @ref doc_tech_mesure_flux_ouv_ellipse "Calcul de l'ellipse moyenne"
+    # @param[in] image : numero de l'image a traiter
+    # @pre Les variables suivantes doivent contenir
+    # - data_script(nombre_reference) : nombre d'étoiles de référence
+    # - data_image($i,ref,fwhm1_$k) : fwhm sur l'axe principal de l'étoile de référence k dans l'image i.
+    # - data_image($i,ref,ro_$k) : facteur d'allongement de l'étoile de référence k dans l'image i.
+    # - data_image($i,ref,alpha_$k) : angle entre les axes principaux de l'étoile de référence k dans l'image i et les bords de cette image.
+    # @post Les variables suivantes contiendront
+    # - data_image($i,r1x) grand axe de l'ellipse moyenne pour l'image i
+    # - data_image($i,r1y) petit axe de l'ellipse moyenne pour l'image i
+    # - data_image($i,r2) rayon interne de la couronne pour l'image i
+    # - data_image($i,r3) rayon externe de la couronne pour l'image i
+    # - data_image($i,ro) facteur d'allongement de l'ellipse moyenne pour l'image i
+    # - data_image($i,alpha) angle des axes principaux de léllipse moyenne avec les bords de l'image i
     proc CalculEllipses {image} {
         global audace
         variable pos_theo
@@ -28,22 +50,12 @@
         for {set etoile 0} {$etoile < $data_script(nombre_reference)} {incr etoile} {
             if {$data_image($image,ref,centroide_x_$etoile) >= 0} {
                 set fwhm_x [expr $fwhm_x + $data_image($image,ref,fwhm1_$etoile)]
-                set fwhm_y [expr $fwhm_y + $data_image($image,ref,fwhm1_$etoile)]
+                set fwhm_y [expr $fwhm_y + $data_image($image,ref,fwhm2_$etoile)]
                 set ro [expr $ro + $data_image($image,ref,ro_$etoile)]
                 set alpha [expr $alpha + $data_image($image,ref,alpha_$etoile)]
                 incr n
             }
         }
-
-#        for {set etoile 0} {$etoile < $data_script(nombre_variable)} {incr etoile} {
-#            if {$data_image($image,var,centroide_x_$etoile) >= 0} {
-#                set fwhm_x [expr $fwhm_x + $data_image($image,var,fwhm1_$etoile)]
-#                set fwhm_y [expr $fwhm_y + $data_image($image,var,fwhm1_$etoile)]
-#                set ro [expr $ro + $data_image($image,var,ro_$etoile)]
-#                set alpha [expr $alpha + $data_image($image,var,alpha_$etoile)]
-#                incr n
-#            }
-#        }
 
         if {$n > 0} {
             set fwhm_x [expr $fwhm_x / $n]
@@ -77,17 +89,18 @@
         return [list $bon $r1x $r1y $r2 $r3 $ro $alpha]
     }
 
-    #*************************************************************************#
-    #*************  CalculErreurGlobal  **************************************#
-    #*************************************************************************#
+    ##
+    # @brief Calcul d'incertitude sur toutes les étoiles de référence à étudier dans une image
+    # @details
+    # L' incertitude sur la magnitudes de la super-etoile est calculee a partir des incertitudes sur chacune des etoiles de reference. Il s'agit de @c data_image(image,incertitude_ref_total).
+    # Mais pour chacune des autres super-etoiles (qui servent donc au calcul des magnitudes de ces etoiles de reference, a titre de verification), on effectue le meme calcul d incertitudes, stocke dans @c data_image(image,incertitude_ref_etoile). Voir doc_tech_incert_totale_super-etoile "la formule utilisée".
+    # Ensuite est calculee l'incertitude generale sur l'etoile, en additionnant son incertitude propre (calculee par CalculErreur) et celle de son etoile de reference. @n
+    # Formules generales : voir @ref doc_tech_incert_totale "incertitude totale"
+    # @param[in] image : numero de l'image a traiter
+    # @post Les variables suivantes contiendront
+    # - @c data_image(image,incertitude_ref_i) : pour chaque etoile de reference i, la valeur de l'incertitude
+    #
     proc CalculErreurGlobal {image} {
-        # L' incertitude sur la magnitudes de la super-etoile est calculee a partir des incertitudes sur chacune des etoiles de reference. Il s'agit de data_image(image,incertitude_ref_total).
-        # Mais pour chacune des autres super-etoiles (qui servent donc au calcul des magnitudes de ces etoiles de reference, a titre de verification), on effectue le meme calcul d incertitudes, stocke dans data_image(image,incertitude_ref_etoile).
-        # Ensuite est calculee l'incertitude generale sur l'etoile, en additionnant son incertitude propre (calculee par CalculErreur) et celle de son etoile de reference.
-        # Formules generales :
-        # incertitude_ref(etoile) = [somme(10^(-0.4*mag(etoile)) * incertitude_propre(etoile))] / [somme(10^(-0.4*mag(etoile)))]
-        # incertitude(etoile) = incertitude_propre(etoile) + incertitude_ref(etoile)
-        # Sortie : pour chaque etoile, data_image(image,incertitude_ref_etoile)
 
         variable data_script
         variable data_image
@@ -149,17 +162,26 @@
         set data_image($image,$classe,bruit_flux_$etoile) $data_image($image,$classe,sigma_flux_$etoile)
     }
 
-    #*************************************************************************#
-    #*************  CalculErreurOuverture  ***********************************#
-    #*************************************************************************#
+    ##
+    # @brief Calcul d'incertitude pour un astre donne pour le mode ouverture
+    # @details @ref doc_tech_incert_mag_ouv "Formules de calcul" Formule tiree de Handbook of CCD astronomy, SB Howell (suggestion de A. Klotz)
+    # Valeurs de tests tirees du bouquin de Howell
+    #    - set S 24013
+    #    - set g 5
+    #    - set n 1
+    #    - set p 200
+    #    - set b 620
+    #    - On doit obtenir S/B = 342, erreur_mag=0.003
+    #    .
+    # @param[in] image : numero de l'image dans la sequence
+    # @param[in] classe : ref pour les etoiles, var pour l'asteroide
+    # @param[in] etoile : no de l'etoile
+    # @return liste avec le rapport s/b, l'erreur sur la magnitude et l'erreur sur le flux
     proc CalculErreurOuverture {image classe etoile} {
         variable data_image
         variable parametres
 
         Message debug "%s\n" [info level [info level]]
-
-        # Formule tiree de Handbook of CCD astronomy, SB Howell (suggestion de A. Klotz)
-#        Message debug "CEO : Im %d Et %d\n" $image $etoile
 
         set S [expr double($data_image($image,$classe,flux_$etoile))]
         set n [expr double($data_image($image,$classe,nb_pixels_$etoile))]
@@ -170,13 +192,6 @@
         set g [expr double($parametres(gain_camera))]
         set r [expr double($parametres(bruit_lecture))]
 
-    # Valeurs de tests tirees du bouquin de Howell
-#    set S 24013
-#    set g 5
-#    set n 1
-#    set p 200
-#    set b 620
-# On doit obtenir S/B = 342, erreur_mag=0.003
 
         set nn [expr $n * (1 + $n / $p)]
         set t1 [expr $S * $g]
@@ -202,29 +217,20 @@
         set data_image($image,$classe,bruit_flux_$etoile) $data_image($image,$classe,sigma_flux_$etoile)
     }
 
-    #*************************************************************************#
-    #*************  CalculMagSuperEtoile  ************************************#
-    #*************************************************************************#
-    # Entree : pos_theo(ref,N) est une liste dont le 3eme element est la      #
-    #          magnitude theo de l'etoile de ref.                              #
-    # Sortie : data_script(mag_ref_totale) : mag de la super etoile              #
-    #          data_script(mag_ref_N) : mag de la super etoile faite avec      #
-    #          toutes les etoiles de ref. sauf N.                              #
-    # Algo : La super-etoile est calculee a partir des magnitudes de toutes   #
-    #        les etoiles de reference. Il s'agit de                              #
-    #        data_script(mag_ref_totale). Mais pour chacune des etoiles de      #
-    #        ref. est aussi calculee une super-etoile faite a partir des          #
-    #        magnitudes des autres etoiles de ref., valeur stockee dans          #
-    #        data_script(mag_ref_$etoile)                                      #
-    # Formule generale :                                                      #
-    #   mag_ref = -2.5 * log10 (somme (10 ^ (-0.4 * mag(etoile))))            #
-    #*************************************************************************#
+    ##
+    # @brief Calcul de la magnitude de la super-etoile a partir des magnitudes des etoiles de reference
+    # @details La super-etoile est calculee a partir des magnitudes de toutes les etoiles de reference. Il s'agit de data_script(mag_ref_totale).
+    # Mais pour chacune des etoiles de ref. est aussi calculee une super-etoile faite a partir des magnitudes des autres etoiles de ref., valeur stockee dans data_script(mag_ref_$etoile)@n
+    # Formule générale : cf @ref doc_tech_calcul_mag_super_etoile "magnitude de la super-étoile"
+    # @pre Les variables suivantes devront contenir :
+    # - @c pos_theo(ref,i) : liste dont le 3eme element est la magnitude theorique de l'etoile de ref i
+    # .
+    # @post Les variables suivantes contiendront
+    # - @c data_script(mag_ref_totale) : magnitude de la super etoile
+    # - @c data_script(mag_ref_i) : magnitude d'une super etoile faite avec toutes les etoiles de ref. sauf i
+    # .
+    # @return
     proc CalculMagSuperEtoile {} {
-        # La super-etoile est calculee a partir des magnitudes de toutes les etoiles de reference. Il s agit de data_script(mag_ref_0).
-        # Mais pour chacune des etoiles de ref. est aussi calculee une super-etoile faite a partir des magnitudes des autres etoiles de ref., valeur stockee dans data_script(mag_ref_$etoile)
-        # Formule generale : mag_ref = -2.5 log10 (somme (10 ^ (-0.4 * mag(etoile))))
-        # Sortie : pour chaque etoile, data_image(etoile, mag_ref)
-
         variable nombre_etoile
         variable pos_theo
         variable data_script
@@ -266,22 +272,21 @@
         }
     }
 
-    #*************************************************************************#
-    #*************  CalculPositionsReelles  **********************************#
-    #*************************************************************************#
-    # Entree : data_script(nombre_reference) : nbre d'etoile de ref.          #
-    #                     (nombre_variable) : nbre d'asteroides               #
-    #                     (nombre_indes) : nombre d'objet a ecarter           #
-    #          pos_theo(c,j) : position theorique de l'objet de classe c (var,#
-    #          ref ou indes) a affiner                                        #
-    #          parametres(tailleboite) : taille de la zone de calcul de       #
-    #          centroide.                                                     #
-    # Sortie : pos_reel(i,c,j) : liste des coord. (x,y) de l'objet j, de type #
-    #          c (var, ref ou indes) dans l'image i                           #
-    #          0 (OK) ou -1 si la recherche de centroide ne marche pas        #
-    # Algo : pour tous les objets : calcul de la zone de recherche du         #
-    #        centroide, et calcul rapide du centroide. Stockage du resultat   #
-    #*************************************************************************#
+    ##
+    # @brief Calcul de toutes les positions reelles des astres, en tenant compte du decalage entre images, pour les astres a mesurer
+    # @details Pour tous les astres concernes (etoiles, asteroides, etc), calcul de la zone de recherche du centroide, et calcul rapide du centroide
+    # @param image : numero de l'image dans la sequence
+    # @pre Les variables suivantes devront contenir :
+    # - @c data_script(nombre_reference) : nombre d'etoile de reference
+    # - @c data_script(nombre_variable) : nombre d'asteroides
+    # - @c data_script(nombre_indes) : nombre d'objet a ecarter
+    # - @c pos_theo(c,j) : position theorique de l'objet de classe c (var,ref ou indes) a affiner
+    # - @c parametres(tailleboite) : taille de la zone de calcul de centroide.
+    # .
+    # @post Les variables suivantes contiendront
+    # - @c pos_reel(i,c,j) : liste des coord. (x,y) de l'objet j, de typec (var, ref ou indes) dans l'image i
+    # .
+    # @return 0 (OK) ou -1 si la recherche de centroide ne marche pas
     proc CalculPositionsReelles {image} {
         global audace
         variable pos_theo
@@ -293,7 +298,6 @@
 
         Message debug "%s\n" [info level [info level]]
 
-        # Calcul de toutes les positions reelles des astres, en tenant compte du decalage entre images, pour les astres a mesurer
         for {set j 0} {$j < $data_script(nombre_reference)} {incr j} {
             set x1 [expr round([lindex $pos_theo(ref,$j) 0] + $data_image($image,decalage_x) - $parametres(tailleboite))]
             set y1 [expr round([lindex $pos_theo(ref,$j) 1] + $data_image($image,decalage_y) - $parametres(tailleboite))]
@@ -362,27 +366,24 @@
         return 0
     }
 
-
-    #*************************************************************************#
-    #*************  CalculPositionsTheoriques  *******************************#
-    #*************************************************************************#
-    # Entree : data_script(nombre_variable) : nbre d'asteroides               #
-    #                     (delta_jd) : nbre de jj separant la premiere de la  #
-    #          derniere image                                                 #
-    #                     (jd_premier) : jj de la 1ere image                  #
-    #                     (premier_liste) : indice de la 1ere image           #
-    #          data_image(i,date) : jj de l'image i                           #
-    #          coord_aster(i,1) : liste contenant les coordonnees de l'aster  #
-    #          dans la premiere image de la serie                             #
-    #          vitesse_variable(i,c) : vitesse de deplacement de l'aster      #
-    #          suivant l'axe c (x ou y)                                       #
-    #          image : numero de l'image                                      #
-    # Sortie : pos_theo(var,j) : position theorique de l'objet de classe var  #
-    # Algo : pour tous les objets variables : interpolation de la position a  #
-    #        partir de la vitesse de deplacement de l'asteroide. Si les dates #
-    #        ne sont pas connues, on utilise les indices des images (en       #
-    #        supposant qu'elles soient prises a intervalle constant...)       #
-    #*************************************************************************#
+    ##
+    # @brief Interpolation de la position a partir de la vitesse de deplacement de l'asteroide
+    # @details Pour tous les objets variables , interpolation de la position a partir de la vitesse de deplacement de l'asteroide <b> sans tenir compte du décalage des images </b>.
+    # Si les dates ne sont pas connues, on utilise les indices des images (en supposant qu'elles soient prises a intervalle constant...)
+    # @param image : numero de l'image dans la sequence
+    # @pre Les variables suivantes devront contenir :
+    # - @c data_script(nombre_variable) : nbre d'asteroides
+    # - @c delta_jd : nombre de jour julien separant la premiere de la derniere image
+    # - @c jd_premier : jour julien de la 1ere image
+    # - @c premier_liste : indice de la 1ere image
+    # - @c data_image(i,date) : jour julien de l'image i
+    # - @c coord_aster(i,1) : liste contenant les coordonnees de l'aster dans la premiere image de la serie
+    # - @c vitesse_variable(i,c) : vitesse de deplacement de l'aster suivant l'axe c (x ou y)
+    # .
+    # @post Les variables suivantes contiendront
+    # - @c pos_theo(var,i) : pour tous les asteroides i, la liste des coordonnées (x,y) de leur position dans l'image
+    # .
+    # @return
     proc CalculPositionsTheoriques {image} {
         variable data_script
         variable data_image
@@ -405,9 +406,26 @@
         }
     }
 
-    #*************************************************************************#
-    #*************  Centroide  ***********************************************#
-    #*************************************************************************#
+    ##
+    # @brief Determination du centre d'un astre encadre dans le buffer AudACE
+    # @details
+    # Selon Alain Klotz, "buf$audace(bufNo) centro" fait les choses suivantes
+    # -# recherche la position du pixel maximal dans la fenetre
+    # -# effectue l\'histogramme des valeurs de pixels dans la fenetre
+    # -# trie les valeurs de l\'histogramme et prend la valeur du fond
+    #     comme la valeur a 20% (c'est a dire un peu moins que la mediane
+    #     a 50%).
+    # -# Calcule un seuil avec la formule suivante : seuil=fond+0.7*(maxi-fond)
+    # -# Pour chaque pixel de la fenetre, on calcule la valeur = pixel - seuil
+    #     et si cette valeur est positive, le pixel intervient dans le
+    #     calcul du barycentre photometrique.
+    # -# Le resultat consiste en trois valeurs :
+    #   - Le barycentre X,
+    #   - Le barycentre Y,
+    #   - La difference (en pixels) entre la position du pixel de valeur maximale et la position du barycentre.
+    #   .
+    # .
+    # @return la liste des 3 valeurs calculees (voir ci-dessus)
     proc Centroide {} {
         global audace
 
@@ -421,22 +439,6 @@
             set x2 [lindex $rect 2]
             set y2 [lindex $rect 3]
             # Calcul du centre de l'etoile
-            # Selon Alain Klotz, "buf$audace(bufNo) centro" fait les choses suivantes
-            # 1. recherche la position du pixel maximal dans la fenetre
-            # 2. effectue l\'histogramme des valeurs de pixels dans la fenetre
-            # 3. trie les valeurs de l\'histogramme et prend la valeur du fond
-            #     comme la valeur a 20% (c'est a dire un peu moins que la mediane
-            #     a 50%).
-            # 4. Calcule un seuil avec la formule suivante :
-            #     seuil=fond+0.7*(maxi-fond)
-            # 5. Pour chaque pixel de la fenetre, on calcule la valeur = pixel - seuil
-            #     et si cette valeur est positive, le pixel intervient dans le
-            #     calcul du barycentre photometrique.
-            # 7. Le resultat consiste en trois valeurs :
-            #     Le barycentre X,
-            #     Le barycentre Y,
-            #     La difference (en pixels) entre la position du pixel de valeur
-            #     maximale et la position du barycentre.
             ::confVisu::deleteBox $audace(visuNo)
             return [buf$audace(bufNo) centro [list $x1 $y1 $x2 $y2]]
         } else {
@@ -579,17 +581,18 @@
         # Fin de la boucle sur les images
     }
 
-    #*************************************************************************#
-    #*************  FiltrageSB  **********************************************#
-    #*************************************************************************#
-    # Entree : data_script(nombre_reference) : nbre d'etoile de ref           #
-    #          data_image(i,ref,sb_j) : snr de l'etoile de ref j dans l'image #
-    #          i                                                              #
-    #          parametres(signal_bruit) : snr limite                          #
-    # Sortie : data_image(i,valide) : drapeau de validite de l'image i        #
-    # Algo : simplissime : si un seul astre de reference a un s/b < limite,   #
-    #        l'image est invalidee                                            #
-    #*************************************************************************#
+	##
+	# @brief Elimination de certaines images.
+	# @details Pour plus de détail, voir le paragraphe @ref doc_tech_filtrage_sb
+	# @param i : indice de l'image dans la séquence.
+    # @pre Les variables suivantes doivent contenir :
+	# - data_script(nombre_reference) : nbre d'étoile de référence.
+	# - data_image(i,ref,sb_j) : rapport signal/bruit de l'étoile de référence j dans l'image i.
+    # - parametres(signal_bruit) : rapport signal/bruit limite entré par l'utilisateur.
+	# .
+    # @post Les variables suivantes contiendront :
+	# - data_image(i,valide) : drapeau de validite de l'image i.
+	# .
     proc FiltrageSB {i} {
         variable parametres
         variable data_image
@@ -679,9 +682,29 @@
       return [list $convergence $iterations $valeurs_X0 $valeurs_Y0 $valeurs_Signal $valeurs_Fond $valeurs_Sigma_X $valeurs_Sigma_Y $valeurs_Ro $valeurs_Alpha $valeurs_Sigma_1 $valeurs_Sigma_2 $valeurs_Flux $incertitudes_X0 $incertitudes_Y0 $incertitudes_Signal $incertitudes_Fond $incertitudes_Sigma_X $incertitudes_Sigma_Y $incertitudes_Ro $incertitudes_Alpha $incertitudes_Sigma_1 $incertitudes_Sigma_2 $incertitudes_Flux]
     }
 
-    #*************************************************************************#
-    #*************  FluxOuverture  *******************************************#
-    #*************************************************************************#
+	##
+    # @brief Détermination du flux par ouverture centrée sur l'astre.
+    # @details L'ensemble de l'algorithme est décrit dans la documentation technique, <i> à l'exception des calculs de correction de la masse d'air qui <b>ne sont pas activés</b> dans cette version du logiciel </i>.
+    # - @ref doc_tech_mesure_flux_ouv_disque_interne "mesure du flux total de l'astre".
+    # - @ref doc_tech_mesure_flux_ouv_couronne_externe "mesure du fond de ciel".
+	# - @ref doc_tech_mesure_flux_ouv_flux "flux spécifique à l'astre".
+	# .
+	# @param i : indice de l'image .
+    # @param classe : type de l'astre ( @b ref pour une étoile de référence, @b var pour les astéroides).
+	# @param j : indice de l'astre dans sa classe.
+    # @pre Les variables suivantes doivent contenir :
+	# - @c data_image($i,$classe,centroide_x_$j) et data_image($i,$classe,centroide_y_$j) : coordonnées du centroide de l'astre d'indice j dans sa classe pour l'image i.
+	# - @c data_image($i,r1x), $data_image($i,r1y) et data_image($i,ro) : paramètres (axe principaux et facteur d'allongement) de l'ellipse de la fenêtre d'ouverture du flux de l'astre.
+	# - @c data_image($i,r2) et data_image($i,r3) : rayons interne et externe de la couronne destinée à la mesure du fond de ciel.
+	# - @c parametres(surechantillonage) : facteur linéaire de suréchantillonage. Les pixels seront divisés en parametres(surechantillonage) * parametres(surechantillonage) sous-pixels carrés pour augmenter la précision des calculs.
+	# .
+    # @post Les variables suivantes contiendront :
+	# - @c data_image($i,$classe,flux_$j) : flux de l'astre j dans sa classe pour l'image i.
+	# - @c data_image($i,$classe,nb_pixels_$j) : nombre de pixels de l'ellipse qui a servi au calcul du flux de l'astre j dans sa classe pour l'image i.
+    # - @c data_image($i,$classe,fond_$j) : valeur moyenne du fond de ciel pour l'astre j dans sa classe pour l'image i.
+    # - @c data_image($i,$classe,nb_pixels_fond_$j) : nombre de pixels de la couronne qui a servià la mesure du fond de ciel pour l'astre j dans sa classe pour l'image i.
+    # - @c data_image($i,$classe,sigma_fond_$j) : écart-type de valeur du fond de ciel pour l'astre j dans sa classe pour l'image i.
+	# .
     proc FluxOuverture {i classe j} {
         global audace
         variable data_image
@@ -723,23 +746,21 @@
         Message debug "image %d : %s %d  flux=%10.4f nb_pix=%10.4f fond=%10.4f nb_pix_fond=%10.4f sigma=%10.4f\n" $i $classe $j $data_image($i,$classe,flux_$j) $data_image($i,$classe,nb_pixels_$j) $data_image($i,$classe,fond_$j) $data_image($i,$classe,nb_pixels_fond_$j) $data_image($i,$classe,sigma_fond_$j)
     }
 
-    #*************************************************************************#
-    #*************  FluxReference  *******************************************#
-    #*************************************************************************#
-    # Entree : data_script(nombre_reference) : nbre d'etoile de ref           #
-    #          data_image(i,ref,flux_j) : flux de l'etoile j dans l'image i   #
-    # Sortie : data_image(image, flux_ref_j) : flux de ref de l'etoile j dans #
-    #          l'image j.                                                     #
-    #          data_image(image, flux_ref_total) : flux incluant toutes les   #
-    #          etoiles de ref.                                                #
-    # Algo : Le flux de la super-etoile est calcule a partir des flux de      #
-    #        toutes les etoiles de reference. Il s'agit de                    #
-    #        data_image(image,flux_ref_total). Mais pour chacune des etoiles  #
-    #        de ref. est aussi calcule un flux de super-etoile fait a partir  #
-    #        des flux des autres etoiles de ref., valeur stockee dans         #
-    #        data_image(image,flux_ref_$etoile)                               #
-    # Formule generale : flux_ref = somme (flux(etoile))                      #
-    #*************************************************************************#
+	##
+	# @brief Calcul du flux de la super-étoile et des pseudo-super-étoiles.
+	# @details Détails des calculs :
+	# - pour la @ref doc_tech_calcul_flux_super_etoile "super-étoile". 
+	# - pour les @ref doc_tech_calcul_flux_pseudo-super_etoile "pseudo-super-étoiles".
+	# .
+	# @param image : indice de l'image courante
+	# @pre Les variables suivantes doivent contenir :
+	# - @c data_script(nombre_reference) : le nombre d'étoile de référence.
+    # - @c data_image(image,ref,flux_j) : le flux de toutes les étoiles de référence j dans l'image courante.
+	# .
+	# @post Les variables suivantes contiendront :
+	# - @c data_image(image, flux_ref_j) : flux de la pseudo-super-étoile pour l'étoile de référence j dans l'image courante.
+    # - @c data_image(image, flux_ref_total) : flux de la super-étoile dans l'image courante.
+	# .
     proc FluxReference {image} {
         variable data_script
         variable data_image
@@ -790,34 +811,28 @@
         Message debug "image %d : %s %d  mag_sextractor=%10.4f\n" $image $classe $etoile $data_image($image,$classe,mag_sextractor_$etoile)
     }
 
-    #*************************************************************************#
-    #*************  MagnitudesEtoiles  ***************************************#
-    #*************************************************************************#
-    # Entree : data_script(nombre_variable) : nbre d'aster                    #
-    #          data_image(i,c,flux_j) : flux de l'aster ou l'etoile de ref    #
-    #          j dans l'image i                                               #
-    #          data_image(i,flux_ref_total) : flux de ref de la super-etoile  #
-    #          dans l'image i                                                 #
-    #          data_script(mag_ref_totale) : magnitude de la super-etoile     #
-    #          data_image(i,temps_expo) : temps de pose de l'image i          #
-    # Sortie : data_image(i,c,mag_j) : magnitude de l'aster ou de l'etoile de #
-    #          ref j dans l'image i                                           #
-    #          data_image(i,c,sb_j) : snr de l'etoile j de classe c dans      #
-    #          l'image i                                                      #
-    #          data_image(i,c,erreur_mag_j) : incertitude sur la mag de       #
-    #          l'etoile j de classe c dans l'image i                          #
-    #          data_image(i,c,bruit_flux_j) : bruit de photon de              #
-    #          l'etoile j de classe c dans l'image i                          #
-    #          data_image(i,constante_mag) : constante des magnitudes         #
-    # Algo : pour tous les aster, calcul de la magnitude a partir de leur flux#
-    #        de celui de la super-etoile et de la mag. de la se.              #
-    #        pour toutes les etoiles de ref, calcul de la magnitude a partir  #
-    #        de leur flux, de celui de leur se de ref et de la mag de cette   #
-    #        se (cad la super-etoile totale sans l'etoile de ref)             #
-    # Formule de Pogson : m = m_ref - 2.5 log10(flux/flux_ref                 #
-    # Pour la constante des mag : m = m_ref  + 2.5 * log10(flux_ref)          #
-    #        - 2.5 * log10(temp_exposition)                                   #
-    #*************************************************************************#
+
+	##
+	# @brief Calcul de magnitudes et des incertitudes associées
+	# @details Ce calcul est fait pour l'astétoïde et pour les étoiles de référence. Est aussi calculé une constante des magnitudes, magnitude d'un astre dont le flux intégré sur une unité de temps (ici la seconde) correspond à 1 ADU au dessus du fond de ciel. @n
+	# Formules de calcul :
+	# - pour les astres, voir @ref doc_tech_calcul_mag_astre "magnitude des astres"
+	# - pour la constante des magnitudes, voir @ref doc_tech_calcul_cste_mag "constante des magnitudes"
+	# .
+	# Les incertitudes sur la magnitude de l'astre sont aussi calculées depuis cette procédure. Voir @ref CalculErreurOuverture , @ref CalculErreurModelisation ou @ref CalculErreurSextractor. 
+	# @param i : numéro de l'image dans la liste
+    # @pre Les variables suivantes devront contenir :
+	# - @c data_script(nombre_variable) : nbre d'asteroïde.
+	# - @c data_image(i,c,flux_j) : flux de l'astéroïde ou l'étoile de référence j dans l'image i.
+    # - @c data_image(i,flux_ref_total) : flux de la super-étoile dans l'image i.
+    # - @c data_script(mag_ref_totale) : magnitude de la super-étoile.
+    # - @c data_image(i,temps_expo) : temps de pose de l'image i.
+    # @post Les variables suivantes contiendront :
+	# - @c data_image(i,c,mag_j) : magnitude de l'astéroide ou de l'étoile de référence j dans l'image i
+	# - @c data_image(i,c,sb_j) : snr de l'etoile j de classe c dans l'image i
+    # - @c data_image(i,c,erreur_mag_j) : incertitude sur la mag de l'étoile j de classe c dans l'image i
+    # - @c data_image(i,c,bruit_flux_j) : bruit de photon de l'étoile j de classe c dans l'image i
+    # - @c data_image(i,constante_mag) : constante des magnitudes
     proc MagnitudesEtoiles {i} {
         variable data_image
         variable data_script
@@ -828,6 +843,7 @@
         # Calcul par la formule de Pogson
         for {set etoile 0} {$etoile < $data_script(nombre_variable)} {incr etoile} {
             if {([expr $data_image($i,var,flux_$etoile)] > 0) &&  ([expr $data_image($i,flux_ref_total)] > 0)} {
+				# La formule principale de tout le script !
                 set mag [expr $data_script(mag_ref_totale) -2.5 * log10($data_image($i,var,flux_$etoile) / $data_image($i,flux_ref_total))]
                 set data_image($i,var,mag_$etoile) $mag
 
@@ -1256,3 +1272,4 @@
             }
         }
     }
+}

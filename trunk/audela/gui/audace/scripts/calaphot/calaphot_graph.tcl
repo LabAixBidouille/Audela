@@ -1,19 +1,23 @@
-# Mise a jour $Id: calaphot_graph.tcl,v 1.3 2009-01-18 13:55:35 jacquesmichelet Exp $
+##
+# @file calaphot_graph.tcl
+#
+# @author Olivier Thizy (thizy@free.fr) & Jacques Michelet (jacques.michelet@laposte.net)
+#
+# @brief Routines de gestion des affichages de Calaphot
+#
+# $Id: calaphot_graph.tcl,v 1.4 2009-04-09 08:01:02 jacquesmichelet Exp $
 
-    #*************************************************************************#
-    #*************  AffichageMenus  ******************************************#
-    #*************************************************************************#
-    # Entree : trace_log                                                      #
-    #          demande arret                                                  #
-    # Sortie : data_script(nombre_reference)                                  #
-    #                     (nombre_variable)                                   #
-    #                     (nombre_indes)                                      #
-    #          pos_theo(ref,etoile_ref)                                       #
-    #          coord_aster(image, objet)                                      #
-    # Algo : si tracage active, init des valeurs de sortie directement       #
-    #         sinon, passage par les ecrans de saisie (conditionne par        #
-    #         par une eventuelle demande d'arret)                             #
-    #*************************************************************************#
+namespace eval ::CalaPhot {
+
+    ##
+    # @brief Affichage sequentiel des menus de selection des astres
+    # @details si tracage active, init des valeurs de sortie directement @n
+    #         sinon, passage par les ecrans de saisie (conditionne par
+    #         par une eventuelle demande d'arret)
+    # @param[in] nom_image : nom generique des images
+    # @retval data_script(nombre_reference) : nombre d'etoile de reference
+    # @retval data_script(nombre_variable) : nombre d'asteroide
+    # @retval data_script(nombre_indes) : nombre d'etoile a supprimer
     proc AffichageMenus {nom_image} {
         variable demande_arret
         variable trace_log
@@ -49,9 +53,15 @@
         }
     }
 
-    #*************************************************************************#
-    #*************  AffichageMenuAsteroide  **********************************#
-    #*************************************************************************#
+    ##
+    # @brief Affichage de la boite de sélection d'un asteroide
+    # @param indice : selecteur
+    # - 0 : permet de passer à un asteroide suivant (quand on supportera les asteroides multiples)
+    # - 1 : selection dans la 1ere image de la sequence
+    # - 2 : selection dans la derniere image de la sequence
+    # .
+    # @param nom_image nom generique de l'image sur laquelle va se faire la selection
+    # @return
     proc AffichageMenuAsteroide {indice nom_image} {
         global audace
         variable calaphot
@@ -104,7 +114,7 @@
         }
 
         # indice <- (indice + 1) mod 3
-        if {$indice == 2} {set indice } else {incr indice}
+        if {$indice == 2} {set indice 1} else {incr indice}
 
         set commande_bouton(pos_aster_1)  "::CalaPhot::PositionAsteroide $nom_image 1"
         set commande_bouton(pos_aster_2)  "::CalaPhot::PositionAsteroide $nom_image 2"
@@ -135,9 +145,16 @@
         tkwait window $audace(base).selection_aster
     }
 
-    #*************************************************************************#
-    #*************  AffichageMenuEtoile  *************************************#
-    #*************************************************************************#
+    ##
+    # @brief Affichage de la boite de sélection d'une etoile
+    # @details Initialisation de certaines variables
+    # - data_script(nombre_reference)
+    # - coord_etoile_x
+    # - coord_etoile_y
+    # - mag_etoile
+    # .
+    # @param nom_image nom generique de l'image sur laquelle va se faire la selection
+    # @return
     proc AffichageMenuEtoile {nom_image} {
         global audace
         variable calaphot
@@ -205,9 +222,15 @@
         tkwait window $audace(base).selection_etoile
     }
 
-    #*************************************************************************#
-    #*************  AffichageMenuIndesirable  ********************************#
-    #*************************************************************************#
+    ##
+    # @brief Affichage de la boite de suppression d'une etoile
+    # @details Initialisation de certaines variables
+    # - data_script(nombre_indes)
+    # - coord_indes_x
+    # - coord_indes_y
+    # .
+    # @param nom_image nom generique de l'image sur laquelle va se faire la selection
+    # @return
     proc AffichageMenuIndesirable {nom_image} {
         global audace
         variable calaphot
@@ -257,9 +280,10 @@
         tkwait window $audace(base).selection_indes
     }
 
-    #*************************************************************************#
-    #*************  AffichageResultatsBruts  *********************************#
-    #*************************************************************************#
+    ##
+    # @brief Affichage console des informations sur les objets de l'image courante
+    # @param i : indice de l'image dans la sequence
+    # @return
     proc AffichageResultatsBruts {i} {
         variable parametres
         variable data_image
@@ -304,9 +328,12 @@
         Message notice "\n"
     }
 
-    #*************************************************************************#
-    #*************  AffichageVariable  ***************************************#
-    #*************************************************************************#
+    ##
+    # @brief Affichage dynamique des trames de l'ecran de saisie des parametre et ajustement des ascenseurs en consequence
+    # @param mode : mode de calcul choisi
+    # @param c : handle du canvas qui contient ces trames
+    # @param y : handle du scrollbar (ascenseur)
+    # @param t : handle de la trame englobant les trames a afficher
     proc AffichageVariable {mode c y t} {
         global audace
 
@@ -354,7 +381,7 @@
         $c config -width $largeur -height $hauteur
     }
 
-#*************************************************************************#
+    #*************************************************************************#
     #*************  AnnuleSaisie  ********************************************#
     #*************************************************************************#
     proc AnnuleSaisie {} {
@@ -386,11 +413,9 @@
         catch {destroy $audace(base).bouton_arret_color_invariant}
     }
 
-    #*************************************************************************#
-    #*************  BoutonArret  *********************************************#
-    #*************************************************************************#
-    # Mise en place du bouton permettant d'arreter les calculs.               #
-    #*************************************************************************#
+    ##
+    # @brief Mise en place du bouton permettant d'arreter les calculs.
+    # @return
     proc BoutonArret {} {
         global color audace
         variable calaphot
@@ -507,11 +532,9 @@
         destroy $audace(base).selection_indes
     }
 
-    #*************************************************************************#
-    #*************  CourbeLumiere  *******************************************#
-    #*************************************************************************#
-    #  Affichage de la courbe de lumiere finale                               #
-    #*************************************************************************#
+    ##
+    # @brief Affichage de la courbe de lumiere finale
+    # @return
     proc CourbeLumiere {} {
         global audace color
         variable parametres
@@ -581,7 +604,7 @@
         wm resizable $baseplotxy 1 1
 
         set titre "Calaphot "
-        append titre $::CalaPhot::numero_version
+        append titre $calaphot(init,version_ini)
         wm title $baseplotxy $titre
 
         ::blt::graph $baseplotxy.xy
@@ -875,9 +898,19 @@
         }
     }
 
-    #**************************************************************************#
-    #*************  Dessin  ***************************************************#
-    #**************************************************************************#
+    ##
+    # @brief Dessin d'un motif geometrique sur l'image affichee
+    # @param motif : motif a affiche. Les valeurs peuvent etre :
+    # - ovale
+    # - rectangle
+    # - verticale (trait vertical)
+    # - horizontale (trait horizontal)
+    # .
+    # @param centre : liste de corrdonnées en pixel du centre du motif [list x y]
+    # @param taille : liste donnant la largeur et la hauteur du motif en pixels [list largeur hauteur]
+    # @param couleur : couleur du motif. Voir la documentation de Tcl pour les valeurs possibles
+    # @param marqueur : marqueur ("tag" au sens Tk) du motif
+    # @return
     proc Dessin {motif centre taille couleur marqueur} {
         global audace
 
@@ -1063,6 +1096,18 @@
                 }
             }
         }
+    }
+
+    #*************************************************************************#
+    #*************  Retour  **************************************************#
+    #*************************************************************************#
+    proc Retour {nom_image} {
+        global audace
+
+        Message debug "%s\n" [info level [info level]]
+
+        destroy $audace(base).selection_aster
+        AffichageMenuAsteroide 1 $nom_image
     }
 
     #*************************************************************************#
@@ -1508,6 +1553,11 @@
     #*************************************************************************#
     #*************  ValideSaisie  ********************************************#
     #*************************************************************************#
+    ##
+    # @brief Validation generale de la saisie des parametres
+    #
+    # Si manquent certains champs indispensables a ce script, la fenetre de saisie des parametres est maintenue
+    # sinon, elle est detruite
     proc ValideSaisie {} {
         global audace
         variable calaphot
@@ -1545,4 +1595,4 @@
     proc Suppression {} {
         #Procedure pour bloquer la suppression des fenetres esclaves
     }
-
+}
