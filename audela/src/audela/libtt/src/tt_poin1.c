@@ -1234,7 +1234,7 @@ int tt_ptr_saveimakeydim(void *args)
    int nbkeys,datatype;
    void **argu;
    int msg;
-   int naxis1,naxis2,naxis3,bitpix,k,naxis;
+   int naxis1,naxis2,naxis3,bitpix=FLOAT_IMG,k,naxis;
    double bzero=0.,bscale=1.;
    void *p=NULL;
    char *fullname=NULL;

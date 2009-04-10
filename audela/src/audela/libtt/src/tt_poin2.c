@@ -50,7 +50,7 @@ int tt_ptr_imaseries(void *args)
    char **keys=NULL;
    void **argu;
    int msg;
-   int naxis1,naxis2,k,naxis;
+   int naxis1,naxis2,k,naxis=0;
    void **pp_in=NULL,*p_in=NULL,**pp_out=NULL,*p_out=NULL;
    char ligne[TT_MAXLIGNE];
    char ***pkeynames=NULL;
