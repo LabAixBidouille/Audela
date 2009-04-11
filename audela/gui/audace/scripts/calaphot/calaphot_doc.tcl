@@ -5,7 +5,7 @@
 #
 # @brief Documentation generale de Calaphot
 #
-# $Id: calaphot_doc.tcl,v 1.3 2009-04-09 13:56:36 jacquesmichelet Exp $
+# $Id: calaphot_doc.tcl,v 1.4 2009-04-11 13:39:18 jacquesmichelet Exp $
 #
 #
 
@@ -14,20 +14,24 @@
 # @defgroup calaphot_documentation_fr Manuel d'utilisation de Calaphot
 # @ingroup calaphot_notice_fr
 # @section calaphot_generalites Generalites
-# Calaphot est un script qui utilise l'interface graphique AudACE et la librairie de fonctions fournies par l'ensemble Audela. Ce script a pour but de calculer la magnitude d'astres variables par comparaison avec la magnitude d'astres de référence dont la magnitude peut etre considérée comme constante pour la période de temps considérée.
+# Calaphot est un script dédié à des calculs de <b> photométrie différentielle </b> effectués sur une série d'image, c'est-à-dire qu'il procède au calcul de la magnitude d'astres variables (astéroïdes, par exemple) par comparaison avec la magnitude d'astres de référence. Calaphot utilise abondamment l'interface graphique AudACE et la librairie de fonctions fournies par l'ensemble Audela. 
 #
 # @subsection calaphot_generalite_conventions Conventions
 # Pour la suite de cette documentation, et dans un but de simplification, on va appeler
-# - @b astéroïde : un astre dont on veut calculer la magnitude. Dans les faits, il peut s'agir de tout astre suppose variable, que ce soit un veritable astéroïde ou une simple étoile.
+# - @b astéroïde : un astre dont on veut calculer la magnitude. Dans les faits, il peut s'agir de tout astre suppose variable, que ce soit un veritable astéroïde ou une simple étoile. 
 # - @b étoile : un astre dont on va se servir comme référence pour calculer la magnitude de l'astéroïde. Il faut donc que cet astre ait une magnitude constante pour la periode de temps consideree.
-# - @b astre : de facon generique, tout astéroïde ou étoile tels que precedemment specifie.
+# - @b astre : de façon générique, tout astéroïde ou étoile tels que précédemment spécifié.
 # - @b super-étoile : un astre fictif obtenu en additionnant les flux de plusieurs étoiles, et par consequent dont la magnitude est plus faible que toutes les magnitudes des étoiles qui le compose. Ainsi le rapport signal/bruit de cette super-étoile est meilleur (plus grand) que celui des étoiles de référence prises isolément.
-# - @b séquence : l'ensemble des images dont on veut extraire la magnitude d'un astéroïde. Les images de la sequence doivent obeir à quelques contraintes (cf @ref calaphot_limitations_logiciel_images )
+# - @b séquence : l'ensemble des images dont on veut extraire la magnitude d'un astéroïde. Les images de la séquence doivent obeir à quelques contraintes (cf @ref calaphot_limitations_logiciel_images )
 # .
 # @section calaphot_limitations_logiciel Limitations du logiciel
+# @subsection calaphot_limitations_intrinsèques_logiciel Limitations intrinsèques
+# - Calaphot ne sait effectuer que des calculs de photométrie différentielle, et ne sait donc pas traiter des problèmes de photométrie absolue autrement plus ardus.
+# - Calaphot ne sait traiter qu'un seul astéroïde à la fois. Le fait de pouvoir en traiter plusieurs à la fois fera l'objet d'améliorations futures de ce script.
+# - Pour les étoiles de référence, Calaphot ne sait pas extraire automatiquement les magnitudes depuis un catalogue, même si les images contiennent des informations astrométriques dans leur entête. Cette liaison avec un ou plusieurs catalogues fera l'objet d'une version future de ce script.
 # @subsection calaphot_limitations_logiciel_images Limitations sur les images
-# -# Les images doivent correspondre a un champ stellaire <b> avec un fort recouvrement d'une image à l'autre </b>, de façon a pouvoir être recalées en x,y automatiquement. Si ce n'est pas le cas (comme pour un astéroïde géocroiseur avec un déplacement très rapide sur le fond de ciel, par exemple), il faudra "tronçonner" la séquence en plusieurs sous-séquences dont le recouvrement inter-images soit meilleur. Par contre le recalage photométrique des différentes séquences ne sera pas effectué par le script, et sera donc à faire "à la main".
-# -# Les images à traiter ont toutes la même taille c'est-a-dire les mêmes dimensions sur les 2 axes.
+# -# Les images doivent correspondre à un champ stellaire <b> avec un fort recouvrement d'une image à l'autre </b>, de façon à pouvoir être recalées en x,y automatiquement. Si ce n'est pas le cas (comme pour un astéroïde géocroiseur avec un déplacement très rapide sur le fond de ciel, par exemple), il faudra "tronçonner" la séquence en plusieurs sous-séquences dont le recouvrement inter-images soit meilleur. Par contre le recalage photométrique des différentes séquences ne sera pas effectué par le script, et sera donc à faire "à la main".
+# -# Les images à traiter ont toutes la même taille c'est-à-dire les mêmes dimensions sur les 2 axes.
 # -# Les images ont été <b> préalablement pré-traitées </b> : elles ont été nettoyées des artefacts dus à l'électronique de la caméra, à la température du capteur et au dispositif optique à l'aide d'images de calibration comme les offsets, thermiques (darks) et plats (flats).
 # -# Les images doivent être numérotées par un champ numéral à la fin de leur nom de ficher (ex : kandrup_27.fit). Les nombres dans les champs numéraux doivent former une suite sans trous. Il n'est pas nécessaire que le suite commence avec le nombre 1. Et il n'est pas nécessaire que l'ordre de la suite corresponde à l'ordre temporel des images (cf @ref référence a completer)
 # .
@@ -48,39 +52,39 @@
 # @image html calaphot_saisie_parametres.png Ecran de saisie des paramètres
 #
 #
-# L'écran est divisé en 3 parties, les 2 premières etant générales pour le script, la dernière dépendant du mode de calcul choisi (ouverture, modélisation ou via sextractor)
-# @subsection calaphot_saisie_parametres_generaux Parametres généraux
-# - <b>Nom de l'objet</b> : l'utilisateur peut mettre là le nom de l'astéroïde dont il veut la courbe de photométrie.  Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
+# L'écran est divisé en 3 parties, les 2 premières étant générales pour le script et font l'objet du paragraphe @ref calaphot_saisie_parametres_generaux , la dernière dépendant du mode de calcul choisi (ouverture, modélisation ou via sextractor) est décrite au paragraphe @ref calaphot_saisie_parametres_specifiques .
+# @subsection calaphot_saisie_parametres_generaux Paramètres généraux
+# - <b>Nom de l'objet</b> : l'utilisateur peut mettre là le nom de l'astéroïde dont il veut déterminer la courbe de photométrie. Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
 # - <b>Nom de l'opérateur</b> : l'utilisateur peut indiquer le nom de l'auteur des travaux. Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
 # - <b>Code UAI de l'observatoire</b> : permet de repérer l'endroit des prises de vue. Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
 # - <b>Type du capteur</b> : il s'agit d'indiquer, s'il est connu, le type du capteur d'image. Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
-# - <b>Type du télescope</b> : l'utilisateur peut indiquer le type de l'optique principale utilisée (telescope, lunette ou objectif photo). Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
-# - <b>Diamètre du telescope</b> : il convient de preciser le diamètre en mètre de l'optique principale (lentille ou miroir). Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
-# - <b>Focale du telescope</b> : on mentionne la distance focale de l'optique utilisée, incluant toutes les optiques secondaires (aplanisseur de champ, réducteur de focale, lentille de Barlow, etc...). Ce champ sera repris tel quel dans le champ CDR correspondant (cf ).
+# - <b>Type du télescope</b> : l'utilisateur peut indiquer le type de l'optique principale utilisée (télescope, lunette ou objectif photo). Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
+# - <b>Diamètre du télescope</b> : il convient de préciser le diamètre en mètre de l'optique principale (lentille ou miroir). Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
+# - <b>Focale du télescope</b> : on mentionne la distance focale de l'optique utilisée, incluant toutes les optiques secondaires (aplanisseur de champ, réducteur de focale, lentille de Barlow, etc...). Ce champ sera repris tel quel dans le champ CDR correspondant (cf ).
 # - <b>Filtre optique</b> : l'utilisateur peut indiquer le ou les filtres utilisés durant la prise de vue (R, V, B ou I). Ne rien mettre en l'absence de filtre. Ce champ sera repris tel quel dans le champ CDR correspondant (cf )
 # - <b>Nom générique des images</b> : il s'agit du nom des fichiers d'image, sans le chemin d'accès, ni le suffixe numéral, ni l'extension. Exemple : si les fichiers s'appellent @c /tmp/kandrup_18.fit, @c /tmp/kandrup_19.fit, ..., @c /tmp/kandrup_63.fit, on mettra @c kandrup_ dans ce champ.
 # - <b>Indice de la première image</b> : en reprenant l'exemple précédent, on met @c 18 dans ce champ.
 # - <b>Indice de la dernière image</b> : en reprenant l'exemple précédent, on met @c 63 dans ce champ.
-# - <b>Demi-largeur de la fenêtre</b> : la valeur en pixels donnée dans ce champ va définir une fenêtre à l'intérieur de laquelle on va chercher le centroïde des astres. Une largeur faible va accélérer les calculs, mais si les images sont mal recalées, certains astres risquent d'être mal identifiés. A l'inverse, une trop grande fenêtre pourrait faire que 2 astres se trouvent dans la même fenêtre, et fausser les calculs. Par expérience, une valeur égale à 2 ou 3 fois le FWHM moyen des images suffit généralement.
-# - <b>Rapport S/B limite</b> : il s'agit de la valeur du rapport signal sur bruit éliminatoire : si au moins un astre (astéroïde ou étoile de référence) a une mesure de rapport S/B en dessous de cette limite dans une image donnée, l'image sera invalidée, c'est-à-dire que que toutes les mesures faites sur cette image seront éliminées. cf @reference_dans_la_doc_technique.
+# - <b>Demi-largeur de la fenêtre</b> : la valeur en pixels donnée dans ce champ va définir une fenêtre à l'intérieur de laquelle on va chercher le centroïde des astres. Une largeur faible va accélérer les calculs, mais si les images sont mal recalées, certains astres risquent d'être mal identifiés car situés en dehors de la fenêtre. A l'inverse, une trop grande fenêtre pourrait faire que 2 astres se trouvent dans la même fenêtre, et fausser les calculs. Par expérience, une valeur égale à 2 ou 3 fois le FWHM moyen des images suffit généralement.
+# - <b>Rapport S/B limite</b> : il s'agit de la valeur du rapport signal sur bruit éliminatoire : si au moins un astre (astéroïde ou étoile de référence) a une mesure de rapport S/B en dessous de cette limite dans une image donnée, l'image sera invalidée, c'est-à-dire que que toutes les mesures faites sur cette image seront éliminées (voir @ref doc_tech_filtrage_sb ).
 # - <b>Gain de la caméra</b> : il faut indiquer là la valeur du gain inverse en électron/ADU de la caméra. Cette valeur sert pour certains @ref doc_tech_incert_mag_ouv "calculs d'incertitude".
 # - <b>Bruit de lecture</b> : il faut indiquer là la valeur du bruit de lecture en électron de la caméra. Cette valeur sert pour certains @ref doc_tech_incert_mag_ouv "calculs d'incertitude".
-# - <b>Nom du fichier texte résultat</b> : nom du fichier (sans chemin d'accès) qui contiendra l'ensemble des résultats numériques des mesures.
-# - <b>Nom du fichier Postscript résultat</b> : nom du fichier au format Postscript (sans chemin d'accès) qui contiendra le graphique de la courbe de lumière.
+# - <b>Nom du fichier texte résultat</b> : nom du fichier (sans chemin d'accès) qui contiendra l'ensemble des résultats numériques des mesures (voir @refcalaphot_exploitation_resultats )
+# - <b>Nom du fichier Postscript résultat</b> : nom du fichier au format Postscript (sans chemin d'accès) qui contiendra le graphique de la courbe de lumière (voir calaphot_exploitation_resultats ).
 # - <b>Affichage des calculs</b> : les boutons définissent le niveau de verbiage des messages dans la console de l'interface Audela. Depuis "Erreur", mode le moins bavard à "Info", mode très bavard.
 # - <b>Mode de calcul</b> : on indique là le mode de calcul de photométrie retenu pour la séquence. Le détail des calculs effectués pour chacun de ces modes est décrit dans la @ref calaphot_documentation_technique_fr. Le fait de sélectionner une des modes va changer l'aspect de la sous-fenêtre des @ref calaphot_saisie_parametres_specifiques .
 # - <b>Type des images</b> : on indique là si les images ont été préalablement recalées ou pas, c'est à dire si les coordonnées en pixels des étoiles sont constantes ou pas dans toute la séquence.
-#   - images recalées : le mentionner va accélérer les calculs. Sinon les images seront considérés comme non recalées, et un recalage inutile va être systématiquement fait.
-#@note : Si les images sont en fait non recalées, alors qu'on a mentionné qu'elles l'étaient, le script va travailler sur les astres "aléatoires" et va vraisemblablement calculer l'âge du capitaine.
+#   - images recalées : le mentionner va accélérer les calculs. Sinon les images seront considérées comme non recalées, et un recalage inutile va être systématiquement fait.
+#@note : Si les images sont en fait non recalées, alors qu'on a mentionné qu'elles l'étaient, le script va travailler sur les astres "aléatoires" et va vraisemblablement procéder au @ref age_du_capitaine .
 #   - images non recalées : les images vont être alors recalées pour connaître le déplacement de toutes les étoiles, déplacement relatif à la 1ère image de la séquence. Une fois le vecteur translation connu, on en déduit les coordonnées des étoiles dans les images non recalées. <b><i>Tous les calculs de photométrie sont faits sur les images non-recalées.</i></b>
-#@note Les algorithmes de recalage procèdent parfois à des filtrages passe-bas destinés à gommer certains effets visuels du au changement d'échantillonage, ce qui peut nuire à la justesse des calculs de photométrie. Pour cette raison, <b><i>il est recommandé de travailler sur des séquences d'images non-recalées</i></b>.
+#@note Les algorithmes de recalage procèdent parfois à des filtrages passe-bas destinés à gommer certains effets visuels dus au changement d'échantillonage, ce qui peut nuire à la justesse des calculs de photométrie. Pour cette raison, <b><i>il est recommandé de travailler sur des séquences d'images non-recalées</i></b>.
 #@note Pour accélérer les calculs, les résultats du recalage sont stockés, et sont donc ré-utilisés si l'utilisateur est amené à relancer le script sur la même séquence. Ainsi l'utilisateur n'est "pénalisé" qu'une seule fois.
 # - <b>Date des images</b> : il faut indiquer à quoi correspond la date indiquée dans les entêtes FITS des images (début ou milieu de la pose). Le faible degré de normalisation des entêtes FITS est la cause de cette entrée.
-# - <b>Tri des images par date croissante</b> : il faut répondre @c 'oui' dans le cas où l'ordre de numérotation des images de la séquence ne correspond à l'ordre croissant de leur date d'acquisition. En effet, il est nécessaire que le traitement se fasse suivant l'ordre des dates, de façon à pouvoir calculer la position mouvante par essence de l'astéroïde par interpolation linéaire sur les dates précises des images.
+# - <b>Tri des images par date croissante</b> : il faut répondre @c 'oui' dans le cas où l'ordre de numérotation des images de la séquence ne correspond à l'ordre croissant de leur date d'acquisition. En effet, il est nécessaire que le traitement se fasse suivant l'ordre des dates, de façon à pouvoir calculer la position mouvante par essence de l'astéroïde par interpolation linéaire sur les dates précises des images. Il faut noter que le tri des images de la séquence est un processus qui peut paraître long.
 # - <b>Durée de la pose</b> : il faut indiquer l'unité du temps de pose des images. Le faible degré de normalisation des entêtes FITS est la cause de cette entrée.
 # - <b>Format des données</b> : on definit là le type des informations générées dans le fichier texte résultat. cf @ref calaphot_exploitation_resultats.
 # - <b>Reprise des objets déjà saisis</b> : en répondant @c 'oui', on saute l'étape de @ref calaphot_reperage_astres , sous réserve que les astres aient été saisis au moins une fois évidemment.
-# @note Si la séquence d'image a changé, il faut impérativement répondre @c 'non' à ce champ, pour éviter que le script ne travaille sur des étoiles inexistantes et ne calcule l'âge du capitaine.
+# @note Si la séquence d'image a changé, il faut impérativement répondre @c 'non' à ce champ, pour éviter que le script ne travaille sur des étoiles inexistantes et ne passe dans le mode @ref age_du_capitaine .
 #
 # @subsection calaphot_saisie_parametres_specifiques Paramètres dépendant du mode de calcul.
 # -# <b> @anchor calaphot_saisie_parametres_specifiques_ouverture Mode photométrie par ouverture </b>
@@ -107,11 +111,11 @@
 # .
 #
 # @subsection calaphot_reperage_reference Repérage des étoiles de référence.
-# Il s'agit d'indiquer l'emplacement et la magnitude des étoiles de référence. La première image de la séquence est chargée et affichée, ainsi que l'écran ci-dessous s'affiche. Le repérage va se faire sur cette image.
+# Il s'agit d'indiquer l'emplacement et la magnitude des étoiles de référence. La première image de la séquence est chargée et affichée, et l'écran ci-dessous s'affiche. Le repérage va se faire sur cette image.
 # @image html calaphot_etoiles_ref.png Fenêtre de repérage des étoiles de référence
-# - <b> Ajout d'une étoile </b> : pour ajouter une étoile, il suffit de la sélectionner en dessinant un rectangle autout d'elle, et de cliquer sur le bouton <i> Ajout d'une étoile </i>. S'affiche alors une fenêtre demandant la magnitude de cette étoile, qu'il convient de compléter avant d'appuyer sur OK.
-# @note pour la 1ère étoile, la magnitude proposée est toujours 13,5, puisque l'image n'a pas encore été calibrée. Les étoiles suivantes se voient proposer une magnitude plus conforme à la vraie valeur, puisque la 1ère étoile a pu permettre un calibration photométrique grossière.
-# - <b> Retrait d'une étoile </b> : de la même façon qu'on a pu ajouter une étoile, on peut enlever une étoile de liste des références. On sélectionne l'étoile à oter et on clique sur <i> Retrait d'une étoile </i>.
+# - <b> Ajout d'une étoile </b> : pour ajouter une étoile, il suffit de la sélectionner en dessinant un rectangle autour d'elle, et de cliquer sur le bouton <i> Ajout d'une étoile </i>. S'affiche alors une fenêtre demandant la magnitude de cette étoile, qu'il convient de compléter avant d'appuyer sur OK.
+# @note pour la 1ère étoile, la magnitude proposée est toujours 13,5, puisque l'image n'a pas encore été calibrée. Les étoiles suivantes se voient proposer une magnitude plus conforme à la vraie valeur, puisque la 1ère étoile a pu permettre une calibration photométrique grossière.
+# - <b> Retrait d'une étoile </b> : de la même façon qu'on a pu ajouter une étoile, on peut enlever une étoile de liste des références. On sélectionne l'étoile à ôter et on clique sur <i> Retrait d'une étoile </i>.
 # - <b> Suite du script </b> : une fois toutes les étoiles de référence sélectionnées, on peut passer au @ref calaphot_reperage_asteroide en cliquant sur le bouton correspondant.
 # - <b> Arrêt du script </b> : l'appui sur ce bouton va simplement arrêter le script.
 #
