@@ -30,7 +30,7 @@ typedef DWORD 		*LPDWORD;
 typedef WORD 		*LPWORD;
 typedef ULONG		*PULONG;
 typedef PVOID		LPVOID;
-typedef void		VOID;
+// typedef void		VOID;
 typedef unsigned long long int ULONGLONG;
 
 typedef struct _OVERLAPPED {
