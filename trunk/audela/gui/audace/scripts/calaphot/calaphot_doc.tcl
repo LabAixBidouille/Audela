@@ -5,7 +5,7 @@
 #
 # @brief Documentation générale de Calaphot
 #
-# $Id: calaphot_doc.tcl,v 1.5 2009-04-12 13:02:09 jacquesmichelet Exp $
+# $Id: calaphot_doc.tcl,v 1.6 2009-04-13 08:47:37 jacquesmichelet Exp $
 #
 #
 
@@ -50,7 +50,7 @@
 # Dans les autres cas, les paramètres affichés ont la valeur qu'ils avaient reçus lors de la session précédente de Calaphot.
 # L'écran de saisie se présente sous cette forme
 # @image html calaphot_saisie_parametres.png Ecran de saisie des paramètres
-# L'écran est divisé en 3 parties, les 2 premières étant générales pour le script et font l'objet du paragraphe @ref calaphot_saisie_parametres_generaux , la dernière dépendant du mode de calcul choisi (ouverture, modélisation ou via sextractor) est décrite au paragraphe @ref calaphot_saisie_parametres_specifiques .
+# L'écran est divisé en 3 parties, les 2 premières étant générales pour le script et font l'objet du paragraphe @ref calaphot_saisie_parametres_generaux , la dernière dépendant du mode de calcul choisi (ouverture, modélisation ou via SExtractor) est décrite au paragraphe @ref calaphot_saisie_parametres_specifiques .
 # @subsection calaphot_saisie_parametres_generaux Paramètres généraux
 # - <b>Nom de l'objet</b> : l'utilisateur peut mettre là le nom de l'astéroïde dont il veut déterminer la courbe de photométrie. Ce champ sera utilisé dans le @ref calaphot_exploitation_resultats_resume "résumé final" s'il est au format CDR.
 # - <b>Nom de l'opérateur</b> : l'utilisateur peut indiquer le nom de l'auteur des travaux. Ce champ sera utilisé dans le @ref calaphot_exploitation_resultats_resume "résumé final" s'il est au format CDR.
@@ -89,13 +89,14 @@
 # @image html calaphot_param_ouverture.png Ecran de saisie des paramètres spécifiques au mode ouverture
 #   - <b>Facteur de division des pixels</b> : pour augmenter la précision des calculs, les pixels sont divisés en sous-pixels (voir @ref doc_tech_mesure_flux_ouv_division_pixels "les explications techniques"). Il faut noter que le temps de calcul du flux d'une étoile va croître comme le carré de ce facteur.
 #   - <b>Rayon de l'ovale intérieur (en fwhm)</b> : on définit une distance exprimée en fwhm qui va permettre de calculer le flux de l'astre dans une ellipse (voir @ref doc_tech_mesure_flux_ouv_disque_interne "la mesure du flux dans la fenêtre" ).
+# @note : Cette valeur impacte directement la précision des calculs, et a fait l'objet de @ref calaphot_biblio1 "[1]" (chapitre 5.3) et d'une étude détaillée dans @ref calaphot_biblio2 "[2]".
 #   - <b>Rayon interne de la couronne (en fwhm)</b> : on définit une distance exprimée en fwhm d'une couronne qui va permettre de calculer le niveau moyen du fond de ciel (voir @ref doc_tech_mesure_flux_ouv_couronne_externe "la mesure du flux dans la couronne" ).
 #   - <b>Rayon externe de la couronne (en fwhm)</b> : on définit une distance exprimée en fwhm d'une couronne qui va permettre de calculer le niveau moyen du fond de ciel (voir @ref doc_tech_mesure_flux_ouv_couronne_externe "la mesure du flux dans la couronne" ).
 #   .
 # -# <b> @anchor calaphot_saisie_parametres_specifiques_modelisation Mode photométrie par modélisation </b> : il n'y a pas de paramètre spécifique pour ce mode de calcul.
-# -# <b> @anchor calaphot_saisie_parametres_specifiques_sextractor Mode photométrie par Sextractor </b>
-# @image html calaphot_param_sextractor.png Ecran de saisie des paramètres spécifiques au mode sextractor
-#   - <b>Niveau de saturation (en ADU)</b> : Sextractor a besoin de savoir quel est la plus grande valeur possible d'un niveau de gris. Pour une séquence d'images 16 bits issues d'une caméra d'une linéarité parfaite, ce niveau correspond à \f$ \displaystyle 2^{16} - 1 = 65535 \f$.
+# -# <b> @anchor calaphot_saisie_parametres_specifiques_sextractor Mode photométrie par SExtractor </b>
+# @image html calaphot_param_sextractor.png Ecran de saisie des paramètres spécifiques au mode SExtractor
+#   - <b>Niveau de saturation (en ADU)</b> : SExtractor a besoin de savoir quel est la plus grande valeur possible d'un niveau de gris. Pour une séquence d'images 16 bits issues d'une caméra d'une linéarité parfaite, ce niveau correspond à \f$ \displaystyle 2^{16} - 1 = 65535 \f$.
 # .
 #
 # @subsection calaphot_fin_saisie_parametres Fin de la saisie des paramètres
@@ -265,8 +266,8 @@
 # @subsection doc_tech_sequencement_operations Séquencement des opérations.
 # - Saisie d'une certain nombre de paramètres nécessaires aux calculs :
 #   - \f$ \displaystyle {\frac {S}{B}}_{lim} \f$ : rapport signal sur bruit limite.
+#   - \f$ \displaystyle G \f$ : gain inverse de la caméra (en électron/ADU).
 #   - paramètres spécifiques à la photométrie d'ouverture.
-#     - \f$ \displaystyle G \f$ : gain de la caméra (en électron/ADU).
 #     - \f$ \displaystyle N_R \f$ : bruit de lecture de la caméra (en électrons).
 #     - \f$ \displaystyle n_p \f$ : facteur de division des pixels.
 #     - \f$ \displaystyle r_1\f$ : rayon exprimé en FWHM du disque entourant l'astre (nécessaire à la mesure du flux de l'astre).
@@ -283,13 +284,14 @@
 #   - Mesure du flux de chacune des étoiles de @ref doc_tech_calcul_mesure_flux "référence" \f$ \displaystyle F_r \f$.
 #   - Calcul du @ref doc_tech_calcul_flux_super_etoile "flux de la super-étoile"\f$ \displaystyle M_{se} \f$.
 #   - Calcul de l' @ref doc_tech_incert_totale_super_etoile "incertitude sur la magnitude de la super-étoile".
-#   - Calcul de la @ref doc_tech_calcul_mag_astre "magnitude de l'astéroïde".
-#   - Calcul de l' @ref doc_tech_incert_mag "incertitude sur la magnitude de l'astéroïde".
-#   - Calcul des magnitudes des étoiles de référence.
-#   - Calcul des incertitudes sur les étoiles de référence.
-#   - Filtrage sur le rapport signal sur bruit.
+#   - Calcul de la @ref doc_tech_calcul_mag_astre "magnitude de l'astéroïde" \f$ \displaystyle M_a \f$.
+#   - Calcul de l' @ref doc_tech_incert_mag "incertitude sur la magnitude de l'astéroïde" \f$ \displaystyle C_m \f$.
+#   - A titre de vérification, calcul des magnitudes des étoiles de référence (à partir de leur pseudo-super-étoile).
+#   - A titre de vérification, calcul des incertitudes sur les étoiles de référence (à partir de leur pseudo-super-étoile).
+#   - @ref doc_tech_filtrage_sb.
 #   - Calcul de la @ref doc_tech_calcul_cste_mag "constante des magnitudes".
 # - Fin boucle pour toutes les images.
+# - @ref doc_tech_filtrage_cm
 # .
 # @section doc_tech_detail_calcul Détail des calculs.
 #
@@ -308,6 +310,8 @@
 #       - \f$ \displaystyle \lambda_{xm} = 1.66511.r_1.\sigma_{xm} \f$
 #       - \f$ \displaystyle \lambda_{ym} = 1.66511.r_1.\sigma_{ym} \f$ où
 #           - \f$ \displaystyle r_1 \f$ est le rayon exprimé en FWHM du disque elliptique qui entoure l'astre à mesurer. Il a été spécifié par l'utilisateur.
+# @note : Cette valeur \f$ \displaystyle r_1 \f$ impacte directement la précision des calculs, et a fait l'objet de @ref calaphot_biblio1 "[1]" (chapitre 5.3) et d'une étude détaillée dans @ref calaphot_biblio2 "[2]".
+#
 #           .
 #       .
 # @anchor doc_tech_mesure_flux_ouv_division_pixels Pour augmenter la précision de calcul, les pixels sont artificiellement découpés en \f$ \displaystyle n_p^2 \f$ sous-pixels, \f$ \displaystyle n_p \f$ étant le facteur de division entré par l'utilisateur. Ainsi chaque sous-pixel se voit attribuer un niveau de gris égal à celui du pixel divisé par \f$ \displaystyle n_p^2 \f$.Finalement, on détermine sur l'image l'ensemble des sous-pixels qui sont englobés par l'ellipse et on somme les niveaux de gris de ces sous-pixels dans \f$ \displaystyle F_b \f$. On récupère aussi le nombre décimal de pixels \f$ \displaystyle n_{pix} \f$ inclus dans la fenêtre.
@@ -327,8 +331,24 @@
 #    - \f$ \displaystyle \sigma_x \f$ et \f$ \displaystyle \sigma_y \f$ : écart-types suivant les axes principaux de l'ellipse
 #    - \f$ \displaystyle \rho \f$ : facteur d'allongement de l'ellipse (\f$ \displaystyle \|\rho\| < 1 \f$)
 #    .
-# -# @anchor doc_tech_mesure_flux_mod <b>Photométrie par Sextractor</b> :
+# -# @anchor doc_tech_mesure_flux_mod <b>Photométrie par SExtractor</b> :
+# SExtractor inclue un module de photométrie qui est documenté dans le chapitre 9.4 du @ref calaphot_liens_utiles_sextractor "SExtractor user's manual". Calaphot utilise ce module avec les options suivantes :
+#    - DETECT_TYPE  CCD
+#    - MAG_ZEROPOINT 0.0
+#    - GAIN mis à la valeur entrée par l'utilisateur.
+#    - BACK_SIZE 32
+#    - BACK_FILTERSIZE 3
+#    - BACKPHOTO_TYPE  GLOBAL
+#    .
+# et récupère les données :
+#    - MAG_AUTO
+#    - MAGERR_AUTO
+#    - FLUX_AUTO
+#    - FLUXERR_AUTO
+#    .
 # .
+# Il convient de se référer à la documentation de SExtractor pour connaître la signification et l'impact de ces paramètres.
+#
 # @subsection doc_tech_calcul_flux_super_etoile Calcul du flux de la super-étoile.
 # Le flux de la super-étoile \f$ \displaystyle F_{se} \f$ est déterminé en sommant les flux \f$ \displaystyle F_r \f$ des \f$ \displaystyle N_{ref} \f$ étoiles de référence.@n
 # \f$ \displaystyle F_{se} = \sum_{r=1}^{N_{ref}} F_r \f$
@@ -356,7 +376,7 @@
 #    - \f$ \displaystyle N_{ref} \f$ est le nombre d'étoile de référence
 #    .
 # @subsection doc_tech_incert_mag Calcul d'incertitude sur les magnitudes
-# -# @anchor doc_tech_incert_mag_ouv <b>Photométrie d'ouverture</b> : la formule générale (dite équation générale des CCD) est celle donnée par Steve B. Howell dans son livre "Handbook of CCD astronomy" au chapitre 4.4. Elle donne le rapport signal à bruit \f$ \displaystyle \frac {S}{B} \f$ : @n
+# -# @anchor doc_tech_incert_mag_ouv <b>Photométrie d'ouverture</b> : la formule générale (dite équation générale des CCD) est tirée de @ref calaphot_biblio1 "[1]". Elle donne le rapport signal à bruit \f$ \displaystyle \frac {S}{B} \f$ : @n
 #\f$ \displaystyle \frac {S}{B} = \frac {N_*}{\sqrt{N_* + n_{pix}.(1+\frac{n_{pix}}{n_B}).(N_S+N_D+N_R^2+G^2.\sigma_f^2)}} \f$ où @n
 #    - \f$ \displaystyle N_* \f$ est le nombre total de photons correspondant à l'étoile. @n
 #    - \f$ \displaystyle n_{pix} \f$ est le nombre de pixels de l'étoile. @n
@@ -368,8 +388,8 @@
 #    - \f$ \displaystyle \sigma_f \f$ est un facteur constant valant approximativement 0.289.
 #    .
 # @note Les mots photon et électrons sont des synonymes dans les expressions ci-dessus, on devrait normalement parler de photo-electron, notion qui intégrerait le rendement quantique du CCD.@n
-#
-# La formule ci-dessus est exprimée en photons (ou électrons). Les mesures sur les images s'effectuant en ADU, cette formule devient alors (en reprenant les notations ci-dessus )@n
+# Pour des observations avec des caméra CCD classiques, dont le gain est assez élevé, on peut négliger les 2 termes \f$ \displaystyle N_R^2+G^2.\sigma_f^2 \f$ .
+# La formule ci-dessus est exprimée en photons (ou électrons). Or, les mesures sur les images s'effectuant en ADU, cette formule devient alors (en reprenant les notations ci-dessus )@n
 # \f$ \displaystyle \frac {S}{B} = \frac {G.S_*}{\sqrt{G.S_* + n_{pix}.(1+\frac{n_{pix}}{n_B}).(G*N_B + N_R^2)}} \f$ où :
 #    - \f$ \displaystyle S_* \f$ est le nombre d'ADU correspondant à l'étoile
 #    - \f$ \displaystyle N_B \f$ est le nombre d'ADU par pixel du fond de ciel
@@ -377,7 +397,9 @@
 # Finalement, l'incertitude \f$ \displaystyle E \f$ sur la mesure de la magnitude est donnée par
 #\f$ \displaystyle E = \frac {1.0857} {\frac {S}{B}} \f$ .
 # -# <b>Photometrie par modelisation</b> .
-# -# <b>Photometrie par Sextractor</b> .
+# L'incertitude sur le flux est directement issue du calcul des paramètres de la modélisation de l'astre. (voir @ref doc_tech_modelisation_nappe_gaussienne )
+# -# <b>Photometrie par SExtractor</b> .
+# voir le paragraphe sur la mesure des flux par @ref doc_tech_mesure_flux_mod "SExtractor".
 # .
 # @subsection doc_tech_incert_totale Calcul des incertitudes totales.
 # -# @anchor doc_tech_incert_totale_super_etoile Pour la @b super-étoile, l'incertitude \f$ \displaystyle E_{se} \f$ est calculée à partir des incertitudes \f$ \displaystyle E_r \f$ et des magnitudes @b mesurées \f$ \displaystyle M_r \f$ de chacune des \f$ \displaystyle N_{ref} \f$ étoiles de référence : @n
@@ -390,7 +412,7 @@
 # où les \f$ \displaystyle M_k \f$ designent les magnitude @b mesurées des étoiles de référence autres que l'étoile \f$ \displaystyle r \f$.
 # .
 # @subsection doc_tech_modelisation_nappe_gaussienne Modélisation d'une étoile par une nappe gaussienne.
-# La modélisation permet de trouver une fonction analytique qui soit la plus proche au sens des moindres carrés de la fonction de niveaux de gris d'un astre. Dans le cas de la nappe gaussienne, la fonction de modélisation \f$ \displaystyle f(x,y) \f$ est donnée par @n
+# La modélisation permet de trouver une fonction analytique qui soit la plus proche au sens des moindres carrés de la fonction de niveaux de gris d'un astre. On peut trouver plus de détails dans @ref calaphot_biblio4 "les conférences de Peter B. Stetson". Dans le cas de la nappe gaussienne, la fonction de modélisation \f$ \displaystyle f(x,y) \f$ est donnée par @n
 #\f$ \displaystyle f(x,y) = S_0 . e^{-h(x,y)} + B_0 \f$ où \f$ \displaystyle h(x,y) \f$ vaut @n
 #\f$ \displaystyle h(x,y) = \frac {(x-x_c)^2}{\sigma_x^2} + \frac{(y-y_c)^2}{\sigma_y^2} - 2.\rho.\frac{x-x_c}{\sigma_x}.\frac{y-y_c}{\sigma_y} \f$
 #Il faut noter que l'équation \f$ \displaystyle h(x,y) = constante \f$ est l'équation au centre d'une ellipse, dont les axes sont proportionnels aux valeurs \f$ \displaystyle \sigma_x \f$ et \f$ \displaystyle \sigma_y \f$. Pour les notations :
@@ -408,20 +430,36 @@
 #   - dans le cas contraire, l'ellipse est un cercle, et \f$ \displaystyle \alpha \f$ est indéterminé.
 #   .
 # .
-# @subsection doc_tech_filtrage_sb Filtrage des images à partir des rapports signal sur bruit.
-# Ce filtrage vise à éliminer les images douteuses. Sont qualifiées de douteuses les images dont <b>au moins</b> un astre a un rapport signal à bruit inférieur à la limite \f$ \displaystyle {\frac {S}{B}}_{lim} \f$ définie par l'utilisateur.
+# Les incertitudes sont données par le produit du résidu de la modélisation par la covariance du paramètre recherché. En termes plus simples, les incertitudes sont directement fournies par le calcul des paramètres de la modélisation. Pour plus de détails, se rapporter au début de la "lecture 2" de @ref calaphot_biblio4 "[4]"
+#
+# @section doc_tech_filtrage Filtrage des images
+# Certaines images de mauvaise qualité, ou dont les résultats semblent aberrants doivent être écartées du rapport final.
+# @subsection doc_tech_filtrage_sb Filtrage à partir des rapports signal sur bruit.
+# Ce filtrage vise à éliminer les images douteuses. Sont qualifiées de douteuses les images dont <b>au moins</b> un astre a un rapport signal à bruit inférieur à la limite \f$ \displaystyle {\frac {S}{B}}_{lim} \f$ définie par l'utilisateur. Ce filtrage est fait au fur et à mesure des calculs.
+# @section doc_tech_filtrage_cm Filtrage à partir de la constante des magnitudes
+# La @ref doc_tech_calcul_cste_mag "constante des magnitudes" étant calculée directement à partir du flux de la super-étoile, son évolution dans le temps est sensée être lente et ne suivre que les variations de la masse d'air. On peut donc s'appuyer sur sa valeur pour tenter de détecter rapidement les images qui semblent aberrantes pour des raisons diverses (passage nuageux, disfonctionnement de la caméra, dérive brutale brutale du télescope, etc...)@n
+# L'algorithme est le suivant : pour une image donné, on calcule la moyenne \f$ \displaystyle m \f$ et l'écart-type \f$ \displaystyle \sigma \f$ de la constante des magnitudes pour les 5 images précédentes et les 5 images suivantes. Si la constante des magnitude de l'image donnée est dans l'intervalle \f$ \displaystyle [m-3.\sigma, m+3.\sigma] \f$, l'image est conservée. Elle est rejetée dans le cas contraire, et ne participera plus au calcul de la moyenne et écart-type pour les images suivantes.
+# S'il y a moins de 5 images avant ou après l'image donnée, on ne prend que celle qui existent (éternel problème des bords).
 #
 # @section age_du_capitaine Calcul de l'âge du capitaine.
-# Le problème soulevé par ce calcul n'est pas récent, puisque Gustave Flaubert avait soumis cette question à sa soeur dans une lettre.:
-# <i>Tu diriges un navire, qui part de Boston chargé de coton, il jauge 200 tonneaux, il fait voile vers Le Havre, le grand mât est cassé, il y a un mousse sur le gaillard d'avant, les passagers sont au nombre de douze, le vent souffle NNE, l'horloge marque trois heures un quart d'après-midi, on est au mois de mai ... Quel est l'âge du capitaine ? </i>
+# Le problème soulevé par ce calcul n'est pas récent et a été posé par l’écrivain français Gustave Flaubert (1821-1880) dans une lettre à sa sœur Caroline en 1843. <i> Puisque tu fais de la géométrie et de la trigonométrie, je vais te donner un problème : Un navire est en mer, il est parti de Boston chargé de coton, il jauge 200 tonneaux, il fait voile vers Le Havre, le grand mât est cassé, il y a un mousse sur le gaillard d'avant, les passagers sont au nombre de douze, le vent souffle NNE, l'horloge marque trois heures un quart d'après-midi, on est au mois de mai ... On demande l'âge du capitaine </i>
 
 ##
 # @defgroup calaphot_liens_biblio_fr Liens utiles et bibliographie
 # @ingroup calaphot_notice_fr
 # @section calaphot_liens_utiles Liens utiles
-# - Le project CdR/CdL : @anchor calaphot_liens_utiles_cdrcdl http://obswww.unige.ch/~behrend/page_cou.html
-# - Le logiciel Courbrot et son format pour les données d'entrée : @anchor calaphot_liens_utiles_courbrot http://obswww.unige.ch/~behrend/redcouro/redcouro.html
+# - Les pages maintenues par Raoul Behrend :
+#   - Le project CdR/CdL : @anchor calaphot_liens_utiles_cdrcdl http://obswww.unige.ch/~behrend/page_cou.html
+#   - Le logiciel Courbrot et son format pour les données d'entrée : @anchor calaphot_liens_utiles_courbrot http://obswww.unige.ch/~behrend/redcouro/redcouro.html
+#   .
+# - Le logiciel SExtractor : @anchor calaphot_liens_utiles_sextractor http://terapix.iap.fr/rubrique.php?id_rubrique=91/index.html
 # - Le logiciel MPO Canopus : @anchor calaphot_liens_utiles_canopus http://www.minorplanetobserver.com/MPOSoftware/MPOCanopus.htm
-
-
+# .
+#
+# @section calaphot_biblio Bibliographie
+# - @anchor calaphot_biblio1 [1] Handbook of CCD Astronomy, Steve B.Howell, Cambridge University Press, ISBN 0-521-64834-3
+# - @anchor calaphot_biblio2 [2] Howell, S.B, <i> Publ. Astrom. Soc. Pac. </i>, @b 101, 616. Une copie est disponible sur http://astrosurf.com/michelet/calaphot/biblio/Howell_1989_PASP_101_616_CCD_aperture_photometry.pdf
+# - @anchor calaphot_biblio3 [3] Newberry, M, <i> Publ. Astrom. Soc. Pac. </i>, @b 103, 122. Une copie est disponible sur http://astrosurf.com/michelet/calaphot/biblio/Newberry_1991_PASP_103_122_CCD_sky_substraction.pdf
+# - @anchor calaphot_biblio4 [4] Peter B. Stetson, The techniques of least squares and stellar photometry with CCDs : http://nedwww.ipac.caltech.edu/level5/Stetson/Stetson_contents.html
+# .
 

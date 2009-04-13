@@ -5,7 +5,7 @@
 #
 # @brief Routines de calcul de photometrie de Calaphot
 #
-# $Id: calaphot_calcul.tcl,v 1.2 2009-04-09 08:01:02 jacquesmichelet Exp $
+# $Id: calaphot_calcul.tcl,v 1.3 2009-04-13 08:47:37 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -164,7 +164,7 @@ namespace eval ::CalaPhot {
 
     ##
     # @brief Calcul d'incertitude pour un astre donne pour le mode ouverture
-    # @details @ref doc_tech_incert_mag_ouv "Formules de calcul" Formule tiree de Handbook of CCD astronomy, SB Howell (suggestion de A. Klotz)
+    # @details voir les @ref doc_tech_incert_mag_ouv
     # Valeurs de tests tirees du bouquin de Howell
     #    - set S 24013
     #    - set g 5
@@ -519,9 +519,15 @@ namespace eval ::CalaPhot {
         Message debug "Coeff ext general : %f\n" $data_script(coeff_masse_air)
     }
 
-    #*************************************************************************#
-    #*************  FiltrageConstanteMag  ************************************#
-    #*************************************************************************#
+    ##
+    # @brief Filtrage à partir de la constante des magnitudes
+    # @details Pour l'algorithme, voir @ref doc_tech_filtrage_cm
+    # @pre Les variables suivantes devront contenir :
+    # - @c data_image($n,constante_mag) : la constante des magnitudes pour l'image n
+    # - @c data_image($n,valide) : le drapeau de validité de l'image n
+    # .
+    # @post Les variables suivantes contiendront
+    # - @c data_image($n,valide) : le drapeau de validité de l'image n (mis à jour)
     proc FiltrageConstanteMag {} {
         variable parametres
         variable data_image
@@ -749,7 +755,7 @@ namespace eval ::CalaPhot {
 	##
 	# @brief Calcul du flux de la super-étoile et des pseudo-super-étoiles.
 	# @details Détails des calculs :
-	# - pour la @ref doc_tech_calcul_flux_super_etoile "super-étoile". 
+	# - pour la @ref doc_tech_calcul_flux_super_etoile "super-étoile".
 	# - pour les @ref doc_tech_calcul_flux_pseudo-super_etoile "pseudo-super-étoiles".
 	# .
 	# @param image : indice de l'image courante
@@ -819,7 +825,7 @@ namespace eval ::CalaPhot {
 	# - pour les astres, voir @ref doc_tech_calcul_mag_astre "magnitude des astres"
 	# - pour la constante des magnitudes, voir @ref doc_tech_calcul_cste_mag "constante des magnitudes"
 	# .
-	# Les incertitudes sur la magnitude de l'astre sont aussi calculées depuis cette procédure. Voir @ref CalculErreurOuverture , @ref CalculErreurModelisation ou @ref CalculErreurSextractor. 
+	# Les incertitudes sur la magnitude de l'astre sont aussi calculées depuis cette procédure. Voir @ref CalculErreurOuverture , @ref CalculErreurModelisation ou @ref CalculErreurSextractor.
 	# @param i : numéro de l'image dans la liste
     # @pre Les variables suivantes devront contenir :
 	# - @c data_script(nombre_variable) : nbre d'asteroïde.
