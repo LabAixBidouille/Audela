@@ -119,10 +119,15 @@ static void **findptr(void *ptr)
 {
   int i;
 
-  for (i = 0; i < allocated.total; i++)
-    if (allocated.pointers[i] == ptr)
+  debug(FLIDEBUG_INFO,"DM: search for ptr=%p\n",ptr);
+  for (i = 0; i < allocated.total; i++) {
+    if ( allocated.pointers[i] != NULL ) 
+      debug(FLIDEBUG_INFO,"DM:  allocated.pointers[%d]=%p\n",i,allocated.pointers[i]);
+    if (allocated.pointers[i] == ptr) {
+      debug(FLIDEBUG_INFO,"DM:  found at index %d\n",i);
       return &allocated.pointers[i];
-
+    }
+  }
   debug(FLIDEBUG_WARN, "Invalid pointer not found: %p", ptr);
 
   return NULL;

@@ -435,6 +435,7 @@ static long unix_fli_list_glob(char *pattern, flidomain_t domain,
     }
 
     sprintf(list[found], "%s;%s", g.gl_pathv[i], DEVICE->devinfo.model);
+printf("DM:list[%d]=%s\n",found,list[found]);
     FLIClose(dev);
     found++;
   }
@@ -443,10 +444,10 @@ static long unix_fli_list_glob(char *pattern, flidomain_t domain,
 
   /* Terminate the list */
   list[found++] = NULL;
-
-  list = xrealloc(list, found * sizeof(char *));
+printf("DM:list=%p\n",list);
+  //list = xrealloc(list, found * sizeof(char *));
   *names = list;
-
+printf("DM:all is good.\n");
   return 0;
 }
 

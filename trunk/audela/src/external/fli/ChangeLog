@@ -1,3 +1,21 @@
+2009-04-18  Denis MARCHAIS  <denis.marchais@free.fr>
+   Modification du module kernel pour compat kernels recents:
+   - fliusb.c: remplacement de <asm/semaphore.h> par <linux/semaphore.h>
+   - Makefile: remplacement de CFLAGS par EXTRA_CFLAGS, et suppression
+     du scatter-gather.
+   Modification de la librairie:
+   - libfli.c: retrait du define SHOWFUNCTIONS
+   - libfli-mem.c: ajout d'infos de debug (INFO) dans findptr.
+   - libfli-camera-usb.c: infos de debug (INFO) dans fli_camera_usb_grab_row
+   - libfli-debug.c: ecriture des infos de debug dans "fingerlakes.txt"
+   - libfli-sys.c: suppression du xrealloc final dans unix_fli_list_glob
+     et ajout de quelques infos de debug (INFO).
+   - libfli-sys.h: buffer usb reduit a 32ko au lieu de 128 ko.
+   - libfli-usb-sys.c: mise a jour des definitions d'include usb.
+
+2009-04-18  Denis MARCHAIS  <denis.marchais@free.fr>
+   Import de la version 1.71 du driver FLI.
+
 
 2005-03-02  Denis MARCHAIS  <denis.marchais@free.fr>
 	Les modifications suivantes ont ete apportees au driver	libfli-1.13 
