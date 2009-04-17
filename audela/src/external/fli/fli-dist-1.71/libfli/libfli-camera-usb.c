@@ -958,7 +958,7 @@ long fli_camera_usb_grab_row(flidev_t dev, void *buff, size_t width)
 			cam->image_area.lr.x - cam->image_area.ul.x);
 		return -EINVAL;
 	}
-
+debug(FLIDEBUG_INFO,"grab_row: buff=%p, width=%d",buff,width);
 	switch (DEVICE->devinfo.devid)
   {
 		/* MaxCam and IMG cameras */
@@ -1055,7 +1055,7 @@ long fli_camera_usb_grab_row(flidev_t dev, void *buff, size_t width)
 		case FLIUSB_PROLINE_ID:
 		{
 			long rlen, rtotal;
-
+debug(FLIDEBUG_INFO,"  grabrowwidth=%d, grabrowcount=%d, grabrowcounttotal=%d, grabrowindex=%d, grabrowbatchsize=%d, grabrowbufferindex=%d",cam->grabrowwidth, cam->grabrowcount, cam->grabrowcounttot, cam->grabrowindex, cam->grabrowbatchsize, cam->grabrowbufferindex);
 			/* First we need to determine if the row is in memory */
 			if (cam->grabrowcounttot < cam->grabrowwidth)
 			{
@@ -1086,7 +1086,7 @@ long fli_camera_usb_grab_row(flidev_t dev, void *buff, size_t width)
 
 				/* Determine how many bytes to transfer */
 				rlen = (((cam->grabrowcount - cam->grabrowindex) * cam->grabrowwidth) - cam->grabrowcounttot) * 2;
-
+debug(FLIDEBUG_INFO,"  need transfer: loadindex=%d,rlen=%d,cam->max_usb_xfer=%d",loadindex,rlen,cam->max_usb_xfer);
 				if (rlen > cam->max_usb_xfer)
 					rlen = cam->max_usb_xfer;
 
@@ -1098,7 +1098,7 @@ long fli_camera_usb_grab_row(flidev_t dev, void *buff, size_t width)
 				{
 					debug(FLIDEBUG_FAIL, "Read failed...");
 				}
-
+debug(FLIDEBUG_INFO,"  transfer:%d/%d",rlen,rtotal);
 				if (rlen != rtotal)
 				{
 					debug(FLIDEBUG_FAIL, "Transfer did not complete, padding...");

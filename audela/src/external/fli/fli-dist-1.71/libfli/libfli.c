@@ -57,7 +57,7 @@ static long fli_freelist(char **names);
 
 flidevdesc_t *devices[MAX_OPEN_DEVICES] = {NULL,};
 
-#define SHOWFUNCTIONS
+//#define SHOWFUNCTIONS
 
 const char* version = \
 "FLI Software Development Library for " __SYSNAME__ " " __LIBFLIVER__;

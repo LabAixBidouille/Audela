@@ -1,6 +1,6 @@
 .PHONY: build install clean distclean
 
-DIR = libfli/lib
+DIR = fli-dist-1.71/libfli
 
 build:
 	make -C $(DIR)

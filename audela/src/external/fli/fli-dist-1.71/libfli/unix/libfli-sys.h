@@ -56,7 +56,8 @@
 
 #define __SYSNAME__ "Linux"
 #define __LIBFLI_MINOR__ 71
-#define USB_READ_SIZ_MAX (1024 * 128)
+//#define USB_READ_SIZ_MAX (1024 * 128)
+#define USB_READ_SIZ_MAX (1024 * 32)
 #define _USE_FLOCK_
 #define PARPORT_GLOB "/dev/ccd*"
 #define USB_GLOB "/dev/fliusb*"

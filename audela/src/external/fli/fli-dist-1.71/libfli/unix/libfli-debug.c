@@ -97,6 +97,7 @@ int debugclose(void)
 void debug(int level, char *format, ...)
 {
   va_list ap;
+  FILE *f;
 
   va_start(ap, format);
 
@@ -104,9 +105,11 @@ void debug(int level, char *format, ...)
     vsyslog(sysloglevel(level), format, ap);
   else if (level > FLIDEBUG_NONE && level <= _loglevel)
   {
-    fprintf(stderr, LOGPREFIX ": ");
-    vfprintf(stderr, format, ap);
-    fprintf(stderr, "\n");
+    f = fopen("fingerlakes.txt","at");
+    fprintf(f, LOGPREFIX ": ");
+    vfprintf(f, format, ap);
+    fprintf(f, "\n");
+    fclose(f);
   }
 
   va_end(ap);
