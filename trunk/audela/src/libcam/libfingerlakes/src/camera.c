@@ -140,11 +140,18 @@ struct cam_drv_t CAM_DRV = {
 /* Il faut donc, au moins laisser ces fonctions vides.       */
 /* ========================================================= */
 
+int flilogactivated = 0;
+
+flidebug_t flidebuglevel = FLIDEBUG_NONE;
+
 static void logfile(char *s)
 {
     FILE *f;
+    if ( ! flilogactivated )
+        return;
     f = fopen("fingerlakes.txt", "at");
-    fprintf(f, s);
+    fprintf(f, "%s", s);
+    printf("%s",s);
     fclose(f);
 }
 
@@ -160,13 +167,42 @@ int cam_init(struct camprop *cam, int argc, char **argv)
     char **camlist, *fliname, *semicolon;
     char s[100], t[100], headref[6];
     long hwrev, fwrev;
-	double pixsizex, pixsizey; 
+    double pixsizex, pixsizey;
+	 long a, b, c, d;
+	 long aa, bb, cc, dd;
+	 
+
+    for (i = 0 ; i < argc ; i++ ) {
+        if ( ! strcmp(argv[i], "-flidebug" ) ) {
+            if ( ! strcmp(argv[i+1], "none") ) {
+                flidebuglevel = FLIDEBUG_NONE;
+                flilogactivated = 0;
+            } else if ( ! strcmp(argv[i+1], "info") ) {
+                flidebuglevel = FLIDEBUG_INFO;
+                flilogactivated = 1;
+            } else if ( ! strcmp(argv[i+1], "warn") ) {
+                flidebuglevel = FLIDEBUG_WARN;
+                flilogactivated = 1;
+            } else if ( ! strcmp(argv[i+1], "fail") ) {
+                flidebuglevel = FLIDEBUG_FAIL;
+                flilogactivated = 1;
+            } else if ( ! strcmp(argv[i+1], "all") ) {
+                flidebuglevel = FLIDEBUG_ALL;
+                flilogactivated = 1;
+            }
+            if ( ( err = FLISetDebugLevel(NULL,flidebuglevel) ) ) {
+                    sprintf(s,"cam_init: can't set debug mode to %s, %s\n",argv[i+1],strerror((int)-err));
+                    logfile(s);
+                    return -1;
+            }
+        }
+    }
 
     logfile("***\n");
     logfile("CAM_INIT: entree\n");
-    for (i = 0; i < argc; i++) {
-	sprintf(s, "cam_init: argv[%d]=%s\n", i, argv[i]);
-	logfile(s);
+    for(i=0;i<argc;i++) {
+        sprintf(s,"cam_init: argv[%d]=%s\n", i, argv[i]);
+        logfile(s);
     }
 
     // Version du driver FLI
@@ -176,6 +212,10 @@ int cam_init(struct camprop *cam, int argc, char **argv)
     }
     sprintf(s, "cam_init: driver FLI \"%s\"\n", t);
     logfile(s);
+
+    sprintf(s, "camlist=%p\t, &camlist=%p\n",camlist,&camlist);
+    logfile(s);
+    camlist = NULL;
 
     // Recupere la liste des cameras disponibles sur le systeme
     if ((err = FLIList(FLIDOMAIN_USB | FLIDEVICE_CAMERA, &camlist))) {
@@ -273,12 +313,60 @@ int cam_init(struct camprop *cam, int argc, char **argv)
     }
     logfile("cam_init: shutter ferme\n");
 
-    cam->authorized = 1;
+	 // Recuperation de la taille de la matrice
+	 if ((err = FLIGetArrayArea(cam->device, &a, &b, &c, &d))) {
+		logfile("cam_init: impossible de recuperer la array area\n");
+		return -1;
+    }
+    sprintf(s, "cam_init: ArrayArea=(%ld,%ld)-(%ld,%ld)\n", a, b, c, d);
+    logfile(s);
+ 
+    // Recuperation de la partie sensible de la matrice
+    if ((err = FLIGetVisibleArea(cam->device, &aa, &bb, &cc, &dd))) {
+		logfile("cam_init: impossible de recuperer la visible area\n");
+		return -1;
+    }
+    sprintf(s, "cam_init: VisibleArea=(%ld,%ld)-(%ld,%ld)\n", aa, bb, cc, dd);
+    logfile(s);
+
+    for(i=0;i<5;i++) { 
+        if ((err = FLIGetCameraModeString(cam->device,i,s,100))) {
+            sprintf(s,"cam_init: impossible de recuperer le mode %d\n",i);
+            logfile(s);
+            continue;
+        } else {
+            sprintf(t,"mode %d: %s\n",i,s);
+            logfile(t);
+        }
+    } 
+	
+    cam->overscanindex = 0; // Par defaut on n'acquiert pas les overscan
+    cam->nb_deadbeginphotox = CAM_INI[cam->index_cam].overscanxbeg = aa - a;
+    cam->nb_deadendphotox   = CAM_INI[cam->index_cam].overscanxend = c - cc;
+    cam->nb_deadbeginphotoy = CAM_INI[cam->index_cam].overscanybeg = bb - b;
+    cam->nb_deadendphotoy   = CAM_INI[cam->index_cam].overscanyend = d - dd;
+    cam->nb_photox          = CAM_INI[cam->index_cam].maxx = cc - aa;
+    cam->nb_photoy          = CAM_INI[cam->index_cam].maxy = dd - bb;
+    sprintf(s,"cam_init: oxbeg=%d, oybeg=%d, oxend=%d, oyend=%d\n",
+        CAM_INI[cam->index_cam].overscanxbeg, CAM_INI[cam->index_cam].overscanybeg,
+        CAM_INI[cam->index_cam].overscanxend, CAM_INI[cam->index_cam].overscanyend);
+    logfile(s);
+    sprintf(s,"cam_init: maxx=%d, maxy=%d\n",
+        CAM_INI[cam->index_cam].maxx, CAM_INI[cam->index_cam].maxy);
+    logfile(s);	
 
     // Nombre de vidages de la matrice avant exposition
     fingerlakes_nbflushes(cam, 5);
 
+    cam->x1 = 0;
+    cam->y1 = 0;
+    cam->x2 = CAM_INI[cam->index_cam].maxx - 1;
+    cam->y2 = CAM_INI[cam->index_cam].maxy - 1;
     cam_update_window(cam);	/* met a jour x1,y1,x2,y2,h,w dans cam */
+
+    cam->interrupt = 0;
+
+    cam->authorized = 1;
 
     return 0;
 }
@@ -288,78 +376,27 @@ void cam_update_window(struct camprop *cam)
     int maxx, maxy;
     int x1, y1, x2, y2;
     int err;
-    long a, b, c, d;
     char s[100];
 
-    // rajout Myrtille pour faire marcher la FLI MicroLine 1603 //
-	//intialisation of elements of the structure cam 
-	if ((err = FLIGetArrayArea(cam->device, &a, &b, &c, &d))) {
-		sprintf(s,
-		"cam_update_window: impossible de recuperer la array area\n");
-		logfile(s);
-		return;
-    }
-    sprintf(s, "cam_update_window: ArrayArea=(%ld,%ld)-(%ld,%ld)\n", a, b, c, d);
-    logfile(s);
-
-	
-	if ((err = FLIGetVisibleArea(cam->device, &a, &b, &c, &d))) {
-	sprintf(s,
-		"cam_update_window: impossible de recuperer la visible area\n");
-	logfile(s);
-	return;
-	}
-	sprintf(s, "cam_update_window: VisibleArea=(%ld,%ld)-(%ld,%ld)\n", a, b, c, d);
-	logfile(s);
-	cam->nb_photox = c-a; // nombre de photosites sur X 
-	cam->nb_photoy = d-b; // nombre de photosites sur Y 
-
-	CAM_INI[cam->index_cam].overscanxbeg=a;
-	CAM_INI[cam->index_cam].overscanxend=a;
-	CAM_INI[cam->index_cam].overscanybeg=b;
-	CAM_INI[cam->index_cam].overscanyend=b;
-	x1=a;
-	y1=b;
-	x2=c;
-	y2=d;
-
-	if (cam->overscanindex == 0) {
-      /* nb photosites masques autour du CCD */
-      cam->nb_deadbeginphotox = CAM_INI[cam->index_cam].overscanxbeg;
-      cam->nb_deadendphotox = CAM_INI[cam->index_cam].overscanxend;
-      cam->nb_deadbeginphotoy = CAM_INI[cam->index_cam].overscanybeg;
-      cam->nb_deadendphotoy = CAM_INI[cam->index_cam].overscanyend;
-   } else {
-      cam->nb_photox += (CAM_INI[cam->index_cam].overscanxbeg + CAM_INI[cam->index_cam].overscanxend);
-      cam->nb_photoy += (CAM_INI[cam->index_cam].overscanybeg + CAM_INI[cam->index_cam].overscanyend);
-      /* nb photosites masques autour du CCD */
-      cam->nb_deadbeginphotox = 0;
-      cam->nb_deadendphotox = 0;
-      cam->nb_deadbeginphotoy = 0;
-      cam->nb_deadendphotoy = 0;
-   }
-	cam->x2=cam->nb_photox-1;
-	cam->y2=cam->nb_photoy-1;
-// fin rajout Myrtille //
     maxx = cam->nb_photox;
     maxy = cam->nb_photoy;
 
-    if (cam->x1 > cam->x2)
-	libcam_swap(&(cam->x1), &(cam->x2));
-    if (cam->x1 < 0)
-	cam->x1 = 0;
-    if (cam->x2 > maxx - 1)
-	cam->x2 = maxx - 1;
+	if (cam->x1 > cam->x2)
+		libcam_swap(&(cam->x1), &(cam->x2));
+	if (cam->x1 < 0)
+		cam->x1 = 0;
+	if (cam->x2 > maxx - 1)
+		cam->x2 = maxx - 1;
 
-    if (cam->y1 > cam->y2)
-	libcam_swap(&(cam->y1), &(cam->y2));
-    if (cam->y1 < 0)
-	cam->y1 = 0;
-    if (cam->y2 > maxy - 1)
-	cam->y2 = maxy - 1;
+	if (cam->y1 > cam->y2)
+		libcam_swap(&(cam->y1), &(cam->y2));
+	if (cam->y1 < 0)
+		cam->y1 = 0;
+	if (cam->y2 > maxy - 1)
+		cam->y2 = maxy - 1;
 
-    sprintf(s, "CAM_UPDATE_WINDOW: (%d,%d)-(%d,%d) / (%d,%d)\n", cam->x1,
-	    cam->y1, cam->x2, cam->y2, cam->w, cam->h);
+    sprintf(s, "CAM_UPDATE_WINDOW: requested window = (%d,%d)-(%d,%d)\n", cam->x1,
+	    cam->y1, cam->x2, cam->y2);
     logfile(s);
 
     cam->w = (cam->x2 - cam->x1) / cam->binx + 1;
@@ -367,53 +404,25 @@ void cam_update_window(struct camprop *cam)
     cam->h = (cam->y2 - cam->y1) / cam->biny + 1;
     cam->y2 = cam->y1 + cam->h * cam->biny - 1;
 
-    sprintf(s, "cam_update_window: (%d,%d)-(%d,%d) / (%d,%d)\n", cam->x1,
+    sprintf(s, "cam_update_window: (%d,%d)-(%d,%d) / size=(%d,%d)\n", cam->x1,
 	    cam->y1, cam->x2, cam->y2, cam->w, cam->h);
     logfile(s);
 
     // On ajoute cam->overscanxbeg pour les coordonnees en x car le
     // driver FLI n'accepte pas de coordonnees hors de la zone "visible area"
-    x1 = CAM_INI[cam->index_cam].overscanxbeg + cam->x1;
-    y1 = cam->y1;
-    x2 = CAM_INI[cam->index_cam].overscanxbeg + cam->x1 + cam->w;
-    y2 = cam->y1 + cam->h;
-
-
-    if ((err = FLIGetVisibleArea(cam->device, &a, &b, &c, &d))) {
-	sprintf(s,
-		"cam_update_window: impossible de recuperer la visible area\n");
-	logfile(s);
-	return;
-    }
-    sprintf(s, "cam_update_window: VisibleArea=(%ld,%ld)-(%ld,%ld)\n", a,
-	    b, c, d);
-    logfile(s);
-
-    if ((err = FLIGetArrayArea(cam->device, &a, &b, &c, &d))) {
-	sprintf(s,
-		"cam_update_window: impossible de recuperer la array area\n");
-	logfile(s);
-	return;
-    }
-    sprintf(s, "cam_update_window: ArrayArea=(%ld,%ld)-(%ld,%ld)\n", a, b,
-	    c, d);
-    logfile(s);
-
+    x1 = cam->nb_deadbeginphotox + cam->x1;
+    y1 = cam->nb_deadbeginphotoy + cam->y1;
+    x2 = cam->nb_deadbeginphotox + cam->x1 + cam->w;
+    y2 = cam->nb_deadbeginphotoy + cam->y1 + cam->h;
 
     sprintf(s,
 	    "cam_update_window: configuration avec (%d,%d)-(%d,%d) -> (%d,%d)-(%d,%d)\n",
 	    cam->x1, cam->y1, cam->x2, cam->y2, x1, y1, x2, y2);
     logfile(s);
     if ((err = FLISetImageArea(cam->device, x1, y1, x2, y2))) {
-	sprintf(s,
-		"cam_update_window: impossible de configurer la zone image\n");
-	logfile(s);
-	return;
+        logfile("cam_update_window: impossible de configurer la zone image\n");
+        return;
     }
-    sprintf(s,
-	    "cam_update_window: configuration avec (%d,%d)-(%d,%d) -> (%d,%d)-(%d,%d)\n",
-	    cam->x1, cam->y1, cam->x2, cam->y2, x1, y1, x2, y2);
-    logfile(s);
 }
 
 void cam_start_exp(struct camprop *cam, char *amplionoff)
@@ -552,6 +561,14 @@ void cam_measure_temperature(struct camprop *cam)
     logfile(s);
 }
 
+#ifndef min
+#define min(a,b) (((a)<(b))?(a):(b))
+#endif
+
+#ifndef max
+#define max(a,b) (((a)>(b))?(a):(b))
+#endif
+
 void cam_cooler_on(struct camprop *cam)
 {
     double temp;
@@ -679,3 +696,18 @@ int fingerlakes_nbflushes(struct camprop *cam, int nb)
 
     return 0;
 }
+int fingerlakes_cooler_power(struct camprop *cam, double *power)
+{
+    char s[100];
+    int err;
+
+    if ((err=FLIGetCoolerPower(cam->device,power))) {
+        logfile("coolerpower: error");
+        return -1;
+    }
+    sprintf(s,"coolerpower: %lf\n",*power);
+    
+    return 0;
+}
+
+

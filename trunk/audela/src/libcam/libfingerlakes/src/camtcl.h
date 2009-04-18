@@ -27,7 +27,11 @@
    {"scan", (Tcl_CmdProc *)cmdFingerlakesScan}, \
    {"breakscan", (Tcl_CmdProc *)cmdFingerlakesBreakScan}, \
    {"scanloop", (Tcl_CmdProc *)cmdFingerlakesScanLoop}, \
-   {"nbflushes", (Tcl_CmdProc *)cmdFingerlakesNbFlushes},
+   {"nbflushes", (Tcl_CmdProc *)cmdFingerlakesNbFlushes}, \
+   {"coolerpower", (Tcl_CmdProc *)cmdFingerlakesCoolerPower}, \
+   {"flidebug", (Tcl_CmdProc *)cmdFingerlakesFLIDebug}, \
+   {"flimodes", (Tcl_CmdProc*)cmdFingerlakesFLIModes}, \
+   {"flimode", (Tcl_CmdProc *)cmdFingerlakesFLIMode},
 
  /* === Specific commands for that camera === */
 int cmdFingerlakesScan(ClientData clientData, Tcl_Interp * interp,
@@ -38,7 +42,14 @@ int cmdFingerlakesScanLoop(ClientData clientData, Tcl_Interp * interp,
 			   int argc, char *argv[]);
 int cmdFingerlakesNbFlushes(ClientData clientData, Tcl_Interp * interp,
 			    int argc, char *argv[]);
-
+int cmdFingerlakesCoolerPower(ClientData clientData, Tcl_Interp * interp,
+                              int argc, char *argv[]);
+int cmdFingerlakesFLIDebug(ClientData clientData, Tcl_Interp * interp,
+                           int argc, char *argv[]);
+int cmdFingerlakesFLIModes(ClientData clientData, Tcl_Interp * interp,
+                           int argc, char *argv[]);
+int cmdFingerlakesFLIMode(ClientData clientData, Tcl_Interp* interp,
+                          int argc, char *argv[]);
 
 /*
  * -----------------------------------------------------------------------------
