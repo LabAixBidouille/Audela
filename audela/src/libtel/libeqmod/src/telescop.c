@@ -81,7 +81,7 @@ char sate_move_radec;
 
 #define state2string(s) (s==EQMOD_STATE_NOT_INITIALIZED?"NOT_INITIALIZED":(s==EQMOD_STATE_HALT?"HALT":(s==EQMOD_STATE_STOPPED?"STOPPED":(s==EQMOD_STATE_GOTO?"GOTO":(s==EQMOD_STATE_TRACK?"TRACK":(s==EQMOD_STATE_SLEW?"SLEW":"NOT DEFINED"))))))
 
-#define PRINTF(args...) printf(args)
+#define PRINTF printf
 //#define PRINTF(args,...)
 
 
