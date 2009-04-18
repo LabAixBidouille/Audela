@@ -720,3 +720,145 @@ int cmdFingerlakesBreakScan(ClientData clientData, Tcl_Interp * interp,
 
     return retour;
 }
+
+int cmdFingerlakesCoolerPower(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+    char s[100];
+    double power;
+
+    fingerlakes_cooler_power((struct camprop *)clientData, &power);
+    sprintf(s,"%lf",power);
+    Tcl_SetResult(interp,s,TCL_VOLATILE);
+    return TCL_OK;
+}
+
+int cmdFingerlakesFLIDebug(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+    int err;
+
+    if (argc == 2 ) {
+        if ( flidebuglevel == FLIDEBUG_NONE ) {
+            Tcl_SetResult(interp,"none",TCL_STATIC);
+            return TCL_OK;
+        }
+        if ( flidebuglevel == FLIDEBUG_INFO ) {
+            Tcl_SetResult(interp,"info",TCL_STATIC);
+            return TCL_OK;
+        }
+        if ( flidebuglevel == FLIDEBUG_WARN ) {
+            Tcl_SetResult(interp,"warn",TCL_STATIC);
+            return TCL_OK;
+        }
+        if ( flidebuglevel == FLIDEBUG_FAIL ) {
+            Tcl_SetResult(interp,"fail",TCL_STATIC);
+            return TCL_OK;
+        }
+        if ( flidebuglevel == FLIDEBUG_ALL ) {
+            Tcl_SetResult(interp,"all",TCL_STATIC);
+            return TCL_OK;
+        }
+    }
+    if ( ! strcmp(argv[2], "none" ) ) {
+        if ( ( err = FLISetDebugLevel(NULL,FLIDEBUG_NONE) ) ) {
+           Tcl_SetResult(interp,"Can't set debug level to none",TCL_STATIC);
+           return TCL_ERROR;
+        }
+        flilogactivated = 0;
+    } else if ( ! strcmp(argv[2], "info" ) ) {
+        if ( ( err = FLISetDebugLevel(NULL,FLIDEBUG_INFO) ) ) {
+           Tcl_SetResult(interp,"Can't set debug level to info",TCL_STATIC);
+           return TCL_ERROR;
+        }
+        flilogactivated = 1;
+    } else if ( ! strcmp(argv[2], "warn" ) ) {
+        if ( ( err = FLISetDebugLevel(NULL,FLIDEBUG_WARN) ) ) {
+           Tcl_SetResult(interp,"Can't set debug level to warn",TCL_STATIC);
+           return TCL_ERROR;
+        }
+        flilogactivated = 1;
+    } else if ( ! strcmp(argv[2], "fail" ) ) {
+        if ( ( err = FLISetDebugLevel(NULL,FLIDEBUG_FAIL) ) ) {
+           Tcl_SetResult(interp,"Can't set debug level to fail",TCL_STATIC);
+           return TCL_ERROR;
+        }
+        flilogactivated = 1;
+    } else if ( ! strcmp(argv[2], "all" ) ) {
+        if ( ( err = FLISetDebugLevel(NULL,FLIDEBUG_ALL) ) ) {
+           Tcl_SetResult(interp,"Can't set debug level to all",TCL_STATIC);
+           return TCL_ERROR;
+        }
+        flilogactivated = 1;
+    }
+    Tcl_ResetResult(interp);
+    return TCL_OK;
+}
+int cmdFingerlakesFLIModes(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   int err, i;
+   char s[100];
+   Tcl_DString dsptr;
+   struct camprop *cam;
+   
+   cam = (struct camprop *) clientData;
+
+   if (argc != 2 ) {
+      sprintf(s,"%s %s", argv[0], argv[1]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      return TCL_ERROR;
+   }
+
+   Tcl_DStringInit(&dsptr);
+   i = 0;
+   while(1) {
+      if ((err = FLIGetCameraModeString(cam->device,i,s,100)))
+         break;
+      Tcl_DStringAppend(&dsptr,"{",-1);
+      Tcl_DStringAppend(&dsptr,s,-1);
+      Tcl_DStringAppend(&dsptr,"} ",-1);
+      i++;
+   }
+   Tcl_DStringResult(interp,&dsptr);
+   Tcl_DStringFree(&dsptr);
+   return TCL_OK;
+}
+
+int cmdFingerlakesFLIMode(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   char s[100];
+   struct camprop *cam;
+   flimode_t mode;
+   int err;
+   
+   cam = (struct camprop *) clientData;
+
+   if (argc > 3 ) {
+      sprintf(s,"%s %s {mode}", argv[0], argv[1]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      return TCL_ERROR;
+   }
+   
+   if (argc == 2) {
+      // On renvoie le mode
+      if ((err = FLIGetCameraMode(cam->device,&mode))) {
+         Tcl_SetResult(interp, "cmdFingerlakesFLIMode: could not get mode", TCL_STATIC);
+         return TCL_ERROR;
+      }
+      sprintf(s,"%d", (int)mode);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      return TCL_OK;
+   }
+
+   // On change le mode
+   if (Tcl_GetInt(interp, argv[2], (int*)&mode) != TCL_OK) {
+      Tcl_SetResult(interp, "mode shall be an integer", TCL_STATIC);
+      return TCL_ERROR;
+   }
+   if ((err = FLISetCameraMode(cam->device,mode))) {
+      Tcl_SetResult(interp, "cmdFingerlakesFLIMode: could not set mode", TCL_STATIC);
+      return TCL_ERROR;
+   }
+   
+   Tcl_ResetResult(interp);
+   return TCL_OK;
+}
+
