@@ -1,6 +1,6 @@
 #
 # Fichier : acqcolor.cap
-# Mise a jour $Id: acqcolor.cap,v 1.9 2008-05-29 21:29:16 robertdelmas Exp $
+# Mise a jour $Id: acqcolor.cap,v 1.10 2009-04-19 12:51:46 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -198,7 +198,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqcolor,raz)                 "Limpeza CCD"
    set caption(acqcolor,lecture)             "Leitura CCD"
    set caption(acqcolor,total)               "Aquisição 1x1"
-   set caption(acqcolor,acqserie)            "Aq. série"
+   set caption(acqcolor,acqserie)            "Aqu. série"
    set caption(acqcolor,nbimage)             "Número :"
    set caption(acqcolor,attente)             "atraso (ms) :"
    set caption(acqcolor,seprvb)              "Separação RGB"

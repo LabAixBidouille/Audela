@@ -1,6 +1,6 @@
 #
 # Fichier : acqfen.cap
-# Mise a jour $Id: acqfen.cap,v 1.12 2009-04-01 18:03:41 robertdelmas Exp $
+# Mise a jour $Id: acqfen.cap,v 1.13 2009-04-19 12:52:04 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -330,8 +330,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,audace)          "Aud'ACE"
    set caption(acqfen,titre)           "Aquisição em janela"
    set caption(acqfen,help_titre)      "Ajuda para esta ferramenta"
-   set caption(acqfen,titre_centrage)  "Aq. trama completa"
-   set caption(acqfen,titre_fenetrees) "Aq. em janela"
+   set caption(acqfen,titre_centrage)  "Aqu. trama completa"
+   set caption(acqfen,titre_fenetrees) "Aqu. em janela"
    set caption(acqfen,actuxy)          "Actu.\njanela"
    set caption(acqfen,congiguration)   "Configuração"
 

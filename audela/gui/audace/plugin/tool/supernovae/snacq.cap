@@ -1,6 +1,6 @@
 #
 # Fichier : snacq.cap
-# Mise a jour $Id: snacq.cap,v 1.10 2009-04-05 06:39:59 robertdelmas Exp $
+# Mise a jour $Id: snacq.cap,v 1.11 2009-04-19 12:52:14 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -296,7 +296,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(snacq,main_title)             "Aq. Sn"
+   set caption(snacq,main_title)             "Aqu. Sn"
    set caption(snacq,nocam)                  "Não existe câmara"
    set caption(snacq,typecam)                "Câmara "
    set caption(snacq,notel)                  "Não existe telescópio"
@@ -346,7 +346,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(snacq,attention)              "Atenção"
    set caption(snacq,texte1)                 "Aguarde durante"
-   set caption(snacq,texte2)                 "o fecho de Aq. Sn"
+   set caption(snacq,texte2)                 "o fecho de Aqu. Sn"
    set caption(snacq,texte3)                 "Aguarde durante"
    set caption(snacq,texte4)                 "a paragem das aquisições."
 
