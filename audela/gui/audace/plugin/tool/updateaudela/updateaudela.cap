@@ -1,6 +1,6 @@
 #
 # Fichier : updateaudela.cap
-# Mise a jour $Id: updateaudela.cap,v 1.16 2008-09-23 20:39:37 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.cap,v 1.17 2009-04-19 10:32:37 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -76,8 +76,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(updateaudela,directory)          "Le répertoire %s existe déjà.\nVoulez-vous le mettre à jour ?"
    set caption(updateaudela,confirmDelete)      "Etes vous sûr de vouloir supprimer %s ?"
    set caption(updateaudela,makeKitOk)          "Le fichier %s est créé."
-   set caption(updateaudela,confirmInstall)     "Voulez vous remplacer %s par %s ?"
-   set caption(updateaudela,confirmInstallNew)  "Voulez vous installer ce nouveau plug-in %s ?"
+   set caption(updateaudela,confirmInstall)     "Voulez-vous remplacer %s par %s ?"
+   set caption(updateaudela,confirmInstallNew)  "Voulez-vous installer ce nouveau plug-in %s ?"
    set caption(updateaudela,installPluginOk)    "Le plug-in %s est installé dans le répertoire \n %s \n (%s fichier(s) créé(s) ou mis à jour)."
    set caption(updateaudela,restart)            "Veuillez redémarrer AudeLA pour prendre en compte ces modifications."
 
