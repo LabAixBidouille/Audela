@@ -9,30 +9,34 @@
 #
 ########################################################################################
 
-# Mise a jour $Id: make_packages.sh,v 1.7 2009-04-12 22:57:38 bmauclaire Exp $
+# Mise a jour $Id: make_packages.sh,v 1.8 2009-04-20 16:25:25 bmauclaire Exp $
 
 
-#-- Utilisation du script :
+#--- Utilisation du script :
 # 1. chmod u+x ./make_packages.sh
 # 2. ./make_packages.sh nom_distribution_linux (debian ou ubuntu ou mandriva)
 # Rem: les actions root sont faites via sudo) :
 #
-#-- Compilation multithreadee :
+#--- Compilation multithreadee :
 # 1. Avoir, dans cet exemple, un repetoire lib contenant les .a de tcltk multithreade au meme niveau que le repertoire audela issu de CVS.
 # 2. Compiler tcl/tk avec les options de multithread
-# 3. Copier les fichiers libtcl8.4.so et libtk8.4.so multithreadés dans le repetoire bin d'Audela
+# 3. Copier les fichiers libtcl8.4.so et libtk8.4.so multithreadés dans le repertoire audela/bin sinon "plantage Exception point flottant"
 # 4. chmod u+x ./configure
 # 5. ./configure --with-tcl=/home/mauclaire/audela/lib/lib --with-tk=/home/mauclaire/audela/lib/lib
-# 6. ./configure && make external && make contrib && make // ou make all.
+# 6. make external && make contrib && make // ou make all.
 # 7. Renommer les fichiers speciaux libthread2.6.5.1.so_debian (issu de la compilation d'Audela) et placer Thread2.6.5.1.so_mandriva dans le repertoire audela/lib/thread2.6.5.1/
 # La version fabriquee sera notee comme multithreadee si les 2 fichierslibtcl8.4.so et libtk8.4.so sont presents dans le rep bin d'Audela.
 #
-#-- Compilation monothreadee :
+#--- Compilation monothreadee :
 # 1. chmod u+x ./configure ;
-# 2. ./configure && make external && make contrib && make // ou make all.
+# 2. ./configure
+# 3. make external && make contrib && make // ou make all.
 #
-#-- Modifications a faire avant execution :
-# 1. Que la version soit multithreadee ou non, il faut que les fichiers libtcl8.4.so et libtcl8.4.so soient presents dans /usr/lib/ de la machine destination pour que BLT fonctionne. Donc installer les paquets tcl et tk.# 2. Effacer le repertoire audela/lib/thread2.6/
+#--- Modifications a faire avant execution :
+# 1. Que la version soit multithreadee ou non, il faut que les fichiers libtcl8.4.so et libtcl8.4.so soient presents dans /usr/lib/ de la machine destination pour que BLT fonctionne. Donc installer les paquets tcl et tk.
+# 2. Effacer le repertoire audela/lib/thread2.6/
+# 3. cp audela/src/external/libftd2xx/lib/libftd2xx.so.0.4.16 audela/audela/bin/
+# 4. Dans audela/bin : chmod a+x libftd2xx.so.0* ; ln -s libftd2xx.so.0.4.16 libftd2xx.so
 #
 ##------------------------------------------------------------------------------#
 
