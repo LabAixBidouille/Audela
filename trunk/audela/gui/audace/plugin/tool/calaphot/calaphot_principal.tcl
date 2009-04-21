@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.1 2009-04-21 19:58:50 jacquesmichelet Exp $
+# $Id: calaphot_principal.tcl,v 1.2 2009-04-21 20:46:05 jacquesmichelet Exp $
 #
 
 ###catch {namespace delete ::Calaphot}
@@ -89,14 +89,14 @@ namespace eval ::CalaPhot {
         set calaphot(texte,probleme)            "probleme"
         set calaphot(texte,erreur)              "erreur"
 
-        set calaphot(nom_fichier_ini)           [file join $audace(rep_scripts) calaphot calaphot.ini]
-        set calaphot(nom_fichier_log)           [file join $audace(rep_scripts) calaphot trace_calaphot.log]
+        set calaphot(nom_fichier_ini)           [file join audace plugin tool calaphot calaphot.ini]
+        set calaphot(nom_fichier_log)           [file join audace plugin tool calaphot trace_calaphot.log]
 
-        set calaphot(sextractor,catalog)        [ file join $audace(rep_scripts) calaphot calaphot.cat ]
-        set calaphot(sextractor,config)         [ file join $audace(rep_scripts) calaphot calaphot.sex ]
-        set calaphot(sextractor,param)          [ file join $audace(rep_scripts) calaphot calaphot.param ]
-        set calaphot(sextractor,neurone)        [ file join $audace(rep_scripts) calaphot calaphot.nnw ]
-        set calaphot(sextractor,assoc)          [ file join $audace(rep_scripts) calaphot calaphot.assoc ]
+        set calaphot(sextractor,catalog)        [ file join audace plugin tool calaphot calaphot.cat ]
+        set calaphot(sextractor,config)         [ file join audace plugin tool calaphot calaphot.sex ]
+        set calaphot(sextractor,param)          [ file join audace plugin tool calaphot calaphot.param ]
+        set calaphot(sextractor,neurone)        [ file join audace plugin tool calaphot calaphot.nnw ]
+        set calaphot(sextractor,assoc)          [ file join audace plugin tool calaphot calaphot.assoc ]
 
         set calaphot(init,mode)                 ouverture
         set calaphot(init,operateur)            "Tycho Brahe"
@@ -1105,7 +1105,7 @@ namespace eval ::CalaPhot {
         if {[info exists parametres]} {unset parametres}
 
         # Ouverture du fichier de parametres
-        set fichier [file join $audace(rep_scripts) calaphot $calaphot(nom_fichier_ini)]
+        set fichier $calaphot(nom_fichier_ini)
 
         if {[file exists $fichier]} {
             source $fichier
@@ -1220,7 +1220,8 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [info level [info level]]
 
-        set fichier [OuvertureFichier [file join $audace(rep_scripts) calaphot $calaphot(nom_fichier_ini)] w]
+#        set fichier [OuvertureFichier [file join calaphot $calaphot(nom_fichier_ini)] w]
+        set fichier [OuvertureFichier $calaphot(nom_fichier_ini) w]
         if {($fichier != "")} {
             foreach {a b} [array get parametres] {
                 puts $fichier "set parametres($a) \"$b\""
