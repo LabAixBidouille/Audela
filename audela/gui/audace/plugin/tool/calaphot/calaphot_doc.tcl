@@ -5,7 +5,7 @@
 #
 # @brief Documentation générale de Calaphot
 #
-# $Id: calaphot_doc.tcl,v 1.6 2009-04-13 08:47:37 jacquesmichelet Exp $
+# $Id: calaphot_doc.tcl,v 1.1 2009-04-21 20:01:09 jacquesmichelet Exp $
 #
 #
 

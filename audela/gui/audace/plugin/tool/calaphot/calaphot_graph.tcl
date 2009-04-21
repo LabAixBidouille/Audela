@@ -5,7 +5,7 @@
 #
 # @brief Routines de gestion des affichages de Calaphot
 #
-# $Id: calaphot_graph.tcl,v 1.4 2009-04-09 08:01:02 jacquesmichelet Exp $
+# $Id: calaphot_graph.tcl,v 1.1 2009-04-21 19:58:50 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -1073,24 +1073,17 @@ namespace eval ::CalaPhot {
                 if {$data_script(trace_premier,$var) == 1} {
                     for {set e 0} {$e < $data_script(nombre_reference)} {incr e} {
                         set data_script(trace_ref_premier_$e,$var) $data_image($i,ref,mag_$e)
-                        Message debug "trace_premier_ref_%d=%10.4f\n" $e $data_script(trace_ref_premier_$e,$var)
                     }
                     set data_script(trace_var_premier,$var) $data_image($i,var,mag_$var)
-                    Message debug "trace_premier_var_%d=%10.4f\n" $e $data_script(trace_var_premier,$var)
                     set data_script(trace_cste_premier,$var) $data_image($i,constante_mag)
-                    Message debug "trace_premier_cste=%10.4f\n" $data_script(trace_cste_premier,$var)
                     set data_script(trace_premier,$var) 0
                 }
                 for {set e 0} {$e < $data_script(nombre_reference)} {incr e} {
                     set $TempVectors(temp.$var.ref.$e)(++end) [expr $data_image($i,ref,mag_$e) - $data_script(trace_ref_premier_$e,$var)]
-                    Message debug "var=%d temp_ref_%d=%10.4f\n" $var $e [expr $data_image($i,ref,mag_$e) - $data_script(trace_ref_premier_$e,$var)]
                 }
                 set $TempVectors(temp.$var.var)(++end) [expr $data_image($i,var,mag_$var) - $data_script(trace_var_premier,$var)]
-                Message debug "var=%d temp_var_%d=%10.4f\n" $var $e [expr $data_image($i,var,mag_$var) - $data_script(trace_var_premier,$var)]
                 set $TempVectors(temp.$var.cste)(++end) [expr $data_image($i,constante_mag) - $data_script(trace_cste_premier,$var)]
-                Message debug "var=%d temp_cste=%10.4f\n" $var [expr $data_image($i,constante_mag) - $data_script(trace_cste_premier,$var)]
-                set sigma [expr sqrt([vector expr var($TempVectors(temp.$var.cste))])]
-                Message debug "var=%d sigma_temp_cste=%10.4f\n" $var $sigma
+                set sigma [expr sqrt([::blt::vector expr var($TempVectors(temp.$var.cste))])]
                 if {$sigma != 0} {
                     $audace(base).calaphot_$var.xy axis configure y -min [expr -3.0 * $sigma] -max [expr 3.0 * $sigma]
                 }
@@ -1339,12 +1332,12 @@ namespace eval ::CalaPhot {
         button $t3.b2 \
             -text $calaphot(texte,annuler) \
             -command {::CalaPhot::AnnuleSaisie}
-        pack $t3.b1 \
+        button $t3.b3 \
+            -text $calaphot(texte,aide) \
+            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::CalaPhot::getPluginType ] ] \
+               [ ::CalaPhot::getPluginDirectory ] [ ::CalaPhot::getPluginHelp ]"
+        pack $t3.b1 $t3.b2 $t3.b3 \
             -side left \
-            -padx 10 \
-            -pady 10
-        pack $t3.b2 \
-            -side right \
             -padx 10 \
             -pady 10
         AffichageVariable $parametres(mode) $c $y $t

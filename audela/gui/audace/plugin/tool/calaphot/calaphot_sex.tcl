@@ -5,7 +5,7 @@
 #
 # @brief Routines d'appel et de configuration de sextractor pour Calaphot
 #
-# Mise a jour $Id: calaphot_sex.tcl,v 1.4 2009-04-09 08:01:04 jacquesmichelet Exp $
+# Mise a jour $Id: calaphot_sex.tcl,v 1.1 2009-04-21 19:58:50 jacquesmichelet Exp $
 
 
 proc FichierNeuronalSex { {filename default.nnw} } {

@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.2 2009-04-09 10:04:05 jacquesmichelet Exp $
+# $Id: calaphot_principal.tcl,v 1.1 2009-04-21 19:58:50 jacquesmichelet Exp $
 #
 
 ###catch {namespace delete ::Calaphot}
@@ -57,10 +57,6 @@
 # @brief Calaphot est un script permettant de faire de la photometrie differentielle sur un lot d'images
 # @namespace CalaPhot
 namespace eval ::CalaPhot {
-    source [file join $audace(rep_scripts) calaphot calaphot_graph.tcl]
-    source [file join $audace(rep_scripts) calaphot calaphot_calcul.tcl]
-    source [file join $audace(rep_scripts) calaphot calaphot_sex.tcl]
-
     ##
     # @brief Initialisation generale des variables par défaut
     # @return
@@ -80,8 +76,6 @@ namespace eval ::CalaPhot {
 #    set trace_log 1
 
         set numero_version v5.0
-
-        source [file join $audace(rep_scripts) calaphot calaphot.cap]
 
         set calaphot(niveau_debug) 0
         set calaphot(niveau_info) 1
@@ -137,6 +131,11 @@ namespace eval ::CalaPhot {
         set calaphot(init,signal_bruit)         20
         set calaphot(init,type_objet)           0
         set calaphot(init,version_ini)          $numero_version
+
+        # couleur des affichages console
+        foreach niveau { debug info notice probleme erreur } couleur_style { green orange blue purple red } {
+            $audace(Console).txt1 tag configure calaphot(style_$niveau) -foreground $couleur_style
+        }
     }
 
     ##
@@ -1400,46 +1399,8 @@ namespace eval ::CalaPhot {
         update
     }
 
-    # couleur des affichages console
-    foreach niveau { debug info notice probleme erreur } couleur_style { green orange blue purple red } {
-        $audace(Console).txt1 tag configure calaphot(style_$niveau) -foreground $couleur_style
-    }
 
 }
 # Fin du namespace Calaphot
 
-if {[catch {load libjm[info sharedlibextension]} erreur]} {
-    ::CalaPhot::Message console "%s\n" $erreur
-    return 1
-}
-
-if {[catch {jm_versionlib} version_lib]} {
-    Message console "%s\n" ::CalaPhot::Message console "%s\n" $version_lib
-    return 1
-} else {
-    if {[expr double([string range $version_lib 0 2])] < 3.0} {
-        Message console "LibJM version must be greater than 3.0\n"
-        return 1
-    }
-}
-
-catch {package require BLT} erreur
-if {$erreur != "2.4"} {
-    catch {load blt24[info sharedlibextension]} erreur
-    if {$erreur !=    ""} {
-        ::CalaPhot::Message console "%s\n" $erreur
-        return 1
-    } else {
-        if {[catch {package require BLT} erreur]} {
-            ::CalaPhot::Message console "%s\n" $erreur
-            return 1
-        }
-    }
-} else {
-    namespace import -force blt::*
-}
-
-
-
-::CalaPhot::Principal
 

@@ -1,6 +1,6 @@
 #
 # Fichier : calaphot.cap
-# Mise a jour $Id: calaphot.cap,v 1.14 2009-04-09 10:04:05 jacquesmichelet Exp $
+# Mise a jour $Id: calaphot.cap,v 1.1 2009-04-21 20:01:09 jacquesmichelet Exp $
 #
 
 #=========================================================================
@@ -120,10 +120,13 @@ set calaphot(texte,param_sextractor)       "Parameters for the Sextractor Mode"
 set calaphot(texte,tri_images_0)           "No"
 set calaphot(texte,tri_images_1)           "Yes"
 set calaphot(texte,detection_ini)          "The Calaphot version has changed : the calaphot.ini settings will be reset"
+set calaphot(texte,titre_menu)             "Differential Photometry"
+set calaphot(texte,aide)                   "Help"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
+   set calaphot(texte,titre_menu)          "Photométrie différentielle"
    set calaphot(texte,titre_saisie)        "Paramètres du script de photométrie"
    set calaphot(texte,operateur)           "Nom de l'opérateur"
    set calaphot(texte,objet)               "Nom de l'objet"
@@ -229,6 +232,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,tri_images_0)        "non"
    set calaphot(texte,tri_images_1)        "oui"
    set calaphot(texte,detection_ini)       "Changement de version de Calaphot : le contenu de calaphot.ini va être re-initialisé"
+   set calaphot(texte,aide)                "Aide"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -339,6 +343,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,tri_images_0)        "No"
    set calaphot(texte,tri_images_1)        "Yes"
    set calaphot(texte,detection_ini)       "The Calaphot version has changed : the calaphot.ini settings will be reset"
+   set calaphot(texte,titre_menu)          "Differential Photometry"
+   set calaphot(texte,aide)                "Help"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -449,6 +455,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,tri_images_0)        "No"
    set calaphot(texte,tri_images_1)        "Yes"
    set calaphot(texte,detection_ini)       "The Calaphot version has changed : the calaphot.ini settings will be reset"
+   set calaphot(texte,titre_menu)          "Differential Photometry"
+   set calaphot(texte,aide)                "Help"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -559,6 +567,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,tri_images_0)        "No"
    set calaphot(texte,tri_images_1)        "Yes"
    set calaphot(texte,detection_ini)       "The Calaphot version has changed : the calaphot.ini settings will be reset"
+   set calaphot(texte,titre_menu)          "Differential Photometry"
+   set calaphot(texte,aide)                "Help"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -668,6 +678,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,tri_images_0)        "No"
    set calaphot(texte,tri_images_1)        "Yes"
    set calaphot(texte,detection_ini)       "The Calaphot version has changed : the calaphot.ini settings will be reset"
+   set calaphot(texte,titre_menu)          "Differential Photometry"
+   set calaphot(texte,aide)                "Help"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -778,6 +790,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,tri_images_0)        "No"
    set calaphot(texte,tri_images_1)        "Yes"
    set calaphot(texte,detection_ini)       "The Calaphot version has changed : the calaphot.ini settings will be reset"
+   set calaphot(texte,titre_menu)          "Differential Photometry"
+   set calaphot(texte,aide)                "Help"
 }
 
 #=========================================================================
