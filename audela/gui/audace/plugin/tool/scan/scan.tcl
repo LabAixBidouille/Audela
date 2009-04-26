@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.45 2009-02-07 11:02:31 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.46 2009-04-26 16:35:39 robertdelmas Exp $
 #
 
 #============================================================
@@ -654,6 +654,9 @@ proc ::scan::cmdGo { { motor motoron } } {
 
          #--- Rajoute la date de debut et de fin de pose en jour julien dans l'en-tete FITS
          ::keyword::addJDayOBSandEND
+
+         #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
+         ::confVisu::setFileName $audace(visuNo) ""
 
          #--- Gestion graphique du bouton GO CCD
          $This.fra4.but1 configure -relief groove -text $panneau(scan,go2) -state disabled
