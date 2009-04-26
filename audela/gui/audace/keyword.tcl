@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.14 2009-03-07 09:20:00 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.15 2009-04-26 20:26:34 michelpujol Exp $
 #
 
 namespace eval ::keyword {
@@ -432,10 +432,11 @@ proc ::keyword::getKeywords { visuNo } {
             set type         [lindex $infosMotClef 6]
             set commentaire  [lindex $infosMotClef 7]
             set unite        [lindex $infosMotClef 8]
+            #--- j'ajoute le mots clef dans le resultat
+            lappend result [list $motclef $valeur $type $commentaire $unite]
             break
          }
       }
-      lappend result [list $motclef $valeur $type $commentaire $unite]
    }
    return $result
 }
