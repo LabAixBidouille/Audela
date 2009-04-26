@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.45 2009-02-07 11:02:42 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.46 2009-04-26 16:35:58 robertdelmas Exp $
 #
 
 global panneau
@@ -787,6 +787,9 @@ proc ::scanfast::cmdGo { { motor motoron } } {
 
          #--- Rajoute la date de debut et de fin de pose en jour julien dans l'en-tete FITS
          ::keyword::addJDayOBSandEND
+
+         #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
+         ::confVisu::setFileName $audace(visuNo) ""
 
          #--- Gestion graphique du bouton GO CCD
          $This.fra4.but1 configure -relief groove -text $panneau(scanfast,go2) -state disabled
