@@ -2,7 +2,7 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snacq.tcl,v 1.15 2009-04-05 15:07:36 robertdelmas Exp $
+# Mise a jour $Id: snacq.tcl,v 1.16 2009-04-27 16:48:04 robertdelmas Exp $
 #
 
 # ===================================================================
@@ -1062,6 +1062,8 @@ proc snacq_go { {sndebug 0} } {
             foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
                buf$audace(bufNo) setkwd $keyword
             }
+            #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
+            ::confVisu::setFileName $audace(visuNo) ""
             #---
             $buffer setkwd [list RA $rad float "right ascension" deg]
             $buffer setkwd [list DEC $decd float "declination" deg]

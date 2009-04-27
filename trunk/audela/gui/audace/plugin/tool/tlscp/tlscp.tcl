@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.23 2009-04-01 20:47:34 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.24 2009-04-27 16:48:22 robertdelmas Exp $
 #
 
 #============================================================
@@ -911,6 +911,9 @@ proc ::tlscp::startAcquisition { visuNo  } {
       buf$bufNo setkwd $keyword
    }
 
+   #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
+   ::confVisu::setFileName $visuNo ""
+
    #--- j'identifie la fin d'une acquisition
    set private($visuNo,pose_en_cours)     "0"
 
@@ -1016,6 +1019,9 @@ proc ::tlscp::startCenter { visuNo { methode "" } } {
    foreach keyword [ ::keyword::getKeywords $visuNo ] {
       buf$bufNo setkwd $keyword
    }
+
+   #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
+   ::confVisu::setFileName $visuNo ""
 
    #--- j'affiche marques autour des etoiles
    if { $private($visuNo,acquisitionResult) != "" } {
