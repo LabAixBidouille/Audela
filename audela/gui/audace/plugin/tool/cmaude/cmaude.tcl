@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude.tcl,v 1.19 2009-04-01 17:52:25 robertdelmas Exp $
+# Mise a jour $Id: cmaude.tcl,v 1.20 2009-04-27 16:47:38 robertdelmas Exp $
 #
 # Remarks :
 # The definition of some variables (binning, exp. time, rythm, etc.)
@@ -598,6 +598,9 @@ namespace eval ::cmaude {
       foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
          buf$audace(bufNo) setkwd $keyword
       }
+
+      #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
+      ::confVisu::setFileName $audace(visuNo) ""
 
       #--- Visualisation
       ::audace::autovisu $audace(visuNo)

@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.23 2009-04-01 18:04:18 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.24 2009-04-27 16:47:23 robertdelmas Exp $
 #
 
 # =========================================================
@@ -466,6 +466,9 @@ namespace eval ::acqfen {
                foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
                   buf$audace(bufNo) setkwd $keyword
                }
+
+               #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
+               ::confVisu::setFileName $audace(visuNo) ""
 
                #--- Affichage avec visu auto.
                audace::autovisu $audace(visuNo)
@@ -1235,6 +1238,9 @@ namespace eval ::acqfen {
       foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
          buf$audace(bufNo) setkwd $keyword
       }
+
+      #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
+      ::confVisu::setFileName $audace(visuNo) ""
 
       #--- Fenetrage sur le buffer si la camera ne possede pas le mode fenetrage (APN et WebCam)
       if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] hasWindow ] == "0" } {
