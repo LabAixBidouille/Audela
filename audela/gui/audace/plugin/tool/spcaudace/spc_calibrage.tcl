@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.7 2009-02-22 12:06:01 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.8 2009-04-28 20:14:23 bmauclaire Exp $
 
 
 
@@ -2350,6 +2350,7 @@ proc spc_calibretelluric { args } {
                 set rms_dec2 [ lindex [ spc_rms "$spectre_dec" $listeraies ] 1 ]
              }
           }
+          set rms_dec [ lindex [ spc_rms "$spectre_dec" $listeraies ] 1 ]
        }
 
 
