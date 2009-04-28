@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.14 2009-03-15 22:07:32 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.15 2009-04-28 20:14:23 bmauclaire Exp $
 
 
 
@@ -1126,6 +1126,7 @@ proc spc_select { args } {
        buf$audace(bufNo) bitpix float
        buf$audace(bufNo) save1d "$audace(rep_images)/${fichier}_sel$conf(extension,defaut)"
        buf$audace(bufNo) bitpix short
+       file delete -force "$audace(rep_images)/$spectre_lin$conf(extension,defaut)"
        ::console::affiche_resultat "Sélection sauvée sous $audace(rep_images)/${fichier}_sel$conf(extension,defaut)\n"
        return ${fichier}_sel
    } else {
