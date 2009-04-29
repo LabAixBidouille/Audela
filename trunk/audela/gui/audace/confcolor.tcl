@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.28 2009-01-11 12:12:51 robertdelmas Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.29 2009-04-29 21:42:36 robertdelmas Exp $
 #
 
 namespace eval confColor:: {
@@ -577,12 +577,18 @@ namespace eval confColor:: {
          }
          Graph {
             #--- Je mets a jour la couleur des widgets
-            $w configure -bg $audace(color,backColor) -fg $audace(color,textColor) \
-               -plotbackground $audace(color,entryTextColor)
-            $w axis configure x  -hide no -color $audace(color,textColor) -titlecolor $audace(color,textColor)
-            $w axis configure x2 -hide no -color $audace(color,textColor) -titlecolor $audace(color,textColor)
-            $w axis configure y  -hide no -color $audace(color,textColor) -titlecolor $audace(color,textColor)
-            $w axis configure y2 -hide no -color $audace(color,textColor) -titlecolor $audace(color,textColor)
+            if { [ string first simple $w ] == -1 } {
+               $w configure -bg $audace(color,backColor) -fg $audace(color,textColor) \
+                  -plotbackground $audace(color,entryTextColor)
+               $w axis configure x  -hide no -color $audace(color,textColor) -titlecolor $audace(color,textColor)
+               $w axis configure x2 -hide no -color $audace(color,textColor) -titlecolor $audace(color,textColor)
+               $w axis configure y  -hide no -color $audace(color,textColor) -titlecolor $audace(color,textColor)
+               $w axis configure y2 -hide no -color $audace(color,textColor) -titlecolor $audace(color,textColor)
+            } else {
+               $w configure -bg $audace(color,backColor) -fg $audace(color,textColor)
+               $w axis configure x -hide no -color $audace(color,textColor) -titlecolor $audace(color,textColor)
+               $w axis configure y -hide no -color $audace(color,textColor) -titlecolor $audace(color,textColor)
+            }
             #--- Je mets a jour la police des widgets
             $w configure -font "$audace(font,Graph)"
          }
