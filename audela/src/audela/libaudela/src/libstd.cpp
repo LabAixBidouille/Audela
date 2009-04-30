@@ -25,6 +25,18 @@
 #include "audela.h"
 #include "libtt.h"            // for TFLOAT, LONG_IMG, TT_PTR_...
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "setip.h"
+
+#ifdef __cplusplus
+}
+#endif
+
+
+
 #if defined(OS_LIN) || defined(OS_UNX) || defined(OS_MACOS)
    #include <sys/timeb.h>
    #include <stdlib.h>
@@ -238,6 +250,30 @@ int CmdPing(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       }
       res=ping(ip,1,timeout,s);
       sprintf(result,"{%d} {%s}",res,s);
+      Tcl_SetResult(interp,result,TCL_VOLATILE);
+      return TCL_OK;
+   }
+}
+
+//------------------------------------------------------------------------------
+//
+//
+int CmdSetIP(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   char s[256];
+   char result[256];
+   char errorMessage[1024];
+
+   int res,timeout=1;
+   if (argc<2) {
+	   sprintf(s,"usage : %s IPAddress",argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      return TCL_ERROR;
+   } else {
+      res = setip(argv[1],"11:22:33:44:55:66","0.0.0.0","255.255.255.1", errorMessage);
+      // int setip(char *szClientIP, char *szClientMAC, char *szClientNM,
+	  //     char *szClientGW, char *errorMessage)
+      sprintf(result,"{%d} {%s}",res,errorMessage);
       Tcl_SetResult(interp,result,TCL_VOLATILE);
       return TCL_OK;
    }
@@ -484,6 +520,7 @@ void audelaInit(Tcl_Interp *interp)
    Tcl_CreateCommand(interp,"getclicks",(Tcl_CmdProc *)CmdTestGetClicks,NULL,NULL);
    Tcl_CreateCommand(interp,"hostaddress",(Tcl_CmdProc *)CmdHostaddress,NULL,NULL);
    Tcl_CreateCommand(interp,"ping",(Tcl_CmdProc *)CmdPing,NULL,NULL);
+   Tcl_CreateCommand(interp,"setip",(Tcl_CmdProc *)CmdSetIP,NULL,NULL);
 
    // file_tcl.cpp : Gestion des fichiers RAW, JPEG, PNG
    Tcl_CreateCommand(interp,"cfa2rgb",(Tcl_CmdProc *)CmdCfa2rgb,(void*)link_pool,NULL);
