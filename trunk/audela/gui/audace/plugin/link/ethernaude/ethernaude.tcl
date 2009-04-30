@@ -2,7 +2,7 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: ethernaude.tcl,v 1.27 2009-03-13 23:51:36 michelpujol Exp $
+# Mise a jour $Id: ethernaude.tcl,v 1.28 2009-04-30 20:04:22 robertdelmas Exp $
 #
 
 namespace eval ethernaude {
@@ -51,7 +51,7 @@ proc ::ethernaude::configurePlugin { } {
    global conf
 
    if { $conf(ethernaude,ipsetting) == "1" } {
-      ::ethernaude::initHostEthernAude "$conf(ethernaude,host)"
+      setip "$conf(ethernaude,host)"
    } else {
       return
    }
@@ -84,7 +84,7 @@ proc ::ethernaude::createPluginInstance { linkLabel deviceId usage comment args 
    variable private
 
    set private(started) "1"
-   ###::ethernaude::ConfEthernAude
+   ::ethernaude::ConfEthernAude
    return
 }
 
@@ -396,64 +396,4 @@ proc ::ethernaude::widgetToConf { } {
    set conf(ethernaude,debug)     $widget(ethernaude,debug)
    set conf(ethernaude,canspeed)  $widget(ethernaude,canspeed)
 }
-
-########################
-#------------------------------------------------------------
-#  udpEvent
-#
-#------------------------------------------------------------
-proc ::ethernaude::udpEvent { chan } {
-   variable widget
-
-   set data [read $chan]
-   set peer [fconfigure $chan -peer]
-   set widget(ethernaude,length1) [ expr $widget(ethernaude,length1) + [string length $data] ]
-  ### ::console::disp "$peer [string length $data] '$data' \n"
-   if { $widget(ethernaude,length1) >= 12 } {
-      set ::forever 1
-   }
-   return
-}
-
-#------------------------------------------------------------
-#  initHostEthernAude
-#     initialise la nouvelle adresse IP de connexion
-#------------------------------------------------------------
-proc ::ethernaude::initHostEthernAude { host } {
-   variable widget
-
-   #--- Chargement de la librairie
-   package require udp 1.0.8
-
-   #--- Initialisation
-   set widget(ethernaude,length1) 0
-
-   #--- Selection d'une adresse IP (broadcast) et du port de fonctionnement de l'EthernAude
-   set subnet 255.255.255.255
-   set port   192
-
-   #--- Ouverture et configuration d'un channel avec le protocole UDP
-   set s [udp_open $port]
-  ### ::console::disp "Channel : $s \n"
-   fconfigure $s -buffering none -blocking 0 -translation binary
-   fconfigure $s -broadcast 1 -remote [list $subnet $port]
-   fileevent $s readable [list ::ethernaude::udpEvent $s]
-
-   #--- Formatage du host EthernAude en hexadecimal
-   set ip  [ split $host "." ]
-   set ip1 [ format %c [ lindex $ip 0 ] ]
-   set ip2 [ format %c [ lindex $ip 1 ] ]
-   set ip3 [ format %c [ lindex $ip 2 ] ]
-   set ip4 [ format %c [ lindex $ip 3 ] ]
-
-   #--- Envoie des informations selon le protocole UDP
-   puts -nonewline $s "\xff\x0f\xf0\x11$ip1$ip2$ip3$ip4"
-   set forever 0
-   vwait ::forever
-
-   #--- Fermeture du channel
-  ### ::console::disp "Close \n\n"
-   close $s
-}
-########################
 
