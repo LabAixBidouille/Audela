@@ -24,7 +24,7 @@
  * set AudiNet IP address
  *
  *
- * $Id: setip.c,v 1.1 2009-04-30 19:43:03 michelpujol Exp $
+ * $Id: setip.cpp,v 1.1 2009-05-01 09:21:35 michelpujol Exp $
  */
 
 
@@ -66,7 +66,7 @@
 #endif
 
 #include "setip.h"
-#include "log.h"
+//#include "log.h"
 
 typedef struct {
     unsigned char optype;
@@ -96,7 +96,10 @@ int sockbootp_bind();
 #endif
 
 #if defined(OS_LIN) || defined(OS_MACOS)
-int broadcastBootpReply();
+int broadcastBootpReply(int times,
+			unsigned long clientIP,
+			unsigned char *clientMAC,
+			unsigned long clientNM, unsigned long clientGW);
 #endif
 
 int sendBootpReply(int times,
@@ -106,7 +109,7 @@ int sendBootpReply(int times,
 		   unsigned long clientIP,
 		   unsigned char *clientMAC,
 		   unsigned long clientNM, unsigned long clientGW);
-int sockbootp_close();
+int sockbootp_close(int socket);
 
 int sendEthernaude(int times,
 		   int Socket,
@@ -144,18 +147,18 @@ int setip(char *szClientIP, char *szClientMAC, char *szClientNM,
   WSADATA wsaData;
   if (WSAStartup(MAKEWORD(1,1),&wsaData) != 0){
 	  sprintf(errorMessage,"WSAStartup failed: %d\n",GetLastError());
-     logError(errorMessage);
+     //logError(errorMessage);
 	  return 1;
   }
 #endif
 
    if (!szClientIP) {
       sprintf(errorMessage, "setip client IP is null");
-      logError(errorMessage);
+      //logError(errorMessage);
       return 1;
    } else {
       clientIP = htonl(inet_addr(szClientIP));
-      if ((clientIP == 0) || (clientIP == -1)) {
+      if ((clientIP == (unsigned long) 0) || (clientIP == (unsigned long) -1)) {
          struct hostent *pHostEnt;
          pHostEnt = gethostbyname(szClientIP);
          if (pHostEnt) {
@@ -165,9 +168,9 @@ int setip(char *szClientIP, char *szClientMAC, char *szClientNM,
             clientIP = htonl(SockAddr.sin_addr.s_addr);
          }
       }
-      if ((clientIP == 0) || (clientIP == -1)) {
+      if ((clientIP == (unsigned long) 0) || (clientIP == (unsigned long) -1)) {
          sprintf(errorMessage, "setip bad IP address (%s)", szClientIP);
-         logError(errorMessage);
+         //logError(errorMessage);
          return 1;
       }
    }
@@ -175,7 +178,7 @@ int setip(char *szClientIP, char *szClientMAC, char *szClientNM,
    
    if (!szClientMAC) {
       sprintf(errorMessage, "setip client MAC address is null");
-      logError(errorMessage);
+      //logError(errorMessage);
       return 1;
    } else {
       char ch;
@@ -200,7 +203,7 @@ int setip(char *szClientIP, char *szClientMAC, char *szClientNM,
       if (n != 6 || ch != 0) {
          sprintf(errorMessage, "setip bad MAC address (%s)",
             szClientMAC);
-         logError(errorMessage);
+         //logError(errorMessage);
          return 1;
       } else {
          for (i = 0; i < 6; ++i)
@@ -212,7 +215,7 @@ int setip(char *szClientIP, char *szClientMAC, char *szClientNM,
    
    if (szClientGW) {
       clientGW = htonl(inet_addr(szClientGW));
-      if ((clientGW == 0) || (clientGW == -1)) {
+      if ((clientGW == (unsigned long) 0) || (clientGW == (unsigned long) -1)) {
          struct hostent *pHostEnt;
          pHostEnt = gethostbyname(szClientGW);
          if (pHostEnt) {
@@ -223,10 +226,10 @@ int setip(char *szClientIP, char *szClientMAC, char *szClientNM,
          }
       }
       
-      if ((clientGW == 0) || (clientGW == -1)) {
+      if ((clientGW == (unsigned long) 0) || (clientGW == (unsigned long) -1)) {
          sprintf(errorMessage, "setip bad default gateway address (%s)",
             szClientGW);
-         logError(errorMessage);
+         //logError(errorMessage);
          return 1;
       }
       
@@ -242,7 +245,7 @@ int setip(char *szClientIP, char *szClientMAC, char *szClientNM,
             if (z) {
                sprintf(errorMessage, "setip bad netmask (%s)",
                   szClientNM);
-               logError(errorMessage);
+               //logError(errorMessage);
                return 1;
             }
             continue;
@@ -260,12 +263,12 @@ int setip(char *szClientIP, char *szClientMAC, char *szClientNM,
       result = sendEthernaude(1, replySocket, serverIP, broadcastIP, clientIP, clientMAC, clientNM, clientGW);
       if (result != 0) {
          sprintf(errorMessage, "sendBootpReply error errno=%d", errno);
-         logError(errorMessage);
+         //logError(errorMessage);
       }
       sockbootp_close(replySocket);
    } else {
       sprintf(errorMessage, "sockbootp_bind error errno=%d", errno);
-      logError(errorMessage);
+      //logError(errorMessage);
       result = 1;
    }
 #else
@@ -297,6 +300,7 @@ int sendBootpReply(int times,
     BOOTP_PACKET *ppkt = (BOOTP_PACKET *) udpbuf;
     struct sockaddr dst;
 
+    /*
     logInfo("sendBootpReply(%d, %d, "
 	    "Server IP=%d.%d.%d.%d, "
 	    "Broadcast IP=%d.%d.%d.%d, "
@@ -321,7 +325,7 @@ int sendBootpReply(int times,
     ((struct sockaddr_in *) (&dst))->sin_family = AF_INET;
     ((struct sockaddr_in *) (&dst))->sin_addr.s_addr = htonl(broadcastIP);
     ((struct sockaddr_in *) (&dst))->sin_port = htons(BOOTP_REPLY_PORT);
-
+    */
     memset(ppkt, 0, udpbuflen);	/* clear BOOTP packet */
 
     ppkt->optype = 2;		/* BOOTREPLY */
@@ -348,7 +352,7 @@ int sendBootpReply(int times,
 
     for (i = 0; i < times; ++i) {
 	   if (sendto(Socket, udpbuf, udpbuflen, 0, &dst,sizeof(struct sockaddr)) != udpbuflen) {
-	       logError("sendBootpReply sendto errno=%d", errno);
+	       //logError("sendBootpReply sendto errno=%d", errno);
 	       return (1);		/* error exit */
 	   }
     }
@@ -394,7 +398,7 @@ int sendEthernaude(int times,
 
     for (i = 0; i < times; ++i) {
 	    if (sendto(Socket, udpbuf, udpbuflen, 0, &dst,sizeof(struct sockaddr)) != udpbuflen) {
-	       logError("sendBootpReply sendto errno=%d", errno);
+	       //logError("sendBootpReply sendto errno=%d", errno);
 	       return (1);		/* error exit */
        }
     }
@@ -416,7 +420,7 @@ int sockbootp_bind()
    
    replySocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
    if (replySocket < 0) {
-      logError("sockbootp_bind socket() ");
+      //logError("sockbootp_bind socket() ");
       return 0;
    }
    
@@ -427,13 +431,13 @@ int sockbootp_bind()
    
    if (bind(replySocket, (struct sockaddr *) &SockAddr, sizeof SockAddr)
       != 0) {
-      logError("sockbootp_bind bind errno=%d", errno);
+      //logError("sockbootp_bind bind errno=%d", errno);
       return 0;
    }
    
    if (setsockopt(replySocket, SOL_SOCKET, SO_BROADCAST,
       (char *) &bBroad, sizeof bBroad) != 0) {
-      logError("sockbootp_bind setsockopt errno=%d", errno);
+      //logError("sockbootp_bind setsockopt errno=%d", errno);
       return 0;
    }
    
