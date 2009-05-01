@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_8.tcl
 # Description : Script regroupant les fonctionnalites du menu Aide
-# Mise a jour $Id: aud_menu_8.tcl,v 1.3 2009-05-01 08:41:55 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_8.tcl,v 1.4 2009-05-01 14:57:32 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -66,7 +66,7 @@ namespace eval ::audace {
    # Il faut avoir un navigateur web sur le micro
    #
    proc editSiteWebAudeLA { } {
-      global audace caption
+      global audace
 
       #--- Fenetre parent
       set fenetre "$audace(base)"
@@ -86,7 +86,7 @@ namespace eval ::audace {
    # Il faut avoir Acrobate Reader pour Windows ou son equivalent pour Linux sur le micro
    #
    proc editNotice_pdf { } {
-      global audace caption
+      global audace
 
       #--- Fenetre parent
       set fenetre "$audace(base)"
