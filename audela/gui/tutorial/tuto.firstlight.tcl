@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.firstlight.tcl,v 1.6 2008-04-23 21:01:38 robertdelmas Exp $
+# Mise a jour $Id: tuto.firstlight.tcl,v 1.7 2009-05-01 08:44:35 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -318,6 +318,12 @@ proc acquisition_firstlight {exposure} {
    #--- (waits for the variable cam1_status to change)
    cam$num(cam1) acq
    vwait status_cam$num(cam1)
+
+   #--- wait end of exposure (multithread)
+   set statusVariableName "::status_cam$num(cam1)"
+   if { [set $statusVariableName] == "exp" } {
+      vwait $statusVariableName
+   }
 
   #--- Change the red button text
    $zone(red_button) configure -text $caption(compute) -relief groove

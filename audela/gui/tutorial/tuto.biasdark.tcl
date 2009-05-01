@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.biasdark.tcl,v 1.6 2008-04-23 20:59:53 robertdelmas Exp $
+# Mise a jour $Id: tuto.biasdark.tcl,v 1.7 2009-05-01 08:43:47 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -330,6 +330,12 @@ proc acquisition_biasdark {exposure} {
       cam$num(cam1) acq
       vwait status_cam$num(cam1)
 
+      #--- wait end of exposure (multithread)
+      set statusVariableName "::status_cam$num(cam1)"
+      if { [set $statusVariableName] == "exp" } {
+         vwait $statusVariableName
+      }
+
       #--- Change the red button text
       $zone(red_button) configure -text $caption(compute) -relief groove
       update
@@ -378,12 +384,18 @@ proc acquisition_biasdark {exposure} {
       cam$num(cam1) acq
       vwait status_cam$num(cam1)
 
+      #--- wait end of exposure (multithread)
+      set statusVariableName "::status_cam$num(cam1)"
+      if { [set $statusVariableName] == "exp" } {
+         vwait $statusVariableName
+      }
+
       #--- Change the red button text
       $zone(red_button) configure -text $caption(compute) -relief groove
       update
 
       #--- get statistics from the acquired image
-     set myStatistics [buf$num(buf1) stat]
+      set myStatistics [buf$num(buf1) stat]
       set max_dark [lrange $myStatistics 2 2]
 
       #--- and display it with the right thresholds
