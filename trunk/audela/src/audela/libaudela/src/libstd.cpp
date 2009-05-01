@@ -256,20 +256,25 @@ int CmdPing(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 }
 
 //------------------------------------------------------------------------------
+// CmdSetIP
 //
+// envoie une demande de chagement d'adresse IP (au format ethernaude)
 //
+// @param  : ipaddress  , exemple 192.168.1.33
+// @return : {code} {message}
+//    si OK alors code = 0 et message= chaine vide
+//------------------------------------------------------------------------------
 int CmdSetIP(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
-   char s[256];
    char result[256];
-   char errorMessage[1024];
 
-   int res,timeout=1;
    if (argc<2) {
-	   sprintf(s,"usage : %s IPAddress",argv[0]);
-      Tcl_SetResult(interp,s,TCL_VOLATILE);
+	   sprintf(result,"usage : %s IPAddress",argv[0]);
+      Tcl_SetResult(interp,result,TCL_VOLATILE);
       return TCL_ERROR;
    } else {
+      int res;
+      char errorMessage[1024];
       // j'initalise le message d'erreur a vide
       strcpy(errorMessage,"");
       // j'envoi la commande sur la liaison reseau ethernet
