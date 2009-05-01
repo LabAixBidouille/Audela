@@ -1,10 +1,31 @@
 #
 # Fichier : aud_menu_8.tcl
 # Description : Script regroupant les fonctionnalites du menu Aide
-# Mise a jour $Id: aud_menu_8.tcl,v 1.2 2006-11-11 16:29:50 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_8.tcl,v 1.3 2009-05-01 08:41:55 robertdelmas Exp $
 #
 
 namespace eval ::audace {
+
+   #
+   # ::audace::Lance_Tutorial
+   # Lance le tutorial
+   #
+   proc Lance_Tutorial { } {
+      global caption
+
+      if { $::tcl_platform(platform) == "windows" } {
+         exec "[ file join $::audela_start_dir audela.exe ]" --file tutorial.tcl &
+      } elseif { $::tcl_platform(platform) == "unix" } {
+         cd ../bin
+         set catchError [ catch { exec "[ file join $::audela_start_dir audela.sh ]" --file tutorial.tcl & } ]
+         if { $catchError != "0" } {
+            ::tkutil::displayErrorInfo "$caption(audace,menu,tutorial)"
+         }
+         cd ../gui
+      } elseif { $::tcl_platform(platform) == "macintosh" } {
+         #--- A completer
+      }
+   }
 
    #
    # ::audace::Lance_Site_htm filename

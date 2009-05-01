@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.98 2009-03-13 23:41:36 michelpujol Exp $
+# Mise a jour $Id: aud.tcl,v 1.99 2009-05-01 08:42:16 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -782,7 +782,7 @@ namespace eval ::audace {
       Menu_Command   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,fonctions)" \
          ::audace::showFunctions
       Menu_Command   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,tutorial)" \
-         { exec "[ file join $::audela_start_dir audela.exe ]" --file tutorial.tcl & }
+         "::audace::Lance_Tutorial"
       Menu_Cascade   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,site_audela)"
       Menu_Command   $visuNo "$caption(audace,menu,site_audela)" "$caption(audace,menu,site_internet)" {
          set filename "$caption(en-tete,a_propos_de_site)" ; ::audace::Lance_Site_htm $filename }
