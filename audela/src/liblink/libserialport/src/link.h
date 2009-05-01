@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: link.h,v 1.1 2009-03-14 11:52:14 michelpujol Exp $
+// $Id: link.h,v 1.2 2009-05-01 16:11:46 michelpujol Exp $
 
 #ifndef __SERIALPORT_H__
 #define __SERIALPORT_H__
@@ -54,8 +54,6 @@ public:
    int getChar(char *c);
    int setBit(int bitNum, int value);
    int getBit(int bitNum, int *value);
-   //void getLastError(char *message);
-   int getIndex(int * index);
 
    static char * getGenericName();
    static int getAvailableLinks(unsigned long *pnumDevices, char **list);

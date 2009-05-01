@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: cserial.cpp,v 1.1 2009-03-14 11:52:14 michelpujol Exp $
+// $Id: cserial.cpp,v 1.2 2009-05-01 16:11:46 michelpujol Exp $
 
 
 #include "sysexp.h"
@@ -35,9 +35,13 @@
 
 // =========== local definiton and types ===========
 
-#ifdef WIN32
+#ifdef OS_WIN
 #include <winsock.h>
 #define close CloseHandle
+#else 
+#define ULONG  unsigned long
+#define DWORD  unsigned long
+#endif
 
 typedef struct _SERIAL_QUEUE_SIZE {
   ULONG  InSize;
@@ -70,12 +74,15 @@ typedef struct _SERIAL_QUEUE_SIZE {
 
 #define IOCTL_SERIAL_SET_QUEUE_SIZE \
   CTL_CODE (FILE_DEVICE_SERIAL_PORT, 2, METHOD_BUFFERED, FILE_ANY_ACCESS)
-#endif
+
 
 
 // =========== local functions prototypes ===========
 
 // =========== local variables ===========
+#ifdef OS_LIN
+char * errorMessage = "";
+#endif
 
 
 // ============= methodes statiques ====================================
@@ -169,7 +176,7 @@ char * CSerial::getGenericName() {
 // ============ implementation des methodes de CSerial ==========================
 CSerial::CSerial() : CLink()
 {
-
+   strcpy(index,"");
 }
 
 /**
@@ -184,6 +191,11 @@ CSerial::~CSerial()
 }
 
 char * CSerial::getLastSystemErrorMessage() {
+
+#ifdef OS_LIN
+	// je retourne un message vide par defaut
+	return errorMessage;
+#else
       LPTSTR lpMsgBuf;
 
       // je recupere le message système
@@ -199,6 +211,8 @@ char * CSerial::getLastSystemErrorMessage() {
           NULL 
       );
    return lpMsgBuf;
+#endif
+
 }
 
 /**
@@ -211,14 +225,7 @@ int CSerial::openLink(int argc, char **argv) {
    char name[256];
    int  openFlag = 1;
 
-
-   DCB dcb;
-   COMMTIMEOUTS commtimeouts;
-   SERIAL_QUEUE_SIZE queueSize;
-   DWORD bytesReturned;
-   
-   sprintf(name, "COM%d",index);
-   hDevice = NULL;
+   sprintf(name, "COM%s",index);
    
    // je lis les parametres optionnels 
    if (argc >= 2) {
@@ -231,7 +238,17 @@ int CSerial::openLink(int argc, char **argv) {
    }
 
    if ( openFlag == 1 ) {
-      
+#ifdef OS_LIN
+      setLastMessage("Error openLink->GetCommState : not implemented for Linux");
+      result = LINK_ERROR;
+#else
+   
+      DCB dcb;
+   	COMMTIMEOUTS commtimeouts;
+   	SERIAL_QUEUE_SIZE queueSize;
+   	DWORD bytesReturned;
+
+      hDevice = NULL;
       hDevice = CreateFile( name,
          GENERIC_READ | GENERIC_WRITE,
          0,    // must be opened with exclusive-access
@@ -364,8 +381,8 @@ int CSerial::openLink(int argc, char **argv) {
          closeLink();
          result = LINK_ERROR;
       }
+#endif
    }
-
    return LINK_OK;
 }
 
@@ -394,30 +411,9 @@ int CSerial::closeLink()
 */
 int CSerial::setChar(char c)
 {
-   int result = LINK_OK;
-   
-#if defined(OS_LIN)
-   // Write a byte 
-   if (ioctl(fileDescriptor, PPWDATA, &c)) {
-      ioctl(fileDescriptor, PPRELEASE);
-      fileDescriptor = -1;
-      result = LINK_ERROR;
-   }
-#endif
-
-
-#if defined(OS_WIN)
-   DWORD numberOfBytesWritten = 0;
-   // Write a byte 
-   if (!WriteFile (hDevice,  &c, 1, &numberOfBytesWritten, NULL)
-       || numberOfBytesWritten != 1) {
-      result = LINK_ERROR;
-   }
-#endif
-
-   if( result == LINK_OK) {
-      currentValue = c;
-   }
+   int result = LINK_OK;   
+	setLastMessage("Error CSerial::setChar : not implemented");
+   result = LINK_ERROR;
    return result;
 }
 
@@ -426,30 +422,28 @@ int CSerial::setChar(char c)
 *    lit un octet 
 */
 int CSerial::getChar(char *c) {
-   
-#if defined(OS_WIN)
-   // not implemented
-   return LINK_ERROR;
-#elif defined(OS_LIN)
-   // Read a byte
-   *c = inb(this->address);
-    return LINK_OK;
-#elif defined(OS_MACOS)
-	return LINK_ERROR;
-#endif
+ 
+   int result = LINK_OK;   
+	setLastMessage("Error CSerial::getChar : not implemented");
+   result = LINK_ERROR;
+   return result;
 
 }
 
 
 int CSerial::writeBit( DWORD dwIoControlCode) {
+#if defined(OS_LIN) 
+	setLastMessage("Error CSerial::writeBit : not implemented");
+   return LINK_ERROR;
+#else
    DWORD bytesReturned;
-
    if ( DeviceIoControl(hDevice,dwIoControlCode,NULL,0,NULL,0,&bytesReturned,NULL) == FALSE ) {
-      setLastMessage("Error setBit DeviceIoControl: %s", getLastSystemErrorMessage());
+      setLastMessage("Error writeBit DeviceIoControl: %s", getLastSystemErrorMessage());
       return LINK_ERROR;
    } else {
       return LINK_OK;
    }
+#endif
 }
  
 /**
@@ -493,15 +487,3 @@ int CSerial::getBit(int bitNum, int *value)
    setLastMessage("Error getBit NOT IMPLEMENTED");
    return LINK_ERROR;
 }
-
-
-/**
-*  getName
-*    retourne l'adress du port parallele
-*/
-int CSerial::getIndex( int *pindex)
-{
-   *pindex = index;
-   return LINK_OK;
-}
-
