@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: liblink.cpp,v 1.3 2009-01-12 18:02:29 michelpujol Exp $
+// $Id: liblink.cpp,v 1.4 2009-05-01 16:11:02 michelpujol Exp $
 
 
 #include "sysexp.h"
@@ -297,10 +297,8 @@ static int cmdLinkDriverName(ClientData clientData, Tcl_Interp * interp, int arg
  */
 static int cmdLinkIndex(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
-   char ligne[256];
    CLink * link = (CLink *) clientData;   
-   sprintf(ligne, "%d", link->getIndex() );
-   Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+   Tcl_SetResult(interp, link->getIndex(), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -415,14 +413,16 @@ int CLink::init_common(int argc, char **argv)
    int result;
 
    if(argc>2) {    
-      if( sscanf(argv[2],"%d",&index) != 1 ) {
-         setLastMessage("Usage: %s %s ?index?\nindex = must be an integer 0 to 255",argv[0],argv[1]);
-         result = LINK_ERROR;
-      } else {
+      unsigned int indexLen = strlen(argv[2]);
+      if( indexLen > 0 && indexLen < sizeof(index) ) {
+         strcpy(index, argv[2]);
          result = LINK_OK;   
+      } else {
+         setLastMessage("Usage: %s %s ?index?\nBad index=%d . length of index must be between 1 to %d",argv[0],argv[1],argv[2],sizeof(index));
+         result = LINK_ERROR;
       }
    } else {
-         setLastMessage("Usage: %s %s ?index?\nindex = must be an integer 0 to 255",argv[0],argv[1]);
+         setLastMessage("Usage: %s %s ?index?\nindex is mising",argv[0],argv[1]);
          result = LINK_ERROR;
    }
 
@@ -431,7 +431,7 @@ int CLink::init_common(int argc, char **argv)
 
 
 
-int CLink::getIndex() {
+char * CLink::getIndex() {
    return index;
 }
 

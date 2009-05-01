@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Linkbridge, MA 02139, USA.
  */
 
-// $Id: liblink.h,v 1.4 2009-01-12 18:02:29 michelpujol Exp $
+// $Id: liblink.h,v 1.5 2009-05-01 16:10:33 michelpujol Exp $
 
 #ifndef __LIBLINK_H__
 #define __LIBLINK_H__
@@ -32,8 +32,6 @@
 /* Please, don't change the source of this file!                 */
 /*                                                               */
 /*****************************************************************/
-
-//#include "liblink.h"
 
 #include "liblink/useitem.h"
 
@@ -53,7 +51,7 @@ class CLink {
    int removeUse(char *deviceId, char *usage);
    int getUse(char **list);
 
-   int getIndex();
+   char *getIndex();
    void setLastMessage(const char *format, ...);
    char * getLastMessage();
    void setAuthorized(int value);
@@ -62,7 +60,7 @@ class CLink {
 
  protected:
    int authorized;
-   int index;
+   char index[1024];
    char msg[1024];
    int linkno;
    CUseItem *useItem;

@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: cquickremote.cpp,v 1.5 2009-01-12 18:06:05 michelpujol Exp $
+// $Id: cquickremote.cpp,v 1.6 2009-05-01 16:11:03 michelpujol Exp $
 
 
 #ifdef WIN32
@@ -101,7 +101,7 @@ char * CQuickremote::getGenericName() {
 CQuickremote::CQuickremote() : CLink()
 {
    ftHandle = NULL;
-   
+   strcpy(index,"");  
 }
 
 CQuickremote::~CQuickremote()
@@ -122,17 +122,13 @@ int CQuickremote::openLink(int argc, char **argv)
       return  LINK_ERROR;
    }
    
-   if( argc >= 6) {
-     index = atoi(argv[5]);
-   } else {
-         return  LINK_ERROR;
-   }
+   int deviceNumber = atoi(index);
 
-   lastStatus = FT_Open(index,&ftHandle);
+   lastStatus = FT_Open(deviceNumber,&ftHandle);
    if (lastStatus != FT_OK) {
       char ftdiError[1024];      
       getLastError(ftdiError);
-      sprintf(this->msg, "Can't open FTDI device index=%d : %s", index, ftdiError);
+      sprintf(this->msg, "Can't open FTDI device index=%s deviceNumber=%d : %s", index, deviceNumber, ftdiError);
       return  LINK_ERROR;
    }
    
