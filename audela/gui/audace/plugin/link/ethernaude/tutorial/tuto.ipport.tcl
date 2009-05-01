@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.ipport.tcl,v 1.10 2007-12-04 22:29:20 robertdelmas Exp $
+# Mise a jour $Id: tuto.ipport.tcl,v 1.11 2009-05-01 10:27:31 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -44,7 +44,7 @@ que pour ce test de connexion)."
       if {$ipeth(ipnumethernaudeping)==1} {
          set textip "Un appareil, qui a ce numéro, a été détecté sur le réseau. Vérifier qu'il s'agisse bien de l'EthernAude."
       } else {
-         set textip "Ce numéro n'est pas encore utilisé"
+         set textip "Ce numéro n'est pas encore utilisé."
       }
       set texte(firstdark_4) "\
 Actuellement, votre ordinateur possède le numéro IP $ipeth(ipnum).\
@@ -70,14 +70,6 @@ Actuellement, votre ordinateur n'est pas configuré pour une utilisation\
 en réseau. Consulter l'aide de votre système d'exploitation.\n\n\
 "
    }
-   set texte(firstdark_5) ""
-   if {$ipeth(ipnumethernaudeping)==1} {
-      set texte(firstdark_5) "\n\n\
-N.B. Le programme IPSetting.exe, présent dans le dossier\
-bin permet de changer le numéro IP du boîtier EthernAude.\
-Il peut être utilisé indépendemment de ce logiciel.\
-"
-   }
    set texte(firstdark_exit) " Retour à la page principale."
 } else {
    set caption(ethernaude) "EthernAude"
@@ -95,7 +87,7 @@ to your network (this restriction only applies to this connection test)."
       if {$ipeth(ipnumethernaudeping)==1} {
          set textip "A device with that number has been detected in the network.  Verify that it is the EthernAude device."
       } else {
-         set textip "This number is not yet used"
+         set textip "This number is not yet used."
       }
       set texte(firstdark_4) "\
 Your computer currently has the IP $ipeth(ipnum) number.\
@@ -122,15 +114,7 @@ Your computer is not currently configured to be used in a network.\
 Read the Help section of the OS manual.\n\n\
 "
    }
-   set texte(firstdark_5) ""
-   if {$ipeth(ipnumethernaudeping)==1} {
-      set texte(firstdark_5) "\n\n\
-Note: The IPSetting.exe utility in the bin folder\
-allows you to change the IP number of the EthernAude device.\
-It can be used independently of this software.\
-"
-   }
-  set texte(firstdark_exit) " Return to the Main Page."
+   set texte(firstdark_exit) " Return to the Main Page."
 }
 }
 
@@ -145,20 +129,15 @@ proc connect_ethernaude {} {
       }
       catch { cam::delete $num(camNo) }
    }
-   if {[info exists audace]==1} {
-      set ipsetting_filename [ file join $audace(rep_install) bin IPSetting.exe ]
-   } else {
-      set ipsetting_filename [ file join .. bin IPSetting.exe ]
-   }
    #--- Si une camera est connectee, j'arrete les plugins camera
    if { [ ::cam::list ] != "" } {
       ::confCam::stopPlugin
    }
    #--- Je connecte l'Audine via la liaison EthernAude
+   setip "$ipeth(ipnumethernaude)"
    set eth_canspeed [ expr round((-7.11)/(39.51-7.11)*30.) ]
    set erreur [ catch { cam::create ethernaude udp -ip "$ipeth(ipnumethernaude)" \
-      -shutterinvert "1" -canspeed $eth_canspeed \
-      -ipsetting "$ipsetting_filename" -num 500 } msg ]
+      -shutterinvert "1" -canspeed $eth_canspeed -num 500 } msg ]
    if { $erreur == "1" } {
       tk_messageBox -message "$msg" -icon error
       return
@@ -167,6 +146,7 @@ proc connect_ethernaude {} {
          set num(camNo) $msg
          cam$num(camNo) buf $audace(bufNo)
          ::audace::visuDynamix 32767 -32768
+         ::console::affiche_saut "\n"
          ::console::affiche_erreur "$caption(ethernaude) : $ipeth(ipnumethernaude) \n"
          ::console::affiche_erreur "[ cam$num(camNo) name ] ([ cam$num(camNo) ccd ]) \n\n"
       }
@@ -384,8 +364,7 @@ set lastLine ""
 .second.t insert end "$texte(firstdark_1)\n" title
 .second.t insert end "$texte(firstdark_2)\n\n" title
 .second.t insert end "$texte(firstdark_3)\n\n"
-.second.t insert end "$texte(firstdark_4)"
-.second.t insert end "$texte(firstdark_5)\n\n"
+.second.t insert end "$texte(firstdark_4)\n\n"
 
 .second.t insert end " \n " {demospace}
 .second.t insert end "$texte(next_topic) $texte(tuto_11)" {demo demo-firstlight}
