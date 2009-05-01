@@ -2,7 +2,7 @@
 OUTPUT   = libaudela.so
 
 SRC = $(SRCDIR)/buf_tcl.cpp $(SRCDIR)/cam_tcl.cpp $(SRCDIR)/cbuffer.cpp \
-      $(SRCDIR)/cdevice.cpp $(SRCDIR)/cpool.cpp  \
+      $(SRCDIR)/cdevice.cpp $(SRCDIR)/cpool.cpp  $(SRCDIR)/setip.cpp \
       $(SRCDIR)/fitskw.cpp $(SRCDIR)/history.cpp $(SRCDIR)/ping.cpp \
       $(SRCDIR)/libstd.cpp $(SRCDIR)/pool_tcl.cpp $(SRCDIR)/stats.cpp \
       $(SRCDIR)/tel_tcl.cpp $(SRCDIR)/tt.cpp $(SRCDIR)/cfile.cpp\
