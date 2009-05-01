@@ -270,9 +270,14 @@ int CmdSetIP(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       return TCL_ERROR;
    } else {
-      res = setip(argv[1],"11:22:33:44:55:66","0.0.0.0","255.255.255.1", errorMessage);
-      // int setip(char *szClientIP, char *szClientMAC, char *szClientNM,
-	  //     char *szClientGW, char *errorMessage)
+      // j'initalise le message d'erreur a vide
+      strcpy(errorMessage,"");
+      // j'envoi la commande sur la liaison reseau ethernet
+      res = setip(argv[1],    // szClientIP nouvelle adresse IP
+         "11:22:33:44:55:66", // adresse MAC (non utilisee par l'ethernaude)
+         "0.0.0.0",           // masque de sous reseau (filtre nul)
+         "255.255.255.1",     // addresse de gateway (non utilise );
+         errorMessage);
       sprintf(result,"{%d} {%s}",res,errorMessage);
       Tcl_SetResult(interp,result,TCL_VOLATILE);
       return TCL_OK;
