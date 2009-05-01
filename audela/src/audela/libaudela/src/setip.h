@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: setip.h,v 1.2 2009-05-01 09:21:35 michelpujol Exp $
+ * $Id: setip.h,v 1.3 2009-05-01 13:42:18 jacquesmichelet Exp $
  */
 
 #ifndef __SETIP_H__
@@ -31,8 +31,8 @@
 extern "C" {
 #endif
 
-int setip(char *szClientIP, char *szClientMAC, char *szClientNM,
-	  char *szClientGW, char *errorMessage);
+int setip(const char *szClientIP, const char *szClientMAC, const char *szClientNM,
+	  const char *szClientGW, char *errorMessage);
 
 #ifdef __cplusplus
 }

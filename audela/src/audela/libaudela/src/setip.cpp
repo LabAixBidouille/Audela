@@ -24,7 +24,7 @@
  * set AudiNet IP address
  *
  *
- * $Id: setip.cpp,v 1.1 2009-05-01 09:21:35 michelpujol Exp $
+ * $Id: setip.cpp,v 1.2 2009-05-01 13:42:18 jacquesmichelet Exp $
  */
 
 
@@ -129,8 +129,8 @@ int sendEthernaude(int times,
  *   szClientGW  : client gateway       ( optional, may be NULL)
  * returns 0 if no error occurs
  */
-int setip(char *szClientIP, char *szClientMAC, char *szClientNM,
-          char *szClientGW, char *errorMessage)
+int setip(const char *szClientIP, const char *szClientMAC, const char *szClientNM,
+          const char *szClientGW, char *errorMessage)
 {
    int result;
    unsigned long clientIP = 0;
