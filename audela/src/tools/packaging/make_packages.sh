@@ -9,7 +9,7 @@
 #
 ########################################################################################
 
-# Mise a jour $Id: make_packages.sh,v 1.8 2009-04-20 16:25:25 bmauclaire Exp $
+# Mise a jour $Id: make_packages.sh,v 1.9 2009-05-01 18:23:58 bmauclaire Exp $
 
 
 #--- Utilisation du script :
@@ -25,7 +25,7 @@
 # 5. ./configure --with-tcl=/home/mauclaire/audela/lib/lib --with-tk=/home/mauclaire/audela/lib/lib
 # 6. make external && make contrib && make // ou make all.
 # 7. Renommer les fichiers speciaux libthread2.6.5.1.so_debian (issu de la compilation d'Audela) et placer Thread2.6.5.1.so_mandriva dans le repertoire audela/lib/thread2.6.5.1/
-# La version fabriquee sera notee comme multithreadee si les 2 fichierslibtcl8.4.so et libtk8.4.so sont presents dans le rep bin d'Audela.
+# La version fabriquee sera notee comme multithreadee si les 2 fichiers libtcl8.4.so et libtk8.4.so sont presents dans le rep bin d'Audela.
 #
 #--- Compilation monothreadee :
 # 1. chmod u+x ./configure ;
@@ -36,12 +36,13 @@
 # 1. Que la version soit multithreadee ou non, il faut que les fichiers libtcl8.4.so et libtcl8.4.so soient presents dans /usr/lib/ de la machine destination pour que BLT fonctionne. Donc installer les paquets tcl et tk.
 # 2. Effacer le repertoire audela/lib/thread2.6/
 # 3. cp audela/src/external/libftd2xx/lib/libftd2xx.so.0.4.16 audela/audela/bin/
-# 4. Dans audela/bin : chmod a+x libftd2xx.so.0* ; ln -s libftd2xx.so.0.4.16 libftd2xx.so
+# 4. Dans audela/bin : chmod a+x libftd2xx.so.0* ; ln -s libftd2xx.so.0.4.16 libftd2xx.so.0
 #
 ##------------------------------------------------------------------------------#
 
 
 #--- Variables de focntionnement :
+# Visiblement non necessaires : tclxml, tcllib, tclvfs.
 #-- Dependances Linux du paquet :
 depends_debian="tk8.4, libstdc++6, libgsl0, gnuplot-x11, gzip, libusb-0.1-4, tclxml, tcllib, tclvfs, libtk-img, blt"
 # depends_debian="libc6, libgcc1, libgsl0, libstdc++6, libusb-0.1-4, tcl8.4, tk8.4, tclthread, libx11-6, libxau6, gnuplot-x11, gzip, tclxml, tcllib, tclvfs, libtk-img, blt"
@@ -81,7 +82,7 @@ then
     echo "La distribution est une Mandriva."
     depends="$depends_mandriva"
     ladistro="$1"
-elif "$1" = "-h"
+elif test "$1" = "-h"
 then
     echo "make_packages.sh [debian/ubuntu/mandriva]"
     exit 0
