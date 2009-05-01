@@ -20,12 +20,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: serial_tcl.cpp,v 1.1 2009-03-14 11:52:14 michelpujol Exp $
+// $Id: serial_tcl.cpp,v 1.2 2009-05-01 16:11:46 michelpujol Exp $
 
 
 #include <sysexp.h>
 #include <tcl.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef __cplusplus
 extern "C" {			/* Assume C declarations for C++ */
@@ -135,22 +136,15 @@ int cmdSerialBit(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
    return result;
 }
    
+//----------------------------------------------------------------------------
+// retounr l'index de la liaison
+
 int cmdSerialIndex(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    
-   int result ;
-   char message[256];
    CSerial * serial = (CSerial*)clientData;
-   int index;
 
-   result = serial->getIndex(&index);
-   if (result == LINK_OK) {
-      sprintf(message,"%d", index);
-      Tcl_SetResult(interp,message,TCL_VOLATILE);      
-      return TCL_OK;
-   } else {
-      Tcl_SetResult(interp,serial->getLastMessage(),TCL_VOLATILE);      
-      return TCL_ERROR;
-   }
+   Tcl_SetResult(interp,serial->getIndex(),TCL_VOLATILE);      
+   return TCL_OK;
 }
    
 
