@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: parallel_tcl.cpp,v 1.3 2006-09-28 19:38:24 michelpujol Exp $
+// $Id: parallel_tcl.cpp,v 1.4 2009-05-01 16:11:02 michelpujol Exp $
 
 
 #include <sysexp.h>
@@ -136,23 +136,10 @@ int cmdParallelBit(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
    return result;
 }
    
-int cmdParallelIndex(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
-   
-   int result ;
-   char message[256];
+int cmdParallelIndex(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {   
    CParallel * parallel = (CParallel*)clientData;
-   int index;
-
-   result = parallel->getIndex(&index);
-   if (result == LINK_OK) {
-      sprintf(message,"%d", index);
-      Tcl_SetResult(interp,message,TCL_VOLATILE);      
-      return TCL_OK;
-   } else {
-      parallel->getLastError(message);
-      Tcl_SetResult(interp,message,TCL_VOLATILE);      
-      return TCL_ERROR;
-   }
+   Tcl_SetResult(interp,parallel->getIndex(),TCL_VOLATILE);      
+   return TCL_OK;
 }
    
 int cmdParallelAddress(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {

@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: link.h,v 1.3 2006-09-28 19:38:24 michelpujol Exp $
+// $Id: link.h,v 1.4 2009-05-01 16:11:02 michelpujol Exp $
 
 #ifndef __PARELLELPORT_H__
 #define __PARELLELPORT_H__
@@ -51,7 +51,6 @@ public:
    int setBit(int numbit, int value);
    int getBit(int numbit, int *value);
    void getLastError(char *message);
-   int getIndex(int * index);
    int getAddress( unsigned short *a_address);
 
    static char * getGenericName();

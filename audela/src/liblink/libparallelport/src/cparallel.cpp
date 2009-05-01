@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: cparallel.cpp,v 1.5 2009-01-12 18:03:29 michelpujol Exp $
+// $Id: cparallel.cpp,v 1.6 2009-05-01 16:11:02 michelpujol Exp $
 
 
 #include "sysexp.h"
@@ -157,7 +157,7 @@ char * CParallel::getGenericName() {
 
 CParallel::CParallel() : CLink()
 {
-
+   strcpy(index,"");
 }
 
 /**
@@ -190,7 +190,7 @@ int CParallel::openLink(int argc, char **argv) {
    char name[128];
 
    index = index -1;
-   sprintf(name, "/dev/parport%d", index);
+   sprintf(name, "/dev/parport%s", index);
    if (-1 == (fileDescriptor = open(name, O_RDWR))) {
       result = LINK_ERROR;
    } else if (ioctl(fileDescriptor, PPCLAIM)) {
@@ -440,16 +440,6 @@ void CParallel::getLastError(char *message) {
 int CParallel::getAddress( unsigned short *a_address)
 {
    *a_address = address;
-   return LINK_OK;
-}
-
-/**
-*  getName
-*    retourne l'adress du port parallele
-*/
-int CParallel::getIndex( int *pindex)
-{
-   *pindex = index;
    return LINK_OK;
 }
 
