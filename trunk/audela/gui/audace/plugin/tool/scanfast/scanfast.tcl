@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.46 2009-04-26 16:35:58 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.47 2009-05-02 09:29:29 robertdelmas Exp $
 #
 
 global panneau
@@ -541,6 +541,12 @@ proc ::scanfast::startTool { visuNo } {
 #------------------------------------------------------------
 proc ::scanfast::stopTool { visuNo } {
    variable This
+   global panneau
+
+   #--- Je verifie si une operation est en cours
+   if { $panneau(scanfast,acquisition) == 1 } {
+      return -1
+   }
 
    #--- Sauvegarde de la configuration
    enregistrementVar
