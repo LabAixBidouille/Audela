@@ -6626,7 +6626,7 @@ fi
 
 LIBTELS="libaudecom libcelestron libcombit libdeltatau libdfm libeqmod liblx200 liblxnet libouranos libtemma"
 
-LIBLINKS="libparallelport libquickremote"
+LIBLINKS="libparallelport libquickremote libserialport"
 
 { echo "$as_me:$LINENO: result: CXXFLAGS = $CXXFLAGS" >&5
 echo "${ECHO_T}CXXFLAGS = $CXXFLAGS" >&6; }
