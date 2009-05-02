@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: camera.tcl,v 1.28 2009-02-11 19:02:05 robertdelmas Exp $
+# Mise a jour $Id: camera.tcl,v 1.29 2009-05-02 09:30:24 robertdelmas Exp $
 #
 # Procedures utilisees par confCam
 #   ::camera::create : cree une camera
@@ -298,7 +298,9 @@ proc ::camera::Avancement_scan { tt Nb_Line_Total scan_Delai } {
          }
       }
       #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $audace(base).progress_scan
+      if { [ winfo exists $audace(base).progress_scan ] } {
+         ::confColor::applyColor $audace(base).progress_scan
+      }
    } else {
       if { $tt == "-10" } {
          if { $scan_Delai > "1" } {
@@ -469,7 +471,9 @@ proc ::camera::Avancement_pose { { t } } {
          update
       }
       #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $audace(base).progress_pose
+      if { [ winfo exists $audace(base).progress_pose ] } {
+         ::confColor::applyColor $audace(base).progress_pose
+      }
    } else {
       #--- t est un nombre entier
       if { $t <= "0" } {
