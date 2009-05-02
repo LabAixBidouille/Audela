@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.24 2009-04-27 16:47:23 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.25 2009-05-02 09:28:52 robertdelmas Exp $
 #
 
 # =========================================================
@@ -175,6 +175,7 @@ namespace eval ::acqfen {
       set panneau(acqfen,index)          1
       set panneau(acqfen,nb_images)      1
       set panneau(acqfen,enregistrer)    0
+      set panneau(acqfen,acquisition)    0
 
       #--- Reglages acquisitions serie et continu par defaut
       set panneau(acqfen,fenreglfen1)    1
@@ -260,7 +261,12 @@ namespace eval ::acqfen {
    #------------------------------------------------------------
    proc stopTool { visuNo } {
       variable This
-      global audace
+      global audace panneau
+
+      #--- Je verifie si une operation est en cours
+      if { $panneau(acqfen,acquisition) == 1 } {
+         return -1
+      }
 
       #--- Sauvegarde de la configuration de prise de vue
       ::acqfen::Enregistrement_Var
@@ -413,6 +419,9 @@ namespace eval ::acqfen {
 
          switch -exact -- $panneau(acqfen,go_stop_cent) {
             "go" {
+               #--- Mise a jour de variable
+               set panneau(acqfen,acquisition) "1"
+
                #--- Modification du bouton, pour eviter un second lancement
                set panneau(acqfen,go_stop_cent) stop
                $This.acqcent.but configure -text $caption(acqfen,stop)
@@ -493,8 +502,13 @@ namespace eval ::acqfen {
                $This.acqred.matrice_color_invariant.fen config -width $panneau(acqfen,mtx_x) -height $panneau(acqfen,mtx_y)
                place $This.acq.matrice_color_invariant.fen -x 0 -y 0
                place $This.acqred.matrice_color_invariant.fen -x 0 -y 0
+
+               #--- Mise a jour de variable
+               set panneau(acqfen,acquisition) "0"
             }
             "stop" {
+               #--- Mise a jour de variable
+               set panneau(acqfen,acquisition) "0"
                #--- Annulation de l'alarme de fin de pose
                catch { after cancel bell }
                #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
@@ -521,6 +535,9 @@ namespace eval ::acqfen {
          #---
          switch -exact -- $panneau(acqfen,go_stop) {
             "go" {
+               #--- Mise a jour de variable
+               set panneau(acqfen,acquisition) "1"
+
                #--- Modification du bouton, pour eviter un second lancement
                set panneau(acqfen,go_stop) stop
                $This.acq.but configure -text $caption(acqfen,stop)
@@ -1177,8 +1194,12 @@ namespace eval ::acqfen {
                set panneau(acqfen,go_stop) go
                $This.acq.but configure -text $caption(acqfen,GO)
                $This.acqred.but configure -text $caption(acqfen,GO)
+               #--- Mise a jour de variable
+               set panneau(acqfen,acquisition) "0"
             }
             "stop" {
+               #--- Mise a jour de variable
+               set panneau(acqfen,acquisition) "0"
                #--- On positionne un indicateur de demande d'arret
                set panneau(acqfen,demande_arret) 1
                #--- Annulation de l'alarme de fin de pose
