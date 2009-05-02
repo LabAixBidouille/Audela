@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude.tcl,v 1.20 2009-04-27 16:47:38 robertdelmas Exp $
+# Mise a jour $Id: cmaude.tcl,v 1.21 2009-05-02 14:51:15 robertdelmas Exp $
 #
 # Remarks :
 # The definition of some variables (binning, exp. time, rythm, etc.)
@@ -160,6 +160,7 @@ namespace eval ::cmaude {
       set panneau(cmaude,status)          "$caption(cmaude,status1)"
       set panneau(cmaude,status2)         "$caption(cmaude,status2)"
       set panneau(cmaude,status3)         "$caption(cmaude,status2)"
+      set panneau(cmaude,acquisition)     "0"
       cmaudeBuildIF $This
    }
 
@@ -190,6 +191,12 @@ namespace eval ::cmaude {
    #------------------------------------------------------------
    proc stopTool { visuNo } {
       variable This
+      global panneau
+
+      #--- Je verifie si une operation est en cours
+      if { $panneau(cmaude,acquisition) == 1 } {
+         return -1
+      }
 
       pack forget $This
    }
@@ -208,6 +215,7 @@ namespace eval ::cmaude {
       global audace caption compteur loopexit namelog panneau
 
       if { [ ::cam::list ] != "" } {
+         set panneau(cmaude,acquisition) "1"
          $This.fra2.but1 configure -relief groove -state disabled
          update
          #--- Initialisation de l'heure TU ou TL
@@ -438,6 +446,7 @@ namespace eval ::cmaude {
             puts $fileId "\n$caption(cmaude,fin_boucle_acquisition_a) $dateend !\n"
             close $fileId
          }
+         set panneau(cmaude,acquisition) "0"
          $This.fra2.but1 configure -relief raised -state normal
          update
       } else {
