@@ -9,7 +9,7 @@
 #
 ########################################################################################
 
-# Mise a jour $Id: make_packages.sh,v 1.9 2009-05-01 18:23:58 bmauclaire Exp $
+# Mise a jour $Id: make_packages.sh,v 1.10 2009-05-02 07:32:16 bmauclaire Exp $
 
 
 #--- Utilisation du script :
@@ -269,6 +269,7 @@ sudo chown -R root.root $DIRECTORY/*
 
 
 #--- Creation du fichier d'entree pour la presence d'Audela dans le menu du gestionnaire de fenetres :
+#- La derniere version du logo (AK) se trouve dans audela/src/audela/audela/linux
 mkdir -p $BUILD_DIR/usr/share/applications/
 echo "[Desktop Entry]
 Name=AudeLA
