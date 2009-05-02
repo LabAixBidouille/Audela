@@ -2,11 +2,11 @@
 # Fichier : updateaudela.tcl
 # Description : Outil de fabrication des fichiers Kit et de deploiement des plugins
 # Auteur : Michel Pujol
-# Mise a jour $Id: updateaudela.tcl,v 1.18 2009-02-07 11:03:53 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.tcl,v 1.19 2009-05-02 15:17:56 michelpujol Exp $
 #
 
 namespace eval ::updateaudela {
-   package provide updateaudela 1.2
+   package provide updateaudela 1.3
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] updateaudela.cap ]
@@ -113,7 +113,7 @@ proc ::updateaudela::createPluginInstance { {in ""} { visuNo 1 } } {
    if { ! [ info exists conf(updateaudela,position) ] }          { set conf(updateaudela,position)     "300x200+250+75" }
    if { ! [ info exists conf(updateaudela,kitDirectory) ] }      { set conf(updateaudela,kitDirectory) "$::audace(rep_install)" }
    if { ! [ info exists conf(updateaudela,downloadAndInstall ] } { set conf(updateaudela,downloadAndInstall) "1" }
-   if { ! [ info exists conf(updateaudela,addressList) ] }       { set conf(updateaudela,addressList) [list "http://perso.orange.fr/michel.pujol/audela/index.htm" "http://bmauclaire.free.fr/astronomie/softs/audela/spcaudace/index.php#download"] }
+   if { ! [ info exists conf(updateaudela,addressList) ] }       { set conf(updateaudela,addressList) [list "http://pagesperso-orange.fr/michel.pujol/audela/index.html" "http://bmauclaire.free.fr/astronomie/softs/audela/spcaudace/index.php#download"] }
 
    set private(base)            $in
    set private(kitDirectory)    "$::audace(rep_install)"
@@ -355,32 +355,42 @@ proc ::updateaudela::installKit { kitFileName } {
              set pluginAudelaVersion $pluginInfo(audelaVersion)
          }
          if { [package vcompare $audelaVersion $pluginAudelaVersion] >= 0 } {
-         #--- je recupere les informations de la version deja installee
-         set currentPkgIndexFileName [file join [getTypeDirectory $pluginInfo(type) $pluginInfo(name)]  pkgIndex.tcl]
-         if { [file exists $currentPkgIndexFileName] == 1 } {
-            if { [::audace::getPluginInfo $currentPkgIndexFileName currentPluginInfo ] == 0 } {
-               #--- si le plugin est deja installe , je propose la mise la jour
-               set message [format $::caption(updateaudela,confirmInstall) "\"$currentPluginInfo(name) $currentPluginInfo(version)\"" "\"$pluginInfo(name) $pluginInfo(version)\""]
+            #--- je recupere les informations de la version deja installee
+            set currentPkgIndexFileName [file join [getTypeDirectory $pluginInfo(type) $pluginInfo(name)]  pkgIndex.tcl]
+            if { [file exists $currentPkgIndexFileName] == 1 } {
+               if { [::audace::getPluginInfo $currentPkgIndexFileName currentPluginInfo ] == 0 } {
+                  #--- si le plugin est deja installe , je propose la mise la jour
+                  set message [format $::caption(updateaudela,confirmInstall) "\"$currentPluginInfo(name) $currentPluginInfo(version)\"" "\"$pluginInfo(name) $pluginInfo(version)\""]
+               }
+            } else {
+               #--- si le plugin n'est pas installe , je propose l'installation
+               set message [format $::caption(updateaudela,confirmInstallNew) "$pluginInfo(name) ($pluginInfo(version))"]
+            }
+            set answer [tk_messageBox -message $message -type okcancel -icon question -title $::caption(updateaudela,title)]
+            if { $answer == "ok" } {
+               #--- j'extrait le plugin
+               set result [::updateaudela::sync [list -verbose 0 -auto 0 -noerror 0 $vfsName $pluginDirectory]]
+               #--- je rafraichis l'affichage des plugins
+               ::updateaudela::plugin::fillPluginTable
+               #--- je suppprime de la memoire la version precedente du plugin
+               package forget $pluginInfo(name)
+               #--- je charge la nouvelle version du plugin
+               package require $pluginInfo(name)
+               #--- j'execute la procedure d'installation du plugin si elle existe
+               if { [info command ::$pluginInfo(namespace)::install]  != "" } {
+                  $pluginInfo(namespace)::install
+               } else {
+                  ##console::disp "::updateaudela::installKit la procedure [info command ::$pluginInfo(namespace)::install] n'existe pas\n"
+               }
+
+               #--- j'affiche un message OK
+               set message [format $::caption(updateaudela,installPluginOk) $kitFileName $pluginDirectory $result ]
+               if { $result != 0 } {
+                  append message "\n$::caption(updateaudela,restart)"
+               }
+               tk_messageBox -message $message -type ok -icon info  -title $::caption(updateaudela,title)
             }
          } else {
-            #--- si le plugin n'est pas installe , je propose l'installation
-            set message [format $::caption(updateaudela,confirmInstallNew) "$pluginInfo(name) ($pluginInfo(version))"]
-         }
-         set answer [tk_messageBox -message $message -type okcancel -icon question -title $::caption(updateaudela,title)]
-         if { $answer == "ok" } {
-            #--- j'extrait le plugin
-            set result [::updateaudela::sync [list -verbose 0 -auto 0 -noerror 0 $vfsName $pluginDirectory]]
-           #--- je rafraichis l'affichage des plugins
-            ::updateaudela::plugin::fillPluginTable
-
-            #--- j'affiche un message OK
-            set message [format $::caption(updateaudela,installPluginOk) $kitFileName $pluginDirectory $result ]
-            if { $result != 0 } {
-               append message "\n$::caption(updateaudela,restart)"
-            }
-            tk_messageBox -message $message -type ok -icon info  -title $::caption(updateaudela,title)
-         }
-      } else {
             set message [format $::caption(updateaudela,badAudelaVersion) $pluginInfo(audelaVersion) ]
             tk_messageBox -message $message -type ok -icon error -title $::caption(updateaudela,title)
          }
