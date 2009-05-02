@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.24 2009-04-27 16:48:22 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.25 2009-05-02 14:25:07 robertdelmas Exp $
 #
 
 #============================================================
@@ -393,7 +393,7 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
                -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
                -height [ llength $list_combobox ] \
                -relief sunken -borderwidth 1 -editable 0 \
-               -textvariable ::conf(tlscp,binning)) \
+               -textvariable ::conf(tlscp,binning) \
                -values $list_combobox \
                -modifycmd "::tlscp::setBinning $visuNo"
 
@@ -1296,7 +1296,6 @@ proc ::tlscp::onChangeDisplay { visuNo args } {
          }
       }
    }
-
 }
 
 #------------------------------------------------------------
