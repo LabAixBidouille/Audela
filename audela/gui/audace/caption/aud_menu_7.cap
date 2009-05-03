@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_7.cap
-# Mise a jour $Id: aud_menu_7.cap,v 1.14 2009-02-07 11:17:02 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.cap,v 1.15 2009-05-03 18:01:55 jacquesmichelet Exp $
 #
 
 #=========================================================================
@@ -48,6 +48,8 @@ set caption(confeditscript,edit_script)         "Script Editor:"
 set caption(confeditscript,notice_pdf)          "See User Guides (.pdf):"
 set caption(confeditscript,navigateur_htm)      "Web Browser:"
 set caption(confeditscript,viewer)              "Viewer:"
+set caption(confeditscript,exec_java)           "Java Binary:"
+set caption(confeditscript,exec_aladin)         "Aladin Binary:"
 
 set caption(audace,enregistrer_config1)         "Save setup?"
 set caption(audace,enregistrer_config2)         "Setup saving not required."
@@ -99,6 +101,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeditscript,notice_pdf)       "Voir les notices (.pdf) :"
    set caption(confeditscript,navigateur_htm)   "Navigateur Web :"
    set caption(confeditscript,viewer)           "Visualiseur d'images :"
+   set caption(confeditscript,exec_java)        "Interpréteur Java :"
+   set caption(confeditscript,exec_aladin)      "Aladin :"
 
    set caption(audace,enregistrer_config1)      "Enregistrer la configuration ?"
    set caption(audace,enregistrer_config2)      "Pas d'enregistrement de configuration nécessaire."
@@ -150,6 +154,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeditscript,notice_pdf)       "Vedi la guida utente (.pdf):"
    set caption(confeditscript,navigateur_htm)   "Web browser:"
    set caption(confeditscript,viewer)           "Visualizzatore di immagini:"
+   # JM Pour Aladin
+   set caption(confeditscript,repertoire_java)  "Java language directory:"
+   set caption(confeditscript,exec_aladin)      "Aladin Binary:"
+   # /JM
 
    set caption(audace,enregistrer_config1)      "Salvare la configurazione?"
    set caption(audace,enregistrer_config2)      "Non e` richiesto il salvataggio della configurazione."
@@ -201,6 +209,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeditscript,notice_pdf)       "Ver guia de usuario (.pdf):"
    set caption(confeditscript,navigateur_htm)   "Navegador Web:"
    set caption(confeditscript,viewer)           "Visualizador de imágenes:"
+   # JM Pour Aladin
+   set caption(confeditscript,repertoire_java)  "Java language directory:"
+   set caption(confeditscript,exec_aladin)      "Aladin Binary:"
+   # /JM
 
    set caption(audace,enregistrer_config1)      "¿ Guardar preferencias ?"
    set caption(audace,enregistrer_config2)      "No hace falta guardar las preferencias."
@@ -252,6 +264,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeditscript,notice_pdf)       "Hinweisen ansehen (.pdf):"
    set caption(confeditscript,navigateur_htm)   "Web Navigator:"
    set caption(confeditscript,viewer)           "Bild Zeichner:"
+   # JM Pour Aladin
+   set caption(confeditscript,repertoire_java)  "Java language directory:"
+   set caption(confeditscript,exec_aladin)      "Aladin Binary:"
+   # /JM
 
    set caption(audace,enregistrer_config1)      "Gestalt speichern ?"
    set caption(audace,enregistrer_config2)      "Keine Gestalt Speicherung notwendig."
@@ -303,6 +319,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeditscript,notice_pdf)       "Ver guia de utilizador (.pdf):"
    set caption(confeditscript,navigateur_htm)   "Navegador Web:"
    set caption(confeditscript,viewer)           "Visualizador de imagens:"
+   # JM Pour Aladin
+   set caption(confeditscript,repertoire_java)  "Java language directory:"
+   set caption(confeditscript,exec_aladin)      "Aladin Binary:"
+   # /JM
 
    set caption(audace,enregistrer_config1)      "Guardar configuração?"
    set caption(audace,enregistrer_config2)      "Não é necessário guardar configuração."
@@ -354,6 +374,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeditscript,notice_pdf)       "Se brugsanvisning (.pdf):"
    set caption(confeditscript,navigateur_htm)   "Web Browser:"
    set caption(confeditscript,viewer)           "Billedvisning:"
+   # JM Pour Aladin
+   set caption(confeditscript,repertoire_java)  "Java language directory:"
+   set caption(confeditscript,exec_aladin)      "Aladin Binary:"
+   # /JM
 
    set caption(audace,enregistrer_config1)      "Gem opsætning?"
    set caption(audace,enregistrer_config2)      "Gem opsætning - Er ikke nødvendig."

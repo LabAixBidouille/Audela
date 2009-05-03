@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.99 2009-05-01 08:42:16 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.100 2009-05-03 18:01:55 jacquesmichelet Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -73,6 +73,8 @@ namespace eval ::audace {
       set confgene(EditScript,error_pdf)    "1"
       set confgene(EditScript,error_htm)    "1"
       set confgene(EditScript,error_viewer) "1"
+      set confgene(EditScript,error_java)   "1"
+      set confgene(EditScript,error_aladin) "1"
       #--- On retourne dans le repertoire principal
       cd ..
       set audace(rep_gui)    "[pwd]"
@@ -213,7 +215,16 @@ namespace eval ::audace {
       }
       if { ! [ info exists conf(editnotice_pdf) ] } {
          if { $::tcl_platform(os) == "Linux" } {
-            set conf(editnotice_pdf) [ file join ${path} acroread ]
+            set defaultname [ file join ${path} xpdf ]
+            set testnames [ list [ file join ${path} kpdf ] \
+                                    [ file join ${path} acroread ] ]
+            foreach testname $testnames {
+               if { [ file executable "$testname" ] == "1" } {
+                  set defaultname "$testname"
+                  break;
+               }
+            }
+            set conf(editnotice_pdf) "$defaultname"
             if { ! [ file exist $conf(editnotice_pdf) ] } {
                set conf(editnotice_pdf) [ file join ${path} xpdf ]
             }
@@ -231,20 +242,37 @@ namespace eval ::audace {
       }
       if { ! [ info exists conf(editscript) ] } {
          if { $::tcl_platform(os) == "Linux" } {
-            set conf(editscript) [ file join ${path} kedit ]
-            if { ! [ file exist $conf(editscript) ] } {
-               set conf(editscript) [ file join ${path} emacs ]
+            set defaultname [ file join ${path} vi ]
+            set testnames [ list [ file join ${path} kedit ] \
+                                    [ file join ${path} kwrite ] \
+                                    [ file join ${path} kate ]  \
+                                    [ file join ${path} gedit ]  \
+                                    [ file join ${path} emacs ]  \
+                                    [ file join ${path} zile ]  \
+                                    [ file join ${path} nano ] ]
+            foreach testname $testnames {
+               if { [ file executable "$testname" ] == "1" } {
+                  set defaultname "$testname"
+                  break;
+               }
             }
+            set conf(editscript) "$defaultname"
          } else {
             set conf(editscript) "write"
          }
       }
       if { ! [ info exists conf(editsite_htm) ] } {
          if { $::tcl_platform(os) == "Linux" } {
-            set conf(editsite_htm) [ file join ${path} netscape ]
-            if { ! [ file exist $conf(editsite_htm) ] } {
-               set conf(editsite_htm) [ file join ${path} mozilla ]
+            set defaultname [ file join ${path} mozilla ]
+            set testnames [ list [ file join ${path} konqueror ] \
+                                    [ file join ${path} netscape ] ]
+            foreach testname $testnames {
+               if { [ file executable "$testname" ] == "1" } {
+                  set defaultname "$testname"
+                  break;
+               }
             }
+            set conf(editsite_htm) "$defaultname"
          } else {
             set defaultname [ file join ${path} "Internet Explorer" Iexplore.exe ]
             set testnames [ list [ file join ${path} Netscape Netscape Netscp.exe ] \
@@ -275,6 +303,41 @@ namespace eval ::audace {
                }
             }
             set conf(edit_viewer) "$defaultname"
+         }
+      }
+      #--- Chargement du repertoire de l'interpreteur java
+      if { ! [ info exists conf(exec_java) ] } {
+         if { $::tcl_platform(os) == "Linux" } {
+            if {[ catch {exec which java} exec_java ]} {
+               set conf(exec_java) ""
+            } else {
+               set conf(exec_java) $exec_java
+            }
+         }
+         if { $::tcl_platform(os) == "Windows NT" } {
+            set exec_java [ file join ${path} java.exe ]
+            if { ![ file executable "$exec_java" ] } {
+               set conf(exec_java) ""
+            } else {
+               set conf(exec_java) $exec_java
+            }
+         }
+         if { $::tcl_platform(os) == "Darwin" } {
+            set conf(exec_java) ""
+         }
+      }
+      #--- Chargement du repertoire de Aladin
+      if { ! [ info exists conf(exec_aladin) ] } {
+         if { $::tcl_platform(os) == "Linux" } {
+             set conf(exec_aladin)   [ file join [file nativename ~] .aladin Aladin.jar]
+         }
+         if { $::tcl_platform(os) == "Windows NT" } {
+            set exec_alain [ file join ${path} Aladin Aladin.exe ]
+            if { ![ file executable "$exec_aladin" ] } {
+               set conf(exec_aladin) ""
+            } else {
+               set conf(exec_aladin) $exec_aladin
+            }
          }
       }
    }
@@ -392,7 +455,7 @@ namespace eval ::audace {
       #--- Initialisation
       if {[info exists conf]} {unset conf}
 
-      #--- Ouverture du fichier de paramètres
+      #--- Ouverture du fichier de parametres
       if { $::tcl_platform(os) == "Linux" } {
          set fichier [ file join ~ .audela config.ini ]
          #--- Si le dossier ~/.audela n'existe pas, on le cree
@@ -832,13 +895,13 @@ namespace eval ::audace {
       }
       update
 
-      #--- Définition d'un fichier palette temporaire, modifiable dynamiquement
+      #--- Definition d'un fichier palette temporaire, modifiable dynamiquement
       #--- On stocke le nom de ce fichier dans tmp(fichier_palette)
       #--- Attention : On stocke le nom du fichier sans l'extension .pal
       if { ! [ info exist tmp(fichier_palette) ] } {
          switch $::tcl_platform(os) {
             Linux {
-               #--- Si le dossier /tmp/.audela n'existe pas, on le cree avec les permissions d'écriture pour tout le monde
+               #--- Si le dossier /tmp/.audela n'existe pas, on le cree avec les permissions d'ecriture pour tout le monde
                if {[file exist [file join /tmp .audela]]=="0"} {
                   file mkdir [file join /tmp .audela]
                   exec chmod a+w [file join /tmp .audela]
@@ -1013,6 +1076,8 @@ namespace eval ::audace {
       set confgene(EditScript,error_pdf)    "1"
       set confgene(EditScript,error_htm)    "1"
       set confgene(EditScript,error_viewer) "1"
+      set confgene(EditScript,error_java)   "1"
+      set confgene(EditScript,error_aladin)   "1"
 
       if [ string compare $filename "" ] {
          set a_effectuer "exec \"$conf(edit_viewer)\" \"$filename\" &"
@@ -1057,7 +1122,7 @@ namespace eval ::audace {
    }
 
    proc rien { } {
-      #--- Sert a bloquer l'affichage multiple de la fenêtre Quitter
+      #--- Sert a bloquer l'affichage multiple de la fenetre Quitter
    }
 
    proc menustate { state } {
@@ -1081,7 +1146,7 @@ namespace eval ::audace {
 
    # ::audace::screen2Canvas coord
    # Transforme des coordonnees ecran en coordonnees canvas. L'argument est une liste de deux entiers,
-   # et retourne également une liste de deux entiers
+   # et retourne egalement une liste de deux entiers
    #
    proc screen2Canvas { coord } {
       global audace
@@ -1091,7 +1156,7 @@ namespace eval ::audace {
 
    # ::audace::canvas2Picture coord {stick left}
    # Transforme des coordonnees canvas en coordonnees image. L'argument est une liste de deux entiers,
-   # et retourne également une liste de deux entiers.
+   # et retourne egalement une liste de deux entiers.
    # Les coordonnees canvas commencent a 0,0 dans le coin superieur gauche de l'image.
    # Les coordonnees image  commencent a 1,1 dans le coin inferieur gauche de l'image.
    # En passant un argument <> de left pour stick, calcule les coordonnees par arrondi superieur.
@@ -1105,7 +1170,7 @@ namespace eval ::audace {
    #
    # ::audace::picture2Canvas coord
    # Transforme des coordonnees image en coordonnees canvas. L'argument est une liste de deux entiers,
-   # et retourne également une liste de deux entiers
+   # et retourne egalement une liste de deux entiers
    #
    proc picture2Canvas { coord } {
       global audace
@@ -1488,7 +1553,7 @@ proc restore_cursor { } {
 #  startdebug
 #     active le debugger "RamDebugger"
 #
-#     RamDebugger doit être installé dans le répertoire
+#     RamDebugger doit etre installe dans le repertoire
 #     audace/lib/RamDebugger
 #------------------------------------------------------------
 proc startdebug { } {

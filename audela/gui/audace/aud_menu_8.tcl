@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_8.tcl
 # Description : Script regroupant les fonctionnalites du menu Aide
-# Mise a jour $Id: aud_menu_8.tcl,v 1.4 2009-05-01 14:57:32 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_8.tcl,v 1.5 2009-05-03 18:01:55 jacquesmichelet Exp $
 #
 
 namespace eval ::audace {
@@ -39,6 +39,8 @@ namespace eval ::audace {
       set confgene(EditScript,error_pdf)    "1"
       set confgene(EditScript,error_htm)    "1"
       set confgene(EditScript,error_viewer) "1"
+      set confgene(EditScript,error_java)   "1"
+      set confgene(EditScript,error_aladin) "1"
       regsub -all " " "$filename" "\%20" filename
       if [string compare $filename ""] {
          set a_effectuer "exec \"$conf(editsite_htm)\" \"$filename\" &"
@@ -114,6 +116,8 @@ namespace eval ::audace {
       set confgene(EditScript,error_pdf)    "1"
       set confgene(EditScript,error_htm)    "1"
       set confgene(EditScript,error_viewer) "1"
+      set confgene(EditScript,error_java)   "1"
+      set confgene(EditScript,error_aladin) "1"
       if [string compare $filename ""] {
          set a_effectuer "exec \"$conf(editnotice_pdf)\" \"$filename\" &"
          if [catch $a_effectuer input] {

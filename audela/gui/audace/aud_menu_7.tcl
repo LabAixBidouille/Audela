@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise a jour $Id: aud_menu_7.tcl,v 1.13 2009-01-11 16:11:37 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.tcl,v 1.14 2009-05-03 18:01:55 jacquesmichelet Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -544,6 +544,76 @@ namespace eval ::confEditScript {
          pack $This.usr4.ent4 -side right -padx 5 -pady 5
       pack $This.usr4 -side top -fill both -expand 1
 
+      #--- Cree un frame pour y mettre le bouton ... et la zone a renseigner - Java
+      frame $This.usr5 -borderwidth 1 -relief raised
+         #--- Positionne le bouton ... et la zone a renseigner
+         if { $confgene(EditScript,error_java) == "1" } {
+            set font $confgene(EditScript,edit_font)
+            set relief "sunken"
+         } else {
+            set font $confgene(EditScript,edit_font_italic)
+            set relief "solid"
+         }
+         label $This.usr5.lab -text "$caption(confeditscript,exec_java)"
+         pack $This.usr5.lab -side left -padx 5 -pady 5
+         button $This.usr5.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
+            -command {
+               #--- Recuperation de la police par defaut des entry
+               set confgene(EditScript,edit_font)        "$audace(font,Entry)"
+               #--- Transformation de la police en italique
+               set confgene(EditScript,edit_font_italic) [ lreplace $confgene(EditScript,edit_font) 2 2 italic ]
+               #---
+               $::confEditScript::This.usr5.ent configure -font $confgene(EditScript,edit_font_italic) -relief solid
+               set fenetre "$::confEditScript::This"
+               set confgene(EditScript,exec_java) \
+                  [ ::tkutil::box_load $fenetre ${confgene(EditScript,path)} $audace(bufNo) "12" ]
+               if { $confgene(EditScript,exec_java) == "" } {
+                  set confgene(EditScript,exec_java) $conf(exec_java)
+               }
+               focus $::confEditScript::This.usr5
+               $::confEditScript::This.usr5.ent configure -font $confgene(EditScript,edit_font) -relief sunken
+            }
+         pack $This.usr5.explore -side right -padx 5 -pady 5 -ipady 5
+         entry $This.usr5.ent -textvariable confgene(EditScript,exec_java) -width $confgene(EditScript,long) \
+            -font $font -relief $relief
+         pack $This.usr5.ent -side right -padx 5 -pady 5
+      pack $This.usr5 -side top -fill both -expand 1
+
+      #--- Cree un frame pour y mettre le bouton ... et la zone a renseigner - Aladin
+      frame $This.usr6 -borderwidth 1 -relief raised
+         #--- Positionne le bouton ... et la zone a renseigner
+         if { $confgene(EditScript,error_aladin) == "1" } {
+            set font $confgene(EditScript,edit_font)
+            set relief "sunken"
+         } else {
+            set font $confgene(EditScript,edit_font_italic)
+            set relief "solid"
+         }
+         label $This.usr6.lab -text "$caption(confeditscript,exec_aladin)"
+         pack $This.usr6.lab -side left -padx 5 -pady 5
+         button $This.usr6.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
+            -command {
+               #--- Recuperation de la police par defaut des entry
+               set confgene(EditScript,edit_font)        "$audace(font,Entry)"
+               #--- Transformation de la police en italique
+               set confgene(EditScript,edit_font_italic) [ lreplace $confgene(EditScript,edit_font) 2 2 italic ]
+               #---
+               $::confEditScript::This.usr6.ent configure -font $confgene(EditScript,edit_font_italic) -relief solid
+               set fenetre "$::confEditScript::This"
+               set confgene(EditScript,exec_aladin) \
+                  [ ::tkutil::box_load $fenetre ${confgene(EditScript,path)} $audace(bufNo) "13" ]
+               if { $confgene(EditScript,exec_aladin) == "" } {
+                  set confgene(EditScript,exec_aladin) $conf(exec_aladin)
+               }
+               focus $::confEditScript::This.usr6
+               $::confEditScript::This.usr6.ent configure -font $confgene(EditScript,edit_font) -relief sunken
+            }
+         pack $This.usr6.explore -side right -padx 5 -pady 5 -ipady 5
+         entry $This.usr6.ent -textvariable confgene(EditScript,exec_aladin) -width $confgene(EditScript,long) \
+            -font $font -relief $relief
+         pack $This.usr6.ent -side right -padx 5 -pady 5
+      pack $This.usr6 -side top -fill both -expand 1
+
       #--- Cree un frame pour y mettre les boutons
       frame $This.cmd -borderwidth 1 -relief raised
          #--- Cree le bouton 'OK'
@@ -591,6 +661,16 @@ namespace eval ::confEditScript {
          set confgene(EditScript,long_viewer) [ string length $confgene(EditScript,edit_viewer) ]
       }
       if { ! [ info exists confgene(EditScript,edit_viewer) ] } { set confgene(EditScript,long_viewer) "30" }
+      catch {
+         set confgene(EditScript,exec_java) $conf(exec_java)
+         set confgene(EditScript,long_java) [ string length $confgene(EditScript,exec_java) ]
+      }
+      if { ! [ info exists confgene(EditScript,exec_java) ] } { set confgene(EditScript,long_java) "30" }
+      catch {
+         set confgene(EditScript,exec_aladin) $conf(exec_aladin)
+         set confgene(EditScript,long_aladin) [ string length $confgene(EditScript,exec_aladin) ]
+      }
+      if { ! [ info exists confgene(EditScript,exec_aladin) ] } { set confgene(EditScript,long_aladin) "30" }
 
       if { $confgene(EditScript,long_pdf) > $confgene(EditScript,long) } {
          set confgene(EditScript,long) $confgene(EditScript,long_pdf)
@@ -600,6 +680,12 @@ namespace eval ::confEditScript {
       }
       if { $confgene(EditScript,long_viewer) > $confgene(EditScript,long) } {
          set confgene(EditScript,long) $confgene(EditScript,long_viewer)
+      }
+      if { $confgene(EditScript,long_java) > $confgene(EditScript,long) } {
+         set confgene(EditScript,long) $confgene(EditScript,long_java)
+      }
+      if { $confgene(EditScript,long_aladin) > $confgene(EditScript,long) } {
+         set confgene(EditScript,long) $confgene(EditScript,long_aladin)
       }
       set confgene(EditScript,long) [expr $confgene(EditScript,long) + 3]
    }
@@ -629,11 +715,15 @@ namespace eval ::confEditScript {
       set conf(editnotice_pdf)              "$confgene(EditScript,edit_pdf)"
       set conf(editsite_htm)                "$confgene(EditScript,edit_htm)"
       set conf(edit_viewer)                 "$confgene(EditScript,edit_viewer)"
+      set conf(exec_java)                   "$confgene(EditScript,exec_java)"
+      set conf(exec_aladin)                 "$confgene(EditScript,exec_aladin)"
       #---
       set confgene(EditScript,error_script) "1"
       set confgene(EditScript,error_pdf)    "1"
       set confgene(EditScript,error_htm)    "1"
       set confgene(EditScript,error_viewer) "1"
+      set confgene(EditScript,error_java)   "1"
+      set confgene(EditScript,error_aladin) "1"
       #---
       set confgene(EditScript,ok)           "1"
       ::confEditScript::destroyDialog
@@ -662,6 +752,8 @@ namespace eval ::confEditScript {
       set confgene(EditScript,error_pdf)    "1"
       set confgene(EditScript,error_htm)    "1"
       set confgene(EditScript,error_viewer) "1"
+      set confgene(EditScript,error_java)   "1"
+      set confgene(EditScript,error_aladin) "1"
       #---
       set confgene(EditScript,ok)           "0"
       ::confEditScript::destroyDialog
