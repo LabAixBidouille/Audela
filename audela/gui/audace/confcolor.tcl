@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.29 2009-04-29 21:42:36 robertdelmas Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.30 2009-05-03 17:26:52 michelpujol Exp $
 #
 
 namespace eval confColor:: {
@@ -476,10 +476,12 @@ namespace eval confColor:: {
          }
          Checkbutton {
             #--- Je mets a jour la couleur des widgets
-            $w configure -bg $audace(color,backColor) -activebackground $audace(color,backColor) \
-               -fg $audace(color,textColor) -activeforeground $audace(color,textColor) \
-               -disabledforeground $audace(color,disabledTextColor) \
-               -selectcolor $audace(color,backColor) -highlightbackground $audace(color,backColor)
+            if { [ string first color_invariant $w ] == -1 } {
+               $w configure -bg $audace(color,backColor) -activebackground $audace(color,backColor) \
+                  -fg $audace(color,textColor) -activeforeground $audace(color,textColor) \
+                  -disabledforeground $audace(color,disabledTextColor) \
+                  -selectcolor $audace(color,backColor) -highlightbackground $audace(color,backColor)
+            }
             #--- Je mets a jour la police des widgets
             $w configure -font "$audace(font,Checkbutton)"
          }
