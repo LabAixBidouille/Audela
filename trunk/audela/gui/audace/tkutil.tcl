@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.17 2008-12-20 11:53:57 michelpujol Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.18 2009-05-03 18:01:55 jacquesmichelet Exp $
 #
 
 namespace eval tkutil {
@@ -120,6 +120,16 @@ namespace eval tkutil {
       } elseif { $type == "11" } {
          set title "$caption(tkutil,editer_fichier)"
          set filetypes [ list [ list "$caption(tkutil,fichier_txt)" "*" ] ]
+      } elseif { $type == "12" } {
+         set title "$caption(tkutil,executable_java)"
+         set filetypes [ list [ list "$caption(tkutil,fichier_tous)" "*" ] ]
+      } elseif { $type == "13" } {
+         set title "$caption(tkutil,executable_aladin)"
+         if { $::tcl_platform(os) == "Linux" } {
+            set filetypes [ list [ list "$caption(tkutil,fichier_jar)" ".jar" ] ]
+         } else {
+            set filetypes [ list [ list "$caption(tkutil,fichier_tous)" "*" ] ]
+         }
       }
       set filename [ tk_getOpenFile -title $title -filetypes $filetypes -initialdir $initialdir -parent $parent ]
       #---

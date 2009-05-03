@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.28 2009-04-05 06:41:25 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.29 2009-05-03 18:01:55 jacquesmichelet Exp $
 #
 
 namespace eval ::audace {
@@ -122,6 +122,8 @@ namespace eval ::audace {
       set confgene(EditScript,error_pdf)    "1"
       set confgene(EditScript,error_htm)    "1"
       set confgene(EditScript,error_viewer) "1"
+      set confgene(EditScript,error_java)   "1"
+      set confgene(EditScript,error_aladin) "1"
       if [string compare $filename ""] {
          set a_effectuer "exec \"$conf(editscript)\" \"$filename\" &"
          if [catch $a_effectuer input] {
