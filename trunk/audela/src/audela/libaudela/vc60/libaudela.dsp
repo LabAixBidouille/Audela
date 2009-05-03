@@ -177,6 +177,10 @@ SOURCE=..\..\..\external\porttalk\porttalk_interface.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\setip.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\stats.cpp
 # End Source File
 # Begin Source File
@@ -266,6 +270,10 @@ SOURCE=..\src\libtt.h
 # Begin Source File
 
 SOURCE=..\src\palette.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\setip.h
 # End Source File
 # Begin Source File
 
