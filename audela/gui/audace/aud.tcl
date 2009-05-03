@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.100 2009-05-03 18:01:55 jacquesmichelet Exp $
+# Mise a jour $Id: aud.tcl,v 1.101 2009-05-03 21:49:04 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -332,7 +332,7 @@ namespace eval ::audace {
              set conf(exec_aladin)   [ file join [file nativename ~] .aladin Aladin.jar]
          }
          if { $::tcl_platform(os) == "Windows NT" } {
-            set exec_alain [ file join ${path} Aladin Aladin.exe ]
+            set exec_aladin [ file join ${path} Aladin Aladin.exe ]
             if { ![ file executable "$exec_aladin" ] } {
                set conf(exec_aladin) ""
             } else {
