@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.101 2009-05-03 21:49:04 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.102 2009-05-04 21:25:25 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -1077,7 +1077,7 @@ namespace eval ::audace {
       set confgene(EditScript,error_htm)    "1"
       set confgene(EditScript,error_viewer) "1"
       set confgene(EditScript,error_java)   "1"
-      set confgene(EditScript,error_aladin)   "1"
+      set confgene(EditScript,error_aladin) "1"
 
       if [ string compare $filename "" ] {
          set a_effectuer "exec \"$conf(edit_viewer)\" \"$filename\" &"
