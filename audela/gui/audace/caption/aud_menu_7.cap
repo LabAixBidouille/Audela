@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_7.cap
-# Mise a jour $Id: aud_menu_7.cap,v 1.15 2009-05-03 18:01:55 jacquesmichelet Exp $
+# Mise a jour $Id: aud_menu_7.cap,v 1.16 2009-05-05 05:00:50 jacquesmichelet Exp $
 #
 
 #=========================================================================
@@ -155,7 +155,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeditscript,navigateur_htm)   "Web browser:"
    set caption(confeditscript,viewer)           "Visualizzatore di immagini:"
    # JM Pour Aladin
-   set caption(confeditscript,repertoire_java)  "Java language directory:"
+   set caption(confeditscript,exec_java)        "Java Binary:"
    set caption(confeditscript,exec_aladin)      "Aladin Binary:"
    # /JM
 
@@ -210,7 +210,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeditscript,navigateur_htm)   "Navegador Web:"
    set caption(confeditscript,viewer)           "Visualizador de imágenes:"
    # JM Pour Aladin
-   set caption(confeditscript,repertoire_java)  "Java language directory:"
+   set caption(confeditscript,exec_java)        "Java Binary:"
    set caption(confeditscript,exec_aladin)      "Aladin Binary:"
    # /JM
 
@@ -265,7 +265,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeditscript,navigateur_htm)   "Web Navigator:"
    set caption(confeditscript,viewer)           "Bild Zeichner:"
    # JM Pour Aladin
-   set caption(confeditscript,repertoire_java)  "Java language directory:"
+   set caption(confeditscript,exec_java)        "Java Binary:"
    set caption(confeditscript,exec_aladin)      "Aladin Binary:"
    # /JM
 
@@ -320,7 +320,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeditscript,navigateur_htm)   "Navegador Web:"
    set caption(confeditscript,viewer)           "Visualizador de imagens:"
    # JM Pour Aladin
-   set caption(confeditscript,repertoire_java)  "Java language directory:"
+   set caption(confeditscript,exec_java)        "Java Binary:"
    set caption(confeditscript,exec_aladin)      "Aladin Binary:"
    # /JM
 
@@ -375,7 +375,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeditscript,navigateur_htm)   "Web Browser:"
    set caption(confeditscript,viewer)           "Billedvisning:"
    # JM Pour Aladin
-   set caption(confeditscript,repertoire_java)  "Java language directory:"
+   set caption(confeditscript,exec_java)        "Java Binary:"
    set caption(confeditscript,exec_aladin)      "Aladin Binary:"
    # /JM
 
