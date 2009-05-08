@@ -2,7 +2,7 @@
 # Fichier : sophie.tcl
 # Description : Outil d'autoguidage pour le spectro Sophie du telescope T193 de l'OHP
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophie.tcl,v 1.1 2009-05-08 10:44:49 michelpujol Exp $
+# Mise a jour $Id: sophie.tcl,v 1.2 2009-05-08 12:54:01 robertdelmas Exp $
 #
 
 #============================================================
@@ -95,45 +95,44 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    source [ file join $audace(rep_plugin) tool sophie sophiecommand.tcl ]
    source [ file join $audace(rep_plugin) tool sophie sophieconfig.tcl ]
    source [ file join $audace(rep_plugin) tool sophie sophiecontrol.tcl ]
-   source [ file join $audace(rep_plugin) tool sophie sophietest.tcl ]  ; # a supprimer quand on aura fait les premiers tests
+   source [ file join $audace(rep_plugin) tool sophie sophietest.tcl ] ; # a supprimer quand on aura fait les premiers tests
 
-   if { ! [ info exists conf(sophie,exposure) ] }           { set conf(sophie,exposure              "0.5" }
-   if { ! [ info exists conf(sophie,binning) ] }            { set conf(sophie,binning)              [lindex $audace(list_binning) 1] }
-   if { ! [ info exists conf(sophie,intervalle)] }          { set conf(sophie,intervalle)           "0" }
-   if { ! [ info exists conf(sophie,alphaSpeed)] }          { set conf(sophie,alphaSpeed)           "10" }
-   if { ! [ info exists conf(sophie,deltaSpeed)] }          { set conf(sophie,deltaSpeed)           "10" }
-   if { ! [ info exists conf(sophie,seuilx)] }              { set conf(sophie,seuilx)               "1" }
-   if { ! [ info exists conf(sophie,seuily)] }              { set conf(sophie,seuily)               "1" }
-   if { ! [ info exists conf(sophie,detection)] }           { set conf(sophie,detection)            "FIBER" }
-   if { ! [ info exists conf(sophie,angle)] }               { set conf(sophie,angle)                "0" }
-   if { ! [ info exists conf(sophie,showOrigin)] }          { set conf(sophie,showOrigin)           "1" }
-   if { ! [ info exists conf(sophie,showImage)] }           { set conf(sophie,showImage)            "1" }
-   if { ! [ info exists conf(sophie,showTarget)] }          { set conf(sophie,showTarget)           "1" }
-   if { ! [ info exists conf(sophie,targetBoxSize)] }       { set conf(sophie,targetBoxSize)        "16" }
-   if { ! [ info exists conf(sophie,originCoord)] }         { set conf(sophie,originCoord)          [list 320 240 ] }
-   if { ! [ info exists conf(sophie,originBoxSize)] }       { set conf(sophie,originBoxSize)        "32" }
-   if { ! [ info exists conf(sophie,declinaisonEnabled)] }  { set conf(sophie,declinaisonEnabled)   "1" }
-   if { ! [ info exists conf(sophie,cumulEnabled)] }        { set conf(sophie,cumulEnabled)         "0" }
-   if { ! [ info exists conf(sophie,cumulNb)] }             { set conf(sophie,cumulNb)              "5" }
-   if { ! [ info exists conf(sophie,darkEnabled)] }         { set conf(sophie,darkEnabled)          "0" }
-   if { ! [ info exists conf(sophie,darkFileName)] }        { set conf(sophie,darkFileName)         "dark.fit" }
-   if { ! [ info exists conf(sophie,alphaReverse)] }        { set conf(sophie,alphaReverse)         "0" }
-   if { ! [ info exists conf(sophie,deltaReverse)] }        { set conf(sophie,deltaReverse)         "0" }
+   if { ! [ info exists conf(sophie,exposure) ] }               { set conf(sophie,exposure                 "0.5" }
+   if { ! [ info exists conf(sophie,binning) ] }                { set conf(sophie,binning)                 [lindex $audace(list_binning) 1] }
+   if { ! [ info exists conf(sophie,intervalle)] }              { set conf(sophie,intervalle)              "0" }
+   if { ! [ info exists conf(sophie,alphaSpeed)] }              { set conf(sophie,alphaSpeed)              "10" }
+   if { ! [ info exists conf(sophie,deltaSpeed)] }              { set conf(sophie,deltaSpeed)              "10" }
+   if { ! [ info exists conf(sophie,seuilx)] }                  { set conf(sophie,seuilx)                  "1" }
+   if { ! [ info exists conf(sophie,seuily)] }                  { set conf(sophie,seuily)                  "1" }
+   if { ! [ info exists conf(sophie,detection)] }               { set conf(sophie,detection)               "FIBER" }
+   if { ! [ info exists conf(sophie,angle)] }                   { set conf(sophie,angle)                   "0" }
+   if { ! [ info exists conf(sophie,showOrigin)] }              { set conf(sophie,showOrigin)              "1" }
+   if { ! [ info exists conf(sophie,showImage)] }               { set conf(sophie,showImage)               "1" }
+   if { ! [ info exists conf(sophie,showTarget)] }              { set conf(sophie,showTarget)              "1" }
+   if { ! [ info exists conf(sophie,targetBoxSize)] }           { set conf(sophie,targetBoxSize)           "16" }
+   if { ! [ info exists conf(sophie,originCoord)] }             { set conf(sophie,originCoord)             [list 320 240 ] }
+   if { ! [ info exists conf(sophie,originBoxSize)] }           { set conf(sophie,originBoxSize)           "32" }
+   if { ! [ info exists conf(sophie,declinaisonEnabled)] }      { set conf(sophie,declinaisonEnabled)      "1" }
+   if { ! [ info exists conf(sophie,cumulEnabled)] }            { set conf(sophie,cumulEnabled)            "0" }
+   if { ! [ info exists conf(sophie,cumulNb)] }                 { set conf(sophie,cumulNb)                 "5" }
+   if { ! [ info exists conf(sophie,darkEnabled)] }             { set conf(sophie,darkEnabled)             "0" }
+   if { ! [ info exists conf(sophie,darkFileName)] }            { set conf(sophie,darkFileName)            "dark.fit" }
+   if { ! [ info exists conf(sophie,alphaReverse)] }            { set conf(sophie,alphaReverse)            "0" }
+   if { ! [ info exists conf(sophie,deltaReverse)] }            { set conf(sophie,deltaReverse)            "0" }
 
-   if { ! [ info exists conf(sophie,biasImage)] }           { set conf(sophie,biasImage)            "" }
-   if { ! [ info exists conf(sophie,imageDirectory)] }      { set conf(sophie,imageDirectory)       $::audace(rep_images) }
-   if { ! [ info exists conf(sophie,guidingMode)] }         { set conf(sophie,guidingMode)          "FIBER" }  ; # FIBER ou OBJECT
-   if { ! [ info exists conf(sophie,fiberGuigindMode)] }    { set conf(sophie,fiberGuigindMode)     "HR" }
-   if { ! [ info exists conf(sophie,xfibreAHR)] }           { set conf(sophie,xfibreAHR)     "314" }
-   if { ! [ info exists conf(sophie,yfibreAHR)] }           { set conf(sophie,yfibreAHR)     "150" }
-   if { ! [ info exists conf(sophie,xfibreAHE)] }           { set conf(sophie,xfibreAHE)     "315" }
-   if { ! [ info exists conf(sophie,yfibreAHE)] }           { set conf(sophie,yfibreAHE)     "151" }
-   if { ! [ info exists conf(sophie,xfibreB)] }             { set conf(sophie,xfibreB)       "925" }
-   if { ! [ info exists conf(sophie,yfibreB)] }             { set conf(sophie,yfibreB)       "566" }
-   if { ! [ info exists conf(sophie,targetDetectionThresold)] }  { set conf(sophie,targetDetectionThresold)       "10" }
+   if { ! [ info exists conf(sophie,biasImage)] }               { set conf(sophie,biasImage)               "" }
+   if { ! [ info exists conf(sophie,imageDirectory)] }          { set conf(sophie,imageDirectory)          $::audace(rep_images) }
+   if { ! [ info exists conf(sophie,guidingMode)] }             { set conf(sophie,guidingMode)             "FIBER" }  ; # FIBER ou OBJECT
+   if { ! [ info exists conf(sophie,fiberGuigindMode)] }        { set conf(sophie,fiberGuigindMode)        "HR" }
+   if { ! [ info exists conf(sophie,xfibreAHR)] }               { set conf(sophie,xfibreAHR)               "314" }
+   if { ! [ info exists conf(sophie,yfibreAHR)] }               { set conf(sophie,yfibreAHR)               "150" }
+   if { ! [ info exists conf(sophie,xfibreAHE)] }               { set conf(sophie,xfibreAHE)               "315" }
+   if { ! [ info exists conf(sophie,yfibreAHE)] }               { set conf(sophie,yfibreAHE)               "151" }
+   if { ! [ info exists conf(sophie,xfibreB)] }                 { set conf(sophie,xfibreB)                 "925" }
+   if { ! [ info exists conf(sophie,yfibreB)] }                 { set conf(sophie,yfibreB)                 "566" }
+   if { ! [ info exists conf(sophie,targetDetectionThresold)] } { set conf(sophie,targetDetectionThresold) "10" }
 
-   if { $conf(sophie,originCoord) == "" }                    { set conf(sophie,originCoord)          [list 320 240 ] }
-
+   if { $conf(sophie,originCoord) == "" }                       { set conf(sophie,originCoord)          [list 320 240 ] }
 
    #--- Initialisation de variables
    set private(frm)              "$in.sophie"
@@ -143,7 +142,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(binning)          "2x2"
    set private(mode)             "centrage"
    set private(zoom)             "1"
-   set private(attenuateur)      "80"
+   set private(attenuateur)      "50"
 
    set private(hCanvas)          [::confVisu::getCanvas $visuNo]
    set private(targetCoord)      $conf(sophie,originCoord)
@@ -407,5 +406,4 @@ proc ::sophie::stopTool { visuNo } {
    pack forget $private(frm)
 
 }
-
 
