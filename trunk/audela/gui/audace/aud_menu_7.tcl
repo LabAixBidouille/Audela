@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise a jour $Id: aud_menu_7.tcl,v 1.14 2009-05-03 18:01:55 jacquesmichelet Exp $
+# Mise a jour $Id: aud_menu_7.tcl,v 1.15 2009-05-08 06:54:13 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -380,7 +380,7 @@ namespace eval ::confEditScript {
       toplevel $This
       wm resizable $This 0 0
       wm deiconify $This
-      wm title $This "$caption(confeditscript,editeurs)"
+      wm title $This "$caption(confeditscript,logiciels_externes)"
       wm geometry $This +180+50
       wm protocol $This WM_DELETE_WINDOW ::confEditScript::cmdClose
 

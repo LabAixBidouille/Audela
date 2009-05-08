@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.102 2009-05-04 21:25:25 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.103 2009-05-08 06:53:52 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -801,7 +801,7 @@ namespace eval ::audace {
          { ::confLangue::run "$audace(base).confLangue" }
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,repertoire)..." \
          { ::cwdWindow::run "$audace(base).cwdWindow" }
-      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,editeur)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,logiciels_externes)..." \
          { ::confEditScript::run "$audace(base).confEditScript" }
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,temps)..." \
          { ::confTemps::run "$audace(base).confTemps" }
