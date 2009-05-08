@@ -5,7 +5,7 @@
 #               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.56 2009-03-29 19:22:55 michelpujol Exp $
+# Mise a jour $Id: confgene.tcl,v 1.57 2009-05-08 12:42:02 robertdelmas Exp $
 #
 
 #
@@ -2845,6 +2845,8 @@ namespace eval ::confGenerique {
 #              valeur par defaut = 200x100+180+50
 #  -resizable 0|1 : 1=redimmensionnement possible ou 0=redimensionnement interdit
 #              valeur par defaut = 1
+#  -close 0|1 : 1=fermeture de la fenetre possible ou 0=fermeture de la fenetre interdit
+#              valeur par defaut = 1
 # return
 #  si mode=modal
 #     retourne 1 si la fenetre est fermee avec le bouton OK
@@ -2864,6 +2866,7 @@ proc ::confGenerique::run { args } {
    set private($visuNo,$NameSpace,modal)     "1"
    set private($visuNo,$NameSpace,geometry)  "+180+50"
    set private($visuNo,$NameSpace,resizable) "0"
+   set private($visuNo,$NameSpace,close)     "1"
 
    #--- je traite les options
    while {[llength $options] > 0} {
@@ -2877,6 +2880,9 @@ proc ::confGenerique::run { args } {
          }
          "-resizable" {
             set private($visuNo,$NameSpace,resizable) [lindex $options 1]
+         }
+         "-close" {
+            set private($visuNo,$NameSpace,close) [lindex $options 1]
          }
       }
       set options [lrange $options 2 end]
@@ -2936,15 +2942,19 @@ proc ::confGenerique::showHelp { visuNo NameSpace } {
 # differente de "0"
 #
 proc ::confGenerique::closeWindow { visuNo NameSpace This } {
-   if { [info procs $NameSpace\:\:closeWindow ] != "" } {
-      #--- appelle la procedure "closeWindow"
-      set result [$NameSpace\:\:closeWindow $visuNo]
-      if { $result == "0" } {
-         return
+   variable private
+
+   if { $private($visuNo,$NameSpace,close) == "1" } {
+      if { [info procs $NameSpace\:\:closeWindow ] != "" } {
+         #--- appelle la procedure "closeWindow"
+         set result [$NameSpace\:\:closeWindow $visuNo]
+         if { $result == "0" } {
+            return
+         }
       }
+      #--- supprime la fenetre
+      destroy $This
    }
-   #--- supprime la fenetre
-   destroy $This
    return
 }
 
