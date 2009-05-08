@@ -1,6 +1,6 @@
 #
 # Fichier : camera.cap
-# Mise a jour $Id: camera.cap,v 1.11 2007-09-28 23:18:53 robertdelmas Exp $
+# Mise a jour $Id: camera.cap,v 1.12 2009-05-08 17:07:03 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -90,7 +90,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(camera,ligne)             "linha"
    set caption(camera,lignes)            "linhas"
    set caption(camera,attente)           "A aguardar:"
-   set caption(camera,numerisation       "Ler CCD"
+   set caption(camera,numerisation)      "Ler CCD"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
