@@ -2,7 +2,7 @@
 # Fichier : sophiecommand.tcl
 # Description : Centralise les commandes de l'outil Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecommand.tcl,v 1.1 2009-05-08 10:44:49 michelpujol Exp $
+# Mise a jour $Id: sophiecommand.tcl,v 1.2 2009-05-08 12:55:27 robertdelmas Exp $
 #
 
 #============================================================
@@ -128,7 +128,6 @@ proc ::sophie::webcamConfigure { visuNo } {
    }
 }
 
-
 #------------------------------------------------------------
 # showControlWindow
 #    ouvre la fenetre de controle
@@ -155,7 +154,6 @@ proc ::sophie::onChangeMode { } {
    #--- je change le mode d'acquisition
    setMode $private(mode)
 }
-
 
 #------------------------------------------------------------
 # setMode
@@ -247,7 +245,7 @@ proc ::sophie::incrementAttenuateur { } {
 #------------------------------------------------------------
 proc ::sophie::decrementZoom { } {
    variable private
-   global color
+   global audace
 
    if { $private(zoom) == "0.125" } {
       set private(zoom) "0.25"
@@ -262,6 +260,7 @@ proc ::sophie::decrementZoom { } {
    } elseif { $private(zoom) == "4" } {
       set private(zoom) "4"
    }
+   ::confVisu::setZoom $audace(visuNo) $private(zoom)
 }
 
 #------------------------------------------------------------
@@ -270,7 +269,7 @@ proc ::sophie::decrementZoom { } {
 #------------------------------------------------------------
 proc ::sophie::incrementZoom { } {
    variable private
-   global color
+   global audace
 
    if { $private(zoom) == "4" } {
       set private(zoom) "2"
@@ -285,6 +284,7 @@ proc ::sophie::incrementZoom { } {
    } elseif { $private(zoom) == "0.125" } {
       set private(zoom) "0.125"
    }
+   ::confVisu::setZoom $audace(visuNo) $private(zoom)
 }
 
 #------------------------------------------------------------
@@ -457,7 +457,6 @@ proc ::sophie::moveOrigin { visuNo originCoord } {
    $private(hCanvas) coords "origin" [list $xCan1 $yCan1 $xCan2 $yCan2]
 }
 
-
 ##------------------------------------------------------------
 # setTargetCoord
 #    initialise les coordonnees de la cible
@@ -607,7 +606,6 @@ proc ::sophie::setMountEnabled { visuNo state } {
    ::camera::setParam $private(camItem) "mountEnabled" $private(mountEnabled)
 }
 
-
 ##------------------------------------------------------------
 # startAcquisition
 #    lance les acquisitions continues
@@ -670,7 +668,6 @@ proc ::sophie::startAcquisition { visuNo } {
       $::conf(sophie,intervalle)   \
       $::conf(sophie,declinaisonEnabled)
 }
-
 
 #------------------------------------------------------------
 # stopAcquisition
@@ -783,6 +780,4 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
       ::tkutil::displayErrorInfo $::caption(sophie,titre)
    }
 }
-
-
 
