@@ -2,7 +2,7 @@
 # Fichier : sophiecontrol.tcl
 # Description : Fenetre de controle pour le centrage, la focalisation et le guidage
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecontrol.tcl,v 1.2 2009-05-08 12:57:54 robertdelmas Exp $
+# Mise a jour $Id: sophiecontrol.tcl,v 1.3 2009-05-08 15:48:26 robertdelmas Exp $
 #
 
 #============================================================
@@ -132,7 +132,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          #--- Indicateur etoile selectionnee ou non
          checkbutton $frm.centrage.controleInterface.etoile_color_invariant \
             -indicatoron 0 -offrelief flat -background "#ff0000" -selectcolor "#00ff00" -state normal \
-            -text $caption(sophie,etoileNonSelect)
+            -text $caption(sophie,etoileNonDetecte)
 
          grid $frm.centrage.controleInterface.etoile_color_invariant -in [ $frm.centrage.controleInterface getframe ] \
             -row 1 -column 1 -sticky we -padx 4 -pady 4 -ipadx 10 -ipady 4
@@ -332,7 +332,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             -row 0 -column 1 -columnspan 2 -sticky ns -pady 4 -ipadx 20 -ipady 4
 
          #--- Indicateur etoile selectionnee ou non
-         button $frm.focalisation.controleInterface.etoile -text $caption(sophie,etoileNonSelect) \
+         button $frm.focalisation.controleInterface.etoile -text $caption(sophie,etoileNonDetecte) \
             -relief solid -command " "
          grid $frm.focalisation.controleInterface.etoile -in [ $frm.focalisation.controleInterface getframe ] \
             -row 1 -column 1 -sticky we -padx 4 -pady 4 -ipadx 10 -ipady 4
@@ -497,7 +497,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             -row 0 -column 1 -columnspan 2 -sticky ns -pady 4 -ipadx 20 -ipady 4
 
          #--- Indicateur etoile selectionnee ou non
-         button $frm.guidage.controleInterface.etoile -text $caption(sophie,etoileNonSelect) \
+         button $frm.guidage.controleInterface.etoile -text $caption(sophie,etoileNonDetecte) \
             -relief solid -command " "
          grid $frm.guidage.controleInterface.etoile -in [ $frm.guidage.controleInterface getframe ] \
             -row 1 -column 1 -sticky we -padx 4 -pady 4 -ipadx 10 -ipady 4
@@ -956,10 +956,10 @@ proc ::sophie::control::setCenterInformation { starDetection fiberDetection orig
 ###console::disp "setCenterInformation starDetection=$starDetection\n"
    set frm $private(frm)
    if { $starDetection == 0 } {
-      $frm.centrage.controleInterface.etoile_color_invariant configure -text $::caption(sophie,etoileNonSelect)
+      $frm.centrage.controleInterface.etoile_color_invariant configure -text $::caption(sophie,etoileNonDetecte)
       $frm.centrage.controleInterface.etoile_color_invariant deselect
    } else {
-      $frm.centrage.controleInterface.etoile_color_invariant configure -text $::caption(sophie,etoileSelect)
+      $frm.centrage.controleInterface.etoile_color_invariant configure -text $::caption(sophie,etoileDetecte)
       $frm.centrage.controleInterface.etoile_color_invariant select
    }
 
@@ -989,10 +989,10 @@ proc ::sophie::control::setFocusInformation { starDetection fiberDetection origi
 
    set frm $private(frm)
    if { $starDetection == 0 } {
-      $frm.centrage.controleInterface.etoile_color_invariant configure -text $::caption(sophie,etoileNonSelect)
+      $frm.centrage.controleInterface.etoile_color_invariant configure -text $::caption(sophie,etoileNonDetecte)
       $frm.centrage.controleInterface.etoile_color_invariant deselect
    } else {
-      $frm.centrage.controleInterface.etoile_color_invariant configure -text $::caption(sophie,etoileSelect)
+      $frm.centrage.controleInterface.etoile_color_invariant configure -text $::caption(sophie,etoileDetecte)
       $frm.centrage.controleInterface.etoile_color_invariant select
    }
 
@@ -1021,10 +1021,10 @@ proc ::sophie::control::setGuidingInformation { starDetection fiberDetection ori
 
    set frm $private(frm)
    if { $starDetection == 0 } {
-      $frm.centrage.controleInterface.etoile_color_invariant configure -text $::caption(sophie,etoileNonSelect)
+      $frm.centrage.controleInterface.etoile_color_invariant configure -text $::caption(sophie,etoileNonDetecte)
       $frm.centrage.controleInterface.etoile_color_invariant deselect
    } else {
-      $frm.centrage.controleInterface.etoile_color_invariant configure -text $::caption(sophie,etoileSelect)
+      $frm.centrage.controleInterface.etoile_color_invariant configure -text $::caption(sophie,etoileDetecte)
       $frm.centrage.controleInterface.etoile_color_invariant select
    }
 
