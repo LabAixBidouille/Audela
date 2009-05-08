@@ -2,7 +2,7 @@
 # Fichier : sophie.tcl
 # Description : Outil d'autoguidage pour le spectro Sophie du telescope T193 de l'OHP
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophie.tcl,v 1.2 2009-05-08 12:54:01 robertdelmas Exp $
+# Mise a jour $Id: sophie.tcl,v 1.3 2009-05-08 23:14:10 robertdelmas Exp $
 #
 
 #============================================================
@@ -142,7 +142,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(binning)          "2x2"
    set private(mode)             "centrage"
    set private(zoom)             "1"
-   set private(attenuateur)      "50"
+   set private(attenuateur)      "80"
 
    set private(hCanvas)          [::confVisu::getCanvas $visuNo]
    set private(targetCoord)      $conf(sophie,originCoord)
@@ -278,6 +278,13 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
          pack $frm.attenuateur.butMin -in [ $frm.attenuateur getframe ] \
             -anchor center -expand 1 -fill x -ipady 2 -side left
 
+         #--- Entry pour la consigne de l'attenuateur
+         entry $frm.attenuateur.entry \
+            -background $color(white) -state readonly -takefocus 0 \
+            -textvariable ::sophie::private(attenuateur) -width 4 -justify center
+         pack $frm.attenuateur.entry -in [ $frm.attenuateur getframe ] \
+            -anchor center -expand 0 -fill none -side left
+
          ArrowButton $frm.attenuateur.butMax -borderwidth 1 -dir right -relief raised \
             -command "::sophie::decrementAttenuateur"
          pack $frm.attenuateur.butMax -in [ $frm.attenuateur getframe ] \
@@ -287,13 +294,6 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
          label $frm.attenuateur.labNoir_color_invariant -text "  " -background $color(black)
          pack $frm.attenuateur.labNoir_color_invariant -in [ $frm.attenuateur getframe ] \
             -anchor center -expand 0 -fill none -side left
-
-         #--- Entry pour la consigne de l'attenuateur
-         entry $frm.attenuateur.entry \
-            -background $color(white) -state readonly -takefocus 0 \
-            -textvariable ::sophie::private(attenuateur) -width 4 -justify center
-         pack $frm.attenuateur.entry -in [ $frm.attenuateur getframe ] \
-            -anchor center -expand 0 -fill none -side top
 
       pack $frm.attenuateur -side top -fill x
 
