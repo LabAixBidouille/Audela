@@ -1,0 +1,242 @@
+#
+# Fichier : sophie.cap
+# Mise a jour $Id: sophie.cap,v 1.1 2009-05-08 10:44:49 michelpujol Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(sophie,titre)                    "Sophie"
+set caption(sophie,aide)                     "Help For This Tool"
+set caption(sophie,config)                   "Setup"
+set caption(sophie,pose)                     "Exp. (sec.)"
+set caption(sophie,binning)                  "Binning"
+set caption(sophie,goAcq)                    "GO Acq."
+set caption(sophie,stopAcq)                  "STOP Acq."
+set caption(sophie,mode)                     "Mode"
+set caption(sophie,centrage)                 "Centering"
+set caption(sophie,focalisation)             "Focusing"
+set caption(sophie,guidage)                  "# Guidage"
+set caption(sophie,zoom)                     "# Zoom"
+set caption(sophie,attenuateur)              "# Atténuateur"
+set caption(sophie,image)                    "Image"
+set caption(sophie,enregistrer)              "Save"
+set caption(sophie,voirImage)                "# Voir l'image"
+
+set caption(sophie,pb)                    "Problem"
+set caption(sophie,selcam)                "You must select a camera first\n(Setup/Camera)."
+
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(sophie,titre)                 "Sophie"
+   set caption(sophie,aide)                  "Aide pour cet outil"
+   set caption(sophie,config)                "Configuration"
+   set caption(sophie,pose)                  "Pose (sec.)"
+   set caption(sophie,binning)               "Binning"
+   set caption(sophie,goAcq)                 "GO Acq."
+   set caption(sophie,stopAcq)               "STOP Acq."
+   set caption(sophie,mode)                  "Mode"
+   set caption(sophie,centrage)              "Centrage"
+   set caption(sophie,focalisation)          "Focalisation"
+   set caption(sophie,guidage)               "Guidage"
+   set caption(sophie,zoom)                  "Zoom"
+   set caption(sophie,attenuateur)           "Atténuateur"
+   set caption(sophie,image)                 "Image"
+   set caption(sophie,enregistrer)           "Enregistrer"
+   set caption(sophie,voirImage)             "Voir l'image"
+
+   set caption(sophie,parametreConfig)       "Configuration générale"
+   set caption(sophie,acquisition)           "Paramètres d'acquisition"
+   set caption(sophie,poseDefaut)            "Pose par défaut (sec.)"
+   set caption(sophie,binningCentrage)       "Binning par défaut du mode centrage"
+   set caption(sophie,binningGuidage)        "Binning par défaut du mode guidage"
+   set caption(sophie,parametreGuidage)      "Paramètres de guidage"
+   set caption(sophie,echelle)               "Echelle (arcsec/pixel)"
+   set caption(sophie,nbPosesAvantCorrect)   "Nombre de poses avant la correction de guidage"
+   set caption(sophie,nbPosesAvantMaj)       "Nombre de poses avant la mise à jour de la consigne"
+   set caption(sophie,tailleFenetreGuidage)  "Taille de la fenêtre de guidage (pixel)"
+   set caption(sophie,tailleFenetreCentrage) "Taille de la fenêtre de centrage (pixel)"
+   set caption(sophie,gainProportionnel)     "Gain proportionnel (%)"
+   set caption(sophie,gainIntegrateur)       "Gain intégrateur (%)"
+   set caption(sophie,positionFibres)        "Position des fibres"
+   set caption(sophie,fibreAHR)              "Fibre A HR"
+   set caption(sophie,fibreAHE)              "Fibre A HE"
+   set caption(sophie,fibreB)                "Fibre B"
+   set caption(sophie,fiberGuigindMode)      "Mode d'entrée de la fibre A"
+   set caption(sophie,x)                     "X (pixels)"
+   set caption(sophie,y)                     "Y (pixels)"
+   set caption(sophie,HR)                    "HR"
+   set caption(sophie,HE)                    "HE"
+   set caption(sophie,images)                "Paramètres de sauvegarde des images"
+   set caption(sophie,imageDirectory)        "Répertoire des images"
+
+   set caption(sophie,parcourir)             "..."
+   set caption(sophie,prefixeImageCentrage)  "Préfixe des images de centrage"
+   set caption(sophie,prefixeImageGuidage)   "Préfixe des images de guidage"
+   set caption(sophie,imageBias)             "Image de Bias"
+
+   set caption(sophie,parametreAlgo)         "Configuration de l'algorithme"
+
+   set caption(sophie,callibrationRappels)   "Callibration des rappels"
+
+   set caption(sophie,controleInterface)     "Contrôle de l'interface"
+   set caption(sophie,indicateurInterface)   "Indicateurs de contrôle de l'interface"
+   set caption(sophie,acquisitionEncours)    "Acquisition en cours"
+   set caption(sophie,acquisitionArretee)    "Acquisition arrêtée"
+   set caption(sophie,etoileSelect)          "Etoile sélectionnée"
+   set caption(sophie,etoileNonSelect)       "Etoile non sélectionnée"
+   set caption(sophie,trouDetecte)           "Trou détecté"
+   set caption(sophie,trouNonDetecte)        "Trou non détecté"
+   set caption(sophie,guidageEncours)        "Guidage en cours"
+   set caption(sophie,guidageSuspendu)       "Guidage suspendu"
+   set caption(sophie,sophieEncours)         "Pose Sophie en cours"
+   set caption(sophie,sophieArretee)         "Pose Sophie arrêtée"
+   set caption(sophie,positionSeeing)        "Position et seeing"
+   set caption(sophie,FWHMX)                 "FWHM X (pixels)"
+   set caption(sophie,FWHMY)                 "FWHM Y (pixels)"
+   set caption(sophie,fondDeCiel)            "Fond de ciel (ADU)"
+   set caption(sophie,fluxMax)               "Flux maxi (ADU)"
+   set caption(sophie,indicateurCentrage)    "Indicateurs de centrage"
+   set caption(sophie,courbes)               "Courbes"
+   set caption(sophie,intensiteMax)          "Intensité maxi (ADU)"
+   set caption(sophie,centrageConsigne)      "Centrer sur la consigne"
+   set caption(sophie,centrageArrete)        "Centrage arrêté"
+   set caption(sophie,centrageReussi)        "Centrage réussi"
+   set caption(sophie,consigne)              "Consigne"
+   set caption(sophie,pointageObjet)         "Pointage de l'objet"
+   set caption(sophie,pointageEntreeFibreA)  "Pointage de l'entrée de la fibre A"
+   set caption(sophie,activationGuidage)     "Activer le guidage"
+   set caption(sophie,positionConsigne)      "Position de la consigne sur la fibre"
+   set caption(sophie,correctionX)           "Correction en X"
+   set caption(sophie,correctionY)           "Correction en Y"
+   set caption(sophie,positionConsigneImage) "Position de la consigne dans l'image"
+   set caption(sophie,increment)             "Incrément"
+   set caption(sophie,objetconsigne)         "Position de l'objet par rapport à la consigne"
+   set caption(sophie,photocentreObjet)      "Photocentre de l'objet"
+   set caption(sophie,ecartconsigne)         "Ecart par rapport à la consigne (pixel)"
+   set caption(sophie,dx)                    "dx"
+   set caption(sophie,dy)                    "dy"
+   set caption(sophie,erreur)                "Erreur ('')"
+   set caption(sophie,erreurAlpha)           "Erreur alpha"
+   set caption(sophie,erreurDelta)           "Erreur delta"
+   set caption(sophie,erreursAlphaDelta)     "Erreurs en alpha et delta"
+   set caption(sophie,arretGuidage)          "Arrêter le guidage"
+   set caption(sophie,suspendreGuidage)      "Suspendre le guidage"
+
+   set caption(sophie,pb)                    "Problème"
+   set caption(sophie,selcam)                "Vous devez d'abord sélectionner une caméra\n(menu Configuration/Caméra)."
+
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(sophie,titre)                 "Sophie"
+   set caption(sophie,aide)                  "Aiuto per questo tool"
+   set caption(sophie,config)                "Configurazione"
+   set caption(sophie,pose)                  "Posa (sec.)"
+   set caption(sophie,binning)               "Binning"
+   set caption(sophie,goAcq)                 "GO Acq."
+   set caption(sophie,stopAcq)               "STOP Acq."
+   set caption(sophie,mode)                  "Modalita`"
+   set caption(sophie,centrage)              "Centraggio"
+   set caption(sophie,focalisation)          "Focheggiamento"
+   set caption(sophie,guidage)               "# Guidage"
+   set caption(sophie,zoom)                  "# Zoom"
+   set caption(sophie,attenuateur)           "# Atténuateur"
+   set caption(sophie,image)                 "Immagine"
+   set caption(sophie,enregistrer)           "Salvare"
+   set caption(sophie,voirImage)             "# Voir l'image"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(sophie,titre)                 "Sophie"
+   set caption(sophie,aide)                  "Ayuda para esta herramienta"
+   set caption(sophie,config)                "Configuración"
+   set caption(sophie,pose)                  "Exp. (seg.)"
+   set caption(sophie,binning)               "Binning"
+   set caption(sophie,goAcq)                 "GO Adq."
+   set caption(sophie,stopAcq)               "STOP Acq."
+   set caption(sophie,mode)                  "Modo"
+   set caption(sophie,centrage)              "Centrado"
+   set caption(sophie,focalisation)          "Enfoque"
+   set caption(sophie,guidage)               "# Guidage"
+   set caption(sophie,zoom)                  "# Zoom"
+   set caption(sophie,attenuateur)           "# Atténuateur"
+   set caption(sophie,image)                 "Imagen"
+   set caption(sophie,enregistrer)           "Guardar"
+   set caption(sophie,voirImage)             "# Voir l'image"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(sophie,titre)                 "Sophie"
+   set caption(sophie,aide)                  "Hilfe für dieses Gerät"
+   set caption(sophie,config)                "Konfiguration"
+   set caption(sophie,pose)                  "Bel. (Sek.)"
+   set caption(sophie,binning)               "Binning"
+   set caption(sophie,goAcq)                 "GO Anschaf."
+   set caption(sophie,stopAcq)               "STOP Anschaf."
+   set caption(sophie,mode)                  "Modus"
+   set caption(sophie,centrage)              "Zentrierung"
+   set caption(sophie,focalisation)          "Fokussierung"
+   set caption(sophie,guidage)               "# Guidage"
+   set caption(sophie,zoom)                  "# Zoom"
+   set caption(sophie,attenuateur)           "# Atténuateur"
+   set caption(sophie,image)                 "Bild"
+   set caption(sophie,enregistrer)           "Speichern"
+   set caption(sophie,voirImage)             "# Voir l'image"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(sophie,titre)                 "Sophie"
+   set caption(sophie,aide)                  "Ajuda para esta ferramenta"
+   set caption(sophie,config)                "Configuração"
+   set caption(sophie,pose)                  "Exposição (seg.)"
+   set caption(sophie,binning)               "Binning"
+   set caption(sophie,goAcq)                 "GO Aqu."
+   set caption(sophie,stopAcq)               "STOP Acq."
+   set caption(sophie,mode)                  "Modo"
+   set caption(sophie,centrage)              "Centragem"
+   set caption(sophie,focalisation)          "Focagem"
+   set caption(sophie,guidage)               "# Guidage"
+   set caption(sophie,zoom)                  "# Zoom"
+   set caption(sophie,attenuateur)           "# Atténuateur"
+   set caption(sophie,image)                 "Imagem"
+   set caption(sophie,enregistrer)           "Guardar"
+   set caption(sophie,voirImage)             "# Voir l'image"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(sophie,titre)                 "Sophie"
+   set caption(sophie,aide)                  "Help For This Tool"
+   set caption(sophie,config)                "Setup"
+   set caption(sophie,pose)                  "Exp. (sec.)"
+   set caption(sophie,binning)               "Binning"
+   set caption(sophie,goAcq)                 "GO Acq."
+   set caption(sophie,stopAcq)               "STOP Acq."
+   set caption(sophie,mode)                  "Mode"
+   set caption(sophie,centrage)              "Centering"
+   set caption(sophie,focalisation)          "Focusing"
+   set caption(sophie,guidage)               "# Guidage"
+   set caption(sophie,zoom)                  "# Zoom"
+   set caption(sophie,attenuateur)           "# Atténuateur"
+   set caption(sophie,image)                 "Image"
+   set caption(sophie,enregistrer)           "Save"
+   set caption(sophie,voirImage)             "# Voir l'image"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
