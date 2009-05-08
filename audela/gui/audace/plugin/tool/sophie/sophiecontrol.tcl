@@ -2,7 +2,7 @@
 # Fichier : sophiecontrol.tcl
 # Description : Fenetre de controle pour le centrage, la focalisation et le guidage
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecontrol.tcl,v 1.1 2009-05-08 10:44:49 michelpujol Exp $
+# Mise a jour $Id: sophiecontrol.tcl,v 1.2 2009-05-08 12:57:54 robertdelmas Exp $
 #
 
 #============================================================
@@ -58,14 +58,13 @@ proc ::sophie::control::run { tkbase visuNo} {
 
    #--- j'affiche la fenetre
    set this "$audace(base).sophiecontrol"
-   ::confGenerique::run  $visuNo $this "::sophie::control" \
+   ::confGenerique::run $visuNo $this "::sophie::control" \
       -modal 0 \
       -geometry $::conf(sophie,controlWindowPosition) \
-      -resizable 1
+      -resizable 1 \
+      -close 0
    #--- je supprime le bouton fermer
    pack forget $this.but_fermer
-   #--- jenpeche de fermer avec la corix en haut à droite
-   wm protocol $this WM_DELETE_WINDOW ""
 
 }
 
@@ -79,7 +78,7 @@ proc ::sophie::control::closeWindow { visuNo } {
    if { [winfo exists $private(frm)] } {
       #--- je memorise la position courante de la fenetre
       set ::conf(sophie,controlWindowPosition) [ winfo geometry [winfo toplevel $private(frm)]]
-      destroy [winfo toplevel $private(frm)]
+      destroy [ winfo toplevel $private(frm) ]
    }
 }
 
@@ -112,7 +111,9 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
    global caption
 
    set private(frm) $frm
+
 ###::console::disp "::sophie::control::fillConfigPage  private(frm)=$private(frm)\n"
+
    #--- Frame du centrage
    frame $frm.centrage -borderwidth 1 -relief groove
 
@@ -121,8 +122,6 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -text "$caption(sophie,indicateurInterface)"
 
          #--- Indicateur acquisition en cours ou arretee
-         ###button $frm.centrage.controleInterface.acquisition -text $caption(sophie,acquisitionArretee) \
-         ###   -relief solid -command " "
          checkbutton $frm.centrage.controleInterface.acquisition_color_invariant \
             -indicatoron 0 -offrelief flat -background "#ff0000" -selectcolor "#00ff00" -state normal \
             -text $caption(sophie,acquisitionArretee)
@@ -131,8 +130,6 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             -row 0 -column 1 -columnspan 2 -sticky ns -pady 4 -ipadx 20 -ipady 4
 
          #--- Indicateur etoile selectionnee ou non
-         ###button $frm.centrage.controleInterface.etoile -text $caption(sophie,etoileNonSelect) \
-         ###   -relief solid -command " "
          checkbutton $frm.centrage.controleInterface.etoile_color_invariant \
             -indicatoron 0 -offrelief flat -background "#ff0000" -selectcolor "#00ff00" -state normal \
             -text $caption(sophie,etoileNonSelect)
@@ -165,16 +162,6 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          grid columnconfigure [ $frm.centrage.controleInterface getframe ] 4 -weight 1
 
       pack $frm.centrage.controleInterface -side top -anchor w -fill x -expand 1
-
-      #--- Frame pour le mode de fonctionnement
-      TitleFrame $frm.centrage.titre -borderwidth 2 -relief groove -text "$caption(sophie,mode)"
-
-         #--- Label du mode centrage
-         label $frm.centrage.titre.centrage -text $caption(sophie,centrage)
-         pack $frm.centrage.titre.centrage -in [ $frm.centrage.titre getframe ] -anchor center \
-            -expand 1 -fill x -side left -ipadx 4 -ipady 4
-
-      pack $frm.centrage.titre -side top -fill x
 
       #--- Frame pour la position et le seeing
       TitleFrame $frm.centrage.positionSeeing -borderwidth 2 -relief ridge \
@@ -376,16 +363,6 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
 
       pack $frm.focalisation.controleInterface -side top -anchor w -fill x -expand 1
 
-      #--- Frame pour le mode de fonctionnement
-      TitleFrame $frm.focalisation.titre -borderwidth 2 -relief groove -text "$caption(sophie,mode)"
-
-         #--- Label du mode focalisation
-         label $frm.focalisation.titre.focalisation -text $caption(sophie,focalisation)
-         pack $frm.focalisation.titre.focalisation -in [ $frm.focalisation.titre getframe ] -anchor center \
-            -expand 1 -fill x -side left -ipadx 4 -ipady 4
-
-      pack $frm.focalisation.titre -side top -fill x
-
       #--- Frame pour la position et le seeing
       TitleFrame $frm.focalisation.positionSeeing -borderwidth 2 -relief ridge \
          -text $caption(sophie,positionSeeing)
@@ -550,16 +527,6 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          grid columnconfigure [ $frm.guidage.controleInterface getframe ] 4 -weight 1
 
       pack $frm.guidage.controleInterface -side top -anchor w -fill x -expand 1
-
-      #--- Frame pour le mode de fonctionnement
-      TitleFrame $frm.guidage.titre -borderwidth 2 -relief groove -text "$caption(sophie,mode)"
-
-         #--- Label du mode focalisation
-         label $frm.guidage.titre.guidage -text $caption(sophie,guidage)
-         pack $frm.guidage.titre.guidage -in [ $frm.guidage.titre getframe ] -anchor center \
-            -expand 1 -fill x -side left -ipadx 4 -ipady 4
-
-      pack $frm.guidage.titre -side top -fill x
 
       #--- Frame pour la position et le seeing
       TitleFrame $frm.guidage.positionSeeing -borderwidth 2 -relief ridge \
@@ -911,7 +878,6 @@ proc ::sophie::control::onGraphMotion { graph xScreen yScreen } {
    $graph crosshairs configure -position @$xScreen,$yScreen
 }
 
-
 ##------------------------------------------------------------
 # setMode
 #    met a jour l'affichage en fonction du mode
@@ -921,6 +887,7 @@ proc ::sophie::control::onGraphMotion { graph xScreen yScreen } {
 #------------------------------------------------------------
 proc ::sophie::control::setMode { mode } {
    variable private
+   global audace caption
 
    set frm $private(frm)
 
@@ -939,6 +906,8 @@ proc ::sophie::control::setMode { mode } {
             pack forget $frm.focalisation
             pack $frm.guidage -side top -fill both
          }
+         set This "$audace(base).sophiecontrol"
+         wm title $This "$caption(sophie,$mode)"
          focus $frm
       }
    }
@@ -1031,7 +1000,6 @@ proc ::sophie::control::setFocusInformation { starDetection fiberDetection origi
 
 }
 
-
 ##------------------------------------------------------------
 # setGuidingInformation
 #    affiche les informations de guidage
@@ -1063,7 +1031,4 @@ proc ::sophie::control::setGuidingInformation { starDetection fiberDetection ori
    # ... à compléter
 
 }
-
-
-
 
