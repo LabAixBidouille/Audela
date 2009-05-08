@@ -2,7 +2,7 @@
 # Fichier : vellemank8055.tcl
 # Description : Interface pour la carte Velleman K8055
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: vellemank8055.tcl,v 1.1 2009-04-01 16:59:08 robertdelmas Exp $
+# Mise a jour $Id: vellemank8055.tcl,v 1.2 2009-05-08 17:06:08 robertdelmas Exp $
 #
 
 namespace eval vellemank8055 {
@@ -359,7 +359,7 @@ proc ::vellemank8055::fillConfigPage { frm } {
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
 
-   #--- Configuration des bouton de test
+   #--- Configuration des boutons de test
    ::vellemank8055::configureConfigPage
 }
 
