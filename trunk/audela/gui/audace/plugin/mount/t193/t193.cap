@@ -1,0 +1,212 @@
+#
+# Fichier : t193.cap
+# Mise a jour $Id: t193.cap,v 1.1 2009-05-08 21:27:17 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(t193,monture)                    "T193"
+set caption(t193,port)                       "HP1000 Com Port"
+set caption(t193,configurer)                 "Set up"
+set caption(t193,nom_carte)                  "# Nom de la carte USB-6501 et son port"
+set caption(t193,commandes)                  "# Tests de la raquette"
+set caption(t193,nord)                       "N"
+set caption(t193,sud)                        "S"
+set caption(t193,est)                        "E"
+set caption(t193,ouest)                      "W"
+set caption(t193,attenuateur)                "# Atténuateur"
+set caption(t193,attenuateur-)               "-"
+set caption(t193,attenuateur+)               "+"
+set caption(t193,coordonnées)                "# Coordonnées AD et Déc."
+set caption(t193,AD)                         "Right Ascension"
+set caption(t193,Dec)                        "Declination"
+set caption(t193,lecture)                    "Read"
+set caption(t193,controle)                   "Control"
+set caption(t193,raquette_tel)               "Hand controller on screen"
+
+set caption(t193,port_t193)                  "HP1000 Com Port"
+set caption(t193,2points)                    ":"
+
+set caption(t193,titre_site_web)             "Reference Web Site:"
+set caption(t193,site_t193)                  "http://www.obs-hp.fr/guide/193-2.html"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(t193,monture)                 "T193"
+   set caption(t193,port)                    "Port Com HP1000"
+   set caption(t193,configurer)              "Configurer"
+   set caption(t193,nom_carte)               "Nom de la carte USB-6501 et son port"
+   set caption(t193,commandes)               "Tests de la raquette"
+   set caption(t193,nord)                    "N"
+   set caption(t193,sud)                     "S"
+   set caption(t193,est)                     "E"
+   set caption(t193,ouest)                   "O"
+   set caption(t193,attenuateur)             "Atténuateur"
+   set caption(t193,attenuateur-)            "-"
+   set caption(t193,attenuateur+)            "+"
+   set caption(t193,coordonnées)             "Coordonnées AD et Déc."
+   set caption(t193,AD)                      "Ascension droite"
+   set caption(t193,Dec)                     "Déclinaison"
+   set caption(t193,lecture)                 "Lecture"
+   set caption(t193,controle)                "Contrôle"
+   set caption(t193,raquette_tel)            "Raquette à l'écran"
+
+   set caption(t193,port_t193)               "Port Com HP1000"
+   set caption(t193,2points)                 ":"
+
+   set caption(t193,titre_site_web)          "Site Web de référence :"
+   set caption(t193,site_t193)               "http://www.obs-hp.fr/guide/193-2.html"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(t193,monture)                 "T193"
+   set caption(t193,port)                    "Porta Com HP1000"
+   set caption(t193,configurer)              "Configurare"
+   set caption(t193,nom_carte)               "# Nom de la carte USB-6501 et son port"
+   set caption(t193,commandes)               "# Tests de la raquette"
+   set caption(t193,nord)                    "N"
+   set caption(t193,sud)                     "S"
+   set caption(t193,est)                     "E"
+   set caption(t193,ouest)                   "O"
+   set caption(t193,attenuateur)             "# Atténuateur"
+   set caption(t193,attenuateur-)            "-"
+   set caption(t193,attenuateur+)            "+"
+   set caption(t193,coordonnées)             "# Coordonnées AD et Déc."
+   set caption(t193,AD)                      "Ascensione Retta"
+   set caption(t193,Dec)                     "Declinazione"
+   set caption(t193,lecture)                 "Lettura"
+   set caption(t193,controle)                "Controllo"
+   set caption(t193,raquette_tel)            "Pulsantiera a schermo"
+
+   set caption(t193,port_t193)               "Porta Com HP1000"
+   set caption(t193,2points)                 ":"
+
+   set caption(t193,titre_site_web)          "Sito Web di riferimento:"
+   set caption(t193,site_t193)               "http://www.obs-hp.fr/guide/193-2.html"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(t193,monture)                 "T193"
+   set caption(t193,port)                    "Puerto Com HP1000"
+   set caption(t193,configurer)              "Configurar"
+   set caption(t193,nom_carte)               "# Nom de la carte USB-6501 et son port"
+   set caption(t193,commandes)               "# Tests de la raquette"
+   set caption(t193,nord)                    "N"
+   set caption(t193,sud)                     "S"
+   set caption(t193,est)                     "E"
+   set caption(t193,ouest)                   "W"
+   set caption(t193,attenuateur)             "# Atténuateur"
+   set caption(t193,attenuateur-)            "-"
+   set caption(t193,attenuateur+)            "+"
+   set caption(t193,coordonnées)             "# Coordonnées AD et Déc."
+   set caption(t193,AD)                      "Ascensión Recta"
+   set caption(t193,Dec)                     "Declinación"
+   set caption(t193,lecture)                 "Leer"
+   set caption(t193,controle)                "Control"
+   set caption(t193,raquette_tel)            "Controlador virtual"
+
+   set caption(t193,port_t193)               "Puerto Com HP1000"
+   set caption(t193,2points)                 ":"
+
+   set caption(t193,titre_site_web)          "Sitio Web de referencia:"
+   set caption(t193,site_t193)               "http://www.obs-hp.fr/guide/193-2.html"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(t193,monture)                 "T193"
+   set caption(t193,port)                    "HP1000 Com Port"
+   set caption(t193,configurer)              "Konfigurieren"
+   set caption(t193,nom_carte)               "# Nom de la carte USB-6501 et son port"
+   set caption(t193,commandes)               "# Tests de la raquette"
+   set caption(t193,nord)                    "N"
+   set caption(t193,sud)                     "S"
+   set caption(t193,est)                     "O"
+   set caption(t193,ouest)                   "W"
+   set caption(t193,attenuateur)             "# Atténuateur"
+   set caption(t193,attenuateur-)            "-"
+   set caption(t193,attenuateur+)            "+"
+   set caption(t193,coordonnées)             "# Coordonnées AD et Déc."
+   set caption(t193,AD)                      "Rektaszension"
+   set caption(t193,Dec)                     "Deklination"
+   set caption(t193,lecture)                 "Lesen"
+   set caption(t193,controle)                "Kontroll"
+   set caption(t193,raquette_tel)            "Hand Kontroller am Bildschirm"
+
+   set caption(t193,port_t193)               "HP1000 Com Port"
+   set caption(t193,2points)                 ":"
+
+   set caption(t193,titre_site_web)          "Referenz Webseite:"
+   set caption(t193,site_t193)               "http://www.obs-hp.fr/guide/193-2.html"
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(t193,monture)                 "T193"
+   set caption(t193,port)                    "Porta Com HP1000"
+   set caption(t193,configurer)              "Configuração"
+   set caption(t193,nom_carte)               "# Nom de la carte USB-6501 et son port"
+   set caption(t193,commandes)               "# Tests de la raquette"
+   set caption(t193,nord)                    "N"
+   set caption(t193,sud)                     "S"
+   set caption(t193,est)                     "E"
+   set caption(t193,ouest)                   "O"
+   set caption(t193,attenuateur)             "# Atténuateur"
+   set caption(t193,attenuateur-)            "-"
+   set caption(t193,attenuateur+)            "+"
+   set caption(t193,coordonnées)             "# Coordonnées AD et Déc."
+   set caption(t193,AD)                      "Ascenção Recta"
+   set caption(t193,Dec)                     "Declinação"
+   set caption(t193,lecture)                 "Ler"
+   set caption(t193,controle)                "Controlo"
+   set caption(t193,raquette_tel)            "Controlador de mão no ecrã"
+
+   set caption(t193,port_t193)               "Porta Com HP1000"
+   set caption(t193,2points)                 ":"
+
+   set caption(t193,titre_site_web)          "Site Web de referência:"
+   set caption(t193,site_t193)               "http://www.obs-hp.fr/guide/193-2.html"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(t193,monture)                 "T193"
+   set caption(t193,port)                    "HP1000 Com Port"
+   set caption(t193,configurer)              "Set up"
+   set caption(t193,nom_carte)               "# Nom de la carte USB-6501 et son port"
+   set caption(t193,commandes)               "# Tests de la raquette"
+   set caption(t193,nord)                    "N"
+   set caption(t193,sud)                     "S"
+   set caption(t193,est)                     "E"
+   set caption(t193,ouest)                   "W"
+   set caption(t193,attenuateur)             "# Atténuateur"
+   set caption(t193,attenuateur-)            "-"
+   set caption(t193,attenuateur+)            "+"
+   set caption(t193,coordonnées)             "# Coordonnées AD et Déc."
+   set caption(t193,AD)                      "Right Ascension"
+   set caption(t193,Dec)                     "Declination"
+   set caption(t193,lecture)                 "Read"
+   set caption(t193,controle)                "Control"
+   set caption(t193,raquette_tel)            "Hand controller on screen"
+
+   set caption(t193,port_t193)               "HP1000 Com Port"
+   set caption(t193,2points)                 ":"
+
+   set caption(t193,titre_site_web)          "Reference Web Site:"
+   set caption(t193,site_t193)               "http://www.obs-hp.fr/guide/193-2.html"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
