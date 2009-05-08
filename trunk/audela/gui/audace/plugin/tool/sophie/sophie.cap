@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.1 2009-05-08 10:44:49 michelpujol Exp $
+# Mise a jour $Id: sophie.cap,v 1.2 2009-05-08 12:45:52 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -22,14 +22,14 @@ set caption(sophie,mode)                     "Mode"
 set caption(sophie,centrage)                 "Centering"
 set caption(sophie,focalisation)             "Focusing"
 set caption(sophie,guidage)                  "# Guidage"
-set caption(sophie,zoom)                     "# Zoom"
+set caption(sophie,zoom)                     "Zoom"
 set caption(sophie,attenuateur)              "# Atténuateur"
 set caption(sophie,image)                    "Image"
 set caption(sophie,enregistrer)              "Save"
 set caption(sophie,voirImage)                "# Voir l'image"
 
-set caption(sophie,pb)                    "Problem"
-set caption(sophie,selcam)                "You must select a camera first\n(Setup/Camera)."
+set caption(sophie,pb)                       "Problem"
+set caption(sophie,selcam)                   "You must select a camera first\n(Setup/Camera)."
 
 
 # *************** Version française ***************************
@@ -148,7 +148,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,centrage)              "Centraggio"
    set caption(sophie,focalisation)          "Focheggiamento"
    set caption(sophie,guidage)               "# Guidage"
-   set caption(sophie,zoom)                  "# Zoom"
+   set caption(sophie,zoom)                  "Zoom"
    set caption(sophie,attenuateur)           "# Atténuateur"
    set caption(sophie,image)                 "Immagine"
    set caption(sophie,enregistrer)           "Salvare"
@@ -168,7 +168,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,centrage)              "Centrado"
    set caption(sophie,focalisation)          "Enfoque"
    set caption(sophie,guidage)               "# Guidage"
-   set caption(sophie,zoom)                  "# Zoom"
+   set caption(sophie,zoom)                  "Zoom"
    set caption(sophie,attenuateur)           "# Atténuateur"
    set caption(sophie,image)                 "Imagen"
    set caption(sophie,enregistrer)           "Guardar"
@@ -188,7 +188,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,centrage)              "Zentrierung"
    set caption(sophie,focalisation)          "Fokussierung"
    set caption(sophie,guidage)               "# Guidage"
-   set caption(sophie,zoom)                  "# Zoom"
+   set caption(sophie,zoom)                  "Zoom"
    set caption(sophie,attenuateur)           "# Atténuateur"
    set caption(sophie,image)                 "Bild"
    set caption(sophie,enregistrer)           "Speichern"
@@ -208,7 +208,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,centrage)              "Centragem"
    set caption(sophie,focalisation)          "Focagem"
    set caption(sophie,guidage)               "# Guidage"
-   set caption(sophie,zoom)                  "# Zoom"
+   set caption(sophie,zoom)                  "Zoom"
    set caption(sophie,attenuateur)           "# Atténuateur"
    set caption(sophie,image)                 "Imagem"
    set caption(sophie,enregistrer)           "Guardar"
@@ -228,7 +228,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,centrage)              "Centering"
    set caption(sophie,focalisation)          "Focusing"
    set caption(sophie,guidage)               "# Guidage"
-   set caption(sophie,zoom)                  "# Zoom"
+   set caption(sophie,zoom)                  "Zoom"
    set caption(sophie,attenuateur)           "# Atténuateur"
    set caption(sophie,image)                 "Image"
    set caption(sophie,enregistrer)           "Save"
