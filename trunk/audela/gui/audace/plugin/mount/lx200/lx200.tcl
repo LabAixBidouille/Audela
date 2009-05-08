@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise a jour $Id: lx200.tcl,v 1.20 2009-03-14 00:01:42 michelpujol Exp $
+# Mise a jour $Id: lx200.tcl,v 1.21 2009-05-08 23:12:16 robertdelmas Exp $
 #
 
 namespace eval ::lx200 {
@@ -147,8 +147,11 @@ proc ::lx200::fillConfigPage { frm } {
    variable private
    global audace caption
 
-   #--- Initialise une variable locale
-   set private(frm) $frm
+   #--- Initialise les variables locales
+   set private(frm)           $frm
+   set private(ite-lente_A0)  "0"
+   set private(ite-lente_A1)  "0"
+   set private(tracesConsole) "0"
 
    #--- confToWidget
    ::lx200::confToWidget
@@ -283,12 +286,35 @@ proc ::lx200::fillConfigPage { frm } {
    pack $frm.majpara -in $frm.frame2 -anchor center -side top -padx 10 -pady 5 -ipadx 10 -ipady 5 \
       -expand true
 
+   #--- Le checkbutton pour obtenir des traces dans la Console
+   checkbutton $frm.tracesConsole -text "$caption(lx200,tracesConsole)" \
+      -highlightthickness 0 -variable ::lx200::private(tracesConsole) \
+      -command "::lx200::tracesConsole"
+   pack $frm.tracesConsole -in $frm.frame2 -anchor w -side top -padx 10 -pady 10
+
    #--- Entree de la tempo Ite-lente
    label $frm.lab4 -text "$caption(lx200,ite-lente_tempo)"
    pack $frm.lab4 -in $frm.frame4a -anchor center -side left -padx 10 -pady 10
 
    entry $frm.tempo -textvariable ::lx200::private(ite-lente_tempo) -justify center -width 5
    pack $frm.tempo -in $frm.frame4a -anchor center -side left -padx 10 -pady 10
+
+   #--- Bouton GO/Stop A0
+   checkbutton $frm.ite-lente_A0 -text "$caption(lx200,ite-lente_A0,go)" -relief raised -indicatoron 0 \
+      -variable ::lx200::private(ite-lente_A0) -state disabled \
+      -command "::lx200::testIteLente ite-lente_A0"
+   pack $frm.ite-lente_A0 -in $frm.frame4a -anchor center -side left -padx 10 -pady 10 -ipadx 10
+
+   #--- Bouton GO/Stop A1
+   checkbutton $frm.ite-lente_A1 -text "$caption(lx200,ite-lente_A1,go)" -relief raised -indicatoron 0 \
+      -variable ::lx200::private(ite-lente_A1) -state disabled \
+      -command "::lx200::testIteLente ite-lente_A1"
+   pack $frm.ite-lente_A1 -in $frm.frame4a -anchor center -side left -padx 10 -pady 10 -ipadx 10
+
+   #--- Bouton ACK
+   button $frm.ite-lente_ack -text "$caption(lx200,ite-lente_ack)" -relief raised \
+      -state disabled -command "::lx200::testIteLente ite-lente_ack"
+   pack $frm.ite-lente_ack -in $frm.frame4a -anchor center -side left -padx 10 -pady 10 -ipadx 10
 
    #--- Le checkbutton pour la visibilite de la raquette a l'ecran
    checkbutton $frm.raquette -text "$caption(lx200,raquette_tel)" \
@@ -382,6 +408,8 @@ proc ::lx200::configureMonture { } {
       }
       #--- Gestion du bouton actif/inactif
       ::lx200::confLX200
+      #--- Traces dans la Console
+      ::lx200::tracesConsole
 
       #--- Si connexion des codeurs Ouranos demandee en tant que monture secondaire
       if { $conf(lx200,ouranos) == "1" } {
@@ -439,6 +467,7 @@ proc ::lx200::stop { } {
 #
 proc ::lx200::confLX200 { } {
    variable private
+   global caption
 
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
@@ -458,6 +487,12 @@ proc ::lx200::confLX200 { } {
                #--- Bouton unpark actif
                $frm.unpark configure -state normal
             }
+            #--- Cas du modele Ite-Lente
+            if { $private(modele) == "$caption(lx200,modele_ite-lente)" } {
+               $frm.ite-lente_A0 configure -state normal
+               $frm.ite-lente_A1 configure -state normal
+               $frm.ite-lente_ack configure -state normal
+            }
          } else {
             #--- Bouton Mise a jour de la date et du lieu inactif
             $frm.majpara configure -state disabled
@@ -465,6 +500,10 @@ proc ::lx200::confLX200 { } {
             $frm.park configure -state disabled
             #--- Bouton unpark inactif
             $frm.unpark configure -state disabled
+            #--- Boutons du modele Ite-Lente
+            $frm.ite-lente_A0 configure -state disabled
+            $frm.ite-lente_A1 configure -state disabled
+            $frm.ite-lente_ack configure -state disabled
          }
       }
    }
@@ -479,13 +518,19 @@ proc ::lx200::confLX200Inactif { } {
 
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
-      if { [winfo exists $frm ] } {
+      if { [ winfo exists $frm ] } {
          #--- Bouton Mise a jour de la date et du lieu inactif
          $frm.majpara configure -state disabled
          #--- Bouton park inactif
          $frm.park configure -state disabled
          #--- Bouton unpark inactif
          $frm.unpark configure -state disabled
+         #--- Boutons du modele Ite-Lente
+         if { [ winfo exists $frm.ite-lente_A0 ] } {
+            $frm.ite-lente_A0 configure -state disabled
+            $frm.ite-lente_A1 configure -state disabled
+            $frm.ite-lente_ack configure -state disabled
+         }
       }
    }
 }
@@ -512,9 +557,24 @@ proc ::lx200::confModele { } {
                #--- Entree de la tempo Ite-lente
                entry $frm.tempo -textvariable ::lx200::private(ite-lente_tempo) -justify center -width 5
                pack $frm.tempo -in $frm.frame4a -anchor center -side left -padx 10 -pady 10
+               #--- Bouton GO/Stop A0
+               checkbutton $frm.ite-lente_A0 -text "$caption(lx200,ite-lente_A0,go)" -relief raised -indicatoron 0 \
+                  -variable ::lx200::private(ite-lente_A0) -state disabled \
+                  -command "::lx200::testIteLente ite-lente_A0"
+               pack $frm.ite-lente_A0 -in $frm.frame4a -anchor center -side left -padx 10 -pady 10 -ipadx 10
+               #--- Bouton GO/Stop A1
+               checkbutton $frm.ite-lente_A1 -text "$caption(lx200,ite-lente_A1,go)" -relief raised -indicatoron 0 \
+                  -variable ::lx200::private(ite-lente_A1) -state disabled \
+                  -command "::lx200::testIteLente ite-lente_A1"
+               pack $frm.ite-lente_A1 -in $frm.frame4a -anchor center -side left -padx 10 -pady 10 -ipadx 10
+               #--- Bouton ACK
+               button $frm.ite-lente_ack -text "$caption(lx200,ite-lente_ack)" -relief raised \
+                  -state disabled -command "::lx200::testIteLente ite-lente_ack"
+               pack $frm.ite-lente_ack -in $frm.frame4a -anchor center -side left -padx 10 -pady 10 -ipadx 10
             }
          } else {
             destroy $frm.lab4 ; destroy $frm.tempo
+            destroy $frm.ite-lente_A0 ; destroy $frm.ite-lente_A1 ; destroy $frm.ite-lente_ack
          }
          #--- Cas du modele AudeCom
          if { $private(modele) == "$caption(lx200,modele_audecom)" } {
@@ -531,6 +591,53 @@ proc ::lx200::confModele { } {
          }
       }
    }
+}
+
+#
+# testIteLente
+#    Envoie les commandes A0, A1 et ACK
+#
+proc ::lx200::testIteLente { buttonName } {
+   variable private
+   global caption
+
+   switch $buttonName {
+      ite-lente_A0 {
+         if { $private($buttonName) == "1" } {
+            tel$private(telNo) command "#:Xa+#" none
+            $private(frm).$buttonName configure -text $caption(lx200,$buttonName,stop)
+         } else {
+            tel$private(telNo) command "#:Xa-#" none
+            $private(frm).$buttonName configure -text $caption(lx200,$buttonName,go)
+         }
+      }
+      ite-lente_A1 {
+         if { $private($buttonName) == "1" } {
+            tel$private(telNo) command "#:Xb+#" none
+            $private(frm).$buttonName configure -text $caption(lx200,$buttonName,stop)
+         } else {
+            tel$private(telNo) command "#:Xb-#" none
+            $private(frm).$buttonName configure -text $caption(lx200,$buttonName,go)
+         }
+      }
+      ite-lente_ack {
+         tel$private(telNo) command "\x06" ok
+      }
+   }
+}
+
+#
+# tracesConsole
+#    Affiche des traces dans la Console
+#
+proc ::lx200::tracesConsole { } {
+   variable private
+
+   if { $private(telNo) == "0" } {
+      return
+   }
+
+   tel$private(telNo) consolelog $private(tracesConsole)
 }
 
 #
