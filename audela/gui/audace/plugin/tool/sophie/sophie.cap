@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.2 2009-05-08 12:45:52 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.3 2009-05-08 15:47:05 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -90,8 +90,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,indicateurInterface)   "Indicateurs de contrôle de l'interface"
    set caption(sophie,acquisitionEncours)    "Acquisition en cours"
    set caption(sophie,acquisitionArretee)    "Acquisition arrêtée"
-   set caption(sophie,etoileSelect)          "Etoile sélectionnée"
-   set caption(sophie,etoileNonSelect)       "Etoile non sélectionnée"
+   set caption(sophie,etoileDetecte)         "Etoile détectée"
+   set caption(sophie,etoileNonDetecte)      "Etoile non détectée"
    set caption(sophie,trouDetecte)           "Trou détecté"
    set caption(sophie,trouNonDetecte)        "Trou non détecté"
    set caption(sophie,guidageEncours)        "Guidage en cours"
