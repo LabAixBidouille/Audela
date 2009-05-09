@@ -2,7 +2,7 @@
 # Fichier : sophiecontrol.tcl
 # Description : Fenetre de controle pour le centrage, la focalisation et le guidage
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecontrol.tcl,v 1.3 2009-05-08 15:48:26 robertdelmas Exp $
+# Mise a jour $Id: sophiecontrol.tcl,v 1.4 2009-05-09 14:38:19 michelpujol Exp $
 #
 
 #============================================================
@@ -269,7 +269,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
 
             #--- Indicateur de pointage de l'objet
             radiobutton $frm.centrage.pointage.indicateur.objet \
-               -indicatoron 0 -text "$caption(sophie,pointageObjet)" -value centrageObjet \
+               -indicatoron 0 -text "$caption(sophie,pointageObjet)" -value OBJECT \
                -variable ::conf(sophie,guidingMode) \
                -command "::sophie::control::showSpinBoxPointageObjet"
             pack $frm.centrage.pointage.indicateur.objet -anchor center \
@@ -277,7 +277,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
 
             #--- Indicateur de pointage de l'entree de la fibre A
             radiobutton $frm.centrage.pointage.indicateur.fibreA \
-               -indicatoron 0 -text "$caption(sophie,pointageEntreeFibreA)" -value centrageFibreA \
+               -indicatoron 0 -text "$caption(sophie,pointageEntreeFibreA)" -value FIBER \
                -variable ::conf(sophie,guidingMode) \
                -command "::sophie::control::showSpinBoxPointageObjet"
             pack $frm.centrage.pointage.indicateur.fibreA -anchor center \
