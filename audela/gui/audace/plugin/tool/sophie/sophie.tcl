@@ -2,7 +2,7 @@
 # Fichier : sophie.tcl
 # Description : Outil d'autoguidage pour le spectro Sophie du telescope T193 de l'OHP
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophie.tcl,v 1.3 2009-05-08 23:14:10 robertdelmas Exp $
+# Mise a jour $Id: sophie.tcl,v 1.4 2009-05-09 14:36:43 michelpujol Exp $
 #
 
 #============================================================
@@ -131,6 +131,8 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists conf(sophie,xfibreB)] }                 { set conf(sophie,xfibreB)                 "925" }
    if { ! [ info exists conf(sophie,yfibreB)] }                 { set conf(sophie,yfibreB)                 "566" }
    if { ! [ info exists conf(sophie,targetDetectionThresold)] } { set conf(sophie,targetDetectionThresold) "10" }
+   if { ! [ info exists conf(sophie,simulation)] }              { set conf(sophie,simulation)              "0" }
+   if { ! [ info exists conf(sophie,simulationGenericFileName)] } { set conf(sophie,simulationGenericFileName) "$::audace(rep_images)/simulation" }
 
    if { $conf(sophie,originCoord) == "" }                       { set conf(sophie,originCoord)          [list 320 240 ] }
 

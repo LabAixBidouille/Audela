@@ -2,7 +2,7 @@
 # Fichier : sophiecommand.tcl
 # Description : Centralise les commandes de l'outil Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecommand.tcl,v 1.2 2009-05-08 12:55:27 robertdelmas Exp $
+# Mise a jour $Id: sophiecommand.tcl,v 1.3 2009-05-09 14:37:21 michelpujol Exp $
 #
 
 #============================================================
@@ -644,6 +644,11 @@ proc ::sophie::startAcquisition { visuNo } {
       ::telescope::setSpeed 1
    }
 
+   if { $::conf(sophie,simulation) == 1 } {
+      ::camera::setParam $private(camItem) "simulation" 1
+      ::camera::setParam $private(camItem) "simulationGenericFileName" $::conf(sophie,simulationGenericFileName)
+   }
+
    set slitWidth 0
    set slitRatio 0
    ::camera::setParam $private(camItem) "targetDetectionThresold" $::conf(sophie,targetDetectionThresold)
@@ -747,9 +752,9 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
             set starY [lindex $private(targetCoord) 1]
             set fwhmX         [lindex $params 0]
             set fwhmY         [lindex $params 1]
-            set background    [expr ([lindex $params 2] + [lindex $params 3]) /2 ]
-            set maxIntensity  [expr ([lindex $params 4] + [lindex $params 5]) /2 ]
-            set flow          [lindex $params 6]
+            set background    [lindex $params 2]
+            set maxIntensity  [lindex $params 3]
+            set flow          [lindex $params 4]
             set alphaCorrection  0 ; #  à faire ...
             set deltaCorrection  0 ; #  à faire ...
 
