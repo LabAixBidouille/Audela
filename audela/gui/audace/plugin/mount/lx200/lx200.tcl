@@ -2,15 +2,32 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise a jour $Id: lx200.tcl,v 1.21 2009-05-08 23:12:16 robertdelmas Exp $
+# Mise a jour $Id: lx200.tcl,v 1.22 2009-05-09 19:56:40 michelpujol Exp $
 #
 
 namespace eval ::lx200 {
-   package provide lx200 1.0
+   package provide lx200 1.1
    package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] lx200.cap ]
+}
+
+
+#
+# install
+#    installe le plugin
+#
+proc ::lx200::install { } {
+   global caption
+
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace  liblx200.dll dans le répertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [getPluginType]] "lx200" "liblx200.dll"]
+      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      ::audace::appendUpdateMessage "Fin d'installation de lx200 v[package version lx200] OK. liblx200.dll a ete mis à jour"
+   }
+
 }
 
 #
