@@ -712,7 +712,7 @@ int mytel_date_get(struct telprop *tel,char *ligne)
 int mytel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s)
 {
    char ligne[1024];
-   int sec,k=0;
+   int sec;
 
    /* Set the time */
    mytel_flush(tel);
