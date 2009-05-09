@@ -911,7 +911,7 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *com
 	va_end (mkr);
 
    if ( tel->consoleLog == 1 ) {
-      sprintf(s,"::console::disp \"LX200 command %s\n\" ",command); mytel_tcleval(tel,s);
+      sprintf(s,"::console::disp \"LX200 command %s \"",command); mytel_tcleval(tel,s);
    }
 
    // j'envoie la commande
@@ -919,22 +919,24 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *com
    // je temporise avant de lire la reponse
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
 
+   // je purge la vairable de la reponse
+   if ( response != NULL) {
+      strcpy(response,"");
+   }
    // je lis la reponse
    if ( returnType == NONE_RETURN ) {
       // je n'attends pas de réponse
       cr = 1;
    } else if ( returnType == BOOL_RETURN ) {
-      // j'initialise a reponse a vide
-      strcpy(response,"");
-      // j'attend la reponse "1" ou "0"
+      // j'attend la reponse d'un caractere ("1" ou "0" ou "P" ou ...)
       sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
       strcpy(response,tel->interp->result);
+      cr = 1;
    }  else if ( returnType == STRING_RETURN ) {
       int k = 0;
       // j'initialise a reponse a vide
       strcpy(response,"");
       // j'attend une reponse qui se termine par diese
-
       do {
          sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
          strcpy(s,tel->interp->result);
@@ -944,6 +946,10 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *com
          }
       } while ( strcmp(s,"#")!= 0  &&  k++ < 10000 ) ;
       cr = 1;
+   }
+
+   if ( tel->consoleLog == 1 ) {
+      sprintf(s,"::console::disp \"response=%s\n\"",response); mytel_tcleval(tel,s);
    }
 
 	return cr;
