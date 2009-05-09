@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.103 2009-05-08 06:53:52 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.104 2009-05-09 07:18:39 jacquesmichelet Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -289,9 +289,16 @@ namespace eval ::audace {
       if { ! [ info exists conf(edit_viewer) ] } {
          if { $::tcl_platform(os) == "Linux" } {
             set conf(edit_viewer) ""
-            if { ! [ file exist $conf(edit_viewer) ] } {
-               set conf(edit_viewer) ""
+            set defaultname ""
+            set testnames [ list [ file join ${path} xnview ] \
+                                    [ file join ${path} display ] ]
+            foreach testname $testnames {
+               if { [ file executable "$testname" ] == "1" } {
+                  set defaultname "$testname"
+                  break;
+               }
             }
+            set conf(edit_viewer) "$defaultname"
          } else {
             set defaultname ""
             set testnames [ list [ file join ${path} "ACD Systems" "ACDSee" ACDSee.exe ] \
