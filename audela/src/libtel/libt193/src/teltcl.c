@@ -1,0 +1,229 @@
+/* teltcl.c
+ *
+ * This file is part of the AudeLA project : <http://software.audela.free.fr>
+ * Copyright (C) 1998-2004 The AudeLA Core Team
+ *
+ * Initial author : Alain KLOTZ <alain.klotz@free.fr>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or (at
+ * your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
+#include "sysexp.h"
+
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+#include "telescop.h"
+#include <libtel/libtel.h>
+#include "teltcl.h"
+#include <libtel/util.h>
+
+/*
+ *   structure pour les fonctions �tendues
+ */
+char *tel_longformat[] = {
+   "on",
+   "off",
+   NULL
+};
+
+int cmdTelFilter(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char ligne[256];
+   int result = TCL_OK;
+   struct telprop *tel;
+   char comment[]="Usage: %s %s ?stop|move|coord|init? ?options?";
+   if (argc<3) {
+      sprintf(ligne,comment,argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else {
+      tel = (struct telprop*)clientData;
+      if (strcmp(argv[2],"init")==0) {
+          // --- init 
+         if (argc>=4) {
+            //tel->focus0=atof(argv[3]);
+            tel_filter_init(tel,atoi(argv[3]));
+            Tcl_SetResult(interp,"",TCL_VOLATILE);
+         } else {
+            sprintf(ligne,"Usage: %s %s init number",argv[0],argv[1]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
+         }
+      } else if (strcmp(argv[2],"coord")==0) {
+         // --- coord 
+         tel_filter_coord(tel,ligne);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      } else if (strcmp(argv[2],"move")==0) {
+         // --- move 
+         if (argc>=4) {
+            tel_filter_move(tel,argv[3]);
+            Tcl_SetResult(interp,"",TCL_VOLATILE);
+         } else {
+            sprintf(ligne,"Usage: %s %s move +|- ",argv[0],argv[1]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
+         }
+      } else if (strcmp(argv[2],"stop")==0) {
+         // --- stop 
+         tel_filter_stop(tel);
+      } else {
+         //--- sub command not found 
+         sprintf(ligne,comment,argv[0],argv[1]);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         result = TCL_ERROR;
+      }
+   }
+   return result;
+}
+
+int cmdTelCorrect(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char ligne[256];
+   struct telprop *tel;
+   char *direction;
+   int duration;
+
+   tel = (struct telprop *)clientData;
+   if(argc!=4) {
+      sprintf(ligne,"Usage: %s %s {n,e,w,s} {0...9999}",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      return TCL_ERROR;
+   } else {
+      switch(argv[2][0]) {
+      case 'n':
+      case 'N':
+	 direction = "n";
+	 break;
+      case 'e':
+      case 'E':
+	 direction = "e";
+	 break;
+      case 'w':
+      case 'W':
+	 direction = "w";
+	 break;
+      case 's':
+      case 'S':
+	 direction = "s";
+	 break;
+      default:
+	 sprintf(ligne,"Usage: %s %s direction time\ndirection shall be n|e|w|s",argv[0],argv[1]);
+	 Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+	 return TCL_ERROR;
+      }
+      if (Tcl_GetInt(interp, argv[3], &duration) != TCL_OK) {
+	 sprintf(ligne,"Usage: %s %s direction time\ntime shall be an integer between 0 and 9999",argv[0],argv[1]);
+	 Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+	 return TCL_ERROR;
+      }
+      if ((duration<0)||(duration>9999)) {
+	 sprintf(ligne,"Usage: %s %s direction time\ntime shall be between 0 and 9999",argv[0],argv[1]);
+	 Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+	 return TCL_ERROR;
+      }
+      //mytel_correct(tel,direction,duration);
+   }
+   return TCL_OK;
+}
+
+/*
+ * -----------------------------------------------------------------------------
+ *  cmdTelSendCommand()
+ *
+ *  envoie une commande a la carte USB 
+ *  La command est un octet. Chque bit correspond a un bit du port
+ *     bit 0 => line0
+ *     bit 1 => line1
+ *     bit 2 => line2
+ *     bit 3 => line3
+ *     bit 4 => line4
+ *     bit 5 => line5
+ *     bit 6 => line6
+ *     bit 7 => line7
+ *
+ * -----------------------------------------------------------------------------
+ */
+
+int cmdTelSendCommand(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char ligne[256];
+   int retour;
+   char *usage= "Usage: %s %s ?command? ";
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;
+   if(argc!=3) {
+      sprintf(ligne,usage,argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      retour = TCL_ERROR;
+   } else {
+      int result;
+      int command;
+      if (Tcl_GetInt(interp, argv[2], &command) != TCL_OK) {
+	      sprintf(ligne,"Usage: %s %s command \n command shall be an integer between 0 and 7",argv[0],argv[1]);
+	      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+	      return TCL_ERROR;
+      }
+      if ( command < 0 || command > 255) {
+	      sprintf(ligne,"Usage: %s %s command \n command shall be an integer between 0 and 255",argv[0],argv[1]);
+	      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+	      return TCL_ERROR;
+      }
+
+      result = mytel_sendCommand(tel, command);
+      if ( result == 1 ) {
+         Tcl_SetResult(interp, tel->msg, TCL_VOLATILE);
+         retour = TCL_ERROR;
+      } else {
+         retour = TCL_OK;
+      }
+   }
+   return retour;
+}
+
+
+/*
+ * -----------------------------------------------------------------------------
+ *  cmdTelConsoleLog()
+ *
+ *  active/desactive les traces dans la console
+ *
+ * -----------------------------------------------------------------------------
+ */
+
+int cmdTelConsoleLog(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char ligne[256];
+   int result = TCL_OK,pb=0;
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;
+   if((argc!=2)&&(argc!=3)) {
+      pb=1;
+   } else if(argc==2) {
+      pb=0;
+   } else {
+      pb=0;
+      tel->consoleLog=atoi(argv[2]);
+   }
+   if (pb==1) {
+      sprintf(ligne,"Usage: %s %s ?0|1?",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else {
+      sprintf(ligne,"%d",tel->consoleLog);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+   }
+   return result;
+}
