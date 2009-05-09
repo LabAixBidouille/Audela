@@ -1,6 +1,6 @@
 #
 # Fichier : ethernaude.cap
-# Mise a jour $Id: ethernaude.cap,v 1.14 2007-01-27 14:42:46 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.cap,v 1.15 2009-05-09 21:10:45 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -41,7 +41,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,debug)                   "Mode débug"
    set caption(ethernaude,lecture_pixel)           "Lecture d'un pixel"
    set caption(ethernaude,micro_sec)               "microsecondes"
-   set caption(ethernaude,tutorial_ethernaude)     "Présentation et tutorial"
+   set caption(ethernaude,tutorial_ethernaude)     "Présentation et tutoriel"
    set caption(ethernaude,coord_gps)               "Coordonnées GPS de l'observateur"
    set caption(ethernaude,alaudine_nt)             "Alimentation AlAudine NT avec port I2C"
 
@@ -85,7 +85,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,debug)                   "Modo depuracion"
    set caption(ethernaude,lecture_pixel)           "Lectura de un píxel"
    set caption(ethernaude,micro_sec)               "microsegundos"
-   set caption(ethernaude,tutorial_ethernaude)     "Introducción y Tutorial"
+   set caption(ethernaude,tutorial_ethernaude)     "Introducción y tutorial"
    set caption(ethernaude,coord_gps)               "Coordenadas GPS del observador"
    set caption(ethernaude,alaudine_nt)             "Alimentación AlAudine NT con puerto I2C"
 

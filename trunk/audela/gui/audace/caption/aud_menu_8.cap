@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_8.cap
-# Mise a jour $Id: aud_menu_8.cap,v 1.5 2008-04-23 21:06:04 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_8.cap,v 1.6 2009-05-09 21:10:02 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -31,7 +31,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,aide)                      "Aide"
    set caption(audace,menu,sommaire)                  "Sommaire"
    set caption(audace,menu,fonctions)                 "Index des fonctions"
-   set caption(audace,menu,tutorial)                  "Tutorial"
+   set caption(audace,menu,tutorial)                  "Tutoriel"
    set caption(audace,menu,site_audela)               "Site Web"
    set caption(audace,menu,site_internet)             "Site Web (Internet)"
    set caption(audace,menu,site_dd)                   "Site Web (copie sur le disque dur)"
@@ -82,7 +82,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,aide)                      "Hilfe"
    set caption(audace,menu,sommaire)                  "Inhalt"
    set caption(audace,menu,fonctions)                 "Funktionen Register"
-   set caption(audace,menu,tutorial)                  "Abstützung"
+   set caption(audace,menu,tutorial)                  "Tutorial"
    set caption(audace,menu,site_audela)               "Webseite"
    set caption(audace,menu,site_internet)             "Webseite (Internet)"
    set caption(audace,menu,site_dd)                   "Webseite (auf die Festplatte nachbilden)"
