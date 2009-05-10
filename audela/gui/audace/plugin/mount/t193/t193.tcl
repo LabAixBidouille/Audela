@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.1 2009-05-08 21:27:17 robertdelmas Exp $
+# Mise a jour $Id: t193.tcl,v 1.2 2009-05-10 20:50:56 robertdelmas Exp $
 #
 
 namespace eval ::t193 {
@@ -91,6 +91,7 @@ proc ::t193::initPlugin { } {
    #--- Initialise les variables de la monture du T193 de l'OHP
    if { ! [ info exists conf(t193,portSerie) ] } { set conf(t193,portSerie) [ lindex $list_connexion 0 ] }
    if { ! [ info exists conf(t193,nomCarte) ] }  { set conf(t193,nomCarte)  "Dev2 /port0" }
+   if { ! [ info exists conf(t193,duree) ] }     { set conf(t193,duree)     "20" }
 }
 
 #
@@ -104,6 +105,7 @@ proc ::t193::confToWidget { } {
    #--- Recupere la configuration de la monture du T193 de l'OHP dans le tableau private(...)
    set private(portSerie) $conf(t193,portSerie)
    set private(nomCarte)  $conf(t193,nomCarte)
+   set private(duree)     $conf(t193,duree)
    set private(raquette)  $conf(raquette)
 }
 
@@ -118,6 +120,7 @@ proc ::t193::widgetToConf { } {
    #--- Memorise la configuration de la monture du T193 de l'OHP dans le tableau conf(t193,...)
    set conf(t193,portSerie) $private(portSerie)
    set conf(t193,nomCarte)  $private(nomCarte)
+   set conf(t193,duree)     $private(duree)
    set conf(raquette)       $private(raquette)
 }
 
@@ -204,8 +207,8 @@ proc ::t193::fillConfigPage { frm } {
    entry $frm.nomCarte -textvariable ::t193::private(nomCarte) -width 15 -justify left
    pack $frm.nomCarte -in $frm.frame4 -anchor n -side left -padx 10 -pady 10
 
-   #--- J'affiche les boutons N, S, E, O, Atténuatteur - et Atténuateur +
-   TitleFrame $frm.test1 -borderwidth 2 -relief ridge -text "$caption(t193,commandes)"
+   #--- J'affiche les boutons N, S, E et O
+   TitleFrame $frm.test1 -borderwidth 2 -relief ridge -text "$caption(t193,raquette)"
 
       #--- J'affiche le bouton E
       button $frm.test1.est -text "$caption(t193,est)" -relief ridge -width 2
@@ -223,23 +226,6 @@ proc ::t193::fillConfigPage { frm } {
       button $frm.test1.ouest -text "$caption(t193,ouest)" -relief ridge -width 2
       grid $frm.test1.ouest -in [ $frm.test1 getframe ] -row 1 -column 3 -ipadx 5
 
-      #--- J'affiche le label pour l'attenuateur
-      label $frm.test1.attenuateur -text $caption(t193,attenuateur)
-      grid $frm.test1.attenuateur -in [ $frm.test1 getframe ] -row 0 -column 4 -columnspan 2
-
-      #--- J'affiche le bouton -
-      button $frm.test1.attenuateur- -text "$caption(t193,attenuateur-)" -relief ridge -width 2
-      grid $frm.test1.attenuateur- -in [ $frm.test1 getframe ] -row 1 -column 4 -ipadx 5
-
-      #--- J'affiche le bouton +
-      button $frm.test1.attenuateur+ -text "$caption(t193,attenuateur+)" -relief ridge -width 2
-      grid $frm.test1.attenuateur+ -in [ $frm.test1 getframe ] -row 1 -column 5 -ipadx 5
-
-      #--- J'affiche l'entry de la position de l'attenuateur
-      entry $frm.test1.entryPosition -textvariable ::t193::private(position) -width 15 \
-         -justify center -state disabled
-      grid $frm.test1.entryPosition -in [ $frm.test1 getframe ] -row 2 -column 4 -columnspan 2
-
       grid rowconfigure [ $frm.test1 getframe ] 0 -minsize 25 -weight 0
       grid rowconfigure [ $frm.test1 getframe ] 1 -minsize 25 -weight 0
       grid rowconfigure [ $frm.test1 getframe ] 2 -minsize 25 -weight 0
@@ -247,12 +233,10 @@ proc ::t193::fillConfigPage { frm } {
       grid columnconfigure [ $frm.test1 getframe ] 1 -minsize 40 -weight 0
       grid columnconfigure [ $frm.test1 getframe ] 2 -minsize 40 -weight 0
       grid columnconfigure [ $frm.test1 getframe ] 3 -minsize 40 -weight 0
-      grid columnconfigure [ $frm.test1 getframe ] 4 -minsize 40 -weight 0
-      grid columnconfigure [ $frm.test1 getframe ] 5 -minsize 40 -weight 0
 
-   pack $frm.test1 -side left -anchor w -fill none -pady 5
+   pack $frm.test1 -side left -anchor w -fill none -pady 5 -expand 1
 
-   #--- J'affiche les voyants et le bouton de lecture des 5 bits d'entree
+   #--- J'affiche le bouton pour la lecture des coordonnees AD et Dec.
    TitleFrame $frm.test2 -borderwidth 2 -relief ridge -text "$caption(t193,coordonnées)"
 
       #--- J'affiche le label pour l'AD
@@ -281,7 +265,42 @@ proc ::t193::fillConfigPage { frm } {
       grid rowconfigure [ $frm.test2 getframe ] 0 -minsize 30 -weight 0
       grid rowconfigure [ $frm.test2 getframe ] 2 -minsize 30 -weight 0
 
-   pack $frm.test2 -side right -anchor w -fill none -pady 5
+   pack $frm.test2 -side left -anchor w -fill none -pady 5 -expand 1
+
+   #--- J'affiche les boutons - et + de l'attenuateur
+   TitleFrame $frm.test3 -borderwidth 2 -relief ridge -text "$caption(t193,attenuateur)"
+
+      #--- J'affiche le label pour la duree du deplacement
+      label $frm.test3.attenuateur -text $caption(t193,duree)
+      grid $frm.test3.attenuateur -in [ $frm.test3 getframe ] -row 0 -column 1
+
+      #--- J'affiche l'entry de la duree du deplacement
+      entry $frm.test3.entryDuree -textvariable ::t193::private(duree) -width 5 \
+         -justify left
+      grid $frm.test3.entryDuree -in [ $frm.test3 getframe ] -row 0 -column 2
+
+      #--- J'affiche le bouton -
+      button $frm.test3.attenuateur- -text "$caption(t193,attenuateur-)" -relief ridge -width 2
+      grid $frm.test3.attenuateur- -in [ $frm.test3 getframe ] -row 1 -column 1 -ipadx 5
+
+      #--- J'affiche le bouton +
+      button $frm.test3.attenuateur+ -text "$caption(t193,attenuateur+)" -relief ridge -width 2
+      grid $frm.test3.attenuateur+ -in [ $frm.test3 getframe ] -row 1 -column 2 -ipadx 5
+
+      #--- J'affiche l'entry de la position de l'attenuateur
+      entry $frm.test3.entryPosition -textvariable ::t193::private(position) \
+         -justify center -state disabled
+      grid $frm.test3.entryPosition -in [ $frm.test3 getframe ] -row 2 -column 1 -columnspan 2 \
+         -sticky ew
+
+      grid rowconfigure [ $frm.test3 getframe ] 0 -minsize 25 -weight 0
+      grid rowconfigure [ $frm.test3 getframe ] 1 -minsize 25 -weight 0
+      grid rowconfigure [ $frm.test3 getframe ] 2 -minsize 25 -weight 0
+
+      grid columnconfigure [ $frm.test3 getframe ] 1 -minsize 40 -weight 0
+      grid columnconfigure [ $frm.test3 getframe ] 2 -minsize 40 -weight 0
+
+   pack $frm.test3 -side left -anchor w -fill none -pady 5 -expand 1
 
    #--- Le checkbutton pour la visibilite de la raquette a l'ecran
    checkbutton $frm.raquette -text "$caption(t193,raquette_tel)" \
@@ -313,11 +332,11 @@ proc ::t193::fillConfigPage { frm } {
    bind $frm.test1.ouest <ButtonPress-1>   "::t193::moveTelescop w press"
    bind $frm.test1.ouest <ButtonRelease-1> "::t193::moveTelescop w release"
 
-   #--- Actions des boutons - et +
-   bind $frm.test1.attenuateur- <ButtonPress-1>   "::t193::moveFilter -"
-   bind $frm.test1.attenuateur- <ButtonRelease-1> "::t193::stopFilter"
-   bind $frm.test1.attenuateur+ <ButtonPress-1>   "::t193::moveFilter +"
-   bind $frm.test1.attenuateur+ <ButtonRelease-1> "::t193::stopFilter"
+   #--- Actions des boutons - et + de l'attenuateur
+   bind $frm.test3.attenuateur- <ButtonPress-1>   "::t193::moveFilter -"
+   bind $frm.test3.attenuateur- <ButtonRelease-1> "::t193::stopFilter"
+   bind $frm.test3.attenuateur+ <ButtonPress-1>   "::t193::moveFilter +"
+   bind $frm.test3.attenuateur+ <ButtonRelease-1> "::t193::stopFilter"
 }
 
 #
@@ -339,6 +358,8 @@ proc ::t193::configureMonture { } {
       set linkNo [ ::confLink::create $conf(t193,portSerie) "tel$telNo" "control" [ tel$telNo product ] -noopen ]
       #--- Je change de variable
       set private(telNo) $telNo
+      #--- J'initialise l'attenuateur
+      tel$private(telNo) filter init $conf(t193,duree)
       #--- Configuration des boutons de test
       ::t193::configureConfigPage
    } ]
@@ -390,18 +411,20 @@ proc ::t193::configureConfigPage { } {
          $private(frm).test1.nord configure -state normal
          $private(frm).test1.sud configure -state normal
          $private(frm).test1.ouest configure -state normal
-         $private(frm).test1.attenuateur- configure -state normal
-         $private(frm).test1.attenuateur+ configure -state normal
          $private(frm).test2.lecture configure -state normal
+         $private(frm).test3.entryDuree configure -state normal
+         $private(frm).test3.attenuateur- configure -state normal
+         $private(frm).test3.attenuateur+ configure -state normal
       } else {
          #--- Je desactive les boutons de l'interface
          $private(frm).test1.est configure -state disabled
          $private(frm).test1.nord configure -state disabled
          $private(frm).test1.sud configure -state disabled
          $private(frm).test1.ouest configure -state disabled
-         $private(frm).test1.attenuateur- configure -state disabled
-         $private(frm).test1.attenuateur+ configure -state disabled
          $private(frm).test2.lecture configure -state disabled
+         $private(frm).test3.entryDuree configure -state disabled
+         $private(frm).test3.attenuateur- configure -state disabled
+         $private(frm).test3.attenuateur+ configure -state disabled
       }
    }
 }
