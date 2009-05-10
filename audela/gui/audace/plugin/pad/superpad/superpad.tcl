@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.26 2008-12-07 18:23:34 michelpujol Exp $
+# Mise a jour $Id: superpad.tcl,v 1.27 2009-05-10 11:49:16 michelpujol Exp $
 #
 
 namespace eval ::superpad {
@@ -82,7 +82,7 @@ namespace eval ::superpad {
       if { ! [ info exists conf(superpad,padsize) ] }      { set conf(superpad,padsize)      "0.5" }
       if { ! [ info exists conf(superpad,centerspeed) ] }  { set conf(superpad,centerspeed)  "140" }
       if { ! [ info exists conf(superpad,position) ] }     { set conf(superpad,position)     "100+100" }
-      if { ! [ info exists conf(superpad,focuserLabel) ] } { set conf(superpad,focuserLabel) "focuserjmi" }
+      if { ! [ info exists conf(superpad,focuserLabel) ] } { set conf(superpad,focuserLabel) "" }
 
       return
    }
