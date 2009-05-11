@@ -2,7 +2,7 @@
 # Fichier : sophiecontrol.tcl
 # Description : Fenetre de controle pour le centrage, la focalisation et le guidage
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecontrol.tcl,v 1.7 2009-05-11 18:01:00 robertdelmas Exp $
+# Mise a jour $Id: sophiecontrol.tcl,v 1.8 2009-05-11 20:46:38 michelpujol Exp $
 #
 
 #============================================================
@@ -857,12 +857,12 @@ proc ::sophie::control::setFocusInformation { starDetection fiberDetection origi
    #--- je mets a jour le voyant "etoileDetecte"
    if { $starDetection == 0 } {
       $frm.indicateurs.controleInterface.etoile_color_invariant configure \
-         -text $::caption(sophie,etoileNonDetecte)
-      $frm.indicateurs.controleInterface.etoile_color_invariant deselect
+         -text $::caption(sophie,etoileNonDetecte) \
+         -bg   $private(inactiveColor)
    } else {
       $frm.indicateurs.controleInterface.etoile_color_invariant configure \
-         -text $::caption(sophie,etoileDetecte)
-      $frm.indicateurs.controleInterface.etoile_color_invariant select
+         -text $::caption(sophie,etoileDetecte) \
+         -bg   $private(activeColor)
    }
 
    #--- je mets a jour le voyant "trouDetecte"
