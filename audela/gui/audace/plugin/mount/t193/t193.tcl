@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.2 2009-05-10 20:50:56 robertdelmas Exp $
+# Mise a jour $Id: t193.tcl,v 1.3 2009-05-11 11:37:01 michelpujol Exp $
 #
 
 namespace eval ::t193 {
@@ -84,14 +84,20 @@ proc ::t193::initPlugin { } {
 
    #--- Initialisation
    set private(telNo) "0"
+   set private(frm)   ""
 
    #--- Prise en compte des liaisons
    set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
 
    #--- Initialise les variables de la monture du T193 de l'OHP
-   if { ! [ info exists conf(t193,portSerie) ] } { set conf(t193,portSerie) [ lindex $list_connexion 0 ] }
-   if { ! [ info exists conf(t193,nomCarte) ] }  { set conf(t193,nomCarte)  "Dev2 /port0" }
-   if { ! [ info exists conf(t193,duree) ] }     { set conf(t193,duree)     "20" }
+   if { ! [ info exists conf(t193,portSerie) ] }      { set conf(t193,portSerie) [ lindex $list_connexion 0 ] }
+   if { ! [ info exists conf(t193,nomCarte) ] }       { set conf(t193,nomCarte)  "Dev1/port0" }
+   if { ! [ info exists conf(t193,usbLine) ] }        { set conf(t193,usbLine)   "0 1 2 3 4 5 6 7" }
+   #--- vitesses de guidage en arcseconde de degre par seconde de temps
+   if { ! [ info exists conf(t193,alphaSpeed) ] }     { set conf(t193,alphaSpeed)  1.0  }
+   if { ! [ info exists conf(t193,deltaSpeed) ] }     { set conf(t193,alphaSpeed)  1.0 }
+   #--- duree de déplacement entre les 2 butée de l'atténuatteur
+   if { ! [ info exists conf(t193,duree) ] }          { set conf(t193,duree)     "20" }
 }
 
 #
@@ -349,7 +355,7 @@ proc ::t193::configureMonture { } {
 
    set catchResult [ catch {
       #--- Je cree la monture
-      set telNo [ tel::create t193 HP1000 -hpcom $conf(t193,portSerie) -usbport $conf(t193,nomCarte) -usbline { 0 1 2 3 4 5 6 7 } ]
+      set telNo [ tel::create t193 HP1000 -hpcom $conf(t193,portSerie) -usbport $conf(t193,nomCarte) -usbline $::conf(t193,usbLine) ]
       #--- J'affiche un message d'information dans la Console
       ::console::affiche_entete "$caption(t193,port_t193) $caption(t193,2points) $conf(t193,portSerie)\n"
       ::console::affiche_entete "$caption(t193,nom_carte) $caption(t193,2points) $conf(t193,nomCarte)\n"
@@ -404,7 +410,7 @@ proc ::t193::stop { } {
 proc ::t193::configureConfigPage { } {
    variable private
 
-   if { $private(frm) != "" && [ winfo exists $private(frm) ] } {
+   if { [ winfo exists $private(frm) ] } {
       if { [ ::t193::isReady ] == 1 } {
          #--- J'active les boutons de l'interface
          $private(frm).test1.est configure -state normal
@@ -525,6 +531,7 @@ proc ::t193::getPluginProperty { propertyName } {
       hasUnpark               { return 0 }
       hasUpdateDate           { return 0 }
       backlash                { return 0 }
+      guidingSpeed            { return [list $::conf(t193,alphaGuidingSpeed) $::conf(t193,deltaGuidingSpeed) ] }
    }
 }
 
