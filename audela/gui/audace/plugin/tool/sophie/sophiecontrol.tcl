@@ -2,7 +2,7 @@
 # Fichier : sophiecontrol.tcl
 # Description : Fenetre de controle pour le centrage, la focalisation et le guidage
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecontrol.tcl,v 1.5 2009-05-11 11:42:51 michelpujol Exp $
+# Mise a jour $Id: sophiecontrol.tcl,v 1.6 2009-05-11 13:45:18 michelpujol Exp $
 #
 
 #============================================================
@@ -1053,7 +1053,7 @@ proc ::sophie::control::setFocusInformation { starDetection fiberDetection origi
 }
 
 ##------------------------------------------------------------
-# setGuidingInformation
+# setGuideInformation
 #    affiche les informations de guidage
 #
 # @param starDetection 0=etoile non detecte 1=etoile detecte
@@ -1068,16 +1068,19 @@ proc ::sophie::control::setFocusInformation { starDetection fiberDetection origi
 # @param deltaCorrection  correction en delta (en arcseconde)
 # @return rien
 #------------------------------------------------------------
-proc ::sophie::control::setGuidingInformation { starDetection fiberDetection originX originY starX starY starDx starDy alphaCorrection deltaCorrection } {
+proc ::sophie::control::setGuideInformation { starDetection fiberDetection originX originY starX starY starDx starDy alphaCorrection deltaCorrection } {
    variable private
 
+   #--- je met a jour le voyant "etoileDetecte"
    set frm $private(frm)
    if { $starDetection == 0 } {
-      $frm.centrage.controleInterface.etoile_color_invariant configure -text $::caption(sophie,etoileNonDetecte)
-      $frm.centrage.controleInterface.etoile_color_invariant deselect
+      $frm.centrage.controleInterface.etoile_color_invariant configure \
+         -text $::caption(sophie,etoileNonDetecte) \
+         -bg   $private(inactiveColor)
    } else {
-      $frm.centrage.controleInterface.etoile_color_invariant configure -text $::caption(sophie,etoileDetecte)
-      $frm.centrage.controleInterface.etoile_color_invariant select
+      $frm.centrage.controleInterface.etoile_color_invariant configure \
+         -text $::caption(sophie,etoileDetecte) \
+         -bg   $private(activeColor)
    }
 
    # ... à compléter
