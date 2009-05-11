@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.4 2009-05-11 10:51:46 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.5 2009-05-11 11:42:51 michelpujol Exp $
 #
 
 #=========================================================================
@@ -28,7 +28,7 @@ set caption(sophie,image)                    "Image"
 set caption(sophie,enregistrer)              "Save"
 set caption(sophie,voirImage)                "See Image"
 
-set caption(sophie,pb)                       "Problem"
+set caption(sophie,selcam)                   "You must select a camera first\n(Setup/Camera)."
 set caption(sophie,selcam)                   "You must select a camera first\n(Setup/Camera)."
 
 
@@ -37,6 +37,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(sophie,titre)                 "Sophie"
    set caption(sophie,aide)                  "Aide pour cet outil"
+   set caption(sophie,acquisition)           "Acquisition"
    set caption(sophie,config)                "Configuration"
    set caption(sophie,pose)                  "Pose (sec.)"
    set caption(sophie,binning)               "Binning"
@@ -51,6 +52,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,image)                 "Image"
    set caption(sophie,enregistrer)           "Enregistrer"
    set caption(sophie,voirImage)             "Voir l'image"
+   set caption(sophie,invalidDirectory)      "Le répertoire %s n'existe pas."
 
    set caption(sophie,parametreConfig)       "Configuration générale"
    set caption(sophie,acquisition)           "Paramètres d'acquisition"
@@ -106,9 +108,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,indicateurCentrage)    "Indicateurs de centrage"
    set caption(sophie,courbes)               "Courbes"
    set caption(sophie,intensiteMax)          "Intensité maxi (ADU)"
-   set caption(sophie,centrageConsigne)      "Centrer sur la consigne"
+   set caption(sophie,lancerCentrage)        "Centrer sur la consigne"
+   set caption(sophie,arreterCentrage)       "Arrêter le centrage"
    set caption(sophie,centrageArrete)        "Centrage arrêté"
-   set caption(sophie,centrageReussi)        "Centrage réussi"
+   set caption(sophie,centrageReussi)        "Centrage en cours"
    set caption(sophie,consigne)              "Consigne"
    set caption(sophie,pointageObjet)         "Pointage de l'objet"
    set caption(sophie,pointageEntreeFibreA)  "Pointage de l'entrée de la fibre A"
@@ -130,8 +133,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,arretGuidage)          "Arrêter le guidage"
    set caption(sophie,suspendreGuidage)      "Suspendre le guidage"
 
-   set caption(sophie,pb)                    "Problème"
    set caption(sophie,selcam)                "Vous devez d'abord sélectionner une caméra\n(menu Configuration/Caméra)."
+   set caption(sophie,noAcquisition)         "L'acquisition continue n'est pas lancée."
 
 
 # *************** Version italienne ***************************

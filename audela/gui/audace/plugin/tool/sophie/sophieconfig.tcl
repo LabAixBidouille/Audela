@@ -2,7 +2,7 @@
 # Fichier : sophieconfig.tcl
 # Description : Fenetre de configuration de l'instrument Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophieconfig.tcl,v 1.1 2009-05-08 10:44:49 michelpujol Exp $
+# Mise a jour $Id: sophieconfig.tcl,v 1.2 2009-05-11 11:42:51 michelpujol Exp $
 #
 
 #============================================================
@@ -16,31 +16,18 @@ namespace eval ::sophie::config {
 # run
 #    affiche la fenetre du configuration
 #------------------------------------------------------------
-proc ::sophie::config::run { tkbase } {
+proc ::sophie::config::run { visuNo tkbase  } {
    variable private
    global audace conf
 
    #--- Initialisation de variables
    set private(frm)                   "$audace(base).sophieconfig"
-   set private(closeWindow)           "1"
-   set private(poseDefaut)            "1"
-   set private(binCentrageDefaut)     "2x2"
-   set private(binGuidageDefaut)      "1x1"
-   set private(echelle)               "0.186"
-   set private(nbPosesAvantCorrect)   "1"
-   set private(nbPosesAvantMaj)       "1"
-   set private(tailleFenetreGuidage)  "200"
-   set private(tailleFenetreCentrage) "100"
-   set private(gainProportionnel)     "50"
-   set private(gainIntegrateur)       "10"
-   set private(prefixeImageCentrage)  "centrage"
-   set private(prefixeImageGuidage)   "guidage"
 
    #--- Creation des variables si elles n'existaient pas
    if { ! [ info exists conf(sophie,configWindowPosition) ] } { set conf(sophie,configWindowPosition) "450x540+565+160" }
 
    #--- j'affiche la fenetre
-   ::confGenerique::run 1 $private(frm) "::sophie::config" -modal 0 -geometry $conf(sophie,configWindowPosition) -resizable 1
+   ::confGenerique::run $visuNo $private(frm) "::sophie::config" -modal 0 -geometry $conf(sophie,configWindowPosition) -resizable 1
 }
 
 #------------------------------------------------------------
@@ -50,12 +37,6 @@ proc ::sophie::config::run { tkbase } {
 proc ::sophie::config::closeWindow { visuNo } {
    variable private
    global conf
-
-   if { $private(closeWindow) == 0 } {
-      set private(closeWindow) 1
-      #--- j'annule la fermeture s'il y a une erreur
-      return 0
-   }
 
    #--- je memorise la position courante de la fenetre
    set conf(sophie,configWindowPosition) [ winfo geometry [ winfo toplevel $private(frm) ] ]
@@ -119,7 +100,27 @@ proc ::sophie::config::fillConfigPage { frm visuNo } {
 #------------------------------------------------------------
 proc ::sophie::config::fillConfigurationPage { frm visuNo } {
    variable private
+   variable widget
    global caption
+
+   #--- j'initalise les variables des widgets
+   set widget(poseDefaut)            $::conf(sophie,exposure)
+   set widget(binCentrageDefaut)     $::conf(sophie,centerBinning)
+   set widget(binGuidageDefaut)      $::conf(sophie,guideBinning)
+   set widget(echelle)               $::conf(sophie,pixelScale)
+   set widget(nbPosesAvantCorrect)   $::conf(sophie,correctionCumulNb)
+   set widget(nbPosesAvantMaj)       $::conf(sophie,originCumulNb)
+   set widget(tailleFenetreGuidage)  $::conf(sophie,guidingWindowSize)
+   set widget(tailleFenetreCentrage) $::conf(sophie,centerWindowSize)
+   set widget(gainProportionnel)     $::conf(sophie,proportionalGain)
+   set widget(gainIntegrateur)       $::conf(sophie,integralGain)
+   set widget(prefixeImageCentrage)  $::conf(sophie,centerFileNameprefix)
+   set widget(prefixeImageGuidage)   $::conf(sophie,guidingFileNameprefix)
+
+   set widget(fiberHRX)             $::conf(sophie,fiberHRX)
+   set widget(fiberHRY)             $::conf(sophie,fiberHRY)
+   set widget(fiberHEX)             $::conf(sophie,fiberHEX)
+   set widget(fiberHEY)             $::conf(sophie,fiberHEY)
 
    #--- Frame pour la configuration des acquisitions
    TitleFrame $frm.acq -borderwidth 2 -relief ridge -text $caption(sophie,acquisition)
@@ -134,7 +135,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -justify center            \
          -relief sunken             \
          -borderwidth 1             \
-         -textvariable ::sophie::config::private(poseDefaut) \
+         -textvariable ::sophie::config::widget(poseDefaut) \
          -editable 1                \
          -values $::sophie::private(listePose)
       grid $frm.acq.valeurpose -in [ $frm.acq getframe ] -row 0 -column 1 -sticky ens
@@ -149,7 +150,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -justify center            \
          -relief sunken             \
          -borderwidth 1             \
-         -textvariable ::sophie::config::private(binCentrageDefaut) \
+         -textvariable ::sophie::config::widget(binCentrageDefaut) \
          -editable 1                \
          -values $::sophie::private(listeBinning)
       grid $frm.acq.valeurbincentrage -in [ $frm.acq getframe ] -row 1 -column 1 -sticky ens
@@ -164,7 +165,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -justify center            \
          -relief sunken             \
          -borderwidth 1             \
-         -textvariable ::sophie::config::private(binGuidageDefaut) \
+         -textvariable ::sophie::config::widget(binGuidageDefaut) \
          -editable 1                \
          -values $::sophie::private(listeBinning)
       grid $frm.acq.valeurbinguidage -in [ $frm.acq getframe ] -row 2 -column 1 -sticky ens
@@ -180,7 +181,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
 
       Entry $frm.guidage.entryechelle \
          -width 8 -justify center -editable 1 \
-         -textvariable ::sophie::config::private(echelle)
+         -textvariable ::sophie::config::widget(echelle)
       grid $frm.guidage.entryechelle -in [ $frm.guidage getframe ] -row 0 -column 2 -sticky ens
 
       #--- Nombre de poses avant la correction de guidage
@@ -189,7 +190,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
 
       Entry $frm.guidage.entrynbPosesAvantCorrect \
          -width 8 -justify center -editable 1 \
-         -textvariable ::sophie::config::private(nbPosesAvantCorrect)
+         -textvariable ::sophie::config::widget(nbPosesAvantCorrect)
       grid $frm.guidage.entrynbPosesAvantCorrect -in [ $frm.guidage getframe ] -row 1 -column 2 -sticky ens
 
       #--- Nombre de poses avant la mise à jour de la consigne
@@ -198,7 +199,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
 
       Entry $frm.guidage.entrynbPosesAvantMaj \
          -width 8 -justify center -editable 1 \
-         -textvariable ::sophie::config::private(nbPosesAvantMaj)
+         -textvariable ::sophie::config::widget(nbPosesAvantMaj)
       grid $frm.guidage.entrynbPosesAvantMaj -in [ $frm.guidage getframe ] -row 2 -column 2 -sticky ens
 
       #--- Taille de la fenetre de guidage
@@ -207,7 +208,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
 
       Entry $frm.guidage.entrytailleFenetreGuidage \
          -width 8 -justify center -editable 1 \
-         -textvariable ::sophie::config::private(tailleFenetreGuidage)
+         -textvariable ::sophie::config::widget(tailleFenetreGuidage)
       grid $frm.guidage.entrytailleFenetreGuidage -in [ $frm.guidage getframe ] -row 3 -column 2 -sticky ens
 
       #--- Taille de la fenetre de centrage
@@ -216,7 +217,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
 
       Entry $frm.guidage.entrytailleFenetreCentrage \
          -width 8 -justify center -editable 1 \
-         -textvariable ::sophie::config::private(tailleFenetreCentrage)
+         -textvariable ::sophie::config::widget(tailleFenetreCentrage)
       grid $frm.guidage.entrytailleFenetreCentrage -in [ $frm.guidage getframe ] -row 4 -column 2 -sticky ens
 
       #--- Gain proportionnel
@@ -225,7 +226,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
 
       Entry $frm.guidage.entrygainProportionnel \
          -width 8 -justify center -editable 1 \
-         -textvariable ::sophie::config::private(gainProportionnel)
+         -textvariable ::sophie::config::widget(gainProportionnel)
       grid $frm.guidage.entrygainProportionnel -in [ $frm.guidage getframe ] -row 5 -column 2 -sticky ens
 
       #--- Gain integrateur
@@ -234,7 +235,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
 
       Entry $frm.guidage.entrygainIntegrateur \
          -width 8 -justify center -editable 1 \
-         -textvariable ::sophie::config::private(gainIntegrateur)
+         -textvariable ::sophie::config::widget(gainIntegrateur)
       grid $frm.guidage.entrygainIntegrateur -in [ $frm.guidage getframe ] -row 6 -column 2 -sticky ens
 
    pack $frm.guidage -side top -anchor w -fill x -expand 1
@@ -246,33 +247,29 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
       label $frm.fibre.labelfibreAHR -text $caption(sophie,fibreAHR)
       grid $frm.fibre.labelfibreAHR -in [ $frm.fibre getframe ] -row 0 -column 1 -sticky w
 
-      spinbox $frm.fibre.spinboxxfibreAHR -from 1 -to 1536 -incr 1 \
-         -width 8 -justify center
-      $frm.fibre.spinboxxfibreAHR set $::conf(sophie,xfibreAHR)
-      $frm.fibre.spinboxxfibreAHR configure -textvariable ::conf(sophie,xfibreAHR)
-      grid $frm.fibre.spinboxxfibreAHR -in [ $frm.fibre getframe ] -row 0 -column 2 -sticky ens
+      spinbox $frm.fibre.spinboxfiberHRX -from 1 -to 1536 -incr 1 \
+         -width 8 -justify center -xscrollcommand "::sophie::config::onScroll $visuNo fiberHRX" \
+         -textvariable ::sophie::config::widget(fiberHRX)
+      grid $frm.fibre.spinboxfiberHRX -in [ $frm.fibre getframe ] -row 0 -column 2 -sticky ens
 
-      spinbox $frm.fibre.spinboxyfibreAHR -from 1 -to 1024 -incr 1 \
-         -width 8 -justify center
-      $frm.fibre.spinboxyfibreAHR set $::conf(sophie,yfibreAHR)
-      $frm.fibre.spinboxyfibreAHR configure -textvariable ::conf(sophie,yfibreAHR)
-      grid $frm.fibre.spinboxyfibreAHR -in [ $frm.fibre getframe ] -row 0 -column 3 -sticky ens
+      spinbox $frm.fibre.spinboxfiberHRY -from 1 -to 1024 -incr 1 \
+         -width 8 -justify center -xscrollcommand "::sophie::config::onScroll $visuNo fiberHRY" \
+         -textvariable ::sophie::config::widget(fiberHRY)
+      grid $frm.fibre.spinboxfiberHRY -in [ $frm.fibre getframe ] -row 0 -column 3 -sticky ens
 
       #--- Fibre A HE
       label $frm.fibre.labelfibreAHE -text $caption(sophie,fibreAHE)
       grid $frm.fibre.labelfibreAHE -in [ $frm.fibre getframe ] -row 1 -column 1 -sticky w
 
-      spinbox $frm.fibre.spinboxxfibreAHE -from 1 -to 1536 -incr 1 \
-         -width 8 -justify center
-      $frm.fibre.spinboxxfibreAHE set $::conf(sophie,xfibreAHE)
-      $frm.fibre.spinboxxfibreAHE configure -textvariable ::conf(sophie,xfibreAHE)
-      grid $frm.fibre.spinboxxfibreAHE -in [ $frm.fibre getframe ] -row 1 -column 2 -sticky ens
+      spinbox $frm.fibre.spinboxfiberHEX -from 1 -to 1536 -incr 1 \
+         -width 8 -justify center -xscrollcommand "::sophie::config::onScroll $visuNo fiberHEX" \
+         -textvariable ::sophie::config::widget(fiberHEX)
+      grid $frm.fibre.spinboxfiberHEX -in [ $frm.fibre getframe ] -row 1 -column 2 -sticky ens
 
-      spinbox $frm.fibre.spinboxyfibreAHE -from 1 -to 1024 -incr 1 \
-         -width 8 -justify center
-      $frm.fibre.spinboxyfibreAHE set $::conf(sophie,xfibreAHE)
-      $frm.fibre.spinboxyfibreAHE configure -textvariable ::conf(sophie,yfibreAHE)
-      grid $frm.fibre.spinboxyfibreAHE -in [ $frm.fibre getframe ] -row 1 -column 3 -sticky ens
+      spinbox $frm.fibre.spinboxfiberHEY -from 1 -to 1024 -incr 1 \
+         -width 8 -justify center -xscrollcommand "::sophie::config::onScroll $visuNo fiberHEY" \
+         -textvariable ::sophie::config::widget(fiberHEY)
+      grid $frm.fibre.spinboxfiberHEY -in [ $frm.fibre getframe ] -row 1 -column 3 -sticky ens
 
       #--- Fibre B
       label $frm.fibre.labelfibreB -text $caption(sophie,fibreB)
@@ -332,7 +329,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
 
       Entry $frm.image.entryprefixeImageCentrage \
          -width 13 -justify center -editable 1 \
-         -textvariable ::sophie::config::private(prefixeImageCentrage)
+         -textvariable ::sophie::config::widget(prefixeImageCentrage)
       grid $frm.image.entryprefixeImageCentrage -in [ $frm.image getframe ] -row 1 -column 2 -sticky ens
 
       #--- Prefixe des images de guidage
@@ -341,7 +338,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
 
       Entry $frm.image.entryprefixeImageGuidage \
          -width 13 -justify center -editable 1 \
-         -textvariable ::sophie::config::private(prefixeImageGuidage)
+         -textvariable ::sophie::config::widget(prefixeImageGuidage)
       grid $frm.image.entryprefixeImageGuidage -in [ $frm.image getframe ] -row 2 -column 2 -sticky ens
 
       #--- Image de Bias
@@ -387,10 +384,33 @@ proc ::sophie::config::fillCallibrationPage { frm visuNo } {
 #    met à jour les variables et les widgets quand on applique les modifications d'une configuration
 #----------------------------------------------------------------------------
 proc ::sophie::config::apply { visuNo } {
-   variable private
    variable widget
 
-   set private(closeWindow) 1
+
+   #--- je controle les valeurs saisies
+   ### à compléter ...
+
+   #--- j'initalise les variables des widgets
+   set ::conf(sophie,exposure)                  $widget(poseDefaut)
+   set ::conf(sophie,centerBinning)             $widget(binCentrageDefaut)
+   set ::conf(sophie,guideBinning)              $widget(binGuidageDefaut)
+   set ::conf(sophie,pixelScale)                $widget(echelle)
+   set ::conf(sophie,correctionCumulNb)         $widget(nbPosesAvantCorrect)
+   set ::conf(sophie,originCumulNb)             $widget(nbPosesAvantMaj)
+   set ::conf(sophie,guidingWindowSize)         $widget(tailleFenetreGuidage)
+   set ::conf(sophie,centerWindowSize)          $widget(tailleFenetreCentrage)
+   set ::conf(sophie,proportionalGain)          $widget(gainProportionnel)
+   set ::conf(sophie,integralGain)              $widget(gainIntegrateur)
+   set ::conf(sophie,centerFileNameprefix)      $widget(prefixeImageCentrage)
+   set ::conf(sophie,guidingFileNameprefix)     $widget(prefixeImageGuidage)
+
+   set ::conf(sophie,fiberHRX)                $widget(fiberHRX)
+   set ::conf(sophie,fiberHRY)                $widget(fiberHRY)
+   set ::conf(sophie,fiberHEX)                $widget(fiberHEX)
+   set ::conf(sophie,fiberHEY)                $widget(fiberHEY)
+
+   #---  je re-positionne la consigne demandé si le mode de guidage est FIBER
+   ::sophie::setGuidingMode $visuNo
 }
 
 #------------------------------------------------------------
@@ -437,4 +457,26 @@ proc ::sophie::chooseBiasFile { } {
    }
 }
 
+#------------------------------------------------------------
+# choseBiasFile
+#    choisi le nom de l'image de bias
+#------------------------------------------------------------
+proc ::sophie::config::onScroll { visuNo name  args } {
+   variable widget
+
+   switch $name {
+      "fiberHRX" -
+      "fiberHRY" {
+         set ::sophie::private(originCoord) [list $widget(fiberHRX) $widget(fiberHRY)]
+         ::sophie::createOrigin $visuNo
+      }
+      "fiberHEX" -
+      "fiberHEY" {
+         set ::sophie::private(originCoord) [list $widget(fiberHEX) $widget(fiberHEY)]
+         ::sophie::createOrigin $visuNo
+      }
+   }
+
+
+}
 
