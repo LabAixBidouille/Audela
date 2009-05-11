@@ -2,7 +2,7 @@
 # Fichier : sophie.tcl
 # Description : Outil d'autoguidage pour le spectro Sophie du telescope T193 de l'OHP
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophietest.tcl,v 1.1 2009-05-08 10:44:49 michelpujol Exp $
+# Mise a jour $Id: sophietest.tcl,v 1.2 2009-05-11 13:44:13 michelpujol Exp $
 #
 
 #------------------------------------------------------------
@@ -91,4 +91,29 @@ proc ::sophie::testReadHp { } {
       }
    }
 }
+
+
+
+#----------
+# tests de la fentre de controle
+#-----------------
+
+proc ::sophie::ta1 { }  {
+   ::sophie::control::setAcquisitionState { 1 }
+}
+
+proc ::sophie::ta2 { }  {
+   ::sophie::control::setAcquisitionState { 0 }
+}
+
+
+proc ::sophie::tc1 { } {
+   ####          starDetection fiberDetection originX originY starX starY fwhmX fwhmY background maxFlow
+   ::sophie::control::setCenterInformation 1 1 750 512 752 514 45 46 100 10000
+
+}
+
+
+
+
 
