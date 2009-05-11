@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.3 2009-05-11 11:37:01 michelpujol Exp $
+# Mise a jour $Id: t193.tcl,v 1.4 2009-05-11 18:01:23 robertdelmas Exp $
 #
 
 namespace eval ::t193 {
@@ -89,15 +89,15 @@ proc ::t193::initPlugin { } {
    #--- Prise en compte des liaisons
    set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
 
-   #--- Initialise les variables de la monture du T193 de l'OHP
-   if { ! [ info exists conf(t193,portSerie) ] }      { set conf(t193,portSerie) [ lindex $list_connexion 0 ] }
-   if { ! [ info exists conf(t193,nomCarte) ] }       { set conf(t193,nomCarte)  "Dev1/port0" }
-   if { ! [ info exists conf(t193,usbLine) ] }        { set conf(t193,usbLine)   "0 1 2 3 4 5 6 7" }
+   #--- configuration de la monture du T193 de l'OHP
+   if { ! [ info exists conf(t193,portSerie) ] }      { set conf(t193,portSerie)  [ lindex $list_connexion 0 ] }
+   if { ! [ info exists conf(t193,nomCarte) ] }       { set conf(t193,nomCarte)   "Dev1/port0" }
+   if { ! [ info exists conf(t193,usbLine) ] }        { set conf(t193,usbLine)    "0 1 2 3 4 5 6 7" }
    #--- vitesses de guidage en arcseconde de degre par seconde de temps
-   if { ! [ info exists conf(t193,alphaSpeed) ] }     { set conf(t193,alphaSpeed)  1.0  }
-   if { ! [ info exists conf(t193,deltaSpeed) ] }     { set conf(t193,alphaSpeed)  1.0 }
-   #--- duree de déplacement entre les 2 butée de l'atténuatteur
-   if { ! [ info exists conf(t193,duree) ] }          { set conf(t193,duree)     "20" }
+   if { ! [ info exists conf(t193,alphaSpeed) ] }     { set conf(t193,alphaSpeed) "1.0" }
+   if { ! [ info exists conf(t193,deltaSpeed) ] }     { set conf(t193,alphaSpeed) "1.0" }
+   #--- duree de deplacement entre les 2 butees (mini et maxi) de l'attenuateur
+   if { ! [ info exists conf(t193,duree) ] }          { set conf(t193,duree)      "20" }
 }
 
 #
