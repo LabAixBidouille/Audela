@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.5 2009-05-11 11:42:51 michelpujol Exp $
+# Mise a jour $Id: sophie.cap,v 1.6 2009-05-11 17:59:38 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -14,6 +14,7 @@ global caption langage
 set caption(sophie,titre)                    "Sophie"
 set caption(sophie,aide)                     "Help For This Tool"
 set caption(sophie,config)                   "Setup"
+set caption(sophie,acquisition)              "Acquisition"
 set caption(sophie,pose)                     "Exp. (sec.)"
 set caption(sophie,binning)                  "Binning"
 set caption(sophie,goAcq)                    "GO Acq."
@@ -28,17 +29,13 @@ set caption(sophie,image)                    "Image"
 set caption(sophie,enregistrer)              "Save"
 set caption(sophie,voirImage)                "See Image"
 
-set caption(sophie,selcam)                   "You must select a camera first\n(Setup/Camera)."
-set caption(sophie,selcam)                   "You must select a camera first\n(Setup/Camera)."
-
-
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(sophie,titre)                 "Sophie"
    set caption(sophie,aide)                  "Aide pour cet outil"
-   set caption(sophie,acquisition)           "Acquisition"
    set caption(sophie,config)                "Configuration"
+   set caption(sophie,acquisition)           "Acquisition"
    set caption(sophie,pose)                  "Pose (sec.)"
    set caption(sophie,binning)               "Binning"
    set caption(sophie,goAcq)                 "GO Acq."
@@ -52,10 +49,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,image)                 "Image"
    set caption(sophie,enregistrer)           "Enregistrer"
    set caption(sophie,voirImage)             "Voir l'image"
+
    set caption(sophie,invalidDirectory)      "Le répertoire %s n'existe pas."
 
    set caption(sophie,parametreConfig)       "Configuration générale"
-   set caption(sophie,acquisition)           "Paramètres d'acquisition"
+   set caption(sophie,parametreAcquisition)  "Paramètres d'acquisition"
    set caption(sophie,poseDefaut)            "Pose par défaut (sec.)"
    set caption(sophie,binningCentrage)       "Binning par défaut du mode centrage"
    set caption(sophie,binningGuidage)        "Binning par défaut du mode guidage"
@@ -112,6 +110,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,arreterCentrage)       "Arrêter le centrage"
    set caption(sophie,centrageArrete)        "Centrage arrêté"
    set caption(sophie,centrageReussi)        "Centrage en cours"
+   set caption(sophie,centrageTermine)       "Centrage terminé"
    set caption(sophie,consigne)              "Consigne"
    set caption(sophie,pointageObjet)         "Pointage de l'objet"
    set caption(sophie,pointageEntreeFibreA)  "Pointage de l'entrée de la fibre A"
@@ -134,6 +133,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,suspendreGuidage)      "Suspendre le guidage"
 
    set caption(sophie,selcam)                "Vous devez d'abord sélectionner une caméra\n(menu Configuration/Caméra)."
+   set caption(sophie,seltel)                "Vous devez d'abord sélectionner une monture\n(menu Configuration/Monture)."
    set caption(sophie,noAcquisition)         "L'acquisition continue n'est pas lancée."
 
 
@@ -143,6 +143,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,titre)                 "Sophie"
    set caption(sophie,aide)                  "Aiuto per questo tool"
    set caption(sophie,config)                "Configurazione"
+   set caption(sophie,acquisition)           "Acquisizione"
    set caption(sophie,pose)                  "Posa (sec.)"
    set caption(sophie,binning)               "Binning"
    set caption(sophie,goAcq)                 "GO Acq."
@@ -163,6 +164,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,titre)                 "Sophie"
    set caption(sophie,aide)                  "Ayuda para esta herramienta"
    set caption(sophie,config)                "Configuración"
+   set caption(sophie,acquisition)           "Adquisición"
    set caption(sophie,pose)                  "Exp. (seg.)"
    set caption(sophie,binning)               "Binning"
    set caption(sophie,goAcq)                 "GO Adq."
@@ -183,6 +185,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,titre)                 "Sophie"
    set caption(sophie,aide)                  "Hilfe für dieses Gerät"
    set caption(sophie,config)                "Konfiguration"
+   set caption(sophie,acquisition)           "Belichtung"
    set caption(sophie,pose)                  "Bel. (Sek.)"
    set caption(sophie,binning)               "Binning"
    set caption(sophie,goAcq)                 "GO Anschaf."
@@ -203,6 +206,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,titre)                 "Sophie"
    set caption(sophie,aide)                  "Ajuda para esta ferramenta"
    set caption(sophie,config)                "Configuração"
+   set caption(sophie,acquisition)           "Aquisição"
    set caption(sophie,pose)                  "Exposição (seg.)"
    set caption(sophie,binning)               "Binning"
    set caption(sophie,goAcq)                 "GO Aqu."
@@ -223,6 +227,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,titre)                 "Sophie"
    set caption(sophie,aide)                  "Help For This Tool"
    set caption(sophie,config)                "Setup"
+   set caption(sophie,acquisition)           "Acquisition"
    set caption(sophie,pose)                  "Exp. (sec.)"
    set caption(sophie,binning)               "Binning"
    set caption(sophie,goAcq)                 "GO Acq."
