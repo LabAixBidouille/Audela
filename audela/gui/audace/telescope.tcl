@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.34 2009-04-22 07:54:07 denismarchais Exp $
+# Mise a jour $Id: telescope.tcl,v 1.35 2009-05-11 11:40:38 michelpujol Exp $
 #
 
 namespace eval ::telescope {
@@ -18,6 +18,7 @@ namespace eval ::telescope {
 #    Rien
 #------------------------------------------------------------
 proc ::telescope::init { } {
+   variable private
    global audace caption
 
    #--- Chargement des captions
@@ -36,6 +37,8 @@ proc ::telescope::init { } {
    set audace(telescope,goto)          "0"
    set audace(telescope,inittel)       "$caption(telescope,init)"
    set audace(telescope,controle)      "$caption(telescope,suivi_marche)"
+
+   set private(tescopeIsMoving) 0
 }
 
 #------------------------------------------------------------
@@ -835,6 +838,10 @@ proc ::telescope::stop { direction } {
    variable AfterState
    global audace conf
 
+   #--- j'inerromps la boucle dans ::telescope::moveTelescope
+   set private(tescopeIsMoving) 0
+
+
    if { [ ::tel::list ] != "" } {
       if { $conf(telescope) == "audecom" } {
          tel$audace(telNo) radec stop $direction
@@ -1121,21 +1128,24 @@ proc ::telescope::getTargetEquinox { } {
 #------------------------------------------------------------
 # moveTelescope
 #    Deplace le telescope pendant un duree determinee
-#    Le deplacement est interrompu si private(acquisitionState)!=1
+#    Le deplacement est interrompu si private(tescopeIsMoving)!=1
 #
-# Parametres :
-#    alphaDirection : Direction (e, w, n, ou s) du movement en AD
-#    alphaDelay     : Duree du deplacement en milliseconde (nombre entier) en AD
-#    deltaDirection : Direction (e, w, n, ou s) du movement en Dec
-#    deltaDelay     : Duree du deplacement en milliseconde (nombre entier) en Dec
-# Return :
-#    Rien
+# @param alphaDirection : Direction (e, w, n, ou s) du movement en AD
+# @param alphaDiff      : Deplacement alpha en arcseconde
+# @param deltaDirection : Direction (e, w, n, ou s) du movement en Dec
+# @param deltaDiff      : Deplacement delta en arcseconde
+#
+# @return rien
 #------------------------------------------------------------
-proc ::telescope::moveTelescope { alphaDirection alphaDelay deltaDirection deltaDelay } {
+proc ::telescope::moveTelescope { alphaDirection alphaDiff deltaDirection deltaDiff } {
    variable private
    global audace
 
-   set private(acquisitionState) 1
+   #--- je recupere les vitesses de guidage (en arseconde par milliseconde de temps)
+   set guidingSpeed  [::confTel::getPluginProperty "guidingSpeed"]
+   #--- je calcule le delai de rattrapage
+   set alphaDelay    [expr int($alphaDiff * [lindex $guidingSpeed 0 ]) ]
+   set deltaDelay    [expr int($deltaDiff * [lindex $guidingSpeed 1 ]) ]
 
    #--- laisse la main pour traiter une eventuelle demande d'arret
    update
@@ -1145,7 +1155,7 @@ proc ::telescope::moveTelescope { alphaDirection alphaDelay deltaDirection delta
    #--- j'attend l'expiration du delai par tranche de 1 seconde
    set delay $alphaDelay
    while { $delay > 0 } {
-      if { $private(acquisitionState) == 1 } {
+      if { $private(tescopeIsMoving) == 1 } {
          if { $delay > 1000 } {
             after 999
             set delay [expr $delay - 1000 ]
@@ -1168,7 +1178,7 @@ proc ::telescope::moveTelescope { alphaDirection alphaDelay deltaDirection delta
    #--- j'attend l'expiration du delai par tranche de 1 seconde
    set delay $deltaDelay
    while { $delay > 0 } {
-      if { $private(acquisitionState) == 1 } {
+      if { $private(tescopeIsMoving) == 1 } {
          if { $delay > 10000 } {
             after 9990
             set delay [expr $delay - 10000 ]

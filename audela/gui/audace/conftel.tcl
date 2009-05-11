@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.54 2009-03-13 23:45:14 michelpujol Exp $
+# Mise a jour $Id: conftel.tcl,v 1.55 2009-05-11 11:40:38 michelpujol Exp $
 #
 
 namespace eval ::confTel {
@@ -478,20 +478,21 @@ proc ::confTel::widgetToConf { } {
 proc ::confTel::getPluginProperty { propertyName } {
    variable private
 
-   # multiMount              Retourne la possibilite de se connecter avec Ouranos (1 : Oui, 0 : Non)
-   # name                    Retourne le modele de la monture
-   # product                 Retourne le nom du produit
+   # backlash                Retourne la possibilite de faire un rattrapage des jeux
+   # guidingSpeed            Retourne les vitesses de guidage en arcseconde de degre par seconde de temps
    # hasCoordinates          Retourne la possibilite d'afficher les coordonnees
-   # hasGoto                 Retourne la possibilite de faire un Goto
-   # hasMatch                Retourne la possibilite de faire un Match
-   # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
    # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
    # hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
+   # hasGoto                 Retourne la possibilite de faire un Goto
+   # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
+   # hasMatch                Retourne la possibilite de faire un Match
    # hasModel                Retourne la possibilite d'avoir plusieurs modeles pour le meme product
    # hasPark                 Retourne la possibilite de parquer la monture
    # hasUnpark               Retourne la possibilite de de-parquer la monture
    # hasUpdateDate           Retourne la possibilite de mettre a jour la date et le lieu
-   # backlash                Retourne la possibilite de faire un rattrapage des jeux
+   # multiMount              Retourne la possibilite de se connecter avec Ouranos (1 : Oui, 0 : Non)
+   # name                    Retourne le modele de la monture
+   # product                 Retourne le nom du produit
 
    #--- je recherche la valeur par defaut de la propriete
    #--- si la valeur par defaut de la propriete n'existe pas, je retourne une chaine vide
@@ -510,6 +511,7 @@ proc ::confTel::getPluginProperty { propertyName } {
       hasUnpark               { set result 0 }
       hasUpdateDate           { set result 0 }
       backlash                { set result 0 }
+      guidingSpeed            { return [list 1.0 1.0] }
       default                 { set result 0 }
    }
 
