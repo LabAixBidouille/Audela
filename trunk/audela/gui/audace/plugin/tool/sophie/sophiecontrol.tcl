@@ -2,7 +2,7 @@
 # Fichier : sophiecontrol.tcl
 # Description : Fenetre de controle pour le centrage, la focalisation et le guidage
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecontrol.tcl,v 1.4 2009-05-09 14:38:19 michelpujol Exp $
+# Mise a jour $Id: sophiecontrol.tcl,v 1.5 2009-05-11 11:42:51 michelpujol Exp $
 #
 
 #============================================================
@@ -52,6 +52,11 @@ proc ::sophie::control::run { tkbase visuNo} {
    set private(guidageDY)                       ""
    set private(guidageErreurAlpha)              ""
    set private(guidageErreurDelta)              ""
+
+   set private(guidageErreurDelta)              ""
+
+   set private(activeColor)                     "green"
+   set private(inactiveColor)                   "red"
 
    #--- Creation des variables si elles n'existaient pas
    if { ! [ info exists conf(sophie,controlWindowPosition) ] } { set conf(sophie,controlWindowPosition) "430x540+580+160" }
@@ -112,8 +117,6 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
 
    set private(frm) $frm
 
-###::console::disp "::sophie::control::fillConfigPage  private(frm)=$private(frm)\n"
-
    #--- Frame du centrage
    frame $frm.centrage -borderwidth 1 -relief groove
 
@@ -121,38 +124,39 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
       TitleFrame $frm.centrage.controleInterface -borderwidth 2 -relief ridge \
          -text "$caption(sophie,indicateurInterface)"
 
-         #--- Indicateur acquisition en cours ou arretee
-         checkbutton $frm.centrage.controleInterface.acquisition_color_invariant \
-            -indicatoron 0 -offrelief flat -background "#ff0000" -selectcolor "#00ff00" -state normal \
+         label $frm.centrage.controleInterface.acquisition_color_invariant \
+            -bg $private(inactiveColor) -borderwidth 1 -relief  groove \
             -text $caption(sophie,acquisitionArretee)
 
          grid $frm.centrage.controleInterface.acquisition_color_invariant -in [ $frm.centrage.controleInterface getframe ] \
             -row 0 -column 1 -columnspan 2 -sticky ns -pady 4 -ipadx 20 -ipady 4
 
          #--- Indicateur etoile selectionnee ou non
-         checkbutton $frm.centrage.controleInterface.etoile_color_invariant \
-            -indicatoron 0 -offrelief flat -background "#ff0000" -selectcolor "#00ff00" -state normal \
+         label $frm.centrage.controleInterface.etoile_color_invariant \
+            -bg $private(inactiveColor) -borderwidth 1 -relief  groove \
             -text $caption(sophie,etoileNonDetecte)
-
          grid $frm.centrage.controleInterface.etoile_color_invariant -in [ $frm.centrage.controleInterface getframe ] \
             -row 1 -column 1 -sticky we -padx 4 -pady 4 -ipadx 10 -ipady 4
 
          #--- Indicateur trou detecte ou non
-         button $frm.centrage.controleInterface.trou -text $caption(sophie,trouNonDetecte) \
-            -relief solid -command " "
-         grid $frm.centrage.controleInterface.trou -in [ $frm.centrage.controleInterface getframe ] \
+         label $frm.centrage.controleInterface.trou_color_invariant \
+            -bg $private(inactiveColor) -borderwidth 1 -relief  groove \
+            -text $caption(sophie,trouNonDetecte)
+         grid $frm.centrage.controleInterface.trou_color_invariant -in [ $frm.centrage.controleInterface getframe ] \
             -row 1 -column 2 -sticky we -padx 4 -pady 4 -ipadx 10 -ipady 4
 
          #--- Indicateur guidage en cours ou arrete
-         button $frm.centrage.controleInterface.guidage -text $caption(sophie,guidageSuspendu) \
-            -relief solid -command " "
-         grid $frm.centrage.controleInterface.guidage -in [ $frm.centrage.controleInterface getframe ] \
+         label $frm.centrage.controleInterface.guidage_color_invariant \
+            -bg $private(inactiveColor) -borderwidth 1 -relief  groove \
+            -text $caption(sophie,guidageSuspendu)
+         grid $frm.centrage.controleInterface.guidage_color_invariant -in [ $frm.centrage.controleInterface getframe ] \
             -row 2 -column 1 -columnspan 2 -sticky ns -pady 4 -ipadx 20 -ipady 4
 
          #--- Indicateur pose Sophie en cours ou arretee
-         button $frm.centrage.controleInterface.sophie -text $caption(sophie,sophieArretee) \
-            -relief solid -command " "
-         grid $frm.centrage.controleInterface.sophie -in [ $frm.centrage.controleInterface getframe ] \
+         label $frm.centrage.controleInterface.sophie_color_invariant \
+            -bg $private(inactiveColor) -borderwidth 1 -relief  groove \
+            -text $caption(sophie,sophieArretee)
+         grid $frm.centrage.controleInterface.sophie_color_invariant -in [ $frm.centrage.controleInterface getframe ] \
             -row 3 -column 1 -columnspan 2 -sticky ns -pady 4 -ipadx 20 -ipady 4
 
          grid columnconfigure [ $frm.centrage.controleInterface getframe ] 0 -weight 1
@@ -246,16 +250,21 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
       TitleFrame $frm.centrage.centrageConsigne -borderwidth 2 -relief ridge \
          -text $caption(sophie,indicateurCentrage)
 
-         #--- Indicateur Centrage en cours ou non
-         button $frm.centrage.centrageConsigne.indicateurCentrer -text $caption(sophie,centrageConsigne) \
-            -relief raised -command " "
-         pack $frm.centrage.centrageConsigne.indicateurCentrer -in [ $frm.centrage.centrageConsigne getframe ] \
+         #--- Commande de centrage ( doublon avec la commande de la fenetre principale)
+         checkbutton $frm.centrage.centrageConsigne.start   \
+            -indicatoron 0  -state disabled \
+            -text $caption(sophie,lancerCentrage) \
+            -variable ::sophie::private(centerEnabled) \
+            -command "::sophie::onCenter"
+
+         pack $frm.centrage.centrageConsigne.start -in [ $frm.centrage.centrageConsigne getframe ] \
             -side left -expand 1 -pady 4 -ipadx 10 -ipady 4
 
          #--- Indicateur Centrage en cours ou non
-         button $frm.centrage.centrageConsigne.indicateurArrete -text $caption(sophie,centrageArrete) \
-            -relief solid -command " "
-         pack $frm.centrage.centrageConsigne.indicateurArrete -in [ $frm.centrage.centrageConsigne getframe ] \
+         label $frm.centrage.centrageConsigne.indicateur -text $caption(sophie,centrageArrete) \
+            -borderwidth 1 -relief  groove -bg $private(inactiveColor)
+
+         pack $frm.centrage.centrageConsigne.indicateur -in [ $frm.centrage.centrageConsigne getframe ] \
             -side left -expand 1 -pady 4 -ipadx 10 -ipady 4
 
       pack $frm.centrage.centrageConsigne -side top -anchor w -fill x -expand 1
@@ -271,7 +280,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             radiobutton $frm.centrage.pointage.indicateur.objet \
                -indicatoron 0 -text "$caption(sophie,pointageObjet)" -value OBJECT \
                -variable ::conf(sophie,guidingMode) \
-               -command "::sophie::control::showSpinBoxPointageObjet"
+               -command "::sophie::setGuidingMode $visuNo"       ; # Attention: la commande appelle la procedure du namspace ::sophie
             pack $frm.centrage.pointage.indicateur.objet -anchor center \
                -expand 1 -fill x -side left -ipadx 4 -ipady 4
 
@@ -279,7 +288,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             radiobutton $frm.centrage.pointage.indicateur.fibreA \
                -indicatoron 0 -text "$caption(sophie,pointageEntreeFibreA)" -value FIBER \
                -variable ::conf(sophie,guidingMode) \
-               -command "::sophie::control::showSpinBoxPointageObjet"
+               -command "::sophie::setGuidingMode $visuNo"   ; # Attention: la commande appelle la procedure du namspace ::sophie
             pack $frm.centrage.pointage.indicateur.fibreA -anchor center \
                -expand 1 -fill x -side left -ipadx 4 -ipady 4
 
@@ -809,26 +818,24 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
 
     # pack $frm.guidage -side top -fill both
 
-   #--- Affiche les spinbox pour le pointage d'un objet
-   showSpinBoxPointageObjet
-
 }
 
 #------------------------------------------------------------
-# showSpinBoxPointageObjet
+# setGuidingMode
 #    ouvre les spinbox pour le pointage d'un objet
+#    place la consigne au bon endroit
 #------------------------------------------------------------
-proc ::sophie::control::showSpinBoxPointageObjet { } {
+proc ::sophie::control::setGuidingMode { guidingMode } {
    variable private
 
    set frm $private(frm)
-   if { $::conf(sophie,guidingMode) == "OBJECT" } {
+   if { $guidingMode == "OBJECT" } {
       pack $frm.centrage.pointage.positionXY -in [ $frm.centrage.pointage getframe ] \
          -side top -anchor w -fill x -expand 1
       pack $frm.guidage.positionconsigne.positionXY -in [ $frm.guidage.positionconsigne getframe ] \
         -side top -anchor w -fill x -expand 1
       pack forget $frm.guidage.positionconsigne.correction
-   } elseif { $::conf(sophie,guidingMode) == "FIBER" } {
+   } elseif { $guidingMode == "FIBER" } {
       pack forget $frm.centrage.pointage.positionXY
       pack forget $frm.guidage.positionconsigne.positionXY
       pack $frm.guidage.positionconsigne.correction -in [ $frm.guidage.positionconsigne getframe ] \
@@ -925,13 +932,51 @@ proc ::sophie::control::setAcquisitionState { state } {
 
    set frm $private(frm)
    if { $state == 0 } {
-      $frm.centrage.controleInterface.acquisition_color_invariant configure -text $::caption(sophie,acquisitionArretee)
-      $frm.centrage.controleInterface.acquisition_color_invariant deselect
+      #--- j'affiche l'indicateur d'acquisition en rouge
+      $frm.centrage.controleInterface.acquisition_color_invariant configure \
+         -text $::caption(sophie,acquisitionArretee) \
+         -bg   $private(inactiveColor)
+
+      #--- je desactive le bouton de centrage
+      $frm.centrage.centrageConsigne.start configure -state disabled
    } else {
-      $frm.centrage.controleInterface.acquisition_color_invariant configure -text $::caption(sophie,acquisitionEncours)
-      $frm.centrage.controleInterface.acquisition_color_invariant select
+      #--- j'affiche l'indicateur d'acquisition en vert
+      $frm.centrage.controleInterface.acquisition_color_invariant configure \
+         -text $::caption(sophie,acquisitionEncours) \
+         -bg   $private(activeColor)
+      #--- j'active le bouton de centrage
+      $frm.centrage.centrageConsigne.start configure -state normal
    }
 }
+
+##------------------------------------------------------------
+# setCenterState
+#    met a jour le voyant du centrage
+#
+# @param state    etat du centrage 0=arrete 1=en cours
+# @return rien
+#------------------------------------------------------------
+proc ::sophie::control::setCenterState { state } {
+   variable private
+
+   set frm $private(frm)
+   if { $state == 0 } {
+      #--- j'affiche le voyant en rouge
+      $frm.centrage.centrageConsigne.indicateur configure \
+         -text $::caption(sophie,centrageArrete) \
+         -bg   $private(inactiveColor)
+      #--- je change le libelle du bouton de commande
+      $frm.centrage.centrageConsigne.start configure -text $::caption(sophie,lancerCentrage)
+   } else {
+      #--- j'affiche le voyant en vert
+      $frm.centrage.centrageConsigne.indicateur configure \
+         -text $::caption(sophie,centrageReussi) \
+         -bg   $private(activeColor)
+      #--- je change le libelle du bouton de commande
+      $frm.centrage.centrageConsigne.start configure -text $::caption(sophie,arreterCentrage)
+   }
+}
+
 
 ##------------------------------------------------------------
 # setCenterInformation
@@ -953,17 +998,24 @@ proc ::sophie::control::setAcquisitionState { state } {
 proc ::sophie::control::setCenterInformation { starDetection fiberDetection originX originY starX starY fwhmX fwhmY background maxFlow } {
    variable private
 
-###console::disp "setCenterInformation starDetection=$starDetection\n"
+   #--- je met a jour le voyant "etoileDetecte"
    set frm $private(frm)
    if { $starDetection == 0 } {
-      $frm.centrage.controleInterface.etoile_color_invariant configure -text $::caption(sophie,etoileNonDetecte)
-      $frm.centrage.controleInterface.etoile_color_invariant deselect
+      $frm.centrage.controleInterface.etoile_color_invariant configure \
+         -text $::caption(sophie,etoileNonDetecte) \
+         -bg   $private(inactiveColor)
    } else {
-      $frm.centrage.controleInterface.etoile_color_invariant configure -text $::caption(sophie,etoileDetecte)
-      $frm.centrage.controleInterface.etoile_color_invariant select
+      $frm.centrage.controleInterface.etoile_color_invariant configure \
+         -text $::caption(sophie,etoileDetecte) \
+         -bg   $private(activeColor)
    }
 
-   # ... à compléter
+   set private(centragePositionX)    [format "%6.1f" $starX]
+   set private(centragePositionY)    [format "%6.1f" $starY]
+   set private(centrageFWHMX)        [format "%6.1f" $fwhmX]
+   set private(centrageFWHMY)        [format "%6.1f" $fwhmY]
+   set private(centrageFondDeCiel)   [format "%6.1f" $background]
+   set private(centrageFluxMax)      [format "%6.1f" $maxFlow]
 }
 
 ##------------------------------------------------------------
