@@ -2,7 +2,7 @@
 # Fichier : sophiecommand.tcl
 # Description : Centralise les commandes de l'outil Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecommand.tcl,v 1.5 2009-05-11 14:26:10 michelpujol Exp $
+# Mise a jour $Id: sophiecommand.tcl,v 1.6 2009-05-11 18:00:28 robertdelmas Exp $
 #
 
 #============================================================
@@ -21,13 +21,12 @@ namespace eval ::sophie {
 #------------------------------------------------------------
 proc ::sophie::adaptPanel { visuNo args } {
    variable private
-   global conf
 
    set frm $private(frm)
 
    #--- je recupere l'item de la camera
    set private(camItem) [ ::confVisu::getCamItem $visuNo ]
-   set private(camNo)   [::confCam::getCamNo $private(camItem) ]
+   set private(camNo)   [ ::confCam::getCamNo $private(camItem) ]
 
    if { $private(camNo) != 0 } {
       if { [::confCam::getPluginProperty $private(camItem) hasBinning] == "0" } {
@@ -38,7 +37,7 @@ proc ::sophie::adaptPanel { visuNo args } {
          $frm.acq.labBinning configure -state normal
          $frm.acq.binning.a configure -state normal
          $frm.acq.binning.e configure -state normal
-         #--- je met a jour la liste des binning
+         #--- je mets a jour la liste des binning
          set private(listeBinning) [::confCam::getPluginProperty $private(camItem) binningList]
          $frm.acq.binning  configure -values $private(listeBinning) -height [llength $private(listeBinning)]
          if { [lsearch $private(listeBinning) $private(binning)] != -1 } {
@@ -48,7 +47,6 @@ proc ::sophie::adaptPanel { visuNo args } {
          }
       }
    }
-
 
 ### a d'autre a faire. Pour l'instant je retourne immediatement et je ne fais rien
 return
@@ -64,11 +62,9 @@ return
       pack forget $frm.pose.lab1
       pack forget $frm.pose.combo
       pack $frm.pose.confwebcam -anchor center -side left -fill x -expand 1
-      #--- je met la pose a zero car cette variable est utilisee et doit etre nulle pour les courtes poses
+      #--- je mets la pose a zero car cette variable est utilisee et doit etre nulle pour les courtes poses
       set ::conf(sophie,exposure) "0"
    }
-
-
 
 }
 
@@ -81,7 +77,6 @@ return
 #------------------------------------------------------------
 proc ::sophie::onChangeZoom { visuNo args } {
    variable private
-
 
    #--- je redessine l'origine
    createOrigin $visuNo
@@ -111,18 +106,16 @@ proc ::sophie::onChangeSubWindow { visuNo args } {
 # @param visuNo         numero de la visu courante
 #------------------------------------------------------------
 proc ::sophie::webcamConfigure { visuNo } {
-   global caption
-
    set result [::webcam::config::run $visuNo [::confVisu::getCamItem $visuNo]]
    if { $result == "1" } {
       if { [ ::confVisu::getCamItem $visuNo ] == "" } {
          ::audace::menustate disabled
-         set choix [ tk_messageBox -title $caption(sophie,titre) -type ok \
-                -message $caption(sophie,selcam) ]
+         set choix [ tk_messageBox -title $::caption(sophie,titre) -type ok \
+                -message $::caption(sophie,selcam) ]
          if { $choix == "ok" } {
              #--- Ouverture de la fenetre de selection des cameras
              ::confCam::run
-             tkwait window $audace(base).confCam
+             tkwait window $::audace(base).confCam
          }
          ::audace::menustate normal
       }
@@ -139,7 +132,7 @@ proc ::sophie::showControlWindow { visuNo } {
    variable private
 
    ::sophie::control::run [winfo toplevel $private(frm)] $visuNo
-   #--- je mets à jour le mode dans la fentre de controle
+   #--- je mets a jour le mode dans la fenetre de controle
    ::sophie::control::setMode $private(mode)
 }
 
@@ -173,9 +166,7 @@ proc ::sophie::setBinning { binning } {
       ::camera::setParam $private(camItem) "targetBoxSize" $targetBoxSize
    }
 
-
 }
-
 
 #------------------------------------------------------------
 # onChangeBinning
@@ -189,8 +180,6 @@ proc ::sophie::onChangeBinning { visuNo } {
    setBinning $private(binning)
 }
 
-
-
 #------------------------------------------------------------
 # onChangeMode
 #  cette procedure est apellee par les boutons de changement de mode
@@ -202,8 +191,6 @@ proc ::sophie::onChangeMode { } {
    #--- je change le mode d'acquisition
    setMode $private(mode)
 }
-
-
 
 #------------------------------------------------------------
 # onCenter
@@ -235,14 +222,14 @@ proc ::sophie::setMode { mode } {
    $private(frm).mode.centrageStart configure -state disabled
    stopCenter
 
-   #--- je met à jour la variable
+   #--- je mets a jour la variable
    set private(mode) $mode
 
    #--- j'applique le nouveau mode
    switch $mode {
       "centrage" {
          $private(frm).mode.centrageStart configure -state normal
-         if { $private(centerEnabled) == 1 }  {
+         if { $private(centerEnabled) == 1 } {
             #--- je mets la thread de la camera en mode centrage
             ### ::camera::setParam $private(camItem) "mode" "center"
          } else {
@@ -294,11 +281,10 @@ proc ::sophie::setGuidingMode { visuNo } {
       }
    }
 
-   #--- je met a jour la fentre de controle
+   #--- je mets a jour la fenetre de controle
    ::sophie::control::setGuidingMode $::conf(sophie,guidingMode)
 
 }
-
 
 #------------------------------------------------------------
 # adaptIncrement
@@ -319,14 +305,13 @@ proc ::sophie::adaptIncrement { } {
 #------------------------------------------------------------
 proc ::sophie::decrementAttenuateur { } {
    variable private
-   global color
 
    incr private(attenuateur) 1
    if { $private(attenuateur) >= "100" } {
       set private(attenuateur) "100"
-      $private(frm).attenuateur.labNoir_color_invariant configure -background $color(red)
+      $private(frm).attenuateur.labNoir_color_invariant configure -background $::color(red)
    } else {
-      $private(frm).attenuateur.labBlanc_color_invariant configure -background $color(white)
+      $private(frm).attenuateur.labBlanc_color_invariant configure -background $::color(white)
    }
 }
 
@@ -336,14 +321,13 @@ proc ::sophie::decrementAttenuateur { } {
 #------------------------------------------------------------
 proc ::sophie::incrementAttenuateur { } {
    variable private
-   global color
 
    incr private(attenuateur) -1
    if { $private(attenuateur) <= "1" } {
       set private(attenuateur) "1"
-      $private(frm).attenuateur.labBlanc_color_invariant configure -background $color(red)
+      $private(frm).attenuateur.labBlanc_color_invariant configure -background $::color(red)
    } else {
-      $private(frm).attenuateur.labNoir_color_invariant configure -background $color(black)
+      $private(frm).attenuateur.labNoir_color_invariant configure -background $::color(black)
    }
 }
 
@@ -368,8 +352,7 @@ proc ::sophie::decrementZoom { } {
       set private(zoom) "4"
    }
    ::confVisu::setZoom $::audace(visuNo) $private(zoom)
-   set private(zoom) [::confVisu::getZoom $::audace(visuNo) ]
-
+   set private(zoom) [ ::confVisu::getZoom $::audace(visuNo) ]
 }
 
 #------------------------------------------------------------
@@ -393,8 +376,7 @@ proc ::sophie::incrementZoom { } {
       set private(zoom) "0.125"
    }
    ::confVisu::setZoom $::audace(visuNo) $private(zoom)
-   set private(zoom) [::confVisu::getZoom $::audace(visuNo) ]
-
+   set private(zoom) [ ::confVisu::getZoom $::audace(visuNo) ]
 }
 
 #------------------------------------------------------------
@@ -405,7 +387,6 @@ proc ::sophie::saveImage { } {
 
    tk_messageBox -title $::caption(sophie,titre) -icon error -message "Cette fonction n'est pas encore implémentée."
 }
-
 
 #------------------------------------------------------------
 # showImage
@@ -425,7 +406,6 @@ proc ::sophie::showImage { } {
    } else {
       tk_messageBox -title $::caption(sophie,titre) -icon error -message $::caption(sophie,invalidDirectory)
    }
-
 
 }
 
@@ -690,7 +670,6 @@ proc ::sophie::moveTarget { visuNo targetCoord } {
    #--- je prendre en compte le binning de la camera
    scan $private(binning) "%dx%d" xBinning  yBinning
 
-
    #--- je calcule les coordonnees dans l'image
    ##set x  [lindex $targetCoord 0]
    ##set y  [lindex $targetCoord 1]
@@ -755,9 +734,15 @@ proc ::sophie::startAcquisition { visuNo } {
       return ""
    }
 
-   #--- je verifie la presence la camera
+   #--- je verifie la presence d'une camera
    if { [::confCam::isReady $private(camItem)] == 0 } {
       ::confCam::run
+      return 1
+   }
+
+   #--- je verifie la presence d'une monture
+   if { [::confTel::isReady] == 0 } {
+      ::confTel::run
       return 1
    }
 
@@ -769,7 +754,7 @@ proc ::sophie::startAcquisition { visuNo } {
 
    #--- j'initialise les valeurs affichees
    set private(acquisitionState)  1
-   #--- je met a jour la fenetre de controle
+   #--- je mets a jour la fenetre de controle
    ::sophie::control::setAcquisitionState  $private(acquisitionState)
 
    #--- je potionne la vitesse "guidage" de la monture si l'envoi des rappels est actif
@@ -809,22 +794,22 @@ proc ::sophie::startAcquisition { visuNo } {
 
    #--- je fais l'acquisition
    ::camera::guide $private(camItem) "::sophie::callbackAcquisition $visuNo" \
-      $::conf(sophie,exposure)     \
-      "FIBER"    \
-      [list $xOriginCoord $yOriginCoord]   \
-      [list $xTargetCoord $yTargetCoord]    \
-      $cameraAngle        \
-      $targetBoxSize \
-      $private(mountEnabled)   \
-      $alphaSpeed  \
-      $deltaSpeed   \
-      $::conf(sophie,alphaReverse) \
-      $::conf(sophie,deltaReverse) \
-      $seuilx       \
-      $seuily       \
-      $slitWidth    \
-      $slitRatio    \
-      $intervalle   \
+      $::conf(sophie,exposure)           \
+      "FIBER"                            \
+      [list $xOriginCoord $yOriginCoord] \
+      [list $xTargetCoord $yTargetCoord] \
+      $cameraAngle                       \
+      $targetBoxSize                     \
+      $private(mountEnabled)             \
+      $alphaSpeed                        \
+      $deltaSpeed                        \
+      $::conf(sophie,alphaReverse)       \
+      $::conf(sophie,deltaReverse)       \
+      $seuilx                            \
+      $seuily                            \
+      $slitWidth                         \
+      $slitRatio                         \
+      $intervalle                        \
       $declinaisonEnabled
 }
 
@@ -835,7 +820,6 @@ proc ::sophie::startAcquisition { visuNo } {
 #------------------------------------------------------------
 proc ::sophie::stopAcquisition { visuNo } {
    variable private
-   global caption
 
    if { $private(acquisitionState) == 1 } {
       #--- je demande l'arret des acquisitions
@@ -851,9 +835,9 @@ proc ::sophie::stopAcquisition { visuNo } {
       #--- j'efface le fichier de cumul
       ###file delete -force [file join $::audace(rep_images) $private($visuNo,cumulFileName)]]
 
-      #--- je met a jour l'indicateur d'acquisition
+      #--- je mets a jour l'indicateur d'acquisition
       set private(acquisitionState) 0
-      #--- je met a jour la fenetre de controle
+      #--- je mets a jour la fenetre de controle
       ::sophie::control::setAcquisitionState  $private(acquisitionState)
 
       #--- j'arrete le centrage s'il était en cours
@@ -864,7 +848,7 @@ proc ::sophie::stopAcquisition { visuNo } {
 
 ##------------------------------------------------------------
 # startCenter
-#    lance le centrage.
+#    lance le centrage (centrage en cours)
 #
 # @return  null
 #------------------------------------------------------------
@@ -885,13 +869,13 @@ proc ::sophie::startCenter { } {
    ::camera::setParam $private(camItem) "mode" "center"
    ::camera::setParam $private(camItem) "mountEnabled" "1"
 
-   #--- je met à jour le voyant dans la fenetre de controle
+   #--- je mets a jour le voyant dans la fenetre de controle
    ::sophie::control::setCenterState $private(centerEnabled)
 }
 
 ##------------------------------------------------------------
 # stopCenter
-#    arret le centrage
+#    arrete le centrage (centrage termine)
 # @return  null
 #------------------------------------------------------------
 proc ::sophie::stopCenter { } {
@@ -902,11 +886,10 @@ proc ::sophie::stopCenter { } {
    ::camera::setParam $private(camItem) "mode" "guide"
    ::camera::setParam $private(camItem) "mountEnabled" "0"
 
-   #--- je met à jour le voyant dans la fenetre de controle
+   #--- je mets a jour le voyant dans la fenetre de controle
    ::sophie::control::setCenterState $private(centerEnabled)
 
 }
-
 
 ##------------------------------------------------------------
 # callbackAcquisition
@@ -941,24 +924,24 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
             scan $private(binning) "%dx%d" xBinning yBinning
 
             #--- je recupere les informations
-            set starX         [expr [lindex [lindex $args 0] 0] * $xBinning ]
-            set starY         [expr [lindex [lindex $args 0] 1] * $yBinning ]
+            set starX                [expr [lindex [lindex $args 0] 0] * $xBinning ]
+            set starY                [expr [lindex [lindex $args 0] 1] * $yBinning ]
             set private(targetCoord) [list $starX $starY]
-            set starDx           [lindex $args 1]
-            set starDy           [lindex $args 2]
-            set targetDetection  [lindex $args 3]
-            set originDetection  [lindex $args 4]
-            set params           [lindex $args 5]
+            set starDx               [lindex $args 1]
+            set starDy               [lindex $args 2]
+            set targetDetection      [lindex $args 3]
+            set originDetection      [lindex $args 4]
+            set params               [lindex $args 5]
 
-            set originX       [lindex $params 0]
-            set originY       [lindex $params 1]
-            set fwhmX         [lindex $params 2]
-            set fwhmY         [lindex $params 3]
-            set background    [lindex $params 4]
-            set maxIntensity  [lindex $params 5]
-            set flow          [lindex $params 6]
-            set alphaCorrection  0 ; #  à faire ...
-            set deltaCorrection  0 ; #  à faire ...
+            set originX              [lindex $params 0]
+            set originY              [lindex $params 1]
+            set fwhmX                [lindex $params 2]
+            set fwhmY                [lindex $params 3]
+            set background           [lindex $params 4]
+            set maxIntensity         [lindex $params 5]
+            set flow                 [lindex $params 6]
+            set alphaCorrection      0 ; #  à faire ...
+            set deltaCorrection      0 ; #  à faire ...
 console::disp "callbackAcquisition targetCoord=$private(targetCoord)\n"
             #--- je deplace la cible sur les nouvelles corrdonnees
             ::sophie::moveTarget $visuNo $private(targetCoord)
