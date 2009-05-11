@@ -2,7 +2,7 @@
 # Fichier : sophiecommand.tcl
 # Description : Centralise les commandes de l'outil Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecommand.tcl,v 1.4 2009-05-11 11:42:51 michelpujol Exp $
+# Mise a jour $Id: sophiecommand.tcl,v 1.5 2009-05-11 14:26:10 michelpujol Exp $
 #
 
 #============================================================
@@ -81,6 +81,7 @@ return
 #------------------------------------------------------------
 proc ::sophie::onChangeZoom { visuNo args } {
    variable private
+
 
    #--- je redessine l'origine
    createOrigin $visuNo
@@ -367,6 +368,8 @@ proc ::sophie::decrementZoom { } {
       set private(zoom) "4"
    }
    ::confVisu::setZoom $::audace(visuNo) $private(zoom)
+   set private(zoom) [::confVisu::getZoom $::audace(visuNo) ]
+
 }
 
 #------------------------------------------------------------
@@ -390,6 +393,8 @@ proc ::sophie::incrementZoom { } {
       set private(zoom) "0.125"
    }
    ::confVisu::setZoom $::audace(visuNo) $private(zoom)
+   set private(zoom) [::confVisu::getZoom $::audace(visuNo) ]
+
 }
 
 #------------------------------------------------------------
