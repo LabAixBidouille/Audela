@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.6 2009-05-11 17:59:38 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.7 2009-05-12 10:27:10 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -131,6 +131,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,erreursAlphaDelta)     "Erreurs en alpha et delta"
    set caption(sophie,arretGuidage)          "Arrêter le guidage"
    set caption(sophie,suspendreGuidage)      "Suspendre le guidage"
+
+   set caption(sophie,simulation)            "Simulation"
+   set caption(sophie,modeSimulation)        "Mode simulation"
+   set caption(sophie,simulGenericFileName)  "Répertoire des images de simulation"
+   set caption(sophie,ok)                    "OK"
+   set caption(sophie,fermer)                "Fermer"
 
    set caption(sophie,selcam)                "Vous devez d'abord sélectionner une caméra\n(menu Configuration/Caméra)."
    set caption(sophie,seltel)                "Vous devez d'abord sélectionner une monture\n(menu Configuration/Monture)."
