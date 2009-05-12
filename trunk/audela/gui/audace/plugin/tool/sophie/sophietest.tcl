@@ -1,19 +1,20 @@
 #
 # Fichier : sophie.tcl
-# Description : Outil d'autoguidage pour le spectro Sophie du telescope T193 de l'OHP
+# Description : Outil de tests pour le developpement de Sophie pour le T193 de l'OHP
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophietest.tcl,v 1.2 2009-05-11 13:44:13 michelpujol Exp $
+# Mise a jour $Id: sophietest.tcl,v 1.3 2009-05-12 10:27:48 robertdelmas Exp $
 #
 
 #------------------------------------------------------------
-# test lenvoie les coordonnees toutes le secondes
+# testhp
+#    teste l'envoi des coordonnees toutes les secondes
 #------------------------------------------------------------
 proc ::sophie::testhp { } {
    variable private
 
    set private(testhp) 0
 
-   # je lance l'envoi permanent des coordonnees sur le port COM5
+   # je lance l'envoi permanent des coordonnees sur le port COM
    set private(writeHpHandle) [open COM7 "r+" ]
    fconfigure $private(writeHpHandle) -mode "19200,n,8,1" -buffering none -blocking 0
 
@@ -27,6 +28,10 @@ proc ::sophie::testhp { } {
 
 }
 
+#------------------------------------------------------------
+# stophp
+#    arrete l'envoi des coordonnees
+#------------------------------------------------------------
 proc ::sophie::stophp { } {
    variable private
 
@@ -46,7 +51,7 @@ proc ::sophie::stophp { } {
 
 #------------------------------------------------------------
 # testWriteHp
-#    envoie les coordonnees toutes le secondes
+#    envoie les coordonnees toutes les secondes
 #------------------------------------------------------------
 proc ::sophie::testWriteHp { } {
    variable private
@@ -67,7 +72,7 @@ console::disp "testWriteHp data=$data\n"
 
 #------------------------------------------------------------
 # testReadHp
-#    lit  les coordonnees toutes les 3 secondes
+#    lit les coordonnees toutes les 3 secondes
 #------------------------------------------------------------
 proc ::sophie::testReadHp { } {
    variable private
@@ -92,12 +97,9 @@ proc ::sophie::testReadHp { } {
    }
 }
 
-
-
-#----------
-# tests de la fentre de controle
-#-----------------
-
+#------------------------------------------------------------
+# tests de la fenetre de controle
+#------------------------------------------------------------
 proc ::sophie::ta1 { }  {
    ::sophie::control::setAcquisitionState { 1 }
 }
@@ -106,14 +108,143 @@ proc ::sophie::ta2 { }  {
    ::sophie::control::setAcquisitionState { 0 }
 }
 
-
 proc ::sophie::tc1 { } {
-   ####          starDetection fiberDetection originX originY starX starY fwhmX fwhmY background maxFlow
+   ### starDetection fiberDetection originX originY starX starY fwhmX fwhmY background maxFlow
    ::sophie::control::setCenterInformation 1 1 750 512 752 514 45 46 100 10000
 
 }
 
+###### Fenetre de configuration de la simulation ######
 
+#------------------------------------------------------------
+# simul
+#    Creation de la fenetre de configuration de la simulation
+#------------------------------------------------------------
+proc ::sophie::simul { } {
+   variable private
 
+   set private(frm) $::audace(base).configSimul
+   ::sophie::createDialogSimul
+   tkwait visibility $private(frm)
+}
 
+#------------------------------------------------------------
+# ok
+#    Fonction appellee lors de l'appui sur le bouton 'OK' pour
+#    appliquer la configuration et fermer la fenetre
+#------------------------------------------------------------
+proc ::sophie::ok { } {
+   variable private
 
+   set ::conf(sophie,simulation)                $private(simulation)
+   set ::conf(sophie,simulationGenericFileName) $private(simulationGenericFileName)
+   ::sophie::fermer
+}
+
+#------------------------------------------------------------
+# fermer
+#    Fonction appellee lors de l'appui sur le bouton 'Fermer' pour
+#    fermer la fenetre
+#------------------------------------------------------------
+proc ::sophie::fermer { } {
+   variable private
+
+   destroy $private(frm)
+}
+
+#------------------------------------------------------------
+# createDialogSimul
+#    Creation de l'interface graphique
+#------------------------------------------------------------
+proc ::sophie::createDialogSimul { } {
+   variable private
+
+   set frm $private(frm)
+
+   if { [ winfo exists $frm ] } {
+      wm withdraw $frm
+      wm deiconify $frm
+      focus $frm
+      return
+   }
+
+   #--- Creation de la fenetre $frm de niveau le plus haut
+   toplevel $frm -class Toplevel
+   wm title $frm $::caption(sophie,simulation)
+   set posxSimul [ lindex [ split [ wm geometry $::audace(base) ] "+" ] 1 ]
+   set posySimul [ lindex [ split [ wm geometry $::audace(base) ] "+" ] 2 ]
+   wm geometry $frm +[ expr $posxSimul + 134 ]+[ expr $posySimul + 60 ]
+   wm resizable $frm 1 1
+   wm protocol $frm WM_DELETE_WINDOW ::sophie::fermer
+
+   #--- On utilise les valeurs contenues dans le tableau conf pour l'initialisation
+   set private(simulation)                $::conf(sophie,simulation)
+   set private(simulationGenericFileName) $::conf(sophie,simulationGenericFileName)
+
+   #--- Creation des differents frames
+   frame $frm.frame1 -borderwidth 1 -relief raised
+   pack $frm.frame1 -side top -fill both -expand 1
+
+   frame $frm.frame2 -borderwidth 1 -relief raised
+   pack $frm.frame2 -side top -fill x
+
+   frame $frm.frame3 -borderwidth 0 -relief raised
+   pack $frm.frame3 -in $frm.frame1 -side top -fill both -expand 1
+
+   frame $frm.frame4 -borderwidth 0 -relief raised
+   pack $frm.frame4 -in $frm.frame1 -side top -fill both -expand 1
+
+   #--- Activation ou non de la simulation
+   checkbutton $frm.simul -text $::caption(sophie,modeSimulation) -highlightthickness 0 \
+      -variable ::sophie::private(simulation)
+   pack $frm.simul -in $frm.frame3 -anchor center -side left -padx 5 -pady 5
+
+   #--- Label
+   label $frm.label -text $::caption(sophie,simulGenericFileName)
+   pack $frm.label -in $frm.frame4 -anchor center -side left -padx 5 -pady 5
+
+   #--- Entry pour le nom generique des images de simulation
+   entry $frm.entry -textvariable ::sophie::private(simulationGenericFileName) -width 25 -justify left
+   pack $frm.entry -in $frm.frame4 -anchor center -side left -padx 5 -pady 5
+
+   #--- Bouton 'Parcourir'
+   button $frm.butParcourir -text $::caption(sophie,parcourir) -borderwidth 2 \
+      -command "::sophie::simulationGenericFileName"
+   pack $frm.butParcourir -in $frm.frame4 -anchor center -side left -padx 5 -pady 5
+
+   #--- Bouton 'OK'
+   button $frm.butOk -text $::caption(sophie,ok) -borderwidth 2 \
+      -command "::sophie::ok"
+   pack $frm.butOk -in $frm.frame2 -anchor center -side left -padx 5 -pady 5 -ipadx 10 -ipady 5
+
+   #--- Bouton 'Fermer'
+   button $frm.butFermer -text $::caption(sophie,fermer) -borderwidth 2 \
+      -command "::sophie::fermer"
+   pack $frm.butFermer -in $frm.frame2 -anchor center -side right -padx 5 -pady 5 -ipadx 10 -ipady 5
+
+   #--- La fenetre est active
+   focus $frm
+
+   #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+   bind $frm <Key-F1> { ::console::GiveFocus }
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
+}
+
+#------------------------------------------------------------
+# simulationGenericFileName
+#    Ouvre le navigateur pour choisir les images de simulation
+#------------------------------------------------------------
+proc ::sophie::simulationGenericFileName { } {
+   variable private
+
+   #--- Ouvre la fenetre de choix des images
+   set private(simulationGenericFileName) [ ::tkutil::box_load $::audace(base) $::audace(rep_images) $::audace(bufNo) "1" ]
+   #--- Il faut un fichier
+   if { $private(simulationGenericFileName)  == "" } {
+      return
+   }
+}
+
+###### Fin de la fenetre de configuration de la simulation ######
