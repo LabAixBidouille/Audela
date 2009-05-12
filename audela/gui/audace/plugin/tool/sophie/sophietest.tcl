@@ -2,7 +2,7 @@
 # Fichier : sophie.tcl
 # Description : Outil de tests pour le developpement de Sophie pour le T193 de l'OHP
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophietest.tcl,v 1.3 2009-05-12 10:27:48 robertdelmas Exp $
+# Mise a jour $Id: sophietest.tcl,v 1.4 2009-05-12 17:48:25 michelpujol Exp $
 #
 
 #------------------------------------------------------------
@@ -114,6 +114,25 @@ proc ::sophie::tc1 { } {
 
 }
 
+proc ::sophie::tsim0 { }  {
+   set ::conf(sophie,simulation) 0
+   set ::conf(sophie,simulationGenericFileName) "C:/Documents and Settings/michel/Mes documents/astronomie/test/OHP/simulation/centrage_"
+   ::console::disp "pas de simulation\n"
+}
+
+proc ::sophie::tsim1 { }  {
+   set ::conf(sophie,simulation) 1
+   set ::conf(sophie,simulationGenericFileName) "$::audace(rep_images)/test/OHP/simulation/centrage_"
+   ::console::disp "simulation fichiers centrage_*\n"
+}
+
+proc ::sophie::tsim2 { }  {
+   set ::conf(sophie,simulation) 1
+   set ::conf(sophie,simulationGenericFileName) "$::audace(rep_images)/test/OHP/simulation/simuFWHM10px_fibre_"
+   ::console::disp "simulation fichiers simuFWHM10px_fibre_*\n"
+}
+
+
 ###### Fenetre de configuration de la simulation ######
 
 #------------------------------------------------------------
@@ -123,9 +142,9 @@ proc ::sophie::tc1 { } {
 proc ::sophie::simul { } {
    variable private
 
-   set private(frm) $::audace(base).configSimul
+   set private(frmsimul) $::audace(base).configSimul
    ::sophie::createDialogSimul
-   tkwait visibility $private(frm)
+   tkwait visibility $private(frmsimul)
 }
 
 #------------------------------------------------------------
@@ -149,7 +168,7 @@ proc ::sophie::ok { } {
 proc ::sophie::fermer { } {
    variable private
 
-   destroy $private(frm)
+   destroy $private(frmsimul)
 }
 
 #------------------------------------------------------------
@@ -159,7 +178,7 @@ proc ::sophie::fermer { } {
 proc ::sophie::createDialogSimul { } {
    variable private
 
-   set frm $private(frm)
+   set frm $private(frmsimul)
 
    if { [ winfo exists $frm ] } {
       wm withdraw $frm
