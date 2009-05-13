@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.52 2009-03-13 23:49:24 michelpujol Exp $
+# Mise a jour $Id: webcam.tcl,v 1.53 2009-05-13 20:49:44 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -87,19 +87,19 @@ proc ::webcam::initPlugin { } {
 
    #--- Initialise les variables de chaque item
    foreach camItem { A B C } {
-      if { ! [ info exists conf(webcam,$camItem,longuepose) ] }           { set conf(webcam,$camItem,longuepose)           "0" }
-      if { ! [ info exists conf(webcam,$camItem,longueposeport) ] }       { set conf(webcam,$camItem,longueposeport)       "LPT1:" }
-      if { ! [ info exists conf(webcam,$camItem,longueposelinkbit) ] }    { set conf(webcam,$camItem,longueposelinkbit)    "0" }
-      if { ! [ info exists conf(webcam,$camItem,longueposestartvalue) ] } { set conf(webcam,$camItem,longueposestartvalue) "0" }
-      if { ! [ info exists conf(webcam,$camItem,mirv) ] }                 { set conf(webcam,$camItem,mirv)                 "0" }
-      if { ! [ info exists conf(webcam,$camItem,mirh) ] }                 { set conf(webcam,$camItem,mirh)                 "0" }
-      if { ! [ info exists conf(webcam,$camItem,channel) ] }              { set conf(webcam,$camItem,channel)              "0" }
-      if { ! [ info exists conf(webcam,$camItem,ccd_N_B) ] }              { set conf(webcam,$camItem,ccd_N_B)              "0" }
-      if { ! [ info exists conf(webcam,$camItem,dim_ccd_N_B) ] }          { set conf(webcam,$camItem,dim_ccd_N_B)          "1/4''" }
-      if { ! [ info exists conf(webcam,$camItem,ccd) ] }                  { set conf(webcam,$camItem,ccd)                  "" }
-      if { ! [ info exists conf(webcam,$camItem,videoformat) ] }          { set conf(webcam,$camItem,videoformat)          "QCIF" }
-      if { ! [ info exists conf(webcam,$camItem,port) ] }                 { set conf(webcam,$camItem,port)                 "/dev/video0" }
-      if { ! [ info exists conf(webcam,$camItem,videomode) ] }            { set conf(webcam,$camItem,videomode)            "vfw" }
+      if { ! [ info exists conf(webcam,$camItem,longuepose) ] }            { set conf(webcam,$camItem,longuepose)           "0" }
+      if { ! [ info exists conf(webcam,$camItem,longueposeport) ] }        { set conf(webcam,$camItem,longueposeport)       "LPT1:" }
+      if { ! [ info exists conf(webcam,$camItem,longueposelinkbit) ] }     { set conf(webcam,$camItem,longueposelinkbit)    "0" }
+      if { ! [ info exists conf(webcam,$camItem,longueposestartvalue) ] }  { set conf(webcam,$camItem,longueposestartvalue) "0" }
+      if { ! [ info exists conf(webcam,$camItem,mirv) ] }                  { set conf(webcam,$camItem,mirv)                 "0" }
+      if { ! [ info exists conf(webcam,$camItem,mirh) ] }                  { set conf(webcam,$camItem,mirh)                 "0" }
+      if { ! [ info exists conf(webcam,$camItem,channel) ] }               { set conf(webcam,$camItem,channel)              "0" }
+      if { ! [ info exists conf(webcam,$camItem,ccd_N_B) ] }               { set conf(webcam,$camItem,ccd_N_B)              "0" }
+      if { ! [ info exists conf(webcam,$camItem,dim_ccd_N_B) ] }           { set conf(webcam,$camItem,dim_ccd_N_B)          "1/4''" }
+      if { ! [ info exists conf(webcam,$camItem,ccd) ] }                   { set conf(webcam,$camItem,ccd)                  "" }
+      if { ! [ info exists conf(webcam,$camItem,videoformat) ] }           { set conf(webcam,$camItem,videoformat)          "QCIF" }
+      if { ! [ info exists conf(webcam,$camItem,port) ] }                  { set conf(webcam,$camItem,port)                 "/dev/video0" }
+      if { ! [ info exists conf(webcam,$camItem,videomode) ] }             { set conf(webcam,$camItem,videomode)            "vfw" }
 
       if { $::tcl_platform(os) == "Linux" } {
          if { ! [ info exists conf(webcam,$camItem,configWindowPosition)]} { set conf(webcam,$camItem,configWindowPosition) "+0+0" }
@@ -147,11 +147,11 @@ proc ::webcam::initPlugin { } {
 proc ::webcam::setConnection { camItem state }  {
    variable private
 
-   if { $::tcl_platform(platform) != "windows" }         return
-   if { $::conf(webcam,$camItem,videomode) != "directx" }  return
-   if { $::conf(webcam,switchedConnexion)  == 0 }        return
-   if { [::webcam::isReady $camItem] != 1 }              return
-   if { [cam$private($camItem,camNo) connect ] == 1 }    return
+   if { $::tcl_platform(platform) != "windows" }          return
+   if { $::conf(webcam,$camItem,videomode) != "directx" } return
+   if { $::conf(webcam,switchedConnexion) == 0 }          return
+   if { [::webcam::isReady $camItem] != 1 }               return
+   if { [cam$private($camItem,camNo) connect ] == 1 }     return
 
    ###console::disp "::webcam::setConnection $state \n"
    if { $state == 1 } {
@@ -175,7 +175,7 @@ proc ::webcam::setConnection { camItem state }  {
 #
 proc ::webcam::confToWidget { } {
    variable private
-   global conf
+  global conf
 
    #--- Recupere la configuration de la WebCam dans le tableau private($camItem,...)
    foreach camItem { A B C } {
@@ -194,7 +194,7 @@ proc ::webcam::confToWidget { } {
       set private($camItem,port)                 $conf(webcam,$camItem,port)
 
       if { $::tcl_platform(os) == "Linux" } {
-         set private($camItem,validFrame)                 $conf(webcam,$camItem,validFrame)
+         set private($camItem,validFrame)        $conf(webcam,$camItem,validFrame)
       }
 
       #--- je copie le label correspondant au format video
@@ -777,7 +777,7 @@ proc ::webcam::configureLinkLonguePose { camItem } {
 
    set frm $private(frm)
 
-   #--- je rafraichis la liste des bits disponibles pour la command de la longue pose
+   #--- je rafraichis la liste des bits disponibles pour la commande de la longue pose
    set bitList [ ::confLink::getPluginProperty $private($camItem,longueposeport) "bitList" ]
    $frm.longueposelinkbit configure -values $bitList -height [ llength $bitList ] -width [::tkutil::lgEntryComboBox $bitList]
    if { [lsearch $bitList $private($camItem,longueposelinkbit)] == -1 } {
@@ -869,7 +869,7 @@ namespace eval ::webcam::config {
 
 #------------------------------------------------------------
 # ::webcam::config::run
-#    affiche la fenetre de configuration de l'autoguidage
+#    affiche la fenetre de configuration
 #------------------------------------------------------------
 proc ::webcam::config::run { visuNo camItem } {
    variable private
@@ -1142,3 +1142,4 @@ proc ::webcam::config::onSetAutoGain { visuNo tkscale } {
       set ::conf(webcam,$camItem,autoGain) $private($visuNo,autoGain)
    }
 }
+
