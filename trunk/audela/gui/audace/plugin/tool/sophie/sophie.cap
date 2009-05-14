@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.7 2009-05-12 10:27:10 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.8 2009-05-14 12:24:40 michelpujol Exp $
 #
 
 #=========================================================================
@@ -49,6 +49,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,image)                 "Image"
    set caption(sophie,enregistrer)           "Enregistrer"
    set caption(sophie,voirImage)             "Voir l'image"
+   set caption(sophie,directoryNotFound)     "Le répertoire %s n'existe pas. \n Veuillez vérifier la configuration de l'outil."
 
    set caption(sophie,invalidDirectory)      "Le répertoire %s n'existe pas."
 
