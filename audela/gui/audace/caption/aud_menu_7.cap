@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_7.cap
-# Mise a jour $Id: aud_menu_7.cap,v 1.17 2009-05-08 06:54:42 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.cap,v 1.18 2009-05-14 09:42:16 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -14,7 +14,7 @@ global caption langage
 set caption(audace,menu,configuration)            "Setup"
 set caption(audace,menu,langue)                   "Language"
 set caption(audace,menu,repertoire)               "Folders"
-set caption(audace,menu,logiciels_externes)       "External Softwares"
+set caption(audace,menu,logiciels_externes)       "External Programs"
 set caption(audace,menu,temps)                    "Time"
 set caption(audace,menu,position)                 "Observer Location"
 set caption(audace,menu,fichier_image)            "Image Files"
@@ -43,7 +43,7 @@ set caption(cwdWindow,repertoire_catalogues)      "Catalogue Folder:"
 set caption(cwdWindow,boite_erreur)               "Error"
 set caption(cwdWindow,pas_repertoire)             " is not a folder."
 
-set caption(confeditscript,logiciels_externes)    "External Softwares"
+set caption(confeditscript,logiciels_externes)    "External Programs"
 set caption(confeditscript,edit_script)           "Script Editor:"
 set caption(confeditscript,notice_pdf)            "See User Guides (.pdf):"
 set caption(confeditscript,navigateur_htm)        "Web Browser:"
@@ -120,7 +120,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,configuration)         "Configurazione"
    set caption(audace,menu,langue)                "Lingue"
    set caption(audace,menu,repertoire)            "Directories"
-   set caption(audace,menu,logiciels_externes)    "Softwares esterni"
+   set caption(audace,menu,logiciels_externes)    "Programmi esterni"
    set caption(audace,menu,temps)                 "Tempo"
    set caption(audace,menu,position)              "Posizione dell'osservatore"
    set caption(audace,menu,fichier_image)         "Files immagine"
@@ -149,7 +149,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,boite_erreur)            "Errore"
    set caption(cwdWindow,pas_repertoire)          " non e' una directory."
 
-   set caption(confeditscript,logiciels_externes) "Softwares esterni"
+   set caption(confeditscript,logiciels_externes) "Programmi esterni"
    set caption(confeditscript,edit_script)        "Editor script:"
    set caption(confeditscript,notice_pdf)         "Vedi la guida utente (.pdf):"
    set caption(confeditscript,navigateur_htm)     "Web browser:"
@@ -173,7 +173,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,configuration)         "Configuración"
    set caption(audace,menu,langue)                "Idioma"
    set caption(audace,menu,repertoire)            "Directorios"
-   set caption(audace,menu,logiciels_externes)    "Softwares externos"
+   set caption(audace,menu,logiciels_externes)    "Programas externos"
    set caption(audace,menu,temps)                 "Tiempos"
    set caption(audace,menu,position)              "Posición del observador"
    set caption(audace,menu,fichier_image)         "Ficheros de imágenes"
@@ -202,7 +202,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,boite_erreur)            "Error"
    set caption(cwdWindow,pas_repertoire)          " no es un directorio."
 
-   set caption(confeditscript,logiciels_externes) "Softwares externos"
+   set caption(confeditscript,logiciels_externes) "Programas externos"
    set caption(confeditscript,edit_script)        "Editor de scripts:"
    set caption(confeditscript,notice_pdf)         "Ver guia de usuario (.pdf):"
    set caption(confeditscript,navigateur_htm)     "Navegador Web:"
@@ -226,7 +226,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,configuration)         "Konfiguration"
    set caption(audace,menu,langue)                "Sprache"
    set caption(audace,menu,repertoire)            "Verzeichnis"
-   set caption(audace,menu,logiciels_externes)    "Externe Softwares"
+   set caption(audace,menu,logiciels_externes)    "Externe Programme"
    set caption(audace,menu,temps)                 "Zeit"
    set caption(audace,menu,position)              "Beobachter-Position"
    set caption(audace,menu,fichier_image)         "Bild Datei"
@@ -255,7 +255,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,boite_erreur)            "Irrtum"
    set caption(cwdWindow,pas_repertoire)          "das ist kein Verzeichnis."
 
-   set caption(confeditscript,logiciels_externes) "Externe Softwares"
+   set caption(confeditscript,logiciels_externes) "Externe Programme"
    set caption(confeditscript,edit_script)        "Skripten Editor:"
    set caption(confeditscript,notice_pdf)         "Hinweisen ansehen (.pdf):"
    set caption(confeditscript,navigateur_htm)     "Web Navigator:"
@@ -279,7 +279,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,configuration)         "Configuração"
    set caption(audace,menu,langue)                "Idioma"
    set caption(audace,menu,repertoire)            "Pastas"
-   set caption(audace,menu,logiciels_externes)    "Softwares externos"
+   set caption(audace,menu,logiciels_externes)    "Programas externos"
    set caption(audace,menu,temps)                 "Tempo"
    set caption(audace,menu,position)              "Posição do observador"
    set caption(audace,menu,fichier_image)         "Ficheiros de imagens"
@@ -308,7 +308,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,boite_erreur)            "Erro"
    set caption(cwdWindow,pas_repertoire)          " não é uma pasta."
 
-   set caption(confeditscript,logiciels_externes) "Softwares externos"
+   set caption(confeditscript,logiciels_externes) "Programas externos"
    set caption(confeditscript,edit_script)        "Editor de scripts:"
    set caption(confeditscript,notice_pdf)         "Ver guia de utilizador (.pdf):"
    set caption(confeditscript,navigateur_htm)     "Navegador Web:"
@@ -332,7 +332,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,configuration)         "Konfiguration"
    set caption(audace,menu,langue)                "Sprog"
    set caption(audace,menu,repertoire)            "Mappe"
-   set caption(audace,menu,logiciels_externes)    "Eksterne softwares"
+   set caption(audace,menu,logiciels_externes)    "Eksterne programmer"
    set caption(audace,menu,temps)                 "Tid"
    set caption(audace,menu,position)              "Observators position"
    set caption(audace,menu,fichier_image)         "Billedfil"
@@ -361,7 +361,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,boite_erreur)            "Fejl"
    set caption(cwdWindow,pas_repertoire)          " er ingen mappe."
 
-   set caption(confeditscript,logiciels_externes) "Eksterne softwares"
+   set caption(confeditscript,logiciels_externes) "Eksterne programmer"
    set caption(confeditscript,edit_script)        "Teksteditor:"
    set caption(confeditscript,notice_pdf)         "Se brugsanvisning (.pdf):"
    set caption(confeditscript,navigateur_htm)     "Web Browser:"
