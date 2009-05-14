@@ -2,7 +2,7 @@
 # Fichier : sophiecontrol.tcl
 # Description : Fenetre de controle pour le centrage, la focalisation et le guidage
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecontrol.tcl,v 1.8 2009-05-11 20:46:38 michelpujol Exp $
+# Mise a jour $Id: sophiecontrol.tcl,v 1.9 2009-05-14 12:24:40 michelpujol Exp $
 #
 
 #============================================================
@@ -38,6 +38,7 @@ proc ::sophie::control::run { tkbase visuNo} {
    set private(guidageDY)                       ""
    set private(guidageErreurAlpha)              ""
    set private(guidageErreurDelta)              ""
+   set private(realDelay)                        ""
 
    set private(activeColor)                     "green"
    set private(inactiveColor)                   "red"
@@ -164,7 +165,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             -row 0 -column 1 -sticky ew
 
          Entry $frm.indicateurs.positionSeeing.entryPositionX \
-            -width 8 -justify left -editable 0 \
+            -width 8 -justify center -editable 0 \
             -textvariable ::sophie::control::private(indicateursPositionX)
          grid $frm.indicateurs.positionSeeing.entryPositionX \
             -in [ $frm.indicateurs.positionSeeing getframe ] \
@@ -203,7 +204,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             -row 1 -column 3 -sticky ew
 
          Entry $frm.indicateurs.positionSeeing.entryFWHMY \
-            -width 8 -justify left -editable 0 \
+            -width 8 -justify center -editable 0 \
             -textvariable ::sophie::control::private(indicateursFWHMY)
          grid $frm.indicateurs.positionSeeing.entryFWHMY \
             -in [ $frm.indicateurs.positionSeeing getframe ] \
@@ -229,11 +230,24 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             -row 1 -column 5 -sticky ew
 
          Entry $frm.indicateurs.positionSeeing.entryfluxMax \
-            -width 8 -justify left -editable 0 \
+            -width 8 -justify center -editable 0 \
             -textvariable ::sophie::control::private(indicateursFluxMax)
          grid $frm.indicateurs.positionSeeing.entryfluxMax \
             -in [ $frm.indicateurs.positionSeeing getframe ] \
             -row 1 -column 6 -sticky ens
+
+         #--- Delai reel
+         label $frm.indicateurs.positionSeeing.labelRealDelay -text "Délai entre 2 debuts de poses (ms)"
+         grid $frm.indicateurs.positionSeeing.labelRealDelay \
+            -in [ $frm.indicateurs.positionSeeing getframe ] \
+            -row 2 -column 0 -columnspan 3 -sticky ew
+
+         Entry $frm.indicateurs.positionSeeing.entryRealDelay \
+            -width 8 -justify center -editable 0 \
+            -textvariable ::sophie::control::private(realDelay)
+         grid $frm.indicateurs.positionSeeing.entryRealDelay \
+            -in [ $frm.indicateurs.positionSeeing getframe ] \
+            -row 2 -column 3 -sticky ew
 
          grid columnconfigure [ $frm.indicateurs.positionSeeing getframe ] 0 -weight 0
          grid columnconfigure [ $frm.indicateurs.positionSeeing getframe ] 1 -weight 1
@@ -780,6 +794,21 @@ proc ::sophie::control::setCenterState { state } {
 }
 
 ##------------------------------------------------------------
+# setRealDelay
+#    met a jour le delai entre 2 poses
+#
+# @param state    etat des acquisitions continues 0=arrete 1=en cours
+# @return rien
+#------------------------------------------------------------
+proc ::sophie::control::setRealDelay { delay } {
+   variable private
+
+   set  private(realDelay) $delay
+
+}
+
+
+##------------------------------------------------------------
 # setCenterInformation
 #    affiche les informations de centrage
 #
@@ -796,7 +825,7 @@ proc ::sophie::control::setCenterState { state } {
 #
 # @return rien
 #------------------------------------------------------------
-proc ::sophie::control::setCenterInformation { starDetection fiberDetection originX originY starX starY fwhmX fwhmY background maxFlow } {
+proc ::sophie::control::setCenterInformation { starDetection fiberDetection originX originY starX starY fwhmX fwhmY background maxIntensity } {
    variable private
 
    set frm $private(frm)
@@ -828,7 +857,7 @@ proc ::sophie::control::setCenterInformation { starDetection fiberDetection orig
    set private(indicateursFWHMX)      [format "%6.1f" $fwhmX]
    set private(indicateursFWHMY)      [format "%6.1f" $fwhmY]
    set private(indicateursFondDeCiel) [format "%6.1f" $background]
-   set private(indicateursFluxMax)    [format "%6.1f" $maxFlow]
+   set private(indicateursFluxMax)    [format "%6.1f" $maxIntensity]
 }
 
 ##------------------------------------------------------------

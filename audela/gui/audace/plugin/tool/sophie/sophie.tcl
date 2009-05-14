@@ -2,7 +2,7 @@
 # Fichier : sophie.tcl
 # Description : Outil d'autoguidage pour le spectro Sophie du telescope T193 de l'OHP
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophie.tcl,v 1.6 2009-05-11 18:00:11 robertdelmas Exp $
+# Mise a jour $Id: sophie.tcl,v 1.7 2009-05-14 12:24:40 michelpujol Exp $
 #
 
 #============================================================
@@ -137,6 +137,10 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(mode)             "centrage"
    set private(zoom)             "1"
    set private(attenuateur)      "80"
+   set private(windowing)        "full"      ; #  fenetrage, contient "full" ou la longueur du coté du carré de fentrage
+   set private(targetDetection)  0           ; # 0=etoile non detectee , 1= etoile detectee
+   set private(updateFilterId)   ""          ; # identifiant de la commande after pour la mise a jour de l'affichage du taux d'attenuation
+   set private(updateFilterSate) 0           ; # 0=pas de modificationde l'atténuation en cour, 1= modification de l'attennuation en cours
 
    set private(hCanvas)          [::confVisu::getCanvas $visuNo]
    set private(originCoord)      $::conf(sophie,originCoord)
@@ -149,6 +153,8 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(detectedTarget)   0        ; # 0=etoile non detectee  1=etoile detectee
    set private(targetRa)         "0h0m0s" ; # ascension droite de la cible en HMS
    set private(targetDec)        "0d0m0s" ; # declinaison de la cible en DMS
+   set private(xWindow)          1        ; # abscisse du coin bas gauche du fenetrage
+   set private(yWindow)          1        ; # ordonnee du coin bas gauche du fenetrage
 
    #--- Petit raccourci
    set frm $private(frm)
@@ -281,12 +287,13 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
          -text $::caption(sophie,attenuateur)
 
          #--- Label blanc
-         label $frm.attenuateur.labBlanc_color_invariant -text "  " -background $::color(white)
-         pack $frm.attenuateur.labBlanc_color_invariant -in [ $frm.attenuateur getframe ] \
+         label $frm.attenuateur.labMin_color_invariant -text "  " -background $::color(white)
+         pack $frm.attenuateur.labMin_color_invariant -in [ $frm.attenuateur getframe ] \
             -anchor center -expand 0 -fill none -side left
 
-         ArrowButton $frm.attenuateur.butMin -borderwidth 1 -dir left -relief raised \
-            -command "::sophie::incrementAttenuateur"
+         ###ArrowButton $frm.attenuateur.butMin -borderwidth 1 -dir left -relief raised
+         ###   -command "::sophie::incrementAttenuateur"
+         Button $frm.attenuateur.butMin -borderwidth 1 -relief raised -text "-"
          pack $frm.attenuateur.butMin -in [ $frm.attenuateur getframe ] \
             -anchor center -expand 1 -fill x -ipady 2 -side left
 
@@ -297,14 +304,21 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
          pack $frm.attenuateur.entry -in [ $frm.attenuateur getframe ] \
             -anchor center -expand 0 -fill none -side left
 
-         ArrowButton $frm.attenuateur.butMax -borderwidth 1 -dir right -relief raised \
-            -command "::sophie::decrementAttenuateur"
+         ##ArrowButton $frm.attenuateur.butMax -borderwidth 1 -dir right -relief raised
+         Button $frm.attenuateur.butMax -borderwidth 1 -relief raised -text "+"
+         ###   -command "::sophie::decrementAttenuateur"
          pack $frm.attenuateur.butMax -in [ $frm.attenuateur getframe ] \
             -anchor center -expand 1 -fill x -ipady 2 -side left
 
+         bind $frm.attenuateur.butMin <ButtonPress-1>    "::sophie::moveFilter -"
+         bind $frm.attenuateur.butMin <ButtonRelease-1>  "::sophie::stopFilter"
+         bind $frm.attenuateur.butMax <ButtonPress-1>    "::sophie::moveFilter +"
+         bind $frm.attenuateur.butMax <ButtonRelease-1>  "::sophie::stopFilter"
+
+
          #--- Label noir
-         label $frm.attenuateur.labNoir_color_invariant -text "  " -background $::color(black)
-         pack $frm.attenuateur.labNoir_color_invariant -in [ $frm.attenuateur getframe ] \
+         label $frm.attenuateur.labMax_color_invariant -text "  " -background $::color(black)
+         pack $frm.attenuateur.labMax_color_invariant -in [ $frm.attenuateur getframe ] \
             -anchor center -expand 0 -fill none -side left
 
       pack $frm.attenuateur -side top -fill x
