@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.4 2009-05-11 18:01:23 robertdelmas Exp $
+# Mise a jour $Id: t193.tcl,v 1.5 2009-05-14 12:27:22 michelpujol Exp $
 #
 
 namespace eval ::t193 {
@@ -91,13 +91,14 @@ proc ::t193::initPlugin { } {
 
    #--- configuration de la monture du T193 de l'OHP
    if { ! [ info exists conf(t193,portSerie) ] }      { set conf(t193,portSerie)  [ lindex $list_connexion 0 ] }
-   if { ! [ info exists conf(t193,nomCarte) ] }       { set conf(t193,nomCarte)   "Dev1/port0" }
-   if { ! [ info exists conf(t193,usbLine) ] }        { set conf(t193,usbLine)    "0 1 2 3 4 5 6 7" }
+   if { ! [ info exists conf(t193,nomCarte) ] }       { set conf(t193,nomCarte)   "Dev1" }
+   if { ! [ info exists conf(t193,nomPortTelescope) ] }       { set conf(t193,nomPortTelescope)   "port0" }
+   if { ! [ info exists conf(t193,nomPortAttenuateur) ] }     { set conf(t193,nomPortAttenuateur)   "port1" }
    #--- vitesses de guidage en arcseconde de degre par seconde de temps
    if { ! [ info exists conf(t193,alphaSpeed) ] }     { set conf(t193,alphaSpeed) "1.0" }
    if { ! [ info exists conf(t193,deltaSpeed) ] }     { set conf(t193,alphaSpeed) "1.0" }
    #--- duree de deplacement entre les 2 butees (mini et maxi) de l'attenuateur
-   if { ! [ info exists conf(t193,duree) ] }          { set conf(t193,duree)      "20" }
+   if { ! [ info exists conf(t193,dureeMaxAttenuateur) ] }          { set conf(t193,dureeMaxAttenuateur)      "16" }
 }
 
 #
@@ -111,7 +112,9 @@ proc ::t193::confToWidget { } {
    #--- Recupere la configuration de la monture du T193 de l'OHP dans le tableau private(...)
    set private(portSerie) $conf(t193,portSerie)
    set private(nomCarte)  $conf(t193,nomCarte)
-   set private(duree)     $conf(t193,duree)
+   set private(nomPortTelescope)  $conf(t193,nomPortTelescope)
+   set private(nomPortAttenuateur)  $conf(t193,nomPortAttenuateur)
+   set private(dureeMaxAttenuateur)     $conf(t193,dureeMaxAttenuateur)
    set private(raquette)  $conf(raquette)
 }
 
@@ -126,8 +129,10 @@ proc ::t193::widgetToConf { } {
    #--- Memorise la configuration de la monture du T193 de l'OHP dans le tableau conf(t193,...)
    set conf(t193,portSerie) $private(portSerie)
    set conf(t193,nomCarte)  $private(nomCarte)
-   set conf(t193,duree)     $private(duree)
-   set conf(raquette)       $private(raquette)
+   set conf(t193,nomPortTelescope)  $private(nomPortTelescope)
+   set conf(t193,nomPortAttenuateur)  $private(nomPortAttenuateur)
+   set conf(t193,dureeMaxAttenuateur)     $private(dureeMaxAttenuateur)
+   set conf(raquette)                     $private(raquette)
 }
 
 #
@@ -281,7 +286,7 @@ proc ::t193::fillConfigPage { frm } {
       grid $frm.test3.attenuateur -in [ $frm.test3 getframe ] -row 0 -column 1
 
       #--- J'affiche l'entry de la duree du deplacement
-      entry $frm.test3.entryDuree -textvariable ::t193::private(duree) -width 5 \
+      entry $frm.test3.entryDuree -textvariable ::t193::private(dureeMaxAttenuateur) -width 5 \
          -justify left
       grid $frm.test3.entryDuree -in [ $frm.test3 getframe ] -row 0 -column 2
 
@@ -354,8 +359,24 @@ proc ::t193::configureMonture { } {
    global caption conf
 
    set catchResult [ catch {
+      set usbLine "0 1 2 3 4 0 1 2 3"
       #--- Je cree la monture
-      set telNo [ tel::create t193 HP1000 -hpcom $conf(t193,portSerie) -usbport $conf(t193,nomCarte) -usbline $::conf(t193,usbLine) ]
+      set telNo [ tel::create t193 HP1000 -hpcom $conf(t193,portSerie) \
+         -usbCardName $::conf(t193,nomCarte) \
+         -usbTelescopPort $::conf(t193,nomPortTelescope) \
+         -usbFilterPort   $::conf(t193,nomPortAttenuateur) \
+         -northRelay 0 \
+         -southRelay 1 \
+         -estRelay   2 \
+         -westRelay  3 \
+         -enabledRelay 4 \
+         -decreaseFilterRelay 0 \
+         -increaseFilterRelay 1 \
+         -minDetectorFilterInput 2 \
+         -maxDetectorFilterInput 3 \
+         -filterMaxDelay $conf(t193,dureeMaxAttenuateur) \
+      ]
+
       #--- J'affiche un message d'information dans la Console
       ::console::affiche_entete "$caption(t193,port_t193) $caption(t193,2points) $conf(t193,portSerie)\n"
       ::console::affiche_entete "$caption(t193,nom_carte) $caption(t193,2points) $conf(t193,nomCarte)\n"
@@ -364,8 +385,6 @@ proc ::t193::configureMonture { } {
       set linkNo [ ::confLink::create $conf(t193,portSerie) "tel$telNo" "control" [ tel$telNo product ] -noopen ]
       #--- Je change de variable
       set private(telNo) $telNo
-      #--- J'initialise l'attenuateur
-      tel$private(telNo) filter init $conf(t193,duree)
       #--- Configuration des boutons de test
       ::t193::configureConfigPage
    } ]
