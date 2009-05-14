@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.53 2009-05-13 20:49:44 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.54 2009-05-14 09:34:30 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -175,7 +175,7 @@ proc ::webcam::setConnection { camItem state }  {
 #
 proc ::webcam::confToWidget { } {
    variable private
-  global conf
+   global conf
 
    #--- Recupere la configuration de la WebCam dans le tableau private($camItem,...)
    foreach camItem { A B C } {
