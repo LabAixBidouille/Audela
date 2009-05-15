@@ -2,7 +2,7 @@
 # Fichier : telpad.tcl
 # Description : Raquette simplifiee a l'usage des telescopes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: telpad.tcl,v 1.20 2008-12-21 09:29:31 robertdelmas Exp $
+# Mise a jour $Id: telpad.tcl,v 1.21 2009-05-15 07:24:47 robertdelmas Exp $
 #
 
 namespace eval telpad {
@@ -80,7 +80,7 @@ namespace eval telpad {
       global conf
 
       if { ! [ info exists conf(telpad,wmgeometry) ] }   { set conf(telpad,wmgeometry)   "157x254+657+252" }
-      if { ! [ info exists conf(telpad,focuserLabel) ] } { set conf(telpad,focuserLabel) "focuserlx200" }
+      if { ! [ info exists conf(telpad,focuserLabel) ] } { set conf(telpad,focuserLabel) "" }
 
       return
    }
