@@ -2,7 +2,7 @@
 # Fichier : sextractor.tcl
 # Description : Functions to initialize configuration files for sextractor
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: sextractor.tcl,v 1.8 2008-05-11 06:20:19 alainklotz Exp $
+# Mise a jour $Id: sextractor.tcl,v 1.9 2009-05-15 21:45:17 alainklotz Exp $
 #
 
 global audace
@@ -300,13 +300,13 @@ proc sextractor { args } {
 }
 
    #--- Creation des fichiers de configuration s'ils n'existent pas deja
-   if { [ file exist [ file join ${audace(rep_gui)} config.param ] ] == "0" } {
-      sextractor_config_param [ file join ${audace(rep_gui)} config.param ]
+   if { [ file exist "[ file join ${audace(rep_gui)} config.param ]" ] == "0" } {
+      sextractor_config_param "[ file join ${audace(rep_gui)} config.param ]"
    }
-   if { [ file exist [ file join ${audace(rep_gui)} config.sex ] ] == "0" } {
-      sextractor_config_sex [ file join ${audace(rep_gui)} config.sex ]
+   if { [ file exist "[ file join ${audace(rep_gui)} config.sex ]" ] == "0" } {
+      sextractor_config_sex "[ file join ${audace(rep_gui)} config.sex ]"
    }
-   if { [ file exist [ file join ${audace(rep_gui)} default.nnw ] ] == "0" } {
-      sextractor_default_nnw [ file join ${audace(rep_gui)} default.nnw ]
+   if { [ file exist "[ file join ${audace(rep_gui)} default.nnw ]" ] == "0" } {
+      sextractor_default_nnw "[ file join ${audace(rep_gui)} default.nnw ]"
    }
 
