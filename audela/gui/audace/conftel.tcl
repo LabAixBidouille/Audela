@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.55 2009-05-11 11:40:38 michelpujol Exp $
+# Mise a jour $Id: conftel.tcl,v 1.56 2009-05-18 21:50:14 robertdelmas Exp $
 #
 
 namespace eval ::confTel {
@@ -487,6 +487,7 @@ proc ::confTel::getPluginProperty { propertyName } {
    # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
    # hasMatch                Retourne la possibilite de faire un Match
    # hasModel                Retourne la possibilite d'avoir plusieurs modeles pour le meme product
+   # hasMotionWhile          Retourne la possibilite d'avoir des deplacements cardinaux pendant une duree
    # hasPark                 Retourne la possibilite de parquer la monture
    # hasUnpark               Retourne la possibilite de de-parquer la monture
    # hasUpdateDate           Retourne la possibilite de mettre a jour la date et le lieu
@@ -497,21 +498,22 @@ proc ::confTel::getPluginProperty { propertyName } {
    #--- je recherche la valeur par defaut de la propriete
    #--- si la valeur par defaut de la propriete n'existe pas, je retourne une chaine vide
    switch $propertyName {
-      multiMount              { set result 0 }
-      name                    { set result "" }
-      product                 { set result "" }
+      backlash                { set result 0 }
+      guidingSpeed            { return [list 1.0 1.0] }
       hasCoordinates          { set result 1 }
-      hasGoto                 { set result 1 }
-      hasMatch                { set result 1 }
-      hasManualMotion         { set result 1 }
       hasControlSuivi         { set result 0 }
       hasCorrectionRefraction { set result 0 }
+      hasGoto                 { set result 1 }
+      hasManualMotion         { set result 1 }
+      hasMatch                { set result 1 }
       hasModel                { set result 0 }
+      hasMotionWhile          { set result 0 }
       hasPark                 { set result 0 }
       hasUnpark               { set result 0 }
       hasUpdateDate           { set result 0 }
-      backlash                { set result 0 }
-      guidingSpeed            { return [list 1.0 1.0] }
+      multiMount              { set result 0 }
+      name                    { set result "" }
+      product                 { set result "" }
       default                 { set result 0 }
    }
 
