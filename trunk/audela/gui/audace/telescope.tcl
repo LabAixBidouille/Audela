@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.36 2009-05-18 21:53:30 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.37 2009-05-18 22:26:22 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -216,7 +216,7 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
       if { $audace(telescope,stopgoto) == "1" } {
          return 0
       }
-#--- Goto0
+      #--- Goto0
       tel$audace(telNo) radec goto $list_radec -blocking $blocking
       #--- Boucle tant que la monture n'est pas arretee
       set audace(telescope,goto) "1"
@@ -1142,56 +1142,65 @@ proc ::telescope::moveTelescope { alphaDirection alphaDiff deltaDirection deltaD
 
    #--- je recupere les vitesses de guidage (en arseconde par milliseconde de temps)
    set guidingSpeed [::confTel::getPluginProperty "guidingSpeed"]
-   #--- je calcule le delai de rattrapage
+   #--- je calcule le delai de rattrapage en milliseconde de temps
    set alphaDelay   [expr int($alphaDiff * [lindex $guidingSpeed 0 ]) ]
    set deltaDelay   [expr int($deltaDiff * [lindex $guidingSpeed 1 ]) ]
 
    #--- laisse la main pour traiter une eventuelle demande d'arret
    update
 
-   #--- je demarre le deplacement alpha
-   tel$audace(telNo) radec move $alphaDirection $audace(telescope,rate)
-   #--- j'attend l'expiration du delai par tranche de 1 seconde
-   set delay $alphaDelay
-   while { $delay > 0 } {
-      if { $private(tescopeIsMoving) == 1 } {
-         if { $delay > 1000 } {
-            after 999
-            set delay [expr $delay - 1000 ]
+   if { [ ::confTel::getPluginProperty hasMotionWhile ] == "0" } {
+      #--- je demarre le deplacement alpha
+      tel$audace(telNo) radec move $alphaDirection $audace(telescope,rate)
+      #--- j'attend l'expiration du delai par tranche de 1 seconde
+      set delay $alphaDelay
+      while { $delay > 0 } {
+         if { $private(tescopeIsMoving) == 1 } {
+            if { $delay > 1000 } {
+               after 999
+               set delay [expr $delay - 1000 ]
+            } else {
+               after $delay
+               set delay 0
+            }
          } else {
-            after $delay
+            #--- j'interromp l'attente s'il y a une demande d'arret
             set delay 0
          }
-      } else {
-         #--- j'interromp l'attente s'il y a une demande d'arret
-         set delay 0
       }
+      #--- j'arrete le deplacement alpha
+      tel$audace(telNo) radec stop $alphaDirection
+   } else {
+      tel$audace(telNo) correct $alphaDirection $alphaDelay
    }
-   #--- j'arrete le deplacement alpha
-   tel$audace(telNo) radec stop $alphaDirection
 
    #--- laisse la main pour traiter une eventuelle demande d'arret
    update
-   #--- je demarre le deplacement delta
-   tel$audace(telNo) radec move $deltaDirection $audace(telescope,rate))
-   #--- j'attend l'expiration du delai par tranche de 1 seconde
-   set delay $deltaDelay
-   while { $delay > 0 } {
-      if { $private(tescopeIsMoving) == 1 } {
-         if { $delay > 10000 } {
-            after 9990
-            set delay [expr $delay - 10000 ]
+
+   if { [ ::confTel::getPluginProperty hasMotionWhile ] == "0" } {
+      #--- je demarre le deplacement delta
+      tel$audace(telNo) radec move $deltaDirection $audace(telescope,rate))
+      #--- j'attend l'expiration du delai par tranche de 1 seconde
+      set delay $deltaDelay
+      while { $delay > 0 } {
+         if { $private(tescopeIsMoving) == 1 } {
+            if { $delay > 10000 } {
+               after 9990
+               set delay [expr $delay - 10000 ]
+            } else {
+               after $delay
+               set delay 0
+            }
          } else {
-            after $delay
+            #--- j'interromp l'attente s'il y a une demande d'arret
             set delay 0
          }
-      } else {
-         #--- j'interromp l'attente s'il y a une demande d'arret
-         set delay 0
       }
+      #--- j'arrete le deplacement delta
+      tel$audace(telNo) radec stop $deltaDirection
+   } else {
+      tel$audace(telNo) correct $deltaDirection $deltaDelay
    }
-   #--- j'arrete le deplacement delta
-   tel$audace(telNo) radec stop $deltaDirection
 }
 
 #------------------------------------------------------------
