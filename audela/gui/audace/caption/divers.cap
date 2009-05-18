@@ -1,6 +1,6 @@
 #
 # Fichier : divers.cap
-# Mise a jour $Id: divers.cap,v 1.5 2007-01-27 14:42:04 robertdelmas Exp $
+# Mise a jour $Id: divers.cap,v 1.6 2009-05-18 10:39:10 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -65,6 +65,8 @@ set caption(divers,series_trreg_transl)               "Translation for the Follo
 set caption(divers,series_trreg_rot)                  "Rotation for the Following Sub-series: "
 set caption(divers,erreur,serie_existe)               "Error - The following series does not exist: "
 set caption(divers,nom_invalide)                      "The following file name is invalid (contains accented characters): "
+set caption(divers,copyjpeg)                          "Save as Jpeg"
+set caption(divers,libgsl)                            "\nThe libgsl and libgslcblas libraries are missing."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -80,6 +82,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(divers,series_trreg_rot)               "Rotation pour la sous-série suivante : "
    set caption(divers,erreur,serie_existe)            "Erreur, la série suivante n'existe pas : "
    set caption(divers,nom_invalide)                   "Le nom de fichier suivant est invalide (présence de caractères accentués) : "
+   set caption(divers,copyjpeg)                       "Enregistrer en Jpeg"
+   set caption(divers,libgsl)                         "\nLes librairies libgsl et libgslcblas sont manquantes."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -95,6 +99,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(divers,series_trreg_rot)               "Rotazione per la seguente sotto-serie: "
    set caption(divers,erreur,serie_existe)            "Errore, la serie seguente non esiste: "
    set caption(divers,nom_invalide)                   "Il nome del seguente file non e' valido (contiene caratteri accentati): "
+   set caption(divers,copyjpeg)                       "Salvare in JPEG"
+   set caption(divers,libgsl)                         "# \nLes librairies libgsl et libgslcblas sont manquantes."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -110,6 +116,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(divers,series_trreg_rot)               "Rotación para la siguiente sub-serie: "
    set caption(divers,erreur,serie_existe)            "Error, no existe la serie siguiente: "
    set caption(divers,nom_invalide)                   "El siguiente nombre de fichero es incorrecto (contiene caracteres acentuados): "
+   set caption(divers,copyjpeg)                       "Guardar JPEG"
+   set caption(divers,libgsl)                         "\nLas librerias libgsl y libgslcblas no se encuentran."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -125,6 +133,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(divers,series_trreg_rot)               "Umdrehung für den folgenden Untersatz: "
    set caption(divers,erreur,serie_existe)            "Irrtum, die Folgende Serie existiert nicht: "
    set caption(divers,nom_invalide)                   "Der Name dieser Datei ist inkorrekt (Gegenwart von betonten Buchstaben): "
+   set caption(divers,copyjpeg)                       "In JPEG speichern"
+   set caption(divers,libgsl)                         "\nDie libgsl und libslcbas Bibliotheken fehlen."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -140,6 +150,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(divers,series_trreg_rot)               "Rotação para a seguinte sub-série: "
    set caption(divers,erreur,serie_existe)            "Erro, não existe a série seguinte: "
    set caption(divers,nom_invalide)                   "O seguinte nome de ficheiro não é válido (contém caracteres com acento): "
+   set caption(divers,copyjpeg)                       "Guardar como JPEG"
+   set caption(divers,libgsl)                         "# \nLes librairies libgsl et libgslcblas sont manquantes."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -155,6 +167,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(divers,series_trreg_rot)               "Rotation af den flg. Sub-serie: "
    set caption(divers,erreur,serie_existe)            "Fejl! Den følgende serie eksisterer ikke: "
    set caption(divers,nom_invalide)                   "Følgende filnavn er ugyldigt (indeholder forbudte karakterer): "
+   set caption(divers,copyjpeg)                       "Gem som Jpeg"
+   set caption(divers,libgsl)                         "\nBibliotekerne libgsl og libgslcblas er ikke oprettet."
 
 }
 
