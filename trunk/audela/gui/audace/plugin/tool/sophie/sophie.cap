@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.8 2009-05-14 12:24:40 michelpujol Exp $
+# Mise a jour $Id: sophie.cap,v 1.9 2009-05-18 10:39:41 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -49,8 +49,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,image)                 "Image"
    set caption(sophie,enregistrer)           "Enregistrer"
    set caption(sophie,voirImage)             "Voir l'image"
-   set caption(sophie,directoryNotFound)     "Le répertoire %s n'existe pas. \n Veuillez vérifier la configuration de l'outil."
 
+   set caption(sophie,directoryNotFound)     "Le répertoire %s n'existe pas. \n Veuillez vérifier la configuration de l'outil."
    set caption(sophie,invalidDirectory)      "Le répertoire %s n'existe pas."
 
    set caption(sophie,parametreConfig)       "Configuration générale"
@@ -179,12 +179,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,mode)                  "Modo"
    set caption(sophie,centrage)              "Centrado"
    set caption(sophie,focalisation)          "Enfoque"
-   set caption(sophie,guidage)               "# Guidage"
+   set caption(sophie,guidage)               "Guiado"
    set caption(sophie,zoom)                  "Zoom"
-   set caption(sophie,attenuateur)           "# Atténuateur"
+   set caption(sophie,attenuateur)           "Atenuador"
    set caption(sophie,image)                 "Imagen"
    set caption(sophie,enregistrer)           "Guardar"
-   set caption(sophie,voirImage)             "# Voir l'image"
+   set caption(sophie,voirImage)             "Ver la imágen"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -200,12 +200,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,mode)                  "Modus"
    set caption(sophie,centrage)              "Zentrierung"
    set caption(sophie,focalisation)          "Fokussierung"
-   set caption(sophie,guidage)               "# Guidage"
+   set caption(sophie,guidage)               "Lenkung "
    set caption(sophie,zoom)                  "Zoom"
-   set caption(sophie,attenuateur)           "# Atténuateur"
+   set caption(sophie,attenuateur)           "Abblender"
    set caption(sophie,image)                 "Bild"
    set caption(sophie,enregistrer)           "Speichern"
-   set caption(sophie,voirImage)             "# Voir l'image"
+   set caption(sophie,voirImage)             "Das Bild sehen"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {

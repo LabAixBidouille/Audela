@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_7.cap
-# Mise a jour $Id: aud_menu_7.cap,v 1.18 2009-05-14 09:42:16 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.cap,v 1.19 2009-05-18 10:38:51 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -226,7 +226,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,configuration)         "Konfiguration"
    set caption(audace,menu,langue)                "Sprache"
    set caption(audace,menu,repertoire)            "Verzeichnis"
-   set caption(audace,menu,logiciels_externes)    "Externe Programme"
+   set caption(audace,menu,logiciels_externes)    "Äußere Programmen"
    set caption(audace,menu,temps)                 "Zeit"
    set caption(audace,menu,position)              "Beobachter-Position"
    set caption(audace,menu,fichier_image)         "Bild Datei"
@@ -255,7 +255,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,boite_erreur)            "Irrtum"
    set caption(cwdWindow,pas_repertoire)          "das ist kein Verzeichnis."
 
-   set caption(confeditscript,logiciels_externes) "Externe Programme"
+   set caption(confeditscript,logiciels_externes) "Äußere Programmen"
    set caption(confeditscript,edit_script)        "Skripten Editor:"
    set caption(confeditscript,notice_pdf)         "Hinweisen ansehen (.pdf):"
    set caption(confeditscript,navigateur_htm)     "Web Navigator:"

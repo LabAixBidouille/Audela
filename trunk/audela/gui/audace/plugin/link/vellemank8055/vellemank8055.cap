@@ -1,6 +1,6 @@
 #
 # Fichier : vellemank8055.cap
-# Mise a jour $Id: vellemank8055.cap,v 1.1 2009-04-01 16:59:20 robertdelmas Exp $
+# Mise a jour $Id: vellemank8055.cap,v 1.2 2009-05-18 10:40:12 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -72,17 +72,17 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(vellemank8055,titre)            "Velleman K8055"
-   set caption(vellemank8055,USBPort)          "# Liaison USB"
-   set caption(vellemank8055,selectAdresse)    "# Sélectionner le numéro de la carte"
+   set caption(vellemank8055,USBPort)          "Conexión USB"
+   set caption(vellemank8055,selectAdresse)    "Seleccionar el número de la tarjeta"
    set caption(vellemank8055,SK5)              "SK5"
    set caption(vellemank8055,SK6)              "SK6"
-   set caption(vellemank8055,adresse)          "# Numéro de la carte :"
-   set caption(vellemank8055,test8sorties)     "# Tester les 8 sorties numériques"
-   set caption(vellemank8055,test5entrees)     "# Tester les 5 entrées numériques"
-   set caption(vellemank8055,tous)             "# Toutes"
-   set caption(vellemank8055,chenillard)       "# Test auto
-   set caption(vellemank8055,raz)              "# Remise à zéro"
-   set caption(vellemank8055,lire)             "# Lire les entrées"
+   set caption(vellemank8055,adresse)          "Número de la tarjeta:"
+   set caption(vellemank8055,test8sorties)     "Testear las 8 salidas digitales"
+   set caption(vellemank8055,test5entrees)     "Testear las 5 entradas digitales"
+   set caption(vellemank8055,tous)             "Todas"
+   set caption(vellemank8055,chenillard)       "Test auto
+   set caption(vellemank8055,raz)              "Resetear"
+   set caption(vellemank8055,lire)             "Leer las entradas"
    set caption(vellemank8055,stop)             "Parar"
    set caption(vellemank8055,attention)        "!Cuidado¡"
    set caption(vellemank8055,cannotcreatelink) "Enlace no puede ser creada."
@@ -92,17 +92,17 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(vellemank8055,titre)            "Velleman K8055"
-   set caption(vellemank8055,USBPort)          "# Liaison USB"
-   set caption(vellemank8055,selectAdresse)    "# Sélectionner le numéro de la carte"
+   set caption(vellemank8055,USBPort)          "USB Link"
+   set caption(vellemank8055,selectAdresse)    "Karte Nummer wählen"
    set caption(vellemank8055,SK5)              "SK5"
    set caption(vellemank8055,SK6)              "SK6"
-   set caption(vellemank8055,adresse)          "# Numéro de la carte :"
-   set caption(vellemank8055,test8sorties)     "# Tester les 8 sorties numériques"
-   set caption(vellemank8055,test5entrees)     "# Tester les 5 entrées numériques"
-   set caption(vellemank8055,tous)             "# Toutes"
-   set caption(vellemank8055,chenillard)       "# Test auto"
-   set caption(vellemank8055,raz)              "# Remise à zéro"
-   set caption(vellemank8055,lire)             "# Lire les entrées"
+   set caption(vellemank8055,adresse)          "Karte Nummer:"
+   set caption(vellemank8055,test8sorties)     "Die 8 digitale Ausgaben proben"
+   set caption(vellemank8055,test5entrees)     "Die 5 digitale Eingaben proben"
+   set caption(vellemank8055,tous)             "Alle"
+   set caption(vellemank8055,chenillard)       "Auto Test"
+   set caption(vellemank8055,raz)              "Umstellen"
+   set caption(vellemank8055,lire)             "Eingaben lesen"
    set caption(vellemank8055,stop)             "Halten"
    set caption(vellemank8055,attention)        "Achtung"
    set caption(vellemank8055,cannotcreatelink) "Der Link kann nicht hergestellt werden."
