@@ -1,8 +1,8 @@
 #
 # Fichier : acquisition.tcl
-# Description : acquisitionde guidage de  l'outil Sophie
+# Description : Acquisition de guidage de l'outil Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: acquisition.tcl,v 1.1 2009-05-08 10:44:49 michelpujol Exp $
+# Mise a jour $Id: acquisition.tcl,v 1.2 2009-05-18 22:09:23 robertdelmas Exp $
 #
 
 #============================================================
@@ -24,10 +24,8 @@ proc ::sophie::acquisition::setMode { mode } {
 
 }
 
-
-
 #------------------------------------------------------------
-#  startGuiding
+#  startAcquisition
 #     lance l'autoguidage
 #  parametres
 #     visuNo : numero de visu
@@ -132,8 +130,8 @@ proc ::sophie::acquisition::callbackAcquisition { visuNo command args } {
 
 #------------------------------------------------------------
 # stopAcquisition
-#    Demande l'arret des acquisitions . L'arret sera effectif apres la fin
-#    de l'acquisition en cours
+#    Demande l'arret des acquisitions
+#    L'arret sera effectif apres la fin de l'acquisition en cours
 #------------------------------------------------------------
 proc ::sophie::acquisition::stopAcquisition { visuNo } {
    variable private
@@ -164,3 +162,4 @@ proc ::sophie::acquisition::stopAcquisition { visuNo } {
 
    }
 }
+
