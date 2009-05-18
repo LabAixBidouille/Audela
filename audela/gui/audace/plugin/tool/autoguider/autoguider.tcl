@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.36 2009-04-02 16:47:29 michelpujol Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.37 2009-05-18 21:48:52 robertdelmas Exp $
 #
 
 #==============================================================
@@ -1272,48 +1272,5 @@ proc ::autoguider::selectBinning { visuNo } {
    #--- je position l'indicateur qui doit mettre a jour les axes
    #--- a la prochaine acquisition
    set private($visuNo,updateAxis) "1"
-}
-
-#------------------------------------------------------------
-# moveTelescope { }
-#    Deplace le telescope pendant un duree determinee
-#    Le deplacement est interrompu si private($visuNo,acquisitionState)!=0
-#
-# parametres :
-#    visuNo    : numero de la visu courante
-#    direction : e w n s
-#    delay     : duree du deplacement en milliseconde (nombre entier)
-# return
-#    rien
-#------------------------------------------------------------
-proc ::autoguider::moveTelescope { visuNo direction delay} {
-   variable private
-
-   #--- laisse la main pour traiter une eventuelle demande d'arret
-   update
-
-   #--- je demarre le deplacement
-   ###::telescope::move $direction
-   tel$::audace(telNo) radec move $direction $::audace(telescope,rate)
-
-   #--- j'attend l'expiration du delai par tranche de 1 seconde
-   while { $delay > 0 } {
-      if { $private($visuNo,acquisitionState) == 1 } {
-         if { $delay > 1000 } {
-            after 999
-            set delay [expr $delay - 1000 ]
-         } else {
-            after $delay
-            set delay 0
-         }
-      } else {
-         #--- j'interromp l'attente s'il y a une demande d'arret
-         set delay 0
-      }
-   }
-
-   #--- j'arrete le deplacement
-   ###::telescope::stop $direction
-   tel$::audace(telNo) radec stop $direction
 }
 
