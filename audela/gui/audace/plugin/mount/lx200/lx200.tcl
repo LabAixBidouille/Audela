@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise a jour $Id: lx200.tcl,v 1.22 2009-05-09 19:56:40 michelpujol Exp $
+# Mise a jour $Id: lx200.tcl,v 1.23 2009-05-18 21:51:27 robertdelmas Exp $
 #
 
 namespace eval ::lx200 {
@@ -675,6 +675,7 @@ proc ::lx200::tracesConsole { } {
 # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
 # hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
 # hasModel                Retourne la possibilite d'avoir plusieurs modeles pour le meme product
+# hasMotionWhile          Retourne la possibilite d'avoir des deplacements cardinaux pendant une duree
 # hasPark                 Retourne la possibilite de parquer la monture
 # hasUnpark               Retourne la possibilite de de-parquer la monture
 # hasUpdateDate           Retourne la possibilite de mettre a jour la date et le lieu
@@ -720,6 +721,13 @@ proc ::lx200::getPluginProperty { propertyName } {
          }
       }
       hasModel                { return 1 }
+      hasMotionWhile          {
+         if { $::conf(lx200,modele) == "$::caption(lx200,modele_ite-lente)" } {
+            return 1
+         } else {
+            return 0
+         }
+      }
       hasPark                 {
          if {  $::conf(lx200,modele) == $::caption(lx200,modele_lx200)
             || $::conf(lx200,modele) == $::caption(lx200,modele_astro_physics)} {
