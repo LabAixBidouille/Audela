@@ -492,9 +492,9 @@ int tel_radec_move(struct telprop *tel,char *direction)
             return 1;
       }
 
-      // je cree le masque 
+      // je cree le masque de l'octet
       mask = 1 << numbit;
-      // je force à 1 le bit correspondant 
+      // je force à 0 le bit correspondant 
       tel->outputTelescopData &= ~mask;
       result = mytel_sendCommandTelescop(tel , tel->outputTelescopData);
    } else {
@@ -517,6 +517,7 @@ int tel_radec_stop(struct telprop *tel,char *direction)
       int numbit;
 
       if ( strlen(direction) > 0 ) {
+         // j'arrete le mouvement dans la direction precisee en parametre
          switch (tolower(direction[0])) {
             case 'n' : 
                numbit = tel->northRelay;
@@ -540,6 +541,8 @@ int tel_radec_stop(struct telprop *tel,char *direction)
          // je force à 1 le bit correspondant 
          tel->outputTelescopData |= mask;
       } else {
+         // j'arrete le mouvement dans toutes les directions 
+
          // je cree le masque northRelay
          mask = 1 << tel->northRelay;
          // je force à 1 le bit correspondant 
@@ -687,12 +690,12 @@ int mytel_setControl(struct telprop *tel,int control) {
       if ( control == 1 ) {
          // je cree le masque 
          mask = 1 << tel->enabledRelay;
-         // je force à 1 le bit correspondant 
+         // je force à 0 le bit correspondant 
          tel->outputTelescopData &= ~mask;
       } else {
          // je cree le masque 
          mask = 1 << tel->enabledRelay;
-         // je force à 0 le bit correspondant 
+         // je force à 1 le bit correspondant 
          tel->outputTelescopData |= mask;
       }
       result = mytel_sendCommandTelescop(tel , tel->outputTelescopData);
