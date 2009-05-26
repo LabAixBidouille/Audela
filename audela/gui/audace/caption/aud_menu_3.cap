@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.34 2008-06-13 16:43:21 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.35 2009-05-26 17:13:16 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -601,7 +601,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,seuil_subsky)              "Historische Kurve Schwelle (0 oder 1):"
    set caption(pretraitement,clip_max)                  "Höchstwert zu beseitigen:"
    set caption(pretraitement,clip_min)                  "Tiefswert zu beseitigen:"
-   set caption(pretraitement,valeur_par_defaut)         "Mangelwerten"
+   set caption(pretraitement,valeur_par_defaut)         "Standardwerte"
    set caption(pretraitement,attention)                 "Achtung"
    set caption(pretraitement,header_noimage)            "Es ist jetzt kein Bild im Speicher."
    set caption(pretraitement,choix_coefficients)        "Bestimmen sie die Kofficienten."

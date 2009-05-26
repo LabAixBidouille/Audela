@@ -1,6 +1,6 @@
 #
 # Fichier : audecomconfig.cap
-# Mise a jour $Id: audecomconfig.cap,v 1.3 2008-12-21 11:40:08 robertdelmas Exp $
+# Mise a jour $Id: audecomconfig.cap,v 1.4 2009-05-26 17:13:50 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -646,7 +646,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecomconfig,para_mot)                "Motoren Parametern"
    set caption(audecomconfig,rat_jeu_ad)              "Spielausgleichung Weite in RA"
    set caption(audecomconfig,rat_jeu_dec)             "Spielausgleichung Weite in Dek."
-   set caption(audecomconfig,val_defaut)              "Mangelwerten"
+   set caption(audecomconfig,val_defaut)              "Standardwerte"
    set caption(audecomconfig,limites)                 "Innerhalb der Grenzen"
    set caption(audecomconfig,a)                       "bis"
    set caption(audecomconfig,max_AD)                  "Max. Tempo in RA"
@@ -732,7 +732,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecomconfig,para_mot,aide03)         "                                   können für eure äquatorial Teleskop Montierung Konfiguration."
    set caption(audecomconfig,para_mot,aide05)         "Die Spielausgleichung Weite soll ein Decimalzahl sein (0.5)."
    set caption(audecomconfig,para_mot,aide06)         "Sie kann in Rektaszension anders als in Deklination sein."
-   set caption(audecomconfig,para_mot,aide11)         "'Mangelwerten': gibt den initialen Wert aus dem AudeCom Mikrocontroller."
+   set caption(audecomconfig,para_mot,aide11)         "'Standardwerte': gibt den initialen Wert aus dem AudeCom Mikrocontroller."
    set caption(audecomconfig,para_mot,aide12)         "'Innerhalb der Grenzen von': sitzt die Wahl Grenzen für diesen Wert."
    set caption(audecomconfig,para_mot,aide13)         "Diese Option ermöglicht den Wahl der höchsten Tempo für den Rektaszension Motor.\
                                                        Größer ist der befassende Wert, höher ist das maximale Tempo. Diese Parametrierung\
