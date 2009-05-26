@@ -34,8 +34,11 @@ struct telprop {
    /* --- parametres standards, ne pas changer ---*/
    COMMON_TELSTRUCT
    /* Ajoutez ici les variables necessaires a votre telescope */
-   void * outputTaskHandle;
-   void * inputTaskHandle;
+   void * outputTelescopTaskHandle;
+   void * outputFilterTaskHandle;
+   void * inputFilterTaskHandle;
+   unsigned char outputTelescopData;
+   unsigned char outputFilterData;
    int consoleLog;
    double filterMaxDelay;    
    double filterCurrentDelay;
@@ -43,11 +46,11 @@ struct telprop {
    int southRelay;
    int estRelay;
    int westRelay;
+   int enabledRelay;
    int decreaseFilterRelay;
    int increaseFilterRelay;
    int minDetectorFilterInput;
    int maxDetectorFilterInput;
-   unsigned char outputData;
    double startTime;
    int filterCommand;
 };
@@ -75,7 +78,8 @@ int tel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s);
 int tel_home_get(struct telprop *tel,char *ligne);
 int tel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,double altitude);
 
-int tel_filter_init(struct  telprop *tel, double filterMaxDelay);
+int tel_filter_setMax(struct  telprop *tel, double filterMaxDelay);
+int tel_filter_getMax(struct  telprop *tel, double *filterMaxDelay);
 int tel_filter_coord(struct telprop *tel, char * coord);
 int tel_filter_move(struct  telprop *tel, char * direction);
 int tel_filter_stop(struct  telprop *tel);
@@ -106,6 +110,6 @@ int mytel_flush(struct telprop *tel);
 */
 int mytel_tcleval(struct telprop *tel,char *ligne);
 int mytel_correct(struct telprop *tel,char *direction, int duration);
-int mytel_sendCommand(struct telprop *tel, int command);
+int mytel_setControl(struct telprop *tel,int control);
 #endif
 
