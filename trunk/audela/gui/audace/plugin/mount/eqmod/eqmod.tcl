@@ -2,7 +2,7 @@
 # Fichier : eqmod.tcl
 # Description : Configuration de la monture EQMOD
 # Auteur : Robert DELMAS
-# Mise a jour $Id: eqmod.tcl,v 1.4 2009-03-28 10:11:44 robertdelmas Exp $
+# Mise a jour $Id: eqmod.tcl,v 1.5 2009-05-26 21:23:54 robertdelmas Exp $
 #
 
 namespace eval ::eqmod {
@@ -100,21 +100,21 @@ proc ::eqmod::initPlugin { } {
 #
 proc ::eqmod::confToWidget { } {
    variable private
-   global conf
+   global caption conf
 
    #--- Recupere la configuration de la monture EQMOD dans le tableau private(...)
-   foreach varname [ list raquette eqmod,port eqmod,tube_e_w eqmod,startmotor ] {
-      if { [ catch { set private($varname) [ set conf($varname) ] } m ] } {
+   foreach varname [ list port tube_e_w startmotor ] {
+      if { [ catch { set private($varname) [ set conf(eqmod,$varname) ] } m ] } {
          ::console::affiche_resultat "$varname: $m"
          switch $varname {
-            eqmod,port       { set private($varname) "COM1" }
-            eqmod,tube_e_w   { set private($varname) "-west" }
-            eqmod,startmotor { set private($varname) "1" }
-            raquette         { set private($varname) "0" }
+            port       { set private($varname) "COM1" }
+            tube_e_w   { set private($varname) "-west" }
+            startmotor { set private($varname) "1" }
          }
-         ::console::affiche_resultat " valeur par defaut: $private($varname)\n"
+         ::console::affiche_resultat "$caption(eqmod,valeurDefaut) $private($varname)\n"
       }
    }
+   set private(raquette) $conf(raquette)
 }
 
 #
@@ -126,10 +126,10 @@ proc ::eqmod::widgetToConf { } {
    global conf
 
    #--- Memorise la configuration de la monture EQMOD dans le tableau conf(eqmod,...)
-   set conf(eqmod,port)       $private(eqmod,port)
+   set conf(eqmod,port)       $private(port)
+   set conf(eqmod,tube_e_w)   $private(tube_e_w)
+   set conf(eqmod,startmotor) $private(startmotor)
    set conf(raquette)         $private(raquette)
-   set conf(eqmod,tube_e_w)   $private(eqmod,tube_e_w)
-   set conf(eqmod,startmotor) $private(eqmod,startmotor)
 }
 
 #
@@ -188,10 +188,10 @@ proc ::eqmod::fillConfigPage { frm } {
    if { [ llength $list_connexion ] > 0 } {
       #--- Si la liste n'est pas vide,
       #--- je verifie que la valeur par defaut existe dans la liste
-      if { [ lsearch -exact $list_connexion $private(eqmod,port) ] == -1 } {
+      if { [ lsearch -exact $list_connexion $private(port) ] == -1 } {
          #--- Si la valeur par defaut n'existe pas dans la liste,
          #--- je la remplace par le premier item de la liste
-         set private(eqmod,port) [ lindex $list_connexion 0 ]
+         set private(port) [ lindex $list_connexion 0 ]
       }
    } else {
       #--- Si la liste est vide, on continue quand meme
@@ -200,7 +200,7 @@ proc ::eqmod::fillConfigPage { frm } {
    #--- Bouton de configuration des ports et liaisons
    button $frm.configure -text "$caption(eqmod,configurer)" -relief raised \
       -command {
-         ::confLink::run ::eqmod::private(eqmod,port) { serialport } \
+         ::confLink::run ::eqmod::private(port) { serialport } \
             "- $caption(eqmod,controle) - $caption(eqmod,monture)"
       }
    pack $frm.configure -in $frm.frame6 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
@@ -211,22 +211,22 @@ proc ::eqmod::fillConfigPage { frm } {
       -height [ llength $list_connexion ] \
       -relief sunken    \
       -borderwidth 1    \
-      -textvariable ::eqmod::private(eqmod,port) \
+      -textvariable ::eqmod::private(port) \
       -editable 0       \
       -values $list_connexion
    pack $frm.port -in $frm.frame6 -anchor center -side left -padx 10 -pady 10
 
    #--- Les radiobuttons de commande maj position du EQMOD
    radiobutton $frm.tube_West -text "$caption(eqmod,tube_ouest)" \
-      -highlightthickness 0 -variable ::eqmod::private(eqmod,tube_e_w) -value "-west"
+      -highlightthickness 0 -variable ::eqmod::private(tube_e_w) -value "-west"
    pack $frm.tube_West -in $frm.frame2 -anchor center -side left -padx 10 -pady 10
 
    radiobutton $frm.tube_East -text "$caption(eqmod,tube_est)" \
-      -highlightthickness 0 -variable ::eqmod::private(eqmod,tube_e_w) -value "-east"
+      -highlightthickness 0 -variable ::eqmod::private(tube_e_w) -value "-east"
    pack $frm.tube_East -in $frm.frame2 -anchor center -side right -padx 10 -pady 10
 
    #--- Le checkbutton pour le demarrage du suivi sideral a l'init
-   checkbutton $frm.startmotor -text "$caption(eqmod,moteur_on)" -highlightthickness 0 -variable ::eqmod::private(eqmod,startmotor)
+   checkbutton $frm.startmotor -text "$caption(eqmod,moteur_on)" -highlightthickness 0 -variable ::eqmod::private(startmotor)
    pack $frm.startmotor -in $frm.frame2b -anchor center -side left -padx 10 -pady 10
 
    #--- Le checkbutton pour la visibilite de la raquette a l'ecran
@@ -275,10 +275,10 @@ proc ::eqmod::configureMonture { } {
 
    set catchResult [ catch {
       #--- Je cree la monture
-      if { $private(eqmod,startmotor) == 1 } {
-         set telNo [ tel::create eqmod $conf(eqmod,port) $::eqmod::private(eqmod,tube_e_w) -startmotor ]
+      if { $private(startmotor) == 1 } {
+         set telNo [ tel::create eqmod $conf(eqmod,port) $::eqmod::private(tube_e_w) -startmotor ]
       } else {
-         set telNo [ tel::create eqmod $conf(eqmod,port) $::eqmod::private(eqmod,tube_e_w) ]
+         set telNo [ tel::create eqmod $conf(eqmod,port) $::eqmod::private(tube_e_w) ]
       }
       #--- J'affiche un message d'information dans la Console
       ::console::affiche_entete "$caption(eqmod,port_eqmod)\
