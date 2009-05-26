@@ -120,6 +120,10 @@ SOURCE=..\src\libname.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\..\include\libtel\libstruc.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\telcmd.h
 # End Source File
 # Begin Source File
