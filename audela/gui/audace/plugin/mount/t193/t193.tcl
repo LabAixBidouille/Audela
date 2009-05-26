@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.5 2009-05-14 12:27:22 michelpujol Exp $
+# Mise a jour $Id: t193.tcl,v 1.6 2009-05-26 16:55:20 robertdelmas Exp $
 #
 
 namespace eval ::t193 {
@@ -90,15 +90,15 @@ proc ::t193::initPlugin { } {
    set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
 
    #--- configuration de la monture du T193 de l'OHP
-   if { ! [ info exists conf(t193,portSerie) ] }      { set conf(t193,portSerie)  [ lindex $list_connexion 0 ] }
-   if { ! [ info exists conf(t193,nomCarte) ] }       { set conf(t193,nomCarte)   "Dev1" }
-   if { ! [ info exists conf(t193,nomPortTelescope) ] }       { set conf(t193,nomPortTelescope)   "port0" }
-   if { ! [ info exists conf(t193,nomPortAttenuateur) ] }     { set conf(t193,nomPortAttenuateur)   "port1" }
+   if { ! [ info exists conf(t193,portSerie) ] }           { set conf(t193,portSerie)           [ lindex $list_connexion 0 ] }
+   if { ! [ info exists conf(t193,nomCarte) ] }            { set conf(t193,nomCarte)            "Dev1" }
+   if { ! [ info exists conf(t193,nomPortTelescope) ] }    { set conf(t193,nomPortTelescope)    "port0" }
+   if { ! [ info exists conf(t193,nomPortAttenuateur) ] }  { set conf(t193,nomPortAttenuateur)  "port1" }
    #--- vitesses de guidage en arcseconde de degre par seconde de temps
-   if { ! [ info exists conf(t193,alphaSpeed) ] }     { set conf(t193,alphaSpeed) "1.0" }
-   if { ! [ info exists conf(t193,deltaSpeed) ] }     { set conf(t193,alphaSpeed) "1.0" }
+   if { ! [ info exists conf(t193,alphaSpeed) ] }          { set conf(t193,alphaSpeed)          "1.0" }
+   if { ! [ info exists conf(t193,deltaSpeed) ] }          { set conf(t193,alphaSpeed)          "1.0" }
    #--- duree de deplacement entre les 2 butees (mini et maxi) de l'attenuateur
-   if { ! [ info exists conf(t193,dureeMaxAttenuateur) ] }          { set conf(t193,dureeMaxAttenuateur)      "16" }
+   if { ! [ info exists conf(t193,dureeMaxAttenuateur) ] } { set conf(t193,dureeMaxAttenuateur) "16" }
 }
 
 #
@@ -110,12 +110,12 @@ proc ::t193::confToWidget { } {
    global conf
 
    #--- Recupere la configuration de la monture du T193 de l'OHP dans le tableau private(...)
-   set private(portSerie) $conf(t193,portSerie)
-   set private(nomCarte)  $conf(t193,nomCarte)
-   set private(nomPortTelescope)  $conf(t193,nomPortTelescope)
+   set private(portSerie)           $conf(t193,portSerie)
+   set private(nomCarte)            $conf(t193,nomCarte)
+   set private(nomPortTelescope)    $conf(t193,nomPortTelescope)
    set private(nomPortAttenuateur)  $conf(t193,nomPortAttenuateur)
-   set private(dureeMaxAttenuateur)     $conf(t193,dureeMaxAttenuateur)
-   set private(raquette)  $conf(raquette)
+   set private(dureeMaxAttenuateur) $conf(t193,dureeMaxAttenuateur)
+   set private(raquette)            $conf(raquette)
 }
 
 #
@@ -127,12 +127,12 @@ proc ::t193::widgetToConf { } {
    global conf
 
    #--- Memorise la configuration de la monture du T193 de l'OHP dans le tableau conf(t193,...)
-   set conf(t193,portSerie) $private(portSerie)
-   set conf(t193,nomCarte)  $private(nomCarte)
-   set conf(t193,nomPortTelescope)  $private(nomPortTelescope)
+   set conf(t193,portSerie)           $private(portSerie)
+   set conf(t193,nomCarte)            $private(nomCarte)
+   set conf(t193,nomPortTelescope)    $private(nomPortTelescope)
    set conf(t193,nomPortAttenuateur)  $private(nomPortAttenuateur)
-   set conf(t193,dureeMaxAttenuateur)     $private(dureeMaxAttenuateur)
-   set conf(raquette)                     $private(raquette)
+   set conf(t193,dureeMaxAttenuateur) $private(dureeMaxAttenuateur)
+   set conf(raquette)                 $private(raquette)
 }
 
 #
