@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_4.cap
-# Mise a jour $Id: aud_menu_4.cap,v 1.9 2009-04-08 15:14:14 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_4.cap,v 1.10 2009-05-26 17:13:33 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -222,7 +222,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,parcourir)                 "..."
    set caption(traiteFilters,entree)                    "Eingang Bild:"
    set caption(traiteFilters,sortie)                    "Hinaus Bild:"
-   set caption(traiteFilters,valeur_par_defaut)         "Mangelwerten"
+   set caption(traiteFilters,valeur_par_defaut)         "Standardwerte"
    set caption(traiteFilters,coef_etalement)            "Ausbreitung Koefficient:"
    set caption(traiteFilters,coef_mult)                 "Multiplikativ Koefficient:"
    set caption(traiteFilters,coef_efficacite)           "Wirksamkeit:"
