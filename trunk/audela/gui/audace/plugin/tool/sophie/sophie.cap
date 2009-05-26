@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.9 2009-05-18 10:39:41 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.10 2009-05-26 16:55:01 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -143,7 +143,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,seltel)                "Vous devez d'abord sélectionner une monture\n(menu Configuration/Monture)."
    set caption(sophie,noAcquisition)         "L'acquisition continue n'est pas lancée."
 
-
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
@@ -158,12 +157,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,mode)                  "Modalita`"
    set caption(sophie,centrage)              "Centraggio"
    set caption(sophie,focalisation)          "Focheggiamento"
-   set caption(sophie,guidage)               "# Guidage"
+   set caption(sophie,guidage)               "Guida"
    set caption(sophie,zoom)                  "Zoom"
-   set caption(sophie,attenuateur)           "# Atténuateur"
+   set caption(sophie,attenuateur)           "Attenuatore"
    set caption(sophie,image)                 "Immagine"
    set caption(sophie,enregistrer)           "Salvare"
-   set caption(sophie,voirImage)             "# Voir l'image"
+   set caption(sophie,voirImage)             "Mostra immagine"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {

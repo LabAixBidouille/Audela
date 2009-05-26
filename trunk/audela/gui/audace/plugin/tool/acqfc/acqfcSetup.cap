@@ -1,6 +1,6 @@
 #
 # Fichier : acqfcSetup.cap
-# Mise a jour $Id: acqfcSetup.cap,v 1.14 2009-04-05 06:38:01 robertdelmas Exp $
+# Mise a jour $Id: acqfcSetup.cap,v 1.15 2009-05-26 16:54:47 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -43,9 +43,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfcSetup,texte1)                 "Mostra messaggio sul terminale"
    set caption(acqfcSetup,texte2)                 "Salvataggio date nel file di log"
    set caption(acqfcSetup,texte3)                 "Segnale acustico quando finisce la serie"
-   set caption(acqfcSetup,texte4)                 "# Demander l'autorisation de remplacer un fichier existant"
-   set caption(acqfcSetup,texte5)                 "# Signaler que l'index de départ est différent de 1"
-   set caption(acqfcSetup,texte6)                 "# Enregistrer une acquisition interrompue"
+   set caption(acqfcSetup,texte4)                 "Domandare l'autorizzazione di rimpiazzare un file esistente"
+   set caption(acqfcSetup,texte5)                 "Segnalare che l'indice di partenza sia differente da 1"
+   set caption(acqfcSetup,texte6)                 "Salvare una acquisizione interrotta"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {

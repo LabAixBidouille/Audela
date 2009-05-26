@@ -1,6 +1,6 @@
 #
 # Fichier : eqmod.cap
-# Mise a jour $Id: eqmod.cap,v 1.4 2009-04-05 06:38:58 robertdelmas Exp $
+# Mise a jour $Id: eqmod.cap,v 1.5 2009-05-26 16:53:45 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -67,15 +67,15 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,controle)               "Controllo"
    set caption(eqmod,raquette_tel)           "Pulsantiera a schermo"
 
-   set caption(eqmod,tube_ouest)             "# Tube à l'ouest"
-   set caption(eqmod,tube_est)               "# Tube à l'est"
+   set caption(eqmod,tube_ouest)             "Tubo a ovest"
+   set caption(eqmod,tube_est)               "Tubo a est"
    set caption(eqmod,moteur_on)              "Motore On"
    set caption(eqmod,N/A)                    "------"
    set caption(eqmod,angle_horaire)          "Angolo orario:"
    set caption(eqmod,AD)                     "Ascensione Retta:"
    set caption(eqmod,DEC)                    "Declinazione:"
-   set caption(eqmod,position_AD)            "# Position AD:"
-   set caption(eqmod,position_DEC)           "# Position Déc.:"
+   set caption(eqmod,position_AD)            "Posizione A.R.:"
+   set caption(eqmod,position_DEC)           "Posizione Dec.:"
 
    set caption(eqmod,port_eqmod)             "Porta EQMOD"
    set caption(eqmod,2points)                ":"

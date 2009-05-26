@@ -1,6 +1,6 @@
 #
 # Fichier : t193.cap
-# Mise a jour $Id: t193.cap,v 1.3 2009-05-18 10:39:56 robertdelmas Exp $
+# Mise a jour $Id: t193.cap,v 1.4 2009-05-26 16:54:17 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -72,17 +72,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,monture)                 "T193"
    set caption(t193,port)                    "Porta Com HP1000"
    set caption(t193,configurer)              "Configurare"
-   set caption(t193,nom_carte)               "# Nom de la carte USB-6501"
+   set caption(t193,nom_carte)               "Nome di carta USB-6501"
    set caption(t193,raquette)                "Pulsantiera"
    set caption(t193,nord)                    "N"
    set caption(t193,sud)                     "S"
    set caption(t193,est)                     "E"
    set caption(t193,ouest)                   "O"
-   set caption(t193,attenuateur)             "# Atténuateur"
-   set caption(t193,duree)                   "# Durée de\ndéplacement entre\nle mini et le maxi (sec.)"
+   set caption(t193,attenuateur)             "Attenuatore"
+   set caption(t193,duree)                   "Durata di\nposizionamento\nmin e max (sec.)"
    set caption(t193,attenuateur-)            "-"
    set caption(t193,attenuateur+)            "+"
-   set caption(t193,coordonnées)             "# Coordonnées AD et Déc."
+   set caption(t193,coordonnées)             "Coordinate AR e Dec."
    set caption(t193,AD)                      "Ascensione Retta"
    set caption(t193,Dec)                     "Declinazione"
    set caption(t193,lecture)                 "Lettura"
