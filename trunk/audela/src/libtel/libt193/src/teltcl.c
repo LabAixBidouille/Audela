@@ -54,11 +54,14 @@ int cmdTelFilter(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
       result = TCL_ERROR;
    } else {
       tel = (struct telprop*)clientData;
-      if (strcmp(argv[2],"init")==0) {
-          // --- init 
-         if (argc>=4) {
-            //tel->focus0=atof(argv[3]);
-            tel_filter_init(tel,atoi(argv[3]));
+      if (strcmp(argv[2],"max")==0) {
+         if (argc == 3) {
+            double maxDelay; 
+            tel_filter_getMax(tel,&maxDelay);
+            sprintf(ligne, "%f",maxDelay);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         } else if (argc==4) {
+            tel_filter_setMax(tel,atoi(argv[3]));
             Tcl_SetResult(interp,"",TCL_VOLATILE);
          } else {
             sprintf(ligne,"Usage: %s %s init number",argv[0],argv[1]);
@@ -71,7 +74,7 @@ int cmdTelFilter(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       } else if (strcmp(argv[2],"move")==0) {
          // --- move 
-         if (argc>=4) {
+         if (argc==4) {
             tel_filter_move(tel,argv[3]);
             Tcl_SetResult(interp,"",TCL_VOLATILE);
          } else {
@@ -141,6 +144,7 @@ int cmdTelCorrect(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    return TCL_OK;
 }
 
+
 /*
  * -----------------------------------------------------------------------------
  *  cmdTelSendCommand()
@@ -158,7 +162,7 @@ int cmdTelCorrect(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
  *
  * -----------------------------------------------------------------------------
  */
-
+/*
 int cmdTelSendCommand(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char ligne[256];
    int retour;
@@ -193,7 +197,7 @@ int cmdTelSendCommand(ClientData clientData, Tcl_Interp *interp, int argc, char 
    }
    return retour;
 }
-
+*/
 
 /*
  * -----------------------------------------------------------------------------
@@ -225,5 +229,106 @@ int cmdTelConsoleLog(ClientData clientData, Tcl_Interp *interp, int argc, char *
       sprintf(ligne,"%d",tel->consoleLog);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    }
+   return result;
+}
+
+
+/*
+ * -----------------------------------------------------------------------------
+ *  cmdTelControl()
+ *
+ *  active/desactive la prise de controle du telescope 
+ *
+ * -----------------------------------------------------------------------------
+ */
+
+int cmdTelControl(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char ligne[256];
+   int result = TCL_OK,pb=0;
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;
+   if(argc!=3) {
+      pb=1;
+   }  else {
+      pb=0;
+      mytel_setControl(tel,atoi(argv[2]));
+   }
+   if (pb==1) {
+      sprintf(ligne,"Usage: %s %s ?0|1?",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } 
+   return result;
+}
+
+
+
+static void timerCallback(ClientData clientData ) {
+   char ligne[256];
+   int result;
+   struct telprop *   tel = (struct telprop *)clientData;
+   tel->timeDone = 1;
+}
+
+
+/*
+ * -----------------------------------------------------------------------------
+ *  cmdTelControl()
+ *
+ *  active/desactive la prise de controle du telescope 
+ *  thread::send  -async [tel1 threadid] "tel1 test 5000" 
+ *  
+ *  thread::send [tel1 threadid]  "tel1 test stop"
+ *  tel1 test 10000
+ *  tel1 test stop
+ * -----------------------------------------------------------------------------
+ */
+
+int cmdTelTest(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char ligne[256];
+   int result = TCL_OK,pb=0;
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;
+   if(argc!=3) {
+      pb=1;
+   }  else {
+      int timerDelay;
+      int result;
+      int foundEvent;
+
+      pb=0;
+      if (strcmp(argv[2],"stop")  == 0 ) {
+            Tcl_DeleteTimerHandler(tel->timerToken);
+            tel->timeDone = 2;
+            Tcl_SetResult(interp, "stop OK",TCL_VOLATILE);
+            result = TCL_OK     ;          
+         return result;
+      }
+
+      timerDelay = atoi(argv[2]);
+
+      tel->timerToken = Tcl_CreateTimerHandler(timerDelay, timerCallback, (ClientData) tel);
+
+      // j'attends un evenement
+      tel->timeDone = 0; 
+      foundEvent = 1;
+      while (!tel->timeDone && foundEvent) {
+         foundEvent = Tcl_DoOneEvent(TCL_ALL_EVENTS);
+         if (Tcl_LimitExceeded(interp)) {
+            break;
+         }
+      }
+
+      //sprintf(ligne,"fin du timer %d", tel->timeDone);
+      tel->timeDone = 0;
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_OK;
+   
+   }
+   if (pb==1) {
+      sprintf(ligne,"Usage: %s %s ?0|1?",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } 
    return result;
 }

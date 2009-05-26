@@ -66,7 +66,8 @@ int mytel_readUsbCard(struct telprop *tel, unsigned char *data);
 int mytel_getBit(struct telprop *tel, unsigned char data, int numbit);
 void mytel_startTimer(struct telprop *tel);
 double mytel_stopTimer(struct telprop *tel);
-
+int mytel_sendCommandTelescop(struct telprop *tel, int command);
+int mytel_sendCommandFilter(struct telprop *tel, int command);
 
 /* ========================================================= */
 /* ========================================================= */
@@ -91,8 +92,9 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    int         error=0;
 	uInt32      data=0xffffffff;
    char        hpcom[128]={'\0'};
-   char        usbport[128]={'\0'};
-	//int32		written;
+   char        usbCardName[128]     ="Dev1";    // ces valeurs par defaut seront ecrasées par les paramètres optionels
+   char        usbTelescopPort[128] ="port0";
+   char        usbFilterPort[128]   ="port1";
    int         i;
    int         result = 0;
    char s[1024],ssres[1024];
@@ -101,9 +103,12 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 
    // j'intialise les variables
    strcpy(tel->channel , "");
-   tel->outputTaskHandle = 0;
-   tel->inputTaskHandle = 0;   
-   tel->consoleLog = 1;    // j'active les traces dans la console pour les premiers tests 
+   tel->outputTelescopTaskHandle = 0;
+   tel->outputFilterTaskHandle = 0;
+   tel->inputFilterTaskHandle = 0;   
+   tel->outputTelescopData = 255;
+   tel->outputFilterData = 255;
+   tel->consoleLog = 0;    // j'active les traces dans la console pour les premiers tests 
    tel->filterMaxDelay = 10;  
    tel->filterCurrentDelay = 0;  
 
@@ -111,11 +116,11 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    tel->southRelay         = 1;
    tel->estRelay           = 2;
    tel->westRelay          = 3;
-   tel->decreaseFilterRelay = 4;
-   tel->increaseFilterRelay = 5;
-   tel->minDetectorFilterInput = 6;
-   tel->minDetectorFilterInput = 7;
-   tel->outputData = 0;
+   tel->enabledRelay       = 4;
+   tel->decreaseFilterRelay = 0;
+   tel->increaseFilterRelay = 1;
+   tel->minDetectorFilterInput = 2;
+   tel->minDetectorFilterInput = 3;
 
 
    // je lis les parametres optionels
@@ -123,145 +128,188 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 	   if (strcmp(argv[i],"-hpcom")==0) {
 			   strcpy(hpcom, argv[i+1]);
       }
-	   if (strcmp(argv[i],"-usbport")==0) {
-			   strcpy(usbport, argv[i+1]);
+	   if (strcmp(argv[i],"-usbCardName")==0) {
+			   strcpy(usbCardName, argv[i+1]);
 		}
-	   if (strcmp(argv[i],"-usbline")==0) {
-         char value;
-
-         // j'initialise northRelay
-         value = argv[i+1][0] - '0';
-         if ( value >= 0 && value <= 7 ) {
-            tel->northRelay = value; 
-         } else {
-            sprintf(tel->msg,"northRelay=%d Must be beetween 0 and 7", value );
-            return 1;
-         }
-
-         // j'initialise southRelay
-         value = argv[i+2][0] - '0';
-         if ( value >= 0 && value <= 7 ) {
-            tel->southRelay = value; 
-         } else {
-            sprintf(tel->msg,"southRelay=%d Must be beetween 0 and 7", value );
-            return 1;
-         }
-
-         // j'initialise estRelay
-         value = argv[i+3][0] - '0';
-         if ( value >= 0 && value <= 7 ) {
-            tel->estRelay = value; 
-         } else {
-            sprintf(tel->msg,"estRelay=%d Must be beetween 0 and 7", value );
-            return 1;
-         }
-
-         // j'initialise westRelay
-         value = argv[i+4][0] - '0';
-         if ( value >= 0 && value <= 7 ) {
-            tel->westRelay = value; 
-         } else {
-            sprintf(tel->msg,"westRelay=%d Must be beetween 0 and 7", value );
-            return 1;
-         }
-
-         // j'initialise decreaseFilterRelay
-         value = argv[i+5][0] - '0';
-         if ( value >= 0 && value <= 7 ) {
-            tel->decreaseFilterRelay = value; 
-         } else {
-            sprintf(tel->msg,"decreaseFilterRelay=%d Must be beetween 0 and 7", value );
-            return 1;
-         }
-
-         // j'initialise increaseFilterRelay
-         value = argv[i+6][0] - '0';
-         if ( value >= 0 && value <= 7 ) {
-            tel->increaseFilterRelay = value; 
-         } else {
-            sprintf(tel->msg,"increaseFilterRelay=%d Must be beetween 0 and 7", value );
-            return 1;
-         }
-
-         // j'initialise minDetectorFilterInput
-         value = argv[i+7][0] - '0';
-         if ( value >= 0 && value <= 7 ) {
-            tel->minDetectorFilterInput = value; 
-         } else {
-            sprintf(tel->msg,"minDetectorFilterInput=%d Must be beetween 0 and 7", value );
-            return 1;
-         }
-
-         // j'initialise maxDetectorFilterInput
-         value = argv[i+8][0] - '0';
-         if ( value >= 0 && value <= 7 ) {
-            tel->maxDetectorFilterInput = value; 
-         } else {
-            sprintf(tel->msg,"maxDetectorFilterInput=%d Must be beetween 0 and 7", value );
-            return 1;
-         }
-
-         i+=9;
+	   if (strcmp(argv[i],"-usbTelescopPort")==0) {
+			   strcpy(usbTelescopPort, argv[i+1]);
 		}
+	   if (strcmp(argv[i],"-usbFilterPort")==0) {
+			   strcpy(usbFilterPort, argv[i+1]);
+		}
+	   if (strcmp(argv[i],"-northRelay")==0) {
+         tel->northRelay = atoi(argv[i+1]); 
+         if ( tel->northRelay < 0 && tel->northRelay > 7 ) {
+            sprintf(tel->msg,"northRelay=%d Must be beetween 0 and 7", tel->northRelay );
+            return 1;
+         }
+      }
+	   if (strcmp(argv[i],"-southRelay")==0) {
+         tel->southRelay = atoi(argv[i+1]); 
+         if ( tel->southRelay < 0 && tel->southRelay > 7 ) {
+            sprintf(tel->msg,"southRelay=%d Must be beetween 0 and 7", tel->southRelay );
+            return 1;
+         }
+      }
+	   if (strcmp(argv[i],"-estRelay")==0) {
+         tel->estRelay = atoi(argv[i+1]); 
+         if ( tel->estRelay < 0 && tel->estRelay > 7 ) {
+            sprintf(tel->msg,"estRelay=%d Must be beetween 0 and 7", tel->estRelay );
+            return 1;
+         }
+      }
+	   if (strcmp(argv[i],"-westRelay")==0) {
+         tel->westRelay = atoi(argv[i+1]); 
+         if ( tel->westRelay < 0 && tel->westRelay > 7 ) {
+            sprintf(tel->msg,"westRelay=%d Must be beetween 0 and 7", tel->westRelay );
+            return 1;
+         }
+      }
+	   if (strcmp(argv[i],"-enabledRelay")==0) {
+         tel->enabledRelay = atoi(argv[i+1]); 
+         if ( tel->enabledRelay < 0 && tel->enabledRelay > 7 ) {
+            sprintf(tel->msg,"enabledRelay=%d Must be beetween 0 and 7", tel->enabledRelay );
+            return 1;
+         }
+      }
+	   if (strcmp(argv[i],"-decreaseFilterRelay")==0) {
+         tel->decreaseFilterRelay = atoi(argv[i+1]); 
+         if ( tel->decreaseFilterRelay < 0 && tel->decreaseFilterRelay > 7 ) {
+            sprintf(tel->msg,"decreaseFilterRelay=%d Must be beetween 0 and 7", tel->decreaseFilterRelay );
+            return 1;
+         }
+      }
+	   if (strcmp(argv[i],"-increaseFilterRelay")==0) {
+         tel->increaseFilterRelay = atoi(argv[i+1]); 
+         if ( tel->increaseFilterRelay < 0 && tel->increaseFilterRelay > 7 ) {
+            sprintf(tel->msg,"increaseFilterRelay=%d Must be beetween 0 and 7", tel->increaseFilterRelay );
+            return 1;
+         }
+      }
+	   if (strcmp(argv[i],"-minDetectorFilterInput")==0) {
+         tel->minDetectorFilterInput = atoi(argv[i+1]); 
+         if ( tel->minDetectorFilterInput < 0 && tel->minDetectorFilterInput > 7 ) {
+            sprintf(tel->msg,"minDetectorFilterInput=%d Must be beetween 0 and 7", tel->minDetectorFilterInput );
+            return 1;
+         }
+      }
+	   if (strcmp(argv[i],"-maxDetectorFilterInput")==0) {
+         tel->maxDetectorFilterInput = atoi(argv[i+1]); 
+         if ( tel->maxDetectorFilterInput < 0 && tel->maxDetectorFilterInput > 7 ) {
+            sprintf(tel->msg,"maxDetectorFilterInput=%d Must be beetween 0 and 7", tel->maxDetectorFilterInput );
+            return 1;
+         }
+      }
+
+	   if (strcmp(argv[i],"-filterMaxDelay")==0) {
+         tel_filter_setMax(tel,atof(argv[i+1])); 
+      }
    }
 
    if ( result == 1 ) {
+      // j'arrete l'init s'il y a eu une erreur
       return 1;
    }
 
+   // argv2 contient le type de connexion du telescope HP1000 ou PC 
    if ( strcmp(argv[2], "HP1000") == 0 ) {
-      if ( strcmp(usbport, "simulation") !=  0 ) {
+      if ( strcmp(usbCardName, "simulation") !=  0 ) {
+         //DAQmxGetSysDevNames
+
+         // je verifie que la carte est presente 
+         if( ! DAQmxFailed(error) ) {
+	         error = DAQmxSelfTestDevice(usbCardName);
+         }
+
 	      // J'ouvre la connexion de la carte USB-6501
-         // argv2 contient le nom du device et du port de la carte USB-6501
-	      error = DAQmxCreateTask("",&tel->outputTaskHandle);
+         // je cree la tache du telescope en ecriture
+         if( ! DAQmxFailed(error) ) {
+	         error = DAQmxCreateTask("",&tel->outputTelescopTaskHandle);
+         }
+
          if( ! DAQmxFailed(error) ) {
             char lines[256];
 
-            // je cree le canal en ecriture
-	         //error = DAQmxCreateDOChan(tel->outputTaskHandle,usbport,"",DAQmx_Val_ChanForAllLines);
-            sprintf(lines, "%s/line%d, %s/line%d, %s/line%d, %s/line%d, %s/line%d, %s/line%d",
-                 usbport, tel->northRelay,
-                 usbport, tel->southRelay,
-                 usbport, tel->estRelay,
-                 usbport, tel->westRelay,
-                 usbport, tel->decreaseFilterRelay,
-                 usbport, tel->increaseFilterRelay);
-	         error = DAQmxCreateDOChan(tel->outputTaskHandle,lines,"", DAQmx_Val_ChanForAllLines  );  //DAQmx_Val_ChanForAllLines DAQmx_Val_ChanPerLine
+            sprintf(lines, "%s/%s/line%d, %s/%s/line%d, %s/%s/line%d, %s/%s/line%d, %s/%s/line%d",
+                 usbCardName,usbTelescopPort, tel->northRelay,
+                 usbCardName,usbTelescopPort, tel->southRelay,
+                 usbCardName,usbTelescopPort, tel->estRelay,
+                 usbCardName,usbTelescopPort, tel->westRelay,
+                 usbCardName,usbTelescopPort, tel->enabledRelay);
+	         error = DAQmxCreateDOChan(tel->outputTelescopTaskHandle,lines,"", DAQmx_Val_ChanForAllLines  );  //DAQmx_Val_ChanForAllLines DAQmx_Val_ChanPerLine
          }
 
+         // je cree la tache de l'attenuateur en ecriture
+         if( ! DAQmxFailed(error) ) {
+   	      error = DAQmxCreateTask("",&tel->outputFilterTaskHandle);
+         }
+         if( ! DAQmxFailed(error) ) {
+            char lines[256];
+
+            sprintf(lines, "%s/%s/line%d, %s/%s/line%d",
+                 usbCardName,usbFilterPort, tel->decreaseFilterRelay,
+                 usbCardName,usbFilterPort, tel->increaseFilterRelay);
+	         error = DAQmxCreateDOChan(tel->outputFilterTaskHandle,lines,"", DAQmx_Val_ChanForAllLines  );  //DAQmx_Val_ChanForAllLines DAQmx_Val_ChanPerLine
+         }
+
+         // je cree la tache de l'attenuateur en lecture
          if( ! DAQmxFailed(error) ) {
             // je cree la tache de lecture 
-   	      error = DAQmxCreateTask("",&tel->inputTaskHandle);
+   	      error = DAQmxCreateTask("",&tel->inputFilterTaskHandle);
          }
+
          if( ! DAQmxFailed(error) ) {
             char lines[256];
             // je crée le canal en lecture
-            sprintf(lines, "%s/line%d, %s/line%d",
-                 usbport, tel->minDetectorFilterInput,
-                 usbport, tel->maxDetectorFilterInput);
-	         error = DAQmxCreateDIChan(tel->inputTaskHandle,lines,"", DAQmx_Val_ChanForAllLines  );  //DAQmx_Val_ChanForAllLines DAQmx_Val_ChanPerLine
+            sprintf(lines, "%s/%s/line%d, %s/%s/line%d",
+                 usbCardName,usbFilterPort, tel->minDetectorFilterInput,
+                 usbCardName,usbFilterPort, tel->maxDetectorFilterInput);
+	         error = DAQmxCreateDIChan(tel->inputFilterTaskHandle,lines,"", DAQmx_Val_ChanForAllLines  );  //DAQmx_Val_ChanForAllLines DAQmx_Val_ChanPerLine
          }
+         
+         // je demarre les taches
          if( ! DAQmxFailed(error) ) {
-	         // je demarre la tache d'ecriture
-	         error = DAQmxStartTask(tel->outputTaskHandle);
+	         error = DAQmxStartTask(tel->outputTelescopTaskHandle);
+         }
+         // je demarre les taches
+         if( ! DAQmxFailed(error) ) {
+	         error = DAQmxStartTask(tel->outputFilterTaskHandle);
          }
          if( ! DAQmxFailed(error) ) {
 	         // je demarre la tache de lecture
-	         error = DAQmxStartTask(tel->inputTaskHandle);
+	         error = DAQmxStartTask(tel->inputFilterTaskHandle);
          }
-         if( DAQmxFailed(error) ) {
-       	   char errBuff[2048]={'\0'};
+         if( ! DAQmxFailed(error) ) {
+
+            //  je met tous les bits à 1 (position de repos de la commande du télescope) 
+            tel->outputTelescopData = 255;
+            result = mytel_sendCommandTelescop(tel , tel->outputTelescopData);
+
+            //  je met tous les bits à 1 (position de repos de la commande de l'attenuateur) 
+            tel->outputFilterData = 255;
+            result = mytel_sendCommandFilter(tel , tel->outputFilterData);
+         } else {
+            char errBuff[2001]={'\0'};
             // je recupere le message d'erreur
-		      DAQmxGetExtendedErrorInfo(errBuff,2048);
-            strcpy(tel->msg, errBuff) ;
+		      //DAQmxGetExtendedErrorInfo(errBuff,2000);
+            DAQmxGetErrorString(error, errBuff, 2000);
+            //sprintf(tel->msg, "DAQmx error %d", error);
+            sprintf(tel->msg, "Device=%s %s",usbCardName, errBuff) ;
             result = 1;
-	      }
+         } 
+
       } else {
          //simulation
-         mytel_logConsole(tel, "simul open %s OK",usbport);
+         mytel_logConsole(tel, "simul open %s OK",usbCardName);
       }
 
+      if ( result == 1 ) {
+         // j'arrete l'init s'il y a eu une erreur
+   	   tel_close(tel);
+         return 1;
+      }
 
+ 
       // j'ouvre la connexion avec le port serie du HP1000 pour la reception des ccordonnees
       if ( strlen(hpcom) > 0 ) {
          strcpy(ss,hpcom);
@@ -341,21 +389,27 @@ int tel_close(struct telprop *tel)
 /* --- called by : tel1 close --- */
 /* ------------------------------ */
 {
-   // je ferme la connexion "output"  de la carte USB
- 	if( tel->outputTaskHandle!=0 ) {
-		DAQmxStopTask(tel->outputTaskHandle);
-		DAQmxClearTask(tel->outputTaskHandle);
-      tel->outputTaskHandle = 0;
+   // je ferme la tache en ecriture du telescope sur la carte USB
+ 	if( tel->outputTelescopTaskHandle!=0 ) {
+		DAQmxStopTask(tel->outputTelescopTaskHandle);
+		DAQmxClearTask(tel->outputTelescopTaskHandle);
+      tel->outputTelescopTaskHandle = 0;
 	}
 
-   // je ferme la connexion "intput"  de la carte USB
- 	if( tel->inputTaskHandle!=0 ) {
-		DAQmxStopTask(tel->inputTaskHandle);
-		DAQmxClearTask(tel->inputTaskHandle);
-      tel->inputTaskHandle = 0;
+   // je ferme la tache en ecriture de l'attenuateur sur la carte USB
+ 	if( tel->outputFilterTaskHandle!=0 ) {
+		DAQmxStopTask(tel->outputFilterTaskHandle);
+		DAQmxClearTask(tel->outputFilterTaskHandle);
+      tel->outputFilterTaskHandle = 0;
+	}
+   // je ferme la tache en lecture de l'attenuateur sur la carte USB
+ 	if( tel->inputFilterTaskHandle!=0 ) {
+		DAQmxStopTask(tel->inputFilterTaskHandle);
+		DAQmxClearTask(tel->inputFilterTaskHandle);
+      tel->inputFilterTaskHandle = 0;
 	}
 
-   // je ferme le port serie de liaison avec le HP1000
+   // je ferme le port de liaison série avec le HP1000
    if( strcmp(tel->channel,"") != 0 ) {
       char s[1024];
       sprintf(s,"close %s",tel->channel); mytel_tcleval(tel,s);
@@ -389,11 +443,12 @@ int tel_radec_coord(struct telprop *tel,char *result)
    //sprintf(command,"read %s 1",tel->channel); mytel_tcleval(tel,s);
    //strcpy(response,tel->interp->result);
 
-   sprintf(result, "01h22m03s +33d43m12s");
+   sprintf(result, "00h00m00.00s +00d00m00s");
 
 
    return 0;
 }
+
 
 int tel_radec_state(struct telprop *tel,char *result)
 /* ------------------------------------ */
@@ -415,7 +470,7 @@ int tel_radec_move(struct telprop *tel,char *direction)
 {
    int result ;
 
-   if ( tel->outputTaskHandle != 0 ) {
+   if ( tel->outputTelescopTaskHandle != 0 ) {
       char mask; 
       int numbit;
 
@@ -440,8 +495,8 @@ int tel_radec_move(struct telprop *tel,char *direction)
       // je cree le masque 
       mask = 1 << numbit;
       // je force à 1 le bit correspondant 
-      tel->outputData |= mask;
-      result = mytel_sendCommand(tel , tel->outputData);
+      tel->outputTelescopData &= ~mask;
+      result = mytel_sendCommandTelescop(tel , tel->outputTelescopData);
    } else {
       // je simule l'envoi de la commande
       mytel_logConsole(tel, "simul radec move %s OK",direction);
@@ -457,7 +512,7 @@ int tel_radec_stop(struct telprop *tel,char *direction)
 {
    int result ;
 
-   if ( tel->outputTaskHandle != 0 ) {
+   if ( tel->outputTelescopTaskHandle != 0 ) {
       char mask; 
       int numbit;
 
@@ -483,34 +538,35 @@ int tel_radec_stop(struct telprop *tel,char *direction)
          // je cree le masque 
          mask = 1 << numbit;
          // je force à 1 le bit correspondant 
-         tel->outputData &= ~mask;
+         tel->outputTelescopData |= mask;
       } else {
          // je cree le masque northRelay
          mask = 1 << tel->northRelay;
          // je force à 1 le bit correspondant 
-         tel->outputData &= ~mask;
+         tel->outputTelescopData |= mask;
 
          // je cree le masque 
          mask = 1 << tel->southRelay;
          // je force à 1 le bit correspondant 
-         tel->outputData &= ~mask;
+         tel->outputTelescopData |= mask;
 
          // je cree le masque 
          mask = 1 << tel->estRelay;
          // je force à 1 le bit correspondant 
-         tel->outputData &= ~mask;
+         tel->outputTelescopData |= mask;
 
          // je cree le masque 
          mask = 1 << tel->westRelay;
          // je force à 1 le bit correspondant 
-         tel->outputData &= ~mask;
+         tel->outputTelescopData |= mask;
       }
-      result = mytel_sendCommand(tel , tel->outputData);
+      result = mytel_sendCommandTelescop(tel, tel->outputTelescopData);
    } else {
       // je simule l'envoi de la commande
       mytel_logConsole(tel, "simul radec stop %s OK",direction);
+      result = 0; 
    }
-   return 0;
+   return result;
 }
 
 int tel_radec_motor(struct telprop *tel)
@@ -610,33 +666,106 @@ int tel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,d
 
 
 //-------------------------------------------------------------
+// mytel_setControl
+//
+// Active ou désactive le controle des deplacement du telescope.
+// Si le controle n'est pas active, le telescope ne prend pas en compte les mouvements
+//
+//
+// @param tel 
+// @param control 0=OFF 1=ON  etat du controle
+//
+// @return 
+//-------------------------------------------------------------
+
+int mytel_setControl(struct telprop *tel,int control) { 
+   int result ;
+
+   if ( tel->outputTelescopTaskHandle != 0 ) {
+      char mask; 
+
+      if ( control == 1 ) {
+         // je cree le masque 
+         mask = 1 << tel->enabledRelay;
+         // je force à 1 le bit correspondant 
+         tel->outputTelescopData &= ~mask;
+      } else {
+         // je cree le masque 
+         mask = 1 << tel->enabledRelay;
+         // je force à 0 le bit correspondant 
+         tel->outputTelescopData |= mask;
+      }
+      result = mytel_sendCommandTelescop(tel , tel->outputTelescopData);
+   } else {
+      // je simule l'envoi de la commande
+      mytel_logConsole(tel, "simul radec control %d OK",control);
+      result = 0;
+   }
+   return result;
+
+}
+
+//-------------------------------------------------------------
 // gestion des atténuateurs 
 //-------------------------------------------------------------
 
 
-int tel_filter_init(struct telprop *tel, double filterMaxDelay) {
-   
+//-------------------------------------------------------------
+// tel_filter_setMax
+//
+// Inialise la duree de déplement entre les 2 fin de course de l'attenuateur
+// Cette durée servira pour calculer le pourcentage d'atténuation
+//
+// @param tel 
+// @param filterMaxDelay  duree de déplacement entre les fin de course (en seconde)
+//-------------------------------------------------------------
 
-   tel->filterMaxDelay = tel->filterMaxDelay;
+int tel_filter_setMax(struct telprop *tel, double filterMaxDelay) {   
+   tel->filterMaxDelay = filterMaxDelay;
 
-   // j'ecrete la valeur courant pour dne pas provoquer une situation incohérente
+   // j'ecrete la valeur courante pour ne pas provoquer une situation incohérente
    if ( tel->filterCurrentDelay > tel->filterMaxDelay ) {
       tel->filterCurrentDelay = tel->filterMaxDelay;
    }
 
-   if ( tel->outputTaskHandle != 0 ) {
+   if ( tel->outputFilterTaskHandle != 0 ) {
       // je simule l'envoi de la commande
-      mytel_logConsole(tel, "simul filter init %f OK", filterMaxDelay);
+      mytel_logConsole(tel, "simul filter set max %f OK", filterMaxDelay);
    }
-
-   return 0;
-   
+   return 0;   
 }
 
+//-------------------------------------------------------------
+// tel_filter_getMax
+//
+// retour,la durée de depalcement entre les 2 butées de fin de course 
+//
+// @param tel 
+// @param filterMaxDelay  duree de déplacement entre les fin de course (en seconde)
+//-------------------------------------------------------------
+
+int tel_filter_getMax(struct telprop *tel, double *filterMaxDelay) {   
+   tel->filterMaxDelay = tel->filterMaxDelay;
+
+   *filterMaxDelay = tel->filterMaxDelay;
+
+   return 0;   
+}
+
+
+//-------------------------------------------------------------
+// tel_filter_coord
+//
+// Retourner les coordonnee
+// Cette durée servira pour calculer le pourcentage d'atténuation
+//
+// @param tel    pointeur struture telprop
+// @param coord  chaine de caractere contenant le pourcentage d'attenuation ( entre 0 et 100)
+//-------------------------------------------------------------
 int tel_filter_coord(struct telprop *tel, char * coord) {
    int result;
 
-   if ( tel->outputTaskHandle != 0 ) {
+   if ( tel->outputFilterTaskHandle != 0 ) {
       // je lis la carte
       unsigned char inputData;
       result = mytel_readUsbCard(tel, &inputData);
@@ -646,9 +775,10 @@ int tel_filter_coord(struct telprop *tel, char * coord) {
          // je recupere l'etat de la butee max
          int max = mytel_getBit(tel, inputData, tel->maxDetectorFilterInput);
 
-         if ( min == 1 ) {
+         // la fin de course est au niveau 0 quand elle est rencontrée
+         if ( min == 0 ) {
             tel->filterCurrentDelay = 0;
-         } else if (max == 1 ) {
+         } else if (max == 0 ) {
             tel->filterCurrentDelay = tel->filterMaxDelay;
          } 
 
@@ -668,10 +798,19 @@ int tel_filter_coord(struct telprop *tel, char * coord) {
    
 }
 
+//-------------------------------------------------------------
+// tel_filter_move
+//
+// modifie la position de l'atténuateur
+// Cette durée servira pour calculer le pourcentage d'atténuation
+//
+// @param tel    pointeur struture telprop
+// @param coord  chaine de caractere contenant le pourcentage d'attenuation ( entre 0 et 100)
+//-------------------------------------------------------------
 int tel_filter_move(struct telprop *tel, char * direction) {
    int result = 0;
 
-   if ( tel->outputTaskHandle != 0 ) {
+   if ( tel->outputFilterTaskHandle != 0 ) {
       char mask; 
       int numbit;
 
@@ -689,12 +828,12 @@ int tel_filter_move(struct telprop *tel, char * direction) {
 
       // je cree le masque 
       mask = 1 << numbit;
-      // je force à 1 le bit correspondant 
-      tel->outputData |= mask;
-      result = mytel_sendCommand(tel, tel->outputData);
+      // je force à 0 le bit correspondant 
+      tel->outputFilterData &= ~mask;
+      result = mytel_sendCommandFilter(tel, tel->outputFilterData);
       // je memorise l'heure de début du mouvememt
       mytel_startTimer(tel);
-      // je memorise le sens du mouvememt
+      // je memorise le sens du mouvememt qui sera utilisé par tel_filter_stop
       tel->filterCommand = numbit;      
    } else {
       // je simule l'envoi de la commande
@@ -709,23 +848,23 @@ int tel_filter_move(struct telprop *tel, char * direction) {
 int tel_filter_stop(struct telprop *tel) {
    int result;
 
-   if ( tel->outputTaskHandle != 0 ) {
+   if ( tel->outputFilterTaskHandle != 0 ) {
       char mask; 
       double delay;
 
       // je cree le masque pour decreaseFilterRelay
       mask = 1 << tel->decreaseFilterRelay;
-      // je force à 0 le bit correspondant 
-      tel->outputData &= ~mask;
+      // je force à 1 le bit correspondant 
+      tel->outputFilterData |= mask;
 
       // je cree le masque pour increaseFilterRelay
       mask = 1 << tel->increaseFilterRelay;
-      // je force à 0 le bit correspondant 
-      tel->outputData &= ~mask;
+      // je force à 1 le bit correspondant 
+      tel->outputFilterData |= mask;
       // j'enoive la commande sur la carte
-      result = mytel_sendCommand(tel, tel->outputData);
+      result = mytel_sendCommandFilter(tel, tel->outputFilterData);
       
-      // je memorise l'heure de début du mouvememt
+      // je memorise l'heure de fin du mouvememt et je calule le délai en millisecondes
       delay = mytel_stopTimer(tel);
 
       if (tel->filterCommand == tel->decreaseFilterRelay) {
@@ -741,8 +880,6 @@ int tel_filter_stop(struct telprop *tel) {
             tel->filterCurrentDelay = tel->filterMaxDelay;
          } 
       }
-
-
     } else {
       // je simule l'envoi de la commande
       mytel_logConsole(tel, "simul filter stop OK");
@@ -757,19 +894,62 @@ int tel_filter_stop(struct telprop *tel) {
 
 
 /**
- * mytel_sendCommand : send a command to the telescop
+ * mytel_sendCommandTelescop : send a command to the telescop
  * @param tel  
  * @param command : long integer 
  * @return 0=OK 1=erreur
  */
-int mytel_sendCommand(struct telprop *tel, int command) {
-	char     ligne[1024];
+int mytel_sendCommandTelescop(struct telprop *tel, int command) {
 	int      cr = 0;
    int      error=0;
-   //uInt32   data=0;
-   uInt8   data=0;
+   uInt8    data=0;
    int32	   written;
 
+   data = (uInt8) command;
+
+   if ( tel->consoleLog == 1 ) {
+      // j'affiche une trace dans la console
+      mytel_logConsole(tel, "T193 command: %d",data); 
+   }
+
+   // DAQmx Write Code
+   // parametres : 
+   //    outputTaskHandle outputTaskHandle,  
+   //    int32 numSampsPerChan,        1
+   //    bool32 autoStart,             1
+   //    float64 timeout,              10.0 seconds
+   //    bool32 dataLayout,            DAQmx_Val_GroupByChannel
+   //    const uInt32 writeArray[],    data 
+   //    int32 *sampsPerChanWritten,   written
+   //    bool32 *reserved);            NULL
+	//error = DAQmxWriteDigitalU32(tel->outputTaskHandle,1,1,10.0,DAQmx_Val_GroupByChannel,&data,&written,NULL);
+   error = DAQmxWriteDigitalU8(tel->outputTelescopTaskHandle,1,1,10.0,DAQmx_Val_GroupByChannel,&data,&written,NULL);
+    
+
+   if( DAQmxFailed(error)) {
+      // je copie le message d'erreur
+		DAQmxGetExtendedErrorInfo(tel->msg,1024);
+      cr = 1;
+   } else {
+		strcpy(tel->msg,"");
+      cr = 0;
+   }
+
+	return cr;
+}
+
+/**
+ * mytel_sendCommandTelescop : send a command to the telescop
+ * @param tel  
+ * @param command : long integer 
+ * @return 0=OK 1=erreur
+ */
+int mytel_sendCommandFilter(struct telprop *tel, int command) {
+	char     ligne[1024];
+	int      cr = 0;
+   uInt8   data=0;
+   int32	   written;
+   int      error=0;
    data = (uInt8) command;
 
    if ( tel->consoleLog == 1 ) {
@@ -789,7 +969,7 @@ int mytel_sendCommand(struct telprop *tel, int command) {
    //    int32 *sampsPerChanWritten,   written
    //    bool32 *reserved);            NULL
 	//error = DAQmxWriteDigitalU32(tel->outputTaskHandle,1,1,10.0,DAQmx_Val_GroupByChannel,&data,&written,NULL);
-   error = DAQmxWriteDigitalU8(tel->outputTaskHandle,1,1,10.0,DAQmx_Val_GroupByChannel,&data,&written,NULL);
+   error = DAQmxWriteDigitalU8(tel->outputFilterTaskHandle,1,1,10.0,DAQmx_Val_GroupByChannel,&data,&written,NULL);
     
 
    if( DAQmxFailed(error)) {
@@ -825,7 +1005,7 @@ int mytel_readUsbCard(struct telprop *tel, unsigned char *data ) {
    //    const uInt32 writeArray[],    data 
    //    int32 *sampsPerChanWritten,   readden elements nb
    //    bool32 *reserved);            NULL 
-   error = DAQmxReadDigitalU8 (tel->inputTaskHandle, 1, 10.0, DAQmx_Val_GroupByChannel, data, 1, &readden, NULL);
+   error = DAQmxReadDigitalU8 (tel->inputFilterTaskHandle, 1, 10.0, DAQmx_Val_GroupByChannel, data, 1, &readden, NULL);
 
    if( DAQmxFailed(error)) {
       // je copie le message d'erreur
@@ -921,15 +1101,21 @@ void mytel_logConsole(struct telprop *tel, char *messageFormat, ...) {
    char message[1024];
    char ligne[1200];
    va_list mkr;
+   int result;
    
    // j'assemble la commande 
    va_start(mkr, messageFormat);
    vsprintf(message, messageFormat, mkr);
 	va_end (mkr);
 
-   sprintf(ligne,"::console::disp \"libT193: %s\n\" ",message); 
-   Tcl_Eval(tel->interp,ligne);
+   if ( strcmp(tel->telThreadId,"") == 0 ) {
+      sprintf(ligne,"::console::disp \"libT193: %s\n\" ",message); 
+   } else {
+      sprintf(ligne,"::thread::send -async %s { ::console::disp \"libT193: %s \n\" } " , tel->mainThreadId, message); 
+   }
+   result = Tcl_Eval(tel->interp,ligne);
 
+   
 }
 
 
