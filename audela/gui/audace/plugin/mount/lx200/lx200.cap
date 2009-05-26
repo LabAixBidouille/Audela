@@ -1,6 +1,6 @@
 #
 # Fichier : lx200.cap
-# Mise a jour $Id: lx200.cap,v 1.9 2009-05-18 10:39:25 robertdelmas Exp $
+# Mise a jour $Id: lx200.cap,v 1.10 2009-05-26 16:54:00 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -101,7 +101,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,modele_astro_physics)       "Astro-Physics"
    set caption(lx200,format)                     "Formato"
    set caption(lx200,maj_lx200)                  "Aggiornamento di ora, longitudine, latitudine ed altitudine dell' LX200"
-   set caption(lx200,tracesConsole)              "# Traces dans la Console"
+   set caption(lx200,tracesConsole)              "Traccia sulla Console"
    set caption(lx200,ite-lente_tempo)            "Tempo"
    set caption(lx200,ite-lente_A0,go)            "GO A0"
    set caption(lx200,ite-lente_A0,stop)          "Stop A0"

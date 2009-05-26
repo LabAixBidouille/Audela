@@ -1,6 +1,6 @@
 #
 # Fichier : acqfc.cap
-# Mise a jour $Id: acqfc.cap,v 1.39 2009-04-05 06:37:49 robertdelmas Exp $
+# Mise a jour $Id: acqfc.cap,v 1.40 2009-05-26 16:54:32 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -275,7 +275,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,avancement_acq)         "Avanzamento\nacquisizione"
    set caption(acqfc,buttonShiftConfig)      "Spostamento"
    set caption(acqfc,acquisition)            "Aud'ACE - Acquisizione di"
-   set caption(acqfc,acquisitionError)       "# Erreur à l'acquisition. Vedere i dettagli sul Console."
+   set caption(acqfc,acquisitionError)       "Errore di acquisizione. Vedere i dettagli sul Console."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {

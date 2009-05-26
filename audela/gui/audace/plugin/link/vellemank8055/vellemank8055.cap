@@ -1,6 +1,6 @@
 #
 # Fichier : vellemank8055.cap
-# Mise a jour $Id: vellemank8055.cap,v 1.2 2009-05-18 10:40:12 robertdelmas Exp $
+# Mise a jour $Id: vellemank8055.cap,v 1.3 2009-05-26 16:53:30 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -52,17 +52,17 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(vellemank8055,titre)            "Velleman K8055"
-   set caption(vellemank8055,USBPort)          "# Liaison USB"
-   set caption(vellemank8055,selectAdresse)    "# Sélectionner le numéro de la carte"
+   set caption(vellemank8055,USBPort)          "Collegamento USB"
+   set caption(vellemank8055,selectAdresse)    "Selezionare il numero di carta"
    set caption(vellemank8055,SK5)              "SK5"
    set caption(vellemank8055,SK6)              "SK6"
-   set caption(vellemank8055,adresse)          "# Numéro de la carte :"
-   set caption(vellemank8055,test8sorties)     "# Tester les 8 sorties numériques"
-   set caption(vellemank8055,test5entrees)     "# Tester les 5 entrées numériques"
-   set caption(vellemank8055,tous)             "# Toutes"
-   set caption(vellemank8055,chenillard)       "# Test auto"
-   set caption(vellemank8055,raz)              "# Remise à zéro"
-   set caption(vellemank8055,lire)             "# Lire les entrées"
+   set caption(vellemank8055,adresse)          "Numero di carta:"
+   set caption(vellemank8055,test8sorties)     "Verificare le 8 uscite digitali"
+   set caption(vellemank8055,test5entrees)     "Verificare i 5 ingressi digitali"
+   set caption(vellemank8055,tous)             "Tutti"
+   set caption(vellemank8055,chenillard)       "Auto test"
+   set caption(vellemank8055,raz)              "Azzeramento"
+   set caption(vellemank8055,lire)             "Leggere gli ingressi"
    set caption(vellemank8055,stop)             "Ferma"
    set caption(vellemank8055,attention)        "Attenzione"
    set caption(vellemank8055,cannotcreatelink) "Il collegamento non e' stata creata."
