@@ -2,14 +2,24 @@
 # Fichier : sophie.tcl
 # Description : Outil de tests pour le developpement de Sophie pour le T193 de l'OHP
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophietest.tcl,v 1.4 2009-05-12 17:48:25 michelpujol Exp $
+# Mise a jour $Id: sophietest.tcl,v 1.5 2009-05-27 21:54:56 michelpujol Exp $
 #
+
+#------------------------------------------------------------
+# test de communication avec le PC sophie
+#
+#
+#
+#
+proc ::sophie::testpcs { } {
+
+}
 
 #------------------------------------------------------------
 # testhp
 #    teste l'envoi des coordonnees toutes les secondes
 #------------------------------------------------------------
-proc ::sophie::testhp { } {
+proc ::sophie::testCom { } {
    variable private
 
    set private(testhp) 0
@@ -32,7 +42,7 @@ proc ::sophie::testhp { } {
 # stophp
 #    arrete l'envoi des coordonnees
 #------------------------------------------------------------
-proc ::sophie::stophp { } {
+proc ::sophie::stopCom { } {
    variable private
 
    set private(testhp) 0
@@ -53,7 +63,7 @@ proc ::sophie::stophp { } {
 # testWriteHp
 #    envoie les coordonnees toutes les secondes
 #------------------------------------------------------------
-proc ::sophie::testWriteHp { } {
+proc ::sophie::testWriteCom { } {
    variable private
 
    set data "02h 06m 47.87s / -13d 44' 28\" /   -1d"
@@ -71,6 +81,54 @@ console::disp "testWriteHp data=$data\n"
 }
 
 #------------------------------------------------------------
+# testReadCom
+#    lit les coordonnees toutes les 3 secondes
+#------------------------------------------------------------
+proc ::sophie::testReadCom { } {
+   variable private
+
+
+   if { $private(testhp) == 1 } {
+      set data [read -nonewline $private(readHpHandle)]
+      set data [split $data "\n" ]
+      set messageNb [llength $data]
+      console::disp "\ntestReadHp nb=$messageNb data=$data\n"
+      after 3000 ::sophie::testReadHp
+   } else {
+     if { $private(readHpHandle) != "" } {
+         close $private(readHpHandle)
+         set private(readHpHandle) ""
+      }
+   }
+}
+
+#------------------------------------------------------------
+# startReadHp
+#    lance la lecture sur le port COM1
+#------------------------------------------------------------
+proc ::sophie::startReadHp { } {
+   variable private
+
+   # j'ouvre le port de reception des coordonnees
+   set private(readHpHandle) [open COM1 "r+" ]
+   fconfigure $private(readHpHandle) -mode "19200,n,8,1" -buffering none -blocking 0
+   console::disp "startReadHp  private(readHpHandle)=$private(readHpHandle)\n"
+   set private(testhp) 1
+   ::sophie::testReadHp
+}
+
+#------------------------------------------------------------
+# stopReadHp
+#    lit les coordonnees toutes les 3 secondes
+#------------------------------------------------------------
+proc ::sophie::stopReadHp { } {
+   variable private
+
+   set private(testhp) 0
+
+}
+
+#------------------------------------------------------------
 # testReadHp
 #    lit les coordonnees toutes les 3 secondes
 #------------------------------------------------------------
@@ -81,14 +139,21 @@ proc ::sophie::testReadHp { } {
       set data [read -nonewline $private(readHpHandle)]
       set data [split $data "\n" ]
       set messageNb [llength $data]
-      console::disp "\ntestReadHp nb=$messageNb data=$data\n"
       set data [lindex $data end]
       if { $data != "" } {
-         scan $data "#%2dh%2x%2x" r g b
-         set  [ format "%02dh%02dm%02ds" $h $m $sec);
-         console::disp "\ntestReadHp nb=$messageNb data=$data\n"
+         set nbVar [scan $data "%dh %dm %fs / %dd %d' %d'' / %dd" ah am as dd dm ds ba]
+         if { $nbVar == 7 } {
+            ##set alpha "${ah}h${am}m${as}s"
+            set alpha [format "%02dh%02dm%05.2fs" $ah $am $as]
+            set delta "${dd}h${dm}m${ds}s"
+            console::disp "testReadHp nb=$messageNb data=$data  alpha=$alpha delta=$delta\n"
+         } else {
+            console::affiche_erreur  "testReadHp nb=$messageNb data=$data nbVar=$nbVar\n"
+         }
+      } else {
+         console::disp "testReadHp nb=$messageNb data=$data\n"
       }
-      after 4000 ::sophie::testReadHp
+      after 2000 ::sophie::testReadHp
    } else {
      if { $private(readHpHandle) != "" } {
          close $private(readHpHandle)
@@ -96,6 +161,22 @@ proc ::sophie::testReadHp { } {
       }
    }
 }
+
+
+#------------------------------------------------------------
+# tests de la fenetre principale
+#------------------------------------------------------------
+
+proc ::sophie::aff1 { }  {
+   ::sophie::setMode "centrage"
+
+   #--- je verifie le binning
+   if { $::sophie::private(binning) } {
+
+
+   }
+}
+
 
 #------------------------------------------------------------
 # tests de la fenetre de controle
@@ -157,6 +238,15 @@ proc ::sophie::ok { } {
 
    set ::conf(sophie,simulation)                $private(simulation)
    set ::conf(sophie,simulationGenericFileName) $private(simulationGenericFileName)
+
+   if { $::conf(sophie,simulation) == 1 } {
+      ::camera::setParam $private(camItem) "simulation" 1
+      ::camera::setParam $private(camItem) "simulationGenericFileName" $::conf(sophie,simulationGenericFileName)
+   } else {
+      ::camera::setParam $private(camItem) "simulation" 0
+   }
+
+
    ::sophie::fermer
 }
 

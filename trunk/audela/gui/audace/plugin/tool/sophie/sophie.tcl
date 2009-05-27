@@ -2,7 +2,7 @@
 # Fichier : sophie.tcl
 # Description : Outil d'autoguidage pour le spectro Sophie du telescope T193 de l'OHP
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophie.tcl,v 1.7 2009-05-14 12:24:40 michelpujol Exp $
+# Mise a jour $Id: sophie.tcl,v 1.8 2009-05-27 21:54:56 michelpujol Exp $
 #
 
 #============================================================
@@ -101,7 +101,8 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(sophie,proportionalGain)] }          { set ::conf(sophie,proportionalGain)          "90" }
    if { ! [ info exists ::conf(sophie,integralGain)] }              { set ::conf(sophie,integralGain)              "10" }
    if { ! [ info exists ::conf(sophie,detection)] }                 { set ::conf(sophie,detection)                 "FIBER" }
-   if { ! [ info exists ::conf(sophie,targetBoxSize)] }             { set ::conf(sophie,targetBoxSize)             "64" }
+   if { ! [ info exists ::conf(sophie,thresold)] }                  { set ::conf(sophie,thresold)                 "30" }
+###   if { ! [ info exists ::conf(sophie,targetBoxSize)] }             { set ::conf(sophie,targetBoxSize)             "64" }
    if { ! [ info exists ::conf(sophie,originCoord)] }               { set ::conf(sophie,originCoord)               [list 320 240 ] }
    if { ! [ info exists ::conf(sophie,originBoxSize)] }             { set ::conf(sophie,originBoxSize)             "32" }
    if { ! [ info exists ::conf(sophie,darkEnabled)] }               { set ::conf(sophie,darkEnabled)               "0" }
@@ -133,7 +134,9 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(listePose)        "0.1 0.2 0.5 0.8 1"
    set private(pose)             "0.5"
    set private(listeBinning)     "1x1 2x2 3x3 4x4 5x5 6x6"
-   set private(binning)          "2x2"
+   set private(widgetBinning)    "2x2"
+   set private(xBinning)         2
+   set private(yBinning)         2
    set private(mode)             "centrage"
    set private(zoom)             "1"
    set private(attenuateur)      "80"
@@ -141,11 +144,15 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(targetDetection)  0           ; # 0=etoile non detectee , 1= etoile detectee
    set private(updateFilterId)   ""          ; # identifiant de la commande after pour la mise a jour de l'affichage du taux d'attenuation
    set private(updateFilterSate) 0           ; # 0=pas de modificationde l'atténuation en cour, 1= modification de l'attennuation en cours
+   set private(targetBoxSize)    100
+   set private(cameraCells)      [list 1536 1024 ] ; #dimension du capteur de la camera
 
+   set private(bufNo)            [::confVisu::getBufNo $visuNo]
    set private(hCanvas)          [::confVisu::getCanvas $visuNo]
    set private(originCoord)      $::conf(sophie,originCoord)
    set private(targetCoord)      $::conf(sophie,originCoord)
    set private(centerEnabled)    0
+   set private(guideEnabled)     0
    set private(mountEnabled)     0
    set private(delay,alpha)      "0.00"   ; # duree de rappel en alpha
    set private(delay,delta)      "0.00"   ; # duree de rappel en delta
@@ -175,7 +182,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
 
          #--- Bouton d'ouverture de la fenetre de configuration
          button $frm.titre.but2 -borderwidth 2 -text $::caption(sophie,config) \
-            -command "::sophie::config::run $visuNo [winfo toplevel $private(frm)]"
+            -command "::sophie::showConfigWindow $visuNo"
          pack $frm.titre.but2 -anchor center -expand 0 -fill x -ipady 2 -padx 2 -pady 2
 
       pack $frm.titre -side top -fill x
@@ -193,6 +200,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
             -entrybg white -justify center -takefocus 1 \
             -width [ ::tkutil::lgEntryComboBox $private(listePose) ] \
             -textvariable ::conf(sophie,exposure) \
+            -modifycmd "::sophie::onChangeExposure $visuNo" \
             -values $private(listePose)
          grid $frm.acq.exposure -in [$frm.acq getframe] -column 1 -row 0 \
             -columnspan 1 -rowspan 1 -sticky e
@@ -206,7 +214,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
          ComboBox $frm.acq.binning \
             -entrybg white -justify center -takefocus 1 \
             -width [ ::tkutil::lgEntryComboBox $private(listeBinning) ] \
-            -textvariable ::sophie::private(binning) \
+            -textvariable ::sophie::private(widgetBinning) \
             -modifycmd "::sophie::onChangeBinning $visuNo" \
             -values $private(listeBinning)
          grid $frm.acq.binning -in [$frm.acq getframe] -column 1 -row 1 \
@@ -253,6 +261,15 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
             -variable ::sophie::private(centerEnabled) \
             -command "::sophie::onCenter"
          pack $frm.mode.centrageStart -in [ $frm.mode getframe ] -anchor center \
+            -expand 0 -fill x -side top
+
+        #--- Commande de guidage
+         checkbutton $frm.mode.guidageStart \
+            -indicatoron 1 -offrelief flat -state disabled \
+            -text $::caption(sophie,activationGuidage) \
+            -variable ::sophie::private(guideEnabled) \
+            -command "::sophie::onGuide"
+         pack $frm.mode.guidageStart -in [ $frm.mode getframe ] -anchor center \
             -expand 0 -fill x -side top
 
       pack $frm.mode -side top -fill x
@@ -365,7 +382,7 @@ proc ::sophie::startTool { visuNo } {
    pack $private(frm) -side left -fill y
 
    #--- je change le bind du bouton droit de la souris sur le canvas
-   ::confVisu::createBindCanvas $visuNo <ButtonPress-3> "::sophie::onOriginCoord $visuNo %x %y"
+   ####::confVisu::createBindCanvas $visuNo <ButtonPress-3> "::sophie::onOriginCoord $visuNo %x %y"
    #--- je change le bind du double-clic du bouton gauche de la souris sur le canvas
    ::confVisu::createBindCanvas $visuNo <Double-1> "::sophie::onTargetCoord $visuNo %x %y"
 
@@ -382,7 +399,7 @@ proc ::sophie::startTool { visuNo } {
    adaptPanel $visuNo
 
    #--- Ouverture de la fenetre de controle de l'interface
-   ::sophie::control::run [winfo toplevel $private(frm)] $visuNo
+   ::sophie::showControlWindow $visuNo
    #--- je mets à jour le mode
    ::sophie::setMode $private(mode)
    #--- je mets a jour le mode de guidage
@@ -390,6 +407,9 @@ proc ::sophie::startTool { visuNo } {
 
    #--- j'affiche la cible sur l'image
    createTarget $visuNo
+   #--- j'affiche la consigne sur l'image
+   createOrigin $visuNo
+
 
 }
 
