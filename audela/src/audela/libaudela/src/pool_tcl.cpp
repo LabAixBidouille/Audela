@@ -77,9 +77,11 @@ int CmdDeletePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
       }
       toto = pool->Chercher(numero);
       if(toto) {
-         sprintf(ligne,"catch {%s%d close}",classname,numero);
-         Tcl_Eval(interp,ligne);
-         Tcl_SetResult(interp,(char*)"",TCL_VOLATILE);
+         if ( strcmp(classname,"buf") != 0 ) {
+            sprintf(ligne,"catch {%s%d close}",classname,numero);
+            Tcl_Eval(interp,ligne);
+            Tcl_SetResult(interp,(char*)"",TCL_VOLATILE);
+         }
          pool->RetirerDev(toto);
          sprintf(ligne,"%s%d",classname,numero);
 			Tcl_DeleteCommand(interp,ligne);
@@ -107,7 +109,6 @@ int CmdGetGenericNamePoolItem(ClientData clientData, Tcl_Interp *interp, int arg
    if(argc==2) {
       // chargement de la lib'argv[1]'
       sprintf(ligne,"load \"%s/lib%s[info sharedlibextension]\"",audela_start_dir,argv[1]);
-      //Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       if(Tcl_Eval(interp,ligne)==TCL_ERROR) {
          sprintf(ligne,"error when loading driver lib%s ", interp->result);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -138,7 +139,6 @@ int CmdAvailablePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, ch
    if(argc==2) {
       // chargement de la lib'argv[1]'
       sprintf(ligne,"load \"%s/lib%s[info sharedlibextension]\"",audela_start_dir,argv[1]);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       if(Tcl_Eval(interp,ligne)==TCL_ERROR) {
          sprintf(ligne,"error when loading driver lib%s ", interp->result);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -221,7 +221,6 @@ int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
          } else {
             // chargement de la lib'argv[1]'
             sprintf(ligne,"load \"%s/lib%s[info sharedlibextension]\"",audela_start_dir,argv[1]);
-            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             if(Tcl_Eval(interp,ligne)==TCL_ERROR) {
                sprintf(ligne,"Usage: %s libcam_driver ?options?",argv[0]);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -277,9 +276,8 @@ int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
          } else {
             // chargement de la lib'argv[1]'
             sprintf(ligne,"load \"%s/lib%s[info sharedlibextension]\"",audela_start_dir,argv[1]);
-            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             if(Tcl_Eval(interp,ligne)==TCL_ERROR) {
-               sprintf(ligne,"Usage: %s libtel_driver ?options?",argv[0]);
+               sprintf(ligne,"Error: %s \nUsage: %s libtel_driver ?options?",interp->result, argv[0]);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                free(ligne);
                return TCL_ERROR;
@@ -332,7 +330,6 @@ int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
          } else {
             // chargement de la lib'argv[1]'
             sprintf(ligne,"load \"%s/lib%s[info sharedlibextension]\"",audela_start_dir,argv[1]);
-            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             if(Tcl_Eval(interp,ligne)==TCL_ERROR) {
                sprintf(ligne,"error when loading driver lib%s ", interp->result);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
