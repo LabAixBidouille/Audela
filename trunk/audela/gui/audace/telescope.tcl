@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.37 2009-05-18 22:26:22 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.38 2009-05-27 21:47:50 michelpujol Exp $
 #
 
 namespace eval ::telescope {
@@ -1140,12 +1140,13 @@ proc ::telescope::moveTelescope { alphaDirection alphaDiff deltaDirection deltaD
    variable private
    global audace
 
-   #--- je recupere les vitesses de guidage (en arseconde par milliseconde de temps)
-   set guidingSpeed [::confTel::getPluginProperty "guidingSpeed"]
-   #--- je calcule le delai de rattrapage en milliseconde de temps
-   set alphaDelay   [expr int($alphaDiff * [lindex $guidingSpeed 0 ]) ]
-   set deltaDelay   [expr int($deltaDiff * [lindex $guidingSpeed 1 ]) ]
+   #--- je recupere les vitesses de guidage (en arseconde par seconde de temps)
+   set guidingSpeed  [::confTel::getPluginProperty "guidingSpeed"]
+   #--- je calcule le delai de rattrapage
+   set alphaDelay    [expr int(1000.0 * ($alphaDiff / [lindex $guidingSpeed 0 ])) ]
+   set deltaDelay    [expr int(1000.0 * ($deltaDiff / [lindex $guidingSpeed 1 ])) ]
 
+   set private(tescopeIsMoving) 1
    #--- laisse la main pour traiter une eventuelle demande d'arret
    update
 
