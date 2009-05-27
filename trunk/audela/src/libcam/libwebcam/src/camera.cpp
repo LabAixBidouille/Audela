@@ -203,6 +203,91 @@ struct _PrivateParams {
 #pragma pack (1)
 #endif
 
+// Fonctions de trace
+
+#define LOG_NONE    0
+#define LOG_ERROR   1
+#define LOG_WARNING 2
+#define LOG_INFO    3
+#define LOG_DEBUG   4
+int webcam_debug_level = LOG_DEBUG;
+
+#include <time.h>   
+#include <sys/timeb.h>          /* ftime, struct timebuffer */
+
+char *getlogdate(char *buf, size_t size)
+{
+#if defined(OS_WIN)
+  #ifdef _MSC_VER
+    /* cas special a Microsoft C++ pour avoir les millisecondes */
+    struct _timeb timebuffer;
+    time_t ltime;
+    _ftime(&timebuffer);
+    time(&ltime);
+    strftime(buf, size - 3, "%Y-%m-%d %H:%M:%S", localtime(&ltime));
+    sprintf(buf, "%s.%02d", buf, (int) (timebuffer.millitm / 10));
+  #else
+    struct time t1;
+    struct date d1;
+    getdate(&d1);
+    gettime(&t1);
+    sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d.%02d : ", d1.da_year,
+	    d1.da_mon, d1.da_day, t1.ti_hour, t1.ti_min, t1.ti_sec,
+	    t1.ti_hund);
+  #endif
+#elif defined(OS_LIN)
+    struct timeb timebuffer;
+    time_t ltime;
+    ftime(&timebuffer);
+    time(&ltime);
+    strftime(buf, size - 3, "%Y-%m-%d %H:%M:%S", localtime(&ltime));
+    sprintf(buf, "%s.%02d", buf, (int) (timebuffer.millitm / 10));
+#elif defined(OS_MACOS)
+    struct timeval t;
+    char message[50];
+    char s1[27];
+    gettimeofday(&t,NULL);
+    strftime(message,45,"%Y-%m-%dT%H:%M:%S",localtime((const time_t*)(&t.tv_sec)));
+    sprintf(s1,"%s.%02d : ",message,(t.tv_usec)/10000);
+#else
+    sprintf(s1,"[No time functions available]");
+#endif
+
+    return buf;
+}
+
+void webcam_log(int level, const char *fmt, ...)
+{
+   FILE *f;
+   char buf[100];
+
+   va_list mkr;
+   va_start(mkr, fmt);
+
+   if (level <= webcam_debug_level) {
+      getlogdate(buf,100);
+      f = fopen("webcam.log","at+");
+      switch (level) {
+      case LOG_ERROR:
+         fprintf(f,"%s - %s(%s) <ERROR> : ", buf, CAM_LIBNAME, CAM_LIBVER);
+         break;
+      case LOG_WARNING:
+         fprintf(f,"%s - %s(%s) <WARNING> : ", buf, CAM_LIBNAME, CAM_LIBVER);
+         break;
+      case LOG_INFO:
+         fprintf(f,"%s - %s(%s) <INFO> : ", buf, CAM_LIBNAME, CAM_LIBVER);
+         break;
+      case LOG_DEBUG:
+         fprintf(f,"%s - %s(%s) <DEBUG> : ", buf, CAM_LIBNAME, CAM_LIBVER);
+         break;
+      }
+      vfprintf(f,fmt, mkr);
+      fprintf(f,"\n");
+      va_end(mkr);
+      fclose(f);
+   }
+
+}
 
 /* ========================================================= */
 /* ========================================================= */
@@ -245,6 +330,10 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 
    interp = cam->interp;
 
+   //webcam_log(LOG_DEBUG,"cam_init begin ===============");
+   // j'active les taces de libcam 
+
+
    strcpy(videomode, "vfw");
    strcpy(formatname, "SIF");
    strcpy(formatname, "VGA");
@@ -256,7 +345,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    cam->videoStatusVarNamePtr[0] = 0;
    cam->videoEndCaptureCommandPtr[0] = 0;
    cam->params = (PrivateParams*)malloc(sizeof(PrivateParams));
-
+   
    // je decode les options de cam::create
    if (argc >= 5) {
       for (kk = 3; kk < argc - 1; kk++) {
@@ -286,6 +375,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
             if (validFrame < 0) {
                sprintf(cam->msg,
                       "-validFrame=%d invalid parameter, must be integer >= 0", validFrame);
+               //webcam_log(LOG_DEBUG,"cam_init error: %s",cam->msg);
                return 1;
             }
          }
@@ -294,8 +384,8 @@ int cam_init(struct camprop *cam, int argc, char **argv)
                cam->sensorColor = atoi(argv[kk + 1]);
             } else {
                //--- je renseigne le message d'erreur
-               strcpy(cam->msg,
-                      "-sensorcolor invalide parameter, must be : 1=color or 0=black and white");
+               strcpy(cam->msg, "-sensorcolor invalide parameter, must be : 1=color or 0=black and white");
+               //webcam_log(LOG_DEBUG,"cam_init error: %s",cam->msg);
                return 1;
             }
          }
@@ -313,6 +403,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       cam->params->capture = new CCaptureWinDirectx();
 #else
       strcpy(cam->msg, "directx is not available.");
+      //webcam_log(LOG_DEBUG,"cam_init error: %s",cam->msg);
       return 1;
 #endif
    }
@@ -323,23 +414,27 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 
    if (cam->params->capture == NULL) {
       strcpy(cam->msg, "capture is a null pointer. Video not initialized.");
+      //webcam_log(LOG_DEBUG,"cam_init error: %s",cam->msg);
       return 3;
    }
 
    // j'active le driver
    cam->params->captureListener = new CCaptureListener(cam->interp, cam->camno);
    if (cam->params->capture->initHardware( cam->driver, cam->params->captureListener, cam->msg) == FALSE) {
+      //webcam_log(LOG_DEBUG,"cam_init initHardware error:  %s",cam->msg);
       cam_close(cam);
       return 4;
    }
 
    // je connecte le stream video
    if (cam->params->capture->connect(cam->longuepose, cam->msg) == FALSE) {
+      //webcam_log(LOG_DEBUG,"cam_init connect error:  %s",cam->msg);
       cam_close(cam);
       return 4;
    }
    // j'applique le format video
    if ( cam->params->capture->setVideoFormat(formatname, cam->msg) == FALSE ) {
+      //webcam_log(LOG_DEBUG,"cam_init setVideoFormat error:  %s",cam->msg);
       cam_close(cam);
       return 5;
    }
@@ -356,13 +451,20 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 
    if ( validFrame != -1 ) {
       if ( cam->params->capture->setVideoParameter(validFrame, SETVALIDFRAME, cam->msg) == FALSE ) {
+         //webcam_log(LOG_DEBUG,"cam_init error: %s",cam->msg);
          cam_close(cam);
          return 6;
       }
-
    }
 
    cam_update_window(cam);
+
+   if (strlen(cam->msg) == 0) {
+      //webcam_log(LOG_DEBUG,"cam_init end OK");
+   } else {
+      //webcam_log(LOG_DEBUG,"cam_init error: %s",cam->msg);
+   }
+
    return 0;
 }
 
@@ -384,6 +486,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 
 int cam_close(struct camprop *cam)
 {
+   //webcam_log(LOG_DEBUG,"cam_close begin");
    if (cam->params->capture != NULL) {
       delete cam->params->capture;
       cam->params->capture = NULL;
@@ -400,6 +503,7 @@ int cam_close(struct camprop *cam)
       cam->params = NULL;
    }
 
+   //webcam_log(LOG_DEBUG,"cam_close end OK");
    return TCL_OK;
 }
 
@@ -484,17 +588,24 @@ int webcam_getConnectionState(struct camprop *cam, BOOL *pstate) {
 */
 void cam_start_exp(struct camprop *cam, char *amplionoff)
 {
+   //webcam_log(LOG_DEBUG,"cam_start_exp begin exptime=%d", cam->exptime);
+   if ( cam->exptime == 0 ) {
+      Sleep(50);
+   }
    if (cam->longuepose == 1) {
       //long exposure
       if (webcam_setLongExposureDevice(cam, cam->longueposestart)) {
          //error description in cam->msg
+         //webcam_log(LOG_DEBUG,"cam_start_exp %s",cam->msg);
          return;
       }
    }
+   //webcam_log(LOG_DEBUG,"cam_start_exp end OK");
 }
 
 void cam_stop_exp(struct camprop *cam)
 {
+   //webcam_log(LOG_DEBUG,"cam_stop_exp begin");
    if (cam->longuepose == 1) {
       //long exposure
       int stop;
@@ -509,6 +620,7 @@ void cam_stop_exp(struct camprop *cam)
       }
       cam->params->capture->grabFrame(cam->msg);
    }
+   //webcam_log(LOG_DEBUG,"cam_stop_exp end OK");
 }
 
 /**
@@ -530,6 +642,7 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
    unsigned char *frameBuffer;
    BOOL result ;
 
+   //webcam_log(LOG_DEBUG,"cam_read_ccd begin");
    if (cam->longuepose == 1) {
       //long exposure
       int stop;
@@ -602,6 +715,11 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
          // je retourne un message d'erreur
          sprintf(cam->msg, "cam_read_ccd: Not enougt memory");
       }
+   }
+   if (strlen(cam->msg) == 0) {
+      //webcam_log(LOG_DEBUG,"cam_read_ccd end OK");
+   } else {
+      //webcam_log(LOG_DEBUG,"cam_read_ccd error: %s",cam->msg);
    }
 }
 
@@ -707,6 +825,8 @@ int webcam_getVideoFormat(struct camprop *cam, char *formatname) {
 int webcam_setVideoFormat(struct camprop *cam, char *formatname)
 {
 
+   //webcam_log(LOG_DEBUG,"webcam_setVideoFormat begin");
+
 #if defined(OS_WIN)
    if (cam->params->capture == NULL) {
       sprintf(cam->msg, "Camera not ready (capture=NULL)");
@@ -748,6 +868,8 @@ int webcam_setVideoFormat(struct camprop *cam, char *formatname)
 #endif
 
    cam_update_window(cam);
+   //webcam_log(LOG_DEBUG,"webcam_setVideoFormat end OK");
+
    return 0;
 }
 
@@ -799,7 +921,7 @@ int webcam_setLongExposureDevice(struct camprop *cam, unsigned char value)
    } else {
       result = 0;
    }
-   //libcam_log(4,"webcam_setLongExposureDevice %s result=%d",ligne,result);
+   //webcam_log(LOG_DEBUG,"webcam_setLongExposureDevice %s result=%d",ligne,result);
    return result;
 }
 
