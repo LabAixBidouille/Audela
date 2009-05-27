@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.25 2009-05-02 14:25:07 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.26 2009-05-27 21:41:30 michelpujol Exp $
 #
 
 #============================================================
@@ -562,7 +562,12 @@ proc ::tlscp::adaptPanel { visuNo args } {
       if { [buf$bufNo imageready] == 0 } {
          #--- je cree une image de la taille de l'image de la camera
          set windowCam [cam[::confCam::getCamNo $private($visuNo,camItem)] window]
-         buf$bufNo setpixels "CLASS_GRAY" [expr [lindex $windowCam 2] - [lindex $windowCam 0] +1] [expr [lindex $windowCam 3] - [lindex $windowCam 1] +1] "FORMAT_FLOAT" "COMPRESS_NONE" 0
+         set width [expr [lindex $windowCam 2] - [lindex $windowCam 0] +1]
+         set height [expr [lindex $windowCam 3] - [lindex $windowCam 1] +1]
+         buf$bufNo setpixels "CLASS_GRAY" $width $height  "FORMAT_FLOAT" "COMPRESS_NONE" 0
+         buf$bufNo setkwd [list "NAXIS" 2 "int" "number of data axes" "" ]
+         buf$bufNo setkwd [list "NAXIS1" $width "int" "length of data axis 1" "" ]
+         buf$bufNo setkwd [list "NAXIS2" $height "int" "length of data axis 2" "" ]
          ::confVisu::autovisu $visuNo
       }
 
@@ -712,7 +717,7 @@ proc ::tlscp::cmdGoto { visuNo } {
    }
 
    #--- Goto
-   ::telescope::goto $private($visuNo,list_radec) "1" \
+   ::telescope::goto $private($visuNo,list_radec) "0" \
       $private($visuNo,This).fra2.fra2a.but1 \
       $private($visuNo,This).fra2.fra1a.match \
       $private($visuNo,nomObjet) \
