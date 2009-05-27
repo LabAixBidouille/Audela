@@ -2,7 +2,7 @@
 # Fichier : sophieconfig.tcl
 # Description : Fenetre de configuration de l'instrument Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophieconfig.tcl,v 1.3 2009-05-11 18:00:44 robertdelmas Exp $
+# Mise a jour $Id: sophieconfig.tcl,v 1.4 2009-05-27 21:54:56 michelpujol Exp $
 #
 
 #============================================================
@@ -27,6 +27,9 @@ proc ::sophie::config::run { visuNo tkbase  } {
 
    #--- j'affiche la fenetre
    ::confGenerique::run $visuNo $private(frm) "::sophie::config" -modal 0 -geometry $::conf(sophie,configWindowPosition) -resizable 1
+
+   #--- je deplace la consigne a la position du mode courant de la fibre
+   onFiberMode $visuNo
 }
 
 #------------------------------------------------------------
@@ -82,7 +85,7 @@ proc ::sophie::config::fillConfigPage { frm visuNo } {
    fillAlgorithmePage    [ $notebook getframe "algorithme" ] 1
    fillCallibrationPage  [ $notebook getframe "callibration" ] 1
 
-   pack $frm -side top -fill both -expand 1
+   pack $frm -side top -fill x -expand 1
 
    #--- je selectionne le premier onglet
    $notebook raise "configuration"
@@ -106,11 +109,12 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
    set widget(nbPosesAvantMaj)       $::conf(sophie,originCumulNb)
    set widget(tailleFenetreGuidage)  $::conf(sophie,guidingWindowSize)
    set widget(tailleFenetreCentrage) $::conf(sophie,centerWindowSize)
-   set widget(gainProportionnel)     $::conf(sophie,proportionalGain)
-   set widget(gainIntegrateur)       $::conf(sophie,integralGain)
+   set widget(gainProportionnel)     [expr $::conf(sophie,proportionalGain) * 100.0]
+   set widget(gainIntegrateur)       [expr $::conf(sophie,integralGain) * 100.0]
    set widget(prefixeImageCentrage)  $::conf(sophie,centerFileNameprefix)
    set widget(prefixeImageGuidage)   $::conf(sophie,guidingFileNameprefix)
 
+   set widget(fiberGuigindMode)      $::conf(sophie,fiberGuigindMode)
    set widget(fiberHRX)              $::conf(sophie,fiberHRX)
    set widget(fiberHRY)              $::conf(sophie,fiberHRY)
    set widget(fiberHEX)              $::conf(sophie,fiberHEX)
@@ -242,12 +246,14 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
       grid $frm.fibre.labelfibreAHR -in [ $frm.fibre getframe ] -row 0 -column 1 -sticky w
 
       spinbox $frm.fibre.spinboxfiberHRX -from 1 -to 1536 -incr 1 \
-         -width 8 -justify center -xscrollcommand "::sophie::config::onScroll $visuNo fiberHRX" \
+         -width 8 -justify center \
+         -command "::sophie::config::onScroll $visuNo fiberHRX" \
          -textvariable ::sophie::config::widget(fiberHRX)
       grid $frm.fibre.spinboxfiberHRX -in [ $frm.fibre getframe ] -row 0 -column 2 -sticky ens
 
       spinbox $frm.fibre.spinboxfiberHRY -from 1 -to 1024 -incr 1 \
-         -width 8 -justify center -xscrollcommand "::sophie::config::onScroll $visuNo fiberHRY" \
+         -width 8 -justify center \
+         -command "::sophie::config::onScroll $visuNo fiberHRY" \
          -textvariable ::sophie::config::widget(fiberHRY)
       grid $frm.fibre.spinboxfiberHRY -in [ $frm.fibre getframe ] -row 0 -column 3 -sticky ens
 
@@ -256,12 +262,14 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
       grid $frm.fibre.labelfibreAHE -in [ $frm.fibre getframe ] -row 1 -column 1 -sticky w
 
       spinbox $frm.fibre.spinboxfiberHEX -from 1 -to 1536 -incr 1 \
-         -width 8 -justify center -xscrollcommand "::sophie::config::onScroll $visuNo fiberHEX" \
+         -width 8 -justify center \
+         -command "::sophie::config::onScroll $visuNo fiberHEX" \
          -textvariable ::sophie::config::widget(fiberHEX)
       grid $frm.fibre.spinboxfiberHEX -in [ $frm.fibre getframe ] -row 1 -column 2 -sticky ens
 
       spinbox $frm.fibre.spinboxfiberHEY -from 1 -to 1024 -incr 1 \
-         -width 8 -justify center -xscrollcommand "::sophie::config::onScroll $visuNo fiberHEY" \
+         -width 8 -justify center \
+         -command "::sophie::config::onScroll $visuNo fiberHEY" \
          -textvariable ::sophie::config::widget(fiberHEY)
       grid $frm.fibre.spinboxfiberHEY -in [ $frm.fibre getframe ] -row 1 -column 3 -sticky ens
 
@@ -270,15 +278,15 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
       grid $frm.fibre.labelfibreB -in [ $frm.fibre getframe ] -row 2 -column 1 -sticky w
 
       spinbox $frm.fibre.spinboxxfibreB -from 1 -to 1536 -incr 1 \
-         -width 8 -justify center
-      $frm.fibre.spinboxxfibreB set $::conf(sophie,xfibreB)
-      $frm.fibre.spinboxxfibreB configure -textvariable ::conf(sophie,xfibreB)
+         -width 8 -justify center \
+         -command "::sophie::config::onScroll $visuNo fiberBX" \
+         -textvariable ::sophie::config::widget(xfibreB)
       grid $frm.fibre.spinboxxfibreB -in [ $frm.fibre getframe ] -row 2 -column 2 -sticky ens
 
       spinbox $frm.fibre.spinboxyfibreB -from 1 -to 1024 -incr 1 \
-         -width 8 -justify center
-      $frm.fibre.spinboxyfibreB set $::conf(sophie,yfibreB)
-      $frm.fibre.spinboxyfibreB configure -textvariable ::conf(sophie,yfibreB)
+         -width 8 -justify center \
+         -command "::sophie::config::onScroll $visuNo fiberBY" \
+         -textvariable ::sophie::config::widget(yfibreB)
       grid $frm.fibre.spinboxyfibreB -in [ $frm.fibre getframe ] -row 2 -column 3 -sticky ens
 
       #--- Mode d'entree de la fibre A
@@ -288,15 +296,15 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
       radiobutton $frm.fibre.fiberGuigindModeHR -highlightthickness 0 -padx 0 -pady 0 -state normal \
          -text $::caption(sophie,HR) \
          -value "HR" \
-         -variable ::conf(sophie,fiberGuigindMode) \
-         -command " "
+         -variable ::sophie::config::widget(fiberGuigindMode) \
+         -command "::sophie::config::onFiberMode $visuNo"
       grid $frm.fibre.fiberGuigindModeHR -in [ $frm.fibre getframe ] -row 3 -column 2 -sticky ens
 
       radiobutton $frm.fibre.fiberGuigindModeHE -highlightthickness 0 -padx 0 -pady 0 -state normal \
          -text $::caption(sophie,HE) \
          -value "HE" \
-         -variable ::conf(sophie,fiberGuigindMode) \
-         -command " "
+         -variable ::sophie::config::widget(fiberGuigindMode) \
+         -command "::sophie::config::onFiberMode $visuNo"
       grid $frm.fibre.fiberGuigindModeHE -in [ $frm.fibre getframe ] -row 3 -column 3 -sticky ens
 
    pack $frm.fibre -side top -anchor w -fill x -expand 1
@@ -391,18 +399,21 @@ proc ::sophie::config::apply { visuNo } {
    set ::conf(sophie,originCumulNb)         $widget(nbPosesAvantMaj)
    set ::conf(sophie,guidingWindowSize)     $widget(tailleFenetreGuidage)
    set ::conf(sophie,centerWindowSize)      $widget(tailleFenetreCentrage)
-   set ::conf(sophie,proportionalGain)      $widget(gainProportionnel)
-   set ::conf(sophie,integralGain)          $widget(gainIntegrateur)
+   set ::conf(sophie,proportionalGain)      [expr double($widget(gainProportionnel)) / 100.0]
+   set ::conf(sophie,integralGain)          [expr double($widget(gainIntegrateur)) / 100.0]
    set ::conf(sophie,centerFileNameprefix)  $widget(prefixeImageCentrage)
    set ::conf(sophie,guidingFileNameprefix) $widget(prefixeImageGuidage)
 
+   set ::conf(sophie,fiberGuigindMode)      $widget(fiberGuigindMode)
    set ::conf(sophie,fiberHRX)              $widget(fiberHRX)
    set ::conf(sophie,fiberHRY)              $widget(fiberHRY)
    set ::conf(sophie,fiberHEX)              $widget(fiberHEX)
    set ::conf(sophie,fiberHEY)              $widget(fiberHEY)
 
+   #
    #---  je re-positionne la consigne demandé si le mode de guidage est FIBER
    ::sophie::setGuidingMode $visuNo
+   ###::sophie::setMode
 }
 
 #------------------------------------------------------------
@@ -466,7 +477,32 @@ proc ::sophie::config::onScroll { visuNo name  args } {
          set ::sophie::private(originCoord) [list $widget(fiberHEX) $widget(fiberHEY)]
          ::sophie::createOrigin $visuNo
       }
+      "fiberBX" -
+      "fiberBY" {
+         ###set ::sophie::private(originCoord) [list $widget(fiberHEX) $widget(fiberHEY)]
+         ###::sophie::createFiberB $visuNo
+      }
+   }
+}
+
+#------------------------------------------------------------
+# onFiberMode
+#   change le mode
+#------------------------------------------------------------
+proc ::sophie::config::onFiberMode { visuNo args } {
+   variable widget
+
+   switch $widget(fiberGuigindMode) {
+      "HR" {
+         set ::sophie::private(originCoord) [list $widget(fiberHRX) $widget(fiberHRY)]
+         ::sophie::createOrigin $visuNo
+      }
+      "HE" {
+         set ::sophie::private(originCoord) [list $widget(fiberHEX) $widget(fiberHEY)]
+         ::sophie::createOrigin $visuNo
+      }
    }
 
 }
+
 

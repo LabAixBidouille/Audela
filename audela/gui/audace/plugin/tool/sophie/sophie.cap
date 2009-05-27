@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.10 2009-05-26 16:55:01 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.11 2009-05-27 21:54:56 michelpujol Exp $
 #
 
 #=========================================================================
@@ -71,8 +71,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,fibreAHE)              "Fibre A HE"
    set caption(sophie,fibreB)                "Fibre B"
    set caption(sophie,fiberGuigindMode)      "Mode d'entrée de la fibre A"
-   set caption(sophie,x)                     "X (pixels)"
-   set caption(sophie,y)                     "Y (pixels)"
+   set caption(sophie,x)                     "X"
+   set caption(sophie,y)                     "Y"
    set caption(sophie,HR)                    "HR"
    set caption(sophie,HE)                    "HE"
    set caption(sophie,images)                "Paramètres de sauvegarde des images"
@@ -116,9 +116,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,pointageObjet)         "Pointage de l'objet"
    set caption(sophie,pointageEntreeFibreA)  "Pointage de l'entrée de la fibre A"
    set caption(sophie,activationGuidage)     "Activer le guidage"
-   set caption(sophie,positionConsigne)      "Position de la consigne sur la fibre"
+   set caption(sophie,correction)            "Correction télescope (arcsec)"
    set caption(sophie,correctionX)           "Correction en X"
    set caption(sophie,correctionY)           "Correction en Y"
+   set caption(sophie,positionGuidage)       "Position guidage"
+   set caption(sophie,positionEtoile)        "Position étoile (pixel)"
+   set caption(sophie,positionConsigne)      "Position consigne (pixel)"
+   set caption(sophie,ecartEtoile)           "Ecart etoile (pixel)"
+   set caption(sophie,ecartConsigne)         "Ecart consigne (pixel)"
    set caption(sophie,positionConsigneImage) "Position de la consigne dans l'image"
    set caption(sophie,increment)             "Incrément"
    set caption(sophie,objetconsigne)         "Position de l'objet par rapport à la consigne"
@@ -126,12 +131,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,ecartconsigne)         "Ecart par rapport à la consigne (pixel)"
    set caption(sophie,dx)                    "dx"
    set caption(sophie,dy)                    "dy"
-   set caption(sophie,erreur)                "Erreur ('')"
-   set caption(sophie,erreurAlpha)           "Erreur alpha"
-   set caption(sophie,erreurDelta)           "Erreur delta"
+   set caption(sophie,erreur)                "Erreur (pixel)"
+   set caption(sophie,alpha)                 "alpha"
+   set caption(sophie,delta)                 "delta"
+   ###set caption(sophie,erreurAlpha)           "Erreur alpha"
+   ###set caption(sophie,erreurDelta)           "Erreur delta"
+   ###set caption(sophie,correctionAlpha)       "Correction alpha"
+   ###set caption(sophie,correctionDelta)       "Correction delta"
    set caption(sophie,erreursAlphaDelta)     "Erreurs en alpha et delta"
    set caption(sophie,arretGuidage)          "Arrêter le guidage"
    set caption(sophie,suspendreGuidage)      "Suspendre le guidage"
+   set caption(sophie,realDelay)             "Délai entre 2 debuts de poses (seconde)"
 
    set caption(sophie,simulation)            "Simulation"
    set caption(sophie,modeSimulation)        "Mode simulation"
