@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.30 2008-12-20 14:52:52 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.31 2009-05-27 21:51:45 michelpujol Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -93,7 +93,7 @@ proc ::fingerlakes::initPlugin { } {
    set private(A,camNo) "0"
    set private(B,camNo) "0"
    set private(C,camNo) "0"
-   set private(ccdTemp) "$caption(fingerlakes,temperature_CCD)"
+   set private(ccdTemp) "$::caption(fingerlakes,temperature_CCD): -- $::caption(fingerlakes,deg_c) / -- $::caption(fingerlakes,deg_c) $::caption(fingerlakes,power): -- %"
 }
 
 #
@@ -323,13 +323,15 @@ proc ::fingerlakes::dispTempFLI { camItem } {
    variable private
    global caption
 
-   if { [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "0" } {
-      set temp_ccd [ format "%+5.2f" $temp_ccd ]
-      set private(ccdTemp)   "$caption(fingerlakes,temperature_CCD) $temp_ccd $caption(fingerlakes,deg_c)"
+   if { [ catch { set temppower [ cam$private($camItem,camNo) temppower ] } ] == "0" } {
+      set internTemp [ format "%+5.2f" [lindex $temppower 0] ]
+      set externTemp [ format "%+5.2f" [lindex $temppower 1] ]
+      set power      [ format "%+5.2f" [lindex $temppower 2] ]
+      set private(ccdTemp)   "$caption(fingerlakes,temperature_CCD): $internTemp $caption(fingerlakes,deg_c) / $externTemp $caption(fingerlakes,deg_c) $caption(fingerlakes,power): $power %"
       set private(aftertemp) [ after 5000 ::fingerlakes::dispTempFLI $camItem ]
    } else {
       set temp_ccd ""
-      set private(ccdTemp) "$caption(fingerlakes,temperature_CCD) $temp_ccd"
+      set private(ccdTemp) "$caption(fingerlakes,temperature_CCD): -- $caption(fingerlakes,deg_c) / -- $caption(fingerlakes,deg_c) $caption(fingerlakes,power): -- %"
       if { [ info exists private(aftertemp) ] == "1" } {
          unset private(aftertemp)
       }
