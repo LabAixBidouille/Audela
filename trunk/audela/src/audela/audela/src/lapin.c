@@ -216,19 +216,20 @@ char* audela_join_filename(char *root, char *tail)
 }
 
 /*
- * audela_installPatch
- *    intalls a patch if the file  intallpatch.tcl is present in current directory
+ * audela_update
+ *    intalls an update if the file update.tcl is present in current directory
  */
-void audela_installPatch(Tcl_Interp *interp)
+void audela_update(Tcl_Interp *interp)
 {
-   char * installPatch = "installpatch.tcl";
+   char * updateFileName = "update.tcl";
    char s[256];
    FILE *f;
-   if((f=fopen(installPatch,"r"))!=NULL) {
+   if((f=fopen(updateFileName,"r"))!=NULL) {
       fclose(f) ;
-      sprintf(s,"source installpatch.tcl");
-      LOGDEBUG("installPatch = %s\n",s);
+      sprintf(s,"global audela ; set catchError [catch  { source %s }] ; if { $catchError != 0 } { set audela(updateMessage) $::errorInfo }" , updateFileName );
+      LOGDEBUG("update command = %s\n",s);
       Tcl_Eval(interp,s);
+      remove(updateFileName);
    }
 }
 
@@ -519,8 +520,8 @@ int Tk_AppInit(Tcl_Interp *interp)
    /* Log filename available in the interp, through variable "audelog_filename" */
    Tcl_SetVar(interp,"audelog_filename",log_filename,TCL_GLOBAL_ONLY);
 
-   /* install a patch */
-   audela_installPatch(interp);
+   /* install an update  */
+   audela_update(interp);
 
    LOGDEBUG("will load libraries\n");
 
@@ -573,8 +574,8 @@ int Tcl_AppInit(Tcl_Interp *interp)
    Tcl_CreateExitHandler(AppInitExitHandler, interp);
 #endif   
    
-   // install a patch 
-   audela_installPatch(interp);
+   /* install an update  */
+   audela_update(interp);
 
    // load standard libraries for AudeLA
    load_library(interp,"libak");      // Misc. from Alain Klotz
