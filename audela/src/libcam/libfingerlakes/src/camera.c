@@ -82,7 +82,7 @@ struct camini CAM_INI[] = {
      11.,			/* readnoise (e) */
      1, 1,			/* default bin x,y */
      1.,			/* default exptime */
-     1,				/* default state of shutter (1=synchro) */
+     1,				/* default state of f (1=synchro) */
      1,				/* default num buf for the image */
      1,				/* default num tel for the coordinates taken */
      0,				/* default port index (0=lpt1) */
@@ -197,6 +197,9 @@ int cam_init(struct camprop *cam, int argc, char **argv)
             }
         }
     }
+
+//flilogactivated = 1;
+//flidebuglevel = FLIDEBUG_INFO;
 
     logfile("***\n");
     logfile("CAM_INIT: entree\n");
@@ -427,40 +430,41 @@ void cam_update_window(struct camprop *cam)
 
 void cam_start_exp(struct camprop *cam, char *amplionoff)
 {
-    char s[100];
-    int err;
-    int time;
-
-    if (cam->authorized == 1) {
-	if ((err = FLIControlShutter(cam->device, FLI_SHUTTER_CLOSE))) {
-	    logfile("cam_start_exp: erreur a la fermeture du shutter\n");
-	    return;
-	}
-	logfile("cam_start_exp: shutter ferme\n");
-
-	time = (int) (1000 * cam->exptime);
-	if ((err = FLISetExposureTime(cam->device, time))) {
-	    logfile
-		("cam_start_exp: impossible de programmer le temps d'exposition\n");
-	    return;
-	}
-	sprintf(s,
-		"cam_start_exp: programmation du temps d'integration (%d ms)\n",
-		time);
-	logfile(s);
-
-	//if (err=FLIFlushRow(cam->device,CAM_INI[cam->index_cam].maxy,1)) {
-	//   logfile("cam_start_exp: impossible de declencher le vidage\n");
-	//   return;
-	//}
-	//logfile("cam_start_exp: ccd nettoye\n");
-
-	if ((err = FLIExposeFrame(cam->device))) {
-	    logfile("cam_start_exp: refus de demarrer la pose\n");
-	    return;
-	}
-	logfile("cam_start_exp: demarrage de la pose\n");
-    }
+   char s[100];
+   int err;
+   int time;
+   
+   if (cam->authorized == 1) {
+      /*
+      if ((err = FLIControlShutter(cam->device, FLI_SHUTTER_CLOSE))) {
+         logfile("cam_start_exp: erreur a la fermeture du shutter\n");
+         return;
+      }
+      logfile("cam_start_exp: shutter ferme\n");
+      */
+      time = (int) (1000 * cam->exptime);
+      if ((err = FLISetExposureTime(cam->device, time))) {
+         logfile
+            ("cam_start_exp: impossible de programmer le temps d'exposition\n");
+         return;
+      }
+      sprintf(s,
+         "cam_start_exp: programmation du temps d'integration (%d ms)\n",
+         time);
+      logfile(s);
+      
+      //if (err=FLIFlushRow(cam->device,CAM_INI[cam->index_cam].maxy,1)) {
+      //   logfile("cam_start_exp: impossible de declencher le vidage\n");
+      //   return;
+      //}
+      //logfile("cam_start_exp: ccd nettoye\n");
+      
+      if ((err = FLIExposeFrame(cam->device))) {
+         logfile("cam_start_exp: refus de demarrer la pose\n");
+         return;
+      }
+      logfile("cam_start_exp: demarrage de la pose\n");
+   }
 }
 
 void cam_stop_exp(struct camprop *cam)
@@ -479,28 +483,29 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 {
     long timeleft;
     int row;
-
+    
     if (p == NULL)
-	return;
+       return;
     if (cam->authorized == 1) {
-
-	// Synchronisation avec l'obturateur
-	timeleft = 100;
-	while (timeleft != 0) {
-	    FLIGetExposureStatus(cam->device, &timeleft);
-	    logfile("cam_read_ccd: attente de synchro obturateur\n");
-	}
-
-	/* Lecture de l'image */
-	for (row = 0; row < cam->h; row++) {
-	    FLIGrabRow(cam->device, &p[row * cam->w], cam->w);
-	}
-	logfile("cam_read_ccd: fin de lecture du ccd\n");
-
-	/* Remise a l'heure de l'horloge de Windows */
-	if (cam->interrupt == 1) {
-	    update_clock();
-	}
+       
+       // Synchronisation avec l'obturateur
+       timeleft = 100;
+       while (timeleft !=  0) {
+          FLIGetExposureStatus(cam->device, &timeleft);
+          logfile("cam_read_ccd: attente de synchro obturateur\n");
+       }
+       
+       /* Lecture de l'image */
+       for (row = 0; row < cam->h; row++) {
+          FLIGrabRow(cam->device, &p[row * cam->w], cam->w);
+       }
+       logfile("cam_read_ccd: fin de lecture du ccd\n");
+       
+       /* Remise a l'heure de l'horloge de Windows */
+       if (cam->interrupt == 1) {
+          update_clock();
+          logfile("cam_read_ccd: update_clock\n");
+       }
     }
 }
 
@@ -709,5 +714,41 @@ int fingerlakes_cooler_power(struct camprop *cam, double *power)
     
     return 0;
 }
+
+//----------------------------------------------------------------------------
+// retourne la temperature de la face froide du peltier (interne), de la face chaude du peltier (externe) 
+//  et la puissance du peltier en pourcent
+//
+// @return 0=OK , 1=error
+//----------------------------------------------------------------------------
+int fingerlakes_getTempPower(struct camprop *cam, double *internalTemp, double *externalTemp, double *coolerPower)
+{
+    char s[1024];
+    int err;
+
+   if ((err = FLIReadTemperature(cam->device, FLI_TEMPERATURE_INTERNAL, internalTemp))) {
+      sprintf(cam->msg,"cam_measure_temperature: erreur FLIReadTemperature INTERNAL");
+      logfile
+         ("cam_measure_temperature: erreur FLIReadTemperature INTERNAL\n");
+      return 1;
+   }
+   if ((err = FLIReadTemperature(cam->device, FLI_TEMPERATURE_EXTERNAL, externalTemp))) {
+      sprintf(cam->msg,"cam_measure_temperature: erreur FLIReadTemperature EXTERNAL");
+      logfile("cam_measure_temperature: erreur FLIReadTemperaturee EXTERNAL\n");
+      return 1;
+   }
+
+   if ((err = FLIGetCoolerPower(cam->device, coolerPower))) {
+      sprintf(cam->msg,"cam_measure_temperature: erreur FLIGetCoolerPower EXTERNAL");
+      logfile
+         ("cam_measure_temperature: erreur FLIGetCoolerPower EXTERNAL\n");
+      return 1;
+   }
+   sprintf(s, "fingerlakes_getTempPower: temperature lue Tint=(%f) / Text(%f) p=(%f)\n", *internalTemp, *externalTemp, *coolerPower);
+   logfile(s);
+   return 0;
+}
+
+
 
 

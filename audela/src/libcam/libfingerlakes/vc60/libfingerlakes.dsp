@@ -116,10 +116,22 @@ SOURCE=..\..\util.c
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl;fi;fd"
+# Begin Source File
+
+SOURCE=..\src\camera.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\camtcl.h
+# End Source File
 # End Group
 # Begin Group "Resource Files"
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe"
 # End Group
+# Begin Source File
+
+SOURCE=..\..\..\external\include\libfli.h
+# End Source File
 # End Target
 # End Project
