@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.6 2009-05-26 16:55:20 robertdelmas Exp $
+# Mise a jour $Id: t193.tcl,v 1.7 2009-05-27 21:38:35 michelpujol Exp $
 #
 
 namespace eval ::t193 {
@@ -82,10 +82,6 @@ proc ::t193::initPlugin { } {
    variable private
    global conf
 
-   #--- Initialisation
-   set private(telNo) "0"
-   set private(frm)   ""
-
    #--- Prise en compte des liaisons
    set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
 
@@ -95,10 +91,16 @@ proc ::t193::initPlugin { } {
    if { ! [ info exists conf(t193,nomPortTelescope) ] }    { set conf(t193,nomPortTelescope)    "port0" }
    if { ! [ info exists conf(t193,nomPortAttenuateur) ] }  { set conf(t193,nomPortAttenuateur)  "port1" }
    #--- vitesses de guidage en arcseconde de degre par seconde de temps
-   if { ! [ info exists conf(t193,alphaSpeed) ] }          { set conf(t193,alphaSpeed)          "1.0" }
-   if { ! [ info exists conf(t193,deltaSpeed) ] }          { set conf(t193,alphaSpeed)          "1.0" }
+   if { ! [ info exists conf(t193,alphaGuidingSpeed) ] }     { set conf(t193,alphaGuidingSpeed) "3.0" }
+   if { ! [ info exists conf(t193,deltaGuidingSpeed) ] }     { set conf(t193,deltaGuidingSpeed) "3.0" }
    #--- duree de deplacement entre les 2 butees (mini et maxi) de l'attenuateur
-   if { ! [ info exists conf(t193,dureeMaxAttenuateur) ] } { set conf(t193,dureeMaxAttenuateur) "16" }
+   if { ! [ info exists conf(t193,dureeMaxAttenuateur) ] }          { set conf(t193,dureeMaxAttenuateur)      "16" }
+
+   #--- Initialisation
+   set private(telNo)      "0"
+   set private(frm)        ""
+   set private(radecHandle) ""      ; # identificant du canal de lecture
+   set private(radecLoop)  0        ; # boucle de lecture de radec descativee par defaut
 }
 
 #
@@ -115,6 +117,8 @@ proc ::t193::confToWidget { } {
    set private(nomPortTelescope)    $conf(t193,nomPortTelescope)
    set private(nomPortAttenuateur)  $conf(t193,nomPortAttenuateur)
    set private(dureeMaxAttenuateur) $conf(t193,dureeMaxAttenuateur)
+   set private(alphaGuidingSpeed)   $conf(t193,alphaGuidingSpeed)
+   set private(deltaGuidingSpeed)   $conf(t193,deltaGuidingSpeed)
    set private(raquette)            $conf(raquette)
 }
 
@@ -132,6 +136,8 @@ proc ::t193::widgetToConf { } {
    set conf(t193,nomPortTelescope)    $private(nomPortTelescope)
    set conf(t193,nomPortAttenuateur)  $private(nomPortAttenuateur)
    set conf(t193,dureeMaxAttenuateur) $private(dureeMaxAttenuateur)
+   set conf(t193,alphaGuidingSpeed)   $private(alphaGuidingSpeed)
+   set conf(t193,deltaGuidingSpeed)   $private(deltaGuidingSpeed)
    set conf(raquette)                 $private(raquette)
 }
 
@@ -160,7 +166,7 @@ proc ::t193::fillConfigPage { frm } {
    pack $frm.frame2 -side top -fill x
 
    frame $frm.frame3 -borderwidth 0 -relief raised
-   pack $frm.frame3 -side top -fill x
+  pack $frm.frame3 -side top -fill x
 
    frame $frm.frame4 -borderwidth 0 -relief raised
    pack $frm.frame4 -side top -fill x
@@ -218,6 +224,28 @@ proc ::t193::fillConfigPage { frm } {
    entry $frm.nomCarte -textvariable ::t193::private(nomCarte) -width 15 -justify left
    pack $frm.nomCarte -in $frm.frame4 -anchor n -side left -padx 10 -pady 10
 
+   #--- fram des vitesses
+   frame $frm.frame3.speed -borderwidth 0
+      #--- Vitesse de rappel alpha
+      label $frm.frame3.speed.labelAlpha -text "Vitesse de rappel alpha (arcsec/sec)"
+      entry $frm.frame3.speed.entryAlpha -textvariable ::t193::private(alphaGuidingSpeed) -width 5 -justify right
+      grid $frm.frame3.speed.labelAlpha  -row 0 -column 0 -ipadx 3
+      grid $frm.frame3.speed.entryAlpha  -row 0 -column 1 -ipadx 3
+
+      #--- Vitesse de rappel delta
+      label $frm.frame3.speed.labelDelta -text "Vitesse de rappel del (arcsec/sec)"
+      entry $frm.frame3.speed.entryDelta -textvariable ::t193::private(deltaGuidingSpeed) -width 5 -justify right
+      grid $frm.frame3.speed.labelDelta  -row 1 -column 0 -ipadx 3
+      grid $frm.frame3.speed.entryDelta  -row 1 -column 1 -ipadx 3
+
+      grid rowconfigure $frm.frame3.speed 0  -weight 0
+      grid rowconfigure $frm.frame3.speed 1  -weight 1
+
+      grid columnconfigure $frm.frame3.speed 1 -weight 0
+      grid columnconfigure $frm.frame3.speed 2 -weight 1
+
+   pack $frm.frame3.speed -in $frm.frame3 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
+
    #--- J'affiche les boutons N, S, E et O
    TitleFrame $frm.test1 -borderwidth 2 -relief ridge -text "$caption(t193,raquette)"
 
@@ -242,7 +270,7 @@ proc ::t193::fillConfigPage { frm } {
       grid rowconfigure [ $frm.test1 getframe ] 2 -minsize 25 -weight 0
 
       grid columnconfigure [ $frm.test1 getframe ] 1 -minsize 40 -weight 0
-      grid columnconfigure [ $frm.test1 getframe ] 2 -minsize 40 -weight 0
+     grid columnconfigure [ $frm.test1 getframe ] 2 -minsize 40 -weight 0
       grid columnconfigure [ $frm.test1 getframe ] 3 -minsize 40 -weight 0
 
    pack $frm.test1 -side left -anchor w -fill none -pady 5 -expand 1
@@ -361,7 +389,7 @@ proc ::t193::configureMonture { } {
    set catchResult [ catch {
       set usbLine "0 1 2 3 4 0 1 2 3"
       #--- Je cree la monture
-      set telNo [ tel::create t193 HP1000 -hpcom $conf(t193,portSerie) \
+      set telNo [ tel::create t193 HP1000 \
          -usbCardName $::conf(t193,nomCarte) \
          -usbTelescopPort $::conf(t193,nomPortTelescope) \
          -usbFilterPort   $::conf(t193,nomPortAttenuateur) \
@@ -387,6 +415,15 @@ proc ::t193::configureMonture { } {
       set private(telNo) $telNo
       #--- Configuration des boutons de test
       ::t193::configureConfigPage
+
+      #--- je lance la lecture de radec en boucle sur le port com
+      set private(radecHandle) [open COM1 "r+" ]
+      fconfigure $private(radecHandle) -mode "19200,n,8,1" -buffering none -blocking 0
+      set private(readLoop) 1
+      #--- j'intialise les coordonnees
+      set ::audace(telescope,getra) "00h00m00.00s"
+      set ::audace(telescope,getdec) "00d00m00"
+      ::t193::readRadec
    } ]
 
    if { $catchResult == "1" } {
@@ -410,7 +447,14 @@ proc ::t193::stop { } {
       return
    }
 
-   #--- Je memorise le port
+   #--- j'arrete la boucle de lecture de radec
+   set private(testhp) 0
+   if { $private(radecHandle) != "" } {
+      close $private(radecHandle)
+      set private(radecHandle) ""
+   }
+
+   #--- Je memorise le port pour ensuite supprimer le link
    set telPort [ tel$private(telNo) port ]
    #--- J'arrete la monture
    tel::delete $private(telNo)
@@ -497,7 +541,7 @@ proc ::t193::stopFilter { } {
    }
 }
 
-#
+#------------------------------------------------------------------------------
 # getPluginProperty
 #    Retourne la valeur de la propriete
 #
@@ -519,7 +563,7 @@ proc ::t193::stopFilter { } {
 # hasUnpark               Retourne la possibilite de de-parquer la monture
 # hasUpdateDate           Retourne la possibilite de mettre a jour la date et le lieu
 # backlash                Retourne la possibilite de faire un rattrapage des jeux
-#
+#------------------------------------------------------------------------------
 proc ::t193::getPluginProperty { propertyName } {
    variable private
 
@@ -553,4 +597,45 @@ proc ::t193::getPluginProperty { propertyName } {
       guidingSpeed            { return [list $::conf(t193,alphaGuidingSpeed) $::conf(t193,deltaGuidingSpeed) ] }
    }
 }
+
+
+#------------------------------------------------------------
+# readRadec
+#    lit les coordonnees toutes les 2 secondes
+#
+#    "06h 23m 36.73s / +44d 35' 29'' /   -1d"
+#------------------------------------------------------------
+proc ::t193::readRadec { } {
+   variable private
+
+   if { $private(readLoop) == 1 && $private(radecHandle) != "" } {
+      set data [read -nonewline $private(radecHandle)]
+      set data [split $data "\n" ]
+      if { $data != "" } {
+         ####console::disp "::t193::readRadec data=$data \n"
+         #--- je recupere la dernier message ( au cas ou il en aurait plusieurs qui se seraient accumulés)
+         set data [lindex $data end]
+         set nbVar [scan $data "%dh %dm %fs / %dd %d' %d'' / %dd" ah am as dd dm ds ba]
+         if { $nbVar == 7 } {
+            set ::audace(telescope,getra)  [format "%02dh%02dm%05.2fs" $ah $am $as]
+            set ::audace(telescope,getdec) [format "%02dh%02dm%02ds" $dd $dm $ds]
+         } else {
+            console::affiche_erreur " ::t193::readRadec nombre de valeurs=$nbVar different de 7. Data=$data\n"
+         }
+      }
+      after 2000 ::t193::readRadec
+   }
+}
+
+#------------------------------------------------------------
+# getRadec
+#    lit les coordonnees toutes les 2 secondes
+#
+#    "06h 23m 36.73s / +44d 35' 29'' /   -1d"
+#------------------------------------------------------------
+proc ::t193::getRadec { } {
+   variable private
+
+}
+
 
