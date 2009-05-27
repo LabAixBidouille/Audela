@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise a jour $Id: lx200.tcl,v 1.23 2009-05-18 21:51:27 robertdelmas Exp $
+# Mise a jour $Id: lx200.tcl,v 1.24 2009-05-27 21:53:54 michelpujol Exp $
 #
 
 namespace eval ::lx200 {
@@ -120,6 +120,7 @@ proc ::lx200::initPlugin { } {
    if { ! [ info exists conf(lx200,modele) ] }          { set conf(lx200,modele)          "LX200" }
    if { ! [ info exists conf(lx200,format) ] }          { set conf(lx200,format)          "1" }
    if { ! [ info exists conf(lx200,ite-lente_tempo) ] } { set conf(lx200,ite-lente_tempo) "300" }
+   set private(tracesConsole) "0"
 }
 
 #
@@ -168,7 +169,7 @@ proc ::lx200::fillConfigPage { frm } {
    set private(frm)           $frm
    set private(ite-lente_A0)  "0"
    set private(ite-lente_A1)  "0"
-   set private(tracesConsole) "0"
+
 
    #--- confToWidget
    ::lx200::confToWidget
