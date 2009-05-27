@@ -58,5 +58,6 @@ int fingerlakes_read_line(struct camprop *cam, int width, int offset,
 			  int bin, unsigned short *buf);
 int fingerlakes_nbflushes(struct camprop *cam, int nb);
 int fingerlakes_cooler_power(struct camprop *cam, double *power);
+int fingerlakes_getTempPower(struct camprop *cam, double *internalTemp, double *externalTemp, double *coolerPower);
 
 #endif

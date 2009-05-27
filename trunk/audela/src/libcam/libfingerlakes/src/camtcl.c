@@ -732,6 +732,24 @@ int cmdFingerlakesCoolerPower(ClientData clientData, Tcl_Interp *interp, int arg
     return TCL_OK;
 }
 
+int cmdFingerlakesGetTempPower(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   char s[100];
+   double internalTemp;
+   double externalTemp;
+   double power;
+   struct camprop *cam= clientData;
+   if ( fingerlakes_getTempPower(cam, &internalTemp, &externalTemp, &power) == 0 ) {      
+      sprintf(s,"%lf %lf %lf", internalTemp, externalTemp, power);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      return TCL_OK;
+   } else {
+      Tcl_SetResult(interp,cam->msg,TCL_VOLATILE);
+      return TCL_ERROR;
+   }
+}
+
+
 int cmdFingerlakesFLIDebug(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
     int err;

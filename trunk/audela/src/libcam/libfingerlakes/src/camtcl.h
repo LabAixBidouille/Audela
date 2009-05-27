@@ -31,7 +31,8 @@
    {"coolerpower", (Tcl_CmdProc *)cmdFingerlakesCoolerPower}, \
    {"flidebug", (Tcl_CmdProc *)cmdFingerlakesFLIDebug}, \
    {"flimodes", (Tcl_CmdProc*)cmdFingerlakesFLIModes}, \
-   {"flimode", (Tcl_CmdProc *)cmdFingerlakesFLIMode},
+   {"flimode", (Tcl_CmdProc *)cmdFingerlakesFLIMode}, \
+   {"temppower", (Tcl_CmdProc *)cmdFingerlakesGetTempPower},
 
  /* === Specific commands for that camera === */
 int cmdFingerlakesScan(ClientData clientData, Tcl_Interp * interp,
@@ -49,6 +50,8 @@ int cmdFingerlakesFLIDebug(ClientData clientData, Tcl_Interp * interp,
 int cmdFingerlakesFLIModes(ClientData clientData, Tcl_Interp * interp,
                            int argc, char *argv[]);
 int cmdFingerlakesFLIMode(ClientData clientData, Tcl_Interp* interp,
+                          int argc, char *argv[]);
+int cmdFingerlakesGetTempPower(ClientData clientData, Tcl_Interp* interp,
                           int argc, char *argv[]);
 
 /*
