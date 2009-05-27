@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.104 2009-05-09 07:18:39 jacquesmichelet Exp $
+# Mise a jour $Id: aud.tcl,v 1.105 2009-05-27 21:44:24 michelpujol Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -56,6 +56,12 @@ namespace eval ::audace {
       initLastEnv $visuNo
       dispClock1
       afficheOutilF2
+
+      if { [info exists ::audela(updateMessage) ] == 1 } {
+         #--- j'affiche le compte rendu de mise a jour s'il existe)
+         tk_messageBox -icon info  -message $::audela(updateMessage) -title $::caption(audace,titre) -type ok
+      }
+
    }
 
    proc initEnv { } {
@@ -1459,6 +1465,30 @@ namespace eval ::audace {
       return $typeDirectory
    }
 
+   #------------------------------------------------------------
+   #  appendUpdateCommand
+   #    Ajoute des commandes de mise a jour d'Audela
+   #    a executer au prochain demarrage de Audela
+   #    Les commandes sont enregistrees dans le fichier $::audela_start_dir/update.tcl
+   #    qui est execute puis efface par audela.exe (voir lapin.c)
+   #------------------------------------------------------------
+   proc appendUpdateCommand { command } {
+      set fileNo [open "$::audela_start_dir/update.tcl" a]
+           puts -nonewline $fileNo "$command"
+           close $fileNo
+   }
+
+   #------------------------------------------------------------
+   #  appendUpdateMessage
+   #    Ajoute un message de mise à jour
+   #    a executer au prochain demarrage de Audela
+   #------------------------------------------------------------
+   proc appendUpdateMessage { updateMessage } {
+      set fileNo [open "$::audela_start_dir/update.tcl" a]
+           puts -nonewline $fileNo "append audela(updateMessage) \"$updateMessage\" \n"
+           close $fileNo
+   }
+
 }
 
 ########################## Fin du namespace audace ##########################
@@ -1585,6 +1615,54 @@ proc startdebug { } {
    }
    package require RamDebugger
 }
+
+#------------------------------------------------------------
+#  stackTrace
+#     affiche la pile d'appel des procedures
+#
+#     RamDebugger doit etre installe dans le repertoire
+#     audace/lib/RamDebugger
+#------------------------------------------------------------
+proc stackTrace { {procedureFullName "" } } {
+
+   set catchError [ catch {
+      set stack "Stack trace:\n"
+      for {set i 1} {$i < [info level]} {incr i} {
+         set lvl [info level -$i]
+         if { "[lrange $lvl 0 1]" == "namespace inscope"  } {
+            set procedureName "[lindex $lvl 2]::[lindex $lvl 3]"
+            set argNo 4
+         } else {
+           set procedureName [lindex $lvl 0]
+            set argNo 1
+         }
+         set procedureFullName [uplevel [list namespace which -command $procedureName]]
+         if { [info command $procedureFullName] == "" } {
+            set procedureFullName "::audace::$procedureName"
+         }
+
+         ###console::disp "stackTrace level=$i lvl=$lvl procedureName=$procedureName procedureFullName=$procedureFullName\n"
+         append stack [string repeat " " $i]$procedureFullName
+         foreach value $argNo arg [info args $procedureFullName] {
+            if {$value eq "" } {
+               info default $procedureFullName $arg value
+            } else {
+               append stack " $arg='$value'"
+            }
+         }
+         append stack "\n"
+      }
+      console::disp "$stack\n"
+   } ]
+   #--- je traite les erreur imprevues
+   if { $catchError != 0 } {
+      #---  je trace le message d'erreur
+      ::console::affiche_erreur "$::errorInfo\n"
+   }
+}
+
+
+
 
 #
 #--- Execute en premier au demarrage
