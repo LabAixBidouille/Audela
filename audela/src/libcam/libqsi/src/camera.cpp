@@ -38,7 +38,7 @@
 #include <stdio.h>
 #include "camera.h"
 
-///#define ASCOM_SIMULATOR
+//#define ASCOM_SIMULATOR
 
 #ifdef ASCOM_SIMULATOR
 #import "file:C:\Program Files\Fichiers communs\ASCOM\Interface\AscomMasterInterfaces.tlb"
@@ -321,7 +321,7 @@ int cam_close(struct camprop * cam)
       // je supprime la camera
       cam->params->pCam->Release();
       cam->params->pCam = NULL;
-
+      CoUninitialize();   // devrait eviter de demarrer dans le thread principal dans libcam.c .. a voir
       if ( cam->params != NULL ) {
          free(cam->params);
          cam->params = NULL;
