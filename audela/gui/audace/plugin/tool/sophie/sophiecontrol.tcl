@@ -2,7 +2,7 @@
 # Fichier : sophiecontrol.tcl
 # Description : Fenetre de controle pour le centrage, la focalisation et le guidage
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecontrol.tcl,v 1.10 2009-05-27 21:54:56 michelpujol Exp $
+# Mise a jour $Id: sophiecontrol.tcl,v 1.11 2009-05-29 21:28:43 michelpujol Exp $
 #
 
 #============================================================
@@ -928,7 +928,6 @@ proc ::sophie::control::onScrollOrigin { visuNo args } {
 
    #--- je copie les coordonnees dans la vairable globale
    set ::conf(sophie,originCoord) [list $private(positionObjetX) $private(positionObjetY) ]
-::console::disp "onScrollOrigin originCoord=$::conf(sophie,originCoord) args=$args\n"
 
    #--- je met a jour l'affichage de la fenetre principale
    ::sophie::setGuidingMode $visuNo
@@ -1190,12 +1189,11 @@ proc ::sophie::control::setCenterInformation { starDetection fiberDetection orig
 # @param fwhmX   largeur a mi hauter sur l'axe X
 # @param fwhmY   largeur a mi hauter sur l'axe Y
 # @param background   fond du ciel
-# @param maxFlow      flux max
 # @param maxIntensity intensité max
 #
 # @return rien
 #------------------------------------------------------------
-proc ::sophie::control::setFocusInformation { starDetection fiberDetection originX originY starX starY fwhmX fwhmY background maxFlow maxIntensity } {
+proc ::sophie::control::setFocusInformation { starDetection fiberDetection originX originY starX starY fwhmX fwhmY background maxIntensity } {
    variable private
 
    set frm $private(frm)

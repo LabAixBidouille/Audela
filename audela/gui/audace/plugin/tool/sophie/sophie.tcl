@@ -2,7 +2,7 @@
 # Fichier : sophie.tcl
 # Description : Outil d'autoguidage pour le spectro Sophie du telescope T193 de l'OHP
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophie.tcl,v 1.8 2009-05-27 21:54:56 michelpujol Exp $
+# Mise a jour $Id: sophie.tcl,v 1.9 2009-05-29 21:28:43 michelpujol Exp $
 #
 
 #============================================================
@@ -92,6 +92,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    source [ file join $::audace(rep_plugin) tool sophie sophiecommand.tcl ]
    source [ file join $::audace(rep_plugin) tool sophie sophieconfig.tcl ]
    source [ file join $::audace(rep_plugin) tool sophie sophiecontrol.tcl ]
+   source [ file join $::audace(rep_plugin) tool sophie sophieview.tcl ]
    source [ file join $::audace(rep_plugin) tool sophie sophietest.tcl ] ; # a supprimer quand on aura fait les premiers tests
 
    if { ! [ info exists ::conf(sophie,exposure) ] }                 { set ::conf(sophie,exposure)                  "0.5" }
@@ -101,8 +102,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(sophie,proportionalGain)] }          { set ::conf(sophie,proportionalGain)          "90" }
    if { ! [ info exists ::conf(sophie,integralGain)] }              { set ::conf(sophie,integralGain)              "10" }
    if { ! [ info exists ::conf(sophie,detection)] }                 { set ::conf(sophie,detection)                 "FIBER" }
-   if { ! [ info exists ::conf(sophie,thresold)] }                  { set ::conf(sophie,thresold)                 "30" }
-###   if { ! [ info exists ::conf(sophie,targetBoxSize)] }             { set ::conf(sophie,targetBoxSize)             "64" }
+   if { ! [ info exists ::conf(sophie,thresold)] }                  { set ::conf(sophie,thresold)                  "3" }
    if { ! [ info exists ::conf(sophie,originCoord)] }               { set ::conf(sophie,originCoord)               [list 320 240 ] }
    if { ! [ info exists ::conf(sophie,originBoxSize)] }             { set ::conf(sophie,originBoxSize)             "32" }
    if { ! [ info exists ::conf(sophie,darkEnabled)] }               { set ::conf(sophie,darkEnabled)               "0" }
@@ -162,6 +162,13 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(targetDec)        "0d0m0s" ; # declinaison de la cible en DMS
    set private(xWindow)          1        ; # abscisse du coin bas gauche du fenetrage
    set private(yWindow)          1        ; # ordonnee du coin bas gauche du fenetrage
+
+   set private(maskBufNo)  [::buf::create ]
+   set private(sumBufNo)   [::buf::create ]
+   set private(fiberBufNo) [::buf::create ]
+
+   set private(AsynchroneParameter) 0
+   set private(newAcquisition)  1   ; #--- variable utilisee par le listener addAcquisitionListener
 
    #--- Petit raccourci
    set frm $private(frm)
@@ -410,7 +417,7 @@ proc ::sophie::startTool { visuNo } {
    #--- j'affiche la consigne sur l'image
    createOrigin $visuNo
 
-
+   ::sophie::view::run $visuNo
 }
 
 #------------------------------------------------------------
