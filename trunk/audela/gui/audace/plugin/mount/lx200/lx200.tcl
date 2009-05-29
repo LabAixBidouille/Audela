@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise a jour $Id: lx200.tcl,v 1.24 2009-05-27 21:53:54 michelpujol Exp $
+# Mise a jour $Id: lx200.tcl,v 1.25 2009-05-29 16:46:14 robertdelmas Exp $
 #
 
 namespace eval ::lx200 {
@@ -13,21 +13,17 @@ namespace eval ::lx200 {
    source [ file join [file dirname [info script]] lx200.cap ]
 }
 
-
 #
 # install
 #    installe le plugin
 #
 proc ::lx200::install { } {
-   global caption
-
    if { $::tcl_platform(platform) == "windows" } {
-      #--- je deplace  liblx200.dll dans le répertoire audela/bin
+      #--- je deplace liblx200.dll dans le repertoire audela/bin
       set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [getPluginType]] "lx200" "liblx200.dll"]
       ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
-      ::audace::appendUpdateMessage "Fin d'installation de lx200 v[package version lx200] OK. liblx200.dll a ete mis à jour"
+      ::audace::appendUpdateMessage "$::caption(lx200,install_1) v[package version lx200]. $::caption(lx200,install_2)"
    }
-
 }
 
 #
@@ -108,8 +104,9 @@ proc ::lx200::initPlugin { } {
    variable private
    global conf
 
-   #--- Initialisation
-   set private(telNo) "0"
+   #--- Initialisation de variables
+   set private(telNo)         "0"
+   set private(tracesConsole) "0"
 
    #--- Prise en compte des liaisons
    set list_connexion [::confLink::getLinkLabels { "serialport" "audinet" } ]
@@ -120,7 +117,6 @@ proc ::lx200::initPlugin { } {
    if { ! [ info exists conf(lx200,modele) ] }          { set conf(lx200,modele)          "LX200" }
    if { ! [ info exists conf(lx200,format) ] }          { set conf(lx200,format)          "1" }
    if { ! [ info exists conf(lx200,ite-lente_tempo) ] } { set conf(lx200,ite-lente_tempo) "300" }
-   set private(tracesConsole) "0"
 }
 
 #
