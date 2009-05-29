@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.tcl,v 1.7 2008-12-07 22:49:51 michelpujol Exp $
+# Mise a jour $Id: tuto.tcl,v 1.8 2009-05-29 20:15:49 michelpujol Exp $
 #
 
 #!/bin/sh
@@ -144,6 +144,7 @@ wm geometry .main ${screenwidth}x${screenheight}+0+0
 wm maxsize .main [winfo screenwidth .main] [winfo screenheight .main]
 wm minsize .main ${screenwidth} ${screenheight}
 wm resizable .main 1 1
+wm protocol .main WM_DELTE_WINDOW tuto_exit
 set widgetDemo 1
 
 #----------------------------------------------------------------
@@ -375,10 +376,6 @@ proc aboutBox {} {
    tk_messageBox -icon info -type ok -title $texte(tuto_about0) -message $texte(tuto_about1)
 }
 
-bind .main <Destroy> {
-   tuto_exit
-}
-
 proc tuto_exit { } {
    global audace num
    ::buf::delete $num(buf1)
@@ -401,7 +398,7 @@ proc tuto_exit { } {
       }
       cd [ file join $audace(rep_audela) ]
    } else {
-      destroy .
+      ###destroy .
       exit
    }
 }
