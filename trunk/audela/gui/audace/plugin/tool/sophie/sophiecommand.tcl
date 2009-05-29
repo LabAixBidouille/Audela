@@ -2,7 +2,7 @@
 # Fichier : sophiecommand.tcl
 # Description : Centralise les commandes de l'outil Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecommand.tcl,v 1.8 2009-05-27 21:54:56 michelpujol Exp $
+# Mise a jour $Id: sophiecommand.tcl,v 1.9 2009-05-29 21:28:43 michelpujol Exp $
 #
 
 #============================================================
@@ -200,6 +200,7 @@ console::disp "setBinning  previousBinning=$xPreviousBinning $yPreviousBinning  
       set xTargetCoord [ expr ( [lindex $private(targetCoord) 0] - $private(xWindow) + 1 ) / $private(xBinning)  ]
       set yTargetCoord [ expr ( [lindex $private(targetCoord) 1] - $private(yWindow) + 1 ) / $private(yBinning)  ]
       set targetBoxSize [ expr int($private(targetBoxSize) / (2.0 * $private(xBinning) ))  ]
+      set private(AsynchroneParameter) 1
       ::camera::setAsynchroneParameter $private(camItem) \
          "originCoord" [list $xOriginCoord $yOriginCoord] \
          "targetCoord" [list $xTargetCoord $yTargetCoord] \
@@ -236,6 +237,7 @@ proc ::sophie::setExposure { { exposure "" } } {
 
    #--- je change les paramètres dans la thread
    if { $private(acquisitionState) != 0 } {
+      set private(AsynchroneParameter) 1
       ::camera::setAsynchroneParameter $private(camItem) "exptime" $::conf(sophie,exposure)
    }
 }
@@ -303,6 +305,7 @@ proc ::sophie::setWindowing { size { center "" } } {
       set xTargetCoord [ expr ( [lindex $private(targetCoord) 0] - $private(xWindow) + 1 ) / $private(xBinning)  ]
       set yTargetCoord [ expr ( [lindex $private(targetCoord) 1] - $private(yWindow) + 1 ) / $private(yBinning)  ]
       set targetBoxSize [ expr int($private(targetBoxSize) / (2.0 * $private(xBinning))) ]
+      set private(AsynchroneParameter) 1
       ::camera::setAsynchroneParameter $private(camItem) \
             "originCoord" [list $xOriginCoord $yOriginCoord] \
             "targetCoord" [list $xTargetCoord $yTargetCoord] \
@@ -520,7 +523,6 @@ proc ::sophie::setGuidingMode { visuNo } {
          ::sophie::createOrigin $visuNo
       }
    }
-console::disp "=== setGuidingMode originCoord=$private(originCoord) \n"
    #--- je mets a jour la fenetre de controle
    ::sophie::control::setGuidingMode $::conf(sophie,guidingMode)
 
@@ -528,7 +530,9 @@ console::disp "=== setGuidingMode originCoord=$private(originCoord) \n"
    if { $private(acquisitionState) != 0 } {
       set xOriginCoord [ expr ( [lindex $private(originCoord) 0] - $private(xWindow) + 1 ) / $private(xBinning)  ]
       set yOriginCoord [ expr ( [lindex $private(originCoord) 1] - $private(yWindow) + 1 ) / $private(yBinning)  ]
+      set private(AsynchroneParameter) 1
       ::camera::setAsynchroneParameter $private(camItem) \
+            "guidingMode" $::conf(sophie,guidingMode) \
             "originCoord" [list $xOriginCoord $yOriginCoord]
    }
 
@@ -991,6 +995,7 @@ proc ::sophie::onTargetCoord { visuNo x y } {
 
 
    #--- je transmet les coordonnees a l'interperteur de la camera
+   set private(AsynchroneParameter) 1
    ::camera::setAsynchroneParameter  $private(camItem) "targetCoord" $coord
 }
 
@@ -1115,6 +1120,7 @@ proc ::sophie::setMountEnabled { visuNo state } {
    set private(delay,alpha)      "0.00"
    set private(delay,delta)      "0.00"
    #--- je notifie l'interperteur de la camera
+   set private(AsynchroneParameter) 1
    ::camera::setAsynchroneParameter  $private(camItem) "mountEnabled" $private(mountEnabled)
 }
 
@@ -1196,19 +1202,23 @@ proc ::sophie::startAcquisition { visuNo } {
       set slitRatio  0.0   ; #--- coefficient
       set intervalle 0.0  ; #--- intervalle de temps entre de 2 acquisitions
       set seuilx $::conf(sophie,thresold)  ; #--- seuil minimum de correction sur l'axe x en arcsec
-      set seuily $::conf(sophie,thresold)  ; #--- seuil minimum de correction sur l'axe y
+     set seuily $::conf(sophie,thresold)  ; #--- seuil minimum de correction sur l'axe y
       set cameraAngle 0.0 ;                  #angle de la camera
       set declinaisonEnabled 1 ;                #--- correction en declinaison activee
       set alphaSpeed [lindex $guidingSpeed 1 ]
       set deltaSpeed [lindex $guidingSpeed 1 ]
 
+      set private(AsynchroneParameter) 0
       ::camera::setAsynchroneParameter $private(camItem) \
          "targetDetectionThresold" $::conf(sophie,targetDetectionThresold) \
          "pixelScale"              $::conf(sophie,pixelScale) \
          "targetDec"               [ mc_angle2deg $::audace(telescope,getdec) 90 ] \
          "proportionalGain"        $::conf(sophie,proportionalGain) \
          "integralGain"            $::conf(sophie,integralGain) \
-         "binning"                 [list $private(xBinning) $private(yBinning)]
+         "binning"                 [list $private(xBinning) $private(yBinning)] \
+         "maskBufNo"               $private(maskBufNo) \
+         "sumBufNo"                $private(sumBufNo) \
+         "fiberBufNo"              $private(fiberBufNo)
 
       #set xOriginCoord [ expr  [lindex $private(originCoord) 0] / $private(xBinning) ]
       #set yOriginCoord [ expr  [lindex $private(originCoord) 1] / $private(yBinning) ]
@@ -1221,8 +1231,6 @@ proc ::sophie::startAcquisition { visuNo } {
       set targetX [ expr ( [lindex $private(targetCoord) 0] - $private(xWindow) + 1 ) / $private(xBinning) ]
       set targetY [ expr ( [lindex $private(targetCoord) 1] - $private(yWindow) + 1 ) / $private(yBinning) ]
       set targetBoxSize [ expr int( $private(targetBoxSize) / (2.0 * $private(xBinning) )) ]
-
-console::disp "startAcquisition originX=[lindex $private(originCoord) 0] originY=[lindex $private(originCoord) 1] \n"
 
       #--- je fais l'acquisition
       ::camera::guide $private(camItem) "::sophie::callbackAcquisition $visuNo" \
@@ -1300,18 +1308,20 @@ proc ::sophie::startCenter { } {
 
    #--- je verifie que les acqusitions sont lancees
    if { $private(acquisitionState) == 0 } {
-      tk_messageBox -title $::caption(sophie,titre) -icon error -message $::caption(sophie,noAcquisition)
-      set private(centerEnabled) 0
-      return
+      ##tk_messageBox -title $::caption(sophie,titre) -icon error -message $::caption(sophie,noAcquisition)
+      ##set private(centerEnabled) 0
+      ##return
+      startAcquisition $::audace(visuNo)
    }
 
    set private(centerEnabled) 1
    #--- j'active le centrage dans la thread de la camera
+   set private(AsynchroneParameter) 1
    ::camera::setAsynchroneParameter $private(camItem) \
          "seuilx" $::conf(sophie,thresold) \
          "seuily" $::conf(sophie,thresold) \
          "mode" "center" \
-         "mountEnabled" "1"
+         "mountEnabled" $private(centerEnabled)
 
    #--- je mets a jour le voyant dans la fenetre de controle
    ::sophie::control::setCenterState $private(centerEnabled)
@@ -1329,9 +1339,10 @@ proc ::sophie::stopCenter { } {
    #--- j'arrete le centrage dans la thread de la camera
 
    ::telescope::stop ""
+   set private(AsynchroneParameter) 1
    ::camera::setAsynchroneParameter $private(camItem) \
          "mode" "guide" \
-         "mountEnabled" "0"
+         "mountEnabled" $private(centerEnabled)
    #--- je mets a jour le voyant dans la fenetre de controle
    ::sophie::control::setCenterState $private(centerEnabled)
 }
@@ -1347,17 +1358,18 @@ proc ::sophie::startGuide { } {
 
    #--- je verifie que les acqusitions sont lancees
    if { $private(acquisitionState) == 0 } {
-      tk_messageBox -title $::caption(sophie,titre) -icon error -message $::caption(sophie,noAcquisition)
-      set private(guideEnabled) 0
-      return
+      ##tk_messageBox -title $::caption(sophie,titre) -icon error -message $::caption(sophie,noAcquisition)
+      ##set private(guideEnabled) 0
+      ##return
+      startAcquisition $::audace(visuNo)
    }
 
    set private(guideEnabled) 1
    #--- j'active le centrage dans la thread de la camera
-   #--- j'active le centrage dans la thread de la camera
+   set private(AsynchroneParameter) 1
    ::camera::setAsynchroneParameter $private(camItem) \
          "mode" "guide" \
-         "mountEnabled" "1"
+         "mountEnabled" $private(guideEnabled)
 
    #--- je mets a jour le voyant dans la fenetre de controle
    ::sophie::control::setGuideState $private(guideEnabled)
@@ -1374,9 +1386,10 @@ proc ::sophie::stopGuide { } {
    set private(guideEnabled) 0
    #--- j'arrete le centrage dans la thread de la camera
    ::telescope::stop ""
+   set private(AsynchroneParameter) 1
    ::camera::setAsynchroneParameter $private(camItem) \
          "mode" "guide" \
-         "mountEnabled" "0"
+         "mountEnabled" $private(guideEnabled)
 
    #--- je mets a jour le voyant dans la fenetre de controle
    ::sophie::control::setGuideState $private(guideEnabled)
@@ -1417,63 +1430,78 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
             # args 0 = coordonnees de l'étoile, ou coordonnees du centre de la zone de recherche si l'étoile n'a pas ete trouvee
             # args 1 = dx
             # args 2 = dy
-            # args 3 = nombre d'étoiles detectees dans l'image
-            # args 4 = nombre de trous detectes dans l'image
-            # args 5 = 0 originX, 1 originY,
+            # args 3 = istar nombre d'étoiles detectees dans l'image
+            # args 4 = cstar nombre de trous detectes dans l'image
+            # args 5 = astar
+            #          0 originX, 1 originY,
             #          2 fwhmX,   3  fwhmY,
             #          4 background, 5 maxIntensity,
-            #          6 flow,
-            #          7 alphaDiff, 8 deltaDiff
+            #          6 alphaDiff, 7 deltaDiff
 
-            set previousTargetDetection $private(targetDetection)
+            if { $private(AsynchroneParameter) == 0 } {
 
-            #--- je recupere les informations
-            set starX                [expr [lindex [lindex $args 0] 0] * $private(xBinning)+ $private(xWindow) -1 ]
-            set starY                [expr [lindex [lindex $args 0] 1] * $private(yBinning) + $private(yWindow) -1 ]
-            set private(targetCoord) [list $starX $starY]
-            set starDx               [lindex $args 1]
-            set starDy               [lindex $args 2]
-            set private(targetDetection)  [lindex $args 3]
-            set originDetection      [lindex $args 4]
-            set params               [lindex $args 5]
+               set previousTargetDetection $private(targetDetection)
 
-            set originX              [expr [lindex $params 0] * $private(xBinning) + $private(xWindow) -1 ]
-            set originY              [expr [lindex $params 1] * $private(yBinning) + $private(yWindow) -1 ]
-            set originDx             0.0
-            set originDy             0.0
-            set fwhmX                [lindex $params 2]
-            set fwhmY                [lindex $params 3]
-            set background           [lindex $params 4]
-            set maxIntensity         [lindex $params 5]
-            set flow                 [lindex $params 6]
-            set alphaCorrection      [lindex $params 7]
-            set deltaCorrection      [lindex $params 8]
-            #--- je deplace la cible sur les nouvelles corrdonnees
-            ::sophie::moveTarget $visuNo $private(targetCoord)
+               #--- je recupere les informations
+               set starX                [expr [lindex [lindex $args 0] 0] * $private(xBinning)+ $private(xWindow) -1 ]
+               set starY                [expr [lindex [lindex $args 0] 1] * $private(yBinning) + $private(yWindow) -1 ]
+               set private(targetCoord) [list $starX $starY]
+               set starDx               [lindex $args 1]
+               set starDy               [lindex $args 2]
+               set private(targetDetection)  [lindex $args 3]
+               set fiberDetected        [lindex $args 4]
+               set params               [lindex $args 5]
 
-            #--- j'affiche le symbole de l'origine
-            ::sophie::createOrigin $visuNo
+               set originX              [expr [lindex $params 0] * $private(xBinning) + $private(xWindow) -1 ]
+               set originY              [expr [lindex $params 1] * $private(yBinning) + $private(yWindow) -1 ]
+               set originDx             0.0
+               set originDy             0.0
+               set fwhmX                [lindex $params 2]
+               set fwhmY                [lindex $params 3]
+               set background           [lindex $params 4]
+               set maxIntensity         [lindex $params 5]
+               set infoMessage          [lindex $params 6]
+               set alphaCorrection      [lindex $params 7]
+               set deltaCorrection      [lindex $params 8]
 
-            #--- j'affiche les informations dans la fenetre de controle
-            switch $private(mode) {
-               "centrage" {
-                  ::sophie::control::setCenterInformation $private(targetDetection) $originDetection $originX $originY $starX $starY $fwhmX $fwhmY $background $maxIntensity
+               if { $::conf(sophie,guidingMode) == "FIBER" } {
+                  if { $fiberDetected == 1 } {
+                     set private(originCoord) [list $originX $originY]
+                 }
                }
-               "focalisation" {
-                  ::sophie::control::setFocusInformation $private(targetDetection) $originDetection $originX $originY $starX $starY $fwhmX $fwhmY $background $flow $maxIntensity
-                  #--- je change le mode d'affichage si la detection de l'etoile a change
-                  ##if { $previousTargetDetection != $private(targetDetection)  } {
-                  ##   sophie::setMode $private(mode)
-                  ##}
+
+               #--- je deplace la cible sur les nouvelles corrdonnees
+               ::sophie::moveTarget $visuNo $private(targetCoord)
+
+               #--- j'affiche le symbole de l'origine
+               ::sophie::createOrigin $visuNo
+   ##console::disp "callbackAcquisition origin= $private(originCoord) detail=$infoMessage\n"
+               #--- j'affiche les informations dans la fenetre de controle
+               switch $private(mode) {
+                  "centrage" {
+                     ::sophie::control::setCenterInformation $private(targetDetection) $fiberDetected $originX $originY $starX $starY $fwhmX $fwhmY $background $maxIntensity
+                  }
+                  "focalisation" {
+                     ::sophie::control::setFocusInformation $private(targetDetection) $fiberDetected $originX $originY $starX $starY $fwhmX $fwhmY $background $maxIntensity
+                     #--- je change le mode d'affichage si la detection de l'etoile a change
+                     ##if { $previousTargetDetection != $private(targetDetection)  } {
+                     ##   sophie::setMode $private(mode)
+                     ##}
+                  }
+                  "guidage" {
+                     ::sophie::control::setGuideInformation $private(targetDetection) $fiberDetected $originX $originY $starX $starY $starDx $starDy $alphaCorrection $deltaCorrection $originDx $originDy
+                     #--- je change le mode d'affichage si la detection de l'etoile a change
+                     ##if { $previousTargetDetection != $private(targetDetection)  } {
+                     ##   sophie::setMode $private(mode)
+                     ##}
+                  }
                }
-               "guidage" {
-                  ::sophie::control::setGuideInformation $private(targetDetection) $originDetection $originX $originY $starX $starY $starDx $starDy $alphaCorrection $deltaCorrection $originDx $originDy
-                  #--- je change le mode d'affichage si la detection de l'etoile a change
-                  ##if { $previousTargetDetection != $private(targetDetection)  } {
-                  ##   sophie::setMode $private(mode)
-                  ##}
-               }
+            } else {
+               set private(AsynchroneParameter) 0
             }
+
+            #--- variable utilisee par le listener addAcquisitionListener
+            set private(newAcquisition)  "1"
          }
          "acquisitionResult" {
             #--- j'affiche les informations dans la fenetre de controle
@@ -1502,3 +1530,34 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
    }
 }
 
+#------------------------------------------------------------
+# getBufNo
+#  retourne le numero de buffer
+#------------------------------------------------------------
+proc ::sophie::getBufNo { bufName } {
+   variable private
+
+   return $private($bufName)
+}
+
+#------------------------------------------------------------
+# addAcquisitionListener
+#    ajoute une procedure a appeler pour chaque nouvelle acquisition
+#  parametres :
+#    visuNo: numero de la visu
+#    cmd : commande TCL a lancer quand la camera associee a la visu change
+#------------------------------------------------------------
+proc ::sophie::addAcquisitionListener { visuNo cmd } {
+   trace add variable ::sophie::private(newAcquisition) write $cmd
+}
+
+#------------------------------------------------------------
+# removeCameraListener
+#    supprime une procedure a appeler pour chaque nouvelle acquisition
+#  parametres :
+#    visuNo: numero de la visu
+#    cmd : commande TCL a lancer quand la camera associee a la visu change
+#------------------------------------------------------------
+proc ::sophie::removeAcquisitionListener { visuNo cmd } {
+   trace remove variable ::sophie::private(newAcquisition) write $cmd
+}
