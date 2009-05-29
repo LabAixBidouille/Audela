@@ -1,6 +1,6 @@
 #
 # Fichier : fingerlakes.cap
-# Mise a jour $Id: fingerlakes.cap,v 1.6 2009-05-27 21:49:53 michelpujol Exp $
+# Mise a jour $Id: fingerlakes.cap,v 1.7 2009-05-29 16:11:10 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -21,7 +21,7 @@ set caption(fingerlakes,refroidissement)              "Cooling to Temperature"
 set caption(fingerlakes,deg_c)                        "°C"
 set caption(fingerlakes,refroidissement_1)            ""
 set caption(fingerlakes,temperature_CCD)              "CCD Temperature"
-set caption(fingerlakes,Power)                        "Peltier Power"
+set caption(fingerlakes,Power)                        "Peltier Stage Power"
 set caption(fingerlakes,miroir_x)                     "Horizontal Mirror"
 set caption(fingerlakes,miroir_y)                     "Vertical Mirror"
 set caption(fingerlakes,fonc_obtu)                    "Shutter Operation"
@@ -45,7 +45,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,deg_c)                     "°C"
    set caption(fingerlakes,refroidissement_1)         ""
    set caption(fingerlakes,temperature_CCD)           "Température du CCD :"
-   set caption(fingerlakes,power)                     "Puissance du peltier"
+   set caption(fingerlakes,power)                     "Puissance Peltier"
    set caption(fingerlakes,miroir_x)                  "Miroir horizontal"
    set caption(fingerlakes,miroir_y)                  "Miroir vertical"
    set caption(fingerlakes,fonc_obtu)                 "Fonctionnement de l'obturateur"
@@ -69,6 +69,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,deg_c)                     "°C"
    set caption(fingerlakes,refroidissement_1)         ""
    set caption(fingerlakes,temperature_CCD)           "CCD Temperatura:"
+   set caption(fingerlakes,power)                     "Potenza stadio Peltier"
    set caption(fingerlakes,miroir_x)                  "Specchio orizzontale"
    set caption(fingerlakes,miroir_y)                  "Specchio verticale"
    set caption(fingerlakes,fonc_obtu)                 "Funzionamento otturatore"
@@ -92,6 +93,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,deg_c)                     "°C"
    set caption(fingerlakes,refroidissement_1)         ""
    set caption(fingerlakes,temperature_CCD)           "Temperatura CCD:"
+   set caption(fingerlakes,power)                     "Alimentación Etapa Peltier"
    set caption(fingerlakes,miroir_x)                  "Espejo horizontal"
    set caption(fingerlakes,miroir_y)                  "Espejo vertical"
    set caption(fingerlakes,fonc_obtu)                 "Funcionamiento del obturador"
@@ -115,6 +117,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,deg_c)                     "°C"
    set caption(fingerlakes,refroidissement_1)         "kühlen."
    set caption(fingerlakes,temperature_CCD)           "Temperatur CCD:"
+   set caption(fingerlakes,power)                     "Peltier Stärke"
    set caption(fingerlakes,miroir_x)                  "Horizontale Spiegel"
    set caption(fingerlakes,miroir_y)                  "Verticale Spiegel"
    set caption(fingerlakes,fonc_obtu)                 "Verschluss Arbeiten"
@@ -138,6 +141,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,deg_c)                     "°C"
    set caption(fingerlakes,refroidissement_1)         ""
    set caption(fingerlakes,temperature_CCD)           "Temperatura do CCD:"
+   set caption(fingerlakes,power)                     "Nível de Potência do Peltier"
    set caption(fingerlakes,miroir_x)                  "Espelho Horizontal"
    set caption(fingerlakes,miroir_y)                  "Espelho Vertical"
    set caption(fingerlakes,fonc_obtu)                 "Operação do obturador"
@@ -161,6 +165,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,deg_c)                     "°C"
    set caption(fingerlakes,refroidissement_1)         ""
    set caption(fingerlakes,temperature_CCD)           "CCD Temperature:"
+   set caption(fingerlakes,power)                     "Peltier Stage Power"
    set caption(fingerlakes,miroir_x)                  "Horisontal spejl"
    set caption(fingerlakes,miroir_y)                  "Vertikal spejl"
    set caption(fingerlakes,fonc_obtu)                 "Shutter Operation"
