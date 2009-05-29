@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.7 2009-05-27 21:38:35 michelpujol Exp $
+# Mise a jour $Id: t193.tcl,v 1.8 2009-05-29 16:47:49 robertdelmas Exp $
 #
 
 namespace eval ::t193 {
@@ -91,16 +91,16 @@ proc ::t193::initPlugin { } {
    if { ! [ info exists conf(t193,nomPortTelescope) ] }    { set conf(t193,nomPortTelescope)    "port0" }
    if { ! [ info exists conf(t193,nomPortAttenuateur) ] }  { set conf(t193,nomPortAttenuateur)  "port1" }
    #--- vitesses de guidage en arcseconde de degre par seconde de temps
-   if { ! [ info exists conf(t193,alphaGuidingSpeed) ] }     { set conf(t193,alphaGuidingSpeed) "3.0" }
-   if { ! [ info exists conf(t193,deltaGuidingSpeed) ] }     { set conf(t193,deltaGuidingSpeed) "3.0" }
+   if { ! [ info exists conf(t193,alphaGuidingSpeed) ] }   { set conf(t193,alphaGuidingSpeed)   "3.0" }
+   if { ! [ info exists conf(t193,deltaGuidingSpeed) ] }   { set conf(t193,deltaGuidingSpeed)   "3.0" }
    #--- duree de deplacement entre les 2 butees (mini et maxi) de l'attenuateur
-   if { ! [ info exists conf(t193,dureeMaxAttenuateur) ] }          { set conf(t193,dureeMaxAttenuateur)      "16" }
+   if { ! [ info exists conf(t193,dureeMaxAttenuateur) ] } { set conf(t193,dureeMaxAttenuateur) "16" }
 
    #--- Initialisation
-   set private(telNo)      "0"
-   set private(frm)        ""
-   set private(radecHandle) ""      ; # identificant du canal de lecture
-   set private(radecLoop)  0        ; # boucle de lecture de radec descativee par defaut
+   set private(telNo)       "0"
+   set private(frm)         ""
+   set private(radecHandle) ""      ; # identifiant du canal de lecture
+   set private(radecLoop)   0       ; # boucle de lecture de radec desactivee par defaut
 }
 
 #
@@ -270,7 +270,7 @@ proc ::t193::fillConfigPage { frm } {
       grid rowconfigure [ $frm.test1 getframe ] 2 -minsize 25 -weight 0
 
       grid columnconfigure [ $frm.test1 getframe ] 1 -minsize 40 -weight 0
-     grid columnconfigure [ $frm.test1 getframe ] 2 -minsize 40 -weight 0
+      grid columnconfigure [ $frm.test1 getframe ] 2 -minsize 40 -weight 0
       grid columnconfigure [ $frm.test1 getframe ] 3 -minsize 40 -weight 0
 
    pack $frm.test1 -side left -anchor w -fill none -pady 5 -expand 1
@@ -598,7 +598,6 @@ proc ::t193::getPluginProperty { propertyName } {
    }
 }
 
-
 #------------------------------------------------------------
 # readRadec
 #    lit les coordonnees toutes les 2 secondes
@@ -613,7 +612,7 @@ proc ::t193::readRadec { } {
       set data [split $data "\n" ]
       if { $data != "" } {
          ####console::disp "::t193::readRadec data=$data \n"
-         #--- je recupere la dernier message ( au cas ou il en aurait plusieurs qui se seraient accumulés)
+         #--- je recupere le dernier message (au cas ou il en aurait plusieurs qui se seraient accumulés)
          set data [lindex $data end]
          set nbVar [scan $data "%dh %dm %fs / %dd %d' %d'' / %dd" ah am as dd dm ds ba]
          if { $nbVar == 7 } {
@@ -637,5 +636,4 @@ proc ::t193::getRadec { } {
    variable private
 
 }
-
 
