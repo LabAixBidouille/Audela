@@ -1,6 +1,6 @@
 #
 # Fichier : lx200.cap
-# Mise a jour $Id: lx200.cap,v 1.10 2009-05-26 16:54:00 robertdelmas Exp $
+# Mise a jour $Id: lx200.cap,v 1.11 2009-05-29 16:45:56 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -37,6 +37,9 @@ set caption(lx200,ite-lente_ack)                 "ACK"
 set caption(lx200,raquette_tel)                  "Hand controller on screen"
 set caption(lx200,park)                          "Park"
 set caption(lx200,unpark)                        "Unpark"
+
+set caption(lx200,install_1)                     "# Fin d'installation du plugin lx200"
+set caption(lx200,install_2)                     "# La librairie liblx200.dll a été mise à jour."
 
 set caption(lx200,host_audinet)                  "Host AudiNet/LXnet"
 set caption(lx200,port_lx200)                    "LX200 Port"
@@ -75,6 +78,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,park)                       "Park"
    set caption(lx200,unpark)                     "Unpark"
 
+   set caption(lx200,install_1)                  "Fin d'installation du plugin lx200"
+   set caption(lx200,install_2)                  "La librairie liblx200.dll a été mise à jour."
+
    set caption(lx200,host_audinet)               "Host AudiNet/LXnet"
    set caption(lx200,port_lx200)                 "Port LX200"
    set caption(lx200,2points)                    ":"
@@ -111,6 +117,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,raquette_tel)               "Pulsantiera a schermo"
    set caption(lx200,park)                       "Park"
    set caption(lx200,unpark)                     "Unpark"
+
+   set caption(lx200,install_1)                  "# Fin d'installation du plugin lx200"
+   set caption(lx200,install_2)                  "# La librairie liblx200.dll a été mise à jour."
 
    set caption(lx200,host_audinet)               "Host AudiNet/LXnet"
    set caption(lx200,port_lx200)                 "Porta LX200"
@@ -149,6 +158,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,park)                       "Park"
    set caption(lx200,unpark)                     "Unpark"
 
+   set caption(lx200,install_1)                  "# Fin d'installation du plugin lx200"
+   set caption(lx200,install_2)                  "# La librairie liblx200.dll a été mise à jour."
+
    set caption(lx200,host_audinet)               "Host AudiNet/LXnet"
    set caption(lx200,port_lx200)                 "Puerto LX200"
    set caption(lx200,2points)                    ":"
@@ -185,6 +197,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,raquette_tel)               "Hand Kontroller am Bildschirm"
    set caption(lx200,park)                       "Park"
    set caption(lx200,unpark)                     "Unpark"
+
+   set caption(lx200,install_1)                  "# Fin d'installation du plugin lx200"
+   set caption(lx200,install_2)                  "# La librairie liblx200.dll a été mise à jour."
 
    set caption(lx200,host_audinet)               "Host AudiNet/LXnet"
    set caption(lx200,port_lx200)                 "LX200 Port"
@@ -223,6 +238,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,park)                       "Park"
    set caption(lx200,unpark)                     "Unpark"
 
+   set caption(lx200,install_1)                  "# Fin d'installation du plugin lx200"
+   set caption(lx200,install_2)                  "# La librairie liblx200.dll a été mise à jour."
+
    set caption(lx200,host_audinet)               "Servidor AudiNet/LXnet"
    set caption(lx200,port_lx200)                 "Porta LX200"
    set caption(lx200,2points)                    ":"
@@ -259,6 +277,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,raquette_tel)               "Hand controller on screen"
    set caption(lx200,park)                       "Park"
    set caption(lx200,unpark)                     "Unpark"
+
+   set caption(lx200,install_1)                  "# Fin d'installation du plugin lx200"
+   set caption(lx200,install_2)                  "# La librairie liblx200.dll a été mise à jour."
 
    set caption(lx200,host_audinet)               "Host AudiNet/LXnet"
    set caption(lx200,port_lx200)                 "LX200 Port"
