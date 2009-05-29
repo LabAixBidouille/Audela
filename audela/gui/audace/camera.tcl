@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: camera.tcl,v 1.29 2009-05-02 09:30:24 robertdelmas Exp $
+# Mise a jour $Id: camera.tcl,v 1.30 2009-05-29 21:20:20 michelpujol Exp $
 #
 # Procedures utilisees par confCam
 #   ::camera::create : cree une camera
@@ -130,7 +130,7 @@ proc ::camera::create { camItem } {
       ::thread::copycommand $private($camItem,threadNo) "ttscript2"
       ::thread::copycommand $private($camItem,threadNo) "mc_date2jd"
       ::thread::copycommand $private($camItem,threadNo) "mc_date2iso8601"
-
+      
       #--- J'ajoute la commande de liaison longue pose dans la thread de la camera
       if { [::confCam::getPluginProperty $camItem "hasLongExposure"] == 1 } {
          if { [cam$private($camItem,camNo)  longueposelinkno] != 0} {
@@ -705,10 +705,34 @@ proc ::camera::setParam { camItem  paramName paramValue } {
       interp eval $camThreadNo [list ::camerathread::setParam $paramName $paramValue]
       update
    } else {
-      ::thread::send -async $camThreadNo [list ::camerathread::setParam $paramName $paramValue]
+      ::thread::send -async -head $camThreadNo [list ::camerathread::setParam $paramName $paramValue]
       ###::thread::send $camThreadNo [list ::camerathread::setParam $paramName $paramValue]
    }
 }
+
+#------------------------------------------------------------
+# setAsynchroneParameter
+#    modifie plusieurs parametres en mode asynchrone
+#
+# @param args liste de couples (nom parametrea, valeur parametre)
+# @return rien
+#------------------------------------------------------------
+proc ::camera::setAsynchroneParameter { camItem  args } {
+   variable private
+   if { $camItem == "" } {
+      return
+   }
+   set camThreadNo $private($camItem,threadNo)
+   #--- je notifie la camera
+   if { $::tcl_platform(threaded) == 0  } {
+      interp eval $camThreadNo [list ::camerathread::setAsynchroneParameter $args]
+      update
+   } else {
+      ::thread::send -async -head $camThreadNo [list ::camerathread::setAsynchroneParameter $args]
+      ###::thread::send $camThreadNo [list ::camerathread::setAsynchroneParameter $args]
+   }
+}
+
 
 #------------------------------------------------------------
 # stopAcquisition
