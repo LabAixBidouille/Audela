@@ -60,6 +60,7 @@ struct cmditem {
    {"date", (Tcl_CmdProc *)cmdTelDate},\
    {"home", (Tcl_CmdProc *)cmdTelHome},\
    {"model", (Tcl_CmdProc *)cmdTelModel},\
+   {"threadid", (Tcl_CmdProc *)cmdTelThreadId},\
    /*
    {"obs", cmdTelObs},\
    {"version", cmdTelVersion},\
@@ -72,6 +73,7 @@ int cmdTelPort(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
 int cmdTelChannel(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelTestCom(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelClose(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelThreadId(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 
 /* --- Obsolete compatible old version commands ---*/
 int cmdTelCoord(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
