@@ -117,7 +117,47 @@ SOURCE=..\src\visu_tcl.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
+SOURCE=..\..\include\cbuffer.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cdevice.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cerror.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpixels.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpool.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\cvisu.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\fitskw.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\palette.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\external\include\win\pthread.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\external\include\win\sched.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\include\sysexp.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
