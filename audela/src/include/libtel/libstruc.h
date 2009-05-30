@@ -58,6 +58,11 @@
    double speed;\
    double focusspeed;\
    int active_backlash;\
+   char mainThreadId[20]; \
+   char telThreadId[20]; \
+   Tcl_TimerToken timerToken; \
+   Tcl_Obj *      timerVar; \
+   int            timeDone; \
    struct telprop *next;
 
 
