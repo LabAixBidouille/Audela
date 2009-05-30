@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.103 2009-04-05 06:41:43 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.104 2009-05-30 07:13:25 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -196,7 +196,6 @@ namespace eval ::confVisu {
 
       #--- je verifie que la visu existe
       if { [info commands "::visu$visuNo" ] == "::visu$visuNo" } {
-         set bufNo [visu$visuNo buf]
 
          #--- je ferme l'outil courant
          if { [getTool $visuNo] != "" } {
@@ -233,6 +232,9 @@ namespace eval ::confVisu {
 
          #--- je supprime l'image associee a la visu
          image delete image[visu$visuNo image]
+
+         #--- je recupere le numero de buffer avant de suprimer la visu
+         set bufNo [visu$visuNo buf]
 
          #--- je supprime la visu
          ::visu::delete $visuNo
