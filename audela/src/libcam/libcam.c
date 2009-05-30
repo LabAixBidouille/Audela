@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.27 2009-03-29 19:11:10 michelpujol Exp $
+ * $Id: libcam.c,v 1.28 2009-05-30 09:08:33 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -319,11 +319,11 @@ static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, ch
          return TCL_ERROR;
       }
 
-
       if ( strcmp(argv[argc-2],"mainThreadId") != 0 ) {
          if ( strcmp(threaded,"1") == 0 ) {
             // Cas de l'environnement multi-thread : je cree un thread dediee a la camera ,
-            if ( !( strcmp(argv[0],"webcam") == 0 && strcmp(platform,"windows")==0) && ! (strcmp(argv[0],"qsi") == 0 && strcmp(platform,"windows")==0)  ) {
+            if ( !( strcmp(argv[0],"webcam") == 0 && strcmp(platform,"windows")==0) 
+               && !(strcmp(argv[0],"qsi") == 0 && strcmp(platform,"windows")==0)) {
                // Cas normal en mutlti-thread
 
                // je recupere l'indentifiant de la thread principale
@@ -437,13 +437,25 @@ static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, ch
       // cas du mutltithread
       if ( cam->camThreadId[0] != 0 ) {
          if ( !(strcmp(argv[0],"webcam") == 0 && strcmp(platform,"windows")==0) 
-           && !(strcmp(argv[0],"qsi") == 0 && strcmp(platform,"windows")==0)) {
+           && !(strcmp(argv[0],"qsi") == 0 && strcmp(platform,"windows")==0) ) {
             // je duplique la commande de la camera dans la thread principale
             sprintf(s,"thread::copycommand %s %s ",mainThreadId, argv[1]);
             Tcl_Eval(interp, s);
             // je cree la variable ::status_cam dans la thread principale
             sprintf(s, "thread::send -async %s { set ::status_cam%d stand }", cam->mainThreadId, cam->camno);
             Tcl_Eval(interp, s);
+
+            // je recupere le thread de la camera
+            sprintf(s, "thread::send %s [list tel%d threadid]", cam->camThreadId, cam->telno);
+            if ( Tcl_Eval(interp, s) == TCL_OK ) {
+               char telThreadId[20] ;
+               strcpy(telThreadId, interp->result);
+               // je copie la commande du telescope dans le thread de la camera 
+               sprintf(s, "thread::send -async %s [list thread::copycommand %s tel%d]", 
+                  telThreadId, cam->camThreadId, cam->telno);
+               Tcl_Eval(interp, s);
+            }
+
          } else {
             // cas particulier de la webcam sous windows
             // je duplique la commande de la camera dans la thread de la camera
@@ -452,7 +464,20 @@ static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, ch
             // je cree la variable ::status_cam dans la thread de la camera
             sprintf(s, "thread::send -async %s { set ::status_cam%d stand }", cam->camThreadId, cam->camno);
             Tcl_Eval(interp, s);
+
+            // je recupere le thread de la camera
+            sprintf(s, "tel%d threadid", cam->telno);
+            if ( Tcl_Eval(interp, s) == TCL_OK ) {
+               char telThreadId[20] ;
+               strcpy(telThreadId, interp->result);
+               // je copie la commande du telescope dans le thread de la camera 
+               sprintf(s, "thread::send -async %s [list thread::copycommand %s tel%d]",  
+                  telThreadId, cam->camThreadId, cam->telno);
+               Tcl_Eval(interp, s);
+            }
+
          }
+
       }
 
       // set TCL global status_camNo
@@ -471,17 +496,6 @@ static int cmdCam(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
    int retour = TCL_OK, k, i;
    struct cmditem *cmd;
    struct camprop *cam = (struct camprop *) clientData;
-
-   if (debug_level > 0) {
-      char s1[256], *s2;
-      s2 = s1;
-      s2 += sprintf(s2,"Enter cmdCam (argc=%d", argc);
-      for (i = 0; i < argc; i++) {
-         s2 += sprintf(s2, ",argv[%d]=%s", i, argv[i]);
-      }
-      s2 += sprintf(s2, ")");
-      libcam_log(LOG_INFO, "%s", s1);
-   }
 
    if (argc == 1) {
      sprintf(s, "%s choose sub-command among ", argv[0]);
@@ -524,6 +538,17 @@ static int cmdCam(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
                return Tcl_Eval(interp, s);
             }
          }
+      }
+
+      if (debug_level > 0) {
+         char s1[256], *s2;
+         s2 = s1;
+         s2 += sprintf(s2,"Enter cmdCam (argc=%d", argc);
+         for (i = 0; i < argc; i++) {
+            s2 += sprintf(s2, ",argv[%d]=%s", i, argv[i]);
+         }
+         s2 += sprintf(s2, ")");
+         libcam_log(LOG_INFO, "%s", s1);
       }
 
       for (cmd = cmdlist; cmd->cmd != NULL; cmd++) {
@@ -885,8 +910,8 @@ static int cmdCamTel(ClientData clientData, Tcl_Interp * interp, int argc, char 
    int i_telno, result = TCL_OK;
    struct camprop *cam;
 
-   if ((argc != 2) && (argc != 3)) {
-      sprintf(ligne, "Usage: %s %s ?telno?", argv[0], argv[1]);
+   if ( argc < 2 || argc > 4) {
+      sprintf(ligne, "Usage: %s %s ?telno? ?telThreadId?", argv[0], argv[1]);
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
       result = TCL_ERROR;
    } else if (argc == 2) {
@@ -901,8 +926,20 @@ static int cmdCamTel(ClientData clientData, Tcl_Interp * interp, int argc, char 
       } else {
          cam = (struct camprop *) clientData;
          cam->telno = i_telno;
-         sprintf(ligne, "%d", cam->telno);
-         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         if ( argc >= 4 &&  cam->camThreadId[0] != 0 ) {          
+            char telThreadId[20] ;
+            strcpy(telThreadId, argv[3]);
+            // je copie la commande du telescope dans le thread de la camera 
+            sprintf(ligne, "thread::send -async %s [list thread::copycommand %s tel%d]", 
+               telThreadId, cam->camThreadId, cam->telno);
+            result = Tcl_Eval(interp, ligne);
+
+         }
+         if (result == TCL_OK) {
+            //--- je retourne le numero du telescope
+            sprintf(ligne, "%d", cam->telno);
+            Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         }
       }
    }
    return result;
@@ -1007,20 +1044,8 @@ static void AcqRead(ClientData clientData )
    // allocation par defaut du buffer
    p = (unsigned short *) calloc(cam->w * cam->h, sizeof(unsigned short));
 
-   libcam_GetCurrentFITSDate(cam->interp, cam->date_end);
-   libcam_GetCurrentFITSDate_function(cam->interp, cam->date_end, "::audace::date_sys2ut");
-
-   // Test de l'existence du buffer avant l'acquisition
-   // DM: cela permet eventuellement a la fonction read_ccd de creer des
-   // mots cles FITS.
-   sprintf(s, "buf%d clear", cam->bufno);
-   if (Tcl_Eval(interp, s) == TCL_ERROR) {
-      libcam_log(LOG_WARNING, "error in this command: result='%s'", interp->result);
-      sprintf(s, "buf::create %d", cam->bufno);
-      if (Tcl_Eval(interp, s) == TCL_ERROR) {
-         libcam_log(LOG_ERROR, "(libcam.c @ %d) error in the command '%s': result='%s'", __LINE__, s, interp->result);
-      }
-   }
+   libcam_GetCurrentFITSDate(cam->interpCam, cam->date_end);
+   libcam_GetCurrentFITSDate_function(cam->interpCam, cam->date_end, "::audace::date_sys2ut");
 
    /* Ces deux mots cles sont assignes avant d'appeller la fonction */
    /* de lecture de la camera, ce qui permet a celle-ci de les ecraser */
@@ -1075,6 +1100,18 @@ static void AcqRead(ClientData clientData )
          }
       }
 
+      // Test de l'existence du buffer avant l'acquisition
+      // DM: cela permet eventuellement a la fonction read_ccd de creer des
+      // mots cles FITS.
+      sprintf(s, "buf%d clear", cam->bufno);
+      if (Tcl_Eval(interp, s) == TCL_ERROR) {
+         libcam_log(LOG_WARNING, "error in this command: result='%s'", interp->result);
+         sprintf(s, "buf::create %d", cam->bufno);
+         if (Tcl_Eval(interp, s) == TCL_ERROR) {
+            libcam_log(LOG_ERROR, "(libcam.c @ %d) error in the command '%s': result='%s'", __LINE__, s, interp->result);
+         }
+      }
+
       //--- set pixels to buffer
       //--- setPixels usage :
       //  required parameters :
@@ -1118,24 +1155,6 @@ static void AcqRead(ClientData clientData )
          if (Tcl_Eval(interp, s) == TCL_ERROR) {
             libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
          }
-      }
-
-      //--- get height after decompression
-      sprintf(s, "buf%d getpixelsheight", cam->bufno);
-      libcam_log(LOG_DEBUG, s);
-      if (Tcl_Eval(interp, s) == TCL_OK) {
-         Tcl_GetIntFromObj(interp, Tcl_GetObjResult(interp), &cam->h);
-      } else {
-         libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
-      }
-
-      //--- get width after decompression
-      sprintf(s, "buf%d getpixelswidth", cam->bufno);
-      libcam_log(LOG_DEBUG, s);
-      if (Tcl_Eval(interp, s) == TCL_OK) {
-         Tcl_GetIntFromObj(interp, Tcl_GetObjResult(interp), &cam->w);
-      } else {
-         libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
       }
 
       sprintf(s, "buf%d setkwd {NAXIS1 %d int \"\" \"\"}", cam->bufno, cam->w);
@@ -1184,28 +1203,32 @@ static void AcqRead(ClientData clientData )
          libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
       }
 
+
       /* - call the header proc to add additional informations -*/
-      sprintf(s,"catch {set libcam(header) [%s]}",cam->headerproc);
-      libcam_log(LOG_DEBUG, s);
-      if (Tcl_Eval(interp, s) == TCL_ERROR) {
-         libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
-      }
-      if (atoi(interp->result)==0) {
-         sprintf(s, "foreach header $libcam(header) { buf%d setkwd $header }", cam->bufno);
+      if ( cam->headerproc[0] != 0 ) {
+         sprintf(s,"set libcam(header) [%s]",cam->headerproc);
          libcam_log(LOG_DEBUG, s);
          if (Tcl_Eval(interp, s) == TCL_ERROR) {
             libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
          }
+         if (atoi(interp->result)==0) {
+            sprintf(s, "foreach header $libcam(header) { buf%d setkwd $header }", cam->bufno);
+            libcam_log(LOG_DEBUG, s);
+            if (Tcl_Eval(interp, s) == TCL_ERROR) {
+               libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+            }
+         }
       }
-      //printf("libcam.c: cam->radecFromTel=%d\n", cam->radecFromTel);
       if ( cam->radecFromTel  == 1 ) {
          libcam_get_tel_coord(interp, &ra, &dec, cam, &status);
-	 //printf("libcam.c: libcam_get_tel_coord:status=%d\n", status);
-	 if (status == 0) {
+         //printf("libcam.c: libcam_get_tel_coord:status=%d\n", status);
+         if (status == 0) {
             // Add FITS keywords
             sprintf(s, "buf%d setkwd {RA %7.3f float \"Right ascension telescope encoder\" \"\"}", cam->bufno, ra);
+            libcam_log(LOG_DEBUG, s);
             Tcl_Eval(interp, s);
             sprintf(s, "buf%d setkwd {DEC %7.3f float \"Declination telescope encoder\" \"\"}", cam->bufno, dec);
+            libcam_log(LOG_DEBUG, s);
             Tcl_Eval(interp, s);
          }
       }
@@ -1234,9 +1257,11 @@ static void AcqRead(ClientData clientData )
    cam->clockbegin = 0;
 
    if (cam->timerExpiration != NULL) {
+      Tcl_DeleteTimerHandler(cam->timerExpiration->TimerToken);
       free(cam->timerExpiration);
       cam->timerExpiration = NULL;
    }
+   cam->doneAcquisition = 1; 
 }
 
 
@@ -1251,12 +1276,18 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
    struct camprop *cam;
    int result = TCL_OK;
 
-   if (argc != 2) {
-      sprintf(ligne, "Usage: %s %s", argv[0], argv[1]);
+   if (argc != 2 && argc != 3) {
+      sprintf(ligne, "Usage: %s %s ?-blocking?", argv[0], argv[1]);
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
       result = TCL_ERROR;
    } else {
       cam = (struct camprop *) clientData;
+      if ( argc == 3 ) {
+         cam->blockingAcquisition = 1;
+      } else {
+         cam->blockingAcquisition = 0;    
+      }
+
       if (cam->timerExpiration == NULL) {
          /* Pour avertir les gens du status de la camera. */
          //sprintf(ligne, "status_cam%d", cam->camno);
@@ -1292,16 +1323,36 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
             Tcl_SetResult(interp, cam->msg, TCL_VOLATILE);
             result = TCL_ERROR;
          } else {
-            // je teste cam->timerExpiration car il peut �tre nul si cmdCamStop a ete appele entre temps
+            // je teste cam->timerExpiration car il peut etre nul si cmdCamStop a ete appele entre temps
             if( cam->timerExpiration != NULL ) {
-               libcam_GetCurrentFITSDate(cam->interp, cam->date_obs);
-               libcam_GetCurrentFITSDate_function(cam->interp, cam->date_obs, "::audace::date_sys2ut");
+               libcam_GetCurrentFITSDate(cam->interpCam, cam->date_obs);
+               libcam_GetCurrentFITSDate_function(cam->interpCam, cam->date_obs, "::audace::date_sys2ut");
                /* Creation du timer pour realiser le temps de pose. */
                i = (int) (1000 * cam->exptimeTimer);
                cam->timerExpiration->TimerToken = Tcl_CreateTimerHandler(i, AcqRead, (ClientData) cam);
             } else {
                Tcl_SetResult(interp, "", TCL_VOLATILE);
                result = TCL_OK;
+            }
+
+            if(cam->blockingAcquisition == 1 ) {
+               // j'attend la fin de l'acquisition
+               int foundEvent = 1;
+               cam->doneAcquisition = 0; 
+               while (!cam->doneAcquisition && foundEvent) {
+                  foundEvent = Tcl_DoOneEvent(TCL_ALL_EVENTS);
+                  //if (Tcl_LimitExceeded(interp)) {
+                  //   break;
+                  //}
+               }
+               if( cam->timerExpiration != NULL ) {
+                  Tcl_DeleteTimerHandler(cam->timerExpiration->TimerToken);
+                  if (cam->timerExpiration != NULL) {
+                     free(cam->timerExpiration);
+                     cam->timerExpiration = NULL;
+                  }
+
+               }
             }
          }
       } else {
@@ -1325,6 +1376,8 @@ static int cmdCamStop(ClientData clientData, Tcl_Interp * interp, int argc, char
    int retour = TCL_OK;
 
    cam = (struct camprop *) clientData;
+   cam->doneAcquisition = 2; 
+
    if (cam->timerExpiration) {
       Tcl_DeleteTimerHandler(cam->timerExpiration->TimerToken);
       if (cam->timerExpiration != NULL) {
@@ -2022,6 +2075,7 @@ static int cam_init_common(struct camprop *cam, int argc, char **argv)
    cam->timerExpiration = NULL;
    cam->radecFromTel = 1;
    strcpy(cam->headerproc,"");
+   cam->blockingAcquisition = 0; 
    //---  valeurs par defaut des capacites offertes par la camera
    cam->capabilities.expTimeCommand = 1;  // existance du choix du temps de pose
    cam->capabilities.expTimeList    = 0;  // existance de la liste des temps de pose predefini
@@ -2062,14 +2116,16 @@ static int cmdCamDebug(ClientData clientData, Tcl_Interp * interp, int argc, cha
 
 void setCameraStatus(struct camprop *cam, Tcl_Interp * interp, char * status)
 {
-   char s[256];
-   sprintf(s, "status_cam%d", cam->camno);
-   Tcl_SetVar(interp, s, status, TCL_GLOBAL_ONLY);
-   if ( cam->camThreadId[0] != 0 ) {
-      // cas du mutltithread
-      // je change l'etat de la variable dans la thread principale
-      sprintf(s, "thread::send -async %s { set ::status_cam%d {%s} }", cam->mainThreadId, cam->camno, status);
-      Tcl_Eval(interp, s);
+   if ( cam->blockingAcquisition == 0 ) {
+      char s[256];
+      sprintf(s, "status_cam%d", cam->camno);
+      Tcl_SetVar(interp, s, status, TCL_GLOBAL_ONLY);
+      if ( cam->camThreadId[0] != 0 ) {
+         // cas du mutltithread
+         // je change l'etat de la variable dans la thread principale
+         sprintf(s, "thread::send -async %s { set ::status_cam%d {%s} }", cam->mainThreadId, cam->camno, status);
+         Tcl_Eval(interp, s);
+      }
    }
 }
 
