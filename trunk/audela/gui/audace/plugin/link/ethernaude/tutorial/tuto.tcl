@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.tcl,v 1.11 2007-10-02 17:12:20 robertdelmas Exp $
+# Mise a jour $Id: tuto.tcl,v 1.12 2009-05-30 06:19:13 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -131,6 +131,7 @@ wm geometry .main ${screenwidth}x${screenheight}+0+0
 wm maxsize .main [winfo screenwidth .main] [winfo screenheight .main]
 wm minsize .main ${screenwidth} ${screenheight}
 wm resizable .main 1 1
+wm protocol .main WM_DELTE_WINDOW tuto_exit
 set widgetDemo 1
 
 
@@ -380,10 +381,6 @@ proc aboutBox {} {
    global texte
    tk_messageBox -icon info -type ok -title $texte(tuto_about0) -message \
       $texte(tuto_about1)
-}
-
-bind .main <Destroy> {
-   tuto_exit
 }
 
 proc tuto_exit { } {
