@@ -2,7 +2,7 @@
 # Fichier : sophieview.tcl
 # Description : vue detail du suivi
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophieview.tcl,v 1.1 2009-05-29 21:29:24 michelpujol Exp $
+# Mise a jour $Id: sophieview.tcl,v 1.2 2009-05-30 07:14:18 michelpujol Exp $
 #
 
 #============================================================
@@ -25,6 +25,8 @@ proc ::sophie::view::run { sophieVisu } {
    confVisu::selectTool $visuNo ""
    Menu_Delete $visuNo $::caption(audace,menu,tool) all
    createPluginInstance [::confVisu::getBase $visuNo].tool $visuNo
+   lappend ::confVisu::private($visuNo,pluginInstanceList) "sophie::view"
+   set ::confVisu::private($visuNo,currentTool) "sophie::view"
    startTool $visuNo
    grid [::confVisu::getBase $visuNo].tool -row 0 -column 0 -rowspan 2 -sticky ns
 }
@@ -39,6 +41,8 @@ proc ::sophie::view::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(frm)              "$in.sophieview"
    #--- je memorise le buffer initial
    set private(initialBuffer) [::confVisu::getBufNo $visuNo]
+console::disp "::sophie::view::createPluginInstance $private(initialBuffer)\n"
+
    set private(bufferName)    "maskBufNo"
 
    #--- Petit raccourci
@@ -87,7 +91,7 @@ proc ::sophie::view::createPluginInstance { { in "" } { visuNo 1 } } {
 proc ::sophie::view::deletePluginInstance { visuNo } {
 
    #--- je restaure le numero du buffer initial
-   ::sophie::setBuffer $visuNo ""
+   ##::sophie::setBuffer $visuNo ""
 
 }
 
@@ -117,6 +121,9 @@ proc ::sophie::view::stopTool { visuNo } {
 
    #--- j'arrete le listener
    ::sophie::removeAcquisitionListener $private(sophieVisu) "::sophie::view::refresh $visuNo"
+   after 1000
+   #--- je restaure le numero du buffer initial
+   ::sophie::view::setBuffer $visuNo "initialBuffer"
    #--- je masque le panneau
    pack forget $private(frm)
 
@@ -141,10 +148,11 @@ proc ::sophie::view::setBuffer { visuNo { bufferName "" } } {
       "fiberBufNo" {
          visu$visuNo buf [::sophie::getBufNo $bufferName]
       }
-      defaut {
+      "initialBuffer" {
          visu$visuNo buf $private(initialBuffer)
       }
    }
+console::disp "::sophie::view::setBuffer [visu$visuNo buf]\n"
    ::confVisu::autovisu $visuNo
 }
 
