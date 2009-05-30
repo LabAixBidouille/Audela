@@ -590,7 +590,7 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 {
    //webcam_log(LOG_DEBUG,"cam_start_exp begin exptime=%d", cam->exptime);
    if ( cam->exptime == 0 ) {
-      Sleep(50);
+      libcam_sleep(50);
    }
    if (cam->longuepose == 1) {
       //long exposure
