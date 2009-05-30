@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.tcl,v 1.8 2009-05-29 20:15:49 michelpujol Exp $
+# Mise a jour $Id: tuto.tcl,v 1.9 2009-05-30 06:18:12 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -398,7 +398,7 @@ proc tuto_exit { } {
       }
       cd [ file join $audace(rep_audela) ]
    } else {
-      ###destroy .
+      destroy .
       exit
    }
 }
