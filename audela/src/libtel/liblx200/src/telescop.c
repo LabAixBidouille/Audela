@@ -54,10 +54,13 @@ struct telini tel_ini[] = {
    },
 };
 
+// fonctions locales
+void mytel_logConsole(struct telprop *tel, char *messageFormat, ...);
+
 // types de retour du protocole lx200
-#define NONE_RETURN   0
-#define BOOL_RETURN  1
-#define STRING_RETURN   2
+#define RETURN_NONE   0
+#define RETURN_CHAR  1
+#define RETURN_STRING   2
 
 /* ========================================================= */
 /* ========================================================= */
@@ -133,7 +136,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 	strcpy(tel->autostar_char," ");
    mytel_set_format(tel,0);
 	/* --- identify a LX200 GPS ---*/
-   mytel_sendLX(tel, STRING_RETURN, s, "#:GVP#");
+   mytel_sendLX(tel, RETURN_STRING, s, "#:GVP#");
 	k=(int)strlen(s);
 	if (k>=7) {
 		// if (strcmp(s+k-7,"LX2001#")==0) { // remarque : la chaine retournee par mytel_sendLX ne contient pas #
@@ -338,7 +341,7 @@ int mytel_radec_init(struct telprop *tel)
    /* Receive 1 if it is OK */
    //sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
    //sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   mytel_sendLX(tel, BOOL_RETURN, s, "#:Sr%s%s#", tel->autostar_char,ss);
+   mytel_sendLX(tel, RETURN_CHAR, s, "#:Sr%s#",ss);
 
    sprintf(s,"mc_angle2lx200dec %f %s",tel->dec0,ls); mytel_tcleval(tel,s);
 	strcpy(ss,tel->interp->result);
@@ -351,7 +354,7 @@ int mytel_radec_init(struct telprop *tel)
    //sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
    //sprintf(s,"after 50"); mytel_tcleval(tel,s);
 
-   mytel_sendLX(tel, BOOL_RETURN, s, "#:Sd%s%s#", tel->autostar_char,ss);
+   mytel_sendLX(tel, RETURN_CHAR, s, "#:Sd%s#", ss);
 
 
    /* tel->radec_goto_rate is not used for the LX200 protocol (always slew) */
@@ -359,7 +362,7 @@ int mytel_radec_init(struct telprop *tel)
    //sprintf(s,"puts -nonewline %s \"#:CM#\"",tel->channel); mytel_tcleval(tel,s);
    //sprintf(s,"after 200"); mytel_tcleval(tel,s);
    
-   mytel_sendLX(tel, STRING_RETURN, s, "#:CM#");
+   mytel_sendLX(tel, RETURN_STRING, s, "#:CM#");
 
    return 0;
 }
@@ -385,14 +388,14 @@ int mytel_radec_init_additional(struct telprop *tel)
    
    sprintf(s,"mc_angle2lx200ra %f %s",tel->ra0,ls); mytel_tcleval(tel,s);
    // Send Sr 
-   mytel_sendLX(tel, BOOL_RETURN, s, "#:Sr%s%s#", tel->autostar_char, tel->interp->result);
+   mytel_sendLX(tel, RETURN_CHAR, s, "#:Sr%s#", tel->interp->result);
 
    sprintf(s,"mc_angle2lx200dec %f %s",tel->dec0,ls); mytel_tcleval(tel,s);
    // Send Sd 
-   mytel_sendLX(tel, BOOL_RETURN, s, "#:Sd%s%s#", tel->autostar_char, tel->interp->result);
+   mytel_sendLX(tel, RETURN_CHAR, s, "#:Sd%s#", tel->interp->result);
 
    // Send Cm 
-   mytel_sendLX(tel, STRING_RETURN, s, "#:Cm#");
+   mytel_sendLX(tel, RETURN_STRING, s, "#:Cm#");
 
    return 0;
 }
@@ -428,18 +431,19 @@ int mytel_radec_goto(struct telprop *tel)
 
    // Send Sr
    sprintf(s,"mc_angle2lx200ra %f %s",tel->ra0,ls); mytel_tcleval(tel,s);
-   mytel_sendLX(tel, BOOL_RETURN, s, "#:Sr%s%s#", tel->autostar_char, tel->interp->result);
+   mytel_sendLX(tel, RETURN_CHAR, s, "#:Sr%s#", tel->interp->result);
 
    // Send Sd
    sprintf(s,"mc_angle2lx200dec %f %s",tel->dec0,ls); mytel_tcleval(tel,s);
-   mytel_sendLX(tel, BOOL_RETURN, s, "#:Sd%s%s#", tel->autostar_char, tel->interp->result);
+   mytel_sendLX(tel, RETURN_CHAR, s, "#:Sd%s#", tel->interp->result);
 
    // Send MS 
-   mytel_sendLX(tel, BOOL_RETURN, ss, "#:MS#");
+   mytel_sendLX(tel, RETURN_CHAR, ss, "#:MS#");
    if ((strcmp(ss,"1")==0)||(strcmp(ss,"2")==0)) {
       /* The telescope can not complete the slew and tells something*/
+      strcpy(tel->msg, "Object Below Horizon");
       mytel_flush(tel);
-      return 0;
+      return 1;
    }
    /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
    if (tel->radec_goto_blocking==1) {
@@ -467,27 +471,27 @@ int mytel_radec_move(struct telprop *tel,char *direction)
    /* LX200 protocol has 4 motion rates */
    if ((tel->radec_move_rate<=0.25)) {
       /* Guide */
-      mytel_sendLX(tel, NONE_RETURN, NULL, "#:RG#");
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:RG#");
    } else if ((tel->radec_move_rate>0.25)&&(tel->radec_move_rate<=0.5)) {
       /* Center */
-      mytel_sendLX(tel, NONE_RETURN, NULL, "#:RC#");
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:RC#");
    } else if ((tel->radec_move_rate>0.5)&&(tel->radec_move_rate<=0.75)) {
       /* Find */
-      mytel_sendLX(tel, NONE_RETURN, NULL, "#:RM#");
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:RM#");
    } else if ((tel->radec_move_rate>0.75)) {
       /* Slew */
-      mytel_sendLX(tel, NONE_RETURN, NULL, "#:RS#");
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:RS#");
    }
    sprintf(s,"lindex [string toupper %s] 0",direction); mytel_tcleval(tel,s);
    strcpy(direc,tel->interp->result);
    if (strcmp(direc,"N")==0) {
-      mytel_sendLX(tel, NONE_RETURN, NULL, "#:Mn#");
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:Mn#");
    } else if (strcmp(direc,"S")==0) {
-      mytel_sendLX(tel, NONE_RETURN, NULL, "#:Ms#");
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:Ms#");
    } else if (strcmp(direc,"E")==0) {
-      mytel_sendLX(tel, NONE_RETURN, NULL, "#:Me#");
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:Me#");
    } else if (strcmp(direc,"W")==0) {
-      mytel_sendLX(tel, NONE_RETURN, NULL, "#:Mw#");
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:Mw#");
    }
    return 0;
 }
@@ -511,19 +515,19 @@ int mytel_radec_stop(struct telprop *tel,char *direction)
    }
    strcpy(direc,tel->interp->result);
    if (strcmp(direc,"N")==0) {
-      mytel_sendLX(tel, NONE_RETURN, NULL, "#:Qn#");
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:Qn#");
    } else if (strcmp(direc,"S")==0) {
-      mytel_sendLX(tel, NONE_RETURN, NULL, "#:Qs#");
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:Qs#");
    } else if (strcmp(direc,"E")==0) {
-      mytel_sendLX(tel, NONE_RETURN, NULL, "#:Qe#");
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:Qe#");
    } else if (strcmp(direc,"W")==0) {
-      mytel_sendLX(tel, NONE_RETURN, NULL, "#:Qw#");
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:Qw#");
    } else {
-      mytel_sendLX(tel, NONE_RETURN, NULL, "#:Q#");
-      mytel_sendLX(tel, NONE_RETURN, NULL, "#:Qn#");
-      mytel_sendLX(tel, NONE_RETURN, NULL, "#:Qs#");
-      mytel_sendLX(tel, NONE_RETURN, NULL, "#:Qe#");
-      mytel_sendLX(tel, NONE_RETURN, NULL, "#:Qw#");
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:Q#");
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:Qn#");
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:Qs#");
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:Qe#");
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:Qw#");
    }
    //sprintf(s,"after 50"); mytel_tcleval(tel,s);
    return 0;
@@ -537,16 +541,16 @@ int mytel_radec_motor(struct telprop *tel)
    if (tel->radec_motor==1) {
       /* stop the motor */
 		if (strcmp(tel->autostar_char,"")==0) {
-         //mytel_sendLX(tel, NONE_RETURN, NULL, "#:hW#");
+         //mytel_sendLX(tel, RETURN_NONE, NULL, "#:hW#");
 		} else {
-         mytel_sendLX(tel, NONE_RETURN, NULL, "#:AL#");
+         mytel_sendLX(tel, RETURN_NONE, NULL, "#:AL#");
 		}
    } else {
       /* start the motor */
 		if (strcmp(tel->autostar_char,"")==0) {
-         //mytel_sendLX(tel, NONE_RETURN, NULL, "#:hN#");
+         //mytel_sendLX(tel, RETURN_NONE, NULL, "#:hN#");
 		} else {
-         mytel_sendLX(tel, NONE_RETURN, NULL, "#:AP#");
+         mytel_sendLX(tel, RETURN_NONE, NULL, "#:AP#");
 		}
    }
    //sprintf(s,"after 50"); mytel_tcleval(tel,s);
@@ -561,7 +565,7 @@ int mytel_radec_coord(struct telprop *tel,char *result)
    strcpy(result,"");
 
    /* Send GR */
-   mytel_sendLX(tel, STRING_RETURN, ss, "#:GR#");
+   mytel_sendLX(tel, RETURN_STRING, ss, "#:GR#");
 
    //mytel_get_format(tel);
    len=(int)strlen(ss);
@@ -599,7 +603,7 @@ int mytel_radec_coord(struct telprop *tel,char *result)
    sprintf(result,"%s ",s);
    
    /* Send GD */
-   mytel_sendLX(tel, STRING_RETURN, ss, "#:GD#");
+   mytel_sendLX(tel, RETURN_STRING, ss, "#:GD#");
    sprintf(s,"string range \"%s\" 0 0",ss); mytel_tcleval(tel,s);
    strcpy(signe,tel->interp->result);
    if ((strcmp(signe,"-")!=0)&&(strcmp(signe,"+")!=0)) {
@@ -640,24 +644,24 @@ int mytel_focus_move(struct telprop *tel,char *direction)
    /* LX200 protocol has 2 motion rates */
    if (tel->focus_move_rate<=0.5) {
       /* Slow */
-      mytel_sendLX(tel, NONE_RETURN, NULL, "#:FS#");
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:FS#");
    } else if (tel->focus_move_rate>0.5) {
       /* Fast */
-      mytel_sendLX(tel, NONE_RETURN, NULL, "#:FF#");
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:FF#");
    }
    sprintf(s,"lindex [string toupper %s] 0",direction); mytel_tcleval(tel,s);
    strcpy(direc,tel->interp->result);
    if (strcmp(direc,"+")==0) {
-      mytel_sendLX(tel, NONE_RETURN, NULL, "#:F+#");
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:F+#");
    } else if (strcmp(direc,"-")==0) {
-      mytel_sendLX(tel, NONE_RETURN, NULL, "#:F-#");
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:F-#");
    }
    return 0;
 }
 
 int mytel_focus_stop(struct telprop *tel,char *direction)
 {
-   mytel_sendLX(tel, NONE_RETURN, NULL, "#:FQ#");
+   mytel_sendLX(tel, RETURN_NONE, NULL, "#:FQ#");
    return 0;
 }
 
@@ -677,7 +681,7 @@ int mytel_date_get(struct telprop *tel,char *ligne)
    int y,m,d,h,min;
    int sec;
    /* Get the time */
-   mytel_sendLX(tel, STRING_RETURN, ss, "#:GL#");
+   mytel_sendLX(tel, RETURN_STRING, ss, "#:GL#");
    sprintf(s,"string range \"%s\" 0 1",ss); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    h=atoi(s);
@@ -689,7 +693,7 @@ int mytel_date_get(struct telprop *tel,char *ligne)
    sec=atoi(s);
 
    /* Get the date */
-   mytel_sendLX(tel, STRING_RETURN, ss, "#:GC#");
+   mytel_sendLX(tel, RETURN_STRING, ss, "#:GC#");
    sprintf(s,"string range \"%s\" 0 1",ss); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    m=atoi(s);
@@ -717,7 +721,7 @@ int mytel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s
    /* Set the time */
    mytel_flush(tel);
    sec=(int)(s);   
-   mytel_sendLX(tel, BOOL_RETURN, ligne, "#:SL%s%02d:%02d:%02d#", tel->autostar_char, h,min,sec);
+   mytel_sendLX(tel, RETURN_CHAR, ligne, "#:SL%02d:%02d:%02d#", h,min,sec);
 
    /* Set the date */
    if (y<1992) {y=1992;}
@@ -727,7 +731,7 @@ int mytel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s
    } else {
       y=y-2000;
    }
-   mytel_sendLX(tel, BOOL_RETURN, ligne, "#:SC%s%02d/%02d/%02d#", tel->autostar_char, m,d,y);
+   mytel_sendLX(tel, RETURN_CHAR, ligne, "#:SC%02d/%02d/%02d#", m,d,y);
    // normalement si ligne=1 , il faudrait lire la suite
    mytel_flush(tel); 
    return 0;
@@ -739,7 +743,7 @@ int mytel_home_get(struct telprop *tel,char *ligne)
    int d1,m1,d2,m2;
    double longitude,latitude;
    /* Get the longitude */
-   mytel_sendLX(tel, STRING_RETURN, ss, "#:Gg#");
+   mytel_sendLX(tel, RETURN_STRING, ss, "#:Gg#");
    sprintf(s,"string range \"%s\" 0 2",ss); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    d1=atoi(s);
@@ -754,7 +758,7 @@ int mytel_home_get(struct telprop *tel,char *ligne)
       strcpy(ew,"w");
    }
    /* Get the latitude */
-   mytel_sendLX(tel, STRING_RETURN, ss, "#:Gt#");   
+   mytel_sendLX(tel, RETURN_STRING, ss, "#:Gt#");   
    sprintf(s,"string range \"%s\" 1 2",ss); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    d2=atoi(s);
@@ -786,14 +790,14 @@ int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude
    strcpy(ligne2,tel->interp->result);
    sprintf(ligne,"string range \"[string range [lindex {%s} 0] 1 3]\xDF[string range [lindex {%s} 1] 0 1]\" 0 6",ligne2,ligne2); mytel_tcleval(tel,ligne);
    strcpy(ligne2,tel->interp->result);
-   mytel_sendLX(tel, BOOL_RETURN, ligne, "#:Sg%s%s#", tel->autostar_char,ligne2);
+   mytel_sendLX(tel, RETURN_CHAR, ligne, "#:Sg%s#", ligne2);
 
    /* Set the latitude */
    sprintf(ligne,"mc_angle2dms %f 90 zero 0 + list",latitude); mytel_tcleval(tel,ligne);
    strcpy(ligne2,tel->interp->result);
    sprintf(ligne,"string range \"[string range [lindex {%s} 0] 0 0][string range [lindex {%s} 0] 1 2]\xDF[string range [lindex {%s} 1] 0 1]\" 0 6",ligne2,ligne2,ligne2); mytel_tcleval(tel,ligne);
    strcpy(ligne2,tel->interp->result);
-   mytel_sendLX(tel, BOOL_RETURN, ligne, "#:St%s%s#", tel->autostar_char,ligne2);
+   mytel_sendLX(tel, RETURN_CHAR, ligne, "#:St%s%s#", ligne2);
    return 0;
 }
 /* ================================================================ */
@@ -809,7 +813,7 @@ int mytel_get_format(struct telprop *tel)
    char s[1024];
    int len,k;
 
-   mytel_sendLX(tel, STRING_RETURN, s, "#:GR#");
+   mytel_sendLX(tel, RETURN_STRING, s, "#:GR#");
    len=(int)strlen(s);
    k=0;
    /* 12:34:45# ou 12:34.7# */
@@ -831,7 +835,7 @@ int mytel_set_format(struct telprop *tel,int longformatindex)
    int k=0;
    if (mytel_get_format(tel)==1) {
       if (longformatindex!=tel->longformatindex) {
-         mytel_sendLX(tel, NONE_RETURN, NULL, "#:U#");
+         mytel_sendLX(tel, RETURN_NONE, NULL, "#:U#");
          tel->longformatindex=longformatindex;
          k=1;
       }
@@ -875,7 +879,7 @@ int mytel_tcleval(struct telprop *tel,char *ligne)
 
 int mytel_correct(struct telprop *tel,char *direction, int duration)
 {
-   mytel_sendLX(tel, NONE_RETURN, NULL, "#:Mg%s%04d#", direction, duration);
+   mytel_sendLX(tel, RETURN_NONE, NULL, "#:Mg%s%04d#", direction, duration);
    return 0;
 }
 
@@ -891,12 +895,12 @@ int mytel_correct(struct telprop *tel,char *direction, int duration)
  *   exemple "xxxxx#" 
  *
  * return :
- *  if recvWithTimeout OK
- *		cr= 1
- *    if returnType = 0  response = ""
- *    if returnType = 1  response = "0" or "1"
- *    if returnType = 2  response = "...#"
- *
+ *  
+ *		1= OK
+ *       if returnType = 0  response = ""
+ *       if returnType = 1  response = "0" or "1"
+ *       if returnType = 2  response = "...#"
+ *    0= error , with error message in tel->msg 
  *  return cr
  */
 int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *commandFormat, ...) {
@@ -910,10 +914,6 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *com
    vsprintf(command, commandFormat, mkr);
 	va_end (mkr);
 
-   if ( tel->consoleLog == 1 ) {
-      sprintf(s,"::console::disp \"LX200 command %s \"",command); mytel_tcleval(tel,s);
-   }
-
    // j'envoie la commande
    sprintf(s,"puts -nonewline %s %s",tel->channel,command); mytel_tcleval(tel,s);
    // je temporise avant de lire la reponse
@@ -922,35 +922,76 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *com
    // je purge la vairable de la reponse
    if ( response != NULL) {
       strcpy(response,"");
+      strcpy(tel->msg, "");
    }
    // je lis la reponse
-   if ( returnType == NONE_RETURN ) {
+   if ( returnType == RETURN_NONE ) {
       // je n'attends pas de réponse
       cr = 1;
-   } else if ( returnType == BOOL_RETURN ) {
+   } else if ( returnType == RETURN_CHAR ) {
       // j'attend la reponse d'un caractere ("1" ou "0" ou "P" ou ...)
-      sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
-      strcpy(response,tel->interp->result);
-      cr = 1;
-   }  else if ( returnType == STRING_RETURN ) {
       int k = 0;
-      // j'initialise a reponse a vide
-      strcpy(response,"");
-      // j'attend une reponse qui se termine par diese
+      cr = 0;
+      // j'attend un caractere
       do {
-         sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
-         strcpy(s,tel->interp->result);
-         if ( strcmp(s,"#")!= 0 ) {
-            // j'ajoute le caractere lu si ce n'est pas un diese
-            strcat(response,s);
+         sprintf(s,"read %s 1",tel->channel); 
+         if ( mytel_tcleval(tel,s) == TCL_OK ) {
+            if ( strlen(tel->interp->result) > 0 ) {
+               strcpy(response,tel->interp->result);
+               cr = 1;
+            }
+         } else {
+            // je copie le message d'erreur 
+            strcpy(tel->msg, tel->interp->result);
          }
-      } while ( strcmp(s,"#")!= 0  &&  k++ < 10000 ) ;
-      cr = 1;
+      } while ( k++ < 100000 && cr==0 );
+   }  else if ( returnType == RETURN_STRING ) {
+      int k = 0;
+      cr = 0;
+      // j'attend une chaine qui se termine par diese
+      do {
+         sprintf(s,"read %s 1",tel->channel); 
+         if ( mytel_tcleval(tel,s) == TCL_OK ) {
+            if ( strcmp(tel->interp->result,"#") != 0 ) {
+               // j'ajoute le caractere lu si ce n'est pas un diese
+               strcat(response,tel->interp->result);
+            } else {
+               // c'est un diese
+               cr =1;
+            }
+         } else {
+            // je copie le message d'erreur 
+            strcpy(tel->msg, tel->interp->result);
+         }
+
+      } while ( strcmp(s,"#")!= 0  &&  k++ < 10000 && cr==0 );
    }
 
    if ( tel->consoleLog == 1 ) {
-      sprintf(s,"::console::disp \"response=%s\n\"",response); mytel_tcleval(tel,s);
+      mytel_logConsole(tel, "command=%s response=%s\n",command, response);
    }
 
 	return cr;
 }
+
+void mytel_logConsole(struct telprop *tel, char *messageFormat, ...) {
+   char message[1024];
+   char ligne[1200];
+   va_list mkr;
+   int result;
+   
+   // j'assemble la commande 
+   va_start(mkr, messageFormat);
+   vsprintf(message, messageFormat, mkr);
+	va_end (mkr);
+
+   if ( strcmp(tel->telThreadId,"") == 0 ) {
+      sprintf(ligne,"after 0 { ::console::disp \"liblx200: %s\n\"}",message); 
+   } else {
+      sprintf(ligne,"::thread::send -async %s { ::console::disp \"liblx200: %s \n\" } " , tel->mainThreadId, message); 
+   }
+   result = Tcl_Eval(tel->interp,ligne);
+
+   
+}
+
