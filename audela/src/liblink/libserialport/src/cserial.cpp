@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: cserial.cpp,v 1.3 2009-05-27 22:03:06 michelpujol Exp $
+// $Id: cserial.cpp,v 1.4 2009-05-30 09:50:33 michelpujol Exp $
 
 
 #include "sysexp.h"
@@ -177,7 +177,9 @@ char * CSerial::getGenericName() {
 CSerial::CSerial() : CLink()
 {
    strcpy(index,"");
+#if defined(OS_WIN)
    hDevice = NULL;
+#endif
 }
 
 /**
