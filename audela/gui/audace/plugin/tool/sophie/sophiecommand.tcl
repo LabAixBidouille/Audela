@@ -2,7 +2,7 @@
 # Fichier : sophiecommand.tcl
 # Description : Centralise les commandes de l'outil Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecommand.tcl,v 1.9 2009-05-29 21:28:43 michelpujol Exp $
+# Mise a jour $Id: sophiecommand.tcl,v 1.10 2009-05-31 15:51:23 michelpujol Exp $
 #
 
 #============================================================
@@ -190,8 +190,6 @@ proc ::sophie::setBinning { binning } {
    set yPreviousBinning $private(yBinning)
    set private(xBinning) $xBinning
    set private(yBinning) $yBinning
-
-console::disp "setBinning  previousBinning=$xPreviousBinning $yPreviousBinning   binning=$binning\n"
 
    #--- je change les paramètres dans la thread
    if { $private(acquisitionState) != 0 } {
@@ -1314,6 +1312,9 @@ proc ::sophie::startCenter { } {
       startAcquisition $::audace(visuNo)
    }
 
+   #--- j'active l'envoi des commandes a la monture si c'est demande
+   ::telescope::setSpeed 1
+
    set private(centerEnabled) 1
    #--- j'active le centrage dans la thread de la camera
    set private(AsynchroneParameter) 1
@@ -1338,7 +1339,7 @@ proc ::sophie::stopCenter { } {
    set private(centerEnabled) 0
    #--- j'arrete le centrage dans la thread de la camera
 
-   ::telescope::stop ""
+   ###::telescope::stop ""
    set private(AsynchroneParameter) 1
    ::camera::setAsynchroneParameter $private(camItem) \
          "mode" "guide" \
@@ -1365,6 +1366,8 @@ proc ::sophie::startGuide { } {
    }
 
    set private(guideEnabled) 1
+   #--- j'active l'envoi des commandes a la monture si c'est demande
+   ::telescope::setSpeed 1
    #--- j'active le centrage dans la thread de la camera
    set private(AsynchroneParameter) 1
    ::camera::setAsynchroneParameter $private(camItem) \
@@ -1385,7 +1388,7 @@ proc ::sophie::stopGuide { } {
 
    set private(guideEnabled) 0
    #--- j'arrete le centrage dans la thread de la camera
-   ::telescope::stop ""
+   ###::telescope::stop ""
    set private(AsynchroneParameter) 1
    ::camera::setAsynchroneParameter $private(camItem) \
          "mode" "guide" \
