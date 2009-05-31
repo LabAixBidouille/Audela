@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.tcl,v 1.9 2009-05-30 06:18:12 robertdelmas Exp $
+# Mise a jour $Id: tuto.tcl,v 1.10 2009-05-31 08:25:41 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -144,7 +144,7 @@ wm geometry .main ${screenwidth}x${screenheight}+0+0
 wm maxsize .main [winfo screenwidth .main] [winfo screenheight .main]
 wm minsize .main ${screenwidth} ${screenheight}
 wm resizable .main 1 1
-wm protocol .main WM_DELTE_WINDOW tuto_exit
+wm protocol .main WM_DELETE_WINDOW tuto_exit
 set widgetDemo 1
 
 #----------------------------------------------------------------

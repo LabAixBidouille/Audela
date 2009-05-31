@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.biasdark.tcl,v 1.7 2009-05-01 08:43:47 robertdelmas Exp $
+# Mise a jour $Id: tuto.biasdark.tcl,v 1.8 2009-05-31 08:22:00 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -57,6 +57,11 @@ En pratique, une dizaine d'images de bias et de dark vont être réalisées. Compte
    }
 }
 
+proc tuto_biasdark_exit { } {
+   wm deiconify .main
+   destroy .second
+}
+
 # widget --
 # This script demonstrates the various widgets provided by Tk,
 # along with many of the features of the Tk toolkit.  This file
@@ -88,7 +93,7 @@ set color(back_image) #000000
 # all of the demos as hypertext items.
 #----------------------------------------------------------------
 
-#--- si la fenetre principale existe deja, je la deiconifie et je sors du script
+#--- si la fenetre secondaire existe deja, je la deiconifie et je sors du script
 if { [winfo exists .second] } {
    wm deiconify .second
    focus .second
@@ -105,6 +110,7 @@ wm geometry .second ${screenwidth}x${screenheight}+0+0
 wm maxsize .second [winfo screenwidth .second] [winfo screenheight .second]
 wm minsize .second ${screenwidth} ${screenheight}
 wm resizable .second 1 1
+wm protocol .second WM_DELETE_WINDOW tuto_biasdark_exit
 set widgetDemo 1
 
 #----------------------------------------------------------------
@@ -291,11 +297,7 @@ set lastLine ""
 
 .second.t configure -state disabled
 focus .second.s
-
-bind .second <Destroy> {
-   wm deiconify .main
-   destroy .second
-}
+wm withdraw .main
 
 ##################################################################
 # procedure to acquire an image
@@ -313,7 +315,7 @@ proc acquisition_biasdark {exposure} {
       $zone(red_button) configure -text "$caption(wait) " -relief groove
       grab $zone(red_button)
       update
-      .second.snap.label1 configure -text "$caption(gobias)"
+      .second.snap.frame1.label1 configure -text "$caption(gobias)"
       .second.snap.frame1.label2 configure -text "BIAS : $k/$nbi"
       update
 
@@ -367,7 +369,7 @@ proc acquisition_biasdark {exposure} {
       $zone(red_button) configure -text "$caption(wait) " -relief groove
       grab $zone(red_button)
       update
-      .second.snap.label1 configure -text "$caption(godarks)"
+      .second.snap.frame1.label1 configure -text "$caption(godarks)"
       .second.snap.frame1.label2 configure -text "DARK $exposure : $k/$nbi"
       update
 
@@ -415,7 +417,7 @@ proc acquisition_biasdark {exposure} {
    ttscript2 "IMA/SERIES . d$expos- 1 $nbi .fit . d$expos . .fit DELETE"
    ttscript2 "IMA/STAT . d$expos . . .fit . d$expos . .fit STAT"
 
-   .second.snap.label1 configure -text "$caption(end)"
+   .second.snap.frame1.label1 configure -text "$caption(end)"
    update
 
    #--- Change the text of the red button
