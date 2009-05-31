@@ -2,7 +2,7 @@
 # Fichier : sophieview.tcl
 # Description : vue detail du suivi
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophieview.tcl,v 1.2 2009-05-30 07:14:18 michelpujol Exp $
+# Mise a jour $Id: sophieview.tcl,v 1.3 2009-05-31 15:51:23 michelpujol Exp $
 #
 
 #============================================================
@@ -41,7 +41,6 @@ proc ::sophie::view::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(frm)              "$in.sophieview"
    #--- je memorise le buffer initial
    set private(initialBuffer) [::confVisu::getBufNo $visuNo]
-console::disp "::sophie::view::createPluginInstance $private(initialBuffer)\n"
 
    set private(bufferName)    "maskBufNo"
 
@@ -58,25 +57,25 @@ console::disp "::sophie::view::createPluginInstance $private(initialBuffer)\n"
          ##button $frm.titre.but2 -borderwidth 2 -text "test"
          #--- Bouton de selection de l'image a afficher
          radiobutton $frm.select.mask -highlightthickness 0 -padx 0 -pady 0 -state normal \
-            -text "Masque" \
+            -text "Masque" -justify left \
             -value "maskBufNo" \
             -variable ::sophie::view::private(bufferName) \
             -command "::sophie::view::setBuffer $visuNo "
-         pack $frm.select.mask -anchor center -expand 0 -fill x -ipady 2 -padx 2 -pady 2
+         pack $frm.select.mask -anchor w -expand 0 -fill x -ipady 2 -padx 2 -pady 2
 
          radiobutton $frm.select.sum -highlightthickness 0 -padx 0 -pady 0 -state normal \
-            -text "Image intégrée" \
+            -text "Image intégrée" -justify left \
             -value "sumBufNo" \
             -variable ::sophie::view::private(bufferName) \
             -command "::sophie::view::setBuffer $visuNo "
-         pack $frm.select.sum -anchor center -expand 0 -fill x -ipady 2 -padx 2 -pady 2
+         pack $frm.select.sum -anchor w -expand 0 -fill x -ipady 2 -padx 2 -pady 2
 
          radiobutton $frm.select.fiber -highlightthickness 0 -padx 0 -pady 0 -state normal \
-            -text "Entrée fibre" \
+            -text "Entrée fibre" -justify left \
             -value "fiberBufNo" \
             -variable ::sophie::view::private(bufferName) \
             -command "::sophie::view::setBuffer $visuNo "
-         pack $frm.select.fiber -anchor center -expand 0 -fill x -ipady 2 -padx 2 -pady 2
+         pack $frm.select.fiber -anchor w -expand 0 -fill x -ipady 2 -padx 2 -pady 2
 
       pack $frm.select -side top -fill x
 
@@ -152,7 +151,6 @@ proc ::sophie::view::setBuffer { visuNo { bufferName "" } } {
          visu$visuNo buf $private(initialBuffer)
       }
    }
-console::disp "::sophie::view::setBuffer [visu$visuNo buf]\n"
    ::confVisu::autovisu $visuNo
 }
 

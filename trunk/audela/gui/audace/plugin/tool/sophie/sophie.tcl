@@ -2,7 +2,7 @@
 # Fichier : sophie.tcl
 # Description : Outil d'autoguidage pour le spectro Sophie du telescope T193 de l'OHP
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophie.tcl,v 1.9 2009-05-29 21:28:43 michelpujol Exp $
+# Mise a jour $Id: sophie.tcl,v 1.10 2009-05-31 15:51:23 michelpujol Exp $
 #
 
 #============================================================
@@ -242,21 +242,21 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
 
          #--- Radiobutton pour le mode Centrage
          radiobutton $frm.mode.centrage -height 2 \
-            -command " " -indicatoron 0 -text $::caption(sophie,centrage) -value centrage \
+            -indicatoron 0 -text $::caption(sophie,centrage) -value centrage \
             -variable ::sophie::private(mode) -command "::sophie::onChangeMode"
          pack $frm.mode.centrage -in [ $frm.mode getframe ] -anchor center \
             -expand 0 -fill x -side top
 
          #--- Radiobutton pour le mode Mise au point
          radiobutton $frm.mode.focalisation -height 2 \
-            -command " " -indicatoron 0 -text $::caption(sophie,focalisation) -value focalisation \
+            -indicatoron 0 -text $::caption(sophie,focalisation) -value focalisation \
             -variable ::sophie::private(mode) -command "::sophie::onChangeMode"
          pack $frm.mode.focalisation -in [ $frm.mode getframe ] -anchor center \
            -expand 0 -fill x -side top
 
          #--- Radiobutton pour le mode Guidage
          radiobutton $frm.mode.guidage -height 2 \
-            -command " " -indicatoron 0 -text $::caption(sophie,guidage) -value guidage \
+            -indicatoron 0 -text $::caption(sophie,guidage) -value guidage \
             -variable ::sophie::private(mode) -command "::sophie::onChangeMode"
          pack $frm.mode.guidage -in [ $frm.mode getframe ] -anchor center \
             -expand 0 -fill x -side top
