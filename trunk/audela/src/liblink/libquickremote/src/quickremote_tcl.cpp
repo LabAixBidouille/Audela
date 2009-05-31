@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: quickremote_tcl.cpp,v 1.3 2006-09-28 19:39:12 michelpujol Exp $
+// $Id: quickremote_tcl.cpp,v 1.4 2009-05-31 15:23:01 michelpujol Exp $
 
 #ifdef WIN32
 #include <windows.h>
@@ -81,11 +81,12 @@ int cmdQuickremoteBit(ClientData clientData, Tcl_Interp *interp, int argc, char 
    char *ligne;
    int bit;
    int value;
+   double duration;
    CQuickremote * quickremote = (CQuickremote*)clientData;
    
    ligne = (char*)calloc(200,sizeof(char));
-   if((argc!=3)&&(argc!=4)) {
-      sprintf(ligne,"Usage: %s %s bit ?value?",argv[0],argv[1]);
+   if((argc<3)) {
+      sprintf(ligne,"Usage: %s %s bit ?value (0|1)? ?duration (second)",argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       result = TCL_ERROR;
    } else {
@@ -110,13 +111,31 @@ int cmdQuickremoteBit(ClientData clientData, Tcl_Interp *interp, int argc, char 
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                result = TCL_ERROR;
             } else {
-               if( quickremote->setBit(bit, value) == LINK_OK) {
-                  Tcl_SetResult(interp,"",TCL_VOLATILE);
-                  result = TCL_OK;
+               if(argc==4) {
+                  if( quickremote->setBit(bit, value) == LINK_OK) {
+                     Tcl_SetResult(interp,"",TCL_VOLATILE);
+                     result = TCL_OK;
+                  } else {
+                     quickremote->getLastError(ligne);
+                     Tcl_SetResult(interp,ligne,TCL_VOLATILE);      
+                     result = TCL_ERROR;
+                  }
                } else {
-                  quickremote->getLastError(ligne);
-                  Tcl_SetResult(interp,ligne,TCL_VOLATILE);      
-                  result = TCL_ERROR;
+                  if(Tcl_GetDouble(interp,argv[4],&duration)!=TCL_OK) {
+                     sprintf(ligne,"duration must be a double");
+                     Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+                     result = TCL_ERROR;
+                  } else {
+                     if( quickremote->setBit(bit, value, duration) == LINK_OK) {
+                        Tcl_SetResult(interp,"",TCL_VOLATILE);
+                        result = TCL_OK;
+                     } else {
+                        quickremote->getLastError(ligne);
+                        Tcl_SetResult(interp,ligne,TCL_VOLATILE);      
+                        result = TCL_ERROR;
+                     }
+
+                  }
                }
             }
          }
