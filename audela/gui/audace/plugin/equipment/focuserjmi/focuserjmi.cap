@@ -1,6 +1,6 @@
 #
 # Fichier : focuserjmi.cap
-# Mise a jour $Id: focuserjmi.cap,v 1.7 2007-12-04 19:21:43 robertdelmas Exp $
+# Mise a jour $Id: focuserjmi.cap,v 1.8 2009-05-31 15:20:57 michelpujol Exp $
 #
 
 #=========================================================================
@@ -16,6 +16,10 @@ set caption(focuserjmi,link)                  "Link"
 set caption(focuserjmi,configure)             "Set up"
 set caption(focuserjmi,bitStart)              "Start Bit Number"
 set caption(focuserjmi,bitDirection)          "Direction Bit Number"
+   set caption(focuserjmi,manualPulse)        "Manual pulse"
+   set caption(focuserjmi,fixedPulse)         "Fixed pulse"
+   set caption(focuserjmi,duration)           "Duration (second)"
+   set caption(focuserjmi,test)               "Test"
 
 set caption(focuserjmi,arreter)               "Stop"
 set caption(focuserjmi,creer_au_demarrage)    "Next time software is run connect this equipment automatically"
@@ -28,6 +32,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserjmi,configure)          "Configurer"
    set caption(focuserjmi,bitStart)           "Numéro du bit de démarrage"
    set caption(focuserjmi,bitDirection)       "Numéro du bit de direction"
+   set caption(focuserjmi,manualPulse)        "Impulsion manuelle"
+   set caption(focuserjmi,fixedPulse)         "Impulsion durée fixe"
+   set caption(focuserjmi,duration)           "Durée (seconde)"
+   set caption(focuserjmi,test)               "Test"
 
    set caption(focuserjmi,arreter)            "Arrêter"
    set caption(focuserjmi,creer_au_demarrage) "Connexion automatique de cet équipement au prochain démarrage"
@@ -40,6 +48,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserjmi,configure)          "Configurare"
    set caption(focuserjmi,bitStart)           "Numero del bit di start"
    set caption(focuserjmi,bitDirection)       "Numero del bit di direzione"
+   set caption(focuserjmi,manualPulse)        "###Impulsion manuelle"
+   set caption(focuserjmi,fixedPulse)         "###Impulsion durée fixe"
+   set caption(focuserjmi,duration)           "###Durée (seconde)"
+   set caption(focuserjmi,test)               "###Test"
 
    set caption(focuserjmi,arreter)            "Ferma"
    set caption(focuserjmi,creer_au_demarrage) "Connessione automatica di questo equipaggiamento alla prossima esecuzione del software"
