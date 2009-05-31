@@ -2,7 +2,7 @@
 # Fichier : focuserjmi.tcl
 # Description : Gere un focuser sur port parallele ou quickremote
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserjmi.tcl,v 1.13 2008-11-01 15:58:31 robertdelmas Exp $
+# Mise a jour $Id: focuserjmi.tcl,v 1.14 2009-05-31 15:20:58 michelpujol Exp $
 #
 
 #
@@ -101,8 +101,11 @@ proc ::focuserjmi::initPlugin { } {
    if { ! [ info exists conf(focuserjmi,bitStart) ] }     { set conf(focuserjmi,bitStart)     "4" }
    if { ! [ info exists conf(focuserjmi,bitDirection) ] } { set conf(focuserjmi,bitDirection) "5" }
    if { ! [ info exists conf(focuserjmi,start) ] }        { set conf(focuserjmi,start)        "0" }
+   if { ! [ info exists conf(focuserjmi,pulseMode) ] }    { set conf(focuserjmi,pulseMode)    "manual" }
+   if { ! [ info exists conf(focuserjmi,pulseDuration) ]} { set conf(focuserjmi,pulseDuration)   0.1 }
 
    #--- variables locales
+   set private(frm)     ""
    set private(linkNo) "0"
 }
 
@@ -124,15 +127,19 @@ proc ::focuserjmi::getStartFlag { } {
 #------------------------------------------------------------
 proc ::focuserjmi::fillConfigPage { frm } {
    variable widget
+   variable private
    global caption conf
 
+   set private(frm) $frm
    #--- je copie les donnees de conf(...) dans les variables widget(...)
-   set widget(link)         $conf(focuserjmi,link)
-   set widget(bitStart)     $conf(focuserjmi,bitStart)
-   set widget(bitDirection) $conf(focuserjmi,bitDirection)
+   set widget(link)           $conf(focuserjmi,link)
+   set widget(bitStart)       $conf(focuserjmi,bitStart)
+   set widget(bitDirection)   $conf(focuserjmi,bitDirection)
+   set widget(pulseMode)      $conf(focuserjmi,pulseMode)
+   set widget(pulseDuration)  $conf(focuserjmi,pulseDuration)
 
    #--- Je constitue la liste des liaisons pour le focuser
-   set linkList [ ::confLink::getLinkLabels {"parallelport" "quickremote"} ]
+   set linkList [ ::confLink::getLinkLabels {"parallelport" "serialport" "quickremote" } ]
 
    #--- Je verifie le contenu de la liste
    if { [llength $linkList ] > 0 } {
@@ -164,13 +171,14 @@ proc ::focuserjmi::fillConfigPage { frm } {
          -borderwidth 1         \
          -editable 0            \
          -textvariable ::focuserjmi::widget(link) \
+         -modifycmd "::focuserjmi::onChangeLink" \
          -values $linkList
       grid $frm.frame1.link -row 0 -column 1 -columnspan 1 -rowspan 1 -sticky ewns
 
       #--- Bouton de configuration de la liaison
       button $frm.frame1.configure -text "$caption(focuserjmi,configure)" -relief raised \
          -command {
-            ::confLink::run ::focuserjmi::widget(link) {"parallelport" "quickremote"} $caption(focuserjmi,label)
+            ::confLink::run ::focuserjmi::widget(link) {"parallelport" "serialport" "quickremote" } $caption(focuserjmi,label)
          }
       grid $frm.frame1.configure -row 0 -column 2 -columnspan 1 -rowspan 1 -sticky ewns
 
@@ -204,7 +212,37 @@ proc ::focuserjmi::fillConfigPage { frm } {
          -values $bitList
       grid $frm.frame1.bitDirection -row 2 -column 1 -columnspan 1 -rowspan 1 -sticky ewns
 
+      radiobutton $frm.frame1.manualPulse \
+         -indicatoron 1 -text $caption(focuserjmi,manualPulse) -value "manual" \
+         -variable ::focuserjmi::widget(pulseMode)
+      grid $frm.frame1.manualPulse -row 3 -column 0 -columnspan 1 -rowspan 1 -sticky ewns
+
+      radiobutton $frm.frame1.fixedPulse \
+         -indicatoron 1 -text $caption(focuserjmi,fixedPulse) -value "fixed" \
+         -variable ::focuserjmi::widget(pulseMode)
+      grid $frm.frame1.fixedPulse -row 4 -column 0 -columnspan 1 -rowspan 1 -sticky ewns
+
+      LabelEntry $frm.frame1.duration -label "$caption(focuserjmi,duration)" \
+         -labeljustify left -width 6 -justify right \
+         -textvariable ::focuserjmi::widget(pulseDuration)
+      grid $frm.frame1.duration -row 4 -column 1 -columnspan 2 -rowspan 1 -sticky nw -padx 3
+
    pack $frm.frame1 -side top -fill x
+
+
+   TitleFrame $frm.test -borderwidth 2 -text $caption(focuserjmi,test)
+      button $frm.test.decrease -text "-" -relief raised -width "12"
+      bind $frm.test.decrease <ButtonPress-1>      { ::focuserjmi::testMove "-" }
+      bind $frm.test.decrease <ButtonRelease-1>    { ::focuserjmi::testMove "stop" }
+      pack $frm.test.decrease -in [$frm.test getframe] -side left -padx 3 -pady 3 -fill none
+
+      button $frm.test.increase -text "+" -relief raised -width "12"
+      bind $frm.test.increase <ButtonPress-1>      { ::focuserjmi::testMove "+" }
+      bind $frm.test.increase <ButtonRelease-1>    { ::focuserjmi::testMove "stop" }
+      pack $frm.test.increase -in [$frm.test getframe] -side left -padx 3 -pady 3 -fill none
+
+   pack $frm.test -side top -fill x
+
 
    #--- Frame du bouton Arreter et du checkbutton creer au demarrage
    frame $frm.start -borderwidth 0 -relief flat
@@ -221,8 +259,37 @@ proc ::focuserjmi::fillConfigPage { frm } {
 
    pack $frm.start -side bottom -fill x
 
+   #--- Mise a jour de liste de bit des liaisons
+   ::focuserjmi::onChangeLink
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
+}
+
+#------------------------------------------------------------
+#  ::focuserjmi::onChangeLink
+#     met a jour les donnees affichées quand on change de liaison
+#
+#  return nothing
+#------------------------------------------------------------
+proc ::focuserjmi::onChangeLink { } {
+   variable widget
+   variable private
+
+   set frm $private(frm)
+   #--- je rafraichis la liste des bits disponibles sur la laison
+   set bitList [ ::confLink::getPluginProperty $widget(link) "bitList" ]
+   $frm.frame1.bitStart configure -values $bitList -height [ llength $bitList ] -width [::tkutil::lgEntryComboBox $bitList]
+   $frm.frame1.bitDirection configure -values $bitList -height [ llength $bitList ] -width [::tkutil::lgEntryComboBox $bitList]
+
+   if { [lsearch $bitList $widget(bitStart)] == -1 } {
+      #--- si le bit n'existe pas dans la liste, je selectionne le premier element de la liste
+      set widget(bitStart) [lindex $bitList 0 ]
+   }
+   if { [lsearch $bitList $widget(bitDirection)] == -1 } {
+      #--- si le bit n'existe pas dans la liste, je selectionne le premier element de la liste
+      set widget(bitDirection) [lindex $bitList 0 ]
+   }
+
 }
 
 #------------------------------------------------------------
@@ -236,9 +303,11 @@ proc ::focuserjmi::configurePlugin { } {
    global conf
 
    #--- copie les variables des widgets dans le tableau conf()
-   set conf(focuserjmi,link)         $widget(link)
-   set conf(focuserjmi,bitStart)     $widget(bitStart)
-   set conf(focuserjmi,bitDirection) $widget(bitDirection)
+   set conf(focuserjmi,link)           $widget(link)
+   set conf(focuserjmi,bitStart)       $widget(bitStart)
+   set conf(focuserjmi,bitDirection)   $widget(bitDirection)
+   set conf(focuserjmi,pulseMode)      $widget(pulseMode)
+   set conf(focuserjmi,pulseDuration)  $widget(pulseDuration)
 }
 
 #------------------------------------------------------------
@@ -300,24 +369,73 @@ proc ::focuserjmi::isReady { } {
 #------------------------------------------------------------
 proc ::focuserjmi::move { command } {
    variable private
-   global conf
 
    if { [isReady] == 0 } {
       return
    }
    set linkNo $private(linkNo)
 
-   if { "$command" == "-" } {
-      link$linkNo bit $conf(focuserjmi,bitDirection) "0"
-      link$linkNo bit $conf(focuserjmi,bitStart) "1"
-   } elseif { "$command" == "+" } {
-      link$linkNo bit $conf(focuserjmi,bitDirection) "1"
-      link$linkNo bit $conf(focuserjmi,bitStart) "1"
-   } elseif { "$command" == "stop" } {
-      link$linkNo bit $conf(focuserjmi,bitDirection) "0"
-      link$linkNo bit $conf(focuserjmi,bitStart) "0"
+   if { $::conf(focuserjmi,pulseMode) == "manual" } {
+      if { "$command" == "-" } {
+         link$linkNo bit $::conf(focuserjmi,bitDirection) "0"
+         link$linkNo bit $::conf(focuserjmi,bitStart)     "1"
+      } elseif { "$command" == "+" } {
+         link$linkNo bit $::conf(focuserjmi,bitDirection) "1"
+         link$linkNo bit $::conf(focuserjmi,bitStart)     "1"
+      } elseif { "$command" == "stop" } {
+         link$linkNo bit $::conf(focuserjmi,bitDirection) "0"
+         link$linkNo bit $::conf(focuserjmi,bitStart)     "0"
+      }
+   } else {
+      if { "$command" == "-" } {
+         link$linkNo bit $::conf(focuserjmi,bitDirection) 0
+         link$linkNo bit $::conf(focuserjmi,bitStart)     1 $::conf(focuserjmi,pulseDuration)
+      } elseif { "$command" == "+" } {
+         link$linkNo bit $::conf(focuserjmi,bitDirection) 1
+         link$linkNo bit $::conf(focuserjmi,bitStart)     1 $::conf(focuserjmi,pulseDuration)
+      }
    }
 }
+
+#------------------------------------------------------------
+#  ::focuserjmi::testMove
+#     test desmouvement en utilisant les variables widget
+#     si command = "-" , demarre le mouvement du focus en intra focale
+#     si command = "+" , demarre le mouvement du focus en extra focale
+#     si command = "stop" , arrete le mouvement
+#------------------------------------------------------------
+proc ::focuserjmi::testMove { command } {
+   variable private
+   variable widget
+
+   if { [isReady] == 0 } {
+      return
+   }
+   set linkNo $private(linkNo)
+
+   if { $widget(pulseMode) == "manual" } {
+      if { "$command" == "-" } {
+         link$linkNo bit $widget(bitDirection) "0"
+         link$linkNo bit $widget(bitStart)     "1"
+      } elseif { "$command" == "+" } {
+         link$linkNo bit $widget(bitDirection) "1"
+         link$linkNo bit $widget(bitStart)     "1"
+      } elseif { "$command" == "stop" } {
+         link$linkNo bit $widget(bitDirection) "0"
+         link$linkNo bit $widget(bitStart)     "0"
+      }
+   } else {
+      if { "$command" == "-" } {
+         link$linkNo bit $widget(bitDirection) "0"
+         link$linkNo bit $widget(bitStart)     "1" $widget(pulseDuration)
+      } elseif { "$command" == "+" } {
+         link$linkNo bit $widget(bitDirection) "1"
+         link$linkNo bit $widget(bitStart) "1" $widget(pulseDuration)
+      }
+   }
+}
+
+
 
 #------------------------------------------------------------
 #  ::focuserjmi::goto
@@ -357,4 +475,5 @@ proc ::focuserjmi::possedeControleEtendu { } {
       set result "0"
    }
 }
+
 
