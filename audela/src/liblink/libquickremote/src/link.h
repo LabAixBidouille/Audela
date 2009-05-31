@@ -38,6 +38,7 @@ public:
    int setChar(char c);
    int getChar(char *c);
    int setBit(int numbit, int value);
+   int setBit(int numbit, int value, double duration);
    int getBit(int numbit, int *value);
    void getLastError(char *message);
 

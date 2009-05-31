@@ -20,8 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: cquickremote.cpp,v 1.6 2009-05-01 16:11:03 michelpujol Exp $
+// $Id: cquickremote.cpp,v 1.7 2009-05-31 15:22:59 michelpujol Exp $
 
+#include "sysexp.h" //
 
 #ifdef WIN32
 #include <windows.h>
@@ -220,6 +221,63 @@ int CQuickremote::setBit(int numbit, int value)
    }
    currentValue = tempValue;
    
+   return LINK_OK;
+}
+
+
+/**
+ * setBit
+ *    change la valeur d'un bit pendant une duree imposee
+ * @param numbit  numero du bit (0 a 7)
+ * @param value   valeur 0 ou 1
+ * @param duration  duree du changement en seconde
+ */
+int CQuickremote::setBit(int numbit, int value, double duration)
+{
+   unsigned long  bytesWritten = 0;
+   char mask; 
+   char tempValue, previousValue;
+   
+   
+   if(numbit <0 || numbit >7 ) {
+      lastStatus = INCORRECT_BIT;
+      return LINK_ERROR;
+   }
+   
+   mask = 1 << numbit;
+   previousValue  = currentValue;
+   tempValue = currentValue;
+   
+   if (value == 1 ) {
+      tempValue |= mask;
+   } else if( value == 0) {
+      tempValue &= ~mask;
+   } else {
+      lastStatus = INCORRECT_VALUE; 
+      return LINK_ERROR;
+   }
+   
+   // je met le bit a la valeur demandee
+   lastStatus = FT_Write(ftHandle, &tempValue, 1, &bytesWritten);
+   if (lastStatus != FT_OK && bytesWritten !=1 ) {
+      return LINK_ERROR;
+   } 
+   // j'attend la duree imposee
+   int milliseconds = duration * 1000;
+   //#if defined(OS_LIN)
+   // usleep(milliseconds * 1000);
+   //#elif defined(OS_WIN)
+    Sleep(milliseconds);
+   //#elif defined(OS_MACOS)
+   // usleep(milliseconds * 1000);
+   //#endif
+
+   // je remet le bit a l'ancienne valeur
+   lastStatus = FT_Write(ftHandle, &previousValue, 1, &bytesWritten);
+   if (lastStatus != FT_OK && bytesWritten !=1 ) {
+      return LINK_ERROR;
+   } 
+      
    return LINK_OK;
 }
 
