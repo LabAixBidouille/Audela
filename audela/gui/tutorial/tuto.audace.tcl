@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.audace.tcl,v 1.7 2009-05-01 08:43:32 robertdelmas Exp $
+# Mise a jour $Id: tuto.audace.tcl,v 1.8 2009-05-31 08:21:28 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -51,6 +51,11 @@ En route pour l'aventure !\n"
    }
 }
 
+proc tuto_audace_exit { } {
+   wm deiconify .main
+   destroy .second
+}
+
 # widget --
 # This script demonstrates the various widgets provided by Tk,
 # along with many of the features of the Tk toolkit.  This file
@@ -82,7 +87,7 @@ set color(back_image) #000000
 # all of the demos as hypertext items.
 #----------------------------------------------------------------
 
-#--- si la fenetre principale existe deja, je la deiconifie et je sors du script
+#--- si la fenetre secondaire existe deja, je la deiconifie et je sors du script
 if { [winfo exists .second] } {
    wm deiconify .second
    focus .second
@@ -99,6 +104,7 @@ wm geometry .second ${screenwidth}x${screenheight}+0+0
 wm maxsize .second [winfo screenwidth .second] [winfo screenheight .second]
 wm minsize .second ${screenwidth} ${screenheight}
 wm resizable .second 1 1
+wm protocol .second WM_DELETE_WINDOW tuto_audace_exit
 set widgetDemo 1
 
 #----------------------------------------------------------------
@@ -285,11 +291,7 @@ set lastLine ""
 
 .second.t configure -state disabled
 focus .second.s
-
-bind .second <Destroy> {
-   wm deiconify .main
-   destroy .second
-}
+wm withdraw .main
 
 ##################################################################
 # procedure to acquire an image

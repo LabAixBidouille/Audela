@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.testcam.tcl,v 1.6 2008-04-23 21:03:53 robertdelmas Exp $
+# Mise a jour $Id: tuto.testcam.tcl,v 1.7 2009-05-31 08:24:47 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -74,6 +74,11 @@ signaux d'entrée CCD avec un oscilloscope.\n"
    }
 }
 
+proc tuto_testcam_exit { } {
+   wm deiconify .main
+   destroy .second
+}
+
 # widget --
 # This script demonstrates the various widgets provided by Tk,
 # along with many of the features of the Tk toolkit.  This file
@@ -106,7 +111,7 @@ set color(back_image) #000000
 # all of the demos as hypertext items.
 #----------------------------------------------------------------
 
-#--- si la fenetre principale existe deja, je la deiconifie et je sors du script
+#--- si la fenetre secondaire existe deja, je la deiconifie et je sors du script
 if { [winfo exists .second] } {
    wm deiconify .second
    focus .second
@@ -123,6 +128,7 @@ wm geometry .second ${screenwidth}x${screenheight}+0+0
 wm maxsize .second [winfo screenwidth .second] [winfo screenheight .second]
 wm minsize .second ${screenwidth} ${screenheight}
 wm resizable .second 1 1
+wm protocol .second WM_DELETE_WINDOW tuto_testcam_exit
 set widgetDemo 1
 
 #----------------------------------------------------------------
@@ -321,9 +327,4 @@ set lastLine ""
 .second.t configure -state disabled
 focus .second.s
 wm withdraw .main
-
-bind .second <Destroy> {
-   wm deiconify .main
-   destroy .second
-}
 
