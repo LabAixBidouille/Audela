@@ -2,7 +2,7 @@
 # Fichier : sophiecontrol.tcl
 # Description : Fenetre de controle pour le centrage, la focalisation et le guidage
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecontrol.tcl,v 1.11 2009-05-29 21:28:43 michelpujol Exp $
+# Mise a jour $Id: sophiecontrol.tcl,v 1.12 2009-05-31 15:31:53 robertdelmas Exp $
 #
 
 #============================================================
@@ -22,10 +22,8 @@ proc ::sophie::control::run { visuNo tkbase } {
    package require BLT
    namespace import ::blt::vector
 
-
    #--- Creation des variables globales si elles n'existaient pas
    if { ! [ info exists ::conf(sophie,controlWindowPosition) ] } { set ::conf(sophie,controlWindowPosition) "430x540+580+160" }
-
 
    #--- Initialisation de variables locales
    set private(positionEtoileX)                 ""
@@ -51,12 +49,13 @@ proc ::sophie::control::run { visuNo tkbase } {
    set private(correctionDelta)                 ""
    set private(realDelay)                        ""
 
-   set private(activeColor)                     "#77ff77" ; #--_ vert tendre
+   set private(activeColor)                     "#77ff77" ; #--- vert tendre
    set private(inactiveColor)                   "#ff9582" ; #--- rouge tendre
    set private(vectorLength)                    50
+   set private(listMaxIntensity)                ""
 
    #--- vecteur des abcisses
-   if { [::blt::vector names ::sophieAbcisse ] == "" } {
+  if { [::blt::vector names ::sophieAbcisse ] == "" } {
       ::blt::vector create ::sophieAbcisse
       ::sophieAbcisse length $private(vectorLength)
       ::sophieAbcisse seq 1 $private(vectorLength)
@@ -115,8 +114,7 @@ proc ::sophie::control::run { visuNo tkbase } {
       ::sophieEcartConsigneY length $private(vectorLength)
    }
 
-
-   #
+   #--- Initialisation des vecteurs des fenetres Focalisation et Guidage
    resetFocusVector
    resetGuideVector
 
@@ -130,7 +128,7 @@ proc ::sophie::control::run { visuNo tkbase } {
    #--- je supprime le bouton fermer
    pack forget $this.but_fermer
 
-   #--- je masque les graduations des abcisses (un bug de BLT empeche de le faire avant )
+   #--- je masque les graduations des abcisses (un bug de BLT empeche de le faire avant)
    $private(frm).focalisation.courbes.graphFwhmX_simple axis configure x -hide true
    $private(frm).focalisation.courbes.graphFwhmY_simple axis configure x -hide true
    $private(frm).focalisation.courbes.graphintensiteMax_simple axis configure x -hide true
@@ -188,7 +186,6 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
    variable private
 
    set private(frm) $frm
-
 
    #--- Frame des voyants de controle de l'interface
    TitleFrame $frm.voyant -borderwidth 2 -relief ridge \
@@ -479,8 +476,6 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
       grid columnconfigure [ $frm.positionGuidage getframe ] 5 -weight 0
       grid columnconfigure [ $frm.positionGuidage getframe ] 6 -weight 1
       grid columnconfigure [ $frm.positionGuidage getframe ] 7 -weight 0
-
-
 
       #--- Frame pour la camera
       ####TitleFrame $frm.indicateurs.camera -borderwidth 2 -relief ridge \
@@ -889,8 +884,6 @@ console::disp "frm = $frm.focalisation.courbes.graphintensiteMax_simple\n"
 
     # pack $frm.guidage -side top -fill both
 
-
-
 }
 
 #------------------------------------------------------------
@@ -933,8 +926,6 @@ proc ::sophie::control::onScrollOrigin { visuNo args } {
    ::sophie::setGuidingMode $visuNo
 
 }
-
-
 
 #------------------------------------------------------------
 # createGraph
@@ -1123,7 +1114,6 @@ proc ::sophie::control::setRealDelay { delay } {
 
 }
 
-
 ##------------------------------------------------------------
 # setCenterInformation
 #    affiche les informations de centrage
@@ -1168,8 +1158,8 @@ proc ::sophie::control::setCenterInformation { starDetection fiberDetection orig
          -bg   $private(activeColor)
    }
 
-   set private(positionEtoileX)  [format "%6.1f" $starX]
-   set private(positionEtoileY)  [format "%6.1f" $starY]
+   set private(positionEtoileX)       [format "%6.1f" $starX]
+   set private(positionEtoileY)       [format "%6.1f" $starY]
    set private(indicateursFwhmX)      [format "%6.1f" $fwhmX]
    set private(indicateursFwhmY)      [format "%6.1f" $fwhmY]
    set private(indicateursFondDeCiel) [format "%6.1f" $background]
@@ -1220,24 +1210,37 @@ proc ::sophie::control::setFocusInformation { starDetection fiberDetection origi
          -bg   $private(activeColor)
    }
 
-   set private(positionEtoileX)            [format "%6.1f" $starX]
-   set private(positionEtoileY)            [format "%6.1f" $starY]
-   set private(indicateursFwhmX)                [format "%6.1f" $fwhmX]
-   set private(indicateursFwhmY)                [format "%6.1f" $fwhmY]
-   set private(indicateursFondDeCiel)           [format "%6.1f" $background]
-   set private(indicateursFluxMax)              [format "%6.1f" $maxIntensity]
+   set private(positionEtoileX)       [format "%6.1f" $starX]
+   set private(positionEtoileY)       [format "%6.1f" $starY]
+   set private(indicateursFwhmX)      [format "%6.1f" $fwhmX]
+   set private(indicateursFwhmY)      [format "%6.1f" $fwhmY]
+   set private(indicateursFondDeCiel) [format "%6.1f" $background]
+   set private(indicateursFluxMax)    [format "%6.1f" $maxIntensity]
 
-   #--- j'ajoute la valeur le graphe FwhmX
+   #--- j'ajoute la valeur dans le graphe FwhmX
    ::sophieFwhmX delete 0
    ::sophieFwhmX append $fwhmX
 
-   #--- j'ajoute la valeur le graphe FwhmY
+   #--- j'ajoute la valeur dans le graphe FwhmY
    ::sophieFwhmY delete 0
    ::sophieFwhmY append $fwhmY
 
-   #--- j'ajoute la valeur le graphe maxIntensity
+   #--- j'ajoute la valeur dans le graphe maxIntensity
    ::sophieMaxIntensity delete 0
    ::sophieMaxIntensity append $maxIntensity
+
+   #--- Je mets les intensites maxi dans une liste
+   lappend private(listMaxIntensity) "$maxIntensity"
+   #--- Je trie la liste des intensites maxi
+   set private(listMaxIntensity) [ lsort $private(listMaxIntensity) ]
+   #--- Je calcule la longueur de la liste des intensites maxi
+   set longueurListe [ llength $private(listMaxIntensity) ]
+   #--- Je recupere la valeur mini de la liste a laquelle je retranche 10
+   set intensityMin [ expr [ lindex $private(listMaxIntensity) 0 ] - 10. ]
+   #--- Je recupere la valeur maxi de la liste a laquelle j'ajoute 10
+   set intensityMax [ expr [ lindex $private(listMaxIntensity) [ expr $longueurListe - 1 ] ] + 10. ]
+   #--- J'affiche le graphe avec une ordonnee dynamique de l'intensite
+   $frm.focalisation.courbes.graphintensiteMax_simple axis configure y -min $intensityMin -max $intensityMax
 
 }
 
@@ -1286,11 +1289,10 @@ proc ::sophie::control::setGuideInformation { starDetection fiberDetection origi
          -bg   $private(activeColor)
    }
 
-   set private(indicateursFwhmX)       ""
-   set private(indicateursFwhmY)       ""
-   set private(indicateursFondDeCiel)  ""
-   set private(indicateursFluxMax)     ""
-
+   set private(indicateursFwhmX)      ""
+   set private(indicateursFwhmY)      ""
+   set private(indicateursFondDeCiel) ""
+   set private(indicateursFluxMax)    ""
 
    set private(positionEtoileX)   [format "%6.2f" $starX]
    set private(positionEtoileY)   [format "%6.2f" $starY]
@@ -1363,3 +1365,4 @@ proc ::sophie::control::resetGuideVector {  } {
    set ::sophieCorrectionAlpha(0:end) 0
    set ::sophieCorrectionDelta(0:end) 0
 }
+
