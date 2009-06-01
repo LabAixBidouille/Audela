@@ -2,7 +2,7 @@
 # Fichier : sophiecommand.tcl
 # Description : Centralise les commandes de l'outil Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecommand.tcl,v 1.10 2009-05-31 15:51:23 michelpujol Exp $
+# Mise a jour $Id: sophiecommand.tcl,v 1.11 2009-06-01 07:22:57 robertdelmas Exp $
 #
 
 #============================================================
@@ -556,67 +556,25 @@ proc ::sophie::adaptIncrement { } {
    $frm.guidage.positionconsigne.positionXY.spinboxY configure -increment $increment
 }
 
-####------------------------------------------------------------
-#### decrementAttenuateur
-####    decremente les valeurs de l'attenuteur
-####------------------------------------------------------------
-###proc ::sophie::decrementAttenuateur { } {
-###   variable private
-###
-###   incr private(attenuateur) 1
-###   if { $private(attenuateur) >= "100" } {
-###      set private(attenuateur) "100"
-###      $private(frm).attenuateur.labMax_color_invariant configure -background $::color(red)
-###   } else {
-###      $private(frm).attenuateur.labMin_color_invariant configure -background $::color(white)
-###   }
-###}
-###
-
-####------------------------------------------------------------
-#### incrementAttenuateur
-####    incremente les valeurs de l'attenuteur
-####------------------------------------------------------------
-###proc ::sophie::incrementAttenuateur { } {
-###   variable private
-###
-###   incr private(attenuateur) -1
-###   if { $private(attenuateur) <= "100" } {
-###      set private(attenuateur) "100"
-###      $private(frm).attenuateur.labMin_color_invariant configure -background $::color(red)
-###   } else {
-###      $private(frm).attenuateur.labMax_color_invariant configure -background $::color(black)
-###   }
-###
-###   if { $private(attenuateur) >= "100" } {
-###      set private(attenuateur) "100"
-###      $private(frm).attenuateur.labMax_color_invariant configure -background $::color(red)
-###   } else {
-###      $private(frm).attenuateur.labMin_color_invariant configure -background $::color(white)
-###   }
-###}
-
-
 #------------------------------------------------------------
 # moveFilter
 #  démarre le changement d'attenuation
 #  Ne fait rien si le telescope n'est pas connecté
-# @param  direction "-"=diminution de l'attenuation , "+" =augmentation de l'atténuation
+# @param  direction "-" =diminution de l'attenuation , "+" =augmentation de l'atténuation
 #
 #------------------------------------------------------------
 proc ::sophie::moveFilter { direction } {
    variable private
 
    if { [ ::tel::list ] != "" } {
-      set private(filterMaxDelay) [ tel$::audace(telNo) filter max ]
+      set private(filterMaxDelay)       [ tel$::audace(telNo) filter max ]
       set private(filterCurrentPercent) [ tel$::audace(telNo) filter coord ]
-      set private(filterDirection) $direction
+      set private(filterDirection)      $direction
       #--- je demarre le deplacement
       tel$::audace(telNo) filter move $direction
       set private(updateFilterState) 1
       after 0 ::sophie::updateFilterPercent
    }
-
 
 }
 
@@ -646,7 +604,7 @@ proc ::sophie::stopFilter { } {
    #--- je recupere la nouvelle valeur
    set private(attenuateur) [ tel$::audace(telNo) filter coord ]
 
-   #--- je met a jour la couleur des fin de course
+   #--- je mets a jour la couleur des fin de course
    if { $private(attenuateur) >= "100" } {
       set private(attenuateur) "100"
       $private(frm).attenuateur.labMin_color_invariant configure -background $::audace(color,backColor)
@@ -674,7 +632,7 @@ proc ::sophie::updateFilterPercent { } {
       set private(updateFilterId) ""
    }
 
-   #--- je met a jour l'affichage avec une estimation de taux d'attenuation
+   #--- je mets a jour l'affichage avec une estimation de taux d'attenuation
    if { $private(updateFilterState) == 1 } {
       if { $private(filterDirection) == "-" } {
          set private(filterCurrentPercent) [expr $private(filterCurrentPercent) - (0.25 * 100 / $private(filterMaxDelay) ) ]
