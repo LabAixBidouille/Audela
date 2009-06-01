@@ -1,12 +1,12 @@
 #
 # Fichier : sophieview.tcl
-# Description : vue detail du suivi
+# Description : Vue detail du suivi
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophieview.tcl,v 1.3 2009-05-31 15:51:23 michelpujol Exp $
+# Mise a jour $Id: sophieview.tcl,v 1.4 2009-06-01 07:21:53 robertdelmas Exp $
 #
 
 #============================================================
-# Declaration du namespace sophie::config
+# Declaration du namespace sophie::view
 #    initialise le namespace
 #============================================================
 namespace eval ::sophie::view {
@@ -38,11 +38,11 @@ proc ::sophie::view::run { sophieVisu } {
 proc ::sophie::view::createPluginInstance { { in "" } { visuNo 1 } } {
    variable private
 
-   set private(frm)              "$in.sophieview"
+   set private(frm)                   "$in.sophieview"
    #--- je memorise le buffer initial
-   set private(initialBuffer) [::confVisu::getBufNo $visuNo]
+   set private(initialBuffer,$visuNo) [::confVisu::getBufNo $visuNo]
 
-   set private(bufferName)    "maskBufNo"
+   set private(bufferName,$visuNo)    "maskBufNo"
 
    #--- Petit raccourci
    set frm $private(frm)
@@ -53,28 +53,26 @@ proc ::sophie::view::createPluginInstance { { in "" } { visuNo 1 } } {
       #--- Frame du titre et de la configuration
       frame $frm.select -borderwidth 2 -relief groove
 
-         #--- Bouton du titre
-         ##button $frm.titre.but2 -borderwidth 2 -text "test"
          #--- Bouton de selection de l'image a afficher
          radiobutton $frm.select.mask -highlightthickness 0 -padx 0 -pady 0 -state normal \
             -text "Masque" -justify left \
             -value "maskBufNo" \
-            -variable ::sophie::view::private(bufferName) \
-            -command "::sophie::view::setBuffer $visuNo "
+            -variable ::sophie::view::private(bufferName,$visuNo) \
+            -command "::sophie::view::setBuffer $visuNo"
          pack $frm.select.mask -anchor w -expand 0 -fill x -ipady 2 -padx 2 -pady 2
 
          radiobutton $frm.select.sum -highlightthickness 0 -padx 0 -pady 0 -state normal \
             -text "Image intégrée" -justify left \
             -value "sumBufNo" \
-            -variable ::sophie::view::private(bufferName) \
-            -command "::sophie::view::setBuffer $visuNo "
+            -variable ::sophie::view::private(bufferName,$visuNo) \
+            -command "::sophie::view::setBuffer $visuNo"
          pack $frm.select.sum -anchor w -expand 0 -fill x -ipady 2 -padx 2 -pady 2
 
          radiobutton $frm.select.fiber -highlightthickness 0 -padx 0 -pady 0 -state normal \
             -text "Entrée fibre" -justify left \
             -value "fiberBufNo" \
-            -variable ::sophie::view::private(bufferName) \
-            -command "::sophie::view::setBuffer $visuNo "
+            -variable ::sophie::view::private(bufferName,$visuNo) \
+            -command "::sophie::view::setBuffer $visuNo"
          pack $frm.select.fiber -anchor w -expand 0 -fill x -ipady 2 -padx 2 -pady 2
 
       pack $frm.select -side top -fill x
@@ -91,7 +89,6 @@ proc ::sophie::view::deletePluginInstance { visuNo } {
 
    #--- je restaure le numero du buffer initial
    ##::sophie::setBuffer $visuNo ""
-
 }
 
 #------------------------------------------------------------
@@ -101,9 +98,9 @@ proc ::sophie::view::deletePluginInstance { visuNo } {
 proc ::sophie::view::startTool { visuNo } {
    variable private
 
-   #--- j'affiche le panneau
+   #--- j'affiche l'outil
    pack $private(frm) -side left -fill y
-   #--- je passe en zoomx4
+   #--- je passe en zoom x4
    ::confVisu::setZoom  $visuNo 4
    #--- j'affiche l'image du buffer
    setBuffer $visuNo
@@ -123,22 +120,21 @@ proc ::sophie::view::stopTool { visuNo } {
    after 1000
    #--- je restaure le numero du buffer initial
    ::sophie::view::setBuffer $visuNo "initialBuffer"
-   #--- je masque le panneau
+   #--- je masque l'outil
    pack forget $private(frm)
-
 }
 
 #------------------------------------------------------------
 # setBuffer
-#    change le buffer etaffiche le contenu
+#    change le buffer et affiche le contenu
 #------------------------------------------------------------
 proc ::sophie::view::setBuffer { visuNo { bufferName "" } } {
    variable private
 
    if { $bufferName == "" } {
-      set bufferName $private(bufferName)
+      set bufferName $private(bufferName,$visuNo)
    } else {
-      set private(bufferName) $bufferName
+      set private(bufferName,$visuNo) $bufferName
    }
 
    switch $bufferName {
@@ -148,7 +144,7 @@ proc ::sophie::view::setBuffer { visuNo { bufferName "" } } {
          visu$visuNo buf [::sophie::getBufNo $bufferName]
       }
       "initialBuffer" {
-         visu$visuNo buf $private(initialBuffer)
+         visu$visuNo buf $private(initialBuffer,$visuNo)
       }
    }
    ::confVisu::autovisu $visuNo
@@ -156,10 +152,11 @@ proc ::sophie::view::setBuffer { visuNo { bufferName "" } } {
 
 #------------------------------------------------------------
 # refresh
-#    change le buffer etaffiche le contenu
+#    raffraichit l'affichage
 #------------------------------------------------------------
 proc ::sophie::view::refresh { visuNo args } {
    variable private
+
    ::confVisu::autovisu $visuNo
 }
 
