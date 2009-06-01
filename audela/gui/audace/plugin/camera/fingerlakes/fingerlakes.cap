@@ -1,6 +1,6 @@
 #
 # Fichier : fingerlakes.cap
-# Mise a jour $Id: fingerlakes.cap,v 1.8 2009-05-29 16:32:34 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.cap,v 1.9 2009-06-01 09:23:30 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -21,7 +21,7 @@ set caption(fingerlakes,refroidissement)              "Cooling to Temperature"
 set caption(fingerlakes,deg_c)                        "°C"
 set caption(fingerlakes,refroidissement_1)            ""
 set caption(fingerlakes,temperature_CCD)              "CCD Temperature:"
-set caption(fingerlakes,Power)                        "Peltier Stage Power:"
+set caption(fingerlakes,power)                        "Peltier Stage Power:"
 set caption(fingerlakes,miroir_x)                     "Horizontal Mirror"
 set caption(fingerlakes,miroir_y)                     "Vertical Mirror"
 set caption(fingerlakes,fonc_obtu)                    "Shutter Operation"
