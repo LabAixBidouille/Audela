@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.tcl,v 1.13 2009-05-31 08:31:59 robertdelmas Exp $
+# Mise a jour $Id: tuto.tcl,v 1.14 2009-06-01 09:53:12 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -16,12 +16,12 @@ proc caption_def { langage } {
    global texte caption
    #--- definition of captions
    if {[string compare $langage french] ==0 } {
-      set caption(main_title) "Un tutorial pour les utilisateurs de l'EthernAude"
+      set caption(main_title) "Un tutoriel pour les utilisateurs de l'EthernAude"
       set caption(tuto_about) "A propos..."
       set caption(tuto_quit)  "Quitter"
       set caption(tuto_tools) "Outils"
-      set texte(tuto_1)    "Tutorial pour les utilisateurs de l'EthernAude"
-      set texte(tuto_2)    "Ce tutorial vous permettra de réaliser vos premières images avec votre caméra CCD connectée avec un boîtier EthernAude. Pour toute information complémentaire, consulter le site web http://www.astrosurf.com/ethernaude"
+      set texte(tuto_1)    "Tutoriel pour les utilisateurs de l'EthernAude"
+      set texte(tuto_2)    "Ce tutoriel vous permettra de réaliser vos premières images avec votre caméra CCD connectée avec un boîtier EthernAude. Pour toute information complémentaire, consulter le site web http://www.astrosurf.com/ethernaude"
       set texte(tuto_0)    "Présentation générale de l'EthernAude."
       set texte(tuto_3)    "Brancher l'EthernAude avec une caméra Audine"
       set texte(tuto_4)    "Connexions entre le boîtier et la caméra."
@@ -42,8 +42,8 @@ proc caption_def { langage } {
       set texte(tuto_31)   "Choisir le CCD Kaf-0401E ou Kaf-1602E."
       set texte(tuto_32)   "Reprogrammer le microcontrôleur caméra."
       set texte(tuto_33)   "Reprogrammer le microcontrôleur Ethernet."
-      set texte(tuto_about0) "Tutorial EthernAude"
-      set texte(tuto_about1) "Tutorial pour le boîtier EthernAude\n\n\Aude (c) 2002\n\nIn order to change the language, you must edit the file langage.tcl and write another language.\n"
+      set texte(tuto_about0) "Tutoriel EthernAude"
+      set texte(tuto_about1) "Tutoriel pour le boîtier EthernAude\n\n\Aude (c) 2002\n"
       set texte(tuto_update) "Mise à jour du"
       set texte(next_topic)  "Page suivante :"
    } else {
@@ -74,7 +74,7 @@ proc caption_def { langage } {
       set texte(tuto_32)   "Updating the Microcontroller Software for the Camera."
       set texte(tuto_33)   "Updating the Microcontroller Software for Ethernet."
       set texte(tuto_about0) "Audine Tutorial"
-      set texte(tuto_about1) "Tutorial for the EthernAude device\n\n\Aude (c) 2002\n\nTo change the language, you must edit the langage.tcl file and write another language.\n"
+      set texte(tuto_about1) "Tutorial for the EthernAude device\n\n\Aude (c) 2002\n"
       set texte(tuto_update) "Updated On"
       set texte(next_topic)  "Next Topic:"
    }
@@ -408,3 +408,4 @@ proc tuto_exit { } {
       exit
    }
 }
+
