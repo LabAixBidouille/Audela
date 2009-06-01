@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: cquickremote.cpp,v 1.7 2009-05-31 15:22:59 michelpujol Exp $
+// $Id: cquickremote.cpp,v 1.8 2009-06-01 17:50:21 michelpujol Exp $
 
 #include "sysexp.h" //
 
@@ -263,14 +263,14 @@ int CQuickremote::setBit(int numbit, int value, double duration)
       return LINK_ERROR;
    } 
    // j'attend la duree imposee
-   int milliseconds = duration * 1000;
-   //#if defined(OS_LIN)
-   // usleep(milliseconds * 1000);
-   //#elif defined(OS_WIN)
-    Sleep(milliseconds);
-   //#elif defined(OS_MACOS)
-   // usleep(milliseconds * 1000);
-   //#endif
+   int milliseconds = int(duration * 1000);
+   #if defined(OS_LIN)
+      usleep(milliseconds * 1000);
+   #elif defined(OS_WIN)
+     Sleep(milliseconds);
+   #elif defined(OS_MACOS)
+     usleep(milliseconds * 1000);
+   #endif
 
    // je remet le bit a l'ancienne valeur
    lastStatus = FT_Write(ftHandle, &previousValue, 1, &bytesWritten);
