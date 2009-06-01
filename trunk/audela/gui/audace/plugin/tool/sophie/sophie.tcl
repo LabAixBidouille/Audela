@@ -2,7 +2,7 @@
 # Fichier : sophie.tcl
 # Description : Outil d'autoguidage pour le spectro Sophie du telescope T193 de l'OHP
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophie.tcl,v 1.10 2009-05-31 15:51:23 michelpujol Exp $
+# Mise a jour $Id: sophie.tcl,v 1.11 2009-06-01 07:18:06 robertdelmas Exp $
 #
 
 #============================================================
@@ -93,7 +93,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    source [ file join $::audace(rep_plugin) tool sophie sophieconfig.tcl ]
    source [ file join $::audace(rep_plugin) tool sophie sophiecontrol.tcl ]
    source [ file join $::audace(rep_plugin) tool sophie sophieview.tcl ]
-   source [ file join $::audace(rep_plugin) tool sophie sophietest.tcl ] ; # a supprimer quand on aura fait les premiers tests
+   source [ file join $::audace(rep_plugin) tool sophie sophietest.tcl ] ; #--- a supprimer quand on aura fait les premiers tests
 
    if { ! [ info exists ::conf(sophie,exposure) ] }                 { set ::conf(sophie,exposure)                  "0.5" }
    if { ! [ info exists ::conf(sophie,centerBinning) ] }            { set ::conf(sophie,centerBinning)             "2x2" }
@@ -115,7 +115,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(sophie,guidingWindowSize)] }         { set ::conf(sophie,guidingWindowSize)         200 }
    if { ! [ info exists ::conf(sophie,centerWindowSize)] }          { set ::conf(sophie,centerWindowSize)          100 }
    if { ! [ info exists ::conf(sophie,imageDirectory)] }            { set ::conf(sophie,imageDirectory)            "$::audace(rep_images)" }
-   if { ! [ info exists ::conf(sophie,guidingMode)] }               { set ::conf(sophie,guidingMode)               "FIBER" } ; # FIBER ou OBJECT
+   if { ! [ info exists ::conf(sophie,guidingMode)] }               { set ::conf(sophie,guidingMode)               "FIBER" } ; #--- FIBER ou OBJECT
    if { ! [ info exists ::conf(sophie,fiberGuigindMode)] }          { set ::conf(sophie,fiberGuigindMode)          "HR" }
    if { ! [ info exists ::conf(sophie,fiberHRX)] }                  { set ::conf(sophie,fiberHRX)                  "314" }
    if { ! [ info exists ::conf(sophie,fiberHRY)] }                  { set ::conf(sophie,fiberHRY)                  "150" }
@@ -140,12 +140,12 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(mode)             "centrage"
    set private(zoom)             "1"
    set private(attenuateur)      "80"
-   set private(windowing)        "full"      ; #  fenetrage, contient "full" ou la longueur du coté du carré de fentrage
-   set private(targetDetection)  0           ; # 0=etoile non detectee , 1= etoile detectee
-   set private(updateFilterId)   ""          ; # identifiant de la commande after pour la mise a jour de l'affichage du taux d'attenuation
-   set private(updateFilterSate) 0           ; # 0=pas de modificationde l'atténuation en cour, 1= modification de l'attennuation en cours
+   set private(windowing)        "full"            ; #--- fenetrage, contient "full" ou la longueur du coté du carré de fentrage
+   set private(targetDetection)  0                 ; #--- 0=etoile non detectee , 1= etoile detectee
+   set private(updateFilterId)   ""                ; #--- identifiant de la commande after pour la mise a jour de l'affichage du taux d'attenuation
+   set private(updateFilterSate) 0                 ; #--- 0=pas de modificationde l'atténuation en cour, 1= modification de l'attennuation en cours
    set private(targetBoxSize)    100
-   set private(cameraCells)      [list 1536 1024 ] ; #dimension du capteur de la camera
+   set private(cameraCells)      [list 1536 1024 ] ; #--- dimensions du capteur de la camera
 
    set private(bufNo)            [::confVisu::getBufNo $visuNo]
    set private(hCanvas)          [::confVisu::getCanvas $visuNo]
@@ -154,21 +154,21 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(centerEnabled)    0
    set private(guideEnabled)     0
    set private(mountEnabled)     0
-   set private(delay,alpha)      "0.00"   ; # duree de rappel en alpha
-   set private(delay,delta)      "0.00"   ; # duree de rappel en delta
-   set private(acquisitionState) 0        ; # etat de l'acquisition continue 0=arrete  1=en cours
-   set private(detectedTarget)   0        ; # 0=etoile non detectee  1=etoile detectee
-   set private(targetRa)         "0h0m0s" ; # ascension droite de la cible en HMS
-   set private(targetDec)        "0d0m0s" ; # declinaison de la cible en DMS
-   set private(xWindow)          1        ; # abscisse du coin bas gauche du fenetrage
-   set private(yWindow)          1        ; # ordonnee du coin bas gauche du fenetrage
+   set private(delay,alpha)      "0.00"   ; #--- duree de rappel en alpha
+   set private(delay,delta)      "0.00"   ; #--- duree de rappel en delta
+   set private(acquisitionState) 0        ; #--- etat de l'acquisition continue 0=arrete  1=en cours
+   set private(detectedTarget)   0        ; #--- 0=etoile non detectee  1=etoile detectee
+   set private(targetRa)         "0h0m0s" ; #--- ascension droite de la cible en HMS
+   set private(targetDec)        "0d0m0s" ; #--- declinaison de la cible en DMS
+   set private(xWindow)          1        ; #--- abscisse du coin bas gauche du fenetrage
+   set private(yWindow)          1        ; #--- ordonnee du coin bas gauche du fenetrage
 
    set private(maskBufNo)  [::buf::create ]
    set private(sumBufNo)   [::buf::create ]
    set private(fiberBufNo) [::buf::create ]
 
    set private(AsynchroneParameter) 0
-   set private(newAcquisition)  1   ; #--- variable utilisee par le listener addAcquisitionListener
+   set private(newAcquisition)      1     ; #--- variable utilisee par le listener addAcquisitionListener
 
    #--- Petit raccourci
    set frm $private(frm)
@@ -315,8 +315,6 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
          pack $frm.attenuateur.labMin_color_invariant -in [ $frm.attenuateur getframe ] \
             -anchor center -expand 0 -fill none -side left
 
-         ###ArrowButton $frm.attenuateur.butMin -borderwidth 1 -dir left -relief raised
-         ###   -command "::sophie::incrementAttenuateur"
          Button $frm.attenuateur.butMin -borderwidth 1 -relief raised -text "-"
          pack $frm.attenuateur.butMin -in [ $frm.attenuateur getframe ] \
             -anchor center -expand 1 -fill x -ipady 2 -side left
@@ -328,17 +326,14 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
          pack $frm.attenuateur.entry -in [ $frm.attenuateur getframe ] \
             -anchor center -expand 0 -fill none -side left
 
-         ##ArrowButton $frm.attenuateur.butMax -borderwidth 1 -dir right -relief raised
          Button $frm.attenuateur.butMax -borderwidth 1 -relief raised -text "+"
-         ###   -command "::sophie::decrementAttenuateur"
          pack $frm.attenuateur.butMax -in [ $frm.attenuateur getframe ] \
             -anchor center -expand 1 -fill x -ipady 2 -side left
 
-         bind $frm.attenuateur.butMin <ButtonPress-1>    "::sophie::moveFilter -"
-         bind $frm.attenuateur.butMin <ButtonRelease-1>  "::sophie::stopFilter"
-         bind $frm.attenuateur.butMax <ButtonPress-1>    "::sophie::moveFilter +"
-         bind $frm.attenuateur.butMax <ButtonRelease-1>  "::sophie::stopFilter"
-
+         bind $frm.attenuateur.butMin <ButtonPress-1>   "::sophie::moveFilter -"
+         bind $frm.attenuateur.butMin <ButtonRelease-1> "::sophie::stopFilter"
+         bind $frm.attenuateur.butMax <ButtonPress-1>   "::sophie::moveFilter +"
+         bind $frm.attenuateur.butMax <ButtonRelease-1> "::sophie::stopFilter"
 
          #--- Label noir
          label $frm.attenuateur.labMax_color_invariant -text "  " -background $::color(black)
@@ -363,6 +358,17 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
             -expand 0 -fill x -ipady 2 -padx 2 -pady 2
 
       pack $frm.image -side top -fill x
+
+      #--- Frame pour l'image
+      TitleFrame $frm.processus -borderwidth 2 -relief groove -text $::caption(sophie,controle)
+
+         #--- Bouton pour enregistrer l'image courante
+         button $frm.processus.but5 -borderwidth 2 -text $::caption(sophie,imagesEtapes) \
+            -command "::sophie::view::run $visuNo"
+         pack $frm.processus.but5 -in [ $frm.processus getframe ] -anchor center \
+            -expand 0 -fill x -ipady 2 -padx 2 -pady 2
+
+      pack $frm.processus -side top -fill x
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
       bind $frm <Key-F1> { ::console::GiveFocus }
@@ -402,7 +408,7 @@ proc ::sophie::startTool { visuNo } {
    #--- j'active la mise a jour automatique de l'affichage quand on change de miroir
    ::confVisu::addMirrorListener $visuNo "::sophie::onChangeSubWindow $visuNo"
 
-   #--- j'adapte l'affichage du panneau
+   #--- j'adapte l'affichage de l'outil
    adaptPanel $visuNo
 
    #--- Ouverture de la fenetre de controle de l'interface
@@ -416,8 +422,6 @@ proc ::sophie::startTool { visuNo } {
    createTarget $visuNo
    #--- j'affiche la consigne sur l'image
    createOrigin $visuNo
-
-   ::sophie::view::run $visuNo
 }
 
 #------------------------------------------------------------
@@ -459,6 +463,5 @@ proc ::sophie::stopTool { visuNo } {
 
    #--- je masque le panneau
    pack forget $private(frm)
-
 }
 
