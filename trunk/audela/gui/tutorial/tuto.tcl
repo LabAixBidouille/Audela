@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.tcl,v 1.10 2009-05-31 08:25:41 robertdelmas Exp $
+# Mise a jour $Id: tuto.tcl,v 1.11 2009-06-01 09:29:12 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -42,12 +42,12 @@ proc caption_def { langage } {
       set texte(tuto_about1) "Tutorial for the Audine Camera\n\n\Aude (c) 1999\n\nIn order to change the language, you must edit the file langage.tcl and write another language.\n"
    }
    if {[string compare $langage french] ==0 } {
-      set caption(main_title) "Tuto : Un tutorial pour les débutants en CCD"
+      set caption(main_title) "Tuto : Un tutoriel pour les débutants en CCD"
       set caption(tuto_about) "A propos..."
       set caption(tuto_quit)  "Quitter"
       set caption(tuto_tools) "Outils"
       set texte(tuto_1)    "Initiation à l'imagerie CCD"
-      set texte(tuto_2)    "Ce tutorial vous permettra de réaliser vos premières images avec une caméra CCD. Il a été réalisé avec le logiciel AudeLA."
+      set texte(tuto_2)    "Ce tutoriel vous permettra de réaliser vos premières images avec une caméra CCD. Il a été réalisé avec le logiciel AudeLA."
       set texte(tuto_3)    "Brancher et tester la caméra Audine"
       set texte(tuto_4)    "Connexion des câbles de la caméra."
       set texte(tuto_5)    "Tests électroniques pour le kit Audine."
@@ -64,8 +64,8 @@ proc caption_def { langage } {
       set texte(tuto_14)   "Focalisation sur une étoile brillante."
       set texte(tuto_15)   "Focalisation sur un amas globulaire."
       set texte(tuto_16)   "L'acquisition par la pratique."
-      set texte(tuto_about0) "Tutorial Audine"
-      set texte(tuto_about1) "Tutorial pour la camera Audine\n\n\Aude (c) 1999\n\nIn order to change the language, you must edit the file langage.tcl and write another language.\n"
+      set texte(tuto_about0) "Tutoriel Audine"
+      set texte(tuto_about1) "Tutoriel pour la camera Audine\n\n\Aude (c) 1999\n\nIn order to change the language, you must edit the file langage.tcl and write another language.\n"
    }
 }
 
