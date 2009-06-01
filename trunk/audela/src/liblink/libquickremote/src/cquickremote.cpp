@@ -20,12 +20,16 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: cquickremote.cpp,v 1.8 2009-06-01 17:50:21 michelpujol Exp $
+// $Id: cquickremote.cpp,v 1.9 2009-06-01 18:07:19 michelpujol Exp $
 
 #include "sysexp.h" //
 
-#ifdef WIN32
+#if defined(OS_WIN)
 #include <windows.h>
+#endif
+
+#if defined(OS_LIN)
+#include <unistd.h> // pour usleep()
 #endif
 
 #include <stdio.h>
