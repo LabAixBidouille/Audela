@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.capot.tcl,v 1.7 2007-09-29 11:16:58 robertdelmas Exp $
+# Mise a jour $Id: tuto.capot.tcl,v 1.8 2009-06-01 09:49:04 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -10,7 +10,7 @@ proc caption_def_plugcam { langage } {
    global texte caption
 #--- definition of captions
 if {[string compare $langage french] ==0 } {
-   set texte(firstdark_1) "Tutorial pour les utilisateurs de l'EthernAude"
+   set texte(firstdark_1) "Tutoriel pour les utilisateurs de l'EthernAude"
    set texte(firstdark_2) "Démontage du capot."
    set texte(firstdark_3) "\
 Le capot se démonte très facilement en dévissant les\
@@ -67,6 +67,7 @@ wm geometry .second ${screenwidth}x${screenheight}+0+0
 wm maxsize .second [winfo screenwidth .second] [winfo screenheight .second]
 wm minsize .second ${screenwidth} ${screenheight}
 wm resizable .second 1 1
+wm protocol .second WM_DELETE_WINDOW tuto_capot_exit
 set widgetDemo 1
 
 #----------------------------------------------------------------
@@ -217,7 +218,8 @@ set lastLine ""
 focus .second.s
 wm withdraw .main
 
-bind .second <Destroy> {
+proc tuto_capot_exit { } {
    wm deiconify .main
    destroy .second
 }
+

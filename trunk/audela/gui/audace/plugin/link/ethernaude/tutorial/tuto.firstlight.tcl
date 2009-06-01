@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.firstlight.tcl,v 1.10 2009-05-01 10:27:57 robertdelmas Exp $
+# Mise a jour $Id: tuto.firstlight.tcl,v 1.11 2009-06-01 09:49:39 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -23,7 +23,7 @@ if {[string compare $langage french] ==0 } {
    set caption(lowlevel) "Niveau bas ="
    set caption(highlevel) "Niveau haut ="
 
-   set texte(firstlight_1) "Tutorial pour les utilisateurs de l'EthernAude"
+   set texte(firstlight_1) "Tutoriel pour les utilisateurs de l'EthernAude"
    set texte(firstlight_2) "Premières images."
    set texte(firstlight_3) "Installer votre matériel d'acquisition CCD (caméra branchée sur EthernAude) dans une pièce faiblement éclairée. Le mieux est de procéder pendant la nuit dans une pièce éclairée par l'écran de l'ordinateur.\n\n\
 Cliquer sur le bouton rouge $caption(go) pour faire une image en binning 2x2. L'image doit être grise parsemée de nombreux pixels blancs"
@@ -94,6 +94,7 @@ wm geometry .second ${screenwidth}x${screenheight}+0+0
 wm maxsize .second [winfo screenwidth .second] [winfo screenheight .second]
 wm minsize .second ${screenwidth} ${screenheight}
 wm resizable .second 1 1
+wm protocol .second WM_DELETE_WINDOW tuto_firstlight_exit
 set widgetDemo 1
 
 #----------------------------------------------------------------
@@ -291,7 +292,7 @@ set lastLine ""
 focus .second.s
 wm withdraw .main
 
-bind .second <Destroy> {
+proc tuto_firstlight_exit { } {
    wm deiconify .main
    destroy .second
 }
@@ -366,3 +367,4 @@ proc acquisition_firstlight {exposure} {
    $zone(red_button) configure -text $caption(go) -relief raised
 
 }
+

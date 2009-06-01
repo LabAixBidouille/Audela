@@ -1,10 +1,11 @@
 #
-# Mise a jour $Id: tuto.ipport.tcl,v 1.11 2009-05-01 10:27:31 robertdelmas Exp $
+# Mise a jour $Id: tuto.ipport.tcl,v 1.12 2009-06-01 09:50:12 robertdelmas Exp $
 #
 
 #!/bin/sh
 # the next line restarts using wish \
 #exec wish "$0" "$@"
+
 global ipeth
 
 proc caption_def_plugcam { langage } {
@@ -30,7 +31,7 @@ proc caption_def_plugcam { langage } {
 if {[string compare $langage french] ==0 } {
    set caption(ethernaude) "EthernAude"
    set caption(connect) "Connecter"
-   set texte(firstdark_1) "Tutorial pour les utilisateurs de l'EthernAude"
+   set texte(firstdark_1) "Tutoriel pour les utilisateurs de l'EthernAude"
    set texte(firstdark_2) "Connexion logicielle entre l'ordinateur et l'EthernAude."
    set texte(firstdark_3) "\
 Pour communiquer sur un réseau informatique, l'ordinateur et\
@@ -194,6 +195,7 @@ wm geometry .second ${screenwidth}x${screenheight}+0+0
 wm maxsize .second [winfo screenwidth .second] [winfo screenheight .second]
 wm minsize .second ${screenwidth} ${screenheight}
 wm resizable .second 1 1
+wm protocol .second WM_DELETE_WINDOW tuto_ipport_exit
 set widgetDemo 1
 
 #----------------------------------------------------------------
@@ -378,8 +380,11 @@ set lastLine ""
 focus .second.s
 wm withdraw .main
 
-bind .second <Destroy> {
+proc tuto_ipport_exit { } {
+   global ipeth
+
    catch {unset ipeth}
    wm deiconify .main
    destroy .second
 }
+
