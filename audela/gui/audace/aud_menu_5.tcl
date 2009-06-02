@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_5.tcl
 # Description : Script regroupant les fonctionnalites du menu Analyse
-# Mise a jour $Id: aud_menu_5.tcl,v 1.5 2009-02-07 11:23:26 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_5.tcl,v 1.6 2009-06-02 16:56:57 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -14,19 +14,17 @@ namespace eval ::audace {
    proc ::audace::Histo { visuNo } {
       global caption
 
-      #---
       set bufNo [ visu$visuNo buf ]
-
       if { [ buf$bufNo imageready ] == "1" } {
          buf$bufNo imaseries "CUTS lofrac=0.01 hifrac=0.99 hicut=SH locut=SB keytype=FLOAT"
          set mini [ lindex [ buf$bufNo getkwd SB ] 1 ]
          set maxi [ lindex [ buf$bufNo getkwd SH ] 1 ]
          set r [ buf$bufNo histo 50 $mini $maxi ]
          ::plotxy::figure 1
-         ::plotxy::plot [ lindex $r 1 ]  [ lindex $r 0 ]
+         ::plotxy::title "$caption(audace,histo_titre) (visu$visuNo)"
          ::plotxy::xlabel "$caption(audace,histo_adu)"
          ::plotxy::ylabel "$caption(audace,histo_nbpix)"
-         ::plotxy::title "$caption(audace,histo_titre) (visu$visuNo)"
+         ::plotxy::plot [ lindex $r 1 ] [ lindex $r 0 ]
       }
    }
 
