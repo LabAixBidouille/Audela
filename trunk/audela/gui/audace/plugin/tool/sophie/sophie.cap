@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.12 2009-06-01 07:15:42 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.13 2009-06-02 18:20:04 michelpujol Exp $
 #
 
 #=========================================================================
@@ -135,8 +135,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,dx)                    "dx"
    set caption(sophie,dy)                    "dy"
    set caption(sophie,erreur)                "Erreur (pixel)"
-   set caption(sophie,alpha)                 "alpha"
-   set caption(sophie,delta)                 "delta"
+   set caption(sophie,alpha)                 "dalpha"
+   set caption(sophie,delta)                 "ddelta"
    ###set caption(sophie,erreurAlpha)           "Erreur alpha"
    ###set caption(sophie,erreurDelta)           "Erreur delta"
    ###set caption(sophie,correctionAlpha)       "Correction alpha"
