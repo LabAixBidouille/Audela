@@ -2,7 +2,7 @@
 # Fichier : sophieconfig.tcl
 # Description : Fenetre de configuration de l'instrument Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophieconfig.tcl,v 1.4 2009-05-27 21:54:56 michelpujol Exp $
+# Mise a jour $Id: sophieconfig.tcl,v 1.5 2009-06-02 21:39:15 robertdelmas Exp $
 #
 
 #============================================================
@@ -149,7 +149,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -relief sunken             \
          -borderwidth 1             \
          -textvariable ::sophie::config::widget(binCentrageDefaut) \
-         -editable 1                \
+         -editable 0                \
          -values $::sophie::private(listeBinning)
       grid $frm.acq.valeurbincentrage -in [ $frm.acq getframe ] -row 1 -column 1 -sticky ens
 
@@ -164,7 +164,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -relief sunken             \
          -borderwidth 1             \
          -textvariable ::sophie::config::widget(binGuidageDefaut) \
-         -editable 1                \
+         -editable 0                \
          -values $::sophie::private(listeBinning)
       grid $frm.acq.valeurbinguidage -in [ $frm.acq getframe ] -row 2 -column 1 -sticky ens
 
