@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.2 2009-04-21 20:46:05 jacquesmichelet Exp $
+# $Id: calaphot_principal.tcl,v 1.3 2009-06-02 09:32:49 jacquesmichelet Exp $
 #
 
 ###catch {namespace delete ::Calaphot}
@@ -1113,7 +1113,8 @@ namespace eval ::CalaPhot {
             if { ( (![info exists parametres(version_ini)]) \
                 || ([string compare $parametres(version_ini) $calaphot(init,version_ini)] != 0) ) } {
                 set parametres(niveau_message) $calaphot(init,niveau_message)
-                Message probleme "%s\n" $calaphot(texte,detection_ini)
+                # Il n'est pas possible d'utiliser Message a cause de $parametres qui n'existe plus
+                ::console::affiche_erreur $calaphot(texte,detection_ini)
                 foreach {a b} [array get parametres] {unset parametres($a)}
             }
         }
