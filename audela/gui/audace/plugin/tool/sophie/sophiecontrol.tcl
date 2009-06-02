@@ -2,7 +2,7 @@
 # Fichier : sophiecontrol.tcl
 # Description : Fenetre de controle pour le centrage, la focalisation et le guidage
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecontrol.tcl,v 1.12 2009-05-31 15:31:53 robertdelmas Exp $
+# Mise a jour $Id: sophiecontrol.tcl,v 1.13 2009-06-02 18:23:38 michelpujol Exp $
 #
 
 #============================================================
@@ -57,61 +57,61 @@ proc ::sophie::control::run { visuNo tkbase } {
    #--- vecteur des abcisses
   if { [::blt::vector names ::sophieAbcisse ] == "" } {
       ::blt::vector create ::sophieAbcisse
-      ::sophieAbcisse length $private(vectorLength)
+      ###::sophieAbcisse length $private(vectorLength)
       ::sophieAbcisse seq 1 $private(vectorLength)
    }
 
    #--- vecteur FwhmX
    if { [::blt::vector names ::sophieFwhmX] == "" } {
       ::blt::vector create ::sophieFwhmX
-      ::sophieFwhmX length $private(vectorLength)
+      ###::sophieFwhmX length $private(vectorLength)
    }
    #--- vecteur FwhmY
    if { [::blt::vector names ::sophieFwhmY] == "" } {
       ::blt::vector create ::sophieFwhmY
-      ::sophieFwhmY length $private(vectorLength)
+      ###::sophieFwhmY length $private(vectorLength)
    }
 
    #--- vecteur MaxIntensity
    if { [::blt::vector names ::sophieMaxIntensity] == "" } {
       ::blt::vector create ::sophieMaxIntensity
-      ::sophieMaxIntensity length $private(vectorLength)
+      ###::sophieMaxIntensity length $private(vectorLength)
    }
 
    #--- vecteur alphaDiff
    if { [::blt::vector names ::sophieEcartEtoileX] == "" } {
       ::blt::vector create ::sophieEcartEtoileX
-      ::sophieEcartEtoileX length $private(vectorLength)
+      ###::sophieEcartEtoileX length $private(vectorLength)
    }
 
    #--- vecteur DeltaDiff
    if { [::blt::vector names ::sophieEcartEtoileY] == "" } {
       ::blt::vector create ::sophieEcartEtoileY
-      ::sophieEcartEtoileY length $private(vectorLength)
+      ###::sophieEcartEtoileY length $private(vectorLength)
    }
 
    #--- vecteur AlphaCorrection
    if { [::blt::vector names ::sophieCorrectionAlpha] == "" } {
       ::blt::vector create ::sophieCorrectionAlpha
-      ::sophieCorrectionAlpha length $private(vectorLength)
+      ###::sophieCorrectionAlpha length $private(vectorLength)
    }
 
    #--- vecteur DeltaCorrection
    if { [::blt::vector names ::sophieCorrectionDelta] == "" } {
       ::blt::vector create ::sophieCorrectionDelta
-      ::sophieCorrectionDelta length $private(vectorLength)
+      ###::sophieCorrectionDelta length $private(vectorLength)
    }
 
    #--- vecteur consigneXDiff
    if { [::blt::vector names ::sophieEcartConsigneX] == "" } {
       ::blt::vector create ::sophieEcartConsigneX
-      ::sophieEcartConsigneX length $private(vectorLength)
+      ###::sophieEcartConsigneX length $private(vectorLength)
    }
 
    #--- vecteur consigneYDiff
    if { [::blt::vector names ::sophieEcartConsigneY] == "" } {
       ::blt::vector create ::sophieEcartConsigneY
-      ::sophieEcartConsigneY length $private(vectorLength)
+      ##::sophieEcartConsigneY length $private(vectorLength)
    }
 
    #--- Initialisation des vecteurs des fenetres Focalisation et Guidage
@@ -357,7 +357,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -textvariable ::sophie::control::private(positionEtoileX)
       grid $frm.positionGuidage.entryPositionEtoileX \
          -in [ $frm.positionGuidage getframe ] \
-         -row 1 -column 1 -sticky ens
+         -row 1 -column 1 -sticky ew
 
       #--- Position etoile y
       label $frm.positionGuidage.labelPositionEtoileY -text $::caption(sophie,y)
@@ -370,7 +370,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -textvariable ::sophie::control::private(positionEtoileY)
       grid $frm.positionGuidage.entryPositionEtoileY \
          -in [ $frm.positionGuidage getframe ] \
-         -row 2 -column 1 -sticky ens
+         -row 2 -column 1 -sticky ew
 
        #--- Position consigne
       label $frm.positionGuidage.labelConsigne -text $::caption(sophie,positionConsigne)
@@ -389,7 +389,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -textvariable ::sophie::control::private(positionConsigneX)
       grid $frm.positionGuidage.entryPositionConsigneX \
          -in [ $frm.positionGuidage getframe ] \
-         -row 1 -column 3 -sticky ens
+         -row 1 -column 3 -sticky ew
 
       #--- Positionconsigne Y
       label $frm.positionGuidage.labelPositionConsigneY -text $::caption(sophie,y)
@@ -402,7 +402,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -textvariable ::sophie::control::private(positionConsigneY)
       grid $frm.positionGuidage.entryPositionConsigneY \
          -in [ $frm.positionGuidage getframe ] \
-         -row 2 -column 3 -sticky ens
+         -row 2 -column 3 -sticky ew
 
        #--- Ecart etoile
       label $frm.positionGuidage.labelEcartEtoile -text $::caption(sophie,ecartEtoile)
@@ -421,7 +421,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -textvariable ::sophie::control::private(ecartEtoileX)
       grid $frm.positionGuidage.entryEcartEtoileX \
          -in [ $frm.positionGuidage getframe ] \
-         -row 1 -column 5 -sticky ens
+         -row 1 -column 5 -sticky ew
 
       #--- Ecart etoile Y
       label $frm.positionGuidage.labelEcartEtoileY -text $::caption(sophie,dy)
@@ -434,7 +434,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -textvariable ::sophie::control::private(ecartEtoileY)
       grid $frm.positionGuidage.entryEcartEtoileY \
          -in [ $frm.positionGuidage getframe ] \
-         -row 2 -column 5 -sticky ens
+         -row 2 -column 5 -sticky ew
 
        #--- Correction
       label $frm.positionGuidage.labelCorrection -text $::caption(sophie,correction)
@@ -453,7 +453,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -textvariable ::sophie::control::private(correctionAlpha)
       grid $frm.positionGuidage.entryCorrectionAlpha \
          -in [ $frm.positionGuidage getframe ] \
-         -row 1 -column 7 -sticky ens
+         -row 1 -column 7 -sticky ew
 
       #--- Correction delta
       label $frm.positionGuidage.labelCorrectionDelta -text $::caption(sophie,delta)
@@ -466,16 +466,16 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -textvariable ::sophie::control::private(correctionDelta)
       grid $frm.positionGuidage.entryCorrectionDelta \
          -in [ $frm.positionGuidage getframe ] \
-         -row 2 -column 7 -sticky ens
+         -row 2 -column 7 -sticky ew
 
       grid columnconfigure [ $frm.positionGuidage getframe ] 0 -weight 1
-      grid columnconfigure [ $frm.positionGuidage getframe ] 1 -weight 0
+      grid columnconfigure [ $frm.positionGuidage getframe ] 1 -weight 1
       grid columnconfigure [ $frm.positionGuidage getframe ] 2 -weight 1
-      grid columnconfigure [ $frm.positionGuidage getframe ] 3 -weight 0
+      grid columnconfigure [ $frm.positionGuidage getframe ] 3 -weight 1
       grid columnconfigure [ $frm.positionGuidage getframe ] 4 -weight 1
-      grid columnconfigure [ $frm.positionGuidage getframe ] 5 -weight 0
+      grid columnconfigure [ $frm.positionGuidage getframe ] 5 -weight 1
       grid columnconfigure [ $frm.positionGuidage getframe ] 6 -weight 1
-      grid columnconfigure [ $frm.positionGuidage getframe ] 7 -weight 0
+      grid columnconfigure [ $frm.positionGuidage getframe ] 7 -weight 1
 
       #--- Frame pour la camera
       ####TitleFrame $frm.indicateurs.camera -borderwidth 2 -relief ridge \
@@ -615,7 +615,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          #--- Intensite maxi
          createGraph $frm.focalisation.courbes.graphintensiteMax_simple 120
          $frm.focalisation.courbes.graphintensiteMax_simple axis configure y -min 0
-         $frm.focalisation.courbes.graphintensiteMax_simple element create mexIntensity \
+         $frm.focalisation.courbes.graphintensiteMax_simple element create maxIntensity \
             -xdata ::sophieAbcisse -ydata ::sophieMaxIntensity \
             -symbol none -label $::caption(sophie,intensiteMax)
          $frm.focalisation.courbes.graphintensiteMax_simple legend configure \
@@ -628,7 +628,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          grid columnconfig [ $frm.focalisation.courbes getframe ] 0 -weight 0
          grid columnconfig [ $frm.focalisation.courbes getframe ] 1 -weight 1
       pack $frm.focalisation.courbes -side top -anchor w -fill x -expand 1
-console::disp "frm = $frm.focalisation.courbes.graphintensiteMax_simple\n"
+##console::disp "frm = $frm.focalisation.courbes.graphintensiteMax_simple\n"
   # pack $frm.focalisation -side top -fill both
 
    #--- Frame du guidage
@@ -1087,15 +1087,13 @@ proc ::sophie::control::setGuideState { state } {
       $frm.voyant.guidage_color_invariant configure \
          -text $::caption(sophie,guidageSuspendu) \
          -bg   $private(inactiveColor)
-      #--- je change le libelle du bouton de commande
-      ##$frm.guidage.activationGuidage.etoile configure -text $::caption(sophie,activationGuidage)
+      #--- je purge les vecteurs
+
    } else {
       #--- j'affiche le voyant en vert
       $frm.voyant.guidage_color_invariant configure \
          -text $::caption(sophie,guidageEncours) \
          -bg   $private(activeColor)
-      #--- je change le libelle du bouton de commande
-      ###$frm.guidage.activationGuidage.etoile configure -text $::caption(sophie,suspendreGuidage)
    }
 }
 
@@ -1218,29 +1216,44 @@ proc ::sophie::control::setFocusInformation { starDetection fiberDetection origi
    set private(indicateursFluxMax)    [format "%6.1f" $maxIntensity]
 
    #--- j'ajoute la valeur dans le graphe FwhmX
-   ::sophieFwhmX delete 0
    ::sophieFwhmX append $fwhmX
+   if { [::sophieFwhmX length] >= $private(vectorLength) } {
+      #--- je supprime le point le plus ancien
+      ::sophieFwhmX delete 0
+   }
 
    #--- j'ajoute la valeur dans le graphe FwhmY
-   ::sophieFwhmY delete 0
    ::sophieFwhmY append $fwhmY
+   if { [::sophieFwhmY length] >= $private(vectorLength) } {
+      #--- je supprime le point le plus ancien
+      ::sophieFwhmY delete 0
+   }
 
    #--- j'ajoute la valeur dans le graphe maxIntensity
-   ::sophieMaxIntensity delete 0
    ::sophieMaxIntensity append $maxIntensity
+   if { [::sophieMaxIntensity length] >= $private(vectorLength) } {
+      #--- je supprime le point le plus ancien
+      ::sophieMaxIntensity delete 0
+   }
 
-   #--- Je mets les intensites maxi dans une liste
-   lappend private(listMaxIntensity) "$maxIntensity"
-   #--- Je trie la liste des intensites maxi
-   set private(listMaxIntensity) [ lsort $private(listMaxIntensity) ]
-   #--- Je calcule la longueur de la liste des intensites maxi
-   set longueurListe [ llength $private(listMaxIntensity) ]
-   #--- Je recupere la valeur mini de la liste a laquelle je retranche 10
-   set intensityMin [ expr [ lindex $private(listMaxIntensity) 0 ] - 10. ]
-   #--- Je recupere la valeur maxi de la liste a laquelle j'ajoute 10
-   set intensityMax [ expr [ lindex $private(listMaxIntensity) [ expr $longueurListe - 1 ] ] + 10. ]
-   #--- J'affiche le graphe avec une ordonnee dynamique de l'intensite
-   $frm.focalisation.courbes.graphintensiteMax_simple axis configure y -min $intensityMin -max $intensityMax
+
+   ####--- Je mets les intensites maxi dans une liste
+   ###lappend private(listMaxIntensity) "$maxIntensity"
+   ####--- Je trie la liste des intensites maxi
+   ###set private(listMaxIntensity) [ lsort $private(listMaxIntensity) ]
+   ####--- Je calcule la longueur de la liste des intensites maxi
+   ###set longueurListe [ llength $private(listMaxIntensity) ]
+   ####--- Je recupere la valeur mini de la liste a laquelle je retranche 10
+   ###set intensityMin [ expr [ lindex $private(listMaxIntensity) 0 ] - 10. ]
+   ####--- Je recupere la valeur maxi de la liste a laquelle j'ajoute 10
+   ###set intensityMax [ expr [ lindex $private(listMaxIntensity) [ expr $longueurListe - 1 ] ] + 10. ]
+   ###if { $intensityMax < $intensityMin } {
+   ###   set temp $intensityMin
+   ###   set intensityMin $intensityMax
+   ###   set intensityMax $temp
+   ###}
+   ####--- J'affiche le graphe avec une ordonnee dynamique de l'intensite
+   ###$frm.focalisation.courbes.graphintensiteMax_simple axis configure y -min $intensityMin -max $intensityMax
 
 }
 
@@ -1289,42 +1302,77 @@ proc ::sophie::control::setGuideInformation { starDetection fiberDetection origi
          -bg   $private(activeColor)
    }
 
+   if { $::conf(sophie,guidingMode) == "FIBER" } {
+      #--- je calcule l'écart par rapport à la position de depart
+      if { $::conf(sophie,fiberGuigindMode) == "HR" } {
+         set configX   "/$::conf(sophie,fiberHRX)"
+         set configY   "/$::conf(sophie,fiberHRY)"
+      } else {
+         set configX   "/$::conf(sophie,fiberHEX)"
+         set configY   "/$::conf(sophie,fiberHEY)"
+      }
+   } else {
+      set configX ""
+      set configY ""
+   }
+
    set private(indicateursFwhmX)      ""
    set private(indicateursFwhmY)      ""
    set private(indicateursFondDeCiel) ""
    set private(indicateursFluxMax)    ""
 
-   set private(positionEtoileX)   [format "%6.2f" $starX]
-   set private(positionEtoileY)   [format "%6.2f" $starY]
-   set private(positionConsigneX) [format "%6.2f" $originX]
-   set private(positionConsigneY) [format "%6.2f" $originY]
-   set private(ecartEtoileX)      [format "%6.2f" $starDx]
-   set private(ecartEtoileY)      [format "%6.2f" $starDy]
-   set private(ecartConsigneX)    [format "%6.2f" $originDx]
-   set private(ecartConsigneY)    [format "%6.2f" $originDy]
+   set private(positionEtoileX)   [format "%6.1f" $starX]
+   set private(positionEtoileY)   [format "%6.1f" $starY]
+   set private(positionConsigneX) [format "%6.1f%s" $originX $configX]
+   set private(positionConsigneY) [format "%6.1f%s" $originY $configY]
+   set private(ecartEtoileX)      [format "%6.1f" $starDx]
+   set private(ecartEtoileY)      [format "%6.1f" $starDy]
+   set private(ecartConsigneX)    [format "%6.1f" $originDx]
+   set private(ecartConsigneY)    [format "%6.1f" $originDy]
    set private(correctionAlpha)   [format "%6.2f" $alphaCorrection]
    set private(correctionDelta)   [format "%6.2f" $deltaCorrection]
 
    #--- j'ajoute la valeur le graphe starDx
-   ::sophieEcartEtoileX delete 0
    ::sophieEcartEtoileX append $starDx
+   if { [::sophieEcartEtoileX length] >= $private(vectorLength) } {
+      #--- je supprime le point le plus ancien
+      ::sophieEcartEtoileX delete 0
+   }
+
    #--- j'ajoute la valeur le graphe starDy
-   ::sophieEcartEtoileY delete 0
    ::sophieEcartEtoileY append $starDy
+   if { [::sophieEcartEtoileY length] >= $private(vectorLength) } {
+      #--- je supprime le point le plus ancien
+      ::sophieEcartEtoileY delete 0
+   }
 
    #--- j'ajoute la valeur le graphe alphaCorrection
-   ::sophieCorrectionAlpha delete 0
    ::sophieCorrectionAlpha append $alphaCorrection
+   if { [::sophieCorrectionAlpha length] >= $private(vectorLength) } {
+      #--- je supprime le point le plus ancien
+      ::sophieCorrectionAlpha delete 0
+   }
+
    #--- j'ajoute la valeur le graphe deltaCorrection
-   ::sophieCorrectionDelta delete 0
    ::sophieCorrectionDelta append $deltaCorrection
+   if { [::sophieCorrectionDelta length] >= $private(vectorLength) } {
+      #--- je supprime le point le plus ancien
+      ::sophieCorrectionDelta delete 0
+   }
+
+   #--- j'ajoute la valeur le graphe sophieEcartConsigneX
+   ::sophieEcartConsigneX append $originDx
+   if { [::sophieEcartConsigneX length] >= $private(vectorLength) } {
+      #--- je supprime le point le plus ancien
+      ::sophieEcartConsigneX delete 0
+   }
 
    #--- j'ajoute la valeur le graphe sophieEcartConsigneY
-   ::sophieEcartConsigneX delete 0
-   ::sophieEcartConsigneX append $originDx
-   #--- j'ajoute la valeur le graphe sophieEcartConsigneY
-   ::sophieEcartConsigneY delete 0
    ::sophieEcartConsigneY append $originDy
+   if { [::sophieEcartConsigneY length] >= $private(vectorLength) } {
+      #--- je supprime le point le plus ancien
+      ::sophieEcartConsigneY delete 0
+   }
 }
 
 #
@@ -1353,16 +1401,38 @@ proc ::sophie::control::dispTempFLI { camItem } {
 
 proc ::sophie::control::resetFocusVector {  } {
    #--- raz des vecteurs
-   set ::sophieFwhmX(0:end) 0
-   set ::sophieFwhmY(0:end) 0
-   set ::sophieMaxIntensity(0:end) 0
+   if { [::sophieFwhmX length] > 0 } {
+      ::sophieFwhmX delete 0:end
+   }
+   if { [::sophieFwhmY length] > 0 } {
+      ::sophieFwhmY delete 0:end
+   }
+   if { [::sophieMaxIntensity length] > 0 } {
+      ::sophieMaxIntensity delete 0:end
+   }
+
 }
 
 proc ::sophie::control::resetGuideVector {  } {
    #--- raz des vecteurs
-   set ::sophieEcartEtoileX(0:end) 0
-   set ::sophieEcartEtoileY(0:end) 0
-   set ::sophieCorrectionAlpha(0:end) 0
-   set ::sophieCorrectionDelta(0:end) 0
+
+   if { [::sophieEcartConsigneX length] > 0 } {
+      ::sophieEcartConsigneX delete 0:end
+   }
+   if { [::sophieEcartConsigneY length] > 0 } {
+      ::sophieEcartConsigneY delete 0:end
+   }
+   if { [::sophieEcartEtoileX length] > 0 } {
+      ::sophieEcartEtoileX delete 0:end
+   }
+   if { [::sophieEcartEtoileY length] > 0 } {
+      ::sophieEcartEtoileY delete 0:end
+   }
+   if { [::sophieCorrectionAlpha length] > 0 } {
+      ::sophieCorrectionAlpha delete 0:end
+   }
+   if { [::sophieCorrectionDelta length] > 0 } {
+      sophieCorrectionDelta delete 0:end
+   }
 }
 
