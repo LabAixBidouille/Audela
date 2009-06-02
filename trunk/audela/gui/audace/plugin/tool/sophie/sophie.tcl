@@ -2,7 +2,7 @@
 # Fichier : sophie.tcl
 # Description : Outil d'autoguidage pour le spectro Sophie du telescope T193 de l'OHP
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophie.tcl,v 1.11 2009-06-01 07:18:06 robertdelmas Exp $
+# Mise a jour $Id: sophie.tcl,v 1.12 2009-06-02 18:21:25 michelpujol Exp $
 #
 
 #============================================================
@@ -150,7 +150,13 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(bufNo)            [::confVisu::getBufNo $visuNo]
    set private(hCanvas)          [::confVisu::getCanvas $visuNo]
    set private(originCoord)      $::conf(sophie,originCoord)
-   set private(targetCoord)      $::conf(sophie,originCoord)
+   if { $::conf(sophie,detection) == "FIBER" } {
+      #--- je place le symbole de la cible sur la consigne FIBRE HR
+      set private(targetCoord)      [list $::conf(sophie,fiberHRX) $::conf(sophie,fiberHRY)]
+   } else {
+      #--- je place le symbole de la cible sur la consigne OBJET
+      set private(targetCoord)      $::conf(sophie,originCoord)
+   }
    set private(centerEnabled)    0
    set private(guideEnabled)     0
    set private(mountEnabled)     0
@@ -219,7 +225,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
 
          #--- ComboBox pour le choix du binning
          ComboBox $frm.acq.binning \
-            -entrybg white -justify center -takefocus 1 \
+            -entrybg white -justify center -takefocus 1 -editable 0 \
             -width [ ::tkutil::lgEntryComboBox $private(listeBinning) ] \
             -textvariable ::sophie::private(widgetBinning) \
             -modifycmd "::sophie::onChangeBinning $visuNo" \
