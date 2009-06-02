@@ -2,7 +2,7 @@
 # Fichier : sectiongraph.tcl
 # Description : Affiche une coupe de l'image
 # Auteur : Michel PUJOL
-# Mise a jour $Id: sectiongraph.tcl,v 1.8 2007-11-10 11:28:30 michelpujol Exp $
+# Mise a jour $Id: sectiongraph.tcl,v 1.9 2009-06-02 17:47:52 robertdelmas Exp $
 #
 
 namespace eval ::sectiongraph {
@@ -15,14 +15,12 @@ namespace eval ::sectiongraph {
 #------------------------------------------------------------
 proc ::sectiongraph::init { visuNo } {
    variable private
-   global audace
-   global conf
 
    if { [ buf[::confVisu::getBufNo $visuNo] imageready] == "0" } {
       return
    }
 
-   #--- je verifie si la variable
+   #--- je verifie si la variable existe
    if { [info exists private($visuNo,This)] } {
       wm withdraw $private($visuNo,This)
       wm deiconify $private($visuNo,This)
@@ -44,7 +42,7 @@ proc ::sectiongraph::init { visuNo } {
    set x2 [expr [lindex $canvasCenter 0 ] + 20 ]
    set y [lindex $canvasCenter 1 ]
    set private($visuNo,itemNo) [::polydraw::createLine $visuNo [list $x1 $y $x2 $y ] ]
-   #--- j'active le rafraichissement automatique sur déplacement de la ligne de coupe
+   #--- j'active le rafraichissement automatique sur deplacement de la ligne de coupe
    ::polydraw::addMoveItemListener $visuNo $private($visuNo,itemNo) "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
    #--- je declare le rafraichissement automatique au changement d'image
    ::confVisu::addFileNameListener $visuNo "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
@@ -146,7 +144,7 @@ proc ::sectiongraph::refresh { visuNo itemNo args } {
    } else {
       sectiongraphYG$visuNo set $lyG
       sectiongraphYB$visuNo set $lyB
-      #--- j'affiche trois courbes rouge, vert, bleu
+      #--- j'affiche trois courbes rouge, verte et bleue
       $private($visuNo,graph,horz) element configure lineR -color red
       $private($visuNo,graph,horz) element configure lineG -color green
       $private($visuNo,graph,horz) element configure lineB -color blue
@@ -158,14 +156,12 @@ proc ::sectiongraph::refresh { visuNo itemNo args } {
 
 #------------------------------------------------------------
 #  createToplevel
-#     initialise le graphe
+#     creation de la fenetre
 #
-#  return namespace name
+#  return : null
 #------------------------------------------------------------
 proc ::sectiongraph::createToplevel { visuNo } {
    variable private
-   global audace
-   global conf
    global caption
 
    set base [ ::confVisu::getBase $visuNo ]
@@ -190,14 +186,14 @@ proc ::sectiongraph::createToplevel { visuNo } {
    wm geometry $This "+350+75"
    wm protocol $This WM_DELETE_WINDOW "::sectiongraph::closeToplevel $visuNo"
 
-   # Horizontal Graph
+   #--- Horizontal Graph
    set private($visuNo,graph,horz) [blt::graph $This.horz \
             -title "" \
             -width $width -height $height \
             -takefocus 0 \
             -bd 0 -relief flat \
-            -rightmargin 1 -leftmargin 1 \
-            -topmargin 4 -bottommargin 1 \
+            -rightmargin 2 -leftmargin 60 \
+            -topmargin 2 -bottommargin 25 \
             -background black \
             -plotborderwidth 2 -plotrelief groove \
             -plotpadx 0 -plotpady 0 \
@@ -214,28 +210,28 @@ proc ::sectiongraph::createToplevel { visuNo } {
    $private($visuNo,graph,horz) element create lineB \
       -xdata sectiongraphX$visuNo -ydata sectiongraphYB$visuNo -color $fgColor -symbol ""
    $private($visuNo,graph,horz) legend configure -hide yes
-   $private($visuNo,graph,horz) xaxis configure -title "" -hide yes
-   $private($visuNo,graph,horz) x2axis configure -title "" -hide yes
-   $private($visuNo,graph,horz) yaxis configure -title "" -hide yes
-   $private($visuNo,graph,horz) y2axis configure -title "" -hide no -color $fgColor \
+   $private($visuNo,graph,horz) axis configure x -min 0
+   $private($visuNo,graph,horz) xaxis configure -title "" -hide no -color $fgColor \
       -ticklength 4 -tickfont $canvasFont
+   $private($visuNo,graph,horz) x2axis configure -title "" -hide yes
+   $private($visuNo,graph,horz) yaxis configure -title "" -hide no -color $fgColor \
+      -ticklength 4 -tickfont $canvasFont
+   $private($visuNo,graph,horz) y2axis configure -title "" -hide yes
    $private($visuNo,graph,horz) grid configure -mapy y -dashes ""
    $private($visuNo,graph,horz) crosshairs configure -color green
-   # $private($visuNo,graph,horz) element configure line1 -hide yes
    $private($visuNo,graph,horz) element configure lineR -hide no
 
    pack $private($visuNo,graph,horz)
 
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
    bind $This <Key-F1> { ::console::GiveFocus }
-
 }
 
 #------------------------------------------------------------
 #  closeToplevel
-#     ferme la fenetre et libere les ressources associées
+#     ferme la fenetre et libere les ressources associees
 #
-#  return namespace name
+#  return : null
 #------------------------------------------------------------
 proc ::sectiongraph::closeToplevel { visuNo } {
    variable private
