@@ -2,7 +2,7 @@
 # Fichier : sophiecommand.tcl
 # Description : Centralise les commandes de l'outil Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecommand.tcl,v 1.11 2009-06-01 07:22:57 robertdelmas Exp $
+# Mise a jour $Id: sophiecommand.tcl,v 1.12 2009-06-02 18:22:43 michelpujol Exp $
 #
 
 #============================================================
@@ -1166,6 +1166,7 @@ proc ::sophie::startAcquisition { visuNo } {
 
       set private(AsynchroneParameter) 0
       ::camera::setAsynchroneParameter $private(camItem) \
+         "guidingMode"             $::conf(sophie,guidingMode) \
          "targetDetectionThresold" $::conf(sophie,targetDetectionThresold) \
          "pixelScale"              $::conf(sophie,pixelScale) \
          "targetDec"               [ mc_angle2deg $::audace(telescope,getdec) 90 ] \
@@ -1246,8 +1247,10 @@ proc ::sophie::stopAcquisition { visuNo } {
 
       #--- j'arrete le centrage s'il était en cours
       stopCenter
+      #--- j'arrete le guidage s'il était en cours
+      stopGuide
 
-      #--- je ferme lobturateur de la camera
+      #--- l'obturateur de la camera est ferme a la fin de la derniere acquisition pour ne pas la perturber.
       #cam$private(camNo) shutter closed
 
    }
@@ -1415,8 +1418,6 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
 
                set originX              [expr [lindex $params 0] * $private(xBinning) + $private(xWindow) -1 ]
                set originY              [expr [lindex $params 1] * $private(yBinning) + $private(yWindow) -1 ]
-               set originDx             0.0
-               set originDy             0.0
                set fwhmX                [lindex $params 2]
                set fwhmY                [lindex $params 3]
                set background           [lindex $params 4]
@@ -1425,10 +1426,22 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                set alphaCorrection      [lindex $params 7]
                set deltaCorrection      [lindex $params 8]
 
+               #--- je modifie la position de la consigne si on est en mode FIFER et la fibre est detectee
                if { $::conf(sophie,guidingMode) == "FIBER" } {
                   if { $fiberDetected == 1 } {
                      set private(originCoord) [list $originX $originY]
-                 }
+                  }
+                  #--- je calcule l'écart par rapport à la position de depart
+                  if { $::conf(sophie,fiberGuigindMode) == "HR" } {
+                     set originDx  [expr $originX - $::conf(sophie,fiberHRX) ]
+                     set originDy  [expr $originY - $::conf(sophie,fiberHRY) ]
+                  } else {
+                     set originDx  [expr $originX - $::conf(sophie,fiberHEX) ]
+                     set originDy  [expr $originY - $::conf(sophie,fiberHEY) ]
+                  }
+               } else {
+                  set originDx 0.0
+                  set originDy 0.0
                }
 
                #--- je deplace la cible sur les nouvelles corrdonnees
