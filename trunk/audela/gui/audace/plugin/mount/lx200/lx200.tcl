@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise a jour $Id: lx200.tcl,v 1.25 2009-05-29 16:46:14 robertdelmas Exp $
+# Mise a jour $Id: lx200.tcl,v 1.26 2009-06-02 18:26:40 michelpujol Exp $
 #
 
 namespace eval ::lx200 {
@@ -117,6 +117,9 @@ proc ::lx200::initPlugin { } {
    if { ! [ info exists conf(lx200,modele) ] }          { set conf(lx200,modele)          "LX200" }
    if { ! [ info exists conf(lx200,format) ] }          { set conf(lx200,format)          "1" }
    if { ! [ info exists conf(lx200,ite-lente_tempo) ] } { set conf(lx200,ite-lente_tempo) "300" }
+   if { ! [ info exists conf(lx200,alphaGuidingSpeed) ] }   { set conf(lx200,alphaGuidingSpeed)   "3.0" }
+   if { ! [ info exists conf(lx200,deltaGuidingSpeed) ] }   { set conf(lx200,deltaGuidingSpeed)   "3.0" }
+   set private(tracesConsole) "0"
 }
 
 #
@@ -134,6 +137,8 @@ proc ::lx200::confToWidget { } {
    set private(format)          [ lindex "$caption(lx200,format_court_long)" $conf(lx200,format) ]
    set private(ite-lente_tempo) $conf(lx200,ite-lente_tempo)
    set private(raquette)        $conf(raquette)
+   set private(alphaGuidingSpeed)   $conf(lx200,alphaGuidingSpeed)
+   set private(deltaGuidingSpeed)   $conf(lx200,deltaGuidingSpeed)
 }
 
 #
@@ -151,6 +156,8 @@ proc ::lx200::widgetToConf { } {
    set conf(lx200,modele)          $private(modele)
    set conf(lx200,ite-lente_tempo) $private(ite-lente_tempo)
    set conf(raquette)              $private(raquette)
+   set conf(lx200,alphaGuidingSpeed)   $private(alphaGuidingSpeed)
+   set conf(lx200,deltaGuidingSpeed)   $private(deltaGuidingSpeed)
 }
 
 #
@@ -304,7 +311,34 @@ proc ::lx200::fillConfigPage { frm } {
    checkbutton $frm.tracesConsole -text "$caption(lx200,tracesConsole)" \
       -highlightthickness 0 -variable ::lx200::private(tracesConsole) \
       -command "::lx200::tracesConsole"
-   pack $frm.tracesConsole -in $frm.frame2 -anchor w -side top -padx 10 -pady 10
+   pack $frm.tracesConsole -in $frm.frame2 -anchor w -side left -padx 10 -pady 10
+
+   #--- frame des vitesses de guidage
+   frame $frm.frame2.frameSpeed -borderwidth 0
+      #--- Vitesse de rappel alpha
+      label $frm.frame2.frameSpeed.labelAlpha -text "Vitesse de rappel alpha (arcsec/sec)"
+      entry $frm.frame2.frameSpeed.entryAlpha -textvariable ::lx200::private(alphaGuidingSpeed) -width 5 -justify right
+      grid $frm.frame2.frameSpeed.labelAlpha  -row 0 -column 0 -sticky nw -ipadx 3
+      grid $frm.frame2.frameSpeed.entryAlpha  -row 0 -column 1 -sticky nw -ipadx 3
+
+      #--- Vitesse de rappel delta
+      label $frm.frame2.frameSpeed.labelDelta -text "Vitesse de rappel delta (arcsec/sec)"
+      entry $frm.frame2.frameSpeed.entryDelta -textvariable ::lx200::private(deltaGuidingSpeed) -width 5 -justify right
+      grid $frm.frame2.frameSpeed.labelDelta  -row 1 -column 0 -sticky nw -ipadx 3
+      grid $frm.frame2.frameSpeed.entryDelta  -row 1 -column 1 -sticky nw -ipadx 3
+
+      #--- information
+      label $frm.frame2.frameSpeed.labelInformation -text "(Vitesse sidérale = 15 arcsec/seconde )"
+      grid $frm.frame2.frameSpeed.labelInformation  -row 0 -column 2 -sticky nw -ipadx 3
+
+      grid rowconfigure $frm.frame2.frameSpeed 0  -weight 0
+      grid rowconfigure $frm.frame2.frameSpeed 1  -weight 0
+
+      grid columnconfigure $frm.frame2.frameSpeed 0 -weight 0
+      grid columnconfigure $frm.frame2.frameSpeed 1 -weight 0
+      grid columnconfigure $frm.frame2.frameSpeed 2 -weight 1
+
+   pack $frm.frame2.frameSpeed -in $frm.frame2 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
    #--- Entree de la tempo Ite-lente
    label $frm.lab4 -text "$caption(lx200,ite-lente_tempo)"
@@ -751,6 +785,7 @@ proc ::lx200::getPluginProperty { propertyName } {
          }
       }
       backlash                { return 0 }
+      guidingSpeed            { return [list $::conf(lx200,alphaGuidingSpeed) $::conf(lx200,deltaGuidingSpeed) ] }
    }
 }
 
