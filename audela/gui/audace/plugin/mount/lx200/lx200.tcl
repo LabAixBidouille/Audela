@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise a jour $Id: lx200.tcl,v 1.26 2009-06-02 18:26:40 michelpujol Exp $
+# Mise a jour $Id: lx200.tcl,v 1.27 2009-06-03 17:47:21 robertdelmas Exp $
 #
 
 namespace eval ::lx200 {
@@ -112,13 +112,13 @@ proc ::lx200::initPlugin { } {
    set list_connexion [::confLink::getLinkLabels { "serialport" "audinet" } ]
 
    #--- Initialise les variables de la monture LX200
-   if { ! [ info exists conf(lx200,port) ] }            { set conf(lx200,port)            [ lindex $list_connexion 0 ] }
-   if { ! [ info exists conf(lx200,ouranos) ] }         { set conf(lx200,ouranos)         "0" }
-   if { ! [ info exists conf(lx200,modele) ] }          { set conf(lx200,modele)          "LX200" }
-   if { ! [ info exists conf(lx200,format) ] }          { set conf(lx200,format)          "1" }
-   if { ! [ info exists conf(lx200,ite-lente_tempo) ] } { set conf(lx200,ite-lente_tempo) "300" }
-   if { ! [ info exists conf(lx200,alphaGuidingSpeed) ] }   { set conf(lx200,alphaGuidingSpeed)   "3.0" }
-   if { ! [ info exists conf(lx200,deltaGuidingSpeed) ] }   { set conf(lx200,deltaGuidingSpeed)   "3.0" }
+   if { ! [ info exists conf(lx200,port) ] }              { set conf(lx200,port)              [ lindex $list_connexion 0 ] }
+   if { ! [ info exists conf(lx200,ouranos) ] }           { set conf(lx200,ouranos)           "0" }
+   if { ! [ info exists conf(lx200,modele) ] }            { set conf(lx200,modele)            "LX200" }
+   if { ! [ info exists conf(lx200,format) ] }            { set conf(lx200,format)            "1" }
+   if { ! [ info exists conf(lx200,ite-lente_tempo) ] }   { set conf(lx200,ite-lente_tempo)   "300" }
+   if { ! [ info exists conf(lx200,alphaGuidingSpeed) ] } { set conf(lx200,alphaGuidingSpeed) "3.0" }
+   if { ! [ info exists conf(lx200,deltaGuidingSpeed) ] } { set conf(lx200,deltaGuidingSpeed) "3.0" }
    set private(tracesConsole) "0"
 }
 
@@ -131,14 +131,14 @@ proc ::lx200::confToWidget { } {
    global caption conf
 
    #--- Recupere la configuration de la monture LX200 dans le tableau private(...)
-   set private(port)            $conf(lx200,port)
-   set private(ouranos)         $conf(lx200,ouranos)
-   set private(modele)          $conf(lx200,modele)
-   set private(format)          [ lindex "$caption(lx200,format_court_long)" $conf(lx200,format) ]
-   set private(ite-lente_tempo) $conf(lx200,ite-lente_tempo)
-   set private(raquette)        $conf(raquette)
-   set private(alphaGuidingSpeed)   $conf(lx200,alphaGuidingSpeed)
-   set private(deltaGuidingSpeed)   $conf(lx200,deltaGuidingSpeed)
+   set private(port)              $conf(lx200,port)
+   set private(ouranos)           $conf(lx200,ouranos)
+   set private(modele)            $conf(lx200,modele)
+   set private(format)            [ lindex "$caption(lx200,format_court_long)" $conf(lx200,format) ]
+   set private(ite-lente_tempo)   $conf(lx200,ite-lente_tempo)
+   set private(raquette)          $conf(raquette)
+   set private(alphaGuidingSpeed) $conf(lx200,alphaGuidingSpeed)
+   set private(deltaGuidingSpeed) $conf(lx200,deltaGuidingSpeed)
 }
 
 #
@@ -150,14 +150,14 @@ proc ::lx200::widgetToConf { } {
    global caption conf
 
    #--- Memorise la configuration de la monture LX200 dans le tableau conf(lx200,...)
-   set conf(lx200,port)            $private(port)
-   set conf(lx200,ouranos)         $private(ouranos)
-   set conf(lx200,format)          [ lsearch "$caption(lx200,format_court_long)" "$private(format)" ]
-   set conf(lx200,modele)          $private(modele)
-   set conf(lx200,ite-lente_tempo) $private(ite-lente_tempo)
-   set conf(raquette)              $private(raquette)
-   set conf(lx200,alphaGuidingSpeed)   $private(alphaGuidingSpeed)
-   set conf(lx200,deltaGuidingSpeed)   $private(deltaGuidingSpeed)
+   set conf(lx200,port)              $private(port)
+   set conf(lx200,ouranos)           $private(ouranos)
+   set conf(lx200,format)            [ lsearch "$caption(lx200,format_court_long)" "$private(format)" ]
+   set conf(lx200,modele)            $private(modele)
+   set conf(lx200,ite-lente_tempo)   $private(ite-lente_tempo)
+   set conf(raquette)                $private(raquette)
+   set conf(lx200,alphaGuidingSpeed) $private(alphaGuidingSpeed)
+   set conf(lx200,deltaGuidingSpeed) $private(deltaGuidingSpeed)
 }
 
 #
@@ -169,9 +169,9 @@ proc ::lx200::fillConfigPage { frm } {
    global audace caption
 
    #--- Initialise les variables locales
-   set private(frm)           $frm
-   set private(ite-lente_A0)  "0"
-   set private(ite-lente_A1)  "0"
+   set private(frm)          $frm
+   set private(ite-lente_A0) "0"
+   set private(ite-lente_A1) "0"
 
 
    #--- confToWidget
@@ -186,6 +186,9 @@ proc ::lx200::fillConfigPage { frm } {
 
    frame $frm.frame2 -borderwidth 0 -relief raised
    pack $frm.frame2 -side top -fill x
+
+   frame $frm.frame2a -borderwidth 0 -relief raised
+   pack $frm.frame2a -side top -fill x
 
    frame $frm.frame3 -borderwidth 0 -relief raised
    pack $frm.frame3 -side top -fill x
@@ -307,38 +310,39 @@ proc ::lx200::fillConfigPage { frm } {
    pack $frm.majpara -in $frm.frame2 -anchor center -side top -padx 10 -pady 5 -ipadx 10 -ipady 5 \
       -expand true
 
-   #--- Le checkbutton pour obtenir des traces dans la Console
-   checkbutton $frm.tracesConsole -text "$caption(lx200,tracesConsole)" \
-      -highlightthickness 0 -variable ::lx200::private(tracesConsole) \
-      -command "::lx200::tracesConsole"
-   pack $frm.tracesConsole -in $frm.frame2 -anchor w -side left -padx 10 -pady 10
-
-   #--- frame des vitesses de guidage
+   #--- Frame des vitesses de guidage
    frame $frm.frame2.frameSpeed -borderwidth 0
+
       #--- Vitesse de rappel alpha
-      label $frm.frame2.frameSpeed.labelAlpha -text "Vitesse de rappel alpha (arcsec/sec)"
+      label $frm.frame2.frameSpeed.labelAlpha -text "$caption(lx200,rappelAD)"
       entry $frm.frame2.frameSpeed.entryAlpha -textvariable ::lx200::private(alphaGuidingSpeed) -width 5 -justify right
       grid $frm.frame2.frameSpeed.labelAlpha  -row 0 -column 0 -sticky nw -ipadx 3
       grid $frm.frame2.frameSpeed.entryAlpha  -row 0 -column 1 -sticky nw -ipadx 3
 
       #--- Vitesse de rappel delta
-      label $frm.frame2.frameSpeed.labelDelta -text "Vitesse de rappel delta (arcsec/sec)"
+      label $frm.frame2.frameSpeed.labelDelta -text "$caption(lx200,rappelDec)"
       entry $frm.frame2.frameSpeed.entryDelta -textvariable ::lx200::private(deltaGuidingSpeed) -width 5 -justify right
       grid $frm.frame2.frameSpeed.labelDelta  -row 1 -column 0 -sticky nw -ipadx 3
       grid $frm.frame2.frameSpeed.entryDelta  -row 1 -column 1 -sticky nw -ipadx 3
 
-      #--- information
-      label $frm.frame2.frameSpeed.labelInformation -text "(Vitesse sidérale = 15 arcsec/seconde )"
-      grid $frm.frame2.frameSpeed.labelInformation  -row 0 -column 2 -sticky nw -ipadx 3
+      #--- Information
+      label $frm.frame2.frameSpeed.labelInformation -text "$caption(lx200,vitesseSiderale)"
+      grid $frm.frame2.frameSpeed.labelInformation  -row 0 -column 2 -rowspan 2 -sticky ns -ipadx 3
 
-      grid rowconfigure $frm.frame2.frameSpeed 0  -weight 0
-      grid rowconfigure $frm.frame2.frameSpeed 1  -weight 0
+      grid rowconfigure $frm.frame2.frameSpeed 0 -weight 0
+      grid rowconfigure $frm.frame2.frameSpeed 1 -weight 0
 
       grid columnconfigure $frm.frame2.frameSpeed 0 -weight 0
       grid columnconfigure $frm.frame2.frameSpeed 1 -weight 0
       grid columnconfigure $frm.frame2.frameSpeed 2 -weight 1
 
-   pack $frm.frame2.frameSpeed -in $frm.frame2 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
+   pack $frm.frame2.frameSpeed -in $frm.frame2 -anchor n -side left -padx 10 -pady 10 -ipadx 10 -ipady 1 -expand 0
+
+   #--- Le checkbutton pour obtenir des traces dans la Console
+   checkbutton $frm.tracesConsole -text "$caption(lx200,tracesConsole)" \
+      -highlightthickness 0 -variable ::lx200::private(tracesConsole) \
+      -command "::lx200::tracesConsole"
+   pack $frm.tracesConsole -in $frm.frame2a -anchor w -side left -padx 10 -pady 10
 
    #--- Entree de la tempo Ite-lente
    label $frm.lab4 -text "$caption(lx200,ite-lente_tempo)"
