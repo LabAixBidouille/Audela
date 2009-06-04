@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.13 2009-06-02 18:20:04 michelpujol Exp $
+# Mise a jour $Id: sophie.cap,v 1.14 2009-06-04 16:28:48 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -233,12 +233,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,mode)                  "Modo"
    set caption(sophie,centrage)              "Centragem"
    set caption(sophie,focalisation)          "Focagem"
-   set caption(sophie,guidage)               "# Guidage"
+   set caption(sophie,guidage)               "Seguimento"
    set caption(sophie,zoom)                  "Zoom"
-   set caption(sophie,attenuateur)           "# Atténuateur"
+   set caption(sophie,attenuateur)           "Atenuador"
    set caption(sophie,image)                 "Imagem"
    set caption(sophie,enregistrer)           "Guardar"
-   set caption(sophie,voirImage)             "# Voir l'image"
+   set caption(sophie,voirImage)             "Ver imagem"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

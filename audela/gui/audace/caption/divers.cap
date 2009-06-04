@@ -1,6 +1,6 @@
 #
 # Fichier : divers.cap
-# Mise a jour $Id: divers.cap,v 1.7 2009-05-26 16:52:29 robertdelmas Exp $
+# Mise a jour $Id: divers.cap,v 1.8 2009-06-04 16:27:40 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -151,7 +151,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(divers,erreur,serie_existe)            "Erro, não existe a série seguinte: "
    set caption(divers,nom_invalide)                   "O seguinte nome de ficheiro não é válido (contém caracteres com acento): "
    set caption(divers,copyjpeg)                       "Guardar como JPEG"
-   set caption(divers,libgsl)                         "# \nLes librairies libgsl et libgslcblas sont manquantes."
+   set caption(divers,libgsl)                         "\nAs livrarias libgsl e libgslcblas não foram encontradas."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

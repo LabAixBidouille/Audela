@@ -1,6 +1,6 @@
 #
 # Fichier : acqfcSetup.cap
-# Mise a jour $Id: acqfcSetup.cap,v 1.15 2009-05-26 16:54:47 robertdelmas Exp $
+# Mise a jour $Id: acqfcSetup.cap,v 1.16 2009-06-04 16:25:44 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -82,9 +82,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfcSetup,texte1)                 "Mostrar mensagens na Consola"
    set caption(acqfcSetup,texte2)                 "Guardar datas no ficheiro log"
    set caption(acqfcSetup,texte3)                 "Alarme sonoro quando a série terminar"
-   set caption(acqfcSetup,texte4)                 "# Demander l'autorisation de remplacer un fichier existant"
-   set caption(acqfcSetup,texte5)                 "# Signaler que l'index de départ est différent de 1"
-   set caption(acqfcSetup,texte6)                 "# Enregistrer une acquisition interrompue"
+   set caption(acqfcSetup,texte4)                 "Pedir a autorização para substituir um ficheiro existente"
+   set caption(acqfcSetup,texte5)                 "Indicar que o índice de partida é diferente de 1"
+   set caption(acqfcSetup,texte6)                 "Salvar uma aquisição interrompida"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
