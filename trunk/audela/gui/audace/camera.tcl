@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: camera.tcl,v 1.30 2009-05-29 21:20:20 michelpujol Exp $
+# Mise a jour $Id: camera.tcl,v 1.31 2009-06-06 10:06:20 michelpujol Exp $
 #
 # Procedures utilisees par confCam
 #   ::camera::create : cree une camera
@@ -130,7 +130,7 @@ proc ::camera::create { camItem } {
       ::thread::copycommand $private($camItem,threadNo) "ttscript2"
       ::thread::copycommand $private($camItem,threadNo) "mc_date2jd"
       ::thread::copycommand $private($camItem,threadNo) "mc_date2iso8601"
-      
+
       #--- J'ajoute la commande de liaison longue pose dans la thread de la camera
       if { [::confCam::getPluginProperty $camItem "hasLongExposure"] == 1 } {
          if { [cam$private($camItem,camNo)  longueposelinkno] != 0} {
@@ -165,6 +165,23 @@ proc ::camera::delete { camItem } {
       ###interp eval $private($camItem,threadNo) [list ::cam::delete $private($camItem,camNo) ]
    } else {
       return
+   }
+}
+
+#------------------------------------------------------------
+# loadSource
+#    charge un fichier source TCL supplementaire dans l'interpreteur de la thread de la camera
+#
+# @param  camItem          Item de la camera
+# @param  sourceFileName   nom complet du fichier source ( avec le repertoire )
+# return resultat du chargement execute dans la thread de la camera
+#------------------------------------------------------------
+proc ::camera::loadSource { camItem sourceFileName } {
+   variable private
+   if { $::tcl_platform(threaded) == 0 } {
+      interp eval $private($camItem,threadNo) [list uplevel #0 source \"$sourceFileName\"]
+   } else {
+      ::thread::send $private($camItem,threadNo) [list uplevel #0 source \"$sourceFileName\"]
    }
 }
 
