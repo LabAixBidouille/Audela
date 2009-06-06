@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.28 2009-05-30 09:08:33 michelpujol Exp $
+ * $Id: libcam.c,v 1.29 2009-06-06 10:50:55 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -323,7 +323,7 @@ static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, ch
          if ( strcmp(threaded,"1") == 0 ) {
             // Cas de l'environnement multi-thread : je cree un thread dediee a la camera ,
             if ( !( strcmp(argv[0],"webcam") == 0 && strcmp(platform,"windows")==0) 
-               && !(strcmp(argv[0],"qsi") == 0 && strcmp(platform,"windows")==0)) {
+               ) {
                // Cas normal en mutlti-thread
 
                // je recupere l'indentifiant de la thread principale
@@ -436,8 +436,8 @@ static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, ch
 
       // cas du mutltithread
       if ( cam->camThreadId[0] != 0 ) {
-         if ( !(strcmp(argv[0],"webcam") == 0 && strcmp(platform,"windows")==0) 
-           && !(strcmp(argv[0],"qsi") == 0 && strcmp(platform,"windows")==0) ) {
+         if ( !(strcmp(argv[0],"webcam") == 0 && strcmp(platform,"windows")==0)
+            ) {
             // je duplique la commande de la camera dans la thread principale
             sprintf(s,"thread::copycommand %s %s ",mainThreadId, argv[1]);
             Tcl_Eval(interp, s);
@@ -515,8 +515,7 @@ static int cmdCam(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
          // je recupere la thread courante
          Tcl_Eval(interp, "thread::id");
          strcpy(currentThread,interp->result);
-         //if ( strcmp(CAM_INI[0].product,"webcam") != 0 ) {
-         if ( (strcmp(argv[1],"timer") == 0 )  
+        if ( (strcmp(argv[1],"timer") == 0 )  
 #if defined(OS_WIN)
               // ces commandes de webcam doivent s'executer dans la thread principale sous Windows car elles ouvrer une fenetre.
               || (strcmp(CAM_INI[0].product,"webcam") == 0 && (strcmp(argv[1],"close") == 0 || strcmp(argv[1],"videoformat") == 0|| strcmp(argv[1],"videosource") == 0 || strcmp(argv[1],"startvideoview") == 0 || strcmp(argv[1],"stopvideoview") == 0 || strcmp(argv[1],"startvideocapture") == 0 || strcmp(argv[1],"stopvideocapture") == 0 || strcmp(argv[1],"startvideocrop") == 0 || strcmp(argv[1],"stopvideocrop") == 0 )) 
