@@ -2,7 +2,7 @@
 # Fichier : sophieconfig.tcl
 # Description : Fenetre de configuration de l'instrument Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophieconfig.tcl,v 1.5 2009-06-02 21:39:15 robertdelmas Exp $
+# Mise a jour $Id: sophieconfig.tcl,v 1.6 2009-06-06 10:03:28 michelpujol Exp $
 #
 
 #============================================================
@@ -106,7 +106,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
    set widget(binGuidageDefaut)      $::conf(sophie,guideBinning)
    set widget(echelle)               $::conf(sophie,pixelScale)
    set widget(nbPosesAvantCorrect)   $::conf(sophie,correctionCumulNb)
-   set widget(nbPosesAvantMaj)       $::conf(sophie,originCumulNb)
+   set widget(nbPosesAvantMaj)       $::conf(sophie,originSumNb)
    set widget(tailleFenetreGuidage)  $::conf(sophie,guidingWindowSize)
    set widget(tailleFenetreCentrage) $::conf(sophie,centerWindowSize)
    set widget(gainProportionnel)     [expr $::conf(sophie,proportionalGain) * 100.0]
@@ -396,7 +396,7 @@ proc ::sophie::config::apply { visuNo } {
    set ::conf(sophie,guideBinning)          $widget(binGuidageDefaut)
    set ::conf(sophie,pixelScale)            $widget(echelle)
    set ::conf(sophie,correctionCumulNb)     $widget(nbPosesAvantCorrect)
-   set ::conf(sophie,originCumulNb)         $widget(nbPosesAvantMaj)
+   set ::conf(sophie,originSumNb)           $widget(nbPosesAvantMaj)
    set ::conf(sophie,guidingWindowSize)     $widget(tailleFenetreGuidage)
    set ::conf(sophie,centerWindowSize)      $widget(tailleFenetreCentrage)
    set ::conf(sophie,proportionalGain)      [expr double($widget(gainProportionnel)) / 100.0]

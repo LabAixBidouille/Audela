@@ -2,7 +2,7 @@
 # Fichier : sophie.tcl
 # Description : Outil d'autoguidage pour le spectro Sophie du telescope T193 de l'OHP
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophie.tcl,v 1.12 2009-06-02 18:21:25 michelpujol Exp $
+# Mise a jour $Id: sophie.tcl,v 1.13 2009-06-06 10:03:28 michelpujol Exp $
 #
 
 #============================================================
@@ -102,16 +102,15 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(sophie,proportionalGain)] }          { set ::conf(sophie,proportionalGain)          "90" }
    if { ! [ info exists ::conf(sophie,integralGain)] }              { set ::conf(sophie,integralGain)              "10" }
    if { ! [ info exists ::conf(sophie,detection)] }                 { set ::conf(sophie,detection)                 "FIBER" }
-   if { ! [ info exists ::conf(sophie,thresold)] }                  { set ::conf(sophie,thresold)                  "3" }
+   if { ! [ info exists ::conf(sophie,centerMaxLimit)] }            { set ::conf(sophie,centerMaxLimit)            "3" }
    if { ! [ info exists ::conf(sophie,originCoord)] }               { set ::conf(sophie,originCoord)               [list 320 240 ] }
    if { ! [ info exists ::conf(sophie,originBoxSize)] }             { set ::conf(sophie,originBoxSize)             "32" }
-   if { ! [ info exists ::conf(sophie,darkEnabled)] }               { set ::conf(sophie,darkEnabled)               "0" }
    if { ! [ info exists ::conf(sophie,alphaReverse)] }              { set ::conf(sophie,alphaReverse)              "0" }
    if { ! [ info exists ::conf(sophie,deltaReverse)] }              { set ::conf(sophie,deltaReverse)              "0" }
 
    if { ! [ info exists ::conf(sophie,biasImage)] }                 { set ::conf(sophie,biasImage)                 "bias.fit" }
    if { ! [ info exists ::conf(sophie,correctionCumulNb)] }         { set ::conf(sophie,correctionCumulNb)         1 }
-   if { ! [ info exists ::conf(sophie,originCumulNb)] }             { set ::conf(sophie,originCumulNb)             1 }
+   if { ! [ info exists ::conf(sophie,originSumNb)] }               { set ::conf(sophie,originSumNb)               1 }
    if { ! [ info exists ::conf(sophie,guidingWindowSize)] }         { set ::conf(sophie,guidingWindowSize)         200 }
    if { ! [ info exists ::conf(sophie,centerWindowSize)] }          { set ::conf(sophie,centerWindowSize)          100 }
    if { ! [ info exists ::conf(sophie,imageDirectory)] }            { set ::conf(sophie,imageDirectory)            "$::audace(rep_images)" }
@@ -128,16 +127,19 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(sophie,simulationGenericFileName)] } { set ::conf(sophie,simulationGenericFileName) "$::audace(rep_images)/simulation" }
    if { ! [ info exists ::conf(sophie,centerFileNameprefix)] }      { set ::conf(sophie,centerFileNameprefix)      "centrage" }
    if { ! [ info exists ::conf(sophie,guidingFileNameprefix)] }     { set ::conf(sophie,guidingFileNameprefix)     "guidage" }
+   if { ! [ info exists ::conf(sophie,maskRadius)] }                { set ::conf(sophie,maskRadius)                20 }
+   if { ! [ info exists ::conf(sophie,maskFwhm)] }                  { set ::conf(sophie,maskFwhm)                  5 }
+   if { ! [ info exists ::conf(sophie,pixelMinCount)] }             { set ::conf(sophie,pixelMinCount)             50 }
 
    #--- Initialisation de variables
    set private(frm)              "$in.sophie"
-   set private(listePose)        "0.1 0.2 0.5 0.8 1"
+   set private(listePose)        "0 0.1 0.2 0.5 0.8 1 2 3 5 10"
    set private(pose)             "0.5"
-   set private(listeBinning)     "1x1 2x2 3x3 4x4 5x5 6x6"
+   set private(listeBinning)     "1x1 2x2 3x3 4x4"
    set private(widgetBinning)    "2x2"
    set private(xBinning)         2
    set private(yBinning)         2
-   set private(mode)             "centrage"
+   set private(mode)             "CENTER"
    set private(zoom)             "1"
    set private(attenuateur)      "80"
    set private(windowing)        "full"            ; #--- fenetrage, contient "full" ou la longueur du coté du carré de fentrage
@@ -160,15 +162,13 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(centerEnabled)    0
    set private(guideEnabled)     0
    set private(mountEnabled)     0
-   set private(delay,alpha)      "0.00"   ; #--- duree de rappel en alpha
-   set private(delay,delta)      "0.00"   ; #--- duree de rappel en delta
    set private(acquisitionState) 0        ; #--- etat de l'acquisition continue 0=arrete  1=en cours
-   set private(detectedTarget)   0        ; #--- 0=etoile non detectee  1=etoile detectee
    set private(targetRa)         "0h0m0s" ; #--- ascension droite de la cible en HMS
    set private(targetDec)        "0d0m0s" ; #--- declinaison de la cible en DMS
    set private(xWindow)          1        ; #--- abscisse du coin bas gauche du fenetrage
    set private(yWindow)          1        ; #--- ordonnee du coin bas gauche du fenetrage
 
+   set private(biasBufNo)  0 ; ###[::buf::create ]
    set private(maskBufNo)  [::buf::create ]
    set private(sumBufNo)   [::buf::create ]
    set private(fiberBufNo) [::buf::create ]
@@ -225,7 +225,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
 
          #--- ComboBox pour le choix du binning
          ComboBox $frm.acq.binning \
-            -entrybg white -justify center -takefocus 1 -editable 0 \
+            -entrybg white -justify center -takefocus 1 \
             -width [ ::tkutil::lgEntryComboBox $private(listeBinning) ] \
             -textvariable ::sophie::private(widgetBinning) \
             -modifycmd "::sophie::onChangeBinning $visuNo" \
@@ -248,21 +248,21 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
 
          #--- Radiobutton pour le mode Centrage
          radiobutton $frm.mode.centrage -height 2 \
-            -indicatoron 0 -text $::caption(sophie,centrage) -value centrage \
+            -indicatoron 0 -text $::caption(sophie,centrage) -value "CENTER" \
             -variable ::sophie::private(mode) -command "::sophie::onChangeMode"
          pack $frm.mode.centrage -in [ $frm.mode getframe ] -anchor center \
             -expand 0 -fill x -side top
 
          #--- Radiobutton pour le mode Mise au point
          radiobutton $frm.mode.focalisation -height 2 \
-            -indicatoron 0 -text $::caption(sophie,focalisation) -value focalisation \
+            -indicatoron 0 -text $::caption(sophie,focalisation) -value "FOCUS" \
             -variable ::sophie::private(mode) -command "::sophie::onChangeMode"
          pack $frm.mode.focalisation -in [ $frm.mode getframe ] -anchor center \
            -expand 0 -fill x -side top
 
          #--- Radiobutton pour le mode Guidage
          radiobutton $frm.mode.guidage -height 2 \
-            -indicatoron 0 -text $::caption(sophie,guidage) -value guidage \
+            -indicatoron 0 -text $::caption(sophie,guidage) -value "GUIDE" \
             -variable ::sophie::private(mode) -command "::sophie::onChangeMode"
          pack $frm.mode.guidage -in [ $frm.mode getframe ] -anchor center \
             -expand 0 -fill x -side top
