@@ -2,7 +2,7 @@
 # Fichier : acquisition.tcl
 # Description : Acquisition de guidage de l'outil Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: acquisition.tcl,v 1.2 2009-05-18 22:09:23 robertdelmas Exp $
+# Mise a jour $Id: acquisition.tcl,v 1.3 2009-06-06 10:03:28 michelpujol Exp $
 #
 
 #============================================================
@@ -155,8 +155,6 @@ proc ::sophie::acquisition::stopAcquisition { visuNo } {
 
       #--- je supprime l'association du bouton escape
       bind all <Key-Escape> ""
-      #--- j'efface le fichier de cumul
-      ###file delete -force [file join $::audace(rep_images) $private($visuNo,cumulFileName)]]
       #--- j'initialise la variable
       set private($visuNo,acquisitionState) 0
 

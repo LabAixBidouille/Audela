@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.14 2009-06-04 16:28:48 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.15 2009-06-06 10:03:28 michelpujol Exp $
 #
 
 #=========================================================================
@@ -41,9 +41,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,goAcq)                 "GO Acq."
    set caption(sophie,stopAcq)               "STOP Acq."
    set caption(sophie,mode)                  "Mode"
-   set caption(sophie,centrage)              "Centrage"
-   set caption(sophie,focalisation)          "Focalisation"
-   set caption(sophie,guidage)               "Guidage"
+   set caption(sophie,CENTER)                "Centrage"
+   set caption(sophie,FOCUS)                 "Focalisation"
+   set caption(sophie,GUIDE)                 "Guidage"
    set caption(sophie,zoom)                  "Zoom"
    set caption(sophie,attenuateur)           "Atténuateur"
    set caption(sophie,image)                 "Image"
@@ -137,10 +137,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,erreur)                "Erreur (pixel)"
    set caption(sophie,alpha)                 "dalpha"
    set caption(sophie,delta)                 "ddelta"
-   ###set caption(sophie,erreurAlpha)           "Erreur alpha"
-   ###set caption(sophie,erreurDelta)           "Erreur delta"
-   ###set caption(sophie,correctionAlpha)       "Correction alpha"
-   ###set caption(sophie,correctionDelta)       "Correction delta"
    set caption(sophie,erreursAlphaDelta)     "Erreurs en alpha et delta"
    set caption(sophie,arretGuidage)          "Arrêter le guidage"
    set caption(sophie,suspendreGuidage)      "Suspendre le guidage"

@@ -2,7 +2,7 @@
 # Fichier : sophiecontrol.tcl
 # Description : Fenetre de controle pour le centrage, la focalisation et le guidage
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecontrol.tcl,v 1.13 2009-06-02 18:23:38 michelpujol Exp $
+# Mise a jour $Id: sophiecontrol.tcl,v 1.14 2009-06-06 10:03:28 michelpujol Exp $
 #
 
 #============================================================
@@ -586,7 +586,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          ###   -row 0 -column 0 -sticky w
 
          createGraph $frm.focalisation.courbes.graphFwhmX_simple 120
-         $frm.focalisation.courbes.graphFwhmX_simple axis configure y -min 0
+         ###$frm.focalisation.courbes.graphFwhmX_simple axis configure y -min 0
          $frm.focalisation.courbes.graphFwhmX_simple element create xfwhm \
             -xdata ::sophieAbcisse -ydata ::sophieFwhmX \
             -symbol none -label $::caption(sophie,FWHMX)
@@ -601,7 +601,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
 
          #--- FWHM Y
          createGraph $frm.focalisation.courbes.graphFwhmY_simple 120
-         $frm.focalisation.courbes.graphFwhmY_simple axis configure y -min 0
+         ###$frm.focalisation.courbes.graphFwhmY_simple axis configure y -min 0
          $frm.focalisation.courbes.graphFwhmY_simple element create yfwhm \
             -xdata ::sophieAbcisse -ydata ::sophieFwhmY \
             -symbol none -label $::caption(sophie,FWHMY)
@@ -614,7 +614,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
 
          #--- Intensite maxi
          createGraph $frm.focalisation.courbes.graphintensiteMax_simple 120
-         $frm.focalisation.courbes.graphintensiteMax_simple axis configure y -min 0
+         ###$frm.focalisation.courbes.graphintensiteMax_simple axis configure y -min 0
          $frm.focalisation.courbes.graphintensiteMax_simple element create maxIntensity \
             -xdata ::sophieAbcisse -ydata ::sophieMaxIntensity \
             -symbol none -label $::caption(sophie,intensiteMax)
@@ -844,7 +844,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             $frm.guidage.erreurs.alpha_simple element create alphaDiff \
                -xdata ::sophieAbcisse -ydata ::sophieEcartEtoileX -mapy y \
                -color  blue -dash "2" -linewidth 3 \
-               -symbol none -label $::caption(sophie,alpha)
+              -symbol none -label $::caption(sophie,alpha)
             $frm.guidage.erreurs.alpha_simple element create deltaDiff \
                -xdata ::sophieAbcisse -ydata ::sophieEcartEtoileY -mapy y \
                -color orange -dash "" -linewidth 3 \
@@ -978,34 +978,35 @@ proc ::sophie::control::setMode { mode } {
 
    if { [ winfo exists $frm ] } {
       if { [ winfo exists $frm ] } {
-         if { $mode == "centrage" } {
-            pack forget $frm.positionGuidage
-            pack forget $frm.guidage
-            pack forget $frm.focalisation
-            pack $frm.voyant         -side top -fill x
-            pack $frm.positionSeeing -side top -fill x
-            pack $frm.centrage       -side top -fill x
-         } elseif { $mode == "focalisation" } {
-            pack forget $frm.positionGuidage
-            pack forget $frm.centrage
-            pack forget $frm.guidage
-            pack $frm.voyant         -side top -fill x
-            pack $frm.positionSeeing -side top -fill x
-            pack $frm.focalisation   -side top -fill x
-
-            #--- raz des vecteurs
-            resetFocusVector
-
-         } elseif { $mode == "guidage" } {
-            pack forget $frm.positionSeeing
-            pack forget $frm.centrage
-            pack forget $frm.focalisation
-            pack $frm.voyant          -side top -fill x
-            pack $frm.positionGuidage -side top -fill x
-            pack $frm.guidage         -side top -fill x
-
-            #--- raz des vecteurs
-            resetGuideVector
+         switch $mode {
+            "CENTER" {
+               pack forget $frm.positionGuidage
+               pack forget $frm.guidage
+               pack forget $frm.focalisation
+               pack $frm.voyant         -side top -fill x
+               pack $frm.positionSeeing -side top -fill x
+               pack $frm.centrage       -side top -fill x
+            }
+            "FOCUS" {
+               pack forget $frm.positionGuidage
+               pack forget $frm.centrage
+               pack forget $frm.guidage
+               pack $frm.voyant         -side top -fill x
+               pack $frm.positionSeeing -side top -fill x
+               pack $frm.focalisation   -side top -fill x
+               #--- raz des vecteurs
+               resetFocusVector
+            }
+            "GUIDE" {
+               pack forget $frm.positionSeeing
+               pack forget $frm.centrage
+               pack forget $frm.focalisation
+               pack $frm.voyant          -side top -fill x
+               pack $frm.positionGuidage -side top -fill x
+               pack $frm.guidage         -side top -fill x
+               #--- raz des vecteurs
+               resetGuideVector
+            }
          }
          set This "$::audace(base).sophiecontrol"
          wm title $This "$::caption(sophie,$mode)"

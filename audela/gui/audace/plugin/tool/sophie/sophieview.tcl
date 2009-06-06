@@ -2,7 +2,7 @@
 # Fichier : sophieview.tcl
 # Description : Vue detail du suivi
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophieview.tcl,v 1.4 2009-06-01 07:21:53 robertdelmas Exp $
+# Mise a jour $Id: sophieview.tcl,v 1.5 2009-06-06 10:03:28 michelpujol Exp $
 #
 
 #============================================================
@@ -59,21 +59,21 @@ proc ::sophie::view::createPluginInstance { { in "" } { visuNo 1 } } {
             -value "maskBufNo" \
             -variable ::sophie::view::private(bufferName,$visuNo) \
             -command "::sophie::view::setBuffer $visuNo"
-         pack $frm.select.mask -anchor w -expand 0 -fill x -ipady 2 -padx 2 -pady 2
+         pack $frm.select.mask -anchor w -expand 1 -fill x -ipady 2 -padx 2 -pady 2
 
          radiobutton $frm.select.sum -highlightthickness 0 -padx 0 -pady 0 -state normal \
             -text "Image intégrée" -justify left \
             -value "sumBufNo" \
             -variable ::sophie::view::private(bufferName,$visuNo) \
             -command "::sophie::view::setBuffer $visuNo"
-         pack $frm.select.sum -anchor w -expand 0 -fill x -ipady 2 -padx 2 -pady 2
+         pack $frm.select.sum -anchor w -expand 1 -fill x -ipady 2 -padx 2 -pady 2
 
          radiobutton $frm.select.fiber -highlightthickness 0 -padx 0 -pady 0 -state normal \
-            -text "Entrée fibre" -justify left \
+            -text "Image inversée du trou" -justify left \
             -value "fiberBufNo" \
             -variable ::sophie::view::private(bufferName,$visuNo) \
             -command "::sophie::view::setBuffer $visuNo"
-         pack $frm.select.fiber -anchor w -expand 0 -fill x -ipady 2 -padx 2 -pady 2
+         pack $frm.select.fiber -anchor w -expand 1 -fill x -ipady 2 -padx 2 -pady 2
 
       pack $frm.select -side top -fill x
 
