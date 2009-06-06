@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.37 2009-05-18 21:48:52 robertdelmas Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.38 2009-06-06 10:46:04 michelpujol Exp $
 #
 
 #==============================================================
@@ -360,9 +360,9 @@ proc ::autoguider::startTool { { visuNo 1 } } {
    #--- j'affiche la fenetre de l'outil d'autoguidage
    pack $private($visuNo,This) -fill y -side top
 
-   #--- je change le bind du bouton droit de la souris
+   #--- je change le bind du bouton droit de la souris sur le canvas
    ::confVisu::createBindCanvas $visuNo <ButtonPress-3> "::autoguider::setOrigin $visuNo %x %y"
-   #--- je change le bind du double-clic du bouton gauche de la souris
+   #--- je change le bind du double-clic du bouton gauche de la souris sur le canvas
    ::confVisu::createBindCanvas $visuNo <Double-1> "::autoguider::setTargetCoord $visuNo %x %y"
 
    #--- j'active la mise a jour automatique de l'affichage quand on change de camera
@@ -386,7 +386,7 @@ proc ::autoguider::startTool { { visuNo 1 } } {
 # stopTool
 #    masque la fenetre de l'outil
 #------------------------------------------------------------
-proc ::autoguider::stopTool { { visuNo 1 } } {
+proc ::autoguider::stopTool { visuNo } {
    variable private
 
    #--- je verifie si une operation est en cours
@@ -420,7 +420,7 @@ proc ::autoguider::stopTool { { visuNo 1 } } {
    #--- je restaure le bind par defaut du double-clic du bouton gauche de la souris
    ::confVisu::createBindCanvas $visuNo <Double-1> "default"
 
-   #--- je masque la fenetre
+   #--- je masque le panneau
    pack forget $private($visuNo,This)
 }
 
@@ -717,13 +717,13 @@ proc ::autoguider::stopAcquisition { visuNo } {
    }
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # setOrigin
-#    initialise le point origine dans private(visuNo,originCoord)
+#     initialise la position de la consigne
 #
-# parametres :
-#    visuNo    : numero de la visu courante
-#    x,y       : coordonnees de l'origine des axes (referentiel ecran)
+# @param visuNo    : numero de la visu courante
+# @param x     : abcisse de l'origine des axes (referentiel ecran)
+# @param y     : ordonnee de l'origine des axes (referentiel ecran)
 #------------------------------------------------------------
 proc ::autoguider::setOrigin { visuNo x y } {
    variable private
@@ -741,13 +741,13 @@ proc ::autoguider::setOrigin { visuNo x y } {
 
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # setTargetCoord
-#    initialise les coordonnees de la cible dans private(visuNo,targetCoord)
+#    initialise les coordonnees de la cible
 #
-# parametres :
-#    visuNo    : numero de la visu courante
-#    x,y       : coordonnees de l'origine des axes (referentiel ecran)
+# @param visuNo  numero de la visu courante
+# @param x       abcisse de la cible (referentiel ecran)
+# @param y       ordonnee de la cible (referentiel ecran)
 #------------------------------------------------------------
 proc ::autoguider::setTargetCoord { visuNo x y } {
    variable private
@@ -782,9 +782,7 @@ proc ::autoguider::setTargetCoord { visuNo x y } {
 #       |          |           |          |
 #       *----------* y1=y0-w   *----------*  y1=y0-w
 #       x1         x2          x1         x2
-# parametres :
-#    visuNo      : numero de la visu courante
-#    targetCoord : coordonnees de la cible (referentiel buffer)
+# @param visuNo  numero de la visu courante
 #------------------------------------------------------------
 proc ::autoguider::createTarget { visuNo } {
    variable private
@@ -854,8 +852,7 @@ proc ::autoguider::createTarget { visuNo } {
 # deleteTarget
 #    supprime l'affichage de la cible
 #
-# parametres :
-#    visuNo    : numero de la visu courante
+# @param visuNo      numero de la visu courante
 #------------------------------------------------------------
 proc ::autoguider::deleteTarget { visuNo } {
    variable private
@@ -867,13 +864,12 @@ proc ::autoguider::deleteTarget { visuNo } {
    $private($visuNo,hCanvas) dtag "target2"
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # moveTarget
 #    deplace l'affichage de la cible
 #
-# parametres :
-#    visuNo      : numero de la visu courante
-#    targetCoord : coordonnees de la cible (referentiel buffer)
+# @param visuNo         numero de la visu courante
+# @param targetCoord    coordonnees de la cible (referentiel buffer)
 #------------------------------------------------------------
 proc ::autoguider::moveTarget { visuNo targetCoord } {
    variable private
@@ -1150,9 +1146,10 @@ proc ::autoguider::changeShowImage { visuNo } {
    }
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # configureWebcam
 #    affiche la fenetre de configuration d'une webcam
+# @param visuNo         numero de la visu courante
 #------------------------------------------------------------
 proc ::autoguider::webcamConfigure { visuNo } {
    global caption
@@ -1173,13 +1170,12 @@ proc ::autoguider::webcamConfigure { visuNo } {
    }
 }
 
-#------------------------------------------------------------
-#  onChangeZoom
+##------------------------------------------------------------
+# onChangeZoom
 #      appele par confVisu quand on change le zoom de la visu
-#  parametres
-#     visuNo : numero de visu
-#     args   : valeur fournies par le gestionnaire de listener
-#  return : null
+#
+# @param visuNo       numero de la visu courante
+# @param args         valeur fournies par le gestionnaire de listener
 #------------------------------------------------------------
 proc ::autoguider::onChangeZoom { visuNo args } {
    variable private
@@ -1193,10 +1189,9 @@ proc ::autoguider::onChangeZoom { visuNo args } {
 #------------------------------------------------------------
 #  onChangeSubWindow
 #     appele par confVisu quand on applique un fenetrage sur la visu
-#  parametres
-#     visuNo : numero de visu
-#     args   : valeur fournies par le gestionnaire de listener
-#  return : null
+#
+# @param visuNo       numero de la visu courante
+# @param args         valeur fournies par le gestionnaire de listener
 #------------------------------------------------------------
 proc ::autoguider::onChangeSubWindow { visuNo args } {
    variable private
@@ -1213,10 +1208,11 @@ proc ::autoguider::onChangeSubWindow { visuNo args } {
 #     si state = 1 , les commandes sont envoyees
 #     si state = 0 , les commandes ne sont pas envoyees
 #     si state = "" , l'envoi depend du checkbutton "montEnabled"
-#  parametres
-#     visuNo : numero de visu
-#     state   : valeur fournies par le gestionnaire de listener
-#  return : null
+#
+# @param visuNo       numero de la visu courante
+# @param state       state = 1 envoie les commandes à la monture
+#                    state = 0 n'envoie pas les commandes à la monture
+# @return  null
 #------------------------------------------------------------
 proc ::autoguider::setMountEnabled { visuNo { state "" } } {
    variable private
@@ -1240,6 +1236,9 @@ proc ::autoguider::setMountEnabled { visuNo { state "" } } {
 #------------------------------------------------------------
 # selectBinning
 #    change le binning de la camera
+# @param visuNo       numero de la visu courante
+# @param state       activation/desactivation de l'envoi des commandes à la monture
+# @return  null
 #------------------------------------------------------------
 proc ::autoguider::selectBinning { visuNo } {
    variable private
