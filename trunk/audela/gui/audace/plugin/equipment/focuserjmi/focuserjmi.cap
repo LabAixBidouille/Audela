@@ -1,6 +1,6 @@
 #
 # Fichier : focuserjmi.cap
-# Mise a jour $Id: focuserjmi.cap,v 1.8 2009-05-31 15:20:57 michelpujol Exp $
+# Mise a jour $Id: focuserjmi.cap,v 1.9 2009-06-06 13:25:18 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -16,10 +16,10 @@ set caption(focuserjmi,link)                  "Link"
 set caption(focuserjmi,configure)             "Set up"
 set caption(focuserjmi,bitStart)              "Start Bit Number"
 set caption(focuserjmi,bitDirection)          "Direction Bit Number"
-   set caption(focuserjmi,manualPulse)        "Manual pulse"
-   set caption(focuserjmi,fixedPulse)         "Fixed pulse"
-   set caption(focuserjmi,duration)           "Duration (second)"
-   set caption(focuserjmi,test)               "Test"
+set caption(focuserjmi,manualPulse)           "Manual Pulse"
+set caption(focuserjmi,fixedPulse)            "Fixed Time Pulse"
+set caption(focuserjmi,duration)              "Time (seconds)"
+set caption(focuserjmi,test)                  "Test"
 
 set caption(focuserjmi,arreter)               "Stop"
 set caption(focuserjmi,creer_au_demarrage)    "Next time software is run connect this equipment automatically"
@@ -33,8 +33,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserjmi,bitStart)           "Numéro du bit de démarrage"
    set caption(focuserjmi,bitDirection)       "Numéro du bit de direction"
    set caption(focuserjmi,manualPulse)        "Impulsion manuelle"
-   set caption(focuserjmi,fixedPulse)         "Impulsion durée fixe"
-   set caption(focuserjmi,duration)           "Durée (seconde)"
+   set caption(focuserjmi,fixedPulse)         "Impulsion de durée fixe"
+   set caption(focuserjmi,duration)           "Durée (secondes)"
    set caption(focuserjmi,test)               "Test"
 
    set caption(focuserjmi,arreter)            "Arrêter"
@@ -48,10 +48,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserjmi,configure)          "Configurare"
    set caption(focuserjmi,bitStart)           "Numero del bit di start"
    set caption(focuserjmi,bitDirection)       "Numero del bit di direzione"
-   set caption(focuserjmi,manualPulse)        "###Impulsion manuelle"
-   set caption(focuserjmi,fixedPulse)         "###Impulsion durée fixe"
-   set caption(focuserjmi,duration)           "###Durée (seconde)"
-   set caption(focuserjmi,test)               "###Test"
+   set caption(focuserjmi,manualPulse)        "Impulsi manuali"
+   set caption(focuserjmi,fixedPulse)         "Impulsi di durata fissa"
+   set caption(focuserjmi,duration)           "Durata (secondi)"
+   set caption(focuserjmi,test)               "Test"
 
    set caption(focuserjmi,arreter)            "Ferma"
    set caption(focuserjmi,creer_au_demarrage) "Connessione automatica di questo equipaggiamento alla prossima esecuzione del software"
@@ -64,6 +64,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserjmi,configure)          "Configurar"
    set caption(focuserjmi,bitStart)           "Numero del bit de comienzo"
    set caption(focuserjmi,bitDirection)       "Numero del bit de dirección"
+   set caption(focuserjmi,manualPulse)        "Pulso manual"
+   set caption(focuserjmi,fixedPulse)         "Pulso de duración fija"
+   set caption(focuserjmi,duration)           "Duración (segundos)"
+   set caption(focuserjmi,test)               "Test"
 
    set caption(focuserjmi,arreter)            "Parar"
    set caption(focuserjmi,creer_au_demarrage) "La próxima vez que se ejecute el programa, el equipo se conecta automáticamente"
@@ -76,6 +80,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserjmi,configure)          "Konfigurieren"
    set caption(focuserjmi,bitStart)           "Nummer der Start Bit"
    set caption(focuserjmi,bitDirection)       "Nummer der Direktion Bit"
+   set caption(focuserjmi,manualPulse)        "Manuelle Impuls"
+   set caption(focuserjmi,fixedPulse)         "Fest Impuls Dauer"
+   set caption(focuserjmi,duration)           "Dauer (Sekunden)"
+   set caption(focuserjmi,test)               "Test"
 
    set caption(focuserjmi,arreter)            "Halten"
    set caption(focuserjmi,creer_au_demarrage) "Nächste Mal diese Einrichtung automatisch anschließen"
@@ -88,6 +96,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserjmi,configure)          "Configurar"
    set caption(focuserjmi,bitStart)           "Número do bit inicial"
    set caption(focuserjmi,bitDirection)       "Número do bit de direcção"
+   set caption(focuserjmi,manualPulse)        "Impulso manual"
+   set caption(focuserjmi,fixedPulse)         "Impulso de duração fixa"
+   set caption(focuserjmi,duration)           "Duração (segundos)"
+   set caption(focuserjmi,test)               "Teste"
 
    set caption(focuserjmi,arreter)            "Parar"
    set caption(focuserjmi,creer_au_demarrage) "O equipamento conecta-se automaticamente na próxima execução do programa"
@@ -100,6 +112,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserjmi,configure)          "Opsætning"
    set caption(focuserjmi,bitStart)           "Start bit-værdi"
    set caption(focuserjmi,bitDirection)       "Retnings bit-værdi"
+   set caption(focuserjmi,manualPulse)        "Manuel impuls"
+   set caption(focuserjmi,fixedPulse)         "Fast impuls tid"
+   set caption(focuserjmi,duration)           "Tid (sekunder)"
+   set caption(focuserjmi,test)               "Test"
 
    set caption(focuserjmi,arreter)            "Stop"
    set caption(focuserjmi,creer_au_demarrage) "Tilslut automatisk dette udstyr ved næste start"
