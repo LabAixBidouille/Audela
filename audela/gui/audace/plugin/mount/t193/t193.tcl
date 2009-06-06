@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.8 2009-05-29 16:47:49 robertdelmas Exp $
+# Mise a jour $Id: t193.tcl,v 1.9 2009-06-06 10:44:55 michelpujol Exp $
 #
 
 namespace eval ::t193 {
@@ -224,7 +224,7 @@ proc ::t193::fillConfigPage { frm } {
    entry $frm.nomCarte -textvariable ::t193::private(nomCarte) -width 15 -justify left
    pack $frm.nomCarte -in $frm.frame4 -anchor n -side left -padx 10 -pady 10
 
-   #--- fram des vitesses
+   #--- frame des vitesses
    frame $frm.frame3.speed -borderwidth 0
       #--- Vitesse de rappel alpha
       label $frm.frame3.speed.labelAlpha -text "Vitesse de rappel alpha (arcsec/sec)"

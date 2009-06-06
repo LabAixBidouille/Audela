@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.32 2009-05-29 16:32:15 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.33 2009-06-06 10:43:55 michelpujol Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -87,7 +87,7 @@ proc ::fingerlakes::initPlugin { } {
    if { ! [ info exists conf(fingerlakes,foncobtu) ] } { set conf(fingerlakes,foncobtu) "2" }
    if { ! [ info exists conf(fingerlakes,mirh) ] }     { set conf(fingerlakes,mirh)     "0" }
    if { ! [ info exists conf(fingerlakes,mirv) ] }     { set conf(fingerlakes,mirv)     "0" }
-   if { ! [ info exists conf(fingerlakes,temp) ] }     { set conf(fingerlakes,temp)     "-50" }
+   if { ! [ info exists conf(fingerlakes,temp) ] }     { set conf(fingerlakes,temp)     -20 }
 
    #--- Initialisation
    set private(A,camNo) "0"
