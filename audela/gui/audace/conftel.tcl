@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.56 2009-05-18 21:50:14 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.57 2009-06-06 10:08:01 michelpujol Exp $
 #
 
 namespace eval ::confTel {
@@ -499,7 +499,7 @@ proc ::confTel::getPluginProperty { propertyName } {
    #--- si la valeur par defaut de la propriete n'existe pas, je retourne une chaine vide
    switch $propertyName {
       backlash                { set result 0 }
-      guidingSpeed            { return [list 1.0 1.0] }
+      guidingSpeed            { set result [list 1.0 1.0] }
       hasCoordinates          { set result 1 }
       hasControlSuivi         { set result 0 }
       hasCorrectionRefraction { set result 0 }

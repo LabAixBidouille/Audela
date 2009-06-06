@@ -3,7 +3,7 @@
 # Description : procedures d'acqusitition et de traitement avec
 #         plusieurs cameras simultanées exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise a jour $Id: camerathread.tcl,v 1.7 2008-11-30 17:32:43 michelpujol Exp $
+# Mise a jour $Id: camerathread.tcl,v 1.8 2009-06-06 10:07:41 michelpujol Exp $
 #
 
 namespace eval ::camerathread {
@@ -19,6 +19,8 @@ proc ::camerathread::init { camItem camNo mainThreadNo} {
    set private(bufNo)         [cam$camNo buf]
    set private(acquisitionState)  0
    set private(test)          0
+
+   set private(synchroneParameter) ""
 }
 
 
@@ -838,7 +840,7 @@ proc ::camerathread::disp { message } {
 
 #------------------------------------------------------------
 # setParam
-#    mdofifie un parametre
+#    modifie un parametre
 #
 # parametres :
 #    paramName  : nom du parametre
@@ -853,7 +855,56 @@ proc ::camerathread::setParam { paramName paramValue } {
       interp eval "" "set private($paramName) { $paramValue }"
    } else {
       #--- thread::eval utilise un mutex interne a la thread
-      thread::eval "set private($paramName) { $paramValue }"
+      thread::eval "set private($paramName) {$paramValue}"
+   }
+}
+
+#------------------------------------------------------------
+# setAsynchroneParameter
+#    modifie plusieurs parametres en mode asynchrone
+#
+# @param args liste de couples (nom parametrea, valeur parametre)
+# @return rien
+#------------------------------------------------------------
+proc ::camerathread::setAsynchroneParameter { args } {
+   variable private
+
+   if { $private(mainThreadNo)==0 } {
+      interp eval "" "set private($paramName) $args"
+   } else {
+      #--- thread::eval utilise un mutex interne du thread de la camera
+      thread::eval "append private(synchroneParameter) \" \";append private(synchroneParameter) $args"
+      if { $private(acquisitionState) == 0 } {
+         updateParameter
+      }
+
+   }
+}
+
+#------------------------------------------------------------
+# updateParameter
+#    modifie plusieurs parametres en mode asynchrone
+#
+# @param
+# @return rien
+#------------------------------------------------------------
+proc ::camerathread::updateParameter { } {
+   variable private
+   set paramList $private(synchroneParameter)
+   set private(synchroneParameter)  ""
+::camerathread::disp  "updateParameter:$paramList:\n"
+   foreach { paramName paramValue } $paramList {
+      set private($paramName) $paramValue
+      ###::camerathread::disp  "camerathread: $paramName=$private($paramName)XXX\n"
+
+      switch $paramName {
+        "binning" {
+            cam$private(camNo) bin $private(binning)
+         }
+        "exptime" {
+            cam$private(camNo) exptime $private(exptime)
+         }
+      }
    }
 }
 
