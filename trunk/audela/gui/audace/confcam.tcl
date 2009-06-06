@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.129 2009-03-29 19:20:08 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.130 2009-06-06 10:27:42 michelpujol Exp $
 #
 
 namespace eval ::confCam {
@@ -532,15 +532,15 @@ proc ::confCam::setFormat { camItem format } {
 #    telNo   : numero du telescope
 #----------------------------------------------------------------------------
 proc ::confCam::setMount { camItem telNo } {
-   if { [::confCam::isReady $camItem] && [confTel::isReady]  } {
-     ### set threadNo [::confCam::getThreadNo $camItem]
-     ### if { $::tcl_platform(threaded)==1 } {
-     ###    #--- je copie la commande de la monture dans l'interpreteur de la camera
-     ###    thread::copycommand $threadNo "tel$telNo"
-     ### } else {
-     ###    #--- je copie la commande de la monture dans l'interpreteur de la camera
-     ###    copycommand $threadNo "tel$telNo"
-     ### }
+   variable private
+   if { $private($camItem,camNo) != 0 && [confTel::isReady]  } {
+      if { [ catch { tel$telNo threadid } ] == 0 } {
+         #--- le telescope possede un thread  dedie
+         cam$private($camItem,camNo) tel $telNo [tel$telNo threadid]
+      } else {
+         #--- le telescope ne possede pas de thread dedie
+         cam$private($camItem,camNo) tel $telNo
+      }
    }
 }
 
