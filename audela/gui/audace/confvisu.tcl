@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.104 2009-05-30 07:13:25 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.105 2009-06-07 17:58:16 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -408,7 +408,14 @@ namespace eval ::confVisu {
             set private($visuNo,picture_w) [buf$bufNo getpixelswidth]
             set private($visuNo,picture_h) [buf$bufNo getpixelsheight]
             set private($visuNo,currentHduNo) $hduNo
+         } else {
+            #--- je mets à jour le nom du fichier meme quand l'image ne 
+            #--- proviens pas d'un fichier , mais d'une camera
+            #--- afin de permettre le rafraichissement des outils 
+            #--- qui sont abonnes au listener addFilenameListener
+            ::confVisu::setFileName $visuNo "?"
          }
+
 
          #--- je determine le mode d'affichage en focntion du type d'image
          #---  si type=image2D alors  mode=image
@@ -3135,7 +3142,7 @@ proc ::confVisu::getToolBar { visuNo } {
 proc ::confVisu::initHduList { visuNo fileName } {
    variable private
 
-	if { [info command fits] == "" } {
+        if { [info command fits] == "" } {
        #--- si la commande fits n'existe pas , on ne peut lire que le premier HDU
        return ""
    }
