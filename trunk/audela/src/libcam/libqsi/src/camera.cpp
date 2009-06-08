@@ -26,6 +26,7 @@
 #include <windows.h>
 #include <wchar.h>   // pour BSTR
 #include <exception>
+#include <stdexcept>
 #endif
 
 #if defined(OS_LIN)
@@ -38,17 +39,8 @@
 #include <stdio.h>
 #include "camera.h"
 
-//#define ASCOM_SIMULATOR
-
-#ifdef ASCOM_SIMULATOR
-#import "file:C:\Program Files\Fichiers communs\ASCOM\Interface\AscomMasterInterfaces.tlb"
-#else
 #define _WIN32_DCOM  // CoInitializeEx help : You must include the #define _WIN32_DCOM preprocessor directive at the beginning of your code to be able to use CoInitializeEx.
 #import "progid:QSICamera.CCDCamera"
-#endif
-
-//#import "progid:CCDSimulator.Camera"
-//#import "progid:AscomMasterInterfaces"
 
 #ifdef __cplusplus
 extern "C" {
@@ -122,13 +114,8 @@ struct cam_drv_t CAM_DRV = {
 };
 
 struct _PrivateParams {
-#ifdef ASCOM_SIMULATOR
-   AscomInterfacesLib::ICamera  * pCam;
-   AscomInterfacesLib::IFilterWheel *pFilterWheel;
-#else 
    QSICameraLib::ICameraEx * pCam;                // parametres internes de la camera
    //QSICameraLib::IFilterWheelEx * pFilterWheel;
-#endif
    int debug;
 };
 
@@ -255,24 +242,16 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       return -1;
    }
 
-#ifdef ASCOM_SIMULATOR
-   CLSID clsid;
-   hr = CLSIDFromProgID(OLESTR("CCDSimulator.Camera") ,&clsid); 
-   hr = ::CoCreateInstance( clsid, NULL, CLSCTX_INPROC_SERVER,
-         __uuidof( AscomInterfacesLib::ICamera ) , (void **) &cam->params->pCam);
-   cam->params->pFilterWheel = NULL;
-#else     
    hr = ::CoCreateInstance( __uuidof (QSICameraLib::CCDCamera), NULL, CLSCTX_INPROC_SERVER,
       __uuidof( QSICameraLib::ICameraEx) , (void **) &cam->params->pCam);
-#endif
    if (FAILED(hr)) { 
       if  ( hr == REGDB_E_CLASSNOTREG ) {
-         cam_log(LOG_ERROR,"cam_init error REGDB_E_CLASSNOTREG : QSI Class not registered");
          sprintf(cam->msg, "cam_init error REGDB_E_CLASSNOTREG : QSI Class not registered");
+         cam_log(LOG_ERROR,cam->msg);
          return -1;
       } else {
-         cam_log(LOG_ERROR,"cam_init error CoCreateInstance hr=%X",hr);
          sprintf(cam->msg, "cam_init error CoCreateInstance hr=%X",hr);
+         cam_log(LOG_ERROR,cam->msg);
          return -1;
       }
    }
@@ -286,10 +265,18 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       cam->nb_photoy  = cam->params->pCam->CameraYSize;
       //cam_log(LOG_DEBUG,"cam_init avant GetDescription");
       //strcpy(CAM_INI[cam->index_cam].name, cam->params->pCam->Name);
+      // je recupere la description
+      strncpy(CAM_INI[cam->index_cam].name, 
+         _com_util::ConvertBSTRToString(cam->params->pCam->Description),
+         sizeof(CAM_INI[cam->index_cam].name) -1 );
 
    } catch (_com_error &e) {
-      cam_log(LOG_ERROR,"cam_init connection error=%s",e.ErrorMessage());
-      sprintf(cam->msg, "cam_init connection error=%s",e.ErrorMessage());
+      cam_log(LOG_ERROR,"cam_init connection _com_error=%s",e.ErrorMessage());
+      sprintf(cam->msg, "cam_init connection _com_error=%s",e.ErrorMessage());
+      return -1;
+   } catch (std::exception &e) {
+      cam_log(LOG_ERROR,"cam_init connection error=%s",e.what());
+      sprintf(cam->msg, "cam_init connection error=%s",e.what());
       return -1;
    } catch (...) {
       cam_log(LOG_ERROR,"cam_init error Connected exception");
@@ -336,6 +323,75 @@ int cam_close(struct camprop * cam)
    return 0;
 }
 
+void cam_update_window(struct camprop *cam)
+{
+   int maxx, maxy;
+   maxx = cam->nb_photox;
+   maxy = cam->nb_photoy;
+   int x1, x2, y1, y2; 
+   
+   if (cam->x1 > cam->x2) {
+      int x0 = cam->x2;
+      cam->x2 = cam->x1;
+      cam->x1 = x0;
+   }
+
+   if (cam->x1 < 0) {
+      cam->x1 = 0;
+   }
+   if (cam->x2 > maxx - 1) {
+      cam->x2 = maxx - 1;
+   }
+
+   if (cam->y1 > cam->y2) {
+      int y0 = cam->y2;
+      cam->y2 = cam->y1;
+      cam->y1 = y0;
+   }
+   if (cam->y1 < 0) {
+      cam->y1 = 0;
+   }
+
+   if (cam->y2 > maxy - 1) {
+      cam->y2 = maxy - 1;
+   }
+
+   // je prend en compte le binning
+   cam->w = (cam->x2 - cam->x1) / cam->binx +1;
+   cam->h = (cam->y2 - cam->y1) / cam->biny +1;
+   x1 = cam->x1  / cam->binx;
+   x2 = x1 + cam->w -1;
+   y1 = cam->y1 / cam->biny;
+   y2 = y1 + cam->h -1;
+
+   // je configure la camera.
+   // The frame to be captured is defined by four properties, StartX, StartY, which define the upperleft
+   // corner of the frame, and NumX and NumY the define the binned size of the frame.
+   // If binning is active, value is in binned pixels, start position for the X and Y axis are 0 based.
+   //
+   // Attention , il faut d'abord mettre a jour l'origine (StartX,StartY) avant la taille de la fenetre
+   // car sinon on risque de provoquer une exception (cas de l'ancienne origine hors de la fenetre)
+
+
+
+   if ( cam->mirrorv == 1 ) {
+      // j'applique un miroir vertical en inversant les ordonnees de la fenetre
+      x1 = (maxx / cam->binx ) - x2 -1;
+   }
+
+   if ( cam->mirrorh == 1 ) {
+      // j'applique un miroir horizontal en inversant les abcisses de la fenetre
+      // 0---y1-----y2---------------------(w-1)
+      // 0---------------(w-y2)---(w-y1)---(w-1)  
+      y1 = (maxy / cam->biny ) - y2 -1;
+   }
+
+   cam->params->pCam->StartX = x1 ;
+   cam->params->pCam->StartY = y1 ;
+   cam->params->pCam->NumX = cam->w;
+   cam->params->pCam->NumY = cam->h;
+}
+
 
 void cam_start_exp(struct camprop *cam, char *amplionoff)
 {
@@ -349,9 +405,11 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 
    if (cam->authorized == 1) {
       try {
-         float exptime = cam->exptime ;
+         float exptime ;
          if ( cam->exptime <= 0.03f ) {
             exptime = 0.03f;
+         } else {
+            exptime = cam->exptime ;
          }
 
          // je lance l'acquisition
@@ -586,65 +644,21 @@ void cam_set_binning(int binx, int biny, struct camprop *cam)
       cam->binx = binx;
       cam->biny = biny;
       cam_log(LOG_DEBUG,"cam_set_binning fin OK");
-   } catch (std::exception error) {
-      cam_log(LOG_ERROR, "cam_set_binning error exception");
-      sprintf(cam->msg, "cam_set_binning error exception");
-   } catch (...) {
-      cam_log(LOG_ERROR,"cam_set_binning error exception");
-      sprintf(cam->msg, "cam_set_binning error exception");
+   } catch (_com_error &e) {
+      cam_log(LOG_ERROR,"cam_init connection error=%s",e.ErrorMessage());
+      sprintf(cam->msg, "cam_init connection error=%s",e.ErrorMessage());
+   } catch (std::runtime_error &e) {
+      cam_log(LOG_ERROR,"cam_init connection error=%s",e.what());
+      sprintf(cam->msg, "cam_init connection error=%s",e.what());
+   } catch (std::logic_error &e) {
+      cam_log(LOG_ERROR,"cam_init connection error=%s",e.what());
+      sprintf(cam->msg, "cam_init connection error=%s",e.what());      
+   } catch (std::exception &e) {
+      cam_log(LOG_ERROR,"cam_init connection error=%s",e.what());
+      sprintf(cam->msg, "cam_init connection error=%s",e.what());      
    }
 }
 
-void cam_update_window(struct camprop *cam)
-{
-   int maxx, maxy;
-   maxx = cam->nb_photox;
-   maxy = cam->nb_photoy;
-
-   if (cam->x1 > cam->x2) {
-      int x0 = cam->x2;
-      cam->x2 = cam->x1;
-      cam->x1 = x0;
-   }
-   if (cam->x1 < 0)
-      cam->x1 = 0;
-   if (cam->x2 > maxx - 1)
-      cam->x2 = maxx - 1;
-
-   if (cam->y1 > cam->y2) {
-      int y0 = cam->y2;
-      cam->y2 = cam->y1;
-      cam->y1 = y0;
-   }
-   if (cam->y1 < 0)
-      cam->y1 = 0;
-   if (cam->y2 > maxy - 1)
-      cam->y2 = maxy - 1;
-
-   cam->w = (cam->x2 - cam->x1) / cam->binx + 1;
-   cam->x2 = cam->x1 + cam->w * cam->binx - 1;
-   cam->h = (cam->y2 - cam->y1) / cam->biny + 1;
-   cam->y2 = cam->y1 + cam->h * cam->biny - 1;
-
-   if (cam->x2 > maxx - 1) {
-      cam->w = cam->w - 1;
-      cam->x2 = cam->x1 + cam->w * cam->binx - 1;
-   }
-
-   if (cam->y2 > maxy - 1) {
-      cam->h = cam->h - 1;
-      cam->y2 = cam->y1 + cam->h * cam->biny - 1;
-   }
-
-   // je configure la camera.
-   // The frame to be captured is defined by four properties, StartX, StartY, which define the upperleft
-   // corner of the frame, and NumX and NumY the define the binned size of the frame.
-   // If binning is active, value is in binned pixels, start position for the X and Y axis are 0 based.
-   cam->params->pCam->NumX = cam->w;
-   cam->params->pCam->NumY = cam->h;
-   cam->params->pCam->StartX = cam->x1 / cam->binx ;
-   cam->params->pCam->StartY = cam->y1 / cam->biny ;
-}
 
 
 // ---------------------------------------------------------------------------
@@ -658,8 +672,8 @@ void qsiSetupDialog(struct camprop *cam)
 {
    cam_log(LOG_DEBUG,"qsiSetupDialog avant SetupDialog");
    if ( cam->params->pCam == NULL ) {
-      cam_log(LOG_ERROR,"qsiSetupDialog camera not initialized");
       sprintf(cam->msg, "qsiSetupDialog camera not initialized");
+      cam_log(LOG_ERROR,cam->msg);
       return;
    }
    try {
@@ -667,8 +681,8 @@ void qsiSetupDialog(struct camprop *cam)
       cam->params->pCam->SetupDialog();
       cam->params->pCam->Connected = true;
    } catch (...) {
-      cam_log(LOG_ERROR,"qsiSetupDialog error exception");
       sprintf(cam->msg, "cam_cooler_check error exception");
+      cam_log(LOG_ERROR,cam->msg);
    }
 }
 
@@ -727,7 +741,8 @@ int qsiGetWheelPosition(struct camprop *cam, int *position)
       return -1;
    }
    try {
-      if ( cam->params->pCam->HasFilterWheel) {
+      VARIANT_BOOL filter = cam->params->pCam->HasFilterWheel;
+      if ( filter) {
          *position = cam->params->pCam->Position;
          return 0;
       } else {
@@ -761,7 +776,8 @@ int qsiGetWheelNames(struct camprop *cam, char **names)
       return -1;
    }
    try {
-      if ( cam->params->pCam->HasFilterWheel == VARIANT_TRUE) {
+      VARIANT_BOOL filter = cam->params->pCam->HasFilterWheel;
+      if ( filter ) {
          SAFEARRAY *safeValues;
          cam_log(LOG_DEBUG,"qsiGetWheelNames avant GetNames filter Wheel");      
          safeValues = cam->params->pCam->Names;
