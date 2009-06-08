@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.29 2009-06-06 10:50:55 michelpujol Exp $
+ * $Id: libcam.c,v 1.30 2009-06-08 22:04:32 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -753,6 +753,7 @@ static int cmdCamBin(ClientData clientData, Tcl_Interp * interp, int argc, char 
             cam->msg[0]=0;
             CAM_DRV.set_binning(i_binx, i_biny, cam);
             if ( cam->msg[0] == 0 ) {
+               // je met a jour les coordonnees du fenetrage pour prendre en compte le binning
                CAM_DRV.update_window(cam);
                sprintf(ligne, "%d %d", cam->binx, cam->biny);
                Tcl_SetResult(interp, ligne, TCL_VOLATILE);
@@ -1879,6 +1880,8 @@ static int cmdCamMirrorH(ClientData clientData, Tcl_Interp * interp, int argc, c
          Tcl_SetResult(interp, ligne, TCL_VOLATILE);
          result = TCL_ERROR;
       } else {
+         // je met a jour les coordonnees du fenetrage pour prendre en compte le miroir
+         CAM_DRV.update_window(cam);
          Tcl_SetResult(interp, "", TCL_VOLATILE);
          result = TCL_OK;
       }
@@ -1908,6 +1911,8 @@ static int cmdCamMirrorV(ClientData clientData, Tcl_Interp * interp, int argc, c
          Tcl_SetResult(interp, ligne, TCL_VOLATILE);
          result = TCL_ERROR;
       } else {
+         // je met a jour les coordonnees du fenetrage pour prendre en compte le miroir
+         CAM_DRV.update_window(cam);
          Tcl_SetResult(interp, "", TCL_VOLATILE);
          result = TCL_OK;
       }
