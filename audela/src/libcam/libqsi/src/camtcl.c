@@ -93,8 +93,8 @@ int cmdQsiWheel(ClientData clientData, Tcl_Interp * interp, int argc, char *argv
    int result = TCL_OK, pb = 0, k = 0;
    struct camprop *cam;
    cam = (struct camprop *) clientData;
-   if ((argc < 2) || (argc > 4)) {
-      pb = 0;
+   if ( argc < 3 || argc > 4 ) {
+      pb = 1;
    } else {
       k = 0;
       pb = 0;
