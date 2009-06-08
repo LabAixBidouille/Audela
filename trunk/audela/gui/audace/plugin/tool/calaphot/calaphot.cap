@@ -1,6 +1,6 @@
 #
 # Fichier : calaphot.cap
-# Mise a jour $Id: calaphot.cap,v 1.1 2009-04-21 20:01:09 jacquesmichelet Exp $
+# Mise a jour $Id: calaphot.cap,v 1.2 2009-06-08 15:08:37 jacquesmichelet Exp $
 #
 
 #=========================================================================
@@ -27,7 +27,7 @@ set calaphot(texte,o_rayon1)               "Inner Oval Radius (in FWHM)"
 set calaphot(texte,o_rayon2)               "Inner Crown Radius (in FWHM)"
 set calaphot(texte,o_rayon3)               "Outer Crown Radius (in FWHM)"
 set calaphot(texte,sortie)                 "Output File Name"
-set calaphot(texte,signal_bruit)           "Maximum S/N Ratio"
+set calaphot(texte,signal_bruit)           "Minimum S/N Ratio"
 set calaphot(texte,mode)                   "Calculation Mode"
 set calaphot(texte,mode_ouverture)         "Aperture Photometry"
 set calaphot(texte,mode_modelisation)      "Star Modelling"
@@ -122,6 +122,7 @@ set calaphot(texte,tri_images_1)           "Yes"
 set calaphot(texte,detection_ini)          "The Calaphot version has changed : the calaphot.ini settings will be reset"
 set calaphot(texte,titre_menu)             "Differential Photometry"
 set calaphot(texte,aide)                   "Help"
+set calaphot(texte,pas_image_valide)       "No valid image. You should check the minimum S/N ratio"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -233,6 +234,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,tri_images_1)        "oui"
    set calaphot(texte,detection_ini)       "Changement de version de Calaphot : le contenu de calaphot.ini va être re-initialisé"
    set calaphot(texte,aide)                "Aide"
+   set calaphot(texte,pas_image_valide)    "Aucune image n'est valide. Vérifiez le rapport S/B limite"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -345,6 +347,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,detection_ini)       "The Calaphot version has changed : the calaphot.ini settings will be reset"
    set calaphot(texte,titre_menu)          "Differential Photometry"
    set calaphot(texte,aide)                "Help"
+   set calaphot(texte,pas_image_valide)    "No valid image. You should check the minimum S/N ratio"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -457,6 +460,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,detection_ini)       "The Calaphot version has changed : the calaphot.ini settings will be reset"
    set calaphot(texte,titre_menu)          "Differential Photometry"
    set calaphot(texte,aide)                "Help"
+   set calaphot(texte,pas_image_valide)    "No valid image. You should check the minimum S/N ratio"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -569,6 +573,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,detection_ini)       "The Calaphot version has changed : the calaphot.ini settings will be reset"
    set calaphot(texte,titre_menu)          "Differential Photometry"
    set calaphot(texte,aide)                "Help"
+   set calaphot(texte,pas_image_valide)    "No valid image. You should check the minimum S/N ratio"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -680,6 +685,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,detection_ini)       "The Calaphot version has changed : the calaphot.ini settings will be reset"
    set calaphot(texte,titre_menu)          "Differential Photometry"
    set calaphot(texte,aide)                "Help"
+   set calaphot(texte,pas_image_valide)    "No valid image. You should check the minimum S/N ratio"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -792,6 +798,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,detection_ini)       "The Calaphot version has changed : the calaphot.ini settings will be reset"
    set calaphot(texte,titre_menu)          "Differential Photometry"
    set calaphot(texte,aide)                "Help"
+   set calaphot(texte,pas_image_valide)    "No valid image. You should check the minimum S/N ratio"
 }
 
 #=========================================================================
