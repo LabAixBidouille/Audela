@@ -5,7 +5,7 @@
 #
 # @brief Routines de gestion des affichages de Calaphot
 #
-# $Id: calaphot_graph.tcl,v 1.1 2009-04-21 19:58:50 jacquesmichelet Exp $
+# $Id: calaphot_graph.tcl,v 1.2 2009-06-08 15:08:37 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -578,6 +578,11 @@ namespace eval ::CalaPhot {
             }
         }
 
+        if { ![info exists data_script(trace_cste_premier)] } {
+            # Aucune image n'est valide    
+            tk_messageBox -message $calaphot(texte,pas_image_valide) -icon error -title $calaphot(texte,probleme)
+            return
+        }
         Message debug "trace cste premier= %10.4f\n" $data_script(trace_cste_premier)
         for {set e 0} {$e < $data_script(nombre_reference)} {incr e} {
             Message debug "trace ref premier= %10.4f\n" $data_script(trace_ref_premier_$e)
