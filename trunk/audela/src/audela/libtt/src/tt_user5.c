@@ -1080,7 +1080,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 
 	tt_morphomath_1(pseries);	
 	//pour visualiser le tophat 
-	tt_imasaver(p_out,"D:/tophat.fit",16);	
+	//tt_imasaver(p_out,"D:/tophat.fit",16);	
 
 	/* --- lit les parametres astrometriques de l'image ---*/
 	valid_ast=1;
@@ -1136,7 +1136,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					}
 				}
 			}
-			tt_imasaver(p_tmp3,"D:/gtopetite.fit",16);
+			//tt_imasaver(p_tmp3,"D:/gtopetite.fit",16);
 			tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
 			
 			//recupère les coordonnées de la droite détectée y=a0*x+b0 y=eq[0]*x+eq[1] et eq[2]=0, si la droite est verticale x=eq[2] et eq[0]=eq[1]=0
@@ -1158,7 +1158,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 							}
 						}
 					}
-					tt_imasaver(p_tmp3,"D:/gtopetite_rot.fit",16);
+					//tt_imasaver(p_tmp3,"D:/gtopetite_rot.fit",16);
 					tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
 					rotation=1;
 				}
@@ -1259,7 +1259,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 							}
 						}
 					}
-					tt_imasaver(p_tmp3,"D:/gtopetite2.fit",16);
+					//tt_imasaver(p_tmp3,"D:/gtopetite2.fit",16);
 					tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
 
 					somme_value=0;somme_x=0;somme_y=0;		
@@ -2749,8 +2749,10 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 		if (strcmp (struct_elem,"RECTANGLE")==0) {
 			x2=(int)(x1/3.0);
 			y2=(int)(y1/3.0);
-			//x2=x1/2;
-			//y2=y1/2;
+			// garde fou sur la valeur minimum
+			if (x2<=2) {
+				x2=2;
+			}
 			if (x2%2 != 1) {
 				x2=x2+1;
 			}
@@ -3115,7 +3117,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 				}
 			}
 			tt_util_histocuts(p_tmp1,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
-			tt_imasaver(p_tmp1,"D:/gradient.fit",16);	
+			//tt_imasaver(p_tmp1,"D:/gradient.fit",16);	
 
 			seuil =(pseries->hicut+mode2)/2.0;
 
