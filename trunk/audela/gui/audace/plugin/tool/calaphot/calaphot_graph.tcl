@@ -5,7 +5,7 @@
 #
 # @brief Routines de gestion des affichages de Calaphot
 #
-# $Id: calaphot_graph.tcl,v 1.2 2009-06-08 15:08:37 jacquesmichelet Exp $
+# $Id: calaphot_graph.tcl,v 1.3 2009-06-09 07:56:36 jacquesmichelet Exp $
 
 namespace eval ::CalaPhot {
 
@@ -323,7 +323,7 @@ namespace eval ::CalaPhot {
 
         Message notice " | %07.4f | %s" $data_image($i,constante_mag) $data_image($i,valide)
         if {$data_image($i,valide) == "N"} {
-            Message info "( %s )\n" $data_script($i,invalidation)
+            Message debug "( %s )\n" $data_script($i,invalidation)
         }
         Message notice "\n"
     }

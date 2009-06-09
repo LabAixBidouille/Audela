@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.3 2009-06-02 09:32:49 jacquesmichelet Exp $
+# $Id: calaphot_principal.tcl,v 1.4 2009-06-09 07:56:36 jacquesmichelet Exp $
 #
 
 ###catch {namespace delete ::Calaphot}
@@ -73,7 +73,7 @@ namespace eval ::CalaPhot {
 
 # L'existence de trace_log cree le ficher debug.log et le mode d'affichage debug
         catch {unset trace_log}
-#    set trace_log 1
+##        set trace_log 1
 
         set numero_version v5.0
 
@@ -293,7 +293,13 @@ namespace eval ::CalaPhot {
             Visualisation rapide
 
             # Recherche la date de l'image dans l'entete FITS (deja fait si les images etaient declarees non triees)
-            DateImage $i
+            if { [DateImage $i] } {
+                Message probleme "%s %i : %s\n" $calaphot(texte,image) $i $calaphot(texte,temps_pose_nul)
+                ArretScript
+                EffaceMotif astres
+                Message probleme "%s\n" $calaphot(texte,fin_anticipee)
+                return
+            }
 
             # Determination du decalage geometrique
             MesureDecalage $i
@@ -620,7 +626,7 @@ namespace eval ::CalaPhot {
     # @param[in] i : numero de l'image dans la sequence
     # @retval data_image($i,date) : date en jour julien
     # @retval data_image($i,temps_expo) : temps d'exposition en s
-    # @return
+    # @return : -1 si le temps d'exposition trouvé est nul, 0, dans le cas normal
     proc DateImage {i} {
         global audace
         variable data_image
@@ -641,9 +647,12 @@ namespace eval ::CalaPhot {
         if {[string length $expo] == 0} {
             set expo [lindex [buf$audace(bufNo) getkwd "EXP_TIME"] 1]
         }
-        if {[string length $expo] == 0} {
-            set expo 1
+
+        Message debug "temps exposition : %d\n" $expo
+        if { ([string length $expo] == 0) || ($expo == 0) } {
+            return -1
         }
+
         if {$parametres(pose_minute) == "minute"} {
             set expo [expr $expo * 60.0]
         }
@@ -672,6 +681,7 @@ namespace eval ::CalaPhot {
                 set data_script(date_max) $data_image($i,date)
             }
         }
+        return 0
     }
 
 
