@@ -2750,7 +2750,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			x2=(int)(x1/3.0);
 			y2=(int)(y1/3.0);
 			// garde fou sur la valeur minimum
-			if (x2<=2) {
+			if (x2<2) {
 				x2=2;
 			}
 			if (x2%2 != 1) {
