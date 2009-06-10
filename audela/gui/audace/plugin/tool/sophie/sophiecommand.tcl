@@ -2,7 +2,7 @@
 # Fichier : sophiecommand.tcl
 # Description : Centralise les commandes de l'outil Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecommand.tcl,v 1.13 2009-06-06 10:03:28 michelpujol Exp $
+# Mise a jour $Id: sophiecommand.tcl,v 1.14 2009-06-10 18:34:16 michelpujol Exp $
 #
 
 #============================================================
@@ -433,7 +433,6 @@ proc ::sophie::setMode { { mode "" } } {
          set private(targetBoxSize) $::conf(sophie,centerWindowSize)
          #--- je mets la thread de la camera en mode centrage
          ::camera::setAsynchroneParameter $private(camItem)  "mode" "CENTER"
-
          #--- je change le binning
          setBinning "1x1"
          #--- j'active le fenetrage centrée sur l'étoile
@@ -1103,6 +1102,8 @@ proc ::sophie::startAcquisition { visuNo } {
         $private(frm).mode.guidageStart  configure -state disabled
       }
 
+
+
       #--- j'initialise les valeurs affichees
       set private(acquisitionState)  1
       #--- je mets a jour la fenetre de controle
@@ -1134,7 +1135,6 @@ proc ::sophie::startAcquisition { visuNo } {
 
       set private(AsynchroneParameter) 0
       ::camera::setAsynchroneParameter $private(camItem) \
-         "mode"                     "GUIDE" \
          "guidingMode"              $::conf(sophie,guidingMode) \
          "targetDetectionThresold"  $::conf(sophie,targetDetectionThresold) \
          "pixelScale"               $::conf(sophie,pixelScale) \
@@ -1148,6 +1148,7 @@ proc ::sophie::startAcquisition { visuNo } {
          "biasBufNo"                $private(biasBufNo)     \
          "maskRadius"               $::conf(sophie,maskRadius)  \
          "maskFwhm"                 $::conf(sophie,maskFwhm)   \
+         "maskPercent"              $::conf(sophie,maskPercent)   \
          "originSumNb"              $::conf(sophie,originSumNb) \
          "pixelMinCount"            $::conf(sophie,pixelMinCount) \
          "centerMaxLimit"           $::conf(sophie,centerMaxLimit)
@@ -1374,7 +1375,7 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                set starDx               [lindex $args 1]
                set starDy               [lindex $args 2]
                set private(targetDetection)  [lindex $args 3]
-               set fiberDetected        [lindex $args 4]
+               set fiberDetection       [lindex $args 4]
                set originX              [expr [lindex $args 5] * $private(xBinning) + $private(xWindow) -1 ]
                set originY              [expr [lindex $args 6] * $private(yBinning) + $private(yWindow) -1 ]
                set fwhmX                [lindex $args 7]
@@ -1388,7 +1389,7 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
 
                #--- je modifie la position de la consigne si on est en mode FIFER et la fibre est detectee
                if { $::conf(sophie,guidingMode) == "FIBER" } {
-                  if { $fiberDetected == 1 } {
+                  if { $fiberDetection == 1 } {
                      set private(originCoord) [list $originX $originY]
                   }
                   #--- je calcule l'écart par rapport à la position de depart
@@ -1413,17 +1414,17 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                #--- j'affiche les informations dans la fenetre de controle
                switch $private(mode) {
                   "CENTER" {
-                     ::sophie::control::setCenterInformation $private(targetDetection) $fiberDetected $originX $originY $starX $starY $fwhmX $fwhmY $background $maxIntensity
+                     ::sophie::control::setCenterInformation $private(targetDetection) $fiberDetection $originX $originY $starX $starY $fwhmX $fwhmY $background $maxIntensity
                   }
                   "FOCUS" {
-                     ::sophie::control::setFocusInformation $private(targetDetection) $fiberDetected $originX $originY $starX $starY $fwhmX $fwhmY $background $maxIntensity
+                     ::sophie::control::setFocusInformation $private(targetDetection) $fiberDetection $originX $originY $starX $starY $fwhmX $fwhmY $background $maxIntensity
                      #--- je change le mode d'affichage si la detection de l'etoile a change
                      ##if { $previousTargetDetection != $private(targetDetection)  } {
                      ##   sophie::setMode $private(mode)
                      ##}
                   }
                   "GUIDE" {
-                     ::sophie::control::setGuideInformation $private(targetDetection) $fiberDetected $originX $originY $starX $starY $starDx $starDy $alphaCorrection $deltaCorrection $originDx $originDy
+                     ::sophie::control::setGuideInformation $private(targetDetection) $fiberDetection $originX $originY $starX $starY $starDx $starDy $alphaCorrection $deltaCorrection $originDx $originDy
                      #--- je change le mode d'affichage si la detection de l'etoile a change
                      ##if { $previousTargetDetection != $private(targetDetection)  } {
                      ##   sophie::setMode $private(mode)

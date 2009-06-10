@@ -2,7 +2,7 @@
 # Fichier : sophiecontrol.tcl
 # Description : Fenetre de controle pour le centrage, la focalisation et le guidage
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecontrol.tcl,v 1.14 2009-06-06 10:03:28 michelpujol Exp $
+# Mise a jour $Id: sophiecontrol.tcl,v 1.15 2009-06-10 18:34:16 michelpujol Exp $
 #
 
 #============================================================
@@ -1147,14 +1147,25 @@ proc ::sophie::control::setCenterInformation { starDetection fiberDetection orig
    }
 
    #--- je mets a jour le voyant "trouDetecte"
-   if { $fiberDetection == 0 } {
-      $frm.voyant.trou_color_invariant configure \
-         -text $::caption(sophie,trouNonDetecte) \
-         -bg   $private(inactiveColor)
-   } else {
-      $frm.voyant.trou_color_invariant configure \
-         -text $::caption(sophie,trouDetecte) \
-         -bg   $private(activeColor)
+   switch $fiberDetection {
+      "0" {
+         #--- le trou n'est pas détecte
+         $frm.voyant.trou_color_invariant configure \
+            -text $::caption(sophie,trouNonDetecte) \
+            -bg   $private(inactiveColor)
+      }
+      "1" {
+         #--- le trou est détecte
+         $frm.voyant.trou_color_invariant configure \
+            -text $::caption(sophie,trouDetecte) \
+            -bg   $private(activeColor)
+      }
+      "2" {
+         #--- la detection du trou est desactivee
+         $frm.voyant.trou_color_invariant configure \
+            -text $::caption(sophie,tourNonRecherche) \
+            -bg   "SystemButtonFace"
+      }
    }
 
    set private(positionEtoileX)       [format "%6.1f" $starX]
@@ -1199,14 +1210,25 @@ proc ::sophie::control::setFocusInformation { starDetection fiberDetection origi
    }
 
    #--- je mets a jour le voyant "trouDetecte"
-   if { $fiberDetection == 0 } {
-      $frm.voyant.trou_color_invariant configure \
-         -text $::caption(sophie,trouNonDetecte) \
-         -bg   $private(inactiveColor)
-   } else {
-      $frm.voyant.trou_color_invariant configure \
-         -text $::caption(sophie,trouDetecte) \
-         -bg   $private(activeColor)
+   switch $fiberDetection {
+      "0" {
+         #--- le trou n'est pas détecte
+         $frm.voyant.trou_color_invariant configure \
+            -text $::caption(sophie,trouNonDetecte) \
+            -bg   $private(inactiveColor)
+      }
+      "1" {
+         #--- le trou est détecte
+         $frm.voyant.trou_color_invariant configure \
+            -text $::caption(sophie,trouDetecte) \
+            -bg   $private(activeColor)
+      }
+      "2" {
+         #--- la detection du trou est desactivee
+         $frm.voyant.trou_color_invariant configure \
+            -text $::caption(sophie,tourNonRecherche) \
+            -bg   "SystemButtonFace"
+      }
    }
 
    set private(positionEtoileX)       [format "%6.1f" $starX]
@@ -1293,28 +1315,25 @@ proc ::sophie::control::setGuideInformation { starDetection fiberDetection origi
    }
 
    #--- je mets a jour le voyant "trouDetecte"
-   if { $fiberDetection == 0 } {
-      $frm.voyant.trou_color_invariant configure \
-         -text $::caption(sophie,trouNonDetecte) \
-         -bg   $private(inactiveColor)
-   } else {
-      $frm.voyant.trou_color_invariant configure \
-         -text $::caption(sophie,trouDetecte) \
-         -bg   $private(activeColor)
-   }
-
-   if { $::conf(sophie,guidingMode) == "FIBER" } {
-      #--- je calcule l'écart par rapport à la position de depart
-      if { $::conf(sophie,fiberGuigindMode) == "HR" } {
-         set configX   "/$::conf(sophie,fiberHRX)"
-         set configY   "/$::conf(sophie,fiberHRY)"
-      } else {
-         set configX   "/$::conf(sophie,fiberHEX)"
-         set configY   "/$::conf(sophie,fiberHEY)"
+   switch $fiberDetection {
+      "0" {
+         #--- le trou n'est pas détecte
+         $frm.voyant.trou_color_invariant configure \
+            -text $::caption(sophie,trouNonDetecte) \
+            -bg   $private(inactiveColor)
       }
-   } else {
-      set configX ""
-      set configY ""
+      "1" {
+         #--- le trou est détecte
+         $frm.voyant.trou_color_invariant configure \
+            -text $::caption(sophie,trouDetecte) \
+            -bg   $private(activeColor)
+      }
+      "2" {
+         #--- la detection du trou est desactivee
+         $frm.voyant.trou_color_invariant configure \
+            -text $::caption(sophie,tourNonRecherche) \
+            -bg   "SystemButtonFace"
+      }
    }
 
    set private(indicateursFwhmX)      ""
@@ -1324,8 +1343,8 @@ proc ::sophie::control::setGuideInformation { starDetection fiberDetection origi
 
    set private(positionEtoileX)   [format "%6.1f" $starX]
    set private(positionEtoileY)   [format "%6.1f" $starY]
-   set private(positionConsigneX) [format "%6.1f%s" $originX $configX]
-   set private(positionConsigneY) [format "%6.1f%s" $originY $configY]
+   set private(positionConsigneX) [format "%6.1f" $originX]
+   set private(positionConsigneY) [format "%6.1f" $originY]
    set private(ecartEtoileX)      [format "%6.1f" $starDx]
    set private(ecartEtoileY)      [format "%6.1f" $starDy]
    set private(ecartConsigneX)    [format "%6.1f" $originDx]

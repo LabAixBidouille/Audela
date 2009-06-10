@@ -2,7 +2,7 @@
 # Fichier : sophie.tcl
 # Description : Outil de tests pour le developpement de Sophie pour le T193 de l'OHP
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophietest.tcl,v 1.5 2009-05-27 21:54:56 michelpujol Exp $
+# Mise a jour $Id: sophietest.tcl,v 1.6 2009-06-10 18:34:16 michelpujol Exp $
 #
 
 #------------------------------------------------------------
@@ -16,33 +16,41 @@ proc ::sophie::testpcs { } {
 }
 
 #------------------------------------------------------------
-# testhp
+# simulHp
 #    teste l'envoi des coordonnees toutes les secondes
 #------------------------------------------------------------
-proc ::sophie::testCom { } {
+proc ::sophie::simulHp { } {
    variable private
 
    set private(testhp) 0
 
+   set private(dataNo) 0
+   set private(data,0) "02h 06m 47.87s / -13d 44' 28\" / -1d "
+   set private(data,1) "02h 07m 47.87s / -00d 44' 28\" / -1d "
+   set private(data,2) "02h 08m 47.87s / +10d 44' 28\" / -1d "
+   set private(data,2) "02h 08m 47.87s /-310d 44' 28\" / -1d "
+
    # je lance l'envoi permanent des coordonnees sur le port COM
    set private(writeHpHandle) [open COM7 "r+" ]
    fconfigure $private(writeHpHandle) -mode "19200,n,8,1" -buffering none -blocking 0
-
+console::disp "simulHp writeHpHandle=$private(writeHpHandle)\n"
    # j'ouvre le port de reception des coordonnees
-   set private(readHpHandle) [open COM8 "r+" ]
-   fconfigure $private(readHpHandle) -mode "19200,n,8,1" -buffering none -blocking 0
+   ###set private(readHpHandle) [open COM8 "r+" ]
+   ###fconfigure $private(readHpHandle) -mode "19200,n,8,1" -buffering none -blocking 0
 
    set private(testhp) 1
    after 1000 ::sophie::testWriteHp
-   after 1500 ::sophie::testReadHp
+   ###after 1500 ::sophie::testReadHp
 
 }
+
+
 
 #------------------------------------------------------------
 # stophp
 #    arrete l'envoi des coordonnees
 #------------------------------------------------------------
-proc ::sophie::stopCom { } {
+proc ::sophie::stopHp { } {
    variable private
 
    set private(testhp) 0
@@ -52,10 +60,10 @@ proc ::sophie::stopCom { } {
       set private(writeHpHandle) ""
    }
 
-  if { $private(readHpHandle) != "" } {
-      close $private(readHpHandle)
-      set private(readHpHandle) ""
-   }
+  #if { $private(readHpHandle) != "" } {
+  #    close $private(readHpHandle)
+  #    set private(readHpHandle) ""
+  # }
 
 }
 
@@ -63,16 +71,21 @@ proc ::sophie::stopCom { } {
 # testWriteHp
 #    envoie les coordonnees toutes les secondes
 #------------------------------------------------------------
-proc ::sophie::testWriteCom { } {
+proc ::sophie::testWriteHp { } {
    variable private
 
-   set data "02h 06m 47.87s / -13d 44' 28\" /   -1d"
+   set data  $private(data,$private(dataNo))
+   if { $private(dataNo) < "2" } {
+      incr  private(dataNo)
+   } else {
+      set private(dataNo) 0
+   }
+
    if { $private(testhp) == 1 } {
       puts  $private(writeHpHandle) $data
 console::disp "testWriteHp data=$data\n"
-     after 2000 ::sophie::testWriteHp
+     after 5000 ::sophie::testWriteHp
    } else {
-
      if { $private(writeHpHandle) != "" } {
          close $private(writeHpHandle)
          set private(writeHpHandle) ""

@@ -2,7 +2,7 @@
 # Fichier : sophie.tcl
 # Description : Outil d'autoguidage pour le spectro Sophie du telescope T193 de l'OHP
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophie.tcl,v 1.13 2009-06-06 10:03:28 michelpujol Exp $
+# Mise a jour $Id: sophie.tcl,v 1.14 2009-06-10 18:34:16 michelpujol Exp $
 #
 
 #============================================================
@@ -99,8 +99,8 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(sophie,centerBinning) ] }            { set ::conf(sophie,centerBinning)             "2x2" }
    if { ! [ info exists ::conf(sophie,guideBinning) ] }             { set ::conf(sophie,guideBinning)              "1x1" }
    if { ! [ info exists ::conf(sophie,pixelScale)] }                { set ::conf(sophie,pixelScale)                "0.186" }
-   if { ! [ info exists ::conf(sophie,proportionalGain)] }          { set ::conf(sophie,proportionalGain)          "90" }
-   if { ! [ info exists ::conf(sophie,integralGain)] }              { set ::conf(sophie,integralGain)              "10" }
+   if { ! [ info exists ::conf(sophie,proportionalGain)] }          { set ::conf(sophie,proportionalGain)          "0.9" }
+   if { ! [ info exists ::conf(sophie,integralGain)] }              { set ::conf(sophie,integralGain)              "0.1" }
    if { ! [ info exists ::conf(sophie,detection)] }                 { set ::conf(sophie,detection)                 "FIBER" }
    if { ! [ info exists ::conf(sophie,centerMaxLimit)] }            { set ::conf(sophie,centerMaxLimit)            "3" }
    if { ! [ info exists ::conf(sophie,originCoord)] }               { set ::conf(sophie,originCoord)               [list 320 240 ] }
@@ -129,6 +129,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(sophie,guidingFileNameprefix)] }     { set ::conf(sophie,guidingFileNameprefix)     "guidage" }
    if { ! [ info exists ::conf(sophie,maskRadius)] }                { set ::conf(sophie,maskRadius)                20 }
    if { ! [ info exists ::conf(sophie,maskFwhm)] }                  { set ::conf(sophie,maskFwhm)                  5 }
+   if { ! [ info exists ::conf(sophie,maskPercent)] }               { set ::conf(sophie,maskPercent)              0.15 }
    if { ! [ info exists ::conf(sophie,pixelMinCount)] }             { set ::conf(sophie,pixelMinCount)             50 }
 
    #--- Initialisation de variables
@@ -168,7 +169,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(xWindow)          1        ; #--- abscisse du coin bas gauche du fenetrage
    set private(yWindow)          1        ; #--- ordonnee du coin bas gauche du fenetrage
 
-   set private(biasBufNo)  0 ; ###[::buf::create ]
+   set private(biasBufNo)  [::buf::create ]
    set private(maskBufNo)  [::buf::create ]
    set private(sumBufNo)   [::buf::create ]
    set private(fiberBufNo) [::buf::create ]
@@ -248,21 +249,21 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
 
          #--- Radiobutton pour le mode Centrage
          radiobutton $frm.mode.centrage -height 2 \
-            -indicatoron 0 -text $::caption(sophie,centrage) -value "CENTER" \
+            -indicatoron 0 -text $::caption(sophie,CENTER) -value "CENTER" \
             -variable ::sophie::private(mode) -command "::sophie::onChangeMode"
          pack $frm.mode.centrage -in [ $frm.mode getframe ] -anchor center \
             -expand 0 -fill x -side top
 
          #--- Radiobutton pour le mode Mise au point
          radiobutton $frm.mode.focalisation -height 2 \
-            -indicatoron 0 -text $::caption(sophie,focalisation) -value "FOCUS" \
+            -indicatoron 0 -text $::caption(sophie,FOCUS) -value "FOCUS" \
             -variable ::sophie::private(mode) -command "::sophie::onChangeMode"
          pack $frm.mode.focalisation -in [ $frm.mode getframe ] -anchor center \
            -expand 0 -fill x -side top
 
          #--- Radiobutton pour le mode Guidage
          radiobutton $frm.mode.guidage -height 2 \
-            -indicatoron 0 -text $::caption(sophie,guidage) -value "GUIDE" \
+            -indicatoron 0 -text $::caption(sophie,GUIDE) -value "GUIDE" \
             -variable ::sophie::private(mode) -command "::sophie::onChangeMode"
          pack $frm.mode.guidage -in [ $frm.mode getframe ] -anchor center \
             -expand 0 -fill x -side top
@@ -428,6 +429,11 @@ proc ::sophie::startTool { visuNo } {
    createTarget $visuNo
    #--- j'affiche la consigne sur l'image
    createOrigin $visuNo
+
+   #--- je charge l'image de bias
+   if { [file exists "$::conf(sophie,biasImage)" ] } {
+      buf$private(biasBufNo) load "$::conf(sophie,biasImage)"
+   }
 }
 
 #------------------------------------------------------------

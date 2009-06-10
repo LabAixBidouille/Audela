@@ -2,7 +2,7 @@
 # Fichier : sophieview.tcl
 # Description : Vue detail du suivi
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophieview.tcl,v 1.5 2009-06-06 10:03:28 michelpujol Exp $
+# Mise a jour $Id: sophieview.tcl,v 1.6 2009-06-10 18:34:16 michelpujol Exp $
 #
 
 #============================================================
@@ -117,9 +117,9 @@ proc ::sophie::view::stopTool { visuNo } {
 
    #--- j'arrete le listener
    ::sophie::removeAcquisitionListener $private(sophieVisu) "::sophie::view::refresh $visuNo"
-   after 1000
+   ##after 1000
    #--- je restaure le numero du buffer initial
-   ::sophie::view::setBuffer $visuNo "initialBuffer"
+   visu$visuNo buf $private(initialBuffer,$visuNo)
    #--- je masque l'outil
    pack forget $private(frm)
 }
@@ -156,7 +156,9 @@ proc ::sophie::view::setBuffer { visuNo { bufferName "" } } {
 #------------------------------------------------------------
 proc ::sophie::view::refresh { visuNo args } {
    variable private
-
-   ::confVisu::autovisu $visuNo
+console::disp ":sophie::view::refresh \n"
+   if { [winfo exists $private(frm) ] } {
+      ::confVisu::autovisu $visuNo
+   }
 }
 

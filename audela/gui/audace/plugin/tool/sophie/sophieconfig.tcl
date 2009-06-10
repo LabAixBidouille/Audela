@@ -2,7 +2,7 @@
 # Fichier : sophieconfig.tcl
 # Description : Fenetre de configuration de l'instrument Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophieconfig.tcl,v 1.6 2009-06-06 10:03:28 michelpujol Exp $
+# Mise a jour $Id: sophieconfig.tcl,v 1.7 2009-06-10 18:34:16 michelpujol Exp $
 #
 
 #============================================================
@@ -200,23 +200,23 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -textvariable ::sophie::config::widget(nbPosesAvantMaj)
       grid $frm.guidage.entrynbPosesAvantMaj -in [ $frm.guidage getframe ] -row 2 -column 2 -sticky ens
 
-      #--- Taille de la fenetre de guidage
-      label $frm.guidage.labeltailleFenetreGuidage -text $::caption(sophie,tailleFenetreGuidage)
-      grid $frm.guidage.labeltailleFenetreGuidage -in [ $frm.guidage getframe ] -row 3 -column 1 -sticky w
-
-      Entry $frm.guidage.entrytailleFenetreGuidage \
-         -width 8 -justify center -editable 1 \
-         -textvariable ::sophie::config::widget(tailleFenetreGuidage)
-      grid $frm.guidage.entrytailleFenetreGuidage -in [ $frm.guidage getframe ] -row 3 -column 2 -sticky ens
-
       #--- Taille de la fenetre de centrage
       label $frm.guidage.labeltailleFenetreCentrage -text $::caption(sophie,tailleFenetreCentrage)
-      grid $frm.guidage.labeltailleFenetreCentrage -in [ $frm.guidage getframe ] -row 4 -column 1 -sticky w
+      grid $frm.guidage.labeltailleFenetreCentrage -in [ $frm.guidage getframe ] -row 3 -column 1 -sticky w
 
       Entry $frm.guidage.entrytailleFenetreCentrage \
          -width 8 -justify center -editable 1 \
          -textvariable ::sophie::config::widget(tailleFenetreCentrage)
-      grid $frm.guidage.entrytailleFenetreCentrage -in [ $frm.guidage getframe ] -row 4 -column 2 -sticky ens
+      grid $frm.guidage.entrytailleFenetreCentrage -in [ $frm.guidage getframe ] -row 3 -column 2 -sticky ens
+
+      #--- Taille de la fenetre de guidage
+      label $frm.guidage.labeltailleFenetreGuidage -text $::caption(sophie,tailleFenetreGuidage)
+      grid $frm.guidage.labeltailleFenetreGuidage -in [ $frm.guidage getframe ] -row 4 -column 1 -sticky w
+
+      Entry $frm.guidage.entrytailleFenetreGuidage \
+         -width 8 -justify center -editable 1 \
+         -textvariable ::sophie::config::widget(tailleFenetreGuidage)
+      grid $frm.guidage.entrytailleFenetreGuidage -in [ $frm.guidage getframe ] -row 4 -column 2 -sticky ens
 
       #--- Gain proportionnel
       label $frm.guidage.labelgainProportionnel -text $::caption(sophie,gainProportionnel)
