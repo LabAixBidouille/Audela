@@ -2,7 +2,7 @@
 # Fichier : sophieconfig.tcl
 # Description : Fenetre de configuration de l'instrument Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophieconfig.tcl,v 1.7 2009-06-10 18:34:16 michelpujol Exp $
+# Mise a jour $Id: sophieconfig.tcl,v 1.8 2009-06-10 21:20:12 michelpujol Exp $
 #
 
 #============================================================
@@ -413,7 +413,8 @@ proc ::sophie::config::apply { visuNo } {
    #
    #---  je re-positionne la consigne demandé si le mode de guidage est FIBER
    ::sophie::setGuidingMode $visuNo
-   ###::sophie::setMode
+   #--- j'applique le mode courant pour prendre en compte les nouvelles valeurs des parametres
+   ::sophie::setMode
 }
 
 #------------------------------------------------------------
