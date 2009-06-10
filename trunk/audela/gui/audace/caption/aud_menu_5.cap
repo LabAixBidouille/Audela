@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_5.cap
-# Mise a jour $Id: aud_menu_5.cap,v 1.10 2009-02-07 11:14:00 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_5.cap,v 1.11 2009-06-10 17:49:53 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -25,6 +25,9 @@ set caption(audace,menu,scar)                         "Cosmetic Repair"
 set caption(audace,histo_titre)                       "Image Histogram"
 set caption(audace,histo_adu)                         "ADU"
 set caption(audace,histo_nbpix)                       "Pixels Number"
+
+set caption(audace,calculAuto)                        "Auto Refresh"
+set caption(audace,calculManuel)                      "Refresh Now"
 
 set caption(audace,maxi)                              "Max.: "
 set caption(audace,mini)                              "Min.: "
@@ -51,8 +54,6 @@ set caption(audace,MPC_format)                        "MPC Format:"
 set caption(audace,gauss_attention)                   "Warning:"
 set caption(audace,UAI_site_image)                    "UAI %s site must be where the image was acquired."
 
-set caption(audace,calculer)                          "Calculate"
-
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
@@ -70,6 +71,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,histo_titre)                    "Histogramme de l'image"
    set caption(audace,histo_adu)                      "ADU"
    set caption(audace,histo_nbpix)                    "Nombre de pixels"
+
+   set caption(audace,calculAuto)                     "Rafraîchissement automatique"
+   set caption(audace,calculManuel)                   "Rafraîchir maintenant"
 
    set caption(audace,maxi)                           "Maxi. : "
    set caption(audace,mini)                           "Mini. : "
@@ -96,8 +100,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,gauss_attention)                "Attention :"
    set caption(audace,UAI_site_image)                 "Le site UAI %s doit être celui où l'image a été acquise."
 
-   set caption(audace,calculer)                       "Calculer"
-
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
@@ -115,6 +117,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,histo_titre)                    "Istogramma dell'immagine"
    set caption(audace,histo_adu)                      "ADU"
    set caption(audace,histo_nbpix)                    "Numero dei pixels"
+
+   set caption(audace,calculAuto)                     "# Rafraîchissement automatique"
+   set caption(audace,calculManuel)                   "# Rafraîchir maintenant"
 
    set caption(audace,maxi)                           "Max.: "
    set caption(audace,mini)                           "Min.: "
@@ -141,8 +146,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,gauss_attention)                "Attenzione:"
    set caption(audace,UAI_site_image)                 "Il sito UAI %s dovra` essere quello dove l'immagine sara` acquisita."
 
-   set caption(audace,calculer)                       "Calcolàre"
-
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
@@ -160,6 +163,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,histo_titre)                    "Histograma de la imagen"
    set caption(audace,histo_adu)                      "Unidades digitales (ADU)"
    set caption(audace,histo_nbpix)                    "Número de píxeles"
+
+   set caption(audace,calculAuto)                     "Refresco automatico"
+   set caption(audace,calculManuel)                   "Refrescar ahora"
 
    set caption(audace,maxi)                           "Max.: "
    set caption(audace,mini)                           "Min.: "
@@ -186,8 +192,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,gauss_attention)                "Cuidado:"
    set caption(audace,UAI_site_image)                 "El sitio UAI %s debe estar donde se ha adquirido la imagen."
 
-   set caption(audace,calculer)                       "Calcular"
-
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
@@ -205,6 +209,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,histo_titre)                    "Historische Kurve des Bild"
    set caption(audace,histo_adu)                      "ADU"
    set caption(audace,histo_nbpix)                    "Rasterpunkten Zahl"
+
+   set caption(audace,calculAuto)                     "# Rafraîchissement automatique"
+   set caption(audace,calculManuel)                   "# Rafraîchir maintenant"
 
    set caption(audace,maxi)                           "Maxi.: "
    set caption(audace,mini)                           "Mini.: "
@@ -231,8 +238,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,gauss_attention)                "Achtung:"
    set caption(audace,UAI_site_image)                 "Die UAI %s Stelle muss die sein wo das Bild erworben wurde."
 
-   set caption(audace,calculer)                       "Rechnen"
-
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
@@ -250,6 +255,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,histo_titre)                    "Histograma de imagens"
    set caption(audace,histo_adu)                      "Unidades digitais (ADU)"
    set caption(audace,histo_nbpix)                    "Número de pixeis"
+
+   set caption(audace,calculAuto)                     "# Rafraîchissement automatique"
+   set caption(audace,calculManuel)                   "# Rafraîchir maintenant"
 
    set caption(audace,maxi)                           "Max.: "
    set caption(audace,mini)                           "Min.: "
@@ -276,8 +284,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,gauss_attention)                "Aviso:"
    set caption(audace,UAI_site_image)                 "O sítio UAI %s deve estar onde foi adquirida a imagem."
 
-   set caption(audace,calculer)                       "Calcular"
-
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
@@ -295,6 +301,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,histo_titre)                    "Billed-histogram"
    set caption(audace,histo_adu)                      "ADU"
    set caption(audace,histo_nbpix)                    "Pixeltal"
+
+   set caption(audace,calculAuto)                     "Automatisk opdatering"
+   set caption(audace,calculManuel)                   "Opdatér nu"
 
    set caption(audace,maxi)                           "Max.: "
    set caption(audace,mini)                           "Min.: "
@@ -320,8 +329,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,MPC_format)                     "MPC Format:"
    set caption(audace,gauss_attention)                "Advarsel:"
    set caption(audace,UAI_site_image)                 "Stedet UAI %s må være hvorfra billedet blev hentet."
-
-   set caption(audace,calculer)                       "Beregn"
 
 }
 
