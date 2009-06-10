@@ -3,7 +3,7 @@
 # Description : procedures d'acqusitition et de traitement avec
 #         plusieurs cameras simultanées exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise a jour $Id: sophiecamerathread.tcl,v 1.1 2009-06-06 10:03:28 michelpujol Exp $
+# Mise a jour $Id: sophiecamerathread.tcl,v 1.2 2009-06-10 18:34:16 michelpujol Exp $
 #
 
 
@@ -16,7 +16,6 @@ proc ::camerathread::guideSophie { exptime guidingMode originCoord targetCoord c
       return
    }
 
-   set private(mode)          "CENTER"
    set private(guidingMode)   $guidingMode
    set private(exptime)       $exptime
    set private(originCoord)   $originCoord
@@ -36,7 +35,7 @@ proc ::camerathread::guideSophie { exptime guidingMode originCoord targetCoord c
 
    #--- variables de travail
    set private(simulationCounter) "1"
-   set private(originSumCounter)  1
+   set private(originSumCounter)  0
    set private(diffXCumul)  0
    set private(diffYCumul)  0
    set private(centerDeltaList)   ""
@@ -122,15 +121,23 @@ proc ::camerathread::sophieAcquisitionLoop { } {
 
       set targetDetection ""
       set fiberDetection ""
-      #--- je calcule l'ecart dx,dy entre la cible et l'origine
-      #--- je calcule les coordonnees de la cible autour de l'etoile
-      set x  [lindex $private(targetCoord) 0]
-      set y  [lindex $private(targetCoord) 1]
-      set x1 [expr int($x) - $private(targetBoxSize)]
-      set x2 [expr int($x) + $private(targetBoxSize)]
-      set y1 [expr int($y) - $private(targetBoxSize)]
-      set y2 [expr int($y) + $private(targetBoxSize)]
-
+      #--- je calcule les coordonnees de la fenetre d'analyse
+      if {  $private(mode) == "GUIDE" } {
+         #--- la fenetre correspond à toute l'image
+         set x1 1
+         set y1 1
+         set x2 [buf$bufNo getpixelswidth]
+         set y2 [buf$bufNo getpixelsheight]
+ ::camerathread::disp  "camerathread: etoile avant x1=$x1 x2=$x2 y1=$y1 y2=$y2\n"
+      } else {
+         #--- la fenetre est centree sur l'etoile
+         set x  [lindex $private(targetCoord) 0]
+         set y  [lindex $private(targetCoord) 1]
+         set x1 [expr int($x) - $private(targetBoxSize)]
+         set x2 [expr int($x) + $private(targetBoxSize)]
+         set y1 [expr int($y) - $private(targetBoxSize)]
+         set y2 [expr int($y) + $private(targetBoxSize)]
+         }
 
       #--- je mesure la position de l'etoile et le trou de la fibre
       # buf$bufNo fibercentro
@@ -146,8 +153,9 @@ proc ::camerathread::sophieAcquisitionLoop { } {
       # @param     Argv[10]=previousFiberX abcisse du centre de la fibre
       # @param     Argv[11]=previousFiberY ordonnee du centre de la fibre
       # @param     Argv[12]=maskFwhm       largeur a mi hauteur de la gaussienne
-      # @param     Argv[13]=mode           mode: "GUIDE" "CENTER" "FOCUS"
+      # @param     Argv[13]=findFiber      recherche de l'entrée de fibre
       # @param     Argv[14]=pixelMinCount  nombre minimal de pixels pour accepter l'image
+      # @param     Argv[15]=maskPercent    pourcentage du niveau du mask
       #
       # @return si TCL_OK
       #            list[0] starStatus      resultat de la recherche de la fibre
@@ -165,12 +173,24 @@ proc ::camerathread::sophieAcquisitionLoop { } {
       #         si TCL_ERREUR
       #            message d'erreur
 
+      if {  $private(mode) == "GUIDE" && $private(guidingMode) == "FIBER" } {
+         set findFiber 1
+         #--- j'incremente le compteur d'integration de l'origine
+         if { $private(originSumCounter) >= $private(originSumNb) } {
+            set private(originSumCounter) 0
+         }
+         incr private(originSumCounter)
+      } else {
+         set findFiber 0
+         set private(originSumCounter) 0
+      }
+
       set result [buf$bufNo fibercentro "[list $x1 $y1 $x2 $y2]" \
          $private(biasBufNo) $private(maskBufNo) $private(sumBufNo) $private(fiberBufNo) \
          $private(maskRadius) \
          $private(originSumNb) $private(originSumCounter)  \
          [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
-         $private(maskFwhm) $private(mode) $private(pixelMinCount) ]
+         $private(maskFwhm) $findFiber $private(pixelMinCount) $private(maskPercent) ]
 
       set starStatus       [lindex $result 0 ]
       set starX            [lindex $result 1 ]
@@ -183,7 +203,6 @@ proc ::camerathread::sophieAcquisitionLoop { } {
       set background       [lindex $result 8 ]
       set maxIntensity     [lindex $result 9 ]
       set infoMessage      [lindex $result 10 ]
- ::camerathread::disp  "camerathread: etoile avant x=[format "%6.1f" $x] y=[format "%6.1f" $y] apres x=[format "%6.1f" $starX] y=[format "%6.1f" $starY] infoMessage=$infoMessage\n"
 
       if { $starStatus == "DETECTED" } {
          #--- coordonnes de la cible
@@ -195,26 +214,27 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          set targetDetection 0
       }
 
-      if { $private(guidingMode) == "FIBER" } {
-         if { $fiberStatus == "DETECTED" } {
-            #--- La consigne est detectee
-            set fiberDetection  1
-            ::camerathread::disp  "camerathread: consigne Xcons=$fiberX YCons=$fiberY \n"
-            #--- je met a jour les coordonnes de la consigne
-            set private(originCoord) [list $fiberX $fiberY ]
+      if {  $private(mode) == "GUIDE" && $private(guidingMode) == "FIBER" } {
+         if { $private(originSumCounter) >= $private(originSumNb) } {
+            if { $fiberStatus == "DETECTED" } {
+               #--- La consigne est detectee
+               set fiberDetection  1
+               ::camerathread::disp  "camerathread: consigne Xcons=$fiberX YCons=$fiberY \n"
+               #--- je met a jour les coordonnes de la consigne
+               set private(originCoord) [list $fiberX $fiberY ]
+            } else {
+               #--- la consigne n'est pas detectee, je ne change pas les coordonnes de la consigne
+               set fiberDetection  0
+               ::camerathread::disp  "camerathread:  consigne non dectectee\n"
+            }
          } else {
-            #--- la consigne n'est pas detectee, je ne change pas les coordonnes de la consigne
-            set fiberDetection  0
-            ::camerathread::disp  "camerathread:  consigne non dectectee\n"
+            #--- pas de changement, on attend la fin de l'integration de l'image
+            set fiberDetection  3
          }
-         #--- j'incremente le compteur d'integration de l'origine
-         incr private(originSumCounter)
-         if { $private(originSumCounter) > $private(originSumNb) } {
-            set private(originSumCounter) $private(originSumNb)
-         }
+
       } else {
          #--- la consigne n'a pas besoin  d'etre detectee en mode OBJECT
-         set fiberDetection  0
+         set fiberDetection  2
          ::camerathread::disp  "camerathread: trou non cherche\n"
       }
 
@@ -228,11 +248,11 @@ proc ::camerathread::sophieAcquisitionLoop { } {
       #--- je calcule la correction diffAlpha et diffDelta  en arcsec
       if { $private(mountEnabled) == 1 && $private(acquisitionState) == "1" &&  $starStatus == "DETECTED" } {
 
-         #--- je calcule l'ecart en arcseconde
-         set diffAlpha [expr $dx * $private(pixelScale) / (cos($private(targetDec) * 3.14159265359/180)) ]
-         set diffDelta [expr $dy * $private(pixelScale) ]
+         set binning [cam$private(camNo) bin]
 
-         set diffAlpha
+         #--- je calcule l'ecart en arcseconde
+         set diffAlpha [expr $dx * [lindex $binning 0] * $private(pixelScale) / (cos($private(targetDec) * 3.14159265359/180)) ]
+         set diffDelta [expr $dy * [lindex $binning 1] * $private(pixelScale) ]
 
          if { $private(mode) == "GUIDE" } {
             #--- j'applique le PID pour le guidage
@@ -292,7 +312,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          }
 
          #--- j'ecrete l'ampleur du deplacement en alpha
-         set maxAlpha [expr $private(pixelScale) * $private(targetBoxSize)]
+         set maxAlpha [expr $private(targetBoxSize) * [lindex $binning 0] * $private(pixelScale) ]
          if { $diffAlpha > 0 } {
             if { $diffAlpha > $maxAlpha } {
                set diffAlpha $maxAlpha
@@ -304,13 +324,14 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          }
 
          #--- j'ecrete l'ampleur du deplacement en delta
+         set maxDelta [expr $private(targetBoxSize) * [lindex $binning 1] * $private(pixelScale) ]
          if { $diffDelta > 0 } {
-            if { $diffDelta >  $maxAlpha } {
-               set diffDelta $maxAlpha
+            if { $diffDelta >  $maxDelta } {
+               set diffDelta $maxDelta
             }
          } else {
-            if { $diffDelta <  -$maxAlpha } {
-               set diffDelta  [expr -$maxAlpha]
+            if { $diffDelta <  -$maxDelta } {
+               set diffDelta  [expr -$maxDelta]
             }
          }
       } else {
