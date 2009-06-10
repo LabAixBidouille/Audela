@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.9 2009-06-06 10:44:55 michelpujol Exp $
+# Mise a jour $Id: t193.tcl,v 1.10 2009-06-10 18:31:53 michelpujol Exp $
 #
 
 namespace eval ::t193 {
@@ -297,9 +297,9 @@ proc ::t193::fillConfigPage { frm } {
       grid $frm.test2.entryDec -in [ $frm.test2 getframe ] -row 1 -column 2
 
       #--- J'affiche le bouton de lecture des coordonnees
-      button $frm.test2.lecture -text $caption(t193,lecture) -relief raised \
-         -command "::telescope::afficheCoord"
-      grid $frm.test2.lecture -in [ $frm.test2 getframe ] -row 2 -column 1 -columnspan 2 -ipadx 15
+      ##button $frm.test2.lecture -text $caption(t193,lecture) -relief raised \
+      ##   -command "::telescope::afficheCoord"
+      ##grid $frm.test2.lecture -in [ $frm.test2 getframe ] -row 2 -column 1 -columnspan 2 -ipadx 15
 
       grid rowconfigure [ $frm.test2 getframe ] 0 -minsize 30 -weight 0
       grid rowconfigure [ $frm.test2 getframe ] 2 -minsize 30 -weight 0
@@ -387,7 +387,6 @@ proc ::t193::configureMonture { } {
    global caption conf
 
    set catchResult [ catch {
-      set usbLine "0 1 2 3 4 0 1 2 3"
       #--- Je cree la monture
       set telNo [ tel::create t193 HP1000 \
          -usbCardName $::conf(t193,nomCarte) \
@@ -417,7 +416,7 @@ proc ::t193::configureMonture { } {
       ::t193::configureConfigPage
 
       #--- je lance la lecture de radec en boucle sur le port com
-      set private(radecHandle) [open COM1 "r+" ]
+      set private(radecHandle) [open $conf(t193,portSerie) "r+" ]
       fconfigure $private(radecHandle) -mode "19200,n,8,1" -buffering none -blocking 0
       set private(readLoop) 1
       #--- j'intialise les coordonnees
@@ -480,7 +479,7 @@ proc ::t193::configureConfigPage { } {
          $private(frm).test1.nord configure -state normal
          $private(frm).test1.sud configure -state normal
          $private(frm).test1.ouest configure -state normal
-         $private(frm).test2.lecture configure -state normal
+         ###$private(frm).test2.lecture configure -state normal
          $private(frm).test3.entryDuree configure -state normal
          $private(frm).test3.attenuateur- configure -state normal
          $private(frm).test3.attenuateur+ configure -state normal
@@ -490,7 +489,7 @@ proc ::t193::configureConfigPage { } {
          $private(frm).test1.nord configure -state disabled
          $private(frm).test1.sud configure -state disabled
          $private(frm).test1.ouest configure -state disabled
-         $private(frm).test2.lecture configure -state disabled
+         ###$private(frm).test2.lecture configure -state disabled
          $private(frm).test3.entryDuree configure -state disabled
          $private(frm).test3.attenuateur- configure -state disabled
          $private(frm).test3.attenuateur+ configure -state disabled
@@ -614,14 +613,22 @@ proc ::t193::readRadec { } {
          ####console::disp "::t193::readRadec data=$data \n"
          #--- je recupere le dernier message (au cas ou il en aurait plusieurs qui se seraient accumulés)
          set data [lindex $data end]
-         set nbVar [scan $data "%dh %dm %fs / %dd %d' %d'' / %dd" ah am as dd dm ds ba]
-         if { $nbVar == 7 } {
+         set ah ""
+         set am ""
+         set as ""
+         set dd ""
+         set dm ""
+         set ds ""
+         set ba ""
+         set nbVar [scan $data "%dh %dm %fs / %dd %d' %d'' /   %dd" ah am as dd dm ds ba]
+         if { $nbVar == 7 || $nbVar == 6} {
             set ::audace(telescope,getra)  [format "%02dh%02dm%05.2fs" $ah $am $as]
-            set ::audace(telescope,getdec) [format "%02dh%02dm%02ds" $dd $dm $ds]
+            set ::audace(telescope,getdec) [format "%02dd%02d\'%02d\"" $dd $dm $ds]
          } else {
-            console::affiche_erreur " ::t193::readRadec nombre de valeurs=$nbVar different de 7. Data=$data\n"
+            console::affiche_erreur " ::t193::readRadec nombre de valeurs lues=$nbVar different de 7. Data=$data\n"
+            console::affiche_erreur " ::t193::readRadec alpha=$ah m=$am s=$as delta=$dd m=$dm s=$ds angle=$ba\n"
          }
-      }
+     }
       after 2000 ::t193::readRadec
    }
 }
