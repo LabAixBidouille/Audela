@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.130 2009-06-06 10:27:42 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.131 2009-06-10 18:29:52 michelpujol Exp $
 #
 
 namespace eval ::confCam {
@@ -875,6 +875,9 @@ proc ::confCam::configureCamera { camItem } {
          #--- Mise a jour de la variable audace pour compatibilite
          set audace(camNo) $private($camItem,camNo)
       }
+
+      #--- j'associe la camera avec le telescope
+      ::confCam::setMount $camItem $::audace(telNo)
 
       #--- J'associe la camera avec la visu
       ::confVisu::setCamera $private($camItem,visuNo) $camItem
