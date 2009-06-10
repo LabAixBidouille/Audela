@@ -1,32 +1,32 @@
 #
 # Fichier : aud_menu_5.tcl
 # Description : Script regroupant les fonctionnalites du menu Analyse
-# Mise a jour $Id: aud_menu_5.tcl,v 1.6 2009-06-02 16:56:57 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_5.tcl,v 1.7 2009-06-10 17:50:58 robertdelmas Exp $
 #
 
 namespace eval ::audace {
 }
 
-   #
-   # Histo visuNo
-   # Visualisation de l'histogramme de l'image affichee dans la visu
-   #
-   proc ::audace::Histo { visuNo } {
-      global caption
+#
+# Histo visuNo
+# Visualisation de l'histogramme de l'image affichee dans la visu
+#
+proc ::audace::Histo { visuNo } {
+   global caption
 
-      set bufNo [ visu$visuNo buf ]
-      if { [ buf$bufNo imageready ] == "1" } {
-         buf$bufNo imaseries "CUTS lofrac=0.01 hifrac=0.99 hicut=SH locut=SB keytype=FLOAT"
-         set mini [ lindex [ buf$bufNo getkwd SB ] 1 ]
-         set maxi [ lindex [ buf$bufNo getkwd SH ] 1 ]
-         set r [ buf$bufNo histo 50 $mini $maxi ]
-         ::plotxy::figure 1
-         ::plotxy::title "$caption(audace,histo_titre) (visu$visuNo)"
-         ::plotxy::xlabel "$caption(audace,histo_adu)"
-         ::plotxy::ylabel "$caption(audace,histo_nbpix)"
-         ::plotxy::plot [ lindex $r 1 ] [ lindex $r 0 ]
-      }
+   set bufNo [ visu$visuNo buf ]
+   if { [ buf$bufNo imageready ] == "1" } {
+      buf$bufNo imaseries "CUTS lofrac=0.01 hifrac=0.99 hicut=SH locut=SB keytype=FLOAT"
+      set mini [ lindex [ buf$bufNo getkwd SB ] 1 ]
+      set maxi [ lindex [ buf$bufNo getkwd SH ] 1 ]
+      set r [ buf$bufNo histo 50 $mini $maxi ]
+      ::plotxy::figure 1
+      ::plotxy::title  "$caption(audace,histo_titre) (visu$visuNo)"
+      ::plotxy::xlabel "$caption(audace,histo_adu)"
+      ::plotxy::ylabel "$caption(audace,histo_nbpix)"
+      ::plotxy::plot   [ lindex $r 1 ] [ lindex $r 0 ]
    }
+}
 
 ############################# Fin du namespace audace #############################
 
@@ -35,136 +35,312 @@ namespace eval ::audace {
 # Fournit les statistiques d'une fenetre d'une image
 #
 proc statwin { visuNo } {
+   variable private
    global caption conf
 
    #---
    set base [ ::confVisu::getBase $visuNo ]
+
    #---
-   set This "$base.statwin"
-   if [ winfo exists $This ] {
-      ferme_fenetre_analyse $This statwin
+   set private(statwin,frm) "$base.statwin"
+   set frm $private(statwin,frm)
+   if [ winfo exists $frm ] {
+      ferme_fenetre_analyse $visuNo $frm statwin
    }
-   #---
-   set box [ ::confVisu::getBox $visuNo ]
-   if { $box == "" } {
+
+   #--- Initialisation de variables
+   if { ! [ info exists conf(statwin,position) ] }   { set conf(statwin,position)   "+350+75" }
+   if { ! [ info exists conf(statwin,modeCalcul) ] } { set conf(statwin,modeCalcul) "0" }
+
+   #--- Capture de la fenetre de calcul
+   set private(statwin,box) [ ::confVisu::getBox $visuNo ]
+   if { $private(statwin,box) == "" } {
       return
    }
-   #--- Initialisation de la position de la fenetre
-   if { ! [ info exists conf(statwin,position) ] } { set conf(statwin,position) "+350+75" }
+
    #--- Creation de la fenetre
-   toplevel $This
-   wm transient $This $base
-   wm resizable $This 0 0
-   wm title $This "$caption(audace,menu,statwin)"
-   wm geometry $This $conf(statwin,position)
-   wm protocol $This WM_DELETE_WINDOW "ferme_fenetre_analyse $This statwin"
-   #--- Lecture des statistiques fenetre
-   set valeurs [ buf[ ::confVisu::getBufNo $visuNo ] stat $box ]
-   #--- Cree les etiquettes
-   label $This.lab0 -text "Visu$visuNo"
-   pack $This.lab0 -padx 10 -pady 2
-   label $This.lab1 -text "$caption(audace,maxi) [ lindex $valeurs 2 ]"
-   pack $This.lab1 -padx 10 -pady 2
-   label $This.lab2 -text "$caption(audace,mini) [ lindex $valeurs 3 ]"
-   pack $This.lab2 -padx 10 -pady 2
-   label $This.lab3 -text "$caption(audace,moyenne) [ lindex $valeurs 4 ]"
-   pack $This.lab3 -padx 10 -pady 2
-   label $This.lab4 -text "$caption(audace,ecart_type) [ lindex $valeurs 5 ]"
-   pack $This.lab4 -padx 10 -pady 2
-   label $This.lab5 -text "$caption(audace,moyenne_fond_ciel) [ lindex $valeurs 6 ]"
-   pack $This.lab5 -padx 10 -pady 2
-   label $This.lab6 -text "$caption(audace,ecart_type_fond_ciel) [ lindex $valeurs 7 ]"
-   pack $This.lab6 -padx 10 -pady 2
-   #--- Cree le bouton pour recalculer les statistiques
-   button $This.but_calculer -text "$caption(audace,calculer)" -width 7 -command "statwin $visuNo"
-   pack $This.but_calculer -side bottom -padx 3 -pady 3 -ipady 5 -fill x
+   toplevel $frm
+   wm transient $frm $base
+   wm resizable $frm 0 0
+   wm title $frm "$caption(audace,menu,statwin)"
+   wm geometry $frm $conf(statwin,position)
+   wm protocol $frm WM_DELETE_WINDOW "ferme_fenetre_analyse $visuNo $frm statwin"
+
+   #--- Creation d'une frame
+   frame $frm.frame1 -borderwidth 2 -relief raised
+
+      #--- Cree les etiquettes
+      label $frm.frame1.lab0 -text "Visu$visuNo"
+      pack $frm.frame1.lab0 -padx 10 -pady 2
+      label $frm.frame1.lab1 -text ""
+      pack $frm.frame1.lab1 -padx 10 -pady 2
+      label $frm.frame1.lab2 -text ""
+      pack $frm.frame1.lab2 -padx 10 -pady 2
+      label $frm.frame1.lab3 -text ""
+      pack $frm.frame1.lab3 -padx 10 -pady 2
+      label $frm.frame1.lab4 -text ""
+      pack $frm.frame1.lab4 -padx 10 -pady 2
+      label $frm.frame1.lab5 -text ""
+      pack $frm.frame1.lab5 -padx 10 -pady 2
+      label $frm.frame1.lab6 -text ""
+      pack $frm.frame1.lab6 -padx 10 -pady 2
+
+   pack $frm.frame1 -side top -fill both -expand 1
+
+   #--- Creation d'une frame
+   frame $frm.frame2 -borderwidth 2 -relief raised
+
+      #--- Cree le checkbutton pour choisir le mode de calcul
+      checkbutton $frm.frame2.choixCalcul -text "$caption(audace,calculAuto)" \
+         -variable conf(statwin,modeCalcul) -command "::confStatwin $visuNo"
+      pack $frm.frame2.choixCalcul -anchor w -side top -padx 3 -pady 3
+
+      #--- Cree le bouton pour recalculer les statistiques
+      button $frm.frame2.but_calculer -text "$caption(audace,calculManuel)" -width 7 \
+         -command "::calculStatwin $visuNo"
+      pack $frm.frame2.but_calculer -side top -padx 3 -pady 3 -ipady 5 -fill x
+
+   pack $frm.frame2 -side top -fill both -expand 1
+
+   #--- Calcule les valeurs
+   ::calculStatwin $visuNo
+
+   #--- Configure la fenetre
+   ::confStatwin $visuNo
+
    #--- La fenetre est active
-   focus $This
+   focus $frm
+
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-   bind $This <Key-F1> { ::console::GiveFocus }
-   #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $This
+   bind $frm <Key-F1> { ::console::GiveFocus }
+
+#--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
 }
+
+#
+# calculStatwin
+# Calcule les valeurs de la fenetre
+#
+proc calculStatwin { visuNo args } {
+   variable private
+   global caption
+
+   #--- Capture de la fenetre de calcul
+   set private(statwin,box) [ ::confVisu::getBox $visuNo ]
+   if { $private(statwin,box) == "" } {
+      return
+   }
+
+   #--- Lecture des parametres dans la fenetre
+   set private(statwin,valeurs) [ buf[ ::confVisu::getBufNo $visuNo ] stat $private(statwin,box) ]
+
+   #--- Mise a jour des variables
+   set private(statwin,maxi)                 "$caption(audace,maxi) [ lindex $private(statwin,valeurs) 2 ]"
+   set private(statwin,mini)                 "$caption(audace,mini) [ lindex $private(statwin,valeurs) 3 ]"
+   set private(statwin,moyenne)              "$caption(audace,moyenne) [ lindex $private(statwin,valeurs) 4 ]"
+   set private(statwin,ecart_type)           "$caption(audace,ecart_type) [ lindex $private(statwin,valeurs) 5 ]"
+   set private(statwin,moyenne_fond_ciel)    "$caption(audace,moyenne_fond_ciel) [ lindex $private(statwin,valeurs) 6 ]"
+   set private(statwin,ecart_type_fond_ciel) "$caption(audace,ecart_type_fond_ciel) [ lindex $private(statwin,valeurs) 7 ]"
+
+   #--- Mise a jour des labels
+   $private(statwin,frm).frame1.lab1 configure -text "$private(statwin,maxi)"
+   $private(statwin,frm).frame1.lab2 configure -text "$private(statwin,mini)"
+   $private(statwin,frm).frame1.lab3 configure -text "$private(statwin,moyenne)"
+   $private(statwin,frm).frame1.lab4 configure -text "$private(statwin,ecart_type)"
+   $private(statwin,frm).frame1.lab5 configure -text "$private(statwin,moyenne_fond_ciel)"
+   $private(statwin,frm).frame1.lab6 configure -text "$private(statwin,ecart_type_fond_ciel)"
+}
+
+#
+# confStatwin
+# Configure la fenetre
+#
+proc confStatwin { visuNo args } {
+   variable private
+   global conf
+
+   #--- Configure le bouton Calculer
+   if { $conf(statwin,modeCalcul) == "0" } {
+      $private(statwin,frm).frame2.but_calculer configure -state normal
+      #--- J'arrete le rafraichissement automatique des valeurs si on charge une image
+      ::confVisu::removeFileNameListener $visuNo "::calculStatwin $visuNo"
+   } else {
+      $private(statwin,frm).frame2.but_calculer configure -state disabled
+      #--- Je declare le rafraichissement automatique des valeurs si on charge une image
+      ::confVisu::addFileNameListener $visuNo "::calculStatwin $visuNo"
+   }
+}
+
+###################################################################################
 
 #
 # fwhm visuNo
 # Fournit les fwhm en x et en y d'une fenetre d'une image
 #
 proc fwhm { visuNo } {
+   variable private
    global caption conf
 
    #---
    set base [ ::confVisu::getBase $visuNo ]
+
    #---
-   set This "$base.fwhm"
-   if [ winfo exists $This ] {
-      ferme_fenetre_analyse $This fwhm
+   set private(fwhm,frm) "$base.fwhm"
+   set frm $private(fwhm,frm)
+   if [ winfo exists $frm ] {
+      ferme_fenetre_analyse $visuNo $frm fwhm
    }
+
    #---
-   set box [ ::confVisu::getBox $visuNo ]
-   if { $box == "" } {
+   set private(fwhm,box) [ ::confVisu::getBox $visuNo ]
+   if { $private(fwhm,box) == "" } {
       return
    }
+
    #--- Initialisation de la position de la fenetre
-   if { ! [ info exists conf(fwhm,position) ] } { set conf(fwhm,position) "+350+75" }
+   if { ! [ info exists conf(fwhm,position) ] }   { set conf(fwhm,position)   "+350+75" }
+   if { ! [ info exists conf(fwhm,modeCalcul) ] } { set conf(fwhm,modeCalcul) "0" }
+
    #--- Creation de la fenetre
-   toplevel $This
-   wm transient $This $base
-   wm resizable $This 0 0
-   wm title $This "$caption(audace,menu,fwhm)"
-   wm geometry $This $conf(fwhm,position)
-   wm protocol $This WM_DELETE_WINDOW "ferme_fenetre_analyse $This fwhm"
-   #--- Lecture de fwhmx et fwhmy
-   set valeurs [ buf[ ::confVisu::getBufNo $visuNo ] fwhm $box ]
-   #--- Cree les etiquettes
-   label $This.lab0 -text "Visu$visuNo"
-   pack $This.lab0 -padx 10 -pady 2
-   label $This.lab1 -text "$caption(audace,fwhm_x) : [ lindex $valeurs 0 ]"
-   pack $This.lab1 -padx 10 -pady 2
-   label $This.lab2 -text "$caption(audace,fwhm_y) : [ lindex $valeurs 1 ]"
-   pack $This.lab2 -padx 10 -pady 2
-   #--- Cree le bouton pour recalculer les fwhm
-   button $This.but_calculer -text "$caption(audace,calculer)" -width 7 -command "fwhm $visuNo"
-   pack $This.but_calculer -side bottom -padx 3 -pady 3 -ipady 5 -fill x
+   toplevel $frm
+   wm transient $frm $base
+   wm resizable $frm 0 0
+   wm title $frm "$caption(audace,menu,fwhm)"
+   wm geometry $frm $conf(fwhm,position)
+   wm protocol $frm WM_DELETE_WINDOW "ferme_fenetre_analyse $visuNo $frm fwhm"
+
+   #--- Creation d'une frame
+   frame $frm.frame1 -borderwidth 2 -relief raised
+
+      #--- Cree les etiquettes
+      label $frm.frame1.lab0 -text "Visu$visuNo"
+      pack $frm.frame1.lab0 -padx 10 -pady 2
+      label $frm.frame1.lab1 -text ""
+      pack $frm.frame1.lab1 -padx 10 -pady 2
+      label $frm.frame1.lab2 -text ""
+      pack $frm.frame1.lab2 -padx 10 -pady 2
+
+   pack $frm.frame1 -side top -fill both -expand 1
+
+   #--- Creation d'une frame
+   frame $frm.frame2 -borderwidth 2 -relief raised
+
+      #--- Cree le checkbutton pour choisir le mode de calcul
+      checkbutton $frm.frame2.choixCalcul -text "$caption(audace,calculAuto)" \
+         -variable conf(fwhm,modeCalcul) -command "::confFwhm $visuNo"
+      pack $frm.frame2.choixCalcul -anchor w -side top -padx 3 -pady 3
+
+      #--- Cree le bouton pour recalculer les fwhm
+      button $frm.frame2.but_calculer -text "$caption(audace,calculManuel)" -width 7 \
+         -command "::calculFwhm $visuNo"
+      pack $frm.frame2.but_calculer -side bottom -padx 3 -pady 3 -ipady 5 -fill x
+
+   pack $frm.frame2 -side top -fill both -expand 1
+
+   #--- Calcule les valeurs
+   ::calculFwhm $visuNo
+
+   #--- Configure la fenetre
+   ::confFwhm $visuNo
+
    #--- La fenetre est active
-   focus $This
+   focus $frm
+
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-   bind $This <Key-F1> { ::console::GiveFocus }
+   bind $frm <Key-F1> { ::console::GiveFocus }
+
    #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $This
+   ::confColor::applyColor $frm
 }
+
+#
+# calculFwhm
+# Calcule les valeurs de la fenetre
+#
+proc calculFwhm { visuNo args } {
+   variable private
+   global caption
+
+   #--- Capture de la fenetre de calcul
+   set private(fwhm,box) [ ::confVisu::getBox $visuNo ]
+   if { $private(fwhm,box) == "" } {
+      return
+   }
+
+   #--- Lecture des parametres dans la fenetre
+   set private(fwhm,valeurs) [ buf[ ::confVisu::getBufNo $visuNo ] fwhm $private(fwhm,box) ]
+
+   #--- Mise a jour des variables
+   set private(fwhm,x) "$caption(audace,fwhm_x) [ lindex $private(fwhm,valeurs) 0 ]"
+   set private(fwhm,y) "$caption(audace,fwhm_y) [ lindex $private(fwhm,valeurs) 1 ]"
+
+   #--- Mise a jour des labels
+   $private(fwhm,frm).frame1.lab1 configure -text "$private(fwhm,x)"
+   $private(fwhm,frm).frame1.lab2 configure -text "$private(fwhm,y)"
+}
+
+#
+# confFwhm
+# Configure la fenetre
+#
+proc confFwhm { visuNo args } {
+   variable private
+   global conf
+
+   #--- Configure le bouton Calculer
+   if { $conf(fwhm,modeCalcul) == "0" } {
+      $private(fwhm,frm).frame2.but_calculer configure -state normal
+      #--- J'arrete le rafraichissement automatique des valeurs si on charge une image
+      ::confVisu::removeFileNameListener $visuNo "::calculFwhm $visuNo"
+   } else {
+      $private(fwhm,frm).frame2.but_calculer configure -state disabled
+      #--- Je declare le rafraichissement automatique des valeurs si on charge une image
+      ::confVisu::addFileNameListener $visuNo "::calculFwhm $visuNo"
+   }
+}
+
+###################################################################################
 
 #
 # fitgauss visuNo
 # Ajuste une gaussienne dans une fenetre d'une image
 #
-proc fitgauss { visuNo } {
+proc fitgauss { visuNo args } {
+   variable private
    global caption color conf
 
    #---
    set base [ ::confVisu::getBase $visuNo ]
+
    #---
-   set This "$base.fitgauss"
-   if [ winfo exists $This ] {
-      ferme_fenetre_analyse $This fitgauss
+   set private(fitgauss,frm) "$base.fitgauss"
+   set frm $private(fitgauss,frm)
+   if [ winfo exists $frm ] {
+      ferme_fenetre_analyse $visuNo $frm fitgauss
    }
+
    #---
-   set box [ ::confVisu::getBox $visuNo ]
-   if { $box == "" } {
+   set private(fitgauss,box) [ ::confVisu::getBox $visuNo ]
+   if { $private(fitgauss,box) == "" } {
       return
    }
+
    #--- Initialisation de la position de la fenetre
-   if { ! [ info exists conf(fitgauss,position) ] } { set conf(fitgauss,position) "+350+75" }
+   if { ! [ info exists conf(fitgauss,position) ] }   { set conf(fitgauss,position)   "+350+75" }
+   if { ! [ info exists conf(fitgauss,modeCalcul) ] } { set conf(fitgauss,modeCalcul) "0" }
+
    #--- Creation de la fenetre
-   toplevel $This
-   wm transient $This $base
-   wm resizable $This 0 0
-   wm title $This "$caption(audace,menu,fitgauss)"
-   wm geometry $This $conf(fitgauss,position)
-   wm protocol $This WM_DELETE_WINDOW "ferme_fenetre_analyse $This fitgauss"
+   toplevel $frm
+   wm transient $frm $base
+   wm resizable $frm 0 0
+   wm title $frm "$caption(audace,menu,fitgauss)"
+   wm geometry $frm $conf(fitgauss,position)
+   wm protocol $frm WM_DELETE_WINDOW "ferme_fenetre_analyse $visuNo $frm fitgauss"
+
    #--- Lecture de la gaussienne d'ajustement
    set bufNo [ ::confVisu::getBufNo $visuNo ]
-   set valeurs [ buf$bufNo fitgauss $box ]
+   set valeurs [ buf$bufNo fitgauss $private(fitgauss,box) ]
    set naxis1 [lindex [buf$bufNo getkwd NAXIS1] 1]
    if {$naxis1=={}} { set naxis1 1 }
    set naxis2 [lindex [buf$bufNo getkwd NAXIS2] 1]
@@ -197,69 +373,104 @@ proc fitgauss { visuNo } {
       set if0 [ expr ($if1+$if2)/2. ]
       set dif [ expr abs($if1-$if0) ]
    }
-   #--- Cree les etiquettes
-   label $This.lab0 -text "Visu$visuNo"
-   pack $This.lab0 -padx 10 -pady 2
-   ::console::affiche_resultat "=== Visu$visuNo $caption(audace,titre_gauss)\n"
-   ::console::affiche_resultat "$caption(audace,coord_box) : $box\n"
-   set texte "$caption(audace,center_xy) : "
-   if {($naxis1>1)&&($naxis2>1)} {
-      append texte "[ format "%.2f" $xc ] / [ format "%.2f" $yc ]"
-   } elseif {($naxis1>1)&&($naxis2==1)} {
-      append texte "[ format "%.2f" $xc ]"
-   } elseif {($naxis1==1)&&($naxis2>1)} {
-      append texte "[ format "%.2f" $yc ]"
-   }
-   ::console::affiche_resultat "$texte\n"
-   label $This.lab1 -text "$texte"
-   pack $This.lab1 -padx 10 -pady 2
-   set texte "$caption(audace,fwhm_xy) : "
-   if {($naxis1>1)&&($naxis2>1)} {
-      append texte "[ format "%.3f" $fwhmx ] / [ format "%.3f" $fwhmy ]"
-   } elseif {($naxis1>1)&&($naxis2==1)} {
-      append texte "[ format "%.3f" $fwhmx ]"
-   } elseif {($naxis1==1)&&($naxis2>1)} {
-      append texte "[ format "%.3f" $fwhmy ]"
-   }
-   ::console::affiche_resultat "$texte\n"
-   label $This.lab2 -text "$texte"
-   pack $This.lab2 -padx 10 -pady 2
-   set texte "$caption(audace,intens_xy) : "
-   if {($naxis1>1)&&($naxis2>1)} {
-      append texte "[ format "%f" $intx ] / [ format "%f" $inty ]"
-   } elseif {($naxis1>1)&&($naxis2==1)} {
-      append texte "[ format "%f" $intx ]"
-   } elseif {($naxis1==1)&&($naxis2>1)} {
-      append texte "[ format "%f" $inty ]"
-   }
-   ::console::affiche_resultat "$texte\n"
-   label $This.lab3 -text "$texte"
-   pack $This.lab3 -padx 10 -pady 2
-   set texte "$caption(audace,back_xy) : "
-   if {($naxis1>1)&&($naxis2>1)} {
-      append texte "[ format "%f" $bgx ] / [ format "%f" $bgy ]"
-   } elseif {($naxis1>1)&&($naxis2==1)} {
-      append texte "[ format "%f" $bgx ]"
-   } elseif {($naxis1==1)&&($naxis2>1)} {
-      append texte "[ format "%f" $bgy ]"
-   }
-   ::console::affiche_resultat "$texte\n"
-   label $This.lab4 -text "$texte"
-   pack $This.lab4 -padx 10 -pady 2
-   set texte "$caption(audace,integflux) : $if0 "
-   if {($naxis1>1)&&($naxis2>1)} {
-      append texte "+/- $dif"
-   }
-   ::console::affiche_resultat "$texte\n"
-   label $This.lab5 -text "$texte"
-   pack $This.lab5 -padx 10 -pady 2
-   #---
-   if {($naxis1==1)||($naxis2==1)} {
-      set texte "$caption(audace,largeurequiv) : [ format "%f" $leq ] pixels"
+
+   #--- Creation d'une frame
+   frame $frm.frame1 -borderwidth 2 -relief raised
+
+      #--- Cree les etiquettes
+      label $frm.frame1.lab0 -text "Visu$visuNo"
+      pack $frm.frame1.lab0 -padx 10 -pady 2
+      ::console::affiche_resultat "=== Visu$visuNo $caption(audace,titre_gauss)\n"
+      ::console::affiche_resultat "$caption(audace,coord_box) : $private(fitgauss,box)\n"
+      set texte "$caption(audace,center_xy) : "
+      if {($naxis1>1)&&($naxis2>1)} {
+         append texte "[ format "%.2f" $xc ] / [ format "%.2f" $yc ]"
+      } elseif {($naxis1>1)&&($naxis2==1)} {
+         append texte "[ format "%.2f" $xc ]"
+      } elseif {($naxis1==1)&&($naxis2>1)} {
+         append texte "[ format "%.2f" $yc ]"
+      }
       ::console::affiche_resultat "$texte\n"
-      label $This.lab6 -text "$texte"
-      pack $This.lab6 -padx 10 -pady 2
-   }
+      label $frm.frame1.lab1 -text "$texte"
+      pack $frm.frame1.lab1 -padx 10 -pady 2
+      set texte "$caption(audace,fwhm_xy) : "
+      if {($naxis1>1)&&($naxis2>1)} {
+         append texte "[ format "%.3f" $fwhmx ] / [ format "%.3f" $fwhmy ]"
+      } elseif {($naxis1>1)&&($naxis2==1)} {
+         append texte "[ format "%.3f" $fwhmx ]"
+      } elseif {($naxis1==1)&&($naxis2>1)} {
+         append texte "[ format "%.3f" $fwhmy ]"
+      }
+      ::console::affiche_resultat "$texte\n"
+      label $frm.frame1.lab2 -text "$texte"
+      pack $frm.frame1.lab2 -padx 10 -pady 2
+      set texte "$caption(audace,intens_xy) : "
+      if {($naxis1>1)&&($naxis2>1)} {
+         append texte "[ format "%f" $intx ] / [ format "%f" $inty ]"
+      } elseif {($naxis1>1)&&($naxis2==1)} {
+         append texte "[ format "%f" $intx ]"
+      } elseif {($naxis1==1)&&($naxis2>1)} {
+         append texte "[ format "%f" $inty ]"
+      }
+      ::console::affiche_resultat "$texte\n"
+      label $frm.frame1.lab3 -text "$texte"
+      pack $frm.frame1.lab3 -padx 10 -pady 2
+      set texte "$caption(audace,back_xy) : "
+      if {($naxis1>1)&&($naxis2>1)} {
+         append texte "[ format "%f" $bgx ] / [ format "%f" $bgy ]"
+      } elseif {($naxis1>1)&&($naxis2==1)} {
+         append texte "[ format "%f" $bgx ]"
+      } elseif {($naxis1==1)&&($naxis2>1)} {
+         append texte "[ format "%f" $bgy ]"
+      }
+      ::console::affiche_resultat "$texte\n"
+      label $frm.frame1.lab4 -text "$texte"
+      pack $frm.frame1.lab4 -padx 10 -pady 2
+      set texte "$caption(audace,integflux) : $if0 "
+      if {($naxis1>1)&&($naxis2>1)} {
+         append texte "+/- $dif"
+      }
+      ::console::affiche_resultat "$texte\n"
+      label $frm.frame1.lab5 -text "$texte"
+      pack $frm.frame1.lab5 -padx 10 -pady 2
+
+      #---
+      if {($naxis1==1)||($naxis2==1)} {
+         set texte "$caption(audace,largeurequiv) : [ format "%f" $leq ] pixels"
+         ::console::affiche_resultat "$texte\n"
+         label $frm.frame1.lab6 -text "$texte"
+         pack $frm.frame1.lab6 -padx 10 -pady 2
+      }
+
+   pack $frm.frame1 -side top -fill both -expand 1
+
+   #--- Creation d'une frame
+   frame $frm.frame2 -borderwidth 2 -relief raised
+
+      #--- Cree le checkbutton pour choisir le mode de calcul
+      checkbutton $frm.frame2.choixCalcul -text "$caption(audace,calculAuto)" \
+         -variable conf(fitgauss,modeCalcul) -command "::confFitgauss $visuNo"
+      pack $frm.frame2.choixCalcul -anchor w -side top -padx 3 -pady 3
+
+      #--- Cree le bouton pour recalculer l'ajustement de la gaussienne
+      button $frm.frame2.but_calculer -text "$caption(audace,calculManuel)" -width 7 \
+         -command "::fitgauss $visuNo"
+      pack $frm.frame2.but_calculer -side bottom -padx 3 -pady 3 -ipady 5 -fill x
+
+   pack $frm.frame2 -side top -fill both -expand 1
+
+   #--- Configure la fenetre
+   ::confFitgauss $visuNo
+
+   #--- La fenetre est active
+   focus $frm
+
+   #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+   bind $frm <Key-F1> { ::console::GiveFocus }
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
+
    #---
    if {[expr $if0+$dif]<=0} {
       set dif [expr $if0+1]
@@ -348,108 +559,277 @@ proc fitgauss { visuNo } {
       ::console::affiche_resultat "Use ::astrometry::mpc_provisional2packed to convert designation to MPC packed form.\n"
       ::console::affiche_saut "\n"
    }
-   #--- Cree le bouton pour recalculer l'ajustement de la gaussienne
-   button $This.but_calculer -text "$caption(audace,calculer)" -width 7 -command "fitgauss $visuNo"
-   pack $This.but_calculer -side bottom -padx 3 -pady 3 -ipady 5 -fill x
-   #--- La fenetre est active
-   focus $This
-   #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-   bind $This <Key-F1> { ::console::GiveFocus }
-   #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $This
 }
+
+#
+# confFitgauss
+# Configure la fenetre
+#
+proc confFitgauss { visuNo args } {
+   variable private
+   global conf
+
+   #--- Configure le bouton Calculer
+   if { $conf(fitgauss,modeCalcul) == "0" } {
+      $private(fitgauss,frm).frame2.but_calculer configure -state normal
+      #--- J'arrete le rafraichissement automatique des valeurs si on charge une image
+      ::confVisu::removeFileNameListener $visuNo "::fitgauss $visuNo"
+   } else {
+      $private(fitgauss,frm).frame2.but_calculer configure -state disabled
+      #--- Je declare le rafraichissement automatique des valeurs si on charge une image
+      ::confVisu::addFileNameListener $visuNo "::fitgauss $visuNo"
+   }
+}
+
+###################################################################################
 
 #
 # center visuNo
 # Fournit le photocentre d'une fenetre d'une image
 #
 proc center { visuNo } {
+   variable private
    global caption conf
 
    #---
    set base [ ::confVisu::getBase $visuNo ]
+
    #---
-   set This "$base.center"
-   if [ winfo exists $This ] {
-      ferme_fenetre_analyse $This center
+   set private(center,frm) "$base.center"
+   set frm $private(center,frm)
+   if [ winfo exists $frm ] {
+      ferme_fenetre_analyse $visuNo $frm center
    }
+
    #---
-   set box [ ::confVisu::getBox $visuNo ]
-   if { $box == "" } {
+   set private(center,box) [ ::confVisu::getBox $visuNo ]
+   if { $private(center,box) == "" } {
       return
    }
+
    #--- Initialisation de la position de la fenetre
-   if { ! [ info exists conf(center,position) ] } { set conf(center,position) "+350+75" }
+   if { ! [ info exists conf(center,position) ] }   { set conf(center,position)   "+350+75" }
+   if { ! [ info exists conf(center,modeCalcul) ] } { set conf(center,modeCalcul) "0" }
+
    #--- Creation de la fenetre
-   toplevel $This
-   wm transient $This $base
-   wm resizable $This 0 0
-   wm title $This "$caption(audace,menu,centro)"
-   wm geometry $This $conf(center,position)
-   wm protocol $This WM_DELETE_WINDOW "ferme_fenetre_analyse $This centro"
-   #--- Lecture de la fonction
-   set valeurs [ buf[ ::confVisu::getBufNo $visuNo ] centro $box ]
-   #--- Cree les etiquettes
-   label $This.lab0 -text "Visu$visuNo"
-   pack $This.lab0 -padx 10 -pady 2
-   label $This.lab1 -text "$caption(audace,center_xy) : ( [ format "%.2f" [ lindex $valeurs 0 ] ] / [ format "%.2f" [ lindex $valeurs 1 ] ] )"
-   pack $This.lab1 -padx 10 -pady 2
-   #--- Cree le bouton pour recalculer le photocentre
-   button $This.but_calculer -text "$caption(audace,calculer)" -width 7 -command "center $visuNo"
-   pack $This.but_calculer -side bottom -padx 3 -pady 3 -ipady 5 -fill x
+   toplevel $frm
+   wm transient $frm $base
+   wm resizable $frm 0 0
+   wm title $frm "$caption(audace,menu,centro)"
+   wm geometry $frm $conf(center,position)
+   wm protocol $frm WM_DELETE_WINDOW "ferme_fenetre_analyse $visuNo $frm center"
+
+   #--- Creation d'une frame
+   frame $frm.frame1 -borderwidth 2 -relief raised
+
+      #--- Cree les etiquettes
+      label $frm.frame1.lab0 -text "Visu$visuNo"
+      pack $frm.frame1.lab0 -padx 10 -pady 2
+      label $frm.frame1.lab1 -text ""
+      pack $frm.frame1.lab1 -padx 10 -pady 2
+
+   pack $frm.frame1 -side top -fill both -expand 1
+
+   #--- Creation d'une frame
+   frame $frm.frame2 -borderwidth 2 -relief raised
+
+      #--- Cree le checkbutton pour choisir le mode de calcul
+      checkbutton $frm.frame2.choixCalcul -text "$caption(audace,calculAuto)" \
+         -variable conf(center,modeCalcul) -command "::confCenter $visuNo"
+      pack $frm.frame2.choixCalcul -anchor w -side top -padx 3 -pady 3
+
+      #--- Cree le bouton pour recalculer le photocentre
+      button $frm.frame2.but_calculer -text "$caption(audace,calculManuel)" -width 7 \
+         -command "::calculCenter $visuNo"
+      pack $frm.frame2.but_calculer -side bottom -padx 3 -pady 3 -ipady 5 -fill x
+
+   pack $frm.frame2 -side top -fill both -expand 1
+
+   #--- Calcule les valeurs
+   ::calculCenter $visuNo
+
+   #--- Configure la fenetre
+   ::confCenter $visuNo
+
    #--- La fenetre est active
-   focus $This
+   focus $frm
+
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-   bind $This <Key-F1> { ::console::GiveFocus }
+   bind $frm <Key-F1> { ::console::GiveFocus }
+
    #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $This
+   ::confColor::applyColor $frm
 }
+
+#
+# calculCenter
+# Calcule les valeurs de la fenetre
+#
+proc calculCenter { visuNo args } {
+   variable private
+   global caption
+
+   #--- Capture de la fenetre de calcul
+   set private(center,box) [ ::confVisu::getBox $visuNo ]
+   if { $private(center,box) == "" } {
+      return
+   }
+
+   #--- Lecture des parametres dans la fenetre
+   set private(center,valeurs) [ buf[ ::confVisu::getBufNo $visuNo ] centro $private(center,box) ]
+
+   #--- Mise a jour des variables
+   set private(center,centro) "$caption(audace,center_xy) : ( [ format "%.2f" [ lindex $private(center,valeurs) 0 ] ] / [ format "%.2f" [ lindex $private(center,valeurs) 1 ] ] )"
+
+   #--- Mise a jour des labels
+   $private(center,frm).frame1.lab1 configure -text "$private(center,centro)"
+}
+
+#
+# confCenter
+# Configure la fenetre
+#
+proc confCenter { visuNo args } {
+   variable private
+   global conf
+
+   #--- Configure le bouton Calculer
+   if { $conf(center,modeCalcul) == "0" } {
+      $private(center,frm).frame2.but_calculer configure -state normal
+      #--- J'arrete le rafraichissement automatique des valeurs si on charge une image
+      ::confVisu::removeFileNameListener $visuNo "::calculCenter $visuNo"
+   } else {
+      $private(center,frm).frame2.but_calculer configure -state disabled
+      #--- Je declare le rafraichissement automatique des valeurs si on charge une image
+      ::confVisu::addFileNameListener $visuNo "::calculCenter $visuNo"
+   }
+}
+
+###################################################################################
 
 #
 # photom visuNo
 # Fournit la photometrie integrale d'une fenetre d'une image
 #
 proc photom { visuNo } {
+   variable private
    global caption conf
 
    #---
    set base [ ::confVisu::getBase $visuNo ]
+
    #---
-   set This "$base.photom"
-   if [ winfo exists $This ] {
-      ferme_fenetre_analyse $This photom
+   set private(photom,frm) "$base.photom"
+   set frm $private(photom,frm)
+   if [ winfo exists $frm ] {
+      ferme_fenetre_analyse $visuNo $frm photom
    }
+
    #---
-   set box [ ::confVisu::getBox $visuNo ]
-   if { $box == "" } {
+   set private(photom,box) [ ::confVisu::getBox $visuNo ]
+   if { $private(photom,box) == "" } {
       return
    }
+
    #--- Initialisation de la position de la fenetre
-   if { ! [ info exists conf(photom,position) ] } { set conf(photom,position) "+350+75" }
+   if { ! [ info exists conf(photom,position) ] }   { set conf(photom,position)   "+350+75" }
+   if { ! [ info exists conf(photom,modeCalcul) ] } { set conf(photom,modeCalcul) "0" }
+
    #--- Creation de la fenetre
-   toplevel $This
-   wm transient $This $base
-   wm resizable $This 0 0
-   wm title $This "$caption(audace,menu,phot)"
-   wm geometry $This $conf(photom,position)
-   wm protocol $This WM_DELETE_WINDOW "ferme_fenetre_analyse $This photom"
-   #--- Lecture de la fonction
-   set valeurs [ buf[ ::confVisu::getBufNo $visuNo ] phot $box ]
-   #--- Cree les etiquettes
-   label $This.lab0 -text "Visu$visuNo"
-   pack $This.lab0 -padx 10 -pady 2
-   label $This.lab1 -text "$caption(audace,integflux) : [ lindex $valeurs 0 ]"
-   pack $This.lab1 -padx 10 -pady 2
-   #--- Cree le bouton pour recalculer la photometrie integrale
-   button $This.but_calculer -text "$caption(audace,calculer)" -width 7 -command "photom $visuNo"
-   pack $This.but_calculer -side bottom -padx 3 -pady 3 -ipady 5 -fill x
+   toplevel $frm
+   wm transient $frm $base
+   wm resizable $frm 0 0
+   wm title $frm "$caption(audace,menu,phot)"
+   wm geometry $frm $conf(photom,position)
+   wm protocol $frm WM_DELETE_WINDOW "ferme_fenetre_analyse $visuNo $frm photom"
+
+   #--- Creation d'une frame
+   frame $frm.frame1 -borderwidth 2 -relief raised
+
+      #--- Cree les etiquettes
+      label $frm.frame1.lab0 -text "Visu$visuNo"
+      pack $frm.frame1.lab0 -padx 10 -pady 2
+      label $frm.frame1.lab1 -text ""
+      pack $frm.frame1.lab1 -padx 10 -pady 2
+
+   pack $frm.frame1 -side top -fill both -expand 1
+
+   #--- Creation d'une frame
+   frame $frm.frame2 -borderwidth 2 -relief raised
+
+      #--- Cree le checkbutton pour choisir le mode de calcul
+      checkbutton $frm.frame2.choixCalcul -text "$caption(audace,calculAuto)" \
+         -variable conf(photom,modeCalcul) -command "::confPhotom $visuNo"
+      pack $frm.frame2.choixCalcul -anchor w -side top -padx 3 -pady 3
+
+      #--- Cree le bouton pour recalculer la photometrie integrale
+      button $frm.frame2.but_calculer -text "$caption(audace,calculManuel)" -width 7 \
+         -command "::calculPhotom $visuNo"
+      pack $frm.frame2.but_calculer -side bottom -padx 3 -pady 3 -ipady 5 -fill x
+
+   pack $frm.frame2 -side top -fill both -expand 1
+
+   #--- Calcule les valeurs
+   ::calculPhotom $visuNo
+
+   #--- Configure la fenetre
+   ::confPhotom $visuNo
+
    #--- La fenetre est active
-   focus $This
+   focus $frm
+
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-   bind $This <Key-F1> { ::console::GiveFocus }
+   bind $frm <Key-F1> { ::console::GiveFocus }
+
    #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $This
+   ::confColor::applyColor $frm
 }
+
+#
+# calculPhotom
+# Calcule les valeurs de la fenetre
+#
+proc calculPhotom { visuNo args } {
+   variable private
+   global caption
+
+   #--- Capture de la fenetre de calcul
+   set private(photom,box) [ ::confVisu::getBox $visuNo ]
+   if { $private(photom,box) == "" } {
+      return
+   }
+
+   #--- Lecture des parametres dans la fenetre
+   set private(photom,valeurs) [ buf[ ::confVisu::getBufNo $visuNo ] phot $private(photom,box) ]
+
+   #--- Mise a jour des variables
+   set private(photom,integflux) "$caption(audace,integflux) : [ lindex $private(photom,valeurs) 0 ]"
+
+   #--- Mise a jour des labels
+   $private(photom,frm).frame1.lab1 configure -text "$private(photom,integflux)"
+}
+
+#
+# confPhotom
+# Configure la fenetre
+#
+proc confPhotom { visuNo args } {
+   variable private
+   global conf
+
+   #--- Configure le bouton Calculer
+   if { $conf(photom,modeCalcul) == "0" } {
+      $private(photom,frm).frame2.but_calculer configure -state normal
+      #--- J'arrete le rafraichissement automatique des valeurs si on charge une image
+      ::confVisu::removeFileNameListener $visuNo "::calculPhotom $visuNo"
+   } else {
+      $private(photom,frm).frame2.but_calculer configure -state disabled
+      #--- Je declare le rafraichissement automatique des valeurs si on charge une image
+      ::confVisu::addFileNameListener $visuNo "::calculPhotom $visuNo"
+   }
+}
+
+###################################################################################
 
 #
 # subfitgauss visuNo
@@ -465,6 +845,8 @@ proc subfitgauss { visuNo } {
    set valeurs [ buf[ ::confVisu::getBufNo $visuNo ] fitgauss $box -sub ]
    ::confVisu::autovisu $visuNo
 }
+
+###################################################################################
 
 #
 # scar visuNo
@@ -486,18 +868,25 @@ proc scar { visuNo } {
 ###################################################################################
 
 #
-# ferme_fenetre_analyse This nom_conf
+# ferme_fenetre_analyse visuNo frm nom_conf
 # Recupere les coordonnees des boites de dialogue ci-dessus
 #
-proc ferme_fenetre_analyse { This nom_conf } {
+proc ferme_fenetre_analyse { visuNo frm nom_conf } {
    global conf
 
+   #--- J'arrete le rafraichissement automatique des valeurs si on charge une image
+   ::confVisu::removeFileNameListener $visuNo "::calculStatwin $visuNo"
+   ::confVisu::removeFileNameListener $visuNo "::calculFwhm $visuNo"
+   ::confVisu::removeFileNameListener $visuNo "::fitgauss $visuNo"
+   ::confVisu::removeFileNameListener $visuNo "::calculCenter $visuNo"
+   ::confVisu::removeFileNameListener $visuNo "::calculPhotom $visuNo"
+
    #--- Determination de la position de la fenetre
-   set geometry [ wm geometry $This ]
+   set geometry [ wm geometry $frm ]
    set deb [ expr 1 + [ string first + $geometry ] ]
    set fin [ string length $geometry ]
    set conf($nom_conf,position) "+[ string range $geometry $deb $fin ]"
    #--- Fermeture de la fenetre
-   destroy $This
+   destroy $frm
 }
 
