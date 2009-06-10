@@ -3,7 +3,7 @@
 # Description : procedures d'acqusitition et de traitement avec
 #         plusieurs cameras simultanées exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise a jour $Id: sophiecamerathread.tcl,v 1.2 2009-06-10 18:34:16 michelpujol Exp $
+# Mise a jour $Id: sophiecamerathread.tcl,v 1.3 2009-06-10 21:18:12 michelpujol Exp $
 #
 
 
@@ -128,7 +128,6 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          set y1 1
          set x2 [buf$bufNo getpixelswidth]
          set y2 [buf$bufNo getpixelsheight]
- ::camerathread::disp  "camerathread: etoile avant x1=$x1 x2=$x2 y1=$y1 y2=$y2\n"
       } else {
          #--- la fenetre est centree sur l'etoile
          set x  [lindex $private(targetCoord) 0]
@@ -159,16 +158,16 @@ proc ::camerathread::sophieAcquisitionLoop { } {
       #
       # @return si TCL_OK
       #            list[0] starStatus      resultat de la recherche de la fibre
-      #            list[1] starX            abcisse du centre de la fibre
-      #            list[2] starY            ordonnee du centre de la fibre
-      #            list[3] fiberStatus      resultat de la recherche de la fibre
-      #            list[4] fiberX           abcisse du centre de la fibre
-      #            list[5] fiberY           ordonnee du centre de la fibre
-      #            list[6] measuredFwhmX    gaussienne mesuree
-      #            list[7] measuredFwhmY    gaussienne mesuree
-      #            list[8] background       fond du ciel
-      #            list[9] maxIntensity   intensite max
-      #            list[10] message          message d'information
+      #            list[1] starX           abcisse du centre de la fibre
+      #            list[2] starY           ordonnee du centre de la fibre
+      #            list[3] fiberStatus     resultat de la recherche de la fibre
+      #            list[4] fiberX          abcisse du centre de la fibre
+      #            list[5] fiberY          ordonnee du centre de la fibre
+      #            list[6] measuredFwhmX   gaussienne mesuree
+      #            list[7] measuredFwhmY   gaussienne mesuree
+      #            list[8] background      fond du ciel
+      #            list[9] maxIntensity    intensite max
+      #            list[10] message        message d'information
       #
       #         si TCL_ERREUR
       #            message d'erreur
@@ -219,13 +218,11 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             if { $fiberStatus == "DETECTED" } {
                #--- La consigne est detectee
                set fiberDetection  1
-               ::camerathread::disp  "camerathread: consigne Xcons=$fiberX YCons=$fiberY \n"
                #--- je met a jour les coordonnes de la consigne
                set private(originCoord) [list $fiberX $fiberY ]
             } else {
                #--- la consigne n'est pas detectee, je ne change pas les coordonnes de la consigne
                set fiberDetection  0
-               ::camerathread::disp  "camerathread:  consigne non dectectee\n"
             }
          } else {
             #--- pas de changement, on attend la fin de l'integration de l'image
@@ -235,7 +232,6 @@ proc ::camerathread::sophieAcquisitionLoop { } {
       } else {
          #--- la consigne n'a pas besoin  d'etre detectee en mode OBJECT
          set fiberDetection  2
-         ::camerathread::disp  "camerathread: trou non cherche\n"
       }
 
 ###::camerathread::disp  "camerathread: FIBER= y1=$y1 y2=$y2 detection etoile=$targetDetection [lindex $result 11]\n"
