@@ -2,7 +2,7 @@
 # Fichier : sophiecommand.tcl
 # Description : Centralise les commandes de l'outil Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecommand.tcl,v 1.14 2009-06-10 18:34:16 michelpujol Exp $
+# Mise a jour $Id: sophiecommand.tcl,v 1.15 2009-06-10 21:18:51 michelpujol Exp $
 #
 
 #============================================================
@@ -1385,7 +1385,6 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                set alphaCorrection      [lindex $args 11]
                set deltaCorrection      [lindex $args 12]
                set infoMessage          [lindex $args 13]
- console::disp "callbackAcquisition starX=$starX starY=$starY\n"
 
                #--- je modifie la position de la consigne si on est en mode FIFER et la fibre est detectee
                if { $::conf(sophie,guidingMode) == "FIBER" } {
