@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_5.tcl
 # Description : Script regroupant les fonctionnalites du menu Analyse
-# Mise a jour $Id: aud_menu_5.tcl,v 1.7 2009-06-10 17:50:58 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_5.tcl,v 1.8 2009-06-10 21:19:41 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -306,9 +306,9 @@ proc confFwhm { visuNo args } {
 # fitgauss visuNo
 # Ajuste une gaussienne dans une fenetre d'une image
 #
-proc fitgauss { visuNo args } {
+proc fitgauss { visuNo } {
    variable private
-   global caption color conf
+   global caption conf
 
    #---
    set base [ ::confVisu::getBase $visuNo ]
@@ -337,6 +337,80 @@ proc fitgauss { visuNo args } {
    wm title $frm "$caption(audace,menu,fitgauss)"
    wm geometry $frm $conf(fitgauss,position)
    wm protocol $frm WM_DELETE_WINDOW "ferme_fenetre_analyse $visuNo $frm fitgauss"
+
+   #--- Creation d'une frame
+   frame $frm.frame1 -borderwidth 2 -relief raised
+
+      label $frm.frame1.lab0 -text "Visu$visuNo"
+      pack $frm.frame1.lab0 -padx 10 -pady 2
+
+      label $frm.frame1.lab1 -text ""
+      pack $frm.frame1.lab1 -padx 10 -pady 2
+
+      label $frm.frame1.lab2 -text ""
+      pack $frm.frame1.lab2 -padx 10 -pady 2
+
+      label $frm.frame1.lab3 -text ""
+      pack $frm.frame1.lab3 -padx 10 -pady 2
+
+      label $frm.frame1.lab4 -text ""
+      pack $frm.frame1.lab4 -padx 10 -pady 2
+
+      label $frm.frame1.lab5 -text ""
+      pack $frm.frame1.lab5 -padx 10 -pady 2
+
+      label $frm.frame1.lab6 -text ""
+      pack $frm.frame1.lab6 -padx 10 -pady 2
+
+   pack $frm.frame1 -side top -fill both -expand 1
+
+   #--- Creation d'une frame
+   frame $frm.frame2 -borderwidth 2 -relief raised
+
+      #--- Cree le checkbutton pour choisir le mode de calcul
+      checkbutton $frm.frame2.choixCalcul -text "$caption(audace,calculAuto)" \
+         -variable conf(fitgauss,modeCalcul) -command "::confFitgauss $visuNo"
+      pack $frm.frame2.choixCalcul -anchor w -side top -padx 3 -pady 3
+
+      #--- Cree le bouton pour recalculer l'ajustement de la gaussienne
+      button $frm.frame2.but_calculer -text "$caption(audace,calculManuel)" -width 7 \
+         -command "::calculFitgauss $visuNo"
+      pack $frm.frame2.but_calculer -side bottom -padx 3 -pady 3 -ipady 5 -fill x
+
+   pack $frm.frame2 -side top -fill both -expand 1
+
+   #--- Calcule les valeurs
+   ::calculFitgauss $visuNo
+
+   #--- Configure la fenetre
+   ::confFitgauss $visuNo
+
+   #--- La fenetre est active
+   focus $frm
+
+   #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+   bind $frm <Key-F1> { ::console::GiveFocus }
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
+}
+
+#
+# calculFitgauss
+# Calcule les valeurs de la fenetre
+#
+proc calculFitgauss { visuNo args } {
+   variable private
+   global caption color conf
+
+   #--- Capture de la fenetre de calcul
+   set private(fitgauss,box) [ ::confVisu::getBox $visuNo ]
+   if { $private(fitgauss,box) == "" } {
+      return
+   }
+
+   #---
+   set base [ ::confVisu::getBase $visuNo ]
 
    #--- Lecture de la gaussienne d'ajustement
    set bufNo [ ::confVisu::getBufNo $visuNo ]
@@ -374,102 +448,62 @@ proc fitgauss { visuNo args } {
       set dif [ expr abs($if1-$if0) ]
    }
 
-   #--- Creation d'une frame
-   frame $frm.frame1 -borderwidth 2 -relief raised
+   #--- Cree les etiquettes
+   ::console::affiche_resultat "=== Visu$visuNo $caption(audace,titre_gauss)\n"
+   ::console::affiche_resultat "$caption(audace,coord_box) : $private(fitgauss,box)\n"
+   set texte "$caption(audace,center_xy) : "
+   if {($naxis1>1)&&($naxis2>1)} {
+      append texte "[ format "%.2f" $xc ] / [ format "%.2f" $yc ]"
+   } elseif {($naxis1>1)&&($naxis2==1)} {
+      append texte "[ format "%.2f" $xc ]"
+   } elseif {($naxis1==1)&&($naxis2>1)} {
+      append texte "[ format "%.2f" $yc ]"
+   }
+   ::console::affiche_resultat "$texte\n"
+   $private(fitgauss,frm).frame1.lab1 configure -text "$texte"
+   set texte "$caption(audace,fwhm_xy) : "
+   if {($naxis1>1)&&($naxis2>1)} {
+      append texte "[ format "%.3f" $fwhmx ] / [ format "%.3f" $fwhmy ]"
+   } elseif {($naxis1>1)&&($naxis2==1)} {
+      append texte "[ format "%.3f" $fwhmx ]"
+   } elseif {($naxis1==1)&&($naxis2>1)} {
+      append texte "[ format "%.3f" $fwhmy ]"
+   }
+   ::console::affiche_resultat "$texte\n"
+   $private(fitgauss,frm).frame1.lab2 configure -text "$texte"
+   set texte "$caption(audace,intens_xy) : "
+   if {($naxis1>1)&&($naxis2>1)} {
+      append texte "[ format "%f" $intx ] / [ format "%f" $inty ]"
+   } elseif {($naxis1>1)&&($naxis2==1)} {
+      append texte "[ format "%f" $intx ]"
+   } elseif {($naxis1==1)&&($naxis2>1)} {
+      append texte "[ format "%f" $inty ]"
+   }
+   ::console::affiche_resultat "$texte\n"
+   $private(fitgauss,frm).frame1.lab3 configure -text "$texte"
+   set texte "$caption(audace,back_xy) : "
+   if {($naxis1>1)&&($naxis2>1)} {
+      append texte "[ format "%f" $bgx ] / [ format "%f" $bgy ]"
+   } elseif {($naxis1>1)&&($naxis2==1)} {
+      append texte "[ format "%f" $bgx ]"
+   } elseif {($naxis1==1)&&($naxis2>1)} {
+      append texte "[ format "%f" $bgy ]"
+   }
+   ::console::affiche_resultat "$texte\n"
+   $private(fitgauss,frm).frame1.lab4 configure -text "$texte"
+   set texte "$caption(audace,integflux) : $if0 "
+   if {($naxis1>1)&&($naxis2>1)} {
+      append texte "+/- $dif"
+   }
+   ::console::affiche_resultat "$texte\n"
+   $private(fitgauss,frm).frame1.lab5 configure -text "$texte"
 
-      #--- Cree les etiquettes
-      label $frm.frame1.lab0 -text "Visu$visuNo"
-      pack $frm.frame1.lab0 -padx 10 -pady 2
-      ::console::affiche_resultat "=== Visu$visuNo $caption(audace,titre_gauss)\n"
-      ::console::affiche_resultat "$caption(audace,coord_box) : $private(fitgauss,box)\n"
-      set texte "$caption(audace,center_xy) : "
-      if {($naxis1>1)&&($naxis2>1)} {
-         append texte "[ format "%.2f" $xc ] / [ format "%.2f" $yc ]"
-      } elseif {($naxis1>1)&&($naxis2==1)} {
-         append texte "[ format "%.2f" $xc ]"
-      } elseif {($naxis1==1)&&($naxis2>1)} {
-         append texte "[ format "%.2f" $yc ]"
-      }
+   #---
+   if {($naxis1==1)||($naxis2==1)} {
+      set texte "$caption(audace,largeurequiv) : [ format "%f" $leq ] pixels"
       ::console::affiche_resultat "$texte\n"
-      label $frm.frame1.lab1 -text "$texte"
-      pack $frm.frame1.lab1 -padx 10 -pady 2
-      set texte "$caption(audace,fwhm_xy) : "
-      if {($naxis1>1)&&($naxis2>1)} {
-         append texte "[ format "%.3f" $fwhmx ] / [ format "%.3f" $fwhmy ]"
-      } elseif {($naxis1>1)&&($naxis2==1)} {
-         append texte "[ format "%.3f" $fwhmx ]"
-      } elseif {($naxis1==1)&&($naxis2>1)} {
-         append texte "[ format "%.3f" $fwhmy ]"
-      }
-      ::console::affiche_resultat "$texte\n"
-      label $frm.frame1.lab2 -text "$texte"
-      pack $frm.frame1.lab2 -padx 10 -pady 2
-      set texte "$caption(audace,intens_xy) : "
-      if {($naxis1>1)&&($naxis2>1)} {
-         append texte "[ format "%f" $intx ] / [ format "%f" $inty ]"
-      } elseif {($naxis1>1)&&($naxis2==1)} {
-         append texte "[ format "%f" $intx ]"
-      } elseif {($naxis1==1)&&($naxis2>1)} {
-         append texte "[ format "%f" $inty ]"
-      }
-      ::console::affiche_resultat "$texte\n"
-      label $frm.frame1.lab3 -text "$texte"
-      pack $frm.frame1.lab3 -padx 10 -pady 2
-      set texte "$caption(audace,back_xy) : "
-      if {($naxis1>1)&&($naxis2>1)} {
-         append texte "[ format "%f" $bgx ] / [ format "%f" $bgy ]"
-      } elseif {($naxis1>1)&&($naxis2==1)} {
-         append texte "[ format "%f" $bgx ]"
-      } elseif {($naxis1==1)&&($naxis2>1)} {
-         append texte "[ format "%f" $bgy ]"
-      }
-      ::console::affiche_resultat "$texte\n"
-      label $frm.frame1.lab4 -text "$texte"
-      pack $frm.frame1.lab4 -padx 10 -pady 2
-      set texte "$caption(audace,integflux) : $if0 "
-      if {($naxis1>1)&&($naxis2>1)} {
-         append texte "+/- $dif"
-      }
-      ::console::affiche_resultat "$texte\n"
-      label $frm.frame1.lab5 -text "$texte"
-      pack $frm.frame1.lab5 -padx 10 -pady 2
-
-      #---
-      if {($naxis1==1)||($naxis2==1)} {
-         set texte "$caption(audace,largeurequiv) : [ format "%f" $leq ] pixels"
-         ::console::affiche_resultat "$texte\n"
-         label $frm.frame1.lab6 -text "$texte"
-         pack $frm.frame1.lab6 -padx 10 -pady 2
-      }
-
-   pack $frm.frame1 -side top -fill both -expand 1
-
-   #--- Creation d'une frame
-   frame $frm.frame2 -borderwidth 2 -relief raised
-
-      #--- Cree le checkbutton pour choisir le mode de calcul
-      checkbutton $frm.frame2.choixCalcul -text "$caption(audace,calculAuto)" \
-         -variable conf(fitgauss,modeCalcul) -command "::confFitgauss $visuNo"
-      pack $frm.frame2.choixCalcul -anchor w -side top -padx 3 -pady 3
-
-      #--- Cree le bouton pour recalculer l'ajustement de la gaussienne
-      button $frm.frame2.but_calculer -text "$caption(audace,calculManuel)" -width 7 \
-         -command "::fitgauss $visuNo"
-      pack $frm.frame2.but_calculer -side bottom -padx 3 -pady 3 -ipady 5 -fill x
-
-   pack $frm.frame2 -side top -fill both -expand 1
-
-   #--- Configure la fenetre
-   ::confFitgauss $visuNo
-
-   #--- La fenetre est active
-   focus $frm
-
-   #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-   bind $frm <Key-F1> { ::console::GiveFocus }
-
-   #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $frm
+      $private(fitgauss,frm).frame1.lab6 configure -text "$texte"
+   }
 
    #---
    if {[expr $if0+$dif]<=0} {
@@ -573,11 +607,11 @@ proc confFitgauss { visuNo args } {
    if { $conf(fitgauss,modeCalcul) == "0" } {
       $private(fitgauss,frm).frame2.but_calculer configure -state normal
       #--- J'arrete le rafraichissement automatique des valeurs si on charge une image
-      ::confVisu::removeFileNameListener $visuNo "::fitgauss $visuNo"
+      ::confVisu::removeFileNameListener $visuNo "::calculFitgauss $visuNo"
    } else {
       $private(fitgauss,frm).frame2.but_calculer configure -state disabled
       #--- Je declare le rafraichissement automatique des valeurs si on charge une image
-      ::confVisu::addFileNameListener $visuNo "::fitgauss $visuNo"
+      ::confVisu::addFileNameListener $visuNo "::calculFitgauss $visuNo"
    }
 }
 
@@ -877,7 +911,7 @@ proc ferme_fenetre_analyse { visuNo frm nom_conf } {
    #--- J'arrete le rafraichissement automatique des valeurs si on charge une image
    ::confVisu::removeFileNameListener $visuNo "::calculStatwin $visuNo"
    ::confVisu::removeFileNameListener $visuNo "::calculFwhm $visuNo"
-   ::confVisu::removeFileNameListener $visuNo "::fitgauss $visuNo"
+   ::confVisu::removeFileNameListener $visuNo "::calculFitgauss $visuNo"
    ::confVisu::removeFileNameListener $visuNo "::calculCenter $visuNo"
    ::confVisu::removeFileNameListener $visuNo "::calculPhotom $visuNo"
 
