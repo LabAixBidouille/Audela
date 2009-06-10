@@ -3,7 +3,7 @@
 # Description : procedures d'acqusitition et de traitement avec
 #         plusieurs cameras simultanées exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise a jour $Id: camerathread.tcl,v 1.8 2009-06-06 10:07:41 michelpujol Exp $
+# Mise a jour $Id: camerathread.tcl,v 1.9 2009-06-10 21:15:12 michelpujol Exp $
 #
 
 namespace eval ::camerathread {
@@ -892,7 +892,6 @@ proc ::camerathread::updateParameter { } {
    variable private
    set paramList $private(synchroneParameter)
    set private(synchroneParameter)  ""
-::camerathread::disp  "updateParameter:$paramList:\n"
    foreach { paramName paramValue } $paramList {
       set private($paramName) $paramValue
       ###::camerathread::disp  "camerathread: $paramName=$private($paramName)XXX\n"
