@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: camera.tcl,v 1.31 2009-06-06 10:06:20 michelpujol Exp $
+# Mise a jour $Id: camera.tcl,v 1.32 2009-06-10 21:17:09 michelpujol Exp $
 #
 # Procedures utilisees par confCam
 #   ::camera::create : cree une camera
@@ -112,7 +112,7 @@ proc ::camera::create { camItem } {
             copycommand $private($camItem,threadNo) "link[cam$private($camItem,camNo) longueposelinkno]"
          }
       }
-      #--- je descative la recuperation des coordonnees du telescope
+      #--- je desactive la recuperation des coordonnees du telescope
       cam$private($camItem,camNo) radecfromtel 0
       #--- j'initialise la file d'evenement  pour la communication entre les deux threads
       set private($camItem,eventList) [list]
@@ -137,7 +137,7 @@ proc ::camera::create { camItem } {
             thread::copycommand $private($camItem,threadNo) "link[cam$private($camItem,camNo) longueposelinkno]"
          }
       }
-      #--- je descative la recuperation des coordonnees du telescope
+      #--- je desactive la recuperation des coordonnees du telescope
       cam$private($camItem,camNo) radecfromtel 0
 
       #--- j'initialise la file d'evenement  pour la communication entre les deux threads
