@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_5.cap
-# Mise a jour $Id: aud_menu_5.cap,v 1.11 2009-06-10 17:49:53 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_5.cap,v 1.12 2009-06-11 20:53:05 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -26,8 +26,8 @@ set caption(audace,histo_titre)                       "Image Histogram"
 set caption(audace,histo_adu)                         "ADU"
 set caption(audace,histo_nbpix)                       "Pixels Number"
 
-set caption(audace,calculAuto)                        "Auto Refresh"
-set caption(audace,calculManuel)                      "Refresh Now"
+set caption(audace,refreshAuto)                       "Auto Refresh"
+set caption(audace,refreshManuel)                     "Refresh Now"
 
 set caption(audace,maxi)                              "Max.: "
 set caption(audace,mini)                              "Min.: "
@@ -72,8 +72,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,histo_adu)                      "ADU"
    set caption(audace,histo_nbpix)                    "Nombre de pixels"
 
-   set caption(audace,calculAuto)                     "Rafraîchissement automatique"
-   set caption(audace,calculManuel)                   "Rafraîchir maintenant"
+   set caption(audace,refreshAuto)                    "Rafraîchissement automatique"
+   set caption(audace,refreshManuel)                  "Rafraîchir maintenant"
 
    set caption(audace,maxi)                           "Maxi. : "
    set caption(audace,mini)                           "Mini. : "
@@ -118,8 +118,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,histo_adu)                      "ADU"
    set caption(audace,histo_nbpix)                    "Numero dei pixels"
 
-   set caption(audace,calculAuto)                     "# Rafraîchissement automatique"
-   set caption(audace,calculManuel)                   "# Rafraîchir maintenant"
+   set caption(audace,refreshAuto)                    "# Rafraîchissement automatique"
+   set caption(audace,refreshManuel)                  "# Rafraîchir maintenant"
 
    set caption(audace,maxi)                           "Max.: "
    set caption(audace,mini)                           "Min.: "
@@ -164,8 +164,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,histo_adu)                      "Unidades digitales (ADU)"
    set caption(audace,histo_nbpix)                    "Número de píxeles"
 
-   set caption(audace,calculAuto)                     "Refresco automatico"
-   set caption(audace,calculManuel)                   "Refrescar ahora"
+   set caption(audace,refreshAuto)                    "Refresco automatico"
+   set caption(audace,refreshManuel)                  "Refrescar ahora"
 
    set caption(audace,maxi)                           "Max.: "
    set caption(audace,mini)                           "Min.: "
@@ -210,8 +210,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,histo_adu)                      "ADU"
    set caption(audace,histo_nbpix)                    "Rasterpunkten Zahl"
 
-   set caption(audace,calculAuto)                     "# Rafraîchissement automatique"
-   set caption(audace,calculManuel)                   "# Rafraîchir maintenant"
+   set caption(audace,refreshAuto)                    "# Rafraîchissement automatique"
+   set caption(audace,refreshManuel)                  "# Rafraîchir maintenant"
 
    set caption(audace,maxi)                           "Maxi.: "
    set caption(audace,mini)                           "Mini.: "
@@ -256,8 +256,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,histo_adu)                      "Unidades digitais (ADU)"
    set caption(audace,histo_nbpix)                    "Número de pixeis"
 
-   set caption(audace,calculAuto)                     "# Rafraîchissement automatique"
-   set caption(audace,calculManuel)                   "# Rafraîchir maintenant"
+   set caption(audace,refreshAuto)                    "# Rafraîchissement automatique"
+   set caption(audace,refreshManuel)                  "# Rafraîchir maintenant"
 
    set caption(audace,maxi)                           "Max.: "
    set caption(audace,mini)                           "Min.: "
@@ -302,8 +302,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,histo_adu)                      "ADU"
    set caption(audace,histo_nbpix)                    "Pixeltal"
 
-   set caption(audace,calculAuto)                     "Automatisk opdatering"
-   set caption(audace,calculManuel)                   "Opdatér nu"
+   set caption(audace,refreshAuto)                    "Automatisk opdatering"
+   set caption(audace,refreshManuel)                  "Opdatér nu"
 
    set caption(audace,maxi)                           "Max.: "
    set caption(audace,mini)                           "Min.: "
