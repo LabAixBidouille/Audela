@@ -2,13 +2,11 @@
 # Fichier : polydraw.tcl
 # Description : Dessine un polygone
 # Auteur : Michel PUJOL
-# Mise a jour $Id: polydraw.tcl,v 1.6 2007-11-10 11:28:30 michelpujol Exp $
+# Mise a jour $Id: polydraw.tcl,v 1.7 2009-06-11 20:55:57 robertdelmas Exp $
 #
 
 namespace eval ::polydraw {
-
 }
-
 
 #------------------------------------------------------------
 #  init
@@ -138,8 +136,7 @@ proc ::polydraw::setZoom { visuNo args } {
          }
       }
    }
-   set private($visuNo,previousZoom)  $zoom
-
+   set private($visuNo,previousZoom) $zoom
 }
 
 #------------------------------------------------------------
@@ -441,9 +438,10 @@ proc ::polydraw::removeMoveItemListener { visuNo item cmd } {
    variable private
 
    trace remove variable "::polydraw::private($visuNo,item$item)" write $cmd
-   unset ::polydraw::private($visuNo,item$item)
+   if { [ info exists ::polydraw::private($visuNo,item$item) ] } {
+      unset ::polydraw::private($visuNo,item$item)
+   }
 }
-
 
 proc ::polydraw::redraw {w dx dy} {
    #-- update a polygon when one node was moved
