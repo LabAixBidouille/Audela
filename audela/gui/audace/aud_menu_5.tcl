@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_5.tcl
 # Description : Script regroupant les fonctionnalites du menu Analyse
-# Mise a jour $Id: aud_menu_5.tcl,v 1.8 2009-06-10 21:19:41 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_5.tcl,v 1.9 2009-06-11 20:53:56 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -19,7 +19,7 @@ proc ::audace::Histo { visuNo } {
       buf$bufNo imaseries "CUTS lofrac=0.01 hifrac=0.99 hicut=SH locut=SB keytype=FLOAT"
       set mini [ lindex [ buf$bufNo getkwd SB ] 1 ]
       set maxi [ lindex [ buf$bufNo getkwd SH ] 1 ]
-      set r [ buf$bufNo histo 50 $mini $maxi ]
+      set r    [ buf$bufNo histo 50 $mini $maxi ]
       ::plotxy::figure 1
       ::plotxy::title  "$caption(audace,histo_titre) (visu$visuNo)"
       ::plotxy::xlabel "$caption(audace,histo_adu)"
@@ -49,10 +49,10 @@ proc statwin { visuNo } {
    }
 
    #--- Initialisation de variables
-   if { ! [ info exists conf(statwin,position) ] }   { set conf(statwin,position)   "+350+75" }
-   if { ! [ info exists conf(statwin,modeCalcul) ] } { set conf(statwin,modeCalcul) "0" }
+   if { ! [ info exists conf(statwin,position) ] }    { set conf(statwin,position)    "+350+75" }
+   if { ! [ info exists conf(statwin,modeRefresh) ] } { set conf(statwin,modeRefresh) "0" }
 
-   #--- Capture de la fenetre de calcul
+   #--- Capture de la fenetre d'analyse
    set private(statwin,box) [ ::confVisu::getBox $visuNo ]
    if { $private(statwin,box) == "" } {
       return
@@ -90,22 +90,22 @@ proc statwin { visuNo } {
    #--- Creation d'une frame
    frame $frm.frame2 -borderwidth 2 -relief raised
 
-      #--- Cree le checkbutton pour choisir le mode de calcul
-      checkbutton $frm.frame2.choixCalcul -text "$caption(audace,calculAuto)" \
-         -variable conf(statwin,modeCalcul) -command "::confStatwin $visuNo"
-      pack $frm.frame2.choixCalcul -anchor w -side top -padx 3 -pady 3
+      #--- Cree le checkbutton pour choisir le mode de rafraichissement
+      checkbutton $frm.frame2.modeRefresh -text "$caption(audace,refreshAuto)" \
+         -variable conf(statwin,modeRefresh) -command "::confStatwin $visuNo"
+      pack $frm.frame2.modeRefresh -anchor w -side top -padx 3 -pady 3
 
-      #--- Cree le bouton pour recalculer les statistiques
-      button $frm.frame2.but_calculer -text "$caption(audace,calculManuel)" -width 7 \
-         -command "::calculStatwin $visuNo"
-      pack $frm.frame2.but_calculer -side top -padx 3 -pady 3 -ipady 5 -fill x
+      #--- Cree le bouton pour rafraichir les statistiques
+      button $frm.frame2.butRefresh -text "$caption(audace,refreshManuel)" -width 7 \
+         -command "::refreshStatwin $visuNo"
+      pack $frm.frame2.butRefresh -side top -padx 3 -pady 3 -ipady 5 -fill x
 
    pack $frm.frame2 -side top -fill both -expand 1
 
-   #--- Calcule les valeurs
-   ::calculStatwin $visuNo
+   #--- Rafraichit les valeurs
+   ::refreshStatwin $visuNo
 
-   #--- Configure la fenetre
+   #--- Rafraichit la fenetre
    ::confStatwin $visuNo
 
    #--- La fenetre est active
@@ -114,19 +114,19 @@ proc statwin { visuNo } {
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
    bind $frm <Key-F1> { ::console::GiveFocus }
 
-#--- Mise a jour dynamique des couleurs
+   #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
 }
 
 #
-# calculStatwin
-# Calcule les valeurs de la fenetre
+# refreshStatwin
+# Rafraichit les valeurs de la fenetre
 #
-proc calculStatwin { visuNo args } {
+proc refreshStatwin { visuNo args } {
    variable private
    global caption
 
-   #--- Capture de la fenetre de calcul
+   #--- Capture de la fenetre d'analyse
    set private(statwin,box) [ ::confVisu::getBox $visuNo ]
    if { $private(statwin,box) == "" } {
       return
@@ -154,21 +154,21 @@ proc calculStatwin { visuNo args } {
 
 #
 # confStatwin
-# Configure la fenetre
+# Rafraichit la fenetre
 #
 proc confStatwin { visuNo args } {
    variable private
    global conf
 
-   #--- Configure le bouton Calculer
-   if { $conf(statwin,modeCalcul) == "0" } {
-      $private(statwin,frm).frame2.but_calculer configure -state normal
+   #--- Configure le bouton pour le rafraichissement
+   if { $conf(statwin,modeRefresh) == "0" } {
+      $private(statwin,frm).frame2.butRefresh configure -state normal
       #--- J'arrete le rafraichissement automatique des valeurs si on charge une image
-      ::confVisu::removeFileNameListener $visuNo "::calculStatwin $visuNo"
+      ::confVisu::removeFileNameListener $visuNo "::refreshStatwin $visuNo"
    } else {
-      $private(statwin,frm).frame2.but_calculer configure -state disabled
+      $private(statwin,frm).frame2.butRefresh configure -state disabled
       #--- Je declare le rafraichissement automatique des valeurs si on charge une image
-      ::confVisu::addFileNameListener $visuNo "::calculStatwin $visuNo"
+      ::confVisu::addFileNameListener $visuNo "::refreshStatwin $visuNo"
    }
 }
 
@@ -192,15 +192,15 @@ proc fwhm { visuNo } {
       ferme_fenetre_analyse $visuNo $frm fwhm
    }
 
-   #---
+   #--- Capture de la fenetre d'analyse
    set private(fwhm,box) [ ::confVisu::getBox $visuNo ]
    if { $private(fwhm,box) == "" } {
       return
    }
 
    #--- Initialisation de la position de la fenetre
-   if { ! [ info exists conf(fwhm,position) ] }   { set conf(fwhm,position)   "+350+75" }
-   if { ! [ info exists conf(fwhm,modeCalcul) ] } { set conf(fwhm,modeCalcul) "0" }
+   if { ! [ info exists conf(fwhm,position) ] }    { set conf(fwhm,position)    "+350+75" }
+   if { ! [ info exists conf(fwhm,modeRefresh) ] } { set conf(fwhm,modeRefresh) "0" }
 
    #--- Creation de la fenetre
    toplevel $frm
@@ -226,22 +226,22 @@ proc fwhm { visuNo } {
    #--- Creation d'une frame
    frame $frm.frame2 -borderwidth 2 -relief raised
 
-      #--- Cree le checkbutton pour choisir le mode de calcul
-      checkbutton $frm.frame2.choixCalcul -text "$caption(audace,calculAuto)" \
-         -variable conf(fwhm,modeCalcul) -command "::confFwhm $visuNo"
-      pack $frm.frame2.choixCalcul -anchor w -side top -padx 3 -pady 3
+      #--- Cree le checkbutton pour choisir le mode de rafraichissement
+      checkbutton $frm.frame2.modeRefresh -text "$caption(audace,refreshAuto)" \
+         -variable conf(fwhm,modeRefresh) -command "::confFwhm $visuNo"
+      pack $frm.frame2.modeRefresh -anchor w -side top -padx 3 -pady 3
 
-      #--- Cree le bouton pour recalculer les fwhm
-      button $frm.frame2.but_calculer -text "$caption(audace,calculManuel)" -width 7 \
-         -command "::calculFwhm $visuNo"
-      pack $frm.frame2.but_calculer -side bottom -padx 3 -pady 3 -ipady 5 -fill x
+      #--- Cree le bouton pour rafraichir les fwhm
+      button $frm.frame2.butRefresh -text "$caption(audace,refreshManuel)" -width 7 \
+         -command "::refreshFwhm $visuNo"
+      pack $frm.frame2.butRefresh -side bottom -padx 3 -pady 3 -ipady 5 -fill x
 
    pack $frm.frame2 -side top -fill both -expand 1
 
-   #--- Calcule les valeurs
-   ::calculFwhm $visuNo
+   #--- Rafraichit les valeurs
+   ::refreshFwhm $visuNo
 
-   #--- Configure la fenetre
+   #--- Rafraichit la fenetre
    ::confFwhm $visuNo
 
    #--- La fenetre est active
@@ -255,14 +255,14 @@ proc fwhm { visuNo } {
 }
 
 #
-# calculFwhm
-# Calcule les valeurs de la fenetre
+# refreshFwhm
+# Rafraichit les valeurs de la fenetre
 #
-proc calculFwhm { visuNo args } {
+proc refreshFwhm { visuNo args } {
    variable private
    global caption
 
-   #--- Capture de la fenetre de calcul
+   #--- Capture de la fenetre d'analyse
    set private(fwhm,box) [ ::confVisu::getBox $visuNo ]
    if { $private(fwhm,box) == "" } {
       return
@@ -282,21 +282,21 @@ proc calculFwhm { visuNo args } {
 
 #
 # confFwhm
-# Configure la fenetre
+# Rafraichit la fenetre
 #
 proc confFwhm { visuNo args } {
    variable private
    global conf
 
-   #--- Configure le bouton Calculer
-   if { $conf(fwhm,modeCalcul) == "0" } {
-      $private(fwhm,frm).frame2.but_calculer configure -state normal
+   #--- Configure le bouton pour le rafraichissement
+   if { $conf(fwhm,modeRefresh) == "0" } {
+      $private(fwhm,frm).frame2.butRefresh configure -state normal
       #--- J'arrete le rafraichissement automatique des valeurs si on charge une image
-      ::confVisu::removeFileNameListener $visuNo "::calculFwhm $visuNo"
+      ::confVisu::removeFileNameListener $visuNo "::refreshFwhm $visuNo"
    } else {
-      $private(fwhm,frm).frame2.but_calculer configure -state disabled
+      $private(fwhm,frm).frame2.butRefresh configure -state disabled
       #--- Je declare le rafraichissement automatique des valeurs si on charge une image
-      ::confVisu::addFileNameListener $visuNo "::calculFwhm $visuNo"
+      ::confVisu::addFileNameListener $visuNo "::refreshFwhm $visuNo"
    }
 }
 
@@ -320,15 +320,15 @@ proc fitgauss { visuNo } {
       ferme_fenetre_analyse $visuNo $frm fitgauss
    }
 
-   #---
+   #--- Capture de la fenetre d'analyse
    set private(fitgauss,box) [ ::confVisu::getBox $visuNo ]
    if { $private(fitgauss,box) == "" } {
       return
    }
 
    #--- Initialisation de la position de la fenetre
-   if { ! [ info exists conf(fitgauss,position) ] }   { set conf(fitgauss,position)   "+350+75" }
-   if { ! [ info exists conf(fitgauss,modeCalcul) ] } { set conf(fitgauss,modeCalcul) "0" }
+   if { ! [ info exists conf(fitgauss,position) ] }    { set conf(fitgauss,position)    "+350+75" }
+   if { ! [ info exists conf(fitgauss,modeRefresh) ] } { set conf(fitgauss,modeRefresh) "0" }
 
    #--- Creation de la fenetre
    toplevel $frm
@@ -367,22 +367,22 @@ proc fitgauss { visuNo } {
    #--- Creation d'une frame
    frame $frm.frame2 -borderwidth 2 -relief raised
 
-      #--- Cree le checkbutton pour choisir le mode de calcul
-      checkbutton $frm.frame2.choixCalcul -text "$caption(audace,calculAuto)" \
-         -variable conf(fitgauss,modeCalcul) -command "::confFitgauss $visuNo"
-      pack $frm.frame2.choixCalcul -anchor w -side top -padx 3 -pady 3
+      #--- Cree le checkbutton pour choisir le mode de rafraichissement
+      checkbutton $frm.frame2.modeRefresh -text "$caption(audace,refreshAuto)" \
+         -variable conf(fitgauss,modeRefresh) -command "::confFitgauss $visuNo"
+      pack $frm.frame2.modeRefresh -anchor w -side top -padx 3 -pady 3
 
-      #--- Cree le bouton pour recalculer l'ajustement de la gaussienne
-      button $frm.frame2.but_calculer -text "$caption(audace,calculManuel)" -width 7 \
-         -command "::calculFitgauss $visuNo"
-      pack $frm.frame2.but_calculer -side bottom -padx 3 -pady 3 -ipady 5 -fill x
+      #--- Cree le bouton pour rafraichir l'ajustement de la gaussienne
+      button $frm.frame2.butRefresh -text "$caption(audace,refreshManuel)" -width 7 \
+         -command "::refreshFitgauss $visuNo"
+      pack $frm.frame2.butRefresh -side bottom -padx 3 -pady 3 -ipady 5 -fill x
 
    pack $frm.frame2 -side top -fill both -expand 1
 
-   #--- Calcule les valeurs
-   ::calculFitgauss $visuNo
+   #--- Rafraichit les valeurs
+   ::refreshFitgauss $visuNo
 
-   #--- Configure la fenetre
+   #--- Rafraichit la fenetre
    ::confFitgauss $visuNo
 
    #--- La fenetre est active
@@ -396,14 +396,14 @@ proc fitgauss { visuNo } {
 }
 
 #
-# calculFitgauss
-# Calcule les valeurs de la fenetre
+# refreshFitgauss
+# Rafraichit les valeurs de la fenetre
 #
-proc calculFitgauss { visuNo args } {
+proc refreshFitgauss { visuNo args } {
    variable private
    global caption color conf
 
-   #--- Capture de la fenetre de calcul
+   #--- Capture de la fenetre d'analyse
    set private(fitgauss,box) [ ::confVisu::getBox $visuNo ]
    if { $private(fitgauss,box) == "" } {
       return
@@ -597,21 +597,21 @@ proc calculFitgauss { visuNo args } {
 
 #
 # confFitgauss
-# Configure la fenetre
+# Rafraichit la fenetre
 #
 proc confFitgauss { visuNo args } {
    variable private
    global conf
 
-   #--- Configure le bouton Calculer
-   if { $conf(fitgauss,modeCalcul) == "0" } {
-      $private(fitgauss,frm).frame2.but_calculer configure -state normal
+   #--- Configure le bouton pour le rafraichissement
+   if { $conf(fitgauss,modeRefresh) == "0" } {
+      $private(fitgauss,frm).frame2.butRefresh configure -state normal
       #--- J'arrete le rafraichissement automatique des valeurs si on charge une image
-      ::confVisu::removeFileNameListener $visuNo "::calculFitgauss $visuNo"
+      ::confVisu::removeFileNameListener $visuNo "::refreshFitgauss $visuNo"
    } else {
-      $private(fitgauss,frm).frame2.but_calculer configure -state disabled
+      $private(fitgauss,frm).frame2.butRefresh configure -state disabled
       #--- Je declare le rafraichissement automatique des valeurs si on charge une image
-      ::confVisu::addFileNameListener $visuNo "::calculFitgauss $visuNo"
+      ::confVisu::addFileNameListener $visuNo "::refreshFitgauss $visuNo"
    }
 }
 
@@ -635,15 +635,15 @@ proc center { visuNo } {
       ferme_fenetre_analyse $visuNo $frm center
    }
 
-   #---
+   #--- Capture de la fenetre d'analyse
    set private(center,box) [ ::confVisu::getBox $visuNo ]
    if { $private(center,box) == "" } {
       return
    }
 
    #--- Initialisation de la position de la fenetre
-   if { ! [ info exists conf(center,position) ] }   { set conf(center,position)   "+350+75" }
-   if { ! [ info exists conf(center,modeCalcul) ] } { set conf(center,modeCalcul) "0" }
+   if { ! [ info exists conf(center,position) ] }    { set conf(center,position)    "+350+75" }
+   if { ! [ info exists conf(center,modeRefresh) ] } { set conf(center,modeRefresh) "0" }
 
    #--- Creation de la fenetre
    toplevel $frm
@@ -667,22 +667,22 @@ proc center { visuNo } {
    #--- Creation d'une frame
    frame $frm.frame2 -borderwidth 2 -relief raised
 
-      #--- Cree le checkbutton pour choisir le mode de calcul
-      checkbutton $frm.frame2.choixCalcul -text "$caption(audace,calculAuto)" \
-         -variable conf(center,modeCalcul) -command "::confCenter $visuNo"
-      pack $frm.frame2.choixCalcul -anchor w -side top -padx 3 -pady 3
+      #--- Cree le checkbutton pour choisir le mode de rafraichissement
+      checkbutton $frm.frame2.modeRefresh -text "$caption(audace,refreshAuto)" \
+         -variable conf(center,modeRefresh) -command "::confCenter $visuNo"
+      pack $frm.frame2.modeRefresh -anchor w -side top -padx 3 -pady 3
 
-      #--- Cree le bouton pour recalculer le photocentre
-      button $frm.frame2.but_calculer -text "$caption(audace,calculManuel)" -width 7 \
-         -command "::calculCenter $visuNo"
-      pack $frm.frame2.but_calculer -side bottom -padx 3 -pady 3 -ipady 5 -fill x
+      #--- Cree le bouton pour rafraichir le photocentre
+      button $frm.frame2.butRefresh -text "$caption(audace,refreshManuel)" -width 7 \
+         -command "::refreshCenter $visuNo"
+      pack $frm.frame2.butRefresh -side bottom -padx 3 -pady 3 -ipady 5 -fill x
 
    pack $frm.frame2 -side top -fill both -expand 1
 
-   #--- Calcule les valeurs
-   ::calculCenter $visuNo
+   #--- Rafraichit les valeurs
+   ::refreshCenter $visuNo
 
-   #--- Configure la fenetre
+   #--- Rafraichit la fenetre
    ::confCenter $visuNo
 
    #--- La fenetre est active
@@ -696,14 +696,14 @@ proc center { visuNo } {
 }
 
 #
-# calculCenter
-# Calcule les valeurs de la fenetre
+# refreshCenter
+# Rafraichit les valeurs de la fenetre
 #
-proc calculCenter { visuNo args } {
+proc refreshCenter { visuNo args } {
    variable private
    global caption
 
-   #--- Capture de la fenetre de calcul
+   #--- Capture de la fenetre d'analyse
    set private(center,box) [ ::confVisu::getBox $visuNo ]
    if { $private(center,box) == "" } {
       return
@@ -721,21 +721,21 @@ proc calculCenter { visuNo args } {
 
 #
 # confCenter
-# Configure la fenetre
+# Rafraichit la fenetre
 #
 proc confCenter { visuNo args } {
    variable private
    global conf
 
-   #--- Configure le bouton Calculer
-   if { $conf(center,modeCalcul) == "0" } {
-      $private(center,frm).frame2.but_calculer configure -state normal
+   #--- Configure le bouton pour le rafraichissement
+   if { $conf(center,modeRefresh) == "0" } {
+      $private(center,frm).frame2.butRefresh configure -state normal
       #--- J'arrete le rafraichissement automatique des valeurs si on charge une image
-      ::confVisu::removeFileNameListener $visuNo "::calculCenter $visuNo"
+      ::confVisu::removeFileNameListener $visuNo "::refreshCenter $visuNo"
    } else {
-      $private(center,frm).frame2.but_calculer configure -state disabled
+      $private(center,frm).frame2.butRefresh configure -state disabled
       #--- Je declare le rafraichissement automatique des valeurs si on charge une image
-      ::confVisu::addFileNameListener $visuNo "::calculCenter $visuNo"
+      ::confVisu::addFileNameListener $visuNo "::refreshCenter $visuNo"
    }
 }
 
@@ -759,15 +759,15 @@ proc photom { visuNo } {
       ferme_fenetre_analyse $visuNo $frm photom
    }
 
-   #---
+   #--- Capture de la fenetre d'analyse
    set private(photom,box) [ ::confVisu::getBox $visuNo ]
    if { $private(photom,box) == "" } {
       return
    }
 
    #--- Initialisation de la position de la fenetre
-   if { ! [ info exists conf(photom,position) ] }   { set conf(photom,position)   "+350+75" }
-   if { ! [ info exists conf(photom,modeCalcul) ] } { set conf(photom,modeCalcul) "0" }
+   if { ! [ info exists conf(photom,position) ] }    { set conf(photom,position)    "+350+75" }
+   if { ! [ info exists conf(photom,modeRefresh) ] } { set conf(photom,modeRefresh) "0" }
 
    #--- Creation de la fenetre
    toplevel $frm
@@ -791,22 +791,22 @@ proc photom { visuNo } {
    #--- Creation d'une frame
    frame $frm.frame2 -borderwidth 2 -relief raised
 
-      #--- Cree le checkbutton pour choisir le mode de calcul
-      checkbutton $frm.frame2.choixCalcul -text "$caption(audace,calculAuto)" \
-         -variable conf(photom,modeCalcul) -command "::confPhotom $visuNo"
-      pack $frm.frame2.choixCalcul -anchor w -side top -padx 3 -pady 3
+      #--- Cree le checkbutton pour choisir le mode de rafraichissement
+      checkbutton $frm.frame2.modeRefresh -text "$caption(audace,refreshAuto)" \
+         -variable conf(photom,modeRefresh) -command "::confPhotom $visuNo"
+      pack $frm.frame2.modeRefresh -anchor w -side top -padx 3 -pady 3
 
-      #--- Cree le bouton pour recalculer la photometrie integrale
-      button $frm.frame2.but_calculer -text "$caption(audace,calculManuel)" -width 7 \
-         -command "::calculPhotom $visuNo"
-      pack $frm.frame2.but_calculer -side bottom -padx 3 -pady 3 -ipady 5 -fill x
+      #--- Cree le bouton pour rafraichir la photometrie integrale
+      button $frm.frame2.butRefresh -text "$caption(audace,refreshManuel)" -width 7 \
+         -command "::refreshPhotom $visuNo"
+      pack $frm.frame2.butRefresh -side bottom -padx 3 -pady 3 -ipady 5 -fill x
 
    pack $frm.frame2 -side top -fill both -expand 1
 
-   #--- Calcule les valeurs
-   ::calculPhotom $visuNo
+   #--- Rafraichit les valeurs
+   ::refreshPhotom $visuNo
 
-   #--- Configure la fenetre
+   #--- Rafraichit la fenetre
    ::confPhotom $visuNo
 
    #--- La fenetre est active
@@ -820,14 +820,14 @@ proc photom { visuNo } {
 }
 
 #
-# calculPhotom
-# Calcule les valeurs de la fenetre
+# refreshPhotom
+# Rafraichit les valeurs de la fenetre
 #
-proc calculPhotom { visuNo args } {
+proc refreshPhotom { visuNo args } {
    variable private
    global caption
 
-   #--- Capture de la fenetre de calcul
+   #--- Capture de la fenetre d'analyse
    set private(photom,box) [ ::confVisu::getBox $visuNo ]
    if { $private(photom,box) == "" } {
       return
@@ -845,21 +845,21 @@ proc calculPhotom { visuNo args } {
 
 #
 # confPhotom
-# Configure la fenetre
+# Rafraichit la fenetre
 #
 proc confPhotom { visuNo args } {
    variable private
    global conf
 
-   #--- Configure le bouton Calculer
-   if { $conf(photom,modeCalcul) == "0" } {
-      $private(photom,frm).frame2.but_calculer configure -state normal
+   #--- Configure le bouton pour le rafraichissement
+   if { $conf(photom,modeRefresh) == "0" } {
+      $private(photom,frm).frame2.butRefresh configure -state normal
       #--- J'arrete le rafraichissement automatique des valeurs si on charge une image
-      ::confVisu::removeFileNameListener $visuNo "::calculPhotom $visuNo"
+      ::confVisu::removeFileNameListener $visuNo "::refreshPhotom $visuNo"
    } else {
-      $private(photom,frm).frame2.but_calculer configure -state disabled
+      $private(photom,frm).frame2.butRefresh configure -state disabled
       #--- Je declare le rafraichissement automatique des valeurs si on charge une image
-      ::confVisu::addFileNameListener $visuNo "::calculPhotom $visuNo"
+      ::confVisu::addFileNameListener $visuNo "::refreshPhotom $visuNo"
    }
 }
 
@@ -867,15 +867,15 @@ proc confPhotom { visuNo args } {
 
 #
 # subfitgauss visuNo
-# Ajuste et soustrait une gaussinne dans une fenetre d'une image
+# Ajuste et soustrait une gaussienne dans la fenetre d'une image
 #
 proc subfitgauss { visuNo } {
-   #---
+   #--- Capture de la fenetre d'analyse
    set box [ ::confVisu::getBox $visuNo ]
    if { $box == "" } {
       return
    }
-   #---
+   #--- Lecture des parametres dans la fenetre
    set valeurs [ buf[ ::confVisu::getBufNo $visuNo ] fitgauss $box -sub ]
    ::confVisu::autovisu $visuNo
 }
@@ -887,12 +887,12 @@ proc subfitgauss { visuNo } {
 # Cicatrise l'interieur d'une fenetre d'une image
 #
 proc scar { visuNo } {
-   #---
+   #--- Capture de la fenetre d'analyse
    set box [ ::confVisu::getBox $visuNo ]
    if { $box == "" } {
       return
    }
-   #---
+   #--- Lecture des parametres dans la fenetre
    set valeurs [ buf[::confVisu::getBufNo $visuNo] scar $box ]
    ::confVisu::autovisu $visuNo
 }
@@ -909,17 +909,18 @@ proc ferme_fenetre_analyse { visuNo frm nom_conf } {
    global conf
 
    #--- J'arrete le rafraichissement automatique des valeurs si on charge une image
-   ::confVisu::removeFileNameListener $visuNo "::calculStatwin $visuNo"
-   ::confVisu::removeFileNameListener $visuNo "::calculFwhm $visuNo"
-   ::confVisu::removeFileNameListener $visuNo "::calculFitgauss $visuNo"
-   ::confVisu::removeFileNameListener $visuNo "::calculCenter $visuNo"
-   ::confVisu::removeFileNameListener $visuNo "::calculPhotom $visuNo"
+   ::confVisu::removeFileNameListener $visuNo "::refreshStatwin $visuNo"
+   ::confVisu::removeFileNameListener $visuNo "::refreshFwhm $visuNo"
+   ::confVisu::removeFileNameListener $visuNo "::refreshFitgauss $visuNo"
+   ::confVisu::removeFileNameListener $visuNo "::refreshCenter $visuNo"
+   ::confVisu::removeFileNameListener $visuNo "::refreshPhotom $visuNo"
 
    #--- Determination de la position de la fenetre
    set geometry [ wm geometry $frm ]
    set deb [ expr 1 + [ string first + $geometry ] ]
    set fin [ string length $geometry ]
    set conf($nom_conf,position) "+[ string range $geometry $deb $fin ]"
+
    #--- Fermeture de la fenetre
    destroy $frm
 }
