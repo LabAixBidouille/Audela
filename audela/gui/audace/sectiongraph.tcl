@@ -2,7 +2,7 @@
 # Fichier : sectiongraph.tcl
 # Description : Affiche une coupe de l'image
 # Auteur : Michel PUJOL
-# Mise a jour $Id: sectiongraph.tcl,v 1.9 2009-06-02 17:47:52 robertdelmas Exp $
+# Mise a jour $Id: sectiongraph.tcl,v 1.10 2009-06-11 20:56:55 robertdelmas Exp $
 #
 
 namespace eval ::sectiongraph {
@@ -15,10 +15,15 @@ namespace eval ::sectiongraph {
 #------------------------------------------------------------
 proc ::sectiongraph::init { visuNo } {
    variable private
+   global caption conf
 
    if { [ buf[::confVisu::getBufNo $visuNo] imageready] == "0" } {
       return
    }
+
+   #--- Initialisation de variables
+   if { ! [ info exists conf(sectiongraph,position) ] }    { set conf(sectiongraph,position)    "+350+75" }
+   if { ! [ info exists conf(sectiongraph,modeRefresh) ] } { set conf(sectiongraph,modeRefresh) "0" }
 
    #--- je verifie si la variable existe
    if { [info exists private($visuNo,This)] } {
@@ -42,12 +47,63 @@ proc ::sectiongraph::init { visuNo } {
    set x2 [expr [lindex $canvasCenter 0 ] + 20 ]
    set y [lindex $canvasCenter 1 ]
    set private($visuNo,itemNo) [::polydraw::createLine $visuNo [list $x1 $y $x2 $y ] ]
-   #--- j'active le rafraichissement automatique sur deplacement de la ligne de coupe
-   ::polydraw::addMoveItemListener $visuNo $private($visuNo,itemNo) "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
-   #--- je declare le rafraichissement automatique au changement d'image
-   ::confVisu::addFileNameListener $visuNo "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
-   #--- je rafraichis le graphe
+
+   #--- Creation d'une frame
+   frame $private($visuNo,This).frame1 -borderwidth 2 -relief raised
+
+      #--- Cree le checkbutton pour choisir le mode de rafraichissement
+      checkbutton $private($visuNo,This).frame1.modeRefresh -text "$caption(sectiongraph,refreshAuto)" \
+         -variable conf(sectiongraph,modeRefresh) -command "::sectiongraph::confSectionGraph $visuNo"
+      pack $private($visuNo,This).frame1.modeRefresh -anchor w -side top -padx 3 -pady 3
+
+      #--- Cree le bouton pour rafraichir la coupe
+      button $private($visuNo,This).frame1.butRefresh -text "$caption(sectiongraph,refreshManuel)" \
+         -width 7 -command "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
+      pack $private($visuNo,This).frame1.butRefresh -side top -padx 3 -pady 3 -ipady 5 -fill x
+
+   pack $private($visuNo,This).frame1 -side top -fill both -expand 1
+
+   #--- Rafraichir le graphe
    ::sectiongraph::refresh $visuNo $private($visuNo,itemNo)
+
+   #--- Rafraichir la fenetre
+   ::sectiongraph::confSectionGraph $visuNo
+
+   #--- La fenetre est active
+   focus $private($visuNo,This)
+
+   #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+   bind $private($visuNo,This) <Key-F1> { ::console::GiveFocus }
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $private($visuNo,This)
+}
+
+#------------------------------------------------------------
+#  confSectionGraph
+#     rafraichit la fenetre
+#  parametres
+#     visuNo : numero de visu
+#     args   : valeurs fournies par le gestionnaire de listener
+#  return : null
+#------------------------------------------------------------
+proc ::sectiongraph::confSectionGraph { visuNo args } {
+   variable private
+   global conf
+
+   #--- Configure le bouton pour le rafraichissement
+   if { $conf(sectiongraph,modeRefresh) == "0" } {
+      $private($visuNo,This).frame1.butRefresh configure -state normal
+      #--- J'arrete le rafraichissement automatique
+      ::confVisu::removeFileNameListener $visuNo "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
+      ::polydraw::removeMoveItemListener $visuNo $private($visuNo,itemNo) "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
+   } else {
+      $private($visuNo,This).frame1.butRefresh configure -state disabled
+      #--- j'active le rafraichissement automatique sur deplacement de la ligne de coupe
+      ::polydraw::addMoveItemListener $visuNo $private($visuNo,itemNo) "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
+      #--- je declare le rafraichissement automatique au changement d'image
+      ::confVisu::addFileNameListener $visuNo "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
+   }
 }
 
 #------------------------------------------------------------
@@ -55,7 +111,7 @@ proc ::sectiongraph::init { visuNo } {
 #     mise a jour du graphe
 #  parametres
 #     visuNo : numero de visu
-#     args   : valeur fournies par le gestionnaire de listener
+#     args   : valeurs fournies par le gestionnaire de listener
 #  return : null
 #------------------------------------------------------------
 proc ::sectiongraph::refresh { visuNo itemNo args } {
@@ -162,7 +218,7 @@ proc ::sectiongraph::refresh { visuNo itemNo args } {
 #------------------------------------------------------------
 proc ::sectiongraph::createToplevel { visuNo } {
    variable private
-   global caption
+   global caption conf
 
    set base [ ::confVisu::getBase $visuNo ]
    set This "$base.sectiongraph"
@@ -183,7 +239,7 @@ proc ::sectiongraph::createToplevel { visuNo } {
    wm transient $This $base
    wm resizable $This 0 0
    wm title $This "$caption(sectiongraph,title) (visu$visuNo)"
-   wm geometry $This "+350+75"
+   wm geometry $This $conf(sectiongraph,position)
    wm protocol $This WM_DELETE_WINDOW "::sectiongraph::closeToplevel $visuNo"
 
    #--- Horizontal Graph
@@ -192,8 +248,8 @@ proc ::sectiongraph::createToplevel { visuNo } {
             -width $width -height $height \
             -takefocus 0 \
             -bd 0 -relief flat \
-            -rightmargin 2 -leftmargin 60 \
-            -topmargin 2 -bottommargin 25 \
+            -rightmargin 1 -leftmargin 60 \
+            -topmargin 1 -bottommargin 25 \
             -background black \
             -plotborderwidth 2 -plotrelief groove \
             -plotpadx 0 -plotpady 0 \
@@ -235,15 +291,18 @@ proc ::sectiongraph::createToplevel { visuNo } {
 #------------------------------------------------------------
 proc ::sectiongraph::closeToplevel { visuNo } {
    variable private
+   global conf
 
-   #--- je supprime les listener
    if { [info exists private($visuNo,itemNo)] } {
-      ::confVisu::removeFileNameListener $visuNo "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
-      ::polydraw::removeMoveItemListener $visuNo $private($visuNo,itemNo) "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
-
       ::polydraw::deleteItem $visuNo $private($visuNo,itemNo)
       ::polydraw::close $visuNo
       blt::vector destroy sectiongraphX$visuNo sectiongraphYR$visuNo sectiongraphYG$visuNo sectiongraphYB$visuNo
+
+      #--- je determine la position de la fenetre
+      set geometry [ wm geometry $private($visuNo,This) ]
+      set deb [ expr 1 + [ string first + $geometry ] ]
+      set fin [ string length $geometry ]
+      set conf(sectiongraph,position) "+[ string range $geometry $deb $fin ]"
 
       #--- je supprime la fenetre
       destroy $private($visuNo,This)
