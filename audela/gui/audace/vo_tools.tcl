@@ -2,7 +2,7 @@
 # Fichier : vo_tools.tcl
 # Description : Outils pour l'Observatoire Virtuel
 # Auteur : Alain KLOTZ et Jerome BERTHIER
-# Mise a jour $Id: vo_tools.tcl,v 1.20 2008-12-23 13:26:06 jberthier Exp $
+# Mise a jour $Id: vo_tools.tcl,v 1.21 2009-06-12 21:46:19 robertdelmas Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -86,7 +86,7 @@ proc vo_aladin { args } {
          }
       }
       #
-      set fnameajs [file join $audace(rep_scripts) ${ftail}.ajs]
+      set fnameajs [file join $audace(rep_images) ${ftail}.ajs]
       set f [open "$fnameajs" w]
       puts -nonewline $f $texte
       close $f
@@ -135,7 +135,7 @@ proc vo_aladin { args } {
          }
       }
       #
-      set fnameajs [file join $audace(rep_scripts) ${ftail}.ajs]
+      set fnameajs [file join $audace(rep_images) ${ftail}.ajs]
       set f [open "$fnameajs" w]
       puts -nonewline $f $texte
       close $f
@@ -349,7 +349,7 @@ proc vo_skybotconesearch { args } {
       # recuperation des resultats
       set flag [lindex $response 1]
       set result [lindex $response 5]
-               
+
       # retour du resultat et gestion des cas d'erreur
       if { $erreur == "0" && $flag >= 1 } {
          return $result
