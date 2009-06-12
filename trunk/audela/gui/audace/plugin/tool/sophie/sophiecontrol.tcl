@@ -2,7 +2,7 @@
 # Fichier : sophiecontrol.tcl
 # Description : Fenetre de controle pour le centrage, la focalisation et le guidage
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecontrol.tcl,v 1.15 2009-06-10 18:34:16 michelpujol Exp $
+# Mise a jour $Id: sophiecontrol.tcl,v 1.16 2009-06-12 17:31:56 robertdelmas Exp $
 #
 
 #============================================================
@@ -55,7 +55,7 @@ proc ::sophie::control::run { visuNo tkbase } {
    set private(listMaxIntensity)                ""
 
    #--- vecteur des abcisses
-  if { [::blt::vector names ::sophieAbcisse ] == "" } {
+   if { [::blt::vector names ::sophieAbcisse ] == "" } {
       ::blt::vector create ::sophieAbcisse
       ###::sophieAbcisse length $private(vectorLength)
       ::sophieAbcisse seq 1 $private(vectorLength)
@@ -372,13 +372,13 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -in [ $frm.positionGuidage getframe ] \
          -row 2 -column 1 -sticky ew
 
-       #--- Position consigne
+      #--- Position consigne
       label $frm.positionGuidage.labelConsigne -text $::caption(sophie,positionConsigne)
       grid $frm.positionGuidage.labelConsigne \
          -in [ $frm.positionGuidage getframe ] \
          -row 0 -column 2 -columnspan 2 -sticky ew
 
-       #--- Position consigne X
+      #--- Position consigne X
       label $frm.positionGuidage.labelPositionConsigneX -text $::caption(sophie,x)
       grid $frm.positionGuidage.labelPositionConsigneX \
          -in [ $frm.positionGuidage getframe ] \
@@ -404,13 +404,13 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -in [ $frm.positionGuidage getframe ] \
          -row 2 -column 3 -sticky ew
 
-       #--- Ecart etoile
+      #--- Ecart etoile
       label $frm.positionGuidage.labelEcartEtoile -text $::caption(sophie,ecartEtoile)
       grid $frm.positionGuidage.labelEcartEtoile \
          -in [ $frm.positionGuidage getframe ] \
          -row 0 -column 4 -columnspan 2 -sticky ew
 
-       #--- Ecart etoile X
+      #--- Ecart etoile X
       label $frm.positionGuidage.labelEcartEtoileX -text $::caption(sophie,dx)
       grid $frm.positionGuidage.labelEcartEtoileX \
          -in [ $frm.positionGuidage getframe ] \
@@ -436,13 +436,13 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -in [ $frm.positionGuidage getframe ] \
          -row 2 -column 5 -sticky ew
 
-       #--- Correction
+      #--- Correction
       label $frm.positionGuidage.labelCorrection -text $::caption(sophie,correction)
       grid $frm.positionGuidage.labelCorrection \
          -in [ $frm.positionGuidage getframe ] \
          -row 0 -column 6 -columnspan 2 -sticky ew
 
-       #--- Correction alpha
+      #--- Correction alpha
       label $frm.positionGuidage.labelCorrectionAlpha -text $::caption(sophie,alpha)
       grid $frm.positionGuidage.labelCorrectionAlpha \
          -in [ $frm.positionGuidage getframe ] \
@@ -663,7 +663,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             createGraph $frm.guidage.positionconsigne.correction.ecartConsigne_simple 120
             $frm.guidage.positionconsigne.correction.ecartConsigne_simple element create ecartConsigneX \
                -xdata ::sophieAbcisse -ydata ::sophieEcartConsigneX -mapy y \
-               -color  blue -dash "2" -linewidth 3 \
+               -color blue -dash "2" -linewidth 3 \
                -symbol none -label $::caption(sophie,dx)
             $frm.guidage.positionconsigne.correction.ecartConsigne_simple element create ecartConsigneY \
                -xdata ::sophieAbcisse -ydata ::sophieEcartConsigneY -mapy y \
@@ -832,51 +832,51 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
       TitleFrame $frm.guidage.erreurs -borderwidth 2 -relief ridge \
          -text $::caption(sophie,erreursAlphaDelta)
 
-            ####--- Label de la correction en alpha
-            ###label $frm.guidage.erreurs.labelAlpha -text $::caption(sophie,erreurAlpha)
-            ###grid $frm.guidage.erreurs.labelAlpha \
-            ###   -in [ $frm.guidage.erreurs getframe ] \
-            ###   -row 0 -column 1 -sticky w -padx 5 -pady 3
+         ####--- Label de la correction en alpha
+         ###label $frm.guidage.erreurs.labelAlpha -text $::caption(sophie,erreurAlpha)
+         ###grid $frm.guidage.erreurs.labelAlpha \
+         ###   -in [ $frm.guidage.erreurs getframe ] \
+         ###   -row 0 -column 1 -sticky w -padx 5 -pady 3
 
-            #--- Graphe de la erreur en alpha et delta
-            createGraph $frm.guidage.erreurs.alpha_simple 120
-            $frm.guidage.erreurs.alpha_simple configure -title $::caption(sophie,erreur)
-            $frm.guidage.erreurs.alpha_simple element create alphaDiff \
-               -xdata ::sophieAbcisse -ydata ::sophieEcartEtoileX -mapy y \
-               -color  blue -dash "2" -linewidth 3 \
-              -symbol none -label $::caption(sophie,alpha)
-            $frm.guidage.erreurs.alpha_simple element create deltaDiff \
-               -xdata ::sophieAbcisse -ydata ::sophieEcartEtoileY -mapy y \
-               -color orange -dash "" -linewidth 3 \
-               -symbol none -label $::caption(sophie,delta)
-            $frm.guidage.erreurs.alpha_simple legend configure -hide yes
+         #--- Graphe de la erreur en alpha et delta
+         createGraph $frm.guidage.erreurs.alpha_simple 120
+         $frm.guidage.erreurs.alpha_simple configure -title $::caption(sophie,erreur)
+         $frm.guidage.erreurs.alpha_simple element create alphaDiff \
+            -xdata ::sophieAbcisse -ydata ::sophieEcartEtoileX -mapy y \
+            -color blue -dash "2" -linewidth 3 \
+           -symbol none -label $::caption(sophie,alpha)
+         $frm.guidage.erreurs.alpha_simple element create deltaDiff \
+            -xdata ::sophieAbcisse -ydata ::sophieEcartEtoileY -mapy y \
+            -color orange -dash "" -linewidth 3 \
+            -symbol none -label $::caption(sophie,delta)
+         $frm.guidage.erreurs.alpha_simple legend configure -hide yes
 
-            grid $frm.guidage.erreurs.alpha_simple \
-               -in [ $frm.guidage.erreurs getframe ] \
-               -row 0 -column 1 -sticky nsew
+         grid $frm.guidage.erreurs.alpha_simple \
+            -in [ $frm.guidage.erreurs getframe ] \
+            -row 0 -column 1 -sticky nsew
 
-            ####--- Label de la correction en delta
-            ###label $frm.guidage.erreurs.labelDelta -text $::caption(sophie,erreurDelta)
-            ###grid $frm.guidage.erreurs.labelDelta \
-            ###   -in [ $frm.guidage.erreurs getframe ] \
-            ###   -row 1 -column 1 -sticky w -padx 5 -pady 3
+         ####--- Label de la correction en delta
+         ###label $frm.guidage.erreurs.labelDelta -text $::caption(sophie,erreurDelta)
+         ###grid $frm.guidage.erreurs.labelDelta \
+         ###   -in [ $frm.guidage.erreurs getframe ] \
+         ###   -row 1 -column 1 -sticky w -padx 5 -pady 3
 
-            #--- Graphe de la correction en delta
-            createGraph $frm.guidage.erreurs.delta_simple 140
-            $frm.guidage.erreurs.delta_simple configure -title $::caption(sophie,correction)
-            $frm.guidage.erreurs.delta_simple element create alphaCorrection \
-               -xdata ::sophieAbcisse -ydata ::sophieCorrectionAlpha -mapy y \
-               -color  blue -dash "2" -linewidth 3 \
-               -symbol none -label $::caption(sophie,alpha)
-            $frm.guidage.erreurs.delta_simple element create deltaCorrection \
-               -xdata ::sophieAbcisse -ydata ::sophieCorrectionDelta -mapy y \
-               -color orange -dash "" -linewidth 3 \
-               -symbol none -label $::caption(sophie,delta)
-            $frm.guidage.erreurs.delta_simple legend configure -position bottom
+         #--- Graphe de la correction en delta
+         createGraph $frm.guidage.erreurs.delta_simple 140
+         $frm.guidage.erreurs.delta_simple configure -title $::caption(sophie,correction)
+         $frm.guidage.erreurs.delta_simple element create alphaCorrection \
+            -xdata ::sophieAbcisse -ydata ::sophieCorrectionAlpha -mapy y \
+            -color blue -dash "2" -linewidth 3 \
+            -symbol none -label $::caption(sophie,alpha)
+         $frm.guidage.erreurs.delta_simple element create deltaCorrection \
+            -xdata ::sophieAbcisse -ydata ::sophieCorrectionDelta -mapy y \
+            -color orange -dash "" -linewidth 3 \
+            -symbol none -label $::caption(sophie,delta)
+         $frm.guidage.erreurs.delta_simple legend configure -position bottom
 
-            grid $frm.guidage.erreurs.delta_simple \
-               -in [ $frm.guidage.erreurs getframe ] \
-               -row 1 -column 1 -sticky nsew
+         grid $frm.guidage.erreurs.delta_simple \
+            -in [ $frm.guidage.erreurs getframe ] \
+            -row 1 -column 1 -sticky nsew
 
          grid columnconfig [ $frm.guidage.erreurs getframe ] 0 -weight 0
          grid columnconfig [ $frm.guidage.erreurs getframe ] 1 -weight 1
