@@ -2,7 +2,7 @@
 # Fichier : sectiongraph.tcl
 # Description : Affiche une coupe de l'image
 # Auteur : Michel PUJOL
-# Mise a jour $Id: sectiongraph.tcl,v 1.10 2009-06-11 20:56:55 robertdelmas Exp $
+# Mise a jour $Id: sectiongraph.tcl,v 1.11 2009-06-12 17:32:55 robertdelmas Exp $
 #
 
 namespace eval ::sectiongraph {
@@ -15,7 +15,7 @@ namespace eval ::sectiongraph {
 #------------------------------------------------------------
 proc ::sectiongraph::init { visuNo } {
    variable private
-   global caption conf
+   global conf
 
    if { [ buf[::confVisu::getBufNo $visuNo] imageready] == "0" } {
       return
@@ -39,44 +39,14 @@ proc ::sectiongraph::init { visuNo } {
    #--- j'interdis l'ajout d'item et de nodes avec la souris
    ::polydraw::setMouseAddItem $visuNo "0"
    ::polydraw::setMouseAddNode $visuNo "0"
-   #--- je cree la fenetre contenant le graphe
-   ::sectiongraph::createToplevel $visuNo
    #--- je dessine la ligne de coupe au centre du canvas
    set canvasCenter [::confVisu::getCanvasCenter $visuNo ]
    set x1 [expr [lindex $canvasCenter 0 ] - 20 ]
    set x2 [expr [lindex $canvasCenter 0 ] + 20 ]
    set y [lindex $canvasCenter 1 ]
    set private($visuNo,itemNo) [::polydraw::createLine $visuNo [list $x1 $y $x2 $y ] ]
-
-   #--- Creation d'une frame
-   frame $private($visuNo,This).frame1 -borderwidth 2 -relief raised
-
-      #--- Cree le checkbutton pour choisir le mode de rafraichissement
-      checkbutton $private($visuNo,This).frame1.modeRefresh -text "$caption(sectiongraph,refreshAuto)" \
-         -variable conf(sectiongraph,modeRefresh) -command "::sectiongraph::confSectionGraph $visuNo"
-      pack $private($visuNo,This).frame1.modeRefresh -anchor w -side top -padx 3 -pady 3
-
-      #--- Cree le bouton pour rafraichir la coupe
-      button $private($visuNo,This).frame1.butRefresh -text "$caption(sectiongraph,refreshManuel)" \
-         -width 7 -command "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
-      pack $private($visuNo,This).frame1.butRefresh -side top -padx 3 -pady 3 -ipady 5 -fill x
-
-   pack $private($visuNo,This).frame1 -side top -fill both -expand 1
-
-   #--- Rafraichir le graphe
-   ::sectiongraph::refresh $visuNo $private($visuNo,itemNo)
-
-   #--- Rafraichir la fenetre
-   ::sectiongraph::confSectionGraph $visuNo
-
-   #--- La fenetre est active
-   focus $private($visuNo,This)
-
-   #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-   bind $private($visuNo,This) <Key-F1> { ::console::GiveFocus }
-
-   #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $private($visuNo,This)
+   #--- je cree la fenetre contenant le graphe
+   ::sectiongraph::createToplevel $visuNo
 }
 
 #------------------------------------------------------------
@@ -93,12 +63,12 @@ proc ::sectiongraph::confSectionGraph { visuNo args } {
 
    #--- Configure le bouton pour le rafraichissement
    if { $conf(sectiongraph,modeRefresh) == "0" } {
-      $private($visuNo,This).frame1.butRefresh configure -state normal
+      $private($visuNo,This).frame2.butRefresh configure -state normal
       #--- J'arrete le rafraichissement automatique
       ::confVisu::removeFileNameListener $visuNo "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
       ::polydraw::removeMoveItemListener $visuNo $private($visuNo,itemNo) "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
    } else {
-      $private($visuNo,This).frame1.butRefresh configure -state disabled
+      $private($visuNo,This).frame2.butRefresh configure -state disabled
       #--- j'active le rafraichissement automatique sur deplacement de la ligne de coupe
       ::polydraw::addMoveItemListener $visuNo $private($visuNo,itemNo) "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
       #--- je declare le rafraichissement automatique au changement d'image
@@ -242,6 +212,10 @@ proc ::sectiongraph::createToplevel { visuNo } {
    wm geometry $This $conf(sectiongraph,position)
    wm protocol $This WM_DELETE_WINDOW "::sectiongraph::closeToplevel $visuNo"
 
+   #--- Creation d'une frame
+   frame $private($visuNo,This).frame1 -borderwidth 2 -relief raised
+   pack $private($visuNo,This).frame1 -side top -fill both -expand 1
+
    #--- Horizontal Graph
    set private($visuNo,graph,horz) [blt::graph $This.horz \
             -title "" \
@@ -277,10 +251,37 @@ proc ::sectiongraph::createToplevel { visuNo } {
    $private($visuNo,graph,horz) crosshairs configure -color green
    $private($visuNo,graph,horz) element configure lineR -hide no
 
-   pack $private($visuNo,graph,horz)
+   pack $private($visuNo,graph,horz) -in $private($visuNo,This).frame1
+
+   #--- Creation d'une frame
+   frame $private($visuNo,This).frame2 -borderwidth 2 -relief raised
+
+      #--- Cree le checkbutton pour choisir le mode de rafraichissement
+      checkbutton $private($visuNo,This).frame2.modeRefresh -text "$caption(sectiongraph,refreshAuto)" \
+         -variable conf(sectiongraph,modeRefresh) -command "::sectiongraph::confSectionGraph $visuNo"
+      pack $private($visuNo,This).frame2.modeRefresh -anchor w -side top -padx 3 -pady 3
+
+      #--- Cree le bouton pour rafraichir la coupe
+      button $private($visuNo,This).frame2.butRefresh -text "$caption(sectiongraph,refreshManuel)" \
+         -command "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
+      pack $private($visuNo,This).frame2.butRefresh -side top -padx 6 -pady 10 -ipadx 20 -ipady 6
+
+   pack $private($visuNo,This).frame2 -side top -fill both -expand 1
+
+   #--- Rafraichir le graphe
+   ::sectiongraph::refresh $visuNo $private($visuNo,itemNo)
+
+   #--- Rafraichir la fenetre
+   ::sectiongraph::confSectionGraph $visuNo
+
+   #--- La fenetre est active
+   focus $private($visuNo,This)
 
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-   bind $This <Key-F1> { ::console::GiveFocus }
+   bind $private($visuNo,This) <Key-F1> { ::console::GiveFocus }
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $private($visuNo,This)
 }
 
 #------------------------------------------------------------

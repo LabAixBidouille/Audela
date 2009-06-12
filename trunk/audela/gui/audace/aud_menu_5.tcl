@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_5.tcl
 # Description : Script regroupant les fonctionnalites du menu Analyse
-# Mise a jour $Id: aud_menu_5.tcl,v 1.9 2009-06-11 20:53:56 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_5.tcl,v 1.10 2009-06-12 17:32:39 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -96,9 +96,9 @@ proc statwin { visuNo } {
       pack $frm.frame2.modeRefresh -anchor w -side top -padx 3 -pady 3
 
       #--- Cree le bouton pour rafraichir les statistiques
-      button $frm.frame2.butRefresh -text "$caption(audace,refreshManuel)" -width 7 \
+      button $frm.frame2.butRefresh -text "$caption(audace,refreshManuel)" \
          -command "::refreshStatwin $visuNo"
-      pack $frm.frame2.butRefresh -side top -padx 3 -pady 3 -ipady 5 -fill x
+      pack $frm.frame2.butRefresh -side top -padx 6 -pady 10 -ipadx 20 -ipady 6
 
    pack $frm.frame2 -side top -fill both -expand 1
 
@@ -232,9 +232,9 @@ proc fwhm { visuNo } {
       pack $frm.frame2.modeRefresh -anchor w -side top -padx 3 -pady 3
 
       #--- Cree le bouton pour rafraichir les fwhm
-      button $frm.frame2.butRefresh -text "$caption(audace,refreshManuel)" -width 7 \
+      button $frm.frame2.butRefresh -text "$caption(audace,refreshManuel)" \
          -command "::refreshFwhm $visuNo"
-      pack $frm.frame2.butRefresh -side bottom -padx 3 -pady 3 -ipady 5 -fill x
+      pack $frm.frame2.butRefresh -side top -padx 6 -pady 10 -ipadx 20 -ipady 6
 
    pack $frm.frame2 -side top -fill both -expand 1
 
@@ -373,9 +373,9 @@ proc fitgauss { visuNo } {
       pack $frm.frame2.modeRefresh -anchor w -side top -padx 3 -pady 3
 
       #--- Cree le bouton pour rafraichir l'ajustement de la gaussienne
-      button $frm.frame2.butRefresh -text "$caption(audace,refreshManuel)" -width 7 \
+      button $frm.frame2.butRefresh -text "$caption(audace,refreshManuel)" \
          -command "::refreshFitgauss $visuNo"
-      pack $frm.frame2.butRefresh -side bottom -padx 3 -pady 3 -ipady 5 -fill x
+      pack $frm.frame2.butRefresh -side top -padx 6 -pady 10 -ipadx 20 -ipady 6
 
    pack $frm.frame2 -side top -fill both -expand 1
 
@@ -673,9 +673,9 @@ proc center { visuNo } {
       pack $frm.frame2.modeRefresh -anchor w -side top -padx 3 -pady 3
 
       #--- Cree le bouton pour rafraichir le photocentre
-      button $frm.frame2.butRefresh -text "$caption(audace,refreshManuel)" -width 7 \
+      button $frm.frame2.butRefresh -text "$caption(audace,refreshManuel)" \
          -command "::refreshCenter $visuNo"
-      pack $frm.frame2.butRefresh -side bottom -padx 3 -pady 3 -ipady 5 -fill x
+      pack $frm.frame2.butRefresh -side top -padx 6 -pady 10 -ipadx 20 -ipady 6
 
    pack $frm.frame2 -side top -fill both -expand 1
 
@@ -797,9 +797,9 @@ proc photom { visuNo } {
       pack $frm.frame2.modeRefresh -anchor w -side top -padx 3 -pady 3
 
       #--- Cree le bouton pour rafraichir la photometrie integrale
-      button $frm.frame2.butRefresh -text "$caption(audace,refreshManuel)" -width 7 \
+      button $frm.frame2.butRefresh -text "$caption(audace,refreshManuel)" \
          -command "::refreshPhotom $visuNo"
-      pack $frm.frame2.butRefresh -side bottom -padx 3 -pady 3 -ipady 5 -fill x
+      pack $frm.frame2.butRefresh -side top -padx 6 -pady 10 -ipadx 20 -ipady 6
 
    pack $frm.frame2 -side top -fill both -expand 1
 
