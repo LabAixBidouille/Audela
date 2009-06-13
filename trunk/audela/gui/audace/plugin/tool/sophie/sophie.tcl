@@ -2,7 +2,7 @@
 # Fichier : sophie.tcl
 # Description : Outil d'autoguidage pour le spectro Sophie du telescope T193 de l'OHP
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophie.tcl,v 1.14 2009-06-10 18:34:16 michelpujol Exp $
+# Mise a jour $Id: sophie.tcl,v 1.15 2009-06-13 23:59:16 michelpujol Exp $
 #
 
 #============================================================
@@ -92,6 +92,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    source [ file join $::audace(rep_plugin) tool sophie sophiecommand.tcl ]
    source [ file join $::audace(rep_plugin) tool sophie sophieconfig.tcl ]
    source [ file join $::audace(rep_plugin) tool sophie sophiecontrol.tcl ]
+   source [ file join $::audace(rep_plugin) tool sophie sophiespectro.tcl ]
    source [ file join $::audace(rep_plugin) tool sophie sophieview.tcl ]
    source [ file join $::audace(rep_plugin) tool sophie sophietest.tcl ] ; #--- a supprimer quand on aura fait les premiers tests
 
@@ -129,8 +130,10 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(sophie,guidingFileNameprefix)] }     { set ::conf(sophie,guidingFileNameprefix)     "guidage" }
    if { ! [ info exists ::conf(sophie,maskRadius)] }                { set ::conf(sophie,maskRadius)                20 }
    if { ! [ info exists ::conf(sophie,maskFwhm)] }                  { set ::conf(sophie,maskFwhm)                  5 }
-   if { ! [ info exists ::conf(sophie,maskPercent)] }               { set ::conf(sophie,maskPercent)              0.15 }
+   if { ! [ info exists ::conf(sophie,maskPercent)] }               { set ::conf(sophie,maskPercent)               0.15 }
    if { ! [ info exists ::conf(sophie,pixelMinCount)] }             { set ::conf(sophie,pixelMinCount)             50 }
+
+   if { ! [ info exists ::conf(sophie,socketPort)] }                { set ::conf(sophie,socketPort)                5020 }
 
    #--- Initialisation de variables
    set private(frm)              "$in.sophie"

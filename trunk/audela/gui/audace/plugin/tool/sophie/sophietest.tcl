@@ -2,24 +2,21 @@
 # Fichier : sophie.tcl
 # Description : Outil de tests pour le developpement de Sophie pour le T193 de l'OHP
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophietest.tcl,v 1.6 2009-06-10 18:34:16 michelpujol Exp $
+# Mise a jour $Id: sophietest.tcl,v 1.7 2009-06-13 23:59:16 michelpujol Exp $
 #
 
-#------------------------------------------------------------
-# test de communication avec le PC sophie
-#
-#
-#
-#
-proc ::sophie::testpcs { } {
-
+#============================================================
+# Declaration du namespace sophie::test
+#    initialise le namespace
+#============================================================
+namespace eval ::sophie::test {
 }
 
 #------------------------------------------------------------
 # simulHp
 #    teste l'envoi des coordonnees toutes les secondes
 #------------------------------------------------------------
-proc ::sophie::simulHp { } {
+proc ::sophie::test::simulHp { } {
    variable private
 
    set private(testhp) 0
@@ -39,8 +36,8 @@ console::disp "simulHp writeHpHandle=$private(writeHpHandle)\n"
    ###fconfigure $private(readHpHandle) -mode "19200,n,8,1" -buffering none -blocking 0
 
    set private(testhp) 1
-   after 1000 ::sophie::testWriteHp
-   ###after 1500 ::sophie::testReadHp
+   after 1000 ::sophie::test::testWriteHp
+   ###after 1500 ::sophie::test::testReadHp
 
 }
 
@@ -50,7 +47,7 @@ console::disp "simulHp writeHpHandle=$private(writeHpHandle)\n"
 # stophp
 #    arrete l'envoi des coordonnees
 #------------------------------------------------------------
-proc ::sophie::stopHp { } {
+proc ::sophie::test::stopHp { } {
    variable private
 
    set private(testhp) 0
@@ -71,7 +68,7 @@ proc ::sophie::stopHp { } {
 # testWriteHp
 #    envoie les coordonnees toutes les secondes
 #------------------------------------------------------------
-proc ::sophie::testWriteHp { } {
+proc ::sophie::test::testWriteHp { } {
    variable private
 
    set data  $private(data,$private(dataNo))
@@ -84,7 +81,7 @@ proc ::sophie::testWriteHp { } {
    if { $private(testhp) == 1 } {
       puts  $private(writeHpHandle) $data
 console::disp "testWriteHp data=$data\n"
-     after 5000 ::sophie::testWriteHp
+     after 5000 ::sophie::test::testWriteHp
    } else {
      if { $private(writeHpHandle) != "" } {
          close $private(writeHpHandle)
@@ -97,7 +94,7 @@ console::disp "testWriteHp data=$data\n"
 # testReadCom
 #    lit les coordonnees toutes les 3 secondes
 #------------------------------------------------------------
-proc ::sophie::testReadCom { } {
+proc ::sophie::test::testReadCom { } {
    variable private
 
 
@@ -106,7 +103,7 @@ proc ::sophie::testReadCom { } {
       set data [split $data "\n" ]
       set messageNb [llength $data]
       console::disp "\ntestReadHp nb=$messageNb data=$data\n"
-      after 3000 ::sophie::testReadHp
+      after 3000 ::sophie::test::testReadHp
    } else {
      if { $private(readHpHandle) != "" } {
          close $private(readHpHandle)
@@ -115,11 +112,12 @@ proc ::sophie::testReadCom { } {
    }
 }
 
+
 #------------------------------------------------------------
 # startReadHp
 #    lance la lecture sur le port COM1
 #------------------------------------------------------------
-proc ::sophie::startReadHp { } {
+proc ::sophie::test::startReadHp { } {
    variable private
 
    # j'ouvre le port de reception des coordonnees
@@ -127,14 +125,14 @@ proc ::sophie::startReadHp { } {
    fconfigure $private(readHpHandle) -mode "19200,n,8,1" -buffering none -blocking 0
    console::disp "startReadHp  private(readHpHandle)=$private(readHpHandle)\n"
    set private(testhp) 1
-   ::sophie::testReadHp
+   ::sophie::test::testReadHp
 }
 
 #------------------------------------------------------------
 # stopReadHp
 #    lit les coordonnees toutes les 3 secondes
 #------------------------------------------------------------
-proc ::sophie::stopReadHp { } {
+proc ::sophie::test::stopReadHp { } {
    variable private
 
    set private(testhp) 0
@@ -145,7 +143,7 @@ proc ::sophie::stopReadHp { } {
 # testReadHp
 #    lit les coordonnees toutes les 3 secondes
 #------------------------------------------------------------
-proc ::sophie::testReadHp { } {
+proc ::sophie::test::testReadHp { } {
    variable private
 
    if { $private(testhp) == 1 } {
@@ -166,7 +164,7 @@ proc ::sophie::testReadHp { } {
       } else {
          console::disp "testReadHp nb=$messageNb data=$data\n"
       }
-      after 2000 ::sophie::testReadHp
+      after 2000 ::sophie::test::testReadHp
    } else {
      if { $private(readHpHandle) != "" } {
          close $private(readHpHandle)
@@ -175,40 +173,109 @@ proc ::sophie::testReadHp { } {
    }
 }
 
+#============================================================
+#
+# SIMULATION DU PC SOPHIE
+#
+#============================================================
+
+#------------------------------------------------------------
+# openSocketSophie
+#   ouvre une socket en ecriture pour simuler l'envoi des donnees du PC Sophie
+#
+# @param host adress IP ou nom DNS du PC de guidage (parametre optionel, valeur par defaut= localhost)
+#------------------------------------------------------------
+proc ::sophie::test::openSocketSophie { } {
+   variable private
+
+   set private(socketChannel) [socket $private(host) $::conf(sophie,socketPort) ]
+   #---  -translation binary -encoding binary
+   fconfigure $private(socketChannel) -buffering line -blocking false -translation binary -encoding binary
+   fileevent $private(socketChannel) readable [list ::sophie::test::readSocketSophie ]
+
+}
+
+#------------------------------------------------------------
+# closeSocketSophie
+#   ferme la socket
+#
+#------------------------------------------------------------
+proc ::sophie::test::closeSocketSophie { } {
+   variable private
+   if { $private(socketChannel) != "" } {
+      close $private(socketChannel)
+      set private(socketChannel) ""
+   }
+}
+
+#------------------------------------------------------------
+# readSocketSophie
+#   envoie des donnes vers le PC de guidage
+#
+#------------------------------------------------------------
+proc ::sophie::test::readSocketSophie {  } {
+   variable private
+
+   set private(socketResponse) [gets $private(socketChannel) ]
+   ###return $result
+}
+
+#------------------------------------------------------------
+# writeSocketSophie
+#   envoie des donnes vers le PC de guidage
+#
+# @param data : donnees a envoyer
+#------------------------------------------------------------
+proc ::sophie::test::writeSocketSophie { data } {
+   variable private
+
+   console::disp "::sophie::test::writeSocketSophie data=$data\n"
+   puts $private(socketChannel) $data
+
+}
+
+
 
 #------------------------------------------------------------
 # tests de la fenetre principale
 #------------------------------------------------------------
 
-proc ::sophie::aff1 { }  {
+proc ::sophie::test::aff1 { }  {
    ::sophie::setMode "centrage"
 
    #--- je verifie le binning
-   if { $::sophie::private(binning) } {
+   if { $::sophie::test::private(binning) } {
 
 
    }
 }
 
 
-#------------------------------------------------------------
+#============================================================
+#
 # tests de la fenetre de controle
+#
+#============================================================
+
+
 #------------------------------------------------------------
-proc ::sophie::ta1 { }  {
+# demarre l'acquisition continue
+#------------------------------------------------------------
+proc ::sophie::test::ta1 { }  {
    ::sophie::control::setAcquisitionState { 1 }
 }
 
-proc ::sophie::ta2 { }  {
+proc ::sophie::test::ta2 { }  {
    ::sophie::control::setAcquisitionState { 0 }
 }
 
-proc ::sophie::tc1 { } {
+proc ::sophie::test::tc1 { } {
    ### starDetection fiberDetection originX originY starX starY fwhmX fwhmY background maxFlow
    ::sophie::control::setCenterInformation 1 1 750 512 752 514 45 46 100 10000
 
 }
 
-proc ::sophie::tsim0 { }  {
+proc ::sophie::test::tsim0 { }  {
    set ::conf(sophie,simulation) 0
    set ::conf(sophie,simulationGenericFileName) "C:/Documents and Settings/michel/Mes documents/astronomie/test/OHP/simulation/centrage_"
    ::console::disp "pas de simulation\n"
@@ -220,7 +287,7 @@ proc ::sophie::tsim1 { }  {
    ::console::disp "simulation fichiers centrage_*\n"
 }
 
-proc ::sophie::tsim2 { }  {
+proc ::sophie::test::tsim2 { }  {
    set ::conf(sophie,simulation) 1
    set ::conf(sophie,simulationGenericFileName) "$::audace(rep_images)/test/OHP/simulation/simuFWHM10px_fibre_"
    ::console::disp "simulation fichiers simuFWHM10px_fibre_*\n"
@@ -234,11 +301,8 @@ proc ::sophie::tsim2 { }  {
 #    Creation de la fenetre de configuration de la simulation
 #------------------------------------------------------------
 proc ::sophie::simul { } {
-   variable private
 
-   set private(frmsimul) $::audace(base).configSimul
-   ::sophie::createDialogSimul
-   tkwait visibility $private(frmsimul)
+   ::sophie::test::createDialogSimul
 }
 
 #------------------------------------------------------------
@@ -246,21 +310,19 @@ proc ::sophie::simul { } {
 #    Fonction appellee lors de l'appui sur le bouton 'OK' pour
 #    appliquer la configuration et fermer la fenetre
 #------------------------------------------------------------
-proc ::sophie::ok { } {
+proc ::sophie::test::ok { } {
    variable private
 
    set ::conf(sophie,simulation)                $private(simulation)
    set ::conf(sophie,simulationGenericFileName) $private(simulationGenericFileName)
 
    if { $::conf(sophie,simulation) == 1 } {
-      ::camera::setParam $private(camItem) "simulation" 1
-      ::camera::setParam $private(camItem) "simulationGenericFileName" $::conf(sophie,simulationGenericFileName)
+      ::camera::setParam $::sophie::private(camItem) "simulation" 1
+      ::camera::setParam $::sophie::private(camItem) "simulationGenericFileName" $::conf(sophie,simulationGenericFileName)
    } else {
-      ::camera::setParam $private(camItem) "simulation" 0
+      ::camera::setParam $::sophie::private(camItem) "simulation" 0
    }
-
-
-   ::sophie::fermer
+   ::sophie::test::fermer
 }
 
 #------------------------------------------------------------
@@ -268,21 +330,30 @@ proc ::sophie::ok { } {
 #    Fonction appellee lors de l'appui sur le bouton 'Fermer' pour
 #    fermer la fenetre
 #------------------------------------------------------------
-proc ::sophie::fermer { } {
+proc ::sophie::test::fermer { } {
    variable private
 
-   destroy $private(frmsimul)
+   #--- je referme la socket du pc de guidage
+   ::sophie::test::closeSocketSophie
+
+
+   destroy $private(frm)
 }
 
 #------------------------------------------------------------
 # createDialogSimul
 #    Creation de l'interface graphique
 #------------------------------------------------------------
-proc ::sophie::createDialogSimul { } {
+proc ::sophie::test::createDialogSimul { } {
    variable private
 
-   set frm $private(frmsimul)
+   #--- j'initialise les variables
+   set private(host) "localhost"
+   set private(socketChannel) ""
+   set private(frm) $::audace(base).configSimul
 
+
+   set frm $private(frm)
    if { [ winfo exists $frm ] } {
       wm withdraw $frm
       wm deiconify $frm
@@ -297,7 +368,7 @@ proc ::sophie::createDialogSimul { } {
    set posySimul [ lindex [ split [ wm geometry $::audace(base) ] "+" ] 2 ]
    wm geometry $frm +[ expr $posxSimul + 134 ]+[ expr $posySimul + 60 ]
    wm resizable $frm 1 1
-   wm protocol $frm WM_DELETE_WINDOW ::sophie::fermer
+   wm protocol $frm WM_DELETE_WINDOW ::sophie::test::fermer
 
    #--- On utilise les valeurs contenues dans le tableau conf pour l'initialisation
    set private(simulation)                $::conf(sophie,simulation)
@@ -307,9 +378,6 @@ proc ::sophie::createDialogSimul { } {
    frame $frm.frame1 -borderwidth 1 -relief raised
    pack $frm.frame1 -side top -fill both -expand 1
 
-   frame $frm.frame2 -borderwidth 1 -relief raised
-   pack $frm.frame2 -side top -fill x
-
    frame $frm.frame3 -borderwidth 0 -relief raised
    pack $frm.frame3 -in $frm.frame1 -side top -fill both -expand 1
 
@@ -318,7 +386,7 @@ proc ::sophie::createDialogSimul { } {
 
    #--- Activation ou non de la simulation
    checkbutton $frm.simul -text $::caption(sophie,modeSimulation) -highlightthickness 0 \
-      -variable ::sophie::private(simulation)
+      -variable ::sophie::test::private(simulation)
    pack $frm.simul -in $frm.frame3 -anchor center -side left -padx 5 -pady 5
 
    #--- Label
@@ -326,23 +394,54 @@ proc ::sophie::createDialogSimul { } {
    pack $frm.label -in $frm.frame4 -anchor center -side left -padx 5 -pady 5
 
    #--- Entry pour le nom generique des images de simulation
-   entry $frm.entry -textvariable ::sophie::private(simulationGenericFileName) -width 25 -justify left
+   entry $frm.entry -textvariable ::sophie::test::private(simulationGenericFileName) -width 25 -justify left
    pack $frm.entry -in $frm.frame4 -anchor center -side left -padx 5 -pady 5
 
    #--- Bouton 'Parcourir'
    button $frm.butParcourir -text $::caption(sophie,parcourir) -borderwidth 2 \
-      -command "::sophie::simulationGenericFileName"
+      -command "::sophie::test::simulationGenericFileName"
    pack $frm.butParcourir -in $frm.frame4 -anchor center -side left -padx 5 -pady 5
 
-   #--- Bouton 'OK'
-   button $frm.butOk -text $::caption(sophie,ok) -borderwidth 2 \
-      -command "::sophie::ok"
-   pack $frm.butOk -in $frm.frame2 -anchor center -side left -padx 5 -pady 5 -ipadx 10 -ipady 5
+   #--- Frame pour le mode de fonctionnement
+   TitleFrame $frm.pcsophie -borderwidth 2 -relief groove -text "Simulation du PC Sophie"
 
-   #--- Bouton 'Fermer'
-   button $frm.butFermer -text $::caption(sophie,fermer) -borderwidth 2 \
-      -command "::sophie::fermer"
-   pack $frm.butFermer -in $frm.frame2 -anchor center -side right -padx 5 -pady 5 -ipadx 10 -ipady 5
+      #--- host
+      label $frm.pcsophie.hostLabel -text "host:"
+      grid $frm.pcsophie.hostLabel -in [ $frm.pcsophie getframe ] -row 0 -column 0 -sticky ens -padx 2
+      entry $frm.pcsophie.hostEntry -textvariable ::sophie::test::private(host)
+      grid $frm.pcsophie.hostEntry -in [ $frm.pcsophie getframe ] -row 0 -column 1 -sticky ens -padx 2
+
+      #--- Bouton connect et disconnect
+      button $frm.pcsophie.connect -text "connecter" -command "::sophie::test::connecterPcGuidage"
+      grid $frm.pcsophie.connect -in [ $frm.pcsophie getframe ] -row 0 -column 2 -sticky ens -padx 2
+
+      #--- Bouton envoi de commande
+      button $frm.pcsophie.staton -text "STAT ON" -command [list ::sophie::test::sendPcGuidage "STAT_ON" ]
+      grid $frm.pcsophie.staton -in [ $frm.pcsophie getframe ] -row 0 -column 3 -sticky ens -padx 2
+
+      button $frm.pcsophie.statoff -text "STAT OFF" -command [list ::sophie::test::sendPcGuidage "STAT_OFF" ]
+      grid $frm.pcsophie.statoff -in [ $frm.pcsophie getframe ] -row 1 -column 3 -sticky ens -padx 2
+
+      button $frm.pcsophie.getstat -text "GET STAT" -command [list ::sophie::test::sendPcGuidage "GET_STAT" ]
+      grid $frm.pcsophie.getstat -in [ $frm.pcsophie getframe ] -row 2 -column 3 -sticky ens -padx 2
+
+      button $frm.pcsophie.clearstat -text "RAZ STAT" -command [list ::sophie::test::sendPcGuidage "RAZ_STAT" ]
+      grid $frm.pcsophie.clearstat -in [ $frm.pcsophie getframe ] -row 3 -column 3 -sticky ens -padx 2
+
+   pack $frm.pcsophie -in $frm -side top -fill both -expand 1
+
+   frame $frm.frameButton -borderwidth 1 -relief raised
+      #--- Bouton 'OK'
+      button $frm.butOk -text $::caption(sophie,ok) -borderwidth 2 \
+         -command "::sophie::test::ok"
+      pack $frm.butOk -in $frm.frameButton -anchor center -side left -padx 5 -pady 5 -ipadx 10 -ipady 5
+
+      #--- Bouton 'Fermer'
+      button $frm.butFermer -text $::caption(sophie,fermer) -borderwidth 2 \
+         -command "::sophie::test::fermer"
+      pack $frm.butFermer -in $frm.frameButton -anchor center -side right -padx 5 -pady 5 -ipadx 10 -ipady 5
+
+   pack $frm.frameButton -side top -fill x
 
    #--- La fenetre est active
    focus $frm
@@ -358,7 +457,7 @@ proc ::sophie::createDialogSimul { } {
 # simulationGenericFileName
 #    Ouvre le navigateur pour choisir les images de simulation
 #------------------------------------------------------------
-proc ::sophie::simulationGenericFileName { } {
+proc ::sophie::test::simulationGenericFileName { } {
    variable private
 
    #--- Ouvre la fenetre de choix des images
@@ -369,4 +468,75 @@ proc ::sophie::simulationGenericFileName { } {
    }
 }
 
+#------------------------------------------------------------
+# connecterPcGuidage
+#    connecter/deconnecter au PC de guidage
+#------------------------------------------------------------
+proc ::sophie::test::connecterPcGuidage { } {
+   variable private
+
+   set catchError [ catch {
+      if { $private(socketChannel) == "" } {
+         ::sophie::test::openSocketSophie
+         $private(frm).pcsophie.connect configure -text "déconnecter"
+      } else {
+         ::sophie::test::closeSocketSophie
+         $private(frm).pcsophie.connect configure -text "connecter"
+      }
+   }]
+
+   if { $catchError != 0 } {
+      #--- j'affiche et je trace le message d'erreur
+      ::tkutil::displayErrorInfo $::caption(sophie,simulation)
+   }
+}
+
+#------------------------------------------------------------
+# connecterPcGuidage
+#    envoie des donnees au PC de guidage
+#------------------------------------------------------------
+proc ::sophie::test::sendPcGuidage { commandName } {
+   variable private
+
+   set catchError [ catch {
+      switch $commandName {
+         "STAT_ON" {
+            ::sophie::test::writeSocketSophie "!STAT_ON@"
+         }
+         "STAT_OFF" {
+            ::sophie::test::writeSocketSophie "!STAT_OFF@"
+         }
+         "GET_STAT" {
+            #--- je purge la socket
+            set private(socketResponse) ""
+
+            ::sophie::test::writeSocketSophie "!GET_STAT@"
+            ###set result [::sophie::test::readSocketSophie]
+            update
+            set result $private(socketResponse)
+            #--- j'affiche le resultat
+            tk_messageBox -title $::caption(sophie,simulation) -type ok -message "statistiques=$result" -icon info
+         }
+         "RAZ_STAT" {
+            ::sophie::test::writeSocketSophie "!RAZ_STAT@"
+         }
+
+         default {
+            error "invalid commandName=$commandName"
+         }
+      }
+   }]
+
+   if { $catchError != 0 } {
+      #--- j'affiche et je trace le message d'erreur
+      ::tkutil::displayErrorInfo $::caption(sophie,simulation)
+   }
+
+}
+
 ###### Fin de la fenetre de configuration de la simulation ######
+
+
+###::sophie::simul
+
+#  source audace/plugin/tool/sophie/sophietest.tcl

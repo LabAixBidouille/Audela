@@ -2,7 +2,7 @@
 # Fichier : sophiecommand.tcl
 # Description : Centralise les commandes de l'outil Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecommand.tcl,v 1.15 2009-06-10 21:18:51 michelpujol Exp $
+# Mise a jour $Id: sophiecommand.tcl,v 1.16 2009-06-13 23:59:16 michelpujol Exp $
 #
 
 #============================================================
@@ -451,6 +451,10 @@ proc ::sophie::setMode { { mode "" } } {
            #--- j'interdis le bouton de guidage
            $private(frm).mode.guidageStart  configure -state disabled
          }
+
+         buf$private(maskBufNo)  clear
+         buf$private(sumBufNo)   clear
+         buf$private(fiberBufNo) clear
 
          #--- je change la taille de d'analyse de la cible
          set private(targetBoxSize) $::conf(sophie,guidingWindowSize)
@@ -1475,20 +1479,20 @@ proc ::sophie::getBufNo { bufName } {
 #------------------------------------------------------------
 # addAcquisitionListener
 #    ajoute une procedure a appeler pour chaque nouvelle acquisition
-#  parametres :
-#    visuNo: numero de la visu
-#    cmd : commande TCL a lancer quand la camera associee a la visu change
+#
+#  @param visuNo numero de la visu
+#  @param cmd : commande TCL a lancer quand la camera associee a la visu change
 #------------------------------------------------------------
 proc ::sophie::addAcquisitionListener { visuNo cmd } {
    trace add variable ::sophie::private(newAcquisition) write $cmd
 }
 
 #------------------------------------------------------------
-# removeCameraListener
+# removeAcquisitionListener
 #    supprime une procedure a appeler pour chaque nouvelle acquisition
-#  parametres :
-#    visuNo: numero de la visu
-#    cmd : commande TCL a lancer quand la camera associee a la visu change
+#
+#  @param visuNo numero de la visu
+#  @param cmd : commande TCL a lancer quand la camera associee a la visu change
 #------------------------------------------------------------
 proc ::sophie::removeAcquisitionListener { visuNo cmd } {
    trace remove variable ::sophie::private(newAcquisition) write $cmd
@@ -1496,7 +1500,7 @@ proc ::sophie::removeAcquisitionListener { visuNo cmd } {
 
 
 #------------------------------------------------------------
-# guide
+# guideSophie
 #    lance une session guidage
 #
 # parametres :
@@ -1523,3 +1527,46 @@ proc ::camera::guideSophie { camItem callback exptime guidingMode originCoord ta
    set camThreadNo $private($camItem,threadNo)
    ::thread::send -async $camThreadNo [list ::camerathread::guideSophie $exptime $guidingMode $originCoord $targetCoord $cameraAngle $targetBoxSize $mountEnabled $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $intervalle ]
 }
+
+#------------------------------------------------------------
+# startStatistics
+#  debute les statistiques de guidage pour le PC Sophie
+#
+#------------------------------------------------------------
+proc ::sophie::startStatistics { } {
+   console::disp "::sophie::startStatistics \n"
+
+   #--- je met àa jour le voyant dans la fenetre de controle
+   ::sophie::control::setAcquisitionSophie 1
+}
+
+#------------------------------------------------------------
+# stopStatistics
+#  arrete les statistiques de guidage pour le PC Sophie
+#
+#------------------------------------------------------------
+proc ::sophie::stopStatistics { } {
+   console::disp "::sophie::stopStatistics \n"
+
+   #--- je met àa jour le voyant dans la fenetre de controle
+   ::sophie::control::setAcquisitionSophie 0
+
+}
+
+#------------------------------------------------------------
+# getStatistics
+#  retourne les statistiques de guidage pour le PC Sophie
+#
+#------------------------------------------------------------
+proc ::sophie::getStatistics { } {
+
+   set result [list 2.68 83.17 2.74 177.85 ]
+   console::disp "::sophie::getStatistics $result\n"
+
+   return $result
+}
+
+
+
+
+
