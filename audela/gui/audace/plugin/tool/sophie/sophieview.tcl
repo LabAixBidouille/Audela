@@ -2,7 +2,7 @@
 # Fichier : sophieview.tcl
 # Description : Vue detail du suivi
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophieview.tcl,v 1.6 2009-06-10 18:34:16 michelpujol Exp $
+# Mise a jour $Id: sophieview.tcl,v 1.7 2009-06-13 23:58:20 michelpujol Exp $
 #
 
 #============================================================
@@ -20,7 +20,7 @@ proc ::sophie::view::run { sophieVisu } {
    variable private
 
    set private(sophieVisu) $sophieVisu
-   #--- j'ouvre une fenetre pour afficher des profils
+   #--- j'ouvre une visu pour afficher des profils
    set visuNo [::confVisu::create]
    confVisu::selectTool $visuNo ""
    Menu_Delete $visuNo $::caption(audace,menu,tool) all
@@ -100,8 +100,11 @@ proc ::sophie::view::startTool { visuNo } {
 
    #--- j'affiche l'outil
    pack $private(frm) -side left -fill y
-   #--- je passe en zoom x4
-   ::confVisu::setZoom  $visuNo 4
+   #--- je choisi les seuils initiaux par defaut
+   set ::conf(seuils,visu$visuNo,mode) "initiaux"
+
+   #--- je passe en zoom x1
+   ::confVisu::setZoom  $visuNo 1
    #--- j'affiche l'image du buffer
    setBuffer $visuNo
    #--- je demarre le listener
