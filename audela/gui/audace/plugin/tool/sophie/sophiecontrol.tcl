@@ -2,7 +2,7 @@
 # Fichier : sophiecontrol.tcl
 # Description : Fenetre de controle pour le centrage, la focalisation et le guidage
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecontrol.tcl,v 1.16 2009-06-12 17:31:56 robertdelmas Exp $
+# Mise a jour $Id: sophiecontrol.tcl,v 1.17 2009-06-13 23:59:16 michelpujol Exp $
 #
 
 #============================================================
@@ -1097,6 +1097,33 @@ proc ::sophie::control::setGuideState { state } {
          -bg   $private(activeColor)
    }
 }
+
+##------------------------------------------------------------
+# setCenterState
+#    met a jour le voyant d'acquisition des spectres Sophie
+#
+# @param state    etat du centrage 0=arrete 1=en cours
+# @return rien
+#------------------------------------------------------------
+proc ::sophie::control::setAcquisitionSophie { state } {
+   variable private
+
+   set frm $private(frm)
+   if { $state == 0 } {
+      #--- j'affiche le voyant en rouge
+      $frm.voyant.sophie_color_invariant configure \
+         -text $::caption(sophie,sophieArretee) \
+         -bg   $private(inactiveColor)
+      #--- je purge les vecteurs
+
+   } else {
+      #--- j'affiche le voyant en vert
+      $frm.voyant.sophie_color_invariant configure \
+         -text $::caption(sophie,sophieEncours) \
+         -bg   $private(activeColor)
+   }
+}
+
 
 ##------------------------------------------------------------
 # setRealDelay
