@@ -2,7 +2,7 @@
 # Fichier : sophiecontrol.tcl
 # Description : Fenetre de controle pour le centrage, la focalisation et le guidage
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecontrol.tcl,v 1.17 2009-06-13 23:59:16 michelpujol Exp $
+# Mise a jour $Id: sophiecontrol.tcl,v 1.18 2009-06-14 08:52:47 robertdelmas Exp $
 #
 
 #============================================================
@@ -135,7 +135,7 @@ proc ::sophie::control::run { visuNo tkbase } {
 
    $private(frm).guidage.positionconsigne.correction.ecartConsigne_simple axis configure x -hide true
    $private(frm).guidage.erreurs.alpha_simple axis configure x -hide true
-   $private(frm).guidage.erreurs.delta_simple axis configure x -hide true
+   $private(frm).guidage.corrections.delta_simple axis configure x -hide true
 
 }
 
@@ -437,7 +437,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -row 2 -column 5 -sticky ew
 
       #--- Correction
-      label $frm.positionGuidage.labelCorrection -text $::caption(sophie,correction)
+      label $frm.positionGuidage.labelCorrection -text $::caption(sophie,correction1)
       grid $frm.positionGuidage.labelCorrection \
          -in [ $frm.positionGuidage getframe ] \
          -row 0 -column 6 -columnspan 2 -sticky ew
@@ -660,7 +660,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             ###   -row 0 -column 1 -sticky w -padx 5 -pady 3
 
             #--- Graphe de la erreur en alpha et delta
-            createGraph $frm.guidage.positionconsigne.correction.ecartConsigne_simple 120
+            createGraph $frm.guidage.positionconsigne.correction.ecartConsigne_simple 105
             $frm.guidage.positionconsigne.correction.ecartConsigne_simple element create ecartConsigneX \
                -xdata ::sophieAbcisse -ydata ::sophieEcartConsigneX -mapy y \
                -color blue -dash "2" -linewidth 3 \
@@ -669,7 +669,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
                -xdata ::sophieAbcisse -ydata ::sophieEcartConsigneY -mapy y \
                -color orange -dash "" -linewidth 3 \
                -symbol none -label $::caption(sophie,dy)
-            $frm.guidage.positionconsigne.correction.ecartConsigne_simple legend configure -hide no -position bottom
+            $frm.guidage.positionconsigne.correction.ecartConsigne_simple legend configure -hide no -position right
 
             grid $frm.guidage.positionconsigne.correction.ecartConsigne_simple \
                -row 0 -column 1 -sticky ew
@@ -839,8 +839,8 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          ###   -row 0 -column 1 -sticky w -padx 5 -pady 3
 
          #--- Graphe de la erreur en alpha et delta
-         createGraph $frm.guidage.erreurs.alpha_simple 120
-         $frm.guidage.erreurs.alpha_simple configure -title $::caption(sophie,erreur)
+         createGraph $frm.guidage.erreurs.alpha_simple 105
+        ### $frm.guidage.erreurs.alpha_simple configure -title $::caption(sophie,erreur)
          $frm.guidage.erreurs.alpha_simple element create alphaDiff \
             -xdata ::sophieAbcisse -ydata ::sophieEcartEtoileX -mapy y \
             -color blue -dash "2" -linewidth 3 \
@@ -849,7 +849,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             -xdata ::sophieAbcisse -ydata ::sophieEcartEtoileY -mapy y \
             -color orange -dash "" -linewidth 3 \
             -symbol none -label $::caption(sophie,delta)
-         $frm.guidage.erreurs.alpha_simple legend configure -hide yes
+         $frm.guidage.erreurs.alpha_simple legend configure -hide no -position right
 
          grid $frm.guidage.erreurs.alpha_simple \
             -in [ $frm.guidage.erreurs getframe ] \
@@ -861,26 +861,32 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          ###   -in [ $frm.guidage.erreurs getframe ] \
          ###   -row 1 -column 1 -sticky w -padx 5 -pady 3
 
+      pack $frm.guidage.erreurs -side top -anchor w -fill x -expand 1
+
+      #--- Frame pour visualiser les corrections au telescope en alpha et delta
+      TitleFrame $frm.guidage.corrections -borderwidth 2 -relief ridge \
+         -text $::caption(sophie,correction)
+
          #--- Graphe de la correction en delta
-         createGraph $frm.guidage.erreurs.delta_simple 140
-         $frm.guidage.erreurs.delta_simple configure -title $::caption(sophie,correction)
-         $frm.guidage.erreurs.delta_simple element create alphaCorrection \
+         createGraph $frm.guidage.corrections.delta_simple 105
+        ### $frm.guidage.corrections.delta_simple configure -title $::caption(sophie,correction)
+         $frm.guidage.corrections.delta_simple element create alphaCorrection \
             -xdata ::sophieAbcisse -ydata ::sophieCorrectionAlpha -mapy y \
             -color blue -dash "2" -linewidth 3 \
             -symbol none -label $::caption(sophie,alpha)
-         $frm.guidage.erreurs.delta_simple element create deltaCorrection \
+         $frm.guidage.corrections.delta_simple element create deltaCorrection \
             -xdata ::sophieAbcisse -ydata ::sophieCorrectionDelta -mapy y \
             -color orange -dash "" -linewidth 3 \
             -symbol none -label $::caption(sophie,delta)
-         $frm.guidage.erreurs.delta_simple legend configure -position bottom
+         $frm.guidage.corrections.delta_simple legend configure -hide no -position right
 
-         grid $frm.guidage.erreurs.delta_simple \
-            -in [ $frm.guidage.erreurs getframe ] \
+         grid $frm.guidage.corrections.delta_simple \
+            -in [ $frm.guidage.corrections getframe ] \
             -row 1 -column 1 -sticky nsew
 
-         grid columnconfig [ $frm.guidage.erreurs getframe ] 0 -weight 0
-         grid columnconfig [ $frm.guidage.erreurs getframe ] 1 -weight 1
-      pack $frm.guidage.erreurs -side top -anchor w -fill x -expand 1
+        ### grid columnconfig [ $frm.guidage.erreurs getframe ] 0 -weight 0
+        ### grid columnconfig [ $frm.guidage.erreurs getframe ] 1 -weight 1
+      pack $frm.guidage.corrections -side top -anchor w -fill x -expand 1
 
     # pack $frm.guidage -side top -fill both
 
@@ -1124,7 +1130,6 @@ proc ::sophie::control::setAcquisitionSophie { state } {
    }
 }
 
-
 ##------------------------------------------------------------
 # setRealDelay
 #    met a jour le delai entre 2 poses
@@ -1285,7 +1290,6 @@ proc ::sophie::control::setFocusInformation { starDetection fiberDetection origi
       #--- je supprime le point le plus ancien
       ::sophieMaxIntensity delete 0
    }
-
 
    ####--- Je mets les intensites maxi dans une liste
    ###lappend private(listMaxIntensity) "$maxIntensity"
@@ -1457,7 +1461,6 @@ proc ::sophie::control::resetFocusVector {  } {
    if { [::sophieMaxIntensity length] > 0 } {
       ::sophieMaxIntensity delete 0:end
    }
-
 }
 
 proc ::sophie::control::resetGuideVector {  } {
