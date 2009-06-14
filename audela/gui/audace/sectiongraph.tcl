@@ -2,7 +2,7 @@
 # Fichier : sectiongraph.tcl
 # Description : Affiche une coupe de l'image
 # Auteur : Michel PUJOL
-# Mise a jour $Id: sectiongraph.tcl,v 1.11 2009-06-12 17:32:55 robertdelmas Exp $
+# Mise a jour $Id: sectiongraph.tcl,v 1.12 2009-06-14 08:51:39 robertdelmas Exp $
 #
 
 namespace eval ::sectiongraph {
@@ -231,7 +231,6 @@ proc ::sectiongraph::createToplevel { visuNo } {
          ]
 
    set fgColor white
-   set canvasFont "*helvetica-medium-r-*-100-*"
 
    $private($visuNo,graph,horz) element create lineR \
       -xdata sectiongraphX$visuNo -ydata sectiongraphYR$visuNo -color $fgColor -symbol ""
@@ -242,12 +241,13 @@ proc ::sectiongraph::createToplevel { visuNo } {
    $private($visuNo,graph,horz) legend configure -hide yes
    $private($visuNo,graph,horz) axis configure x -min 0
    $private($visuNo,graph,horz) xaxis configure -title "" -hide no -color $fgColor \
-      -ticklength 4 -tickfont $canvasFont
+      -ticklength 4
    $private($visuNo,graph,horz) x2axis configure -title "" -hide yes
    $private($visuNo,graph,horz) yaxis configure -title "" -hide no -color $fgColor \
-      -ticklength 4 -tickfont $canvasFont
+      -ticklength 4
    $private($visuNo,graph,horz) y2axis configure -title "" -hide yes
    $private($visuNo,graph,horz) grid configure -mapy y -dashes ""
+   $private($visuNo,graph,horz) crosshairs on
    $private($visuNo,graph,horz) crosshairs configure -color green
    $private($visuNo,graph,horz) element configure lineR -hide no
 
