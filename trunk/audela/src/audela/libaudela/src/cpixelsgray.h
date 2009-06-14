@@ -39,14 +39,6 @@ public:
    void Clipmax(double value);
    void Clipmin(double value);
    void Div(char *filename, float constante);
-   void Fwhm(int x1, int y1, int x2, int y2,
-              double *maxx, double *posx, double *fwhmx, double *fondx, double *errx,
-              double *maxy, double *posy, double *fwhmy, double *fondy, double *erry,
-				  double fwhmx0, double fwhmy0);
-   void Fwhm2d(int x1, int y1, int x2, int y2,
-                  double *maxx, double *posx, double *fwhmx, double *fondx, double *errx,
-                  double *maxy, double *posy, double *fwhmy, double *fondy, double *erry,
-				  double fwhmx0, double fwhmy0);
    int  GetHeight(void);
    int  GetPlanes(void);
    int  GetWidth(void);
@@ -57,13 +49,12 @@ public:
    // void GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, int pixels);
    void GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, long pixels);
    void GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, long pixels);
+   void GetPixelsRgb( int x1,int y1,int x2, int y2,
+                  int mirrorX, int mirrorY, float *cuts,
+                  unsigned char *palette[3], unsigned char *ptr);
    void GetPixelsVisu( int x1,int y1,int x2, int y2, 
-            int mirrorX, int mirrorY,
-                  //double hicutRed,   double locutRed, 
-                  //double hicutGreen, double locutGreen,
-                  //double hicutBlue,  double locutBlue,
-                  float *cuts,
-            unsigned char *palette[3], unsigned char *ptr);
+                  int mirrorX, int mirrorY, float *cuts,
+                  unsigned char *palette[3], unsigned char *ptr);
    int  IsPixelsReady(void);
    void Log(float coef, float offset);
    void MergePixels(TColorPlane plane, int pixels);
