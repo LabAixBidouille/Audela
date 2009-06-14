@@ -96,6 +96,7 @@ CFileFormat CFile::loadFile(char * filename, int dataTypeOut, CPixels **pixels, 
  *  return :
  *    CFileFormat : file format 
  */
+/*
 CFileFormat CFile::saveFile(char * filename, int dataTypeOut, CPixels *pixels, CFitsKeywords *keywords)
 {
    CFileFormat fileFormat = CFILE_UNKNOWN;
@@ -103,7 +104,7 @@ CFileFormat CFile::saveFile(char * filename, int dataTypeOut, CPixels *pixels, C
    
    return fileFormat;
 }
-
+*/
 
 
 void CFile::loadFits(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords)
