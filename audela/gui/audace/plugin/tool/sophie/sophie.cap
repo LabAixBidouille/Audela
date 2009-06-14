@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.16 2009-06-10 18:34:16 michelpujol Exp $
+# Mise a jour $Id: sophie.cap,v 1.17 2009-06-14 08:52:06 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -88,6 +88,13 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(sophie,parametreAlgo)         "Configuration de l'algorithme"
 
+   set caption(sophie,paraMasque)            "Paramètres du masque"
+   set caption(sophie,diametreMasque)        "Diamètre du masque (pixel)"
+   set caption(sophie,largeurGaussMasque)    "Largeur de la gaussienne du masque (pixel)"
+   set caption(sophie,seuilMini)             "Nombre minimal de pixels"
+   set caption(sophie,paraPrecisionCentrage) "Paramètre de la précision du centrage"
+   set caption(sophie,precisionCentrage)     "Précision du centrage (arcsec)"
+
    set caption(sophie,callibrationRappels)   "Callibration des rappels"
 
    set caption(sophie,controleInterface)     "Contrôle de l'interface"
@@ -104,8 +111,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,sophieEncours)         "Pose Sophie en cours"
    set caption(sophie,sophieArretee)         "Pose Sophie arrêtée"
    set caption(sophie,positionSeeing)        "Position et seeing"
-   set caption(sophie,FWHMX)                 "FWHM X (pixels)"
-   set caption(sophie,FWHMY)                 "FWHM Y (pixels)"
+   set caption(sophie,FWHMX)                 "FWHM X (pixel)"
+   set caption(sophie,FWHMY)                 "FWHM Y (pixel)"
    set caption(sophie,fondDeCiel)            "Fond de ciel (ADU)"
    set caption(sophie,fluxMax)               "Flux maxi (ADU)"
    set caption(sophie,indicateurCentrage)    "Indicateurs de centrage"
@@ -120,13 +127,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,pointageObjet)         "Pointage de l'objet"
    set caption(sophie,pointageEntreeFibreA)  "Pointage de l'entrée de la fibre A"
    set caption(sophie,activationGuidage)     "Activer le guidage"
-   set caption(sophie,correction)            "Correction télescope (arcsec)"
+   set caption(sophie,correction)            "Corrections du télescope en alpha et delta (arcsec)"
+   set caption(sophie,correction1)           "Corrections du télescope (arcsec)"
    set caption(sophie,correctionX)           "Correction en X"
    set caption(sophie,correctionY)           "Correction en Y"
    set caption(sophie,positionGuidage)       "Position guidage"
    set caption(sophie,positionEtoile)        "Position étoile (pixel)"
    set caption(sophie,positionConsigne)      "Position consigne (pixel)"
-   set caption(sophie,ecartEtoile)           "Ecart etoile (pixel)"
+   set caption(sophie,ecartEtoile)           "Ecart étoile (pixel)"
    set caption(sophie,ecartConsigne)         "Ecart consigne (pixel)"
    set caption(sophie,positionConsigneImage) "Position de la consigne dans l'image"
    set caption(sophie,increment)             "Incrément"
@@ -138,7 +146,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,erreur)                "Erreur (pixel)"
    set caption(sophie,alpha)                 "dalpha"
    set caption(sophie,delta)                 "ddelta"
-   set caption(sophie,erreursAlphaDelta)     "Erreurs en alpha et delta"
+   set caption(sophie,erreursAlphaDelta)     "Erreurs en alpha et delta (pixel)"
    set caption(sophie,arretGuidage)          "Arrêter le guidage"
    set caption(sophie,suspendreGuidage)      "Suspendre le guidage"
    set caption(sophie,realDelay)             "Délai entre 2 debuts de poses (seconde)"
