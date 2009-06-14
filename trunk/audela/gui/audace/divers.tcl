@@ -2,7 +2,7 @@
 # Fichier divers.tcl
 # Description : Ce script regroupe diverses petites fonctions
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: divers.tcl,v 1.11 2008-06-06 17:30:27 robertdelmas Exp $
+# Mise a jour $Id: divers.tcl,v 1.12 2009-06-14 07:00:46 robertdelmas Exp $
 #
 
 # Documentation : voir le fichier divers.htm dans le dossier doc_html
@@ -251,6 +251,11 @@ proc sauve {args} {
          set polyNo 1
       }
 
+      #--- Les mots cles NAXIS, NAXIS1 et NAXIS2 sont obligatoires pour executer la commande save
+      buf$buf setkwd [ list NAXIS 2 int "" "" ]
+      buf$buf setkwd [ list NAXIS1 [ buf$buf getpixelswidth ] int "" "" ]
+      buf$buf setkwd [ list NAXIS2 [ buf$buf getpixelsheight ] int "" "" ]
+
       # Procédure principale
       # 1er cas : pas de nom de fichier donné, on doit donc afficher une boîte de dialogue
       if {$fichier == "?"} {
@@ -418,7 +423,13 @@ proc sauve_jpeg {args} {
                buf$num_buf_tmp extension $conf(extension,defaut)
                buf$audace(bufNo) copyto $num_buf_tmp
 
-               bm_hard2visu $num_buf_tmp [lindex [visu$audace(visuNo) cut] 0] [lindex [visu$audace(visuNo) cut] 1] ${palette_R}
+               set catchError [ catch { bm_hard2visu $num_buf_tmp [lindex [visu$audace(visuNo) cut] 0] [lindex [visu$audace(visuNo) cut] 1] ${palette_R} } ]
+               if { $catchError == "1" } {
+                  # Affichage d'un message d'erreur
+                  ::tkutil::displayErrorInfo "$caption(divers,copyjpeg)" "$caption(divers,libgsl)"
+                  # Sortie de la procedure
+                  return
+               }
 
                # Enregistrement de l'image
                buf$num_buf_tmp savejpeg $nom_complet $conf(jpegquality,defaut) [lindex [visu$audace(visuNo) cut] 1] [lindex [visu$audace(visuNo) cut] 0]
@@ -452,7 +463,17 @@ proc sauve_jpeg {args} {
                # Enregistrement des plans R, V et B
                # plan R
                buf$audace(bufNo) copyto $num_buf_tmp
-               bm_hard2visu $num_buf_tmp [lindex [visu$audace(visuNo) cut] 0] [lindex [visu$audace(visuNo) cut] 1] ${palette_R}
+               set catchError [ catch { bm_hard2visu $num_buf_tmp [lindex [visu$audace(visuNo) cut] 0] [lindex [visu$audace(visuNo) cut] 1] ${palette_R} } ]
+               if { $catchError == "1" } {
+                  # Affichage d'un message d'erreur
+                  ::tkutil::displayErrorInfo "$caption(divers,copyjpeg)" "$caption(divers,libgsl)"
+                  # Suppression du buffer temporaire
+                  buf::delete $num_buf_tmp
+                  # Suppression du répertoire temporaire
+                  file delete $rep_tmp
+                  # Sortie de la procedure
+                  return
+               }
                sauve plan_R -buf $num_buf_tmp -rep "$rep_tmp" -ext $conf(extension,defaut)
                # plan V
                buf$audace(bufNo) copyto $num_buf_tmp
