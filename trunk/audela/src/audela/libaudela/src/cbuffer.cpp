@@ -636,6 +636,8 @@ void CBuffer::Save1d(char *filename,int iaxis2)
       iaxis2=0;
    }
    nnaxis1=naxis1;
+   x1 = 0;
+   y1 = 0;
    x2 = 0;  //for gcc warning: ?x2? may be used uninitialized in this function
    y2 = 0;
    if (pix->getPixelClass()==CLASS_GRAY) {
@@ -854,7 +856,7 @@ void CBuffer::SaveJpg(char *filename,int quality, float *cuts, unsigned char *pa
    }
 
    // je transforme l'image sur 256 niveaux
-   this->pix->GetPixelsVisu(
+   this->pix->GetPixelsRgb(
       0, 0, width-1, height-1,   // size
       mirrorx, mirrory,          // mirror
       cuts,                      // cuts
@@ -927,13 +929,16 @@ void CBuffer::Cfa2Rgb(int interpolationMethod)
 int CBuffer::GetNaxis()
 {
    CFitsKeyword *k;
-
+   int value; 
+   pthread_mutex_lock(&mutex);
    k = this->keywords->FindKeyword("NAXIS");
    if(k != NULL  ) {
-      return k->GetIntValue();
+      value= k->GetIntValue();
    } else {
-      return 0;
+      value= 0;
    }
+   pthread_mutex_unlock(&mutex);
+   return value;
 }
 
 /*
@@ -1970,6 +1975,552 @@ void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2, int slitWidth, dou
 }
 
 
+/*
+ * AstroFiberCentro
+ *  detecte le centre de l'etoile et le centre de l'entree de fibre du spectrometre
+ *
+ *  Parameters IN:
+ *  @param     x1 fenetre de detection
+ *  @param     y1 fenetre de detection
+ *  @param     x2 fenetre de detection
+ *  @param     y2 fenetre de detection
+ *  @param     findFiber      indicateur de recherche de fibre 
+ *  @param     biasBufNo      numero du buffer du bias
+ *  @param     maskBufNo      numero du buffer du masque
+ *  @param     sumBufNo       numero du buffer de l'image integree
+ *  @param     fiberBufNo     numero du buffer de l'image resultat
+ *  @param     maskRadius     rayon du masque 
+ *  @param     maskFwhmX      largeur a mi hauteur de la gaussienne du masque
+ *  @param     maskPercent    pourcentage du niveau du mask
+ *  @param     originSumNb    nombre d'acquisition de l'image integree 
+ *  @param     originSumCounter  numero de l'acquisition courante 
+ *  @param     previousFiberX abcisse du centre de la fibre
+ *  @param     previousFiberY ordonnee du centre de la fibre 
+ *  @param     pixelMinCount  nombre minimal de pixels 
+ *  Parameters OUT:
+ *  @param     starStatus     resultat de la recherche de la fibre
+ *  @param     starX          abcisse du centre de la fibre
+ *  @param     starY          ordonnee du centre de la fibre
+ *  @param     fiberStatus    resultat de la recherche de la fibre
+ *  @param     fiberX         abcisse du centre de la fibre
+ *  @param     fiberY         ordonnee du centre de la fibre
+ *  @param     measuredFwhmX  gaussienne mesuree
+ *  @param     measuredFwhmY  gaussienne mesuree
+ *  @param     background     fond du ciel
+ *  @param     maxIntensity   intensite max
+ *  @param     message        message d'information
+ *
+ *  Return :   void . Exception en cas d'erreur imprevue
+ *
+ */
+
+void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2, 
+                                int findFiber,
+                                int biasBufNo, int maskBufNo, int sumBufNo, int fiberBufNo,
+                                int maskRadius, double maskFwhm, double maskPercent,
+                                int originSumNb, int originSumCounter, 
+                                double previousFiberX, double previousFiberY,  
+                                int pixelMinCount,  
+                                char *starStatus,  double *starX,  double *starY,
+                                char *fiberStatus, double *fiberX, double *fiberY,
+                                double *measuredFwhmX, double *measuredFwhmY, 
+                                double *background, double *maxIntensity,
+                                char * message)
+{
+   int i, j;                         
+   int naxis1, naxis2;  // taille de l'image
+   int width, height;   // taille de la zone a analyser
+   double flux,sx,sy;
+   TYPE_PIXELS *imgPix  =NULL, *imgOffset,  *imgPtr;;
+   TYPE_PIXELS *biasPix =NULL, *biasOffset, *biasPtr;
+   TYPE_PIXELS *maskPix =NULL, *maskOffset, *maskPtr;
+   TYPE_PIXELS *sumPix  =NULL, *sumOffset,  *sumPtr;
+   TYPE_PIXELS *fiberPix=NULL, *fiberOffset,  *fiberPtr;   
+   TYPE_PIXELS *iX=NULL, *iY=NULL;
+   double *dX=NULL, *dY=NULL;
+   double previousFiberCgX , previousFiberCgY;
+   int fiberInside = 1;
+   TYPE_PIXELS sumMaxIntensity = 0;      
+   TYPE_PIXELS sumMinIntensity = 0;      
+   char tempMessage[1024];
+   double qualityMin;
+   CBuffer * biasBuf=NULL;
+      
+   try {
+      strcpy(message,"");
+      strcpy(fiberStatus, "NOT DETECTED");
+      strcpy(starStatus,  "NOT DETECTED");
+      // debut de protection acces concurrent au buffer
+
+      pthread_mutex_lock(&mutex);
+      naxis1 = this->GetWidth();
+      naxis2 = this->GetHeight();
+      if (x1<0) {x1=0;}
+      if (x2<0) {x2=0;}
+      if (y1<0) {y1=0;}
+      if (y2<0) {y2=0;}
+      if (x1>naxis1-1) {x1=naxis1-1;}
+      if (x2>naxis1-1) {x2=naxis1-1;}
+      if (y1>naxis2-1) {y1=naxis2-1;}
+      if (y2>naxis2-1) {y2=naxis2-1;}
+      
+      width =  x2-x1+1;
+      height = y2-y1+1;
+      //double previousStarX= ((double)x2 - x1 ) / 2;
+      //double previousStarY= ((double)y2 - y1 ) / 2;
+
+      if (previousFiberX <= x1) {fiberInside = 0;}
+      if (previousFiberX >= x2) {fiberInside = 0; }
+      if (previousFiberY <= y1) {fiberInside = 0; }
+      if (previousFiberY >= y2) {fiberInside = 0; }
+      
+      if (fiberInside == 0 ) {
+         strcpy(fiberStatus, "OUTSIDE");
+         *fiberX = previousFiberX;
+         *fiberY = previousFiberY;
+      }
+
+      previousFiberCgX = previousFiberX - x1;
+      previousFiberCgY = previousFiberY - y1;
+
+      imgPix = (TYPE_PIXELS *) malloc(width * height * sizeof(TYPE_PIXELS));
+      if ( imgPix ==NULL ) {
+         throw CError( "CBuffer::AstroFiberCentro not enough memory for imgPix");
+      }      
+      pix->GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (long) imgPix);
+      
+      // fin de protection acces concurrent au buffer
+      pthread_mutex_unlock(&mutex);
+      
+      // ----------------------------------------------------
+      // je soustrais le bias
+      // ----------------------------------------------------   
+
+      if ( biasBufNo != 0 ) {
+         biasBuf = (CBuffer *)buf_pool->Chercher(biasBufNo);
+         if ( ! biasBuf->IsPixelsReady()) {
+            biasBuf = NULL;
+         }
+      }
+
+      if ( biasBuf != NULL ) {
+         biasPix = (TYPE_PIXELS *) malloc(width * height * sizeof(TYPE_PIXELS));
+         if ( biasPix ==NULL ) {
+            throw CError( "CBuffer::AstroFiberCentro not enough memory for biasPix");
+         }      
+         // je recupere la zone du bias correspondant à la fenetre 
+         biasBuf->pix->GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (long) biasPix);
+         
+         for(j=0;j<height;j++) {
+            imgOffset  = imgPix  + j * width;
+            biasOffset = biasPix + j * width;
+            for(i=0;i<width;i++) {
+               imgPtr  = imgOffset  +i;
+               biasPtr = biasOffset +i;
+               // je soutrais le bias
+               *imgPtr -= *biasPtr;
+               //je remplace les valeurs négatives par 0
+               if ( *imgPtr < 0. ) {
+                  *imgPtr = 0.;
+               }
+            }
+         }
+      } 
+      
+      // ----------------------------------------------------
+      // je calcule la qualite qualityMin à partir de mean, dsigma
+      // ----------------------------------------------------
+      int ttResult;
+      int datatype = TFLOAT;
+      double dlocut, dhicut, dmaxi, dmini, dmean, dsigma, dbgmean,dbgsigma,dcontrast;
+      
+      ttResult = Libtt_main(TT_PTR_STATIMA,13,imgPix,&datatype,&width,&height,
+         &dlocut,&dhicut,&dmaxi,&dmini,&dmean,&dsigma,&dbgmean,&dbgsigma,&dcontrast);
+      if(ttResult) {
+         free(imgPix);
+         throw CErrorLibtt(ttResult);
+      }
+      *maxIntensity = dmaxi;
+      *background =   dbgmean;
+
+      if ( biasBuf != NULL ) {
+         qualityMin = dbgmean + 6.0 * dbgsigma;
+      } else {
+         qualityMin = 6.0 * dbgsigma;
+      }
+
+      // ----------------------------------------------------
+      // je soustrais le fond de ciel estimé si le bias n'a pas ete soustrait
+      // ----------------------------------------------------   
+      if ( biasBuf == NULL ) {
+         for(j=0;j<height;j++) {
+            imgOffset  = imgPix  + j * width;
+            for(i=0;i<width;i++) {
+               imgPtr  = imgOffset  +i;
+               // je soutrait le fond de ciel 
+               *imgPtr -= (float)dmean;
+               //je remplace les valeurs négatives par 0
+               if ( *imgPtr < 0. ) {
+                  *imgPtr = 0.;
+               }
+            }
+         }
+      }   
+
+      // ----------------------------------------------------
+      // j'ajuste une gaussienne pour le calcul de la FWHM, 
+      // de background et de maxIntensity
+      // ----------------------------------------------------
+      double px[4], py[4];
+      TYPE_PIXELS pixel;
+      double errx, erry;
+
+      // je cree les variables de travail pour l'ajustement de la gaussienne
+      iX = (TYPE_PIXELS*)calloc(width,sizeof(TYPE_PIXELS));
+      dX = (double*)calloc(width,sizeof(double));
+      iY = (TYPE_PIXELS*)calloc(height,sizeof(TYPE_PIXELS));
+      dY = (double*)calloc(height,sizeof(double));
+
+      for(j=0;j<height;j++) {
+         for(i=0;i<width;i++) {
+            pixel = *(imgPix+width*j+i);
+            *(iX+i) += pixel;
+            *(iY+j) += pixel;
+         }
+      }
+
+      for(i=0;i<width;i++)  *(dX+i) = (double)*(iX+i);
+      for(i=0;i<height;i++) *(dY+i) = (double)*(iY+i);
+
+      pix->fitgauss1d(width,dX,px,&errx);
+      pix->fitgauss1d(height,dY,py,&erry);
+
+      *measuredFwhmX = px[2];
+      *measuredFwhmY = py[2];
+      
+      CBuffer * maskBuf = NULL; 
+      CBuffer * sumBuf  = NULL;
+
+      if ( findFiber == 1 && fiberInside == 1) {
+         // je prepare les buffes du masque et de l'image inregree
+         maskBuf = (CBuffer *)buf_pool->Chercher(maskBufNo);
+         maskPix = (TYPE_PIXELS *) malloc(width * height * sizeof(TYPE_PIXELS));
+         if ( maskPix ==NULL ) {
+            throw CError( "CBuffer::AstroFiberCentro not enough memory for maskPix");
+         }      
+         sumBuf = (CBuffer *)buf_pool->Chercher(sumBufNo);
+         sumPix = (TYPE_PIXELS *) malloc(width * height * sizeof(TYPE_PIXELS));
+         if ( sumPix ==NULL ) {
+            throw CError( "CBuffer::AstroFiberCentro not enough memory for sumPix");
+         }      
+
+         if ( originSumCounter > 1 ) {
+            // je recupere le masque 
+            maskBuf->GetPixels(0, 0, width -1, height -1, FORMAT_FLOAT, PLANE_GREY, (long) maskPix);
+            // je recupere l'image integree  
+            sumBuf->GetPixels(0, 0, width -1, height -1, FORMAT_FLOAT, PLANE_GREY, (long) sumPix);
+         }
+      }
+
+      // ----------------------------------------------------
+      // je compte les pixels pixelCount au dessus du seuil de qualite 
+      // j'applique le masque (et j'intialise le masque si c'est la premiere image de la serie)
+      // je cumule l'image et je calcule l'intensite max de l'image cumulee
+      // je calcule le barycentre
+      // ---------------------------------------------------- 
+      int    pixelCount = 0;
+      double dist;
+      
+      *starX=0.;
+      *starY=0.;
+      flux = 0.;
+      sx = 0.;
+      sy = 0.;
+      for(j=0;j<height;j++) {
+         imgOffset  = imgPix  + j * width;
+         maskOffset = maskPix + j * width;
+         sumOffset  = sumPix +  j * width;
+         for(i=0;i<width;i++) {
+            imgPtr  = imgOffset+i;
+         
+            // j'incremente le compteur des pixels au dessus du seuil
+            if ( (double)*imgPtr > qualityMin ) {
+               pixelCount++;
+            }
+
+            // je cumule les flux de l'image courante
+            flux += (double)*imgPtr  ;
+            sx += (i+1) * (double)*imgPtr ;
+            sy += (j+1) * (double)*imgPtr ;
+         
+            if ( findFiber == 1 && fiberInside == 1 ) {
+               maskPtr = maskOffset+i;
+               sumPtr  = sumOffset+i;
+               if ( originSumCounter == 1 ) {
+                  // j'initialise le masque autour de la consigne
+                  dist = sqrt( ((double)i-previousFiberCgX)*((double)i-previousFiberCgX) + ((double)j-previousFiberCgY)*((double)j-previousFiberCgY));
+                  if ( dist > maskRadius ) {
+                     *maskPtr = 0;
+                     // j'applique le masque sur l'image courante
+                     *imgPtr  = 0;
+                  } else {
+                     *maskPtr = 1;
+                  }
+                  // j'initialise le flux dans l'image integree
+                  *sumPtr = *imgPtr;
+               } else {
+                  // j'applique le masque sur l'image courante
+                  *imgPtr *= *maskPtr;
+                  // j'additionne le flux dans l'image integree
+                  *sumPtr += *imgPtr;
+               }
+               // je calcule l'intensite max de l'image cumulee
+               if ( *sumPtr > sumMaxIntensity ) {
+                  sumMaxIntensity = *sumPtr; 
+               }
+               // je calcule l'intensite min de l'image cumulee
+               if ( *sumPtr > sumMaxIntensity ) {
+                  sumMaxIntensity = *sumPtr; 
+               }
+            }            
+
+         }
+      }
+   
+      
+      if ( findFiber == 1 && fiberInside == 1 ) {
+         if ( originSumCounter == 1 ) {
+            int naxis = 2; 
+            TYPE_PIXELS minMask = 0;
+            TYPE_PIXELS maxMask = 1;
+            // j'intialise le buffer du masque 
+            maskBuf->SetPixels(PLANE_GREY, width, height, FORMAT_FLOAT, COMPRESS_NONE, maskPix, 0,0,0) ;
+            maskBuf->GetKeywords()->Add("NAXIS",  &naxis, TINT, "","");
+            maskBuf->GetKeywords()->Add("NAXIS1", &width, TINT, "","");
+            maskBuf->GetKeywords()->Add("NAXIS2", &height,TINT, "","");
+            maskBuf->GetKeywords()->Add("MIPS-LO", &minMask, TFLOAT, "","");
+            maskBuf->GetKeywords()->Add("MIPS-HI", &maxMask, TFLOAT, "","");
+            // j'initialise l'image integree 
+            sumBuf->GetKeywords()->Add("NAXIS",  &naxis, TINT, "","");
+            sumBuf->GetKeywords()->Add("NAXIS1", &width, TINT, "","");
+            sumBuf->GetKeywords()->Add("NAXIS2", &height,TINT, "","");
+         }
+         // je remplace les pixels de l'image integree
+         sumBuf->SetPixels(PLANE_GREY, width, height, FORMAT_FLOAT, COMPRESS_NONE, sumPix, 0,0,0) ;
+         // j'ajoute les min et max pour les seuils de visualisation
+         sumBuf->GetKeywords()->Add("MIPS-LO", &sumMinIntensity, TFLOAT, "","");
+         sumBuf->GetKeywords()->Add("MIPS-HI", &sumMaxIntensity, TFLOAT, "","");
+         sumBuf->GetKeywords()->Add("SUM_COUNT", &originSumCounter, TINT, "","");
+      }
+
+
+      // ----------------------------------------------------
+      // je verifie le seuil de qualite 
+      // ----------------------------------------------------
+      if (  pixelCount < pixelMinCount || flux ==0 ) {
+         strcpy(starStatus, "NO SIGNAL");
+         if (imgPix!=NULL)    free(imgPix);
+         if (biasPix!=NULL)   free(biasPix);
+         if (maskPix!=NULL)   free(maskPix);
+         if (sumPix!=NULL)    free(sumPix);
+         if (fiberPix!=NULL)  free(fiberPix);
+         
+         if (iX!=NULL)  free(iX);
+         if (dX!=NULL)  free(dX);
+         if (iY!=NULL)  free(iY);
+         if (dY!=NULL)  free(dY);
+         return;
+      }      
+
+      // je calcule le barycentre 
+      *starX = (sx / flux) -1 ;
+      *starY = (sy / flux) -1;
+      // je change de repere de coordonnees
+      *starX += x1;
+      *starY += y1;
+
+      strcpy(starStatus, "DETECTED");
+      sprintf (message, "pixelCount= %d", pixelCount);
+
+
+      if ( findFiber == 1 && originSumCounter == originSumNb && fiberInside==1 )  {
+         
+
+         // ----------------------------------------------------
+         // je detecte l'entree de la fibre
+         //
+         // 1) je synthetise la gaussienne
+         //  IMA2[i,j]=(1.-offset)*exp(-((i-cgx)**2 / (0.36*fwhmx**2))-((j-cgy)**2 /(0.36*fwhmy**2)))+offset
+         //  avec fwhmx = fwhmy = le seeing moyen en pixel,
+         //  et cgx, cgy le centre de gravite de l'etoile detectee,
+         //  et offset = 1. - 1./max_ima
+         //
+                  
+
+         TYPE_PIXELS offset = (TYPE_PIXELS) (1. - 1. / sumMaxIntensity);
+         TYPE_PIXELS gaussIntensity ;
+         TYPE_PIXELS fiberMaxIntensity = 0;          // intensite du plateau
+         
+         fiberPix = (TYPE_PIXELS*) malloc(width * height * sizeof(TYPE_PIXELS));
+         if ( fiberPix ==NULL ) {
+            throw CError( "CBuffer::AstroFiberCentro not enough memory for fiberPix");
+         }      
+         
+         double cgx =    *starX - x1;
+         double cgy =    *starY - y1;
+
+         // 
+         for(j=0;j<height;j++) {
+            sumOffset  = sumPix  + j * width;
+            maskOffset = maskPix + j * width;
+            fiberOffset = fiberPix + j * width;
+            for(i=0;i<width;i++) {
+               sumPtr  = sumOffset+i;
+               maskPtr = maskOffset+i;
+               fiberPtr = fiberOffset+i;
+               
+               gaussIntensity = (TYPE_PIXELS) ( (1. - offset) * exp( - ((double)i-cgx)*((double)i-cgx)/(0.36*maskFwhm*maskFwhm)  - ((double)j-cgy)*((double)j-cgy) / (0.36*maskFwhm*maskFwhm) ) + offset);               
+               *fiberPtr = *sumPtr * *maskPtr / gaussIntensity;
+
+               if ( *fiberPtr > fiberMaxIntensity ) {
+                  // je mets à jour la nouvelle valeur max
+                  fiberMaxIntensity = *fiberPtr; 
+               }
+
+            }
+         }
+         
+         
+         // ----------------------------------------------------
+         // 2) je cree le plateau 
+         //  IMA3=IMA x MASKT / IMA2 
+         //  PLATEAU = MAX(IMA3)
+         //  j'impose cette valeur a tous les pixels de valeurs superieurs a 15% de cette valeur
+         //  IMA4 = WHERE ( IMA3 > 0.15 x PLATEAU, PLATEAU, IMA3 ) 
+         //
+         // 3) j'inverse les flux 
+         //  IMA5 = (PLATEAU - IMA4 ) x MASKT 
+         // j'impose cette valeur a tous les pixels de valeurs superieurs a 15% de cette valeur
+         // j'inverse les flux
+         // je cumule les flux pour le centre de gravite
+         flux = 0.;
+         sx = 0.;
+         sy = 0.;
+
+         for(j=0;j<height;j++) {
+            fiberOffset = fiberPix + j * width;
+            maskOffset =  maskPix  + j * width;
+            for(i=0;i<width;i++) {
+               fiberPtr = fiberOffset+i;
+               maskPtr = maskOffset+i;
+               
+               // j'ecrete a 15% du plateau
+               if ( *fiberPtr > fiberMaxIntensity * maskPercent ) {
+                  *fiberPtr = fiberMaxIntensity; 
+               }
+               // j'inverse le flux  
+               *fiberPtr = (fiberMaxIntensity - *fiberPtr) * *maskPtr ;
+               // je cumule les flux 
+               flux += (double)*fiberPtr;
+               sx += (i+1) * (double)*fiberPtr;
+               sy += (j+1) * (double)*fiberPtr;
+            }
+         }
+         // je calcule le barycentre 
+         *fiberX = (sx / flux) -1 ;
+         *fiberY = (sy / flux) -1 ;
+
+         if ( fiberBufNo !=0 ) {
+            CBuffer * fiberBuf = (CBuffer *)buf_pool->Chercher(fiberBufNo);
+            fiberBuf->SetPixels(PLANE_GREY, width, height, FORMAT_FLOAT, COMPRESS_NONE, fiberPix, 0,0,0) ;
+            // j'initialise l'image integree 
+            int naxis = 2;
+            TYPE_PIXELS fiberMinIntensity = 0;
+            fiberBuf->GetKeywords()->Add("NAXIS",  &naxis, TINT, "","");
+            fiberBuf->GetKeywords()->Add("NAXIS1", &width, TINT, "","");
+            fiberBuf->GetKeywords()->Add("NAXIS2", &height,TINT, "","");
+            fiberBuf->GetKeywords()->Add("MIPS-LO", &fiberMinIntensity, TFLOAT, "","");
+            fiberBuf->GetKeywords()->Add("MIPS-HI", &fiberMaxIntensity, TFLOAT, "","");
+         }
+
+        
+         // ----------------------------------------------------
+         // je calcule la qualite qualityMin à partir de mean, dsigma
+         // ----------------------------------------------------
+         int ttResult;
+         int datatype = TFLOAT;
+         double dlocut, dhicut, dmaxi, dmini, dmean, dsigma, dbgmean,dbgsigma,dcontrast;
+      
+         ttResult = Libtt_main(TT_PTR_STATIMA,13,fiberPix,&datatype,&width,&height,
+            &dlocut,&dhicut,&dmaxi,&dmini,&dmean,&dsigma,&dbgmean,&dbgsigma,&dcontrast);
+         if(ttResult) {
+            free(imgPix);
+            throw CErrorLibtt(ttResult);
+         }
+
+
+         if ( dmaxi < 10 ) {
+            strcpy(fiberStatus, "LOW SIGNAL");
+            *fiberX=previousFiberX;
+            *fiberY=previousFiberY;
+            sprintf(tempMessage, "Low fiber signal: %6.2f < 10", dmaxi);
+            strcat(message,tempMessage);
+         } else if ( (dmaxi-dmini) < 3*sqrt(dsigma) ) {
+            strcpy(fiberStatus, "NO SIGNAL");
+            sprintf(tempMessage, "No fiber signal:(%6.2f -%6.2f) < 3*sqrt(%6.2f) ", dmaxi, dmini,dsigma);
+            strcat(message,tempMessage);
+            *fiberX=previousFiberX;
+            *fiberY=previousFiberY;
+         } else {
+            // je change de repere de coordonnees fenetre => coordonnes image
+            *fiberX += x1;
+            *fiberY += y1;
+            double fiberDist = sqrt((*fiberX-previousFiberX)*(*fiberX-previousFiberX)+(*fiberY-previousFiberY)*(*fiberY-previousFiberY));
+            if ( fiberDist >5 ) {
+               strcpy(fiberStatus, "TOO FAR");
+               sprintf(tempMessage, "Fiber too far: %6.2f > 5", fiberDist);
+               strcat(message,tempMessage);
+            } else {         
+               strcpy(fiberStatus, "DETECTED");
+               // je copie le resulat dans le buffer de visalisation 
+            }
+         }
+         
+      }
+
+      
+      if (imgPix!=NULL)    free(imgPix);
+      if (biasPix!=NULL)   free(biasPix);
+      if (maskPix!=NULL)   free(maskPix);
+      if (sumPix!=NULL)    free(sumPix);
+      if (fiberPix!=NULL)  free(fiberPix);
+
+      if (iX!=NULL)  free(iX);
+      if (dX!=NULL)  free(dX);
+      if (iY!=NULL)  free(iY);
+      if (dY!=NULL)  free(dY);
+         
+      
+   } catch(const CError& e) {
+      if (imgPix!=NULL)    free(imgPix);
+      if (biasPix!=NULL)   free(biasPix);
+      if (maskPix!=NULL)   free(maskPix);
+      if (sumPix!=NULL)    free(sumPix);
+      if (fiberPix!=NULL)  free(fiberPix);
+      
+      if (iX!=NULL)  free(iX);
+      if (dX!=NULL)  free(dX);
+      if (iY!=NULL)  free(iY);
+      if (dY!=NULL)  free(dY);
+      
+      throw e;
+   }
+   
+
+}
+
+   
+
 void CBuffer::Autocut(double *phicut,double *plocut,double *pmode)
 {
    pix->Autocut( phicut, plocut, pmode);
@@ -2042,23 +2593,47 @@ void CBuffer::GetPix(int *plane, TYPE_PIXELS *val1,TYPE_PIXELS *val2,TYPE_PIXELS
  */
 void CBuffer::GetPixels(TYPE_PIXELS *pixels)
 {
-   int width = GetWidth();
-   int height = GetHeight();
-   pthread_mutex_lock(&mutex);
-   // Yassine
-   //pix->GetPixels(0, 0, width -1, height -1, FORMAT_FLOAT, PLANE_GREY, (int) pixels);
-   pix->GetPixels(0, 0, width -1, height -1, FORMAT_FLOAT, PLANE_GREY, (long) pixels);
-   pthread_mutex_unlock(&mutex);
+   try {
+      pthread_mutex_lock(&mutex);
+      int width = GetWidth();
+      int height = GetHeight();
+      // Yassine
+      //pix->GetPixels(0, 0, width -1, height -1, FORMAT_FLOAT, PLANE_GREY, (int) pixels);
+      pix->GetPixels(0, 0, width -1, height -1, FORMAT_FLOAT, PLANE_GREY, (long) pixels);
+      pthread_mutex_unlock(&mutex);
+   } catch(const CError& e) {
+      pthread_mutex_unlock(&mutex);
+      throw e;
+   }   
 }
 
 void CBuffer::GetPixels(TYPE_PIXELS *pixels, TColorPlane colorPlane)
 {
-   int width = GetWidth();
-   int height = GetHeight();
-   // Yassine
-   // pix->GetPixels(0, 0, width -1, height -1, FORMAT_FLOAT, colorPlane, (int) pixels);
-   pix->GetPixels(0, 0, width -1, height -1, FORMAT_FLOAT, colorPlane, (long) pixels);
+   try {
+      pthread_mutex_lock(&mutex);
+      int width = GetWidth();
+      int height = GetHeight();
+      pix->GetPixels(0, 0, width -1, height -1, FORMAT_FLOAT, colorPlane, (long) pixels);
+      pthread_mutex_unlock(&mutex);
+   } catch(const CError& e) {
+      pthread_mutex_unlock(&mutex);
+      throw e;
+   }
+
 }
+
+void CBuffer::GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane colorPlane, long pixelsPtr)
+{
+   try {
+      pthread_mutex_lock(&mutex);
+      pix->GetPixels(x1, y1, x2, y2, pixelFormat, colorPlane, pixelsPtr);
+      pthread_mutex_unlock(&mutex);
+   } catch(const CError& e) {
+      pthread_mutex_unlock(&mutex);
+      throw e;
+   }
+}
+
 
 void CBuffer::GetPixelsPointer(TYPE_PIXELS **ppixels)
 {
@@ -2066,20 +2641,37 @@ void CBuffer::GetPixelsPointer(TYPE_PIXELS **ppixels)
 }
 
 
-void CBuffer::GetPixelsVisu( int x1,int y1,int x2, int y2,
-            int mirrorX, int mirrorY,
-                  //double hicutRed,   double locutRed,
-                  //double hicutGreen, double locutGreen,
-                  //double hicutBlue,  double locutBlue,
-                  float *cuts,
+void CBuffer::GetPixelsRgb( int x1,int y1,int x2, int y2,
+            int mirrorX, int mirrorY, float *cuts,
             unsigned char *palette[3], unsigned char *ptr)
 {
-   pthread_mutex_lock(&mutex);
-   pix->GetPixelsVisu(x1,y1,x2, y2, mirrorX, mirrorY,
-      //hicutRed, locutRed, hicutGreen, locutGreen, hicutBlue, locutBlue,
-      cuts,
-      palette, ptr);
-   pthread_mutex_unlock(&mutex);
+   try {
+      pthread_mutex_lock(&mutex);
+      pix->GetPixelsRgb(x1,y1,x2, y2, mirrorX, mirrorY,
+         cuts,
+         palette, ptr);
+      pthread_mutex_unlock(&mutex);
+   } catch(const CError& e) {
+      pthread_mutex_unlock(&mutex);
+      throw e;
+   }
+}
+
+
+void CBuffer::GetPixelsVisu( int x1,int y1,int x2, int y2,
+            int mirrorX, int mirrorY, float *cuts,
+            unsigned char *palette[3], unsigned char *ptr)
+{
+   try {
+      pthread_mutex_lock(&mutex);
+      pix->GetPixelsVisu(x1,y1,x2, y2, mirrorX, mirrorY,
+         cuts,
+         palette, ptr);
+      pthread_mutex_unlock(&mutex);
+   } catch(const CError& e) {
+      pthread_mutex_unlock(&mutex);
+      throw e;
+   }
 }
 
 void CBuffer::Log(float coef, float offset)
@@ -2632,7 +3224,7 @@ void CBuffer::radec2xy(double ra, double dec, double *x, double *y,int order)
       *y = (double)(p_ast->crpix2 + (p_ast->cd11*ddec-p_ast->cd21*dra) / det -0.5);
    }
    /* --- cas de distorsion ---*/
-   if ((order==2)&&(p_ast->pv_valid=1)) {
+   if ((order==2)&&(p_ast->pv_valid==1)) {
       x0=*x;
       y0=*y;
       xp = p_ast->pv[1][1]*x0 + p_ast->pv[1][2]*y0 + p_ast->pv[1][0] + p_ast->pv[1][5]*x0*y0 + p_ast->pv[1][4]*x0*x0 + p_ast->pv[1][6]*y0*y0 + p_ast->pv[1][7]*x0*x0*x0 + p_ast->pv[1][8]*x0*x0*y0 + p_ast->pv[1][9]*x0*y0*y0 + p_ast->pv[1][10]*y0*y0*y0;
@@ -2707,7 +3299,8 @@ void CBuffer::Fwhm(int x1, int y1, int x2, int y2,
 }
 
 
-void CBuffer::MedX(int x1, int x2, int width)
+
+void CBuffer::MedX(int , int , int )
 {
 #if 0
    int temp;
@@ -2745,7 +3338,7 @@ void CBuffer::MedX(int x1, int x2, int width)
 }
 
 
-void CBuffer::MedY(int y1, int y2, int height)
+void CBuffer::MedY(int , int , int )
 {
 #if 0
    int temp;
@@ -2962,8 +3555,8 @@ int CBuffer::A_filtrGauss (TYPE_PIXELS fwhm, int radius, TYPE_PIXELS threshin,
       double xmax, ymax;
       int nbRow2, nbCol, col;
       char columnTypes[100];
-      char **columnUnits;
-      char **columnTitle;
+      char **columnUnits = NULL;
+      char **columnTitle = NULL;
       int msg;
 
       nbCol =13;
