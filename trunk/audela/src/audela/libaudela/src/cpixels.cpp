@@ -74,7 +74,7 @@ void CPixels::AstroBaricenter(int x1, int y1, int x2, int y2, double *xc, double
    sy = (float)0;
    for(j=0;j<naxis2;j++) {
       offset = pixTemp + j * naxis1;
-      for(i=0;i<naxis2;i++) {
+      for(i=0;i<naxis1;i++) {
          flux_pix = (double)*(offset+i);
          flux += flux_pix;
          sx += i * flux_pix;
