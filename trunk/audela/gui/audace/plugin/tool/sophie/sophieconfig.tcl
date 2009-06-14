@@ -2,7 +2,7 @@
 # Fichier : sophieconfig.tcl
 # Description : Fenetre de configuration de l'instrument Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophieconfig.tcl,v 1.8 2009-06-10 21:20:12 michelpujol Exp $
+# Mise a jour $Id: sophieconfig.tcl,v 1.9 2009-06-14 08:53:39 robertdelmas Exp $
 #
 
 #============================================================
@@ -168,7 +168,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -values $::sophie::private(listeBinning)
       grid $frm.acq.valeurbinguidage -in [ $frm.acq getframe ] -row 2 -column 1 -sticky ens
 
-   pack $frm.acq -side top -anchor w -fill x -expand 1
+   pack $frm.acq -side top -anchor w -fill x -expand 0
 
    #--- Frame pour la configuration du guidage
    TitleFrame $frm.guidage -borderwidth 2 -relief ridge -text $::caption(sophie,parametreGuidage)
@@ -236,7 +236,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -textvariable ::sophie::config::widget(gainIntegrateur)
       grid $frm.guidage.entrygainIntegrateur -in [ $frm.guidage getframe ] -row 6 -column 2 -sticky ens
 
-   pack $frm.guidage -side top -anchor w -fill x -expand 1
+   pack $frm.guidage -side top -anchor w -fill x -expand 0
 
    #--- Frame pour la position des fibres
    TitleFrame $frm.fibre -borderwidth 2 -relief ridge -text $::caption(sophie,positionFibres)
@@ -307,7 +307,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -command "::sophie::config::onFiberMode $visuNo"
       grid $frm.fibre.fiberGuigindModeHE -in [ $frm.fibre getframe ] -row 3 -column 3 -sticky ens
 
-   pack $frm.fibre -side top -anchor w -fill x -expand 1
+   pack $frm.fibre -side top -anchor w -fill x -expand 0
 
    #--- Frame pour les images
    TitleFrame $frm.image -borderwidth 2 -relief ridge -text $::caption(sophie,images)
@@ -356,7 +356,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -command "::sophie::chooseBiasFile"
       grid $frm.image.configureimageBias -in [ $frm.image getframe ] -row 3 -column 3 -sticky ens -padx 2
 
-   pack $frm.image -side top -anchor w -fill x -expand 1
+   pack $frm.image -side top -anchor w -fill x -expand 0
 }
 
 #------------------------------------------------------------
@@ -367,6 +367,60 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
 proc ::sophie::config::fillAlgorithmePage { frm visuNo } {
    variable private
 
+   #--- Frame pour les parametres du masque
+   TitleFrame $frm.paraMasque -borderwidth 2 -relief ridge -text $::caption(sophie,paraMasque)
+
+      #--- Diametre du masque
+      label $frm.paraMasque.labeldiametreMasque -text $::caption(sophie,diametreMasque)
+      grid $frm.paraMasque.labeldiametreMasque -in [ $frm.paraMasque getframe ]\
+         -row 0 -column 1 -sticky w
+
+      Entry $frm.paraMasque.entrydiametreMasque \
+         -width 8 -justify center -editable 1 \
+         -textvariable ::conf(sophie,maskRadius)
+      grid $frm.paraMasque.entrydiametreMasque -in [ $frm.paraMasque getframe ] \
+         -row 0 -column 2 -sticky ens
+
+      #--- Largeur de la gaussienne du masque
+      label $frm.paraMasque.labellargeurGaussMasque -text $::caption(sophie,largeurGaussMasque)
+      grid $frm.paraMasque.labellargeurGaussMasque -in [ $frm.paraMasque getframe ] \
+         -row 1 -column 1 -sticky w
+
+      Entry $frm.paraMasque.entrylargeurGaussMasque \
+         -width 8 -justify center -editable 1 \
+         -textvariable ::conf(sophie,maskFwhm)
+      grid $frm.paraMasque.entrylargeurGaussMasque -in [ $frm.paraMasque getframe ] \
+         -row 1 -column 2 -sticky ens
+
+      #--- Nombre minimal de pixels
+      label $frm.paraMasque.labelseuilMini -text $::caption(sophie,seuilMini)
+      grid $frm.paraMasque.labelseuilMini -in [ $frm.paraMasque getframe ] \
+         -row 2 -column 1 -sticky w
+
+      Entry $frm.paraMasque.entryseuilMini \
+         -width 8 -justify center -editable 1 \
+         -textvariable ::conf(sophie,pixelMinCount)
+      grid $frm.paraMasque.entryseuilMini -in [ $frm.paraMasque getframe ] \
+         -row 2 -column 2 -sticky ens
+
+   pack $frm.paraMasque -side top -anchor w -fill x -expand 0
+
+   #--- Frame pour les parametres de la précision du guidage
+   TitleFrame $frm.paraPrecisionCentrage -borderwidth 2 -relief ridge \
+      -text $::caption(sophie,paraPrecisionCentrage)
+
+      #--- Precision du centrage
+      label $frm.paraPrecisionCentrage.labelprecisionCentrage -text $::caption(sophie,precisionCentrage)
+      grid $frm.paraPrecisionCentrage.labelprecisionCentrage -in [ $frm.paraPrecisionCentrage getframe ] \
+         -row 0 -column 1 -sticky w
+
+      Entry $frm.paraPrecisionCentrage.entryprecisionCentrage \
+         -width 8 -justify center -editable 1 \
+         -textvariable ::conf(sophie,centerMaxLimit)
+      grid $frm.paraPrecisionCentrage.entryprecisionCentrage -in [ $frm.paraPrecisionCentrage getframe ] \
+         -row 0 -column 2 -sticky ens
+
+   pack $frm.paraPrecisionCentrage -side top -anchor w -fill x -expand 0
 }
 
 #------------------------------------------------------------
