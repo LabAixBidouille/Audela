@@ -133,6 +133,17 @@ public:
                       double *flux, double* f23, double* fmoy, double* sigma, int *n1);
    void AstroBaricenter(int x1, int y1, int x2, int y2, double *xc, double *yc);
    void AstroSlitCentro(int x1, int y1, int x2, int y2, int w, double signalRatio,double *xc, double *yc, TYPE_PIXELS* maxi,double *signal1, double *signal2);
+   void AstroFiberCentro(int x1, int y1, int x2, int y2, int mode,
+                          int biasBufNo, int maskBufNo, int sumBufNo, int fiberBufNo,
+                          int maskRadius, double maskFwhm, double maskPercent,
+                          int originSumNb, int originSumCounter, 
+                          double previousFiberX, double previousFiberY,  
+                          int pixelMinCount,
+                          char *starStatus,  double *starX,  double *starY,
+                          char *fiberStatus, double *fiberX, double *fiberY, 
+                          double *ajustedFwhmX, double *ajustedFwhmY, 
+                          double *background, double *maxIntensity,
+                          char * message);
    void Autocut(double *phicut,double *plocut,double *pmode);
    void BinX(int x1, int x2, int width);
    void BinY(int y1, int y2, int height);
@@ -162,13 +173,13 @@ public:
    void GetPix(int *plane, TYPE_PIXELS *val1,TYPE_PIXELS *val2,TYPE_PIXELS *val3,int x, int y);
    void GetPixels(TYPE_PIXELS* pixels);
    void GetPixels(TYPE_PIXELS *pixels, TColorPlane colorPlane);
+   void GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, long pixelsPtr);
    void GetPixelsPointer(TYPE_PIXELS **ppixels);
+   void GetPixelsRgb( int x1,int y1,int x2, int y2,
+            int mirrorX, int mirrorY, float *cuts,
+            unsigned char *palette[3], unsigned char *ptr);
    void GetPixelsVisu( int x1,int y1,int x2, int y2, 
-            int mirrorX, int mirrorY,
-                  //double hicutRed,   double locutRed, 
-                  //double hicutGreen, double locutGreen,
-                  //double hicutBlue,  double locutBlue,
-                  float *cuts,
+            int mirrorX, int mirrorY, float *cuts,
             unsigned char *palette[3], unsigned char *ptr);
    int  GetSavingType();
    int  GetCompressType();
