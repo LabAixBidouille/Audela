@@ -2,7 +2,7 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: serialport.tcl,v 1.22 2009-03-13 23:51:36 michelpujol Exp $
+# Mise a jour $Id: serialport.tcl,v 1.23 2009-06-14 06:59:08 robertdelmas Exp $
 #
 
 namespace eval serialport {
@@ -170,14 +170,6 @@ proc ::serialport::deletePluginInstance { linkLabel deviceId usage } {
       #--- je rafraichis la liste
       refreshAvailableList
    }
-
-   #--- je supprime le commentaire d'utilisation
-   ###if { [info exists private(serialLink,$linkLabel,$deviceId,$usage)] } {
-   ###   unset private(serialLink,$linkLabel,$deviceId,$usage)
-   ###}
-   #--- je rafraichis la liste
-   ###::serialport::refreshAvailableList
-   #---
    return
 }
 
@@ -255,7 +247,7 @@ proc ::serialport::getLinkIndex { linkLabel } {
 
    #--- je recupere linkIndex qui est apres le linkType dans linkLabel
    set linkIndex ""
-   if { [string first $private(genericName) $linkLabel]  == 0 } {
+   if { [string first $private(genericName) $linkLabel] == 0 } {
       scan $linkLabel "$private(genericName)%s" linkIndex
    }
    return $linkIndex
@@ -336,16 +328,16 @@ proc ::serialport::refreshAvailableList { } {
 
    set linkList [list ]
    set linkLabelList [list ]
-   #--- j'affiche les port serie deja ouverts
-   foreach { key value } [array get ::serialport::private serialLink,*] {
-      set linklabel [lindex [split $key ","] 1]
-      set deviceId  [lindex [split $key ","] 2]
-      set usage     [lindex [split $key ","] 3]
-      set comment   $value
-      set linkText "$linklabel { $deviceId $usage $comment }"
-      #--- je renseigne la liste les ports deja utilises
-      lappend linkList $linkText
-      lappend linkLabelList $linklabel
+   #--- j'affiche les ports series deja ouverts
+   foreach { linkNo } [ ::link::list ] {
+      if { [ link$linkNo drivername ] == "serialport" } {
+         set linklabel "$private(genericName)[ link$linkNo index ]"
+         set usage     [ link$linkNo use get ]
+         set linkText  "$linklabel $usage"
+         #--- je renseigne la liste les ports deja utilises
+         lappend linkList $linkText
+         lappend linkLabelList $linklabel
+      }
    }
 
    #--- je recherche les ports disponibles non utilises
@@ -361,7 +353,6 @@ proc ::serialport::refreshAvailableList { } {
    foreach linkLabel [lsort $linkList] {
       $private(frm).available.list insert end $linkLabel
    }
-
 
    #--- je selectionne le linkLabel comme avant le rafraichissement
    selectConfigLink $selectedLinkLabel
