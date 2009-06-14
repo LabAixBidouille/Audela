@@ -82,9 +82,11 @@ public:
    //Yassine
    //virtual void GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, int pixels)=0;
    virtual void GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, long pixels)=0;
+   virtual void GetPixelsRgb( int x1,int y1,int x2, int y2,
+                  int mirrorX, int mirrorY, float *cuts,
+                  unsigned char *palette[3], unsigned char *ptr)=0;
    virtual void GetPixelsVisu( int x1,int y1,int x2, int y2,
-                  int mirrorX, int mirrorY,
-                   float *cuts,
+                  int mirrorX, int mirrorY, float *cuts,
                   unsigned char *palette[3], unsigned char *ptr)=0;
    void         Histogram(int n, float *adus, float *meanadus, long *histo,
                           int ismini,float mini,int ismaxi,float maxi);

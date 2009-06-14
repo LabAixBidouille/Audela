@@ -1212,6 +1212,102 @@ void CPixelsRgb::GetPixelsPointer(TYPE_PIXELS **pixels) {
       throw CError(ELIBSTD_NOT_IMPLEMENTED);
 }
 
+/** 
+ * GetPixelsRgb
+ * retourne les intensités de la zone (x1,y1)-(x2,y2)
+ * dans le format RGB : 3 octets par pixel ( rouge, vert, bleu) 
+ * en tenant compte des mirrois X ou Y éventuels, des seuils haut et bas et de la palette de couleurs
+ *
+ * @param x1       abcisse du coin bas gauche de la zone
+ * @param y1       ordonnee du coin bas gauche de la zone 
+ * @param x2       abcisse du coin haut, doit de la zone
+ * @param x2       ordonnée du coin haut, doit de la zone
+ * @param mirrorX  0: pas de miroir horizontal, 1: miroir horizontal
+ * @param mirrorY  0: pas de miroir vertical, 1 : miroir vertical
+ * @param cuts     tableau des 6 seuils : haut rouge, bas rouge, haut vert bas vert , haut bleu , bas bleu
+ * @param palette  palette de couleur (256 valeurs dans un tableau de 256 octets)
+ * @param ptr      pointeur de pixels 24 bits sous la forme RGBARGBARGBA...
+ *
+ * @return void
+ */
+
+void CPixelsRgb::GetPixelsRgb( int x1,int y1,int x2, int y2,
+            int mirrorX, int mirrorY, float *cuts,
+             unsigned char *palette[3], unsigned char *ptr) 
+{
+   int i, j;
+   int orgww, orgwh;        // original window width, height
+   float dynRed, dynGreen, dynBlue;
+   float fshRed = (float)cuts[0];
+   float fsbRed = (float)cuts[1];
+   float fshGreen = (float)cuts[2];
+   float fsbGreen = (float)cuts[3];
+   float fshBlue = (float)cuts[4];
+   float fsbBlue = (float)cuts[5];
+   long base;
+   int xdest, ydest;
+   unsigned char (*pdest)[3];
+   pdest = (unsigned char (*)[3])ptr;
+
+   orgww = x2 - x1 + 1; // Largeur de la fenetre au depart
+   orgwh = y2 - y1 + 1; // Hauteur ...
+ 
+   if(fshRed==fsbRed) { 
+      fsbRed -= (float)1e-1; 
+   }
+   dynRed = (float)256. / (fshRed - fsbRed);
+   
+   if(fshGreen==fsbGreen) { 
+      fsbGreen -= (float)1e-1; 
+   }
+   dynGreen = (float)256. / (fshGreen - fsbGreen);
+   
+   if(fshBlue==fsbBlue) { 
+      fsbBlue -= (float)1e-1; 
+   }
+   dynBlue = (float)256. / (fshBlue - fsbBlue);
+   
+   
+   for(j=y1;j<=y2; j++) {
+      if(mirrorY == 0) {
+         ydest = ((y2-y1) - (j -y1) )*orgww ;
+      } else {
+         ydest = (j - y1)*orgww ;
+      }
+    
+      for(i=x1;i<=x2;i++) {
+         if(mirrorX == 0) {
+            xdest = i-x1;
+         } else {
+            xdest = (x2-x1) - (i-x1) ;
+         }
+         base = (j*naxis1+i)*naxis;
+         pdest[ydest+xdest][0] = palette[0][(unsigned char)min(max(((float)pix[base+0]-fsbRed)  *dynRed,0),255)];
+         pdest[ydest+xdest][1] = palette[1][(unsigned char)min(max(((float)pix[base+1]-fsbGreen)*dynGreen,0),255)];
+         pdest[ydest+xdest][2] = palette[2][(unsigned char)min(max(((float)pix[base+2]-fsbBlue) *dynBlue,0),255)];
+      }
+   }   
+}
+
+
+/** 
+ * GetPixelsVisu
+ * retourne les intensités de la zone (x1,y1)-(x2,y2)
+ * dans le format compatible avec la visu : 4 octets par pixel ( rouge, vert, bleu, inutilisé) 
+ * en tenant compte des mirrois X ou Y éventuels, des seuils haut et bas et de la palette de couleurs
+ *
+ * @param x1       abcisse du coin bas gauche de la zone
+ * @param y1       ordonnee du coin bas gauche de la zone 
+ * @param x2       abcisse du coin haut, doit de la zone
+ * @param x2       ordonnée du coin haut, doit de la zone
+ * @param mirrorX  0: pas de miroir horizontal, 1: miroir horizontal
+ * @param mirrorY  0: pas de miroir vertical, 1 : miroir vertical
+ * @param cuts     tableau des 6 seuils : haut rouge, bas rouge, haut vert bas vert , haut bleu , bas bleu
+ * @param palette  palette de couleur (256 valeurs dans un tableau de 256 octets)
+ * @param ptr      pointeur de pixels 32 bits sous la forme RGBARGBARGBA...
+ *
+ * @return void
+ */
 
 void CPixelsRgb::GetPixelsVisu( int x1,int y1,int x2, int y2,
             int mirrorX, int mirrorY,
