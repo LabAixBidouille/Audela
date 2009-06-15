@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.30 2009-05-03 17:26:52 michelpujol Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.31 2009-06-15 15:48:37 robertdelmas Exp $
 #
 
 namespace eval confColor:: {
@@ -391,7 +391,9 @@ namespace eval confColor:: {
                if { [ string first color_invariant $w ] == -1 } {
                   $w configure -bg $audace(color,canvas)
                } else {
-                  ::bermasaude::representationRoueAFiltres
+                  if { [ file exist [ file join $audace(rep_plugin) equipment bermasaude bermasaude.tcl ] ] == "1" } {
+                     ::bermasaude::representationRoueAFiltres
+                  }
                }
             }
          }
