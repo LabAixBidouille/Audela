@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.46 2008-12-18 23:32:41 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.47 2009-06-15 16:45:25 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -2969,7 +2969,7 @@ namespace eval ::traiteImage {
       global audace traiteImage
 
       #--- Retourne les coordonnees de la zone selectionnee avec la souris
-      set box [ ::confVisu::getBox 1 ]
+      set box [ ::confVisu::getBox $audace(visuNo) ]
       if { $box == "" } {
          set traiteImage(blanc_R) ""
          set traiteImage(blanc_V) ""
@@ -3002,8 +3002,8 @@ namespace eval ::traiteImage {
       set traiteImage(blanc_B) [ lindex $intensite_blanc 3 ]
 
       #--- Suppression de la zone selectionnee avec la souris si elle existe
-      if { [ lindex [ list [ ::confVisu::getBox 1 ] ] 0 ] != "" } {
-         ::confVisu::deleteBox 1
+      if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] != "" } {
+         ::confVisu::deleteBox $audace(visuNo)
       }
    }
 
@@ -3015,7 +3015,7 @@ namespace eval ::traiteImage {
       global audace traiteImage
 
       #--- Retourne les coordonnees de la zone selectionnee avec la souris
-      set box [ ::confVisu::getBox 1 ]
+      set box [ ::confVisu::getBox $audace(visuNo) ]
       if { $box == "" } {
          set traiteImage(noir_R) ""
          set traiteImage(noir_V) ""
@@ -3048,8 +3048,8 @@ namespace eval ::traiteImage {
       set traiteImage(noir_B) [ lindex $intensite_noir 3 ]
 
       #--- Suppression de la zone selectionnee avec la souris si elle existe
-      if { [ lindex [ list [ ::confVisu::getBox 1 ] ] 0 ] != "" } {
-         ::confVisu::deleteBox 1
+      if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] != "" } {
+         ::confVisu::deleteBox $audace(visuNo)
       }
    }
 
@@ -3497,6 +3497,7 @@ namespace eval ::traiteWindow {
                if { $traiteWindow(disp) == 1 } {
                   loadima $out$end
                }
+               ::confVisu::deleteBox $audace(visuNo)
                set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
             } m ]
             if { $catchError == "1" } {
