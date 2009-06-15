@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.17 2009-06-14 08:52:06 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.18 2009-06-15 16:17:43 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -150,6 +150,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,arretGuidage)          "Arrêter le guidage"
    set caption(sophie,suspendreGuidage)      "Suspendre le guidage"
    set caption(sophie,realDelay)             "Délai entre 2 debuts de poses (seconde)"
+
+   set caption(sophie,masque)                "Masque"
+   set caption(sophie,imageIntegree)         "Image intégrée"
+   set caption(sophie,imageInversee)         "Image inversée du trou"
 
    set caption(sophie,simulation)            "Simulation"
    set caption(sophie,modeSimulation)        "Mode simulation"
