@@ -2,7 +2,7 @@
 # Fichier : sophieview.tcl
 # Description : Vue detail du suivi
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophieview.tcl,v 1.7 2009-06-13 23:58:20 michelpujol Exp $
+# Mise a jour $Id: sophieview.tcl,v 1.8 2009-06-15 16:18:31 robertdelmas Exp $
 #
 
 #============================================================
@@ -38,13 +38,13 @@ proc ::sophie::view::run { sophieVisu } {
 proc ::sophie::view::createPluginInstance { { in "" } { visuNo 1 } } {
    variable private
 
-   set private(frm)                   "$in.sophieview"
    #--- je memorise le buffer initial
    set private(initialBuffer,$visuNo) [::confVisu::getBufNo $visuNo]
 
    set private(bufferName,$visuNo)    "maskBufNo"
 
    #--- Petit raccourci
+   set private(frm) "$in.sophieview"
    set frm $private(frm)
 
    #--- Interface graphique de l'outil
@@ -54,26 +54,26 @@ proc ::sophie::view::createPluginInstance { { in "" } { visuNo 1 } } {
       frame $frm.select -borderwidth 2 -relief groove
 
          #--- Bouton de selection de l'image a afficher
-         radiobutton $frm.select.mask -highlightthickness 0 -padx 0 -pady 0 -state normal \
-            -text "Masque" -justify left \
+         radiobutton $frm.select.mask -highlightthickness 0 -state normal \
+            -text "$::caption(sophie,masque)" \
             -value "maskBufNo" \
             -variable ::sophie::view::private(bufferName,$visuNo) \
             -command "::sophie::view::setBuffer $visuNo"
-         pack $frm.select.mask -anchor w -expand 1 -fill x -ipady 2 -padx 2 -pady 2
+         pack $frm.select.mask -side top -anchor w -ipady 2 -padx 2 -pady 2
 
-         radiobutton $frm.select.sum -highlightthickness 0 -padx 0 -pady 0 -state normal \
-            -text "Image intégrée" -justify left \
+         radiobutton $frm.select.sum -highlightthickness 0 -state normal \
+            -text "$::caption(sophie,imageIntegree)" \
             -value "sumBufNo" \
             -variable ::sophie::view::private(bufferName,$visuNo) \
             -command "::sophie::view::setBuffer $visuNo"
-         pack $frm.select.sum -anchor w -expand 1 -fill x -ipady 2 -padx 2 -pady 2
+         pack $frm.select.sum -side top -anchor w -ipady 2 -padx 2 -pady 2
 
-         radiobutton $frm.select.fiber -highlightthickness 0 -padx 0 -pady 0 -state normal \
-            -text "Image inversée du trou" -justify left \
+         radiobutton $frm.select.fiber -highlightthickness 0 -state normal \
+            -text "$::caption(sophie,imageInversee)" \
             -value "fiberBufNo" \
             -variable ::sophie::view::private(bufferName,$visuNo) \
             -command "::sophie::view::setBuffer $visuNo"
-         pack $frm.select.fiber -anchor w -expand 1 -fill x -ipady 2 -padx 2 -pady 2
+         pack $frm.select.fiber -side top -anchor w -ipady 2 -padx 2 -pady 2
 
       pack $frm.select -side top -fill x
 
