@@ -2,7 +2,7 @@
 # Fichier : focuserjmi.tcl
 # Description : Gere un focuser sur port parallele ou quickremote
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserjmi.tcl,v 1.14 2009-05-31 15:20:58 michelpujol Exp $
+# Mise a jour $Id: focuserjmi.tcl,v 1.15 2009-06-15 16:18:52 robertdelmas Exp $
 #
 
 #
@@ -161,7 +161,7 @@ proc ::focuserjmi::fillConfigPage { frm } {
 
       #--- Label de la liaison
       label $frm.frame1.labelLink -text "$caption(focuserjmi,link)"
-      grid $frm.frame1.labelLink -row 0 -column 0 -columnspan 1 -rowspan 1 -sticky ewns
+      grid $frm.frame1.labelLink -row 0 -column 0 -columnspan 1 -rowspan 1 -sticky nw -padx 5
 
       #--- Choix de la liaison
       ComboBox $frm.frame1.link \
@@ -184,9 +184,9 @@ proc ::focuserjmi::fillConfigPage { frm } {
 
       #--- Choix du numero du bit pour le demarrage du moteur
       label $frm.frame1.bitDecrLabel -text "$caption(focuserjmi,bitStart)"
-      grid $frm.frame1.bitDecrLabel -row 1 -column 0 -columnspan 1 -rowspan 1 -sticky ewns
+      grid $frm.frame1.bitDecrLabel -row 1 -column 0 -columnspan 1 -rowspan 1 -sticky nw -padx 5
 
-     set bitList [ list 0 1 2 3 4 5 6 7 ]
+      set bitList [ list 0 1 2 3 4 5 6 7 ]
       ComboBox $frm.frame1.bitStart \
          -width [ ::tkutil::lgEntryComboBox $bitList ] \
          -height [ llength $bitList ] \
@@ -199,7 +199,7 @@ proc ::focuserjmi::fillConfigPage { frm } {
 
       #--- Choix du numero du bit pour le sens de rotation du moteur
       label $frm.frame1.bitIncrLabel -text "$caption(focuserjmi,bitDirection)"
-      grid $frm.frame1.bitIncrLabel -row 2 -column 0 -columnspan 1 -rowspan 1 -sticky ewns
+      grid $frm.frame1.bitIncrLabel -row 2 -column 0 -columnspan 1 -rowspan 1 -sticky nw -padx 5
 
       set bitList [ list 0 1 2 3 4 5 6 7 ]
       ComboBox $frm.frame1.bitDirection \
@@ -215,17 +215,17 @@ proc ::focuserjmi::fillConfigPage { frm } {
       radiobutton $frm.frame1.manualPulse \
          -indicatoron 1 -text $caption(focuserjmi,manualPulse) -value "manual" \
          -variable ::focuserjmi::widget(pulseMode)
-      grid $frm.frame1.manualPulse -row 3 -column 0 -columnspan 1 -rowspan 1 -sticky ewns
+      grid $frm.frame1.manualPulse -row 3 -column 0 -columnspan 1 -rowspan 1 -sticky nw -padx 5
 
       radiobutton $frm.frame1.fixedPulse \
          -indicatoron 1 -text $caption(focuserjmi,fixedPulse) -value "fixed" \
          -variable ::focuserjmi::widget(pulseMode)
-      grid $frm.frame1.fixedPulse -row 4 -column 0 -columnspan 1 -rowspan 1 -sticky ewns
+      grid $frm.frame1.fixedPulse -row 4 -column 0 -columnspan 1 -rowspan 1 -sticky nw -padx 5
 
-      LabelEntry $frm.frame1.duration -label "$caption(focuserjmi,duration)" \
+      LabelEntry $frm.frame1.duration -label "$caption(focuserjmi,duration)  " \
          -labeljustify left -width 6 -justify right \
          -textvariable ::focuserjmi::widget(pulseDuration)
-      grid $frm.frame1.duration -row 4 -column 1 -columnspan 2 -rowspan 1 -sticky nw -padx 3
+      grid $frm.frame1.duration -row 4 -column 1 -columnspan 2 -rowspan 1 -sticky nw
 
    pack $frm.frame1 -side top -fill x
 
