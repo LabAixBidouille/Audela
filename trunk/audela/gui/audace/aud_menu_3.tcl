@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.47 2009-06-15 16:45:25 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.48 2009-06-18 17:02:32 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -3172,6 +3172,7 @@ namespace eval ::traiteWindow {
       set traiteWindow(nb)            ""
       set traiteWindow(valeur_indice) "1"
       set traiteWindow(out)           ""
+      set traiteWindow(sup_boite)     "0"
       set traiteWindow(disp)          "1"
       set traiteWindow(avancement)    ""
 
@@ -3247,6 +3248,12 @@ namespace eval ::traiteWindow {
                pack $This.usr.2.4.explore -side left -padx 10 -pady 5 -ipady 5
             pack $This.usr.2.4 -side top -fill both
         # pack $This.usr.2 -in $This.usr -side top -fill both
+
+         frame $This.usr.2a -borderwidth 1 -relief raised
+            checkbutton $This.usr.2a.che1 -text "$caption(pretraitement,sup_boite)" \
+               -variable traiteWindow(sup_boite)
+            pack $This.usr.2a.che1 -side left -padx 10 -pady 5
+        # pack $This.usr.2a -side top -fill both
 
          frame $This.usr.1 -borderwidth 1 -relief raised
             label $This.usr.1.lab1 -text "$caption(pretraitement,operation_serie)"
@@ -3420,7 +3427,7 @@ namespace eval ::traiteWindow {
          }
          set traiteWindow(avancement) ""
          return
-      }
+     }
       #--- Calcul du dernier indice de la serie
       set end [ expr $nb + ( $first - 1 ) ]
 
@@ -3497,7 +3504,9 @@ namespace eval ::traiteWindow {
                if { $traiteWindow(disp) == 1 } {
                   loadima $out$end
                }
-               ::confVisu::deleteBox $audace(visuNo)
+               if { $traiteWindow(sup_boite) == 1 } {
+                  ::confVisu::deleteBox $audace(visuNo)
+               }
                set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
             } m ]
             if { $catchError == "1" } {
@@ -3568,6 +3577,7 @@ namespace eval ::traiteWindow {
             pack $This.usr.4 -in $This.usr -side bottom -fill both
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
+            pack forget $This.usr.2a
             pack $This.usr.3 -in $This.usr -side top -fill both
             pack forget $This.usr.3a
          }
@@ -3576,6 +3586,7 @@ namespace eval ::traiteWindow {
             pack $This.usr.4 -in $This.usr -side bottom -fill both
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
+            pack forget $This.usr.2a
             pack $This.usr.3 -in $This.usr -side top -fill both
             pack forget $This.usr.3a
          }
@@ -3584,6 +3595,7 @@ namespace eval ::traiteWindow {
             pack $This.usr.4 -in $This.usr -side bottom -fill both
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
+            pack forget $This.usr.2a
             pack $This.usr.3 -in $This.usr -side top -fill both
             pack forget $This.usr.3a
          }
@@ -3592,6 +3604,7 @@ namespace eval ::traiteWindow {
             pack $This.usr.4 -in $This.usr -side bottom -fill both
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
+            pack forget $This.usr.2a
             pack $This.usr.3 -in $This.usr -side top -fill both
             pack forget $This.usr.3a
          }
@@ -3600,6 +3613,7 @@ namespace eval ::traiteWindow {
             pack $This.usr.4 -in $This.usr -side bottom -fill both
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
+            pack $This.usr.2a -in $This.usr -side top -fill both
             pack forget $This.usr.3
             pack $This.usr.3a -in $This.usr -side top -fill both
          }
