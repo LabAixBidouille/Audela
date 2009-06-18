@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.35 2009-05-26 17:13:16 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.36 2009-06-18 17:00:25 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -69,6 +69,7 @@ set caption(pretraitement,coef_manquant)                "Define the missing coef
 set caption(pretraitement,cte_invalide)                 "Invalid Constant."
 set caption(pretraitement,en_cours)                     "Preprocessing in progress..."
 set caption(pretraitement,fin_traitement)               "End of Preprocessing."
+set caption(pretraitement,sup_boite)                    "Remove the frame when processing is done"
 set caption(pretraitement,tracer_boite)                 "Please draw a square with your mouse."
 set caption(pretraitement,appuyer_ok)                   "Then press OK."
 set caption(pretraitement,definir_cte)                  "Define a constant."
@@ -204,6 +205,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,cte_invalide)              "Constante invalide."
    set caption(pretraitement,en_cours)                  "Prétraitement en cours..."
    set caption(pretraitement,fin_traitement)            "Fin du prétraitement."
+   set caption(pretraitement,sup_boite)                 "Supprimer le cadre à la fin du traitement"
    set caption(pretraitement,tracer_boite)              "Veuillez tracer un cadre à la souris."
    set caption(pretraitement,appuyer_ok)                "Ensuite, vous appuierez sur OK."
    set caption(pretraitement,definir_cte)               "Définissez une constante."
@@ -339,6 +341,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,cte_invalide)              "Costante non valida."
    set caption(pretraitement,en_cours)                  "Pretrattamento in corso..."
    set caption(pretraitement,fin_traitement)            "Fine del Pretrattamento."
+   set caption(pretraitement,sup_boite)                 "Rimuovere il frame a fine trattamento"
    set caption(pretraitement,tracer_boite)              "Disegnare un quadrato con il mouse."
    set caption(pretraitement,appuyer_ok)                "Successivamente premere OK."
    set caption(pretraitement,definir_cte)               "Definire una costante."
@@ -474,6 +477,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,cte_invalide)              "Constante Inválida."
    set caption(pretraitement,en_cours)                  "Preprocesando..."
    set caption(pretraitement,fin_traitement)            "Fin de preprocesando."
+   set caption(pretraitement,sup_boite)                 "Suprimir el recuadro al terminar el procesado"
    set caption(pretraitement,tracer_boite)              "Porfavor, dibuje un recuadro con el ratón."
    set caption(pretraitement,appuyer_ok)                "Entocnces, pulse OK."
    set caption(pretraitement,definir_cte)               "Define una constante."
@@ -609,6 +613,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,cte_invalide)              "Ungültige Konstante."
    set caption(pretraitement,en_cours)                  "Voraufbereitung im Gange..."
    set caption(pretraitement,fin_traitement)            "Voraufbereitung Ende."
+   set caption(pretraitement,sup_boite)                 "Der Rahmen am Ende der Behandlung entfernen"
    set caption(pretraitement,tracer_boite)              "Bitte, einen Rahmen mit der Mause zeichnen."
    set caption(pretraitement,appuyer_ok)                "Nachdem drücken sie auf OK."
    set caption(pretraitement,definir_cte)               "Bestimmen sie eine Konstante."
@@ -744,6 +749,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,cte_invalide)              "Constante Inválida."
    set caption(pretraitement,en_cours)                  "Pré-tratamento em curso..."
    set caption(pretraitement,fin_traitement)            "Fim do pré-tratamento."
+   set caption(pretraitement,sup_boite)                 "# Supprimer le cadre à la fin du traitement"
    set caption(pretraitement,tracer_boite)              "Por favor desenhe um quadrado com o seu rato."
    set caption(pretraitement,appuyer_ok)                "De seguida, prima OK."
    set caption(pretraitement,definir_cte)               "Defina uma constante."
@@ -879,6 +885,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,cte_invalide)              "Ugyldig konstant."
    set caption(pretraitement,en_cours)                  "Preprocessing er aktiv..."
    set caption(pretraitement,fin_traitement)            "Slut på preprocessing."
+   set caption(pretraitement,sup_boite)                 "Fjern rammen, når behandlingen er udført"
    set caption(pretraitement,tracer_boite)              "Tegn en ramme med musen."
    set caption(pretraitement,appuyer_ok)                "Tryk så OK."
    set caption(pretraitement,definir_cte)               "Definer en konstant."
