@@ -1,6 +1,6 @@
 #
 # Fichier : lx200.cap
-# Mise a jour $Id: lx200.cap,v 1.12 2009-06-03 17:46:47 robertdelmas Exp $
+# Mise a jour $Id: lx200.cap,v 1.13 2009-06-18 16:59:15 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -113,9 +113,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,modele_astro_physics)       "Astro-Physics"
    set caption(lx200,format)                     "Formato"
    set caption(lx200,maj_lx200)                  "Aggiornamento di ora, longitudine, latitudine ed altitudine dell' LX200"
-   set caption(lx200,rappelAD)                   "# Vitesse de rappel en A.D. (arcsec/sec.)"
-   set caption(lx200,rappelDec)                  "# Vitesse de rappel en Déc. (arcsec/sec.)"
-   set caption(lx200,vitesseSiderale)            "# (vitesse sidérale = 15 arcsec/sec.)"
+   set caption(lx200,rappelAD)                   "Velocità guida in A.R. (arcsec/sec.)"
+   set caption(lx200,rappelDec)                  "Velocità guida in Dec. (arcsec/sec.)"
+   set caption(lx200,vitesseSiderale)            "(velocità siderale = 15 arcsec/sec.)"
    set caption(lx200,tracesConsole)              "Traccia sulla Console"
    set caption(lx200,ite-lente_tempo)            "Tempo"
    set caption(lx200,ite-lente_A0,go)            "GO A0"
@@ -156,9 +156,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,modele_astro_physics)       "Astro-Physics"
    set caption(lx200,format)                     "Formato"
    set caption(lx200,maj_lx200)                  "Actualizar hora, longitud, latitud y altitud del LX200"
-   set caption(lx200,rappelAD)                   "# Vitesse de rappel en A.D. (arcsec/sec.)"
-   set caption(lx200,rappelDec)                  "# Vitesse de rappel en Déc. (arcsec/sec.)"
-   set caption(lx200,vitesseSiderale)            "# (vitesse sidérale = 15 arcsec/sec.)"
+   set caption(lx200,rappelAD)                   "Velocidad de guiado A.R. (arcsec/sec.)"
+   set caption(lx200,rappelDec)                  "Velocidad de guiados Dec. (arcsec/sec.)"
+   set caption(lx200,vitesseSiderale)            "(velocidad sideral = 15 arcsec/sec.)"
    set caption(lx200,tracesConsole)              "Log en la Consola"
    set caption(lx200,ite-lente_tempo)            "Tempo"
    set caption(lx200,ite-lente_A0,go)            "GO A0"
@@ -199,9 +199,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,modele_astro_physics)       "Astro-Physics"
    set caption(lx200,format)                     "Format"
    set caption(lx200,maj_lx200)                  "Zeit, Länge, Breite, Höhe des LX200 Aktualisierung"
-   set caption(lx200,rappelAD)                   "# Vitesse de rappel en A.D. (arcsec/sec.)"
-   set caption(lx200,rappelDec)                  "# Vitesse de rappel en Déc. (arcsec/sec.)"
-   set caption(lx200,vitesseSiderale)            "# (vitesse sidérale = 15 arcsec/sec.)"
+   set caption(lx200,rappelAD)                   "R.A. Rückruf Geschwindigkeit (arcsek/Sek.)"
+   set caption(lx200,rappelDec)                  "Dek. Rückruf Geschwindigkeit (arcsek/Sek.)"
+   set caption(lx200,vitesseSiderale)            "(Siderische Geschwindigkeit = 15 arcsek/Sek.)"
    set caption(lx200,tracesConsole)              "Konsole Log"
    set caption(lx200,ite-lente_tempo)            "Tempo"
    set caption(lx200,ite-lente_A0,go)            "GO A0"
@@ -245,7 +245,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,rappelAD)                   "# Vitesse de rappel en A.D. (arcsec/sec.)"
    set caption(lx200,rappelDec)                  "# Vitesse de rappel en Déc. (arcsec/sec.)"
    set caption(lx200,vitesseSiderale)            "# (vitesse sidérale = 15 arcsec/sec.)"
-   set caption(lx200,tracesConsole)              "# Traces dans la Console"
+   set caption(lx200,tracesConsole)              "Log na Consola"
    set caption(lx200,ite-lente_tempo)            "Tempo"
    set caption(lx200,ite-lente_A0,go)            "GO A0"
    set caption(lx200,ite-lente_A0,stop)          "Stop A0"
@@ -256,8 +256,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,park)                       "Park"
    set caption(lx200,unpark)                     "Unpark"
 
-   set caption(lx200,install_1)                  "# Fin de l'installation du plug-in LX200"
-   set caption(lx200,install_2)                  "# La librairie liblx200.dll a été mise à jour."
+   set caption(lx200,install_1)                  "Fin da instalação do plug-in LX200"
+   set caption(lx200,install_2)                  "A livraria liblx200.dll foi actualizada."
 
    set caption(lx200,host_audinet)               "Servidor AudiNet/LXnet"
    set caption(lx200,port_lx200)                 "Porta LX200"
