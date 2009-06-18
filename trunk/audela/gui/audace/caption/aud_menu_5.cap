@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_5.cap
-# Mise a jour $Id: aud_menu_5.cap,v 1.12 2009-06-11 20:53:05 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_5.cap,v 1.13 2009-06-18 17:00:43 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -118,8 +118,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,histo_adu)                      "ADU"
    set caption(audace,histo_nbpix)                    "Numero dei pixels"
 
-   set caption(audace,refreshAuto)                    "# Rafraîchissement automatique"
-   set caption(audace,refreshManuel)                  "# Rafraîchir maintenant"
+   set caption(audace,refreshAuto)                    "Auto raffreddamento"
+   set caption(audace,refreshManuel)                  "Raffreddamento immediato"
 
    set caption(audace,maxi)                           "Max.: "
    set caption(audace,mini)                           "Min.: "
@@ -210,8 +210,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,histo_adu)                      "ADU"
    set caption(audace,histo_nbpix)                    "Rasterpunkten Zahl"
 
-   set caption(audace,refreshAuto)                    "# Rafraîchissement automatique"
-   set caption(audace,refreshManuel)                  "# Rafraîchir maintenant"
+   set caption(audace,refreshAuto)                    "Automatische Auffrischung"
+   set caption(audace,refreshManuel)                  "Jetzt auffrischen"
 
    set caption(audace,maxi)                           "Maxi.: "
    set caption(audace,mini)                           "Mini.: "

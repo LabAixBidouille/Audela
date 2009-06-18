@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.60 2009-06-11 20:54:26 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.61 2009-06-18 16:59:34 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -227,8 +227,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(plotxy,figure)                         "Figura"
 
    set caption(sectiongraph,title)                    "Grafico della sezione"
-   set caption(sectiongraph,refreshAuto)              "# Rafraîchissement automatique"
-   set caption(sectiongraph,refreshManuel)            "# Rafraîchir maintenant"
+   set caption(sectiongraph,refreshAuto)              "Auto raffreddamento"
+   set caption(sectiongraph,refreshManuel)            "Raffreddamento immediato"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -375,8 +375,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(plotxy,figure)                         "Figur"
 
    set caption(sectiongraph,title)                    "Abschnitt Grafik"
-   set caption(sectiongraph,refreshAuto)              "# Rafraîchissement automatique"
-   set caption(sectiongraph,refreshManuel)            "# Rafraîchir maintenant"
+   set caption(sectiongraph,refreshAuto)              "Automatische Auffrischung"
+   set caption(sectiongraph,refreshManuel)            "Jetzt auffrischen"
 
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
