@@ -2,14 +2,15 @@
 # Fichier : sophieconfig.tcl
 # Description : Fenetre de configuration de l'instrument Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophieconfig.tcl,v 1.9 2009-06-14 08:53:39 robertdelmas Exp $
+# Mise a jour $Id: sophieconfig.tcl,v 1.10 2009-06-20 17:32:26 michelpujol Exp $
 #
 
-#============================================================
-# Declaration du namespace sophie::config
-#    initialise le namespace
-#============================================================
+##------------------------------------------------------------
+# @brief   configuration de l'outil sophie
+#
+#------------------------------------------------------------
 namespace eval ::sophie::config {
+
 }
 
 #------------------------------------------------------------
@@ -353,7 +354,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
       grid $frm.image.entryimageBias -in [ $frm.image getframe ] -row 3 -column 2 -sticky ens
 
       button $frm.image.configureimageBias -text $::caption(sophie,parcourir) -relief raised \
-         -command "::sophie::chooseBiasFile"
+         -command "::sophie::config::chooseBiasFile"
       grid $frm.image.configureimageBias -in [ $frm.image getframe ] -row 3 -column 3 -sticky ens -padx 2
 
    pack $frm.image -side top -anchor w -fill x -expand 0
@@ -503,7 +504,7 @@ proc ::sophie::config::chooseDir { { inidir . } { title } { parent } } {
 # choseBiasFile
 #    choisi le nom de l'image de bias
 #------------------------------------------------------------
-proc ::sophie::chooseBiasFile { } {
+proc ::sophie::config::chooseBiasFile { } {
    variable private
 
    #--- Ouvre la fenetre de choix des images

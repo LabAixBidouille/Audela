@@ -2,14 +2,16 @@
 # Fichier : sophiecommand.tcl
 # Description : Centralise les commandes de l'outil Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecommand.tcl,v 1.17 2009-06-20 15:14:32 robertdelmas Exp $
+# Mise a jour $Id: sophiecommand.tcl,v 1.18 2009-06-20 17:32:26 michelpujol Exp $
 #
 
-#============================================================
-# Declaration du namespace sophie
-#    initialise le namespace
-#============================================================
+#--- suite du namespace sophie
+##------------------------------------------------------------
+# @brief   suite du namespace sophi
+#
+#------------------------------------------------------------
 namespace eval ::sophie {
+
 }
 
 ##------------------------------------------------------------
@@ -91,7 +93,7 @@ proc ::sophie::onChangeZoom { visuNo args } {
 
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 #  onChangeSubWindow
 #     appele par confVisu quand on applique un fenetrage sur la visu
 #
@@ -130,7 +132,7 @@ proc ::sophie::webcamConfigure { visuNo } {
 }
 
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # showConfigWindow
 #    ouvre la fenetre de configuration
 #
@@ -142,7 +144,7 @@ proc ::sophie::showConfigWindow { visuNo } {
    ::sophie::config::run $visuNo [winfo toplevel $private(frm)]
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # showControlWindow
 #    ouvre la fenetre de controle
 #
@@ -156,11 +158,10 @@ proc ::sophie::showControlWindow { visuNo } {
    ::sophie::control::setMode $private(mode)
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # setBinning
 #  applique le changement de binning
-#     - dans la camera ,
-#     - position de la cible
+#
 # @param  binning   binning x et y  sous la forme 1x1 2x2 ...
 # @return rien
 #------------------------------------------------------------
@@ -203,7 +204,7 @@ proc ::sophie::setBinning { binning } {
    }
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # setExposure
 #    applique le changement de duree de pose
 # @param  exposure  temps de pose (en seconde)
@@ -223,15 +224,17 @@ proc ::sophie::setExposure { { exposure "" } } {
    }
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # setSubWindow
-#  applique le fenetrage de la camera autour de la position courante de la consigne
-#     - dans la camera ,
-#     - position de la cible
-# @param  windowing  "full" ou longueur d'un du carré du fenetrage
+#  applique le fenetrage de la camera autour de la position courante de la consigne.
+#  Met a jour le carre autour de la cible et modifie le parametre de fenetrage de la
+#  camera.
+#
+# @param  size  "full" ou dimension d'un cote du carre du fenetrage (en pixel)
+# @param  centerCoords  coordonnes du centre du fenetrage
 # @return rien
 #------------------------------------------------------------
-proc ::sophie::setWindowing { size { center "" } } {
+proc ::sophie::setWindowing { size { centerCoords "" } } {
    variable private
 
    if { $private(camNo) == 0  } {
@@ -249,8 +252,8 @@ proc ::sophie::setWindowing { size { center "" } } {
       set y2 $height
    } else {
       set size [expr $size / 2 ]
-      set x  [lindex $center 0]
-      set y  [lindex $center 1]
+      set x  [lindex $centerCoords 0]
+      set y  [lindex $centerCoords 1]
       if { [ expr ($x - $size) < 1 ]} {
          #--- la fenetre est trop a gauche
          set x [expr $size + 1]
@@ -306,7 +309,7 @@ proc ::sophie::setWindowing { size { center "" } } {
    }
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # onChangeBinning
 #  cette procedure est apellee par la commbbo de choix du binning
 #  pour changer de binning
@@ -318,7 +321,7 @@ proc ::sophie::onChangeBinning { visuNo } {
    setBinning $private(widgetBinning)
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # onChangeExposure
 #  cette procedure est apellee par la commbbo de choix du temps de pose
 #  pour changer le temps de pose
@@ -387,10 +390,11 @@ proc ::sophie::newExposure { } {
    pack $private(base).button -side top -anchor center -fill x -expand 0
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # onChangeMode
 #  cette procedure est apellee par les boutons de changement de mode
-#  pour changer de mode
+#  pour changer de mode. Elle appelle setMode pour appliquer le nouveau mode.
+#
 #------------------------------------------------------------
 proc ::sophie::onChangeMode { } {
    variable private
@@ -399,7 +403,7 @@ proc ::sophie::onChangeMode { } {
    setMode $private(mode)
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # onCenter
 #  cette procedure est apellee quand on clique sur la chekbox de centrage
 #  pour lancer ou arreter le centrage
@@ -415,7 +419,7 @@ proc ::sophie::onCenter { } {
    }
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # onGuide
 #  cette procedure est apellee quand on clique sur la chekbox de guidage
 #  pour lancer ou arret le guidage
@@ -432,14 +436,16 @@ proc ::sophie::onGuide { } {
 }
 
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # setMode
 #    change le mode d'acquisition
 #      - change les paramètres de l'acquisition continue dans la thread de la camera
 #      - met à jour l'affichage de la fenetre de contole
-# @param mode       mode d'acquisition
+#
+# @param mode mode d'acquisition CENTER FOCUS GUIDE.
+#
 #------------------------------------------------------------
-proc ::sophie::setMode { { mode "" } } {
+proc ::sophie::setMode { mode } {
    variable private
 
    #--- je desactive le mode precedent
@@ -525,7 +531,7 @@ proc ::sophie::setMode { { mode "" } } {
    ::sophie::control::setMode $private(mode)
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # setGuidingMode
 #    ouvre les spinbox pour le pointage d'un objet
 #    place la consigne au bon endroit
@@ -574,7 +580,7 @@ proc ::sophie::setGuidingMode { visuNo } {
 #------------------------------------------------------------
 #------------------------------------------------------------
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # adaptIncrement
 #    adapte la valeur de l'increment
 #------------------------------------------------------------
@@ -587,14 +593,14 @@ proc ::sophie::adaptIncrement { } {
    $frm.guidage.positionconsigne.positionXY.spinboxY configure -increment $increment
 }
 
-#------------------------------------------------------------
-# moveFilter
+##------------------------------------------------------------
+# startMoveFilter
 #  démarre le changement d'attenuation
 #  Ne fait rien si le telescope n'est pas connecté
 # @param  direction "-" =diminution de l'attenuation , "+" =augmentation de l'atténuation
 #
 #------------------------------------------------------------
-proc ::sophie::moveFilter { direction } {
+proc ::sophie::startMoveFilter { direction } {
    variable private
 
    if { [ ::tel::list ] != "" } {
@@ -609,13 +615,13 @@ proc ::sophie::moveFilter { direction } {
 
 }
 
-#------------------------------------------------------------
-# stopFilter
+##------------------------------------------------------------
+# stopMoveFilter
 #  Arrete le changement d'attenuation
 #  affiche la fin de cours "min" en vert quand la fin de course est atteinte
 #  affiche la fin de cours "max" en rouge quand la fin de course est atteinte
 #------------------------------------------------------------
-proc ::sophie::stopFilter { } {
+proc ::sophie::stopMoveFilter { } {
    variable private
 
    if { $::audace(telNo) == 0 } {
@@ -649,9 +655,9 @@ proc ::sophie::stopFilter { } {
    }
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # updateFilterPercent
-#  met a jour l'affichage du taux d'attenuation en faisnt une estmation a partir de la duree du mouvement
+#  met a jour l'affichage du taux d'attenuation en faisant une estmation a partir de la duree du mouvement
 #
 #------------------------------------------------------------
 proc ::sophie::updateFilterPercent { } {
@@ -684,7 +690,7 @@ proc ::sophie::updateFilterPercent { } {
 
 
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # decrementZoom
 #    decremente les valeurs du zoom
 #------------------------------------------------------------
@@ -708,7 +714,7 @@ proc ::sophie::decrementZoom { } {
    set private(zoom) [ ::confVisu::getZoom $::audace(visuNo) ]
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # incrementZoom
 #    incremente les valeurs du zoom
 #------------------------------------------------------------
@@ -732,7 +738,7 @@ proc ::sophie::incrementZoom { } {
    set private(zoom) [ ::confVisu::getZoom $::audace(visuNo) ]
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # saveImage
 #  enregistre l'image courante
 #  le nom du fichier :  "prefixe-date.exention"
@@ -774,9 +780,9 @@ proc ::sophie::saveImage { } {
 
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # showImage
-#    affiche une visu pour monter les images enregistrees
+#    affiche une nouvelle visu pour afficher les images enregistrees
 #------------------------------------------------------------
 proc ::sophie::showImage { } {
 
@@ -804,29 +810,29 @@ proc ::sophie::showImage { } {
 # @param y      ordonnee de la souris (referentiel ecran)
 # @return  null
 #------------------------------------------------------------
-###proc ::sophie::onOriginCoord { visuNo x y } {
-###   variable private
-###
-###   if { $::conf(sophie,guidingMode) == "FIBER" } {
-###      #--- je convertis en coordonnes du referentiel Image
-###      set coord [::confVisu::screen2Canvas $visuNo [list $x $y]]
-###      set coord [::confVisu::canvas2Picture $visuNo $coord]
-###
-###      scan $private(binning) "%dx%d" xBinning yBinning
-###      set x [expr [lindex $coord 0] * $xBinning + $private(xWindow) -1 ]
-###      set y [expr [lindex $coord 1] * $yBinning + $private(yWindow) -1 ]
-###      set private(originCoord) [list $x $y]
-###
-###      ###set private(originCoord) $coord
-###
-###      #--- je dessine les axes sur la nouvelle origine
-###      createOrigin $visuNo
-###
-###      ::camera::setParam $private(camItem) "originCoord" $coord
-###   }
-###}
+proc ::sophie::onOriginCoord { visuNo x y } {
+   variable private
 
-#------------------------------------------------------------
+   if { $::conf(sophie,guidingMode) == "FIBER" } {
+      #--- je convertis en coordonnes du referentiel Image
+      set coord [::confVisu::screen2Canvas $visuNo [list $x $y]]
+      set coord [::confVisu::canvas2Picture $visuNo $coord]
+
+      scan $private(binning) "%dx%d" xBinning yBinning
+      set x [expr [lindex $coord 0] * $xBinning + $private(xWindow) -1 ]
+      set y [expr [lindex $coord 1] * $yBinning + $private(yWindow) -1 ]
+      set private(originCoord) [list $x $y]
+
+      ###set private(originCoord) $coord
+
+      #--- je dessine les axes sur la nouvelle origine
+      createOrigin $visuNo
+
+      ::camera::setParam $private(camItem) "originCoord" $coord
+   }
+}
+
+##------------------------------------------------------------
 # createOrigin
 #    affiche la cible autour du point de coordonnees OriginCoord
 #
@@ -908,7 +914,7 @@ proc ::sophie::createOrigin { visuNo } {
 
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # deleteOrigin
 #    supprime l'affichage de la consigne
 #
@@ -989,16 +995,6 @@ proc ::sophie::onTargetCoord { visuNo x y } {
 ##------------------------------------------------------------
 # createTarget
 #    affiche la cible autour du point de coordonnees targetCoord
-#
-#           PSF
-#       *----------* y1=y0+w
-#       |          |
-#       |          |
-#     ..|..........|..........
-#       |          |
-#       |          |
-#       *----------* y1=y0-w
-#       x1         x2
 # @param visuNo  numero de la visu courante
 # @return  null
 #------------------------------------------------------------
@@ -1081,14 +1077,15 @@ proc ::sophie::moveTarget { visuNo targetCoord } {
    $private(hCanvas) coords "target" [list $xCan1 $yCan1 $xCan2 $yCan2]
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 #  setMountEnabled
-#     active ou descative l'envoi des commandes de guidage a la monture
-#     si state = 1 , les commandes sont envoyees
-#     si state = 0 , les commandes ne sont pas envoyees
+#   active ou descative l'envoi des commandes de guidage a la monture.
 #
 # @param visuNo      numero de la visu courante
 # @param state       activation/desactivation de l'envoi des commandes à la monture
+#   -  si state = 1 , les commandes sont envoyees
+#   -  si state = 0 , les commandes ne sont pas envoyees
+#
 # @return  null
 #------------------------------------------------------------
 proc ::sophie::setMountEnabled { visuNo state } {
@@ -1163,8 +1160,8 @@ proc ::sophie::startAcquisition { visuNo } {
       set private(acquisitionState)  1
       #--- je mets a jour la fenetre de controle
       ::sophie::control::setAcquisitionState  $private(acquisitionState)
-      #--- je postionne les parametres du mode courant
-      setMode
+      #--- je positionne les parametres du mode courant
+      setMode $private(mode)
 
       #--- je positionne la vitesse "guidage" de la monture si l'envoi des rappels est actif
       if { $private(mountEnabled) == 1 } {
@@ -1245,7 +1242,7 @@ proc ::sophie::startAcquisition { visuNo } {
 
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # stopAcquisition
 #    Demande l'arret des acquisitions . L'arret sera effectif apres la fin
 #    de l'acquisition en cours
@@ -1281,8 +1278,10 @@ proc ::sophie::stopAcquisition { visuNo } {
 }
 
 ##------------------------------------------------------------
-# startCenter
-#    lance le centrage (centrage en cours)
+# startCenter lance le centrage.
+#  Le centrage est arrete soit manuellement (voir stopCenter),
+#  soit automatiquement quand l'ecart entre l'etoile et la consigne
+#  est inferieur a valeur choisie dans la fenetre de configuration.
 #
 # @return  null
 #------------------------------------------------------------
@@ -1314,7 +1313,7 @@ proc ::sophie::startCenter { } {
 
 ##------------------------------------------------------------
 # stopCenter
-#    arrete le centrage (centrage termine)
+#    arrete le centrage.
 # @return  null
 #------------------------------------------------------------
 proc ::sophie::stopCenter { } {
@@ -1379,7 +1378,13 @@ proc ::sophie::stopGuide { } {
 ##------------------------------------------------------------
 # callbackAcquisition
 # cette procedure est appele par la thread de la camera pednant les acquisitions
-# @param visuNo numero de la visu courante
+# @param visuNo  numero de la visu courante
+# @param command commande retournee par le thread de la camera :
+#     - autovisu : l'image est prete dans le buffer
+#     - error    : le thread de la camera a rencontre une erreur. L'acqusition continue est interrompue
+#     - targetCoord : les nouvelles coordonnees de l'etoile detecte dans l'image
+#     - acquisitionResult : fin du centrage.
+# @param args    liste variable de parametres associes a la commande
 # @return  null
 #------------------------------------------------------------
 proc ::sophie::callbackAcquisition { visuNo command args } {
@@ -1459,7 +1464,7 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                   set originDy 0.0
                }
 
-               #--- je deplace la cible sur les nouvelles corrdonnees
+               #--- j'affiche le carre de la cible sur les nouvelles coordonnees
                ::sophie::moveTarget $visuNo $private(targetCoord)
 
                #--- j'affiche le symbole de l'origine
@@ -1478,7 +1483,11 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                      ##}
                   }
                   "GUIDE" {
+                     #--- je mets a jour les statistiques pour le PC Sophie
+                     ::sophie::spectro::updateStatistics $alphaCorrection $deltaCorrection
+                     #--- je mets a jour la fenetre de controle
                      ::sophie::control::setGuideInformation $private(targetDetection) $fiberDetection $originX $originY $starX $starY $starDx $starDy $alphaCorrection $deltaCorrection $originDx $originDy
+
                      #--- je change le mode d'affichage si la detection de l'etoile a change
                      ##if { $previousTargetDetection != $private(targetDetection)  } {
                      ##   sophie::setMode $private(mode)
@@ -1517,9 +1526,12 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
    }
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # getBufNo
 #  retourne le numero de buffer
+#
+# @param bufName  nom du buffer
+# @return numero du buffer
 #------------------------------------------------------------
 proc ::sophie::getBufNo { bufName } {
    variable private
@@ -1527,18 +1539,18 @@ proc ::sophie::getBufNo { bufName } {
    return $private($bufName)
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # addAcquisitionListener
 #    ajoute une procedure a appeler pour chaque nouvelle acquisition
 #
 #  @param visuNo numero de la visu
-#  @param cmd : commande TCL a lancer quand la camera associee a la visu change
+#  @param cmd  commande TCL a lancer quand la camera associee a la visu change
 #------------------------------------------------------------
 proc ::sophie::addAcquisitionListener { visuNo cmd } {
    trace add variable ::sophie::private(newAcquisition) write $cmd
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # removeAcquisitionListener
 #    supprime une procedure a appeler pour chaque nouvelle acquisition
 #
@@ -1550,7 +1562,7 @@ proc ::sophie::removeAcquisitionListener { visuNo cmd } {
 }
 
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # guideSophie
 #    lance une session guidage
 #
@@ -1577,44 +1589,6 @@ proc ::camera::guideSophie { camItem callback exptime guidingMode originCoord ta
    set private($camItem,callback) $callback
    set camThreadNo $private($camItem,threadNo)
    ::thread::send -async $camThreadNo [list ::camerathread::guideSophie $exptime $guidingMode $originCoord $targetCoord $cameraAngle $targetBoxSize $mountEnabled $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $intervalle ]
-}
-
-#------------------------------------------------------------
-# startStatistics
-#  debute les statistiques de guidage pour le PC Sophie
-#
-#------------------------------------------------------------
-proc ::sophie::startStatistics { } {
-   console::disp "::sophie::startStatistics \n"
-
-   #--- je met àa jour le voyant dans la fenetre de controle
-   ::sophie::control::setAcquisitionSophie 1
-}
-
-#------------------------------------------------------------
-# stopStatistics
-#  arrete les statistiques de guidage pour le PC Sophie
-#
-#------------------------------------------------------------
-proc ::sophie::stopStatistics { } {
-   console::disp "::sophie::stopStatistics \n"
-
-   #--- je met àa jour le voyant dans la fenetre de controle
-   ::sophie::control::setAcquisitionSophie 0
-
-}
-
-#------------------------------------------------------------
-# getStatistics
-#  retourne les statistiques de guidage pour le PC Sophie
-#
-#------------------------------------------------------------
-proc ::sophie::getStatistics { } {
-
-   set result [list 2.68 83.17 2.74 177.85 ]
-   console::disp "::sophie::getStatistics $result\n"
-
-   return $result
 }
 
 

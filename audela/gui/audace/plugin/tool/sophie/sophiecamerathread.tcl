@@ -1,9 +1,9 @@
 #
 # Fichier : camerathread.tcl
-# Description : procedures d'acqusitition et de traitement avec
+# Description : procedures d'acquisiition et de traitement avec
 #         plusieurs cameras simultanées exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise a jour $Id: sophiecamerathread.tcl,v 1.3 2009-06-10 21:18:12 michelpujol Exp $
+# Mise a jour $Id: sophiecamerathread.tcl,v 1.4 2009-06-20 17:32:26 michelpujol Exp $
 #
 
 
