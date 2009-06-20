@@ -78,6 +78,7 @@
    Tcl_CreateCommand(interp,"ak_photometric_parallax_avmap",(Tcl_CmdProc *)Cmd_aktcl_photometric_parallax_avmap,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"ak_reduceusno",(Tcl_CmdProc *)Cmd_aktcl_reduceusno,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"ak_splitcfht",(Tcl_CmdProc *)Cmd_aktcl_splitcfht,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"ak_aster1",(Tcl_CmdProc *)Cmd_aktcl_aster1,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    /* */
 	Tcl_CreateCommand(interp,"ak_cour_final",(Tcl_CmdProc *)Cmd_aktcl_cour_finalbis,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    /* fonctions de Yassine ---*/
