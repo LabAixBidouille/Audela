@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.18 2009-06-15 16:17:43 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.19 2009-06-20 15:11:23 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -49,6 +49,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,image)                 "Image"
    set caption(sophie,enregistrer)           "Enregistrer"
    set caption(sophie,voirImage)             "Voir l'image"
+
+   set caption(sophie,newExposure)           "Temps de pose"
+   set caption(sophie,newValue)              "Nouvelle valeur (sec.)"
 
    set caption(sophie,controle)              "Contrôle du suivi"
    set caption(sophie,imagesEtapes)          "Images aux\ndifférentes étapes"
@@ -160,6 +163,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,simulGenericFileName)  "Répertoire des images de simulation"
    set caption(sophie,ok)                    "OK"
    set caption(sophie,fermer)                "Fermer"
+   set caption(sophie,annuler)               "Annuler"
 
    set caption(sophie,selcam)                "Vous devez d'abord sélectionner une caméra\n(menu Configuration/Caméra)."
    set caption(sophie,seltel)                "Vous devez d'abord sélectionner une monture\n(menu Configuration/Monture)."
