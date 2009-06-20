@@ -2,7 +2,7 @@
 # Fichier : sophie.tcl
 # Description : Outil d'autoguidage pour le spectro Sophie du telescope T193 de l'OHP
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophie.tcl,v 1.15 2009-06-13 23:59:16 michelpujol Exp $
+# Mise a jour $Id: sophie.tcl,v 1.16 2009-06-20 15:12:43 robertdelmas Exp $
 #
 
 #============================================================
@@ -137,7 +137,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
 
    #--- Initialisation de variables
    set private(frm)              "$in.sophie"
-   set private(listePose)        "0 0.1 0.2 0.5 0.8 1 2 3 5 10"
+   set private(listePose)        "0 0.1 0.2 0.5 0.8 1 2 3 5 10 new"
    set private(pose)             "0.5"
    set private(listeBinning)     "1x1 2x2 3x3 4x4"
    set private(widgetBinning)    "2x2"
@@ -214,7 +214,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
 
          #--- ComboBox pour le choix du temps de pose
          ComboBox $frm.acq.exposure \
-            -entrybg white -justify center -takefocus 1 \
+            -entrybg white -justify center -takefocus 1 -editable 0 \
             -width [ ::tkutil::lgEntryComboBox $private(listePose) ] \
             -textvariable ::conf(sophie,exposure) \
             -modifycmd "::sophie::onChangeExposure $visuNo" \
@@ -229,7 +229,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
 
          #--- ComboBox pour le choix du binning
          ComboBox $frm.acq.binning \
-            -entrybg white -justify center -takefocus 1 \
+            -entrybg white -justify center -takefocus 1 -editable 0 \
             -width [ ::tkutil::lgEntryComboBox $private(listeBinning) ] \
             -textvariable ::sophie::private(widgetBinning) \
             -modifycmd "::sophie::onChangeBinning $visuNo" \
@@ -437,6 +437,7 @@ proc ::sophie::startTool { visuNo } {
    if { [file exists "$::conf(sophie,biasImage)" ] } {
       buf$private(biasBufNo) load "$::conf(sophie,biasImage)"
    }
+
 }
 
 #------------------------------------------------------------
