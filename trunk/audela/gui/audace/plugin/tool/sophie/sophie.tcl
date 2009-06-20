@@ -2,13 +2,13 @@
 # Fichier : sophie.tcl
 # Description : Outil d'autoguidage pour le spectro Sophie du telescope T193 de l'OHP
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophie.tcl,v 1.16 2009-06-20 15:12:43 robertdelmas Exp $
+# Mise a jour $Id: sophie.tcl,v 1.17 2009-06-20 17:19:34 michelpujol Exp $
 #
 
-#============================================================
-# Declaration du namespace sophie
-#    initialise le namespace
-#============================================================
+##------------------------------------------------------------
+# @brief   namespace principal de l'outil sophie
+#
+#------------------------------------------------------------
 namespace eval ::sophie {
    package provide sophie 1.0
    package require audela 1.5.0
@@ -340,10 +340,10 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
          pack $frm.attenuateur.butMax -in [ $frm.attenuateur getframe ] \
             -anchor center -expand 1 -fill x -ipady 2 -side left
 
-         bind $frm.attenuateur.butMin <ButtonPress-1>   "::sophie::moveFilter -"
-         bind $frm.attenuateur.butMin <ButtonRelease-1> "::sophie::stopFilter"
-         bind $frm.attenuateur.butMax <ButtonPress-1>   "::sophie::moveFilter +"
-         bind $frm.attenuateur.butMax <ButtonRelease-1> "::sophie::stopFilter"
+         bind $frm.attenuateur.butMin <ButtonPress-1>   "::sophie::startMoveFilter -"
+         bind $frm.attenuateur.butMin <ButtonRelease-1> "::sophie::stopMoveFilter"
+         bind $frm.attenuateur.butMax <ButtonPress-1>   "::sophie::startMoveFilter +"
+         bind $frm.attenuateur.butMax <ButtonRelease-1> "::sophie::stopMoveFilter"
 
          #--- Label noir
          label $frm.attenuateur.labMax_color_invariant -text "  " -background $::color(black)
@@ -427,7 +427,6 @@ proc ::sophie::startTool { visuNo } {
    ::sophie::setMode $private(mode)
    #--- je mets a jour le mode de guidage
    ::sophie::setGuidingMode $visuNo
-
    #--- j'affiche la cible sur l'image
    createTarget $visuNo
    #--- j'affiche la consigne sur l'image
@@ -436,6 +435,15 @@ proc ::sophie::startTool { visuNo } {
    #--- je charge l'image de bias
    if { [file exists "$::conf(sophie,biasImage)" ] } {
       buf$private(biasBufNo) load "$::conf(sophie,biasImage)"
+   }
+
+   set catchError [ catch {
+      #--- j'ouvre la liaison pour recevoir les commandes du PC Sophie
+      ::sophie::spectro::openSocket
+   }]
+   if { $catchError != 0 } {
+      #--- j'affiche et je trace le message d'erreur
+      ::tkutil::displayErrorInfo $::caption(sophie,titre)
    }
 
 }
@@ -454,6 +462,16 @@ proc ::sophie::stopTool { visuNo } {
 
    #--- j'arrete le suivi
    stopAcquisition $visuNo
+
+   set catchError [ catch {
+      #--- je ferme la liaison du PC Sophie
+      ::sophie::spectro::closeSocket
+   }]
+   if { $catchError != 0 } {
+      #--- j'affiche et je trace le message d'erreur
+      ::tkutil::displayErrorInfo $::caption(sophie,titre)
+   }
+
 
    #--- je desactive l'adaptation de l'affichage quand on change de camera
    ::confVisu::removeCameraListener $visuNo "::sophie::adaptPanel $visuNo"
