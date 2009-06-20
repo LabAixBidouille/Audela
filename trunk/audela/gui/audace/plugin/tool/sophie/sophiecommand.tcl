@@ -2,7 +2,7 @@
 # Fichier : sophiecommand.tcl
 # Description : Centralise les commandes de l'outil Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecommand.tcl,v 1.16 2009-06-13 23:59:16 michelpujol Exp $
+# Mise a jour $Id: sophiecommand.tcl,v 1.17 2009-06-20 15:14:32 robertdelmas Exp $
 #
 
 #============================================================
@@ -68,7 +68,6 @@ proc ::sophie::adaptPanel { visuNo args } {
    ####   #--- je mets la pose a zero car cette variable est utilisee et doit etre nulle pour les courtes poses
    ####   set ::conf(sophie,exposure) "0"
    ####}
-
 }
 
 ##------------------------------------------------------------
@@ -202,10 +201,6 @@ proc ::sophie::setBinning { binning } {
       createTarget $::audace(visuNo)
       createOrigin $::audace(visuNo)
    }
-
-
-
-
 }
 
 #------------------------------------------------------------
@@ -331,10 +326,66 @@ proc ::sophie::onChangeBinning { visuNo } {
 proc ::sophie::onChangeExposure { visuNo } {
    variable private
 
+   #--- je choisis une valeur non disponible dans la liste
+   if { $::conf(sophie,exposure) == "new" } {
+      ::sophie::newExposure
+   }
+
    #--- je change le mode d'acquisition
    setExposure $::conf(sophie,exposure)
 }
 
+#------------------------------------------------------------
+# newExposure
+#  permet d'utiliser un temps de pose non propose
+#   dans la liste
+#------------------------------------------------------------
+proc ::sophie::newExposure { } {
+   variable private
+
+   #--- Toplevel
+   set private(base) $::audace(base).newExposure
+   toplevel $private(base) -class Toplevel
+   wm title $private(base) $::caption(sophie,newExposure)
+   wm transient $private(base) $::audace(base)
+   set posx [ lindex [ split [ wm geometry $::audace(base) ] "+" ] 1 ]
+   set posy [ lindex [ split [ wm geometry $::audace(base) ] "+" ] 2 ]
+   wm geometry $private(base) +[ expr $posx + 160 ]+[ expr $posy + 105 ]
+   wm resizable $private(base) 0 0
+   wm protocol $private(base) WM_DELETE_WINDOW {
+      set ::conf(sophie,exposure) "0.5"
+      destroy $::sophie::private(base)
+   }
+   #--- Label et entry
+   frame $private(base).newExposure -borderwidth 2 -relief raised
+      label $private(base).newExposure.lab1 -text "$::caption(sophie,newValue)"
+      pack $private(base).newExposure.lab1 -side left -anchor se -padx 5 -pady 5 -expand 0
+      entry $private(base).newExposure.ent1 -textvariable ::sophie::private(newExposure) -width 7 \
+         -relief groove -justify center
+      pack $private(base).newExposure.ent1 -side left -anchor se -padx 5 -pady 5 -expand 0
+   pack $private(base).newExposure -side top -fill x -expand 0
+   #--- Boutons
+   frame $private(base).button -borderwidth 2 -relief raised
+      #--- Button OK
+      button $private(base).button.ok -text $::caption(sophie,ok) -borderwidth 2 \
+         -command {
+            if { $::sophie::private(newExposure) != "" } {
+               set ::conf(sophie,exposure) $::sophie::private(newExposure)
+               destroy $::sophie::private(base)
+            }
+         }
+      pack $private(base).button.ok -side left -anchor center -padx 10 -pady 5 \
+         -ipadx 10 -ipady 5 -expand 0
+      #--- Button Annuler
+      button $private(base).button.annuler -text $::caption(sophie,annuler) -borderwidth 2 \
+         -command {
+            set ::conf(sophie,exposure) "0.5"
+            destroy $::sophie::private(base)
+         }
+      pack $private(base).button.annuler -side right -anchor center -padx 10 -pady 5 \
+         -ipadx 10 -ipady 5 -expand 0
+   pack $private(base).button -side top -anchor center -fill x -expand 0
+}
 
 #------------------------------------------------------------
 # onChangeMode
