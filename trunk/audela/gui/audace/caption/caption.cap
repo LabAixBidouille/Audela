@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.61 2009-06-18 16:59:34 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.62 2009-06-20 21:37:12 michelpujol Exp $
 #
 
 #=========================================================================
@@ -75,6 +75,7 @@ set caption(confVisu,non_connecte)                    "Not connected"
 set caption(confVisu,fitsHduList)                     "HDU"
 set caption(confVisu,fermeture_impossible)            "Aud'ACE cannot be stopped because of an on-going action in the tool:"
 set caption(confVisu,fermeture_impossible1)           ""
+set caption(confVisu,fermeture_outil_impossible)      "###Impossible d'arrêter %s car une opération est en cours"
 
 set caption(plotxy,figure)                            "Figure"
 
@@ -149,6 +150,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,fitsHduList)                  "HDU"
    set caption(confVisu,fermeture_impossible)         "Impossible d'arrêter Aud'ACE car une opération est en cours dans l'outil :"
    set caption(confVisu,fermeture_impossible1)        ""
+   set caption(confVisu,fermeture_outil_impossible)   "Impossible d'arrêter %s car une opération est en cours"
 
    set caption(plotxy,figure)                         "Figure"
 

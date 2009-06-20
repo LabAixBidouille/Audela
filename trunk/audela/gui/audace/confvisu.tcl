@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.105 2009-06-07 17:58:16 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.106 2009-06-20 21:36:50 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -409,9 +409,9 @@ namespace eval ::confVisu {
             set private($visuNo,picture_h) [buf$bufNo getpixelsheight]
             set private($visuNo,currentHduNo) $hduNo
          } else {
-            #--- je mets à jour le nom du fichier meme quand l'image ne 
+            #--- je mets à jour le nom du fichier meme quand l'image ne
             #--- proviens pas d'un fichier , mais d'une camera
-            #--- afin de permettre le rafraichissement des outils 
+            #--- afin de permettre le rafraichissement des outils
             #--- qui sont abonnes au listener addFilenameListener
             ::confVisu::setFileName $visuNo "?"
          }
@@ -1435,18 +1435,25 @@ namespace eval ::confVisu {
       variable private
 
       #--- j'arrete l'outil deja present
+      set stopResult ""
       if { "$private($visuNo,currentTool)" != "" } {
          #--- Cela veut dire qu'il y a deja un outil selectionne
          if { $toolName != "" } {
             if { [$toolName\::getPluginProperty "display" ] != "window"
                && [$private($visuNo,currentTool)::getPluginProperty "display" ] != "window" } {
                #--- Cela veut dire que l'utilisateur selectionne un nouvel outil
-               stopTool $visuNo
+               set stopResult [stopTool $visuNo]
             }
          } else {
             #--- Cela veut dire que l'utilisateur veut arreter l'outil en cours
-            stopTool $visuNo
+            set stopResult [stopTool $visuNo]
          }
+      }
+
+      if { $stopResult == "-1" } {
+         tk_messageBox -title "$::caption(confVisu,attention)" -icon error \
+          -message [format $::caption(confVisu,fermeture_outil_impossible) [ [ ::confVisu::getTool $visuNo ]::getPluginTitle ] ]
+         return
       }
 
       if { $toolName != "" } {
