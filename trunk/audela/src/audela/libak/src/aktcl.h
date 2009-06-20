@@ -188,6 +188,7 @@ int Cmd_aktcl_cour_finalbis(ClientData clientData, Tcl_Interp *interp, int argc,
 int Cmd_aktcl_reduceusno(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 int Cmd_aktcl_splitcfht(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int Cmd_aktcl_aster1(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 /*int Cmd_aktcl_rectification(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);*/
 

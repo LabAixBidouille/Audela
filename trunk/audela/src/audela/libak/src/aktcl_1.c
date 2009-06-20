@@ -2728,7 +2728,7 @@ int Cmd_aktcl_splitcfht(ClientData clientData, Tcl_Interp *interp, int argc, cha
 		fin=fopen(s,"rb");
 		if (fin==NULL) {
 			sprintf(stringresult,"Problem with the file %s",s);
-			Tcl_SetResult(interp,s,TCL_VOLATILE);
+			Tcl_SetResult(interp,stringresult,TCL_VOLATILE);
 			return TCL_ERROR;
 		}
 		/* --- ---*/
@@ -2817,4 +2817,288 @@ int Cmd_aktcl_splitcfht(ClientData clientData, Tcl_Interp *interp, int argc, cha
    return result;
 }
 
+int Cmd_aktcl_aster1(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Explore les parametres d'un asteroide binaire */
+/****************************************************************************/
+/* Entrees :                                                                */
+/****************************************************************************/
+{
+	double G,t,T2,pi,qp2;
+	FILE *fid;
+	double dd,rr,rrrab,rrrac,a11,a12,da1,b11,b12,db1,c11,c12,dc1;
+	double a21,a22,da2,b21,b22,db2,c21,c22,dc2;
+	double rho1, rho2,drho;
+	int result,k;
+	double rho,a1,a2,b1,b2,c1,c2;
+	double b11y,b12z,c11y,c12z,b21y,b22z,c21y,c22z;
+   char stringresult[1024],st[1024];
+	double dmp,dmp1,dmp2,hbc_hab,hbc_hab1,hbc_hab2,s,s1,s2,mp;
+	int kdmp,khbc_hab,ks,km21,ktanphi2;
+	double m1,m2,m21,m21min,m21max;
+	double tanphi2,tanphi2min,tanphi2max;
+	double kkm21,kkdmp,kkhbc_hab,kks,kktanphi2;
+	int algo=0;
+	double delta,s01,x01,y01,aaa,bbb,ccc;
+
+	// ------ Gravitation constant (usi)
+	G=6.67259e-11;
+	// --- Period (h)
+	t=1.14361*24.;
+	T2=(t*3600)*(t*3600);
+	// ---- 4*pi^2
+	pi=4*atan(1);
+	qp2=4*pi*pi;
+
+	/* === good pour une jolie optimisation === */
+	if (1==1) {
+		// en km
+		dd=0.05;
+		rr=0+1*sqrt(0.82); // from radar
+		rrrab=0.78;
+		rrrac=0.59*1+0.78*0;
+		a11=((-4+4.51+6.82)/2)/2/rr; // rayon
+		a12=((6+4.51+6.82)/2)/2/rr; // rayon
+		a11=2.0;
+		a12=4.5;
+
+		da1=dd;
+		b11=a11*rrrab; b11=1.5;
+		b12=a12*rrrab; b12=3.5;
+		db1=dd;
+		c11=a11*rrrac; c11=1.;
+		c12=a12*rrrac; c12=3.;
+		dc1=dd;
+		a21=a11*rr*rr; a21=1.8;
+		a22=a12*rr*rr; a22=4.0;
+		da2=dd;
+		b21=b11*rr*rr; b21=1.;
+		b22=b12*rr*rr; b22=3.5;
+		db2=dd;
+		c21=c11*rr*rr; c21=0.5;
+		c22=c12*rr*rr; c22=2.5;
+		dc2=dd;
+
+		rho1=2;
+		rho2=5.5;
+		drho=0.1;
+
+		kkm21=1;
+		kkdmp=1;
+		kkhbc_hab=1;
+		kks=1;
+		kktanphi2=1;
+		algo=1;
+	}
+
+	/* === good pour deux corps jumeaux === */
+	if (1==0) {
+		// en km
+		dd=0.05;
+		rr=1.; // from radar
+		rrrab=0.78;
+		rrrac=0.78;
+		a11=2/2/rr; // rayon
+		a12=10/2/rr; // rayon
+		a11=((-6+4.51+6.82)/2)/2/rr; // rayon
+		a12=((6+4.51+6.82)/2)/2/rr; // rayon
+
+		da1=dd;
+		b11=a11*rrrab; //b11=2.;
+		b12=a12*rrrab; //b12=5.;
+		db1=dd;
+		c11=a11*rrrac; //c11=1.5;
+		c12=a12*rrrac; //c12=4.;
+		dc1=dd;
+		a21=a11*rr*rr; //a21=1.8;
+		a22=a12*rr*rr; //a22=5.5;
+		da2=dd;
+		b21=b11*rr*rr; //b21=1.5;
+		b22=b12*rr*rr; //b22=4.5;
+		db2=dd;
+		c21=c11*rr*rr; //c21=1.;
+		c22=c12*rr*rr; //c22=3.5;
+		dc2=dd;
+
+		rho1=1;
+		rho2=5;
+		drho=0.05;
+
+		kkm21=0;
+		kkdmp=1;
+		kkhbc_hab=0;
+		kks=1;
+		kktanphi2=1;
+		algo=0;
+	}
+
+	m21min=0.55-0.16;
+	m21max=0.55+0.16;
+
+	dmp1=(0.476-0.02)/(1+0.03*26); //0.2562
+	dmp2=(0.476+0.02)/(1+0.03*26); //0.2787
+
+	hbc_hab1= (13.15-12.58)-0.09; //0.48
+	hbc_hab2= (13.15-12.58)+0.09; //0.66
+
+	s1=16.07;
+	s2=19.03;
+
+	tanphi2min=tan((0.0812-0.006)/2*360*pi/180);
+	tanphi2max=tan((0.0812+0.006)/2*360*pi/180);
+
+	strcpy(st,"c:/d/asters/atami/params.txt");
+	fid=fopen(st,"wt");
+	if (fid==NULL) {
+		sprintf(stringresult,"Problem with the file %s",st);
+		Tcl_SetResult(interp,stringresult,TCL_VOLATILE);
+		return TCL_ERROR;
+	}
+	/* --- algo=0 pour asterbinsame ---*/
+	/* --- algo=1 pour deux corps triaxiaux ---*/
+	if (algo==0) {
+		k=0;
+		for (rho=rho1;rho<=rho2;rho+=drho) {
+			for (a1=a11;a1<=a12;a1+=da1) {
+				a2=a1;
+				b11y=b11;
+				b12z=b12;
+				if (b11y>a1) {
+					continue;
+				}
+				if (b12z>a1) {
+					b12z=a1;
+				}
+				for (b1=b11y;b1<=b12z;b1+=db1) {
+					b2=b1;
+					c1=b1;
+					c2=b2;
+					k=k+1;
+					//%         1  2  3  4  5  6  7
+					//inp(k,:)=[a1 b1 c1 a2 b2 c2 rho];
+					m1= 1e9*1e3*4./3*pi*rho*( a1*b1*c1 ) ;
+					m2= 1e9*1e3*4./3*pi*rho*( a2*b2*c2 ) ;
+					m21=m2/m1;
+					km21= (m21>=m21min) && (m21<=m21max);
+					if (km21>=kkm21) {
+						mp=m1+m2;
+						dmp=-2.5*log10( ( b1*c1 + b2*c2 ) / ( a1*c1 + a2*c2 ) ) ;
+						kdmp= (dmp>=dmp1) && (dmp<=dmp2) ;
+						if (kdmp>=kkdmp) {
+							hbc_hab=-2.5*log10( ( b1*c1 + b2*c2 ) / ( a1*b1+a2*b2 ) ) ;
+							khbc_hab= (hbc_hab>=hbc_hab1) && (hbc_hab<=hbc_hab2) ;
+							if (khbc_hab>=kkhbc_hab) {
+								s=1e-3* pow ( ( G*mp*T2/qp2 ) , (1./3.) );
+								ks= (s>=s1) && (s<=s2) ;
+								if (ks>=kks) {
+									//tanphi2=(c1+c2)/s;
+									tanphi2=sqrt(c1*c1/(s/2*s/2-a1*a1));
+									ktanphi2= (tanphi2>=tanphi2min) && (tanphi2<=tanphi2max) ;
+									if (ktanphi2>=kktanphi2) {
+										fprintf(fid,"%f %f %f %f %f %f %f  %f  %f      %e %f %f\n",
+														 a1,b1,c1,a2,b2,c2,rho,dmp,hbc_hab,mp,s, m21);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	} else {
+		k=0;
+		for (rho=rho1;rho<=rho2;rho+=drho) {
+			for (a1=a11;a1<=a12;a1+=da1) {
+				b11y=b11;
+				b12z=b12;
+				if (b11y>a1) {
+					continue;
+				}
+				if (b12z>a1) {
+					b12z=a1;
+				}
+				for (b1=b11y;b1<=b12z;b1+=db1) {
+					c11y=c11;
+					c12z=c12;
+					if (c11y>b1) {
+						continue;
+					}
+					if (c12z>b1) {
+						c12z=b1;
+					}
+					for (c1=c11y;c1<=c12z;c1+=dc1) {
+						for (a2=a21;a2<=a22;a2+=da2) {
+							if (a2>a1) {
+								break;
+							}
+							b21y=b21;
+							b22z=b22;
+							if (b21y>a2) {
+								continue;
+							}
+							if (b22z>a2) {
+								b22z=a2;
+							}
+							for (b2=b21y;b2<=b22z;b2+=db2) {
+								c21y=c21;
+								c22z=c22;
+								if (c21y>b2) {
+									continue;
+								}
+								if (c22z>b2) {
+									c22z=b2;
+								}
+								for (c2=c21y;c2<=c22z;c2+=dc2) {
+									k=k+1;
+									//%         1  2  3  4  5  6  7
+									//inp(k,:)=[a1 b1 c1 a2 b2 c2 rho];
+									m1= 1e9*1e3*4./3*pi*rho*( a1*b1*c1 ) ;
+									m2= 1e9*1e3*4./3*pi*rho*( a2*b2*c2 ) ;
+									m21=m2/m1;
+									km21= (m21>=m21min) && (m21<=m21max);
+									if (km21>=kkm21) {
+										mp=m1+m2;
+										dmp=-2.5*log10( ( b1*c1 + b2*c2 ) / ( a1*c1 + a2*c2 ) ) ;
+										kdmp= (dmp>=dmp1) && (dmp<=dmp2) ;
+										if (kdmp>=kkdmp) {
+											hbc_hab=-2.5*log10( ( b1*c1 + b2*c2 ) / ( a1*b1+a2*b2 ) ) ;
+											khbc_hab= (hbc_hab>=hbc_hab1) && (hbc_hab<=hbc_hab2) ;
+											if (khbc_hab>=kkhbc_hab) {
+												s=1e-3* pow ( ( G*mp*T2/qp2 ) , (1./3.) );
+												ks= (s>=s1) && (s<=s2) ;
+												if (ks>=kks) {
+													tanphi2=(c1+c2)/s;
+													aaa=b1*b1-b2*b2;
+													bbb=-2*s*b1*b1;
+													ccc=b2*b2*a1*a1-b1*b1*a2*a2+s*s*b1*b1;
+													delta=bbb*bbb-4*aaa*ccc;
+													s01=(-bbb-sqrt(delta))/2./aaa;
+													//delta=b1*b1*b2*b2*(s*s-a1*a1-a2*a2)+b1*b1*b1*b1*a2*a2+b2*b2*b2*b2*a1*a1;
+													//s01=(s*b1*b1+sqrt(delta))/(b1*b1-b2*b2);
+													x01=a1*a1/s01;
+													y01=b1*sqrt(1-a1*a1/s01/s01);
+													tanphi2=y01/(s01-x01);
+													ktanphi2= (tanphi2>=tanphi2min) && (tanphi2<=tanphi2max) ;
+													if (ktanphi2>=kktanphi2) {
+														fprintf(fid,"%f %f %f %f %f %f %f  %f  %f      %e %f %f\n",
+																		 a1,b1,c1,a2,b2,c2,rho,dmp,hbc_hab,mp,s, m21);
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	fclose(fid);
+	/* --- ---*/
+   Tcl_SetResult(interp,"OK",TCL_VOLATILE);
+	result=TCL_OK;
+   return result;
+}
 
