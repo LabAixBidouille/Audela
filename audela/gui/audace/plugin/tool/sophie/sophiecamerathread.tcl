@@ -3,7 +3,7 @@
 # Description : procedures d'acquisiition et de traitement avec
 #         plusieurs cameras simultanées exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise a jour $Id: sophiecamerathread.tcl,v 1.4 2009-06-20 17:32:26 michelpujol Exp $
+# Mise a jour $Id: sophiecamerathread.tcl,v 1.5 2009-06-20 21:33:55 michelpujol Exp $
 #
 
 
@@ -80,10 +80,6 @@ proc ::camerathread::sophieAcquisitionLoop { } {
       } else {
          #--- je simule une acquisition
          after [expr int($private(exptime) * 1000.0)]
-
-         #--- pour simuler la presence d'une camera pendant les tests de debuggage
-         set statusVariableName "::status_cam$private(camNo)"
-         set $statusVariableName "stand"
          ###::camerathread::disp  "camerathread: private(simulationGenericFileName)=$private(simulationGenericFileName)XX\n"
 
          set fileName "$private(simulationGenericFileName)$private(simulationCounter).fit"
@@ -204,10 +200,10 @@ proc ::camerathread::sophieAcquisitionLoop { } {
       set infoMessage      [lindex $result 10 ]
 
       if { $starStatus == "DETECTED" } {
-         #--- coordonnes de la cible
-         set private(targetCoord) [list $starX $starY ]
          #--- l'etoile est detectee
          set targetDetection 1
+         #--- je memorise les nouvelles coordonnees de la cible
+         set private(targetCoord) [list $starX $starY ]
       } else {
          #--- l'etoile n'est pas detectee
          set targetDetection 0
