@@ -2,14 +2,15 @@
 # Fichier : sophiecontrol.tcl
 # Description : Fenetre de controle pour le centrage, la focalisation et le guidage
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecontrol.tcl,v 1.18 2009-06-14 08:52:47 robertdelmas Exp $
+# Mise a jour $Id: sophiecontrol.tcl,v 1.19 2009-06-20 17:32:26 michelpujol Exp $
 #
 
-#============================================================
-# Declaration du namespace sophie::config
-#    initialise le namespace
-#============================================================
+##------------------------------------------------------------
+# @brief   fenetre de controle pour le centrage, la focalisation et le guidage
+#
+#------------------------------------------------------------
 namespace eval ::sophie::control {
+
 }
 
 #------------------------------------------------------------
@@ -51,67 +52,57 @@ proc ::sophie::control::run { visuNo tkbase } {
 
    set private(activeColor)                     "#77ff77" ; #--- vert tendre
    set private(inactiveColor)                   "#ff9582" ; #--- rouge tendre
-   set private(vectorLength)                    50
+   set private(vectorLength)                    50        ; #--- nombre de valeurs conservées dans les vecteurs
    set private(listMaxIntensity)                ""
 
    #--- vecteur des abcisses
    if { [::blt::vector names ::sophieAbcisse ] == "" } {
       ::blt::vector create ::sophieAbcisse
-      ###::sophieAbcisse length $private(vectorLength)
       ::sophieAbcisse seq 1 $private(vectorLength)
    }
 
    #--- vecteur FwhmX
    if { [::blt::vector names ::sophieFwhmX] == "" } {
       ::blt::vector create ::sophieFwhmX
-      ###::sophieFwhmX length $private(vectorLength)
    }
    #--- vecteur FwhmY
    if { [::blt::vector names ::sophieFwhmY] == "" } {
       ::blt::vector create ::sophieFwhmY
-      ###::sophieFwhmY length $private(vectorLength)
    }
 
    #--- vecteur MaxIntensity
    if { [::blt::vector names ::sophieMaxIntensity] == "" } {
       ::blt::vector create ::sophieMaxIntensity
-      ###::sophieMaxIntensity length $private(vectorLength)
    }
 
    #--- vecteur alphaDiff
    if { [::blt::vector names ::sophieEcartEtoileX] == "" } {
       ::blt::vector create ::sophieEcartEtoileX
-      ###::sophieEcartEtoileX length $private(vectorLength)
    }
 
    #--- vecteur DeltaDiff
    if { [::blt::vector names ::sophieEcartEtoileY] == "" } {
       ::blt::vector create ::sophieEcartEtoileY
-      ###::sophieEcartEtoileY length $private(vectorLength)
    }
 
    #--- vecteur AlphaCorrection
    if { [::blt::vector names ::sophieCorrectionAlpha] == "" } {
       ::blt::vector create ::sophieCorrectionAlpha
-      ###::sophieCorrectionAlpha length $private(vectorLength)
    }
 
    #--- vecteur DeltaCorrection
    if { [::blt::vector names ::sophieCorrectionDelta] == "" } {
       ::blt::vector create ::sophieCorrectionDelta
-      ###::sophieCorrectionDelta length $private(vectorLength)
    }
 
    #--- vecteur consigneXDiff
    if { [::blt::vector names ::sophieEcartConsigneX] == "" } {
       ::blt::vector create ::sophieEcartConsigneX
-      ###::sophieEcartConsigneX length $private(vectorLength)
    }
 
    #--- vecteur consigneYDiff
    if { [::blt::vector names ::sophieEcartConsigneY] == "" } {
       ::blt::vector create ::sophieEcartConsigneY
-      ##::sophieEcartConsigneY length $private(vectorLength)
    }
 
    #--- Initialisation des vecteurs des fenetres Focalisation et Guidage
@@ -151,12 +142,6 @@ proc ::sophie::control::closeWindow { visuNo } {
       set ::conf(sophie,controlWindowPosition) [ winfo geometry [winfo toplevel $private(frm)]]
       destroy [ winfo toplevel $private(frm) ]
    }
-
-console::disp "::sophie::control::closeWindow\n"
-
-   #--- je supprime les vecteurs
-   ###vector destroy $private(xVFwhm)
-   ###vector destroy $private(yVFwhm)
 
 }
 
@@ -334,7 +319,6 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
       grid columnconfigure [ $frm.positionSeeing getframe ] 4 -weight 0
       grid columnconfigure [ $frm.positionSeeing getframe ] 5 -weight 1
 
-   ####pack $frm.positionSeeing -side top -anchor w -fill x -expand 1
 
    #--- Frame pour la position du guidage
    TitleFrame $frm.positionGuidage -borderwidth 2 -relief ridge \
@@ -477,18 +461,6 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
       grid columnconfigure [ $frm.positionGuidage getframe ] 6 -weight 1
       grid columnconfigure [ $frm.positionGuidage getframe ] 7 -weight 1
 
-      #--- Frame pour la camera
-      ####TitleFrame $frm.indicateurs.camera -borderwidth 2 -relief ridge \
-      ####   -text "Camera"
-      ####
-      ####   #--- temperature et puissance du peltier
-      ####   label $frm.indicateurs.camera.temperature -text ""
-      ####   grid $frm.indicateurs.camera.temperature \
-      ####      -in [ $frm.indicateurs.camera getframe ] \
-      ####      -row 0 -column 0 -sticky ew
-      ####
-      ####pack $frm.positionSeeing -side top -anchor w -fill x -expand 1
-
    #--- Frame du centrage
    frame $frm.centrage -borderwidth 1 -relief groove
 
@@ -569,8 +541,6 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
 
       pack $frm.centrage.pointage -side top -anchor w -fill x -expand 1
 
-  # pack $frm.centrage -side top -fill both
-
    #--- Frame de la focalisation
    frame $frm.focalisation -borderwidth 1 -relief groove
 
@@ -579,12 +549,6 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -text $::caption(sophie,courbes)
 
          #--- FWHM X
-
-         ###label $frm.focalisation.courbes.labelFWHMX -text $::caption(sophie,FWHMX)
-         ###grid $frm.focalisation.courbes.labelFWHMX \
-         ###   -in [ $frm.focalisation.courbes getframe ] \
-         ###   -row 0 -column 0 -sticky w
-
          createGraph $frm.focalisation.courbes.graphFwhmX_simple 120
          ###$frm.focalisation.courbes.graphFwhmX_simple axis configure y -min 0
          $frm.focalisation.courbes.graphFwhmX_simple element create xfwhm \
@@ -628,24 +592,9 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          grid columnconfig [ $frm.focalisation.courbes getframe ] 0 -weight 0
          grid columnconfig [ $frm.focalisation.courbes getframe ] 1 -weight 1
       pack $frm.focalisation.courbes -side top -anchor w -fill x -expand 1
-##console::disp "frm = $frm.focalisation.courbes.graphintensiteMax_simple\n"
-  # pack $frm.focalisation -side top -fill both
 
    #--- Frame du guidage
    frame $frm.guidage -borderwidth 1 -relief groove
-
-      #--- Frame pour l'activation du guidage
-      ####TitleFrame $frm.guidage.activationGuidage -borderwidth 2 -relief ridge \
-      ####   -text $::caption(sophie,activationGuidage)
-      ####
-      ####   #--- Indicateur Etoile selectionnee ou non
-      ####   button $frm.guidage.activationGuidage.etoile -text $::caption(sophie,activationGuidage) \
-      ####      -relief raised -command " "
-      ####   pack $frm.guidage.activationGuidage.etoile \
-      ####      -in [ $frm.guidage.activationGuidage getframe ] \
-      ####      -side top -ipadx 4 -ipady 4
-      ####
-      ####pack $frm.guidage.activationGuidage -side top -anchor w -fill x -expand 1
 
       #--- Frame de la position de la consigne sur la fibre
       TitleFrame $frm.guidage.positionconsigne -borderwidth 2 -relief ridge \
@@ -653,11 +602,6 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
 
          #--- Frame pour la position en X et Y de la consigne dans l'image
          frame $frm.guidage.positionconsigne.correction -borderwidth 0 -relief ridge
-
-            #--- Label de la correction en X
-            ###label $frm.guidage.positionconsigne.correction.labelX -text $::caption(sophie,correctionX)
-            ###grid $frm.guidage.positionconsigne.correction.labelX \
-            ###   -row 0 -column 1 -sticky w -padx 5 -pady 3
 
             #--- Graphe de la erreur en alpha et delta
             createGraph $frm.guidage.positionconsigne.correction.ecartConsigne_simple 105
@@ -730,117 +674,12 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
 
       pack $frm.guidage.positionconsigne -side top -anchor w -fill x -expand 1
 
-      #--- Frame de la position de l'objet par rapport a la consigne
-      ###TitleFrame $frm.guidage.objetconsigne -borderwidth 2 -relief ridge \
-      ###   -text $::caption(sophie,objetconsigne)
-      ###
-      ###   #--- Photocentre de l'objet
-      ###   label $frm.guidage.objetconsigne.labelPhotocentreObjet -text $::caption(sophie,photocentreObjet)
-      ###   grid $frm.guidage.objetconsigne.labelPhotocentreObjet \
-      ###      -in [ $frm.guidage.objetconsigne getframe ] \
-      ###      -row 0 -column 1 -sticky w
-      ###
-      ###   label $frm.guidage.objetconsigne.labelPositionX -text $::caption(sophie,x) -relief groove
-      ###   grid $frm.guidage.objetconsigne.labelPositionX \
-      ###      -in [ $frm.guidage.objetconsigne getframe ] \
-      ###      -row 0 -column 2 -columnspan 1 -rowspan 1 -sticky ew
-      ###
-      ###   Entry $frm.guidage.objetconsigne.entryPositionX \
-      ###      -width 8 -justify left -editable 0 \
-      ###      -textvariable ::sophie::control::private(guidagePhotocentrePositionX)
-      ###   grid $frm.guidage.objetconsigne.entryPositionX \
-      ###      -in [ $frm.guidage.objetconsigne getframe ] \
-      ###      -row 0 -column 3 -sticky ens
-      ###
-      ###   label $frm.guidage.objetconsigne.labelPositionY -text $::caption(sophie,y) -relief groove
-      ###   grid $frm.guidage.objetconsigne.labelPositionY \
-      ###      -in [ $frm.guidage.objetconsigne getframe ] \
-      ###      -row 0 -column 4 -columnspan 1 -rowspan 1 -sticky ew
-      ###
-      ###   Entry $frm.guidage.objetconsigne.entryPositionY \
-      ###      -width 8 -justify center -editable 0 \
-      ###      -textvariable ::sophie::control::private(guidagePhotocentrePositionY)
-      ###   grid $frm.guidage.objetconsigne.entryPositionY \
-      ###      -in [ $frm.guidage.objetconsigne getframe ] \
-      ###      -row 0 -column 5 -sticky ens
-      ###
-      ###   #--- Ecart par rapport a la consigne
-      ###   label $frm.guidage.objetconsigne.labelEcartconsigne -text $::caption(sophie,ecartconsigne)
-      ###   grid $frm.guidage.objetconsigne.labelEcartconsigne \
-      ###      -in [ $frm.guidage.objetconsigne getframe ] \
-      ###      -row 1 -column 1 -sticky w
-      ###
-      ###   label $frm.guidage.objetconsigne.labelDX -text $::caption(sophie,dx) -relief groove
-      ###   grid $frm.guidage.objetconsigne.labelDX \
-      ###      -in [ $frm.guidage.objetconsigne getframe ] \
-      ###      -row 1 -column 2 -columnspan 1 -rowspan 1 -sticky ew
-      ###
-      ###   Entry $frm.guidage.objetconsigne.entryDX \
-      ###      -width 8 -justify left -editable 0 \
-      ###      -textvariable ::sophie::control::private(ecartEtoileX)
-      ###   grid $frm.guidage.objetconsigne.entryDX \
-      ###      -in [ $frm.guidage.objetconsigne getframe ] \
-      ###      -row 1 -column 3 -sticky ens
-      ###
-      ###   label $frm.guidage.objetconsigne.labelDY -text $::caption(sophie,dy) -relief groove
-      ###   grid $frm.guidage.objetconsigne.labelDY \
-      ###      -in [ $frm.guidage.objetconsigne getframe ] \
-      ###      -row 1 -column 4 -columnspan 1 -rowspan 1 -sticky ew
-      ###
-      ###   Entry $frm.guidage.objetconsigne.entryDY \
-      ###      -width 8 -justify center -editable 0 \
-      ###      -textvariable ::sophie::control::private(ecartEtoileY)
-      ###   grid $frm.guidage.objetconsigne.entryDY \
-      ###     -in [ $frm.guidage.objetconsigne getframe ] \
-      ###      -row 1 -column 5 -sticky ens
-      ###
-      ###   #--- Erreur alpha et delta
-      ###   label $frm.guidage.objetconsigne.labelErreur -text $::caption(sophie,erreur)
-      ###   grid $frm.guidage.objetconsigne.labelErreur \
-      ###      -in [ $frm.guidage.objetconsigne getframe ] \
-      ###      -row 2 -column 1 -sticky w
-      ###
-      ###   label $frm.guidage.objetconsigne.labelErreurAlpha -text $::caption(sophie,erreurAlpha) \
-      ###      -relief groove
-      ###   grid $frm.guidage.objetconsigne.labelErreurAlpha \
-      ###      -in [ $frm.guidage.objetconsigne getframe ] \
-      ###      -row 2 -column 2 -columnspan 1 -rowspan 1 -sticky ew
-      ###
-      ###   Entry $frm.guidage.objetconsigne.entryErreurAlpha \
-      ###      -width 8 -justify left -editable 0 \
-      ###      -textvariable ::sophie::control::private(correctionAlpha)
-      ###   grid $frm.guidage.objetconsigne.entryErreurAlpha \
-      ###      -in [ $frm.guidage.objetconsigne getframe ] \
-      ###      -row 2 -column 3 -sticky ens
-      ###
-      ###   label $frm.guidage.objetconsigne.labelErreurDelta -text $::caption(sophie,erreurDelta) \
-      ###      -relief groove
-      ###   grid $frm.guidage.objetconsigne.labelErreurDelta \
-      ###      -in [ $frm.guidage.objetconsigne getframe ] \
-      ###      -row 2 -column 4 -columnspan 1 -rowspan 1 -sticky ew
-      ###
-      ###   Entry $frm.guidage.objetconsigne.entryErreurDelta \
-      ###      -width 8 -justify center -editable 0 \
-      ###      -textvariable ::sophie::control::private(correctionDelta)
-      ###   grid $frm.guidage.objetconsigne.entryErreurDelta \
-      ###      -in [ $frm.guidage.objetconsigne getframe ] \
-      ###      -row 2 -column 5 -sticky ens
-      ###
-      ###pack $frm.guidage.objetconsigne -side top -anchor w -fill x -expand 1
-
       #--- Frame pour visualiser les erreurs en alpha et delta
       TitleFrame $frm.guidage.erreurs -borderwidth 2 -relief ridge \
          -text $::caption(sophie,erreursAlphaDelta)
 
-         ####--- Label de la correction en alpha
-         ###label $frm.guidage.erreurs.labelAlpha -text $::caption(sophie,erreurAlpha)
-         ###grid $frm.guidage.erreurs.labelAlpha \
-         ###   -in [ $frm.guidage.erreurs getframe ] \
-         ###   -row 0 -column 1 -sticky w -padx 5 -pady 3
-
          #--- Graphe de la erreur en alpha et delta
          createGraph $frm.guidage.erreurs.alpha_simple 105
-        ### $frm.guidage.erreurs.alpha_simple configure -title $::caption(sophie,erreur)
          $frm.guidage.erreurs.alpha_simple element create alphaDiff \
             -xdata ::sophieAbcisse -ydata ::sophieEcartEtoileX -mapy y \
             -color blue -dash "2" -linewidth 3 \
@@ -855,12 +694,6 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             -in [ $frm.guidage.erreurs getframe ] \
             -row 0 -column 1 -sticky nsew
 
-         ####--- Label de la correction en delta
-         ###label $frm.guidage.erreurs.labelDelta -text $::caption(sophie,erreurDelta)
-         ###grid $frm.guidage.erreurs.labelDelta \
-         ###   -in [ $frm.guidage.erreurs getframe ] \
-         ###   -row 1 -column 1 -sticky w -padx 5 -pady 3
-
       pack $frm.guidage.erreurs -side top -anchor w -fill x -expand 1
 
       #--- Frame pour visualiser les corrections au telescope en alpha et delta
@@ -869,7 +702,6 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
 
          #--- Graphe de la correction en delta
          createGraph $frm.guidage.corrections.delta_simple 105
-        ### $frm.guidage.corrections.delta_simple configure -title $::caption(sophie,correction)
          $frm.guidage.corrections.delta_simple element create alphaCorrection \
             -xdata ::sophieAbcisse -ydata ::sophieCorrectionAlpha -mapy y \
             -color blue -dash "2" -linewidth 3 \
@@ -1158,7 +990,7 @@ proc ::sophie::control::setRealDelay { delay } {
 # @param fwhmX   largeur a mi hauter sur l'axe X
 # @param fwhmY   largeur a mi hauter sur l'axe Y
 # @param background   fond du ciel
-# @param max     flux max
+# @param maxIntensity  intensité max
 #
 # @return rien
 #------------------------------------------------------------
@@ -1290,25 +1122,6 @@ proc ::sophie::control::setFocusInformation { starDetection fiberDetection origi
       #--- je supprime le point le plus ancien
       ::sophieMaxIntensity delete 0
    }
-
-   ####--- Je mets les intensites maxi dans une liste
-   ###lappend private(listMaxIntensity) "$maxIntensity"
-   ####--- Je trie la liste des intensites maxi
-   ###set private(listMaxIntensity) [ lsort $private(listMaxIntensity) ]
-   ####--- Je calcule la longueur de la liste des intensites maxi
-   ###set longueurListe [ llength $private(listMaxIntensity) ]
-   ####--- Je recupere la valeur mini de la liste a laquelle je retranche 10
-   ###set intensityMin [ expr [ lindex $private(listMaxIntensity) 0 ] - 10. ]
-   ####--- Je recupere la valeur maxi de la liste a laquelle j'ajoute 10
-   ###set intensityMax [ expr [ lindex $private(listMaxIntensity) [ expr $longueurListe - 1 ] ] + 10. ]
-   ###if { $intensityMax < $intensityMin } {
-   ###   set temp $intensityMin
-   ###   set intensityMin $intensityMax
-   ###   set intensityMax $temp
-   ###}
-   ####--- J'affiche le graphe avec une ordonnee dynamique de l'intensite
-   ###$frm.focalisation.courbes.graphintensiteMax_simple axis configure y -min $intensityMin -max $intensityMax
-
 }
 
 ##------------------------------------------------------------
@@ -1327,7 +1140,7 @@ proc ::sophie::control::setFocusInformation { starDetection fiberDetection origi
 # @param deltaCorrection  correction en delta (en arcseconde)
 # @param originDx correction de la consigne en X  (en pixel)
 # @param originDy correction de la consigne en Y  (en pixel)
-# @return rien
+# @return null
 #------------------------------------------------------------
 proc ::sophie::control::setGuideInformation { starDetection fiberDetection originX originY starX starY starDx starDy alphaCorrection deltaCorrection originDx originDy} {
    variable private

@@ -1,15 +1,15 @@
-#
-# Fichier : sophie.tcl
-# Description : Outil de tests pour le developpement de Sophie pour le T193 de l'OHP
-# Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophietest.tcl,v 1.7 2009-06-13 23:59:16 michelpujol Exp $
-#
+##-----------------------------------------------------------
+# @file     sophietest.tcl
+# @brief    Outil de tests pour le developpement de Sophie pour le T193 de l'OHP
+# @author   Michel PUJOL et Robert DELMAS
+# Mise a jour $Id: sophietest.tcl,v 1.8 2009-06-20 17:32:26 michelpujol Exp $
+#------------------------------------------------------------
 
-#============================================================
-# Declaration du namespace sophie::test
-#    initialise le namespace
-#============================================================
+##-----------------------------------------------------------
+# @brief    test de l'outil sophie et simulation des interfaces externes
+#------------------------------------------------------------
 namespace eval ::sophie::test {
+
 }
 
 #------------------------------------------------------------
@@ -234,23 +234,6 @@ proc ::sophie::test::writeSocketSophie { data } {
 
 }
 
-
-
-#------------------------------------------------------------
-# tests de la fenetre principale
-#------------------------------------------------------------
-
-proc ::sophie::test::aff1 { }  {
-   ::sophie::setMode "centrage"
-
-   #--- je verifie le binning
-   if { $::sophie::test::private(binning) } {
-
-
-   }
-}
-
-
 #============================================================
 #
 # tests de la fenetre de controle
@@ -258,35 +241,35 @@ proc ::sophie::test::aff1 { }  {
 #============================================================
 
 
+##------------------------------------------------------------
+# tests de la fenetre de controle
 #------------------------------------------------------------
-# demarre l'acquisition continue
-#------------------------------------------------------------
-proc ::sophie::test::ta1 { }  {
-   ::sophie::control::setAcquisitionState { 1 }
-}
-
-proc ::sophie::test::ta2 { }  {
-   ::sophie::control::setAcquisitionState { 0 }
-}
-
 proc ::sophie::test::tc1 { } {
    ### starDetection fiberDetection originX originY starX starY fwhmX fwhmY background maxFlow
    ::sophie::control::setCenterInformation 1 1 750 512 752 514 45 46 100 10000
-
 }
 
+##------------------------------------------------------------
+# tests de la fenetre de controle
+#------------------------------------------------------------
 proc ::sophie::test::tsim0 { }  {
    set ::conf(sophie,simulation) 0
    set ::conf(sophie,simulationGenericFileName) "C:/Documents and Settings/michel/Mes documents/astronomie/test/OHP/simulation/centrage_"
    ::console::disp "pas de simulation\n"
 }
 
+##------------------------------------------------------------
+# tests de la fenetre de controle
+#------------------------------------------------------------
 proc ::sophie::tsim1 { }  {
    set ::conf(sophie,simulation) 1
    set ::conf(sophie,simulationGenericFileName) "$::audace(rep_images)/test/OHP/simulation/centrage_"
    ::console::disp "simulation fichiers centrage_*\n"
 }
 
+##------------------------------------------------------------
+# tests de la fenetre de controle
+#------------------------------------------------------------
 proc ::sophie::test::tsim2 { }  {
    set ::conf(sophie,simulation) 1
    set ::conf(sophie,simulationGenericFileName) "$::audace(rep_images)/test/OHP/simulation/simuFWHM10px_fibre_"
@@ -416,17 +399,18 @@ proc ::sophie::test::createDialogSimul { } {
       grid $frm.pcsophie.connect -in [ $frm.pcsophie getframe ] -row 0 -column 2 -sticky ens -padx 2
 
       #--- Bouton envoi de commande
+      button $frm.pcsophie.clearstat -text "RAZ STAT" -command [list ::sophie::test::sendPcGuidage "RAZ_STAT" ]
+      grid $frm.pcsophie.clearstat -in [ $frm.pcsophie getframe ] -row 0 -column 3 -sticky ens -padx 2
+
       button $frm.pcsophie.staton -text "STAT ON" -command [list ::sophie::test::sendPcGuidage "STAT_ON" ]
-      grid $frm.pcsophie.staton -in [ $frm.pcsophie getframe ] -row 0 -column 3 -sticky ens -padx 2
+      grid $frm.pcsophie.staton -in [ $frm.pcsophie getframe ] -row 1 -column 3 -sticky ens -padx 2
 
       button $frm.pcsophie.statoff -text "STAT OFF" -command [list ::sophie::test::sendPcGuidage "STAT_OFF" ]
-      grid $frm.pcsophie.statoff -in [ $frm.pcsophie getframe ] -row 1 -column 3 -sticky ens -padx 2
+      grid $frm.pcsophie.statoff -in [ $frm.pcsophie getframe ] -row 2 -column 3 -sticky ens -padx 2
 
       button $frm.pcsophie.getstat -text "GET STAT" -command [list ::sophie::test::sendPcGuidage "GET_STAT" ]
-      grid $frm.pcsophie.getstat -in [ $frm.pcsophie getframe ] -row 2 -column 3 -sticky ens -padx 2
+      grid $frm.pcsophie.getstat -in [ $frm.pcsophie getframe ] -row 3 -column 3 -sticky ens -padx 2
 
-      button $frm.pcsophie.clearstat -text "RAZ STAT" -command [list ::sophie::test::sendPcGuidage "RAZ_STAT" ]
-      grid $frm.pcsophie.clearstat -in [ $frm.pcsophie getframe ] -row 3 -column 3 -sticky ens -padx 2
 
    pack $frm.pcsophie -in $frm -side top -fill both -expand 1
 
