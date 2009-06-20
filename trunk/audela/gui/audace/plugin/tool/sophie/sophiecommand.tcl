@@ -2,7 +2,7 @@
 # Fichier : sophiecommand.tcl
 # Description : Centralise les commandes de l'outil Sophie
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecommand.tcl,v 1.18 2009-06-20 17:32:26 michelpujol Exp $
+# Mise a jour $Id: sophiecommand.tcl,v 1.19 2009-06-20 21:33:55 michelpujol Exp $
 #
 
 #--- suite du namespace sophie
@@ -278,9 +278,9 @@ proc ::sophie::setWindowing { size { centerCoords "" } } {
    }
 
    #--- je configure la camera
-   if { $private(camNo) != 0 } {
-      cam$private(camNo) window  [list $x1 $y1 $x2 $y2 ]
-   }
+   #if { $private(camNo) != 0 } {
+   #   cam$private(camNo) window  [list $x1 $y1 $x2 $y2 ]
+   #}
 
    #--- j'applique le fenetrage au buffer pour eviter d'avoir une image trop grande quand on applique le zoom ensuite
    if { [buf$private(bufNo) imageready] == 1 } {
@@ -305,6 +305,7 @@ proc ::sophie::setWindowing { size { centerCoords "" } } {
       ::camera::setAsynchroneParameter $private(camItem) \
             "originCoord" [list $xOriginCoord $yOriginCoord] \
             "targetCoord" [list $xTargetCoord $yTargetCoord] \
+            "window"      [list $x1 $y1 $x2 $y2 ] \
             "targetBoxSize" $targetBoxSize
    }
 }
@@ -442,10 +443,11 @@ proc ::sophie::onGuide { } {
 #      - change les paramètres de l'acquisition continue dans la thread de la camera
 #      - met à jour l'affichage de la fenetre de contole
 #
-# @param mode mode d'acquisition CENTER FOCUS GUIDE.
-#
+# @param mode mode d'acquisition CENTER FOCUS GUIDE ou "".
+#     Si le mode est vide, c'est le mode qui a ete choisi dans la fentre
+#     principale qui est applique.
 #------------------------------------------------------------
-proc ::sophie::setMode { mode } {
+proc ::sophie::setMode { { mode "" } } {
    variable private
 
    #--- je desactive le mode precedent
@@ -1446,6 +1448,9 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                set deltaCorrection      [lindex $args 12]
                set infoMessage          [lindex $args 13]
 
+               #--- je modifie la position du carre de la cible
+               ::sophie::moveTarget $visuNo $private(targetCoord)
+
                #--- je modifie la position de la consigne si on est en mode FIFER et la fibre est detectee
                if { $::conf(sophie,guidingMode) == "FIBER" } {
                   if { $fiberDetection == 1 } {
@@ -1460,16 +1465,14 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                      set originDy  [expr $originY - $::conf(sophie,fiberHEY) ]
                   }
                } else {
+                  #--- l'ecart de la consigne est nul
                   set originDx 0.0
                   set originDy 0.0
-               }
-
-               #--- j'affiche le carre de la cible sur les nouvelles coordonnees
-               ::sophie::moveTarget $visuNo $private(targetCoord)
+              }
 
                #--- j'affiche le symbole de l'origine
                ::sophie::createOrigin $visuNo
-   ##console::disp "callbackAcquisition origin= $private(originCoord) detail=$infoMessage\n"
+               ##console::disp "callbackAcquisition origin= $private(originCoord) detail=$infoMessage\n"
                #--- j'affiche les informations dans la fenetre de controle
                switch $private(mode) {
                   "CENTER" {
