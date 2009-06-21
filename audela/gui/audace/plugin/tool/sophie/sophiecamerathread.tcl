@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.6 2009-06-21 13:16:20 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.7 2009-06-21 13:37:13 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -274,6 +274,9 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             #--- je corrige avec les termes proportionnels et integrateurs
             set alphaCorrection [expr $alphaDiff * $private(proportionalGain) + $alphaDiffCumul * $private(integralGain) ]
             set deltaCorrection [expr $deltaDiff * $private(proportionalGain) + $deltaDiffCumul * $private(integralGain) ]
+         } else {
+            set alphaCorrection $alphaDiff
+            set deltaCorrection $deltaDiff
          }
 
          #--- je verifie si le centrage est fini
@@ -336,7 +339,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          }
       } else {
          set alphaCorrection 0.0
-         set alphaCorrection 0.0
+         set deltaCorrection 0.0
       }
 
       ###::camerathread::disp  "camerathread: alphaCorrection=$alphaCorrection deltaCorrection=$deltaCorrection \n"
