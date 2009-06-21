@@ -2,7 +2,7 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.20 2009-06-21 13:15:50 michelpujol Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.21 2009-06-21 21:41:07 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -48,7 +48,13 @@ proc ::sophie::control::run { visuNo tkbase } {
    set private(ecartConsigneY)                  ""
    set private(correctionAlpha)                 ""
    set private(correctionDelta)                 ""
-   set private(realDelay)                        ""
+   set private(starDx)                          ""
+   set private(starDy)                          ""
+   set private(alphaDiff)                       ""
+   set private(deltaDiff)                       ""
+   set private(alphaCorrection)                 ""
+   set private(deltaCorrection)                 ""
+   set private(realDelay)                       ""
 
    set private(activeColor)                     "#77ff77" ; #--- vert tendre
    set private(inactiveColor)                   "#ff9582" ; #--- rouge tendre
@@ -177,7 +183,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
       -text $::caption(sophie,indicateurInterface)
 
       label $frm.voyant.acquisition_color_invariant \
-         -bg $private(inactiveColor) -borderwidth 1 -relief  groove \
+         -bg $private(inactiveColor) -borderwidth 1 -relief groove \
          -text $::caption(sophie,acquisitionArretee)
 
       grid $frm.voyant.acquisition_color_invariant \
@@ -186,7 +192,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
 
       #--- Indicateur etoile selectionnee ou non
       label $frm.voyant.etoile_color_invariant \
-         -bg $private(inactiveColor) -borderwidth 1 -relief  groove \
+         -bg $private(inactiveColor) -borderwidth 1 -relief groove \
          -text $::caption(sophie,etoileNonDetecte)
       grid $frm.voyant.etoile_color_invariant \
          -in [ $frm.voyant getframe ] \
@@ -194,7 +200,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
 
       #--- Indicateur trou detecte ou non
       label $frm.voyant.trou_color_invariant \
-         -bg $private(inactiveColor) -borderwidth 1 -relief  groove \
+         -bg $private(inactiveColor) -borderwidth 1 -relief groove \
          -text $::caption(sophie,trouNonDetecte)
       grid $frm.voyant.trou_color_invariant \
          -in [ $frm.voyant getframe ] \
@@ -202,7 +208,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
 
       #--- Indicateur guidage en cours ou arrete
       label $frm.voyant.guidage_color_invariant \
-         -bg $private(inactiveColor) -borderwidth 1 -relief  groove \
+         -bg $private(inactiveColor) -borderwidth 1 -relief groove \
          -text $::caption(sophie,guidageSuspendu)
       grid $frm.voyant.guidage_color_invariant \
          -in [ $frm.voyant getframe ] \
@@ -210,7 +216,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
 
       #--- Indicateur pose Sophie en cours ou arretee
       label $frm.voyant.sophie_color_invariant \
-         -bg $private(inactiveColor) -borderwidth 1 -relief  groove \
+         -bg $private(inactiveColor) -borderwidth 1 -relief groove \
          -text $::caption(sophie,sophieArretee)
       grid $frm.voyant.sophie_color_invariant \
          -in [ $frm.voyant getframe ] \
@@ -318,7 +324,6 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
       grid columnconfigure [ $frm.positionSeeing getframe ] 3 -weight 1
       grid columnconfigure [ $frm.positionSeeing getframe ] 4 -weight 0
       grid columnconfigure [ $frm.positionSeeing getframe ] 5 -weight 1
-
 
    #--- Frame pour la position du guidage
    TitleFrame $frm.positionGuidage -borderwidth 2 -relief ridge \
@@ -468,24 +473,134 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
       TitleFrame $frm.centrage.centrageConsigne -borderwidth 2 -relief ridge \
          -text $::caption(sophie,indicateurCentrage)
 
-         #--- Commande de centrage ( doublon avec la commande de la fenetre principale)
+         #--- Ecarts etoile en pixel
+         label $frm.centrage.centrageConsigne.labelEcartEtoile \
+            -text $::caption(sophie,ecartEtoile)
+         grid $frm.centrage.centrageConsigne.labelEcartEtoile \
+            -in [ $frm.centrage.centrageConsigne getframe ] \
+            -row 0 -column 0 -columnspan 2 -sticky ew
+
+         #--- Ecart etoile X
+         label $frm.centrage.centrageConsigne.labelEcartEtoileX -text $::caption(sophie,dx)
+         grid $frm.centrage.centrageConsigne.labelEcartEtoileX \
+            -in [ $frm.centrage.centrageConsigne getframe ] \
+            -row 1 -column 0 -sticky ew
+
+         Entry $frm.centrage.centrageConsigne.entryEcartEtoileX \
+            -width 8 -justify center -editable 0 \
+            -textvariable ::sophie::control::private(starDx)
+         grid $frm.centrage.centrageConsigne.entryEcartEtoileX \
+            -in [ $frm.centrage.centrageConsigne getframe ] \
+            -row 1 -column 1 -sticky ew
+
+         #--- Ecart etoile Y
+         label $frm.centrage.centrageConsigne.labelEcartEtoileY -text $::caption(sophie,dy)
+         grid $frm.centrage.centrageConsigne.labelEcartEtoileY \
+            -in [ $frm.centrage.centrageConsigne getframe ] \
+            -row 2 -column 0 -sticky ew
+
+         Entry $frm.centrage.centrageConsigne.entryEcartEtoileY \
+            -width 8 -justify center -editable 0 \
+            -textvariable ::sophie::control::private(starDy)
+         grid $frm.centrage.centrageConsigne.entryEcartEtoileY \
+            -in [ $frm.centrage.centrageConsigne getframe ] \
+            -row 2 -column 1 -sticky ew
+
+         #--- Ecarts etoile en arcsec
+         label $frm.centrage.centrageConsigne.labelEcartEtoile1 -text $::caption(sophie,ecartEtoile1)
+         grid $frm.centrage.centrageConsigne.labelEcartEtoile1 \
+            -in [ $frm.centrage.centrageConsigne getframe ] \
+            -row 0 -column 2 -columnspan 2 -sticky ew
+
+         #--- Ecart etoile X
+         label $frm.centrage.centrageConsigne.labelEcartEtoile1X -text $::caption(sophie,alpha)
+         grid $frm.centrage.centrageConsigne.labelEcartEtoile1X \
+            -in [ $frm.centrage.centrageConsigne getframe ] \
+            -row 1 -column 2 -sticky ew
+
+         Entry $frm.centrage.centrageConsigne.entryEcartEtoile1X \
+            -width 8 -justify center -editable 0 \
+            -textvariable ::sophie::control::private(alphaDiff)
+         grid $frm.centrage.centrageConsigne.entryEcartEtoile1X \
+            -in [ $frm.centrage.centrageConsigne getframe ] \
+            -row 1 -column 3 -sticky ew
+
+         #--- Ecart etoile Y
+         label $frm.centrage.centrageConsigne.labelEcartEtoile1Y -text $::caption(sophie,delta)
+         grid $frm.centrage.centrageConsigne.labelEcartEtoile1Y \
+            -in [ $frm.centrage.centrageConsigne getframe ] \
+            -row 2 -column 2 -sticky ew
+
+         Entry $frm.centrage.centrageConsigne.entryEcartEtoile1Y \
+            -width 8 -justify center -editable 0 \
+            -textvariable ::sophie::control::private(deltaDiff)
+         grid $frm.centrage.centrageConsigne.entryEcartEtoile1Y \
+            -in [ $frm.centrage.centrageConsigne getframe ] \
+            -row 2 -column 3 -sticky ew
+
+         #--- Corrections telescope
+         label $frm.centrage.centrageConsigne.labelCorrection -text $::caption(sophie,correction1)
+         grid $frm.centrage.centrageConsigne.labelCorrection \
+            -in [ $frm.centrage.centrageConsigne getframe ] \
+           -row 0 -column 4 -columnspan 2 -sticky ew
+
+         #--- Correction alpha
+         label $frm.centrage.centrageConsigne.labelCorrectionAlpha -text $::caption(sophie,correctAlpha)
+         grid $frm.centrage.centrageConsigne.labelCorrectionAlpha \
+            -in [ $frm.centrage.centrageConsigne getframe ] \
+            -row 1 -column 4 -sticky ew
+
+         Entry $frm.centrage.centrageConsigne.entryCorrectionAlpha \
+            -width 8 -justify center -editable 0 \
+            -textvariable ::sophie::control::private(alphaCorrection)
+         grid $frm.centrage.centrageConsigne.entryCorrectionAlpha \
+            -in [ $frm.centrage.centrageConsigne getframe ] \
+            -row 1 -column 5 -sticky ew
+
+         #--- Correction delta
+         label $frm.centrage.centrageConsigne.labelCorrectionDelta -text $::caption(sophie,correctDelta)
+         grid $frm.centrage.centrageConsigne.labelCorrectionDelta \
+            -in [ $frm.centrage.centrageConsigne getframe ] \
+            -row 2 -column 4 -sticky ew
+
+         Entry $frm.centrage.centrageConsigne.entryCorrectionDelta \
+            -width 8 -justify center -editable 0 \
+            -textvariable ::sophie::control::private(deltaCorrection)
+         grid $frm.centrage.centrageConsigne.entryCorrectionDelta \
+            -in [ $frm.centrage.centrageConsigne getframe ] \
+            -row 2 -column 5 -sticky ew
+
+         grid columnconfigure [ $frm.centrage.centrageConsigne getframe ] 0 -weight 1
+         grid columnconfigure [ $frm.centrage.centrageConsigne getframe ] 1 -weight 1
+         grid columnconfigure [ $frm.centrage.centrageConsigne getframe ] 2 -weight 1
+         grid columnconfigure [ $frm.centrage.centrageConsigne getframe ] 3 -weight 1
+         grid columnconfigure [ $frm.centrage.centrageConsigne getframe ] 4 -weight 1
+         grid columnconfigure [ $frm.centrage.centrageConsigne getframe ] 5 -weight 1
+
+         #--- Commande de centrage (doublon avec la commande de la fenetre principale)
          checkbutton $frm.centrage.centrageConsigne.start \
-            -indicatoron 0  -state disabled \
+            -indicatoron 0 -state disabled \
             -text $::caption(sophie,lancerCentrage) \
             -variable ::sophie::private(centerEnabled) \
             -command "::sophie::onCenter"
 
-         pack $frm.centrage.centrageConsigne.start \
+         grid $frm.centrage.centrageConsigne.start \
             -in [ $frm.centrage.centrageConsigne getframe ] \
-            -side left -expand 1 -pady 4 -ipadx 10 -ipady 4
+            -row 3 -column 0 -columnspan 3 -sticky ew -pady 4 -ipadx 10 -ipady 4
+        ### pack $frm.centrage.centrageConsigne.start \
+        ###    -in [ $frm.centrage.centrageConsigne getframe ] \
+        ###    -side left -expand 1 -pady 4 -ipadx 10 -ipady 4
 
          #--- Indicateur Centrage en cours ou non
          label $frm.centrage.centrageConsigne.indicateur -text $::caption(sophie,centrageArrete) \
-            -borderwidth 1 -relief  groove -bg $private(inactiveColor)
+            -borderwidth 1 -relief groove -bg $private(inactiveColor)
 
-         pack $frm.centrage.centrageConsigne.indicateur \
+         grid $frm.centrage.centrageConsigne.indicateur \
             -in [ $frm.centrage.centrageConsigne getframe ] \
-            -side left -expand 1 -pady 4 -ipadx 10 -ipady 4
+            -row 3 -column 3 -columnspan 3 -sticky ew -pady 4 -ipadx 10 -ipady 4
+        ### pack $frm.centrage.centrageConsigne.indicateur \
+        ###    -in [ $frm.centrage.centrageConsigne getframe ] \
+        ###    -side left -expand 1 -pady 4 -ipadx 10 -ipady 4
 
       pack $frm.centrage.centrageConsigne -side top -anchor w -fill x -expand 1
 
@@ -981,15 +1096,15 @@ proc ::sophie::control::setRealDelay { delay } {
 # setCenterInformation
 #    affiche les informations de centrage
 #
-# @param starDetection 0=etoile non detecte 1=etoile detecte
-# @param fiberDetection 0=fibre non detecte 1=fibre detecte
+# @param starDetection  0=etoile non detecte 1=etoile detecte
+# @param fiberDetection  0=fibre non detecte 1=fibre detecte
 # @param originX  abcisse de la consigne en pixel
 # @param originY  ordonnee de la consigne en pixel
-# @param starX   abcisse de l'etoile en pixel
-# @param starY   ordonnee de l'etoile en pixel
-# @param fwhmX   largeur a mi hauter sur l'axe X
-# @param fwhmY   largeur a mi hauter sur l'axe Y
-# @param background   fond du ciel
+# @param starX  abcisse de l'etoile en pixel
+# @param starY  ordonnee de l'etoile en pixel
+# @param fwhmX  largeur a mi hauter sur l'axe X
+# @param fwhmY  largeur a mi hauter sur l'axe Y
+# @param background  fond du ciel
 # @param maxIntensity  intensité max
 # @param starDx  ecart de l'abcisse de l'etoile en pixel
 # @param starDy  ecart de l'ordonne de l'etoile en pixel
@@ -1044,6 +1159,13 @@ proc ::sophie::control::setCenterInformation { starDetection fiberDetection orig
    set private(indicateursFwhmY)      [format "%6.1f" $fwhmY]
    set private(indicateursFondDeCiel) [format "%6.1f" $background]
    set private(indicateursFluxMax)    [format "%6.1f" $maxIntensity]
+
+   set private(starDx)                [format "%6.1f" $starDx]
+   set private(starDy)                [format "%6.1f" $starDy]
+   set private(alphaDiff)             [format "%6.1f" $alphaDiff]
+   set private(deltaDiff)             [format "%6.1f" $deltaDiff]
+   set private(alphaCorrection)       [format "%6.1f" $alphaCorrection]
+   set private(deltaCorrection)       [format "%6.1f" $deltaCorrection]
 }
 
 ##------------------------------------------------------------
