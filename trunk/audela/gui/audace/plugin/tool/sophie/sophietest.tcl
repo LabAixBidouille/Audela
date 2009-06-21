@@ -1,12 +1,13 @@
-##-----------------------------------------------------------
+##------------------------------------------------------------
 # @file     sophietest.tcl
-# @brief    Outil de tests pour le developpement de Sophie pour le T193 de l'OHP
+# @brief    Fichier du namespace ::sophie::test
 # @author   Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophietest.tcl,v 1.8 2009-06-20 17:32:26 michelpujol Exp $
+# @version  $Id: sophietest.tcl,v 1.9 2009-06-21 13:16:20 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
-# @brief    test de l'outil sophie et simulation des interfaces externes
+# @brief    Procédures de test de l'outil sophie et simulation des interfaces externes
+#
 #------------------------------------------------------------
 namespace eval ::sophie::test {
 

@@ -1,9 +1,37 @@
+##------------------------------------------------------------
+# @file     sophie.tcl
+# @brief    Fichier du namespace ::sophie
+# @author   Michel PUJOL et Robert DELMAS
+# @version   $Id: sophie.tcl,v 1.18 2009-06-21 13:16:20 michelpujol Exp $
+#------------------------------------------------------------
+
+##------------------------------------------------------------
+# @mainpage   Outil de guidage pour le spectro Sophie.
 #
-# Fichier : sophie.tcl
-# Description : Outil d'autoguidage pour le spectro Sophie du telescope T193 de l'OHP
-# Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophie.tcl,v 1.17 2009-06-20 17:19:34 michelpujol Exp $
+# @image html logosophie.gif
 #
+# Dans un premier temps, les éléments remplacés sont :
+# -	le PC de guidage et logiciel de guidage sont remplacés ( => Windows Vista et Audela),
+# -	la caméra de guidage est remplacée par la caméra FLI,
+# -	la carte wrappée est remplacée par la  carte N.I. USB-6501).
+#
+# Puis, dans un deuxième temps :
+# -  le HP1000 est remplacé par un « PC T193 » avec les nouveaux moteurs associés (moteurs ETEL et BRADFOR commandés par une carte DELTATAU).
+#
+# Le cahier des charges « cahier des charges_guidage_193_v0.pdf » décrit les besoins suivants:
+# - Le logiciel doit permettre de s'interfacer avec les équipements de la configuration intermédiaire puis de la configuration cible.
+# - Il doit fournir les fonctions de centrage d'une étoile sur une consigne, d'aide à la mise au point (focalisation) et de guidage automatique du télescope pendant les poses du spectrographe Sophie
+#
+# Interlocuteurs opérationnels :
+# - Luc Arnold : Nouveau PC guidage et caméra FLI
+# - François Moreau : jouvance T293
+# - Jean Pierre Menier : spectrographe Sophie
+# - Xavier  Regal : commandes atténuateurs, carte National instrument
+# - Fabien Fillion : PC de supervision du T193
+#
+#------------------------------------------------------------
+
+
 
 ##------------------------------------------------------------
 # @brief   namespace principal de l'outil sophie

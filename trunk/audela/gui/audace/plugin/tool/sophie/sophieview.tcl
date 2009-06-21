@@ -1,9 +1,9 @@
-#
-# Fichier : sophieview.tcl
-# Description : Vue detail du suivi
-# Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophieview.tcl,v 1.9 2009-06-20 17:32:26 michelpujol Exp $
-#
+##------------------------------------------------------------
+# @file     sophieview.tcl
+# @brief    Fichier du namespace ::sophie::view
+# @author   Michel PUJOL et Robert DELMAS
+# @version  $Id: sophieview.tcl,v 1.10 2009-06-21 13:16:20 michelpujol Exp $
+#------------------------------------------------------------
 
 ##------------------------------------------------------------
 # @brief   visualisation des images
