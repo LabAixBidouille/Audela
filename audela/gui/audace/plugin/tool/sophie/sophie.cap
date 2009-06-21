@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.19 2009-06-20 15:11:23 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.20 2009-06-21 21:39:55 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -138,6 +138,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,positionEtoile)        "Position étoile (pixel)"
    set caption(sophie,positionConsigne)      "Position consigne (pixel)"
    set caption(sophie,ecartEtoile)           "Ecart étoile (pixel)"
+   set caption(sophie,ecartEtoile1)          "Ecart étoile (arcsec)"
    set caption(sophie,ecartConsigne)         "Ecart consigne (pixel)"
    set caption(sophie,positionConsigneImage) "Position de la consigne dans l'image"
    set caption(sophie,increment)             "Incrément"
@@ -149,18 +150,24 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,erreur)                "Erreur (pixel)"
    set caption(sophie,alpha)                 "dalpha"
    set caption(sophie,delta)                 "ddelta"
+   set caption(sophie,correctAlpha)          "Corr. alpha"
+   set caption(sophie,correctDelta)          "Corr. delta"
    set caption(sophie,erreursAlphaDelta)     "Erreurs en alpha et delta (pixel)"
    set caption(sophie,arretGuidage)          "Arrêter le guidage"
    set caption(sophie,suspendreGuidage)      "Suspendre le guidage"
-   set caption(sophie,realDelay)             "Délai entre 2 debuts de poses (seconde)"
+   set caption(sophie,realDelay)             "Délai entre 2 débuts de poses (seconde)"
 
    set caption(sophie,masque)                "Masque"
    set caption(sophie,imageIntegree)         "Image intégrée"
    set caption(sophie,imageInversee)         "Image inversée du trou"
 
    set caption(sophie,simulation)            "Simulation"
+   set caption(sophie,simulAcquisition)      "Simulation des acquisitions"
    set caption(sophie,modeSimulation)        "Mode simulation"
    set caption(sophie,simulGenericFileName)  "Répertoire des images de simulation"
+   set caption(sophie,simulPCSophie)         "Simulation du PC Sophie"
+   set caption(sophie,host)                  "Host"
+   set caption(sophie,connecter)             "Connecter"
    set caption(sophie,ok)                    "OK"
    set caption(sophie,fermer)                "Fermer"
    set caption(sophie,annuler)               "Annuler"
