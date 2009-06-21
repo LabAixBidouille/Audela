@@ -1,12 +1,12 @@
-#
-# Fichier : sophiecontrol.tcl
-# Description : Fenetre de controle pour le centrage, la focalisation et le guidage
-# Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecontrol.tcl,v 1.19 2009-06-20 17:32:26 michelpujol Exp $
-#
+##------------------------------------------------------------
+# @file     sophiecontrol.tcl
+# @brief    Fichier du namespace ::sophie::config
+# @author   Michel PUJOL et Robert DELMAS
+# @version  $Id: sophiecontrol.tcl,v 1.20 2009-06-21 13:15:50 michelpujol Exp $
+#------------------------------------------------------------
 
 ##------------------------------------------------------------
-# @brief   fenetre de controle pour le centrage, la focalisation et le guidage
+# @brief   fenêtre de controle du centrage, de la focalisation et du guidage
 #
 #------------------------------------------------------------
 namespace eval ::sophie::control {
@@ -991,10 +991,16 @@ proc ::sophie::control::setRealDelay { delay } {
 # @param fwhmY   largeur a mi hauter sur l'axe Y
 # @param background   fond du ciel
 # @param maxIntensity  intensité max
+# @param starDx  ecart de l'abcisse de l'etoile en pixel
+# @param starDy  ecart de l'ordonne de l'etoile en pixel
+# @param alphaDiff  ecart de l'ascension droite de l'etoile en arcseconde
+# @param deltaDiff  ecart de la declinaison de l'etoile en arcseconde
+# @param alphaCorrection  correction du telescope en alpha (en arcseconde)
+# @param deltaCorrection  correction du telescope en delta (en arcseconde)
 #
 # @return rien
 #------------------------------------------------------------
-proc ::sophie::control::setCenterInformation { starDetection fiberDetection originX originY starX starY fwhmX fwhmY background maxIntensity } {
+proc ::sophie::control::setCenterInformation { starDetection fiberDetection originX originY starX starY fwhmX fwhmY background maxIntensity starDx starDy alphaDiff deltaDiff alphaCorrection deltaCorrection } {
    variable private
 
    set frm $private(frm)

@@ -1,13 +1,12 @@
-#
-# Fichier : sophiecommand.tcl
-# Description : Centralise les commandes de l'outil Sophie
-# Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophiecommand.tcl,v 1.19 2009-06-20 21:33:55 michelpujol Exp $
-#
-
-#--- suite du namespace sophie
 ##------------------------------------------------------------
-# @brief   suite du namespace sophi
+# @file     sophiecommand.tcl
+# @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
+# @author   Michel PUJOL et Robert DELMAS
+# @version  $Id: sophiecommand.tcl,v 1.20 2009-06-21 13:15:46 michelpujol Exp $
+#------------------------------------------------------------
+
+##------------------------------------------------------------
+# @brief   commandes de la fenêtre principale de l'outil sophie
 #
 #------------------------------------------------------------
 namespace eval ::sophie {
@@ -52,7 +51,7 @@ proc ::sophie::adaptPanel { visuNo args } {
       #--- je recupere la taille du capteur en pixel (en binning 1x1
       set private(cameraCells) [cam$private(camNo) nbcells]
 
-      #--- je charge sophiecamerathread.tcl dans l'interpreteur de la thread de la camera
+      #--- je charge sophiecamerathread.tcl dans l'interpreteur de le thread de la camera
       ::camera::loadSource $private(camItem) [file join $::audace(rep_plugin) tool sophie sophiecamerathread.tcl]
    }
 
@@ -179,7 +178,7 @@ proc ::sophie::setBinning { binning } {
    set private(xBinning) $xBinning
    set private(yBinning) $yBinning
 
-   #--- je change les paramètres dans la thread
+   #--- je change les paramètres dans le thread
    if { $private(acquisitionState) != 0 } {
       set xOriginCoord [ expr ( [lindex $private(originCoord) 0] - $private(xWindow) + 1 ) / $private(xBinning)  ]
       set yOriginCoord [ expr ( [lindex $private(originCoord) 1] - $private(yWindow) + 1 ) / $private(yBinning)  ]
@@ -217,7 +216,7 @@ proc ::sophie::setExposure { { exposure "" } } {
       set ::conf(sophie,exposure) $exposure
    }
 
-   #--- je change les paramètres dans la thread
+   #--- je change les paramètres dans le thread
    if { $private(acquisitionState) != 0 } {
       set private(AsynchroneParameter) 1
       ::camera::setAsynchroneParameter $private(camItem) "exptime" $::conf(sophie,exposure)
@@ -294,7 +293,7 @@ proc ::sophie::setWindowing { size { centerCoords "" } } {
    set private(xWindow) $x1
    set private(yWindow) $y1
 
-   #--- je change les paramètres dans la thread
+   #--- je change les paramètres dans le thread
    if { $private(acquisitionState) != 0 } {
       set xOriginCoord [ expr ( [lindex $private(originCoord) 0] - $private(xWindow) + 1 ) / $private(xBinning)  ]
       set yOriginCoord [ expr ( [lindex $private(originCoord) 1] - $private(yWindow) + 1 ) / $private(yBinning)  ]
@@ -440,7 +439,7 @@ proc ::sophie::onGuide { } {
 ##------------------------------------------------------------
 # setMode
 #    change le mode d'acquisition
-#      - change les paramètres de l'acquisition continue dans la thread de la camera
+#      - change les paramètres de l'acquisition continue dans le thread de la camera
 #      - met à jour l'affichage de la fenetre de contole
 #
 # @param mode mode d'acquisition CENTER FOCUS GUIDE ou "".
@@ -473,7 +472,7 @@ proc ::sophie::setMode { { mode "" } } {
          $private(frm).mode.guidageStart  configure -state disabled
          #--- je change la taille de d'analyse de la cible
          set private(targetBoxSize) $::conf(sophie,centerWindowSize)
-         #--- je mets la thread de la camera en mode centrage
+         #--- je mets le thread de la camera en mode centrage
          ::camera::setAsynchroneParameter $private(camItem)  "mode" "CENTER"
          #--- je change le binning
          setBinning $::conf(sophie,centerBinning)
@@ -490,7 +489,7 @@ proc ::sophie::setMode { { mode "" } } {
          $private(frm).mode.guidageStart  configure -state disabled
          #--- je change la taille de d'analyse de la cible
          set private(targetBoxSize) $::conf(sophie,centerWindowSize)
-         #--- je mets la thread de la camera en mode centrage
+         #--- je mets le thread de la camera en mode centrage
          ::camera::setAsynchroneParameter $private(camItem)  "mode" "CENTER"
          #--- je change le binning
          setBinning "1x1"
@@ -517,7 +516,7 @@ proc ::sophie::setMode { { mode "" } } {
 
          #--- je change la taille de d'analyse de la cible
          set private(targetBoxSize) $::conf(sophie,guidingWindowSize)
-         #--- je mets la thread de la camera en mode centrage
+         #--- je mets le thread de la camera en mode centrage
          ::camera::setAsynchroneParameter $private(camItem)  "mode" "GUIDE"
           #--- je change le binning
          setBinning $::conf(sophie,guideBinning)
@@ -563,7 +562,7 @@ proc ::sophie::setGuidingMode { visuNo } {
    #--- je mets a jour la fenetre de controle
    ::sophie::control::setGuidingMode $::conf(sophie,guidingMode)
 
-   #--- je change les paramètres dans la thread
+   #--- je change les paramètres dans le thread
    if { $private(acquisitionState) != 0 } {
       set xOriginCoord [ expr ( [lindex $private(originCoord) 0] - $private(xWindow) + 1 ) / $private(xBinning)  ]
       set yOriginCoord [ expr ( [lindex $private(originCoord) 1] - $private(yWindow) + 1 ) / $private(yBinning)  ]
@@ -1302,7 +1301,7 @@ proc ::sophie::startCenter { } {
    ::telescope::setSpeed 1
 
    set private(centerEnabled) 1
-   #--- j'active le centrage dans la thread de la camera
+   #--- j'active le centrage dans le thread de la camera
    set private(AsynchroneParameter) 1
    ::camera::setAsynchroneParameter $private(camItem) \
          "centerMaxLimit" $::conf(sophie,centerMaxLimit) \
@@ -1322,7 +1321,7 @@ proc ::sophie::stopCenter { } {
    variable private
 
    set private(centerEnabled) 0
-   #--- j'arrete le centrage dans la thread de la camera
+   #--- j'arrete le centrage dans le thread de la camera
 
    set private(AsynchroneParameter) 1
    ::camera::setAsynchroneParameter $private(camItem) \
@@ -1348,7 +1347,7 @@ proc ::sophie::startGuide { } {
    set private(guideEnabled) 1
    #--- je configure le telescope avec la vitesse de guidage
    ::telescope::setSpeed 1
-   #--- j'active le guidage dans la thread de la camera
+   #--- j'active le guidage dans le thread de la camera
    set private(AsynchroneParameter) 1
    ::camera::setAsynchroneParameter $private(camItem) \
          "mode" "GUIDE" \
@@ -1366,7 +1365,7 @@ proc ::sophie::stopGuide { } {
    variable private
 
    set private(guideEnabled) 0
-   #--- j'arrete le centrage dans la thread de la camera
+   #--- j'arrete le centrage dans le thread de la camera
    ###::telescope::stop ""
    set private(AsynchroneParameter) 1
    ::camera::setAsynchroneParameter $private(camItem) \
@@ -1379,7 +1378,7 @@ proc ::sophie::stopGuide { } {
 
 ##------------------------------------------------------------
 # callbackAcquisition
-# cette procedure est appele par la thread de la camera pednant les acquisitions
+# cette procedure est appele par le thread de la camera pednant les acquisitions
 # @param visuNo  numero de la visu courante
 # @param command commande retournee par le thread de la camera :
 #     - autovisu : l'image est prete dans le buffer
@@ -1444,9 +1443,11 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                set fwhmY                [lindex $args 8]
                set background           [lindex $args 9]
                set maxIntensity         [lindex $args 10]
-               set alphaCorrection      [lindex $args 11]
-               set deltaCorrection      [lindex $args 12]
-               set infoMessage          [lindex $args 13]
+               set alphaDiff            [lindex $args 11]
+               set deltaDiff            [lindex $args 12]
+               set alphaCorrection      [lindex $args 13]
+               set deltaCorrection      [lindex $args 14]
+               set infoMessage          [lindex $args 15]
 
                #--- je modifie la position du carre de la cible
                ::sophie::moveTarget $visuNo $private(targetCoord)
@@ -1476,7 +1477,9 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                #--- j'affiche les informations dans la fenetre de controle
                switch $private(mode) {
                   "CENTER" {
-                     ::sophie::control::setCenterInformation $private(targetDetection) $fiberDetection $originX $originY $starX $starY $fwhmX $fwhmY $background $maxIntensity
+                     ::sophie::control::setCenterInformation $private(targetDetection) $fiberDetection \
+                        $originX $originY $starX $starY $fwhmX $fwhmY $background $maxIntensity \
+                        $starDx $starDy $alphaDiff $deltaDiff $alphaCorrection $deltaCorrection
                   }
                   "FOCUS" {
                      ::sophie::control::setFocusInformation $private(targetDetection) $fiberDetection $originX $originY $starX $starY $fwhmX $fwhmY $background $maxIntensity
