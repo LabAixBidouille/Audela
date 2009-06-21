@@ -1,9 +1,9 @@
-#
-# Fichier : sophieconfig.tcl
-# Description : Fenetre de configuration de l'instrument Sophie
-# Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: sophieconfig.tcl,v 1.10 2009-06-20 17:32:26 michelpujol Exp $
-#
+##------------------------------------------------------------
+# @file     sophieconfig.tcl
+# @brief    Fichier du namespace ::sophie::config
+# @author   Michel PUJOL et Robert DELMAS
+# @version  $Id: sophieconfig.tcl,v 1.11 2009-06-21 13:16:20 michelpujol Exp $
+#------------------------------------------------------------
 
 ##------------------------------------------------------------
 # @brief   configuration de l'outil sophie

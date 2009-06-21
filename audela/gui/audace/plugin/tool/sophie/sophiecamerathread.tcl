@@ -1,12 +1,22 @@
+##------------------------------------------------------------
+# @file     sophiecamerathread.tcl
+# @brief    Fichier du namespace ::camerathread
+# @author   Michel PUJOL et Robert DELMAS
+# @version  $Id: sophiecamerathread.tcl,v 1.6 2009-06-21 13:16:20 michelpujol Exp $
+#------------------------------------------------------------
+
+##------------------------------------------------------------
+# @brief   procedure d'acquisition et de traitement exécutee dans le thread de la camera
 #
-# Fichier : camerathread.tcl
-# Description : procedures d'acquisiition et de traitement avec
-#         plusieurs cameras simultanées exploitant le mode multithread
-# Auteur : Michel PUJOL
-# Mise a jour $Id: sophiecamerathread.tcl,v 1.5 2009-06-20 21:33:55 michelpujol Exp $
-#
+#------------------------------------------------------------
+namespace eval ::camerathread {
+
+}
 
 
+##------------------------------------------------------------
+# guideSophie lance la boucle d'acquisition continue
+#
 #------------------------------------------------------------
 proc ::camerathread::guideSophie { exptime guidingMode originCoord targetCoord cameraAngle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse intervalle } {
    variable private
@@ -33,7 +43,7 @@ proc ::camerathread::guideSophie { exptime guidingMode originCoord targetCoord c
    set private(acquisitionState) "1"
    set private(previousClock)    "0"
 
-   #--- variables de travail
+  #--- variables de travail
    set private(simulationCounter) "1"
    set private(originSumCounter)  0
    set private(diffXCumul)  0
@@ -53,7 +63,7 @@ proc ::camerathread::guideSophie { exptime guidingMode originCoord targetCoord c
    ::camerathread::sophieAcquisitionLoop
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # sophieAcquisitionLoop
 #  boucle d'acquisition continue
 # @return rien
@@ -232,19 +242,17 @@ proc ::camerathread::sophieAcquisitionLoop { } {
 
 ###::camerathread::disp  "camerathread: FIBER= y1=$y1 y2=$y2 detection etoile=$targetDetection [lindex $result 11]\n"
 
-      #--- je calcule l'ecart de position entre la cible et la consigne
-      set dx [expr [lindex $private(targetCoord) 0] - [lindex $private(originCoord) 0] ]
-      set dy [expr [lindex $private(targetCoord) 1] - [lindex $private(originCoord) 1] ]
+      #--- je calcule l'ecart de position entre la cible et la consigne (en pixels ramene au binning 1x1)
+      set binning [cam$private(camNo) bin]
+      set dx [expr ([lindex $private(targetCoord) 0] - [lindex $private(originCoord) 0]) * [lindex $binning 0] ]
+      set dy [expr ([lindex $private(targetCoord) 1] - [lindex $private(originCoord) 1]) * [lindex $binning 1] ]
       ###::camerathread::disp  "camerathread: etoile dx=[format "%6.1f" $dx] dy=[format "%6.1f" $dy] \n"
+      #--- je calcule l'ecart de position (en arcseconde)
+      set alphaDiff [expr $dx * $private(pixelScale) / (cos($private(targetDec) * 3.14159265359/180)) ]
+      set deltaDiff [expr $dy * $private(pixelScale) ]
 
-      #--- je calcule la correction diffAlpha et diffDelta  en arcsec
+      #--- je calcule la correction alphaCorrection et deltaCorrection  en arcsec
       if { $private(mountEnabled) == 1 && $private(acquisitionState) == "1" &&  $starStatus == "DETECTED" } {
-
-         set binning [cam$private(camNo) bin]
-
-         #--- je calcule l'ecart en arcseconde
-         set diffAlpha [expr $dx * [lindex $binning 0] * $private(pixelScale) / (cos($private(targetDec) * 3.14159265359/180)) ]
-         set diffDelta [expr $dy * [lindex $binning 1] * $private(pixelScale) ]
 
          if { $private(mode) == "GUIDE" } {
             #--- j'applique le PID pour le guidage
@@ -260,18 +268,18 @@ proc ::camerathread::sophieAcquisitionLoop { } {
                set private(diffYCumul) 0
             }
 
-            set diffAlphaCumul [expr $private(diffXCumul) * $private(pixelScale) / ( cos($private(targetDec) * 3.14159265359/180)) ]
-            set diffDeltaCumul [expr $private(diffYCumul) * $private(pixelScale) ]
+            set alphaDiffCumul [expr $private(diffXCumul) * $private(pixelScale) / ( cos($private(targetDec) * 3.14159265359/180)) ]
+            set deltaDiffCumul [expr $private(diffYCumul) * $private(pixelScale) ]
 
             #--- je corrige avec les termes proportionnels et integrateurs
-            set diffAlpha [expr $diffAlpha * $private(proportionalGain) + $diffAlphaCumul * $private(integralGain) ]
-            set diffDelta [expr $diffDelta * $private(proportionalGain) + $diffDeltaCumul * $private(integralGain) ]
+            set alphaCorrection [expr $alphaDiff * $private(proportionalGain) + $alphaDiffCumul * $private(integralGain) ]
+            set deltaCorrection [expr $deltaDiff * $private(proportionalGain) + $deltaDiffCumul * $private(integralGain) ]
          }
 
          #--- je verifie si le centrage est fini
          if { $private(mode)=="CENTER" && $private(mountEnabled) == 1} {
             #--- j'ajoute les nouvelles valeurs à la fin de la liste
-            lappend private(centerDeltaList) [list $diffAlpha $diffDelta ]
+            lappend private(centerDeltaList) [list $alphaCorrection $deltaCorrection ]
             #--- je supprime le premier element
             set private(centerDeltaList) [lrange $private(centerDeltaList) 1 end ]
             set xmean "0"
@@ -297,47 +305,47 @@ proc ::camerathread::sophieAcquisitionLoop { } {
 
          #--- j'inverse le sens des deplacements si necessaire
          if { $private(alphaReverse) == "1" } {
-            set diffAlpha [expr -$diffAlpha]
+            set alphaCorrection [expr -$alphaCorrection]
          }
          if { $private(deltaReverse) == "1" } {
-            set diffDelta [expr -$diffDelta]
+            set deltaCorrection [expr -$deltaCorrection]
          }
 
          #--- j'ecrete l'ampleur du deplacement en alpha
          set maxAlpha [expr $private(targetBoxSize) * [lindex $binning 0] * $private(pixelScale) ]
-         if { $diffAlpha > 0 } {
-            if { $diffAlpha > $maxAlpha } {
-               set diffAlpha $maxAlpha
+         if { $alphaCorrection > 0 } {
+            if { $alphaCorrection > $maxAlpha } {
+               set alphaCorrection $maxAlpha
             }
          } else {
-            if { $diffAlpha < -$maxAlpha } {
-               set diffAlpha [expr - $maxAlpha]
+            if { $alphaCorrection < -$maxAlpha } {
+               set alphaCorrection [expr - $maxAlpha]
             }
          }
 
          #--- j'ecrete l'ampleur du deplacement en delta
          set maxDelta [expr $private(targetBoxSize) * [lindex $binning 1] * $private(pixelScale) ]
-         if { $diffDelta > 0 } {
-            if { $diffDelta >  $maxDelta } {
-               set diffDelta $maxDelta
+         if { $deltaCorrection > 0 } {
+            if { $deltaCorrection >  $maxDelta } {
+               set deltaCorrection $maxDelta
             }
          } else {
-            if { $diffDelta <  -$maxDelta } {
-               set diffDelta  [expr -$maxDelta]
+            if { $deltaCorrection <  -$maxDelta } {
+               set deltaCorrection  [expr -$maxDelta]
             }
          }
       } else {
-         set diffAlpha 0.0
-         set diffDelta 0.0
+         set alphaCorrection 0.0
+         set alphaCorrection 0.0
       }
 
-      ###::camerathread::disp  "camerathread: diffAlpha=$diffAlpha diffDelta=$diffDelta \n"
+      ###::camerathread::disp  "camerathread: alphaCorrection=$alphaCorrection deltaCorrection=$deltaCorrection \n"
       #--- j'envoi un compe rendu avant de faire la correction
       ::camerathread::notify "targetCoord" \
          $private(targetCoord) $dx $dy $targetDetection $fiberDetection \
          [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
          $measuredFwhmX $measuredFwhmY $background $maxIntensity  \
-         $diffAlpha $diffDelta $infoMessage
+         $alphaDiff $deltaDiff $alphaCorrection $alphaCorrection $infoMessage
 
 
       set alphaDelay 0.0
@@ -347,34 +355,34 @@ proc ::camerathread::sophieAcquisitionLoop { } {
       #--- je deplace le telescope
       if { $private(mountEnabled) == 1 && $private(acquisitionState) == "1"  } {
          #--- je calcule la direction alpha
-         if { $diffAlpha >= 0 } {
+         if { $alphaCorrection >= 0 } {
             set alphaDirection "w"
          } else {
             set alphaDirection "e"
          }
 
          #--- je calcule la direction delta
-         if { $diffDelta >= 0 } {
+         if { $deltaCorrection >= 0 } {
             set deltaDirection "n"
          } else {
             set deltaDirection "s"
          }
-         ::camerathread::notify "mountInfo" $alphaDirection [expr abs($diffAlpha)] $deltaDirection [expr abs($diffDelta)]
+         ::camerathread::notify "mountInfo" $alphaDirection [expr abs($alphaCorrection)] $deltaDirection [expr abs($deltaCorrection)]
 
          #--- je deplace le telescope
-         if { $diffAlpha != 0 || $diffDelta != 0 } {
+         if { $alphaCorrection != 0 || $deltaCorrection != 0 } {
             if { $private(mainThreadNo)==0 } {
-               interp eval "" [list ::telescope::moveTelescope $alphaDirection $diffAlpha $deltaDirection $diffDelta  ]
+               interp eval "" [list ::telescope::moveTelescope $alphaDirection $alphaCorrection $deltaDirection $deltaCorrection  ]
            } else {
-               set alphaDelay [expr abs($diffAlpha) / $private(alphaSpeed)  ]
-               set deltaDelay [expr abs($diffDelta) / $private(deltaSpeed)  ]
+               set alphaDelay [expr abs($alphaCorrection) / $private(alphaSpeed)  ]
+               set deltaDelay [expr abs($deltaCorrection) / $private(deltaSpeed)  ]
                ###::camerathread::disp  "camerathread: tel1 move [format "%s %7.3fs" $alphaDirection $alphaDelay ] [format "%s %7.3fs" $deltaDirection $deltaDelay ]\n"
                tel1 radec move $alphaDirection 0.1 $alphaDelay
                tel1 radec move $deltaDirection 0.1 $deltaDelay
             }
          }
       }
-      ::camerathread::disp  "camerathread: dx,dy=[format "%6.1f" $dx],[format "%6.1f" $dy] pixel dAlpha,ddelta=[format "%6.2f" $diffAlpha],[format "%6.2f" $diffDelta] arsec tel move [format "%s %4.3fs" $alphaDirection $alphaDelay] [format "%s %4.3fs" $deltaDirection $deltaDelay ]\n"
+      ::camerathread::disp  "camerathread: dx,dy=[format "%6.1f" $dx],[format "%6.1f" $dy] pixel dAlpha,ddelta=[format "%6.2f" $alphaCorrection],[format "%6.2f" $deltaCorrection] arsec tel move [format "%s %4.3fs" $alphaDirection $alphaDelay] [format "%s %4.3fs" $deltaDirection $deltaDelay ]\n"
 
 
    } catchMessage ]
