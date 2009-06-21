@@ -2,7 +2,7 @@
 # @file     sophietest.tcl
 # @brief    Fichier du namespace ::sophie::test
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietest.tcl,v 1.9 2009-06-21 13:16:20 michelpujol Exp $
+# @version  $Id: sophietest.tcl,v 1.10 2009-06-21 21:42:56 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -41,8 +41,6 @@ console::disp "simulHp writeHpHandle=$private(writeHpHandle)\n"
    ###after 1500 ::sophie::test::testReadHp
 
 }
-
-
 
 #------------------------------------------------------------
 # stophp
@@ -98,7 +96,6 @@ console::disp "testWriteHp data=$data\n"
 proc ::sophie::test::testReadCom { } {
    variable private
 
-
    if { $private(testhp) == 1 } {
       set data [read -nonewline $private(readHpHandle)]
       set data [split $data "\n" ]
@@ -112,7 +109,6 @@ proc ::sophie::test::testReadCom { } {
       }
    }
 }
-
 
 #------------------------------------------------------------
 # startReadHp
@@ -241,7 +237,6 @@ proc ::sophie::test::writeSocketSophie { data } {
 #
 #============================================================
 
-
 ##------------------------------------------------------------
 # tests de la fenetre de controle
 #------------------------------------------------------------
@@ -276,7 +271,6 @@ proc ::sophie::test::tsim2 { }  {
    set ::conf(sophie,simulationGenericFileName) "$::audace(rep_images)/test/OHP/simulation/simuFWHM10px_fibre_"
    ::console::disp "simulation fichiers simuFWHM10px_fibre_*\n"
 }
-
 
 ###### Fenetre de configuration de la simulation ######
 
@@ -320,7 +314,6 @@ proc ::sophie::test::fermer { } {
    #--- je referme la socket du pc de guidage
    ::sophie::test::closeSocketSophie
 
-
    destroy $private(frm)
 }
 
@@ -335,7 +328,6 @@ proc ::sophie::test::createDialogSimul { } {
    set private(host) "localhost"
    set private(socketChannel) ""
    set private(frm) $::audace(base).configSimul
-
 
    set frm $private(frm)
    if { [ winfo exists $frm ] } {
@@ -358,45 +350,53 @@ proc ::sophie::test::createDialogSimul { } {
    set private(simulation)                $::conf(sophie,simulation)
    set private(simulationGenericFileName) $::conf(sophie,simulationGenericFileName)
 
-   #--- Creation des differents frames
-   frame $frm.frame1 -borderwidth 1 -relief raised
-   pack $frm.frame1 -side top -fill both -expand 1
+   #--- Frame pour la simulation des acquisitions
+   TitleFrame $frm.simulAcquisition -borderwidth 2 -relief groove -text $::caption(sophie,simulAcquisition)
 
-   frame $frm.frame3 -borderwidth 0 -relief raised
-   pack $frm.frame3 -in $frm.frame1 -side top -fill both -expand 1
+      #--- Frame pour la simulation
+      frame $frm.simulAcquisition.check -borderwidth 0 -relief raised
 
-   frame $frm.frame4 -borderwidth 0 -relief raised
-   pack $frm.frame4 -in $frm.frame1 -side top -fill both -expand 1
+         #--- Activation ou non de la simulation
+         checkbutton $frm.simulAcquisition.check.simul -text $::caption(sophie,modeSimulation) \
+            -highlightthickness 0 -variable ::sophie::test::private(simulation)
+         pack $frm.simulAcquisition.check.simul -anchor center -side left -padx 5 -pady 5
 
-   #--- Activation ou non de la simulation
-   checkbutton $frm.simul -text $::caption(sophie,modeSimulation) -highlightthickness 0 \
-      -variable ::sophie::test::private(simulation)
-   pack $frm.simul -in $frm.frame3 -anchor center -side left -padx 5 -pady 5
+      pack $frm.simulAcquisition.check -in [ $frm.simulAcquisition getframe ] \
+         -side top -fill both -expand 1
 
-   #--- Label
-   label $frm.label -text $::caption(sophie,simulGenericFileName)
-   pack $frm.label -in $frm.frame4 -anchor center -side left -padx 5 -pady 5
+      #--- Frame pour les fichiers de simulation
+      frame $frm.simulAcquisition.filename -borderwidth 0 -relief raised
 
-   #--- Entry pour le nom generique des images de simulation
-   entry $frm.entry -textvariable ::sophie::test::private(simulationGenericFileName) -width 25 -justify left
-   pack $frm.entry -in $frm.frame4 -anchor center -side left -padx 5 -pady 5
+         #--- Label
+         label $frm.simulAcquisition.filename.label -text $::caption(sophie,simulGenericFileName)
+         pack $frm.simulAcquisition.filename.label -anchor center -side left -padx 5 -pady 5
 
-   #--- Bouton 'Parcourir'
-   button $frm.butParcourir -text $::caption(sophie,parcourir) -borderwidth 2 \
-      -command "::sophie::test::simulationGenericFileName"
-   pack $frm.butParcourir -in $frm.frame4 -anchor center -side left -padx 5 -pady 5
+         #--- Entry pour le nom generique des images de simulation
+         entry $frm.simulAcquisition.filename.entry -textvariable ::sophie::test::private(simulationGenericFileName) \
+            -width 25 -justify left
+         pack $frm.simulAcquisition.filename.entry -anchor center -side left -padx 5 -pady 5
+
+         #--- Bouton 'Parcourir'
+         button $frm.simulAcquisition.filename.butParcourir -text $::caption(sophie,parcourir) \
+            -borderwidth 2 -command "::sophie::test::simulationGenericFileName"
+         pack $frm.simulAcquisition.filename.butParcourir -anchor center -side left -padx 5 -pady 5
+
+      pack $frm.simulAcquisition.filename -in [ $frm.simulAcquisition getframe ] \
+         -side top -fill both -expand 1
+
+   pack $frm.simulAcquisition -side top -fill both -expand 1
 
    #--- Frame pour le mode de fonctionnement
-   TitleFrame $frm.pcsophie -borderwidth 2 -relief groove -text "Simulation du PC Sophie"
+   TitleFrame $frm.pcsophie -borderwidth 2 -relief groove -text $::caption(sophie,simulPCSophie)
 
       #--- host
-      label $frm.pcsophie.hostLabel -text "host:"
+      label $frm.pcsophie.hostLabel -text $::caption(sophie,host)
       grid $frm.pcsophie.hostLabel -in [ $frm.pcsophie getframe ] -row 0 -column 0 -sticky ens -padx 2
       entry $frm.pcsophie.hostEntry -textvariable ::sophie::test::private(host)
       grid $frm.pcsophie.hostEntry -in [ $frm.pcsophie getframe ] -row 0 -column 1 -sticky ens -padx 2
 
       #--- Bouton connect et disconnect
-      button $frm.pcsophie.connect -text "connecter" -command "::sophie::test::connecterPcGuidage"
+      button $frm.pcsophie.connect -text $::caption(sophie,connecter) -command "::sophie::test::connecterPcGuidage"
       grid $frm.pcsophie.connect -in [ $frm.pcsophie getframe ] -row 0 -column 2 -sticky ens -padx 2
 
       #--- Bouton envoi de commande
@@ -412,10 +412,11 @@ proc ::sophie::test::createDialogSimul { } {
       button $frm.pcsophie.getstat -text "GET STAT" -command [list ::sophie::test::sendPcGuidage "GET_STAT" ]
       grid $frm.pcsophie.getstat -in [ $frm.pcsophie getframe ] -row 3 -column 3 -sticky ens -padx 2
 
-
    pack $frm.pcsophie -in $frm -side top -fill both -expand 1
 
+   #--- Frame pour les boutons
    frame $frm.frameButton -borderwidth 1 -relief raised
+
       #--- Bouton 'OK'
       button $frm.butOk -text $::caption(sophie,ok) -borderwidth 2 \
          -command "::sophie::test::ok"
@@ -446,9 +447,11 @@ proc ::sophie::test::simulationGenericFileName { } {
    variable private
 
    #--- Ouvre la fenetre de choix des images
-   set private(simulationGenericFileName) [ ::tkutil::box_load $::audace(base) $::audace(rep_images) $::audace(bufNo) "1" ]
+   set filename [ ::tkutil::box_load $::audace(base) $::audace(rep_images) $::audace(bufNo) "1" ]
+   #--- Nom generique avec le chemin
+   set private(simulationGenericFileName) [ file join [ lindex [ decomp $filename ] 0 ] [ lindex [ decomp $filename ] 1 ] ]
    #--- Il faut un fichier
-   if { $private(simulationGenericFileName)  == "" } {
+   if { $private(simulationGenericFileName) == "" } {
       return
    }
 }
@@ -521,7 +524,7 @@ proc ::sophie::test::sendPcGuidage { commandName } {
 
 ###### Fin de la fenetre de configuration de la simulation ######
 
-
 ###::sophie::simul
 
 #  source audace/plugin/tool/sophie/sophietest.tcl
+
