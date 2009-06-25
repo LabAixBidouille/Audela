@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.28 2009-02-07 11:02:18 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.29 2009-06-25 16:58:02 robertdelmas Exp $
 #
 
 #============================================================
@@ -69,8 +69,8 @@ namespace eval ::remotectrl {
    proc getPluginProperty { propertyName } {
       switch $propertyName {
          menu         { return "tool" }
-         function     { return "aiming" }
-         subfunction1 { return "acquisition" }
+         function     { return "acquisition" }
+         subfunction1 { return "aiming" }
          display      { return "panel" }
       }
    }
