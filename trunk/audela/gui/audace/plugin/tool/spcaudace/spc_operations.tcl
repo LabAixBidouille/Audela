@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.15 2009-04-28 20:14:23 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.16 2009-07-01 16:21:01 bmauclaire Exp $
 
 
 
@@ -1380,12 +1380,10 @@ proc spc_echant { args } {
           for { set i 1 } { $i <= $naxis1_orig } { incr i } {
              lappend intensites_a_echant [ lindex [ buf$audace(bufNo) getpix [ list $i 1 ] ] 1 ]
           }
-::console::affiche_resultat "ICI1\n"
           #-- Calcul des lambdas :
           for { set i 0 } { $i < $naxis1_orig } { incr i } {
              lappend lambdas_a_echant [ expr $crval1_orig+$cdelt1_orig*$i ]
           }
-::console::affiche_resultat "ICI2\n"
        } else {
           ::console::affiche_erreur "Le spectre $fichier_a_echant doit etre calibre et avec une loi lineaire.\n"
           return ""
