@@ -1,6 +1,7 @@
 
 
-# Mise a jour $Id: spc_filter2.tcl,v 1.5 2008-12-21 07:56:18 bmauclaire Exp $
+# Mise a jour $Id: spc_filter2.tcl,v 1.6 2009-07-01 16:17:28 bmauclaire Exp $
+# Mise a jour Patrick Lailly 29 mai 2009
 
 
 ####################################################################
@@ -233,54 +234,201 @@ proc spc_passebas_pat { args } {
 }
 #****************************************************************#
 
+# Procedure de lissage d'un profil basse resolution typiquement un résultat de division, 
+# supposé calibré linéairement, via une fonction linéaire par morceaux en considerant comme 
+# donnee aberrante les echantillons situes a proximite de raies bien connues (raies
+# telluriques, dioxygene,...)
+# Auteur : Patrick LAILLY
+# Date creation : 01-12-2008
+# Date modification :01-12-2008
+# Algo : ajustement par moindres carrés des données (résultat division) par une fonction 
+# lineaire par morceaux. La procedure fonctionne ici en mode automatique : elle ne prend pas en compte les echantillons 
+# situes dans des intervalles de longueurs d'ondes definis dans le fichier forgetlambda.dat : ces echantillons sont 
+# censes etre potentiellement contamines par des raies d'absorbtion ou, de facon plus générale contenir des données 
+# aberrantes. Un coefficient d'extension de la largeur de ces intervalles donne la souplesse requise en cas de calibration # imprecise. 
+# Le parametre nechant definit la largeur des intervalles sur lesquels la fonction est lineaire
+# (ce parametre n'a pas beaucoup d'importance tant qu'il n'est pas trop grand, la valeur 20
+# semblant pouvoir traiter l'essentiel des situations; donner a ce parametre une valeur
+# petite n'a pas d'autre incidence que d'augmenter le temps de calcul) : d'ailleurs l'algorithme
+# modifie legerement la valeur choisie au depart afin de minimiser les effets de bord. Ne pas 
+# donner cependant une valeur inferieure a 18. Le 
+# filtrage est fondamentalement assure par l'application d'une regularisation (precisement on 
+# penalise la norme L^2 de la fonction derivee seconde du profil lisse), la "force" de cette
+# regularisation etant definie par le parametre regul_weight ( plus sa valeur est grande plus on
+# lisse). La valeur 1. correspond a un faible lissage et la valeur 10000. a un fort lissage.
+# Si l'on souhaite un lissage variable en fonction de la longueur d'onde on peut utiliser 
+# l'argument liste_regul : cette liste donne les valeurs relatives du poids de regularisation
+# pour differentes longueurs d'ondes. Soulignons qu'il s'agit de valeurs relatives : seules
+# sont pris en compte le rapport entre les differentes valeurs de la liste, la force globale de
+# la regularisation etant geree par le parametre regul_weight. A titre d'exemple
+# - une liste a un element correspond a une regularisation uniforme
+# - une liste a deux elements correspond a une regularisation variable lineairement, les valeurs
+# dans la liste definissant les variations relatives du poids de regularisation aux bornes de 
+# l'intervalle de longueurs d'ondes considerees
+# - une liste a trois elements correspond a une regularisation variable, les valeurs
+# dans la liste definissant les variations relatives du poids de regularisation pour la longueur
+# d'onde minimum, pour la longueur d'onde centrale et pour la longueur d'onde maximale
+# - etc.
+# 
+# Le parametre visu permet de s'assurer visuellement de la qualite du resultat et donne 
+# les échantillons pris en compte (ce sont ceux pour lesquels  la courbe verte prend une valeur
+# non nulle.  
+#
+# Arguments obligatoires : fichier .fit du profil de raie, nom du fichier.dat (avec chemin d'acces si ce fichier n'est 
+# pas dans le répertoire images d'Audela) donnant les intervalles de longueur d'ondes ou sont localisees 
+# les raies perturbatrices coefficient d'extension de la largeur de ces intervalles, poids de régularisation
+# Arguments facultatifs : liste_regul, visu ('o' ou 'n'), nechant
+# 
+# Exemples :
+# spc_lowresfilterfile resultat_division_150t "$audace(rep_images)/forgetlambda.dat" 1.1 1.
+# spc_lowresfilterfile resultat_division_150t "$audace(rep_images)/forgetlambda.dat" 1.1 1. {1. 2.} 'o' 18
+# La version tunée Benji pour le lissage de la RI ne demande que le nom du fichier de cette RI
+####################################################################
+proc spc_lowresfilterfile {args } {
+   global conf
+   global audace spcaudace
+   if { [ llength $args ] == 7 || [ llength $args ] == 4 || [ llength $args ] == 1 } {
+      set profile [ lindex $args 0 ]
+      set forgetlambda forgetlambda.dat
+      set catalog_file "$spcaudace(reptelluric)/$forgetlambda"
+      ::console::affiche_resultat "$catalog_file\n"
+      set ext_coef 1.1
+      set regul_weight 10.
+      set regul_list {1. 2.}
+	 	lappend regul_list 1.
+	 	set visu 'o'
+	 	set nechant 18	
+      if { [ llength $args ] > 1 } {
+      	set catalog_file [ lindex $args 1 ]
+      	set ext_coef [ lindex $args 2 ]
+      	set regul_weight [ lindex $args 3 ]
+      	if { [ llength $args ] == 4 } {
+	 			set regul_list [ list ]
+	 			lappend regul_list 1.
+	 			set visu 'o'
+	 			set nechant 18	
+     		} else {
+	 			set regul_list [ lindex $args 4 ]
+	 			set visu [ lindex $args 5 ]
+	 			set nechant [ lindex $args 6 ]
+     	 	}
+		}
+      set filename [ spc_piecewiselinearfilter $profile $ext_coef $regul_weight 'auto' $catalog_file $nechant $regul_list $visu ] 
+      return [ file rootname $filename ]
+   } else { 
+      ::console::affiche_erreur "Usage: spc_lowresfilterfile profile ? fichier_catalogue ? ext_coef ? regul_weight ?  options : regul_list ? visu ? nechant ?\n\n"
+      return 0
+   }
+}
+# Procedure de lissage d'un profil basse resolution typiquement un résultat de division, supposé calibré linéairement, 
+# via une fonction linéaire par morceaux en ne retenant que les données correspondant à des longueurs d'ondes spécifiées 
+# via une liste (lambda_list) donnée en argument.
+# Auteur : Patrick LAILLY
+# Date creation : 01-12-2008
+# Date modification : 01-12-2008
+# Algo : ajustement par moindres carrés des données (résultat division) par une fonction 
+# lineaire par morceaux. 
+# Le parametre nechant definit la largeur des intervalles sur lesquels la fonction est lineaire
+# (ce parametre n'a pas beaucoup d'importance tant qu'il n'est pas trop grand, la valeur 20
+# semblant pouvoir traiter l'essentiel des situations; donner a ce parametre une valeur
+# petite n'a pas d'autre incidence que d'augmenter le temps de calcul) : d'ailleurs l'algorithme
+# modifie legerement la valeur choisie au depart afin de minimiser les effets de bord. Ne pas 
+# donner cependant une valeur inferieure a 18. Le 
+# filtrage est fondamentalement assure par l'application d'une regularisation (precisement on 
+# penalise la norme L^2 de la fonction derivee seconde du profil lisse), la "force" de cette
+# regularisation etant definie par le parametre regul_weight ( plus sa valeur est grande plus on
+# lisse). La valeur 1. correspond a un faible lissage et la valeur 10000. a un fort lissage.
+# Si l'on souhaite un lissage variable en fonction de la longueur d'onde on peut utiliser 
+# l'argument liste_regul : cette liste donne les valeurs relatives du poids de regularisation
+# pour differentes longueurs d'ondes. Soulignons qu'il s'agit de valeurs relatives : seules
+# sont pris en compte le rapport entre les differentes valeurs de la liste, la force globale de
+# la regularisation etant geree par le parametre regul_weight. A titre d'exemple
+# - une liste a un element correspond a une regularisation uniforme
+# - une liste a deux elements correspond a une regularisation variable lineairement, les valeurs
+# dans la liste definissant les variations relatives du poids de regularisation aux bornes de 
+# l'intervalle de longueurs d'ondes considerees
+# - une liste a trois elements correspond a une regularisation variable, les valeurs
+# dans la liste definissant les variations relatives du poids de regularisation pour la longueur
+# d'onde minimum, pour la longueur d'onde centrale et pour la longueur d'onde maximale
+# - etc.
+# 
+# Le parametre visu permet de s'assurer visuellement de la qualite du resultat et donne 
+# les échantillons pris en compte (ce sont ceux pour lesquels  la courbe verte prend une valeur
+# non nulle.  
+# 
+# Arguments : fichier .fit du profil de raie, liste donnant les longueurs d'ondes à prendre en compte, regul_weight, 
+# liste_regul, visu ('o' ou 'n'), nechant
+# 
+# Exemple: spc_lowresfilterlist resultat_division_150t_linear.fit {3643. 3688. 3847. 3909. 3989. 4158. 4246. 4415. 4583. 4743. 4965. 5346. 5745. 5807. 6300. 6640. 7013. 7386. 7538. 7740. } 300. {1. 1. 10000. 1000000. 500000. 10000. 1000.} 'o' 18
+####################################################################
+proc spc_lowresfilterlist {args } {
+   global conf
+   global audace
+   if { [ llength $args ] == 6 } {
+      set profile [ lindex $args 0 ]
+      set lambda_list [ lindex $args 1 ]
+      set regul_weight [ lindex $args 2 ]
+      set regul_list [ lindex $args 3 ]
+      if { [ llength $args ] == 4 } {
+	 set visu 'o'
+	 set nechant 18
+      } else {
+	 set visu [ lindex $args 4 ]
+	 set nechant [ lindex $args 5 ]
+      }
+      set ext_coef 1.
+      set filename [ spc_piecewiselinearfilter $profile $ext_coef $regul_weight 'manu' $lambda_list $nechant $regul_list $visu ] 
+      return [ file rootname $filename ]
+   } else { 
+      ::console::affiche_erreur "Usage: spc_lowresfilterfile profile ? lambda_list ? regul_weight ? regul_list ? options : visu ? nechant ?\n\n"
+      return 0
+   }
+}
 
 ####################################################################
 # Procedure d'ajustement de la largeur (nechant) des morceaux utilis?s
 # dans spc_pwlri et spc_pwlfilter pour minimiser les effets de bords
 # Auteur : Patrick LAILLY
 # Date creation : 08-05-2007
-# Date modification : 23-07-2007
+# Date modification : 1-11-2008
 # Arguments : longueur liste intensite non nulle, valeur approx nechant
-# cette derniere est supposee superieure ou egale a 24
+# cette derniere est supposee superieure ou egale a 18
 ####################################################################
 proc ajust_interv {args } {
 global conf
 global audace
 if { [ llength $args ]==2 } {
-	set len [ lindex $args 0 ]
-	set nechant [ lindex $args 1 ]
-	if { $nechant < 24 } {
-		::console::affiche_erreur "Usage:  dans ajust_interv le deuxieme argument doit etre superieur ou egal a 24\n\n"
-		return 0
-	}
-	set reste [ list ]
-	for { set k [ expr $nechant - 6 ] } { $k <= [ expr $nechant + 6 ] } {incr k } {
-		set restek [ expr $len % $k ]
-		lappend reste $restek
-	}
-	set restetri [ lsort -integer -increasing $reste ]
-	if { [ lindex $restetri 0 ] == 0 } {
-		set npos [ lsearch -exact $reste 0 ]
-		} else {
-		set reste_max [ lindex $restetri 12 ]
-		set npos [ lsearch -exact $reste $reste_max ]
-	}
-	set nechant [ expr $npos + $nechant - 6 ]
-	::console::affiche_resultat "nechant ajuste = $nechant reste [ lindex $reste $npos ]\n"
-	#::console::affiche_resultat "restes $restetri\n "
-	return $nechant
-} else {
-	::console::affiche_erreur "Usage: ajust_interv nb echant profil ?largeur morceaux?\n\n"
-	return 0
+   set len [ lindex $args 0 ]
+   set nechant [ lindex $args 1 ]
+   if { $nechant < 18 } {
+      ::console::affiche_erreur "Usage:  dans ajust_interv le 2e arg doit etre superieur ou egal a 18 par securite\n\n"
+      return 0
+   }
+   set reste [ list ]
+   for { set k [ expr $nechant - 6 ] } { $k <= [ expr $nechant + 6 ] } {incr k } {
+      set restek [ expr $len % $k ]
+      lappend reste $restek
+   }
+   set restetri [ lsort -integer -increasing $reste ]
+   if { [ lindex $restetri 0 ] == 0 } {
+      set npos [ lsearch -exact $reste 0 ]
+   } else {
+      set reste_max [ lindex $restetri 12 ]
+      set npos [ lsearch -exact $reste $reste_max ]
+   }
+   set nechant [ expr $npos + $nechant - 6 ]
+   ::console::affiche_resultat "nechant ajuste = $nechant reste [ lindex $reste $npos ]\n"
+   #::console::affiche_resultat "restes $restetri\n "
+   return $nechant
+   } else {
+      ::console::affiche_erreur "Usage: ajust_interv nb echant profil ?largeur morceaux?\n\n"
+      return 0
+   }
 }
-}
-#****************************************************************#
-
-
 
 ####################################################################
 # Procedure de calcul de la matrice B utilisee dans les algorithmes de 
-# lissage par des fonctions linŽÃŽ©aires morceaux (spc_pwl...)
+# lissage par des fonctions linÃ©aires morceaux (spc_pwl...)
 #
 # Auteur : Patrick LAILLY
 # Date creation : 15-05-2007
@@ -290,729 +438,493 @@ if { [ llength $args ]==2 } {
 # l'appel de cette procedure meriterait d'etre sortie de la partie algo
 # on s'epargnerait ainsi plusieurs calculs de la matrice B dans spc_pwlri 
 proc spc_calcmatB {args} {
-global conf
-global audace
+   global conf
+   global audace
 
-if { [ llength $args ]==2 } {
-	set nechant [ lindex $args 0 ]
-	set nbase [ lindex $args 1 ]
-	#::console::affiche_resultat "fonc gener\n"
+   if { [ llength $args ]==2 } {
+      set nechant [ lindex $args 0 ]
+      set nbase [ lindex $args 1 ]
+      #::console::affiche_resultat "fonc gener\n"
  
-        #-- calcul de la fonction generatrice
-        set vpre [ list ]
-        set vtop [ list ]
-        set vpost [ list ]
-        lappend vtop 1.
-        #lappend vpre 0.
-        #set nechant1 [ expr $nechant-1 ]
-        for {set i 0} {$i<$nechant} {incr i} {
-            set vi [ expr 1.*$i/$nechant ]
-            lappend vpre $vi
-        }
-        for {set i 0} {$i<$nechant} {incr i} {
-            set vi [ lindex $vpre [ expr $nechant - $i -1] ]
-            lappend vpost $vi
-        }
-        #lappend vpost 0.
-
-        
-        #::console::affiche_resultat "vpre=$vpre\n"
-        #::console::affiche_resultat "vtop=$vtop\n"
-        #::console::affiche_resultat "vpost=$vpost\n"
-	#-- calcul de la matrice BT (B transposee)
-	set listezeros [ list ]
-	for {set i 0} {$i<$nechant} {incr i} {
-		lappend listezeros 0.
-	}
-	set B [ list ]
-	#set BT [ list ]
-	set listdeb [ list ]
-	set listfin [ list ]
-	for {set i 1} {$i<= [ expr $nbase -2 ]} {incr i} {
-		set listfin [ concat $listfin $listezeros ]
-	}
-	set BTi [ concat $vtop $vpost $listfin ]
+      #-- calcul de la fonction generatrice
+      set vpre [ list ]
+      set vtop [ list ]
+      set vpost [ list ]
+      lappend vtop 1.
+      #lappend vpre 0.
+      #set nechant1 [ expr $nechant-1 ]
+      for {set i 0} {$i<$nechant} {incr i} {
+	 set vi [ expr 1.*$i/$nechant ]
+         lappend vpre $vi
+      }
+      for {set i 0} {$i<$nechant} {incr i} {
+	 set vi [ lindex $vpre [ expr $nechant - $i -1] ]
+         lappend vpost $vi
+      }
+      #lappend vpost 0.        
+      #::console::affiche_resultat "vpre=$vpre\n"
+      #::console::affiche_resultat "vtop=$vtop\n"
+      #::console::affiche_resultat "vpost=$vpost\n"
+      #-- calcul de la matrice BT (B transposee)
+      set listezeros [ list ]
+      for {set i 0} {$i<$nechant} {incr i} {
+	 lappend listezeros 0.
+      }
+      set B [ list ]
+      #set BT [ list ]
+      set listdeb [ list ]
+      set listfin [ list ]
+      for {set i 1} {$i<= [ expr $nbase -2 ]} {incr i} {
+	 set listfin [ concat $listfin $listezeros ]
+      }
+      set BTi [ concat $vtop $vpost $listfin ]
+      lappend B $BTi
+      #::console::affiche_resultat "long 0 eme ligne BT [llength $BTi] \n"
+      set JJ [ expr $nbase -2 ]
+      for {set i 1} {$i<= $JJ} {incr i} {
+	 set listdeb [ list ]
+	 set listfin [ list ]
+	 if { $i != 1 } {
+	    for {set j 1} {$j<= [ expr $i - 1 ]} {incr j} {
+	       set listdeb [ concat $listdeb $listezeros ]
+	    }
+	 }
+	 if { $i != $JJ } {
+	    for {set j 1} {$j<= [ expr $JJ - $i ]} {incr j} {
+	       set listfin [ concat $listfin $listezeros ]
+	    }
+	 }
+	 set BTi [concat $listdeb $vpre $vtop $vpost $listfin ]
+	 #::console::affiche_resultat "long $i eme ligne BT [llength $listdeb] [llength $vpre] [llength $vtop] [llength $vpost] [llength $listfin]\n"
+	 lappend B $BTi
+      }
+      # derniere ligne de B*
+      set listdeb [ list ]
+      set listfin [ list ]
+      for {set i 1} {$i<= [ expr $nbase -2 ]} {incr i} {
+	 set listdeb [ concat $listdeb $listezeros ]
+      }
+      set BTi [ concat $listdeb $vpre $vtop ]
+      #::console::affiche_resultat "long derniere ligne BT [llength $BTi] \n"
+      lappend B $BTi
+      #::console::affiche_resultat "longueur BT : [llength $BT]\n"
+      #::console::affiche_resultat "longueur ligne de BT : [llength [lindex $BT 1]]\n"
 	
-	lappend B $BTi
-	#::console::affiche_resultat "long 0 eme ligne BT [llength $BTi] \n"
-	set JJ [ expr $nbase -2 ]
-	for {set i 1} {$i<= $JJ} {incr i} {
-		set listdeb [ list ]
-		set listfin [ list ]
-		if { $i != 1 } {
-			for {set j 1} {$j<= [ expr $i - 1 ]} {incr j} {
-				set listdeb [ concat $listdeb $listezeros ]
-			}
-		}
-		if { $i != $JJ } {
-			for {set j 1} {$j<= [ expr $JJ - $i ]} {incr j} {
-				set listfin [ concat $listfin $listezeros ]
-			}
-		}
-		set BTi [concat $listdeb $vpre $vtop $vpost $listfin ]
-		#::console::affiche_resultat "long $i eme ligne BT  [llength $listdeb]  [llength $vpre]   [llength $vtop]  [llength $vpost] [llength $listfin]\n"
-		lappend B $BTi
-	}
-	# derniere ligne de B*
-	set listdeb [ list ]
-	set listfin [ list ]
-	for {set i 1} {$i<= [ expr $nbase -2 ]} {incr i} {
-		set listdeb [ concat $listdeb $listezeros ]
-	}
-	set BTi [ concat $listdeb $vpre $vtop ]
-	#::console::affiche_resultat "long derniere ligne BT [llength $BTi] \n"
-	lappend B $BTi
-	#::console::affiche_resultat "longueur BT : [llength $BT]\n"
-	#::console::affiche_resultat "longueur ligne de BT : [llength [lindex $BT 1]]\n"
-	
-	# transposition de B*
-	
-	set B [ gsl_mtranspose $B ]
-	#::console::affiche_resultat "longueur B : [llength $B]\n"
-	#::console::affiche_resultat "longueur ligne de B : [llength [lindex $B 1]]\n"
-	return $B	 
-	} else {
-        ::console::affiche_erreur "Usage: spc_calcmatB 2 arguments requis\n\n"
-	return 0
-    }
-}
-#****************************************************************#
-
-	
-
-####################################################################
-# Procedure (partie algorithmique) de calcul de l'approximation lineaire par
-# morceaux de la partie reguliere du profil
-#
-# Auteur : Patrick LAILLY
-# Date creation : 15-05-2007
-# Date modification : 23-07-2007
-# Arguments :
-# -liste d'abscisses du profil de raie
-# -liste d'ordonnees du profil de raie (ces 2 listes doivent avoir la meme longueur)
-# - nechant est le nombre d'echantillons contenus dans un macro intervalle; a ce stade la longueur du profil moins un est supposee etre un multiple de nechant
-# - tauxRMS specifie l'amplitude des residus (en % de la moyenne RMS) censes correspondre, apres filtrage, a des portions irregulieres du profil
-# - demilargeur est la demi largeur (en echantillons) du filtre passe bas utilise
-# - period_max est la periode maximale (en echantillons) definissant la frequence de coupure du #filtre passe bas utilise
-# - larg_cosmet specifie la largeur de la reponse impulsionnelle du filtre cosmetique
-# (rectangle) utilise en post traitement, cette largeur etant exprimee en % de la largeur nechant
-# retourne la liste d'ordonnees lissee (la liste d'abscisses est inchangee)
-####################################################################
-
-proc spc_ajust_piecewiselinear_alg { args } {
-
-global conf
-global audace
-
-
-if { [ llength $args ]==7 } {
-
-	set abscisses [ lindex $args 0 ]
-	set ordonnees [ lindex $args 1 ]
-	set nechant [ lindex $args 2 ]
-	set tauxRMS [ lindex $args 3 ]
-	set demilargeur [ lindex $args 4 ]
-	set period_max [ lindex $args 5 ]
-	set larg_cosmet [ lindex $args 6 ]
-
-        #-- Initialisation des param?tres :  
-
-        set n [ llength $ordonnees ]
-        set ordon_max [ lindex [ lsort -real -increasing $ordonnees ] [ expr $n -1 ] ]
-        #::console::affiche_resultat "ordonnee max $ordon_max \n"
-        if { [expr ($n % $nechant) ] != 1 } {
-        	::console::affiche_resultat "erreur conflit de donnees n= $n nechant= $nechant \n"
-        }
-	::console::affiche_resultat "longueur ordonnees apres extraction partie effective: [ llength $ordonnees ]\n"
-
-        #-- Param?tre d'ajustement :
-        set ninter [expr int($n/$nechant)]
-        set nbase [expr $ninter+1]
-        #::console::affiche_resultat "nbase= $nbase\n"
-        #::console::affiche_resultat "nechant= $nechant\n"
-
-        
-        #definition des poids
-        set poids [ list ]
-        for {set i 0} {$i<$n} {incr i} {
-            set poidsi 1.
-            if {[lindex $ordonnees $i]==0.} {set poidsi 0.}
-            lappend poids $poidsi
-        }
-	
-        
-
-       
-
-        #approx des donnees par une version filtree et mesure des ecarts (residus)
-	set riliss [ spc_passebas_pat $ordonnees $demilargeur $period_max rectangle ]
-	set resid [ gsl_msub $ordonnees $riliss ]
-	#::console::affiche_resultat "longueur B : [llength $B]\n"
-        #::console::affiche_resultat "longueur riliss : [llength $riliss]\n"
-	set residtransp [ gsl_mtranspose $resid]
-
-	# les calculs ci-dessous sont ? la louche : il faudrati faire intervenir les poids
-	set rms_pat1  [ gsl_mmult $residtransp $resid ]
-	set rms_pat [ lindex $rms_pat1 0 ]
-	set rms_pat [ expr ($rms_pat/($n*1.)) ]
-	set rms_pat [expr sqrt($rms_pat)]
-	::console::affiche_resultat "residu moyen (RMS) apres filtrage : $rms_pat\n"
-	set seuilres [ expr $rms_pat*$tauxRMS*.01 ]
-	set poids1 [ list ]
-	for {set i 0} {$i<$n} {incr i} {
-		set poids1i 1.
-		set residi [ lindex $resid $i ]
-		if { [ expr abs($residi) ]>=$seuilres } {
-		set poids1i 0.
-		}
-		lappend poids1 $poids1i
-	}
-	set B [ spc_calcmatB $nechant $nbase ]
-	
-	set nouvpoids [ list ]
-	for {set i 0} {$i<$n} {incr i} {
-		lappend nouvpoids [ expr [ lindex $poids $i ] * [ lindex $poids1 $i ] ]
-        }
-	#::console::affiche_resultat "longueur nouvpoids : [ llength $nouvpoids ] \n"
-	#-- calcul de l'ajustement
-	set result [ gsl_mfitmultilin $ordonnees $B $nouvpoids ]
-        #-- extrait le resultat
-        set coeffs [ lindex $result 0 ]
-        set chi2 [ lindex $result 1 ]
-        set covar [ lindex $result 2 ]
-
-        set riliss [ gsl_mmult $B $coeffs ]
-
-        #::console::affiche_resultat "longueur B : [llength $B]\n"
-        #::console::affiche_resultat "longueur riliss : [llength $riliss]\n"
-        #::console::affiche_resultat "longueur Coefficients : [llength $coeffs]\n"
-        #::console::affiche_resultat "Coefficients : $coeffs\n"
-
-	# lissage de la fonction lineaire par morceaux
-	set demilargeur [ expr $nechant*$larg_cosmet/100 ]
-	
-	# extension a droite
-	set dy [ expr  [ lindex $riliss [ expr $n-1 ] ] -[ lindex $riliss [ expr $n-2 ] ] ]
-	set prevalue [ lindex $riliss [ expr $n-1 ] ]
-	for { set i 1 } { $i<=$demilargeur } { incr i } {
-	    set riliss [ linsert $riliss [ expr $n+$i ] [ expr $prevalue + $dy*$i ] ]
-	}
-
-	#extension a gauche
-	set prevalue [ lindex $riliss 0 ]
-	set postvalue [ lindex $riliss 1 ]
-
-	set dy [ expr  $postvalue - $prevalue  ]
-	
-	for { set i 1 } { $i<=$demilargeur } { incr i } {
-	    set riliss [ linsert $riliss 0 [ expr $prevalue - $dy*$i ] ]
-	}
-	#::console::affiche_resultat "demilargeur : $demilargeur\n"
-
-	set period_max [ expr 2*$demilargeur ]
-	set riliss [ spc_passebas_pat $riliss $demilargeur $period_max rectangle]
-        #--- On rame?ne riliss et poids aux dumensions de d?part de l'image FITS :
-        set riliss [ lrange $riliss $demilargeur [ expr $demilargeur + $n-1] ]
-        set poids [ lrange $poids 0 [ expr $n-1] ]
-        
-	set nouvpoids [ lrange $nouvpoids 0 [ expr $n-1] ]
- 	#::console::affiche_resultat "longueur nouvpoids : [llength $nouvpoids]\n"
-	#::console::affiche_resultat "nouvpoids (0) : [lindex $nouvpoids 0]\n"
-	#::console::affiche_resultat "nouvpoids (1) : [lindex $nouvpoids 1]\n"
-	for {set i 0} {$i<$n} {incr i} {
-		set nouvpoidsi [ lindex $nouvpoids $i ]
-		set nouvpoidsi [ expr .05*$ordon_max*$nouvpoidsi]
-		set nouvpoids [lreplace $nouvpoids $i $i $nouvpoidsi]
-	}
-
-	set list_result [ list $abscisses $riliss $nouvpoids ]
-	return $list_result
-	} else {
-        ::console::affiche_erreur "Usage: spc_ajust_piecewiselinear_alg 7 arguments requis, les 2 premiers etant des listes de meme longueur\n\n"
-	return 0
-    }
-}
-#****************************************************************#
-
-
-
-
-####################################################################
-# Procedure de lissage de la reponse instrumentale en basse resolution
-#
-# Auteur : Patrick LAILLY
-# Date creation : 07-03-2007
-# Date modification : 23-07-2007
-# Algo : on cr?e une version lissee (a l'aide d'une representation 
-# parametrique basee sur des fonctions continues lineaires par morceaux
-# (macro-intervalles) de largeur fixee) du resultat de la division en limitant
-# l'ajustement aux portions regulieres du fichier d'entree. Pour detecter
-# les portions irregulieres on analyse les ecarts avec une version filtree
-# du profil. En fait deux niveaux de filtrage sont testes creant ainsi les
-# deux premiers fichier de sortie : le premier utilise un filtre 
-# peu selectif, l'autre un filtre plus selectif. Enfin un troisieme resultat
-# est produit par interpolation des 2 premiers, le parametre d'interpolation 
-# dependant de la longueur d'onde : un poids plus important est donne au premier 
-# fichier pour les faibles longueurs d'onde alors que c'est le second 
-# fichier qui devient preponderant pour les grandes longueurs d'onde.
-# Cette methode de compositage a ses motivations mais ne pretend pas 
-# a l'universalite. Au final, l'utilisateur selectionnera (via la visualisation
-# des 3 resultats la RI qui lui convient le mieux. 
-# Precisons que l'approximation lineaire par morceaux fait l'objet 
-# d'un post traitement : on lui applique un filtre (encore un !) avant
-# tout pour des raisons cosmetiques.  
-# Arguments : fichier .fit du profil de raie, largeur d'un macro intervalle (en nombre 
-# d'echantillons + arguments optionnels (voir ci-dessous)
-# NB la largeur d'un macro intervalle donnee en argument est legerement modifiee par l'algorithme # afin de minimiser les effets de bord
-####################################################################
-
-proc spc_pwlri { args } {
-
-  global conf
-  global audace
-  global spcaudace
-  #set spcaudace(nulpcent) 100
-
-  # nechant est le nombre d'echantillons contenus dans un macro intervalle pour les 2 filtrages de  1er niveau
-  # ce parametre est modifie de facon a minimiser les effets de bord; il faut eviter la situation ou, apres
-  # modification de ce parametre, la fonction lin?aire par morceaux a un sommet localise dans une raie importante
-  # period_max1 est la periode de coupure (en echantillons) donnant la frequence de coupure pour le 1er niveau de filtrage
-  # period_max2 est la periode de coupure (en echantillons) donnant la frequence de coupure pour le 2eme niveau de filtrage
-  # tauxRMS1 specifie l'amplitude des residus (en % de la moyenne RMS) censes correspondre a des portions irregulieres du profil pour le 1er niveau de filtrage
-  # tauxRMS2 specifie l'amplitude des residus (en % de la moyenne RMS) censes correspondre a des #portions irregulieres du profil pour le 2eme niveau de filtrage
-  # larg_cosmet specifie la largeur de la reponse impulsionnelle du filtre cosmetique (rectangle) utilise en post traitement, cette largeur etant exprimee en % de la largeur nechant des macrointervalles
-
-  # Exemple : spc_pwlri resultat_division_150t.fit 50 11 51 70 50 100
-
-
-  if { [ llength $args ]==2 || [ llength $args ]==7} {
-	set filenamespc [ lindex $args 0 ]
-	set nechant [ lindex $args 1 ]
-	set period_max1 11
-	set period_max2 51
-	set tauxRMS1 70
-	set tauxRMS2 50
-	set larg_cosmet 40
-
-	if { [ llength $args ]==7 } {
-            set nechant [ lindex $args 1 ]
-	    set period_max1 [ lindex $args 2 ]
-	    set period_max2 [ lindex $args 3 ]
-	    set tauxRMS1 [ lindex $args 4 ]
-	    set tauxRMS2 [ lindex $args 5 ]
-	    set larg_cosmet [ lindex $args 6 ]
-	}
-
-	set demilargeur1 [ expr $period_max1/2 ]
-	set demilargeur2 [ expr $period_max2/2 ]
-
-        #--- Extraction des donnees :
-
-        set contenu [ spc_fits2data $filenamespc ]
-        set abscissesorig [ lindex $contenu 0 ]
-        set ordonneesorig [ lindex $contenu 1 ]
-        set lenorig [llength $ordonneesorig ]
- 
-        
-	#-- elimination des termes nuls au bord
-	set limits [ spc_findnnul $ordonneesorig ]
-	set i_inf [ lindex $limits 0 ]
-	set i_sup [ lindex $limits 1 ]
-	set nmilieu0 [ expr $i_sup -$i_inf +1 ]
-	#-- nmilieu0 est le nb d'echantillons non nuls dans la partie effective du profil
-	set abscisses [ list ]
-	set ordonnees [ list ]
-	set intens_moy 0.
-	for { set i $i_inf } { $i<=$i_sup } { incr i } {
-  		set xi [ lindex $abscissesorig $i ]
-  		set yi [ lindex $ordonneesorig $i ]
-  		lappend abscisses $xi
-  		lappend ordonnees $yi
-  		set intens_moy [ expr $intens_moy +$yi ]
-	}
-	set intens_moy [ expr $intens_moy/($nmilieu0*1.) ]
-
-	set len [ llength $ordonnees ]
-	::console::affiche_resultat "longueur profil apres extract part effective $len\n"
-
-	#-- ajustement de nechant pour minimiser les effets de bord et prolongement "accordingly" du profil 
-	set nechant [ ajust_interv [ expr $nmilieu0-1 ] $nechant ]
-	set deltax [ expr [ lindex $abscisses 1 ] -[ lindex $abscisses 0 ] ]
-	# set ordmoyen [ lindex $ordonnees [ expr $nmilieu0 -1 ] ] 
-	set ordmoyen [ expr .5*([ lindex $ordonnees [ expr $nmilieu0 -1 ] ] + [ lindex $ordonnees [ expr $nmilieu0 -2 ] ]) ]
-
-	if { [ expr ( $nmilieu0 - 1 ) % $nechant ] !=0  } {
-		set nmilieu [ expr (( $nmilieu0 -1 ) /$nechant + 1 ) * $nechant +1]
-		for { set i 1 } { $i<= [ expr $nmilieu - $nmilieu0 ] } { incr i } {
-	
-			lappend abscisses [ expr [ lindex $abscisses [ expr $lenorig - 1 ] ] + $deltax ] 
-			lappend ordonnees $ordmoyen
-		}
-	} else {
-	set nmilieu $nmilieu0
-	}
-	set len [ llength $ordonnees ]
-	#::console::affiche_resultat "longueur profil apres traitement effets de bord $len\n"
-	#::console::affiche_resultat "longueur profil apres traitement effets de bord $len\n"
-
-	set list_result [ spc_ajust_piecewiselinear_alg $abscisses $ordonnees $nechant $tauxRMS1 $demilargeur1 $period_max1 $larg_cosmet ]
-
-	# set abscisses [ lindex $list_result  0 ]
-	set riliss1 [ lindex $list_result  1 ]
-	set nouvpoids1 [ lindex $list_result 2 ]
-	#::console::affiche_resultat "longueur riliss : [llength $riliss1] - longueur poids=[ llength $nouvpoids1 ]\n"
-
-
-	set list_result [ spc_ajust_piecewiselinear_alg $abscisses $ordonnees $nechant $tauxRMS2 $demilargeur2 $period_max2 $larg_cosmet ]
-
-	#set abscisses [ lindex $list_result  0 ]
-	set riliss2 [ lindex $list_result  1 ]
-	set nouvpoids2 [ lindex $list_result 2 ]
-	#::console::affiche_resultat "longueur riliss : [llength $riliss2] - longueur poids=[ llength $nouvpoids2 ]\n"
-
-        
-
-	#--- post traitement : revenir au nb d'ecahntillons avant passage de nmilieu0 a nmilieu
-	set nordonnees1 [ lrange $riliss1 0 [ expr $nmilieu0 - 1 ] ]
-	set nordonnees2 [ lrange $riliss2 0 [ expr $nmilieu0 - 1 ] ]
-	
-	set nordonnees3 [ list ]
-	for {set i 0} {$i<$nmilieu0} {incr i} {
-            set riliss1i [ lindex $nordonnees1 $i ]
-	    set riliss2i [ lindex $nordonnees2 $i ]
-	    set theta [ expr $i*1./$nmilieu0 ]
-	    set riliss3i [ expr $riliss1i*(1.-$theta) + $riliss2i*$theta ]
-            lappend nordonnees3 $riliss3i
-        }
-        #::console::affiche_resultat "longueur result 3 : [llength $nordonnees3]\n"
-
-	set nouvpoids1 [ lrange $nouvpoids1 0 [ expr $nmilieu0 - 1 ] ]
-	set nouvpoids2 [ lrange $nouvpoids2 0 [ expr $nmilieu0 - 1 ] ]	
-	
-        #--- mise a zero d'eventuels echantillons tres petits
-	set zero 0.
-	set seuil_min [ expr $intens_moy*$spcaudace(nulpcent)/100. ]
-	for { set i 0 } {$i<$nmilieu0} {incr i} {
-		if { [ lindex $nordonnees1 $i ] < $seuil_min } { set nordonnees1 [ lreplace $nordonnees1 $i $i $zero ] }
-		if { [ lindex $nordonnees2 $i ] < $seuil_min } { set nordonnees2 [ lreplace $nordonnees2 $i $i $zero ] }
-		if { [ lindex $nordonnees3 $i ] < $seuil_min } { set nordonnees3 [ lreplace $nordonnees3 $i $i $zero ] } 
-	}
-	
-	
-        #--- Rajout des valeurs nulles en dbut et en fin pour retrouver la dimension initiale du fichier de dpart :
-	set len_ini $lenorig
-	set len_cut $nmilieu0
-	set nb_insert_sup [ expr $lenorig-$i_inf-$nmilieu0 ]
-	for { set i 1 } { $i<=$nb_insert_sup } { incr i } {
-	    set nordonnees1 [ linsert $nordonnees1 [ expr $len_cut+$i ] 0.0 ]
-	    set nordonnees2 [ linsert $nordonnees2 [ expr $len_cut+$i ] 0.0 ]
-	    set nordonnees3 [ linsert $nordonnees3 [ expr $len_cut+$i ] 0.0 ]
-	    set nouvpoids1 [ linsert $nouvpoids1 [ expr $len_cut+$i ] 0.0 ]
-	    set nouvpoids2 [ linsert $nouvpoids2 [ expr $len_cut+$i ] 0.0 ]
-	}
-	for { set i 0 } { $i<$i_inf } { incr i } {
-	    set nordonnees1 [ linsert $nordonnees1 0 0.0 ]
-	    set nordonnees2 [ linsert $nordonnees2 0 0.0 ]
-	    set nordonnees3 [ linsert $nordonnees3 0 0.0 ]
-	    set nouvpoids1 [ linsert $nouvpoids1 0 0.0 ]
-	    set nouvpoids2 [ linsert $nouvpoids2 0 0.0 ]
-	}
-
-	set len [ llength $nordonnees1 ]
-	::console::affiche_resultat "longueur profil piecewiselinear $len\n"
-	
-	
-	
-        #--- CrŽÃŽ©e les fichiers fits de sortie
-	set abscisses $abscissesorig 
-        set filename [ file rootname $filenamespc ]
-        
-        #--- CrŽÃŽ©e le fichier fits de sortie nŽÂŽ°1 :
-        buf$audace(bufNo) load "$audace(rep_images)/$filename"
-        set k 1
-        foreach x $abscisses {
-	    buf$audace(bufNo) setpix [list $k 1] [ lindex $nordonnees1 [ expr $k-1 ] ]
-            incr k
-        }
-        #-- Sauvegarde du rŽÃŽ©sultat :
-        buf$audace(bufNo) bitpix float
-        buf$audace(bufNo) save "$audace(rep_images)/${filename}_conti-1$conf(extension,defaut)"
-        buf$audace(bufNo) bitpix short
-        ::console::affiche_resultat "Fichier fits sauv? sous ${filename}_conti-1$conf(extension,defaut)\n"
-
-
-        #return ${filename}_conti-1
-
-        #--- CrŽÃŽ©e le fichier fits de sortie nŽÂŽ°2 :
-        buf$audace(bufNo) load "$audace(rep_images)/$filename"
-        set k 1
-        foreach x $abscisses {
-	    buf$audace(bufNo) setpix [list $k 1] [ lindex $nordonnees2 [ expr $k-1 ] ]
-            incr k
-        }
-        #-- Sauvegarde du rŽÃŽ©sultat :
-        buf$audace(bufNo) bitpix float
-        buf$audace(bufNo) save "$audace(rep_images)/${filename}_conti-2$conf(extension,defaut)"
-        buf$audace(bufNo) bitpix short
-        ::console::affiche_resultat "Fichier fits sauv? sous ${filename}_conti-2$conf(extension,defaut)\n"
-
-
-        #return ${filename}_conti-2
-
-                
-        #--- CrŽÃŽ©e le fichier fits de sortie nŽÂŽ°3 :
-
-        buf$audace(bufNo) load "$audace(rep_images)/$filename"
-        set k 1
-        foreach x $abscisses {
-	    buf$audace(bufNo) setpix [list $k 1] [ lindex $nordonnees3 [ expr $k-1 ] ]
-            incr k
-        }
-        #-- Sauvegarde du rŽÃŽ©sultat :
-        buf$audace(bufNo) bitpix float
-        buf$audace(bufNo) save "$audace(rep_images)/${filename}_conti-3$conf(extension,defaut)"
-        buf$audace(bufNo) bitpix short
-        ::console::affiche_resultat "Fichier fits sauv? sous ${filename}_conti-3$conf(extension,defaut)\n"
-
-
-
-        #--- Affichage du graphe
-        #--- Meth1
-	::plotxy::clf
-        ::plotxy::figure 1
-        ::plotxy::plot $abscissesorig $nordonnees1 r 1
-        ::plotxy::hold on
-        ::plotxy::plot $abscissesorig $ordonneesorig ob 0
-	::plotxy::hold on
-        ::plotxy::plot $abscissesorig $nouvpoids1 g 0
-        ::plotxy::plotbackground #FFFFFF
-        ##::plotxy::xlabel "x"
-        ##::plotxy::ylabel "y"
-        ::plotxy::title "bleu : orginal ; rouge : interpolation lineaire par morceaux de largeur $nechant echantillons"
-
-
-	::plotxy::figure 2
-        ::plotxy::plot $abscissesorig $nordonnees2 r 1
-        ::plotxy::hold on
-        ::plotxy::plot $abscissesorig $ordonneesorig ob 0
-	::plotxy::hold on
-        ::plotxy::plot $abscissesorig $nouvpoids2 g 0
-        ::plotxy::plotbackground #FFFFFF
-        ##::plotxy::xlabel "x"
-        ##::plotxy::ylabel "y"
-        ::plotxy::title "bleu : orginal ; rouge : interpolation lineaire par morceaux de largeur $nechant echantillons"
-
-
-
-	::plotxy::figure 3
-        ::plotxy::plot $abscissesorig $nordonnees3 r 1
-        ::plotxy::hold on
-        ::plotxy::plot $abscissesorig $ordonneesorig ob 0
-
-        ::plotxy::plotbackground #FFFFFF
-        ##::plotxy::xlabel "x"
-        ##::plotxy::ylabel "y"
-        ::plotxy::title "bleu : orginal ; rouge : interpolation lineaire par morceaux de largeur $nechant echantillons"
-
-      return ${filename}_conti-3
-  } else {
-      ::console::affiche_erreur "Usage: spc_pwlri fichier_profil.fit nombre_Žéchantillons ?visualisation (o/n)? ?pŽériode_coupure amplitude_rŽésidus pourcent_largeur_cosmŽétique?\n\n"
+      # transposition de B*
+      set B [ gsl_mtranspose $B ]
+      #::console::affiche_resultat "longueur B : [llength $B]\n"
+      #::console::affiche_resultat "longueur ligne de B : [llength [lindex $B 1]]\n"
+      return $B	 
+   } else {
+      ::console::affiche_erreur "Usage: spc_calcmatB 2 arguments requis\n\n"
       return 0
-  }
+   }
 }
-#****************************************************************#
-
-
+	
 
 ####################################################################
-# Procedure de lissage d'un profil spectral via une fonction 
-# lineaire par morceaux
+# Procedure de lissage d'un profil basse resolution typiquement un résultat de division, #supposé calibré linéairement, via une fonction linéaire par morceaux en considerant comme 
+# donnee aberrante les echantillons situes a proximite de raies bien connues (raies
+# telluriques, dioxygene,...)
 # Auteur : Patrick LAILLY
-# Date creation : 07-03-2007
-# Date modification : 23-07-2007
-# Algo : Il est similaire a spc_pwlri a ceci pres qu'un seul fichier (au lieu de 3) est 
-# sauvegarde : c'est celui qui correspond a l'image composite. Si l'on prefere sauvegarder 
-# le fichier correspondant a l'image 1 (resp. l'image 2), il suffit de repeter 2 fois les parametres  
-# (period_max et tauxRMS) ayant permis la creation de l'image 1 (resp. de l'image 2) 
-# Le parametre visu permet de s'assurer visuellement de la qualite du resultat.
-# Arguments : fichier .fit du profil de raie  nechant visu period_max1 period_max2 tauxRMS1 tauxRMS2 larg_cosmet (voir 
-# definition ci-dessous)
+# Date creation : 07-02-2008
+# Date modification : 1-11-2008
+# Algo : ajustement par moindres carrés des données (résultat division) par une fonction 
+# lineaire par morceaux. La procedure fonctionne 
+
+# ou bien en mode automatique auquel cas elle ne prend pas en compte les echantillons situes
+# dans des intervalles de longueurs d'ondes definis dans le fichier forgetlambda.dat : ces echantillons sont censes etre potentiellement contamines par des raies d'absorbtion ou, de
+# facon plus générale contenir des données aberrantes. Un coefficient d'extension de la largeur de ces intervalles donne la souplesse requise en cas de calibration imprecise. 
+
+# ou bien en mode manuel auquel cas l'utilisteur spécifie la liste des longueurs d'ondes (en
+# Angstroems) où il souhaite prendre en compte l'information
+
+# Le parametre nechant definit la largeur des intervalles sur lesquels la fonction est lineaire
+# (ce parametre n'a pas beaucoup d'importance tant qu'il n'est pas trop grand, la valeur 20
+# semblant pouvoir traiter l'essentiel des situations; donner a ce parametre une valeur
+# petite n'a pas d'autre incidence que d'augmenter le temps de calcul) : d'ailleurs l'algorithme
+# modifie legerement la valeur choisie au depart afin de minimiser les effets de bord. Ne pas 
+# donner cependant une valeur inferieure a 18. Le 
+# filtrage est fondamentalement assure par l'application d'une regularisation (precisement on 
+# penalise la norme L^2 de la fonction derivee seconde du profil lisse), la "force" de cette
+# regularisation etant definie par le parametre regul_weight ( plus sa valeur est grande plus on
+# lisse). La valeur 1. correspond a un faible lissage et la valeur 10000. a un fort lissage.
+# Si l'on souhaite un lissage variable en fonction de la longueur d'onde on peut utiliser 
+# l'argument liste_regul : cette liste donne les valeurs relatives du poids de regularisation
+# pour differentes longueurs d'ondes. Soulignons qu'il s'agit de valeurs relatives : seules
+# sont pris en compte le rapport entre les differentes valeurs de la liste, la force globale de
+# la regularisation etant geree par le parametre regul_weight. A titre d'exemple
+# - une liste a un element correspond a une regularisation uniforme
+# - une liste a deux elements correspond a une regularisation variable lineairement, les valeurs
+# dans la liste definissant les variations relatives du poids de regularisation aux bornes de 
+# l'intervalle de longueurs d'ondes considerees
+# - une liste a trois elements correspond a une regularisation variable, les valeurs
+# dans la liste definissant les variations relatives du poids de regularisation pour la longueur
+# d'onde minimum, pour la longueur d'onde centrale et pour la longueur d'onde maximale
+# - etc.
+# 
+# Le parametre visu permet de s'assurer visuellement de la qualite du resultat et donne 
+# les échantillons pris en compte (ce sont ceux pour lesquels  la courbe verte prend une valeur
+# non nulle.  
+# Arguments : fichier .fit du profil de raie, coefficient d'extension de la 
+# largeur de ces intervalles, regul_weight, mode, (fichier .dat donnant les intervalles de
+# longueur d'ondes ou sont localisees les raies perturbatrices (mode auto) ou bien liste des
+# longueurs d'ondes a prendre en compte(mode manu), nechant, liste_regul, visu)
+# Les parametre entre parentheses peuvent etre en bloc omis. 
 ####################################################################
 
-proc spc_pwlfilter { args } {
-
-    global conf
-    global audace
-    global spcaudace
-    #set spcaudace(nulpcent) 100.
-
-
-    # nechant est le nombre d'echantillons contenus dans un macro intervalle; ce parametre est modifie de facon a minimiser les effets de bord; il faut eviter la situation o?, apres modification de ce parametre, la fonction lin?aire par morceaux a un sommet localise dans une raie importante
-    # visu (=o ou n) indique si l'on veut ou non une visualisation du resultat
-    # period_max1 est la periode de coupure (en echantillons) donnant la frequence de coupure pour le 1er niveau de filtrage
-    # period_max2 est la periode de coupure (en echantillons) donnant la frequence de coupure pour le 2eme niveau de filtrage    
-    # tauxRMS1 specifie l'amplitude des residus (en % de la moyenne RMS) censes correspondre a des portions irregulieres du profil pour le 1er niveau de filtrage
-    # tauxRMS2 specifie l'amplitude des residus (en % de la moyenne RMS) censes correspondre a des portions irregulieres du profil pour le 2e niveau de filtrage
-    # larg_cosmet specifie la largeur de la reponse impulsionnelle du filtre cosmetique (rectangle) utilise en post traitement, cette largeur etant exprimee en % de la largeur nechant des macrointervalles
-
-    # Exemples :
-    # spc_pwlfilter resultat_division_150t.fit 50 n 11 51 70 50 100
+proc spc_piecewiselinearfilter { args } {
+   global conf
+   global audace spcaudace
+   #global spc_audace(nul_pcent_intens)
+   set nul_pcent_intens .65
+    
+   
+   # regul_weight est le poids de régularisation
+   # nechant est le nombre d'intervalles contenus dans un macro intervalle (morceau linéaire de la fonction d'ajustemet)
+   # visu (=o ou n) indique si l'on veut ou non une visualisation du resultat
+	
+   # Exemples :
+   
+   # spc_piecewiselinearfilter resultat_division_150t_linear.fit 1.1 10.
+   
+   # spc_piecewiselinearfilter resultat_division_150t_linear.fit 1.1 300. 'auto' "$audace(rep_images)/forgetlambda.dat" 18 {1. 1. 10000. 1000000. 500000. 10000. 1000.} 'o'
+   
+   # spc_piecewiselinearfilter resultat_division_150t_linear.fit 1.1 300. 'manu' {3643. 3688. 3847. 3909. 3989. 4158. 4246. 4415. 4583. 4743. 4965. 5346. 5745. 5807. 6300. 6640. 7013. 7386. 7538. 7740. } 18 {1. 1. 10000. 1000000. 500000. 10000. 1000.} 'o'
     
 
-    set nb_args [ llength $args ]
-    if { $nb_args==8 } {
-	    set filenamespc [ lindex $args 0 ]
-	    set nechant [ lindex $args 1 ]
-	    set visu [ lindex $args 2 ]
-	    set period_max1 [ lindex $args 3 ]
-	    set period_max2 [ lindex $args 4 ]
-	    set tauxRMS1 [ lindex $args 5 ]
-	    set tauxRMS2 [ lindex $args 6 ]
-	    set larg_cosmet [ lindex $args 7 ]
+   set nb_args [ llength $args ]
+   set mode1 'auto'
+   set mode2 'manu'
+   if { $nb_args==8 || $nb_args==3 } {
 		
-	set demilargeur1 [ expr $period_max1/2 ]
-	set demilargeur2 [ expr $period_max2/2 ]
+      set filenamespc [ lindex $args 0 ]
+      set coefextens [ lindex $args 1 ]
+      set regul_weight [ lindex $args 2 ]
+      if { $nb_args==8 } {
+	 set mode [ lindex $args 3 ]
+	 if { $mode == $mode1} {
+	    set fileforgetlambda [ lindex $args 4 ]
+	    #set fileforgetlambda "$audace(rep_images)/$fileforgetlambda"
+	 } elseif { $mode == $mode2} {
+	    set listepoints [ lindex $args 4 ]
+	    set nbpoints [ llength $listepoints ]
+	 } else {
+	    ::console::affiche_erreur "Usage: dans spc_piecewiselinearfilter le 4eme parametre doit etre 'manu' ou 'auto'  \n\n"
+	 }
+	 set nechant [ lindex $args 5 ]
+	 set listeregul [ lindex $args 6 ]
+	 set visu [ lindex $args 7 ]
+      }
+      if { $nb_args==3 } {
+	 set mode 'auto'
+	 #set fileforgetlambda "$audace(rep_images)/forgetlambda.dat"
+	 set nechant 20
+	 set listeregul [ list ]
+	 lappend listeregul 1.
+	 set visu 'o'
+      }
+	    
+      #--- Extraction des donnees :
+      #--- Gestion des profils selon la loi de calibration :
+      buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
+      #-- Renseigne sur les parametres de l'image :
+      set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+      set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+      set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+      set contenu [ spc_fits2data $filenamespc ]
+      set abscissesorig [ lindex $contenu 0 ]
+      set ordonneesorig [ lindex $contenu 1 ]
+      set lenorig [llength $ordonneesorig ]
+      ::console::affiche_resultat "dispersion = $cdelt1  [ expr [lindex $abscissesorig 1 ]- [lindex $abscissesorig 0 ]]\n"
+      ::console::affiche_resultat "crval1= $crval1 [lindex $abscissesorig 0 ]\n"
+      if { $naxis1 != $lenorig } {
+         ::console::affiche_erreur "naxis1 = $naxis1 doit etre egal a$lenorig\n"
+      }
 
-        #--- Extraction des donnees :
-        set contenu [ spc_fits2data $filenamespc ]
-        set abscissesorig [ lindex $contenu 0 ]
-        set ordonneesorig [ lindex $contenu 1 ]
-        set lenorig [llength $ordonneesorig ]
- 
+      #-- elimination des termes nuls au bord
+      set limits [ spc_findnnul $ordonneesorig ]
+      # i_inf est le N° (suivant la numerotation des listes Tcl) du premier element non nul
+      # i_sup est le N° (suivant la numerotation des listes Tcl) du dernier element non nul
+      set i_inf [ lindex $limits 0 ]
+      set i_sup [ lindex $limits 1 ]
+      # set nechant_util [ expr $i_sup - $i_inf +1 ]
+      #::console::affiche_resultat "limites profil utile $i_inf $i_sup\n"
+      set nmilieu0 [ expr $i_sup -$i_inf +1 ]
+      #-- nmilieu0 est le nb d'echantillons non nuls dans la partie effective du profil
+      set lambdamin [ lindex $abscissesorig $i_inf ]
+      set lambdamax [ lindex $abscissesorig $i_sup ]
+      set ecartlambda [ expr $lambdamax-$lambdamin ]
+      ::console::affiche_resultat "lambdamin= $lambdamin lambdamax= $lambdamax\n"
+		
+      # modification des listes pour se limiter a l'intervalle lambdamin lambdamax et calcul de l'intensite moyenne
+      set abscisses [ list ]
+      set ordonnees [ list ]
+      #set poids [ list ]
+      set intens_moy 0.
+      for { set i $i_inf } { $i<=$i_sup } { incr i } {
+	 set xi [ lindex $abscissesorig $i ]
+  	 set yi [ lindex $ordonneesorig $i ]
+  	 lappend abscisses $xi
+  	 lappend ordonnees $yi
+	 #lappend poids 1.
+  	 set intens_moy [ expr $intens_moy +$yi ]
+      }
+      set intens_moy [ expr $intens_moy/($nmilieu0*1.) ]
+      # intens_moy est la valeur moyenne de l'intensite
+      ::console::affiche_resultat "intensite moyenne : $intens_moy \n"
+      # normalisation de regul_weight en fonction de l'intensite moyenne du profil
+      set regul_weight [ expr $regul_weight * $intens_moy / 600000. ]
+	
+      #-- ajustement de nechant pour minimiser les effets de bord et prolongement "accordingly" du profil 
+      set nechant [ ajust_interv [ expr $nmilieu0-1 ] $nechant ]
+      # set ordmoyen [ lindex $ordonnees [ expr $nmilieu0 -1 ] ]
+      set o1 [ lindex $ordonnees [ expr $nmilieu0 -1 ] ]
+      set o2 [ lindex $ordonnees [ expr $nmilieu0 -2 ] ]
+      set ordmoyen [ expr .5*( $o1+ $o2 ) ]
+
+      if { [ expr ( $nmilieu0 - 1 ) % $nechant ] !=0  } {
+	 set nmilieu [ expr (( $nmilieu0 -1 ) /$nechant + 1 ) * $nechant +1]
+	 for { set i 1 } { $i<= [ expr $nmilieu - $nmilieu0 ] } { incr i } {
+	    lappend abscisses [ expr [ lindex $abscisses [ expr $lenorig - 1 ] ] + $cdelt1 ] 
+	    lappend ordonnees $ordmoyen
+	 }
+      } else {
+	 set nmilieu $nmilieu0
+      }
+	
+      set len [ llength $ordonnees ]
+      set len_1 [ expr $len -1 ]
+      if {$len != $nmilieu } {
+	 ::console::affiche_erreur "longueur profil utile $len $nmilieu\n"
+	 return 0
+      }
+      ::console::affiche_resultat "augmentation de la partie utile du profil $len au lieu de $nmilieu0 echantillons\n"
+      set lambdamax [ expr $lambdamin + $len_1* $cdelt1 ]
+      set ninter [expr int($len/$nechant)]
+      set nbase [expr $ninter+1]
+	
+      #calcul matrice B
+	
+      set B [ spc_calcmatB $nechant $nbase ]
+		
+      #construction des poids sur les intensites
+      set poids [ list ]
+      if { $mode== $mode1 } {
+	 for { set i 0} { $i<$len } { incr i } {
+	    lappend poids 1.
+	 }
+	 set inputfile [open "$fileforgetlambda" r]
+	 set contents [split [read $inputfile] \n]
+	 close $inputfile
+      
+	 set kk 0
+	 foreach ligne $contents {
+	    set lambda1 [ lindex $ligne 0 ]	
+	    set lambda2 [ lindex $ligne 1 ]
+	    #::console::affiche_resultat " $lambda1 $lambda2   $lambdamax \n"
+	    if { $lambda1!="" } {
+	       # for { set kk 0 } { $kk< $lforgetlambda } { incr kk } {}
+	       #::console::affiche_resultat " $kk $lambda1 $lambda2 \n"
+	       # prise en compte de l'extension des intervalles
+	       set lambdacentre [ expr ( $lambda1 + $lambda2 )*.5 ]
+	       set larginter [ expr ( $lambda2 - $lambda1 ) * $coefextens ]
+	       set lambda1 [ expr $lambdacentre - $larginter * .5 ]
+	       set lambda2 [ expr $lambdacentre + $larginter * .5 ]	
+	       if { $lambda2 >= $lambdamin && $lambda1 <= $lambdamax } {
+		  set deb [ expr max ($lambda1,$lambdamin) ]
+		  set fin [ expr min ($lambda2,$lambdamax) ]
+		  set iideb [ expr int (($deb - $lambdamin)/$cdelt1) ]
+		  #set iideb [ expr int (($deb - $lambdamin)/$cdelt1) +1 ]			
+		  #set iifin [ expr int (($fin - $lambdamin)/$cdelt1) ]
+		  set iifin [ expr min ( $len_1, int (($fin - $lambdamin)/$cdelt1) +1) ]
+		  #::console::affiche_resultat " $iideb $iifin \n"
+		  for { set i $iideb } { $i <= $iifin } { incr i } {
+		     set poids [ lreplace $poids $i $i 0. ]
+		  }  
+	       }
+	       incr kk
+	    }
+	 }
+	 set lforgetlambda $kk
+	 #::console::affiche_resultat "nb d'intervalles forgetlambda $lforgetlambda \n"
+      } else {
+	 for { set i 0 } { $i<$len } { incr i } {
+	    lappend poids 0.
+	 }
+	 ::console::affiche_resultat "lambdamin= $lambdamin lambdamax=$lambdamax \n"
+	 ::console::affiche_resultat "liste des longueurs d'ondes definies par l'utilisateur :\n"
+	 for { set i 0 } { $i < $nbpoints } { incr i } {
+	    set lambda_i [ lindex $listepoints $i ]
+	    #::console::affiche_resultat "$lambda_i \n"
+	    if { $lambda_i > $lambdamax || $lambda_i < $lambdamin } {
+	       ::console::affiche_erreur "dans la liste de points la valeur $lambda_i n'appartient pas à la partie exploitable du spectre\n\n"
+	       return 0
+	    }
+	    # ci-dessous le calcul n'est valide que pour un spectre calibre lineairement
+	    set j [ expr round (($lambda_i-$lambdamin)*$nmilieu / $ecartlambda) -1 ]
+	    set poids [ lreplace $poids $j $j 1. ]
+	 }
+      }
+      # prise en compte de la regularisation
+    
+      # normalisation de listeregul
+      set longregul [ llength $listeregul ]
+      #::console::affiche_resultat "longueur listeregul $longregul \n"
+
+      if { $longregul > 1 } {
+	 set somregul 0.
+	 for {set i 0} {$i<$longregul} {incr i} {
+	    set somregul [ expr $somregul + [ lindex $listeregul $i ] ] 
+	 }
+	 for {set i 0} {$i<$longregul} {incr i} {
+	    set regulnorm [ expr [ lindex $listeregul $i ] / $somregul ]
+	    set listeregul [ lreplace $listeregul $i $i $regulnorm ] 
+	 }
+
+	 # calcul des poids de regularisation sur les nbase noeuds des macrointervalles
+	 set nlongregul [ expr $longregul -1 ]
+	 #set undersampling [ expr ($ninter*1.)/($nlonginter*1.) ]
+	 set undersampling [ expr ($ninter*1.)/($nlongregul*1.) ]
+	 set ilonginter 0
+	 set ilonginterp1 1
+	 set listeregulfin [list ]
+	 for { set ibase 0 } { $ibase<$nbase } {incr ibase} {
+	    if {$ibase > [ expr ($ilonginter +1) * $undersampling ] } {
+	       incr ilonginter
+	       incr ilonginterp1
+	    }
+	    # interpolation lineaire entre les donnees associees a ilonginter et ilonginterp1
+	    set intensmoins [ lindex $listeregul $ilonginter ]
+	    set intensplus [ lindex $listeregul $ilonginterp1 ]
+	    set num  [ expr  ($intensplus - $intensmoins)*1. ]
+	    set den  $undersampling
+	    set pente [ expr $num / $den ]
+	    set inten [ expr $intensmoins*1. + $pente * ( $ibase*1. - $ilonginter * $undersampling ) ]
+	    #::console::affiche_resultat " ndeb= $ndeb lambda1= [ lindex $intensites_orig $ndeb ] lambda2= [ lindex $intensites_orig $ndebp1 ]\n"
+	    lappend listeregulfin $inten
+	 }  				
+      }
+     
+      set yy $ordonnees
+      set listezeros [ list ]
+      for {set i 0} {$i<=$ninter} {incr i} {
+	 lappend listezeros 0.
+      }
+      if { $longregul > 1 } {
+	 for { set i 0} { $i< [expr $ninter-1] } { incr i } {
+	    set ip1 [ expr $i + 1 ]
+	    set ip2 [ expr $i + 2 ]
+	    lappend poids [ expr  $regul_weight * [ lindex $listeregulfin $ip1 ] ]
+	    set Bi $listezeros
+	    set Bi [ lreplace $Bi $i $i -1. ]
+	    set Bi [ lreplace $Bi $ip1 $ip1 2. ]
+	    set Bi [ lreplace $Bi $ip2 $ip2 -1. ]
+	    lappend B $Bi
+	    lappend yy 0.
+	 }
+
+      } else {
+	 for { set i 0} { $i< [expr $ninter-1] } { incr i } {
+	    set ip1 [ expr $i + 1 ]
+	    set ip2 [ expr $i + 2 ]
+	    lappend poids $regul_weight
+	    set Bi $listezeros
+	    set Bi [ lreplace $Bi $i $i -1. ]
+	    set Bi [ lreplace $Bi $ip1 $ip1 2. ]
+	    set Bi [ lreplace $Bi $ip2 $ip2 -1. ]
+	    lappend B $Bi
+	    lappend yy 0.
+	 }
+      }
+	 
+      ::console::affiche_resultat "longueur B : [llength $B] [llength $yy] [llength $poids]\n"
+		
+      #-- calcul de l'ajustement
+      set result [ gsl_mfitmultilin $yy $B $poids ]
+      #-- extrait le resultat
+      set coeffs [ lindex $result 0 ]
+      set chi2 [ lindex $result 1 ]
+      set covar [ lindex $result 2 ]
+      set riliss [ gsl_mmult $B $coeffs ]
+      #set riliss0 [ gsl_mmult $B $coeffs ]
+      set riliss1 [ list ]
+      for {set i 0} {$i<$len} {incr i} {
+	 lappend riliss1 [ lindex $riliss $i ]
+	 #lappend riliss1 [ lindex $riliss0 $i ]
+      }
+	
+      #-- mise a zero d'eventuels echantillons tres petits
+      set zero 0.
+      set seuil_min [ expr $intens_moy*$nul_pcent_intens/100. ]
+      for { set i 0 } {$i<$nmilieu0} {incr i} {
+	 if { [ lindex $riliss $i ] < $seuil_min } { set riliss [ lreplace $riliss $i $i $zero ] }
+      }
+
+      #--- Rajout des valeurs nulles en début et en fin pour retrouver la dimension initiale du fichier de départ :
+      set len_ini $lenorig
+      set len_cut $nmilieu0
+      set nb_insert_sup [ expr $lenorig-$i_inf-$nmilieu0 ]
+      for { set i 1 } { $i<=$nb_insert_sup } { incr i } {
+	 set riliss [ linsert $riliss [ expr $len_cut+$i ] 0.0 ]
+	 #set riliss1 [ linsert $riliss1 [ expr $len_cut+$i ] 0.0 ]
+	 #set poids2 [ linsert $poids2 [ expr $len_cut+$i ] 0.0 ]
+	 set poids [ linsert $poids [ expr $len_cut+$i ] 0.0 ]    
+      }
+      for { set i 0 } { $i<$i_inf } { incr i } {
+	 set riliss [ linsert $riliss 0 0.0 ]
+	 #set riliss1 [ linsert $riliss1 0 0.0 ]
+	 set poids [ linsert $poids 0 0.0 ]
+	 #set poids2 [ linsert $poids2 0 0.0 ]
+      }
+      set intmoy [ expr $intens_moy *.1 ]
+      for { set i 0 } { $i< [ llength $riliss ] } { incr i } {
+	 set poidsi [ expr [ lindex $poids $i ] * $intmoy ] 
+	 set poids [ lreplace $poids $i $i $poidsi ]
+      }
+#set lriliss_1 [ expr [ llength $riliss ] -1 ]
+#set poids [ lreplace $poids $lriliss_1 $lriliss_1 0 ]
+      ::console::affiche_resultat "Nombre d'éléments traités : [ llength $riliss ]\n"
+      #--- Affichage du resultat :
+      set testvisu 'n'
+      if { $visu != $testvisu } {       
+	 ::plotxy::clf
+	 ::plotxy::figure 1
+	 ::plotxy::plot $abscissesorig $riliss r 1
+         ::plotxy::hold on
+	 #::plotxy::plot $abscissesorig $riliss1 g 1
+	 ::plotxy::hold on
+         ::plotxy::plot $abscissesorig $ordonneesorig b 0
+	 ::plotxy::hold on
+	 ::plotxy::plot $abscissesorig $poids g 0
+         ::plotxy::plotbackground #FFFFFF
+         ##::plotxy::xlabel "x"
+	 ##::plotxy::ylabel "y"
+         ::plotxy::title "bleu : original; rouge : lissage; vert : poids"
+      }
+	#--- Crée le fichier fits de sortie
+      set abscisses $abscissesorig 
+      set filename [ file rootname $filenamespc ]
         
-	#-- elimination des termes nuls au bord
-	set limits [ spc_findnnul $ordonneesorig ]
-	set i_inf [ lindex $limits 0 ]
-	set i_sup [ lindex $limits 1 ]
-	set nmilieu0 [ expr $i_sup -$i_inf +1 ]
-	#-- nmilieu0 est le nb d'echantillons non nuls dans la partie effective du profil
-	set abscisses [ list ]
-	set ordonnees [ list ]
-	set intens_moy 0.
-	for { set i $i_inf } { $i<=$i_sup } { incr i } {
-  		set xi [ lindex $abscissesorig $i ]
-  		set yi [ lindex $ordonneesorig $i ]
-  		lappend abscisses $xi
-  		lappend ordonnees $yi
-  		set intens_moy [ expr $intens_moy +$yi ]
-	}
-	set intens_moy [ expr $intens_moy/($nmilieu0*1.) ]
-	# intens_moy est la valeur moyenne de l'intensite
-	::console::affiche_resultat "intensite moyenne : $intens_moy \n"
-
-
-	#-- ajustement de nechant pour minimiser les effets de bord et prolongement "accordingly" du profil 
-	set nechant [ ajust_interv [ expr $nmilieu0-1 ] $nechant ]
-	set deltax [ expr [ lindex $abscisses 1 ] -[ lindex $abscisses 0 ] ]
-	# set ordmoyen [ lindex $ordonnees [ expr $nmilieu0 -1 ] ] 
-	set ordmoyen [ expr .5*([ lindex $ordonnees [ expr $nmilieu0 -1 ] ] + [ lindex $ordonnees [ expr $nmilieu0 -2 ] ]) ]
-
-	if { [ expr ( $nmilieu0 - 1 ) % $nechant ] !=0  } {
-		set nmilieu [ expr (( $nmilieu0 -1 ) /$nechant + 1 ) * $nechant +1]
-		for { set i 1 } { $i<= [ expr $nmilieu - $nmilieu0 ] } { incr i } {
-	
-			lappend abscisses [ expr [ lindex $abscisses [ expr $lenorig - 1 ] ] + $deltax ] 
-			lappend ordonnees $ordmoyen
-		}
-	} else {
-	set nmilieu $nmilieu0
-	}
-	set len [ llength $ordonnees ]
-	
-	set list_result [ spc_ajust_piecewiselinear_alg $abscisses $ordonnees $nechant $tauxRMS1 $demilargeur1 $period_max1 $larg_cosmet ]
-
-	# set abscisses [ lindex $list_result 0 ]
-	set riliss1 [ lindex $list_result 1 ]
-	set nouvpoids1 [ lindex $list_result 2 ]
-	#- ::console::affiche_resultat "Longueur riliss : [llength $riliss1] - longueur poids=[ llength $nouvpoids1 ]\n"
-
-	set list_result [ spc_ajust_piecewiselinear_alg $abscisses $ordonnees $nechant $tauxRMS2 $demilargeur2 $period_max2 $larg_cosmet ]
-
-	#set abscisses [ lindex $list_result  0 ]
-	set riliss2 [ lindex $list_result  1 ]
-	set nouvpoids2 [ lindex $list_result 2 ]
-	#::console::affiche_resultat "longueur riliss : [llength $riliss2] - longueur poids=[ llength $nouvpoids2 ]\n"
+      buf$audace(bufNo) load "$audace(rep_images)/$filename"
+      set k 1
+      foreach x $abscisses {
+	 buf$audace(bufNo) setpix [list $k 1] [ lindex $riliss [ expr $k-1 ] ]
+         incr k
+      }
+      #-- Sauvegarde du résultat :
+      buf$audace(bufNo) bitpix float
+      buf$audace(bufNo) save "$audace(rep_images)/${filename}_lin$conf(extension,defaut)"
+      buf$audace(bufNo) bitpix short
+      ::console::affiche_resultat "Fichier fits sauvé sous ${filename}_lin$conf(extension,defaut)\n"
+      spc_passebas ${filename}_lin$conf(extension,defaut) 3
+      file delete -force "$audace(rep_images)/${filename}_lin$conf(extension,defaut)"
+      return ${filename}_lin_pbas$conf(extension,defaut)
 		
-
-	#-- post traitement : eliminer la prolongation effectuee pour limiter les effets de bord
-	set nordonnees1 [ lrange $riliss1 0 [ expr $nmilieu0 - 1 ] ]
-	set nouvpoids1 [ lrange $nouvpoids1 0 [ expr $nmilieu0 - 1 ] ]
-	#- ::console::affiche_resultat "Longueur nordonnees : [llength $nordonnees1]\n"
-	set nordonnees2 [ lrange $riliss2 0 [ expr $nmilieu0 - 1 ] ]
-	set nouvpoids2 [ lrange $nouvpoids2 0 [ expr $nmilieu0 - 1 ] ]
-	
-	set nordonnees3 [ list ]
-	for {set i 0} {$i<$nmilieu0} {incr i} {
-            set riliss1i [ lindex $nordonnees1 $i ]
-	    set riliss2i [ lindex $nordonnees2 $i ]
-	    set theta [ expr $i*1./$nmilieu0 ]
-	    set riliss3i [ expr $riliss1i*(1.-$theta) + $riliss2i*$theta ]
-            lappend nordonnees3 $riliss3i
-        }
-        #::console::affiche_resultat "longueur result 3 : [llength $nordonnees3]\n"
-	
-	#-- mise a zero d'eventuels echantillons tres petits
-	set zero 0.
-	set seuil_min [ expr $intens_moy*$spcaudace(nulpcent)/100. ]
-	for { set i 0 } {$i<$nmilieu0} {incr i} {
-		if { [ lindex $nordonnees3 $i ] < $seuil_min } { set nordonnees3 [ lreplace $nordonnees3 $i $i $zero ] }
-	}
-		
-	#--- Rajout des valeurs nulles en dŽébut et en fin pour retrouver la dimension initiale du fichier de dŽépart :
-	set len_ini $lenorig
-	set len_cut $nmilieu0
-	set nb_insert_sup [ expr $lenorig-$i_inf-$nmilieu0 ]
-	for { set i 1 } { $i<=$nb_insert_sup } { incr i } {
-	    	set nordonnees3 [ linsert $nordonnees3 [ expr $len_cut+$i ] 0.0 ]
-	    	#set nouvpoids1 [ linsert $nouvpoids1 [ expr $len_cut+$i ] 0.0 ]    
-	}
-	for { set i 0 } { $i<$i_inf } { incr i } {
-	    	set nordonnees3 [ linsert $nordonnees3 0 0.0 ]
-	    	#set nouvpoids1 [ linsert $nouvpoids1 0 0.0 ]
-	}
-
-	::console::affiche_resultat "Nombre d'ŽélŽéments traitŽés : [llength $nordonnees1]\n"
-	
-        #--- CrŽÃŽ©e le fichier fits de sortie
-	set abscisses $abscissesorig 
-        set filename [ file rootname $filenamespc ]
-        
-        buf$audace(bufNo) load "$audace(rep_images)/$filename"
-	set k 1
-        foreach x $abscisses {
-		buf$audace(bufNo) setpix [list $k 1] [ lindex $nordonnees3 [ expr $k-1 ] ]
-            	incr k
-        }
-        #-- Sauvegarde du rŽÃŽ©sultat :
-        buf$audace(bufNo) bitpix float
-        buf$audace(bufNo) save "$audace(rep_images)/${filename}_conti$conf(extension,defaut)"
-        buf$audace(bufNo) bitpix short
-        ::console::affiche_resultat "Fichier fits sauvŽé sous ${filename}_conti$conf(extension,defaut)\n"
-
-
-	
-	#--- Affichage du resultat :
-	set testvisu 'n'
-	if { $visu != $testvisu } {       
-	::plotxy::clf
-        ::plotxy::figure 1
-        ::plotxy::plot $abscissesorig $nordonnees3 r 1
-        ::plotxy::hold on
-        ::plotxy::plot $abscissesorig $ordonneesorig ob 0
-	#::plotxy::hold on
-	#::plotxy::plot $abscissesorig $nouvpoids1 g 0
-        ::plotxy::plotbackground #FFFFFF
-        ##::plotxy::xlabel "x"
-       	##::plotxy::ylabel "y"
-        ::plotxy::title "bleu : orginal ; rouge : interpolation lineaire par morceaux de largeur $nechant echantillons"
-        }
-	return ${filename}_conti
-
-    } else {
-        ::console::affiche_erreur "Usage: spc_pwlfilter fichier_profil.fit nombre_Žéchantillons ?visualisation (o/n)? pŽériode_coupure1? pŽériode_coupure2? tauxRMS1? tauxRMS2? pourcent_largeur_cosmŽétique?\n\n"
-    }
+   } else {
+      ::console::affiche_erreur "Usage: spc_piecewiselinearfilter fichier_profil.fit ? coef_extension ? poids regularisation ? forgetlambda.dat ? nechant ? liste_regul ? visualisation (o/n)? \n\n"
+   }
 }
-#****************************************************************#
 
 
 
