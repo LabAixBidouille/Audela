@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.8 2009-04-28 20:14:23 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.9 2009-07-01 16:17:28 bmauclaire Exp $
 
 
 
@@ -3742,8 +3742,9 @@ proc spc_rinstrum { args } {
                set rinstrum [ spc_pwlfilter $result_division 280 o 51 201 10 2 50 ]
            } else {
            #-- Lhires3+résos 300 et 150 t/mm :
-               # set rinstrum [ spc_pwlfilter $result_division 50 o 11 51 70 50 100 ]
-               set rinstrum [ spc_pwlfilter $result_division 24 o 3 3 50 50 50 ]
+               ## set rinstrum [ spc_pwlfilter $result_division 50 o 11 51 70 50 100 ]
+               # set rinstrum [ spc_pwlfilter $result_division 24 o 3 3 50 50 50 ]
+              set rinstrum [ spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.1 10 { 1.0 2.0 } "o" 18 ]
            }
            file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-br$conf(extension,defaut)"
        }
@@ -3766,7 +3767,8 @@ proc spc_rinstrum { args } {
        } else {
           if { $flag_br == 1 } {
              ::console::affiche_erreur "Réponse instrumentale sauvée sous reponse_instrumentale-br$conf(extension,defaut)\n"
-             return reponse_instrumentale-br
+             #return reponse_instrumentale-br
+             return reponse_instrumentale-
           } else {
              #-- Résultat de la division :
              ##file delete -force "$audace(rep_images)/$rinstrum0$conf(extension,defaut)"

@@ -2,7 +2,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_metaf.tcl ]
 
-# Mise a jour $Id: spc_metaf.tcl,v 1.7 2009-01-02 21:37:59 bmauclaire Exp $
+# Mise a jour $Id: spc_metaf.tcl,v 1.8 2009-07-01 16:17:28 bmauclaire Exp $
 
 
 
@@ -1138,25 +1138,27 @@ proc spc_traite2rinstrum { args } {
 	   if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
 	       set dispersion [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
 	       if { $dispersion <= $spcaudace(dmax) } {
-		   ::console::affiche_resultat "\n\n**** Calibration avec les raies telluriques ****\n\n"
+		   ::console::affiche_resultat "\n\n**** Calibration préparatoire avec les raies telluriques ****\n\n"
 		   set fcalo [ spc_calibretelluric "$fcal" ]
 	       } else {
-		   ::console::affiche_erreur "\n\n**** Calibration avec les raies telluriques non réalisée car dispersion insuffisante ****\n\n"
+		   ::console::affiche_erreur "\n\n**** Calibration  préparatoire avec les raies telluriques non réalisée car dispersion insuffisante ****\n\n"
 		   set fcalo "$fcal"
 	       }
 	   } elseif { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
 	       set dispersion [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
 	       if { $dispersion <= $spcaudace(dmax) } {
-		   ::console::affiche_resultat "\n\n**** Calibration avec les raies telluriques ****\n\n"
+		   ::console::affiche_resultat "\n\n**** Calibration préparatoire avec les raies telluriques ****\n\n"
 		   set fcalo [ spc_calibretelluric "$fcal" ]
 	       } else {
-		   ::console::affiche_erreur "\n\n**** Calibration avec les raies telluriques non réalisée car dispersion insuffisante ****\n\n"
+		   ::console::affiche_erreur "\n\n**** Calibration préparatoire avec les raies telluriques non réalisée car dispersion lineaire insuffisante ****\n\n"
 		   set fcalo "$fcal"
 	       }
 	   }
        } else {
 	   set fcalo "$fcal"
        }
+       file copy -force "$audace(rep_images)/$fcalo$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1b$conf(extension,defaut)"
+
 
 
        #--- Normalisation du profil de raies :
@@ -1187,13 +1189,18 @@ proc spc_traite2rinstrum { args } {
        ::console::affiche_resultat "\nRéponse instrumentale sauvée sous $rep_instrum\n"
 
        #--- Correction de l'étoile de référence par la réponse instrumentale :
+       ::console::affiche_resultat "\n\n**** Division par la réponse intrumentale ****\n\n"
        if { [ file exists "$audace(rep_images)/${rep_instrum}3$conf(extension,defaut)" ] } {
 	   set fricorr [ spc_divri "$fcalo" ${rep_instrum}3 ]
+           file copy -force "$audace(rep_images)/$fricorr$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1c$conf(extension,defaut)"
        } elseif { [ file exists "$audace(rep_images)/${rep_instrum}br$conf(extension,defaut)" ] } {
 	   set fricorr [ spc_divri "$fcalo" ${rep_instrum}br ]
+           file copy -force "$audace(rep_images)/$fricorr$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1c$conf(extension,defaut)"
        } else {
 	   set fricorr "$fcalo"
        }
+
+
 
        #--- Calibration finale avec les raies telluriques :
        if { $methcalo == "o" } {
@@ -1202,19 +1209,19 @@ proc spc_traite2rinstrum { args } {
 	   if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
 	       set dispersion [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
 	       if { $dispersion <= $spcaudace(dmax) } {
-		   ::console::affiche_resultat "\n\n**** Calibration avec les raies telluriques ****\n\n"
+		   ::console::affiche_resultat "\n\n**** Calibration finale avec les raies telluriques ****\n\n"
 		   set ffinal [ spc_calibretelluric "$fricorr" ]
 	       } else {
-		   ::console::affiche_erreur "\n\n**** Calibration avec les raies telluriques non réalisée car dispersion insuffisante ****\n\n"
+		   ::console::affiche_erreur "\n\n**** Calibration finale avec les raies telluriques non réalisée car dispersion insuffisante ****\n\n"
 		   set ffinal "$fricorr"
 	       }
 	   } elseif { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
 	       set dispersion [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
 	       if { $dispersion <= $spcaudace(dmax) } {
-		   ::console::affiche_resultat "\n\n**** Calibration avec les raies telluriques ****\n\n"
+		   ::console::affiche_resultat "\n\n**** Calibration finale avec les raies telluriques ****\n\n"
 		   set ffinal [ spc_calibretelluric "$fricorr" ]
 	       } else {
-		   ::console::affiche_erreur "\n\n**** Calibration avec les raies telluriques non réalisée car dispersion insuffisante ****\n\n"
+		   ::console::affiche_erreur "\n\n**** Calibration finale avec les raies telluriques non réalisée car dispersion linéaire insuffisante ****\n\n"
 		   set ffinal "$fricorr"
 	       }
 	   }
@@ -1224,14 +1231,14 @@ proc spc_traite2rinstrum { args } {
 
 
        #--- Nettoyage des fichiers :
-       file copy -force "$audace(rep_images)/$fcalo$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1b$conf(extension,defaut)"
+       #file copy -force "$audace(rep_images)/$fcalo$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1b$conf(extension,defaut)"
        file delete -force "$audace(rep_images)/$fcalo$conf(extension,defaut)"
        file delete -force "$audace(rep_images)/$fcal$conf(extension,defaut)"
        if { $methcalo == "o" } {
-          file copy -force "$audace(rep_images)/$fricorr$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1c$conf(extension,defaut)"
-          file copy -force "$audace(rep_images)/$ffinal$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1c-ocal$conf(extension,defaut)"
+          #file copy -force "$audace(rep_images)/$fricorr$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1c$conf(extension,defaut)"
+          #file copy -force "$audace(rep_images)/$ffinal$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1c-ocal$conf(extension,defaut)"
        } else {
-          file copy -force "$audace(rep_images)/$fricorr$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1c$conf(extension,defaut)"
+          #file copy -force "$audace(rep_images)/$fricorr$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1c$conf(extension,defaut)"
        }
        file delete -force "$audace(rep_images)/$fricorr$conf(extension,defaut)"
        file delete -force "$audace(rep_images)/$ffinal$conf(extension,defaut)"
