@@ -3,7 +3,7 @@
 # Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# Mise a jour $Id: mauclaire.tcl,v 1.26 2008-12-10 10:40:17 bmauclaire Exp $
+# Mise a jour $Id: mauclaire.tcl,v 1.27 2009-07-01 16:01:19 bmauclaire Exp $
 #
 
 #
@@ -1450,7 +1450,7 @@ proc bm_pretraittot { args } {
    global audace
    global conf
 
-      if { [llength $args] <= 6 } {
+   if { [llength $args] <= 6 } {
       if { [llength $args] == 4 } {
         set nom_stellaire [ lindex $args 0 ]
         set nom_dark [ lindex $args 1 ]
@@ -1474,6 +1474,7 @@ proc bm_pretraittot { args } {
         set rmmasters [ lindex $args 5 ]
       } else {
         ::console::affiche_erreur "Usage: bm_pretraittot nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu ?offset (none)? ?effacement des masters (o/n)?\n\n"
+        return ""
       }
 
       #--- Pretraite les images brutes
@@ -1493,6 +1494,7 @@ proc bm_pretraittot { args } {
 
    } else {
       ::console::affiche_erreur "Usage: bm_pretraittot nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu ?offset (none)? ?effacement des masters (o/n)?\n\n"
+      return ""
    }
 }
 #-----------------------------------------------------------------------------#
@@ -1595,9 +1597,9 @@ proc bm_pretrait { args } {
       if { [ file exists "$audace(rep_images)/$nom_stellaire$conf(extension,defaut)" ] } {
          set stellaire_liste [ list $nom_stellaire ]
          set nb_stellaire 1
-      } elseif { [ catch { glob -dir $audace(rep_images) ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
+      } elseif { [ catch { glob -dir $audace(rep_images) ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) } ] ==0 } {
          renumerote $nom_stellaire
-         set stellaire_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+         set stellaire_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut)  ] ]
          set nb_stellaire [ llength $stellaire_liste ]
       } else {
          ::console::affiche_resultat "Le(s) fichier(s) $nom_stellaire n'existe(nt) pas.\n"
@@ -1606,9 +1608,9 @@ proc bm_pretrait { args } {
       if { [ file exists "$audace(rep_images)/$nom_dark$conf(extension,defaut)" ] } {
          set dark_liste [ list $nom_dark ]
          set nb_dark 1
-      } elseif { [ catch { glob -dir $audace(rep_images) ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
+      } elseif { [ catch { glob -dir $audace(rep_images) ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) } ] ==0 } {
          renumerote $nom_dark
-         set dark_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+         set dark_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
          set nb_dark [ llength $dark_liste ]
       } else {
          ::console::affiche_resultat "Le(s) fichier(s) $nom_dark n'existe(nt) pas.\n"
@@ -1617,9 +1619,9 @@ proc bm_pretrait { args } {
       if { [ file exists "$audace(rep_images)/$nom_flat$conf(extension,defaut)" ] } {
          set flat_list [ list $nom_flat ]
          set nb_flat 1
-      } elseif { [ catch { glob -dir $audace(rep_images) ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
+      } elseif { [ catch { glob -dir $audace(rep_images) ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) } ] ==0 } {
          renumerote $nom_flat
-         set flat_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+         set flat_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
          set nb_flat [ llength $flat_list ]
       } else {
          ::console::affiche_resultat "Le(s) fichier(s) $nom_flat n'existe(nt) pas.\n"
@@ -1628,9 +1630,9 @@ proc bm_pretrait { args } {
       if { [ file exists "$audace(rep_images)/$nom_darkflat$conf(extension,defaut)" ] } {
          set darkflat_list [ list $nom_darkflat ]
          set nb_darkflat 1
-      } elseif { [ catch { glob -dir $audace(rep_images) ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
+      } elseif { [ catch { glob -dir $audace(rep_images) ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) } ] ==0 } {
          renumerote $nom_darkflat
-         set darkflat_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+         set darkflat_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
          set nb_darkflat [ llength $darkflat_list ]
       } else {
          ::console::affiche_resultat "Le(s) fichier(s) $nom_darkflat n'existe(nt) pas.\n"
@@ -1640,9 +1642,9 @@ proc bm_pretrait { args } {
          if { [ file exists "$audace(rep_images)/$nom_offset$conf(extension,defaut)" ] } {
             set offset_list [ list $nom_offset ]
             set nb_offset 1
-         } elseif { [ catch { glob -dir $audace(rep_images) ${nom_offset}\[0-9\]$conf(extension,defaut) ${nom_offset}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
+         } elseif { [ catch { glob -dir $audace(rep_images) ${nom_offset}\[0-9\]$conf(extension,defaut) ${nom_offset}\[0-9\]\[0-9\]$conf(extension,defaut) } ] ==0 } {
             renumerote $nom_offset
-            set offset_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_offset}\[0-9\]$conf(extension,defaut) ${nom_offset}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+            set offset_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_offset}\[0-9\]$conf(extension,defaut) ${nom_offset}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_offset}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_offset}\[0-9\]\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
             set nb_offset [ llength $offset_list ]
          } else {
             ::console::affiche_resultat "Le(s) fichier(s) $nom_offset n'existe(nt) pas.\n"
@@ -1853,7 +1855,7 @@ proc bm_register { args } {
 
    if {[llength $args] == 1} {
        set nom_generique [ file tail [ file rootname [ lindex $args 0 ] ] ]
-       set liste_fichiers [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+       set liste_fichiers [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
        set nbimg [ llength $liste_fichiers ]
 
        ::console::affiche_resultat "$nbimg fichiers à apparier...\n"
@@ -1881,7 +1883,7 @@ proc bm_sadd { args } {
 
    if {[llength $args] == 1} {
        set nom_generique [ file tail [ file rootname [ lindex $args 0 ] ] ]
-      set liste_fichiers [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ]
+      set liste_fichiers [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ]
       set nb_file [ llength $liste_fichiers ]
 
       #--- Gestion de la durée totale d'exposition :
@@ -1932,7 +1934,7 @@ proc bm_smean { args } {
 
    if {[llength $args] == 1} {
        set nom_generique [ file tail [ file rootname [ lindex $args 0 ] ] ]
-       set liste_fichiers [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ]
+       set liste_fichiers [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ]
        set nb_file [ llength $liste_fichiers ]
 
       #--- Gestion de la durée totale d'exposition :
@@ -1972,7 +1974,7 @@ proc bm_smed { args } {
    if {[llength $args] == 1} {
       #set repdflt [bm_goodrep]
       set nom_generique [ file rootname [ lindex $args 0 ] ]
-      set nb_file [ llength [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+      set nb_file [ llength [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 
       ::console::affiche_resultat "Somme médiane de $nb_file images...\n"
       renumerote "$nom_generique"
