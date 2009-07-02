@@ -2,7 +2,7 @@
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER
-# Mise a jour $Id: skybot_resolver.tcl,v 1.24 2008-12-23 16:41:52 robertdelmas Exp $
+# Mise a jour $Id: skybot_resolver.tcl,v 1.25 2009-07-02 22:01:33 jberthier Exp $
 #
 
 namespace eval skybot_Resolver {
@@ -791,24 +791,38 @@ namespace eval skybot_Resolver {
       global voconf
 
       #--- Interrogation de la base de donnees
-      set erreur [ catch { vo_skybotstatus } statut ]
+      set d [mc_date2ymdhms $date_calcul]
+      set d [format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $d 0] [lindex $d 1] [lindex $d 2] \
+       [lindex $d 3] [lindex $d 4] [lindex $d 5] ]
+      set erreur [ catch { vo_skybotstatus text "$d"} statut ]
+      unset d
 
       #---
       if { $erreur == "0" && $statut != "failed" && $statut != "error"} {
+#         set lines [split $statut ";"]
+#         set found 0
+#         set rangemin undef
+#         set rangemax undef
+#         for {set i 1} {$i < [llength $lines]} {
+#           set statut [split [lindex $lines $i] "|"]
+#           set date_debut [lindex $statut 1]
+#         }
          #--- Mise en forme du resultat
          set statut [lindex [split $statut ";"] 1]
          regsub -all "\'" $statut "" statut
          set statut [split $statut "|"]
          #--- Date du debut
-         set date_debut_jd [lindex $statut 1]
-         set date_d [ mc_date2ymdhms $date_debut_jd ]
-         set date_debut [format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $date_d 0] [lindex $date_d 1] [lindex $date_d 2] \
-                                                                 [lindex $date_d 3] [lindex $date_d 4] [lindex $date_d 5] ]
+         set date_debut [lindex $statut 1]
+         set date_debut_jd [mc_date2jd $date_debut]
+#         set date_d [ mc_date2ymdhms $date_debut_jd ]
+#         set date_debut [format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $date_d 0] [lindex $date_d 1] [lindex $date_d 2] \
+#                                                                 [lindex $date_d 3] [lindex $date_d 4] [lindex $date_d 5] ]
          #--- Date de fin
-         set date_fin_jd [lindex $statut 2]
-         set date_d [ mc_date2ymdhms $date_fin_jd ]
-         set date_fin [ format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $date_d 0] [lindex $date_d 1] [lindex $date_d 2] \
-                                                                [lindex $date_d 3] [lindex $date_d 4] [lindex $date_d 5] ]
+         set date_fin [lindex $statut 2]
+         set date_fin_jd [mc_date2jd $date_fin]
+#         set date_d [ mc_date2ymdhms $date_fin_jd ]
+#         set date_fin [ format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $date_d 0] [lindex $date_d 1] [lindex $date_d 2] \
+#                                                                [lindex $date_d 3] [lindex $date_d 4] [lindex $date_d 5] ]
          #--- Tests sur la validite de la date saisie
          if { $date_calcul < $date_debut_jd } {
             tk_messageBox -title $caption(resolver,msg_erreur) -type ok -message "$caption(resolver,msg_date_min) $date_debut"
@@ -885,7 +899,9 @@ namespace eval skybot_Resolver {
       }
 
       #--- Conversion de la date en JD
+puts "$voconf(date_ephemerides)"
       set date_calcul [ mc_date2jd $voconf(date_ephemerides) ]
+puts "$date_calcul"
 
       #--- Verifie que la date JD est couverte par le service Skybot (si demande)
       if { $voconf(but_skybot) } {
@@ -999,12 +1015,12 @@ namespace eval skybot_Resolver {
          #--- Extraction du resultat
          set vo_objet(1) [ split [ lindex $voconf(liste) 1 ] "|" ]
          #--- Initialisation de RA et DEC pour la Recherche dans le FOV
-         set voconf(ad_objet) [ expr 15.0 * [ lindex $vo_objet(1) 2 ] ]
-         set voconf(dec_objet) [ lindex $vo_objet(1) 3 ]
+         set voconf(ad_objet) [ expr 15.0 * [vo_hms_to_h [ lindex $vo_objet(1) 2 ]] ]
+         set voconf(dec_objet) [vo_hms_to_h [ lindex $vo_objet(1) 3 ]]
          #--- Mise en forme de l'ascension droite
-         set ad [ expr 15.0 * [ lindex $vo_objet(1) 2 ] ]
+         set ad [ expr 15.0 * [vo_hms_to_h [ lindex $vo_objet(1) 2 ] ]]
          #--- Mise en forme de la declinaison
-         set dec [ lindex $vo_objet(1) 3 ]
+         set dec [vo_hms_to_h [ lindex $vo_objet(1) 3 ]]
          #--- Insertion des objets dans la table
          $::skybot_Resolver::This.frame5.tbl insert end [ string trim $vo_objet(1) ]
          #---
@@ -1017,10 +1033,10 @@ namespace eval skybot_Resolver {
                $::skybot_Resolver::This.frame5.tbl cellconfigure $i,1 -fg $color(blue)
                #--- Mise en forme de l'ascension droite
                set ad [ $::skybot_Resolver::This.frame5.tbl cellcget $i,2 -text ]
-               set ad [ expr $ad * 15.0 ]
+               set ad [ expr [vo_hms_to_h $ad] * 15.0 ]
                $::skybot_Resolver::This.frame5.tbl cellconfigure $i,2 -text [ mc_angle2hms $ad 360 zero 2 auto string ]
                #--- Mise en forme de la declinaison
-               set dec [ $::skybot_Resolver::This.frame5.tbl cellcget $i,3 -text ]
+               set dec [vo_hms_to_h [ $::skybot_Resolver::This.frame5.tbl cellcget $i,3 -text ]]
                $::skybot_Resolver::This.frame5.tbl cellconfigure $i,3 -text [ mc_angle2dms $dec 90 zero 2 + string ]
             }
          }

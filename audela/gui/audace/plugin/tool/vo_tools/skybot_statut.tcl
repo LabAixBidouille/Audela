@@ -2,7 +2,7 @@
 # Fichier : skybot_statut.tcl
 # Description : Affiche le statut de la base de donnees SkyBoT
 # Auteur : Jerome BERTHIER
-# Mise a jour $Id: skybot_statut.tcl,v 1.14 2008-12-23 16:42:26 robertdelmas Exp $
+# Mise a jour $Id: skybot_statut.tcl,v 1.15 2009-07-02 22:01:34 jberthier Exp $
 #
 
 namespace eval skybot_Statut {
@@ -89,7 +89,11 @@ namespace eval skybot_Statut {
       }
 
       #--- Interrogation de la base de donnees
-      set erreur [ catch { vo_skybotstatus } statut ]
+      set erreur [ catch { vo_skybotstatus votable } statut ]
+      set flag [lindex $statut 1]
+      set ticket [lindex $statut 3]
+      set xml [lindex $statut 5]
+      set votable [::dom::parse $xml]
 
       #--- Gestion des erreurs
       if { $erreur == "0" && $statut != "failed" && $statut != "error"} {
@@ -100,6 +104,26 @@ namespace eval skybot_Statut {
          wm resizable $This 1 1
          wm title $This $caption(statut,main_title)
          wm protocol $This WM_DELETE_WINDOW { ::skybot_Statut::fermer }
+
+
+         #--- Liste des tranches : nouveau format
+         frame $This.frame0 -borderwidth 0 -cursor arrow
+         pack $This.frame0 -in $This -anchor s -side top -expand yes -fill both
+         label $This.frame0.titre -text "$caption(statut,titre)"
+         pack $This.frame0.titre -in $This.frame0 -side top -padx 3 -pady 3
+         set tbl $This.frame0.tbl
+         tablelist::tablelist $tbl -stretch all -columns [list \
+          0 $caption(statut,label_ok) \
+          0 begin 0 end \
+          0 $caption(statut,label_aster) 0 $caption(statut,label_planet) 0 $caption(statut,label_satnat) 0 $caption(statut,label_comet) 0 $caption(statut,label_maj) ] 
+         pack $tbl -in $This.frame0 -side top -padx 3 -pady 3 -fill both -expand yes
+         foreach tr [::dom::selectNode $votable "descendant::TR"] {
+          set row {}
+          foreach td [::dom::selectNode $tr "descendant::TD/text()"] {
+           lappend row [::dom::node stringValue $td]
+          }
+          $tbl insert end $row
+         }
 
          #--- Mise en forme du resultat
          set statut [lindex [split $statut ";"] 1]

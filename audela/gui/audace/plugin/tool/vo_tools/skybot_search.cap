@@ -1,6 +1,6 @@
 #
 # Fichier : skybot_search.cap
-# Mise a jour $Id: skybot_search.cap,v 1.15 2008-12-23 13:26:54 jberthier Exp $
+# Mise a jour $Id: skybot_search.cap,v 1.16 2009-07-02 22:01:33 jberthier Exp $
 #
 
 #=========================================================================
@@ -12,6 +12,7 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(search,main_title)            "SkyBoT - Seek and identify solar system objects in a field of view"
+set caption(search,image_courante)        "Use current image"
 set caption(search,parcourir)             "..."
 set caption(search,nom_image)             "Filename of the image to analyze"
 set caption(search,caract_fov)            "Information about the field of view"
@@ -144,6 +145,7 @@ set caption(search,format_spinppm)        "# Filtre sur les mouvements propres :
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(search,main_title)         "SkyBoT - Recherche et identification des corps du Système Solaire dans un champ de vue"
+   set caption(search,image_courante)     "Utiliser l'image courante"
    set caption(search,parcourir)          "..."
    set caption(search,nom_image)          "Nom de l'image à analyser"
    set caption(search,caract_fov)         "Caractéristiques du champ de vue"

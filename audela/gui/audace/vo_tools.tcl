@@ -2,7 +2,7 @@
 # Fichier : vo_tools.tcl
 # Description : Outils pour l'Observatoire Virtuel
 # Auteur : Alain KLOTZ et Jerome BERTHIER
-# Mise a jour $Id: vo_tools.tcl,v 1.21 2009-06-12 21:46:19 robertdelmas Exp $
+# Mise a jour $Id: vo_tools.tcl,v 1.22 2009-07-02 22:01:32 jberthier Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -23,6 +23,18 @@ if { $::tcl_platform(os) == "Linux" } {
    set audace(rep_aladinjar) "c:/vo/votal/"
 } else {
    set audace(aladin) "C:/Program Files/Aladin"
+}
+
+proc vo_hms_to_h { txt } {
+ set val undef
+ if {[regexp {([-+0-9]+) ([0-9]+) ([0-9]+\.[0-9]+)} $txt all h m s]} {
+  set isneg [expr $h.0 < 0]
+  set val [expr abs($h.0) + $m.0/60.0 + $s/3600.0]
+  if {$isneg} { set val [expr -1.0 * $val]  }
+ } else {
+#  gren_info "vo_hms_to_h: conversion error with $txt"
+ }
+ return $val
 }
 
 proc vo_aladin { args } {
@@ -86,7 +98,7 @@ proc vo_aladin { args } {
          }
       }
       #
-      set fnameajs [file join $audace(rep_images) ${ftail}.ajs]
+      set fnameajs [file join $audace(rep_scripts) ${ftail}.ajs]
       set f [open "$fnameajs" w]
       puts -nonewline $f $texte
       close $f
@@ -135,7 +147,7 @@ proc vo_aladin { args } {
          }
       }
       #
-      set fnameajs [file join $audace(rep_images) ${ftail}.ajs]
+      set fnameajs [file join $audace(rep_scripts) ${ftail}.ajs]
       set f [open "$fnameajs" w]
       puts -nonewline $f $texte
       close $f
@@ -261,6 +273,7 @@ proc vo_skybotXML {procVarName args} {
 #                       output   = choix des donnees en sortie ('object', 'basic','all')
 #                       observer = code UAI de l'observatoire
 #                       filter   = filtre sur l'erreur de position
+#                       objfilter= masque de filtrage des objets
 #
 # Description : Skybot webservice
 # Auteur      : Jerome BERTHIER &amp; Alain KLOTZ
@@ -303,6 +316,8 @@ proc vo_skybotconesearch { args } {
       if {$argc >= 7} { set observer [lindex $args 6] }
       set filter "0"
       if {$argc >= 8} { set filter [lindex $args 7] }
+      set objfilter "110"
+      if {$argc >= 9} { set objfilter [lindex $args 8] }
 
       # The XML below is ripped straight from the generated request
       variable skybot_xml
@@ -310,7 +325,7 @@ proc vo_skybotconesearch { args } {
         skybotconesearch {<?xml version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope
     xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
-    xmlns:ns1="http://www.imcce.fr/webservices/skybot"
+    xmlns:ns1="http://vo.imcce.fr/webservices/skybot"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
@@ -329,6 +344,7 @@ proc vo_skybotconesearch { args } {
         <output xsi:type="xsd:string">$out</output>
         <observer xsi:type="xsd:string">$observer</observer>
         <filter xsi:type="xsd:double">$filter</filter>
+        <objFilter xsi:type="xsd:string">$objfilter</objFilter>
       </inputArray>
     </ns1:skybotconesearch>
   </SOAP-ENV:Body>
@@ -337,21 +353,22 @@ proc vo_skybotconesearch { args } {
 
       # instance du client soap
       SOAP::create skybotconesearch \
-         -uri "http://www.imcce.fr/webservices/skybot" \
-         -proxy "http://www.imcce.fr/webservices/skybot/skybot.php" \
+         -uri "http://vo.imcce.fr/webservices/skybot" \
+         -proxy "http://vo.imcce.fr/webservices/skybot/skybot.php" \
          -name "skybotconesearch" \
          -wrapProc vo_skybotXML \
-         -params { epoch double alpha double delta double radius string mime string output string observer string filter string }
+         -params { epoch double alpha double delta double radius string mime string output string observer string filter string objfilter string }
 
       # invocation du web service
-      set erreur [ catch { skybotconesearch epoch $jd RA $RA DEC $DEC radius $radius mime $mime out $out observer $observer filter $filter } response ]
+      set erreur [ catch { skybotconesearch epoch $jd RA $RA DEC $DEC radius $radius mime $mime out $out observer $observer filter $filter objfilter $objfilter } response ]
 
       # recuperation des resultats
       set flag [lindex $response 1]
       set result [lindex $response 5]
-
+               
       # retour du resultat et gestion des cas d'erreur
-      if { $erreur == "0" && $flag >= 1 } {
+# dans le cas ou aucun corps n'est trouve, la votable est valide, contient WARNING et flags==0
+      if { $erreur == "0" && $flag >= 0 } {
          return $result
       } else {
          if { $erreur == "0" && $flag == 0 } {
@@ -366,7 +383,7 @@ proc vo_skybotconesearch { args } {
 
    } else {
 
-      error "Usage: vo_skybot Epoch RA_J2000 DEC_J2000 Radius(arcsec) ?text|votable|html? ?object|basic|all? Observer Filter(arcsec)"
+      error "Usage: vo_skybot Epoch RA_J2000 DEC_J2000 Radius(arcsec) ?text|votable|html? ?object|basic|all? Observer Filter(arcsec) objFilter(bitmask e.g. 110)"
 
    }
 }
@@ -422,7 +439,7 @@ proc vo_skybotresolver { args } {
         skybotresolver {<?xml version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope
     xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
-    xmlns:ns1="http://www.imcce.fr/webservices/skybot"
+    xmlns:ns1="http://vo.imcce.fr/webservices/skybot"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
@@ -446,8 +463,8 @@ proc vo_skybotresolver { args } {
 
       # instance du client soap
       SOAP::create skybotresolver \
-         -uri "http://www.imcce.fr/webservices/skybot" \
-         -proxy "http://www.imcce.fr/webservices/skybot/skybot.php" \
+         -uri "http://vo.imcce.fr/webservices/skybot" \
+         -proxy "http://vo.imcce.fr/webservices/skybot/skybot.php" \
          -name "skybotresolver" \
          -wrapProc vo_skybotXML \
          -params { epoch double name string mime string output string observer string }
@@ -455,6 +472,7 @@ proc vo_skybotresolver { args } {
       # invocation du web service
       set erreur [ catch { skybotresolver epoch $jd name $name mime $mime output $output observer $observer } response ]
 
+puts "response: $response"
       # recuperation des resultats
       set flag [lindex $response 1]
       set result [lindex $response 5]
@@ -517,6 +535,10 @@ proc vo_skybotstatus { args } {
       # reception des arguments
       set mime "text"
       if {$argc >= 1} { set mime [lindex $args 0] }
+      set epoch ""
+      if {$argc >= 2} { set epoch [lindex $args 1] }
+      set epoch [regsub {T} $epoch " "]
+      set epoch [regsub {\..*} $epoch ""]
 
       # The XML below is ripped straight from the generated request
       variable skybot_xml
@@ -524,7 +546,7 @@ proc vo_skybotstatus { args } {
         skybotstatus {<?xml version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope
    xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
-   xmlns:ns1="http://www.imcce.fr/webservices/skybot"
+   xmlns:ns1="http://vo.imcce.fr/webservices/skybot"
    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
@@ -535,6 +557,7 @@ proc vo_skybotstatus { args } {
  <SOAP-ENV:Body>
   <ns1:skybotstatus>
    <mime xsi:type="xsd:string">$mime</mime>
+   <epoch xsi:type="xsd:dateTime">$epoch</epoch>
   </ns1:skybotstatus>
  </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>}
@@ -542,16 +565,17 @@ proc vo_skybotstatus { args } {
 
       # instance du client soap
       SOAP::create skybotstatus \
-         -uri "http://www.imcce.fr/webservices/skybot" \
-         -proxy "http://www.imcce.fr/webservices/skybot/skybot.php" \
+         -uri "http://vo.imcce.fr/webservices/skybot" \
+         -proxy "http://vo.imcce.fr/webservices/skybot/skybot.php" \
          -name "skybotstatus" \
          -wrapProc vo_skybotXML \
-         -params { "mime" "string" }
+         -params { "mime" "string" "epoch" "string" }
 
       # invocation du web service
-      set erreur [ catch { skybotstatus mime $mime } response ]
+      set erreur [ catch { skybotstatus mime $mime epoch $epoch } response ]
 
       # cas ou le serveur repond avec une erreur
+#TODO
       if {[string range $response 0 11] == "SKYBOTStatus"} {
          set erreur 99
       }
@@ -572,7 +596,7 @@ proc vo_skybotstatus { args } {
 
    } else {
 
-      error "Usage: vo_skybotstatus ?text|votable|html?"
+      error "Usage: vo_skybotstatus ?text|votable|html? ?epoch?"
 
    }
 }
