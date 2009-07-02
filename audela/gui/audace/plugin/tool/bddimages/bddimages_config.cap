@@ -1,0 +1,38 @@
+#
+# Fichier : bddimages_config.cap
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption
+
+set caption(bddimages_config,main_title)     "BddImages - Configuration"
+set caption(bddimages_config,titre)	     "Statut de la base de données"
+set caption(bddimages_config,label_ok)       "Statut .........................."
+set caption(bddimages_config,label_nbimg)    "Nb d'images......................"
+set caption(bddimages_config,label_nbheader) "Nb de header....................."
+
+set caption(bddimages_config,aide)	     "Aide"
+set caption(bddimages_config,save)	     "Sauver"
+set caption(bddimages_config,fermer)	     "Fermer"
+
+set caption(bddimages_config,msg_erreur)     "Erreur"
+set caption(bddimages_config,msg_internet)   "Une connexion à Internet opérationnelle est nécessaire pour accéder à la base de données."
+
+set caption(bddimages_config,access)	     "Accés à la base de données"
+set caption(bddimages_config,login)	     "Login"
+set caption(bddimages_config,pass)	     "Mot de passe"
+set caption(bddimages_config,serv)	     "Adresse IP du serveur Mysql"
+set caption(bddimages_config,dir)	     "Repertoires de travail"
+set caption(bddimages_config,dirbase)	     "Repertoire de la base"
+set caption(bddimages_config,dirinco)	     "Repertoire incoming par defaut"
+set caption(bddimages_config,dirfits)	     "Repertoire des fichiers FITS"
+set caption(bddimages_config,dircata)	     "Repertoire des catalogues"
+set caption(bddimages_config,direrr)	     "Repertoire des fichiers en erreur"
+set caption(bddimages_config,dirlog)	     "Repertoire des logs"
+set caption(bddimages_config,variables)	     "Variables diverses"
+set caption(bddimages_config,listlimit)	     "Limite pour la liste d'insertion"
+
+set caption(bddimages_config,test)	     "Test"
