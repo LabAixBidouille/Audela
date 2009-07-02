@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER
-# Mise a jour $Id: skybot_search.tcl,v 1.23 2008-12-23 16:42:12 robertdelmas Exp $
+# Mise a jour $Id: skybot_search.tcl,v 1.24 2009-07-02 22:01:33 jberthier Exp $
 #
 
 namespace eval skybot_Search {
@@ -194,7 +194,7 @@ namespace eval skybot_Search {
    # skybot_Search::charger
    # Permet de charger l'image a analyser
    #
-   proc charger { } {
+   proc charger { {path "?"} } {
       variable This
       global audace
       global caption
@@ -212,7 +212,7 @@ namespace eval skybot_Search {
       set voconf(taille_champ_y)      ""
       set voconf(pose)                "0"
       set voconf(unite_pose)          "0"
-      set voconf(origine_pose)        "0"
+      set voconf(origine_pose)        "2"
       set voconf(date_image)          ""
       set current_object(num)         "-1"
 
@@ -225,14 +225,23 @@ namespace eval skybot_Search {
       #--- Fenetre parent
       set fenetre $This
       #--- Ouvre la fenetre de choix des images
-      if { $voconf(session_filename) == "?" } {
-         set voconf(nom_image) [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
+      if { $path eq "!" } {
+      } else {
+      if { $path eq "?" } {
+       if { $voconf(session_filename) == "?" } {
+          set voconf(nom_image) [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
+       }
+      } else {
+       set voconf(nom_image) $path
       }
+      
       #--- Extraction et chargement du fichier
       if { $voconf(nom_image) != "" } {
          loadima $voconf(nom_image)
       } else {
          return
+      }
+
       }
 
       #--- Verification de la calibration astrometrique de l'image
@@ -257,6 +266,32 @@ namespace eval skybot_Search {
          #--- Affichage des fleches de direction
          ::skybot_Search::Trace_Repere
 
+         #--- Recherche du temps de pose de l'image (si non trouve alors 1s)
+         set voconf(unite_pose) 0
+         foreach kw {EXPTIME EXPOSURE EXP_TIME} {
+          set l [ buf$audace(bufNo) getkwd $kw ]
+          set value [lindex $l 1]
+          set units [lindex $l 4]
+          if { ($units eq "m" || $units eq "s") } {
+           set voconf(pose) $value
+           if { $units eq "m" } {
+            set voconf(unite_pose) 2
+           } else {
+            set voconf(unite_pose) 1
+           }
+          }
+         }
+#         set voconf(pose) [ lindex [ buf$audace(bufNo) getkwd "EXPTIME" ] 1 ]
+#         if { [ string length $voconf(pose) ] == "0" } {
+#            set voconf(pose) [ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ]
+#         }
+#         if { [ string length $voconf(pose) ] == "0" } {
+#            set voconf(pose) [ lindex [ buf$audace(bufNo) getkwd "EXP_TIME" ] 1 ]
+#         }
+#         if { [ string length $voconf(pose) ] == "0" } {
+#            set voconf(pose) 1
+#         }
+
          #--- A-t-on choisi l'unite de la duree de pose ?
          if { $voconf(unite_pose) == "0" } {
             set choix [ tk_messageBox -title $caption(search,msg_attention) -type yesno \
@@ -277,18 +312,6 @@ namespace eval skybot_Search {
             } else {
                set voconf(origine_pose) "2"
             }
-         }
-
-         #--- Recherche du temps de pose de l'image (si non trouve alors 1s)
-         set voconf(pose) [ lindex [ buf$audace(bufNo) getkwd "EXPTIME" ] 1 ]
-         if { [ string length $voconf(pose) ] == "0" } {
-            set voconf(pose) [ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ]
-         }
-         if { [ string length $voconf(pose) ] == "0" } {
-            set voconf(pose) [ lindex [ buf$audace(bufNo) getkwd "EXP_TIME" ] 1 ]
-         }
-         if { [ string length $voconf(pose) ] == "0" } {
-            set voconf(pose) 1
          }
 
          #--- Affichage de la date de l'image
@@ -629,6 +652,7 @@ namespace eval skybot_Search {
           $This.frame0.image.menu add command -label "$caption(search,charge)" -command { ::skybot_Search::charger }
           $This.frame0.image.menu add command -label [concat "$caption(search,entete_FITS) (Ctrl+f)"] \
                                               -command { ::keyword::header $audace(visuNo) }
+          $This.frame0.image.menu add command -label "puts filename" -command { puts [::confVisu::getFileName $audace(visuNo)] }
         pack $This.frame0.image -side left
         #--- menu aide
         menubutton $This.frame0.aide -text "$caption(search,aide)" -underline 0 -menu $This.frame0.aide.menu
@@ -649,6 +673,10 @@ namespace eval skybot_Search {
          -in $This -anchor s -side top -expand 0 -fill x \
          -pady 6
 
+         #--- Cree un bouton pour utiliser l'image en cours d'utilisation
+         button $This.frame1.usecurrent -text "$caption(search,image_courante)" -command { ::skybot_Search::charger "!"}
+         pack $This.frame1.usecurrent -in $This.frame1 -side top -anchor w -fill x -padx 3 -pady 3
+
          #--- Cree un label pour le chargement d'une image
          label $This.frame1.lab \
             -text "$caption(search,nom_image)" \
@@ -662,11 +690,16 @@ namespace eval skybot_Search {
          pack $load -in $This.frame1 -anchor w -side top -expand 0 -fill x -padx 10
 
            #--- Cree une ligne d'entree
+           set voconf(nom_image) [::confVisu::getFileName $audace(visuNo)]
            set input_img [entry $load.ent -textvariable voconf(nom_image) -borderwidth 1 -relief groove]
            pack $input_img -in $load -side left -anchor w -expand 1 -fill x -padx 2
            #--- Cree le bouton parcourir
-           button $load.explore -text "$caption(search,parcourir)" -width 3 -command { ::skybot_Search::charger }
+           button $load.explore -text "$caption(search,parcourir)" -width 3 -command { ::skybot_Search::charger $voconf(nom_image)}
            pack $load.explore -in $load -side left -anchor c -fill x -padx 6
+           #--- Cree le bouton charger
+#           button $load.load -text "LOAD" -width 3 -command { ::skybot_Search::charger [::confVisu::getFileName $audace(visuNo)]}
+#           button $load.load -text "CURRENT" -width 3 -command { ::skybot_Search::charger "!"}
+#           pack $load.load -in $load -side left -anchor c -fill x -padx 6
 
       #--- Cree un frame pour les caracteristiques de l'image
       frame $This.frame2 -borderwidth 0
@@ -1653,7 +1686,7 @@ namespace eval skybot_Search {
       #--- Conversion de la date en JD
       set date [ mc_date2jd $voconf(date_image) ]
       #--- Interrogation de la base de donnees
-      set erreur [ catch { vo_skybotstatus } statut ]
+      set erreur [ catch { vo_skybotstatus text "$voconf(date_image)" } statut ]
       #---
       if { $erreur == "0" && $statut != "failed" && $statut != "error"} {
 
@@ -1662,15 +1695,17 @@ namespace eval skybot_Search {
          regsub -all "\'" $statut "" statut
          set statut [split $statut "|"]
          #--- Date du debut
-         set date_debut_jd [lindex $statut 1]
-         set date_d [ mc_date2ymdhms $date_debut_jd ]
-         set date_debut [format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $date_d 0] [lindex $date_d 1] [lindex $date_d 2] \
-                                                                 [lindex $date_d 3] [lindex $date_d 4] [lindex $date_d 5] ]
+         set date_debut [lindex $statut 1]
+#         set date_d [ mc_date2ymdhms $date_debut_jd ]
+#         set date_debut [format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $date_d 0] [lindex $date_d 1] [lindex $date_d 2] \
+#                                                                 [lindex $date_d 3] [lindex $date_d 4] [lindex $date_d 5] ]
+         set date_debut_jd [mc_date2jd $date_debut]
          #--- Date de fin
-         set date_fin_jd [lindex $statut 2]
-         set date_d [ mc_date2ymdhms $date_fin_jd ]
-         set date_fin [ format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $date_d 0] [lindex $date_d 1] [lindex $date_d 2] \
-                                                                [lindex $date_d 3] [lindex $date_d 4] [lindex $date_d 5] ]
+         set date_fin [lindex $statut 2]
+#         set date_d [ mc_date2ymdhms $date_fin_jd ]
+#         set date_fin [ format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $date_d 0] [lindex $date_d 1] [lindex $date_d 2] \
+#                                                                [lindex $date_d 3] [lindex $date_d 4] [lindex $date_d 5] ]
+         set date_fin_jd [mc_date2jd $date_fin]
          #--- Tests sur la validite de la date saisie
          #---
          if { $date <= $date_debut_jd } {
