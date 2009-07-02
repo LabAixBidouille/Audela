@@ -1388,12 +1388,13 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					somme_x=x;
 					somme_y=y;
 					dvalue=p_in->p[naxis1*(int)somme_y+(int)somme_x];
-					if (dvalue>pseries->bgmean+20*pseries->bgsigma) {
-						seuil_nbnul= 6*(4*largx);
-					} else if (dvalue>pseries->bgmean+15*pseries->bgsigma) {
+					//if (dvalue>pseries->bgmean+20*pseries->bgsigma) {
+					//	seuil_nbnul= 10*(4*largx);
+					//} else if (dvalue>pseries->bgmean+15*pseries->bgsigma) {
+					if (dvalue>pseries->bgmean+15*pseries->bgsigma) {
 						seuil_nbnul= 20*(4*largx);
 					} else {
-						seuil_nbnul= 30*(4*largx);
+						seuil_nbnul= 35*(4*largx);
 					}
 
 					nbnul=0;nb=0;
