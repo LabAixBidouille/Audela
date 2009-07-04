@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.15 2009-04-26 20:26:34 michelpujol Exp $
+# Mise a jour $Id: keyword.tcl,v 1.16 2009-07-04 22:41:49 michelpujol Exp $
 #
 
 namespace eval ::keyword {
@@ -224,7 +224,8 @@ proc ::keyword::run { visuNo } {
    package require Tablelist
 
    #--- Creation des variables de la boite de configuration de l'en-tete FITS si elles n'existent pas
-   if { ! [ info exists ::conf(keyword,visu$visuNo,check) ] } { set ::conf(keyword,visu$visuNo,check) "" }
+   if { ! [ info exists ::conf(keyword,visu$visuNo,check) ] }    { set ::conf(keyword,visu$visuNo,check) "" }
+   if { ! [ info exists ::conf(keyword,visu$visuNo,disabled) ] } { set ::conf(keyword,visu$visuNo,disabled) "" }
 
    #--- j'ajoute un listener sur la configuration de l'observatoire
    ::confPosObs::addPosObsListener [list ::keyword::onChangeConfPosObs $visuNo]
@@ -554,13 +555,19 @@ proc ::keyword::createDialog { visuNo } {
    pack $frm.fra1 -side top -fill both -expand 1
 
    #--- La fenetre est active
-  focus $frm
+   focus $frm
 
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
    bind $frm <Key-F1> { ::console::GiveFocus }
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
+
+   #--- je donne le temps au TK de creer les checkbutton dans la tablelist
+   update
+   #--- je mets a jour l'etat des checkbutton
+   ::keyword::setCheckButtonState $visuNo
+
 }
 
 #------------------------------------------------------------------------------
@@ -765,14 +772,61 @@ proc ::keyword::setKeywordValue { visuNo keywordName keywordValue} {
 proc ::keyword::selectKeywords { visuNo keywordNameList} {
    variable private
 
-   set ::conf(keyword,visu$visuNo,check) ""
-   foreach name [array names private $visuNo,check,*] {
-      set private($name) 0
+   set ::conf(keyword,visu$visuNo,disabled) ""
+   foreach keywordName $keywordNameList {
+      if { [lsearch $::conf(keyword,visu$visuNo,check)  "$visuNo,check,$keywordName" ] == -1 } {
+         lappend ::conf(keyword,visu$visuNo,check) "$visuNo,check,$keywordName"
+      }
+   }
+}
+
+#------------------------------------------------------------------------------
+# setKeywordState
+#    definit les mots cles qui ne peuvent pas etre changes par l'utilsateur
+#
+# Parametres :
+#    visuNo
+#------------------------------------------------------------------------------
+proc ::keyword::setKeywordState { visuNo keywordNameList} {
+   variable private
+
+   set ::conf(keyword,visu$visuNo,disabled) ""
+   foreach keywordName $keywordNameList {
+      lappend ::conf(keyword,visu$visuNo,disabled) "$keywordName"
    }
 
-   foreach keywordName $keywordNameList {
-      set private($visuNo,check,$keywordName) 1
-      lappend ::conf(keyword,visu$visuNo,check) "$visuNo,check,$keywordName"
+
+   if { [info exists private($visuNo,frm)] == 1 } {
+      if { [winfo exists $private($visuNo,frm)] == 1 } {
+         ::keyword::setCheckButtonState $visuNo
+      }
+   }
+
+}
+
+
+
+#------------------------------------------------------------------------------
+# setCheckButtonState
+#    mets les checkbutton a l'etat disabled si leur nom est dans la variable ::conf(keyword,visu$visuNo,disabled)
+#    sinon mets a l'etat normal
+#
+# Parametres :
+#    visuNo
+#------------------------------------------------------------------------------
+proc ::keyword::setCheckButtonState { visuNo } {
+   variable private
+
+   for {set i 0 } { $i <  [$private($visuNo,table) size] } { incr i } {
+      set keywordName [$private($visuNo,table) rowcget $i -name ]
+      #--- je recupere le nomTK du checkbutton
+      set w [$::keyword::private($visuNo,table)  windowpath  $i,available ]
+      #--- je recupere la valeur
+      if { [lsearch $::conf(keyword,visu$visuNo,disabled) $keywordName ] == -1 } {
+         $w configure -state normal
+      } else {
+         $w configure -state disabled
+      }
    }
 }
 
