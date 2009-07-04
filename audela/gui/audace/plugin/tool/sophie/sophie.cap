@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.20 2009-06-21 21:39:55 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.21 2009-07-04 22:39:45 michelpujol Exp $
 #
 
 #=========================================================================
@@ -114,8 +114,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,sophieEncours)         "Pose Sophie en cours"
    set caption(sophie,sophieArretee)         "Pose Sophie arrêtée"
    set caption(sophie,positionSeeing)        "Position et seeing"
-   set caption(sophie,FWHMX)                 "FWHM X (pixel)"
-   set caption(sophie,FWHMY)                 "FWHM Y (pixel)"
+   set caption(sophie,FWHMX)                 "FWHM X (arcsec)"
+   set caption(sophie,FWHMY)                 "FWHM Y (arcsec)"
    set caption(sophie,fondDeCiel)            "Fond de ciel (ADU)"
    set caption(sophie,fluxMax)               "Flux maxi (ADU)"
    set caption(sophie,indicateurCentrage)    "Indicateurs de centrage"
@@ -131,7 +131,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,pointageEntreeFibreA)  "Pointage de l'entrée de la fibre A"
    set caption(sophie,activationGuidage)     "Activer le guidage"
    set caption(sophie,correction)            "Corrections du télescope en alpha et delta (arcsec)"
-   set caption(sophie,correction1)           "Corrections du télescope (arcsec)"
+   set caption(sophie,correction1)           "Corrections (arcsec)"
    set caption(sophie,correctionX)           "Correction en X"
    set caption(sophie,correctionY)           "Correction en Y"
    set caption(sophie,positionGuidage)       "Position guidage"

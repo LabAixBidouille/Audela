@@ -2,7 +2,7 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.21 2009-06-21 21:41:07 robertdelmas Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.22 2009-07-04 22:39:45 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -39,7 +39,8 @@ proc ::sophie::control::run { visuNo tkbase } {
    set private(positionObjetX)                  [lindex $::conf(sophie,originCoord) 0]
    set private(positionObjetY)                  [lindex $::conf(sophie,originCoord) 1]
    set private(focalisationCourbesIntensiteMax) ""
-   set private(guidageIncrement)                "0.1"
+   set private(centrageIncrement)               1
+   set private(guidageIncrement)                "1"
    set private(guidagePhotocentrePositionX)     ""
    set private(guidagePhotocentrePositionY)     ""
    set private(ecartEtoileX)                    ""
@@ -125,14 +126,16 @@ proc ::sophie::control::run { visuNo tkbase } {
    #--- je supprime le bouton fermer
    pack forget $this.but_fermer
 
-   #--- je masque les graduations des abcisses (un bug de BLT empeche de le faire avant)
-   $private(frm).focalisation.courbes.graphFwhmX_simple axis configure x -hide true
-   $private(frm).focalisation.courbes.graphFwhmY_simple axis configure x -hide true
-   $private(frm).focalisation.courbes.graphintensiteMax_simple axis configure x -hide true
 
-   $private(frm).guidage.positionconsigne.correction.ecartConsigne_simple axis configure x -hide true
-   $private(frm).guidage.erreurs.alpha_simple axis configure x -hide true
-   $private(frm).guidage.corrections.delta_simple axis configure x -hide true
+   #--- je masque les graduations des abcisses (un bug de BLT empeche de le faire avant)
+   set frm $private(frm)
+   $frm.focalisation.courbes.graphFwhmX_simple axis configure x -hide true
+   $frm.focalisation.courbes.graphFwhmY_simple axis configure x -hide true
+   $frm.focalisation.courbes.graphintensiteMax_simple axis configure x -hide true
+
+   $frm.guidage.positionconsigne.correction.ecartConsigne_simple axis configure x -hide true
+   $frm.guidage.erreurs.alpha_simple axis configure x -hide true
+   $frm.guidage.corrections.delta_simple axis configure x -hide true
 
 }
 
@@ -473,102 +476,119 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
       TitleFrame $frm.centrage.centrageConsigne -borderwidth 2 -relief ridge \
          -text $::caption(sophie,indicateurCentrage)
 
+         #--- Indicateur Centrage en cours ou non
+         label $frm.centrage.centrageConsigne.indicateur -text $::caption(sophie,centrageArrete) \
+            -borderwidth 1 -relief groove -bg $private(inactiveColor)
+         grid $frm.centrage.centrageConsigne.indicateur \
+            -in [ $frm.centrage.centrageConsigne getframe ] \
+            -row 0 -column 2 -columnspan 2 -sticky ew -pady 4 -ipadx 10 -ipady 4
+
+        #--- Commande de centrage (doublon avec la commande de la fenetre principale)
+         checkbutton $frm.centrage.centrageConsigne.start \
+            -indicatoron 0 -state disabled \
+            -text $::caption(sophie,lancerCentrage) \
+            -variable ::sophie::private(centerEnabled) \
+            -command "::sophie::onCenter"
+         grid $frm.centrage.centrageConsigne.start \
+            -in [ $frm.centrage.centrageConsigne getframe ] \
+            -row 1 -column 2 -columnspan 2 -sticky ew -pady 4 -ipadx 10 -ipady 4
+
          #--- Ecarts etoile en pixel
          label $frm.centrage.centrageConsigne.labelEcartEtoile \
             -text $::caption(sophie,ecartEtoile)
          grid $frm.centrage.centrageConsigne.labelEcartEtoile \
             -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 0 -column 0 -columnspan 2 -sticky ew
+            -row 2 -column 0 -columnspan 2 -sticky ew
 
          #--- Ecart etoile X
          label $frm.centrage.centrageConsigne.labelEcartEtoileX -text $::caption(sophie,dx)
          grid $frm.centrage.centrageConsigne.labelEcartEtoileX \
             -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 1 -column 0 -sticky ew
+            -row 3 -column 0 -sticky ew
 
          Entry $frm.centrage.centrageConsigne.entryEcartEtoileX \
             -width 8 -justify center -editable 0 \
             -textvariable ::sophie::control::private(starDx)
          grid $frm.centrage.centrageConsigne.entryEcartEtoileX \
             -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 1 -column 1 -sticky ew
+            -row 3 -column 1 -sticky ew
 
          #--- Ecart etoile Y
          label $frm.centrage.centrageConsigne.labelEcartEtoileY -text $::caption(sophie,dy)
          grid $frm.centrage.centrageConsigne.labelEcartEtoileY \
             -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 2 -column 0 -sticky ew
+            -row 4 -column 0 -sticky ew
 
          Entry $frm.centrage.centrageConsigne.entryEcartEtoileY \
             -width 8 -justify center -editable 0 \
             -textvariable ::sophie::control::private(starDy)
          grid $frm.centrage.centrageConsigne.entryEcartEtoileY \
             -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 2 -column 1 -sticky ew
+            -row 4 -column 1 -sticky ew
 
          #--- Ecarts etoile en arcsec
          label $frm.centrage.centrageConsigne.labelEcartEtoile1 -text $::caption(sophie,ecartEtoile1)
          grid $frm.centrage.centrageConsigne.labelEcartEtoile1 \
             -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 0 -column 2 -columnspan 2 -sticky ew
+            -row 2 -column 2 -columnspan 2 -sticky ew
 
          #--- Ecart etoile X
          label $frm.centrage.centrageConsigne.labelEcartEtoile1X -text $::caption(sophie,alpha)
          grid $frm.centrage.centrageConsigne.labelEcartEtoile1X \
             -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 1 -column 2 -sticky ew
+            -row 3 -column 2 -sticky ew
 
          Entry $frm.centrage.centrageConsigne.entryEcartEtoile1X \
             -width 8 -justify center -editable 0 \
             -textvariable ::sophie::control::private(alphaDiff)
          grid $frm.centrage.centrageConsigne.entryEcartEtoile1X \
             -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 1 -column 3 -sticky ew
+            -row 3 -column 3 -sticky ew
 
          #--- Ecart etoile Y
          label $frm.centrage.centrageConsigne.labelEcartEtoile1Y -text $::caption(sophie,delta)
          grid $frm.centrage.centrageConsigne.labelEcartEtoile1Y \
             -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 2 -column 2 -sticky ew
+            -row 4 -column 2 -sticky ew
 
          Entry $frm.centrage.centrageConsigne.entryEcartEtoile1Y \
             -width 8 -justify center -editable 0 \
             -textvariable ::sophie::control::private(deltaDiff)
          grid $frm.centrage.centrageConsigne.entryEcartEtoile1Y \
             -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 2 -column 3 -sticky ew
+            -row 4 -column 3 -sticky ew
 
          #--- Corrections telescope
          label $frm.centrage.centrageConsigne.labelCorrection -text $::caption(sophie,correction1)
          grid $frm.centrage.centrageConsigne.labelCorrection \
             -in [ $frm.centrage.centrageConsigne getframe ] \
-           -row 0 -column 4 -columnspan 2 -sticky ew
+            -row 2 -column 4 -columnspan 2 -sticky ew
 
          #--- Correction alpha
          label $frm.centrage.centrageConsigne.labelCorrectionAlpha -text $::caption(sophie,correctAlpha)
          grid $frm.centrage.centrageConsigne.labelCorrectionAlpha \
             -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 1 -column 4 -sticky ew
+            -row 3 -column 4 -sticky ew
 
          Entry $frm.centrage.centrageConsigne.entryCorrectionAlpha \
             -width 8 -justify center -editable 0 \
             -textvariable ::sophie::control::private(alphaCorrection)
          grid $frm.centrage.centrageConsigne.entryCorrectionAlpha \
             -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 1 -column 5 -sticky ew
+            -row 3 -column 5 -sticky ew
 
          #--- Correction delta
          label $frm.centrage.centrageConsigne.labelCorrectionDelta -text $::caption(sophie,correctDelta)
          grid $frm.centrage.centrageConsigne.labelCorrectionDelta \
             -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 2 -column 4 -sticky ew
+            -row 4 -column 4 -sticky ew
 
          Entry $frm.centrage.centrageConsigne.entryCorrectionDelta \
             -width 8 -justify center -editable 0 \
             -textvariable ::sophie::control::private(deltaCorrection)
          grid $frm.centrage.centrageConsigne.entryCorrectionDelta \
             -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 2 -column 5 -sticky ew
+            -row 4 -column 5 -sticky ew
 
          grid columnconfigure [ $frm.centrage.centrageConsigne getframe ] 0 -weight 1
          grid columnconfigure [ $frm.centrage.centrageConsigne getframe ] 1 -weight 1
@@ -577,30 +597,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          grid columnconfigure [ $frm.centrage.centrageConsigne getframe ] 4 -weight 1
          grid columnconfigure [ $frm.centrage.centrageConsigne getframe ] 5 -weight 1
 
-         #--- Commande de centrage (doublon avec la commande de la fenetre principale)
-         checkbutton $frm.centrage.centrageConsigne.start \
-            -indicatoron 0 -state disabled \
-            -text $::caption(sophie,lancerCentrage) \
-            -variable ::sophie::private(centerEnabled) \
-            -command "::sophie::onCenter"
 
-         grid $frm.centrage.centrageConsigne.start \
-            -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 3 -column 0 -columnspan 3 -sticky ew -pady 4 -ipadx 10 -ipady 4
-        ### pack $frm.centrage.centrageConsigne.start \
-        ###    -in [ $frm.centrage.centrageConsigne getframe ] \
-        ###    -side left -expand 1 -pady 4 -ipadx 10 -ipady 4
-
-         #--- Indicateur Centrage en cours ou non
-         label $frm.centrage.centrageConsigne.indicateur -text $::caption(sophie,centrageArrete) \
-            -borderwidth 1 -relief groove -bg $private(inactiveColor)
-
-         grid $frm.centrage.centrageConsigne.indicateur \
-            -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 3 -column 3 -columnspan 3 -sticky ew -pady 4 -ipadx 10 -ipady 4
-        ### pack $frm.centrage.centrageConsigne.indicateur \
-        ###    -in [ $frm.centrage.centrageConsigne getframe ] \
-        ###    -side left -expand 1 -pady 4 -ipadx 10 -ipady 4
 
       pack $frm.centrage.centrageConsigne -side top -anchor w -fill x -expand 1
 
@@ -638,7 +635,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             label $frm.centrage.pointage.positionXY.labelX -text $::caption(sophie,x)
             grid $frm.centrage.pointage.positionXY.labelX -row 0 -column 1 -sticky w -padx 5 -pady 3
 
-            spinbox $frm.centrage.pointage.positionXY.spinboxX -from 1 -to 1536 -incr 0.1 \
+            spinbox $frm.centrage.pointage.positionXY.spinboxX -from 1 -to 1536 -incr $private(centrageIncrement) \
                -width 8 -justify center \
                -command "::sophie::control::onScrollOrigin $visuNo" \
                -textvariable ::sophie::control::private(positionObjetX)
@@ -648,11 +645,24 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             label $frm.centrage.pointage.positionXY.labelY -text $::caption(sophie,y)
             grid $frm.centrage.pointage.positionXY.labelY -row 0 -column 3 -sticky w -padx 5 -pady 3
 
-            spinbox $frm.centrage.pointage.positionXY.spinboxY -from 1 -to 1024 -incr 0.1 \
+            spinbox $frm.centrage.pointage.positionXY.spinboxY -from 1 -to 1024 -incr $private(centrageIncrement)  \
                -width 8 -justify center \
                -command "::sophie::control::onScrollOrigin $visuNo" \
                -textvariable ::sophie::control::private(positionObjetY)
             grid $frm.centrage.pointage.positionXY.spinboxY -row 0 -column 4 -sticky ens
+
+            #--- increment
+            label $frm.centrage.pointage.positionXY.labelIncrement -text $::caption(sophie,increment)
+            grid $frm.centrage.pointage.positionXY.labelIncrement -row 0 -column 5 -sticky w -padx 5 -pady 3
+
+            spinbox $frm.centrage.pointage.positionXY.spinboxIncrement \
+               -values { 0.1 1 10 } -width 5 -justify center \
+               -command "::sophie::control::setCenterIncrement" \
+               -textvariable ::sophie::control::private(centrageIncrement)
+            $frm.centrage.pointage.positionXY.spinboxIncrement set 1
+            grid $frm.centrage.pointage.positionXY.spinboxIncrement \
+               -row 0 -column 6 -sticky ens
+
 
       pack $frm.centrage.pointage -side top -anchor w -fill x -expand 1
 
@@ -752,7 +762,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
                -row 1 -column 1 -sticky w -padx 5 -pady 3
 
             spinbox $frm.guidage.positionconsigne.positionXY.spinboxX -from 1 -to 1536 \
-               -incr $::sophie::control::private(guidageIncrement) -width 8 -justify center \
+               -incr $private(guidageIncrement) -width 8 -justify center \
                -command "::sophie::control::onScrollOrigin $visuNo" \
                -textvariable ::sophie::control::private(positionObjetX)
             grid $frm.guidage.positionconsigne.positionXY.spinboxX \
@@ -764,7 +774,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
                -row 1 -column 3 -sticky w -padx 5 -pady 3
 
             spinbox $frm.guidage.positionconsigne.positionXY.spinboxY -from 1 -to 1024 \
-               -incr $::sophie::control::private(guidageIncrement) -width 8 -justify center \
+               -incr $private(guidageIncrement) -width 8 -justify center \
                -command "::sophie::control::onScrollOrigin $visuNo" \
                -textvariable ::sophie::control::private(positionObjetY)
             grid $frm.guidage.positionconsigne.positionXY.spinboxY \
@@ -777,15 +787,12 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
                -row 1 -column 5 -sticky w -padx 5 -pady 3
 
             spinbox $frm.guidage.positionconsigne.positionXY.spinboxIncrement \
-               -values { 0.01 0.1 1 10 } -width 5 -justify center \
-               -command "::sophie::adaptIncrement" \
+               -values { 0.1 1 10 } -width 5 -justify center \
+               -command "::sophie::control::setGuidingIncrement" \
                -textvariable ::sophie::control::private(guidageIncrement)
+
             grid $frm.guidage.positionconsigne.positionXY.spinboxIncrement \
                -row 1 -column 6 -sticky ens
-
-        # pack $frm.guidage.positionconsigne.positionXY \
-        #    -in [ $frm.guidage.positionconsigne getframe ] \
-        #    -side top -anchor w -fill x -expand 1
 
       pack $frm.guidage.positionconsigne -side top -anchor w -fill x -expand 1
 
@@ -838,6 +845,32 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
     # pack $frm.guidage -side top -fill both
 
 }
+
+##------------------------------------------------------------
+# adaptIncrement
+#    adapte la valeur de l'increment
+#------------------------------------------------------------
+proc ::sophie::control::setCenterIncrement { } {
+   variable private
+
+   set frm $::sophie::control::private(frm)
+   $frm.centrage.pointage.positionXY.spinboxX configure -increment $private(centrageIncrement)
+   $frm.centrage.pointage.positionXY.spinboxY configure -increment $private(centrageIncrement)
+}
+
+##------------------------------------------------------------
+# adaptIncrement
+#    adapte la valeur de l'increment
+#------------------------------------------------------------
+proc ::sophie::control::setGuidingIncrement { } {
+   variable private
+
+   set frm $::sophie::control::private(frm)
+   $frm.guidage.positionconsigne.positionXY.spinboxX configure -increment $private(guidageIncrement)
+   $frm.guidage.positionconsigne.positionXY.spinboxY configure -increment $private(guidageIncrement)
+}
+
+
 
 #------------------------------------------------------------
 # setGuidingMode
@@ -1178,8 +1211,8 @@ proc ::sophie::control::setCenterInformation { starDetection fiberDetection orig
 # @param originY  ordonnee de la consigne en pixel
 # @param starX   abcisse de l'etoile en pixel
 # @param starY   ordonnee de l'etoile en pixel
-# @param fwhmX   largeur a mi hauter sur l'axe X
-# @param fwhmY   largeur a mi hauter sur l'axe Y
+# @param fwhmX   largeur a mi hauteur sur l'axe X (arcsec)
+# @param fwhmY   largeur a mi hauteur sur l'axe Y (arcsec)
 # @param background   fond du ciel
 # @param maxIntensity intensité max
 #

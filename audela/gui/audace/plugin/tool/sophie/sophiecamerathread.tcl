@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.7 2009-06-21 13:37:13 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.8 2009-07-04 22:39:45 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -158,21 +158,21 @@ proc ::camerathread::sophieAcquisitionLoop { } {
       # @param     Argv[10]=previousFiberX abcisse du centre de la fibre
       # @param     Argv[11]=previousFiberY ordonnee du centre de la fibre
       # @param     Argv[12]=maskFwhm       largeur a mi hauteur de la gaussienne
-      # @param     Argv[13]=findFiber      recherche de l'entrée de fibre
+      # @param     Argv[13]=findFiber      1=recherche de l'entrée de fibre , 0= ne pas rechercher
       # @param     Argv[14]=pixelMinCount  nombre minimal de pixels pour accepter l'image
       # @param     Argv[15]=maskPercent    pourcentage du niveau du mask
       #
       # @return si TCL_OK
-      #            list[0] starStatus      resultat de la recherche de la fibre
-      #            list[1] starX           abcisse du centre de la fibre
-      #            list[2] starY           ordonnee du centre de la fibre
-      #            list[3] fiberStatus     resultat de la recherche de la fibre
-      #            list[4] fiberX          abcisse du centre de la fibre
-      #            list[5] fiberY          ordonnee du centre de la fibre
-      #            list[6] measuredFwhmX   gaussienne mesuree
-      #            list[7] measuredFwhmY   gaussienne mesuree
-      #            list[8] background      fond du ciel
-      #            list[9] maxIntensity    intensite max
+      #            list[0] starStatus      resultat de la recherche de la fibre (DETECTED NO_SIGNAL)
+      #            list[1] starX           abcisse du centre de la fibre   (pixel binné)
+      #            list[2] starY           ordonnee du centre de la fibre  (pixel binné
+      #            list[3] fiberStatus     resultat de la recherche de la fibre (DETECTED NO_SIGNAL)
+      #            list[4] fiberX          abcisse du centre de la fibre  (pixel binné)
+      #            list[5] fiberY          ordonnee du centre de la fibre (pixel binné)
+      #            list[6] measuredFwhmX   gaussienne mesuree (pixel binné)
+      #            list[7] measuredFwhmY   gaussienne mesuree (pixel binné)
+      #            list[8] background      fond du ciel (ADU)
+      #            list[9] maxIntensity    intensite max (ADU)
       #            list[10] message        message d'information
       #
       #         si TCL_ERREUR
@@ -242,8 +242,8 @@ proc ::camerathread::sophieAcquisitionLoop { } {
 
 ###::camerathread::disp  "camerathread: FIBER= y1=$y1 y2=$y2 detection etoile=$targetDetection [lindex $result 11]\n"
 
-      #--- je calcule l'ecart de position entre la cible et la consigne (en pixels ramene au binning 1x1)
       set binning [cam$private(camNo) bin]
+      #--- je calcule l'ecart de position entre la cible et la consigne (en pixels ramene au binning 1x1)
       set dx [expr ([lindex $private(targetCoord) 0] - [lindex $private(originCoord) 0]) * [lindex $binning 0] ]
       set dy [expr ([lindex $private(targetCoord) 1] - [lindex $private(originCoord) 1]) * [lindex $binning 1] ]
       ###::camerathread::disp  "camerathread: etoile dx=[format "%6.1f" $dx] dy=[format "%6.1f" $dy] \n"
@@ -299,9 +299,9 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             #--- je vérifie si la moyenne est inferieure au seuil
             if { $xmean < $private(centerMaxLimit)  && $ymean < $private(centerMaxLimit) } {
                ::camerathread::notify "acquisitionResult" "CENTER" $private(targetCoord)
-               ::camerathread::disp  "camerathread: Le centrage est terminé ([format "%6.1f" $xmean]<$private(centerMaxLimit))  ([format "%6.1f" $ymean]<$private(centerMaxLimit) arsec) \n"
+               ###::camerathread::disp  "camerathread: Le centrage est terminé ([format "%6.1f" $xmean]<$private(centerMaxLimit))  ([format "%6.1f" $ymean]<$private(centerMaxLimit) arsec) \n"
             } else {
-               ::camerathread::disp  "camerathread: Le centrage continue : ([format "%6.1f" $xmean]>$private(centerMaxLimit)) ([format "%6.1f" $ymean]>$private(centerMaxLimit) arsec) \n"
+               ###::camerathread::disp  "camerathread: Le centrage continue : ([format "%6.1f" $xmean]>$private(centerMaxLimit)) ([format "%6.1f" $ymean]>$private(centerMaxLimit) arsec) \n"
             }
          }
 
@@ -348,8 +348,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          $private(targetCoord) $dx $dy $targetDetection $fiberDetection \
          [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
          $measuredFwhmX $measuredFwhmY $background $maxIntensity  \
-         $alphaDiff $deltaDiff $alphaCorrection $alphaCorrection $infoMessage
-
+         $alphaDiff $deltaDiff $alphaCorrection $deltaCorrection $infoMessage
 
       set alphaDelay 0.0
       set deltaDelay 0.0
@@ -385,7 +384,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             }
          }
       }
-      ::camerathread::disp  "camerathread: dx,dy=[format "%6.1f" $dx],[format "%6.1f" $dy] pixel dAlpha,ddelta=[format "%6.2f" $alphaCorrection],[format "%6.2f" $deltaCorrection] arsec tel move [format "%s %4.3fs" $alphaDirection $alphaDelay] [format "%s %4.3fs" $deltaDirection $deltaDelay ]\n"
+      ###::camerathread::disp  "camerathread: dx,dy=[format "%6.1f" $dx],[format "%6.1f" $dy]pixel dAlpha,ddelta=[format "%6.2f" $alphaDiff],[format "%6.2f" $deltaDiff] arsec correction=[format "%6.2f" $alphaCorrection],[format "%6.2f" $deltaCorrection]arsec tel move [format "%s %4.3fs" $alphaDirection $alphaDelay] [format "%s %4.3fs" $deltaDirection $deltaDelay ]\n"
 
 
    } catchMessage ]
