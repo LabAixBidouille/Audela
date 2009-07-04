@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.20 2009-06-21 13:15:46 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.21 2009-07-04 22:39:45 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -1412,8 +1412,8 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
          "targetCoord" {
             # description des parametres
             # args 0 = coordonnees de l'étoile, ou coordonnees du centre de la zone de recherche si l'étoile n'a pas ete trouvee
-            # args 1 = dx
-            # args 2 = dy
+            # args 1 = dx   (ramené au binning 1x1)
+            # args 2 = dy   (ramené au binning 1x1)
             # args 3 = targetDetection
             # args 4 = fiberDetection
             # args 5 = fiberX
@@ -1439,8 +1439,8 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                set fiberDetection       [lindex $args 4]
                set originX              [expr [lindex $args 5] * $private(xBinning) + $private(xWindow) -1 ]
                set originY              [expr [lindex $args 6] * $private(yBinning) + $private(yWindow) -1 ]
-               set fwhmX                [lindex $args 7]
-               set fwhmY                [lindex $args 8]
+               set fwhmX                [expr [lindex $args 7] * $private(xBinning) * $::conf(sophie,pixelScale)]
+               set fwhmY                [expr [lindex $args 8] * $private(yBinning) * $::conf(sophie,pixelScale)]
                set background           [lindex $args 9]
                set maxIntensity         [lindex $args 10]
                set alphaDiff            [lindex $args 11]
@@ -1482,7 +1482,8 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                         $starDx $starDy $alphaDiff $deltaDiff $alphaCorrection $deltaCorrection
                   }
                   "FOCUS" {
-                     ::sophie::control::setFocusInformation $private(targetDetection) $fiberDetection $originX $originY $starX $starY $fwhmX $fwhmY $background $maxIntensity
+                     ::sophie::control::setFocusInformation $private(targetDetection) $fiberDetection \
+                        $originX $originY $starX $starY $fwhmX $fwhmY $background $maxIntensity
                      #--- je change le mode d'affichage si la detection de l'etoile a change
                      ##if { $previousTargetDetection != $private(targetDetection)  } {
                      ##   sophie::setMode $private(mode)
@@ -1492,7 +1493,8 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                      #--- je mets a jour les statistiques pour le PC Sophie
                      ::sophie::spectro::updateStatistics $alphaCorrection $deltaCorrection
                      #--- je mets a jour la fenetre de controle
-                     ::sophie::control::setGuideInformation $private(targetDetection) $fiberDetection $originX $originY $starX $starY $starDx $starDy $alphaCorrection $deltaCorrection $originDx $originDy
+                     ::sophie::control::setGuideInformation $private(targetDetection) $fiberDetection \
+                         $originX $originY $starX $starY $starDx $starDy $alphaCorrection $deltaCorrection $originDx $originDy
 
                      #--- je change le mode d'affichage si la detection de l'etoile a change
                      ##if { $previousTargetDetection != $private(targetDetection)  } {
