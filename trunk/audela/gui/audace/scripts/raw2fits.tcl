@@ -3,7 +3,7 @@
 # Description : Script pour la conversion d'images .ARW .CR2 .CRW .DNG .ERF .MRW \
 #.NEF .ORF .RAF .RW2 .SR2 .TIFF .X3F au format .fit
 # Auteur : Raymond Zachantke
-# Mise a jour $Id : Exp $
+# Mise a jour $Id: raw2fits.tcl,v 1.3 2009-07-05 15:07:53 robertdelmas Exp $
 #
 
 namespace eval ::raw2fits {
