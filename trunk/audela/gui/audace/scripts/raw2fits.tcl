@@ -3,7 +3,7 @@
 # Description : Script pour la conversion d'images .ARW .CR2 .CRW .DNG .ERF .MRW \
 #.NEF .ORF .RAF .RW2 .SR2 .TIFF .X3F au format .fit
 # Auteur : Raymond Zachantke
-# Mise a jour $Id: raw2fits.tcl,v 1.3 2009-07-05 15:07:53 robertdelmas Exp $
+# Mise a jour $Id: raw2fits.tcl,v 1.4 2009-07-05 22:30:30 robertdelmas Exp $
 #
 
 namespace eval ::raw2fits {
@@ -94,10 +94,10 @@ namespace eval ::raw2fits {
          $audace(base).convert.cmd.ok configure -state active -relief sunken
          ::raw2fits::Convert $todo
       }
-         bind $this <Key-Escape> { ::raw2fits::Fermer }
+      bind $this <Key-Escape> { ::raw2fits::Fermer }
 
-         #--- Focus
-         focus $this
+      #--- Focus
+      focus $this
 
    }
 
