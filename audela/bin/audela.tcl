@@ -1,5 +1,5 @@
 #
-# Update $Id: audela.tcl,v 1.13 2008-04-26 11:06:13 robertdelmas Exp $
+# Update $Id: audela.tcl,v 1.14 2009-07-06 17:55:14 michelpujol Exp $
 #
 #--- Welcome to the AudeLA-Interfaces Easy Launcher
 #
@@ -17,6 +17,13 @@
 #---       ...
 #---       ...
 #
+
+#--- add audela/lib directory to ::auto_path if it doesn't already exist
+set audelaLibPath [file join [file join [file dirname [file dirname [info nameofexecutable]] ] lib]]
+if { [lsearch $::auto_path $audelaLibPath] == -1 } {
+   lappend ::auto_path $audelaLibPath
+}
+
 
 set nameofexecutable [file tail [file rootname [info nameofexecutable]]]
 if {($nameofexecutable!="audela")&&([file exists ../ros]==1)} {
