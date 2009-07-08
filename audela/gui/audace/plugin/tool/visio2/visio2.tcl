@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.41 2009-02-07 11:04:27 robertdelmas Exp $
+# Mise a jour $Id: visio2.tcl,v 1.42 2009-07-08 19:56:18 michelpujol Exp $
 #
 
 namespace eval ::visio2 {
@@ -241,8 +241,13 @@ proc ::visio2::configure { visuNo } {
 
    set files ""
    foreach fullname [glob -nocomplain -dir $directory *] {
-      set isdir [file isdir $fullname]
       set shortname [file tail $fullname]
+      if { [string index $shortname 0 ] == "~" } {
+         #--- j'ignore les fichiers dont le nom commence par un tilde car cfitsio refuse de les lire
+         #--- (cfitsio va chercher le fichier dans le repertoir HOME du user)
+         continue
+      }
+      set isdir [file isdir $fullname]
       set date [file mtime $fullname]
       if { $isdir == 1 } {
          set size ""
