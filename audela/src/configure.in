@@ -166,6 +166,13 @@ if test x"$TCL_THREADS" = x"1" ; then
 	EXTERNAL="$EXTERNAL libthread"
 fi
 
+AC_ARG_WITH([tls],
+            [AS_HELP_STRING([--with-tls],
+              [compile external/tls @<:@default=no@:>@])],
+            [],
+            [with_tls=no])
+AS_IF([test "x$with_tls" != xno], [EXTERNAL="$EXTERNAL tls"])
+
 CONTRIB="ethernaude libgs"
 if test x"$GSL_FOUND" = x"1" ; then
 	CONTRIB="$CONTRIB libbm"
