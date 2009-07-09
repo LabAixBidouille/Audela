@@ -330,6 +330,17 @@ void cam_update_window(struct camprop *cam)
    cam->x2 = cam->x1 + cam->w * cam->binx - 1;
    cam->h = ( cam->y2 - cam->y1) / cam->biny + 1;
    cam->y2 = cam->y1 + cam->h * cam->biny - 1;
+
+   if (cam->x2 > maxx - 1) {
+      cam->w = cam->w - 1;
+      cam->x2 = cam->x1 + cam->w * cam->binx - 1;
+   }
+   
+   if (cam->y2 > maxy - 1) {
+      cam->h = cam->h - 1;
+      cam->y2 = cam->y1 + cam->h * cam->biny - 1;
+   }
+
 }
 
 void cam_ampli_on(struct camprop *cam)
