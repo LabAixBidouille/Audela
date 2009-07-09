@@ -1587,16 +1587,6 @@ int tt_ima_series_subdark_1(TT_IMA_SERIES *pseries)
       pseries->val_exptime=atof(value_char);
    }
 
-   /* --- suppression des points chauds, des colonnes defectueuses et des lignes defectueuses ---*/
-   if (pseries->hotPixelList!= NULL) {
-      // je retire les pixels chauds dans p_in
-      tt_repairHotPixel (pseries->hotPixelList, pseries->p_in);
-   }
-   if (pseries->cosmicThreshold != 0.) {
-      // je retire les cosmiques dans p_in
-      tt_repairCosmic(pseries->cosmicThreshold , pseries->p_in);
-   }
-
    /* --- calcul de la fonction ---*/
    /*tt_imabuilder(p_out);*/
    tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
@@ -1619,6 +1609,16 @@ int tt_ima_series_subdark_1(TT_IMA_SERIES *pseries)
 		  value=(p_in->p[kkk])- xb*(p_tmp2->p[kkk]) - (p_tmp1->p[kkk]) ;
 		  p_out->p[kkk]=(TT_PTYPE)(value);
 	   }
+   }
+
+   /* --- suppression des points chauds, des colonnes defectueuses et des lignes defectueuses ---*/
+   if (pseries->hotPixelList!= NULL) {
+      // je retire les pixels chauds dans p_out
+      tt_repairHotPixel (pseries->hotPixelList, pseries->p_out);
+   }
+   if (pseries->cosmicThreshold != 0.) {
+      // je retire les cosmiques dans p_out
+      tt_repairCosmic(pseries->cosmicThreshold , pseries->p_out);
    }
 
    /* --- calcul du de-smearing (deconvflat) ---*/
