@@ -406,8 +406,8 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
    if (cam->authorized == 1) {
       try {
          float exptime ;
-         if ( cam->exptime <= 0.03f ) {
-            exptime = 0.03f;
+         if ( cam->exptime <= 0.06f ) {
+            exptime = 0.06f;
          } else {
             exptime = cam->exptime ;
          }
@@ -454,7 +454,7 @@ void cam_stop_exp(struct camprop *cam)
    try {
       // j'interromps l'acquisition
 
-      hr = cam->params->pCam->StopExposure();
+      hr = cam->params->pCam->AbortExposure();
       if (FAILED(hr)) { 
          sprintf(cam->msg, "cam_stop_exp error StopExposure hr=%X",hr);
          return;
