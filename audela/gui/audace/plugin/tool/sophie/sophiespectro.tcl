@@ -2,7 +2,7 @@
 # @file     sophiespectro.tcl
 # @brief    fichier du namespace ::sophie::spectro
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiespectro.tcl,v 1.2 2009-06-20 17:22:32 michelpujol Exp $
+# @version  $Id: sophiespectro.tcl,v 1.3 2009-07-09 17:27:07 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -111,7 +111,7 @@ proc ::sophie::spectro::readSocket { channel } {
             set resultList [::sophie::spectro::getStatistics ]
 
             #--- A<20h>=<20h><20h><20h>2.68<20h><20h>Arms<20h>=<20h><20h>83.17<20h>D<20h>=<20h><20h><20h>2.74<20h>Drms<20h>=<20h>177.85<20h>
-            set resultString [format "A = %5.2f  Arms = %5.2f D = %5.2f Drms = %5.2f " \
+            set resultString [format "A = %5.2f  Arms = %5.2f D = %5.2f Drms = %5.2f\n" \
                [lindex $resultList 0] [lindex $resultList 1] \
                [lindex $resultList 2] [lindex $resultList 3] \
             ]
