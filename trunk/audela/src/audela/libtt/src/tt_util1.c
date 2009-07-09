@@ -749,37 +749,46 @@ int tt_decodekeys(char *ligne,void ***outkeys,int *numkeys)
 /***************************************************************************/
 char * tt_scanNextInt(char* buffer,int *value) {
    char *p = buffer;
+   char *p0;
    int resultScan;
    
    if ( p== NULL ) {
-      // j'arrete si j'ai atteint la fin de la chaine de caracteres  
+      // j'arrete si le pointeur null
       return NULL; 
    }
    
+   if ( *p== '\0' ) {
+      // j'arrete si j'ai atteint la fin de la chaine de caracteres  
+      return NULL; 
+   }
+
    while ( *p ==  ' ' || *p == '{' || *p == '}' ) {
       // je point le caractere suivant
       p++;
       // je commence s'il y a encore un espace
    }
 
-   if ( p== NULL ) {
-      // j'arrete si j'ai atteint la fin de la chaine de caracteres  
-      return NULL; 
-   }
-
    // je lis l'entier 
    if ( *p == 'P' || *p == 'C' || *p == 'L' ) {
       *value = (int) *p;
+      p++;
    } else {
       resultScan = sscanf(p, "%d", value); 
       if (resultScan == 0 ) return NULL;
    }
 
    // je cherche l'espace suivant 
-   p = strchr(p,' ');
-   if ( p== NULL ) {
-      // j'arrete si j'ai atteint la fin de la chaine de caracteres  
-      return NULL; 
+   p0 = strchr(p,' ');
+   if ( p0== NULL ) {
+      p0 = strchr(p,'}');
+      if ( p0== NULL ) { 
+         // j'arrete si j'ai atteint la fin de la chaine de caracteres  
+         return NULL; 
+      } else {
+         p = p0;
+      }
+   } else {
+      p = p0;
    }
    while ( *p ==  ' ' || *p == '{' || *p == '}' ) {
       // je pointe le caractere suivant
