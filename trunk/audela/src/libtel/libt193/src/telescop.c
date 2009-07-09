@@ -499,7 +499,7 @@ int tel_radec_move(struct telprop *tel,char *direction)
       result = mytel_sendCommandTelescop(tel , tel->outputTelescopData);
    } else {
       // je simule l'envoi de la commande
-      mytel_logConsole(tel, "simul radec move %s OK",direction);
+      //mytel_logConsole(tel, "simul radec move %s OK",direction);
       result = 0;
    }
    return result;
@@ -566,7 +566,7 @@ int tel_radec_stop(struct telprop *tel,char *direction)
       result = mytel_sendCommandTelescop(tel, tel->outputTelescopData);
    } else {
       // je simule l'envoi de la commande
-      mytel_logConsole(tel, "simul radec stop %s OK",direction);
+      //mytel_logConsole(tel, "simul radec stop %s OK",direction);
       result = 0; 
    }
    return result;
@@ -701,7 +701,7 @@ int mytel_setControl(struct telprop *tel,int control) {
       result = mytel_sendCommandTelescop(tel , tel->outputTelescopData);
    } else {
       // je simule l'envoi de la commande
-      mytel_logConsole(tel, "simul radec control %d OK",control);
+      //mytel_logConsole(tel, "simul radec control %d OK",control);
       result = 0;
    }
    return result;
@@ -733,7 +733,7 @@ int tel_filter_setMax(struct telprop *tel, double filterMaxDelay) {
 
    if ( tel->outputFilterTaskHandle != 0 ) {
       // je simule l'envoi de la commande
-      mytel_logConsole(tel, "simul filter set max %f OK", filterMaxDelay);
+      //mytel_logConsole(tel, "simul filter set max %f OK", filterMaxDelay);
    }
    return 0;   
 }
@@ -793,7 +793,7 @@ int tel_filter_coord(struct telprop *tel, char * coord) {
    } else {
       strcpy(coord, "23");
       // je simule l'envoi de la commande
-      mytel_logConsole(tel, "simul filter coord %s OK", coord);
+      //mytel_logConsole(tel, "simul filter coord %s OK", coord);
       result = 0;
    }
    return result;
@@ -840,7 +840,7 @@ int tel_filter_move(struct telprop *tel, char * direction) {
       tel->filterCommand = numbit;      
    } else {
       // je simule l'envoi de la commande
-      mytel_logConsole(tel, "simul filter move %s OK",direction);
+      //mytel_logConsole(tel, "simul filter move %s OK",direction);
       result = 0;
    }
 
@@ -885,7 +885,7 @@ int tel_filter_stop(struct telprop *tel) {
       }
     } else {
       // je simule l'envoi de la commande
-      mytel_logConsole(tel, "simul filter stop OK");
+      //mytel_logConsole(tel, "simul filter stop OK");
       result = 0;
    }
    return result;
