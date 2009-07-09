@@ -682,10 +682,10 @@ proc bddimages_catas_datainsert { filename sizefich } {
           append sqlcmdcrea "  sizefich int(20) unsigned NOT NULL,                   "
           append sqlcmdcrea "  datemodif datetime NOT NULL,                            "
           append sqlcmdcrea "  istreated tinyint(3) unsigned default 0,                "
-          append sqlcmdcrea "  sstdate datetime default 0,                             "
+          append sqlcmdcrea "  ssp_date datetime default 0,                             "
           append sqlcmdcrea "  PRIMARY KEY  (idbddcata),                               "
           append sqlcmdcrea "  KEY istreated (istreated),                              "
-          append sqlcmdcrea "  KEY sstdate (sstdate)                                   "
+          append sqlcmdcrea "  KEY ssp_date (ssp_date)                                   "
           append sqlcmdcrea ") ENGINE=MyISAM DEFAULT CHARSET=latin1;                   "
 
           set err [catch {::bddimages_sql::sql query $sqlcmdcrea} msg]
