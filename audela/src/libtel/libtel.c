@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.7 2009-05-31 15:27:18 michelpujol Exp $
+// $Id: libtel.c,v 1.8 2009-07-09 17:34:21 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -191,13 +191,20 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
                return TCL_ERROR;
             }
 
+            // je duplique la commande "mc_angle2hms" dans la thread de la camera
+            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_angle2hms");
+            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
+               sprintf(s, "cmdCamCreate: %s",interp->result);
+               Tcl_SetResult(interp, s, TCL_VOLATILE);
+               return TCL_ERROR;
+            }
             // je duplique la commande "mc_angle2deg" dans la thread de la camera
             sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_angle2deg");
             if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
                sprintf(s, "cmdCamCreate: %s",interp->result);
                Tcl_SetResult(interp, s, TCL_VOLATILE);
                return TCL_ERROR;
-            }
+            }            
             
             // je duplique la commande "mc_date2iso8601" dans la thread de la camera
             sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_date2iso8601");
