@@ -2,7 +2,7 @@
 # Fichier : skybot_statut.tcl
 # Description : Affiche le statut de la base de donnees SkyBoT
 # Auteur : Jerome BERTHIER
-# Mise a jour $Id: skybot_statut.tcl,v 1.15 2009-07-02 22:01:34 jberthier Exp $
+# Mise a jour $Id: skybot_statut.tcl,v 1.16 2009-07-09 17:03:06 svaillant Exp $
 #
 
 namespace eval skybot_Statut {
@@ -106,13 +106,20 @@ namespace eval skybot_Statut {
          wm protocol $This WM_DELETE_WINDOW { ::skybot_Statut::fermer }
 
 
-         #--- Liste des tranches : nouveau format
+         #--- Liste des tranches
          frame $This.frame0 -borderwidth 0 -cursor arrow
          pack $This.frame0 -in $This -anchor s -side top -expand yes -fill both
+         #--- Cree un acsenseur horizontal
+         scrollbar $This.frame0.hsb -orient horizontal \
+            -command { $::skybot_Statut::This.frame0.tbl xview } -takefocus 1 -borderwidth 1
+         pack $This.frame0.hsb -in $This.frame0 -side bottom -fill x
+
          label $This.frame0.titre -text "$caption(statut,titre)"
          pack $This.frame0.titre -in $This.frame0 -side top -padx 3 -pady 3
          set tbl $This.frame0.tbl
-         tablelist::tablelist $tbl -stretch all -columns [list \
+         tablelist::tablelist $tbl -stretch all \
+          -xscrollcommand [ list $This.frame0.hsb set ] \
+          -columns [list \
           0 $caption(statut,label_ok) \
           0 begin 0 end \
           0 $caption(statut,label_aster) 0 $caption(statut,label_planet) 0 $caption(statut,label_satnat) 0 $caption(statut,label_comet) 0 $caption(statut,label_maj) ] 
@@ -140,74 +147,6 @@ namespace eval skybot_Statut {
            set date_fin [ format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $date 0] [lindex $date 1] [lindex $date 2] \
                                                                   [lindex $date 3] [lindex $date  4] [lindex $date  5] ]
 
-         #--- Cree un frame pour afficher le statut de la base
-         frame $This.frame1 -borderwidth 0 -cursor arrow
-         pack $This.frame1 -in $This -anchor s -side top -expand 0 -fill x
-
-           #--- Cree un label pour le titre
-           label $This.frame1.titre \
-                 -text "$caption(statut,titre)"
-           pack $This.frame1.titre \
-                -in $This.frame1 -side top -padx 3 -pady 3
-
-           #--- Cree un frame pour afficher les resultats
-           frame $This.frame1.statut \
-                 -borderwidth 1 -relief raised -cursor arrow
-           pack $This.frame1.statut \
-                -in $This.frame1 -side top -expand 0 -fill x -padx 1 -pady 1
-
-             #--- Cree un frame pour afficher les intitules
-             set intitle [frame $This.frame1.statut.l -borderwidth 0]
-             pack $intitle -in $This.frame1.statut -side left
-
-               #--- Cree un label pour le statut
-               label $intitle.ok -text "$caption(statut,label_ok)"
-               pack $intitle.ok -in $intitle -side top -padx 3 -pady 1 -anchor w
-               #--- Cree un label pour la periode
-               label $intitle.pe -text "$caption(statut,label_periode)"
-               pack $intitle.pe -in $intitle -side top -padx 3 -pady 1 -anchor w
-               #--- Cree un label pour la date de MAJ
-               label $intitle.dm -text "$caption(statut,label_maj)"
-               pack $intitle.dm -in $intitle -side top -padx 3 -pady 1 -anchor w
-               #--- Cree un label pour le nombre d'asteroides
-               label $intitle.na -text "$caption(statut,label_aster)"
-               pack $intitle.na -in $intitle -side top -padx 3 -pady 1 -anchor w
-               #--- Cree un label pour le nombre de planetes
-               label $intitle.np -text "$caption(statut,label_planet)"
-               pack $intitle.np -in $intitle -side top -padx 3 -pady 1 -anchor w
-               #--- Cree un label pour le nombre de satellites naturels
-               label $intitle.ns -text "$caption(statut,label_satnat)"
-               pack $intitle.ns -in $intitle -side top -padx 3 -pady 1 -anchor w
-               #--- Cree un label pour le nombre de cometes
-               label $intitle.nc -text "$caption(statut,label_comet)"
-               pack $intitle.nc -in $intitle -side top -padx 3 -pady 1 -anchor w
-
-             #--- Cree un frame pour afficher les valeurs
-             set inparam [frame $This.frame1.statut.v -borderwidth 0]
-             pack $inparam -in $This.frame1.statut -side right -expand 1 -fill x
-
-               #--- Cree un label pour le statut
-               label $inparam.ok -text [string trim [lindex $statut 0]] -fg $color(green)
-               pack $inparam.ok -in $inparam -side top -pady 1 -anchor w
-               if {[string trim [lindex $statut 0]] != "ok"} { $inparam.ok configure -fg $color(red) }
-               #--- Cree un label pour la periode
-               label $inparam.pe -text [string trim [concat $date_debut - $date_fin]] -fg $color(blue)
-               pack $inparam.pe -in $inparam -side top -pady 1 -anchor w
-               #--- Cree un label pour la date de MAJ
-               label $inparam.dm -text [string trim [lindex $statut 7]] -fg $color(blue)
-               pack $inparam.dm -in $inparam -side top -pady 1 -anchor w
-               #--- Cree un label pour le nombre d'asteroides
-               label $inparam.na -text [string trim [lindex $statut 3]] -fg $color(blue)
-               pack $inparam.na -in $inparam -side top -pady 1 -anchor w
-               #--- Cree un label pour le nombre de planetes
-               label $inparam.np -text [string trim [lindex $statut 4]] -fg $color(blue)
-               pack $inparam.np -in $inparam -side top -pady 1 -anchor w
-               #--- Cree un label pour le nombre de satellites naturels
-               label $inparam.ns -text [string trim [lindex $statut 5]] -fg $color(blue)
-               pack $inparam.ns -in $inparam -side top -pady 1 -anchor w
-               #--- Cree un label pour le nombre de cometes
-               label $inparam.nc -text [string trim [lindex $statut 6]] -fg $color(blue)
-               pack $inparam.nc -in $inparam -side top -pady 1 -anchor w
 
          #--- Cree un frame pour y mettre les boutons
          frame $This.frame11 \
