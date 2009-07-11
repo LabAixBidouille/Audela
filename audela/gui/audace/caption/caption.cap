@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.62 2009-06-20 21:37:12 michelpujol Exp $
+# Mise a jour $Id: caption.cap,v 1.63 2009-07-11 16:30:11 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -75,7 +75,7 @@ set caption(confVisu,non_connecte)                    "Not connected"
 set caption(confVisu,fitsHduList)                     "HDU"
 set caption(confVisu,fermeture_impossible)            "Aud'ACE cannot be stopped because of an on-going action in the tool:"
 set caption(confVisu,fermeture_impossible1)           ""
-set caption(confVisu,fermeture_outil_impossible)      "###Impossible d'arrêter %s car une opération est en cours"
+set caption(confVisu,fermeture_outil_impossible)      "%s cannot be stopped because it is running."
 
 set caption(plotxy,figure)                            "Figure"
 
@@ -150,7 +150,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,fitsHduList)                  "HDU"
    set caption(confVisu,fermeture_impossible)         "Impossible d'arrêter Aud'ACE car une opération est en cours dans l'outil :"
    set caption(confVisu,fermeture_impossible1)        ""
-   set caption(confVisu,fermeture_outil_impossible)   "Impossible d'arrêter %s car une opération est en cours"
+   set caption(confVisu,fermeture_outil_impossible)   "Impossible d'arrêter %s car une opération est en cours."
 
    set caption(plotxy,figure)                         "Figure"
 
@@ -225,6 +225,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,fitsHduList)                  "HDU"
    set caption(confVisu,fermeture_impossible)         "Impossibile arrestare Aud'ACE a causa di una operazione in corso nella utility:"
    set caption(confVisu,fermeture_impossible1)        ""
+   set caption(confVisu,fermeture_outil_impossible)   "Impossibile fermare %s a causa di una operazione in corso."
 
    set caption(plotxy,figure)                         "Figura"
 
@@ -299,6 +300,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,fitsHduList)                  "HDU"
    set caption(confVisu,fermeture_impossible)         "Imposible detener Aud'ACE debido a una operción en curso en la herramienta:"
    set caption(confVisu,fermeture_impossible1)        ""
+   set caption(confVisu,fermeture_outil_impossible)   "Imposible detener %s porque hay una operación en curso."
 
    set caption(plotxy,figure)                         "Figura"
 
@@ -373,6 +375,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,fitsHduList)                  "HDU"
    set caption(confVisu,fermeture_impossible)         "Unmöglich Aud’ACE zu beenden weil eine Aktion im"
    set caption(confVisu,fermeture_impossible1)        " Werkzeug an ist."
+   set caption(confVisu,fermeture_outil_impossible)   "# Impossible d'arrêter %s car une opération est en cours."
 
    set caption(plotxy,figure)                         "Figur"
 
@@ -447,6 +450,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,fitsHduList)                  "HDU"
    set caption(confVisu,fermeture_impossible)         "Impossível parar Aud'ACE devido a uma operação em curso na ferramenta:"
    set caption(confVisu,fermeture_impossible1)        ""
+   set caption(confVisu,fermeture_outil_impossible)   "# Impossible d'arrêter %s car une opération est en cours."
 
    set caption(plotxy,figure)                         "Figura"
 
@@ -521,6 +525,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,fitsHduList)                  "HDU"
    set caption(confVisu,fermeture_impossible)         "Aud'ACE kan ikke afsluttes, da anden proces kører i værktøjet:"
    set caption(confVisu,fermeture_impossible1)        ""
+   set caption(confVisu,fermeture_outil_impossible)   "%s kan ikke annulleres, da processen kører."
 
    set caption(plotxy,figure)                         "Figur"
 

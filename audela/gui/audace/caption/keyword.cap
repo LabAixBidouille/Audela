@@ -1,6 +1,6 @@
 #
 # Fichier : keyword.cap
-# Mise a jour $Id: keyword.cap,v 1.12 2009-06-04 16:28:31 robertdelmas Exp $
+# Mise a jour $Id: keyword.cap,v 1.13 2009-07-11 16:29:55 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -68,6 +68,12 @@ set caption(keyword,description,SWMODIFY)              "Processing Software"
 set caption(keyword,description,CONFNAME)              "Instrument Setup"
 set caption(keyword,description,COMMENT)               "Comments"
 
+set caption(keyword,manuel)                            "Manual"
+set caption(keyword,automatic)                         "Automatic"
+set caption(keyword,newValue)                          "Input a value"
+set caption(keyword,saisirNewValue)                    "New Value"
+set caption(keyword,annuler)                           "Cancel"
+
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
@@ -127,6 +133,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,SWMODIFY)           "Logiciel de traitement"
    set caption(keyword,description,CONFNAME)           "Configuration instrumentale"
    set caption(keyword,description,COMMENT)            "Commentaire"
+
+   set caption(keyword,manuel)                         "Manuel"
+   set caption(keyword,automatic)                      "Automatique"
+   set caption(keyword,newValue)                       "Entrer une valeur"
+   set caption(keyword,saisirNewValue)                 "Nouvelle valeur"
+   set caption(keyword,annuler)                        "Annuler"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -188,6 +200,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,CONFNAME)           "Configurazione strumentale"
    set caption(keyword,description,COMMENT)            "Commenti"
 
+   set caption(keyword,manuel)                         "Manuale"
+   set caption(keyword,automatic)                      "Automatico"
+   set caption(keyword,newValue)                       "# Entrer une valeur"
+   set caption(keyword,saisirNewValue)                 "# Nouvelle valeur"
+   set caption(keyword,annuler)                        "Cancella"
+
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
@@ -247,6 +265,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,SWMODIFY)           "Programa de tratamiento"
    set caption(keyword,description,CONFNAME)           "Configurar instrumento"
    set caption(keyword,description,COMMENT)            "Comentarios"
+
+   set caption(keyword,manuel)                         "Manual"
+   set caption(keyword,automatic)                      "Automático"
+   set caption(keyword,newValue)                       "# Entrer une valeur"
+   set caption(keyword,saisirNewValue)                 "# Nouvelle valeur"
+   set caption(keyword,annuler)                        "Cancelar"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -308,6 +332,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,CONFNAME)           "Instrument Konfiguration"
    set caption(keyword,description,COMMENT)            "Kommentar"
 
+   set caption(keyword,manuel)                         "Manuell"
+   set caption(keyword,automatic)                      "Automatisch"
+   set caption(keyword,newValue)                       "# Entrer une valeur"
+   set caption(keyword,saisirNewValue)                 "# Nouvelle valeur"
+   set caption(keyword,annuler)                        "Annullieren"
+
 # *************** Version portugaise ***************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
@@ -368,6 +398,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,CONFNAME)           "Configuração instrumental"
    set caption(keyword,description,COMMENT)            "Comentário"
 
+   set caption(keyword,manuel)                         "Manual"
+   set caption(keyword,automatic)                      "Automático"
+   set caption(keyword,newValue)                       "# Entrer une valeur"
+   set caption(keyword,saisirNewValue)                 "# Nouvelle valeur"
+   set caption(keyword,annuler)                        "Cancelar"
+
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
@@ -427,6 +463,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,SWMODIFY)           "Processing Software"
    set caption(keyword,description,CONFNAME)           "Instrument Setup"
    set caption(keyword,description,COMMENT)            "Comments"
+
+   set caption(keyword,manuel)                         "Manual"
+   set caption(keyword,automatic)                      "Automatic"
+   set caption(keyword,newValue)                       "Input a value"
+   set caption(keyword,saisirNewValue)                 "New Value"
+   set caption(keyword,annuler)                        "Cancel"
 
 }
 
