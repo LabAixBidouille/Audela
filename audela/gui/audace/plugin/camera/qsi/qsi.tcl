@@ -2,7 +2,7 @@
 # Fichier : qsi.tcl
 # Description : Configuration de la camera QSI
 # Auteur : Michel Pujol
-# Mise a jour $Id: qsi.tcl,v 1.1 2009-03-28 14:34:53 michelpujol Exp $
+# Mise a jour $Id: qsi.tcl,v 1.2 2009-07-11 17:11:38 robertdelmas Exp $
 #
 
 namespace eval ::qsi {
@@ -83,21 +83,21 @@ proc ::qsi::initPlugin { } {
    global conf caption
 
    #--- Initialise les variables de la camera
-   if { ! [ info exists conf(qsi,mirh) ] }  { set conf(qsi,mirh)  0 }
-   if { ! [ info exists conf(qsi,mirv) ] }  { set conf(qsi,mirv)  0 }
-   if { ! [ info exists conf(qsi,cool) ] }  { set conf(qsi,cool)  0 }
-   if { ! [ info exists conf(qsi,setTemperature) ] }  { set conf(qsi,setTemperature)  0 }
-   if { ! [ info exists conf(qsi,foncobtu) ] } { set conf(qsi,foncobtu) "2" }
-   if { ! [ info exists conf(qsi,filterNo) ] } { set conf(qsi,filterNo) "0" }
+   if { ! [ info exists conf(qsi,mirh) ] }           { set conf(qsi,mirh)           0 }
+   if { ! [ info exists conf(qsi,mirv) ] }           { set conf(qsi,mirv)           0 }
+   if { ! [ info exists conf(qsi,cool) ] }           { set conf(qsi,cool)           0 }
+   if { ! [ info exists conf(qsi,setTemperature) ] } { set conf(qsi,setTemperature) 0 }
+   if { ! [ info exists conf(qsi,foncobtu) ] }       { set conf(qsi,foncobtu)       2 }
+   if { ! [ info exists conf(qsi,filterNo) ] }       { set conf(qsi,filterNo)       0 }
 
    #--- Initialisation
-   set private(A,camNo) "0"
-   set private(B,camNo) "0"
-   set private(C,camNo) "0"
-   set private(power)   "$caption(qsi,puissance_peltier_--)"
-   ###set private(temperature) $caption(qsi,ccdTemp)
-   set private(frm) ""
+   set private(A,camNo)     "0"
+   set private(B,camNo)     "0"
+   set private(C,camNo)     "0"
+   set private(power)       "$caption(qsi,puissance_peltier_--)"
+   set private(frm)         ""
    set private(filterNames) ""
+   ###set private(temperature) $caption(qsi,ccdTemp)
 }
 
 #
@@ -111,9 +111,9 @@ proc ::qsi::confToWidget { } {
    #--- Recupere la configuration de la camera dans le tableau private(...)
    set widget(mirh)     $conf(qsi,mirh)
    set widget(mirv)     $conf(qsi,mirv)
-   ###set widget(cool)     $conf(qsi,cool)
-   ###set widget(setTemperature)     $conf(qsi,setTemperature)
    set widget(foncobtu) [ lindex "opened $caption(qsi,obtu_ferme) $caption(qsi,obtu_synchro)" $conf(qsi,foncobtu) ]
+   ###set widget(cool)           $conf(qsi,cool)
+   ###set widget(setTemperature) $conf(qsi,setTemperature)
 }
 
 #
@@ -125,10 +125,10 @@ proc ::qsi::widgetToConf { camItem } {
    global conf
 
    #--- Memorise la configuration de la camera dans le tableau conf()
-   set conf(qsi,mirh)   $widget(mirh)
-   set conf(qsi,mirv)   $widget(mirv)
-   ###set conf(qsi,cool)   $widget(cool)
-   ###set conf(qsi,setTemperature)   $widget(setTemperature)
+   set conf(qsi,mirh) $widget(mirh)
+   set conf(qsi,mirv) $widget(mirv)
+   ###set conf(qsi,cool)           $widget(cool)
+   ###set conf(qsi,setTemperature) $widget(setTemperature)
 }
 
 #
@@ -149,7 +149,6 @@ proc ::qsi::fillConfigPage { frm camItem } {
       destroy $i
    }
 
-
    #--- Frame des miroirs en x et en y
    frame $frm.frame1 -borderwidth 0 -relief raised
 
@@ -166,7 +165,6 @@ proc ::qsi::fillConfigPage { frm camItem } {
          pack $frm.frame1.frame4.miry -anchor w -side top -padx 20 -pady 10
 
       pack $frm.frame1.frame4 -anchor nw -side left -fill x -padx 20
-
 
    pack $frm.frame1 -side top -fill both -expand 1
 
@@ -274,7 +272,7 @@ proc ::qsi::configureCamera { camItem bufNo } {
          error "" "CameraUnique"
       }
       #--- Je cree la camera
-      set camNo [ cam::create qsi  ]
+      set camNo [ cam::create qsi USB ]
       console::affiche_erreur "$caption(qsi,port_camera) $caption(qsi,2points) USB\n"
       console::affiche_saut "\n"
       #--- Je change de variable
@@ -343,7 +341,6 @@ proc ::qsi::stop { camItem } {
 
    #--- j'adapte l'etat des widgets
    ::qsi::setWigetState $camItem
-
 }
 
 # ::qsi::getPluginProperty
@@ -394,8 +391,8 @@ proc ::qsi::getPluginProperty { camItem propertyName } {
    }
 }
 
-
-# ::qsi::displayWiget
+#
+# ::qsi::setWigetState
 #    change l'etat widgets "normal" si la camera est connectee
 #    change l'etat widgets "disabled" si la camera est deconnectee
 #
@@ -419,7 +416,6 @@ proc ::qsi::setWigetState { camItem } {
       }
    }
 }
-
 
 #
 # ::qsi::setConfigTemperature
@@ -473,6 +469,7 @@ proc ::qsi::setConfigTemperature { camItem } {
    }
 }
 
+#
 # ::qsi::displayTemperature
 #    Affiche la temperature du CCD
 #
@@ -481,24 +478,24 @@ proc ::qsi::displayTemperature { camItem } {
    global caption
 
    if { [ catch { set tempstatus [ cam$private($camItem,camNo) infotemp ] } ] == "0" } {
-      set setTemp         [ format "%+5.2f" [ lindex $tempstatus 0 ] ]
-      set temp_ccd           [ format "%+5.2f" [ lindex $tempstatus 1 ] ]
-      set temp_ambiant       [ format "%+5.2f" [ lindex $tempstatus 2 ] ]
-      set regulation         [ lindex $tempstatus 3 ]
-      set private(power)     "$caption(qsi,puissance_peltier) [ format "%3.0f" [ lindex $tempstatus 4 ] ] %"
-      set private(temperature)  "$caption(qsi,ccdTemp) $temp_ccd $caption(qsi,deg_c) ($caption(qsi,setTemp): $setTemp)"
-      set private(aftertemp) [ after 5000 ::qsi::displayTemperature $camItem ]
+      set setTemp              [ format "%+5.2f" [ lindex $tempstatus 0 ] ]
+      set temp_ccd             [ format "%+5.2f" [ lindex $tempstatus 1 ] ]
+      set temp_ambiant         [ format "%+5.2f" [ lindex $tempstatus 2 ] ]
+      set regulation           [ lindex $tempstatus 3 ]
+      set private(power)       "$caption(qsi,puissance_peltier) [ format "%3.0f" [ lindex $tempstatus 4 ] ] %"
+      set private(temperature) "$caption(qsi,ccdTemp) $temp_ccd $caption(qsi,deg_c) ($caption(qsi,setTemp): $setTemp)"
+      set private(aftertemp)   [ after 5000 ::qsi::displayTemperature $camItem ]
    } else {
-      set setTemp          "--"
-      set temp_ccd         ""
-      set temp_ambiant     ""
-      set regulation       ""
-      set power            "--"
-      set private(power)   "$caption(qsi,puissance_peltier) $power"
+      set setTemp              "--"
+      set temp_ccd             ""
+      set temp_ambiant         ""
+      set regulation           ""
+      set power                "--"
+      set private(power)       "$caption(qsi,puissance_peltier) $power"
       set private(temperature) "$caption(qsi,ccdTemp) $temp_ccd $caption(qsi,deg_c) ($caption(qsi,setTemp): $setTemp)"
       ###if { [ info exists private(aftertemp) ] == "1" } {
-      ###  unset private(aftertemp)
-      ##}
+      ###   unset private(aftertemp)
+      ###}
    }
 }
 
@@ -526,6 +523,4 @@ proc ::qsi::setShutter { camItem shutterState ShutterOptionList } {
       }
    }
 }
-
-
 
