@@ -2,12 +2,18 @@
 # Fichier : skybot_statut.tcl
 # Description : Affiche le statut de la base de donnees SkyBoT
 # Auteur : Jerome BERTHIER
-# Mise a jour $Id: skybot_statut.tcl,v 1.16 2009-07-09 17:03:06 svaillant Exp $
+# Mise a jour $Id: skybot_statut.tcl,v 1.17 2009-07-11 08:05:12 robertdelmas Exp $
 #
 
 namespace eval skybot_Statut {
    global audace
-   global voconf
+
+   #--- Compatibilite ascendante
+   if { [ package require dom ] == "2.6" } {
+      interp alias {} ::dom::parse {} ::dom::tcl::parse
+      interp alias {} ::dom::node {} ::dom::tcl::node
+      interp alias {} ::dom::selectNode {} ::dom::tcl::selectNode
+   }
 
    #--- Chargement des captions
    source [ file join $audace(rep_plugin) tool vo_tools skybot_statut.cap ]
@@ -41,16 +47,11 @@ namespace eval skybot_Statut {
    #
    proc recup_position { } {
       variable This
-      global audace
       global conf
       global voconf
 
       set voconf(geometry_statut) [ wm geometry $This ]
-      set deb [ expr 1 + [ string first + $voconf(geometry_statut) ] ]
-      set fin [ string length $voconf(geometry_statut) ]
-      set voconf(position_statut) "+[ string range $voconf(geometry_statut) $deb $fin ]"
-      #---
-      set conf(vo_tools,position_statut) $voconf(position_statut)
+      set conf(vo_tools,position_statut) $voconf(geometry_statut)
    }
 
    #
@@ -61,12 +62,11 @@ namespace eval skybot_Statut {
       variable This
       global audace
       global caption
-      global color
       global conf
       global voconf
 
       #--- initConf
-      if { ! [ info exists conf(vo_tools,position_statut) ] } { set conf(vo_tools,position_statut) "+80+40" }
+      if { ! [ info exists conf(vo_tools,position_statut) ] } { set conf(vo_tools,position_statut) "670x250+80+40" }
 
       #--- confToWidget
       set voconf(position_statut) $conf(vo_tools,position_statut)
@@ -79,13 +79,6 @@ namespace eval skybot_Statut {
          #--- Gestion du bouton
          $audace(base).tool.vo_tools.fra5.but1 configure -relief raised -state normal
          return
-      }
-
-      #---
-      if { [ info exists voconf(geometry_statut) ] } {
-         set deb [ expr 1 + [ string first + $voconf(geometry_statut) ] ]
-         set fin [ string length $voconf(geometry_statut) ]
-         set voconf(position_statut) "+[ string range $voconf(geometry_statut) $deb $fin ]"
       }
 
       #--- Interrogation de la base de donnees
@@ -105,7 +98,6 @@ namespace eval skybot_Statut {
          wm title $This $caption(statut,main_title)
          wm protocol $This WM_DELETE_WINDOW { ::skybot_Statut::fermer }
 
-
          #--- Liste des tranches
          frame $This.frame0 -borderwidth 0 -cursor arrow
          pack $This.frame0 -in $This -anchor s -side top -expand yes -fill both
@@ -122,7 +114,7 @@ namespace eval skybot_Statut {
           -columns [list \
           0 $caption(statut,label_ok) \
           0 begin 0 end \
-          0 $caption(statut,label_aster) 0 $caption(statut,label_planet) 0 $caption(statut,label_satnat) 0 $caption(statut,label_comet) 0 $caption(statut,label_maj) ] 
+          0 $caption(statut,label_aster) 0 $caption(statut,label_planet) 0 $caption(statut,label_satnat) 0 $caption(statut,label_comet) 0 $caption(statut,label_maj) ]
          pack $tbl -in $This.frame0 -side top -padx 3 -pady 3 -fill both -expand yes
          foreach tr [::dom::selectNode $votable "descendant::TR"] {
           set row {}
@@ -146,7 +138,6 @@ namespace eval skybot_Statut {
            set date [ mc_date2ymdhms [lindex $statut 2] ]
            set date_fin [ format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $date 0] [lindex $date 1] [lindex $date 2] \
                                                                   [lindex $date 3] [lindex $date  4] [lindex $date  5] ]
-
 
          #--- Cree un frame pour y mettre les boutons
          frame $This.frame11 \
