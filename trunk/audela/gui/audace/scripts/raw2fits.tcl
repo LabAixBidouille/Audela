@@ -3,7 +3,7 @@
 # Description : Script pour la conversion d'images .ARW .CR2 .CRW .DNG .ERF .MRW \
 #.NEF .ORF .RAF .RW2 .SR2 .TIFF .X3F au format .fit
 # Auteur : Raymond Zachantke
-# Mise a jour $Id: raw2fits.tcl,v 1.4 2009-07-05 22:30:30 robertdelmas Exp $
+# Mise a jour $Id: raw2fits.tcl,v 1.5 2009-07-11 16:30:43 robertdelmas Exp $
 #
 
 namespace eval ::raw2fits {
@@ -41,10 +41,10 @@ namespace eval ::raw2fits {
          -text "$caption(raw2fits,label_1) $private(raw2fits,dirname) $caption(raw2fits,label_2) "\
          -indicatoron 1 -onvalue "sub"
       checkbutton $this.opt.all -variable todo \
-         -text "$caption(raw2fits,label_1) $private(raw2fits,dirname) $caption(raw2fits,label_3) "\
+         -text "$caption(raw2fits,label_3) $private(raw2fits,dirname) $caption(raw2fits,label_4) "\
          -indicatoron 1 -onvalue "all"
       checkbutton $this.opt.one -variable todo \
-         -text $caption(raw2fits,label_5)\
+         -text $caption(raw2fits,label_6)\
          -indicatoron 1 -onvalue "one"
       if [ buf$audace(bufNo) imageready ] {
          $this.opt.one configure -state normal
@@ -55,10 +55,10 @@ namespace eval ::raw2fits {
       pack $this.opt -in $this -side top
 
       if [ buf$audace(bufNo) imageready ] {
-          set private(raw2fits,nom) [ ::confVisu::getFileName $audace(visuNo) ]
-          set extension  [ file extension $private(raw2fits,nom) ]
-          set test [ lsearch -exact $file_extension $extension ]
-          if { $test != "-1" } {
+         set private(raw2fits,nom) [ ::confVisu::getFileName $audace(visuNo) ]
+         set extension  [ file extension $private(raw2fits,nom) ]
+         set test [ lsearch -exact $file_extension $extension ]
+         if { $test != "-1" } {
             $this.opt.one configure -state normal
             $this.opt.one select
          } else {
@@ -79,7 +79,7 @@ namespace eval ::raw2fits {
       #--   frame de la confirmation
       frame $this.cmd -borderwidth 1 -relief raised
       ::raw2fits::CreateButton $this.cmd "ok" $caption(raw2fits,bouton1) { ::raw2fits::Convert $todo }
-         pack $this.cmd.ok -side left
+      pack $this.cmd.ok -side left
       ::raw2fits::CreateButton "$this.cmd" "no" $caption(raw2fits,bouton3) { ::raw2fits::Fermer }
       pack $this.cmd.no -side right
       ::raw2fits::CreateButton $this.cmd "hlp" $caption(raw2fits,bouton2) {
@@ -170,12 +170,12 @@ namespace eval ::raw2fits {
 
       #--   etablit la liste des fichiers d'extensions acceptees présents dans le repertoire
       set private(raw2fits,liste_cibles) [glob -nocomplain *.ARW *.CR2 *.CRW *.DNG *.MRW \
-       *.NEF *.ORF *.RAF *.RW2 *.SR2 *.TIFF *.X3F ]
+         *.NEF *.ORF *.RAF *.RW2 *.SR2 *.TIFF *.X3F ]
 
       if { $private(raw2fits,liste_cibles) != "" } {
 
          #--   notifie le repertoire analyse
-         ::console::affiche_resultat "$caption(raw2fits,label_4) $rep\n"
+         ::console::affiche_resultat "$caption(raw2fits,label_5) $rep\n"
 
          #--   prend pour generique le nom du repertoire
          set i [ string last "/" $rep ]
@@ -216,10 +216,10 @@ namespace eval ::raw2fits {
       if { $error == "0" } {
          #--   sauve l'image
          buf$audace(bufNo) save $destination
-         ::console::affiche_resultat "$caption(raw2fits,label_7) $name --> $private(raw2fits,nom)\n"
+         ::console::affiche_resultat "$caption(raw2fits,label_8) $name --> $private(raw2fits,nom)\n"
       } else {
          #--   message d'echec
-         ::console:::affiche_resultat "$caption(raw2fits,label_6) $source : $msg\n"
+         ::console:::affiche_resultat "$caption(raw2fits,label_7) $source : $msg\n"
          #--   suppression de l'image de la liste
          set index [ lsearch -exact $private(raw2fits,liste_cibles) $name ]
          set private(raw2fits,liste_cibles) [ lreplace $private(raw2fits,liste_cibles) $index $index ]
