@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.106 2009-06-20 21:36:50 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.107 2009-07-12 13:57:01 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -650,8 +650,8 @@ namespace eval ::confVisu {
 
             set hFile ""
             set catchResult [catch {
-               #--- j'ouvre le fichier en mode lecture
-               ###set hFile [fits open [getFileName $visuNo] 0]
+               #--- j'affiche la tkTable
+               ::confVisu::setMode $visuNo "table"
                set tkTable [::confVisu::getTable $visuNo ]
 
                #--- je vide la tkTable
@@ -671,8 +671,6 @@ namespace eval ::confVisu {
                   $tkTable insert end $row
                }
 
-               #--- j'affiche la tkTable
-               ::confVisu::setMode $visuNo "table"
             } ]
 
             if { $hFile != "" } {
@@ -1659,7 +1657,7 @@ namespace eval ::confVisu {
 
       #--- creation du graphe
       ###createGraph $visuNo
-      ###createTable $visuNo
+      createTable $visuNo
 
       grid $This.tool -row 0 -column 0 -rowspan 2 -sticky ns
       grid $This.bar  -row 0 -column 1 -sticky ew
@@ -3034,6 +3032,7 @@ proc ::confVisu::createTable { visuNo } {
          -xscrollcommand [list $This.ftable.xsb set] \
          -yscrollcommand [list $This.ftable.ysb set] \
          -exportselection 0 \
+         -selectmode single \
          -setfocus 1 \
          -activestyle none
       #--- je place la table et les scrollbars dans la frame
@@ -3042,7 +3041,6 @@ proc ::confVisu::createTable { visuNo } {
       grid $This.ftable.xsb   -row 1 -column 0 -sticky ew
       grid rowconfig    $This.ftable  0 -weight 1
       grid columnconfig $This.ftable  0 -weight 1
-   ###::confVisu::selectTool 1 ""
 }
 
 #------------------------------------------------------------
