@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.8 2009-07-09 17:34:21 michelpujol Exp $
+// $Id: libtel.c,v 1.9 2009-07-12 09:35:15 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -268,6 +268,14 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
                return TCL_ERROR;
             }
 
+            // je duplique la commande "mc_angle2rad" dans la thread de la camera
+            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_angle2rad");
+            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
+               sprintf(s, "cmdCamCreate: %s",interp->result);
+               Tcl_SetResult(interp, s, TCL_VOLATILE);
+               return TCL_ERROR;
+            }
+
             // je prepare la commande de creation de la camera dans la thread de la camera :
             // thread::send $threadId { {argv0} {argv1} ... {argvn} mainThreadId $mainThreadId }
             sprintf(s,"thread::send %s { ",telThreadId);
@@ -298,11 +306,9 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
      	   tel->interp=interp;
       }
 
-
       // je copie les identifiants de thread dans la structure du telescope
       strcpy(tel->mainThreadId, mainThreadId);
       strcpy(tel->telThreadId,  telThreadId);
-
 
       /* --- internal init ---*/
       if((err=tel_init_common(tel,argc,argv))!=0) {
