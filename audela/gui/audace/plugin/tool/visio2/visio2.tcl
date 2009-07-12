@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.42 2009-07-08 19:56:18 michelpujol Exp $
+# Mise a jour $Id: visio2.tcl,v 1.43 2009-07-12 14:02:00 michelpujol Exp $
 #
 
 namespace eval ::visio2 {
@@ -1031,9 +1031,9 @@ proc ::visio2::localTable::cmdButton1Click { visuNo tbl } {
       #--- j'arrete le slideshow
       set private($visuNo,slideShowState) 0
    }
-   update
    #--- je charge l'item selectionne
-   after 10 "::visio2::localTable::loadItem $visuNo [lindex $selection 0 ]"
+   after idle [list ::visio2::localTable::loadItem $visuNo [lindex $selection 0 ] ]
+
 }
 
 #------------------------------------------------------------------------------
@@ -1055,7 +1055,7 @@ proc ::visio2::localTable::cmdButton1DoubleClick { visuNo tbl } {
    }
 
    #--- je charge l'item selectionne (avec option double-clic)
-   loadItem $visuNo [lindex $selection 0 ] 1
+   after idle [list ::visio2::localTable::loadItem $visuNo [lindex $selection 0 ] 1 ]
 
 }
 
@@ -1074,16 +1074,15 @@ proc ::visio2::localTable::loadItem { visuNo index { doubleClick 0 } } {
    variable private
    global audace conf
 
-   $::visio2::private($visuNo,This) configure -cursor watch
+   $private($visuNo,tbl) configure -cursor watch
    update
 
    set catchResult [ catch {
-   set tbl $private($visuNo,tbl)
-
-   if { $private($visuNo,animation) == 1 } {
-      #--- j'arrete l'animation
-      stopAnimation $visuNo
-   }
+      set tbl $private($visuNo,tbl)
+      if { $private($visuNo,animation) == 1 } {
+         #--- j'arrete l'animation
+         stopAnimation $visuNo
+      }
 
       set name [string trimleft [$tbl cellcget $index,0 -text]]
       set type [$tbl cellcget $index,1 -text]
@@ -1160,7 +1159,7 @@ proc ::visio2::localTable::loadItem { visuNo index { doubleClick 0 } } {
       ::console::affiche_erreur "$::errorInfo\n"
    }
 
-   $::visio2::private($visuNo,This) configure -cursor arrow
+   $private($visuNo,tbl) configure -cursor arrow
 
 }
 
