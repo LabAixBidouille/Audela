@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.38 2009-05-27 21:47:50 michelpujol Exp $
+# Mise a jour $Id: telescope.tcl,v 1.39 2009-07-12 13:59:43 michelpujol Exp $
 #
 
 namespace eval ::telescope {
@@ -1147,8 +1147,6 @@ proc ::telescope::moveTelescope { alphaDirection alphaDiff deltaDirection deltaD
    set deltaDelay    [expr int(1000.0 * ($deltaDiff / [lindex $guidingSpeed 1 ])) ]
 
    set private(tescopeIsMoving) 1
-   #--- laisse la main pour traiter une eventuelle demande d'arret
-   update
 
    if { [ ::confTel::getPluginProperty hasMotionWhile ] == "0" } {
       #--- je demarre le deplacement alpha
@@ -1174,9 +1172,6 @@ proc ::telescope::moveTelescope { alphaDirection alphaDiff deltaDirection deltaD
    } else {
       tel$audace(telNo) correct $alphaDirection $alphaDelay
    }
-
-   #--- laisse la main pour traiter une eventuelle demande d'arret
-   update
 
    if { [ ::confTel::getPluginProperty hasMotionWhile ] == "0" } {
       #--- je demarre le deplacement delta
