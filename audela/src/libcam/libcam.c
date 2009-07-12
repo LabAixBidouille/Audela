@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.30 2009-06-08 22:04:32 michelpujol Exp $
+ * $Id: libcam.c,v 1.31 2009-07-12 09:36:57 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -1156,6 +1156,28 @@ static void AcqRead(ClientData clientData )
             libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
          }
       }
+
+
+      //--- get height after decompression . 
+      //--- Indispensable pour recuperer la taille relle de l'image 
+      //--- en particulier pour les APN ou l'utilisateur peut changer le format de l'image
+      sprintf(s, "buf%d getpixelsheight", cam->bufno);
+      libcam_log(LOG_DEBUG, s);
+      if (Tcl_Eval(interp, s) == TCL_OK) {
+         Tcl_GetIntFromObj(interp, Tcl_GetObjResult(interp), &cam->h);
+      } else {
+         libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+      }
+
+      //--- get width after decompression
+      sprintf(s, "buf%d getpixelswidth", cam->bufno);
+      libcam_log(LOG_DEBUG, s);
+      if (Tcl_Eval(interp, s) == TCL_OK) {
+         Tcl_GetIntFromObj(interp, Tcl_GetObjResult(interp), &cam->w);
+      } else {
+         libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+      }
+
 
       sprintf(s, "buf%d setkwd {NAXIS1 %d int \"\" \"\"}", cam->bufno, cam->w);
       libcam_log(LOG_DEBUG, s);
