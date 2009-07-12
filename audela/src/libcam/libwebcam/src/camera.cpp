@@ -401,6 +401,22 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    }else {
 #ifdef LIBWEBCAM_WITH_DIRECTX
       cam->params->capture = new CCaptureWinDirectx();
+      std::list<std::string> deviceList;
+      std::list<std::string>::iterator iterator;
+      BOOL result = ((CCaptureWinDirectx*) cam->params->capture)->getDeviceList(&deviceList, cam->msg);
+      if (result == TRUE) {
+         sprintf(cam->msg, "{ " );
+         for (iterator =  deviceList.begin(); iterator != deviceList.end(); ++iterator) {
+            char camName[256]; 
+            sprintf(camName, "{%s}", iterator->c_str());
+            strcat(cam->msg, camName);
+         }
+         strcat(cam->msg, " }");
+         deviceList.clear();
+         return 1;
+      } else {
+         return 1;
+      }
 #else
       strcpy(cam->msg, "directx is not available.");
       //webcam_log(LOG_DEBUG,"cam_init error: %s",cam->msg);
@@ -664,16 +680,26 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
       strcpy(cam->pixels_format, "FORMAT_BYTE");
       strcpy(cam->pixels_compression, "COMPRESS_NONE");
       cam->pixels_reverse_y = 1;
-      cam->pixel_data = (char*)malloc(cam->imax*cam->jmax*3);
+      //cam->pixel_data = (char*)malloc(cam->imax*cam->jmax*3);
+      cam->pixel_data = (char*)malloc(cam->w * cam->h * 3);
+      
       if( cam->pixel_data != NULL) {
-         // copy rgbBuffer into cam->pixel_data
-         // convert color order  BGR -> RGB
+         // copy rgbBuffer into cam->pixel_data and convert color order  BGR -> RGB
          frameBuffer = cam->params->capture->getGrabbedFrame(cam->msg);
          if( frameBuffer != NULL ) {
             unsigned char *pOut = (unsigned char *) cam->pixel_data  ;
-            for(int y = cam->jmax -1; y >= 0; y-- ) {
+            //for(int y = cam->jmax -1; y >= 0; y-- ) {
+            //   unsigned char *pIn = frameBuffer + y * cam->imax *3 ;
+            //   for(int x=0; x <cam->imax; x++) {
+            //      *(pOut++)= *(pIn + x*3 +2);
+            //      *(pOut++)= *(pIn + x*3 +1);
+            //      *(pOut++)= *(pIn + x*3 +0);
+            //   }
+            //}
+            // j'applique le fenetrage 
+            for(int y = cam->y2; y >= cam->y1; y-- ) {
                unsigned char *pIn = frameBuffer + y * cam->imax *3 ;
-               for(int x=0; x <cam->imax; x++) {
+               for(int x= cam->x1; x <= cam->x2; x++) {
                   *(pOut++)= *(pIn + x*3 +2);
                   *(pOut++)= *(pIn + x*3 +1);
                   *(pOut++)= *(pIn + x*3 +0);
@@ -694,16 +720,22 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
       strcpy(cam->pixels_format, "FORMAT_BYTE");
       strcpy(cam->pixels_compression, "COMPRESS_NONE");
       cam->pixels_reverse_y = 1;
-      cam->pixel_data = (char*)malloc(cam->imax*cam->jmax);
+      //cam->pixel_data = (char*)malloc(cam->imax*cam->jmax);
+      cam->pixel_data = (char*)malloc(cam->w * cam->h);
       if( cam->pixel_data != NULL) {
-         // copy rgbBuffer into cam->pixel_data
-         // convert color order  BGR -> RGB
+         // copy rgbBuffer into cam->pixel_data   convert color order  BGR -> RGB
          frameBuffer = cam->params->capture->getGrabbedFrame(cam->msg);
          if( frameBuffer != NULL ) {
             unsigned char *pOut = (unsigned char *) cam->pixel_data;
-            for(int y = cam->jmax -1; y >= 0; y-- ) {
+            //for(int y = cam->jmax -1; y >= 0; y-- ) {
+            //   unsigned char * pIn = frameBuffer + y * cam->imax *3 ;
+            //   for(int x=0; x <cam->imax; x++) {
+            //      *(pOut++)= *(pIn + x*3 );
+            //   }
+            //}
+            for(int y = cam->y2; y >= cam->y1; y-- ) {
                unsigned char * pIn = frameBuffer + y * cam->imax *3 ;
-               for(int x=0; x <cam->imax; x++) {
+               for(int x= cam->x1; x <= cam->x2; x++) {
                   *(pOut++)= *(pIn + x*3 );
                }
             }
@@ -769,10 +801,25 @@ void cam_update_window(struct camprop *cam)
    int maxx, maxy;
    maxx = cam->nb_photox;
    maxy = cam->nb_photoy;
-   cam->x1 = 0;
-   cam->x2 = maxx - 1;
-   cam->y1 = 0;
-   cam->y2 = maxy - 1;
+   //  je laisse les coor
+   //cam->x1 = 0;
+   //cam->x2 = maxx - 1;
+   //cam->y1 = 0;
+   //cam->y2 = maxy - 1;
+
+    if (cam->x1 < 0)
+	   cam->x1 = 0;
+    if (cam->x2 > maxx - 1)
+   	cam->x2 = maxx - 1;
+    if (cam->x1 > cam->x2)
+	   libcam_swap(&(cam->x1), &(cam->x2));
+    if (cam->y1 < 0)
+	   cam->y1 = 0;
+    if (cam->y2 > maxy - 1)
+	   cam->y2 = maxy - 1;
+    if (cam->y1 > cam->y2)
+	   libcam_swap(&(cam->y1), &(cam->y2));
+   
    cam->w = (cam->x2 - cam->x1) / cam->binx + 1;
    cam->x2 = cam->x1 + cam->w * cam->binx - 1;
    cam->h = (cam->y2 - cam->y1) / cam->biny + 1;
@@ -867,6 +914,10 @@ int webcam_setVideoFormat(struct camprop *cam, char *formatname)
 
 #endif
 
+   cam->x1 = 0;
+   cam->x2 = cam->nb_photox - 1;
+   cam->y1 = 0;
+   cam->y2 = cam->nb_photoy - 1;
    cam_update_window(cam);
    //webcam_log(LOG_DEBUG,"webcam_setVideoFormat end OK");
 
