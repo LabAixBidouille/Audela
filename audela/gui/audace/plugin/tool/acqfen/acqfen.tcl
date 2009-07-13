@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.25 2009-05-02 09:28:52 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.26 2009-07-13 21:38:06 robertdelmas Exp $
 #
 
 # =========================================================
@@ -1528,7 +1528,8 @@ frame $This -borderwidth 2 -relief groove
    frame $This.titre -borderwidth 2 -relief groove
    pack $This.titre -side top -fill x
 
-      Button $This.titre.but -borderwidth 1 -text $caption(acqfen,titre_fenetrees) \
+      Button $This.titre.but -borderwidth 1 \
+         -text "$caption(acqfen,help_titre1)\n$caption(acqfen,titre_fenetrees)" \
          -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::acqfen::getPluginType ] ] \
             [ ::acqfen::getPluginDirectory ] [ ::acqfen::getPluginHelp ]"
       pack $This.titre.but -in $This.titre -anchor center -expand 1 -fill both -side top -ipadx 5

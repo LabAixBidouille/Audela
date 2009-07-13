@@ -2,7 +2,7 @@
 # Fichier : cmanimate.tcl
 # Description : Animation/slides control panel for Cloud Monitor
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmanimate.tcl,v 1.15 2009-02-07 11:01:02 robertdelmas Exp $
+# Mise a jour $Id: cmanimate.tcl,v 1.16 2009-07-13 21:40:30 robertdelmas Exp $
 #
 
 #****************************************************************
@@ -136,6 +136,7 @@ namespace eval ::cmanimate {
       #--- Initialisation des captions
       set panneau(cmanimate,titre)           "$caption(cmanimate,titre)"
       set panneau(cmanimate,aide)            "$caption(cmanimate,help_titre)"
+      set panneau(cmanimate,aide1)           "$caption(cmanimate,help_titre1)"
       set panneau(cmanimate,genericfilename) "$caption(cmanimate,nom_generique)"
       set panneau(cmanimate,parcourir)       "$caption(cmanimate,parcourir)"
       set panneau(cmanimate,nbimages)        "$caption(cmanimate,nbre_images)"
@@ -1052,7 +1053,8 @@ proc cmanimateBuildIF { This } {
       frame $This.fra1 -borderwidth 2 -relief groove
 
          #--- Label for title
-         Button $This.fra1.but -borderwidth 1 -text $panneau(cmanimate,titre) \
+         Button $This.fra1.but -borderwidth 1 \
+            -text "$panneau(cmanimate,aide1)\n$panneau(cmanimate,titre)" \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::cmanimate::getPluginType ] ] \
                [ ::cmanimate::getPluginDirectory ] [ ::cmanimate::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5

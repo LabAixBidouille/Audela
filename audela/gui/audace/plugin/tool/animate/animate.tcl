@@ -2,7 +2,7 @@
 # Fichier : animate.tcl
 # Description : Outil pour le controle des animations d'images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: animate.tcl,v 1.20 2009-02-07 11:00:34 robertdelmas Exp $
+# Mise a jour $Id: animate.tcl,v 1.21 2009-07-13 21:39:19 robertdelmas Exp $
 #
 
 #============================================================
@@ -113,6 +113,7 @@ proc ::animate::createPanel { this } {
    #--- Initialisation des captions
    set panneau(animate,titre)           "$caption(animate,animation)"
    set panneau(animate,aide)            "$caption(animate,help_titre)"
+   set panneau(animate,aide1)           "$caption(animate,help_titre1)"
    set panneau(animate,parcourir)       "$caption(animate,parcourir)"
    set panneau(animate,genericfilename) "$caption(animate,nom_generique)"
    set panneau(animate,nbimages)        "$caption(animate,nb_images)"
@@ -265,7 +266,8 @@ proc ::animate::animBuildIF { This } {
       frame $This.fra1 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(animate,titre) \
+         Button $This.fra1.but -borderwidth 1 \
+            -text "$panneau(animate,aide1)\n$panneau(animate,titre)" \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::animate::getPluginType ] ] \
                [ ::animate::getPluginDirectory ] [ ::animate::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5

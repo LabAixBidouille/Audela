@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude.tcl,v 1.21 2009-05-02 14:51:15 robertdelmas Exp $
+# Mise a jour $Id: cmaude.tcl,v 1.22 2009-07-13 21:40:59 robertdelmas Exp $
 #
 # Remarks :
 # The definition of some variables (binning, exp. time, rythm, etc.)
@@ -134,6 +134,7 @@ namespace eval ::cmaude {
       #--- Initialisation des variables panneau
       set panneau(cmaude,titre)           "$caption(cmaude,titre_mascot)"
       set panneau(cmaude,aide)            "$caption(cmaude,help_titre)"
+      set panneau(cmaude,aide1)           "$caption(cmaude,help_titre1)"
       set panneau(cmaude,config)          "$caption(cmaude,configuration)"
       set panneau(cmaude,parcourir)       "$caption(cmaude,parcourir)"
       set panneau(cmaude,label_bias)      "$caption(cmaude,bias)"
@@ -808,7 +809,8 @@ global color panneau
       frame $This.fra1 -borderwidth 2 -relief groove
 
          #--- Label of title
-         Button $This.fra1.but1 -borderwidth 1 -text $panneau(cmaude,titre) \
+         Button $This.fra1.but1 -borderwidth 1 \
+            -text "$panneau(cmaude,aide1)\n$panneau(cmaude,titre)" \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::cmaude::getPluginType ] ] \
                [ ::cmaude::getPluginDirectory ] [ ::cmaude::getPluginHelp ]"
          pack $This.fra1.but1 -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5

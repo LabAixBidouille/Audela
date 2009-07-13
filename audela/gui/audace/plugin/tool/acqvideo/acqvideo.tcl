@@ -2,7 +2,7 @@
 # Fichier : acqvideo.tcl
 # Description : Outil d'acquisition video
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: acqvideo.tcl,v 1.10 2009-02-07 10:59:34 robertdelmas Exp $
+# Mise a jour $Id: acqvideo.tcl,v 1.11 2009-07-13 21:38:51 robertdelmas Exp $
 #
 
 #==============================================================
@@ -1671,7 +1671,8 @@ proc acqvideoBuildIF { visuNo } {
 
    #--- Trame du titre de l'outil
    frame $panneau(acqvideo,$visuNo,This).titre -borderwidth 2 -relief groove
-      Button $panneau(acqvideo,$visuNo,This).titre.but -borderwidth 1 -text $caption(acqvideo,titre) \
+      Button $panneau(acqvideo,$visuNo,This).titre.but -borderwidth 1 \
+         -text "$caption(acqvideo,help_titre1)\n$caption(acqvideo,titre)" \
          -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::acqvideo::getPluginType ] ] \
             [ ::acqvideo::getPluginDirectory ] [ ::acqvideo::getPluginHelp ]"
       pack $panneau(acqvideo,$visuNo,This).titre.but -side top -fill x -in $panneau(acqvideo,$visuNo,This).titre -ipadx 5
