@@ -3,7 +3,7 @@
 #
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.9 2009-04-28 20:32:59 bmauclaire Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.10 2009-07-13 00:20:21 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -12,7 +12,7 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "1.5.2 - 20/04/2009"
+set spcaudace(version) "1.5.3 - 13/06/2009"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
 
