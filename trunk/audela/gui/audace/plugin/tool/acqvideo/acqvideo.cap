@@ -1,6 +1,6 @@
 #
 # Fichier : acqvideo.cap
-# Mise a jour $Id: acqvideo.cap,v 1.2 2008-06-29 12:59:27 robertdelmas Exp $
+# Mise a jour $Id: acqvideo.cap,v 1.3 2009-07-13 21:33:56 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,7 +13,8 @@ global caption langage
 
 set caption(acqvideo,menu)                      "Video Acquisition"
 set caption(acqvideo,titre)                     "Video Acquisition"
-set caption(acqvideo,help_titre)                "Help For This Tool"
+set caption(acqvideo,help_titre)                "Help for this Tool"
+set caption(acqvideo,help_titre1)               "Help for the Tool:"
 set caption(acqvideo,configuration)             "Setup"
 set caption(acqvideo,pose)                      "Exp."
 set caption(acqvideo,sec)                       "sec."
@@ -87,7 +88,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqvideo,menu)                   "Acquisition vidéo"
    set caption(acqvideo,titre)                  "Acquisition vidéo"
-   set caption(acqvideo,help_titre)             "Aide pour cet outil"
+   set caption(acqvideo,help_titre)             "Aide de cet outil"
+   set caption(acqvideo,help_titre1)            "Aide de l'outil :"
    set caption(acqvideo,configuration)          "Configuration"
    set caption(acqvideo,pose)                   "Pose"
    set caption(acqvideo,sec)                    "sec."
@@ -163,6 +165,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqvideo,menu)                   "Acquisizione video"
    set caption(acqvideo,titre)                  "Acquisizione video"
    set caption(acqvideo,help_titre)             "Aiuto per questo tool"
+   set caption(acqvideo,help_titre1)            "Aiuto per lo tool:"
    set caption(acqvideo,configuration)          "Configurazione"
    set caption(acqvideo,pose)                   "Posa"
    set caption(acqvideo,sec)                    "sec."
@@ -238,6 +241,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqvideo,menu)                   "Adquisición vídeo"
    set caption(acqvideo,titre)                  "Adquisición vídeo"
    set caption(acqvideo,help_titre)             "Ayuda para esta herramienta"
+   set caption(acqvideo,help_titre1)            "Ajuda para del herramienta:"
    set caption(acqvideo,configuration)          "Configuración"
    set caption(acqvideo,pose)                   "Exp."
    set caption(acqvideo,sec)                    "seg."
@@ -313,6 +317,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqvideo,menu)                   "Video Belichtung"
    set caption(acqvideo,titre)                  "Video Belichtung"
    set caption(acqvideo,help_titre)             "Hilfe für dieses Gerät"
+   set caption(acqvideo,help_titre1)            "Hilfe für die Gerät:"
    set caption(acqvideo,configuration)          "Konfiguration"
    set caption(acqvideo,pose)                   "Bel."
    set caption(acqvideo,sec)                    "sek."
@@ -388,6 +393,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqvideo,menu)                   "Aquisição video"
    set caption(acqvideo,titre)                  "Aquisição video"
    set caption(acqvideo,help_titre)             "Ajuda para esta ferramenta"
+   set caption(acqvideo,help_titre1)            "Ajuda para del ferramenta:"
    set caption(acqvideo,configuration)          "Configuração"
    set caption(acqvideo,pose)                   "Exposição"
    set caption(acqvideo,sec)                    "seg."
@@ -462,7 +468,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqvideo,menu)                   "Video Acquisition"
    set caption(acqvideo,titre)                  "Video Acquisition"
-   set caption(acqvideo,help_titre)             "Help For This Tool"
+   set caption(acqvideo,help_titre)             "Help for this Tool"
+   set caption(acqvideo,help_titre1)            "Help for the Tool:"
    set caption(acqvideo,configuration)          "Setup"
    set caption(acqvideo,pose)                   "Exp."
    set caption(acqvideo,sec)                    "sec."

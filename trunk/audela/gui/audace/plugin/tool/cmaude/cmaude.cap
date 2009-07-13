@@ -1,6 +1,6 @@
 #
 # Fichier : cmaude.cap
-# Mise a jour $Id: cmaude.cap,v 1.21 2009-04-01 17:51:34 robertdelmas Exp $
+# Mise a jour $Id: cmaude.cap,v 1.22 2009-07-13 21:35:36 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,7 +12,8 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(cmaude,titre_mascot)                   "Acquisition (MASCOT)"
-set caption(cmaude,help_titre)                     "Help For This Tool"
+set caption(cmaude,help_titre)                     "Help for this Tool"
+set caption(cmaude,help_titre1)                    "Help for the Tool:"
 set caption(cmaude,configuration)                  "Setup"
 set caption(cmaude,bias)                           "Bias Image"
 set caption(cmaude,dark)                           "Dark Image"
@@ -101,7 +102,8 @@ set caption(cmaude,mots_cles)                      "Keywords"
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cmaude,titre_mascot)                "Acquisition (MASCOT)"
-   set caption(cmaude,help_titre)                  "Aide pour cet outil"
+   set caption(cmaude,help_titre)                  "Aide de cet outil"
+   set caption(cmaude,help_titre1)                 "Aide de l'outil :"
    set caption(cmaude,configuration)               "Configuration"
    set caption(cmaude,bias)                        "Image du bias"
    set caption(cmaude,dark)                        "Image du dark"
@@ -191,6 +193,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cmaude,titre_mascot)                "Acquisizione (MASCOT)"
    set caption(cmaude,help_titre)                  "Aiuto per questo tool"
+   set caption(cmaude,help_titre1)                 "Aiuto per lo tool:"
    set caption(cmaude,configuration)               "Configurazione"
    set caption(cmaude,bias)                        "Immagine bias"
    set caption(cmaude,dark)                        "Immagine dark"
@@ -280,6 +283,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cmaude,titre_mascot)                "Adquisición (MASCOT)"
    set caption(cmaude,help_titre)                  "Ayuda para esta herramienta"
+   set caption(cmaude,help_titre1)                 "Ajuda para del herramienta:"
    set caption(cmaude,configuration)               "Configuración"
    set caption(cmaude,bias)                        "Imagen de Bias"
    set caption(cmaude,dark)                        "Imagen de Dark"
@@ -369,6 +373,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cmaude,titre_mascot)                "Belichtung (MASCOT)"
    set caption(cmaude,help_titre)                  "Hilfe für dieses Gerät"
+   set caption(cmaude,help_titre1)                 "Hilfe für die Gerät:"
    set caption(cmaude,configuration)               "Konfiguration"
    set caption(cmaude,bias)                        "Bias Bild"
    set caption(cmaude,dark)                        "Dark Bild"
@@ -458,6 +463,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cmaude,titre_mascot)                "Aquisição (MASCOT)"
    set caption(cmaude,help_titre)                  "Ajuda para esta ferramenta"
+   set caption(cmaude,help_titre1)                 "Ajuda para del ferramenta:"
    set caption(cmaude,configuration)               "Configuração"
    set caption(cmaude,bias)                        "Imagem de polarização"
    set caption(cmaude,dark)                        "Imagem dark"
@@ -546,7 +552,8 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(cmaude,titre_mascot)                "Acquisition (MASCOT)"
-   set caption(cmaude,help_titre)                  "Help For This Tool"
+   set caption(cmaude,help_titre)                  "Help for this Tool"
+   set caption(cmaude,help_titre1)                 "Help for the Tool:"
    set caption(cmaude,configuration)               "Setup"
    set caption(cmaude,bias)                        "Bias Image"
    set caption(cmaude,dark)                        "Dark Image"

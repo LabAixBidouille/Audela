@@ -1,6 +1,6 @@
 #
 # Fichier : acqcolor_go.cap
-# Mise a jour $Id: acqcolor_go.cap,v 1.7 2009-04-19 12:51:55 robertdelmas Exp $
+# Mise a jour $Id: acqcolor_go.cap,v 1.8 2009-07-13 21:32:57 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,7 +12,8 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(acqcolor_go,acqcolor)         "Color CCD"
-set caption(acqcolor_go,help_titre)       "Help For This Tool"
+set caption(acqcolor_go,help_titre)       "Help for this Tool"
+set caption(acqcolor_go,help_titre1)      "Help for the Tool:"
 set caption(acqcolor_go,kaf0400)          "Color Kaf-0400"
 set caption(acqcolor_go,kaf1600)          "Color Kaf-1600"
 set caption(acqcolor_go,kac1310)          "Color Kac-1310"
@@ -22,7 +23,8 @@ set caption(acqcolor_go,acqvisu)          "Acq. & View"
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqcolor_go,acqcolor)      "CCD couleur"
-   set caption(acqcolor_go,help_titre)    "Aide pour cet outil"
+   set caption(acqcolor_go,help_titre)    "Aide de cet outil"
+   set caption(acqcolor_go,help_titre1)   "Aide de l'outil :"
    set caption(acqcolor_go,kaf0400)       "Kaf-0400 Couleur"
    set caption(acqcolor_go,kaf1600)       "Kaf-1600 Couleur"
    set caption(acqcolor_go,kac1310)       "Kac-1310 Couleur"
@@ -33,6 +35,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqcolor_go,acqcolor)      "CCD colore"
    set caption(acqcolor_go,help_titre)    "Aiuto per questo tool"
+   set caption(acqcolor_go,help_titre1)   "Aiuto per lo tool:"
    set caption(acqcolor_go,kaf0400)       "Kaf-0400 Colore"
    set caption(acqcolor_go,kaf1600)       "Kaf-1600 Colore"
    set caption(acqcolor_go,kac1310)       "Kac-1310 Colore"
@@ -43,6 +46,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqcolor_go,acqcolor)      "CCD color"
    set caption(acqcolor_go,help_titre)    "Ayuda para esta herramienta"
+   set caption(acqcolor_go,help_titre1)   "Ajuda para del herramienta:"
    set caption(acqcolor_go,kaf0400)       "Kaf-0400 Color"
    set caption(acqcolor_go,kaf1600)       "Kaf-1600 Color"
    set caption(acqcolor_go,kac1310)       "Kac-1310 Color"
@@ -53,6 +57,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqcolor_go,acqcolor)      "Farbe CCD"
    set caption(acqcolor_go,help_titre)    "Hilfe für dieses Gerät"
+   set caption(acqcolor_go,help_titre1)   "Hilfe für die Gerät:"
    set caption(acqcolor_go,kaf0400)       "Farbe Kaf-0400"
    set caption(acqcolor_go,kaf1600)       "Farbe Kaf-1600"
    set caption(acqcolor_go,kac1310)       "Farbe Kac-1310"
@@ -63,6 +68,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqcolor_go,acqcolor)      "CCD a cores"
    set caption(acqcolor_go,help_titre)    "Ajuda para esta ferramenta"
+   set caption(acqcolor_go,help_titre1)   "Ajuda para del ferramenta:"
    set caption(acqcolor_go,kaf0400)       "Kaf-0400 a cores"
    set caption(acqcolor_go,kaf1600)       "Kaf-1600 a cores"
    set caption(acqcolor_go,kac1310)       "Kac-1310 a cores"
@@ -73,6 +79,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqcolor_go,acqcolor)      "Farve CCD"
    set caption(acqcolor_go,help_titre)    "Hjælp til dette værktøj"
+   set caption(acqcolor_go,help_titre1)   "Hjælp til i værktøj:"
    set caption(acqcolor_go,kaf0400)       "Farve Kaf-0400"
    set caption(acqcolor_go,kaf1600)       "Farve Kaf-1600"
    set caption(acqcolor_go,kac1310)       "Farve Kac-1310"

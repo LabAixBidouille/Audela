@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.29 2007-11-26 17:42:48 robertdelmas Exp $
+# Mise a jour $Id: autoguider.cap,v 1.30 2009-07-13 21:34:32 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,7 +13,8 @@ global caption langage
 
 set caption(autoguider,menu)                     "Autoguider"
 set caption(autoguider,titre)                    "Autoguider"
-set caption(autoguider,help_titre)               "Help For This Tool"
+set caption(autoguider,help_titre)               "Help for this Tool"
+set caption(autoguider,help_titre1)              "Help for the Tool:"
 set caption(autoguider,pb)                       "Problem"
 set caption(autoguider,selcam)                   "You must select a camera first\n(Setup/Camera)."
 
@@ -75,7 +76,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(autoguider,menu)                  "Autoguidage"
    set caption(autoguider,titre)                 "Autoguidage"
-   set caption(autoguider,help_titre)            "Aide pour cet outil"
+   set caption(autoguider,help_titre)            "Aide de cet outil"
+   set caption(autoguider,help_titre1)           "Aide de l'outil :"
    set caption(autoguider,pb)                    "Problème"
    set caption(autoguider,selcam)                "Vous devez d'abord sélectionner une caméra\n(menu Configuration/Caméra)."
 
@@ -138,6 +140,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,menu)                  "Autoguida"
    set caption(autoguider,titre)                 "Autoguida"
    set caption(autoguider,help_titre)            "Aiuto per questo tool"
+   set caption(autoguider,help_titre1)           "Aiuto per lo tool:"
    set caption(autoguider,pb)                    "Problema"
    set caption(autoguider,selcam)                "Occorre selezionare preventivamente una\ncamera CCD (menu Configurazione/Camera)."
 
@@ -200,6 +203,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,menu)                  "Autoguía"
    set caption(autoguider,titre)                 "Autoguía"
    set caption(autoguider,help_titre)            "Ayuda para esta herramienta"
+   set caption(autoguider,help_titre1)           "Ajuda para del herramienta:"
    set caption(autoguider,pb)                    "Problema"
    set caption(autoguider,selcam)                "Debe seleccionar primero una cámara\n(menú Configuración/Cámara)."
 
@@ -262,6 +266,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,menu)                  "Automatische Steuerung"
    set caption(autoguider,titre)                 "Automatische Steuerung"
    set caption(autoguider,help_titre)            "Hilfe für dieses Gerät"
+   set caption(autoguider,help_titre1)           "Hilfe für die Gerät:"
    set caption(autoguider,pb)                    "Problem"
    set caption(autoguider,selcam)                "Sie müssen erst eine Kamera wählen\n(Konfiguration/Kamera Menu)."
 
@@ -324,6 +329,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,menu)                  "Autoguiagem"
    set caption(autoguider,titre)                 "Autoguiagem"
    set caption(autoguider,help_titre)            "Ajuda para esta ferramenta"
+   set caption(autoguider,help_titre1)           "Ajuda para del ferramenta:"
    set caption(autoguider,pb)                    "Problema"
    set caption(autoguider,selcam)                "Deve seleccionar primeiro uma câmara\n(menu Configuração/Câmara)."
 
@@ -385,7 +391,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(autoguider,menu)                  "Autoguider"
    set caption(autoguider,titre)                 "Autoguider"
-   set caption(autoguider,help_titre)            "Help For This Tool"
+   set caption(autoguider,help_titre)            "Help for this Tool"
+   set caption(autoguider,help_titre1)           "Help for the Tool:"
    set caption(autoguider,pb)                    "Problem"
    set caption(autoguider,selcam)                "You must select a camera first\n(Setup/Camera)."
 
