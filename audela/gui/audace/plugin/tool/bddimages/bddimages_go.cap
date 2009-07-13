@@ -8,13 +8,15 @@
 
 global caption
 
-set caption(bddimages_go,titre) 	"Base de donnees d'images"
-set caption(bddimages_go,bddimages)	"Aide à la Base\nde donnees d'images"
-set caption(bddimages_go,help_titre)	"Aide pour cet outil"
+   set caption(bddimages_go,titre)              "Base de données d'images"
+   set caption(bddimages_go,bddimages)          "Base de données\nd'images"
+   set caption(bddimages_go,help_titre)         "Aide de cet outil"
+   set caption(bddimages_go,help_titre1)        "Aide de l'outil :"
 
-set caption(bddimages_go,configuration) "Configuration"
-set caption(bddimages_go,status)	"Statut de la BDD"
-set caption(bddimages_go,insertion)	"Insertion d'images"
-set caption(bddimages_go,recherche)	"Recherche"
-set caption(bddimages_go,test)	        "Test"
-set caption(bddimages_go,ressource)     "re-source"
+   set caption(bddimages_go,configuration)      "Configuration"
+   set caption(bddimages_go,status)             "Statut de la BDD"
+   set caption(bddimages_go,insertion)          "Insertion d'images"
+   set caption(bddimages_go,recherche)          "Recherche"
+   set caption(bddimages_go,test)               "Test"
+   set caption(bddimages_go,ressource)          "re-source"
+

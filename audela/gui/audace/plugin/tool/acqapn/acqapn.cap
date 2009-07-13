@@ -1,6 +1,6 @@
 #
 # Fichier : acqapn.cap
-# Mise a jour $Id: acqapn.cap,v 1.17 2009-01-10 10:40:05 robertdelmas Exp $
+# Mise a jour $Id: acqapn.cap,v 1.18 2009-07-13 21:32:40 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -25,7 +25,8 @@ set caption(acqapn,sw_connect,off)           "Disconnect"
 set caption(acqapn,sw_video,no)              "Connect Video"
 set caption(acqapn,sw_video,on)              "Video On"
 set caption(acqapn,sw_video,off)             "Video Off"
-set caption(acqapn,help,titre)               "Help For This Tool"
+set caption(acqapn,help,titre)               "Help for this Tool"
+set caption(acqapn,help,titre1)              "Help for the Tool:"
 set caption(acqapn,help,adopt)               "The new settings"
 set caption(acqapn,help,charge)              "Record Label"
 set caption(acqapn,help,edit)                "On the Terminal"
@@ -113,7 +114,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqapn,sw_video,no)           "Vidéo Connecte"
    set caption(acqapn,sw_video,on)           "Vidéo On"
    set caption(acqapn,sw_video,off)          "Vidéo Off"
-   set caption(acqapn,help,titre)            "Aide pour cet outil"
+   set caption(acqapn,help,titre)            "Aide de cet outil"
+   set caption(acqapn,help,titre1)           "Aide de l'outil :"
    set caption(acqapn,help,adopt)            "les nouveaux paramètres"
    set caption(acqapn,help,charge)           "label d'enregistrement"
    set caption(acqapn,help,edit)             "sur la Console"
@@ -202,6 +204,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqapn,sw_video,on)           "Video Acceso"
    set caption(acqapn,sw_video,off)          "Video Spento"
    set caption(acqapn,help,titre)            "Aiuto per questo tool"
+   set caption(acqapn,help,titre1)           "Aiuto per lo tool:"
    set caption(acqapn,help,adopt)            "i nuovi parametri"
    set caption(acqapn,help,charge)           "identificativo per salvataggio"
    set caption(acqapn,help,edit)             "sulla Console"
@@ -290,6 +293,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqapn,sw_video,on)           "Vídeo On"
    set caption(acqapn,sw_video,off)          "Vídeo Off"
    set caption(acqapn,help,titre)            "Ayuda para esta herramienta"
+   set caption(acqapn,help,titre1)           "Ajuda para del herramienta:"
    set caption(acqapn,help,adopt)            "Los nuevos ajustes"
    set caption(acqapn,help,charge)           "Etiqueta de grabar"
    set caption(acqapn,help,edit)             "En la Consola"
@@ -378,6 +382,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqapn,sw_video,on)           "Video ein"
    set caption(acqapn,sw_video,off)          "Video aus"
    set caption(acqapn,help,titre)            "Hilfe für dieses Gerät"
+   set caption(acqapn,help,titre1)           "Hilfe für die Gerät:"
    set caption(acqapn,help,adopt)            "Die neuen Parametern"
    set caption(acqapn,help,charge)           "Speicherung zeichnen"
    set caption(acqapn,help,edit)             "auf die Konsole"
@@ -466,6 +471,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqapn,sw_video,on)           "Video ligado"
    set caption(acqapn,sw_video,off)          "Video desligado"
    set caption(acqapn,help,titre)            "Ajuda para esta ferramenta"
+   set caption(acqapn,help,titre1)           "Ajuda para del ferramenta:"
    set caption(acqapn,help,adopt)            "os novos parâmetros"
    set caption(acqapn,help,charge)           "nome de registo"
    set caption(acqapn,help,edit)             "na consola"
@@ -553,7 +559,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqapn,sw_video,no)           "Connect Video"
    set caption(acqapn,sw_video,on)           "Video On"
    set caption(acqapn,sw_video,off)          "Video Off"
-   set caption(acqapn,help,titre)            "Help For This Tool"
+   set caption(acqapn,help,titre)            "Help for this Tool"
+   set caption(acqapn,help,titre1)           "Help for the Tool:"
    set caption(acqapn,help,adopt)            "The new settings"
    set caption(acqapn,help,charge)           "Record Label"
    set caption(acqapn,help,edit)             "On the Terminal"
