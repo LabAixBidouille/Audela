@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.86 2009-07-09 17:22:21 michelpujol Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.87 2009-07-13 21:37:12 robertdelmas Exp $
 #
 
 #==============================================================
@@ -2360,7 +2360,8 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
 
    #--- Trame du titre du panneau
    frame $panneau(acqfc,$visuNo,This).titre -borderwidth 2 -relief groove
-      Button $panneau(acqfc,$visuNo,This).titre.but -borderwidth 1 -text $caption(acqfc,titre) \
+      Button $panneau(acqfc,$visuNo,This).titre.but -borderwidth 1 \
+         -text "$caption(acqfc,help_titre1)\n$caption(acqfc,titre)" \
          -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::acqfc::getPluginType ] ] \
             [ ::acqfc::getPluginDirectory ] [ ::acqfc::getPluginHelp ]"
       pack $panneau(acqfc,$visuNo,This).titre.but -side top -fill x -in $panneau(acqfc,$visuNo,This).titre -ipadx 5

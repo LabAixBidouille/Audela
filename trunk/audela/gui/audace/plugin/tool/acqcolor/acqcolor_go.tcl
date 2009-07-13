@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition d'images en couleur
 # Compatibilite : Cameras Audine Couleur et SCR1300XTC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: acqcolor_go.tcl,v 1.14 2009-02-07 10:58:53 robertdelmas Exp $
+# Mise a jour $Id: acqcolor_go.tcl,v 1.15 2009-07-13 21:36:38 robertdelmas Exp $
 #
 
 #============================================================
@@ -118,6 +118,7 @@ proc ::acqcolor::createPanel { this } {
    #--- Initialisation des captions
    set panneau(acqcolor,titre)  "$caption(acqcolor_go,acqcolor)"
    set panneau(acqcolor,aide)   "$caption(acqcolor_go,help_titre)"
+   set panneau(acqcolor,aide1)  "$caption(acqcolor_go,help_titre1)"
    set panneau(acqcolor,titre1) "$caption(acqcolor_go,kaf0400)"
    set panneau(acqcolor,titre2) "$caption(acqcolor_go,kaf1600)"
    set panneau(acqcolor,titre3) "$caption(acqcolor_go,kac1310)"
@@ -164,7 +165,8 @@ proc ::acqcolor::acqcolorBuildIF { This } {
       frame $This.fra1 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(acqcolor,titre) \
+         Button $This.fra1.but -borderwidth 1 \
+            -text "$panneau(acqcolor,aide1)\n$panneau(acqcolor,titre)" \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::acqcolor::getPluginType ] ] \
                [ ::acqcolor::getPluginDirectory ] [ ::acqcolor::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5

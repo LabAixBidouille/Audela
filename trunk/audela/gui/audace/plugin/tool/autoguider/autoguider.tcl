@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.39 2009-06-25 16:56:26 robertdelmas Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.40 2009-07-13 21:39:45 robertdelmas Exp $
 #
 
 #==============================================================
@@ -157,11 +157,12 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
 
    #--- Cadre du titre de l'outil
    frame $This.titre -borderwidth 2 -relief groove
-      Button $This.titre.but -borderwidth 1 -text "$caption(autoguider,titre)" \
-        -command {
-           ::audace::showHelpPlugin [::audace::getPluginTypeDirectory [::autoguider::getPluginType]] \
-              [::autoguider::getPluginDirectory] [::autoguider::getPluginHelp]
-        }
+      Button $This.titre.but -borderwidth 1 \
+         -text "$caption(autoguider,help_titre1)\n$caption(autoguider,titre)" \
+         -command {
+            ::audace::showHelpPlugin [::audace::getPluginTypeDirectory [::autoguider::getPluginType]] \
+               [::autoguider::getPluginDirectory] [::autoguider::getPluginHelp]
+         }
       pack $This.titre.but -side top -fill x
       DynamicHelp::add $This.titre.but -text "$caption(autoguider,help_titre)"
    grid $This.titre -sticky new

@@ -3,7 +3,7 @@
 # Fichier : bddimages_go.tcl
 # Description : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur : Frédéric Vachier
-# 
+#
 
 
 #============================================================
@@ -151,6 +151,7 @@ proc ::bddimages::createPanel { this } {
    #--- Initialisation des captions
    set panneau(bddimages,titre)  "$caption(bddimages_go,bddimages)"
    set panneau(bddimages,aide)   "$caption(bddimages_go,help_titre)"
+   set panneau(bddimages,aide1)  "$caption(bddimages_go,help_titre1)"
    set panneau(bddimages,titre1) "$caption(bddimages_go,configuration)"
    set panneau(bddimages,titre2) "$caption(bddimages_go,status)"
    set panneau(bddimages,titre3) "$caption(bddimages_go,insertion)"
@@ -159,7 +160,7 @@ proc ::bddimages::createPanel { this } {
    set panneau(bddimages,titre6) "$caption(bddimages_go,ressource)"
    #--- Construction de l'interface
    ::bddimages::bddimagesBuildIF $This
-    
+
 }
 
 #------------------------------------------------------------
@@ -178,7 +179,7 @@ proc ::bddimages::startTool { visuNo } {
 #------------------------------------------------------------
 proc ::bddimages::stopTool { visuNo } {
    variable This
-   
+
    pack forget $This
 }
 
@@ -196,14 +197,15 @@ proc ::bddimages::bddimagesBuildIF { This } {
       frame $This.fra1 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(bddimages,titre) \
+         Button $This.fra1.but -borderwidth 1 \
+            -text "$panneau(bddimages,aide1)\n$panneau(bddimages,titre)" \
             -command "::audace::showHelpPlugin tool bddimages bddimages.htm"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(bddimages,aide)
 
       pack $This.fra1 -side top -fill x
 
-      #--- Frame des services  
+      #--- Frame des services
       frame $This.fra2 -borderwidth 1 -relief groove
 
          #--- Bouton d'ouverture de l'outil de configuration
@@ -213,7 +215,7 @@ proc ::bddimages::bddimagesBuildIF { This } {
 
       pack $This.fra2 -side top -fill x
 
-      #--- Frame des services  
+      #--- Frame des services
       frame $This.fra3 -borderwidth 1 -relief groove
 
          #--- Bouton d'ouverture de l'outil de statut
@@ -223,7 +225,7 @@ proc ::bddimages::bddimagesBuildIF { This } {
 
       pack $This.fra3 -side top -fill x
 
-      #--- Frame des services  
+      #--- Frame des services
       frame $This.fra4 -borderwidth 1 -relief groove
 
          #--- Bouton d'ouverture de l'outil d'insertion des images
@@ -233,7 +235,7 @@ proc ::bddimages::bddimagesBuildIF { This } {
 
       pack $This.fra4 -side top -fill x
 
-      #--- Frame des services  
+      #--- Frame des services
       frame $This.fra5 -borderwidth 1 -relief groove
 
          #--- Bouton d'ouverture de l'outil de recherche d images
@@ -243,7 +245,7 @@ proc ::bddimages::bddimagesBuildIF { This } {
 
       pack $This.fra5 -side top -fill x
 
-      #--- Frame des services  
+      #--- Frame des services
       frame $This.fra6 -borderwidth 1 -relief groove
 
          #--- Bouton d'ouverture de l'outil de recherche d images
@@ -253,17 +255,17 @@ proc ::bddimages::bddimagesBuildIF { This } {
 
       pack $This.fra6 -side top -fill x
 
-      #--- 
+      #---
       frame $This.fra7 -borderwidth 1 -relief groove
 
-         #--- Bouton d'ouverture de l'outil 
+         #--- Bouton d'ouverture de l'outil
          button $This.fra7.but1 -borderwidth 2 -text "IDENT" \
             -command "::bddimages_identification::run $audace(base).bddimages_identification"
          pack $This.fra7.but1 -in $This.fra7 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
       pack $This.fra7 -side top -fill x
 
-      #--- Frame des services  
+      #--- Frame des services
       frame $This.ressource -borderwidth 1 -relief groove
 
          #--- Bouton d'ouverture de l'outil de recherche d images
