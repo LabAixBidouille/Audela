@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.29 2009-06-25 16:58:02 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.30 2009-07-13 22:56:59 robertdelmas Exp $
 #
 
 #============================================================
@@ -124,6 +124,7 @@ namespace eval ::remotectrl {
       set This $this
       set panneau(remotectrl,titre)         "$caption(remotectrl,title)"
       set panneau(remotectrl,aide)          "$caption(remotectrl,help_titre)"
+      set panneau(remotectrl,aide1)         "$caption(remotectrl,help_titre1)"
       set panneau(remotectrl,configuration) "$caption(remotectrl,configuration)"
       set panneau(remotectrl,none)          "$caption(remotectrl,none)"
       set panneau(remotectrl,home)          "$caption(remotectrl,home)"
@@ -868,7 +869,8 @@ proc remotectrlBuildIF { This } {
       frame $This.fra1 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(remotectrl,titre) \
+         Button $This.fra1.but -borderwidth 1 \
+            -text "$panneau(remotectrl,aide1)\n$panneau(remotectrl,titre)" \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::remotectrl::getPluginType ] ] \
                [ ::remotectrl::getPluginDirectory ] [ ::remotectrl::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
@@ -1104,7 +1106,7 @@ proc remotectrlBuildIF { This } {
 
       #--- Frame du mask
       frame $This.fram -borderwidth 1 -relief flat
-      place $This.fram -x 3 -y 74 -width 200 -height 600 -anchor nw \
+      place $This.fram -x 3 -y 87 -width 200 -height 600 -anchor nw \
          -bordermode ignore
 
       #--- Mise a jour dynamique des couleurs
@@ -1314,7 +1316,7 @@ proc remotectrlBuildIF { This } {
          }
          $This.fraconf.but1 configure -text $panneau(remotectrl,unconnect)
          #--- Le client demasque les commandes
-         place $This.fram -x 3 -y 74 -width 200 -height 1 -anchor nw \
+         place $This.fram -x 3 -y 87 -width 200 -height 1 -anchor nw \
             -bordermode ignore
          ::remotectrl::cmdAfficheCoord
       }
@@ -1409,7 +1411,7 @@ proc remotectrlBuildIF { This } {
                $This.fraconf.labURL2 configure -text $panneau(remotectrl,backyard) -fg $color(blue)
                $This.fraconf.but1 configure -text $panneau(remotectrl,unconnect)
                #--- Le serveur masque les commandes
-               place $This.fram -x 3 -y 74 -width 200 -height 600 -anchor nw \
+               place $This.fram -x 3 -y 87 -width 200 -height 600 -anchor nw \
                   -bordermode ignore
             }
          }
@@ -1440,7 +1442,7 @@ proc remotectrlBuildIF { This } {
       $This.fraconf.labURL2 configure -text $panneau(remotectrl,none) -fg $color(red)
       $This.fraconf.but1 configure -text $panneau(remotectrl,connect)
       #--- Masque les commandes
-      place $This.fram -x 3 -y 74 -width 200 -height 600 -anchor nw \
+      place $This.fram -x 3 -y 87 -width 200 -height 600 -anchor nw \
          -bordermode ignore
    }
 
@@ -1462,7 +1464,7 @@ proc remotectrlBuildIF { This } {
       $This.fraconf.labURL2 configure -text $panneau(remotectrl,none) -fg $color(red)
       $This.fraconf.but1 configure -text $panneau(remotectrl,connect)
       #--- Masque les commandes
-      place $This.fram -x 3 -y 74 -width 200 -height 600 -anchor nw \
+      place $This.fram -x 3 -y 87 -width 200 -height 600 -anchor nw \
          -bordermode ignore
    }
 

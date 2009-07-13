@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.47 2009-05-02 09:29:09 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.48 2009-07-13 22:57:25 robertdelmas Exp $
 #
 
 #============================================================
@@ -168,6 +168,7 @@ proc ::scan::createPanel { this } {
    #--- Initialisation des captions
    set panneau(scan,titre)           "$caption(scan,drift_scan)"
    set panneau(scan,aide)            "$caption(scan,help_titre)"
+   set panneau(scan,aide1)           "$caption(scan,help_titre1)"
    set panneau(scan,configuration)   "$caption(scan,configuration)"
    set panneau(scan,col)             "$caption(scan,colonnes)"
    set panneau(scan,lig)             "$caption(scan,lignes)"
@@ -1070,7 +1071,8 @@ proc scanBuildIF { This } {
       frame $This.fra0 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra0.but -borderwidth 1 -text $panneau(scan,titre) \
+         Button $This.fra0.but -borderwidth 1 \
+            -text "$panneau(scan,aide1)\n$panneau(scan,titre)" \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::scan::getPluginType ] ] \
                [ ::scan::getPluginDirectory ] [ ::scan::getPluginHelp ]"
          pack $This.fra0.but -in $This.fra0 -anchor center -expand 1 -fill both -side top -ipadx 5

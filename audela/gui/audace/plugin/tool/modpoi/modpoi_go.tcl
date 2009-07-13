@@ -2,7 +2,7 @@
 # Fichier : modpoi_go.tcl
 # Description : Outil pour la determination du modele de pointage
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi_go.tcl,v 1.13 2009-02-07 11:01:41 robertdelmas Exp $
+# Mise a jour $Id: modpoi_go.tcl,v 1.14 2009-07-13 22:56:38 robertdelmas Exp $
 #
 
 #============================================================
@@ -113,6 +113,7 @@ proc ::modpoi::createPanel { this } {
    #--- Initialisation des captions
    set panneau(modpoi,titre)   "$caption(modpoi_go,modpoi)"
    set panneau(modpoi,aide)    "$caption(modpoi_go,help_titre)"
+   set panneau(modpoi,aide1)   "$caption(modpoi_go,help_titre1)"
    set panneau(modpoi,titre1)  "$caption(modpoi_go,titre)"
    set panneau(modpoi,nouveau) "$caption(modpoi_go,nouveau)"
    set panneau(modpoi,charger) "$caption(modpoi_go,ouvrir)"
@@ -154,7 +155,8 @@ proc ::modpoi::modpoiBuildIF { This } {
       frame $This.fra1 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(modpoi,titre) \
+         Button $This.fra1.but -borderwidth 1 \
+            -text "$panneau(modpoi,aide1)\n$panneau(modpoi,titre)" \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::modpoi::getPluginType ] ] \
                [ ::modpoi::getPluginDirectory ] [ ::modpoi::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5

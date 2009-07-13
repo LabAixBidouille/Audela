@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.47 2009-05-02 09:29:29 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.48 2009-07-13 22:58:02 robertdelmas Exp $
 #
 
 global panneau
@@ -251,6 +251,7 @@ proc ::scanfast::createPanel { this } {
    #--- Initialisation des captions
    set panneau(scanfast,titre)           "$caption(scanfast,scanfast)"
    set panneau(scanfast,aide)            "$caption(scanfast,help_titre)"
+   set panneau(scanfast,aide1)           "$caption(scanfast,help_titre1)"
    set panneau(scanfast,configuration)   "$caption(scanfast,configuration)"
    set panneau(scanfast,col)             "$caption(scanfast,colonnes)"
    set panneau(scanfast,lig)             "$caption(scanfast,lignes)"
@@ -1197,7 +1198,8 @@ proc scanfastBuildIF { This } {
       frame $This.fra0 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra0.but -borderwidth 1 -text $panneau(scanfast,titre) \
+         Button $This.fra0.but -borderwidth 1 \
+            -text "$panneau(scanfast,aide1)\n$panneau(scanfast,titre)" \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::scanfast::getPluginType ] ] \
                [ ::scanfast::getPluginDirectory ] [ ::scanfast::getPluginHelp ]"
          pack $This.fra0.but -in $This.fra0 -anchor center -expand 1 -fill both -side top -ipadx 5
