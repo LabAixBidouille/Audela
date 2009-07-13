@@ -2,7 +2,7 @@
 # Fichier : methking.tcl
 # Description : Outil d'aide a la mise en station par la methode de King
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: methking.tcl,v 1.24 2009-02-07 11:09:26 robertdelmas Exp $
+# Mise a jour $Id: methking.tcl,v 1.25 2009-07-13 22:56:19 robertdelmas Exp $
 #
 
 #============================================================
@@ -2267,12 +2267,13 @@ proc methkingBuildIF {This tableau} {
    frame $This.ftitre -borderwidth 2 -height 75 -relief groove -width 92
 
    #--- Label du titre
-   Button $This.ftitre.l -borderwidth 2 -text $caption(methking,titre) \
+   Button $This.ftitre.l -borderwidth 2 \
+      -text "$caption(methking,help,titre1)\n$caption(methking,titre)" \
       -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::methking::getPluginType ] ] \
          [ ::methking::getPluginDirectory ] [ ::methking::getPluginHelp ]"
    pack $This.ftitre.l -in $This.ftitre -anchor center -expand 1 -fill both -side top
    DynamicHelp::add $This.ftitre.l -text $caption(methking,help,titre)
-   place $This.ftitre -x 4 -y 4 -width 92 -height 22 -anchor nw -bordermode ignore
+   place $This.ftitre -x 4 -y 4 -width 92 -height 42 -anchor nw -bordermode ignore
 
    #Trame d'affichage des parametres
    set t1 [frame $This.flisteconfig -borderwidth 1 -height 100 -relief groove]
@@ -2285,7 +2286,7 @@ proc methkingBuildIF {This tableau} {
    $mc add separator
    $mc add command -label $caption(methking,edition) -command ::methking::EditeConfig
 
-   place $t1 -x 4 -y 32 -width 92 -anchor nw -bordermode ignore
+   place $t1 -x 4 -y 52 -width 92 -anchor nw -bordermode ignore
 
    # Trame des boutons
    set t2 [frame $This.boutons -borderwidth 1 -relief groove]
@@ -2297,13 +2298,13 @@ proc methkingBuildIF {This tableau} {
       button $t2.b$champ -borderwidth 1 -text $caption(methking,$champ) -command $commande($champ) -width 10 -relief raised
       pack $t2.b$champ -in $t2 -anchor center -fill none -pady 4 -ipady 4
    }
-   place $t2 -x 4 -y 74 -width 92  -anchor nw -bordermode ignore
+   place $t2 -x 4 -y 94 -width 92  -anchor nw -bordermode ignore
 
    # Bouton d'arret
    frame $This.stop -borderwidth 1 -relief groove
    button $This.stop.b -borderwidth 1 -text $caption(methking,arret) -state disabled -width 10
    pack $This.stop.b -in $This.stop -anchor center -fill none -pady 4 -ipady 4
-   place $This.stop -x 4 -y 220 -width 92  -anchor nw -bordermode ignore
+   place $This.stop -x 4 -y 240 -width 92  -anchor nw -bordermode ignore
 
    # Affichage des status
    frame $This.fstatus -borderwidth 1 -height 77 -relief groove
@@ -2311,13 +2312,13 @@ proc methkingBuildIF {This tableau} {
    pack   $This.fstatus.l1 -in $This.fstatus -anchor center -fill both -padx 0 -pady 0
    label  $This.fstatus.m -text $panneau(methking,status) -justify center -padx 0 -pady 0 -relief flat -width 11 -height 3 -wraplength 88
    pack   $This.fstatus.m -in $This.fstatus -anchor center -fill both -padx 0 -pady 0
-   place $This.fstatus -x 4 -y 270 -width 92 -anchor nw -bordermode ignore
+   place $This.fstatus -x 4 -y 290 -width 92 -anchor nw -bordermode ignore
 
    # Affichage des infos
    frame $This.finfos -borderwidth 1 -relief groove
    label  $This.finfos.m -text $panneau(methking,infos) -justify center -padx 0 -pady 0 -relief flat -width 11 -height 2 -wraplength 88
    pack   $This.finfos.m -in $This.finfos -anchor center -fill both -padx 0 -pady 0
-   place $This.finfos -x 4 -y 370 -width 92 -anchor nw -bordermode ignore
+   place $This.finfos -x 4 -y 390 -width 92 -anchor nw -bordermode ignore
 }
 
 # === fin du fichier methking.tcl ===
