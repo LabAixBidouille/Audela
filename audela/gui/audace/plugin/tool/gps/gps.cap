@@ -1,6 +1,6 @@
 #
 # Fichier : gps.cap
-# Mise a jour $Id: gps.cap,v 1.12 2008-12-29 12:00:51 robertdelmas Exp $
+# Mise a jour $Id: gps.cap,v 1.13 2009-07-13 22:53:21 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -63,7 +63,8 @@ set caption(gps,automatique)                 "Automatic"
 set caption(gps,demarrage_auto)              "Synchro"
 set caption(gps,arret_auto)                  "Stop"
 set caption(gps,intervalle_synchro)          "Synchro (s)"
-set caption(gps,help,titre)                  "Help For This Tool"
+set caption(gps,help,titre)                  "Help for this Tool"
+set caption(gps,help,titre1)                 "Help for the Tool:"
 set caption(gps,non_rs232)                   "This port is not an RS232 serial port."
 set caption(gps,droit_acces)                 "Insufficient privileges for setting the system clock.\nYou need to be an administrator of this computer."
 set caption(gps,pas_synchro)                 "No synchronisation"
@@ -123,7 +124,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,demarrage_auto)           "Synchro"
    set caption(gps,arret_auto)               "Arrêt"
    set caption(gps,intervalle_synchro)       "Synchro (s)"
-   set caption(gps,help,titre)               "Aide pour cet outil"
+   set caption(gps,help,titre)               "Aide de cet outil"
+   set caption(gps,help,titre1)              "Aide de l'outil :"
    set caption(gps,non_rs232)                "Ce port n'est pas un port série de type RS232."
    set caption(gps,droit_acces)              "Vous n'avez pas les droits d'accès nécessaires pour modifier l'horloge système.\nIl vous faut être administrateur de l'ordinateur."
    set caption(gps,pas_synchro)              "Pas de synchronisation"
@@ -184,6 +186,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,arret_auto)               "Arresto"
    set caption(gps,intervalle_synchro)       "Sincronizza (s)"
    set caption(gps,help,titre)               "Aiuto per questo tool"
+   set caption(gps,help,titre1)              "Aiuto per lo tool:"
    set caption(gps,non_rs232)                "Questa non e` una porta seriale tipo RS232."
    set caption(gps,droit_acces)              "Privilegi insufficenti per regolare l'orologio di sistema.\nDovete essere l'amministratore di questo computer."
    set caption(gps,pas_synchro)              "Nessuna sincronizzazione"
@@ -244,6 +247,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,arret_auto)               "Stop"
    set caption(gps,intervalle_synchro)       "Sincro (s)"
    set caption(gps,help,titre)               "Ayuda para esta herramienta"
+   set caption(gps,help,titre1)              "Ajuda para del herramienta:"
    set caption(gps,non_rs232)                "Esto no es un puerto serie RS232."
    set caption(gps,droit_acces)              "No tiene los permisos de acceso necesarios para modificar la hora del sistema.\nTiene que ser administrador del ordenador."
    set caption(gps,pas_synchro)              "Sin sincronización"
@@ -304,6 +308,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,arret_auto)               "Abstellung"
    set caption(gps,intervalle_synchro)       "Synchro (s)"
    set caption(gps,help,titre)               "Hilfe für dieses Gerät"
+   set caption(gps,help,titre1)              "Hilfe für die Gerät:"
    set caption(gps,non_rs232)                "Diesen Anschluss ist nicht ein RS232 Anschluss."
    set caption(gps,droit_acces)              "Sie haben nicht genügend Recht um die System Uhr einzustellen.\nSie müssen Verwaltungsbeamte von diesen Computer sein."
    set caption(gps,pas_synchro)              "Keine Synchronisation"
@@ -364,6 +369,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,arret_auto)               "Parar"
    set caption(gps,intervalle_synchro)       "Sincro (s)"
    set caption(gps,help,titre)               "Ajuda para esta ferramenta"
+   set caption(gps,help,titre1)              "Ajuda para del ferramenta:"
    set caption(gps,non_rs232)                "Esta porta não é uma porta série do tipo RS232."
    set caption(gps,droit_acces)              "Você não tem os direitos de acesso suficientes para modificar o relógio de sistema.\nVocê precisa de ser administrador deste computador."
    set caption(gps,pas_synchro)              "Sem sincronização"
@@ -423,7 +429,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,demarrage_auto)           "Synchro"
    set caption(gps,arret_auto)               "Stop"
    set caption(gps,intervalle_synchro)       "Synchro (s)"
-   set caption(gps,help,titre)               "Help For This Tool"
+   set caption(gps,help,titre)               "Help for this Tool"
+   set caption(gps,help,titre1)              "Help for the Tool:"
    set caption(gps,non_rs232)                "This port is not an RS232 serial port."
    set caption(gps,droit_acces)              "Insufficient privileges for setting the system clock.\n You need to be an administrator of this computer."
    set caption(gps,pas_synchro)              "No synchronisation"

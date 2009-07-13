@@ -1,6 +1,6 @@
 #
 # Fichier : methking.cap
-# Mise a jour $Id: methking.cap,v 1.14 2009-01-10 10:41:11 robertdelmas Exp $
+# Mise a jour $Id: methking.cap,v 1.15 2009-07-13 22:53:43 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,7 +13,8 @@ global caption langage
 
 # Partie methking
 set caption(methking,titre)                   "King"
-set caption(methking,help,titre)              "Help For This Tool"
+set caption(methking,help,titre)              "Help for this Tool"
+set caption(methking,help,titre1)             "Help for the Tool:"
 set caption(methking,titre_console_1)         "Polar Alignment using the King Method"
 set caption(methking,titre_console_2)         "MethKing Tool"
 set caption(methking,copyright)               "(C)2001-2009 François Cochard & Jacques Michelet"
@@ -184,7 +185,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    # Partie methking
    set caption(methking,titre)                "King"
-   set caption(methking,help,titre)           "Aide pour cet outil"
+   set caption(methking,help,titre)           "Aide de cet outil"
+   set caption(methking,help,titre1)          "Aide de l'outil :"
    set caption(methking,titre_console_1)      "Session de mise en station par la méthode de King"
    set caption(methking,titre_console_2)      "Outil MethKing"
    set caption(methking,copyright)            "(C)2001-2009 François Cochard et Jacques Michelet"
@@ -356,6 +358,7 @@ if { [ string compare $langage "french" ] == "0" } {
    # Partie methking
    set caption(methking,titre)                "King"
    set caption(methking,help,titre)           "Aiuto per questo tool"
+   set caption(methking,help,titre1)          "Aiuto per lo tool:"
    set caption(methking,titre_console_1)      "Sessione per stazionamento telescopio col metodo di King"
    set caption(methking,titre_console_2)      "Accessorio MethKing"
    set caption(methking,copyright)            "(C)2001-2009 François Cochard e Jacques Michelet"
@@ -527,6 +530,7 @@ if { [ string compare $langage "french" ] == "0" } {
    # Partie methking
    set caption(methking,titre)                "King"
    set caption(methking,help,titre)           "Ayuda para esta herramienta"
+   set caption(methking,help,titre1)          "Ajuda para del herramienta:"
    set caption(methking,titre_console_1)      "Alineamiento polar utilizando el método King"
    set caption(methking,titre_console_2)      "Herramienta MethKing"
    set caption(methking,copyright)            "(C)2001-2009 François Cochard & Jacques Michelet"
@@ -698,6 +702,7 @@ if { [ string compare $langage "french" ] == "0" } {
    # Partie methking
    set caption(methking,titre)                "King"
    set caption(methking,help,titre)           "Hilfe für dieses Gerät"
+   set caption(methking,help,titre1)          "Hilfe für die Gerät:"
    set caption(methking,titre_console_1)      "Mit King Methode Einstellung Session"
    set caption(methking,titre_console_2)      "MethKing Gerät"
    set caption(methking,copyright)            "(C)2001-2009 François Cochard und Jacques Michelet"
@@ -869,6 +874,7 @@ if { [ string compare $langage "french" ] == "0" } {
    # Partie methking
    set caption(methking,titre)                "King"
    set caption(methking,help,titre)           "Ajuda para esta ferramenta"
+   set caption(methking,help,titre1)          "Ajuda para del ferramenta:"
    set caption(methking,titre_console_1)      "Sessão de colocação em estação pelo método King"
    set caption(methking,titre_console_2)      "Ferramenta MethKing"
    set caption(methking,copyright)            "(C)2001-2009 François Cochard e Jacques Michelet"
@@ -1039,7 +1045,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    # Partie methking
    set caption(methking,titre)                "King"
-   set caption(methking,help,titre)           "Help For This Tool"
+   set caption(methking,help,titre)           "Help for this Tool"
+   set caption(methking,help,titre1)          "Help for the Tool:"
    set caption(methking,titre_console_1)      "Polar Alignment using the King Method"
    set caption(methking,titre_console_2)      "MethKing Tool"
    set caption(methking,copyright)            "(C)2001-2009 François Cochard & Jacques Michelet"

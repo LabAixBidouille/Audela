@@ -1,6 +1,6 @@
 #
 # Fichier : foc.cap
-# Mise a jour $Id: foc.cap,v 1.8 2009-01-10 10:41:00 robertdelmas Exp $
+# Mise a jour $Id: foc.cap,v 1.9 2009-07-13 22:52:59 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,7 +12,8 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(foc,focalisation)       "Focusing"
-set caption(foc,help_titre)         "Help For This Tool"
+set caption(foc,help_titre)         "Help for this Tool"
+set caption(foc,help_titre1)        "Help for the Tool:"
 set caption(foc,acquisition)        "Acquisition"
 set caption(foc,centrage)           "Centering"
 set caption(foc,fenetre)            "Window"
@@ -52,7 +53,8 @@ set caption(foc,entier_positif)     "Exposure time not valid\n(must be a positiv
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(foc,focalisation)    "Focalisation"
-   set caption(foc,help_titre)      "Aide pour cet outil"
+   set caption(foc,help_titre)      "Aide de cet outil"
+   set caption(foc,help_titre1)     "Aide de l'outil :"
    set caption(foc,acquisition)     "Acquisition"
    set caption(foc,centrage)        "Centrage"
    set caption(foc,fenetre)         "Fenêtre"
@@ -93,6 +95,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(foc,focalisation)    "Focheggiamento"
    set caption(foc,help_titre)      "Aiuto per questo tool"
+   set caption(foc,help_titre1)     "Aiuto per lo tool:"
    set caption(foc,acquisition)     "Acquisizione"
    set caption(foc,centrage)        "Centraggio"
    set caption(foc,fenetre)         "Finestra"
@@ -133,6 +136,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(foc,focalisation)    "Enfoque"
    set caption(foc,help_titre)      "Ayuda para esta herramienta"
+   set caption(foc,help_titre1)     "Ajuda para del herramienta:"
    set caption(foc,acquisition)     "Adquisición"
    set caption(foc,centrage)        "Centrado"
    set caption(foc,fenetre)         "Ventana"
@@ -173,6 +177,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(foc,focalisation)    "Fokussierung"
    set caption(foc,help_titre)      "Hilfe für dieses Gerät"
+   set caption(foc,help_titre1)     "Hilfe für die Gerät:"
    set caption(foc,acquisition)     "Belichtung"
    set caption(foc,centrage)        "Zentrierung"
    set caption(foc,fenetre)         "Fenster"
@@ -213,6 +218,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(foc,focalisation)    "Focagem"
    set caption(foc,help_titre)      "Ajuda para esta ferramenta"
+   set caption(foc,help_titre1)     "Ajuda para del ferramenta:"
    set caption(foc,acquisition)     "Aquisição"
    set caption(foc,centrage)        "Centragem"
    set caption(foc,fenetre)         "Janela"
@@ -252,7 +258,8 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(foc,focalisation)    "Focusing"
-   set caption(foc,help_titre)      "Help For This Tool"
+   set caption(foc,help_titre)      "Help for this Tool"
+   set caption(foc,help_titre1)     "Help for the Tool:"
    set caption(foc,acquisition)     "Acquisition"
    set caption(foc,centrage)        "Centering"
    set caption(foc,fenetre)         "Window"
