@@ -1,6 +1,6 @@
 #
 # Fichier : scanfast.cap
-# Mise a jour $Id: scanfast.cap,v 1.20 2007-06-10 10:54:29 robertdelmas Exp $
+# Mise a jour $Id: scanfast.cap,v 1.21 2009-07-13 22:55:04 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -28,7 +28,8 @@ set caption(scanfast,comment9)            "Recommended Value"
 set caption(scanfast,comment10)           "You can now run the command:"
 
 set caption(scanfast,scanfast)            "Fast Scan"
-set caption(scanfast,help_titre)          "Help For This Tool"
+set caption(scanfast,help_titre)          "Help for this Tool"
+set caption(scanfast,help_titre1)         "Help for the Tool:"
 set caption(scanfast,configuration)       "Setup"
 set caption(scanfast,colonnes)            "Columns"
 set caption(scanfast,lignes)              "Lines"
@@ -89,7 +90,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,comment10)        "Vous pouvez désormais lancer la commande :"
 
    set caption(scanfast,scanfast)         "Scan rapide"
-   set caption(scanfast,help_titre)       "Aide pour cet outil"
+   set caption(scanfast,help_titre)       "Aide de cet outil"
+   set caption(scanfast,help_titre1)      "Aide de l'outil :"
    set caption(scanfast,configuration)    "Configuration"
    set caption(scanfast,colonnes)         "Colonnes"
    set caption(scanfast,lignes)           "Lignes"
@@ -151,6 +153,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scanfast,scanfast)         "Scanneriz. rapida"
    set caption(scanfast,help_titre)       "Aiuto per questo tool"
+   set caption(scanfast,help_titre1)      "Aiuto per lo tool:"
    set caption(scanfast,configuration)    "Configurazione"
    set caption(scanfast,colonnes)         "Colonne"
    set caption(scanfast,lignes)           "Linee"
@@ -212,6 +215,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scanfast,scanfast)         "Scan rápido"
    set caption(scanfast,help_titre)       "Ayuda para esta herramienta"
+   set caption(scanfast,help_titre1)      "Ajuda para del herramienta:"
    set caption(scanfast,configuration)    "Configuración"
    set caption(scanfast,colonnes)         "Columnas"
    set caption(scanfast,lignes)           "Líneas"
@@ -273,6 +277,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scanfast,scanfast)         "Schnell Scan"
    set caption(scanfast,help_titre)       "Hilfe für dieses Gerät"
+   set caption(scanfast,help_titre1)      "Hilfe für die Gerät:"
    set caption(scanfast,configuration)    "Konfiguration"
    set caption(scanfast,colonnes)         "Kolonnen"
    set caption(scanfast,lignes)           "Linien"
@@ -334,6 +339,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scanfast,scanfast)         "Scan rápido"
    set caption(scanfast,help_titre)       "Ajuda para esta ferramenta"
+   set caption(scanfast,help_titre1)      "Ajuda para del ferramenta:"
    set caption(scanfast,configuration)    "Configuração"
    set caption(scanfast,colonnes)         "Colunas"
    set caption(scanfast,lignes)           "Linhas"
@@ -394,7 +400,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,comment10)        "You can now run the command:"
 
    set caption(scanfast,scanfast)         "Fast Scan"
-   set caption(scanfast,help_titre)       "Help For This Tool"
+   set caption(scanfast,help_titre)       "Help for this Tool"
+   set caption(scanfast,help_titre1)      "Help for the Tool:"
    set caption(scanfast,configuration)    "Setup"
    set caption(scanfast,colonnes)         "Columns"
    set caption(scanfast,lignes)           "Lines"
