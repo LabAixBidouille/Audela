@@ -1,6 +1,6 @@
 #
 # Fichier : visio2.cap
-# Mise a jour $Id: visio2.cap,v 1.13 2008-09-23 20:40:13 robertdelmas Exp $
+# Mise a jour $Id: visio2.cap,v 1.14 2009-07-14 08:07:45 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -58,7 +58,8 @@ set caption(visio2,delete_button0)           "OK"
 set caption(visio2,delete_button1)           "OK For All"
 set caption(visio2,delete_button2)           "No"
 set caption(visio2,delete_button3)           "Cancel"
-set caption(visio2,help,titre)               "Help For This Tool"
+set caption(visio2,help,titre)               "Help for this Tool"
+set caption(visio2,help,titre1)              "Help for the Tool:"
 
 set caption(visio2,confirm_overwrite)        "File already exists. Do you want to replace it?"
 set caption(visio2,show_directory)           "Folder is empty or missing."
@@ -129,7 +130,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,delete_button1)        "OK pour tous"
    set caption(visio2,delete_button2)        "Non"
    set caption(visio2,delete_button3)        "Abandonner"
-   set caption(visio2,help,titre)            "Aide pour cet outil"
+   set caption(visio2,help,titre)            "Aide de cet outil"
+   set caption(visio2,help,titre1)           "Aide de l'outil :"
 
    set caption(visio2,confirm_overwrite)     "Le fichier existe déjà. Voulez-vous l'écraser ?"
    set caption(visio2,show_directory)        "Le répertoire est vide ou absent."
@@ -201,6 +203,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,delete_button2)        "No"
    set caption(visio2,delete_button3)        "Cancella"
    set caption(visio2,help,titre)            "Aiuto per questo tool"
+   set caption(visio2,help,titre1)           "Aiuto per lo tool:"
 
    set caption(visio2,confirm_overwrite)     "Il file e` gia` esistente. Sostituirlo?"
    set caption(visio2,show_directory)        "La cartella e` vuota o assente."
@@ -272,6 +275,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,delete_button2)        "No"
    set caption(visio2,delete_button3)        "Cancelar"
    set caption(visio2,help,titre)            "Ayuda para esta herramienta"
+   set caption(visio2,help,titre1)           "Ajuda para del herramienta:"
 
    set caption(visio2,confirm_overwrite)     "El fichero ya existe. Quiere reemplazarlo?"
    set caption(visio2,show_directory)        "La carpeta está vacía o no existe."
@@ -343,6 +347,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,delete_button2)        "Nein"
    set caption(visio2,delete_button3)        "Abrechen"
    set caption(visio2,help,titre)            "Hilfe für dieses Gerät"
+   set caption(visio2,help,titre1)           "Hilfe für die Gerät:"
 
    set caption(visio2,confirm_overwrite)     "Die Datei existiert schon. Vollen sie ihr austauchen ?"
    set caption(visio2,show_directory)        "Der Register ist lehr oder existiert nicht."
@@ -414,6 +419,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,delete_button2)        "Não"
    set caption(visio2,delete_button3)        "Cancelar"
    set caption(visio2,help,titre)            "Ajuda para esta ferramenta"
+   set caption(visio2,help,titre1)           "Ajuda para del ferramenta:"
 
    set caption(visio2,confirm_overwrite)     "O ficheiro já existe. Deseja substituí-lo?"
    set caption(visio2,show_directory)        "O directório está vazio ou não existe."
@@ -484,7 +490,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,delete_button1)        "OK For All"
    set caption(visio2,delete_button2)        "No"
    set caption(visio2,delete_button3)        "Cancel"
-   set caption(visio2,help,titre)            "Help For This Tool"
+   set caption(visio2,help,titre)            "Help for this Tool"
+   set caption(visio2,help,titre1)           "Help for the Tool:"
 
    set caption(visio2,confirm_overwrite)     "File already exists. Do you want to replace it?"
    set caption(visio2,show_directory)        "Folder is empty or missing."

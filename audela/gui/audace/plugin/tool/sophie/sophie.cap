@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.21 2009-07-04 22:39:45 michelpujol Exp $
+# Mise a jour $Id: sophie.cap,v 1.22 2009-07-14 08:04:25 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,7 +12,8 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(sophie,titre)                    "Sophie"
-set caption(sophie,aide)                     "Help For This Tool"
+set caption(sophie,aide)                     "Help for this Tool"
+set caption(sophie,aide1)                    "Help for the Tool:"
 set caption(sophie,config)                   "Setup"
 set caption(sophie,acquisition)              "Acquisition"
 set caption(sophie,pose)                     "Exp. (sec.)"
@@ -33,7 +34,8 @@ set caption(sophie,voirImage)                "See Image"
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(sophie,titre)                 "Sophie"
-   set caption(sophie,aide)                  "Aide pour cet outil"
+   set caption(sophie,aide)                  "Aide de cet outil"
+   set caption(sophie,aide1)                 "Aide de l'outil :"
    set caption(sophie,config)                "Configuration"
    set caption(sophie,acquisition)           "Acquisition"
    set caption(sophie,pose)                  "Pose (sec.)"
@@ -181,6 +183,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(sophie,titre)                 "Sophie"
    set caption(sophie,aide)                  "Aiuto per questo tool"
+   set caption(sophie,aide1)                 "Aiuto per lo tool:"
    set caption(sophie,config)                "Configurazione"
    set caption(sophie,acquisition)           "Acquisizione"
    set caption(sophie,pose)                  "Posa (sec.)"
@@ -202,6 +205,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(sophie,titre)                 "Sophie"
    set caption(sophie,aide)                  "Ayuda para esta herramienta"
+   set caption(sophie,aide1)                 "Ajuda para del herramienta:"
    set caption(sophie,config)                "Configuración"
    set caption(sophie,acquisition)           "Adquisición"
    set caption(sophie,pose)                  "Exp. (seg.)"
@@ -223,6 +227,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(sophie,titre)                 "Sophie"
    set caption(sophie,aide)                  "Hilfe für dieses Gerät"
+   set caption(sophie,aide1)                 "Hilfe für die Gerät:"
    set caption(sophie,config)                "Konfiguration"
    set caption(sophie,acquisition)           "Belichtung"
    set caption(sophie,pose)                  "Bel. (Sek.)"
@@ -244,6 +249,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(sophie,titre)                 "Sophie"
    set caption(sophie,aide)                  "Ajuda para esta ferramenta"
+   set caption(sophie,aide1)                 "Ajuda para del ferramenta:"
    set caption(sophie,config)                "Configuração"
    set caption(sophie,acquisition)           "Aquisição"
    set caption(sophie,pose)                  "Exposição (seg.)"
@@ -264,7 +270,8 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(sophie,titre)                 "Sophie"
-   set caption(sophie,aide)                  "Help For This Tool"
+   set caption(sophie,aide)                  "Help for this Tool"
+   set caption(sophie,aide1)                 "Help for the Tool:"
    set caption(sophie,config)                "Setup"
    set caption(sophie,acquisition)           "Acquisition"
    set caption(sophie,pose)                  "Exp. (sec.)"

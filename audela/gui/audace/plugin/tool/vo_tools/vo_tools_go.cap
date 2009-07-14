@@ -1,6 +1,6 @@
 #
 # Fichier : vo_tools_go.cap
-# Mise a jour $Id: vo_tools_go.cap,v 1.12 2007-01-27 15:00:40 robertdelmas Exp $
+# Mise a jour $Id: vo_tools_go.cap,v 1.13 2009-07-14 08:07:21 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,7 +13,8 @@ global caption langage
 
 set caption(vo_tools_go,vo_tools)         "Virtual\nObservatory"
 set caption(vo_tools_go,titre)            "Virtual Observatory"
-set caption(vo_tools_go,help_titre)       "Help For This Tool"
+set caption(vo_tools_go,help_titre)       "Help for this Tool"
+set caption(vo_tools_go,help_titre1)      "Help for the Tool:"
 set caption(vo_tools_go,aladin)           "Run Aladin\n(VO Web Portal)"
 set caption(vo_tools_go,cone-search)      "Search for solar\nsystem bodies\nin a field of view"
 set caption(vo_tools_go,resolver)         "Search for solar\nsystem bodies\naround a\ncelestial object"
@@ -24,7 +25,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(vo_tools_go,vo_tools)      "Observatoire\nVirtuel"
    set caption(vo_tools_go,titre)         "Observatoire Virtuel"
-   set caption(vo_tools_go,help_titre)    "Aide pour cet outil"
+   set caption(vo_tools_go,help_titre)    "Aide de cet outil"
+   set caption(vo_tools_go,help_titre1)   "Aide de l'outil :"
    set caption(vo_tools_go,aladin)        "Lancer Aladin\n(Portail OV)"
    set caption(vo_tools_go,cone-search)   "Recherche des\ncorps du Système\nSolaire dans un\nchamp de vue"
    set caption(vo_tools_go,resolver)      "Recherche des\ncorps du Système\nSolaire autour\nd'un corps céleste"
@@ -36,6 +38,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,vo_tools)      "Osservatorio\nVirtuale"
    set caption(vo_tools_go,titre)         "Osservatorio Virtuale"
    set caption(vo_tools_go,help_titre)    "Aiuto per questo tool"
+   set caption(vo_tools_go,help_titre1)   "Aiuto per lo tool:"
    set caption(vo_tools_go,aladin)        "Esegui Aladin\n(Web Portale OV)"
    set caption(vo_tools_go,cone-search)   "Ricerca dei\ncorpi del\nsistema solare\nin un campo"
    set caption(vo_tools_go,resolver)      "Ricerca dei corpi\ndel sistema solare\nattorno ad un\ncorpo celeste"
@@ -47,6 +50,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,vo_tools)      "Observatorio\nVisual"
    set caption(vo_tools_go,titre)         "Observatorio Visual"
    set caption(vo_tools_go,help_titre)    "Ayuda para esta herramienta"
+   set caption(vo_tools_go,help_titre1)   "Ajuda para del herramienta:"
    set caption(vo_tools_go,aladin)        "Lanzar Aladin\n(Web Portal OV)"
    set caption(vo_tools_go,cone-search)   "Buscar cuerpos\ndel sistema\nsolar en el\ncampo de visión"
    set caption(vo_tools_go,resolver)      "Buscar cuerpos\ndel sistema\nsolar alrededor de\nun objeto celeste"
@@ -58,6 +62,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,vo_tools)      "Virtuelle\nSternwarte"
    set caption(vo_tools_go,titre)         "Virtuelle Sternwarte"
    set caption(vo_tools_go,help_titre)    "Hilfe für dieses Gerät"
+   set caption(vo_tools_go,help_titre1)   "Hilfe für die Gerät:"
    set caption(vo_tools_go,aladin)        "Aladin starten\n(Web Portal VS)"
    set caption(vo_tools_go,cone-search)   "In einen\nAnsicht Feld\nSonnen System\nKörper Suchung"
    set caption(vo_tools_go,resolver)      "Herum einen\nhimmlisch Körper\nSonnen System\nKörper Suchung"
@@ -69,6 +74,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,vo_tools)      "Observatório\nVirtual"
    set caption(vo_tools_go,titre)         "Observatório Virtual"
    set caption(vo_tools_go,help_titre)    "Ajuda para esta ferramenta"
+   set caption(vo_tools_go,help_titre1)   "Ajuda para del ferramenta:"
    set caption(vo_tools_go,aladin)        "Iniciar Aladin\n(Portal OV)"
    set caption(vo_tools_go,cone-search)   "Procura de\ncorpos do Sistema\nSolar\nobserváveis"
    set caption(vo_tools_go,resolver)      "Procura de\ncorpos do Sistema\nSolar em torno\nde um corpo celeste"
@@ -80,6 +86,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,vo_tools)      "Virtuel\nObservatorium"
    set caption(vo_tools_go,titre)         "Virtuel Observatorium"
    set caption(vo_tools_go,help_titre)    "Hjælp til dette værktøj"
+   set caption(vo_tools_go,help_titre1)   "Hjælp til i værktøj:"
    set caption(vo_tools_go,aladin)        "Start Aladin\n(VO Portal)"
    set caption(vo_tools_go,cone-search)   "Søgning efter\nsolsystems\nelementer i\nsynsfelt"
    set caption(vo_tools_go,resolver)      "Søgning efter\nsolsystems\nelementer omkring\net himmelobjekt"
