@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.44 2009-07-14 08:10:34 robertdelmas Exp $
+# Mise a jour $Id: visio2.tcl,v 1.45 2009-07-14 17:53:23 michelpujol Exp $
 #
 
 namespace eval ::visio2 {
@@ -1645,11 +1645,11 @@ proc ::visio2::localTable::createTbl { visuNo frame } {
       -activestyle none
 
    #--- je fixe la largeur des colonnes
-   $tbl columnconfigure 0 -width $conf(visio2,width_column_name)
-   $tbl columnconfigure 1 -width $conf(visio2,width_column_type)
-   $tbl columnconfigure 2 -width $conf(visio2,width_column_series)
-   $tbl columnconfigure 3 -width $conf(visio2,width_column_date)
-   $tbl columnconfigure 4 -width $conf(visio2,width_column_size)
+   $tbl columnconfigure 0 -width $conf(visio2,width_column_name) -sortmode dictionary
+   $tbl columnconfigure 1 -width $conf(visio2,width_column_type) -sortmode dictionary
+   $tbl columnconfigure 2 -width $conf(visio2,width_column_series) -sortmode dictionary
+   $tbl columnconfigure 3 -width $conf(visio2,width_column_date)   -sortmode dictionary
+   $tbl columnconfigure 4 -width $conf(visio2,width_column_size)   -sortmode dictionary
 
    #--- j'affiche ou masque les colonnes (la premiere colonne est toujours visible)
    $tbl columnconfigure 0 -hide 0
@@ -2018,11 +2018,11 @@ proc ::visio2::ftpTable::createTbl { visuNo frame } {
       -activestyle none
 
    #--- je fixe la largeur des colonnes
-   $tbl columnconfigure 0 -width $conf(visio2,width_column_name)
-   $tbl columnconfigure 1 -width $conf(visio2,width_column_type)
-   $tbl columnconfigure 2 -width $conf(visio2,width_column_series)
-   $tbl columnconfigure 3 -width $conf(visio2,width_column_date)
-   $tbl columnconfigure 4 -width $conf(visio2,width_column_size)
+   $tbl columnconfigure 0 -width $conf(visio2,width_column_name)  -sortmode dictionary
+   $tbl columnconfigure 1 -width $conf(visio2,width_column_type)  -sortmode dictionary
+   $tbl columnconfigure 2 -width $conf(visio2,width_column_series) -sortmode dictionary
+   $tbl columnconfigure 3 -width $conf(visio2,width_column_date)  -sortmode dictionary
+   $tbl columnconfigure 4 -width $conf(visio2,width_column_size)  -sortmode dictionary
 
    #--- j'affiche ou masque les colonnes (la premiere colonne est toujours visible)
    $tbl columnconfigure 0 -hide 0
