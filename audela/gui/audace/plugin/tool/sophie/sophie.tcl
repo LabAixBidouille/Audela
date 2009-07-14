@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.18 2009-06-21 13:16:20 michelpujol Exp $
+# @version   $Id: sophie.tcl,v 1.19 2009-07-14 08:08:16 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -219,7 +219,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
 
          #--- Bouton du titre
          image create photo sophieLogo -file [ file join $::audace(rep_plugin) [ ::audace::getPluginTypeDirectory [ getPluginType ] ] [ getPluginDirectory ] "logosophie.gif" ]
-         Button $frm.titre.but1 -borderwidth 1 -image "sophieLogo" \
+         Button $frm.titre.but1 -borderwidth 1 -text $::caption(sophie,aide1) -image "sophieLogo" \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory \
             [ ::sophie::getPluginType ] ] [ ::sophie::getPluginDirectory ] [ ::sophie::getPluginHelp ]"
          pack $frm.titre.but1 -anchor center -expand 1 -fill both -side top

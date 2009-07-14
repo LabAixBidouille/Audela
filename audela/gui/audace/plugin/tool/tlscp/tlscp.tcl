@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.27 2009-06-25 16:58:54 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.28 2009-07-14 08:09:35 robertdelmas Exp $
 #
 
 #============================================================
@@ -166,7 +166,8 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
       #--- Frame du titre
       frame $private($visuNo,This).fra1 -borderwidth 2 -relief groove
          #--- Label du titre
-         Button $private($visuNo,This).fra1.but -borderwidth 1 -text $caption(tlscp,telescope) \
+         Button $private($visuNo,This).fra1.but -borderwidth 1 \
+            -text "$caption(tlscp,help_titre1)\n$caption(tlscp,telescope)" \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::tlscp::getPluginType ] ] \
                [ ::tlscp::getPluginDirectory ] [ ::tlscp::getPluginHelp ]"
          pack $private($visuNo,This).fra1.but -anchor center -expand 1 \

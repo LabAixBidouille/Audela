@@ -2,7 +2,7 @@
 # Fichier : vo_tools_go.tcl
 # Description : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur : Robert DELMAS
-# Mise a jour $Id: vo_tools_go.tcl,v 1.14 2009-07-02 22:01:34 jberthier Exp $
+# Mise a jour $Id: vo_tools_go.tcl,v 1.15 2009-07-14 08:10:53 robertdelmas Exp $
 #
 
 #============================================================
@@ -123,6 +123,7 @@ proc ::vo_tools::createPanel { this } {
    #--- Initialisation des captions
    set panneau(vo_tools,titre)  "$caption(vo_tools_go,vo_tools)"
    set panneau(vo_tools,aide)   "$caption(vo_tools_go,help_titre)"
+   set panneau(vo_tools,aide1)  "$caption(vo_tools_go,help_titre1)"
    set panneau(vo_tools,titre1) "$caption(vo_tools_go,aladin)"
    set panneau(vo_tools,titre2) "$caption(vo_tools_go,cone-search)"
    set panneau(vo_tools,titre3) "$caption(vo_tools_go,resolver)"
@@ -166,7 +167,8 @@ proc ::vo_tools::vo_toolsBuildIF { This } {
       frame $This.fra1 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(vo_tools,titre) \
+         Button $This.fra1.but -borderwidth 1 \
+            -text "$panneau(vo_tools,aide1)\n$panneau(vo_tools,titre)" \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::vo_tools::getPluginType ] ] \
                [ ::vo_tools::getPluginDirectory ] [ ::vo_tools::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5

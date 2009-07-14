@@ -2,7 +2,7 @@
 # Fichier : supernovae_go.tcl
 # Description : Outil pour l'observation des SnAudes
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: supernovae_go.tcl,v 1.16 2009-06-25 16:58:23 robertdelmas Exp $
+# Mise a jour $Id: supernovae_go.tcl,v 1.17 2009-07-14 08:08:33 robertdelmas Exp $
 #
 
 #============================================================
@@ -117,6 +117,7 @@ proc ::supernovae::createPanel { this } {
    #--- Initialisation des captions
    set panneau(supernovae,titre)     "$caption(supernovae_go,supernovae)"
    set panneau(supernovae,aide)      "$caption(supernovae_go,help,titre)"
+   set panneau(supernovae,aide1)     "$caption(supernovae_go,help,titre1)"
    set panneau(supernovae,recherche) "$caption(supernovae_go,recherche_sn)"
    set panneau(supernovae,snacq)     "$caption(supernovae_go,sn_acq)"
    set panneau(supernovae,snvisu)    "$caption(supernovae_go,sn_visu)"
@@ -157,7 +158,8 @@ proc ::supernovae::supernovaeBuildIF { This } {
       frame $This.fra1 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(supernovae,titre) \
+         Button $This.fra1.but -borderwidth 1 \
+            -text "$panneau(supernovae,aide1)\n$panneau(supernovae,titre)" \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::supernovae::getPluginType ] ] \
                [ ::supernovae::getPluginDirectory ] [ ::supernovae::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5

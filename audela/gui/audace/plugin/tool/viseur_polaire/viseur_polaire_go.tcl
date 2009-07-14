@@ -4,7 +4,7 @@
 # Type Takahashi : Viseur polaire à niveau
 # Type EQ6 : Viseur polaire à constellations
 # Auteur : Robert DELMAS
-# Mise a jour $Id: viseur_polaire_go.tcl,v 1.10 2009-02-07 11:04:02 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_go.tcl,v 1.11 2009-07-14 08:09:51 robertdelmas Exp $
 #
 
 #============================================================
@@ -115,6 +115,7 @@ proc ::viseur_polaire::createPanel { this } {
    #--- Initialisation des captions
    set panneau(viseur_polaire,titre) "$caption(viseur_polaire_go,titre)"
    set panneau(viseur_polaire,aide)  "$caption(viseur_polaire_go,help_titre)"
+   set panneau(viseur_polaire,aide1) "$caption(viseur_polaire_go,help_titre1)"
    set panneau(viseur_polaire,taka)  "$caption(viseur_polaire_go,taka)"
    set panneau(viseur_polaire,eq6)   "$caption(viseur_polaire_go,eq6)"
    #--- Construction de l'interface
@@ -154,7 +155,8 @@ proc ::viseur_polaire::viseur_polaireBuildIF { This } {
       frame $This.fra1 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(viseur_polaire,titre) \
+         Button $This.fra1.but -borderwidth 1 \
+            -text "$panneau(viseur_polaire,aide1)\n$panneau(viseur_polaire,titre)" \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::viseur_polaire::getPluginType ] ] \
                [ ::viseur_polaire::getPluginDirectory ] [ ::viseur_polaire::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
