@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.39 2009-07-12 13:59:43 michelpujol Exp $
+# Mise a jour $Id: telescope.tcl,v 1.40 2009-07-14 08:22:39 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -745,10 +745,10 @@ proc ::telescope::controleSuivi { { value " " } } {
             }
          } else {
             if { $value == "$caption(telescope,suivi_marche)" } {
-               tel$audace(telNo) radec motor on
+               tel$audace(telNo) radec motor off
                set audace(telescope,controle) "$caption(telescope,suivi_arret)"
             } elseif { $value == "$caption(telescope,suivi_arret)" } {
-               tel$audace(telNo) radec motor off
+               tel$audace(telNo) radec motor on
                set audace(telescope,controle) "$caption(telescope,suivi_marche)"
             }
          }
