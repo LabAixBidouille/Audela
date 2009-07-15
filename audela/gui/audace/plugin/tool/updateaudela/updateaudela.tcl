@@ -2,7 +2,7 @@
 # Fichier : updateaudela.tcl
 # Description : Outil de fabrication des fichiers Kit et de deploiement des plugins
 # Auteur : Michel Pujol
-# Mise a jour $Id: updateaudela.tcl,v 1.20 2009-07-15 17:40:47 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.tcl,v 1.21 2009-07-15 21:45:37 robertdelmas Exp $
 #
 
 namespace eval ::updateaudela {
@@ -113,7 +113,7 @@ proc ::updateaudela::createPluginInstance { {in ""} { visuNo 1 } } {
    if { ! [ info exists conf(updateaudela,position) ] }          { set conf(updateaudela,position)           "300x200+250+75" }
    if { ! [ info exists conf(updateaudela,kitDirectory) ] }      { set conf(updateaudela,kitDirectory)       "$::audace(rep_install)" }
    if { ! [ info exists conf(updateaudela,downloadAndInstall ] } { set conf(updateaudela,downloadAndInstall) "1" }
-   if { ! [ info exists conf(updateaudela,addressList) ] }       { set conf(updateaudela,addressList)        [list "http://pagesperso-orange.fr/michel.pujol/audela/" "http://bmauclaire.free.fr/astronomie/softs/audela/spcaudace/index.php#download"] }
+   if { ! [ info exists conf(updateaudela,addressList) ] }       { set conf(updateaudela,addressList)        [list "http://pagesperso-orange.fr/michel.pujol/audela/" "http://bmauclaire.free.fr/spcaudace/"] }
 
    set private(base)            $in
    set private(kitDirectory)    "$::audace(rep_install)"
