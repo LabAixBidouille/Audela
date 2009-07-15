@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.30 2009-07-13 22:56:59 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.31 2009-07-15 17:01:10 robertdelmas Exp $
 #
 
 #============================================================
@@ -836,7 +836,7 @@ namespace eval ::remotectrl {
          }
 
          #--- Graphisme panneau
-         $This.fra1.but configure -text $panneau(remotectrl,titre)
+         $This.fra1.but configure -text "$panneau(remotectrl,aide1)\n$panneau(remotectrl,titre)"
          $This.fra6.but1 configure -relief raised -state normal
          update
 
