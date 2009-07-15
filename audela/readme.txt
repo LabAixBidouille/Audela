@@ -379,14 +379,12 @@ pour rectifier l'injustice qu'ils subissent.
 ===================================
  - BLT : Trace des courbes sous TK (histogramme, plotxy).
  - BWidget : Definition de nouveaux widgets TK.
- - Dde : Protocole Dynamic Data Exchange pour Windows (Carte du Ciel V2.xx).
  - DialogWin : tk_messageBox evolue.
  - Dp : Communication sur protocole IP de bas niveau (TCP, RCP, UDP, SMTP, etc.).
  - HelpViewer : Affichage d'une aide.
  - Img : Librairie de chargement de formats d'images standards (jpg, bmp, etc.).
  - Memchan : Librairie pour l'outil "Mise a jour d'AudeLA".
  - Mk4tcl : Librairie pour l'outil "Mise a jour d'AudeLA".
- - Reg : Fonctions d'acces a la base de registres Windows.
  - SuperGrid : Positionne automatiquement les widgets dans une grille.
  - TableList : Affichage d'une liste avec parametrage des colonnes (outil Visionneuse bis).
  - TclDOM : Extension DOM pour skybot/virtual observatory. http://tclxml.sourceforge.net
