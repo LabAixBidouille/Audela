@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.19 2009-07-14 08:08:16 robertdelmas Exp $
+# @version   $Id: sophie.tcl,v 1.20 2009-07-15 17:39:36 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -11,22 +11,22 @@
 # @image html logosophie.gif
 #
 # Dans un premier temps, les éléments remplacés sont :
-# -	le PC de guidage et logiciel de guidage sont remplacés ( => Windows Vista et Audela),
-# -	la caméra de guidage est remplacée par la caméra FLI,
-# -	la carte wrappée est remplacée par la  carte N.I. USB-6501).
+# - le PC de guidage et logiciel de guidage sont remplacés ( => Windows Vista et Audela),
+# - la caméra de guidage est remplacée par la caméra FLI,
+# - la carte wrappée est remplacée par la carte N.I. USB-6501.
 #
 # Puis, dans un deuxième temps :
-# -  le HP1000 est remplacé par un « PC T193 » avec les nouveaux moteurs associés (moteurs ETEL et BRADFOR commandés par une carte DELTATAU).
+# - le HP1000 est remplacé par un « PC T193 » avec les nouveaux moteurs associés (moteurs ETEL et BRADFOR commandés par une carte DELTATAU).
 #
-# Le cahier des charges « cahier des charges_guidage_193_v0.pdf » décrit les besoins suivants:
+# Le cahier des charges « cahier des charges_guidage_193_v0.pdf » décrit les besoins suivants :
 # - Le logiciel doit permettre de s'interfacer avec les équipements de la configuration intermédiaire puis de la configuration cible.
-# - Il doit fournir les fonctions de centrage d'une étoile sur une consigne, d'aide à la mise au point (focalisation) et de guidage automatique du télescope pendant les poses du spectrographe Sophie
+# - Il doit fournir les fonctions de centrage d'une étoile sur une consigne, d'aide à la mise au point (focalisation) et de guidage automatique du télescope pendant les poses du spectrographe Sophie.
 #
 # Interlocuteurs opérationnels :
 # - Luc Arnold : Nouveau PC guidage et caméra FLI
-# - François Moreau : jouvance T293
+# - François Moreau : jouvance T193
 # - Jean Pierre Menier : spectrographe Sophie
-# - Xavier  Regal : commandes atténuateurs, carte National instrument
+# - Xavier Regal : commandes atténuateurs, carte National Instrument
 # - Fabien Fillion : PC de supervision du T193
 #
 #------------------------------------------------------------
