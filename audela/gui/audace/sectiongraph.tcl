@@ -2,7 +2,7 @@
 # Fichier : sectiongraph.tcl
 # Description : Affiche une coupe de l'image
 # Auteur : Michel PUJOL
-# Mise a jour $Id: sectiongraph.tcl,v 1.12 2009-06-14 08:51:39 robertdelmas Exp $
+# Mise a jour $Id: sectiongraph.tcl,v 1.13 2009-07-17 20:38:27 michelpujol Exp $
 #
 
 namespace eval ::sectiongraph {
@@ -295,6 +295,10 @@ proc ::sectiongraph::closeToplevel { visuNo } {
    global conf
 
    if { [info exists private($visuNo,itemNo)] } {
+      #--- je supprime les listeners
+      ::polydraw::removeMoveItemListener $visuNo $private($visuNo,itemNo) "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
+      ::confVisu::removeFileNameListener $visuNo "::sectiongraph::refresh $visuNo $private($visuNo,itemNo)"
+
       ::polydraw::deleteItem $visuNo $private($visuNo,itemNo)
       ::polydraw::close $visuNo
       blt::vector destroy sectiongraphX$visuNo sectiongraphYR$visuNo sectiongraphYG$visuNo sectiongraphYB$visuNo
