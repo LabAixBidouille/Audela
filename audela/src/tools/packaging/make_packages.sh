@@ -9,7 +9,7 @@
 #
 ########################################################################################
 
-# Mise a jour $Id: make_packages.sh,v 1.10 2009-05-02 07:32:16 bmauclaire Exp $
+# Mise a jour $Id: make_packages.sh,v 1.11 2009-07-17 14:01:12 bmauclaire Exp $
 
 
 #--- Utilisation du script :
@@ -37,6 +37,7 @@
 # 2. Effacer le repertoire audela/lib/thread2.6/
 # 3. cp audela/src/external/libftd2xx/lib/libftd2xx.so.0.4.16 audela/audela/bin/
 # 4. Dans audela/bin : chmod a+x libftd2xx.so.0* ; ln -s libftd2xx.so.0.4.16 libftd2xx.so.0
+# 5. Facultatif : donner le bon numero de version dans audela/bin/version.tcl
 #
 ##------------------------------------------------------------------------------#
 
@@ -44,11 +45,17 @@
 #--- Variables de focntionnement :
 # Visiblement non necessaires : tclxml, tcllib, tclvfs.
 #-- Dependances Linux du paquet :
-depends_debian="tk8.4, libstdc++6, libgsl0, gnuplot-x11, gzip, libusb-0.1-4, tclxml, tcllib, tclvfs, libtk-img, blt"
+#- Debian :
+depends_debian="libstdc++6, libgsl0, gnuplot-x11, libusb-0.1-4, tclvfs, libtk-img, tclx8.4"
+# depends_debian="tk8.4, libstdc++6, libgsl0, gnuplot-x11, gzip, libusb-0.1-4, tclxml, tcllib, tclvfs, libtk-img, blt"
 # depends_debian="libc6, libgcc1, libgsl0, libstdc++6, libusb-0.1-4, tcl8.4, tk8.4, tclthread, libx11-6, libxau6, gnuplot-x11, gzip, tclxml, tcllib, tclvfs, libtk-img, blt"
-depends_ubuntu="tk8.4, libstdc++6, libgsl0ldbl, gnuplot-x11, gzip, libusb-0.1-4, tclxml, tcllib, tclvfs, libtk-img, blt"
+#- Ubuntu :
+depends_ubuntu="libstdc++6, libgsl0ldbl, gnuplot-x11, libusb-0.1-4, tclvfs, libtk-img, tclx8.4"
+# depends_ubuntu="tk8.4, libstdc++6, libgsl0ldbl, gnuplot-x11, gzip, libusb-0.1-4, tclxml, tcllib, tclvfs, libtk-img, blt"
 # depends_ubuntu="libc6, libgcc1, libgsl0ldbl, libstdc++6, libusb-0.1-4, tcl8.4, tk8.4, gnuplot-x11, gzip, tclxml, tcllib, tclvfs, libtk-img, blt"
-depends_mandriva="libtk8.4, gsl, libstdc++6, gnuplot, gzip, libusb, tcl-tcllib, blt"
+#- Mandriva :
+depends_mandriva="gsl, libstdc++6, gnuplot, libusb, tcl-tcllib"
+# depends_mandriva="libtk8.4, gsl, libstdc++6, gnuplot, gzip, libusb, tcl-tcllib, blt"
 # depends_mandriva="glibc, libgcc1, libgphoto, gsl, libstdc++6, libusb, libtcl8.4, libtk8.4, gnuplot, gzip, tcl-tcllib, blt"
 # unfound : gnuplot-x11 tclxml tclvfs, libtk-img
 
@@ -247,12 +254,12 @@ cp $DIRECTORY/readme.txt $DIRECTORY/bin/audela.txt
 #--- Gestion de libthread :
 dirlocal=`pwd`
 cd $DIRECTORY/$sous_rep_libthread
-if [ "$ladistro" = "debian" ] || [ "$ladistro" = "ubuntu" ]
+#if [ "$ladistro" = "debian" ] || [ "$ladistro" = "ubuntu" ]
+#then
+#    ln -s libthread2.6.5.1.so_debian libthread2.6.5.1.so
+if test "$ladistro" = "mandriva"
 then
-    ln -s libthread2.6.5.1.so_debian libthread2.6.5.1.so
-elif test "$ladistro" = "mandriva"
-then
-    ln -s Thread2.6.5.1.so_mandriva libthread2.6.5.1.so
+    cp -f /home/mauclaire/audela/binlibs/libthread/Thread2.6.5.1.so_mandriva libthread2.6.5.1.so
 fi
 cd $dirlocal
 
