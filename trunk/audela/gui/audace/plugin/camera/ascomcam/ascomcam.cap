@@ -1,0 +1,58 @@
+#
+# Fichier : ascomcam.cap
+# Mise a jour $Id: ascomcam.cap,v 1.1 2009-07-18 12:18:57 michelpujol Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(ascomcam,camera)                       "ASCOM"
+set caption(ascomcam,port)                         "Choix de la camera"
+
+set caption(ascomcam,configurer)                   "Configurer"
+set caption(ascomcam,install)                         "La mise a jour de %s v%s est terminée."
+
+set caption(ascomcam,miroir_x)                     "Horizontal Mirror"
+set caption(ascomcam,miroir_y)                     "Vertical Mirror"
+
+set caption(ascomcam,port_camera)                  "ASCOM driver"
+set caption(ascomcam,2points)                      ":"
+
+set caption(ascomcam,obtu_ferme)                   "Ferme"
+set caption(ascomcam,obtu_synchro)                 "Synchro"
+
+set caption(ascomcam,titre_site_web)               "Reference Web Site:"
+set caption(ascomcam,site_web_ref)                 "http://ascom-standards.org"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
