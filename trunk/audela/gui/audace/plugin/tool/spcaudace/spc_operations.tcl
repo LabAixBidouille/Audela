@@ -7,8 +7,347 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.16 2009-07-01 16:21:01 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.17 2009-07-18 18:24:41 bmauclaire Exp $
 
+
+
+
+################################################################################################
+# Procedure pour reechantilloner un profil spectral suivant un profil spectral modele
+# Auteur : Patrick LAILLY
+# Date de création : 1-09-08
+# Date de modification : 17-07-2009
+# Cette procédure rééchantillone un profil de raies (fichier fits) avec le meme pas 
+# d'echantillonage qu'un fichier modèle : le fichier de sortie est limité à l'intervalle
+# de longueurs d'ondes du fichier de départ. Les deux fichiers sont censés être calibrés
+# linéairement. Le fichier de sortie est créé avec le suffixe _newsamp. En option on peut
+# spécifier la longueur d'onde de départ (crval1) du fichier rééchantillonné.
+# Exemple spc_echantmodel profile_model.fit profile_data.fit
+# Exemple spc_echantmodel profile_model.fit profile_data.fit 6563.
+#################################################################################################
+proc spc_echantmodel { args } {
+   global audace
+   set nbargs [ llength $args ]
+   if { $nbargs == 2 || $nbargs == 3 } {
+      set nom_fich_input [ lindex $args 1 ]
+      set nom_fich_input [ file rootname $nom_fich_input ]
+      set nom_fich_model [ lindex $args 0 ]
+      set nom_fich_model [ file rootname $nom_fich_model ]
+	
+      #set nbunit "float"
+      set nbunit "double"
+      set precision 0.05
+      #set oversampling 2
+		#--- Caractéristiques du profil modèle:
+      buf$audace(bufNo) load "$audace(rep_images)/$nom_fich_model"
+   	#-- Renseigne sur les parametres de l'image :
+      set naxis1mod [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+      set crval1mod [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+      set newsamplingrate [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+      ::console::affiche_resultat "caractéristiques fichier modèle cdelt1= $newsamplingrate naxis1= $naxis1mod crval1= $crval1mod \n"
+      buf$audace(bufNo) delkwds
+      buf$audace(bufNo) clear
+      if { $nbargs == 3 } {
+      	set crvalnew [ lindex $args 2 ]
+      	set nom_fich_output [ spc_echantdelt $nom_fich_input $newsamplingrate $crvalnew ]
+      } else {
+      	set nom_fich_output [ spc_echantdelt $nom_fich_input $newsamplingrate ]
+      }
+      return $nom_fich_output
+
+   } else {
+      ::console::affiche_erreur "Usage: spc_echantmodel profile_model.fits?  profile_a_reechantillonner.fits?\n\n"
+      return 0
+   }
+}
+#*****************************************************************#
+
+
+###########################################################################################
+# Procedure pour reechantilloner un profil spectral suivant un pas d'echantillonage passe en 
+# argument  
+# Auteur : Patrick LAILLY
+# Date de création : 12-12-08
+# Date de modification : 17-07-09
+# Cette procédure rééchantillone un profil de raies (fichier fits) avec un pas d'echantillonnage
+# spécifié en argument et exprimé en Angstroems. En option on peut changer le lambda de départ
+# mais l'argument, exprimé en angstroems, est contraint à etre situé dans l'intervalle des
+# longueurs d'ondes couvert par le profil d'entrée.
+# Le profil data est censé être calibré linéairement. Le fichier de sortie est créé avec le 
+# suffixe _newsampl
+# Exemples 
+# spc_echantdelt profile_data.fit .001
+# spc_echantdelt profile_data.fit 10.
+# spc_echantdelt profile_data.fit 10. 6563.
+##############################################################################################
+proc spc_echantdelt { args } {
+   #global conf
+  	global audace
+   set nbargs [ llength $args ]
+   if { $nbargs == 2 || $nbargs == 3} {
+      set nom_fich_input [ lindex $args 0 ]
+      set nom_fich_input [ file rootname $nom_fich_input ]
+      set newsamplingrate [ lindex $args 1 ]	
+      #set nbunit "float"
+      set nbunit "double"
+
+	# Accès au fichier data
+      buf$audace(bufNo) load "$audace(rep_images)/$nom_fich_input"
+		#-- Renseigne sur les parametres de l'image :
+      set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+      set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+      set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+      set crvalnew $crval1
+      if { $nbargs == 3} { 
+      	set crvalnew [ lindex $args 2 ]
+      }
+      set contenu [ spc_fits2data $nom_fich_input ]
+      set abscisses [ lindex $contenu 0 ]
+      set ordonnees [ lindex $contenu 1 ]
+      
+      ::console::affiche_resultat "caractéristiques fichier data cdelt1= $cdelt1 naxis1= $naxis1 crval1= $crval1 \n"
+      # Rééchantillonnage
+      set result [ spc_resample $abscisses $ordonnees $newsamplingrate $crvalnew ]
+      set profile [ lindex $result 1 ]
+      ::console::affiche_resultat "longueur nouveau profil = [ llength $profile ] \n"
+      set newnaxis1 [ llength $profile ]
+      #set lambda [ list ]
+      #for { set i 0 } { $i< $newnaxis1 } { incr i } {
+	 	#	set lambdai [ expr $crval1 + $i *$newsamplingrate ]
+	 #lappend lambda $lambdai
+     # }
+     	set crval1 $crvalnew
+      set lambdamin $crval1
+      set lambdamax [ expr $crval1 + $newsamplingrate* ($newnaxis1 - 1) ]
+      # creation du nouveau fichier 
+      set nbunit "float"
+      set nbunit1 "double"
+      buf$audace(bufNo) setpixels CLASS_GRAY $newnaxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
+      buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
+      buf$audace(bufNo) setkwd [list "NAXIS1" $newnaxis1 int "" ""]
+      buf$audace(bufNo) setkwd [list "NAXIS2" 1 int "" ""]
+      #-- Valeur minimale de l'abscisse (xdepart) : =0 si profil non étalonné
+      #set xdepart [ expr 1.0*[lindex $lambda 0]]
+      buf$audace(bufNo) setkwd [list "CRVAL1" $crval1 $nbunit1 "" "Angstrom"]
+      #-- Dispersion
+      buf$audace(bufNo) setkwd [list "CDELT1" $newsamplingrate $nbunit1 "" "Angstrom/pixel"]
+      #--- Rempli la matrice 1D du fichier fits avec les valeurs du profil de raie ---
+      # Une liste commence à 0 ; Un vecteur fits commence à 1
+      #set intensite [ list ]
+      ::console::affiche_resultat " lambdamin= $lambdamin  lambdamax= $lambdamax \n"
+      for {set k 0} { $k < $newnaxis1 } {incr k} {
+	 		#append intensite [lindex $profileref $k]
+	 		#::console::affiche_resultat "$intensite\n"
+	 		#if { [regexp {([0-9]+\.*[0-9]*)} $intensite match mintensite] } {}
+	 		buf$audace(bufNo) setpix [list [expr $k+1] 1] [lindex $profile $k ]
+         #set intensite 0
+      }
+      #--- Sauvegarde du fichier fits ainsi créé
+      buf$audace(bufNo) bitpix float
+      set suff _newsampl
+      set nom_fich_output "$nom_fich_input$suff"
+      buf$audace(bufNo) save "$audace(rep_images)/$nom_fich_output"
+      ::console::affiche_resultat " nom fichier sortie $nom_fich_output \n"
+      buf$audace(bufNo) bitpix short
+      return $nom_fich_output 
+      
+   } else {
+	 ::console::affiche_erreur "Usage: spc_echantdelt profil_a_reechantillonner.fits?  newsampl?\n\n"
+	 return 0
+   }
+}
+#*****************************************************************#
+
+
+
+
+####################################################################
+# Procedure pour merger 2 spectres ayant un recouvrement et gere le niveau du continuum
+#
+# Auteurs : Benjamin MAUCLAIRE et Patrick LAILLY
+# Date creation : 2008-12-10
+# Date modification : 2009-07-16
+# Arguments : spectre1 spectre2
+####################################################################
+
+proc spc_merge { args } {
+   global audace spcaudace
+   global conf caption
+   set spcaudace(maxdiff_icont) .05
+   set increment 400
+   set epsilon .00001
+
+   if { [ llength $args ] == 2 } {
+      set spectre1 [ lindex $args 0 ]
+      set spectre1 [ file rootname $spectre1 ]
+      set spectre2 [ lindex $args 1 ]
+      set spectre2 [ file rootname $spectre2 ]
+      set nom_fich_output $spectre1
+
+      #--- Détermine les parametres de chaque spectre :
+      buf$audace(bufNo) load "$audace(rep_images)/$spectre1"
+      set naxis1_a [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+      set crval1_a [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+      set cdelt1_a [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+      set lfin_a [ expr $crval1_a+($naxis1_a-1)*$cdelt1_a ]
+      buf$audace(bufNo) load "$audace(rep_images)/$spectre2"
+      set naxis1_b [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+      set crval1_b [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+      set cdelt1_b [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+      set lfin_b [ expr $crval1_b+($naxis1_b-1)*$cdelt1_b ]          
+
+       #--- Selection du spectre le plus rouge et de la plage de recouvrement :
+       # ne devrait on pas s'assurer d'une largeur de recouvrement minimum (remarque Pat)
+      if { $lfin_a >= $crval1_b && $crval1_a <= $crval1_b } {
+	 		set spectre_bleu "$spectre1"
+	 		set spectre_rouge "$spectre2"
+	 		#set lc_deb $crval1_b
+	 		set lc_fin $lfin_a
+	 		set naxisbleu $naxis1_a
+	 		set naxisrouge $naxis1_b
+	 		set crvalrouge $crval1_b
+	 		set crvalbleu $crval1_a
+      } elseif { $lfin_b >= $crval1_a && $crval1_a >= $crval1_b } {
+	 		set spectre_bleu "$spectre2"
+	 		set spectre_rouge "$spectre1"
+	 		#set lc_deb $lfin_b
+	 		set lc_fin $lfin_b
+	 		set naxisrouge $naxis1_a
+	 		set naxisbleu $naxis1_b
+	 		set crvalbleu $crval1_b
+	 		set crvalrouge $crval1_a
+      } else {
+	 		::console::affiche_erreur "Aucune plage commune de longueur d'onde.\n"
+	 		return ""
+      }
+      set lc_deb $crvalrouge
+
+      # a changer !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+      #--- Mise au meme niveau du continuum des deux spectres : A CHANGER !! vomme au tel
+      #-- C le spectre rouge qui sera multiplié car c'est toujours le moins bruité :
+      # commentaire Pat : pour moi qui n'ai rien changé, c'est OK
+      set ic_bleu [ spc_icontinuum $spectre_bleu ]
+      set ic_rouge [ spc_icontinuum $spectre_rouge ]
+      if { $ic_rouge > 0 } {
+	 		if { [ expr abs($ic_bleu-$ic_rouge)/$ic_bleu ] >= $spcaudace(maxdiff_icont) } {
+	    		set ic_coeff [ expr $ic_bleu/$ic_rouge ]
+	   		set spectre_rouge_mult [ spc_mult $spectre_rouge $ic_coeff ]
+	 		} else {
+	    		set spectre_rouge_mult "$spectre_rouge"
+	 		}
+  		} else {
+	 		set spectre_rouge_mult "$spectre_rouge"
+	 		::console::affiche_erreur "Pas de rescaling du continuum possible.\n"
+  		}
+
+   	#  uniformisation de l'echantillonnage des spectres
+   	set newnaxisbleu [ expr $naxisbleu + $increment ] 
+  		set cdeltnew [ expr ( $crvalrouge - $crvalbleu )/ ( $newnaxisbleu -1 ) ]
+  		set newbleu [ spc_echantdelt $spectre_bleu $cdeltnew ]
+  		set newrouge [ spc_echantdelt $spectre_rouge_mult $cdeltnew ]
+  		buf$audace(bufNo) load "$audace(rep_images)/$newbleu"
+  		set naxis1b [ lindex [ buf$audace(bufNo) getkwd NAXIS1 ] 1 ]
+  		buf$audace(bufNo) imaseries "PROFILE offset=1 direction=x filename=bleu.dat"
+  		buf$audace(bufNo) load "$audace(rep_images)/$newrouge"
+  		buf$audace(bufNo) imaseries "PROFILE offset=1 direction=x filename=rouge.dat"
+ 		# determination du N° d' echantillon de debut de la zone commune
+		set ndebrouge [ expr int( ( $crvalrouge -$crvalbleu + $epsilon ) / $cdeltnew) + 1 ]
+   	#::console::affiche_resultat " ndebrouge = $ndebrouge\n"
+	   
+		## === Extraction des numeros des pixels et des intensites bleu===
+   	set inputfile [ open "$audace(rep_gui)/bleu.dat" r ]
+  		set contents [split [read $inputfile] \n]
+  		close $inputfile
+  		set abscissesbleu [ list ]
+ 		set intensitebleu [ list ]
+  		set kk 0
+ 		foreach ligne $contents {
+	 		#::console::affiche_resultat " $ligne \n"
+	 		if { $kk != 0 } {
+	    		lappend abscissesbleu [ lindex $ligne 0 ]	
+	    		lappend intensitebleu [ lindex $ligne 1 ]
+	 		}
+	 		incr kk
+  		}
+ 		set longbleu [ llength $abscissesbleu ]
+  		## === Extraction des numeros des pixels et des intensites rouge===
+		set inputfile [ open "$audace(rep_gui)/rouge.dat" r ]
+  		set contents [split [read $inputfile] \n]
+  		close $inputfile
+  		set abscissesrouge [ list ]
+  		set intensiterouge [ list ]
+  		set kk 0
+   	foreach ligne $contents {
+			#::console::affiche_resultat " $ligne \n"
+	 		if { $kk != 0 } {
+	    		lappend abscissesrouge [ lindex $ligne 0 ]	
+	    		lappend intensiterouge [ lindex $ligne 1 ]
+	 		}
+	 		incr kk
+  		}
+  		set longrouge [ llength $abscissesrouge ] 
+ 		::console::affiche_resultat " longueur des profils apres reechantillonage bleu = $longbleu rouge = $longrouge \n"
+ 		#merge des listes
+ 		set ndebrouge_2 [ expr $ndebrouge - 2 ]
+		set ndebrouge_1 [ expr $ndebrouge - 1 ]
+ 		set intensite [ lrange $intensitebleu 0 $ndebrouge_2 ]
+		set newnaxisbleu [ llength $abscissesbleu ]
+		# traitement de la zone commune
+ 		set erreurlambda1 [ expr $lc_deb - $crvalbleu- $cdeltnew * $ndebrouge_1 ]
+ 		set erreurlambda2 [ expr $lc_fin - $crvalbleu- $cdeltnew * ($newnaxisbleu-1) ]
+  		::console::affiche_resultat " erreur arrondis= $erreurlambda1 cdeltnew= $cdeltnew \n"
+  		::console::affiche_resultat " erreur secondaire (controle) = $erreurlambda2 cdeltnew= $cdeltnew \n"
+  		::console::affiche_resultat " naxis1b = $naxis1b newnaxisbleu= $newnaxisbleu \n"
+ 		# commentaire Pat :je ne comprends pas pourquoi newnaxisbleu est != de naxis1b
+  		set newnaxisbleu $naxis1b
+ 		for { set i $ndebrouge_1 } { $i < $newnaxisbleu } { incr i } { 
+	 		set intensite_bleu [ lindex $intensitebleu $i ]
+	 		set intensite_rouge [ lindex $intensiterouge [ expr $i -$ndebrouge_1 ] ]
+	 		set nbechant [ expr $newnaxisbleu - $ndebrouge_1 ]
+	 		set nbechant_1 [ expr $nbechant-1 ]
+	 		set coefrouge [ expr ($i - $ndebrouge_1)*1. / ( $nbechant_1 * 1. ) ]
+	 		set coefbleu [ expr ( $newnaxisbleu- 1 -$i )*1. / ( $nbechant_1 * 1. ) ]
+	 		lappend intensite [ expr $coefrouge * $intensite_rouge + $coefbleu * $intensite_bleu ]
+ 		}
+		set longrouge_2 [ expr $longrouge -2 ]
+  		set debrouge [ expr $newnaxisbleu -$ndebrouge_1 ]
+ 		#::console::affiche_resultat " debrouge= $debrouge longrouge_2= $longrouge_2 \n"
+		#::console::affiche_resultat " long =  [llength $intensite ]\n"
+  		set intensite_suite [ lrange $intensiterouge $debrouge $longrouge_2 ]
+ 		#::console::affiche_resultat " long =  [llength $intensite_suite ]\n"
+  		set intensite [ concat $intensite $intensite_suite ]
+ 		set newnaxis1 [ llength $intensite ]
+	
+		# creation du nouveau fichier 
+ 		set nbunit "float"
+ 		set nbunit1 "double"
+ 		buf$audace(bufNo) setpixels CLASS_GRAY $newnaxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
+  		buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
+ 		buf$audace(bufNo) setkwd [list "NAXIS1" $newnaxis1 int "" ""]
+ 		buf$audace(bufNo) setkwd [list "NAXIS2" 1 int "" ""]
+  		buf$audace(bufNo) setkwd [list "CRVAL1" $crvalbleu $nbunit1 "" "Angstrom"]
+  		#-- Dispersion
+  		buf$audace(bufNo) setkwd [list "CDELT1" $cdeltnew $nbunit1 "" "Angstrom/pixel"]
+ 		#--- Rempli la matrice 1D du fichier fits avec les valeurs du profil de raie ---
+		# Une liste commence à 0 ; Un vecteur fits commence à 1
+  		#set intensite [ list ]
+ 		for {set k 0} { $k < $newnaxis1 } {incr k} {
+	 		#if { [regexp {([0-9]+\.*[0-9]*)} $intensite match mintensite] } {}
+	 		buf$audace(bufNo) setpix [list [expr $k+1] 1] [lindex $intensite $k ]  
+  		}
+  		#--- Sauvegarde du fichier fits ainsi créé
+      buf$audace(bufNo) bitpix float
+      set suff _merged
+      set nom_fich_output "$nom_fich_output$suff"
+      buf$audace(bufNo) save "$audace(rep_images)/$nom_fich_output"
+      ::console::affiche_resultat " nom fichier sortie $nom_fich_output \n"
+      buf$audace(bufNo) bitpix short
+      return $nom_fich_output 
+   } else {
+   	::console::affiche_erreur "Usage : spc_merge spectre1 spectre2\n\n"
+   }
+}
+#*****************************************************************#
 
 
 

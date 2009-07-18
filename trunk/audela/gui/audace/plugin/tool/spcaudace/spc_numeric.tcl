@@ -1,47 +1,138 @@
 # Fonctions de calculs numeriques : interpolation, ajustement...
 # source $audace(rep_scripts)/spcaudace/spc_numeric.tcl
 
-# Mise a jour $Id: spc_numeric.tcl,v 1.3 2009-01-02 21:23:29 bmauclaire Exp $
+# Mise a jour $Id: spc_numeric.tcl,v 1.4 2009-07-18 18:24:41 bmauclaire Exp $
 
 
 
-###################################################################
-# Procedure de determination du minimum entre 2 valeurs
-#
-# Auteur : Benjamin MAUCLAIRE
-# Date creation : 01-06-08
-# Date modification : 01-06-08
-# Arguments : valeur 1, valeur 2
-#####################################################################
-
-proc spc_resample { args } {
-
-
-   if { [ llength $args ] == 3 } {
-      set xvals [ lindex $args 0 ]
-      set yvals [ lindex $args 1 ]
-      set nxvals [ lindex $args 2 ]
-
-      #--- Recupere les informations sur l'echantillon :
-      set len [ llength $xvals ]
-      set x_0 [ lindex $xvals 0 ]
-
-      #--- Calcul
-      set new_xvals [ list ]
-      for {set i 0} {$i<$len} {incr i} {
-         lappend new_xvals [ expr $pas*$i+$lambda_deb ]
+#############################################################################################
+# Procedure de reechantillonage d'unn profil spectral decrit sous forme de listes
+# Auteur : Patrick LAILLY
+# Date de création : 12-12-08
+# Date de modification : 17-07-09
+# Cette procédure rééchantillone, selon un pas d'echantillonage spécifié en Angstroems et 
+# commencant à une longueur d'onde (variable crvalnew) spécifiéee en angstroems, un 
+# profil de raies (censé être calibré linéairement) decrit via une liste de lambdas et une 
+# liste d'intensités  et retourne un liste donnant la liste des lambdas et la liste des 
+# intensités du profil ainsi rééchantillonné. crvalnew est cense etre compris dans l'intervalle
+# des lambdas donnés en argument. 
+# Il serait peut être bon de prevoir des arguments optionnels pour le design du filtre dans le 
+# cas d'un sous-échantillonage
+# Exemple 
+# spc_resample_start naxis1 list_lambdas list_intensites .001 crvalnew
+##############################################################################################
+proc spc_resample { args } {set nbargs [ llength $args ]
+   if { $nbargs == 4 } {
+      set abscisses [ lindex $args 0 ]
+      set ordonnees [ lindex $args 1 ]
+      set newsamplingrate [ lindex $args 2 ]
+      set crvalnew [ lindex $args 3 ]
+      # test calibration linéaire du profil entré
+      set crval1 [ lindex $abscisses 0 ]
+      set naxis1 [ llength $abscisses ]
+      set naxis1_1 [ expr $naxis1 -1 ]
+      set ecartlambda [ expr ( [ lindex $abscisses  $naxis1_1] -$crval1 ) ]
+      set dlambda_glob [ expr  $ecartlambda / $naxis1_1  ]
+      set dlambda_first [ expr ( [ lindex $abscisses  1] -$crval1 ) ]
+      if { [ expr abs ( $dlambda_glob - $dlambda_first ) ] > .0000001 } {
+	 		::console::affiche_erreur "spc_resample : le profil entré n'est pas calibré linéairement\n\n"
+	 		return 0
+	 	}
+		# test sur validite de crvalnew
+	 	if { [ lindex $abscisses  $naxis1_1] < $crvalnew || $crval1 > $crvalnew } {
+	 		::console::affiche_erreur "le parametre crvalnew n'est pas compris dans l'intervalle des lambdas donnés en argument \n\n"
+	 		return 0
       }
-
-      #-- R��chantillonne par spline les intensit�s sur la nouvelle �chelle en longueur d'onde :
-      #-- Verifier les valeurs des lambdas pour eviter un "monoticaly error de BLT".
-      set new_intensities [ lindex  [ spc_spline $xvals $yvals $nxvals n ] 1 ]
-      return $new_coordonnees
+      set cdelt1 $dlambda_glob
+      set precision 0.05
+      #set oversampling 2 
+      set lambdamax [ expr $crval1 + $ecartlambda ]
+      #set lambdamin $crvalnew
+      set ecartlambda [ expr $lambdamax -$crvalnew ]
+      set newnaxis1 [ expr int ( $ecartlambda / $newsamplingrate ) + 1 ]
+      ::console::affiche_resultat "avant reechantillonage : $naxis1 $cdelt1 $crval1 apres : $newnaxis1 $newsamplingrate $crvalnew\n"
+      if { $cdelt1 > $newsamplingrate } {
+	 		# cas suréchantillonage
+	 		::console::affiche_resultat "suréchantillonage des données \n"
+	 		#set den  $cdelt1
+	 		# reechantillonage du fichier selon newsamplingrate
+	 		set lambda [ list ]
+	 		set profile [ list ]
+	 		set ndeb 0
+	 		set ndebp1 [ expr $ndeb + 1 ]
+	 		for { set i 0 } { $i<$newnaxis1 } {incr i} {
+	    		set lambdai [ expr $crvalnew + $i * $newsamplingrate ]
+	    		lappend lambda $lambdai
+	    		while { $lambdai > [ expr $crval1 + $ndebp1 * $cdelt1] } {
+	       		incr ndebp1
+	      		incr ndeb		
+	    		}
+	    		# interpolation lineaire entre les donnees associees a ndeb et ndebp1
+	    		set lambdamoins [ lindex $abscisses $ndeb ]
+	    		set lambdaplus [ lindex $abscisses $ndebp1 ]
+	    		set intensmoins [ lindex $ordonnees $ndeb ]
+	    		set intensplus [ lindex $ordonnees $ndebp1 ]
+	    		set num  [ expr  ($intensplus - $intensmoins)*1. ]
+	    		set den  [ expr ($lambdaplus - $lambdamoins)*1. ]
+	    		set pente [ expr $num / $den ]
+	    		set inten [ expr $intensmoins*1. + $pente * ( $lambdai - $lambdamoins ) ]
+	    		#::console::affiche_resultat " ndeb= $ndeb lambda1= [ lindex $intensites_orig $ndeb ] lambda2= [ lindex $intensites_orig $ndebp1 ]\n"
+	    		lappend profile $inten			
+	 		}
+	 		::console::affiche_resultat " sortie echant_base \n"
+	 		set result [ list ]
+	 		lappend result $lambda
+	 		lappend result $profile
+	 		return $result
+	 	} else {
+	 		#cas souseechantillonage
+	 		::console::affiche_resultat "souséchantillonage des données \n"
+	 		#application d'un filtre adequat aux donnees
+	 		# alpha est la proportion par rapport a la frequence de Nyquist
+	 		set alpha 0.8
+	 		set coupure [ expr int ( 2.*$newsamplingrate / ( $alpha *$cdelt1 ) ) ]
+	 		set demilargeur [ expr int ($coupure / 2) +1 ]
+	 		set filteredata [ spc_passebas_pat $ordonnees $demilargeur $coupure ]
+		 	# attention aux effets de bord !!!!!!!!!!!!!
+			
+	 		# reechantillonage des donnees filtrees
+	 		#set den  $cdelt1
+	 		# reechantillonage du fichier selon newsamplingrate
+	 		set lambda [ list ]
+	 		set profile [ list ]
+	 		set ndeb 0
+	 		set ndebp1 [ expr $ndeb + 1 ]
+   		for { set i 0 } { $i<$newnaxis1 } {incr i} {
+	   		set lambdai [ expr $crvalnew + $i * $newsamplingrate ]
+	   		lappend lambda $lambdai
+	   		while { $lambdai > [ expr $crval1 + $ndebp1 * $cdelt1] } {
+	      		incr ndebp1
+	      		incr ndeb		
+	   		}
+	   		# interpolation lineaire entre les donnees associees a ndeb et ndebp1
+	   		set lambdamoins [ lindex $abscisses $ndeb ]
+	   		set lambdaplus [ lindex $abscisses $ndebp1 ]
+	   		set intensmoins [ lindex $filteredata $ndeb ]
+	   		set intensplus [ lindex $filteredata $ndebp1 ]
+	   		set num  [ expr  ($intensplus - $intensmoins)*1. ]
+	   		set den  [ expr ($lambdaplus - $lambdamoins)*1. ]
+	   		set pente [ expr $num / $den ]
+	   		set inten [ expr $intensmoins*1. + $pente * ( $lambdai - $lambdamoins ) ]
+	   		#::console::affiche_resultat " ndeb= $ndeb ndebp1= $ndebp1 ]\n"
+	   		lappend profile $inten			
+			}			
+		}
+		set result [ list ]
+   	lappend result $lambda
+   	lappend result $profile
+   	return $result
    } else {
-
+      ::console::affiche_erreur "Usage: spc_resample list_lambdas? list_intensites? newsamplingrate? \n\n"
+      return 0
    }
 }
-
 #****************************************************************#
+
 
 
 ###################################################################
@@ -1803,3 +1894,41 @@ proc spc_ajust_051215a { args } {
 #****************************************************************#
 
 
+
+###################################################################
+# Procedure de determination du minimum entre 2 valeurs
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 01-06-08
+# Date modification : 01-06-08
+# Arguments : valeur 1, valeur 2
+#####################################################################
+
+proc spc_resample0 { args } {
+
+
+   if { [ llength $args ] == 3 } {
+      set xvals [ lindex $args 0 ]
+      set yvals [ lindex $args 1 ]
+      set nxvals [ lindex $args 2 ]
+
+      #--- Recupere les informations sur l'echantillon :
+      set len [ llength $xvals ]
+      set x_0 [ lindex $xvals 0 ]
+
+      #--- Calcul
+      set new_xvals [ list ]
+      for {set i 0} {$i<$len} {incr i} {
+         lappend new_xvals [ expr $pas*$i+$lambda_deb ]
+      }
+
+      #-- R��chantillonne par spline les intensit�s sur la nouvelle �chelle en longueur d'onde :
+      #-- Verifier les valeurs des lambdas pour eviter un "monoticaly error de BLT".
+      set new_intensities [ lindex  [ spc_spline $xvals $yvals $nxvals n ] 1 ]
+      return $new_coordonnees
+   } else {
+
+   }
+}
+
+#******************************************************************************#
