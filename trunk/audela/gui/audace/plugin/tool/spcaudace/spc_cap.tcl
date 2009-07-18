@@ -3,7 +3,7 @@
 # Modification : 08/12/2005
 #
 
-# Mise a jour $Id: spc_cap.tcl,v 1.2 2008-09-20 17:20:05 bmauclaire Exp $
+# Mise a jour $Id: spc_cap.tcl,v 1.3 2009-07-18 18:27:23 bmauclaire Exp $
 
 
 global caption langage
@@ -49,6 +49,7 @@ global caption langage
    set caption(spcaudace,gui,writeps)                            "Screenshot to Postscript file"
    set caption(spcaudace,gui,writegif)                           "Screenshot to GIF file"
    set caption(spcaudace,gui,spc_fit2ps)                         "Export a profil to Postscript file"
+   set caption(spcaudace,gui,spc_fit2colors)                     "Export a profil as a large colored jpeg file"
    set caption(spcaudace,gui,spc_fits2dat_w)                     "Export FITS profils to dat"
    set caption(spcaudace,gui,spc_dat2fits_w)                     "Export DAT profil to FITS"
    set caption(spcaudace,gui,spc_spc2fits_w)                     "Export SPC profil to FITS"
@@ -81,6 +82,9 @@ global caption langage
    set caption(spcaudace,gui,spc_div)                            "Dividing two lines profile"
    set caption(spcaudace,gui,spc_extractcont)                    "Extract continuum"
    set caption(spcaudace,gui,spc_dry)                            "Remove telluric lines"
+   set caption(spcaudace,gui,spc_merge)                          "Merge two lines profil"
+   set caption(spcaudace,gui,spc_echantdelt)                     "Resample a profil with sample rate"
+   set caption(spcaudace,gui,spc_echantmodel)                    "Resample a profil the same as an other profil"
    set caption(spcaudace,gui,spc_calibre_space)                  "---------------------------------------------------------------------------"
    set caption(spcaudace,gui,spc_norma_w)                        "Normalisation by continuum extraction"
    set caption(spcaudace,gui,spc_rescalecont_w)                  "Rescaling continuum to value 1"
@@ -160,6 +164,9 @@ global caption langage
    set caption(spcaudace,gui,spc_contrib_w)                      "Contributors: $spcaudace(contribs)."
 
 
+
+
+#=====================================================================================================#
 # *************** Version française ***************************
 if { [string compare $langage "french"] == "0" } {
 
@@ -203,6 +210,7 @@ if { [string compare $langage "french"] == "0" } {
      set caption(spcaudace,gui,writeps)                       "Fait une capture d'écran au format Postscript"
      set caption(spcaudace,gui,writegif)                      "Fait une capture d'écran au format GIF"
      set caption(spcaudace,gui,spc_fit2ps)                    "Exporter un profil en Postscript"
+     set caption(spcaudace,gui,spc_fit2colors)                "Création d'un spectre coloré à partir du profil"
      set caption(spcaudace,gui,spc_fits2dat_w)                "Conversion de profil FITS vers DAT"
      set caption(spcaudace,gui,spc_dat2fits_w)                "Conversion de profil DAT vers FITS"
      set caption(spcaudace,gui,spc_spc2fits_w)                "Conversion de profil SPC vers FITS"
@@ -231,6 +239,9 @@ if { [string compare $langage "french"] == "0" } {
      set caption(spcaudace,gui,spc_smooth)                    "Adoucissement par filtrage passe bas"
      set caption(spcaudace,gui,spc_smooth2)                   "Adoucissement par filtrage non-linéaire"
      set caption(spcaudace,gui,spc_div)                       "Division de deux profils de raies"
+     set caption(spcaudace,gui,spc_merge)                     "Raboutage de deux profils de raies"
+     set caption(spcaudace,gui,spc_echantdelt)                "Rééchantillonnage d'un profil avec un pas"
+     set caption(spcaudace,gui,spc_echantmodel)               "Rééchantillonnage d'un profil à l'identique d'un autre"
      set caption(spcaudace,gui,spc_extractcont)               "Extraction du continuum"
      set caption(spcaudace,gui,spc_dry)                       "Retrait des raies telluriques"
      set caption(spcaudace,gui,spc_calibre_space)             "---------------------------------------------------------------------------"
