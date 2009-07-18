@@ -1,6 +1,6 @@
 #
 # Fichier : ascomcam.cap
-# Mise a jour $Id: ascomcam.cap,v 1.1 2009-07-18 12:18:57 michelpujol Exp $
+# Mise a jour $Id: ascomcam.cap,v 1.2 2009-07-18 17:22:03 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,18 +12,18 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(ascomcam,camera)                       "ASCOM"
-set caption(ascomcam,port)                         "Choix de la camera"
+set caption(ascomcam,port)                         "Camera Selection"
 
-set caption(ascomcam,configurer)                   "Configurer"
-set caption(ascomcam,install)                         "La mise a jour de %s v%s est terminée."
+set caption(ascomcam,configurer)                   "Set up"
+set caption(ascomcam,install)                      "%s V%s update completed."
 
 set caption(ascomcam,miroir_x)                     "Horizontal Mirror"
 set caption(ascomcam,miroir_y)                     "Vertical Mirror"
 
-set caption(ascomcam,port_camera)                  "ASCOM driver"
+set caption(ascomcam,port_camera)                  "ASCOM Driver"
 set caption(ascomcam,2points)                      ":"
 
-set caption(ascomcam,obtu_ferme)                   "Ferme"
+set caption(ascomcam,obtu_ferme)                   "Closed"
 set caption(ascomcam,obtu_synchro)                 "Synchro"
 
 set caption(ascomcam,titre_site_web)               "Reference Web Site:"
@@ -32,23 +32,128 @@ set caption(ascomcam,site_web_ref)                 "http://ascom-standards.org"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
+   set caption(ascomcam,camera)                    "ASCOM"
+   set caption(ascomcam,port)                      "Choix de la caméra"
+
+   set caption(ascomcam,configurer)                "Configurer"
+   set caption(ascomcam,install)                   "La mise à jour de %s V%s est terminée."
+
+   set caption(ascomcam,miroir_x)                  "Miroir horizontal"
+   set caption(ascomcam,miroir_y)                  "Miroir vertical"
+
+   set caption(ascomcam,port_camera)               "Driver ASCOM"
+   set caption(ascomcam,2points)                   ":"
+
+   set caption(ascomcam,obtu_ferme)                "Fermé"
+   set caption(ascomcam,obtu_synchro)              "Synchro"
+
+   set caption(ascomcam,titre_site_web)            "Site Web de référence :"
+   set caption(ascomcam,site_web_ref)              "http://ascom-standards.org"
+
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(ascomcam,camera)                    "ASCOM"
+   set caption(ascomcam,port)                      "# Choix de la caméra"
+
+   set caption(ascomcam,configurer)                "Configurare"
+   set caption(ascomcam,install)                   "# La mise à jour de %s V%s est terminée."
+
+   set caption(ascomcam,miroir_x)                  "Specchio orizzontale"
+   set caption(ascomcam,miroir_y)                  "Specchio verticale"
+
+   set caption(ascomcam,port_camera)               "Driver ASCOM"
+   set caption(ascomcam,2points)                   ":"
+
+   set caption(ascomcam,obtu_ferme)                "Chiuso"
+   set caption(ascomcam,obtu_synchro)              "Sincronizza"
+
+   set caption(ascomcam,titre_site_web)            "Sito Web di riferimento:"
+   set caption(ascomcam,site_web_ref)              "http://ascom-standards.org"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
+   set caption(ascomcam,camera)                    "ASCOM"
+   set caption(ascomcam,port)                      "# Choix de la caméra"
+
+   set caption(ascomcam,configurer)                "Configurar"
+   set caption(ascomcam,install)                   "# La mise à jour de %s V%s est terminée."
+
+   set caption(ascomcam,miroir_x)                  "Espejo horizontal"
+   set caption(ascomcam,miroir_y)                  "Espejo vertical"
+
+   set caption(ascomcam,port_camera)               "Driver ASCOM"
+   set caption(ascomcam,2points)                   ":"
+
+   set caption(ascomcam,obtu_ferme)                "Cerrado"
+   set caption(ascomcam,obtu_synchro)              "Sincro"
+
+   set caption(ascomcam,titre_site_web)            "Sitio Web de referencia:"
+   set caption(ascomcam,site_web_ref)              "http://ascom-standards.org"
+
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
+   set caption(ascomcam,camera)                    "ASCOM"
+   set caption(ascomcam,port)                      "# Choix de la caméra"
+
+   set caption(ascomcam,configurer)                "Konfigurieren"
+   set caption(ascomcam,install)                   "# La mise à jour de %s V%s est terminée."
+
+   set caption(ascomcam,miroir_x)                  "Horizontale Spiegel"
+   set caption(ascomcam,miroir_y)                  "Verticale Spiegel"
+
+   set caption(ascomcam,port_camera)               "ASCOM Driver"
+   set caption(ascomcam,2points)                   ":"
+
+   set caption(ascomcam,obtu_ferme)                "Geschlossen"
+   set caption(ascomcam,obtu_synchro)              "Synchro"
+
+   set caption(ascomcam,titre_site_web)            "Referenz Webseite:"
+   set caption(ascomcam,site_web_ref)              "http://ascom-standards.org"
 
 # *************** Version portugaise ***************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
+   set caption(ascomcam,camera)                    "ASCOM"
+   set caption(ascomcam,port)                      "# Choix de la caméra"
+
+   set caption(ascomcam,configurer)                "Configuração"
+   set caption(ascomcam,install)                   "# La mise à jour de %s %V%s est terminée."
+
+   set caption(ascomcam,miroir_x)                  "Espelho Horizontal"
+   set caption(ascomcam,miroir_y)                  "Espelho Vertical"
+
+   set caption(ascomcam,port_camera)               "Driver ASCOM"
+   set caption(ascomcam,2points)                   ":"
+
+   set caption(ascomcam,obtu_ferme)                "Fechado"
+   set caption(ascomcam,obtu_synchro)              "Sincro"
+
+   set caption(ascomcam,titre_site_web)            "Site Web de referência:"
+   set caption(ascomcam,site_web_ref)              "http://ascom-standards.org"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
+   set caption(ascomcam,camera)                    "ASCOM"
+   set caption(ascomcam,port)                      "Camera Selection"
+
+   set caption(ascomcam,configurer)                "Set up"
+   set caption(ascomcam,install)                   "%s V%s update completed."
+
+   set caption(ascomcam,miroir_x)                  "Horizontal Mirror"
+   set caption(ascomcam,miroir_y)                  "Vertical Mirror"
+
+   set caption(ascomcam,port_camera)               "ASCOM Driver"
+   set caption(ascomcam,2points)                   ":"
+
+   set caption(ascomcam,obtu_ferme)                "Closed"
+   set caption(ascomcam,obtu_synchro)              "Synchro"
+
+   set caption(ascomcam,titre_site_web)            "Reference Web Site:"
+   set caption(ascomcam,site_web_ref)              "http://ascom-standards.org"
 
 }
 
