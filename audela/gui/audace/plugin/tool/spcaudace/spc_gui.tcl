@@ -1,7 +1,7 @@
 
 # Procédures liées à 'linterface graphique et au tracé des profils de raies.
 
-# Mise a jour $Id: spc_gui.tcl,v 1.3 2009-01-02 20:48:53 bmauclaire Exp $
+# Mise a jour $Id: spc_gui.tcl,v 1.4 2009-07-18 18:27:23 bmauclaire Exp $
 
 
 
@@ -106,6 +106,7 @@ proc spc_winini { } {
       # .spc.menuBar.conv add command -label $caption(spcaudace,gui,writeps) -command "spc_postscript" -underline 0
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_fit2ps) -command "spc_fit2ps" -underline 0
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,writegif) -command "spc_scgif" -underline 0
+      .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_fit2colors) -command "spc_fit2colors" -underline 0
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_file_space)
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_fits2dat_w) -command "spc_fits2dat" -underline 0
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_file_space)
@@ -146,6 +147,10 @@ proc spc_winini { } {
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_smooth) -command "spc_smooth" -underline 0
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_smooth2) -command "spc_smooth2" -underline 0
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_div) -command "spc_div" -underline 0
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_merge) -command "spc_merge" -underline 0
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_echantdelt) -command "spc_echantdelt" -underline 0
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_echantmodel) -command "spc_echantmodel" -underline 0
+
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_calibre_space)
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_dry) -command "spc_dry" -underline 0
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_extractcont) -command "spc_extractcont" -underline 0
