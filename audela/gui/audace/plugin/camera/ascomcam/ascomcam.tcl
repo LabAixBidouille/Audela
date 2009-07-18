@@ -1,8 +1,8 @@
 #
 # Fichier : ascomcam.tcl
 # Description : Configuration de la camera ASCOM
-# Auteur : Robert DELMAS
-# Mise a jour $Id: ascomcam.tcl,v 1.1 2009-07-18 12:18:57 michelpujol Exp $
+# Auteur : Michel PUJOL
+# Mise a jour $Id: ascomcam.tcl,v 1.2 2009-07-18 17:55:42 robertdelmas Exp $
 #
 
 namespace eval ::ascomcam {
@@ -82,10 +82,10 @@ proc ::ascomcam::initPlugin { } {
    variable private
    global conf
 
-   #--- Initialise les variables de la camera CB245
-   if { ! [ info exists conf(ascomcam,port) ] }  { set conf(ascomcam,port)  "LPT1:" }
-   if { ! [ info exists conf(ascomcam,mirh) ] }  { set conf(ascomcam,mirh)  "0" }
-   if { ! [ info exists conf(ascomcam,mirv) ] }  { set conf(ascomcam,mirv)  "0" }
+   #--- Initialise les variables de la camera ASCOM
+   if { ! [ info exists conf(ascomcam,port) ] } { set conf(ascomcam,port) "LPT1:" }
+   if { ! [ info exists conf(ascomcam,mirh) ] } { set conf(ascomcam,mirh) "0" }
+   if { ! [ info exists conf(ascomcam,mirv) ] } { set conf(ascomcam,mirv) "0" }
 
    #--- Initialisation
    set private(A,camNo) "0"
@@ -104,10 +104,10 @@ proc ::ascomcam::confToWidget { } {
    variable private
    global conf
 
-   #--- Recupere la configuration de la camera CB245 dans le tableau private(...)
-   set private(port)  $conf(ascomcam,port)
-   set private(mirh)  $conf(ascomcam,mirh)
-   set private(mirv)  $conf(ascomcam,mirv)
+   #--- Recupere la configuration de la camera ASCOM dans le tableau private(...)
+   set private(port) $conf(ascomcam,port)
+   set private(mirh) $conf(ascomcam,mirh)
+   set private(mirv) $conf(ascomcam,mirv)
 }
 
 #
@@ -118,15 +118,15 @@ proc ::ascomcam::widgetToConf { camItem } {
    variable private
    global conf
 
-   #--- Memorise la configuration de la camera CB245 dans le tableau conf(ascomcam,...)
-   set conf(ascomcam,port)  $private(port)
-   set conf(ascomcam,mirh)  $private(mirh)
-   set conf(ascomcam,mirv)  $private(mirv)
+   #--- Memorise la configuration de la camera ASCOM dans le tableau conf(ascomcam,...)
+   set conf(ascomcam,port) $private(port)
+   set conf(ascomcam,mirh) $private(mirh)
+   set conf(ascomcam,mirv) $private(mirv)
 }
 
 #
 # ::ascomcam::fillConfigPage
-#    Interface de configuration de la camera CB245
+#    Interface de configuration de la camera ASCOM
 #
 proc ::ascomcam::fillConfigPage { frm camItem } {
    variable private
@@ -193,7 +193,6 @@ proc ::ascomcam::fillConfigPage { frm camItem } {
             -command "::ascomcam::configureDriver "
          pack $frm.frame1.frame3.configure -anchor center -side left -pady 28 -ipadx 10 -ipady 1 -expand 0
 
-
       pack $frm.frame1.frame3 -anchor nw -side left -fill x
 
       #--- Frame des miroirs en x et en y
@@ -210,10 +209,9 @@ proc ::ascomcam::fillConfigPage { frm camItem } {
 
       pack $frm.frame1.frame4 -anchor nw -side left -fill x -padx 20
 
-
    pack $frm.frame1 -side top -fill both -expand 1
 
-   #--- Frame du site web officiel de la CB245
+   #--- Frame du site web officiel de la ASCOM
    frame $frm.frame2 -borderwidth 0 -relief raised
 
       label $frm.frame2.lab103 -text "$caption(ascomcam,titre_site_web)"
@@ -239,11 +237,11 @@ proc ::ascomcam::configureCamera { camItem bufNo } {
 
    set catchResult [ catch {
       #--- je verifie que la camera n'est deja utilisee
-      if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
+      if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0 } {
          error "" "CameraUnique"
       }
       #--- Je cree la camera
-      set camNo [ cam::create ascomcam \"$conf(ascomcam,port)\"  ]
+      set camNo [ cam::create ascomcam \"$conf(ascomcam,port)\" ]
       console::affiche_erreur "$caption(ascomcam,port_camera) $caption(ascomcam,2points) $conf(ascomcam,port)\n"
       console::affiche_saut "\n"
       #--- Je change de variable
@@ -269,7 +267,6 @@ proc ::ascomcam::configureCamera { camItem bufNo } {
 #
 proc ::ascomcam::stop { camItem } {
    variable private
-   global conf
 
    #--- J'arrete la camera
    if { $private($camItem,camNo) != 0 } {
@@ -348,13 +345,11 @@ proc ::ascomcam::configureDriver { } {
    package require tcom
    package require registry
 
-
    set private(portObject)  [ ::tcom::ref createobj $private(port) ]
 
    after idle $private(portObject) SetupDialog
 
    ###$private(portObject) Connected 1
-
 }
 
 #
@@ -363,7 +358,6 @@ proc ::ascomcam::configureDriver { } {
 #
 proc ::ascomcam::selectCamera { camItem } {
    variable private
-   global conf
 
    load [file join $::audela_start_dir libascomcam.dll]
 }
