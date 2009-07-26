@@ -1,6 +1,6 @@
 #
 # Fichier : vo_tools_go.cap
-# Mise a jour $Id: vo_tools_go.cap,v 1.13 2009-07-14 08:07:21 robertdelmas Exp $
+# Mise a jour $Id: vo_tools_go.cap,v 1.14 2009-07-26 20:35:05 svaillant Exp $
 #
 
 #=========================================================================
@@ -19,6 +19,7 @@ set caption(vo_tools_go,aladin)           "Run Aladin\n(VO Web Portal)"
 set caption(vo_tools_go,cone-search)      "Search for solar\nsystem bodies\nin a field of view"
 set caption(vo_tools_go,resolver)         "Search for solar\nsystem bodies\naround a\ncelestial object"
 set caption(vo_tools_go,statut)           "Status of\nSkyBoT Service"
+set caption(vo_tools_go,samp-broadcast)   "Samp:\nBroadcast Image"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -31,6 +32,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,cone-search)   "Recherche des\ncorps du Système\nSolaire dans un\nchamp de vue"
    set caption(vo_tools_go,resolver)      "Recherche des\ncorps du Système\nSolaire autour\nd'un corps céleste"
    set caption(vo_tools_go,statut)        "Statut du service\nSkyBoT"
+   set caption(vo_tools_go,samp-broadcast) "Samp:\ndiffuser l'image"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {

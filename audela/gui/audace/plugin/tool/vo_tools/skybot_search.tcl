@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER
-# Mise a jour $Id: skybot_search.tcl,v 1.24 2009-07-02 22:01:33 jberthier Exp $
+# Mise a jour $Id: skybot_search.tcl,v 1.25 2009-07-26 20:35:05 svaillant Exp $
 #
 
 namespace eval skybot_Search {
@@ -673,10 +673,6 @@ namespace eval skybot_Search {
          -in $This -anchor s -side top -expand 0 -fill x \
          -pady 6
 
-         #--- Cree un bouton pour utiliser l'image en cours d'utilisation
-         button $This.frame1.usecurrent -text "$caption(search,image_courante)" -command { ::skybot_Search::charger "!"}
-         pack $This.frame1.usecurrent -in $This.frame1 -side top -anchor w -fill x -padx 3 -pady 3
-
          #--- Cree un label pour le chargement d'une image
          label $This.frame1.lab \
             -text "$caption(search,nom_image)" \
@@ -700,6 +696,10 @@ namespace eval skybot_Search {
 #           button $load.load -text "LOAD" -width 3 -command { ::skybot_Search::charger [::confVisu::getFileName $audace(visuNo)]}
 #           button $load.load -text "CURRENT" -width 3 -command { ::skybot_Search::charger "!"}
 #           pack $load.load -in $load -side left -anchor c -fill x -padx 6
+
+         #--- Cree un bouton pour utiliser l'image en cours d'utilisation
+         button $This.frame1.usecurrent -text "$caption(search,image_courante)" -command { ::skybot_Search::charger "!"}
+         pack $This.frame1.usecurrent -in $This.frame1 -side top -anchor w -fill x -padx 3 -pady 3
 
       #--- Cree un frame pour les caracteristiques de l'image
       frame $This.frame2 -borderwidth 0

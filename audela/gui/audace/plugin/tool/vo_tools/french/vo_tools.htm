@@ -24,6 +24,7 @@
   <tr><td><a href='#field_55'>&nbsp;&nbsp;&nbsp;5.5 Champ <em>Filtre</em></a></td></tr>
   <tr><td><a href='#field_56'>&nbsp;&nbsp;&nbsp;5.6 Champ <em>Observateur</em></a></td></tr>
   <tr><td><a href='#field_6'>6. Mises &agrave; jour de SkyBoT</a></td></tr>
+  <tr><td><a href='#field_7'>7. Protocole SAMP</a></td></tr>
 </table>
 <hr/>
 
@@ -86,6 +87,13 @@
    <tr><td align="center">Outil <em>Recherche et identification des corps<br/>du syst&egrave;me solaire dans un champ de vue</em></td></tr>
   </table>
   <p/>
+  <p><b>[ Addenum (2009-07-26)</b> : Si une image calibrée astrométriquement
+ est affichée, on peut cliquer sur "Utiliser l'image courante" pour remplir 
+les champs automatiquement. Vérifiez tout de même la valeur du temps de pose ;
+l'origine de la date n'est pas déduite des informations de de l'image et est
+systématiquement positionnée à "Mileu de pose". Il ne reste plus qu'à cliquer
+sur "Lancer la recherche". <b>]</b>
+  </p>
   <ol type="a">
     <li>Charger une image astronomique calibr&eacute;e astrom&eacute;triquement</li>
     <li>V&eacute;rifier les caract&eacute;ristiques de l'image, &agrave; savoir, la valeur et l'unit&eacute; (secondes
@@ -424,6 +432,31 @@
     que lors d'une &eacute;volution significative des th&eacute;ories des syst&egrave;mes plan&eacute;taires.
     <p/>
     Pour plus d'informations sur SkyBoT : <a href="http://skybot.imcce.fr/">http://skybot.imcce.fr/</a>.
+  </td>
+</tr>
+</table>
+
+<h2><a name='field_7'></a>7. Protocole SAMP</a></h2>
+<table>
+<tr>
+<td>
+<p>( 2009-07-26 ) L'outil VO implémente de façon rudimentaire deux
+fonctionnalités du protocole SAMP : la diffusion et la réception d'images.
+<p>Exemple de fonctionnement :
+<ul>
+<li>1. Lancer Audela et afficher le panneau Observatoire Virtuel
+<li>2. Lancer Aladin (par ex. version BETA 5.924) et s'assurer que cette version implémente le protocole SAMP en vérifiant la présence d'une icône réprésentant une antenne radar en bas à droite de la fenêtre. Cliquer sur l'icône et vérifier que (1) le hub interne est lancé et (2) Aladin est connecté au hub.
+<li>3. Charger une image du système de fichiers dans Audela (ne chargez pas une
+ image obtenue par le réseau comme par exemple par protocole http). Ensuite cliquez sur le bouton "Samp: diffuser l'image" ; Aladin doit alors avoir chargé la
+ même image (durant cette opération c'est le nom du fichier qui est transmis et non son contenu).
+<li>4. Pour transmettre une image d'Aladin vers Audela : dans Aladin effectuez un clic droit sur le plan de l'image à transmettre, choisir "Broadcast selected images to ..." puis "audela-vo" ; l'image doit être transmise immédiatement.
+</ul>
+
+<p>Remarques:
+<ul>
+<li>L'outil Observatoire Virtuel essaie d'établir une connexion avec le hub lorsque le panneau est affiché pour la première fois et si la connexion échoue il réessaye à chaque fois qu' l'on clique sur le bouton "diffusion de l'image"
+<li>L'implémentation dans Audela est rudimentaire : une fois la connexion établie il ne faut pas arrêter le hub (par exemple ne pas fermer Aladin). Autrement il faut relancer Audela.
+</ul>
   </td>
 </tr>
 </table>

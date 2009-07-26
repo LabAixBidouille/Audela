@@ -1,12 +1,10 @@
 #!/usr/bin/tclsh
-#lappend auto_path /datacentre/audela/lib
-#lappend auto_path /opt/tcl/lib
 
 #package require SOAP
 
 #namespace import -force rpcvar::typedef
 #namespace import rpcvar::typedef
-package require Tclx
+#package require Tclx
 
 namespace eval Samp {
 
@@ -60,7 +58,7 @@ proc ::Samp::build { nsp } {
  while {[gets $chan line] >= 0} {
   if {[string first "#" $line] >= 0} { continue }
   set l [split $line "="]
-  puts $l
+  #puts $l
   set ${nsp}::params([lindex $l 0]) [lindex $l 1]
  }
  close $chan
@@ -106,10 +104,10 @@ proc ::Samp::build { nsp } {
   variable params
   variable key
   set msg [ m_register [set params(samp.secret)] ]
-  puts $msg
+  #puts $msg
   array set iparams $msg
   set key $iparams(samp.private-key)
-  puts "key: $key"
+  #puts "key: $key"
   m_declare $key { samp.name audela-vo samp.description.text audela_vo dummy.version 0.1 }
  }
 
@@ -132,7 +130,7 @@ proc ::Samp::build { nsp } {
     set datalen($chan) $len
    }
   } else {
-   puts "== EOF ON CHANNEL $chan"
+   #puts "== EOF ON CHANNEL $chan"
   }
  }
 
@@ -149,7 +147,7 @@ proc ::Samp::build { nsp } {
  #  puts $::chan::datalen($chan)
  #  puts "$chan: $line"
   if {$datalen($chan) == 0} {
- puts $buf($chan)
+ #puts $buf($chan)
    set resp [::SOAP::parse_xmlrpc_request $buf($chan)]
  #  puts "\nRESPONSE\n"
  #  puts $resp
@@ -161,10 +159,10 @@ proc ::Samp::build { nsp } {
    close $chan
    handler $resp
   } elseif {$datalen($chan) < 0 } {
-   puts "INVALID LEN ON $chan"
+   #puts "INVALID LEN ON $chan"
   }
   } else {
-   puts "== EOF ON CHANNEL $chan"
+   #puts "== EOF ON CHANNEL $chan"
   }
  }
 
@@ -174,14 +172,14 @@ proc ::Samp::build { nsp } {
   set a [lindex $msg 1]
   set k [lindex $a 0]
   if { ! ($k eq $key) } {
-   puts "Ignoring event : bad key"
+   #puts "Ignoring event : bad key"
    return 0
   }
   set hub [lindex $a 1]
   set b [lindex $a 2]
   array set p [lindex $a 2]
-  puts "handler: $msg"
-  puts "msg: $p(samp.mtype)"
+  #puts "handler: $msg"
+  #puts "msg: $p(samp.mtype)"
   set hndlr h_$p(samp.mtype)
   if {[info proc $hndlr] eq $hndlr} {
    $hndlr $p(samp.params)
@@ -192,7 +190,7 @@ proc ::Samp::build { nsp } {
   variable buf
   variable datalen
   variable state
-  puts "Connection from $clientaddr registered channel $channel"
+  #puts "Connection from $clientaddr registered channel $channel"
   fconfigure $channel -blocking 0 -buffering line
   namespace eval ::chan { }
   set buf($channel) ""
@@ -210,17 +208,18 @@ proc ::Samp::build { nsp } {
  }
 
  proc ${nsp}::h_coord.pointAt.sky {args} {
-  puts "proc coord.pointAt.sky $args"
+  ::console::disp "#vo_tools::samp proc coord.pointAt.sky $args\n"
  }
 
  proc ${nsp}::h_image.load.fits {args} {
-  puts "proc image.load.fits $args"
+  #puts "proc image.load.fits $args"
   array set p [lindex $args 0]
   set url $p(image-id)
   if {[regexp {^file:(.*)} $url allmatch path]} {
-   puts "path= $path"
+   #puts "path= $path"
    if {[ file exists $path]} {
-    puts "file exists"
+#    puts "file exists"
+    ::console::disp "#vo_tools::samp load image $path\n"
     loadima $path
    }
   }
@@ -231,17 +230,22 @@ proc ::Samp::build { nsp } {
  register
  set sockserver [socket -server [namespace current]::Server 0]
  set port [ lindex [fconfigure $sockserver -sockname] 2 ]
- puts "port for callback = $port"
+ ::console::disp "#vo_tools::samp port for callback = $port\n"
 
- set msg [m_setXmlrpcCallback $key "http://benoite.imcce.fr:$port/"]
- puts $msg
+# set msg [m_setXmlrpcCallback $key "http://benoite.imcce.fr:$port/"]
+ set msg [m_setXmlrpcCallback $key "http://127.0.0.1:$port/"]
+ #puts $msg
 
  set msg [m_declareSubscriptions $key { samp.hup.event.shutdown {} samp.hup.event.unregister {} samp.app.ping {} image.load.fits {} table.load.votable {} table.highlight.row {} coord.pointAt.sky {} table.select.rowList {}}]
- puts $msg
+ #puts $msg
 
 
 # set msg [m_imageLoadFits $key { samp.mtype image.load.fits samp.params {name ABC "image-id" ABC url file:/astrodata/bddimages/fits/tarot_calern/2008/01/07/IM_20080107_004103161_080107_00211100.fits.gz} }]
 # puts "load: $msg"
+ }
+ 
+ namespace eval $nsp {
+  set initialized 1
  }
 
  return 1
@@ -250,15 +254,23 @@ proc ::Samp::build { nsp } {
 
 ###########################################################################
 
+proc ::Samp::check { } {
+ if { [info exists ::samp::initialized] && [expr $::samp::initialized == 1]} {
+  return 1
+ }
+ if { ! [::Samp::build ::samp] } {
+  ::console::disp "#vo_tools::samp INFO: samp server not found\n"
+  return 0
+ }
+ return 1
+}
+
+::Samp::check
+
 #proc mysig {} {
 # global forever
 # set forever 0
 #}
-
-if { ! [::Samp::build ::samp] } {
- puts "error building ::samp"
-# exit 1
-}
 
 #signal trap SIGINT mysig
 #vwait forever
