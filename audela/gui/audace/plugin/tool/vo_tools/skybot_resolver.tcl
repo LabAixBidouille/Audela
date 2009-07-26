@@ -2,7 +2,7 @@
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER
-# Mise a jour $Id: skybot_resolver.tcl,v 1.25 2009-07-02 22:01:33 jberthier Exp $
+# Mise a jour $Id: skybot_resolver.tcl,v 1.26 2009-07-26 22:03:55 svaillant Exp $
 #
 
 namespace eval skybot_Resolver {
@@ -1013,6 +1013,9 @@ puts "$date_calcul"
             $::skybot_Resolver::This.frame5.tbl columnconfigure 1 -sortmode dictionary
          }
          #--- Extraction du resultat
+         #--- Attention : si la requete provient de skybot les champs
+         # sont au format hms ou dms et si la requete provient de sesame
+         # ils sont au format h ou deg.
          set vo_objet(1) [ split [ lindex $voconf(liste) 1 ] "|" ]
          #--- Initialisation de RA et DEC pour la Recherche dans le FOV
          set voconf(ad_objet) [ expr 15.0 * [vo_hms_to_h [ lindex $vo_objet(1) 2 ]] ]
