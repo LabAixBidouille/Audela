@@ -2,7 +2,7 @@
 # Fichier : vo_tools_go.tcl
 # Description : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur : Robert DELMAS
-# Mise a jour $Id: vo_tools_go.tcl,v 1.15 2009-07-14 08:10:53 robertdelmas Exp $
+# Mise a jour $Id: vo_tools_go.tcl,v 1.16 2009-07-26 20:35:05 svaillant Exp $
 #
 
 #============================================================
@@ -128,7 +128,7 @@ proc ::vo_tools::createPanel { this } {
    set panneau(vo_tools,titre2) "$caption(vo_tools_go,cone-search)"
    set panneau(vo_tools,titre3) "$caption(vo_tools_go,resolver)"
    set panneau(vo_tools,titre4) "$caption(vo_tools_go,statut)"
-   set panneau(vo_tools,titre6) "SAMP"
+   set panneau(vo_tools,titre6) "$caption(vo_tools_go,samp-broadcast)"
    #--- Construction de l'interface
    ::vo_tools::vo_toolsBuildIF $This
 }
@@ -226,31 +226,23 @@ proc ::vo_tools::vo_toolsBuildIF { This } {
 
          #--- Bouton
          button $This.fra6.but1 -borderwidth 2 -text $panneau(vo_tools,titre6) \
-            -command "::vo_tools::click"
+            -command "::vo_tools::cmdSampBroadcastImage"
          pack $This.fra6.but1 -in $This.fra6 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
       pack $This.fra6 -side top -fill x
-
-      #--- Frame
-      frame $This.fra7 -borderwidth 1 -relief groove
-
-         #--- Bouton
-         button $This.fra7.but1 -borderwidth 2 -text LOADIMA \
-            -command "loadima /astrodata/bddimages/fits/tarot_calern/2008/01/07/IM_20080107_235415512_080107_22020702.fits.gz"
-         pack $This.fra7.but1 -in $This.fra7 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
-
-      pack $This.fra7 -side top -fill x
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
 }
 
-proc ::vo_tools::click {} {
+proc ::vo_tools::cmdSampBroadcastImage {} {
  global audace
+ if { [::Samp::check] == 1 } {
  set path [::confVisu::getFileName $audace(visuNo)]
- puts "path= $path"
+ #puts "path= $path"
  set url "file:$path"
- puts "url= $url"
+ #puts "url= $url"
  set msg [::samp::m_imageLoadFits $::samp::key [list samp.mtype image.load.fits samp.params [list name $url "image-id" $url url $url] ]]
- puts "msg= $msg"
+ #puts "msg= $msg"
+ }
 }
