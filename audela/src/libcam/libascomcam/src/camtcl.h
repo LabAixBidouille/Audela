@@ -25,15 +25,18 @@
 
 #define SPECIFIC_CMDLIST \
     {"select",   (Tcl_CmdProc *) cmdAscomSelect},\
-    {"infotemp", (Tcl_CmdProc *) cmdQsiInfotemp},\
-    {"setup",    (Tcl_CmdProc *) cmdQsiSetupDialog},\
-    {"wheel",    (Tcl_CmdProc *) cmdQsiWheel},
+    {"infotemp", (Tcl_CmdProc *) cmdAscomcamInfotemp},\
+    {"property", (Tcl_CmdProc *) cmdAscomcamProperty},\
+    {"setup",    (Tcl_CmdProc *) cmdAscomcamSetupDialog},\
+    {"wheel",    (Tcl_CmdProc *) cmdAscomcamWheel},
 
 
  /* === Specific commands for that camera === */
 int cmdAscomSelect(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-int cmdQsiInfotemp(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-int cmdQsiSetupDialog(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-int cmdQsiWheel(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdAscomcamProperty(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdAscomcamInfotemp(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdAscomcamSetupDialog(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdAscomcamWheel(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdAscomcamProperty(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 
 #endif

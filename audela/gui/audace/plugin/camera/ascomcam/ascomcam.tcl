@@ -2,7 +2,7 @@
 # Fichier : ascomcam.tcl
 # Description : Configuration de la camera ASCOM
 # Auteur : Michel PUJOL
-# Mise a jour $Id: ascomcam.tcl,v 1.2 2009-07-18 17:55:42 robertdelmas Exp $
+# Mise a jour $Id: ascomcam.tcl,v 1.3 2009-07-27 22:16:50 michelpujol Exp $
 #
 
 namespace eval ::ascomcam {
@@ -86,6 +86,7 @@ proc ::ascomcam::initPlugin { } {
    if { ! [ info exists conf(ascomcam,port) ] } { set conf(ascomcam,port) "LPT1:" }
    if { ! [ info exists conf(ascomcam,mirh) ] } { set conf(ascomcam,mirh) "0" }
    if { ! [ info exists conf(ascomcam,mirv) ] } { set conf(ascomcam,mirv) "0" }
+   if { ! [ info exists conf(ascomcam,foncobtu) ] } { set conf(ascomcam,foncobtu) 2 }
 
    #--- Initialisation
    set private(A,camNo) "0"
@@ -108,6 +109,7 @@ proc ::ascomcam::confToWidget { } {
    set private(port) $conf(ascomcam,port)
    set private(mirh) $conf(ascomcam,mirh)
    set private(mirv) $conf(ascomcam,mirv)
+   set widget(foncobtu) [ lindex "opened $::caption(ascomcam,obtu_ferme) $::caption(ascomcam,obtu_synchro)" $::conf(ascomcam,foncobtu) ]
 }
 
 #
@@ -251,6 +253,19 @@ proc ::ascomcam::configureCamera { camItem bufNo } {
       #--- Je configure l'oriention des miroirs par defaut
       cam$camNo mirrorh $conf(ascomcam,mirh)
       cam$camNo mirrorv $conf(ascomcam,mirv)
+      #--- Je configure l'obturateur
+      switch -exact -- $conf(ascomcam,foncobtu) {
+         0 {
+            cam$camNo shutter "opened"
+         }
+         1 {
+            cam$camNo shutter "closed"
+         }
+         2 {
+            cam$camNo shutter "synchro"
+         }
+      }
+
    } ]
 
    if { $catchResult == "1" } {
@@ -306,7 +321,18 @@ proc ::ascomcam::getPluginProperty { camItem propertyName } {
    variable private
 
    switch $propertyName {
-      binningList      { return [ list 1x1 ] }
+      binningList      {
+         if { [::ascomcam::isReady $camItem ] == 1 } {
+            set maxBin [cam$private($camItem,camNo) property maxbin]
+            set binningList ""
+            for { set i 1 } { $i <= $maxBin } { incr i } {
+               lappend binningList "${i}x${i}"
+            }
+            return $binningList
+         } else {
+            return [ list 1x1 ]
+         }
+      }
       binningXListScan { return [ list "" ] }
       binningYListScan { return [ list "" ] }
       dynamic          { return [ list 4096 -4096 ] }
@@ -314,7 +340,13 @@ proc ::ascomcam::getPluginProperty { camItem propertyName } {
       hasFormat        { return 0 }
       hasLongExposure  { return 0 }
       hasScan          { return 0 }
-      hasShutter       { return 0 }
+      hasShutter       {
+         if { [::ascomcam::isReady $camItem ] == 1 } {
+            return [cam$private($camItem,camNo) property hasShutter]
+         } else {
+            return 0
+         }
+      }
       hasTempSensor    { return 0 }
       hasSetTemp       { return 0 }
       hasVideo         { return 0 }
@@ -361,4 +393,30 @@ proc ::ascomcam::selectCamera { camItem } {
 
    load [file join $::audela_start_dir libascomcam.dll]
 }
+
+#
+# ::ascomcam::setShutter
+#    Procedure pour la commande de l'obturateur
+#
+proc ::ascomcam::setShutter { camItem shutterState ShutterOptionList } {
+   variable private
+
+   set ::conf(ascomcam,foncobtu) $shutterState
+
+   switch -exact -- $shutterState {
+      1  {
+         cam$private($camItem,camNo) shutter "closed"
+         if { [ info exists private(frm) ] } {
+            set widget(foncobtu) $::caption(ascomcam,obtu_ferme)
+         }
+      }
+      2  {
+         cam$private($camItem,camNo) shutter "synchro"
+         if { [ info exists private(frm) ] } {
+         set widget(foncobtu) $::caption(ascomcam,obtu_synchro)
+         }
+      }
+   }
+   }
+
 
