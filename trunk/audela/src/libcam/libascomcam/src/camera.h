@@ -65,14 +65,15 @@ struct camprop {
 };
 
 int cam_select(char * productName);
-void qsiGetTemperatureInfo(struct camprop *cam, double *setTemperature, double *ccdTemperature, 
+int ascomcamGetMaxBin(struct camprop *cam, int *maxBin);
+int ascomcamHasShutter(struct camprop *cam, int *hasShutter);
+void ascomcamGetTemperatureInfo(struct camprop *cam, double *setTemperature, double *ccdTemperature, 
                                double *ambientTemperature, int *regulationEnabled, int *power);
-void qsiSetupDialog(struct camprop *cam);
+void ascomcamSetupDialog(struct camprop *cam);
 
-int qsiSetWheelPosition(struct camprop *cam, int position);
-int qsiGetWheelPosition(struct camprop *cam, int *position);
-int qsiGetWheelNames(struct camprop *cam, char **names);
-
+int ascomcamSetWheelPosition(struct camprop *cam, int position);
+int ascomcamGetWheelPosition(struct camprop *cam, int *position);
+int ascomcamGetWheelNames(struct camprop *cam, char **names);
 #ifdef __cplusplus
 }            /* End of extern "C" */
 #endif

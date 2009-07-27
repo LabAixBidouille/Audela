@@ -43,8 +43,8 @@
 extern struct camini CAM_INI[];
 
 // ---------------------------------------------------------------------------
-// cmdQsiInfotemp 
-//    recupere les information de temperature
+// cmdAscomSelect 
+//    selectionne le driver de la camera
 // return:
 // OUTPUT                                                              
 //    double : check temperature (deg. Celcius)                            
@@ -69,7 +69,7 @@ int cmdAscomSelect(ClientData clientData, Tcl_Interp * interp, int argc, char *a
 }
 
 // ---------------------------------------------------------------------------
-// cmdQsiInfotemp 
+// cmdAscomcamInfotemp 
 //    recupere les information de temperature
 // return:
 // OUTPUT                                                              
@@ -79,41 +79,41 @@ int cmdAscomSelect(ClientData clientData, Tcl_Interp * interp, int argc, char *a
 //    int    : regulation, 1=on, 0=off                                     
 //    int    : Peltier power, (0-255=0-100%)                               
 // ---------------------------------------------------------------------------
-int cmdQsiInfotemp(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+int cmdAscomcamInfotemp(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
     struct camprop *cam;
     double setpoint, ccd, ambient;
     int reg, power;
     char s[256];
     cam = (struct camprop *) clientData;
-    qsiGetTemperatureInfo(cam, &setpoint, &ccd, &ambient, &reg, &power);
+    ascomcamGetTemperatureInfo(cam, &setpoint, &ccd, &ambient, &reg, &power);
     sprintf(s, "%f %f %f %d %d", setpoint, ccd, ambient, reg, power);
     Tcl_SetResult(interp, s, TCL_VOLATILE);
     return TCL_OK;
 }
 
 // ---------------------------------------------------------------------------
-// cmdQsiSetupDialog 
+// cmdAscomcamSetupDialog 
 //    affiche la fenetre de configuration fournie par le driver de la camera
 // return
 //    TCL_OK
 // ---------------------------------------------------------------------------
-int cmdQsiSetupDialog(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+int cmdAscomcamSetupDialog(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
     struct camprop *cam;
     cam = (struct camprop *) clientData;
-    qsiSetupDialog(cam);
+    ascomcamSetupDialog(cam);
     Tcl_SetResult(interp, (char*)"", TCL_VOLATILE);
     return TCL_OK;
 }
 
 // ---------------------------------------------------------------------------
-// cmdQsiSetupDialog 
+// cmdAscomcamWheel 
 //    configure la roue a filtre
 // return
 //    TCL_OK
 // ---------------------------------------------------------------------------
-int cmdQsiWheel(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+int cmdAscomcamWheel(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
    char ligne[1024];
    int result = TCL_OK, pb = 0, k = 0;
@@ -126,7 +126,7 @@ int cmdQsiWheel(ClientData clientData, Tcl_Interp * interp, int argc, char *argv
       pb = 0;
       if (strcmp(argv[2], "position") == 0) {
          if ( argc == 4 ) {
-            result = qsiSetWheelPosition(cam,atoi(argv[3]) );
+            result = ascomcamSetWheelPosition(cam,atoi(argv[3]) );
             if ( result == 0 ) {
                sprintf(ligne, "%d", atoi(argv[3]));
                result = TCL_OK;
@@ -136,7 +136,7 @@ int cmdQsiWheel(ClientData clientData, Tcl_Interp * interp, int argc, char *argv
             }
          } else {
             int position; 
-            result = qsiGetWheelPosition(cam,&position);
+            result = ascomcamGetWheelPosition(cam,&position);
             if ( result == 0 ) {
                sprintf(ligne, "%d", position);
                result = TCL_OK;
@@ -147,7 +147,7 @@ int cmdQsiWheel(ClientData clientData, Tcl_Interp * interp, int argc, char *argv
          }
       } else if (strcmp(argv[2], "names")==0) {
          char * names = NULL;
-         result = qsiGetWheelNames(cam, &names);
+         result = ascomcamGetWheelNames(cam, &names);
          if ( result == 0) {
             if ( names != NULL ) {
                sprintf(ligne, "%s", names);         
@@ -172,4 +172,55 @@ int cmdQsiWheel(ClientData clientData, Tcl_Interp * interp, int argc, char *argv
    Tcl_SetResult(interp, ligne, TCL_VOLATILE);
    return result;
 }
+
+// ---------------------------------------------------------------------------
+// cmdAscomcamProperty 
+//    retourne une propriete de la camera
+// return
+//    TCL_OK
+// ---------------------------------------------------------------------------
+int cmdAscomcamProperty(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+   char ligne[1024];
+   int result = TCL_OK, pb = 0, k = 0;
+   struct camprop *cam;
+   cam = (struct camprop *) clientData;
+   if ((argc < 2) || (argc > 4)) {
+      pb = 0;
+   } else {
+      k = 0;
+      pb = 0;
+      if (strcmp(argv[2], "maxbin") == 0) {
+         int maxBin; 
+         result = ascomcamGetMaxBin(cam,&maxBin);
+         if ( result == 0 ) {
+            sprintf(ligne, "%d", maxBin);
+            result = TCL_OK;
+         } else {
+            sprintf(ligne, "%s", cam->msg);
+            result = TCL_ERROR;
+         }
+      } else if (strcmp(argv[2], "hasShutter") == 0) {
+         int hasShutter; 
+         result = ascomcamHasShutter(cam,&hasShutter);
+         if ( result == 0 ) {
+            sprintf(ligne, "%d", hasShutter);
+            result = TCL_OK;
+         } else {
+            sprintf(ligne, "%s", cam->msg);
+            result = TCL_ERROR;
+         }
+      } else {
+         pb = 1;
+      }
+   }
+   if (pb == 1 ) {
+         sprintf(ligne, "Usage: %s %s hasShutter|maxbin", argv[0], argv[1]);
+         result = TCL_ERROR;
+   }
+   Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+   return result;
+}
+
+
 
