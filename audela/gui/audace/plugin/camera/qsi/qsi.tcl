@@ -2,7 +2,7 @@
 # Fichier : qsi.tcl
 # Description : Configuration de la camera QSI
 # Auteur : Michel Pujol
-# Mise a jour $Id: qsi.tcl,v 1.2 2009-07-11 17:11:38 robertdelmas Exp $
+# Mise a jour $Id: qsi.tcl,v 1.3 2009-07-27 22:17:39 michelpujol Exp $
 #
 
 namespace eval ::qsi {
@@ -507,20 +507,20 @@ proc ::qsi::setShutter { camItem shutterState ShutterOptionList } {
    variable private
 
    set ::conf(qsi,foncobtu) $shutterState
-   set camNo $private($camItem,camNo)
-
-   if { [ info exists private(frm) ] } {
-      #--- Gestion du mode de fonctionnement
-      switch -exact -- $shutterState {
-         1  {
+   
+   switch -exact -- $shutterState {
+      1  {
+         cam$private($camItem,camNo) shutter "closed"
+         if { [ info exists private(frm) ] } {
             set widget(foncobtu) $::caption(qsi,obtu_ferme)
-            cam$camNo shutter "closed"
-         }
-         2  {
-            set widget(foncobtu) $::caption(qsi,obtu_synchro)
-            cam$camNo shutter "synchro"
          }
       }
-   }
+      2  {
+         cam$private($camItem,camNo) shutter "synchro"
+         if { [ info exists private(frm) ] } {
+         set widget(foncobtu) $::caption(qsi,obtu_synchro)
+         }
+      }
+   }   
 }
 
