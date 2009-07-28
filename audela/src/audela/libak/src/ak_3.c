@@ -1856,7 +1856,7 @@ int yd_perchoice(gsl_vector *jds, int nmes, int *temoin, int *indice_prem_date, 
 /* Fonction perchoice                                                       */
 /***************************************************************************/
 /* Fonction with the aim to choose trial periods following the criterion ni*delta_Pi=accu*Pi<<Pi,
-/* and eliminate aliasing periods  
+   and eliminate aliasing periods  */
 /* Inputs : 1) The jds vector
 			2) The length of the jds vector
             2) Aliasing periods histogram
