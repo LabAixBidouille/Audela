@@ -175,7 +175,7 @@ int cmdHisisRegister(ClientData clientData, Tcl_Interp * interp, int argc,
 	    hisis24_writeverparam(cam, address, data, &res);
 	else
 	    hisis24_writevercom(cam, address, data, &res);
-	sprintf(ligne, "res=%d, addr=%d(0x%02X) <= data=%d(0x%02X)", res,
+    	sprintf(ligne, "res=%lu, addr=%d(0x%02X) <= data=%d(0x%02X)", res,
 		address, address, data, data);
 	Tcl_SetResult(interp, ligne, TCL_VOLATILE);
 	tcl_return = TCL_OK;
@@ -545,7 +545,7 @@ int cmdHisisNbVidage(ClientData clientData, Tcl_Interp * interp, int argc,
       tcl_return = TCL_OK;
    } else if (argc == 3) {
       tcl_return = Tcl_GetInt(interp, argv[2], &cam->nb_vidages);
-      // je retoune la valeur, quelle soit modifiéee ou pas
+      // je retoune la valeur, quelle soit modifiee ou pas
       sprintf(ligne, "%d", cam->nb_vidages);
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
    } else {
