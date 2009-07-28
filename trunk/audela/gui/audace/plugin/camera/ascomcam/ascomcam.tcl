@@ -2,15 +2,28 @@
 # Fichier : ascomcam.tcl
 # Description : Configuration de la camera ASCOM
 # Auteur : Michel PUJOL
-# Mise a jour $Id: ascomcam.tcl,v 1.3 2009-07-27 22:16:50 michelpujol Exp $
+# Mise a jour $Id: ascomcam.tcl,v 1.4 2009-07-28 17:34:19 michelpujol Exp $
 #
 
 namespace eval ::ascomcam {
-   package provide ascomcam 1.1
+   package provide ascomcam 1.2
    package require audela 1.5.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] ascomcam.cap ]
+}
+
+#
+# install
+#    installe le plugin
+#
+proc ::ascomcam::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libascomcam.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [getPluginType]] "ascomcam" "libascomcam.dll"]
+      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      ::audace::appendUpdateMessage "Fin de l'installation de $sourceFileName \n du plug-in ascomcam v[package version ascomcam]"
+   }
 }
 
 #
