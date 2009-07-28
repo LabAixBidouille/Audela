@@ -86,7 +86,6 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    char ipstring[50],portstring[50],s[1024],ss[1024],ssusb[1024],ssres[1024];
    int k, kk, kdeb, nbp, klen,res;
    Tcl_DString dsptr;
-   char **argvv=NULL;
 #if defined DFM_MOUCHARD
    FILE *f;
 #endif
@@ -217,8 +216,8 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		strcpy(tel->channel,tel->interp->result);
 		/*
 		# 9600 : vitesse de transmission (bauds)
-		# 0 : 0 bit de parité
-		# 8 : 8 bits de données
+		# 0 : 0 bit de paritï¿½
+		# 8 : 8 bits de donnï¿½es
 		# 1 : 1 bits de stop
 		*/
 		sprintf(s,"fconfigure %s -mode \"9600,n,8,1\" -buffering none -translation {binary binary} -blocking 0",tel->channel); mytel_tcleval(tel,s);
@@ -445,7 +444,6 @@ int mytel_hadec_goto(struct telprop *tel)
 {
    char s[1024],bits[25];
    int time_in=0,time_out=70;
-   int nbgoto=1;
 
    dfm_arret_pointage(tel);
    dfm_hadec_goto(tel);
@@ -1070,7 +1068,7 @@ void dfm_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function)
       Tcl_Eval(interp,ligne);
       strcpy(s,interp->result);
    } else {
-      sprintf(ligne,"mc_date2iso8601 now",function);
+      sprintf(ligne,"mc_date2iso8601 now");
       Tcl_Eval(interp,ligne);
       strcpy(s,interp->result);
    }
