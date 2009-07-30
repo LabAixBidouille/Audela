@@ -2,7 +2,7 @@
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER
-# Mise a jour $Id: skybot_resolver.tcl,v 1.27 2009-07-30 16:46:51 svaillant Exp $
+# Mise a jour $Id: skybot_resolver.tcl,v 1.28 2009-07-30 18:15:50 svaillant Exp $
 #
 
 namespace eval skybot_Resolver {
@@ -1207,7 +1207,8 @@ namespace eval skybot_Resolver {
          }
          #--- Si l'objet a ete resolu par Sesame, on l'ajoute dans la table
          if { $ok(sesame) == "1" } {
-            set obj_sesame [ split [ lindex $voconf(sesame) 1 ] "|" ]
+            set liste_sesame [ split $voconf(sesame) ";" ]
+            set obj_sesame [ split [ lindex $liste_sesame 1 ] "|" ]
             #--- Mise en forme de l'ascension droite
             set ad [ expr 15.0 * [ lindex $obj_sesame 2 ] ]
             #--- Mise en forme de la declinaison
