@@ -2,7 +2,7 @@
 # Fichier : vo_tools_go.tcl
 # Description : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur : Robert DELMAS
-# Mise a jour $Id: vo_tools_go.tcl,v 1.16 2009-07-26 20:35:05 svaillant Exp $
+# Mise a jour $Id: vo_tools_go.tcl,v 1.17 2009-07-30 11:43:04 svaillant Exp $
 #
 
 #============================================================
@@ -176,50 +176,55 @@ proc ::vo_tools::vo_toolsBuildIF { This } {
 
       pack $This.fra1 -side top -fill x
 
+      set packoptions "-anchor center -expand 1 -fill both -side top -ipadx 5"
       #--- Frame CDS Aladin Multiview
-      frame $This.fra2 -borderwidth 1 -relief groove
+      set frame $This.fra2
+      frame $frame -borderwidth 2 -relief groove
 
          #--- Bouton d'ouverture de l'outil CDS Aladin Multiview
-         button $This.fra2.but1 -borderwidth 2 -text $panneau(vo_tools,titre1) -state disabled \
+         button $frame.but1 -borderwidth 1 -text $panneau(vo_tools,titre1) -state disabled \
             -command ""
-         pack $This.fra2.but1 -in $This.fra2 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
+         eval "pack $frame.but1 -in $frame $packoptions"
 
-      pack $This.fra2 -side top -fill x
+      pack $frame -side top -fill x
 
       #--- Frame des services SkyBoT
-      frame $This.fra3 -borderwidth 1 -relief groove
+      set frame $This.fra3
+      frame $frame -borderwidth 1 -relief groove
 
          #--- Bouton d'ouverture de l'outil de recherche d'objets du Systeme Solaire dans le champ
-         button $This.fra3.but1 -borderwidth 2 -text $panneau(vo_tools,titre2) \
+         button $frame.but1 -borderwidth 1 -text $panneau(vo_tools,titre2) \
             -command "::skybot_Search::run $audace(base).skybot_Search"
-         pack $This.fra3.but1 -in $This.fra3 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
+         eval "pack $frame.but1 -in $frame $packoptions"
 
-      pack $This.fra3 -side top -fill x
+      pack $frame -side top -fill x
 
       #--- Frame du mode de calcul des ephemerides d'objets du Systeme Solaire
-      frame $This.fra4 -borderwidth 1 -relief groove
+      set frame $This.fra4
+      frame $frame -borderwidth 1 -relief groove
 
          #--- Bouton d'ouverture de l'outil de calcul des ephemerides d'objets du Systeme Solaire
-         button $This.fra4.but1 -borderwidth 2 -text $panneau(vo_tools,titre3) \
+         button $frame.but1 -borderwidth 1 -text $panneau(vo_tools,titre3) \
             -command "::skybot_Resolver::run $audace(base).skybot_Resolver"
-         pack $This.fra4.but1 -in $This.fra4 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
+         eval "pack $frame.but1 -in $frame $packoptions"
 
-      pack $This.fra4 -side top -fill x
+      pack $frame -side top -fill x
 
       #--- Frame du mode de verification du statut de la base SkyBoT
-      frame $This.fra5 -borderwidth 1 -relief groove
+      set frame $This.fra5
+      frame $frame -borderwidth 1 -relief groove
 
          #--- Bouton d'ouverture de l'outil de verification du statut de la base SkyBoT
-         button $This.fra5.but1 -borderwidth 2 -text $panneau(vo_tools,titre4) \
+         button $frame.but1 -borderwidth 1 -text $panneau(vo_tools,titre4) \
             -command {
                #--- Gestion du bouton
                $::vo_tools::This.fra5.but1 configure -relief groove -state disabled
                #--- Lancement de la commande
                ::skybot_Statut::run "$audace(base).skybot_Statut"
             }
-         pack $This.fra5.but1 -in $This.fra5 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
+         eval "pack $frame.but1 -in $frame $packoptions"
 
-      pack $This.fra5 -side top -fill x
+      pack $frame -side top -fill x
 
       #--- Frame
       frame $This.fra6 -borderwidth 1 -relief groove
