@@ -2,7 +2,7 @@
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER
-# Mise a jour $Id: skybot_resolver.tcl,v 1.26 2009-07-26 22:03:55 svaillant Exp $
+# Mise a jour $Id: skybot_resolver.tcl,v 1.27 2009-07-30 16:46:51 svaillant Exp $
 #
 
 namespace eval skybot_Resolver {
@@ -791,11 +791,7 @@ namespace eval skybot_Resolver {
       global voconf
 
       #--- Interrogation de la base de donnees
-      set d [mc_date2ymdhms $date_calcul]
-      set d [format "%2s-%02d-%02d %02d:%02d:%02.0f" [lindex $d 0] [lindex $d 1] [lindex $d 2] \
-       [lindex $d 3] [lindex $d 4] [lindex $d 5] ]
-      set erreur [ catch { vo_skybotstatus text "$d"} statut ]
-      unset d
+      set erreur [ catch { vo_skybotstatus text [mc_date2iso8601 $date_calcul]} statut ]
 
       #---
       if { $erreur == "0" && $statut != "failed" && $statut != "error"} {
@@ -899,9 +895,7 @@ namespace eval skybot_Resolver {
       }
 
       #--- Conversion de la date en JD
-puts "$voconf(date_ephemerides)"
       set date_calcul [ mc_date2jd $voconf(date_ephemerides) ]
-puts "$date_calcul"
 
       #--- Verifie que la date JD est couverte par le service Skybot (si demande)
       if { $voconf(but_skybot) } {
@@ -1018,12 +1012,12 @@ puts "$date_calcul"
          # ils sont au format h ou deg.
          set vo_objet(1) [ split [ lindex $voconf(liste) 1 ] "|" ]
          #--- Initialisation de RA et DEC pour la Recherche dans le FOV
-         set voconf(ad_objet) [ expr 15.0 * [vo_hms_to_h [ lindex $vo_objet(1) 2 ]] ]
-         set voconf(dec_objet) [vo_hms_to_h [ lindex $vo_objet(1) 3 ]]
+         set voconf(ad_objet) [ expr 15.0 * [mc_angle2deg [ lindex $vo_objet(1) 2 ]] ]
+         set voconf(dec_objet) [mc_angle2deg [ lindex $vo_objet(1) 3 ]]
          #--- Mise en forme de l'ascension droite
-         set ad [ expr 15.0 * [vo_hms_to_h [ lindex $vo_objet(1) 2 ] ]]
+         set ad [ expr 15.0 * [mc_angle2deg [ lindex $vo_objet(1) 2 ] ]]
          #--- Mise en forme de la declinaison
-         set dec [vo_hms_to_h [ lindex $vo_objet(1) 3 ]]
+         set dec [mc_angle2deg [ lindex $vo_objet(1) 3 ]]
          #--- Insertion des objets dans la table
          $::skybot_Resolver::This.frame5.tbl insert end [ string trim $vo_objet(1) ]
          #---
@@ -1035,11 +1029,11 @@ puts "$date_calcul"
                #--- Les noms des objets sont en bleu
                $::skybot_Resolver::This.frame5.tbl cellconfigure $i,1 -fg $color(blue)
                #--- Mise en forme de l'ascension droite
-               set ad [ $::skybot_Resolver::This.frame5.tbl cellcget $i,2 -text ]
-               set ad [ expr [vo_hms_to_h $ad] * 15.0 ]
+               set ad [ mc_angle2deg [ $::skybot_Resolver::This.frame5.tbl cellcget $i,2 -text ] ]
+               set ad [ expr $ad * 15.0 ]
                $::skybot_Resolver::This.frame5.tbl cellconfigure $i,2 -text [ mc_angle2hms $ad 360 zero 2 auto string ]
                #--- Mise en forme de la declinaison
-               set dec [vo_hms_to_h [ $::skybot_Resolver::This.frame5.tbl cellcget $i,3 -text ]]
+               set dec [ mc_angle2deg [ $::skybot_Resolver::This.frame5.tbl cellcget $i,3 -text ] ]
                $::skybot_Resolver::This.frame5.tbl cellconfigure $i,3 -text [ mc_angle2dms $dec 90 zero 2 + string ]
             }
          }
