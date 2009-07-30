@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER
-# Mise a jour $Id: skybot_search.tcl,v 1.25 2009-07-26 20:35:05 svaillant Exp $
+# Mise a jour $Id: skybot_search.tcl,v 1.26 2009-07-30 11:24:29 svaillant Exp $
 #
 
 namespace eval skybot_Search {
@@ -194,7 +194,13 @@ namespace eval skybot_Search {
    # skybot_Search::charger
    # Permet de charger l'image a analyser
    #
-   proc charger { {path "?"} } {
+   # 3 cas de figure :
+   #  1- appel par le bouton ... (sans argument)
+   #     a noter que la valeur du champ situe a gauche du bouton est ignoree
+   #  2- appel lors du chargement d'une session (sans argument)
+   #  3- appel lors de l'utilisation de l'image courante (1 argument : !)
+   #
+   proc charger { {path ""} } {
       variable This
       global audace
       global caption
@@ -212,7 +218,7 @@ namespace eval skybot_Search {
       set voconf(taille_champ_y)      ""
       set voconf(pose)                "0"
       set voconf(unite_pose)          "0"
-      set voconf(origine_pose)        "2"
+      set voconf(origine_pose)        "0"
       set voconf(date_image)          ""
       set current_object(num)         "-1"
 
@@ -224,23 +230,22 @@ namespace eval skybot_Search {
 
       #--- Fenetre parent
       set fenetre $This
-      #--- Ouvre la fenetre de choix des images
+
       if { $path eq "!" } {
+        #--- Recupere uniquement le nom de l'image courante
+        set voconf(nom_image) [::confVisu::getFileName $audace(visuNo)]
       } else {
-      if { $path eq "?" } {
        if { $voconf(session_filename) == "?" } {
+          #--- Ouvre la fenetre de choix des images
           set voconf(nom_image) [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
        }
-      } else {
-       set voconf(nom_image) $path
-      }
       
-      #--- Extraction et chargement du fichier
-      if { $voconf(nom_image) != "" } {
-         loadima $voconf(nom_image)
-      } else {
-         return
-      }
+       #--- Extraction et chargement du fichier
+       if { $voconf(nom_image) != "" } {
+          loadima $voconf(nom_image)
+       } else {
+          return
+       }
 
       }
 
@@ -326,7 +331,7 @@ namespace eval skybot_Search {
          #--- Fermeture de l'interface
          ::skybot_Search::fermer
          #--- Execution de la calibration astrometrique
-         ::astrometry::create
+         ::astrometry::create $audace(visuNo)
 
       }
    }
@@ -686,11 +691,10 @@ namespace eval skybot_Search {
          pack $load -in $This.frame1 -anchor w -side top -expand 0 -fill x -padx 10
 
            #--- Cree une ligne d'entree
-           set voconf(nom_image) [::confVisu::getFileName $audace(visuNo)]
            set input_img [entry $load.ent -textvariable voconf(nom_image) -borderwidth 1 -relief groove]
            pack $input_img -in $load -side left -anchor w -expand 1 -fill x -padx 2
            #--- Cree le bouton parcourir
-           button $load.explore -text "$caption(search,parcourir)" -width 3 -command { ::skybot_Search::charger $voconf(nom_image)}
+           button $load.explore -text "$caption(search,parcourir)" -width 3 -command { ::skybot_Search::charger }
            pack $load.explore -in $load -side left -anchor c -fill x -padx 6
            #--- Cree le bouton charger
 #           button $load.load -text "LOAD" -width 3 -command { ::skybot_Search::charger [::confVisu::getFileName $audace(visuNo)]}
