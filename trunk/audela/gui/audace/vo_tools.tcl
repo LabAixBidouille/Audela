@@ -2,7 +2,7 @@
 # Fichier : vo_tools.tcl
 # Description : Outils pour l'Observatoire Virtuel
 # Auteur : Alain KLOTZ et Jerome BERTHIER
-# Mise a jour $Id: vo_tools.tcl,v 1.24 2009-07-26 22:03:55 svaillant Exp $
+# Mise a jour $Id: vo_tools.tcl,v 1.25 2009-07-30 16:53:32 svaillant Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -23,26 +23,6 @@ if { $::tcl_platform(os) == "Linux" } {
    set audace(rep_aladinjar) "c:/vo/votal/"
 } else {
    set audace(aladin) "C:/Program Files/Aladin"
-}
-
-# --- Normalise une coordonnee horaire :
-#  1. si elle est au format hms alors renvoit la valeur h+m/60+s/3600
-#  2. si elle est au format dms alors idem
-#  3. si elle est au format h ou d renvoit la même valeur
-#  4. autrement renvoit undef
-# Rq: le cas 3. est utilise par le resolveur du plugin vo_tools
-#     pour gerer la difference de format sesame/skybot.
-proc vo_hms_to_h { txt } {
- set val undef
- if {[regexp {^\s*([-+0-9]+) ([0-9]+) ([0-9]+\.[0-9]+)\s*$} $txt all h m s]} {
-  set isneg [expr $h.0 < 0]
-  set val [expr abs($h.0) + $m.0/60.0 + $s/3600.0]
-  if {$isneg} { set val [expr -1.0 * $val]  }
- } elseif {[regexp {^\s*([-+]?[0-9]+(\.[0-9]*)?)\s*$} $txt all h]} {
-  set val $h
- } else {
- }
- return $val
 }
 
 proc vo_aladin { args } {
