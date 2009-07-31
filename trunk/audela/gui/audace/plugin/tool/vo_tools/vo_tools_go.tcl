@@ -2,7 +2,7 @@
 # Fichier : vo_tools_go.tcl
 # Description : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur : Robert DELMAS
-# Mise a jour $Id: vo_tools_go.tcl,v 1.17 2009-07-30 11:43:04 svaillant Exp $
+# Mise a jour $Id: vo_tools_go.tcl,v 1.18 2009-07-31 08:02:41 svaillant Exp $
 #
 
 #============================================================
@@ -107,7 +107,7 @@ proc ::vo_tools::createPluginInstance { { in "" } { visuNo 1 } } {
 #    suppprime l'instance du plugin
 #------------------------------------------------------------
 proc ::vo_tools::deletePluginInstance { visuNo } {
-
+ ::Samp::destroy
 }
 
 #------------------------------------------------------------
@@ -128,7 +128,6 @@ proc ::vo_tools::createPanel { this } {
    set panneau(vo_tools,titre2) "$caption(vo_tools_go,cone-search)"
    set panneau(vo_tools,titre3) "$caption(vo_tools_go,resolver)"
    set panneau(vo_tools,titre4) "$caption(vo_tools_go,statut)"
-   set panneau(vo_tools,titre6) "$caption(vo_tools_go,samp-broadcast)"
    #--- Construction de l'interface
    ::vo_tools::vo_toolsBuildIF $This
 }
@@ -165,6 +164,7 @@ proc ::vo_tools::vo_toolsBuildIF { This } {
 
       #--- Frame du titre
       frame $This.fra1 -borderwidth 2 -relief groove
+      set packoptions "-anchor center -expand 1 -fill both -side top -ipadx 5"
 
          #--- Label du titre
          Button $This.fra1.but -borderwidth 1 \
@@ -176,7 +176,6 @@ proc ::vo_tools::vo_toolsBuildIF { This } {
 
       pack $This.fra1 -side top -fill x
 
-      set packoptions "-anchor center -expand 1 -fill both -side top -ipadx 5"
       #--- Frame CDS Aladin Multiview
       set frame $This.fra2
       frame $frame -borderwidth 2 -relief groove
@@ -226,15 +225,16 @@ proc ::vo_tools::vo_toolsBuildIF { This } {
 
       pack $frame -side top -fill x
 
-      #--- Frame
-      frame $This.fra6 -borderwidth 1 -relief groove
+      #--- Frame boutton Interop
+      set frame $This.fra7
+      frame $frame -borderwidth 1 -relief groove
 
          #--- Bouton
-         button $This.fra6.but1 -borderwidth 2 -text $panneau(vo_tools,titre6) \
-            -command "::vo_tools::cmdSampBroadcastImage"
-         pack $This.fra6.but1 -in $This.fra6 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
+         button $frame.but1 -borderwidth 1 -text "Interop Menu" \
+            -command "::vo_tools::cmdInteropInstallMenu  $frame"
+         eval "pack $frame.but1 -in $frame $packoptions"
 
-      pack $This.fra6 -side top -fill x
+      pack $frame -side top -fill x
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
@@ -243,11 +243,47 @@ proc ::vo_tools::vo_toolsBuildIF { This } {
 proc ::vo_tools::cmdSampBroadcastImage {} {
  global audace
  if { [::Samp::check] == 1 } {
- set path [::confVisu::getFileName $audace(visuNo)]
- #puts "path= $path"
- set url "file:$path"
- #puts "url= $url"
- set msg [::samp::m_imageLoadFits $::samp::key [list samp.mtype image.load.fits samp.params [list name $url "image-id" $url url $url] ]]
- #puts "msg= $msg"
+  set path [::confVisu::getFileName $audace(visuNo)]
+  set url "file://localhost/$path"
+  ::console::disp "#vo_tools::samp broadcasting image $path\n"
+  set msg [::samp::m_imageLoadFits $::samp::key [list samp.mtype image.load.fits samp.params [list name $url "image-id" $url url $url] ]]
+ } else {
+  ::console::disp "#vo_tools::samp hub not found\n"
  }
 }
+
+proc ::vo_tools::cmdSampConnect {} {
+ if { [::Samp::check] == 1 } {
+  ::console::disp "#vo_tools::samp connected\n"
+ } else {
+  ::console::disp "#vo_tools::samp hub not found\n"
+ }
+}
+
+proc ::vo_tools::cmdSampDisconnect {} {
+ ::Samp::destroy
+}
+
+
+proc ::vo_tools::cmdInteropInstallMenu { frame } {
+   #--- Ajout du menu SAMP au menu principal de l'application
+   #--- Le nom est le meme que celui d'Aladin
+   global caption
+   set visuNo $::audace(visuNo)
+
+   Menu  $visuNo Interop
+   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_help) ::vo_tools::cmdInteropHelp
+   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_broadcast) ::vo_tools::cmdSampBroadcastImage
+   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_connect) ::vo_tools::cmdSampConnect
+   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_disconnect) ::vo_tools::cmdSampDisconnect
+   ::confColor::applyColor [MenuGet $visuNo "Interop"]
+
+   destroy $frame
+
+  ::Samp::check
+}
+
+proc ::vo_tools::cmdInteropHelp { } {
+ ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::vo_tools::getPluginType ] ] [ ::vo_tools::getPluginDirectory ] [ ::vo_tools::getPluginHelp ] "field_7"
+}
+
