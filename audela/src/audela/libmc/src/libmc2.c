@@ -5681,6 +5681,7 @@ int Cmd_mctcl_meo(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 /* method:                                                                  */
 /*
 mc_meo corrected_positions STAR_COORD "c:/d/meo/positions.txt" [list 2008 05 30 12 34 50] [list 2008 05 30 12 36 00] 12h45m15.34s +34°56'23.3 J2000.0 J2000.0 0.01 -0.03 34 {GPS 6.92388042 E 43.75046555 1323.338}
+mc_meo compute_positions "c:/d/meo/positions.txt" [list 2008 05 30 12 34 50] [list 2008 05 30 12 36 00] JUPITER {GPS 6.92388042 E 43.75046555 1323.338}
 
 source c:/d/meo/meo_tools.tcl
 meo_corrected_positions "c:/d/meo/positions.txt"  [list 2008 05 30 12 34 50] [list 2008 05 30 12 34 51] STAR_COORD_TCL [list 12h45m15.34s +34°56'23.3 J2000.0 J2000.0 0.01 -0.03 34] 290 101325 "c:/d/meo/model.txt"
@@ -5693,7 +5694,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	char action[50],InputType[50],OutputFile[1024],InputFile[1024],PointingModelFile[1024];
 	char home[60],ligne[1024];
 	double jddeb, jdfin,equinox,epoch;
-   int result,k,res;
+   int result,k,res,k1;
    //Tcl_DString dsptr;
    double rhocosphip=0.,rhosinphip=0.;
    double latitude,altitude,longitude;
@@ -5703,8 +5704,8 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	double dec,asd2,dec2,delta,mag,diamapp,elong,phase,r,diamapp_equ,diamapp_pol,long1,long2,long3,lati,posangle_sun,posangle_north,long1_sun,lati_sun;
 	double ha,az,h,jd,djd,star_site,star_gise;
 	double sun_site,sun_gise,sep,distance,ra0,dec0;
-	double dt,parallactic,posangle,sod0,sod,refraction;
-	int nlignes,nlig=0,kl,valid,kk;
+	double dt,dt2,parallactic,posangle,sod0,sod,refraction;
+	int nlignes,nligne2s,nlig=0,kl,valid,kk;
 	FILE *f,*finp;
 	mc_modpoi_matx *matx=NULL; /* 2*nb_star */
 	mc_modpoi_vecy *vecy=NULL; /* nb_coef */
@@ -5712,8 +5713,11 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	double tane,cosa,sina,cose,sine,sece,cos2a,sin2a,cos3a,sin3a,cos4a,sin4a,dh,daz;
 	double cos5a,sin5a,cos6a,sin6a;
 	double *seps=NULL,site,gise,sepmax;
+	double *ephemras,*ephemdecs,*ephemjds;
 	char *flignes;
 	int longligne=255;
+	int planetnum;
+	char objename[10000],orbitformat[15],orbitfile[1024];
    Tcl_DString dsptr;
 
    if(argc<2) {
@@ -5726,7 +5730,116 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	   //Tcl_DStringInit(&dsptr);
       /* --- decode l'action ---*/
 		strcpy(action,argv[1]);
-		if (strcmp(action,"corrected_positions")==0) {
+		if (strcmp(action,"compute_positions")==0) {
+			if (argc<7) {
+				sprintf(s,"Usage: %s compute_positions OutputFile DateDeb DateFin Planet Home", argv[0]);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				result = TCL_ERROR;
+				return(result);
+			}
+		   /* --- Genere un fichier d'entree de type SATEL_EPHEM_FILE pour les planetes ---*/
+			k=2;
+			strcpy(OutputFile,argv[k++]);
+	  	   mctcl_decode_date(interp,argv[k++],&jddeb);
+	  	   mctcl_decode_date(interp,argv[k++],&jdfin);
+	      mctcl_decode_planet(interp,argv[k++],&planetnum,objename,orbitformat,orbitfile);
+			strcpy(home,argv[k++]);
+			result=mctcl_decode_home(interp,home,&longitude,sens,&latitude,&altitude,&longitude,&rhocosphip,&rhosinphip);
+			if (result==TCL_ERROR) {
+				Tcl_SetResult(interp,"Input string is not regonized amongst Home type",TCL_VOLATILE);
+				result = TCL_ERROR;
+				return(result);
+			}
+			/* --- calculs ---*/
+			duree=(jdfin-jddeb);
+			if (duree<=0) {
+				sprintf(s,"error DateDeb(%s) > DateFin(%s)",argv[3],argv[4]);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				result = TCL_ERROR;
+				return(result);
+			}
+			date=(jddeb+jdfin)/2.;
+			sod0=(jddeb+0.5-floor(jddeb+0.5))*86400.;
+			dt=0.00016667*1200 ; // time sampling of the positions to calculate
+			nlignes=(int)(floor(duree*86400/dt));
+			dt2=60.; // time sampling for exact ephem calculations
+			nligne2s=(int)(floor(duree*86400/dt2));
+			if (nligne2s<2) {
+				nligne2s=2;
+			}
+			ephemjds=(double*)malloc(nligne2s*sizeof(double));
+			ephemras=(double*)malloc(nligne2s*sizeof(double));
+			ephemdecs=(double*)malloc(nligne2s*sizeof(double));
+			for (kl=0;kl<nligne2s;kl++) {
+				djd=dt2*kl/86400.;
+				jd=jddeb+djd;
+				ephemjds[kl]=jd;
+				sprintf(s,"lindex [mc_ephem %s %12.5f {AZIMUTH ALTITUDE} -topo {%s}] 0",objename,jd,home);
+				res=Tcl_Eval(interp,s);
+				if (res==TCL_OK) {
+					strcpy(ligne,interp->result);
+					sprintf(s,"lindex {%s} 0",ligne);
+					Tcl_Eval(interp,s);
+					ephemras[kl]=atof(interp->result)+180.;
+					sprintf(s,"lindex {%s} 1",ligne);
+					Tcl_Eval(interp,s);
+					ephemdecs[kl]=atof(interp->result);
+				}
+			}
+			/* --- sortie des resultats ---*/
+			f=fopen(OutputFile,"wt");
+			if (f==NULL) {
+				free(ephemjds);
+				free(ephemras);
+				free(ephemdecs);
+				sprintf(s,"Error opening file %s",OutputFile);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				result = TCL_ERROR;
+				return(result);
+			}
+			fprintf(f,"PLANET_COORD\n");
+			fprintf(f,"PLANET_COORD %.7f\n",jddeb-2400000.5);
+			fprintf(f,"  43.75463222   6.92157300 1323.338  43.75046555   6.92388042   .0000 3.9477997593 0. 0. 0. 6.300388098783  .5000\n");
+			/* --- boucle des interpolations ---*/
+			sod0=(jddeb+0.5-floor(jddeb+0.5))*86400.;
+			k1=0;
+			for (kl=0;kl<nlignes;kl++) {
+				djd=dt*kl/86400.;
+				jd=jddeb+djd;
+				// --- Calcule le SOD
+				sod=sod0+dt*kl;
+				if (sod>=86400) {
+					sod-=86400.;
+				}
+				for (k=0;k<nligne2s;k++) {
+					if (ephemjds[k]>jd) {
+						break;
+					}
+				}
+				k1=k-1;
+				if (k1<0) {
+					k1=0;
+				}
+				if (k1<nligne2s-1) {
+					az=ephemras[k1]+(ephemras[k1+1]-ephemras[k1])/(ephemjds[k1+1]-ephemjds[k1])*(jd-ephemjds[k1]);
+					h=ephemdecs[k1]+(ephemdecs[k1+1]-ephemdecs[k1])/(ephemjds[k1+1]-ephemjds[k1])*(jd-ephemjds[k1]);
+				} else {
+					az=ephemras[k1];
+					h=ephemdecs[k1];
+				}
+				distance=0.;
+				fprintf(f,"%9.3f %9.6f %10.6f %13.6f\n",sod,h,az,distance);
+			}
+			fclose(f);
+			free(ephemjds);
+			free(ephemras);
+			free(ephemdecs);
+			sprintf(s,"%d",nlignes);
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
+			return(TCL_OK);
+		}
+		/* ======================================================================== */
+		else if (strcmp(action,"corrected_positions")==0) {
 			if (argc<3) {
 				strcpy(s,"InputType must be amongst STAR_COORD, SATEL_EPHEM_FILE");
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -6464,7 +6577,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 			free(kseps);
 			free(flignes);
 		} else {
-			strcpy(s,"Action must be amongst corrected_positions, amer_hip");
+			strcpy(s,"Action must be amongst corrected_positions, amer_hip, compute_positions");
 			Tcl_SetResult(interp,s,TCL_VOLATILE);
 			result = TCL_ERROR;
 			if (matx!=NULL) { free(matx); }
