@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.31 2008-12-19 18:51:07 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.32 2009-07-31 12:19:14 svaillant Exp $
 #
 
 namespace eval cataGoto {
@@ -868,10 +868,10 @@ namespace eval cataGoto {
                   set catalogue(asteroide_choisi) [ lindex $liste_objet 1 ]
                   set catalogue(asteroide_choisi) [ string trimleft $catalogue(asteroide_choisi) " " ]
                   set catalogue(asteroide_choisi) [ string trimright $catalogue(asteroide_choisi) " " ]
-                  set catalogue(aster_ad) [ lindex $liste_objet 2 ]
+                  set catalogue(aster_ad) [ mc_angle2deg [ lindex $liste_objet 2 ] ]
                   set catalogue(asteroide_ad_d) [ expr 15.0 * $catalogue(aster_ad) ]
                   set catalogue(asteroide_ad_) [ mc_angle2hms $catalogue(asteroide_ad_d) 360 zero 2 auto string ]
-                  set catalogue(aster_dec) [ lindex $liste_objet 3 ]
+                  set catalogue(aster_dec) [ mc_angle2deg [ lindex $liste_objet 3 ] ]
                   set catalogue(asteroide_dec_) [ string trimleft [ mc_angle2dms $catalogue(aster_dec) 90 zero 2 + string ] + ]
                   set catalogue(asteroide_mag_) [ lindex $liste_objet 5 ]
                } else {
