@@ -5694,7 +5694,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	char action[50],InputType[50],OutputFile[1024],InputFile[1024],PointingModelFile[1024];
 	char home[60],ligne[1024];
 	double jddeb, jdfin,equinox,epoch;
-   int result,k,res,k1;
+   int result,k,res,k1,k10;
    //Tcl_DString dsptr;
    double rhocosphip=0.,rhosinphip=0.;
    double latitude,altitude,longitude;
@@ -5718,6 +5718,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	int longligne=255;
 	int planetnum;
 	char objename[10000],orbitformat[15],orbitfile[1024];
+	double ra1,ra2,ra3,dec1,dec3,mu,mu2;
    Tcl_DString dsptr;
 
    if(argc<2) {
@@ -5750,7 +5751,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				result = TCL_ERROR;
 				return(result);
 			}
-			/* --- calculs ---*/
+			/* --- calculs grossiers ---*/
 			duree=(jdfin-jddeb);
 			if (duree<=0) {
 				sprintf(s,"error DateDeb(%s) > DateFin(%s)",argv[3],argv[4]);
@@ -5763,27 +5764,28 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 			dt=0.00016667*1200 ; // time sampling of the positions to calculate
 			nlignes=(int)(floor(duree*86400/dt));
 			dt2=60.; // time sampling for exact ephem calculations
-			nligne2s=(int)(floor(duree*86400/dt2));
-			if (nligne2s<2) {
-				nligne2s=2;
-			}
+			nligne2s=(int)(ceil(duree*86400/dt2))+4;
 			ephemjds=(double*)malloc(nligne2s*sizeof(double));
 			ephemras=(double*)malloc(nligne2s*sizeof(double));
 			ephemdecs=(double*)malloc(nligne2s*sizeof(double));
 			for (kl=0;kl<nligne2s;kl++) {
-				djd=dt2*kl/86400.;
+				djd=dt2*(kl-2)/86400.;
 				jd=jddeb+djd;
 				ephemjds[kl]=jd;
-				sprintf(s,"lindex [mc_ephem %s %12.5f {AZIMUTH ALTITUDE} -topo {%s}] 0",objename,jd,home);
+				sprintf(s,"lindex [mc_ephem %s %12.5f {AZIMUTH ALTITUDE RA DEC} -topo {%s}] 0",objename,jd,home);
 				res=Tcl_Eval(interp,s);
 				if (res==TCL_OK) {
 					strcpy(ligne,interp->result);
 					sprintf(s,"lindex {%s} 0",ligne);
 					Tcl_Eval(interp,s);
-					ephemras[kl]=atof(interp->result)+180.;
+					az=atof(interp->result);
 					sprintf(s,"lindex {%s} 1",ligne);
 					Tcl_Eval(interp,s);
-					ephemdecs[kl]=atof(interp->result);
+					h=atof(interp->result);
+					mc_ah2hd(az,h,latitude,&ha,&dec);
+					mc_hd2ad(jd,longitude,ha,&ra);
+					ephemras[kl]=ra;
+					ephemdecs[kl]=dec;
 				}
 			}
 			/* --- sortie des resultats ---*/
@@ -5798,11 +5800,12 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				return(result);
 			}
 			fprintf(f,"PLANET_COORD\n");
-			fprintf(f,"PLANET_COORD %.7f\n",jddeb-2400000.5);
+			fprintf(f,"%s %.7f\n",objename,jddeb-2400000.5);
 			fprintf(f,"  43.75463222   6.92157300 1323.338  43.75046555   6.92388042   .0000 3.9477997593 0. 0. 0. 6.300388098783  .5000\n");
 			/* --- boucle des interpolations ---*/
 			sod0=(jddeb+0.5-floor(jddeb+0.5))*86400.;
 			k1=0;
+			k10=-10;
 			for (kl=0;kl<nlignes;kl++) {
 				djd=dt*kl/86400.;
 				jd=jddeb+djd;
@@ -5811,22 +5814,35 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				if (sod>=86400) {
 					sod-=86400.;
 				}
+				// -- recherche l'indice k1 dans le calcul grossier
 				for (k=0;k<nligne2s;k++) {
-					if (ephemjds[k]>jd) {
+					if (ephemjds[k]>=jd) {
 						break;
 					}
 				}
-				k1=k-1;
-				if (k1<0) {
-					k1=0;
+				//                                   k
+				// --- interpolation cubique k1 = 0 [1 2] 3
+				k1=k-2;
+				if (k1!=k10) {
+					ra0 = ephemras[k1+3] - ephemras[k1+2] - ephemras[k1] + ephemras[k1+1];
+					ra1 = ephemras[k1]   - ephemras[k1+1] - ra0;
+					ra2 = ephemras[k1+2] - ephemras[k1];
+					ra3 = ephemras[k1+1];
+					dec0 = ephemdecs[k1+3] - ephemdecs[k1+2] - ephemdecs[k1] + ephemdecs[k1+1];
+					dec1 = ephemdecs[k1]   - ephemdecs[k1+1] - dec0;
+					dec2 = ephemdecs[k1+2] - ephemdecs[k1];
+					dec3 = ephemdecs[k1+1];
 				}
-				if (k1<nligne2s-1) {
-					az=ephemras[k1]+(ephemras[k1+1]-ephemras[k1])/(ephemjds[k1+1]-ephemjds[k1])*(jd-ephemjds[k1]);
-					h=ephemdecs[k1]+(ephemdecs[k1+1]-ephemdecs[k1])/(ephemjds[k1+1]-ephemjds[k1])*(jd-ephemjds[k1]);
-				} else {
-					az=ephemras[k1];
-					h=ephemdecs[k1];
-				}
+				k10=k1;
+				//
+				mu=(jd-ephemjds[k1+1])/(ephemjds[k1+2]-ephemjds[k1+1]);
+				mu2=mu*mu;
+				ra=ra0*mu*mu2+ra1*mu2+ra2*mu+ra3;
+				dec=dec0*mu*mu2+dec1*mu2+dec2*mu+dec3;
+				//
+				mc_ad2ah(jd,longitude,latitude,ra,dec,&az,&h);
+				//h=dec;az=ra;
+				//
 				distance=0.;
 				fprintf(f,"%9.3f %9.6f %10.6f %13.6f\n",sod,h,az,distance);
 			}
