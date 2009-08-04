@@ -252,6 +252,7 @@ void mc_libration(double jj,double longmpc,double rhocosphip,double rhosinphip,d
    double v,x,y;
    double diamapp_equ,diamapp_pol,long1,long2,long3,lati,posangle_sun,posangle_north;
    double long1_sun,lati_sun;
+	int astrometric=1;
 
    /* --- nutation ---*/
    mc_obliqmoy(jj,&eps);
@@ -289,7 +290,7 @@ void mc_libration(double jj,double longmpc,double rhocosphip,double rhosinphip,d
    /* =============== earth lon,lat =====================*/
    /* --- topocentric coordinates of moon ---*/
    long1=1.; /* pour eviter la recursivite folle */
-   mc_adlunap(LUNE,jj,longmpc,rhocosphip,rhosinphip,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+   mc_adlunap(LUNE,jj,equinoxe,astrometric,longmpc,rhocosphip,rhosinphip,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
    /* --- precession J2000.0 -> date ---*/
    mc_precad(equinoxe,asd,dec,jj,&asd,&dec);
    /* --- coord ecl */
@@ -318,7 +319,7 @@ void mc_libration(double jj,double longmpc,double rhocosphip,double rhosinphip,d
    *p=fmod(4*PI+v,2*PI);
    /* =============== earth lon,lat =====================*/
    /* --- geocentric coordinates of sun ---*/
-   mc_adsolap(jj,0.0,0.0,0.0,&asd,&dec,&r,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+   mc_adsolap(jj,equinoxe,astrometric,0.0,0.0,0.0,&asd,&dec,&r,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
    /* --- precession J2000.0 -> date ---*/
    mc_precad(equinoxe,asd,dec,jj,&asd,&dec);
    /* --- coord ecl */
