@@ -224,7 +224,7 @@ void mc_adastrom(double jj, struct elemorb elem, double equinoxe, double *asd, d
    *rsol=rs;
 }
 
-void mc_adasaap(double jj,double longmpc,double rhocosphip,double rhosinphip, struct elemorb elem, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr)
+void mc_adasaap(double jj,double equinoxe, int astrometric, double longmpc,double rhocosphip,double rhosinphip, struct elemorb elem, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr)
 /***************************************************************************/
 /* Calcul de l'asd, dec et distance a jj donne rapporte a un equinoxe      */
 /* pour un astre defini par ses elements d'orbite.                         */
@@ -239,7 +239,6 @@ void mc_adasaap(double jj,double longmpc,double rhocosphip,double rhosinphip, st
    double llp[10],mmp[10],uup[10],jjd,ls,bs,rs,eps,xs,ys,zs;
    double r,x,y,z,m,v,jjda;
    struct pqw elempq;
-   double equinoxe=J2000;
    double dxeq=0.,dyeq=0.,dzeq=0.;
    /*FILE *fichier_out;*/
    jjd=jj;
@@ -283,6 +282,16 @@ void mc_adasaap(double jj,double longmpc,double rhocosphip,double rhosinphip, st
    mc_anomoy(elem,jjda,&m);
    mc_anovrair(elem,m,&v,&r);
    *rr=r;
+   /*--- correction de la nutation ---*/
+	/* A FAIRE
+	if (astrometric==0) {
+		mc_xyz2lbr(xg,yg,zg,&l,&b,&r);
+		mc_nutation(jjd,1,&dpsi,&deps);
+		l+=dpsi;
+		eps+=deps;
+		mc_lbr2xyz(l,b,r,&xg,&yg,&zg);
+	}
+	*/
    mc_rv_xyz(elempq,r,v,&x,&y,&z); /* equatoriale J2000 */
    mc_he2ge(x,y,z,xs,ys,zs,&x,&y,&z);
 
@@ -484,7 +493,7 @@ void mc_xyzasaaphelio(double jj,double longmpc,double rhocosphip,double rhosinph
 }
 
 
-void mc_adplaap(double jj,double longmpc,double rhocosphip,double rhosinphip, int planete, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun)
+void mc_adplaap(double jj,double equinoxe, int astrometric, double longmpc,double rhocosphip,double rhosinphip, int planete, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun)
 /***************************************************************************/
 /* Calcul de l'asd, dec et distance apparentes d'une planete a jj donne.   */
 /***************************************************************************/
@@ -493,7 +502,7 @@ void mc_adplaap(double jj,double longmpc,double rhocosphip,double rhosinphip, in
    double llp[10],mmp[10],uup[10],jjd,ls,bs,rs,eps,/*dpsi,deps,*/xs,ys,zs;
    double l,b,r,x,y,z,xg,yg,zg;
    double dxeq,dyeq,dzeq;
-   double equinoxe=J2000;
+	double dpsi,deps;
    jjd=jj;
 
    /*--- soleil ---*/
@@ -528,13 +537,13 @@ void mc_adplaap(double jj,double longmpc,double rhocosphip,double rhosinphip, in
    mc_obliqmoy(jjd,&eps);
 
    /*--- correction de la nutation ---*/
-   /*
-   mc_xyz2lbr(xg,yg,zg,&l,&b,&r);
-   mc_nutation(jjd,1,&dpsi,&deps);
-   l+=dpsi;
-   eps+=deps;
-   mc_lbr2xyz(l,b,r,&xg,&yg,&zg);
-   */
+	if (astrometric==0) {
+		mc_xyz2lbr(xg,yg,zg,&l,&b,&r);
+		mc_nutation(jjd,1,&dpsi,&deps);
+		l+=dpsi;
+		eps+=deps;
+		mc_lbr2xyz(l,b,r,&xg,&yg,&zg);
+	}
 
    /*--- coord. spheriques ---*/
    mc_xyzec2eq(xg,yg,zg,eps,&xg,&yg,&zg);
@@ -560,7 +569,7 @@ void mc_adplaap(double jj,double longmpc,double rhocosphip,double rhosinphip, in
       long1,long2,long3,lati,posangle_north,posangle_sun,long1_sun,lati_sun);
 }
 
-void mc_adlunap(int planete, double jj,double longmpc,double rhocosphip,double rhosinphip,double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun)
+void mc_adlunap(int planete, double jj,double equinoxe, int astrometric, double longmpc,double rhocosphip,double rhosinphip,double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun)
 /***************************************************************************/
 /* Calcul de l'asd, dec et distance apparentes de la Lune a jj donne.      */
 /***************************************************************************/
@@ -569,7 +578,6 @@ void mc_adlunap(int planete, double jj,double longmpc,double rhocosphip,double r
    double llp[10],mmp[10],uup[10],jjd,ls,bs,rs,eps,dpsi,deps,xs,ys,zs;
    double l,b,r,x,y,z;
    double dxeq,dyeq,dzeq;
-   double equinoxe=J2000;
    /*int planete;*/
    double jjds,asds,decs,limb;
    jjd=jj;
@@ -645,13 +653,13 @@ void mc_adlunap(int planete, double jj,double longmpc,double rhocosphip,double r
    mc_obliqmoy(jjd,&eps);
 
    /*--- correction de la nutation ---*/
-   /*
-   mc_xyz2lbr(x,y,z,&l,&b,&r);
-   mc_nutation(jjd,1,&dpsi,&deps);
-   l+=dpsi;
-   eps+=deps;
-   mc_lbr2xyz(l,b,r,&x,&y,&z);
-   */
+	if (astrometric==0) {
+		mc_xyz2lbr(x,y,z,&l,&b,&r);
+		mc_nutation(jjd,1,&dpsi,&deps);
+		l+=dpsi;
+		eps+=deps;
+		mc_lbr2xyz(l,b,r,&x,&y,&z);
+	}
 
    /*--- coord. spheriques ---*/
    mc_xyzec2eq(x,y,z,eps,&x,&y,&z);
@@ -684,7 +692,7 @@ void mc_adlunap(int planete, double jj,double longmpc,double rhocosphip,double r
 
 }
 
-void mc_adsolap(double jj,double longmpc,double rhocosphip,double rhosinphip, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun)
+void mc_adsolap(double jj,double equinoxe, int astrometric, double longmpc,double rhocosphip,double rhosinphip, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun)
 /***************************************************************************/
 /* Calcul de l'asd, dec et distance apparentes du Soleil a jj donne        */
 /***************************************************************************/
@@ -693,7 +701,7 @@ void mc_adsolap(double jj,double longmpc,double rhocosphip,double rhosinphip, do
    double llp[10],mmp[10],uup[10],jjd,ls,bs,rs,eps,/*dpsi,deps,*/xs,ys,zs;
    double dxeq,dyeq,dzeq;
    int planete;
-   double equinoxe=J2000;
+	double dpsi,deps;
 
    planete=SOLEIL;
    jjd=jj;
@@ -716,11 +724,11 @@ void mc_adsolap(double jj,double longmpc,double rhocosphip,double rhosinphip, do
    mc_xyzeq2ec(xs,ys,zs,eps,&xs,&ys,&zs);
    mc_xyz2lbr(xs,ys,zs,&ls,&bs,&rs);
 
-   /*
-   mc_nutation(jjd,1,&dpsi,&deps);
-   ls+=dpsi;
-   eps+=deps;
-   */
+	if (astrometric==0) {
+		mc_nutation(jjd,1,&dpsi,&deps);
+		ls+=dpsi;
+		eps+=deps;
+	}
    mc_lbr2xyz(ls,bs,rs,&xs,&ys,&zs);
    mc_xyzec2eq(xs,ys,zs,eps,&xs,&ys,&zs);
    mc_xyz2add(xs,ys,zs,asd,dec,delta);

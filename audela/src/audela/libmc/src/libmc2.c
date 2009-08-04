@@ -1336,6 +1336,8 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
    time_t ltime;
    long t0,t1;
    Tcl_DString dsptr;
+   double equinoxe=J2000;
+	int astrometric=1;
 
    if(argc<=1) {
       sprintf(s,"Usage: %s ListObjects ?ListDates ListFormat? ?-topo Home? ?-dec> value? ?-dec< value? ?-mag> value? ?-mag< value? ?-delta< value? ?-delta> value? ?-r< value? ?-r> value? ?-elong< value? ?-elong> value? ?-moonelong< value? ?-moonelong> value? ?-altitude< value? ?-altitude> value? ?-azimuth< value? ?-azimuth> value? ?-ha< value? ?-ha>value? ? ?-prov 0|1? ?-numb 0|1?", argv[0]);
@@ -1426,6 +1428,16 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 			   if (longmpc==10.) { stationfilefound=NO; longmpc=0.; }
 			   if (longmpc==15.) { stationfound=NO; longmpc=0.; }
 		   }
+	      else if (strcmp(s,"-EQUINOX")==0) {
+				strcpy(s,argv[ko+1]);
+				mc_strupr(s,s);
+		      if (strcmp(s,"APPARENT")==0) {
+					astrometric=0;
+					equinoxe=0.;
+				} else {
+		  	      mctcl_decode_date(interp,s,&equinoxe);
+				}
+		   }
          else if (strcmp(s,"-MOONELONG>")==0) { ok4moonelong=YES; }
          else if (strcmp(s,"-MOONELONG<")==0) { ok4moonelong=YES; }
          else if (strcmp(s,"-ALTITUDE>")==0) { ok4azimcoord=YES; }
@@ -1444,7 +1456,7 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 		   jj=jds[kd];
 		   /* --- position de la Lune si on veut l'elongation par rapport a la Lune ---*/
 		   if (ok4moonelong==YES) {
-            mc_adlunap(LUNE,jj,longmpc,rhocosphip,rhosinphip,&asdmoon,&decmoon,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+            mc_adlunap(LUNE,jj,equinoxe,astrometric,longmpc,rhocosphip,rhosinphip,&asdmoon,&decmoon,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
          }
  		   /* --- Temps sideral et latitude si on veut l'azimuth et la hauteur ---*/
 		   if (ok4azimcoord==YES) {
@@ -1497,13 +1509,13 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	            else if (strcmp(name,"PLU")==0) { planetnum=PLUTON; strcpy(objename,"Pluto"); }
 	            /* --- calcule les coordonnees topocentriques ---*/
 		         if (planetnum==SOLEIL) {
-   			      mc_adsolap(jj,longmpc,rhocosphip,rhosinphip,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+   			      mc_adsolap(jj,equinoxe,astrometric,longmpc,rhocosphip,rhosinphip,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
 			         ok4compute=OK;
 		         } else if ((planetnum>=MERCURE)&&(planetnum<=PLUTON)) {
-                  mc_adplaap(jj,longmpc,rhocosphip,rhosinphip,planetnum,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+                  mc_adplaap(jj,equinoxe,astrometric,longmpc,rhocosphip,rhosinphip,planetnum,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
 			         ok4compute=OK;
 		         } else if ((planetnum==LUNE)||(planetnum==LUNE_ELP)) {
-          	      mc_adlunap(planetnum,jj,longmpc,rhocosphip,rhosinphip,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+          	      mc_adlunap(planetnum,jj,equinoxe,astrometric,longmpc,rhocosphip,rhosinphip,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
 			         ok4compute=OK;
 		         }
                kp++;
@@ -1604,7 +1616,7 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
                   kp++;
    			      mc_aster2elem(aster,&elem);
 			         sprintf(objename,elem.designation);
-			         mc_adasaap(jj,longmpc,rhocosphip,rhosinphip,elem,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+			         mc_adasaap(jj,equinoxe,astrometric,longmpc,rhocosphip,rhosinphip,elem,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
 			         ok4compute=OK;
 			      }
 			   }
@@ -1862,6 +1874,8 @@ int Cmd_mctcl_readcat(ClientData clientData, Tcl_Interp *interp, int argc, char 
    double dist,posangle;
    double diamapp_equ,diamapp_pol,long1,long2,long3,lati,posangle_sun,posangle_north;
    double long1_sun=0.,lati_sun=0.;
+	double equinoxe=J2000;
+	int astrometric=1;
 
    if(argc<=3) {
       sprintf(s,"Usage: %s Field ListObjects Output", argv[0]);
@@ -1998,10 +2012,10 @@ int Cmd_mctcl_readcat(ClientData clientData, Tcl_Interp *interp, int argc, char 
            if (msg!=0) {break;}
            if (kp==TERRE) {continue;}
            if (kp==SOLEIL) {
-   		     mc_adsolap(jj,longmpc,rhocosphip,rhosinphip,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+   		     mc_adsolap(jj,equinoxe,astrometric,longmpc,rhocosphip,rhosinphip,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
               strcpy(objename,"Sun");
   	        } else if ((kp>=MERCURE)&&(kp<=PLUTON)) {
-              mc_adplaap(jj,longmpc,rhocosphip,rhosinphip,kp,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+              mc_adplaap(jj,equinoxe,astrometric,longmpc,rhocosphip,rhosinphip,kp,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
               if (kp==MERCURE) strcpy(objename,"Mercury");
               if (kp==VENUS) strcpy(objename,"Venus");
               if (kp==MARS) strcpy(objename,"Mars");
@@ -2011,7 +2025,7 @@ int Cmd_mctcl_readcat(ClientData clientData, Tcl_Interp *interp, int argc, char 
               if (kp==NEPTUNE) strcpy(objename,"Neptune");
               if (kp==PLUTON) strcpy(objename,"Pluto");
 		     } else if ((kp==LUNE)||(kp==LUNE_ELP)) {
-              mc_adlunap(kp,jj,longmpc,rhocosphip,rhosinphip,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+              mc_adlunap(kp,jj,equinoxe,astrometric,longmpc,rhocosphip,rhosinphip,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
               strcpy(objename,"Moon");
   	        }
            mc_util_astrom_radec2xy(&p,asd,dec,&x,&y);
@@ -2092,7 +2106,7 @@ int Cmd_mctcl_readcat(ClientData clientData, Tcl_Interp *interp, int argc, char 
 			   if (orbitisgood==YES) {
 			      mc_aster2elem(aster,&elem);
 			      sprintf(objename,elem.designation);
-			      mc_adasaap(jj,longmpc,rhocosphip,rhosinphip,elem,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+			      mc_adasaap(jj,equinoxe,astrometric,longmpc,rhocosphip,rhosinphip,elem,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
 			   }
 		   }
          mc_util_astrom_radec2xy(&p,asd,dec,&x,&y);
@@ -5363,6 +5377,8 @@ mc_lightmap 2005-09-23T00:00:44.280 0.6708 0.1333 J2000.0 "c:/d/gft/test.fit" 1 
    double ramoon,decmoon,cosrmoon,sinrmoon,cosdmoon,sindmoon,coshmoon,sinhmoon;
    double hmax,lonzen=0,latzen=0;
    double hobsotherhome;
+	double equinoxe=J2000;
+	int astrometric=1;
 
    if(argc<12) {
       sprintf(s,"Usage: %s ListDates ListRa ListDec ListEquinox filename steplon steplat method minobjelev maxsunelev minmoondist ?Home?", argv[0]);
@@ -5524,12 +5540,12 @@ mc_lightmap 2005-09-23T00:00:44.280 0.6708 0.1333 J2000.0 "c:/d/gft/test.fit" 1 
          sinr=sin(ra);
          cosd=cos(dec);
          sind=sin(dec);
-         mc_adsolap(jd,longitude,rhocosphip,rhosinphip,&rasun, &decsun,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+         mc_adsolap(jd,equinoxe,astrometric,longitude,rhocosphip,rhosinphip,&rasun, &decsun,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
          cosrsun=cos(rasun);
          sinrsun=sin(rasun);
          cosdsun=cos(decsun);
          sindsun=sin(decsun);
-         mc_adlunap(LUNE,jd,longitude,rhocosphip,rhosinphip,&ramoon,&decmoon,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+         mc_adlunap(LUNE,jd,equinoxe,astrometric,longitude,rhocosphip,rhosinphip,&ramoon,&decmoon,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
          cosrmoon=cos(ramoon);
          sinrmoon=sin(ramoon);
          cosdmoon=cos(decmoon);
@@ -5720,6 +5736,8 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	char objename[10000],orbitformat[15],orbitfile[1024];
 	double ra1,ra2,ra3,dec1,dec3,mu,mu2;
    Tcl_DString dsptr;
+	double equinoxe=J2000;
+	int astrometric=1;
 
    if(argc<2) {
       sprintf(s,"Usage: %s Action ?parameters?", argv[0]);
@@ -5772,7 +5790,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				djd=dt2*(kl-2)/86400.;
 				jd=jddeb+djd;
 				ephemjds[kl]=jd;
-				sprintf(s,"lindex [mc_ephem %s %12.5f {AZIMUTH ALTITUDE RA DEC} -topo {%s}] 0",objename,jd,home);
+				sprintf(s,"lindex [mc_ephem %s %12.5f {AZIMUTH ALTITUDE RA DEC} -topo {%s} -equinoxe apparent] 0",objename,jd,home);
 				res=Tcl_Eval(interp,s);
 				if (res==TCL_OK) {
 					strcpy(ligne,interp->result);
@@ -5953,7 +5971,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				sod0=(jddeb+0.5-floor(jddeb+0.5))*86400.;
 				/* --- date fixe ---*/
 				jd=date;
-				mc_adsolap(jd,longitude,rhocosphip,rhosinphip,&asd2,&dec2,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+				mc_adsolap(jd,equinoxe,astrometric,longitude,rhocosphip,rhosinphip,&asd2,&dec2,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
 				mc_ad2hd(jd,longitude,asd2,&ha);
 			   mc_hd2ah(ha,dec2,latitude,&az,&h);
 				sun_site=h;
@@ -6235,7 +6253,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				sod0=(jddeb+0.5-floor(jddeb+0.5))*86400.;
 				/* --- date fixe ---*/
 				jd=date;
-				mc_adsolap(jd,longitude,rhocosphip,rhosinphip,&asd2,&dec2,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+				mc_adsolap(jd,equinoxe,astrometric,longitude,rhocosphip,rhosinphip,&asd2,&dec2,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
 				mc_ad2hd(jd,longitude,asd2,&ha);
 			   mc_hd2ah(ha,dec2,latitude,&az,&h);
 				sun_site=h;
