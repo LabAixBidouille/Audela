@@ -237,7 +237,7 @@ void mc_adasaap(double jj,double equinoxe, int astrometric, double longmpc,doubl
 /***************************************************************************/
 {
    double llp[10],mmp[10],uup[10],jjd,ls,bs,rs,eps,xs,ys,zs;
-   double r,x,y,z,m,v,jjda;
+   double r,x,y,z,m,v,jjda,xg,yg,zg,l,b,dpsi,deps;
    struct pqw elempq;
    double dxeq=0.,dyeq=0.,dzeq=0.;
    /*FILE *fichier_out;*/
@@ -268,12 +268,6 @@ void mc_adasaap(double jj,double equinoxe, int astrometric, double longmpc,doubl
    mc_anomoy(elem,jjd,&m);
    mc_anovrair(elem,m,&v,&r);
    mc_rv_xyz(elempq,r,v,&x,&y,&z); /* equatoriale J2000 */
-   /**/
-   /*
-    mc_xyzeq2ec(x,y,z,eps,&x,&y,&z);
-    mc_xyz2lbr(x,y,z,&ls,&bs,&rs);
-    */
-   /**/
    mc_he2ge(x,y,z,xs,ys,zs,&x,&y,&z);
    mc_xyz2add(x,y,z,asd,dec,delta);
 
@@ -282,21 +276,27 @@ void mc_adasaap(double jj,double equinoxe, int astrometric, double longmpc,doubl
    mc_anomoy(elem,jjda,&m);
    mc_anovrair(elem,m,&v,&r);
    *rr=r;
+   mc_rv_xyz(elempq,r,v,&x,&y,&z); /* equatoriale J2000 */
+   mc_he2ge(x,y,z,xs,ys,zs,&x,&y,&z);
+
    /*--- correction de la nutation ---*/
-	/* A FAIRE
 	if (astrometric==0) {
+		mc_xyzeq2ec(x,y,z,eps,&xg,&yg,&zg);
 		mc_xyz2lbr(xg,yg,zg,&l,&b,&r);
 		mc_nutation(jjd,1,&dpsi,&deps);
 		l+=dpsi;
 		eps+=deps;
 		mc_lbr2xyz(l,b,r,&xg,&yg,&zg);
+		mc_xyzec2eq(xg,yg,zg,eps,&x,&y,&z);
 	}
-	*/
-   mc_rv_xyz(elempq,r,v,&x,&y,&z); /* equatoriale J2000 */
-   mc_he2ge(x,y,z,xs,ys,zs,&x,&y,&z);
 
    /* --- coord. spheriques ---*/
    mc_xyz2add(x,y,z,asd,dec,delta);
+
+   /*--- correction de l'aberration annuelle ---*/
+	if (astrometric==0) {
+		mc_aberration_annuelle(jjd,*asd,*dec,asd,dec,1);
+	}
 
    /* --- parametres elong et magnitude ---*/
    r=*rr;
@@ -548,21 +548,22 @@ void mc_adplaap(double jj,double equinoxe, int astrometric, double longmpc,doubl
    /*--- coord. spheriques ---*/
    mc_xyzec2eq(xg,yg,zg,eps,&xg,&yg,&zg);
    mc_xyz2add(xg,yg,zg,asd,dec,delta);
+
+   /*--- correction de l'aberration annuelle ---*/
+	if (astrometric==0) {
+		mc_aberration_annuelle(jjd,*asd,*dec,asd,dec,1);
+	}
+
+   /*--- correction de la precession ---*/
    if (planete!=PLUTON) {
       mc_precad(jjd,*asd,*dec,equinoxe,asd,dec); /*equatoriale J2000*/
    }
-
 
    /* --- parametres elong et magnitude ---*/
    r=*rr;
    mc_elonphas(r,rs,*delta,elong,phase);
    mc_magplanet(r,*delta,planete,*phase,l,b,mag,diamapp);
-   /*--- correction de la nutation pour les coord. helio ---*/
-   /*
-   mc_xyz2lbr(x,y,z,&l,&b,&r);
-   l+=dpsi;
-   mc_lbr2xyz(l,b,r,&x,&y,&z);
-   */
+
    /*--- coord. helio equatoriales ---*/
    mc_xyzec2eq(x,y,z,eps,&x,&y,&z);
    mc_physephem(jjd,planete,xg,yg,zg,x,y,z,diamapp_equ,diamapp_pol,
@@ -685,9 +686,14 @@ void mc_adlunap(int planete, double jj,double equinoxe, int astrometric, double 
    mc_magplanet(r,*delta,planete,*phase,l,b,mag,diamapp);
    *rr=r;
 
+   /*--- correction de l'aberration annuelle ---*/
+	if (astrometric==0) {
+		mc_aberration_annuelle(jjd,*asd,*dec,asd,dec,1);
+	}
+
    /* mc_ephem moon 1992-04-12T00:00:00 {RA DEC DELTA PHASE MAG} */
-   /* --- precession J2000.0 ---*/
-   mc_precad(jjd,*asd,*dec,equinoxe,asd,dec); /* equatoriale J2000 */
+   /*--- correction de la precession ---*/
+   mc_precad(jjd,*asd,*dec,equinoxe,asd,dec);
 
 
 }
@@ -732,6 +738,13 @@ void mc_adsolap(double jj,double equinoxe, int astrometric, double longmpc,doubl
    mc_lbr2xyz(ls,bs,rs,&xs,&ys,&zs);
    mc_xyzec2eq(xs,ys,zs,eps,&xs,&ys,&zs);
    mc_xyz2add(xs,ys,zs,asd,dec,delta);
+
+   /*--- correction de l'aberration annuelle ---*/
+	if (astrometric==0) {
+		mc_aberration_annuelle(jjd,*asd,*dec,asd,dec,1);
+	}
+
+   /*--- correction de la precession ---*/
    mc_precad(jjd,*asd,*dec,equinoxe,asd,dec); /* equatoriale J2000 */
 
    /* --- parametres elong et magnitude ---*/

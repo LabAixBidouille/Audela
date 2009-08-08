@@ -1454,6 +1454,9 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
       /* ============================*/
 	   for (kd=0;kd<nbdates;kd++) {
 		   jj=jds[kd];
+			if (astrometric==0) {
+				equinoxe=jj;
+			}
 		   /* --- position de la Lune si on veut l'elongation par rapport a la Lune ---*/
 		   if (ok4moonelong==YES) {
             mc_adlunap(LUNE,jj,equinoxe,astrometric,longmpc,rhocosphip,rhosinphip,&asdmoon,&decmoon,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
@@ -5697,7 +5700,9 @@ int Cmd_mctcl_meo(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 /* method:                                                                  */
 /*
 mc_meo corrected_positions STAR_COORD "c:/d/meo/positions.txt" [list 2008 05 30 12 34 50] [list 2008 05 30 12 36 00] 12h45m15.34s +34°56'23.3 J2000.0 J2000.0 0.01 -0.03 34 {GPS 6.92388042 E 43.75046555 1323.338}
-mc_meo compute_positions "c:/d/meo/positions.txt" [list 2008 05 30 12 34 50] [list 2008 05 30 12 36 00] JUPITER {GPS 6.92388042 E 43.75046555 1323.338}
+mc_meo compute_positions "c:/d/meo/positions.txt" [list 2008 05 30 21 00 00] [list 2008 05 30 21 03 00] JUPITER {GPS 6.92388042 E 43.75046555 1323.338}
+mc_meo compute_positions "c:/d/meo/positions.txt" [list 2008 05 30 21 00 00] [list 2008 05 30 21 03 00] JUPITER {GPS 2.037500 E 43.644349 136.9}
+mc_meo compute_positions "c:/d/meo/positions.txt" [list 2008 05 30 21 00 00] [list 2008 05 30 21 03 00] MOON {GPS 2.037500 E 43.644349 136.9} 23.47 0.67 
 
 source c:/d/meo/meo_tools.tcl
 meo_corrected_positions "c:/d/meo/positions.txt"  [list 2008 05 30 12 34 50] [list 2008 05 30 12 34 51] STAR_COORD_TCL [list 12h45m15.34s +34°56'23.3 J2000.0 J2000.0 0.01 -0.03 34] 290 101325 "c:/d/meo/model.txt"
@@ -5711,7 +5716,6 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	char home[60],ligne[1024];
 	double jddeb, jdfin,equinox,epoch;
    int result,k,res,k1,k10;
-   //Tcl_DString dsptr;
    double rhocosphip=0.,rhosinphip=0.;
    double latitude,altitude,longitude;
 	double ra,cosdec,mura,mudec,parallax,temperature,pressure;
@@ -5733,11 +5737,13 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	char *flignes;
 	int longligne=255;
 	int planetnum;
-	char objename[10000],orbitformat[15],orbitfile[1024];
+	char objename[10000],orbitformat[15],orbitfile[1024],field[500];
 	double ra1,ra2,ra3,dec1,dec3,mu,mu2;
    Tcl_DString dsptr;
 	double equinoxe=J2000;
-	int astrometric=1;
+	int astrometric=1,ephemphys=0;
+	double ff,lonpla,latpla,longi2,lati2,longi_sun2,lati_sun2,posnorth,appdiampol,appdiamequ,power,pixsize1;
+	double x,y;
 
    if(argc<2) {
       sprintf(s,"Usage: %s Action ?parameters?", argv[0]);
@@ -5746,17 +5752,16 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	   return(result);
    } else {
 	   result=TCL_OK;
-	   //Tcl_DStringInit(&dsptr);
-      /* --- decode l'action ---*/
+		/* --- decode l'action ---*/
 		strcpy(action,argv[1]);
 		if (strcmp(action,"compute_positions")==0) {
+		   /* --- Genere un fichier d'entree de type SATEL_EPHEM_FILE pour les planetes ---*/
 			if (argc<7) {
-				sprintf(s,"Usage: %s compute_positions OutputFile DateDeb DateFin Planet Home", argv[0]);
+				sprintf(s,"Usage: %s compute_positions OutputFile DateDeb DateFin Planet Home ?lon lat?", argv[0]);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				result = TCL_ERROR;
 				return(result);
 			}
-		   /* --- Genere un fichier d'entree de type SATEL_EPHEM_FILE pour les planetes ---*/
 			k=2;
 			strcpy(OutputFile,argv[k++]);
 	  	   mctcl_decode_date(interp,argv[k++],&jddeb);
@@ -5769,7 +5774,12 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				result = TCL_ERROR;
 				return(result);
 			}
-			/* --- calculs grossiers ---*/
+			if (argc>=9) {
+				ephemphys=1;
+	  			mctcl_decode_angle(interp,argv[k++],&lonpla); // positif vers l'est (Appolo 11), negatif vers l'ouest (Appolo 14)
+	  			mctcl_decode_angle(interp,argv[k++],&latpla);
+			}
+			/* --- Calculs precis avec echantillonnage temporel grossier ---*/
 			duree=(jdfin-jddeb);
 			if (duree<=0) {
 				sprintf(s,"error DateDeb(%s) > DateFin(%s)",argv[3],argv[4]);
@@ -5790,23 +5800,83 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				djd=dt2*(kl-2)/86400.;
 				jd=jddeb+djd;
 				ephemjds[kl]=jd;
-				sprintf(s,"lindex [mc_ephem %s %12.5f {AZIMUTH ALTITUDE RA DEC} -topo {%s} -equinoxe apparent] 0",objename,jd,home);
+				sprintf(s,"lindex [mc_ephem %s %12.5f {RA DEC LONGI LATI LONGI_SUN LATI_SUN POSNORTH APPDIAMPOL APPDIAMEQU} -topo {%s} -equinox apparent] 0",objename,jd,home);
 				res=Tcl_Eval(interp,s);
 				if (res==TCL_OK) {
 					strcpy(ligne,interp->result);
 					sprintf(s,"lindex {%s} 0",ligne);
 					Tcl_Eval(interp,s);
-					az=atof(interp->result);
+					ra=atof(interp->result);
 					sprintf(s,"lindex {%s} 1",ligne);
 					Tcl_Eval(interp,s);
-					h=atof(interp->result);
+					dec=atof(interp->result);
+					/*
 					mc_ah2hd(az,h,latitude,&ha,&dec);
 					mc_hd2ad(jd,longitude,ha,&ra);
+					*/
+					if (ephemphys==1) {
+						/* --- corrections pour pointer un site sur la planete ---*/
+						sprintf(s,"lindex {%s} 2",ligne);
+						Tcl_Eval(interp,s);
+						longi2=atof(interp->result);
+						sprintf(s,"lindex {%s} 3",ligne);
+						Tcl_Eval(interp,s);
+						lati2=atof(interp->result);
+						sprintf(s,"lindex {%s} 4",ligne);
+						Tcl_Eval(interp,s);
+						longi_sun2=atof(interp->result);
+						sprintf(s,"lindex {%s} 5",ligne);
+						Tcl_Eval(interp,s);
+						lati_sun2=atof(interp->result);
+						sprintf(s,"lindex {%s} 6",ligne);
+						Tcl_Eval(interp,s);
+						posnorth=atof(interp->result);
+						sprintf(s,"lindex {%s} 7",ligne);
+						Tcl_Eval(interp,s);
+						appdiampol=atof(interp->result);
+						sprintf(s,"lindex {%s} 8",ligne);
+						Tcl_Eval(interp,s);
+						appdiamequ=atof(interp->result);
+						ff=1.-appdiampol/appdiamequ;
+						power=0.1;
+						/*--- Parametres astrometriques d'une l'image fictive ---*/
+						pixsize1=1.*atan(appdiamequ/2./200*3.1415926535/180.);
+						sprintf(field,"{list OPTIC NAXIS1 500 NAXIS2 500 FOCLEN 1. PIXSIZE1 %e PIXSIZE2 %e CROTA2 0 RA %f DEC %f}",pixsize1,pixsize1,ra,dec);
+						/*--- Calcule la position du point sur l'image fictive ---*/
+						sprintf(s,"mc_lonlat2xy %f %f %f %f 250 250 200 %f %f %f %f %f",longi2,lati2,posnorth,ff,lonpla,latpla,longi_sun2,lati_sun2,power);
+						Tcl_Eval(interp,s);
+						strcpy(ligne,interp->result);
+						sprintf(s,"lindex {%s} 0",ligne);
+						Tcl_Eval(interp,s);
+						x=atof(interp->result);
+						sprintf(s,"lindex {%s} 1",ligne);
+						Tcl_Eval(interp,s);
+						y=atof(interp->result);
+					   /*--- Calcule la position astrometrique de (x,y) ---*/
+						sprintf(s,"mc_xy2radec %f %f %s",x,y,field);
+						Tcl_Eval(interp,s);
+						strcpy(ligne,interp->result);
+						sprintf(s,"lindex {%s} 0",ligne);
+						Tcl_Eval(interp,s);
+						ra=atof(interp->result);
+						sprintf(s,"lindex {%s} 1",ligne);
+						Tcl_Eval(interp,s);
+						dec=atof(interp->result);
+					}
+					/* --- coordonnees vraies a la date ---*/
 					ephemras[kl]=ra;
 					ephemdecs[kl]=dec;
+					/*
+					sprintf(s,"mc_date2iso8601 %.5f",jd);
+					Tcl_Eval(interp,s);
+					sprintf(s,"mc_angle2hms %.5f",ra);
+					Tcl_Eval(interp,s);
+					sprintf(s,"mc_angle2dms %.5f 90",dec);
+					Tcl_Eval(interp,s);
+					*/
 				}
 			}
-			/* --- sortie des resultats ---*/
+			/* --- Fichier de sortie des resultats ---*/
 			f=fopen(OutputFile,"wt");
 			if (f==NULL) {
 				free(ephemjds);
@@ -5820,7 +5890,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 			fprintf(f,"PLANET_COORD\n");
 			fprintf(f,"%s %.7f\n",objename,jddeb-2400000.5);
 			fprintf(f,"  43.75463222   6.92157300 1323.338  43.75046555   6.92388042   .0000 3.9477997593 0. 0. 0. 6.300388098783  .5000\n");
-			/* --- boucle des interpolations ---*/
+			/* --- Boucle des interpolations ---*/
 			sod0=(jddeb+0.5-floor(jddeb+0.5))*86400.;
 			k1=0;
 			k10=-10;
@@ -5862,7 +5932,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				//h=dec;az=ra;
 				//
 				distance=0.;
-				fprintf(f,"%9.3f %9.6f %10.6f %13.6f\n",sod,h,az,distance);
+				fprintf(f,"%9.3f %9.6f %10.6f %13.6f\n",sod,h,az-PI,distance);
 			}
 			fclose(f);
 			free(ephemjds);
