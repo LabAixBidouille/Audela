@@ -5703,6 +5703,7 @@ mc_meo corrected_positions STAR_COORD "c:/d/meo/positions.txt" [list 2008 05 30 
 mc_meo compute_positions "c:/d/meo/positions.txt" [list 2008 05 30 21 00 00] [list 2008 05 30 21 03 00] JUPITER {GPS 6.92388042 E 43.75046555 1323.338}
 mc_meo compute_positions "c:/d/meo/positions.txt" [list 2008 05 30 21 00 00] [list 2008 05 30 21 03 00] JUPITER {GPS 2.037500 E 43.644349 136.9}
 mc_meo compute_positions "c:/d/meo/positions.txt" [list 2008 05 30 21 00 00] [list 2008 05 30 21 03 00] MOON {GPS 2.037500 E 43.644349 136.9} 23.47 0.67 
+mc_meo compute_positions "c:/d/meo/positions.txt" [list 2008 05 30 21 00 00] [list 2008 05 30 21 03 00] MOON {GPS 2.037500 E 43.644349 136.9}
 
 source c:/d/meo/meo_tools.tcl
 meo_corrected_positions "c:/d/meo/positions.txt"  [list 2008 05 30 12 34 50] [list 2008 05 30 12 34 51] STAR_COORD_TCL [list 12h45m15.34s +34°56'23.3 J2000.0 J2000.0 0.01 -0.03 34] 290 101325 "c:/d/meo/model.txt"
@@ -5744,6 +5745,8 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	int astrometric=1,ephemphys=0;
 	double ff,lonpla,latpla,longi2,lati2,longi_sun2,lati_sun2,posnorth,appdiampol,appdiamequ,power,pixsize1;
 	double x,y;
+	double ttsec,jdtt;
+	int ttsecok=0;
 
    if(argc<2) {
       sprintf(s,"Usage: %s Action ?parameters?", argv[0]);
@@ -5752,6 +5755,15 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	   return(result);
    } else {
 	   result=TCL_OK;
+		sprintf(s,"global meo ; set ::meo(ttsec)");
+		res=Tcl_Eval(interp,s);
+		if (res==TCL_OK) {
+			ttsec=atof(interp->result);
+			ttsecok=1;
+		} else {
+			ttsec=0;
+			ttsecok=0;
+		}
 		/* --- decode l'action ---*/
 		strcpy(action,argv[1]);
 		if (strcmp(action,"compute_positions")==0) {
@@ -5800,7 +5812,15 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				djd=dt2*(kl-2)/86400.;
 				jd=jddeb+djd;
 				ephemjds[kl]=jd;
-				sprintf(s,"lindex [mc_ephem %s %12.5f {RA DEC LONGI LATI LONGI_SUN LATI_SUN POSNORTH APPDIAMPOL APPDIAMEQU} -topo {%s} -equinox apparent] 0",objename,jd,home);
+				jdtt=jd;
+				if (ttsecok==0) {
+					sprintf(s,"mc_date2tt %.5f",jd);
+					res=Tcl_Eval(interp,s);
+					jdtt=atof(interp->result);
+				} else {
+					jdtt+=ttsec/86400.;
+				}
+				sprintf(s,"lindex [mc_ephem %s %12.5f {RA DEC LONGI LATI LONGI_SUN LATI_SUN POSNORTH APPDIAMPOL APPDIAMEQU} -topo {%s} -equinox apparent] 0",objename,jdtt,home);
 				res=Tcl_Eval(interp,s);
 				if (res==TCL_OK) {
 					strcpy(ligne,interp->result);
@@ -5866,14 +5886,14 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 					/* --- coordonnees vraies a la date ---*/
 					ephemras[kl]=ra;
 					ephemdecs[kl]=dec;
-					/*
+					/**/
 					sprintf(s,"mc_date2iso8601 %.5f",jd);
 					Tcl_Eval(interp,s);
 					sprintf(s,"mc_angle2hms %.5f",ra);
 					Tcl_Eval(interp,s);
 					sprintf(s,"mc_angle2dms %.5f 90",dec);
 					Tcl_Eval(interp,s);
-					*/
+					/**/
 				}
 			}
 			/* --- Fichier de sortie des resultats ---*/

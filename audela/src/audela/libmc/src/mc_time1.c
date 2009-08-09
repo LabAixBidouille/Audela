@@ -204,9 +204,9 @@ void mc_tdminusut(double jj,double *dt)
 /***************************************************************************/
 {
    double ds=0.,ds1,ds2,t=0.;
-   int indexmax=194,k,k2;
+   int indexmax=195,k,k2;
    double jjmax,jj1,jj2;
-   double table[194*2]={
+   double table[195*2]={
       2312752.5, +124., /* 1620 */
       2313483.5, +115.,
       2314213.5, +106.,
@@ -400,7 +400,8 @@ void mc_tdminusut(double jj,double *dt)
       2450083.5, 62.184,  /* 1996 JAN  1 */
       2450630.5, 63.184,  /* 1997 JUL  1 */
       2451179.5, 64.184,  /* 1999 JAN  1 */
-      2453736.5, 65.184   /* 2006 JAN  1 */
+      2453736.5, 65.184,  /* 2006 JAN  1 */
+      2454832.5, 66.184   /* 2009 JAN  1 */
    };
    jjmax=table[(indexmax-1)*2];
    if (jj<=2067314.5) {
@@ -436,8 +437,8 @@ void mc_tdminusut(double jj,double *dt)
       return;
    }
    /* --- extrapolation ---*/
-   t=(jj-2453736.5)/365.25;
-   ds=65.184+t/6.;
+   t=(jj-2454832.5)/365.25;
+   ds=66.184+t/3.;
    *dt=ds;
 }
 
