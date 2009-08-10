@@ -2,7 +2,7 @@
 # Fichier : vo_tools_go.tcl
 # Description : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur : Robert DELMAS
-# Mise a jour $Id: vo_tools_go.tcl,v 1.18 2009-07-31 08:02:41 svaillant Exp $
+# Mise a jour $Id: vo_tools_go.tcl,v 1.19 2009-08-10 09:08:38 robertdelmas Exp $
 #
 
 #============================================================
@@ -128,6 +128,7 @@ proc ::vo_tools::createPanel { this } {
    set panneau(vo_tools,titre2) "$caption(vo_tools_go,cone-search)"
    set panneau(vo_tools,titre3) "$caption(vo_tools_go,resolver)"
    set panneau(vo_tools,titre4) "$caption(vo_tools_go,statut)"
+   set panneau(vo_tools,titre5) "$caption(vo_tools_go,samp_menu_interop)"
    #--- Construction de l'interface
    ::vo_tools::vo_toolsBuildIF $This
 }
@@ -225,12 +226,12 @@ proc ::vo_tools::vo_toolsBuildIF { This } {
 
       pack $frame -side top -fill x
 
-      #--- Frame boutton Interop
+      #--- Frame bouton Interop
       set frame $This.fra7
       frame $frame -borderwidth 1 -relief groove
 
          #--- Bouton
-         button $frame.but1 -borderwidth 1 -text "Interop Menu" \
+         button $frame.but1 -borderwidth 1 -text $panneau(vo_tools,titre5) \
             -command "::vo_tools::cmdInteropInstallMenu  $frame"
          eval "pack $frame.but1 -in $frame $packoptions"
 
@@ -263,7 +264,6 @@ proc ::vo_tools::cmdSampConnect {} {
 proc ::vo_tools::cmdSampDisconnect {} {
  ::Samp::destroy
 }
-
 
 proc ::vo_tools::cmdInteropInstallMenu { frame } {
    #--- Ajout du menu SAMP au menu principal de l'application
