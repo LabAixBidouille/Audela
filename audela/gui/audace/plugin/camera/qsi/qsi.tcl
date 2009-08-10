@@ -2,7 +2,7 @@
 # Fichier : qsi.tcl
 # Description : Configuration de la camera QSI
 # Auteur : Michel Pujol
-# Mise a jour $Id: qsi.tcl,v 1.3 2009-07-27 22:17:39 michelpujol Exp $
+# Mise a jour $Id: qsi.tcl,v 1.4 2009-08-10 09:11:31 robertdelmas Exp $
 #
 
 namespace eval ::qsi {
@@ -14,7 +14,7 @@ namespace eval ::qsi {
 }
 
 #
-# ::qsi::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::qsi::getPluginTitle { } {
@@ -24,7 +24,7 @@ proc ::qsi::getPluginTitle { } {
 }
 
 #
-# ::qsi::getPluginHelp
+# getPluginHelp
 #    Retourne la documentation du plugin
 #
 proc ::qsi::getPluginHelp { } {
@@ -32,7 +32,7 @@ proc ::qsi::getPluginHelp { } {
 }
 
 #
-# ::qsi::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::qsi::getPluginType { } {
@@ -40,7 +40,7 @@ proc ::qsi::getPluginType { } {
 }
 
 #
-# ::qsi::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::qsi::getPluginOS { } {
@@ -48,7 +48,7 @@ proc ::qsi::getPluginOS { } {
 }
 
 #
-# ::qsi::getCamNo
+# getCamNo
 #    Retourne le numero de la camera
 #
 proc ::qsi::getCamNo { camItem } {
@@ -58,7 +58,7 @@ proc ::qsi::getCamNo { camItem } {
 }
 
 #
-# ::qsi::isReady
+# isReady
 #    Indique que la camera est prete
 #    Retourne "1" si la camera est prete, sinon retourne "0"
 #
@@ -75,7 +75,7 @@ proc ::qsi::isReady { camItem } {
 }
 
 #
-# ::qsi::initPlugin
+# initPlugin
 #    Initialise les variables conf(qsi,...)
 #
 proc ::qsi::initPlugin { } {
@@ -101,7 +101,7 @@ proc ::qsi::initPlugin { } {
 }
 
 #
-# ::qsi::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::qsi::confToWidget { } {
@@ -117,7 +117,7 @@ proc ::qsi::confToWidget { } {
 }
 
 #
-# ::qsi::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::qsi::widgetToConf { camItem } {
@@ -132,7 +132,7 @@ proc ::qsi::widgetToConf { camItem } {
 }
 
 #
-# ::qsi::fillConfigPage
+# fillConfigPage
 #    Fenetre de configuration de la camera
 #
 proc ::qsi::fillConfigPage { frm camItem } {
@@ -247,7 +247,7 @@ proc ::qsi::fillConfigPage { frm camItem } {
 }
 
 #
-# ::qsi::onSelectFilter
+# onSelectFilter
 #    recupere le numero du filtre quand on change la selection dans la combbox
 #
 proc ::qsi::onSelectFilter { camItem tkCombo } {
@@ -259,7 +259,7 @@ proc ::qsi::onSelectFilter { camItem tkCombo } {
 }
 
 #
-# ::qsi::configureCamera
+# configureCamera
 #    Configure la camera en fonction des donnees contenues dans les variables conf(qsi,...)
 #
 proc ::qsi::configureCamera { camItem bufNo } {
@@ -326,7 +326,7 @@ proc ::qsi::configureCamera { camItem bufNo } {
 }
 
 #
-# ::qsi::stop
+# stop
 #    Arrete la camera
 #
 proc ::qsi::stop { camItem } {
@@ -343,7 +343,7 @@ proc ::qsi::stop { camItem } {
    ::qsi::setWigetState $camItem
 }
 
-# ::qsi::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #    (voir la liste des proprietes dans confCam::getPluginProperty)
 # Parametre :
@@ -392,7 +392,7 @@ proc ::qsi::getPluginProperty { camItem propertyName } {
 }
 
 #
-# ::qsi::setWigetState
+# setWigetState
 #    change l'etat widgets "normal" si la camera est connectee
 #    change l'etat widgets "disabled" si la camera est deconnectee
 #
@@ -418,7 +418,7 @@ proc ::qsi::setWigetState { camItem } {
 }
 
 #
-# ::qsi::setConfigTemperature
+# setConfigTemperature
 #    Configure le widget de la consigne en temperature
 #
 proc ::qsi::setConfigTemperature { camItem } {
@@ -470,7 +470,7 @@ proc ::qsi::setConfigTemperature { camItem } {
 }
 
 #
-# ::qsi::displayTemperature
+# displayTemperature
 #    Affiche la temperature du CCD
 #
 proc ::qsi::displayTemperature { camItem } {
@@ -500,14 +500,14 @@ proc ::qsi::displayTemperature { camItem } {
 }
 
 #
-# ::qsi::setShutter
+# setShutter
 #    Procedure pour la commande de l'obturateur
 #
 proc ::qsi::setShutter { camItem shutterState ShutterOptionList } {
    variable private
 
    set ::conf(qsi,foncobtu) $shutterState
-   
+
    switch -exact -- $shutterState {
       1  {
          cam$private($camItem,camNo) shutter "closed"
@@ -518,9 +518,9 @@ proc ::qsi::setShutter { camItem shutterState ShutterOptionList } {
       2  {
          cam$private($camItem,camNo) shutter "synchro"
          if { [ info exists private(frm) ] } {
-         set widget(foncobtu) $::caption(qsi,obtu_synchro)
+            set widget(foncobtu) $::caption(qsi,obtu_synchro)
          }
       }
-   }   
+   }
 }
 
