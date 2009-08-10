@@ -3,7 +3,7 @@
 # Description : Script pour la conversion d'images .ARW .CR2 .CRW .DNG .ERF .MRW \
 #.NEF .ORF .RAF .RW2 .SR2 .TIFF .X3F au format .fit
 # Auteur : Raymond Zachantke
-# Mise a jour $Id: raw2fits.tcl,v 1.5 2009-07-11 16:30:43 robertdelmas Exp $
+# Mise a jour $Id: raw2fits.tcl,v 1.6 2009-08-10 09:10:20 robertdelmas Exp $
 #
 
 namespace eval ::raw2fits {
@@ -216,10 +216,10 @@ namespace eval ::raw2fits {
       if { $error == "0" } {
          #--   sauve l'image
          buf$audace(bufNo) save $destination
-         ::console::affiche_resultat "$caption(raw2fits,label_8) $name --> $private(raw2fits,nom)\n"
+         ::console::affiche_resultat "$caption(raw2fits,label_9) $name $caption(raw2fits,label_10) --> $private(raw2fits,nom)\n"
       } else {
          #--   message d'echec
-         ::console:::affiche_resultat "$caption(raw2fits,label_7) $source : $msg\n"
+         ::console:::affiche_resultat "$caption(raw2fits,label_7) $source $caption(raw2fits,label_8) : $msg\n"
          #--   suppression de l'image de la liste
          set index [ lsearch -exact $private(raw2fits,liste_cibles) $name ]
          set private(raw2fits,liste_cibles) [ lreplace $private(raw2fits,liste_cibles) $index $index ]
