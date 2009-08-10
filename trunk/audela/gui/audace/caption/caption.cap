@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.63 2009-07-11 16:30:11 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.64 2009-08-10 09:09:36 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -375,7 +375,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,fitsHduList)                  "HDU"
    set caption(confVisu,fermeture_impossible)         "Unmöglich Aud’ACE zu beenden weil eine Aktion im"
    set caption(confVisu,fermeture_impossible1)        " Werkzeug an ist."
-   set caption(confVisu,fermeture_outil_impossible)   "# Impossible d'arrêter %s car une opération est en cours."
+   set caption(confVisu,fermeture_outil_impossible)   "Unmöglich %s zu halten weil ein Vorgang ist laufend."
 
    set caption(plotxy,figure)                         "Figur"
 

@@ -1,6 +1,6 @@
 #
 # Fichier : keyword.cap
-# Mise a jour $Id: keyword.cap,v 1.13 2009-07-11 16:29:55 robertdelmas Exp $
+# Mise a jour $Id: keyword.cap,v 1.14 2009-08-10 09:09:20 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -202,8 +202,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(keyword,manuel)                         "Manuale"
    set caption(keyword,automatic)                      "Automatico"
-   set caption(keyword,newValue)                       "# Entrer une valeur"
-   set caption(keyword,saisirNewValue)                 "# Nouvelle valeur"
+   set caption(keyword,newValue)                       "Inserire un valore"
+   set caption(keyword,saisirNewValue)                 "Nuovo valore"
    set caption(keyword,annuler)                        "Cancella"
 
 # *************** Version espagnole ***************************
@@ -268,8 +268,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(keyword,manuel)                         "Manual"
    set caption(keyword,automatic)                      "Automático"
-   set caption(keyword,newValue)                       "# Entrer une valeur"
-   set caption(keyword,saisirNewValue)                 "# Nouvelle valeur"
+   set caption(keyword,newValue)                       "Entrar un valor"
+   set caption(keyword,saisirNewValue)                 "Nuevo valor"
    set caption(keyword,annuler)                        "Cancelar"
 
 # *************** Version allemande ***************************
@@ -334,8 +334,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(keyword,manuel)                         "Manuell"
    set caption(keyword,automatic)                      "Automatisch"
-   set caption(keyword,newValue)                       "# Entrer une valeur"
-   set caption(keyword,saisirNewValue)                 "# Nouvelle valeur"
+   set caption(keyword,newValue)                       "Einen Wert Geben"
+   set caption(keyword,saisirNewValue)                 "Neuen Wert"
    set caption(keyword,annuler)                        "Annullieren"
 
 # *************** Version portugaise ***************************
