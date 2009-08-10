@@ -2,7 +2,7 @@
 # Fichier : ascomcam.tcl
 # Description : Configuration de la camera ASCOM
 # Auteur : Michel PUJOL
-# Mise a jour $Id: ascomcam.tcl,v 1.4 2009-07-28 17:34:19 michelpujol Exp $
+# Mise a jour $Id: ascomcam.tcl,v 1.5 2009-08-10 09:12:54 robertdelmas Exp $
 #
 
 namespace eval ::ascomcam {
@@ -27,7 +27,7 @@ proc ::ascomcam::install { } {
 }
 
 #
-# ::ascomcam::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::ascomcam::getPluginTitle { } {
@@ -37,7 +37,7 @@ proc ::ascomcam::getPluginTitle { } {
 }
 
 #
-# ::ascomcam::getPluginHelp
+# getPluginHelp
 #    Retourne la documentation du plugin
 #
 proc ::ascomcam::getPluginHelp { } {
@@ -45,7 +45,7 @@ proc ::ascomcam::getPluginHelp { } {
 }
 
 #
-# ::ascomcam::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::ascomcam::getPluginType { } {
@@ -53,7 +53,7 @@ proc ::ascomcam::getPluginType { } {
 }
 
 #
-# ::ascomcam::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::ascomcam::getPluginOS { } {
@@ -61,7 +61,7 @@ proc ::ascomcam::getPluginOS { } {
 }
 
 #
-# ::ascomcam::getCamNo
+# getCamNo
 #    Retourne le numero de la camera
 #
 proc ::ascomcam::getCamNo { camItem } {
@@ -71,7 +71,7 @@ proc ::ascomcam::getCamNo { camItem } {
 }
 
 #
-# ::ascomcam::isReady
+# isReady
 #    Indique que la camera est prete
 #    Retourne "1" si la camera est prete, sinon retourne "0"
 #
@@ -88,18 +88,17 @@ proc ::ascomcam::isReady { camItem } {
 }
 
 #
-# ::ascomcam::initPlugin
+# initPlugin
 #    Initialise les variables conf(ascomcam,...)
 #
 proc ::ascomcam::initPlugin { } {
    variable private
-   global conf
 
    #--- Initialise les variables de la camera ASCOM
-   if { ! [ info exists conf(ascomcam,port) ] } { set conf(ascomcam,port) "LPT1:" }
-   if { ! [ info exists conf(ascomcam,mirh) ] } { set conf(ascomcam,mirh) "0" }
-   if { ! [ info exists conf(ascomcam,mirv) ] } { set conf(ascomcam,mirv) "0" }
-   if { ! [ info exists conf(ascomcam,foncobtu) ] } { set conf(ascomcam,foncobtu) 2 }
+   if { ! [ info exists ::conf(ascomcam,port) ] }     { set ::conf(ascomcam,port)     "LPT1:" }
+   if { ! [ info exists ::conf(ascomcam,mirh) ] }     { set ::conf(ascomcam,mirh)     "0" }
+   if { ! [ info exists ::conf(ascomcam,mirv) ] }     { set ::conf(ascomcam,mirv)     "0" }
+   if { ! [ info exists ::conf(ascomcam,foncobtu) ] } { set ::conf(ascomcam,foncobtu) "2" }
 
    #--- Initialisation
    set private(A,camNo) "0"
@@ -111,36 +110,34 @@ proc ::ascomcam::initPlugin { } {
 }
 
 #
-# ::ascomcam::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::ascomcam::confToWidget { } {
    variable private
-   global conf
 
    #--- Recupere la configuration de la camera ASCOM dans le tableau private(...)
-   set private(port) $conf(ascomcam,port)
-   set private(mirh) $conf(ascomcam,mirh)
-   set private(mirv) $conf(ascomcam,mirv)
-   set widget(foncobtu) [ lindex "opened $::caption(ascomcam,obtu_ferme) $::caption(ascomcam,obtu_synchro)" $::conf(ascomcam,foncobtu) ]
+   set private(port)    $::conf(ascomcam,port)
+   set private(mirh)    $::conf(ascomcam,mirh)
+   set private(mirv)    $::conf(ascomcam,mirv)
+   set widget(foncobtu) [ lindex "$::caption(ascomcam,obtu_ouvert) $::caption(ascomcam,obtu_ferme) $::caption(ascomcam,obtu_synchro)" $::conf(ascomcam,foncobtu) ]
 }
 
 #
-# ::ascomcam::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::ascomcam::widgetToConf { camItem } {
    variable private
-   global conf
 
    #--- Memorise la configuration de la camera ASCOM dans le tableau conf(ascomcam,...)
-   set conf(ascomcam,port) $private(port)
-   set conf(ascomcam,mirh) $private(mirh)
-   set conf(ascomcam,mirv) $private(mirv)
+   set ::conf(ascomcam,port) $private(port)
+   set ::conf(ascomcam,mirh) $private(mirh)
+   set ::conf(ascomcam,mirv) $private(mirv)
 }
 
 #
-# ::ascomcam::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la camera ASCOM
 #
 proc ::ascomcam::fillConfigPage { frm camItem } {
@@ -243,7 +240,7 @@ proc ::ascomcam::fillConfigPage { frm camItem } {
 }
 
 #
-# ::ascomcam::configureCamera
+# configureCamera
 #    Configure la camera en fonction des donnees contenues dans les variables conf(ascomcam,...)
 #
 proc ::ascomcam::configureCamera { camItem bufNo } {
@@ -290,7 +287,7 @@ proc ::ascomcam::configureCamera { camItem bufNo } {
 }
 
 #
-# ::ascomcam::stop
+# stop
 #    Arrete la camera
 #
 proc ::ascomcam::stop { camItem } {
@@ -304,7 +301,7 @@ proc ::ascomcam::stop { camItem } {
 }
 
 #
-# ::ascomcam::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :
@@ -408,7 +405,7 @@ proc ::ascomcam::selectCamera { camItem } {
 }
 
 #
-# ::ascomcam::setShutter
+# setShutter
 #    Procedure pour la commande de l'obturateur
 #
 proc ::ascomcam::setShutter { camItem shutterState ShutterOptionList } {
