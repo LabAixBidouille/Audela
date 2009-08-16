@@ -75,6 +75,9 @@
 #endif
 
 #define VSOP87
+#if defined LIBRARY_DLL
+#define ELP82
+#endif
 
 #define mc_USNO 0
 #define mc_USNOCOMP 1
@@ -598,7 +601,7 @@ void mc_adastrom(double jj, struct elemorb elem, double equinoxe, double *asd, d
 void mc_adasaap(double jj,double equinoxe, int astrometric, double longmpc,double rhocosphip,double rhosinphip, struct elemorb elem, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr);
 void mc_xyzasaaphelio(double jj,double longmpc,double rhocosphip,double rhosinphip, struct elemorb elem, int frame, double *xearth,double *yearth,double *zearth,double *xaster,double *yaster,double *zaster, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr);
 void mc_adplaap(double jj,double equinoxe, int astrometric, double longmpc,double rhocosphip,double rhosinphip, int planete, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun);
-void mc_adlunap(int planete, double jj,double equinoxe, int astrometric, double longmpc,double rhocosphip,double rhosinphip,double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun);
+void mc_adlunap(int planete, double jj, double jjutc, double equinoxe, int astrometric, double longmpc,double rhocosphip,double rhosinphip,double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun);
 void mc_adsolap(double jj,double equinoxe, int astrometric, double longmpc,double rhocosphip,double rhosinphip, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun);
 void mc_adelemap(double jj,struct elemorb elem, double longmpc,double rhocosphip,double rhosinphip, int planete, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun);
 void mc_xyzgeoelem(double jj,struct elemorb elem, double longmpc,double rhocosphip,double rhosinphip, int planete, double *xageo, double *yageo, double *zageo, double *xtgeo, double *ytgeo, double *ztgeo, double *xsgeo, double *ysgeo, double *zsgeo, double *xlgeo, double *ylgeo, double *zlgeo);
@@ -658,7 +661,7 @@ void mc_magaster(double r, double delta, double phase, double h, double g, doubl
 void mc_magplanet(double r,double delta,int planete,double phase,double l,double b,double *mag,double *diamapp);
 void mc_magcomete(double r, double delta, double h0, double n, double *mag);
 void mc_sepangle(double a1, double a2, double d1, double d2, double *dist, double *posangle);
-void mc_libration(double jj,double longmpc,double rhocosphip,double rhosinphip,double *lonc, double *latc, double *p,double *lons, double *lats);
+void mc_libration(double jj,int planete,double longmpc,double rhocosphip,double rhosinphip,double *lonc, double *latc, double *p,double *lons, double *lats);
 void mc_physephem(double jj,int planete,double xg,double yg,double zg,double x,double y,double z,
                   double *diamapp_equ,double *diamapp_pol,
                   double *long1,double *long2,double *long3,double *lati,double *posangle_north,
@@ -825,6 +828,11 @@ void mc_jd2lbr1f(double jj, double *l, double *m, double *u, double *ll0, double
 void mc_jd2lbr1g(double jj, double *l, double *m, double *u, double *ll0, double *bb0, double *rr0);
 void mc_jd2lbr1h(double jj, double *l, double *m, double *u, double *ll0, double *bb0, double *rr0);
 
+void mc_elp10(double *elp, double pla_me, double pla_ve, double tt, double pla_ma, double pla_ju, double pla_sa, double pla_ur, double pla_ne, double d, double l, double f);
+void mc_elp11(double *elp, double pla_me, double pla_ve, double tt, double pla_ma, double pla_ju, double pla_sa, double pla_ur, double pla_ne, double d, double l, double f);
+void mc_elp12(double *elp, double pla_me, double pla_ve, double tt, double pla_ma, double pla_ju, double pla_sa, double pla_ur, double pla_ne, double d, double l, double f);
+void mc_elp13(double *elp, double pla_me, double pla_ve, double tt, double pla_ma, double pla_ju, double pla_sa, double pla_ur, double pla_ne, double d, double l, double f);
+
 /***************************************************************************/
 /* Utilitaires de gestion de catalogues (Usno, MicroCat, ...)              */
 /***************************************************************************/
@@ -873,7 +881,7 @@ void mc_xyzasaaphelio(double jj,double longmpc,double rhocosphip,double rhosinph
    pour un astre defini par ses elements d'orbite.
 void mc_adplaap(double jj,double equinoxe, int astrometric, double longmpc,double rhocosphip,double rhosinphip, int planete, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun)
    Calcul de l'asd, dec et distance apparentes d'une planete a jj donne.
-void mc_adlunap(int planete, double jj,double equinoxe, int astrometric, double longmpc,double rhocosphip,double rhosinphip,double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun)
+void mc_adlunap(int planete, double jj, double jjutc, double equinoxe, int astrometric, double longmpc,double rhocosphip,double rhosinphip,double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun);
    Calcul de l'asd, dec et distance apparentes de la Lune a jj donne.
 void mc_adsolap(double jj,double equinoxe, int astrometric, double longmpc,double rhocosphip,double rhosinphip, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun)
    Calcul de l'asd, dec et distance apparentes du Soleil a jj donne
@@ -1016,7 +1024,7 @@ void mc_magcomete(double r, double delta, double h0, double n, double *mag);
 void mc_sepangle(double a1, double a2, double d1, double d2, double *dist, double *posangle);
    Calcul de l'angle de separation et de l'angle de position au pole nord
    a partir de deux coordonnees spheriques.
-void mc_libration(double jj,double longmpc,double rhocosphip,double rhosinphip,double *lonc, double *latc, double *p,double *lons, double *lats);
+void mc_libration(double jj,int planete,double longmpc,double rhocosphip,double rhosinphip,double *lonc, double *latc, double *p,double *lons, double *lats)
    Calcul de la libration apparentes de la Lune a jj donne.
 void mc_physephem(double jj,int planete,double xg,double yg,double zg,double x,double y,double z,
                   double *diamapp_equ,double *diamapp_pol,

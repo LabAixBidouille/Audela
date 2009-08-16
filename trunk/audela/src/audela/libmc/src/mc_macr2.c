@@ -570,23 +570,26 @@ void mc_adplaap(double jj,double equinoxe, int astrometric, double longmpc,doubl
       long1,long2,long3,lati,posangle_north,posangle_sun,long1_sun,lati_sun);
 }
 
-void mc_adlunap(int planete, double jj,double equinoxe, int astrometric, double longmpc,double rhocosphip,double rhosinphip,double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun)
+void mc_adlunap(int planete, double jj, double jjutc, double equinoxe, int astrometric, double longmpc,double rhocosphip,double rhosinphip,double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun)
 /***************************************************************************/
 /* Calcul de l'asd, dec et distance apparentes de la Lune a jj donne.      */
 /***************************************************************************/
+/* 
+mc_ephem moon 1992-04-12T00:00:00 {RA DEC DELTA PHASE MAG} 
+*/
 /***************************************************************************/
 {
    double llp[10],mmp[10],uup[10],jjd,ls,bs,rs,eps,dpsi,deps,xs,ys,zs;
    double l,b,r,x,y,z;
    double dxeq,dyeq,dzeq;
-   /*int planete;*/
-   double jjds,asds,decs,limb;
+   double jjds,asds,decs,limb,ttminusutc;
    jjd=jj;
+	ttminusutc=jj-jjutc;
 
-   /*planete=LUNE;*/
+   /*planete=LUNE ou LUNE_ELP;*/
 
    /*--- soleil ---*/
-   *delta=1.; /* correction de l'abberation a priori */
+   *delta=1.; /* correction de l'abberation planetaire a priori */
    mc_aberpla(jjd,*delta,&jjds);
    mc_jd2lbr1a(jjds,llp,mmp,uup);
    mc_jd2lbr1b(jjds,SOLEIL,llp,mmp,uup,&ls,&bs,&rs);
@@ -595,23 +598,26 @@ void mc_adlunap(int planete, double jj,double equinoxe, int astrometric, double 
    /*--- soleil : correction de la parallaxe ---*/
    mc_obliqmoy(jjds,&eps);
    mc_xyzec2eq(xs,ys,zs,eps,&xs,&ys,&zs);
-   mc_paraldxyzeq(jjds,longmpc,rhocosphip,rhosinphip,&dxeq,&dyeq,&dzeq);
+   mc_paraldxyzeq(jjds-ttminusutc,longmpc,rhocosphip,rhosinphip,&dxeq,&dyeq,&dzeq);
    xs-=dxeq;
    ys-=dyeq;
    zs-=dzeq;
    mc_xyzeq2ec(xs,ys,zs,eps,&xs,&ys,&zs);
 
    /*--- soleil : coordonnes asd,dec du Soleil ---*/
-   mc_xyz2lbr(xs,ys,zs,&ls,&bs,&rs);
-   mc_nutation(jjd,1,&dpsi,&deps);
-   ls+=dpsi;
-   eps+=deps;
-   mc_lbr2xyz(ls,bs,rs,&xs,&ys,&zs);
+	if (astrometric==0) {
+		mc_xyz2lbr(xs,ys,zs,&ls,&bs,&rs);
+		mc_nutation(jjd,1,&dpsi,&deps);
+		ls+=dpsi;
+		eps+=deps;
+		mc_lbr2xyz(ls,bs,rs,&xs,&ys,&zs);
+	}
    mc_xyzec2eq(xs,ys,zs,eps,&xs,&ys,&zs);
    mc_xyz2add(xs,ys,zs,&asds,&decs,delta);
 
    /* a ce niveau on retient (asds,decs) pour le calcul de la phase */
-   /* on recommence tout le calcul sans abberation */
+   /* On recommence tout le calcul sans abberation pour la position */
+	/* dans le repere heliocentrique */
 
    /*--- Terre ---*/
    mc_jd2lbr1a(jjd,llp,mmp,uup);
@@ -621,18 +627,20 @@ void mc_adlunap(int planete, double jj,double equinoxe, int astrometric, double 
    /*--- Terre : correction de la parallaxe ---*/
    mc_obliqmoy(jjd,&eps);
    mc_xyzec2eq(xs,ys,zs,eps,&xs,&ys,&zs);
-   mc_paraldxyzeq(jjd,longmpc,rhocosphip,rhosinphip,&dxeq,&dyeq,&dzeq);
+   mc_paraldxyzeq(jjd-ttminusutc,longmpc,rhocosphip,rhosinphip,&dxeq,&dyeq,&dzeq);
    xs-=dxeq;
    ys-=dyeq;
    zs-=dzeq;
    mc_xyzeq2ec(xs,ys,zs,eps,&xs,&ys,&zs);
 
    /*--- Terre : coordonnes asd,dec du Soleil ---*/
-   mc_xyz2lbr(xs,ys,zs,&ls,&bs,&r);
-   mc_nutation(jjd,1,&dpsi,&deps);
-   ls+=dpsi;
-   eps+=deps;
-   mc_lbr2xyz(ls,bs,r,&xs,&ys,&zs);
+	if (astrometric==0) {
+		mc_xyz2lbr(xs,ys,zs,&ls,&bs,&r);
+		mc_nutation(jjd,1,&dpsi,&deps);
+		ls+=dpsi;
+		eps+=deps;
+		mc_lbr2xyz(ls,bs,r,&xs,&ys,&zs);
+	}
    mc_xyzec2eq(xs,ys,zs,eps,&xs,&ys,&zs);
    mc_xyz2add(xs,ys,zs,asd,dec,delta);
 
@@ -662,11 +670,13 @@ void mc_adlunap(int planete, double jj,double equinoxe, int astrometric, double 
 		mc_lbr2xyz(l,b,r,&x,&y,&z);
 	}
 
-   /*--- coord. spheriques ---*/
+   /*--- correction de la parallaxe ---*/
    mc_xyzec2eq(x,y,z,eps,&x,&y,&z);
    x-=dxeq;
    y-=dyeq;
    z-=dzeq;
+
+   /*--- coord. spheriques ---*/
    mc_xyz2add(x,y,z,asd,dec,delta);
 
    /* --- parametres physiques ---*/
@@ -691,10 +701,8 @@ void mc_adlunap(int planete, double jj,double equinoxe, int astrometric, double 
 		mc_aberration_annuelle(jjd,*asd,*dec,asd,dec,1);
 	}
 
-   /* mc_ephem moon 1992-04-12T00:00:00 {RA DEC DELTA PHASE MAG} */
    /*--- correction de la precession ---*/
-   mc_precad(jjd,*asd,*dec,equinoxe,asd,dec);
-
+	mc_precad(jjd,*asd,*dec,equinoxe,asd,dec);
 
 }
 

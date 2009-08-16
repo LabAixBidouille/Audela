@@ -126,6 +126,22 @@ SOURCE=..\src\mc_cord1.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\mc_elp10.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\mc_elp11.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\mc_elp12.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\mc_elp13.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\mc_file1.c
 # End Source File
 # Begin Source File
