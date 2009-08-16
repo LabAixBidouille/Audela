@@ -230,7 +230,7 @@ void mc_sepangle(double a1, double a2, double d1, double d2, double *dist, doubl
    *posangle=aa;
 }
 
-void mc_libration(double jj,double longmpc,double rhocosphip,double rhosinphip,double *lonc, double *latc, double *p,double *lons, double *lats)
+void mc_libration(double jj,int planete,double longmpc,double rhocosphip,double rhosinphip,double *lonc, double *latc, double *p,double *lons, double *lats)
 /***************************************************************************/
 /* Calcul de la libration apparentes de la Lune a jj donne.                */
 /***************************************************************************/
@@ -251,7 +251,7 @@ void mc_libration(double jj,double longmpc,double rhocosphip,double rhosinphip,d
    double ls,bs,l,b;
    double v,x,y;
    double diamapp_equ,diamapp_pol,long1,long2,long3,lati,posangle_sun,posangle_north;
-   double long1_sun,lati_sun;
+   double long1_sun,lati_sun,jjutc;
 	int astrometric=1;
 
    /* --- nutation ---*/
@@ -290,7 +290,8 @@ void mc_libration(double jj,double longmpc,double rhocosphip,double rhosinphip,d
    /* =============== earth lon,lat =====================*/
    /* --- topocentric coordinates of moon ---*/
    long1=1.; /* pour eviter la recursivite folle */
-   mc_adlunap(LUNE,jj,equinoxe,astrometric,longmpc,rhocosphip,rhosinphip,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+	jjutc=jj;
+   mc_adlunap(planete,jj,jjutc,equinoxe,astrometric,longmpc,rhocosphip,rhosinphip,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
    /* --- precession J2000.0 -> date ---*/
    mc_precad(equinoxe,asd,dec,jj,&asd,&dec);
    /* --- coord ecl */
@@ -449,7 +450,7 @@ void mc_physephem(double jj,int planete,double xg,double yg,double zg,double x,d
       longmpc=*long1;
       rhocosphip=*long2;
       rhosinphip=*long3;
-      mc_libration(jj,longmpc,rhocosphip,rhosinphip,long1,lati,posangle_north,&lons,&lats);
+      mc_libration(jj,planete,longmpc,rhocosphip,rhosinphip,long1,lati,posangle_north,&lons,&lats);
       *long2=*long1;
       *long3=*long1;
       r=sqrt(xg*xg+yg*yg+zg*zg);

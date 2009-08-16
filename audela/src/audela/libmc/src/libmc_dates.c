@@ -420,6 +420,37 @@ int Cmd_mctcl_date2tt(ClientData clientData, Tcl_Interp *interp, int argc, char 
    return result;
 }
 
+int Cmd_mctcl_date2ttutc(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+/****************************************************************************/
+/* Retourne TT-UTC pour une date UTC                                        */
+/****************************************************************************/
+/* Entrees :                 												             */
+/* Date            								                                  */
+/*																			                   */
+/* Sorties :																                */
+/* TT-UTC expressed in days                                                 */
+/****************************************************************************/
+   double jj=0.,dt=0.;
+   int result;
+   char s[100];
+
+   if(argc<=1) {
+      sprintf(s,"Usage: %s Date", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else {
+      /* --- decode la date ---*/
+      mctcl_decode_date(interp,argv[1],&jj);
+      /* --- TT-UTC ---*/
+		mc_tdminusut(jj,&dt);
+      /* --- sortie des resultats ---*/
+      sprintf(s,"%.10f",dt/86400.);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_OK;
+   }
+   return result;
+}
+
 int mctcl_decode_date(Tcl_Interp *interp, char *argv0,double *jj)
 /****************************************************************************/
 /* Decode automatiquement des dates entree sous 5 formats differents.	    */
