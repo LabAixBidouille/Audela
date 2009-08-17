@@ -2,7 +2,7 @@
 # Fichier : vo_tools.tcl
 # Description : Outils pour l'Observatoire Virtuel
 # Auteur : Alain KLOTZ et Jerome BERTHIER
-# Mise a jour $Id: vo_tools.tcl,v 1.25 2009-07-30 16:53:32 svaillant Exp $
+# Mise a jour $Id: vo_tools.tcl,v 1.26 2009-08-17 17:05:46 svaillant Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -354,19 +354,28 @@ proc vo_skybotconesearch { args } {
       set flag [lindex $response 1]
       set result [lindex $response 5]
 
-      # retour du resultat et gestion des cas d'erreur
-# dans le cas ou aucun corps n'est trouve, la votable est valide, contient WARNING et flags==0
-      if { $erreur == "0" && $flag >= 0 } {
-         return $result
-      } else {
-         if { $erreur == "0" && $flag == 0 } {
-            return "no"
+      # On traite 3 cas de figure :
+      # 1- une erreur s'est produite
+      # 2- pas d'erreur mais la liste des corps est vide
+      # 3- pas d'erreur et la liste contient au moins un corps
+      #
+      # Ces trois cas sont traites differemment suivant le type de table demande
+      #  - type text : lorsque la liste est vide on renvoit "no"
+      #  - type mime : si la liste est vide pas de traitement particulier
+      # 
+      # Valeur de $flag : 0 == liste vide , > 0 sinon
+      #
+      if { $erreur == 0 } {
+         if { $flag > 0 || $mime eq "votable" } {
+            return $result
          } else {
-            if {[set nameofexecutable [file tail [file rootname [info nameofexecutable]]]]=="audela"} {
-               tk_messageBox -title "error" -type ok -message [concat "skybotconesearch: error: " $response]
-            }
-            return "failed"
+            return "no"
          }
+      } else {
+         if {[set nameofexecutable [file tail [file rootname [info nameofexecutable]]]]=="audela"} {
+            tk_messageBox -title "error" -type ok -message [concat "skybotconesearch: error: " $response]
+         }
+         return "failed"
       }
 
    } else {
@@ -460,7 +469,6 @@ proc vo_skybotresolver { args } {
       # invocation du web service
       set erreur [ catch { skybotresolver epoch $jd name $name mime $mime output $output observer $observer } response ]
 
-puts "response: $response"
       # recuperation des resultats
       set flag [lindex $response 1]
       set result [lindex $response 5]
