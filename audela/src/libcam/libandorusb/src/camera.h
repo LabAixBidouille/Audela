@@ -1,3 +1,4 @@
+
 /* camera.h
  *
  * This file is part of the AudeLA project : <http://software.audela.free.fr>
@@ -23,27 +24,35 @@
 #ifndef __CAMERA_H__
 #define __CAMERA_H__
 
+#define DEVEL_LINUX
+
 #ifdef OS_LIN
 //#define __KERNEL__
 //#   include <sys/io.h>
-#define ENV_LIN		-1				/* Target for Linux environment */
-#define TARGET			ENV_LIN			/* Set for your target */
+#define ENV_LIN		-1      /* Target for Linux environment */
+#define TARGET			ENV_LIN /* Set for your target */
 #endif
 
 #include <tcl.h>
 #include "libname.h"
 #include <libcam/libstruc.h>
 
+#ifndef DEVEL_LINUX
 #include "Atmcd32d.h"
+#else
+#include "atmcdLXd.h"
+#endif
 
 /*
  * Donnees propres a chaque camera.
  */
+
 /* --- structure qui accueille les parametres---*/
-struct camprop {
-   /* --- parametres standards, ne pas changer ---*/
-  COMMON_CAMSTRUCT;
-   /* Ajoutez ici les variables necessaires a votre camera (mode d'obturateur, etc). */   
+struct camprop
+{
+   /* --- parametres standards, ne pas changer --- */
+   COMMON_CAMSTRUCT;
+   /* Ajoutez ici les variables necessaires a votre camera (mode d'obturateur, etc). */
    int drv_status;
    int minTemp;
    int maxTemp;
@@ -51,20 +60,21 @@ struct camprop {
    int VSSpeed;
    int ADChannel;
    int PreAmpGain;
-	int VSAmplitude;
-	int EMCCDGain;
+   int VSAmplitude;
+   int EMCCDGain;
    int openingtime;
    int closingtime;
    int HSEMult;
-	char headref[10];
-	int acqmode;
-	int nbimages;
-	float cycletime;
-	char spoolname[2048];
+   char headref[10];
+   int acqmode;
+   int nbimages;
+   float cycletime;
+   char spoolname[2048];
 };
 
 void cam_setup_electronic(struct camprop *cam);
-void cam_setup_exposure(struct camprop *cam,float *texptime,float *taccumtime,float *tkinetictime);
+void cam_setup_exposure(struct camprop *cam, float *texptime,
+                        float *taccumtime, float *tkinetictime);
 /*
 int cam_init(struct camprop *cam, int argc, char **argv);
 void cam_update_window(struct camprop *cam);
@@ -84,6 +94,6 @@ void cam_set_binning(int binx, int biny,struct camprop *cam);
 int cam_close(struct camprop *cam);
 */
 
-char* get_status(int st);
+char *get_status(int st);
 
 #endif
