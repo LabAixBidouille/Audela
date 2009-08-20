@@ -1,3 +1,4 @@
+
 /* camtcl.h
  *
  * This file is part of the AudeLA project : <http://software.audela.free.fr>
@@ -30,11 +31,16 @@
    {"acqmode", (Tcl_CmdProc *)cmdAndorAcqmode}, \
    {"electronic", (Tcl_CmdProc *)cmdAndorElectronic},
 
- /* === Specific commands for that camera ===*/
-int cmdAndorClosingtime(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmdAndorOpeningtime(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmdAndorAcqmode(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmdAndorElectronic(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+ /* === Specific commands for that camera === */
+int cmdAndorClosingtime(ClientData clientData, Tcl_Interp * interp, int argc,
+                        char *argv[]);
+int cmdAndorOpeningtime(ClientData clientData, Tcl_Interp * interp, int argc,
+                        char *argv[]);
+int cmdAndorNative(ClientData clientData, Tcl_Interp * interp, int argc,
+                   char *argv[]);
+int cmdAndorAcqmode(ClientData clientData, Tcl_Interp * interp, int argc,
+                    char *argv[]);
+int cmdAndorElectronic(ClientData clientData, Tcl_Interp * interp, int argc,
+                       char *argv[]);
 
 #endif

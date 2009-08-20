@@ -11,3 +11,6 @@ OBJ += $(patsubst $(SRCDIR)/%.c, %.o, $(filter $(SRCDIR)/%.c, $(SRC)))
 
 include ../../../Makefile1
 
+CXXFLAGS += -I /usr/local/include
+
+LDFLAGS += -L/usr/local/lib -landor
