@@ -149,6 +149,8 @@
  int Cmd_mctcl_lightmap(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
  int Cmd_mctcl_meo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
+ int Cmd_mctcl_astrology(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+
 /*--- Point d'entree de la DLL */
 #ifdef LIBRARY_DLL
    __declspec(dllexport) int __cdecl Mc_Init(Tcl_Interp *interp);

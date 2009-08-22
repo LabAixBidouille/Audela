@@ -6751,3 +6751,136 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
       return result;     
    }
 }
+
+int Cmd_mctcl_astrology(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+/****************************************************************************/
+/* Calcule les donnees astrologiques.                                       */
+/****************************************************************************/
+/* Entrees :                                                                */
+/* mc_astrology Date ?Home?                                                 */
+/*
+mc_astrology 1967-08-23T18:00:00 {GPS 2 E 48 120}
+*/
+/*                                                                          */
+/****************************************************************************/
+
+   double longi,latitude,altitude,rhocosphip,rhosinphip;
+   char s[1000];
+   double equinox=J2000;
+   double llp[10],mmp[10],uup[10],jd,jjd,ls,bs,rs,eps,xs,ys,zs;
+   double dxeq,dyeq,dzeq;
+	double dpsi,deps,az,h,h1,h2,az1,az2;
+	int topo=0,ksig,kasc;
+   Tcl_DString dsptr;
+
+   if(argc<=1) {
+      sprintf(s,"Usage: %s Date_UT ?Home?", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+ 	   return TCL_ERROR;
+   } else {
+ 	   /* --- decode la date ---*/
+      mctcl_decode_date(interp,argv[1],&jd);
+		jjd=jd;
+      /* --- decode le Home ---*/
+      longi=0.;
+      rhocosphip=0.;
+      rhosinphip=0.;
+      if (argc>=3) {
+         mctcl_decode_topo(interp,argv[2],&longi,&rhocosphip,&rhosinphip);
+	      mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
+			topo=1;
+      }
+		mc_jd2lbr1a(jjd,llp,mmp,uup);
+		mc_jd2lbr1b(jjd,SOLEIL,llp,mmp,uup,&ls,&bs,&rs);
+		mc_aberpla(jjd,rs,&jjd);
+		mc_jd2lbr1a(jjd,llp,mmp,uup);
+		mc_jd2lbr1b(jjd,0,llp,mmp,uup,&ls,&bs,&rs);
+		mc_obliqmoy(jjd,&eps);
+		/*--- correction de la parallaxe ---*/
+		mc_obliqmoy(jjd,&eps);
+		mc_lbr2xyz(ls,bs,rs,&xs,&ys,&zs);
+		mc_xyzec2eq(xs,ys,zs,eps,&xs,&ys,&zs);
+		mc_paraldxyzeq(jjd,longi,rhocosphip,rhosinphip,&dxeq,&dyeq,&dzeq);
+		xs-=dxeq;
+		ys-=dyeq;
+		zs-=dzeq;
+		mc_xyzeq2ec(xs,ys,zs,eps,&xs,&ys,&zs);
+		mc_xyz2lbr(xs,ys,zs,&ls,&bs,&rs);
+		/*--- correction de la nutation ---*/
+		mc_nutation(jjd,1,&dpsi,&deps);
+		ls+=dpsi;
+		eps+=deps;
+		ls/=(DR);
+		ls=fmod(ls+720,360.);
+		ksig=(int)floor(ls/30.);
+      /* --- sorties ---*/
+      Tcl_DStringInit(&dsptr);
+      Tcl_DStringAppend(&dsptr,"{sign ",-1);
+		if (ksig==0) { strcpy(s,"Aries"); }
+		if (ksig==1) { strcpy(s,"Taurus"); }
+		if (ksig==2) { strcpy(s,"Gemini"); }
+		if (ksig==3) { strcpy(s,"Cancer"); }
+		if (ksig==4) { strcpy(s,"Leo"); }
+		if (ksig==5) { strcpy(s,"Virgo"); }
+		if (ksig==6) { strcpy(s,"Libra"); }
+		if (ksig==7) { strcpy(s,"Scorpio"); }
+		if (ksig==8) { strcpy(s,"Sagittarius"); }
+		if (ksig==9) { strcpy(s,"Capricorn"); }
+		if (ksig==10) { strcpy(s,"Aquarius"); }
+		if (ksig==11) { strcpy(s,"Pisces"); }
+      Tcl_DStringAppend(&dsptr,s,-1);
+      Tcl_DStringAppend(&dsptr," ",-1);
+      sprintf(s,"%.5f ",ls);
+      Tcl_DStringAppend(&dsptr,s,-1);
+      Tcl_DStringAppend(&dsptr,"} ",-1);
+		/* --- ascendant ---*/
+		if (topo==1) {
+			kasc=-1;
+			for (ksig=0;ksig<12;ksig++) {
+				ls=ksig*30*(DR);
+				bs=0.;
+				mc_lbr2xyz(ls,bs,rs,&xs,&ys,&zs);
+				mc_xyzec2eq(xs,ys,zs,eps,&xs,&ys,&zs);
+				mc_xyz2lbr(xs,ys,zs,&ls,&bs,&rs);
+				mc_ad2ah(jd,longi,latitude,ls,bs,&az,&h);
+				h1=h;
+				az1=az;
+				ls=(ksig+1)*30*(DR);
+				bs=0.;
+				mc_lbr2xyz(ls,bs,rs,&xs,&ys,&zs);
+				mc_xyzec2eq(xs,ys,zs,eps,&xs,&ys,&zs);
+				mc_xyz2lbr(xs,ys,zs,&ls,&bs,&rs);
+				mc_ad2ah(jd,longi,latitude,ls,bs,&az,&h);
+				h2=h;
+				az2=az;
+				// lever
+				if ((h1>=0)&&(h2<=0)) {
+					kasc=ksig;
+					break;
+				}
+			}
+			strcpy(s,"{No ascendant}");
+			Tcl_DStringAppend(&dsptr,"{ascendant ",-1);
+			if (kasc==0) { strcpy(s,"Aries"); }
+			if (kasc==1) { strcpy(s,"Taurus"); }
+			if (kasc==2) { strcpy(s,"Gemini"); }
+			if (kasc==3) { strcpy(s,"Cancer"); }
+			if (kasc==4) { strcpy(s,"Leo"); }
+			if (kasc==5) { strcpy(s,"Virgo"); }
+			if (kasc==6) { strcpy(s,"Libra"); }
+			if (kasc==7) { strcpy(s,"Scorpio"); }
+			if (kasc==8) { strcpy(s,"Sagittarius"); }
+			if (kasc==9) { strcpy(s,"Capricorn"); }
+			if (kasc==10) { strcpy(s,"Aquarius"); }
+			if (kasc==11) { strcpy(s,"Pisces"); }
+			Tcl_DStringAppend(&dsptr,s,-1);
+			Tcl_DStringAppend(&dsptr," ",-1);
+			sprintf(s,"%.5f %.5f %.5f %.5f",h1/(DR),h2/(DR),az1/(DR),az2/(DR));
+			Tcl_DStringAppend(&dsptr,s,-1);
+			Tcl_DStringAppend(&dsptr,"} ",-1);
+		}
+      Tcl_DStringResult(interp,&dsptr);
+      Tcl_DStringFree(&dsptr);
+   }
+   return TCL_OK;
+}
