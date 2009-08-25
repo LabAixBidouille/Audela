@@ -371,9 +371,6 @@ void cam_update_window(struct camprop *cam)
    //
    // Attention , il faut d'abord mettre a jour l'origine (StartX,StartY) avant la taille de la fenetre
    // car sinon on risque de provoquer une exception (cas de l'ancienne origine hors de la fenetre)
-
-
-
    if ( cam->mirrorv == 1 ) {
       // j'applique un miroir vertical en inversant les ordonnees de la fenetre
       x1 = (maxx / cam->binx ) - x2 -1;
@@ -416,11 +413,11 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
          if (cam->shutterindex == 0) {
             // acquisition avec obturateur ferme
             cam_log(LOG_DEBUG,"cam_start_exp apres StartExposure shutter=closed exptime=%f",cam->exptime);
-            hr = cam->params->pCam->StartExposure(cam->exptime, VARIANT_FALSE);
+            hr = cam->params->pCam->StartExposure(exptime, VARIANT_FALSE);
          } else {
             // acquisition avec obturateur ouvert
             cam_log(LOG_DEBUG,"cam_start_exp apres StartExposure shutter=synchro exptime=%f",cam->exptime);
-            hr = cam->params->pCam->StartExposure(cam->exptime, VARIANT_TRUE);
+            hr = cam->params->pCam->StartExposure(exptime, VARIANT_TRUE);
             cam_log(LOG_DEBUG,"cam_start_exp apres StartExposure");
          }
          if (FAILED(hr)) {  
@@ -453,7 +450,6 @@ void cam_stop_exp(struct camprop *cam)
 
    try {
       // j'interromps l'acquisition
-
       hr = cam->params->pCam->AbortExposure();
       if (FAILED(hr)) { 
          sprintf(cam->msg, "cam_stop_exp error StopExposure hr=%X",hr);
