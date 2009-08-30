@@ -378,6 +378,7 @@ void cam_update_window(struct camprop *cam)
 {
    int maxx, maxy;
    int x1, y1, x2, y2;
+   int x1Mir, y1Mir, x2Mir, y2Mir;
    int err;
    char s[100];
    
@@ -411,25 +412,34 @@ void cam_update_window(struct camprop *cam)
       cam->y1, cam->x2, cam->y2, cam->w, cam->h);
    logfile(s);
    
-   // On ajoute cam->overscanxbeg pour les coordonnees en x car le
-   // driver FLI n'accepte pas de coordonnees hors de la zone "visible area"
-   x1 = cam->nb_deadbeginphotox + cam->x1;
-   y1 = cam->nb_deadbeginphotoy + cam->y1;
-   x2 = cam->nb_deadbeginphotox + cam->x1 + cam->w;
-   y2 = cam->nb_deadbeginphotoy + cam->y1 + cam->h;
-   
 
    if ( cam->mirrorv == 1 ) {
       // j'applique un miroir vertical en inversant les ordonnees de la fenetre
-      x1 = (maxx / cam->binx ) - x2 -1;
+      x1Mir = maxx -1 - cam->x2; 
+      x2Mir = maxx -1 - cam->x1; 
+   } else {
+      x1Mir = cam->x1; 
+      x2Mir = cam->x2; 
    }
 
    if ( cam->mirrorh == 1 ) {
       // j'applique un miroir horizontal en inversant les abcisses de la fenetre
-      // 0---y1-----y2---------------------(w-1)
-      // 0---------------(w-y2)---(w-y1)---(w-1)  
-      y1 = (maxy / cam->biny ) - y2 -1;
+      // 0---y1-----y2---------------------(maxy/biny)
+      // 0---------------(w-y2)---(w-y1)---(maxy/biny)  
+      y1Mir = maxy -1 - cam->y2;
+      y2Mir = maxy -1 - cam->y1;
+   } else {
+      y1Mir = cam->y1; 
+      y2Mir = cam->y2; 
    }
+
+   // On ajoute cam->overscanxbeg pour les coordonnees en x car le
+   // driver FLI n'accepte pas de coordonnees hors de la zone "visible area"
+   x1 = cam->nb_deadbeginphotox + x1Mir;
+   y1 = cam->nb_deadbeginphotoy + y1Mir;
+   x2 = cam->nb_deadbeginphotox + x1Mir + cam->w;
+   y2 = cam->nb_deadbeginphotoy + y1Mir + cam->h;
+   
 
    sprintf(s,
       "cam_update_window: configuration avec (%d,%d)-(%d,%d) -> (%d,%d)-(%d,%d)\n",
