@@ -3,7 +3,7 @@
 # Description : procedures d'acqusitition et de traitement avec
 #         plusieurs cameras simultanées exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise a jour $Id: camerathread.tcl,v 1.11 2009-07-09 17:24:55 michelpujol Exp $
+# Mise a jour $Id: camerathread.tcl,v 1.12 2009-08-30 20:30:10 michelpujol Exp $
 #
 
 namespace eval ::camerathread {
@@ -876,7 +876,7 @@ proc ::camerathread::setAsynchroneParameter { args } {
       interp eval "" "set private($paramName) $args"
    } else {
       #--- thread::eval utilise un mutex interne du thread de la camera
-      thread::eval "append private(synchroneParameter) \" \";append private(synchroneParameter) $args"
+      thread::eval "append private(synchroneParameter) \" \" $args"
       if { $private(acquisitionState) == 0 } {
          updateParameter
       }
@@ -895,9 +895,9 @@ proc ::camerathread::updateParameter { } {
    variable private
    set paramList $private(synchroneParameter)
    set private(synchroneParameter)  ""
-   foreach { paramName paramValue } $paramList {
+   foreach { paramName paramValue } $paramList { 
       set private($paramName) $paramValue
-      ###::camerathread::disp  "camerathread: $paramName=$private($paramName)XXX\n"
+      ###::camerathread::disp  "camerathread::updateParameter $paramName=$private($paramName)\n"
 
       switch $paramName {
         "binning" {
