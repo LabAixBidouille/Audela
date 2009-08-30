@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.31 2009-07-12 09:36:57 michelpujol Exp $
+ * $Id: libcam.c,v 1.32 2009-08-30 21:14:17 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -1127,36 +1127,19 @@ static void AcqRead(ClientData clientData )
       //      -reverseX    if "1" , apply vertical mirror
       //      -reverseY    if "1" , apply horizontal mirror
       // ---
+      
       sprintf(s, "buf%d setpixels %s %d %d %s %s %d -pixels_size %lu -reverse_x %d -reverse_y %d -keep_keywords",
          cam->bufno, cam->pixels_classe, cam->w, cam->h, cam->pixels_format, cam->pixels_compression ,
          (int)(void *) p, cam->pixel_size, cam->pixels_reverse_x, cam->pixels_reverse_y);
+      /*
+      sprintf(s, "buf%d setpixels %s %d %d %s %s %d -pixels_size %lu -reverse_x %d -reverse_y %d",
+         cam->bufno, cam->pixels_classe, cam->w, cam->h, cam->pixels_format, cam->pixels_compression ,
+         (int)(void *) p, cam->pixel_size, cam->pixels_reverse_x, cam->pixels_reverse_y);
+      */
       libcam_log(LOG_DEBUG, s);
       if (Tcl_Eval(interp, s) == TCL_ERROR) {
          libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
       }
-
-      //--- Add FITS keywords
-      if ( strcmp(cam->pixels_classe, "CLASS_GRAY")==0 ) {
-         // cas d'une image 2D en niveau de gris
-         sprintf(s, "buf%d setkwd {NAXIS 2 int \"\" \"\"}", cam->bufno);
-         libcam_log(LOG_DEBUG, s);
-         if (Tcl_Eval(interp, s) == TCL_ERROR) {
-            libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
-         }
-      } else if ( strcmp(cam->pixels_classe, "CLASS_RGB")==0 ) {
-         // cas d'une image 2D RGB
-         sprintf(s, "buf%d setkwd {NAXIS 3 int \"\" \"\"}", cam->bufno);
-         libcam_log(LOG_DEBUG, s);
-         if (Tcl_Eval(interp, s) == TCL_ERROR) {
-            libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
-         }
-         sprintf(s, "buf%d setkwd {NAXIS3 3 int \"\" \"\"}", cam->bufno);
-         libcam_log(LOG_DEBUG, s);
-         if (Tcl_Eval(interp, s) == TCL_ERROR) {
-            libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
-         }
-      }
-
 
       //--- get height after decompression . 
       //--- Indispensable pour recuperer la taille relle de l'image 
@@ -1179,16 +1162,49 @@ static void AcqRead(ClientData clientData )
       }
 
 
-      sprintf(s, "buf%d setkwd {NAXIS1 %d int \"\" \"\"}", cam->bufno, cam->w);
-      libcam_log(LOG_DEBUG, s);
-      if (Tcl_Eval(interp, s) == TCL_ERROR) {
-         libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+      //--- Add FITS keywords
+      if ( strcmp(cam->pixels_classe, "CLASS_GRAY")==0 ) {
+         // cas d'une image 2D en niveau de gris
+         sprintf(s, "buf%d setkwd {NAXIS 2 int \"\" \"\"}", cam->bufno);
+         libcam_log(LOG_DEBUG, s);
+         if (Tcl_Eval(interp, s) == TCL_ERROR) {
+            libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+         }
+         sprintf(s, "buf%d setkwd {NAXIS1 %d int \"\" \"\"}", cam->bufno, cam->w);
+         libcam_log(LOG_DEBUG, s);
+         if (Tcl_Eval(interp, s) == TCL_ERROR) {
+            libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+         }
+         sprintf(s, "buf%d setkwd {NAXIS2 %d int \"\" \"\"}", cam->bufno, cam->h);
+         libcam_log(LOG_DEBUG, s);
+         if (Tcl_Eval(interp, s) == TCL_ERROR) {
+            libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+         }
+      } else if ( strcmp(cam->pixels_classe, "CLASS_RGB")==0 ) {
+         // cas d'une image 2D RGB
+         sprintf(s, "buf%d setkwd {NAXIS 3 int \"\" \"\"}", cam->bufno);
+         libcam_log(LOG_DEBUG, s);
+         if (Tcl_Eval(interp, s) == TCL_ERROR) {
+            libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+         }
+         sprintf(s, "buf%d setkwd {NAXIS1 %d int \"\" \"\"}", cam->bufno, cam->w);
+         libcam_log(LOG_DEBUG, s);
+         if (Tcl_Eval(interp, s) == TCL_ERROR) {
+            libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+         }
+         sprintf(s, "buf%d setkwd {NAXIS2 %d int \"\" \"\"}", cam->bufno, cam->h);
+         libcam_log(LOG_DEBUG, s);
+         if (Tcl_Eval(interp, s) == TCL_ERROR) {
+            libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+         }
+         sprintf(s, "buf%d setkwd {NAXIS3 3 int \"\" \"\"}", cam->bufno);
+         libcam_log(LOG_DEBUG, s);
+         if (Tcl_Eval(interp, s) == TCL_ERROR) {
+            libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+         }
       }
-      sprintf(s, "buf%d setkwd {NAXIS2 %d int \"\" \"\"}", cam->bufno, cam->h);
-      libcam_log(LOG_DEBUG, s);
-      if (Tcl_Eval(interp, s) == TCL_ERROR) {
-         libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
-      }
+
+
       sprintf(s, "buf%d setkwd {BIN1 %d int \"\" \"\"}", cam->bufno, cam->binx);
       libcam_log(LOG_DEBUG, s);
       if (Tcl_Eval(interp, s) == TCL_ERROR) {
@@ -1312,14 +1328,6 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
 
       if (cam->timerExpiration == NULL) {
          /* Pour avertir les gens du status de la camera. */
-         //sprintf(ligne, "status_cam%d", cam->camno);
-         //Tcl_SetVar(interp, ligne, "exp", TCL_GLOBAL_ONLY);
-         //if ( cam->camThreadId[0] != 0 ) {
-         //   // cas du mutltithread
-         //   // je change l'etat de la variable dans la thread principale
-         //   sprintf(ligne, "thread::send -async %s { set ::status_cam%d exp }", cam->mainThreadId, cam->camno);
-         //   Tcl_Eval(interp, ligne);
-         //}
          setCameraStatus(cam,interp,"exp");
 
          // set current interp for multithread
@@ -1373,7 +1381,6 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
                      free(cam->timerExpiration);
                      cam->timerExpiration = NULL;
                   }
-
                }
             }
          }
@@ -1394,7 +1401,6 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
 static int cmdCamStop(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
    struct camprop *cam;
-   //char s[100];
    int retour = TCL_OK;
 
    cam = (struct camprop *) clientData;
@@ -1413,14 +1419,7 @@ static int cmdCamStop(ClientData clientData, Tcl_Interp * interp, int argc, char
       retour = TCL_ERROR;
    }
 
-   //sprintf(s, "status_cam%d", cam->camno);
-   //Tcl_SetVar(interp, s, "stand", TCL_GLOBAL_ONLY);
-   //if ( cam->camThreadId[0] != 0 ) {
-   //   // cas du mutltithread
-   //   // je change l'etat de la variable dans la thread principale
-   //   sprintf(s, "thread::send -async %s { set ::status_cam%d stand }", cam->mainThreadId, cam->camno);
-   //   Tcl_Eval(interp, s);
-   //}
+   // je position le status de la camera a "stand"
    setCameraStatus(cam,interp,"stand");
    return retour;
 }
@@ -2142,16 +2141,14 @@ static int cmdCamDebug(ClientData clientData, Tcl_Interp * interp, int argc, cha
 
 void setCameraStatus(struct camprop *cam, Tcl_Interp * interp, char * status)
 {
-   if ( cam->blockingAcquisition == 0 ) {
-      char s[256];
-      sprintf(s, "status_cam%d", cam->camno);
-      Tcl_SetVar(interp, s, status, TCL_GLOBAL_ONLY);
-      if ( cam->camThreadId[0] != 0 ) {
-         // cas du mutltithread
-         // je change l'etat de la variable dans la thread principale
-         sprintf(s, "thread::send -async %s { set ::status_cam%d {%s} }", cam->mainThreadId, cam->camno, status);
-         Tcl_Eval(interp, s);
-      }
+   char s[256];
+   sprintf(s, "status_cam%d", cam->camno);
+   Tcl_SetVar(interp, s, status, TCL_GLOBAL_ONLY);
+   if ( cam->camThreadId[0] != 0 ) {
+      // cas du mutltithread
+      // je change l'etat de la variable dans la thread principale
+      sprintf(s, "thread::send -async %s { set ::status_cam%d {%s} }", cam->mainThreadId, cam->camno, status);
+      Tcl_Eval(interp, s);
    }
 }
 
