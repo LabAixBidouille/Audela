@@ -2,7 +2,7 @@
 # @file     sophiespectro.tcl
 # @brief    fichier du namespace ::sophie::spectro
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiespectro.tcl,v 1.3 2009-07-09 17:27:07 michelpujol Exp $
+# @version  $Id: sophiespectro.tcl,v 1.4 2009-08-30 21:58:50 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -96,7 +96,12 @@ proc ::sophie::spectro::readSocket { channel } {
      close $channel
    } else {
       set data [read -nonewline $channel]
-      ###::console::disp "::sophie::spectro::readSocket read channel=$channel data=$data\n"
+      set beginPos [string first "!" $data ]
+      set endPos   [string first "@" $data ]
+      if { $beginPos != -1 && $endPos != -1 && $beginPos < $endPos } {
+         set data [string range $data $beginPos $endPos ]
+      } 
+      ::console::disp "::sophie::spectro::readSocket read channel=$channel data=###$data###\n"
       switch $data {
          "!RAZ_STAT@" {
             ::sophie::spectro::resetStatistics
@@ -108,15 +113,22 @@ proc ::sophie::spectro::readSocket { channel } {
             ::sophie::spectro::stopStatistics
          }
          "!GET_STAT@" {
+            #--- je recupere les statistiques ( alphaMean alphaRms deltaMean detaRms) 
             set resultList [::sophie::spectro::getStatistics ]
+            #--- j'enregistre l'image integree
+            saveImage  [lindex $resultList 0] [lindex $resultList 1] [lindex $resultList 2] [lindex $resultList 3]
 
-            #--- A<20h>=<20h><20h><20h>2.68<20h><20h>Arms<20h>=<20h><20h>83.17<20h>D<20h>=<20h><20h><20h>2.74<20h>Drms<20h>=<20h>177.85<20h>
-            set resultString [format "A = %5.2f  Arms = %5.2f D = %5.2f Drms = %5.2f\n" \
+            #--- je met en forme le resultat pour le PC Sophie
+            #--- a revoir ...A<20h>=<20h><20h><20h>2.68<20h><20h>Arms<20h>=<20h><20h>83.17<20h>D<20h>=<20h><20h><20h>2.74<20h>Drms<20h>=<20h>177.85<20h>
+            set resultString [format "!GET_STAT@    A = %5.2f  Arms = %5.2f  D = %5.2f  Drms = %5.2f" \
                [lindex $resultList 0] [lindex $resultList 1] \
                [lindex $resultList 2] [lindex $resultList 3] \
             ]
-            ###::console::disp "::sophie::spectro::spectro::readSocket resultString=$resultString\n"
+            ::console::disp "::sophie::spectro::spectro::readSocket resultString=$resultString\n"
+            #--- je retourne le resultat au PC Sophie
             puts $channel $resultString
+
+
          }
          "" {
             #--- je ne fais rien s'il n'y a pas de donnees
@@ -145,6 +157,70 @@ proc ::sophie::spectro::resetStatistics { } {
 }
 
 ##------------------------------------------------------------
+# saveImage
+#  enregistre l'image integree
+#     nom du fichier :  "prefixe-date.fit"
+#    
+#  avec  prefixe = "centrage" ou "guidage"  suivant le mode courant
+#        date    = date courante au format ISO8601  , exemple: 2009-05-13T18:51:30.250
+#  Mots cles enregistre dans le fichier : 
+#   - BIN1     binning horizontal
+#   - BIN2     binning vertical
+#   - DATE-OBS  date de debut de pose
+#   - DATE-END  date de fin de pose
+#   - EXPOSURE  temps de pose
+#   - NAXIS1   largeur de l'image en pixel
+#   - NAXIS2   hauteur de l'image en pixel
+#   - 
+#------------------------------------------------------------
+proc ::sophie::spectro::saveImage {  alphaMean alphaRms deltaMean deltaRms} {
+   variable private
+
+   set sumBufNo [::sophie::getBufNo "sumBufNo"]
+   if { $sumBufNo != 0 && [buf$sumBufNo imageready] == 1 } {
+      set catchError [ catch {
+         set visuNo  [::sophie::getVisuNo]
+         set camItem [::confVisu::getCamItem $visuNo ]
+         if { [file exists $::conf(sophie,imageDirectory)] == 0 } {
+            #--- je signale que le repertoire n'existe pas
+            error [format $::caption(sophie,directoryNotFound) $::conf(sophie,imageDirectory)]
+         }
+   
+         #--- je recupere la date UT
+         set shortName "$::conf(sophie,guidingFileNameprefix)-[mc_date2iso8601 [::audace::date_sys2ut now]].fit"
+         #--- je remplace ":" par "-" car ce n'est pas un caractere autorise dasn le nom d'un fichier.
+         set shortName [string map { ":" "-" } $shortName]
+         #--- j'ajoute le repertoire dans le nom du fichier
+         set fileName [file join $::conf(sophie,imageDirectory) $shortName]
+         #--- j'ajoute les mot cles dans l'image integree
+         ::keyword::setKeywordValue $visuNo "RA_MEAN"  $alphaMean
+         ::keyword::setKeywordValue $visuNo "RA_RMS"   $alphaRms
+         ::keyword::setKeywordValue $visuNo "DEC_MEAN" $deltaMean
+         ::keyword::setKeywordValue $visuNo "DEC_RMS"  $deltaRms
+         ::keyword::setKeywordValue $visuNo "DETNAM"   [::confCam::getPluginProperty $camItem "name"]
+         ::keyword::setKeywordValue $visuNo "TELESCOP" $::conf(telescope)
+         ::keyword::setKeywordValue $visuNo "SWCREATE" "[::audela::getPluginTitle] $::audela(version)"
+         #--- j'ajoute des mots clefs dans l'en-tete FITS de l'image
+         foreach keyword [ ::keyword::getKeywords $visuNo ] {
+            #--- j'ajoute tous les mots cles qui ne sont pas vide
+            buf$sumBufNo setkwd $keyword
+         }
+
+         #--- Sauvegarde de l'image
+         buf$sumBufNo save $fileName
+      } ]
+
+      if { $catchError != 0 } {
+         #--- je trace le message d'erreur
+         ::console::affiche_erreur $::errorInfo
+      }
+   } else {
+      ::console::affiche_erreur $::caption(sophie,sumNotReady)        
+   }
+   
+
+}
+##------------------------------------------------------------
 # startStatistics
 #  debute le calcul des statistiques de guidage pour le PC Sophie
 #
@@ -157,6 +233,13 @@ proc ::sophie::spectro::startStatistics { } {
 
    #--- je met a jour le voyant dans la fenetre de controle
    ::sophie::control::setAcquisitionSophie 1
+   
+   #--- j'ajoute le mot cle DATE-OBS dans l'image integree
+   set sumBufNo [::sophie::getBufNo "sumBufNo"]
+   if { $sumBufNo != 0 && [buf$sumBufNo imageready] == 1 } {
+      set dateObs [mc_date2iso8601 [::audace::date_sys2ut now]]
+      buf$sumBufNo setkwd [list "DATE-OBS" $dateObs string "" "" ]
+   }
 }
 
 ##------------------------------------------------------------
@@ -172,11 +255,19 @@ proc ::sophie::spectro::stopStatistics { } {
 
    #--- je met a jour le voyant dans la fenetre de controle
    ::sophie::control::setAcquisitionSophie 0
+   
+   #--- j'ajoute le mot cle DATE-END dans l'image integree
+   set sumBufNo [::sophie::getBufNo "sumBufNo"]
+   if { $sumBufNo != 0 && [buf$sumBufNo imageready] == 1 } {
+      set dateEnd [mc_date2iso8601 [::audace::date_sys2ut now]]
+      buf$sumBufNo setkwd [list "DATE-END" $dateEnd string "" "" ]
+   }
 }
 
 ##------------------------------------------------------------
 # getStatistics
 #  retourne les statistiques de guidage pour le PC Sophie
+#  
 #  @return liste de 4 valeurs : private(alphaMean) private(alphaRms) private(deltaMean) private(deltaRms)
 #------------------------------------------------------------
 proc ::sophie::spectro::getStatistics { } {
@@ -207,11 +298,11 @@ proc ::sophie::spectro::getStatistics { } {
 #   ajoute la correction du telescope dans les statistiques.
 #   Les variables private(alphaMean) private(alphaRms) private(deltaaMean) private(deltaaRms)
 #   sont mises a jour.
-# @param alphaCorrection  correction alpha (arcsec)
-# @param deltaCorrection  correction delta (arcsec)
+# @param alphaDiff  ecart alpha etoile/consigne (arcsec)
+# @param deltaDiff  ecart delta etoile/consigne (arcsec)
 # @return null
 #------------------------------------------------------------
-proc ::sophie::spectro::updateStatistics { alphaCorrection deltaCorrection } {
+proc ::sophie::spectro::updateStatistics { alphaDiff deltaDiff } {
    variable private
 
    if { $private(statisticsEnabled) == 0 } {
@@ -225,12 +316,12 @@ proc ::sophie::spectro::updateStatistics { alphaCorrection deltaCorrection } {
 
    #--- j’initialise les moyennes pour la première itération
    if { $private(correctionNb) == 1 }  {
-      set private(alphaMean) $alphaCorrection
-      set private(deltaMean) $deltaCorrection
+      set private(alphaMean) $alphaDiff
+      set private(deltaMean) $deltaDiff
    }
 
    #--- je calcule la moyenne des corrections Alpha
-   set diff [expr ($alphaCorrection + $private(alphaMean)) ]
+   set diff [expr $alphaDiff - $private(alphaMean) ]
    if { [expr abs($diff) < $epsilon ] }  {
       if { [expr $diff < 0] } {
          set diff [expr - $epsilon]
@@ -241,7 +332,7 @@ proc ::sophie::spectro::updateStatistics { alphaCorrection deltaCorrection } {
    set mean [expr $private(alphaMean) + $diff / $private(correctionNb)]
 
    #--- je calcule rms des corrections Alpha
-   set rms  [expr $private(alphaRms) + $diff * ($alphaCorrection  - $mean)]
+   set rms  [expr $private(alphaRms) + $diff * ($alphaDiff  - $mean)]
    if { [expr abs($rms) < $epsilon ] } {
       if { [expr $rms  < 0] } {
          set rms [expr - $epsilon]
@@ -253,7 +344,7 @@ proc ::sophie::spectro::updateStatistics { alphaCorrection deltaCorrection } {
    set private(alphaRms)  $rms
 
    #--- je calcule la moyenne des corrections Delta
-   set diff [expr $deltaCorrection - $private(deltaMean) ]
+   set diff [expr $deltaDiff - $private(deltaMean) ]
    if { [expr abs($diff) < $epsilon ] }  {
      if { [expr $diff < 0] } {
          set diff [expr - $epsilon]
@@ -264,7 +355,7 @@ proc ::sophie::spectro::updateStatistics { alphaCorrection deltaCorrection } {
    set mean [expr $private(deltaMean) + $diff / $private(correctionNb) ]
 
    #--- je calcule rms des corrections Delta
-   set rms  [expr $private(deltaRms) + $diff * ( $deltaCorrection  - $mean )]
+   set rms  [expr $private(deltaRms) + $diff * ( $deltaDiff  - $mean )]
    if { [expr abs($rms) < $epsilon ] } {
       if { [expr $rms  < 0] } {
          set rms [expr - $epsilon]
@@ -276,7 +367,7 @@ proc ::sophie::spectro::updateStatistics { alphaCorrection deltaCorrection } {
    set private(deltaMean) $mean
    set private(deltaRms)  $rms
 
-   ###console::disp "::sophie::updateStatistics alphaMean=$private(alphaMean) alphaRms=$private(alphaRms) deltaMean=$private(deltaMean) deltaRms=$private(deltaRms)\n"
+   console::disp "::sophie::updateStatistics alphaMean=$private(alphaMean) alphaRms=$private(alphaRms) deltaMean=$private(deltaMean) deltaRms=$private(deltaRms)\n"
    return
 }
 

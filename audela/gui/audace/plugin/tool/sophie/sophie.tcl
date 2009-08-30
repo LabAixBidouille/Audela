@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.20 2009-07-15 17:39:36 robertdelmas Exp $
+# @version   $Id: sophie.tcl,v 1.21 2009-08-30 21:59:42 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -50,7 +50,7 @@ namespace eval ::sophie {
 #    retourne le titre du plugin dans la langue de l'utilisateur
 #------------------------------------------------------------
 proc ::sophie::getPluginTitle { } {
-   return "$::caption(sophie,titre)"
+   return $::caption(sophie,titre)
 }
 
 #------------------------------------------------------------
@@ -116,7 +116,6 @@ proc ::sophie::initPlugin { tkbase } {
 #------------------------------------------------------------
 proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    variable private
-
    source [ file join $::audace(rep_plugin) tool sophie sophiecommand.tcl ]
    source [ file join $::audace(rep_plugin) tool sophie sophieconfig.tcl ]
    source [ file join $::audace(rep_plugin) tool sophie sophiecontrol.tcl ]
@@ -128,23 +127,29 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(sophie,centerBinning) ] }            { set ::conf(sophie,centerBinning)             "2x2" }
    if { ! [ info exists ::conf(sophie,guideBinning) ] }             { set ::conf(sophie,guideBinning)              "1x1" }
    if { ! [ info exists ::conf(sophie,pixelScale)] }                { set ::conf(sophie,pixelScale)                "0.186" }
-   if { ! [ info exists ::conf(sophie,proportionalGain)] }          { set ::conf(sophie,proportionalGain)          "0.9" }
-   if { ! [ info exists ::conf(sophie,integralGain)] }              { set ::conf(sophie,integralGain)              "0.1" }
+   if { ! [ info exists ::conf(sophie,alphaProportionalGain)] }     { set ::conf(sophie,alphaProportionalGain)     "0.9" }
+   if { ! [ info exists ::conf(sophie,alphaIntegralGain)] }         { set ::conf(sophie,alphaIntegralGain)         "0.1" }
+   if { ! [ info exists ::conf(sophie,deltaProportionalGain)] }     { set ::conf(sophie,deltaProportionalGain)     "0.9" }
+   if { ! [ info exists ::conf(sophie,deltaIntegralGain)] }         { set ::conf(sophie,deltaIntegralGain)         "0.1" }
+   if { ! [ info exists ::conf(sophie,minMaxDiff)] }                { set ::conf(sophie,minMaxDiff)                "0.5" }
    if { ! [ info exists ::conf(sophie,detection)] }                 { set ::conf(sophie,detection)                 "FIBER" }
    if { ! [ info exists ::conf(sophie,centerMaxLimit)] }            { set ::conf(sophie,centerMaxLimit)            "3" }
-   if { ! [ info exists ::conf(sophie,originCoord)] }               { set ::conf(sophie,originCoord)               [list 320 240 ] }
+   if { ! [ info exists ::conf(sophie,objectCoord)] }               { set ::conf(sophie,objectCoord)               [list 320 240 ] }
    if { ! [ info exists ::conf(sophie,originBoxSize)] }             { set ::conf(sophie,originBoxSize)             "32" }
    if { ! [ info exists ::conf(sophie,alphaReverse)] }              { set ::conf(sophie,alphaReverse)              "0" }
    if { ! [ info exists ::conf(sophie,deltaReverse)] }              { set ::conf(sophie,deltaReverse)              "0" }
 
-   if { ! [ info exists ::conf(sophie,biasImage)] }                 { set ::conf(sophie,biasImage)                 "bias.fit" }
+   if { ! [ info exists ::conf(sophie,biasFileName,1,1)] }          { set ::conf(sophie,biasFileName,1,1)          "" }
+   if { ! [ info exists ::conf(sophie,biasFileName,1,2)] }          { set ::conf(sophie,biasFileName,1,2)          "" }
+   if { ! [ info exists ::conf(sophie,biasFileName,2,1)] }          { set ::conf(sophie,biasFileName,2,1)          "" }
+   if { ! [ info exists ::conf(sophie,biasFileName,2,2)] }          { set ::conf(sophie,biasFileName,2,2)          "" }
    if { ! [ info exists ::conf(sophie,correctionCumulNb)] }         { set ::conf(sophie,correctionCumulNb)         1 }
    if { ! [ info exists ::conf(sophie,originSumNb)] }               { set ::conf(sophie,originSumNb)               1 }
    if { ! [ info exists ::conf(sophie,guidingWindowSize)] }         { set ::conf(sophie,guidingWindowSize)         200 }
    if { ! [ info exists ::conf(sophie,centerWindowSize)] }          { set ::conf(sophie,centerWindowSize)          100 }
    if { ! [ info exists ::conf(sophie,imageDirectory)] }            { set ::conf(sophie,imageDirectory)            "$::audace(rep_images)" }
-   if { ! [ info exists ::conf(sophie,guidingMode)] }               { set ::conf(sophie,guidingMode)               "FIBER" } ; #--- FIBER ou OBJECT
-   if { ! [ info exists ::conf(sophie,fiberGuigindMode)] }          { set ::conf(sophie,fiberGuigindMode)          "HR" }
+   if { ! [ info exists ::conf(sophie,guidingMode)] }               { set ::conf(sophie,guidingMode)               "FIBER_HR" } ; #--- FIBER_HR , FIBER_HE ou OBJECT
+   ###if { ! [ info exists ::conf(sophie,fiberGuigindMode)] }          { set ::conf(sophie,fiberGuigindMode)          "HR" }
    if { ! [ info exists ::conf(sophie,fiberHRX)] }                  { set ::conf(sophie,fiberHRX)                  "314" }
    if { ! [ info exists ::conf(sophie,fiberHRY)] }                  { set ::conf(sophie,fiberHRY)                  "150" }
    if { ! [ info exists ::conf(sophie,fiberHEX)] }                  { set ::conf(sophie,fiberHEX)                  "315" }
@@ -165,6 +170,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
 
    #--- Initialisation de variables
    set private(frm)              "$in.sophie"
+   set private(visuNo)           $visuNo
    set private(listePose)        "0 0.1 0.2 0.5 0.8 1 2 3 5 10 new"
    set private(pose)             "0.5"
    set private(listeBinning)     "1x1 2x2 3x3 4x4"
@@ -174,8 +180,9 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(mode)             "CENTER"
    set private(zoom)             "1"
    set private(attenuateur)      "80"
-   set private(windowing)        "full"            ; #--- fenetrage, contient "full" ou la longueur du coté du carré de fentrage
+   set private(windowing)        "full"            ; #--- fenetrage, contient "full" ou la longueur du coté du carré de fenetrage
    set private(targetDetection)  0                 ; #--- 0=etoile non detectee , 1= etoile detectee
+   set private(findFiber)        0                 ; #---  1= detection de la fibre activee 0=detection fibre desactivee
    set private(updateFilterId)   ""                ; #--- identifiant de la commande after pour la mise a jour de l'affichage du taux d'attenuation
    set private(updateFilterSate) 0                 ; #--- 0=pas de modificationde l'atténuation en cour, 1= modification de l'attennuation en cours
    set private(targetBoxSize)    100
@@ -183,14 +190,30 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
 
    set private(bufNo)            [::confVisu::getBufNo $visuNo]
    set private(hCanvas)          [::confVisu::getCanvas $visuNo]
-   set private(originCoord)      $::conf(sophie,originCoord)
+   switch $::conf(sophie,guidingMode) {
+      "FIBER_HR" {
+         set private(originCoord)      [list $::conf(sophie,fiberHRX) $::conf(sophie,fiberHRX) ]
+      }
+      "FIBER_HE" {
+         set private(originCoord)      [list $::conf(sophie,fiberHEX) $::conf(sophie,fiberHEX) ]
+      }
+      "OBJECT" {
+         set private(originCoord)      $::conf(sophie,objectCoord)
+      }
+      default {
+         set private(originCoord)      $::conf(sophie,objectCoord)
+      }
+   }
+      
+   set private(originMove)       "AUTO"      ; #--- "MANUAL"=positionnement manuel en cours "AUTO"=positionnement automatique
    if { $::conf(sophie,detection) == "FIBER" } {
       #--- je place le symbole de la cible sur la consigne FIBRE HR
       set private(targetCoord)      [list $::conf(sophie,fiberHRX) $::conf(sophie,fiberHRY)]
    } else {
       #--- je place le symbole de la cible sur la consigne OBJET
-      set private(targetCoord)      $::conf(sophie,originCoord)
+      set private(targetCoord)      $::conf(sophie,objectCoord)
    }
+   set private(targetMove)       "AUTO"   ; #--- "MANUAL"=positionnement manuel en cours "AUTO"=positionnement automatique  
    set private(centerEnabled)    0
    set private(guideEnabled)     0
    set private(mountEnabled)     0
@@ -199,7 +222,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(targetDec)        "0d0m0s" ; #--- declinaison de la cible en DMS
    set private(xWindow)          1        ; #--- abscisse du coin bas gauche du fenetrage
    set private(yWindow)          1        ; #--- ordonnee du coin bas gauche du fenetrage
-
+   set private(biasFileName)        "" 
    set private(biasBufNo)  [::buf::create ]
    set private(maskBufNo)  [::buf::create ]
    set private(sumBufNo)   [::buf::create ]
@@ -207,7 +230,10 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
 
    set private(AsynchroneParameter) 0
    set private(newAcquisition)      1     ; #--- variable utilisee par le listener addAcquisitionListener
-
+   set private(currentMouseItem)    ""    ; #--- item en cous de deplacement avec la souris
+   set private(pendingZoom)         ""
+   set private(biasWindow)          ""
+   
    #--- Petit raccourci
    set frm $private(frm)
 
@@ -299,23 +325,33 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
          pack $frm.mode.guidage -in [ $frm.mode getframe ] -anchor center \
             -expand 0 -fill x -side top
 
-        #--- Commande de centrage
+         #--- Commande de centrage
          checkbutton $frm.mode.centrageStart \
             -indicatoron 1 -offrelief flat -state disabled \
             -text $::caption(sophie,lancerCentrage) \
             -variable ::sophie::private(centerEnabled) \
             -command "::sophie::onCenter"
-         pack $frm.mode.centrageStart -in [ $frm.mode getframe ] -anchor center \
+         pack $frm.mode.centrageStart -in [ $frm.mode getframe ] -anchor w \
             -expand 0 -fill x -side top
 
-        #--- Commande de guidage
+         #--- Commande de guidage
          checkbutton $frm.mode.guidageStart \
             -indicatoron 1 -offrelief flat -state disabled \
             -text $::caption(sophie,activationGuidage) \
             -variable ::sophie::private(guideEnabled) \
             -command "::sophie::onGuide"
-         pack $frm.mode.guidageStart -in [ $frm.mode getframe ] -anchor center \
+         pack $frm.mode.guidageStart -in [ $frm.mode getframe ] -anchor w \
             -expand 0 -fill x -side top
+
+         #--- DetectionFibre
+         checkbutton $frm.mode.findFiber \
+            -indicatoron 1 -offrelief flat  \
+            -text $::caption(sophie,findFiber) \
+            -variable ::sophie::private(findFiber) \
+            -command "::sophie::onFiberDetection"
+         pack $frm.mode.findFiber -in [ $frm.mode getframe ] -anchor w \
+            -expand 0 -fill x -side top
+
 
       pack $frm.mode -side top -fill x
 
@@ -397,7 +433,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
 
       pack $frm.image -side top -fill x
 
-      #--- Frame pour l'image
+      #--- Frame pour enregistrer et voir les images capturees
       TitleFrame $frm.processus -borderwidth 2 -relief groove -text $::caption(sophie,controle)
 
          #--- Bouton pour enregistrer l'image courante
@@ -432,9 +468,10 @@ proc ::sophie::startTool { visuNo } {
 
    pack $private(frm) -side left -fill y
 
-   #--- je change le bind du bouton droit de la souris sur le canvas
-   ####::confVisu::createBindCanvas $visuNo <ButtonPress-3> "::sophie::onOriginCoord $visuNo %x %y"
-   #--- je change le bind du double-clic du bouton gauche de la souris sur le canvas
+   #--- je change le bind des boutons de la souris sur le canvas
+   ::confVisu::createBindCanvas $visuNo <ButtonPress-1>     "::sophie::onMousePressButton1 $visuNo %W %x %y"
+   ::confVisu::createBindCanvas $visuNo <B1-Motion>         "::sophie::onMouseMoveButton1  $visuNo %W %x %y"
+   ::confVisu::createBindCanvas $visuNo <ButtonRelease-1>   "::sophie::onMouseReleaseButton1 $visuNo %W %x %y"
    ::confVisu::createBindCanvas $visuNo <Double-1> "::sophie::onTargetCoord $visuNo %x %y"
 
    #--- j'active la mise a jour automatique de l'affichage quand on change de camera
@@ -456,14 +493,10 @@ proc ::sophie::startTool { visuNo } {
    #--- je mets a jour le mode de guidage
    ::sophie::setGuidingMode $visuNo
    #--- j'affiche la cible sur l'image
-   createTarget $visuNo
+   ::sophie::createTarget $visuNo
    #--- j'affiche la consigne sur l'image
    createOrigin $visuNo
 
-   #--- je charge l'image de bias
-   if { [file exists "$::conf(sophie,biasImage)" ] } {
-      buf$private(biasBufNo) load "$::conf(sophie,biasImage)"
-   }
 
    set catchError [ catch {
       #--- j'ouvre la liaison pour recevoir les commandes du PC Sophie
@@ -473,7 +506,15 @@ proc ::sophie::startTool { visuNo } {
       #--- j'affiche et je trace le message d'erreur
       ::tkutil::displayErrorInfo $::caption(sophie,titre)
    }
+   
+   #--- j'intialise la paosition de l'attenuateur 
+   ::sophie::initFilter
 
+   #--- je selectionne les mots clefs optionnel a ajouter dans les images
+   ::keyword::selectKeywords $visuNo [list RA_MEAN RA_RMS DEC_MEAN DEC_RMS DETNAM INSTRUME TELESCOP SITENAME SITELONG SITELAT SWCREATE]
+   #--- je selectionne la liste des mots clefs non modifiables
+   ::keyword::setKeywordState $visuNo [list RA_MEAN RA_RMS DEC_MEAN DEC_RMS DETNAM INSTRUME TELESCOP ]
+   
 }
 
 #------------------------------------------------------------
@@ -515,10 +556,12 @@ proc ::sophie::stopTool { visuNo } {
    #--- je supprime la consigne
    ::sophie::deleteOrigin $visuNo
 
-   #--- je restaure le bind par defaut du bouton droit de la souris
-   ::confVisu::createBindCanvas $visuNo <ButtonPress-3> "default"
-   #--- je restaure le bind par defaut du double-clic du bouton gauche de la souris
-   ::confVisu::createBindCanvas $visuNo <Double-1> "default"
+   #--- je restaure le bind par defaut des boutons de la souris
+   ::confVisu::createBindCanvas $visuNo <ButtonPress-1>     "default"
+   ::confVisu::createBindCanvas $visuNo <B1-Motion>         "default"
+   ::confVisu::createBindCanvas $visuNo <ButtonRelease-1>   "default"
+   ::confVisu::createBindCanvas $visuNo <Double-1>          "default"
+   ::confVisu::createBindCanvas $visuNo <ButtonPress-3>     "default"
 
    #--- je ferme la fenetre de controle
    ::sophie::control::closeWindow $visuNo

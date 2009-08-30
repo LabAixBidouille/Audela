@@ -2,7 +2,7 @@
 # @file     sophietest.tcl
 # @brief    Fichier du namespace ::sophie::test
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietest.tcl,v 1.10 2009-06-21 21:42:56 robertdelmas Exp $
+# @version  $Id: sophietest.tcl,v 1.11 2009-08-30 22:00:38 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -12,6 +12,43 @@
 namespace eval ::sophie::test {
 
 }
+
+
+      #--- je mesure la position de l'etoile et le trou de la fibre
+      # buf$bufNo fibercentro
+      # Parameters IN:
+      # @param     Argv[2]= [list x1 y1 x2 y2 ] fenetre de detection
+      # @param     Argv[3]=biasBufNo       numero du buffer du bias
+      # @param     Argv[4]=maskBufNo       numero du buffer du masque
+      # @param     Argv[5]=sumBufNo        numero du buffer de l'image integree
+      # @param     Argv[6]=fiberBufNo      numero du buffer de l'image resultat
+      # @param     Argv[7]=maskRadius      rayon du masque
+      # @param     Argv[8]=originSumNb     nombre d'acquisition de l'image integree
+      # @param     Argv[9]=originSumCounter compteur d'integration de l'image de l'origine
+      # @param     Argv[10]=previousFiberX abcisse du centre de la fibre
+      # @param     Argv[11]=previousFiberY ordonnee du centre de la fibre
+      # @param     Argv[12]=maskFwhm       largeur a mi hauteur de la gaussienne
+      # @param     Argv[13]=findFiber      1=recherche de l'entrée de fibre , 0= ne pas rechercher
+      # @param     Argv[14]=pixelMinCount  nombre minimal de pixels pour accepter l'image
+      # @param     Argv[15]=maskPercent    pourcentage du niveau du mask
+      #
+      # @return si TCL_OK
+      #            list[0] starStatus      resultat de la recherche de la fibre (DETECTED NO_SIGNAL)
+      #            list[1] starX           abcisse du centre de la fibre   (pixel binné)
+      #            list[2] starY           ordonnee du centre de la fibre  (pixel binné
+      #            list[3] fiberStatus     resultat de la recherche de la fibre (DETECTED NO_SIGNAL)
+      #            list[4] fiberX          abcisse du centre de la fibre  (pixel binné)
+      #            list[5] fiberY          ordonnee du centre de la fibre (pixel binné)
+      #            list[6] measuredFwhmX   gaussienne mesuree (pixel binné)
+      #            list[7] measuredFwhmY   gaussienne mesuree (pixel binné)
+      #            list[8] background      fond du ciel (ADU)
+      #            list[9] maxIntensity    intensite max (ADU)
+      #            list[10] message        message d'information
+      #
+      #         si TCL_ERREUR
+      #            message d'erreur
+
+
 
 #------------------------------------------------------------
 # simulHp
