@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.57 2009-06-06 10:08:01 michelpujol Exp $
+# Mise a jour $Id: conftel.tcl,v 1.58 2009-08-30 20:32:40 michelpujol Exp $
 #
 
 namespace eval ::confTel {
@@ -498,33 +498,37 @@ proc ::confTel::getPluginProperty { propertyName } {
    #--- je recherche la valeur par defaut de la propriete
    #--- si la valeur par defaut de la propriete n'existe pas, je retourne une chaine vide
    switch $propertyName {
-      backlash                { set result 0 }
-      guidingSpeed            { set result [list 1.0 1.0] }
-      hasCoordinates          { set result 1 }
-      hasControlSuivi         { set result 0 }
-      hasCorrectionRefraction { set result 0 }
-      hasGoto                 { set result 1 }
-      hasManualMotion         { set result 1 }
-      hasMatch                { set result 1 }
-      hasModel                { set result 0 }
-      hasMotionWhile          { set result 0 }
-      hasPark                 { set result 0 }
-      hasUnpark               { set result 0 }
-      hasUpdateDate           { set result 0 }
-      multiMount              { set result 0 }
-      name                    { set result "" }
-      product                 { set result "" }
-      default                 { set result 0 }
+      backlash                { set defaultResult 0 }
+      guidingSpeed            { set defaultResult [list 1.0 1.0] }
+      hasCoordinates          { set defaultResult 1 }
+      hasControlSuivi         { set defaultResult 0 }
+      hasCorrectionRefraction { set defaultResult 0 }
+      hasGoto                 { set defaultResult 1 }
+      hasManualMotion         { set defaultResult 1 }
+      hasMatch                { set defaultResult 1 }
+      hasModel                { set defaultResult 0 }
+      hasMotionWhile          { set defaultResult 0 }
+      hasPark                 { set defaultResult 0 }
+      hasUnpark               { set defaultResult 0 }
+      hasUpdateDate           { set defaultResult 0 }
+      multiMount              { set defaultResult 0 }
+      name                    { set defaultResult "" }
+      product                 { set defaultResult "" }
+      default                 { set defaultResult 0 }
    }
 
    #--- si aucune monture n'est selectionnee, je retourne la valeur par defaut
    if { $private(mountName) == "" } {
-      return $result
+      return $defaultResult
    }
 
    #--- si une monture est selectionnee, je recherche la valeur propre a la monture
    set result [ ::$private(mountName)::getPluginProperty $propertyName ]
-   return $result
+   if { $result != "" } {
+      return $result
+   } else {
+      return $defaultResult
+   }
 }
 
 #------------------------------------------------------------
