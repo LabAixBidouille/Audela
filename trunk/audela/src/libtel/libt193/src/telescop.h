@@ -83,7 +83,7 @@ int tel_filter_getMax(struct  telprop *tel, double *filterMaxDelay);
 int tel_filter_coord(struct telprop *tel, char * coord);
 int tel_filter_move(struct  telprop *tel, char * direction);
 int tel_filter_stop(struct  telprop *tel);
-
+int tel_filter_extremity(struct telprop *tel, char * extremity);
 /*
 int mytel_radec_init(struct telprop *tel);
 int mytel_radec_init_additional(struct telprop *tel);

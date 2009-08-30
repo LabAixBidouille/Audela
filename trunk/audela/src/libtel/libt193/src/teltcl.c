@@ -69,8 +69,12 @@ int cmdTelFilter(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
             result = TCL_ERROR;
          }
       } else if (strcmp(argv[2],"coord")==0) {
-         // --- coord 
+         // --- coord : retourne le % d'attenuation, 
          tel_filter_coord(tel,ligne);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      } else if (strcmp(argv[2],"extremity")==0) {
+         // --- coord : retourne l'etat des butees (MIN MED MAX)
+         tel_filter_extremity(tel,ligne);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       } else if (strcmp(argv[2],"move")==0) {
          // --- move 
@@ -264,8 +268,6 @@ int cmdTelControl(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 
 
 static void timerCallback(ClientData clientData ) {
-   char ligne[256];
-   int result;
    struct telprop *   tel = (struct telprop *)clientData;
    tel->timeDone = 1;
 }

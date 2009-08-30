@@ -763,7 +763,9 @@ int tel_filter_getMax(struct telprop *tel, double *filterMaxDelay) {
 // Cette durée servira pour calculer le pourcentage d'atténuation
 //
 // @param tel    pointeur struture telprop
-// @param coord  chaine de caractere contenant le pourcentage d'attenuation ( entre 0 et 100)
+// @param coord  chaine de caractere contenant 1 valeurs
+//                - le pourcentage d'attenuation ( entre 0 et 100) 
+//                -  l'état des butées MIN , MED , MAX
 //-------------------------------------------------------------
 int tel_filter_coord(struct telprop *tel, char * coord) {
    int result;
@@ -783,10 +785,10 @@ int tel_filter_coord(struct telprop *tel, char * coord) {
             tel->filterCurrentDelay = 0;
          } else if (max == 0 ) {
             tel->filterCurrentDelay = tel->filterMaxDelay;
-         } 
+         }
 
          // je calcule le pourcentage par raport au delai max
-         sprintf(coord, "%d", (int) (tel->filterCurrentDelay * 100.0 / tel->filterMaxDelay) ); 
+         sprintf(coord, "%d", (int) (tel->filterCurrentDelay * 100.0 / tel->filterMaxDelay)); 
          result = 0;
       }
 
@@ -797,9 +799,54 @@ int tel_filter_coord(struct telprop *tel, char * coord) {
       result = 0;
    }
    return result;
+}
+
+
+//-------------------------------------------------------------
+// tel_filter_extremity
+//
+// Retourner l'etat des butees aux extremités
+//
+// @param tel    pointeur struture telprop
+// @param extremity  chaine de caractere contenant l'état des butées (MIN , MED , MAX)
+//                
+//-------------------------------------------------------------
+int tel_filter_extremity(struct telprop *tel, char * extremity) {
+   int result;
+
+   if ( tel->outputFilterTaskHandle != 0 ) {
+      // je lis la carte
+      unsigned char inputData;
+      result = mytel_readUsbCard(tel, &inputData);
+      if ( result == 0 ) {
+         // je recupere l'etat de la butee min
+         int min = mytel_getBit(tel, inputData, tel->minDetectorFilterInput);
+         // je recupere l'etat de la butee max
+         int max = mytel_getBit(tel, inputData, tel->maxDetectorFilterInput);
+
+         // la fin de course est au niveau 0 quand elle est rencontrée
+         if ( min == 0 ) {
+            strcpy(extremity,"MIN");
+         } else if (max == 0 ) {
+            strcpy(extremity,"MAX");
+         }  else {
+            strcpy(extremity,"MED");
+         }
+
+         result = 0;
+      }
+
+   } else {
+      strcpy(extremity, "MED");
+      // je simule l'envoi de la commande
+      //mytel_logConsole(tel, "simul filter coord %s OK", coord);
+      result = 0;
+   }
+   return result;
    
    
 }
+
 
 //-------------------------------------------------------------
 // tel_filter_move
