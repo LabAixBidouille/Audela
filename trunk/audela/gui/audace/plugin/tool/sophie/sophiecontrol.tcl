@@ -2,7 +2,7 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.22 2009-07-04 22:39:45 michelpujol Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.23 2009-08-30 21:59:58 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -36,28 +36,23 @@ proc ::sophie::control::run { visuNo tkbase } {
    set private(positionConsigneX)               ""
    set private(positionConsigneY)               ""
    set private(indicateursFluxMax)              ""
-   set private(positionObjetX)                  [lindex $::conf(sophie,originCoord) 0]
-   set private(positionObjetY)                  [lindex $::conf(sophie,originCoord) 1]
+   set private(positionObjetX)                  ""
+   set private(positionObjetY)                  ""
    set private(focalisationCourbesIntensiteMax) ""
    set private(centrageIncrement)               1
-   set private(guidageIncrement)                "1"
+   set private(guidageIncrement)                1
    set private(guidagePhotocentrePositionX)     ""
    set private(guidagePhotocentrePositionY)     ""
    set private(ecartEtoileX)                    ""
    set private(ecartEtoileY)                    ""
    set private(ecartConsigneX)                  ""
    set private(ecartConsigneY)                  ""
-   set private(correctionAlpha)                 ""
-   set private(correctionDelta)                 ""
-   set private(starDx)                          ""
-   set private(starDy)                          ""
-   set private(alphaDiff)                       ""
-   set private(deltaDiff)                       ""
    set private(alphaCorrection)                 ""
    set private(deltaCorrection)                 ""
    set private(realDelay)                       ""
 
-   set private(activeColor)                     "#77ff77" ; #--- vert tendre
+   ##set private(activeColor)                     "#77ff77" ; #--- vert tendre
+   set private(activeColor)                     "#48ebff" ; #--- bleu tendre 9 221 232
    set private(inactiveColor)                   "#ff9582" ; #--- rouge tendre
    set private(vectorLength)                    50        ; #--- nombre de valeurs conservées dans les vecteurs
    set private(listMaxIntensity)                ""
@@ -112,6 +107,27 @@ proc ::sophie::control::run { visuNo tkbase } {
       ::blt::vector create ::sophieEcartConsigneY
    }
 
+   #--- vecteur sophieEcartMax
+   if { [::blt::vector names ::sophieEcartMax] == "" } {
+      ::blt::vector create ::sophieEcartMax
+      ###::sophieEcartMax append { 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 }  
+      ###::sophieEcartMax expr 0.5   
+   }
+
+   if { [::blt::vector names ::sophieEcartMin] == "" } {
+      ::blt::vector create ::sophieEcartMin
+   }
+   
+   if { [::blt::vector names ::sophieEcartNul] == "" } {
+      ::blt::vector create ::sophieEcartNul
+      for { set i 0 } { $i < $private(vectorLength) } {incr i } {
+         ::sophieEcartNul append { 0 }
+      }
+   }
+
+   #--- j'intialise les courbes Min et Max des ecarts
+   ::sophie::control::setMinMaxDiff $::conf(sophie,minMaxDiff)   
+   
    #--- Initialisation des vecteurs des fenetres Focalisation et Guidage
    resetFocusVector
    resetGuideVector
@@ -134,7 +150,7 @@ proc ::sophie::control::run { visuNo tkbase } {
    $frm.focalisation.courbes.graphintensiteMax_simple axis configure x -hide true
 
    $frm.guidage.positionconsigne.correction.ecartConsigne_simple axis configure x -hide true
-   $frm.guidage.erreurs.alpha_simple axis configure x -hide true
+   $frm.guidage.ecarts.alpha_simple axis configure x -hide true
    $frm.guidage.corrections.delta_simple axis configure x -hide true
 
 }
@@ -239,235 +255,209 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
       grid columnconfigure [ $frm.voyant getframe ] 0 -weight 1
       grid columnconfigure [ $frm.voyant getframe ] 1 -weight 1
 
-   #--- Frame pour la position et le seeing du centrage et de la focalisation
-   TitleFrame $frm.positionSeeing -borderwidth 2 -relief ridge \
-      -text $::caption(sophie,positionSeeing)
+   #--- Frame du seeing du centrage et de la focalisation
+   TitleFrame $frm.seeing -borderwidth 2 -relief ridge \
+      -text $::caption(sophie,seeing)
 
-      #--- Position x
-      label $frm.positionSeeing.labelPositionX -text $::caption(sophie,x)
-      grid $frm.positionSeeing.labelPositionX \
-         -in [ $frm.positionSeeing getframe ] \
-         -row 0 -column 1 -sticky ew
+       #--- FWHM X
+      label $frm.seeing.labelFWHMX -text $::caption(sophie,FWHMX)
+      grid $frm.seeing.labelFWHMX \
+         -in [ $frm.seeing getframe ] \
+         -row 0 -column 0 -sticky ew
 
-      Entry $frm.positionSeeing.entryPositionX \
-         -width 8 -justify center -editable 0 \
-         -textvariable ::sophie::control::private(positionEtoileX)
-      grid $frm.positionSeeing.entryPositionX \
-         -in [ $frm.positionSeeing getframe ] \
-         -row 0 -column 2 -sticky ens
-
-      #--- Position y
-      label $frm.positionSeeing.labelPositionY -text $::caption(sophie,y)
-      grid $frm.positionSeeing.labelPositionY \
-         -in [ $frm.positionSeeing getframe ] \
-         -row 1 -column 1 -sticky ew
-
-      Entry $frm.positionSeeing.entryPositionY \
-         -width 8 -justify center -editable 0 \
-         -textvariable ::sophie::control::private(positionEtoileY)
-      grid $frm.positionSeeing.entryPositionY \
-         -in [ $frm.positionSeeing getframe ] \
-         -row 1 -column 2 -sticky ens
-
-      #--- FWHM X
-      label $frm.positionSeeing.labelFWHMX -text $::caption(sophie,FWHMX)
-      grid $frm.positionSeeing.labelFWHMX \
-         -in [ $frm.positionSeeing getframe ] \
-         -row 0 -column 3 -sticky ew
-
-      Entry $frm.positionSeeing.entryFWHMX \
+      Entry $frm.seeing.entryFWHMX \
          -width 8 -justify center -editable 0 \
          -textvariable ::sophie::control::private(indicateursFwhmX)
-      grid $frm.positionSeeing.entryFWHMX \
-         -in [ $frm.positionSeeing getframe ] \
-         -row 0 -column 4 -sticky ens
+      grid $frm.seeing.entryFWHMX \
+         -in [ $frm.seeing getframe ] \
+         -row 0 -column 1 -sticky ens
 
       #--- FWHM Y
-      label $frm.positionSeeing.labelFWHMY -text $::caption(sophie,FWHMY)
-      grid $frm.positionSeeing.labelFWHMY \
-         -in [ $frm.positionSeeing getframe ] \
-         -row 1 -column 3 -sticky ew
+      label $frm.seeing.labelFWHMY -text $::caption(sophie,FWHMY)
+      grid $frm.seeing.labelFWHMY \
+         -in [ $frm.seeing getframe ] \
+         -row 1 -column 0 -sticky ew
 
-      Entry $frm.positionSeeing.entryFWHMY \
+      Entry $frm.seeing.entryFWHMY \
          -width 8 -justify center -editable 0 \
          -textvariable ::sophie::control::private(indicateursFwhmY)
-      grid $frm.positionSeeing.entryFWHMY \
-         -in [ $frm.positionSeeing getframe ] \
-         -row 1 -column 4 -sticky ens
+      grid $frm.seeing.entryFWHMY \
+         -in [ $frm.seeing getframe ] \
+         -row 1 -column 1 -sticky ens
 
       #--- Fond de ciel
-      label $frm.positionSeeing.labelfondDeCiel -text $::caption(sophie,fondDeCiel)
-      grid $frm.positionSeeing.labelfondDeCiel \
-         -in [ $frm.positionSeeing getframe ] \
-         -row 0 -column 5 -sticky ew
+      label $frm.seeing.labelfondDeCiel -text $::caption(sophie,fondDeCiel)
+      grid $frm.seeing.labelfondDeCiel \
+         -in [ $frm.seeing getframe ] \
+         -row 0 -column 2 -sticky ew
 
-      Entry $frm.positionSeeing.entryfondDeCiel \
+      Entry $frm.seeing.entryfondDeCiel \
          -width 8 -justify center -editable 0 \
          -textvariable ::sophie::control::private(indicateursFondDeCiel)
-      grid $frm.positionSeeing.entryfondDeCiel \
-         -in [ $frm.positionSeeing getframe ] \
-         -row 0 -column 6 -sticky ens
+      grid $frm.seeing.entryfondDeCiel \
+         -in [ $frm.seeing getframe ] \
+         -row 0 -column 3 -sticky ens
 
       #--- Flux maxi
-      label $frm.positionSeeing.labelfluxMax -text $::caption(sophie,fluxMax)
-      grid $frm.positionSeeing.labelfluxMax \
-         -in [ $frm.positionSeeing getframe ] \
-         -row 1 -column 5 -sticky ew
+      label $frm.seeing.labelfluxMax -text $::caption(sophie,fluxMax)
+      grid $frm.seeing.labelfluxMax \
+         -in [ $frm.seeing getframe ] \
+         -row 1 -column 2 -sticky ew
 
-      Entry $frm.positionSeeing.entryfluxMax \
+      Entry $frm.seeing.entryfluxMax \
          -width 8 -justify center -editable 0 \
          -textvariable ::sophie::control::private(indicateursFluxMax)
-      grid $frm.positionSeeing.entryfluxMax \
-         -in [ $frm.positionSeeing getframe ] \
-         -row 1 -column 6 -sticky ens
+      grid $frm.seeing.entryfluxMax \
+         -in [ $frm.seeing getframe ] \
+         -row 1 -column 3 -sticky ens
 
-      grid columnconfigure [ $frm.positionSeeing getframe ] 0 -weight 0
-      grid columnconfigure [ $frm.positionSeeing getframe ] 1 -weight 1
-      grid columnconfigure [ $frm.positionSeeing getframe ] 2 -weight 0
-      grid columnconfigure [ $frm.positionSeeing getframe ] 3 -weight 1
-      grid columnconfigure [ $frm.positionSeeing getframe ] 4 -weight 0
-      grid columnconfigure [ $frm.positionSeeing getframe ] 5 -weight 1
+      grid columnconfigure [ $frm.seeing getframe ] 0 -weight 0
+      grid columnconfigure [ $frm.seeing getframe ] 1 -weight 1
+      grid columnconfigure [ $frm.seeing getframe ] 2 -weight 0
+      grid columnconfigure [ $frm.seeing getframe ] 3 -weight 1
+      grid columnconfigure [ $frm.seeing getframe ] 4 -weight 0
+      grid columnconfigure [ $frm.seeing getframe ] 5 -weight 1
 
    #--- Frame pour la position du guidage
-   TitleFrame $frm.positionGuidage -borderwidth 2 -relief ridge \
-      -text $::caption(sophie,positionGuidage)
+   TitleFrame $frm.position -borderwidth 2 -relief ridge \
+      -text $::caption(sophie,position)
 
       #--- Position etoile
-      label $frm.positionGuidage.labelPosition -text $::caption(sophie,positionEtoile)
-      grid $frm.positionGuidage.labelPosition \
-         -in [ $frm.positionGuidage getframe ] \
+      label $frm.position.labelPosition -text $::caption(sophie,positionEtoile)
+      grid $frm.position.labelPosition \
+         -in [ $frm.position getframe ] \
          -row 0 -column 0 -columnspan 2 -sticky ew
 
       #--- Position etoile x
-      label $frm.positionGuidage.labelPositionEtoileX -text $::caption(sophie,x)
-      grid $frm.positionGuidage.labelPositionEtoileX \
-         -in [ $frm.positionGuidage getframe ] \
+      label $frm.position.labelPositionEtoileX -text $::caption(sophie,x)
+      grid $frm.position.labelPositionEtoileX \
+         -in [ $frm.position getframe ] \
          -row 1 -column 0 -sticky ew
 
-      Entry $frm.positionGuidage.entryPositionEtoileX \
+      Entry $frm.position.entryPositionEtoileX \
          -width 8 -justify center -editable 0 \
          -textvariable ::sophie::control::private(positionEtoileX)
-      grid $frm.positionGuidage.entryPositionEtoileX \
-         -in [ $frm.positionGuidage getframe ] \
+      grid $frm.position.entryPositionEtoileX \
+         -in [ $frm.position getframe ] \
          -row 1 -column 1 -sticky ew
 
       #--- Position etoile y
-      label $frm.positionGuidage.labelPositionEtoileY -text $::caption(sophie,y)
-      grid $frm.positionGuidage.labelPositionEtoileY \
-         -in [ $frm.positionGuidage getframe ] \
+      label $frm.position.labelPositionEtoileY -text $::caption(sophie,y)
+      grid $frm.position.labelPositionEtoileY \
+         -in [ $frm.position getframe ] \
          -row 2 -column 0 -sticky ew
 
-      Entry $frm.positionGuidage.entryPositionEtoileY \
+      Entry $frm.position.entryPositionEtoileY \
          -width 8 -justify center -editable 0 \
          -textvariable ::sophie::control::private(positionEtoileY)
-      grid $frm.positionGuidage.entryPositionEtoileY \
-         -in [ $frm.positionGuidage getframe ] \
+      grid $frm.position.entryPositionEtoileY \
+         -in [ $frm.position getframe ] \
          -row 2 -column 1 -sticky ew
 
       #--- Position consigne
-      label $frm.positionGuidage.labelConsigne -text $::caption(sophie,positionConsigne)
-      grid $frm.positionGuidage.labelConsigne \
-         -in [ $frm.positionGuidage getframe ] \
+      label $frm.position.labelConsigne -text $::caption(sophie,positionConsigne)
+      grid $frm.position.labelConsigne \
+         -in [ $frm.position getframe ] \
          -row 0 -column 2 -columnspan 2 -sticky ew
 
       #--- Position consigne X
-      label $frm.positionGuidage.labelPositionConsigneX -text $::caption(sophie,x)
-      grid $frm.positionGuidage.labelPositionConsigneX \
-         -in [ $frm.positionGuidage getframe ] \
+      label $frm.position.labelPositionConsigneX -text $::caption(sophie,x)
+      grid $frm.position.labelPositionConsigneX \
+         -in [ $frm.position getframe ] \
          -row 1 -column 2 -sticky ew
 
-      Entry $frm.positionGuidage.entryPositionConsigneX \
+      Entry $frm.position.entryPositionConsigneX \
          -width 8 -justify center -editable 0 \
          -textvariable ::sophie::control::private(positionConsigneX)
-      grid $frm.positionGuidage.entryPositionConsigneX \
-         -in [ $frm.positionGuidage getframe ] \
+      grid $frm.position.entryPositionConsigneX \
+         -in [ $frm.position getframe ] \
          -row 1 -column 3 -sticky ew
 
       #--- Positionconsigne Y
-      label $frm.positionGuidage.labelPositionConsigneY -text $::caption(sophie,y)
-      grid $frm.positionGuidage.labelPositionConsigneY \
-         -in [ $frm.positionGuidage getframe ] \
+      label $frm.position.labelPositionConsigneY -text $::caption(sophie,y)
+      grid $frm.position.labelPositionConsigneY \
+         -in [ $frm.position getframe ] \
          -row 2 -column 2 -sticky ew
 
-      Entry $frm.positionGuidage.entryPositionConsigneY \
+      Entry $frm.position.entryPositionConsigneY \
          -width 8 -justify center -editable 0 \
          -textvariable ::sophie::control::private(positionConsigneY)
-      grid $frm.positionGuidage.entryPositionConsigneY \
-         -in [ $frm.positionGuidage getframe ] \
+      grid $frm.position.entryPositionConsigneY \
+         -in [ $frm.position getframe ] \
          -row 2 -column 3 -sticky ew
 
       #--- Ecart etoile
-      label $frm.positionGuidage.labelEcartEtoile -text $::caption(sophie,ecartEtoile)
-      grid $frm.positionGuidage.labelEcartEtoile \
-         -in [ $frm.positionGuidage getframe ] \
+      label $frm.position.labelEcartEtoile -text $::caption(sophie,ecartEtoile)
+      grid $frm.position.labelEcartEtoile \
+         -in [ $frm.position getframe ] \
          -row 0 -column 4 -columnspan 2 -sticky ew
 
       #--- Ecart etoile X
-      label $frm.positionGuidage.labelEcartEtoileX -text $::caption(sophie,dx)
-      grid $frm.positionGuidage.labelEcartEtoileX \
-         -in [ $frm.positionGuidage getframe ] \
+      label $frm.position.labelEcartEtoileX -text $::caption(sophie,alpha)
+      grid $frm.position.labelEcartEtoileX \
+         -in [ $frm.position getframe ] \
          -row 1 -column 4 -sticky ew
 
-      Entry $frm.positionGuidage.entryEcartEtoileX \
+      Entry $frm.position.entryEcartEtoileX \
          -width 8 -justify center -editable 0 \
          -textvariable ::sophie::control::private(ecartEtoileX)
-      grid $frm.positionGuidage.entryEcartEtoileX \
-         -in [ $frm.positionGuidage getframe ] \
+      grid $frm.position.entryEcartEtoileX \
+         -in [ $frm.position getframe ] \
          -row 1 -column 5 -sticky ew
 
       #--- Ecart etoile Y
-      label $frm.positionGuidage.labelEcartEtoileY -text $::caption(sophie,dy)
-      grid $frm.positionGuidage.labelEcartEtoileY \
-         -in [ $frm.positionGuidage getframe ] \
+      label $frm.position.labelEcartEtoileY -text $::caption(sophie,delta)
+      grid $frm.position.labelEcartEtoileY \
+         -in [ $frm.position getframe ] \
          -row 2 -column 4 -sticky ew
 
-      Entry $frm.positionGuidage.entryEcartEtoileY \
+      Entry $frm.position.entryEcartEtoileY \
          -width 8 -justify center -editable 0 \
          -textvariable ::sophie::control::private(ecartEtoileY)
-      grid $frm.positionGuidage.entryEcartEtoileY \
-         -in [ $frm.positionGuidage getframe ] \
+      grid $frm.position.entryEcartEtoileY \
+         -in [ $frm.position getframe ] \
          -row 2 -column 5 -sticky ew
 
       #--- Correction
-      label $frm.positionGuidage.labelCorrection -text $::caption(sophie,correction1)
-      grid $frm.positionGuidage.labelCorrection \
-         -in [ $frm.positionGuidage getframe ] \
+      label $frm.position.labelCorrection -text $::caption(sophie,correction)
+      grid $frm.position.labelCorrection \
+         -in [ $frm.position getframe ] \
          -row 0 -column 6 -columnspan 2 -sticky ew
 
       #--- Correction alpha
-      label $frm.positionGuidage.labelCorrectionAlpha -text $::caption(sophie,alpha)
-      grid $frm.positionGuidage.labelCorrectionAlpha \
-         -in [ $frm.positionGuidage getframe ] \
+      label $frm.position.labelCorrectionAlpha -text $::caption(sophie,alpha)
+      grid $frm.position.labelCorrectionAlpha \
+         -in [ $frm.position getframe ] \
          -row 1 -column 6 -sticky ew
 
-      Entry $frm.positionGuidage.entryCorrectionAlpha \
+      Entry $frm.position.entryCorrectionAlpha \
          -width 8 -justify center -editable 0 \
-         -textvariable ::sophie::control::private(correctionAlpha)
-      grid $frm.positionGuidage.entryCorrectionAlpha \
-         -in [ $frm.positionGuidage getframe ] \
+         -textvariable ::sophie::control::private(alphaCorrection)
+      grid $frm.position.entryCorrectionAlpha \
+         -in [ $frm.position getframe ] \
          -row 1 -column 7 -sticky ew
 
       #--- Correction delta
-      label $frm.positionGuidage.labelCorrectionDelta -text $::caption(sophie,delta)
-      grid $frm.positionGuidage.labelCorrectionDelta \
-         -in [ $frm.positionGuidage getframe ] \
+      label $frm.position.labelCorrectionDelta -text $::caption(sophie,delta)
+      grid $frm.position.labelCorrectionDelta \
+         -in [ $frm.position getframe ] \
          -row 2 -column 6 -sticky ew
 
-      Entry $frm.positionGuidage.entryCorrectionDelta \
+      Entry $frm.position.entryCorrectionDelta \
          -width 8 -justify center -editable 0 \
-         -textvariable ::sophie::control::private(correctionDelta)
-      grid $frm.positionGuidage.entryCorrectionDelta \
-         -in [ $frm.positionGuidage getframe ] \
+         -textvariable ::sophie::control::private(deltaCorrection)
+      grid $frm.position.entryCorrectionDelta \
+         -in [ $frm.position getframe ] \
          -row 2 -column 7 -sticky ew
 
-      grid columnconfigure [ $frm.positionGuidage getframe ] 0 -weight 1
-      grid columnconfigure [ $frm.positionGuidage getframe ] 1 -weight 1
-      grid columnconfigure [ $frm.positionGuidage getframe ] 2 -weight 1
-      grid columnconfigure [ $frm.positionGuidage getframe ] 3 -weight 1
-      grid columnconfigure [ $frm.positionGuidage getframe ] 4 -weight 1
-      grid columnconfigure [ $frm.positionGuidage getframe ] 5 -weight 1
-      grid columnconfigure [ $frm.positionGuidage getframe ] 6 -weight 1
-      grid columnconfigure [ $frm.positionGuidage getframe ] 7 -weight 1
+      grid columnconfigure [ $frm.position getframe ] 0 -weight 1
+      grid columnconfigure [ $frm.position getframe ] 1 -weight 1
+      grid columnconfigure [ $frm.position getframe ] 2 -weight 1
+      grid columnconfigure [ $frm.position getframe ] 3 -weight 1
+      grid columnconfigure [ $frm.position getframe ] 4 -weight 1
+      grid columnconfigure [ $frm.position getframe ] 5 -weight 1
+      grid columnconfigure [ $frm.position getframe ] 6 -weight 1
+      grid columnconfigure [ $frm.position getframe ] 7 -weight 1
 
    #--- Frame du centrage
    frame $frm.centrage -borderwidth 1 -relief groove
@@ -479,156 +469,62 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          #--- Indicateur Centrage en cours ou non
          label $frm.centrage.centrageConsigne.indicateur -text $::caption(sophie,centrageArrete) \
             -borderwidth 1 -relief groove -bg $private(inactiveColor)
-         grid $frm.centrage.centrageConsigne.indicateur \
-            -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 0 -column 2 -columnspan 2 -sticky ew -pady 4 -ipadx 10 -ipady 4
+         #grid $frm.centrage.centrageConsigne.indicateur \
+         #   -in [ $frm.centrage.centrageConsigne getframe ] \
+         #   -row 0 -column 0 -columnspan 1 -sticky n -pady 4 -ipadx 10 -ipady 4
+         pack $frm.centrage.centrageConsigne.indicateur -in [ $frm.centrage.centrageConsigne getframe] \
+            -side top -anchor center -fill none -expand 1  -pady 4 -ipadx 10 -ipady 4
 
-        #--- Commande de centrage (doublon avec la commande de la fenetre principale)
+         #--- Commande de centrage (doublon avec la commande de la fenetre principale)
          checkbutton $frm.centrage.centrageConsigne.start \
             -indicatoron 0 -state disabled \
             -text $::caption(sophie,lancerCentrage) \
             -variable ::sophie::private(centerEnabled) \
             -command "::sophie::onCenter"
-         grid $frm.centrage.centrageConsigne.start \
-            -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 1 -column 2 -columnspan 2 -sticky ew -pady 4 -ipadx 10 -ipady 4
+         #grid $frm.centrage.centrageConsigne.start \
+         #   -in [ $frm.centrage.centrageConsigne getframe ] \
+         #   -row 1 -column 0 -columnspan 1 -sticky n -pady 4 -ipadx 10 -ipady 4
+         pack $frm.centrage.centrageConsigne.start -in [ $frm.centrage.centrageConsigne getframe ] \
+            -side top -anchor center -fill none -expand 1 -pady 4 -ipadx 10 -ipady 4
+   
+      pack $frm.centrage.centrageConsigne -side top -anchor center -fill x -expand 1
 
-         #--- Ecarts etoile en pixel
-         label $frm.centrage.centrageConsigne.labelEcartEtoile \
-            -text $::caption(sophie,ecartEtoile)
-         grid $frm.centrage.centrageConsigne.labelEcartEtoile \
-            -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 2 -column 0 -columnspan 2 -sticky ew
-
-         #--- Ecart etoile X
-         label $frm.centrage.centrageConsigne.labelEcartEtoileX -text $::caption(sophie,dx)
-         grid $frm.centrage.centrageConsigne.labelEcartEtoileX \
-            -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 3 -column 0 -sticky ew
-
-         Entry $frm.centrage.centrageConsigne.entryEcartEtoileX \
-            -width 8 -justify center -editable 0 \
-            -textvariable ::sophie::control::private(starDx)
-         grid $frm.centrage.centrageConsigne.entryEcartEtoileX \
-            -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 3 -column 1 -sticky ew
-
-         #--- Ecart etoile Y
-         label $frm.centrage.centrageConsigne.labelEcartEtoileY -text $::caption(sophie,dy)
-         grid $frm.centrage.centrageConsigne.labelEcartEtoileY \
-            -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 4 -column 0 -sticky ew
-
-         Entry $frm.centrage.centrageConsigne.entryEcartEtoileY \
-            -width 8 -justify center -editable 0 \
-            -textvariable ::sophie::control::private(starDy)
-         grid $frm.centrage.centrageConsigne.entryEcartEtoileY \
-            -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 4 -column 1 -sticky ew
-
-         #--- Ecarts etoile en arcsec
-         label $frm.centrage.centrageConsigne.labelEcartEtoile1 -text $::caption(sophie,ecartEtoile1)
-         grid $frm.centrage.centrageConsigne.labelEcartEtoile1 \
-            -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 2 -column 2 -columnspan 2 -sticky ew
-
-         #--- Ecart etoile X
-         label $frm.centrage.centrageConsigne.labelEcartEtoile1X -text $::caption(sophie,alpha)
-         grid $frm.centrage.centrageConsigne.labelEcartEtoile1X \
-            -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 3 -column 2 -sticky ew
-
-         Entry $frm.centrage.centrageConsigne.entryEcartEtoile1X \
-            -width 8 -justify center -editable 0 \
-            -textvariable ::sophie::control::private(alphaDiff)
-         grid $frm.centrage.centrageConsigne.entryEcartEtoile1X \
-            -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 3 -column 3 -sticky ew
-
-         #--- Ecart etoile Y
-         label $frm.centrage.centrageConsigne.labelEcartEtoile1Y -text $::caption(sophie,delta)
-         grid $frm.centrage.centrageConsigne.labelEcartEtoile1Y \
-            -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 4 -column 2 -sticky ew
-
-         Entry $frm.centrage.centrageConsigne.entryEcartEtoile1Y \
-            -width 8 -justify center -editable 0 \
-            -textvariable ::sophie::control::private(deltaDiff)
-         grid $frm.centrage.centrageConsigne.entryEcartEtoile1Y \
-            -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 4 -column 3 -sticky ew
-
-         #--- Corrections telescope
-         label $frm.centrage.centrageConsigne.labelCorrection -text $::caption(sophie,correction1)
-         grid $frm.centrage.centrageConsigne.labelCorrection \
-            -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 2 -column 4 -columnspan 2 -sticky ew
-
-         #--- Correction alpha
-         label $frm.centrage.centrageConsigne.labelCorrectionAlpha -text $::caption(sophie,correctAlpha)
-         grid $frm.centrage.centrageConsigne.labelCorrectionAlpha \
-            -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 3 -column 4 -sticky ew
-
-         Entry $frm.centrage.centrageConsigne.entryCorrectionAlpha \
-            -width 8 -justify center -editable 0 \
-            -textvariable ::sophie::control::private(alphaCorrection)
-         grid $frm.centrage.centrageConsigne.entryCorrectionAlpha \
-            -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 3 -column 5 -sticky ew
-
-         #--- Correction delta
-         label $frm.centrage.centrageConsigne.labelCorrectionDelta -text $::caption(sophie,correctDelta)
-         grid $frm.centrage.centrageConsigne.labelCorrectionDelta \
-            -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 4 -column 4 -sticky ew
-
-         Entry $frm.centrage.centrageConsigne.entryCorrectionDelta \
-            -width 8 -justify center -editable 0 \
-            -textvariable ::sophie::control::private(deltaCorrection)
-         grid $frm.centrage.centrageConsigne.entryCorrectionDelta \
-            -in [ $frm.centrage.centrageConsigne getframe ] \
-            -row 4 -column 5 -sticky ew
-
-         grid columnconfigure [ $frm.centrage.centrageConsigne getframe ] 0 -weight 1
-         grid columnconfigure [ $frm.centrage.centrageConsigne getframe ] 1 -weight 1
-         grid columnconfigure [ $frm.centrage.centrageConsigne getframe ] 2 -weight 1
-         grid columnconfigure [ $frm.centrage.centrageConsigne getframe ] 3 -weight 1
-         grid columnconfigure [ $frm.centrage.centrageConsigne getframe ] 4 -weight 1
-         grid columnconfigure [ $frm.centrage.centrageConsigne getframe ] 5 -weight 1
-
-
-
-      pack $frm.centrage.centrageConsigne -side top -anchor w -fill x -expand 1
-
-      #--- Frame pour le mode de pointage (Fibre ou objet)
+      #--- Frame pour le mode de guidage (Fibre ou objet)
       TitleFrame $frm.centrage.pointage -borderwidth 2 -relief ridge \
          -text $::caption(sophie,consigne)
 
-         #--- Frame pour les indicateurs
+         #--- Frame des indicateurs
          frame $frm.centrage.pointage.indicateur -borderwidth 0 -relief ridge
 
+            #--- Indicateur de pointage de l'entree de la fibre A HR
+            radiobutton $frm.centrage.pointage.indicateur.fibreAHR \
+               -indicatoron 0 -text $::caption(sophie,consigneFibreHR) -value FIBER_HR \
+               -variable ::conf(sophie,guidingMode) \
+               -command "::sophie::setGuidingMode $visuNo"   ; # Attention: la commande appelle la procedure du namespace ::sophie
+            pack $frm.centrage.pointage.indicateur.fibreAHR -anchor center \
+               -expand 1 -fill none -side left -ipadx 4 -ipady 4
+
+            #--- Indicateur de pointage de l'entree de la fibre A HE
+            radiobutton $frm.centrage.pointage.indicateur.fibreAHE \
+               -indicatoron 0 -text $::caption(sophie,consigneFibreHE) -value FIBER_HE \
+               -variable ::conf(sophie,guidingMode) \
+               -command "::sophie::setGuidingMode $visuNo"   ; # Attention: la commande appelle la procedure du namespace ::sophie
+            pack $frm.centrage.pointage.indicateur.fibreAHE -anchor center \
+               -expand 1 -fill none -side left -ipadx 4 -ipady 4
+               
             #--- Indicateur de pointage de l'objet
             radiobutton $frm.centrage.pointage.indicateur.objet \
-               -indicatoron 0 -text $::caption(sophie,pointageObjet) -value OBJECT \
+               -indicatoron 0 -text $::caption(sophie,consigneObjet) -value OBJECT \
                -variable ::conf(sophie,guidingMode) \
                -command "::sophie::setGuidingMode $visuNo"   ; # Attention: la commande appelle la procedure du namespace ::sophie
             pack $frm.centrage.pointage.indicateur.objet -anchor center \
-               -expand 1 -fill x -side left -ipadx 4 -ipady 4
-
-            #--- Indicateur de pointage de l'entree de la fibre
-            radiobutton $frm.centrage.pointage.indicateur.fibreA \
-               -indicatoron 0 -text $::caption(sophie,pointageEntreeFibreA) -value FIBER \
-               -variable ::conf(sophie,guidingMode) \
-               -command "::sophie::setGuidingMode $visuNo"   ; # Attention: la commande appelle la procedure du namespace ::sophie
-            pack $frm.centrage.pointage.indicateur.fibreA -anchor center \
-               -expand 1 -fill x -side left -ipadx 4 -ipady 4
+               -expand 1 -fill none -side left -ipadx 4 -ipady 4
 
          pack $frm.centrage.pointage.indicateur \
             -in [ $frm.centrage.pointage getframe ] \
             -side top -anchor w -fill x -expand 1
 
-         #--- Frame pour la position en X et Y de l'objet
+         #--- Frame pour modifier la position de la consigne
          frame $frm.centrage.pointage.positionXY -borderwidth 0 -relief ridge
 
             #--- Position X
@@ -662,8 +558,6 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             $frm.centrage.pointage.positionXY.spinboxIncrement set 1
             grid $frm.centrage.pointage.positionXY.spinboxIncrement \
                -row 0 -column 6 -sticky ens
-
-
       pack $frm.centrage.pointage -side top -anchor w -fill x -expand 1
 
    #--- Frame de la focalisation
@@ -721,11 +615,43 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
    #--- Frame du guidage
    frame $frm.guidage -borderwidth 1 -relief groove
 
-      #--- Frame de la position de la consigne sur la fibre
+      #--- Frame seeing du guidage
+      TitleFrame $frm.guidage.seeing -borderwidth 2 -relief ridge \
+         -text $::caption(sophie,seeing)
+
+         #--- Fond de ciel
+         label $frm.guidage.seeing.labelfondDeCiel -text $::caption(sophie,fondDeCiel)
+         grid $frm.guidage.seeing.labelfondDeCiel \
+            -in [ $frm.guidage.seeing getframe ] \
+            -row 0 -column 0 -sticky ew
+   
+         Entry $frm.guidage.seeing.entryfondDeCiel \
+            -width 8 -justify center -editable 0 \
+            -textvariable ::sophie::control::private(indicateursFondDeCiel)
+         grid $frm.guidage.seeing.entryfondDeCiel \
+            -in [ $frm.guidage.seeing getframe ] \
+            -row 0 -column 1 -sticky ens
+   
+         #--- Flux maxi
+         label $frm.guidage.seeing.labelfluxMax -text $::caption(sophie,fluxMax)
+         grid $frm.guidage.seeing.labelfluxMax \
+            -in [ $frm.guidage.seeing getframe ] \
+            -row 0 -column 2 -sticky ew
+   
+         Entry $frm.guidage.seeing.entryfluxMax \
+            -width 8 -justify center -editable 0 \
+            -textvariable ::sophie::control::private(indicateursFluxMax)
+         grid $frm.guidage.seeing.entryfluxMax \
+            -in [ $frm.guidage.seeing getframe ] \
+            -row 0 -column 3 -sticky ens
+         
+      pack $frm.guidage.seeing -side top -anchor w -fill x -expand 1
+      
+      #--- Frame des graphes des ecarts et des corrections
       TitleFrame $frm.guidage.positionconsigne -borderwidth 2 -relief ridge \
          -text $::caption(sophie,positionConsigneImage)
 
-         #--- Frame pour la position en X et Y de la consigne dans l'image
+         #--- Frame pour afficher la position de la consigne
          frame $frm.guidage.positionconsigne.correction -borderwidth 0 -relief ridge
 
             #--- Graphe de la erreur en alpha et delta
@@ -733,58 +659,60 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             $frm.guidage.positionconsigne.correction.ecartConsigne_simple element create ecartConsigneX \
                -xdata ::sophieAbcisse -ydata ::sophieEcartConsigneX -mapy y \
                -color blue -dash "2" -linewidth 3 \
-               -symbol none -label $::caption(sophie,dx)
+               -symbol none -label $::caption(sophie,alpha)
             $frm.guidage.positionconsigne.correction.ecartConsigne_simple element create ecartConsigneY \
                -xdata ::sophieAbcisse -ydata ::sophieEcartConsigneY -mapy y \
                -color orange -dash "" -linewidth 3 \
-               -symbol none -label $::caption(sophie,dy)
+               -symbol none -label $::caption(sophie,delta)
             $frm.guidage.positionconsigne.correction.ecartConsigne_simple legend configure -hide no -position right
+            ###$frm.guidage.positionconsigne.correction.ecartConsigne_simple legend configure -hide no -position plotarea -anchor nw
 
             grid $frm.guidage.positionconsigne.correction.ecartConsigne_simple \
-               -row 0 -column 1 -sticky ew
-
+               -row 0 -column 0 -sticky ew
+            grid columnconfig $frm.guidage.positionconsigne.correction 0 -weight 1
+            
          pack $frm.guidage.positionconsigne.correction \
            -in [ $frm.guidage.positionconsigne getframe ] \
-           -side top -anchor w -fill x
+           -side top -anchor w -fill x -expand 1
 
-         #--- Frame pour la position en X et Y de la consigne dans l'image
+         #--- Frame pour modifier la position de la consigne
          frame $frm.guidage.positionconsigne.positionXY -borderwidth 0 -relief ridge
 
-            #--- Label
-            label $frm.guidage.positionconsigne.positionXY.label \
-               -text $::caption(sophie,positionConsigneImage)
-            grid $frm.guidage.positionconsigne.positionXY.label \
-               -row 0 -column 1 -columnspan 4 -sticky w -padx 5 -pady 3
+            ####--- Label
+            ###label $frm.guidage.positionconsigne.positionXY.label \
+            ###   -text $::caption(sophie,positionConsigneImage)
+            ###grid $frm.guidage.positionconsigne.positionXY.label \
+            ###   -row 0 -column 1 -columnspan 4 -sticky w -padx 5 -pady 3
 
             #--- Position X
             label $frm.guidage.positionconsigne.positionXY.labelX -text $::caption(sophie,x)
             grid $frm.guidage.positionconsigne.positionXY.labelX \
-               -row 1 -column 1 -sticky w -padx 5 -pady 3
+               -row 0 -column 1 -sticky w -padx 5 -pady 3
 
             spinbox $frm.guidage.positionconsigne.positionXY.spinboxX -from 1 -to 1536 \
                -incr $private(guidageIncrement) -width 8 -justify center \
                -command "::sophie::control::onScrollOrigin $visuNo" \
                -textvariable ::sophie::control::private(positionObjetX)
             grid $frm.guidage.positionconsigne.positionXY.spinboxX \
-               -row 1 -column 2 -sticky ens
+               -row 0 -column 2 -sticky ens
 
             #--- Position Y
             label $frm.guidage.positionconsigne.positionXY.labelY -text $::caption(sophie,y)
             grid $frm.guidage.positionconsigne.positionXY.labelY \
-               -row 1 -column 3 -sticky w -padx 5 -pady 3
+               -row 0 -column 3 -sticky w -padx 5 -pady 3
 
             spinbox $frm.guidage.positionconsigne.positionXY.spinboxY -from 1 -to 1024 \
                -incr $private(guidageIncrement) -width 8 -justify center \
                -command "::sophie::control::onScrollOrigin $visuNo" \
                -textvariable ::sophie::control::private(positionObjetY)
             grid $frm.guidage.positionconsigne.positionXY.spinboxY \
-               -row 1 -column 4 -sticky ens
+               -row 0 -column 4 -sticky ens
 
             #--- Increment
             label $frm.guidage.positionconsigne.positionXY.labelIncrement \
                -text $::caption(sophie,increment)
             grid $frm.guidage.positionconsigne.positionXY.labelIncrement \
-               -row 1 -column 5 -sticky w -padx 5 -pady 3
+               -row 0 -column 5 -sticky w -padx 5 -pady 3
 
             spinbox $frm.guidage.positionconsigne.positionXY.spinboxIncrement \
                -values { 0.1 1 10 } -width 5 -justify center \
@@ -792,33 +720,49 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
                -textvariable ::sophie::control::private(guidageIncrement)
 
             grid $frm.guidage.positionconsigne.positionXY.spinboxIncrement \
-               -row 1 -column 6 -sticky ens
-
+               -row 0 -column 6 -sticky ens
+            
+            set private(guidageIncrement) 1
+            
       pack $frm.guidage.positionconsigne -side top -anchor w -fill x -expand 1
 
-      #--- Frame pour visualiser les erreurs en alpha et delta
-      TitleFrame $frm.guidage.erreurs -borderwidth 2 -relief ridge \
-         -text $::caption(sophie,erreursAlphaDelta)
+      #--- Frame des ecarts en alpha et delta
+      TitleFrame $frm.guidage.ecarts -borderwidth 2 -relief ridge \
+         -text $::caption(sophie,ecartEtoile)
 
          #--- Graphe de la erreur en alpha et delta
-         createGraph $frm.guidage.erreurs.alpha_simple 105
-         $frm.guidage.erreurs.alpha_simple element create alphaDiff \
+         createGraph $frm.guidage.ecarts.alpha_simple 105
+         $frm.guidage.ecarts.alpha_simple element create alphaDiff \
             -xdata ::sophieAbcisse -ydata ::sophieEcartEtoileX -mapy y \
             -color blue -dash "2" -linewidth 3 \
-           -symbol none -label $::caption(sophie,alpha)
-         $frm.guidage.erreurs.alpha_simple element create deltaDiff \
+            -symbol none -label $::caption(sophie,alpha)
+         $frm.guidage.ecarts.alpha_simple element create deltaDiff \
             -xdata ::sophieAbcisse -ydata ::sophieEcartEtoileY -mapy y \
             -color orange -dash "" -linewidth 3 \
             -symbol none -label $::caption(sophie,delta)
-         $frm.guidage.erreurs.alpha_simple legend configure -hide no -position right
+         $frm.guidage.ecarts.alpha_simple legend configure -hide no -position right
+         ###$frm.guidage.ecarts.alpha_simple legend configure -hide no -position plotarea -anchor nw
 
-         grid $frm.guidage.erreurs.alpha_simple \
-            -in [ $frm.guidage.erreurs getframe ] \
-            -row 0 -column 1 -sticky nsew
+         $frm.guidage.ecarts.alpha_simple  element create ecartMax  \
+            -xdata ::sophieAbcisse -ydata ::sophieEcartMax -mapy y \
+            -color red -symbol none -label ""
 
-      pack $frm.guidage.erreurs -side top -anchor w -fill x -expand 1
+         $frm.guidage.ecarts.alpha_simple  element create ecartMin  \
+            -xdata ::sophieAbcisse -ydata ::sophieEcartMin -mapy y \
+            -color red -symbol none  -label ""
+            
+         $frm.guidage.ecarts.alpha_simple  element create ecartNul  \
+            -xdata ::sophieAbcisse -ydata ::sophieEcartNul -mapy y \
+            -color black -symbol none  -label ""
 
-      #--- Frame pour visualiser les corrections au telescope en alpha et delta
+         grid $frm.guidage.ecarts.alpha_simple \
+            -in [ $frm.guidage.ecarts getframe ] \
+            -row 0 -column 0 -sticky nsew
+        grid columnconfig [ $frm.guidage.ecarts getframe ] 0 -weight 1
+
+      pack $frm.guidage.ecarts -side top -anchor w -fill x -expand 1
+
+      #--- Frame pour visualiser les corrections du telescope en alpha et delta
       TitleFrame $frm.guidage.corrections -borderwidth 2 -relief ridge \
          -text $::caption(sophie,correction)
 
@@ -833,13 +777,13 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             -color orange -dash "" -linewidth 3 \
             -symbol none -label $::caption(sophie,delta)
          $frm.guidage.corrections.delta_simple legend configure -hide no -position right
+         ###$frm.guidage.corrections.delta_simple legend configure -hide no -position plotarea -anchor nw
 
          grid $frm.guidage.corrections.delta_simple \
             -in [ $frm.guidage.corrections getframe ] \
-            -row 1 -column 1 -sticky nsew
+            -row 1 -column 0 -sticky nsew
 
-        ### grid columnconfig [ $frm.guidage.erreurs getframe ] 0 -weight 0
-        ### grid columnconfig [ $frm.guidage.erreurs getframe ] 1 -weight 1
+        grid columnconfig [ $frm.guidage.corrections getframe ] 0 -weight 1
       pack $frm.guidage.corrections -side top -anchor w -fill x -expand 1
 
     # pack $frm.guidage -side top -fill both
@@ -876,12 +820,46 @@ proc ::sophie::control::setGuidingIncrement { } {
 # setGuidingMode
 #    ouvre les spinbox pour le pointage d'un objet
 #    place la consigne au bon endroit
+# @param guidingMode mode de guidage
+# @return rien
 #------------------------------------------------------------
 proc ::sophie::control::setGuidingMode { guidingMode } {
    variable private
 
+   #--- petit raccourci bien pratique
    set frm $private(frm)
-   if { $guidingMode == "OBJECT" } {
+   
+   switch $guidingMode {
+      "OBJECT" {
+         pack $frm.centrage.pointage.positionXY \
+            -in [ $frm.centrage.pointage getframe ] \
+            -side top -anchor w -fill x -expand 1 -pady 2
+         pack $frm.guidage.positionconsigne.positionXY \
+            -in [ $frm.guidage.positionconsigne getframe ] \
+            -side top -anchor w -fill x -expand 1
+         pack forget $frm.guidage.positionconsigne.correction
+      }
+      "FIBER_HR" -
+      "FIBER_HE" {
+         pack forget $frm.centrage.pointage.positionXY
+         pack forget $frm.guidage.positionconsigne.positionXY
+         pack $frm.guidage.positionconsigne.correction \
+            -in [ $frm.guidage.positionconsigne getframe ] \
+            -side top -anchor w -fill x -expand 1
+      }
+   }
+}
+
+#------------------------------------------------------------
+# setFiberDetection
+#    si findFiber=0 affiche les spinbox pour le pointage d'un objet
+#    si findFiber=1 affiche les graphes de correction automatique
+#------------------------------------------------------------
+proc ::sophie::control::setFiberDetection { findFiber } {
+   variable private
+
+   set frm $private(frm)
+   if { $findFiber == 0 } {
       pack $frm.centrage.pointage.positionXY \
          -in [ $frm.centrage.pointage getframe ] \
          -side top -anchor w -fill x -expand 1
@@ -889,7 +867,7 @@ proc ::sophie::control::setGuidingMode { guidingMode } {
          -in [ $frm.guidage.positionconsigne getframe ] \
          -side top -anchor w -fill x -expand 1
       pack forget $frm.guidage.positionconsigne.correction
-   } elseif { $guidingMode == "FIBER" } {
+   } else {
       pack forget $frm.centrage.pointage.positionXY
       pack forget $frm.guidage.positionconsigne.positionXY
       pack $frm.guidage.positionconsigne.correction \
@@ -905,8 +883,8 @@ proc ::sophie::control::setGuidingMode { guidingMode } {
 proc ::sophie::control::onScrollOrigin { visuNo args } {
    variable private
 
-   #--- je copie les coordonnees dans la vairable globale
-   set ::conf(sophie,originCoord) [list $private(positionObjetX) $private(positionObjetY) ]
+   #--- je copie les coordonnees dans la variable globale
+   set ::conf(sophie,objectCoord) [list $private(positionObjetX) $private(positionObjetY) ]
 
    #--- je met a jour l'affichage de la fenetre principale
    ::sophie::setGuidingMode $visuNo
@@ -963,44 +941,69 @@ proc ::sophie::control::setMode { mode } {
    set frm $private(frm)
 
    if { [ winfo exists $frm ] } {
-      if { [ winfo exists $frm ] } {
-         switch $mode {
-            "CENTER" {
-               pack forget $frm.positionGuidage
-               pack forget $frm.guidage
-               pack forget $frm.focalisation
-               pack $frm.voyant         -side top -fill x
-               pack $frm.positionSeeing -side top -fill x
-               pack $frm.centrage       -side top -fill x
-            }
-            "FOCUS" {
-               pack forget $frm.positionGuidage
-               pack forget $frm.centrage
-               pack forget $frm.guidage
-               pack $frm.voyant         -side top -fill x
-               pack $frm.positionSeeing -side top -fill x
-               pack $frm.focalisation   -side top -fill x
-               #--- raz des vecteurs
-               resetFocusVector
-            }
-            "GUIDE" {
-               pack forget $frm.positionSeeing
-               pack forget $frm.centrage
-               pack forget $frm.focalisation
-               pack $frm.voyant          -side top -fill x
-               pack $frm.positionGuidage -side top -fill x
-               pack $frm.guidage         -side top -fill x
-               #--- raz des vecteurs
-               resetGuideVector
-            }
+      switch $mode {
+         "CENTER" {
+            pack forget $frm.guidage
+            pack forget $frm.focalisation
+            pack $frm.voyant     -side top -fill x
+            pack $frm.position   -side top -fill x -after $frm.voyant
+            pack $frm.seeing     -side top -fill x -after $frm.position
+            pack $frm.centrage   -side top -fill x
          }
-         set This "$::audace(base).sophiecontrol"
-         wm title $This "$::caption(sophie,$mode)"
-         focus $frm
+         "FOCUS" {
+            pack forget $frm.centrage
+            pack forget $frm.guidage
+            pack forget $frm.focalisation
+            pack $frm.voyant     -side top -fill x
+            pack $frm.position   -side top -fill x -after $frm.voyant
+            pack $frm.seeing     -side top -fill x -after $frm.position 
+            pack $frm.focalisation   -side top -fill x
+            #--- raz des vecteurs
+            resetFocusVector
+         }
+         "GUIDE" {
+            pack forget $frm.seeing
+            pack forget $frm.centrage
+            pack forget $frm.focalisation
+            pack $frm.voyant     -side top -fill x
+            pack $frm.position   -side top -fill x
+            pack $frm.guidage    -side top -fill x
+            #--- raz des vecteurs
+            resetGuideVector
+         }
       }
+      set This "$::audace(base).sophiecontrol"
+      wm title $This "$::caption(sophie,controlTitle) $::caption(sophie,$mode)"
+      focus $frm
    }
 }
 
+##------------------------------------------------------------
+# setMode
+#    met a jour l'affichage en fonction du mode
+#
+# @param mode  mode de fonctionnement (centrage, focalisation, guidage)
+# @return rien
+#------------------------------------------------------------
+proc ::sophie::control::setMinMaxDiff { minMaxValue } {
+   variable private
+
+   if { [::sophieEcartMax length] > 0 } {
+      ::sophieEcartMax delete 0:end
+   }
+   for { set i 0 } { $i < $private(vectorLength) } {incr i } {
+      ::sophieEcartMax append $minMaxValue
+   }
+
+   if { [::sophieEcartMin length] > 0 } {
+      ::sophieEcartMin delete 0:end
+   }
+   for { set i 0 } { $i < $private(vectorLength) } {incr i } {
+      ::sophieEcartMin append [expr $minMaxValue * -1]
+   }
+
+
+}
 ##------------------------------------------------------------
 # setAcquisitionState
 #    met a jour l'etat des acquisitions continues
@@ -1111,6 +1114,24 @@ proc ::sophie::control::setAcquisitionSophie { state } {
 }
 
 ##------------------------------------------------------------
+# setBias
+#    met a jour le nom du fichier bias 
+#
+# @param biasState  etat du bias  
+#     - OK   le bias est charge  (biasMessage contient le nom du fichier)
+#     - NONE pas de bias demande (biasMessage est vide)
+#     - ERROR erreur pendant le chargement de bias (biasMessage contient le libelle du message d'erreur)
+# @param biasMessage  nom du fichier bias ou message d'erreur
+# @return rien
+#------------------------------------------------------------
+proc ::sophie::control::setBias { biasState biasMessage } {
+   variable private
+
+   console::disp "setBias biasState=$biasState biasMessage=$biasMessage\n"
+}
+
+
+##------------------------------------------------------------
 # setRealDelay
 #    met a jour le delai entre 2 poses
 #
@@ -1130,7 +1151,7 @@ proc ::sophie::control::setRealDelay { delay } {
 #    affiche les informations de centrage
 #
 # @param starDetection  0=etoile non detecte 1=etoile detecte
-# @param fiberDetection  0=fibre non detecte 1=fibre detecte
+# @param fiberDetection  resultat detection de la fibre = DETECTED NO_SIGNAL TOO_FAR OUTSIDE LOW_SIGNAL UNCHANGED DISABLED
 # @param originX  abcisse de la consigne en pixel
 # @param originY  ordonnee de la consigne en pixel
 # @param starX  abcisse de l'etoile en pixel
@@ -1166,19 +1187,25 @@ proc ::sophie::control::setCenterInformation { starDetection fiberDetection orig
 
    #--- je mets a jour le voyant "trouDetecte"
    switch $fiberDetection {
-      "0" {
+      "LOW_SIGNAL" -
+      "TOO_FAR" -
+      "OUTSIDE" -
+      "NO_SIGNAL" {
          #--- le trou n'est pas détecte
          $frm.voyant.trou_color_invariant configure \
             -text $::caption(sophie,trouNonDetecte) \
             -bg   $private(inactiveColor)
       }
-      "1" {
+      "UNCHANGED" {
+         #--- je ne change pas l'affichage
+      }
+      "DETECTED" {
          #--- le trou est détecte
          $frm.voyant.trou_color_invariant configure \
             -text $::caption(sophie,trouDetecte) \
             -bg   $private(activeColor)
       }
-      "2" {
+      "DISABLED" {
          #--- la detection du trou est desactivee
          $frm.voyant.trou_color_invariant configure \
             -text $::caption(sophie,tourNonRecherche) \
@@ -1188,17 +1215,18 @@ proc ::sophie::control::setCenterInformation { starDetection fiberDetection orig
 
    set private(positionEtoileX)       [format "%6.1f" $starX]
    set private(positionEtoileY)       [format "%6.1f" $starY]
+   set private(positionConsigneX)     [format "%6.1f" $originX]
+   set private(positionConsigneY)     [format "%6.1f" $originY]
+   set private(ecartEtoileX)          [format "%6.2f" $alphaDiff]
+   set private(ecartEtoileY)          [format "%6.2f" $deltaDiff]
+   set private(alphaCorrection)       [format "%6.2f" $alphaCorrection]
+   set private(deltaCorrection)       [format "%6.2f" $deltaCorrection]
+
    set private(indicateursFwhmX)      [format "%6.1f" $fwhmX]
    set private(indicateursFwhmY)      [format "%6.1f" $fwhmY]
    set private(indicateursFondDeCiel) [format "%6.1f" $background]
    set private(indicateursFluxMax)    [format "%6.1f" $maxIntensity]
-
-   set private(starDx)                [format "%6.1f" $starDx]
-   set private(starDy)                [format "%6.1f" $starDy]
-   set private(alphaDiff)             [format "%6.1f" $alphaDiff]
-   set private(deltaDiff)             [format "%6.1f" $deltaDiff]
-   set private(alphaCorrection)       [format "%6.1f" $alphaCorrection]
-   set private(deltaCorrection)       [format "%6.1f" $deltaCorrection]
+   
 }
 
 ##------------------------------------------------------------
@@ -1206,19 +1234,20 @@ proc ::sophie::control::setCenterInformation { starDetection fiberDetection orig
 #    affiche les informations de focalisation
 #
 # @param starDetection 0=etoile non detecte 1=etoile detecte
-# @param fiberDetection 0=fibre non detecte 1=fibre detecte
-# @param originX  abcisse de la consigne en pixel
+# @param fiberDetection  resultat detection de la fibre = DETECTED NO_SIGNAL TOO_FAR OUTSIDE LOW_SIGNAL UNCHANGED DISABLED
 # @param originY  ordonnee de la consigne en pixel
 # @param starX   abcisse de l'etoile en pixel
 # @param starY   ordonnee de l'etoile en pixel
 # @param fwhmX   largeur a mi hauteur sur l'axe X (arcsec)
 # @param fwhmY   largeur a mi hauteur sur l'axe Y (arcsec)
+# @param alphaDiff  ecart de l'ascension droite de l'etoile en arcseconde
+# @param deltaDiff  ecart de la declinaison de l'etoile en arcseconde
 # @param background   fond du ciel
 # @param maxIntensity intensité max
 #
 # @return rien
 #------------------------------------------------------------
-proc ::sophie::control::setFocusInformation { starDetection fiberDetection originX originY starX starY fwhmX fwhmY background maxIntensity } {
+proc ::sophie::control::setFocusInformation { starDetection fiberDetection originX originY starX starY fwhmX fwhmY alphaDiff deltaDiff background maxIntensity } {
    variable private
 
    set frm $private(frm)
@@ -1236,19 +1265,25 @@ proc ::sophie::control::setFocusInformation { starDetection fiberDetection origi
 
    #--- je mets a jour le voyant "trouDetecte"
    switch $fiberDetection {
-      "0" {
+      "LOW_SIGNAL" -
+      "TOO_FAR" -
+      "OUTSIDE" -
+      "NO_SIGNAL" {
          #--- le trou n'est pas détecte
          $frm.voyant.trou_color_invariant configure \
             -text $::caption(sophie,trouNonDetecte) \
             -bg   $private(inactiveColor)
       }
-      "1" {
+      "UNCHANGED" {
+         #--- je ne change pas l'affichage
+      }
+      "DETECTED" {
          #--- le trou est détecte
          $frm.voyant.trou_color_invariant configure \
             -text $::caption(sophie,trouDetecte) \
             -bg   $private(activeColor)
       }
-      "2" {
+      "DISABLED" {
          #--- la detection du trou est desactivee
          $frm.voyant.trou_color_invariant configure \
             -text $::caption(sophie,tourNonRecherche) \
@@ -1258,8 +1293,10 @@ proc ::sophie::control::setFocusInformation { starDetection fiberDetection origi
 
    set private(positionEtoileX)       [format "%6.1f" $starX]
    set private(positionEtoileY)       [format "%6.1f" $starY]
-   set private(indicateursFwhmX)      [format "%6.1f" $fwhmX]
-   set private(indicateursFwhmY)      [format "%6.1f" $fwhmY]
+   set private(indicateursFwhmX)      [format "%6.2f" $fwhmX]
+   set private(indicateursFwhmY)      [format "%6.2f" $fwhmY]
+   set private(ecartEtoileX)          [format "%6.2f" $alphaDiff]
+   set private(ecartEtoileY)          [format "%6.2f" $deltaDiff]
    set private(indicateursFondDeCiel) [format "%6.1f" $background]
    set private(indicateursFluxMax)    [format "%6.1f" $maxIntensity]
 
@@ -1290,20 +1327,22 @@ proc ::sophie::control::setFocusInformation { starDetection fiberDetection origi
 #    affiche les informations de guidage
 #
 # @param starDetection 0=etoile non detecte 1=etoile detecte
-# @param fiberDetection 0=fibre non detecte 1=fibre detecte
-# @param originX  abcisse de la consigne en pixel
-# @param originY  ordonnee de la consigne en pixel
-# @param starX   abcisse de l'etoile en pixel
-# @param starY   ordonnee de l'etoile en pixel
-# @param starDx  ecart de l'abcisse de l'etoile en pixel
-# @param starDy  ecart de l'ordonne de l'etoile en pixel
-# @param alphaCorrection  correction en alpha (en arcseconde)
-# @param deltaCorrection  correction en delta (en arcseconde)
+# @param fiberDetection  resultat detection de la fibre = DETECTED NO_SIGNAL TOO_FAR OUTSIDE LOW_SIGNAL UNCHANGED DISABLED
+# @param originX  abcisse de la consigne (en pixel)
+# @param originY  ordonnee de la consigne (en pixel)
+# @param starX   abcisse de l'etoile (en pixel)
+# @param starY   ordonnee de l'etoile (en pixel)
+# @param starDx  ecart alpha de l'etoile (en arcsec)
+# @param starDy  ecart delta de l'etoile (en arcsec)
+# @param alphaCorrection  correction en alpha (en arcsec)
+# @param deltaCorrection  correction en delta (en arcsec)
 # @param originDx correction de la consigne en X  (en pixel)
 # @param originDy correction de la consigne en Y  (en pixel)
+# @param background  fond du ciel
+# @param maxIntensity  intensité max
 # @return null
 #------------------------------------------------------------
-proc ::sophie::control::setGuideInformation { starDetection fiberDetection originX originY starX starY starDx starDy alphaCorrection deltaCorrection originDx originDy} {
+proc ::sophie::control::setGuideInformation { starDetection fiberDetection originX originY starX starY starDx starDy alphaCorrection deltaCorrection originDx originDy background maxIntensity} {
    variable private
 
    set frm $private(frm)
@@ -1321,19 +1360,25 @@ proc ::sophie::control::setGuideInformation { starDetection fiberDetection origi
 
    #--- je mets a jour le voyant "trouDetecte"
    switch $fiberDetection {
-      "0" {
+      "LOW_SIGNAL" -
+      "TOO_FAR" -
+      "OUTSIDE" -
+      "NO_SIGNAL" {
          #--- le trou n'est pas détecte
          $frm.voyant.trou_color_invariant configure \
             -text $::caption(sophie,trouNonDetecte) \
             -bg   $private(inactiveColor)
       }
-      "1" {
+      "UNCHANGED" {
+         #--- je ne change pas l'affichage
+      }
+      "DETECTED" {
          #--- le trou est détecte
          $frm.voyant.trou_color_invariant configure \
             -text $::caption(sophie,trouDetecte) \
             -bg   $private(activeColor)
       }
-      "2" {
+      "DISABLED" {
          #--- la detection du trou est desactivee
          $frm.voyant.trou_color_invariant configure \
             -text $::caption(sophie,tourNonRecherche) \
@@ -1350,21 +1395,37 @@ proc ::sophie::control::setGuideInformation { starDetection fiberDetection origi
    set private(positionEtoileY)   [format "%6.1f" $starY]
    set private(positionConsigneX) [format "%6.1f" $originX]
    set private(positionConsigneY) [format "%6.1f" $originY]
-   set private(ecartEtoileX)      [format "%6.1f" $starDx]
-   set private(ecartEtoileY)      [format "%6.1f" $starDy]
-   set private(ecartConsigneX)    [format "%6.1f" $originDx]
-   set private(ecartConsigneY)    [format "%6.1f" $originDy]
-   set private(correctionAlpha)   [format "%6.2f" $alphaCorrection]
-   set private(correctionDelta)   [format "%6.2f" $deltaCorrection]
+   set private(ecartConsigneX)    [format "%6.2f" $originDx]
+   set private(ecartConsigneY)    [format "%6.2f" $originDy]
+   set private(ecartEtoileX)      [format "%6.2f" $starDx]
+   set private(ecartEtoileY)      [format "%6.2f" $starDy]
+   set private(alphaCorrection)   [format "%6.2f" $alphaCorrection]
+   set private(deltaCorrection)   [format "%6.2f" $deltaCorrection]
+   set private(indicateursFondDeCiel) [format "%6.1f" $background]
+   set private(indicateursFluxMax)    [format "%6.1f" $maxIntensity]
 
-   #--- j'ajoute la valeur le graphe starDx
+   #--- j'ajoute la valeur le graphe sophieEcartConsigneX
+   ::sophieEcartConsigneX append $originDx
+   if { [::sophieEcartConsigneX length] >= $private(vectorLength) } {
+      #--- je supprime le point le plus ancien
+      ::sophieEcartConsigneX delete 0
+   }
+
+   #--- j'ajoute la valeur le graphe sophieEcartConsigneY
+   ::sophieEcartConsigneY append $originDy
+   if { [::sophieEcartConsigneY length] >= $private(vectorLength) } {
+      #--- je supprime le point le plus ancien
+      ::sophieEcartConsigneY delete 0
+   }
+   
+   #--- j'ajoute la valeur le graphe sophieEcartEtoileX
    ::sophieEcartEtoileX append $starDx
    if { [::sophieEcartEtoileX length] >= $private(vectorLength) } {
       #--- je supprime le point le plus ancien
       ::sophieEcartEtoileX delete 0
    }
 
-   #--- j'ajoute la valeur le graphe starDy
+   #--- j'ajoute la valeur le graphe sophieEcartEtoileY
    ::sophieEcartEtoileY append $starDy
    if { [::sophieEcartEtoileY length] >= $private(vectorLength) } {
       #--- je supprime le point le plus ancien
@@ -1384,21 +1445,38 @@ proc ::sophie::control::setGuideInformation { starDetection fiberDetection origi
       #--- je supprime le point le plus ancien
       ::sophieCorrectionDelta delete 0
    }
-
-   #--- j'ajoute la valeur le graphe sophieEcartConsigneX
-   ::sophieEcartConsigneX append $originDx
-   if { [::sophieEcartConsigneX length] >= $private(vectorLength) } {
-      #--- je supprime le point le plus ancien
-      ::sophieEcartConsigneX delete 0
-   }
-
-   #--- j'ajoute la valeur le graphe sophieEcartConsigneY
-   ::sophieEcartConsigneY append $originDy
-   if { [::sophieEcartConsigneY length] >= $private(vectorLength) } {
-      #--- je supprime le point le plus ancien
-      ::sophieEcartConsigneY delete 0
-   }
 }
+
+##------------------------------------------------------------
+# setOriginCoords
+#    met a jour les coordonnes de la consigne
+#
+# @param originX  abcisse de la consigne en pixel
+# @param originY  ordonnee de la consigne en pixel
+# @return rien
+#------------------------------------------------------------
+proc ::sophie::control::setOriginCoords { originX originY } {
+   variable private
+
+   set private(positionObjetX)   [format "%6.1f" $originX]
+   set private(positionObjetY)   [format "%6.1f" $originY]
+}
+
+##------------------------------------------------------------
+# setTargetCoords
+#    met a jour les coordonnes de l'etoile
+#
+# @param starX  abcisse de l'etoile en pixel (referentiel image binning 1x1 sans fentrage) 
+# @param starY  ordonnee de l'etoile en pixel (referentiel image binning 1x1 sans fentrage)
+# @return rien
+#------------------------------------------------------------
+proc ::sophie::control::setTargetCoords { starX starY } {
+   variable private
+
+   set private(positionEtoileX)   [format "%6.1f" $starX]
+   set private(positionEtoileY)   [format "%6.1f" $starY]
+}
+
 
 #
 # ::fingerlakes::dispTempFLI

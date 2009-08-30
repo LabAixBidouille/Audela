@@ -2,7 +2,7 @@
 # @file     sophieconfig.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieconfig.tcl,v 1.11 2009-06-21 13:16:20 michelpujol Exp $
+# @version  $Id: sophieconfig.tcl,v 1.12 2009-08-30 22:00:11 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -30,7 +30,7 @@ proc ::sophie::config::run { visuNo tkbase  } {
    ::confGenerique::run $visuNo $private(frm) "::sophie::config" -modal 0 -geometry $::conf(sophie,configWindowPosition) -resizable 1
 
    #--- je deplace la consigne a la position du mode courant de la fibre
-   onFiberMode $visuNo
+   ###onFiberMode $visuNo
 }
 
 #------------------------------------------------------------
@@ -110,17 +110,26 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
    set widget(nbPosesAvantMaj)       $::conf(sophie,originSumNb)
    set widget(tailleFenetreGuidage)  $::conf(sophie,guidingWindowSize)
    set widget(tailleFenetreCentrage) $::conf(sophie,centerWindowSize)
-   set widget(gainProportionnel)     [expr $::conf(sophie,proportionalGain) * 100.0]
-   set widget(gainIntegrateur)       [expr $::conf(sophie,integralGain) * 100.0]
+   set widget(alphaProportionalGain) [expr $::conf(sophie,alphaProportionalGain) * 100.0]
+   set widget(deltaProportionalGain) [expr $::conf(sophie,deltaProportionalGain) * 100.0]
+   set widget(alphaIntegralGain)     [expr $::conf(sophie,alphaIntegralGain) * 100.0]
+   set widget(deltaIntegralGain)     [expr $::conf(sophie,deltaIntegralGain) * 100.0]
+   set widget(minMaxDiff)            $::conf(sophie,minMaxDiff) 
+
    set widget(prefixeImageCentrage)  $::conf(sophie,centerFileNameprefix)
    set widget(prefixeImageGuidage)   $::conf(sophie,guidingFileNameprefix)
 
-   set widget(fiberGuigindMode)      $::conf(sophie,fiberGuigindMode)
+   ###set widget(fiberGuigindMode)      $::conf(sophie,fiberGuigindMode)
    set widget(fiberHRX)              $::conf(sophie,fiberHRX)
    set widget(fiberHRY)              $::conf(sophie,fiberHRY)
    set widget(fiberHEX)              $::conf(sophie,fiberHEX)
    set widget(fiberHEY)              $::conf(sophie,fiberHEY)
 
+   set widget(biasFileName,1,1)         $::conf(sophie,biasFileName,1,1)
+   set widget(biasFileName,1,2)         $::conf(sophie,biasFileName,1,2)
+   set widget(biasFileName,2,1)         $::conf(sophie,biasFileName,2,1)
+   set widget(biasFileName,2,2)         $::conf(sophie,biasFileName,2,2)
+   
    #--- Frame pour la configuration des acquisitions
    TitleFrame $frm.acq -borderwidth 2 -relief ridge -text $::caption(sophie,parametreAcquisition)
 
@@ -176,137 +185,174 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
 
       #--- Echelle
       label $frm.guidage.labelechelle -text $::caption(sophie,echelle)
-      grid $frm.guidage.labelechelle -in [ $frm.guidage getframe ] -row 0 -column 1 -sticky w
+      grid $frm.guidage.labelechelle -in [ $frm.guidage getframe ] -row 0 -column 0 -sticky w
 
       Entry $frm.guidage.entryechelle \
          -width 8 -justify center -editable 1 \
          -textvariable ::sophie::config::widget(echelle)
-      grid $frm.guidage.entryechelle -in [ $frm.guidage getframe ] -row 0 -column 2 -sticky ens
+      grid $frm.guidage.entryechelle -in [ $frm.guidage getframe ] -row 0 -column 1 -sticky ens
 
       #--- Nombre de poses avant la correction de guidage
       label $frm.guidage.labelnbPosesAvantCorrect -text $::caption(sophie,nbPosesAvantCorrect)
-      grid $frm.guidage.labelnbPosesAvantCorrect -in [ $frm.guidage getframe ] -row 1 -column 1 -sticky w
+      grid $frm.guidage.labelnbPosesAvantCorrect -in [ $frm.guidage getframe ] -row 1 -column 0 -sticky w
 
       Entry $frm.guidage.entrynbPosesAvantCorrect \
          -width 8 -justify center -editable 1 \
          -textvariable ::sophie::config::widget(nbPosesAvantCorrect)
-      grid $frm.guidage.entrynbPosesAvantCorrect -in [ $frm.guidage getframe ] -row 1 -column 2 -sticky ens
+      grid $frm.guidage.entrynbPosesAvantCorrect -in [ $frm.guidage getframe ] -row 1 -column 1 -sticky ens
 
       #--- Nombre de poses avant la mise à jour de la consigne
       label $frm.guidage.labelnbPosesAvantMaj -text $::caption(sophie,nbPosesAvantMaj)
-      grid $frm.guidage.labelnbPosesAvantMaj -in [ $frm.guidage getframe ] -row 2 -column 1 -sticky w
+      grid $frm.guidage.labelnbPosesAvantMaj -in [ $frm.guidage getframe ] -row 2 -column 0 -sticky w
 
       Entry $frm.guidage.entrynbPosesAvantMaj \
          -width 8 -justify center -editable 1 \
          -textvariable ::sophie::config::widget(nbPosesAvantMaj)
-      grid $frm.guidage.entrynbPosesAvantMaj -in [ $frm.guidage getframe ] -row 2 -column 2 -sticky ens
+      grid $frm.guidage.entrynbPosesAvantMaj -in [ $frm.guidage getframe ] -row 2 -column 1 -sticky ens
 
       #--- Taille de la fenetre de centrage
       label $frm.guidage.labeltailleFenetreCentrage -text $::caption(sophie,tailleFenetreCentrage)
-      grid $frm.guidage.labeltailleFenetreCentrage -in [ $frm.guidage getframe ] -row 3 -column 1 -sticky w
+      grid $frm.guidage.labeltailleFenetreCentrage -in [ $frm.guidage getframe ] -row 3 -column 0 -sticky w
 
       Entry $frm.guidage.entrytailleFenetreCentrage \
          -width 8 -justify center -editable 1 \
          -textvariable ::sophie::config::widget(tailleFenetreCentrage)
-      grid $frm.guidage.entrytailleFenetreCentrage -in [ $frm.guidage getframe ] -row 3 -column 2 -sticky ens
+      grid $frm.guidage.entrytailleFenetreCentrage -in [ $frm.guidage getframe ] -row 3 -column 1 -sticky ens
 
       #--- Taille de la fenetre de guidage
       label $frm.guidage.labeltailleFenetreGuidage -text $::caption(sophie,tailleFenetreGuidage)
-      grid $frm.guidage.labeltailleFenetreGuidage -in [ $frm.guidage getframe ] -row 4 -column 1 -sticky w
+      grid $frm.guidage.labeltailleFenetreGuidage -in [ $frm.guidage getframe ] -row 4 -column 0 -sticky w
 
       Entry $frm.guidage.entrytailleFenetreGuidage \
          -width 8 -justify center -editable 1 \
          -textvariable ::sophie::config::widget(tailleFenetreGuidage)
-      grid $frm.guidage.entrytailleFenetreGuidage -in [ $frm.guidage getframe ] -row 4 -column 2 -sticky ens
+      grid $frm.guidage.entrytailleFenetreGuidage -in [ $frm.guidage getframe ] -row 4 -column 1 -sticky ens
 
       #--- Gain proportionnel
-      label $frm.guidage.labelgainProportionnel -text $::caption(sophie,gainProportionnel)
-      grid $frm.guidage.labelgainProportionnel -in [ $frm.guidage getframe ] -row 5 -column 1 -sticky w
+      label $frm.guidage.labelGainAlpha -text $::caption(sophie,alpha)
+      grid $frm.guidage.labelGainAlpha -in [ $frm.guidage getframe ] -row 5 -column 1 -sticky we
 
-      Entry $frm.guidage.entrygainProportionnel \
+      label $frm.guidage.labelGainDelta -text $::caption(sophie,delta)
+      grid $frm.guidage.labelGainDelta -in [ $frm.guidage getframe ] -row 5 -column 2 -sticky we
+
+      label $frm.guidage.labelgainProportionnel -text $::caption(sophie,gainProportionnel)
+      grid $frm.guidage.labelgainProportionnel -in [ $frm.guidage getframe ] -row 6 -column 0 -sticky w
+
+      Entry $frm.guidage.entryAlphaProportionalGain \
          -width 8 -justify center -editable 1 \
-         -textvariable ::sophie::config::widget(gainProportionnel)
-      grid $frm.guidage.entrygainProportionnel -in [ $frm.guidage getframe ] -row 5 -column 2 -sticky ens
+         -textvariable ::sophie::config::widget(alphaProportionalGain)
+      grid $frm.guidage.entryAlphaProportionalGain -in [ $frm.guidage getframe ] -row 6 -column 1 -sticky ens
+
+      Entry $frm.guidage.entryDeltaProportionalGain \
+         -width 8 -justify center -editable 1 \
+         -textvariable ::sophie::config::widget(deltaProportionalGain)
+      grid $frm.guidage.entryDeltaProportionalGain -in [ $frm.guidage getframe ] -row 6 -column 2 -sticky ens
 
       #--- Gain integrateur
       label $frm.guidage.labelgainIntegrateur -text $::caption(sophie,gainIntegrateur)
-      grid $frm.guidage.labelgainIntegrateur -in [ $frm.guidage getframe ] -row 6 -column 1 -sticky w
+      grid $frm.guidage.labelgainIntegrateur -in [ $frm.guidage getframe ] -row 7 -column 0 -sticky w
 
-      Entry $frm.guidage.entrygainIntegrateur \
+      Entry $frm.guidage.entryAlphaIntegralGain \
          -width 8 -justify center -editable 1 \
-         -textvariable ::sophie::config::widget(gainIntegrateur)
-      grid $frm.guidage.entrygainIntegrateur -in [ $frm.guidage getframe ] -row 6 -column 2 -sticky ens
+         -textvariable ::sophie::config::widget(alphaIntegralGain)
+      grid $frm.guidage.entryAlphaIntegralGain -in [ $frm.guidage getframe ] -row 7 -column 1 -sticky ens
 
+      Entry $frm.guidage.entryDeltaIntegralGain \
+         -width 8 -justify center -editable 1 \
+         -textvariable ::sophie::config::widget(deltaIntegralGain)
+      grid $frm.guidage.entryDeltaIntegralGain -in [ $frm.guidage getframe ] -row 7 -column 2 -sticky ens
+
+      #--- Ecart min max
+      label $frm.guidage.labelEcartMinMax -text $::caption(sophie,ecartMinMax)
+      grid $frm.guidage.labelEcartMinMax -in [ $frm.guidage getframe ] -row 8 -column 0 -sticky w
+
+      Entry $frm.guidage.entryEcartMinMax \
+         -width 8 -justify center -editable 1 \
+         -textvariable ::sophie::config::widget(minMaxDiff)
+      grid $frm.guidage.entryEcartMinMax -in [ $frm.guidage getframe ] -row 8 -column 1 -sticky ens
+   
    pack $frm.guidage -side top -anchor w -fill x -expand 0
 
    #--- Frame pour la position des fibres
    TitleFrame $frm.fibre -borderwidth 2 -relief ridge -text $::caption(sophie,positionFibres)
 
+      label $frm.fibre.xLabel -text "X"
+      grid $frm.fibre.xLabel -in [ $frm.fibre getframe ] -row 0 -column 1 -sticky we
+      label $frm.fibre.yLabel -text "Y"
+      grid $frm.fibre.yLabel -in [ $frm.fibre getframe ] -row 0 -column 2 -sticky we
+      
       #--- Fibre A HR
       label $frm.fibre.labelfibreAHR -text $::caption(sophie,fibreAHR)
-      grid $frm.fibre.labelfibreAHR -in [ $frm.fibre getframe ] -row 0 -column 1 -sticky w
+      grid $frm.fibre.labelfibreAHR -in [ $frm.fibre getframe ] -row 1 -column 0 -sticky w
 
-      spinbox $frm.fibre.spinboxfiberHRX -from 1 -to 1536 -incr 1 \
-         -width 8 -justify center \
-         -command "::sophie::config::onScroll $visuNo fiberHRX" \
+      Entry $frm.fibre.spinboxfiberHRX \
+         -width 8 -justify center -editable 1 \
          -textvariable ::sophie::config::widget(fiberHRX)
-      grid $frm.fibre.spinboxfiberHRX -in [ $frm.fibre getframe ] -row 0 -column 2 -sticky ens
+      grid $frm.fibre.spinboxfiberHRX -in [ $frm.fibre getframe ] -row 1 -column 1 -sticky ens
 
-      spinbox $frm.fibre.spinboxfiberHRY -from 1 -to 1024 -incr 1 \
-         -width 8 -justify center \
-         -command "::sophie::config::onScroll $visuNo fiberHRY" \
+      Entry $frm.fibre.spinboxfiberHRY \
+         -width 8 -justify center -editable 1 \
          -textvariable ::sophie::config::widget(fiberHRY)
-      grid $frm.fibre.spinboxfiberHRY -in [ $frm.fibre getframe ] -row 0 -column 3 -sticky ens
+      grid $frm.fibre.spinboxfiberHRY -in [ $frm.fibre getframe ] -row 1 -column 2 -sticky ens
 
+      Button $frm.fibre.replaceOriginHR -text $::caption(sophie,replaceOriginValue) \
+         -command "::sophie::config::replaceOriginCoordinates $visuNo HR"
+      grid $frm.fibre.replaceOriginHR -in [ $frm.fibre getframe ] -row 1 -column 3 -sticky ens  -padx 2
+         
       #--- Fibre A HE
       label $frm.fibre.labelfibreAHE -text $::caption(sophie,fibreAHE)
-      grid $frm.fibre.labelfibreAHE -in [ $frm.fibre getframe ] -row 1 -column 1 -sticky w
+      grid $frm.fibre.labelfibreAHE -in [ $frm.fibre getframe ] -row 2 -column 0 -sticky w
 
-      spinbox $frm.fibre.spinboxfiberHEX -from 1 -to 1536 -incr 1 \
-         -width 8 -justify center \
-         -command "::sophie::config::onScroll $visuNo fiberHEX" \
+      Entry $frm.fibre.spinboxfiberHEX \
+         -width 8 -justify center -editable 1 \
          -textvariable ::sophie::config::widget(fiberHEX)
-      grid $frm.fibre.spinboxfiberHEX -in [ $frm.fibre getframe ] -row 1 -column 2 -sticky ens
+      grid $frm.fibre.spinboxfiberHEX -in [ $frm.fibre getframe ] -row 2 -column 1 -sticky ens
 
-      spinbox $frm.fibre.spinboxfiberHEY -from 1 -to 1024 -incr 1 \
-         -width 8 -justify center \
-         -command "::sophie::config::onScroll $visuNo fiberHEY" \
+      Entry $frm.fibre.spinboxfiberHEY \
+         -width 8 -justify center -editable 1 \
          -textvariable ::sophie::config::widget(fiberHEY)
-      grid $frm.fibre.spinboxfiberHEY -in [ $frm.fibre getframe ] -row 1 -column 3 -sticky ens
+      grid $frm.fibre.spinboxfiberHEY -in [ $frm.fibre getframe ] -row 2 -column 2 -sticky ens
+
+      Button $frm.fibre.replaceOriginHE -text $::caption(sophie,replaceOriginValue) \
+         -command "::sophie::config::replaceOriginCoordinates $visuNo HE"
+      grid $frm.fibre.replaceOriginHE -in [ $frm.fibre getframe ] -row 2 -column 3 -sticky ens  -padx 2
+
 
       #--- Fibre B
       label $frm.fibre.labelfibreB -text $::caption(sophie,fibreB)
-      grid $frm.fibre.labelfibreB -in [ $frm.fibre getframe ] -row 2 -column 1 -sticky w
+      grid $frm.fibre.labelfibreB -in [ $frm.fibre getframe ] -row 3 -column 0 -sticky w
 
-      spinbox $frm.fibre.spinboxxfibreB -from 1 -to 1536 -incr 1 \
-         -width 8 -justify center \
-         -command "::sophie::config::onScroll $visuNo fiberBX" \
+      Entry $frm.fibre.spinboxxfibreB\
+         -width 8 -justify center -editable 1 \
          -textvariable ::sophie::config::widget(xfibreB)
-      grid $frm.fibre.spinboxxfibreB -in [ $frm.fibre getframe ] -row 2 -column 2 -sticky ens
+      grid $frm.fibre.spinboxxfibreB -in [ $frm.fibre getframe ] -row 3 -column 1 -sticky ens
 
-      spinbox $frm.fibre.spinboxyfibreB -from 1 -to 1024 -incr 1 \
-         -width 8 -justify center \
-         -command "::sophie::config::onScroll $visuNo fiberBY" \
+      Entry $frm.fibre.spinboxyfibreB\
+         -width 8 -justify center -editable 1 \
          -textvariable ::sophie::config::widget(yfibreB)
-      grid $frm.fibre.spinboxyfibreB -in [ $frm.fibre getframe ] -row 2 -column 3 -sticky ens
+      grid $frm.fibre.spinboxyfibreB -in [ $frm.fibre getframe ] -row 3 -column 2 -sticky ens
+   
 
       #--- Mode d'entree de la fibre A
-      label $frm.fibre.labelfiberGuigindMode -text $::caption(sophie,fiberGuigindMode)
-      grid $frm.fibre.labelfiberGuigindMode -in [ $frm.fibre getframe ] -row 3 -column 1 -sticky w
-
-      radiobutton $frm.fibre.fiberGuigindModeHR -highlightthickness 0 -padx 0 -pady 0 -state normal \
-         -text $::caption(sophie,HR) \
-         -value "HR" \
-         -variable ::sophie::config::widget(fiberGuigindMode) \
-         -command "::sophie::config::onFiberMode $visuNo"
-      grid $frm.fibre.fiberGuigindModeHR -in [ $frm.fibre getframe ] -row 3 -column 2 -sticky ens
-
-      radiobutton $frm.fibre.fiberGuigindModeHE -highlightthickness 0 -padx 0 -pady 0 -state normal \
-         -text $::caption(sophie,HE) \
-         -value "HE" \
-         -variable ::sophie::config::widget(fiberGuigindMode) \
-         -command "::sophie::config::onFiberMode $visuNo"
-      grid $frm.fibre.fiberGuigindModeHE -in [ $frm.fibre getframe ] -row 3 -column 3 -sticky ens
+      ###label $frm.fibre.labelfiberGuigindMode -text $::caption(sophie,fiberGuigindMode)
+      ###grid $frm.fibre.labelfiberGuigindMode -in [ $frm.fibre getframe ] -row 3 -column 1 -sticky w
+      ###
+      ###radiobutton $frm.fibre.fiberGuigindModeHR -highlightthickness 0 -padx 0 -pady 0 -state normal \
+      ###   -text $::caption(sophie,HR) \
+      ###   -value "HR" \
+      ###   -variable ::sophie::config::widget(fiberGuigindMode) 
+      ###   
+      ###   ###-command "::sophie::config::onFiberMode $visuNo"
+      ###
+      ###grid $frm.fibre.fiberGuigindModeHR -in [ $frm.fibre getframe ] -row 3 -column 2 -sticky ens
+      ###
+      ###radiobutton $frm.fibre.fiberGuigindModeHE -highlightthickness 0 -padx 0 -pady 0 -state normal \
+      ###   -text $::caption(sophie,HE) \
+      ###   -value "HE" \
+      ###   -variable ::sophie::config::widget(fiberGuigindMode) 
+      ###   
+      ###   ###-command "::sophie::config::onFiberMode $visuNo"
+      ###grid $frm.fibre.fiberGuigindModeHE -in [ $frm.fibre getframe ] -row 3 -column 3 -sticky ens
 
    pack $frm.fibre -side top -anchor w -fill x -expand 0
 
@@ -320,43 +366,84 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
       Entry $frm.image.entryrepImages \
          -width 30 -justify left -editable 1 \
          -textvariable ::conf(sophie,imageDirectory)
-      grid $frm.image.entryrepImages -in [ $frm.image getframe ] -row 0 -column 2 -sticky ens
+      grid $frm.image.entryrepImages -in [ $frm.image getframe ] -row 0 -column 2 -sticky ew
 
       button $frm.image.configurerepImages -text $::caption(sophie,parcourir) -relief raised \
          -command "::sophie::config::changeRepImages"
-      grid $frm.image.configurerepImages -in [ $frm.image getframe ] -row 0 -column 3 -sticky ens -padx 2
+      grid $frm.image.configurerepImages -in [ $frm.image getframe ] -row 0 -column 3 -sticky e -padx 2
 
       #--- Prefixe des images de centrage
       label $frm.image.labelprefixeImageCentrage -text $::caption(sophie,prefixeImageCentrage)
-      grid $frm.image.labelprefixeImageCentrage -in [ $frm.image getframe ] -row 1 -column 1 -sticky w
+      grid $frm.image.labelprefixeImageCentrage -in [ $frm.image getframe ] -row 1 -column 1 -sticky e
 
       Entry $frm.image.entryprefixeImageCentrage \
-         -width 13 -justify center -editable 1 \
+         -width 13 -justify left -editable 1 \
          -textvariable ::sophie::config::widget(prefixeImageCentrage)
-      grid $frm.image.entryprefixeImageCentrage -in [ $frm.image getframe ] -row 1 -column 2 -sticky ens
+      grid $frm.image.entryprefixeImageCentrage -in [ $frm.image getframe ] -row 1 -column 2 -sticky ew
 
       #--- Prefixe des images de guidage
       label $frm.image.labelprefixeImageGuidage -text $::caption(sophie,prefixeImageGuidage)
       grid $frm.image.labelprefixeImageGuidage -in [ $frm.image getframe ] -row 2 -column 1 -sticky w
 
       Entry $frm.image.entryprefixeImageGuidage \
-         -width 13 -justify center -editable 1 \
+         -width 13 -justify left -editable 1 \
          -textvariable ::sophie::config::widget(prefixeImageGuidage)
-      grid $frm.image.entryprefixeImageGuidage -in [ $frm.image getframe ] -row 2 -column 2 -sticky ens
+      grid $frm.image.entryprefixeImageGuidage -in [ $frm.image getframe ] -row 2 -column 2 -sticky ew
+   
+      #--- Image de Bias 11
+      label $frm.image.labelImageBias11 -text "$::caption(sophie,imageBias) bin 1 mode 1"
+      grid $frm.image.labelImageBias11 -in [ $frm.image getframe ] -row 3 -column 1 -sticky w
 
-      #--- Image de Bias
-      label $frm.image.labelimageBias -text $::caption(sophie,imageBias)
-      grid $frm.image.labelimageBias -in [ $frm.image getframe ] -row 3 -column 1 -sticky w
-
-      Entry $frm.image.entryimageBias \
+      Entry $frm.image.entryImageBias11 \
          -width 30 -justify left -editable 1 \
-         -textvariable ::conf(sophie,biasImage)
-      grid $frm.image.entryimageBias -in [ $frm.image getframe ] -row 3 -column 2 -sticky ens
+         -textvariable ::sophie::config::widget(biasFileName,1,1)
+      grid $frm.image.entryImageBias11 -in [ $frm.image getframe ] -row 3 -column 2 -sticky ew
 
-      button $frm.image.configureimageBias -text $::caption(sophie,parcourir) -relief raised \
-         -command "::sophie::config::chooseBiasFile"
-      grid $frm.image.configureimageBias -in [ $frm.image getframe ] -row 3 -column 3 -sticky ens -padx 2
+      button $frm.image.configureimageBias11 -text $::caption(sophie,parcourir) -relief raised \
+         -command "::sophie::config::chooseBiasFile 1 1"
+      grid $frm.image.configureimageBias11 -in [ $frm.image getframe ] -row 3 -column 3 -sticky e -padx 2
 
+      #--- Image de Bias 12
+      label $frm.image.labelImageBias12 -text "$::caption(sophie,imageBias) bin 1 mode 2"
+      grid $frm.image.labelImageBias12 -in [ $frm.image getframe ] -row 4 -column 1 -sticky w
+
+      Entry $frm.image.entryImageBias12 \
+         -width 30 -justify left -editable 1 \
+         -textvariable ::sophie::config::widget(biasFileName,1,2)
+      grid $frm.image.entryImageBias12 -in [ $frm.image getframe ] -row 4 -column 2 -sticky ew
+
+      button $frm.image.configureimageBias12 -text $::caption(sophie,parcourir) -relief raised \
+         -command "::sophie::config::chooseBiasFile 1 2"
+      grid $frm.image.configureimageBias12 -in [ $frm.image getframe ] -row 4 -column 3 -sticky e -padx 2
+
+      #--- Image de Bias 21
+      label $frm.image.labelImageBias21 -text "$::caption(sophie,imageBias) bin 2 mode 1"
+      grid $frm.image.labelImageBias21 -in [ $frm.image getframe ] -row 5 -column 1 -sticky w
+
+      Entry $frm.image.entryImageBias21 \
+         -width 30 -justify left -editable 1 \
+         -textvariable ::sophie::config::widget(biasFileName,2,1)
+      grid $frm.image.entryImageBias21 -in [ $frm.image getframe ] -row 5 -column 2 -sticky ew
+
+      button $frm.image.configureimageBias21 -text $::caption(sophie,parcourir) -relief raised \
+         -command "::sophie::config::chooseBiasFile 2 1"
+      grid $frm.image.configureimageBias21 -in [ $frm.image getframe ] -row 5 -column 3 -sticky e -padx 2
+
+      #--- Image de Bias 22
+      label $frm.image.labelImageBias22 -text "$::caption(sophie,imageBias) bin 2 mode 2"
+      grid $frm.image.labelImageBias22 -in [ $frm.image getframe ] -row 6 -column 1 -sticky w
+
+      Entry $frm.image.entryImageBias22 \
+         -width 30 -justify left -editable 1 \
+         -textvariable ::sophie::config::widget(biasFileName,2,2)
+      grid $frm.image.entryImageBias22 -in [ $frm.image getframe ] -row 6 -column 2 -sticky ew
+
+      button $frm.image.configureimageBias22 -text $::caption(sophie,parcourir) -relief raised \
+         -command "::sophie::config::chooseBiasFile 2 2"
+      grid $frm.image.configureimageBias22 -in [ $frm.image getframe ] -row 6 -column 3 -sticky e -padx 2
+      
+      grid columnconfigure [ $frm.image getframe ] 2 -weight 1
+      
    pack $frm.image -side top -anchor w -fill x -expand 0
 }
 
@@ -454,22 +541,40 @@ proc ::sophie::config::apply { visuNo } {
    set ::conf(sophie,originSumNb)           $widget(nbPosesAvantMaj)
    set ::conf(sophie,guidingWindowSize)     $widget(tailleFenetreGuidage)
    set ::conf(sophie,centerWindowSize)      $widget(tailleFenetreCentrage)
-   set ::conf(sophie,proportionalGain)      [expr double($widget(gainProportionnel)) / 100.0]
-   set ::conf(sophie,integralGain)          [expr double($widget(gainIntegrateur)) / 100.0]
+   set ::conf(sophie,alphaProportionalGain) [expr double($widget(alphaProportionalGain)) / 100.0]
+   set ::conf(sophie,deltaProportionalGain) [expr double($widget(deltaProportionalGain)) / 100.0]
+   set ::conf(sophie,alphaIntegralGain)     [expr double($widget(alphaIntegralGain)) / 100.0]
+   set ::conf(sophie,deltaIntegralGain)     [expr double($widget(deltaIntegralGain)) / 100.0]
+   set ::conf(sophie,minMaxDiff)            $widget(minMaxDiff) 
    set ::conf(sophie,centerFileNameprefix)  $widget(prefixeImageCentrage)
    set ::conf(sophie,guidingFileNameprefix) $widget(prefixeImageGuidage)
 
-   set ::conf(sophie,fiberGuigindMode)      $widget(fiberGuigindMode)
+   ###set ::conf(sophie,fiberGuigindMode)      $widget(fiberGuigindMode)
    set ::conf(sophie,fiberHRX)              $widget(fiberHRX)
    set ::conf(sophie,fiberHRY)              $widget(fiberHRY)
    set ::conf(sophie,fiberHEX)              $widget(fiberHEX)
    set ::conf(sophie,fiberHEY)              $widget(fiberHEY)
 
-   #
-   #---  je re-positionne la consigne demandé si le mode de guidage est FIBER
+   set ::conf(sophie,biasFileName,1,1)         $widget(biasFileName,1,1)
+   set ::conf(sophie,biasFileName,1,2)         $widget(biasFileName,1,2)
+   set ::conf(sophie,biasFileName,2,1)         $widget(biasFileName,2,1)
+   set ::conf(sophie,biasFileName,2,2)         $widget(biasFileName,2,2)
+
+   #--- je communique les nouveaux parametres au thread de la camera
+   ::camera::setAsynchroneParameter $::sophie::private(camItem)\
+         "alphaProportionalGain"    $::conf(sophie,alphaProportionalGain) \
+         "deltaProportionalGain"    $::conf(sophie,deltaProportionalGain) \
+         "alphaIntegralGain"        $::conf(sophie,alphaIntegralGain) \
+         "deltaIntegralGain"        $::conf(sophie,deltaIntegralGain) \
+         "originSumNb"              $::conf(sophie,originSumNb) 
+
+   #---  je re-positionne la consigne 
    ::sophie::setGuidingMode $visuNo
    #--- j'applique le mode courant pour prendre en compte les nouvelles valeurs des parametres
    ::sophie::setMode
+   #--- je met a jour la fenetre de controle
+   ::sophie::control::setMinMaxDiff $::conf(sophie,minMaxDiff)
+   
 }
 
 #------------------------------------------------------------
@@ -488,7 +593,7 @@ proc ::sophie::config::changeRepImages { } {
 # chooseDir
 #    navigateur pour le choix des repertoires
 #------------------------------------------------------------
-proc ::sophie::config::chooseDir { { inidir . } { title } { parent } } {
+proc ::sophie::config::chooseDir { inidir title parent } {
    if {$inidir=="."} {
       set inidir [pwd]
    }
@@ -503,62 +608,84 @@ proc ::sophie::config::chooseDir { { inidir . } { title } { parent } } {
 #------------------------------------------------------------
 # choseBiasFile
 #    choisi le nom de l'image de bias
+# @param  cameraBinning  binning de la camera
+# @param  cameraMode     mode de la camera  
+# @return rien
 #------------------------------------------------------------
-proc ::sophie::config::chooseBiasFile { } {
-   variable private
-
-   #--- Ouvre la fenetre de choix des images
-   set ::conf(sophie,biasImage) [ ::tkutil::box_load $::audace(base) $::audace(rep_images) $::audace(bufNo) "1" ]
-   #--- Il faut un fichier
-   if { $::conf(sophie,biasImage)  == "" } {
-      return
-   }
-}
-
-#------------------------------------------------------------
-# choseBiasFile
-#    choisi le nom de l'image de bias
-#------------------------------------------------------------
-proc ::sophie::config::onScroll { visuNo name  args } {
+proc ::sophie::config::chooseBiasFile { cameraBinning cameraMode } {
    variable widget
 
-   switch $name {
-      "fiberHRX" -
-      "fiberHRY" {
-         set ::sophie::private(originCoord) [list $widget(fiberHRX) $widget(fiberHRY)]
-         ::sophie::createOrigin $visuNo
-      }
-      "fiberHEX" -
-      "fiberHEY" {
-         set ::sophie::private(originCoord) [list $widget(fiberHEX) $widget(fiberHEY)]
-         ::sophie::createOrigin $visuNo
-      }
-      "fiberBX" -
-      "fiberBY" {
-         ###set ::sophie::private(originCoord) [list $widget(fiberHEX) $widget(fiberHEY)]
-         ###::sophie::createFiberB $visuNo
-      }
-   }
+   #--- Ouvre la fenetre de choix des images
+   set widget(biasFileName,$cameraBinning,$cameraMode) [ ::tkutil::box_load $::audace(base) $::audace(rep_images) $::audace(bufNo) "1" ]
 }
+
+#------------------------------------------------------------
+# onScroll
+#    scroll de la consigne
+#------------------------------------------------------------
+###proc ::sophie::config::onScroll { visuNo name  args } {
+###   variable widget
+###
+###   switch $name {
+###      "fiberHRX" -
+###      "fiberHRY" {
+###         set ::sophie::private(originCoord) [list $widget(fiberHRX) $widget(fiberHRY)]
+###         ::sophie::createOrigin $visuNo
+###      }
+###      "fiberHEX" -
+###      "fiberHEY" {
+###         set ::sophie::private(originCoord) [list $widget(fiberHEX) $widget(fiberHEY)]
+###         ::sophie::createOrigin $visuNo
+###      }
+###      "fiberBX" -
+###      "fiberBY" {
+###         ###set ::sophie::private(originCoord) [list $widget(fiberHEX) $widget(fiberHEY)]
+###         ###::sophie::createFiberB $visuNo
+###      }
+###   }
+###}
 
 #------------------------------------------------------------
 # onFiberMode
 #   change le mode
 #------------------------------------------------------------
-proc ::sophie::config::onFiberMode { visuNo args } {
+###proc ::sophie::config::onFiberMode { visuNo args } {
+###   variable widget
+###
+###   switch $widget(fiberGuigindMode) {
+###      "HR" {
+###         set ::sophie::private(originCoord) [list $widget(fiberHRX) $widget(fiberHRY)]
+###         ::sophie::createOrigin $visuNo
+###      }
+###      "HE" {
+###         set ::sophie::private(originCoord) [list $widget(fiberHEX) $widget(fiberHEY)]
+###         ::sophie::createOrigin $visuNo
+###      }
+###   }
+###
+###}
+
+#------------------------------------------------------------
+# replaceOriginValue
+#   remplace la position de la consigne par la position courante de la consigne
+# @param numero de la visu
+# @param type de position (HR ou HE)
+# @return rien
+#------------------------------------------------------------
+proc ::sophie::config::replaceOriginCoordinates { visuNo positionType } {
    variable widget
 
-   switch $widget(fiberGuigindMode) {
+   switch $positionType {
       "HR" {
-         set ::sophie::private(originCoord) [list $widget(fiberHRX) $widget(fiberHRY)]
-         ::sophie::createOrigin $visuNo
+         set widget(fiberHRX) [lindex $::sophie::private(originCoord) 0]
+         set widget(fiberHRY) [lindex $::sophie::private(originCoord) 1]
       }
       "HE" {
-         set ::sophie::private(originCoord) [list $widget(fiberHEX) $widget(fiberHEY)]
-         ::sophie::createOrigin $visuNo
+         set widget(fiberHEX) [lindex $::sophie::private(originCoord) 0]
+         set widget(fiberHEY) [lindex $::sophie::private(originCoord) 1]
       }
    }
-
 }
+
 
 

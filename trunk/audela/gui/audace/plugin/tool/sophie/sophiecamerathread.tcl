@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.8 2009-07-04 22:39:45 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.9 2009-08-30 22:00:24 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -18,7 +18,7 @@ namespace eval ::camerathread {
 # guideSophie lance la boucle d'acquisition continue
 #
 #------------------------------------------------------------
-proc ::camerathread::guideSophie { exptime guidingMode originCoord targetCoord cameraAngle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse intervalle } {
+proc ::camerathread::guideSophie { exptime originCoord targetCoord cameraAngle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse intervalle } {
    variable private
 
    if { $private(acquisitionState) == 1 } {
@@ -26,7 +26,6 @@ proc ::camerathread::guideSophie { exptime guidingMode originCoord targetCoord c
       return
    }
 
-   set private(guidingMode)   $guidingMode
    set private(exptime)       $exptime
    set private(originCoord)   $originCoord
    set private(targetCoord)   $targetCoord
@@ -74,6 +73,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
    set catchError [ catch {
       set bufNo $private(bufNo)
 
+      #--- je prends en compte les modifications des parametres
       if { $private(synchroneParameter) != "" } {
          ::camerathread::updateParameter
          ###::camerathread::disp  "camerathread: originCoord=$private(originCoord)  \n"
@@ -107,7 +107,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             set xScale  [expr 1.0 / [lindex $binning 0 ] ]
             set yScale  [expr 1.0 / [lindex $binning 1 ] ]
             ###::camerathread::disp  "camerathread: simulation binning=$binning  buf$bufNo scale $xScale $yScale  \n"
-            buf$bufNo scale $xScale $yScale
+            buf$bufNo scale [list $xScale $yScale ] 1.0
          }
          #--- j'increment le compteur de fichier de simulation
          incr private(simulationCounter)
@@ -126,7 +126,6 @@ proc ::camerathread::sophieAcquisitionLoop { } {
       }
 
       set targetDetection ""
-      set fiberDetection ""
       #--- je calcule les coordonnees de la fenetre d'analyse
       if {  $private(mode) == "GUIDE" } {
          #--- la fenetre correspond à toute l'image
@@ -142,7 +141,17 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          set x2 [expr int($x) + $private(targetBoxSize)]
          set y1 [expr int($y) - $private(targetBoxSize)]
          set y2 [expr int($y) + $private(targetBoxSize)]
+      }
+
+      if { $private(findFiber) == 1 } {
+         #--- j'incremente le compteur d'integration de l'origine
+         if { $private(originSumCounter) >= $private(originSumNb) } {
+            set private(originSumCounter) 0
          }
+         incr private(originSumCounter)
+      } else {
+         set private(originSumCounter) 0
+      }
 
       #--- je mesure la position de l'etoile et le trou de la fibre
       # buf$bufNo fibercentro
@@ -178,24 +187,12 @@ proc ::camerathread::sophieAcquisitionLoop { } {
       #         si TCL_ERREUR
       #            message d'erreur
 
-      if {  $private(mode) == "GUIDE" && $private(guidingMode) == "FIBER" } {
-         set findFiber 1
-         #--- j'incremente le compteur d'integration de l'origine
-         if { $private(originSumCounter) >= $private(originSumNb) } {
-            set private(originSumCounter) 0
-         }
-         incr private(originSumCounter)
-      } else {
-         set findFiber 0
-         set private(originSumCounter) 0
-      }
-
       set result [buf$bufNo fibercentro "[list $x1 $y1 $x2 $y2]" \
          $private(biasBufNo) $private(maskBufNo) $private(sumBufNo) $private(fiberBufNo) \
          $private(maskRadius) \
          $private(originSumNb) $private(originSumCounter)  \
          [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
-         $private(maskFwhm) $findFiber $private(pixelMinCount) $private(maskPercent) ]
+         $private(maskFwhm) $private(findFiber)  $private(pixelMinCount) $private(maskPercent) ]
 
       set starStatus       [lindex $result 0 ]
       set starX            [lindex $result 1 ]
@@ -219,36 +216,36 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          set targetDetection 0
       }
 
-      if {  $private(mode) == "GUIDE" && $private(guidingMode) == "FIBER" } {
+      if { $private(findFiber) == 1 } {
          if { $private(originSumCounter) >= $private(originSumNb) } {
             if { $fiberStatus == "DETECTED" } {
-               #--- La consigne est detectee
-               set fiberDetection  1
                #--- je met a jour les coordonnes de la consigne
                set private(originCoord) [list $fiberX $fiberY ]
             } else {
                #--- la consigne n'est pas detectee, je ne change pas les coordonnes de la consigne
-               set fiberDetection  0
             }
+            #--- je retourne le meme code resultat
+            set fiberStatus  $fiberStatus
          } else {
             #--- pas de changement, on attend la fin de l'integration de l'image
-            set fiberDetection  3
+            set fiberStatus  "UNCHANGED"
          }
 
       } else {
          #--- la consigne n'a pas besoin  d'etre detectee en mode OBJECT
-         set fiberDetection  2
+         set fiberStatus  "DISABLED"
       }
 
 ###::camerathread::disp  "camerathread: FIBER= y1=$y1 y2=$y2 detection etoile=$targetDetection [lindex $result 11]\n"
 
       set binning [cam$private(camNo) bin]
       #--- je calcule l'ecart de position entre la cible et la consigne (en pixels ramene au binning 1x1)
-      set dx [expr ([lindex $private(targetCoord) 0] - [lindex $private(originCoord) 0]) * [lindex $binning 0] ]
-      set dy [expr ([lindex $private(targetCoord) 1] - [lindex $private(originCoord) 1]) * [lindex $binning 1] ]
+      set dx [expr (double([lindex $private(targetCoord) 0]) - [lindex $private(originCoord) 0]) * [lindex $binning 0] ]
+      set dy [expr (double([lindex $private(targetCoord) 1]) - [lindex $private(originCoord) 1]) * [lindex $binning 1] ]
       ###::camerathread::disp  "camerathread: etoile dx=[format "%6.1f" $dx] dy=[format "%6.1f" $dy] \n"
       #--- je calcule l'ecart de position (en arcseconde)
-      set alphaDiff [expr $dx * $private(pixelScale) / (cos($private(targetDec) * 3.14159265359/180)) ]
+      ###set alphaDiff [expr $dx * $private(pixelScale) / (cos($private(targetDec) * 3.14159265359/180)) ]
+      set alphaDiff [expr $dx * $private(pixelScale) ]
       set deltaDiff [expr $dy * $private(pixelScale) ]
 
       #--- je calcule la correction alphaCorrection et deltaCorrection  en arcsec
@@ -268,12 +265,12 @@ proc ::camerathread::sophieAcquisitionLoop { } {
                set private(diffYCumul) 0
             }
 
-            set alphaDiffCumul [expr $private(diffXCumul) * $private(pixelScale) / ( cos($private(targetDec) * 3.14159265359/180)) ]
+            set alphaDiffCumul [expr $private(diffXCumul) * $private(pixelScale) ]
             set deltaDiffCumul [expr $private(diffYCumul) * $private(pixelScale) ]
 
             #--- je corrige avec les termes proportionnels et integrateurs
-            set alphaCorrection [expr $alphaDiff * $private(proportionalGain) + $alphaDiffCumul * $private(integralGain) ]
-            set deltaCorrection [expr $deltaDiff * $private(proportionalGain) + $deltaDiffCumul * $private(integralGain) ]
+            set alphaCorrection [expr $alphaDiff * $private(alphaProportionalGain) + $alphaDiffCumul * $private(alphaIntegralGain) ]
+            set deltaCorrection [expr $deltaDiff * $private(deltaProportionalGain) + $deltaDiffCumul * $private(deltaIntegralGain) ]
          } else {
             set alphaCorrection $alphaDiff
             set deltaCorrection $deltaDiff
@@ -325,7 +322,10 @@ proc ::camerathread::sophieAcquisitionLoop { } {
                set alphaCorrection [expr - $maxAlpha]
             }
          }
-
+                  
+         #--- je prends en compte la declinaison dans le calcul de la correction de alpha
+         set alphaCorrection [expr $alphaCorrection / (cos($private(targetDec) * 3.14159265359/180)) ]
+         
          #--- j'ecrete l'ampleur du deplacement en delta
          set maxDelta [expr $private(targetBoxSize) * [lindex $binning 1] * $private(pixelScale) ]
          if { $deltaCorrection > 0 } {
@@ -345,11 +345,10 @@ proc ::camerathread::sophieAcquisitionLoop { } {
       ###::camerathread::disp  "camerathread: alphaCorrection=$alphaCorrection deltaCorrection=$deltaCorrection \n"
       #--- j'envoi un compe rendu avant de faire la correction
       ::camerathread::notify "targetCoord" \
-         $private(targetCoord) $dx $dy $targetDetection $fiberDetection \
+         $private(targetCoord) $dx $dy $targetDetection $fiberStatus \
          [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
          $measuredFwhmX $measuredFwhmY $background $maxIntensity  \
          $alphaDiff $deltaDiff $alphaCorrection $deltaCorrection $infoMessage
-
       set alphaDelay 0.0
       set deltaDelay 0.0
       set alphaDirection ""
@@ -385,8 +384,6 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          }
       }
       ###::camerathread::disp  "camerathread: dx,dy=[format "%6.1f" $dx],[format "%6.1f" $dy]pixel dAlpha,ddelta=[format "%6.2f" $alphaDiff],[format "%6.2f" $deltaDiff] arsec correction=[format "%6.2f" $alphaCorrection],[format "%6.2f" $deltaCorrection]arsec tel move [format "%s %4.3fs" $alphaDirection $alphaDelay] [format "%s %4.3fs" $deltaDirection $deltaDelay ]\n"
-
-
    } catchMessage ]
 
    if { $catchError == 1 } {

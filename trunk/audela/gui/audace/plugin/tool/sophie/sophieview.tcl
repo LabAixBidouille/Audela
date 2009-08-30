@@ -2,7 +2,7 @@
 # @file     sophieview.tcl
 # @brief    Fichier du namespace ::sophie::view
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieview.tcl,v 1.10 2009-06-21 13:16:20 michelpujol Exp $
+# @version  $Id: sophieview.tcl,v 1.11 2009-08-30 22:00:54 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -107,7 +107,7 @@ proc ::sophie::view::startTool { visuNo } {
    set ::conf(seuils,visu$visuNo,mode) "initiaux"
 
    #--- je passe en zoom x1
-   ::confVisu::setZoom  $visuNo 1
+   ::confVisu::setZoom  $visuNo 2
    #--- j'affiche l'image du buffer
    setBuffer $visuNo
    #--- je demarre le listener
