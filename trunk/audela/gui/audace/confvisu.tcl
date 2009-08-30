@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.107 2009-07-12 13:57:01 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.108 2009-08-30 20:35:03 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -413,6 +413,7 @@ namespace eval ::confVisu {
             #--- proviens pas d'un fichier , mais d'une camera
             #--- afin de permettre le rafraichissement des outils
             #--- qui sont abonnes au listener addFilenameListener
+            set private($visuNo,fitsHduList) ""
             ::confVisu::setFileName $visuNo "?"
          }
 
