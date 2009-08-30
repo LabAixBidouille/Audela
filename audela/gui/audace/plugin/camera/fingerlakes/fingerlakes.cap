@@ -1,6 +1,6 @@
 #
 # Fichier : fingerlakes.cap
-# Mise a jour $Id: fingerlakes.cap,v 1.9 2009-06-01 09:23:30 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.cap,v 1.10 2009-08-30 20:43:24 michelpujol Exp $
 #
 
 #=========================================================================
@@ -25,6 +25,7 @@ set caption(fingerlakes,power)                        "Peltier Stage Power:"
 set caption(fingerlakes,miroir_x)                     "Horizontal Mirror"
 set caption(fingerlakes,miroir_y)                     "Vertical Mirror"
 set caption(fingerlakes,fonc_obtu)                    "Shutter Operation"
+set caption(fingerlakes,readSpeed)                    "# vitesse de lecture"
 
 set caption(fingerlakes,port_camera)                  "FLI Port"
 set caption(fingerlakes,2points)                      ":"
@@ -49,7 +50,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,miroir_x)                  "Miroir horizontal"
    set caption(fingerlakes,miroir_y)                  "Miroir vertical"
    set caption(fingerlakes,fonc_obtu)                 "Fonctionnement de l'obturateur"
-
+   set caption(fingerlakes,readSpeed)                 "Vitesse de lecture"
+   
    set caption(fingerlakes,port_camera)               "Port FLI"
    set caption(fingerlakes,2points)                   ":"
 
