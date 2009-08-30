@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.18 2009-08-30 20:40:30 michelpujol Exp $
+# Mise a jour $Id: keyword.tcl,v 1.19 2009-08-30 22:27:10 michelpujol Exp $
 #
 
 namespace eval ::keyword {
@@ -998,6 +998,10 @@ proc ::keyword::setKeywordValue { visuNo keywordName keywordValue} {
 #------------------------------------------------------------------------------
 proc ::keyword::selectKeywords { visuNo keywordNameList } {
    variable private
+
+   #--- Creation des variables de la boite de configuration de l'en-tete FITS si elles n'existent pas
+   if { ! [ info exists ::conf(keyword,visu$visuNo,check) ] }    { set ::conf(keyword,visu$visuNo,check)    "" }
+   if { ! [ info exists ::conf(keyword,visu$visuNo,disabled) ] } { set ::conf(keyword,visu$visuNo,disabled) "" }
 
    set ::conf(keyword,visu$visuNo,disabled) ""
    foreach keywordName $keywordNameList {
