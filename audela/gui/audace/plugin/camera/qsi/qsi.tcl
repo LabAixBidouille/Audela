@@ -2,16 +2,30 @@
 # Fichier : qsi.tcl
 # Description : Configuration de la camera QSI
 # Auteur : Michel Pujol
-# Mise a jour $Id: qsi.tcl,v 1.4 2009-08-10 09:11:31 robertdelmas Exp $
+# Mise a jour $Id: qsi.tcl,v 1.5 2009-08-30 20:44:26 michelpujol Exp $
 #
 
 namespace eval ::qsi {
-   package provide qsi 1.0
+   package provide qsi 1.2
    package require audela 1.5.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] qsi.cap ]
 }
+
+#
+# install
+#    installe la DLL fournie dans le plugin
+#
+proc ::qsi::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libqsi.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [getPluginType]] "qsi" "libqsi.dll"]
+      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      ::audace::appendUpdateMessage "Fin de l'installation de $sourceFileName \n du plug-in qsi v[package version qsi]"
+   }
+}
+
 
 #
 # getPluginTitle
