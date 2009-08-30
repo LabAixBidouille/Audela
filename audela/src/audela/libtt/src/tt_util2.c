@@ -2390,77 +2390,77 @@ int tt_util_qsort_double(double *x,int kdeb,int n,int *index)
    if (index!=NULL) {
       /*--- effectue un tri simple si n<=15 ---*/
       if (n<=15) {
-	 for (kt1=kdeb;kt1<kfin;kt1++) {
-	    m=x[kt1];
-	    mi=index[kt1];
-	    kp=kt1;
-	    for (kt2=kt1+1;kt2<=kfin;kt2++) {
-	       if (x[kt2]<m) {
-		  m=x[kt2];
-		  mi=index[kt2];
-		  kp=kt2;
-	       }
-	    }
-	    a=x[kt1];x[kt1]=m;x[kp]=a;
-	    ai=index[kt1];index[kt1]=mi;index[kp]=ai;
-	 }
-	 return(OK_DLL);
+         for (kt1=kdeb;kt1<kfin;kt1++) {
+            m=x[kt1];
+            mi=index[kt1];
+            kp=kt1;
+            for (kt2=kt1+1;kt2<=kfin;kt2++) {
+               if (x[kt2]<m) {
+                  m=x[kt2];
+                  mi=index[kt2];
+                  kp=kt2;
+               }
+            }
+            a=x[kt1];x[kt1]=m;x[kp]=a;
+            ai=index[kt1];index[kt1]=mi;index[kp]=ai;
+         }
+         return(OK_DLL);
       }
       /*--- trie le tableau dans l'ordre croissant avec quick sort ---*/
       s=kdeb; qsort_l[tt_util_qsort_verif(kdeb)]=kdeb; qsort_r[tt_util_qsort_verif(kdeb)]=kfin;
       do {
-	 l=(int)(qsort_l[tt_util_qsort_verif(s)]); r=(int)(qsort_r[tt_util_qsort_verif(s)]);
-	 s=s-1;
-	 do {
-	    i=l; j=r;
-	    v=x[(int) (floor((double)(l+r)/(double)2))];
-	    do {
-	       while (x[i]<v) {i++;}
-	       while (v<x[j]) {j--;}
-	       if (i<=j) {
-		  w=x[i];x[i]=x[j];x[j]=w;
-		  wi=index[i];index[i]=index[j];index[j]=wi;
-		  i++; j--;
-	       }
-	    } while (i<=j);
-	    if ((j-l)>=(r-i)) {if (i<r) {s++ ; qsort_l[tt_util_qsort_verif(s)]=i ; qsort_r[tt_util_qsort_verif(s)]=r;} r=j; } else { if (l<j) {s++ ; qsort_l[tt_util_qsort_verif(s)]=l ; qsort_r[tt_util_qsort_verif(s)]=j;} l=i; }
-	 } while (l<r);
+         l=(int)(qsort_l[tt_util_qsort_verif(s)]); r=(int)(qsort_r[tt_util_qsort_verif(s)]);
+         s=s-1;
+         do {
+            i=l; j=r;
+            v=x[(int) (floor((double)(l+r)/(double)2))];
+            do {
+               while (x[i]<v) {i++;}
+               while (v<x[j]) {j--;}
+               if (i<=j) {
+                  w=x[i];x[i]=x[j];x[j]=w;
+                  wi=index[i];index[i]=index[j];index[j]=wi;
+                  i++; j--;
+               }
+            } while (i<=j);
+            if ((j-l)>=(r-i)) {if (i<r) {s++ ; qsort_l[tt_util_qsort_verif(s)]=i ; qsort_r[tt_util_qsort_verif(s)]=r;} r=j; } else { if (l<j) {s++ ; qsort_l[tt_util_qsort_verif(s)]=l ; qsort_r[tt_util_qsort_verif(s)]=j;} l=i; }
+         } while (l<r);
       } while (s!=(kdeb-1)) ;
       return(OK_DLL);
    } else {
       /*--- effectue un tri simple si n<=15 ---*/
       if (n<=15) {
-	 for (kt1=kdeb;kt1<kfin;kt1++) {
-	    m=x[kt1];
-	    kp=kt1;
-	    for (kt2=kt1+1;kt2<=kfin;kt2++) {
-	       if (x[kt2]<m) {
-		  m=x[kt2];
-		  kp=kt2;
-	       }
-	    }
-	    a=x[kt1];x[kt1]=m;x[kp]=a;
-	 }
-	 return(OK_DLL);
+         for (kt1=kdeb;kt1<kfin;kt1++) {
+            m=x[kt1];
+            kp=kt1;
+            for (kt2=kt1+1;kt2<=kfin;kt2++) {
+               if (x[kt2]<m) {
+                  m=x[kt2];
+                  kp=kt2;
+               }
+            }
+            a=x[kt1];x[kt1]=m;x[kp]=a;
+         }
+         return(OK_DLL);
       }
       /*--- trie le tableau dans l'ordre croissant avec quick sort ---*/
       s=kdeb; qsort_l[tt_util_qsort_verif(kdeb)]=kdeb; qsort_r[tt_util_qsort_verif(kdeb)]=kfin;
       do {
-	 l=(int)(qsort_l[tt_util_qsort_verif(s)]); r=(int)(qsort_r[tt_util_qsort_verif(s)]);
-	 s=s-1;
-	 do {
-	    i=l; j=r;
-	    v=x[(int) (floor((double)(l+r)/(double)2))];
-	    do {
-	       while (x[i]<v) {i++;}
-	       while (v<x[j]) {j--;}
-	       if (i<=j) {
-		  w=x[i];x[i]=x[j];x[j]=w;
-		  i++; j--;
-	       }
-	    } while (i<=j);
-	    if ((j-l)>=(r-i)) {if (i<r) {s++ ; qsort_l[tt_util_qsort_verif(s)]=i ; qsort_r[tt_util_qsort_verif(s)]=r;} r=j; } else { if (l<j) {s++ ; qsort_l[tt_util_qsort_verif(s)]=l ; qsort_r[tt_util_qsort_verif(s)]=j;} l=i; }
-	 } while (l<r);
+         l=(int)(qsort_l[tt_util_qsort_verif(s)]); r=(int)(qsort_r[tt_util_qsort_verif(s)]);
+         s=s-1;
+         do {
+            i=l; j=r;
+            v=x[(int) (floor((double)(l+r)/(double)2))];
+            do {
+                while (x[i]<v  && i < n) {i++;}
+               while (v<x[j]  && j >= 0) {j--;}
+               if (i<=j) {
+                  w=x[i];x[i]=x[j];x[j]=w;
+                  i++; j--;
+               }
+            } while (i<=j);
+            if ((j-l)>=(r-i)) {if (i<r) {s++ ; qsort_l[tt_util_qsort_verif(s)]=i ; qsort_r[tt_util_qsort_verif(s)]=r;} r=j; } else { if (l<j) {s++ ; qsort_l[tt_util_qsort_verif(s)]=l ; qsort_r[tt_util_qsort_verif(s)]=j;} l=i; }
+         } while (l<r);
       } while (s!=(kdeb-1)) ;
       return(OK_DLL);
    }
