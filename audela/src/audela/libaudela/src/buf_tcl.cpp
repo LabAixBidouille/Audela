@@ -842,9 +842,9 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                palette[1] = pal1;
                palette[2] = pal2;
                for(int i=0; i<256; i++) {
-                  pal0[i]= i;
-                  pal1[i]= i;
-                  pal2[i]= i;
+                  pal0[i]= (unsigned char) i;
+                  pal1[i]= (unsigned char) i;
+                  pal2[i]= (unsigned char) i;
                }
 
                // je fabrique des seuils par defaut
@@ -1080,6 +1080,7 @@ int cmdCreate3d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
          free(path2);
          free(nom_fichier);
       }
+      retour = TCL_OK;
    }
    Tcl_Free((char *) argvv);
 
@@ -1535,13 +1536,15 @@ int cmdSetPix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
                      try {
                         if ( argc == 4 ) {
                            buffer->SetPix(PLANE_GREY, (TYPE_PIXELS)val,x,y);
-                        retour = TCL_OK;
+                           retour = TCL_OK;
                         } else {
                            Tcl_GetDouble(interp,argv[3],&valred);
+                           Tcl_GetDouble(interp,argv[4],&valgreen);
                            Tcl_GetDouble(interp,argv[5],&valblue);
                            buffer->SetPix(PLANE_R, (TYPE_PIXELS)valred,x,y);
                            buffer->SetPix(PLANE_G, (TYPE_PIXELS)valgreen,x,y);
                            buffer->SetPix(PLANE_B, (TYPE_PIXELS)valblue,x,y);
+                           retour = TCL_OK;
                         }
                      } catch(const CError& e) {
                         sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
