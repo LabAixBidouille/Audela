@@ -1,6 +1,6 @@
 #
 # Fichier : keyword.cap
-# Mise a jour $Id: keyword.cap,v 1.14 2009-08-10 09:09:20 robertdelmas Exp $
+# Mise a jour $Id: keyword.cap,v 1.15 2009-08-30 20:40:45 michelpujol Exp $
 #
 
 #=========================================================================
@@ -59,6 +59,10 @@ set caption(keyword,description,OBJNAME)               "Object Name"
 set caption(keyword,description,EXPTIME)               "Exposure Time"
 set caption(keyword,description,RA)                    "Right Ascension"
 set caption(keyword,description,DEC)                   "Declination"
+set caption(keyword,description,RA_MEAN)               "Right Ascension mean correction"
+set caption(keyword,description,RA_RMS)                "Right Ascension rms correction"
+set caption(keyword,description,DEC_MEAN)              "Declination mean correction"
+set caption(keyword,description,DEC_RMS)               "Declination rms correction"
 set caption(keyword,description,EQUINOX)               "Coordinates Equinox"
 set caption(keyword,description,RADECSYS)              "Coordinates System"
 set caption(keyword,description,IMAGETYP)              "Image Type"
