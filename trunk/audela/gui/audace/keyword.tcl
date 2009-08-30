@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.17 2009-07-11 16:33:28 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.18 2009-08-30 20:40:30 michelpujol Exp $
 #
 
 namespace eval ::keyword {
@@ -174,6 +174,10 @@ proc ::keyword::init { } {
    set private(typeImage)           "Object"
    set private(seriesId)            ""
    set private(expTime)             ""
+   set private(raMean)              ""
+   set private(raRms)               ""
+   set private(decMean)             ""
+   set private(decRms)              ""
    set private(name_software)       "[ ::audela::getPluginTitle ] $::audela(version)"
    set private(name_software)       "[ ::keyword::headerFitsCompliant $::keyword::private(name_software) ]"
    set private(confName)            ""
@@ -210,6 +214,10 @@ proc ::keyword::init { } {
    lappend private(infosMotsClefs) [ list "IMAGETYP" $::caption(keyword,acquisition) ::keyword::private(typeImage)           readonly ""                             ""                                             $::keyword::private(listTypeImage)  ::conf(keyword,typeImageSelected)        0  "" "string" "Image type"                                    "" ]
    lappend private(infosMotsClefs) [ list "SERIESID" $::caption(keyword,acquisition) ::keyword::private(seriesId)            normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Series identifiant"                            "" ]
    lappend private(infosMotsClefs) [ list "EXPTIME"  $::caption(keyword,acquisition) ::keyword::private(expTime)             normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "Exposure time"                                 "s" ]
+   lappend private(infosMotsClefs) [ list "RA_MEAN"  $::caption(keyword,acquisition) ::keyword::private(raMean)              normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "RA mean correction"                            "arsec" ]
+   lappend private(infosMotsClefs) [ list "RA_RMS"   $::caption(keyword,acquisition) ::keyword::private(raRms)               normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "RA rms correction"                             "arsec" ]
+   lappend private(infosMotsClefs) [ list "DEC_MEAN" $::caption(keyword,acquisition) ::keyword::private(decMean)             normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "DEC mean correction"                           "arsec" ]
+   lappend private(infosMotsClefs) [ list "DEC_RMS"  $::caption(keyword,acquisition) ::keyword::private(decRms)              normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "DEC rms correction"                            "arsec" ]
    lappend private(infosMotsClefs) [ list "SWCREATE" $::caption(keyword,logiciel)    ::keyword::private(name_software)       readonly ""                             ""                                             ""                                  ""                                       "" "" "string" "Acquisition software: http://www.audela.org/"  "" ]
    lappend private(infosMotsClefs) [ list "SWMODIFY" $::caption(keyword,logiciel)    ::keyword::private(name_software)       readonly ""                             ""                                             ""                                  ""                                       "" "" "string" "Processing software: http://www.audela.org/"   "" ]
    lappend private(infosMotsClefs) [ list "CONFNAME" $::caption(keyword,instrument)  ::keyword::private(confName)            normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Configuration name"                            "" ]
