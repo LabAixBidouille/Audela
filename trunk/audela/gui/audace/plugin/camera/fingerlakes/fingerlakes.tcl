@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.33 2009-06-06 10:43:55 michelpujol Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.34 2009-08-30 20:43:24 michelpujol Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -85,6 +85,7 @@ proc ::fingerlakes::initPlugin { } {
    #--- Initialise les variables de la camera FLI
    if { ! [ info exists conf(fingerlakes,cool) ] }     { set conf(fingerlakes,cool)     "0" }
    if { ! [ info exists conf(fingerlakes,foncobtu) ] } { set conf(fingerlakes,foncobtu) "2" }
+   if { ! [ info exists conf(fingerlakes,readSpeed) ] } { set conf(fingerlakes,readSpeed) "" }
    if { ! [ info exists conf(fingerlakes,mirh) ] }     { set conf(fingerlakes,mirh)     "0" }
    if { ! [ info exists conf(fingerlakes,mirv) ] }     { set conf(fingerlakes,mirv)     "0" }
    if { ! [ info exists conf(fingerlakes,temp) ] }     { set conf(fingerlakes,temp)     -20 }
@@ -107,6 +108,7 @@ proc ::fingerlakes::confToWidget { } {
    #--- Recupere la configuration de la camera fingerlakes dans le tableau private(...)
    set private(cool)     $conf(fingerlakes,cool)
    set private(foncobtu) [ lindex "$caption(fingerlakes,obtu_ouvert) $caption(fingerlakes,obtu_ferme) $caption(fingerlakes,obtu_synchro)" $conf(fingerlakes,foncobtu) ]
+   set private(readSpeed) $conf(fingerlakes,readSpeed)
    set private(mirh)     $conf(fingerlakes,mirh)
    set private(mirv)     $conf(fingerlakes,mirv)
    set private(temp)     $conf(fingerlakes,temp)
@@ -123,6 +125,7 @@ proc ::fingerlakes::widgetToConf { camItem } {
    #--- Memorise la configuration de la camera FLI dans le tableau conf(fingerlakes,...)
    set conf(fingerlakes,cool)     $private(cool)
    set conf(fingerlakes,foncobtu) [ lsearch "$caption(fingerlakes,obtu_ouvert) $caption(fingerlakes,obtu_ferme) $caption(fingerlakes,obtu_synchro)" "$private(foncobtu)" ]
+   set conf(fingerlakes,readSpeed) $private(readSpeed)
    set conf(fingerlakes,mirh)     $private(mirh)
    set conf(fingerlakes,mirv)     $private(mirv)
    set conf(fingerlakes,temp)     $private(temp)
@@ -223,6 +226,28 @@ proc ::fingerlakes::fillConfigPage { frm camItem } {
 
       pack $frm.frame1.frame8 -side top -fill x -expand 0
 
+      #--- Frame du mode de lecture du CCD
+
+      frame $frm.frame1.readSpeed -borderwidth 0 -relief raised
+
+         #--- Mode de fonctionnement de l'obturateur
+         label $frm.frame1.readSpeed.label -text "$caption(fingerlakes,readSpeed)"
+         pack $frm.frame1.readSpeed.label -anchor nw -side left -padx 10 -pady 5
+
+         #--- Cette liste est vide au démarrage. Elle sera remplie apres la connexion a la camera
+         set list_combobox ""
+         ComboBox $frm.frame1.readSpeed.list \
+            -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
+            -height [ llength $list_combobox ] \
+            -relief sunken      \
+            -borderwidth 1      \
+            -editable 0         \
+            -state disabled     \
+            -textvariable ::fingerlakes::private(readSpeed) \
+            -values $list_combobox
+         pack $frm.frame1.readSpeed.list -anchor nw -side left -padx 0 -pady 5
+
+      pack $frm.frame1.readSpeed -side top -fill x -expand 0
    pack $frm.frame1 -side top -fill both -expand 1
 
    #--- Frame du site web officiel de la FLI
@@ -242,6 +267,17 @@ proc ::fingerlakes::fillConfigPage { frm camItem } {
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
+
+   if { $private($camItem,camNo) == "" } {
+      set readSpeedList [cam$camNo flimodes]  ; #--- je recupere la liste des vitesses
+      if { $readSpeedList != "" } {
+         $private(frm).frame1.readSpeed.list configure \
+            -values $readSpeedList \
+            -width [ ::tkutil::lgEntryComboBox $readSpeedList ] \
+            -height [ llength $readSpeedList ] \
+            -state normal
+      }
+   }
 }
 
 #
@@ -282,6 +318,23 @@ proc ::fingerlakes::configureCamera { camItem bufNo } {
       } else {
          cam$camNo cooler off
       }
+      #--- Je configure la vitesse de lecture
+      set readSpeedList [cam$camNo flimodes]  ; #--- je recupere la liste des vitesses
+      if { $readSpeedList != "" } {
+         $private(frm).frame1.readSpeed.list configure \
+            -values $readSpeedList \
+            -width [ ::tkutil::lgEntryComboBox $readSpeedList ] \
+            -height [ llength $readSpeedList ] \
+            -state normal
+         set speedNo [lsearch $readSpeedList $private(readSpeed) ]
+         if { $speedNo == -1 } {
+            #--- si la vitesse de lecture n'existe pas, je selectionne le premier
+            set speedNo 0
+            set private(readSpeed) [lindex $readSpeedList $speedNo]
+         }
+
+         cam$camNo flimode $speedNo
+      }
       #--- J'associe le buffer de la visu
       cam$camNo buf $bufNo
       #--- Je configure l'oriention des miroirs par defaut
@@ -313,6 +366,14 @@ proc ::fingerlakes::stop { camItem } {
       cam::delete $private($camItem,camNo)
       set private($camItem,camNo) 0
    }
+
+   #--- je desactive le choix de la vitesse de lecture
+   if { [ info exists private(frm) ] } {
+      if { [ winfo exists $private(frm) ] } {
+         $private(frm).frame1.readSpeed.list configure -state disabled
+      }
+   }
+
 }
 
 #
@@ -370,6 +431,15 @@ proc ::fingerlakes::setTempCCD { } {
 
    return "$conf(fingerlakes,temp)"
 }
+
+#
+# ::fingerlakes::getReadSpeed
+#    retourne la vitesse de lecture
+#
+proc ::fingerlakes::getReadSpeed { } {
+   return $::conf(fingerlakes,readSpeed)
+}
+
 
 #
 # ::fingerlakes::setShutter
