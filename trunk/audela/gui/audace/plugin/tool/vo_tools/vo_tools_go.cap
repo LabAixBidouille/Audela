@@ -1,6 +1,6 @@
 #
 # Fichier : vo_tools_go.cap
-# Mise a jour $Id: vo_tools_go.cap,v 1.16 2009-08-10 09:08:54 robertdelmas Exp $
+# Mise a jour $Id: vo_tools_go.cap,v 1.17 2009-08-31 16:15:54 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -53,9 +53,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,cone-search)          "Ricerca dei\ncorpi del\nsistema solare\nin un campo"
    set caption(vo_tools_go,resolver)             "Ricerca dei corpi\ndel sistema solare\nattorno ad un\ncorpo celeste"
    set caption(vo_tools_go,statut)               "Stato del\nservizio SkyBot"
-   set caption(vo_tools_go,samp_menu_interop)    "# Interop Menu"
+   set caption(vo_tools_go,samp_menu_interop)    "Menu Interop"
    set caption(vo_tools_go,samp_menu_help)       "Aiuto"
-   set caption(vo_tools_go,samp_menu_broadcast)  "# Diffuser l'image"
+   set caption(vo_tools_go,samp_menu_broadcast)  "Diffusione dell'immagine"
    set caption(vo_tools_go,samp_menu_connect)    "Connettere"
    set caption(vo_tools_go,samp_menu_disconnect) "Sconnettere"
 
@@ -70,9 +70,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,cone-search)          "Buscar cuerpos\ndel sistema\nsolar en el\ncampo de visión"
    set caption(vo_tools_go,resolver)             "Buscar cuerpos\ndel sistema\nsolar alrededor de\nun objeto celeste"
    set caption(vo_tools_go,statut)               "Estado del\nservicio SkyBoT"
-   set caption(vo_tools_go,samp_menu_interop)    "# Interop Menu"
+   set caption(vo_tools_go,samp_menu_interop)    "Menú Interop"
    set caption(vo_tools_go,samp_menu_help)       "Ayuda"
-   set caption(vo_tools_go,samp_menu_broadcast)  "# Diffuser l'image"
+   set caption(vo_tools_go,samp_menu_broadcast)  "Difundir la imagen"
    set caption(vo_tools_go,samp_menu_connect)    "Conectar"
    set caption(vo_tools_go,samp_menu_disconnect) "Desconectar"
 
@@ -124,8 +124,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,samp_menu_interop)    "# Interop Menu"
    set caption(vo_tools_go,samp_menu_help)       "Hjælp"
    set caption(vo_tools_go,samp_menu_broadcast)  "# Diffuser l'image"
-   set caption(vo_tools_go,samp_menu_connect)    "# Connecter"
-   set caption(vo_tools_go,samp_menu_disconnect) "# Deconnecter"
+   set caption(vo_tools_go,samp_menu_connect)    "Tilslut"
+   set caption(vo_tools_go,samp_menu_disconnect) "Afbryd"
 
 }
 
