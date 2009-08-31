@@ -1144,6 +1144,7 @@ C49                              STEREO-A
 C50                              STEREO-B
 D14 113.3231  0.92000  +0.39061  Nanchuan Observatory, Guangzhou
 D17 114.2200  0.9245   +0.3799   Hong Kong
+D20 115.71311 0.854733 -0.517343 Zadko Observatory, Wallingup Plain
 D21 115.8150  0.8492   -0.5263   Shenton Park
 D25 117.08978 0.844104 -0.534424 Tzec Maun Observatory, Pingelly
 D29 118.4639  0.84204  +0.53767  Purple Mountain Observatory, XuYi Station
