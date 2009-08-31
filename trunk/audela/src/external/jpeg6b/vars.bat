@@ -1,6 +1,6 @@
-set VSCommonDir=C:\progra~1\micros~3\common
-set MSDevDir=C:\progra~1\micros~3\common\msdev98
-set MSVCDir=C:\progra~1\micros~3\vc98
+set VSCommonDir=C:\Program Files\Microsoft Visual Studio\common
+set MSDevDir=C:\Program Files\Microsoft Visual Studio\common\msdev98
+set MSVCDir=C:\Program Files\Microsoft Visual Studio\vc98
 
 set VcOsDir=WIN95
 if "%OS%" == "Windows_NT" set VcOsDir=WINNT
