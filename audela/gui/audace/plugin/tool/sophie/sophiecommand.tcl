@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.22 2009-08-30 21:59:14 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.23 2009-08-31 21:26:01 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -153,7 +153,7 @@ proc ::sophie::showConfigWindow { visuNo } {
 proc ::sophie::showControlWindow { visuNo } {
    variable private
 
-   ::sophie::control::run $visuNo [winfo toplevel $private(frm)] 
+   ::sophie::control::run $visuNo [winfo toplevel $private(frm)]
    #--- je mets a jour le mode dans la fenetre de controle
    ::sophie::control::setMode $private(mode)
 }
@@ -191,7 +191,7 @@ proc ::sophie::showControlWindow { visuNo } {
 ###         "binning"     [list $private(xBinning) $private(yBinning)] \
 ###         "targetCoord" [list $xTargetCoord $yTargetCoord] \
 ###         "targetBoxSize" $targetBoxSize \
-###         "originCoord" [list $xOriginCoord $yOriginCoord] 
+###         "originCoord" [list $xOriginCoord $yOriginCoord]
 ###   } else {
 ###      #--- je change le binning de l'image courante
 ###      if { [buf$private(bufNo) imageready] == 1 } {
@@ -202,7 +202,7 @@ proc ::sophie::showControlWindow { visuNo } {
 ###      createTarget $::audace(visuNo)
 ###      createOrigin $::audace(visuNo)
 ###   }
-###   
+###
 ###   #--- je charge le bias correspondant au binning
 ###   loadBias
 ###}
@@ -290,7 +290,7 @@ proc ::sophie::setBinningAndWindow { binning { windowSize ""} { centerCoords "" 
          "originCoord"  [list $xOriginCoord $yOriginCoord] \
          "targetCoord"  [list $xTargetCoord $yTargetCoord] \
          "targetBoxSize" $targetBoxSize
-   } 
+   }
 
    #--- je charge le bias correspondant au binning et j'applique le fentrage
    if { $windowSize == "full" } {
@@ -304,7 +304,7 @@ proc ::sophie::setBinningAndWindow { binning { windowSize ""} { centerCoords "" 
    }
    ###if { [buf$private(biasBufNo) imageready] == 1 } {
    ###   buf$private(biasBufNo) window [list $x1 $y1 $x2 $y2 ]
-   ###}   
+   ###}
 }
 
 ##------------------------------------------------------------
@@ -411,9 +411,9 @@ proc ::sophie::setExposure { { exposure "" } } {
 ###            "targetBoxSize" $targetBoxSize
 ###   }
 ###   #--- j'applique le fenetrage sur le bias
-###   loadBias 
+###   loadBias
 ###   buf$private(biasBufNo) window [list $x1 $y1 $x2 $y2 ]
-###   
+###
 ###}
 
 ##------------------------------------------------------------
@@ -500,11 +500,11 @@ proc ::sophie::getNewExposure { } {
 
 #------------------------------------------------------------
 # getVisuNo
-#  retourne le numero de la visu dans laquelle est affiche l'outil sophie 
+#  retourne le numero de la visu dans laquelle est affiche l'outil sophie
 #------------------------------------------------------------
 proc ::sophie::getVisuNo { } {
    variable private
-   
+
    return $private(visuNo)
 }
 
@@ -682,13 +682,13 @@ proc ::sophie::setGuidingMode { visuNo } {
    set frm $private(frm)
    switch $::conf(sophie,guidingMode) {
       "FIBER_HR" {
-         set private(originCoord)  [list $::conf(sophie,fiberHRX) $::conf(sophie,fiberHRY)]       
+         set private(originCoord)  [list $::conf(sophie,fiberHRX) $::conf(sophie,fiberHRY)]
          set activewidth 2
          #--- je positionne la consigne sur la fibre
          ::sophie::createOrigin $visuNo
       }
       "FIBER_HE" {
-         set private(originCoord)  [list $::conf(sophie,fiberHEX) $::conf(sophie,fiberHEY)]         
+         set private(originCoord)  [list $::conf(sophie,fiberHEX) $::conf(sophie,fiberHEY)]
          set activewidth 2
          #--- je positionne la consigne sur la fibre
          ::sophie::createOrigin $visuNo
@@ -701,7 +701,7 @@ proc ::sophie::setGuidingMode { visuNo } {
       }
    }
    #--- je mets a jour la fenetre de controle
-   ::sophie::control::setOriginCoords [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] 
+   ::sophie::control::setOriginCoords [lindex $private(originCoord) 0] [lindex $private(originCoord) 1]
    ::sophie::control::setGuidingMode $::conf(sophie,guidingMode)
 
    #--- je change les paramètres dans le thread de la camera
@@ -761,10 +761,10 @@ proc ::sophie::adaptIncrement { } {
 proc ::sophie::startMoveFilter { direction } {
    variable private
 
-   if { [ ::tel::list ] != "" && [tel$::audace(telNo) name] == "t193"] } {
+   if { [ ::tel::list ] != "" && [tel$::audace(telNo) name] == "t193" } {
       set private(filterMaxDelay)       [ tel$::audace(telNo) filter max ]
       set private(filterCurrentPercent) [ tel$::audace(telNo) filter coord ]
-      set private(filterDirection)    $direction
+      set private(filterDirection)      $direction
       #--- je demarre le deplacement
       tel$::audace(telNo) filter move $direction
       set private(updateFilterState) 1
@@ -782,7 +782,7 @@ proc ::sophie::startMoveFilter { direction } {
 proc ::sophie::stopMoveFilter { } {
    variable private
 
-   if { $::audace(telNo) == 0 && [tel$::audace(telNo) name] == "t193"]  } {
+   if { $::audace(telNo) == 0 && [tel$::audace(telNo) name] == "t193" } {
       return
    }
    tel$::audace(telNo) filter stop
@@ -807,13 +807,13 @@ proc ::sophie::stopMoveFilter { } {
          set private(attenuateur) 100
          $private(frm).attenuateur.labMin_color_invariant configure -background $::audace(color,backColor)
          $private(frm).attenuateur.labMax_color_invariant configure -background $::color(red)
-      } 
+      }
       "MIN" {
          set private(attenuateur) 0
          $private(frm).attenuateur.labMin_color_invariant configure -background $::color(green)
          $private(frm).attenuateur.labMax_color_invariant configure -background $::audace(color,backColor)
       }
-      default  {      
+      default  {
          $private(frm).attenuateur.labMin_color_invariant configure -background $::audace(color,backColor)
          $private(frm).attenuateur.labMax_color_invariant configure -background $::audace(color,backColor)
       }
@@ -823,8 +823,8 @@ proc ::sophie::stopMoveFilter { } {
 ##------------------------------------------------------------
 # updateFilterPercent
 #  met a jour l'affichage du taux d'attenuation en faisant une estmation a partir de la duree du mouvement
-#  
-#  
+#
+#
 #------------------------------------------------------------
 proc ::sophie::updateFilterPercent { } {
    variable private
@@ -849,7 +849,7 @@ proc ::sophie::updateFilterPercent { } {
          set private(filterCurrentPercent) 100
       }
       set private(attenuateur) [expr int($private(filterCurrentPercent))]
-      
+
       #--- je mets a jour la couleur des fin de course
       set extremity [ tel$::audace(telNo) filter extremity ]
       switch $extremity {
@@ -857,19 +857,19 @@ proc ::sophie::updateFilterPercent { } {
             set private(attenuateur) 100
             $private(frm).attenuateur.labMin_color_invariant configure -background $::audace(color,backColor)
             $private(frm).attenuateur.labMax_color_invariant configure -background $::color(red)
-         } 
+         }
          "MIN" {
             set private(attenuateur) 0
             $private(frm).attenuateur.labMin_color_invariant configure -background $::color(green)
             $private(frm).attenuateur.labMax_color_invariant configure -background $::audace(color,backColor)
          }
-         default  {      
+         default  {
             $private(frm).attenuateur.labMin_color_invariant configure -background $::audace(color,backColor)
             $private(frm).attenuateur.labMax_color_invariant configure -background $::audace(color,backColor)
          }
       }
-         
-      #--- je lance la boucle d'affichage pendant le mouvement 
+
+      #--- je lance la boucle d'affichage pendant le mouvement
       set private(updateFilterId) [after 250 ::sophie::updateFilterPercent]
    }
 }
@@ -884,17 +884,17 @@ proc ::sophie::updateFilterPercent { } {
 proc ::sophie::initFilter {  } {
    variable private
 
-   #--- je demarre la boucle de detection de la butee min 
+   #--- je demarre la boucle de detection de la butee min
    if { [ ::tel::list ] != "" && [ tel$::audace(telNo) name ] == "t193" } {
       set private(filterMaxDelay)       [ tel$::audace(telNo) filter max ]
       set private(filterCurrentPercent) [ tel$::audace(telNo) filter coord ]
       set private(filterDirection)    "-"
       $private(frm).attenuateur.butMin configure -state disabled
       $private(frm).attenuateur.butMax configure -state disabled
-      bind $private(frm).attenuateur.butMin <ButtonPress-1>  ""  
+      bind $private(frm).attenuateur.butMin <ButtonPress-1>  ""
       bind $private(frm).attenuateur.butMin <ButtonRelease-1> ""
       bind $private(frm).attenuateur.butMax <ButtonPress-1>   ""
-      bind $private(frm).attenuateur.butMax <ButtonRelease-1>   ""      
+      bind $private(frm).attenuateur.butMax <ButtonRelease-1>   ""
       #--- je demarre le deplacement
       tel$::audace(telNo) filter move $private(filterDirection)
       set private(initFilterDuration) [expr $private(filterMaxDelay) * 1.5  ]
@@ -910,7 +910,7 @@ proc ::sophie::initFilterLoop {  } {
       after cancel $private(updateFilterId)
    }
    set private(updateFilterId) ""
-   
+
    #--- je verifie que le telescope est toujours connecte
    if { [ ::tel::list ] != "" } {
       return
@@ -919,69 +919,69 @@ proc ::sophie::initFilterLoop {  } {
    #--- je mets a jour l'affichage avec une estimation de taux d'attenuation
    if { $private(initFilterDuration) >= 0 } {
       set private(attenuateur) "init..."
-      
+
       #--- je mets a jour la couleur des fin de course
       set extremity [ tel$::audace(telNo) filter extremity ]
       if { $extremity == "MIN"  } {
             set private(attenuateur) 0
-            $private(frm).attenuateur.labMin_color_invariant configure -background $::color(green) 
-            $private(frm).attenuateur.labMax_color_invariant configure -background $::audace(color,backColor) 
+            $private(frm).attenuateur.labMin_color_invariant configure -background $::color(green)
+            $private(frm).attenuateur.labMax_color_invariant configure -background $::audace(color,backColor)
             $private(frm).attenuateur.butMin configure -state normal
             $private(frm).attenuateur.butMax configure -state normal
             bind $private(frm).attenuateur.butMin <ButtonPress-1>   "::sophie::startMoveFilter -"
             bind $private(frm).attenuateur.butMin <ButtonRelease-1> "::sophie::stopMoveFilter"
             bind $private(frm).attenuateur.butMax <ButtonPress-1>   "::sophie::startMoveFilter +"
-            bind $private(frm).attenuateur.butMax <ButtonRelease-1> "::sophie::stopMoveFilter"         
+            bind $private(frm).attenuateur.butMax <ButtonRelease-1> "::sophie::stopMoveFilter"
       } else {
             $private(frm).attenuateur.labMin_color_invariant configure -background $::audace(color,backColor)
             $private(frm).attenuateur.labMax_color_invariant configure -background $::audace(color,backColor)
-            #--- je lance la boucle d'affichage pendant le mouvement 
+            #--- je lance la boucle d'affichage pendant le mouvement
             set private(initFilterDuration) [expr $private(initFilterDuration)  - 0.250 ]
             set private(updateFilterId) [after 250 ::sophie::initFilterLoop]
-      }      
+      }
    } else {
       set private(attenuateur) "?"
       $private(frm).attenuateur.labMin_color_invariant configure -background $::audace(color,backColor)
-      $private(frm).attenuateur.labMax_color_invariant configure -background $::audace(color,backColor)            
+      $private(frm).attenuateur.labMax_color_invariant configure -background $::audace(color,backColor)
       $private(frm).attenuateur.butMin configure -state normal
       $private(frm).attenuateur.butMax configure -state normal
       bind $private(frm).attenuateur.butMin <ButtonPress-1>   "::sophie::startMoveFilter -"
       bind $private(frm).attenuateur.butMin <ButtonRelease-1> "::sophie::stopMoveFilter"
       bind $private(frm).attenuateur.butMax <ButtonPress-1>   "::sophie::startMoveFilter +"
-      bind $private(frm).attenuateur.butMax <ButtonRelease-1> "::sophie::stopMoveFilter"         
+      bind $private(frm).attenuateur.butMax <ButtonRelease-1> "::sophie::stopMoveFilter"
    }
 }
 
 ##------------------------------------------------------------
-# loadBias 
+# loadBias
 #  charge le bias dans le buffer biasBufNo
 #  met a jour l'affichage de la fenetre de controle
 #
-# @param biasWindow  fenetrage du bias (full ou [list x1 y1 x2 y2] 
+# @param biasWindow  fenetrage du bias (full ou [list x1 y1 x2 y2]
 #------------------------------------------------------------
 proc ::sophie::loadBias { biasWindow } {
-   variable private 
-   
+   variable private
+
    #--- je recupere le mode de la camera
-   set product [::confCam::getPluginProperty $private(camItem) product]   
+   set product [::confCam::getPluginProperty $private(camItem) product]
    if { $product == "fingerlakes" } {
       switch [::fingerlakes::getReadSpeed ] {
          "1.0 MHz" { set cameraMode 1 }
          "3.5 Mhz" { set cameraMode 2 }
-         default { set cameraMode 1 } 
+         default { set cameraMode 1 }
       }
    } else {
       set cameraMode 1
    }
 
-console::disp "loadbias xBinning=$private(xBinning)\n"   
+console::disp "loadbias xBinning=$private(xBinning)\n"
    #--- je recupere le nom du fichier Bias en fonction du binning et du mode d'acquisition
    if { $private(xBinning) == 1 || $private(xBinning) == 2 } {
       set biasFileName $::conf(sophie,biasFileName,$private(xBinning),$cameraMode)
    } else {
-      set biasFileName "" 
+      set biasFileName ""
    }
-      
+
    #--- je charge bias
    set catchError [ catch {
       if { $biasFileName != "" } {
@@ -996,7 +996,7 @@ console::disp "loadbias xBinning=$private(xBinning)\n"
          if { $biasWindow != "full" && $private(biasWindow) != $biasWindow } {
             buf$private(biasBufNo) window $biasWindow
             set private(biasWindow) $biasWindow
-            ###console::disp "loadBias subwindow $biasWindow \n"         
+            ###console::disp "loadBias subwindow $biasWindow \n"
          }
          set biasState "OK"
          set biasMessage $private(biasFileName)
@@ -1007,16 +1007,16 @@ console::disp "loadbias xBinning=$private(xBinning)\n"
          set biasMessage ""
       }
    }]
-   
+
    if { $catchError != 0 } {
       #--- je vide le buffer
-      buf$private(biasBufNo) clear 
+      buf$private(biasBufNo) clear
       set biasState "ERROR"
       set biasMessage $::errorInfo
-   }      
-   
+   }
+
    #--- je mets a jour l'affichage de la fenetre de controle
-   ::sophie::control::setBias $biasState $biasMessage 
+   ::sophie::control::setBias $biasState $biasMessage
 
 }
 
@@ -1072,10 +1072,10 @@ proc ::sophie::incrementZoom { } {
 # saveImage
 #  enregistre l'image courante
 #     nom du fichier :  "prefixe-date.fit"
-#    
+#
 #  avec  prefixe = "centrage" ou "guidage"  suivant le mode courant
 #        date    = date courante au format ISO8601  , exemple: 2009-05-13T18:51:30.250
-#  Mots cles enregistre dans le fichier : 
+#  Mots cles enregistre dans le fichier :
 #   - BIN1     binning horizontal
 #   - BIN2     binning vertical
 #   - DATE-OBS  date de debut de pose
@@ -1083,7 +1083,7 @@ proc ::sophie::incrementZoom { } {
 #   - EXPOSURE  temps de pose
 #   - NAXIS1   largeur de l'image en pixel
 #   - NAXIS2   hauteur de l'image en pixel
-#   - 
+#   -
 #------------------------------------------------------------
 proc ::sophie::saveImage { } {
    variable private
@@ -1313,31 +1313,31 @@ proc ::sophie::onMousePressButton1 { visuNo w x y } {
    if { [buf$private(bufNo) imageready] == 0 } {
       return
    }
-   
+
 
    set tags [$w itemcget current -tags]
    set typeItem [lindex $tags 0]
 
-   #--- je vérifie que le guidage est sur OBJECT 
-   #---- (il ne faut pas pouvoir déplacer la consigne si on est en mode FIBER) 
+   #--- je vérifie que le guidage est sur OBJECT
+   #---- (il ne faut pas pouvoir déplacer la consigne si on est en mode FIBER)
    if { $typeItem == "origin" && $::conf(sophie,guidingMode) != "OBJECT" } {
       return
-   }  
+   }
 
    switch $typeItem  {
       "origin" {
          #--- je desactive le positionnement automatique de la consigne par le thread de la camera
-         set private(originMove) "MANUAL" 
+         set private(originMove) "MANUAL"
          set x [$w canvasx $x]
          set y [$w canvasy $y]
          set private(currentx)       $x
          set private(currenty)       $y
          ###set private(currentMouseItem) [$w find withtag current]
-         set private(currentMouseItem) $typeItem   
+         set private(currentMouseItem) $typeItem
       }
      "target" {
-         #--- je desactive le positionnement automatique de la cible 
-         set private(targetMove) "MANUAL"  
+         #--- je desactive le positionnement automatique de la cible
+         set private(targetMove) "MANUAL"
          set x [$w canvasx $x]
          set y [$w canvasy $y]
          set private(currentx)       $x
@@ -1387,7 +1387,7 @@ proc ::sophie::onMouseMoveButton1 { visuNo w x y } {
          set private(currentx) $x
          set private(currenty) $y
          $w move "target" $dx $dy
-      }         
+      }
       default {
          #--- la consigne n'est pas selectionnee
          ::confVisu::onMotionButton1 $visuNo $x $y
@@ -1414,13 +1414,13 @@ proc ::sophie::onMouseReleaseButton1 { visuNo w x y } {
       "origin" {
          #--- la consigne est selectionnee
 
-         #--- je recupere les coordonnees de l'origine (coordonnees canvas  du premier tag qui compose l'origine) 
+         #--- je recupere les coordonnees de l'origine (coordonnees canvas  du premier tag qui compose l'origine)
          set coord [$w coords "origin" ]
          set vide 4
          #--- je calcule les coordonnees du centre de l'origine dans l'image
          set coord [::confVisu::canvas2Picture $visuNo $coord]
          set coord [list [expr [lindex $coord 0] - $vide ] [expr [lindex $coord 1] - $vide ] ]
-         
+
          set x [expr [lindex $coord 0] * $private(xBinning) + $private(xWindow) -1 ]
          set y [expr [lindex $coord 1] * $private(yBinning) + $private(yWindow) -1 ]
          set ::conf(sophie,objectCoord) [list $x $y]
@@ -1428,30 +1428,30 @@ proc ::sophie::onMouseReleaseButton1 { visuNo w x y } {
          #--- je libere le mouvement manuel du widget
          set private(currentMouseItem) ""
          #--- j'active le positionnement automatique de la consigne par le thread de la camera
-         set private(originMove) "AUTO" 
+         set private(originMove) "AUTO"
       }
       "target" {
          #--- la cible est selectionnee
-         
-         #--- je recupere les coordonnees de la cible (coordonnees canvas) 
+
+         #--- je recupere les coordonnees de la cible (coordonnees canvas)
          set coord [$w coords "target" ]
          set x [expr ([lindex $coord 2] + [lindex $coord 0]) /2 ]
          set y [expr ([lindex $coord 3] + [lindex $coord 1]) /2 ]
-         
+
          #--- je calcule les coordonnees de la cible dans l'image
          set coord [::confVisu::canvas2Picture $visuNo [list $x $y]]
          set x [expr [lindex $coord 0] * $private(xBinning) + $private(xWindow) -1 ]
          set y [expr [lindex $coord 1] * $private(yBinning) + $private(yWindow) -1 ]
          set private(targetCoord) [list $x $y]
-         
-         #--- je met a jour le thread de la camera 
+
+         #--- je met a jour le thread de la camera
          set private(AsynchroneParameter) 1
          ::camera::setAsynchroneParameter  $private(camItem) "targetCoord" $coord
          #--- je met a jour la fenetre de controle
          ::sophie::control::setTargetCoords $x $y
          set private(currentMouseItem) ""
-         #--- j'active le positionnement automatique de la cible 
-         set private(targetMove) "AUTO"           
+         #--- j'active le positionnement automatique de la cible
+         set private(targetMove) "AUTO"
       }
       default {
          #--- la consigne n'est pas selectionnee, j'appelle le traitement par defaut
@@ -1494,7 +1494,7 @@ proc ::sophie::onTargetCoord { visuNo x y } {
    ::camera::setAsynchroneParameter  $private(camItem) "targetCoord" $coord
    #--- je met a jour la fenetre de controle
    ::sophie::control::setTargetCoords $x $y
-   
+
 }
 
 ##------------------------------------------------------------
@@ -1972,13 +1972,13 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                if { $private(targetMove) == "AUTO" } {
                   ::sophie::moveTarget $visuNo $private(targetCoord)
                }
-               
-               #--- je calcule la correction de la position de la consigne 
+
+               #--- je calcule la correction de la position de la consigne
                switch $::conf(sophie,guidingMode)  {
                   "FIBER_HR" {
                      if { $fiberDetection == 1 && $private(originMove) == "AUTO" } {
                         set private(originCoord) [list $originX $originY]
-                     } 
+                     }
                      #--- je calcule l'écart par rapport à la position de depart
                      set originDx  [expr [lindex $private(originCoord) 0] - $::conf(sophie,fiberHRX) ]
                      set originDy  [expr [lindex $private(originCoord) 1] - $::conf(sophie,fiberHRY) ]
@@ -2096,8 +2096,8 @@ proc ::sophie::removeAcquisitionListener { visuNo cmd } {
 
 ##------------------------------------------------------------
 # guideSophie
-#    lance une session de guidage 
-#    Cette procedure transmet la commande de demarrage de la session 
+#    lance une session de guidage
+#    Cette procedure transmet la commande de demarrage de la session
 #    de guidage au thread de la camera de guidage
 # parametres :
 # @param camItem   item de la camera
@@ -2116,7 +2116,7 @@ proc ::sophie::removeAcquisitionListener { visuNo cmd } {
 #------------------------------------------------------------
 proc ::camera::guideSophie { camItem callback exptime originCoord targetCoord cameraAngle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse intervalle } {
    variable private
-   
+
    set private($camItem,callback) $callback
    set camThreadNo $private($camItem,threadNo)
    ::thread::send -async $camThreadNo [list ::camerathread::guideSophie $exptime $originCoord $targetCoord $cameraAngle $targetBoxSize $mountEnabled $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $intervalle ]
