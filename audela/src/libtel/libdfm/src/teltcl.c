@@ -109,7 +109,7 @@ int cmdTelPutread(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
  *   Lit les status
  */
 int cmdTelStatus(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
-   char ligne[2048],bits[20];
+   char ligne[2048],bits[200];
    int result = TCL_OK,res;
    struct telprop *tel;
    tel = (struct telprop *)clientData;
@@ -140,32 +140,17 @@ int cmdTelPark(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
 
 
 /*
- *   Envoie une Init
+ *   Envoie une Init de type Fiducial
  */
 int cmdTelInit(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
-   char ligne[2048];
    int result = TCL_OK,res;
    struct telprop *tel;
-   int axe_min=1,axe_max=4;
    tel = (struct telprop *)clientData;
-   if (argc<3) {
-      sprintf(ligne,"Usage: %s %s AxeNo",argv[0],argv[1]);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+   res=dfm_initfiducial(tel);
+   if (res==1) {
       result = TCL_ERROR;
    } else {
-      res=atoi(argv[2]);
-      if ((res<axe_min)||(res>axe_max)) { 
-         sprintf(ligne,"AxeNo must be between %d and %d",axe_min,axe_max);
-         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-         result = TCL_ERROR;
-      }
-      sprintf(ligne,"P%d00=9",res);
-      res=dfm_put(tel,ligne);
-      if (res==1) {
-         result = TCL_ERROR;
-      } else {
-         Tcl_SetResult(interp,"",TCL_VOLATILE);
-      }
+      Tcl_SetResult(interp,"",TCL_VOLATILE);
    }
    return result;
 }

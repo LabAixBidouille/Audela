@@ -53,7 +53,7 @@ struct telini tel_ini[] = {
    },
 };
 
-#define DFM_MOUCHARD
+//#define DFM_MOUCHARD
 
 /********************************************************/
 /* sate_move_radec                                      */
@@ -228,7 +228,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    sprintf(s,"after 350"); mytel_tcleval(tel,s);
    res=dfm_put(tel,"#22,2000.;"); /* J2000.0 display */
    sprintf(s,"after 100"); mytel_tcleval(tel,s);
-	tel->track_diurnal=0.004180983; /* (deg/s) */
+	tel->track_diurnal=360./86164.; /* (deg/s) */
 	tel->speed_track_ra=tel->track_diurnal; /* (deg/s) */
 	tel->speed_track_dec=0.; /* (deg/s) */
 	/* --- Home --- */
@@ -435,8 +435,8 @@ int mytel_radec_goto(struct telprop *tel)
          if (time_in>=time_out) {break;}
       }
       sate_move_radec=' ';
+      dfm_suivi_marche(tel);
    }
-   dfm_suivi_marche(tel);
    return 0;
 }
 
@@ -458,8 +458,8 @@ int mytel_hadec_goto(struct telprop *tel)
          if (time_in>=time_out) {break;}
       }
       sate_move_radec=' ';
+	  dfm_suivi_marche(tel);
    }
-   dfm_suivi_marche(tel);
    return 0;
 }
 
@@ -743,6 +743,7 @@ int dfm_stat(struct telprop *tel,char *result,char *bits)
 	pos=0;bos=(int)pow(2,pos);b=(int)floor(octet/bos);sprintf(bits+k,"%d",b);k++;
 	sprintf(s,"{initialized %d} ",b);Tcl_DStringAppend(&dsptr,s,-1);
 	strcpy(s,"} ");Tcl_DStringAppend(&dsptr,s,-1);
+
 	/* Byte STATH */
 	strcpy(s,"{ ");Tcl_DStringAppend(&dsptr,s,-1);
    sprintf(s,"lindex \"%s\" 1",ss); mytel_tcleval(tel,s);
@@ -902,7 +903,7 @@ int dfm_goto(struct telprop *tel)
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    res=dfm_put(tel,"#12;");
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   res=dfm_put(tel,"#22,2000.;");
+   //res=dfm_put(tel,"#22,2000.;");
    /* --- --- */
    return 0;
 }
@@ -925,7 +926,7 @@ int dfm_hadec_goto(struct telprop *tel)
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    res=dfm_put(tel,"#12;");
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   res=dfm_put(tel,"#22,2000.;");
+   //res=dfm_put(tel,"#22,2000.;");
    /* --- --- */
    return 0;
 }
@@ -945,6 +946,22 @@ int dfm_initzenith(struct telprop *tel)
    /* --- --- */
    /* --- function SLEW --- */
    res=dfm_put(tel,"#12;");
+   return 0;
+}
+
+int dfm_initfiducial(struct telprop *tel)
+{
+	int res;
+	char s[1024];
+   /* --- Vide le buffer --- */
+   res=dfm_read(tel,s);
+   /* --- function TRACK --- */
+   res=dfm_put(tel,"#14,0,0,0,0;");
+   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+   /* --- function ZENITH --- */
+   res=dfm_put(tel,"#30,1;");
+   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+   /* --- --- */
    return 0;
 }
 
@@ -982,7 +999,7 @@ int dfm_suivi_marche (struct telprop *tel)
    /* --- Vide le buffer --- */
    res=dfm_read(tel,s);
    /* --- function TRACK --- */
-   sprintf(s,"#14,%.6f,%.6f,0,0;",tel->speed_track_ra*3600,tel->speed_track_dec*3600);
+   sprintf(s,"#14,%.6f,%.6f,%.6f,%.6f;",tel->speed_track_ra*3600,tel->speed_track_dec*3600,tel->speed_track_ra*3600,tel->speed_track_dec*3600);
    res=dfm_put(tel,s);
 	return 0;
 }
