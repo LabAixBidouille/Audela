@@ -131,6 +131,8 @@ double dfm_tsl(struct telprop *tel,int *h, int *m,double *sec);
 void dfm_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function);
 
 int dfm_stat(struct telprop *tel,char *result,char *bits);
+int dfm_initfiducial(struct telprop *tel);
+;
 
 #endif
 
