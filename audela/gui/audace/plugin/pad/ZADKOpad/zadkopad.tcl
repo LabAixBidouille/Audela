@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: ZADKOpad.tcl,v 1.1 2009-09-02 04:06:58 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.1 2009-09-02 04:14:58 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
