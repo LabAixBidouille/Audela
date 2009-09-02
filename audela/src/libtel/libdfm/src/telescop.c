@@ -91,7 +91,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 #endif
 
 	/* -ip 127.0.0.1 -port 1025 -type umac|pmac*/
-   tel->tempo=200;
+   tel->tempo=400;
 #if defined DFM_MOUCHARD
    f=fopen("mouchard_dfm.txt","wt");
    fclose(f);
@@ -959,7 +959,7 @@ int dfm_initfiducial(struct telprop *tel)
    res=dfm_put(tel,"#14,0,0,0,0;");
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /* --- function ZENITH --- */
-   res=dfm_put(tel,"#30,1;");
+   res=dfm_put(tel,"#30,0;");
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /* --- --- */
    return 0;
