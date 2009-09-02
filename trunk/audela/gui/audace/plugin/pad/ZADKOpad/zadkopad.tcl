@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.1 2009-09-02 04:14:58 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.2 2009-09-02 09:47:03 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -176,7 +176,7 @@ namespace eval ::zadkopad {
    #  return rien
    #------------------------------------------------------------
    proc deletePluginInstance { } {
-      global audace conf
+      global audace conf paramhorloge
 
       if { [ winfo exists .zadkopad ] } {
          #--- Enregistre la position de la raquette
@@ -185,7 +185,7 @@ namespace eval ::zadkopad {
          set fin [string length $geom]
          set conf(zadkopad,position) [string range $geom $deb $fin]
       }
-
+	  set paramhorloge(sortie) "1"
       #--- J'arrete la surveillance de audace(telescope,speed)
       ::telescope::removeSpeedListener ::zadkopad::surveilleSpeed
 
@@ -215,7 +215,7 @@ namespace eval ::zadkopad {
    #------------------------------------------------------------
    proc run { {zoom .5} {positionxy 0+0} } {
       variable widget
-      global audace caption color geomlx200 statustel zonelx200
+      global audace caption color geomlx200 statustel zonelx200 paramhorloge base
 
       if { [ string length [ info commands .zadkopad.display* ] ] != "0" } {
          destroy .zadkopad
@@ -230,15 +230,16 @@ namespace eval ::zadkopad {
       # === Initialisation of the variables
       # === Initialisation des variables
       # =======================================
-
+	  set zoom 1
       set statustel(speed) "0"
 
       #--- Definition of colorlx200s
       #--- Definition des couleurs
       set colorlx200(backkey)  $color(gray_pad)
+      set colorlx200(backtour) $color(cyan)
       set colorlx200(backpad)  $color(blue_pad)
       set colorlx200(backdisp) $color(red_pad)
-      set colorlx200(textkey)  $color(white)
+      set colorlx200(textkey)  $color(yellow)
       set colorlx200(textdisp) $color(black)
 
       #--- Definition des geomlx200etries
@@ -252,7 +253,7 @@ namespace eval ::zadkopad {
       set geomlx200(fontsize10) [ expr int(10*$zoom) ]
       set geomlx200(10pixels)   [ expr int(10*$zoom) ]
       set geomlx200(20pixels)   [ expr int(20*$zoom) ]
-      set geomlx200(larg2)      [ expr int(85*$zoom) ]
+      set geomlx200(larg2)      [ expr int(170*$zoom) ]
       set geomlx200(haut2)      [ expr int(65*$zoom) ]
       set geomlx200(haut)       [ expr int(70*$zoom) ]
       set geomlx200(linewidth0) [ expr int(3*$zoom) ]
@@ -262,7 +263,19 @@ namespace eval ::zadkopad {
       set geomlx200(lightx2)    [ expr int(20*$zoom) ]
       set geomlx200(lighty2)    [ expr int(40*$zoom) ]
       if { $geomlx200(linewidth0) <= "1" } { set geomlx200(textthick) "" } else { set geomlx200(textthick) "bold" }
-
+      
+	#--- Initialisation
+	set paramhorloge(sortie)     "0"
+	set paramhorloge(ra)         "21 44 11.2"
+	set paramhorloge(dec)        "+09 52 30"
+	set paramhorloge(home)       $audace(posobs,observateur,gps)
+	set paramhorloge(color,back) #123456
+	set paramhorloge(color,text) #FFFFAA
+	set paramhorloge(font)       {times 30 bold}
+	
+	set paramhorloge(new,ra)     "$paramhorloge(ra)"
+	set paramhorloge(new,dec)    "$paramhorloge(dec)"
+	
       # =========================================
       # === Setting the graphic interface
       # === Met en place l'interface graphique
@@ -278,7 +291,7 @@ namespace eval ::zadkopad {
       #--- Create the title
       #--- Cree le titre
       label .zadkopad.meade \
-         -font [ list {Arial} $geomlx200(fontsize25) $geomlx200(textthick) ] -text Meade \
+         -font [ list {Arial} $geomlx200(fontsize25) $geomlx200(textthick) ] -text "Telescope And Dome Control" \
          -borderwidth 0 -relief flat -bg $colorlx200(backpad) \
          -fg $colorlx200(textkey)
       pack .zadkopad.meade \
@@ -291,25 +304,6 @@ namespace eval ::zadkopad {
          -fill x -side top \
          -pady $geomlx200(10pixels) -padx 12
 
-      #--- Label pour RA
-      label .zadkopad.display.ra \
-         -font [ list {Courier} $geomlx200(fontsize20) $geomlx200(textthick) ] \
-         -textvariable audace(telescope,getra) -bg $colorlx200(backdisp) \
-         -fg $colorlx200(textdisp) -relief flat -height 1 -width 12
-      pack .zadkopad.display.ra -in .zadkopad.display -anchor center -pady 0
-
-      #--- Label pour DEC
-      label .zadkopad.display.dec \
-         -font [ list {Courier} $geomlx200(fontsize20) $geomlx200(textthick) ] \
-         -textvariable audace(telescope,getdec) -bg $colorlx200(backdisp) \
-         -fg $colorlx200(textdisp) -relief flat -height 1 -width 12
-      pack .zadkopad.display.dec -in .zadkopad.display -anchor center -pady 0
-
-      #--- Refreach the coordinates on the display
-      bind .zadkopad.display.ra  <ButtonPress-1> { ::telescope::afficheCoord }
-      bind .zadkopad.display.dec <ButtonPress-1> { ::telescope::afficheCoord }
-      bind .zadkopad.display     <ButtonPress-1> { ::telescope::afficheCoord }
-
       #--- Create a dummy space
       #--- Cree un espace inutile
       frame .zadkopad.dum1 \
@@ -317,738 +311,328 @@ namespace eval ::zadkopad {
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
       pack .zadkopad.dum1 \
          -in .zadkopad -side top -fill x
-
-      #--- Create a frame for the function buttons
+         
+  
+         
+#################################################              
+    #--- Create a frame for the function buttons
       #--- Cree un espace pour les boutons de fonction
       frame .zadkopad.func \
          -height 70 \
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
       pack .zadkopad.func \
-         -in .zadkopad -side top -fill x
-
-      #--- Create the button 'enter'
-      frame .zadkopad.func.enter \
-         -width $geomlx200(larg2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.func.enter \
+         -in .zadkopad -side top -pady 10
+         
+       #--- Dome control
+      label .zadkopad.func.dome \
+         -width 25 -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "Dome Control" \
+         -borderwidth 0 -relief flat -bg $colorlx200(backpad) \
+         -fg $colorlx200(textkey)
+      pack .zadkopad.func.dome \
          -in .zadkopad.func -side left
-
-      #--- Button-design
-      canvas .zadkopad.func.enter.canv1 \
-         -width $geomlx200(larg2) -height $geomlx200(haut2) \
+         
+      button .zadkopad.func.init -width 15 -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text INIT \
          -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -highlightbackground $colorlx200(backpad)
-      .zadkopad.func.enter.canv1 create line $geomlx200(linewidth) $geomlx200(linewidth) $geomlx200(linewidth) \
-         $geomlx200(haut2) $geomlx200(larg2) $geomlx200(haut2) $geomlx200(larg2) $geomlx200(linewidth) \
-         $geomlx200(linewidth) $geomlx200(linewidth) \
-         -fill $colorlx200(textkey) -width $geomlx200(linewidth0)
-      pack .zadkopad.func.enter.canv1 \
-         -in .zadkopad.func.enter -expand 1
-      #--- Write the label
-      label .zadkopad.func.enter.canv1.lab \
-         -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text ENTER \
+         -fg $colorlx200(textkey)\
+         
+	  button .zadkopad.func.opendome -width 15 -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text OPEN \
          -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.func.enter.canv1.lab \
-         -in .zadkopad.func.enter.canv1 -x [ expr int(11*$zoom) ] -y [ expr int(22*$zoom) ]
+         -fg $colorlx200(textkey)\
+          
+	  button .zadkopad.func.closedome -width 15 -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text CLOSE \
+         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
+         -fg $colorlx200(textkey)\
+     
+	  pack  .zadkopad.func.closedome .zadkopad.func.opendome .zadkopad.func.init -in .zadkopad.func -padx [ expr int(11*$zoom) ] -side right
 
-      #--- Create the button 'go to'
-      frame .zadkopad.func.goto \
-         -width $geomlx200(larg2) \
+
+
+#################################################              
+    #--- Create a frame for the function buttons
+      #--- Cree un espace pour les boutons de fonction
+      frame .zadkopad.tel \
+         -height 70 \
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.func.goto \
-         -in .zadkopad.func -side right
-      #--- Button-design
-      canvas .zadkopad.func.goto.canv1 \
-         -width $geomlx200(larg2) -height $geomlx200(haut2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -highlightbackground $colorlx200(backpad)
-      .zadkopad.func.goto.canv1 create line $geomlx200(linewidth) $geomlx200(linewidth) $geomlx200(linewidth) \
-         $geomlx200(haut2) $geomlx200(larg2) $geomlx200(haut2) $geomlx200(larg2) $geomlx200(linewidth) \
-         $geomlx200(linewidth) $geomlx200(linewidth) \
-         -fill $colorlx200(textkey) -width $geomlx200(linewidth0)
-      pack .zadkopad.func.goto.canv1 \
-         -in .zadkopad.func.goto -expand 1
-      #--- Write the label
-      label .zadkopad.func.goto.canv1.lab \
-         -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text "GO TO" \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.func.goto.canv1.lab \
-         -in .zadkopad.func.goto.canv1 -x [ expr int(13*$zoom) ] -y [ expr int(22*$zoom) ]
-
-      #--- Create the button 'mode'
-      frame .zadkopad.func.mode \
-         -width $geomlx200(larg2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.func.mode \
-         -in .zadkopad.func -side top
-      #--- Button-design
-      canvas .zadkopad.func.mode.canv1 \
-         -width $geomlx200(larg2) -height $geomlx200(haut2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -highlightbackground $colorlx200(backpad)
-      .zadkopad.func.mode.canv1 create line $geomlx200(linewidth) $geomlx200(linewidth) $geomlx200(linewidth) \
-         $geomlx200(haut2) $geomlx200(larg2) $geomlx200(haut2) $geomlx200(larg2) $geomlx200(linewidth) \
-         $geomlx200(linewidth) $geomlx200(linewidth) \
-         -fill $colorlx200(textkey) -width $geomlx200(linewidth0)
-      pack .zadkopad.func.mode.canv1 \
-         -in .zadkopad.func.mode -expand 1
-      #--- Write the label
-      label .zadkopad.func.mode.canv1.lab \
-         -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text MODE \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.func.mode.canv1.lab \
-         -in .zadkopad.func.mode.canv1 -x [ expr int(13*$zoom) ] -y [ expr int(22*$zoom) ]
-
-      #--- Create a frame for the cardinal buttons
-      #--- Cree un espace pour les boutons cardinaux
-      frame .zadkopad.card \
-         -height 150 \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.card \
-         -in .zadkopad -side top -fill x
-
-      #--- Create a dummy space
-      #--- Cree un espace inutile
-      frame .zadkopad.card.dumw \
-         -width $geomlx200(20pixels) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.card.dumw \
-         -in .zadkopad.card -side left -fill y
-
-      #--- Create the button 'W'
-      set geomlx200(larg2) $geomlx200(haut2)
-      frame .zadkopad.card.w \
-         -width $geomlx200(larg2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.card.w \
-         -in .zadkopad.card -side left
-      #--- Button-design
-      canvas .zadkopad.card.w.canv1 \
-         -width $geomlx200(larg2) -height $geomlx200(haut2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -highlightbackground $colorlx200(backpad)
-      .zadkopad.card.w.canv1 create line $geomlx200(linewidth) $geomlx200(linewidth) $geomlx200(linewidth) \
-         $geomlx200(haut2) $geomlx200(larg2) $geomlx200(haut2) $geomlx200(larg2) $geomlx200(linewidth) \
-         $geomlx200(linewidth) $geomlx200(linewidth) \
-         -fill $colorlx200(textkey) -width $geomlx200(linewidth0)
-      pack .zadkopad.card.w.canv1 \
-         -in .zadkopad.card.w -expand 1
-      #--- Write the label
-      label .zadkopad.card.w.canv1.lab \
-         -font [ list {Arial} $geomlx200(fontsize25) $geomlx200(textthick) ] -text W \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.card.w.canv1.lab \
-         -in .zadkopad.card.w.canv1 -x [ expr int(17*$zoom) ] -y [ expr int(15*$zoom) ]
-      set zonelx200(w) .zadkopad.card.w.canv1
-
-      #--- Create a dummy space
-      #--- Cree un espace inutile
-      frame .zadkopad.card.dume \
-         -width $geomlx200(20pixels) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.card.dume \
-         -in .zadkopad.card -side right -fill y
-
-      #--- Create the button 'E'
-      frame .zadkopad.card.e \
-         -width $geomlx200(larg2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.card.e \
-         -in .zadkopad.card -side right
-      #--- Button-design
-      canvas .zadkopad.card.e.canv1 \
-         -width $geomlx200(larg2) -height $geomlx200(haut2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -highlightbackground $colorlx200(backpad)
-      .zadkopad.card.e.canv1 create line $geomlx200(linewidth) $geomlx200(linewidth) $geomlx200(linewidth) \
-         $geomlx200(haut2) $geomlx200(larg2) $geomlx200(haut2) $geomlx200(larg2) $geomlx200(linewidth) \
-         $geomlx200(linewidth) $geomlx200(linewidth) \
-         -fill $colorlx200(textkey) -width $geomlx200(linewidth0)
-      pack .zadkopad.card.e.canv1 \
-         -in .zadkopad.card.e -expand 1
-      #--- Write the label
-      label .zadkopad.card.e.canv1.lab \
-         -font [ list {Arial} $geomlx200(fontsize25) $geomlx200(textthick) ] -text E \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.card.e.canv1.lab \
-         -in .zadkopad.card.e.canv1 -x [ expr int(22*$zoom) ] -y [ expr int(15*$zoom) ]
-      set zonelx200(e) .zadkopad.card.e.canv1
-
-      #--- Create the button 'N'
-      frame .zadkopad.card.n \
-         -width $geomlx200(larg2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.card.n \
-         -in .zadkopad.card -side top
-      #--- Button-design
-      canvas .zadkopad.card.n.canv1 \
-         -width $geomlx200(larg2) -height $geomlx200(haut2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -highlightbackground $colorlx200(backpad)
-      .zadkopad.card.n.canv1 create line $geomlx200(linewidth) $geomlx200(linewidth) $geomlx200(linewidth) \
-         $geomlx200(haut2) $geomlx200(larg2) $geomlx200(haut2) $geomlx200(larg2) $geomlx200(linewidth) \
-         $geomlx200(linewidth) $geomlx200(linewidth) \
-         -fill $colorlx200(textkey) -width $geomlx200(linewidth0)
-      pack .zadkopad.card.n.canv1 \
-         -in .zadkopad.card.n -expand 1
-      #--- Write the label
-      label .zadkopad.card.n.canv1.lab \
-         -font [ list {Arial} $geomlx200(fontsize25) $geomlx200(textthick) ] -text N \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.card.n.canv1.lab \
-         -in .zadkopad.card.n.canv1 -x [ expr int(22*$zoom) ] -y [ expr int(15*$zoom) ]
-      set zonelx200(n) .zadkopad.card.n.canv1
-
-      #--- Create the button 'S'
-      frame .zadkopad.card.s \
-         -width $geomlx200(larg2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.card.s \
-         -in .zadkopad.card -side top
-      #--- Button-design
-      canvas .zadkopad.card.s.canv1 \
-         -width $geomlx200(larg2) -height $geomlx200(haut2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -highlightbackground $colorlx200(backpad)
-      .zadkopad.card.s.canv1 create line $geomlx200(linewidth) $geomlx200(linewidth) $geomlx200(linewidth) \
-         $geomlx200(haut2) $geomlx200(larg2) $geomlx200(haut2) $geomlx200(larg2) $geomlx200(linewidth) \
-         $geomlx200(linewidth) $geomlx200(linewidth) \
-         -fill $colorlx200(textkey) -width $geomlx200(linewidth0)
-      pack .zadkopad.card.s.canv1 \
-         -in .zadkopad.card.s -expand 1
-      #--- Write the label
-      label .zadkopad.card.s.canv1.lab \
-         -font [ list {Arial} $geomlx200(fontsize25) $geomlx200(textthick) ] -text S \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.card.s.canv1.lab \
-         -in .zadkopad.card.s.canv1 -x [ expr int(22*$zoom) ] -y [ expr int(15*$zoom) ]
-      set zonelx200(s) .zadkopad.card.s.canv1
-
-      #--- Create a frame for the 789 buttons
-      #--- Cree un espace pour les boutons 789
-      frame .zadkopad.789 \
-         -height 150 \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.789 \
-         -in .zadkopad -side top -fill x
-
-      #--- Create the light 'slew'
-      frame .zadkopad.789.slew \
-         -width $geomlx200(20pixels) \
-         -borderwidth 0 -relief flat -bg $color(green)
-      pack .zadkopad.789.slew \
-         -in .zadkopad.789 -side left -fill y
-      canvas .zadkopad.789.slew.canv1 \
-         -width $geomlx200(20pixels) -height $geomlx200(haut2) \
+      pack .zadkopad.tel \
+         -in .zadkopad -side top -fill x -pady 10
+         
+       #--- Telescope control
+      label .zadkopad.tel.telescope \
+         -width 25 -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "Telescope Control" \
          -borderwidth 0 -relief flat -bg $colorlx200(backpad) \
-         -highlightbackground $colorlx200(backpad)
-      .zadkopad.789.slew.canv1 create oval $geomlx200(lightx1) $geomlx200(lighty1) $geomlx200(lightx2) \
-      $geomlx200(lighty2) -fill $color(black)
-      pack .zadkopad.789.slew.canv1 \
-         -in .zadkopad.789.slew -expand 1
-      set zonelx200(slew) .zadkopad.789.slew.canv1
+         -fg $colorlx200(textkey)
+      pack .zadkopad.tel.telescope \
+         -in .zadkopad.tel -side left
+         
+       button .zadkopad.tel.init -width 15 -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text INIT \
+         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
+         -fg $colorlx200(textkey)\
 
-      #--- Create the button '7'
-      frame .zadkopad.789.7 \
-         -width $geomlx200(larg2) \
+	  button .zadkopad.tel.parking -width 15 -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text PARKING \
+         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
+         -fg $colorlx200(textkey)\
+
+	  pack  .zadkopad.tel.parking .zadkopad.tel.init -in .zadkopad.tel -padx [ expr int(11*$zoom) ] -side right
+
+  
+#########################################################
+
+
+#################################################              
+    #--- Create a frame for the function buttons
+      #--- Cree un espace pour les boutons de fonction
+      frame .zadkopad.petal \
+         -height 70 \
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.789.7 \
-         -in .zadkopad.789 -side left
-      #--- Button-design
-      canvas .zadkopad.789.7.canv1 \
-         -width $geomlx200(larg2) -height $geomlx200(haut2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -highlightbackground $colorlx200(backpad)
-      .zadkopad.789.7.canv1 create line $geomlx200(linewidth) $geomlx200(linewidth) $geomlx200(linewidth) \
-         $geomlx200(haut2) $geomlx200(larg2) $geomlx200(haut2) $geomlx200(larg2) $geomlx200(linewidth) \
-         $geomlx200(linewidth) $geomlx200(linewidth) \
-         -fill $colorlx200(textkey) -width $geomlx200(linewidth0)
-      pack .zadkopad.789.7.canv1 \
-         -in .zadkopad.789.7 -expand 1
-      #--- Write the label
-      label .zadkopad.789.7.canv1.lab1 \
-         -font [ list {Arial} $geomlx200(fontsize20) $geomlx200(textthick) ] -text 7 \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.789.7.canv1.lab1 \
-         -in .zadkopad.789.7.canv1 -x [ expr int(25*$zoom) ] -y [ expr int(28*$zoom) ]
-      #--- Write the label
-      label .zadkopad.789.7.canv1.lab2 \
-         -font [ list {Arial} $geomlx200(fontsize10) $geomlx200(textthick) ] -text SLEW \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.789.7.canv1.lab2 \
-         -in .zadkopad.789.7.canv1 -x [ expr int(13*$zoom) ] -y [ expr int(10*$zoom) ]
-      set zonelx200(7) .zadkopad.789.7.canv1
-
-      #--- Create a dummy frame
-      frame .zadkopad.789.dume \
-         -width $geomlx200(20pixels) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.789.dume \
-         -in .zadkopad.789 -side right -fill y
-
-      #--- Create the button '9'
-      frame .zadkopad.789.9 \
-         -width $geomlx200(larg2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.789.9 \
-         -in .zadkopad.789 -side right
-      #--- Button-design
-      canvas .zadkopad.789.9.canv1 \
-         -width $geomlx200(larg2) -height $geomlx200(haut2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -highlightbackground $colorlx200(backpad)
-      .zadkopad.789.9.canv1 create line $geomlx200(linewidth) $geomlx200(linewidth) $geomlx200(linewidth) \
-         $geomlx200(haut2) $geomlx200(larg2) $geomlx200(haut2) $geomlx200(larg2) $geomlx200(linewidth) \
-         $geomlx200(linewidth) $geomlx200(linewidth) \
-         -fill $colorlx200(textkey) -width $geomlx200(linewidth0)
-      pack .zadkopad.789.9.canv1 \
-         -in .zadkopad.789.9 -expand 1
-      #--- Write the label
-      label .zadkopad.789.9.canv1.lab1 \
-         -font [ list {Arial} $geomlx200(fontsize20) $geomlx200(textthick) ] -text 9 \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.789.9.canv1.lab1 \
-         -in .zadkopad.789.9.canv1 -x [ expr int(25*$zoom) ] -y [ expr int(28*$zoom) ]
-      #--- Write the label
-      label .zadkopad.789.9.canv1.lab2 \
-         -font [ list {Arial} $geomlx200(fontsize10) $geomlx200(textthick) ] -text M \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.789.9.canv1.lab2 \
-         -in .zadkopad.789.9.canv1 -x [ expr int(28*$zoom) ] -y [ expr int(10*$zoom) ]
-
-      #--- Create the button '8'
-      frame .zadkopad.789.8 \
-         -width $geomlx200(larg2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.789.8 \
-         -in .zadkopad.789 -side top
-      #--- Button-design
-      canvas .zadkopad.789.8.canv1 \
-         -width $geomlx200(larg2) -height $geomlx200(haut2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -highlightbackground $colorlx200(backpad)
-      .zadkopad.789.8.canv1 create line $geomlx200(linewidth) $geomlx200(linewidth) $geomlx200(linewidth) \
-         $geomlx200(haut2) $geomlx200(larg2) $geomlx200(haut2) $geomlx200(larg2) $geomlx200(linewidth) \
-         $geomlx200(linewidth) $geomlx200(linewidth) \
-         -fill $colorlx200(textkey) -width $geomlx200(linewidth0)
-      pack .zadkopad.789.8.canv1 \
-         -in .zadkopad.789.8 -expand 1
-      #--- Write the label
-      label .zadkopad.789.8.canv1.lab1 \
-         -font [ list {Arial} $geomlx200(fontsize20) $geomlx200(textthick) ] -text 8 \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.789.8.canv1.lab1 \
-         -in .zadkopad.789.8.canv1 -x [ expr int(25*$zoom) ] -y [ expr int(28*$zoom) ]
-      #--- Write the label
-      label .zadkopad.789.8.canv1.lab2 \
-         -font [ list {Arial} $geomlx200(fontsize10) $geomlx200(textthick) ] -text RET \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.789.8.canv1.lab2 \
-         -in .zadkopad.789.8.canv1 -x [ expr int(20*$zoom) ] -y [ expr int(10*$zoom) ]
-
-      #--- Create a frame for the 456 buttons
-      #--- Cree un espace pour les boutons 456
-      frame .zadkopad.456 \
-         -height 150 \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.456 \
-         -in .zadkopad -side top -fill x
-
-      #--- Create the light 'find'
-      frame .zadkopad.456.find \
-         -width $geomlx200(20pixels) \
-         -borderwidth 0 -relief flat -bg $color(red)
-      pack .zadkopad.456.find \
-         -in .zadkopad.456 -side left -fill y
-      canvas .zadkopad.456.find.canv1 \
-         -width $geomlx200(20pixels) -height $geomlx200(haut2) \
+      pack .zadkopad.petal \
+         -in .zadkopad -side top -fill x -pady 10
+         
+       #--- petal control
+      label .zadkopad.petal.telescope \
+         -width 25 -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "Mirror Door Control" \
          -borderwidth 0 -relief flat -bg $colorlx200(backpad) \
-         -highlightbackground $colorlx200(backpad)
-      .zadkopad.456.find.canv1 create oval $geomlx200(lightx1) $geomlx200(lighty1) $geomlx200(lightx2) \
-         $geomlx200(lighty2) -fill $color(black)
-      pack .zadkopad.456.find.canv1 \
-         -in .zadkopad.456.find -expand 1
-      set zonelx200(find) .zadkopad.456.find.canv1
-
-      #--- Create the button '4'
-      frame .zadkopad.456.4 \
-         -width $geomlx200(larg2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.456.4 \
-         -in .zadkopad.456 -side left
-      #--- Button-design
-      canvas .zadkopad.456.4.canv1 \
-         -width $geomlx200(larg2) -height $geomlx200(haut2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -highlightbackground $colorlx200(backpad)
-      .zadkopad.456.4.canv1 create line $geomlx200(linewidth) $geomlx200(linewidth) $geomlx200(linewidth) \
-         $geomlx200(haut2) $geomlx200(larg2) $geomlx200(haut2) $geomlx200(larg2) $geomlx200(linewidth) \
-         $geomlx200(linewidth) $geomlx200(linewidth) \
-         -fill $colorlx200(textkey) -width $geomlx200(linewidth0)
-      pack .zadkopad.456.4.canv1 \
-         -in .zadkopad.456.4 -expand 1
-
-      #--- Write the label
-      label .zadkopad.456.4.canv1.lab1 \
-         -font [ list {Arial} $geomlx200(fontsize20) $geomlx200(textthick) ] -text 4 \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
          -fg $colorlx200(textkey)
-      place .zadkopad.456.4.canv1.lab1 \
-         -in .zadkopad.456.4.canv1 -x [ expr int(25*$zoom) ] -y [ expr int(28*$zoom) ]
-      #--- Write the label
-      label .zadkopad.456.4.canv1.lab2 \
-         -font [ list {Arial} $geomlx200(fontsize10) $geomlx200(textthick) ] -text FIND \
+      pack .zadkopad.petal.telescope \
+         -in .zadkopad.petal -side left
+         
+       button .zadkopad.petal.petalopen -width 15 -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text OPEN \
          -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.456.4.canv1.lab2 \
-         -in .zadkopad.456.4.canv1 -x [ expr int(18*$zoom) ] -y [ expr int(10*$zoom) ]
-      set zonelx200(4) .zadkopad.456.4.canv1
+         -fg $colorlx200(textkey)\
 
-      #--- Create a dummy frame
-      frame .zadkopad.456.dume \
-         -width $geomlx200(20pixels) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.456.dume \
-         -in .zadkopad.456 -side right -fill y
+	  button .zadkopad.petal.petalclose -width 15 -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text CLOSE \
+         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
+         -fg $colorlx200(textkey)\
 
-      #--- Create the button '6'
-      frame .zadkopad.456.6 \
-         -width $geomlx200(larg2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.456.6 \
-         -in .zadkopad.456 -side right
-      #--- Button-design
-      canvas .zadkopad.456.6.canv1 \
-         -width $geomlx200(larg2) -height $geomlx200(haut2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -highlightbackground $colorlx200(backpad)
-      .zadkopad.456.6.canv1 create line $geomlx200(linewidth) $geomlx200(linewidth) $geomlx200(linewidth) \
-         $geomlx200(haut2) $geomlx200(larg2) $geomlx200(haut2) $geomlx200(larg2) $geomlx200(linewidth) \
-         $geomlx200(linewidth) $geomlx200(linewidth) \
-         -fill $colorlx200(textkey) -width $geomlx200(linewidth0)
-      pack .zadkopad.456.6.canv1 \
-         -in .zadkopad.456.6 -expand 1
-      #--- Write the label
-      label .zadkopad.456.6.canv1.lab1 \
-         -font [ list {Arial} $geomlx200(fontsize20) $geomlx200(textthick) ] -text 6 \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.456.6.canv1.lab1 \
-         -in .zadkopad.456.6.canv1 -x [ expr int(25*$zoom) ] -y [ expr int(28*$zoom) ]
-      #--- Write the label
-      label .zadkopad.456.6.canv1.lab2 \
-         -font [ list {Arial} $geomlx200(fontsize10) $geomlx200(textthick) ] -text STAR \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.456.6.canv1.lab2 \
-         -in .zadkopad.456.6.canv1 -x [ expr int(16*$zoom) ] -y [ expr int(10*$zoom) ]
+	  pack  .zadkopad.petal.petalclose .zadkopad.petal.petalopen -in .zadkopad.petal -padx [ expr int(11*$zoom) ] -side right
 
-      #--- Create the button '5'
-      frame .zadkopad.456.5 \
-         -width $geomlx200(larg2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.456.5 \
-         -in .zadkopad.456 -side top
-      #--- Button-design
-      canvas .zadkopad.456.5.canv1 \
-         -width $geomlx200(larg2) -height $geomlx200(haut2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -highlightbackground $colorlx200(backpad)
-      .zadkopad.456.5.canv1 create line $geomlx200(linewidth) $geomlx200(linewidth) $geomlx200(linewidth) \
-         $geomlx200(haut2) $geomlx200(larg2) $geomlx200(haut2) $geomlx200(larg2) $geomlx200(linewidth) \
-         $geomlx200(linewidth) $geomlx200(linewidth) \
-         -fill $colorlx200(textkey) -width $geomlx200(linewidth0)
-      pack .zadkopad.456.5.canv1 \
-         -in .zadkopad.456.5 -expand 1
-      #--- Write the label
-      label .zadkopad.456.5.canv1.lab1 \
-         -font [ list {Arial} $geomlx200(fontsize20) $geomlx200(textthick) ] -text 5 \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.456.5.canv1.lab1 \
-         -in .zadkopad.456.5.canv1 -x [ expr int(25*$zoom) ] -y [ expr int(28*$zoom) ]
-      #--- Write the label
-      label .zadkopad.456.5.canv1.lab2 \
-         -font [ list {Arial} $geomlx200(fontsize10) $geomlx200(textthick) ] -text FOCUS \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.456.5.canv1.lab2 \
-         -in .zadkopad.456.5.canv1 -x [ expr int(10*$zoom) ] -y [ expr int(10*$zoom) ]
+#########################################################
 
-      #--- Create a frame for the 123 buttons
-      #--- Cree un espace pour les boutons 123
-      frame .zadkopad.123 \
-         -height 150 \
+#################################################              
+    #--- Create a frame for the function buttons
+      #--- Cree un espace pour les boutons de fonction
+      frame .zadkopad.track \
+         -height 70 \
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.123 \
-         -in .zadkopad -side top -fill x
-
-      #--- Create the light 'cntr'
-      frame .zadkopad.123.cntr \
-         -width $geomlx200(20pixels) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.123.cntr \
-         -in .zadkopad.123 -side left -fill y
-      canvas .zadkopad.123.cntr.canv1 \
-         -width $geomlx200(20pixels) -height $geomlx200(haut2) \
+      pack .zadkopad.track \
+         -in .zadkopad -side top -fill x -pady 10
+         
+       #--- track control
+      label .zadkopad.track.telescope \
+         -width 25 -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "Tracking Control" \
          -borderwidth 0 -relief flat -bg $colorlx200(backpad) \
-         -highlightbackground $colorlx200(backpad)
-      .zadkopad.123.cntr.canv1 create oval $geomlx200(lightx1) $geomlx200(lighty1) $geomlx200(lightx2) \
-         $geomlx200(lighty2) -fill $color(black)
-      pack .zadkopad.123.cntr.canv1 \
-         -in .zadkopad.123.cntr -expand 1
-      set zonelx200(cntr) .zadkopad.123.cntr.canv1
-
-      #--- Create the button '1'
-      set larg2 65
-      set haut2 65
-      frame .zadkopad.123.1 \
-         -width $geomlx200(larg2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.123.1 \
-         -in .zadkopad.123 -side left
-      #--- Button-design
-      canvas .zadkopad.123.1.canv1 \
-         -width $geomlx200(larg2) -height $geomlx200(haut2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -highlightbackground $colorlx200(backpad)
-      .zadkopad.123.1.canv1 create line $geomlx200(linewidth) $geomlx200(linewidth) $geomlx200(linewidth) \
-         $geomlx200(haut2) $geomlx200(larg2) $geomlx200(haut2) $geomlx200(larg2) $geomlx200(linewidth) \
-         $geomlx200(linewidth) $geomlx200(linewidth) \
-         -fill $colorlx200(textkey) -width $geomlx200(linewidth0)
-      pack .zadkopad.123.1.canv1 \
-         -in .zadkopad.123.1 -expand 1
-      #--- Write the label
-      label .zadkopad.123.1.canv1.lab1 \
-         -font [ list {Arial} $geomlx200(fontsize20) $geomlx200(textthick) ] -text 1 \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
          -fg $colorlx200(textkey)
-      place .zadkopad.123.1.canv1.lab1 \
-         -in .zadkopad.123.1.canv1 -x [ expr int(25*$zoom) ] -y [ expr int(28*$zoom) ]
-      #--- Write the label
-      label .zadkopad.123.1.canv1.lab2 \
-         -font [ list {Arial} $geomlx200(fontsize10) $geomlx200(textthick) ] -text CNTR \
+      pack .zadkopad.track.telescope \
+         -in .zadkopad.track -side left
+         
+       button .zadkopad.track.trackopen -width 15 -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text ON \
          -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.123.1.canv1.lab2 \
-         -in .zadkopad.123.1.canv1 -x [ expr int(16*$zoom) ] -y [ expr int(10*$zoom) ]
-      set zonelx200(1) .zadkopad.123.1.canv1
+         -fg $colorlx200(textkey)\
 
-      #--- Create a dummy frame
-      frame .zadkopad.123.dume \
-         -width $geomlx200(20pixels) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.123.dume \
-         -in .zadkopad.123 -side right -fill y
+	  button .zadkopad.track.trackclose -width 15 -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text OFF \
+         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
+         -fg $colorlx200(textkey)\
 
-      #--- Create the button '3'
-      frame .zadkopad.123.3 \
-         -width $geomlx200(larg2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.123.3 \
-         -in .zadkopad.123 -side right
-      #--- Button-design
-      canvas .zadkopad.123.3.canv1 \
-         -width $geomlx200(larg2) -height $geomlx200(haut2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -highlightbackground $colorlx200(backpad)
-      .zadkopad.123.3.canv1 create line $geomlx200(linewidth) $geomlx200(linewidth) $geomlx200(linewidth) \
-         $geomlx200(haut2) $geomlx200(larg2) $geomlx200(haut2) $geomlx200(larg2) $geomlx200(linewidth) \
-         $geomlx200(linewidth) $geomlx200(linewidth) \
-         -fill $colorlx200(textkey) -width $geomlx200(linewidth0)
-      pack .zadkopad.123.3.canv1 \
-         -in .zadkopad.123.3 -expand 1
-      #--- Write the label
-      label .zadkopad.123.3.canv1.lab1 \
-         -font [ list {Arial} $geomlx200(fontsize20) $geomlx200(textthick) ] -text 3 \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.123.3.canv1.lab1 \
-         -in .zadkopad.123.3.canv1 -x [ expr int(25*$zoom) ] -y [ expr int(28*$zoom) ]
-      #--- Write the label
-      label .zadkopad.123.3.canv1.lab2 \
-         -font [ list {Arial} $geomlx200(fontsize10) $geomlx200(textthick) ] -text CNGC \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.123.3.canv1.lab2 \
-         -in .zadkopad.123.3.canv1 -x [ expr int(13*$zoom) ] -y [ expr int(10*$zoom) ]
+	  pack  .zadkopad.track.trackclose .zadkopad.track.trackopen -in .zadkopad.track -padx [ expr int(11*$zoom) ] -side right
 
-      #--- Create the button '2'
-      frame .zadkopad.123.2 \
-         -width $geomlx200(larg2) \
+		.zadkopad.track.trackclose configure -relief groove -state disabled
+         update
+     
+#################################################              
+    #--- Create a frame for the function buttons
+      #--- Cree un espace pour les boutons de fonction
+      frame .zadkopad.vide \
+         -height 30 \
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.123.2 \
-         -in .zadkopad.123 -side top
-      #--- Button-design
-      canvas .zadkopad.123.2.canv1 \
-         -width $geomlx200(larg2) -height $geomlx200(haut2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -highlightbackground $colorlx200(backpad)
-      .zadkopad.123.2.canv1 create line $geomlx200(linewidth) $geomlx200(linewidth) $geomlx200(linewidth) \
-         $geomlx200(haut2) $geomlx200(larg2) $geomlx200(haut2) $geomlx200(larg2) $geomlx200(linewidth) \
-         $geomlx200(linewidth) $geomlx200(linewidth) \
-         -fill $colorlx200(textkey) -width $geomlx200(linewidth0)
-      pack .zadkopad.123.2.canv1 \
-         -in .zadkopad.123.2 -expand 1
-      #--- Write the label
-      label .zadkopad.123.2.canv1.lab1 \
-         -font [ list {Arial} $geomlx200(fontsize20) $geomlx200(textthick) ] -text 2 \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.123.2.canv1.lab1 \
-         -in .zadkopad.123.2.canv1 -x [ expr int(25*$zoom) ] -y [ expr int(28*$zoom) ]
-      #--- Write the label
-      label .zadkopad.123.2.canv1.lab2 \
-         -font [ list {Arial} $geomlx200(fontsize10) $geomlx200(textthick) ] -text MAP \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.123.2.canv1.lab2 \
-         -in .zadkopad.123.2.canv1 -x [ expr int(19*$zoom) ] -y [ expr int(10*$zoom) ]
-
-      #--- Create a frame for the 000 buttons
-      #--- Cree un espace pour les boutons 000
-      frame .zadkopad.000 \
-         -height 150 \
+      pack .zadkopad.vide \
+         -in .zadkopad -side top -fill x -pady 10
+          
+#################################################              
+    #--- Create a frame for the function buttons
+      #--- Cree un espace pour les boutons de fonction
+      frame .zadkopad.foc \
+         -height 70 \
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.000 \
-         -in .zadkopad -side top -fill x
-
-      #--- Create the light 'guide'
-      frame .zadkopad.000.guide \
-         -width $geomlx200(20pixels) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.000.guide \
-         -in .zadkopad.000 -side left -fill y
-      canvas .zadkopad.000.guide.canv1 \
-         -width $geomlx200(20pixels) -height $geomlx200(haut2) \
+      pack .zadkopad.foc \
+         -in .zadkopad -side top -fill x -pady 10
+         
+       #--- track control
+      label .zadkopad.foc.telescope \
+         -width 25 -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "Focalisation" \
          -borderwidth 0 -relief flat -bg $colorlx200(backpad) \
-         -highlightbackground $colorlx200(backpad)
-      .zadkopad.000.guide.canv1 create oval $geomlx200(lightx1) $geomlx200(lighty1) $geomlx200(lightx2) \
-         $geomlx200(lighty2) -fill $color(red)
-      pack .zadkopad.000.guide.canv1 \
-         -in .zadkopad.000.guide -expand 1
-      set zonelx200(guide) .zadkopad.000.guide.canv1
+         -fg $colorlx200(textkey)
+      pack .zadkopad.foc.telescope \
+         -in .zadkopad.foc -side left
+         
+       entry .zadkopad.foc.ent1 -textvariable focal_number \
+	         -width 10  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
+	         -bg $colorlx200(backtour)  -fg $colorlx200(backpad) \
+	         -relief flat
+	  pack  .zadkopad.foc.ent1 -in .zadkopad.foc -padx [ expr int(11*$zoom) ] -side left
 
-      #--- Create the button '0'
-      set larg2 65
-      set haut2 65
-      frame .zadkopad.000.0 \
-         -width $geomlx200(larg2) \
+   
+#################################################              
+    #--- Create a frame for the function buttons
+      #--- Cree un espace pour les boutons de fonction
+      frame .zadkopad.vide2 \
+         -height 30 \
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.000.0 \
-         -in .zadkopad.000 -side left
-      #--- Button-design
-      canvas .zadkopad.000.0.canv1 \
-         -width $geomlx200(larg2) -height $geomlx200(haut2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -highlightbackground $colorlx200(backpad)
-      .zadkopad.000.0.canv1 create line $geomlx200(linewidth) $geomlx200(linewidth) $geomlx200(linewidth) \
-         $geomlx200(haut2) $geomlx200(larg2) $geomlx200(haut2) $geomlx200(larg2) $geomlx200(linewidth) \
-         $geomlx200(linewidth) $geomlx200(linewidth) \
-         -fill $colorlx200(textkey) -width $geomlx200(linewidth0)
-      pack .zadkopad.000.0.canv1 \
-         -in .zadkopad.000.0 -expand 1
-      #--- Write the label
-      label .zadkopad.000.0.canv1.lab1 \
-         -font [ list {Arial} $geomlx200(fontsize20) $geomlx200(textthick) ] -text 0 \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.000.0.canv1.lab1 \
-         -in .zadkopad.000.0.canv1 -x [ expr int(25*$zoom) ] -y [ expr int(28*$zoom) ]
-      #--- Write the label
-      label .zadkopad.000.0.canv1.lab2 \
-         -font [ list {Arial} $geomlx200(fontsize10) $geomlx200(textthick) ] -text GUIDE \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.000.0.canv1.lab2 \
-         -in .zadkopad.000.0.canv1 -x [ expr int(13*$zoom) ] -y [ expr int(10*$zoom) ]
-      set zonelx200(0) .zadkopad.000.0.canv1
+      pack .zadkopad.vide2 \
+         -in .zadkopad -side top -fill x -pady 10
+          
+#########################################################
 
-      #--- Create a dummy frame
-      frame .zadkopad.000.dume \
-         -width $geomlx200(20pixels) \
+#--- Create a frame for the function buttons
+      #--- Cree un espace pour les boutons de fonction
+      frame .zadkopad.frame1 \
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.000.dume \
-         -in .zadkopad.000 -side right -fill y
+      pack .zadkopad.frame1 \
+         -in .zadkopad -side top -fill x -pady 10
+         
+         frame .zadkopad.frame1.frame2 \
+         -borderwidth 5 -relief flat -width 430 -bg $colorlx200(backkey) 
+      	pack .zadkopad.frame1.frame2 \
+         -in .zadkopad.frame1 -side right -fill x -expand true -pady 10 -padx 10
+         frame .zadkopad.frame1.frame3 \
+         -borderwidth 5 -relief flat -width 430 -bg $colorlx200(backkey)
+      	pack .zadkopad.frame1.frame3 \
+         -in .zadkopad.frame1 -side left -fill x -expand true -pady 10 -padx 10
 
-      #--- Create the button 'next'
-      frame .zadkopad.000.next \
-         -width $geomlx200(larg2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.000.next \
-         -in .zadkopad.000 -side right
-      #--- Button-design
-      canvas .zadkopad.000.next.canv1 \
-         -width $geomlx200(larg2) -height $geomlx200(haut2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -highlightbackground $colorlx200(backpad)
-      .zadkopad.000.next.canv1 create line $geomlx200(linewidth) $geomlx200(linewidth) $geomlx200(linewidth) \
-         $geomlx200(haut2) $geomlx200(larg2) $geomlx200(haut2) $geomlx200(larg2) $geomlx200(linewidth) \
-         $geomlx200(linewidth) $geomlx200(linewidth) \
-         -fill $colorlx200(textkey) -width $geomlx200(linewidth)
-      pack .zadkopad.000.next.canv1 \
-         -in .zadkopad.000.next -expand 1
-      #--- Write the label
-      label .zadkopad.000.next.canv1.lab1 \
-         -font [ list {Arial} $geomlx200(fontsize20) $geomlx200(textthick) ] -text " " \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
+ 		#--- label de droite
+      label .zadkopad.frame1.frame2.telescope \
+         -font [ list {Arial} $geomlx200(fontsize20) $geomlx200(textthick) ] -text "Telescope Information" \
+         -borderwidth 0 -relief flat -bg $colorlx200(backpad) \
          -fg $colorlx200(textkey)
-      place .zadkopad.000.next.canv1.lab1 \
-         -in .zadkopad.000.next.canv1 -x [ expr int(25*$zoom) ] -y [ expr int(28*$zoom) ]
-      #--- Write the label
-      label .zadkopad.000.next.canv1.lab2 \
-         -font [ list {Arial} $geomlx200(fontsize10) $geomlx200(textthick) ] -text NEXT \
+      pack .zadkopad.frame1.frame2.telescope \
+         -in .zadkopad.frame1.frame2 -side top -fill x -expand true
+         
+		set base ".zadkopad.frame1.frame2"
+			frame $base.f -bg $colorlx200(backpad)
+	   #---
+	   label $base.f.lab_tu \
+	      -bg $colorlx200(backpad)  -fg $colorlx200(textkey) \
+	      -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+	   label $base.f.lab_tsl \
+	      -bg $colorlx200(backpad)  -fg $colorlx200(textkey) \
+	      -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+	   pack $base.f.lab_tu -fill none -pady 2
+	   pack $base.f.lab_tsl -fill none -pady 2
+	   #---
+	   frame $base.f.ra -bg $colorlx200(backpad)
+	      label $base.f.ra.lab1 -text "Right Ascension (h m s):" \
+	         -bg $colorlx200(backpad)  -fg $colorlx200(textkey) \
+	         -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+	      entry $base.f.ra.ent1 -textvariable paramhorloge(ra) \
+	         -width 10  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
+	         -bg $colorlx200(backpad)  -fg $colorlx200(textkey) \
+	         -relief flat
+	      pack $base.f.ra.lab1 -side left -fill none
+	      pack $base.f.ra.ent1 -side left -fill none
+	   pack $base.f.ra -fill none -pady 2
+	   frame $base.f.dec -bg $colorlx200(backpad)
+	      label $base.f.dec.lab1 -text "Declination (+/- ° ' ''):" \
+	         -bg $colorlx200(backpad)  -fg $colorlx200(textkey) \
+	         -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+	      entry $base.f.dec.ent1 -textvariable paramhorloge(dec) \
+	         -width 10  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
+	         -bg $colorlx200(backpad) \
+	          -fg $colorlx200(textkey) -relief flat
+	      pack $base.f.dec.lab1 -side left -fill none
+	      pack $base.f.dec.ent1 -side left -fill none
+	   pack $base.f.dec -fill none -pady 2
+	   
+	   
+	   #---
+	   label $base.f.lab_ha \
+	      -bg $colorlx200(backpad)  -fg $colorlx200(textkey) \
+	      -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+	   label $base.f.lab_altaz \
+	      -bg $colorlx200(backpad)  -fg $colorlx200(textkey) \
+	      -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+	   pack $base.f.lab_ha -fill none -pady 2
+	   pack $base.f.lab_altaz -fill none -pady 2
+	   label $base.f.lab_secz \
+	      -bg $colorlx200(backpad)  -fg $colorlx200(textkey) \
+	      -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+	   pack $base.f.lab_secz -fill none -pady 2
+	   
+	   button $base.f.but1 -width 15 -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text OFF \
          -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
+         -fg $colorlx200(textkey)\
+         -text "Refresh" -command {::zadkopad::calcul}
+	   pack $base.f.but1 -ipadx 5 -ipady 5 -pady 20
+	pack $base.f -fill both
+	
+	#bind $base.f.ra.ent1 <Enter> { met_a_jour }
+	#bind $base.f.dec.ent1 <Enter> { met_a_jour }
+	
+         
+         
+         #--- label de gauche
+      label .zadkopad.frame1.frame3.telescope \
+         -font [ list {Arial} $geomlx200(fontsize20) $geomlx200(textthick) ] -text "Move Telescope" \
+         -borderwidth 0 -relief flat -bg $colorlx200(backpad) \
          -fg $colorlx200(textkey)
-      place .zadkopad.000.next.canv1.lab2 \
-         -in .zadkopad.000.next.canv1 -x [ expr int(16*$zoom) ] -y [ expr int(10*$zoom) ]
-      set zonelx200(next) .zadkopad.000.next.canv1
+      pack .zadkopad.frame1.frame3.telescope \
+         -in .zadkopad.frame1.frame3 -side top -fill x -expand true
+         
+        
+		
+		set base2 ".zadkopad.frame1.frame3"
+			frame $base2.f -bg $colorlx200(backpad)
+	   #---
+	   label $base2.f.lab_tu \
+	      -bg $colorlx200(backpad)  -fg $colorlx200(textkey) \
+	      -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+	   label $base2.f.lab_tsl \
+	      -bg $colorlx200(backpad)  -fg $colorlx200(textkey) \
+	      -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+	   pack $base2.f.lab_tu -fill none -pady 2
+	   pack $base2.f.lab_tsl -fill none -pady 2
+	   #---
+	   frame $base2.f.ra -bg $colorlx200(backpad)
+	      label $base2.f.ra.lab1 -text "Right Ascension (h m s):" \
+	         -bg $colorlx200(backpad)  -fg $colorlx200(textkey) \
+	         -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+	      entry $base2.f.ra.ent1 -textvariable paramhorloge(new,ra) \
+	         -width 10  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
+	         -bg $colorlx200(backtour)  -fg $colorlx200(backpad) \
+	         -relief flat
+	      pack $base2.f.ra.lab1 -side left -fill none
+	      pack $base2.f.ra.ent1 -side left -fill none
+	   pack $base2.f.ra -fill none -pady 2
+	   frame $base2.f.dec -bg $colorlx200(backpad)
+	      label $base2.f.dec.lab1 -text "Declination (+/- ° ' ''):" \
+	         -bg $colorlx200(backpad)  -fg $colorlx200(textkey) \
+	         -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+	      entry $base2.f.dec.ent1 -textvariable paramhorloge(new,dec)\
+	         -width 10  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
+	         -bg $colorlx200(backtour)  -fg $colorlx200(backpad) \
+	          -relief flat
+	      pack $base2.f.dec.lab1 -side left -fill none
+	      pack $base2.f.dec.ent1 -side left -fill none
+	   pack $base2.f.dec -fill none -pady 2
+	   #button $base2.f.but1 -text "Refresh" -command {::zadkopad::calcul}
+	   #pack $base2.f.but1 -ipadx 5 -ipady 5
+	   #---
+	   label $base2.f.lab_ha \
+	      -bg $colorlx200(backpad)  -fg $colorlx200(textkey) \
+	      -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+	   label $base2.f.lab_altaz \
+	      -bg $colorlx200(backpad)  -fg $colorlx200(textkey) \
+	      -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+	   pack $base2.f.lab_ha -fill none -pady 2
+	   pack $base2.f.lab_altaz -fill none -pady 2
+	   label $base2.f.lab_secz \
+	      -bg $colorlx200(backpad)  -fg $colorlx200(textkey) \
+	      -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+	   pack $base2.f.lab_secz -fill none -pady 2
+	pack $base2.f -fill both
+ 	
+#	bind $base2.f2.ra2.ent2 <Enter> { ::zadkopad::met_a_jour }
+#	bind $base2.f2.dec2.ent2 <Enter> { ::zadkopad::met_a_jour }
+	
 
-      #--- Create the button 'prev'
-      frame .zadkopad.000.prev \
-         -width $geomlx200(larg2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.000.prev \
-         -in .zadkopad.000 -side top
-      #--- Button-design
-      canvas .zadkopad.000.prev.canv1 \
-         -width $geomlx200(larg2) -height $geomlx200(haut2) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -highlightbackground $colorlx200(backpad)
-      .zadkopad.000.prev.canv1 create line $geomlx200(linewidth) $geomlx200(linewidth) $geomlx200(linewidth) \
-         $geomlx200(haut2) $geomlx200(larg2) $geomlx200(haut2) $geomlx200(larg2) $geomlx200(linewidth) \
-         $geomlx200(linewidth) $geomlx200(linewidth) \
-         -fill $colorlx200(textkey) -width $geomlx200(linewidth0)
-      pack .zadkopad.000.prev.canv1 \
-         -in .zadkopad.000.prev -expand 1
-      #--- Write the label
-      label .zadkopad.000.prev.canv1.lab1 \
-         -font [ list {Arial} $geomlx200(fontsize20) $geomlx200(textthick) ] -text " " \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.000.prev.canv1.lab1 \
-         -in .zadkopad.000.prev.canv1 -x [ expr int(25*$zoom) ] -y [ expr int(28*$zoom) ]
-      #--- Write the label
-      label .zadkopad.000.prev.canv1.lab2 \
-         -font [ list {Arial} $geomlx200(fontsize10) $geomlx200(textthick) ] -text PREV \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
-         -fg $colorlx200(textkey)
-      place .zadkopad.000.prev.canv1.lab2 \
-         -in .zadkopad.000.prev.canv1 -x [ expr int(15*$zoom) ] -y [ expr int(10*$zoom) ]
-      set zonelx200(prev) .zadkopad.000.prev.canv1
+	#---
 
       #--- La fenetre est active
       focus .zadkopad
@@ -1056,73 +640,66 @@ namespace eval ::zadkopad {
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
       bind .zadkopad <Key-F1> { ::console::GiveFocus }
 
-      # =========================================
-      # === Setting the binding
-      # === Met en place les liaisons
-      # =========================================
-
-      # ========================================
-      # === Setting the astronomical devices ===
-      # ========================================
-
-      if { [ string compare $audace(telNo) 0 ] != "0" } {
-         #--- Cardinal moves
-         bind $zonelx200(e) <ButtonPress-1>       { ::telescope::move e }
-         bind $zonelx200(e).lab <ButtonPress-1>   { ::telescope::move e }
-         bind $zonelx200(e) <ButtonRelease-1>     { ::telescope::stop e }
-         bind $zonelx200(e).lab <ButtonRelease-1> { ::telescope::stop e }
-
-         bind $zonelx200(w) <ButtonPress-1>       { ::telescope::move w }
-         bind $zonelx200(w).lab <ButtonPress-1>   { ::telescope::move w }
-         bind $zonelx200(w) <ButtonRelease-1>     { ::telescope::stop w }
-         bind $zonelx200(w).lab <ButtonRelease-1> { ::telescope::stop w }
-
-         bind $zonelx200(s) <ButtonPress-1>       { ::telescope::move s }
-         bind $zonelx200(s).lab <ButtonPress-1>   { ::telescope::move s }
-         bind $zonelx200(s) <ButtonRelease-1>     { ::telescope::stop s }
-         bind $zonelx200(s).lab <ButtonRelease-1> { ::telescope::stop s }
-
-         bind $zonelx200(n) <ButtonPress-1>       { ::telescope::move n }
-         bind $zonelx200(n).lab <ButtonPress-1>   { ::telescope::move n }
-         bind $zonelx200(n) <ButtonRelease-1>     { ::telescope::stop n }
-         bind $zonelx200(n).lab <ButtonRelease-1> { ::telescope::stop n }
-
-         #--- Focus moves
-         bind $zonelx200(next) <ButtonPress-1> { tel$audace(telNo) focus move + $statustel(speed) }
-         bind $zonelx200(next).lab1 <ButtonPress-1> { tel$audace(telNo) focus move + $statustel(speed) }
-         bind $zonelx200(next) <ButtonRelease-1> { tel$audace(telNo) focus stop }
-         bind $zonelx200(next).lab1 <ButtonRelease-1> { tel$audace(telNo) focus stop }
-         bind $zonelx200(prev) <ButtonPress-1> { tel$audace(telNo) focus move - $statustel(speed) }
-         bind $zonelx200(prev).lab1 <ButtonPress-1> { tel$audace(telNo) focus move - $statustel(speed) }
-         bind $zonelx200(prev) <ButtonRelease-1> { tel$audace(telNo) focus stop }
-         bind $zonelx200(prev).lab1 <ButtonRelease-1> { tel$audace(telNo) focus stop }
-
-         #--- Set speeds
-         bind $zonelx200(7) <ButtonPress-1>      {::telescope::setSpeed "4"}
-         bind $zonelx200(7).lab1 <ButtonPress-1> {::telescope::setSpeed "4"}
-         bind $zonelx200(7).lab2 <ButtonPress-1> {::telescope::setSpeed "4"}
-
-         bind $zonelx200(4) <ButtonPress-1>      {::telescope::setSpeed "3"}
-         bind $zonelx200(4).lab1 <ButtonPress-1> {::telescope::setSpeed "3"}
-         bind $zonelx200(4).lab2 <ButtonPress-1> {::telescope::setSpeed "3"}
-
-         bind $zonelx200(1) <ButtonPress-1>      {::telescope::setSpeed "2"}
-         bind $zonelx200(1).lab1 <ButtonPress-1> {::telescope::setSpeed "2"}
-         bind $zonelx200(1).lab2 <ButtonPress-1> {::telescope::setSpeed "2"}
-
-         bind $zonelx200(0) <ButtonPress-1>      {::telescope::setSpeed "1"}
-         bind $zonelx200(0).lab1 <ButtonPress-1> {::telescope::setSpeed "1"}
-         bind $zonelx200(0).lab2 <ButtonPress-1> {::telescope::setSpeed "1"}
-      }
-
-      #--- Je refraichi l'affichage des coordonnees
-      ::telescope::afficheCoord
-
       # =======================================
       # === It is the end of the script run ===
       # =======================================
+      ::zadkopad::calcul
    }
+   
+proc calcul { } {
+   global caption
+   global base
+   global paramhorloge
 
+   if { $paramhorloge(sortie) != "1" } {
+	set paramhorloge(ra) "$paramhorloge(new,ra)"
+   set paramhorloge(dec) "$paramhorloge(new,dec)"
+      set now now
+      catch {set now [::audace::date_sys2ut now]}
+      set tu [mc_date2ymdhms $now ]
+      set h [format "%02d" [lindex $tu 3]]
+      set m [format "%02d" [lindex $tu 4]]
+      set s [format "%02d" [expr int(floor([lindex $tu 5]))]]
+      $base.f.lab_tu configure -text "Universal Time: ${h}h ${m}mn ${s}s"
+      set tsl [mc_date2lst $now $paramhorloge(home)]
+      set h [format "%02d" [lindex $tsl 0]]
+      set m [format "%02d" [lindex $tsl 1]]
+      set s [format "%02d" [expr int(floor([lindex $tsl 2]))]]
+      $base.f.lab_tsl configure -text "Local Sidereal Time: ${h}h ${m}mn ${s}s"
+      set paramhorloge(ra1) "[ lindex $paramhorloge(ra) 0 ]h[ lindex $paramhorloge(ra) 1 ]m[ lindex $paramhorloge(ra) 2 ]"
+      set paramhorloge(dec1) "[ lindex $paramhorloge(dec) 0 ]d[ lindex $paramhorloge(dec) 1 ]m[ lindex $paramhorloge(dec) 2 ]"
+      set res [mc_radec2altaz "$paramhorloge(ra1)" "$paramhorloge(dec1)" "$paramhorloge(home)" $now]
+      set az  [format "%5.2f" [lindex $res 0]]
+      set alt [format "%5.2f" [lindex $res 1]]
+      set ha  [lindex $res 2]
+      set res [mc_angle2hms $ha]
+      set h [format "%02d" [lindex $res 0]]
+      set m [format "%02d" [lindex $res 1]]
+      set s [format "%02d" [expr int(floor([lindex $res 2]))]]
+      $base.f.lab_ha configure -text "Hour Angle: ${h}h ${m}mn ${s}s"
+      $base.f.lab_altaz configure -text "Azimuth: ${az}° - Elevation: ${alt}°"
+      if { $alt >= "0" } {
+         set distanceZenithale [ expr 90.0 - $alt ]
+         set distanceZenithale [ mc_angle2rad $distanceZenithale ]
+         set secz [format "%5.2f" [ expr 1. / cos($distanceZenithale) ] ]
+      } else {
+         set secz "The target is below the horizon."
+      }
+      $base.f.lab_secz configure -text "sec z: ${secz}"
+      update
+      #--- An infinite loop to change the language interactively
+      after 1000 {::zadkopad::calcul}
+   } else {
+      #--- Rien
+   }
+}
+
+proc met_a_jour { } {
+   global paramhorloge
+
+   set paramhorloge(ra) "$paramhorloge(new,ra)"
+   set paramhorloge(dec) "$paramhorloge(new,dec)"
+}
    #------------------------------------------------------------
    #  surveilleSpeed
    #   surveille les modifications de audace(telescope,speed) en tache de fond
