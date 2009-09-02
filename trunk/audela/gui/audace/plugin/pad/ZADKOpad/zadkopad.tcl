@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.2 2009-09-02 09:47:03 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.3 2009-09-02 09:51:29 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -558,7 +558,7 @@ namespace eval ::zadkopad {
 	   button $base.f.but1 -width 15 -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text OFF \
          -borderwidth 0 -relief flat -bg $colorlx200(backkey) \
          -fg $colorlx200(textkey)\
-         -text "Refresh" -command {::zadkopad::calcul}
+         -text "Refresh" -command {::zadkopad::calculz}
 	   pack $base.f.but1 -ipadx 5 -ipady 5 -pady 20
 	pack $base.f -fill both
 	
@@ -611,7 +611,7 @@ namespace eval ::zadkopad {
 	      pack $base2.f.dec.lab1 -side left -fill none
 	      pack $base2.f.dec.ent1 -side left -fill none
 	   pack $base2.f.dec -fill none -pady 2
-	   #button $base2.f.but1 -text "Refresh" -command {::zadkopad::calcul}
+	   #button $base2.f.but1 -text "Refresh" -command {::zadkopad::calculz}
 	   #pack $base2.f.but1 -ipadx 5 -ipady 5
 	   #---
 	   label $base2.f.lab_ha \
@@ -643,10 +643,10 @@ namespace eval ::zadkopad {
       # =======================================
       # === It is the end of the script run ===
       # =======================================
-      ::zadkopad::calcul
+      ::zadkopad::calculz
    }
    
-proc calcul { } {
+proc calculz { } {
    global caption
    global base
    global paramhorloge
@@ -688,18 +688,18 @@ proc calcul { } {
       $base.f.lab_secz configure -text "sec z: ${secz}"
       update
       #--- An infinite loop to change the language interactively
-      after 1000 {::zadkopad::calcul}
+      after 1000 {::zadkopad::calculz}
    } else {
       #--- Rien
    }
 }
 
-proc met_a_jour { } {
-   global paramhorloge
-
-   set paramhorloge(ra) "$paramhorloge(new,ra)"
-   set paramhorloge(dec) "$paramhorloge(new,dec)"
-}
+# proc met_a_jour { } {
+#    global paramhorloge
+# 
+#    set paramhorloge(ra) "$paramhorloge(new,ra)"
+#    set paramhorloge(dec) "$paramhorloge(new,dec)"
+# }
    #------------------------------------------------------------
    #  surveilleSpeed
    #   surveille les modifications de audace(telescope,speed) en tache de fond

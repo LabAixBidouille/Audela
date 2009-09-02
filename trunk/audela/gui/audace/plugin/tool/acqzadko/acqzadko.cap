@@ -1,6 +1,6 @@
 #
 # Fichier : acqzadko.cap
-# Mise a jour $Id: acqzadko.cap,v 1.2 2009-09-02 09:47:44 myrtillelaas Exp $
+# Mise a jour $Id: acqzadko.cap,v 1.3 2009-09-02 09:51:18 myrtillelaas Exp $
 #
 
 #=========================================================================
@@ -98,7 +98,7 @@ set caption(acqzadko,buttonShiftConfig)         "Shift"
 set caption(acqzadko,acquisition)               "Aud'ACE - Acquisition of"
 set caption(acqzadko,acquisitionError)          "Acquisition Error. See details in the Terminal screen."
 set caption(acqzadko,connectioncamera)       	"Camera Connection"
-set caption(acqzadko,raquettetel)				"Telescop Control"
+set caption(acqzadko,raquettetel)				"Telescope Control"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -285,7 +285,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqzadko,acquisition)            "Aud'ACE - Acquisizione di"
    set caption(acqzadko,acquisitionError)       "Errore di acquisizione. Vedere i dettagli sul Console."
    set caption(acqzadko,connectioncamera)       "Camera Connection"
-   set caption(acqzadko,raquettetel)			"Telescop Control"
+   set caption(acqzadko,raquettetel)			"Telescope Control"
    
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -378,7 +378,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqzadko,acquisition)            "Aud'ACE - Adquisición de"
    set caption(acqzadko,acquisitionError)       "Error de adquisición. Ver detalles en la Consola."
    set caption(acqzadko,connectioncamera)       "Camera Connection"
-   set caption(acqzadko,raquettetel)			"Telescop Control"
+   set caption(acqzadko,raquettetel)			"Telescope Control"
    
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -471,7 +471,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqzadko,image,acquisition)      "Aud'ACE - Belichtung von"
    set caption(acqzadko,acquisitionError)       "Belichtung Irrtum. Siehe Details auf der Konsole."
    set caption(acqzadko,connectioncamera)       "Camera Connection"
-   set caption(acqzadko,raquettetel)			"Telescop Control"
+   set caption(acqzadko,raquettetel)			"Telescope Control"
    
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -564,7 +564,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqzadko,acquisition)            "Aud'ACE - Aquisição de"
    set caption(acqzadko,acquisitionError)       "Erro na aquisição. Ver detalhes na Consola."
    set caption(acqzadko,connectioncamera)       "Camera Connection"
-   set caption(acqzadko,raquettetel)			"Telescop Control"
+   set caption(acqzadko,raquettetel)			"Telescope Control"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -656,7 +656,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqzadko,acquisition)            "Aud'ACE - Eksponeringer slut"
    set caption(acqzadko,acquisitionError)       "Acquisition Error. See details in the Terminal screen."
    set caption(acqzadko,connectioncamera)       "Camera Connection"
-   set caption(acqzadko,raquettetel)			"Telescop Control"
+   set caption(acqzadko,raquettetel)			"Telescope Control"
 }
 
 #=========================================================================
