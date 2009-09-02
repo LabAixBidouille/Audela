@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqzadko.tcl,v 1.1 2009-09-02 03:58:49 myrtillelaas Exp $
+# Mise a jour $Id: acqzadko.tcl,v 1.2 2009-09-02 09:47:44 myrtillelaas Exp $
 #
 
 #==============================================================
@@ -2383,17 +2383,11 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
       pack $panneau(acqzadko,$visuNo,This).camera.but -side top -fill x -in $panneau(acqzadko,$visuNo,This).camera -ipadx 5 -ipady 4
    pack $panneau(acqzadko,$visuNo,This).camera -side top -fill x
    
-   #--- Trame du bouton de connection du telescope
-   frame $panneau(acqzadko,$visuNo,This).tel -borderwidth 2 -relief groove
-      button $panneau(acqzadko,$visuNo,This).tel.but -borderwidth 1 -text $caption(acqzadko,connectiontel) \
-        -command "::confTel::run"
-      pack $panneau(acqzadko,$visuNo,This).tel.but -side top -fill x -in $panneau(acqzadko,$visuNo,This).tel -ipadx 5 -ipady 4
-   pack $panneau(acqzadko,$visuNo,This).tel -side top -fill x
    
    #--- Trame du bouton affichage de la raquette
    frame $panneau(acqzadko,$visuNo,This).raquette -borderwidth 2 -relief groove
       button $panneau(acqzadko,$visuNo,This).raquette.but -borderwidth 1 -text $caption(acqzadko,raquettetel) \
-        -command "::confPad::run"
+        -command "::zadkopad::run"
       pack $panneau(acqzadko,$visuNo,This).raquette.but -side top -fill x -in $panneau(acqzadko,$visuNo,This).raquette -ipadx 5 -ipady 4
    pack $panneau(acqzadko,$visuNo,This).raquette -side top -fill x
    
