@@ -84,30 +84,7 @@ int tel_filter_coord(struct telprop *tel, char * coord);
 int tel_filter_move(struct  telprop *tel, char * direction);
 int tel_filter_stop(struct  telprop *tel);
 int tel_filter_extremity(struct telprop *tel, char * extremity);
-/*
-int mytel_radec_init(struct telprop *tel);
-int mytel_radec_init_additional(struct telprop *tel);
-int mytel_radec_goto(struct telprop *tel);
-int mytel_radec_state(struct telprop *tel,char *result);
-int mytel_radec_coord(struct telprop *tel,char *result);
-int mytel_radec_move(struct telprop *tel,char *direction);
-int mytel_radec_stop(struct telprop *tel,char *direction);
-int mytel_radec_motor(struct telprop *tel);
-int mytel_focus_init(struct telprop *tel);
-int mytel_focus_goto(struct telprop *tel);
-int mytel_focus_coord(struct telprop *tel,char *result);
-int mytel_focus_move(struct telprop *tel,char *direction);
-int mytel_focus_stop(struct telprop *tel,char *direction);
-int mytel_focus_motor(struct telprop *tel);
-int mytel_date_get(struct telprop *tel,char *ligne);
-int mytel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s);
-int mytel_home_get(struct telprop *tel,char *ligne);
-int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,double altitude);
 
-int mytel_get_format(struct telprop *tel);
-int mytel_set_format(struct telprop *tel,int longformatindex);
-int mytel_flush(struct telprop *tel);
-*/
 int mytel_tcleval(struct telprop *tel,char *ligne);
 int mytel_correct(struct telprop *tel,char *direction, int duration);
 int mytel_setControl(struct telprop *tel,int control);

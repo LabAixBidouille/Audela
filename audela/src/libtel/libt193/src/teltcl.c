@@ -73,7 +73,7 @@ int cmdTelFilter(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
          tel_filter_coord(tel,ligne);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       } else if (strcmp(argv[2],"extremity")==0) {
-         // --- coord : retourne l'etat des butees (MIN MED MAX)
+         // --- extremity : retourne l'etat des butees (MIN MED MAX)
          tel_filter_extremity(tel,ligne);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       } else if (strcmp(argv[2],"move")==0) {
@@ -89,6 +89,8 @@ int cmdTelFilter(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
       } else if (strcmp(argv[2],"stop")==0) {
          // --- stop 
          tel_filter_stop(tel);
+         strcpy(ligne,"");
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       } else {
          //--- sub command not found 
          sprintf(ligne,comment,argv[0],argv[1]);

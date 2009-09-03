@@ -65,6 +65,7 @@ void mytel_logConsole(struct telprop *tel, char *messageFormat, ...) ;
 int mytel_readUsbCard(struct telprop *tel, unsigned char *data);
 int mytel_getBit(struct telprop *tel, unsigned char data, int numbit);
 void mytel_startTimer(struct telprop *tel);
+double mytel_getTimer(struct telprop *tel);
 double mytel_stopTimer(struct telprop *tel);
 int mytel_sendCommandTelescop(struct telprop *tel, int command);
 int mytel_sendCommandFilter(struct telprop *tel, int command);
@@ -110,7 +111,12 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    tel->outputFilterData = 255;
    tel->consoleLog = 0;    // j'active les traces dans la console pour les premiers tests 
    tel->filterMaxDelay = 10;  
-   tel->filterCurrentDelay = 0;  
+   tel->filterCurrentDelay = 0; 
+   tel->startTime = 0.0;
+   tel->filterCommand = -1;   // L'indicateur de mouvement du filtre vaut :
+                              //    -1=pas de mouvement en cours, 
+                              //    tel->decreaseFilterRelay = mouvement "-" en cours
+                              //    tel->increaseFilterRelay = mouvement "+" en cours
 
    tel->northRelay         = 0;
    tel->southRelay         = 1;
@@ -430,12 +436,10 @@ int tel_radec_init(struct telprop *tel)
 int tel_radec_coord(struct telprop *tel,char *result)
 {
 
-
 //   char command[1024],response[1024],signe[2],ls[100];
 //   int h,d,m,sec;
 //   int nbcar_1,nbcar_2;
 //   strcpy(result,"");
-
 
    // j'initialise a reponse a vide
    //strcpy(response,"");
@@ -723,7 +727,8 @@ int mytel_setControl(struct telprop *tel,int control) {
 // @param filterMaxDelay  duree de déplacement entre les fin de course (en seconde)
 //-------------------------------------------------------------
 
-int tel_filter_setMax(struct telprop *tel, double filterMaxDelay) {   
+int tel_filter_setMax(struct telprop *tel, double filterMaxDelay) {  
+   // je memorise la valeur max 
    tel->filterMaxDelay = filterMaxDelay;
 
    // j'ecrete la valeur courante pour ne pas provoquer une situation incohérente
@@ -741,17 +746,14 @@ int tel_filter_setMax(struct telprop *tel, double filterMaxDelay) {
 //-------------------------------------------------------------
 // tel_filter_getMax
 //
-// retour,la durée de depalcement entre les 2 butées de fin de course 
+// retour,la durée de deplacement entre les 2 butées de fin de course 
 //
 // @param tel 
 // @param filterMaxDelay  duree de déplacement entre les fin de course (en seconde)
 //-------------------------------------------------------------
 
 int tel_filter_getMax(struct telprop *tel, double *filterMaxDelay) {   
-   tel->filterMaxDelay = tel->filterMaxDelay;
-
-   *filterMaxDelay = tel->filterMaxDelay;
-
+   *filterMaxDelay     = tel->filterMaxDelay;
    return 0;   
 }
 
@@ -759,13 +761,10 @@ int tel_filter_getMax(struct telprop *tel, double *filterMaxDelay) {
 //-------------------------------------------------------------
 // tel_filter_coord
 //
-// Retourner les coordonnee
-// Cette durée servira pour calculer le pourcentage d'atténuation
+// Retourne la position du filtre d'attenuation (entre 0.0 et 10.0) 
 //
 // @param tel    pointeur struture telprop
-// @param coord  chaine de caractere contenant 1 valeurs
-//                - le pourcentage d'attenuation ( entre 0 et 100) 
-//                -  l'état des butées MIN , MED , MAX
+// @param coord  chaine de caractere contenant la valeur d'attenuation (entre 0.0 et 10.0) 
 //-------------------------------------------------------------
 int tel_filter_coord(struct telprop *tel, char * coord) {
    int result;
@@ -775,25 +774,48 @@ int tel_filter_coord(struct telprop *tel, char * coord) {
       unsigned char inputData;
       result = mytel_readUsbCard(tel, &inputData);
       if ( result == 0 ) {
+         double delay ; 
+
+
          // je recupere l'etat de la butee min
          int min = mytel_getBit(tel, inputData, tel->minDetectorFilterInput);
          // je recupere l'etat de la butee max
          int max = mytel_getBit(tel, inputData, tel->maxDetectorFilterInput);
 
-         // la fin de course est au niveau 0 quand elle est rencontrée
          if ( min == 0 ) {
-            tel->filterCurrentDelay = 0;
+            // la butee MIN est au niveau 0 quand elle est rencontrée
+            delay= 0;
+            tel->filterCurrentDelay = delay; 
          } else if (max == 0 ) {
-            tel->filterCurrentDelay = tel->filterMaxDelay;
+            // la butee MAX est au niveau 0 quand elle est rencontrée
+            delay = tel->filterMaxDelay;
+            tel->filterCurrentDelay = delay; 
+         } else {
+            // la position est entre les deux butees
+            if (tel->filterCommand == tel->decreaseFilterRelay) {
+               // si un mouvement "-" en cours , je soustrais la durée ecoulee depuis le début du mouvement
+               delay =  tel->filterCurrentDelay -  mytel_getTimer(tel);
+            } else if (tel->filterCommand == tel->increaseFilterRelay) {
+               // si un mouvement "-" en cours , j'ajoute la durée ecoulee depuis le début du mouvement
+               delay =  tel->filterCurrentDelay +  mytel_getTimer(tel);
+            } else {
+               // si pas de un mouvement en cours, je retourne le delai courant
+               delay = tel->filterCurrentDelay;
+            }
+
+            if (delay< 0.0 ) {
+               delay = 0.0;
+            } else if (delay > tel->filterMaxDelay ) {
+               delay = tel->filterMaxDelay;
+            }
          }
 
-         // je calcule le pourcentage par raport au delai max
-         sprintf(coord, "%d", (int) (tel->filterCurrentDelay * 100.0 / tel->filterMaxDelay)); 
+         // je calcule le pourcentage par rapport au delai max
+         sprintf(coord, "%3.1f", ( delay * 10.0 / tel->filterMaxDelay)); 
          result = 0;
       }
-
    } else {
-      strcpy(coord, "23");
+      strcpy(coord, "5.0");
       // je simule l'envoi de la commande
       //mytel_logConsole(tel, "simul filter coord %s OK", coord);
       result = 0;
@@ -805,10 +827,13 @@ int tel_filter_coord(struct telprop *tel, char * coord) {
 //-------------------------------------------------------------
 // tel_filter_extremity
 //
-// Retourner l'etat des butees aux extremités
+// Retourne l'etat des butees aux extremités
+//    retourne MIN si la position est sur la butée MIN
+//    retourne MAX si la position est sur la butée MAX
+//    retourne MED si la position est entre les deux butées
 //
 // @param tel    pointeur struture telprop
-// @param extremity  chaine de caractere contenant l'état des butées (MIN , MED , MAX)
+// @param extremity  chaine de caractere contenant l'état de la position (MIN , MED , MAX)
 //                
 //-------------------------------------------------------------
 int tel_filter_extremity(struct telprop *tel, char * extremity) {
@@ -832,10 +857,8 @@ int tel_filter_extremity(struct telprop *tel, char * extremity) {
          }  else {
             strcpy(extremity,"MED");
          }
-
          result = 0;
       }
-
    } else {
       strcpy(extremity, "MED");
       // je simule l'envoi de la commande
@@ -847,15 +870,14 @@ int tel_filter_extremity(struct telprop *tel, char * extremity) {
    
 }
 
-
 //-------------------------------------------------------------
 // tel_filter_move
 //
-// modifie la position de l'atténuateur
-// Cette durée servira pour calculer le pourcentage d'atténuation
+// demarrer le changement de position de l'atténuateur
 //
-// @param tel    pointeur struture telprop
-// @param coord  chaine de caractere contenant le pourcentage d'attenuation ( entre 0 et 100)
+// @param tel    pointeur structure telprop
+// @param direction  sens du deplacement ( "-" ou "+" )
+// @return      0 = OK,  1= erreur
 //-------------------------------------------------------------
 int tel_filter_move(struct telprop *tel, char * direction) {
    int result = 0;
@@ -891,10 +913,17 @@ int tel_filter_move(struct telprop *tel, char * direction) {
       result = 0;
    }
 
-   return result;
-   
+   return result;   
 }
 
+//-------------------------------------------------------------
+// tel_filter_move
+//
+// arrete le changement de position de l'atténuateur
+//
+// @param tel    pointeur structure telprop
+// @return      0 = OK,  1= erreur
+//-------------------------------------------------------------
 int tel_filter_stop(struct telprop *tel) {
    int result;
 
@@ -930,25 +959,26 @@ int tel_filter_stop(struct telprop *tel) {
             tel->filterCurrentDelay = tel->filterMaxDelay;
          } 
       }
+      // Raz de la commande pour indiquer que le mouvement est arrete
+      tel->filterCommand = -1;
     } else {
       // je simule l'envoi de la commande
       //mytel_logConsole(tel, "simul filter stop OK");
       result = 0;
    }
-   return result;
-   
+   return result;   
 }
 
+//-------------------------------------------------------------
+// mytel_sendCommandTelescop
+//
+// envoie une commande au telescope sur le port tel->outputTelescopTaskHandle
+//
+// @param tel     pointeur structure telprop
+// @param command integer contenant la conmmande  
+// @return        0 = OK,  1= erreur
+//-------------------------------------------------------------
 
-
-
-
-/**
- * mytel_sendCommandTelescop : send a command to the telescop
- * @param tel  
- * @param command : long integer 
- * @return 0=OK 1=erreur
- */
 int mytel_sendCommandTelescop(struct telprop *tel, int command) {
 	int      cr = 0;
    int      error=0;
@@ -988,12 +1018,15 @@ int mytel_sendCommandTelescop(struct telprop *tel, int command) {
 	return cr;
 }
 
-/**
- * mytel_sendCommandTelescop : send a command to the telescop
- * @param tel  
- * @param command : long integer 
- * @return 0=OK 1=erreur
- */
+//-------------------------------------------------------------
+// mytel_sendCommandFilter
+//
+// envoie une commande au filtre sur le port tel->outputFilterTaskHandle
+//
+// @param tel      pointeur structure telprop
+// @param command  integer contenant la conmmande 
+// @return         0 = OK,  1= erreur
+//-------------------------------------------------------------
 int mytel_sendCommandFilter(struct telprop *tel, int command) {
 	char     ligne[1024];
 	int      cr = 0;
@@ -1020,7 +1053,6 @@ int mytel_sendCommandFilter(struct telprop *tel, int command) {
    //    bool32 *reserved);            NULL
 	//error = DAQmxWriteDigitalU32(tel->outputTaskHandle,1,1,10.0,DAQmx_Val_GroupByChannel,&data,&written,NULL);
    error = DAQmxWriteDigitalU8(tel->outputFilterTaskHandle,1,1,10.0,DAQmx_Val_GroupByChannel,&data,&written,NULL);
-    
 
    if( DAQmxFailed(error)) {
       // je copie le message d'erreur
@@ -1103,7 +1135,11 @@ int mytel_getBit(struct telprop *tel, unsigned char data, int numbit)
    return result;
 }
 
-
+/**
+ * mytel_startTimer : enregistre l'heure courante comme heure de demarrage du timer
+ * @param tel  
+ * @return none
+ */
 void mytel_startTimer(struct telprop *tel)
 {
 #if defined(OS_WIN)
@@ -1124,26 +1160,72 @@ void mytel_startTimer(struct telprop *tel)
 #endif
 }
 
+
+/**
+ * mytel_getTimer : retourne le delay 
+ * @param tel  
+ * @return  delay ecoule entre le demarrage et l'arret du timer (en seconde)
+ */
+
+double mytel_getTimer(struct telprop *tel)
+{
+    double stopTime;
+    if ( tel->startTime == 0.0 ) {
+       // je retourne une valeur nulle si le timer est arrete
+       return 0.0;
+    } else {
+#if defined(OS_WIN)
+      struct _timeb timebuffer;
+      _ftime(&timebuffer);
+#endif
+#if defined(OS_LIN)
+      struct timeb timebuffer;
+      ftime(&timebuffer);
+#endif
+#if defined(OS_WIN) || defined(OS_LIN)
+      stopTime = ((double) timebuffer.millitm) / 1000.0 + (double) timebuffer.time;
+#endif
+#if defined(OS_MACOS)
+      struct timeval date;
+      gettimeofday(&date, NULL);
+      stopTime = (double) date.tv_sec + ((double) date.tv_usec) / 1000000.0;
+#endif
+      return stopTime - tel->startTime;
+   }
+}
+
+
+/**
+ * mytel_startTimer : enregistre l'heure courante comme heure de demarrage du timer
+ * @param tel  
+ * @return  delay ecoule entre le demarrage et l'arret du timer (en seconde)
+ */
+
 double mytel_stopTimer(struct telprop *tel)
 {
     double stopTime;
+    double delay;
+
 #if defined(OS_WIN)
-    struct _timeb timebuffer;
-    _ftime(&timebuffer);
+   struct _timeb timebuffer;
+   _ftime(&timebuffer);
 #endif
 #if defined(OS_LIN)
-    struct timeb timebuffer;
-    ftime(&timebuffer);
+   struct timeb timebuffer;
+   ftime(&timebuffer);
 #endif
 #if defined(OS_WIN) || defined(OS_LIN)
-    stopTime = ((double) timebuffer.millitm) / 1000.0 + (double) timebuffer.time;
+   stopTime = ((double) timebuffer.millitm) / 1000.0 + (double) timebuffer.time;
 #endif
 #if defined(OS_MACOS)
-    struct timeval date;
-    gettimeofday(&date, NULL);
-    stopTime = (double) date.tv_sec + ((double) date.tv_usec) / 1000000.0;
+   struct timeval date;
+   gettimeofday(&date, NULL);
+   stopTime = (double) date.tv_sec + ((double) date.tv_usec) / 1000000.0;
 #endif
-    return stopTime - tel->startTime;
+   delay = stopTime - tel->startTime;
+   // RAZ de l'heure de debut pour indiquer qque le timer est arrete
+   tel->startTime = 0.0; 
+   return delay;
 
 }
 
