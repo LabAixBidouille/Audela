@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.23 2009-08-31 21:26:01 robertdelmas Exp $
+# @version  $Id: sophiecommand.tcl,v 1.24 2009-09-03 18:11:44 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -761,9 +761,8 @@ proc ::sophie::adaptIncrement { } {
 proc ::sophie::startMoveFilter { direction } {
    variable private
 
-   if { [ ::tel::list ] != "" && [tel$::audace(telNo) name] == "t193" } {
+   if { [ ::tel::list ] != "" && [tel$::audace(telNo) name] == "T193" } {
       set private(filterMaxDelay)       [ tel$::audace(telNo) filter max ]
-      set private(filterCurrentPercent) [ tel$::audace(telNo) filter coord ]
       set private(filterDirection)      $direction
       #--- je demarre le deplacement
       tel$::audace(telNo) filter move $direction
@@ -782,13 +781,13 @@ proc ::sophie::startMoveFilter { direction } {
 proc ::sophie::stopMoveFilter { } {
    variable private
 
-   if { $::audace(telNo) == 0 && [tel$::audace(telNo) name] == "t193" } {
+   if { $::audace(telNo) == 0 && [tel$::audace(telNo) name] == "T193" } {
       return
    }
    tel$::audace(telNo) filter stop
    #--- je recupere la position et je rafraichis l'affichage
    set private(attenuateur) [ tel$::audace(telNo) filter coord ]
-   #--- je recupere l'eta de butees
+   #--- je recupere l'etat de butees
    set extremity [ tel$::audace(telNo) filter extremity ]
 
    #--- j'arrete le rafraichissement de l'affichage du taux d'atténuation
@@ -804,7 +803,7 @@ proc ::sophie::stopMoveFilter { } {
    #--- je mets a jour la couleur des fin de course
    switch $extremity {
       "MAX" {
-         set private(attenuateur) 100
+         set private(attenuateur) 10.0
          $private(frm).attenuateur.labMin_color_invariant configure -background $::audace(color,backColor)
          $private(frm).attenuateur.labMax_color_invariant configure -background $::color(red)
       }
@@ -835,31 +834,19 @@ proc ::sophie::updateFilterPercent { } {
       set private(updateFilterId) ""
    }
 
-   #--- je mets a jour l'affichage avec une estimation de taux d'attenuation
    if { $private(updateFilterState) == 1 } {
-      if { $private(filterDirection) == "-" } {
-         set private(filterCurrentPercent) [expr $private(filterCurrentPercent) - (0.25 * 100 / $private(filterMaxDelay) ) ]
-      } else {
-         set private(filterCurrentPercent) [expr $private(filterCurrentPercent) + (0.25 * 100 / $private(filterMaxDelay) ) ]
-      }
-      if { $private(filterCurrentPercent) < 0 } {
-         set private(filterCurrentPercent) 0
-      }
-      if { $private(filterCurrentPercent) > 100 } {
-         set private(filterCurrentPercent) 100
-      }
-      set private(attenuateur) [expr int($private(filterCurrentPercent))]
+      #--- je recupere la position courante du filtre attenuateur
+      set private(attenuateur) [ tel$::audace(telNo) filter coord ]
 
-      #--- je mets a jour la couleur des fin de course
+      #--- je recupere l'etat des extremites
       set extremity [ tel$::audace(telNo) filter extremity ]
+      #--- je mets a jour la couleur des fin de course
       switch $extremity {
          "MAX" {
-            set private(attenuateur) 100
             $private(frm).attenuateur.labMin_color_invariant configure -background $::audace(color,backColor)
             $private(frm).attenuateur.labMax_color_invariant configure -background $::color(red)
          }
          "MIN" {
-            set private(attenuateur) 0
             $private(frm).attenuateur.labMin_color_invariant configure -background $::color(green)
             $private(frm).attenuateur.labMax_color_invariant configure -background $::audace(color,backColor)
          }
@@ -868,7 +855,6 @@ proc ::sophie::updateFilterPercent { } {
             $private(frm).attenuateur.labMax_color_invariant configure -background $::audace(color,backColor)
          }
       }
-
       #--- je lance la boucle d'affichage pendant le mouvement
       set private(updateFilterId) [after 250 ::sophie::updateFilterPercent]
    }
@@ -876,19 +862,20 @@ proc ::sophie::updateFilterPercent { } {
 
 ##------------------------------------------------------------
 # initFilter
-#  initialise la position des attenuateurs sur la borne inférieure d'atténuation
-#
-# @param bufName  nom du buffer
-# @return numero du buffer
+#  demarrage un mouvement "-" de l'attenuateur pour initialiser 
+#  la position des attenuateurs sur l'extremitee MIN
+#  la duree de recherche est limitee à 1.5 *  private(filterMaxDelay)
+# @return rien
 #------------------------------------------------------------
 proc ::sophie::initFilter {  } {
    variable private
 
    #--- je demarre la boucle de detection de la butee min
-   if { [ ::tel::list ] != "" && [ tel$::audace(telNo) name ] == "t193" } {
+   if { [ ::tel::list ] != "" && [ tel$::audace(telNo) name ] == "T193" } {
       set private(filterMaxDelay)       [ tel$::audace(telNo) filter max ]
       set private(filterCurrentPercent) [ tel$::audace(telNo) filter coord ]
       set private(filterDirection)    "-"
+      #--- j'active les boutons de commande du filtre attenuateur pendant las 
       $private(frm).attenuateur.butMin configure -state disabled
       $private(frm).attenuateur.butMax configure -state disabled
       bind $private(frm).attenuateur.butMin <ButtonPress-1>  ""
@@ -902,17 +889,23 @@ proc ::sophie::initFilter {  } {
    }
 }
 
+##------------------------------------------------------------
+# initFilterLoop
+#  continue le mouvement "-" de l'attenuateur jusqu'à ce que 
+#  l' extremite MIN soit atteinte
+# @return rien
+#------------------------------------------------------------
 proc ::sophie::initFilterLoop {  } {
    variable private
 
    #--- j'arrete le timer s'il est en cours
-   if { $private(updateFilterId)!="" } {
+   if { $private(updateFilterId) != "" } {
       after cancel $private(updateFilterId)
+      set private(updateFilterId) ""
    }
-   set private(updateFilterId) ""
 
    #--- je verifie que le telescope est toujours connecte
-   if { [ ::tel::list ] != "" } {
+   if { [ ::tel::list ] == "" } {
       return
    }
 
@@ -923,24 +916,34 @@ proc ::sophie::initFilterLoop {  } {
       #--- je mets a jour la couleur des fin de course
       set extremity [ tel$::audace(telNo) filter extremity ]
       if { $extremity == "MIN"  } {
-            set private(attenuateur) 0
-            $private(frm).attenuateur.labMin_color_invariant configure -background $::color(green)
-            $private(frm).attenuateur.labMax_color_invariant configure -background $::audace(color,backColor)
-            $private(frm).attenuateur.butMin configure -state normal
-            $private(frm).attenuateur.butMax configure -state normal
-            bind $private(frm).attenuateur.butMin <ButtonPress-1>   "::sophie::startMoveFilter -"
-            bind $private(frm).attenuateur.butMin <ButtonRelease-1> "::sophie::stopMoveFilter"
-            bind $private(frm).attenuateur.butMax <ButtonPress-1>   "::sophie::startMoveFilter +"
-            bind $private(frm).attenuateur.butMax <ButtonRelease-1> "::sophie::stopMoveFilter"
+         #--- l'extremitee MIN est atteinte            
+         set private(attenuateur) [ tel$::audace(telNo) filter coord ]
+         #--- j'arrete le mouvement 
+         tel$::audace(telNo) filter stop
+         
+         #--- j'active les boutons de commande du filtre attenuateur
+         $private(frm).attenuateur.labMin_color_invariant configure -background $::color(green)
+         $private(frm).attenuateur.labMax_color_invariant configure -background $::audace(color,backColor)
+         $private(frm).attenuateur.butMin configure -state normal
+         $private(frm).attenuateur.butMax configure -state normal
+         bind $private(frm).attenuateur.butMin <ButtonPress-1>   "::sophie::startMoveFilter -"
+         bind $private(frm).attenuateur.butMin <ButtonRelease-1> "::sophie::stopMoveFilter"
+         bind $private(frm).attenuateur.butMax <ButtonPress-1>   "::sophie::startMoveFilter +"
+         bind $private(frm).attenuateur.butMax <ButtonRelease-1> "::sophie::stopMoveFilter"
       } else {
-            $private(frm).attenuateur.labMin_color_invariant configure -background $::audace(color,backColor)
-            $private(frm).attenuateur.labMax_color_invariant configure -background $::audace(color,backColor)
-            #--- je lance la boucle d'affichage pendant le mouvement
-            set private(initFilterDuration) [expr $private(initFilterDuration)  - 0.250 ]
-            set private(updateFilterId) [after 250 ::sophie::initFilterLoop]
+         #--- l'extremite MIN n'est pas atteinte
+         $private(frm).attenuateur.labMin_color_invariant configure -background $::audace(color,backColor)
+         $private(frm).attenuateur.labMax_color_invariant configure -background $::audace(color,backColor)
+         #--- je continue le mouvement pendant 0.250 seconde
+         set private(initFilterDuration) [expr $private(initFilterDuration)  - 0.250 ]
+         set private(updateFilterId) [after 250 ::sophie::initFilterLoop]
       }
    } else {
+      #--- la duree max de recherche est depassee sans avoir trouve l'extremite MIN 
       set private(attenuateur) "?"
+      #--- j'arrete le mouvement 
+      tel$::audace(telNo) filter stop
+      #--- j'active les boutons de commande 
       $private(frm).attenuateur.labMin_color_invariant configure -background $::audace(color,backColor)
       $private(frm).attenuateur.labMax_color_invariant configure -background $::audace(color,backColor)
       $private(frm).attenuateur.butMin configure -state normal
