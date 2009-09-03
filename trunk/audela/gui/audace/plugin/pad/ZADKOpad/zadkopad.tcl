@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.4 2009-09-02 15:36:25 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.5 2009-09-03 16:15:30 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -15,23 +15,17 @@ namespace eval ::zadkopad {
    #     initialise le plugin
    #------------------------------------------------------------
    proc initPlugin { } {
+	  global port modetelescope
+	   
+	  set port(adressePCcontrol) 121.200.43.11
+	  set port(maj) 30032
+	  set port(tel) 30011
+	  set modetelescope 0
       #--- Cree les variables dans conf(...) si elles n'existent pas
       initConf
       #--- J'initialise les variables widget(..)
       confToWidget
-      #--- Je passe en mode manuel sur le telescope ZADKO
-      modeZADKO 1
-   }
-   #------------------------------------------------------------
-   #  change mode du telescope
-   #     manuel/auto
-   #------------------------------------------------------------
-   proc modeZADKO { mode } {
-     if {$mode==1} {
-	 #mode manuel du majordome
-     		
-	     } else {
-	     }
+      
    }
    #------------------------------------------------------------
    #  getPluginProperty
@@ -195,7 +189,10 @@ namespace eval ::zadkopad {
          set conf(zadkopad,position) [string range $geom $deb $fin]
       }
 	  set paramhorloge(sortie) "1"
-
+	  
+	  #--- rend la main a ros
+	  #modeZADKO 0
+	  
       #--- Supprime la raquette
       destroy .zadkopad
 
@@ -215,7 +212,101 @@ namespace eval ::zadkopad {
    #==============================================================
    # Procedures specifiques du plugin
    #==============================================================
-
+   #------------------------------------------------------------
+   #  open socket
+   #     
+   #------------------------------------------------------------
+   proc dialoguesocket {adressseIP port texte} {
+	   
+		set f [socket $adressseIP $port]
+		fconfigure $f -blocking 0 -buffering none 
+		puts $f "$texte"
+		after 1000
+		set reponse [read $f]
+		close $f
+		return $reponse
+   }
+   #------------------------------------------------------------
+   #  change mode du telescope
+   #     manuel(1)/auto
+   #------------------------------------------------------------
+	proc modeZADKO { mode } {
+		global port modetelescope
+		
+		set texte "DO eval "
+		append texte  {expr 1+1}
+		
+     	if {($mode==1)&&($modetelescope==0)} {
+	 		#passer en mode manuel du majordome
+	 		
+	 		set reponse [dialoguesocket $port(adressePCcontrol) $port(maj) $texte]
+	 		::console::affiche_resultat "$reponse"
+			
+	 		if {$reponse!=2} {
+		 		# --- le majordome ne repond pas
+		 		.zadkopad.func.closedome configure -relief groove -state disabled
+		 		.zadkopad.func.opendome configure -relief groove -state disabled
+		 		.zadkopad.func.init configure -relief groove -state disabled
+		 		.zadkopad.track.trackclose configure -relief groove -state disabled
+		 		.zadkopad.track.trackopen configure -relief groove -state disabled
+		 		.zadkopad.tel.init configure -relief groove -state disabled
+		 		.zadkopad.tel.parking configure -relief groove -state disabled
+		 		.zadkopad.petal.petalopen configure -relief groove -state disabled
+		 		.zadkopad.petal.petalclose configure -relief groove -state disabled
+		 		.zadkopad.foc.enter configure -relief groove -state disabled
+		 		.zadkopad.frame1.frame3.f.but1 configure -relief groove -state disabled
+		 		update
+		 		
+		 		set modetelescope 0
+		 	} else {
+				.zadkopad.mode.manual configure -relief groove -state disabled			
+				# ouvrir socket
+				#set reponse [dialoguesocket $port(adressePCcontrol) $port(tel) $texte]
+				::console::affiche_resultat "$reponse"
+					
+				# --- passer majordome en mode manuel
+				roscommande {majordome DO mysql ModeSysteme MANUAL}
+				
+				set modetelescope 1
+			}
+     		
+		} elseif {$modetelescope==1} {
+			# --- passer majordome en mode auto
+			#passer en mode manuel du majordome
+	 		set reponse [dialoguesocket $port(adressePCcontrol) $port(maj) $texte]
+	 		::console::affiche_resultat "$reponse"
+			
+	 		if {$reponse!=2} {
+			
+			}
+			#roscommande {majordome DO mysql ModeSysteme AUTO}
+		}
+	}
+   #------------------------------------------------------------
+   #    ros commande 
+   #     
+   #------------------------------------------------------------
+	proc roscommande { msg } {
+		global port
+		
+		::console::affiche_resultat "$msg"
+		set nameexe [lindex $msg 0]
+		
+		set ordre [lrange $msg 1 end]
+        
+		if {([string compare -nocase $nameexe "majordome"] == 0) || ([string compare -nocase $nameexe telescope]==0)} {
+			if {$nameexe=="majordome"} {
+				set portCom $port(maj)
+			} elseif { $nameexe=="telescope"} {
+				set portCom $port(tel)
+			}
+			
+			# ouvrir socket
+			set reponse [dialoguesocket $port(adressePCcontrol) $portCom $ordre]
+			::console::affiche_resultat "$reponse"	
+		} 
+		return $reponse
+	}
    #------------------------------------------------------------
    #  run
    #     cree la fenetre de la raquette
@@ -272,8 +363,9 @@ namespace eval ::zadkopad {
       
 	#--- Initialisation
 	set paramhorloge(sortie)     "0"
-	set paramhorloge(ra)         "21 44 11.2"
-	set paramhorloge(dec)        "+09 52 30"
+	set radec [ roscommande {telescope TEL radec coord}]
+	set paramhorloge(ra)         [lindex $radec 0]
+	set paramhorloge(dec)        [lindex $radec 1]
 	set paramhorloge(home)       $audace(posobs,observateur,gps)
 	set paramhorloge(color,back) #123456
 	set paramhorloge(color,text) #FFFFAA
@@ -315,7 +407,21 @@ namespace eval ::zadkopad {
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
       pack .zadkopad.dum1 \
          -in .zadkopad -side top -fill x
-             
+         
+#--- Create a frame for change mode
+      frame .zadkopad.mode \
+         -height $geomlx200(haut) \
+         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+      pack .zadkopad.mode \
+         -in .zadkopad -side top -pady 10
+      
+	  button .zadkopad.mode.manual -width $geomlx200(20pixels) -relief flat -bg $colorlx200(textdisp) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text MANUAL \
+         -borderwidth 0 -relief flat -bg $colorlx200(textdisp) \
+         -fg $colorlx200(backtour) -command {::zadkopad::modeZADKO 1}\
+         
+	  pack  .zadkopad.mode.manual -in .zadkopad.mode -padx [ expr int(11*$zoom) ] -side right
+
+ 
 #--- Create a frame for the dome control button
       frame .zadkopad.func \
          -height $geomlx200(haut) \
@@ -428,7 +534,7 @@ namespace eval ::zadkopad {
      
 #--- Create a dummy space
       frame .zadkopad.vide \
-         -height $geomlx200(30pixels) \
+         -height $geomlx200(20pixels) \
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
       pack .zadkopad.vide \
          -in .zadkopad -side top -fill x -pady 10
@@ -458,14 +564,6 @@ namespace eval ::zadkopad {
 
          
 	  pack  .zadkopad.foc.ent1 .zadkopad.foc.enter -in .zadkopad.foc -padx [ expr int(11*$zoom) ] -side left
-
-#--- Create a dummy space
-      frame .zadkopad.vide2 \
-         -height $geomlx200(30pixels) \
-         -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-      pack .zadkopad.vide2 \
-         -in .zadkopad -side top -fill x -pady 10
-          
 
 #--- Create a frame for Telescope Information
       frame .zadkopad.frame1 \
@@ -638,6 +736,8 @@ namespace eval ::zadkopad {
       # === It is the end of the script run ===
       # =======================================
       ::zadkopad::calculz
+      #--- Je passe en mode manuel sur le telescope ZADKO
+      ::zadkopad::modeZADKO 1
    }
    
 proc calculz { } {
