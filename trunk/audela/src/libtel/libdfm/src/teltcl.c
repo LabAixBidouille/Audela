@@ -346,3 +346,44 @@ int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    }
    return result;
 }
+
+/*
+ *   Value of focus (UC units)
+ */
+int cmdTelDFMFocus(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char ligne[2048],s[2048],ss[2048];
+   int result = TCL_OK,res;
+   double value,foc_analog,foc_digit;
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;
+   if (argc>3) {
+      sprintf(ligne,"Usage: %s %s ?focus_value?",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_ERROR;
+      return result;
+   }
+   if (argc>=3) {
+		value=atof(argv[2]);
+		if (value<2800) {
+			value=2800;
+		}
+		if (value>3600) {
+			value=3600;
+		}
+      sprintf(ligne,"#27,%f;",value);
+		res=dfm_put(tel,ligne);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+		strcpy(ligne,"");
+	} else {
+		res=dfm_put(tel,"#25;");
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+		res=dfm_read(tel,ss);
+		sprintf(s,"lindex \"%s\" 5",ss); mytel_tcleval(tel,s);
+		foc_analog=atof(tel->interp->result);
+		sprintf(s,"lindex \"%s\" 6",ss); mytel_tcleval(tel,s);
+		foc_digit=atof(tel->interp->result);
+		sprintf(ligne,"%.1f %.0f",foc_digit,foc_analog);
+	}
+	Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+	return result;
+}
