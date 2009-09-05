@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.21 2009-08-30 21:59:42 michelpujol Exp $
+# @version   $Id: sophie.tcl,v 1.22 2009-09-05 21:57:24 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -179,7 +179,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(yBinning)         2
    set private(mode)             "CENTER"
    set private(zoom)             "1"
-   set private(attenuateur)      "80"
+   set private(attenuateur)      "5"
    set private(windowing)        "full"            ; #--- fenetrage, contient "full" ou la longueur du coté du carré de fenetrage
    set private(targetDetection)  0                 ; #--- 0=etoile non detectee , 1= etoile detectee
    set private(findFiber)        0                 ; #---  1= detection de la fibre activee 0=detection fibre desactivee
