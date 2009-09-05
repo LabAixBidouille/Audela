@@ -2,7 +2,7 @@
 # Fichier divers.tcl
 # Description : Ce script regroupe diverses petites fonctions
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: divers.tcl,v 1.12 2009-06-14 07:00:46 robertdelmas Exp $
+# Mise a jour $Id: divers.tcl,v 1.13 2009-09-05 21:52:31 michelpujol Exp $
 #
 
 # Documentation : voir le fichier divers.htm dans le dossier doc_html
@@ -2965,7 +2965,6 @@ proc numerotation_usuelle {args} {
       foreach index $liste {
          if {[string compare $k $index] != 0} {
             return 0
-            break
          }
          incr k
       }
@@ -3169,7 +3168,6 @@ proc syntaxe_args {args} {
       # On vérifie que l'on a suffisamment d'arguments à se mettre sous la dent
       if {[llength $list_args_averifier]<$nb_args_obligatoires} {
          return 0
-         break
       }
       # On détermine le nombre d'arguments optionnels
       set args_optionnels_en_cours 0
@@ -3190,7 +3188,6 @@ proc syntaxe_args {args} {
          if {$ou_est_loption == "-1"} {
             console::affiche_resultat "$caption(divers,invalide_opt)[lindex $list_opts_averifier $index]\n"
             return 0
-            break
          } else {
             # Donc l'option existe.
             # On vérifie que :
@@ -3198,7 +3195,6 @@ proc syntaxe_args {args} {
             if {[expr $index+$ou_est_loption]>$ind_max} {
                console::affiche_resultat "$caption(divers,oubli_param_opt)[lindex $list_opts_averifier $index]\n"
                return 0
-               break
                # 2) parmi les paramètres de l'option, il n'y a pas un truc qui commence par un "-" et qui serait donc une option
             } else {
                set k 0
@@ -3206,7 +3202,6 @@ proc syntaxe_args {args} {
                   if {[string index [lindex $list_opts_averifier [expr $index+$k+1]] 0]=="-"} {
                      console::affiche_resultat "$caption(divers,oubli_param_opt)[lindex $list_opts_averifier $index]\n"
                      return 0
-                     break
                   }
                   incr k
                }
