@@ -2,7 +2,7 @@
 # @file     sophietest.tcl
 # @brief    Fichier du namespace ::sophie::test
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietest.tcl,v 1.12 2009-09-05 21:56:35 michelpujol Exp $
+# @version  $Id: sophietest.tcl,v 1.13 2009-09-05 21:56:57 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -62,9 +62,8 @@ proc ::sophie::test::simulHp { } {
    set private(dataNo) 0
    set private(data,0) "02h 06m 47.87s / -13d 44' 28\" / -1d "
    set private(data,1) "02h 07m 47.87s / -00d 44' 28\" / -1d "
-   ###set private(data,2) "02h 08m 47.87s / +10d 44' 28\" / -1d "
-   ###set private(data,2) "02h 08m 47.87s /-310d 44' 28\" / -1d "
-   set private(data,2) "02h 08m 47.87s "
+   set private(data,2) "02h 08m 47.87s / +10d 44' 28\" / -1d "
+   set private(data,2) "02h 08m 47.87s /-310d 44' 28\" / -1d "
 
    # je lance l'envoi permanent des coordonnees sur le port COM
    set private(writeHpHandle) [open COM7 "r+" ]
