@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.9 2009-08-30 22:00:24 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.10 2009-09-05 16:55:47 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -42,7 +42,8 @@ proc ::camerathread::guideSophie { exptime originCoord targetCoord cameraAngle t
    set private(acquisitionState) "1"
    set private(previousClock)    "0"
 
-  #--- variables de travail
+   #--- variables de travail
+   set private(originSumMinCounter)  "5" 
    set private(simulationCounter) "1"
    set private(originSumCounter)  0
    set private(diffXCumul)  0
@@ -144,10 +145,6 @@ proc ::camerathread::sophieAcquisitionLoop { } {
       }
 
       if { $private(findFiber) == 1 } {
-         #--- j'incremente le compteur d'integration de l'origine
-         if { $private(originSumCounter) >= $private(originSumNb) } {
-            set private(originSumCounter) 0
-         }
          incr private(originSumCounter)
       } else {
          set private(originSumCounter) 0
@@ -162,7 +159,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
       # @param     Argv[5]=sumBufNo        numero du buffer de l'image integree
       # @param     Argv[6]=fiberBufNo      numero du buffer de l'image resultat
       # @param     Argv[7]=maskRadius      rayon du masque
-      # @param     Argv[8]=originSumNb     nombre d'acquisition de l'image integree
+      # @param     Argv[8]=originSumMinCounter     nombre d'acquisition de l'image integree
       # @param     Argv[9]=originSumCounter compteur d'integration de l'image de l'origine
       # @param     Argv[10]=previousFiberX abcisse du centre de la fibre
       # @param     Argv[11]=previousFiberY ordonnee du centre de la fibre
@@ -190,7 +187,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
       set result [buf$bufNo fibercentro "[list $x1 $y1 $x2 $y2]" \
          $private(biasBufNo) $private(maskBufNo) $private(sumBufNo) $private(fiberBufNo) \
          $private(maskRadius) \
-         $private(originSumNb) $private(originSumCounter)  \
+         $private(originSumMinCounter) $private(originSumCounter)  \
          [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
          $private(maskFwhm) $private(findFiber)  $private(pixelMinCount) $private(maskPercent) ]
 
@@ -216,27 +213,24 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          set targetDetection 0
       }
 
-      if { $private(findFiber) == 1 } {
-         if { $private(originSumCounter) >= $private(originSumNb) } {
-            if { $fiberStatus == "DETECTED" } {
-               #--- je met a jour les coordonnes de la consigne
-               set private(originCoord) [list $fiberX $fiberY ]
-            } else {
-               #--- la consigne n'est pas detectee, je ne change pas les coordonnes de la consigne
-            }
-            #--- je retourne le meme code resultat
-            set fiberStatus  $fiberStatus
-         } else {
-            #--- pas de changement, on attend la fin de l'integration de l'image
-            set fiberStatus  "UNCHANGED"
+      switch $fiberStatus {
+         "DETECTED" {
+            #--- je met a jour les coordonnes de la consigne
+            set private(originCoord) [list $fiberX $fiberY ]               
          }
-
-      } else {
-         #--- la consigne n'a pas besoin  d'etre detectee en mode OBJECT
-         set fiberStatus  "DISABLED"
+         "INTEGRATING" -
+         "TOO_FAR" - 
+         "LOW_SIGNAL" -
+         "NO_SIGNAL" -
+         "DISABLED" -
+         "OUTSIDE" -
+         default {
+            #--- rien a faire, je transmet le status de la fibre tel quel
+         }
       }
 
-###::camerathread::disp  "camerathread: FIBER= y1=$y1 y2=$y2 detection etoile=$targetDetection [lindex $result 11]\n"
+###::camerathread::disp  "camerathread: private(targetCoord)=$private(targetCoord) private(originCoord)=$private(originCoord)\n"
+###::camerathread::disp  "camerathread: FIBER= y1=$y1 y2=$y2 fiberStatus=$fiberStatus\n"
 
       set binning [cam$private(camNo) bin]
       #--- je calcule l'ecart de position entre la cible et la consigne (en pixels ramene au binning 1x1)
