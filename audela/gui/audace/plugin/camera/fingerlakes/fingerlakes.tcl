@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.34 2009-08-30 20:43:24 michelpujol Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.35 2009-09-05 21:53:55 michelpujol Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -321,18 +321,21 @@ proc ::fingerlakes::configureCamera { camItem bufNo } {
       #--- Je configure la vitesse de lecture
       set readSpeedList [cam$camNo flimodes]  ; #--- je recupere la liste des vitesses
       if { $readSpeedList != "" } {
-         $private(frm).frame1.readSpeed.list configure \
-            -values $readSpeedList \
-            -width [ ::tkutil::lgEntryComboBox $readSpeedList ] \
-            -height [ llength $readSpeedList ] \
-            -state normal
+         if { [ info exists private(frm) ] } {
+            if { [ winfo exists $frm ] } {
+               $private(frm).frame1.readSpeed.list configure \
+                  -values $readSpeedList \
+                  -width [ ::tkutil::lgEntryComboBox $readSpeedList ] \
+                  -height [ llength $readSpeedList ] \
+                  -state normal
+            }
+         }
          set speedNo [lsearch $readSpeedList $private(readSpeed) ]
          if { $speedNo == -1 } {
             #--- si la vitesse de lecture n'existe pas, je selectionne le premier
             set speedNo 0
             set private(readSpeed) [lindex $readSpeedList $speedNo]
          }
-
          cam$camNo flimode $speedNo
       }
       #--- J'associe le buffer de la visu
