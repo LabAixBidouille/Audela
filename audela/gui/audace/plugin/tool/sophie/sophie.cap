@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.23 2009-08-30 21:59:28 michelpujol Exp $
+# Mise a jour $Id: sophie.cap,v 1.24 2009-09-05 16:59:48 michelpujol Exp $
 #
 
 #=========================================================================
@@ -116,6 +116,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,trouDetecte)           "Trou détecté"
    set caption(sophie,trouNonDetecte)        "Trou non détecté"
    set caption(sophie,tourNonRecherche)      "Détection du trou désactivée"
+   set caption(sophie,integrationEncours)    "Integration en cours"
    set caption(sophie,guidageEncours)        "Guidage en cours"
    set caption(sophie,guidageSuspendu)       "Guidage suspendu"
    set caption(sophie,sophieEncours)         "Pose Sophie en cours"
