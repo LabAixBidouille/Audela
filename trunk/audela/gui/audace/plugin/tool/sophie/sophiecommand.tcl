@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.24 2009-09-03 18:11:44 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.25 2009-09-05 16:57:20 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -684,18 +684,26 @@ proc ::sophie::setGuidingMode { visuNo } {
       "FIBER_HR" {
          set private(originCoord)  [list $::conf(sophie,fiberHRX) $::conf(sophie,fiberHRY)]
          set activewidth 2
+         #--- j'affiche le choix de la detection de la fibre 
+         $frm.mode.findFiber configure -state normal
          #--- je positionne la consigne sur la fibre
          ::sophie::createOrigin $visuNo
       }
       "FIBER_HE" {
          set private(originCoord)  [list $::conf(sophie,fiberHEX) $::conf(sophie,fiberHEY)]
          set activewidth 2
+         #--- j'affiche le choix de la detection de la fibre 
+         $frm.mode.findFiber configure -state normal
          #--- je positionne la consigne sur la fibre
          ::sophie::createOrigin $visuNo
       }
       "OBJECT" {
          set private(originCoord) $::conf(sophie,objectCoord)
          set activewidth 4
+         #--- je desactive la detection de la fibre
+         set private(findFiber) 0
+         #--- j'affiche le choix de la detection de la fibre 
+         $frm.mode.findFiber configure -state disabled         
          #--- je positionne la consigne sur l'objet
          ::sophie::createOrigin $visuNo
       }
@@ -711,25 +719,32 @@ proc ::sophie::setGuidingMode { visuNo } {
       set private(AsynchroneParameter) 1
       ::camera::setAsynchroneParameter $private(camItem) \
             "guidingMode" $::conf(sophie,guidingMode) \
-            "originCoord" [list $xOriginCoord $yOriginCoord]
+            "originCoord" [list $xOriginCoord $yOriginCoord] \
+            "findFiber" $private(findFiber)
    }
 }
 
 
 ##------------------------------------------------------------
 # setFiberDetection
-#   active/desactive la destection automatique de la fiber
+#   active/desactive la destection automatique de la fibre
 #    place la consigne au bon endroit
 #------------------------------------------------------------
 proc ::sophie::setFiberDetection { findFiber  } {
    variable private
 
-   #--- j'active la detection de la fibre
-   ::camera::setAsynchroneParameter $private(camItem) \
-      "findFiber" $findFiber
-
-   #--- je met a jour l'affichage de la fenetre de controle
-   ::sophie::control::setFiberDetection $findFiber
+   ###if { $findFiber == 0 } {
+   ###   #--- je restaure les coordonnes 
+   ###   setGuidingMode $private(visuNo)
+   ###} else {
+   ###   #--- j'active la detection de la fibre
+   ###   ::camera::setAsynchroneParameter $private(camItem) \
+   ###      "findFiber" $findFiber
+   ###   #--- je met a jour l'affichage de la fenetre de controle
+   ###   ###::sophie::control::setFiberDetection $findFiber
+   ###   ::sophie::control::setGuidingMode $::conf(sophie,guidingMode)
+   ###} 
+   setGuidingMode $private(visuNo)
 }
 
 #------------------------------------------------------------
@@ -1190,8 +1205,8 @@ proc ::sophie::createOrigin { visuNo } {
    $private(hCanvas) delete "origin"
 
    #--- je calcule les coordonnees dans l'image
-   set x [ expr ( [lindex $private(originCoord) 0] - $private(xWindow) + 1 ) / $private(xBinning)  ]
-   set y [ expr ( [lindex $private(originCoord) 1] - $private(yWindow) + 1 ) / $private(yBinning)  ]
+   set x [ expr ( double([lindex $private(originCoord) 0]) - $private(xWindow) + 1 ) / $private(xBinning)  ]
+   set y [ expr ( double([lindex $private(originCoord) 1]) - $private(yWindow) + 1 ) / $private(yBinning)  ]
 
    switch $::conf(sophie,guidingMode) {
       "OBJECT" {
@@ -1906,20 +1921,16 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
       ###console::disp "callbackAcquisition visu=$visuNo command=$command args=$args\n"
       switch $command  {
          "autovisu" {
-            if { $private(pendingZoom) != "" && $private(pendingZoom) < $private(zoom) } {
+            if { $private(pendingZoom) != ""  } {
+               visu$::audace(visuNo) clear
+               ##buf[ visu$::audace(visuNo) buf] clear
                ::confVisu::setZoom $::audace(visuNo) $private(pendingZoom)
                set private(zoom) [ ::confVisu::getZoom $::audace(visuNo) ]
                set private(pendingZoom) ""
-               update
             }
             #--- j'affiche l'image
             ::confVisu::autovisu $visuNo
-
-            if { $private(pendingZoom) != "" && $private(pendingZoom) > $private(zoom) } {
-               ::confVisu::setZoom $::audace(visuNo) $private(pendingZoom)
-               set private(zoom) [ ::confVisu::getZoom $::audace(visuNo) ]
-               set private(pendingZoom) ""
-            }
+            
             #--- j'affiche le delay entre 2 poses
             ::sophie::control::setRealDelay [lindex [lindex $args 0] 0]
         }
@@ -1929,12 +1940,12 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
             ::sophie::stopAcquisition $visuNo
          }
          "targetCoord" {
-            # description des parametres
+            # description des parametres recus
             # args 0 = coordonnees de l'étoile, ou coordonnees du centre de la zone de recherche si l'étoile n'a pas ete trouvee
             # args 1 = dx   (ramené au binning 1x1)
             # args 2 = dy   (ramené au binning 1x1)
             # args 3 = targetDetection
-            # args 4 = fiberDetection  (=DETECTED NO_SIGNAL UNCHANGED DISABLED )
+            # args 4 = fiberStatus  (=DETECTED NO_SIGNAL UNCHANGED DISABLED )
             # args 5 = fiberX
             # args 6 = fiberY
             # args 7 = measuredFwhmX
@@ -1957,7 +1968,7 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                set starDx               [lindex $args 1]
                set starDy               [lindex $args 2]
                set private(targetDetection)  [lindex $args 3]
-               set fiberDetection       [lindex $args 4]
+               set fiberStatus          [lindex $args 4]
                set originX              [expr [lindex $args 5] * $private(xBinning) + $private(xWindow) -1 ]
                set originY              [expr [lindex $args 6] * $private(yBinning) + $private(yWindow) -1 ]
                set fwhmX                [expr [lindex $args 7] * $private(xBinning) * $::conf(sophie,pixelScale)]
@@ -1975,47 +1986,48 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                if { $private(targetMove) == "AUTO" } {
                   ::sophie::moveTarget $visuNo $private(targetCoord)
                }
-
-               #--- je calcule la correction de la position de la consigne
-               switch $::conf(sophie,guidingMode)  {
-                  "FIBER_HR" {
-                     if { $fiberDetection == 1 && $private(originMove) == "AUTO" } {
+               if { $fiberStatus == "DETECTED" && $private(originMove) == "AUTO" } {
+                  #--- je calcule la correction de la nouvelle position de la consigne
+                  switch $::conf(sophie,guidingMode)  {
+                     "FIBER_HR" {
                         set private(originCoord) [list $originX $originY]
+                        #--- je calcule l'écart par rapport à la position de depart
+                        set originDx  [expr [lindex $private(originCoord) 0] - $::conf(sophie,fiberHRX) ]
+                        set originDy  [expr [lindex $private(originCoord) 1] - $::conf(sophie,fiberHRY) ]
                      }
-                     #--- je calcule l'écart par rapport à la position de depart
-                     set originDx  [expr [lindex $private(originCoord) 0] - $::conf(sophie,fiberHRX) ]
-                     set originDy  [expr [lindex $private(originCoord) 1] - $::conf(sophie,fiberHRY) ]
-                  }
-                  "FIBER_HE" {
-                     if { $fiberDetection == 1 && $private(originMove) == "AUTO" } {
+                     "FIBER_HE" {
                         set private(originCoord) [list $originX $originY]
+                        #--- je calcule l'écart par rapport à la position de depart
+                        set originDx  [expr [lindex $private(originCoord) 0] - $::conf(sophie,fiberHEX) ]
+                        set originDy  [expr [lindex $private(originCoord) 1] - $::conf(sophie,fiberHEY) ]
                      }
-                     #--- je calcule l'écart par rapport à la position de depart
-                     set originDx  [expr [lindex $private(originCoord) 0] - $::conf(sophie,fiberHEX) ]
-                     set originDy  [expr [lindex $private(originCoord) 1] - $::conf(sophie,fiberHEY) ]
+                     "OBJECT" {
+                        #--- l'ecart de la consigne est nul
+                        set originDx 0.0
+                        set originDy 0.0
+                     }
                   }
-                  "OBJECT" {
-                     #--- l'ecart de la consigne est nul
-                     set originDx 0.0
-                     set originDy 0.0
-                  }
-               }
-
+               } else { 
+                  #--- l'ecart n'est pas calcule 
+                  set originDx 0.0
+                  set originDy 0.0
+               }                  
                #--- j'affiche le symbole de l'origine
                if { $private(originMove) == "AUTO" } {
                   ::sophie::createOrigin $visuNo
                }
                ##console::disp "callbackAcquisition origin= $private(originCoord) detail=$infoMessage\n"
+
                #--- j'affiche les informations dans la fenetre de controle
                switch $private(mode) {
                   "CENTER" {
-                     ::sophie::control::setCenterInformation $private(targetDetection) $fiberDetection \
+                     ::sophie::control::setCenterInformation $private(targetDetection) $fiberStatus \
                         [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
                         $starX $starY $fwhmX $fwhmY $background $maxIntensity \
                         $starDx $starDy $alphaDiff $deltaDiff $alphaCorrection $deltaCorrection
                   }
                   "FOCUS" {
-                     ::sophie::control::setFocusInformation $private(targetDetection) $fiberDetection \
+                     ::sophie::control::setFocusInformation $private(targetDetection) $fiberStatus \
                         [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
                         $starX $starY $fwhmX $fwhmY $alphaDiff $deltaDiff $background $maxIntensity
                   }
@@ -2023,7 +2035,7 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                      #--- je mets a jour les statistiques pour le PC Sophie
                      ::sophie::spectro::updateStatistics $alphaDiff $deltaDiff
                      #--- je mets a jour la fenetre de controle
-                     ::sophie::control::setGuideInformation $private(targetDetection) $fiberDetection \
+                     ::sophie::control::setGuideInformation $private(targetDetection) $fiberStatus \
                         [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
                         $starX $starY $alphaDiff $deltaDiff $alphaCorrection $deltaCorrection \
                         $originDx $originDy $background $maxIntensity
