@@ -2,7 +2,7 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.23 2009-08-30 21:59:58 michelpujol Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.24 2009-09-05 16:58:48 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -829,25 +829,50 @@ proc ::sophie::control::setGuidingMode { guidingMode } {
    #--- petit raccourci bien pratique
    set frm $private(frm)
    
+   ###switch $guidingMode {
+   ###   "OBJECT" {
+   ###      pack $frm.centrage.pointage.positionXY \
+   ###         -in [ $frm.centrage.pointage getframe ] \
+   ###         -side top -anchor w -fill x -expand 1 -pady 2
+   ###      pack $frm.guidage.positionconsigne.positionXY \
+   ###         -in [ $frm.guidage.positionconsigne getframe ] \
+   ###         -side top -anchor w -fill x -expand 1
+   ###      pack forget $frm.guidage.positionconsigne.correction
+   ###   }
+   ###   "FIBER_HR" -
+   ###   "FIBER_HE" {
+   ###      pack forget $frm.centrage.pointage.positionXY
+   ###      pack forget $frm.guidage.positionconsigne.positionXY
+   ###      pack $frm.guidage.positionconsigne.correction \
+   ###         -in [ $frm.guidage.positionconsigne getframe ] \
+   ###         -side top -anchor w -fill x -expand 1
+   ###   }
+   ###}
+   
    switch $guidingMode {
       "OBJECT" {
+         #--- je masque le graphe des ecarts de la consigne
+         pack forget $frm.guidage.positionconsigne.correction
+         #--- j'affiche les spinbox de modification manuelle de la consigne 
          pack $frm.centrage.pointage.positionXY \
             -in [ $frm.centrage.pointage getframe ] \
             -side top -anchor w -fill x -expand 1 -pady 2
          pack $frm.guidage.positionconsigne.positionXY \
             -in [ $frm.guidage.positionconsigne getframe ] \
             -side top -anchor w -fill x -expand 1
-         pack forget $frm.guidage.positionconsigne.correction
       }
       "FIBER_HR" -
       "FIBER_HE" {
+         #--- je masque les spinbox de modification manuelle de la consigne 
          pack forget $frm.centrage.pointage.positionXY
          pack forget $frm.guidage.positionconsigne.positionXY
+         #--- j'affiche le graphe des ecarts de la consigne
          pack $frm.guidage.positionconsigne.correction \
             -in [ $frm.guidage.positionconsigne getframe ] \
             -side top -anchor w -fill x -expand 1
       }
    }
+   
 }
 
 #------------------------------------------------------------
@@ -858,21 +883,55 @@ proc ::sophie::control::setGuidingMode { guidingMode } {
 proc ::sophie::control::setFiberDetection { findFiber } {
    variable private
 
+   switch $::conf(sophie,guidingMode)  {
+      "FIBER_HR" {
+         #--- je masque les spinbox de modification manuelle de la consigne 
+         pack forget $frm.centrage.pointage.positionXY
+         pack forget $frm.guidage.positionconsigne.positionXY
+         
+         if { $findFiber == 0 } {
+            #--- je masque la position corrigee de la consigne 
+         } else {
+            #--- j'affiche la position corrigee de la consigne
+         }
+
+         #--- j'affiche le graphe de position de la consigne
+         pack $frm.guidage.positionconsigne.correction \
+            -in [ $frm.guidage.positionconsigne getframe ] \
+            -side top -anchor w -fill x -expand 1
+      }
+      "FIBER_HE" {
+         #--- je masque les spinbox de modification manuelle de la consigne 
+         pack forget $frm.centrage.pointage.positionXY
+         pack forget $frm.guidage.positionconsigne.positionXY
+         
+         if { $findFiber == 0 } {
+            #--- je masque la position corrigee de la consigne 
+         } else {
+            #--- j'affiche la position corrigee de la consigne
+         }
+
+         #--- j'affiche le graphe de position de la consigne
+         pack $frm.guidage.positionconsigne.correction \
+            -in [ $frm.guidage.positionconsigne getframe ] \
+            -side top -anchor w -fill x -expand 1
+      }
+      "OBJECT" {
+         #--- je masque le graphe des ecarts de la consigne
+         pack forget $frm.guidage.positionconsigne.correction
+         #--- j'affiche les spinbox de modification manuelle de la consigne 
+         pack $frm.centrage.pointage.positionXY \
+            -in [ $frm.centrage.pointage getframe ] \
+            -side top -anchor w -fill x -expand 1
+         pack $frm.guidage.positionconsigne.positionXY \
+            -in [ $frm.guidage.positionconsigne getframe ] \
+            -side top -anchor w -fill x -expand 1
+      }
+   }
+   
    set frm $private(frm)
    if { $findFiber == 0 } {
-      pack $frm.centrage.pointage.positionXY \
-         -in [ $frm.centrage.pointage getframe ] \
-         -side top -anchor w -fill x -expand 1
-      pack $frm.guidage.positionconsigne.positionXY \
-         -in [ $frm.guidage.positionconsigne getframe ] \
-         -side top -anchor w -fill x -expand 1
-      pack forget $frm.guidage.positionconsigne.correction
    } else {
-      pack forget $frm.centrage.pointage.positionXY
-      pack forget $frm.guidage.positionconsigne.positionXY
-      pack $frm.guidage.positionconsigne.correction \
-         -in [ $frm.guidage.positionconsigne getframe ] \
-         -side top -anchor w -fill x -expand 1
    }
 }
 
@@ -1151,7 +1210,7 @@ proc ::sophie::control::setRealDelay { delay } {
 #    affiche les informations de centrage
 #
 # @param starDetection  0=etoile non detecte 1=etoile detecte
-# @param fiberDetection  resultat detection de la fibre = DETECTED NO_SIGNAL TOO_FAR OUTSIDE LOW_SIGNAL UNCHANGED DISABLED
+# @param fiberStatus  resultat detection de la fibre = DETECTED NO_SIGNAL TOO_FAR OUTSIDE LOW_SIGNAL INTEGRATING DISABLED
 # @param originX  abcisse de la consigne en pixel
 # @param originY  ordonnee de la consigne en pixel
 # @param starX  abcisse de l'etoile en pixel
@@ -1169,7 +1228,7 @@ proc ::sophie::control::setRealDelay { delay } {
 #
 # @return rien
 #------------------------------------------------------------
-proc ::sophie::control::setCenterInformation { starDetection fiberDetection originX originY starX starY fwhmX fwhmY background maxIntensity starDx starDy alphaDiff deltaDiff alphaCorrection deltaCorrection } {
+proc ::sophie::control::setCenterInformation { starDetection fiberStatus originX originY starX starY fwhmX fwhmY background maxIntensity starDx starDy alphaDiff deltaDiff alphaCorrection deltaCorrection } {
    variable private
 
    set frm $private(frm)
@@ -1186,19 +1245,7 @@ proc ::sophie::control::setCenterInformation { starDetection fiberDetection orig
    }
 
    #--- je mets a jour le voyant "trouDetecte"
-   switch $fiberDetection {
-      "LOW_SIGNAL" -
-      "TOO_FAR" -
-      "OUTSIDE" -
-      "NO_SIGNAL" {
-         #--- le trou n'est pas détecte
-         $frm.voyant.trou_color_invariant configure \
-            -text $::caption(sophie,trouNonDetecte) \
-            -bg   $private(inactiveColor)
-      }
-      "UNCHANGED" {
-         #--- je ne change pas l'affichage
-      }
+   switch $fiberStatus {
       "DETECTED" {
          #--- le trou est détecte
          $frm.voyant.trou_color_invariant configure \
@@ -1210,6 +1257,22 @@ proc ::sophie::control::setCenterInformation { starDetection fiberDetection orig
          $frm.voyant.trou_color_invariant configure \
             -text $::caption(sophie,tourNonRecherche) \
             -bg   "SystemButtonFace"
+      }
+      "INTEGRATING" {
+         #--- l'integration des premieres images est en cours
+         $frm.voyant.trou_color_invariant configure \
+            -text $::caption(sophie,integrationEncours) \
+            -bg   "SystemButtonFace"
+      }
+      "LOW_SIGNAL" -
+      "TOO_FAR" -
+      "OUTSIDE" -
+      "NO_SIGNAL" - 
+      default {
+         #--- le trou n'est pas détecte
+         $frm.voyant.trou_color_invariant configure \
+            -text "$::caption(sophie,trouNonDetecte) ($fiberStatus)" \
+            -bg   $private(inactiveColor)
       }
    }
 
@@ -1234,7 +1297,7 @@ proc ::sophie::control::setCenterInformation { starDetection fiberDetection orig
 #    affiche les informations de focalisation
 #
 # @param starDetection 0=etoile non detecte 1=etoile detecte
-# @param fiberDetection  resultat detection de la fibre = DETECTED NO_SIGNAL TOO_FAR OUTSIDE LOW_SIGNAL UNCHANGED DISABLED
+# @param fiberStatus  resultat detection de la fibre = DETECTED NO_SIGNAL TOO_FAR OUTSIDE LOW_SIGNAL INTEGRATING DISABLED
 # @param originY  ordonnee de la consigne en pixel
 # @param starX   abcisse de l'etoile en pixel
 # @param starY   ordonnee de l'etoile en pixel
@@ -1247,7 +1310,7 @@ proc ::sophie::control::setCenterInformation { starDetection fiberDetection orig
 #
 # @return rien
 #------------------------------------------------------------
-proc ::sophie::control::setFocusInformation { starDetection fiberDetection originX originY starX starY fwhmX fwhmY alphaDiff deltaDiff background maxIntensity } {
+proc ::sophie::control::setFocusInformation { starDetection fiberStatus originX originY starX starY fwhmX fwhmY alphaDiff deltaDiff background maxIntensity } {
    variable private
 
    set frm $private(frm)
@@ -1264,19 +1327,7 @@ proc ::sophie::control::setFocusInformation { starDetection fiberDetection origi
    }
 
    #--- je mets a jour le voyant "trouDetecte"
-   switch $fiberDetection {
-      "LOW_SIGNAL" -
-      "TOO_FAR" -
-      "OUTSIDE" -
-      "NO_SIGNAL" {
-         #--- le trou n'est pas détecte
-         $frm.voyant.trou_color_invariant configure \
-            -text $::caption(sophie,trouNonDetecte) \
-            -bg   $private(inactiveColor)
-      }
-      "UNCHANGED" {
-         #--- je ne change pas l'affichage
-      }
+   switch $fiberStatus {
       "DETECTED" {
          #--- le trou est détecte
          $frm.voyant.trou_color_invariant configure \
@@ -1288,6 +1339,22 @@ proc ::sophie::control::setFocusInformation { starDetection fiberDetection origi
          $frm.voyant.trou_color_invariant configure \
             -text $::caption(sophie,tourNonRecherche) \
             -bg   "SystemButtonFace"
+      }
+      "INTEGRATING" {
+         #--- l'integration des premieres images est en cours
+         $frm.voyant.trou_color_invariant configure \
+            -text $::caption(sophie,integrationEncours) \
+            -bg   "SystemButtonFace"
+      }
+      "LOW_SIGNAL" -
+      "TOO_FAR" -
+      "OUTSIDE" -
+      "NO_SIGNAL" -
+      default {
+         #--- le trou n'est pas détecte
+         $frm.voyant.trou_color_invariant configure \
+            -text "$::caption(sophie,trouNonDetecte) ($fiberStatus)" \
+            -bg   $private(inactiveColor)
       }
    }
 
@@ -1327,7 +1394,7 @@ proc ::sophie::control::setFocusInformation { starDetection fiberDetection origi
 #    affiche les informations de guidage
 #
 # @param starDetection 0=etoile non detecte 1=etoile detecte
-# @param fiberDetection  resultat detection de la fibre = DETECTED NO_SIGNAL TOO_FAR OUTSIDE LOW_SIGNAL UNCHANGED DISABLED
+# @param fiberStatus  resultat detection de la fibre = DETECTED NO_SIGNAL TOO_FAR OUTSIDE LOW_SIGNAL INTEGRATING DISABLED
 # @param originX  abcisse de la consigne (en pixel)
 # @param originY  ordonnee de la consigne (en pixel)
 # @param starX   abcisse de l'etoile (en pixel)
@@ -1342,7 +1409,7 @@ proc ::sophie::control::setFocusInformation { starDetection fiberDetection origi
 # @param maxIntensity  intensité max
 # @return null
 #------------------------------------------------------------
-proc ::sophie::control::setGuideInformation { starDetection fiberDetection originX originY starX starY starDx starDy alphaCorrection deltaCorrection originDx originDy background maxIntensity} {
+proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX originY starX starY starDx starDy alphaCorrection deltaCorrection originDx originDy background maxIntensity} {
    variable private
 
    set frm $private(frm)
@@ -1359,19 +1426,7 @@ proc ::sophie::control::setGuideInformation { starDetection fiberDetection origi
    }
 
    #--- je mets a jour le voyant "trouDetecte"
-   switch $fiberDetection {
-      "LOW_SIGNAL" -
-      "TOO_FAR" -
-      "OUTSIDE" -
-      "NO_SIGNAL" {
-         #--- le trou n'est pas détecte
-         $frm.voyant.trou_color_invariant configure \
-            -text $::caption(sophie,trouNonDetecte) \
-            -bg   $private(inactiveColor)
-      }
-      "UNCHANGED" {
-         #--- je ne change pas l'affichage
-      }
+   switch $fiberStatus {
       "DETECTED" {
          #--- le trou est détecte
          $frm.voyant.trou_color_invariant configure \
@@ -1383,6 +1438,23 @@ proc ::sophie::control::setGuideInformation { starDetection fiberDetection origi
          $frm.voyant.trou_color_invariant configure \
             -text $::caption(sophie,tourNonRecherche) \
             -bg   "SystemButtonFace"
+      }
+      "INTEGRATING" {
+         #--- l'integration des premieres images est en cours
+         $frm.voyant.trou_color_invariant configure \
+            -text $::caption(sophie,integrationEncours) \
+            -bg   "SystemButtonFace"
+      }
+      "LOW_SIGNAL" -
+      "TOO_FAR" -
+      "OUTSIDE" -
+      "NO_SIGNAL" -
+      "OUTSIDE" -
+      default {
+         #--- le trou n'est pas détecte
+         $frm.voyant.trou_color_invariant configure \
+            -text "$::caption(sophie,trouNonDetecte) ($fiberStatus)" \
+            -bg   $private(inactiveColor)
       }
    }
 
