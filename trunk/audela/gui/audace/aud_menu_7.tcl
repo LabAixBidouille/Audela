@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise a jour $Id: aud_menu_7.tcl,v 1.15 2009-05-08 06:54:13 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.tcl,v 1.16 2009-09-05 21:51:56 michelpujol Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -220,7 +220,7 @@ namespace eval ::cwdWindow {
    # ::cwdWindow::tkplus_chooseDir [inidir] [title] [parent]
    # Navigateur pour le choix des repertoires
    #
-   proc tkplus_chooseDir { { inidir . } { title } { parent } } {
+   proc tkplus_chooseDir { inidir title parent } {
       global cwdWindow
 
       if {$inidir=="."} {
