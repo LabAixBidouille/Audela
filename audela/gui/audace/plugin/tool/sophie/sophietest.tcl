@@ -2,7 +2,7 @@
 # @file     sophietest.tcl
 # @brief    Fichier du namespace ::sophie::test
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietest.tcl,v 1.11 2009-08-30 22:00:38 michelpujol Exp $
+# @version  $Id: sophietest.tcl,v 1.12 2009-09-05 21:56:35 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -62,8 +62,9 @@ proc ::sophie::test::simulHp { } {
    set private(dataNo) 0
    set private(data,0) "02h 06m 47.87s / -13d 44' 28\" / -1d "
    set private(data,1) "02h 07m 47.87s / -00d 44' 28\" / -1d "
-   set private(data,2) "02h 08m 47.87s / +10d 44' 28\" / -1d "
-   set private(data,2) "02h 08m 47.87s /-310d 44' 28\" / -1d "
+   ###set private(data,2) "02h 08m 47.87s / +10d 44' 28\" / -1d "
+   ###set private(data,2) "02h 08m 47.87s /-310d 44' 28\" / -1d "
+   set private(data,2) "02h 08m 47.87s "
 
    # je lance l'envoi permanent des coordonnees sur le port COM
    set private(writeHpHandle) [open COM7 "r+" ]
@@ -74,7 +75,7 @@ console::disp "simulHp writeHpHandle=$private(writeHpHandle)\n"
    ###fconfigure $private(readHpHandle) -mode "19200,n,8,1" -buffering none -blocking 0
 
    set private(testhp) 1
-   after 1000 ::sophie::test::testWriteHp
+   after 3000 ::sophie::test::testWriteHp
    ###after 1500 ::sophie::test::testReadHp
 
 }
@@ -484,7 +485,7 @@ proc ::sophie::test::simulationGenericFileName { } {
    variable private
 
    #--- Ouvre la fenetre de choix des images
-   set filename [ ::tkutil::box_load $::audace(base) $::audace(rep_images) $::audace(bufNo) "1" ]
+   set filename [ ::tkutil::box_load $private(frm) $::audace(rep_images) $::audace(bufNo) "1" ]
    #--- Nom generique avec le chemin
    set private(simulationGenericFileName) [ file join [ lindex [ decomp $filename ] 0 ] [ lindex [ decomp $filename ] 1 ] ]
    #--- Il faut un fichier
