@@ -2,7 +2,7 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.24 2009-09-05 16:58:48 michelpujol Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.25 2009-09-05 21:55:11 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -535,6 +535,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
                -width 8 -justify center \
                -command "::sophie::control::onScrollOrigin $visuNo" \
                -textvariable ::sophie::control::private(positionObjetX)
+            bind $frm.centrage.pointage.positionXY.spinboxX <Key-Return> "::sophie::control::onScrollOrigin $visuNo"
             grid $frm.centrage.pointage.positionXY.spinboxX -row 0 -column 2 -sticky ens
 
             #--- Position Y
@@ -545,6 +546,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
                -width 8 -justify center \
                -command "::sophie::control::onScrollOrigin $visuNo" \
                -textvariable ::sophie::control::private(positionObjetY)
+            bind $frm.centrage.pointage.positionXY.spinboxY <Key-Return> "::sophie::control::onScrollOrigin $visuNo"
             grid $frm.centrage.pointage.positionXY.spinboxY -row 0 -column 4 -sticky ens
 
             #--- increment
