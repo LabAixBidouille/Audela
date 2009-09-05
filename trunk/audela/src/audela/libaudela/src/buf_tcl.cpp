@@ -4759,7 +4759,7 @@ int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
  *  @param     Argv[5]=sumBufNo        numero du buffer de l'image integree
  *  @param     Argv[6]=fiberBufNo      numero du buffer de l'image resultat
  *  @param     Argv[7]=maskRadius      rayon du masque 
- *  @param     Argv[8]=originSumNb     nombre d'acquisition de l'image integree 
+ *  @param     Argv[8]=originSumMinCounter   nombre d'images minimum a integrer pour mettre a jour la consigne
  *  @param     Argv[9]=originSumCounter   numero de l'acquisition courante 
  *  @param     Argv[10]=previousFiberX abcisse du centre de la fibre
  *  @param     Argv[11]=previousFiberY ordonnee du centre de la fibre 
@@ -4804,7 +4804,7 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
       int maskRadius=0;
       double maskFwhm=0;                  // largeur a mi hauteur de la gaussienne du masque
       double maskPercent=0;
-      int originSumNb=0, originSumCounter=0;
+      int originSumMinCounter=0, originSumCounter=0;
       double previousFiberX=0, previousFiberY=0;
       int pixelMinCount=0;                // nombre minimal de pixels 
       double fiberX=0, fiberY=0;          // centre de l'entree de la fibre
@@ -4847,9 +4847,6 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             retour = TCL_ERROR;
          }
-         // Petit changement de repere pour avoir des coordonnees partant de (0,0)
-         // et non de (1,1).
-         x1 -= 1; y1 -= 1; x2 -= 1; y2 -= 1;
       }
 
       if(Tcl_GetInt(interp,argv[3],&biasBufNo)!=TCL_OK) {
@@ -4877,8 +4874,8 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
          Tcl_AppendResult(interp,ligne,TCL_VOLATILE);
          retour = TCL_ERROR;
       } 
-      if(Tcl_GetInt(interp,argv[8],&originSumNb)!=TCL_OK) {
-         sprintf(ligne,"originSumNb=%d is not integer", originSumNb);
+      if(Tcl_GetInt(interp,argv[8],&originSumMinCounter)!=TCL_OK) {
+         sprintf(ligne,"originSumMinCounter=%d is not integer", originSumMinCounter);
          Tcl_AppendResult(interp,ligne,TCL_VOLATILE);
          retour = TCL_ERROR;
       } 
@@ -4919,7 +4916,9 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
          retour = TCL_ERROR;
       } 
 
-      
+      // passage dans le repère d'origine (0,0)
+      x1 -= 1; y1 -= 1; x2 -= 1; y2 -= 1;
+      previousFiberX -= 1; previousFiberY -= 1; 
 
       if ( retour == TCL_OK ) {
          buffer = (CBuffer*)clientData;
@@ -4939,7 +4938,7 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                findFiber,
                biasBufNo, maskBufNo, sumBufNo, fiberBufNo,
                maskRadius, maskFwhm, maskPercent,
-               originSumNb, originSumCounter,
+               originSumMinCounter, originSumCounter,
                previousFiberX, previousFiberY,
                pixelMinCount,
                starStatus, &starX, &starY,
@@ -4947,6 +4946,14 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                &measuredFwhmX, &measuredFwhmY,
                &background, &maxIntensity,
                message);
+            
+               // retour dans le repere d'origine (1,1)
+               starX  += 1; 
+               starY  += 1;
+               fiberX += 1;
+               fiberY += 1; 
+
+            
             sprintf(ligne,"{%s} %f %f {%s} %f %f %f %f %f %f {%s}", 
                starStatus, starX, starY, 
                fiberStatus, fiberX, fiberY, 
