@@ -2007,7 +2007,7 @@ void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2, int slitWidth, dou
  *  @param     maskRadius     rayon du masque 
  *  @param     maskFwhmX      largeur a mi hauteur de la gaussienne du masque
  *  @param     maskPercent    pourcentage du niveau du mask
- *  @param     originSumNb    nombre d'images  a integrer pour detection du trou et mise a jour de la consigne
+ *  @param     originSumMinCounter   nombre d'images minimum a integrer pour mettre a jour  la consigne
  *  @param     originSumCounter  numero de l'acquisition courante 
  *  @param     previousFiberX abcisse du centre de la fibre
  *  @param     previousFiberY ordonnee du centre de la fibre 
@@ -2033,7 +2033,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                                 int findFiber,
                                 int biasBufNo, int maskBufNo, int sumBufNo, int fiberBufNo,
                                 int maskRadius, double maskFwhm, double maskPercent,
-                                int originSumNb, int originSumCounter, 
+                                int originSumMinCounter, int originSumCounter, 
                                 double previousFiberX, double previousFiberY,  
                                 int pixelMinCount,  
                                 char *starStatus,  double *starX,  double *starY,
@@ -2084,13 +2084,13 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
       //double previousStarX= ((double)x2 - x1 ) / 2;
       //double previousStarY= ((double)y2 - y1 ) / 2;
 
+      // je verifie si la fibre est dans l'image
       if (previousFiberX <= x1) {fiberInside = 0;}
       if (previousFiberX >= x2) {fiberInside = 0; }
       if (previousFiberY <= y1) {fiberInside = 0; }
       if (previousFiberY >= y2) {fiberInside = 0; }
       
       if (fiberInside == 0 ) {
-         strcpy(fiberStatus, "OUTSIDE");
          *fiberX = previousFiberX;
          *fiberY = previousFiberY;
       }
@@ -2222,7 +2222,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
       CBuffer * sumBuf  = NULL;
 
       if ( findFiber == 1 && fiberInside == 1) {
-         // je prepare les buffes du masque et de l'image inregree
+         // je prepare le buffer du masque et le buffer de l'image inregree
          maskBuf = (CBuffer *)buf_pool->Chercher(maskBufNo);
          maskPix = (TYPE_PIXELS *) malloc(width * height * sizeof(TYPE_PIXELS));
          if ( maskPix ==NULL ) {
@@ -2250,12 +2250,13 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
       // ---------------------------------------------------- 
       int    pixelCount = 0;
       double dist;
-      
+      float floatCounter = (float) originSumCounter - 1 ; 
       *starX=0.;
       *starY=0.;
       flux = 0.;
       sx = 0.;
       sy = 0.;
+
       for(j=0;j<height;j++) {
          imgOffset  = imgPix  + j * width;
          maskOffset = maskPix + j * width;
@@ -2290,10 +2291,12 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                   // j'initialise le flux dans l'image integree
                   *sumPtr = *imgPtr;
                } else {
+                  
                   // j'applique le masque sur l'image courante
                   *imgPtr *= *maskPtr;
                   // j'additionne le flux dans l'image integree
-                  *sumPtr += *imgPtr;
+                  //*sumPtr += *imgPtr;
+                  *sumPtr = (*sumPtr + *imgPtr / floatCounter ) / ( (float) 1.0 + 1 / floatCounter );
                }
                // je calcule l'intensite max de l'image cumulee
                if ( *sumPtr > sumMaxIntensity ) {
@@ -2306,20 +2309,30 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
             }            
          }
       }
-   
+      // je calcule le barycentre 
+      *starX = (sx / flux) -1 ;
+      *starY = (sy / flux) -1;
+      // je change de repere de coordonnees
+      *starX += x1;
+      *starY += y1;
+
+
       
       if ( findFiber == 1 && fiberInside == 1 ) {
          if ( originSumCounter == 1 ) {
             int naxis = 2; 
-            TYPE_PIXELS minMask = 0;
-            TYPE_PIXELS maxMask = 1;
+            TYPE_PIXELS minMaskIntensity = 0;
+            TYPE_PIXELS maxMaskIntensity = 1;
             // j'intialise le buffer du masque 
             maskBuf->SetPixels(PLANE_GREY, width, height, FORMAT_FLOAT, COMPRESS_NONE, maskPix, 0,0,0) ;
             maskBuf->GetKeywords()->Add("NAXIS",  &naxis, TINT, "","");
             maskBuf->GetKeywords()->Add("NAXIS1", &width, TINT, "","");
             maskBuf->GetKeywords()->Add("NAXIS2", &height,TINT, "","");
-            maskBuf->GetKeywords()->Add("MIPS-LO", &minMask, TFLOAT, "","");
-            maskBuf->GetKeywords()->Add("MIPS-HI", &maxMask, TFLOAT, "","");
+            maskBuf->GetKeywords()->Add("MIPS-LO", &minMaskIntensity, TFLOAT, "","");
+            maskBuf->GetKeywords()->Add("MIPS-HI", &maxMaskIntensity, TFLOAT, "","");
+            maskBuf->initialMipsLo = minMaskIntensity;
+            maskBuf->initialMipsHi = maxMaskIntensity;
+
             // j'initialise l'image integree 
             sumBuf->GetKeywords()->Add("NAXIS",  &naxis, TINT, "","");
             sumBuf->GetKeywords()->Add("NAXIS1", &width, TINT, "","");
@@ -2330,7 +2343,9 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
          // j'ajoute les min et max pour les seuils de visualisation
          sumBuf->GetKeywords()->Add("MIPS-LO", &sumMinIntensity, TFLOAT, "","");
          sumBuf->GetKeywords()->Add("MIPS-HI", &sumMaxIntensity, TFLOAT, "","");
-         sumBuf->GetKeywords()->Add("SUM_COUNT", &originSumCounter, TINT, "","");
+         sumBuf->GetKeywords()->Add("SUM_COUNT", &originSumCounter, TINT, "integrated image counter","");
+         sumBuf->initialMipsLo = sumMinIntensity;
+         sumBuf->initialMipsHi = sumMaxIntensity;
       }
 
 
@@ -2350,181 +2365,248 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
          if (iY!=NULL)  free(iY);
          if (dY!=NULL)  free(dY);
          return;
-      }      
-
-      // je calcule le barycentre 
-      *starX = (sx / flux) -1 ;
-      *starY = (sy / flux) -1;
-      // je change de repere de coordonnees
-      *starX += x1;
-      *starY += y1;
+      }          
 
       strcpy(starStatus, "DETECTED");
       sprintf (message, "pixelCount= %d", pixelCount);
 
 
-      if ( findFiber == 1 && originSumCounter == originSumNb && fiberInside==1 )  {
+
+      // ----------------------------------------------------
+      // je detecte l'entree de la fibre
+      // ----------------------------------------------------
+      if ( findFiber == 1 )  {
+         // je verifie que la consigne est dans l'image
+         if ( fiberInside==1 ) {
+            // je verifie que l'image integree a integree suffisamment d'images
+            if ( originSumCounter >= originSumMinCounter ) {
          
+               // ----------------------------------------------------
+               // 1) je synthetise la gaussienne
+               //  IMA2[i,j]=(1.-offset)*exp(-((i-cgx)**2 / (0.36*fwhmx**2))-((j-cgy)**2 /(0.36*fwhmy**2)))+offset
+               //  avec fwhmx = fwhmy = le seeing moyen en pixel,
+               //  et cgx, cgy le centre de gravite de l'etoile detectee,
+               //  et offset = 1. - 1./max_ima
+               // ----------------------------------------------------                  
 
-         // ----------------------------------------------------
-         // je detecte l'entree de la fibre
-         //
-         // 1) je synthetise la gaussienne
-         //  IMA2[i,j]=(1.-offset)*exp(-((i-cgx)**2 / (0.36*fwhmx**2))-((j-cgy)**2 /(0.36*fwhmy**2)))+offset
-         //  avec fwhmx = fwhmy = le seeing moyen en pixel,
-         //  et cgx, cgy le centre de gravite de l'etoile detectee,
-         //  et offset = 1. - 1./max_ima
-         //
-                  
-
-         TYPE_PIXELS offset;
-         TYPE_PIXELS gaussIntensity ;
-         TYPE_PIXELS fiberMaxIntensity = 0;          // intensite du plateau
+               TYPE_PIXELS offset;
+               TYPE_PIXELS gaussIntensity ;
+               TYPE_PIXELS fiberMaxIntensity = 0;          // intensite du plateau
          
-         if ( sumMaxIntensity > 0 ) {
-            offset = (TYPE_PIXELS) (1. - 1. / sumMaxIntensity);
-         } else {
-            offset = 0;
-         }
-
-         fiberPix = (TYPE_PIXELS*) malloc(width * height * sizeof(TYPE_PIXELS));
-         if ( fiberPix ==NULL ) {
-            throw CError( "CBuffer::AstroFiberCentro not enough memory for fiberPix");
-         }      
-         
-         double cgx =    *starX - x1;
-         double cgy =    *starY - y1;
-
-         // 
-         for(j=0;j<height;j++) {
-            sumOffset  = sumPix  + j * width;
-            maskOffset = maskPix + j * width;
-            fiberOffset = fiberPix + j * width;
-            for(i=0;i<width;i++) {
-               sumPtr  = sumOffset+i;
-               maskPtr = maskOffset+i;
-               fiberPtr = fiberOffset+i;
-               
-               gaussIntensity = (TYPE_PIXELS) ( (1. - offset) * exp( - ((double)i-cgx)*((double)i-cgx)/(0.36*maskFwhm*maskFwhm)  - ((double)j-cgy)*((double)j-cgy) / (0.36*maskFwhm*maskFwhm) ) + offset);               
-               if ( gaussIntensity != 0 ) {
-                  *fiberPtr = *sumPtr * *maskPtr / gaussIntensity;
+               if ( sumMaxIntensity > 0 ) {
+                  offset = (TYPE_PIXELS) (1. - 1. / sumMaxIntensity);
                } else {
-                  *fiberPtr = *sumPtr * *maskPtr;
+                  offset = 0;
                }
 
-               if ( _isnan(*fiberPtr) == 1 ) {
-                  *fiberPtr = 0;
-               }
-
-               if ( *fiberPtr > fiberMaxIntensity ) {
-                  // je mets à jour la nouvelle valeur max
-                  fiberMaxIntensity = *fiberPtr; 
-               }
-
-            }
-         }
+               fiberPix = (TYPE_PIXELS*) malloc(width * height * sizeof(TYPE_PIXELS));
+               if ( fiberPix ==NULL ) {
+                  throw CError( "CBuffer::AstroFiberCentro not enough memory for fiberPix");
+               }      
          
-         
-         // ----------------------------------------------------
-         // 2) je cree le plateau 
-         //  IMA3=IMA x MASKT / IMA2 
-         //  PLATEAU = MAX(IMA3)
-         //  j'impose cette valeur a tous les pixels de valeurs superieurs a 15% de cette valeur
-         //  IMA4 = WHERE ( IMA3 > 0.15 x PLATEAU, PLATEAU, IMA3 ) 
-         //
-         // 3) j'inverse les flux 
-         //  IMA5 = (PLATEAU - IMA4 ) x MASKT 
-         // j'impose cette valeur a tous les pixels de valeurs superieurs a 15% de cette valeur
-         // j'inverse les flux
-         // je cumule les flux pour le centre de gravite
-         flux = 0.;
-         sx = 0.;
-         sy = 0.;
+               double cgx =    *starX - x1;
+               double cgy =    *starY - y1;
 
-         for(j=0;j<height;j++) {
-            fiberOffset = fiberPix + j * width;
-            maskOffset =  maskPix  + j * width;
-            for(i=0;i<width;i++) {
-               fiberPtr = fiberOffset+i;
-               maskPtr = maskOffset+i;
+               // 
+               for(j=0;j<height;j++) {
+                  sumOffset  = sumPix  + j * width;
+                  maskOffset = maskPix + j * width;
+                  fiberOffset = fiberPix + j * width;
+                  for(i=0;i<width;i++) {
+                     sumPtr  = sumOffset+i;
+                     maskPtr = maskOffset+i;
+                     fiberPtr = fiberOffset+i;
                
-               // j'ecrete a 15% du plateau
-               if ( *fiberPtr > fiberMaxIntensity * maskPercent ) {
-                  *fiberPtr = fiberMaxIntensity; 
+                     gaussIntensity = (TYPE_PIXELS) ( (1. - offset) * exp( - ((double)i-cgx)*((double)i-cgx)/(0.36*maskFwhm*maskFwhm)  - ((double)j-cgy)*((double)j-cgy) / (0.36*maskFwhm*maskFwhm) ) + offset);               
+                     if ( gaussIntensity != 0 ) {
+                        *fiberPtr = *sumPtr * *maskPtr / gaussIntensity;
+                     } else {
+                        *fiberPtr = *sumPtr * *maskPtr;
+                     }
+
+                     if ( _isnan(*fiberPtr) == 1 ) {
+                        *fiberPtr = 0;
+                     }
+
+                     if ( *fiberPtr > fiberMaxIntensity ) {
+                        // je mets à jour la nouvelle valeur max
+                        fiberMaxIntensity = *fiberPtr; 
+                     }
+
+                  }
                }
-               // j'inverse le flux  
-               *fiberPtr = (fiberMaxIntensity - *fiberPtr) * *maskPtr ;
+         
+         
+               // ----------------------------------------------------
+               // 2) je cree le plateau 
+               //  IMA3=IMA x MASKT / IMA2 
+               //  PLATEAU = MAX(IMA3)
+               //  j'impose cette valeur a tous les pixels de valeurs superieurs a maskPercent=15% de cette valeur
+               //  IMA4 = WHERE ( IMA3 > 0.15 x PLATEAU, PLATEAU, IMA3 ) 
+               //
+               // 3) j'inverse les flux 
+               //  IMA5 = (PLATEAU - IMA4 ) x MASKT 
+               //  j'impose cette valeur a tous les pixels de valeurs superieurs a 15% de cette valeur
+               //  j'inverse les flux
+               //  je cumule les flux pour le calcul du centre de gravite
+               // ----------------------------------------------------                  
 
-               if ( _isnan(*fiberPtr) == 1 ) {
-                  *fiberPtr = 0;
+               flux = 0.;
+               sx = 0.;
+               sy = 0.;
+
+               for(j=0;j<height;j++) {
+                  fiberOffset = fiberPix + j * width;
+                  maskOffset =  maskPix  + j * width;
+                  for(i=0;i<width;i++) {
+                     fiberPtr = fiberOffset+i;
+                     maskPtr = maskOffset+i;
+               
+                     // j'ecrete a 15% du plateau
+                     if ( *fiberPtr > fiberMaxIntensity * maskPercent ) {
+                        *fiberPtr = fiberMaxIntensity; 
+                     }
+                     // j'inverse le flux  
+                     *fiberPtr = (fiberMaxIntensity - *fiberPtr) * *maskPtr ;
+
+                     if ( _isnan(*fiberPtr) == 1 ) {
+                        *fiberPtr = 0;
+                     }
+
+                     // je cumule les flux 
+                     flux += (double)*fiberPtr;
+                     sx += (i+1) * (double)*fiberPtr;
+                     sy += (j+1) * (double)*fiberPtr;
+                  }
                }
+               // je calcule le barycentre 
+               *fiberX = (sx / flux) - 1 ;
+               *fiberY = (sy / flux) - 1 ;
 
-               // je cumule les flux 
-               flux += (double)*fiberPtr;
-               sx += (i+1) * (double)*fiberPtr;
-               sy += (j+1) * (double)*fiberPtr;
-            }
-         }
-         // je calcule le barycentre 
-         *fiberX = (sx / flux) -1 ;
-         *fiberY = (sy / flux) -1 ;
+               /*
+               // TEST
+               { 
+                  // ----------------------------------------------------
+                  // j'ajuste une gaussienne pour le calcul du centre, 
+                  // de background et de maxIntensity
+                  // ----------------------------------------------------
+                  //double px[4], py[4];
+                  //TYPE_PIXELS pixel;
+                  //double errx, erry;
 
-         if ( fiberBufNo !=0 ) {
-            CBuffer * fiberBuf = (CBuffer *)buf_pool->Chercher(fiberBufNo);
-            fiberBuf->SetPixels(PLANE_GREY, width, height, FORMAT_FLOAT, COMPRESS_NONE, fiberPix, 0,0,0) ;
-            // j'initialise l'image integree 
-            int naxis = 2;
-            TYPE_PIXELS fiberMinIntensity = 0;
-            fiberBuf->GetKeywords()->Add("NAXIS",  &naxis, TINT, "","");
-            fiberBuf->GetKeywords()->Add("NAXIS1", &width, TINT, "","");
-            fiberBuf->GetKeywords()->Add("NAXIS2", &height,TINT, "","");
-            fiberBuf->GetKeywords()->Add("MIPS-LO", &fiberMinIntensity, TFLOAT, "","");
-            fiberBuf->GetKeywords()->Add("MIPS-HI", &fiberMaxIntensity, TFLOAT, "","");
-         }
+                  px[0] = 0; py[0] = 0;
+                  px[1] = 0; py[1] = 0;
+                  px[2] = 0; py[2] = 0;
+                  px[3] = 0; py[3] = 0;
+                  errx = 0; erry=0;
+
+                  if (iX!=NULL)  free(iX);
+                  if (dX!=NULL)  free(dX);
+                  if (iY!=NULL)  free(iY);
+                  if (dY!=NULL)  free(dY);
+
+                  // je cree les variables de travail pour l'ajustement de la gaussienne
+                  iX = (TYPE_PIXELS*)calloc(width,sizeof(TYPE_PIXELS));
+                  dX = (double*)calloc(width,sizeof(double));
+                  iY = (TYPE_PIXELS*)calloc(height,sizeof(TYPE_PIXELS));
+                  dY = (double*)calloc(height,sizeof(double));
+
+                  for(j=0;j<height;j++) {
+                     for(i=0;i<width;i++) {
+                        pixel = *(fiberPix+width*j+i);
+                        // je supprime les pixels negatifs
+                        if ( pixel < 0. ) {
+                          pixel = 0.;
+                        }
+                        *(iX+i) += pixel;
+                        *(iY+j) += pixel;
+                     }
+                  }
+
+                  for(i=0;i<width;i++)  *(dX+i) = (double)*(iX+i);
+                  for(i=0;i<height;i++) *(dY+i) = (double)*(iY+i);
+
+                  pix->fitgauss1d(width,dX,px,&errx);
+                  pix->fitgauss1d(height,dY,py,&erry);
+
+                  *fiberX = px[1];
+                  *fiberY = py[1];
+               }
+               */
+
+               if ( fiberBufNo !=0 ) {
+                  CBuffer * fiberBuf = (CBuffer *)buf_pool->Chercher(fiberBufNo);
+                  // je copie l'image inversee de la fibre dans le buffer fiberBuf  
+                  fiberBuf->SetPixels(PLANE_GREY, width, height, FORMAT_FLOAT, COMPRESS_NONE, fiberPix, 0,0,0) ;
+                  int naxis = 2;
+                  TYPE_PIXELS fiberMinIntensity = 1.0;
+                  fiberBuf->GetKeywords()->Add("NAXIS",  &naxis, TINT, "","");
+                  fiberBuf->GetKeywords()->Add("NAXIS1", &width, TINT, "","");
+                  fiberBuf->GetKeywords()->Add("NAXIS2", &height,TINT, "","");
+                  fiberBuf->GetKeywords()->Add("MIPS-LO", &fiberMinIntensity, TFLOAT, "","");
+                  fiberBuf->GetKeywords()->Add("MIPS-HI", &fiberMaxIntensity, TFLOAT, "","");
+                  fiberBuf->GetKeywords()->Add("SUM_COUNT", &originSumCounter, TINT, "integrated image counter","");
+                  fiberBuf->initialMipsLo = fiberMinIntensity;
+                  fiberBuf->initialMipsHi = fiberMaxIntensity;
+               }
 
         
-         // ----------------------------------------------------
-         // je calcule la qualite qualityMin à partir de mean, dsigma
-         // ----------------------------------------------------
-         int ttResult;
-         int datatype = TFLOAT;
-         double dlocut, dhicut, dmaxi, dmini, dmean, dsigma, dbgmean,dbgsigma,dcontrast;
+               // ----------------------------------------------------
+               // je verifie la qualite de l'image inversee à partir de mean, dsigma
+               // je calcule dsigma, dmaxi, dmini de la fenetre (x1,y1,x2,y2)
+               //   si dsigma < 10 , retourne l'erreur LOW_SIGNAL
+               //   si (dmaxi-dmini) < 3*sqrt(dsigma) retoune l'erreur NO_SIGNAL
+               //   sinon retourne DETECTED
+               // ----------------------------------------------------
+               int ttResult;
+               int datatype = TFLOAT;
+               double dlocut, dhicut, dmaxi, dmini, dmean, dsigma, dbgmean,dbgsigma,dcontrast;
       
-         ttResult = Libtt_main(TT_PTR_STATIMA,13,fiberPix,&datatype,&width,&height,
-            &dlocut,&dhicut,&dmaxi,&dmini,&dmean,&dsigma,&dbgmean,&dbgsigma,&dcontrast);
-         if(ttResult) {
-            free(imgPix);
-            throw CErrorLibtt(ttResult);
-         }
+               ttResult = Libtt_main(TT_PTR_STATIMA,13,fiberPix,&datatype,&width,&height,
+                  &dlocut,&dhicut,&dmaxi,&dmini,&dmean,&dsigma,&dbgmean,&dbgsigma,&dcontrast);
+               if(ttResult) {
+                  free(imgPix);
+                  throw CErrorLibtt(ttResult);
+               }
 
-         if ( dmaxi < 10 ) {
-            strcpy(fiberStatus, "LOW_SIGNAL");
-            *fiberX=previousFiberX;
-            *fiberY=previousFiberY;
-            sprintf(tempMessage, "Low fiber signal: %6.2f < 10", dmaxi);
-            strcat(message,tempMessage);
-         } else if ( (dmaxi-dmini) < 3*sqrt(dsigma) ) {
-            strcpy(fiberStatus, "NO_SIGNAL");
-            sprintf(tempMessage, "No fiber signal:(%6.2f -%6.2f) < 3*sqrt(%6.2f) ", dmaxi, dmini,dsigma);
-            strcat(message,tempMessage);
-            *fiberX=previousFiberX;
-            *fiberY=previousFiberY;
-         } else {
-            // je change de repere de coordonnees fenetre => coordonnes image
-            *fiberX += x1;
-            *fiberY += y1;
-            double fiberDist = sqrt((*fiberX-previousFiberX)*(*fiberX-previousFiberX)+(*fiberY-previousFiberY)*(*fiberY-previousFiberY));
-            if ( fiberDist >5 ) {
-               strcpy(fiberStatus, "TOO_FAR");
-               sprintf(tempMessage, "Fiber too far: %6.2f > 5", fiberDist);
-               strcat(message,tempMessage);
-            } else {         
-               strcpy(fiberStatus, "DETECTED");
-               // je copie le resulat dans le buffer de visalisation 
+               if ( dmaxi < 10 ) {
+                  strcpy(fiberStatus, "LOW_SIGNAL");
+                  *fiberX=previousFiberX;
+                  *fiberY=previousFiberY;
+                  sprintf(tempMessage, "Low fiber signal: %6.2f < 10", dmaxi);
+                  strcat(message,tempMessage);
+               } else if ( (dmaxi-dmini) < 3*sqrt(dsigma) ) {
+                  strcpy(fiberStatus, "NO_SIGNAL");
+                  sprintf(tempMessage, "No fiber signal:(%6.2f -%6.2f) < 3*sqrt(%6.2f) ", dmaxi, dmini,dsigma);
+                  strcat(message,tempMessage);
+                  *fiberX=previousFiberX;
+                  *fiberY=previousFiberY;
+               } else {
+                  // je change de repere de coordonnees fenetre => coordonnes image
+                  *fiberX += x1;
+                  *fiberY += y1;
+                  double fiberDist = sqrt((*fiberX-previousFiberX)*(*fiberX-previousFiberX)+(*fiberY-previousFiberY)*(*fiberY-previousFiberY));
+                  if ( fiberDist > 20 ) {
+                     strcpy(fiberStatus, "TOO_FAR");
+                     sprintf(tempMessage, "Fiber too far: %6.2f > 5", fiberDist);
+                     strcat(message,tempMessage);
+                  } else {         
+                     strcpy(fiberStatus, "DETECTED");
+                     // je copie le resulat dans le buffer de visalisation 
+                  }
+               }
+            } else {
+               // l'image integree n'a suffisamment integree d'images
+               strcpy(fiberStatus, "INTEGRATING");
             }
+         } else {
+            // la fibre n'est pas dans la fenetre
+            strcpy(fiberStatus, "OUTSIDE");
          }
+      } else {
+         // la detection de la position de la fibre n'est pas demandee
+         strcpy(fiberStatus, "DISABLED");
       }
-
       
       if (imgPix!=NULL)    free(imgPix);
       if (biasPix!=NULL)   free(biasPix);
