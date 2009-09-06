@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.6 2009-09-06 04:46:17 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.7 2009-09-06 17:28:48 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -25,12 +25,7 @@ namespace eval ::zadkopad {
 		set port(gard) 30001
 		set modetelescope 0
 		set stopcalcul 0
-		#--- Tue camera.exe
-		package require twapi
-		set res [twapi::get_process_ids -glob -name "camera.exe"]
-		if {$res!=""} {
-			twapi::end_process $res -force
-		}
+		
 		#--- Cree les variables dans conf(...) si elles n'existent pas
 		initConf
 		#--- J'initialise les variables widget(..)
@@ -231,7 +226,7 @@ namespace eval ::zadkopad {
 		if {[string range $f 0 3]=="sock"} {
 			fconfigure $f -blocking 0 -buffering none 
 			puts $f "$texte"
-			after 1000
+			after 1500
 			set reponse [read $f]
 			close $f
 			return $reponse
@@ -253,7 +248,7 @@ namespace eval ::zadkopad {
      	if {($mode==1)&&($modetelescope==0)} {
 	 		#passer en mode manuel du majordome
 	 		
-	 		set reponse [dialoguesocket $port(adressePCcontrol) $port(maj) $texte]
+	 		set reponse [::zadkopad::dialoguesocket $port(adressePCcontrol) $port(maj) $texte]
 	 		::console::affiche_resultat "$reponse \n"
 			
 	 		if {$reponse!=2} {
@@ -265,14 +260,28 @@ namespace eval ::zadkopad {
 		 		.zadkopad.petal.petalopen configure -relief groove -state disabled
 		 		.zadkopad.petal.petalclose configure -relief groove -state disabled
 		 		.zadkopad.foc.enter configure -relief groove -state disabled
+		 		.zadkopad.foc.stop configure -relief groove -state disabled
 		 		.zadkopad.frame1.frame2.f.but1 configure -relief groove -state disabled
-		 		.zadkopad.frame1.frame3.f.f2.trackopen configure -relief groove -state disabled
-		 		.zadkopad.frame1.frame3.f.f2.trackclose configure -relief groove -state disabled
 		 		.zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state disabled
 		 		update
 		 		
 		 		set modetelescope 0
 		 	} else {
+				# ouvrir socket
+				#set reponse [dialoguesocket $port(adressePCcontrol) $port(tel) $texte]
+	
+				# --- passer majordome en mode manuel
+				set reponse [::zadkopad::roscommande {majordome DO mysql ModeSysteme MANUAL}]
+				::console::affiche_resultat "$reponse \n"
+				set reponse [::zadkopad::roscommande {telescope DO eval {tel1 radec motor off}}]
+				::console::affiche_resultat "$reponse \n"
+				set modetelescope 1
+				#--- Tue camera.exe
+				package require twapi
+				set res [twapi::get_process_ids -glob -name "camera.exe"]
+				if {$res!=""} {
+					twapi::end_process $res -force
+				}
 				.zadkopad.mode.manual configure -relief groove -state disabled		
 		 		.zadkopad.func.closedome configure -relief groove -state normal
 		 		.zadkopad.func.opendome configure -relief groove -state normal
@@ -281,32 +290,28 @@ namespace eval ::zadkopad {
 		 		.zadkopad.petal.petalopen configure -relief groove -state normal
 		 		.zadkopad.petal.petalclose configure -relief groove -state normal
 		 		.zadkopad.foc.enter configure -relief groove -state normal
+		 		.zadkopad.foc.stop configure -relief groove -state normal
 		 		.zadkopad.frame1.frame2.f.but1 configure -relief groove -state normal
-		 		.zadkopad.frame1.frame3.f.f2.trackopen configure -relief groove -state normal
-		 		.zadkopad.frame1.frame3.f.f2.trackclose configure -relief groove -state normal
 		 		.zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state normal
-		 		update	
-				# ouvrir socket
-				#set reponse [dialoguesocket $port(adressePCcontrol) $port(tel) $texte]
-	
-				# --- passer majordome en mode manuel
-				set reponse [roscommande {majordome DO mysql ModeSysteme MANUAL}]
-				::console::affiche_resultat "$reponse \n"
-				
-				set modetelescope 1
 			}
      		
 		} elseif {$mode==0} {
 			if {$modetelescope==1} {
+				#################################
+				# pour contrer le bug de DFM
+				::zadkopad::stopfocus
+				#################################
+				set reponse [::zadkopad::roscommande {telescope DO eval {tel1 radec motor off}}]
+				::console::affiche_resultat "$reponse \n"
 				# --- passer majordome en mode auto
 				#passer en mode manuel du majordome
-		 		set reponse [dialoguesocket $port(adressePCcontrol) $port(maj) $texte]
+		 		set reponse [::zadkopad::dialoguesocket $port(adressePCcontrol) $port(maj) $texte]
 	 	 		::console::affiche_resultat "$reponse \n"
 	 			
 	 	 		if {$reponse!=2} {
 	 			
 	 			}
-				set reponse [roscommande {majordome DO mysql ModeSysteme AUTO}]
+				#set reponse [::zadkopad::roscommande {majordome DO mysql ModeSysteme AUTO}]
 				#relancer si reponse pas bonne
 			}
 		}
@@ -316,14 +321,14 @@ namespace eval ::zadkopad {
    #     
    #------------------------------------------------------------
 	proc roscommande { msg } {
-		global port
+		global port paramhorloge 
 		
 		::console::affiche_resultat "$msg"
 		set nameexe [lindex $msg 0]
 		
 		set ordre [lrange $msg 1 end]
         
-		if {([string compare -nocase $nameexe "majordome"] == 0) || ([string compare -nocase $nameexe telescope]==0)} {
+		if {([string compare -nocase $nameexe "majordome"] == 0) || ([string compare -nocase $nameexe telescope]==0)|| ([string compare -nocase $nameexe gardien]==0)} {
 			if {$nameexe=="majordome"} {
 				set portCom $port(maj)
 			} elseif { $nameexe=="telescope"} {
@@ -331,9 +336,8 @@ namespace eval ::zadkopad {
 			} elseif { $nameexe=="gardien"} {
 				set portCom $port(gard)
 			}
-			
 			# ouvrir socket
-			set reponse [dialoguesocket $port(adressePCcontrol) $portCom $ordre]
+			set reponse [::zadkopad::dialoguesocket $port(adressePCcontrol) $portCom $ordre]
 			::console::affiche_resultat "$nameexe ordre: $ordre, reponse: $reponse \n"	
 		} 
 		return $reponse
@@ -342,7 +346,7 @@ namespace eval ::zadkopad {
    #    goto new coordinate     
    #------------------------------------------------------------
 	proc gotocoord { newra newdec suivira suividec onoff newfocus} {
-		global port paramhorloge audace
+		global port paramhorloge audace 
 		
 		set paramhorloge(home)       $audace(posobs,observateur,gps)
 		
@@ -361,17 +365,19 @@ namespace eval ::zadkopad {
 		set ha  [lindex $res 2]
 		set tsl [mc_date2lst $now $paramhorloge(home)]
 			
-		::console::affiche_resultat "goto ra: $ra, dec: $dec, alt: $alt, ha:$ha\n"
+		::console::affiche_resultat "goto ra: $ra, dec: $dec, alt: $alt, ha: $ha \n"
 		# --- teste si les coordonnees sont pointables
-		if {($ha<[expr 8.5*15])||($ha>[expr 16.5*15])||($alt<10)} {			
+		if {(($ha<[expr 15*15])&&($ha>[expr 8*15]))||($alt<10)||($dec>45)||($dec<-89.5)} {			
 			# --- affiche un message d'erreur
 			::console::affiche_resultat "tsl: $tsl\n"
 			set ts [mc_angle2deg [list $tsl] ]
-			set ramin [expr $ts - 8.5]
-			set ramax [expr $ts - 16.5]
-			::console::affiche_resultat "goto erreur ramin: $ramin, ramax: $ramax, ts: $ts\n"
+			set ramin [expr $ts/15 - 8.5]
+			set ramax [expr $ts/15 - 16.5*15]
+			set decmin 89.5
+			set decmax 45
+			::console::affiche_resultat "goto erreur ramin: $ramin, ramax: $ramax, ts: $ts \n"
 			# ne peut pas ouvrir connection
-			tk_messageBox -icon error -message "BAD COORDINATES: must be $ramin< RA <$ramax AND ALT>10 degre" -type ok
+			tk_messageBox -icon error -message "BAD COORDINATES: must be $ramin<RA<$ramax AND ALT>10 degre AND $decmin<DEC<$decmax" -type ok
 			return
 		} 
 		# --- teste si les vitesses de suivi sont bonnes
@@ -386,22 +392,22 @@ namespace eval ::zadkopad {
 			return
 		} 
 		
-		# --- envoie l'ordre de focus
-		set reponse [roscommande {telescope DO eval {tel1 dfmfocus $newfocus}}]
-		::console::affiche_resultat "$reponse \n"	
-		# --- envoie l'ordre de suivi
-		if {$onoff=="0"} {
-			set ordreonoff off
-		} else {
-			set ordreonoff on
+		# --- envoie l'ordre de suivi	
+		
+		#################################
+		# pour contrer le bug de DFM
+		if 	{$onoff=="off"} {
+			stopfocus
 		}
-		set reponse [roscommande {telescope DO eval {tel1 racdec motor $ordreonoff}}]
-		::console::affiche_resultat "$reponse \n"	
+		###################################
+		
 		# --- envoie les valeurs de suivi
-		set reponse [roscommande {telescope DO eval {tel1 speedtrack $suivira $suividec}}]
+		set reponse [::zadkopad::roscommande [list telescope DO eval tel1 speedtrack $suivira $suividec]]
 		::console::affiche_resultat "$reponse \n"	
 		# --- envoie l'ordre de pointage au telescope
-		set reponse [roscommande {telescope GOTO $newra $newdec}]
+		set reponse [::zadkopad::roscommande [list telescope GOTO $newra $newdec -blocking 1]]
+		::console::affiche_resultat "$reponse \n"	
+		set reponse [::zadkopad::roscommande [list telescope DO eval tel1 racdec motor $onoff]]
 		::console::affiche_resultat "$reponse \n"	
 		
 		return $reponse
@@ -409,32 +415,67 @@ namespace eval ::zadkopad {
 	#------------------------------------------------------------
    #    send focus     
    #------------------------------------------------------------
-	proc sendfocus { newfocus} {
-		global port paramhorloge audace
+	proc sendfocus {newfocus} {
+		global port paramhorloge audace 
 		
 		# --- teste si le focus est bon
 		if {($newfocus<2800)||($newfocus>3600)} {				
 			tk_messageBox -icon error -message "BAD FOCUS VALUES: must be 2800<FOCUS<3600" -type ok
 			return
 		} 
-		
 		# --- envoie l'ordre de focus
-		set reponse [roscommande {telescope DO eval {tel1 dfmfocus $newfocus}}]
+		set nowfocus [lindex [::zadkopad::roscommande {telescope DO eval {tel1 dfmfocus}}] 0] 
+		::console::affiche_resultat "recupere le focus : $nowfocus \n"	
+		if {$nowfocus==""} {
+				set nowfocus 3340 
+		}
+		# --- envoie l'ordre de focus
+		set reponse [::zadkopad::roscommande [list telescope DO eval tel1 dfmfocus $newfocus]]
 		::console::affiche_resultat "$reponse \n"	
+		if {$nowfocus==""} {
+				set temps  [expr 800*30*1000/500 + 3000]
+		} else {
+			  	set temps [expr [expr abs($nowfocus -$newfocus)]*30*1000/500 + 3000]
+		}
+		::console::affiche_resultat "nowfocus: $nowfocus, newfocus: $newfocus, temps: $temps \n"
+		after [expr int($temps)]
+		::zadkopad::stopfocus
 		
+		return $reponse
+	}
+	#------------------------------------------------------------
+   #    send focus     
+   #------------------------------------------------------------
+	proc stopfocus {} {
+		global port paramhorloge audace 
+		
+		set texte {DO eval {tel1 put "#13;\r"}}
+		
+		catch [ set f [socket $port(adressePCcontrol) $port(tel)]]
+		if {[string range $f 0 3]=="sock"} {
+			fconfigure $f -blocking 0 -buffering none 
+			puts $f "$texte"
+			after 1000
+			set reponse [read $f]
+			close $f
+		} else {
+			# ne peut pas ouvrir connection
+			tk_messageBox -icon error -message "No connection with $adressseIP $port" -type ok
+		}
+		::console::affiche_resultat "$reponse \n"	
 		return $reponse
 	}
 	#------------------------------------------------------------
 	#    met a jour les donnes     
 	#------------------------------------------------------------
 	proc calculz { } {
-	   global caption stopcalcul base paramhorloge
+	   global caption stopcalcul base paramhorloge 
 	   
 	    #::console::affiche_resultat "paramhorloge(new,ra):$paramhorloge(new,ra) ,paramhorloge(new,dec): $paramhorloge(new,dec) \n"
 		if { $paramhorloge(sortie) != "1" } {
  			if {($paramhorloge(new,ra)=="")&&($paramhorloge(new,dec)=="")} {
-				::console::affiche_resultat "probleme with telescope connection, paramhorloge(new,ra):$paramhorloge(new,ra)\n"
-				set radec [ roscommande {telescope TEL radec coord}]
+				::console::affiche_resultat "calculz probleme with telescope connection, paramhorloge(new,ra):$paramhorloge(new,ra)\n"
+				set radec [ ::zadkopad::roscommande {telescope TEL radec coord}]
  				set paramhorloge(ra)         "[lindex $radec 0]"
  				set paramhorloge(dec)        "[lindex $radec 1]"
  				set paramhorloge(new,ra) 	 $paramhorloge(ra)
@@ -443,7 +484,6 @@ namespace eval ::zadkopad {
 				set paramhorloge(ra) $paramhorloge(new,ra)
 		    	set paramhorloge(dec) $paramhorloge(new,dec)
   			}
-			
 			
 			set now now
 			catch {set now [::audace::date_sys2ut now]}
@@ -489,21 +529,37 @@ namespace eval ::zadkopad {
 	#------------------------------------------------------------
 	#    met a jour les donnes     
 	#------------------------------------------------------------
+	proc initobservatory { value } {
+	   global caption base paramhorloge stopcalcul
+	   
+	   if {$value=="1"} {		  			
+	   		::zadkopad::roscommande {telescope DO init}
+   		} else {
+	   		::zadkopad::roscommande {telescope DO park}
+   		}
+ 	
+	}
+	#------------------------------------------------------------
+	#    met a jour les donnes     
+	#------------------------------------------------------------
 	proc refreshcoord { } {
 	   global caption base paramhorloge stopcalcul
 	    
 	    set stopcalcul 1
 	    ::console::affiche_resultat "refresh paramhorloge(new,ra):$paramhorloge(new,ra) ,paramhorloge(new,dec): $paramhorloge(new,dec) \n"
 		
-		set radec [ roscommande {telescope TEL radec coord}]
-		::console::affiche_resultat "refresh radec: $radec \n"
-
+		set radec [ ::zadkopad::roscommande {telescope TEL radec coord}]
+		
  		set paramhorloge(ra)         "[lindex $radec 0]"
  		set paramhorloge(dec)        "[lindex $radec 1]"
  		set paramhorloge(new,ra) 	 $paramhorloge(ra)
  		set paramhorloge(new,dec) 	 $paramhorloge(dec)
- 		
+ 		set paramhorloge(focal_number)	[lindex [::zadkopad::roscommande {telescope DO eval {tel1 dfmfocus}}] 0]
+ 		set vitessessuivie [::zadkopad::roscommande [list telescope DO eval {tel1 speedtrack}]]
+ 		set paramhorloge(suivira)	[lindex $vitessessuivie 0]
+ 		set paramhorloge(suividec)	[lindex $vitessessuivie 1] 
  		set stopcalcul 0
+ 		::console::affiche_resultat "refresh radec: $radec, focal_number: $paramhorloge(focal_number), vitessessuivie : $vitessessuivie\n"
  		::zadkopad::calculz
  	
 	}
@@ -573,10 +629,10 @@ namespace eval ::zadkopad {
 	set paramhorloge(font)       {times 30 bold}
 	set paramhorloge(suivira)	 "0.00417808"
 	set paramhorloge(suividec)   "0.0"
-	set focal_number			 [lindex [roscommande {telescope DO eval {tel1 dfmfocus}}] 0] 
+	set paramhorloge(focal_number)	"[lindex [::zadkopad::roscommande {telescope DO eval {tel1 dfmfocus}}] 0]" 
 	set paramhorloge(new,ra)     "$paramhorloge(ra)"
 	set paramhorloge(new,dec)    "$paramhorloge(dec)"
-	::console::affiche_resultat "init paramhorloge(new,ra):$paramhorloge(new,ra) ,paramhorloge(new,dec): $paramhorloge(new,dec) \n"
+	::console::affiche_resultat  "init focal_number: $paramhorloge(focal_number), paramhorloge(new,ra):$paramhorloge(new,ra), paramhorloge(new,dec): $paramhorloge(new,dec) \n"
 	# =========================================
 	# === Setting the graphic interface
 	# === Met en place l'interface graphique
@@ -601,7 +657,7 @@ namespace eval ::zadkopad {
 	#--- Create a dummy space
 	frame .zadkopad.dum1 -height $geomlx200(20pixels) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
 	pack .zadkopad.dum1 -in .zadkopad -side top -fill x
-	 
+         
 	#--- Create a frame for change mode
 	frame .zadkopad.mode -height $geomlx200(haut) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
 	pack .zadkopad.mode -in .zadkopad -side top -pady 10
@@ -620,9 +676,9 @@ namespace eval ::zadkopad {
 	pack .zadkopad.tel.telescope -in .zadkopad.tel -side left
 	 
 	button .zadkopad.tel.init -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text INIT \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {roscommande {telescope DO init}}
+	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::initobservatory 1}
 	button .zadkopad.tel.parking -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text "CLOSE (end of night)" \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {roscommande {telescope DO park}}
+	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::initobservatory 0}
 	
 	pack .zadkopad.tel.init .zadkopad.tel.parking -in .zadkopad.tel -padx [ expr int(11*$zoom) ] -side left
 	
@@ -637,9 +693,9 @@ namespace eval ::zadkopad {
 	
 	
 	button .zadkopad.func.opendome -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text OPEN \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {roscommande {telescope DO roof_open}}
+	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::roscommande {gardien DO roof_open}}
 	button .zadkopad.func.closedome -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text CLOSE \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {roscommande {telescope DO roof_close}}
+	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::roscommande {gardien DO roof_close}}
 	pack  .zadkopad.func.closedome .zadkopad.func.opendome -in .zadkopad.func -padx [ expr int(11*$zoom) ] -side right
 	
 	    
@@ -653,10 +709,10 @@ namespace eval ::zadkopad {
 	pack .zadkopad.petal.telescope -in .zadkopad.petal -side left
 	 
 	button .zadkopad.petal.petalopen -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text OPEN \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {roscommande {telescope DO mirrordoors 1}}
+	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::roscommande {telescope DO mirrordoors 1}}
 	
 	button .zadkopad.petal.petalclose -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text CLOSE \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {roscommande {telescope DO mirrordoors 1}}
+	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::roscommande {telescope DO mirrordoors 0}}
 	
 	pack  .zadkopad.petal.petalopen .zadkopad.petal.petalclose  -in .zadkopad.petal -padx [ expr int(11*$zoom) ] -side left
 	
@@ -672,13 +728,16 @@ namespace eval ::zadkopad {
 	 -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
 	pack .zadkopad.foc.telescope -in .zadkopad.foc -side left
 	 
-	entry .zadkopad.foc.ent1 -textvariable focal_number -width $geomlx200(16pixels)  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
+	entry .zadkopad.foc.ent1 -textvariable paramhorloge(focal_number) -width $geomlx200(10pixels)  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
 	     -bg $colorlx200(backtour)  -fg $colorlx200(backpad) -relief flat
 	     
-	button .zadkopad.foc.enter -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text SEND \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::sendfocus $focal_number}
+	button .zadkopad.foc.enter -width $geomlx200(10pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text SEND \
+	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::sendfocus $paramhorloge(focal_number)}
+	 
+	 button .zadkopad.foc.stop -width $geomlx200(10pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text STOP \
+	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::stopfocus}
 	
-	pack  .zadkopad.foc.ent1 .zadkopad.foc.enter -in .zadkopad.foc -padx [ expr int(11*$zoom) ] -side left
+	pack  .zadkopad.foc.ent1 .zadkopad.foc.enter .zadkopad.foc.stop -in .zadkopad.foc -padx [ expr int(11*$zoom) ] -side left
 	
 	#--- Create a frame for Telescope Information
 	frame .zadkopad.frame1 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
@@ -760,7 +819,7 @@ namespace eval ::zadkopad {
 	#--- Create a dummy space
 	frame $base2.f.vide -height 2 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
 	pack $base2.f.vide -in $base2.f -side top -fill x -pady 5
-	 	   
+         
 	#--- track control
 	frame $base2.f.f3 -height 15 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
 	pack $base2.f.f3 -in $base2.f -side top -fill x -pady 10
@@ -787,16 +846,13 @@ namespace eval ::zadkopad {
 	pack $base2.f.f2 -in $base2.f -side top -fill x -pady 10
 	
 	label $base2.f.f2.labelvide -width $geomlx200(10pixels) -borderwidth 0 -bg $colorlx200(backpad)
-	pack $base2.f.f2.labelvide -in $base2.f.f3 -side left  
-	
+	pack $base2.f.f2.labelvide -in $base2.f.f2 -side left  
+          
 	checkbutton $base2.f.f2.trackopen -width $geomlx200(10pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text "Tracking ON" \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -textvariable onoff 
-	 
-	$base2.f.f2.trackopen deselect
+	 -borderwidth 0 -relief flat -variable paramhorloge(onoff) -onvalue "on" -offvalue "off"
 
 	pack $base2.f.f2.trackopen -in $base2.f.f2 -padx [ expr int(11*$zoom) ] -side top
 	
-	$base2.f.f2.trackclose configure -relief groove -state disabled
 	#--- Create a dummy space
 	frame $base2.f.vide2 -height 2 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
 	pack $base2.f.vide2 -in $base2.f -side top -fill x -pady 5
@@ -806,7 +862,7 @@ namespace eval ::zadkopad {
 	
 	button $base2.f.vide2.sendposition.but1 -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]\
 	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey)\
-	 -text "SEND" -command {::zadkopad::gotocoord "$paramhorloge(new,ra)" "$paramhorloge(new,dec)" "$paramhorloge(suivira)" "$paramhorloge(suivira)" "[$base2.f.f2.trackopen cget]" "$focal_number"}
+	 -text "SEND" -command {::zadkopad::gotocoord "$paramhorloge(new,ra)" "$paramhorloge(new,dec)" "$paramhorloge(suivira)" "$paramhorloge(suividec)" "$paramhorloge(onoff)" "$paramhorloge(focal_number)"}
 	pack $base2.f.vide2.sendposition.but1 -in $base2.f.vide2.sendposition -side top -ipadx 5 -ipady 5 -pady 10	  
 	
 	#--- Create a dummy space
@@ -814,7 +870,18 @@ namespace eval ::zadkopad {
 	#pack $base2.f.vide2 -in $base2.f -side top -fill x -pady 10
 	
 	pack $base2.f -fill both
-
+	.zadkopad.mode.manual configure -relief groove -state normal		
+	.zadkopad.func.closedome configure -relief groove -state disabled
+	.zadkopad.func.opendome configure -relief groove -state disabled
+	.zadkopad.tel.init configure -relief groove -state disabled
+	.zadkopad.tel.parking configure -relief groove -state disabled
+	.zadkopad.petal.petalopen configure -relief groove -state disabled
+	.zadkopad.petal.petalclose configure -relief groove -state disabled
+	.zadkopad.foc.enter configure -relief groove -state disabled
+	.zadkopad.foc.stop configure -relief groove -state disabled
+	.zadkopad.frame1.frame2.f.but1 configure -relief groove -state disabled
+	.zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state disabled
+	update	
 	#--- La fenetre est active
 	focus .zadkopad
 	
@@ -824,6 +891,7 @@ namespace eval ::zadkopad {
 	# =======================================
 	# === It is the end of the script run ===
 	# =======================================
+	::zadkopad::refreshcoord
 	::zadkopad::calculz
 	#--- Je passe en mode manuel sur le telescope ZADKO
 	::zadkopad::modeZADKO 1
