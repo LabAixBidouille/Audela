@@ -231,6 +231,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 	tel->track_diurnal=360./86164.; /* (deg/s) */
 	tel->speed_track_ra=tel->track_diurnal; /* (deg/s) */
 	tel->speed_track_dec=0.; /* (deg/s) */
+	tel->blockingmethod=0; /* =0 for status, =1 for a coord loop */
 	/* --- Home --- */
 	tel->latitude=-31.356667;
 	sprintf(tel->home0,"GPS 115.713611 E %+.6f 50",tel->latitude);
@@ -422,18 +423,30 @@ int mytel_radec_goto(struct telprop *tel)
 {
    char s[1024],bits[25];
    int time_in=0,time_out=70;
+	double sepangledeg,sepangledeglim;
    dfm_arret_pointage(tel);
    dfm_goto(tel);
    sate_move_radec='A';
+	sepangledeglim=5./3600;
    if (tel->radec_goto_blocking==1) {
       /* A loop is actived until the telescope is stopped */
-      while (1==1) {
-   	   time_in++;
-         sprintf(s,"after 350"); mytel_tcleval(tel,s);
-			dfm_stat(tel,s,bits);
-			if (bits[0]==0) { break; }
-         if (time_in>=time_out) {break;}
-      }
+		if (tel->blockingmethod==0) {
+			while (1==1) {
+   			time_in++;
+				sprintf(s,"after 350"); mytel_tcleval(tel,s);
+				dfm_stat(tel,s,bits);
+				if (bits[0]==0) { break; }
+				if (time_in>=time_out) {break;}
+			}
+		} else {
+			while (1==1) {
+   			time_in++;
+				sprintf(s,"after 350"); mytel_tcleval(tel,s);
+				dfm_movingdetect(tel,1,&sepangledeg);
+				if (sepangledeg<sepangledeglim) { break; }
+				if (time_in>=time_out) {break;}
+			}
+		}
       sate_move_radec=' ';
       dfm_suivi_marche(tel);
    }
@@ -444,19 +457,31 @@ int mytel_hadec_goto(struct telprop *tel)
 {
    char s[1024],bits[25];
    int time_in=0,time_out=70;
+	double sepangledeg,sepangledeglim;
 
    dfm_arret_pointage(tel);
    dfm_hadec_goto(tel);
    sate_move_radec='A';
+	sepangledeglim=5./3600;
    if (tel->radec_goto_blocking==1) {
       /* A loop is actived until the telescope is stopped */
-      while (1==1) {
-   	   time_in++;
-         sprintf(s,"after 350"); mytel_tcleval(tel,s);
-			dfm_stat(tel,s,bits);
-			if (bits[0]==0) { break; }
-         if (time_in>=time_out) {break;}
-      }
+		if (tel->blockingmethod==0) {
+			while (1==1) {
+   			time_in++;
+				sprintf(s,"after 350"); mytel_tcleval(tel,s);
+				dfm_stat(tel,s,bits);
+				if (bits[0]==0) { break; }
+				if (time_in>=time_out) {break;}
+			}
+		} else {
+			while (1==1) {
+   			time_in++;
+				sprintf(s,"after 350"); mytel_tcleval(tel,s);
+				dfm_movingdetect(tel,1,&sepangledeg);
+				if (sepangledeg<sepangledeglim) { break; }
+				if (time_in>=time_out) {break;}
+			}
+		}
       sate_move_radec=' ';
 	  dfm_suivi_marche(tel);
    }
@@ -875,6 +900,41 @@ int dfm_hadec_coord(struct telprop *tel,char *result)
    return 0;
 }
 
+int dfm_movingdetect(struct telprop *tel,int hara, double *sepangledeg)
+/*
+*
+*/
+{
+   char s[1024],ss[1024];
+   int res,khara=0;
+	double ra1,dec1,ra2,dec2;
+	if (hara==0) { khara=0; } else { khara=1; }
+   /* --- Vide le buffer --- */
+   res=dfm_read(tel,s);
+   /* --- function COORDS --- */
+   res=dfm_put(tel,"#25;");
+   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+   res=dfm_read(tel,ss);
+   sprintf(s,"lindex \"%s\" %d",ss,khara); mytel_tcleval(tel,s);
+	ra1=15.*atof(tel->interp->result);
+   sprintf(s,"lindex \"%s\" 2",ss); mytel_tcleval(tel,s);
+	dec1=atof(tel->interp->result);
+   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+   /* --- Vide le buffer --- */
+   res=dfm_read(tel,s);
+   /* --- function COORDS --- */
+   res=dfm_put(tel,"#25;");
+   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+   res=dfm_read(tel,ss);
+   sprintf(s,"lindex \"%s\" %d",ss,khara); mytel_tcleval(tel,s);
+	ra2=15.*atof(tel->interp->result);
+   sprintf(s,"lindex \"%s\" 2",ss); mytel_tcleval(tel,s);
+	dec2=atof(tel->interp->result);
+   /* --- retourne l'angle de separation --- */
+   sprintf(s,"lindex [mc_sepangle %.7f %.7f %.7f %.7f] 0",ra1,dec1,ra2,dec2); mytel_tcleval(tel,s);
+   *sepangledeg=atof(tel->interp->result);
+   return 0;
+}
 
 int dfm_match(struct telprop *tel)
 {

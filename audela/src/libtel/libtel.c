@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.10 2009-09-01 16:05:47 myrtillelaas Exp $
+// $Id: libtel.c,v 1.11 2009-09-06 04:51:30 myrtillelaas Exp $
 
 #include "sysexp.h"
 
@@ -104,7 +104,7 @@ int TEL_ENTRYPOINT (Tcl_Interp *interp)
 
 int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
-   char s[2048];
+   char s[2048],cmd[256];
    int telno, err;
    struct telprop *tel, *tell;
    if(argc<3) {
@@ -168,13 +168,18 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
             }
 
             // je duplique la commande "::console::disp" dans la thread du telescope
-            sprintf(s,"thread::copycommand %s %s ",telThreadId, "::console::disp");
-            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
-               sprintf(s, "cmdTelCreate: %s",interp->result);
-               Tcl_SetResult(interp, s, TCL_VOLATILE);
-               return TCL_ERROR;
-            }
-            
+				strcpy(cmd,"::console::disp");
+				sprintf(s,"info command %s",cmd);
+				Tcl_Eval(interp,s);
+				if (strcmp(interp->result,cmd)==0) {
+					sprintf(s,"thread::copycommand %s %s ",telThreadId,cmd);
+					if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
+						sprintf(s, "cmdTelCreate: %s",interp->result);
+						Tcl_SetResult(interp, s, TCL_VOLATILE);
+						return TCL_ERROR;
+					}  
+				}
+
             // je duplique la commande "mc_angle2lx200ra" dans la thread du telescope
             sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_angle2lx200ra");
             if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
@@ -275,6 +280,19 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
                Tcl_SetResult(interp, s, TCL_VOLATILE);
                return TCL_ERROR;
             }
+
+            // je duplique la commande "mc_sepangle" dans la thread du telescope
+				strcpy(cmd,"mc_sepangle");
+				sprintf(s,"info command %s",cmd);
+				Tcl_Eval(interp,s);
+				if (strcmp(interp->result,cmd)==0) {
+					sprintf(s,"thread::copycommand %s %s ",telThreadId,cmd);
+					if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
+						sprintf(s, "cmdTelCreate: %s",interp->result);
+						Tcl_SetResult(interp, s, TCL_VOLATILE);
+						return TCL_ERROR;
+					}  
+				}
 
             // je prepare la commande de creation du telescope dans la thread du telescope :
             // thread::send $threadId { {argv0} {argv1} ... {argvn} mainThreadId $mainThreadId }

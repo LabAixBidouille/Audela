@@ -387,3 +387,33 @@ int cmdTelDFMFocus(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 	return result;
 }
+
+/*
+ *   Choice for the blocking method for Goto
+ */
+int cmdTelBlockingMethod(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char ligne[2048];
+   int result = TCL_OK;
+   int value;
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;
+   if (argc>3) {
+      sprintf(ligne,"Usage: %s %s ?value?",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_ERROR;
+      return result;
+   }
+   if (argc>=3) {
+		value=(int)atof(argv[2]);
+		if (value<0) {
+			value=0;
+		}
+		if (value>1) {
+			value=1;
+		}
+		tel->blockingmethod=value;
+	}
+	sprintf(ligne,"%d",tel->blockingmethod);
+	Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+	return result;
+}

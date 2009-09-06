@@ -43,6 +43,7 @@ struct telprop {
    double speed_track_ra; /* (deg/s) */
    double speed_track_dec; /* (deg/s) */
    double track_diurnal; /* (deg/s) */
+	int blockingmethod;
 };
 
 int tel_init(struct telprop *tel, int argc, char **argv);
@@ -132,7 +133,7 @@ void dfm_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function)
 
 int dfm_stat(struct telprop *tel,char *result,char *bits);
 int dfm_initfiducial(struct telprop *tel);
-;
+int dfm_movingdetect(struct telprop *tel,int hara, double *sepangledeg);
 
 #endif
 
