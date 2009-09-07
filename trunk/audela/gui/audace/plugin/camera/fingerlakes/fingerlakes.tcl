@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.35 2009-09-05 21:53:55 michelpujol Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.36 2009-09-07 19:38:01 robertdelmas Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -227,14 +227,13 @@ proc ::fingerlakes::fillConfigPage { frm camItem } {
       pack $frm.frame1.frame8 -side top -fill x -expand 0
 
       #--- Frame du mode de lecture du CCD
-
       frame $frm.frame1.readSpeed -borderwidth 0 -relief raised
 
-         #--- Mode de fonctionnement de l'obturateur
+         #--- Mode de lecture du CCD
          label $frm.frame1.readSpeed.label -text "$caption(fingerlakes,readSpeed)"
          pack $frm.frame1.readSpeed.label -anchor nw -side left -padx 10 -pady 5
 
-         #--- Cette liste est vide au démarrage. Elle sera remplie apres la connexion a la camera
+         #--- Cette liste est vide au démarrage. Elle sera remplie apres la connexion de la camera
          set list_combobox ""
          ComboBox $frm.frame1.readSpeed.list \
             -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
@@ -248,6 +247,7 @@ proc ::fingerlakes::fillConfigPage { frm camItem } {
          pack $frm.frame1.readSpeed.list -anchor nw -side left -padx 0 -pady 5
 
       pack $frm.frame1.readSpeed -side top -fill x -expand 0
+
    pack $frm.frame1 -side top -fill both -expand 1
 
    #--- Frame du site web officiel de la FLI
@@ -268,8 +268,9 @@ proc ::fingerlakes::fillConfigPage { frm camItem } {
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
 
-   if { $private($camItem,camNo) == "" } {
-      set readSpeedList [cam$camNo flimodes]  ; #--- je recupere la liste des vitesses
+   #--- Configure la liste des modes de lecture du CCD
+   if { $private($camItem,camNo) != "0" } {
+      set readSpeedList [cam$private($camItem,camNo) flimodes] ; #--- je recupere la liste des vitesses
       if { $readSpeedList != "" } {
          $private(frm).frame1.readSpeed.list configure \
             -values $readSpeedList \
@@ -319,10 +320,10 @@ proc ::fingerlakes::configureCamera { camItem bufNo } {
          cam$camNo cooler off
       }
       #--- Je configure la vitesse de lecture
-      set readSpeedList [cam$camNo flimodes]  ; #--- je recupere la liste des vitesses
+      set readSpeedList [cam$camNo flimodes] ; #--- je recupere la liste des vitesses
       if { $readSpeedList != "" } {
          if { [ info exists private(frm) ] } {
-            if { [ winfo exists $frm ] } {
+            if { [ winfo exists $private(frm) ] } {
                $private(frm).frame1.readSpeed.list configure \
                   -values $readSpeedList \
                   -width [ ::tkutil::lgEntryComboBox $readSpeedList ] \
@@ -332,7 +333,7 @@ proc ::fingerlakes::configureCamera { camItem bufNo } {
          }
          set speedNo [lsearch $readSpeedList $private(readSpeed) ]
          if { $speedNo == -1 } {
-            #--- si la vitesse de lecture n'existe pas, je selectionne le premier
+            #--- si la vitesse de lecture n'existe pas, je selectionne la premiere
             set speedNo 0
             set private(readSpeed) [lindex $readSpeedList $speedNo]
          }
