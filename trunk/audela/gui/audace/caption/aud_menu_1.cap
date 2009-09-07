@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_1.cap
-# Mise a jour $Id: aud_menu_1.cap,v 1.12 2009-06-04 16:26:18 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.cap,v 1.13 2009-09-07 16:34:04 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -115,7 +115,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,console_rate)          "Accesso non possibile"
 
    set caption(audace,script)                "Programma"
-   set caption(audace,boite_erreur)           "Errore"
+   set caption(audace,boite_erreur)          "Errore"
    set caption(audace,2points)               ":"
    set caption(audace,script_termine)        "Completato"
 
