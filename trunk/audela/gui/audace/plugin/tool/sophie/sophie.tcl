@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.22 2009-09-05 21:57:24 michelpujol Exp $
+# @version   $Id: sophie.tcl,v 1.23 2009-09-07 19:58:00 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -233,6 +233,8 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(currentMouseItem)    ""    ; #--- item en cous de deplacement avec la souris
    set private(pendingZoom)         ""
    set private(biasWindow)          ""
+   set private(windowSize)          "full"
+   set private(centerCoords)        [list 0 0 ]
    
    #--- Petit raccourci
    set frm $private(frm)
@@ -468,12 +470,13 @@ proc ::sophie::startTool { visuNo } {
 
    pack $private(frm) -side left -fill y
 
-   #--- je change le bind des boutons de la souris sur le canvas
-   ::confVisu::createBindCanvas $visuNo <ButtonPress-1>     "::sophie::onMousePressButton1 $visuNo %W %x %y"
-   ::confVisu::createBindCanvas $visuNo <B1-Motion>         "::sophie::onMouseMoveButton1  $visuNo %W %x %y"
-   ::confVisu::createBindCanvas $visuNo <ButtonRelease-1>   "::sophie::onMouseReleaseButton1 $visuNo %W %x %y"
-   ::confVisu::createBindCanvas $visuNo <Double-1> "::sophie::onTargetCoord $visuNo %x %y"
-
+   #--- je cree les bind pour les items "::sophie"
+   $private(hCanvas) bind "::sophie"  <ButtonPress-1>  "::sophie::onMousePressButton1 $visuNo %W %x %y"
+   $private(hCanvas) bind "::sophie"  <B1-Motion>      "::sophie::onMouseMoveButton1  $visuNo %W %x %y"
+   $private(hCanvas) bind "::sophie" <ButtonRelease-1> "::sophie::onMouseReleaseButton1 $visuNo %W %x %y"
+   #--- je surcharge le double clic sur l'image du canvas pour deplacer la cible a la position de la souris 
+   ::confVisu::createBindCanvas $visuNo <Double-Button-1> "::sophie::onTargetCoord $visuNo %x %y; break"
+   
    #--- j'active la mise a jour automatique de l'affichage quand on change de camera
    ::confVisu::addCameraListener $visuNo "::sophie::adaptPanel $visuNo"
    #--- j'active la mise a jour automatique de l'affichage quand on change de zoom
@@ -556,13 +559,14 @@ proc ::sophie::stopTool { visuNo } {
    #--- je supprime la consigne
    ::sophie::deleteOrigin $visuNo
 
-   #--- je restaure le bind par defaut des boutons de la souris
-   ::confVisu::createBindCanvas $visuNo <ButtonPress-1>     "default"
-   ::confVisu::createBindCanvas $visuNo <B1-Motion>         "default"
-   ::confVisu::createBindCanvas $visuNo <ButtonRelease-1>   "default"
-   ::confVisu::createBindCanvas $visuNo <Double-1>          "default"
-   ::confVisu::createBindCanvas $visuNo <ButtonPress-3>     "default"
-
+   #--- je supprime les binds des items "::sophie"
+   $private(hCanvas) bind "::sophie"  <ButtonPress-1>     "default"
+   $private(hCanvas) bind "::sophie"  <B1-Motion>         "default"
+   $private(hCanvas) bind "::sophie"  <ButtonRelease-1>   "default"
+   $private(hCanvas) bind "::sophie"  <ButtonPress-3>     "default"
+   #--- je restaure le bind du canvas 
+   ::confVisu::createBindCanvas $visuNo <Double-Button-1> "default"
+   
    #--- je ferme la fenetre de controle
    ::sophie::control::closeWindow $visuNo
 
