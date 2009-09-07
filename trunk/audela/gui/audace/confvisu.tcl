@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.108 2009-08-30 20:35:03 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.109 2009-09-07 20:06:20 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -1711,12 +1711,19 @@ namespace eval ::confVisu {
       bind $This.fra1.sca2 <ButtonRelease> "::confVisu::onCutScaleRelease $visuNo"
 
       #--- bind du canvas avec la souris, j'active les valeurs par defaut
-      createBindCanvas $visuNo <ButtonPress-1>   "default"
-      createBindCanvas $visuNo <ButtonRelease-1> "default"
-      createBindCanvas $visuNo <B1-Motion>       "default"
-      createBindCanvas $visuNo <Motion>          "default"
-      createBindCanvas $visuNo <ButtonPress-3>   "default"
+      ###createBindCanvas $visuNo <ButtonPress-1>   "default"
+      ###createBindCanvas $visuNo <ButtonRelease-1> "default"
+      ###createBindCanvas $visuNo <B1-Motion>       "default"
+      ###createBindCanvas $visuNo <Motion>          "default"
+      ###createBindCanvas $visuNo <ButtonPress-3>   "default"
 
+      #--- bind de l'item "display" canvas avec la souris
+      $private($visuNo,hCanvas) bind display <ButtonPress-1>   "::confVisu::onPressButton1 $visuNo %x %y"
+      $private($visuNo,hCanvas) bind display <ButtonRelease-1> "::confVisu::onReleaseButton1 $visuNo %x %y"
+      $private($visuNo,hCanvas) bind display <B1-Motion>       "::confVisu::onMotionButton1 $visuNo %x %y"
+      $private($visuNo,hCanvas) bind display <Motion>          "::confVisu::onMotionMouse $visuNo %x %y"
+      $private($visuNo,hCanvas) bind display <Button-3>        "::confVisu::showPopupMenu $visuNo %X %Y"
+      
       #--- bind pour l'ouverture de la boite de configuration des cameras
       bind $This.fra1.labCam_labURL <ButtonPress-1> {
          ::confCam::run
@@ -1764,11 +1771,17 @@ namespace eval ::confVisu {
       bind $This.fra1.sca2 <ButtonRelease> ""
 
       #--- bind du canvas avec la souris
-      createBindCanvas $visuNo <ButtonPress-1>   ""
-      createBindCanvas $visuNo <ButtonRelease-1> ""
-      createBindCanvas $visuNo <B1-Motion>       ""
-      createBindCanvas $visuNo <Motion>          ""
-      createBindCanvas $visuNo <ButtonPress-3>   ""
+      ###createBindCanvas $visuNo <ButtonPress-1>   ""
+      ###createBindCanvas $visuNo <ButtonRelease-1> ""
+      ###createBindCanvas $visuNo <B1-Motion>       ""
+      ###createBindCanvas $visuNo <Motion>          ""
+      ###createBindCanvas $visuNo <ButtonPress-3>   ""
+      #--- bind de l'item "display" canvas avec la souris
+      $private($visuNo,hCanvas) bind display <ButtonPress-1>   ""
+      $private($visuNo,hCanvas) bind display <ButtonRelease-1> ""
+      $private($visuNo,hCanvas) bind display <B1-Motion>       ""
+      $private($visuNo,hCanvas) bind display <Motion>          ""
+      $private($visuNo,hCanvas) bind display <Button-3>   ""
 
       #--- bind pour l'ouverture de la boite de configuration des cameras
       bind $This.fra1.labCam_name_labURL <ButtonPress-1> ""
@@ -1782,7 +1795,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  createBindCanvas
-   #     associe un evenement du canvas avec une commande
+   #     associe une sequence du canvas avec une commande
    #
    #  parametres :
    #     visuNo : numero de la visu
@@ -1794,28 +1807,49 @@ namespace eval ::confVisu {
       variable private
 
       if { "$command" == "default" } {
-         switch -exact $sequence {
-            <ButtonPress-1> {
-               bind $private($visuNo,hCanvas) <ButtonPress-1>   "::confVisu::onPressButton1 $visuNo %x %y"
-            }
-            <ButtonRelease-1> {
-               bind $private($visuNo,hCanvas) <ButtonRelease-1> "::confVisu::onReleaseButton1 $visuNo %x %y"
-            }
-            <B1-Motion> {
-               bind $private($visuNo,hCanvas) <B1-Motion>       "::confVisu::onMotionButton1 $visuNo %x %y"
-            }
-            <Motion> {
-               bind $private($visuNo,hCanvas) <Motion>          "::confVisu::onMotionMouse $visuNo %x %y"
-            }
-            <ButtonPress-3> {
-               bind $private($visuNo,hCanvas) <ButtonPress-3>   "::confVisu::showPopupMenu $visuNo %X %Y"
-            }
-         }
+         bind $private($visuNo,hCanvas) $sequence   ""
       }  else {
-         bind $private($visuNo,hCanvas) $sequence "$command"
+         bind $private($visuNo,hCanvas) $sequence $command        
       }
    }
 
+   #------------------------------------------------------------
+   #  addBindDisplay
+   #     ajoute une commande sur l'item "display" du canvas
+   #
+   #  @param   visuNo : numero de la visu
+   #  @param   sequence : evenement associe
+   #  @param   command  : command a executer
+   #  @return  rien
+   #------------------------------------------------------------
+   proc addBindDisplay { visuNo sequence command } {
+      variable private
+
+      set commandList [split [$private($visuNo,hCanvas) bind display $sequence ] "\n"]
+      set commandList [linsert $commandList 0 $command]      
+      $private($visuNo,hCanvas) bind display $sequence [join $commandList "\n"]      
+   }
+   
+   #------------------------------------------------------------
+   #  removeBindDisplay
+   #     supprime une commande de l'item "display" du canvas
+   #
+   #  @param   visuNo : numero de la visu
+   #  @param   sequence : evenement associe
+   #  @param   command  : command a supprimer 
+   #  @return  rien
+   #------------------------------------------------------------
+   proc removeBindDisplay { visuNo sequence command } {
+      variable private
+
+      set commandList [split [$private($visuNo,hCanvas) bind display $sequence ] "\n"]
+      set commandIndex [lsearch $commandList $command]
+      if { $commandIndex != -1 } {
+         set commandList [lreplace $commandList $commandIndex $commandIndex]  
+         $private($visuNo,hCanvas) bind display $sequence [join $commandList "\n"]      
+      }
+   }
+   
    proc createMenu { visuNo } {
       variable private
       global audace caption conf panneau
