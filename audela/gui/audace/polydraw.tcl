@@ -2,7 +2,7 @@
 # Fichier : polydraw.tcl
 # Description : Dessine un polygone
 # Auteur : Michel PUJOL
-# Mise a jour $Id: polydraw.tcl,v 1.7 2009-06-11 20:55:57 robertdelmas Exp $
+# Mise a jour $Id: polydraw.tcl,v 1.8 2009-09-07 20:05:18 michelpujol Exp $
 #
 
 namespace eval ::polydraw {
@@ -19,7 +19,6 @@ proc ::polydraw::init { visuNo } {
    variable private
 
    set private($visuNo,hCanvas) [::confVisu::getCanvas $visuNo]
-   set w $private($visuNo,hCanvas)
 
    set private($visuNo,mouseAddItem) "0"
    set private($visuNo,mouseAddNode) "0"
@@ -27,18 +26,19 @@ proc ::polydraw::init { visuNo } {
    set private($visuNo,previousZoom)  [confVisu::getZoom $visuNo]
    ::confVisu::addZoomListener $visuNo "::polydraw::setZoom $visuNo"
 
-   interp alias {} tags$w {} $w itemcget current -tags
+   interp alias {} tags$private($visuNo,hCanvas) {} $private($visuNo,hCanvas) itemcget current -tags
 
    #-- add bindings for drawing/editing polygons to a canvas
-   bind $w <Button-1>         "::polydraw::mark   $visuNo %W %x %y"
-   bind $w <B1-Motion>        "::polydraw::move   $visuNo %W %x %y"
-   bind $w <Shift-B1-Motion>  "::polydraw::move   $visuNo %W %x %y 1"
-   bind $w <Button-3>         "::polydraw::delete $visuNo %W 1"
-   bind $w <Double-1>         "::polydraw::insert $visuNo %W "
-   bind $w <Button-2>         "::polydraw::rotate $visuNo %W 0.1"
-   bind $w <Shift-2>          "::polydraw::rotate $visuNo %W -0.1"
-   bind $w <Button-3>         "::polydraw::delete $visuNo %W "
-   bind $w <Shift-3>          "::polydraw::delete $visuNo %W 1"
+   $private($visuNo,hCanvas) bind polydraw <Button-1>         "::polydraw::mark   $visuNo %W %x %y "
+   $private($visuNo,hCanvas) bind polydraw <B1-Motion>        "::polydraw::move   $visuNo %W %x %y "
+   $private($visuNo,hCanvas) bind polydraw <Shift-B1-Motion>  "::polydraw::move   $visuNo %W %x %y 1 "
+   $private($visuNo,hCanvas) bind polydraw <Button-3>         "::polydraw::delete $visuNo %W 1"
+   $private($visuNo,hCanvas) bind polydraw <Double-1>         "::polydraw::insert $visuNo %W "
+   $private($visuNo,hCanvas) bind polydraw <Button-2>         "::polydraw::rotate $visuNo %W 0.1"
+   $private($visuNo,hCanvas) bind polydraw <Shift-2>          "::polydraw::rotate $visuNo %W -0.1"
+   $private($visuNo,hCanvas) bind polydraw <Button-3>         "::polydraw::delete $visuNo %W "
+   $private($visuNo,hCanvas) bind polydraw <Shift-3>          "::polydraw::delete $visuNo %W 1"
+
 }
 
 #------------------------------------------------------------
@@ -47,29 +47,22 @@ proc ::polydraw::init { visuNo } {
 #  return :
 #------------------------------------------------------------
 proc ::polydraw::close { visuNo } {
+   variable private
 
-   #--- je restaure les binds par defaut de la visu
-   ::confVisu::createBindCanvas $visuNo <ButtonPress-1> "default"
-   ::confVisu::createBindCanvas $visuNo <B1-Motion>     "default"
-   ::confVisu::createBindCanvas $visuNo <Shift-B1-Motion> "default"
-   ::confVisu::createBindCanvas $visuNo <Button-3> "default"
-   ::confVisu::createBindCanvas $visuNo <Double-1> "default"
-   ::confVisu::createBindCanvas $visuNo <Button-2> "default"
-   ::confVisu::createBindCanvas $visuNo <Shift-2>  "default"
-   ::confVisu::createBindCanvas $visuNo <ButtonPress-3> "default"
-   ::confVisu::createBindCanvas $visuNo <Shift-3>  "default"
+   #--- je supprime les binds
+   $private($visuNo,hCanvas) bind polydraw <Button-1>         ""
+   $private($visuNo,hCanvas) bind polydraw <B1-Motion>        ""
+   $private($visuNo,hCanvas) bind polydraw <Shift-B1-Motion>  ""
+   $private($visuNo,hCanvas) bind polydraw <Button-3>         ""
+   $private($visuNo,hCanvas) bind polydraw <Double-1>         ""
+   $private($visuNo,hCanvas) bind polydraw <Button-2>         ""
+   $private($visuNo,hCanvas) bind polydraw <Shift-2>          ""
+   $private($visuNo,hCanvas) bind polydraw <Button-3>         ""
+   $private($visuNo,hCanvas) bind polydraw <Shift-3>          ""
 
    confVisu::removeZoomListener $visuNo "::polydraw::setZoom $visuNo"
 
-   #--- je recupere le canvas
-   set w [::confVisu::getCanvas $visuNo]
-
-   $w delete node
-   $w delete line
-   $w delete poly
-
-   #--- je supprime les variables associees a la visu
-   array unset private $visuNo,*
+   $private($visuNo,hCanvas) delete polydraw
 }
 
 #------------------------------------------------------------
@@ -129,7 +122,7 @@ proc ::polydraw::setZoom { visuNo args } {
             $w scale $item 0 0 $coeff $coeff
             ::polydraw::markNodes $visuNo $w $item
          }
-         poly {
+         polygon {
             #--- homothetie
             $w scale $item 0 0 $coeff $coeff
             ::polydraw::markNodes $visuNo $w $item
@@ -157,7 +150,7 @@ proc ::polydraw::createLine {visuNo points } {
       return ""
    }
    set itemNo [$private($visuNo,hCanvas) create line $points -fill yellow -width 2 -activewidth 4 ]
-   $private($visuNo,hCanvas) itemconfigure $itemNo -tag "line"
+   $private($visuNo,hCanvas) itemconfigure $itemNo -tags { line polydraw }
    ::polydraw::markNodes $visuNo $private($visuNo,hCanvas) $itemNo
    return $itemNo
 }
@@ -180,7 +173,7 @@ proc ::polydraw::createPolygon {visuNo points } {
       return ""
    }
    set itemNo [$private($visuNo,hCanvas) create poly $points  -fill {} -outline white -width 1 -activewidth 3 ]
-   $private($visuNo,hCanvas) itemconfigure $itemNo -tag "poly"
+   $private($visuNo,hCanvas) itemconfigure $itemNo -tags { polygon polydraw }
    ::polydraw::markNodes $visuNo $private($visuNo,hCanvas) $itemNo
    return $itemNo
 }
@@ -236,7 +229,7 @@ proc ::polydraw::add {visuNo w x y} {
       if { $private($visuNo,mouseAddItem) == "1" } {
          #--- je cree une ligne de longueur=1
          set coords [list [expr {$x-1}] [expr {$y-1}] $x $y]
-         set private($visuNo,tempItem) [$w create line $coords -fill red -tag line0]
+         set private($visuNo,tempItem) [$w create line $coords -fill red -tags { line0 polydraw} ]
          set result $private($visuNo,tempItem)
       }
    } else {
@@ -246,7 +239,7 @@ proc ::polydraw::add {visuNo w x y} {
          set coords [lrange [$w coords $item] 2 end]
          $w delete $item
          unset private($visuNo,tempItem)
-         set newItem [$w create poly $coords -fill {} -tag poly -outline black]
+         set newItem [$w create poly $coords -fill {} -tags { polygon polydraw } -outline black]
          ::polydraw::markNodes $visuNo $w $newItem
          set result $newItem
       } else {
@@ -317,7 +310,7 @@ proc ::polydraw::insert {visuNo w} {
 #------------------------------------------------------------
 #  mark
 #     ajoute un nouveau point ou selectionne un point existant
-#  return :
+#  return
 #------------------------------------------------------------
 proc ::polydraw::mark {visuNo w x y} {
    variable private
@@ -336,7 +329,7 @@ proc ::polydraw::mark {visuNo w x y} {
       set private($visuNo,currentx)       $x
       set private($visuNo,currenty)       $y
       set result $private($visuNo,currentItem)
-   } elseif {[has [tags$w] poly]} {
+   } elseif {[has [tags$w] polygon]} {
       set private($visuNo,currentItem) [$w find withtag current]
       set private($visuNo,currentx)       $x
       set private($visuNo,currenty)       $y
@@ -344,7 +337,8 @@ proc ::polydraw::mark {visuNo w x y} {
    } else {
       set result [::polydraw::add $visuNo $w $x $y]
    }
-   return $result
+   ###return $result
+
 }
 
 #------------------------------------------------------------
@@ -358,7 +352,7 @@ proc ::polydraw::markNodes {visuNo w item} {
    set pos 0
    foreach {x y} [$w coords $item] {
       set coo [list [expr $x-2] [expr $y-2] [expr $x+2] [expr $y+2]]
-      $w create rect $coo -fill blue -tag "node of:$item at:$pos"
+      $w create rect $coo -fill blue -activefill turquoise -tags "node of:$item at:$pos polydraw"
       incr pos 2
    }
 }
@@ -390,7 +384,7 @@ proc ::polydraw::move {visuNo w x y {all 0}} {
             set itemNo $private($visuNo,currentItem)
             $w move $itemNo    $dx $dy
             $w move of:$itemNo $dx $dy
-         } elseif  { $typeItem == "poly" } {
+         } elseif  { $typeItem == "polygon" } {
             set itemNo $private($visuNo,currentItem)
             $w move $itemNo    $dx $dy
             $w move of:$itemNo $dx $dy
