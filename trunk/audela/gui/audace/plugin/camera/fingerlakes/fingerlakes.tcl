@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.36 2009-09-07 19:38:01 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.37 2009-09-07 20:02:23 michelpujol Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -95,6 +95,7 @@ proc ::fingerlakes::initPlugin { } {
    set private(B,camNo) "0"
    set private(C,camNo) "0"
    set private(ccdTemp) "$::caption(fingerlakes,temperature_CCD) -- $::caption(fingerlakes,deg_c) / -- $::caption(fingerlakes,deg_c) $::caption(fingerlakes,power) -- %"
+   set private(readSpeed) ""
 }
 
 #
@@ -331,11 +332,11 @@ proc ::fingerlakes::configureCamera { camItem bufNo } {
                   -state normal
             }
          }
-         set speedNo [lsearch $readSpeedList $private(readSpeed) ]
+         set speedNo [lsearch $readSpeedList $::conf(fingerlakes,readSpeed) ]
          if { $speedNo == -1 } {
             #--- si la vitesse de lecture n'existe pas, je selectionne la premiere
             set speedNo 0
-            set private(readSpeed) [lindex $readSpeedList $speedNo]
+            set conf(fingerlakes,readSpeed) [lindex $readSpeedList $speedNo]
          }
          cam$camNo flimode $speedNo
       }
