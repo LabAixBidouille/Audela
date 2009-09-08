@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.29 2009-09-08 13:33:55 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.30 2009-09-08 16:59:35 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -232,6 +232,17 @@ proc ::sophie::setBinningAndWindow { binning { windowSize ""} { centerCoords "" 
    set yOriginCoord [ expr ( [lindex $private(originCoord) 1] - $private(yWindow) + 1 ) / $private(yBinning)  ]
    set xTargetCoord [ expr ( [lindex $private(targetCoord) 0] - $private(xWindow) + 1 ) / $private(xBinning)  ]
    set yTargetCoord [ expr ( [lindex $private(targetCoord) 1] - $private(yWindow) + 1 ) / $private(yBinning)  ]
+
+   #--- je charge le bias correspondant au binning et j'applique le fentrage
+   if { $windowSize == "full" } {
+      loadBias "full"
+   } else {
+      set x1b [expr $x1 / $private(xBinning)]
+      set y1b [expr $y1 / $private(yBinning)]
+      set x2b [expr $x2 / $private(xBinning)]
+      set y2b [expr $y2 / $private(yBinning)]
+      loadBias [list $x1b $y1b $x2b $y2b]
+   }
    #--- je change les paramètres dans le thread
    if { $private(acquisitionState) != 0 } {
       set targetBoxSize [ expr int($private(targetBoxSize) / (2.0 * $private(xBinning))) ]
@@ -243,18 +254,8 @@ proc ::sophie::setBinningAndWindow { binning { windowSize ""} { centerCoords "" 
          "targetCoord"  [list $xTargetCoord $yTargetCoord] \
          "maskRadius"   [expr $::conf(sophie,maskRadius) / $private(xBinning)]  \
          "maskFwhm"     [expr $::conf(sophie,maskFwhm)   / $private(xBinning)]   \
-         "targetBoxSize" $targetBoxSize
-   }
-
-   #--- je charge le bias correspondant au binning et j'applique le fentrage
-   if { $windowSize == "full" } {
-      loadBias "full"
-   } else {
-      set x1b [expr $x1 / $private(xBinning)]
-      set y1b [expr $y1 / $private(yBinning)]
-      set x2b [expr $x2 / $private(xBinning)]
-      set y2b [expr $y2 / $private(yBinning)]
-      loadBias [list $x1b $y1b $x2b $y2b]
+         "targetBoxSize" $targetBoxSize \
+         "biasValue"    $private(biasValue)
    }
 }
 
@@ -865,38 +866,39 @@ proc ::sophie::loadBias { biasWindow } {
       set cameraMode fast
    }
 
-console::disp "loadbias xBinning=$private(xBinning)\n"
    #--- je recupere le nom du fichier Bias en fonction du binning et du mode d'acquisition
-   if { $private(xBinning) == 1 || $private(xBinning) == 2 } {
-      set biasFileName $::conf(sophie,biasFileName,$private(xBinning),$cameraMode)
+   if { $private(xBinning) == 1 || $private(xBinning) == 2 || $private(xBinning) == 3 } {
+      ###set biasFileName $::conf(sophie,biasFileName,$private(xBinning),$cameraMode)
+      set private(biasValue) $::conf(sophie,biasFileName,$private(xBinning),$cameraMode)
    } else {
-      set biasFileName ""
+      ###set biasFileName ""
+      set private(biasValue) 0
    }
 
    #--- je charge bias
    set catchError [ catch {
-      if { $biasFileName != "" } {
-         #--- je charge le fichier dans le buffer
-         if { $biasFileName != $private(biasFileName) || $private(biasWindow) != $biasWindow } {
-            buf$private(biasBufNo) load $biasFileName
-            set private(biasFileName) $biasFileName
-            set private(biasWindow) ""
-            ###console::disp "loadBias $private(biasFileName) private(biasWindow)=$private(biasWindow) biasWindow=$biasWindow\n"
-         }
-         #--- j'applique le fenetrage si nessaire
-         if { $biasWindow != "full" && $private(biasWindow) != $biasWindow } {
-            buf$private(biasBufNo) window $biasWindow
-            set private(biasWindow) $biasWindow
-            ###console::disp "loadBias subwindow $biasWindow \n"
-         }
-         set biasState "OK"
-         set biasMessage $private(biasFileName)
-      } else {
-         #--- il n'y a pas de Bias
-         buf$private(biasBufNo) clear
-         set biasState "NONE"
-         set biasMessage ""
-      }
+      ###if { $biasFileName != "" } {
+      ###   #--- je charge le fichier dans le buffer
+      ###   if { $biasFileName != $private(biasFileName) || $private(biasWindow) != $biasWindow } {
+      ###      buf$private(biasBufNo) load $biasFileName
+      ###      set private(biasFileName) $biasFileName
+      ###      set private(biasWindow) ""
+      ###      ###console::disp "loadBias $private(biasFileName) private(biasWindow)=$private(biasWindow) biasWindow=$biasWindow\n"
+      ###   }
+      ###   #--- j'applique le fenetrage si nessaire
+      ###   if { $biasWindow != "full" && $private(biasWindow) != $biasWindow } {
+      ###      buf$private(biasBufNo) window $biasWindow
+      ###      set private(biasWindow) $biasWindow
+      ###      ###console::disp "loadBias subwindow $biasWindow \n"
+      ###   }
+      ###   set biasState "OK"
+      ###   set biasMessage $private(biasFileName)
+      ###} else {
+      ###   #--- il n'y a pas de Bias
+      ###   buf$private(biasBufNo) clear
+      ###   set biasState "NONE"
+      ###   set biasMessage ""
+      ###}
    }]
 
    if { $catchError != 0 } {
@@ -907,7 +909,8 @@ console::disp "loadbias xBinning=$private(xBinning)\n"
    }
 
    #--- je mets a jour l'affichage de la fenetre de controle
-   ::sophie::control::setBias $biasState $biasMessage
+   ###::sophie::control::setBias $biasState $biasMessage
+   ::sophie::control::setBias "OK" "$private(biasValue) (Binning=$private(xBinning) Mode=$cameraMode)"
 
 }
 
@@ -1613,6 +1616,7 @@ proc ::sophie::startAcquisition { visuNo } {
          "sumBufNo"                 $private(sumBufNo)      \
          "fiberBufNo"               $private(fiberBufNo)    \
          "biasBufNo"                $private(biasBufNo)     \
+         "biasValue"                $private(biasValue)     \
          "maskRadius"               [expr $::conf(sophie,maskRadius) / $private(xBinning)]  \
          "maskFwhm"                 [expr $::conf(sophie,maskFwhm) / $private(xBinning)]   \
          "maskPercent"              $::conf(sophie,maskPercent) \

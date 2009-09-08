@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.12 2009-09-08 13:33:55 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.13 2009-09-08 16:59:35 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -158,7 +158,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
       # @param     Argv[3]=biasBufNo       numero du buffer du bias
       # @param     Argv[4]=maskBufNo       numero du buffer du masque
       # @param     Argv[5]=sumBufNo        numero du buffer de l'image integree
-      # @param     Argv[6]=fiberBufNo      numero du buffer de l'image resultat
+      # @param     Argv[6]=fiberBufNo      numero du buffer de l'image resultat      
       # @param     Argv[7]=maskRadius      rayon du masque
       # @param     Argv[8]=originSumMinCounter     nombre d'acquisition de l'image integree
       # @param     Argv[9]=originSumCounter compteur d'integration de l'image de l'origine
@@ -168,6 +168,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
       # @param     Argv[13]=findFiber      1=recherche de l'entrée de fibre , 0= ne pas rechercher
       # @param     Argv[14]=pixelMinCount  nombre minimal de pixels pour accepter l'image
       # @param     Argv[15]=maskPercent    pourcentage du niveau du mask
+      # @param     Argv[16]=biasValue      valeur du bias
       #
       # @return si TCL_OK
       #            list[0] starStatus      resultat de la recherche de la fibre (DETECTED NO_SIGNAL)
@@ -190,7 +191,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             $private(maskRadius) \
             $private(originSumMinCounter) $private(originSumCounter)  \
             [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
-            $private(maskFwhm) $private(findFiber)  $private(pixelMinCount) $private(maskPercent) ]
+            $private(maskFwhm) $private(findFiber)  $private(pixelMinCount) $private(maskPercent) $private(biasValue)]
    
          set starStatus       [lindex $result 0 ]
          set starX            [lindex $result 1 ]
