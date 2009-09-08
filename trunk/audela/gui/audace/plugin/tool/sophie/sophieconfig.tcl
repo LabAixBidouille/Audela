@@ -2,7 +2,7 @@
 # @file     sophieconfig.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieconfig.tcl,v 1.17 2009-09-08 16:59:35 michelpujol Exp $
+# @version  $Id: sophieconfig.tcl,v 1.18 2009-09-08 19:06:43 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -418,9 +418,9 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -textvariable ::sophie::config::widget(biasFileName,1,slow)
       grid $frm.image.entryImageBias1Slow -in [ $frm.image getframe ] -row 3 -column 2 -sticky ew
 
-      button $frm.image.configureimageBias1Slow -text $::caption(sophie,parcourir) -relief raised \
-         -command "::sophie::config::chooseBiasFile 1 slow"
-      grid $frm.image.configureimageBias1Slow -in [ $frm.image getframe ] -row 3 -column 3 -sticky e -padx 2
+     ### button $frm.image.configureimageBias1Slow -text $::caption(sophie,parcourir) -relief raised \
+     ###    -command "::sophie::config::chooseBiasFile 1 slow"
+     ### grid $frm.image.configureimageBias1Slow -in [ $frm.image getframe ] -row 3 -column 3 -sticky e -padx 2
 
       #--- Valeur de Bias 1 Fast
       ### label $frm.image.labelImageBias1Fast -text "$::caption(sophie,imageBias,bin1Fast)"
@@ -432,9 +432,9 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -textvariable ::sophie::config::widget(biasFileName,1,fast)
       grid $frm.image.entryImageBias1Fast -in [ $frm.image getframe ] -row 4 -column 2 -sticky ew
 
-      button $frm.image.configureimageBias1Fast -text $::caption(sophie,parcourir) -relief raised \
-         -command "::sophie::config::chooseBiasFile 1 fast"
-      grid $frm.image.configureimageBias1Fast -in [ $frm.image getframe ] -row 4 -column 3 -sticky e -padx 2
+     ### button $frm.image.configureimageBias1Fast -text $::caption(sophie,parcourir) -relief raised \
+     ###    -command "::sophie::config::chooseBiasFile 1 fast"
+     ### grid $frm.image.configureimageBias1Fast -in [ $frm.image getframe ] -row 4 -column 3 -sticky e -padx 2
 
       #--- Valeur de Bias 2 Slow
       ### label $frm.image.labelImageBias2Slow -text "$::caption(sophie,imageBias,bin2Slow)"
@@ -446,9 +446,9 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -textvariable ::sophie::config::widget(biasFileName,2,slow)
       grid $frm.image.entryImageBias2Slow -in [ $frm.image getframe ] -row 5 -column 2 -sticky ew
 
-      button $frm.image.configureimageBias2Slow -text $::caption(sophie,parcourir) -relief raised \
-         -command "::sophie::config::chooseBiasFile 2 slow"
-      grid $frm.image.configureimageBias2Slow -in [ $frm.image getframe ] -row 5 -column 3 -sticky e -padx 2
+     ### button $frm.image.configureimageBias2Slow -text $::caption(sophie,parcourir) -relief raised \
+     ###    -command "::sophie::config::chooseBiasFile 2 slow"
+     ### grid $frm.image.configureimageBias2Slow -in [ $frm.image getframe ] -row 5 -column 3 -sticky e -padx 2
 
       #--- Valeur de Bias 2 Fast
       ### label $frm.image.labelImageBias2Fast -text "$::caption(sophie,imageBias,bin2Fast)"
@@ -460,9 +460,9 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -textvariable ::sophie::config::widget(biasFileName,2,fast)
       grid $frm.image.entryImageBias2Fast -in [ $frm.image getframe ] -row 6 -column 2 -sticky ew
 
-      button $frm.image.configureimageBias2Fast -text $::caption(sophie,parcourir) -relief raised \
-         -command "::sophie::config::chooseBiasFile 2 fast"
-      grid $frm.image.configureimageBias2Fast -in [ $frm.image getframe ] -row 6 -column 3 -sticky e -padx 2
+     ### button $frm.image.configureimageBias2Fast -text $::caption(sophie,parcourir) -relief raised \
+     ###    -command "::sophie::config::chooseBiasFile 2 fast"
+     ### grid $frm.image.configureimageBias2Fast -in [ $frm.image getframe ] -row 6 -column 3 -sticky e -padx 2
 
       grid columnconfigure [ $frm.image getframe ] 2 -weight 1
 
@@ -476,9 +476,9 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -textvariable ::sophie::config::widget(biasFileName,3,slow)
       grid $frm.image.entryImageBias3Slow -in [ $frm.image getframe ] -row 7 -column 2 -sticky ew
 
-      button $frm.image.configureimageBias3Slow -text $::caption(sophie,parcourir) -relief raised \
-         -command "::sophie::config::chooseBiasFile 3 slow"
-      grid $frm.image.configureimageBias3Slow -in [ $frm.image getframe ] -row 7 -column 3 -sticky e -padx 2
+     ### button $frm.image.configureimageBias3Slow -text $::caption(sophie,parcourir) -relief raised \
+     ###    -command "::sophie::config::chooseBiasFile 3 slow"
+     ### grid $frm.image.configureimageBias3Slow -in [ $frm.image getframe ] -row 7 -column 3 -sticky e -padx 2
 
       #--- Valeur de Bias 3 Fast
       ### label $frm.image.labelImageBias3Fast -text "$::caption(sophie,imageBias,bin3Fast)"
@@ -490,9 +490,9 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -textvariable ::sophie::config::widget(biasFileName,3,fast)
       grid $frm.image.entryImageBias3Fast -in [ $frm.image getframe ] -row 8 -column 2 -sticky ew
 
-      button $frm.image.configureimageBias3Fast -text $::caption(sophie,parcourir) -relief raised \
-         -command "::sophie::config::chooseBiasFile 3 fast"
-      grid $frm.image.configureimageBias3Fast -in [ $frm.image getframe ] -row 8 -column 3 -sticky e -padx 2
+     ### button $frm.image.configureimageBias3Fast -text $::caption(sophie,parcourir) -relief raised \
+     ###    -command "::sophie::config::chooseBiasFile 3 fast"
+     ### grid $frm.image.configureimageBias3Fast -in [ $frm.image getframe ] -row 8 -column 3 -sticky e -padx 2
 
       grid columnconfigure [ $frm.image getframe ] 2 -weight 1
 
