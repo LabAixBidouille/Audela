@@ -2,7 +2,7 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.26 2009-09-08 09:34:32 michelpujol Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.27 2009-09-08 13:26:50 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -50,8 +50,9 @@ proc ::sophie::control::run { visuNo tkbase } {
    set private(alphaCorrection)                 ""
    set private(deltaCorrection)                 ""
    set private(realDelay)                       ""
+   set private(biasUse)                         ""
 
-   ##set private(activeColor)                     "#77ff77" ; #--- vert tendre
+   ###set private(activeColor)                     "#77ff77" ; #--- vert tendre
    set private(activeColor)                     "#48ebff" ; #--- bleu tendre 9 221 232
    set private(inactiveColor)                   "#ff9582" ; #--- rouge tendre
    set private(vectorLength)                    50        ; #--- nombre de valeurs conservées dans les vecteurs
@@ -110,14 +111,14 @@ proc ::sophie::control::run { visuNo tkbase } {
    #--- vecteur sophieEcartMax
    if { [::blt::vector names ::sophieEcartMax] == "" } {
       ::blt::vector create ::sophieEcartMax
-      ###::sophieEcartMax append { 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 }  
-      ###::sophieEcartMax expr 0.5   
+      ###::sophieEcartMax append { 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 }
+      ###::sophieEcartMax expr 0.5
    }
 
    if { [::blt::vector names ::sophieEcartMin] == "" } {
       ::blt::vector create ::sophieEcartMin
    }
-   
+
    if { [::blt::vector names ::sophieEcartNul] == "" } {
       ::blt::vector create ::sophieEcartNul
       for { set i 0 } { $i < $private(vectorLength) } {incr i } {
@@ -126,8 +127,8 @@ proc ::sophie::control::run { visuNo tkbase } {
    }
 
    #--- j'intialise les courbes Min et Max des ecarts
-   ::sophie::control::setMinMaxDiff $::conf(sophie,minMaxDiff)   
-   
+   ::sophie::control::setMinMaxDiff $::conf(sophie,minMaxDiff)
+
    #--- Initialisation des vecteurs des fenetres Focalisation et Guidage
    resetFocusVector
    resetGuideVector
@@ -141,7 +142,6 @@ proc ::sophie::control::run { visuNo tkbase } {
       -close 0
    #--- je supprime le bouton fermer
    pack forget $this.but_fermer
-
 
    #--- je masque les graduations des abcisses (un bug de BLT empeche de le faire avant)
    set frm $private(frm)
@@ -241,16 +241,27 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -in [ $frm.voyant getframe ] \
          -row 3 -column 0 -columnspan 2 -sticky ns -pady 4 -ipadx 20 -ipady 4
 
-      #--- Indicateur durée entre 2 poses
+      #--- Durée entre 2 poses
       LabelEntry $frm.voyant.entryRealDelay \
          -borderwidth 0 -relief flat\
          -label $::caption(sophie,realDelay) \
-         -labelanchor w  -width 8 -padx 2 \
+         -labelanchor w -width 8 -padx 2 \
          -justify center -state normal\
          -textvariable ::sophie::control::private(realDelay)
       grid $frm.voyant.entryRealDelay \
          -in [ $frm.voyant getframe ] \
-         -row 4 -column 0 -columnspan 2 -sticky w
+         -row 4 -column 0 -columnspan 2 -sticky w -padx 2 -pady 2
+
+      #--- Nom de l'image Bias utilisée
+      LabelEntry $frm.voyant.entryBiasUse \
+         -borderwidth 0 -relief flat\
+         -label $::caption(sophie,biasUse) \
+         -labelanchor w -width 40 -padx 2 \
+         -justify center -state normal\
+         -textvariable ::sophie::control::private(biasUse)
+      grid $frm.voyant.entryBiasUse \
+         -in [ $frm.voyant getframe ] \
+         -row 5 -column 0 -columnspan 2 -sticky w -padx 2 -pady 2
 
       grid columnconfigure [ $frm.voyant getframe ] 0 -weight 1
       grid columnconfigure [ $frm.voyant getframe ] 1 -weight 1
@@ -486,7 +497,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          #   -row 1 -column 0 -columnspan 1 -sticky n -pady 4 -ipadx 10 -ipady 4
          pack $frm.centrage.centrageConsigne.start -in [ $frm.centrage.centrageConsigne getframe ] \
             -side top -anchor center -fill none -expand 1 -pady 4 -ipadx 10 -ipady 4
-   
+
       pack $frm.centrage.centrageConsigne -side top -anchor center -fill x -expand 1
 
       #--- Frame pour le mode de guidage (Fibre ou objet)
@@ -511,7 +522,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
                -command "::sophie::setGuidingMode $visuNo"   ; # Attention: la commande appelle la procedure du namespace ::sophie
             pack $frm.centrage.pointage.indicateur.fibreAHE -anchor center \
                -expand 1 -fill none -side left -ipadx 4 -ipady 4
-               
+
             #--- Indicateur de pointage de l'objet
             radiobutton $frm.centrage.pointage.indicateur.objet \
                -indicatoron 0 -text $::caption(sophie,consigneObjet) -value OBJECT \
@@ -626,29 +637,29 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          grid $frm.guidage.seeing.labelfondDeCiel \
             -in [ $frm.guidage.seeing getframe ] \
             -row 0 -column 0 -sticky ew
-   
+
          Entry $frm.guidage.seeing.entryfondDeCiel \
             -width 8 -justify center -editable 0 \
             -textvariable ::sophie::control::private(indicateursFondDeCiel)
          grid $frm.guidage.seeing.entryfondDeCiel \
             -in [ $frm.guidage.seeing getframe ] \
             -row 0 -column 1 -sticky ens
-   
+
          #--- Flux maxi
          label $frm.guidage.seeing.labelfluxMax -text $::caption(sophie,fluxMax)
          grid $frm.guidage.seeing.labelfluxMax \
             -in [ $frm.guidage.seeing getframe ] \
             -row 0 -column 2 -sticky ew
-   
+
          Entry $frm.guidage.seeing.entryfluxMax \
             -width 8 -justify center -editable 0 \
             -textvariable ::sophie::control::private(indicateursFluxMax)
          grid $frm.guidage.seeing.entryfluxMax \
             -in [ $frm.guidage.seeing getframe ] \
             -row 0 -column 3 -sticky ens
-         
+
       pack $frm.guidage.seeing -side top -anchor w -fill x -expand 1
-      
+
       #--- Frame des graphes des ecarts et des corrections
       TitleFrame $frm.guidage.positionconsigne -borderwidth 2 -relief ridge \
          -text $::caption(sophie,positionConsigneImage)
@@ -672,7 +683,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             grid $frm.guidage.positionconsigne.correction.ecartConsigne_simple \
                -row 0 -column 0 -sticky ew
             grid columnconfig $frm.guidage.positionconsigne.correction 0 -weight 1
-            
+
          pack $frm.guidage.positionconsigne.correction \
            -in [ $frm.guidage.positionconsigne getframe ] \
            -side top -anchor w -fill x -expand 1
@@ -723,9 +734,9 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
 
             grid $frm.guidage.positionconsigne.positionXY.spinboxIncrement \
                -row 0 -column 6 -sticky ens
-            
+
             set private(guidageIncrement) 1
-            
+
       pack $frm.guidage.positionconsigne -side top -anchor w -fill x -expand 1
 
       #--- Frame des ecarts en alpha et delta
@@ -752,7 +763,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          $frm.guidage.ecarts.alpha_simple  element create ecartMin  \
             -xdata ::sophieAbcisse -ydata ::sophieEcartMin -mapy y \
             -color red -symbol none  -label ""
-            
+
          $frm.guidage.ecarts.alpha_simple  element create ecartNul  \
             -xdata ::sophieAbcisse -ydata ::sophieEcartNul -mapy y \
             -color black -symbol none  -label ""
@@ -816,8 +827,6 @@ proc ::sophie::control::setGuidingIncrement { } {
    $frm.guidage.positionconsigne.positionXY.spinboxY configure -increment $private(guidageIncrement)
 }
 
-
-
 #------------------------------------------------------------
 # setGuidingMode
 #    si guidingMode=OBJECT ouvre les spinbox pour le pointage d'un objet
@@ -830,12 +839,12 @@ proc ::sophie::control::setGuidingMode { guidingMode } {
 
    #--- petit raccourci bien pratique
    set frm $private(frm)
-      
+
    switch $guidingMode {
       "OBJECT" {
          #--- je masque le graphe des ecarts de la consigne
          pack forget $frm.guidage.positionconsigne.correction
-         #--- j'affiche les spinbox de modification manuelle de la consigne 
+         #--- j'affiche les spinbox de modification manuelle de la consigne
          pack $frm.centrage.pointage.positionXY \
             -in [ $frm.centrage.pointage getframe ] \
             -side top -anchor w -fill x -expand 1 -pady 2
@@ -845,7 +854,7 @@ proc ::sophie::control::setGuidingMode { guidingMode } {
       }
       "FIBER_HR" -
       "FIBER_HE" {
-         #--- je masque les spinbox de modification manuelle de la consigne 
+         #--- je masque les spinbox de modification manuelle de la consigne
          pack forget $frm.centrage.pointage.positionXY
          pack forget $frm.guidage.positionconsigne.positionXY
          #--- j'affiche le graphe des ecarts de la consigne
@@ -853,13 +862,13 @@ proc ::sophie::control::setGuidingMode { guidingMode } {
             -in [ $frm.guidage.positionconsigne getframe ] \
             -side top -anchor w -fill x -expand 1
       }
-   }   
+   }
 }
 
 #------------------------------------------------------------
 # setFiberDetection
 #    si OBJECT ouvre les spinbox pour le pointage d'un objet
-#    
+#
 #    si findFiber=0 affiche les spinbox pour le pointage d'un objet
 #    si findFiber=1 affiche les graphes de correction automatique
 #------------------------------------------------------------
@@ -867,15 +876,15 @@ proc ::sophie::control::setGuidingMode { guidingMode } {
 ###   variable private
 ###
 ###   set frm $private(frm)
-###   
+###
 ###   switch $::conf(sophie,guidingMode)  {
 ###      "FIBER_HR" {
-###         #--- je masque les spinbox de modification manuelle de la consigne 
+###         #--- je masque les spinbox de modification manuelle de la consigne
 ###         pack forget $frm.centrage.pointage.positionXY
 ###         pack forget $frm.guidage.positionconsigne.positionXY
-###         
+###
 ###         if { $findFiber == 0 } {
-###            #--- je masque la position corrigee de la consigne 
+###            #--- je masque la position corrigee de la consigne
 ###         } else {
 ###            #--- j'affiche la position corrigee de la consigne
 ###         }
@@ -886,12 +895,12 @@ proc ::sophie::control::setGuidingMode { guidingMode } {
 ###            -side top -anchor w -fill x -expand 1
 ###      }
 ###      "FIBER_HE" {
-###         #--- je masque les spinbox de modification manuelle de la consigne 
+###         #--- je masque les spinbox de modification manuelle de la consigne
 ###         pack forget $frm.centrage.pointage.positionXY
 ###         pack forget $frm.guidage.positionconsigne.positionXY
-###         
+###
 ###         if { $findFiber == 0 } {
-###            #--- je masque la position corrigee de la consigne 
+###            #--- je masque la position corrigee de la consigne
 ###         } else {
 ###            #--- j'affiche la position corrigee de la consigne
 ###         }
@@ -904,7 +913,7 @@ proc ::sophie::control::setGuidingMode { guidingMode } {
 ###      "OBJECT" {
 ###         #--- je masque le graphe des ecarts de la consigne
 ###         pack forget $frm.guidage.positionconsigne.correction
-###         #--- j'affiche les spinbox de modification manuelle de la consigne 
+###         #--- j'affiche les spinbox de modification manuelle de la consigne
 ###         pack $frm.centrage.pointage.positionXY \
 ###            -in [ $frm.centrage.pointage getframe ] \
 ###            -side top -anchor w -fill x -expand 1
@@ -913,7 +922,7 @@ proc ::sophie::control::setGuidingMode { guidingMode } {
 ###            -side top -anchor w -fill x -expand 1
 ###      }
 ###   }
-###   
+###
 ###}
 
 #------------------------------------------------------------
@@ -996,7 +1005,7 @@ proc ::sophie::control::setMode { mode } {
             pack forget $frm.focalisation
             pack $frm.voyant     -side top -fill x
             pack $frm.position   -side top -fill x -after $frm.voyant
-            pack $frm.seeing     -side top -fill x -after $frm.position 
+            pack $frm.seeing     -side top -fill x -after $frm.position
             pack $frm.focalisation   -side top -fill x
             #--- raz des vecteurs
             resetFocusVector
@@ -1041,9 +1050,8 @@ proc ::sophie::control::setMinMaxDiff { minMaxValue } {
    for { set i 0 } { $i < $private(vectorLength) } {incr i } {
       ::sophieEcartMin append [expr $minMaxValue * -1]
    }
-
-
 }
+
 ##------------------------------------------------------------
 # setAcquisitionState
 #    met a jour l'etat des acquisitions continues
@@ -1155,9 +1163,9 @@ proc ::sophie::control::setAcquisitionSophie { state } {
 
 ##------------------------------------------------------------
 # setBias
-#    met a jour le nom du fichier bias 
+#    met a jour le nom du fichier bias
 #
-# @param biasState  etat du bias  
+# @param biasState  etat du bias
 #     - OK   le bias est charge  (biasMessage contient le nom du fichier)
 #     - NONE pas de bias demande (biasMessage est vide)
 #     - ERROR erreur pendant le chargement de bias (biasMessage contient le libelle du message d'erreur)
@@ -1167,9 +1175,16 @@ proc ::sophie::control::setAcquisitionSophie { state } {
 proc ::sophie::control::setBias { biasState biasMessage } {
    variable private
 
-   console::disp "setBias biasState=$biasState biasMessage=$biasMessage\n"
+   if { $biasState == "NONE" } {
+      set private(biasUse) $::caption(sophie,noneBiasUse)
+   } elseif { $biasState == "OK" } {
+      set private(biasUse) $biasMessage
+   } elseif { $biasState == "ERROR" } {
+      set private(biasUse) $::caption(sophie,errorMessage)
+      ::console::affiche_erreur "$biasMessage\n"
+   }
+  ### console::disp "setBias biasState=$biasState biasMessage=$biasMessage\n"
 }
-
 
 ##------------------------------------------------------------
 # setRealDelay
@@ -1181,8 +1196,8 @@ proc ::sophie::control::setBias { biasState biasMessage } {
 proc ::sophie::control::setRealDelay { delay } {
    variable private
 
-   #--- je formate le délai avant de l'afficher
-   set  private(realDelay) [format "%6.3f" $delay ]
+   #--- je formate le delai avant de l'afficher
+   set private(realDelay) [format "%6.3f" $delay ]
 
 }
 
@@ -1248,7 +1263,7 @@ proc ::sophie::control::setCenterInformation { starDetection fiberStatus originX
       "LOW_SIGNAL" -
       "TOO_FAR" -
       "OUTSIDE" -
-      "NO_SIGNAL" - 
+      "NO_SIGNAL" -
       default {
          #--- le trou n'est pas détecte
          $frm.voyant.trou_color_invariant configure \
@@ -1270,7 +1285,7 @@ proc ::sophie::control::setCenterInformation { starDetection fiberStatus originX
    set private(indicateursFwhmY)      [format "%6.1f" $fwhmY]
    set private(indicateursFondDeCiel) [format "%6.1f" $background]
    set private(indicateursFluxMax)    [format "%6.1f" $maxIntensity]
-   
+
 }
 
 ##------------------------------------------------------------
@@ -1470,7 +1485,7 @@ proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX 
       #--- je supprime le point le plus ancien
       ::sophieEcartConsigneY delete 0
    }
-   
+
    #--- j'ajoute la valeur le graphe sophieEcartEtoileX
    ::sophieEcartEtoileX append $starDx
    if { [::sophieEcartEtoileX length] >= $private(vectorLength) } {
@@ -1519,7 +1534,7 @@ proc ::sophie::control::setOriginCoords { originX originY } {
 # setTargetCoords
 #    met a jour les coordonnes de l'etoile
 #
-# @param starX  abcisse de l'etoile en pixel (referentiel image binning 1x1 sans fentrage) 
+# @param starX  abcisse de l'etoile en pixel (referentiel image binning 1x1 sans fentrage)
 # @param starY  ordonnee de l'etoile en pixel (referentiel image binning 1x1 sans fentrage)
 # @return rien
 #------------------------------------------------------------
@@ -1529,7 +1544,6 @@ proc ::sophie::control::setTargetCoords { starX starY } {
    set private(positionEtoileX)   [format "%6.1f" $starX]
    set private(positionEtoileY)   [format "%6.1f" $starY]
 }
-
 
 #
 # ::fingerlakes::dispTempFLI

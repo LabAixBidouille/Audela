@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.24 2009-09-08 09:33:56 michelpujol Exp $
+# @version   $Id: sophie.tcl,v 1.25 2009-09-08 13:25:45 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -125,6 +125,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
 
    if { ! [ info exists ::conf(sophie,exposure) ] }                 { set ::conf(sophie,exposure)                  "0.5" }
    if { ! [ info exists ::conf(sophie,centerBinning) ] }            { set ::conf(sophie,centerBinning)             "2x2" }
+   if { ! [ info exists ::conf(sophie,focuseBinning) ] }            { set ::conf(sophie,focuseBinning)             "1x1" }
    if { ! [ info exists ::conf(sophie,guideBinning) ] }             { set ::conf(sophie,guideBinning)              "1x1" }
    if { ! [ info exists ::conf(sophie,pixelScale)] }                { set ::conf(sophie,pixelScale)                "0.186" }
    if { ! [ info exists ::conf(sophie,alphaProportionalGain)] }     { set ::conf(sophie,alphaProportionalGain)     "0.9" }
@@ -204,7 +205,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
          set private(originCoord)      $::conf(sophie,objectCoord)
       }
    }
-      
+
    set private(originMove)       "AUTO"      ; #--- "MANUAL"=positionnement manuel en cours "AUTO"=positionnement automatique
    if { $::conf(sophie,detection) == "FIBER" } {
       #--- je place le symbole de la cible sur la consigne FIBRE HR
@@ -213,29 +214,29 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
       #--- je place le symbole de la cible sur la consigne OBJET
       set private(targetCoord)      $::conf(sophie,objectCoord)
    }
-   set private(targetMove)       "AUTO"   ; #--- "MANUAL"=positionnement manuel en cours "AUTO"=positionnement automatique  
-   set private(centerEnabled)    0
-   set private(guideEnabled)     0
-   set private(mountEnabled)     0
-   set private(acquisitionState) 0        ; #--- etat de l'acquisition continue 0=arrete  1=en cours
-   set private(targetRa)         "0h0m0s" ; #--- ascension droite de la cible en HMS
-   set private(targetDec)        "0d0m0s" ; #--- declinaison de la cible en DMS
-   set private(xWindow)          1        ; #--- abscisse du coin bas gauche du fenetrage
-   set private(yWindow)          1        ; #--- ordonnee du coin bas gauche du fenetrage
-   set private(biasFileName)        "" 
-   set private(biasBufNo)  [::buf::create ]
-   set private(maskBufNo)  [::buf::create ]
-   set private(sumBufNo)   [::buf::create ]
-   set private(fiberBufNo) [::buf::create ]
+   set private(targetMove)          "AUTO"   ; #--- "MANUAL"=positionnement manuel en cours "AUTO"=positionnement automatique
+   set private(centerEnabled)       0
+   set private(guideEnabled)        0
+   set private(mountEnabled)        0
+   set private(acquisitionState)    0        ; #--- etat de l'acquisition continue 0=arrete  1=en cours
+   set private(targetRa)            "0h0m0s" ; #--- ascension droite de la cible en HMS
+   set private(targetDec)           "0d0m0s" ; #--- declinaison de la cible en DMS
+   set private(xWindow)             1        ; #--- abscisse du coin bas gauche du fenetrage
+   set private(yWindow)             1        ; #--- ordonnee du coin bas gauche du fenetrage
+   set private(biasFileName)        ""
+   set private(biasBufNo)           [::buf::create ]
+   set private(maskBufNo)           [::buf::create ]
+   set private(sumBufNo)            [::buf::create ]
+   set private(fiberBufNo)          [::buf::create ]
 
    set private(AsynchroneParameter) 0
-   set private(newAcquisition)      1     ; #--- variable utilisee par le listener addAcquisitionListener
-   set private(currentMouseItem)    ""    ; #--- item en cous de deplacement avec la souris
+   set private(newAcquisition)      1        ; #--- variable utilisee par le listener addAcquisitionListener
+   set private(currentMouseItem)    ""       ; #--- item en cous de deplacement avec la souris
    set private(pendingZoom)         ""
    set private(biasWindow)          ""
    set private(windowSize)          "full"
    set private(centerCoords)        [list 0 0 ]
-   
+
    #--- Petit raccourci
    set frm $private(frm)
 
@@ -278,20 +279,20 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
          grid $frm.acq.exposure -in [$frm.acq getframe] -column 1 -row 0 \
             -columnspan 1 -rowspan 1 -sticky e
 
-         #--- Label pour le binning
-         label $frm.acq.labBinning -borderwidth 0 -text $::caption(sophie,binning)
-         grid $frm.acq.labBinning -in [$frm.acq getframe] -column 0 -row 1 \
-            -columnspan 1 -rowspan 1 -sticky w -padx 3
+        ### #--- Label pour le binning
+        ### label $frm.acq.labBinning -borderwidth 0 -text $::caption(sophie,binning)
+        ### grid $frm.acq.labBinning -in [$frm.acq getframe] -column 0 -row 1 \
+        ###    -columnspan 1 -rowspan 1 -sticky w -padx 3
 
-         #--- ComboBox pour le choix du binning
-         ComboBox $frm.acq.binning \
-            -entrybg white -justify center -takefocus 1 -editable 0 \
-            -width [ ::tkutil::lgEntryComboBox $private(listeBinning) ] \
-            -textvariable ::sophie::private(widgetBinning) \
-            -modifycmd "::sophie::onChangeBinning $visuNo" \
-            -values $private(listeBinning)
-         grid $frm.acq.binning -in [$frm.acq getframe] -column 1 -row 1 \
-            -columnspan 1 -rowspan 1 -sticky e
+        ### #--- ComboBox pour le choix du binning
+        ### ComboBox $frm.acq.binning \
+        ###    -entrybg white -justify center -takefocus 1 -editable 0 \
+        ###    -width [ ::tkutil::lgEntryComboBox $private(listeBinning) ] \
+        ###    -textvariable ::sophie::private(widgetBinning) \
+        ###    -modifycmd "::sophie::onChangeBinning $visuNo" \
+        ###    -values $private(listeBinning)
+        ### grid $frm.acq.binning -in [$frm.acq getframe] -column 1 -row 1 \
+        ###    -columnspan 1 -rowspan 1 -sticky e
 
          #--- Bouton de lancement des acqusitions
          button $frm.acq.goAcq -borderwidth 2 -height 2 -text $::caption(sophie,goAcq) \
@@ -474,9 +475,9 @@ proc ::sophie::startTool { visuNo } {
    $private(hCanvas) bind "::sophie"  <ButtonPress-1>  "::sophie::onMousePressButton1 $visuNo %W %x %y"
    $private(hCanvas) bind "::sophie"  <B1-Motion>      "::sophie::onMouseMoveButton1  $visuNo %W %x %y"
    $private(hCanvas) bind "::sophie" <ButtonRelease-1> "::sophie::onMouseReleaseButton1 $visuNo %W %x %y"
-   #--- je surcharge le double clic sur l'image du canvas pour deplacer la cible a la position de la souris 
+   #--- je surcharge le double clic sur l'image du canvas pour deplacer la cible a la position de la souris
    ::confVisu::createBindCanvas $visuNo <Double-Button-1> "::sophie::onTargetCoord $visuNo %x %y; break"
-   
+
    #--- j'active la mise a jour automatique de l'affichage quand on change de camera
    ::confVisu::addCameraListener $visuNo "::sophie::adaptPanel $visuNo"
    #--- j'active la mise a jour automatique de l'affichage quand on change de zoom
@@ -509,15 +510,15 @@ proc ::sophie::startTool { visuNo } {
       #--- j'affiche et je trace le message d'erreur
       ::tkutil::displayErrorInfo $::caption(sophie,titre)
    }
-   
-   #--- j'intialise la paosition de l'attenuateur 
+
+   #--- j'intialise la paosition de l'attenuateur
    ::sophie::initFilter
 
    #--- je selectionne les mots clefs optionnel a ajouter dans les images
    ::keyword::selectKeywords $visuNo [list RA_MEAN RA_RMS DEC_MEAN DEC_RMS DETNAM INSTRUME TELESCOP SITENAME SITELONG SITELAT SWCREATE]
    #--- je selectionne la liste des mots clefs non modifiables
    ::keyword::setKeywordState $visuNo [list RA_MEAN RA_RMS DEC_MEAN DEC_RMS DETNAM INSTRUME TELESCOP ]
-   
+
 }
 
 #------------------------------------------------------------
@@ -564,9 +565,9 @@ proc ::sophie::stopTool { visuNo } {
    $private(hCanvas) bind "::sophie"  <B1-Motion>         "default"
    $private(hCanvas) bind "::sophie"  <ButtonRelease-1>   "default"
    $private(hCanvas) bind "::sophie"  <ButtonPress-3>     "default"
-   #--- je restaure le bind du canvas 
+   #--- je restaure le bind du canvas
    ::confVisu::createBindCanvas $visuNo <Double-Button-1> "default"
-   
+
    #--- je ferme la fenetre de controle
    ::sophie::control::closeWindow $visuNo
 

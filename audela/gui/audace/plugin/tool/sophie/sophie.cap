@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.24 2009-09-05 16:59:48 michelpujol Exp $
+# Mise a jour $Id: sophie.cap,v 1.25 2009-09-08 13:25:29 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -66,6 +66,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,parametreAcquisition)  "Paramètres d'acquisition"
    set caption(sophie,poseDefaut)            "Pose par défaut (sec.)"
    set caption(sophie,binningCentrage)       "Binning par défaut du mode centrage"
+   set caption(sophie,binningFocalisation)   "Binning par défaut du mode focalisation"
    set caption(sophie,binningGuidage)        "Binning par défaut du mode guidage"
    set caption(sophie,parametreGuidage)      "Paramètres de guidage"
    set caption(sophie,echelle)               "Echelle (arcsec/pixel)"
@@ -82,7 +83,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,fibreAHR)              "Fibre A HR"
    set caption(sophie,fibreAHE)              "Fibre A HE"
    set caption(sophie,fibreB)                "Fibre B"
-   ###set caption(sophie,fiberGuigindMode)      "Mode d'entrée de la fibre A"
+  ### set caption(sophie,fiberGuigindMode)      "Mode d'entrée de la fibre A"
    set caption(sophie,replaceOriginValue)    "Remplacer par la position dans l'image"
    set caption(sophie,x)                     "X"
    set caption(sophie,y)                     "Y"
@@ -95,6 +96,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,prefixeImageCentrage)  "Préfixe des images de centrage"
    set caption(sophie,prefixeImageGuidage)   "Préfixe des images de guidage"
    set caption(sophie,imageBias)             "Image de Bias"
+   set caption(sophie,imageBias,bin1Slow)    "Image de Bias - Bin 1 - Mode Slow"
+   set caption(sophie,imageBias,bin1Fast)    "Image de Bias - Bin 1 - Mode Fast"
+   set caption(sophie,imageBias,bin2Slow)    "Image de Bias - Bin 2 - Mode Slow"
+   set caption(sophie,imageBias,bin2Fast)    "Image de Bias - Bin 2 - Mode Fast"
+   set caption(sophie,imageBias,bin3Slow)    "Image de Bias - Bin 3 - Mode Slow"
+   set caption(sophie,imageBias,bin3Fast)    "Image de Bias - Bin 3 - Mode Fast"
 
    set caption(sophie,parametreAlgo)         "Configuration de l'algorithme"
 
@@ -105,7 +112,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,paraPrecisionCentrage) "Paramètre de la précision du centrage"
    set caption(sophie,precisionCentrage)     "Précision du centrage (arcsec)"
 
-   set caption(sophie,callibrationRappels)   "Callibration des rappels"
+  ### set caption(sophie,callibrationRappels)   "Callibration des rappels"
 
    set caption(sophie,controleInterface)     "Contrôle de l'interface"
    set caption(sophie,indicateurInterface)   "Indicateurs de contrôle de l'interface"
@@ -136,9 +143,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,centrageReussi)        "Centrage en cours"
    set caption(sophie,centrageTermine)       "Centrage terminé"
    set caption(sophie,consigne)              "Consigne"
-   set caption(sophie,consigneFibreHR)       "Consigne sur la fibre A HR"
-   set caption(sophie,consigneFibreHE)       "Consigne sur la fibre A HE"
-   set caption(sophie,consigneObjet)         "Consigne sur un objet"
+   set caption(sophie,consigneFibreHR)       "Consigne automatique\nsur la fibre A HR"
+   set caption(sophie,consigneFibreHE)       "Consigne automatique\nsur la fibre A HE"
+   set caption(sophie,consigneObjet)         "Consigne manuelle"
    set caption(sophie,activationGuidage)     "Activer le guidage"
    set caption(sophie,findFiber)             "Détecter le trou"
    set caption(sophie,correction)            "Correction télescope\n(arcsec)"
@@ -156,6 +163,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,arretGuidage)          "Arrêter le guidage"
    set caption(sophie,suspendreGuidage)      "Suspendre le guidage"
    set caption(sophie,realDelay)             "Délai entre 2 débuts de poses (seconde)"
+   set caption(sophie,biasUse)               "Image Bias utilisée"
+   set caption(sophie,noneBiasUse)           "Aucune image Bias utilisée"
+   set caption(sophie,errorMessage)          "Erreur chargement du fichier : Voir la Console"
    set caption(sophie,sumNotReady)           "Image intégrée non disponible"
 
    set caption(sophie,masque)                "Masque"

@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.27 2009-09-08 09:34:08 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.28 2009-09-08 13:26:17 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -31,25 +31,26 @@ proc ::sophie::adaptPanel { visuNo args } {
 
    if { $private(camNo) != 0 } {
       if { [::confCam::getPluginProperty $private(camItem) hasBinning] == "0" } {
-         $frm.acq.labBinning configure -state disabled
-         $frm.acq.binning.a configure -state disabled
-         $frm.acq.binning.e configure -state disabled
+        ### $frm.acq.labBinning configure -state disabled
+        ### $frm.acq.binning.a configure -state disabled
+        ### $frm.acq.binning.e configure -state disabled
          set private(listeBinning) "1x1"
          ###::sophie::setBinning "1x1"
-         setBinningAndWindow "1x1"
+         #--- Je mets a jour le binning en fonction du mode
+         ::sophie::setMode
       } else {
-         $frm.acq.labBinning configure -state normal
-         $frm.acq.binning.a configure -state normal
-         $frm.acq.binning.e configure -state normal
+        ### $frm.acq.labBinning configure -state normal
+        ### $frm.acq.binning.a configure -state normal
+        ### $frm.acq.binning.e configure -state normal
          #--- je mets a jour la liste des binning
-         set private(listeBinning) [::confCam::getPluginProperty $private(camItem) binningList]
-         $frm.acq.binning  configure -values $private(listeBinning) -height [llength $private(listeBinning)]
-         if { [lsearch $private(listeBinning) $private(widgetBinning)] == -1 } {
-            #--- je selectionnele premier binning s'il n'existe pas dans la liste
-            set private(widgetBinning) [lindex $private(listeBinning) 0 ]
-         }
+        ### set private(listeBinning) [::confCam::getPluginProperty $private(camItem) binningList]
+        ### $frm.acq.binning configure -values $private(listeBinning) -height [llength $private(listeBinning)]
+        ### if { [lsearch $private(listeBinning) $private(widgetBinning)] == -1 } {
+        ###    #--- je selectionnele premier binning s'il n'existe pas dans la liste
+        ###    set private(widgetBinning) [lindex $private(listeBinning) 0 ]
+        ### }
       }
-      #--- je recupere la taille du capteur en pixel (en binning 1x1
+      #--- je recupere la taille du capteur en pixel (en binning 1x1)
       set private(cameraCells) [cam$private(camNo) nbcells]
 
       #--- je charge sophiecamerathread.tcl dans l'interpreteur de le thread de la camera
@@ -166,17 +167,17 @@ proc ::sophie::setBinningAndWindow { binning { windowSize ""} { centerCoords "" 
    variable private
 
    if { [lsearch $private(listeBinning) $binning] == -1 } {
-      #--- je ne change pas le binning s'il n'existe pas dans la liste des binning de la camera
+      #--- je ne change pas le binning s'il n'existe pas dans la liste des binnings de la camera
       return
    }
    set private(widgetBinning) $binning
-   scan $binning "%dx%d" xBinning  yBinning
+   scan $binning "%dx%d" xBinning yBinning
    set private(xBinning) $xBinning
    set private(yBinning) $yBinning
 
    set width  [lindex $private(cameraCells) 0 ]
    set height [lindex $private(cameraCells) 1 ]
-   
+
    if { $windowSize == "" } {
       set windowSize $private(windowSize)
    }
@@ -185,7 +186,7 @@ proc ::sophie::setBinningAndWindow { binning { windowSize ""} { centerCoords "" 
       set centerCoords $private(centerCoords)
    }
 
-   
+
    if { $windowSize == "full" } {
       #--- pas de fenetrage
       set x1 1
@@ -227,7 +228,7 @@ proc ::sophie::setBinningAndWindow { binning { windowSize ""} { centerCoords "" 
    #--- je memorise la taille du fenetrage
    set private(windowSize) $windowSize
    set private(centerCoords) $centerCoords
-   
+
    set xOriginCoord [ expr ( [lindex $private(originCoord) 0] - $private(xWindow) + 1 ) / $private(xBinning)  ]
    set yOriginCoord [ expr ( [lindex $private(originCoord) 1] - $private(yWindow) + 1 ) / $private(yBinning)  ]
    set xTargetCoord [ expr ( [lindex $private(targetCoord) 0] - $private(xWindow) + 1 ) / $private(xBinning)  ]
@@ -281,7 +282,7 @@ proc ::sophie::setExposure { { exposure "" } } {
 
 ##------------------------------------------------------------
 # onChangeBinning
-#  cette procedure est appellee par la commbbo de choix du binning
+#  cette procedure est appellee par la combobox de choix du binning
 #  pour changer de binning
 #------------------------------------------------------------
 proc ::sophie::onChangeBinning { visuNo } {
@@ -436,7 +437,7 @@ proc ::sophie::onGuide { } {
 #      - met à jour l'affichage de la fenetre de contole
 #
 # @param mode mode d'acquisition CENTER FOCUS GUIDE ou "".
-#     Si le mode est vide, c'est le mode qui a ete choisi dans la fentre
+#     Si le mode est vide, c'est le mode qui a ete choisi dans la fenetre
 #     principale qui est applique.
 #------------------------------------------------------------
 proc ::sophie::setMode { { mode "" } } {
@@ -468,7 +469,7 @@ proc ::sophie::setMode { { mode "" } } {
          #--- je mets le thread de la camera en mode centrage et je desactive la detection de la fibre
          ::camera::setAsynchroneParameter $private(camItem) \
             "mode" "CENTER" \
-            "findFiber" 0          
+            "findFiber" 0
          #--- je change le binning et je supprime le fentrage
          setBinningAndWindow $::conf(sophie,centerBinning) "full"
          #--- je change le zoom
@@ -484,9 +485,9 @@ proc ::sophie::setMode { { mode "" } } {
          #--- je mets le thread de la camera en mode centrage et je desactive la detection de la fibre
          ::camera::setAsynchroneParameter $private(camItem) \
             "mode" "CENTER" \
-            "findFiber" 0          
+            "findFiber" 0
          #--- je change le binning et je cree une fenetre centree sur l'étoile
-         setBinningAndWindow "1x1" $private(targetBoxSize) $private(targetCoord)
+         setBinningAndWindow $::conf(sophie,focuseBinning) $private(targetBoxSize) $private(targetCoord)
          #--- j'applique le zoom 4
          set private(pendingZoom) 4
       }
@@ -510,7 +511,7 @@ proc ::sophie::setMode { { mode "" } } {
          #--- je mets le thread de la camera en mode centrage
          ::camera::setAsynchroneParameter $private(camItem) \
             "mode" "GUIDE" \
-            "findFiber" 0          
+            "findFiber" 0
          #--- je change le binning et je cree une fenetre centree sur la consigne
          setBinningAndWindow $::conf(sophie,guideBinning) $::conf(sophie,guidingWindowSize) $private(originCoord)
          #--- je change le zoom
@@ -536,7 +537,7 @@ proc ::sophie::setGuidingMode { visuNo } {
       "FIBER_HR" {
          set private(originCoord)  [list $::conf(sophie,fiberHRX) $::conf(sophie,fiberHRY)]
          set activewidth 2
-         #--- j'affiche le choix de la detection de la fibre 
+         #--- j'affiche le choix de la detection de la fibre
          $frm.mode.findFiber configure -state normal
          #--- je positionne la consigne sur la fibre
          ::sophie::createOrigin $visuNo
@@ -544,7 +545,7 @@ proc ::sophie::setGuidingMode { visuNo } {
       "FIBER_HE" {
          set private(originCoord)  [list $::conf(sophie,fiberHEX) $::conf(sophie,fiberHEY)]
          set activewidth 2
-         #--- j'affiche le choix de la detection de la fibre 
+         #--- j'affiche le choix de la detection de la fibre
          $frm.mode.findFiber configure -state normal
          #--- je positionne la consigne sur la fibre
          ::sophie::createOrigin $visuNo
@@ -554,8 +555,8 @@ proc ::sophie::setGuidingMode { visuNo } {
          set activewidth 4
          #--- je desactive la detection de la fibre
          set private(findFiber) 0
-         #--- j'affiche le choix de la detection de la fibre 
-         $frm.mode.findFiber configure -state disabled         
+         #--- j'affiche le choix de la detection de la fibre
+         $frm.mode.findFiber configure -state disabled
          #--- je positionne la consigne sur l'objet
          ::sophie::createOrigin $visuNo
       }
@@ -645,17 +646,17 @@ proc ::sophie::stopMoveFilter { } {
          set private(attenuateur) [ tel$::audace(telNo) filter coord ]
          #--- je recupere l'etat de butees
          set extremity [ tel$::audace(telNo) filter extremity ]
-      
+
          #--- j'arrete le rafraichissement de l'affichage du taux d'atténuation
          set private(updateFilterState) 0
          if { $private(updateFilterId)!="" } {
             after cancel $private(updateFilterId)
             set private(updateFilterId) ""
          }
-      
+
          #--- je recupere la nouvelle valeur
          set private(attenuateur) [ tel$::audace(telNo) filter coord ]
-      
+
          #--- je mets a jour la couleur des fin de course
          switch $extremity {
             "MAX" {
@@ -720,7 +721,7 @@ proc ::sophie::updateFilterPercent { } {
 
 ##------------------------------------------------------------
 # initFilter
-#  demarrage un mouvement "-" de l'attenuateur pour initialiser 
+#  demarrage un mouvement "-" de l'attenuateur pour initialiser
 #  la position des attenuateurs sur l'extremitee MIN
 #  la duree de recherche est limitee à 1.5 *  private(filterMaxDelay)
 # @return rien
@@ -733,7 +734,7 @@ proc ::sophie::initFilter {  } {
       set private(filterMaxDelay)       [ tel$::audace(telNo) filter max ]
       set private(filterCurrentPercent) [ tel$::audace(telNo) filter coord ]
       set private(filterDirection)    "-"
-      #--- j'active les boutons de commande du filtre attenuateur pendant las 
+      #--- j'active les boutons de commande du filtre attenuateur pendant las
       $private(frm).attenuateur.butMin configure -state disabled
       $private(frm).attenuateur.butMax configure -state disabled
       bind $private(frm).attenuateur.butMin <ButtonPress-1>  ""
@@ -749,7 +750,7 @@ proc ::sophie::initFilter {  } {
 
 ##------------------------------------------------------------
 # initFilterLoop
-#  continue le mouvement "-" de l'attenuateur jusqu'à ce que 
+#  continue le mouvement "-" de l'attenuateur jusqu'à ce que
 #  l' extremite MIN soit atteinte
 # @return rien
 #------------------------------------------------------------
@@ -774,11 +775,11 @@ proc ::sophie::initFilterLoop {  } {
       #--- je mets a jour la couleur des fin de course
       set extremity [ tel$::audace(telNo) filter extremity ]
       if { $extremity == "MIN"  } {
-         #--- l'extremitee MIN est atteinte            
+         #--- l'extremitee MIN est atteinte
          set private(attenuateur) [ tel$::audace(telNo) filter coord ]
-         #--- j'arrete le mouvement 
+         #--- j'arrete le mouvement
          tel$::audace(telNo) filter stop
-         
+
          #--- j'active les boutons de commande du filtre attenuateur
          $private(frm).attenuateur.labMin_color_invariant configure -background $::color(green)
          $private(frm).attenuateur.labMax_color_invariant configure -background $::audace(color,backColor)
@@ -797,11 +798,11 @@ proc ::sophie::initFilterLoop {  } {
          set private(updateFilterId) [after 250 ::sophie::initFilterLoop]
       }
    } else {
-      #--- la duree max de recherche est depassee sans avoir trouve l'extremite MIN 
+      #--- la duree max de recherche est depassee sans avoir trouve l'extremite MIN
       set private(attenuateur) "?"
-      #--- j'arrete le mouvement 
+      #--- j'arrete le mouvement
       tel$::audace(telNo) filter stop
-      #--- j'active les boutons de commande 
+      #--- j'active les boutons de commande
       $private(frm).attenuateur.labMin_color_invariant configure -background $::audace(color,backColor)
       $private(frm).attenuateur.labMax_color_invariant configure -background $::audace(color,backColor)
       $private(frm).attenuateur.butMin configure -state normal
@@ -829,10 +830,10 @@ proc ::sophie::loadBias { biasWindow } {
       switch [::fingerlakes::getReadSpeed ] {
          "1.0 MHz" { set cameraMode slow }
          "3.5 Mhz" { set cameraMode fast }
-         default { set cameraMode fast }
+         default   { set cameraMode fast }
       }
    } else {
-      set cameraMode 1
+      set cameraMode fast
    }
 
 console::disp "loadbias xBinning=$private(xBinning)\n"
@@ -1776,7 +1777,7 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
             }
             #--- j'affiche l'image
             ::confVisu::autovisu $visuNo
-            
+
             #--- j'affiche le delay entre 2 poses
             ::sophie::control::setRealDelay [lindex [lindex $args 0] 0]
         }
@@ -1853,11 +1854,11 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                         set originDy 0.0
                      }
                   }
-               } else { 
-                  #--- l'ecart n'est pas calcule 
+               } else {
+                  #--- l'ecart n'est pas calcule
                   set originDx 0.0
                   set originDy 0.0
-               }                  
+               }
                #--- j'affiche le symbole de l'origine
                if { $private(originMove) == "AUTO" } {
                   ::sophie::createOrigin $visuNo
