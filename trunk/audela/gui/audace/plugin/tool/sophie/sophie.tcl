@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.25 2009-09-08 13:25:45 robertdelmas Exp $
+# @version   $Id: sophie.tcl,v 1.26 2009-09-08 16:59:35 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -140,10 +140,12 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(sophie,alphaReverse)] }              { set ::conf(sophie,alphaReverse)              "0" }
    if { ! [ info exists ::conf(sophie,deltaReverse)] }              { set ::conf(sophie,deltaReverse)              "0" }
 
-   if { ! [ info exists ::conf(sophie,biasFileName,1,slow)] }       { set ::conf(sophie,biasFileName,1,slow)       "" }
-   if { ! [ info exists ::conf(sophie,biasFileName,1,fast)] }       { set ::conf(sophie,biasFileName,1,fast)       "" }
-   if { ! [ info exists ::conf(sophie,biasFileName,2,slow)] }       { set ::conf(sophie,biasFileName,2,slow)       "" }
-   if { ! [ info exists ::conf(sophie,biasFileName,2,fast)] }       { set ::conf(sophie,biasFileName,2,fast)       "" }
+   if { ! [ info exists ::conf(sophie,biasFileName,1,slow)] }       { set ::conf(sophie,biasFileName,1,slow)       "0" }
+   if { ! [ info exists ::conf(sophie,biasFileName,1,fast)] }       { set ::conf(sophie,biasFileName,1,fast)       "0" }
+   if { ! [ info exists ::conf(sophie,biasFileName,2,slow)] }       { set ::conf(sophie,biasFileName,2,slow)       "0" }
+   if { ! [ info exists ::conf(sophie,biasFileName,2,fast)] }       { set ::conf(sophie,biasFileName,2,fast)       "0" }
+   if { ! [ info exists ::conf(sophie,biasFileName,3,slow)] }       { set ::conf(sophie,biasFileName,3,slow)       "0" }
+   if { ! [ info exists ::conf(sophie,biasFileName,3,fast)] }       { set ::conf(sophie,biasFileName,3,fast)       "0" }
    if { ! [ info exists ::conf(sophie,correctionCumulNb)] }         { set ::conf(sophie,correctionCumulNb)         1 }
    if { ! [ info exists ::conf(sophie,originSumNb)] }               { set ::conf(sophie,originSumNb)               1 }
    if { ! [ info exists ::conf(sophie,guidingWindowSize)] }         { set ::conf(sophie,guidingWindowSize)         200 }
@@ -224,6 +226,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(xWindow)             1        ; #--- abscisse du coin bas gauche du fenetrage
    set private(yWindow)             1        ; #--- ordonnee du coin bas gauche du fenetrage
    set private(biasFileName)        ""
+   set private(biasValue)           0
    set private(biasBufNo)           [::buf::create ]
    set private(maskBufNo)           [::buf::create ]
    set private(sumBufNo)            [::buf::create ]

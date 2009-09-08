@@ -2,7 +2,7 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.29 2009-09-08 16:37:46 robertdelmas Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.30 2009-09-08 16:59:35 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -256,7 +256,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
       LabelEntry $frm.voyant.entryBiasUse \
          -borderwidth 0 -relief flat\
          -label $::caption(sophie,biasUse) \
-         -labelanchor w -width 8 -padx 2 \
+         -labelanchor w -width 30 -padx 2 \
          -justify center -state normal\
          -textvariable ::sophie::control::private(biasUse)
       grid $frm.voyant.entryBiasUse \
