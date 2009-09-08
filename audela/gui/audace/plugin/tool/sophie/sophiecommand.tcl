@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.26 2009-09-07 19:54:31 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.27 2009-09-08 09:34:08 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -237,10 +237,12 @@ proc ::sophie::setBinningAndWindow { binning { windowSize ""} { centerCoords "" 
       set targetBoxSize [ expr int($private(targetBoxSize) / (2.0 * $private(xBinning))) ]
       set private(AsynchroneParameter) 1
       ::camera::setAsynchroneParameter $private(camItem) \
-         "binning"     [list $private(xBinning) $private(yBinning)] \
+         "binning"      [list $private(xBinning) $private(yBinning)] \
          "window"       [list $x1 $y1 $x2 $y2 ] \
          "originCoord"  [list $xOriginCoord $yOriginCoord] \
          "targetCoord"  [list $xTargetCoord $yTargetCoord] \
+         "maskRadius"   [expr $::conf(sophie,maskRadius) / $private(xBinning)]  \
+         "maskFwhm"     [expr $::conf(sophie,maskFwhm)   / $private(xBinning)]   \
          "targetBoxSize" $targetBoxSize
    }
 
@@ -825,9 +827,9 @@ proc ::sophie::loadBias { biasWindow } {
    set product [::confCam::getPluginProperty $private(camItem) product]
    if { $product == "fingerlakes" } {
       switch [::fingerlakes::getReadSpeed ] {
-         "1.0 MHz" { set cameraMode 1 }
-         "3.5 Mhz" { set cameraMode 2 }
-         default { set cameraMode 1 }
+         "1.0 MHz" { set cameraMode slow }
+         "3.5 Mhz" { set cameraMode fast }
+         default { set cameraMode fast }
       }
    } else {
       set cameraMode 1
@@ -1564,9 +1566,9 @@ proc ::sophie::startAcquisition { visuNo } {
          "sumBufNo"                 $private(sumBufNo)      \
          "fiberBufNo"               $private(fiberBufNo)    \
          "biasBufNo"                $private(biasBufNo)     \
-         "maskRadius"               $::conf(sophie,maskRadius)  \
-         "maskFwhm"                 $::conf(sophie,maskFwhm)   \
-         "maskPercent"              $::conf(sophie,maskPercent)   \
+         "maskRadius"               [expr $::conf(sophie,maskRadius) / $private(xBinning)]  \
+         "maskFwhm"                 [expr $::conf(sophie,maskFwhm) / $private(xBinning)]   \
+         "maskPercent"              $::conf(sophie,maskPercent) \
          "originSumNb"              $::conf(sophie,originSumNb) \
          "pixelMinCount"            $::conf(sophie,pixelMinCount) \
          "centerMaxLimit"           $::conf(sophie,centerMaxLimit) \

@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.23 2009-09-07 19:58:00 michelpujol Exp $
+# @version   $Id: sophie.tcl,v 1.24 2009-09-08 09:33:56 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -139,10 +139,10 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(sophie,alphaReverse)] }              { set ::conf(sophie,alphaReverse)              "0" }
    if { ! [ info exists ::conf(sophie,deltaReverse)] }              { set ::conf(sophie,deltaReverse)              "0" }
 
-   if { ! [ info exists ::conf(sophie,biasFileName,1,1)] }          { set ::conf(sophie,biasFileName,1,1)          "" }
-   if { ! [ info exists ::conf(sophie,biasFileName,1,2)] }          { set ::conf(sophie,biasFileName,1,2)          "" }
-   if { ! [ info exists ::conf(sophie,biasFileName,2,1)] }          { set ::conf(sophie,biasFileName,2,1)          "" }
-   if { ! [ info exists ::conf(sophie,biasFileName,2,2)] }          { set ::conf(sophie,biasFileName,2,2)          "" }
+   if { ! [ info exists ::conf(sophie,biasFileName,1,slow)] }       { set ::conf(sophie,biasFileName,1,slow)       "" }
+   if { ! [ info exists ::conf(sophie,biasFileName,1,fast)] }       { set ::conf(sophie,biasFileName,1,fast)       "" }
+   if { ! [ info exists ::conf(sophie,biasFileName,2,slow)] }       { set ::conf(sophie,biasFileName,2,slow)       "" }
+   if { ! [ info exists ::conf(sophie,biasFileName,2,fast)] }       { set ::conf(sophie,biasFileName,2,fast)       "" }
    if { ! [ info exists ::conf(sophie,correctionCumulNb)] }         { set ::conf(sophie,correctionCumulNb)         1 }
    if { ! [ info exists ::conf(sophie,originSumNb)] }               { set ::conf(sophie,originSumNb)               1 }
    if { ! [ info exists ::conf(sophie,guidingWindowSize)] }         { set ::conf(sophie,guidingWindowSize)         200 }
