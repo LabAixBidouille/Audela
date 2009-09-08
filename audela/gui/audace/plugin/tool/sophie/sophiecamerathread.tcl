@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.11 2009-09-07 19:42:53 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.12 2009-09-08 13:33:55 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -323,7 +323,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          #--- j'ecrete l'ampleur du deplacement en delta
          set maxDelta [expr $private(targetBoxSize) * [lindex $binning 1] * $private(pixelScale) ]
          if { $deltaCorrection > 0 } {
-            if { $deltaCorrection >  $maxDelta } {
+            if { $deltaCorrection > $maxDelta } {
                set deltaCorrection $maxDelta
             }
          } else {
@@ -372,7 +372,8 @@ proc ::camerathread::sophieAcquisitionLoop { } {
               } else {
                   set alphaDelay [expr abs($alphaCorrection) / $private(alphaSpeed)  ]
                   set deltaDelay [expr abs($deltaCorrection) / $private(deltaSpeed)  ]
-                  ###::camerathread::disp  "camerathread: tel1 move [format "%s %7.3fs" $alphaDirection $alphaDelay ] [format "%s %7.3fs" $deltaDirection $deltaDelay ]\n"
+                  ::camerathread::disp  "camerathread: tel1 move [format "%s %7.3fs" $alphaDirection $alphaDelay ] [format "%s %7.3fs" $deltaDirection $deltaDelay ]\n"
+                  #--- tel1 radec move n|s|e|w ?rate? ?delay (ms)?
                   tel1 radec move $alphaDirection 0.1 $alphaDelay
                   tel1 radec move $deltaDirection 0.1 $deltaDelay
                }

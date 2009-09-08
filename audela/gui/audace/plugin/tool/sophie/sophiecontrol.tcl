@@ -2,7 +2,7 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.27 2009-09-08 13:26:50 robertdelmas Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.28 2009-09-08 13:33:55 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -1023,7 +1023,7 @@ proc ::sophie::control::setMode { mode } {
       }
       set This "$::audace(base).sophiecontrol"
       wm title $This "$::caption(sophie,controlTitle) $::caption(sophie,$mode)"
-      focus $frm
+      ###focus $frm
    }
 }
 
