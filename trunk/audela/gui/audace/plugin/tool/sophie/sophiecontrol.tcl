@@ -2,7 +2,7 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.28 2009-09-08 13:33:55 michelpujol Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.29 2009-09-08 16:37:46 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -256,7 +256,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
       LabelEntry $frm.voyant.entryBiasUse \
          -borderwidth 0 -relief flat\
          -label $::caption(sophie,biasUse) \
-         -labelanchor w -width 40 -padx 2 \
+         -labelanchor w -width 8 -padx 2 \
          -justify center -state normal\
          -textvariable ::sophie::control::private(biasUse)
       grid $frm.voyant.entryBiasUse \
@@ -1175,14 +1175,15 @@ proc ::sophie::control::setAcquisitionSophie { state } {
 proc ::sophie::control::setBias { biasState biasMessage } {
    variable private
 
-   if { $biasState == "NONE" } {
-      set private(biasUse) $::caption(sophie,noneBiasUse)
-   } elseif { $biasState == "OK" } {
-      set private(biasUse) $biasMessage
-   } elseif { $biasState == "ERROR" } {
-      set private(biasUse) $::caption(sophie,errorMessage)
-      ::console::affiche_erreur "$biasMessage\n"
-   }
+  ### if { $biasState == "NONE" } {
+  ###    set private(biasUse) $::caption(sophie,noneBiasUse)
+  ### } elseif { $biasState == "OK" } {
+  ###    set private(biasUse) $biasMessage
+  ### } elseif { $biasState == "ERROR" } {
+  ###    set private(biasUse) $::caption(sophie,errorMessage)
+  ###    ::console::affiche_erreur "$biasMessage\n"
+  ### }
+   set private(biasUse) $biasMessage
   ### console::disp "setBias biasState=$biasState biasMessage=$biasMessage\n"
 }
 

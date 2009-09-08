@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.25 2009-09-08 13:25:29 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.26 2009-09-08 16:36:51 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -63,7 +63,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,invalidDirectory)      "Le répertoire %s n'existe pas."
 
    set caption(sophie,parametreConfig)       "Configuration générale"
-   set caption(sophie,parametreAcquisition)  "Paramètres d'acquisition"
+  ### set caption(sophie,parametreAcquisition)  "Paramètres d'acquisition"
+   set caption(sophie,parametreAcquisition)  "Binnings par défaut des modes"
    set caption(sophie,poseDefaut)            "Pose par défaut (sec.)"
    set caption(sophie,binningCentrage)       "Binning par défaut du mode centrage"
    set caption(sophie,binningFocalisation)   "Binning par défaut du mode focalisation"
@@ -89,19 +90,24 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,y)                     "Y"
    set caption(sophie,HR)                    "HR"
    set caption(sophie,HE)                    "HE"
-   set caption(sophie,images)                "Paramètres de sauvegarde des images"
+   set caption(sophie,images)                "Paramètres de sauvegarde des images et valeurs des Bias"
    set caption(sophie,imageDirectory)        "Répertoire des images"
 
    set caption(sophie,parcourir)             "..."
    set caption(sophie,prefixeImageCentrage)  "Préfixe des images de centrage"
    set caption(sophie,prefixeImageGuidage)   "Préfixe des images de guidage"
-   set caption(sophie,imageBias)             "Image de Bias"
-   set caption(sophie,imageBias,bin1Slow)    "Image de Bias - Bin 1 - Mode Slow"
-   set caption(sophie,imageBias,bin1Fast)    "Image de Bias - Bin 1 - Mode Fast"
-   set caption(sophie,imageBias,bin2Slow)    "Image de Bias - Bin 2 - Mode Slow"
-   set caption(sophie,imageBias,bin2Fast)    "Image de Bias - Bin 2 - Mode Fast"
-   set caption(sophie,imageBias,bin3Slow)    "Image de Bias - Bin 3 - Mode Slow"
-   set caption(sophie,imageBias,bin3Fast)    "Image de Bias - Bin 3 - Mode Fast"
+  ### set caption(sophie,imageBias,bin1Slow)    "Image de Bias - Bin 1 - Mode Slow"
+  ### set caption(sophie,imageBias,bin1Fast)    "Image de Bias - Bin 1 - Mode Fast"
+  ### set caption(sophie,imageBias,bin2Slow)    "Image de Bias - Bin 2 - Mode Slow"
+  ### set caption(sophie,imageBias,bin2Fast)    "Image de Bias - Bin 2 - Mode Fast"
+  ### set caption(sophie,imageBias,bin3Slow)    "Image de Bias - Bin 3 - Mode Slow"
+  ### set caption(sophie,imageBias,bin3Fast)    "Image de Bias - Bin 3 - Mode Fast"
+   set caption(sophie,valeurBias,bin1Slow)   "Valeur du Bias - Bin 1 - Mode Slow"
+   set caption(sophie,valeurBias,bin1Fast)   "Valeur du Bias - Bin 1 - Mode Fast"
+   set caption(sophie,valeurBias,bin2Slow)   "Valeur du Bias - Bin 2 - Mode Slow"
+   set caption(sophie,valeurBias,bin2Fast)   "Valeur du Bias - Bin 2 - Mode Fast"
+   set caption(sophie,valeurBias,bin3Slow)   "Valeur du Bias - Bin 3 - Mode Slow"
+   set caption(sophie,valeurBias,bin3Fast)   "Valeur du Bias - Bin 3 - Mode Fast"
 
    set caption(sophie,parametreAlgo)         "Configuration de l'algorithme"
 
@@ -163,7 +169,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,arretGuidage)          "Arrêter le guidage"
    set caption(sophie,suspendreGuidage)      "Suspendre le guidage"
    set caption(sophie,realDelay)             "Délai entre 2 débuts de poses (seconde)"
-   set caption(sophie,biasUse)               "Image Bias utilisée"
+  ### set caption(sophie,biasUse)               "Image Bias utilisée"
+   set caption(sophie,biasUse)               "Valeur du Bias utilisé"
    set caption(sophie,noneBiasUse)           "Aucune image Bias utilisée"
    set caption(sophie,errorMessage)          "Erreur chargement du fichier : Voir la Console"
    set caption(sophie,sumNotReady)           "Image intégrée non disponible"
