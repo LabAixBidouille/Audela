@@ -2,7 +2,7 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.25 2009-09-05 21:55:11 michelpujol Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.26 2009-09-08 09:34:32 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -820,8 +820,8 @@ proc ::sophie::control::setGuidingIncrement { } {
 
 #------------------------------------------------------------
 # setGuidingMode
-#    ouvre les spinbox pour le pointage d'un objet
-#    place la consigne au bon endroit
+#    si guidingMode=OBJECT ouvre les spinbox pour le pointage d'un objet
+#    si guidingMode=FIBER_HR ou FIBER_HE omasque les spinbox et affiche  le graphe d'ecart consigne/fibre
 # @param guidingMode mode de guidage
 # @return rien
 #------------------------------------------------------------
@@ -830,27 +830,7 @@ proc ::sophie::control::setGuidingMode { guidingMode } {
 
    #--- petit raccourci bien pratique
    set frm $private(frm)
-   
-   ###switch $guidingMode {
-   ###   "OBJECT" {
-   ###      pack $frm.centrage.pointage.positionXY \
-   ###         -in [ $frm.centrage.pointage getframe ] \
-   ###         -side top -anchor w -fill x -expand 1 -pady 2
-   ###      pack $frm.guidage.positionconsigne.positionXY \
-   ###         -in [ $frm.guidage.positionconsigne getframe ] \
-   ###         -side top -anchor w -fill x -expand 1
-   ###      pack forget $frm.guidage.positionconsigne.correction
-   ###   }
-   ###   "FIBER_HR" -
-   ###   "FIBER_HE" {
-   ###      pack forget $frm.centrage.pointage.positionXY
-   ###      pack forget $frm.guidage.positionconsigne.positionXY
-   ###      pack $frm.guidage.positionconsigne.correction \
-   ###         -in [ $frm.guidage.positionconsigne getframe ] \
-   ###         -side top -anchor w -fill x -expand 1
-   ###   }
-   ###}
-   
+      
    switch $guidingMode {
       "OBJECT" {
          #--- je masque le graphe des ecarts de la consigne
@@ -873,69 +853,68 @@ proc ::sophie::control::setGuidingMode { guidingMode } {
             -in [ $frm.guidage.positionconsigne getframe ] \
             -side top -anchor w -fill x -expand 1
       }
-   }
-   
+   }   
 }
 
 #------------------------------------------------------------
 # setFiberDetection
+#    si OBJECT ouvre les spinbox pour le pointage d'un objet
+#    
 #    si findFiber=0 affiche les spinbox pour le pointage d'un objet
 #    si findFiber=1 affiche les graphes de correction automatique
 #------------------------------------------------------------
-proc ::sophie::control::setFiberDetection { findFiber } {
-   variable private
-
-   switch $::conf(sophie,guidingMode)  {
-      "FIBER_HR" {
-         #--- je masque les spinbox de modification manuelle de la consigne 
-         pack forget $frm.centrage.pointage.positionXY
-         pack forget $frm.guidage.positionconsigne.positionXY
-         
-         if { $findFiber == 0 } {
-            #--- je masque la position corrigee de la consigne 
-         } else {
-            #--- j'affiche la position corrigee de la consigne
-         }
-
-         #--- j'affiche le graphe de position de la consigne
-         pack $frm.guidage.positionconsigne.correction \
-            -in [ $frm.guidage.positionconsigne getframe ] \
-            -side top -anchor w -fill x -expand 1
-      }
-      "FIBER_HE" {
-         #--- je masque les spinbox de modification manuelle de la consigne 
-         pack forget $frm.centrage.pointage.positionXY
-         pack forget $frm.guidage.positionconsigne.positionXY
-         
-         if { $findFiber == 0 } {
-            #--- je masque la position corrigee de la consigne 
-         } else {
-            #--- j'affiche la position corrigee de la consigne
-         }
-
-         #--- j'affiche le graphe de position de la consigne
-         pack $frm.guidage.positionconsigne.correction \
-            -in [ $frm.guidage.positionconsigne getframe ] \
-            -side top -anchor w -fill x -expand 1
-      }
-      "OBJECT" {
-         #--- je masque le graphe des ecarts de la consigne
-         pack forget $frm.guidage.positionconsigne.correction
-         #--- j'affiche les spinbox de modification manuelle de la consigne 
-         pack $frm.centrage.pointage.positionXY \
-            -in [ $frm.centrage.pointage getframe ] \
-            -side top -anchor w -fill x -expand 1
-         pack $frm.guidage.positionconsigne.positionXY \
-            -in [ $frm.guidage.positionconsigne getframe ] \
-            -side top -anchor w -fill x -expand 1
-      }
-   }
-   
-   set frm $private(frm)
-   if { $findFiber == 0 } {
-   } else {
-   }
-}
+###proc ::sophie::control::setFiberDetection { findFiber } {
+###   variable private
+###
+###   set frm $private(frm)
+###   
+###   switch $::conf(sophie,guidingMode)  {
+###      "FIBER_HR" {
+###         #--- je masque les spinbox de modification manuelle de la consigne 
+###         pack forget $frm.centrage.pointage.positionXY
+###         pack forget $frm.guidage.positionconsigne.positionXY
+###         
+###         if { $findFiber == 0 } {
+###            #--- je masque la position corrigee de la consigne 
+###         } else {
+###            #--- j'affiche la position corrigee de la consigne
+###         }
+###
+###         #--- j'affiche le graphe de position de la consigne
+###         pack $frm.guidage.positionconsigne.correction \
+###            -in [ $frm.guidage.positionconsigne getframe ] \
+###            -side top -anchor w -fill x -expand 1
+###      }
+###      "FIBER_HE" {
+###         #--- je masque les spinbox de modification manuelle de la consigne 
+###         pack forget $frm.centrage.pointage.positionXY
+###         pack forget $frm.guidage.positionconsigne.positionXY
+###         
+###         if { $findFiber == 0 } {
+###            #--- je masque la position corrigee de la consigne 
+###         } else {
+###            #--- j'affiche la position corrigee de la consigne
+###         }
+###
+###         #--- j'affiche le graphe de position de la consigne
+###         pack $frm.guidage.positionconsigne.correction \
+###            -in [ $frm.guidage.positionconsigne getframe ] \
+###            -side top -anchor w -fill x -expand 1
+###      }
+###      "OBJECT" {
+###         #--- je masque le graphe des ecarts de la consigne
+###         pack forget $frm.guidage.positionconsigne.correction
+###         #--- j'affiche les spinbox de modification manuelle de la consigne 
+###         pack $frm.centrage.pointage.positionXY \
+###            -in [ $frm.centrage.pointage getframe ] \
+###            -side top -anchor w -fill x -expand 1
+###         pack $frm.guidage.positionconsigne.positionXY \
+###            -in [ $frm.guidage.positionconsigne getframe ] \
+###            -side top -anchor w -fill x -expand 1
+###      }
+###   }
+###   
+###}
 
 #------------------------------------------------------------
 # onScrollOrigin

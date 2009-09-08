@@ -2,7 +2,7 @@
 # @file     sophieconfig.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieconfig.tcl,v 1.12 2009-08-30 22:00:11 michelpujol Exp $
+# @version  $Id: sophieconfig.tcl,v 1.13 2009-09-08 09:34:20 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -125,10 +125,10 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
    set widget(fiberHEX)              $::conf(sophie,fiberHEX)
    set widget(fiberHEY)              $::conf(sophie,fiberHEY)
 
-   set widget(biasFileName,1,1)         $::conf(sophie,biasFileName,1,1)
-   set widget(biasFileName,1,2)         $::conf(sophie,biasFileName,1,2)
-   set widget(biasFileName,2,1)         $::conf(sophie,biasFileName,2,1)
-   set widget(biasFileName,2,2)         $::conf(sophie,biasFileName,2,2)
+   set widget(biasFileName,1,slow)         $::conf(sophie,biasFileName,1,slow)
+   set widget(biasFileName,1,fast)         $::conf(sophie,biasFileName,1,fast)
+   set widget(biasFileName,2,slow)         $::conf(sophie,biasFileName,2,slow)
+   set widget(biasFileName,2,fast)         $::conf(sophie,biasFileName,2,fast)
    
    #--- Frame pour la configuration des acquisitions
    TitleFrame $frm.acq -borderwidth 2 -relief ridge -text $::caption(sophie,parametreAcquisition)
@@ -550,15 +550,15 @@ proc ::sophie::config::apply { visuNo } {
    set ::conf(sophie,guidingFileNameprefix) $widget(prefixeImageGuidage)
 
    ###set ::conf(sophie,fiberGuigindMode)      $widget(fiberGuigindMode)
-   set ::conf(sophie,fiberHRX)              $widget(fiberHRX)
-   set ::conf(sophie,fiberHRY)              $widget(fiberHRY)
-   set ::conf(sophie,fiberHEX)              $widget(fiberHEX)
-   set ::conf(sophie,fiberHEY)              $widget(fiberHEY)
+   set ::conf(sophie,fiberHRX)               $widget(fiberHRX)
+   set ::conf(sophie,fiberHRY)               $widget(fiberHRY)
+   set ::conf(sophie,fiberHEX)               $widget(fiberHEX)
+   set ::conf(sophie,fiberHEY)               $widget(fiberHEY)
 
-   set ::conf(sophie,biasFileName,1,1)         $widget(biasFileName,1,1)
-   set ::conf(sophie,biasFileName,1,2)         $widget(biasFileName,1,2)
-   set ::conf(sophie,biasFileName,2,1)         $widget(biasFileName,2,1)
-   set ::conf(sophie,biasFileName,2,2)         $widget(biasFileName,2,2)
+   set ::conf(sophie,biasFileName,1,slow)    $widget(biasFileName,1,slow)
+   set ::conf(sophie,biasFileName,1,fast)    $widget(biasFileName,1,fast)
+   set ::conf(sophie,biasFileName,2,slow)    $widget(biasFileName,2,slow)
+   set ::conf(sophie,biasFileName,2,fast)    $widget(biasFileName,2,fast)
 
    #--- je communique les nouveaux parametres au thread de la camera
    ::camera::setAsynchroneParameter $::sophie::private(camItem)\
