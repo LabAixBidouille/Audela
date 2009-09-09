@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.31 2009-09-09 08:46:51 robertdelmas Exp $
+# @version  $Id: sophiecommand.tcl,v 1.32 2009-09-09 14:52:50 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -279,7 +279,6 @@ proc ::sophie::setExposure { { exposure "" } } {
    }
 }
 
-
 ##------------------------------------------------------------
 # onChangeBinning
 #  cette procedure est appellee par la combobox de choix du binning
@@ -396,7 +395,6 @@ proc ::sophie::onFiberDetection { } {
    setFiberDetection $private(findFiber)
 }
 
-
 ##------------------------------------------------------------
 # onCenter
 #  cette procedure est appellee quand on clique sur la chekbox de centrage
@@ -428,7 +426,6 @@ proc ::sophie::onGuide { } {
       stopGuide
    }
 }
-
 
 ##------------------------------------------------------------
 # setMode
@@ -606,7 +603,6 @@ proc ::sophie::setGuidingMode { visuNo } {
             "findFiber" $private(findFiber)
    }
 }
-
 
 ##------------------------------------------------------------
 # setFiberDetection
@@ -932,7 +928,9 @@ proc ::sophie::decrementZoom { } {
    } elseif { $private(zoom) == "2" } {
       set private(zoom) "4"
    } elseif { $private(zoom) == "4" } {
-      set private(zoom) "4"
+      set private(zoom) "8"
+   } elseif { $private(zoom) == "8" } {
+      set private(zoom) "8"
    }
    ::confVisu::setZoom $::audace(visuNo) $private(zoom)
    set private(zoom) [ ::confVisu::getZoom $::audace(visuNo) ]
@@ -945,7 +943,9 @@ proc ::sophie::decrementZoom { } {
 proc ::sophie::incrementZoom { } {
    variable private
 
-   if { $private(zoom) == "4" } {
+   if { $private(zoom) == "8" } {
+      set private(zoom) "4"
+   } elseif { $private(zoom) == "4" } {
       set private(zoom) "2"
    } elseif { $private(zoom) == "2" } {
       set private(zoom) "1"
@@ -1084,7 +1084,6 @@ proc ::sophie::createOrigin { visuNo } {
    set x [ expr ( double([lindex $private(originCoord) 0]) - $private(xWindow) + 1 ) / $private(xBinning)  ]
    set y [ expr ( double([lindex $private(originCoord) 1]) - $private(yWindow) + 1 ) / $private(yBinning)  ]
 
-
     ###switch $::conf(sophie,guidingMode) {
     ###   "OBJECT" {
     ###      set activewidth 4
@@ -1210,7 +1209,6 @@ proc ::sophie::onMousePressButton1 { visuNo w x y } {
       return
    }
 
-
    set tags [$w itemcget current -tags]
    #--- je recupere le type de l'item (deuxieme tag)
    set typeItem [lindex $tags 1]
@@ -1262,7 +1260,6 @@ proc ::sophie::onMousePressButton1 { visuNo w x y } {
 #------------------------------------------------------------
 proc ::sophie::onMouseMoveButton1 { visuNo w x y } {
    variable private
-
 
    switch $private(currentMouseItem) {
       "origin" {
@@ -1372,7 +1369,6 @@ proc ::sophie::onMouseReleaseButton1 { visuNo w x y } {
       }
    }
 }
-
 
 ##------------------------------------------------------------
 # onTargetCoord
@@ -1617,10 +1613,11 @@ proc ::sophie::startAcquisition { visuNo } {
          "fiberBufNo"               $private(fiberBufNo)    \
          "biasBufNo"                $private(biasBufNo)     \
          "biasValue"                $private(biasValue)     \
-         "maskRadius"               [expr $::conf(sophie,maskRadius) / $private(xBinning)]  \
-         "maskFwhm"                 [expr $::conf(sophie,maskFwhm) / $private(xBinning)]   \
+         "maskRadius"               [expr $::conf(sophie,maskRadius) / $private(xBinning)] \
+         "maskFwhm"                 [expr $::conf(sophie,maskFwhm) / $private(xBinning)] \
          "maskPercent"              $::conf(sophie,maskPercent) \
-         "originSumNb"              $::conf(sophie,originSumNb) \
+         "originSumMinCounter"      $::conf(sophie,originSumMinCounter) \
+         "originSumCounter"         0 \
          "pixelMinCount"            $::conf(sophie,pixelMinCount) \
          "centerMaxLimit"           $::conf(sophie,centerMaxLimit) \
          "findFiber"                $private(findFiber)
@@ -2004,7 +2001,6 @@ proc ::sophie::removeAcquisitionListener { visuNo cmd } {
    trace remove variable ::sophie::private(newAcquisition) write $cmd
 }
 
-
 ##------------------------------------------------------------
 # guideSophie
 #    lance une session de guidage
@@ -2032,8 +2028,4 @@ proc ::camera::guideSophie { camItem callback exptime originCoord targetCoord ca
    set camThreadNo $private($camItem,threadNo)
    ::thread::send -async $camThreadNo [list ::camerathread::guideSophie $exptime $originCoord $targetCoord $cameraAngle $targetBoxSize $mountEnabled $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $intervalle ]
 }
-
-
-
-
 

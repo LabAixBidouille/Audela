@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.13 2009-09-08 16:59:35 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.14 2009-09-09 14:52:32 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -11,9 +11,7 @@
 #------------------------------------------------------------
 namespace eval ::camerathread {
 
-   
 }
-
 
 ##------------------------------------------------------------
 # guideSophie lance la boucle d'acquisition continue
@@ -27,35 +25,34 @@ proc ::camerathread::guideSophie { exptime originCoord targetCoord cameraAngle t
       return
    }
 
-   set private(exptime)       $exptime
-   set private(originCoord)   $originCoord
-   set private(targetCoord)   $targetCoord
-   set private(targetBoxSize) $targetBoxSize
-   set private(cameraAngle)   $cameraAngle
-   set private(mountEnabled)  $mountEnabled
-   set private(alphaSpeed)    $alphaSpeed
-   set private(deltaSpeed)    $deltaSpeed
-   set private(alphaReverse)  $alphaReverse
-   set private(deltaReverse)  $deltaReverse
-   set private(intervalle)    $intervalle
+   set private(exptime)              $exptime
+   set private(originCoord)          $originCoord
+   set private(targetCoord)          $targetCoord
+   set private(targetBoxSize)        $targetBoxSize
+   set private(cameraAngle)          $cameraAngle
+   set private(mountEnabled)         $mountEnabled
+   set private(alphaSpeed)           $alphaSpeed
+   set private(deltaSpeed)           $deltaSpeed
+   set private(alphaReverse)         $alphaReverse
+   set private(deltaReverse)         $deltaReverse
+   set private(intervalle)           $intervalle
 
-   set private(centerDeltaList)  ""
-   set private(acquisitionState) "1"
-   set private(previousClock)    "0"
+   set private(centerDeltaList)      ""
+   set private(acquisitionState)     "1"
+   set private(previousClock)        "0"
 
    #--- variables de travail
-   set private(originSumMinCounter)  "5" 
-   set private(simulationCounter) "1"
-   set private(originSumCounter)  0
-   set private(diffXCumul)  0
-   set private(diffYCumul)  0
-   set private(centerDeltaList)   ""
+   set private(simulationCounter)    "1"
+   set private(originSumCounter)     0
+   set private(diffXCumul)           0
+   set private(diffYCumul)           0
+   set private(centerDeltaList)      ""
    lappend  private(centerDeltaList) [list $private(targetBoxSize) $private(targetBoxSize)]
    lappend  private(centerDeltaList) [list $private(targetBoxSize) $private(targetBoxSize)]
    lappend  private(centerDeltaList) [list $private(targetBoxSize) $private(targetBoxSize)]
    lappend  private(centerDeltaList) [list $private(targetBoxSize) $private(targetBoxSize)]
 
-   ###::camerathread::disp  "::camerathread::processAcquisition \n"
+   ###::camerathread::disp "::camerathread::processAcquisition \n"
 
    #--- je parametre la camera
    cam$private(camNo) exptime $private(exptime)
@@ -72,7 +69,7 @@ proc ::camerathread::guideSophie { exptime originCoord targetCoord cameraAngle t
 proc ::camerathread::sophieAcquisitionLoop { } {
    variable private
 
-   #--- debut du catch pour intercepter les erreurs 
+   #--- debut du catch pour intercepter les erreurs
    #--- ATTENTION: il ne faut pas d'instruction return dans un cath !!!
    set catchError [ catch {
       set bufNo $private(bufNo)
@@ -83,8 +80,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          ###::camerathread::disp  "camerathread: originCoord=$private(originCoord)  \n"
       }
 
-
-      if { $private(acquisitionState) == 1 } {         
+      if { $private(acquisitionState) == 1 } {
          #--- je calcule le temps ecoule entre deux debuts de pose
          set nextClock [clock clicks -milliseconds ]
          set interval "[expr $nextClock - $private(previousClock)]"
@@ -97,10 +93,10 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             #--- je simule une acquisition
             after [expr int($private(exptime) * 1000.0)]
             ###::camerathread::disp  "camerathread: private(simulationGenericFileName)=$private(simulationGenericFileName)XX\n"
-   
+
             set fileName "$private(simulationGenericFileName)$private(simulationCounter).fit"
             buf$bufNo load "$fileName"
-   
+
             #--- je simule le fenetrage
             set windowing [cam$private(camNo) window]
             set nbcells [cam$private(camNo) nbcells]
@@ -124,8 +120,8 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          #--- j'affiche l'image et je transmets le temps ecoule entre 2 debuts de pose
          ::camerathread::notify "autovisu"  [expr double($interval) / 1000]
       }
-      
-      if { $private(acquisitionState) == 1 } {         
+
+      if { $private(acquisitionState) == 1 } {
          set targetDetection ""
          #--- je calcule les coordonnees de la fenetre d'analyse
          if {  $private(mode) == "GUIDE" } {
@@ -143,56 +139,56 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             set y1 [expr int($y) - $private(targetBoxSize)]
             set y2 [expr int($y) + $private(targetBoxSize)]
          }
-   
+
          if { $private(findFiber) == 1 } {
             incr private(originSumCounter)
          } else {
             set private(originSumCounter) 0
          }
       }
-      
+
       #--- je mesure la position de l'etoile et le trou de la fibre
       # buf$bufNo fibercentro
       # Parameters IN:
       # @param     Argv[2]= [list x1 y1 x2 y2 ] fenetre de detection
-      # @param     Argv[3]=biasBufNo       numero du buffer du bias
-      # @param     Argv[4]=maskBufNo       numero du buffer du masque
-      # @param     Argv[5]=sumBufNo        numero du buffer de l'image integree
-      # @param     Argv[6]=fiberBufNo      numero du buffer de l'image resultat      
-      # @param     Argv[7]=maskRadius      rayon du masque
-      # @param     Argv[8]=originSumMinCounter     nombre d'acquisition de l'image integree
-      # @param     Argv[9]=originSumCounter compteur d'integration de l'image de l'origine
-      # @param     Argv[10]=previousFiberX abcisse du centre de la fibre
-      # @param     Argv[11]=previousFiberY ordonnee du centre de la fibre
-      # @param     Argv[12]=maskFwhm       largeur a mi hauteur de la gaussienne
-      # @param     Argv[13]=findFiber      1=recherche de l'entrée de fibre , 0= ne pas rechercher
-      # @param     Argv[14]=pixelMinCount  nombre minimal de pixels pour accepter l'image
-      # @param     Argv[15]=maskPercent    pourcentage du niveau du mask
-      # @param     Argv[16]=biasValue      valeur du bias
+      # @param     Argv[3]=biasBufNo            numero du buffer du bias
+      # @param     Argv[4]=maskBufNo            numero du buffer du masque
+      # @param     Argv[5]=sumBufNo             numero du buffer de l'image integree
+      # @param     Argv[6]=fiberBufNo           numero du buffer de l'image resultat
+      # @param     Argv[7]=maskRadius           rayon du masque
+      # @param     Argv[8]=originSumMinCounter  nombre d'acquisition de l'image integree
+      # @param     Argv[9]=originSumCounter     compteur d'integration de l'image de l'origine
+      # @param     Argv[10]=previousFiberX      abcisse du centre de la fibre
+      # @param     Argv[11]=previousFiberY      ordonnee du centre de la fibre
+      # @param     Argv[12]=maskFwhm            largeur a mi hauteur de la gaussienne
+      # @param     Argv[13]=findFiber           1=recherche de l'entrée de fibre , 0= ne pas rechercher
+      # @param     Argv[14]=pixelMinCount       nombre minimal de pixels pour accepter l'image
+      # @param     Argv[15]=maskPercent         pourcentage du niveau du mask
+      # @param     Argv[16]=biasValue           valeur du bias
       #
       # @return si TCL_OK
-      #            list[0] starStatus      resultat de la recherche de la fibre (DETECTED NO_SIGNAL)
-      #            list[1] starX           abcisse du centre de la fibre   (pixel binné)
-      #            list[2] starY           ordonnee du centre de la fibre  (pixel binné
-      #            list[3] fiberStatus     resultat de la recherche de la fibre (DETECTED NO_SIGNAL)
-      #            list[4] fiberX          abcisse du centre de la fibre  (pixel binné)
-      #            list[5] fiberY          ordonnee du centre de la fibre (pixel binné)
-      #            list[6] measuredFwhmX   gaussienne mesuree (pixel binné)
-      #            list[7] measuredFwhmY   gaussienne mesuree (pixel binné)
-      #            list[8] background      fond du ciel (ADU)
-      #            list[9] maxIntensity    intensite max (ADU)
-      #            list[10] message        message d'information
+      #            list[0] starStatus           resultat de la recherche de la fibre (DETECTED NO_SIGNAL)
+      #            list[1] starX                abcisse du centre de la fibre   (pixel binné)
+      #            list[2] starY                ordonnee du centre de la fibre  (pixel binné
+      #            list[3] fiberStatus          resultat de la recherche de la fibre (DETECTED NO_SIGNAL)
+      #            list[4] fiberX               abcisse du centre de la fibre  (pixel binné)
+      #            list[5] fiberY               ordonnee du centre de la fibre (pixel binné)
+      #            list[6] measuredFwhmX        gaussienne mesuree (pixel binné)
+      #            list[7] measuredFwhmY        gaussienne mesuree (pixel binné)
+      #            list[8] background           fond du ciel (ADU)
+      #            list[9] maxIntensity         intensite max (ADU)
+      #            list[10] message             message d'information
       #
       #         si TCL_ERREUR
       #            message d'erreur
-      if { $private(acquisitionState) == 1 } {            
+      if { $private(acquisitionState) == 1 } {
          set result [buf$bufNo fibercentro "[list $x1 $y1 $x2 $y2]" \
             $private(biasBufNo) $private(maskBufNo) $private(sumBufNo) $private(fiberBufNo) \
             $private(maskRadius) \
-            $private(originSumMinCounter) $private(originSumCounter)  \
+            $private(originSumMinCounter) $private(originSumCounter) \
             [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
             $private(maskFwhm) $private(findFiber)  $private(pixelMinCount) $private(maskPercent) $private(biasValue)]
-   
+
          set starStatus       [lindex $result 0 ]
          set starX            [lindex $result 1 ]
          set starY            [lindex $result 2 ]
@@ -204,7 +200,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          set background       [lindex $result 8 ]
          set maxIntensity     [lindex $result 9 ]
          set infoMessage      [lindex $result 10 ]
-   
+
          if { $starStatus == "DETECTED" } {
             #--- l'etoile est detectee
             set targetDetection 1
@@ -214,14 +210,14 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             #--- l'etoile n'est pas detectee
             set targetDetection 0
          }
-   
+
          switch $fiberStatus {
             "DETECTED" {
                #--- je met a jour les coordonnes de la consigne
-               set private(originCoord) [list $fiberX $fiberY ]               
+               set private(originCoord) [list $fiberX $fiberY ]
             }
             "INTEGRATING" -
-            "TOO_FAR" - 
+            "TOO_FAR" -
             "LOW_SIGNAL" -
             "NO_SIGNAL" -
             "DISABLED" -
@@ -230,10 +226,10 @@ proc ::camerathread::sophieAcquisitionLoop { } {
                #--- rien a faire, je transmet le status de la fibre tel quel
             }
          }
-   
+
          ###::camerathread::disp  "camerathread: private(targetCoord)=$private(targetCoord) private(originCoord)=$private(originCoord)\n"
          ###::camerathread::disp  "camerathread: FIBER= y1=$y1 y2=$y2 fiberStatus=$fiberStatus\n"
-   
+
          set binning [cam$private(camNo) bin]
          #--- je calcule l'ecart de position entre la cible et la consigne (en pixels ramene au binning 1x1)
          set dx [expr (double([lindex $private(targetCoord) 0]) - [lindex $private(originCoord) 0]) * [lindex $binning 0] ]
@@ -244,7 +240,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          set alphaDiff [expr $dx * $private(pixelScale) ]
          set deltaDiff [expr $dy * $private(pixelScale) ]
       }
-      
+
       #--- je calcule la correction alphaCorrection et deltaCorrection  en arcsec
       if { $private(acquisitionState) == "1" && $private(mountEnabled) == 1 && $starStatus == "DETECTED" } {
          if { $private(mode) == "GUIDE" } {
@@ -317,10 +313,10 @@ proc ::camerathread::sophieAcquisitionLoop { } {
                set alphaCorrection [expr - $maxAlpha]
             }
          }
-                  
+
          #--- je prends en compte la declinaison dans le calcul de la correction de alpha
          set alphaCorrection [expr $alphaCorrection / (cos($private(targetDec) * 3.14159265359/180)) ]
-         
+
          #--- j'ecrete l'ampleur du deplacement en delta
          set maxDelta [expr $private(targetBoxSize) * [lindex $binning 1] * $private(pixelScale) ]
          if { $deltaCorrection > 0 } {
@@ -357,7 +353,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             } else {
                set alphaDirection "e"
             }
-   
+
             #--- je calcule la direction delta
             if { $deltaCorrection >= 0 } {
                set deltaDirection "n"
@@ -365,7 +361,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
                set deltaDirection "s"
             }
             ::camerathread::notify "mountInfo" $alphaDirection [expr abs($alphaCorrection)] $deltaDirection [expr abs($deltaCorrection)]
-   
+
             #--- je deplace le telescope
             if { $alphaCorrection != 0 || $deltaCorrection != 0 } {
                if { $private(mainThreadNo)==0 } {
@@ -399,5 +395,4 @@ proc ::camerathread::sophieAcquisitionLoop { } {
 
 #--- j'intialise les variables
 ::thread::copycommand $::camerathread::private(mainThreadNo) "::camerathread::guideSophie"
-
 

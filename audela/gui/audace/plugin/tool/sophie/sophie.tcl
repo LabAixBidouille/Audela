@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.26 2009-09-08 16:59:35 michelpujol Exp $
+# @version   $Id: sophie.tcl,v 1.27 2009-09-09 14:52:17 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -30,8 +30,6 @@
 # - Fabien Fillion : PC de supervision du T193
 #
 #------------------------------------------------------------
-
-
 
 ##------------------------------------------------------------
 # @brief   namespace principal de l'outil sophie
@@ -146,8 +144,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(sophie,biasFileName,2,fast)] }       { set ::conf(sophie,biasFileName,2,fast)       "0" }
    if { ! [ info exists ::conf(sophie,biasFileName,3,slow)] }       { set ::conf(sophie,biasFileName,3,slow)       "0" }
    if { ! [ info exists ::conf(sophie,biasFileName,3,fast)] }       { set ::conf(sophie,biasFileName,3,fast)       "0" }
-   if { ! [ info exists ::conf(sophie,correctionCumulNb)] }         { set ::conf(sophie,correctionCumulNb)         1 }
-   if { ! [ info exists ::conf(sophie,originSumNb)] }               { set ::conf(sophie,originSumNb)               1 }
+   if { ! [ info exists ::conf(sophie,originSumMinCounter)] }       { set ::conf(sophie,originSumMinCounter)       5 }
    if { ! [ info exists ::conf(sophie,guidingWindowSize)] }         { set ::conf(sophie,guidingWindowSize)         200 }
    if { ! [ info exists ::conf(sophie,centerWindowSize)] }          { set ::conf(sophie,centerWindowSize)          100 }
    if { ! [ info exists ::conf(sophie,imageDirectory)] }            { set ::conf(sophie,imageDirectory)            "$::audace(rep_images)" }
@@ -358,7 +355,6 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
          pack $frm.mode.findFiber -in [ $frm.mode getframe ] -anchor w \
             -expand 0 -fill x -side top
 
-
       pack $frm.mode -side top -fill x
 
       #--- Frame pour le zoom
@@ -504,7 +500,6 @@ proc ::sophie::startTool { visuNo } {
    #--- j'affiche la consigne sur l'image
    createOrigin $visuNo
 
-
    set catchError [ catch {
       #--- j'ouvre la liaison pour recevoir les commandes du PC Sophie
       ::sophie::spectro::openSocket
@@ -547,7 +542,6 @@ proc ::sophie::stopTool { visuNo } {
       #--- j'affiche et je trace le message d'erreur
       ::tkutil::displayErrorInfo $::caption(sophie,titre)
    }
-
 
    #--- je desactive l'adaptation de l'affichage quand on change de camera
    ::confVisu::removeCameraListener $visuNo "::sophie::adaptPanel $visuNo"
