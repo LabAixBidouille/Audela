@@ -2,7 +2,7 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.30 2009-09-08 16:59:35 michelpujol Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.31 2009-09-09 16:12:45 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -581,7 +581,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -text $::caption(sophie,courbes)
 
          #--- FWHM X
-         createGraph $frm.focalisation.courbes.graphFwhmX_simple 120
+         createGraph $visuNo $frm.focalisation.courbes.graphFwhmX_simple 120
          ###$frm.focalisation.courbes.graphFwhmX_simple axis configure y -min 0
          $frm.focalisation.courbes.graphFwhmX_simple element create xfwhm \
             -xdata ::sophieAbcisse -ydata ::sophieFwhmX \
@@ -596,7 +596,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             -row 0 -column 1 -sticky nsew
 
          #--- FWHM Y
-         createGraph $frm.focalisation.courbes.graphFwhmY_simple 120
+         createGraph $visuNo $frm.focalisation.courbes.graphFwhmY_simple 120
          ###$frm.focalisation.courbes.graphFwhmY_simple axis configure y -min 0
          $frm.focalisation.courbes.graphFwhmY_simple element create yfwhm \
             -xdata ::sophieAbcisse -ydata ::sophieFwhmY \
@@ -609,7 +609,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             -row 1 -column 1 -sticky nsew
 
          #--- Intensite maxi
-         createGraph $frm.focalisation.courbes.graphintensiteMax_simple 120
+         createGraph $visuNo $frm.focalisation.courbes.graphintensiteMax_simple 120
          ###$frm.focalisation.courbes.graphintensiteMax_simple axis configure y -min 0
          $frm.focalisation.courbes.graphintensiteMax_simple element create maxIntensity \
             -xdata ::sophieAbcisse -ydata ::sophieMaxIntensity \
@@ -668,7 +668,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          frame $frm.guidage.positionconsigne.correction -borderwidth 0 -relief ridge
 
             #--- Graphe de la erreur en alpha et delta
-            createGraph $frm.guidage.positionconsigne.correction.ecartConsigne_simple 105
+            createGraph $visuNo $frm.guidage.positionconsigne.correction.ecartConsigne_simple 105
             $frm.guidage.positionconsigne.correction.ecartConsigne_simple element create ecartConsigneX \
                -xdata ::sophieAbcisse -ydata ::sophieEcartConsigneX -mapy y \
                -color blue -dash "2" -linewidth 3 \
@@ -744,7 +744,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -text $::caption(sophie,ecartEtoile)
 
          #--- Graphe de la erreur en alpha et delta
-         createGraph $frm.guidage.ecarts.alpha_simple 105
+         createGraph $visuNo $frm.guidage.ecarts.alpha_simple 105
          $frm.guidage.ecarts.alpha_simple element create alphaDiff \
             -xdata ::sophieAbcisse -ydata ::sophieEcartEtoileX -mapy y \
             -color blue -dash "2" -linewidth 3 \
@@ -780,7 +780,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -text $::caption(sophie,correction)
 
          #--- Graphe de la correction en delta
-         createGraph $frm.guidage.corrections.delta_simple 105
+         createGraph $visuNo $frm.guidage.corrections.delta_simple 105
          $frm.guidage.corrections.delta_simple element create alphaCorrection \
             -xdata ::sophieAbcisse -ydata ::sophieCorrectionAlpha -mapy y \
             -color blue -dash "2" -linewidth 3 \
@@ -945,7 +945,7 @@ proc ::sophie::control::onScrollOrigin { visuNo args } {
 #    affichage de graphiques
 #
 #------------------------------------------------------------
-proc ::sophie::control::createGraph { graph height } {
+proc ::sophie::control::createGraph { visuNo graph height } {
    #--- je cree le graphique
    blt::graph $graph -plotbackground "$::color(white)"
    $graph crosshairs on
@@ -959,22 +959,12 @@ proc ::sophie::control::createGraph { graph height } {
    $graph configure -plotbackground "$::color(white)"
    $graph configure -leftmargin 50
 
-   bind $graph <Motion> "::sophie::control::onGraphMotion %W %x %y"
-}
-
-#------------------------------------------------------------
-# onGraphMotion
-#    affiche les coordonnees du curseur de la souris
-#    apres chaque deplacement de la souris dans le graphe
-#------------------------------------------------------------
-proc ::sophie::control::onGraphMotion { graph xScreen yScreen } {
-   set x [ $graph axis invtransform x $xScreen ]
-   set y [ $graph axis invtransform y $yScreen ]
-   set lx [ string length $x ]
-   if {$lx>8} { set x [ string range $x 0 7 ] }
-   set ly [ string length $y ]
-   if {$ly>8} { set y [ string range $y 0 7 ] }
-   $graph crosshairs configure -position @$xScreen,$yScreen
+   bind $graph <Motion>          "::sophie::control::onGraphMotion %W %x %y"
+   bind $graph <ButtonPress-1>   "::sophie::control::onGraphRegionStart $visuNo %W %x %y "
+   bind $graph <B1-Motion>       "::sophie::control::onGraphRegionMotion $visuNo %W %x %y"
+   bind $graph <ButtonRelease-1> "::sophie::control::onGraphRegionEnd $visuNo %W %x %y"
+   bind $graph <ButtonRelease-3> "::sophie::control::onGraphUnzoom $graph"
+   
 }
 
 ##------------------------------------------------------------
@@ -1604,5 +1594,139 @@ proc ::sophie::control::resetGuideVector {  } {
    if { [::sophieCorrectionDelta length] > 0 } {
       sophieCorrectionDelta delete 0:end
    }
+}
+
+#############################################################
+#  gestion du zoom des graphes
+#############################################################
+
+#------------------------------------------------------------
+# onGraphMotion
+#    affiche les coordonnees du curseur de la souris
+#    apres chaque deplacement de la souris dans le graphe
+#------------------------------------------------------------
+proc ::sophie::control::onGraphMotion { graph xScreen yScreen } {
+   set x [ $graph axis invtransform x $xScreen ]
+   set y [ $graph axis invtransform y $yScreen ]
+   set lx [ string length $x ]
+   if {$lx>8} { set x [ string range $x 0 7 ] }
+   set ly [ string length $y ]
+   if {$ly>8} { set y [ string range $y 0 7 ] }
+   $graph crosshairs configure -position @$xScreen,$yScreen
+}
+
+
+#------------------------------------------------------------
+# onGraphRegionStart
+#  demarre la selection d'une region du graphe avec la souris
+#
+# Parameters
+#    visuNo  numero de la fenetre
+#    graph   nom tk du graphe
+#    xScreen yScreen  coordoonnees ecran de la souris
+#  @return
+#    rien
+#------------------------------------------------------------
+proc ::sophie::control::onGraphRegionStart { visuNo graph x y } {
+   variable private
+
+   set x [$graph axis invtransform x $x]
+   set y [$graph axis invtransform y $y]
+   $graph marker create line -coords {} -name myLine \
+      -dashes dash -xor yes
+   set private($visuNo,regionStartX) $x
+   set private($visuNo,regionStartY) $y
+}
+
+#------------------------------------------------------------
+# onGraphRegionMotion
+#  modifie la selection d'une region du graphe avec la souris
+#
+# Parameters
+#    visuNo  numero de la fenetre
+#    graph   nom tk du graphe
+#    xScreen yScreen  coordoonnees ecran de la souris
+#  @return
+#     rien
+#------------------------------------------------------------
+proc ::sophie::control::onGraphRegionMotion { visuNo graph x y } {
+   variable private
+
+   if { [info exists private($visuNo,regionStartX)] } {
+      set x0 $private($visuNo,regionStartX)
+      set y0 $private($visuNo,regionStartY)
+      set x [$graph axis invtransform x $x]
+      set y [$graph axis invtransform y $y]
+      $graph marker configure myLine -coords \
+         "$x0 $y0 $x0 $y $x $y $x $y0 $x0 $y0"
+   }
+}
+
+#------------------------------------------------------------
+# onGraphRegionEnd
+#  termine la selection d'une region du graphe avec la souris
+#  et applique un zoom sur cette region
+
+# Parameters
+#    visuNo  numero de la fenetre
+#    graph   nom tk du graphe
+#    xScreen yScreen  coordoonnees ecran de la souris
+#  @return
+#     rien
+#------------------------------------------------------------
+proc ::sophie::control::onGraphRegionEnd { visuNo graph x y } {
+   variable private
+
+   if { [info exists private($visuNo,regionStartX)] } {
+      set x0 $private($visuNo,regionStartX)
+      set y0 $private($visuNo,regionStartY)
+      $graph marker delete myLine
+      set x [$graph axis invtransform x $x]
+      set y [$graph axis invtransform y $y]
+      onGraphZoom $visuNo $graph $x0 $y0 $x $y
+
+      unset private($visuNo,regionStartX)
+      unset private($visuNo,regionStartY)
+   }
+}
+
+#------------------------------------------------------------
+# onGraphZoom
+#  applique le zoom sur une region du graphe
+#
+# Parameters
+#    visuNo  numero de la fenetre
+#    graph   nom tk du graphe
+#  @return
+#     rien
+#------------------------------------------------------------
+proc ::sophie::control::onGraphZoom { visuNo graph x1 y1 x2 y2 } {
+   variable private
+
+   if { $x1 > $x2 } {
+      $graph axis configure x -min $x2 -max $x1
+   } elseif { $x1 < $x2 } {
+      $graph axis configure x -min $x1 -max $x2
+   }
+   if { $y1 > $y2 } {
+      $graph axis configure y -min $y2 -max $y1
+   } elseif { $y1 < $y2 } {
+      $graph axis configure y -min $y1 -max $y2
+   }
+}
+
+#------------------------------------------------------------
+# onGraphUnzoom
+#  supprime le zoom sur le graphe
+#
+# Parameters
+#    graph   nom tk du graphe
+#  @return
+#     rien
+#------------------------------------------------------------
+proc ::sophie::control::onGraphUnzoom { graph  } {
+   variable private
+
+   $graph axis configure x y -min {} -max {}
 }
 
