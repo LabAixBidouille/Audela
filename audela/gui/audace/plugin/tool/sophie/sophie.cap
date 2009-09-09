@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.28 2009-09-09 14:50:43 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.29 2009-09-09 16:44:00 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -158,7 +158,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,positionConsigne)      "Position consigne\n(pixel)"
    set caption(sophie,ecartEtoile)           "Ecart étoile/consigne\n(arcsec)"
    set caption(sophie,ecartConsigne)         "Ecart consigne/fibre\n(arcsec)"
-   set caption(sophie,positionConsigneImage) "Position de la consigne dans l'image"
+   set caption(sophie,positionConsigneImage) "Position de la consigne dans l'image (pixel)"
    set caption(sophie,increment)             "Incrément"
    set caption(sophie,objetconsigne)         "Position de l'objet par rapport à la consigne"
    set caption(sophie,photocentreObjet)      "Photocentre de l'objet"
@@ -177,6 +177,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,masque)                "Masque"
    set caption(sophie,imageIntegree)         "Image intégrée"
    set caption(sophie,imageInversee)         "Image inversée du trou"
+   set caption(sophie,compteur)              "Compteur des images :"
 
    set caption(sophie,simulation)            "Simulation"
    set caption(sophie,simulAcquisition)      "Simulation des acquisitions"
