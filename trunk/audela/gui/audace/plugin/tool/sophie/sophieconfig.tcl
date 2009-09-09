@@ -2,7 +2,7 @@
 # @file     sophieconfig.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieconfig.tcl,v 1.18 2009-09-08 19:06:43 robertdelmas Exp $
+# @version  $Id: sophieconfig.tcl,v 1.19 2009-09-09 14:53:37 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -107,8 +107,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
    set widget(binFocalisationDefaut) $::conf(sophie,focuseBinning)
    set widget(binGuidageDefaut)      $::conf(sophie,guideBinning)
    set widget(echelle)               $::conf(sophie,pixelScale)
-   set widget(nbPosesAvantCorrect)   $::conf(sophie,correctionCumulNb)
-   set widget(nbPosesAvantMaj)       $::conf(sophie,originSumNb)
+   set widget(nbPosesAvantMaj)       $::conf(sophie,originSumMinCounter)
    set widget(tailleFenetreGuidage)  $::conf(sophie,guidingWindowSize)
    set widget(tailleFenetreCentrage) $::conf(sophie,centerWindowSize)
    set widget(alphaProportionalGain) [expr $::conf(sophie,alphaProportionalGain) * 100.0]
@@ -209,15 +208,6 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -width 8 -justify center -editable 1 \
          -textvariable ::sophie::config::widget(echelle)
       grid $frm.guidage.entryechelle -in [ $frm.guidage getframe ] -row 0 -column 1 -sticky ens
-
-      #--- Nombre de poses avant la correction de guidage
-      label $frm.guidage.labelnbPosesAvantCorrect -text $::caption(sophie,nbPosesAvantCorrect)
-      grid $frm.guidage.labelnbPosesAvantCorrect -in [ $frm.guidage getframe ] -row 1 -column 0 -sticky w
-
-      Entry $frm.guidage.entrynbPosesAvantCorrect \
-         -width 8 -justify center -editable 1 \
-         -textvariable ::sophie::config::widget(nbPosesAvantCorrect)
-      grid $frm.guidage.entrynbPosesAvantCorrect -in [ $frm.guidage getframe ] -row 1 -column 1 -sticky ens
 
       #--- Nombre de poses avant la mise à jour de la consigne
       label $frm.guidage.labelnbPosesAvantMaj -text $::caption(sophie,nbPosesAvantMaj)
@@ -335,7 +325,6 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -command "::sophie::config::replaceOriginCoordinates $visuNo HE"
       grid $frm.fibre.replaceOriginHE -in [ $frm.fibre getframe ] -row 2 -column 3 -sticky ens  -padx 2
 
-
       #--- Fibre B
       label $frm.fibre.labelfibreB -text $::caption(sophie,fibreB)
       grid $frm.fibre.labelfibreB -in [ $frm.fibre getframe ] -row 3 -column 0 -sticky w
@@ -349,7 +338,6 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -width 8 -justify center -editable 1 \
          -textvariable ::sophie::config::widget(yfibreB)
       grid $frm.fibre.spinboxyfibreB -in [ $frm.fibre getframe ] -row 3 -column 2 -sticky ens
-
 
       #--- Mode d'entree de la fibre A
       ###label $frm.fibre.labelfiberGuigindMode -text $::caption(sophie,fiberGuigindMode)
@@ -552,7 +540,7 @@ proc ::sophie::config::fillAlgorithmePage { frm visuNo } {
       #--- Precision du centrage
       label $frm.paraPrecisionCentrage.labelprecisionCentrage -text $::caption(sophie,precisionCentrage)
       grid $frm.paraPrecisionCentrage.labelprecisionCentrage -in [ $frm.paraPrecisionCentrage getframe ] \
-         -row 0 -column 1 -sticky w
+        -row 0 -column 1 -sticky w
 
       Entry $frm.paraPrecisionCentrage.entryprecisionCentrage \
          -width 8 -justify center -editable 1 \
@@ -561,6 +549,17 @@ proc ::sophie::config::fillAlgorithmePage { frm visuNo } {
          -row 0 -column 2 -sticky ens
 
    pack $frm.paraPrecisionCentrage -side top -anchor w -fill x -expand 0
+
+   #--- Frame pour le bouton de lancement des simulations
+   TitleFrame $frm.simulation -borderwidth 2 -relief ridge \
+      -text $::caption(sophie,simulation)
+
+      #--- Bouton de lancement des simulations
+      button $frm.simulation.but -text $::caption(sophie,simulation) -relief raised \
+         -command "::sophie::simul"
+      grid $frm.simulation.but -in [ $frm.simulation getframe ] -row 0 -column 1 -sticky e -padx 2
+
+   pack $frm.simulation -side bottom -anchor w -fill x -expand 0
 }
 
 #------------------------------------------------------------
@@ -580,7 +579,6 @@ proc ::sophie::config::fillCallibrationPage { frm visuNo } {
 proc ::sophie::config::apply { visuNo } {
    variable widget
 
-
    #--- je controle les valeurs saisies
    ### à compléter ...
 
@@ -590,8 +588,7 @@ proc ::sophie::config::apply { visuNo } {
    set ::conf(sophie,focuseBinning)         $widget(binFocalisationDefaut)
    set ::conf(sophie,guideBinning)          $widget(binGuidageDefaut)
    set ::conf(sophie,pixelScale)            $widget(echelle)
-   set ::conf(sophie,correctionCumulNb)     $widget(nbPosesAvantCorrect)
-   set ::conf(sophie,originSumNb)           $widget(nbPosesAvantMaj)
+   set ::conf(sophie,originSumMinCounter)   $widget(nbPosesAvantMaj)
    set ::conf(sophie,guidingWindowSize)     $widget(tailleFenetreGuidage)
    set ::conf(sophie,centerWindowSize)      $widget(tailleFenetreCentrage)
    set ::conf(sophie,alphaProportionalGain) [expr double($widget(alphaProportionalGain)) / 100.0]
@@ -616,12 +613,14 @@ proc ::sophie::config::apply { visuNo } {
    set ::conf(sophie,biasFileName,3,fast)    $widget(biasFileName,3,fast)
 
    #--- je communique les nouveaux parametres au thread de la camera
+   set ::sophie::private(AsynchroneParameter) 1
    ::camera::setAsynchroneParameter $::sophie::private(camItem)\
          "alphaProportionalGain"    $::conf(sophie,alphaProportionalGain) \
          "deltaProportionalGain"    $::conf(sophie,deltaProportionalGain) \
          "alphaIntegralGain"        $::conf(sophie,alphaIntegralGain) \
          "deltaIntegralGain"        $::conf(sophie,deltaIntegralGain) \
-         "originSumNb"              $::conf(sophie,originSumNb)
+         "originSumMinCounter"      $::conf(sophie,originSumMinCounter) \
+         "originSumCounter"         0
 
    #---  je re-positionne la consigne
    ::sophie::setGuidingMode $visuNo
@@ -741,6 +740,4 @@ proc ::sophie::config::replaceOriginCoordinates { visuNo positionType } {
       }
    }
 }
-
-
 
