@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.109 2009-09-07 20:06:20 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.110 2009-09-09 14:50:04 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -300,7 +300,7 @@ namespace eval ::confVisu {
                set fileName [split $fileName ";"]
                set hduNo    [lindex $fileName 1]
                set fileName [lindex $fileName 0]
-            } else  {
+            } else {
                set hduNo 1
             }
             if { $fileName != [getFileName $visuNo] } {
@@ -416,7 +416,6 @@ namespace eval ::confVisu {
             set private($visuNo,fitsHduList) ""
             ::confVisu::setFileName $visuNo "?"
          }
-
 
          #--- je determine le mode d'affichage en focntion du type d'image
          #---  si type=image2D alors  mode=image
@@ -865,7 +864,7 @@ namespace eval ::confVisu {
       #--- je modifie le zoom si une nouvelle valeur est donnee en parametre
       if { $zoom == "" } {
          #--- rien a faire, on prend la valeur de private($visuNo,zoom)
-      } elseif { $zoom==.125 || $zoom==.25 || $zoom==.5 || $zoom==1 || $zoom==2 || $zoom==4 } {
+      } elseif { $zoom==.125 || $zoom==.25 || $zoom==.5 || $zoom==1 || $zoom==2 || $zoom==4 || $zoom==8 } {
          set private($visuNo,zoom) $zoom
       } else {
          ::console::affiche_erreur "confVisu::setZoom error : zoom $zoom not authorized\n"
@@ -1723,7 +1722,7 @@ namespace eval ::confVisu {
       $private($visuNo,hCanvas) bind display <B1-Motion>       "::confVisu::onMotionButton1 $visuNo %x %y"
       $private($visuNo,hCanvas) bind display <Motion>          "::confVisu::onMotionMouse $visuNo %x %y"
       $private($visuNo,hCanvas) bind display <Button-3>        "::confVisu::showPopupMenu $visuNo %X %Y"
-      
+
       #--- bind pour l'ouverture de la boite de configuration des cameras
       bind $This.fra1.labCam_labURL <ButtonPress-1> {
          ::confCam::run
@@ -1809,7 +1808,7 @@ namespace eval ::confVisu {
       if { "$command" == "default" } {
          bind $private($visuNo,hCanvas) $sequence   ""
       }  else {
-         bind $private($visuNo,hCanvas) $sequence $command        
+         bind $private($visuNo,hCanvas) $sequence $command
       }
    }
 
@@ -1826,17 +1825,17 @@ namespace eval ::confVisu {
       variable private
 
       set commandList [split [$private($visuNo,hCanvas) bind display $sequence ] "\n"]
-      set commandList [linsert $commandList 0 $command]      
-      $private($visuNo,hCanvas) bind display $sequence [join $commandList "\n"]      
+      set commandList [linsert $commandList 0 $command]
+      $private($visuNo,hCanvas) bind display $sequence [join $commandList "\n"]
    }
-   
+
    #------------------------------------------------------------
    #  removeBindDisplay
    #     supprime une commande de l'item "display" du canvas
    #
    #  @param   visuNo : numero de la visu
    #  @param   sequence : evenement associe
-   #  @param   command  : command a supprimer 
+   #  @param   command  : command a supprimer
    #  @return  rien
    #------------------------------------------------------------
    proc removeBindDisplay { visuNo sequence command } {
@@ -1845,11 +1844,11 @@ namespace eval ::confVisu {
       set commandList [split [$private($visuNo,hCanvas) bind display $sequence ] "\n"]
       set commandIndex [lsearch $commandList $command]
       if { $commandIndex != -1 } {
-         set commandList [lreplace $commandList $commandIndex $commandIndex]  
-         $private($visuNo,hCanvas) bind display $sequence [join $commandList "\n"]      
+         set commandList [lreplace $commandList $commandIndex $commandIndex]
+         $private($visuNo,hCanvas) bind display $sequence [join $commandList "\n"]
       }
    }
-   
+
    proc createMenu { visuNo } {
       variable private
       global audace caption conf panneau
