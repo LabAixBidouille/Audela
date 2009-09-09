@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.26 2009-09-08 16:36:51 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.27 2009-09-09 08:45:05 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -64,11 +64,11 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(sophie,parametreConfig)       "Configuration générale"
   ### set caption(sophie,parametreAcquisition)  "Paramètres d'acquisition"
-   set caption(sophie,parametreAcquisition)  "Binnings par défaut des modes"
+   set caption(sophie,parametreAcquisition)  "Binnings des modes"
    set caption(sophie,poseDefaut)            "Pose par défaut (sec.)"
-   set caption(sophie,binningCentrage)       "Binning par défaut du mode centrage"
-   set caption(sophie,binningFocalisation)   "Binning par défaut du mode focalisation"
-   set caption(sophie,binningGuidage)        "Binning par défaut du mode guidage"
+   set caption(sophie,binningCentrage)       "Binning du mode centrage"
+   set caption(sophie,binningFocalisation)   "Binning du mode focalisation"
+   set caption(sophie,binningGuidage)        "Binning du mode guidage"
    set caption(sophie,parametreGuidage)      "Paramètres de guidage"
    set caption(sophie,echelle)               "Echelle (arcsec/pixel)"
    set caption(sophie,nbPosesAvantCorrect)   "Nombre de poses avant la correction de guidage"
