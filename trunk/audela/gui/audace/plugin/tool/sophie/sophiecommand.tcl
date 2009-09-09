@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.30 2009-09-08 16:59:35 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.31 2009-09-09 08:46:51 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -444,7 +444,7 @@ proc ::sophie::setMode { { mode "" } } {
    variable private
 
    #--- je desactive le mode precedent
-   $private(frm).mode.centrageStart configure -state disabled   
+   $private(frm).mode.centrageStart configure -state disabled
 
    #--- je mets a jour la variable
    if { $mode != "" } {
@@ -454,8 +454,8 @@ proc ::sophie::setMode { { mode "" } } {
    switch $private(mode) {
       "CENTER" {
          #--- j'arrete le guidage
-         if { $private(guideEnabled) == 1 } { 
-            stopGuide 
+         if { $private(guideEnabled) == 1 } {
+            stopGuide
          }
          #--- j'autorise le bouton de centrage
          $private(frm).mode.centrageStart configure -state normal
@@ -469,7 +469,7 @@ proc ::sophie::setMode { { mode "" } } {
          #--- je mets le thread de la camera en mode centrage et je desactive la detection de la fibre
          ::camera::setAsynchroneParameter $private(camItem) \
             "mode" "CENTER" \
-            "findFiber" $private(findFiber)          
+            "findFiber" $private(findFiber)
          #--- je change le binning et je supprime le fentrage
          setBinningAndWindow $::conf(sophie,centerBinning) "full"
          #--- je change le zoom
@@ -477,12 +477,12 @@ proc ::sophie::setMode { { mode "" } } {
       }
       "FOCUS" {
          #--- j'arrete le centrage
-         if { $private(centerEnabled) == 1 } { 
-            stopCenter 
+         if { $private(centerEnabled) == 1 } {
+            stopCenter
          }
          #--- j'arrete le guidage
-         if { $private(guideEnabled) == 1 } { 
-            stopGuide 
+         if { $private(guideEnabled) == 1 } {
+            stopGuide
          }
          #--- j'interdis le bouton de centrage
          $private(frm).mode.centrageStart  configure -state disabled
@@ -496,7 +496,7 @@ proc ::sophie::setMode { { mode "" } } {
          #--- je mets le thread de la camera en mode centrage et je desactive la detection de la fibre
          ::camera::setAsynchroneParameter $private(camItem) \
             "mode" "CENTER" \
-            "findFiber" $private(findFiber)        
+            "findFiber" $private(findFiber)
          #--- je change le binning et je cree une fenetre centree sur l'étoile
          setBinningAndWindow $::conf(sophie,focuseBinning) $private(targetBoxSize) $private(targetCoord)
          #--- j'applique le zoom 4
@@ -504,8 +504,8 @@ proc ::sophie::setMode { { mode "" } } {
       }
       "GUIDE" {
          #--- j'arrete le centrage
-         if { $private(centerEnabled) == 1 } { 
-            stopCenter 
+         if { $private(centerEnabled) == 1 } {
+            stopCenter
          }
          #--- j'interdis le bouton de centrage
          $private(frm).mode.centrageStart  configure -state disabled
@@ -522,7 +522,7 @@ proc ::sophie::setMode { { mode "" } } {
          } else {
             $private(frm).mode.findFiber  configure -state disabled
             set private(findFiber) 0
-         }            
+         }
 
          buf$private(maskBufNo)  clear
          buf$private(sumBufNo)   clear
@@ -533,7 +533,7 @@ proc ::sophie::setMode { { mode "" } } {
          #--- je mets le thread de la camera en mode centrage
          ::camera::setAsynchroneParameter $private(camItem) \
             "mode" "GUIDE" \
-            "findFiber" $private(findFiber)         
+            "findFiber" $private(findFiber)
          #--- je change le binning et je cree une fenetre centree sur la consigne
          setBinningAndWindow $::conf(sophie,guideBinning) $::conf(sophie,guidingWindowSize) $private(originCoord)
          #--- je change le zoom
@@ -549,7 +549,7 @@ proc ::sophie::setMode { { mode "" } } {
 # setGuidingMode
 #    change la position de la consigne en fonction de la variable ::conf(sophie,guidingMode)
 #    met à jour l'affichage de la fentre de controle
-#    et met à jour le thread de la camera si l'acquisition est en cours 
+#    et met à jour le thread de la camera si l'acquisition est en cours
 # @param  ::sophie::private(originCoord)
 #------------------------------------------------------------
 proc ::sophie::setGuidingMode { visuNo } {
@@ -559,25 +559,25 @@ proc ::sophie::setGuidingMode { visuNo } {
    switch $::conf(sophie,guidingMode) {
       "FIBER_HR" {
          set private(originCoord)  [list $::conf(sophie,fiberHRX) $::conf(sophie,fiberHRY)]
-         if { $private(mode) == "GUIDE" } {               
-            #--- j'affiche le choix de la detection de la fibre 
+         if { $private(mode) == "GUIDE" } {
+            #--- j'affiche le choix de la detection de la fibre
             $frm.mode.findFiber configure -state normal
          } else {
             $private(frm).mode.findFiber  configure -state disabled
             set private(findFiber) 0
-         }            
+         }
          #--- je positionne la consigne sur la fibre
          ::sophie::createOrigin $visuNo
       }
       "FIBER_HE" {
          set private(originCoord)  [list $::conf(sophie,fiberHEX) $::conf(sophie,fiberHEY)]
-         if { $private(mode) == "GUIDE" } {               
-            #--- j'affiche le choix de la detection de la fibre 
+         if { $private(mode) == "GUIDE" } {
+            #--- j'affiche le choix de la detection de la fibre
             $frm.mode.findFiber configure -state normal
          } else {
             $private(frm).mode.findFiber  configure -state disabled
             set private(findFiber) 0
-         }            
+         }
          #--- je positionne la consigne sur la fibre
          ::sophie::createOrigin $visuNo
       }
@@ -753,7 +753,7 @@ proc ::sophie::updateFilterPercent { } {
 # initFilter
 #  demarrage un mouvement "-" de l'attenuateur pour initialiser
 #  la position des attenuateurs sur l'extremitee MIN
-#  la duree de recherche est limitee à 1.5 *  private(filterMaxDelay)
+#  la duree de recherche est limitee à 1.5 * private(filterMaxDelay)
 # @return rien
 #------------------------------------------------------------
 proc ::sophie::initFilter {  } {
@@ -763,17 +763,17 @@ proc ::sophie::initFilter {  } {
    if { [ ::tel::list ] != "" && [ tel$::audace(telNo) name ] == "T193" } {
       set private(filterMaxDelay)       [ tel$::audace(telNo) filter max ]
       set private(filterCurrentPercent) [ tel$::audace(telNo) filter coord ]
-      set private(filterDirection)    "-"
+      set private(filterDirection)      "-"
       #--- j'active les boutons de commande du filtre attenuateur pendant las
       $private(frm).attenuateur.butMin configure -state disabled
       $private(frm).attenuateur.butMax configure -state disabled
-      bind $private(frm).attenuateur.butMin <ButtonPress-1>  ""
+      bind $private(frm).attenuateur.butMin <ButtonPress-1>   ""
       bind $private(frm).attenuateur.butMin <ButtonRelease-1> ""
       bind $private(frm).attenuateur.butMax <ButtonPress-1>   ""
-      bind $private(frm).attenuateur.butMax <ButtonRelease-1>   ""
+      bind $private(frm).attenuateur.butMax <ButtonRelease-1> ""
       #--- je demarre le deplacement
       tel$::audace(telNo) filter move $private(filterDirection)
-      set private(initFilterDuration) [expr $private(filterMaxDelay) * 1.5  ]
+      set private(initFilterDuration) [expr $private(filterMaxDelay) * 1.5 ]
       after 0 ::sophie::initFilterLoop
    }
 }
@@ -1084,7 +1084,7 @@ proc ::sophie::createOrigin { visuNo } {
    set x [ expr ( double([lindex $private(originCoord) 0]) - $private(xWindow) + 1 ) / $private(xBinning)  ]
    set y [ expr ( double([lindex $private(originCoord) 1]) - $private(yWindow) + 1 ) / $private(yBinning)  ]
 
-   
+
     ###switch $::conf(sophie,guidingMode) {
     ###   "OBJECT" {
     ###      set activewidth 4
@@ -1322,11 +1322,11 @@ proc ::sophie::onMouseReleaseButton1 { visuNo w x y } {
          set y [expr [lindex $coord 1] * $private(yBinning) + $private(yWindow) -1 ]
          #--- je met a jour la position courante de la consigne
          set private(originCoord) [list $x $y]
-         #--- je met a jour la consigne "OBJET" si on est en mode OBJET 
-         if { $::conf(sophie,guidingMode) == "OBJECT" } { 
+         #--- je met a jour la consigne "OBJET" si on est en mode OBJET
+         if { $::conf(sophie,guidingMode) == "OBJECT" } {
             set ::conf(sophie,objectCoord) $private(originCoord)
-         } 
-          
+         }
+
          #--- je mets a jour la fenetre de controle
          ::sophie::control::setOriginCoords [lindex $private(originCoord) 0] [lindex $private(originCoord) 1]
          #--- je mets a jour le thread de la camera
