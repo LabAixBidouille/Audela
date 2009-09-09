@@ -2,7 +2,7 @@
 # @file     sophieview.tcl
 # @brief    Fichier du namespace ::sophie::view
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieview.tcl,v 1.11 2009-08-30 22:00:54 michelpujol Exp $
+# @version  $Id: sophieview.tcl,v 1.12 2009-09-09 16:45:07 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -46,6 +46,8 @@ proc ::sophie::view::createPluginInstance { { in "" } { visuNo 1 } } {
 
    set private(bufferName,$visuNo)    "maskBufNo"
 
+   set private(valeurCompteur)        ""
+
    #--- Petit raccourci
    set private(frm) "$in.sophieview"
    set frm $private(frm)
@@ -79,6 +81,19 @@ proc ::sophie::view::createPluginInstance { { in "" } { visuNo 1 } } {
          pack $frm.select.fiber -side top -anchor w -ipady 2 -padx 2 -pady 2
 
       pack $frm.select -side top -fill x
+
+      #--- Frame du titre et du compteur d'images integrees
+      frame $frm.compteur -borderwidth 2 -relief groove
+
+         #--- Label du compteur
+         label $frm.compteur.label -text "$::caption(sophie,compteur)"
+         pack $frm.compteur.label -side left -anchor w -ipady 2 -padx 5 -pady 2
+
+         #--- Label de la valeur du compteur
+         label $frm.compteur.valeurCompteur -textvariable ::sophie::view::private(valeurCompteur)
+         pack $frm.compteur.valeurCompteur -side left -anchor w -ipady 2 -pady 2
+
+      pack $frm.compteur -side top -fill x
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $frm
@@ -169,8 +184,10 @@ proc ::sophie::view::setBuffer { visuNo { bufferName "" } } {
 #------------------------------------------------------------
 proc ::sophie::view::refresh { visuNo args } {
    variable private
+
    if { [winfo exists $private(frm) ] } {
       ::confVisu::autovisu $visuNo
+      set private(valeurCompteur) [ lindex [ buf[::sophie::getBufNo $private(bufferName,$visuNo)] getkwd SUM_COUNT ] 1 ]
    }
 }
 
