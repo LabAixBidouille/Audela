@@ -2,7 +2,7 @@
 # @file     sophiespectro.tcl
 # @brief    fichier du namespace ::sophie::spectro
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiespectro.tcl,v 1.4 2009-08-30 21:58:50 michelpujol Exp $
+# @version  $Id: sophiespectro.tcl,v 1.5 2009-09-09 15:45:37 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -107,6 +107,14 @@ proc ::sophie::spectro::readSocket { channel } {
             ::sophie::spectro::resetStatistics
          }
          "!STAT_ON@" {
+            #--- j'initialise l'image integree 
+            set private(AsynchroneParameter) 1
+            set camItem [::confVisu::getCamItem [::sophie::getVisuNo]]
+            if { $camItem != "" } {
+               ::camera::setAsynchroneParameter  $camItem \
+                  "originSumCounter"         0 
+            }
+            #--- j'initialise les statistique
             ::sophie::spectro::startStatistics
          }
          "!STAT_OFF@" {
