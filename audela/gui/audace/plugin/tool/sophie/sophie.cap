@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.27 2009-09-09 08:45:05 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.28 2009-09-09 14:50:43 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -71,7 +71,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,binningGuidage)        "Binning du mode guidage"
    set caption(sophie,parametreGuidage)      "Paramètres de guidage"
    set caption(sophie,echelle)               "Echelle (arcsec/pixel)"
-   set caption(sophie,nbPosesAvantCorrect)   "Nombre de poses avant la correction de guidage"
    set caption(sophie,nbPosesAvantMaj)       "Nombre de poses avant la mise à jour de la consigne"
    set caption(sophie,tailleFenetreGuidage)  "Taille fenêtre de guidage (pixel en binning 1x1)"
    set caption(sophie,tailleFenetreCentrage) "Taille fenêtre de centrage (pixel en binning 1x1)"
