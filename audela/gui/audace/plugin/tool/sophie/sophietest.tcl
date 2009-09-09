@@ -2,7 +2,7 @@
 # @file     sophietest.tcl
 # @brief    Fichier du namespace ::sophie::test
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietest.tcl,v 1.14 2009-09-09 14:53:58 robertdelmas Exp $
+# @version  $Id: sophietest.tcl,v 1.15 2009-09-09 21:46:34 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -362,6 +362,12 @@ proc ::sophie::test::createDialogSimul { } {
    set private(host) "localhost"
    set private(socketChannel) ""
    set private(frm) $::audace(base).configSimul
+   
+   set private(sendPulse,enabled) "0"
+   set private(sendPulse,pulseDelay) "0.05"
+   set private(sendPulse,waitDelay)  "2"
+   set private(sendPulse,direction)  "w"
+      
 
    set frm $private(frm)
    if { [ winfo exists $frm ] } {
@@ -420,7 +426,7 @@ proc ::sophie::test::createDialogSimul { } {
 
    pack $frm.simulAcquisition -side top -fill both -expand 1
 
-   #--- Frame pour le mode de fonctionnement
+   #--- Frame pour l'interface avec le PC Sophie
    TitleFrame $frm.pcsophie -borderwidth 2 -relief groove -text $::caption(sophie,simulPCSophie)
 
       #--- host
@@ -447,6 +453,35 @@ proc ::sophie::test::createDialogSimul { } {
       grid $frm.pcsophie.getstat -in [ $frm.pcsophie getframe ] -row 3 -column 3 -sticky ens -padx 2
 
    pack $frm.pcsophie -in $frm -side top -fill both -expand 1
+
+   #--- Frame pour le test d'impulsion vers le telescope 
+   TitleFrame $frm.pulse -borderwidth 2 -relief groove -text "test impulsions telescope"
+
+      #--- durée impulsion 
+      label $frm.pulse.labelPulseDelay -text "Durée impulsion (seconde)"
+      grid $frm.pulse.labelPulseDelay -in [ $frm.pulse getframe ] -row 0 -column 0 -sticky ens -padx 2
+      entry $frm.pulse.entryPulseDelay -textvariable ::sophie::test::private(sendPulse,pulseDelay)
+      grid $frm.pulse.entryPulseDelay -in [ $frm.pulse getframe ] -row 0 -column 1 -sticky ens -padx 2
+
+      #--- durée attente
+      label $frm.pulse.labelWaitDelay -text "durée entre 2 impulsions (seconde)"
+      grid $frm.pulse.labelWaitDelay -in [ $frm.pulse getframe ] -row 1 -column 0 -sticky ens -padx 2
+      entry $frm.pulse.entryWaitPulse -textvariable ::sophie::test::private(sendPulse,waitDelay)
+      grid $frm.pulse.entryWaitPulse -in [ $frm.pulse getframe ] -row 1 -column 1 -sticky ens -padx 2
+
+       #--- direction 
+      label $frm.pulse.labelDirection -text "Direction"
+      grid $frm.pulse.labelDirection -in [ $frm.pulse getframe ] -row 2 -column 0 -sticky ens -padx 2
+      entry $frm.pulse.entryDirection -textvariable ::sophie::test::private(sendPulse,direction)
+      grid $frm.pulse.entryDirection -in [ $frm.pulse getframe ] -row 2 -column 1 -sticky ens -padx 2
+
+      #--- Bouton connect et disconnect
+      button $frm.pulse.start -text "start" -command "after 10 ::sophie::test::startPulse"
+      grid $frm.pulse.start -in [ $frm.pulse getframe ] -row 3 -column 0 -sticky ens -padx 2
+      button $frm.pulse.stop -text "stop" -command "::sophie::test::stopPulse"
+      grid $frm.pulse.stop -in [ $frm.pulse getframe ] -row 3 -column 1 -sticky ens -padx 2
+
+   pack $frm.pulse -in $frm -side top -fill both -expand 1
 
    #--- Frame pour les boutons
    frame $frm.frameButton -borderwidth 1 -relief raised
@@ -555,6 +590,41 @@ proc ::sophie::test::sendPcGuidage { commandName } {
    }
 
 }
+
+
+#============================================================
+#
+# test impulsion telescope 
+#  source audace/plugin/tool/sophie/sophietest.tcl
+#============================================================
+
+proc ::sophie::test::startPulse { } {
+   variable private
+   
+   set private(sendPulse,enabled) 1
+   ::sophie::test::sendPulse      
+}
+
+proc ::sophie::test::stopPulse { } {
+   variable private
+   
+   set private(sendPulse,enabled) 0
+}
+
+proc ::sophie::test::sendPulse { } {
+   variable private
+   
+   set trace [tel1 radec move $private(sendPulse,direction) 0.1 $private(sendPulse,pulseDelay)]
+   console::disp "radec move $private(sendPulse,direction) $private(sendPulse,pulseDelay) trace=$trace\n"
+
+   if { $private(sendPulse,enabled) == 1 } {
+      after [expr int($private(sendPulse,waitDelay) * 1000) ] ::sophie::test::sendPulse
+   } else {
+      ::console::disp "Fin pulse\n"
+   }
+}
+
+
 
 ###### Fin de la fenetre de configuration de la simulation ######
 
