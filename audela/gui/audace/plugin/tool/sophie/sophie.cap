@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.29 2009-09-09 16:44:00 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.30 2009-09-10 18:56:24 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -72,8 +72,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,parametreGuidage)      "Paramètres de guidage"
    set caption(sophie,echelle)               "Echelle (arcsec/pixel)"
    set caption(sophie,nbPosesAvantMaj)       "Nombre de poses avant la mise à jour de la consigne"
-   set caption(sophie,tailleFenetreGuidage)  "Taille fenêtre de guidage (pixel en binning 1x1)"
-   set caption(sophie,tailleFenetreCentrage) "Taille fenêtre de centrage (pixel en binning 1x1)"
+   set caption(sophie,tailleFenetreGuidage)  "Taille de la fenêtre de guidage (pixel en binning 1x1)"
+   set caption(sophie,tailleFenetreCentrage) "Taille de la fenêtre de centrage et de focalisation (pixel en binning 1x1)"
    set caption(sophie,gainProportionnel)     "Gain proportionnel (%)"
    set caption(sophie,gainIntegrateur)       "Gain intégrateur (%)"
    set caption(sophie,alpha)                 "alpha"
@@ -111,7 +111,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,parametreAlgo)         "Configuration de l'algorithme"
 
    set caption(sophie,paraMasque)            "Paramètres du masque"
-   set caption(sophie,diametreMasque)        "Diamètre du masque (pixel)"
+   set caption(sophie,diametreMasque)        "Rayon du masque (pixel)"
    set caption(sophie,largeurGaussMasque)    "FWHM seeing (pixel)"
    set caption(sophie,seuilMini)             "Seuil de qualité (nombre de pixels)"
    set caption(sophie,paraPrecisionCentrage) "Paramètre de la précision du centrage"
@@ -150,7 +150,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,consigne)              "Consigne"
    set caption(sophie,consigneFibreHR)       "Consigne automatique\nsur la fibre A HR"
    set caption(sophie,consigneFibreHE)       "Consigne automatique\nsur la fibre A HE"
-   set caption(sophie,consigneObjet)         "Consigne manuelle"
+   set caption(sophie,consigneObjet)         "Consigne manuelle\nsur l'objet"
    set caption(sophie,activationGuidage)     "Activer le guidage"
    set caption(sophie,findFiber)             "Détecter le trou"
    set caption(sophie,correction)            "Correction télescope\n(arcsec)"
@@ -193,6 +193,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,selcam)                "Vous devez d'abord sélectionner une caméra\n(menu Configuration/Caméra)."
    set caption(sophie,seltel)                "Vous devez d'abord sélectionner une monture\n(menu Configuration/Monture)."
    set caption(sophie,noAcquisition)         "L'acquisition continue n'est pas lancée."
+
+   set caption(sophie,ouvsess)               "----- Ouverture d'une session de guidage Sophie (version %s)\n"
+   set caption(sophie,affheure)              "%s, %s TU (toutes les heures de ce fichier sont en TU).\n\n"
+   set caption(sophie,finsess)               "----- Fin de session à %s TU\n\n"
+   set caption(sophie,pb)                    "Problème"
+   set caption(sophie,pbouvfichcons)         "Problème durant l'ouverture du fichier log.\n"
+   set caption(sophie,pbouvfich)             "Impossible d'ouvrir le fichier \
+      log.\nChangez immédiatement d'outil, puis vérifiez\nque \
+      le répertoire des images est accessible."
+   set caption(sophie,pbfermfichcons)        "Problème durant la fermeture du fichier log.\n"
+   set caption(sophie,pbmesserr)             "Problème de message d'erreur."
+   set caption(sophie,enrim)                 "A %s TU, enregistrement de l'image %s.\n"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
