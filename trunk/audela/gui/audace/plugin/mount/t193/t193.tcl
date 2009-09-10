@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.10 2009-06-10 18:31:53 michelpujol Exp $
+# Mise a jour $Id: t193.tcl,v 1.11 2009-09-10 18:57:53 robertdelmas Exp $
 #
 
 namespace eval ::t193 {
@@ -88,6 +88,7 @@ proc ::t193::initPlugin { } {
    #--- configuration de la monture du T193 de l'OHP
    if { ! [ info exists conf(t193,portSerie) ] }           { set conf(t193,portSerie)           [ lindex $list_connexion 0 ] }
    if { ! [ info exists conf(t193,nomCarte) ] }            { set conf(t193,nomCarte)            "Dev1" }
+   if { ! [ info exists conf(t193,minDelay) ] }            { set conf(t193,minDelay)            "10" }
    if { ! [ info exists conf(t193,nomPortTelescope) ] }    { set conf(t193,nomPortTelescope)    "port0" }
    if { ! [ info exists conf(t193,nomPortAttenuateur) ] }  { set conf(t193,nomPortAttenuateur)  "port1" }
    #--- vitesses de guidage en arcseconde de degre par seconde de temps
@@ -114,6 +115,7 @@ proc ::t193::confToWidget { } {
    #--- Recupere la configuration de la monture du T193 de l'OHP dans le tableau private(...)
    set private(portSerie)           $conf(t193,portSerie)
    set private(nomCarte)            $conf(t193,nomCarte)
+   set private(minDelay)            $conf(t193,minDelay)
    set private(nomPortTelescope)    $conf(t193,nomPortTelescope)
    set private(nomPortAttenuateur)  $conf(t193,nomPortAttenuateur)
    set private(dureeMaxAttenuateur) $conf(t193,dureeMaxAttenuateur)
@@ -133,6 +135,7 @@ proc ::t193::widgetToConf { } {
    #--- Memorise la configuration de la monture du T193 de l'OHP dans le tableau conf(t193,...)
    set conf(t193,portSerie)           $private(portSerie)
    set conf(t193,nomCarte)            $private(nomCarte)
+   set conf(t193,minDelay)            $private(minDelay)
    set conf(t193,nomPortTelescope)    $private(nomPortTelescope)
    set conf(t193,nomPortAttenuateur)  $private(nomPortAttenuateur)
    set conf(t193,dureeMaxAttenuateur) $private(dureeMaxAttenuateur)
@@ -218,22 +221,30 @@ proc ::t193::fillConfigPage { frm } {
 
    #--- Definition du nom de la carte USB-6501 et de son port
    label $frm.lab2 -text "$caption(t193,nom_carte)"
-   pack $frm.lab2 -in $frm.frame4 -anchor n -side left -padx 10 -pady 10
+   pack $frm.lab2 -in $frm.frame4 -anchor n -side left -padx 10 -pady 5
 
-   #--- Entry du du nom de la carte USB-6501 et de son port
+   #--- Entry du nom de la carte USB-6501 et de son port
    entry $frm.nomCarte -textvariable ::t193::private(nomCarte) -width 15 -justify left
-   pack $frm.nomCarte -in $frm.frame4 -anchor n -side left -padx 10 -pady 10
+   pack $frm.nomCarte -in $frm.frame4 -anchor n -side left -padx 10 -pady 5
+
+   #--- Definition de la longueur de l'impulsion minimale
+   label $frm.lab3 -text "$caption(t193,minDelay)"
+   pack $frm.lab3 -in $frm.frame5 -anchor n -side left -padx 10 -pady 5
+
+   #--- Entry de la longueur de l'impulsion minimale
+   entry $frm.minDelay -textvariable ::t193::private(minDelay) -width 5 -justify left
+   pack $frm.minDelay -in $frm.frame5 -anchor n -side left -padx 10 -pady 5
 
    #--- frame des vitesses
    frame $frm.frame3.speed -borderwidth 0
       #--- Vitesse de rappel alpha
-      label $frm.frame3.speed.labelAlpha -text "Vitesse de rappel alpha (arcsec/sec)"
+      label $frm.frame3.speed.labelAlpha -text "$caption(t193,rappelAlpha)"
       entry $frm.frame3.speed.entryAlpha -textvariable ::t193::private(alphaGuidingSpeed) -width 5 -justify right
       grid $frm.frame3.speed.labelAlpha  -row 0 -column 0 -ipadx 3
       grid $frm.frame3.speed.entryAlpha  -row 0 -column 1 -ipadx 3
 
       #--- Vitesse de rappel delta
-      label $frm.frame3.speed.labelDelta -text "Vitesse de rappel del (arcsec/sec)"
+      label $frm.frame3.speed.labelDelta -text "caption(t193,rappelDelta)"
       entry $frm.frame3.speed.entryDelta -textvariable ::t193::private(deltaGuidingSpeed) -width 5 -justify right
       grid $frm.frame3.speed.labelDelta  -row 1 -column 0 -ipadx 3
       grid $frm.frame3.speed.entryDelta  -row 1 -column 1 -ipadx 3
@@ -403,6 +414,9 @@ proc ::t193::configureMonture { } {
          -maxDetectorFilterInput 3 \
          -filterMaxDelay $conf(t193,dureeMaxAttenuateur) \
       ]
+
+      #--- Je parametre le delai mini pour la carte NS
+      tel$telNo radec mindelay $::conf(t193,minDelay)
 
       #--- J'affiche un message d'information dans la Console
       ::console::affiche_entete "$caption(t193,port_t193) $caption(t193,2points) $conf(t193,portSerie)\n"
