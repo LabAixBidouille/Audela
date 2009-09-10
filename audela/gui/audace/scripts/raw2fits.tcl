@@ -3,7 +3,7 @@
 # Description : Script pour la conversion d'images .ARW .CR2 .CRW .DNG .ERF .MRW \
 #.NEF .ORF .RAF .RW2 .SR2 .TIFF .X3F au format .fit
 # Auteur : Raymond Zachantke
-# Mise a jour $Id: raw2fits.tcl,v 1.6 2009-08-10 09:10:20 robertdelmas Exp $
+# Mise a jour $Id: raw2fits.tcl,v 1.7 2009-09-10 21:49:53 robertdelmas Exp $
 #
 
 namespace eval ::raw2fits {
@@ -38,13 +38,13 @@ namespace eval ::raw2fits {
       #--   frame des chekbuttons
       frame $this.opt -borderwidth 1 -relief raised
       checkbutton $this.opt.sub -variable todo \
-         -text "$caption(raw2fits,label_1) $private(raw2fits,dirname) $caption(raw2fits,label_2) "\
+         -text "[ format $caption(raw2fits,label_1) $private(raw2fits,dirname) ]"\
          -indicatoron 1 -onvalue "sub"
       checkbutton $this.opt.all -variable todo \
-         -text "$caption(raw2fits,label_3) $private(raw2fits,dirname) $caption(raw2fits,label_4) "\
+         -text "[ format $caption(raw2fits,label_2) $private(raw2fits,dirname) ]"\
          -indicatoron 1 -onvalue "all"
       checkbutton $this.opt.one -variable todo \
-         -text $caption(raw2fits,label_6)\
+         -text $caption(raw2fits,label_4)\
          -indicatoron 1 -onvalue "one"
       if [ buf$audace(bufNo) imageready ] {
          $this.opt.one configure -state normal
@@ -122,7 +122,7 @@ namespace eval ::raw2fits {
                      set nb [ expr { $nb + $n } ]
                   }
                }
-         "all"    {  set nb [::raw2fits::ConvertAll $private(raw2fits,dirname) ] }
+         "all"    { set nb [::raw2fits::ConvertAll $private(raw2fits,dirname) ] }
          "one"    {
                   set private(raw2fits,rootname) [ file rootname $private(raw2fits,nom) ]
                   set private(raw2fits,destination) "$private(raw2fits,rootname).fit"
@@ -175,7 +175,7 @@ namespace eval ::raw2fits {
       if { $private(raw2fits,liste_cibles) != "" } {
 
          #--   notifie le repertoire analyse
-         ::console::affiche_resultat "$caption(raw2fits,label_5) $rep\n"
+         ::console::affiche_resultat "$caption(raw2fits,label_3) $rep\n"
 
          #--   prend pour generique le nom du repertoire
          set i [ string last "/" $rep ]
@@ -216,10 +216,10 @@ namespace eval ::raw2fits {
       if { $error == "0" } {
          #--   sauve l'image
          buf$audace(bufNo) save $destination
-         ::console::affiche_resultat "$caption(raw2fits,label_9) $name $caption(raw2fits,label_10) --> $private(raw2fits,nom)\n"
+         ::console::affiche_resultat "[ format $caption(raw2fits,label_6) $name $private(raw2fits,nom) ]\n"
       } else {
          #--   message d'echec
-         ::console:::affiche_resultat "$caption(raw2fits,label_7) $source $caption(raw2fits,label_8) : $msg\n"
+         ::console::affiche_resultat "[ format $caption(raw2fits,label_5) $source $msg" ]\n"
          #--   suppression de l'image de la liste
          set index [ lsearch -exact $private(raw2fits,liste_cibles) $name ]
          set private(raw2fits,liste_cibles) [ lreplace $private(raw2fits,liste_cibles) $index $index ]
