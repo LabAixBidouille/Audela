@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.27 2009-09-09 14:52:17 robertdelmas Exp $
+# @version   $Id: sophie.tcl,v 1.28 2009-09-10 18:58:32 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -119,6 +119,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    source [ file join $::audace(rep_plugin) tool sophie sophiecontrol.tcl ]
    source [ file join $::audace(rep_plugin) tool sophie sophiespectro.tcl ]
    source [ file join $::audace(rep_plugin) tool sophie sophieview.tcl ]
+   source [ file join $::audace(rep_plugin) tool sophie sophielog.tcl ]
    source [ file join $::audace(rep_plugin) tool sophie sophietest.tcl ] ; #--- a supprimer quand on aura fait les premiers tests
 
    if { ! [ info exists ::conf(sophie,exposure) ] }                 { set ::conf(sophie,exposure)                  "0.5" }
@@ -169,27 +170,28 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(sophie,socketPort)] }                { set ::conf(sophie,socketPort)                5020 }
 
    #--- Initialisation de variables
-   set private(frm)              "$in.sophie"
-   set private(visuNo)           $visuNo
-   set private(listePose)        "0 0.1 0.2 0.5 0.8 1 2 3 5 10 new"
-   set private(pose)             "0.5"
-   set private(listeBinning)     "1x1 2x2 3x3 4x4"
-   set private(widgetBinning)    "2x2"
-   set private(xBinning)         2
-   set private(yBinning)         2
-   set private(mode)             "CENTER"
-   set private(zoom)             "1"
-   set private(attenuateur)      "5"
-   set private(windowing)        "full"            ; #--- fenetrage, contient "full" ou la longueur du coté du carré de fenetrage
-   set private(targetDetection)  0                 ; #--- 0=etoile non detectee , 1= etoile detectee
-   set private(findFiber)        0                 ; #---  1= detection de la fibre activee 0=detection fibre desactivee
-   set private(updateFilterId)   ""                ; #--- identifiant de la commande after pour la mise a jour de l'affichage du taux d'attenuation
-   set private(updateFilterSate) 0                 ; #--- 0=pas de modificationde l'atténuation en cour, 1= modification de l'attennuation en cours
-   set private(targetBoxSize)    100
-   set private(cameraCells)      [list 1536 1024 ] ; #--- dimensions du capteur de la camera
+   set private(frm)               "$in.sophie"
+   set private(session_ouverture) "1"
+   set private(visuNo)            $visuNo
+   set private(listePose)         "0 0.1 0.2 0.5 0.8 1 2 3 5 10 new"
+   set private(pose)              "0.5"
+   set private(listeBinning)      "1x1 2x2 3x3 4x4"
+   set private(widgetBinning)     "2x2"
+   set private(xBinning)          2
+   set private(yBinning)          2
+   set private(mode)              "CENTER"
+   set private(zoom)              "1"
+   set private(attenuateur)       "5"
+   set private(windowing)         "full"            ; #--- fenetrage, contient "full" ou la longueur du coté du carré de fenetrage
+   set private(targetDetection)   0                 ; #--- 0=etoile non detectee , 1= etoile detectee
+   set private(findFiber)         0                 ; #---  1= detection de la fibre activee 0=detection fibre desactivee
+   set private(updateFilterId)    ""                ; #--- identifiant de la commande after pour la mise a jour de l'affichage du taux d'attenuation
+   set private(updateFilterSate)  0                 ; #--- 0=pas de modificationde l'atténuation en cour, 1= modification de l'attennuation en cours
+   set private(targetBoxSize)     100
+   set private(cameraCells)       [list 1536 1024 ] ; #--- dimensions du capteur de la camera
 
-   set private(bufNo)            [::confVisu::getBufNo $visuNo]
-   set private(hCanvas)          [::confVisu::getCanvas $visuNo]
+   set private(bufNo)             [::confVisu::getBufNo $visuNo]
+   set private(hCanvas)           [::confVisu::getCanvas $visuNo]
    switch $::conf(sophie,guidingMode) {
       "FIBER_HR" {
          set private(originCoord)      [list $::conf(sophie,fiberHRX) $::conf(sophie,fiberHRX) ]
@@ -451,6 +453,12 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $frm
+
+   #--- Ouverture du fichier de log
+   if { $private(session_ouverture) == "1" } {
+      ::sophie::log::startLogFile $visuNo
+      set private(session_ouverture) "0"
+   }
 }
 
 #------------------------------------------------------------
@@ -459,6 +467,8 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
 #------------------------------------------------------------
 proc ::sophie::deletePluginInstance { visuNo } {
 
+   #--- j'arrete le fichier de log
+   ::sophie::log::stopLogFile $visuNo
 }
 
 #------------------------------------------------------------
@@ -509,7 +519,7 @@ proc ::sophie::startTool { visuNo } {
       ::tkutil::displayErrorInfo $::caption(sophie,titre)
    }
 
-   #--- j'intialise la paosition de l'attenuateur
+   #--- j'intialise la position de l'attenuateur
    ::sophie::initFilter
 
    #--- je selectionne les mots clefs optionnel a ajouter dans les images
@@ -568,7 +578,7 @@ proc ::sophie::stopTool { visuNo } {
    #--- je ferme la fenetre de controle
    ::sophie::control::closeWindow $visuNo
 
-   #--- je masque le panneau
+   #--- je masque l'outil
    pack forget $private(frm)
 }
 
