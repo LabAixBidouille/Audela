@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.32 2009-09-09 14:52:50 robertdelmas Exp $
+# @version  $Id: sophiecommand.tcl,v 1.33 2009-09-10 18:58:51 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -1002,8 +1002,10 @@ proc ::sophie::saveImage { } {
       set shortName [string map { ":" "-" } $shortName]
       #--- j'ajoute le repertoire
       set fileName [file join $::conf(sophie,imageDirectory) $shortName]
-      #--- Sauvegarde de l'image
+      #--- je sauvegarde une image avec une trace dans le fichier de log
       saveima $fileName $::audace(visuNo)
+      set heure $::audace(tu,format,hmsint)
+      ::sophie::log::writeLogFile $::audace(visuNo) log $::caption(sophie,enrim) $heure $fileName
    } ]
 
    if { $catchError != 0 } {
