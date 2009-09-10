@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.7 2009-09-06 17:28:48 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.8 2009-09-10 14:43:42 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -427,19 +427,21 @@ namespace eval ::zadkopad {
 		set nowfocus [lindex [::zadkopad::roscommande {telescope DO eval {tel1 dfmfocus}}] 0] 
 		::console::affiche_resultat "recupere le focus : $nowfocus \n"	
 		if {$nowfocus==""} {
-				set nowfocus 3340 
+				set nowfocus 3330 
 		}
 		# --- envoie l'ordre de focus
 		set reponse [::zadkopad::roscommande [list telescope DO eval tel1 dfmfocus $newfocus]]
 		::console::affiche_resultat "$reponse \n"	
-		if {$nowfocus==""} {
-				set temps  [expr 800*30*1000/500 + 3000]
-		} else {
-			  	set temps [expr [expr abs($nowfocus -$newfocus)]*30*1000/500 + 3000]
-		}
-		::console::affiche_resultat "nowfocus: $nowfocus, newfocus: $newfocus, temps: $temps \n"
-		after [expr int($temps)]
-		::zadkopad::stopfocus
+		#if {$nowfocus==""} {
+		#		set temps  [expr 800*33*1000/500 + 4000]
+		#} else {
+		#	  	set temps [expr [expr abs($nowfocus -$newfocus)]*33*1000/500 + 4000]
+		#}
+		#pierre replace 30*100/500 + 3000 par 33*1000/500 +4000 dans les 2 lignes au dessus et mis un # devant ::zadkopad::stopfocus
+		# suite a la correction par dfm via timo des pb du focus
+		#::console::affiche_resultat "nowfocus: $nowfocus, newfocus: $newfocus, temps: $temps \n"
+		#after [expr int($temps)]
+		# ::zadkopad::stopfocus
 		
 		return $reponse
 	}
