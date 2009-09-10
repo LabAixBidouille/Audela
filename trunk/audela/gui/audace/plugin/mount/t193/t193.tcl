@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.11 2009-09-10 18:57:53 robertdelmas Exp $
+# Mise a jour $Id: t193.tcl,v 1.12 2009-09-10 20:25:16 robertdelmas Exp $
 #
 
 namespace eval ::t193 {
@@ -87,6 +87,7 @@ proc ::t193::initPlugin { } {
 
    #--- configuration de la monture du T193 de l'OHP
    if { ! [ info exists conf(t193,portSerie) ] }           { set conf(t193,portSerie)           [ lindex $list_connexion 0 ] }
+   if { ! [ info exists conf(t193,mode) ] }                { set conf(t193,mode)                "0" }
    if { ! [ info exists conf(t193,nomCarte) ] }            { set conf(t193,nomCarte)            "Dev1" }
    if { ! [ info exists conf(t193,minDelay) ] }            { set conf(t193,minDelay)            "10" }
    if { ! [ info exists conf(t193,nomPortTelescope) ] }    { set conf(t193,nomPortTelescope)    "port0" }
@@ -114,6 +115,7 @@ proc ::t193::confToWidget { } {
 
    #--- Recupere la configuration de la monture du T193 de l'OHP dans le tableau private(...)
    set private(portSerie)           $conf(t193,portSerie)
+   set private(mode)                $conf(t193,mode)
    set private(nomCarte)            $conf(t193,nomCarte)
    set private(minDelay)            $conf(t193,minDelay)
    set private(nomPortTelescope)    $conf(t193,nomPortTelescope)
@@ -134,6 +136,7 @@ proc ::t193::widgetToConf { } {
 
    #--- Memorise la configuration de la monture du T193 de l'OHP dans le tableau conf(t193,...)
    set conf(t193,portSerie)           $private(portSerie)
+   set conf(t193,mode)                $private(mode)
    set conf(t193,nomCarte)            $private(nomCarte)
    set conf(t193,minDelay)            $private(minDelay)
    set conf(t193,nomPortTelescope)    $private(nomPortTelescope)
@@ -168,8 +171,11 @@ proc ::t193::fillConfigPage { frm } {
    frame $frm.frame2 -borderwidth 0 -relief raised
    pack $frm.frame2 -side top -fill x
 
+   TitleFrame $frm.mode -borderwidth 2 -relief ridge -text "$caption(t193,mode)"
+   pack $frm.mode -side top -fill x
+
    frame $frm.frame3 -borderwidth 0 -relief raised
-  pack $frm.frame3 -side top -fill x
+   pack $frm.frame3 -side top -fill x
 
    frame $frm.frame4 -borderwidth 0 -relief raised
    pack $frm.frame4 -side top -fill x
@@ -219,6 +225,24 @@ proc ::t193::fillConfigPage { frm } {
       -values $list_connexion
    pack $frm.portSerie -in $frm.frame3 -anchor n -side left -padx 10 -pady 10
 
+   #--- Mode carte USB National Instruments
+   radiobutton $frm.mode.radio0 -anchor nw -highlightthickness 0 \
+      -text "$caption(t193,carteUSB)" -value 0 -variable ::t193::private(mode) \
+      -command { }
+   pack $frm.mode.radio0 -in [ $frm.mode getframe ] -anchor n -side left -padx 10 -pady 0
+
+   #--- Mode Ethernet (interface de controle OHP)
+   radiobutton $frm.mode.radio1 -anchor nw -highlightthickness 0 -state disabled \
+      -text "$caption(t193,ethernet)" -value 1 -variable ::t193::private(mode) \
+      -command { }
+   pack $frm.mode.radio1 -in [ $frm.mode getframe ] -anchor n -side left -padx 10 -pady 0
+
+   #--- Mode Delta Tau
+   radiobutton $frm.mode.radio2 -anchor nw -highlightthickness 0 -state disabled \
+      -text "$caption(t193,deltatau)" -value 2 -variable ::t193::private(mode) \
+      -command { }
+   pack $frm.mode.radio2 -in [ $frm.mode getframe ] -anchor n -side left -padx 10 -pady 0
+
    #--- Definition du nom de la carte USB-6501 et de son port
    label $frm.lab2 -text "$caption(t193,nom_carte)"
    pack $frm.lab2 -in $frm.frame4 -anchor n -side left -padx 10 -pady 5
@@ -227,35 +251,38 @@ proc ::t193::fillConfigPage { frm } {
    entry $frm.nomCarte -textvariable ::t193::private(nomCarte) -width 15 -justify left
    pack $frm.nomCarte -in $frm.frame4 -anchor n -side left -padx 10 -pady 5
 
-   #--- Definition de la longueur de l'impulsion minimale
-   label $frm.lab3 -text "$caption(t193,minDelay)"
-   pack $frm.lab3 -in $frm.frame5 -anchor n -side left -padx 10 -pady 5
-
    #--- Entry de la longueur de l'impulsion minimale
    entry $frm.minDelay -textvariable ::t193::private(minDelay) -width 5 -justify left
-   pack $frm.minDelay -in $frm.frame5 -anchor n -side left -padx 10 -pady 5
+   pack $frm.minDelay -in $frm.frame4 -anchor n -side right -padx 10 -pady 5
+
+   #--- Definition de la longueur de l'impulsion minimale
+   label $frm.lab3 -text "$caption(t193,minDelay)"
+   pack $frm.lab3 -in $frm.frame4 -anchor n -side right -padx 10 -pady 5
 
    #--- frame des vitesses
    frame $frm.frame3.speed -borderwidth 0
+
       #--- Vitesse de rappel alpha
       label $frm.frame3.speed.labelAlpha -text "$caption(t193,rappelAlpha)"
-      entry $frm.frame3.speed.entryAlpha -textvariable ::t193::private(alphaGuidingSpeed) -width 5 -justify right
+      entry $frm.frame3.speed.entryAlpha -textvariable ::t193::private(alphaGuidingSpeed) \
+         -width 5 -justify right
       grid $frm.frame3.speed.labelAlpha  -row 0 -column 0 -ipadx 3
       grid $frm.frame3.speed.entryAlpha  -row 0 -column 1 -ipadx 3
 
       #--- Vitesse de rappel delta
-      label $frm.frame3.speed.labelDelta -text "caption(t193,rappelDelta)"
-      entry $frm.frame3.speed.entryDelta -textvariable ::t193::private(deltaGuidingSpeed) -width 5 -justify right
+      label $frm.frame3.speed.labelDelta -text "$caption(t193,rappelDelta)"
+      entry $frm.frame3.speed.entryDelta -textvariable ::t193::private(deltaGuidingSpeed) \
+         -width 5 -justify right
       grid $frm.frame3.speed.labelDelta  -row 1 -column 0 -ipadx 3
       grid $frm.frame3.speed.entryDelta  -row 1 -column 1 -ipadx 3
 
-      grid rowconfigure $frm.frame3.speed 0  -weight 0
-      grid rowconfigure $frm.frame3.speed 1  -weight 1
+      grid rowconfigure $frm.frame3.speed 0 -weight 0
+      grid rowconfigure $frm.frame3.speed 1 -weight 1
 
       grid columnconfigure $frm.frame3.speed 1 -weight 0
       grid columnconfigure $frm.frame3.speed 2 -weight 1
 
-   pack $frm.frame3.speed -in $frm.frame3 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
+   pack $frm.frame3.speed -in $frm.frame3 -anchor n -side left -pady 5 -ipadx 10 -ipady 1 -expand 0
 
    #--- J'affiche les boutons N, S, E et O
    TitleFrame $frm.test1 -borderwidth 2 -relief ridge -text "$caption(t193,raquette)"
