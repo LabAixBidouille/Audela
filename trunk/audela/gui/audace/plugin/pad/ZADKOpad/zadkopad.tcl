@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.8 2009-09-10 14:43:42 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.9 2009-09-10 15:14:23 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -183,7 +183,7 @@ namespace eval ::zadkopad {
    #  return rien
    #------------------------------------------------------------
    proc deletePluginInstance { } {
-      global audace conf paramhorloge
+      global audace conf paramhorloge modetelescope
 
       if { [ winfo exists .zadkopad ] } {
          #--- Enregistre la position de la raquette
@@ -193,7 +193,7 @@ namespace eval ::zadkopad {
          set conf(zadkopad,position) [string range $geom $deb $fin]
       }
 	  set paramhorloge(sortie) "1"
-	  
+	  set modetelescope 0
 	  #--- rend la main a ros
 	  modeZADKO 0
 	  
@@ -259,8 +259,7 @@ namespace eval ::zadkopad {
 		 		.zadkopad.tel.parking configure -relief groove -state disabled
 		 		.zadkopad.petal.petalopen configure -relief groove -state disabled
 		 		.zadkopad.petal.petalclose configure -relief groove -state disabled
-		 		.zadkopad.foc.enter configure -relief groove -state disabled
-		 		.zadkopad.foc.stop configure -relief groove -state disabled
+		 		.zadkopad.foc.enter configure -relief groove -state disabled		 		
 		 		.zadkopad.frame1.frame2.f.but1 configure -relief groove -state disabled
 		 		.zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state disabled
 		 		update
@@ -290,7 +289,6 @@ namespace eval ::zadkopad {
 		 		.zadkopad.petal.petalopen configure -relief groove -state normal
 		 		.zadkopad.petal.petalclose configure -relief groove -state normal
 		 		.zadkopad.foc.enter configure -relief groove -state normal
-		 		.zadkopad.foc.stop configure -relief groove -state normal
 		 		.zadkopad.frame1.frame2.f.but1 configure -relief groove -state normal
 		 		.zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state normal
 			}
@@ -424,13 +422,13 @@ namespace eval ::zadkopad {
 			return
 		} 
 		# --- envoie l'ordre de focus
-		set nowfocus [lindex [::zadkopad::roscommande {telescope DO eval {tel1 dfmfocus}}] 0] 
-		::console::affiche_resultat "recupere le focus : $nowfocus \n"	
-		if {$nowfocus==""} {
-				set nowfocus 3330 
-		}
+		#set nowfocus [lindex [::zadkopad::roscommande {telescope DO eval {tel1 dfmfocus}}] 0] 
+		#::console::affiche_resultat "recupere le focus : $nowfocus \n"	
+		#if {$nowfocus==""} {
+		#		set nowfocus 3330 
+		#}
 		# --- envoie l'ordre de focus
-		set reponse [::zadkopad::roscommande [list telescope DO eval tel1 dfmfocus $newfocus]]
+		set reponse [::zadkopad::roscommande [list telescope DO eval [list tel1 dfmfocus $newfocus]]]
 		::console::affiche_resultat "$reponse \n"	
 		#if {$nowfocus==""} {
 		#		set temps  [expr 800*33*1000/500 + 4000]
@@ -736,10 +734,10 @@ namespace eval ::zadkopad {
 	button .zadkopad.foc.enter -width $geomlx200(10pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text SEND \
 	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::sendfocus $paramhorloge(focal_number)}
 	 
-	 button .zadkopad.foc.stop -width $geomlx200(10pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text STOP \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::stopfocus}
+	# button .zadkopad.foc.stop -width $geomlx200(10pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text STOP \
+	# -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::stopfocus}
 	
-	pack  .zadkopad.foc.ent1 .zadkopad.foc.enter .zadkopad.foc.stop -in .zadkopad.foc -padx [ expr int(11*$zoom) ] -side left
+	pack  .zadkopad.foc.ent1 .zadkopad.foc.enter -in .zadkopad.foc -padx [ expr int(11*$zoom) ] -side left
 	
 	#--- Create a frame for Telescope Information
 	frame .zadkopad.frame1 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
@@ -880,7 +878,6 @@ namespace eval ::zadkopad {
 	.zadkopad.petal.petalopen configure -relief groove -state disabled
 	.zadkopad.petal.petalclose configure -relief groove -state disabled
 	.zadkopad.foc.enter configure -relief groove -state disabled
-	.zadkopad.foc.stop configure -relief groove -state disabled
 	.zadkopad.frame1.frame2.f.but1 configure -relief groove -state disabled
 	.zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state disabled
 	update	
@@ -895,7 +892,7 @@ namespace eval ::zadkopad {
 	# =======================================
 	::zadkopad::refreshcoord
 	::zadkopad::calculz
-	#--- Je passe en mode manuel sur le telescope ZADKO
+	#--- Je passe en mode manuel sur le telescope ZADKO	
 	::zadkopad::modeZADKO 1
 	}
    
