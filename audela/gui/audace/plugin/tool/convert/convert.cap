@@ -1,0 +1,65 @@
+#
+# Fichier : convert.cap
+# Mise a jour $Id: convert.cap,v 1.1 2009-09-10 22:18:57 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(convert,menu)                 "# Convertir l'image FITS affichée"
+set caption(convert,titre)                "# Convertir l'image FITS affichée"
+set caption(convert,erreur)               "Error"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(convert,menu)              "Convertir l'image FITS affichée"
+   set caption(convert,titre)             "Convertir l'image FITS affichée"
+   set caption(convert,erreur)            "Erreur"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(convert,menu)              "# Convertir l'image FITS affichée"
+   set caption(convert,titre)             "# Convertir l'image FITS affichée"
+   set caption(convert,erreur)            "Errore"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(convert,menu)              "# Convertir l'image FITS affichée"
+   set caption(convert,titre)             "# Convertir l'image FITS affichée"
+   set caption(convert,erreur)            "Error"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(convert,menu)              "# Convertir l'image FITS affichée"
+   set caption(convert,titre)             "# Convertir l'image FITS affichée"
+   set caption(convert,erreur)            "Irrtum"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(convert,menu)              "# Convertir l'image FITS affichée"
+   set caption(convert,titre)             "# Convertir l'image FITS affichée"
+   set caption(convert,erreur)            "Erro"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(convert,menu)              "# Convertir l'image FITS affichée"
+   set caption(convert,titre)             "# Convertir l'image FITS affichée"
+   set caption(convert,erreur)            "Fejl"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
