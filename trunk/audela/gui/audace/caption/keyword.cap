@@ -1,6 +1,6 @@
 #
 # Fichier : keyword.cap
-# Mise a jour $Id: keyword.cap,v 1.16 2009-08-31 16:15:12 robertdelmas Exp $
+# Mise a jour $Id: keyword.cap,v 1.17 2009-09-10 19:00:39 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -199,10 +199,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,EXPTIME)            "Tempo esposizione"
    set caption(keyword,description,RA)                 "Ascensione Retta"
    set caption(keyword,description,DEC)                "Declinazione"
-   set caption(keyword,description,RA_MEAN)            "# Correction moyenne de l'ascension droite"
-   set caption(keyword,description,RA_RMS)             "# Correction RMS de l'ascension droite"
-   set caption(keyword,description,DEC_MEAN)           "# Correction moyenne de la déclinaison"
-   set caption(keyword,description,DEC_RMS)            "# Correction RMS de la déclinaison"
+   set caption(keyword,description,RA_MEAN)            "Correzione media dell'ascensione retta"
+   set caption(keyword,description,RA_RMS)             "Correzione RMS dell'ascensione retta"
+   set caption(keyword,description,DEC_MEAN)           "Correzione media della declinazione"
+   set caption(keyword,description,DEC_RMS)            "Correziome RMS della declinazione"
    set caption(keyword,description,EQUINOX)            "Epoca delle coordinate"
    set caption(keyword,description,RADECSYS)           "Sistema di coordinate"
    set caption(keyword,description,IMAGETYP)           "Tipo di immagine"
@@ -269,10 +269,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,EXPTIME)            "Tiempo de exposición"
    set caption(keyword,description,RA)                 "Ascensión Recta"
    set caption(keyword,description,DEC)                "Declinación"
-   set caption(keyword,description,RA_MEAN)            "# Correction moyenne de l'ascension droite"
-   set caption(keyword,description,RA_RMS)             "# Correction RMS de l'ascension droite"
-   set caption(keyword,description,DEC_MEAN)           "# Correction moyenne de la déclinaison"
-   set caption(keyword,description,DEC_RMS)            "# Correction RMS de la déclinaison"
+   set caption(keyword,description,RA_MEAN)            "Corrección media de la ascensión recta"
+   set caption(keyword,description,RA_RMS)             "Corrección RMS de la ascensión recta"
+   set caption(keyword,description,DEC_MEAN)           "Corrección media de la declinación"
+   set caption(keyword,description,DEC_RMS)            "Corrección RMS de la declinación"
    set caption(keyword,description,EQUINOX)            "Equinoccio de coordenadas"
    set caption(keyword,description,RADECSYS)           "Sistema de coordenadas"
    set caption(keyword,description,IMAGETYP)           "Tipo de imagen"
