@@ -2,7 +2,7 @@
 # Fichier : cfa2rgb.tcl
 # Description : Script pour la conversion d'images CFA-->RVB en masse
 # Auteur : Raymond Zachantke
-# Mise a jour $Id: cfa2rgb.tcl,v 1.1 2009-09-11 08:21:20 robertdelmas Exp $
+# Mise a jour $Id: cfa2rgb.tcl,v 1.2 2009-09-11 15:08:27 robertdelmas Exp $
 #
 
 namespace eval ::cfa2rgb {
@@ -153,8 +153,6 @@ namespace eval ::cfa2rgb {
                   set private(cfa2rgb,liste) [ list $private(cfa2rgb,dirname) ]
                   ::cfa2rgb::Explore $private(cfa2rgb,dirname)
                   foreach rep $private(cfa2rgb,liste) {
-                     #--   notifie le repertoire d'analyse sur la console
-                     ::console::affiche_resultat "\n$caption(cfa2rgb,label_7) $rep\n"
                      set n [::cfa2rgb::ConvertAll $rep ]
                      set nb [ expr { $nb + $n } ]
                   }
@@ -163,8 +161,8 @@ namespace eval ::cfa2rgb {
                   set nb [ ::cfa2rgb::ConvertAll $private(cfa2rgb,dirname) ]
                }
          "one"    {
-                  set nb [ ::cfa2rgb::ConvertThis $private(cfa2rgb,nom)
-                  set private(cfa2rgb,nom) "$private(cfa2rgb,destination)" ]
+                  set nb [ ::cfa2rgb::ConvertThis $private(cfa2rgb,nom) ]
+                  set private(cfa2rgb,nom) "$private(cfa2rgb,destination)"
                }
       }
 
@@ -204,6 +202,7 @@ namespace eval ::cfa2rgb {
    #--   filtre les fichiers dans un repertoire                            #
    #########################################################################
    proc ::cfa2rgb::ConvertAll { rep } {
+      global caption
       variable private
 
       set private(cfa2rgb,liste_cibles) ""
@@ -211,6 +210,9 @@ namespace eval ::cfa2rgb {
 
       #--   etablit la liste des fichiers d'extension .fit
       set private(cfa2rgb,liste_cibles) [ glob -nocomplain -type f -join $rep *.FIT ]
+
+      #--   notifie le repertoire analyse
+      ::console::affiche_resultat "$caption(cfa2rgb,label_3) $rep\n"
 
       #--   mise a jour de la liste des images en fonction de leur nature
       foreach cible $private(cfa2rgb,liste_cibles) {
@@ -255,6 +257,7 @@ namespace eval ::cfa2rgb {
             set n [ ::cfa2rgb::ConvertThis $source ]
             set nb [ expr { $nb+$n } ]
          }
+         ::console::affiche_resultat "\n\n"
       }
 
       #--   retourne le nombre d'images converties
