@@ -1,6 +1,6 @@
 #
 # Fichier : cfa2rgb.cap
-# Mise a jour $Id: cfa2rgb.cap,v 1.1 2009-09-11 08:20:44 robertdelmas Exp $
+# Mise a jour $Id: cfa2rgb.cap,v 1.2 2009-09-11 08:52:56 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -40,7 +40,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cfa2rgb,label_2)              "Les images du dossier %s uniquement"
    set caption(cfa2rgb,label_3)              "Traitement du dossier"
    set caption(cfa2rgb,label_4)              "Image affichée"
-   set caption(cfa2rgb,label_5)              "Echec de chargement de %s"
+   set caption(cfa2rgb,label_5)              "Echec du chargement de %s"
    set caption(cfa2rgb,label_6)              "Conversion de %s"
    set caption(cfa2rgb,label_7)              "Images du répertoire"
    set caption(cfa2rgb,attention)            "Attention"
