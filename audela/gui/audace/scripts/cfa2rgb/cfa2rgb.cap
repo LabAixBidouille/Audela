@@ -1,6 +1,6 @@
 #
 # Fichier : cfa2rgb.cap
-# Mise a jour $Id: cfa2rgb.cap,v 1.2 2009-09-11 08:52:56 robertdelmas Exp $
+# Mise a jour $Id: cfa2rgb.cap,v 1.3 2009-09-11 15:06:02 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -19,7 +19,6 @@ set caption(cfa2rgb,label_3)                 "Processing folder"
 set caption(cfa2rgb,label_4)                 "Displayed Image"
 set caption(cfa2rgb,label_5)                 "Failed to load %s"
 set caption(cfa2rgb,label_6)                 "Convert %s"
-set caption(cfa2rgb,label_7)                 "# Images du répertoire"
 set caption(cfa2rgb,attention)               "Warning"
 set caption(cfa2rgb,erreur)                  "Error"
 set caption(cfa2rgb,msg_01)                  "Converting..."
@@ -42,7 +41,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cfa2rgb,label_4)              "Image affichée"
    set caption(cfa2rgb,label_5)              "Echec du chargement de %s"
    set caption(cfa2rgb,label_6)              "Conversion de %s"
-   set caption(cfa2rgb,label_7)              "Images du répertoire"
    set caption(cfa2rgb,attention)            "Attention"
    set caption(cfa2rgb,erreur)               "Erreur"
    set caption(cfa2rgb,msg_01)               "Conversion en cours..."
@@ -65,7 +63,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cfa2rgb,label_4)              "Immagine mostrata"
    set caption(cfa2rgb,label_5)              "Fallito caricamento di %s"
    set caption(cfa2rgb,label_6)              "Conversione di %s"
-   set caption(cfa2rgb,label_7)              "# Images du répertoire"
    set caption(cfa2rgb,attention)            "Attenzione"
    set caption(cfa2rgb,erreur)               "Errore"
    set caption(cfa2rgb,msg_01)               "Conversione in corso ..."
@@ -88,7 +85,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cfa2rgb,label_4)              "Imágen presentada"
    set caption(cfa2rgb,label_5)              "Fallo al cargar %s"
    set caption(cfa2rgb,label_6)              "Conversión de %s"
-   set caption(cfa2rgb,label_7)              "# Images du répertoire"
    set caption(cfa2rgb,attention)            "Aviso"
    set caption(cfa2rgb,erreur)               "Error"
    set caption(cfa2rgb,msg_01)               "Conversión en curso..."
@@ -111,7 +107,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cfa2rgb,label_4)              "Angezeigten Bild"
    set caption(cfa2rgb,label_5)              "%s laden Irrtum"
    set caption(cfa2rgb,label_6)              "%s Umwandlung"
-   set caption(cfa2rgb,label_7)              "# Images du répertoire"
    set caption(cfa2rgb,attention)            "Achtung"
    set caption(cfa2rgb,erreur)               "Irrtum"
    set caption(cfa2rgb,msg_01)               "Umwandlung im Laufe..."
@@ -134,7 +129,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cfa2rgb,label_4)              "# Image affichée"
    set caption(cfa2rgb,label_5)              "# Echec de chargement de %s"
    set caption(cfa2rgb,label_6)              "# Conversion de %s"
-   set caption(cfa2rgb,label_7)              "# Images du répertoire"
    set caption(cfa2rgb,attention)            "Aviso"
    set caption(cfa2rgb,erreur)               "Erro"
    set caption(cfa2rgb,msg_01)               "# Conversion en cours..."
@@ -157,7 +151,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cfa2rgb,label_4)              "Displayed Image"
    set caption(cfa2rgb,label_5)              "Failed to load %s"
    set caption(cfa2rgb,label_6)              "Convert %s"
-   set caption(cfa2rgb,label_7)              "# Images du répertoire"
    set caption(cfa2rgb,attention)            "Warning"
    set caption(cfa2rgb,erreur)               "Error"
    set caption(cfa2rgb,msg_01)               "Converting..."
