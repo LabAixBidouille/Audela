@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.9 2009-09-10 15:14:23 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.10 2009-09-11 08:57:45 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -400,13 +400,13 @@ namespace eval ::zadkopad {
 		###################################
 		
 		# --- envoie les valeurs de suivi
-		set reponse [::zadkopad::roscommande [list telescope DO eval tel1 speedtrack $suivira $suividec]]
-		::console::affiche_resultat "$reponse \n"	
 		# --- envoie l'ordre de pointage au telescope
 		set reponse [::zadkopad::roscommande [list telescope GOTO $newra $newdec -blocking 1]]
-		::console::affiche_resultat "$reponse \n"	
-		set reponse [::zadkopad::roscommande [list telescope DO eval tel1 racdec motor $onoff]]
-		::console::affiche_resultat "$reponse \n"	
+		::console::affiche_resultat "$reponse \n"
+		set reponse [::zadkopad::roscommande [list telescope DO speedtrack $suivira $suividec]]
+		::console::affiche_resultat "$reponse \n"		
+		#set reponse [::zadkopad::roscommande [list telescope DO eval tel1 racdec motor $onoff]]
+		#::console::affiche_resultat "$reponse \n"	
 		
 		return $reponse
 	}
@@ -555,7 +555,7 @@ namespace eval ::zadkopad {
  		set paramhorloge(new,ra) 	 $paramhorloge(ra)
  		set paramhorloge(new,dec) 	 $paramhorloge(dec)
  		set paramhorloge(focal_number)	[lindex [::zadkopad::roscommande {telescope DO eval {tel1 dfmfocus}}] 0]
- 		set vitessessuivie [::zadkopad::roscommande [list telescope DO eval {tel1 speedtrack}]]
+ 		set vitessessuivie [::zadkopad::roscommande [list telescope DO speedtrack]]
  		set paramhorloge(suivira)	[lindex $vitessessuivie 0]
  		set paramhorloge(suividec)	[lindex $vitessessuivie 1] 
  		set stopcalcul 0
