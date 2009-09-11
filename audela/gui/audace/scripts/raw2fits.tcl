@@ -3,7 +3,7 @@
 # Description : Script pour la conversion d'images .ARW .CR2 .CRW .DNG .ERF .MRW \
 #.NEF .ORF .RAF .RW2 .SR2 .TIFF .X3F au format .fit
 # Auteur : Raymond Zachantke
-# Mise a jour $Id: raw2fits.tcl,v 1.7 2009-09-10 21:49:53 robertdelmas Exp $
+# Mise a jour $Id: raw2fits.tcl,v 1.8 2009-09-11 15:09:14 robertdelmas Exp $
 #
 
 namespace eval ::raw2fits {
@@ -12,20 +12,75 @@ namespace eval ::raw2fits {
    source [file join $audace(rep_scripts) raw2fits raw2fits.cap]
 
    #########################################################################
+   #--   Initialisation et filtre l'image affichee                         #
+   #########################################################################
+   proc ::raw2fits::Init { } {
+      global audace
+      variable private
+
+      set private(raw2fits,dirname) $audace(rep_images)
+      set private(raw2fits,nom)     ""
+      set private(raw2fits,visuNo)  $audace(visuNo)
+
+      #--   je declare le rafraichissement automatique sur le nom de l'image si on charge une image
+      ::confVisu::addFileNameListener $private(raw2fits,visuNo) "::raw2fits::testeImageAffichee"
+
+      #--   test si il y a une image dans le buffer
+      ::raw2fits::testeImageAffichee
+      ::raw2fits::CreateDialog
+   }
+
+   #########################################################################
+   #--   Filtre l'image affichee                                           #
+   #########################################################################
+   proc ::raw2fits::testeImageAffichee { args } {
+      global audace
+      variable private
+
+      set file_extension [ list .arw .ARW .cr2 .CR2 .crw .CRW .dng .DNG .erf .ERF .mrw .MRW \
+         .nef .NEF .orf .ORF .raf .RAF .rw2 .RW2 .sr2 .SR2 .tiff .TIFF .x3f .X3F ]
+
+      #--   test si il y a une image dans le buffer et que ce n'est pas une image couleurs
+      set this "$audace(base).convert"
+      set private(raw2fits,This) $this
+      set buf_num [ visu$private(raw2fits,visuNo) buf ]
+      if { [ winfo exists $this ] } {
+         if [ buf$buf_num imageready ] {
+            set private(raw2fits,nom) [ ::confVisu::getFileName $private(raw2fits,visuNo) ]
+            set extension [ file extension $private(raw2fits,nom) ]
+            set test [ lsearch -exact $file_extension $extension ]
+            if { $test != "-1" } {
+               $this.opt.one configure -state normal
+               $this.opt.one select
+            } else {
+               if { [ info exists private(raw2fits,action) ] } {
+                  if { $private(raw2fits,action) == "one" } {
+                     $this.opt.one deselect
+                  }
+               }
+               $this.opt.one configure -state disabled
+            }
+         } else {
+            if { [ info exists private(raw2fits,action) ] } {
+               if { $private(raw2fits,action) == "one" } {
+                  $this.opt.one deselect
+               }
+            }
+            $this.opt.one configure -state disabled
+         }
+      }
+   }
+
+   #########################################################################
    #--   Cree la fenetre 'Conversion d'images brutes au format fits'       #
    #  entree : parametres de l'image affichee                              #
    #  sortie : choix du mode de conversion ou abandon                      #
    #########################################################################
-   proc ::raw2fits::Init { } {
+   proc ::raw2fits::CreateDialog {  } {
       global audace color caption
       variable private
 
-      set private(raw2fits,dirname) $audace(rep_images)
-      set file_extension [ list .arw .ARW .cr2 .CR2 .crw .CRW .dng .DNG .erf .ERF .mrw .MRW \
-         .nef .NEF .orf .ORF .raf .RAF .rw2 .RW2 .sr2 .SR2 .tiff .TIFF .x3f .X3F ]
-
-      set this "$audace(base).convert"
-      set private(raw2fits,This) $this
+      set this $private(raw2fits,This)
       if [ winfo exists $private(raw2fits,This) ] { destroy $private(raw2fits,This) }
 
       toplevel $this
@@ -46,29 +101,8 @@ namespace eval ::raw2fits {
       checkbutton $this.opt.one -variable todo \
          -text $caption(raw2fits,label_4)\
          -indicatoron 1 -onvalue "one"
-      if [ buf$audace(bufNo) imageready ] {
-         $this.opt.one configure -state normal
-      } else {
-         $this.opt.one configure -state disabled
-      }
       pack $this.opt.sub $this.opt.all $this.opt.one -in $this.opt -anchor w -ipadx 10 -ipady 5
       pack $this.opt -in $this -side top
-
-      if [ buf$audace(bufNo) imageready ] {
-         set private(raw2fits,nom) [ ::confVisu::getFileName $audace(visuNo) ]
-         set extension  [ file extension $private(raw2fits,nom) ]
-         set test [ lsearch -exact $file_extension $extension ]
-         if { $test != "-1" } {
-            $this.opt.one configure -state normal
-            $this.opt.one select
-         } else {
-            $this.opt.one configure -state disabled
-            $this.opt.all select
-         }
-      } else {
-         $this.opt.one configure -state disabled
-         $this.opt.all select
-      }
 
       #--   frame du message
       frame $this.msg -borderwidth 1 -relief raised
@@ -78,25 +112,24 @@ namespace eval ::raw2fits {
 
       #--   frame de la confirmation
       frame $this.cmd -borderwidth 1 -relief raised
-      ::raw2fits::CreateButton $this.cmd "ok" $caption(raw2fits,bouton1) { ::raw2fits::Convert $todo }
+      ::raw2fits::CreateButton $this.cmd "ok" $caption(raw2fits,appliquer) { ::raw2fits::Convert $todo }
       pack $this.cmd.ok -side left
-      ::raw2fits::CreateButton "$this.cmd" "no" $caption(raw2fits,bouton3) { ::raw2fits::Fermer }
+      ::raw2fits::CreateButton "$this.cmd" "no" $caption(raw2fits,fermer) { ::raw2fits::Fermer }
       pack $this.cmd.no -side right
-      ::raw2fits::CreateButton $this.cmd "hlp" $caption(raw2fits,bouton2) {
+      ::raw2fits::CreateButton $this.cmd "hlp" $caption(raw2fits,aide) {
          ::audace::Lance_Notice_pdf [ file join $audace(rep_scripts) raw2fits raw2fits.pdf ]
       }
       pack $this.cmd.hlp -side right
       pack $this.cmd -in $this -anchor s -fill x
 
-      #---  bindings
-         bind $this <Key-Return>  {
-         $audace(base).convert.cmd.no configure -state disabled
-         $audace(base).convert.cmd.ok configure -state active -relief sunken
-         ::raw2fits::Convert $todo
-      }
+      #--   configure l'option en fonction de l'existence d'une image dans le buffer
+      ::raw2fits::testeImageAffichee
+
+      #--   bindings
+      bind $this <Key-Return> { ::raw2fits::activeconvert ; ::raw2fits::Convert $todo }
       bind $this <Key-Escape> { ::raw2fits::Fermer }
 
-      #--- Focus
+      #--   Focus
       focus $this
 
    }
@@ -107,12 +140,16 @@ namespace eval ::raw2fits {
    #  sortie : abondon ou choix de commandes                               #
    #########################################################################
    proc ::raw2fits::Convert { action } {
-      global audace caption
+      global caption color
       variable private
 
-      set nb 0
-      $private(raw2fits,This).msg.txt configure -text $caption(raw2fits,msg_01)
+      #--   initiallisation
+      set private(raw2fits,action) $action
 
+      #--   change l'etat des boutons
+      ::raw2fits::activeconvert
+
+      set nb 0
       switch -exact $action {
          "sub"    {
                   set private(raw2fits,liste) [ list $private(raw2fits,dirname) ]
@@ -132,16 +169,17 @@ namespace eval ::raw2fits {
                }
       }
 
-      $private(raw2fits,This).msg.txt configure -text $caption(raw2fits,msg_02)
-
       if { $nb != "0" } {
          ::raw2fits::LoadIma
-         $audace(base).convert.cmd.ok configure -state normal -relief raised
-         $audace(base).convert.cmd.no configure -state normal
+         $private(raw2fits,This).msg.txt configure -text $caption(raw2fits,msg_02)
+         $private(raw2fits,This).cmd.ok configure -state normal -relief raised -fg $color(black)
+         $private(raw2fits,This).cmd.no configure -state normal
       } else {
          #--   message si pas de fichiers à convertir
          tk_messageBox -title $caption(raw2fits,erreur) -icon error -type ok -message $caption(raw2fits,msg_03)
-         ::raw2fits::Fermer
+         $private(raw2fits,This).msg.txt configure -text ""
+         $private(raw2fits,This).cmd.ok configure -state normal -relief raised -fg $color(black)
+         $private(raw2fits,This).cmd.no configure -state normal
       }
    }
 
@@ -152,7 +190,7 @@ namespace eval ::raw2fits {
       variable private
 
       foreach subdir [ glob -nocomplain -directory $name -type d * ] {
-         set private(raw2fits,liste)  [ concat $private(raw2fits,liste) [ list $subdir ] ]
+         set private(raw2fits,liste) [ concat $private(raw2fits,liste) [ list $subdir ] ]
          ::raw2fits::Explore $subdir
       }
    }
@@ -205,18 +243,20 @@ namespace eval ::raw2fits {
    #--   Creation du fichier au format fits                                #
    #########################################################################
    proc ::raw2fits::ConvertThis { source destination } {
-      global audace caption
+      global caption
       variable private
+
+      set buf_num [ visu$private(raw2fits,visuNo) buf ]
 
       #--   met à jour la fenetre
       $private(raw2fits,This).msg.txt configure -text $caption(raw2fits,msg_01)
 
       set name [ lindex [ file split $source ] end ]
-      set error [ catch { buf$audace(bufNo) load $source } msg ]
+      set error [ catch { buf$buf_num load $source } msg ]
       if { $error == "0" } {
          #--   sauve l'image
-         buf$audace(bufNo) save $destination
-         ::console::affiche_resultat "[ format $caption(raw2fits,label_6) $name $private(raw2fits,nom) ]\n"
+         buf$buf_num save $destination
+         ::console::affiche_resultat "[ format $caption(raw2fits,label_6) $name $destination ]\n"
       } else {
          #--   message d'echec
          ::console::affiche_resultat "[ format $caption(raw2fits,label_5) $source $msg" ]\n"
@@ -230,15 +270,28 @@ namespace eval ::raw2fits {
    #--   charge la derniere image convertie                                #
    #########################################################################
    proc ::raw2fits::LoadIma { } {
-      global audace
       variable private
 
       set error [ catch { loadima $private(raw2fits,destination) } msg ]
       if { $error == "0" } {
-         ::audace::autovisu $audace(visuNo)
+         ::confVisu::autovisu $private(raw2fits,visuNo) -no $private(raw2fits,destination)
       } else {
          ::console:::affiche_resultat "$caption(raw2fits,msg_04) $private(raw2fits,destination) : $msg\n"
       }
+   }
+
+   #########################################################################
+   #--   Modifie l'etat des boutons                                        #
+   #########################################################################
+   proc ::raw2fits::activeconvert { } {
+      global caption color
+      variable private
+
+      #--   nettoye l'affichage du message
+      $private(raw2fits,This).cmd.ok configure -state normal -relief sunken -fg $color(red)
+      $private(raw2fits,This).msg.txt configure -text $caption(raw2fits,msg_01)
+      $private(raw2fits,This).cmd.no configure -state disabled
+      update
    }
 
    #########################################################################
@@ -246,6 +299,9 @@ namespace eval ::raw2fits {
    #########################################################################
    proc ::raw2fits::Fermer { } {
       variable private
+
+      #--   j'arrete le rafraichissement automatique sur le nom de l'image si on charge une image
+      ::confVisu::removeFileNameListener $private(raw2fits,visuNo) "::raw2fits::testeImageAffichee"
 
       catch { destroy $private(raw2fits,This) }
       namespace delete "::raw2fits"
