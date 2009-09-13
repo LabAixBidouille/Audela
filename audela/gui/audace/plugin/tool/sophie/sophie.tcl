@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.28 2009-09-10 18:58:32 robertdelmas Exp $
+# @version   $Id: sophie.tcl,v 1.29 2009-09-13 15:02:32 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -155,8 +155,9 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(sophie,fiberHRY)] }                  { set ::conf(sophie,fiberHRY)                  "150" }
    if { ! [ info exists ::conf(sophie,fiberHEX)] }                  { set ::conf(sophie,fiberHEX)                  "315" }
    if { ! [ info exists ::conf(sophie,fiberHEY)] }                  { set ::conf(sophie,fiberHEY)                  "151" }
-   if { ! [ info exists ::conf(sophie,xfibreB)] }                   { set ::conf(sophie,xfibreB)                   "925" }
-   if { ! [ info exists ::conf(sophie,yfibreB)] }                   { set ::conf(sophie,yfibreB)                   "566" }
+   if { ! [ info exists ::conf(sophie,fiberBX)] }                   { set ::conf(sophie,fiberBX)                   "925" }
+   if { ! [ info exists ::conf(sophie,fiberBY)] }                   { set ::conf(sophie,fiberBY)                   "566" }
+   if { ! [ info exists ::conf(sophie,fiberBRadius)] }              { set ::conf(sophie,fiberBRadius)              "20" }
    if { ! [ info exists ::conf(sophie,targetDetectionThresold)] }   { set ::conf(sophie,targetDetectionThresold)   "10" }
    if { ! [ info exists ::conf(sophie,simulation)] }                { set ::conf(sophie,simulation)                "0" }
    if { ! [ info exists ::conf(sophie,simulationGenericFileName)] } { set ::conf(sophie,simulationGenericFileName) "$::audace(rep_images)/simulation" }
@@ -206,7 +207,8 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
          set private(originCoord)      $::conf(sophie,objectCoord)
       }
    }
-
+   set private(originCoordGuide) $private(originCoord)
+   
    set private(originMove)       "AUTO"      ; #--- "MANUAL"=positionnement manuel en cours "AUTO"=positionnement automatique
    if { $::conf(sophie,detection) == "FIBER" } {
       #--- je place le symbole de la cible sur la consigne FIBRE HR
@@ -216,6 +218,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
       set private(targetCoord)      $::conf(sophie,objectCoord)
    }
    set private(targetMove)          "AUTO"   ; #--- "MANUAL"=positionnement manuel en cours "AUTO"=positionnement automatique
+   set private(fiberBCoord)         [list $::conf(sophie,fiberBX) $::conf(sophie,fiberBY)]
    set private(centerEnabled)       0
    set private(guideEnabled)        0
    set private(mountEnabled)        0
@@ -509,6 +512,8 @@ proc ::sophie::startTool { visuNo } {
    ::sophie::createTarget $visuNo
    #--- j'affiche la consigne sur l'image
    createOrigin $visuNo
+   #--- j'affiche la fibreB sur l'image
+   createFiberB $visuNo
 
    set catchError [ catch {
       #--- j'ouvre la liaison pour recevoir les commandes du PC Sophie
