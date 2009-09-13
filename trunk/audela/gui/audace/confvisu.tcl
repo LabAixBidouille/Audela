@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.110 2009-09-09 14:50:04 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.111 2009-09-13 20:24:26 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -202,7 +202,7 @@ namespace eval ::confVisu {
             set result [::[getTool $visuNo]::stopTool $visuNo]
             if { $result == "-1" } {
                tk_messageBox -title "$caption(confVisu,attention)" -icon error \
-                  -message "$caption(confVisu,fermeture_impossible) [ [ ::confVisu::getTool 1 ]::getPluginTitle ]$caption(confVisu,fermeture_impossible1)"
+                  -message [format $caption(confVisu,fermeture_impossible) [ [ ::confVisu::getTool $visuNo ]::getPluginTitle ] ]
                set private($visuNo,closeEnCours) "0"
                return
             }
