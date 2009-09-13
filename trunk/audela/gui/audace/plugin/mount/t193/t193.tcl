@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.12 2009-09-10 20:25:16 robertdelmas Exp $
+# Mise a jour $Id: t193.tcl,v 1.13 2009-09-13 15:10:10 michelpujol Exp $
 #
 
 namespace eval ::t193 {
@@ -666,8 +666,8 @@ proc ::t193::readRadec { } {
             set ::audace(telescope,getra)  [format "%02dh%02dm%05.2fs" $ah $am $as]
             set ::audace(telescope,getdec) [format "%02dd%02d\'%02d\"" $dd $dm $ds]
          } else {
-            console::affiche_erreur " ::t193::readRadec nombre de valeurs lues=$nbVar different de 7. Data=$data\n"
-            console::affiche_erreur " ::t193::readRadec alpha=$ah m=$am s=$as delta=$dd m=$dm s=$ds angle=$ba\n"
+            ###console::affiche_erreur " ::t193::readRadec nombre de valeurs lues=$nbVar different de 7. Data=$data\n"
+            ###console::affiche_erreur " ::t193::readRadec alpha=$ah m=$am s=$as delta=$dd m=$dm s=$ds angle=$ba\n"
          }
      }
       after 2000 ::t193::readRadec
