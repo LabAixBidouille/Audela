@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.14 2009-09-09 14:52:32 robertdelmas Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.15 2009-09-13 15:05:51 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -53,7 +53,6 @@ proc ::camerathread::guideSophie { exptime originCoord targetCoord cameraAngle t
    lappend  private(centerDeltaList) [list $private(targetBoxSize) $private(targetBoxSize)]
 
    ###::camerathread::disp "::camerathread::processAcquisition \n"
-
    #--- je parametre la camera
    cam$private(camNo) exptime $private(exptime)
    set private(previousClock) [clock clicks -milliseconds ]
@@ -134,10 +133,15 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             #--- la fenetre est centree sur l'etoile
             set x  [lindex $private(targetCoord) 0]
             set y  [lindex $private(targetCoord) 1]
-            set x1 [expr int($x) - $private(targetBoxSize)]
-            set x2 [expr int($x) + $private(targetBoxSize)]
-            set y1 [expr int($y) - $private(targetBoxSize)]
-            set y2 [expr int($y) + $private(targetBoxSize)]
+            ###set x1 [expr int($x - $private(targetBoxSize))]
+            ###set x2 [expr int($x + $private(targetBoxSize))]
+            ###set y1 [expr int($y - $private(targetBoxSize))]
+            ###set y2 [expr int($y + $private(targetBoxSize))]
+            set x1 [expr round($x - $private(targetBoxSize))]
+            set x2 [expr $x1 + 2 * $private(targetBoxSize)]
+            set y1 [expr round($y - $private(targetBoxSize))]
+            set y2 [expr $y1 + 2 * $private(targetBoxSize)]
+            ###::camerathread::disp  "targetCoord=[format "%.2f" [lindex $private(targetCoord) 0]]  x=$x  x1=$x1 x2=$x2\n"            
          }
 
          if { $private(findFiber) == 1 } {
@@ -145,43 +149,42 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          } else {
             set private(originSumCounter) 0
          }
-      }
 
-      #--- je mesure la position de l'etoile et le trou de la fibre
-      # buf$bufNo fibercentro
-      # Parameters IN:
-      # @param     Argv[2]= [list x1 y1 x2 y2 ] fenetre de detection
-      # @param     Argv[3]=biasBufNo            numero du buffer du bias
-      # @param     Argv[4]=maskBufNo            numero du buffer du masque
-      # @param     Argv[5]=sumBufNo             numero du buffer de l'image integree
-      # @param     Argv[6]=fiberBufNo           numero du buffer de l'image resultat
-      # @param     Argv[7]=maskRadius           rayon du masque
-      # @param     Argv[8]=originSumMinCounter  nombre d'acquisition de l'image integree
-      # @param     Argv[9]=originSumCounter     compteur d'integration de l'image de l'origine
-      # @param     Argv[10]=previousFiberX      abcisse du centre de la fibre
-      # @param     Argv[11]=previousFiberY      ordonnee du centre de la fibre
-      # @param     Argv[12]=maskFwhm            largeur a mi hauteur de la gaussienne
-      # @param     Argv[13]=findFiber           1=recherche de l'entrée de fibre , 0= ne pas rechercher
-      # @param     Argv[14]=pixelMinCount       nombre minimal de pixels pour accepter l'image
-      # @param     Argv[15]=maskPercent         pourcentage du niveau du mask
-      # @param     Argv[16]=biasValue           valeur du bias
-      #
-      # @return si TCL_OK
-      #            list[0] starStatus           resultat de la recherche de la fibre (DETECTED NO_SIGNAL)
-      #            list[1] starX                abcisse du centre de la fibre   (pixel binné)
-      #            list[2] starY                ordonnee du centre de la fibre  (pixel binné
-      #            list[3] fiberStatus          resultat de la recherche de la fibre (DETECTED NO_SIGNAL)
-      #            list[4] fiberX               abcisse du centre de la fibre  (pixel binné)
-      #            list[5] fiberY               ordonnee du centre de la fibre (pixel binné)
-      #            list[6] measuredFwhmX        gaussienne mesuree (pixel binné)
-      #            list[7] measuredFwhmY        gaussienne mesuree (pixel binné)
-      #            list[8] background           fond du ciel (ADU)
-      #            list[9] maxIntensity         intensite max (ADU)
-      #            list[10] message             message d'information
-      #
-      #         si TCL_ERREUR
-      #            message d'erreur
-      if { $private(acquisitionState) == 1 } {
+         #--- je mesure la position de l'etoile et le trou de la fibre
+         # buf$bufNo fibercentro
+         # Parameters IN:
+         # @param     Argv[2]= [list x1 y1 x2 y2 ] fenetre de detection
+         # @param     Argv[3]=biasBufNo            numero du buffer du bias
+         # @param     Argv[4]=maskBufNo            numero du buffer du masque
+         # @param     Argv[5]=sumBufNo             numero du buffer de l'image integree
+         # @param     Argv[6]=fiberBufNo           numero du buffer de l'image resultat
+         # @param     Argv[7]=maskRadius           rayon du masque
+         # @param     Argv[8]=originSumMinCounter  nombre d'acquisition de l'image integree
+         # @param     Argv[9]=originSumCounter     compteur d'integration de l'image de l'origine
+         # @param     Argv[10]=previousFiberX      abcisse du centre de la fibre
+         # @param     Argv[11]=previousFiberY      ordonnee du centre de la fibre
+         # @param     Argv[12]=maskFwhm            largeur a mi hauteur de la gaussienne
+         # @param     Argv[13]=findFiber           1=recherche de l'entrée de fibre , 0= ne pas rechercher
+         # @param     Argv[14]=pixelMinCount       nombre minimal de pixels pour accepter l'image
+         # @param     Argv[15]=maskPercent         pourcentage du niveau du mask
+         # @param     Argv[16]=biasValue           valeur du bias
+         #
+         # @return si TCL_OK
+         #            list[0] starStatus           resultat de la recherche de la fibre (DETECTED NO_SIGNAL)
+         #            list[1] starX                abcisse du centre de la fibre   (pixel binné)
+         #            list[2] starY                ordonnee du centre de la fibre  (pixel binné
+         #            list[3] fiberStatus          resultat de la recherche de la fibre (DETECTED NO_SIGNAL)
+         #            list[4] fiberX               abcisse du centre de la fibre  (pixel binné)
+         #            list[5] fiberY               ordonnee du centre de la fibre (pixel binné)
+         #            list[6] measuredFwhmX        gaussienne mesuree (pixel binné)
+         #            list[7] measuredFwhmY        gaussienne mesuree (pixel binné)
+         #            list[8] background           fond du ciel (ADU)
+         #            list[9] maxIntensity         intensite max (ADU)
+         #            list[10] message             message d'information
+         #
+         #         si TCL_ERREUR
+         #            message d'erreur
+      
          set result [buf$bufNo fibercentro "[list $x1 $y1 $x2 $y2]" \
             $private(biasBufNo) $private(maskBufNo) $private(sumBufNo) $private(fiberBufNo) \
             $private(maskRadius) \
@@ -200,7 +203,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          set background       [lindex $result 8 ]
          set maxIntensity     [lindex $result 9 ]
          set infoMessage      [lindex $result 10 ]
-
+         
          if { $starStatus == "DETECTED" } {
             #--- l'etoile est detectee
             set targetDetection 1
@@ -235,112 +238,144 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          set dx [expr (double([lindex $private(targetCoord) 0]) - [lindex $private(originCoord) 0]) * [lindex $binning 0] ]
          set dy [expr (double([lindex $private(targetCoord) 1]) - [lindex $private(originCoord) 1]) * [lindex $binning 1] ]
          ###::camerathread::disp  "camerathread: etoile dx=[format "%6.1f" $dx] dy=[format "%6.1f" $dy] \n"
+         
+         #--- je pondere la position si on est en mode GUIDE avec detection de la fibre
+         if { $private(mode) == "GUIDE" && $private(findFiber) == 1 } {
+            set cgx $dx
+            if { [expr abs($dx) * [lindex $binning 0] ] < 16 } {
+               #--- le denominateur est toujours non nul parce que dx > 1.7/0.04)
+               set dx [expr $dx / (1.7 - abs($dx) * 0.04)]            
+            }
+            set cgy $dy
+            if { [expr abs($dy) * [lindex $binning 1] ] < 16 } {
+               set dy [expr $dy / (1.7 - abs($dy) * 0.04)]            
+            }
+            ::camerathread::disp  "correction cgx [format "%6.1f" $cgx] => [format "%6.1f" $dx] cgy: [format "%6.1f" $cgy] => [format "%6.1f" $dy (pixel)] \n"
+         }
+         
          #--- je calcule l'ecart de position (en arcseconde)
          ###set alphaDiff [expr $dx * $private(pixelScale) / (cos($private(targetDec) * 3.14159265359/180)) ]
          set alphaDiff [expr $dx * $private(pixelScale) ]
          set deltaDiff [expr $dy * $private(pixelScale) ]
-      }
 
-      #--- je calcule la correction alphaCorrection et deltaCorrection  en arcsec
-      if { $private(acquisitionState) == "1" && $private(mountEnabled) == 1 && $starStatus == "DETECTED" } {
-         if { $private(mode) == "GUIDE" } {
-            #--- j'applique le PID pour le guidage
-
-            #--- je calcule le terme integrateur
-            set private(diffXCumul) [expr $private(diffXCumul) + $dx]
-            set private(diffYCumul) [expr $private(diffYCumul) + $dy]
-
-            #--- J’ecrete le terme integrateur s’il engendre un déplacement superieur au demi cote de la fenetre d’analyse
-            if { [expr abs($private(diffXCumul)) - $private(targetBoxSize) ] > 0
-             ||  [expr abs($private(diffYCumul)) - $private(targetBoxSize) ] > 0 } {
-               set private(diffXCumul) 0
-               set private(diffYCumul) 0
-            }
-
-            set alphaDiffCumul [expr $private(diffXCumul) * $private(pixelScale) ]
-            set deltaDiffCumul [expr $private(diffYCumul) * $private(pixelScale) ]
-
-            #--- je corrige avec les termes proportionnels et integrateurs
-            set alphaCorrection [expr $alphaDiff * $private(alphaProportionalGain) + $alphaDiffCumul * $private(alphaIntegralGain) ]
-            set deltaCorrection [expr $deltaDiff * $private(deltaProportionalGain) + $deltaDiffCumul * $private(deltaIntegralGain) ]
-         } else {
-            set alphaCorrection $alphaDiff
-            set deltaCorrection $deltaDiff
-         }
-
-         #--- je verifie si le centrage est fini
-         if { $private(mode)=="CENTER" && $private(mountEnabled) == 1} {
-            #--- j'ajoute les nouvelles valeurs à la fin de la liste
-            lappend private(centerDeltaList) [list $alphaCorrection $deltaCorrection ]
-            #--- je supprime le premier element
-            set private(centerDeltaList) [lrange $private(centerDeltaList) 1 end ]
-            set xmean "0"
-            set ymean "0"
-            #--- je calcule la somme des ecarts
-            foreach delta  $private(centerDeltaList) {
-               set xmean [expr $xmean + abs( [lindex $delta 0 ] ) ]
-               set ymean [expr $ymean + abs( [lindex $delta 1 ] ) ]
-            }
-            #--- je calcule la moyenne des ecarts
-            set xmean [expr $xmean / [llength $private(centerDeltaList)]]
-            set ymean [expr $ymean / [llength $private(centerDeltaList)]]
-
-            #--- je vérifie si la moyenne est inferieure au seuil
-            if { $xmean < $private(centerMaxLimit)  && $ymean < $private(centerMaxLimit) } {
-               ::camerathread::notify "acquisitionResult" "CENTER" $private(targetCoord)
-               ###::camerathread::disp  "camerathread: Le centrage est terminé ([format "%6.1f" $xmean]<$private(centerMaxLimit))  ([format "%6.1f" $ymean]<$private(centerMaxLimit) arsec) \n"
+         #--- je calcule la correction alphaCorrection et deltaCorrection  en arcsec
+         if { $private(acquisitionState) == "1" && $private(mountEnabled) == 1 && $starStatus == "DETECTED" } {
+            if { $private(mode) == "GUIDE" } {
+               #--- j'applique le PID pour le guidage
+   
+               #--- je calcule le terme integrateur
+               set private(diffXCumul) [expr $private(diffXCumul) + $dx]
+               set private(diffYCumul) [expr $private(diffYCumul) + $dy]
+   
+               #--- J’ecrete le terme integrateur s’il engendre un déplacement superieur au demi cote de la fenetre d’analyse
+               if { [expr abs($private(diffXCumul)) - $private(targetBoxSize) ] > 0
+                ||  [expr abs($private(diffYCumul)) - $private(targetBoxSize) ] > 0 } {
+                  set private(diffXCumul) 0
+                  set private(diffYCumul) 0
+               }
+   
+               set alphaDiffCumul [expr $private(diffXCumul) * $private(pixelScale) ]
+               set deltaDiffCumul [expr $private(diffYCumul) * $private(pixelScale) ]
+   
+               #--- je corrige avec les termes proportionnels et integrateurs
+               set alphaCorrection [expr $alphaDiff * $private(alphaProportionalGain) + $alphaDiffCumul * $private(alphaIntegralGain) ]
+               set deltaCorrection [expr $deltaDiff * $private(deltaProportionalGain) + $deltaDiffCumul * $private(deltaIntegralGain) ]
             } else {
-               ###::camerathread::disp  "camerathread: Le centrage continue : ([format "%6.1f" $xmean]>$private(centerMaxLimit)) ([format "%6.1f" $ymean]>$private(centerMaxLimit) arsec) \n"
+               set alphaCorrection $alphaDiff
+               set deltaCorrection $deltaDiff
+               ###::camerathread::disp  "CENTER alphaDiff=[format "%6.2f" $alphaDiff]  deltaDiff=[format "%6.2f" $deltaDiff] (arsec) "
             }
-         }
-
-         #--- j'inverse le sens des deplacements si necessaire
-         if { $private(alphaReverse) == "1" } {
-            set alphaCorrection [expr -$alphaCorrection]
-         }
-         if { $private(deltaReverse) == "1" } {
-            set deltaCorrection [expr -$deltaCorrection]
-         }
-
-         #--- j'ecrete l'ampleur du deplacement en alpha
-         set maxAlpha [expr $private(targetBoxSize) * [lindex $binning 0] * $private(pixelScale) ]
-         if { $alphaCorrection > 0 } {
-            if { $alphaCorrection > $maxAlpha } {
-               set alphaCorrection $maxAlpha
+   
+            #--- je verifie si le centrage est fini
+            if { $private(mode)=="CENTER" && $private(mountEnabled) == 1} {
+               #--- j'ajoute les nouvelles valeurs à la fin de la liste
+               lappend private(centerDeltaList) [list $alphaCorrection $deltaCorrection ]
+               #--- je supprime le premier element
+               set private(centerDeltaList) [lrange $private(centerDeltaList) 1 end ]
+               set xmean "0"
+               set ymean "0"
+               #--- je calcule la somme des ecarts
+               foreach delta  $private(centerDeltaList) {
+                  set xmean [expr $xmean + abs( [lindex $delta 0 ] ) ]
+                  set ymean [expr $ymean + abs( [lindex $delta 1 ] ) ]
+               }
+               #--- je calcule la moyenne des ecarts
+               set xmean [expr $xmean / [llength $private(centerDeltaList)]]
+               set ymean [expr $ymean / [llength $private(centerDeltaList)]]
+   
+               #--- je vérifie si la moyenne est inferieure au seuil
+               if { $xmean < $private(centerMaxLimit)  && $ymean < $private(centerMaxLimit) } {
+                  ::camerathread::notify "acquisitionResult" "CENTER" $private(targetCoord)
+                  ###::camerathread::disp  "camerathread: Le centrage est terminé ([format "%6.1f" $xmean]<$private(centerMaxLimit))  ([format "%6.1f" $ymean]<$private(centerMaxLimit) arsec) \n"
+               } else {
+                  ###::camerathread::disp  "camerathread: Le centrage continue : ([format "%6.1f" $xmean]>$private(centerMaxLimit)) ([format "%6.1f" $ymean]>$private(centerMaxLimit) arsec) \n"
+               }
+            }
+   
+            #--- j'inverse le sens des deplacements si necessaire
+            if { $private(alphaReverse) == "1" } {
+               set alphaCorrection [expr -$alphaCorrection]
+            }
+            if { $private(deltaReverse) == "1" } {
+               set deltaCorrection [expr -$deltaCorrection]
+            }
+   
+            #--- je prends en compte la declinaison dans le calcul de la correction de alpha
+            set alphaCorrection [expr $alphaCorrection / (cos($private(targetDec) * 3.14159265359/180)) ]
+            
+            #--- j'ecrete l'ampleur du deplacement en alpha
+            set maxAlpha [expr $private(targetBoxSize) * [lindex $binning 0] * $private(pixelScale) ]
+            if { $alphaCorrection > 0 } {
+               if { $alphaCorrection > $maxAlpha } {
+                  set alphaCorrection $maxAlpha
+                  if { $private(mode) == "CENTER" } {
+                     ::camerathread::disp  " ecretage alphaDiff=[format "%6.2f" $alphaCorrection]"
+                  }
+               }
+            } else {
+               if { $alphaCorrection < -$maxAlpha } {
+                  set alphaCorrection [expr - $maxAlpha]
+                  if { $private(mode) == "CENTER" } {
+                     ::camerathread::disp  " ecretage alphaDiff=[format "%6.2f" $alphaCorrection]"
+                  }
+               }
+            }
+   
+            #--- j'ecrete l'ampleur du deplacement en delta
+            set maxDelta [expr $private(targetBoxSize) * [lindex $binning 1] * $private(pixelScale) ]
+            if { $deltaCorrection > 0 } {
+               if { $deltaCorrection > $maxDelta } {
+                  set deltaCorrection $maxDelta
+                  if { $private(mode) == "CENTER" } {
+                     ::camerathread::disp  " ecretage deltaDiff=[format "%6.2f" $deltaCorrection]"
+                  }
+               }
+            } else {
+               if { $deltaCorrection <  -$maxDelta } {
+                  set deltaCorrection  [expr -$maxDelta]
+                  if { $private(mode) == "CENTER" } {
+                     ::camerathread::disp  " ecretage deltaDiff=[format "%6.2f" $deltaCorrection]"
+                  }
+               }
+            }
+            if { $private(mode) == "CENTER" } {
+               ::camerathread::disp  "\n"
             }
          } else {
-            if { $alphaCorrection < -$maxAlpha } {
-               set alphaCorrection [expr - $maxAlpha]
-            }
+            set alphaCorrection 0.0
+            set deltaCorrection 0.0
          }
-
-         #--- je prends en compte la declinaison dans le calcul de la correction de alpha
-         set alphaCorrection [expr $alphaCorrection / (cos($private(targetDec) * 3.14159265359/180)) ]
-
-         #--- j'ecrete l'ampleur du deplacement en delta
-         set maxDelta [expr $private(targetBoxSize) * [lindex $binning 1] * $private(pixelScale) ]
-         if { $deltaCorrection > 0 } {
-            if { $deltaCorrection > $maxDelta } {
-               set deltaCorrection $maxDelta
-            }
-         } else {
-            if { $deltaCorrection <  -$maxDelta } {
-               set deltaCorrection  [expr -$maxDelta]
-            }
-         }
-      } else {
-         set alphaCorrection 0.0
-         set deltaCorrection 0.0
-      }
-
-      ###::camerathread::disp  "camerathread: alphaCorrection=$alphaCorrection deltaCorrection=$deltaCorrection \n"
-      #--- j'envoi un compe rendu avant de faire la correction
-      if { $private(acquisitionState) == "1" } {
+   
+         #--- j'envoi une notification pour mettre a jour l'affichage de la fenetre principale
          ::camerathread::notify "targetCoord" \
             $private(targetCoord) $dx $dy $targetDetection $fiberStatus \
             [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
             $measuredFwhmX $measuredFwhmY $background $maxIntensity  \
             $alphaDiff $deltaDiff $alphaCorrection $deltaCorrection $infoMessage
+      }
+      
+      ###::camerathread::disp  "camerathread: alphaCorrection=$alphaCorrection deltaCorrection=$deltaCorrection \n"
+      if { $private(acquisitionState) == "1" } {
          set alphaDelay 0.0
          set deltaDelay 0.0
          set alphaDirection ""
