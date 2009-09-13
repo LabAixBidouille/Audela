@@ -2,7 +2,7 @@
 # @file     sophieconfig.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieconfig.tcl,v 1.19 2009-09-09 14:53:37 robertdelmas Exp $
+# @version  $Id: sophieconfig.tcl,v 1.20 2009-09-13 15:08:16 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -124,6 +124,8 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
    set widget(fiberHRY)              $::conf(sophie,fiberHRY)
    set widget(fiberHEX)              $::conf(sophie,fiberHEX)
    set widget(fiberHEY)              $::conf(sophie,fiberHEY)
+   set widget(fiberBX)               $::conf(sophie,fiberBX)
+   set widget(fiberBY)               $::conf(sophie,fiberBY)
 
    set widget(biasFileName,1,slow)   $::conf(sophie,biasFileName,1,slow)
    set widget(biasFileName,1,fast)   $::conf(sophie,biasFileName,1,fast)
@@ -305,7 +307,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
 
       Button $frm.fibre.replaceOriginHR -text $::caption(sophie,replaceOriginValue) \
          -command "::sophie::config::replaceOriginCoordinates $visuNo HR"
-      grid $frm.fibre.replaceOriginHR -in [ $frm.fibre getframe ] -row 1 -column 3 -sticky ens  -padx 2
+      grid $frm.fibre.replaceOriginHR -in [ $frm.fibre getframe ] -row 1 -column 3 -sticky ens  -padx 2  -pady 2
 
       #--- Fibre A HE
       label $frm.fibre.labelfibreAHE -text $::caption(sophie,fibreAHE)
@@ -323,7 +325,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
 
       Button $frm.fibre.replaceOriginHE -text $::caption(sophie,replaceOriginValue) \
          -command "::sophie::config::replaceOriginCoordinates $visuNo HE"
-      grid $frm.fibre.replaceOriginHE -in [ $frm.fibre getframe ] -row 2 -column 3 -sticky ens  -padx 2
+      grid $frm.fibre.replaceOriginHE -in [ $frm.fibre getframe ] -row 2 -column 3 -sticky ens  -padx 2  -pady 2
 
       #--- Fibre B
       label $frm.fibre.labelfibreB -text $::caption(sophie,fibreB)
@@ -331,13 +333,17 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
 
       Entry $frm.fibre.spinboxxfibreB\
          -width 8 -justify center -editable 1 \
-         -textvariable ::sophie::config::widget(xfibreB)
+         -textvariable ::sophie::config::widget(fiberBX)
       grid $frm.fibre.spinboxxfibreB -in [ $frm.fibre getframe ] -row 3 -column 1 -sticky ens
 
       Entry $frm.fibre.spinboxyfibreB\
          -width 8 -justify center -editable 1 \
-         -textvariable ::sophie::config::widget(yfibreB)
+         -textvariable ::sophie::config::widget(fiberBY)
       grid $frm.fibre.spinboxyfibreB -in [ $frm.fibre getframe ] -row 3 -column 2 -sticky ens
+
+      Button $frm.fibre.replaceOriginFiberB -text $::caption(sophie,replaceOriginValue) \
+         -command "::sophie::config::replaceOriginCoordinates $visuNo FIBER_B"
+      grid $frm.fibre.replaceOriginFiberB -in [ $frm.fibre getframe ] -row 3 -column 3 -sticky ens  -padx 2  -pady 2
 
       #--- Mode d'entree de la fibre A
       ###label $frm.fibre.labelfiberGuigindMode -text $::caption(sophie,fiberGuigindMode)
@@ -604,6 +610,8 @@ proc ::sophie::config::apply { visuNo } {
    set ::conf(sophie,fiberHRY)               $widget(fiberHRY)
    set ::conf(sophie,fiberHEX)               $widget(fiberHEX)
    set ::conf(sophie,fiberHEY)               $widget(fiberHEY)
+   set ::conf(sophie,fiberBX)                $widget(fiberBX)
+   set ::conf(sophie,fiberBY)                $widget(fiberBY)
 
    set ::conf(sophie,biasFileName,1,slow)    $widget(biasFileName,1,slow)
    set ::conf(sophie,biasFileName,1,fast)    $widget(biasFileName,1,fast)
@@ -723,7 +731,7 @@ proc ::sophie::config::chooseBiasFile { cameraBinning cameraMode } {
 # replaceOriginValue
 #   remplace la position de la consigne par la position courante de la consigne
 # @param numero de la visu
-# @param type de position (HR ou HE)
+# @param type de position (HR ou HE ou FIBER_B)
 # @return rien
 #------------------------------------------------------------
 proc ::sophie::config::replaceOriginCoordinates { visuNo positionType } {
@@ -737,6 +745,10 @@ proc ::sophie::config::replaceOriginCoordinates { visuNo positionType } {
       "HE" {
          set widget(fiberHEX) [lindex $::sophie::private(originCoord) 0]
          set widget(fiberHEY) [lindex $::sophie::private(originCoord) 1]
+      }
+      "FIBER_B" {
+         set widget(fiberBX) [lindex $::sophie::private(fiberBCoord) 0]
+         set widget(fiberBY) [lindex $::sophie::private(fiberBCoord) 1]
       }
    }
 }
