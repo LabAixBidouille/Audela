@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.33 2009-09-10 18:58:51 robertdelmas Exp $
+# @version  $Id: sophiecommand.tcl,v 1.34 2009-09-13 15:07:51 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -524,7 +524,8 @@ proc ::sophie::setMode { { mode "" } } {
          buf$private(maskBufNo)  clear
          buf$private(sumBufNo)   clear
          buf$private(fiberBufNo) clear
-
+         #--- je memorise les coordonnes de l'origine 
+         set private(originCoordGuide) $private(originCoord)
          #--- je change la taille de d'analyse de la cible
          set private(targetBoxSize) $::conf(sophie,guidingWindowSize)
          #--- je mets le thread de la camera en mode centrage
@@ -612,7 +613,10 @@ proc ::sophie::setGuidingMode { visuNo } {
 proc ::sophie::setFiberDetection { findFiber  } {
    variable private
 
-   setGuidingMode $private(visuNo)
+   ###setGuidingMode $private(visuNo)
+   set private(AsynchroneParameter) 1
+   ::camera::setAsynchroneParameter $private(camItem) \
+      "findFiber" $private(findFiber)
 }
 
 #------------------------------------------------------------
@@ -1234,7 +1238,15 @@ proc ::sophie::onMousePressButton1 { visuNo w x y } {
       }
      "target" {
          #--- je desactive le positionnement automatique de la cible
-         set private(targetMove) "MANUAL"
+         set x [$w canvasx $x]
+         set y [$w canvasy $y]
+         set private(currentx)       $x
+         set private(currenty)       $y
+         ###set private(currentMouseItem) [$w find withtag current]
+         set private(currentMouseItem) $typeItem
+     }
+     "fiberB" {
+         #--- je desactive le positionnement automatique de la cible
          set x [$w canvasx $x]
          set y [$w canvasy $y]
          set private(currentx)       $x
@@ -1283,6 +1295,16 @@ proc ::sophie::onMouseMoveButton1 { visuNo w x y } {
          set private(currentx) $x
          set private(currenty) $y
          $w move "target" $dx $dy
+      }
+      "fiberB" {
+         #--- la consigne est selectionnee
+         set x [$w canvasx $x]
+         set y [$w canvasy $y]
+         set dx [expr {$x - $private(currentx)}]
+         set dy [expr {$y - $private(currenty)}]
+         set private(currentx) $x
+         set private(currenty) $y
+         $w move "fiberB" $dx $dy
       }
       default {
          #--- la consigne n'est pas selectionnee
@@ -1364,6 +1386,22 @@ proc ::sophie::onMouseReleaseButton1 { visuNo w x y } {
          #--- j'active le positionnement automatique de la cible
          set private(targetMove) "AUTO"
       }
+      "fiberB" {
+         #--- la fiber B est selectionnee
+
+         #--- je recupere les coordonnees (coordonnees canvas)
+         set coord [$w coords "fiberB" ]
+         set x [expr ([lindex $coord 2] + [lindex $coord 0]) /2 ]
+         set y [expr ([lindex $coord 3] + [lindex $coord 1]) /2 ]
+
+         #--- je calcule les coordonneesdans l'image
+         set coord [::confVisu::canvas2Picture $visuNo [list $x $y]]
+         set x [expr [lindex $coord 0] * $private(xBinning) + $private(xWindow) -1 ]
+         set y [expr [lindex $coord 1] * $private(yBinning) + $private(yWindow) -1 ]
+         set private(fiberBCoord) [list $x $y]
+         
+         set private(currentMouseItem) ""
+      }      
       default {
          #--- la consigne n'est pas selectionnee, j'appelle le traitement par defaut
          ::confVisu::onReleaseButton1 $visuNo $x $y
@@ -1491,6 +1529,43 @@ proc ::sophie::moveTarget { visuNo targetCoord } {
    #--- je deplace la cible aux nouvelles coordonnees
    $private(hCanvas) coords "target" [list $xCan1 $yCan1 $xCan2 $yCan2]
 }
+
+##------------------------------------------------------------
+# createFiberB
+#    affiche le symbole de la fibre 
+#
+# @param visuNo         numero de la visu courante
+# @return  null
+#------------------------------------------------------------
+proc ::sophie::createFiberB { visuNo } {
+   variable private
+
+   #--- je supprime l'affichage precedent de la cible
+   $private(hCanvas) delete "fiberB"
+   #--- je calcule les coordonnees dans l'image
+   set x [ expr ( [lindex $private(fiberBCoord) 0] - $private(xWindow) + 1 ) / $private(xBinning) ]
+   set y [ expr ( [lindex $private(fiberBCoord) 1] - $private(yWindow) + 1 ) / $private(yBinning) ]
+
+   set x1 [expr $x - $::conf(sophie,fiberBRadius) /  $private(xBinning) ]
+   set x2 [expr $x + $::conf(sophie,fiberBRadius) /  $private(yBinning) ]
+   set y1 [expr $y - $::conf(sophie,fiberBRadius) /  $private(xBinning) ]
+   set y2 [expr $y + $::conf(sophie,fiberBRadius) /  $private(yBinning) ]
+
+   #--- je calcule les coordonnees dans le canvas
+   set coord [::confVisu::picture2Canvas $visuNo [list $x $y ]]
+   set x  [lindex $coord 0]
+   set y  [lindex $coord 1]
+   set coord [::confVisu::picture2Canvas $visuNo [list $x1 $y1 ]]
+   set x1 [lindex $coord 0]
+   set y1 [lindex $coord 1]
+   set coord [::confVisu::picture2Canvas $visuNo [list $x2 $y2 ]]
+   set x2 [lindex $coord 0]
+   set y2 [lindex $coord 1]
+
+   #--- je cree les items graphiques dans le canvas
+   $private(hCanvas) create oval $x1 $y1 $x2 $y2 -outline red -offset center -tags "::sophie fiberB" -width 2 -activewidth 4
+}
+
 
 ##------------------------------------------------------------
 #  setMountEnabled
@@ -1881,25 +1956,27 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                if { $private(targetMove) == "AUTO" } {
                   ::sophie::moveTarget $visuNo $private(targetCoord)
                }
-               if { $fiberStatus == "DETECTED" && $private(originMove) == "AUTO" } {
+               if { ($fiberStatus == "DETECTED" && $private(originMove) == "AUTO") || $fiberStatus == "DISABLED" } {
                   #--- je calcule la correction de la nouvelle position de la consigne
                   switch $::conf(sophie,guidingMode)  {
                      "FIBER_HR" {
                         set private(originCoord) [list $originX $originY]
                         #--- je calcule l'écart par rapport à la position de depart
-                        set originDx  [expr [lindex $private(originCoord) 0] - $::conf(sophie,fiberHRX) ]
-                        set originDy  [expr [lindex $private(originCoord) 1] - $::conf(sophie,fiberHRY) ]
+                        set originDx  [expr [lindex $private(originCoord) 0] - [lindex $private(originCoordGuide) 0] ]
+                        set originDy  [expr [lindex $private(originCoord) 1] - [lindex $private(originCoordGuide) 1] ]
                      }
                      "FIBER_HE" {
                         set private(originCoord) [list $originX $originY]
                         #--- je calcule l'écart par rapport à la position de depart
-                        set originDx  [expr [lindex $private(originCoord) 0] - $::conf(sophie,fiberHEX) ]
-                        set originDy  [expr [lindex $private(originCoord) 1] - $::conf(sophie,fiberHEY) ]
+                        set originDx  [expr [lindex $private(originCoord) 0] - [lindex $private(originCoordGuide) 0] ]
+                        set originDy  [expr [lindex $private(originCoord) 1] - [lindex $private(originCoordGuide) 1] ]
                      }
                      "OBJECT" {
                         #--- l'ecart de la consigne est nul
                         set originDx 0.0
                         set originDy 0.0
+                        set originDx  [expr [lindex $private(originCoord) 0] - [lindex $private(originCoordGuide) 0] ]
+                        set originDy  [expr [lindex $private(originCoord) 1] - [lindex $private(originCoordGuide) 1] ]                  
                      }
                   }
                } else {
@@ -1911,6 +1988,10 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                if { $private(originMove) == "AUTO" } {
                   ::sophie::createOrigin $visuNo
                }
+               
+               #--- j'affiche le symbole de la fibre B
+               ::sophie::createFiberB $visuNo
+               
                ##console::disp "callbackAcquisition origin= $private(originCoord) detail=$infoMessage\n"
 
                #--- j'affiche les informations dans la fenetre de controle
