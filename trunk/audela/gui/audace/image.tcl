@@ -2,7 +2,7 @@
 # Fichier : image.tcl
 # Description : Manipulation des images (a deplacer dans aud1.tcl)
 # Auteur : Michel PUJOL
-# Mise a jour $Id: image.tcl,v 1.7 2007-06-11 21:47:19 michelpujol Exp $
+# Mise a jour $Id: image.tcl,v 1.8 2009-09-13 14:59:51 michelpujol Exp $
 #
 
 ##############################################################################
@@ -13,7 +13,7 @@
 #############################################################################
 
 namespace eval ::Image {
-
+   
    #------------------------------------------------------------------------------
    #  loadmovie
    #    charge un film dans la fenetre standard
@@ -36,12 +36,6 @@ namespace eval ::Image {
 
       #--- je raffraichis l'affichage du reticule
       ::confVisu::redrawCrosshair $visuNo
-   }
-
-   array set private {
-      animationState      "0"
-      animationAfterId    ""
-      animationDelay      ".5"
    }
 
    #------------------------------------------------------------
@@ -176,4 +170,11 @@ namespace eval ::Image {
       }
    }
 }
+
+array set ::Image::private {
+   animationState      "0"
+   animationAfterId    ""
+   animationDelay      ".5"
+}
+
 
