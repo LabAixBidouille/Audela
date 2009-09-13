@@ -2,7 +2,7 @@
 # Fichier : supernovae_go.tcl
 # Description : Outil pour l'observation des SnAudes
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: supernovae_go.tcl,v 1.17 2009-07-14 08:08:33 robertdelmas Exp $
+# Mise a jour $Id: supernovae_go.tcl,v 1.18 2009-09-13 19:59:26 robertdelmas Exp $
 #
 
 #============================================================
@@ -142,6 +142,12 @@ proc ::supernovae::startTool { visuNo } {
 proc ::supernovae::stopTool { visuNo } {
    variable This
 
+   #--- Je verifie si une operation est en cours
+   if { $::sn(exit_visu) == 1 } {
+      return -1
+   }
+
+   #---
    pack forget $This
 }
 
