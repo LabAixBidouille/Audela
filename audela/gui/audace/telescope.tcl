@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.40 2009-07-14 08:22:39 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.41 2009-09-15 18:37:21 michelpujol Exp $
 #
 
 namespace eval ::telescope {
@@ -216,14 +216,18 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
       if { $audace(telescope,stopgoto) == "1" } {
          return 0
       }
-      #--- Goto0
+      #--- Goto
       tel$audace(telNo) radec goto $list_radec -blocking $blocking
-      #--- Boucle tant que la monture n'est pas arretee
-      set audace(telescope,goto) "1"
-      set radec0 [ tel$audace(telNo) radec coord ]
-      surveille_goto [ list $radec0 ] $But_Goto $But_Match
-      #--- j'attends que la variable soit remise a zero
-      vwait ::audace(telescope,goto)
+      if { $blocking == 0 } {
+         #--- Boucle tant que la monture n'est pas arretee (si on n'utilise pas le mode bloquant du goto)
+         set audace(telescope,goto) "1"
+         set radec0 [ tel$audace(telNo) radec coord ]
+         set surveilleResultat [::telescope::surveille_goto [ list $radec0 ] $But_Goto $But_Match ]
+         if { $surveilleResultat == 1 } {
+            #--- j'attends que la variable soit remise a zero
+            vwait ::audace(telescope,goto)
+         }
+      }
       #--- je restaure le mode slewpath si necessaire
       slewpathShort2Long
       return 0
@@ -242,7 +246,8 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
 #    But_Goto  : Widget du bouton Goto (optionnel)
 #    But_Match : Widget du bouton Match (optionnel)
 # Return :
-#    Rien
+#    0 si derniere boucle
+#    1 si nouvelle boucle est lancee
 #------------------------------------------------------------
 proc ::telescope::surveille_goto { radec0 { But_Goto "" } { But_Match "" } } {
    global audace
@@ -257,6 +262,7 @@ proc ::telescope::surveille_goto { radec0 { But_Goto "" } { But_Match "" } } {
    set sepangle [ mc_anglesep [ list $ra0 $dec0 $ra1 $dec1 ] ]
    if { [ lindex $sepangle 0 ] > 0.1 } {
       after 1000 ::telescope::surveille_goto [ list $radec1 ] $But_Goto $But_Match
+      return 1
    } else {
       if { $But_Goto != "" } {
          $But_Goto configure -relief raised -state normal
@@ -264,8 +270,9 @@ proc ::telescope::surveille_goto { radec0 { But_Goto "" } { But_Match "" } } {
       if { $But_Match != "" } {
          $But_Match configure -relief raised -state normal
       }
-      set audace(telescope,goto) "0"
+      set ::audace(telescope,goto) "0"
       update
+      return 0
    }
 }
 
