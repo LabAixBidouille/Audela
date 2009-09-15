@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.10 2009-09-11 08:57:45 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.11 2009-09-15 11:58:30 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -567,7 +567,8 @@ namespace eval ::zadkopad {
    #  run
    #     cree la fenetre de la raquette
    #------------------------------------------------------------
-   proc run { {zoom .5} {positionxy 0+0} } {
+   # PIERRE MODIFIE POSITION RAQUETTE
+   proc run { {zoom .5} {positionxy 200+50} } {
       variable widget
       global audace caption color geomlx200 statustel zonelx200 paramhorloge base
 
