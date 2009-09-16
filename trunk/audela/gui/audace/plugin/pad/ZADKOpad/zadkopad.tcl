@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.18 2009-09-16 10:20:21 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.19 2009-09-16 11:59:48 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -17,8 +17,10 @@ namespace eval ::zadkopad {
    #     initialise le plugin
    #------------------------------------------------------------
    proc initPlugin { } {
-		global port modetelescope stopcalcul paramhorloge telnum
+		global port modetelescope stopcalcul paramhorloge
 		
+		set port(hostname) [lindex [hostaddress] end]
+        set port(ipIkon)   "121.200.43.5"
 		set port(adressePCcontrol) 121.200.43.11
 		set port(maj) 30032
 		set port(tel) 30011
@@ -26,7 +28,7 @@ namespace eval ::zadkopad {
 		set modetelescope 0
 		set stopcalcul 0
 		set paramhorloge(init) 0
-		set telnum 1
+
 		#--- Cree les variables dans conf(...) si elles n'existent pas
 		initConf
 		#--- J'initialise les variables widget(..)
@@ -184,7 +186,7 @@ namespace eval ::zadkopad {
    #  return rien
    #------------------------------------------------------------
    proc deletePluginInstance { } {
-      global audace conf paramhorloge modetelescope
+      global audace conf paramhorloge modetelescope port
 
       if { [ winfo exists .zadkopad ] } {
          #--- Enregistre la position de la raquette
@@ -195,8 +197,10 @@ namespace eval ::zadkopad {
       }
 	  set paramhorloge(sortie) "1"
 	  set modetelescope 0
-	  #--- rend la main a ros
-	  modeZADKO 0
+	  if {$port(hostname)==$port(ipIkon)} {
+    	  #--- rend la main a ros
+    	  modeZADKO 0
+	  }
 	  
       #--- Supprime la raquette
       destroy .zadkopad
@@ -241,7 +245,7 @@ namespace eval ::zadkopad {
    #     manuel(1)/auto
    #------------------------------------------------------------
 	proc modeZADKO { mode } {
-		global port modetelescope audela telnum
+		global port modetelescope audela 
 		
 		set texte "DO eval "
 		append texte  {expr 1+1}
@@ -381,7 +385,7 @@ namespace eval ::zadkopad {
    #    goto new coordinate     
    #------------------------------------------------------------
 	proc gotocoord { newra newdec suivira suividec onoff newfocus} {
-		global port paramhorloge audace telnum
+		global port paramhorloge audace 
 		
 		set paramhorloge(home)       $audace(posobs,observateur,gps)
 		
@@ -456,7 +460,7 @@ namespace eval ::zadkopad {
     #    send focus     
     #------------------------------------------------------------
 	proc sendfocus {newfocus} {
-		global port paramhorloge audace telnum
+		global port paramhorloge audace 
 		
 		# --- teste si le focus est bon
 		if {($newfocus<2800)||($newfocus>3600)} {				
@@ -515,7 +519,7 @@ namespace eval ::zadkopad {
    #    send focus     
    #------------------------------------------------------------
 	proc stopfocus {} {
-		global port paramhorloge audace telnum
+		global port paramhorloge audace 
 		
 		set texte {DO eval {tel1 put "#13;\r"}}
 		
@@ -622,7 +626,7 @@ namespace eval ::zadkopad {
 	#    met a jour les donnes     
 	#------------------------------------------------------------
 	proc refreshcoord { } {
-	   global caption base paramhorloge stopcalcul telnum
+	   global caption base paramhorloge stopcalcul 
 	    
 	    set stopcalcul 1
 	    ::console::affiche_resultat "refresh paramhorloge(new,ra):$paramhorloge(new,ra) ,paramhorloge(new,dec): $paramhorloge(new,dec) \n"
@@ -661,7 +665,7 @@ namespace eval ::zadkopad {
     # PIERRE MODIFIE POSITION RAQUETTE
     proc run { {zoom .5} {positionxy 200+50} } {
         variable widget
-        global audace caption color geomlx200 statustel zonelx200 paramhorloge base telnum
+        global audace caption color geomlx200 statustel zonelx200 paramhorloge base port
         
         if { [ string length [ info commands .zadkopad.display* ] ] != "0" } {
          destroy .zadkopad
@@ -700,6 +704,7 @@ namespace eval ::zadkopad {
         set geomlx200(20pixels)   [ expr int(20*$zoom) ]
         set geomlx200(21pixels)   [ expr int(28*$zoom) ]
         set geomlx200(30pixels)   [ expr int(30*$zoom) ]
+        set geomlx200(40pixels)   [ expr int(40*$zoom) ]
         set geomlx200(430pixels)  [ expr int(430*$zoom)]
         set geomlx200(haut)       [ expr int(70*$zoom) ]
         set geomlx200(linewidth0) [ expr int(3*$zoom) ]
@@ -708,32 +713,37 @@ namespace eval ::zadkopad {
       
         #--- Initialisation
         set paramhorloge(sortie)     "0"
-        set radec [ roscommande {telescope TEL radec coord}]
-        #ATTENTION rajout OFFSET de pointage DFM
-		#ATTENTION rajout OFFSET de pointage DFM
-        set paramhorloge(ra)         "[lindex $radec 0]"
-        set paramhorloge(dec)        "[lindex $radec 1]"
-        if {($paramhorloge(ra)!="")&&($paramhorloge(dec)!="")} {
-            set dra [expr 21/60.];       # offset (deg) for hour angle
-            set ddec [expr 8./60.];      # offset (deg) for declination
-            set paramhorloge(ra)        [mc_angle2deg $paramhorloge(ra)]
-            set paramhorloge(dec)       [mc_angle2deg $paramhorloge(dec) 90]
-            set paramhorloge(ra)        [expr $paramhorloge(ra)+$dra]
-            set paramhorloge(dec)       [expr $paramhorloge(dec)+$ddec]
-            set paramhorloge(ra)        [string trim [mc_angle2hms $paramhorloge(ra) 360 zero 2 auto string]]
-            set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec)  90 zero 1 + string]]  
-        }   
-		set paramhorloge(new,ra) 	 "$paramhorloge(ra)"
-		set paramhorloge(new,dec) 	 "$paramhorloge(dec)"
-        set paramhorloge(home)       $audace(posobs,observateur,gps)
+        if {$port(hostname)==$port(ipIkon)} {
+            set radec [ roscommande {telescope TEL radec coord}]
+            #ATTENTION rajout OFFSET de pointage DFM
+            set paramhorloge(ra)         "[lindex $radec 0]"
+            set paramhorloge(dec)        "[lindex $radec 1]"
+            if {($paramhorloge(ra)!="")&&($paramhorloge(dec)!="")} {
+                set dra [expr 21/60.];       # offset (deg) for hour angle
+                set ddec [expr 8./60.];      # offset (deg) for declination
+                set paramhorloge(ra)        [mc_angle2deg $paramhorloge(ra)]
+                set paramhorloge(dec)       [mc_angle2deg $paramhorloge(dec) 90]
+                set paramhorloge(ra)        [expr $paramhorloge(ra)+$dra]
+                set paramhorloge(dec)       [expr $paramhorloge(dec)+$ddec]
+                set paramhorloge(ra)        [string trim [mc_angle2hms $paramhorloge(ra) 360 zero 2 auto string]]
+                set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec)  90 zero 1 + string]]  
+            }              
+            set paramhorloge(focal_number)	"[lindex [::zadkopad::roscommande {telescope DO eval {tel1 dfmfocus}}] 0]" 
+        } else {
+            set paramhorloge(ra)         ""
+            set paramhorloge(dec)        ""
+            set paramhorloge(focal_number)  ""
+        }
+        set paramhorloge(new,ra) 	 "$paramhorloge(ra)"
+    	set paramhorloge(new,dec) 	 "$paramhorloge(dec)"
+    	set paramhorloge(home)       $audace(posobs,observateur,gps)
         set paramhorloge(color,back) #123456
         set paramhorloge(color,text) #FFFFAA
         set paramhorloge(font)       {times 30 bold}
         set paramhorloge(suivira)	 "0.00417808"
         set paramhorloge(suividec)   "0.0"
-        set paramhorloge(focal_number)	"[lindex [::zadkopad::roscommande {telescope DO eval {tel1 dfmfocus}}] 0]" 
-
         ::console::affiche_resultat  "init focal_number: $paramhorloge(focal_number), paramhorloge(new,ra):$paramhorloge(new,ra), paramhorloge(new,dec): $paramhorloge(new,dec) \n"
+
         # =========================================
         # === Setting the graphic interface
         # === Met en place l'interface graphique
@@ -887,6 +897,10 @@ namespace eval ::zadkopad {
         label $base.f.lab_secz -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
         pack $base.f.lab_secz -fill none -pady 2
         
+        #--- Create a dummy space
+        frame $base.f.vide -height 2 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+        pack $base.f.vide -in $base.f -side top -fill x -pady 4
+        
         button $base.f.but1 -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text OFF \
          -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -text "Refresh" -command {::zadkopad::refreshcoord}
         pack $base.f.but1 -ipadx 5 -ipady 5 -pady 20
@@ -905,14 +919,14 @@ namespace eval ::zadkopad {
         #---
         frame $base2.f.ra -bg $colorlx200(backpad)
           label $base2.f.ra.lab1 -text "Right Ascension (h m s):" -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
-          entry $base2.f.ra.ent1 -textvariable paramhorloge(new,ra) -width 10  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
+          entry $base2.f.ra.ent1 -textvariable paramhorloge(new,ra) -width 15  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
              -bg $colorlx200(backtour)  -fg $colorlx200(backpad) -relief flat
           pack $base2.f.ra.lab1 -side left -fill none
           pack $base2.f.ra.ent1 -side left -fill none
         pack $base2.f.ra -fill none -pady 2
         frame $base2.f.dec -bg $colorlx200(backpad)
           label $base2.f.dec.lab1 -text "Declination (+/- ° ' ''):" -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
-          entry $base2.f.dec.ent1 -textvariable paramhorloge(new,dec) -width 10  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
+          entry $base2.f.dec.ent1 -textvariable paramhorloge(new,dec) -width 15  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
              -bg $colorlx200(backtour)  -fg $colorlx200(backpad) -relief flat
           pack $base2.f.dec.lab1 -side left -fill none
           pack $base2.f.dec.ent1 -side left -fill none
@@ -928,6 +942,10 @@ namespace eval ::zadkopad {
          -width $geomlx200(30pixels) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "Tracking Control (degre/sec)" \
          -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
         pack $base2.f.f3.telescope -in $base2.f.f3 -side top
+         label $base2.f.f3.sideral \
+         -width $geomlx200(40pixels) -font [ list {Arial} $geomlx200(10pixels) $geomlx200(textthick) ] -text "Sideral tracking RA 0.00417808 & DEC 0.0" \
+         -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
+        pack $base2.f.f3.sideral -in $base2.f.f3 -side top
         
         label $base2.f.f3.focra \
          -width $geomlx200(5pixels) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "RA" \
@@ -956,10 +974,10 @@ namespace eval ::zadkopad {
         
         #--- Create a dummy space
         frame $base2.f.vide2 -height 2 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-        pack $base2.f.vide2 -in $base2.f -side top -fill x -pady 5
+        pack $base2.f.vide2 -in $base2.f -side top -fill x -pady 4
          	   
         label $base2.f.vide2.sendposition -width $geomlx200(15pixels) -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
-        pack $base2.f.vide2.sendposition -in $base2.f.vide2 -side top -fill x -pady 10
+        pack $base2.f.vide2.sendposition -in $base2.f.vide2 -side top -fill x -pady 8
         
         button $base2.f.vide2.sendposition.but1 -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]\
          -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey)\
@@ -971,7 +989,7 @@ namespace eval ::zadkopad {
         #pack $base2.f.vide2 -in $base2.f -side top -fill x -pady 10
         
         pack $base2.f -fill both
-        .zadkopad.mode.manual configure -relief groove -state normal		
+        
         .zadkopad.func.closedome configure -relief groove -state disabled
         .zadkopad.func.opendome configure -relief groove -state disabled
         .zadkopad.tel.init configure -relief groove -state disabled
@@ -987,14 +1005,17 @@ namespace eval ::zadkopad {
         #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
         bind .zadkopad <Key-F1> { ::console::GiveFocus }
         
+        if {$port(hostname)==$port(ipIkon)} {
+            ::zadkopad::refreshcoord
+            ::zadkopad::calculz
+            #--- Je passe en mode manuel sur le telescope ZADKO
+            ::zadkopad::modeZADKO 1
+            set paramhorloge(init) 1
+            .zadkopad.mode.manual configure -relief groove -state normal		
+        } 
         # =======================================
         # === It is the end of the script run ===
-        # =======================================
-        ::zadkopad::refreshcoord
-        ::zadkopad::calculz
-        #--- Je passe en mode manuel sur le telescope ZADKO
-        ::zadkopad::modeZADKO 1
-        set paramhorloge(init) 1
+        # =======================================        
     }
    
 
