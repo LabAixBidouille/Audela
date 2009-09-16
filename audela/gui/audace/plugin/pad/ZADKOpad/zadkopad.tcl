@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.12 2009-09-16 08:46:27 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.13 2009-09-16 09:08:05 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -17,7 +17,7 @@ namespace eval ::zadkopad {
    #     initialise le plugin
    #------------------------------------------------------------
    proc initPlugin { } {
-		global port modetelescope stopcalcul
+		global port modetelescope stopcalcul paramhorloge
 		
 		set port(adressePCcontrol) 121.200.43.11
 		set port(maj) 30032
@@ -25,7 +25,7 @@ namespace eval ::zadkopad {
 		set port(gard) 30001
 		set modetelescope 0
 		set stopcalcul 0
-		
+		set paramhorloge(init) 0
 		#--- Cree les variables dans conf(...) si elles n'existent pas
 		initConf
 		#--- J'initialise les variables widget(..)
@@ -338,37 +338,39 @@ namespace eval ::zadkopad {
 			set reponse [::zadkopad::dialoguesocket $port(adressePCcontrol) $portCom $ordre]
 			::console::affiche_resultat "$nameexe ordre: $ordre, reponse: $reponse \n"
 			
-			.zadkopad.func.closedome configure -relief groove -state disabled
-    		.zadkopad.func.opendome configure -relief groove -state disabled
-    		.zadkopad.tel.init configure -relief groove -state disabled
-    		.zadkopad.tel.parking configure -relief groove -state disabled
-    		.zadkopad.petal.petalopen configure -relief groove -state disabled
-    		.zadkopad.petal.petalclose configure -relief groove -state disabled
-    		.zadkopad.foc.enter configure -relief groove -state disabled		 		
-    		.zadkopad.frame1.frame2.f.but1 configure -relief groove -state disabled
-    		.zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state disabled
-    		update
-    		
-    		if {[lindex $msg 2]=="roof_open" } {
-        		set temps 120000
-    		} elseif {[lindex $msg 2]=="roof_close" } {
-        		set temps 130000
-    		} elseif {[lindex $msg 2]=="init" } {
-        		set temps 210000
-    		} elseif {[lindex $msg 2]=="park" } {
-        		set temps 120000
+			if {$paramhorloge(init)=="1"} {
+    			.zadkopad.func.closedome configure -relief groove -state disabled
+        		.zadkopad.func.opendome configure -relief groove -state disabled
+        		.zadkopad.tel.init configure -relief groove -state disabled
+        		.zadkopad.tel.parking configure -relief groove -state disabled
+        		.zadkopad.petal.petalopen configure -relief groove -state disabled
+        		.zadkopad.petal.petalclose configure -relief groove -state disabled
+        		.zadkopad.foc.enter configure -relief groove -state disabled		 		
+        		.zadkopad.frame1.frame2.f.but1 configure -relief groove -state disabled
+        		.zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state disabled
+        		update
+        		
+        		if {[lindex $msg 2]=="roof_open" } {
+            		set temps 120000
+        		} elseif {[lindex $msg 2]=="roof_close" } {
+            		set temps 130000
+        		} elseif {[lindex $msg 2]=="init" } {
+            		set temps 210000
+        		} elseif {[lindex $msg 2]=="park" } {
+            		set temps 120000
+        		}
+        		after [expr int($temps)]
+        		
+                .zadkopad.func.closedome configure -relief groove -state normal
+        		.zadkopad.func.opendome configure -relief groove -state normal
+        		.zadkopad.tel.init configure -relief groove -state normal
+        		.zadkopad.tel.parking configure -relief groove -state normal
+        		.zadkopad.petal.petalopen configure -relief groove -state normal
+        		.zadkopad.petal.petalclose configure -relief groove -state normal
+        		.zadkopad.foc.enter configure -relief groove -state normal
+        		.zadkopad.frame1.frame2.f.but1 configure -relief groove -state normal
+        		.zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state normal
     		}
-    		after [expr int($temps)]
-    		
-            .zadkopad.func.closedome configure -relief groove -state normal
-    		.zadkopad.func.opendome configure -relief groove -state normal
-    		.zadkopad.tel.init configure -relief groove -state normal
-    		.zadkopad.tel.parking configure -relief groove -state normal
-    		.zadkopad.petal.petalopen configure -relief groove -state normal
-    		.zadkopad.petal.petalclose configure -relief groove -state normal
-    		.zadkopad.foc.enter configure -relief groove -state normal
-    		.zadkopad.frame1.frame2.f.but1 configure -relief groove -state normal
-    		.zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state normal
 		} 
 		return $reponse
 	}
@@ -435,13 +437,18 @@ namespace eval ::zadkopad {
 		# --- envoie l'ordre de pointage au telescope
 		set reponse [::zadkopad::roscommande [list telescope GOTO $newra $newdec -blocking 1]]
 		::console::affiche_resultat "$reponse \n"
-		set reponse [::zadkopad::roscommande [list telescope DO speedtrack $suivira $suividec]]
+		if 	{$onoff=="off"} {
+			set reponse [::zadkopad::roscommande [list telescope DO speedtrack 0 0]]
+		} else {
+		    set reponse [::zadkopad::roscommande [list telescope DO speedtrack $suivira $suividec]]
+	    }
 		::console::affiche_resultat "$reponse \n"		
 		#set reponse [::zadkopad::roscommande [list telescope DO eval tel1 racdec motor $onoff]]
 		#::console::affiche_resultat "$reponse \n"	
 		
 		return $reponse
 	}
+	
 	#------------------------------------------------------------
     #    send focus     
     #------------------------------------------------------------
@@ -618,339 +625,335 @@ namespace eval ::zadkopad {
  		::zadkopad::calculz
  	
 	}
-   #------------------------------------------------------------
-   #  run
-   #     cree la fenetre de la raquette
-   #------------------------------------------------------------
-   # PIERRE MODIFIE POSITION RAQUETTE
-   proc run { {zoom .5} {positionxy 200+50} } {
-      variable widget
-      global audace caption color geomlx200 statustel zonelx200 paramhorloge base
-
-      if { [ string length [ info commands .zadkopad.display* ] ] != "0" } {
+    #------------------------------------------------------------
+    #  run
+    #     cree la fenetre de la raquette
+    #------------------------------------------------------------
+    # PIERRE MODIFIE POSITION RAQUETTE
+    proc run { {zoom .5} {positionxy 200+50} } {
+        variable widget
+        global audace caption color geomlx200 statustel zonelx200 paramhorloge base
+        
+        if { [ string length [ info commands .zadkopad.display* ] ] != "0" } {
          destroy .zadkopad
-      }
-
-      if { $zoom <= "0" } {
+        }
+        if { $zoom <= "0" } {
          destroy .zadkopad
          return
-      }
-
-      # =======================================
-      # === Initialisation of the variables
-      # === Initialisation des variables
-      # =======================================
-	  set zoom 1
-      set statustel(speed) "0"
-
-      #--- Definition of colorlx200s
-      #--- Definition des couleurs
-      set colorlx200(backkey)  $color(gray_pad)
-      set colorlx200(backtour) $color(cyan)
-      set colorlx200(backpad)  $color(blue_pad)
-      set colorlx200(backdisp) $color(red_pad)
-      set colorlx200(textkey)  $color(yellow)
-      set colorlx200(textdisp) $color(black)
-
-      #--- Definition des geomlx200etries
-      #--- Definition of geometry
-      set geomlx200(larg)       [ expr int(900*$zoom) ]
-      set geomlx200(long)       [ expr int(810*$zoom+40) ]
-      set geomlx200(fontsize25) [ expr int(25*$zoom) ]
-      set geomlx200(fontsize20) [ expr int(20*$zoom) ]
-      set geomlx200(fontsize16) [ expr int(16*$zoom) ]
-      set geomlx200(fontsize14) [ expr int(14*$zoom) ] 
-      set geomlx200(5pixels)   [ expr int(5*$zoom) ]     
-      set geomlx200(10pixels)   [ expr int(10*$zoom) ]
-      set geomlx200(15pixels)   [ expr int(15*$zoom) ]
-      set geomlx200(16pixels)   [ expr int(16*$zoom) ]
-      set geomlx200(20pixels)   [ expr int(20*$zoom) ]
-      set geomlx200(21pixels)   [ expr int(28*$zoom) ]
-      set geomlx200(30pixels)   [ expr int(30*$zoom) ]
-      set geomlx200(430pixels)  [ expr int(430*$zoom)]
-      set geomlx200(haut)       [ expr int(70*$zoom) ]
-      set geomlx200(linewidth0) [ expr int(3*$zoom) ]
-      set geomlx200(linewidth)  [ expr int($geomlx200(linewidth0)+1) ]
-
-      if { $geomlx200(linewidth0) <= "1" } { set geomlx200(textthick) "" } else { set geomlx200(textthick) "bold" }
+        }
+        # =======================================
+        # === Initialisation of the variables
+        # === Initialisation des variables
+        # =======================================
+        set zoom 1
+        set statustel(speed) "0"
+        
+        #--- Definition of colorlx200s
+        #--- Definition des couleurs
+        set colorlx200(backkey)  $color(gray_pad)
+        set colorlx200(backtour) $color(cyan)
+        set colorlx200(backpad)  $color(blue_pad)
+        set colorlx200(backdisp) $color(red_pad)
+        set colorlx200(textkey)  $color(yellow)
+        set colorlx200(textdisp) $color(black)
+        #--- Definition des geomlx200etries
+        #--- Definition of geometry
+        set geomlx200(larg)       [ expr int(900*$zoom) ]
+        set geomlx200(long)       [ expr int(810*$zoom+40) ]
+        set geomlx200(fontsize25) [ expr int(25*$zoom) ]
+        set geomlx200(fontsize20) [ expr int(20*$zoom) ]
+        set geomlx200(fontsize16) [ expr int(16*$zoom) ]
+        set geomlx200(fontsize14) [ expr int(14*$zoom) ] 
+        set geomlx200(5pixels)   [ expr int(5*$zoom) ]     
+        set geomlx200(10pixels)   [ expr int(10*$zoom) ]
+        set geomlx200(15pixels)   [ expr int(15*$zoom) ]
+        set geomlx200(16pixels)   [ expr int(16*$zoom) ]
+        set geomlx200(20pixels)   [ expr int(20*$zoom) ]
+        set geomlx200(21pixels)   [ expr int(28*$zoom) ]
+        set geomlx200(30pixels)   [ expr int(30*$zoom) ]
+        set geomlx200(430pixels)  [ expr int(430*$zoom)]
+        set geomlx200(haut)       [ expr int(70*$zoom) ]
+        set geomlx200(linewidth0) [ expr int(3*$zoom) ]
+        set geomlx200(linewidth)  [ expr int($geomlx200(linewidth0)+1) ]        
+        if { $geomlx200(linewidth0) <= "1" } { set geomlx200(textthick) "" } else { set geomlx200(textthick) "bold" }
       
-	#--- Initialisation
-	set paramhorloge(sortie)     "0"
-	set radec [ roscommande {telescope TEL radec coord}]
-	set paramhorloge(ra)         "[lindex $radec 0]"
-	set paramhorloge(dec)        "[lindex $radec 1]"
-	set paramhorloge(home)       $audace(posobs,observateur,gps)
-	set paramhorloge(color,back) #123456
-	set paramhorloge(color,text) #FFFFAA
-	set paramhorloge(font)       {times 30 bold}
-	set paramhorloge(suivira)	 "0.00417808"
-	set paramhorloge(suividec)   "0.0"
-	set paramhorloge(focal_number)	"[lindex [::zadkopad::roscommande {telescope DO eval {tel1 dfmfocus}}] 0]" 
-	set paramhorloge(new,ra)     "$paramhorloge(ra)"
-	set paramhorloge(new,dec)    "$paramhorloge(dec)"
-	::console::affiche_resultat  "init focal_number: $paramhorloge(focal_number), paramhorloge(new,ra):$paramhorloge(new,ra), paramhorloge(new,dec): $paramhorloge(new,dec) \n"
-	# =========================================
-	# === Setting the graphic interface
-	# === Met en place l'interface graphique
-	# =========================================
-	
-	#--- Cree la fenetre .zadkopad de niveau le plus haut
-	toplevel .zadkopad -class Toplevel -bg $colorlx200(backpad)
-	wm geometry .zadkopad $geomlx200(larg)x$geomlx200(long)+$positionxy
-	wm resizable .zadkopad 0 0
-	wm title .zadkopad $caption(zadkopad,titre)
-	wm protocol .zadkopad WM_DELETE_WINDOW "::zadkopad::deletePluginInstance"
-	
-	#--- Create the title
-	label .zadkopad.meade \
-	 -font [ list {Arial} $geomlx200(fontsize25) $geomlx200(textthick) ] -text "Telescope And Dome Control" \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(backtour)
-	pack .zadkopad.meade -in .zadkopad -fill x -side top
-	
-	frame .zadkopad.display -borderwidth 4  -relief sunken -bg $colorlx200(backtour)
-	pack .zadkopad.display -in .zadkopad -fill x -side top -pady $geomlx200(10pixels) -padx 12
-	
-	#--- Create a dummy space
-	frame .zadkopad.dum1 -height $geomlx200(20pixels) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-	pack .zadkopad.dum1 -in .zadkopad -side top -fill x
+        #--- Initialisation
+        set paramhorloge(sortie)     "0"
+        set radec [ roscommande {telescope TEL radec coord}]
+        set paramhorloge(ra)         "[lindex $radec 0]"
+        set paramhorloge(dec)        "[lindex $radec 1]"
+        set paramhorloge(home)       $audace(posobs,observateur,gps)
+        set paramhorloge(color,back) #123456
+        set paramhorloge(color,text) #FFFFAA
+        set paramhorloge(font)       {times 30 bold}
+        set paramhorloge(suivira)	 "0.00417808"
+        set paramhorloge(suividec)   "0.0"
+        set paramhorloge(focal_number)	"[lindex [::zadkopad::roscommande {telescope DO eval {tel1 dfmfocus}}] 0]" 
+        set paramhorloge(new,ra)     "$paramhorloge(ra)"
+        set paramhorloge(new,dec)    "$paramhorloge(dec)"
+        ::console::affiche_resultat  "init focal_number: $paramhorloge(focal_number), paramhorloge(new,ra):$paramhorloge(new,ra), paramhorloge(new,dec): $paramhorloge(new,dec) \n"
+        # =========================================
+        # === Setting the graphic interface
+        # === Met en place l'interface graphique
+        # =========================================
+        
+        #--- Cree la fenetre .zadkopad de niveau le plus haut
+        toplevel .zadkopad -class Toplevel -bg $colorlx200(backpad)
+        wm geometry .zadkopad $geomlx200(larg)x$geomlx200(long)+$positionxy
+        wm resizable .zadkopad 0 0
+        wm title .zadkopad $caption(zadkopad,titre)
+        wm protocol .zadkopad WM_DELETE_WINDOW "::zadkopad::deletePluginInstance"
+        
+        #--- Create the title
+        label .zadkopad.meade \
+         -font [ list {Arial} $geomlx200(fontsize25) $geomlx200(textthick) ] -text "Telescope And Dome Control" \
+         -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(backtour)
+        pack .zadkopad.meade -in .zadkopad -fill x -side top
+        
+        frame .zadkopad.display -borderwidth 4  -relief sunken -bg $colorlx200(backtour)
+        pack .zadkopad.display -in .zadkopad -fill x -side top -pady $geomlx200(10pixels) -padx 12
+        
+        #--- Create a dummy space
+        frame .zadkopad.dum1 -height $geomlx200(20pixels) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+        pack .zadkopad.dum1 -in .zadkopad -side top -fill x
+             
+        #--- Create a frame for change mode
+        frame .zadkopad.mode -height $geomlx200(haut) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+        pack .zadkopad.mode -in .zadkopad -side top -pady 10
+        
+        button .zadkopad.mode.manual -width $geomlx200(20pixels) -relief flat -bg $colorlx200(textdisp) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text MANUAL \
+         -borderwidth 0 -relief flat -bg $colorlx200(textdisp) -fg $colorlx200(backtour) -command {::zadkopad::modeZADKO 1}   
+        pack  .zadkopad.mode.manual -in .zadkopad.mode -padx [ expr int(11*$zoom) ] -side right
+        
+        #--- Create a frame for the telescope and dome init button
+        frame .zadkopad.tel -height $geomlx200(haut) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+        pack .zadkopad.tel -in .zadkopad -side top -fill x -pady 10
          
-	#--- Create a frame for change mode
-	frame .zadkopad.mode -height $geomlx200(haut) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-	pack .zadkopad.mode -in .zadkopad -side top -pady 10
-	
-	button .zadkopad.mode.manual -width $geomlx200(20pixels) -relief flat -bg $colorlx200(textdisp) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text MANUAL \
-	 -borderwidth 0 -relief flat -bg $colorlx200(textdisp) -fg $colorlx200(backtour) -command {::zadkopad::modeZADKO 1}   
-	pack  .zadkopad.mode.manual -in .zadkopad.mode -padx [ expr int(11*$zoom) ] -side right
-	
-	#--- Create a frame for the telescope and dome init button
-	frame .zadkopad.tel -height $geomlx200(haut) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-	pack .zadkopad.tel -in .zadkopad -side top -fill x -pady 10
-	 
-	#--- observatory control
-	label .zadkopad.tel.telescope -width $geomlx200(21pixels) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "Observatory" \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
-	pack .zadkopad.tel.telescope -in .zadkopad.tel -side left
-	 
-	button .zadkopad.tel.init -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text INIT \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::initobservatory 1}
-	button .zadkopad.tel.parking -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text "CLOSE (end of night)" \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::initobservatory 0}
-	
-	pack .zadkopad.tel.init .zadkopad.tel.parking -in .zadkopad.tel -padx [ expr int(11*$zoom) ] -side left
-	
-	#--- Create a frame for the dome control button
-	frame .zadkopad.func -height $geomlx200(haut) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-	pack .zadkopad.func -in .zadkopad -side top -pady 10
-	 
-	#--- Dome control
-	label .zadkopad.func.dome -width $geomlx200(21pixels) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "Dome Control" \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
-	pack .zadkopad.func.dome -in .zadkopad.func -side left
-	
-	
-	button .zadkopad.func.opendome -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text OPEN \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::roscommande {gardien DO roof_open}}
-	button .zadkopad.func.closedome -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text CLOSE \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::roscommande {gardien DO roof_close}}
-	pack  .zadkopad.func.closedome .zadkopad.func.opendome -in .zadkopad.func -padx [ expr int(11*$zoom) ] -side right
-	
-	    
-	#--- Create a frame for the mirror door button
-	frame .zadkopad.petal -height $geomlx200(haut) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-	pack .zadkopad.petal -in .zadkopad -side top -fill x -pady 10
-	 
-	#--- petal control
-	label .zadkopad.petal.telescope -width $geomlx200(21pixels) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "Mirror Door Control" \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
-	pack .zadkopad.petal.telescope -in .zadkopad.petal -side left
-	 
-	button .zadkopad.petal.petalopen -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text OPEN \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::roscommande {telescope DO mirrordoors 1}}
-	
-	button .zadkopad.petal.petalclose -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text CLOSE \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::roscommande {telescope DO mirrordoors 0}}
-	
-	pack  .zadkopad.petal.petalopen .zadkopad.petal.petalclose  -in .zadkopad.petal -padx [ expr int(11*$zoom) ] -side left
-	
-	#--- Create a dummy space
-	frame .zadkopad.vide -height $geomlx200(20pixels) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-	pack .zadkopad.vide -in .zadkopad -side top -fill x -pady 10
-	  
-	#--- Create a frame for the focalisation value
-	frame .zadkopad.foc -height $geomlx200(haut) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-	pack .zadkopad.foc -in .zadkopad -side top -fill x -pady 10
-	 
-	label .zadkopad.foc.telescope -width $geomlx200(21pixels) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "Focalisation" \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
-	pack .zadkopad.foc.telescope -in .zadkopad.foc -side left
-	 
-	entry .zadkopad.foc.ent1 -textvariable paramhorloge(focal_number) -width $geomlx200(10pixels)  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
-	     -bg $colorlx200(backtour)  -fg $colorlx200(backpad) -relief flat
-	     
-	button .zadkopad.foc.enter -width $geomlx200(10pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text SEND \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::sendfocus $paramhorloge(focal_number)}
-	 
-	# button .zadkopad.foc.stop -width $geomlx200(10pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text STOP \
-	# -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::stopfocus}
-	
-	pack  .zadkopad.foc.ent1 .zadkopad.foc.enter -in .zadkopad.foc -padx [ expr int(11*$zoom) ] -side left
-	
-	#--- Create a frame for Telescope Information
-	frame .zadkopad.frame1 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-	pack .zadkopad.frame1 -in .zadkopad -side top -fill x -pady 10
-	 
-	frame .zadkopad.frame1.frame2 -borderwidth 5 -relief flat -width $geomlx200(430pixels) -bg $colorlx200(backkey) 
-	 
-	pack .zadkopad.frame1.frame2 -in .zadkopad.frame1 -side right -fill x -expand true -pady 10 -padx 10
-	frame .zadkopad.frame1.frame3 -borderwidth 5 -relief flat -width $geomlx200(430pixels) -bg $colorlx200(backkey)
-	pack .zadkopad.frame1.frame3 -in .zadkopad.frame1 -side left -fill x -expand true -pady 10 -padx 10
-	
-	#--- label de droite
-	label .zadkopad.frame1.frame2.telescope -font [ list {Arial} $geomlx200(fontsize20) $geomlx200(textthick) ] -text "Telescope Information" \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(backtour)
-	pack .zadkopad.frame1.frame2.telescope -in .zadkopad.frame1.frame2 -side top -fill x -expand true
-	 
-	set base ".zadkopad.frame1.frame2"
-	frame $base.f -bg $colorlx200(backpad)
-	
-	label $base.f.lab_tu -bg $colorlx200(backpad) -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
-	label $base.f.lab_tsl -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
-	pack $base.f.lab_tu -fill none -pady 2
-	pack $base.f.lab_tsl -fill none -pady 2
-	#---
-	frame $base.f.ra -bg $colorlx200(backpad)
-	  label $base.f.ra.lab1 -text "Right Ascension (h m s):" -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
-	  entry $base.f.ra.ent1 -textvariable paramhorloge(ra) -width $geomlx200(10pixels)  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
-	         -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -relief flat
-	   pack $base.f.ra.lab1 -side left -fill none
-	   pack $base.f.ra.ent1 -side left -fill none
-	pack $base.f.ra -fill none -pady 2
-	frame $base.f.dec -bg $colorlx200(backpad)
-	  label $base.f.dec.lab1 -text "Declination (+/- ° ' ''):" -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
-	  entry $base.f.dec.ent1 -textvariable paramhorloge(dec) -width $geomlx200(10pixels)  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
-	     -bg $colorlx200(backpad) -fg $colorlx200(textkey) -relief flat
-	  pack $base.f.dec.lab1 -side left -fill none
-	  pack $base.f.dec.ent1 -side left -fill none
-	pack $base.f.dec -fill none -pady 2
-	
-	
-	#---
-	label $base.f.lab_ha -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
-	label $base.f.lab_altaz -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
-	pack $base.f.lab_ha -fill none -pady 2
-	pack $base.f.lab_altaz -fill none -pady 2
-	label $base.f.lab_secz -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
-	pack $base.f.lab_secz -fill none -pady 2
-	
-	button $base.f.but1 -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text OFF \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -text "Refresh" -command {::zadkopad::refreshcoord}
-	pack $base.f.but1 -ipadx 5 -ipady 5 -pady 20
-	pack $base.f -fill both
-	
-	#--- label de gauche
-	label .zadkopad.frame1.frame3.telescope -font [ list {Arial} $geomlx200(fontsize20) $geomlx200(textthick) ] -text "Move Telescope" \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(backtour)
-	pack .zadkopad.frame1.frame3.telescope -in .zadkopad.frame1.frame3 -side top -fill x -expand true
-	 	
-	set base2 ".zadkopad.frame1.frame3"
-	frame $base2.f -bg $colorlx200(backpad)
-	#--- Create a dummy space
-	frame $base2.f.vid -height 2 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-	pack $base2.f.vid -in $base2.f -side top -fill x -pady 5
-	#---
-	frame $base2.f.ra -bg $colorlx200(backpad)
-	  label $base2.f.ra.lab1 -text "Right Ascension (h m s):" -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
-	  entry $base2.f.ra.ent1 -textvariable paramhorloge(new,ra) -width 10  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
-	     -bg $colorlx200(backtour)  -fg $colorlx200(backpad) -relief flat
-	  pack $base2.f.ra.lab1 -side left -fill none
-	  pack $base2.f.ra.ent1 -side left -fill none
-	pack $base2.f.ra -fill none -pady 2
-	frame $base2.f.dec -bg $colorlx200(backpad)
-	  label $base2.f.dec.lab1 -text "Declination (+/- ° ' ''):" -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
-	  entry $base2.f.dec.ent1 -textvariable paramhorloge(new,dec) -width 10  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
-	     -bg $colorlx200(backtour)  -fg $colorlx200(backpad) -relief flat
-	  pack $base2.f.dec.lab1 -side left -fill none
-	  pack $base2.f.dec.ent1 -side left -fill none
-	pack $base2.f.dec -fill none -pady 2
-	#--- Create a dummy space
-	frame $base2.f.vide -height 2 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-	pack $base2.f.vide -in $base2.f -side top -fill x -pady 5
+        #--- observatory control
+        label .zadkopad.tel.telescope -width $geomlx200(21pixels) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "Observatory" \
+         -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
+        pack .zadkopad.tel.telescope -in .zadkopad.tel -side left
          
-	#--- track control
-	frame $base2.f.f3 -height 15 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-	pack $base2.f.f3 -in $base2.f -side top -fill x -pady 10
-	label $base2.f.f3.telescope \
-	 -width $geomlx200(30pixels) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "Tracking Control (degre/sec)" \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
-	pack $base2.f.f3.telescope -in $base2.f.f3 -side top
-	
-	label $base2.f.f3.focra \
-	 -width $geomlx200(5pixels) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "RA" \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
-	label $base2.f.f3.focdec \
-	 -width $geomlx200(5pixels) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "DEC" \
-	 -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
-	
-	entry $base2.f.f3.ent1 -textvariable paramhorloge(suivira) -width $geomlx200(15pixels)  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
-	         -bg $colorlx200(backtour) -fg $colorlx200(backpad) -relief flat
-	entry $base2.f.f3.ent2 -textvariable paramhorloge(suividec) -width $geomlx200(15pixels)  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
-	         -bg $colorlx200(backtour) -fg $colorlx200(backpad) -relief flat
-	   
-	pack $base2.f.f3.focra $base2.f.f3.ent1 $base2.f.f3.focdec $base2.f.f3.ent2 -side left -fill none
-	
-	frame $base2.f.f2 -height 15 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-	pack $base2.f.f2 -in $base2.f -side top -fill x -pady 10
-	
-	label $base2.f.f2.labelvide -width $geomlx200(10pixels) -borderwidth 0 -bg $colorlx200(backpad)
-	pack $base2.f.f2.labelvide -in $base2.f.f2 -side left  
+        button .zadkopad.tel.init -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text INIT \
+         -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::initobservatory 1}
+        button .zadkopad.tel.parking -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text "CLOSE (end of night)" \
+         -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::initobservatory 0}
+        
+        pack .zadkopad.tel.init .zadkopad.tel.parking -in .zadkopad.tel -padx [ expr int(11*$zoom) ] -side left
+        
+        #--- Create a frame for the dome control button
+        frame .zadkopad.func -height $geomlx200(haut) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+        pack .zadkopad.func -in .zadkopad -side top -pady 10
+         
+        #--- Dome control
+        label .zadkopad.func.dome -width $geomlx200(21pixels) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "Dome Control" \
+         -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
+        pack .zadkopad.func.dome -in .zadkopad.func -side left
+        
+        
+        button .zadkopad.func.opendome -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text OPEN \
+         -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::roscommande {gardien DO roof_open}}
+        button .zadkopad.func.closedome -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text CLOSE \
+         -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::roscommande {gardien DO roof_close}}
+        pack  .zadkopad.func.closedome .zadkopad.func.opendome -in .zadkopad.func -padx [ expr int(11*$zoom) ] -side right
+        
+            
+        #--- Create a frame for the mirror door button
+        frame .zadkopad.petal -height $geomlx200(haut) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+        pack .zadkopad.petal -in .zadkopad -side top -fill x -pady 10
+         
+        #--- petal control
+        label .zadkopad.petal.telescope -width $geomlx200(21pixels) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "Mirror Door Control" \
+         -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
+        pack .zadkopad.petal.telescope -in .zadkopad.petal -side left
+         
+        button .zadkopad.petal.petalopen -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text OPEN \
+         -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::roscommande {telescope DO mirrordoors 1}}
+        
+        button .zadkopad.petal.petalclose -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text CLOSE \
+         -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::roscommande {telescope DO mirrordoors 0}}
+        
+        pack  .zadkopad.petal.petalopen .zadkopad.petal.petalclose  -in .zadkopad.petal -padx [ expr int(11*$zoom) ] -side left
+        
+        #--- Create a dummy space
+        frame .zadkopad.vide -height $geomlx200(20pixels) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+        pack .zadkopad.vide -in .zadkopad -side top -fill x -pady 10
           
-	checkbutton $base2.f.f2.trackopen -width $geomlx200(10pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text "Tracking ON" \
-	 -borderwidth 0 -relief flat -variable paramhorloge(onoff) -onvalue "on" -offvalue "off"
-
-	pack $base2.f.f2.trackopen -in $base2.f.f2 -padx [ expr int(11*$zoom) ] -side top
-	
-	#--- Create a dummy space
-	frame $base2.f.vide2 -height 2 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-	pack $base2.f.vide2 -in $base2.f -side top -fill x -pady 5
-	 	   
-	label $base2.f.vide2.sendposition -width $geomlx200(15pixels) -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
-	pack $base2.f.vide2.sendposition -in $base2.f.vide2 -side top -fill x -pady 10
-	
-	button $base2.f.vide2.sendposition.but1 -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]\
-	 -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey)\
-	 -text "SEND" -command {::zadkopad::gotocoord "$paramhorloge(new,ra)" "$paramhorloge(new,dec)" "$paramhorloge(suivira)" "$paramhorloge(suividec)" "$paramhorloge(onoff)" "$paramhorloge(focal_number)"}
-	pack $base2.f.vide2.sendposition.but1 -in $base2.f.vide2.sendposition -side top -ipadx 5 -ipady 5 -pady 10	  
-	
-	#--- Create a dummy space
-	#frame $base2.f.vide2 -height 12 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
-	#pack $base2.f.vide2 -in $base2.f -side top -fill x -pady 10
-	
-	pack $base2.f -fill both
-	.zadkopad.mode.manual configure -relief groove -state normal		
-	.zadkopad.func.closedome configure -relief groove -state disabled
-	.zadkopad.func.opendome configure -relief groove -state disabled
-	.zadkopad.tel.init configure -relief groove -state disabled
-	.zadkopad.tel.parking configure -relief groove -state disabled
-	.zadkopad.petal.petalopen configure -relief groove -state disabled
-	.zadkopad.petal.petalclose configure -relief groove -state disabled
-	.zadkopad.foc.enter configure -relief groove -state disabled
-	.zadkopad.frame1.frame2.f.but1 configure -relief groove -state disabled
-	.zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state disabled
-	update	
-	#--- La fenetre est active
-	focus .zadkopad
-	
-	#--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-	bind .zadkopad <Key-F1> { ::console::GiveFocus }
-	
-	# =======================================
-	# === It is the end of the script run ===
-	# =======================================
-	::zadkopad::refreshcoord
-	::zadkopad::calculz
-	#--- Je passe en mode manuel sur le telescope ZADKO	
-	::zadkopad::modeZADKO 1
-	}
+        #--- Create a frame for the focalisation value
+        frame .zadkopad.foc -height $geomlx200(haut) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+        pack .zadkopad.foc -in .zadkopad -side top -fill x -pady 10
+         
+        label .zadkopad.foc.telescope -width $geomlx200(21pixels) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "Focalisation" \
+         -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
+        pack .zadkopad.foc.telescope -in .zadkopad.foc -side left
+         
+        entry .zadkopad.foc.ent1 -textvariable paramhorloge(focal_number) -width $geomlx200(10pixels)  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
+             -bg $colorlx200(backtour)  -fg $colorlx200(backpad) -relief flat
+             
+        button .zadkopad.foc.enter -width $geomlx200(10pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text SEND \
+         -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::sendfocus $paramhorloge(focal_number)}
+         
+        # button .zadkopad.foc.stop -width $geomlx200(10pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text STOP \
+        # -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::stopfocus}
+        
+        pack  .zadkopad.foc.ent1 .zadkopad.foc.enter -in .zadkopad.foc -padx [ expr int(11*$zoom) ] -side left
+        
+        #--- Create a frame for Telescope Information
+        frame .zadkopad.frame1 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+        pack .zadkopad.frame1 -in .zadkopad -side top -fill x -pady 10
+         
+        frame .zadkopad.frame1.frame2 -borderwidth 5 -relief flat -width $geomlx200(430pixels) -bg $colorlx200(backkey) 
+         
+        pack .zadkopad.frame1.frame2 -in .zadkopad.frame1 -side right -fill x -expand true -pady 10 -padx 10
+        frame .zadkopad.frame1.frame3 -borderwidth 5 -relief flat -width $geomlx200(430pixels) -bg $colorlx200(backkey)
+        pack .zadkopad.frame1.frame3 -in .zadkopad.frame1 -side left -fill x -expand true -pady 10 -padx 10
+        
+        #--- label de droite
+        label .zadkopad.frame1.frame2.telescope -font [ list {Arial} $geomlx200(fontsize20) $geomlx200(textthick) ] -text "Telescope Information" \
+         -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(backtour)
+        pack .zadkopad.frame1.frame2.telescope -in .zadkopad.frame1.frame2 -side top -fill x -expand true
+         
+        set base ".zadkopad.frame1.frame2"
+        frame $base.f -bg $colorlx200(backpad)
+        
+        label $base.f.lab_tu -bg $colorlx200(backpad) -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+        label $base.f.lab_tsl -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+        pack $base.f.lab_tu -fill none -pady 2
+        pack $base.f.lab_tsl -fill none -pady 2
+        #---
+        frame $base.f.ra -bg $colorlx200(backpad)
+          label $base.f.ra.lab1 -text "Right Ascension (h m s):" -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+          entry $base.f.ra.ent1 -textvariable paramhorloge(ra) -width $geomlx200(10pixels)  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
+                 -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -relief flat
+           pack $base.f.ra.lab1 -side left -fill none
+           pack $base.f.ra.ent1 -side left -fill none
+        pack $base.f.ra -fill none -pady 2
+        frame $base.f.dec -bg $colorlx200(backpad)
+          label $base.f.dec.lab1 -text "Declination (+/- ° ' ''):" -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+          entry $base.f.dec.ent1 -textvariable paramhorloge(dec) -width $geomlx200(10pixels)  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
+             -bg $colorlx200(backpad) -fg $colorlx200(textkey) -relief flat
+          pack $base.f.dec.lab1 -side left -fill none
+          pack $base.f.dec.ent1 -side left -fill none
+        pack $base.f.dec -fill none -pady 2
+        
+        
+        #---
+        label $base.f.lab_ha -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+        label $base.f.lab_altaz -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+        pack $base.f.lab_ha -fill none -pady 2
+        pack $base.f.lab_altaz -fill none -pady 2
+        label $base.f.lab_secz -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+        pack $base.f.lab_secz -fill none -pady 2
+        
+        button $base.f.but1 -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text OFF \
+         -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -text "Refresh" -command {::zadkopad::refreshcoord}
+        pack $base.f.but1 -ipadx 5 -ipady 5 -pady 20
+        pack $base.f -fill both
+        
+        #--- label de gauche
+        label .zadkopad.frame1.frame3.telescope -font [ list {Arial} $geomlx200(fontsize20) $geomlx200(textthick) ] -text "Move Telescope" \
+         -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(backtour)
+        pack .zadkopad.frame1.frame3.telescope -in .zadkopad.frame1.frame3 -side top -fill x -expand true
+         	
+        set base2 ".zadkopad.frame1.frame3"
+        frame $base2.f -bg $colorlx200(backpad)
+        #--- Create a dummy space
+        frame $base2.f.vid -height 2 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+        pack $base2.f.vid -in $base2.f -side top -fill x -pady 5
+        #---
+        frame $base2.f.ra -bg $colorlx200(backpad)
+          label $base2.f.ra.lab1 -text "Right Ascension (h m s):" -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+          entry $base2.f.ra.ent1 -textvariable paramhorloge(new,ra) -width 10  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
+             -bg $colorlx200(backtour)  -fg $colorlx200(backpad) -relief flat
+          pack $base2.f.ra.lab1 -side left -fill none
+          pack $base2.f.ra.ent1 -side left -fill none
+        pack $base2.f.ra -fill none -pady 2
+        frame $base2.f.dec -bg $colorlx200(backpad)
+          label $base2.f.dec.lab1 -text "Declination (+/- ° ' ''):" -bg $colorlx200(backpad)  -fg $colorlx200(textkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]
+          entry $base2.f.dec.ent1 -textvariable paramhorloge(new,dec) -width 10  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
+             -bg $colorlx200(backtour)  -fg $colorlx200(backpad) -relief flat
+          pack $base2.f.dec.lab1 -side left -fill none
+          pack $base2.f.dec.ent1 -side left -fill none
+        pack $base2.f.dec -fill none -pady 2
+        #--- Create a dummy space
+        frame $base2.f.vide -height 2 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+        pack $base2.f.vide -in $base2.f -side top -fill x -pady 5
+             
+        #--- track control
+        frame $base2.f.f3 -height 15 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+        pack $base2.f.f3 -in $base2.f -side top -fill x -pady 10
+        label $base2.f.f3.telescope \
+         -width $geomlx200(30pixels) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "Tracking Control (degre/sec)" \
+         -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
+        pack $base2.f.f3.telescope -in $base2.f.f3 -side top
+        
+        label $base2.f.f3.focra \
+         -width $geomlx200(5pixels) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "RA" \
+         -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
+        label $base2.f.f3.focdec \
+         -width $geomlx200(5pixels) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "DEC" \
+         -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
+        
+        entry $base2.f.f3.ent1 -textvariable paramhorloge(suivira) -width $geomlx200(15pixels)  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
+                 -bg $colorlx200(backtour) -fg $colorlx200(backpad) -relief flat
+        entry $base2.f.f3.ent2 -textvariable paramhorloge(suividec) -width $geomlx200(15pixels)  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
+                 -bg $colorlx200(backtour) -fg $colorlx200(backpad) -relief flat
+           
+        pack $base2.f.f3.focra $base2.f.f3.ent1 $base2.f.f3.focdec $base2.f.f3.ent2 -side left -fill none
+        
+        frame $base2.f.f2 -height 15 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+        pack $base2.f.f2 -in $base2.f -side top -fill x -pady 10
+        
+        label $base2.f.f2.labelvide -width $geomlx200(10pixels) -borderwidth 0 -bg $colorlx200(backpad)
+        pack $base2.f.f2.labelvide -in $base2.f.f2 -side left  
+              
+        checkbutton $base2.f.f2.trackopen -width $geomlx200(10pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text "Tracking ON" \
+         -borderwidth 0 -relief flat -variable paramhorloge(onoff) -onvalue "on" -offvalue "off" 
+        
+        pack $base2.f.f2.trackopen -in $base2.f.f2 -padx [ expr int(11*$zoom) ] -side top
+        
+        #--- Create a dummy space
+        frame $base2.f.vide2 -height 2 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+        pack $base2.f.vide2 -in $base2.f -side top -fill x -pady 5
+         	   
+        label $base2.f.vide2.sendposition -width $geomlx200(15pixels) -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
+        pack $base2.f.vide2.sendposition -in $base2.f.vide2 -side top -fill x -pady 10
+        
+        button $base2.f.vide2.sendposition.but1 -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]\
+         -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey)\
+         -text "SEND" -command {::zadkopad::gotocoord "$paramhorloge(new,ra)" "$paramhorloge(new,dec)" "$paramhorloge(suivira)" "$paramhorloge(suividec)" "$paramhorloge(onoff)" "$paramhorloge(focal_number)"}
+        pack $base2.f.vide2.sendposition.but1 -in $base2.f.vide2.sendposition -side top -ipadx 5 -ipady 5 -pady 10	  
+        
+        #--- Create a dummy space
+        #frame $base2.f.vide2 -height 12 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+        #pack $base2.f.vide2 -in $base2.f -side top -fill x -pady 10
+        
+        pack $base2.f -fill both
+        .zadkopad.mode.manual configure -relief groove -state normal		
+        .zadkopad.func.closedome configure -relief groove -state disabled
+        .zadkopad.func.opendome configure -relief groove -state disabled
+        .zadkopad.tel.init configure -relief groove -state disabled
+        .zadkopad.tel.parking configure -relief groove -state disabled
+        .zadkopad.petal.petalopen configure -relief groove -state disabled
+        .zadkopad.petal.petalclose configure -relief groove -state disabled
+        .zadkopad.foc.enter configure -relief groove -state disabled
+        .zadkopad.frame1.frame2.f.but1 configure -relief groove -state disabled
+        .zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state disabled
+        update
+        #--- La fenetre est active
+        focus .zadkopad       
+        #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+        bind .zadkopad <Key-F1> { ::console::GiveFocus }
+        
+        # =======================================
+        # === It is the end of the script run ===
+        # =======================================
+        ::zadkopad::refreshcoord
+        ::zadkopad::calculz
+        #--- Je passe en mode manuel sur le telescope ZADKO
+        ::zadkopad::modeZADKO 1
+        set paramhorloge(init) 1
+    }
    
 
 # proc met_a_jour { } {
