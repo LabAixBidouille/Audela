@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.16 2009-09-16 10:13:32 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.17 2009-09-16 10:16:21 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -466,9 +466,12 @@ namespace eval ::zadkopad {
 		# --- envoie l'ordre de focus
 		set nowfocus [lindex [::zadkopad::roscommande {telescope DO eval {tel1 dfmfocus}}] 0] 
 		::console::affiche_resultat "recupere le focus : $nowfocus \n"	
-		#if {$nowfocus==""} {
-		#		set nowfocus 3330 
-		#}
+		if {$nowfocus==""} {
+    		    set nowfocus [lindex [::zadkopad::roscommande {telescope DO eval {tel1 dfmfocus}}] 0] 
+    		    if {$nowfocus==""} {
+				    set nowfocus 3330 
+			    }
+		}
 		# --- envoie l'ordre de focus
 		set reponse [::zadkopad::roscommande [list telescope DO eval [list tel1 dfmfocus $newfocus]]]
 		::console::affiche_resultat "$reponse \n"	
