@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.14 2009-09-16 09:34:16 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.15 2009-09-16 10:06:26 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -273,7 +273,7 @@ namespace eval ::zadkopad {
 				# --- passer majordome en mode manuel
 				set reponse [::zadkopad::roscommande {majordome DO mysql ModeSysteme MANUAL}]
 				::console::affiche_resultat "$reponse \n"
-				set reponse [::zadkopad::roscommande {telescope DO eval {tel$telnum radec motor off}}]
+				set reponse [::zadkopad::roscommande {telescope DO eval {tel1 radec motor off}}]
 				::console::affiche_resultat "$reponse \n"
 				set modetelescope 1
 				#--- Tue camera.exe
@@ -300,7 +300,7 @@ namespace eval ::zadkopad {
 				# pour contrer le bug de DFM
 				::zadkopad::stopfocus
 				#################################
-				set reponse [::zadkopad::roscommande {telescope DO eval {tel$telnum radec motor off}}]
+				set reponse [::zadkopad::roscommande {telescope DO eval {tel1 radec motor off}}]
 				::console::affiche_resultat "$reponse \n"
 				# --- passer majordome en mode auto
 				#passer en mode manuel du majordome
@@ -359,6 +359,8 @@ namespace eval ::zadkopad {
             		set temps 210000
         		} elseif {[lindex $msg 2]=="park" } {
             		set temps 120000
+        		} else {
+	        		set temps 0
         		}
         		after [expr int($temps)]
         		
@@ -444,7 +446,7 @@ namespace eval ::zadkopad {
 		    set reponse [::zadkopad::roscommande [list telescope DO speedtrack $suivira $suividec]]
 	    }
 		::console::affiche_resultat "$reponse \n"		
-		#set reponse [::zadkopad::roscommande [list telescope DO eval tel$telnum racdec motor $onoff]]
+		#set reponse [::zadkopad::roscommande [list telescope DO eval tel1 racdec motor $onoff]]
 		#::console::affiche_resultat "$reponse \n"	
 		
 		return $reponse
@@ -462,13 +464,13 @@ namespace eval ::zadkopad {
 			return
 		} 
 		# --- envoie l'ordre de focus
-		set nowfocus [lindex [::zadkopad::roscommande {telescope DO eval {tel$telnum dfmfocus}}] 0] 
+		set nowfocus [lindex [::zadkopad::roscommande {telescope DO eval {tel1 dfmfocus}}] 0] 
 		::console::affiche_resultat "recupere le focus : $nowfocus \n"	
 		#if {$nowfocus==""} {
 		#		set nowfocus 3330 
 		#}
 		# --- envoie l'ordre de focus
-		set reponse [::zadkopad::roscommande [list telescope DO eval [list tel$telnum dfmfocus $newfocus]]]
+		set reponse [::zadkopad::roscommande [list telescope DO eval [list tel1 dfmfocus $newfocus]]]
 		::console::affiche_resultat "$reponse \n"	
 		if {$nowfocus==""} {
 				set temps  [expr 800*33*1000/500 + 4000]
@@ -512,7 +514,7 @@ namespace eval ::zadkopad {
 	proc stopfocus {} {
 		global port paramhorloge audace telnum
 		
-		set texte {DO eval {tel$telnum put "#13;\r"}}
+		set texte {DO eval {tel1 put "#13;\r"}}
 		
 		catch [ set f [socket $port(adressePCcontrol) $port(tel)]]
 		if {[string range $f 0 3]=="sock"} {
@@ -542,14 +544,14 @@ namespace eval ::zadkopad {
 				#ATTENTION rajout OFFSET de pointage DFM
  				set paramhorloge(ra)         "[lindex $radec 0]"
                 set paramhorloge(dec)        "[lindex $radec 1]"
-                set dra [expr 21/60.]       # offset (deg) for hour angle
-                set ddec [expr 8./60.]      # offset (deg) for declination
+                set dra [expr 21/60.];       # offset (deg) for hour angle
+                set ddec [expr 8./60.];      # offset (deg) for declination
                 set paramhorloge(ra)        [mc_angle2deg $paramhorloge(ra)]
                 set paramhorloge(dec)       [mc_angle2deg $paramhorloge(dec) 90]
                 set paramhorloge(ra)        [expr $paramhorloge(ra)+$dra]
                 set paramhorloge(dec)       [expr $paramhorloge(dec)+$ddec]
                 set paramhorloge(ra)        [string trim [mc_angle2hms $paramhorloge(ra) 360 zero 2 auto string]]
-                set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec  90 zero 1 + string]]    
+                set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec)  90 zero 1 + string]]    
  				set paramhorloge(new,ra) 	 $paramhorloge(ra)
  				set paramhorloge(new,dec) 	 $paramhorloge(dec)
  			} else {
@@ -624,18 +626,18 @@ namespace eval ::zadkopad {
 		#ATTENTION rajout OFFSET de pointage DFM
 		set paramhorloge(ra)         "[lindex $radec 0]"
 		set paramhorloge(dec)        "[lindex $radec 1]"
-		set dra [expr 21/60.]      # offset (deg) for hour angle
-        set ddec [expr 8./60.]     # offset (deg) for declination
+		set dra [expr 21/60.];      # offset (deg) for hour angle
+        set ddec [expr 8./60.];     # offset (deg) for declination
         set paramhorloge(ra)        [mc_angle2deg $paramhorloge(ra)]
         set paramhorloge(dec)       [mc_angle2deg $paramhorloge(dec) 90]
         set paramhorloge(ra)        [expr $paramhorloge(ra)+$dra]
         set paramhorloge(dec)       [expr $paramhorloge(dec)+$ddec]
         set paramhorloge(ra)        [string trim [mc_angle2hms $paramhorloge(ra) 360 zero 2 auto string]]
-        set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec  90 zero 1 + string]]    
+        set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec)  90 zero 1 + string]]    
 		set paramhorloge(new,ra) 	 $paramhorloge(ra)
 		set paramhorloge(new,dec) 	 $paramhorloge(dec)
  				
- 		set paramhorloge(focal_number)	[lindex [::zadkopad::roscommande {telescope DO eval {tel$telnum dfmfocus}}] 0]
+ 		set paramhorloge(focal_number)	[lindex [::zadkopad::roscommande {telescope DO eval {tel1 dfmfocus}}] 0]
  		set vitessessuivie [::zadkopad::roscommande [list telescope DO speedtrack]]
  		set paramhorloge(suivira)	[lindex $vitessessuivie 0]
  		set paramhorloge(suividec)	[lindex $vitessessuivie 1] 
@@ -702,14 +704,14 @@ namespace eval ::zadkopad {
         #ATTENTION rajout OFFSET de pointage DFM
 		set paramhorloge(ra)         "[lindex $radec 0]"
 		set paramhorloge(dec)        "[lindex $radec 1]"
-		set dra [expr 21/60.]       # offset (deg) for hour angle
-        set ddec [expr 8./60.]      # offset (deg) for declination
+		set dra [expr 21/60.];       # offset (deg) for hour angle
+        set ddec [expr 8./60.];      # offset (deg) for declination
         set paramhorloge(ra)        [mc_angle2deg $paramhorloge(ra)]
         set paramhorloge(dec)       [mc_angle2deg $paramhorloge(dec) 90]
         set paramhorloge(ra)        [expr $paramhorloge(ra)+$dra]
         set paramhorloge(dec)       [expr $paramhorloge(dec)+$ddec]
         set paramhorloge(ra)        [string trim [mc_angle2hms $paramhorloge(ra) 360 zero 2 auto string]]
-        set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec  90 zero 1 + string]]    
+        set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec)  90 zero 1 + string]]    
 		set paramhorloge(new,ra) 	 "$paramhorloge(ra)"
 		set paramhorloge(new,dec) 	 "$paramhorloge(dec)"
         set paramhorloge(home)       $audace(posobs,observateur,gps)
@@ -718,7 +720,7 @@ namespace eval ::zadkopad {
         set paramhorloge(font)       {times 30 bold}
         set paramhorloge(suivira)	 "0.00417808"
         set paramhorloge(suividec)   "0.0"
-        set paramhorloge(focal_number)	"[lindex [::zadkopad::roscommande {telescope DO eval {tel$telnum dfmfocus}}] 0]" 
+        set paramhorloge(focal_number)	"[lindex [::zadkopad::roscommande {telescope DO eval {tel1 dfmfocus}}] 0]" 
 
         ::console::affiche_resultat  "init focal_number: $paramhorloge(focal_number), paramhorloge(new,ra):$paramhorloge(new,ra), paramhorloge(new,dec): $paramhorloge(new,dec) \n"
         # =========================================
