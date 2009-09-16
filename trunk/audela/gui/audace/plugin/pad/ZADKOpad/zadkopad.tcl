@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.15 2009-09-16 10:06:26 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.16 2009-09-16 10:13:32 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -441,7 +441,7 @@ namespace eval ::zadkopad {
 		set reponse [::zadkopad::roscommande [list telescope GOTO $newra $newdec -blocking 1]]
 		::console::affiche_resultat "$reponse \n"
 		if 	{$onoff=="off"} {
-			set reponse [::zadkopad::roscommande [list telescope DO speedtrack 0 0]]
+			set reponse [::zadkopad::roscommande [list telescope DO speedtrack 0.0 0.0]]
 		} else {
 		    set reponse [::zadkopad::roscommande [list telescope DO speedtrack $suivira $suividec]]
 	    }
@@ -544,14 +544,16 @@ namespace eval ::zadkopad {
 				#ATTENTION rajout OFFSET de pointage DFM
  				set paramhorloge(ra)         "[lindex $radec 0]"
                 set paramhorloge(dec)        "[lindex $radec 1]"
-                set dra [expr 21/60.];       # offset (deg) for hour angle
-                set ddec [expr 8./60.];      # offset (deg) for declination
-                set paramhorloge(ra)        [mc_angle2deg $paramhorloge(ra)]
-                set paramhorloge(dec)       [mc_angle2deg $paramhorloge(dec) 90]
-                set paramhorloge(ra)        [expr $paramhorloge(ra)+$dra]
-                set paramhorloge(dec)       [expr $paramhorloge(dec)+$ddec]
-                set paramhorloge(ra)        [string trim [mc_angle2hms $paramhorloge(ra) 360 zero 2 auto string]]
-                set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec)  90 zero 1 + string]]    
+                if {($paramhorloge(ra)!="")&&($paramhorloge(dec)!="")} {
+                    set dra [expr 21/60.];       # offset (deg) for hour angle
+                    set ddec [expr 8./60.];      # offset (deg) for declination
+                    set paramhorloge(ra)        [mc_angle2deg $paramhorloge(ra)]
+                    set paramhorloge(dec)       [mc_angle2deg $paramhorloge(dec) 90]
+                    set paramhorloge(ra)        [expr $paramhorloge(ra)+$dra]
+                    set paramhorloge(dec)       [expr $paramhorloge(dec)+$ddec]
+                    set paramhorloge(ra)        [string trim [mc_angle2hms $paramhorloge(ra) 360 zero 2 auto string]]
+                    set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec  90 zero 1 + string]]  
+             }   
  				set paramhorloge(new,ra) 	 $paramhorloge(ra)
  				set paramhorloge(new,dec) 	 $paramhorloge(dec)
  			} else {
@@ -624,16 +626,19 @@ namespace eval ::zadkopad {
 
  		set radec [ ::zadkopad::roscommande {telescope TEL radec coord}]
 		#ATTENTION rajout OFFSET de pointage DFM
-		set paramhorloge(ra)         "[lindex $radec 0]"
-		set paramhorloge(dec)        "[lindex $radec 1]"
-		set dra [expr 21/60.];      # offset (deg) for hour angle
-        set ddec [expr 8./60.];     # offset (deg) for declination
-        set paramhorloge(ra)        [mc_angle2deg $paramhorloge(ra)]
-        set paramhorloge(dec)       [mc_angle2deg $paramhorloge(dec) 90]
-        set paramhorloge(ra)        [expr $paramhorloge(ra)+$dra]
-        set paramhorloge(dec)       [expr $paramhorloge(dec)+$ddec]
-        set paramhorloge(ra)        [string trim [mc_angle2hms $paramhorloge(ra) 360 zero 2 auto string]]
-        set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec)  90 zero 1 + string]]    
+		#ATTENTION rajout OFFSET de pointage DFM
+	    set paramhorloge(ra)         "[lindex $radec 0]"
+        set paramhorloge(dec)        "[lindex $radec 1]"
+        if {($paramhorloge(ra)!="")&&($paramhorloge(dec)!="")} {
+            set dra [expr 21/60.];       # offset (deg) for hour angle
+            set ddec [expr 8./60.];      # offset (deg) for declination
+            set paramhorloge(ra)        [mc_angle2deg $paramhorloge(ra)]
+            set paramhorloge(dec)       [mc_angle2deg $paramhorloge(dec) 90]
+            set paramhorloge(ra)        [expr $paramhorloge(ra)+$dra]
+            set paramhorloge(dec)       [expr $paramhorloge(dec)+$ddec]
+            set paramhorloge(ra)        [string trim [mc_angle2hms $paramhorloge(ra) 360 zero 2 auto string]]
+            set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec  90 zero 1 + string]]  
+     }     
 		set paramhorloge(new,ra) 	 $paramhorloge(ra)
 		set paramhorloge(new,dec) 	 $paramhorloge(dec)
  				
@@ -702,16 +707,19 @@ namespace eval ::zadkopad {
         set paramhorloge(sortie)     "0"
         set radec [ roscommande {telescope TEL radec coord}]
         #ATTENTION rajout OFFSET de pointage DFM
-		set paramhorloge(ra)         "[lindex $radec 0]"
-		set paramhorloge(dec)        "[lindex $radec 1]"
-		set dra [expr 21/60.];       # offset (deg) for hour angle
-        set ddec [expr 8./60.];      # offset (deg) for declination
-        set paramhorloge(ra)        [mc_angle2deg $paramhorloge(ra)]
-        set paramhorloge(dec)       [mc_angle2deg $paramhorloge(dec) 90]
-        set paramhorloge(ra)        [expr $paramhorloge(ra)+$dra]
-        set paramhorloge(dec)       [expr $paramhorloge(dec)+$ddec]
-        set paramhorloge(ra)        [string trim [mc_angle2hms $paramhorloge(ra) 360 zero 2 auto string]]
-        set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec)  90 zero 1 + string]]    
+		#ATTENTION rajout OFFSET de pointage DFM
+        set paramhorloge(ra)         "[lindex $radec 0]"
+        set paramhorloge(dec)        "[lindex $radec 1]"
+        if {($paramhorloge(ra)!="")&&($paramhorloge(dec)!="")} {
+            set dra [expr 21/60.];       # offset (deg) for hour angle
+            set ddec [expr 8./60.];      # offset (deg) for declination
+            set paramhorloge(ra)        [mc_angle2deg $paramhorloge(ra)]
+            set paramhorloge(dec)       [mc_angle2deg $paramhorloge(dec) 90]
+            set paramhorloge(ra)        [expr $paramhorloge(ra)+$dra]
+            set paramhorloge(dec)       [expr $paramhorloge(dec)+$ddec]
+            set paramhorloge(ra)        [string trim [mc_angle2hms $paramhorloge(ra) 360 zero 2 auto string]]
+            set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec  90 zero 1 + string]]  
+        }   
 		set paramhorloge(new,ra) 	 "$paramhorloge(ra)"
 		set paramhorloge(new,dec) 	 "$paramhorloge(dec)"
         set paramhorloge(home)       $audace(posobs,observateur,gps)
