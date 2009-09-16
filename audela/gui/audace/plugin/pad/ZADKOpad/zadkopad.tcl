@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.17 2009-09-16 10:16:21 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.18 2009-09-16 10:20:21 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -555,7 +555,7 @@ namespace eval ::zadkopad {
                     set paramhorloge(ra)        [expr $paramhorloge(ra)+$dra]
                     set paramhorloge(dec)       [expr $paramhorloge(dec)+$ddec]
                     set paramhorloge(ra)        [string trim [mc_angle2hms $paramhorloge(ra) 360 zero 2 auto string]]
-                    set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec  90 zero 1 + string]]  
+                    set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec)  90 zero 1 + string]]  
              }   
  				set paramhorloge(new,ra) 	 $paramhorloge(ra)
  				set paramhorloge(new,dec) 	 $paramhorloge(dec)
@@ -640,7 +640,7 @@ namespace eval ::zadkopad {
             set paramhorloge(ra)        [expr $paramhorloge(ra)+$dra]
             set paramhorloge(dec)       [expr $paramhorloge(dec)+$ddec]
             set paramhorloge(ra)        [string trim [mc_angle2hms $paramhorloge(ra) 360 zero 2 auto string]]
-            set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec  90 zero 1 + string]]  
+            set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec)  90 zero 1 + string]]  
      }     
 		set paramhorloge(new,ra) 	 $paramhorloge(ra)
 		set paramhorloge(new,dec) 	 $paramhorloge(dec)
@@ -721,7 +721,7 @@ namespace eval ::zadkopad {
             set paramhorloge(ra)        [expr $paramhorloge(ra)+$dra]
             set paramhorloge(dec)       [expr $paramhorloge(dec)+$ddec]
             set paramhorloge(ra)        [string trim [mc_angle2hms $paramhorloge(ra) 360 zero 2 auto string]]
-            set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec  90 zero 1 + string]]  
+            set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec)  90 zero 1 + string]]  
         }   
 		set paramhorloge(new,ra) 	 "$paramhorloge(ra)"
 		set paramhorloge(new,dec) 	 "$paramhorloge(dec)"
