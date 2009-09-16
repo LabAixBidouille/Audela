@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.11 2009-09-15 11:58:30 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.12 2009-09-16 08:46:27 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -336,7 +336,39 @@ namespace eval ::zadkopad {
 			}
 			# ouvrir socket
 			set reponse [::zadkopad::dialoguesocket $port(adressePCcontrol) $portCom $ordre]
-			::console::affiche_resultat "$nameexe ordre: $ordre, reponse: $reponse \n"	
+			::console::affiche_resultat "$nameexe ordre: $ordre, reponse: $reponse \n"
+			
+			.zadkopad.func.closedome configure -relief groove -state disabled
+    		.zadkopad.func.opendome configure -relief groove -state disabled
+    		.zadkopad.tel.init configure -relief groove -state disabled
+    		.zadkopad.tel.parking configure -relief groove -state disabled
+    		.zadkopad.petal.petalopen configure -relief groove -state disabled
+    		.zadkopad.petal.petalclose configure -relief groove -state disabled
+    		.zadkopad.foc.enter configure -relief groove -state disabled		 		
+    		.zadkopad.frame1.frame2.f.but1 configure -relief groove -state disabled
+    		.zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state disabled
+    		update
+    		
+    		if {[lindex $msg 2]=="roof_open" } {
+        		set temps 120000
+    		} elseif {[lindex $msg 2]=="roof_close" } {
+        		set temps 130000
+    		} elseif {[lindex $msg 2]=="init" } {
+        		set temps 210000
+    		} elseif {[lindex $msg 2]=="park" } {
+        		set temps 120000
+    		}
+    		after [expr int($temps)]
+    		
+            .zadkopad.func.closedome configure -relief groove -state normal
+    		.zadkopad.func.opendome configure -relief groove -state normal
+    		.zadkopad.tel.init configure -relief groove -state normal
+    		.zadkopad.tel.parking configure -relief groove -state normal
+    		.zadkopad.petal.petalopen configure -relief groove -state normal
+    		.zadkopad.petal.petalclose configure -relief groove -state normal
+    		.zadkopad.foc.enter configure -relief groove -state normal
+    		.zadkopad.frame1.frame2.f.but1 configure -relief groove -state normal
+    		.zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state normal
 		} 
 		return $reponse
 	}
@@ -411,8 +443,8 @@ namespace eval ::zadkopad {
 		return $reponse
 	}
 	#------------------------------------------------------------
-   #    send focus     
-   #------------------------------------------------------------
+    #    send focus     
+    #------------------------------------------------------------
 	proc sendfocus {newfocus} {
 		global port paramhorloge audace 
 		
@@ -422,19 +454,42 @@ namespace eval ::zadkopad {
 			return
 		} 
 		# --- envoie l'ordre de focus
-		#set nowfocus [lindex [::zadkopad::roscommande {telescope DO eval {tel1 dfmfocus}}] 0] 
-		#::console::affiche_resultat "recupere le focus : $nowfocus \n"	
+		set nowfocus [lindex [::zadkopad::roscommande {telescope DO eval {tel1 dfmfocus}}] 0] 
+		::console::affiche_resultat "recupere le focus : $nowfocus \n"	
 		#if {$nowfocus==""} {
 		#		set nowfocus 3330 
 		#}
 		# --- envoie l'ordre de focus
 		set reponse [::zadkopad::roscommande [list telescope DO eval [list tel1 dfmfocus $newfocus]]]
 		::console::affiche_resultat "$reponse \n"	
-		#if {$nowfocus==""} {
-		#		set temps  [expr 800*33*1000/500 + 4000]
-		#} else {
-		#	  	set temps [expr [expr abs($nowfocus -$newfocus)]*33*1000/500 + 4000]
-		#}
+		if {$nowfocus==""} {
+				set temps  [expr 800*33*1000/500 + 4000]
+		} else {
+			  	set temps [expr [expr abs($nowfocus -$newfocus)]*33*1000/500 + 4000]
+		}
+		.zadkopad.func.closedome configure -relief groove -state disabled
+		.zadkopad.func.opendome configure -relief groove -state disabled
+		.zadkopad.tel.init configure -relief groove -state disabled
+		.zadkopad.tel.parking configure -relief groove -state disabled
+		.zadkopad.petal.petalopen configure -relief groove -state disabled
+		.zadkopad.petal.petalclose configure -relief groove -state disabled
+		.zadkopad.foc.enter configure -relief groove -state disabled		 		
+		.zadkopad.frame1.frame2.f.but1 configure -relief groove -state disabled
+		.zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state disabled
+		update
+		
+		after [expr int($temps)]
+		
+        .zadkopad.func.closedome configure -relief groove -state normal
+		.zadkopad.func.opendome configure -relief groove -state normal
+		.zadkopad.tel.init configure -relief groove -state normal
+		.zadkopad.tel.parking configure -relief groove -state normal
+		.zadkopad.petal.petalopen configure -relief groove -state normal
+		.zadkopad.petal.petalclose configure -relief groove -state normal
+		.zadkopad.foc.enter configure -relief groove -state normal
+		.zadkopad.frame1.frame2.f.but1 configure -relief groove -state normal
+		.zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state normal
+		 
 		#pierre replace 30*100/500 + 3000 par 33*1000/500 +4000 dans les 2 lignes au dessus et mis un # devant ::zadkopad::stopfocus
 		# suite a la correction par dfm via timo des pb du focus
 		#::console::affiche_resultat "nowfocus: $nowfocus, newfocus: $newfocus, temps: $temps \n"
