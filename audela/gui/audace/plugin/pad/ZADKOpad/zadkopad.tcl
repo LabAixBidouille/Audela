@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.20 2009-09-16 12:16:26 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.21 2009-09-16 13:21:25 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -557,8 +557,8 @@ namespace eval ::zadkopad {
                     set ddec [expr 8./60.];      # offset (deg) for declination
                     set paramhorloge(ra)        [mc_angle2deg $paramhorloge(ra)]
                     set paramhorloge(dec)       [mc_angle2deg $paramhorloge(dec) 90]
-                    set paramhorloge(ra)        [expr $paramhorloge(ra)+$dra]
-                    set paramhorloge(dec)       [expr $paramhorloge(dec)+$ddec]
+                    set paramhorloge(ra)        [expr $paramhorloge(ra)-$dra]
+                    set paramhorloge(dec)       [expr $paramhorloge(dec)-$ddec]
                     set paramhorloge(ra)        [string trim [mc_angle2hms $paramhorloge(ra) 360 zero 2 auto string]]
                     set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec)  90 zero 1 + string]]  
              }   
@@ -642,8 +642,8 @@ namespace eval ::zadkopad {
             set ddec [expr 8./60.];      # offset (deg) for declination
             set paramhorloge(ra)        [mc_angle2deg $paramhorloge(ra)]
             set paramhorloge(dec)       [mc_angle2deg $paramhorloge(dec) 90]
-            set paramhorloge(ra)        [expr $paramhorloge(ra)+$dra]
-            set paramhorloge(dec)       [expr $paramhorloge(dec)+$ddec]
+            set paramhorloge(ra)        [expr $paramhorloge(ra)-$dra]
+            set paramhorloge(dec)       [expr $paramhorloge(dec)-$ddec]
             set paramhorloge(ra)        [string trim [mc_angle2hms $paramhorloge(ra) 360 zero 2 auto string]]
             set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec)  90 zero 1 + string]]  
      }     
@@ -724,8 +724,8 @@ namespace eval ::zadkopad {
                 set ddec [expr 8./60.];      # offset (deg) for declination
                 set paramhorloge(ra)        [mc_angle2deg $paramhorloge(ra)]
                 set paramhorloge(dec)       [mc_angle2deg $paramhorloge(dec) 90]
-                set paramhorloge(ra)        [expr $paramhorloge(ra)+$dra]
-                set paramhorloge(dec)       [expr $paramhorloge(dec)+$ddec]
+                set paramhorloge(ra)        [expr $paramhorloge(ra)-$dra]
+                set paramhorloge(dec)       [expr $paramhorloge(dec)-$ddec]
                 set paramhorloge(ra)        [string trim [mc_angle2hms $paramhorloge(ra) 360 zero 2 auto string]]
                 set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec)  90 zero 1 + string]]  
             }              
@@ -1012,7 +1012,7 @@ namespace eval ::zadkopad {
             #--- Je passe en mode manuel sur le telescope ZADKO
             ::zadkopad::modeZADKO 1
             set paramhorloge(init) 1
-            .zadkopad.mode.manual configure -relief groove -state normal		
+            #.zadkopad.mode.manual configure -relief groove -state normal		
         } 
         # =======================================
         # === It is the end of the script run ===
