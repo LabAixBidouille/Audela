@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.19 2009-09-16 11:59:48 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.20 2009-09-16 12:16:26 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -20,7 +20,8 @@ namespace eval ::zadkopad {
 		global port modetelescope stopcalcul paramhorloge
 		
 		set port(hostname) [lindex [hostaddress] end]
-        set port(ipIkon)   "121.200.43.5"
+		#::console::affiche_resultat "$port(hostname) \n"
+        set port(ipIkon)   "ikon"
 		set port(adressePCcontrol) 121.200.43.11
 		set port(maj) 30032
 		set port(tel) 30011
@@ -356,7 +357,7 @@ namespace eval ::zadkopad {
         		update
         		
         		if {[lindex $msg 2]=="roof_open" } {
-            		set temps 120000
+            		set temps 100000
         		} elseif {[lindex $msg 2]=="roof_close" } {
             		set temps 130000
         		} elseif {[lindex $msg 2]=="init" } {
