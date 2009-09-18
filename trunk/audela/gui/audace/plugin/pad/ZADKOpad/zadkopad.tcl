@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.23 2009-09-17 15:20:07 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.24 2009-09-18 12:57:14 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -48,7 +48,7 @@ namespace eval ::zadkopad {
        set paramhorloge(ddec) $ros(telescope,private,ddec);      # offset (deg) for declination
        set paramhorloge(focus) $ros(telescope,private,focuscam1) ; # valeur du bon focus
        set paramhorloge(speedra) $ros(telescope,speedtrack,mult,ra) ; # coef multiplicateur du speedtrack
-       set paramhorloge(speeddec) $ros(telescope,speedtrack,mult,dec) ; # coef multiplicateur du speedtrack
+       #set paramhorloge(speeddec) $ros(telescope,speedtrack,mult,dec) ; # coef multiplicateur du speedtrack
    }
    #------------------------------------------------------------
    #  getPluginProperty
@@ -462,9 +462,7 @@ namespace eval ::zadkopad {
 		::console::affiche_resultat "$reponse \n"
 		if 	{$onoff=="off"} {
 			set reponse [::zadkopad::roscommande [list telescope DO speedtrack 0.0 0.0]]
-		} else {
-    		set suivira [expr $suivira*$paramhorloge(speedra)]
-    		set suividec [expr $suividec*$paramhorloge(speeddec)]
+		} else {   		
 		    set reponse [::zadkopad::roscommande [list telescope DO speedtrack $suivira $suividec]]
 	    }
 		::console::affiche_resultat "$reponse \n"		
@@ -665,7 +663,8 @@ namespace eval ::zadkopad {
  				
  		set paramhorloge(focal_number)	[lindex [::zadkopad::roscommande [list telescope DO eval [list tel$telnum dfmfocus]]] 0]
  		set vitessessuivie [::zadkopad::roscommande [list telescope DO speedtrack]]
- 		set paramhorloge(suivira)	[lindex $vitessessuivie 0]
+ 		set paramhorloge(suivira)	[expr [lindex $vitessessuivie 0]/$paramhorloge(speedra)]
+ 		#set paramhorloge(suivira)	[lindex $vitessessuivie 0]
  		set paramhorloge(suividec)	[lindex $vitessessuivie 1] 
  		set stopcalcul 0
  		::console::affiche_resultat "refresh radec: $radec, focal_number: $paramhorloge(focal_number), vitessessuivie : $vitessessuivie\n"
@@ -733,6 +732,7 @@ namespace eval ::zadkopad {
             set paramhorloge(ra)         "[lindex $radec 0]"
             set paramhorloge(dec)        "[lindex $radec 1]"
             if {($paramhorloge(ra)!="")&&($paramhorloge(dec)!="")} {
+	            #::console::affiche_resultat  "paramhorloge(dra): ; ros(telescope,private,dra): $ros(telescope,private,dra)"
                 set paramhorloge(ra)        [mc_angle2deg $paramhorloge(ra)]
                 set paramhorloge(dec)       [mc_angle2deg $paramhorloge(dec) 90]
                 set paramhorloge(ra)        [expr $paramhorloge(ra)-$paramhorloge(dra)]
