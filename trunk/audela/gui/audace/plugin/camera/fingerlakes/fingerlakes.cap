@@ -1,6 +1,6 @@
 #
 # Fichier : fingerlakes.cap
-# Mise a jour $Id: fingerlakes.cap,v 1.12 2009-09-10 19:00:23 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.cap,v 1.13 2009-09-18 17:21:14 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -125,7 +125,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,miroir_x)                  "Horizontale Spiegel"
    set caption(fingerlakes,miroir_y)                  "Verticale Spiegel"
    set caption(fingerlakes,fonc_obtu)                 "Verschluss Arbeiten"
-   set caption(fingerlakes,readSpeed)                 "# Vitesse de lecture"
+   set caption(fingerlakes,readSpeed)                 "Lesung Geschwindigkeit"
 
    set caption(fingerlakes,port_camera)               "FLI Port"
    set caption(fingerlakes,2points)                   ":"

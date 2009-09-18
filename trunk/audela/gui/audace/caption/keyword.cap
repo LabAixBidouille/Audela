@@ -1,6 +1,6 @@
 #
 # Fichier : keyword.cap
-# Mise a jour $Id: keyword.cap,v 1.17 2009-09-10 19:00:39 robertdelmas Exp $
+# Mise a jour $Id: keyword.cap,v 1.18 2009-09-18 17:21:30 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -339,10 +339,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,EXPTIME)            "Aufnahme Zeit"
    set caption(keyword,description,RA)                 "Rektaszension"
    set caption(keyword,description,DEC)                "Deklination"
-   set caption(keyword,description,RA_MEAN)            "# Correction moyenne de l'ascension droite"
-   set caption(keyword,description,RA_RMS)             "# Correction RMS de l'ascension droite"
-   set caption(keyword,description,DEC_MEAN)           "# Correction moyenne de la déclinaison"
-   set caption(keyword,description,DEC_RMS)            "# Correction RMS de la déclinaison"
+   set caption(keyword,description,RA_MEAN)            "Rektaszension mittlere Korrektur"
+   set caption(keyword,description,RA_RMS)             "Rektaszension RMS  Korrektur"
+   set caption(keyword,description,DEC_MEAN)           "Deklination mittlere Korrektur"
+   set caption(keyword,description,DEC_RMS)            "Deklination RMS Korrektur"
    set caption(keyword,description,EQUINOX)            "Equinox Koordinaten"
    set caption(keyword,description,RADECSYS)           "Koordinaten System"
    set caption(keyword,description,IMAGETYP)           "Bild Art"

@@ -1,6 +1,6 @@
 #
 # Fichier : vo_tools_go.cap
-# Mise a jour $Id: vo_tools_go.cap,v 1.17 2009-08-31 16:15:54 robertdelmas Exp $
+# Mise a jour $Id: vo_tools_go.cap,v 1.18 2009-09-18 17:21:45 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -87,9 +87,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,cone-search)          "In einen\nAnsicht Feld\nSonnen System\nKörper Suchung"
    set caption(vo_tools_go,resolver)             "Herum einen\nhimmlisch Körper\nSonnen System\nKörper Suchung"
    set caption(vo_tools_go,statut)               "Skybolt Wartung\nStatus"
-   set caption(vo_tools_go,samp_menu_interop)    "# Interop Menu"
+   set caption(vo_tools_go,samp_menu_interop)    "Interop Menü"
    set caption(vo_tools_go,samp_menu_help)       "Hilfe"
-   set caption(vo_tools_go,samp_menu_broadcast)  "# Diffuser l'image"
+   set caption(vo_tools_go,samp_menu_broadcast)  "Bild übertragen"
    set caption(vo_tools_go,samp_menu_connect)    "Anschließen"
    set caption(vo_tools_go,samp_menu_disconnect) "Abschließen"
 
@@ -121,9 +121,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,cone-search)          "Søgning efter\nsolsystems\nelementer i\nsynsfelt"
    set caption(vo_tools_go,resolver)             "Søgning efter\nsolsystems\nelementer omkring\net himmelobjekt"
    set caption(vo_tools_go,statut)               "Status på\nSkyBoT service"
-   set caption(vo_tools_go,samp_menu_interop)    "# Interop Menu"
+   set caption(vo_tools_go,samp_menu_interop)    "Kompatibilitets menu"
    set caption(vo_tools_go,samp_menu_help)       "Hjælp"
-   set caption(vo_tools_go,samp_menu_broadcast)  "# Diffuser l'image"
+   set caption(vo_tools_go,samp_menu_broadcast)  "Broadcast billede"
    set caption(vo_tools_go,samp_menu_connect)    "Tilslut"
    set caption(vo_tools_go,samp_menu_disconnect) "Afbryd"
 
