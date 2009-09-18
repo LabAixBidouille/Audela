@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.30 2009-09-10 18:56:24 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.31 2009-09-18 19:16:38 michelpujol Exp $
 #
 
 #=========================================================================
@@ -113,6 +113,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,paraMasque)            "Paramètres du masque"
    set caption(sophie,diametreMasque)        "Rayon du masque (pixel)"
    set caption(sophie,largeurGaussMasque)    "FWHM seeing (pixel)"
+   set caption(sophie,pourcentageGaussMasque) "Pourcentage intensite max (%)"
    set caption(sophie,seuilMini)             "Seuil de qualité (nombre de pixels)"
    set caption(sophie,paraPrecisionCentrage) "Paramètre de la précision du centrage"
    set caption(sophie,precisionCentrage)     "Précision du centrage (arcsec)"
