@@ -2,7 +2,7 @@
 # @file     sophieconfig.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieconfig.tcl,v 1.20 2009-09-13 15:08:16 michelpujol Exp $
+# @version  $Id: sophieconfig.tcl,v 1.21 2009-09-18 19:14:05 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -68,38 +68,12 @@ proc ::sophie::config::getLabel { } {
 #------------------------------------------------------------
 proc ::sophie::config::fillConfigPage { frm visuNo } {
    variable private
+   variable widget
 
    set private(frm) $frm
 
    #--- Je positionne la fenetre
    wm geometry [ winfo toplevel $frm ] $::conf(sophie,configWindowPosition)
-
-   #--- Creation des onglets
-   set notebook [ NoteBook $frm.notebook ]
-      $notebook insert end "configuration" -text $::caption(sophie,parametreConfig)
-      $notebook insert end "algorithme"    -text $::caption(sophie,parametreAlgo)
-     ### $notebook insert end "callibration"  -text $::caption(sophie,callibrationRappels)
-   pack $frm.notebook -side top -fill both -expand 1
-
-   #--- j'affiche les wigdets dans les onglets
-   fillConfigurationPage [ $notebook getframe "configuration" ] 1
-   fillAlgorithmePage    [ $notebook getframe "algorithme" ] 1
-  ### fillCallibrationPage  [ $notebook getframe "callibration" ] 1
-
-   pack $frm -side top -fill x -expand 1
-
-   #--- je selectionne le premier onglet
-   $notebook raise "configuration"
-}
-
-#------------------------------------------------------------
-# fillConfigurationPage
-#   cree les widgets dans l'onglet configuration generale
-#   return rien
-#------------------------------------------------------------
-proc ::sophie::config::fillConfigurationPage { frm visuNo } {
-   variable private
-   variable widget
 
    #--- j'initalise les variables des widgets
   ### set widget(poseDefaut)            $::conf(sophie,exposure)
@@ -133,6 +107,38 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
    set widget(biasFileName,2,fast)   $::conf(sophie,biasFileName,2,fast)
    set widget(biasFileName,3,slow)   $::conf(sophie,biasFileName,3,slow)
    set widget(biasFileName,3,fast)   $::conf(sophie,biasFileName,3,fast)
+
+   set widget(maskRadius)            $::conf(sophie,maskRadius)
+   set widget(maskFwhm)              $::conf(sophie,maskFwhm)
+   set widget(maskPercent)           [expr int( $::conf(sophie,maskPercent) * 100)]
+   set widget(pixelMinCount)         $::conf(sophie,pixelMinCount)
+
+   #--- Creation des onglets
+   set notebook [ NoteBook $frm.notebook ]
+      $notebook insert end "configuration" -text $::caption(sophie,parametreConfig)
+      $notebook insert end "algorithme"    -text $::caption(sophie,parametreAlgo)
+     ### $notebook insert end "callibration"  -text $::caption(sophie,callibrationRappels)
+   pack $frm.notebook -side top -fill both -expand 1
+
+   #--- j'affiche les wigdets dans les onglets
+   fillConfigurationPage [ $notebook getframe "configuration" ] 1
+   fillAlgorithmePage    [ $notebook getframe "algorithme" ] 1
+  ### fillCallibrationPage  [ $notebook getframe "callibration" ] 1
+
+   pack $frm -side top -fill x -expand 1
+
+   #--- je selectionne le premier onglet
+   $notebook raise "configuration"
+}
+
+#------------------------------------------------------------
+# fillConfigurationPage
+#   cree les widgets dans l'onglet configuration generale
+#   return rien
+#------------------------------------------------------------
+proc ::sophie::config::fillConfigurationPage { frm visuNo } {
+   variable private
+
 
    #--- Frame pour la configuration des acquisitions
    TitleFrame $frm.acq -borderwidth 2 -relief ridge -text $::caption(sophie,parametreAcquisition)
@@ -505,37 +511,48 @@ proc ::sophie::config::fillAlgorithmePage { frm visuNo } {
    TitleFrame $frm.paraMasque -borderwidth 2 -relief ridge -text $::caption(sophie,paraMasque)
 
       #--- Diametre du masque
-      label $frm.paraMasque.labeldiametreMasque -text $::caption(sophie,diametreMasque)
-      grid $frm.paraMasque.labeldiametreMasque -in [ $frm.paraMasque getframe ]\
+      label $frm.paraMasque.labelDiametreMasque -text $::caption(sophie,diametreMasque)
+      grid $frm.paraMasque.labelDiametreMasque -in [ $frm.paraMasque getframe ]\
          -row 0 -column 1 -sticky w
 
-      Entry $frm.paraMasque.entrydiametreMasque \
+      Entry $frm.paraMasque.entryDiametreMasque \
          -width 8 -justify center -editable 1 \
-         -textvariable ::conf(sophie,maskRadius)
-      grid $frm.paraMasque.entrydiametreMasque -in [ $frm.paraMasque getframe ] \
+         -textvariable ::sophie::config::widget(maskRadius)
+      grid $frm.paraMasque.entryDiametreMasque -in [ $frm.paraMasque getframe ] \
          -row 0 -column 2 -sticky ens
 
       #--- Largeur de la gaussienne du masque
-      label $frm.paraMasque.labellargeurGaussMasque -text $::caption(sophie,largeurGaussMasque)
-      grid $frm.paraMasque.labellargeurGaussMasque -in [ $frm.paraMasque getframe ] \
+      label $frm.paraMasque.labelLargeurGaussMasque -text $::caption(sophie,largeurGaussMasque)
+      grid $frm.paraMasque.labelLargeurGaussMasque -in [ $frm.paraMasque getframe ] \
          -row 1 -column 1 -sticky w
 
-      Entry $frm.paraMasque.entrylargeurGaussMasque \
+      Entry $frm.paraMasque.entryLargeurGaussMasque \
          -width 8 -justify center -editable 1 \
-         -textvariable ::conf(sophie,maskFwhm)
-      grid $frm.paraMasque.entrylargeurGaussMasque -in [ $frm.paraMasque getframe ] \
+         -textvariable ::sophie::config::widget(maskFwhm)
+      grid $frm.paraMasque.entryLargeurGaussMasque -in [ $frm.paraMasque getframe ] \
          -row 1 -column 2 -sticky ens
 
-      #--- Nombre minimal de pixels
-      label $frm.paraMasque.labelseuilMini -text $::caption(sophie,seuilMini)
-      grid $frm.paraMasque.labelseuilMini -in [ $frm.paraMasque getframe ] \
+      #--- Pourcentage du seuil du masque
+      label $frm.paraMasque.labelPourcentageGaussMasque -text $::caption(sophie,pourcentageGaussMasque)
+      grid $frm.paraMasque.labelPourcentageGaussMasque -in [ $frm.paraMasque getframe ] \
          -row 2 -column 1 -sticky w
 
-      Entry $frm.paraMasque.entryseuilMini \
+      Entry $frm.paraMasque.entryPourcentageGaussMasque \
          -width 8 -justify center -editable 1 \
-         -textvariable ::conf(sophie,pixelMinCount)
-      grid $frm.paraMasque.entryseuilMini -in [ $frm.paraMasque getframe ] \
+         -textvariable ::sophie::config::widget(maskPercent)
+      grid $frm.paraMasque.entryPourcentageGaussMasque -in [ $frm.paraMasque getframe ] \
          -row 2 -column 2 -sticky ens
+
+      #--- Nombre minimal de pixels
+      label $frm.paraMasque.labelSeuilMini -text $::caption(sophie,seuilMini)
+      grid $frm.paraMasque.labelSeuilMini -in [ $frm.paraMasque getframe ] \
+         -row 3 -column 1 -sticky w
+
+      Entry $frm.paraMasque.entrySeuilMini \
+         -width 8 -justify center -editable 1 \
+         -textvariable ::sophie::config::widget(pixelMinCount)
+      grid $frm.paraMasque.entrySeuilMini -in [ $frm.paraMasque getframe ] \
+         -row 3 -column 2 -sticky ens
 
    pack $frm.paraMasque -side top -anchor w -fill x -expand 0
 
@@ -620,6 +637,11 @@ proc ::sophie::config::apply { visuNo } {
    set ::conf(sophie,biasFileName,3,slow)    $widget(biasFileName,3,slow)
    set ::conf(sophie,biasFileName,3,fast)    $widget(biasFileName,3,fast)
 
+   set ::conf(sophie,maskRadius)             $widget(maskRadius)
+   set ::conf(sophie,maskFwhm)               $widget(maskFwhm)
+   set ::conf(sophie,maskPercent)            [expr double($widget(maskPercent)) / 100 ]
+   set ::conf(sophie,pixelMinCount)          $widget(pixelMinCount)
+
    #--- je communique les nouveaux parametres au thread de la camera
    set ::sophie::private(AsynchroneParameter) 1
    ::camera::setAsynchroneParameter $::sophie::private(camItem)\
@@ -628,7 +650,11 @@ proc ::sophie::config::apply { visuNo } {
          "alphaIntegralGain"        $::conf(sophie,alphaIntegralGain) \
          "deltaIntegralGain"        $::conf(sophie,deltaIntegralGain) \
          "originSumMinCounter"      $::conf(sophie,originSumMinCounter) \
-         "originSumCounter"         0
+         "originSumCounter"         0 \
+         "maskRadius"               $::conf(sophie,maskRadius) \
+         "maskFwhm"                 $::conf(sophie,maskFwhm)  \
+         "maskPercent"              $::conf(sophie,maskPercent) \
+         "pixelMinCount"            $::conf(sophie,pixelMinCount)
 
    #---  je re-positionne la consigne
    ::sophie::setGuidingMode $visuNo
