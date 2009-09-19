@@ -2,7 +2,7 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snacq.tcl,v 1.16 2009-04-27 16:48:04 robertdelmas Exp $
+# Mise a jour $Id: snacq.tcl,v 1.17 2009-09-19 16:12:06 robertdelmas Exp $
 #
 
 # ===================================================================
@@ -712,7 +712,8 @@ proc snacq_go { {sndebug 0} } {
          return
       }
       set f ""
-      catch { set f [ glob [ file join $snconf(dossier) $snconf(darkfile) ] ] } {
+      set catchError [ catch { set f [ glob [ file join $snconf(dossier) $snconf(darkfile) ] ] } ]
+      if { $catchError == "1" } {
          set f ""
       }
       if {$f==""} {
@@ -722,7 +723,8 @@ proc snacq_go { {sndebug 0} } {
          return
       }
       set f ""
-      catch { set f [ glob [ file join $snconf(dossier) $snconf(biasfile) ] ] } {
+      set catchError [ catch { set f [ glob [ file join $snconf(dossier) $snconf(biasfile) ] ] } ]
+      if { $catchError == "1" } {
          set f ""
       }
       if {$f==""} {
@@ -893,7 +895,8 @@ proc snacq_go { {sndebug 0} } {
 
       #--- Y-a-il un evenement a observer ?
       set listfileevent ""
-      catch { set listfileevent [glob ${dossier_alerte}*.tcl] } {
+      set catchError [ catch { set listfileevent [glob ${dossier_alerte}*.tcl] } ]
+      if { $catchError == "1" } {
          set listfileevent ""
       }
       foreach fileevent $listfileevent {
