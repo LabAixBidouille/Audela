@@ -2,7 +2,7 @@
 # Fichier : ascomcam.tcl
 # Description : Configuration de la camera ASCOM
 # Auteur : Michel PUJOL
-# Mise a jour $Id: ascomcam.tcl,v 1.5 2009-08-10 09:12:54 robertdelmas Exp $
+# Mise a jour $Id: ascomcam.tcl,v 1.6 2009-09-19 15:34:29 robertdelmas Exp $
 #
 
 namespace eval ::ascomcam {
@@ -22,7 +22,7 @@ proc ::ascomcam::install { } {
       #--- je deplace libascomcam.dll dans le repertoire audela/bin
       set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [getPluginType]] "ascomcam" "libascomcam.dll"]
       ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
-      ::audace::appendUpdateMessage "Fin de l'installation de $sourceFileName \n du plug-in ascomcam v[package version ascomcam]"
+      ::audace::appendUpdateMessage [ format $::caption(ascomcam,installNewVersion) $sourceFileName [package version ascomcam] ]
    }
 }
 
@@ -101,12 +101,12 @@ proc ::ascomcam::initPlugin { } {
    if { ! [ info exists ::conf(ascomcam,foncobtu) ] } { set ::conf(ascomcam,foncobtu) "2" }
 
    #--- Initialisation
-   set private(A,camNo) "0"
-   set private(B,camNo) "0"
-   set private(C,camNo) "0"
+   set private(A,camNo)      "0"
+   set private(B,camNo)      "0"
+   set private(C,camNo)      "0"
 
    set private(ascomDrivers) ""
-   set private(port) ""
+   set private(port)         ""
 }
 
 #
