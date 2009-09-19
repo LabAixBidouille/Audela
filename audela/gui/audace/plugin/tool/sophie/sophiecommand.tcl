@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.34 2009-09-13 15:07:51 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.35 2009-09-19 15:46:30 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -524,7 +524,7 @@ proc ::sophie::setMode { { mode "" } } {
          buf$private(maskBufNo)  clear
          buf$private(sumBufNo)   clear
          buf$private(fiberBufNo) clear
-         #--- je memorise les coordonnes de l'origine 
+         #--- je memorise les coordonnes de l'origine
          set private(originCoordGuide) $private(originCoord)
          #--- je change la taille de d'analyse de la cible
          set private(targetBoxSize) $::conf(sophie,guidingWindowSize)
@@ -969,10 +969,10 @@ proc ::sophie::incrementZoom { } {
 ##------------------------------------------------------------
 # saveImage
 #  enregistre l'image courante
-#     nom du fichier :  "prefixe-date.fit"
+#     nom du fichier : "prefixe-date.fit"
 #
 #  avec  prefixe = "centrage" ou "guidage"  suivant le mode courant
-#        date    = date courante au format ISO8601  , exemple: 2009-05-13T18:51:30.250
+#        date    = date courante au format ISO8601 , exemple : 2009-05-13T18:51:30.250
 #  Mots cles enregistre dans le fichier :
 #   - BIN1     binning horizontal
 #   - BIN2     binning vertical
@@ -1001,7 +1001,7 @@ proc ::sophie::saveImage { } {
          set prefix $::conf(sophie,centerFileNameprefix)
       }
       #--- je recupere la date UT
-      set shortName "$prefix-[mc_date2iso8601 [::audace::date_sys2ut now]].fit"
+      set shortName "$prefix-[mc_date2iso8601 [::audace::date_sys2ut now]]$::conf(extension,defaut)"
       #--- je remplace ":" par "-" car ce n'est pas un caractere autorise dasn le nom d'un fichier.
       set shortName [string map { ":" "-" } $shortName]
       #--- j'ajoute le repertoire
@@ -1399,9 +1399,9 @@ proc ::sophie::onMouseReleaseButton1 { visuNo w x y } {
          set x [expr [lindex $coord 0] * $private(xBinning) + $private(xWindow) -1 ]
          set y [expr [lindex $coord 1] * $private(yBinning) + $private(yWindow) -1 ]
          set private(fiberBCoord) [list $x $y]
-         
+
          set private(currentMouseItem) ""
-      }      
+      }
       default {
          #--- la consigne n'est pas selectionnee, j'appelle le traitement par defaut
          ::confVisu::onReleaseButton1 $visuNo $x $y
@@ -1532,7 +1532,7 @@ proc ::sophie::moveTarget { visuNo targetCoord } {
 
 ##------------------------------------------------------------
 # createFiberB
-#    affiche le symbole de la fibre 
+#    affiche le symbole de la fibre
 #
 # @param visuNo         numero de la visu courante
 # @return  null
@@ -1976,7 +1976,7 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                         set originDx 0.0
                         set originDy 0.0
                         set originDx  [expr [lindex $private(originCoord) 0] - [lindex $private(originCoordGuide) 0] ]
-                        set originDy  [expr [lindex $private(originCoord) 1] - [lindex $private(originCoordGuide) 1] ]                  
+                        set originDy  [expr [lindex $private(originCoord) 1] - [lindex $private(originCoordGuide) 1] ]
                      }
                   }
                } else {
@@ -1988,10 +1988,10 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                if { $private(originMove) == "AUTO" } {
                   ::sophie::createOrigin $visuNo
                }
-               
+
                #--- j'affiche le symbole de la fibre B
                ::sophie::createFiberB $visuNo
-               
+
                ##console::disp "callbackAcquisition origin= $private(originCoord) detail=$infoMessage\n"
 
                #--- j'affiche les informations dans la fenetre de controle
