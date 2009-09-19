@@ -1,7 +1,7 @@
 
 
 
-# Mise a jour $Id: spc_filters.tcl,v 1.1 2008-06-14 16:36:20 bmauclaire Exp $
+# Mise a jour $Id: spc_filters.tcl,v 1.2 2009-09-19 13:59:41 bmauclaire Exp $
 
 
 
@@ -71,7 +71,7 @@ proc spc_smooth { args } {
 	   set infichier [ lindex $args 0 ]
 	   set sigma [ lindex $args 1 ]
        } else {
-	   ::console::affiche_erreur "Usage : spc_smooth nom_fichier ?pourcentage?\n\n"
+	   ::console::affiche_erreur "Usage : spc_smooth nom_fichier ?pourcentage (0.9)?\n\n"
 	   return 0
        }
 
@@ -87,7 +87,7 @@ proc spc_smooth { args } {
        ::console::affiche_resultat "Spectre adoucis sauvé sous $audace(rep_images)/${fichier}_smo$conf(extension,defaut)\n"
        return ${fichier}_smo
    } else {
-       ::console::affiche_erreur "Usage : spc_smooth nom_fichier ?pourcentage?\n\n"
+       ::console::affiche_erreur "Usage : spc_smooth nom_fichier ?pourcentage (0.9)?\n\n"
    }
 }
 ##########################################################
