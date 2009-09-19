@@ -1,6 +1,6 @@
 #
 # Fichier : raw2fits.cap
-# Mise a jour $Id: raw2fits.cap,v 1.6 2009-09-11 15:06:17 robertdelmas Exp $
+# Mise a jour $Id: raw2fits.cap,v 1.7 2009-09-19 12:01:00 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -22,7 +22,7 @@ set caption(raw2fits,label_6)                "Convert %s --> %s"
 set caption(raw2fits,erreur)                 "Error"
 set caption(raw2fits,msg_01)                 "Converting..."
 set caption(raw2fits,msg_02)                 "Conversion completed"
-set caption(raw2fits,msg_03)                 "# Pas de format RAW à convertir"
+set caption(raw2fits,msg_03)                 "No RAW files to convert"
 
 set caption(raw2fits,appliquer)              "Apply"
 set caption(raw2fits,fermer)                 "Close"
@@ -62,7 +62,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(raw2fits,erreur)              "Errore"
    set caption(raw2fits,msg_01)              "Conversione in corso ..."
    set caption(raw2fits,msg_02)              "Conversione terminata"
-   set caption(raw2fits,msg_03)              "# Pas de format RAW à convertir"
+   set caption(raw2fits,msg_03)              "Nessun formato RAW da convertire"
 
    set caption(raw2fits,appliquer)           "Applica"
    set caption(raw2fits,fermer)              "Chiudi"
@@ -82,7 +82,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(raw2fits,erreur)              "Error"
    set caption(raw2fits,msg_01)              "Conversión en curso..."
    set caption(raw2fits,msg_02)              "Conversión completada"
-   set caption(raw2fits,msg_03)              "# Pas de format RAW à convertir"
+   set caption(raw2fits,msg_03)              "No hay ficheros RAW a convertir"
 
    set caption(raw2fits,appliquer)           "Aplicar"
    set caption(raw2fits,fermer)              "Cerrar"
@@ -102,7 +102,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(raw2fits,erreur)              "Irrtum"
    set caption(raw2fits,msg_01)              "Umwandlung im Laufe..."
    set caption(raw2fits,msg_02)              "Umstellung beendet"
-   set caption(raw2fits,msg_03)              "# Pas de format RAW à convertir"
+   set caption(raw2fits,msg_03)              "Keine Raw Datei zu konvertieren"
 
    set caption(raw2fits,appliquer)           "Anwenden"
    set caption(raw2fits,fermer)              "Schließen"
@@ -142,7 +142,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(raw2fits,erreur)              "Error"
    set caption(raw2fits,msg_01)              "Converting..."
    set caption(raw2fits,msg_02)              "Conversion completed"
-   set caption(raw2fits,msg_03)              "# Pas de format RAW à convertir"
+   set caption(raw2fits,msg_03)              "No RAW files to convert"
 
    set caption(raw2fits,appliquer)           "Apply"
    set caption(raw2fits,fermer)              "Close"
