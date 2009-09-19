@@ -1,7 +1,7 @@
 
 # Procédures d'analyse spectrale
 # source $audace(rep_scripts)/spcaudace/spc_analyse.tcl
-# Mise a jour $Id: spc_analyse.tcl,v 1.3 2008-12-11 18:58:16 bmauclaire Exp $
+# Mise a jour $Id: spc_analyse.tcl,v 1.4 2009-09-19 13:53:02 bmauclaire Exp $
 
 
 
@@ -1381,7 +1381,7 @@ proc spc_findnnul { args } {
 
         #--- Recherche de i_inf :
         for {set i 0} {$i<$len} {incr i} {
-            if { [ lindex $liste_intentites $i ]!=0 } {
+            if { [ lindex $liste_intentites $i ]>0 } {
                 set i_inf $i
                 break
             }
@@ -1389,7 +1389,7 @@ proc spc_findnnul { args } {
 
         #--- Recherche de i_sup :
         for {set i [ expr $len-1 ]} {$i>=0} {incr i -1} {
-            if { [ lindex $liste_intentites $i ]!=0 } {
+            if { [ lindex $liste_intentites $i ]>0 } {
                 set i_sup $i
                 break
             }
