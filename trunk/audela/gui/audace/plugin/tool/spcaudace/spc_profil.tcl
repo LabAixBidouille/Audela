@@ -20,7 +20,7 @@
 # et renommer ce fichier mauclaire.tcl ;-)
 
 
-# Mise a jour $Id: spc_profil.tcl,v 1.4 2008-09-20 17:20:05 bmauclaire Exp $
+# Mise a jour $Id: spc_profil.tcl,v 1.5 2009-09-19 14:00:45 bmauclaire Exp $
 
 
 
@@ -1926,7 +1926,7 @@ proc spc_loadfit { {filenamespc ""} } {
    } else {
        if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
 	   ::console::affiche_resultat "Ouverture d'un profil de raies calibré nonlinéairement...\n$filenamespc\n"
-	   if { $spc_a < 0.01 } {
+	   if { $spc_a < 0.01 && $spc_a > 0.0 } {
 	       for {set k 0} {$k<$naxis1} {incr k} {
 		   #- Ancienne formulation < 070104 :
 		   lappend profilspc(pixels) [expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
