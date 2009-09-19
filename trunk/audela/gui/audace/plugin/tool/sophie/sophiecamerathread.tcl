@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.16 2009-09-18 19:16:20 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.17 2009-09-19 15:46:12 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -93,7 +93,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             after [expr int($private(exptime) * 1000.0)]
             ###::camerathread::disp  "camerathread: private(simulationGenericFileName)=$private(simulationGenericFileName)XX\n"
 
-            set fileName "$private(simulationGenericFileName)$private(simulationCounter).fit"
+            set fileName "$private(simulationGenericFileName)$private(simulationCounter)$::conf(extension,defaut)"
             buf$bufNo load "$fileName"
 
             #--- je simule le fenetrage
@@ -112,7 +112,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             }
             #--- j'increment le compteur de fichier de simulation
             incr private(simulationCounter)
-            if { [file exists "$private(simulationGenericFileName)$private(simulationCounter).fit" ] == 0 } {
+            if { [file exists "$private(simulationGenericFileName)$private(simulationCounter)$::conf(extension,defaut)" ] == 0 } {
                set private(simulationCounter) 1
             }
          }

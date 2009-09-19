@@ -2,7 +2,7 @@
 # @file     sophiespectro.tcl
 # @brief    fichier du namespace ::sophie::spectro
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiespectro.tcl,v 1.6 2009-09-10 18:59:07 robertdelmas Exp $
+# @version  $Id: sophiespectro.tcl,v 1.7 2009-09-19 15:46:48 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -174,10 +174,10 @@ proc ::sophie::spectro::resetStatistics { } {
 ##------------------------------------------------------------
 # saveImage
 #  enregistre l'image integree
-#     nom du fichier :  "prefixe-date.fit"
+#     nom du fichier : "prefixe-date.fit"
 #
 #  avec  prefixe = "centrage" ou "guidage"  suivant le mode courant
-#        date    = date courante au format ISO8601  , exemple: 2009-05-13T18:51:30.250
+#        date    = date courante au format ISO8601 , exemple : 2009-05-13T18:51:30.250
 #  Mots cles enregistre dans le fichier :
 #   - BIN1     binning horizontal
 #   - BIN2     binning vertical
@@ -202,7 +202,7 @@ proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms} {
          }
 
          #--- je recupere la date UT
-         set shortName "$::conf(sophie,guidingFileNameprefix)-[mc_date2iso8601 [::audace::date_sys2ut now]].fit"
+         set shortName "$::conf(sophie,guidingFileNameprefix)-[mc_date2iso8601 [::audace::date_sys2ut now]]$::conf(extension,defaut)"
          #--- je remplace ":" par "-" car ce n'est pas un caractere autorise dasn le nom d'un fichier.
          set shortName [string map { ":" "-" } $shortName]
          #--- j'ajoute le repertoire dans le nom du fichier
