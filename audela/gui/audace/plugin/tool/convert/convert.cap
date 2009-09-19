@@ -1,6 +1,6 @@
 #
 # Fichier : convert.cap
-# Mise a jour $Id: convert.cap,v 1.1 2009-09-10 22:18:57 robertdelmas Exp $
+# Mise a jour $Id: convert.cap,v 1.2 2009-09-19 12:01:19 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,8 +11,8 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(convert,menu)                 "# Convertir l'image FITS affichée"
-set caption(convert,titre)                "# Convertir l'image FITS affichée"
+set caption(convert,menu)                 "Convert the displayed FITS image"
+set caption(convert,titre)                "Convert the displayed FITS image"
 set caption(convert,erreur)               "Error"
 
 # *************** Version française ***************************
@@ -25,22 +25,22 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(convert,menu)              "# Convertir l'image FITS affichée"
-   set caption(convert,titre)             "# Convertir l'image FITS affichée"
+   set caption(convert,menu)              "Convertire l'immagine FITS visualizzata"
+   set caption(convert,titre)             "Convertire l'immagine FITS visualizzata"
    set caption(convert,erreur)            "Errore"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(convert,menu)              "# Convertir l'image FITS affichée"
-   set caption(convert,titre)             "# Convertir l'image FITS affichée"
+   set caption(convert,menu)              "Convertir la imagen FITS presentada"
+   set caption(convert,titre)             "Convertir la imagen FITS presentada"
    set caption(convert,erreur)            "Error"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(convert,menu)              "# Convertir l'image FITS affichée"
-   set caption(convert,titre)             "# Convertir l'image FITS affichée"
+   set caption(convert,menu)              "Das gezeigte FITS Bild konvertieren"
+   set caption(convert,titre)             "Das gezeigte FITS Bild konvertieren"
    set caption(convert,erreur)            "Irrtum"
 
 # *************** Version portugaise **************************
@@ -53,8 +53,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(convert,menu)              "# Convertir l'image FITS affichée"
-   set caption(convert,titre)             "# Convertir l'image FITS affichée"
+   set caption(convert,menu)              "Konvertér det viste FITS-billede"
+   set caption(convert,titre)             "Konvertér det viste FITS-billede"
    set caption(convert,erreur)            "Fejl"
 
 }
