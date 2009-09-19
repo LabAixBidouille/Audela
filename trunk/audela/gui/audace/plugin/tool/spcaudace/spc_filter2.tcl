@@ -1,6 +1,6 @@
 
 
-# Mise a jour $Id: spc_filter2.tcl,v 1.6 2009-07-01 16:17:28 bmauclaire Exp $
+# Mise a jour $Id: spc_filter2.tcl,v 1.7 2009-09-19 14:01:17 bmauclaire Exp $
 # Mise a jour Patrick Lailly 29 mai 2009
 
 
@@ -1104,7 +1104,7 @@ proc spc_extractcont { args } {
 	::console::affiche_resultat " $som_poids\n"
 	::console::affiche_resultat "residu moyen (RMS) apres premiere etape : $rms_pat\n"
 	
-	if { $nb_args<=5 } {
+	if { $nb_args<=6 } {
 		for { set niter 1 } { $niter<=$nbiter } { incr niter } {
 			set resid_pond [ list ]
 			for {set i 0} {$i<$nmilieu0} {incr i} {
