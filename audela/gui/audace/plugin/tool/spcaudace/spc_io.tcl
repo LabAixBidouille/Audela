@@ -10,7 +10,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_io.tcl,v 1.4 2008-12-10 11:07:41 bmauclaire Exp $
+# Mise a jour $Id: spc_io.tcl,v 1.5 2009-09-19 14:00:45 bmauclaire Exp $
 
 
 # Remarque (par Benoît) : il faut mettre remplacer toutes les variables textes par des variables caption(mauclaire,...)
@@ -931,7 +931,7 @@ proc spc_fits2dat { args } {
          if { $lambda0 != 1 } {
              if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
                  #-- Calibration non-linéaire :
-                 if { $spc_a < 0.01 } {
+                 if { $spc_a < 0.01 && $spc_a > 0.0 } {
                      for {set k 0} {$k<$naxis1} {incr k} {
                          #- Ancienne formulation < 070104 :
                          set lambda [ expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
@@ -1171,45 +1171,45 @@ proc spc_fits2data { args } {
          }
      #---- Audela 140 :
      } else {
-         #--- Spectre calibré en lambda
-         if { $lambda0 != 1 } {
-             #-- Calibration non-linéaire :
-     if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
-         if { $spc_a < 0.01 } {
-### modif michel
-### {set k 0} {$k<$naxis1}
-             for {set k 1} {$k<=$naxis1} {incr k} {
-                 #- Ancienne formulation < 070104 :
-                 #- Une liste commence à 0 ; Un vecteur fits commence à 1
-                 lappend abscisses [ expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
-                 lappend intensites [ lindex [ buf$audace(bufNo) getpix [list [ expr $k ] 1] ] 1 ]
-             }
-         } else {
-### modif michel
-###  {set k 0} {$k<$naxis1}
-             for {set k 1} {$k<=$naxis1} {incr k} {
-                 #- Une liste commence à 0 ; Un vecteur fits commence à 1
-                 lappend abscisses [ expr $spc_d*$k*$k*$k+$spc_c*$k*$k+$spc_b*$k+$spc_a ]
-                 lappend intensites [ lindex [ buf$audace(bufNo) getpix [list [ expr $k ] 1] ] 1 ]
-             }
-         }
-         #-- Calibration linéaire :
-     } else {
-         for {set k 0} {$k<$naxis1} {incr k} {
-             lappend abscisses [ expr $lambda0+$k*$dispersion*1.0 ]
-             lappend intensites [ lindex [ buf$audace(bufNo) getpix [list [ expr $k+1 ] 1] ] 1 ]
-         }
+        #--- Spectre calibré en lambda
+        if { $lambda0 != 1 } {
+           #-- Calibration non-linéaire :
+           if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+              if { $spc_a < 0.01 && $spc_a > 0.0 } {
+                 ### modif michel
+                 ### {set k 0} {$k<$naxis1}
+                 for {set k 1} {$k<=$naxis1} {incr k} {
+                    #- Ancienne formulation < 070104 :
+                    #- Une liste commence à 0 ; Un vecteur fits commence à 1
+                    lappend abscisses [ expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
+                    lappend intensites [ lindex [ buf$audace(bufNo) getpix [list [ expr $k ] 1] ] 1 ]
+                 }
+              } else {
+                 ### modif michel
+                 ###  {set k 0} {$k<$naxis1}
+                 for {set k 1} {$k<=$naxis1} {incr k} {
+                    #- Une liste commence à 0 ; Un vecteur fits commence à 1
+                    lappend abscisses [ expr $spc_d*$k*$k*$k+$spc_c*$k*$k+$spc_b*$k+$spc_a ]
+                    lappend intensites [ lindex [ buf$audace(bufNo) getpix [list [ expr $k ] 1] ] 1 ]
+                 }
+              }
+              #-- Calibration linéaire :
+           } else {
+              for {set k 0} {$k<$naxis1} {incr k} {
+                 lappend abscisses [ expr $lambda0+$k*$dispersion*1.0 ]
+                 lappend intensites [ lindex [ buf$audace(bufNo) getpix [list [ expr $k+1 ] 1] ] 1 ]
+              }
+           }
+        } else {
+           #--- Spectre non calibré en lambda :
+           for {set k 1} {$k<=$naxis1} {incr k} {
+              lappend abscisses $k
+              lappend intensites [ lindex [ buf$audace(bufNo) getpix [list $k 1] ] 1 ]
+           }
+        }
      }
-         } else {
-             #--- Spectre non calibré en lambda :
-             for {set k 1} {$k<=$naxis1} {incr k} {
-                 lappend abscisses $k
-                 lappend intensites [ lindex [ buf$audace(bufNo) getpix [list $k 1] ] 1 ]
-             }
-         }
-     }
-     set coordonnees [list $abscisses $intensites]
-     return $coordonnees
+    set coordonnees [list $abscisses $intensites]
+    return $coordonnees
  } else {
      ::console::affiche_erreur "Usage: spc_fits2data fichier_fits_profil.fit\n\n"
  }
