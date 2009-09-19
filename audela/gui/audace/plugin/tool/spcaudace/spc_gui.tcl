@@ -1,7 +1,7 @@
 
 # Procédures liées à 'linterface graphique et au tracé des profils de raies.
 
-# Mise a jour $Id: spc_gui.tcl,v 1.4 2009-07-18 18:27:23 bmauclaire Exp $
+# Mise a jour $Id: spc_gui.tcl,v 1.5 2009-09-19 13:58:22 bmauclaire Exp $
 
 
 
@@ -305,7 +305,8 @@ proc spc_winini { } {
 
 
 
-################################################                                           # Ouverture d'un fichier fit
+################################################
+# Ouverture d'un fichier fit
 # ---------------------------------------------
 # Auteur : Alain KLOTZ
 # Date de creation : 17-08-2003
