@@ -106,7 +106,7 @@ int cmdTelCorrect(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    struct telprop *tel;
    char *direction;
    int duration;
-
+   
    tel = (struct telprop *)clientData;
    if(argc!=4) {
       sprintf(ligne,"Usage: %s %s {n,e,w,s} {0...9999}",argv[0],argv[1]);
@@ -116,34 +116,34 @@ int cmdTelCorrect(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
       switch(argv[2][0]) {
       case 'n':
       case 'N':
-	 direction = "n";
-	 break;
+         direction = "n";
+         break;
       case 'e':
       case 'E':
-	 direction = "e";
-	 break;
+         direction = "e";
+         break;
       case 'w':
       case 'W':
-	 direction = "w";
-	 break;
+         direction = "w";
+         break;
       case 's':
       case 'S':
-	 direction = "s";
-	 break;
+         direction = "s";
+         break;
       default:
-	 sprintf(ligne,"Usage: %s %s direction time\ndirection shall be n|e|w|s",argv[0],argv[1]);
-	 Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-	 return TCL_ERROR;
+         sprintf(ligne,"Usage: %s %s direction time\ndirection shall be n|e|w|s",argv[0],argv[1]);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         return TCL_ERROR;
       }
       if (Tcl_GetInt(interp, argv[3], &duration) != TCL_OK) {
-	 sprintf(ligne,"Usage: %s %s direction time\ntime shall be an integer between 0 and 9999",argv[0],argv[1]);
-	 Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-	 return TCL_ERROR;
+         sprintf(ligne,"Usage: %s %s direction time\ntime shall be an integer between 0 and 9999",argv[0],argv[1]);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         return TCL_ERROR;
       }
       if ((duration<0)||(duration>9999)) {
-	 sprintf(ligne,"Usage: %s %s direction time\ntime shall be between 0 and 9999",argv[0],argv[1]);
-	 Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-	 return TCL_ERROR;
+         sprintf(ligne,"Usage: %s %s direction time\ntime shall be between 0 and 9999",argv[0],argv[1]);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         return TCL_ERROR;
       }
       //mytel_correct(tel,direction,duration);
    }
@@ -206,38 +206,6 @@ int cmdTelSendCommand(ClientData clientData, Tcl_Interp *interp, int argc, char 
 */
 
 /*
- * -----------------------------------------------------------------------------
- *  cmdTelConsoleLog()
- *
- *  active/desactive les traces dans la console
- *
- * -----------------------------------------------------------------------------
- */
-
-int cmdTelConsoleLog(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
-   char ligne[256];
-   int result = TCL_OK,pb=0;
-   struct telprop *tel;
-   tel = (struct telprop *)clientData;
-   if((argc!=2)&&(argc!=3)) {
-      pb=1;
-   } else if(argc==2) {
-      pb=0;
-   } else {
-      pb=0;
-      tel->consoleLog=atoi(argv[2]);
-   }
-   if (pb==1) {
-      sprintf(ligne,"Usage: %s %s ?0|1?",argv[0],argv[1]);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-      result = TCL_ERROR;
-   } else {
-      sprintf(ligne,"%d",tel->consoleLog);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-   }
-   return result;
-}
-
 
 /*
  * -----------------------------------------------------------------------------

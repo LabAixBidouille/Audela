@@ -109,7 +109,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    tel->inputFilterTaskHandle = 0;   
    tel->outputTelescopData = 255;
    tel->outputFilterData = 255;
-   tel->consoleLog = 0;    // j'active les traces dans la console pour les premiers tests 
+   tel->consoleLog = 0;    
    tel->filterMaxDelay = 10;  
    tel->filterCurrentDelay = 0; 
    tel->startTime = 0.0;
@@ -987,7 +987,7 @@ int mytel_sendCommandTelescop(struct telprop *tel, int command) {
 
    data = (uInt8) command;
 
-   if ( tel->consoleLog == 1 ) {
+   if ( tel->consoleLog >= 2 ) {
       // j'affiche une trace dans la console
       mytel_logConsole(tel, "T193 command: %d",data); 
    }
@@ -1035,7 +1035,7 @@ int mytel_sendCommandFilter(struct telprop *tel, int command) {
    int      error=0;
    data = (uInt8) command;
 
-   if ( tel->consoleLog == 1 ) {
+   if ( tel->consoleLog >= 2 ) {
       // j'affiche une trace dans la console
       mytel_logConsole(tel, "T193 command: %d",data); 
       Tcl_Eval(tel->interp,ligne);
@@ -1094,7 +1094,7 @@ int mytel_readUsbCard(struct telprop *tel, unsigned char *data ) {
 		DAQmxGetExtendedErrorInfo(tel->msg,1024);
       cr = 1;
    } else {
-      if ( tel->consoleLog == 1 ) {
+      if ( tel->consoleLog >= 2 ) {
          // j'affiche une trace dans la console
          mytel_logConsole(tel,"T193 read USB: %d",*data); 
          Tcl_Eval(tel->interp,ligne);
