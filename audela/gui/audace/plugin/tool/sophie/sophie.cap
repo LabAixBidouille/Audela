@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.33 2009-09-20 13:34:46 michelpujol Exp $
+# Mise a jour $Id: sophie.cap,v 1.34 2009-09-20 14:50:22 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -84,7 +84,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,fibreAHE)                 "Fibre A HE"
    set caption(sophie,fibreB)                   "Fibre B"
   ### set caption(sophie,fiberGuigindMode)         "Mode d'entrée de la fibre A"
-   set caption(sophie,replaceCrossPosition)    "Remplacer par la position de la croix rouge dans l'image"
+   set caption(sophie,replaceCrossPosition)     "Remplacer par la position de la croix rouge dans l'image"
    set caption(sophie,replaceCirclePosition)    "Remplacer par la position du cercle rouge dans l'image"
    set caption(sophie,replaceSquarePosition)    "Remplacer par la position du carré rouge dans l'image"
    set caption(sophie,x)                        "X"
