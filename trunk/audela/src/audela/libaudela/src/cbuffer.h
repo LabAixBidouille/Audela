@@ -138,7 +138,7 @@ public:
                           int maskRadius, double maskFwhm, double maskPercent,
                           int originSumNb, int originSumCounter, 
                           double previousFiberX, double previousFiberY,  
-                          int pixelMinCount,
+                          int pixelMinCount, double biasValue,
                           char *starStatus,  double *starX,  double *starY,
                           char *fiberStatus, double *fiberX, double *fiberY, 
                           double *ajustedFwhmX, double *ajustedFwhmY, 
