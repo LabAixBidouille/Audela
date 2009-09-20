@@ -2,7 +2,7 @@
 # @file     sophieconfig.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieconfig.tcl,v 1.21 2009-09-18 19:14:05 michelpujol Exp $
+# @version  $Id: sophieconfig.tcl,v 1.22 2009-09-20 13:34:28 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -311,7 +311,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -textvariable ::sophie::config::widget(fiberHRY)
       grid $frm.fibre.spinboxfiberHRY -in [ $frm.fibre getframe ] -row 1 -column 2 -sticky ens
 
-      Button $frm.fibre.replaceOriginHR -text $::caption(sophie,replaceOriginValue) \
+      Button $frm.fibre.replaceOriginHR -text $::caption(sophie,replaceCrossPosition) \
          -command "::sophie::config::replaceOriginCoordinates $visuNo HR"
       grid $frm.fibre.replaceOriginHR -in [ $frm.fibre getframe ] -row 1 -column 3 -sticky ens  -padx 2  -pady 2
 
@@ -329,7 +329,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -textvariable ::sophie::config::widget(fiberHEY)
       grid $frm.fibre.spinboxfiberHEY -in [ $frm.fibre getframe ] -row 2 -column 2 -sticky ens
 
-      Button $frm.fibre.replaceOriginHE -text $::caption(sophie,replaceOriginValue) \
+      Button $frm.fibre.replaceOriginHE -text $::caption(sophie,replaceCrossPosition) \
          -command "::sophie::config::replaceOriginCoordinates $visuNo HE"
       grid $frm.fibre.replaceOriginHE -in [ $frm.fibre getframe ] -row 2 -column 3 -sticky ens  -padx 2  -pady 2
 
@@ -347,7 +347,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -textvariable ::sophie::config::widget(fiberBY)
       grid $frm.fibre.spinboxyfibreB -in [ $frm.fibre getframe ] -row 3 -column 2 -sticky ens
 
-      Button $frm.fibre.replaceOriginFiberB -text $::caption(sophie,replaceOriginValue) \
+      Button $frm.fibre.replaceOriginFiberB -text $::caption(sophie,replaceCirclePosition) \
          -command "::sophie::config::replaceOriginCoordinates $visuNo FIBER_B"
       grid $frm.fibre.replaceOriginFiberB -in [ $frm.fibre getframe ] -row 3 -column 3 -sticky ens  -padx 2  -pady 2
 
@@ -754,7 +754,7 @@ proc ::sophie::config::chooseBiasFile { cameraBinning cameraMode } {
 ###}
 
 #------------------------------------------------------------
-# replaceOriginValue
+# replaceOriginCoordinates
 #   remplace la position de la consigne par la position courante de la consigne
 # @param numero de la visu
 # @param type de position (HR ou HE ou FIBER_B)
@@ -765,16 +765,16 @@ proc ::sophie::config::replaceOriginCoordinates { visuNo positionType } {
 
    switch $positionType {
       "HR" {
-         set widget(fiberHRX) [lindex $::sophie::private(originCoord) 0]
-         set widget(fiberHRY) [lindex $::sophie::private(originCoord) 1]
+         set widget(fiberHRX) [format "%.1f" [lindex $::sophie::private(originCoord) 0]]
+         set widget(fiberHRY) [format "%.1f" [lindex $::sophie::private(originCoord) 1]]
       }
       "HE" {
-         set widget(fiberHEX) [lindex $::sophie::private(originCoord) 0]
-         set widget(fiberHEY) [lindex $::sophie::private(originCoord) 1]
+         set widget(fiberHEX) [format "%.1f" [lindex $::sophie::private(originCoord) 0]]
+         set widget(fiberHEY) [format "%.1f" [lindex $::sophie::private(originCoord) 1]]
       }
       "FIBER_B" {
-         set widget(fiberBX) [lindex $::sophie::private(fiberBCoord) 0]
-         set widget(fiberBY) [lindex $::sophie::private(fiberBCoord) 1]
+         set widget(fiberBX) [format "%.1f" [lindex $::sophie::private(fiberBCoord) 0]]
+         set widget(fiberBY) [format "%.1f" [lindex $::sophie::private(fiberBCoord) 1]]
       }
    }
 }
