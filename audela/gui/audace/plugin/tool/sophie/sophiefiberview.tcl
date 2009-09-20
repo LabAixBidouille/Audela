@@ -2,7 +2,7 @@
 # @file     fiberview.tcl
 # @brief    Fichier du namespace ::sophie::fiberview
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiefiberview.tcl,v 1.1 2009-09-20 13:29:14 michelpujol Exp $
+# @version  $Id: sophiefiberview.tcl,v 1.2 2009-09-20 16:12:05 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -63,7 +63,6 @@ proc ::sophie::fiberview::createPluginInstance { in visuNo  } {
    variable private
 
    set tkBase [::confVisu::getBase $visuNo]
-   console::disp "createPluginInstance in=$in tkBase=$tkBase"
    #--- je vide le menu des outils
    Menu_Delete $visuNo $::caption(audace,menu,tool) all
    #--- j'affiche la fentre au dessus de la fenetre principale de sophie
