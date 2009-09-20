@@ -705,7 +705,8 @@ int cmdVisuWindow(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
                      break;
                   }
                } else {
-                  sprintf(ligne,"Window not bound inside original picture");
+                  sprintf(ligne,"Window not bound inside original picture. (%d,%d)-(%d,%d) not in (1,1)-(%d,%d)",
+                     x1,y1,x2,y2,naxis1,naxis2);
                   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                   result = TCL_ERROR;
                }
