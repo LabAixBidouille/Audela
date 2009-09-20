@@ -3,7 +3,7 @@
 # Description : procedures d'acqusitition et de traitement avec
 #         plusieurs cameras simultanées exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise a jour $Id: camerathread.tcl,v 1.13 2009-09-09 15:08:52 michelpujol Exp $
+# Mise a jour $Id: camerathread.tcl,v 1.14 2009-09-20 13:40:50 michelpujol Exp $
 #
 
 namespace eval ::camerathread {
@@ -20,7 +20,7 @@ proc ::camerathread::init { camItem camNo mainThreadNo} {
    set private(acquisitionState)  0
    set private(test)          0
 
-   set private(synchroneParameter) ""
+   set private(asynchroneParameter) ""
 }
 
 
@@ -876,7 +876,7 @@ proc ::camerathread::setAsynchroneParameter { args } {
       interp eval "" "set private($paramName) $args"
    } else {
       #--- thread::eval utilise un mutex interne du thread de la camera
-      thread::eval "append private(synchroneParameter) \" \" $args"
+      thread::eval "append private(asynchroneParameter) \" \" $args"
       if { $private(acquisitionState) == 0 } {
          updateParameter
       }
@@ -893,24 +893,28 @@ proc ::camerathread::setAsynchroneParameter { args } {
 #------------------------------------------------------------
 proc ::camerathread::updateParameter { } {
    variable private
-   set paramList $private(synchroneParameter)
-   set private(synchroneParameter)  ""
-   foreach { paramName paramValue } $paramList { 
-      set private($paramName) $paramValue
-      ###::camerathread::disp  "camerathread::updateParameter $paramName=$private($paramName)\n"
+   #--- je donne le temps au thread de mettre a jour la variable private(asynchroneParameter)
+   update
+   if { $private(asynchroneParameter) != "" } {
+      set paramList $private(asynchroneParameter)
+      set private(asynchroneParameter)  ""
+      foreach { paramName paramValue } $paramList {
+         set private($paramName) $paramValue
+         ###::camerathread::disp  "camerathread::updateParameter $paramName=$private($paramName)\n"
 
-      switch $paramName {
-        "binning" {
-            cam$private(camNo) bin $private(binning)
-         }
-        "exptime" {
-            cam$private(camNo) exptime $private(exptime)
-         }
-        "window" {
-            cam$private(camNo) window $private(window)
-         }
-         "shutter" {
-            cam$private(camNo) shutter $private(shutter)
+         switch $paramName {
+           "binning" {
+               cam$private(camNo) bin $private(binning)
+            }
+           "exptime" {
+               cam$private(camNo) exptime $private(exptime)
+            }
+           "window" {
+               cam$private(camNo) window $private(window)
+            }
+            "shutter" {
+               cam$private(camNo) shutter $private(shutter)
+            }
          }
       }
    }
