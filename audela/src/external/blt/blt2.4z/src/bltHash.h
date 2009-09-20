@@ -31,7 +31,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: bltHash.h,v 1.2 2009-09-20 15:04:47 michelpujol Exp $
+ * RCS: @(#) $Id: bltHash.h,v 1.3 2009-09-20 16:12:56 michelpujol Exp $
  */
 
 #ifndef BLT_HASH_H
@@ -51,7 +51,7 @@
 #define SIZEOF_VOID_P 4
 #endif
 #ifndef HAVE_INTTYPES_H
-#if 1
+#if 0
 #define HAVE_INTTYPES_H 1
 #endif
 #endif
