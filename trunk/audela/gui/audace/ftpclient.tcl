@@ -2,14 +2,14 @@
 # Fichier : ftpclient.tcl
 # Description : Connexion a un serveur FTP
 # Auteur : Michel PUJOL
-# Mise a jour $Id: ftpclient.tcl,v 1.12 2009-09-20 13:45:18 michelpujol Exp $
+# Mise a jour $Id: ftpclient.tcl,v 1.13 2009-09-20 14:45:45 robertdelmas Exp $
 #
 
 ##############################################################################
 # namespace ftpclient
 #  ::ftpclient::selectConnection                 : affiche une fenetre de demande de connexion FTP et ouvre la connexion
 #  ::ftpclient::open                             : ouvre la connexion FTP selectionnee
-#  ::ftpclient::closeCnx                            : ferme la connexion FTP
+#  ::ftpclient::closeCnx                         : ferme la connexion FTP
 #  ::ftpclient::getFileList (fullpath)           : retourne la liste des fichiers d'un repertoire distant
 #  ::ftpclient::get ( sourceFile targetDir size) : copie un fichier du serveur distant sur le disque local
 #############################################################################
