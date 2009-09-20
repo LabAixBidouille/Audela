@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: camera.tcl,v 1.33 2009-08-30 20:27:26 michelpujol Exp $
+# Mise a jour $Id: camera.tcl,v 1.34 2009-09-20 13:54:23 michelpujol Exp $
 #
 # Procedures utilisees par confCam
 #   ::camera::create : cree une camera
@@ -704,12 +704,12 @@ proc ::camera::searchBrightestStar { camItem callback exptime originCoord target
 
 #------------------------------------------------------------
 # setParam
-#    modifie un parametre de la camera
+#    modifie un parametre
 #
-# parametres :
-#    direction : e w n s
-# return
-#    rien
+# @param camItem item de la camera
+# @param paramName  nom du prarametre
+# @param paramValue valeur du parametre
+# @return rien
 #------------------------------------------------------------
 proc ::camera::setParam { camItem  paramName paramValue } {
    variable private
