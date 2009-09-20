@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.14 2009-09-20 14:36:53 michelpujol Exp $
+# Mise a jour $Id: t193.tcl,v 1.15 2009-09-20 15:18:23 robertdelmas Exp $
 #
 
 namespace eval ::t193 {
@@ -95,8 +95,12 @@ proc ::t193::initPlugin { } {
    #--- vitesses de guidage en arcseconde de degre par seconde de temps
    if { ! [ info exists conf(t193,alphaGuidingSpeed) ] }   { set conf(t193,alphaGuidingSpeed)   "3.0" }
    if { ! [ info exists conf(t193,deltaGuidingSpeed) ] }   { set conf(t193,deltaGuidingSpeed)   "3.0" }
+   #--- configuration du mode Ethernet
+   if { ! [ info exists conf(t193,hostEthernet) ] }        { set conf(t193,hostEthernet)        "" }
+   if { ! [ info exists conf(t193,portEthernet) ] }        { set conf(t193,portEthernet)        "" }
    #--- duree de deplacement entre les 2 butees (mini et maxi) de l'attenuateur
    if { ! [ info exists conf(t193,dureeMaxAttenuateur) ] } { set conf(t193,dureeMaxAttenuateur) "16" }
+   #---
    if { ! [ info exists conf(t193,consoleLog) ] }          { set conf(t193,consoleLog)          "0" }
 
    #--- Initialisation
@@ -122,9 +126,11 @@ proc ::t193::confToWidget { } {
    set private(minDelay)            $conf(t193,minDelay)
    set private(nomPortTelescope)    $conf(t193,nomPortTelescope)
    set private(nomPortAttenuateur)  $conf(t193,nomPortAttenuateur)
-   set private(dureeMaxAttenuateur) $conf(t193,dureeMaxAttenuateur)
    set private(alphaGuidingSpeed)   $conf(t193,alphaGuidingSpeed)
    set private(deltaGuidingSpeed)   $conf(t193,deltaGuidingSpeed)
+   set private(hostEthernet)        $conf(t193,hostEthernet)
+   set private(portEthernet)        $conf(t193,portEthernet)
+   set private(dureeMaxAttenuateur) $conf(t193,dureeMaxAttenuateur)
    set private(raquette)            $conf(raquette)
    set private(consoleLog)          $conf(t193,consoleLog)
 }
@@ -144,9 +150,11 @@ proc ::t193::widgetToConf { } {
    set conf(t193,minDelay)            $private(minDelay)
    set conf(t193,nomPortTelescope)    $private(nomPortTelescope)
    set conf(t193,nomPortAttenuateur)  $private(nomPortAttenuateur)
-   set conf(t193,dureeMaxAttenuateur) $private(dureeMaxAttenuateur)
    set conf(t193,alphaGuidingSpeed)   $private(alphaGuidingSpeed)
    set conf(t193,deltaGuidingSpeed)   $private(deltaGuidingSpeed)
+   set conf(t193,hostEthernet)        $private(hostEthernet)
+   set conf(t193,portEthernet)        $private(portEthernet)
+   set conf(t193,dureeMaxAttenuateur) $private(dureeMaxAttenuateur)
    set conf(raquette)                 $private(raquette)
    set conf(t193,consoleLog)          $private(consoleLog)
 }
@@ -178,14 +186,17 @@ proc ::t193::fillConfigPage { frm } {
    TitleFrame $frm.mode -borderwidth 2 -relief ridge -text "$caption(t193,mode)"
    pack $frm.mode -side top -fill x
 
+   TitleFrame $frm.carteUSB -borderwidth 2 -relief ridge -text "$caption(t193,carteUSB)"
+   pack $frm.carteUSB -side top -fill x
+
+   TitleFrame $frm.ethernet -borderwidth 2 -relief ridge -text "$caption(t193,ethernet)"
+   pack $frm.ethernet -side top -fill x
+
    frame $frm.frame3 -borderwidth 0 -relief raised
-   pack $frm.frame3 -side top -fill x
+   pack $frm.frame3 -in [ $frm.carteUSB getframe ] -side top -fill x
 
    frame $frm.frame4 -borderwidth 0 -relief raised
-   pack $frm.frame4 -side top -fill x
-
-   frame $frm.frame5 -borderwidth 0 -relief raised
-   pack $frm.frame5 -side top -fill x
+   pack $frm.frame4 -in [ $frm.carteUSB getframe ] -side top -fill x
 
    frame $frm.frame7 -borderwidth 0 -relief raised
    pack $frm.frame7 -side bottom -fill x -pady 2
@@ -193,8 +204,8 @@ proc ::t193::fillConfigPage { frm } {
    frame $frm.frame6 -borderwidth 0 -relief raised
    pack $frm.frame6 -side bottom -fill x -pady 2
 
-   frame $frm.frameLog -borderwidth 0 -relief raised
-   pack $frm.frameLog -side bottom -fill x -pady 2
+   frame $frm.frame5 -borderwidth 0 -relief raised
+   pack $frm.frame5 -side bottom -fill x
 
    #--- Definition du port serie
    label $frm.lab4 -text "$caption(t193,port)"
@@ -235,20 +246,14 @@ proc ::t193::fillConfigPage { frm } {
    #--- Mode carte USB National Instruments
    radiobutton $frm.mode.radio0 -anchor nw -highlightthickness 0 \
       -text "$caption(t193,carteUSB)" -value 0 -variable ::t193::private(mode) \
-      -command { }
+      -command { ::t193::configureConfigPage }
    pack $frm.mode.radio0 -in [ $frm.mode getframe ] -anchor n -side left -padx 10 -pady 0
 
    #--- Mode Ethernet (interface de controle OHP)
-   radiobutton $frm.mode.radio1 -anchor nw -highlightthickness 0 -state disabled \
+   radiobutton $frm.mode.radio1 -anchor nw -highlightthickness 0 \
       -text "$caption(t193,ethernet)" -value 1 -variable ::t193::private(mode) \
-      -command { }
+      -command { ::t193::configureConfigPage }
    pack $frm.mode.radio1 -in [ $frm.mode getframe ] -anchor n -side left -padx 10 -pady 0
-
-   #--- Mode Delta Tau
-   radiobutton $frm.mode.radio2 -anchor nw -highlightthickness 0 -state disabled \
-      -text "$caption(t193,deltatau)" -value 2 -variable ::t193::private(mode) \
-      -command { }
-   pack $frm.mode.radio2 -in [ $frm.mode getframe ] -anchor n -side left -padx 10 -pady 0
 
    #--- Definition du nom de la carte USB-6501 et de son port
    label $frm.lab2 -text "$caption(t193,nom_carte)"
@@ -264,7 +269,23 @@ proc ::t193::fillConfigPage { frm } {
 
    #--- Definition de la longueur de l'impulsion minimale
    label $frm.lab3 -text "$caption(t193,minDelay)"
-   pack $frm.lab3 -in $frm.frame4 -anchor n -side right -padx 10 -pady 5
+   pack $frm.lab3 -in $frm.frame4 -anchor n -side right -padx 0 -pady 5
+
+   #--- Definition du host Ethernet
+   label $frm.labhost -text "$caption(t193,host)"
+   pack $frm.labhost -in [ $frm.ethernet getframe ] -anchor n -side left -padx 10 -pady 10
+
+   #--- Entry du host Ethernet
+   entry $frm.host -textvariable ::t193::private(hostEthernet) -width 15 -justify center
+   pack $frm.host -in [ $frm.ethernet getframe ] -anchor n -side left -padx 10 -pady 10
+
+   #--- Definition du port Ethernet
+   label $frm.labportEthernet -text "$caption(t193,port)"
+   pack $frm.labportEthernet -in [ $frm.ethernet getframe ] -anchor n -side left -padx 10 -pady 10
+
+   #--- Entry du port Ethernet
+   entry $frm.portEthernet -textvariable ::t193::private(portEthernet) -width 7 -justify center
+   pack $frm.portEthernet -in [ $frm.ethernet getframe ] -anchor n -side left -padx 10 -pady 10
 
    #--- frame des vitesses
    frame $frm.frame3.speed -borderwidth 0
@@ -272,14 +293,14 @@ proc ::t193::fillConfigPage { frm } {
       #--- Vitesse de rappel alpha
       label $frm.frame3.speed.labelAlpha -text "$caption(t193,rappelAlpha)"
       entry $frm.frame3.speed.entryAlpha -textvariable ::t193::private(alphaGuidingSpeed) \
-         -width 5 -justify right
+         -width 5 -justify left
       grid $frm.frame3.speed.labelAlpha  -row 0 -column 0 -ipadx 3
       grid $frm.frame3.speed.entryAlpha  -row 0 -column 1 -ipadx 3
 
       #--- Vitesse de rappel delta
       label $frm.frame3.speed.labelDelta -text "$caption(t193,rappelDelta)"
       entry $frm.frame3.speed.entryDelta -textvariable ::t193::private(deltaGuidingSpeed) \
-         -width 5 -justify right
+         -width 5 -justify left
       grid $frm.frame3.speed.labelDelta  -row 1 -column 0 -ipadx 3
       grid $frm.frame3.speed.entryDelta  -row 1 -column 1 -ipadx 3
 
@@ -289,7 +310,7 @@ proc ::t193::fillConfigPage { frm } {
       grid columnconfigure $frm.frame3.speed 1 -weight 0
       grid columnconfigure $frm.frame3.speed 2 -weight 1
 
-   pack $frm.frame3.speed -in $frm.frame3 -anchor n -side left -pady 5 -ipadx 10 -ipady 1 -expand 0
+   pack $frm.frame3.speed -in $frm.frame3 -anchor n -side right -pady 5 -ipadx 5 -ipady 1 -expand 0
 
    #--- J'affiche les boutons N, S, E et O
    TitleFrame $frm.test1 -borderwidth 2 -relief ridge -text "$caption(t193,raquette)"
@@ -318,7 +339,7 @@ proc ::t193::fillConfigPage { frm } {
       grid columnconfigure [ $frm.test1 getframe ] 2 -minsize 40 -weight 0
       grid columnconfigure [ $frm.test1 getframe ] 3 -minsize 40 -weight 0
 
-   pack $frm.test1 -side left -anchor w -fill none -pady 5 -expand 1
+   pack $frm.test1 -in $frm.frame5 -side left -anchor w -fill none -pady 5 -expand 1
 
    #--- J'affiche le bouton pour la lecture des coordonnees AD et Dec.
    TitleFrame $frm.test2 -borderwidth 2 -relief ridge -text "$caption(t193,coordonnées)"
@@ -341,15 +362,10 @@ proc ::t193::fillConfigPage { frm } {
          -justify center -state disabled
       grid $frm.test2.entryDec -in [ $frm.test2 getframe ] -row 1 -column 2
 
-      #--- J'affiche le bouton de lecture des coordonnees
-      ##button $frm.test2.lecture -text $caption(t193,lecture) -relief raised \
-      ##   -command "::telescope::afficheCoord"
-      ##grid $frm.test2.lecture -in [ $frm.test2 getframe ] -row 2 -column 1 -columnspan 2 -ipadx 15
-
       grid rowconfigure [ $frm.test2 getframe ] 0 -minsize 30 -weight 0
       grid rowconfigure [ $frm.test2 getframe ] 2 -minsize 30 -weight 0
 
-   pack $frm.test2 -side left -anchor w -fill none -pady 5 -expand 1
+   pack $frm.test2 -in $frm.frame5 -side left -anchor w -fill none -pady 5 -expand 1
 
    #--- J'affiche les boutons - et + de l'attenuateur
    TitleFrame $frm.test3 -borderwidth 2 -relief ridge -text "$caption(t193,attenuateur)"
@@ -384,13 +400,13 @@ proc ::t193::fillConfigPage { frm } {
       grid columnconfigure [ $frm.test3 getframe ] 1 -minsize 40 -weight 0
       grid columnconfigure [ $frm.test3 getframe ] 2 -minsize 40 -weight 0
 
-   pack $frm.test3 -side left -anchor w -fill none -pady 5 -expand 1
+   pack $frm.test3 -in $frm.frame5 -side left -anchor w -fill none -pady 5 -expand 1
 
-     #--- Le checkbutton pour obtenir des traces dans la Console
-   checkbutton $frm.frameLog.checkLog -text $caption(t193,tracesConsole) \
+   #--- Le checkbutton pour obtenir des traces dans la Console
+   checkbutton $frm.checkLog -text $caption(t193,tracesConsole) \
       -highlightthickness 0 -variable ::t193::private(consoleLog) \
       -command "::t193::tracesConsole"
-   pack $frm.frameLog.checkLog -in $frm.frameLog -anchor w -side left -padx 10
+   pack $frm.checkLog -in $frm.frame6 -anchor w -side right -padx 10
 
    #--- Le checkbutton pour la visibilite de la raquette a l'ecran
    checkbutton $frm.raquette -text "$caption(t193,raquette_tel)" \
@@ -438,47 +454,51 @@ proc ::t193::configureMonture { } {
    global caption conf
 
    set catchResult [ catch {
-      #--- Je cree la monture
-      set telNo [ tel::create t193 HP1000 \
-         -usbCardName $::conf(t193,nomCarte) \
-         -usbTelescopPort $::conf(t193,nomPortTelescope) \
-         -usbFilterPort   $::conf(t193,nomPortAttenuateur) \
-         -northRelay 0 \
-         -southRelay 1 \
-         -estRelay   2 \
-         -westRelay  3 \
-         -enabledRelay 4 \
-         -decreaseFilterRelay 0 \
-         -increaseFilterRelay 1 \
-         -minDetectorFilterInput 2 \
-         -maxDetectorFilterInput 3 \
-         -filterMaxDelay $conf(t193,dureeMaxAttenuateur) \
-      ]
+      if { $conf(t193,mode) == "0" } {
+         #--- Je cree la monture
+         set telNo [ tel::create t193 HP1000 \
+            -usbCardName $::conf(t193,nomCarte) \
+            -usbTelescopPort $::conf(t193,nomPortTelescope) \
+            -usbFilterPort   $::conf(t193,nomPortAttenuateur) \
+            -northRelay 0 \
+            -southRelay 1 \
+            -estRelay   2 \
+            -westRelay  3 \
+            -enabledRelay 4 \
+            -decreaseFilterRelay 0 \
+            -increaseFilterRelay 1 \
+            -minDetectorFilterInput 2 \
+            -maxDetectorFilterInput 3 \
+            -filterMaxDelay $conf(t193,dureeMaxAttenuateur) \
+         ]
 
-      #--- Je parametre le delai mini pour la carte NS
-      tel$telNo radec mindelay $::conf(t193,minDelay)
-      #--- Je parametre le niveau de trace
-      tel$telNo consolelog $::conf(t193,consoleLog)
+         #--- Je parametre le delai mini pour la carte NS
+         tel$telNo radec mindelay $::conf(t193,minDelay)
+         #--- Je parametre le niveau de trace
+         tel$telNo consolelog $::conf(t193,consoleLog)
 
-      #--- J'affiche un message d'information dans la Console
-      ::console::affiche_entete "$caption(t193,port_t193) $caption(t193,2points) $conf(t193,portSerie)\n"
-      ::console::affiche_entete "$caption(t193,nom_carte) $caption(t193,2points) $conf(t193,nomCarte)\n"
-      ::console::affiche_saut "\n"
-      #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
-      set linkNo [ ::confLink::create $conf(t193,portSerie) "tel$telNo" "control" [ tel$telNo product ] -noopen ]
-      #--- Je change de variable
-      set private(telNo) $telNo
-      #--- Configuration des boutons de test
-      ::t193::configureConfigPage
+         #--- J'affiche un message d'information dans la Console
+         ::console::affiche_entete "$caption(t193,port_t193) $caption(t193,2points) $conf(t193,portSerie)\n"
+         ::console::affiche_entete "$caption(t193,nom_carte) $caption(t193,2points) $conf(t193,nomCarte)\n"
+         ::console::affiche_saut "\n"
+         #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
+         set linkNo [ ::confLink::create $conf(t193,portSerie) "tel$telNo" "control" [ tel$telNo product ] -noopen ]
+         #--- Je change de variable
+         set private(telNo) $telNo
+         #--- Configuration des boutons de test
+         ::t193::configureConfigPage
 
-      #--- je lance la lecture de radec en boucle sur le port com
-      set private(radecHandle) [open $conf(t193,portSerie) "r+" ]
-      fconfigure $private(radecHandle) -mode "19200,n,8,1" -buffering none -blocking 0
-      set private(readLoop) 1
-      #--- j'intialise les coordonnees
-      set ::audace(telescope,getra) "00h00m00.00s"
-      set ::audace(telescope,getdec) "00d00m00"
-      ::t193::readRadec
+         #--- je lance la lecture de radec en boucle sur le port com
+         set private(radecHandle) [open $conf(t193,portSerie) "r+" ]
+         fconfigure $private(radecHandle) -mode "19200,n,8,1" -buffering none -blocking 0
+         set private(readLoop) 1
+         #--- j'intialise les coordonnees
+         set ::audace(telescope,getra) "00h00m00.00s"
+         set ::audace(telescope,getdec) "00d00m00"
+         ::t193::readRadec
+      } elseif { $conf(t193,mode) == "1" } {
+         #--- A developper
+      }
    } ]
 
    if { $catchResult == "1" } {
@@ -529,13 +549,19 @@ proc ::t193::configureConfigPage { } {
    variable private
 
    if { [ winfo exists $private(frm) ] } {
+      if { $private(mode) == "0" } {
+         pack forget $private(frm).ethernet
+         pack $private(frm).carteUSB -side top -fill x
+      } elseif { $private(mode) == "1" } {
+         pack forget $private(frm).carteUSB
+         pack $private(frm).ethernet -side top -fill x
+      }
       if { [ ::t193::isReady ] == 1 } {
          #--- J'active les boutons de l'interface
          $private(frm).test1.est configure -state normal
          $private(frm).test1.nord configure -state normal
          $private(frm).test1.sud configure -state normal
          $private(frm).test1.ouest configure -state normal
-         ###$private(frm).test2.lecture configure -state normal
          $private(frm).test3.entryDuree configure -state normal
          $private(frm).test3.attenuateur- configure -state normal
          $private(frm).test3.attenuateur+ configure -state normal
@@ -545,7 +571,6 @@ proc ::t193::configureConfigPage { } {
          $private(frm).test1.nord configure -state disabled
          $private(frm).test1.sud configure -state disabled
          $private(frm).test1.ouest configure -state disabled
-         ###$private(frm).test2.lecture configure -state disabled
          $private(frm).test3.entryDuree configure -state disabled
          $private(frm).test3.attenuateur- configure -state disabled
          $private(frm).test3.attenuateur+ configure -state disabled
@@ -666,7 +691,7 @@ proc ::t193::readRadec { } {
       set data [read -nonewline $private(radecHandle)]
       set data [split $data "\n" ]
       if { $data != "" } {
-         ####console::disp "::t193::readRadec data=$data \n"
+         ###console::disp "::t193::readRadec data=$data \n"
          #--- je recupere le dernier message (au cas ou il en aurait plusieurs qui se seraient accumulés)
          set data [lindex $data end]
          set ah ""
