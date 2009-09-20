@@ -2,7 +2,7 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.32 2009-09-13 15:09:17 michelpujol Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.33 2009-09-20 13:35:57 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -571,12 +571,12 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             $frm.centrage.pointage.positionXY.spinboxIncrement set 1
             grid $frm.centrage.pointage.positionXY.spinboxIncrement \
                -row 0 -column 6 -sticky ens
-               
-            Button $frm.centrage.pointage.positionXY.replaceManualOrigin -text $::caption(sophie,replaceOriginValue) \
-               -command "::sophie::control::replaceOriginCoordinates $visuNo"
-            grid $frm.centrage.pointage.positionXY.replaceManualOrigin -row 0 -column 6 -sticky ew  -padx 2 
 
-               
+            Button $frm.centrage.pointage.positionXY.replaceManualOrigin -text $::caption(sophie,replaceSquarePosition) \
+               -command "::sophie::control::replaceOriginCoordinates $visuNo"
+            grid $frm.centrage.pointage.positionXY.replaceManualOrigin -row 0 -column 6 -sticky ew  -padx 2
+
+
       pack $frm.centrage.pointage -side top -anchor w -fill x -expand 1
 
    #--- Frame de la focalisation
@@ -742,7 +742,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
                -row 0 -column 6 -sticky ens
 
             set private(guidageIncrement) 1
-            
+
       pack $frm.guidage.positionconsigne -side top -anchor w -fill x -expand 1
 
       #--- Frame des ecarts en alpha et delta
@@ -970,7 +970,7 @@ proc ::sophie::control::createGraph { visuNo graph height } {
    bind $graph <B1-Motion>       "::sophie::control::onGraphRegionMotion $visuNo %W %x %y"
    bind $graph <ButtonRelease-1> "::sophie::control::onGraphRegionEnd $visuNo %W %x %y"
    bind $graph <ButtonRelease-3> "::sophie::control::onGraphUnzoom $graph"
-   
+
 }
 
 ##------------------------------------------------------------
@@ -1567,8 +1567,8 @@ proc ::sophie::control::dispTempFLI { camItem } {
 }
 
 #------------------------------------------------------------
-# replaceOriginValue
-#   remplace la position de la consigne par la position de l'etoile 
+# replaceOriginCoordinates
+#   remplace la position de la consigne par la position de l'etoile
 # @param numero de la visu
 # @param type de position (HR ou HE)
 # @return rien
@@ -1578,10 +1578,10 @@ proc ::sophie::control::replaceOriginCoordinates { visuNo } {
 
    #--- je copie les coordonnees courante de la fenetre principale dans la variable globale
    set ::conf(sophie,objectCoord) $::sophie::private(targetCoord)
-   #--- je copie les coordonnees courante de la fenetre principale dans les variables 
+   #--- je copie les coordonnees courante de la fenetre principale dans les variables
    set private(positionObjetX) [lindex $::sophie::private(targetCoord) 0]
    set private(positionObjetY) [lindex $::sophie::private(targetCoord) 1]
-   
+
    #--- je met a jour l'affichage de la fenetre principale
    ::sophie::setGuidingMode $visuNo
 }
