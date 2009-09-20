@@ -63,6 +63,8 @@
    Tcl_TimerToken timerToken; \
    Tcl_Obj *      timerVar; \
    int            timeDone; \
+   int            minRadecDelay;  \
+   int            consoleLog; \
    struct telprop *next;
 
 
