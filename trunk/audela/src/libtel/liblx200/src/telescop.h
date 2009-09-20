@@ -37,7 +37,6 @@ struct telprop {
    int longformatindex;
    int tempo;
 	char autostar_char[3];
-   int consoleLog;
 };
 
 int tel_init(struct telprop *tel, int argc, char **argv);
