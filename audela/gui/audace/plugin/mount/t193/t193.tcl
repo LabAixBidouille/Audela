@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.15 2009-09-20 15:18:23 robertdelmas Exp $
+# Mise a jour $Id: t193.tcl,v 1.16 2009-09-20 18:13:06 robertdelmas Exp $
 #
 
 namespace eval ::t193 {
@@ -96,8 +96,8 @@ proc ::t193::initPlugin { } {
    if { ! [ info exists conf(t193,alphaGuidingSpeed) ] }   { set conf(t193,alphaGuidingSpeed)   "3.0" }
    if { ! [ info exists conf(t193,deltaGuidingSpeed) ] }   { set conf(t193,deltaGuidingSpeed)   "3.0" }
    #--- configuration du mode Ethernet
-   if { ! [ info exists conf(t193,hostEthernet) ] }        { set conf(t193,hostEthernet)        "" }
-   if { ! [ info exists conf(t193,portEthernet) ] }        { set conf(t193,portEthernet)        "" }
+   if { ! [ info exists conf(t193,hostEthernet) ] }        { set conf(t193,hostEthernet)        "192.168.128.157" }
+   if { ! [ info exists conf(t193,portEthernet) ] }        { set conf(t193,portEthernet)        "1026" }
    #--- duree de deplacement entre les 2 butees (mini et maxi) de l'attenuateur
    if { ! [ info exists conf(t193,dureeMaxAttenuateur) ] } { set conf(t193,dureeMaxAttenuateur) "16" }
    #---
