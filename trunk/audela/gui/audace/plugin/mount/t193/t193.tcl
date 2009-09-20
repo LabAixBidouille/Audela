@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.13 2009-09-13 15:10:10 michelpujol Exp $
+# Mise a jour $Id: t193.tcl,v 1.14 2009-09-20 14:36:53 michelpujol Exp $
 #
 
 namespace eval ::t193 {
@@ -97,12 +97,14 @@ proc ::t193::initPlugin { } {
    if { ! [ info exists conf(t193,deltaGuidingSpeed) ] }   { set conf(t193,deltaGuidingSpeed)   "3.0" }
    #--- duree de deplacement entre les 2 butees (mini et maxi) de l'attenuateur
    if { ! [ info exists conf(t193,dureeMaxAttenuateur) ] } { set conf(t193,dureeMaxAttenuateur) "16" }
+   if { ! [ info exists conf(t193,consoleLog) ] }          { set conf(t193,consoleLog)          "0" }
 
    #--- Initialisation
    set private(telNo)       "0"
    set private(frm)         ""
    set private(radecHandle) ""      ; # identifiant du canal de lecture
    set private(radecLoop)   0       ; # boucle de lecture de radec desactivee par defaut
+   set private(tracesConsole) $::conf(t193,consoleLog)
 }
 
 #
@@ -124,6 +126,7 @@ proc ::t193::confToWidget { } {
    set private(alphaGuidingSpeed)   $conf(t193,alphaGuidingSpeed)
    set private(deltaGuidingSpeed)   $conf(t193,deltaGuidingSpeed)
    set private(raquette)            $conf(raquette)
+   set private(consoleLog)          $conf(t193,consoleLog)
 }
 
 #
@@ -145,6 +148,7 @@ proc ::t193::widgetToConf { } {
    set conf(t193,alphaGuidingSpeed)   $private(alphaGuidingSpeed)
    set conf(t193,deltaGuidingSpeed)   $private(deltaGuidingSpeed)
    set conf(raquette)                 $private(raquette)
+   set conf(t193,consoleLog)          $private(consoleLog)
 }
 
 #
@@ -188,6 +192,9 @@ proc ::t193::fillConfigPage { frm } {
 
    frame $frm.frame6 -borderwidth 0 -relief raised
    pack $frm.frame6 -side bottom -fill x -pady 2
+
+   frame $frm.frameLog -borderwidth 0 -relief raised
+   pack $frm.frameLog -side bottom -fill x -pady 2
 
    #--- Definition du port serie
    label $frm.lab4 -text "$caption(t193,port)"
@@ -379,6 +386,12 @@ proc ::t193::fillConfigPage { frm } {
 
    pack $frm.test3 -side left -anchor w -fill none -pady 5 -expand 1
 
+     #--- Le checkbutton pour obtenir des traces dans la Console
+   checkbutton $frm.frameLog.checkLog -text $caption(t193,tracesConsole) \
+      -highlightthickness 0 -variable ::t193::private(consoleLog) \
+      -command "::t193::tracesConsole"
+   pack $frm.frameLog.checkLog -in $frm.frameLog -anchor w -side left -padx 10
+
    #--- Le checkbutton pour la visibilite de la raquette a l'ecran
    checkbutton $frm.raquette -text "$caption(t193,raquette_tel)" \
       -highlightthickness 0 -variable ::t193::private(raquette)
@@ -444,6 +457,8 @@ proc ::t193::configureMonture { } {
 
       #--- Je parametre le delai mini pour la carte NS
       tel$telNo radec mindelay $::conf(t193,minDelay)
+      #--- Je parametre le niveau de trace
+      tel$telNo consolelog $::conf(t193,consoleLog)
 
       #--- J'affiche un message d'information dans la Console
       ::console::affiche_entete "$caption(t193,port_t193) $caption(t193,2points) $conf(t193,portSerie)\n"
@@ -684,4 +699,19 @@ proc ::t193::getRadec { } {
    variable private
 
 }
+
+#
+# tracesConsole
+#    Affiche des traces dans la Console
+#
+proc ::t193::tracesConsole { } {
+   variable private
+
+   if { $private(telNo) == "0" } {
+      return
+   }
+
+   tel$private(telNo) consolelog $private(tracesConsole)
+}
+
 

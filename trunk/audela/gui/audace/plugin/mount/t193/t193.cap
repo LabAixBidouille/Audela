@@ -1,6 +1,6 @@
 #
 # Fichier : t193.cap
-# Mise a jour $Id: t193.cap,v 1.8 2009-09-19 12:00:37 robertdelmas Exp $
+# Mise a jour $Id: t193.cap,v 1.9 2009-09-20 14:37:06 michelpujol Exp $
 #
 
 #=========================================================================
@@ -37,7 +37,7 @@ set caption(t193,Dec)                        "Declination"
 set caption(t193,lecture)                    "Read"
 set caption(t193,controle)                   "Control"
 set caption(t193,raquette_tel)               "Hand controller on screen"
-
+set caption(t193,tracesConsole)              "Console Log"
 set caption(t193,port_t193)                  "HP1000 Com Port"
 set caption(t193,2points)                    ":"
 
@@ -73,6 +73,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,lecture)                 "Lecture"
    set caption(t193,controle)                "Contrôle"
    set caption(t193,raquette_tel)            "Raquette à l'écran"
+   set caption(t193,tracesConsole)           "Console Log"
 
    set caption(t193,port_t193)               "Port Com HP1000"
    set caption(t193,2points)                 ":"
@@ -109,6 +110,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,lecture)                 "Lettura"
    set caption(t193,controle)                "Controllo"
    set caption(t193,raquette_tel)            "Pulsantiera a schermo"
+   set caption(t193,tracesConsole)           "Traccia sulla Console"
 
    set caption(t193,port_t193)               "Porta Com HP1000"
    set caption(t193,2points)                 ":"
@@ -145,7 +147,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,lecture)                 "Leer"
    set caption(t193,controle)                "Control"
    set caption(t193,raquette_tel)            "Controlador virtual"
-
+   set caption(t193,tracesConsole)           "Log en la Consola"
+   
    set caption(t193,port_t193)               "Puerto Com HP1000"
    set caption(t193,2points)                 ":"
 
@@ -181,6 +184,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,lecture)                 "Lesen"
    set caption(t193,controle)                "Kontroll"
    set caption(t193,raquette_tel)            "Hand Kontroller am Bildschirm"
+   set caption(t193,tracesConsole)           "Konsole Log"
 
    set caption(t193,port_t193)               "HP1000 Com Port"
    set caption(t193,2points)                 ":"
@@ -217,6 +221,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,lecture)                 "Ler"
    set caption(t193,controle)                "Controlo"
    set caption(t193,raquette_tel)            "Controlador de mão no ecrã"
+   set caption(t193,tracesConsole)           "Log na Consola"
 
    set caption(t193,port_t193)               "Porta Com HP1000"
    set caption(t193,2points)                 ":"
@@ -253,6 +258,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,lecture)                 "Read"
    set caption(t193,controle)                "Control"
    set caption(t193,raquette_tel)            "Hand controller on screen"
+   set caption(t193,tracesConsole)           "Console Log"
 
    set caption(t193,port_t193)               "HP1000 Com Port"
    set caption(t193,2points)                 ":"
