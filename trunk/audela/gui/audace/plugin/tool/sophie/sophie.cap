@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.32 2009-09-19 12:02:07 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.33 2009-09-20 13:34:46 michelpujol Exp $
 #
 
 #=========================================================================
@@ -84,7 +84,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,fibreAHE)                 "Fibre A HE"
    set caption(sophie,fibreB)                   "Fibre B"
   ### set caption(sophie,fiberGuigindMode)         "Mode d'entrée de la fibre A"
-   set caption(sophie,replaceOriginValue)       "Remplacer par la position dans l'image"
+   set caption(sophie,replaceCrossPosition)    "Remplacer par la position de la croix rouge dans l'image"
+   set caption(sophie,replaceCirclePosition)    "Remplacer par la position du cercle rouge dans l'image"
+   set caption(sophie,replaceSquarePosition)    "Remplacer par la position du carré rouge dans l'image"
    set caption(sophie,x)                        "X"
    set caption(sophie,y)                        "Y"
    set caption(sophie,HR)                       "HR"
@@ -206,6 +208,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,pbfermfichcons)           "Problème durant la fermeture du fichier log.\n"
    set caption(sophie,pbmesserr)                "Problème de message d'erreur."
    set caption(sophie,enrim)                    "A %s TU, enregistrement de l'image %s.\n"
+
+   set caption(sophie,visuFibreA)               "Vue Fibre A"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
