@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.111 2009-09-13 20:24:26 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.112 2009-09-20 13:51:46 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -127,6 +127,12 @@ namespace eval ::confVisu {
 
       #--- initialisation des bind de touches et de la souris
       set private($visuNo,MouseState) rien
+
+      #--- Initialisation des variables utilisees par les listener
+      set private($visuNo,zoomListenerFlag) ""
+      set private($visuNo,mirrorXListenerFlag) ""
+      set private($visuNo,mirrorYListenerFlag) ""
+      set private($visuNo,windowListenerFlag) ""
 
       #--- je cree la fenetre
       ::confVisu::createDialog $visuNo $private($visuNo,This)
@@ -485,11 +491,25 @@ namespace eval ::confVisu {
                      if { $force == "-no" } {
                        visu $visuNo current
                      } else {
-                        visu $visuNo [ lrange [ buf$bufNo stat ] 0 1 ]
+                        set window [visu$visuNo window]
+                        if { $window == "full" } {
+                           #--- je calcule la statistique sur l'image entiere
+                           visu $visuNo [ lrange [ buf$bufNo stat ] 0 1 ]
+                        } else {
+                           #--- je calcule la statistique sur la fenetre
+                           visu $visuNo [ lrange [ buf$bufNo stat $window ] 0 1 ]
+                        }
                      }
                   }
                   loadima {
-                     visu $visuNo [ lrange [ buf$bufNo stat ] 0 1 ]
+                     set window [visu$visuNo window]
+                     if { $window == "full" } {
+                        #--- je calcule la statistique sur l'image entiere
+                        visu $visuNo [ lrange [ buf$bufNo stat ] 0 1 ]
+                     } else {
+                        #--- je calcule la statistique sur la fenetre
+                        visu $visuNo [ lrange [ buf$bufNo stat $window ] 0 1 ]
+                     }
                   }
                   iris {
                      set moyenne [ lindex [ buf$bufNo stat ] 4 ]
@@ -728,7 +748,7 @@ namespace eval ::confVisu {
                 set private($visuNo,zoom) [expr int($private($visuNo,zoom))]
             }
             visu$visuNo zoom $private($visuNo,zoom)
-            console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY , set zoom=$private($visuNo,zoom)\n"
+            console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY , visuNo=$visuNo zoom=$private($visuNo,zoom)\n"
          } else {
             break
          }
@@ -863,21 +883,19 @@ namespace eval ::confVisu {
 
       #--- je modifie le zoom si une nouvelle valeur est donnee en parametre
       if { $zoom == "" } {
-         #--- rien a faire, on prend la valeur de private($visuNo,zoom)
+         #--- on prend la valeur de private($visuNo,zoom) selectionnee dans le menu
       } elseif { $zoom==.125 || $zoom==.25 || $zoom==.5 || $zoom==1 || $zoom==2 || $zoom==4 || $zoom==8 } {
          set private($visuNo,zoom) $zoom
       } else {
          ::console::affiche_erreur "confVisu::setZoom error : zoom $zoom not authorized\n"
       }
-
-      #--- je calcule les coordonnées du centre de l'image
+      #--- je calcule les coordonnées du centre de l'image avec l'ancien zoom
       set canvasCenterPrev [getCanvasCenter $visuNo]
       set pictureCenter [::confVisu::canvas2Picture $visuNo $canvasCenterPrev ]
 
       #--- je calcule la position du bord gauche et du bord haut
       set previousLeft [expr [lindex $canvasCenterPrev 0] - [lindex [$private($visuNo,hCanvas) xview] 0] * [lindex [$private($visuNo,hCanvas) cget -scrollregion ] 2] ]
       set previousTop  [expr [lindex $canvasCenterPrev 1] - [lindex [$private($visuNo,hCanvas) yview] 0] * [lindex [$private($visuNo,hCanvas) cget -scrollregion ] 3] ]
-      set zoomPrev [visu$visuNo zoom]
 
       #--- j'applique le nouveau zoom
       visu$visuNo zoom $private($visuNo,zoom)
@@ -893,11 +911,14 @@ namespace eval ::confVisu {
                 set private($visuNo,zoom) [expr int($private($visuNo,zoom))]
             }
             visu$visuNo zoom $private($visuNo,zoom)
-            console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY , set zoom=$private($visuNo,zoom)\n"
+            console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY , visuNo=$visuNo set zoom=$private($visuNo,zoom)\n"
          } else {
             break
          }
       }
+
+      #--- je declenche les listeners
+      set private($visuNo,zoomListenerFlag) ""
 
       #--- mise a jour du parametre scrollposition du canvas
       setScrollbarSize $visuNo
@@ -945,7 +966,8 @@ namespace eval ::confVisu {
       #--- j'applique un miroir vertical (sur l'axe des x)
       visu$visuNo mirrorx $private($visuNo,mirror_x)
       ::confVisu::autovisu $visuNo
-
+      #--- j'active le listener
+      set private($visuNo,mirrorXListenerFlag) ""
    }
 
    #------------------------------------------------------------
@@ -961,6 +983,9 @@ namespace eval ::confVisu {
       #--- j'applique un miroir horizontal (sur l'axe des y)
       visu$visuNo mirrory $private($visuNo,mirror_y)
       ::confVisu::autovisu $visuNo
+      #--- j'active le listener
+      set private($visuNo,mirrorYListenerFlag) ""
+
    }
 
    #------------------------------------------------------------
@@ -1104,6 +1129,9 @@ namespace eval ::confVisu {
       } else {
          set private($visuNo,window) "0"
       }
+      #--- j'active le listener
+      set private($visuNo,windowListenerFlag) ""
+
    }
 
    #------------------------------------------------------------
@@ -1338,8 +1366,8 @@ namespace eval ::confVisu {
    #    cmd : commande TCL a lancer quand le zoom change
    #------------------------------------------------------------
    proc addMirrorListener { visuNo cmd } {
-      trace add execution ::confVisu::setMirrorX leave $cmd
-      trace add execution ::confVisu::setMirrorY leave $cmd
+      trace add variable ::confVisu::private($visuNo,mirrorXListenerFlag) write $cmd
+      trace add variable ::confVisu::private($visuNo,mirrorYListenerFlag) write $cmd
    }
 
    #------------------------------------------------------------
@@ -1350,8 +1378,8 @@ namespace eval ::confVisu {
    #    cmd : commande TCL a lancer quand le fichier change
    #------------------------------------------------------------
    proc removeMirrorListener { visuNo cmd } {
-      trace remove execution ::confVisu::setMirrorX leave $cmd
-      trace remove execution ::confVisu::setMirrorY leave $cmd
+      trace remove variable ::confVisu::private($visuNo,mirrorXListenerFlag) write $cmd
+      trace remove variable ::confVisu::private($visuNo,mirrorYListenerFlag) write $cmd
    }
 
    #------------------------------------------------------------
@@ -1362,7 +1390,7 @@ namespace eval ::confVisu {
    #    cmd : commande TCL a lancer quand le zoom change
    #------------------------------------------------------------
    proc addSubWindowListener { visuNo cmd } {
-      trace add execution ::confVisu::setWindow leave $cmd
+      trace add variable ::confVisu::private($visuNo,windowListenerFlag) write $cmd
    }
 
    #------------------------------------------------------------
@@ -1373,7 +1401,7 @@ namespace eval ::confVisu {
    #    cmd : commande TCL a lancer quand le zoom change
    #------------------------------------------------------------
    proc removeSubWindowListener { visuNo cmd } {
-      trace remove execution ::confVisu::setWindow leave $cmd
+      trace remove variable ::confVisu::private($visuNo,windowListenerFlag) write $cmd
    }
 
    #------------------------------------------------------------
@@ -1384,7 +1412,7 @@ namespace eval ::confVisu {
    #    cmd : commande TCL a lancer quand le zoom change
    #------------------------------------------------------------
    proc addZoomListener { visuNo cmd } {
-      trace add execution ::confVisu::setZoom leave $cmd
+      trace add variable ::confVisu::private($visuNo,zoomListenerFlag) write $cmd
 
    }
 
@@ -1396,7 +1424,7 @@ namespace eval ::confVisu {
    #    cmd : commande TCL a lancer quand le zoom change
    #------------------------------------------------------------
    proc removeZoomListener { visuNo cmd } {
-      trace remove execution ::confVisu::setZoom leave $cmd
+      trace remove variable ::confVisu::private($visuNo,zoomListenerFlag) write $cmd
    }
 
    #------------------------------------------------------------
@@ -2536,7 +2564,7 @@ namespace eval ::confVisu {
                    set private($visuNo,zoom) [expr int($private($visuNo,zoom))]
                }
                visu$visuNo zoom $private($visuNo,zoom)
-               console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY , set zoom=$private($visuNo,zoom)\n"
+               console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY , visuNo=$visuNo set zoom=$private($visuNo,zoom)\n"
             } else {
                break
             }
@@ -2691,7 +2719,6 @@ namespace eval ::confVisu {
          set x1 [lindex $windowBox 2]
          set y1 [lindex $windowBox 3]
       }
-##::console::disp "displayCrosshair   x0=$x0 y0=$y0 x1=$x1 y1=$y1 \n"
       set coord0Canvas [ picture2Canvas $visuNo [list $x0 $y0 ] ]
       set coord1Canvas [ picture2Canvas $visuNo [list $x1 $y1 ] ]
       set widthCanvas [expr abs([lindex $coord1Canvas 0] - [lindex $coord0Canvas 0]) + 1 ]
