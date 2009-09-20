@@ -1727,7 +1727,7 @@ int cmdSetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
    TPixelClass pixelClass;
    TPixelFormat pixelFormat;
    TPixelCompression compression;
-   int  pixelData;           // pointeur vers le le tableau de pixels
+   long pixelData;           // pointeur vers le le tableau de pixels
    long pixelSize = 0;           // taille du tableau de pixels
    int keep_keywords;
    int i;
@@ -1776,11 +1776,14 @@ int cmdSetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 
       pixelData=0;
       if (argc>=8) {
-         if((Tcl_GetInt(interp,argv[7],&pixelData)!=TCL_OK)&&(retour==TCL_OK)) {
-            sprintf(ligne,"Usage: %s %s %s\nppixels must be an integer > 0",argv[0],argv[1],argv[2]);
-         retour =  TCL_ERROR;
-         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-      }
+//         if((Tcl_GetInt(interp,argv[7],&pixelData)!=TCL_OK)&&(retour==TCL_OK)) {
+//            sprintf(ligne,"Usage: %s %s %s\nppixels must be an integer > 0",argv[0],argv[1],argv[2]);
+//         retour =  TCL_ERROR;
+//         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+//      }
+ 
+         pixelData = atol(argv[7]);
+ 
       }
 
       keep_keywords = DONT_KEEP_KEYWORDS;
