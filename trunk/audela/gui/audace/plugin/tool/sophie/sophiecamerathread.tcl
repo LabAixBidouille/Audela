@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.17 2009-09-19 15:46:12 robertdelmas Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.18 2009-09-20 13:30:36 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -73,11 +73,8 @@ proc ::camerathread::sophieAcquisitionLoop { } {
    set catchError [ catch {
       set bufNo $private(bufNo)
 
-      #--- je prends en compte les modifications des parametres
-      if { $private(synchroneParameter) != "" } {
-         ::camerathread::updateParameter
-         ###::camerathread::disp  "camerathread: originCoord=$private(originCoord)  \n"
-      }
+      #--- je prends en compte les modifications des parametres synchrone et assynchone
+      ::camerathread::updateParameter
 
       if { $private(acquisitionState) == 1 } {
          #--- je calcule le temps ecoule entre deux debuts de pose
@@ -89,11 +86,13 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             #--- je fais une acquisition
             cam$private(camNo) acq -blocking
          } else {
-            #--- je simule une acquisition
+            #--- je simule la duree de l'acquisition
             after [expr int($private(exptime) * 1000.0)]
             ###::camerathread::disp  "camerathread: private(simulationGenericFileName)=$private(simulationGenericFileName)XX\n"
 
-            set fileName "$private(simulationGenericFileName)$private(simulationCounter)$::conf(extension,defaut)"
+            #--- je charge l'image à la place de celle de la camer
+            set extension [buf$bufNo extension]
+            set fileName "$private(simulationGenericFileName)$private(simulationCounter)$extension"
             buf$bufNo load "$fileName"
 
             #--- je simule le fenetrage
@@ -107,40 +106,52 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             if { "$binning" != "1 1" } {
                set xScale  [expr 1.0 / [lindex $binning 0 ] ]
                set yScale  [expr 1.0 / [lindex $binning 1 ] ]
-               ###::camerathread::disp  "camerathread: simulation binning=$binning  buf$bufNo scale $xScale $yScale  \n"
                buf$bufNo scale [list $xScale $yScale ] 1.0
             }
             #--- j'increment le compteur de fichier de simulation
             incr private(simulationCounter)
-            if { [file exists "$private(simulationGenericFileName)$private(simulationCounter)$::conf(extension,defaut)" ] == 0 } {
+            if { [file exists "$private(simulationGenericFileName)$private(simulationCounter)$extension" ] == 0 } {
                set private(simulationCounter) 1
             }
          }
-         #--- j'affiche l'image et je transmets le temps ecoule entre 2 debuts de pose
-         ::camerathread::notify "autovisu"  [expr double($interval) / 1000]
+      }
+
+      if { $private(acquisitionState) == 1 } {
+
+         #--- je prends en compte les modifications des parametres synchrones
+         update
 
          set targetDetection ""
          #--- je calcule les coordonnees de la fenetre d'analyse
          if {  $private(mode) == "GUIDE" } {
-            #--- la fenetre correspond à toute l'image
-            set x1 1
-            set y1 1
-            set x2 [buf$bufNo getpixelswidth]
-            set y2 [buf$bufNo getpixelsheight]
+            if { $private(guidingMode) != "OBJECT" } {
+               #--- la fenetre correspond à toute l'image
+               set x1 1
+               set y1 1
+               set x2 [buf$bufNo getpixelswidth]
+               set y2 [buf$bufNo getpixelsheight]
+            } else {
+               #--- la fentre est centree sur la consigne
+               set x  [lindex $private(originCoord) 0]
+               set y  [lindex $private(originCoord) 1]
+               set x1 [expr round($x - $private(targetBoxSize))]
+               set x2 [expr $x1 + 2 * $private(targetBoxSize)]
+               set y1 [expr round($y - $private(targetBoxSize))]
+               set y2 [expr $y1 + 2 * $private(targetBoxSize)]
+            }
          } else {
             #--- la fenetre est centree sur l'etoile
             set x  [lindex $private(targetCoord) 0]
             set y  [lindex $private(targetCoord) 1]
-            ###set x1 [expr int($x - $private(targetBoxSize))]
-            ###set x2 [expr int($x + $private(targetBoxSize))]
-            ###set y1 [expr int($y - $private(targetBoxSize))]
-            ###set y2 [expr int($y + $private(targetBoxSize))]
             set x1 [expr round($x - $private(targetBoxSize))]
             set x2 [expr $x1 + 2 * $private(targetBoxSize)]
             set y1 [expr round($y - $private(targetBoxSize))]
             set y2 [expr $y1 + 2 * $private(targetBoxSize)]
             ###::camerathread::disp  "targetCoord=[format "%.2f" [lindex $private(targetCoord) 0]]  x=$x  x1=$x1 x2=$x2\n"
          }
+
+         #--- j'affiche l'image et je transmets le temps ecoule entre 2 debuts de pose
+         ::camerathread::notify "autovisu"  [expr double($interval) / 1000] $private(mode) $private(guidingMode) [list $x1 $y1 $x2 $y2] $private(zoom)
 
          if { $private(findFiber) == 1 } {
             incr private(originSumCounter)
@@ -201,6 +212,8 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          set background       [lindex $result 8 ]
          set maxIntensity     [lindex $result 9 ]
          set infoMessage      [lindex $result 10 ]
+
+         ###::camerathread::disp  "windowCoord=$x1 $y1 $x2 $y2 starStatus=$starStatus targetCoord=[list $starX $starY ] infoMessage=$infoMessage\n"
 
          if { $starStatus == "DETECTED" } {
             #--- l'etoile est detectee
@@ -374,6 +387,10 @@ proc ::camerathread::sophieAcquisitionLoop { } {
 
       ###::camerathread::disp  "camerathread: alphaCorrection=$alphaCorrection deltaCorrection=$deltaCorrection \n"
       if { $private(acquisitionState) == "1" } {
+
+         #--- je prends en compte les modifications des parametres synchones et assynchones
+         ::camerathread::updateParameter
+
          set alphaDelay 0.0
          set deltaDelay 0.0
          set alphaDirection ""
@@ -402,7 +419,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
               } else {
                   set alphaDelay [expr abs($alphaCorrection) / $private(alphaSpeed)  ]
                   set deltaDelay [expr abs($deltaCorrection) / $private(deltaSpeed)  ]
-                  ::camerathread::disp  "camerathread: tel1 move [format "%s %7.3fs" $alphaDirection $alphaDelay ] [format "%s %7.3fs" $deltaDirection $deltaDelay ]\n"
+                  ###::camerathread::disp  "camerathread: telescope move [format "%s %.3fs" $alphaDirection $alphaDelay ]   [format "%s %.3fs" $deltaDirection $deltaDelay ]\n"
                   #--- tel1 radec move n|s|e|w ?rate? ?delay (ms)?
                   tel1 radec move $alphaDirection 0.1 $alphaDelay
                   tel1 radec move $deltaDirection 0.1 $deltaDelay
