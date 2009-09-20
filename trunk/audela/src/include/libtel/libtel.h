@@ -61,6 +61,8 @@ struct cmditem {
    {"home", (Tcl_CmdProc *)cmdTelHome},\
    {"model", (Tcl_CmdProc *)cmdTelModel},\
    {"threadid", (Tcl_CmdProc *)cmdTelThreadId},\
+   {"consolelog", (Tcl_CmdProc *)cmdTelConsoleLog},\
+ 
    /*
    {"obs", cmdTelObs},\
    {"version", cmdTelVersion},\
@@ -93,6 +95,7 @@ int cmdTelFocus(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 int cmdTelDate(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelHome(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelModel(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelConsoleLog(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 /* --- Utilitaire C-Tcl ---*/
 void libtel_GetCurrentFITSDate(Tcl_Interp *interp, char *s);

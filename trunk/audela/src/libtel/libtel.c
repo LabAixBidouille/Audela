@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.11 2009-09-06 04:51:30 myrtillelaas Exp $
+// $Id: libtel.c,v 1.12 2009-09-20 14:11:43 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -65,6 +65,24 @@ void MessageBox(void *handle, char *msg, char *title, int bof)
 
 #define BP(i) MessageBox(NULL,#i,"Libtel",MB_OK)
 
+void logConsole(struct telprop *tel, char *messageFormat, ...) {
+   char message[1024];
+   char ligne[1200];
+   va_list mkr;
+   int result;
+   
+   // j'assemble la commande 
+   va_start(mkr, messageFormat);
+   vsprintf(message, messageFormat, mkr);
+	va_end (mkr);
+
+   if ( strcmp(tel->telThreadId,"") == 0 ) {
+      sprintf(ligne,"::console::disp \"Telescope: %s\n\" ",message); 
+   } else {
+      sprintf(ligne,"::thread::send -async %s { ::console::disp \"Telescope: %s \n\" } " , tel->mainThreadId, message); 
+   }
+   result = Tcl_Eval(tel->interp,ligne);
+}
 
 /*
  * Prototypes des differentes fonctions d'interface Tcl/Driver. Ajoutez les
@@ -857,7 +875,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    char ligne[2256],texte[256];
    int result = TCL_OK,k;
    struct telprop *tel;
-   char comment[]="Usage: %s %s ?goto|stop|move|coord|motor|init|state? ?options?";
+   char comment[]="Usage: %s %s ?goto|stop|move|coord|motor|init|state|mindelay(ms)? ?options?";
    if (argc<3) {
       sprintf(ligne,comment,argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -950,30 +968,43 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             } else {
                //argv[5] =duree du dépcement en seconde 
                //exemple :  tel1 radec move n 1 4
-               int timerDelay = 1000 * atoi(argv[5]);
+               int timerDelay = (int) (1000.0 * atof(argv[5]));
                int foundEvent;
-               tel->timerToken = Tcl_CreateTimerHandler(timerDelay, timerCallback, (ClientData) tel);
-               tel_radec_move(tel,argv[3]);
+               if ( timerDelay >= tel->minRadecDelay ) {
+                  if ( tel->consoleLog >= 1 ) {
+                     logConsole(tel, "move to %s %.3fs", argv[3], (float)timerDelay/1000);
+                  }
+            
+                  tel->timerToken = Tcl_CreateTimerHandler(timerDelay, timerCallback, (ClientData) tel);
+                  tel_radec_move(tel,argv[3]);
 
-               // j'attends un evenement
-               tel->timeDone = 0; 
-               foundEvent = 1;
-               while (!tel->timeDone && foundEvent) {
-                  foundEvent = Tcl_DoOneEvent(TCL_ALL_EVENTS);
-                  //if (Tcl_LimitExceeded(interp)) {
-                  //   break;
-                  //}
-               }
-               if (argc>=4) {
-                  tel_radec_stop(tel,argv[3]);
+                  // j'attends un evenement
+                  tel->timeDone = 0; 
+                  foundEvent = 1;
+                  while (!tel->timeDone && foundEvent) {
+                     foundEvent = Tcl_DoOneEvent(TCL_ALL_EVENTS);
+                     //if (Tcl_LimitExceeded(interp)) {
+                     //   break;
+                     //}
+                  }
+                  if (argc>=4) {
+                     tel_radec_stop(tel,argv[3]);
 
+                  } else {
+                     tel_radec_stop(tel,"");
+                  }
+
+                  tel->timeDone = 0;
+                  tel->timerToken = NULL;
                } else {
-                  tel_radec_stop(tel,"");
+                  if ( tel->consoleLog >= 1 ) {
+                     logConsole(tel, "move to %s %.3fs ignored (<%.3fs)", argv[3], (float)timerDelay/1000,(float) tel->minRadecDelay/1000);
+                  }
                }
 
-               tel->timeDone = 0;
-               tel->timerToken = NULL;
-               Tcl_SetResult(interp,"",TCL_VOLATILE);
+            
+               sprintf(ligne,"delai=%d ms",timerDelay);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                result = TCL_OK;
             }            
          } else {
@@ -1004,6 +1035,17 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             sprintf(ligne,"Usage: %s %s motor on|off",argv[0],argv[1]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             result = TCL_ERROR;
+         }
+      } else if (strcmp(argv[2],"mindelay")==0) {
+         /* --- mindelay delay minimal de correction ---*/
+         if (argc>=4) {
+            // je memorise la nouvelle valeur
+            tel->minRadecDelay=atoi(argv[3]);
+            Tcl_SetResult(interp,"",TCL_VOLATILE);
+         } else {
+            // je retourne la valeur courante
+            sprintf(ligne,"%d", tel->minRadecDelay);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          }
       } else {
          /* --- sub command not found ---*/
@@ -1140,6 +1182,13 @@ int cmdTelModel(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    return result;
 }
 
+/* -----------------------------------------------------------------------------
+ *  cmdTelThreadId()
+ *
+ *  retourne le nuemro du thread du telescope
+ *
+ * -----------------------------------------------------------------------------
+ */
 int cmdTelThreadId(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
    char ligne[256];
@@ -1149,6 +1198,38 @@ int cmdTelThreadId(ClientData clientData, Tcl_Interp * interp, int argc, char *a
    Tcl_SetResult(interp, ligne, TCL_VOLATILE);
    return TCL_OK;
 }
+
+/* -----------------------------------------------------------------------------
+ *  cmdTelConsoleLog()
+ *
+ *  active/desactive les traces dans la console
+ *
+ * -----------------------------------------------------------------------------
+ */
+int cmdTelConsoleLog(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char ligne[256];
+   int result = TCL_OK,pb=0;
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;
+   if((argc!=2)&&(argc!=3)) {
+      pb=1;
+   } else if(argc==2) {
+      pb=0;
+   } else {
+      pb=0;
+      tel->consoleLog=atoi(argv[2]);
+   }
+   if (pb==1) {
+      sprintf(ligne,"Usage: %s %s ?0|1|2?",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else {
+      sprintf(ligne,"%d",tel->consoleLog);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+   }
+   return result;
+}
+
 
 
 int tel_init_common(struct telprop *tel, int argc, char **argv)
@@ -1197,6 +1278,9 @@ int tel_init_common(struct telprop *tel, int argc, char **argv)
    tel->focus0=0.;
    tel->focus_goto_rate=0;
    tel->focus_move_rate=0;
+   tel->minRadecDelay = 0;
+   tel->consoleLog = 0;    
+
    strcpy(tel->model_cat2tel,"");
    strcpy(tel->model_tel2cat,"");
    return 0;
