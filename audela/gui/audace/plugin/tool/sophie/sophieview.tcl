@@ -2,7 +2,7 @@
 # @file     sophieview.tcl
 # @brief    Fichier du namespace ::sophie::view
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieview.tcl,v 1.12 2009-09-09 16:45:07 robertdelmas Exp $
+# @version  $Id: sophieview.tcl,v 1.13 2009-09-20 13:37:02 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -16,21 +16,28 @@ namespace eval ::sophie::view {
 ##------------------------------------------------------------
 # run
 #    affiche la fenetre du configuration
-# @param sophieVisu  numero de la visu de la fenetre principale de l'outil sophie
+# @param sophieVisuNo  numero de la visu de la fenetre principale de l'outil sophie
 # @return null
 #------------------------------------------------------------
-proc ::sophie::view::run { sophieVisu } {
+proc ::sophie::view::run { sophieVisuNo } {
    variable private
 
-   set private(sophieVisu) $sophieVisu
+   #--- je memorise le numero de la visu de la fenetre principale de sophie
+   set private(sophieVisuNo) $sophieVisuNo
    #--- j'ouvre une visu pour afficher des profils
    set visuNo [::confVisu::create]
+
+   #--- j'affiche l'outil
    confVisu::selectTool $visuNo ""
    Menu_Delete $visuNo $::caption(audace,menu,tool) all
    createPluginInstance [::confVisu::getBase $visuNo].tool $visuNo
    lappend ::confVisu::private($visuNo,pluginInstanceList) "sophie::view"
    set ::confVisu::private($visuNo,currentTool) "sophie::view"
    startTool $visuNo
+
+   #--- j'affiche la fenetre au dessus de la fenetre principale de sophie
+   wm transient [::confVisu::getBase $visuNo] [::confVisu::getBase $private(sophieVisuNo)]
+
    grid [::confVisu::getBase $visuNo].tool -row 0 -column 0 -rowspan 2 -sticky ns
 }
 
@@ -45,12 +52,18 @@ proc ::sophie::view::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(initialBuffer,$visuNo) [::confVisu::getBufNo $visuNo]
 
    set private(bufferName,$visuNo)    "maskBufNo"
-
    set private(valeurCompteur)        ""
 
    #--- Petit raccourci
    set private(frm) "$in.sophieview"
    set frm $private(frm)
+
+   #--- je masque le nom de la camera et du telescope
+   set tkBase [::confVisu::getBase $visuNo]
+   grid forget $tkBase.fra1.labCam_labURL
+   grid forget $tkBase.fra1.labCam_name_labURL
+   grid forget $tkBase.fra1.labTel_labURL
+   grid forget $tkBase.fra1.labTel_name_labURL
 
    #--- Interface graphique de l'outil
    frame $frm -borderwidth 2 -relief groove
@@ -126,7 +139,7 @@ proc ::sophie::view::startTool { visuNo } {
    #--- j'affiche l'image du buffer
    setBuffer $visuNo
    #--- je demarre le listener
-   ::sophie::addAcquisitionListener $private(sophieVisu) "::sophie::view::refresh $visuNo"
+   ::sophie::addAcquisitionListener $private(sophieVisuNo) "::sophie::view::refresh $visuNo"
 }
 
 ##------------------------------------------------------------
@@ -137,7 +150,7 @@ proc ::sophie::view::stopTool { visuNo } {
    variable private
 
    #--- j'arrete le listener
-   ::sophie::removeAcquisitionListener $private(sophieVisu) "::sophie::view::refresh $visuNo"
+   ::sophie::removeAcquisitionListener $private(sophieVisuNo) "::sophie::view::refresh $visuNo"
    ##after 1000
    #--- je restaure le numero du buffer initial
    visu$visuNo buf $private(initialBuffer,$visuNo)
