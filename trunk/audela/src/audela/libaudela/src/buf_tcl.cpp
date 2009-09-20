@@ -4767,6 +4767,7 @@ int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
  *  @param     Argv[13]=findFiber      recherche de l'entrée de fibre
  *  @param     Argv[14]=pixelMinCount  nombre minimal de pixels
  *  @param     Argv[15]=maskPercent    pourcentage du niveau du mask
+ *  @param     Argv[16]=biasValue      valeur du bias
  *
  *  @return si TCL_OK 
  *             list[0] starStatus      resultat de la recherche de la fibre
@@ -4790,7 +4791,7 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
    char parameters[]= "{x1 y1 x2 y2} biasBufNo maskBufNo sumBufNo fiberBufNo";
 
    // On recupere les parametres (et eventuellement on en met par defaut).
-   if(argc!=16) {
+   if(argc!=17) {
       sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],parameters);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       retour = TCL_ERROR;
@@ -4813,6 +4814,7 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
       char starStatus[128];
       double measuredFwhmX=0, measuredFwhmY=0;
       double background=0, maxIntensity=0;
+      double biasValue; 
       int temp;
       CBuffer *buffer;
       char message[1024]; 
@@ -4915,6 +4917,11 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
          Tcl_AppendResult(interp,ligne,TCL_VOLATILE);
          retour = TCL_ERROR;
       } 
+      if(Tcl_GetDouble(interp,argv[16],&biasValue)!=TCL_OK) {
+         sprintf(ligne,"biasValue=%f is not double", biasValue);
+         Tcl_AppendResult(interp,ligne,TCL_VOLATILE);
+         retour = TCL_ERROR;
+      } 
 
       // passage dans le repère d'origine (0,0)
       x1 -= 1; y1 -= 1; x2 -= 1; y2 -= 1;
@@ -4940,7 +4947,7 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                maskRadius, maskFwhm, maskPercent,
                originSumMinCounter, originSumCounter,
                previousFiberX, previousFiberY,
-               pixelMinCount,
+               pixelMinCount, biasValue, 
                starStatus, &starX, &starY,
                fiberStatus, &fiberX, &fiberY,
                &measuredFwhmX, &measuredFwhmY,
