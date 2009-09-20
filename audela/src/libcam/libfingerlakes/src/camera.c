@@ -494,10 +494,11 @@ void cam_stop_exp(struct camprop *cam)
 {
    int err;
    if (cam->authorized == 1) {
-      if ((err = FLICancelExposure(cam->device))) {
-         logfile("cam_stop_exp: refus d'arreter la pose\n");
-         return;
-      }
+      // ca fait planter la lecture
+      //if ((err = FLICancelExposure(cam->device))) {
+      //   logfile("cam_stop_exp: refus d'arreter la pose\n");
+      //   return;
+      //}
       logfile("cam_stop_exp: pose arretee\n");
    }
 }
