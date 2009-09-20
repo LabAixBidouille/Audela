@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.32 2009-08-30 21:14:17 michelpujol Exp $
+ * $Id: libcam.c,v 1.33 2009-09-20 16:15:43 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -1127,10 +1127,9 @@ static void AcqRead(ClientData clientData )
       //      -reverseX    if "1" , apply vertical mirror
       //      -reverseY    if "1" , apply horizontal mirror
       // ---
-      
-      sprintf(s, "buf%d setpixels %s %d %d %s %s %d -pixels_size %lu -reverse_x %d -reverse_y %d -keep_keywords",
+      sprintf(s, "buf%d setpixels %s %d %d %s %s %ld -pixels_size %lu -reverse_x %d -reverse_y %d -keep_keywords",
          cam->bufno, cam->pixels_classe, cam->w, cam->h, cam->pixels_format, cam->pixels_compression ,
-         (int)(void *) p, cam->pixel_size, cam->pixels_reverse_x, cam->pixels_reverse_y);
+                  (long)(void *) p, cam->pixel_size, cam->pixels_reverse_x, cam->pixels_reverse_y);
       /*
       sprintf(s, "buf%d setpixels %s %d %d %s %s %d -pixels_size %lu -reverse_x %d -reverse_y %d",
          cam->bufno, cam->pixels_classe, cam->w, cam->h, cam->pixels_format, cam->pixels_compression ,
