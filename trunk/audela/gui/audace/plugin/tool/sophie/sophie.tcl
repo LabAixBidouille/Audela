@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.29 2009-09-13 15:02:32 michelpujol Exp $
+# @version   $Id: sophie.tcl,v 1.30 2009-09-20 13:35:28 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -117,10 +117,11 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    source [ file join $::audace(rep_plugin) tool sophie sophiecommand.tcl ]
    source [ file join $::audace(rep_plugin) tool sophie sophieconfig.tcl ]
    source [ file join $::audace(rep_plugin) tool sophie sophiecontrol.tcl ]
+   source [ file join $::audace(rep_plugin) tool sophie sophiefiberview.tcl ]
    source [ file join $::audace(rep_plugin) tool sophie sophiespectro.tcl ]
    source [ file join $::audace(rep_plugin) tool sophie sophieview.tcl ]
    source [ file join $::audace(rep_plugin) tool sophie sophielog.tcl ]
-   source [ file join $::audace(rep_plugin) tool sophie sophietest.tcl ] ; #--- a supprimer quand on aura fait les premiers tests
+   source [ file join $::audace(rep_plugin) tool sophie sophietest.tcl ] ;
 
    if { ! [ info exists ::conf(sophie,exposure) ] }                 { set ::conf(sophie,exposure)                  "0.5" }
    if { ! [ info exists ::conf(sophie,centerBinning) ] }            { set ::conf(sophie,centerBinning)             "2x2" }
@@ -208,7 +209,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
       }
    }
    set private(originCoordGuide) $private(originCoord)
-   
+
    set private(originMove)       "AUTO"      ; #--- "MANUAL"=positionnement manuel en cours "AUTO"=positionnement automatique
    if { $::conf(sophie,detection) == "FIBER" } {
       #--- je place le symbole de la cible sur la consigne FIBRE HR
@@ -237,7 +238,6 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(AsynchroneParameter) 0
    set private(newAcquisition)      1        ; #--- variable utilisee par le listener addAcquisitionListener
    set private(currentMouseItem)    ""       ; #--- item en cous de deplacement avec la souris
-   set private(pendingZoom)         ""
    set private(biasWindow)          ""
    set private(windowSize)          "full"
    set private(centerCoords)        [list 0 0 ]
