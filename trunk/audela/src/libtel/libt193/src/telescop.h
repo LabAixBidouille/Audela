@@ -39,7 +39,6 @@ struct telprop {
    void * inputFilterTaskHandle;
    unsigned char outputTelescopData;
    unsigned char outputFilterData;
-   int consoleLog;
    double filterMaxDelay;    
    double filterCurrentDelay;
    int northRelay;
