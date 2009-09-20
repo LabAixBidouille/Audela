@@ -2,7 +2,7 @@
 # Fichier : ftpclient.tcl
 # Description : Connexion a un serveur FTP
 # Auteur : Michel PUJOL
-# Mise a jour $Id: ftpclient.tcl,v 1.11 2008-12-19 18:50:17 robertdelmas Exp $
+# Mise a jour $Id: ftpclient.tcl,v 1.12 2009-09-20 13:45:18 michelpujol Exp $
 #
 
 ##############################################################################
@@ -84,10 +84,10 @@ namespace eval ::ftpclient {
    }
 
    #------------------------------------------------------------------------------
-   # ftpclient::open
+   # ftpclient::openConnection
    # ouvre la connexion ftp
    #------------------------------------------------------------------------------
-   proc open { } {
+   proc openConnection { } {
       variable private
       global caption conf
 
@@ -241,7 +241,7 @@ namespace eval ::ftpclient {
    # ftpclient::showProgressWindow
    # affiche une barre de progression dans une fenetre independante
    #------------------------------------------------------------------------------
-   proc showProgressWindow { { targetsize "0" } sourceFile } {
+   proc showProgressWindow { targetsize "0" sourceFile } {
       variable private
       global audace caption color
 
@@ -340,7 +340,7 @@ namespace eval ::ftpclient {
       #unset ::ftp::ftp(get:channel)
       #--- fermer et re ouvrir la connexion
       #closeCnx
-      #open
+      #openConnection
    }
 
    #------------------------------------------------------------
@@ -470,7 +470,7 @@ namespace eval ::ftpclient {
       if { $private(namePositionBegin) == "" } { set private(namePositionBegin) "0" }
 
       #--- j'ouvre la connexion ftp
-      set result [open]
+      set result [openConnection]
 
       #--- si la connexion est OK
       if { $result == 1 } {
