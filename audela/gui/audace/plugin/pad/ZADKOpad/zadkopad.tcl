@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.24 2009-09-18 12:57:14 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.25 2009-09-21 06:55:10 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -43,12 +43,21 @@ namespace eval ::zadkopad {
        if {$err==1} {
             ::console::affiche_resultat "pb de chargement fichier root.tcl \n"
         }
-       source c:/audela/ros_private_cador/conf/src/common/variables_sites.tcl
-       set paramhorloge(dra) $ros(telescope,private,dra);       # offset (deg) for hour angle
-       set paramhorloge(ddec) $ros(telescope,private,ddec);      # offset (deg) for declination
-       set paramhorloge(focus) $ros(telescope,private,focuscam1) ; # valeur du bon focus
-       set paramhorloge(speedra) $ros(telescope,speedtrack,mult,ra) ; # coef multiplicateur du speedtrack
-       #set paramhorloge(speeddec) $ros(telescope,speedtrack,mult,dec) ; # coef multiplicateur du speedtrack
+       set err [catch {source "[pwd]/../ros_private_cador/conf/src/common/variables_sites.tcl"}]
+        if {$err==1} {
+            ::console::affiche_resultat "pas de fichiers variables_sites.tcl \n"
+            set paramhorloge(dra) 0;            # offset (deg) for hour angle
+            set paramhorloge(ddec) 0;           # offset (deg) for declination
+            set paramhorloge(focus) 0;          # valeur du bon focus
+            set paramhorloge(speedra) 0;        # coef multiplicateur du speedtrack
+            #set paramhorloge(speeddec) 0;      # coef multiplicateur du speedtrack
+        } else {
+           set paramhorloge(dra) $ros(telescope,private,dra);               # offset (deg) for hour angle
+           set paramhorloge(ddec) $ros(telescope,private,ddec);             # offset (deg) for declination
+           set paramhorloge(focus) $ros(telescope,private,focuscam1) ;      # valeur du bon focus
+           set paramhorloge(speedra) $ros(telescope,speedtrack,mult,ra) ;   # coef multiplicateur du speedtrack
+           #set paramhorloge(speeddec) $ros(telescope,speedtrack,mult,dec);# coef multiplicateur du speedtrack
+       }
    }
    #------------------------------------------------------------
    #  getPluginProperty
