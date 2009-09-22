@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.27 2009-03-16 22:42:18 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.28 2009-09-22 07:49:11 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -551,7 +551,7 @@ proc gcn_decode { longs sockname } {
          set gcn($sockname,descr,grb_error) [expr 0.0001*$gcn($sockname,long,burst_error)*60.]; # boite d'erreur en arcmin
          set gcn($sockname,descr,burst_flue) $gcn($sockname,long,9)
          set gcn($sockname,descr,integ_time) [expr $gcn($sockname,long,14)*4e-3]
-         if {$pkt_type=="901"} {
+         if {($pkt_type=="901")||($pkt_type=="903")} {
             set gcn($sockname,descr,def_not_grb) 0
          }
       }
@@ -565,7 +565,7 @@ proc gcn_decode { longs sockname } {
          set gcn($sockname,descr,grb_error) [expr 0.0001*$gcn($sockname,long,burst_error)*60.]; # boite d'erreur en arcmin
          set gcn($sockname,descr,burst_flue) $gcn($sockname,long,9)
          set gcn($sockname,descr,integ_time) [expr $gcn($sockname,long,14)*4e-3]
-         if {$pkt_type=="905"} {
+         if {($pkt_type=="905")||($pkt_type=="907")} {
             set gcn($sockname,descr,def_not_grb) 0
          }
       }
@@ -797,8 +797,10 @@ proc gcn_pkt_type { pkt_type } {
      130      SIMBAD/NED_SEARCH_RESULTS
      901      ANTARES_GRB_POSITION             AVAILABLE ONLY FOR TAROT COLLABORATION
      902      ANTARES_GRB_POS_TEST             AVAILABLE ONLY FOR TAROT COLLABORATION
+     903      ANTARES_GRB_POS_REFINED          AVAILABLE ONLY FOR TAROT COLLABORATION
      905      LOOCUP_GRB_POSITION              AVAILABLE ONLY FOR TAROT COLLABORATION
-     906      LOOCPU_GRB_POS_TEST              AVAILABLE ONLY FOR TAROT COLLABORATION
+     906      LOOCUP_GRB_POS_TEST              AVAILABLE ONLY FOR TAROT COLLABORATION
+     907      LOOCUP_GRB_POS_REFINED           AVAILABLE ONLY FOR TAROT COLLABORATION
    }
    set lignes [split $lignes \n]
    set textes ""
@@ -867,10 +869,10 @@ proc gcn_pkt_type { pkt_type } {
    if {($pkt_type>=110)&&($pkt_type<=126)} {
       set satellite FERMI
    }
-   if {($pkt_type>=901)&&($pkt_type<=902)} {
+   if {($pkt_type>=901)&&($pkt_type<=903)} {
       set satellite ANTARES
    }
-   if {($pkt_type>=905)&&($pkt_type<=906)} {
+   if {($pkt_type>=905)&&($pkt_type<=907)} {
       set satellite LOOCUP
    }
    lappend textes $satellite
@@ -883,7 +885,7 @@ proc gcn_pkt_type { pkt_type } {
    if {($pkt_type==100)||($pkt_type==121)||($pkt_type==61)||($pkt_type==58)||($pkt_type==53)||($pkt_type==40)||($pkt_type==33)||($pkt_type==35)||($pkt_type==30)||($pkt_type==26)||($pkt_type==28)||($pkt_type==1)||($pkt_type==901)||($pkt_type==905)} {
       set prompt 1
    }
-   if {($pkt_type==101)||($pkt_type==102)||($pkt_type==67)||($pkt_type==54)||($pkt_type==55)||($pkt_type==41)||($pkt_type==42)||($pkt_type==43)||($pkt_type==39)} {
+   if {($pkt_type==101)||($pkt_type==102)||($pkt_type==67)||($pkt_type==54)||($pkt_type==55)||($pkt_type==41)||($pkt_type==42)||($pkt_type==43)||($pkt_type==39)||($pkt_type==903)||($pkt_type==907)} {
       set prompt 2
    }
    lappend textes $prompt
