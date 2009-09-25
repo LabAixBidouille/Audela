@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqzadko.tcl,v 1.7 2009-09-25 08:26:58 myrtillelaas Exp $
+# Mise a jour $Id: acqzadko.tcl,v 1.8 2009-09-25 08:28:48 myrtillelaas Exp $
 #
 
 #==============================================================
@@ -27,10 +27,12 @@ proc ::acqzadko::createPluginInstance { { in "" } { visuNo 1 } } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqzadko dlgshift.tcl ]\""
 
    #--- Tue camera.exe
-   package require twapi
-   set res [twapi::get_process_ids -glob -name "camera.exe"]
-   if {$res!=""} {
-		twapi::end_process $res -force
+   if {[lindex [hostaddress] end]=="ikon"} {
+       package require twapi
+       set res [twapi::get_process_ids -glob -name "camera.exe"]
+       if {$res!=""} {
+    		twapi::end_process $res -force
+       }
    }
    
    #---
