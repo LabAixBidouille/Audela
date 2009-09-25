@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqzadko.tcl,v 1.6 2009-09-16 11:58:18 myrtillelaas Exp $
+# Mise a jour $Id: acqzadko.tcl,v 1.7 2009-09-25 08:26:58 myrtillelaas Exp $
 #
 
 #==============================================================
@@ -143,7 +143,7 @@ proc ::acqzadko::deletePluginInstance { visuNo } {
    #---
    set conf(acqzadko,avancement,position) $panneau(acqzadko,$visuNo,avancement,position)
    #relancer camera.exe
-   if {[file exists "[pwd]/../bin/camera.exe"]==1} {
+   if {([file exists "[pwd]/../bin/camera.exe"]==1)&&([lindex [hostaddress] end]=="ikon")} {
        package require twapi
        set res [twapi::get_process_ids -glob -name "camera.exe"]
        if {($res=="")&&($visuNo=="1")} {
