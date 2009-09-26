@@ -2,7 +2,7 @@
 # Fichier : vo_tools.tcl
 # Description : Outils pour l'Observatoire Virtuel
 # Auteur : Alain KLOTZ et Jerome BERTHIER
-# Mise a jour $Id: vo_tools.tcl,v 1.26 2009-08-17 17:05:46 svaillant Exp $
+# Mise a jour $Id: vo_tools.tcl,v 1.27 2009-09-26 12:28:06 alainklotz Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -82,6 +82,7 @@ proc vo_aladin { args } {
          foreach catalog $catalogs {
             if {$catalog=="USNO-B1"} { set catalog Vizier(I/284) }
             if {$catalog=="DSS2"}    { set catalog Aladin(DSS2) }
+            if {$catalog=="NOMAD1"} { set catalog Vizier(NOMAD1) }
             append texte "get $catalog $coords ${fieldarcmin}'\n"
          }
       }
