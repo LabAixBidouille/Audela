@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.28 2009-09-22 07:49:11 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.29 2009-09-27 16:42:55 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -1013,7 +1013,8 @@ proc grb_copy { {first 1} {date_trigger ""} } {
 				set track ""
 				if {$filter=="C"} {
 					set series c
-					if {$trackspa<0.00418} {
+					# 0.0041781
+					if {$trackspa<0.00417} {
 						set kkc 0
 						set track "(trailed image)"
 					} else {
