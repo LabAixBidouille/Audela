@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.30 2009-09-28 16:45:21 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.31 2009-09-28 20:42:21 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -29,9 +29,22 @@ proc socket_client_send_gcn { name ipserver portserver {data {3 2008 07 07 23 45
 		}
 		lappend data 123.4567 ; # ra J2000.0 (deg)
 		lappend data -46.4321 ; # dec J2000.0 (deg)
-		lappend data 1.5 ; # boite d'erreur
+		lappend data 1.5 ; # boite d'erreur (arcmin)
 		lappend data 2 ; # nombre de neutrinos 1=unique mais intense
 		lappend data 600. ; # duree d'integration (seconds)
+	}
+	if {$data=="*"} {
+      set now [mc_date2ymdhms now]
+      set y  [lindex $now 0]
+      set m  [lindex $now 1]
+      set d  [lindex $now 2]
+      set hh [lindex $now 3]
+      set mm [lindex $now 4]
+      set ss [lindex $now 5]
+      set lst [mc_date2lst now {GPS 115 E -31 50}]
+      set ra [mc_angle2deg [lindex $lst 0]h[lindex $lst 1]m[lindex $lst 2]s] ; # meridien
+      set dec 5
+      set data [list 61 $y $m $d $hh $mm $ss $ra $dec 3. 1 600]   	
 	}
 	# --- decodage data -> longs
 	#
@@ -906,10 +919,13 @@ proc gcn_pkt_type { pkt_type } {
    if {($pkt_type>=60)&&($pkt_type<=89)} {
       set satellite SWIFT
    }
+   if {($pkt_type>=46)&&($pkt_type<=47)} {
+      set satellite SWIFT
+   }
    if {($pkt_type>=100)&&($pkt_type<=109)} {
       set satellite AGILE
    }
-   if {($pkt_type>=110)&&($pkt_type<=126)} {
+   if {($pkt_type>=110)&&($pkt_type<=129)} {
       set satellite FERMI
    }
    if {($pkt_type>=901)&&($pkt_type<=903)} {
@@ -922,10 +938,10 @@ proc gcn_pkt_type { pkt_type } {
    # --- prompt identification
    # =-1 informations only, =0 pointdir, =1 prompt, =2 refined
    set prompt -1
-   if {($pkt_type==108)||($pkt_type==129)||($pkt_type==83)||($pkt_type==51)||($pkt_type==902)||($pkt_type==906)} {
+   if {($pkt_type==109)||($pkt_type==129)||($pkt_type==83)||($pkt_type==51)||($pkt_type==902)||($pkt_type==906)||($pkt_type==46)||($pkt_type==47)} {
       set prompt 0
    }
-   if {($pkt_type==100)||($pkt_type==121)||($pkt_type==61)||($pkt_type==58)||($pkt_type==53)||($pkt_type==40)||($pkt_type==33)||($pkt_type==35)||($pkt_type==30)||($pkt_type==26)||($pkt_type==28)||($pkt_type==1)||($pkt_type==901)||($pkt_type==905)} {
+   if {($pkt_type==100)||($pkt_type==121)||($pkt_type==61)||($pkt_type==58)||($pkt_type==53)||($pkt_type==40)||($pkt_type==33)||($pkt_type==35)||($pkt_type==30)||($pkt_type==26)||($pkt_type==28)||($pkt_type==1)||($pkt_type==901)||($pkt_type==905)||($pkt_type==98)} {
       set prompt 1
    }
    if {($pkt_type==101)||($pkt_type==102)||($pkt_type==67)||($pkt_type==54)||($pkt_type==55)||($pkt_type==41)||($pkt_type==42)||($pkt_type==43)||($pkt_type==39)||($pkt_type==903)||($pkt_type==907)} {
