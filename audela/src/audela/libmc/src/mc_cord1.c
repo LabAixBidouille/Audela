@@ -726,7 +726,7 @@ void mc_ad2ah(double jd, double longuai, double latitude, double asd, double dec
 /***************************************************************************/
 {
    double ha;
-   mc_ad2hd(jd,-longuai,asd,&ha);
+   mc_ad2hd(jd,longuai,asd,&ha);
    mc_hd2ah(ha,dec,latitude,az,h);
 }
 
