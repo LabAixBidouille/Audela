@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.29 2009-09-27 16:42:55 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.30 2009-09-28 16:45:21 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -108,6 +108,49 @@ proc socket_client_send_gcn { name ipserver portserver {data {3 2008 07 07 23 45
 	set longs [lreplace $longs 11 11 $burst_error]
 	set burst_integ_time [expr int([lindex $data 11]/4e-3)]
 	set longs [lreplace $longs 14 14 $burst_integ_time]
+	# --- convert longs into the binary stream
+	#::console::affiche_resultat "longs=<$longs>\n"
+	set line [binary format I* $longs]
+	#::console::affiche_resultat "line=<$line>\n"
+	# --- open socket connexion
+	for {set k 0} {$k<2} {incr k} {
+      if {[info exists audace(socket,client,$name)]==0} {
+   		#::console::affiche_resultat "$ipserver $portserver\n"
+   	   set errno [ catch {
+   	      set fid [socket $ipserver $portserver ]
+      		#::console::affiche_resultat "fid=$fid\n"
+   	   } msg]
+   	   if {$errno==1} {
+   	      error $msg
+   	   } else {
+   			set audace(socket,client,$name) $fid
+   	   }
+      }
+      set fid $audace(socket,client,$name)
+   	#::console::affiche_resultat "fid=<$fid>\n"
+      fconfigure $fid -buffering full -translation binary -encoding binary -buffersize 160
+   	# --- send packet
+      set errsoc [ catch {
+   	   puts -nonewline $fid $line
+      } msgsoc ]
+      if {$errsoc==1} {
+         gcn_print "socket error : $msgsoc"
+         catch {
+      		close $audace(socket,client,$name)
+      		unset audace(socket,client,$name)
+   		}
+      } else {
+         break
+      }
+   }
+}
+
+# ==========================================================================================
+# socket_client_send_gcn_native : to send a GCN-like packet to a server with a GCN connection
+# e.g. source audace/gcn_tools.tcl ; socket_client_send_gcn client_gcn 127.0.0.1 7001
+proc socket_client_send_gcn_native { name ipserver portserver longs } {
+   global audace
+   global gcn
 	# --- convert longs into the binary stream
 	#::console::affiche_resultat "longs=<$longs>\n"
 	set line [binary format I* $longs]
