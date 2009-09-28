@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.25 2009-09-21 06:55:10 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.26 2009-09-28 16:36:29 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -10,17 +10,155 @@ namespace eval ::zadkopad {
    package require audela 1.4.0
    
    source [ file join [file dirname [info script]] zadkopad.cap ]
+   
+   #------------------------------------------------------------
+   #  Archivage du fichier log
+   #     dans zadkopad/zadkopad_date.log
+   #------------------------------------------------------------
+    proc archive_zadkopad { } {
+       global ros
 
+       set logdate [gren_nightdate now]
+       set logcurrent "$ros(caption,logfile)/zadkopad.log"
+       set logdestin  "$ros(caption,logfile)/zadkopad_$logdate.log"
+       set logwww     "$ros(caption,logfilehttpd)/zadkopad_$logdate.log"
+       set logcurrentwww     "$ros(caption,logfilehttpd)/zadkopad.log"
+       set dirwww     "$ros(caption,logfilehttpd)"
+       #zadko_info "logdate: $logdate, logcurrent: $logcurrent; logdestin: $logdestin"
+       set error [ catch {
+        set res1 [file exists $logdestin]
+        set res2 [file exists $logcurrent]
+        if {($res2==1)&&($res1==0)} {
+                 zadko_info "Archivage du fichier $ros(common,nameofexecutable).log"
+                 zadko_info "------------------------------------------------------"
+                 file copy -force -- "$logcurrent"  "$logdestin"
+                 catch {file delete "$logcurrent" }
+          } elseif {($res2==1)&&($res1==1)} {
+                zadko_info "Archivage du fichier $ros(common,nameofexecutable).log"
+                zadko_info "------------------------------------------------------"
+                set fopen [open $logcurrent r]
+                set contenu [read $fopen]          
+                close $fopen
+                set fopen [open $logdestin a]
+                puts $fopen $contenu
+                close $fopen
+                catch {file delete "$logcurrent" }
+          }
+       } msg ]
+    
+       if {$error==1} {
+          zadko_info "Log Manager Error (log): $msg"
+       }
+    
+        set error [ catch {
+        set res1 [file exists $logwww]
+        set res2 [file exists $logdestin]
+        
+        if {($res2==1)&&($res1==0)} {
+                zadko_info "Archivage web du fichier zadkopad.log"
+                zadko_info "------------------------------------------------------"
+                file mkdir $dirwww
+                file copy -force -- "$logcurrent"  "$dirwww"
+                file copy -force -- "$logdestin"  "$dirwww"
+          } elseif {($res2==1)&&($res1==1)} {
+                zadko_info "Archivage web du fichier zadkopad.log"
+                zadko_info "------------------------------------------------------"
+                set fopen [open $logdestin r]
+                set contenu2 [read $fopen]           
+                close $fopen
+                set fopen [open $logwww a]
+                puts $fopen $contenu
+                puts $fopen $contenu2
+                close $fopen
+          }
+        } msg ]
+    
+       if {$error==1} {
+          zadko_info "Log Manager Error (wwwroot): $msg"
+       }   
+    }
+   #------------------------------------------------------------
+   #  Creation du fichier log
+   #     dans zadkopad/zadkopad.log
+   #------------------------------------------------------------
+    proc gren_nightdate { {date now} {deltamidi 0} } {
+       global ros
+       set longitude [lindex $ros(common,home) 1]
+       set sens [lindex $ros(common,home) 2]
+       set signe 1.
+       if {$sens=="E"} {
+          set signe -1.
+       }
+       set dday [expr 0.5+$signe*$longitude/360.+$deltamidi/24.]
+       set logdate [mc_date2iso8601 [mc_datescomp [mc_date2jd $date] - $dday]]
+       set logdate "[string range $logdate 0 3][string range $logdate 5 6][string range $logdate 8 9]"
+       return $logdate
+    }
+   #------------------------------------------------------------
+   #  Creation du fichier log
+   #     dans zadkopad/zadkopad.log
+   #------------------------------------------------------------
+   proc zadko_info {msg } { 
+        global ros
+        
+        set mesage ""
+        ::console::disp "$msg \n"
+        
+        # --- gestion du fichier log
+        set ros(caption,namelogfile) zadkopad.log
+        set ros(caption,logfile)    "$ros(root,logs)/logs/zadkopad"
+        set ros(caption,logfilehttpd)    "$ros(root,htdocs)/htdocs/ros/logs/zadkopad"
+        # --- Retourne la date de l'instant actuel
+        set date [mc_date2ymdhms now]
+        set date "[format "%04d-%02d-%02d %02d:%02d:%06.3f" [lindex $date 0] [lindex $date 1] [lindex $date 2] [lindex $date 3] [lindex $date 4] [lindex $date 5]]"
+        append mesage "$date "
+        append mesage $msg  
+        
+        catch {
+            file mkdir $ros(caption,logfile)
+            set fid [open "$ros(caption,logfile)/$ros(caption,namelogfile)" "a"]
+            puts $fid $mesage
+            close $fid
+        }
+        catch {
+            file mkdir $ros(caption,logfilehttpd)
+            set fid [open "$ros(caption,logfilehttpd)/$ros(caption,namelogfile)" "a"]
+            puts $fid $mesage
+            close $fid
+        }
+        
+        # --- historique des 50 dernieres lignes
+        if {[info exists ros(common,log,lasts)]==0} {
+            set ros(common,log,lasts) "$mesage"
+        } else {
+            if {[info exists ros(common,log,nlig_lasts)]==0} {
+                set ros(common,log,nlig_lasts) 30
+            }
+            set n [llength $ros(common,log,lasts)]
+            set kfin [expr $n-1]
+            set kdeb [expr $kfin-$ros(common,log,nlig_lasts)]
+            if {$kdeb<0} { set kdeb 0 }
+            set ros(common,log,lasts) [lrange $ros(common,log,lasts) $kdeb $kfin]
+            lappend ros(common,log,lasts) "$mesage"
+            set lignes ""
+            foreach ligne $ros(common,log,lasts) {
+                append lignes "$ligne"
+            }
+            file mkdir $ros(caption,logfilehttpd)
+            set fid [open "$ros(caption,logfilehttpd)/[file rootname [file tail $ros(caption,namelogfile)]]_last[file extension [file tail $ros(caption,namelogfile)]]" "w"]
+            puts $fid $lignes
+            close $fid
+        }
+   }
    #------------------------------------------------------------
    #  initPlugin
    #     initialise le plugin
    #------------------------------------------------------------
    proc initPlugin { } {
-		global port modetelescope stopcalcul paramhorloge telnum
+		global port modetelescope stopcalcul paramhorloge telnum ros textloadfile
 		
-		set port(hostname) [lindex [hostaddress] end]
-		#::console::affiche_resultat "$port(hostname) \n"
-        set port(ipIkon)   "ikon"
+		# --- Initialisation des variables ros du telescope
+		set ros(common,nameofexecutable) "telescope"
 		set port(adressePCcontrol) 121.200.43.11
 		set port(maj) 30032
 		set port(tel) 30011
@@ -29,35 +167,69 @@ namespace eval ::zadkopad {
 		set stopcalcul 0
 		set paramhorloge(init) 0
 		set telnum 1
-
-		#--- Cree les variables dans conf(...) si elles n'existent pas
-		initConf
-		#--- J'initialise les variables widget(..)
-		confToWidget  
-		# --- On source les variables ros du telescope
-       set ros(common,nameofexecutable) "telescope"
-       set ros(common,mode) "zadko_australia_pcwinmaj"
-       set ros(common,hostname) strehl
-       set ros(common,ip) 121.200.43.11
-       set err [catch {source "[pwd]/../ros/root.tcl"}]
-       if {$err==1} {
-            ::console::affiche_resultat "pb de chargement fichier root.tcl \n"
+		
+		# hostname and IP number sorted from routables to non routables
+        set res [hostaddress]
+        set res [lrange $res 0 [expr [llength $res]-2]]
+        set non_routables {10.0 172.16 192.168 169.254}
+        set ip0s ""
+        set ip1s ""
+        foreach re $res {
+        	set ip [lindex $re 0].[lindex $re 1]
+        	if {[lsearch $non_routables $ip]>=0} {
+        		lappend ip1s $re
+        	} else {
+        		lappend ip0s $re
+        	}
         }
-       set err [catch {source "[pwd]/../ros_private_cador/conf/src/common/variables_sites.tcl"}]
+        set ips ""
+        foreach ip0 $ip0s {
+        	lappend ips $ip0
+        }
+        foreach ip1 $ip1s {
+        	lappend ips $ip1
+        }
+        # IP number is preferable that is routable
+        set ip0 [lindex $ips 0]
+        set ros(common,hostname) [lindex [hostaddress] end]
+        set ros(common,ip) [lindex $ip0 0].[lindex $ip0 1].[lindex $ip0 2].[lindex $ip0 3]
+        set ros(common,ip2) [lindex $ip0 0].[lindex $ip0 1].[lindex $ip0 2]
+        set ros(common,ip3) [lindex $ip0 0].[lindex $ip0 1]
+		#zadko_info "[pwd]"
+		### pour test ###
+		#set ros(common,hostname) ikon
+        #set ros(common,ip) 121.200.43.5 
+		###
+		set textloadfile ""
+        set err [catch {source "[pwd]/../ros/root.tcl"}]
         if {$err==1} {
-            ::console::affiche_resultat "pas de fichiers variables_sites.tcl \n"
+            append textloadfile "load problem of file root.tcl"
+        }   
+        set err [catch {source "$ros(root,ros)/src/common/macros.tcl"}]
+        if {$err==1} {
+            append textloadfile "load problem of file macros.tcl"
+        }
+        set err [catch {source "$ros(root,conf)/conf/src/common/variables_sites.tcl"}]
+        if {($err!=1)&&($ros(common,mode)=="zadko_australia_pcwincam")} {
+            set paramhorloge(dra) $ros(telescope,private,dra);               # offset (deg) for hour angle
+            set paramhorloge(ddec) $ros(telescope,private,ddec);             # offset (deg) for declination
+            set paramhorloge(focus) $ros(telescope,private,focuscam1) ;      # valeur du bon focus
+            set paramhorloge(speedra) $ros(telescope,speedtrack,mult,ra) ;   # coef multiplicateur du speedtrack
+            #set paramhorloge(speeddec) $ros(telescope,speedtrack,mult,dec); # coef multiplicateur du speedtrack
+        } else {
+            append textloadfile "no offset values defined in variables_sites.tcl"
             set paramhorloge(dra) 0;            # offset (deg) for hour angle
             set paramhorloge(ddec) 0;           # offset (deg) for declination
             set paramhorloge(focus) 0;          # valeur du bon focus
             set paramhorloge(speedra) 0;        # coef multiplicateur du speedtrack
-            #set paramhorloge(speeddec) 0;      # coef multiplicateur du speedtrack
-        } else {
-           set paramhorloge(dra) $ros(telescope,private,dra);               # offset (deg) for hour angle
-           set paramhorloge(ddec) $ros(telescope,private,ddec);             # offset (deg) for declination
-           set paramhorloge(focus) $ros(telescope,private,focuscam1) ;      # valeur du bon focus
-           set paramhorloge(speedra) $ros(telescope,speedtrack,mult,ra) ;   # coef multiplicateur du speedtrack
-           #set paramhorloge(speeddec) $ros(telescope,speedtrack,mult,dec);# coef multiplicateur du speedtrack
+            #set paramhorloge(speeddec) 0;      # coef multiplicateur du speedtrack  
        }
+       
+	   #--- Cree les variables dans conf(...) si elles n'existent pas
+	   initConf
+	   #--- J'initialise les variables widget(..)
+	   confToWidget  
+       
    }
    #------------------------------------------------------------
    #  getPluginProperty
@@ -211,7 +383,7 @@ namespace eval ::zadkopad {
    #  return rien
    #------------------------------------------------------------
    proc deletePluginInstance { } {
-      global audace conf paramhorloge modetelescope port
+      global audace conf paramhorloge modetelescope port ros
 
       if { [ winfo exists .zadkopad ] } {
          #--- Enregistre la position de la raquette
@@ -222,11 +394,13 @@ namespace eval ::zadkopad {
       }
 	  set paramhorloge(sortie) "1"
 	  set modetelescope 0
-	  if {$port(hostname)==$port(ipIkon)} {
+	  if {$ros(common,mode)=="zadko_australia_pcwincam"} {
     	  #--- rend la main a ros
     	  modeZADKO 0
 	  }
-	  
+	  set paramhorloge(init) 0
+	  #--- archive le fichier log
+	  archive_zadkopad
       #--- Supprime la raquette
       destroy .zadkopad
 
@@ -258,6 +432,10 @@ namespace eval ::zadkopad {
 			puts $f "$texte"
 			after 1500
 			set reponse [read $f]
+			if {$reponse==""} {
+    			after 500
+			    set reponse [read $f]
+			}
 			close $f
 			return $reponse
 		} else {
@@ -279,7 +457,7 @@ namespace eval ::zadkopad {
 	 		#passer en mode manuel du majordome
 	 		
 	 		set reponse [::zadkopad::dialoguesocket $port(adressePCcontrol) $port(maj) $texte]
-	 		::console::affiche_resultat "$reponse \n"
+	 		zadko_info "$texte reponse: $reponse"
 			
 	 		if {$reponse!=2} {
 		 		# --- le majordome ne repond pas
@@ -300,10 +478,12 @@ namespace eval ::zadkopad {
 				#set reponse [dialoguesocket $port(adressePCcontrol) $port(tel) $texte]
 	
 				# --- passer majordome en mode manuel
-				set reponse [::zadkopad::roscommande {majordome DO mysql ModeSysteme MANUAL}]
-				::console::affiche_resultat "$reponse \n"
-				set reponse [::zadkopad::roscommande [list telescope DO eval [list tel$telnum radec motor off]]]
-				::console::affiche_resultat "$reponse \n"
+				### pour test ###
+				#set reponse [::zadkopad::roscommande {majordome DO mysql ModeSysteme MANUAL}]
+				#zadko_info "$reponse"
+				#set reponse [::zadkopad::roscommande [list telescope DO eval [list tel$telnum radec motor off]]]
+				#zadko_info "$reponse"
+				#
 				set modetelescope 1
 				#--- Tue camera.exe
 				package require twapi
@@ -330,11 +510,11 @@ namespace eval ::zadkopad {
 				::zadkopad::stopfocus
 				#################################
 				set reponse [::zadkopad::roscommande [list telescope DO eval [list tel$telnum radec motor off]]]
-				::console::affiche_resultat "$reponse \n"
+				zadko_info "$reponse"
 				# --- passer majordome en mode auto
 				#passer en mode manuel du majordome
 		 		set reponse [::zadkopad::dialoguesocket $port(adressePCcontrol) $port(maj) $texte]
-	 	 		::console::affiche_resultat "$reponse \n"
+	 	 		zadko_info "$reponse"
 	 			
 	 	 		if {$reponse!=2} {
 	 			
@@ -351,7 +531,7 @@ namespace eval ::zadkopad {
 	proc roscommande { msg } {
 		global port paramhorloge 
 		
-		::console::affiche_resultat "$msg"
+		zadko_info "$msg"
 		set nameexe [lindex $msg 0]
 		
 		set ordre [lrange $msg 1 end]
@@ -366,8 +546,12 @@ namespace eval ::zadkopad {
 			}
 			# ouvrir socket
 			set reponse [::zadkopad::dialoguesocket $port(adressePCcontrol) $portCom $ordre]
-			::console::affiche_resultat "$nameexe ordre: $ordre, reponse: $reponse \n"
-			
+			zadko_info "$nameexe ordre: $ordre, reponse: $reponse"
+			if {$reponse==""} {
+    			set reponse [::zadkopad::dialoguesocket $port(adressePCcontrol) $portCom $ordre]
+			    zadko_info "$nameexe ordre2: $ordre, reponse: $reponse"
+    			
+			}
 			if {$paramhorloge(init)=="1"} {
     			.zadkopad.func.closedome configure -relief groove -state disabled
         		.zadkopad.func.opendome configure -relief groove -state disabled
@@ -414,7 +598,7 @@ namespace eval ::zadkopad {
 		
 		set paramhorloge(home)       $audace(posobs,observateur,gps)
 		
-		::console::affiche_resultat "goto $newra $newdec \n"
+		zadko_info "goto $newra $newdec"
 		set ra [mc_angle2deg $newra]
 		set dec [mc_angle2deg $newdec 90]
 		
@@ -429,17 +613,17 @@ namespace eval ::zadkopad {
 		set ha  [lindex $res 2]
 		set tsl [mc_date2lst $now $paramhorloge(home)]
 			
-		::console::affiche_resultat "goto ra: $ra, dec: $dec, alt: $alt, ha: $ha \n"
+		zadko_info "goto ra: $ra, dec: $dec, alt: $alt, ha: $ha"
 		# --- teste si les coordonnees sont pointables
 		if {(($ha<[expr 15*15])&&($ha>[expr 8*15]))||($alt<10)||($dec>45)||($dec<-89.5)} {			
 			# --- affiche un message d'erreur
-			::console::affiche_resultat "tsl: $tsl\n"
+			zadko_info "tsl: $tsl"
 			set ts [mc_angle2deg [list $tsl] ]
 			set ramin [expr $ts/15 - 8.5]
 			set ramax [expr $ts/15 - 16.5*15]
 			set decmin 89.5
 			set decmax 45
-			::console::affiche_resultat "goto erreur ramin: $ramin, ramax: $ramax, ts: $ts \n"
+			zadko_info "goto erreur ramin: $ramin, ramax: $ramax, ts: $ts"
 			# ne peut pas ouvrir connection
 			tk_messageBox -icon error -message "BAD COORDINATES: must be $ramin<RA<$ramax AND ALT>10 degre AND $decmin<DEC<$decmax" -type ok
 			return
@@ -468,15 +652,15 @@ namespace eval ::zadkopad {
 		# --- envoie les valeurs de suivi
 		# --- envoie l'ordre de pointage au telescope
 		set reponse [::zadkopad::roscommande [list telescope GOTO $newra $newdec -blocking 1]]
-		::console::affiche_resultat "$reponse \n"
+		zadko_info "$reponse"
 		if 	{$onoff=="off"} {
 			set reponse [::zadkopad::roscommande [list telescope DO speedtrack 0.0 0.0]]
 		} else {   		
 		    set reponse [::zadkopad::roscommande [list telescope DO speedtrack $suivira $suividec]]
 	    }
-		::console::affiche_resultat "$reponse \n"		
+		zadko_info "$reponse"		
 		#set reponse [::zadkopad::roscommande [list telescope DO eval tel$telnum racdec motor $onoff]]
-		#::console::affiche_resultat "$reponse \n"	
+		#zadko_info "$reponse"	
 		
 		return $reponse
 	}
@@ -493,17 +677,17 @@ namespace eval ::zadkopad {
 			return
 		} 
 		# --- envoie l'ordre de focus
-		set nowfocus [lindex [::zadkopad::roscommande [list telescope DO eval [list tel$telnum dfmfocus]]] 0] 
-		::console::affiche_resultat "recupere le focus : $nowfocus \n"	
+		set nowfocus [lindex [::zadkopad::roscommande [list telescope DO eval tel$telnum dfmfocus]] 0] 
+		zadko_info "recupere le focus : $nowfocus"	
 		if {$nowfocus==""} {
-    		    set nowfocus [lindex [::zadkopad::roscommande [list telescope DO eval [list tel$telnum dfmfocus]]] 0] 
+    		    set nowfocus [lindex [::zadkopad::roscommande [list telescope DO eval tel$telnum dfmfocus]] 0] 
     		    if {$nowfocus==""} {
 				    set nowfocus $paramhorloge(focus)
 			    }
 		}
 		# --- envoie l'ordre de focus
 		set reponse [::zadkopad::roscommande [list telescope DO eval [list tel$telnum dfmfocus $newfocus]]]
-		::console::affiche_resultat "$reponse \n"	
+		zadko_info "$reponse"	
 		if {$nowfocus==""} {
 				set temps  [expr 800*33*1000/500 + 4000]
 		} else {
@@ -534,7 +718,7 @@ namespace eval ::zadkopad {
 		 
 		#pierre replace 30*100/500 + 3000 par 33*1000/500 +4000 dans les 2 lignes au dessus et mis un # devant ::zadkopad::stopfocus
 		# suite a la correction par dfm via timo des pb du focus
-		#::console::affiche_resultat "nowfocus: $nowfocus, newfocus: $newfocus, temps: $temps \n"
+		#zadko_info "nowfocus: $nowfocus, newfocus: $newfocus, temps: $temps"
 		#after [expr int($temps)]
 		# ::zadkopad::stopfocus
 		
@@ -559,7 +743,7 @@ namespace eval ::zadkopad {
 			# ne peut pas ouvrir connection
 			tk_messageBox -icon error -message "No connection with $adressseIP $port" -type ok
 		}
-		::console::affiche_resultat "$reponse \n"	
+		zadko_info "$reponse"	
 		return $reponse
 	}
 	#------------------------------------------------------------
@@ -568,10 +752,10 @@ namespace eval ::zadkopad {
 	proc calculz { } {
 	   global caption stopcalcul base paramhorloge ros
 	   
-	    #::console::affiche_resultat "paramhorloge(new,ra):$paramhorloge(new,ra) ,paramhorloge(new,dec): $paramhorloge(new,dec) \n"
+	    #zadko_info "paramhorloge(new,ra):$paramhorloge(new,ra) ,paramhorloge(new,dec): $paramhorloge(new,dec)"
 		if { $paramhorloge(sortie) != "1" } {
  			if {($paramhorloge(new,ra)=="")&&($paramhorloge(new,dec)=="")} {
-				::console::affiche_resultat "calculz probleme with telescope connection, paramhorloge(new,ra):$paramhorloge(new,ra)\n"
+				zadko_info "proc calculz : problem with telescope connection, paramhorloge(new,ra):$paramhorloge(new,ra)"
 				set radec [ ::zadkopad::roscommande {telescope TEL radec coord}]
 				#ATTENTION rajout OFFSET de pointage DFM
  				set paramhorloge(ra)         "[lindex $radec 0]"
@@ -584,12 +768,12 @@ namespace eval ::zadkopad {
                     set paramhorloge(ra)        [string trim [mc_angle2hms $paramhorloge(ra) 360 zero 2 auto string]]
                     set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec)  90 zero 1 + string]]  
              }   
- 				set paramhorloge(new,ra) 	 $paramhorloge(ra)
- 				set paramhorloge(new,dec) 	 $paramhorloge(dec)
- 			} else {
-				set paramhorloge(ra) $paramhorloge(new,ra)
-		    	set paramhorloge(dec) $paramhorloge(new,dec)
-  			}
+			 set paramhorloge(new,ra) 	 $paramhorloge(ra)
+			 set paramhorloge(new,dec) 	 $paramhorloge(dec)
+ 		} else {
+			 set paramhorloge(ra) $paramhorloge(new,ra)
+	    	 set paramhorloge(dec) $paramhorloge(new,dec)
+		}
 			
 			set now now
 			catch {set now [::audace::date_sys2ut now]}
@@ -652,7 +836,7 @@ namespace eval ::zadkopad {
 	   global caption base paramhorloge stopcalcul ros telnum
 	    
 	    set stopcalcul 1
-	    ::console::affiche_resultat "refresh paramhorloge(new,ra):$paramhorloge(new,ra) ,paramhorloge(new,dec): $paramhorloge(new,dec) \n"
+	    zadko_info "proc refresh : paramhorloge(new,ra):$paramhorloge(new,ra) ,paramhorloge(new,dec): $paramhorloge(new,dec)"
 
  		set radec [ ::zadkopad::roscommande {telescope TEL radec coord}]
 		#ATTENTION rajout OFFSET de pointage DFM
@@ -670,13 +854,15 @@ namespace eval ::zadkopad {
 		set paramhorloge(new,ra) 	 $paramhorloge(ra)
 		set paramhorloge(new,dec) 	 $paramhorloge(dec)
  				
- 		set paramhorloge(focal_number)	[lindex [::zadkopad::roscommande [list telescope DO eval [list tel$telnum dfmfocus]]] 0]
+ 		set paramhorloge(focal_number)	[lindex [::zadkopad::roscommande [list telescope DO eval tel$telnum dfmfocus]] 0]
  		set vitessessuivie [::zadkopad::roscommande [list telescope DO speedtrack]]
- 		set paramhorloge(suivira)	[expr [lindex $vitessessuivie 0]/$paramhorloge(speedra)]
- 		#set paramhorloge(suivira)	[lindex $vitessessuivie 0]
- 		set paramhorloge(suividec)	[lindex $vitessessuivie 1] 
+ 		if {$vitessessuivie!=""} {
+     		set paramhorloge(suivira)	[expr [lindex $vitessessuivie 0]/$paramhorloge(speedra)]
+     		#set paramhorloge(suivira)	[lindex $vitessessuivie 0]
+     		set paramhorloge(suividec)	[lindex $vitessessuivie 1] 
+ 		}
  		set stopcalcul 0
- 		::console::affiche_resultat "refresh radec: $radec, focal_number: $paramhorloge(focal_number), vitessessuivie : $vitessessuivie\n"
+ 		zadko_info "proc refresh end : radec: $radec, focal_number: $paramhorloge(focal_number), vitessessuivie : $vitessessuivie"
  		::zadkopad::calculz
  	
 	}
@@ -684,10 +870,9 @@ namespace eval ::zadkopad {
     #  run
     #     cree la fenetre de la raquette
     #------------------------------------------------------------
-    # PIERRE MODIFIE POSITION RAQUETTE
-    proc run { {zoom .5} {positionxy 200+50} } {
+    proc run { {zoom .5} {positionxy 200+20} } {
         variable widget
-        global audace caption color geomlx200 statustel zonelx200 paramhorloge base port ros telnum
+        global audace caption color geomlx200 statustel zonelx200 paramhorloge base port ros telnum textloadfile
         
         if { [ string length [ info commands .zadkopad.display* ] ] != "0" } {
          destroy .zadkopad
@@ -695,6 +880,18 @@ namespace eval ::zadkopad {
         if { $zoom <= "0" } {
          destroy .zadkopad
          return
+        }
+        zadko_info "###########################################"
+        zadko_info "         ZADKO MANUAL INTERFACE            "
+        zadko_info "###########################################"
+        zadko_info "My hostname is: $ros(common,hostname) "
+        zadko_info "My IP is: $ros(common,ip) "
+        zadko_info "ROS mode is: $ros(common,mode) "
+        zadko_info ""
+        if {$textloadfile!=""} {
+            zadko_info "$textloadfile"
+            zadko_info ""
+            set textloadfile ""
         }
         # =======================================
         # === Initialisation of the variables
@@ -735,13 +932,13 @@ namespace eval ::zadkopad {
       
         #--- Initialisation
         set paramhorloge(sortie)     "0"
-        if {$port(hostname)==$port(ipIkon)} {
+        if {$ros(common,mode)=="zadko_australia_pcwincam"} {
             set radec [ roscommande {telescope TEL radec coord}]
             #ATTENTION rajout OFFSET de pointage DFM
             set paramhorloge(ra)         "[lindex $radec 0]"
             set paramhorloge(dec)        "[lindex $radec 1]"
             if {($paramhorloge(ra)!="")&&($paramhorloge(dec)!="")} {
-	            #::console::affiche_resultat  "paramhorloge(dra): ; ros(telescope,private,dra): $ros(telescope,private,dra)"
+	            #zadko_info  "paramhorloge(dra): ; ros(telescope,private,dra): $ros(telescope,private,dra)"
                 set paramhorloge(ra)        [mc_angle2deg $paramhorloge(ra)]
                 set paramhorloge(dec)       [mc_angle2deg $paramhorloge(dec) 90]
                 set paramhorloge(ra)        [expr $paramhorloge(ra)-$paramhorloge(dra)]
@@ -749,7 +946,7 @@ namespace eval ::zadkopad {
                 set paramhorloge(ra)        [string trim [mc_angle2hms $paramhorloge(ra) 360 zero 2 auto string]]
                 set paramhorloge(dec)       [string trim [mc_angle2dms $paramhorloge(dec)  90 zero 1 + string]]  
             }              
-            set paramhorloge(focal_number)	"[lindex [::zadkopad::roscommande [list telescope DO eval [list tel$telnum dfmfocus]]] 0]" 
+            set paramhorloge(focal_number)	"[lindex [::zadkopad::roscommande [list telescope DO eval tel$telnum dfmfocus]] 0]" 
         } else {
             set paramhorloge(ra)         ""
             set paramhorloge(dec)        ""
@@ -763,7 +960,7 @@ namespace eval ::zadkopad {
         set paramhorloge(font)       {times 30 bold}
         set paramhorloge(suivira)	 "0.00417808"
         set paramhorloge(suividec)   "0.0"
-        ::console::affiche_resultat  "init focal_number: $paramhorloge(focal_number), paramhorloge(new,ra):$paramhorloge(new,ra), paramhorloge(new,dec): $paramhorloge(new,dec) \n"
+        zadko_info  "proc run: init focal_number: $paramhorloge(focal_number), paramhorloge(new,ra):$paramhorloge(new,ra), paramhorloge(new,dec): $paramhorloge(new,dec)"
 
         # =========================================
         # === Setting the graphic interface
@@ -1026,8 +1223,8 @@ namespace eval ::zadkopad {
         #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
         bind .zadkopad <Key-F1> { ::console::GiveFocus }
         
-        if {$port(hostname)==$port(ipIkon)} {
-            ::zadkopad::refreshcoord
+        if {$ros(common,mode)=="zadko_australia_pcwincam"} {
+            #::zadkopad::refreshcoord
             ::zadkopad::calculz
             #--- Je passe en mode manuel sur le telescope ZADKO
             ::zadkopad::modeZADKO 1
