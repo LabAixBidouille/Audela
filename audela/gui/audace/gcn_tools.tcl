@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.31 2009-09-28 20:42:21 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.32 2009-09-29 20:31:23 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -831,7 +831,7 @@ proc gcn_pkt_type { pkt_type } {
      100      SuperAGILE_GRB_POS_WAKEUP
      101      SuperAGILE_GRB_POS_GROUND
      102      SuperAGILE_GRB_POS_REFINED
-     108      AGILE_POINTDIR
+     107      AGILE_POINTDIR
      108      SuperAGILE_TRANS                 NOT YET AVAILABLE
      109      SuperAGILE_GRB_POS_TEST
      110      FERMI_GBM_ALERT
@@ -851,6 +851,7 @@ proc gcn_pkt_type { pkt_type } {
      128      FERMI_LAT_GND_TRIG               NOT YET AVAILABLE TO THE PUBLIC
      129      FERMI_POINTDIR
      130      SIMBAD/NED_SEARCH_RESULTS
+     131      PIOTS_OT_POS                     NOT YET AVAILABLE TO THE PUBLIC
      901      ANTARES_GRB_POSITION             AVAILABLE ONLY FOR TAROT COLLABORATION
      902      ANTARES_GRB_POS_TEST             AVAILABLE ONLY FOR TAROT COLLABORATION
      903      ANTARES_GRB_POS_REFINED          AVAILABLE ONLY FOR TAROT COLLABORATION
@@ -938,7 +939,7 @@ proc gcn_pkt_type { pkt_type } {
    # --- prompt identification
    # =-1 informations only, =0 pointdir, =1 prompt, =2 refined
    set prompt -1
-   if {($pkt_type==109)||($pkt_type==129)||($pkt_type==83)||($pkt_type==51)||($pkt_type==902)||($pkt_type==906)||($pkt_type==46)||($pkt_type==47)} {
+   if {($pkt_type==107)||($pkt_type==129)||($pkt_type==83)||($pkt_type==51)||($pkt_type==902)||($pkt_type==906)||($pkt_type==46)||($pkt_type==47)} {
       set prompt 0
    }
    if {($pkt_type==100)||($pkt_type==121)||($pkt_type==61)||($pkt_type==58)||($pkt_type==53)||($pkt_type==40)||($pkt_type==33)||($pkt_type==35)||($pkt_type==30)||($pkt_type==26)||($pkt_type==28)||($pkt_type==1)||($pkt_type==901)||($pkt_type==905)||($pkt_type==98)} {
