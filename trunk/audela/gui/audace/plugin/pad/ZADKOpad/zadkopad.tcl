@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.26 2009-09-28 16:36:29 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.27 2009-09-30 08:11:03 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -195,7 +195,6 @@ namespace eval ::zadkopad {
         set ros(common,ip) [lindex $ip0 0].[lindex $ip0 1].[lindex $ip0 2].[lindex $ip0 3]
         set ros(common,ip2) [lindex $ip0 0].[lindex $ip0 1].[lindex $ip0 2]
         set ros(common,ip3) [lindex $ip0 0].[lindex $ip0 1]
-		#zadko_info "[pwd]"
 		### pour test ###
 		#set ros(common,hostname) ikon
         #set ros(common,ip) 121.200.43.5 
@@ -866,13 +865,59 @@ namespace eval ::zadkopad {
  		::zadkopad::calculz
  	
 	}
+	#------------------------------------------------------------
+	#    coordinates calculation     
+	#------------------------------------------------------------
+	proc findcoordinate {name } {
+    	global paramhorloge audace
+    	
+    	set paramhorloge(soapra) ""
+    	set paramhorloge(soapdec) ""
+    	set paramhorloge(soappos) ""
+        .zadkopad.frame4.frame1.f2.ent1 configure -state disabled 
+        .zadkopad.frame4.frame1.f2.ent2 configure -state disabled 
+        .zadkopad.frame4.frame1.f2.ent3 configure -state disabled 
+        
+        zadko_info "findcoordinate $name"
+        
+	    package require SOAP
+            
+        set name "$name"
+        set resultType "xp"
+        set server "http://cdsws.u-strasbg.fr/axis/services/Sesame"
+        SOAP::create sesame -uri $server -proxy $server -action "urn:sesame" -params { "name" "string"  "resultType" "string" }
+        set xml_text [sesame $name $resultType] 
+        #::console::disp "xml_text: $xml_text \n"  
+        if {([string first jradeg $xml_text]>0)&&([string first jdedeg $xml_text]>0)} {        
+              set radebut [expr [string first jradeg $xml_text] + 7]
+              set rafin [expr [string first "</" $xml_text $radebut]-1]
+              set paramhorloge(soapra) [string range $xml_text $radebut $rafin]
+              
+              set decdebut [expr [string first jdedeg $xml_text] + 7]
+              set decfin [expr [string first "</" $xml_text $decdebut]-1]
+              set paramhorloge(soapdec) [string range $xml_text $decdebut $decfin]
+              
+              set posdebut [expr [string first jpos $xml_text] + 5]
+              set posfin [expr [string first "</" $xml_text $posdebut]-1]
+              set paramhorloge(soappos) [string range $xml_text $posdebut $posfin]
+              ::console::disp "$name $paramhorloge(soappos)\n"
+              
+              .zadkopad.frame4.frame1.f2.ent1 configure -state normal 
+              .zadkopad.frame4.frame1.f2.ent2 configure -state normal 
+              .zadkopad.frame4.frame1.f2.ent3 configure -state normal 
+        } else {
+        # message de pb sur les coordonnées
+              zadko_info "Problem with $name"
+              tk_messageBox -icon error -message "The name: $name is not correct" -type ok
+        }
+ 	}
     #------------------------------------------------------------
     #  run
     #     cree la fenetre de la raquette
     #------------------------------------------------------------
-    proc run { {zoom .5} {positionxy 200+20} } {
+    proc run { {zoom .5} {positionxy 200+10} } {
         variable widget
-        global audace caption color geomlx200 statustel zonelx200 paramhorloge base port ros telnum textloadfile
+        global audace caption color geomlx200 statustel zonelx200 paramhorloge base port ros telnum textloadfile 
         
         if { [ string length [ info commands .zadkopad.display* ] ] != "0" } {
          destroy .zadkopad
@@ -911,12 +956,13 @@ namespace eval ::zadkopad {
         #--- Definition des geomlx200etries
         #--- Definition of geometry
         set geomlx200(larg)       [ expr int(900*$zoom) ]
-        set geomlx200(long)       [ expr int(810*$zoom+40) ]
+        set geomlx200(long)       [ expr int(950*$zoom) ]
         set geomlx200(fontsize25) [ expr int(25*$zoom) ]
         set geomlx200(fontsize20) [ expr int(20*$zoom) ]
         set geomlx200(fontsize16) [ expr int(16*$zoom) ]
         set geomlx200(fontsize14) [ expr int(14*$zoom) ] 
         set geomlx200(5pixels)   [ expr int(5*$zoom) ]     
+        set geomlx200(7pixels)   [ expr int(7*$zoom) ]     
         set geomlx200(10pixels)   [ expr int(10*$zoom) ]
         set geomlx200(15pixels)   [ expr int(15*$zoom) ]
         set geomlx200(16pixels)   [ expr int(16*$zoom) ]
@@ -960,6 +1006,7 @@ namespace eval ::zadkopad {
         set paramhorloge(font)       {times 30 bold}
         set paramhorloge(suivira)	 "0.00417808"
         set paramhorloge(suividec)   "0.0"
+        set objectname "M51"
         zadko_info  "proc run: init focal_number: $paramhorloge(focal_number), paramhorloge(new,ra):$paramhorloge(new,ra), paramhorloge(new,dec): $paramhorloge(new,dec)"
 
         # =========================================
@@ -984,7 +1031,7 @@ namespace eval ::zadkopad {
         pack .zadkopad.display -in .zadkopad -fill x -side top -pady $geomlx200(10pixels) -padx 12
         
         #--- Create a dummy space
-        frame .zadkopad.dum1 -height $geomlx200(20pixels) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+        frame .zadkopad.dum1 -height $geomlx200(10pixels) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
         pack .zadkopad.dum1 -in .zadkopad -side top -fill x
              
         #--- Create a frame for change mode
@@ -1046,7 +1093,7 @@ namespace eval ::zadkopad {
         pack  .zadkopad.petal.petalopen .zadkopad.petal.petalclose  -in .zadkopad.petal -padx [ expr int(11*$zoom) ] -side left
         
         #--- Create a dummy space
-        frame .zadkopad.vide -height $geomlx200(20pixels) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+        frame .zadkopad.vide -height $geomlx200(5pixels) -borderwidth 0 -relief flat -bg $colorlx200(backpad)
         pack .zadkopad.vide -in .zadkopad -side top -fill x -pady 10
           
         #--- Create a frame for the focalisation value
@@ -1072,8 +1119,7 @@ namespace eval ::zadkopad {
         frame .zadkopad.frame1 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
         pack .zadkopad.frame1 -in .zadkopad -side top -fill x -pady 10
          
-        frame .zadkopad.frame1.frame2 -borderwidth 5 -relief flat -width $geomlx200(430pixels) -bg $colorlx200(backkey) 
-         
+        frame .zadkopad.frame1.frame2 -borderwidth 5 -relief flat -width $geomlx200(430pixels) -bg $colorlx200(backkey)   
         pack .zadkopad.frame1.frame2 -in .zadkopad.frame1 -side right -fill x -expand true -pady 10 -padx 10
         frame .zadkopad.frame1.frame3 -borderwidth 5 -relief flat -width $geomlx200(430pixels) -bg $colorlx200(backkey)
         pack .zadkopad.frame1.frame3 -in .zadkopad.frame1 -side left -fill x -expand true -pady 10 -padx 10
@@ -1208,6 +1254,66 @@ namespace eval ::zadkopad {
         
         pack $base2.f -fill both
         
+        #--- Create a frame for Find Coordinates
+  
+        frame .zadkopad.frame4 -borderwidth 0 -relief flat -width $geomlx200(430pixels) -bg $colorlx200(backpad)
+        pack .zadkopad.frame4 -in .zadkopad -side top -fill x -pady 10
+        
+         frame .zadkopad.frame4.frame1 -borderwidth 5 -relief flat -width $geomlx200(430pixels) -bg $colorlx200(backkey)   
+        pack .zadkopad.frame4.frame1 -in .zadkopad.frame4 -side right -fill x -expand true -pady 10 -padx 10
+        
+        label .zadkopad.frame4.frame1.texte -font [ list {Arial} $geomlx200(fontsize20) $geomlx200(textthick) ] -text "Find Coordinates" \
+         -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(backtour)
+        pack .zadkopad.frame4.frame1.texte -in .zadkopad.frame4.frame1 -side top -fill x -expand true
+         	
+        set base3 ".zadkopad.frame4.frame1"
+        
+        frame $base3.f -bg $colorlx200(backpad)
+        #--- Create a dummy space
+        frame $base3.f.vid -height 2 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+        pack $base3.f.vid -in $base3.f -side top -fill x -pady 5
+        #---
+        label $base3.f.name \
+           -width $geomlx200(21pixels) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "Object Name e.g.: M51" \
+           -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
+        entry $base3.f.ent3 -textvariable paramhorloge(objectname) -width $geomlx200(15pixels)  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
+                 -bg $colorlx200(backtour) -fg $colorlx200(backpad) -relief flat
+        button $base3.f.but1 -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ]\
+             -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey)\
+             -text "SEND" -command {::zadkopad::findcoordinate "$paramhorloge(objectname)"}   
+        frame $base3.f.vid2 -height 2 -width $geomlx200(20pixels) -borderwidth 0 -relief flat -bg $colorlx200(backpad)    
+        pack $base3.f.name $base3.f.ent3 -in $base3.f -side left
+        pack $base3.f.vid2 $base3.f.but1 -in $base3.f -side right
+        pack $base3.f -fill both
+        
+        frame $base3.f2 -bg $colorlx200(backpad) -height 20
+        #--- Create a dummy space
+        frame $base3.f2.vid3 -height 2 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+        pack $base3.f2.vid3 -in $base3.f2 -side top -fill x -pady 5
+        frame $base3.f2.vid5 -height 2 -width 100 -borderwidth 0 -relief flat -bg $colorlx200(backpad)   
+        label $base3.f2.ra \
+         -width $geomlx200(7pixels) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "RA deg" \
+         -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
+        label $base3.f2.dec \
+         -width $geomlx200(7pixels) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "DEC deg" \
+         -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
+        label $base3.f2.pos \
+         -width $geomlx200(10pixels) -font [ list {Arial} $geomlx200(fontsize16) $geomlx200(textthick) ] -text "POSITION" \
+         -borderwidth 0 -relief flat -bg $colorlx200(backpad) -fg $colorlx200(textkey)
+        
+        entry $base3.f2.ent1 -textvariable paramhorloge(soapra) -width $geomlx200(15pixels)  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
+                 -bg $colorlx200(backtour) -fg $colorlx200(backpad) -relief flat
+        entry $base3.f2.ent2 -textvariable paramhorloge(soapdec) -width $geomlx200(15pixels)  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
+                 -bg $colorlx200(backtour) -fg $colorlx200(backpad) -relief flat
+        entry $base3.f2.ent3 -textvariable paramhorloge(soappos) -width $geomlx200(20pixels)  -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
+                 -bg $colorlx200(backtour) -fg $colorlx200(backpad) -relief flat
+        pack  $base3.f2.pos $base3.f2.ent3 $base3.f2.ra $base3.f2.ent1 $base3.f2.dec $base3.f2.ent2 -in $base3.f2 -side left -fill none
+        #--- Create a dummy space
+        pack $base3.f2 -fill both
+        
+        frame $base3.vid4 -height 10 -borderwidth 0 -relief flat -bg $colorlx200(backpad)
+        pack $base3.vid4 -in $base3 -side top -fill both
+        
         .zadkopad.func.closedome configure -relief groove -state disabled
         .zadkopad.func.opendome configure -relief groove -state disabled
         .zadkopad.tel.init configure -relief groove -state disabled
@@ -1217,6 +1323,9 @@ namespace eval ::zadkopad {
         .zadkopad.foc.enter configure -relief groove -state disabled
         .zadkopad.frame1.frame2.f.but1 configure -relief groove -state disabled
         .zadkopad.frame1.frame3.f.vide2.sendposition.but1 configure -relief groove -state disabled
+        .zadkopad.frame4.frame1.f2.ent1 configure -state disabled
+        .zadkopad.frame4.frame1.f2.ent2 configure -state disabled
+        .zadkopad.frame4.frame1.f2.ent3 configure -state disabled
         update
         #--- La fenetre est active
         focus .zadkopad       
