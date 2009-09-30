@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.29 2009-09-30 15:25:33 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.30 2009-09-30 15:29:39 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -477,12 +477,11 @@ namespace eval ::zadkopad {
 				#set reponse [dialoguesocket $port(adressePCcontrol) $port(tel) $texte]
 	
 				# --- passer majordome en mode manuel
-				### pour test ###
-				#set reponse [::zadkopad::roscommande {majordome DO mysql ModeSysteme MANUAL}]
-				#zadko_info "$reponse"
-				#set reponse [::zadkopad::roscommande [list telescope DO eval [list tel$telnum radec motor off]]]
-				#zadko_info "$reponse"
-				#
+				set reponse [::zadkopad::roscommande {majordome DO mysql ModeSysteme MANUAL}]
+				zadko_info "$reponse"
+				set reponse [::zadkopad::roscommande [list telescope DO eval [list tel$telnum radec motor off]]]
+				zadko_info "$reponse"
+				
 				set modetelescope 1
 				#--- Tue camera.exe
 				package require twapi
