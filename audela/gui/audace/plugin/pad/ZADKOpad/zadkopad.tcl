@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.27 2009-09-30 08:11:03 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.28 2009-09-30 14:21:17 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -139,7 +139,7 @@ namespace eval ::zadkopad {
             set kdeb [expr $kfin-$ros(common,log,nlig_lasts)]
             if {$kdeb<0} { set kdeb 0 }
             set ros(common,log,lasts) [lrange $ros(common,log,lasts) $kdeb $kfin]
-            lappend ros(common,log,lasts) "$mesage"
+            lappend ros(common,log,lasts) "$mesage\n"
             set lignes ""
             foreach ligne $ros(common,log,lasts) {
                 append lignes "$ligne"
@@ -432,7 +432,7 @@ namespace eval ::zadkopad {
 			after 1500
 			set reponse [read $f]
 			if {$reponse==""} {
-    			after 500
+    			after 1000
 			    set reponse [read $f]
 			}
 			close $f
@@ -546,7 +546,7 @@ namespace eval ::zadkopad {
 			# ouvrir socket
 			set reponse [::zadkopad::dialoguesocket $port(adressePCcontrol) $portCom $ordre]
 			zadko_info "$nameexe ordre: $ordre, reponse: $reponse"
-			if {$reponse==""} {
+			if {($reponse=="")&&([lindex $msg 2]=="speedtrack")} {
     			set reponse [::zadkopad::dialoguesocket $port(adressePCcontrol) $portCom $ordre]
 			    zadko_info "$nameexe ordre2: $ordre, reponse: $reponse"
     			
