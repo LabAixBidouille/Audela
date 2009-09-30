@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.32 2009-09-30 15:56:21 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.33 2009-09-30 16:24:40 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -760,7 +760,7 @@ namespace eval ::zadkopad {
 	#    met a jour les donnes     
 	#------------------------------------------------------------
 	proc calculz { } {
-	   global caption stopcalcul base paramhorloge ros
+	   global caption stopcalcul base paramhorloge ros color
 	   
 	    #zadko_info "paramhorloge(new,ra):$paramhorloge(new,ra) ,paramhorloge(new,dec): $paramhorloge(new,dec)"
 		if { $paramhorloge(sortie) != "1" } {
@@ -817,6 +817,17 @@ namespace eval ::zadkopad {
 			 	set secz "The target is below the horizon."
 			}
 			$base.f.lab_secz configure -text "sec z: ${secz}"
+			
+			# --- test the coordinates
+			set dec [mc_angle2deg $paramhorloge(dec) 90]
+			if {(($ha<[expr 15*15])&&($ha>[expr 8*15]))||($alt<10)||($dec>45)||($dec<-89.5)} {			
+    			.zadkopad.frame1.frame2.f.lab_ha configure -fg red
+                .zadkopad.frame1.frame2.f.lab_altaz configure -fg red
+               
+		    } else {
+    		    .zadkopad.frame1.frame2.f.lab_ha configure -fg $color(yellow)
+                .zadkopad.frame1.frame2.f.lab_altaz configure -fg $color(yellow)
+		    }
 			update
 			if {$stopcalcul==0} {
 				#--- An infinite loop to change the language interactively
