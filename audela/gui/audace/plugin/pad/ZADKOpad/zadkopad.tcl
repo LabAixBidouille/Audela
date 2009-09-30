@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.30 2009-09-30 15:29:39 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.31 2009-09-30 15:34:23 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -592,14 +592,14 @@ namespace eval ::zadkopad {
    #    goto new coordinate     
    #------------------------------------------------------------
 	proc gotocoord { newra newdec suivira suividec onoff newfocus} {
-		global port paramhorloge audace ros telnum colorlx200
+		global port paramhorloge audace ros telnum color
 		
 		set paramhorloge(home)       $audace(posobs,observateur,gps)
-		.zadkopad.foc.ent1 configure -fg $colorlx200(backpad)
-		.zadkopad.frame1.frame2.f.lab_ha configure -fg $colorlx200(backpad)
-        .zadkopad.frame1.frame2.f.lab_altaz configure -fg $colorlx200(backpad)
-        .zadkopad.frame1.frame3.f.f3.ent1 configure -fg $colorlx200(backpad)
-		.zadkopad.frame1.frame3.f.f3.ent2 configure -fg $colorlx200(backpad)
+		.zadkopad.foc.ent1 configure -fg $color(blue_pad)
+		.zadkopad.frame1.frame2.f.lab_ha configure -fg $color(blue_pad)
+        .zadkopad.frame1.frame2.f.lab_altaz configure -fg $color(blue_pad)
+        .zadkopad.frame1.frame3.f.f3.ent1 configure -fg $color(blue_pad)
+		.zadkopad.frame1.frame3.f.f3.ent2 configure -fg $color(blue_pad)
             
 		zadko_info "goto $newra $newdec"
 		set ra [mc_angle2deg $newra]
@@ -677,9 +677,9 @@ namespace eval ::zadkopad {
     #    send focus     
     #------------------------------------------------------------
 	proc sendfocus {newfocus} {
-		global port paramhorloge audace ros telnum colorlx200
-		
-		.zadkopad.foc.ent1 configure -fg $colorlx200(backpad)
+		global port paramhorloge audace ros telnum color
+
+		.zadkopad.foc.ent1 configure -fg $color(blue_pad)
 		# --- teste si le focus est bon
 		if {($newfocus<2800)||($newfocus>3600)} {				
 			tk_messageBox -icon error -message "BAD FOCUS VALUES: must be 2800<FOCUS<3600" -type ok
