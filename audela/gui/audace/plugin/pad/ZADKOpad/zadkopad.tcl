@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.31 2009-09-30 15:34:23 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.32 2009-09-30 15:56:21 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -596,8 +596,8 @@ namespace eval ::zadkopad {
 		
 		set paramhorloge(home)       $audace(posobs,observateur,gps)
 		.zadkopad.foc.ent1 configure -fg $color(blue_pad)
-		.zadkopad.frame1.frame2.f.lab_ha configure -fg $color(blue_pad)
-        .zadkopad.frame1.frame2.f.lab_altaz configure -fg $color(blue_pad)
+		.zadkopad.frame1.frame2.f.lab_ha configure -fg $color(yellow)
+        .zadkopad.frame1.frame2.f.lab_altaz configure -fg $color(yellow)
         .zadkopad.frame1.frame3.f.f3.ent1 configure -fg $color(blue_pad)
 		.zadkopad.frame1.frame3.f.f3.ent2 configure -fg $color(blue_pad)
             
@@ -843,7 +843,7 @@ namespace eval ::zadkopad {
 	#    met a jour les donnes     
 	#------------------------------------------------------------
 	proc refreshcoord { } {
-	   global caption base paramhorloge stopcalcul ros telnum
+	   global caption base paramhorloge stopcalcul ros telnum color
 	    
 	    set stopcalcul 1
 	    zadko_info "proc refresh : paramhorloge(new,ra):$paramhorloge(new,ra) ,paramhorloge(new,dec): $paramhorloge(new,dec)"
@@ -873,6 +873,11 @@ namespace eval ::zadkopad {
  		}
  		set stopcalcul 0
  		zadko_info "proc refresh end : radec: $radec, focal_number: $paramhorloge(focal_number), vitessessuivie : $vitessessuivie"
+ 		.zadkopad.foc.ent1 configure -fg $color(blue_pad)
+		.zadkopad.frame1.frame2.f.lab_ha configure -fg $color(yellow)
+        .zadkopad.frame1.frame2.f.lab_altaz configure -fg $color(yellow)
+        .zadkopad.frame1.frame3.f.f3.ent1 configure -fg $color(blue_pad)
+		.zadkopad.frame1.frame3.f.f3.ent2 configure -fg $color(blue_pad)
  		::zadkopad::calculz
  	
 	}
