@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.33 2009-09-30 16:24:40 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.34 2009-10-01 09:16:34 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -196,8 +196,8 @@ namespace eval ::zadkopad {
         set ros(common,ip2) [lindex $ip0 0].[lindex $ip0 1].[lindex $ip0 2]
         set ros(common,ip3) [lindex $ip0 0].[lindex $ip0 1]
 		### pour test ###
-		#set ros(common,hostname) ikon
-        #set ros(common,ip) 121.200.43.5 
+		set ros(common,hostname) ikon
+        set ros(common,ip) 121.200.43.5 
 		###
 		set textloadfile ""
         set err [catch {source "[pwd]/../ros/root.tcl"}]
@@ -434,6 +434,20 @@ namespace eval ::zadkopad {
 			if {$reponse==""} {
     			after 1000
 			    set reponse [read $f]
+			    if {($reponse=="")&&([lindex $texte 1]=="speedtrack")} {
+    			    after 500
+			        set reponse [read $f]
+			    } elseif {($reponse=="")&&([lindex $texte 0]=="GOTO")} {
+    			    for {set k 1} {$k<130} {incr k} {
+    			        after [expr $k*1000]
+		                set reponse [read $f]
+		                if {$reponse!=""} {
+    		                set k [expr $k + 2.5]
+    		                break
+		                }
+		                zadko_info "move telescope : $k"
+        			}
+			    }
 			}
 			close $f
 			return $reponse
@@ -478,9 +492,7 @@ namespace eval ::zadkopad {
 	
 				# --- passer majordome en mode manuel
 				set reponse [::zadkopad::roscommande {majordome DO mysql ModeSysteme MANUAL}]
-				zadko_info "$reponse"
-				set reponse [::zadkopad::roscommande [list telescope DO eval [list tel$telnum radec motor off]]]
-				zadko_info "$reponse"
+				set reponse [::zadkopad::roscommande [list telescope DO eval tel$telnum radec motor off]]
 				
 				set modetelescope 1
 				#--- Tue camera.exe
@@ -505,14 +517,12 @@ namespace eval ::zadkopad {
 			if {$modetelescope==1} {
 				#################################
 				# pour contrer le bug de DFM
-				::zadkopad::stopfocus
+				#::zadkopad::stopfocus
 				#################################
-				set reponse [::zadkopad::roscommande [list telescope DO eval [list tel$telnum radec motor off]]]
-				zadko_info "$reponse"
+				set reponse [::zadkopad::roscommande [list telescope DO eval tel$telnum radec motor off]]
 				# --- passer majordome en mode auto
 				#passer en mode manuel du majordome
 		 		set reponse [::zadkopad::dialoguesocket $port(adressePCcontrol) $port(maj) $texte]
-	 	 		zadko_info "$reponse"
 	 			
 	 	 		if {$reponse!=2} {
 	 			
@@ -616,7 +626,7 @@ namespace eval ::zadkopad {
 		set ha  [lindex $res 2]
 		set tsl [mc_date2lst $now $paramhorloge(home)]
 			
-		zadko_info "goto ra: $ra, dec: $dec, alt: $alt, ha: $ha"
+		#zadko_info "goto ra: $ra, dec: $dec, alt: $alt, ha: $ha"
 		# --- teste si les coordonnees sont pointables
 		if {(($ha<[expr 15*15])&&($ha>[expr 8*15]))||($alt<10)||($dec>45)||($dec<-89.5)} {			
 			# --- affiche un message d'erreur
@@ -652,25 +662,24 @@ namespace eval ::zadkopad {
 		
 		#################################
 		# pour contrer le bug de DFM
-		if 	{$onoff=="off"} {
-			stopfocus
-		}
+		#if 	{$onoff=="off"} {
+		#	stopfocus
+		#}
 		###################################
-		
 		# --- envoie les valeurs de suivi
 		# --- envoie l'ordre de pointage au telescope
 		set reponse [::zadkopad::roscommande [list telescope GOTO $newra $newdec -blocking 1]]
-		zadko_info "$reponse"
+		#zadko_info "$reponse"
 		if 	{$onoff=="off"} {
 			set reponse [::zadkopad::roscommande [list telescope DO speedtrack 0.0 0.0]]
 		} else {   		
 		    set reponse [::zadkopad::roscommande [list telescope DO speedtrack $suivira $suividec]]
 	    }
-		zadko_info "$reponse"		
+		#zadko_info "$reponse"		
 		#set reponse [::zadkopad::roscommande [list telescope DO eval tel$telnum racdec motor $onoff]]
 		#zadko_info "$reponse"	
 		
-		return $reponse
+		return 
 	}
 	
 	#------------------------------------------------------------
@@ -697,7 +706,6 @@ namespace eval ::zadkopad {
 		}
 		# --- envoie l'ordre de focus
 		set reponse [::zadkopad::roscommande [list telescope DO eval [list tel$telnum dfmfocus $newfocus]]]
-		zadko_info "$reponse"	
 		if {$nowfocus==""} {
 				set temps  [expr 800*33*1000/500 + 4000]
 		} else {
@@ -740,7 +748,7 @@ namespace eval ::zadkopad {
 	proc stopfocus {} {
 		global port paramhorloge audace telnum
 		
-		set texte [list DO eval [list tel$telnum put "#13;\r"]]
+		set texte [list DO eval tel$telnum put "#13;\r"]
 		
 		catch [ set f [socket $port(adressePCcontrol) $port(tel)]]
 		if {[string range $f 0 3]=="sock"} {
