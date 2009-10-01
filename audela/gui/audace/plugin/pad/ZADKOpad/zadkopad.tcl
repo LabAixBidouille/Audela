@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.34 2009-10-01 09:16:34 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.35 2009-10-01 09:17:21 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -196,8 +196,8 @@ namespace eval ::zadkopad {
         set ros(common,ip2) [lindex $ip0 0].[lindex $ip0 1].[lindex $ip0 2]
         set ros(common,ip3) [lindex $ip0 0].[lindex $ip0 1]
 		### pour test ###
-		set ros(common,hostname) ikon
-        set ros(common,ip) 121.200.43.5 
+		#set ros(common,hostname) ikon
+        #set ros(common,ip) 121.200.43.5 
 		###
 		set textloadfile ""
         set err [catch {source "[pwd]/../ros/root.tcl"}]
