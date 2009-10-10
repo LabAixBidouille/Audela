@@ -2,12 +2,12 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.16 2009-09-20 18:13:06 robertdelmas Exp $
+# Mise a jour $Id: t193.tcl,v 1.17 2009-10-10 12:58:33 michelpujol Exp $
 #
 
 namespace eval ::t193 {
    package provide t193 1.0
-   package require audela 1.5.0
+   package require audela 1.5
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] t193.cap ]
@@ -96,8 +96,9 @@ proc ::t193::initPlugin { } {
    if { ! [ info exists conf(t193,alphaGuidingSpeed) ] }   { set conf(t193,alphaGuidingSpeed)   "3.0" }
    if { ! [ info exists conf(t193,deltaGuidingSpeed) ] }   { set conf(t193,deltaGuidingSpeed)   "3.0" }
    #--- configuration du mode Ethernet
-   if { ! [ info exists conf(t193,hostEthernet) ] }        { set conf(t193,hostEthernet)        "192.168.128.157" }
-   if { ! [ info exists conf(t193,portEthernet) ] }        { set conf(t193,portEthernet)        "1026" }
+   if { ! [ info exists conf(t193,hostEthernet) ] }         { set conf(t193,hostEthernet)        "192.168.128.157" }
+   if { ! [ info exists conf(t193,telescopeCommandPort) ] } { set conf(t193,telescopeCommandPort) "1026" }
+   if { ! [ info exists conf(t193,telescopeNotificationPort) ] }  { set conf(t193,telescopeNotificationPort)    "1027" }
    #--- duree de deplacement entre les 2 butees (mini et maxi) de l'attenuateur
    if { ! [ info exists conf(t193,dureeMaxAttenuateur) ] } { set conf(t193,dureeMaxAttenuateur) "16" }
    #---
@@ -108,7 +109,6 @@ proc ::t193::initPlugin { } {
    set private(frm)         ""
    set private(radecHandle) ""      ; # identifiant du canal de lecture
    set private(radecLoop)   0       ; # boucle de lecture de radec desactivee par defaut
-   set private(tracesConsole) $::conf(t193,consoleLog)
 }
 
 #
@@ -129,7 +129,7 @@ proc ::t193::confToWidget { } {
    set private(alphaGuidingSpeed)   $conf(t193,alphaGuidingSpeed)
    set private(deltaGuidingSpeed)   $conf(t193,deltaGuidingSpeed)
    set private(hostEthernet)        $conf(t193,hostEthernet)
-   set private(portEthernet)        $conf(t193,portEthernet)
+   set private(telescopeCommandPort)        $conf(t193,telescopeCommandPort)
    set private(dureeMaxAttenuateur) $conf(t193,dureeMaxAttenuateur)
    set private(raquette)            $conf(raquette)
    set private(consoleLog)          $conf(t193,consoleLog)
@@ -153,7 +153,7 @@ proc ::t193::widgetToConf { } {
    set conf(t193,alphaGuidingSpeed)   $private(alphaGuidingSpeed)
    set conf(t193,deltaGuidingSpeed)   $private(deltaGuidingSpeed)
    set conf(t193,hostEthernet)        $private(hostEthernet)
-   set conf(t193,portEthernet)        $private(portEthernet)
+   set conf(t193,telescopeCommandPort)        $private(telescopeCommandPort)
    set conf(t193,dureeMaxAttenuateur) $private(dureeMaxAttenuateur)
    set conf(raquette)                 $private(raquette)
    set conf(t193,consoleLog)          $private(consoleLog)
@@ -245,13 +245,13 @@ proc ::t193::fillConfigPage { frm } {
 
    #--- Mode carte USB National Instruments
    radiobutton $frm.mode.radio0 -anchor nw -highlightthickness 0 \
-      -text "$caption(t193,carteUSB)" -value 0 -variable ::t193::private(mode) \
+      -text "$caption(t193,carteUSB)" -value "HP1000" -variable ::t193::private(mode) \
       -command { ::t193::configureConfigPage }
    pack $frm.mode.radio0 -in [ $frm.mode getframe ] -anchor n -side left -padx 10 -pady 0
 
    #--- Mode Ethernet (interface de controle OHP)
    radiobutton $frm.mode.radio1 -anchor nw -highlightthickness 0 \
-      -text "$caption(t193,ethernet)" -value 1 -variable ::t193::private(mode) \
+      -text "$caption(t193,ethernet)" -value "ETHERNET" -variable ::t193::private(mode) \
       -command { ::t193::configureConfigPage }
    pack $frm.mode.radio1 -in [ $frm.mode getframe ] -anchor n -side left -padx 10 -pady 0
 
@@ -284,7 +284,7 @@ proc ::t193::fillConfigPage { frm } {
    pack $frm.labportEthernet -in [ $frm.ethernet getframe ] -anchor n -side left -padx 10 -pady 10
 
    #--- Entry du port Ethernet
-   entry $frm.portEthernet -textvariable ::t193::private(portEthernet) -width 7 -justify center
+   entry $frm.portEthernet -textvariable ::t193::private(telescopeCommandPort) -width 7 -justify center
    pack $frm.portEthernet -in [ $frm.ethernet getframe ] -anchor n -side left -padx 10 -pady 10
 
    #--- frame des vitesses
@@ -454,51 +454,74 @@ proc ::t193::configureMonture { } {
    global caption conf
 
    set catchResult [ catch {
-      if { $conf(t193,mode) == "0" } {
-         #--- Je cree la monture
-         set telNo [ tel::create t193 HP1000 \
-            -usbCardName $::conf(t193,nomCarte) \
-            -usbTelescopPort $::conf(t193,nomPortTelescope) \
-            -usbFilterPort   $::conf(t193,nomPortAttenuateur) \
-            -northRelay 0 \
-            -southRelay 1 \
-            -estRelay   2 \
-            -westRelay  3 \
-            -enabledRelay 4 \
-            -decreaseFilterRelay 0 \
-            -increaseFilterRelay 1 \
-            -minDetectorFilterInput 2 \
-            -maxDetectorFilterInput 3 \
-            -filterMaxDelay $conf(t193,dureeMaxAttenuateur) \
-         ]
-
-         #--- Je parametre le delai mini pour la carte NS
-         tel$telNo radec mindelay $::conf(t193,minDelay)
-         #--- Je parametre le niveau de trace
-         tel$telNo consolelog $::conf(t193,consoleLog)
-
-         #--- J'affiche un message d'information dans la Console
-         ::console::affiche_entete "$caption(t193,port_t193) $caption(t193,2points) $conf(t193,portSerie)\n"
-         ::console::affiche_entete "$caption(t193,nom_carte) $caption(t193,2points) $conf(t193,nomCarte)\n"
-         ::console::affiche_saut "\n"
-         #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
-         set linkNo [ ::confLink::create $conf(t193,portSerie) "tel$telNo" "control" [ tel$telNo product ] -noopen ]
-         #--- Je change de variable
-         set private(telNo) $telNo
-         #--- Configuration des boutons de test
-         ::t193::configureConfigPage
-
-         #--- je lance la lecture de radec en boucle sur le port com
-         set private(radecHandle) [open $conf(t193,portSerie) "r+" ]
-         fconfigure $private(radecHandle) -mode "19200,n,8,1" -buffering none -blocking 0
-         set private(readLoop) 1
-         #--- j'intialise les coordonnees
-         set ::audace(telescope,getra) "00h00m00.00s"
-         set ::audace(telescope,getdec) "00d00m00"
-         ::t193::readRadec
-      } elseif { $conf(t193,mode) == "1" } {
-         #--- A developper
+      switch $::conf(t193,mode) {
+         "HP1000" {
+            #--- Je cree la monture
+            set telNo [ tel::create t193 HP1000 \
+               -usbCardName $::conf(t193,nomCarte) \
+               -usbTelescopPort $::conf(t193,nomPortTelescope) \
+               -usbFilterPort   $::conf(t193,nomPortAttenuateur) \
+               -northRelay 0 \
+               -southRelay 1 \
+               -estRelay   2 \
+               -westRelay  3 \
+               -enabledRelay 4 \
+               -decreaseFilterRelay 0 \
+               -increaseFilterRelay 1 \
+               -minDetectorFilterInput 2 \
+               -maxDetectorFilterInput 3 \
+               -filterMaxDelay $conf(t193,dureeMaxAttenuateur) \
+            ]
+            #--- Je parametre le delai mini le HP1000
+            tel$telNo radec mindelay $::conf(t193,minDelay)
+            #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
+            set linkNo [ ::confLink::create $conf(t193,portSerie) "tel$telNo" "control" [ tel$telNo product ] -noopen ]
+            #--- je lance la lecture de radec en boucle sur le port com
+            set private(radecHandle) [open $conf(t193,portSerie) "r+" ]
+            fconfigure $private(radecHandle) -mode "19200,n,8,1" -buffering none -blocking 0
+            set private(readLoop) 1
+            #--- j'intialise les coordonnees
+            set ::audace(telescope,getra) "00h00m00.00s"
+            set ::audace(telescope,getdec) "00d00m00"
+            #--- je lance la lecture periodique des coordonnees
+            ::t193::readRadec
+         }
+         "ETHERNET" {
+            #--- Je cree la monture
+            set telNo [ tel::create t193 ETHERNET \
+               -usbCardName $::conf(t193,nomCarte) \
+               -ethernetHost $::conf(t193,hostEthernet) \
+               -telescopeCommandPort $::conf(t193,telescopeCommandPort) \
+               -telescopeNotificationPort    $::conf(t193,telescopeNotificationPort) \
+               -usbFilterPort $::conf(t193,nomPortAttenuateur) \
+               -decreaseFilterRelay 0 \
+               -increaseFilterRelay 1 \
+               -minDetectorFilterInput 2 \
+               -maxDetectorFilterInput 3 \
+               -filterMaxDelay $conf(t193,dureeMaxAttenuateur) \
+            ]
+         }
+         "REMOTE" {
+            #--- Je cree la monture
+            set telNo [ tel::create t193 REMOTE \
+               -remoteHost $::conf(t193,hostRemote) \
+               -remotePort $::conf(t193,portRemote) \
+            ]
+         }
       }
+
+      #--- Je parametre le niveau de trace
+      tel$telNo consolelog $::conf(t193,consoleLog)
+
+      #--- J'affiche un message d'information dans la Console
+      ::console::affiche_entete "$caption(t193,port_t193) $caption(t193,2points) $conf(t193,portSerie)\n"
+      ::console::affiche_entete "$caption(t193,nom_carte) $caption(t193,2points) $conf(t193,nomCarte)\n"
+      ::console::affiche_saut "\n"
+      #--- Je change de variable
+      set private(telNo) $telNo
+      #--- Configuration des boutons de test
+      ::t193::configureConfigPage
+
    } ]
 
    if { $catchResult == "1" } {
@@ -522,19 +545,31 @@ proc ::t193::stop { } {
       return
    }
 
-   #--- j'arrete la boucle de lecture de radec
-   set private(testhp) 0
-   if { $private(radecHandle) != "" } {
-      close $private(radecHandle)
-      set private(radecHandle) ""
-   }
+   switch $::conf(t193,mode) {
+     "HP1000" {
+         #--- j'arrete la boucle de lecture de radec
+         set private(testhp) 0
+         if { $private(radecHandle) != "" } {
+            close $private(radecHandle)
+            set private(radecHandle) ""
+         }
 
-   #--- Je memorise le port pour ensuite supprimer le link
-   set telPort [ tel$private(telNo) port ]
-   #--- J'arrete la monture
-   tel::delete $private(telNo)
-   #--- J'arrete le link
-   ::confLink::delete $telPort "tel$private(telNo)" "control"
+         #--- Je memorise le port pour ensuite supprimer le link
+         set telPort [ tel$private(telNo) port ]
+         #--- J'arrete la monture
+         tel::delete $private(telNo)
+         #--- J'arrete le link
+         ::confLink::delete $telPort "tel$private(telNo)" "control"
+      }
+      "ETHERNET" {
+         #--- J'arrete la monture
+         tel::delete $private(telNo)
+      }
+      "REMOTE" {
+         #--- J'arrete la monture
+         tel::delete $private(telNo)
+      }
+   }
    #--- Remise a zero du numero de monture
    set private(telNo) "0"
 
@@ -549,10 +584,10 @@ proc ::t193::configureConfigPage { } {
    variable private
 
    if { [ winfo exists $private(frm) ] } {
-      if { $private(mode) == "0" } {
+      if { $private(mode) == "HP1000" } {
          pack forget $private(frm).ethernet
          pack $private(frm).carteUSB -side top -fill x
-      } elseif { $private(mode) == "1" } {
+      } elseif { $private(mode) == "ETHERNET" } {
          pack forget $private(frm).carteUSB
          pack $private(frm).ethernet -side top -fill x
       }
@@ -736,7 +771,7 @@ proc ::t193::tracesConsole { } {
       return
    }
 
-   tel$private(telNo) consolelog $private(tracesConsole)
+   tel$private(telNo) consolelog $private(consoleLog)
 }
 
 
