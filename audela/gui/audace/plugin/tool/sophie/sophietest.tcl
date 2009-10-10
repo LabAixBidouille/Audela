@@ -2,7 +2,7 @@
 # @file     sophietest.tcl
 # @brief    Fichier du namespace ::sophie::test
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietest.tcl,v 1.15 2009-09-09 21:46:34 michelpujol Exp $
+# @version  $Id: sophietest.tcl,v 1.16 2009-10-10 13:00:40 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -10,6 +10,9 @@
 #
 #------------------------------------------------------------
 namespace eval ::sophie::test {
+   set private(telescopeControl,commandSocket) ""
+   set private(telescopeControl,dataSocket) ""
+   set private(controlThreadId) ""
 
 }
 
@@ -206,67 +209,6 @@ proc ::sophie::test::testReadHp { } {
 
 #============================================================
 #
-# SIMULATION DU PC SOPHIE
-#
-#============================================================
-
-#------------------------------------------------------------
-# openSocketSophie
-#   ouvre une socket en ecriture pour simuler l'envoi des donnees du PC Sophie
-#
-# @param host adress IP ou nom DNS du PC de guidage (parametre optionel, valeur par defaut= localhost)
-#------------------------------------------------------------
-proc ::sophie::test::openSocketSophie { } {
-   variable private
-
-   set private(socketChannel) [socket $private(host) $::conf(sophie,socketPort) ]
-   #---  -translation binary -encoding binary
-   fconfigure $private(socketChannel) -buffering line -blocking false -translation binary -encoding binary
-   fileevent $private(socketChannel) readable [list ::sophie::test::readSocketSophie ]
-
-}
-
-#------------------------------------------------------------
-# closeSocketSophie
-#   ferme la socket
-#
-#------------------------------------------------------------
-proc ::sophie::test::closeSocketSophie { } {
-   variable private
-   if { $private(socketChannel) != "" } {
-      close $private(socketChannel)
-      set private(socketChannel) ""
-   }
-}
-
-#------------------------------------------------------------
-# readSocketSophie
-#   envoie des donnes vers le PC de guidage
-#
-#------------------------------------------------------------
-proc ::sophie::test::readSocketSophie {  } {
-   variable private
-
-   set private(socketResponse) [gets $private(socketChannel) ]
-   ###return $result
-}
-
-#------------------------------------------------------------
-# writeSocketSophie
-#   envoie des donnes vers le PC de guidage
-#
-# @param data : donnees a envoyer
-#------------------------------------------------------------
-proc ::sophie::test::writeSocketSophie { data } {
-   variable private
-
-   console::disp "::sophie::test::writeSocketSophie data=$data\n"
-   puts $private(socketChannel) $data
-
-}
-
-#============================================================
-#
 # tests de la fenetre de controle
 #
 #============================================================
@@ -360,14 +302,15 @@ proc ::sophie::test::createDialogSimul { } {
 
    #--- j'initialise les variables
    set private(host) "localhost"
-   set private(socketChannel) ""
+   set private(pcSophie,socketChannel) ""
+   set private(telescopeControl,host) "localhost"
    set private(frm) $::audace(base).configSimul
-   
+
    set private(sendPulse,enabled) "0"
    set private(sendPulse,pulseDelay) "0.05"
    set private(sendPulse,waitDelay)  "2"
    set private(sendPulse,direction)  "w"
-      
+
 
    set frm $private(frm)
    if { [ winfo exists $frm ] } {
@@ -454,10 +397,10 @@ proc ::sophie::test::createDialogSimul { } {
 
    pack $frm.pcsophie -in $frm -side top -fill both -expand 1
 
-   #--- Frame pour le test d'impulsion vers le telescope 
+   #--- Frame pour le test d'impulsion vers le telescope
    TitleFrame $frm.pulse -borderwidth 2 -relief groove -text "test impulsions telescope"
 
-      #--- durée impulsion 
+      #--- durée impulsion
       label $frm.pulse.labelPulseDelay -text "Durée impulsion (seconde)"
       grid $frm.pulse.labelPulseDelay -in [ $frm.pulse getframe ] -row 0 -column 0 -sticky ens -padx 2
       entry $frm.pulse.entryPulseDelay -textvariable ::sophie::test::private(sendPulse,pulseDelay)
@@ -469,7 +412,7 @@ proc ::sophie::test::createDialogSimul { } {
       entry $frm.pulse.entryWaitPulse -textvariable ::sophie::test::private(sendPulse,waitDelay)
       grid $frm.pulse.entryWaitPulse -in [ $frm.pulse getframe ] -row 1 -column 1 -sticky ens -padx 2
 
-       #--- direction 
+       #--- direction
       label $frm.pulse.labelDirection -text "Direction"
       grid $frm.pulse.labelDirection -in [ $frm.pulse getframe ] -row 2 -column 0 -sticky ens -padx 2
       entry $frm.pulse.entryDirection -textvariable ::sophie::test::private(sendPulse,direction)
@@ -482,6 +425,35 @@ proc ::sophie::test::createDialogSimul { } {
       grid $frm.pulse.stop -in [ $frm.pulse getframe ] -row 3 -column 1 -sticky ens -padx 2
 
    pack $frm.pulse -in $frm -side top -fill both -expand 1
+
+   #--- Frame pour l'interface de controle du T193
+   TitleFrame $frm.pccontrol -borderwidth 2 -relief groove -text $::caption(sophie,simul,telescopeControl,title)
+
+      #--- host
+      label $frm.pccontrol.hostLabel -text $::caption(sophie,host)
+      grid $frm.pccontrol.hostLabel -in [ $frm.pccontrol getframe ] -row 0 -column 0 -sticky ens -padx 2
+      entry $frm.pccontrol.hostEntry -textvariable ::sophie::test::private(telescopeControl,host)
+      grid $frm.pccontrol.hostEntry -in [ $frm.pccontrol getframe ] -row 0 -column 1 -sticky ens -padx 2
+
+      #--- Bouton connect et disconnect
+      button $frm.pccontrol.connect -text $::caption(sophie,connecter) -command "::sophie::test::connectTelescopeControl"
+      grid $frm.pccontrol.connect -in [ $frm.pccontrol getframe ] -row 0 -column 2 -sticky ens -padx 2
+
+      #--- Bouton envoi de commande
+      button $frm.pccontrol.clearstat -text "RAZ STAT" -command [list ::sophie::test::sendPcGuidage "RAZ_STAT" ]
+      grid $frm.pccontrol.clearstat -in [ $frm.pccontrol getframe ] -row 0 -column 3 -sticky ens -padx 2
+
+      button $frm.pccontrol.staton -text "STAT ON" -command [list ::sophie::test::sendPcGuidage "STAT_ON" ]
+      grid $frm.pccontrol.staton -in [ $frm.pccontrol getframe ] -row 1 -column 3 -sticky ens -padx 2
+
+      button $frm.pccontrol.statoff -text "STAT OFF" -command [list ::sophie::test::sendPcGuidage "STAT_OFF" ]
+      grid $frm.pccontrol.statoff -in [ $frm.pccontrol getframe ] -row 2 -column 3 -sticky ens -padx 2
+
+      button $frm.pccontrol.getstat -text "GET STAT" -command [list ::sophie::test::sendPcGuidage "GET_STAT" ]
+      grid $frm.pccontrol.getstat -in [ $frm.pccontrol getframe ] -row 3 -column 3 -sticky ens -padx 2
+
+   pack $frm.pccontrol -in $frm -side top -fill both -expand 1
+
 
    #--- Frame pour les boutons
    frame $frm.frameButton -borderwidth 1 -relief raised
@@ -525,6 +497,68 @@ proc ::sophie::test::simulationGenericFileName { } {
    }
 }
 
+#============================================================
+#
+# SIMULATION DU PC SOPHIE
+#
+#============================================================
+
+#------------------------------------------------------------
+# openSocketSophie
+#   ouvre une socket en ecriture pour simuler l'envoi des donnees du PC Sophie
+#
+# @param host adress IP ou nom DNS du PC de guidage (parametre optionel, valeur par defaut= localhost)
+#------------------------------------------------------------
+proc ::sophie::test::openSocketSophie { } {
+   variable private
+
+   set private(pcSophie,socketChannel) [socket $private(host) $::conf(sophie,socketPort) ]
+   #---  -translation binary -encoding binary
+   fconfigure $private(pcSophie,socketChannel) -buffering line -blocking false -translation binary -encoding binary
+   fileevent $private(pcSophie,socketChannel) readable [list ::sophie::test::readSocketSophie ]
+
+}
+
+#------------------------------------------------------------
+# closeSocketSophie
+#   ferme la socket
+#
+#------------------------------------------------------------
+proc ::sophie::test::closeSocketSophie { } {
+   variable private
+   if { $private(pcSophie,socketChannel) != "" } {
+      close $private(pcSophie,socketChannel)
+      set private(pcSophie,socketChannel) ""
+   }
+}
+
+#------------------------------------------------------------
+# readSocketSophie
+#   envoie des donnes vers le PC de guidage
+#
+#------------------------------------------------------------
+proc ::sophie::test::readSocketSophie {  } {
+   variable private
+
+   set private(pcSophie,socketResponse) [gets $private(pcSophie,socketChannel) ]
+   ###return $result
+}
+
+#------------------------------------------------------------
+# writeSocketSophie
+#   envoie des donnes vers le PC de guidage
+#
+# @param data : donnees a envoyer
+#------------------------------------------------------------
+proc ::sophie::test::writeSocketSophie { data } {
+   variable private
+
+   console::disp "::sophie::test::writeSocketSophie data=$data\n"
+   puts $private(pcSophie,socketChannel) $data
+
+}
+
+
 #------------------------------------------------------------
 # connecterPcGuidage
 #    connecter/deconnecter au PC de guidage
@@ -533,7 +567,7 @@ proc ::sophie::test::connecterPcGuidage { } {
    variable private
 
    set catchError [ catch {
-      if { $private(socketChannel) == "" } {
+      if { $private(pcSophie,socketChannel) == "" } {
          ::sophie::test::openSocketSophie
          $private(frm).pcsophie.connect configure -text "déconnecter"
       } else {
@@ -549,7 +583,7 @@ proc ::sophie::test::connecterPcGuidage { } {
 }
 
 #------------------------------------------------------------
-# connecterPcGuidage
+# sendPcGuidage
 #    envoie des donnees au PC de guidage
 #------------------------------------------------------------
 proc ::sophie::test::sendPcGuidage { commandName } {
@@ -565,12 +599,12 @@ proc ::sophie::test::sendPcGuidage { commandName } {
          }
          "GET_STAT" {
             #--- je purge la socket
-            set private(socketResponse) ""
+            set private(pcSophie,socketResponse) ""
 
             ::sophie::test::writeSocketSophie "!GET_STAT@"
             ###set result [::sophie::test::readSocketSophie]
             update
-            set result $private(socketResponse)
+            set result $private(pcSophie,socketResponse)
             #--- j'affiche le resultat
             tk_messageBox -title $::caption(sophie,simulation) -type ok -message "statistiques=$result" -icon info
          }
@@ -594,26 +628,26 @@ proc ::sophie::test::sendPcGuidage { commandName } {
 
 #============================================================
 #
-# test impulsion telescope 
+# test impulsion telescope par carte NI
 #  source audace/plugin/tool/sophie/sophietest.tcl
 #============================================================
 
 proc ::sophie::test::startPulse { } {
    variable private
-   
+
    set private(sendPulse,enabled) 1
-   ::sophie::test::sendPulse      
+   ::sophie::test::sendPulse
 }
 
 proc ::sophie::test::stopPulse { } {
    variable private
-   
+
    set private(sendPulse,enabled) 0
 }
 
 proc ::sophie::test::sendPulse { } {
    variable private
-   
+
    set trace [tel1 radec move $private(sendPulse,direction) 0.1 $private(sendPulse,pulseDelay)]
    console::disp "radec move $private(sendPulse,direction) $private(sendPulse,pulseDelay) trace=$trace\n"
 
@@ -625,10 +659,67 @@ proc ::sophie::test::sendPulse { } {
 }
 
 
+#============================================================
+#
+# SIMULATION DE L'INTERFACE de CONTROLE DU TELESCOPE
+#
+#============================================================
 
-###### Fin de la fenetre de configuration de la simulation ######
+#------------------------------------------------------------
+# connectTelescopeControl
+#    connecter/deconnecter au PC de guidage
+#------------------------------------------------------------
+proc ::sophie::test::connectTelescopeControl { } {
+   variable private
 
-###::sophie::simul
+   set catchError [ catch {
+      if { $private(controlThreadId) == "" } {
 
+         set private(controlThreadId) [thread::create]
+         set sourceFileName [file join $::audace(rep_audela) [file join $::audace(rep_plugin) tool sophie sophietestcontrol.tcl]]
+         ::thread::send $private(controlThreadId) [list uplevel #0 source \"$sourceFileName\"]
+         ::thread::send $private(controlThreadId) "::sophie::test::init [thread::id] $::conf(t193,telescopeCommandPort) $::conf(t193,telescopeNotificationPort)"
+
+         #--- j'ouvre la socket de commande en attente de la connexion d'un client
+         ###::sophie::test::openTelescopeControlSocket
+         console::disp "::sophie::test::connectTelescopeControl avant openTelescopeControlSocket\n"
+         ::thread::send $private(controlThreadId)  "::sophie::test::openTelescopeControlSocket"
+         $private(frm).pccontrol.connect configure -text "déconnecter"
+      } else {
+         #--- je referme les sockets et j'arrete le thread
+         closeTelescopeControl
+         $private(frm).pccontrol.connect configure -text "connecter"
+      }
+   }]
+
+   if { $catchError != 0 } {
+      #--- j'affiche et je trace le message d'erreur
+      ::tkutil::displayErrorInfo $::caption(sophie,simulation)
+   }
+}
+
+#------------------------------------------------------------
+# closeTelescopeControl
+#    connecter/deconnecter au PC de guidage
+#------------------------------------------------------------
+proc ::sophie::test::closeTelescopeControl { } {
+   variable private
+   if { $private(controlThreadId) != "" } {
+      ::thread::send $private(controlThreadId)  "::sophie::test::closeTelescopeControlSocket"
+      thread::release $private(controlThreadId)
+      set private(controlThreadId) ""
+   }
+}
+
+
+proc ::sophie::test::writeTelescopeNotificationSocket { notification } {
+   variable private
+
+   ::thread::send $private(controlThreadId) [list ::sophie::test::writeTelescopeNotificationSocket $notification]
+}
+
+
+::sophie::simul
+::sophie::test::connectTelescopeControl
 #  source audace/plugin/tool/sophie/sophietest.tcl
 
