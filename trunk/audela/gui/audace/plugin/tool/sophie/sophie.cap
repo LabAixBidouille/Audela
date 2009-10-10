@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.34 2009-09-20 14:50:22 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.35 2009-10-10 13:00:53 michelpujol Exp $
 #
 
 #=========================================================================
@@ -192,6 +192,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,ok)                       "OK"
    set caption(sophie,fermer)                   "Fermer"
    set caption(sophie,annuler)                  "Annuler"
+
+   set caption(sophie,simul,telescopeControl,title)      "Simulation de l'interface de controle du T193"
 
    set caption(sophie,selcam)                   "Vous devez d'abord sélectionner une caméra\n(menu Configuration/Caméra)."
    set caption(sophie,seltel)                   "Vous devez d'abord sélectionner une monture\n(menu Configuration/Monture)."
