@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.18 2009-09-20 13:30:36 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.19 2009-10-10 13:01:53 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -339,16 +339,10 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             if { $alphaCorrection > 0 } {
                if { $alphaCorrection > $maxAlpha } {
                   set alphaCorrection $maxAlpha
-                  if { $private(mode) == "CENTER" } {
-                     ::camerathread::disp  " ecretage alphaDiff=[format "%6.2f" $alphaCorrection]"
-                  }
                }
             } else {
                if { $alphaCorrection < -$maxAlpha } {
                   set alphaCorrection [expr - $maxAlpha]
-                  if { $private(mode) == "CENTER" } {
-                     ::camerathread::disp  " ecretage alphaDiff=[format "%6.2f" $alphaCorrection]"
-                  }
                }
             }
 
@@ -357,20 +351,11 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             if { $deltaCorrection > 0 } {
                if { $deltaCorrection > $maxDelta } {
                   set deltaCorrection $maxDelta
-                  if { $private(mode) == "CENTER" } {
-                     ::camerathread::disp  " ecretage deltaDiff=[format "%6.2f" $deltaCorrection]"
-                  }
                }
             } else {
                if { $deltaCorrection <  -$maxDelta } {
                   set deltaCorrection  [expr -$maxDelta]
-                  if { $private(mode) == "CENTER" } {
-                     ::camerathread::disp  " ecretage deltaDiff=[format "%6.2f" $deltaCorrection]"
-                  }
                }
-            }
-            if { $private(mode) == "CENTER" } {
-               ::camerathread::disp  "\n"
             }
          } else {
             set alphaCorrection 0.0
