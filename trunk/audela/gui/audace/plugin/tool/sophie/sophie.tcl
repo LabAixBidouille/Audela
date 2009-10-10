@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.30 2009-09-20 13:35:28 michelpujol Exp $
+# @version   $Id: sophie.tcl,v 1.31 2009-10-10 13:01:28 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -472,6 +472,10 @@ proc ::sophie::deletePluginInstance { visuNo } {
 
    #--- j'arrete le fichier de log
    ::sophie::log::stopLogFile $visuNo
+
+   #--- j'arrete les simulateurs
+   ::sophie::test::closeTelescopeControl
+
 }
 
 #------------------------------------------------------------
