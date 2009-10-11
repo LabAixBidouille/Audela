@@ -2,11 +2,11 @@
 # @file     sophietest.tcl
 # @brief    Fichier du namespace ::sophie::test
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietest.tcl,v 1.16 2009-10-10 13:00:40 michelpujol Exp $
+# @version  $Id: sophietest.tcl,v 1.17 2009-10-11 07:31:11 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
-# @brief    Procédures de test de l'outil sophie et simulation des interfaces externes
+# @brief    Procï¿½dures de test de l'outil sophie et simulation des interfaces externes
 #
 #------------------------------------------------------------
 namespace eval ::sophie::test {
@@ -30,19 +30,19 @@ namespace eval ::sophie::test {
       # @param     Argv[10]=previousFiberX      abcisse du centre de la fibre
       # @param     Argv[11]=previousFiberY      ordonnee du centre de la fibre
       # @param     Argv[12]=maskFwhm            largeur a mi hauteur de la gaussienne
-      # @param     Argv[13]=findFiber           1=recherche de l'entrée de fibre , 0= ne pas rechercher
+      # @param     Argv[13]=findFiber           1=recherche de l'entrï¿½e de fibre , 0= ne pas rechercher
       # @param     Argv[14]=pixelMinCount       nombre minimal de pixels pour accepter l'image
       # @param     Argv[15]=maskPercent         pourcentage du niveau du mask
       #
       # @return si TCL_OK
       #            list[0] starStatus           resultat de la recherche de la fibre (DETECTED NO_SIGNAL)
-      #            list[1] starX                abcisse du centre de la fibre   (pixel binné)
-      #            list[2] starY                ordonnee du centre de la fibre  (pixel binné
+      #            list[1] starX                abcisse du centre de la fibre   (pixel binnï¿½)
+      #            list[2] starY                ordonnee du centre de la fibre  (pixel binnï¿½
       #            list[3] fiberStatus          resultat de la recherche de la fibre (DETECTED NO_SIGNAL)
-      #            list[4] fiberX               abcisse du centre de la fibre  (pixel binné)
-      #            list[5] fiberY               ordonnee du centre de la fibre (pixel binné)
-      #            list[6] measuredFwhmX        gaussienne mesuree (pixel binné)
-      #            list[7] measuredFwhmY        gaussienne mesuree (pixel binné)
+      #            list[4] fiberX               abcisse du centre de la fibre  (pixel binnï¿½)
+      #            list[5] fiberY               ordonnee du centre de la fibre (pixel binnï¿½)
+      #            list[6] measuredFwhmX        gaussienne mesuree (pixel binnï¿½)
+      #            list[7] measuredFwhmY        gaussienne mesuree (pixel binnï¿½)
       #            list[8] background           fond du ciel (ADU)
       #            list[9] maxIntensity         intensite max (ADU)
       #            list[10] message             message d'information
@@ -400,14 +400,14 @@ proc ::sophie::test::createDialogSimul { } {
    #--- Frame pour le test d'impulsion vers le telescope
    TitleFrame $frm.pulse -borderwidth 2 -relief groove -text "test impulsions telescope"
 
-      #--- durée impulsion
-      label $frm.pulse.labelPulseDelay -text "Durée impulsion (seconde)"
+      #--- durï¿½e impulsion
+      label $frm.pulse.labelPulseDelay -text "Durï¿½e impulsion (seconde)"
       grid $frm.pulse.labelPulseDelay -in [ $frm.pulse getframe ] -row 0 -column 0 -sticky ens -padx 2
       entry $frm.pulse.entryPulseDelay -textvariable ::sophie::test::private(sendPulse,pulseDelay)
       grid $frm.pulse.entryPulseDelay -in [ $frm.pulse getframe ] -row 0 -column 1 -sticky ens -padx 2
 
-      #--- durée attente
-      label $frm.pulse.labelWaitDelay -text "durée entre 2 impulsions (seconde)"
+      #--- durï¿½e attente
+      label $frm.pulse.labelWaitDelay -text "durï¿½e entre 2 impulsions (seconde)"
       grid $frm.pulse.labelWaitDelay -in [ $frm.pulse getframe ] -row 1 -column 0 -sticky ens -padx 2
       entry $frm.pulse.entryWaitPulse -textvariable ::sophie::test::private(sendPulse,waitDelay)
       grid $frm.pulse.entryWaitPulse -in [ $frm.pulse getframe ] -row 1 -column 1 -sticky ens -padx 2
@@ -569,7 +569,7 @@ proc ::sophie::test::connecterPcGuidage { } {
    set catchError [ catch {
       if { $private(pcSophie,socketChannel) == "" } {
          ::sophie::test::openSocketSophie
-         $private(frm).pcsophie.connect configure -text "déconnecter"
+         $private(frm).pcsophie.connect configure -text "dï¿½connecter"
       } else {
          ::sophie::test::closeSocketSophie
          $private(frm).pcsophie.connect configure -text "connecter"
@@ -684,7 +684,7 @@ proc ::sophie::test::connectTelescopeControl { } {
          ###::sophie::test::openTelescopeControlSocket
          console::disp "::sophie::test::connectTelescopeControl avant openTelescopeControlSocket\n"
          ::thread::send $private(controlThreadId)  "::sophie::test::openTelescopeControlSocket"
-         $private(frm).pccontrol.connect configure -text "déconnecter"
+         $private(frm).pccontrol.connect configure -text "dï¿½connecter"
       } else {
          #--- je referme les sockets et j'arrete le thread
          closeTelescopeControl
@@ -719,7 +719,7 @@ proc ::sophie::test::writeTelescopeNotificationSocket { notification } {
 }
 
 
-::sophie::simul
-::sophie::test::connectTelescopeControl
+###::sophie::simul
+###::sophie::test::connectTelescopeControl
 #  source audace/plugin/tool/sophie/sophietest.tcl
 
