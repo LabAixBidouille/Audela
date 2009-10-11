@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.31 2009-10-10 13:01:28 michelpujol Exp $
+# @version   $Id: sophie.tcl,v 1.32 2009-10-11 16:14:30 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -130,8 +130,10 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(sophie,pixelScale)] }                { set ::conf(sophie,pixelScale)                "0.186" }
    if { ! [ info exists ::conf(sophie,alphaProportionalGain)] }     { set ::conf(sophie,alphaProportionalGain)     "0.9" }
    if { ! [ info exists ::conf(sophie,alphaIntegralGain)] }         { set ::conf(sophie,alphaIntegralGain)         "0.1" }
+   if { ! [ info exists ::conf(sophie,alphaDifferentialGain)] }     { set ::conf(sophie,alphaDifferentialGain)     "0.1" }
    if { ! [ info exists ::conf(sophie,deltaProportionalGain)] }     { set ::conf(sophie,deltaProportionalGain)     "0.9" }
    if { ! [ info exists ::conf(sophie,deltaIntegralGain)] }         { set ::conf(sophie,deltaIntegralGain)         "0.1" }
+   if { ! [ info exists ::conf(sophie,deltaDifferentialGain)] }     { set ::conf(sophie,deltaDifferentialGain)     "0.1" }
    if { ! [ info exists ::conf(sophie,minMaxDiff)] }                { set ::conf(sophie,minMaxDiff)                "0.5" }
    if { ! [ info exists ::conf(sophie,detection)] }                 { set ::conf(sophie,detection)                 "FIBER" }
    if { ! [ info exists ::conf(sophie,centerMaxLimit)] }            { set ::conf(sophie,centerMaxLimit)            "3" }
@@ -163,6 +165,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(sophie,simulation)] }                { set ::conf(sophie,simulation)                "0" }
    if { ! [ info exists ::conf(sophie,simulationGenericFileName)] } { set ::conf(sophie,simulationGenericFileName) "$::audace(rep_images)/simulation" }
    if { ! [ info exists ::conf(sophie,centerFileNameprefix)] }      { set ::conf(sophie,centerFileNameprefix)      "centrage" }
+   if { ! [ info exists ::conf(sophie,focusFileNameprefix)] }       { set ::conf(sophie,focusFileNameprefix)       "focu" }
    if { ! [ info exists ::conf(sophie,guidingFileNameprefix)] }     { set ::conf(sophie,guidingFileNameprefix)     "guidage" }
    if { ! [ info exists ::conf(sophie,maskRadius)] }                { set ::conf(sophie,maskRadius)                20 }
    if { ! [ info exists ::conf(sophie,maskFwhm)] }                  { set ::conf(sophie,maskFwhm)                  5 }
@@ -283,21 +286,6 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
             -values $private(listePose)
          grid $frm.acq.exposure -in [$frm.acq getframe] -column 1 -row 0 \
             -columnspan 1 -rowspan 1 -sticky e
-
-        ### #--- Label pour le binning
-        ### label $frm.acq.labBinning -borderwidth 0 -text $::caption(sophie,binning)
-        ### grid $frm.acq.labBinning -in [$frm.acq getframe] -column 0 -row 1 \
-        ###    -columnspan 1 -rowspan 1 -sticky w -padx 3
-
-        ### #--- ComboBox pour le choix du binning
-        ### ComboBox $frm.acq.binning \
-        ###    -entrybg white -justify center -takefocus 1 -editable 0 \
-        ###    -width [ ::tkutil::lgEntryComboBox $private(listeBinning) ] \
-        ###    -textvariable ::sophie::private(widgetBinning) \
-        ###    -modifycmd "::sophie::onChangeBinning $visuNo" \
-        ###    -values $private(listeBinning)
-        ### grid $frm.acq.binning -in [$frm.acq getframe] -column 1 -row 1 \
-        ###    -columnspan 1 -rowspan 1 -sticky e
 
          #--- Bouton de lancement des acqusitions
          button $frm.acq.goAcq -borderwidth 2 -height 2 -text $::caption(sophie,goAcq) \
