@@ -2,7 +2,7 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.34 2009-10-11 16:15:46 robertdelmas Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.35 2009-10-11 18:12:55 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -33,8 +33,6 @@ proc ::sophie::control::run { visuNo tkbase } {
    set private(indicateursFwhmY)                ""
    set private(indicateursFondDeCiel)           ""
    set private(indicateursFluxMax)              ""
-   set private(indicateursFondDeCielFixe)       ""
-   set private(indicateursFluxMaxFixe)          ""
    set private(positionConsigneX)               ""
    set private(positionConsigneY)               ""
    set private(indicateursFluxMax)              ""
@@ -633,7 +631,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -text $::caption(sophie,seeing)
 
          #--- FWHM X
-         label $frm.guidage.seeing.labelFWHMX -text $::caption(sophie,FWHMX)
+         label $frm.guidage.seeing.labelFWHMX -text $::caption(sophie,FWHMXMemorise)
          grid $frm.guidage.seeing.labelFWHMX \
             -in [ $frm.guidage.seeing getframe ] \
             -row 0 -column 0 -sticky ew
@@ -646,7 +644,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             -row 0 -column 1 -sticky ens -padx 10
 
          #--- FWHM Y
-         label $frm.guidage.seeing.labelFWHMY -text $::caption(sophie,FWHMY)
+         label $frm.guidage.seeing.labelFWHMY -text $::caption(sophie,FWHMYMemorise)
          grid $frm.guidage.seeing.labelFWHMY \
             -in [ $frm.guidage.seeing getframe ] \
             -row 1 -column 0 -sticky ew
@@ -659,14 +657,14 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
             -row 1 -column 1 -sticky ens -padx 10
 
          #--- Fond de ciel
-         label $frm.guidage.seeing.labelfondDeCiel -text $::caption(sophie,fondDeCiel)
+         label $frm.guidage.seeing.labelfondDeCiel -text $::caption(sophie,fondDeCielMemorise)
          grid $frm.guidage.seeing.labelfondDeCiel \
             -in [ $frm.guidage.seeing getframe ] \
            -row 0 -column 2 -sticky ew -padx 10
 
          Entry $frm.guidage.seeing.entryfondDeCiel \
             -width 8 -justify center -editable 0 \
-            -textvariable ::sophie::control::private(indicateursFondDeCielFixe)
+            -textvariable ::sophie::control::private(indicateursFluxMax)
          grid $frm.guidage.seeing.entryfondDeCiel \
             -in [ $frm.guidage.seeing getframe ] \
             -row 0 -column 3 -sticky ens
@@ -679,7 +677,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
 
          Entry $frm.guidage.seeing.entryfluxMax \
             -width 8 -justify center -editable 0 \
-            -textvariable ::sophie::control::private(indicateursFluxMaxFixe)
+            -textvariable ::sophie::control::private(indicateursFluxMax)
          grid $frm.guidage.seeing.entryfluxMax \
             -in [ $frm.guidage.seeing getframe ] \
             -row 1 -column 3 -sticky ens
