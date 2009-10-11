@@ -2,7 +2,7 @@
 # @file     sophieconfig.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieconfig.tcl,v 1.22 2009-09-20 13:34:28 michelpujol Exp $
+# @version  $Id: sophieconfig.tcl,v 1.23 2009-10-11 16:15:30 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -76,87 +76,72 @@ proc ::sophie::config::fillConfigPage { frm visuNo } {
    wm geometry [ winfo toplevel $frm ] $::conf(sophie,configWindowPosition)
 
    #--- j'initalise les variables des widgets
-  ### set widget(poseDefaut)            $::conf(sophie,exposure)
-   set widget(binCentrageDefaut)     $::conf(sophie,centerBinning)
-   set widget(binFocalisationDefaut) $::conf(sophie,focuseBinning)
-   set widget(binGuidageDefaut)      $::conf(sophie,guideBinning)
-   set widget(echelle)               $::conf(sophie,pixelScale)
-   set widget(nbPosesAvantMaj)       $::conf(sophie,originSumMinCounter)
-   set widget(tailleFenetreGuidage)  $::conf(sophie,guidingWindowSize)
-   set widget(tailleFenetreCentrage) $::conf(sophie,centerWindowSize)
-   set widget(alphaProportionalGain) [expr $::conf(sophie,alphaProportionalGain) * 100.0]
-   set widget(deltaProportionalGain) [expr $::conf(sophie,deltaProportionalGain) * 100.0]
-   set widget(alphaIntegralGain)     [expr $::conf(sophie,alphaIntegralGain) * 100.0]
-   set widget(deltaIntegralGain)     [expr $::conf(sophie,deltaIntegralGain) * 100.0]
-   set widget(minMaxDiff)            $::conf(sophie,minMaxDiff)
+  ### set widget(poseDefaut)               $::conf(sophie,exposure)
+   set widget(binCentrageDefaut)        $::conf(sophie,centerBinning)
+   set widget(binFocalisationDefaut)    $::conf(sophie,focuseBinning)
+   set widget(binGuidageDefaut)         $::conf(sophie,guideBinning)
+   set widget(echelle)                  $::conf(sophie,pixelScale)
+   set widget(nbPosesAvantMaj)          $::conf(sophie,originSumMinCounter)
+   set widget(tailleFenetreGuidage)     $::conf(sophie,guidingWindowSize)
+   set widget(tailleFenetreCentrage)    $::conf(sophie,centerWindowSize)
+   set widget(alphaProportionalGain)    [expr $::conf(sophie,alphaProportionalGain) * 100.0]
+   set widget(deltaProportionalGain)    [expr $::conf(sophie,deltaProportionalGain) * 100.0]
+   set widget(alphaIntegralGain)        [expr $::conf(sophie,alphaIntegralGain) * 100.0]
+   set widget(deltaIntegralGain)        [expr $::conf(sophie,deltaIntegralGain) * 100.0]
+   set widget(alphaDifferentialGain)    [expr $::conf(sophie,alphaDifferentialGain) * 100.0]
+   set widget(deltaDifferentialGain)    [expr $::conf(sophie,deltaDifferentialGain) * 100.0]
+   set widget(minMaxDiff)               $::conf(sophie,minMaxDiff)
 
-   set widget(prefixeImageCentrage)  $::conf(sophie,centerFileNameprefix)
-   set widget(prefixeImageGuidage)   $::conf(sophie,guidingFileNameprefix)
+   set widget(prefixeImageCentrage)     $::conf(sophie,centerFileNameprefix)
+   set widget(prefixeImageFocalisation) $::conf(sophie,focusFileNameprefix)
+   set widget(prefixeImageGuidage)      $::conf(sophie,guidingFileNameprefix)
 
-  ### set widget(fiberGuigindMode)      $::conf(sophie,fiberGuigindMode)
-   set widget(fiberHRX)              $::conf(sophie,fiberHRX)
-   set widget(fiberHRY)              $::conf(sophie,fiberHRY)
-   set widget(fiberHEX)              $::conf(sophie,fiberHEX)
-   set widget(fiberHEY)              $::conf(sophie,fiberHEY)
-   set widget(fiberBX)               $::conf(sophie,fiberBX)
-   set widget(fiberBY)               $::conf(sophie,fiberBY)
+  ### set widget(fiberGuigindMode)         $::conf(sophie,fiberGuigindMode)
+   set widget(fiberHRX)                 $::conf(sophie,fiberHRX)
+   set widget(fiberHRY)                 $::conf(sophie,fiberHRY)
+   set widget(fiberHEX)                 $::conf(sophie,fiberHEX)
+   set widget(fiberHEY)                 $::conf(sophie,fiberHEY)
+   set widget(fiberBX)                  $::conf(sophie,fiberBX)
+   set widget(fiberBY)                  $::conf(sophie,fiberBY)
 
-   set widget(biasFileName,1,slow)   $::conf(sophie,biasFileName,1,slow)
-   set widget(biasFileName,1,fast)   $::conf(sophie,biasFileName,1,fast)
-   set widget(biasFileName,2,slow)   $::conf(sophie,biasFileName,2,slow)
-   set widget(biasFileName,2,fast)   $::conf(sophie,biasFileName,2,fast)
-   set widget(biasFileName,3,slow)   $::conf(sophie,biasFileName,3,slow)
-   set widget(biasFileName,3,fast)   $::conf(sophie,biasFileName,3,fast)
+   set widget(biasFileName,1,slow)      $::conf(sophie,biasFileName,1,slow)
+   set widget(biasFileName,1,fast)      $::conf(sophie,biasFileName,1,fast)
+   set widget(biasFileName,2,slow)      $::conf(sophie,biasFileName,2,slow)
+   set widget(biasFileName,2,fast)      $::conf(sophie,biasFileName,2,fast)
+   set widget(biasFileName,3,slow)      $::conf(sophie,biasFileName,3,slow)
+   set widget(biasFileName,3,fast)      $::conf(sophie,biasFileName,3,fast)
 
-   set widget(maskRadius)            $::conf(sophie,maskRadius)
-   set widget(maskFwhm)              $::conf(sophie,maskFwhm)
-   set widget(maskPercent)           [expr int( $::conf(sophie,maskPercent) * 100)]
-   set widget(pixelMinCount)         $::conf(sophie,pixelMinCount)
+   set widget(maskRadius)               $::conf(sophie,maskRadius)
+   set widget(maskFwhm)                 $::conf(sophie,maskFwhm)
+   set widget(maskPercent)              [expr int( $::conf(sophie,maskPercent) * 100)]
+   set widget(pixelMinCount)            $::conf(sophie,pixelMinCount)
 
    #--- Creation des onglets
    set notebook [ NoteBook $frm.notebook ]
-      $notebook insert end "configuration" -text $::caption(sophie,parametreConfig)
-      $notebook insert end "algorithme"    -text $::caption(sophie,parametreAlgo)
-     ### $notebook insert end "callibration"  -text $::caption(sophie,callibrationRappels)
+      $notebook insert end "configStandard" -text $::caption(sophie,configStandard)
+      $notebook insert end "configAvancee"  -text $::caption(sophie,configAvancee)
    pack $frm.notebook -side top -fill both -expand 1
 
    #--- j'affiche les wigdets dans les onglets
-   fillConfigurationPage [ $notebook getframe "configuration" ] 1
-   fillAlgorithmePage    [ $notebook getframe "algorithme" ] 1
-  ### fillCallibrationPage  [ $notebook getframe "callibration" ] 1
+   fillConfigStandardPage [ $notebook getframe "configStandard" ] 1
+   fillConfigAvanceePage  [ $notebook getframe "configAvancee" ] 1
 
    pack $frm -side top -fill x -expand 1
 
    #--- je selectionne le premier onglet
-   $notebook raise "configuration"
+   $notebook raise "configStandard"
 }
 
 #------------------------------------------------------------
-# fillConfigurationPage
-#   cree les widgets dans l'onglet configuration generale
+# fillConfigStandardPage
+#   cree les widgets dans l'onglet configuration standard
 #   return rien
 #------------------------------------------------------------
-proc ::sophie::config::fillConfigurationPage { frm visuNo } {
+proc ::sophie::config::fillConfigStandardPage { frm visuNo } {
    variable private
 
-
-   #--- Frame pour la configuration des acquisitions
-   TitleFrame $frm.acq -borderwidth 2 -relief ridge -text $::caption(sophie,parametreAcquisition)
-
-     ### #--- Temps de pose par defaut
-     ### label $frm.acq.labelpose -text $::caption(sophie,poseDefaut)
-     ### grid $frm.acq.labelpose -in [ $frm.acq getframe ] -row 0 -column 0 -sticky w
-
-     ### ComboBox $frm.acq.valeurpose \
-     ###    -width [ ::tkutil::lgEntryComboBox $::sophie::private(listePose) ] \
-     ###    -height [ llength $::sophie::private(listePose) ] \
-     ###    -justify center            \
-     ###    -relief sunken             \
-     ###    -borderwidth 1             \
-     ###    -textvariable ::sophie::config::widget(poseDefaut) \
-     ###    -editable 1                \
-     ###    -values $::sophie::private(listePose)
-     ### grid $frm.acq.valeurpose -in [ $frm.acq getframe ] -row 0 -column 1 -sticky ens
+   #--- Frame pour la configuration des binnings de centrage et de guidage
+   TitleFrame $frm.acq -borderwidth 2 -relief ridge -text $::caption(sophie,binnings)
 
       #--- Binning par defaut du mode centrage
       label $frm.acq.labelbincentrage -text $::caption(sophie,binningCentrage) -justify left
@@ -172,21 +157,6 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -editable 0                \
          -values $::sophie::private(listeBinning)
       grid $frm.acq.valeurbincentrage -in [ $frm.acq getframe ] -row 1 -column 1 -sticky ens
-
-      #--- Binning par defaut du mode focalisation
-      label $frm.acq.labelbinfocalisation -text $::caption(sophie,binningFocalisation) -justify left
-      grid $frm.acq.labelbinfocalisation -in [ $frm.acq getframe ] -row 2 -column 0 -sticky w
-
-      ComboBox $frm.acq.valeurbinfocalisation \
-         -width [ ::tkutil::lgEntryComboBox $::sophie::private(listeBinning) ] \
-         -height [ llength $::sophie::private(listeBinning) ] \
-         -justify center            \
-         -relief sunken             \
-         -borderwidth 1             \
-         -textvariable ::sophie::config::widget(binFocalisationDefaut) \
-         -editable 0                \
-         -values $::sophie::private(listeBinning)
-      grid $frm.acq.valeurbinfocalisation -in [ $frm.acq getframe ] -row 2 -column 1 -sticky ens
 
       #--- Binning par defaut du mode guidage
       label $frm.acq.labelbinguidage -text $::caption(sophie,binningGuidage) -justify left
@@ -206,43 +176,7 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
    pack $frm.acq -side top -anchor w -fill x -expand 0
 
    #--- Frame pour la configuration du guidage
-   TitleFrame $frm.guidage -borderwidth 2 -relief ridge -text $::caption(sophie,parametreGuidage)
-
-      #--- Echelle
-      label $frm.guidage.labelechelle -text $::caption(sophie,echelle)
-      grid $frm.guidage.labelechelle -in [ $frm.guidage getframe ] -row 0 -column 0 -sticky w
-
-      Entry $frm.guidage.entryechelle \
-         -width 8 -justify center -editable 1 \
-         -textvariable ::sophie::config::widget(echelle)
-      grid $frm.guidage.entryechelle -in [ $frm.guidage getframe ] -row 0 -column 1 -sticky ens
-
-      #--- Nombre de poses avant la mise à jour de la consigne
-      label $frm.guidage.labelnbPosesAvantMaj -text $::caption(sophie,nbPosesAvantMaj)
-      grid $frm.guidage.labelnbPosesAvantMaj -in [ $frm.guidage getframe ] -row 2 -column 0 -sticky w
-
-      Entry $frm.guidage.entrynbPosesAvantMaj \
-         -width 8 -justify center -editable 1 \
-         -textvariable ::sophie::config::widget(nbPosesAvantMaj)
-      grid $frm.guidage.entrynbPosesAvantMaj -in [ $frm.guidage getframe ] -row 2 -column 1 -sticky ens
-
-      #--- Taille de la fenetre de centrage
-      label $frm.guidage.labeltailleFenetreCentrage -text $::caption(sophie,tailleFenetreCentrage)
-      grid $frm.guidage.labeltailleFenetreCentrage -in [ $frm.guidage getframe ] -row 3 -column 0 -sticky w
-
-      Entry $frm.guidage.entrytailleFenetreCentrage \
-         -width 8 -justify center -editable 1 \
-         -textvariable ::sophie::config::widget(tailleFenetreCentrage)
-      grid $frm.guidage.entrytailleFenetreCentrage -in [ $frm.guidage getframe ] -row 3 -column 1 -sticky ens
-
-      #--- Taille de la fenetre de guidage
-      label $frm.guidage.labeltailleFenetreGuidage -text $::caption(sophie,tailleFenetreGuidage)
-      grid $frm.guidage.labeltailleFenetreGuidage -in [ $frm.guidage getframe ] -row 4 -column 0 -sticky w
-
-      Entry $frm.guidage.entrytailleFenetreGuidage \
-         -width 8 -justify center -editable 1 \
-         -textvariable ::sophie::config::widget(tailleFenetreGuidage)
-      grid $frm.guidage.entrytailleFenetreGuidage -in [ $frm.guidage getframe ] -row 4 -column 1 -sticky ens
+   TitleFrame $frm.guidage -borderwidth 2 -relief ridge -text $::caption(sophie,gainsGuidage)
 
       #--- Gain proportionnel
       label $frm.guidage.labelGainAlpha -text $::caption(sophie,alpha)
@@ -278,14 +212,19 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
          -textvariable ::sophie::config::widget(deltaIntegralGain)
       grid $frm.guidage.entryDeltaIntegralGain -in [ $frm.guidage getframe ] -row 7 -column 2 -sticky ens
 
-      #--- Ecart min max
-      label $frm.guidage.labelEcartMinMax -text $::caption(sophie,ecartMinMax)
-      grid $frm.guidage.labelEcartMinMax -in [ $frm.guidage getframe ] -row 8 -column 0 -sticky w
+      #--- Gain differentiel
+      label $frm.guidage.labelgainDifferentiel -text $::caption(sophie,gainDifferentiel)
+      grid $frm.guidage.labelgainDifferentiel -in [ $frm.guidage getframe ] -row 8 -column 0 -sticky w
 
-      Entry $frm.guidage.entryEcartMinMax \
+      Entry $frm.guidage.entryAlphaDifferentialGain \
          -width 8 -justify center -editable 1 \
-         -textvariable ::sophie::config::widget(minMaxDiff)
-      grid $frm.guidage.entryEcartMinMax -in [ $frm.guidage getframe ] -row 8 -column 1 -sticky ens
+         -textvariable ::sophie::config::widget(alphaDifferentialGain)
+      grid $frm.guidage.entryAlphaDifferentialGain -in [ $frm.guidage getframe ] -row 8 -column 1 -sticky ens
+
+      Entry $frm.guidage.entryDeltaDifferentialGain \
+         -width 8 -justify center -editable 1 \
+         -textvariable ::sophie::config::widget(deltaDifferentialGain)
+      grid $frm.guidage.entryDeltaDifferentialGain -in [ $frm.guidage getframe ] -row 8 -column 2 -sticky ens
 
    pack $frm.guidage -side top -anchor w -fill x -expand 0
 
@@ -313,7 +252,8 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
 
       Button $frm.fibre.replaceOriginHR -text $::caption(sophie,replaceCrossPosition) \
          -command "::sophie::config::replaceOriginCoordinates $visuNo HR"
-      grid $frm.fibre.replaceOriginHR -in [ $frm.fibre getframe ] -row 1 -column 3 -sticky ens  -padx 2  -pady 2
+      grid $frm.fibre.replaceOriginHR -in [ $frm.fibre getframe ] -row 1 -column 3 -sticky ens \
+         -padx 2 -pady 2
 
       #--- Fibre A HE
       label $frm.fibre.labelfibreAHE -text $::caption(sophie,fibreAHE)
@@ -331,7 +271,8 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
 
       Button $frm.fibre.replaceOriginHE -text $::caption(sophie,replaceCrossPosition) \
          -command "::sophie::config::replaceOriginCoordinates $visuNo HE"
-      grid $frm.fibre.replaceOriginHE -in [ $frm.fibre getframe ] -row 2 -column 3 -sticky ens  -padx 2  -pady 2
+      grid $frm.fibre.replaceOriginHE -in [ $frm.fibre getframe ] -row 2 -column 3 -sticky ens \
+         -padx 2 -pady 2
 
       #--- Fibre B
       label $frm.fibre.labelfibreB -text $::caption(sophie,fibreB)
@@ -349,163 +290,180 @@ proc ::sophie::config::fillConfigurationPage { frm visuNo } {
 
       Button $frm.fibre.replaceOriginFiberB -text $::caption(sophie,replaceCirclePosition) \
          -command "::sophie::config::replaceOriginCoordinates $visuNo FIBER_B"
-      grid $frm.fibre.replaceOriginFiberB -in [ $frm.fibre getframe ] -row 3 -column 3 -sticky ens  -padx 2  -pady 2
-
-      #--- Mode d'entree de la fibre A
-      ###label $frm.fibre.labelfiberGuigindMode -text $::caption(sophie,fiberGuigindMode)
-      ###grid $frm.fibre.labelfiberGuigindMode -in [ $frm.fibre getframe ] -row 3 -column 1 -sticky w
-      ###
-      ###radiobutton $frm.fibre.fiberGuigindModeHR -highlightthickness 0 -padx 0 -pady 0 -state normal \
-      ###   -text $::caption(sophie,HR) \
-      ###   -value "HR" \
-      ###   -variable ::sophie::config::widget(fiberGuigindMode)
-      ###
-      ###   ###-command "::sophie::config::onFiberMode $visuNo"
-      ###
-      ###grid $frm.fibre.fiberGuigindModeHR -in [ $frm.fibre getframe ] -row 3 -column 2 -sticky ens
-      ###
-      ###radiobutton $frm.fibre.fiberGuigindModeHE -highlightthickness 0 -padx 0 -pady 0 -state normal \
-      ###   -text $::caption(sophie,HE) \
-      ###   -value "HE" \
-      ###   -variable ::sophie::config::widget(fiberGuigindMode)
-      ###
-      ###   ###-command "::sophie::config::onFiberMode $visuNo"
-      ###grid $frm.fibre.fiberGuigindModeHE -in [ $frm.fibre getframe ] -row 3 -column 3 -sticky ens
+      grid $frm.fibre.replaceOriginFiberB -in [ $frm.fibre getframe ] -row 3 -column 3 -sticky ens \
+         -padx 2 -pady 2
 
    pack $frm.fibre -side top -anchor w -fill x -expand 0
-
-   #--- Frame pour les images
-   TitleFrame $frm.image -borderwidth 2 -relief ridge -text $::caption(sophie,images)
-
-      #--- Repertoire des images
-      label $frm.image.labelImageDirectory -text $::caption(sophie,imageDirectory)
-      grid $frm.image.labelImageDirectory -in [ $frm.image getframe ] -row 0 -column 1 -sticky w
-
-      Entry $frm.image.entryrepImages \
-         -width 30 -justify left -editable 1 \
-         -textvariable ::conf(sophie,imageDirectory)
-      grid $frm.image.entryrepImages -in [ $frm.image getframe ] -row 0 -column 2 -sticky ew
-
-      button $frm.image.configurerepImages -text $::caption(sophie,parcourir) -relief raised \
-         -command "::sophie::config::changeRepImages"
-      grid $frm.image.configurerepImages -in [ $frm.image getframe ] -row 0 -column 3 -sticky e -padx 2
-
-      #--- Prefixe des images de centrage
-      label $frm.image.labelprefixeImageCentrage -text $::caption(sophie,prefixeImageCentrage)
-      grid $frm.image.labelprefixeImageCentrage -in [ $frm.image getframe ] -row 1 -column 1 -sticky w
-
-      Entry $frm.image.entryprefixeImageCentrage \
-         -width 13 -justify left -editable 1 \
-         -textvariable ::sophie::config::widget(prefixeImageCentrage)
-      grid $frm.image.entryprefixeImageCentrage -in [ $frm.image getframe ] -row 1 -column 2 -sticky ew
-
-      #--- Prefixe des images de guidage
-      label $frm.image.labelprefixeImageGuidage -text $::caption(sophie,prefixeImageGuidage)
-      grid $frm.image.labelprefixeImageGuidage -in [ $frm.image getframe ] -row 2 -column 1 -sticky w
-
-      Entry $frm.image.entryprefixeImageGuidage \
-         -width 13 -justify left -editable 1 \
-         -textvariable ::sophie::config::widget(prefixeImageGuidage)
-      grid $frm.image.entryprefixeImageGuidage -in [ $frm.image getframe ] -row 2 -column 2 -sticky ew
-
-      #--- Valeur de Bias 1 Slow
-      ### label $frm.image.labelImageBias1Slow -text "$::caption(sophie,imageBias,bin1Slow)"
-      label $frm.image.labelImageBias1Slow -text "$::caption(sophie,valeurBias,bin1Slow)"
-      grid $frm.image.labelImageBias1Slow -in [ $frm.image getframe ] -row 3 -column 1 -sticky w
-
-      Entry $frm.image.entryImageBias1Slow \
-         -width 30 -justify left -editable 1 \
-         -textvariable ::sophie::config::widget(biasFileName,1,slow)
-      grid $frm.image.entryImageBias1Slow -in [ $frm.image getframe ] -row 3 -column 2 -sticky ew
-
-     ### button $frm.image.configureimageBias1Slow -text $::caption(sophie,parcourir) -relief raised \
-     ###    -command "::sophie::config::chooseBiasFile 1 slow"
-     ### grid $frm.image.configureimageBias1Slow -in [ $frm.image getframe ] -row 3 -column 3 -sticky e -padx 2
-
-      #--- Valeur de Bias 1 Fast
-      ### label $frm.image.labelImageBias1Fast -text "$::caption(sophie,imageBias,bin1Fast)"
-      label $frm.image.labelImageBias1Fast -text "$::caption(sophie,valeurBias,bin1Fast)"
-      grid $frm.image.labelImageBias1Fast -in [ $frm.image getframe ] -row 4 -column 1 -sticky w
-
-      Entry $frm.image.entryImageBias1Fast \
-         -width 30 -justify left -editable 1 \
-         -textvariable ::sophie::config::widget(biasFileName,1,fast)
-      grid $frm.image.entryImageBias1Fast -in [ $frm.image getframe ] -row 4 -column 2 -sticky ew
-
-     ### button $frm.image.configureimageBias1Fast -text $::caption(sophie,parcourir) -relief raised \
-     ###    -command "::sophie::config::chooseBiasFile 1 fast"
-     ### grid $frm.image.configureimageBias1Fast -in [ $frm.image getframe ] -row 4 -column 3 -sticky e -padx 2
-
-      #--- Valeur de Bias 2 Slow
-      ### label $frm.image.labelImageBias2Slow -text "$::caption(sophie,imageBias,bin2Slow)"
-      label $frm.image.labelImageBias2Slow -text "$::caption(sophie,valeurBias,bin2Slow)"
-      grid $frm.image.labelImageBias2Slow -in [ $frm.image getframe ] -row 5 -column 1 -sticky w
-
-      Entry $frm.image.entryImageBias2Slow \
-         -width 30 -justify left -editable 1 \
-         -textvariable ::sophie::config::widget(biasFileName,2,slow)
-      grid $frm.image.entryImageBias2Slow -in [ $frm.image getframe ] -row 5 -column 2 -sticky ew
-
-     ### button $frm.image.configureimageBias2Slow -text $::caption(sophie,parcourir) -relief raised \
-     ###    -command "::sophie::config::chooseBiasFile 2 slow"
-     ### grid $frm.image.configureimageBias2Slow -in [ $frm.image getframe ] -row 5 -column 3 -sticky e -padx 2
-
-      #--- Valeur de Bias 2 Fast
-      ### label $frm.image.labelImageBias2Fast -text "$::caption(sophie,imageBias,bin2Fast)"
-      label $frm.image.labelImageBias2Fast -text "$::caption(sophie,valeurBias,bin2Fast)"
-      grid $frm.image.labelImageBias2Fast -in [ $frm.image getframe ] -row 6 -column 1 -sticky w
-
-      Entry $frm.image.entryImageBias2Fast \
-         -width 30 -justify left -editable 1 \
-         -textvariable ::sophie::config::widget(biasFileName,2,fast)
-      grid $frm.image.entryImageBias2Fast -in [ $frm.image getframe ] -row 6 -column 2 -sticky ew
-
-     ### button $frm.image.configureimageBias2Fast -text $::caption(sophie,parcourir) -relief raised \
-     ###    -command "::sophie::config::chooseBiasFile 2 fast"
-     ### grid $frm.image.configureimageBias2Fast -in [ $frm.image getframe ] -row 6 -column 3 -sticky e -padx 2
-
-      grid columnconfigure [ $frm.image getframe ] 2 -weight 1
-
-      #--- Valeur de Bias 3 Slow
-      ### label $frm.image.labelImageBias3Slow -text "$::caption(sophie,imageBias,bin3Slow)"
-      label $frm.image.labelImageBias3Slow -text "$::caption(sophie,valeurBias,bin3Slow)"
-      grid $frm.image.labelImageBias3Slow -in [ $frm.image getframe ] -row 7 -column 1 -sticky w
-
-      Entry $frm.image.entryImageBias3Slow \
-         -width 30 -justify left -editable 1 \
-         -textvariable ::sophie::config::widget(biasFileName,3,slow)
-      grid $frm.image.entryImageBias3Slow -in [ $frm.image getframe ] -row 7 -column 2 -sticky ew
-
-     ### button $frm.image.configureimageBias3Slow -text $::caption(sophie,parcourir) -relief raised \
-     ###    -command "::sophie::config::chooseBiasFile 3 slow"
-     ### grid $frm.image.configureimageBias3Slow -in [ $frm.image getframe ] -row 7 -column 3 -sticky e -padx 2
-
-      #--- Valeur de Bias 3 Fast
-      ### label $frm.image.labelImageBias3Fast -text "$::caption(sophie,imageBias,bin3Fast)"
-      label $frm.image.labelImageBias3Fast -text "$::caption(sophie,valeurBias,bin3Fast)"
-      grid $frm.image.labelImageBias3Fast -in [ $frm.image getframe ] -row 8 -column 1 -sticky w
-
-      Entry $frm.image.entryImageBias3Fast \
-         -width 30 -justify left -editable 1 \
-         -textvariable ::sophie::config::widget(biasFileName,3,fast)
-      grid $frm.image.entryImageBias3Fast -in [ $frm.image getframe ] -row 8 -column 2 -sticky ew
-
-     ### button $frm.image.configureimageBias3Fast -text $::caption(sophie,parcourir) -relief raised \
-     ###    -command "::sophie::config::chooseBiasFile 3 fast"
-     ### grid $frm.image.configureimageBias3Fast -in [ $frm.image getframe ] -row 8 -column 3 -sticky e -padx 2
-
-      grid columnconfigure [ $frm.image getframe ] 2 -weight 1
-
-   pack $frm.image -side top -anchor w -fill x -expand 0
 }
 
 #------------------------------------------------------------
-# fillAlgorithmePage
-#   cree les widgets dans l'onglet configuration de l'algorithme
+# fillConfigAvanceePage
+#   cree les widgets dans l'onglet configuration avancee
 #   return rien
 #------------------------------------------------------------
-proc ::sophie::config::fillAlgorithmePage { frm visuNo } {
+proc ::sophie::config::fillConfigAvanceePage { frm visuNo } {
    variable private
+
+   #--- Frame pour la configuration du guidage
+   TitleFrame $frm.echelle -borderwidth 2 -relief ridge -text $::caption(sophie,echelle)
+
+      #--- Echelle
+      label $frm.echelle.labelechelle -text $::caption(sophie,echelleArcSec)
+      grid $frm.echelle.labelechelle -in [ $frm.echelle getframe ] -row 0 -column 0 -sticky w
+
+      Entry $frm.echelle.entryechelle \
+         -width 8 -justify center -editable 1 \
+         -textvariable ::sophie::config::widget(echelle)
+      grid $frm.echelle.entryechelle -in [ $frm.echelle getframe ] -row 0 -column 1 -sticky ens
+
+   pack $frm.echelle -side top -anchor w -fill x -expand 0
+
+   #--- Frame pour la configuration du binning de la focalisation
+   TitleFrame $frm.focBinning -borderwidth 2 -relief ridge -text $::caption(sophie,binning)
+
+      #--- Binning par defaut du mode focalisation
+      label $frm.focBinning.labelbinfocalisation -text $::caption(sophie,binningFocalisation) -justify left
+      grid $frm.focBinning.labelbinfocalisation -in [ $frm.focBinning getframe ] -row 2 -column 0 -sticky w
+
+      ComboBox $frm.focBinning.valeurbinfocalisation \
+         -width [ ::tkutil::lgEntryComboBox $::sophie::private(listeBinning) ] \
+         -height [ llength $::sophie::private(listeBinning) ] \
+         -justify center            \
+         -relief sunken             \
+         -borderwidth 1             \
+         -textvariable ::sophie::config::widget(binFocalisationDefaut) \
+         -editable 0                \
+         -values $::sophie::private(listeBinning)
+      grid $frm.focBinning.valeurbinfocalisation -in [ $frm.focBinning getframe ] -row 2 -column 1 \
+         -sticky ens
+
+   pack $frm.focBinning -side top -anchor w -fill x -expand 0
+
+   #--- Frame pour la configuration du guidage
+   TitleFrame $frm.guidageAvancee -borderwidth 2 -relief ridge -text $::caption(sophie,parametreAlgo)
+
+      #--- Valeur de Bias 1 Slow
+      label $frm.guidageAvancee.labelImageBias1Slow -text "$::caption(sophie,valeurBias,bin1Slow)"
+      grid $frm.guidageAvancee.labelImageBias1Slow -in [ $frm.guidageAvancee getframe ] \
+         -row 1 -column 0 -sticky w
+
+      Entry $frm.guidageAvancee.entryImageBias1Slow \
+         -width 8 -justify center -editable 1 \
+         -textvariable ::sophie::config::widget(biasFileName,1,slow)
+      grid $frm.guidageAvancee.entryImageBias1Slow -in [ $frm.guidageAvancee getframe ] \
+         -row 1 -column 1 -sticky ew
+
+      #--- Valeur de Bias 1 Fast
+      label $frm.guidageAvancee.labelImageBias1Fast -text "$::caption(sophie,valeurBias,bin1Fast)"
+      grid $frm.guidageAvancee.labelImageBias1Fast -in [ $frm.guidageAvancee getframe ] \
+         -row 2 -column 0 -sticky w
+
+      Entry $frm.guidageAvancee.entryImageBias1Fast \
+         -width 8 -justify center -editable 1 \
+         -textvariable ::sophie::config::widget(biasFileName,1,fast)
+      grid $frm.guidageAvancee.entryImageBias1Fast -in [ $frm.guidageAvancee getframe ] \
+         -row 2 -column 1 -sticky ew
+
+      #--- Valeur de Bias 2 Slow
+      label $frm.guidageAvancee.labelImageBias2Slow -text "$::caption(sophie,valeurBias,bin2Slow)"
+      grid $frm.guidageAvancee.labelImageBias2Slow -in [ $frm.guidageAvancee getframe ] \
+         -row 3 -column 0 -sticky w
+
+      Entry $frm.guidageAvancee.entryImageBias2Slow \
+         -width 8 -justify center -editable 1 \
+         -textvariable ::sophie::config::widget(biasFileName,2,slow)
+      grid $frm.guidageAvancee.entryImageBias2Slow -in [ $frm.guidageAvancee getframe ] \
+         -row 3 -column 1 -sticky ew
+
+      #--- Valeur de Bias 2 Fast
+      label $frm.guidageAvancee.labelImageBias2Fast -text "$::caption(sophie,valeurBias,bin2Fast)"
+      grid $frm.guidageAvancee.labelImageBias2Fast -in [ $frm.guidageAvancee getframe ] \
+         -row 4 -column 0 -sticky w
+
+      Entry $frm.guidageAvancee.entryImageBias2Fast \
+         -width 8 -justify center -editable 1 \
+         -textvariable ::sophie::config::widget(biasFileName,2,fast)
+      grid $frm.guidageAvancee.entryImageBias2Fast -in [ $frm.guidageAvancee getframe ] \
+         -row 4 -column 1 -sticky ew
+
+      #--- Valeur de Bias 3 Slow
+      label $frm.guidageAvancee.labelImageBias3Slow -text "$::caption(sophie,valeurBias,bin3Slow)"
+      grid $frm.guidageAvancee.labelImageBias3Slow -in [ $frm.guidageAvancee getframe ] \
+         -row 5 -column 0 -sticky w
+
+      Entry $frm.guidageAvancee.entryImageBias3Slow \
+         -width 8 -justify center -editable 1 \
+         -textvariable ::sophie::config::widget(biasFileName,3,slow)
+      grid $frm.guidageAvancee.entryImageBias3Slow -in [ $frm.guidageAvancee getframe ] \
+         -row 5 -column 1 -sticky ew
+
+      #--- Valeur de Bias 3 Fast
+      label $frm.guidageAvancee.labelImageBias3Fast -text "$::caption(sophie,valeurBias,bin3Fast)"
+      grid $frm.guidageAvancee.labelImageBias3Fast -in [ $frm.guidageAvancee getframe ] \
+         -row 6 -column 0 -sticky w
+
+      Entry $frm.guidageAvancee.entryImageBias3Fast \
+         -width 8 -justify center -editable 1 \
+         -textvariable ::sophie::config::widget(biasFileName,3,fast)
+      grid $frm.guidageAvancee.entryImageBias3Fast -in [ $frm.guidageAvancee getframe ] \
+         -row 6 -column 1 -sticky ew
+
+      #--- Nombre de poses avant la mise à jour de la consigne
+      label $frm.guidageAvancee.labelnbPosesAvantMaj -text $::caption(sophie,nbPosesAvantMaj)
+      grid $frm.guidageAvancee.labelnbPosesAvantMaj -in [ $frm.guidageAvancee getframe ] \
+         -row 7 -column 0 -sticky w
+
+      Entry $frm.guidageAvancee.entrynbPosesAvantMaj \
+         -width 8 -justify center -editable 1 \
+         -textvariable ::sophie::config::widget(nbPosesAvantMaj)
+      grid $frm.guidageAvancee.entrynbPosesAvantMaj -in [ $frm.guidageAvancee getframe ] \
+         -row 7 -column 1 -sticky ens
+
+      #--- Ecart min max
+      label $frm.guidageAvancee.labelEcartMinMax -text $::caption(sophie,ecartMinMax)
+      grid $frm.guidageAvancee.labelEcartMinMax -in [ $frm.guidageAvancee getframe ] \
+         -row 8 -column 0 -sticky w
+
+      Entry $frm.guidageAvancee.entryEcartMinMax \
+         -width 8 -justify center -editable 1 \
+         -textvariable ::sophie::config::widget(minMaxDiff)
+      grid $frm.guidageAvancee.entryEcartMinMax -in [ $frm.guidageAvancee getframe ] \
+         -row 8 -column 1 -sticky ens
+
+      #--- Precision du centrage
+      label $frm.guidageAvancee.labelprecisionCentrage -text $::caption(sophie,arretCentrage)
+      grid $frm.guidageAvancee.labelprecisionCentrage -in [ $frm.guidageAvancee getframe ] \
+         -row 9 -column 0 -sticky w
+
+      Entry $frm.guidageAvancee.entryprecisionCentrage \
+         -width 8 -justify center -editable 1 \
+         -textvariable ::conf(sophie,centerMaxLimit)
+      grid $frm.guidageAvancee.entryprecisionCentrage -in [ $frm.guidageAvancee getframe ] \
+         -row 9 -column 1 -sticky ens
+
+      #--- Taille de la fenetre de centrage
+      label $frm.guidageAvancee.labeltailleFenetreCentrage -text $::caption(sophie,tailleFenetreCentrage)
+      grid $frm.guidageAvancee.labeltailleFenetreCentrage -in [ $frm.guidageAvancee getframe ] \
+         -row 10 -column 0 -sticky w
+
+      Entry $frm.guidageAvancee.entrytailleFenetreCentrage \
+         -width 8 -justify center -editable 1 \
+         -textvariable ::sophie::config::widget(tailleFenetreCentrage)
+      grid $frm.guidageAvancee.entrytailleFenetreCentrage -in [ $frm.guidageAvancee getframe ] \
+         -row 10 -column 1 -sticky ens
+
+      #--- Taille de la fenetre de guidage
+      label $frm.guidageAvancee.labeltailleFenetreGuidage -text $::caption(sophie,tailleFenetreGuidage)
+      grid $frm.guidageAvancee.labeltailleFenetreGuidage -in [ $frm.guidageAvancee getframe ] \
+         -row 11 -column 0 -sticky w
+
+      Entry $frm.guidageAvancee.entrytailleFenetreGuidage \
+         -width 8 -justify center -editable 1 \
+         -textvariable ::sophie::config::widget(tailleFenetreGuidage)
+      grid $frm.guidageAvancee.entrytailleFenetreGuidage -in [ $frm.guidageAvancee getframe ] \
+         -row 11 -column 1 -sticky ens
+
+   pack $frm.guidageAvancee -side top -anchor w -fill x -expand 0
 
    #--- Frame pour les parametres du masque
    TitleFrame $frm.paraMasque -borderwidth 2 -relief ridge -text $::caption(sophie,paraMasque)
@@ -556,43 +514,54 @@ proc ::sophie::config::fillAlgorithmePage { frm visuNo } {
 
    pack $frm.paraMasque -side top -anchor w -fill x -expand 0
 
-   #--- Frame pour les parametres de la précision du guidage
-   TitleFrame $frm.paraPrecisionCentrage -borderwidth 2 -relief ridge \
-      -text $::caption(sophie,paraPrecisionCentrage)
+   #--- Frame pour les images
+   TitleFrame $frm.imageAvancee -borderwidth 2 -relief ridge -text $::caption(sophie,images)
 
-      #--- Precision du centrage
-      label $frm.paraPrecisionCentrage.labelprecisionCentrage -text $::caption(sophie,precisionCentrage)
-      grid $frm.paraPrecisionCentrage.labelprecisionCentrage -in [ $frm.paraPrecisionCentrage getframe ] \
-        -row 0 -column 1 -sticky w
+      #--- Prefixe des images de centrage
+      label $frm.imageAvancee.labelprefixeImageCentrage -text $::caption(sophie,prefixeImageCentrage)
+      grid $frm.imageAvancee.labelprefixeImageCentrage -in [ $frm.imageAvancee getframe ] \
+         -row 1 -column 1 -sticky w
 
-      Entry $frm.paraPrecisionCentrage.entryprecisionCentrage \
-         -width 8 -justify center -editable 1 \
-         -textvariable ::conf(sophie,centerMaxLimit)
-      grid $frm.paraPrecisionCentrage.entryprecisionCentrage -in [ $frm.paraPrecisionCentrage getframe ] \
-         -row 0 -column 2 -sticky ens
+      Entry $frm.imageAvancee.entryprefixeImageCentrage \
+         -width 13 -justify left -editable 1 \
+         -textvariable ::sophie::config::widget(prefixeImageCentrage)
+      grid $frm.imageAvancee.entryprefixeImageCentrage -in [ $frm.imageAvancee getframe ] \
+         -row 1 -column 2 -sticky ew
 
-   pack $frm.paraPrecisionCentrage -side top -anchor w -fill x -expand 0
+      #--- Prefixe des images de focalisation
+      label $frm.imageAvancee.labelprefixeImageFocalisation -text $::caption(sophie,prefixeImageFocalisation)
+      grid $frm.imageAvancee.labelprefixeImageFocalisation -in [ $frm.imageAvancee getframe ] \
+         -row 2 -column 1 -sticky w
+
+      Entry $frm.imageAvancee.entryprefixeImageFocalisation \
+         -width 13 -justify left -editable 1 \
+         -textvariable ::sophie::config::widget(prefixeImageFocalisation)
+      grid $frm.imageAvancee.entryprefixeImageFocalisation -in [ $frm.imageAvancee getframe ] \
+         -row 2 -column 2 -sticky ew
+
+      #--- Prefixe des images de guidage
+      label $frm.imageAvancee.labelprefixeImageGuidage -text $::caption(sophie,prefixeImageGuidage)
+      grid $frm.imageAvancee.labelprefixeImageGuidage -in [ $frm.imageAvancee getframe ] \
+         -row 3 -column 1 -sticky w
+
+      Entry $frm.imageAvancee.entryprefixeImageGuidage \
+         -width 13 -justify left -editable 1 \
+         -textvariable ::sophie::config::widget(prefixeImageGuidage)
+      grid $frm.imageAvancee.entryprefixeImageGuidage -in [ $frm.imageAvancee getframe ] \
+         -row 3 -column 2 -sticky ew
+
+   pack $frm.imageAvancee -side top -anchor w -fill x -expand 0
 
    #--- Frame pour le bouton de lancement des simulations
    TitleFrame $frm.simulation -borderwidth 2 -relief ridge \
       -text $::caption(sophie,simulation)
 
       #--- Bouton de lancement des simulations
-      button $frm.simulation.but -text $::caption(sophie,simulation) -relief raised \
+      Button $frm.simulation.but -text $::caption(sophie,simulation) -relief raised \
          -command "::sophie::simul"
       grid $frm.simulation.but -in [ $frm.simulation getframe ] -row 0 -column 1 -sticky e -padx 2
 
    pack $frm.simulation -side bottom -anchor w -fill x -expand 0
-}
-
-#------------------------------------------------------------
-# fillCallibrationPage
-#   cree les widgets dans l'onglet callibration
-#   return rien
-#------------------------------------------------------------
-proc ::sophie::config::fillCallibrationPage { frm visuNo } {
-   variable private
-
 }
 
 #----------------------------------------------------------------------------
@@ -618,8 +587,11 @@ proc ::sophie::config::apply { visuNo } {
    set ::conf(sophie,deltaProportionalGain) [expr double($widget(deltaProportionalGain)) / 100.0]
    set ::conf(sophie,alphaIntegralGain)     [expr double($widget(alphaIntegralGain)) / 100.0]
    set ::conf(sophie,deltaIntegralGain)     [expr double($widget(deltaIntegralGain)) / 100.0]
+   set ::conf(sophie,alphaDifferentialGain) [expr double($widget(alphaDifferentialGain)) / 100.0]
+   set ::conf(sophie,deltaDifferentialGain) [expr double($widget(deltaDifferentialGain)) / 100.0]
    set ::conf(sophie,minMaxDiff)            $widget(minMaxDiff)
    set ::conf(sophie,centerFileNameprefix)  $widget(prefixeImageCentrage)
+   set ::conf(sophie,focusFileNameprefix)   $widget(prefixeImageFocalisation)
    set ::conf(sophie,guidingFileNameprefix) $widget(prefixeImageGuidage)
 
   ### set ::conf(sophie,fiberGuigindMode)      $widget(fiberGuigindMode)
@@ -663,34 +635,6 @@ proc ::sophie::config::apply { visuNo } {
    #--- je met a jour la fenetre de controle
    ::sophie::control::setMinMaxDiff $::conf(sophie,minMaxDiff)
 
-}
-
-#------------------------------------------------------------
-# changeRepImages
-#    ouvre le navigateur pour choisir le repertoire des images
-#------------------------------------------------------------
-proc ::sophie::config::changeRepImages { } {
-   variable private
-
-   set initialdir $::conf(sophie,imageDirectory)
-   set title $::caption(sophie,imageDirectory)
-   set ::conf(sophie,imageDirectory) [ ::sophie::config::chooseDir $initialdir $title $private(frm) ]
-}
-
-#------------------------------------------------------------
-# chooseDir
-#    navigateur pour le choix des repertoires
-#------------------------------------------------------------
-proc ::sophie::config::chooseDir { inidir title parent } {
-   if {$inidir=="."} {
-      set inidir [pwd]
-   }
-   set res [ tk_chooseDirectory -title "$title" -initialdir "$inidir" -parent "$parent" ]
-   if {$res==""} {
-      return "$inidir"
-   } else {
-      return "$res"
-   }
 }
 
 #------------------------------------------------------------

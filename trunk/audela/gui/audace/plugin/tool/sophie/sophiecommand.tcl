@@ -1,7 +1,7 @@
 ##------------------------------------------------------------# @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.36 2009-09-20 13:32:40 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.37 2009-10-11 16:15:14 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -30,24 +30,9 @@ proc ::sophie::adaptPanel { visuNo args } {
 
    if { $private(camNo) != 0 } {
       if { [::confCam::getPluginProperty $private(camItem) hasBinning] == "0" } {
-        ### $frm.acq.labBinning configure -state disabled
-        ### $frm.acq.binning.a configure -state disabled
-        ### $frm.acq.binning.e configure -state disabled
          set private(listeBinning) "1x1"
-         ###::sophie::setBinning "1x1"
          #--- Je mets a jour le binning en fonction du mode
          ::sophie::setMode
-      } else {
-        ### $frm.acq.labBinning configure -state normal
-        ### $frm.acq.binning.a configure -state normal
-        ### $frm.acq.binning.e configure -state normal
-         #--- je mets a jour la liste des binning
-        ### set private(listeBinning) [::confCam::getPluginProperty $private(camItem) binningList]
-        ### $frm.acq.binning configure -values $private(listeBinning) -height [llength $private(listeBinning)]
-        ### if { [lsearch $private(listeBinning) $private(widgetBinning)] == -1 } {
-        ###    #--- je selectionnele premier binning s'il n'existe pas dans la liste
-        ###    set private(widgetBinning) [lindex $private(listeBinning) 0 ]
-        ### }
       }
       #--- je recupere la taille du capteur en pixel (en binning 1x1)
       set private(cameraCells) [cam$private(camNo) nbcells]
