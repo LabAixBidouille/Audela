@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.17 2009-10-10 12:58:33 michelpujol Exp $
+# Mise a jour $Id: t193.tcl,v 1.18 2009-10-11 06:22:34 robertdelmas Exp $
 #
 
 namespace eval ::t193 {
@@ -86,23 +86,23 @@ proc ::t193::initPlugin { } {
    set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
 
    #--- configuration de la monture du T193 de l'OHP
-   if { ! [ info exists conf(t193,portSerie) ] }           { set conf(t193,portSerie)           [ lindex $list_connexion 0 ] }
-   if { ! [ info exists conf(t193,mode) ] }                { set conf(t193,mode)                "0" }
-   if { ! [ info exists conf(t193,nomCarte) ] }            { set conf(t193,nomCarte)            "Dev1" }
-   if { ! [ info exists conf(t193,minDelay) ] }            { set conf(t193,minDelay)            "10" }
-   if { ! [ info exists conf(t193,nomPortTelescope) ] }    { set conf(t193,nomPortTelescope)    "port0" }
-   if { ! [ info exists conf(t193,nomPortAttenuateur) ] }  { set conf(t193,nomPortAttenuateur)  "port1" }
+   if { ! [ info exists conf(t193,portSerie) ] }                 { set conf(t193,portSerie)                 [ lindex $list_connexion 0 ] }
+   if { ! [ info exists conf(t193,mode) ] }                      { set conf(t193,mode)                      "0" }
+   if { ! [ info exists conf(t193,nomCarte) ] }                  { set conf(t193,nomCarte)                  "Dev1" }
+   if { ! [ info exists conf(t193,minDelay) ] }                  { set conf(t193,minDelay)                  "10" }
+   if { ! [ info exists conf(t193,nomPortTelescope) ] }          { set conf(t193,nomPortTelescope)          "port0" }
+   if { ! [ info exists conf(t193,nomPortAttenuateur) ] }        { set conf(t193,nomPortAttenuateur)        "port1" }
    #--- vitesses de guidage en arcseconde de degre par seconde de temps
-   if { ! [ info exists conf(t193,alphaGuidingSpeed) ] }   { set conf(t193,alphaGuidingSpeed)   "3.0" }
-   if { ! [ info exists conf(t193,deltaGuidingSpeed) ] }   { set conf(t193,deltaGuidingSpeed)   "3.0" }
+   if { ! [ info exists conf(t193,alphaGuidingSpeed) ] }         { set conf(t193,alphaGuidingSpeed)         "3.0" }
+   if { ! [ info exists conf(t193,deltaGuidingSpeed) ] }         { set conf(t193,deltaGuidingSpeed)         "3.0" }
    #--- configuration du mode Ethernet
-   if { ! [ info exists conf(t193,hostEthernet) ] }         { set conf(t193,hostEthernet)        "192.168.128.157" }
-   if { ! [ info exists conf(t193,telescopeCommandPort) ] } { set conf(t193,telescopeCommandPort) "1026" }
-   if { ! [ info exists conf(t193,telescopeNotificationPort) ] }  { set conf(t193,telescopeNotificationPort)    "1027" }
+   if { ! [ info exists conf(t193,hostEthernet) ] }              { set conf(t193,hostEthernet)              "192.168.128.157" }
+   if { ! [ info exists conf(t193,telescopeCommandPort) ] }      { set conf(t193,telescopeCommandPort)      "1026" }
+   if { ! [ info exists conf(t193,telescopeNotificationPort) ] } { set conf(t193,telescopeNotificationPort) "1027" }
    #--- duree de deplacement entre les 2 butees (mini et maxi) de l'attenuateur
-   if { ! [ info exists conf(t193,dureeMaxAttenuateur) ] } { set conf(t193,dureeMaxAttenuateur) "16" }
-   #---
-   if { ! [ info exists conf(t193,consoleLog) ] }          { set conf(t193,consoleLog)          "0" }
+   if { ! [ info exists conf(t193,dureeMaxAttenuateur) ] }       { set conf(t193,dureeMaxAttenuateur)       "16" }
+   #--- traces dans la Console
+   if { ! [ info exists conf(t193,consoleLog) ] }                { set conf(t193,consoleLog)                "0" }
 
    #--- Initialisation
    set private(telNo)       "0"
@@ -120,19 +120,20 @@ proc ::t193::confToWidget { } {
    global conf
 
    #--- Recupere la configuration de la monture du T193 de l'OHP dans le tableau private(...)
-   set private(portSerie)           $conf(t193,portSerie)
-   set private(mode)                $conf(t193,mode)
-   set private(nomCarte)            $conf(t193,nomCarte)
-   set private(minDelay)            $conf(t193,minDelay)
-   set private(nomPortTelescope)    $conf(t193,nomPortTelescope)
-   set private(nomPortAttenuateur)  $conf(t193,nomPortAttenuateur)
-   set private(alphaGuidingSpeed)   $conf(t193,alphaGuidingSpeed)
-   set private(deltaGuidingSpeed)   $conf(t193,deltaGuidingSpeed)
-   set private(hostEthernet)        $conf(t193,hostEthernet)
-   set private(telescopeCommandPort)        $conf(t193,telescopeCommandPort)
-   set private(dureeMaxAttenuateur) $conf(t193,dureeMaxAttenuateur)
-   set private(raquette)            $conf(raquette)
-   set private(consoleLog)          $conf(t193,consoleLog)
+   set private(portSerie)                 $conf(t193,portSerie)
+   set private(mode)                      $conf(t193,mode)
+   set private(nomCarte)                  $conf(t193,nomCarte)
+   set private(minDelay)                  $conf(t193,minDelay)
+   set private(nomPortTelescope)          $conf(t193,nomPortTelescope)
+   set private(nomPortAttenuateur)        $conf(t193,nomPortAttenuateur)
+   set private(alphaGuidingSpeed)         $conf(t193,alphaGuidingSpeed)
+   set private(deltaGuidingSpeed)         $conf(t193,deltaGuidingSpeed)
+   set private(hostEthernet)              $conf(t193,hostEthernet)
+   set private(telescopeCommandPort)      $conf(t193,telescopeCommandPort)
+   set private(telescopeNotificationPort) $conf(t193,telescopeNotificationPort)
+   set private(dureeMaxAttenuateur)       $conf(t193,dureeMaxAttenuateur)
+   set private(raquette)                  $conf(raquette)
+   set private(consoleLog)                $conf(t193,consoleLog)
 }
 
 #
@@ -144,19 +145,20 @@ proc ::t193::widgetToConf { } {
    global conf
 
    #--- Memorise la configuration de la monture du T193 de l'OHP dans le tableau conf(t193,...)
-   set conf(t193,portSerie)           $private(portSerie)
-   set conf(t193,mode)                $private(mode)
-   set conf(t193,nomCarte)            $private(nomCarte)
-   set conf(t193,minDelay)            $private(minDelay)
-   set conf(t193,nomPortTelescope)    $private(nomPortTelescope)
-   set conf(t193,nomPortAttenuateur)  $private(nomPortAttenuateur)
-   set conf(t193,alphaGuidingSpeed)   $private(alphaGuidingSpeed)
-   set conf(t193,deltaGuidingSpeed)   $private(deltaGuidingSpeed)
-   set conf(t193,hostEthernet)        $private(hostEthernet)
-   set conf(t193,telescopeCommandPort)        $private(telescopeCommandPort)
-   set conf(t193,dureeMaxAttenuateur) $private(dureeMaxAttenuateur)
-   set conf(raquette)                 $private(raquette)
-   set conf(t193,consoleLog)          $private(consoleLog)
+   set conf(t193,portSerie)                 $private(portSerie)
+   set conf(t193,mode)                      $private(mode)
+   set conf(t193,nomCarte)                  $private(nomCarte)
+   set conf(t193,minDelay)                  $private(minDelay)
+   set conf(t193,nomPortTelescope)          $private(nomPortTelescope)
+   set conf(t193,nomPortAttenuateur)        $private(nomPortAttenuateur)
+   set conf(t193,alphaGuidingSpeed)         $private(alphaGuidingSpeed)
+   set conf(t193,deltaGuidingSpeed)         $private(deltaGuidingSpeed)
+   set conf(t193,hostEthernet)              $private(hostEthernet)
+   set conf(t193,telescopeCommandPort)      $private(telescopeCommandPort)
+   set conf(t193,telescopeNotificationPort) $private(telescopeNotificationPort)
+   set conf(t193,dureeMaxAttenuateur)       $private(dureeMaxAttenuateur)
+   set conf(raquette)                       $private(raquette)
+   set conf(t193,consoleLog)                $private(consoleLog)
 }
 
 #
@@ -277,17 +279,25 @@ proc ::t193::fillConfigPage { frm } {
 
    #--- Entry du host Ethernet
    entry $frm.host -textvariable ::t193::private(hostEthernet) -width 15 -justify center
-   pack $frm.host -in [ $frm.ethernet getframe ] -anchor n -side left -padx 10 -pady 10
+   pack $frm.host -in [ $frm.ethernet getframe ] -anchor n -side left -padx 0 -pady 10
 
-   #--- Definition du port Ethernet
-   label $frm.labportEthernet -text "$caption(t193,port)"
-   pack $frm.labportEthernet -in [ $frm.ethernet getframe ] -anchor n -side left -padx 10 -pady 10
+   #--- Definition du port Ethernet de commande
+   label $frm.labportCommand -text "$caption(t193,portCommand)"
+   pack $frm.labportCommand -in [ $frm.ethernet getframe ] -anchor n -side left -padx 10 -pady 10
 
-   #--- Entry du port Ethernet
-   entry $frm.portEthernet -textvariable ::t193::private(telescopeCommandPort) -width 7 -justify center
-   pack $frm.portEthernet -in [ $frm.ethernet getframe ] -anchor n -side left -padx 10 -pady 10
+   #--- Entry du port Ethernet de commande
+   entry $frm.portCommand -textvariable ::t193::private(telescopeCommandPort) -width 7 -justify center
+   pack $frm.portCommand -in [ $frm.ethernet getframe ] -anchor n -side left -padx 0 -pady 10
 
-   #--- frame des vitesses
+   #--- Definition du port Ethernet de notification
+   label $frm.labportNotification -text "$caption(t193,portNotification)"
+   pack $frm.labportNotification -in [ $frm.ethernet getframe ] -anchor n -side left -padx 10 -pady 10
+
+   #--- Entry du port Ethernet de notification
+   entry $frm.portNotification -textvariable ::t193::private(telescopeNotificationPort) -width 7 -justify center
+   pack $frm.portNotification -in [ $frm.ethernet getframe ] -anchor n -side left -padx 0 -pady 10
+
+   #--- Frame des vitesses
    frame $frm.frame3.speed -borderwidth 0
 
       #--- Vitesse de rappel alpha
@@ -492,7 +502,7 @@ proc ::t193::configureMonture { } {
                -usbCardName $::conf(t193,nomCarte) \
                -ethernetHost $::conf(t193,hostEthernet) \
                -telescopeCommandPort $::conf(t193,telescopeCommandPort) \
-               -telescopeNotificationPort    $::conf(t193,telescopeNotificationPort) \
+               -telescopeNotificationPort $::conf(t193,telescopeNotificationPort) \
                -usbFilterPort $::conf(t193,nomPortAttenuateur) \
                -decreaseFilterRelay 0 \
                -increaseFilterRelay 1 \
@@ -773,5 +783,4 @@ proc ::t193::tracesConsole { } {
 
    tel$private(telNo) consolelog $private(consoleLog)
 }
-
 
