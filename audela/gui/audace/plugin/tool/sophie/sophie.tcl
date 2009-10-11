@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.32 2009-10-11 16:14:30 robertdelmas Exp $
+# @version   $Id: sophie.tcl,v 1.33 2009-10-11 18:12:27 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -165,7 +165,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(sophie,simulation)] }                { set ::conf(sophie,simulation)                "0" }
    if { ! [ info exists ::conf(sophie,simulationGenericFileName)] } { set ::conf(sophie,simulationGenericFileName) "$::audace(rep_images)/simulation" }
    if { ! [ info exists ::conf(sophie,centerFileNameprefix)] }      { set ::conf(sophie,centerFileNameprefix)      "centrage" }
-   if { ! [ info exists ::conf(sophie,focusFileNameprefix)] }       { set ::conf(sophie,focusFileNameprefix)       "focu" }
+   if { ! [ info exists ::conf(sophie,focusFileNameprefix)] }       { set ::conf(sophie,focusFileNameprefix)       "focus" }
    if { ! [ info exists ::conf(sophie,guidingFileNameprefix)] }     { set ::conf(sophie,guidingFileNameprefix)     "guidage" }
    if { ! [ info exists ::conf(sophie,maskRadius)] }                { set ::conf(sophie,maskRadius)                20 }
    if { ! [ info exists ::conf(sophie,maskFwhm)] }                  { set ::conf(sophie,maskFwhm)                  5 }
