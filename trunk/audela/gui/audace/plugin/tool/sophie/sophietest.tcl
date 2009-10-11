@@ -2,7 +2,7 @@
 # @file     sophietest.tcl
 # @brief    Fichier du namespace ::sophie::test
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietest.tcl,v 1.17 2009-10-11 07:31:11 michelpujol Exp $
+# @version  $Id: sophietest.tcl,v 1.18 2009-10-11 16:10:47 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -398,30 +398,30 @@ proc ::sophie::test::createDialogSimul { } {
    pack $frm.pcsophie -in $frm -side top -fill both -expand 1
 
    #--- Frame pour le test d'impulsion vers le telescope
-   TitleFrame $frm.pulse -borderwidth 2 -relief groove -text "test impulsions telescope"
+   TitleFrame $frm.pulse -borderwidth 2 -relief groove -text $::caption(sophie,testImpulsion)
 
-      #--- dur�e impulsion
-      label $frm.pulse.labelPulseDelay -text "Dur�e impulsion (seconde)"
+      #--- duree impulsion
+      label $frm.pulse.labelPulseDelay -text $::caption(sophie,dureeImpulsion)
       grid $frm.pulse.labelPulseDelay -in [ $frm.pulse getframe ] -row 0 -column 0 -sticky ens -padx 2
       entry $frm.pulse.entryPulseDelay -textvariable ::sophie::test::private(sendPulse,pulseDelay)
       grid $frm.pulse.entryPulseDelay -in [ $frm.pulse getframe ] -row 0 -column 1 -sticky ens -padx 2
 
-      #--- dur�e attente
-      label $frm.pulse.labelWaitDelay -text "dur�e entre 2 impulsions (seconde)"
+      #--- duree attente
+      label $frm.pulse.labelWaitDelay -text $::caption(sophie,dureeEntreImpulsion)
       grid $frm.pulse.labelWaitDelay -in [ $frm.pulse getframe ] -row 1 -column 0 -sticky ens -padx 2
       entry $frm.pulse.entryWaitPulse -textvariable ::sophie::test::private(sendPulse,waitDelay)
       grid $frm.pulse.entryWaitPulse -in [ $frm.pulse getframe ] -row 1 -column 1 -sticky ens -padx 2
 
        #--- direction
-      label $frm.pulse.labelDirection -text "Direction"
+      label $frm.pulse.labelDirection -text $::caption(sophie,direction)
       grid $frm.pulse.labelDirection -in [ $frm.pulse getframe ] -row 2 -column 0 -sticky ens -padx 2
       entry $frm.pulse.entryDirection -textvariable ::sophie::test::private(sendPulse,direction)
       grid $frm.pulse.entryDirection -in [ $frm.pulse getframe ] -row 2 -column 1 -sticky ens -padx 2
 
       #--- Bouton connect et disconnect
-      button $frm.pulse.start -text "start" -command "after 10 ::sophie::test::startPulse"
+      button $frm.pulse.start -text $::caption(sophie,start) -command "after 10 ::sophie::test::startPulse"
       grid $frm.pulse.start -in [ $frm.pulse getframe ] -row 3 -column 0 -sticky ens -padx 2
-      button $frm.pulse.stop -text "stop" -command "::sophie::test::stopPulse"
+      button $frm.pulse.stop -text $::caption(sophie,stop) -command "::sophie::test::stopPulse"
       grid $frm.pulse.stop -in [ $frm.pulse getframe ] -row 3 -column 1 -sticky ens -padx 2
 
    pack $frm.pulse -in $frm -side top -fill both -expand 1
