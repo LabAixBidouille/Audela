@@ -205,39 +205,21 @@ int cmdTelSendCommand(ClientData clientData, Tcl_Interp *interp, int argc, char 
 }
 */
 
-/*
 
 /*
  * -----------------------------------------------------------------------------
- *  cmdTelControl()
+ *  timerTestCallback()
  *
  *  active/desactive la prise de controle du telescope 
- *
+ *  thread::send  -async [tel1 threadid] "tel1 test 5000" 
+ *  
+ *  thread::send [tel1 threadid]  "tel1 test stop"
+ *  tel1 test 10000
+ *  tel1 test stop
  * -----------------------------------------------------------------------------
  */
 
-int cmdTelControl(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
-   char ligne[256];
-   int result = TCL_OK,pb=0;
-   struct telprop *tel;
-   tel = (struct telprop *)clientData;
-   if(argc!=3) {
-      pb=1;
-   }  else {
-      pb=0;
-      mytel_setControl(tel,atoi(argv[2]));
-   }
-   if (pb==1) {
-      sprintf(ligne,"Usage: %s %s ?0|1?",argv[0],argv[1]);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-      result = TCL_ERROR;
-   } 
-   return result;
-}
-
-
-
-static void timerCallback(ClientData clientData ) {
+static void timerTestCallback(ClientData clientData ) {
    struct telprop *   tel = (struct telprop *)clientData;
    tel->timeDone = 1;
 }
@@ -245,7 +227,7 @@ static void timerCallback(ClientData clientData ) {
 
 /*
  * -----------------------------------------------------------------------------
- *  cmdTelControl()
+ *  cmdTelTest()
  *
  *  active/desactive la prise de controle du telescope 
  *  thread::send  -async [tel1 threadid] "tel1 test 5000" 
@@ -279,7 +261,7 @@ int cmdTelTest(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
 
       timerDelay = atoi(argv[2]);
 
-      tel->timerToken = Tcl_CreateTimerHandler(timerDelay, timerCallback, (ClientData) tel);
+      tel->timerToken = Tcl_CreateTimerHandler(timerDelay, timerTestCallback, (ClientData) tel);
 
       // j'attends un evenement
       tel->timeDone = 0; 
