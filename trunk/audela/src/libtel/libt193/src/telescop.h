@@ -25,6 +25,7 @@
 
 #include <tcl.h>
 #include <libtel/libstruc.h>
+#include <pthread.h>       // pcreate_thread()
 
 /*
  * Donnees propres a chaque telescope.
@@ -37,8 +38,8 @@ struct telprop {
    void * outputTelescopTaskHandle;
    void * outputFilterTaskHandle;
    void * inputFilterTaskHandle;
-   unsigned char outputTelescopData;
-   unsigned char outputFilterData;
+   unsigned char outputTelescopNotification;
+   unsigned char outputFilterNotification;
    double filterMaxDelay;    
    double filterCurrentDelay;
    int northRelay;
@@ -52,6 +53,15 @@ struct telprop {
    int maxDetectorFilterInput;
    double startTime;
    int filterCommand;
+   Tcl_Channel telescopeCommandSocket;
+   Tcl_Channel telescopeNotificationSocket;
+   //int telescopeCommandSocket;
+   //int telescopeNotificationSocket;
+   char telescopeHost[128];
+   int  telescopeCommandPort;
+   int  telescopeNotificationPort;
+   void * telescopeNotificationThread;
+   //pthread_mutex_t mutex;
 };
 
 int tel_init(struct telprop *tel, int argc, char **argv);
@@ -86,6 +96,5 @@ int tel_filter_extremity(struct telprop *tel, char * extremity);
 
 int mytel_tcleval(struct telprop *tel,char *ligne);
 int mytel_correct(struct telprop *tel,char *direction, int duration);
-int mytel_setControl(struct telprop *tel,int control);
 #endif
 
