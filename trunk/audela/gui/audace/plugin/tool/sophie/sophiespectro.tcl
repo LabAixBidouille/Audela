@@ -2,7 +2,7 @@
 # @file     sophiespectro.tcl
 # @brief    fichier du namespace ::sophie::spectro
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiespectro.tcl,v 1.7 2009-09-19 15:46:48 robertdelmas Exp $
+# @version  $Id: sophiespectro.tcl,v 1.8 2009-10-12 17:05:39 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -22,6 +22,9 @@ namespace eval ::sophie::spectro {
    set private(deltaRms)  0.0        ; #--- dispersion des corrections delta
    set private(correctionNb)  0      ; #--- nombre de corrections
    set private(statisticsEnabled) 0  ; #---
+   set private(xFwhm)     0.0        ; #--- seeing sur l'axe X (en arsec)
+   set private(yFwhm)     0.0        ; #--- seeing sur l'axe Y (en arsec)
+   set private(skyLevel)  0.0        ; #--- fond du ciel (en ADU)
 
 }
 
@@ -122,12 +125,16 @@ proc ::sophie::spectro::readSocket { channel } {
          "!GET_STAT@" {
             #--- je recupere les statistiques ( alphaMean alphaRms deltaMean detaRms)
             set resultList [::sophie::spectro::getStatistics ]
+            #--- je calcule le seeing en faisant la moyenne de xFwhm et yFwhm
+            set seeing [expr ($private(xFwhm) + $private(yFwhm)) / 2.0 ]
             #--- j'enregistre l'image integree
-            saveImage [lindex $resultList 0] [lindex $resultList 1] [lindex $resultList 2] [lindex $resultList 3]
-            set log [ format "%s Ecart : A=%5.2f  Arms=%5.2f  D=%5.2f  Drms=%5.2f  Gain : AP=%s  AI=%s  DP=%s  DI=%s  Coord : RA=%s  Dec=%s\n" \
+            set fileName [saveImage [lindex $resultList 0] [lindex $resultList 1] [lindex $resultList 2] [lindex $resultList 3] $seeing $private(skyLevel)]
+            #--- j'ajoute un message dans le fichier de log
+            set log [ format "%s Ecart : A=%5.2f  Arms=%5.2f  D=%5.2f  Drms=%5.2f  Seeing=%5.2f skyLevel= %5.2f Gain : AP=%s  AI=%s  DP=%s  DI=%s  Coord : RA=%s  Dec=%s\n" \
                [ mc_date2iso8601 now ] \
                [lindex $resultList 0] [lindex $resultList 1] \
                [lindex $resultList 2] [lindex $resultList 3] \
+               $seeing $private(skyLevel) \
                [ expr $::conf(sophie,alphaProportionalGain) * 100 ] \
                [ expr $::conf(sophie,alphaIntegralGain) * 100 ] \
                [ expr $::conf(sophie,deltaProportionalGain) * 100 ] \
@@ -136,11 +143,16 @@ proc ::sophie::spectro::readSocket { channel } {
             ::sophie::log::writeLogFile $::audace(visuNo) log "$log"
             #--- je mets en forme le resultat pour le PC Sophie
             #--- a revoir ...A<20h>=<20h><20h><20h>2.68<20h><20h>Arms<20h>=<20h><20h>83.17<20h>D<20h>=<20h><20h><20h>2.74<20h>Drms<20h>=<20h>177.85<20h>
-            set resultString [format "!GET_STAT@    A = %5.2f  Arms = %5.2f  D = %5.2f  Drms = %5.2f" \
+            ###set resultString [format "!GET_STAT@    A = %5.2f  Arms = %5.2f  D = %5.2f  Drms = %5.2f" \
+            ###   [lindex $resultList 0] [lindex $resultList 1] \
+            ###   [lindex $resultList 2] [lindex $resultList 3] \
+            ###]
+            set resultString [format "!GET_STAT@    A = %5.2f  Arms = %5.2f  D = %5.2f  Drms = %5.2f  Seeing= %5.2f  SkyLevel= %5.2f FileName= %s " \
                [lindex $resultList 0] [lindex $resultList 1] \
                [lindex $resultList 2] [lindex $resultList 3] \
+               $seeing $private(skyLevel) $fileName \
             ]
-           ### ::console::disp "::sophie::spectro::spectro::readSocket resultString=$resultString\n"
+            ::console::disp "::sophie::spectro::spectro::readSocket resultString=$resultString\n"
             #--- je retourne le resultat au PC Sophie
             puts $channel $resultString
 
@@ -174,22 +186,42 @@ proc ::sophie::spectro::resetStatistics { } {
 ##------------------------------------------------------------
 # saveImage
 #  enregistre l'image integree
-#     nom du fichier : "prefixe-date.fit"
+#  Le nom du fichier est "guidage-dateISO8601.fit"
 #
-#  avec  prefixe = "centrage" ou "guidage"  suivant le mode courant
-#        date    = date courante au format ISO8601 , exemple : 2009-05-13T18:51:30.250
-#  Mots cles enregistre dans le fichier :
+#  exemple : guidage-2009-05-13T18:51:30.250.fit
+#
+#  Mots cles enregistre dans l'image integree :
 #   - BIN1     binning horizontal
 #   - BIN2     binning vertical
 #   - DATE-OBS  date de debut de pose
 #   - DATE-END  date de fin de pose
-#   - EXPOSURE  temps de pose
+#   - EXPOSURE  temps de pose individuel des images
 #   - NAXIS1   largeur de l'image en pixel
 #   - NAXIS2   hauteur de l'image en pixel
-#   -
+#
+#   - RA_MEAN  moyenne l'ecart etoile/consigne sur l'axe alpha
+#   - RA_RMS   ecart type de l'ecart etoile/consigne sur l'axe alpha
+#   - DEC_MEAN moyenne l'ecart etoile/consigne sur l'axe delta
+#   - DEC_RMS  ecart type de l'ecart etoile/consigne sur l'axe delta
+#   - SEEING   seeing moyenne (en arcsec)
+#   - BACKGROUND fond du ciel (en ADU)
+#   - DETNAM   nom de la camera
+#   - TELESCOP nom du telescope
+#   - SWCREATE nom du logiciel d'acquisition
+#
+# @param alphaMean
+# @param alphaRms
+# @param deltaMean
+# @param deltaRms
+# @param xFwhm
+# @param yFwhm
+#
+# @return filename
 #------------------------------------------------------------
-proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms} {
+proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms seeing skyLevel } {
    variable private
+
+   set shortName ""
 
    set sumBufNo [::sophie::getBufNo "sumBufNo"]
    if { $sumBufNo != 0 && [buf$sumBufNo imageready] == 1 } {
@@ -212,11 +244,14 @@ proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms} {
          ::keyword::setKeywordValue $visuNo "RA_RMS"   $alphaRms
          ::keyword::setKeywordValue $visuNo "DEC_MEAN" $deltaMean
          ::keyword::setKeywordValue $visuNo "DEC_RMS"  $deltaRms
+         ::keyword::setKeywordValue $visuNo "SEEING"   $seeing
+         ::keyword::setKeywordValue $visuNo "SKYLEVEL" $skyLevel
          ::keyword::setKeywordValue $visuNo "DETNAM"   [::confCam::getPluginProperty $camItem "name"]
          ::keyword::setKeywordValue $visuNo "TELESCOP" $::conf(telescope)
          ::keyword::setKeywordValue $visuNo "SWCREATE" "[::audela::getPluginTitle] $::audela(version)"
+         set keywordNameList [list RA_MEAN RA_RMS DEC_MEAN DEC_RMS SEEING SKYLEVEL DETNAM TELESCOP SWCREATE]
          #--- j'ajoute des mots clefs dans l'en-tete FITS de l'image
-         foreach keyword [ ::keyword::getKeywords $visuNo ] {
+         foreach keyword [ ::keyword::getKeywords $visuNo $keywordNameList] {
             #--- j'ajoute tous les mots cles qui ne sont pas vide
             buf$sumBufNo setkwd $keyword
          }
@@ -233,6 +268,22 @@ proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms} {
       ::console::affiche_erreur $::caption(sophie,sumNotReady)
    }
 
+   return $shortName
+}
+
+##------------------------------------------------------------
+# setSeeing
+#   memorise le seeing
+# @param xFwhm       seeing sur l'axe x (en arsec)
+# @param yFwhm       seeing sur l'axe y (en arsec)
+# #param background  fondu ciel (en ADU)
+#------------------------------------------------------------
+proc ::sophie::spectro::setSeeing { xFwhm yFwhm skyLevel} {
+   variable private
+
+   set private(xFwhm)      $xFwhm
+   set private(yFwhm)      $yFwhm
+   set private(skyLevel)   $skyLevel
 }
 
 ##------------------------------------------------------------
