@@ -1,7 +1,8 @@
-##------------------------------------------------------------# @file     sophiecommand.tcl
+##------------------------------------------------------------
+# @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.37 2009-10-11 16:15:14 robertdelmas Exp $
+# @version  $Id: sophiecommand.tcl,v 1.38 2009-10-12 17:07:13 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -515,18 +516,19 @@ proc ::sophie::setMode { { mode "" } } {
             set private(findFiber) 0
          }
 
-         buf$private(maskBufNo)  clear
-         buf$private(sumBufNo)   clear
-         buf$private(fiberBufNo) clear
+         ###buf$private(maskBufNo)  clear
+         ###buf$private(sumBufNo)   clear
+         ###buf$private(fiberBufNo) clear
          #--- je memorise les coordonnes de l'origine
          set private(originCoordGuide) $private(originCoord)
          #--- je change la taille de d'analyse de la cible
          set private(targetBoxSize) $::conf(sophie,guidingWindowSize)
          #--- je mets le thread de la camera en mode centrage
          ::camera::setAsynchroneParameter $private(camItem) \
-            "mode" "GUIDE" \
-            "findFiber" $private(findFiber) \
-            "zoom" 8
+            "mode"               "GUIDE"    \
+            "findFiber"          $private(findFiber) \
+            "originSumCounter"   0 \
+            "zoom"               8
 
          #--- je change le binning et je cree une fenetre centree sur la consigne
          if { $::conf(sophie,guidingMode) != "OBJECT" } {
@@ -609,7 +611,8 @@ proc ::sophie::setGuidingMode { visuNo } {
       ::camera::setAsynchroneParameter $private(camItem) \
             "guidingMode" $::conf(sophie,guidingMode) \
             "originCoord" [list $xOriginCoord $yOriginCoord] \
-            "findFiber" $private(findFiber)
+            "findFiber" $private(findFiber) \
+            "originSumCounter"   0
    }
 }
 
@@ -624,7 +627,8 @@ proc ::sophie::setFiberDetection { findFiber  } {
 
    ###set private(AsynchroneParameter) 1
    ::camera::setAsynchroneParameter $private(camItem) \
-      "findFiber" $private(findFiber)
+      "findFiber" $private(findFiber)  \
+      "originSumCounter"         0
 }
 
 #------------------------------------------------------------
@@ -2045,6 +2049,8 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                      ::sophie::control::setFocusInformation $private(targetDetection) $fiberStatus \
                         [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
                         $starX $starY $fwhmX $fwhmY $alphaDiff $deltaDiff $background $maxIntensity
+                     #--- je memorise le seeing
+                     ::sophie::spectro::setSeeing $fwhmX $fwhmY $background
                   }
                   "GUIDE" {
                      #--- je mets a jour les statistiques pour le PC Sophie
