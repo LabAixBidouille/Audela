@@ -1,6 +1,6 @@
 #
 # Fichier : keyword.cap
-# Mise a jour $Id: keyword.cap,v 1.18 2009-09-18 17:21:30 robertdelmas Exp $
+# Mise a jour $Id: keyword.cap,v 1.19 2009-10-12 16:56:31 michelpujol Exp $
 #
 
 #=========================================================================
@@ -63,6 +63,8 @@ set caption(keyword,description,RA_MEAN)               "Right Ascension Mean Cor
 set caption(keyword,description,RA_RMS)                "Right Ascension RMS Correction"
 set caption(keyword,description,DEC_MEAN)              "Declination Mean Correction"
 set caption(keyword,description,DEC_RMS)               "Declination RMS Correction"
+set caption(keyword,description,SEEING)                "Mean fwhm"
+set caption(keyword,description,SKYLEVEL)              "Sky backgound level"
 set caption(keyword,description,EQUINOX)               "Coordinates Equinox"
 set caption(keyword,description,RADECSYS)              "Coordinates System"
 set caption(keyword,description,IMAGETYP)              "Image Type"
@@ -133,6 +135,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,RA_RMS)             "Correction RMS de l'ascension droite"
    set caption(keyword,description,DEC_MEAN)           "Correction moyenne de la déclinaison"
    set caption(keyword,description,DEC_RMS)            "Correction RMS de la déclinaison"
+   set caption(keyword,description,SEEING)             "Fwhm moyenne"
+   set caption(keyword,description,SKYLEVEL)           "Fond du ciel"
    set caption(keyword,description,EQUINOX)            "Equinoxe des coordonnées"
    set caption(keyword,description,RADECSYS)           "Système de coordonnées"
    set caption(keyword,description,IMAGETYP)           "Type d'image"
@@ -203,6 +207,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,RA_RMS)             "Correzione RMS dell'ascensione retta"
    set caption(keyword,description,DEC_MEAN)           "Correzione media della declinazione"
    set caption(keyword,description,DEC_RMS)            "Correziome RMS della declinazione"
+   set caption(keyword,description,SEEING)             "#Mean fwhm"
+   set caption(keyword,description,SKYLEVEL)           "#Sky backgound level"
    set caption(keyword,description,EQUINOX)            "Epoca delle coordinate"
    set caption(keyword,description,RADECSYS)           "Sistema di coordinate"
    set caption(keyword,description,IMAGETYP)           "Tipo di immagine"
@@ -273,6 +279,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,RA_RMS)             "Corrección RMS de la ascensión recta"
    set caption(keyword,description,DEC_MEAN)           "Corrección media de la declinación"
    set caption(keyword,description,DEC_RMS)            "Corrección RMS de la declinación"
+   set caption(keyword,description,SEEING)             "#Mean fwhm"
+   set caption(keyword,description,SKYLEVEL)           "#Sky backgound level"
    set caption(keyword,description,EQUINOX)            "Equinoccio de coordenadas"
    set caption(keyword,description,RADECSYS)           "Sistema de coordenadas"
    set caption(keyword,description,IMAGETYP)           "Tipo de imagen"
@@ -343,6 +351,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,RA_RMS)             "Rektaszension RMS  Korrektur"
    set caption(keyword,description,DEC_MEAN)           "Deklination mittlere Korrektur"
    set caption(keyword,description,DEC_RMS)            "Deklination RMS Korrektur"
+   set caption(keyword,description,SEEING)             "#Mean fwhm"
+   set caption(keyword,description,SKYLEVEL)           "#Sky backgound level"
    set caption(keyword,description,EQUINOX)            "Equinox Koordinaten"
    set caption(keyword,description,RADECSYS)           "Koordinaten System"
    set caption(keyword,description,IMAGETYP)           "Bild Art"
@@ -413,6 +423,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,RA_RMS)             "# Correction RMS de l'ascension droite"
    set caption(keyword,description,DEC_MEAN)           "# Correction moyenne de la déclinaison"
    set caption(keyword,description,DEC_RMS)            "# Correction RMS de la déclinaison"
+   set caption(keyword,description,SEEING)             "#Mean fwhm"
+   set caption(keyword,description,SKYLEVEL)           "#Sky backgound level"
    set caption(keyword,description,EQUINOX)            "Equinócio de coordenadas"
    set caption(keyword,description,RADECSYS)           "Sistema de coordenadas"
    set caption(keyword,description,IMAGETYP)           "Tipo de imagem"
@@ -483,6 +495,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,RA_RMS)             "Right Ascension RMS Correction"
    set caption(keyword,description,DEC_MEAN)           "Declination Mean Correction"
    set caption(keyword,description,DEC_RMS)            "Declination RMS Correction"
+   set caption(keyword,description,SEEING)             "#Mean fwhm"
+   set caption(keyword,description,SKYLEVEL)           "#Sky backgound level"
    set caption(keyword,description,EQUINOX)            "Coordinates Equinox"
    set caption(keyword,description,RADECSYS)           "Coordinates System"
    set caption(keyword,description,IMAGETYP)           "Image Type"

@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.19 2009-08-30 22:27:10 michelpujol Exp $
+# Mise a jour $Id: keyword.tcl,v 1.20 2009-10-12 16:56:30 michelpujol Exp $
 #
 
 namespace eval ::keyword {
@@ -178,6 +178,8 @@ proc ::keyword::init { } {
    set private(raRms)               ""
    set private(decMean)             ""
    set private(decRms)              ""
+   set private(seeing)              ""
+   set private(skylevel)            ""
    set private(name_software)       "[ ::audela::getPluginTitle ] $::audela(version)"
    set private(name_software)       "[ ::keyword::headerFitsCompliant $::keyword::private(name_software) ]"
    set private(confName)            ""
@@ -218,6 +220,8 @@ proc ::keyword::init { } {
    lappend private(infosMotsClefs) [ list "RA_RMS"   $::caption(keyword,acquisition) ::keyword::private(raRms)               normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "RA rms correction"                             "arsec" ]
    lappend private(infosMotsClefs) [ list "DEC_MEAN" $::caption(keyword,acquisition) ::keyword::private(decMean)             normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "DEC mean correction"                           "arsec" ]
    lappend private(infosMotsClefs) [ list "DEC_RMS"  $::caption(keyword,acquisition) ::keyword::private(decRms)              normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "DEC rms correction"                            "arsec" ]
+   lappend private(infosMotsClefs) [ list "SEEING"   $::caption(keyword,acquisition) ::keyword::private(seeing)              normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "Seeing as stellar full-width at half-maximum"  "arsec" ]
+   lappend private(infosMotsClefs) [ list "SKYLEVEL" $::caption(keyword,acquisition) ::keyword::private(skylevel)            normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "Sky backgound level"  "ADU" ]
    lappend private(infosMotsClefs) [ list "SWCREATE" $::caption(keyword,logiciel)    ::keyword::private(name_software)       readonly ""                             ""                                             ""                                  ""                                       "" "" "string" "Acquisition software: http://www.audela.org/"  "" ]
    lappend private(infosMotsClefs) [ list "SWMODIFY" $::caption(keyword,logiciel)    ::keyword::private(name_software)       readonly ""                             ""                                             ""                                  ""                                       "" "" "string" "Processing software: http://www.audela.org/"   "" ]
    lappend private(infosMotsClefs) [ list "CONFNAME" $::caption(keyword,instrument)  ::keyword::private(confName)            normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Configuration name"                            "" ]
@@ -573,13 +577,12 @@ proc ::keyword::cmdCancelNewValueTypeImage { } {
 # getKeywords
 #    retourne la liste des mots cles coches
 #
-# Parametres :
-#    visuNo
-# Return :
-#    retourne la liste des mots cles coches
+# @param visuNo  numero de la visu:
+# @param keywordNameList liste des mots cles
+# @return retourne la liste des mots cles coches
 #    exemple : {LATITUDE N43d39m59s} {OBSERVER mpujol} {SITENAME Beauzelle}
 #------------------------------------------------------------------------------
-proc ::keyword::getKeywords { visuNo } {
+proc ::keyword::getKeywords { visuNo { keywordNameList "" } } {
    variable private
 
    #--- je verifie que la visu existe
@@ -597,24 +600,47 @@ proc ::keyword::getKeywords { visuNo } {
    #--- je recupere les dimensions des photosites
    onChangeCellDim $visuNo
 
-   #--- je memorise les mots cles coches
-   set result ""
-   foreach name $::conf(keyword,visu$visuNo,check) {
-      set motclef [lindex [split $name ","] 2]
-      foreach infosMotClef $private(infosMotsClefs) {
-         if { [ lindex $infosMotClef 0 ] == $motclef } {
-            #--- je recupere la temperature du CCD
-            if { $motclef == "CCD_TEMP" } {
-               onChangeTemperature $visuNo
+   if { [llength $keywordNameList] == 0 } {
+      #--- je recupere les mots cles coches
+      set result ""
+      foreach name $::conf(keyword,visu$visuNo,check) {
+         set motclef [lindex [split $name ","] 2]
+         foreach infosMotClef $private(infosMotsClefs) {
+            if { [ lindex $infosMotClef 0 ] == $motclef } {
+               #--- je recupere la temperature du CCD
+               if { $motclef == "CCD_TEMP" } {
+                  onChangeTemperature $visuNo
+               }
+               set textVariable [lindex $infosMotClef 2]
+               set valeur       [set $textVariable]
+               set type         [lindex $infosMotClef 10]
+               set commentaire  [lindex $infosMotClef 11]
+               set unite        [lindex $infosMotClef 12]
+               #--- j'ajoute les mots clef dans le resultat
+               lappend result [list $motclef $valeur $type $commentaire $unite]
+               break
             }
-            set textVariable [lindex $infosMotClef 2]
-            set valeur       [set $textVariable]
-            set type         [lindex $infosMotClef 10]
-            set commentaire  [lindex $infosMotClef 11]
-            set unite        [lindex $infosMotClef 12]
-            #--- j'ajoute les mots clef dans le resultat
-            lappend result [list $motclef $valeur $type $commentaire $unite]
-            break
+         }
+      }
+   } else {
+      #--- je recupere les mots cles de la liste fournie en parametre
+      set result ""
+      foreach keywordName $keywordNameList {
+         foreach infosMotClef $private(infosMotsClefs) {
+            if { [ lindex $infosMotClef 0 ] == $keywordName } {
+               if { $keywordName == "CCD_TEMP" } {
+                  #--- je recupere la temperature du CCD
+                  onChangeTemperature $visuNo
+               }
+               set textVariable [lindex $infosMotClef 2]
+               set valeur       [set $textVariable]
+               set type         [lindex $infosMotClef 10]
+               set commentaire  [lindex $infosMotClef 11]
+               set unite        [lindex $infosMotClef 12]
+               #--- j'ajoute les mots clef dans le resultat
+               lappend result [list $keywordName $valeur $type $commentaire $unite]
+               break
+            }
          }
       }
    }
@@ -632,12 +658,12 @@ proc ::keyword::getKeywords { visuNo } {
 #------------------------------------------------------------------------------
 proc ::keyword::headerFitsCompliant { stringInput } {
    set res $stringInput
-   set res [regsub -all {[é;ê;è;ë]} $res e]
-   set res [regsub -all {[à;â;ä]} $res a]
-   set res [regsub -all {[ï;î]} $res i]
-   set res [regsub -all {[ö;ô]} $res o]
-   set res [regsub -all {[ü;û;ù]} $res u]
-   set res [regsub -all {[ç]} $res c]
+   set res [regsub -all {[ï¿½;ï¿½;ï¿½;ï¿½]} $res e]
+   set res [regsub -all {[ï¿½;ï¿½;ï¿½]} $res a]
+   set res [regsub -all {[ï¿½;ï¿½]} $res i]
+   set res [regsub -all {[ï¿½;ï¿½]} $res o]
+   set res [regsub -all {[ï¿½;ï¿½;ï¿½]} $res u]
+   set res [regsub -all {[ï¿½]} $res c]
    set res [regsub -all {[']} $res " "]
    set stringOutput $res
    return $stringOutput
