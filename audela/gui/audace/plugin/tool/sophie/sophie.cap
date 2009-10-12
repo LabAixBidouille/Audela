@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.37 2009-10-11 18:11:46 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.38 2009-10-12 16:38:15 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -145,9 +145,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,centrageReussi)                "Centrage en cours"
    set caption(sophie,arreterCentrage)               "Arrêter le centrage"
    set caption(sophie,consigne)                      "Consigne"
-   set caption(sophie,consigneFibreHR)               "Consigne automatique\nsur la fibre A HR"
-   set caption(sophie,consigneFibreHE)               "Consigne automatique\nsur la fibre A HE"
-   set caption(sophie,consigneObjet)                 "Consigne manuelle\nsur l'objet"
+   set caption(sophie,consigneFibreHR)               "Consigne sur la fibre A HR"
+   set caption(sophie,consigneFibreHE)               "Consigne sur la fibre A HE"
+   set caption(sophie,consigneObjet)                 "Consigne sur l'objet hors fibre A"
    set caption(sophie,courbes)                       "Courbes"
    set caption(sophie,positionConsigneImage)         "Position de la consigne dans l'image (pixel)"
    set caption(sophie,intensiteMax)                  "Intensité maxi (ADU)"
