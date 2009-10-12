@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.19 2009-10-10 13:01:53 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.20 2009-10-12 17:08:52 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -130,6 +130,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
                set y1 1
                set x2 [buf$bufNo getpixelswidth]
                set y2 [buf$bufNo getpixelsheight]
+               set detectionMode 1
             } else {
                #--- la fentre est centree sur la consigne
                set x  [lindex $private(originCoord) 0]
@@ -138,6 +139,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
                set x2 [expr $x1 + 2 * $private(targetBoxSize)]
                set y1 [expr round($y - $private(targetBoxSize))]
                set y2 [expr $y1 + 2 * $private(targetBoxSize)]
+               set detectionMode 2
             }
          } else {
             #--- la fenetre est centree sur l'etoile
@@ -147,6 +149,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             set x2 [expr $x1 + 2 * $private(targetBoxSize)]
             set y1 [expr round($y - $private(targetBoxSize))]
             set y2 [expr $y1 + 2 * $private(targetBoxSize)]
+            set detectionMode 1
             ###::camerathread::disp  "targetCoord=[format "%.2f" [lindex $private(targetCoord) 0]]  x=$x  x1=$x1 x2=$x2\n"
          }
 
@@ -195,7 +198,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          #            message d'erreur
 
          set result [buf$bufNo fibercentro "[list $x1 $y1 $x2 $y2]" \
-            $private(biasBufNo) $private(maskBufNo) $private(sumBufNo) $private(fiberBufNo) \
+            $detectionMode $private(maskBufNo) $private(sumBufNo) $private(fiberBufNo) \
             $private(maskRadius) \
             $private(originSumMinCounter) $private(originSumCounter) \
             [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
@@ -250,7 +253,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          set dy [expr (double([lindex $private(targetCoord) 1]) - [lindex $private(originCoord) 1]) * [lindex $binning 1] ]
          ###::camerathread::disp  "camerathread: etoile dx=[format "%6.1f" $dx] dy=[format "%6.1f" $dy] \n"
 
-         #--- je pondere la position si on est en mode GUIDE avec detection de la fibre
+        #--- je pondere la position si on est en mode GUIDE avec detection de la fibre
          if { $private(mode) == "GUIDE" && $private(findFiber) == 1 } {
             set cgx $dx
             if { [expr abs($dx) * [lindex $binning 0] ] < 16 } {
@@ -292,8 +295,8 @@ proc ::camerathread::sophieAcquisitionLoop { } {
                set alphaCorrection [expr $alphaDiff * $private(alphaProportionalGain) + $alphaDiffCumul * $private(alphaIntegralGain) ]
                set deltaCorrection [expr $deltaDiff * $private(deltaProportionalGain) + $deltaDiffCumul * $private(deltaIntegralGain) ]
             } else {
-               set alphaCorrection $alphaDiff
-               set deltaCorrection $deltaDiff
+               set alphaCorrection [expr $alphaDiff * 0.9]
+               set deltaCorrection [expr $deltaDiff * 0.9]
                ###::camerathread::disp  "CENTER alphaDiff=[format "%6.2f" $alphaDiff]  deltaDiff=[format "%6.2f" $deltaDiff] (arsec) "
             }
 
