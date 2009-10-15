@@ -1,9 +1,0 @@
-This is a win32 build of tls1.6 statically linked to openssl 0.9.8g
-and linked with the tcl8.4.15 stubs table.  It was built using MSVC++ 6
-and passes all tests in the tls test suite except the ciphers tests as
-the set of ciphers has changed in OpenSSL.
-
-This version does not work with Tcl 8.2 - see the README.txt file for
-information about this.
-
-Patrick Thoyts
