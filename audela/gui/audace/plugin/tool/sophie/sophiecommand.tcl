@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.38 2009-10-12 17:07:13 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.39 2009-10-16 17:46:55 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -1004,10 +1004,10 @@ proc ::sophie::saveImage { } {
    variable private
 
    set catchError [ catch {
-      if { [file exists $::conf(sophie,imageDirectory)] == 0 } {
+      if { [file exists $::audace(rep_images)] == 0 } {
          #--- je signale que le repertoire n'existe pas
          tk_messageBox -title $::caption(sophie,titre) -icon error \
-         -message [format $::caption(sophie,directoryNotFound) $::conf(sophie,imageDirectory)]
+         -message [format $::caption(sophie,directoryNotFound) $::audace(rep_images)]
          return
       }
 
@@ -1022,7 +1022,7 @@ proc ::sophie::saveImage { } {
       #--- je remplace ":" par "-" car ce n'est pas un caractere autorise dasn le nom d'un fichier.
       set shortName [string map { ":" "-" } $shortName]
       #--- j'ajoute le repertoire
-      set fileName [file join $::conf(sophie,imageDirectory) $shortName]
+      set fileName [file join $::audace(rep_images) $shortName]
       #--- je sauvegarde une image avec une trace dans le fichier de log
       saveima $fileName $::audace(visuNo)
       set heure $::audace(tu,format,hmsint)
@@ -1042,13 +1042,13 @@ proc ::sophie::saveImage { } {
 #------------------------------------------------------------
 proc ::sophie::showImage { } {
 
-   if { [file exists $::conf(sophie,imageDirectory) ] == 1 } {
+   if { [file exists $::audace(rep_images) ] == 1 } {
       #--- j'ouvre une visu
       set visuSophie [ ::confVisu::create ]
       #--- je selectionne l'outil Visionneuse bis
       ::confVisu::selectTool $visuSophie ::visio2
       #--- je selectionne le répertoire
-      ::visio2::localTable::init $visuSophie "" $::conf(sophie,imageDirectory)
+      ::visio2::localTable::init $visuSophie "" $::audace(rep_images)
       #--- j'affiche le contenu du repertoire
       ##::visio2::localTable::fillTable $visuSophie
    } else {

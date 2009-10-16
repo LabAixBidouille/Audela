@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.33 2009-10-11 18:12:27 robertdelmas Exp $
+# @version   $Id: sophie.tcl,v 1.34 2009-10-16 17:46:35 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -151,7 +151,6 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(sophie,originSumMinCounter)] }       { set ::conf(sophie,originSumMinCounter)       5 }
    if { ! [ info exists ::conf(sophie,guidingWindowSize)] }         { set ::conf(sophie,guidingWindowSize)         200 }
    if { ! [ info exists ::conf(sophie,centerWindowSize)] }          { set ::conf(sophie,centerWindowSize)          100 }
-   if { ! [ info exists ::conf(sophie,imageDirectory)] }            { set ::conf(sophie,imageDirectory)            "$::audace(rep_images)" }
    if { ! [ info exists ::conf(sophie,guidingMode)] }               { set ::conf(sophie,guidingMode)               "FIBER_HR" } ; #--- FIBER_HR , FIBER_HE ou OBJECT
    ###if { ! [ info exists ::conf(sophie,fiberGuigindMode)] }          { set ::conf(sophie,fiberGuigindMode)          "HR" }
    if { ! [ info exists ::conf(sophie,fiberHRX)] }                  { set ::conf(sophie,fiberHRX)                  "314" }
@@ -193,7 +192,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(updateFilterId)    ""                ; #--- identifiant de la commande after pour la mise a jour de l'affichage du taux d'attenuation
    set private(updateFilterSate)  0                 ; #--- 0=pas de modificationde l'atténuation en cour, 1= modification de l'attennuation en cours
    set private(targetBoxSize)     100
-   set private(cameraCells)       [list 1536 1024 ] ; #--- dimensions du capteur de la camera
+   set private(cameraCells)       [list 1536 1024 ] ; #--- dimensions par defaut du capteur de la camera . cette valeur est mise a jour par ::sophie::adaptPanel
 
    set private(bufNo)             [::confVisu::getBufNo $visuNo]
    set private(hCanvas)           [::confVisu::getCanvas $visuNo]
