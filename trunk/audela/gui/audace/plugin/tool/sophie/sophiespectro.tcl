@@ -2,7 +2,7 @@
 # @file     sophiespectro.tcl
 # @brief    fichier du namespace ::sophie::spectro
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiespectro.tcl,v 1.8 2009-10-12 17:05:39 michelpujol Exp $
+# @version  $Id: sophiespectro.tcl,v 1.9 2009-10-16 17:47:10 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -228,9 +228,9 @@ proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms seeing
       set catchError [ catch {
          set visuNo  [::sophie::getVisuNo]
          set camItem [::confVisu::getCamItem $visuNo ]
-         if { [file exists $::conf(sophie,imageDirectory)] == 0 } {
+         if { [file exists $::audace(rep_images)] == 0 } {
             #--- je signale que le repertoire n'existe pas
-            error [format $::caption(sophie,directoryNotFound) $::conf(sophie,imageDirectory)]
+            error [format $::caption(sophie,directoryNotFound) $::audace(rep_images)]
          }
 
          #--- je recupere la date UT
@@ -238,7 +238,7 @@ proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms seeing
          #--- je remplace ":" par "-" car ce n'est pas un caractere autorise dasn le nom d'un fichier.
          set shortName [string map { ":" "-" } $shortName]
          #--- j'ajoute le repertoire dans le nom du fichier
-         set fileName [file join $::conf(sophie,imageDirectory) $shortName]
+         set fileName [file join $::audace(rep_images) $shortName]
          #--- j'ajoute les mot cles dans l'image integree
          ::keyword::setKeywordValue $visuNo "RA_MEAN"  $alphaMean
          ::keyword::setKeywordValue $visuNo "RA_RMS"   $alphaRms
