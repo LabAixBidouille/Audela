@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_7.cap
-# Mise a jour $Id: aud_menu_7.cap,v 1.19 2009-05-18 10:38:51 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.cap,v 1.20 2009-10-16 17:39:11 michelpujol Exp $
 #
 
 #=========================================================================
@@ -90,6 +90,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,repertoire)              "Répertoires"
    set caption(cwdWindow,repertoire_images)       "Répertoire des images :"
    set caption(cwdWindow,label_sous_rep)          "Nouveau sous répertoire"
+   set caption(cwdWindow,label_sous_rep,aucun)    "Pas de sous_répertoire"
+   set caption(cwdWindow,label_sous_rep,fixe)     "Nom du sous-répertoire"
+   set caption(cwdWindow,label_sous_rep,date)     "Date du jour"
    set caption(cwdWindow,creation_sous_rep)       "Créer"
    set caption(cwdWindow,repertoire_scripts)      "Répertoire des scripts :"
    set caption(cwdWindow,repertoire_catalogues)   "Répertoire des catalogues :"

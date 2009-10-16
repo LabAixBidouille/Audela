@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.106 2009-08-31 16:02:53 myrtillelaas Exp $
+# Mise a jour $Id: aud.tcl,v 1.107 2009-10-16 17:42:21 michelpujol Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -102,6 +102,53 @@ namespace eval ::audace {
          set audace(rep_images) [ file join $audace(rep_install) images ]
          set conf(rep_images)   [ file join $audace(rep_install) images ]
       }
+      if { ! [info exists conf(rep_images,mode) ] } {
+         set conf(rep_images,mode) "none"
+      }
+      if { ! [info exists conf(rep_images,subdir) ] } {
+         set conf(rep_images,subdir) ""
+      }
+
+      #--- je calcule audace(rep_images) en fonction du mode choisi
+      switch $::conf(rep_images,mode) {
+         "none" {
+            set audace(rep_images) $conf(rep_images)
+         }
+         "manual" {
+            if { $::conf(rep_images,subdir) != "" } {
+               set audace(rep_images) [file join $::conf(rep_images) $::conf(rep_images,subdir) ]
+            } else {
+               set audace(rep_images) $conf(rep_images)
+            }
+         }
+         "date" {
+            #--- je calcule la date du jour (date de la veille si heure < 12H)
+            set dateCourante [clock seconds]
+            if { [clock format $dateCourante -format "%H" ] < 12 } {
+               #--- Si on est avant 12H, je prends la date de la veille
+               set subdir [ clock format [ expr $dateCourante - 86400 ] -format "%Y%m%d" ]
+            } else {
+               #--- Sinon, je prends la date du jour
+               set subdir [ clock format $dateCourante -format "%Y%m%d" ]
+            }
+
+            set dirName [file join $::conf(rep_images) $subdir ]
+            if { ![file exists $dirName] } {
+               #--- je cree le repertoire
+               set catchError [catch {
+                  file mkdir $dirName
+                  set audace(rep_images) $dirName
+               }]
+               if { $catchError != 0 } {
+                  ::console::affiche_erreur "$::caption(cwdWindow,label_sous_rep) $errorInfo\n"
+                  set audace(rep_images) $conf(rep_images)
+               }
+            } else {
+              set audace(rep_images) $dirName
+            }
+         }
+      }
+
       #--- Chargement du repertoire des scripts
       if { [ info exists conf(rep_scripts) ] } {
          if { [ file exists "$conf(rep_scripts)" ] } {
