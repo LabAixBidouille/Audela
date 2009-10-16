@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise a jour $Id: aud_menu_7.tcl,v 1.16 2009-09-05 21:51:56 michelpujol Exp $
+# Mise a jour $Id: aud_menu_7.tcl,v 1.17 2009-10-16 17:38:51 michelpujol Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -22,9 +22,11 @@ namespace eval ::cwdWindow {
          wm deiconify $This
          focus $This
       } else {
-         set cwdWindow(dir_images) $audace(rep_images)
-         set cwdWindow(dir_scripts) $audace(rep_scripts)
-         set cwdWindow(dir_catalogues) $audace(rep_catalogues)
+         set cwdWindow(dir_images)        [file nativename $::conf(rep_images)]
+         set cwdWindow(rep_images,mode)   $::conf(rep_images,mode)
+         set cwdWindow(rep_images,subdir) $::conf(rep_images,subdir)
+         set cwdWindow(dir_scripts)       [file nativename $audace(rep_scripts)]
+         set cwdWindow(dir_catalogues)    [file nativename $audace(rep_catalogues)]
          set cwdWindow(long) [string length $cwdWindow(dir_images)]
          if {[string length $cwdWindow(dir_scripts)] > $cwdWindow(long)} {
             set cwdWindow(long) [string length $cwdWindow(dir_scripts)]
@@ -33,6 +35,18 @@ namespace eval ::cwdWindow {
             set cwdWindow(long) [string length $cwdWindow(dir_catalogues)]
          }
          set cwdWindow(long) [expr $cwdWindow(long) + 10]
+
+         #--- je calcule la date du jour
+         set heure_nouveau_repertoire "12"
+         set heure_courante [ lindex [ split $::audace(tu,format,hmsint) h ] 0 ]
+         if { $heure_courante < $heure_nouveau_repertoire } {
+            #--- Si on est avant l'heure de changement, je prends la date de la veille
+            set cwdWindow(sous_repertoire_date) [ clock format [ expr { [ clock seconds ] - 86400 } ] -format "%Y%m%d" ]
+         } else {
+            #--- Sinon, je prends la date du jour
+            set cwdWindow(sous_repertoire_date) [ clock format [ clock seconds ] -format "%Y%m%d" ]
+         }
+
          createDialog
       }
    }
@@ -48,6 +62,7 @@ namespace eval ::cwdWindow {
       #--- Nom du sous-repertoire
       set date [clock format [clock seconds] -format "%y%m%d"]
       set cwdWindow(sous_repertoire) $date
+      set cwdWindow(rep_images,mode) $::conf(rep_images,mode)
       #---
       toplevel $This
       wm geometry $This +180+50
@@ -70,18 +85,50 @@ namespace eval ::cwdWindow {
                entry $This.usr.1.a.ent1 -textvariable cwdWindow(dir_images) -width $cwdWindow(long)
                pack $This.usr.1.a.ent1 -side right -padx 5 -pady 5
             pack $This.usr.1.a -side top -fill both -expand 1
-            frame $This.usr.1.b -borderwidth 0 -relief raised
-               #--- Label nouveau sous-repertoire
-               label $This.usr.1.b.label_sous_rep -text "$caption(cwdWindow,label_sous_rep)"
-               pack $This.usr.1.b.label_sous_rep -side left -padx 5 -pady 5
+            ###frame $This.usr.1.b -borderwidth 0 -relief raised
+            ###   #--- Label nouveau sous-repertoire
+            ###   label $This.usr.1.b.label_sous_rep -text "$caption(cwdWindow,label_sous_rep)"
+            ###   pack $This.usr.1.b.label_sous_rep -side left -padx 5 -pady 5
+            ###   #--- Entry nouveau sous-repertoire
+            ###   entry $This.usr.1.b.ent_sous_rep -textvariable cwdWindow(sous_repertoire) -width 30
+            ###   pack $This.usr.1.b.ent_sous_rep -side left -padx 5 -pady 5
+            ###   #--- Button creation du sous-repertoire
+            ###   button $This.usr.1.b.button_sous_rep -text "$caption(cwdWindow,creation_sous_rep)" -width 7 \
+            ###      -command { ::cwdWindow::cmdCreateSubDir }
+            ###   pack $This.usr.1.b.button_sous_rep -side left -padx 5 -pady 5 -ipady 5
+            ###pack $This.usr.1.b -side top -fill both -expand 1
+            #--- Frame du titre et de la configuration
+            frame $This.usr.1.subdir -borderwidth 0 -relief groove
+               #--- pas de sous repertoire
+               radiobutton $This.usr.1.subdir.noneButton -highlightthickness 0 -state normal \
+                  -text "$::caption(cwdWindow,label_sous_rep,aucun)" \
+                  -value "none" \
+                  -variable cwdWindow(rep_images,mode)
+               grid $This.usr.1.subdir.noneButton -row 0 -column 0 -sticky wn
+
+               #--- sous repertoire manuel
+               radiobutton $This.usr.1.subdir.manualButton -highlightthickness 0 -state normal \
+                  -text "$::caption(cwdWindow,label_sous_rep,fixe)" \
+                  -value "manual" \
+                  -variable cwdWindow(rep_images,mode)
+               grid $This.usr.1.subdir.manualButton -row 1 -column 0 -sticky wn
                #--- Entry nouveau sous-repertoire
-               entry $This.usr.1.b.ent_sous_rep -textvariable cwdWindow(sous_repertoire) -width 30
-               pack $This.usr.1.b.ent_sous_rep -side left -padx 5 -pady 5
-               #--- Button creation du sous-repertoire
-               button $This.usr.1.b.button_sous_rep -text "$caption(cwdWindow,creation_sous_rep)" -width 7 \
-                  -command { ::cwdWindow::cmdCreateSubDir }
-               pack $This.usr.1.b.button_sous_rep -side left -padx 5 -pady 5 -ipady 5
-            pack $This.usr.1.b -side top -fill both -expand 1
+               entry $This.usr.1.subdir.manualEntry -textvariable cwdWindow(sous_repertoire) -width 30
+               grid $This.usr.1.subdir.manualEntry -row 1 -column 1 -sticky wn
+
+               #--- sous repertoire automatique (date du jour)
+               radiobutton $This.usr.1.subdir.dateButton -highlightthickness 0 -state normal \
+                  -text "$::caption(cwdWindow,label_sous_rep,date)" \
+                  -value "date" \
+                  -variable cwdWindow(rep_images,mode)
+               grid $This.usr.1.subdir.dateButton -row 2 -column 0 -sticky wn
+               #--- Entry date sous-repertoire
+               entry $This.usr.1.subdir.dateEntry -textvariable cwdWindow(sous_repertoire_date) -width 12 \
+                  -state readonly
+               grid $This.usr.1.subdir.dateEntry -row 2 -column 1 -sticky wn
+
+            pack $This.usr.1.subdir -side top -fill x -padx 12
+
          pack $This.usr.1 -side top -fill both -expand 1
          frame $This.usr.2 -borderwidth 1 -relief raised
             label $This.usr.2.lab2 -text "$caption(cwdWindow,repertoire_scripts)"
@@ -131,23 +178,6 @@ namespace eval ::cwdWindow {
    }
 
    #
-   # ::cwdWindow::cmdCreateSubDir
-   # Creation d'un sous-repertoire
-   #
-   proc cmdCreateSubDir { } {
-      variable This
-      global cwdWindow
-
-      set subDirectory [ file join $cwdWindow(dir_images) $cwdWindow(sous_repertoire) ]
-      set command "file mkdir $subDirectory"
-      file mkdir $subDirectory
-      set cwdWindow(dir_images) $subDirectory
-      update
-      focus $This.usr.1.a.ent1
-      event generate $This.usr.1.a.ent1 <Control-e>
-   }
-
-   #
    # ::cwdWindow::change_rep_images
    # Ouvre le navigateur pour choisir le repertoire des images
    #
@@ -162,9 +192,9 @@ namespace eval ::cwdWindow {
       #---
       set cwdWindow(rep_images) "1"
       $This.usr.1.a.ent1 configure -font $cwdWindow(rep_font_italic) -relief solid
-      set initialdir $cwdWindow(dir_images)
+      set initialdir [file normalize $cwdWindow(dir_images)]
       set title $caption(cwdWindow,repertoire_images)
-      set cwdWindow(dir_images) "[ ::cwdWindow::tkplus_chooseDir $initialdir $title $This ]"
+      set cwdWindow(dir_images) [file nativename [ ::cwdWindow::tkplus_chooseDir $initialdir $title $This ]]
       $This.usr.1.a.ent1 configure -textvariable cwdWindow(dir_images) -width $cwdWindow(long) \
          -font $cwdWindow(rep_font) -relief sunken
       focus $This.usr.1
@@ -185,9 +215,9 @@ namespace eval ::cwdWindow {
       #---
       set cwdWindow(rep_scripts) "1"
       $This.usr.2.ent2 configure -font $cwdWindow(rep_font_italic) -relief solid
-      set initialdir $cwdWindow(dir_scripts)
+      set initialdir [file normalize $cwdWindow(dir_scripts)]
       set title $caption(cwdWindow,repertoire_scripts)
-      set cwdWindow(dir_scripts) "[ ::cwdWindow::tkplus_chooseDir $initialdir $title $This ]"
+      set cwdWindow(dir_scripts) [file nativename [::cwdWindow::tkplus_chooseDir $initialdir $title $This ]]
       $This.usr.2.ent2 configure -textvariable cwdWindow(dir_scripts) -width $cwdWindow(long) \
          -font $cwdWindow(rep_font) -relief sunken
       focus $This.usr.2
@@ -208,9 +238,9 @@ namespace eval ::cwdWindow {
       #---
       set cwdWindow(rep_catalogues) "1"
       $This.usr.3.ent3 configure -font $cwdWindow(rep_font_italic) -relief solid
-      set initialdir $cwdWindow(dir_catalogues)
+      set initialdir [file normalize $cwdWindow(dir_catalogues)]
       set title $caption(cwdWindow,repertoire_catalogues)
-      set cwdWindow(dir_catalogues) "[ ::cwdWindow::tkplus_chooseDir $initialdir $title $This ]"
+      set cwdWindow(dir_catalogues) [file nativename [ ::cwdWindow::tkplus_chooseDir $initialdir $title $This ]]
       $This.usr.3.ent3 configure -textvariable cwdWindow(dir_catalogues) -width $cwdWindow(long) \
          -font $cwdWindow(rep_font) -relief sunken
       focus $This.usr.3
@@ -259,23 +289,59 @@ namespace eval ::cwdWindow {
       global audace caption conf cwdWindow
 
       #--- Substituer les \ par des /
-      regsub -all {[\\]} $cwdWindow(dir_images) "/" cwdWindow(dir_images)
-      regsub -all {[\\]} $cwdWindow(dir_scripts) "/" cwdWindow(dir_scripts)
-      regsub -all {[\\]} $cwdWindow(dir_catalogues) "/" cwdWindow(dir_catalogues)
+      set normalized_dir_images [file normalize $cwdWindow(dir_images)]
+      set normalized_dir_scripts [file normalize $cwdWindow(dir_scripts)]
+      set normalized_dir_catalogues [file normalize $cwdWindow(dir_catalogues)]
 
-      if {[file exists "$cwdWindow(dir_images)"] && [file isdirectory "$cwdWindow(dir_images)"]} {
-         set conf(rep_images) "$cwdWindow(dir_images)"
-         set audace(rep_images) "$cwdWindow(dir_images)"
-      } else {
-         set m "$cwdWindow(dir_images)"
-         append m "$caption(cwdWindow,pas_repertoire)"
-         tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
+
+      if { ![file exists $normalized_dir_images] || ![file isdirectory $normalized_dir_images]} {
+         set message "$cwdWindow(dir_images)"
+         append message "$caption(cwdWindow,pas_repertoire)"
+         tk_messageBox -message $message -title "$caption(cwdWindow,boite_erreur)"
          return -1
+      } else {
+         switch $cwdWindow(rep_images,mode) {
+            "none" {
+               #--- rien a faire
+               set dirName $cwdWindow(dir_images)
+            }
+            "manual" {
+               set dirName [file join $normalized_dir_images $cwdWindow(sous_repertoire) ]
+               if { ![file exists $dirName] } {
+                  #--- je cree le repertoire
+                  set catchError [catch {
+                     file mkdir $dirName
+                     set conf(rep_images,subdir) $cwdWindow(sous_repertoire)
+                  }]
+                  if { $catchError != 0 } {
+                     ::tkutil::displayErrorInfo "$::caption(cwdWindow,label_sous_rep)"
+                     return -1
+                  }
+               }
+            }
+            "date" {
+               set dirName [file join $normalized_dir_images $cwdWindow(sous_repertoire_date) ]
+               if { ![file exists $dirName] } {
+                  #--- je cree le repertoire
+                  set catchError [catch {
+                     file mkdir $dirName
+                  }]
+                  if { $catchError != 0 } {
+                     ::tkutil::displayErrorInfo "$::caption(cwdWindow,label_sous_rep)"
+                     return -1
+                  }
+               }
+            }
+         }
+         set ::conf(rep_images)        $normalized_dir_images
+         set ::conf(rep_images,mode)   $cwdWindow(rep_images,mode)
+         set audace(rep_images)        $dirName
       }
 
-      if {[file exists "$cwdWindow(dir_scripts)"] && [file isdirectory "$cwdWindow(dir_scripts)"]} {
-         set conf(rep_scripts) "$cwdWindow(dir_scripts)"
-         set audace(rep_scripts) "$cwdWindow(dir_scripts)"
+
+      if {[file exists $normalized_dir_scripts] && [file isdirectory $normalized_dir_scripts]} {
+         set conf(rep_scripts) $normalized_dir_scripts
+         set audace(rep_scripts) $normalized_dir_scripts
       } else {
          set m "$cwdWindow(dir_scripts)"
          append m "$caption(cwdWindow,pas_repertoire)"
@@ -283,9 +349,9 @@ namespace eval ::cwdWindow {
          return -1
       }
 
-      if {[file exists "$cwdWindow(dir_catalogues)"] && [file isdirectory "$cwdWindow(dir_catalogues)"]} {
-         set conf(rep_catalogues) "$cwdWindow(dir_catalogues)"
-         set audace(rep_catalogues) "$cwdWindow(dir_catalogues)"
+      if {[file exists $normalized_dir_catalogues] && [file isdirectory $normalized_dir_catalogues]} {
+         set conf(rep_catalogues) $normalized_dir_catalogues
+         set audace(rep_catalogues) $normalized_dir_catalogues
       } else {
          set m "$cwdWindow(dir_catalogues)"
          append m "$caption(cwdWindow,pas_repertoire)"
