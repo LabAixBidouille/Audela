@@ -2,7 +2,7 @@
 # @file     sophieconfig.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieconfig.tcl,v 1.23 2009-10-11 16:15:30 robertdelmas Exp $
+# @version  $Id: sophieconfig.tcl,v 1.24 2009-10-16 17:12:29 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -81,7 +81,6 @@ proc ::sophie::config::fillConfigPage { frm visuNo } {
    set widget(binFocalisationDefaut)    $::conf(sophie,focuseBinning)
    set widget(binGuidageDefaut)         $::conf(sophie,guideBinning)
    set widget(echelle)                  $::conf(sophie,pixelScale)
-   set widget(nbPosesAvantMaj)          $::conf(sophie,originSumMinCounter)
    set widget(tailleFenetreGuidage)     $::conf(sophie,guidingWindowSize)
    set widget(tailleFenetreCentrage)    $::conf(sophie,centerWindowSize)
    set widget(alphaProportionalGain)    [expr $::conf(sophie,alphaProportionalGain) * 100.0]
@@ -408,60 +407,49 @@ proc ::sophie::config::fillConfigAvanceePage { frm visuNo } {
       grid $frm.guidageAvancee.entryImageBias3Fast -in [ $frm.guidageAvancee getframe ] \
          -row 6 -column 1 -sticky ew
 
-      #--- Nombre de poses avant la mise à jour de la consigne
-      label $frm.guidageAvancee.labelnbPosesAvantMaj -text $::caption(sophie,nbPosesAvantMaj)
-      grid $frm.guidageAvancee.labelnbPosesAvantMaj -in [ $frm.guidageAvancee getframe ] \
-         -row 7 -column 0 -sticky w
-
-      Entry $frm.guidageAvancee.entrynbPosesAvantMaj \
-         -width 8 -justify center -editable 1 \
-         -textvariable ::sophie::config::widget(nbPosesAvantMaj)
-      grid $frm.guidageAvancee.entrynbPosesAvantMaj -in [ $frm.guidageAvancee getframe ] \
-         -row 7 -column 1 -sticky ens
-
       #--- Ecart min max
       label $frm.guidageAvancee.labelEcartMinMax -text $::caption(sophie,ecartMinMax)
       grid $frm.guidageAvancee.labelEcartMinMax -in [ $frm.guidageAvancee getframe ] \
-         -row 8 -column 0 -sticky w
+         -row 7 -column 0 -sticky w
 
       Entry $frm.guidageAvancee.entryEcartMinMax \
          -width 8 -justify center -editable 1 \
          -textvariable ::sophie::config::widget(minMaxDiff)
       grid $frm.guidageAvancee.entryEcartMinMax -in [ $frm.guidageAvancee getframe ] \
-         -row 8 -column 1 -sticky ens
+         -row 7 -column 1 -sticky ens
 
       #--- Precision du centrage
       label $frm.guidageAvancee.labelprecisionCentrage -text $::caption(sophie,arretCentrage)
       grid $frm.guidageAvancee.labelprecisionCentrage -in [ $frm.guidageAvancee getframe ] \
-         -row 9 -column 0 -sticky w
+         -row 8 -column 0 -sticky w
 
       Entry $frm.guidageAvancee.entryprecisionCentrage \
          -width 8 -justify center -editable 1 \
          -textvariable ::conf(sophie,centerMaxLimit)
       grid $frm.guidageAvancee.entryprecisionCentrage -in [ $frm.guidageAvancee getframe ] \
-         -row 9 -column 1 -sticky ens
+         -row 8 -column 1 -sticky ens
 
       #--- Taille de la fenetre de centrage
       label $frm.guidageAvancee.labeltailleFenetreCentrage -text $::caption(sophie,tailleFenetreCentrage)
       grid $frm.guidageAvancee.labeltailleFenetreCentrage -in [ $frm.guidageAvancee getframe ] \
-         -row 10 -column 0 -sticky w
+         -row 9 -column 0 -sticky w
 
       Entry $frm.guidageAvancee.entrytailleFenetreCentrage \
          -width 8 -justify center -editable 1 \
          -textvariable ::sophie::config::widget(tailleFenetreCentrage)
       grid $frm.guidageAvancee.entrytailleFenetreCentrage -in [ $frm.guidageAvancee getframe ] \
-         -row 10 -column 1 -sticky ens
+         -row 9 -column 1 -sticky ens
 
       #--- Taille de la fenetre de guidage
       label $frm.guidageAvancee.labeltailleFenetreGuidage -text $::caption(sophie,tailleFenetreGuidage)
       grid $frm.guidageAvancee.labeltailleFenetreGuidage -in [ $frm.guidageAvancee getframe ] \
-         -row 11 -column 0 -sticky w
+         -row 10 -column 0 -sticky w
 
       Entry $frm.guidageAvancee.entrytailleFenetreGuidage \
          -width 8 -justify center -editable 1 \
          -textvariable ::sophie::config::widget(tailleFenetreGuidage)
       grid $frm.guidageAvancee.entrytailleFenetreGuidage -in [ $frm.guidageAvancee getframe ] \
-         -row 11 -column 1 -sticky ens
+         -row 10 -column 1 -sticky ens
 
    pack $frm.guidageAvancee -side top -anchor w -fill x -expand 0
 
@@ -580,7 +568,6 @@ proc ::sophie::config::apply { visuNo } {
    set ::conf(sophie,focuseBinning)         $widget(binFocalisationDefaut)
    set ::conf(sophie,guideBinning)          $widget(binGuidageDefaut)
    set ::conf(sophie,pixelScale)            $widget(echelle)
-   set ::conf(sophie,originSumMinCounter)   $widget(nbPosesAvantMaj)
    set ::conf(sophie,guidingWindowSize)     $widget(tailleFenetreGuidage)
    set ::conf(sophie,centerWindowSize)      $widget(tailleFenetreCentrage)
    set ::conf(sophie,alphaProportionalGain) [expr double($widget(alphaProportionalGain)) / 100.0]
