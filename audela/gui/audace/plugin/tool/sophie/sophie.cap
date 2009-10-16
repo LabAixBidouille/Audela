@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.38 2009-10-12 16:38:15 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.39 2009-10-16 17:11:52 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -97,7 +97,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,valeurBias,bin2Fast)           "Valeur du Bias - Bin 2 - Mode Fast"
    set caption(sophie,valeurBias,bin3Slow)           "Valeur du Bias - Bin 3 - Mode Slow"
    set caption(sophie,valeurBias,bin3Fast)           "Valeur du Bias - Bin 3 - Mode Fast"
-   set caption(sophie,nbPosesAvantMaj)               "Nombre de poses avant la mise à jour de la consigne"
    set caption(sophie,ecartMinMax)                   "Ecart min/max (arcsec)"
    set caption(sophie,arretCentrage)                 "Arrêt du centrage (arcsec)"
    set caption(sophie,tailleFenetreCentrage)         "Taille de la fenêtre de centrage et de focalisation (pixel pour le binning 1x1)"
