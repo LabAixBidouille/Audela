@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.12 2009-09-20 14:11:43 michelpujol Exp $
+// $Id: libtel.c,v 1.13 2009-10-19 21:17:09 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -963,11 +963,14 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                tel->radec_move_rate=atof(argv[4]);
             }
             if (argc < 6) {
+               // deplacement de duree indeterminee
+               // exemple:  tel1 radec move n 1
                tel_radec_move(tel,argv[3]);
                Tcl_SetResult(interp,"",TCL_VOLATILE);
             } else {
-               //argv[5] =duree du dépcement en seconde 
-               //exemple :  tel1 radec move n 1 4
+               // deplacement de duree determinee
+               // argv[5]= duree du déplacement en seconde 
+               // exemple:  tel1 radec move n 1 0.4
                int timerDelay = (int) (1000.0 * atof(argv[5]));
                int foundEvent;
                if ( timerDelay >= tel->minRadecDelay ) {
