@@ -2,7 +2,7 @@
 # @file     sophieview.tcl
 # @brief    Fichier du namespace ::sophie::view
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieview.tcl,v 1.13 2009-09-20 13:37:02 michelpujol Exp $
+# @version  $Id: sophieview.tcl,v 1.14 2009-10-19 21:09:10 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -51,7 +51,7 @@ proc ::sophie::view::createPluginInstance { { in "" } { visuNo 1 } } {
    #--- je memorise le buffer initial
    set private(initialBuffer,$visuNo) [::confVisu::getBufNo $visuNo]
 
-   set private(bufferName,$visuNo)    "maskBufNo"
+   set private(bufferName,$visuNo)    "sumBufNo"
    set private(valeurCompteur)        ""
 
    #--- Petit raccourci
@@ -72,19 +72,19 @@ proc ::sophie::view::createPluginInstance { { in "" } { visuNo 1 } } {
       frame $frm.select -borderwidth 2 -relief groove
 
          #--- Bouton de selection de l'image a afficher
-         radiobutton $frm.select.mask -highlightthickness 0 -state normal \
-            -text "$::caption(sophie,masque)" \
-            -value "maskBufNo" \
-            -variable ::sophie::view::private(bufferName,$visuNo) \
-            -command "::sophie::view::setBuffer $visuNo"
-         pack $frm.select.mask -side top -anchor w -ipady 2 -padx 2 -pady 2
-
          radiobutton $frm.select.sum -highlightthickness 0 -state normal \
             -text "$::caption(sophie,imageIntegree)" \
             -value "sumBufNo" \
             -variable ::sophie::view::private(bufferName,$visuNo) \
             -command "::sophie::view::setBuffer $visuNo"
          pack $frm.select.sum -side top -anchor w -ipady 2 -padx 2 -pady 2
+
+         radiobutton $frm.select.mask -highlightthickness 0 -state normal \
+            -text "$::caption(sophie,masque)" \
+            -value "maskBufNo" \
+            -variable ::sophie::view::private(bufferName,$visuNo) \
+            -command "::sophie::view::setBuffer $visuNo"
+         pack $frm.select.mask -side top -anchor w -ipady 2 -padx 2 -pady 2
 
          radiobutton $frm.select.fiber -highlightthickness 0 -state normal \
             -text "$::caption(sophie,imageInversee)" \
@@ -134,8 +134,8 @@ proc ::sophie::view::startTool { visuNo } {
    #--- je choisi les seuils initiaux par defaut
    set ::conf(seuils,visu$visuNo,mode) "initiaux"
 
-   #--- je passe en zoom x1
-   ::confVisu::setZoom  $visuNo 2
+   #--- je passe en zoom x4
+   ::confVisu::setZoom  $visuNo 4
    #--- j'affiche l'image du buffer
    setBuffer $visuNo
    #--- je demarre le listener
