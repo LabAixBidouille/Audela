@@ -2,7 +2,7 @@
 # @file     fiberview.tcl
 # @brief    Fichier du namespace ::sophie::fiberview
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiefiberview.tcl,v 1.2 2009-09-20 16:12:05 michelpujol Exp $
+# @version  $Id: sophiefiberview.tcl,v 1.3 2009-10-19 21:08:02 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -126,8 +126,8 @@ proc ::sophie::fiberview::stopTool { visuNo } {
 
 ##------------------------------------------------------------
 # refresh
-#    met a jour le fenertage si necessaire
-#    affiche le contenu du buffer
+#     affiche une fentre centree sur la consigne
+#
 #------------------------------------------------------------
 proc ::sophie::fiberview::refresh { visuNo args } {
    variable private

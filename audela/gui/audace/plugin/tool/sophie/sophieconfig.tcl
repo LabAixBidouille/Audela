@@ -2,7 +2,7 @@
 # @file     sophieconfig.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieconfig.tcl,v 1.24 2009-10-16 17:12:29 robertdelmas Exp $
+# @version  $Id: sophieconfig.tcl,v 1.25 2009-10-19 21:07:49 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -631,12 +631,12 @@ proc ::sophie::config::apply { visuNo } {
 # @param  cameraMode     mode de la camera
 # @return rien
 #------------------------------------------------------------
-proc ::sophie::config::chooseBiasFile { cameraBinning cameraMode } {
-   variable widget
-
-   #--- Ouvre la fenetre de choix des images
-   set widget(biasFileName,$cameraBinning,$cameraMode) [ ::tkutil::box_load $::private(frm) $::audace(rep_images) $::audace(bufNo) "1" ]
-}
+###proc ::sophie::config::chooseBiasFile { cameraBinning cameraMode } {
+###   variable widget
+###
+###   #--- Ouvre la fenetre de choix des images
+###   set widget(biasFileName,$cameraBinning,$cameraMode) [ ::tkutil::box_load $::private(frm) $::audace(rep_images) $::audace(bufNo) "1" ]
+###}
 
 #------------------------------------------------------------
 # onScroll
