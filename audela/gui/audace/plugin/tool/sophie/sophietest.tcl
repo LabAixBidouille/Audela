@@ -2,7 +2,7 @@
 # @file     sophietest.tcl
 # @brief    Fichier du namespace ::sophie::test
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietest.tcl,v 1.18 2009-10-11 16:10:47 robertdelmas Exp $
+# @version  $Id: sophietest.tcl,v 1.19 2009-10-19 21:09:46 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -13,7 +13,10 @@ namespace eval ::sophie::test {
    set private(telescopeControl,commandSocket) ""
    set private(telescopeControl,dataSocket) ""
    set private(controlThreadId) ""
-
+   set private(telescopeControl,ra) ""
+   set private(telescopeControl,dec) ""
+   set private(telescopeControl,raSpeed) ""
+   set private(telescopeControl,decSpeed) ""
 }
 
       #--- je mesure la position de l'etoile et le trou de la fibre
@@ -233,7 +236,7 @@ proc ::sophie::test::tsim0 { }  {
 ##------------------------------------------------------------
 # tests de la fenetre de controle
 #------------------------------------------------------------
-proc ::sophie::tsim1 { }  {
+proc ::sophie::test::tsim1 { }  {
    set ::conf(sophie,simulation) 1
    set ::conf(sophie,simulationGenericFileName) "$::audace(rep_images)/test/OHP/simulation/centrage_"
    ::console::disp "simulation fichiers centrage_*\n"
@@ -379,7 +382,7 @@ proc ::sophie::test::createDialogSimul { } {
       grid $frm.pcsophie.hostEntry -in [ $frm.pcsophie getframe ] -row 0 -column 1 -sticky ens -padx 2
 
       #--- Bouton connect et disconnect
-      button $frm.pcsophie.connect -text $::caption(sophie,connecter) -command "::sophie::test::connecterPcGuidage"
+      button $frm.pcsophie.connect -text "Démarrer serveur" -command "::sophie::test::connecterPcGuidage"
       grid $frm.pcsophie.connect -in [ $frm.pcsophie getframe ] -row 0 -column 2 -sticky ens -padx 2
 
       #--- Bouton envoi de commande
@@ -429,28 +432,37 @@ proc ::sophie::test::createDialogSimul { } {
    #--- Frame pour l'interface de controle du T193
    TitleFrame $frm.pccontrol -borderwidth 2 -relief groove -text $::caption(sophie,simul,telescopeControl,title)
 
+      #--- Bouton connect et disconnect
+      button $frm.pccontrol.connect -text "Demarrer interface" -command "::sophie::test::connectTelescopeControl"
+      grid $frm.pccontrol.connect -in [ $frm.pccontrol getframe ] -row 0 -column 0 -sticky ens -padx 2
+
       #--- host
       label $frm.pccontrol.hostLabel -text $::caption(sophie,host)
-      grid $frm.pccontrol.hostLabel -in [ $frm.pccontrol getframe ] -row 0 -column 0 -sticky ens -padx 2
+      grid $frm.pccontrol.hostLabel -in [ $frm.pccontrol getframe ] -row 0 -column 1 -sticky ens -padx 2
       entry $frm.pccontrol.hostEntry -textvariable ::sophie::test::private(telescopeControl,host)
-      grid $frm.pccontrol.hostEntry -in [ $frm.pccontrol getframe ] -row 0 -column 1 -sticky ens -padx 2
+      grid $frm.pccontrol.hostEntry -in [ $frm.pccontrol getframe ] -row 0 -column 2 -sticky ens -padx 2
 
-      #--- Bouton connect et disconnect
-      button $frm.pccontrol.connect -text $::caption(sophie,connecter) -command "::sophie::test::connectTelescopeControl"
-      grid $frm.pccontrol.connect -in [ $frm.pccontrol getframe ] -row 0 -column 2 -sticky ens -padx 2
 
-      #--- Bouton envoi de commande
-      button $frm.pccontrol.clearstat -text "RAZ STAT" -command [list ::sophie::test::sendPcGuidage "RAZ_STAT" ]
-      grid $frm.pccontrol.clearstat -in [ $frm.pccontrol getframe ] -row 0 -column 3 -sticky ens -padx 2
+      #--- affiche RA Dec
+      label $frm.pccontrol.labelRA -text "RA"
+      grid $frm.pccontrol.labelRA -in [ $frm.pccontrol getframe ] -row 1 -column 1 -sticky ens -padx 0
+      entry $frm.pccontrol.entryRA   -textvariable ::sophie::test::private(telescopeControl,ra)
+      grid $frm.pccontrol.entryRA -in [ $frm.pccontrol getframe ] -row 1 -column 2 -sticky ens -padx 2
+      label $frm.pccontrol.labelDec -text "DEC"
+      grid $frm.pccontrol.labelDec -in [ $frm.pccontrol getframe ] -row 2 -column 1 -sticky ens -padx 0
+      entry $frm.pccontrol.entryDec   -textvariable ::sophie::test::private(telescopeControl,dec)
+      grid $frm.pccontrol.entryDec -in [ $frm.pccontrol getframe ] -row 2 -column 2 -sticky ens -padx 2
 
-      button $frm.pccontrol.staton -text "STAT ON" -command [list ::sophie::test::sendPcGuidage "STAT_ON" ]
-      grid $frm.pccontrol.staton -in [ $frm.pccontrol getframe ] -row 1 -column 3 -sticky ens -padx 2
+      label $frm.pccontrol.labelRaSpeed -text "ra speed"
+      grid $frm.pccontrol.labelRaSpeed -in [ $frm.pccontrol getframe ] -row 1 -column 3 -sticky ens -padx 0
+      entry $frm.pccontrol.entryRaSpeed   -textvariable ::sophie::test::private(telescopeControl,raSpeed)
+      grid $frm.pccontrol.entryRaSpeed -in [ $frm.pccontrol getframe ] -row 1 -column 4 -sticky ens -padx 2
 
-      button $frm.pccontrol.statoff -text "STAT OFF" -command [list ::sophie::test::sendPcGuidage "STAT_OFF" ]
-      grid $frm.pccontrol.statoff -in [ $frm.pccontrol getframe ] -row 2 -column 3 -sticky ens -padx 2
+      label $frm.pccontrol.labelDecSpeed -text "dec speed"
+      grid $frm.pccontrol.labelDecSpeed -in [ $frm.pccontrol getframe ] -row 2 -column 3 -sticky ens -padx 0
+      entry $frm.pccontrol.entryDecSpeed   -textvariable ::sophie::test::private(telescopeControl,decSpeed)
+      grid $frm.pccontrol.entryDecSpeed -in [ $frm.pccontrol getframe ] -row 2 -column 4 -sticky ens -padx 2
 
-      button $frm.pccontrol.getstat -text "GET STAT" -command [list ::sophie::test::sendPcGuidage "GET_STAT" ]
-      grid $frm.pccontrol.getstat -in [ $frm.pccontrol getframe ] -row 3 -column 3 -sticky ens -padx 2
 
    pack $frm.pccontrol -in $frm -side top -fill both -expand 1
 
@@ -569,7 +581,7 @@ proc ::sophie::test::connecterPcGuidage { } {
    set catchError [ catch {
       if { $private(pcSophie,socketChannel) == "" } {
          ::sophie::test::openSocketSophie
-         $private(frm).pcsophie.connect configure -text "dï¿½connecter"
+         $private(frm).pcsophie.connect configure -text "déconnecter"
       } else {
          ::sophie::test::closeSocketSophie
          $private(frm).pcsophie.connect configure -text "connecter"
@@ -684,11 +696,11 @@ proc ::sophie::test::connectTelescopeControl { } {
          ###::sophie::test::openTelescopeControlSocket
          console::disp "::sophie::test::connectTelescopeControl avant openTelescopeControlSocket\n"
          ::thread::send $private(controlThreadId)  "::sophie::test::openTelescopeControlSocket"
-         $private(frm).pccontrol.connect configure -text "dï¿½connecter"
+         $private(frm).pccontrol.connect configure -text "Arreter interface"
       } else {
          #--- je referme les sockets et j'arrete le thread
          closeTelescopeControl
-         $private(frm).pccontrol.connect configure -text "connecter"
+         $private(frm).pccontrol.connect configure -text ""Démarrer interface""
       }
    }]
 
@@ -712,10 +724,26 @@ proc ::sophie::test::closeTelescopeControl { } {
 }
 
 
+#------------------------------------------------------------
+# writeTelescopeNotificationSocket
+#    envoi une notification a l'interface de controle
+#------------------------------------------------------------
 proc ::sophie::test::writeTelescopeNotificationSocket { notification } {
    variable private
 
    ::thread::send $private(controlThreadId) [list ::sophie::test::writeTelescopeNotificationSocket $notification]
+}
+
+#------------------------------------------------------------
+# setRadec
+#    met a jour l'affichage des coordonnees RADEC
+#------------------------------------------------------------
+proc ::sophie::test::setRadec { ra dec raSpeed decSpeed } {
+   variable private
+   set private(telescopeControl,ra)  $ra
+   set private(telescopeControl,dec) $dec
+   set private(telescopeControl,raSpeed) $raSpeed
+   set private(telescopeControl,decSpeed) $decSpeed
 }
 
 
