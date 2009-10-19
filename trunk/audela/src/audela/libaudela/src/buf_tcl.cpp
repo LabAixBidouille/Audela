@@ -4756,21 +4756,22 @@ int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 //
 //
  *  Parameters IN:
- *  @param     Argv[2]= [list x1 y1 x2 y2 ] fenetre de detection
- *  @param     Argv[3]=biasBufNo       numero du buffer du bias
- *  @param     Argv[4]=maskBufNo       numero du buffer du masque
- *  @param     Argv[5]=sumBufNo        numero du buffer de l'image integree
- *  @param     Argv[6]=fiberBufNo      numero du buffer de l'image resultat
- *  @param     Argv[7]=maskRadius      rayon du masque 
- *  @param     Argv[8]=originSumMinCounter   nombre d'images minimum a integrer pour mettre a jour la consigne
- *  @param     Argv[9]=originSumCounter   numero de l'acquisition courante 
- *  @param     Argv[10]=previousFiberX abcisse du centre de la fibre
- *  @param     Argv[11]=previousFiberY ordonnee du centre de la fibre 
- *  @param     Argv[12]=maskFwhm       largeur a mi hauteur de la gaussienne du masque
- *  @param     Argv[13]=findFiber      recherche de l'entrée de fibre
- *  @param     Argv[14]=pixelMinCount  nombre minimal de pixels
- *  @param     Argv[15]=maskPercent    pourcentage du niveau du mask
- *  @param     Argv[16]=biasValue      valeur du bias
+ *  @param     Argv[2]=[list x1 y1 x2 y2] fenetre de detection de l'etoile
+ *  @param     Argv[3]=starDetectionMode  1=fit de gaussienne  2=barycentre
+ *  @param     Argv[4]=integratedImage 0=pas d'image integree, 1=image integree centree la fenetre, 2=image integree centree sur la consigne
+ *  @param     Argv[5]=findFiber       recherche de l'entrée de fibre
+ *  @param     Argv[6]=maskBufNo       numero du buffer du masque
+ *  @param     Argv[7]=sumBufNo        numero du buffer de l'image integree
+ *  @param     Argv[8]=fiberBufNo      numero du buffer de l'image resultat
+ *  @param     Argv[9]=originSumMinCounter   nombre d'images minimum a integrer pour mettre a jour la consigne
+ *  @param     Argv[10]=originSumCounter   numero de l'acquisition courante 
+ *  @param     Argv[11]=previousFiberX abcisse du centre de la fibre
+ *  @param     Argv[12]=previousFiberY ordonnee du centre de la fibre 
+ *  @param     Argv[13]=maskRadius     rayon du masque 
+ *  @param     Argv[14]=maskFwhm       largeur a mi hauteur de la gaussienne du masque
+ *  @param     Argv[15]=pixelMinCount  nombre minimal de pixels
+ *  @param     Argv[16]=maskPercent    pourcentage du niveau du masque
+ *  @param     Argv[17]=biasValue      valeur du bias
  *
  *  @return si TCL_OK 
  *             list[0] starStatus      resultat de la recherche de la fibre
@@ -4794,7 +4795,7 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
    char parameters[]= "{x1 y1 x2 y2} biasBufNo maskBufNo sumBufNo fiberBufNo";
 
    // On recupere les parametres (et eventuellement on en met par defaut).
-   if(argc!=17) {
+   if(argc!=18) {
       sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],parameters);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       retour = TCL_ERROR;
@@ -4803,8 +4804,10 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
       int listArgc;                      // Nombre d'elements dans la liste des coordonnees.
 
       int x1, y1, x2, y2;                // Position de la fenetre
+      int starDetectionMode;
+      int integratedImage;                
       int findFiber;
-      int biasBufNo=0, maskBufNo=0, sumBufNo=0, fiberBufNo=0;
+      int maskBufNo=0, sumBufNo=0, fiberBufNo=0;
       int maskRadius=0;
       double maskFwhm=0;                  // largeur a mi hauteur de la gaussienne du masque
       double maskPercent=0;
@@ -4823,106 +4826,110 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
       char message[1024]; 
 
       // j'intialise le message d'erreur
-      sprintf(ligne,"Usage: %s %s %s\n intensityThresold must be a double",argv[0],argv[1],parameters);
+      sprintf(ligne,"");
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 
       if(Tcl_SplitList(interp,argv[2],&listArgc,&listArgv)!=TCL_OK) {
          sprintf(ligne,"Window struct not valid (not a list?) : must be {x1 y1 x2 y2}");
-         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
       } else if(listArgc!=4) {
          sprintf(ligne,"Window struct not valid (not a list?) : must be {x1 y1 x2 y2}");
-         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
       } else {
          if(Tcl_GetInt(interp,listArgv[0],&x1)!=TCL_OK) {
             sprintf(ligne,"Usage: %s %s %s\nx1 must be an integer",argv[0],argv[1],parameters);
-            Tcl_AppendResult(interp,ligne,TCL_VOLATILE);
+            Tcl_AppendResult(interp,ligne,(char *) NULL);
             retour = TCL_ERROR;
          } else if(Tcl_GetInt(interp,listArgv[1],&y1)!=TCL_OK) {
             sprintf(ligne,"Usage: %s %s %s\ny1 must be an integer",argv[0],argv[1],parameters);
-            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            Tcl_AppendResult(interp,ligne,(char *) NULL);
             retour = TCL_ERROR;
          } else if(Tcl_GetInt(interp,listArgv[2],&x2)!=TCL_OK) {
             sprintf(ligne,"Usage: %s %s %s\nx2 must be an integer",argv[0],argv[1],parameters);
-            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            Tcl_AppendResult(interp,ligne,(char *) NULL);
             retour = TCL_ERROR;
          } else if(Tcl_GetInt(interp,listArgv[3],&y2)!=TCL_OK) {
             sprintf(ligne,"Usage: %s %s %s\ny2 must be an integer",argv[0],argv[1],parameters);
-            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            Tcl_AppendResult(interp,ligne,(char *) NULL);
             retour = TCL_ERROR;
          }
       }
 
-      if(Tcl_GetInt(interp,argv[3],&biasBufNo)!=TCL_OK) {
-         sprintf(ligne,"biasBufNo=%d is not integer", biasBufNo);
-         Tcl_AppendResult(interp,ligne,TCL_VOLATILE);
+      if(Tcl_GetInt(interp,argv[3],&starDetectionMode)!=TCL_OK) {
+         sprintf(ligne,"starDetectionMode=%d is not integer", starDetectionMode);
+         Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
       } 
-      if(Tcl_GetInt(interp,argv[4],&maskBufNo)!=TCL_OK) {
-         sprintf(ligne,"maskBufNo=%d is not integer", maskBufNo);
-         Tcl_AppendResult(interp,ligne,TCL_VOLATILE);
+      if(Tcl_GetInt(interp,argv[4],&integratedImage)!=TCL_OK) {
+         sprintf(ligne,"integratedImage=%d is not integer", integratedImage);
+         Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
       } 
-      if(Tcl_GetInt(interp,argv[5],&sumBufNo)!=TCL_OK) {
-         sprintf(ligne,"sumBufNo=%d is not integer", sumBufNo);
-         Tcl_AppendResult(interp,ligne,TCL_VOLATILE);
-         retour = TCL_ERROR;
-      } 
-      if(Tcl_GetInt(interp,argv[6],&fiberBufNo)!=TCL_OK) {
-         sprintf(ligne,"fiberBufNo=%d is not integer", fiberBufNo);
-         Tcl_AppendResult(interp,ligne,TCL_VOLATILE);
-         retour = TCL_ERROR;
-      } 
-      if(Tcl_GetInt(interp,argv[7],&maskRadius)!=TCL_OK) {
-         sprintf(ligne,"maskRadius=%d is not integer", maskRadius);
-         Tcl_AppendResult(interp,ligne,TCL_VOLATILE);
-         retour = TCL_ERROR;
-      } 
-      if(Tcl_GetInt(interp,argv[8],&originSumMinCounter)!=TCL_OK) {
-         sprintf(ligne,"originSumMinCounter=%d is not integer", originSumMinCounter);
-         Tcl_AppendResult(interp,ligne,TCL_VOLATILE);
-         retour = TCL_ERROR;
-      } 
-      if(Tcl_GetInt(interp,argv[9],&originSumCounter)!=TCL_OK) {
-         sprintf(ligne,"originSumCounter=%d is not integer", originSumCounter);
-         Tcl_AppendResult(interp,ligne,TCL_VOLATILE);
-         retour = TCL_ERROR;
-      } 
-      if(Tcl_GetDouble(interp,argv[10],&previousFiberX)!=TCL_OK) {
-         sprintf(ligne,"previousFiberX=%f is not double", previousFiberX);
-         Tcl_AppendResult(interp,ligne,TCL_VOLATILE);
-         retour = TCL_ERROR;
-      } 
-      if(Tcl_GetDouble(interp,argv[11],&previousFiberY)!=TCL_OK) {
-         sprintf(ligne,"previousFiberY=%f is not double", previousFiberY);
-         Tcl_AppendResult(interp,ligne,TCL_VOLATILE);
-         retour = TCL_ERROR;
-      } 
-      if(Tcl_GetDouble(interp,argv[12],&maskFwhm)!=TCL_OK) {
-         sprintf(ligne,"maskFwhm=%f is not double", maskFwhm);
-         Tcl_AppendResult(interp,ligne,TCL_VOLATILE);
-         retour = TCL_ERROR;
-      } 
-      if(Tcl_GetInt(interp,argv[13],&findFiber)!=TCL_OK) {
+      if(Tcl_GetInt(interp,argv[5],&findFiber)!=TCL_OK) {
          sprintf(ligne,"findFiber=%d is not integer", findFiber);
-         Tcl_AppendResult(interp,ligne,TCL_VOLATILE);
+         Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
       } 
-      
-      if(Tcl_GetInt(interp,argv[14],&pixelMinCount)!=TCL_OK) {
+      if(Tcl_GetInt(interp,argv[6],&maskBufNo)!=TCL_OK) {
+         sprintf(ligne,"maskBufNo=%d is not integer", maskBufNo);
+         Tcl_AppendResult(interp,ligne,(char *) NULL);
+         retour = TCL_ERROR;
+      } 
+      if(Tcl_GetInt(interp,argv[7],&sumBufNo)!=TCL_OK) {
+         sprintf(ligne,"sumBufNo=%d is not integer", sumBufNo);
+         Tcl_AppendResult(interp,ligne,(char *) NULL);
+         retour = TCL_ERROR;
+      } 
+      if(Tcl_GetInt(interp,argv[8],&fiberBufNo)!=TCL_OK) {
+         sprintf(ligne,"fiberBufNo=%d is not integer", fiberBufNo);
+         Tcl_AppendResult(interp,ligne,(char *) NULL);
+         retour = TCL_ERROR;
+      } 
+      if(Tcl_GetInt(interp,argv[9],&originSumMinCounter)!=TCL_OK) {
+         sprintf(ligne,"originSumMinCounter=%d is not integer", originSumMinCounter);
+         Tcl_AppendResult(interp,ligne,(char *) NULL);
+         retour = TCL_ERROR;
+      } 
+      if(Tcl_GetInt(interp,argv[10],&originSumCounter)!=TCL_OK) {
+         sprintf(ligne,"originSumCounter=%d is not integer", originSumCounter);
+         Tcl_AppendResult(interp,ligne,(char *) NULL);
+         retour = TCL_ERROR;
+      } 
+      if(Tcl_GetDouble(interp,argv[11],&previousFiberX)!=TCL_OK) {
+         sprintf(ligne,"previousFiberX=%f is not double", previousFiberX);
+         Tcl_AppendResult(interp,ligne,(char *) NULL);
+         retour = TCL_ERROR;
+      } 
+      if(Tcl_GetDouble(interp,argv[12],&previousFiberY)!=TCL_OK) {
+         sprintf(ligne,"previousFiberY=%f is not double", previousFiberY);
+         Tcl_AppendResult(interp,ligne,(char *) NULL);
+         retour = TCL_ERROR;
+      } 
+      if(Tcl_GetInt(interp,argv[13],&maskRadius)!=TCL_OK) {
+         sprintf(ligne,"maskRadius=%d is not integer", maskRadius);
+         Tcl_AppendResult(interp,ligne,(char *) NULL);
+         retour = TCL_ERROR;
+      } 
+      if(Tcl_GetDouble(interp,argv[14],&maskFwhm)!=TCL_OK) {
+         sprintf(ligne,"maskFwhm=%f is not double", maskFwhm);
+         Tcl_AppendResult(interp,ligne,(char *) NULL);
+         retour = TCL_ERROR;
+      }       
+      if(Tcl_GetInt(interp,argv[15],&pixelMinCount)!=TCL_OK) {
          sprintf(ligne,"pixelMinCount=%d is not integer", pixelMinCount);
-         Tcl_AppendResult(interp,ligne,TCL_VOLATILE);
+         Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
       } 
-      if(Tcl_GetDouble(interp,argv[15],&maskPercent)!=TCL_OK) {
+      if(Tcl_GetDouble(interp,argv[16],&maskPercent)!=TCL_OK) {
          sprintf(ligne,"maskPercent=%f is not double", maskPercent);
-         Tcl_AppendResult(interp,ligne,TCL_VOLATILE);
+         Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
       } 
-      if(Tcl_GetDouble(interp,argv[16],&biasValue)!=TCL_OK) {
+      if(Tcl_GetDouble(interp,argv[17],&biasValue)!=TCL_OK) {
          sprintf(ligne,"biasValue=%f is not double", biasValue);
-         Tcl_AppendResult(interp,ligne,TCL_VOLATILE);
+         Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
       } 
 
@@ -4945,8 +4952,8 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             }
             strcpy(message,"");
             buffer->AstroFiberCentro(x1, y1, x2, y2, 
-               findFiber,
-               biasBufNo, maskBufNo, sumBufNo, fiberBufNo,
+               starDetectionMode, integratedImage, findFiber, 
+               maskBufNo, sumBufNo, fiberBufNo,
                maskRadius, maskFwhm, maskPercent,
                originSumMinCounter, originSumCounter,
                previousFiberX, previousFiberY,
