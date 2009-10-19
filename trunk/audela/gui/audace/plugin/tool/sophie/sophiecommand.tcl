@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.39 2009-10-16 17:46:55 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.40 2009-10-19 21:07:27 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -238,16 +238,16 @@ proc ::sophie::setBinningAndWindow { binning { windowSize ""} { centerCoords "" 
    #--- je change les paramètres dans le thread
    if { $private(acquisitionState) != 0 } {
       set targetBoxSize [ expr int($private(targetBoxSize) / (2.0 * $private(xBinning))) ]
-      ###set private(AsynchroneParameter) 1
       ::camera::setAsynchroneParameter $private(camItem) \
          "binning"      [list $private(xBinning) $private(yBinning)] \
          "window"       [list $x1 $y1 $x2 $y2 ] \
-         "originCoord"  [list $xOriginCoord $yOriginCoord] \
          "targetCoord"  [list $xTargetCoord $yTargetCoord] \
          "maskRadius"   [expr $::conf(sophie,maskRadius) / $private(xBinning)]  \
          "maskFwhm"     [expr $::conf(sophie,maskFwhm)   / $private(xBinning)]   \
          "targetBoxSize" $targetBoxSize \
          "biasValue"    $private(biasValue)
+      ::camera::setParam $private(camItem) "originCoord"  [list $xOriginCoord $yOriginCoord]
+      ::camera::setParam $private(camItem) "targetCoord"  [list $xOriginCoord $yOriginCoord]
    }
 }
 
@@ -530,17 +530,19 @@ proc ::sophie::setMode { { mode "" } } {
             "originSumCounter"   0 \
             "zoom"               8
 
-         #--- je change le binning et je cree une fenetre centree sur la consigne
+         #--- je change le binning
          if { $::conf(sophie,guidingMode) != "OBJECT" } {
             setBinningAndWindow $::conf(sophie,guideBinning) $::conf(sophie,guidingWindowSize) $private(originCoord)
+            #--- je ferme la fenetre d'affichage de la fibre au cas ou elle serait enore ouverte
             ::sophie::fiberview::closeWindow
          } else {
             setBinningAndWindow $::conf(sophie,guideBinning) "full"
+            #--- j'affiche la fenetre d'affichage de la fibre
             ::sophie::fiberview::run $private(visuNo)
          }
       }
    }
-
+   ::sophie::setGuidingMode $private(visuNo)
    #--- je mets a jour la fenetre de controle
    ::sophie::control::setMode $private(mode)
 }
@@ -548,7 +550,7 @@ proc ::sophie::setMode { { mode "" } } {
 ##------------------------------------------------------------
 # setGuidingMode
 #    - change la position de la consigne en fonction de la variable ::conf(sophie,guidingMode)
-#    - met à jour l'affichage de la fentre de controle
+#    - met à jour l'affichage de la fenetre de controle
 #    - met à jour le thread de la camera si l'acquisition est en cours
 #    - ouvre la visu de la fibre si mode=GUIDE et guidingMode=OBJECT
 # @param visuNo numero de visu de la fenetre principale de sophie
@@ -599,6 +601,7 @@ proc ::sophie::setGuidingMode { visuNo } {
          }
       }
    }
+
    #--- je mets a jour la fenetre de controle
    ::sophie::control::setOriginCoords [lindex $private(originCoord) 0] [lindex $private(originCoord) 1]
    ::sophie::control::setGuidingMode $::conf(sophie,guidingMode)
@@ -607,10 +610,12 @@ proc ::sophie::setGuidingMode { visuNo } {
    if { $private(acquisitionState) != 0 } {
       set xOriginCoord [ expr ( [lindex $private(originCoord) 0] - $private(xWindow) + 1 ) / $private(xBinning)  ]
       set yOriginCoord [ expr ( [lindex $private(originCoord) 1] - $private(yWindow) + 1 ) / $private(yBinning)  ]
-      ###set private(AsynchroneParameter) 1
+      set xFiberCoord [ expr ( $::conf(sophie,fiberHRX) - $private(xWindow) + 1 ) / $private(xBinning)  ]
+      set yFiberCoord [ expr ( $::conf(sophie,fiberHRY) - $private(yWindow) + 1 ) / $private(yBinning)  ]
       ::camera::setAsynchroneParameter $private(camItem) \
             "guidingMode" $::conf(sophie,guidingMode) \
             "originCoord" [list $xOriginCoord $yOriginCoord] \
+            "fiberCoord" [list $xFiberCoord $yFiberCoord] \
             "findFiber" $private(findFiber) \
             "originSumCounter"   0
    }
@@ -880,48 +885,12 @@ proc ::sophie::loadBias { biasWindow } {
 
    #--- je recupere le nom du fichier Bias en fonction du binning et du mode d'acquisition
    if { $private(xBinning) == 1 || $private(xBinning) == 2 || $private(xBinning) == 3 } {
-      ###set biasFileName $::conf(sophie,biasFileName,$private(xBinning),$cameraMode)
       set private(biasValue) $::conf(sophie,biasFileName,$private(xBinning),$cameraMode)
    } else {
-      ###set biasFileName ""
       set private(biasValue) 0
    }
 
-   #--- je charge bias
-   ### set catchError [ catch {
-      ###if { $biasFileName != "" } {
-      ###   #--- je charge le fichier dans le buffer
-      ###   if { $biasFileName != $private(biasFileName) || $private(biasWindow) != $biasWindow } {
-      ###      buf$private(biasBufNo) load $biasFileName
-      ###      set private(biasFileName) $biasFileName
-      ###      set private(biasWindow) ""
-      ###      ###console::disp "loadBias $private(biasFileName) private(biasWindow)=$private(biasWindow) biasWindow=$biasWindow\n"
-      ###   }
-      ###   #--- j'applique le fenetrage si nessaire
-      ###   if { $biasWindow != "full" && $private(biasWindow) != $biasWindow } {
-      ###      buf$private(biasBufNo) window $biasWindow
-      ###      set private(biasWindow) $biasWindow
-      ###      ###console::disp "loadBias subwindow $biasWindow \n"
-      ###   }
-      ###   set biasState "OK"
-      ###   set biasMessage $private(biasFileName)
-      ###} else {
-      ###   #--- il n'y a pas de Bias
-      ###   buf$private(biasBufNo) clear
-      ###   set biasState "NONE"
-      ###   set biasMessage ""
-      ###}
-   ###}]
-
-   ###if { $catchError != 0 } {
-   ###   #--- je vide le buffer
-   ###   buf$private(biasBufNo) clear
-   ###   set biasState "ERROR"
-   ###   set biasMessage $::errorInfo
-   ###}
-
    #--- je mets a jour l'affichage de la fenetre de controle
-   ###::sophie::control::setBias $biasState $biasMessage
    ::sophie::control::setBias "OK" "$private(biasValue) (Binning=$private(xBinning) Mode=$cameraMode)"
 
 }
@@ -1054,39 +1023,7 @@ proc ::sophie::showImage { } {
    } else {
       tk_messageBox -title $::caption(sophie,titre) -icon error -message $::caption(sophie,invalidDirectory)
    }
-
 }
-
-#####------------------------------------------------------------
-#### onOriginCoord
-####    initialise la position de la consigne avec la souris
-####
-#### @param visuNo numero de la visu courante
-#### @param x      abcisse de la souris (referentiel ecran)
-#### @param y      ordonnee de la souris (referentiel ecran)
-#### @return  null
-####------------------------------------------------------------
-###proc ::sophie::onOriginCoord { visuNo x y } {
-###   variable private
-###
-###   if { $::conf(sophie,guidingMode) == "FIBER" } {
-###      #--- je convertis en coordonnes du referentiel Image
-###      set coord [::confVisu::screen2Canvas $visuNo [list $x $y]]
-###      set coord [::confVisu::canvas2Picture $visuNo $coord]
-###
-###      scan $private(binning) "%dx%d" xBinning yBinning
-###      set x [expr [lindex $coord 0] * $xBinning + $private(xWindow) -1 ]
-###      set y [expr [lindex $coord 1] * $yBinning + $private(yWindow) -1 ]
-###      set private(originCoord) [list $x $y]
-###
-###      ###set private(originCoord) $coord
-###
-###      #--- je dessine les axes sur la nouvelle origine
-###      createOrigin $visuNo
-###
-###      ::camera::setParam $private(camItem) "originCoord" $coord
-###   }
-###}
 
 ##------------------------------------------------------------
 # createOrigin
@@ -1115,7 +1052,7 @@ proc ::sophie::createOrigin { visuNo } {
    ###      set activewidth 2
    ###   }
    ###}
-   set activewidth 4
+   set activewidth 8
 
    #--- je dessine la consigne
    set vide 4
@@ -1298,6 +1235,7 @@ proc ::sophie::onMouseMoveButton1 { visuNo w x y } {
          set private(currentx) $x
          set private(currenty) $y
          $w move "origin" $dx $dy
+         set private(originMove) "MANUAL"
       }
       "target" {
          #--- la consigne est selectionnee
@@ -1308,6 +1246,7 @@ proc ::sophie::onMouseMoveButton1 { visuNo w x y } {
          set private(currentx) $x
          set private(currenty) $y
          $w move "target" $dx $dy
+         set private(targetMove) "MANUAL"
       }
       "fiberB" {
          #--- la consigne est selectionnee
@@ -1373,17 +1312,14 @@ proc ::sophie::onMouseReleaseButton1 { visuNo w x y } {
             set ::conf(sophie,objectCoord) $private(originCoord)
          }
 
-         #--- je mets a jour la fenetre de controle
-         ::sophie::control::setOriginCoords [lindex $private(originCoord) 0] [lindex $private(originCoord) 1]
          #--- je mets a jour le thread de la camera
          if { $private(acquisitionState) != 0 } {
             set xOriginCoord [ expr ( [lindex $private(originCoord) 0] - $private(xWindow) + 1 ) / $private(xBinning)  ]
             set yOriginCoord [ expr ( [lindex $private(originCoord) 1] - $private(yWindow) + 1 ) / $private(yBinning)  ]
-            ###set private(AsynchroneParameter) 1
-            ##::camera::setAsynchroneParameter $private(camItem) \
-            ##   "originCoord" [list $xOriginCoord $yOriginCoord]
-            ::camera::setParam $private(camItem) "originCoord" [list $xOriginCoord $yOriginCoord] \
+            ::camera::setParam $private(camItem) "originCoord" [list $xOriginCoord $yOriginCoord]
          }
+         #--- je mets a jour la fenetre de controle
+         ::sophie::control::setOriginCoords [lindex $private(originCoord) 0] [lindex $private(originCoord) 1]
          #--- je libere le mouvement manuel du widget
          set private(currentMouseItem) ""
          #--- j'active le positionnement automatique de la consigne par le thread de la camera
@@ -1399,14 +1335,15 @@ proc ::sophie::onMouseReleaseButton1 { visuNo w x y } {
 
          #--- je calcule les coordonnees de la cible dans l'image
          set coord [::confVisu::canvas2Picture $visuNo [list $x $y]]
+
+         #--- je met a jour le thread de la camera
+         if { $private(acquisitionState) != 0 } {
+            ::camera::setParam  $private(camItem) "targetCoord" $coord
+         }
+         #--- je met a jour la fenetre de controle
          set x [expr [lindex $coord 0] * $private(xBinning) + $private(xWindow) -1 ]
          set y [expr [lindex $coord 1] * $private(yBinning) + $private(yWindow) -1 ]
          set private(targetCoord) [list $x $y]
-
-         #--- je met a jour le thread de la camera
-         ###set private(AsynchroneParameter) 1
-         ::camera::setParam  $private(camItem) "targetCoord" $coord
-         #--- je met a jour la fenetre de controle
          ::sophie::control::setTargetCoords $x $y
          set private(currentMouseItem) ""
          #--- j'active le positionnement automatique de la cible
@@ -1503,7 +1440,7 @@ proc ::sophie::createTarget { visuNo } {
    set y2 [lindex $coord 1]
 
    #--- je cree les items graphiques dans le canvas
-   $private(hCanvas) create rect $x1 $y1 $x2 $y2 -outline red -offset center -tags "::sophie target" -activewidth 2
+   $private(hCanvas) create rect $x1 $y1 $x2 $y2 -outline red -offset center -tags "::sophie target" -activewidth 4
 }
 
 ##------------------------------------------------------------
@@ -1916,33 +1853,29 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
       ###console::disp "callbackAcquisition visu=$visuNo command=$command args=$args\n"
       switch $command  {
          "autovisu" {
-            ###if { $private(AsynchroneParameter) == 0 } {
-               set mode [lindex $args 1]
-               set guidingMode [lindex $args 2]
-               set centroWindowCoord [lindex $args 3]
-               set zoom [lindex $args 4]
-               set dispWindowCoord [visu$visuNo window]
-               if { $mode == "GUIDE" && $guidingMode == "OBJECT" } {
-                  if { $centroWindowCoord != $dispWindowCoord } {
-                     if { $dispWindowCoord != "full" } {
-                        #--- j'annule le fenetrage precedent
-                        visu$visuNo window "full"
-                     }
-                     visu$visuNo window $centroWindowCoord
-                  }
-               } else {
+            set mode [lindex $args 1]
+            set guidingMode [lindex $args 2]
+            set centroWindowCoord [lindex $args 3]
+            set zoom [lindex $args 4]
+            set dispWindowCoord [visu$visuNo window]
+            if { $mode == "GUIDE" && $guidingMode == "OBJECT" } {
+               if { $centroWindowCoord != $dispWindowCoord } {
                   if { $dispWindowCoord != "full" } {
-                      visu$visuNo window "full"
+                     #--- j'annule le fenetrage precedent
+                     visu$visuNo window "full"
                   }
+                  visu$visuNo window $centroWindowCoord
                }
-               if { $zoom != [visu$visuNo zoom] } {
-                  ::confVisu::setZoom $::audace(visuNo) $zoom
+            } else {
+               if { $dispWindowCoord != "full" } {
+                   visu$visuNo window "full"
                }
-               #--- j'affiche l'image
-               ::confVisu::autovisu $visuNo
-            ###} else {
-            ###   set private(AsynchroneParameter) 0
-            ###}
+            }
+            if { $zoom != [visu$visuNo zoom] } {
+               ::confVisu::setZoom $::audace(visuNo) $zoom
+            }
+            #--- j'affiche l'image
+            ::confVisu::autovisu $visuNo
 
             #--- j'affiche le delai entre 2 poses dans la fenetre de controle
             ::sophie::control::setRealDelay [lindex [lindex $args 0] 0]
@@ -1971,102 +1904,97 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
             # args 14= deltaCorrection  correction alpha du telescope (en arcsec)
             # args 15= infoMessage
 
-            ##if { $private(AsynchroneParameter) == 0 } {
-               set previousTargetDetection $private(targetDetection)
+            #--- je recupere les informations
+            set starX                [expr [lindex [lindex $args 0] 0] * $private(xBinning)+ $private(xWindow) -1 ]
+            set starY                [expr [lindex [lindex $args 0] 1] * $private(yBinning) + $private(yWindow) -1 ]
+            set starDx               [lindex $args 1]
+            set starDy               [lindex $args 2]
+            set starStatus           [lindex $args 3]
+            set fiberStatus          [lindex $args 4]
+            set originX              [expr [lindex $args 5] * $private(xBinning) + $private(xWindow) -1 ]
+            set originY              [expr [lindex $args 6] * $private(yBinning) + $private(yWindow) -1 ]
+            set fwhmX                [expr [lindex $args 7] * $private(xBinning) * $::conf(sophie,pixelScale)]
+            set fwhmY                [expr [lindex $args 8] * $private(yBinning) * $::conf(sophie,pixelScale)]
+            set background           [lindex $args 9]
+            set maxIntensity         [lindex $args 10]
+            set alphaDiff            [lindex $args 11]
+            set deltaDiff            [lindex $args 12]
+            set alphaCorrection      [lindex $args 13]
+            set deltaCorrection      [lindex $args 14]
+            set infoMessage          [lindex $args 15]
+            ###::console::disp "::sophie::callbackAcquisition alphaDiff=$alphaDiff deltaDiff=$deltaDiff \n"
 
-               #--- je recupere les informations
-               set starX                [expr [lindex [lindex $args 0] 0] * $private(xBinning)+ $private(xWindow) -1 ]
-               set starY                [expr [lindex [lindex $args 0] 1] * $private(yBinning) + $private(yWindow) -1 ]
+            #--- je modifie la position du carre de la cible
+            if { $private(targetMove) == "AUTO" } {
                set private(targetCoord) [list $starX $starY]
-               set starDx               [lindex $args 1]
-               set starDy               [lindex $args 2]
-               set private(targetDetection)  [lindex $args 3]
-               set fiberStatus          [lindex $args 4]
-               set originX              [expr [lindex $args 5] * $private(xBinning) + $private(xWindow) -1 ]
-               set originY              [expr [lindex $args 6] * $private(yBinning) + $private(yWindow) -1 ]
-               set fwhmX                [expr [lindex $args 7] * $private(xBinning) * $::conf(sophie,pixelScale)]
-               set fwhmY                [expr [lindex $args 8] * $private(yBinning) * $::conf(sophie,pixelScale)]
-               set background           [lindex $args 9]
-               set maxIntensity         [lindex $args 10]
-               set alphaDiff            [lindex $args 11]
-               set deltaDiff            [lindex $args 12]
-               set alphaCorrection      [lindex $args 13]
-               set deltaCorrection      [lindex $args 14]
-               set infoMessage          [lindex $args 15]
-               ###::console::disp "::sophie::callbackAcquisition alphaDiff=$alphaDiff deltaDiff=$deltaDiff \n"
+               ::sophie::moveTarget $visuNo $private(targetCoord)
+            }
 
-               #--- je modifie la position du carre de la cible
-               if { $private(targetMove) == "AUTO" } {
-                  ::sophie::moveTarget $visuNo $private(targetCoord)
+            #--- j'affiche le symbole de l'origine (si un deplacement manuel n'est pas en cours)
+            if { $private(originMove) == "AUTO" } {
+               set private(originCoord) [list $originX $originY]
+               ::sophie::createOrigin $visuNo
+            }
+
+            #--- j'affiche le symbole de la fibre B
+            ::sophie::createFiberB $visuNo
+
+            ##console::disp "callbackAcquisition origin= $private(originCoord) detail=$infoMessage\n"
+
+            #--- j'affiche les informations dans la fenetre de controle
+            switch $private(mode) {
+               "CENTER" {
+                  ::sophie::control::setCenterInformation $starStatus $fiberStatus \
+                     [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
+                     $starX $starY $fwhmX $fwhmY $background $maxIntensity \
+                     $starDx $starDy $alphaDiff $deltaDiff $alphaCorrection $deltaCorrection
                }
-               if { ($fiberStatus == "DETECTED" && $private(originMove) == "AUTO") || $fiberStatus == "DISABLED" } {
+               "FOCUS" {
+                  ::sophie::control::setFocusInformation $starStatus $fiberStatus \
+                     [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
+                     $starX $starY $fwhmX $fwhmY $alphaDiff $deltaDiff $background $maxIntensity
+                  #--- je memorise le seeing
+                  ::sophie::spectro::setSeeing $fwhmX $fwhmY $background
+               }
+               "GUIDE" {
+                  #--- je mets a jour les statistiques pour le PC Sophie
+                  ::sophie::spectro::updateStatistics $alphaDiff $deltaDiff
                   #--- je calcule la correction de la nouvelle position de la consigne
-                  switch $::conf(sophie,guidingMode)  {
-                     "FIBER_HR" {
-                        set private(originCoord) [list $originX $originY]
-                        #--- je calcule l'écart par rapport à la position de depart
-                        set originDx  [expr [lindex $private(originCoord) 0] - [lindex $private(originCoordGuide) 0] ]
-                        set originDy  [expr [lindex $private(originCoord) 1] - [lindex $private(originCoordGuide) 1] ]
+                  if { $fiberStatus == "DETECTED" } {
+                     switch $::conf(sophie,guidingMode)  {
+                        "FIBER_HR" {
+                           #--- je calcule l'écart par rapport à la position de depart
+                           set originDx  [expr [lindex $private(originCoord) 0] - [lindex $private(originCoordGuide) 0] ]
+                           set originDy  [expr [lindex $private(originCoord) 1] - [lindex $private(originCoordGuide) 1] ]
+                        }
+                        "FIBER_HE" {
+                           #--- je calcule l'écart par rapport à la position de depart
+                           set originDx  [expr [lindex $private(originCoord) 0] - [lindex $private(originCoordGuide) 0] ]
+                           set originDy  [expr [lindex $private(originCoord) 1] - [lindex $private(originCoordGuide) 1] ]
+                        }
+                        "OBJECT" {
+                           #--- l'ecart de la consigne est nul
+                           ###set originDx  [expr [lindex $private(originCoord) 0] - [lindex $private(originCoordGuide) 0] ]
+                           ###set originDy  [expr [lindex $private(originCoord) 1] - [lindex $private(originCoordGuide) 1] ]
+                           set originDx 0.0
+                           set originDy 0.0
+                        }
                      }
-                     "FIBER_HE" {
-                        set private(originCoord) [list $originX $originY]
-                        #--- je calcule l'écart par rapport à la position de depart
-                        set originDx  [expr [lindex $private(originCoord) 0] - [lindex $private(originCoordGuide) 0] ]
-                        set originDy  [expr [lindex $private(originCoord) 1] - [lindex $private(originCoordGuide) 1] ]
-                     }
-                     "OBJECT" {
-                        #--- l'ecart de la consigne est nul
-                        set originDx 0.0
-                        set originDy 0.0
-                        set originDx  [expr [lindex $private(originCoord) 0] - [lindex $private(originCoordGuide) 0] ]
-                        set originDy  [expr [lindex $private(originCoord) 1] - [lindex $private(originCoordGuide) 1] ]
-                     }
+                  } else {
+                     #--- l'ecart n'est pas calcule
+                     set originDx 0.0
+                     set originDy 0.0
                   }
-               } else {
-                  #--- l'ecart n'est pas calcule
-                  set originDx 0.0
-                  set originDy 0.0
+
+                  #--- je mets a jour la fenetre de controle
+                  ::sophie::control::setGuideInformation $starStatus $fiberStatus \
+                     [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
+                     $starX $starY $alphaDiff $deltaDiff $alphaCorrection $deltaCorrection \
+                     $originDx $originDy $background $maxIntensity
                }
-               #--- j'affiche le symbole de l'origine (si un deplacement manuel n'est pas en cours)
-               if { $private(originMove) == "AUTO" } {
-                  ::sophie::createOrigin $visuNo
-               }
+            }
 
-               #--- j'affiche le symbole de la fibre B
-               ::sophie::createFiberB $visuNo
-
-               ##console::disp "callbackAcquisition origin= $private(originCoord) detail=$infoMessage\n"
-
-               #--- j'affiche les informations dans la fenetre de controle
-               switch $private(mode) {
-                  "CENTER" {
-                     ::sophie::control::setCenterInformation $private(targetDetection) $fiberStatus \
-                        [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
-                        $starX $starY $fwhmX $fwhmY $background $maxIntensity \
-                        $starDx $starDy $alphaDiff $deltaDiff $alphaCorrection $deltaCorrection
-                  }
-                  "FOCUS" {
-                     ::sophie::control::setFocusInformation $private(targetDetection) $fiberStatus \
-                        [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
-                        $starX $starY $fwhmX $fwhmY $alphaDiff $deltaDiff $background $maxIntensity
-                     #--- je memorise le seeing
-                     ::sophie::spectro::setSeeing $fwhmX $fwhmY $background
-                  }
-                  "GUIDE" {
-                     #--- je mets a jour les statistiques pour le PC Sophie
-                     ::sophie::spectro::updateStatistics $alphaDiff $deltaDiff
-                     #--- je mets a jour la fenetre de controle
-                     ::sophie::control::setGuideInformation $private(targetDetection) $fiberStatus \
-                        [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
-                        $starX $starY $alphaDiff $deltaDiff $alphaCorrection $deltaCorrection \
-                        $originDx $originDy $background $maxIntensity
-                  }
-               }
-            ##} else {
-            ##   set private(AsynchroneParameter) 0
-            ##}
-
-           #--- variable utilisee par le listener addAcquisitionListener
+            #--- variable utilisee par le listener addAcquisitionListener
             set private(newAcquisition)  "1"
          }
          "acquisitionResult" {
