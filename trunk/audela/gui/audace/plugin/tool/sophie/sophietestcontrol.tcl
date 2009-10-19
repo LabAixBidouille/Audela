@@ -2,7 +2,7 @@
 # @file     sophiesimulcontrol.tcl
 # @brief    Fichier du namespace ::sophie::test
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietestcontrol.tcl,v 1.1 2009-10-11 07:27:13 michelpujol Exp $
+# @version  $Id: sophietestcontrol.tcl,v 1.2 2009-10-19 21:10:00 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -32,7 +32,7 @@ proc ::sophie::test::init { mainThreadNo telescopeCommandPort telescopeNotificat
    set private(sideralSlew,enabled) 1
 
    set private(motor,ra) "45.0"
-   set private(motor,dec) "45.0"
+   set private(motor,dec) "10.0"
    set private(motor,afterId) ""
    set private(motor,clock)   [clock milliseconds]
    set private(motor,raSpeed)   0
@@ -63,7 +63,7 @@ proc ::sophie::test::openTelescopeControlSocket { } {
       #--- j'ouvre la socket des commandes
       set private(telescopeControl,commandSocket) [socket -server ::sophie::test::acceptTelescopeCommandSocket $private(telescopeCommandPort) ]
 
-      #--- j'ouvre la socket des donnees
+      #--- j'ouvre la socket de notification
       set private(telescopeControl,notificationSocket) [socket -server ::sophie::test::acceptTelescopeNotificationSocket $private(telescopeNotificationPort) ]
 
    }]
@@ -163,21 +163,26 @@ proc ::sophie::test::readTelescopeCommandSocket { channel } {
          set command [gets $channel ]
          disp "::sophie::test::readTelescopeCommandSocket command=$command\n"
 
+         #--- je decoupe la commande en un tableau
          set commandArray [split $command]
+         #--- je traite la commande
          switch [lindex $commandArray 0] {
             "!RADEC" {
                switch [lindex $commandArray 1] {
                   MOVE {
-                     ::sophie::test::startMotor [lindex $commandArray 2] [lindex $commandArray 3]
-                     set returnCode 0
+                     #---
+                     #---  $commandArray 2 = direction
                      set direction [lindex $commandArray 2]
+                     set speedCode [lindex $commandArray 3]
+                     ::sophie::test::startMotor $direction $speedCode
+                     set returnCode 0
                      set response [format "!RADEC MOVE %d %s @" $returnCode $direction ]
                      ::sophie::test::writeTelescopeCommandSocket $channel $response
                   }
                   STOP {
-                     ::sophie::test::stopMotor [lindex $commandArray 2]
-                     set returnCode 0
                      set direction [lindex $commandArray 2]
+                     ::sophie::test::stopMotor $direction
+                     set returnCode 0
                      set response [format "!RADEC STOP %d %s @" $returnCode $direction ]
                      ::sophie::test::writeTelescopeCommandSocket $channel $response
                   }
@@ -239,7 +244,11 @@ proc ::sophie::test::readTelescopeCommandSocket { channel } {
                }
             }
             "!FOC" {
-
+               disp "::sophie::test::readTelescopeCommandSocket invalid [lindex $commandArray 0] command=$command\n"
+               #--- je retourne une erreur 19= NOT IMPLEMENTED
+               set returnCode 19 ;
+               set response [format "!RADEC COORD %d @" $returnCode ]
+               ::sophie::test::writeTelescopeCommandSocket $channel $response
             }
             default {
                disp "::sophie::test::readTelescopeCommandSocket invalid [lindex $commandArray 0] command=$command\n"
@@ -382,6 +391,7 @@ proc ::sophie::test::startMotor { direction speedCode } {
          }
       }
 
+
       if { $private(motor,raSpeed) != 0 || $private(motor,decSpeed) != 0 } {
          ###disp "startMotor $direction $speedCode $private(motor,raSpeed) $private(motor,decSpeed)\n"
          set private(motor,clock) [clock milliseconds]
@@ -419,7 +429,7 @@ proc ::sophie::test::stopMotor { direction } {
 #------------------------------------------------------------
 # simulateMotor
 #   simule un mouvement de moteur en modifiant les coordonnes
-#   toute les 0.1 seconde
+#   toute les 500 millisecondes
 #
 #------------------------------------------------------------
 proc ::sophie::test::simulateMotor { } {
@@ -440,6 +450,7 @@ proc ::sophie::test::simulateMotor { } {
    }
    ###disp "simulateMotor $private(motor,raSpeed) $private(motor,decSpeed) \n"
 
+   ::thread::send -async $private(mainThreadNo) [list ::sophie::test::setRadec $private(motor,ra) $private(motor,dec) $private(motor,raSpeed) $private(motor,decSpeed)]
    if { $private(motor,raSpeed) != 0 ||  $private(motor,decSpeed) != 0 } {
       set private(motor,afterId) [after 500 ::sophie::test::simulateMotor ]
    } else {
@@ -449,8 +460,8 @@ proc ::sophie::test::simulateMotor { } {
 }
 
 #------------------------------------------------------------
-# startMotor
-#   demarre un mouvement de moteur
+# startRadecGoto
+#   demarre un GOTO
 #
 # @param ra  ascension droite (format hms)
 # @param dec declinaison (format dms)
@@ -490,6 +501,8 @@ proc ::sophie::test::slewSideral { } {
       if { $private(motor,ra) > 360.0 } {
          set private(motor,ra) [expr $private(motor,ra) - 360.0 ]
       }
+      ::thread::send -async $private(mainThreadNo) [list ::sophie::test::setRadec $private(motor,ra) $private(motor,dec) $private(motor,raSpeed) $private(motor,decSpeed) ]
+
       #--- je lance une nouvelle iteration apres 1 seconde
       after 1000 ::sophie::test::sendRadecCoord
    }
