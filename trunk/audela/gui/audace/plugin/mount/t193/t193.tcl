@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.18 2009-10-11 06:22:34 robertdelmas Exp $
+# Mise a jour $Id: t193.tcl,v 1.19 2009-10-19 21:11:49 michelpujol Exp $
 #
 
 namespace eval ::t193 {
@@ -87,7 +87,7 @@ proc ::t193::initPlugin { } {
 
    #--- configuration de la monture du T193 de l'OHP
    if { ! [ info exists conf(t193,portSerie) ] }                 { set conf(t193,portSerie)                 [ lindex $list_connexion 0 ] }
-   if { ! [ info exists conf(t193,mode) ] }                      { set conf(t193,mode)                      "0" }
+   if { ! [ info exists conf(t193,mode) ] }                      { set conf(t193,mode)                      "HP1000" }
    if { ! [ info exists conf(t193,nomCarte) ] }                  { set conf(t193,nomCarte)                  "Dev1" }
    if { ! [ info exists conf(t193,minDelay) ] }                  { set conf(t193,minDelay)                  "10" }
    if { ! [ info exists conf(t193,nomPortTelescope) ] }          { set conf(t193,nomPortTelescope)          "port0" }
@@ -103,6 +103,11 @@ proc ::t193::initPlugin { } {
    if { ! [ info exists conf(t193,dureeMaxAttenuateur) ] }       { set conf(t193,dureeMaxAttenuateur)       "16" }
    #--- traces dans la Console
    if { ! [ info exists conf(t193,consoleLog) ] }                { set conf(t193,consoleLog)                "0" }
+
+   #--- modification des valeurs par rapport à la version precedente du 20/09/2009
+   if { $::conf(t193,mode) == 0 } {
+      set ::conf(t193,mode) "HP1000"
+   }
 
    #--- Initialisation
    set private(telNo)       "0"
