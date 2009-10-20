@@ -2,7 +2,7 @@
 # Fichier : cmanimate.tcl
 # Description : Animation/slides control panel for Cloud Monitor
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmanimate.tcl,v 1.16 2009-07-13 21:40:30 robertdelmas Exp $
+# Mise a jour $Id: cmanimate.tcl,v 1.17 2009-10-20 11:16:54 robertdelmas Exp $
 #
 
 #****************************************************************
@@ -326,10 +326,10 @@ namespace eval ::cmanimate {
       global audace caption color conf panneau
 
       #--- Repertoire des images
-      set len [string length $conf(rep_images)]
-      set folder "$conf(rep_images)"
+      set len [string length $audace(rep_images)]
+      set folder "$audace(rep_images)"
       if { $len > "0" } {
-         set car [string index "$conf(rep_images)" [expr $len-1]]
+         set car [string index "$audace(rep_images)" [expr $len-1]]
          if { $car != "/" } {
             append folder "/"
          }
@@ -496,10 +496,10 @@ namespace eval ::cmanimate {
       set indexlistestart [ expr $indexlistestart + 1 ]
       set indexlisteend [ expr $indexlisteend + 1 ]
       #--- Repertoire des images
-      set len [string length $conf(rep_images)]
-      set folder "$conf(rep_images)"
+      set len [string length $audace(rep_images)]
+      set folder "$audace(rep_images)"
       if { $len > "0" } {
-         set car [string index "$conf(rep_images)" [expr $len-1]]
+         set car [string index "$audace(rep_images)" [expr $len-1]]
          if { $car != "/" } {
             append folder "/"
          }
