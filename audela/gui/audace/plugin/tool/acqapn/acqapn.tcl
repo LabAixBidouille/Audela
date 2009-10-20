@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Outil d'acquisition pour APN Nikon CoolPix
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.39 2009-07-13 21:36:21 robertdelmas Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.40 2009-10-20 11:05:45 robertdelmas Exp $
 #
 
 #============================================================
@@ -727,7 +727,7 @@ namespace eval ::acqapn {
       ::acqapn::ConfigEtat disabled
 
       if { $private(coolpix,nb_images)!="0" && $private(coolpix,nb_images)!="-" } {
-         cd "$conf(rep_images)"
+         cd "$audace(rep_images)"
          catch { exec $panneau(acqapn,photopc) -q $panneau(acqapn,cmd_usb) -s $conf(coolpix,baud)\
             "$panneau(acqapn,mini)" $panneau(acqapn,selection) "$panneau(acqapn,imagename)" } msg
          if { $msg=="" } {
@@ -736,7 +736,7 @@ namespace eval ::acqapn {
             #--- Affichage
             if { $panneau(acqapn,affichage)=="1" } {
                cd "$audace(rep_audela)"
-               loadima [ file join $conf(rep_images) $panneau(acqapn,imagename) ]
+               loadima [ file join $audace(rep_images) $panneau(acqapn,imagename) ]
             }
          } else {
             ::acqapn::ErrComm $msg
@@ -1510,7 +1510,7 @@ namespace eval ::acqapn {
                   set confgene(EditScript,error,viewer) "0"
                   ::confEditScript::run "$audace(base).confEditScript"
                } else {
-                  cd "$conf(rep_images)"
+                  cd "$audace(rep_images)"
                   if { [ file exists $panneau(acqapn,imagename) ]=="1" } {
                      ::audace::lanceViewerImages [ file join $audace(rep_images) $panneau(acqapn,imagename) ]
                   } else {
