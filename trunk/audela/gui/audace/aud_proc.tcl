@@ -1,7 +1,7 @@
 #
 # Fichier : aud_proc.tcl
 # Description : Fonctions de chargement, sauvegarde et traitement d'images
-# Mise a jour $Id: aud_proc.tcl,v 1.10 2008-12-16 22:32:26 michelpujol Exp $
+# Mise a jour $Id: aud_proc.tcl,v 1.11 2009-10-20 16:07:14 robertdelmas Exp $
 #
 
 #
@@ -711,13 +711,13 @@ proc dir { { rgxp "*" } } {
 # liste_index   : Liste des index des nb images
 #
 proc animate { filename nb {millisecondes 200} {nbtours 10} {liste_index ""} } {
-   global audace conf
+   global audace
 
    #--- Repertoire des images
-   set len [ string length $conf(rep_images) ]
-   set folder "$conf(rep_images)"
+   set len [ string length $audace(rep_images) ]
+   set folder "$audace(rep_images)"
    if { $len > "0" } {
-      set car [ string index "$conf(rep_images)" [ expr $len-1 ] ]
+      set car [ string index "$audace(rep_images)" [ expr $len-1 ] ]
       if { $car != "/" } {
          append folder "/"
       }
