@@ -13,4 +13,5 @@ mkdir %destDir%\dd_protocols
 copy /Y %sourceDir%\library\*.* %destDir%
 copy /Y %sourceDir%\library\dd_protocols\* %destDir%
 echo on
+copy pkgindex.tcl        %destDir%
 copy %CONFIG%\blt24.dll  %destDir%
