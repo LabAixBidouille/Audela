@@ -2853,7 +2853,7 @@ int Cmd_aktcl_aster1(ClientData clientData, Tcl_Interp *interp, int argc, char *
 	/* === good pour une jolie optimisation === */
 	if (1==1) {
 		// en km
-		dd=0.05;
+		dd=0.075;
 		rr=0+1*sqrt(0.82); // from radar
 		rrrab=0.78;
 		rrrac=0.59*1+0.78*0;
@@ -2881,7 +2881,7 @@ int Cmd_aktcl_aster1(ClientData clientData, Tcl_Interp *interp, int argc, char *
 
 		rho1=2;
 		rho2=5.5;
-		drho=0.1;
+		drho=0.25;
 
 		kkm21=1;
 		kkdmp=1;
