@@ -2,7 +2,7 @@
 # Procedures des traitements géométriques
 # Lancement en console : source $audace(rep_scripts)/spcaudace/spc_geom.tcl
 
-# Mise a jour $Id: spc_geom.tcl,v 1.1 2008-06-14 16:36:20 bmauclaire Exp $
+# Mise a jour $Id: spc_geom.tcl,v 1.2 2009-10-23 18:38:12 bmauclaire Exp $
 
 
 
@@ -305,7 +305,7 @@ proc spc_registerh { args } {
          set nomg_objet [ lindex $args 1 ]
          set wincoords [ lindex $args 2 ]
       } else {
-         ::console::affiche_erreur "Usage: spc_registerh nom_spectre_lampe nom_générique_spectres\n\n"
+         ::console::affiche_erreur "Usage: spc_registerh nom_spectre_lampe ?nom_générique_spectres? ?coordonnees_zone_du_spectre?\n\n"
          return ""
       }
 
