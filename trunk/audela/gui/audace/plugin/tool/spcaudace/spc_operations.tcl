@@ -7,8 +7,206 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.17 2009-07-18 18:24:41 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.18 2009-10-23 18:39:59 bmauclaire Exp $
 
+
+####################################################################
+# Procedure d'ajustement d'une fonction polynomiale sur quelques points extraits d'un spectre 
+# Auteur : Patrick LAILLY
+# Date creation : 07-06-2008
+# Date modification : 30-08-2008
+# Algo : ajustement par moindres carrés des données (résultat division) par une fonction 
+# polynomiale 
+# C'est l'algo classique que l'on fait fonctionner en une étape après avoir mis a 1 les poids associés aux écahntillons sélectionnés et à 0 les autres
+#
+# Arguments : fichier .fit du profil de raie liste d'abscisses (degre du polynome : optionnel)
+# N.B. Le profil de raies doit etre calibre lineairement.
+# Exemple :
+# spc_polynfilter spc_ajustpoints  zeta_tau_2007419 { 6521.32 6528.64 6540.88 6581.89 6604.76 6620.53 6632.85 6639.96 6663.19 6688.02 }
+####################################################################
+
+proc spc_ajustpoints { args } {
+   global conf
+   global audace
+   set nul_pcent_intens .65
+   
+   set nb_args [ llength $args ]
+   if { $nb_args<=3 && $nb_args>1 } {
+      set filenamespc [ lindex $args 0 ]
+      set listepoints [ lindex $args 1 ]
+      set ndeg 4
+	
+      if { $nb_args==3 } {
+	 set ndeg [ lindex $args 2 ]
+      }
+	
+      if { $ndeg>5 } {
+	 ::console::affiche_erreur "Le degré du polynome doit etre <=5 \n\n"
+	 return 0
+      }
+      set nbpoints [ llength $listepoints ]
+      ::console::affiche_resultat "Nombre d'abscisses utilisateur $nbpoints \n"
+      if { $ndeg> [ expr $nbpoints -2 ] } {
+	 ::console::affiche_erreur "Le nombre de longueurs d'ondes spécifiées doit etre supérieur de 2 unites au degré du polynome  \n\n"
+	 return 0
+      }
+
+      #--- Extraction des donnees :
+      set contenu [ spc_fits2data $filenamespc ]
+      set abscissesorig [ lindex $contenu 0 ]
+      set ordonneesorig [ lindex $contenu 1 ]
+      set lenorig [llength $ordonneesorig ]
+      
+      #-- elimination des termes nuls au bord
+      set limits [ spc_findnnul $ordonneesorig ]
+      set i_inf [ lindex $limits 0 ]
+      set i_sup [ lindex $limits 1 ]
+      set nmilieu0 [ expr $i_sup -$i_inf +1 ]
+      #-- nmilieu0 est le nb d'echantillons non nuls dans la partie effective du profil
+      set lambdamin [ lindex $abscissesorig $i_inf ]
+      set lambdamax [ lindex $abscissesorig $i_sup ]
+      set ecartlambda [ expr $lambdamax-$lambdamin ]
+      set abscisses [ list ]
+      set ordonnees [ list ]
+      set xx [ list ]
+      #set poids [ list ]
+      set intens_moy 0.
+      for { set i $i_inf } { $i<=$i_sup } { incr i } {
+	 set xi [ lindex $abscissesorig $i ]
+	 set xxi [ expr ($xi-$lambdamin)/$ecartlambda ]
+  	 set yi [ lindex $ordonneesorig $i ]
+  	 lappend abscisses $xi
+	 lappend xx $xxi
+  	 lappend ordonnees $yi
+	 #lappend poids 1.
+	 set intens_moy [ expr $intens_moy +$yi ]
+      }
+      set intens_moy [ expr $intens_moy/($nmilieu0*1.) ]
+      set intens_moy_2 [ expr $intens_moy*.5 ]
+      set nechant_util [ expr $i_sup - $i_inf +1 ]
+      # intens_moy est la valeur moyenne de l'intensite
+      ::console::affiche_resultat "intensite moyenne : $intens_moy \n"
+	
+      #calcul matrice B
+      set B [ list ]
+      for { set i 0 } { $i<$nmilieu0 } { incr i } {
+	 set Bi [ list ]
+	 for { set j 0 } { $j<=1 } { incr j } {
+	    lappend Bi [ expr pow([ lindex $xx $i ],$j) ]
+	 }
+	 lappend B $Bi
+      }
+      # initialisation des poids
+      set poids [ list ]
+      for { set i $i_inf } { $i<=$i_sup } { incr i } {
+	 lappend poids 0.
+      }
+      ::console::affiche_resultat "lambdamin= $lambdamin lambdamax=$lambdamax \n"
+      ::console::affiche_resultat "liste des longueurs d'ondes definies par l'utilisateur :\n"
+      for { set i 0 } { $i < $nbpoints } { incr i } {
+	 set lambda_i [ lindex $listepoints $i ]
+	 ::console::affiche_resultat "$lambda_i \n"
+	 if { $lambda_i > $lambdamax || $lambda_i < $lambdamin } {
+	    ::console::affiche_erreur "Dans la liste de points la valeur $lambda_i n'appartient pas à la partie exploitable du spectre\n\n"
+	    return 0
+	 }
+	 # ci-dessous le calcul n'est valide que pour un spectre calibre lineairement
+	 set j [ expr round (($lambda_i-$lambdamin)*$nechant_util / $ecartlambda) -1 ]
+	 set poids [ lreplace $poids $j $j 1. ]
+      }
+		
+
+      #-- calcul de l' ajustement
+      set result [ gsl_mfitmultilin $ordonnees $B $poids ]
+      #-- extrait le resultat
+      set coeffs [ lindex $result 0 ]
+      set chi2 [ lindex $result 1 ]
+      set covar [ lindex $result 2 ]
+      set riliss [ gsl_mmult $B $coeffs ]
+      set resid [ gsl_msub $ordonnees $riliss ]
+	
+      #-- evaluation et analyse des residus
+      #::console::affiche_resultat "longueur B : [llength $B]\n"
+      #::console::affiche_resultat "longueur riliss : [llength $riliss1]\n"
+      set residtransp [ gsl_mtranspose $resid ]
+      set rms_pat1  [ gsl_mmult $residtransp $resid ]
+      set rms_pat [ lindex $rms_pat1 0 ]
+      set rms_pat [ expr ($rms_pat/($nmilieu0*1.)) ]
+      set rms_pat [expr sqrt($rms_pat)]
+	
+      ::console::affiche_resultat "Lissage effectué.\n"
+	
+      #normalisation des poids pour la visu
+      for { set i 0 } { $i<$nmilieu0 } { incr i } {
+	 set poidsi [ expr [ lindex $poids $i ]*$intens_moy ]
+	 set poids [ lreplace $poids $i $i $poidsi ]		
+		
+      }
+	
+      #-- mise a zero d'eventuels echantillons tres petits
+      set zero 0.
+      set seuil_min [ expr $intens_moy*$nul_pcent_intens/100. ]
+      for { set i 0 } {$i<$nmilieu0} {incr i} {
+	 if { [ lindex $riliss $i ] < $seuil_min } { 
+	    set riliss [ lreplace $riliss $i $i $zero ] 
+	 }
+      }
+
+      #--- Rajout des valeurs nulles en début et en fin pour retrouver la dimension initiale du 	# fichier de départ :
+      set len_ini $lenorig
+      set len_cut $nmilieu0
+      set nb_insert_sup [ expr $lenorig-$i_inf-$nmilieu0 ]
+      for { set i 1 } { $i<=$nb_insert_sup } { incr i } {
+	 set riliss [ linsert $riliss [ expr $len_cut+$i ] 0.0 ]
+	 #set nouvpoids1 [ linsert $nouvpoids1 [ expr $len_cut+$i ] 0.0 ]    
+      }
+      for { set i 0 } { $i<$i_inf } { incr i } {
+	 set riliss [ linsert $riliss 0 0.0 ]
+	 #set nouvpoids1 [ linsert $nouvpoids1 0 0.0 ]
+      }
+	
+      ::console::affiche_resultat "Nombre d'éléments traités : [ llength $riliss ]\n"
+	
+      #--- CrÃ©e le fichier fits de sortie
+      set abscisses $abscissesorig 
+      set filename [ file rootname $filenamespc ]
+        
+      buf$audace(bufNo) load "$audace(rep_images)/$filename"
+      set k 1
+      foreach x $abscisses {
+	 buf$audace(bufNo) setpix [list $k 1] [ lindex $riliss [ expr $k-1 ] ]
+         incr k
+      }
+      #-- Sauvegarde du rÃ©sultat :
+      buf$audace(bufNo) bitpix float
+      buf$audace(bufNo) save "$audace(rep_images)/${filename}_conti$conf(extension,defaut)"
+      buf$audace(bufNo) bitpix short
+      ::console::affiche_resultat "Fichier fits sauvé sous ${filename}_conti$conf(extension,defaut)\n"
+
+	
+      #--- Affichage du resultat :
+      #set visus 'o'
+      #set testvisu 'n'
+      #if { $visus != $testvisu } {       
+      ::plotxy::clf
+      ::plotxy::figure 1
+      ::plotxy::plot $abscissesorig $riliss r 1
+      #::plotxy::plot $abscissesorig $riliss1 o 1
+      ::plotxy::hold on
+      ::plotxy::plot $abscissesorig $ordonneesorig ob 0
+      ::plotxy::hold on
+      ::plotxy::plot $abscissesorig $poids g 0
+      ::plotxy::plotbackground #FFFFFF
+      ::plotxy::xlabel "lambda"
+      ::plotxy::ylabel "intensity"
+      ::plotxy::title "bleu : original ; rouge : lissage par polynome de degre $ndeg"
+      #}	
+	
+      return ${filename}_conti
+   } else {
+      ::console::affiche_erreur "Usage: spc_ajustpoints profil_de_raies.fit {liste de longueurs d'onde des points par lesquels passer}.\n\n"
+   }
+}
 
 
 
@@ -231,7 +429,7 @@ proc spc_merge { args } {
       if { $ic_rouge > 0 } {
 	 		if { [ expr abs($ic_bleu-$ic_rouge)/$ic_bleu ] >= $spcaudace(maxdiff_icont) } {
 	    		set ic_coeff [ expr $ic_bleu/$ic_rouge ]
-	   		set spectre_rouge_mult [ spc_mult $spectre_rouge $ic_coeff ]
+	   		set spectre_rouge_mult [ spc_multc $spectre_rouge $ic_coeff ]
 	 		} else {
 	    		set spectre_rouge_mult "$spectre_rouge"
 	 		}
@@ -480,7 +678,7 @@ proc spc_rmedges { args } {
        buf$newBufNo bitpix float
        buf$newBufNo save "$audace(rep_images)/${spectre}_sel"
        buf::delete $newBufNo
-       ::console::affiche_resultat "Spectre nettoyé des bords sauvé sous ${spectre}_sel\n"
+       ::console::affiche_resultat "Spectre nettoyé des bords ($xlistdeb;$xlistfin) sauvé sous ${spectre}_sel\n"
        return ${spectre}_sel
     } else {
         ::console::affiche_erreur "Usage : spc_rmedges nom_profil_de_raies (calibré linéairement) ?fraction de continuum (0.85)?\n\n"
@@ -1020,7 +1218,7 @@ proc spc_uncosmic { args } {
 # Arguments : fichier .fit du profil de raies, nombre
 ####################################################################
 
-proc spc_mult { args } {
+proc spc_multc { args } {
 
     global audace
     global conf caption
@@ -1045,7 +1243,7 @@ proc spc_mult { args } {
         ::console::affiche_resultat "Profil multiplié sauvé sous ${fichier}_mult\n"
         return "${fichier}_mult"
     } else {
-        ::console::affiche_erreur "Usage : spc_mult nom_profil_de_raies nombre\n\n"
+        ::console::affiche_erreur "Usage : spc_multc nom_profil_de_raies nombre\n\n"
     }
 }
 #*****************************************************************#
@@ -1187,7 +1385,7 @@ proc spc_normaraie { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 18-03-2007
-# Date modification : 18-03-2007 ; 20-09-2008
+# Date modification : 18-03-2007 ; 20-09-2008 ; 07-10-2009
 # Arguments : fichier .fit du profil de raies
 ####################################################################
 
@@ -1196,23 +1394,33 @@ proc spc_rescalecont { args } {
     global audace
     global conf caption
 
-    if { [llength $args]<=1 } {
-       if { [llength $args] == 1 } {
-           set fichier [ file rootname [ lindex $args 0 ] ]
-       } elseif { [llength $args]==0 } {
+    set nbargs [ llength $args ]
+    if { $nbargs<=2 } {
+       if { $nbargs==1 } {
+          set fichier [ file rootname [ lindex $args 0 ] ]
+       } elseif { $nbargs==2 } {
+          set fichier [ file rootname [ lindex $args 0 ] ]
+          set lambdaconti [ lindex $args 1 ]
+       } elseif { $nbargs==0 } {
            set spctrouve [ file rootname [ file tail [ tk_getOpenFile -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] ]
            if { [ file exists "$audace(rep_images)/$spctrouve$conf(extension,defaut)" ] == 1 } {
                set fichier $spctrouve
            } else {
-               ::console::affiche_erreur "Usage : spc_rescalecont nom_profil_de_raies\n\n"
+               ::console::affiche_erreur "Usage : spc_rescalecont nom_profil_de_raies ?lambda_continuum?\n\n"
                return 0
            }
        } else {
-           ::console::affiche_erreur "Usage : spc_rescalecont nom_profil_de_raies\n\n"
+           ::console::affiche_erreur "Usage : spc_rescalecont nom_profil_de_raies ?lambda_continuum?\n\n"
           return 0
        }
-        #--- Détermination de la valeur du continuum :
-        set icont [ spc_icontinuum $fichier ]
+
+       #--- Détermination de la valeur du continuum :
+       if { $nbargs==2 } {
+          set icont [ spc_icontinuum $fichier $lambdacont ]
+       } else {
+          set icont [ spc_icontinuum $fichier ]
+       }
+
         if { $icont == 0 } {
             ::console::affiche_erreur "Continuum trouvé égal à 0. Le spectre ne sera pas normalisé.\n"
             return "$fichier"
@@ -1227,7 +1435,7 @@ proc spc_rescalecont { args } {
             return "${fichier}_norm"
         }
     } else {
-        ::console::affiche_erreur "Usage : spc_rescalecont nom_profil_de_raies\n\n"
+        ::console::affiche_erreur "Usage : spc_rescalecont nom_profil_de_raies ?lambda_continuum?\n\n"
     }
 }
 #*****************************************************************#
@@ -1950,6 +2158,68 @@ proc spc_bordsnuls { args } {
 }
 #****************************************************************#
 
+##########################################################
+# Procedure de multiplication de 2 profils de raies
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 30-03-2006
+# Date de mise à jour : 21-10-2009
+# Arguments : profil de raies 1, profil de raies 2
+##########################################################
+
+proc spc_mult { args } {
+
+    global audace
+    global conf
+
+    if {[llength $args] == 2} {
+        set profil1 [ lindex $args 0 ]
+        set profil2 [lindex $args 1 ]
+        set fichier [ file tail [ file rootname $profil1 ] ]
+
+        #--- Vérification de la compatibilité des 2 profils de raies : lambda_i, lambda_f et dispersion identiques
+        #if { [ spc_compare $profil1 $profil2 ] == 1 }
+        if { 1 == 1 } {
+            #--- Création des listes de valeur :
+            set contenu1 [ spc_fits2data $profil1 ]
+            set contenu2 [ spc_fits2data $profil2 ]
+            set abscisses [ lindex $contenu1 0 ]
+            set ordonnees1 [ lindex $contenu1 1 ]
+            set ordonnees2 [ lindex $contenu2 1 ]
+
+            #--- Division :
+            #-- Meth2 : division simple sans gestion des valeurs devenues gigantesques :
+            buf$audace(bufNo) load "$audace(rep_images)/$profil1"
+            set i 1
+            set nbdivz 0
+            foreach ordo1 $ordonnees1 ordo2 $ordonnees2 {
+                   if { $ordo2 == 0.0 } {
+                       buf$audace(bufNo) setpix [list $i 1] 0.0
+                       incr i
+                       incr nbdivz
+                   } else {
+                       buf$audace(bufNo) setpix [list $i 1] [ expr 1.0*$ordo1*$ordo2 ]
+                       incr i
+                   }
+            }
+            ::console::affiche_resultat "Fin de la multiplication : $nbdivz multiplications par 0.\n"
+
+
+            #--- Fin du script :
+            buf$audace(bufNo) bitpix float
+            buf$audace(bufNo) save "$audace(rep_images)/${fichier}_mult"
+            buf$audace(bufNo) bitpix short
+            ::console::affiche_resultat "Multiplication des 2 profils sauvée sous ${fichier}_mult$conf(extension,defaut)\n"
+            return ${fichier}_mult
+        } else {
+            ::console::affiche_resultat "\nLes 2 profils de raies ne sont pas multipliables.\n"
+            return 0
+        }
+    } else {
+        ::console::affiche_erreur "Usage : spc_mult profil_de_raies_1_fits profil_de_raies_2_fits\n\n"
+    }
+}
+#*********************************************************************#
 
 
 ##########################################################
