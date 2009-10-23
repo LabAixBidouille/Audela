@@ -1,4 +1,4 @@
-# Mise a jour $Id: spcaudace.tcl,v 1.9 2009-07-13 01:07:36 bmauclaire Exp $
+# Mise a jour $Id: spcaudace.tcl,v 1.10 2009-10-23 18:40:50 bmauclaire Exp $
 
 
 ####################################################################################
@@ -83,6 +83,7 @@ proc ::spcaudace::initPlugin { tkbase } {
    #####uplevel #0 "source \"[ file join $rep_spcaudace spcaudace.tcl ]\""
 
    #--- Chargement de la lib BLT   (spc_ini.tcl a besoin de BLT)
+   #-- A DEPLACER DANS CREATE_PLUGININSTANCE ?
    package require BLT
 
    #-- Chargement des fonctionnalités :
