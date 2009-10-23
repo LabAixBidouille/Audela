@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.10 2009-09-19 13:54:54 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.11 2009-10-23 18:37:56 bmauclaire Exp $
 
 
 
@@ -617,7 +617,7 @@ proc spc_calibren { args } {
 
         #--- Calcul des coéfficients du polynome de calibration :
         if { $nbraies == 2 } {
-           set fileout [ spc_calibre2 $filename $coords ]
+           set fileout [ spc_calibre2 $filename [ lindex $xvals 0 ] [ lindex $lambdas 0 ] [ lindex $xvals 1 ] [ lindex $lambdas 1 ] ]
            return "$fileout"
         } elseif { $nbraies == 3 } {
            #-- Calcul du polynôme de calibration a+bx+cx^2 :
@@ -1261,12 +1261,77 @@ proc spc_resolution { args } {
 # CAlcul la resolution d'un spectre de lampe de calibration en trouvant la raie la plus proche du centre 
 #
 # Auteur : Benjamin MAUCLAIRE
+# Date de création : 22-10-200
+# Date de mise à jour : 22-10-2009
+# Arguments : profil_lampe_calibration
+##########################################################
+
+proc spc_autoresolution { args } {
+
+   global audace spcaudace
+   global conf caption
+
+   if { [ llength $args ] == 1 } {
+      set lampecalibree [ lindex $args 0 ]
+
+      #--- Calcul la resolution du spectre à partir de la raie la plus brillante trouvée et proche du centre du capteur :
+      ::console::affiche_resultat "\nCalcul la résolution du spectre...\n"
+      # set lambda_raiemax [ lindex [ lindex [ spc_findbiglines $lampecalibree e ] 0 ] 0 ]
+      set liste_raies [ spc_findbiglines $lampecalibree e ]
+      #-- Selection les trois premiere raies les plus brillantes de la liste :
+      set nbraies [ llength $liste_raies ]
+      if { $nbraies >= 3 } {
+         set liste_raies [ lrange $liste_raies 0 2 ]
+      }
+
+      #-- Recherhe de la raie la plus proche du centre, sinon prend la plus brillante :
+      #- Reucpere les parametres du spectre :
+      buf$audace(bufNo) load "$audace(rep_images)/$lampecalibree"
+      set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+      set listemotsclef [ buf$audace(bufNo) getkwds ]
+      if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+         set cdelt1 [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+      } else {
+         set cdelt1 1.
+      }
+      if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+         set crval1 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+      } else {
+         set crval1 1.
+      }
+
+      #--- Determine la reslution pour chaque raies de calibration :
+      set listeresol [ list ]
+      foreach raie $liste_raies {
+         set lambdaraie [ lindex $raie 0 ]
+         lappend listeresol [ list $lambdaraie [ spc_resolution $lampecalibree $lambdaraie ] ]
+      }
+
+      #--- Determine la resolution maximale accessible :
+      set bestresol [ lindex [ lsort -real -decreasing -index 1 $listeresol ] 0 ]
+      set lambdabestres [ lindex $bestresol 0 ]
+
+      #-- Calcul de la resolution et l'ecrit dans le header :
+      set resolution [ spc_resolution $lampecalibree [ lindex $bestresol 0 ] ]
+      ::console::affiche_resultat "\nLa meilleure résolution accessible vaut : $resolution à $lambdabestres A\n"
+      return "$lampecalibree"
+   } else {
+       ::console::affiche_erreur "Usage: spc_autoresolution profil_de_raies_lampe\n\n"
+   }
+}
+#****************************************************************#
+
+
+##########################################################
+# CAlcul la resolution d'un spectre de lampe de calibration en trouvant la raie la plus proche du centre 
+#
+# Auteur : Benjamin MAUCLAIRE
 # Date de création : 14-09-2008
 # Date de mise à jour : 14-09-2008
 # Arguments : profil_lampe_calibration
 ##########################################################
 
-proc spc_autoresolution { args } {
+proc spc_autoresolutionmid { args } {
 
    global audace spcaudace
    global conf caption
@@ -1325,7 +1390,7 @@ proc spc_autoresolution { args } {
       set resolution [ spc_resolution $lampecalibree $lambda_raiemax ]
       return "$lampecalibree"
    } else {
-       ::console::affiche_erreur "Usage: spc_autoresolution profil_de_raies_lampe\n\n"
+       ::console::affiche_erreur "Usage: spc_autoresolutionmid profil_de_raies_lampe\n\n"
    }
 }
 #****************************************************************#
@@ -2206,6 +2271,7 @@ proc spc_calibretelluric { args } {
 
           
        #--- Methode 3 : callibration avec les raies telluriques :
+       #- PAS BON : les intensites ne sont pas reinterpollees avec la nouvelle calibration deg3.
        if { [ lsearch $spcaudace(calo_meths) 3 ] != -1 } {
           ::console::affiche_resultat "============ 3) calibration sur l'eau ================\n"
           #-- Ajustement polynomial de degre 3 :
@@ -3100,7 +3166,7 @@ proc spc_calobilan { args } {
 
 
 ####################################################################
-# Réalise un diagnostique de la calibration par prapport aux raies de l'eau :
+# Superpose le profil de raies de l'eau sur un spectre choisi :
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 23-09-2007
