@@ -2,7 +2,7 @@
 # Fichier : vo_samp.tcl
 # Description : SAMP protocol functions
 # Auteur : Stephane VAILLANT
-# Mise a jour $Id: vo_samp.tcl,v 1.3 2009-07-31 08:02:40 svaillant Exp $
+# Mise a jour $Id: vo_samp.tcl,v 1.4 2009-10-23 12:52:35 svaillant Exp $
 #
 
 
@@ -233,6 +233,7 @@ proc ::Samp::build { nsp } {
 
  namespace eval $nsp {
   variable key
+  variable port sockserver msg initialized
   register
   set sockserver [socket -server [namespace current]::Server 0]
   set port [ lindex [fconfigure $sockserver -sockname] 2 ]
