@@ -1,7 +1,260 @@
 # Fonctions de calculs numeriques : interpolation, ajustement...
 # source $audace(rep_scripts)/spcaudace/spc_numeric.tcl
 
-# Mise a jour $Id: spc_numeric.tcl,v 1.4 2009-07-18 18:24:41 bmauclaire Exp $
+# Mise a jour $Id: spc_numeric.tcl,v 1.5 2009-10-23 18:38:59 bmauclaire Exp $
+
+
+####################################################################
+# Procédure de calcul de la valeur moyenne et de l'ecart-type d'une liste de nombres
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 08-10-2009
+# Date modification : 08-10-2009
+# Arguments : liste d'intensites
+####################################################################
+
+proc spc_statlist { args } {
+
+   set nbargs [ llength $args ]
+   if { $nbargs<=3 } {
+      if { $nbargs==1 } {
+         set intensites [ lindex $args 0 ]
+         set xinf 0
+         set xsup [ expr [ llength $intensites ]-1 ]
+      } elseif { $nbargs==3 } {
+         set intensites [ lindex $args 0 ]
+         set xinf [ lindex $args 1 ]
+         set xsup [ lindex $args 2 ]
+      } else {
+         ::console::affiche_erreur "Usage: spc_statlist liste_intensites ?x_inf x_sup?\n"
+         return
+      }
+
+      #--- Decoupage de la plage de donnees :
+      set intensites [ lrange $intensites $xinf $xsup ]
+      set len [ llength $intensites ]
+
+      #--- Calcul de la valeur moyenne :
+      set imean 0.0
+      for {set i 0} {$i<$len} {incr i} {
+         set imean [ expr $imean+[ lindex $intensites $i ] ]
+      }
+      set imean [ expr $imean/$len ]
+
+      #--- Calcul de l'ecart type non biaisé (http://fr.wikipedia.org/wiki/Écart_type) :
+      set ecarttype 0.
+      for {set i 0} {$i<$len} {incr i} {
+         set ecarttype [ expr $ecarttype+pow([ lindex $intensites $i ],2)-pow($imean,2) ]
+      }
+      set ecarttype [ expr sqrt($ecarttype/($len-1)) ]
+      
+      #--- Affichage des résultats :
+      set results [ list $imean $ecarttype ]
+      #::console::affiche_resultat "Valeur moyenne $imean, ecart-type $ecarttype\n"
+      return $results
+   } else {
+      ::console::affiche_erreur "Usage: spc_statlist liste_intensites ?x_inf x_sup?\n"
+   }
+}
+#***************************************************************************#
+
+
+####################################################################
+# Procédure de calcul de la valeur moyenne du continuum d'une liste de nombre
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 18-03-2007
+# Date modification : 07-10-2009
+# Arguments : liste d'intensites
+####################################################################
+
+proc spc_icontilist { args } {
+    global conf
+    global audace
+    set nbtranches 10
+    #- demi-largeur d'etude en pixels :
+    set dlargeur_etude 5
+
+    if { [ llength $args ]==1 } {
+       set intensites [ lindex $args 0 ]
+
+       #--- Détermine les limites gauche et droite d'etude (valeurs != 0) :
+       #- set limits [ spc_findnnul [ lindex [ spc_fits2data "$fichier" ] 1 ] ]
+       #-- Initialisations :
+       set len [ llength $intensites ]
+       set i_inf 0
+       set i_sup [ expr $len-1 ]
+       #-- Recherche de i_inf :
+       for {set i 0} {$i<$len} {incr i} {
+          if { [ lindex $intensites $i ]>0 } {
+             set i_inf $i
+             break
+          }
+       }
+       #-- Recherche de i_sup :
+       for {set i [ expr $len-1 ]} {$i>=0} {incr i -1} {
+          if { [ lindex $intensites $i ]>0 } {
+             set i_sup $i
+             break
+          }
+       }
+       #::console::affiche_resultat "$i_inf, $i_sup\n"
+
+       #-- Selelctionne la tranche d'intensites non nulles :
+       #buf$audace(bufNo) window [ list [ lindex $limits 0 ] 1 [ lindex $limits 1 ] 1 ]
+       set selectintensites [ lrange $intensites $i_inf $i_sup ]
+       set naxis1 [ expr $i_sup-$i_inf+1 ]
+       set largeur [ expr int($naxis1/$nbtranches) ]
+       
+       #--- Détermine l'intensité moyenne sur chaque tranches :
+       set listresults ""
+       #- i : compteur du numero de la tranche de largeur "largeur".
+       for {set i 0} {$i<$nbtranches} {incr i} {
+          if { $i==0 } {
+             set zone [ list 0 [ expr $largeur-1 ] ]
+          } else {
+             set zone [ list [ expr $i*$largeur ] [ expr ($i+1)*$largeur ] ]
+          }
+          set result [ spc_statlist $selectintensites [ lindex $zone 0] [ lindex $zone 1 ] ]
+          lappend listresults [ list [ lindex $result 0 ] [ lindex $result 1 ] ]
+       }
+       
+       #--- Tri par ecart-type :
+       set listresults [ lsort -increasing -real -index 1 $listresults ]
+       set icontinuum [ lindex [ lindex $listresults 0 ] 0 ]
+       
+       #--- Affichage des résultats :
+       ::console::affiche_resultat "Le continuum vaut $icontinuum\n"
+       return $icontinuum
+    } else {
+        ::console::affiche_erreur "Usage: spc_icontilist liste_intensites\n"
+    }
+}
+#***************************************************************************#
+
+
+
+####################################################################
+# Procedure déterminant les bornes (indice) inf et sup d'un ensemble de valeurs où elles sont différentes de 0
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 14-07-2007
+# Date modification : 14-07-2007, 07-10-2009
+# Algo : base sur l'aglo de spc_rmedges
+# Arguments : liste valeurs
+# Sortie : les indices inf et sup de la liste
+####################################################################
+
+proc spc_findnnul { args } {
+    global conf
+    global audace spcaudace
+
+    set nbargs [ llength $args ]
+    if { $nbargs==1 } {
+       set intensites [ lindex $args 0 ]
+       set frac_conti 0.85
+    } elseif { $nbargs==2 } {
+       set intensites [ lindex $args 0 ]
+       set frac_conti [ lindex $args 1 ]
+    } else {
+       ::console::affiche_erreur "Usage : spc_findnnul liste_intensites ?fraction de continuum (0.85)?\n\n"
+       return ""
+    }
+
+   #--- Chargement des paramètres du spectre :
+   set conti_min [ expr $frac_conti*[ spc_icontilist $intensites ] ]
+   set naxis1 [ llength $intensites ]
+   set dnaxis1 [ expr int(0.5*$naxis1) ]
+   set xgauche [ expr int($naxis1*.15) ]
+   set xdroite [ expr int($naxis1*.85) ]
+   
+   #--- Détermine lambda_min et lambda_max :
+   set xlistdeb1 0
+   for { set i 1 } { $i<$xgauche } { incr i } {
+      set intA [ lindex $intensites $i ]
+      set intB [ lindex $intensites [ expr $i+4 ] ]
+      set pente [ expr (abs($intB)-abs($intA))/4. ]
+      #-- Teste si il y a une pente assez croissante :
+      if { $pente >= $spcaudace(croissbord) } {
+         #-- Gestion des pentes douces (met de la souplesse a spcaudace(croissbord)) :
+         if { [ lindex $intensites [ expr $i+2 ] ] >= $conti_min } {
+            set xlistdeb1 [ expr $i+2 ]
+            break
+         } elseif { [ lindex $intensites [ expr $i+3 ] ] >= $conti_min } {
+            set xlistdeb1 [ expr $i+3 ]
+            break
+         }
+      }
+   }
+   set xlistfin1 [ expr $naxis1-1 ]
+   for { set i [ expr $naxis1-1 ] } { $i>$xdroite } { incr i -1 } {
+      set intA [ lindex $intensites [ expr $i-4 ] ]
+      set intB [ lindex $intensites $i ]
+      set pente [ expr abs(abs($intA)-abs($intB))/4. ]
+      #-- Teste si il y a une pente assez croissante :
+      if { $pente >= $spcaudace(croissbord) } {
+         #-- Gestion des pentes douces (met de la souplesse a spcaudace(croissbord)) :
+         if { [ lindex $intensites [ expr $i-2 ] ] >= $conti_min } {
+            set xlistfin1 [ expr $i-2 ]
+            break
+         } elseif { [ lindex $intensites [ expr $i-3 ] ] >= $conti_min }  {
+            set xlistfin1 [ expr $i-3 ]
+            break
+         }
+      }
+   }
+   
+   #--- Seconde passe pour effacer les irréductibles échantillons vraiment nuls, sinon teste la validite des limites trouvees :
+   #-- Bord gauche :
+   set xlistdeb $xlistdeb1
+   if { $xlistdeb1<=$xgauche } {
+      for { set i $xlistdeb1 } { $i <= $dnaxis1 } { incr i } {
+         if { [ lindex $intensites $i ] != 0.} {
+            set xlistdeb $i
+            break
+         }
+      }
+   } else {
+      for {set i 0} {$i<$dnaxis1} {incr i} {
+         if { [ lindex $intentites $i ]>0 } {
+            set xlistdeb $i
+            break
+         }
+      }
+      #- Si trop a l'interieur, calcul avec valeurs nulles, sinon prend la valeur 0 :
+      if { $xlistdeb>$xgauche } {
+         set xlistdeb 0
+      }
+   }
+   #-- Bord droit :
+   set xlistfin $xlistfin1
+   if { $xlistfin1>=$xdroite } {
+      for { set i $xlistdeb1 } { $i >= $dnaxis1 } { incr i -1 } {
+         if { [ lindex $intensites $i ] != 0. } {
+            set xlistfin $i
+            break
+         }
+      }
+   } else {
+      for {set i [ expr $naxis1-1 ]} {$i>=$dnaxis1} {incr i -1} {
+         if { [ lindex $intentites $i ]>0 } {
+            set xlistfin $i
+            break
+         }
+      }
+      #- Si trop a l'interieur, calcul avec valeurs nulles, sinon prend la valeur naxis1-1 :
+      if { $xlistfin<$xdroite } {
+         set xlistfin [ expr $naxis1-1 ]
+      }
+   }
+
+   #--- Exploitation des resultats :
+   set results [ list $xlistdeb $xlistfin ]
+   ::console::affiche_resultat "Les limites non nulles sont $xlistdeb ; $xlistfin\n"
+   return $results
+}
+#***************************************************************************#
+
 
 
 
@@ -1932,3 +2185,50 @@ proc spc_resample0 { args } {
 }
 
 #******************************************************************************#
+
+####################################################################
+# Procedure déterminant les bornes (indice) inf et sup d'un ensemble de valeurs où elles sont différentes de 0
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 14-07-2007
+# Date modification : 14-07-2007
+# Arguments : liste valeurs
+# Sortie : les indices inf et sup de la liste
+####################################################################
+
+proc spc_findnnul_1 { args } {
+    global conf
+    global audace
+
+    if { [llength $args] == 1 } {
+        set liste_intentites [ lindex $args 0 ]
+
+        #--- Initialisations :
+        set len [ llength $liste_intentites ]
+        set i_inf 0
+        set i_sup [ expr $len-1 ]
+
+        #--- Recherche de i_inf :
+        for {set i 0} {$i<$len} {incr i} {
+            if { [ lindex $liste_intentites $i ]>0 } {
+                set i_inf $i
+                break
+            }
+        }
+
+        #--- Recherche de i_sup :
+        for {set i [ expr $len-1 ]} {$i>=0} {incr i -1} {
+            if { [ lindex $liste_intentites $i ]>0 } {
+                set i_sup $i
+                break
+            }
+        }
+
+        #--- Traitement des résultats :
+        set results [ list $i_inf $i_sup ]
+        return $results
+    } else {
+        ::console::affiche_erreur "Usage: spc_findnnul liste_intensites\n"
+    }
+}
+#***************************************************************************#
