@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.19 2009-10-19 21:11:49 michelpujol Exp $
+# Mise a jour $Id: t193.tcl,v 1.20 2009-10-24 22:05:33 robertdelmas Exp $
 #
 
 namespace eval ::t193 {
@@ -714,10 +714,10 @@ proc ::t193::getPluginProperty { propertyName } {
          }
       }
       hasCoordinates          { return 1 }
-      hasGoto                 { return 0 }
+      hasGoto                 { return 1 }
       hasMatch                { return 0 }
       hasManualMotion         { return 1 }
-      hasControlSuivi         { return 0 }
+      hasControlSuivi         { return 1 }
       hasCorrectionRefraction { return 0 }
       hasModel                { return 0 }
       hasPark                 { return 0 }
