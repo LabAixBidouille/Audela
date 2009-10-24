@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.112 2009-09-20 13:51:46 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.113 2009-10-24 22:08:05 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -278,10 +278,6 @@ namespace eval ::confVisu {
       variable private
       global caption conf
 
-      if { $force == "-novisu" } {
-         return
-      }
-
       #--- petit raccourci pour la suite
       set bufNo [visu$visuNo buf]
 
@@ -289,8 +285,8 @@ namespace eval ::confVisu {
          #--- je recupere la largeur et la hauteur de la video
          set camNo [::confCam::getCamNo $private($visuNo,camItem)]
          set videoSize [cam$camNo nbpix ]
-         set private($visuNo,picture_w)  [lindex $videoSize 0]
-         set private($visuNo,picture_h)  [lindex $videoSize 1]
+         set private($visuNo,picture_w) [lindex $videoSize 0]
+         set private($visuNo,picture_h) [lindex $videoSize 1]
          #--- Je mets a jour la taille les scrollbars
          setScrollbarSize $visuNo
          #--- Je mets a jour la taille du reticule
@@ -359,7 +355,7 @@ namespace eval ::confVisu {
                         }
                      }
                   }
-                  #--- je charge la liste dans la combox de la toolbar
+                  #--- je charge la liste dans la combobox de la toolbar
                   ::confVisu::showHduList $visuNo $hduNo
                   #--- j'affiche la toolbar
                   ::confVisu::showToolBar $visuNo 1
@@ -423,74 +419,87 @@ namespace eval ::confVisu {
             ::confVisu::setFileName $visuNo "?"
          }
 
-         #--- je determine le mode d'affichage en focntion du type d'image
-         #---  si type=image2D alors  mode=image
-         #---  si type=image1D alors  mode=graph
-         #---  si type=table   alors  mode=table
-         if { $private($visuNo,fitsHduList) != "" } {
-            #---
-            set hduInfo [lindex $private($visuNo,fitsHduList) [expr $private($visuNo,currentHduNo) -1]]
-            set hduName [lindex $hduInfo 0]
-            set hduType [lindex $hduInfo 1]
-            set hduNaxes [lindex $hduInfo 2]
+         #--- on affiche l'image
+         if { $force != "-novisu" } {
+            #--- je determine le mode d'affichage en fonction du type d'image
+            #---  si type=image2D alors  mode=image
+            #---  si type=image1D alors  mode=graph
+            #---  si type=table   alors  mode=table
+            if { $private($visuNo,fitsHduList) != "" } {
+               #---
+               set hduInfo [lindex $private($visuNo,fitsHduList) [expr $private($visuNo,currentHduNo) -1]]
+               set hduName [lindex $hduInfo 0]
+               set hduType [lindex $hduInfo 1]
+               set hduNaxes [lindex $hduInfo 2]
 
-            switch $hduType {
-               Image {
-                  set naxes [llength $hduNaxes]
-                  set naxis2  [lindex $hduNaxes 1]
-                  if { $naxes == 1 || ($naxes == 2 && $naxis2 == 1) } {
-                     #--- c'est une image 1D
-                     set mode "graph"
-                  } else {
-                     #--- c'est une image 2D
-                     set mode "image"
+               switch $hduType {
+                  Image {
+                     set naxes [llength $hduNaxes]
+                     set naxis2  [lindex $hduNaxes 1]
+                     if { $naxes == 1 || ($naxes == 2 && $naxis2 == 1) } {
+                        #--- c'est une image 1D
+                        set mode "graph"
+                     } else {
+                        #--- c'est une image 2D
+                        set mode "image"
+                     }
+                  }
+                  Binary {
+                     #--- c'est une table
+                     set mode "table"
                   }
                }
-               Binary {
-                  #--- c'est une table
-                  set mode "table"
+            } else {
+               #--- je recupere la largeur et la hauteur de l'image
+               set private($visuNo,picture_w) [buf$bufNo getpixelswidth]
+               if { "$private($visuNo,picture_w)" == "" } {
+                  set private($visuNo,picture_w) 0
+               }
+               if { $private($visuNo,picture_w) == 1 } {
+                  #--- c'est un profil 1D
+                  set mode "graph"
+                  #--- la hauteur correspond a l'epaisseur affichee par la visu
+                  set private($visuNo,applyThickness) "1"
+                  set private($visuNo,picture_h) [visu$visuNo thickness]
+               } else {
+                  #--- c'est une image 2D
+                  set mode "image"
+                  #--- la hauteur est la hauteur retournee par le buffer
+                  set private($visuNo,applyThickness) "0"
+                  set private($visuNo,picture_h) [buf$bufNo getpixelsheight]
                }
             }
-         } else {
-            #--- je recupere la largeur et la hauteur de l'image
-            set private($visuNo,picture_w) [buf$bufNo getpixelswidth]
-            if { "$private($visuNo,picture_w)" == "" } {
-               set private($visuNo,picture_w) 0
-            }
-            if { $private($visuNo,picture_w) == 1 } {
-               #--- c'est un profil 1D
-               set mode "graph"
-               #--- la hauteur correspond a l'epaisseur affichee par la visu
-               set private($visuNo,applyThickness) "1"
-               set private($visuNo,picture_h) [visu$visuNo thickness]
-            } else {
-               #--- c'est une image 2D
-               set mode "image"
-               #--- la hauteur est la hauteur retournee par le buffer
-               set private($visuNo,applyThickness) "0"
-               set private($visuNo,picture_h) [buf$bufNo getpixelsheight]
-            }
-         }
 
-         #--- j'affiche les donnees dans la visu
-         if { $mode == "image" } {
-            #--- j'affiche une image 2D sous forme de courbe
+            #--- j'affiche les donnees dans la visu
+            if { $mode == "image" } {
+               #--- j'affiche une image 2D sous forme de courbe
 
-            #--- je supprime le fenetrage si la fenetre deborde de la nouvelle image
-            set windowBox [visu$visuNo window]
-            if { [lindex $windowBox 2] > $private($visuNo,picture_w)
-               || [lindex $windowBox 3] > $private($visuNo,picture_h) } {
-               set private($visuNo,window) "0"
-               setWindow $visuNo
-            }
+               #--- je supprime le fenetrage si la fenetre deborde de la nouvelle image
+               set windowBox [visu$visuNo window]
+               if { [lindex $windowBox 2] > $private($visuNo,picture_w)
+                  || [lindex $windowBox 3] > $private($visuNo,picture_h) } {
+                  set private($visuNo,window) "0"
+                  setWindow $visuNo
+               }
 
-            #--- Si le buffer contient une image on met a jour les seuils
-            if { [ buf$bufNo imageready ] == "1" } {
-               switch -exact -- $conf(seuils,visu$visuNo,mode) {
-                  disable {
-                     if { $force == "-no" } {
-                       visu $visuNo current
-                     } else {
+               #--- Si le buffer contient une image on met a jour les seuils
+               if { [ buf$bufNo imageready ] == "1" } {
+                  switch -exact -- $conf(seuils,visu$visuNo,mode) {
+                     disable {
+                        if { $force == "-no" } {
+                          visu $visuNo current
+                        } else {
+                           set window [visu$visuNo window]
+                           if { $window == "full" } {
+                              #--- je calcule la statistique sur l'image entiere
+                              visu $visuNo [ lrange [ buf$bufNo stat ] 0 1 ]
+                           } else {
+                              #--- je calcule la statistique sur la fenetre
+                              visu $visuNo [ lrange [ buf$bufNo stat $window ] 0 1 ]
+                           }
+                        }
+                     }
+                     loadima {
                         set window [visu$visuNo window]
                         if { $window == "full" } {
                            #--- je calcule la statistique sur l'image entiere
@@ -500,201 +509,191 @@ namespace eval ::confVisu {
                            visu $visuNo [ lrange [ buf$bufNo stat $window ] 0 1 ]
                         }
                      }
-                  }
-                  loadima {
-                     set window [visu$visuNo window]
-                     if { $window == "full" } {
-                        #--- je calcule la statistique sur l'image entiere
-                        visu $visuNo [ lrange [ buf$bufNo stat ] 0 1 ]
-                     } else {
-                        #--- je calcule la statistique sur la fenetre
-                        visu $visuNo [ lrange [ buf$bufNo stat $window ] 0 1 ]
+                     iris {
+                        set moyenne [ lindex [ buf$bufNo stat ] 4 ]
+                        visu $visuNo [ list [ expr $moyenne + $conf(seuils,irisautohaut) ] [expr $moyenne - $conf(seuils,irisautobas) ] ]
+                     }
+                     histoauto {
+                        set keytype FLOAT
+                        buf$bufNo imaseries "CUTS lofrac=[expr 0.01*$conf(seuils,histoautobas)] hifrac=[expr 0.01*$conf(seuils,histoautohaut)] keytype=$keytype"
+                        visu $visuNo [ list [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ] ]
+                     }
+                     initiaux {
+                        buf$bufNo initialcut
+                        if { [ lindex [ buf$bufNo getkwd NAXIS ] 1 ] == "3" } {
+                           set mycuts [ list [ lindex [ buf$bufNo getkwd MIPS-HIR ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LOR ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-HIG ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LOG ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-HIB ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LOB ] 1 ] ]
+                        } else {
+                           set mycuts [ list [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ] ]
+                        }
+                        visu $visuNo $mycuts
                      }
                   }
-                  iris {
-                     set moyenne [ lindex [ buf$bufNo stat ] 4 ]
-                     visu $visuNo [ list [ expr $moyenne + $conf(seuils,irisautohaut) ] [expr $moyenne - $conf(seuils,irisautobas) ] ]
+               } else {
+                  #--- nettoyage de l'affichage s'il n'y a pas d'image dans le buffer
+                  set private($visuNo,picture_w) 0
+                  set private($visuNo,picture_h) 0
+                  visu $visuNo current
+               }
+
+               #--- Suppression de la zone selectionnee avec la souris si elle est hors de l'image
+               if { [ lindex [ list [ ::confVisu::getBox $visuNo ] ] 0 ] != "" } {
+                  set box [ ::confVisu::getBox $visuNo ]
+                  set x1 [lindex  [confVisu::getBox $visuNo ] 0]
+                  set y1 [lindex  [confVisu::getBox $visuNo ] 1]
+                  set x2 [lindex  [confVisu::getBox $visuNo ] 2]
+                  set y2 [lindex  [confVisu::getBox $visuNo ] 3]
+                  if { $x1 > $::confVisu::private($visuNo,picture_w)
+                    || $y1 > $::confVisu::private($visuNo,picture_h)
+                    || $y2 > $::confVisu::private($visuNo,picture_w)
+                    || $y2 > $::confVisu::private($visuNo,picture_h) } {
+                     ::confVisu::deleteBox $visuNo
                   }
-                  histoauto {
-                     set keytype FLOAT
-                     buf$bufNo imaseries "CUTS lofrac=[expr 0.01*$conf(seuils,histoautobas)] hifrac=[expr 0.01*$conf(seuils,histoautohaut)] keytype=$keytype"
-                     visu $visuNo [ list [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ] ]
+               }
+
+               #--- j'identifie si l'echelle RADEC est disponbible
+               set calib 1
+               if { [string compare [lindex [buf$bufNo getkwd CRPIX1] 0] ""] == 0 } {
+                  set calib 0
+               }
+               if { [string compare [lindex [buf$bufNo getkwd CRPIX2] 0] ""] == 0 } {
+                  set calib 0
+               }
+               if { [string compare [lindex [buf$bufNo getkwd CRVAL1] 0] ""] == 0 } {
+                  set calib 0
+               }
+               if { [string compare [lindex [buf$bufNo getkwd CRVAL2] 0] ""] == 0 } {
+                  set calib 0
+               }
+               set classic 0
+               set nouveau 0
+               if { [string compare [lindex [buf$bufNo getkwd CD1_1] 0] ""] != 0 } {
+                  incr nouveau
+               }
+               if { [string compare [lindex [buf$bufNo getkwd CD1_2] 0] ""] != 0 } {
+                  incr nouveau
+               }
+               if { [string compare [lindex [buf$bufNo getkwd CD2_1] 0] ""] != 0 } {
+                  incr nouveau
+               }
+               if { [string compare [lindex [buf$bufNo getkwd CD2_2] 0] ""] != 0 } {
+                  incr nouveau
+               }
+               if { [string compare [lindex [buf$bufNo getkwd CDELT1] 0] ""] != 0 } {
+                  incr classic
+               }
+               if { [string compare [lindex [buf$bufNo getkwd CDELT2] 0] ""] != 0 } {
+                  incr classic
+               }
+               if { [string compare [lindex [buf$bufNo getkwd CROTA1] 0] ""] != 0 } {
+                  incr classic
+               }
+               if { [string compare [lindex [buf$bufNo getkwd CROTA2] 0] ""] != 0 } {
+                  incr classic
+               }
+               if {(($calib == 1)&&($nouveau==4))||(($calib == 1)&&($classic>=3))} {
+                  ::confVisu::setAvailableScale $visuNo "xy_radec"
+               } else {
+                  ::confVisu::setAvailableScale $visuNo "xy"
+               }
+
+               #--- Je mets a jour la taille des scrollbars
+               setScrollbarSize $visuNo
+
+               #--- Je mets a jour la taille du reticule
+               ::confVisu::redrawCrosshair $visuNo
+               ::confVisu::setMode $visuNo "image"
+            } elseif { $mode == "graph" } {
+               #--- j'affiche une image 1D sous forme de courbe
+
+               #--- j'affiche le graphique
+               set tkgraph [::confVisu::getGraph $visuNo]
+
+               #--- je cree la courbe par defaut si elle n'existe pas
+               if { [ $tkgraph element exists line$visuNo ] == 0 } {
+                   $tkgraph element create line$visuNo -symbol none -smooth natural
+               }
+
+               #--- je recupere les mots clefs
+               set bufNo [getBufNo $visuNo]
+               set size   [lindex [buf$bufNo getkwd NAXIS1] 1]
+               set crval1 [lindex [buf$bufNo getkwd CRVAL1] 1]
+               set cdelt1 [lindex [buf$bufNo getkwd CDELT1] 1]
+               set crpix1 [lindex [buf$bufNo getkwd CRPIX1] 1]
+               if { $crpix1 == "" } {
+                  set crpix1 1
+               }
+               #--- je recupere le nom des unites des abcisses
+               set private($visuNo,graph,xUnit) [lindex [buf$bufNo getkwd CUNIT1] 1]
+               if { $private($visuNo,graph,xUnit) == "" } {
+                  #--- si l'unite n'est pas précise, je choisis "pixel" par defaut
+                  set private($visuNo,graph,xUnit) "pixel"
+               }
+               #--- je donne le nom des unites des ordonnees
+               set private($visuNo,graph,yUnit) "ADU"
+
+               #--- si l'image n'est pas calibree en longueur d'ondes
+               if { $crval1 == "" } {
+                  set crval1 0
+               }
+               if { $cdelt1 == "" } {
+                  set cdelt1 1
+               }
+
+               #--- je recupere les ordonnees
+               set ydata2 ""
+               set abcisses ""
+               for { set i 1 } { $i <= $size } { incr i } {
+                  #--- je calcule les abcisses
+                  lappend abcisses [expr $cdelt1 * $i + $crval1 ]
+                  #--- je controle les ordonnees
+                  ###set y [lindex $ydata $i]
+                  set y [lindex [ buf$bufNo getpix [ list $i 1 ] ] 1]
+                  if { $y == "NULL" || $y == "-1.#QNAN0"} {
+                     set y 0
                   }
-                  initiaux {
-                     buf$bufNo initialcut
-                     if { [ lindex [ buf$bufNo getkwd NAXIS ] 1 ] == "3" } {
-                        set mycuts [ list [ lindex [ buf$bufNo getkwd MIPS-HIR ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LOR ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-HIG ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LOG ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-HIB ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LOB ] 1 ] ]
-                     } else {
-                        set mycuts [ list [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ] ]
-                     }
-                     visu $visuNo $mycuts
+                  lappend ydata2 $y
+               }
+               $tkgraph element configure line$visuNo -xdata $abcisses -ydata $ydata2
+
+               #--- je supprime le zoom, au cas ou il aurait ete applique precedemement
+               ::confVisu::onGraphUnzoom $visuNo
+
+               $tkgraph axis configure x2 -hide true
+               $tkgraph axis configure y2 -hide true
+               $tkgraph configure  -plotbackground "white"
+               #--- j'affiche le graphe
+               ::confVisu::setMode $visuNo "graph"
+            } elseif { $mode == "table" } {
+               #--- j'affiche une table
+
+               set hFile ""
+               set catchResult [catch {
+                  #--- j'affiche la tkTable
+                  ::confVisu::setMode $visuNo "table"
+                  set tkTable [::confVisu::getTable $visuNo ]
+
+                  #--- je vide la tkTable
+                  $tkTable delete 0 end
+
+                  #--- j'ajoute le nom des colonnes en titre
+                  ###set colNames [$hFile info column ]
+                  set columnList ""
+                  foreach colName $columnNames {
+                     lappend columnList 0 $colName center
                   }
+                  $tkTable configure -columns $columnList
+
+                  #--- j'ajoute le contenu des lignes
+                  ###set values [$hFile get table]
+                  foreach row $columnValues {
+                     $tkTable insert end $row
+                  }
+
+               } ]
+
+               if { $hFile != "" } {
+                  $hFile close
                }
-            } else {
-               #--- nettoyage de l'affichage s'il n'y a pas d'image dans le buffer
-               set private($visuNo,picture_w) 0
-               set private($visuNo,picture_h) 0
-               visu $visuNo current
-            }
-
-            #--- Suppression de la zone selectionnee avec la souris si elle est hors de l'image
-            if { [ lindex [ list [ ::confVisu::getBox $visuNo ] ] 0 ] != "" } {
-               set box [ ::confVisu::getBox $visuNo ]
-               set x1 [lindex  [confVisu::getBox $visuNo ] 0]
-               set y1 [lindex  [confVisu::getBox $visuNo ] 1]
-               set x2 [lindex  [confVisu::getBox $visuNo ] 2]
-               set y2 [lindex  [confVisu::getBox $visuNo ] 3]
-               if { $x1 > $::confVisu::private($visuNo,picture_w)
-                 || $y1 > $::confVisu::private($visuNo,picture_h)
-                 || $y2 > $::confVisu::private($visuNo,picture_w)
-                 || $y2 > $::confVisu::private($visuNo,picture_h) } {
-                  ::confVisu::deleteBox $visuNo
-               }
-            }
-
-            #--- j'identifie si l'echelle RADEC est disponbible
-            set calib 1
-            if { [string compare [lindex [buf$bufNo getkwd CRPIX1] 0] ""] == 0 } {
-               set calib 0
-            }
-            if { [string compare [lindex [buf$bufNo getkwd CRPIX2] 0] ""] == 0 } {
-               set calib 0
-            }
-            if { [string compare [lindex [buf$bufNo getkwd CRVAL1] 0] ""] == 0 } {
-               set calib 0
-            }
-            if { [string compare [lindex [buf$bufNo getkwd CRVAL2] 0] ""] == 0 } {
-               set calib 0
-            }
-            set classic 0
-            set nouveau 0
-            if { [string compare [lindex [buf$bufNo getkwd CD1_1] 0] ""] != 0 } {
-               incr nouveau
-            }
-            if { [string compare [lindex [buf$bufNo getkwd CD1_2] 0] ""] != 0 } {
-               incr nouveau
-            }
-            if { [string compare [lindex [buf$bufNo getkwd CD2_1] 0] ""] != 0 } {
-               incr nouveau
-            }
-            if { [string compare [lindex [buf$bufNo getkwd CD2_2] 0] ""] != 0 } {
-               incr nouveau
-            }
-            if { [string compare [lindex [buf$bufNo getkwd CDELT1] 0] ""] != 0 } {
-               incr classic
-            }
-            if { [string compare [lindex [buf$bufNo getkwd CDELT2] 0] ""] != 0 } {
-               incr classic
-            }
-            if { [string compare [lindex [buf$bufNo getkwd CROTA1] 0] ""] != 0 } {
-               incr classic
-            }
-            if { [string compare [lindex [buf$bufNo getkwd CROTA2] 0] ""] != 0 } {
-               incr classic
-            }
-            if {(($calib == 1)&&($nouveau==4))||(($calib == 1)&&($classic>=3))} {
-               ::confVisu::setAvailableScale $visuNo "xy_radec"
-            } else {
-               ::confVisu::setAvailableScale $visuNo "xy"
-            }
-
-            #--- Je mets a jour la taille des scrollbars
-            setScrollbarSize $visuNo
-
-            #--- Je mets a jour la taille du reticule
-            ::confVisu::redrawCrosshair $visuNo
-            ::confVisu::setMode $visuNo "image"
-         } elseif { $mode == "graph" } {
-            #--- j'affiche une image 1D sous forme de courbe
-
-            #--- j'affiche le graphique
-            set tkgraph [::confVisu::getGraph $visuNo]
-
-            #--- je cree la courbe par defaut si elle n'existe pas
-            if { [ $tkgraph element exists line$visuNo ] == 0 } {
-                $tkgraph element create line$visuNo -symbol none -smooth natural
-            }
-
-            #--- je recupere les mots clefs
-            set bufNo [getBufNo $visuNo]
-            set size   [lindex [buf$bufNo getkwd NAXIS1] 1]
-            set crval1 [lindex [buf$bufNo getkwd CRVAL1] 1]
-            set cdelt1 [lindex [buf$bufNo getkwd CDELT1] 1]
-            set crpix1 [lindex [buf$bufNo getkwd CRPIX1] 1]
-            if { $crpix1 == "" } {
-               set crpix1 1
-            }
-            #--- je recupere le nom des unites des abcisses
-            set private($visuNo,graph,xUnit) [lindex [buf$bufNo getkwd CUNIT1] 1]
-            if { $private($visuNo,graph,xUnit) == "" } {
-               #--- si l'unite n'est pas précise, je choisis "pixel" par defaut
-               set private($visuNo,graph,xUnit) "pixel"
-            }
-            #--- je donne le nom des unites des ordonnees
-            set private($visuNo,graph,yUnit) "ADU"
-
-            #--- si l'image n'est pas calibree en longueur d'ondes
-            if { $crval1 == "" } {
-               set crval1 0
-            }
-            if { $cdelt1 == "" } {
-               set cdelt1 1
-            }
-
-            #--- je recupere les ordonnees
-            set ydata2 ""
-            set abcisses ""
-            for { set i 1 } { $i <= $size } { incr i } {
-               #--- je calcule les abcisses
-               lappend abcisses [expr $cdelt1 * $i + $crval1 ]
-               #--- je controle les ordonnees
-               ###set y [lindex $ydata $i]
-               set y [lindex [ buf$bufNo getpix [ list $i 1 ] ] 1]
-               if { $y == "NULL" || $y == "-1.#QNAN0"} {
-                  set y 0
-               }
-               lappend ydata2 $y
-            }
-            $tkgraph element configure line$visuNo -xdata $abcisses -ydata $ydata2
-
-            #--- je supprime le zoom, au cas ou il aurait ete applique precedemement
-            ::confVisu::onGraphUnzoom $visuNo
-
-            $tkgraph axis configure x2 -hide true
-            $tkgraph axis configure y2 -hide true
-            $tkgraph configure  -plotbackground "white"
-            #--- j'affiche le graphe
-            ::confVisu::setMode $visuNo "graph"
-         } elseif { $mode == "table" } {
-            #--- j'affiche une table
-
-            set hFile ""
-            set catchResult [catch {
-               #--- j'affiche la tkTable
-               ::confVisu::setMode $visuNo "table"
-               set tkTable [::confVisu::getTable $visuNo ]
-
-               #--- je vide la tkTable
-               $tkTable delete 0 end
-
-               #--- j'ajoute le nom des colonnes en titre
-               ###set colNames [$hFile info column ]
-               set columnList ""
-               foreach colName $columnNames {
-                  lappend columnList 0 $colName center
-               }
-               $tkTable configure -columns $columnList
-
-               #--- j'ajoute le contenu des lignes
-               ###set values [$hFile get table]
-               foreach row $columnValues {
-                  $tkTable insert end $row
-               }
-
-            } ]
-
-            if { $hFile != "" } {
-               $hFile close
             }
          }
       }
