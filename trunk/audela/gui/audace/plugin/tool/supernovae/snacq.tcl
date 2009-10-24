@@ -2,14 +2,14 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snacq.tcl,v 1.17 2009-09-19 16:12:06 robertdelmas Exp $
+# Mise a jour $Id: snacq.tcl,v 1.18 2009-10-24 22:06:29 robertdelmas Exp $
 #
 
 # ===================================================================
 # ===================================================================
 # ===================================================================
 
-global audace
+global audace snconf
 
 #--- Initialisation des repertoires
 set sn(inidir)        [ pwd ]
@@ -27,7 +27,7 @@ snconfacq_verif
 catch { set snconf(localite) "$audace(posobs,observateur,gps)" }
 
 #--- Recuperation du repertoire dedie aux images
-catch { set snconf(dossier) "$conf(rep_images)" }
+catch { set snconf(dossier) "$audace(rep_images)" }
 
 #--- Recuperation du nom de l'observateur
 catch { set snconf(fits,OBSERVER) "$conf(posobs,nom_observateur)" }
@@ -622,8 +622,7 @@ bind $audace(base).snacq.frame1.labURL_tel <ButtonPress-1> {
 bind $audace(base).snacq.frame9.labURL_chemin_rep <ButtonPress-1> {
    ::cwdWindow::run "$audace(base).cwdWindow"
    tkwait window $audace(base).cwdWindow
-   set snconf(dossier) "$conf(rep_images)"
-   set audace(rep_images) "$conf(rep_images)"
+   set snconf(dossier) "$audace(rep_images)"
   catch { $audace(base).snacq.frame9.labURL_chemin_rep configure -text $snconf(dossier) }
    update
 }
@@ -1068,8 +1067,8 @@ proc snacq_go { {sndebug 0} } {
             #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
             ::confVisu::setFileName $audace(visuNo) ""
             #---
-            $buffer setkwd [list RA $rad float "right ascension" deg]
-            $buffer setkwd [list DEC $decd float "declination" deg]
+            $buffer setkwd [list RA $rad float "Object Right Ascension" deg]
+            $buffer setkwd [list DEC $decd float "Object Declination" deg]
             #--- Mot cles pour compatibilité Prism
             snprism
 

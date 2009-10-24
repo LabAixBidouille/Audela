@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude.tcl,v 1.22 2009-07-13 21:40:59 robertdelmas Exp $
+# Mise a jour $Id: cmaude.tcl,v 1.23 2009-10-24 22:06:50 robertdelmas Exp $
 #
 # Remarks :
 # The definition of some variables (binning, exp. time, rythm, etc.)
@@ -126,7 +126,7 @@ namespace eval ::cmaude {
          source $fichier_cmaude
       }
       #--- Recuperation du repertoire dedie aux images et de l'extension des images
-      set cmconf(folder)    "$conf(rep_images)"
+      set cmconf(folder)    "$audace(rep_images)"
       set cmconf(extension) "$conf(extension,defaut)"
       set This $this
       #--- Initialisation du compteur des images
