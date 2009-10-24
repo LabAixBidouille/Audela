@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.20 2009-10-12 16:56:30 michelpujol Exp $
+# Mise a jour $Id: keyword.tcl,v 1.21 2009-10-24 22:15:03 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -209,8 +209,8 @@ proc ::keyword::init { } {
    lappend private(infosMotsClefs) [ list "INSTRUME" $::caption(keyword,instrument)  ::keyword::private(equipement)          normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Instrument"                                    "" ]
    lappend private(infosMotsClefs) [ list "DETNAM"   $::caption(keyword,instrument)  ::keyword::private(detectorName)        normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Detector"                                      "" ]
    lappend private(infosMotsClefs) [ list "OBJNAME"  $::caption(keyword,cible)       ::keyword::private(objName)             normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAuto)           0  "" "string" "Object name"                                   "" ]
-   lappend private(infosMotsClefs) [ list "RA"       $::caption(keyword,cible)       ::keyword::private(ra)                  normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAuto)           0  "" "string" "Object Right Ascension"                        "degres" ]
-   lappend private(infosMotsClefs) [ list "DEC"      $::caption(keyword,cible)       ::keyword::private(dec)                 normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAuto)           0  "" "string" "Object Declination"                            "degres" ]
+   lappend private(infosMotsClefs) [ list "RA"       $::caption(keyword,cible)       ::keyword::private(ra)                  normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAuto)           0  "" "float"  "Object Right Ascension"                        "degres" ]
+   lappend private(infosMotsClefs) [ list "DEC"      $::caption(keyword,cible)       ::keyword::private(dec)                 normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAuto)           0  "" "float"  "Object Declination"                            "degres" ]
    lappend private(infosMotsClefs) [ list "EQUINOX"  $::caption(keyword,cible)       ::keyword::private(equinoxe)            normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAuto)           0  "" "string" "Coordinates equinox"                           "" ]
    lappend private(infosMotsClefs) [ list "RADECSYS" $::caption(keyword,cible)       ::keyword::private(radecsys)            normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Coordinates system"                            "" ]
    lappend private(infosMotsClefs) [ list "IMAGETYP" $::caption(keyword,acquisition) ::keyword::private(typeImage)           readonly ""                             ""                                             $::keyword::private(listTypeImage)  ::conf(keyword,typeImageSelected)        0  "" "string" "Image type"                                    "" ]
@@ -438,8 +438,8 @@ proc ::keyword::onChangeValueComboBox { visuNo } {
       $wEQUINOX configure -state disabled
       #--- Je recupere les RA et DEC de la procedure ::telescope::goto
       set private(objName)  $::audace(telescope,targetname)
-      set private(ra)       $::audace(telescope,targetRa)
-      set private(dec)      $::audace(telescope,targetDec)
+      set private(ra)       $::audace(telescope,getra)
+      set private(dec)      $::audace(telescope,getdec)
       set private(equinoxe) $::audace(telescope,targetEquinox)
    } elseif { $::conf(keyword,GotoManuelAuto) == "$::caption(keyword,manuel)" } {
       #--- Je recupere le nomTK des entry
@@ -616,6 +616,21 @@ proc ::keyword::getKeywords { visuNo { keywordNameList "" } } {
                set type         [lindex $infosMotClef 10]
                set commentaire  [lindex $infosMotClef 11]
                set unite        [lindex $infosMotClef 12]
+               #--- Conversion du RA et DEC en degres decimaux
+               if { $motclef == "RA" } {
+                  if { $::conf(keyword,GotoManuelAuto) == "$::caption(keyword,automatic)" } {
+                     ::telescope::afficheCoord
+                     set valeur $::audace(telescope,getra)
+                  }
+                  set valeur [ mc_angle2deg $valeur ]
+               }
+               if { $motclef == "DEC" } {
+                  if { $::conf(keyword,GotoManuelAuto) == "$::caption(keyword,automatic)" } {
+                     ::telescope::afficheCoord
+                     set valeur $::audace(telescope,getdec)
+                  }
+                  set valeur [ mc_angle2deg $valeur ]
+               }
                #--- j'ajoute les mots clef dans le resultat
                lappend result [list $motclef $valeur $type $commentaire $unite]
                break
@@ -658,12 +673,12 @@ proc ::keyword::getKeywords { visuNo { keywordNameList "" } } {
 #------------------------------------------------------------------------------
 proc ::keyword::headerFitsCompliant { stringInput } {
    set res $stringInput
-   set res [regsub -all {[ï¿½;ï¿½;ï¿½;ï¿½]} $res e]
-   set res [regsub -all {[ï¿½;ï¿½;ï¿½]} $res a]
-   set res [regsub -all {[ï¿½;ï¿½]} $res i]
-   set res [regsub -all {[ï¿½;ï¿½]} $res o]
-   set res [regsub -all {[ï¿½;ï¿½;ï¿½]} $res u]
-   set res [regsub -all {[ï¿½]} $res c]
+   set res [regsub -all {[é;ê;è;ë]} $res e]
+   set res [regsub -all {[à;â;ä]} $res a]
+   set res [regsub -all {[ï;î]} $res i]
+   set res [regsub -all {[ö;ô]} $res o]
+   set res [regsub -all {[ü;û;ù]} $res u]
+   set res [regsub -all {[ç]} $res c]
    set res [regsub -all {[']} $res " "]
    set stringOutput $res
    return $stringOutput
