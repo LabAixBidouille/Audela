@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.44 2009-10-25 09:37:46 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.45 2009-10-25 11:14:20 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -284,11 +284,11 @@ proc ::telescope::surveille_goto { radec0 { But_Goto "" } { But_Match "" } } {
 #    Arrete le mouvement du GOTO
 #
 # Parametres :
-#    Button_Stop : Widget du bouton Stop Goto (optionnel)
+#    But_Stop : Widget du bouton Stop Goto (optionnel)
 # Return :
 #    Rien
 #------------------------------------------------------------
-proc ::telescope::stopGoto { { Button_Stop "" } } {
+proc ::telescope::stopGoto { { But_Stop "" } } {
    global audace conf
 
    set audace(telescope,stopgoto) "1"
@@ -296,7 +296,9 @@ proc ::telescope::stopGoto { { Button_Stop "" } } {
       #--- Arret d'urgence du pointage et retour a la position au moment de l'action
       tel$audace(telNo) radec stop
       if { $audace(telescope,goto) == "0" } {
-         $Button_Stop configure -relief raised -state normal
+         if { $But_Stop != "" } {
+            $But_Stop configure -relief raised -state normal
+         }
          update
       }
       set audace(telescope,goto) "0"
@@ -307,7 +309,9 @@ proc ::telescope::stopGoto { { Button_Stop "" } } {
       ::confTel::run
       tkwait window $audace(base).confTel
       catch {
-         $Button_Stop configure -relief raised -state normal
+         if { $But_Stop != "" } {
+            $But_Stop configure -relief raised -state normal
+         }
          update
       }
    }
