@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.21 2009-10-19 21:07:09 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.22 2009-10-25 13:24:55 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -45,8 +45,10 @@ proc ::camerathread::guideSophie { exptime originCoord targetCoord cameraAngle t
    #--- variables de travail
    set private(simulationCounter)    "1"
    set private(originSumCounter)     0
-   set private(diffXCumul)           0
-   set private(diffYCumul)           0
+   set private(xDiffCumul)           0
+   set private(yDiffCumul)           0
+   set private(xPreviousDiff)            ""
+   set private(yPreviousDiff)            ""
    set private(centerDeltaList)      ""
    lappend  private(centerDeltaList) [list $private(targetBoxSize) $private(targetBoxSize)]
    lappend  private(centerDeltaList) [list $private(targetBoxSize) $private(targetBoxSize)]
@@ -78,10 +80,10 @@ proc ::camerathread::sophieAcquisitionLoop { } {
       ::camerathread::updateParameter
 
       if { $private(acquisitionState) == 1 } {
-         #--- je calcule le temps ecoule entre deux debuts de pose
-         set nextClock [clock clicks -milliseconds ]
-         set interval "[expr $nextClock - $private(previousClock)]"
-         set private(previousClock) $nextClock
+         #--- je calcule le temps ecoule entre deux debuts de pose (en seconde)
+         set currentClock [clock clicks -milliseconds ]
+         set interval [expr double($currentClock - $private(previousClock))/ 1000.0 ]
+         set private(previousClock) $currentClock
 
          if { $private(simulation) == 0 } {
             #--- je fais une acquisition
@@ -162,7 +164,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          }
 
          #--- j'affiche l'image et je transmets le temps ecoule entre 2 debuts de pose
-         ::camerathread::notify "autovisu"  [expr double($interval) / 1000] $private(mode) $private(guidingMode) [list $x1 $y1 $x2 $y2] $private(zoom)
+         ::camerathread::notify "autovisu" $interval $private(mode) $private(guidingMode) [list $x1 $y1 $x2 $y2] $private(zoom)
 
          #--- j'incremente le compteur des images integrees
          if { $integratedImage != 0 } {
@@ -225,7 +227,6 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          set maxIntensity     [lindex $result 9 ]
          set infoMessage      [lindex $result 10 ]
 
-         ###::camerathread::disp  "windowCoord=$x1 $y1 $x2 $y2 targetCoord=$private(targetCoord) originCoord=$private(originCoord)\n"
          ###::camerathread::disp  "starStatus=$starStatus starX,starY=$starX $starY fiberStatus=$fiberStatus fiberX,fiberY=$fiberX $fiberY infoMessage=$infoMessage\n"
 
          if { $starStatus == "DETECTED" } {
@@ -254,7 +255,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
             }
          }
 
-         ###::camerathread::disp  "camerathread: private(targetCoord)=$private(targetCoord) private(originCoord)=$private(originCoord)\n"
+          ###::camerathread::disp  "camerathread: private(targetCoord)=$private(targetCoord) private(originCoord)=$private(originCoord)\n"
          ###::camerathread::disp  "camerathread: FIBER= y1=$y1 y2=$y2 fiberStatus=$fiberStatus\n"
 
          set binning [cam$private(camNo) bin]
@@ -278,7 +279,6 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          }
 
          #--- je calcule l'ecart de position (en arcseconde)
-         ###set alphaDiff [expr $dx * $private(pixelScale) / (cos($private(targetDec) * 3.14159265359/180)) ]
          set alphaDiff [expr $dx * $private(pixelScale) ]
          set deltaDiff [expr $dy * $private(pixelScale) ]
 
@@ -288,30 +288,52 @@ proc ::camerathread::sophieAcquisitionLoop { } {
                #--- j'applique le PID pour le guidage si on est en mode GUIDE
 
                #--- je calcule le terme integrateur
-               set private(diffXCumul) [expr $private(diffXCumul) + $dx]
-               set private(diffYCumul) [expr $private(diffYCumul) + $dy]
-
+               set private(xDiffCumul) [expr $private(xDiffCumul) + $dx * $interval]
+               set private(yDiffCumul) [expr $private(yDiffCumul) + $dy * $interval]
                #--- J’ecrete le terme integrateur s’il engendre un déplacement superieur au demi cote de la fenetre d’analyse
-               if { [expr abs($private(diffXCumul)) - $private(targetBoxSize) ] > 0
-                ||  [expr abs($private(diffYCumul)) - $private(targetBoxSize) ] > 0 } {
-                  set private(diffXCumul) 0
-                  set private(diffYCumul) 0
+               if { [expr abs($private(xDiffCumul)) - $private(targetBoxSize) ] > 0} {
+                  set private(xDiffCumul) 0
                }
+               if { [expr abs($private(yDiffCumul)) - $private(targetBoxSize) ] > 0 } {
+                  set private(yDiffCumul) 0
+               }
+               set alphaIntegralTerm [expr $private(xDiffCumul) * $private(pixelScale)]
+               set deltaIntegralTerm [expr $private(yDiffCumul) * $private(pixelScale)]
 
-               set alphaDiffCumul [expr $private(diffXCumul) * $private(pixelScale) ]
-               set deltaDiffCumul [expr $private(diffYCumul) * $private(pixelScale) ]
-
-               #--- je corrige avec les termes proportionnels et integrateurs
-               set alphaCorrection [expr $alphaDiff * $private(alphaProportionalGain) + $alphaDiffCumul * $private(alphaIntegralGain) ]
-               set deltaCorrection [expr $deltaDiff * $private(deltaProportionalGain) + $deltaDiffCumul * $private(deltaIntegralGain) ]
+               #--- je calcule le terme derivateur
+               if { $private(xPreviousDiff) != "" } {
+                  set alphaDerivativeTerm [expr ($dx - $private(xPreviousDiff)) * $private(pixelScale) / $interval ]
+                  set private(xPreviousDiff) $dx
+               } else {
+                  #--- si la valeur precedente n'existe pas encore, le terme derivateur est nul
+                  set alphaDerivativeTerm 0
+                  set private(xPreviousDiff) $dx
+               }
+               if { $private(yPreviousDiff) != "" } {
+                  set deltaDerivativeTerm [expr ($dy - $private(yPreviousDiff)) * $private(pixelScale) / $interval ]
+                  set private(yPreviousDiff) $dy
+               } else {
+                  #--- si la valeur precedente n'existe pas encore, le terme derivateur est nul
+                  set deltaDerivativeTerm 0
+                  set private(yPreviousDiff) $dy
+               }
+               #--- je calcule la correction avec les termes proportionnels, integrateurs et dérivateurs
+               set alphaCorrection [expr $alphaDiff * $private(alphaProportionalGain) + $alphaIntegralTerm * $private(alphaIntegralGain) + $alphaDerivativeTerm * $private(alphaDerivativeGain)]
+               set deltaCorrection [expr $deltaDiff * $private(deltaProportionalGain) + $deltaIntegralTerm * $private(deltaIntegralGain) + $deltaDerivativeTerm * $private(deltaDerivativeGain)]
             } else {
+               #--- je ne prends que 90% de la valeur car les anciens moteurs vont trop vite surtout pour centrer en delta 
                set alphaCorrection [expr $alphaDiff * 0.9]
-               set deltaCorrection [expr $deltaDiff * 0.9]
-               ###::camerathread::disp  "CENTER alphaDiff=[format "%6.2f" $alphaDiff]  deltaDiff=[format "%6.2f" $deltaDiff] (arsec) "
+               set deltaCorrection [expr $deltaDiff * 0.9]               
+               #--- raz du cumul pour le calcul du terme integrateur 
+               set private(xDiffCumul) "0"
+               set private(yDiffCumul) "0"
+               #--- raz de la position precedente pour le calcul du terme derivateur
+               set private(xPreviousDiff) ""
+               set private(yPreviousDiff) ""
             }
 
             #--- je verifie si le centrage est fini
-            if { $private(mode)=="CENTER" && $private(mountEnabled) == 1} {
+            if { $private(mode)=="CENTER" } {
                #--- j'ajoute les nouvelles valeurs à la fin de la liste
                lappend private(centerDeltaList) [list $alphaCorrection $deltaCorrection ]
                #--- je supprime le premier element
@@ -371,6 +393,7 @@ proc ::camerathread::sophieAcquisitionLoop { } {
                }
             }
          } else {
+            #--- pas de correction si l'envoi a la monture est desactive
             set alphaCorrection 0.0
             set deltaCorrection 0.0
          }
