@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.40 2009-10-19 21:07:27 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.41 2009-10-25 13:30:18 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -1645,6 +1645,8 @@ proc ::sophie::startAcquisition { visuNo } {
          "deltaProportionalGain"    $::conf(sophie,deltaProportionalGain) \
          "alphaIntegralGain"        $::conf(sophie,alphaIntegralGain) \
          "deltaIntegralGain"        $::conf(sophie,deltaIntegralGain) \
+         "alphaDerivativeGain"      $::conf(sophie,alphaDerivativeGain) \
+         "deltaDerivativeGain"      $::conf(sophie,deltaDerivativeGain) \
          "binning"                  [list $private(xBinning) $private(yBinning)] \
          "shutter"                  "opened" \
          "maskBufNo"                $private(maskBufNo)     \
@@ -1955,6 +1957,7 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                      $starX $starY $fwhmX $fwhmY $alphaDiff $deltaDiff $background $maxIntensity
                   #--- je memorise le seeing
                   ::sophie::spectro::setSeeing $fwhmX $fwhmY $background
+                  ::sophie::control::setSeeing $fwhmX $fwhmY $background
                }
                "GUIDE" {
                   #--- je mets a jour les statistiques pour le PC Sophie
@@ -1990,7 +1993,7 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                   ::sophie::control::setGuideInformation $starStatus $fiberStatus \
                      [lindex $private(originCoord) 0] [lindex $private(originCoord) 1] \
                      $starX $starY $alphaDiff $deltaDiff $alphaCorrection $deltaCorrection \
-                     $originDx $originDy $background $maxIntensity
+                     $originDx $originDy $maxIntensity
                }
             }
 
