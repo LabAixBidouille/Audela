@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.30 2009-07-13 21:34:32 robertdelmas Exp $
+# Mise a jour $Id: autoguider.cap,v 1.31 2009-10-25 13:13:53 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -21,7 +21,7 @@ set caption(autoguider,selcam)                   "You must select a camera first
 set caption(autoguider,image)                    "Image"
 set caption(autoguider,cible)                    "Target"
 set caption(autoguider,axe_AD)                   "Axes (RA, Dec)"
-set caption(autoguider,ctrl_monture)             "Tracking on"
+set caption(autoguider,ctrl_monture)             "Tracking On"
 set caption(autoguider,config_guidage)           "Setup..."
 set caption(autoguider,ecart_origine_etoile)     "Deviation"
 set caption(autoguider,impulsion)                "Pulse"
@@ -147,7 +147,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,image)                 "Immagine"
    set caption(autoguider,cible)                 "Target"
    set caption(autoguider,axe_AD)                "Assi (AR, Dec.)"
-   set caption(autoguider,ctrl_monture)          "Inseg. on"
+   set caption(autoguider,ctrl_monture)          "Inseguimento On"
    set caption(autoguider,config_guidage)        "Settaggio..."
    set caption(autoguider,ecart_origine_etoile)  "Scarto"
    set caption(autoguider,impulsion)             "Impulsi"
@@ -210,7 +210,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,image)                 "Imagen"
    set caption(autoguider,cible)                 "Objetivo"
    set caption(autoguider,axe_AD)                "Ejes (AR, Dec)"
-   set caption(autoguider,ctrl_monture)          "Seg. on"
+   set caption(autoguider,ctrl_monture)          "Seguimiento On"
    set caption(autoguider,config_guidage)        "Configuración..."
    set caption(autoguider,ecart_origine_etoile)  "Desviación"
    set caption(autoguider,impulsion)             "Impulsos"
@@ -273,7 +273,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,image)                 "Bild"
    set caption(autoguider,cible)                 "Ziel"
    set caption(autoguider,axe_AD)                "Achsen (RA, Dek.)"
-   set caption(autoguider,ctrl_monture)          "Folgung an"
+   set caption(autoguider,ctrl_monture)          "Folgung auf"
    set caption(autoguider,config_guidage)        "Konfiguration..."
    set caption(autoguider,ecart_origine_etoile)  "Abweichung"
    set caption(autoguider,impulsion)             "Pulsen"
@@ -399,7 +399,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,image)                 "Image"
    set caption(autoguider,cible)                 "Target"
    set caption(autoguider,axe_AD)                "Axes (RA, Dec)"
-   set caption(autoguider,ctrl_monture)          "Tracking on"
+   set caption(autoguider,ctrl_monture)          "Tracking On"
    set caption(autoguider,config_guidage)        "Setup..."
    set caption(autoguider,ecart_origine_etoile)  "Deviation"
    set caption(autoguider,impulsion)             "Pulse"

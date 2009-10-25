@@ -1,6 +1,6 @@
 #
 # Fichier : telescope.cap
-# Mise a jour $Id: telescope.cap,v 1.17 2009-01-14 15:20:46 robertdelmas Exp $
+# Mise a jour $Id: telescope.cap,v 1.18 2009-10-25 13:13:18 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,8 +13,8 @@ global caption langage
 
 set caption(telescope,interro)             "?"
 set caption(telescope,init)                "Tel. Initialization"
-set caption(telescope,suivi_marche)        "Tracking on"
-set caption(telescope,suivi_arret)         "Tracking off"
+set caption(telescope,suivi_marche)        "Tracking On"
+set caption(telescope,suivi_arret)         "Tracking Off"
 
 set caption(telescope,inittelscp0)         "Telescope Initialization"
 set caption(telescope,inittelscp1)         "After you have aimed your scope to Gamma"
@@ -59,8 +59,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(telescope,interro)          "?"
    set caption(telescope,init)             "Initialisation tél."
-   set caption(telescope,suivi_marche)     "Suivi on"
-   set caption(telescope,suivi_arret)      "Suivi off"
+   set caption(telescope,suivi_marche)     "Suivi On"
+   set caption(telescope,suivi_arret)      "Suivi Off"
 
    set caption(telescope,inittelscp0)      "Initialisation du télescope"
    set caption(telescope,inittelscp1)      "Après avoir pointé votre instrument sur Gamma"
@@ -105,8 +105,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(telescope,interro)          "?"
    set caption(telescope,init)             "Inizializzazione tel."
-   set caption(telescope,suivi_marche)     "Inseg. on"
-   set caption(telescope,suivi_arret)      "Inseg. off"
+   set caption(telescope,suivi_marche)     "Inseguimento On"
+   set caption(telescope,suivi_arret)      "Inseguimento Off"
 
    set caption(telescope,inittelscp0)      "Inizializzazione telescopio"
    set caption(telescope,inittelscp1)      "Dopo aver puntato il vostro telescopio su"
@@ -151,8 +151,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(telescope,interro)          "?"
    set caption(telescope,init)             "Inicialización tel."
-   set caption(telescope,suivi_marche)     "Seg. on"
-   set caption(telescope,suivi_arret)      "Seg. off"
+   set caption(telescope,suivi_marche)     "Seguimiento On"
+   set caption(telescope,suivi_arret)      "Seguimiento Off"
 
    set caption(telescope,inittelscp0)      "Inicialización de telescopio"
    set caption(telescope,inittelscp1)      "Despues de apuntar el instrumento a Gamma"
@@ -197,7 +197,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(telescope,interro)          "?"
    set caption(telescope,init)             "Tel. Initialisieren"
-   set caption(telescope,suivi_marche)     "Folgung an"
+   set caption(telescope,suivi_marche)     "Folgung auf"
    set caption(telescope,suivi_arret)      "Folgung aus"
 
    set caption(telescope,inittelscp0)      "Teleskop Initialisieren"
@@ -243,8 +243,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(telescope,interro)          "?"
    set caption(telescope,init)             "Inicialização do Telescópio"
-   set caption(telescope,suivi_marche)     "Guiagem Ligada"
-   set caption(telescope,suivi_arret)      "Guiagem Desligada"
+   set caption(telescope,suivi_marche)     "Seguimento On"
+   set caption(telescope,suivi_arret)      "Seguimento Off"
 
    set caption(telescope,inittelscp0)      "Inicialização do Telescópio"
    set caption(telescope,inittelscp1)      "Depois de ter apontado o seu telescópio para Gamma"
@@ -289,8 +289,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(telescope,interro)          "?"
    set caption(telescope,init)             "Tel. Initialization"
-   set caption(telescope,suivi_marche)     "Tracking on"
-   set caption(telescope,suivi_arret)      "Tracking off"
+   set caption(telescope,suivi_marche)     "Tracking On"
+   set caption(telescope,suivi_arret)      "Tracking Off"
 
    set caption(telescope,inittelscp0)      "Telescope Initialization"
    set caption(telescope,inittelscp1)      "After you have aimed your scope to Gamma"
