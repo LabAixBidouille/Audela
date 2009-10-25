@@ -2,7 +2,7 @@
 # @file     sophiespectro.tcl
 # @brief    fichier du namespace ::sophie::spectro
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiespectro.tcl,v 1.9 2009-10-16 17:47:10 michelpujol Exp $
+# @version  $Id: sophiespectro.tcl,v 1.10 2009-10-25 13:26:24 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -130,7 +130,7 @@ proc ::sophie::spectro::readSocket { channel } {
             #--- j'enregistre l'image integree
             set fileName [saveImage [lindex $resultList 0] [lindex $resultList 1] [lindex $resultList 2] [lindex $resultList 3] $seeing $private(skyLevel)]
             #--- j'ajoute un message dans le fichier de log
-            set log [ format "%s Ecart : A=%5.2f  Arms=%5.2f  D=%5.2f  Drms=%5.2f  Seeing=%5.2f skyLevel= %5.2f Gain : AP=%s  AI=%s  DP=%s  DI=%s  Coord : RA=%s  Dec=%s\n" \
+            set log [ format "%s Ecart : A=%5.2f  Arms=%5.2f  D=%5.2f  Drms=%5.2f  Seeing=%5.2f skyLevel= %5.2f Gain : AP=%s  AI=%s AD=%s DP=%s  DI=%s DD=%s Coord : RA=%s  Dec=%s\n" \
                [ mc_date2iso8601 now ] \
                [lindex $resultList 0] [lindex $resultList 1] \
                [lindex $resultList 2] [lindex $resultList 3] \
@@ -139,8 +139,10 @@ proc ::sophie::spectro::readSocket { channel } {
                [ expr $::conf(sophie,alphaIntegralGain) * 100 ] \
                [ expr $::conf(sophie,deltaProportionalGain) * 100 ] \
                [ expr $::conf(sophie,deltaIntegralGain) * 100 ] \
+               [ expr $::conf(sophie,deltaDerivativeGain) * 100 ] \
+               [ expr $::conf(sophie,deltaDerivativeGain) * 100 ] \
                $::audace(telescope,getra) $::audace(telescope,getdec) ]
-            ::sophie::log::writeLogFile $::audace(visuNo) log "$log"
+            ::sophie::log::writeLogFile $::audace(visuNo) log $log
             #--- je mets en forme le resultat pour le PC Sophie
             #--- a revoir ...A<20h>=<20h><20h><20h>2.68<20h><20h>Arms<20h>=<20h><20h>83.17<20h>D<20h>=<20h><20h><20h>2.74<20h>Drms<20h>=<20h>177.85<20h>
             ###set resultString [format "!GET_STAT@    A = %5.2f  Arms = %5.2f  D = %5.2f  Drms = %5.2f" \
@@ -276,7 +278,7 @@ proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms seeing
 #   memorise le seeing
 # @param xFwhm       seeing sur l'axe x (en arsec)
 # @param yFwhm       seeing sur l'axe y (en arsec)
-# #param background  fondu ciel (en ADU)
+# #param background  fond du ciel (en ADU)
 #------------------------------------------------------------
 proc ::sophie::spectro::setSeeing { xFwhm yFwhm skyLevel} {
    variable private
