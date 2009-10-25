@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.35 2009-10-19 21:10:56 michelpujol Exp $
+# @version   $Id: sophie.tcl,v 1.36 2009-10-25 13:32:02 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -130,10 +130,10 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(sophie,pixelScale)] }                { set ::conf(sophie,pixelScale)                "0.186" }
    if { ! [ info exists ::conf(sophie,alphaProportionalGain)] }     { set ::conf(sophie,alphaProportionalGain)     "0.9" }
    if { ! [ info exists ::conf(sophie,alphaIntegralGain)] }         { set ::conf(sophie,alphaIntegralGain)         "0.1" }
-   if { ! [ info exists ::conf(sophie,alphaDifferentialGain)] }     { set ::conf(sophie,alphaDifferentialGain)     "0.1" }
+   if { ! [ info exists ::conf(sophie,alphaDerivativeGain)] }       { set ::conf(sophie,alphaDerivativeGain)       "0.1" }
    if { ! [ info exists ::conf(sophie,deltaProportionalGain)] }     { set ::conf(sophie,deltaProportionalGain)     "0.9" }
    if { ! [ info exists ::conf(sophie,deltaIntegralGain)] }         { set ::conf(sophie,deltaIntegralGain)         "0.1" }
-   if { ! [ info exists ::conf(sophie,deltaDifferentialGain)] }     { set ::conf(sophie,deltaDifferentialGain)     "0.1" }
+   if { ! [ info exists ::conf(sophie,deltaDerivativeGain)] }       { set ::conf(sophie,deltaDerivativeGain)       "0.1" }
    if { ! [ info exists ::conf(sophie,minMaxDiff)] }                { set ::conf(sophie,minMaxDiff)                "0.5" }
    if { ! [ info exists ::conf(sophie,detection)] }                 { set ::conf(sophie,detection)                 "FIBER" }
    if { ! [ info exists ::conf(sophie,centerMaxLimit)] }            { set ::conf(sophie,centerMaxLimit)            "3" }
@@ -170,6 +170,7 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(sophie,maskFwhm)] }                  { set ::conf(sophie,maskFwhm)                  5 }
    if { ! [ info exists ::conf(sophie,maskPercent)] }               { set ::conf(sophie,maskPercent)               0.15 }
    if { ! [ info exists ::conf(sophie,pixelMinCount)] }             { set ::conf(sophie,pixelMinCount)             50 }
+   if { ! [ info exists ::conf(sophie,minIntensity)] }             { set ::conf(sophie,minIntensity)               1000 }
 
    if { ! [ info exists ::conf(sophie,socketPort)] }                { set ::conf(sophie,socketPort)                5020 }
 
