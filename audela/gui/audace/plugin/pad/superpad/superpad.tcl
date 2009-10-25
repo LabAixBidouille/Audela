@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.27 2009-05-10 11:49:16 michelpujol Exp $
+# Mise a jour $Id: superpad.tcl,v 1.28 2009-10-25 13:11:47 robertdelmas Exp $
 #
 
 namespace eval ::superpad {
@@ -418,7 +418,7 @@ namespace eval ::telescopePad {
          -text "3" -value 3 -variable audace(telescope,speed) \
          -command { ::telescope::setSpeed "3" }
 
-      radiobutton $This.card.speed.2  -indicatoron 0 \
+      radiobutton $This.card.speed.2 -indicatoron 0 \
          -font [ list {Arial} $geompad(fontsize16) $geompad(textthick) ] \
          -bg $colorpad(backkey) \
          -fg $colorpad(textkey) \
