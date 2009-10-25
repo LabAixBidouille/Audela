@@ -2,7 +2,7 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.35 2009-10-11 18:12:55 robertdelmas Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.36 2009-10-25 13:28:23 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -35,7 +35,6 @@ proc ::sophie::control::run { visuNo tkbase } {
    set private(indicateursFluxMax)              ""
    set private(positionConsigneX)               ""
    set private(positionConsigneY)               ""
-   set private(indicateursFluxMax)              ""
    set private(positionObjetX)                  ""
    set private(positionObjetY)                  ""
    set private(focalisationCourbesIntensiteMax) ""
@@ -150,8 +149,8 @@ proc ::sophie::control::run { visuNo tkbase } {
    $frm.focalisation.courbes.graphintensiteMax_simple axis configure x -hide true
 
    $frm.guidage.positionconsigne.correction.ecartConsigne_simple axis configure x -hide true
-   $frm.guidage.ecarts.alpha_simple axis configure x -hide true
-   $frm.guidage.corrections.delta_simple axis configure x -hide true
+   $frm.guidage.ecarts.graph_simple axis configure x -hide true
+   $frm.guidage.corrections.graph_simple axis configure x -hide true
 
 }
 
@@ -664,7 +663,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
 
          Entry $frm.guidage.seeing.entryfondDeCiel \
             -width 8 -justify center -editable 0 \
-            -textvariable ::sophie::control::private(indicateursFluxMax)
+            -textvariable ::sophie::control::private(indicateursFondDeCiel)
          grid $frm.guidage.seeing.entryfondDeCiel \
             -in [ $frm.guidage.seeing getframe ] \
             -row 0 -column 3 -sticky ens
@@ -768,31 +767,31 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -text $::caption(sophie,ecartEtoile)
 
          #--- Graphe de la erreur en alpha et delta
-         createGraph $visuNo $frm.guidage.ecarts.alpha_simple 105
-         $frm.guidage.ecarts.alpha_simple element create alphaDiff \
+         createGraph $visuNo $frm.guidage.ecarts.graph_simple 105
+         $frm.guidage.ecarts.graph_simple element create alphaDiff \
             -xdata ::sophieAbcisse -ydata ::sophieEcartEtoileX -mapy y \
             -color blue -dash "2" -linewidth 3 \
             -symbol none -label $::caption(sophie,alpha)
-         $frm.guidage.ecarts.alpha_simple element create deltaDiff \
+         $frm.guidage.ecarts.graph_simple element create deltaDiff \
             -xdata ::sophieAbcisse -ydata ::sophieEcartEtoileY -mapy y \
             -color orange -dash "" -linewidth 3 \
             -symbol none -label $::caption(sophie,delta)
-         $frm.guidage.ecarts.alpha_simple legend configure -hide no -position right
-         ###$frm.guidage.ecarts.alpha_simple legend configure -hide no -position plotarea -anchor nw
+         $frm.guidage.ecarts.graph_simple legend configure -hide no -position right
+         ###$frm.guidage.ecarts.graph_simple legend configure -hide no -position plotarea -anchor nw
 
-         $frm.guidage.ecarts.alpha_simple  element create ecartMax  \
+         $frm.guidage.ecarts.graph_simple  element create ecartMax  \
             -xdata ::sophieAbcisse -ydata ::sophieEcartMax -mapy y \
             -color red -symbol none -label ""
 
-         $frm.guidage.ecarts.alpha_simple  element create ecartMin  \
+         $frm.guidage.ecarts.graph_simple  element create ecartMin  \
             -xdata ::sophieAbcisse -ydata ::sophieEcartMin -mapy y \
             -color red -symbol none  -label ""
 
-         $frm.guidage.ecarts.alpha_simple  element create ecartNul  \
+         $frm.guidage.ecarts.graph_simple  element create ecartNul  \
             -xdata ::sophieAbcisse -ydata ::sophieEcartNul -mapy y \
             -color black -symbol none  -label ""
 
-         grid $frm.guidage.ecarts.alpha_simple \
+         grid $frm.guidage.ecarts.graph_simple \
             -in [ $frm.guidage.ecarts getframe ] \
             -row 0 -column 0 -sticky nsew
         grid columnconfig [ $frm.guidage.ecarts getframe ] 0 -weight 1
@@ -804,19 +803,32 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          -text $::caption(sophie,correction)
 
          #--- Graphe de la correction en delta
-         createGraph $visuNo $frm.guidage.corrections.delta_simple 105
-         $frm.guidage.corrections.delta_simple element create alphaCorrection \
+         createGraph $visuNo $frm.guidage.corrections.graph_simple 105
+         #--- courbe correction alpha
+         $frm.guidage.corrections.graph_simple element create alphaCorrection \
             -xdata ::sophieAbcisse -ydata ::sophieCorrectionAlpha -mapy y \
             -color blue -dash "2" -linewidth 3 \
             -symbol none -label $::caption(sophie,alpha)
-         $frm.guidage.corrections.delta_simple element create deltaCorrection \
+         #--- courbe correction delta
+         $frm.guidage.corrections.graph_simple element create deltaCorrection \
             -xdata ::sophieAbcisse -ydata ::sophieCorrectionDelta -mapy y \
             -color orange -dash "" -linewidth 3 \
             -symbol none -label $::caption(sophie,delta)
-         $frm.guidage.corrections.delta_simple legend configure -hide no -position right
-         ###$frm.guidage.corrections.delta_simple legend configure -hide no -position plotarea -anchor nw
-
-         grid $frm.guidage.corrections.delta_simple \
+         $frm.guidage.corrections.graph_simple legend configure -hide no -position right
+         #--- droite valeur max
+         $frm.guidage.corrections.graph_simple  element create ecartMax  \
+            -xdata ::sophieAbcisse -ydata ::sophieEcartMax -mapy y \
+            -color red -symbol none -label ""
+         #--- droite valeur min
+         $frm.guidage.corrections.graph_simple  element create ecartMin  \
+            -xdata ::sophieAbcisse -ydata ::sophieEcartMin -mapy y \
+            -color red -symbol none  -label ""
+         #--- droite valeur zero
+         $frm.guidage.corrections.graph_simple  element create ecartNul  \
+            -xdata ::sophieAbcisse -ydata ::sophieEcartNul -mapy y \
+            -color black -symbol none  -label ""
+         
+         grid $frm.guidage.corrections.graph_simple \
             -in [ $frm.guidage.corrections getframe ] \
             -row 1 -column 0 -sticky nsew
 
@@ -1292,7 +1304,16 @@ proc ::sophie::control::setCenterInformation { starDetection fiberStatus originX
    set private(indicateursFwhmY)      [format "%6.1f" $fwhmY]
    set private(indicateursFondDeCiel) [format "%6.1f" $background]
    set private(indicateursFluxMax)    [format "%6.1f" $maxIntensity]
-
+   
+   if { $private(indicateursFluxMax) < $::conf(sophie,minIntensity) } {
+      #--- je mets en rouge le fond du wigdet du flux max, si le flux max est inferieur au minimum requis   
+      $frm.seeing.labelfluxMax configure -bg $private(inactiveColor)
+      $frm.seeing.entryfluxMax configure -bg $private(inactiveColor)
+   } else {
+      #--- je restaure la couleur du fond par defaut
+      $frm.seeing.labelfluxMax configure -bg $::audace(color,backColor)
+      $frm.seeing.entryfluxMax configure -bg $::audace(color,entryBackColor) 
+   }
 }
 
 ##------------------------------------------------------------
@@ -1370,6 +1391,16 @@ proc ::sophie::control::setFocusInformation { starDetection fiberStatus originX 
    set private(indicateursFondDeCiel) [format "%6.1f" $background]
    set private(indicateursFluxMax)    [format "%6.1f" $maxIntensity]
 
+   if { $private(indicateursFluxMax) < $::conf(sophie,minIntensity) } {
+      #--- je mets en rouge le fond du wigdet du flux max, si le flux max est inferieur au minimum requis   
+      $frm.seeing.labelfluxMax configure -bg $private(inactiveColor)
+      $frm.seeing.entryfluxMax configure -bg $private(inactiveColor)
+   } else {
+      #--- je restaure la couleur du fond par defaut
+      $frm.seeing.labelfluxMax configure -bg $::audace(color,backColor)
+      $frm.seeing.entryfluxMax configure -bg $::audace(color,entryBackColor) 
+   }
+      
    #--- j'ajoute la valeur dans le graphe FwhmX
    ::sophieFwhmX append $fwhmX
    if { [::sophieFwhmX length] >= $private(vectorLength) } {
@@ -1408,11 +1439,10 @@ proc ::sophie::control::setFocusInformation { starDetection fiberStatus originX 
 # @param deltaCorrection  correction en delta (en arcsec)
 # @param originDx correction de la consigne en X  (en pixel)
 # @param originDy correction de la consigne en Y  (en pixel)
-# @param background  fond du ciel
 # @param maxIntensity  intensité max
 # @return null
 #------------------------------------------------------------
-proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX originY starX starY starDx starDy alphaCorrection deltaCorrection originDx originDy background maxIntensity} {
+proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX originY starX starY starDx starDy alphaCorrection deltaCorrection originDx originDy maxIntensity} {
    variable private
 
    set frm $private(frm)
@@ -1461,11 +1491,7 @@ proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX 
       }
    }
 
-   set private(indicateursFwhmX)      ""
-   set private(indicateursFwhmY)      ""
-   set private(indicateursFondDeCiel) ""
-   set private(indicateursFluxMax)    ""
-
+   
    set private(positionEtoileX)   [format "%6.1f" $starX]
    set private(positionEtoileY)   [format "%6.1f" $starY]
    set private(positionConsigneX) [format "%6.1f" $originX]
@@ -1476,9 +1502,18 @@ proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX 
    set private(ecartEtoileY)      [format "%6.2f" $starDy]
    set private(alphaCorrection)   [format "%6.2f" $alphaCorrection]
    set private(deltaCorrection)   [format "%6.2f" $deltaCorrection]
-   set private(indicateursFondDeCiel) [format "%6.1f" $background]
    set private(indicateursFluxMax)    [format "%6.1f" $maxIntensity]
 
+   if { $private(indicateursFluxMax) < $::conf(sophie,minIntensity) } {
+      #--- je mets en rouge le fond du wigdet du flux max, si le flux max est inferieur au minimum requis
+      $frm.guidage.seeing.labelfluxMax configure -bg $private(inactiveColor)
+      $frm.guidage.seeing.entryfluxMax configure -bg $private(inactiveColor)
+   } else {
+      #--- je restaure la couleur du fond par defaut
+      $frm.guidage.seeing.labelfluxMax configure -bg $::audace(color,backColor)
+      $frm.guidage.seeing.entryfluxMax configure -bg $::audace(color,entryBackColor) 
+   }
+   
    #--- j'ajoute la valeur le graphe sophieEcartConsigneX
    ::sophieEcartConsigneX append $originDx
    if { [::sophieEcartConsigneX length] >= $private(vectorLength) } {
@@ -1520,6 +1555,21 @@ proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX 
       #--- je supprime le point le plus ancien
       ::sophieCorrectionDelta delete 0
    }
+}
+##------------------------------------------------------------
+# setSeeing
+#   memorise le seeing
+# @param xFwhm       seeing sur l'axe x (en arsec)
+# @param yFwhm       seeing sur l'axe y (en arsec)
+# #param skyLevel  fond du ciel (en ADU)
+#------------------------------------------------------------
+proc ::sophie::control::setSeeing { xFwhm yFwhm skyLevel} {
+   variable private
+
+   set private(indicateursFwhmX)      [format "%6.2f" $xFwhm]
+   set private(indicateursFwhmY)      [format "%6.2f" $yFwhm]
+   set private(indicateursFondDeCiel) [format "%6.1f" $skyLevel]
+   
 }
 
 ##------------------------------------------------------------
