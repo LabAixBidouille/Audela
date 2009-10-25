@@ -2,7 +2,7 @@
 # @file     sophieconfig.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieconfig.tcl,v 1.25 2009-10-19 21:07:49 michelpujol Exp $
+# @version  $Id: sophieconfig.tcl,v 1.26 2009-10-25 13:29:41 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -87,8 +87,8 @@ proc ::sophie::config::fillConfigPage { frm visuNo } {
    set widget(deltaProportionalGain)    [expr $::conf(sophie,deltaProportionalGain) * 100.0]
    set widget(alphaIntegralGain)        [expr $::conf(sophie,alphaIntegralGain) * 100.0]
    set widget(deltaIntegralGain)        [expr $::conf(sophie,deltaIntegralGain) * 100.0]
-   set widget(alphaDifferentialGain)    [expr $::conf(sophie,alphaDifferentialGain) * 100.0]
-   set widget(deltaDifferentialGain)    [expr $::conf(sophie,deltaDifferentialGain) * 100.0]
+   set widget(alphaDerivativeGain)      [expr $::conf(sophie,alphaDerivativeGain) * 100.0]
+   set widget(deltaDerivativeGain)      [expr $::conf(sophie,deltaDerivativeGain) * 100.0]
    set widget(minMaxDiff)               $::conf(sophie,minMaxDiff)
 
    set widget(prefixeImageCentrage)     $::conf(sophie,centerFileNameprefix)
@@ -215,15 +215,15 @@ proc ::sophie::config::fillConfigStandardPage { frm visuNo } {
       label $frm.guidage.labelgainDifferentiel -text $::caption(sophie,gainDifferentiel)
       grid $frm.guidage.labelgainDifferentiel -in [ $frm.guidage getframe ] -row 8 -column 0 -sticky w
 
-      Entry $frm.guidage.entryAlphaDifferentialGain \
+      Entry $frm.guidage.entryAlphaDerivativeGain \
          -width 8 -justify center -editable 1 \
-         -textvariable ::sophie::config::widget(alphaDifferentialGain)
-      grid $frm.guidage.entryAlphaDifferentialGain -in [ $frm.guidage getframe ] -row 8 -column 1 -sticky ens
+         -textvariable ::sophie::config::widget(alphaDerivativeGain)
+      grid $frm.guidage.entryAlphaDerivativeGain -in [ $frm.guidage getframe ] -row 8 -column 1 -sticky ens
 
-      Entry $frm.guidage.entryDeltaDifferentialGain \
+      Entry $frm.guidage.entryDeltaDerivativeGain \
          -width 8 -justify center -editable 1 \
-         -textvariable ::sophie::config::widget(deltaDifferentialGain)
-      grid $frm.guidage.entryDeltaDifferentialGain -in [ $frm.guidage getframe ] -row 8 -column 2 -sticky ens
+         -textvariable ::sophie::config::widget(deltaDerivativeGain)
+      grid $frm.guidage.entryDeltaDerivativeGain -in [ $frm.guidage getframe ] -row 8 -column 2 -sticky ens
 
    pack $frm.guidage -side top -anchor w -fill x -expand 0
 
@@ -574,8 +574,8 @@ proc ::sophie::config::apply { visuNo } {
    set ::conf(sophie,deltaProportionalGain) [expr double($widget(deltaProportionalGain)) / 100.0]
    set ::conf(sophie,alphaIntegralGain)     [expr double($widget(alphaIntegralGain)) / 100.0]
    set ::conf(sophie,deltaIntegralGain)     [expr double($widget(deltaIntegralGain)) / 100.0]
-   set ::conf(sophie,alphaDifferentialGain) [expr double($widget(alphaDifferentialGain)) / 100.0]
-   set ::conf(sophie,deltaDifferentialGain) [expr double($widget(deltaDifferentialGain)) / 100.0]
+   set ::conf(sophie,alphaDerivativeGain)   [expr double($widget(alphaDerivativeGain)) / 100.0]
+   set ::conf(sophie,deltaDerivativeGain)   [expr double($widget(deltaDerivativeGain)) / 100.0]
    set ::conf(sophie,minMaxDiff)            $widget(minMaxDiff)
    set ::conf(sophie,centerFileNameprefix)  $widget(prefixeImageCentrage)
    set ::conf(sophie,focusFileNameprefix)   $widget(prefixeImageFocalisation)
@@ -608,6 +608,8 @@ proc ::sophie::config::apply { visuNo } {
          "deltaProportionalGain"    $::conf(sophie,deltaProportionalGain) \
          "alphaIntegralGain"        $::conf(sophie,alphaIntegralGain) \
          "deltaIntegralGain"        $::conf(sophie,deltaIntegralGain) \
+         "alphaDerivativeGain"      $::conf(sophie,alphaDerivativeGain) \
+         "deltaDerivativeGain"      $::conf(sophie,deltaDerivativeGain) \
          "originSumMinCounter"      $::conf(sophie,originSumMinCounter) \
          "originSumCounter"         0 \
          "maskRadius"               $::conf(sophie,maskRadius) \
