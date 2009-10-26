@@ -2,7 +2,7 @@
 # Fichier : sectiongraph.tcl
 # Description : Affiche une coupe de l'image
 # Auteur : Michel PUJOL
-# Mise a jour $Id: sectiongraph.tcl,v 1.13 2009-07-17 20:38:27 michelpujol Exp $
+# Mise a jour $Id: sectiongraph.tcl,v 1.14 2009-10-26 22:34:06 michelpujol Exp $
 #
 
 namespace eval ::sectiongraph {
@@ -119,9 +119,15 @@ proc ::sectiongraph::refresh { visuNo itemNo args } {
    set lyB       [list ]
    set xDiff     [expr {$x2 - $x1}]
    set yDiff     [expr {$y2 - $y1}]
+   #--- je calcule l'hypothenuse et ses ratios horizontaux et verticaux (=echelle de graduation en pixel)
    set numPixels [expr {hypot($xDiff,$yDiff)}]
-   set xRatio    [expr {$xDiff / $numPixels}]
-   set yRatio    [expr {$yDiff / $numPixels}]
+   if { $numPixels != 0 } {
+      set xRatio    [expr {$xDiff / $numPixels}]
+      set yRatio    [expr {$yDiff / $numPixels}]
+   } else {
+      set xRatio 1
+      set yRatio 1
+   }
    set width     [buf$bufNo getpixelswidth]
    set height    [buf$bufNo getpixelsheight]
 
@@ -133,7 +139,8 @@ proc ::sectiongraph::refresh { visuNo itemNo args } {
       #--- je teste la valeur d'un point pour connaitre le nombre de plan de couleur
       set nbcolor($visuNo) [lindex [buf$bufNo getpix [list 1 1 ] ] 0]
    } else {
-      set nbcolor($visuNo) [lindex [buf$bufNo getpix [list 1 1 ] ] 0]
+      #--- si l'image est vide je considere qu'il n'y a qu'un plan 
+      set nbcolor($visuNo) 1
    }
 
    #--- je copie l'intensite des points de la ligne de coupe dans les vecteurs du graphe
