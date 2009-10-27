@@ -36,7 +36,7 @@ typedef unsigned char uint8_t;
 #define TT_IMASERIES_USER5_GEOGTO	   5004
 #define TT_IMASERIES_USER5_GTO		   5005
 #define TT_IMASERIES_USER5_GEO		   5006
-
+#define TT_IMASERIES_USER5_ROT		   5007
 
 /* --- autorized between 5001 and 5999 ---*/
 #define TT_IMASTACK_USER5_TUTU 5001
@@ -45,6 +45,9 @@ typedef unsigned char uint8_t;
 typedef struct {
    double param1;
    char filename[30];
+   double x0;
+   double y0;
+   double angle;
 } TT_USER5_IMA_SERIES;
 typedef double TYPE_PIXELS;
 /* --- Ajout de parametres pour la classe ima/stack --- */

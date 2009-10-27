@@ -23,11 +23,15 @@
 #include "tt.h"
 #include <math.h>
 
+
 /***** prototypes des fonctions internes du user5 ***********/
 int tt_ima_stack_5_tutu(TT_IMA_STACK *pstack);
 int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries);
 int tt_geo_defilant_1(TT_IMA_SERIES *pseries);
 int tt_ima_masque_catalogue(TT_IMA_SERIES *pseries);
+int tt_ima_rot(TT_IMA_SERIES *pseries);
+/* pour l'interpolation */
+double interpol2 (TT_IMA_SERIES *pseries,TT_IMA *pin,double old_x,double old_y,int method);
 
 void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis2, int threshold , double *eq);
 int tt_histocuts_precis(TT_IMA *p,TT_IMA_SERIES *pseries,double percent_sb,double percent_sh,double *locut,double *hicut,double *mode,double *minim,double *maxim);
@@ -70,6 +74,7 @@ int tt_user5_ima_series_builder1(char *keys10,TT_IMA_SERIES *pseries)
    else if (strcmp(keys10,"GEOGTO")==0) { pseries->numfct=TT_IMASERIES_USER5_GEOGTO;}
    else if (strcmp(keys10,"MORPHOMATH")==0) { pseries->numfct=TT_IMASERIES_USER5_MORPHOMATH;}
    else if (strcmp(keys10,"MASQUECATA")==0) { pseries->numfct=TT_IMASERIES_USER5_MASQUECATA;}
+   else if (strcmp(keys10,"ROTENTIERE")==0) { pseries->numfct=TT_IMASERIES_USER5_ROT;}
    return(OK_DLL);
 }
 
@@ -80,6 +85,9 @@ int tt_user5_ima_series_builder2(TT_IMA_SERIES *pseries)
 {
    pseries->user5.param1=0.;
    strcpy(pseries->user5.filename,"./");
+   pseries->user5.x0=0.;
+   pseries->user5.y0=0.;
+   pseries->user5.angle=0;
    return(OK_DLL);
 }
 
@@ -92,7 +100,13 @@ int tt_user5_ima_series_builder3(char *mot,char *argu,TT_IMA_SERIES *pseries)
 	 pseries->user5.param1=(double)(atof(argu));
    } else if (strcmp(mot,"FILENAME")==0) {   
       strcpy(pseries->user5.filename,argu);
-   } 
+   } else if (strcmp(mot,"X0")==0) {
+      pseries->user5.x0=(double)(atof(argu));
+   } else if (strcmp(mot,"Y0")==0) {
+      pseries->user5.y0=(double)(atof(argu));
+   } else if (strcmp(mot,"ANGLE")==0) {
+      pseries->user5.angle=(double)(atof(argu))*TT_PI/180.;
+   }
    return(OK_DLL);
 }
 
@@ -112,6 +126,9 @@ int tt_user5_ima_series_dispatch1(TT_IMA_SERIES *pseries,int *fct_found, int *ms
 	   *fct_found=TT_YES;
    } else if (pseries->numfct==TT_IMASERIES_USER5_MORPHOMATH) {
 	   *msg=tt_morphomath_1(pseries);
+	   *fct_found=TT_YES;
+   } else if (pseries->numfct==TT_IMASERIES_USER5_ROT) {
+	   *msg=tt_ima_rot(pseries);
 	   *fct_found=TT_YES;
    }
    return(OK_DLL);
@@ -170,7 +187,142 @@ int tt_user5_ima_stack_dispatch1(TT_IMA_STACK *pstack,int *fct_found, int *msg)
 /* ++++++++++++++++++++++++++++    FONCTIONS     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 /*---------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/**************************************************************************/
+/* Fonction Rotation sans perte de données -> en sortie l'image est		  */
+/* plus grande                                                            */
+/* arguments possibles : x0,y,angle,nullpixel                             */
+/**************************************************************************/
+int tt_ima_rot(TT_IMA_SERIES *pseries)
+{
+   TT_IMA *p_in,*p_out, *p_tmp1;
+   int index;
 
+   double x0, y0, x1, y1,theta;
+   int w, h;
+   int x, y;
+
+   double cos_theta,sin_theta;      /* cos theta,sin theta */
+   double old_x,old_y;              /* old point */
+   double value;                    /* value of the pixel */
+   double a[6];
+
+   /* --- intialisations ---*/
+   p_in=pseries->p_in;
+   p_out=pseries->p_out;
+   p_tmp1=pseries->p_tmp1;
+   index=pseries->index;
+
+   theta=(pseries->user5.angle);
+   cos_theta = cos(theta);
+   sin_theta = sin(theta);
+
+   if ((0<theta)&&(theta<90.0*TT_PI/180)) {
+		//w= (int) ( floor (0.5*((1+cos_theta)*p_in->naxis1+sin_theta*p_in->naxis2))+1);
+		//h= (int) ( floor (0.5*((1+cos_theta)*p_in->naxis2+sin_theta*p_in->naxis1))+1);
+		w= (int) ( floor (cos_theta*p_in->naxis1+sin_theta*p_in->naxis2)+1);
+		h= (int) ( floor (sin_theta*p_in->naxis1+cos_theta*p_in->naxis2)+1);
+   } else if((-90.0*TT_PI/180<theta)&&(theta<0)) {
+		w= (int) ( floor (cos_theta*p_in->naxis1-sin_theta*p_in->naxis2)+1);
+		h= (int) ( floor (-sin_theta*p_in->naxis1+cos_theta*p_in->naxis2)+1);
+   } else {
+		w=p_in->naxis1;
+		h=p_in->naxis2;
+   }
+   /* --- coordonnéees du centre de rotation dans l'image initiale --- */
+   x0=pseries->user5.x0;
+   y0=pseries->user5.y0;
+   /* --- coordonnéees du centre de rotation dans la nouvelle image --- */
+   x1=pseries->user5.x0*w/p_in->naxis1;
+   y1=pseries->user5.y0*h/p_in->naxis2;
+
+   /* --- initialisation ---*/
+   /*tt_imabuilder(p_out);*/
+   tt_imacreater(p_tmp1,w,h);
+   tt_imacreater(p_out,w,h);
+
+   /* --- translation de l'image initiale dans la grande image --- */
+   for(x = 0;x < w;x++)
+   {
+      for(y = 0;y < h;y++)
+      {
+         old_x = x-(x1-x0);
+         old_y = y-(y1-y0);
+         value = interpol2(pseries,p_in,old_x,old_y,1);
+         p_tmp1->p[x+y*w]=(TT_PTYPE)(value);
+      } /* end of y-loop */
+   } /* end of x_loop */
+   //tt_imasaver(p_tmp1,"D:/translation.fit",16);
+  
+   /* --- rotation de l'image dans la grande image --- */
+   for(x = 0;x < w;x++)
+   {
+      for(y = 0;y < h;y++)
+      {
+         old_x = cos_theta * (x - x1) + sin_theta * (y - y1) + x1;
+         old_y = - sin_theta * (x - x1) + cos_theta * (y - y1) + y1;
+         value = interpol2(pseries,p_tmp1,old_x,old_y,1);
+         p_out->p[x+y*w]=(TT_PTYPE)(value);
+      } /* end of y-loop */
+   } /* end of x_loop */
+
+   /* --- calcule les nouveaux parametres de projection ---*/ //A REVOIR pour la translation
+   a[0]=cos_theta;
+   a[1]=sin_theta;
+   a[2]=-cos_theta*x1-sin_theta*y1+x1;
+   a[3]=-sin_theta;
+   a[4]=cos_theta;
+   a[5]=sin_theta*x1-cos_theta*y1+y1;
+   tt_util_update_wcs(p_in,p_out,a,2,NULL);
+
+   /* --- calcul des temps (pour l'entete fits) ---*/
+   pseries->jj_stack=pseries->jj[index-1];
+   pseries->exptime_stack=pseries->exptime[index-1];
+
+   return(OK_DLL);
+}
+
+/**************************************************************************/
+/* Fonction Interpol2   (copie de la fonction Interpol dans user3.c       */
+/* arguments possibles : image,old_x,old_y,method,nullpixel               */
+/**************************************************************************/
+double interpol2 (TT_IMA_SERIES *pseries,TT_IMA *pin,double old_x,double old_y,int method)
+{
+   int x1,y1,x2,y2;
+   double value=0.;                    /* value of the pixel */
+   double pix1, pix2, pix3, pix4;   /* pixels for the interpolation */
+   double alpha, beta;              /* coeffs for the interpolation */
+   double nullpixel;
+   int w,h;
+
+   w=pin->naxis1;
+   h=pin->naxis2;
+   nullpixel=pseries->nullpix_value;
+
+    if (method == 1)
+    {
+    	if ((old_x >= 0) && (old_x < w-1) && (old_y >= 0) && (old_y < h-1))
+    	{
+            x1 = (int)old_x;
+            x2 = x1 + 1;
+            y1 = (int)old_y;
+            y2 = y1 + 1;
+            alpha = old_x - x1;
+            beta = old_y - y1;
+            // Valeurs des 4 pixels d'interpolation
+            pix1 = pin->p[x1+y1*w];
+            pix2 = pin->p[x2+y1*w];
+            pix3 = pin->p[x1+y2*w];
+            pix4 = pin->p[x2+y2*w];
+            // Calcul de l'interpolation
+            value = (1-alpha)*(1-beta)*pix1 +
+                    alpha*(1-beta)*pix2 +
+                    (1-alpha)*beta*pix3 +
+                    alpha*beta*pix4;
+      }
+      else  value = nullpixel;
+    } /* end of if_statement */
+    return value;
+}
 
 int tt_ima_masque_catalogue(TT_IMA_SERIES *pseries)
 /***************************************************************************/
