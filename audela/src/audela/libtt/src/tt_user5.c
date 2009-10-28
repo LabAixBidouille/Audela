@@ -192,6 +192,8 @@ int tt_user5_ima_stack_dispatch1(TT_IMA_STACK *pstack,int *fct_found, int *msg)
 /* plus grande                                                            */
 /* arguments possibles : x0,y,angle,nullpixel                             */
 /**************************************************************************/
+//buf1 imaseries "ROTENTIERE X0=1024 Y0=1024 ANGLE=45 nullpixel=0"
+
 int tt_ima_rot(TT_IMA_SERIES *pseries)
 {
    TT_IMA *p_in,*p_out, *p_tmp1;
@@ -216,14 +218,18 @@ int tt_ima_rot(TT_IMA_SERIES *pseries)
    cos_theta = cos(theta);
    sin_theta = sin(theta);
 
-   if ((0<theta)&&(theta<90.0*TT_PI/180)) {
-		//w= (int) ( floor (0.5*((1+cos_theta)*p_in->naxis1+sin_theta*p_in->naxis2))+1);
-		//h= (int) ( floor (0.5*((1+cos_theta)*p_in->naxis2+sin_theta*p_in->naxis1))+1);
+   if (((0<theta)&&(theta<90.0*TT_PI/180))||((-360.0*TT_PI/180<theta)&&(theta<-270.0*TT_PI/180))) {
 		w= (int) ( floor (cos_theta*p_in->naxis1+sin_theta*p_in->naxis2)+1);
 		h= (int) ( floor (sin_theta*p_in->naxis1+cos_theta*p_in->naxis2)+1);
-   } else if((-90.0*TT_PI/180<theta)&&(theta<0)) {
+   } else if (((-90.0*TT_PI/180<theta)&&(theta<0))||((270.0*TT_PI/180<theta)&&(theta<360.0*TT_PI/180))) {
 		w= (int) ( floor (cos_theta*p_in->naxis1-sin_theta*p_in->naxis2)+1);
 		h= (int) ( floor (-sin_theta*p_in->naxis1+cos_theta*p_in->naxis2)+1);
+   } else if(((90.0*TT_PI/180<theta)&&(theta<180.0*TT_PI/180))||((-270.0*TT_PI/180<theta)&&(theta<-180.0*TT_PI/180))) {
+		w= (int) ( floor (-cos_theta*p_in->naxis1+sin_theta*p_in->naxis2)+1);
+		h= (int) ( floor (sin_theta*p_in->naxis1-cos_theta*p_in->naxis2)+1);
+   } else if(((-180.0*TT_PI/180<theta)&&(theta<-90.0*TT_PI/180))||((180.0*TT_PI/180<theta)&&(theta<270.0*TT_PI/180))) {
+		w= (int) ( floor (-cos_theta*p_in->naxis1-sin_theta*p_in->naxis2)+1);
+		h= (int) ( floor (-sin_theta*p_in->naxis1-cos_theta*p_in->naxis2)+1);
    } else {
 		w=p_in->naxis1;
 		h=p_in->naxis2;
