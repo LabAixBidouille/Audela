@@ -4752,14 +4752,14 @@ int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 
 /*==============================================================================
 // buf$i cmdFiberCentro
-//   Fonction de calcul du centroide sur une entrée de fibre optique.
+//   Fonction de calcul du centroide sur une entrï¿½e de fibre optique.
 //
 //
  *  Parameters IN:
  *  @param     Argv[2]=[list x1 y1 x2 y2] fenetre de detection de l'etoile
  *  @param     Argv[3]=starDetectionMode  1=fit de gaussienne  2=barycentre
  *  @param     Argv[4]=integratedImage 0=pas d'image integree, 1=image integree centree la fenetre, 2=image integree centree sur la consigne
- *  @param     Argv[5]=findFiber       recherche de l'entrée de fibre
+ *  @param     Argv[5]=findFiber       recherche de l'entrï¿½e de fibre
  *  @param     Argv[6]=maskBufNo       numero du buffer du masque
  *  @param     Argv[7]=sumBufNo        numero du buffer de l'image integree
  *  @param     Argv[8]=fiberBufNo      numero du buffer de l'image resultat
@@ -4825,8 +4825,8 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
       CBuffer *buffer;
       char message[1024]; 
 
-      // j'intialise le message d'erreur
-      sprintf(ligne,"");
+      // j'initialise le message d'erreur
+      ligne[0] = 0; // chaine vide
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 
       if(Tcl_SplitList(interp,argv[2],&listArgc,&listArgv)!=TCL_OK) {
@@ -4933,7 +4933,7 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
          retour = TCL_ERROR;
       } 
 
-      // passage dans le repère d'origine (0,0)
+      // passage dans le repï¿½re d'origine (0,0)
       x1 -= 1; y1 -= 1; x2 -= 1; y2 -= 1;
       previousFiberX -= 1; previousFiberY -= 1; 
 

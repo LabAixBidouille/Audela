@@ -261,7 +261,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
          if (strcmp(argv[kk], "-lptaddress") == 0) {
             if (kk + 1 < argc) {
                if ( strcmp(argv[kk + 1],"") != 0 && cam->deviceType <= DEV_LPT3 ) {
-                  sscanf(argv[kk + 1],"%x", &cam->port);
+                  sscanf(argv[kk + 1],"%hx", &cam->port);
                }
             }
          }
@@ -646,10 +646,10 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
    pix = p;
 
    /*
-   // Pour tester la disponibilité de la fonction :
-   // en envoyant un paramètre NULL, elle retourne :
-   // 0 si la commande est supportée,
-   // -1 si la fonction est non supportée.
+   // Pour tester la disponibilitï¿½ de la fonction :
+   // en envoyant un paramï¿½tre NULL, elle retourne :
+   // 0 si la commande est supportï¿½e,
+   // -1 si la fonction est non supportï¿½e.
    */
 
    cam_stop_exp(cam);
@@ -676,7 +676,7 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 
    rlp.ccd = (unsigned short) CCD_IMAGING;
    rlp.readoutMode = (unsigned short) (binx - 1);
-   rlp.pixelStart = (unsigned short) (x1 / binx);	// Les pixels commencent à 0
+   rlp.pixelStart = (unsigned short) (x1 / binx);	// Les pixels commencent ï¿½ 0
    rlp.pixelLength = (unsigned short) w;
    for (i = h-1; i >= 0; i--) {
       cam->drv_status =
@@ -719,10 +719,10 @@ void cam_measure_temperature(struct camprop *cam)
     int reg, power;
     cam->temperature = 0.;
     /*
-       // setpoint = température de consigne
-       // ccd = température du ccd
-       // ambient = température ambiante
-       // reg = régulation ?
+       // setpoint = tempï¿½rature de consigne
+       // ccd = tempï¿½rature du ccd
+       // ambient = tempï¿½rature ambiante
+       // reg = rï¿½gulation ?
        // power = puissance du peltier (0-255=0-100%)
      */
     gettemp(cam, &setpoint, &ccd, &ambient, &reg, &power);
@@ -923,10 +923,10 @@ void sbig_cam_read_ccdtrack(struct camprop *cam, unsigned short *p)
     pix = p;
 
     /*
-       // Pour tester la disponibilité de la fonction :
-       // en envoyant un paramètre NULL, elle retourne :
-       // 0 si la commande est supportée,
-       // -1 si la fonction est non supportée.
+       // Pour tester la disponibilitï¿½ de la fonction :
+       // en envoyant un paramï¿½tre NULL, elle retourne :
+       // 0 si la commande est supportï¿½e,
+       // -1 si la fonction est non supportï¿½e.
      */
 
     sbig_cam_stop_exptrack(cam);
@@ -953,7 +953,7 @@ void sbig_cam_read_ccdtrack(struct camprop *cam, unsigned short *p)
 
     rlp.ccd = (unsigned short) CCD_TRACKING;
     rlp.readoutMode = (unsigned short) (binx - 1);
-    rlp.pixelStart = (unsigned short) (x1 / binx);	// Les pixels commencent à 0
+    rlp.pixelStart = (unsigned short) (x1 / binx);	// Les pixels commencent ï¿½ 0
     rlp.pixelLength = (unsigned short) w;
     for (i = 0; i < h; i++) {
 	cam->drv_status =
@@ -1097,10 +1097,10 @@ int temp2setpoint(float temp)
 }
 
 /*
-// setpoint = température de consigne
-// ccd = température du ccd
-// ambient = température ambiante
-// reg = régulation ?
+// setpoint = tempï¿½rature de consigne
+// ccd = tempï¿½rature du ccd
+// ambient = tempï¿½rature ambiante
+// reg = rï¿½gulation ?
 // power = puissance du peltier (0-255=0-100%)
 */
 int gettemp(struct camprop *cam, float *setpoint, float *ccd,
@@ -1189,10 +1189,10 @@ void sbig_get_info_temperatures(struct camprop *cam, double *setpoint,
 				int *power)
 {
     /*
-       // setpoint = température de consigne
-       // ccd = température du ccd
-       // ambient = température ambiante
-       // reg = régulation ?
+       // setpoint = tempï¿½rature de consigne
+       // ccd = tempï¿½rature du ccd
+       // ambient = tempï¿½rature ambiante
+       // reg = rï¿½gulation ?
        // power = puissance du peltier (0-255=0-100%)
      */
     float fsetpoint, fccd, fambient;

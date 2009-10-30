@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: liblink.cpp,v 1.4 2009-05-01 16:11:02 michelpujol Exp $
+// $Id: liblink.cpp,v 1.5 2009-10-30 10:18:53 jacquesmichelet Exp $
 
 
 #include "sysexp.h"
@@ -134,7 +134,7 @@ int LINK_ENTRYPOINT(Tcl_Interp * interp)
    
    liblink_log(LOG_INFO, "Calling entrypoint for driver %s LINK_ENTRYPOINT=%p", LINK_DRIVNAME, LINK_ENTRYPOINT);
    if (Tcl_InitStubs(interp, "8.3", 0) == NULL) {
-      Tcl_SetResult(interp, "Tcl Stubs initialization failed in " LINK_LIBNAME " (" LINK_LIBVER ").", TCL_VOLATILE);
+      Tcl_SetResult(interp, (char*)"Tcl Stubs initialization failed in " LINK_LIBNAME " (" LINK_LIBVER ").", TCL_VOLATILE);
       liblink_log(LOG_ERROR, "Tcl Stubs initialization failed.");
       return TCL_ERROR;
    }
@@ -189,7 +189,7 @@ static int cmdLinkCreate(ClientData clientData, Tcl_Interp * interp, int argc, c
       }
       free(ligne);
    } else if (argc == 2 && strcmp(argv[1], "genericname") ==0) {
-         Tcl_SetResult(interp,LINK_CLASS::getGenericName(),TCL_VOLATILE);
+         Tcl_SetResult(interp,(char*)LINK_CLASS::getGenericName(),TCL_VOLATILE);
          result = TCL_OK;
    } else if (argc >= 3 && strncmp(argv[1], "link",4) ==0) {
       CLink *link;
@@ -327,7 +327,7 @@ static int cmdLinkClose(ClientData clientData, Tcl_Interp * interp, int argc, ch
  *      { { "cam1", "longuepose bit 1" } { "tel1", "bit 2 focus} }
  *
  *  link1 use add deviceId comment 
- *     ajoute un peripherique à la liste 
+ *     ajoute un peripherique ï¿½ la liste 
  *     exemple : 
  *      link1 use add "cam1"  "longuepose bit 1" 
  *

@@ -23,7 +23,7 @@
 #ifndef __CAMTCL_H__
 #define __CAMTCL_H__
 
-//    {"close", (Tcl_CmdProc *) cmdSbigClose}, \
+//    {"close", (Tcl_CmdProc *) cmdSbigClose},
 
 #define SPECIFIC_CMDLIST \
     {"infotemp", (Tcl_CmdProc *) cmdSbigInfotemp}, \

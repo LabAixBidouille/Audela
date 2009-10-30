@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: quickremote_tcl.cpp,v 1.4 2009-05-31 15:23:01 michelpujol Exp $
+// $Id: quickremote_tcl.cpp,v 1.5 2009-10-30 10:18:53 jacquesmichelet Exp $
 
 #ifdef WIN32
 #include <windows.h>
@@ -113,7 +113,8 @@ int cmdQuickremoteBit(ClientData clientData, Tcl_Interp *interp, int argc, char 
             } else {
                if(argc==4) {
                   if( quickremote->setBit(bit, value) == LINK_OK) {
-                     Tcl_SetResult(interp,"",TCL_VOLATILE);
+							ligne[0] = 0;
+                     Tcl_SetResult(interp, ligne, TCL_VOLATILE);
                      result = TCL_OK;
                   } else {
                      quickremote->getLastError(ligne);
@@ -127,7 +128,8 @@ int cmdQuickremoteBit(ClientData clientData, Tcl_Interp *interp, int argc, char 
                      result = TCL_ERROR;
                   } else {
                      if( quickremote->setBit(bit, value, duration) == LINK_OK) {
-                        Tcl_SetResult(interp,"",TCL_VOLATILE);
+								ligne[0] = 0;
+                        Tcl_SetResult(interp, ligne, TCL_VOLATILE);
                         result = TCL_OK;
                      } else {
                         quickremote->getLastError(ligne);
