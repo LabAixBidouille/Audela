@@ -330,24 +330,23 @@ namespace eval bddimages_recherche {
       global conf
       global bddconf
 
-     set i [lindex [$::bddimages_recherche::This.frame6.result.tbl curselection ]  0]
-     set idbddimg  [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 0]
+      set i [lindex [$::bddimages_recherche::This.frame6.result.tbl curselection ]  0]
+      set idbddimg  [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 0]
 
-     affiche_image_by_idbddimg $idbddimg
-     return
-     for { set i 0 } { $i <= [ expr [llength $bddconf(listetotale)] - 1 ] } { incr i } {
-       set selectfich [$::bddimages_recherche::This.frame6.result.tbl selection includes $i]
-       if {$selectfich==1} {
-         set nomfich [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 1]
-	 set errnum [ catch { loadima $nomfich } msg ]
-         if { $errnum == "1" } {
-           tk_messageBox -message "$msg" -icon error
-           }
-	   return # affiche seulement le premier fichier selectionné et sort de la procedure
-	 }
-       } 
-	 
+      affiche_image_by_idbddimg $idbddimg
       return
+      ###for { set i 0 } { $i <= [ expr [llength $bddconf(listetotale)] - 1 ] } { incr i } {
+      ### set selectfich [$::bddimages_recherche::This.frame6.result.tbl selection includes $i]
+      ###  if {$selectfich==1} {
+      ###     set nomfich [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 1]
+      ###     set errnum [ catch { loadima $nomfich } msg ]
+      ###     if { $errnum == "1" } {
+      ###        tk_messageBox -message "$msg" -icon error
+      ###     }
+	   ###     return # affiche seulement le premier fichier selectionné et sort de la procedure
+	   ###  }
+      ###} 
+      ###return
    }
 
 
