@@ -254,7 +254,7 @@ int cmdVisuPal(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
       } else if(strcmp(argv[2],"blue2")==0) {
          res = ((CVisu*)clientData)->CreatePalette(Pal_Blue2);
       } else {
-         // je traite les noms de repertoires contenant des caractères accentués
+         // je traite les noms de repertoires contenant des caractï¿½res accentuï¿½s
          sprintf(ligne,"encoding convertfrom identity {%s}",argv[2]);
          Tcl_Eval(interp,ligne);
          res = ((CVisu*)clientData)->CreatePaletteFromFile(interp->result);
@@ -262,7 +262,7 @@ int cmdVisuPal(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
       if (res != 0) {
          switch (res) {
          case ELIBSTD_NO_MEMORY_FOR_DISPLAY:
-            Tcl_SetResult(interp,"NO MEMORY FOR DISPLAY",TCL_VOLATILE);
+            Tcl_SetResult(interp,(char*)"NO MEMORY FOR DISPLAY",TCL_VOLATILE);
             result = TCL_ERROR;
             break;
          default:
@@ -297,7 +297,7 @@ int cmdVisuPalDir(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
       ligne = (char*)calloc(200,sizeof(char));
       visu = (CVisu*)clientData;
 
-      // je traite les noms de repertoires contenant des caractères accentués
+      // je traite les noms de repertoires contenant des caractï¿½res accentuï¿½s
       sprintf(ligne,"encoding convertfrom identity {%s}",argv[2]);
       Tcl_Eval(interp,ligne);
       visu->SetPaletteDir(interp->result);

@@ -42,7 +42,7 @@ public:
    int getBit(int numbit, int *value);
    void getLastError(char *message);
 
-   static char * getGenericName();
+   static const char * getGenericName();
    static int getAvailableLinks(unsigned long *pnumDevices, char **list);
    
 protected :

@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: cquickremote.cpp,v 1.9 2009-06-01 18:07:19 michelpujol Exp $
+// $Id: cquickremote.cpp,v 1.10 2009-10-30 10:18:53 jacquesmichelet Exp $
 
 #include "sysexp.h" //
 
@@ -97,7 +97,7 @@ int CQuickremote::getAvailableLinks(unsigned long *pnumDevices, char **list) {
  *    attention : c'est une methode statique !
  */
 
-char * CQuickremote::getGenericName() {
+const char * CQuickremote::getGenericName() {
    return "quickremote";
 }
 
@@ -106,7 +106,7 @@ char * CQuickremote::getGenericName() {
 CQuickremote::CQuickremote() : CLink()
 {
    ftHandle = NULL;
-   strcpy(index,"");  
+   strcpy(index,"");
 }
 
 CQuickremote::~CQuickremote()
@@ -144,7 +144,7 @@ int CQuickremote::openLink(int argc, char **argv)
    }
 
    
-   // j'initialise les sorties à 0
+   // j'initialise les sorties ï¿½ 0
    setChar((char)0);
    return LINK_OK;
 }
