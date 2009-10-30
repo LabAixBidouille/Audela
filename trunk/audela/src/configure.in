@@ -45,6 +45,7 @@ AC_SUBST(TK_LIB_SPEC)
 AC_SUBST(TK_STUB_LIB_SPEC)
 
 AC_MSG_RESULT([TCL_BIN_DIR=$TCL_BIN_DIR])
+AC_MSG_RESULT([TK_BIN_DIR=$TK_BIN_DIR])
 
 dnl Check for GSL
 dnl
@@ -158,7 +159,7 @@ dnl
 dnl Configure the modules to be compiled.
 dnl
 
-EXTERNAL="andor cfitsio gzip jpeg6b libdcjpeg libdcraw libftd2xx libgphoto2 libusb porttalk sbig sextractor tcl"
+EXTERNAL="andor cfitsio gzip jpeg6b libdcjpeg libdcraw libftd2xx libgphoto2 libusb porttalk sbig sextractor tcl blt"
 if test -f /usr/bin/mysql_config ; then
 	EXTERNAL="$EXTERNAL mysqltcl"
 fi

@@ -1295,6 +1295,7 @@ Optional Packages:
   --with-tk               directory containing tk configuration (tkConfig.sh)
   --with-gsl-prefix=PFX   Prefix where GSL is installed (optional)
   --with-gsl-exec-prefix=PFX Exec prefix where GSL is installed (optional)
+  --with-tls              compile external/tls [default=no]
 
 Some influential environment variables:
   CC          C compiler command
@@ -3648,6 +3649,8 @@ fi
 
 { echo "$as_me:$LINENO: result: TCL_BIN_DIR=$TCL_BIN_DIR" >&5
 echo "${ECHO_T}TCL_BIN_DIR=$TCL_BIN_DIR" >&6; }
+{ echo "$as_me:$LINENO: result: TK_BIN_DIR=$TK_BIN_DIR" >&5
+echo "${ECHO_T}TK_BIN_DIR=$TK_BIN_DIR" >&6; }
 
 
 
@@ -6598,13 +6601,26 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
-EXTERNAL="andor cfitsio gzip jpeg6b libdcjpeg libdcraw libftd2xx libgphoto2 libusb porttalk sbig sextractor tcl"
+EXTERNAL="andor cfitsio gzip jpeg6b libdcjpeg libdcraw libftd2xx libgphoto2 libusb porttalk sbig sextractor tcl blt"
 if test -f /usr/bin/mysql_config ; then
 	EXTERNAL="$EXTERNAL mysqltcl"
 fi
 if test x"$TCL_THREADS" = x"1" ; then
 	EXTERNAL="$EXTERNAL libthread"
 fi
+
+
+# Check whether --with-tls was given.
+if test "${with_tls+set}" = set; then
+  withval=$with_tls;
+else
+  with_tls=no
+fi
+
+if test "x$with_tls" != xno; then
+  EXTERNAL="$EXTERNAL tls"
+fi
+
 
 CONTRIB="ethernaude libgs"
 if test x"$GSL_FOUND" = x"1" ; then
@@ -6626,7 +6642,7 @@ fi
 
 LIBTELS="libaudecom libcelestron libcombit libdeltatau libdfm libeqmod liblx200 liblxnet libouranos libtemma"
 
-LIBLINKS="libparallelport libquickremote libserialport"
+LIBLINKS="libparallelport libquickremote"
 
 { echo "$as_me:$LINENO: result: CXXFLAGS = $CXXFLAGS" >&5
 echo "${ECHO_T}CXXFLAGS = $CXXFLAGS" >&6; }

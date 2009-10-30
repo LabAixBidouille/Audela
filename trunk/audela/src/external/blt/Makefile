@@ -8,7 +8,7 @@ build:
 	@if test ! -f $(DIR)/Makefile || test ../../Makefile.defs -nt $(DIR)/Makefile; then \
 		cd $(DIR) && \
 		echo chmod +x configure ; \
-		./configure --enable-threads --with-tcl=$(AUD_TCL_BIN_DIR) --with-blt=$(ROOT)/../lib ; \
+		./configure --enable-threads --with-tcl=$(AUD_TCL_BIN_DIR) --with-tk=$(AUD_TK_BIN_DIR) --with-blt=$(ROOT)/../lib ; \
 		 \
 	fi;
 	make -C $(DIR)
