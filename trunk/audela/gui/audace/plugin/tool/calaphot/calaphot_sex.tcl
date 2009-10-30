@@ -5,7 +5,7 @@
 #
 # @brief Routines d'appel et de configuration de sextractor pour Calaphot
 #
-# Mise a jour $Id: calaphot_sex.tcl,v 1.1 2009-04-21 19:58:50 jacquesmichelet Exp $
+# Mise a jour $Id: calaphot_sex.tcl,v 1.2 2009-10-30 11:01:05 michelpujol Exp $
 
 
 proc FichierNeuronalSex { {filename default.nnw} } {
@@ -235,7 +235,7 @@ proc FichierConfigurationSex { {filename calaphot.sex} } {
         Message debug "%s\n" [info level [info level]]
 
         catch {file delete $calaphot(sextractor,param)}
-        catch {file delete $calaphot(sextractor,config}
+        catch {file delete $calaphot(sextractor,config)}
         catch {file delete $calaphot(sextractor,neurone)}
     }
 
