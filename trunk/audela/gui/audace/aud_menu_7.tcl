@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise a jour $Id: aud_menu_7.tcl,v 1.17 2009-10-16 17:38:51 michelpujol Exp $
+# Mise a jour $Id: aud_menu_7.tcl,v 1.18 2009-10-30 23:26:21 michelpujol Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -303,7 +303,7 @@ namespace eval ::cwdWindow {
          switch $cwdWindow(rep_images,mode) {
             "none" {
                #--- rien a faire
-               set dirName $cwdWindow(dir_images)
+               set dirName $normalized_dir_images
             }
             "manual" {
                set dirName [file join $normalized_dir_images $cwdWindow(sous_repertoire) ]
