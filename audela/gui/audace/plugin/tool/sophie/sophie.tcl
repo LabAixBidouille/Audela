@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.36 2009-10-25 13:32:02 michelpujol Exp $
+# @version   $Id: sophie.tcl,v 1.37 2009-10-31 11:34:10 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -254,12 +254,18 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
       frame $frm.titre -borderwidth 2 -relief groove
 
          #--- Bouton du titre
-         image create photo sophieLogo -file [ file join $::audace(rep_plugin) [ ::audace::getPluginTypeDirectory [ getPluginType ] ] [ getPluginDirectory ] "logosophie.gif" ]
-         Button $frm.titre.but1 -borderwidth 1 -text $::caption(sophie,aide1) -image "sophieLogo" \
+         Button $frm.titre.but1 -borderwidth 1 -text "$::caption(sophie,aide1)\n$::caption(sophie,titre)" \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory \
-            [ ::sophie::getPluginType ] ] [ ::sophie::getPluginDirectory ] [ ::sophie::getPluginHelp ]"
-         pack $frm.titre.but1 -anchor center -expand 1 -fill both -side top
+               [ ::sophie::getPluginType ] ] [ ::sophie::getPluginDirectory ] [ ::sophie::getPluginHelp ]"
+         pack $frm.titre.but1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $frm.titre.but1 -text $::caption(sophie,aide)
+
+         #--- Image de Sophie
+         image create photo sophieLogo -file [ file join $::audace(rep_plugin) \
+            [ ::audace::getPluginTypeDirectory [ getPluginType ] ] [ getPluginDirectory ] \
+            "logosophie.gif" ]
+         label $frm.titre.image -borderwidth 1 -image "sophieLogo"
+         pack $frm.titre.image -anchor center -expand 1 -fill both -side top
 
          #--- Bouton d'ouverture de la fenetre de configuration
          button $frm.titre.but2 -borderwidth 2 -text $::caption(sophie,config) \
@@ -518,11 +524,11 @@ proc ::sophie::startTool { visuNo } {
    #--- j'intialise la position de l'attenuateur
    ::sophie::initFilter
 
-   #--- je selectionne les mots clefs optionnel a ajouter dans les images
+   #--- je selectionne les mots cles optionnels a ajouter dans les images
    ::keyword::selectKeywords $visuNo [list RA_MEAN RA_RMS DEC_MEAN DEC_RMS DETNAM INSTRUME TELESCOP SITENAME SITELONG SITELAT SWCREATE]
-   #--- je selectionne la liste des mots clefs non modifiables
-   ::keyword::setKeywordState $visuNo [list RA_MEAN RA_RMS DEC_MEAN DEC_RMS DETNAM INSTRUME TELESCOP ]
 
+   #--- je selectionne la liste des mots cles non modifiables
+   ::keyword::setKeywordState $visuNo [list RA_MEAN RA_RMS DEC_MEAN DEC_RMS DETNAM INSTRUME TELESCOP ]
 }
 
 #------------------------------------------------------------
@@ -573,6 +579,9 @@ proc ::sophie::stopTool { visuNo } {
 
    #--- je ferme la fenetre de controle
    ::sophie::control::closeWindow $visuNo
+
+   #--- je deselectionne la liste des mots cles non modifiables
+   ::keyword::setKeywordState $visuNo [list ]
 
    #--- je masque l'outil
    pack forget $private(frm)
