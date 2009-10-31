@@ -2,7 +2,7 @@
 # Fichier : snmacros.tcl
 # Description : Macros des scripts pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snmacros.tcl,v 1.8 2009-04-05 15:08:26 robertdelmas Exp $
+# Mise a jour $Id: snmacros.tcl,v 1.9 2009-10-31 09:14:42 robertdelmas Exp $
 #
 
 proc globgalsn { args } {
@@ -556,7 +556,7 @@ proc snprism { } {
    set cdeltm2 [ expr $ypixelsz / 1000. ]
    set binx $snconf(binning)
    set biny $snconf(binning)
-   set crval1 $ra
+  set crval1 $ra
    set crval2 $dec
    set cdelt1 [expr atan($cdeltm1/$focmm)]
    set cdelt2 [expr atan($cdeltm2/$focmm)]
@@ -566,26 +566,26 @@ proc snprism { } {
    set x2 $naxis1
    set y2 $naxis2
    #---
-   buf$audace(bufNo) setkwd [list UT $ut string "UT time of observation" ""]
-   buf$audace(bufNo) setkwd [list UT-START $ut_start string "UT start" ""]
-   buf$audace(bufNo) setkwd [list UT-END $ut_end string "UT end" ""]
-   buf$audace(bufNo) setkwd [list JDAY $jday float "julian day of observation" ""]
-   buf$audace(bufNo) setkwd [list XPIXELSZ $xpixelsz float "X pixel size microns" "um"]
-   buf$audace(bufNo) setkwd [list YPIXELSZ $ypixelsz float "Y pixel size microns" "um"]
-   buf$audace(bufNo) setkwd [list CDELTM1 $cdeltm1 float "size of a pixel (x) in mm" "mm"]
-   buf$audace(bufNo) setkwd [list CDELTM2 $cdeltm2 float "size of a pixel (y) in mm" "mm"]
-   buf$audace(bufNo) setkwd [list OBSERVER $snconf(fits,OBSERVER) string "Observer name" ""]
-   buf$audace(bufNo) setkwd [list BINX $binx int "X binning" ""]
-   buf$audace(bufNo) setkwd [list BINY $biny int "Y binning" ""]
-   buf$audace(bufNo) setkwd [list CRVAL1 $crval1 float "Approx.centre coord. in R.A." "deg"]
-   buf$audace(bufNo) setkwd [list CRVAL2 $crval2 float "Approx.centre coord. in DECL" "deg"]
-   buf$audace(bufNo) setkwd [list CDELT1 $cdelt1 float "scaleX in rad/pix" "rad"]
-   buf$audace(bufNo) setkwd [list CDELT2 $cdelt2 float "scaleY in rad/pix" "rad"]
-   buf$audace(bufNo) setkwd [list FOCAL $focal float "Focal length in mm" "mm"]
-   buf$audace(bufNo) setkwd [list X1 $x1 int "X1 image windowing" ""]
-   buf$audace(bufNo) setkwd [list Y1 $y1 int "Y1 image windowing" ""]
-   buf$audace(bufNo) setkwd [list X2 $x2 int "X2 image windowing" ""]
-   buf$audace(bufNo) setkwd [list Y2 $y2 int "Y2 image windowing" ""]
+   buf$audace(bufNo) setkwd [list UT       $ut                    string "UT time of observation"       ""]
+   buf$audace(bufNo) setkwd [list UT-START $ut_start              string "UT start"                     ""]
+   buf$audace(bufNo) setkwd [list UT-END   $ut_end                string "UT end"                       ""]
+   buf$audace(bufNo) setkwd [list JDAY     $jday                  float  "julian day of observation"    ""]
+   buf$audace(bufNo) setkwd [list XPIXELSZ $xpixelsz              float  "X pixel size microns"         "um"]
+   buf$audace(bufNo) setkwd [list YPIXELSZ $ypixelsz              float  "Y pixel size microns"         "um"]
+   buf$audace(bufNo) setkwd [list CDELTM1  $cdeltm1               float  "size of a pixel (x) in mm"    "mm"]
+   buf$audace(bufNo) setkwd [list CDELTM2  $cdeltm2               float  "size of a pixel (y) in mm"    "mm"]
+   buf$audace(bufNo) setkwd [list OBSERVER $snconf(fits,OBSERVER) string "Observer name"                ""]
+   buf$audace(bufNo) setkwd [list BINX     $binx                  int    "X binning"                    ""]
+   buf$audace(bufNo) setkwd [list BINY     $biny                  int    "Y binning"                    ""]
+   buf$audace(bufNo) setkwd [list CRVAL1   $crval1                float  "Approx.centre coord. in R.A." "deg"]
+   buf$audace(bufNo) setkwd [list CRVAL2   $crval2                float  "Approx.centre coord. in DECL" "deg"]
+   buf$audace(bufNo) setkwd [list CDELT1   $cdelt1                float  "scaleX in rad/pix"            "rad"]
+   buf$audace(bufNo) setkwd [list CDELT2   $cdelt2                float  "scaleY in rad/pix"            "rad"]
+   buf$audace(bufNo) setkwd [list FOCAL    $focal                 float  "Focal length in mm"           "mm"]
+   buf$audace(bufNo) setkwd [list X1       $x1                    int    "X1 image windowing"           ""]
+   buf$audace(bufNo) setkwd [list Y1       $y1                    int    "Y1 image windowing"           ""]
+   buf$audace(bufNo) setkwd [list X2       $x2                    int    "X2 image windowing"           ""]
+   buf$audace(bufNo) setkwd [list Y2       $y2                    int    "Y2 image windowing"           ""]
 }
 # ==========================================================================================
 
