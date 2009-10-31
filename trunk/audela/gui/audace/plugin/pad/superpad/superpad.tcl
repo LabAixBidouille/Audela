@@ -2,12 +2,13 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.28 2009-10-25 13:11:47 robertdelmas Exp $
+# Mise a jour $Id: superpad.tcl,v 1.29 2009-10-31 09:25:11 michelpujol Exp $
 #
 
+package provide superpad 1.0
+package require audela 1.4.0
+
 namespace eval ::superpad {
-   package provide superpad 1.0
-   package require audela 1.4.0
    source [ file join [file dirname [info script]] superpad.cap ]
 
    #------------------------------------------------------------
@@ -30,8 +31,7 @@ namespace eval ::superpad {
    # return : valeur de la propriete, ou "" si la propriete n'existe pas
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
-      switch $propertyName {
-      }
+
    }
 
    #------------------------------------------------------------
