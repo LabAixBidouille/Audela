@@ -2,7 +2,7 @@
 # Fichier : fieldchart.tcl
 # Description : Interfaces graphiques pour les fonctions carte de champ
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: fieldchart.tcl,v 1.2 2009-02-07 11:04:43 robertdelmas Exp $
+# Mise a jour $Id: fieldchart.tcl,v 1.3 2009-10-31 20:39:35 robertdelmas Exp $
 #
 
 #============================================================
@@ -88,14 +88,10 @@ namespace eval ::fieldchart {
       set This "$tkbase"
 
       #--- Inititalisation de variables de configuration
-      if { ! [ info exists conf(fieldchart,position) ] }     { set conf(fieldchart,position)  "+350+75" }
-      if { ! [ info exists conf(fieldchart,catalogue) ] }    { set conf(fieldchart,catalogue) "$caption(fieldchart,microcat)" }
-      if { ! [ info exists conf(fieldchart,magmax) ] }       { set conf(fieldchart,magmax)    "14" }
-      if { $::tcl_platform(os) == "Linux" } {
-         if { ! [ info exists conf(fieldchart,path_cata) ] } { set conf(fieldchart,path_cata) "/cdrom/" }
-      } else {
-         if { ! [ info exists conf(fieldchart,path_cata) ] } { set conf(fieldchart,path_cata) "d:/" }
-      }
+      if { ! [ info exists conf(fieldchart,position) ] }    { set conf(fieldchart,position)    "+350+75" }
+      if { ! [ info exists conf(fieldchart,catalogue) ] }   { set conf(fieldchart,catalogue)   "$caption(fieldchart,microcat)" }
+      if { ! [ info exists conf(fieldchart,magmax) ] }      { set conf(fieldchart,magmax)      "14" }
+      if { ! [ info exists conf(fieldchart,pathCatalog) ] } { set conf(fieldchart,pathCatalog) "" }
    }
 
    #------------------------------------------------------------
@@ -139,10 +135,10 @@ namespace eval ::fieldchart {
       variable widget
       global conf
 
-      set widget(fieldchart,position)  "$conf(fieldchart,position)"
-      set widget(fieldchart,catalogue) "$conf(fieldchart,catalogue)"
-      set widget(fieldchart,magmax)    "$conf(fieldchart,magmax)"
-      set widget(fieldchart,path_cata) "$conf(fieldchart,path_cata)"
+      set widget(fieldchart,position)    "$conf(fieldchart,position)"
+      set widget(fieldchart,catalogue)   "$conf(fieldchart,catalogue)"
+      set widget(fieldchart,magmax)      "$conf(fieldchart,magmax)"
+      set widget(fieldchart,pathCatalog) "$conf(fieldchart,pathCatalog)"
    }
 
    #------------------------------------------------------------
@@ -153,10 +149,10 @@ namespace eval ::fieldchart {
       variable widget
       global conf
 
-      set conf(fieldchart,position)  "$widget(fieldchart,position)"
-      set conf(fieldchart,catalogue) "$widget(fieldchart,catalogue)"
-      set conf(fieldchart,magmax)    "$widget(fieldchart,magmax)"
-      set conf(fieldchart,path_cata) "$widget(fieldchart,path_cata)"
+      set conf(fieldchart,position)    "$widget(fieldchart,position)"
+      set conf(fieldchart,catalogue)   "$widget(fieldchart,catalogue)"
+      set conf(fieldchart,magmax)      "$widget(fieldchart,magmax)"
+      set conf(fieldchart,pathCatalog) "$widget(fieldchart,pathCatalog)"
    }
 
    #------------------------------------------------------------
@@ -232,7 +228,8 @@ namespace eval ::fieldchart {
             label $This.usr.1.lab1 -text "$caption(fieldchart,catalogue)"
             grid $This.usr.1.lab1 -row 1 -column 0 -padx 5 -pady 2 -sticky w
 
-            set list_combobox [ list $caption(fieldchart,microcat) $caption(fieldchart,tycho) $caption(fieldchart,loneos) ]
+            set list_combobox [ list $caption(fieldchart,microcat) $caption(fieldchart,tycho) \
+               $caption(fieldchart,loneos) ]
             ComboBox $This.usr.1.cata \
                -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
                -height [ llength $list_combobox ] \
@@ -246,11 +243,11 @@ namespace eval ::fieldchart {
             label $This.usr.1.lab3 -text "$caption(fieldchart,cat_microcat)"
             grid $This.usr.1.lab3 -row 2 -column 0 -padx 5 -pady 2 -sticky w
 
-            entry $This.usr.1.ent1 -textvariable ::fieldchart::widget(fieldchart,path_cata)
+            entry $This.usr.1.ent1 -textvariable ::fieldchart::widget(fieldchart,pathCatalog)
             grid $This.usr.1.ent1 -row 2 -column 1 -padx 5 -pady 2 -sticky e
 
             button $This.usr.1.explore -text "$caption(fieldchart,parcourir)" -width 1 \
-               -command { set ::fieldchart::widget(fieldchart,path_cata) [ ::fieldchart::parcourir ] }
+               -command { set ::fieldchart::widget(fieldchart,pathCatalog) [ ::fieldchart::parcourir ] }
             grid $This.usr.1.explore -row 2 -column 2 -padx 5 -pady 2 -sticky w
 
             label $This.usr.1.lab2 -text "$caption(fieldchart,magnitude_limite)"
@@ -283,7 +280,8 @@ namespace eval ::fieldchart {
             entry $This.usr.2.ent2 -textvariable fieldchart(PictureHeight) -width 5
             grid $This.usr.2.ent2 -row 1 -column 1 -padx 5 -pady 2 -sticky w
 
-            button $This.usr.2.but1 -text "$caption(fieldchart,prendre_image)" -command { ::fieldchart::cmdTakeWHFromPicture }
+            button $This.usr.2.but1 -text "$caption(fieldchart,prendre_image)" \
+               -command { ::fieldchart::cmdTakeWHFromPicture }
             grid $This.usr.2.but1 -column 2 -row 0 -rowspan 2 -padx 5 -pady 5 -ipady 5 -sticky news
 
             label $This.usr.2.lab3 -text "$caption(fieldchart,ad_centre)"
@@ -298,7 +296,8 @@ namespace eval ::fieldchart {
             entry $This.usr.2.ent4 -textvariable fieldchart(CentreDec) -width 10
             grid $This.usr.2.ent4 -column 1 -row 3 -padx 5 -pady 2 -sticky w
 
-            button $This.usr.2.but2 -text "$caption(fieldchart,prendre_image)" -command { ::fieldchart::cmdTakeRaDecFromPicture }
+            button $This.usr.2.but2 -text "$caption(fieldchart,prendre_image)" \
+               -command { ::fieldchart::cmdTakeRaDecFromPicture }
             grid $This.usr.2.but2  -column 2 -row 2 -rowspan 2 -padx 5 -pady 5 -ipady 5 -sticky news
 
             label $This.usr.2.lab5 -text "$caption(fieldchart,inclinaison_camera)"
@@ -372,6 +371,10 @@ namespace eval ::fieldchart {
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
 
+      #--- Telechargement du catalogue MicroCat
+      if  { $widget(fieldchart,pathCatalog) == "" } {
+         ::fieldchart::loadMicroCat
+      }
    }
 
    #------------------------------------------------------------
@@ -426,11 +429,11 @@ namespace eval ::fieldchart {
          #--- Liste des objets
          set choix [ $This.usr.1.cata get ]
          if { ! [ string compare $choix $caption(fieldchart,microcat) ] } {
-            set objects [ list * ASTROMMICROCAT $::fieldchart::widget(fieldchart,path_cata) ]
+            set objects [ list * ASTROMMICROCAT $::fieldchart::widget(fieldchart,pathCatalog) ]
          } elseif { ! [ string compare $choix $caption(fieldchart,tycho) ] } {
-            set objects [ list * TYCHOMICROCAT $::fieldchart::widget(fieldchart,path_cata) ]
+            set objects [ list * TYCHOMICROCAT $::fieldchart::widget(fieldchart,pathCatalog) ]
          } elseif { ! [ string compare $choix $caption(fieldchart,loneos) ] } {
-            set objects [ list * LONEOSMICROCAT $::fieldchart::widget(fieldchart,path_cata) ]
+            set objects [ list * LONEOSMICROCAT $::fieldchart::widget(fieldchart,pathCatalog) ]
          }
          set result [ list LIST ]
          set magmax [ $This.usr.1.magmax get ]
@@ -445,7 +448,8 @@ namespace eval ::fieldchart {
             if { [ lindex $msg 0 ] == "Pb" } {
                tk_messageBox -message "[ lindex $msg 1 ]" -icon error -title "$caption(fieldchart,erreur)"
             } else {
-               tk_messageBox -message "$caption(fieldchart,pas_etoile)" -icon warning -title "$caption(fieldchart,attention)"
+               tk_messageBox -message "$caption(fieldchart,pas_etoile)" -icon warning \
+                  -title "$caption(fieldchart,attention)"
             }
          } else {
             set etoiles $msg
@@ -534,7 +538,7 @@ namespace eval ::fieldchart {
       global audace caption
 
       set dirname [ tk_chooseDirectory -title "$caption(fieldchart,recherche)" \
-         -initialdir $audace(rep_catalogues) -parent $This ]
+         -initialdir "$audace(rep_catalogues)" -parent $This ]
       set len [ string length $dirname ]
       set folder "$dirname"
       if { $len > "0" } {
@@ -545,6 +549,52 @@ namespace eval ::fieldchart {
          set dirname $folder
       }
       return $dirname
+   }
+
+   #------------------------------------------------------------
+   # loadMicroCat
+   #    Invite au telechargement de Microcat
+   #------------------------------------------------------------
+   proc loadMicroCat { } {
+      variable This
+      global audace caption color
+
+      if [ winfo exists $audace(base).loadMicrocat ] {
+         destroy $audace(base).loadMicrocat
+      }
+      toplevel $audace(base).loadMicrocat
+      wm transient $audace(base).loadMicrocat $This
+      wm title $audace(base).loadMicrocat "$caption(fieldchart,microcat)"
+      set posx_maj [ lindex [ split [ wm geometry $This ] "+" ] 1 ]
+      set posy_maj [ lindex [ split [ wm geometry $This ] "+" ] 2 ]
+      wm geometry $audace(base).loadMicrocat +[ expr $posx_maj + 10 ]+[ expr $posy_maj + 105 ]
+      wm resizable $audace(base).loadMicrocat 0 0
+      set fg $color(blue)
+
+      #--- Cree l'affichage du message
+      label $audace(base).loadMicrocat.lab1 -text "$caption(fieldchart,loadMicrocat_1)"
+      pack $audace(base).loadMicrocat.lab1 -padx 10 -pady 2
+      label $audace(base).loadMicrocat.labURL2 -text "$caption(fieldchart,loadMicrocat_2)" -fg $fg
+      pack $audace(base).loadMicrocat.labURL2 -padx 10 -pady 2
+
+      #--- La nouvelle fenetre est active
+      focus $audace(base).loadMicrocat
+
+      #--- Creation du lien avec le navigateur web et changement de sa couleur
+      bind $audace(base).loadMicrocat.labURL2 <ButtonPress-1> {
+         set filename "$caption(fieldchart,loadMicrocat_2)"
+         ::audace::Lance_Site_htm $filename
+      }
+      bind $audace(base).loadMicrocat.labURL2 <Enter> {
+         set fg2 $color(purple)
+         $audace(base).loadMicrocat.labURL2 configure -fg $fg2
+      }
+      bind $audace(base).loadMicrocat.labURL2 <Leave> {
+         set fg3 $color(blue)
+         $audace(base).loadMicrocat.labURL2 configure -fg $fg3
+      }
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $audace(base).loadMicrocat
    }
 
 }
