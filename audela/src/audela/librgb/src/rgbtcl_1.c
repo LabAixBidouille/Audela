@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Alain KLOTZ <alain.klotz@free.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -186,13 +186,13 @@ int Cmd_rgbtcl_load(ClientData clientData, Tcl_Interp *interp, int argc, char *a
    }
 
    /* --- verifie l'existence des buffers ---*/
-   
+
    sprintf(lignetcl,"lsearch [::buf::list] %d",numbufdisp);
    Tcl_Eval(interp,lignetcl);
    if (strcmp(Tcl_GetStringResult(interp),"-1")==0) {
       sprintf(lignetcl,"::buf::create %d",numbufdisp);
       Tcl_Eval(interp,lignetcl);
-   }   
+   }
 
    sprintf(lignetcl,"lsearch [::buf::list] %d",numbufr);
    Tcl_Eval(interp,lignetcl);
@@ -239,9 +239,9 @@ int Cmd_rgbtcl_load(ClientData clientData, Tcl_Interp *interp, int argc, char *a
       if( Tcl_Eval(interp,lignetcl) != TCL_OK  ) {
          return TCL_ERROR;
       }
-      
+
       sprintf(lignetcl,"buf%d load [file rootname %s]%s\\;3",numbufb,argv[1],s);
-      if( Tcl_Eval(interp,lignetcl) != TCL_OK  ) { 
+      if( Tcl_Eval(interp,lignetcl) != TCL_OK  ) {
          return TCL_ERROR;
       }
    }
@@ -257,36 +257,36 @@ int Cmd_rgbtcl_load(ClientData clientData, Tcl_Interp *interp, int argc, char *a
    // je charge l'image dans le buffer d'affichage
 
    // je reserve la place des pixels dans le buffer d'affichage
-   sprintf(lignetcl,"buf%d setpixels CLASS_RGB %d %d  FORMAT_FLOAT COMPRESS_NONE %d", 
+   sprintf(lignetcl,"buf%d setpixels CLASS_RGB %d %d  FORMAT_FLOAT COMPRESS_NONE %d",
       numbufdisp ,naxis1, naxis2, 0);
    if( Tcl_Eval(interp,lignetcl) != TCL_OK  ) { return TCL_ERROR; }
 
-   // je prepare une zone mémoire de transfert
+   // je prepare une zone mÃ©moire de transfert
    pixels = (float*)calloc(naxis1*naxis2,sizeof(float));
    if(pixels==NULL) { return TCL_ERROR; }
 
-   // je recupere les pixels du plan RED          
-   sprintf(lignetcl,"buf%d getpixels %d PLANE_RED",numbufr, pixels);
+   // je recupere les pixels du plan RED
+   sprintf(lignetcl,"buf%d getpixels %p PLANE_RED",numbufr, pixels);
    if( Tcl_Eval(interp,lignetcl) != TCL_OK  ) { return TCL_ERROR; }
 
    // je copie les pixel RED dans le buffer numbuf d'affichage
-   sprintf(lignetcl,"buf%d mergepixels PLANE_RED %d", numbufdisp, pixels);
+   sprintf(lignetcl,"buf%d mergepixels PLANE_RED %p", numbufdisp, pixels);
    if( Tcl_Eval(interp,lignetcl) != TCL_OK  ) { return TCL_ERROR; }
-   
-   // je recupere les pixels du plan GREEN          
-   sprintf(lignetcl,"buf%d getpixels %d PLANE_GREEN",numbufg, pixels);
+
+   // je recupere les pixels du plan GREEN
+   sprintf(lignetcl,"buf%d getpixels %p PLANE_GREEN",numbufg, pixels);
    if( Tcl_Eval(interp,lignetcl) != TCL_OK  ) { return TCL_ERROR; }
 
    // je copie les pixel GREEN dans le buffer numbuf d'affichage
-   sprintf(lignetcl,"buf%d mergepixels PLANE_GREEN %d",numbufdisp, pixels);
+   sprintf(lignetcl,"buf%d mergepixels PLANE_GREEN %p",numbufdisp, pixels);
    if( Tcl_Eval(interp,lignetcl) != TCL_OK  ) { return TCL_ERROR; }
-   
+
    // je recupere les pixels du plan BLUE
-   sprintf(lignetcl,"buf%d getpixels %d PLANE_BLUE",numbufb, pixels);
+   sprintf(lignetcl,"buf%d getpixels %p PLANE_BLUE",numbufb, pixels);
    if( Tcl_Eval(interp,lignetcl) != TCL_OK  ) { return TCL_ERROR; }
 
    // je copie les pixel BLUE dans le buffer numbuf d'affichage
-   sprintf(lignetcl,"buf%d mergepixels PLANE_BLUE %d", numbufdisp, pixels);
+   sprintf(lignetcl,"buf%d mergepixels PLANE_BLUE %p", numbufdisp, pixels);
    if( Tcl_Eval(interp,lignetcl) != TCL_OK  ) { return TCL_ERROR; }
 
    return TCL_OK;
@@ -472,7 +472,7 @@ int Cmd_rgbtcl_visu(ClientData clientData, Tcl_Interp *interp, int argc, char *a
    /* --- recherche les infos sur l'image R ---*/
    result=rgbtcl_getinfoimage(interp,numbufr,&image);
 
-   if( image.naxis1 * image.naxis2  == 0 ) 
+   if( image.naxis1 * image.naxis2  == 0 )
       return TCL_OK;
 
    /* --- recupere les dimensions ---*/
@@ -887,13 +887,13 @@ int Cmd_rgbtcl_split(ClientData clientData, Tcl_Interp *interp, int argc, char *
       ptr_r=NULL;
       Tcl_GetInt(interp,interp->result,&ptri);
       ptr_r=(float*)ptri;
-      
+
       sprintf(s,"buf%d pointer",numbufg);
       Tcl_Eval(interp,s);
       ptr_g=NULL;
       Tcl_GetInt(interp,interp->result,&ptri);
       ptr_g=(float*)ptri;
-      
+
       sprintf(s,"buf%d pointer",numbufb);
       Tcl_Eval(interp,s);
       ptr_b=NULL;
@@ -907,13 +907,13 @@ int Cmd_rgbtcl_split(ClientData clientData, Tcl_Interp *interp, int argc, char *
      if(ptr_g==NULL) { return TCL_ERROR; }
      ptr_b = (float*)calloc(naxis1*naxis2,sizeof(float));
      if(ptr_b==NULL) { return TCL_ERROR; }
-      
+
 
 	  if ((typecodage==1) || (typecodage==6)) {
-         // je recupere les pixels 
+         // je recupere les pixels
          ptr = (float*)calloc(naxis1*naxis2*3,sizeof(float));
          if(ptr_r==NULL) { return TCL_ERROR; }
-         sprintf(s,"buf%d getpixels %d PLANE_RGB",numbuf, ptr);
+         sprintf(s,"buf%d getpixels %p PLANE_RGB",numbuf, ptr);
          Tcl_Eval(interp,s);
 
          /*--- separation des plans de couleur CFA --- */
@@ -986,10 +986,10 @@ int Cmd_rgbtcl_split(ClientData clientData, Tcl_Interp *interp, int argc, char *
       }
 
 	  if (typecodage==2) {
-         // je recupere les pixels 
+         // je recupere les pixels
          ptr = (float*)calloc(naxis1*naxis2*3,sizeof(float));
          if(ptr_r==NULL) { return TCL_ERROR; }
-         sprintf(s,"buf%d getpixels %d PLANE_RGB",numbuf, ptr);
+         sprintf(s,"buf%d getpixels %p PLANE_RGB",numbuf, ptr);
          Tcl_Eval(interp,s);
          /*--- separation des plans de couleur RGB --- */
          for (j=0;j<naxis2;j++) {
@@ -1019,33 +1019,33 @@ int Cmd_rgbtcl_split(ClientData clientData, Tcl_Interp *interp, int argc, char *
             }
          }
          */
-         // je recupere les pixels du plan RED       
-         sprintf(s,"buf%d getpixels %d PLANE_RED",numbuf, ptr_r);
+         // je recupere les pixels du plan RED
+         sprintf(s,"buf%d getpixels %p PLANE_RED",numbuf, ptr_r);
          Tcl_Eval(interp,s);
-      
+
          // je recupere les pixels du plan GREEN
-         sprintf(s,"buf%d getpixels %d PLANE_GREEN",numbuf, ptr_g);
+         sprintf(s,"buf%d getpixels %p PLANE_GREEN",numbuf, ptr_g);
          Tcl_Eval(interp,s);
-      
+
          // je recupere les pixels du plan BLUE
-         sprintf(s,"buf%d getpixels %d PLANE_BLUE",numbuf, ptr_b);
+         sprintf(s,"buf%d getpixels %p PLANE_BLUE",numbuf, ptr_b);
          Tcl_Eval(interp,s);
-      
+
      }
 
 	  if (typecodage==6) {
-         // je recupere les pixels du plan RED       
-         sprintf(s,"buf%d getpixels %d PLANE_RED",numbuf, ptr_r);
+         // je recupere les pixels du plan RED
+         sprintf(s,"buf%d getpixels %p PLANE_RED",numbuf, ptr_r);
          Tcl_Eval(interp,s);
-      
+
          // je recupere les pixels du plan GREEN
-         sprintf(s,"buf%d getpixels %d PLANE_GREEN",numbuf, ptr_g);
+         sprintf(s,"buf%d getpixels %p PLANE_GREEN",numbuf, ptr_g);
          Tcl_Eval(interp,s);
-      
+
          // je recupere les pixels du plan BLUE
-         sprintf(s,"buf%d getpixels %d PLANE_BLUE",numbuf, ptr_b);
+         sprintf(s,"buf%d getpixels %p PLANE_BLUE",numbuf, ptr_b);
          Tcl_Eval(interp,s);
-         
+
          /* --- conversion CMY en RGB ---*/
   		   ptr_c=ptr_r;
          ptr_m=ptr_b;
@@ -1067,20 +1067,20 @@ int Cmd_rgbtcl_split(ClientData clientData, Tcl_Interp *interp, int argc, char *
    }
 
    // je copie les pixels RED dans le buffer numbufr
-   sprintf(lignetcl,"buf%d setpixels CLASS_GRAY %d %d  FORMAT_FLOAT COMPRESS_NONE %d", 
+   sprintf(lignetcl,"buf%d setpixels CLASS_GRAY %d %d  FORMAT_FLOAT COMPRESS_NONE %p",
       numbufr ,naxis1, naxis2, ptr_r);
    Tcl_Eval(interp,lignetcl);
 
    // je copie les pixels GREEN dans le buffer numbufg
-   sprintf(lignetcl,"buf%d setpixels CLASS_GRAY %d %d  FORMAT_FLOAT COMPRESS_NONE %d", 
+   sprintf(lignetcl,"buf%d setpixels CLASS_GRAY %d %d  FORMAT_FLOAT COMPRESS_NONE %p",
       numbufg ,naxis1, naxis2, ptr_g);
    Tcl_Eval(interp,lignetcl);
 
    // je copie les pixels BLUE dans le buffer numbufb
-   sprintf(lignetcl,"buf%d setpixels CLASS_GRAY %d %d FORMAT_FLOAT COMPRESS_NONE %d", 
+   sprintf(lignetcl,"buf%d setpixels CLASS_GRAY %d %d FORMAT_FLOAT COMPRESS_NONE %p",
       numbufb ,naxis1, naxis2, ptr_b);
    Tcl_Eval(interp,lignetcl);
-      
+
 
    free(ptr_r);
    free(ptr_g);
@@ -1464,7 +1464,7 @@ int rgbtcl_getinfoimage(Tcl_Interp *interp,int numbuf, rgb_image *image)
    if( result == 0 ) {
       return(TCL_OK);
    }
-   
+
 
    /* -- recherche le mot cle NAXIS1 dans l'entete FITS --*/
    strcpy(keyname,"NAXIS1");
