@@ -134,6 +134,7 @@ int libtt_main(int service, ...)
 
    /* --- macro fonctions ---*/
    if (service==TT_ERROR_MESSAGE) { status=tt_errmessage(argu); }
+   else if (service==TT_LAST_ERROR_MESSAGE) { status=tt_lasterrmessage(argu); }
    else if (service==TT_SCRIPT_2) { status=tt_script_2(argu[1]); }
    else if (service==TT_SCRIPT_3) { status=tt_script_3(argu[1]); }
 

@@ -1086,6 +1086,7 @@ int tt_writelog(char *message);
 int tt_errlog(int numerreur,char *commande);
 int tt_errmessage(void *args);
 int tt_errmessage2(int numerreur,char *message);
+int tt_lasterrmessage(void *args);
 double tt_atan2(double y, double x);
 
 int tt_imabuilder(TT_IMA *p);
