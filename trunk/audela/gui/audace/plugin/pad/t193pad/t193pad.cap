@@ -1,6 +1,6 @@
 #
 # Fichier : t193pad.cap
-# Mise a jour $Id: t193pad.cap,v 1.1 2009-10-25 13:27:08 robertdelmas Exp $
+# Mise a jour $Id: t193pad.cap,v 1.2 2009-10-31 20:36:25 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -101,8 +101,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193pad,moteur_foc)        "Motor enfoque"
    set caption(t193pad,gotoFoc)           "GOTO enfoque"
 
-   set caption(t193pad,dome)              "# Dôme"
-   set caption(t193pad,synchroMonture)    "# Synchro avec le télescope"
+   set caption(t193pad,dome)              "Cúpula"
+   set caption(t193pad,synchroMonture)    "Sincronizar con el telescopio"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -125,8 +125,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193pad,moteur_foc)        "Fokussierung Motor"
    set caption(t193pad,gotoFoc)           "GOTO Fokus."
 
-   set caption(t193pad,dome)              "# Dôme"
-   set caption(t193pad,synchroMonture)    "# Synchro avec le télescope"
+   set caption(t193pad,dome)              "Kuppel"
+   set caption(t193pad,synchroMonture)    "Synchron mit dem Teleskop"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
