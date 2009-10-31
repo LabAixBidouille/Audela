@@ -168,7 +168,11 @@ char* CError::message(int error)
 //
 //=====================================================================
 
-CErrorLibtt::CErrorLibtt(const int errnum) throw(){
-	buf = new char[1024];
-   Libtt_main(TT_ERROR_MESSAGE,2,&errnum,buf);
+CErrorLibtt::CErrorLibtt(const int errorNum) throw(){
+   char errorName[1024];
+   char errorDetail[1024];
+   buf = new char[1024];
+   Libtt_main(TT_ERROR_MESSAGE,2,&errorNum,errorName);
+   Libtt_main(TT_LAST_ERROR_MESSAGE,1,errorDetail); 
+   sprintf(buf,"Libtt error #%d:%s Detail=%s",errorNum, errorName,errorDetail); 
 }
