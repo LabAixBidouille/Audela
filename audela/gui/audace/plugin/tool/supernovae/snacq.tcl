@@ -2,7 +2,7 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snacq.tcl,v 1.18 2009-10-24 22:06:29 robertdelmas Exp $
+# Mise a jour $Id: snacq.tcl,v 1.19 2009-10-31 15:01:30 robertdelmas Exp $
 #
 
 # ===================================================================
@@ -1060,15 +1060,14 @@ proc snacq_go { {sndebug 0} } {
             #--- Formatage de l'ascension droite et de la declinaison
             set rad [mc_angle2deg [lindex $ligne 1]h[lindex $ligne 2]m[lindex $ligne 3]s ]
             set decd [mc_angle2deg [lindex $ligne 4]d[lindex $ligne 5]m[lindex $ligne 6]s 90 ]
-            #--- Rajoute des mots clefs dans l'en-tete FITS
+            #--- Rajoute le mot cle OBJNAME
+            ::keyword::setKeywordValue $audace(visuNo) "OBJNAME" [lindex $ligne 0]
+            #--- Rajoute des mots cles dans l'en-tete FITS
             foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
                buf$audace(bufNo) setkwd $keyword
             }
             #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
             ::confVisu::setFileName $audace(visuNo) ""
-            #---
-            $buffer setkwd [list RA $rad float "Object Right Ascension" deg]
-            $buffer setkwd [list DEC $decd float "Object Declination" deg]
             #--- Mot cles pour compatibilité Prism
             snprism
 
