@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.39 2009-10-16 17:11:52 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.40 2009-10-31 11:32:01 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -177,6 +177,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,fermer)                        "Fermer"
    set caption(sophie,annuler)                       "Annuler"
    set caption(sophie,parcourir)                     "..."
+
+   set caption(sophie,en-tete_fits)                  "En-tête FITS"
+   set caption(sophie,mots_cles)                     "Mots clés"
 
    set caption(sophie,simul,telescopeControl,title)  "Simulation de l'interface de contrôle du T193"
 
