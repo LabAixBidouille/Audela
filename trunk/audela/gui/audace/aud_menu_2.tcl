@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_2.tcl
 # Description : Script regroupant les fonctionnalites du menu Affichage
-# Mise a jour $Id: aud_menu_2.tcl,v 1.16 2009-02-07 11:22:25 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.tcl,v 1.17 2009-10-31 20:40:40 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -31,7 +31,7 @@ namespace eval ::audace {
             #--- Fonction de transfert log
             if { $conf(fonction_transfert,param2) == 0 } {
                #--- On est ramene au cas lineaire
-                 visu$visuNo pal $fichier_palette_in
+               visu$visuNo pal $fichier_palette_in
             } else {
                set conf(fonction_transfert,param2) [expr abs($conf(fonction_transfert,param2))]
                #--- On determine quelle partie de la courbe log on utilise (abcisses [a b])
