@@ -28,6 +28,7 @@
 
 char nom_fichier_log[]="tt.log";
 char nom_fichier_err[]="tt.err";
+char nom_fichier_last_err[]="tt_last.err";
 
 int tt_errmessage(void *args)
 /**************************************************************************/
@@ -119,7 +120,7 @@ int tt_errlog(int numerreur,char *commande)
 /* Ecrit le fichier tt.err qui contient l'erreur trouve au cours de l'exec*/
 /**************************************************************************/
 {
-   FILE *fichier_log,*fichier_err;
+   FILE *fichier_log,*fichier_err,*fichier_lasterr;
    int long_fic,kk,sortie,milieu;
    int long_mes=TT_MAXLIGNE;
    char car;
@@ -136,6 +137,9 @@ int tt_errlog(int numerreur,char *commande)
    if ((fichier_err=fopen(nom_fichier_err,mode) ) == NULL) {
       return(PB_DLL);
    }
+	if ((fichier_lasterr=fopen(nom_fichier_last_err, "w") ) == NULL) {
+      return(PB_DLL);
+	}
    strcpy(message,"");
    if ((fichier_log=fopen(nom_fichier_log, "r") ) != NULL) {
       /* --- premiere ligne ---*/
@@ -179,19 +183,56 @@ int tt_errlog(int numerreur,char *commande)
       }
    }
    fwrite(message,strlen(message),1,fichier_err);
+	fwrite(message,strlen(message),1,fichier_lasterr);
    /* --- deuxieme ligne ---*/
    strcpy(message,"");
    tt_errmessage2(numerreur,message);
    strcat(message,"\n");
    fwrite(message,strlen(message),1,fichier_err);
+	fwrite(message,strlen(message),1,fichier_lasterr);
    /* --- troisieme ligne ---*/
    strcpy(message,"");
    if (commande!=NULL) {
       strcpy(message,commande);
    }
    strcat(message,"\n");
+	/* --- ici on ecrit le message d'erreur dans tt.err ---*/
    fwrite(message,strlen(message),1,fichier_err);
    fclose(fichier_err);
+	/* --- ici on ecrit le message d'erreur dans tt_last.err ---*/
+	fwrite(message,strlen(message),1,fichier_lasterr);
+	fclose(fichier_lasterr);
+   return(OK_DLL);
+}
+
+int tt_lasterrmessage(void *args)
+/**************************************************************************/
+/* Fonction qui renvoie un message d'erreur en clair                      */
+/**************************************************************************/
+/* ------ entrees                                                         */
+/* pas d'entree                                                           */
+/* ------ sorties                                                         */
+/* arg1 : *message (char*)                                                */
+/**************************************************************************/
+{
+   void **argu;
+   FILE *fichier_err;
+   char *message,c;
+	int k=0;
+   /* --- verification des arguments ---*/
+   argu=(void**)(args);
+   if (argu[1]==NULL) { return(PB_DLL); }
+	message=(char*)argu[1];
+   if ((fichier_err=fopen(nom_fichier_last_err, "r") ) != NULL) {
+		do {
+			c = fgetc (fichier_err);
+			if (c!=EOF) {
+				message[k++]=c;
+			}
+		} while (c != EOF);
+		fclose(fichier_err);
+	}
+   message[k]='\0';
    return(OK_DLL);
 }
 

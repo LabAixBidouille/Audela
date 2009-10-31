@@ -191,6 +191,7 @@ int libtt_main(int service, ...);
 /***************************************************************************/
 
 #define TT_ERROR_MESSAGE                100
+#define TT_LAST_ERROR_MESSAGE           101
 #define TT_SCRIPT_2                     102
 #define TT_SCRIPT_3                     103
 
