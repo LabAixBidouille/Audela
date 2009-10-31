@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Alain KLOTZ <alain.klotz@free.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -75,7 +75,7 @@ int Cmd_mctcl_obsreq(ClientData clientData, Tcl_Interp *interp, int argc, char *
       res=Tcl_Eval(interp,s);
       sprintf(s,"set obsreq(nscenes) [llength $obsreq(scenes)]");
       res=Tcl_Eval(interp,s);
-      nscenes=atoi(interp->result); 
+      nscenes=atoi(interp->result);
       /* -- recherche des debut/fin d'observation */
       jd1min=1e9;
       jd2max=-1e9;
@@ -174,7 +174,7 @@ int Cmd_mctcl_obsreq(ClientData clientData, Tcl_Interp *interp, int argc, char *
       /* ===== loop to place scenes ==== */
       nscenesplaced=0;
       kl=0;
-      flag=0; /* =0 pas de conflit | =1 conflit reglé | =-1 conflit pas reglé */
+      flag=0; /* =0 pas de conflit | =1 conflit reglÃ© | =-1 conflit pas reglÃ© */
       while (kl<nscenes) {
          if (flag==0) {
             jd1=paramscenes[kl].jmeridien;
@@ -212,7 +212,7 @@ int Cmd_mctcl_obsreq(ClientData clientData, Tcl_Interp *interp, int argc, char *
                flag=1;
                if (jd111>=jd10) {
                   /* --- le debut de scene est observable ---*/
-                  /* --- On verifie un eventuel conflit avec toutes les autres scenes deja placées ---*/
+                  /* --- On verifie un eventuel conflit avec toutes les autres scenes deja placÃ©es ---*/
                   for (kcc=k111;kcc<=k222;kcc++) {
                      if (occupations[kcc]>=0) {
                         /* --- une autre scene occupe deja la position ---*/
@@ -222,7 +222,7 @@ int Cmd_mctcl_obsreq(ClientData clientData, Tcl_Interp *interp, int argc, char *
                   }
                }
                if (flag==1) {
-                  /* --- Le conflit est réglé et cette scene peut etre placée dans les occupations ---*/
+                  /* --- Le conflit est rÃ©glÃ© et cette scene peut etre placÃ©e dans les occupations ---*/
                   k1=k111;
                   k2=k222;
                   break;
@@ -234,7 +234,7 @@ int Cmd_mctcl_obsreq(ClientData clientData, Tcl_Interp *interp, int argc, char *
                flag=1;
                if (jd111<=jd20) {
                   /* --- la fin de scene est observable ---*/
-                  /* --- On verifie un eventuel conflit avec toutes les autres scenes deja placées ---*/
+                  /* --- On verifie un eventuel conflit avec toutes les autres scenes deja placÃ©es ---*/
                   for (kcc=k111;kcc<=k222;kcc++) {
                      if (occupations[kcc]>=0) {
                         /* --- une autre scene occupe deja la position ---*/
@@ -244,7 +244,7 @@ int Cmd_mctcl_obsreq(ClientData clientData, Tcl_Interp *interp, int argc, char *
                   }
                }
                if (flag==1) {
-                  /* --- Cette scene peut etre placée dans les occupations ---*/
+                  /* --- Cette scene peut etre placÃ©e dans les occupations ---*/
                   k1=k111;
                   k2=k222;
                   break;
@@ -281,7 +281,7 @@ int Cmd_mctcl_obsreq(ClientData clientData, Tcl_Interp *interp, int argc, char *
       free(occupations);
       sprintf(s,"%d %d %f %f %f %f %f",
          nscenes,nscenesplaced,
-         scenestime,occupiedtime0,occupiedtime,    
+         scenestime,occupiedtime0,occupiedtime,
          jd1min,jd2max);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_OK;
@@ -953,7 +953,7 @@ int mctcl_decode_planet(Tcl_Interp *interp, char *argv0,int *planetnum, char *pl
 
 int mctcl_decode_topo(Tcl_Interp *interp, char *argv0,double *longmpc, double *rhocosphip,double *rhosinphip)
 /*******************************************************************************/
-/* Decode automatiquement la position topocentrique MPC à partir du type Home. */
+/* Decode automatiquement la position topocentrique MPC Ã© partir du type Home. */
 /*******************************************************************************/
 /* SORTIES :																                */
 /* Longmpc : longitude (en radian) positive vers l'est.						    */
@@ -1553,7 +1553,7 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
                t1=time(&ltime)-t0;
                if (t1>timelim) { sortie=YES; break; }
                if ((strcmp(planets[0],"*")!=0)&&(kp>=nbplanets)) { sortie=YES; break; }
-			      if (strcmp(planets[0],"*")!=0) { 
+			      if (strcmp(planets[0],"*")!=0) {
        	         strcpy(name,planets[kp]);
 			         mc_strupr(name,name);
                } else {
@@ -1800,9 +1800,9 @@ int Cmd_mctcl_readcat(ClientData clientData, Tcl_Interp *interp, int argc, char 
 /*           NAXIS2 nombre de pixels sur y                                  */
 /*           FOCLEN focale de l'objectif (en m)                             */
 /*           PIXSIZE1 taille du pixel sur x (en m/pixel)                    */
-/*                    négatif si RA croissant avec x decroissant.           */
+/*                    nÃ©gatif si RA croissant avec x decroissant.           */
 /*           PIXSIZE2 taille du pixel sur y (en m/pixel)                    */
-/*                    négatif si DEC croissant avec y decroissant.          */
+/*                    nÃ©gatif si DEC croissant avec y decroissant.          */
 /*           CROTA2 angle de rotation du champ (degres partir du nord->est) */
 /*           RA Ascension droite du centre (degres)                         */
 /*           DEC Declinaison du centre (degres)                             */
@@ -1899,7 +1899,7 @@ int Cmd_mctcl_readcat(ClientData clientData, Tcl_Interp *interp, int argc, char 
    double dist,posangle;
    double diamapp_equ,diamapp_pol,long1,long2,long3,lati,posangle_sun,posangle_north;
    double long1_sun=0.,lati_sun=0.;
-	double equinoxe=J2000,jjutc;
+	double equinoxe=J2000,jjutc=0;
 	int astrometric=1;
 
    if(argc<=3) {
@@ -2198,13 +2198,13 @@ FILE *F;
 char Nom[1000];
 SYSTEMTIME St;
 char Buffer[300];
-	
+
 	printf("\n%s",Chaine);
 	GetSystemTime(&St);
 	sprintf(Nom,"%lu%.2lu%.2lu-%s",St.wYear,St.wMonth,St.wDay,"log.txt");
 	sprintf(Buffer,"\n%dh%dm%ds : %s",St.wHour,St.wMinute,St.wSecond,Chaine);
 	F = fopen(Nom,"at");
-		
+
 	if(F!=NULL)
 	{
 		fwrite(Buffer,sizeof(char),strlen(Buffer),F);
@@ -2234,7 +2234,7 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
    double asd,dec,delta,mag,diamapp,elong,phase,rr,asd0,dec0;
    FILE *ftle;
    char **argvv=NULL;
-	int argcc,k,kmin,code;
+	int argcc,k,kmin=0,code;
 	double distmin=-1;
 	double sep,posangle;
 
@@ -2416,7 +2416,7 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
 				}
 			}
 			fclose(ftle);
-		} 
+		}
 		/* --- libere les pointeurs ---*/
       Tcl_DStringResult(interp,&dsptr);
       Tcl_DStringFree(&dsptr);
@@ -2492,7 +2492,7 @@ int Cmd_mctcl_simurelief(ClientData clientData, Tcl_Interp *interp, int argc, ch
 /* Synthese de cartes de relief et d'albedo pour courbes de rotations.      */
 /****************************************************************************/
 /* Cette fonction prepare une carte de relief et une carte d'albedo pour    */
-/* etre utilisées par mc_simulc.                                            */
+/* etre utilisÃ©es par mc_simulc.                                            */
 /*																			                   */
 /*	ENTREES               											                   */
 /*	=======               											                   */
@@ -2625,14 +2625,14 @@ int Cmd_mctcl_simurelief(ClientData clientData, Tcl_Interp *interp, int argc, ch
 
 int Cmd_mctcl_simurelief_from_stl(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /****************************************************************************************************/
-/* Synthese de cartes de relief et d'albedo pour courbes de rotations à partir de fichier .stl      */
+/* Synthese de cartes de relief et d'albedo pour courbes de rotations Ã© partir de fichier .stl      */
 /****************************************************************************************************/
 /* Cette fonction prepare une carte de relief et une carte d'albedo pour							*/
-/* etre utilisées par mc_simulc.																	*/
+/* etre utilisÃ©es par mc_simulc.																	*/
 /*																									*/
 /*	ENTREES               																			*/
-/*	=======               																			*/                                          
-/* filename_stl : fichier geométrique stl															*/
+/*	=======               																			*/
+/* filename_stl : fichier geomÃ©trique stl															*/
 /* filename_relief : carte de relief creee avec mc_simurelief										*/
 /* albedo : valeur de l'albedo geometrique.															*/
 /* filename_albedo : carte d'albedo creee avec mc_simurelief										*/
@@ -2652,14 +2652,14 @@ int Cmd_mctcl_simurelief_from_stl(ClientData clientData, Tcl_Interp *interp, int
    struct_point *point1, *point2, *point3, *point4;
    double vert1[3], vert2[3],vert3[3], origin[3],dir[3];
    double *t, *u, *v;
-   
+
 
    if(argc<5) {
 		sprintf(s,"Usage: %s filename_stl filename_relief albedo filename_albedo", argv[0]);
 		Tcl_SetResult(interp,s,TCL_VOLATILE);
  		return TCL_ERROR;
 	} else {
-      
+
 		n_in=0;
 		/* --- lecture du nombre de lignes dans le fichier d'entree ---*/
 		fichier_stl=fopen(argv[1],"rt");
@@ -2703,14 +2703,14 @@ int Cmd_mctcl_simurelief_from_stl(ClientData clientData, Tcl_Interp *interp, int
 			 return TCL_ERROR;
 		}
 		n_in=0;
-		/* recupère les données du fichiers stl*/
+		/* recupÃ©re les donnÃ©es du fichiers stl*/
 		fichier_stl=fopen(argv[1],"rt");
 		if (fichier_stl==NULL) {
 			sprintf(s,"file %s not found",argv[1]);
 			Tcl_SetResult(interp,s,TCL_VOLATILE);
 			return TCL_ERROR;
 		}
-	
+
 		while (feof(fichier_stl)==0) {
 			if (fgets(ligne,sizeof(ligne),fichier_stl)!=NULL) {
 				if (ligne[2]=='f') {//vecteur normal de la facette
@@ -2730,7 +2730,7 @@ int Cmd_mctcl_simurelief_from_stl(ClientData clientData, Tcl_Interp *interp, int
 					point4[n_in].z=atof(s)*pow(10,a);
 				}
 				if (ligne[6]!='v') continue;
-					/// attention aux unités/echelles
+					/// attention aux unitÃ©s/echelles
 					k1=23; k2=26; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 					a=atoi(s);
 					k1=13; k2=21; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
@@ -2745,7 +2745,7 @@ int Cmd_mctcl_simurelief_from_stl(ClientData clientData, Tcl_Interp *interp, int
 					a=atoi(s);
 					k1=43; k2=51; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 					point1[n_in].z=atof(s)*pow(10,a);
-				
+
 					if (fgets(ligne,sizeof(ligne),fichier_stl)!=NULL) {
 						if (ligne[6]!='v') {
 							strcpy(s,"Error : problem in the file stl");
@@ -2815,9 +2815,9 @@ int Cmd_mctcl_simurelief_from_stl(ClientData clientData, Tcl_Interp *interp, int
 		u=(double*)calloc(1,sizeof(double));
 		t=(double*)calloc(1,sizeof(double));
 		v=(double*)calloc(1,sizeof(double));
-		for (klon=0;klon<nlon;klon++) { 
+		for (klon=0;klon<nlon;klon++) {
 			for (klat=0;klat<nlat;klat++) {
-				// recherche appartenance du point klon, klat à un triangle du fichier stl
+				// recherche appartenance du point klon, klat Ã© un triangle du fichier stl
 				alt=b=c=d=0;
 				klatr=klat*(DR);
 				klonr=klon*(DR);
@@ -2841,15 +2841,15 @@ int Cmd_mctcl_simurelief_from_stl(ClientData clientData, Tcl_Interp *interp, int
 						// calcul de l'altitude du point
 						b=point4[k].x*sin(klatr)*cos(klatr)+point4[k].y*sin(klonr)*sin(klatr)+point4[k].z*cos(klatr);
 						if (b!=0) {
-							// attention aux unités dans les fichiers stl a faire en mètres!!! /10 pour être en metre
+							// attention aux unitÃ©s dans les fichiers stl a faire en mÃ©tres!!! /10 pour Ã©tre en metre
 							alt=(point4[k].x*point1[k].x+point4[k].y*point1[k].y+point4[k].z*point1[k].z)/(10*b);
 						} else {
 							alt=0; // a revoir
 						}
 						break;
 
-					} 
-				
+					}
+
 				}
 
 				//calcul de la distance
@@ -2914,7 +2914,7 @@ int Cmd_mctcl_simulc_sat_stl(ClientData clientData, Tcl_Interp *interp, int argc
 /****************************************************************************/
 /* Cette fonction simule la courbe de rotation d'un satellite dans          */
 /* l'intevalle [Date_phase0;Date_phase0+sideral_period_h].                  */
-/* Il faut préalablement avoir utilisé mc_simurelief                        */
+/* Il faut prÃ©alablement avoir utilisÃ© mc_simurelief                        */
 /*																		    */
 /*	ENTREES               													*/
 /*	=======               											        */
@@ -2943,14 +2943,14 @@ int Cmd_mctcl_simulc_sat_stl(ClientData clientData, Tcl_Interp *interp, int argc
 /*    Year : suivi des elements facultatifs suivants, dans l'ordre :		*/
 /*     Month Day Hour Minute Second (Format style Iso mais avec les espaces)*/
 /* Home : localisation topocentrique                                        */
-/* HTM_level  : niveau du découpage HTM                                     */
+/* HTM_level  : niveau du dÃ©coupage HTM                                     */
 /* filename_relief : carte de relief creee avec mc_simurelief               */
 /* filename_albedo : carte d'albedo creee avec mc_simurelief                */
 /* frame_coord : referentiel de coordonnees (=0=ecliptique =1=equatorial)   */
 /* frame_center : referentiel de coordonnees (=0=helio =1=geo)              */
 /* lon_phase0 : longitude de la phase nulle de la cdr (deg)                 */
 /* Date_phase0 : Date de reference de la phase nulle de la cdr (Date)       */
-/* sideral_period_h : periode de rotation sidérale (h)                      */
+/* sideral_period_h : periode de rotation sidÃ©rale (h)                      */
 /* lonpole     : longitude du pole (deg) dans frame_coord                   */
 /* latpole     : latitude du pole (deg) dans frame_coord                    */
 /* density_g/cm3 : masse volumique de la planete (g/cm3)                    */
@@ -3044,9 +3044,9 @@ int Cmd_mctcl_simulc_sat_stl(ClientData clientData, Tcl_Interp *interp, int argc
 		  if (fgets(ligne,sizeof(ligne),fichier_stl)!=NULL) {
 			n_in++;
 		  }
-	  }	
+	  }
       fclose(fichier_stl);
-      
+
 	  /* --- dimensionne la structure des donnees d'entree ---*/
 	  n_in=(n_in-2)/7;
 	  point1=(struct_point*)malloc(n_in*sizeof(struct_point));
@@ -3074,13 +3074,13 @@ int Cmd_mctcl_simulc_sat_stl(ClientData clientData, Tcl_Interp *interp, int argc
 		 return TCL_ERROR;
 	  }
 	  n_in=0;
-	  /* recupère les données du fichiers stl*/
+	  /* recupÃ©re les donnÃ©es du fichiers stl*/
 	  if ((fichier_stl=fopen(filename_stl,"rt") ) == NULL) {
          sprintf(s,"Error : file %s cannot be read",argv[5]);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_ERROR;
 	  }
-	
+
 		while (feof(fichier_stl)==0) {
 			if (fgets(ligne,sizeof(ligne),fichier_stl)!=NULL) {
 				if (ligne[2]=='f') {//vecteur normal de la facette
@@ -3100,7 +3100,7 @@ int Cmd_mctcl_simulc_sat_stl(ClientData clientData, Tcl_Interp *interp, int argc
 					point4[n_in].z=atof(s)*pow(10,a);
 				}
 				if (ligne[6]!='v') continue; // trois points formant le triangle
-					/// attention aux unités/echelles
+					/// attention aux unitÃ©s/echelles
 					k1=23; k2=26; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 					a=atoi(s);
 					k1=13; k2=21; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
@@ -3115,7 +3115,7 @@ int Cmd_mctcl_simulc_sat_stl(ClientData clientData, Tcl_Interp *interp, int argc
 					a=atoi(s);
 					k1=43; k2=51; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 					point1[n_in].z=atof(s)*pow(10,a);
-				
+
 					if (fgets(ligne,sizeof(ligne),fichier_stl)!=NULL) {
 						if (ligne[6]!='v') {
 							strcpy(s,"Error : problem in the file stl");
@@ -3226,7 +3226,7 @@ int Cmd_mctcl_simulc_sat_stl(ClientData clientData, Tcl_Interp *interp, int argc
             fclose(fichier_in);
          }
       }
-  
+
       if (orbitisgood==NO) {
          /* --- la planete n'a pas ete trouvee dans fichier d'orbite : il faut sortir ---*/
          sprintf(s,"Error : Planet %s (type %d) not found in the file %s",objename,planetnum,orbitfile);
@@ -3308,7 +3308,7 @@ int Cmd_mctcl_simulc_sat_stl(ClientData clientData, Tcl_Interp *interp, int argc
          cdrpos[k].mag2=mag;
 		 cdrpos[k].mag3=mag;
          cdrpos[k].mag4=mag;
-         if (cdr.frame_center==0) { 
+         if (cdr.frame_center==0) {
             /* heliocentric */
             cdrpos[k].xearth=0.;
             cdrpos[k].yearth=0.;
@@ -3425,7 +3425,7 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
 /****************************************************************************/
 /* Cette fonction simule la courbe de rotation d'un asteroide dans          */
 /* l'intevalle [Date_phase0;Date_phase0+sideral_period_h].                  */
-/* Il faut préalablement avoir utilisé mc_simurelief                        */
+/* Il faut prÃ©alablement avoir utilisÃ© mc_simurelief                        */
 /*																			                   */
 /*	ENTREES               											                   */
 /*	=======               											                   */
@@ -3454,14 +3454,14 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
 /*    Year : suivi des elements facultatifs suivants, dans l'ordre :		    */
 /*     Month Day Hour Minute Second (Format style Iso mais avec les espaces)*/
 /* Home : localisation topocentrique                                        */
-/* HTM_level  : niveau du découpage HTM                                     */
+/* HTM_level  : niveau du dÃ©coupage HTM                                     */
 /* filename_relief : carte de relief creee avec mc_simurelief               */
 /* filename_albedo : carte d'albedo creee avec mc_simurelief                */
 /* frame_coord : referentiel de coordonnees (=0=ecliptique =1=equatorial)   */
 /* frame_center : referentiel de coordonnees (=0=helio =1=geo)              */
 /* lon_phase0 : longitude de la phase nulle de la cdr (deg)                 */
 /* Date_phase0 : Date de reference de la phase nulle de la cdr (Date)       */
-/* sideral_period_h : periode de rotation sidérale (h)                      */
+/* sideral_period_h : periode de rotation sidÃ©rale (h)                      */
 /* lonpole     : longitude du pole (deg) dans frame_coord                   */
 /* latpole     : latitude du pole (deg) dans frame_coord                    */
 /* density_g/cm3 : masse volumique de la planete (g/cm3)                    */
@@ -3742,7 +3742,7 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
          cdrpos[k].mag0=mag;
          cdrpos[k].mag1=mag;
          cdrpos[k].mag2=mag;
-         if (cdr.frame_center==0) { 
+         if (cdr.frame_center==0) {
             /* heliocentric */
             cdrpos[k].xearth=0.;
             cdrpos[k].yearth=0.;
@@ -3848,7 +3848,7 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
 /****************************************************************************/
 /* Cette fonction simule la courbe de rotation d'un asteroide SSB dans      */
 /* l'intevalle [Date_phase0;Date_phase0+sideral_period_h].                  */
-/* Il faut préalablement avoir utilisé mc_simurelief                        */
+/* Il faut prÃ©alablement avoir utilisÃ© mc_simurelief                        */
 /*																			                   */
 /*	ENTREES               											                   */
 /*	=======               											                   */
@@ -3876,14 +3876,14 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
 /*    nombre decimal <  1000000 : Jour Julien Modifie						       */
 /*    Year : suivi des elements facultatifs suivants, dans l'ordre :		    */
 /*     Month Day Hour Minute Second (Format style Iso mais avec les espaces)*/
-/* HTM_level  : niveau du découpage HTM                                     */
+/* HTM_level  : niveau du dÃ©coupage HTM                                     */
 /* filename_relief : carte de relief creee avec mc_simurelief               */
 /* filename_albedo : carte d'albedo creee avec mc_simurelief                */
 /* frame_coord : referentiel de coordonnees (=0=ecliptique =1=equatorial)   */
 /* frame_center : referentiel de coordonnees (=0=helio =1=geo)              */
 /* lon_phase0 : longitude de la phase nulle de la cdr (deg)                 */
 /* Date_phase0 : Date de reference de la phase nulle de la cdr (Date)       */
-/* sideral_period_h : periode de rotation sidérale (h)                      */
+/* sideral_period_h : periode de rotation sidÃ©rale (h)                      */
 /* lonpole     : longitude du pole (deg) dans frame_coord                   */
 /* latpole     : latitude du pole (deg) dans frame_coord                    */
 /* a_m : demi-grand axe de l'orbite des binaires (m)                        */
@@ -4212,7 +4212,7 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
          cdrpos[k].r=r;
          cdrpos[k].mag1=mag;
          cdrpos[k].mag2=mag;
-         if (cdr.frame_center==0) { 
+         if (cdr.frame_center==0) {
             /* heliocentric */
             cdrpos[k].xearth=0.;
             cdrpos[k].yearth=0.;
@@ -4272,7 +4272,7 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
 /****************************************************************************/
 /* Cette fonction simule la courbe de rotation d'un asteroide SSB dans      */
 /* l'intevalle [Date_phase0;Date_phase0+sideral_period_h].                  */
-/* Il faut préalablement avoir utilisé mc_simurelief                        */
+/* Il faut prÃ©alablement avoir utilisÃ© mc_simurelief                        */
 /*																			                   */
 /*	ENTREES               											                   */
 /*	=======               											                   */
@@ -4301,7 +4301,7 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
 /*    Year : suivi des elements facultatifs suivants, dans l'ordre :		    */
 /*     Month Day Hour Minute Second (Format style Iso mais avec les espaces)*/
 /* Refdates : =0 TT, =1 dans le repere de l'asteroide */
-/* HTM_level  : niveau du découpage HTM                                     */
+/* HTM_level  : niveau du dÃ©coupage HTM                                     */
 /* filename_relief1 : carte de relief obj1 creee avec mc_simurelief         */
 /* filename_albedo1 : carte d'albedo obj1 creee avec mc_simurelief          */
 /* filename_relief2 : carte de relief obj2 creee avec mc_simurelief         */
@@ -4310,9 +4310,9 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
 /* frame_center : referentiel de coordonnees (=0=helio =1=geo)              */
 /* lon_phase0 : longitude de la phase nulle de la cdr (deg)                 */
 /* Date_phase0 : Date de reference de la phase nulle de la cdr (Date)       */
-/*               Ce parametre doit etre celculé dans le repere de date      */
-/*               donné par Refdates.                                        */
-/* sideral_period_h : periode de rotation sidérale (h)                      */
+/*               Ce parametre doit etre celculÃ© dans le repere de date      */
+/*               donnÃ© par Refdates.                                        */
+/* sideral_period_h : periode de rotation sidÃ©rale (h)                      */
 /* lonpole     : longitude du pole (deg) dans frame_coord                   */
 /* latpole     : latitude du pole (deg) dans frame_coord                    */
 /* a_m : demi-grand axe de l'orbite des binaires (m)                        */
@@ -4709,7 +4709,7 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
          cdrpos[k].mag0=mag;
          cdrpos[k].mag1=mag;
          cdrpos[k].mag2=mag;
-         if (cdr.frame_center==0) { 
+         if (cdr.frame_center==0) {
             /* heliocentric */
             cdrpos[k].xearth=0.;
             cdrpos[k].yearth=0.;
@@ -4816,7 +4816,7 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
 /****************************************************************************/
 /* Cette fonction simule la courbe de rotation d'un asteroide SSB dans      */
 /* l'intevalle [Date_phase0;Date_phase0+sideral_period_h].                  */
-/* Il faut préalablement avoir utilisé mc_simurelief                        */
+/* Il faut prÃ©alablement avoir utilisÃ© mc_simurelief                        */
 /*																			                   */
 /*	ENTREES               											                   */
 /*	=======               											                   */
@@ -4852,14 +4852,14 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
 /*    Year : suivi des elements facultatifs suivants, dans l'ordre :		    */
 /*     Month Day Hour Minute Second (Format style Iso mais avec les espaces)*/
 /* Refdates : =0 UTC, =1 dans le repere de l'asteroide */
-/* HTM_level  : niveau du découpage HTM                                     */
+/* HTM_level  : niveau du dÃ©coupage HTM                                     */
 /* filename_relief : carte de relief creee avec mc_simurelief               */
 /* filename_albedo : carte d'albedo creee avec mc_simurelief                */
 /* frame_coord : referentiel de coordonnees (=0=ecliptique =1=equatorial)   */
 /* frame_center : referentiel de coordonnees (=0=helio =1=geo)              */
 /* lon_phase0 : longitude de la phase nulle de la cdr (deg)                 */
 /* Date_phase0 : Date de reference de la phase nulle de la cdr (Date)       */
-/* sideral_period_h : periode de rotation sidérale (h)                      */
+/* sideral_period_h : periode de rotation sidÃ©rale (h)                      */
 /* lonpole     : longitude du pole (deg) dans frame_coord                   */
 /* latpole     : latitude du pole (deg) dans frame_coord                    */
 /* a_m : demi-grand axe de l'orbite des binaires (m)                        */
@@ -4908,7 +4908,7 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
 
    int njd=100;
    mc_cdrpos cdrpos100[100];
-   int kjds[100]; 
+   int kjds[100];
 
    if(argc<15) {
       sprintf(s,"Usage: %s Planet ListObs Ref_dates HTM_level filename_relief filename_albedo frame_coord frame_center lon_phase0 Date_phase0 sideral_period_h List_lonpole List_latpole a_m", argv[0]);
@@ -5217,7 +5217,7 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
             cdrpos100[k].angphase=phase;
             cdrpos100[k].mag1=mag;
             cdrpos100[k].mag2=mag;
-            if (cdr.frame_center==0) { 
+            if (cdr.frame_center==0) {
                /* heliocentric */
                cdrpos100[k].xearth=0.;
                cdrpos100[k].yearth=0.;
@@ -5265,7 +5265,7 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
             cdrpos[k].angphase=phase;
             cdrpos[k].mag1=mag;
             cdrpos[k].mag2=mag;
-            if (cdr.frame_center==0) { 
+            if (cdr.frame_center==0) {
                /* heliocentric */
                cdrpos[k].xearth=0.;
                cdrpos[k].yearth=0.;
@@ -5577,7 +5577,7 @@ mc_lightmap 2005-09-23T00:00:44.280 0.6708 0.1333 J2000.0 "c:/d/gft/test.fit" 1 
          sinrmoon=sin(ramoon);
          cosdmoon=cos(decmoon);
          sindmoon=sin(decmoon);
-         /* --- distance é la moon ---*/
+         /* --- distance Ã© la moon ---*/
          mc_sepangle(ra,ramoon,dec,decmoon,&distmoon,&posangle);
          /* --- Calcul de la visibilite en home --- */
          hobsotherhome=-PISUR2;
@@ -5712,7 +5712,7 @@ mc_lightmap 2005-09-23T00:00:44.280 0.6708 0.1333 J2000.0 "c:/d/gft/test.fit" 1 
       Tcl_DStringAppend(&dsptr,s,-1);
       Tcl_DStringResult(interp,&dsptr);
       Tcl_DStringFree(&dsptr);
-      return result;     
+      return result;
    }
 }
 
@@ -5723,16 +5723,16 @@ int Cmd_mctcl_meo(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 /* Entrees:							   									                */
 /* method:                                                                  */
 /*
-mc_meo corrected_positions STAR_COORD "c:/d/meo/positions.txt" [list 2008 05 30 12 34 50] [list 2008 05 30 12 36 00] 12h45m15.34s +34°56'23.3 J2000.0 J2000.0 0.01 -0.03 34 {GPS 6.92388042 E 43.75046555 1323.338}
+mc_meo corrected_positions STAR_COORD "c:/d/meo/positions.txt" [list 2008 05 30 12 34 50] [list 2008 05 30 12 36 00] 12h45m15.34s +34Ã©56'23.3 J2000.0 J2000.0 0.01 -0.03 34 {GPS 6.92388042 E 43.75046555 1323.338}
 mc_meo compute_positions "c:/d/meo/positions.txt" [list 2008 05 30 21 00 00] [list 2008 05 30 21 03 00] JUPITER {GPS 6.92388042 E 43.75046555 1323.338}
 mc_meo compute_positions "c:/d/meo/positions.txt" [list 2008 05 30 21 00 00] [list 2008 05 30 21 03 00] JUPITER {GPS 2.037500 E 43.644349 136.9}
-mc_meo compute_positions "c:/d/meo/positions.txt" [list 2008 05 30 21 00 00] [list 2008 05 30 21 03 00] MOON {GPS 2.037500 E 43.644349 136.9} 23.47 0.67 
+mc_meo compute_positions "c:/d/meo/positions.txt" [list 2008 05 30 21 00 00] [list 2008 05 30 21 03 00] MOON {GPS 2.037500 E 43.644349 136.9} 23.47 0.67
 mc_meo compute_positions "c:/d/meo/positions.txt" [list 2008 05 30 21 00 00] [list 2008 05 30 21 03 00] MOON {GPS 2.037500 E 43.644349 136.9}
 mc_meo compute_positions "c:/d/meo/positions.txt" [list 2009 08 14 10 00 00] [list 2009 08 14 10 03 00] ELP {GPS 2.037500 E 43.644349 136.9}
 
 source c:/d/meo/meo_tools.tcl
-meo_corrected_positions "c:/d/meo/positions.txt"  [list 2008 05 30 12 34 50] [list 2008 05 30 12 34 51] STAR_COORD_TCL [list 12h45m15.34s +34°56'23.3 J2000.0 J2000.0 0.01 -0.03 34] 290 101325 "c:/d/meo/model.txt"
-meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [list 2008 05 30 12 34 51] STAR_COORD     [list 12h45m15.34s +34°56'23.3 J2000.0 J2000.0 0.01 -0.03 34] 290 101325 "c:/d/meo/model.txt"
+meo_corrected_positions "c:/d/meo/positions.txt"  [list 2008 05 30 12 34 50] [list 2008 05 30 12 34 51] STAR_COORD_TCL [list 12h45m15.34s +34Ã©56'23.3 J2000.0 J2000.0 0.01 -0.03 34] 290 101325 "c:/d/meo/model.txt"
+meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [list 2008 05 30 12 34 51] STAR_COORD     [list 12h45m15.34s +34Ã©56'23.3 J2000.0 J2000.0 0.01 -0.03 34] 290 101325 "c:/d/meo/model.txt"
 
 */
 /* Sorties :																                */
@@ -5749,7 +5749,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	double duree,date;
 	double dec,asd2,dec2,delta,mag,diamapp,elong,phase,r,diamapp_equ,diamapp_pol,long1,long2,long3,lati,posangle_sun,posangle_north,long1_sun,lati_sun;
 	double ha,az,h,jd,djd,star_site,star_gise;
-	double sun_site,sun_gise,sep,distance,ra0,dec0;
+	double sun_site,sun_gise,sep,distance,ra0=0,dec0=0;
 	double dt,dt2,parallactic,posangle,sod0,sod,refraction;
 	int nlignes,nligne2s,nlig=0,kl,valid,kk;
 	FILE *f,*finp;
@@ -5758,13 +5758,13 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	int nb_coef,nb_star,nstars,*kseps=NULL;
 	double tane,cosa,sina,cose,sine,sece,cos2a,sin2a,cos3a,sin3a,cos4a,sin4a,dh,daz;
 	double cos5a,sin5a,cos6a,sin6a;
-	double *seps=NULL,site,gise,sepmax;
+	double *seps=NULL,site=0,gise=0,sepmax;
 	double *ephemras,*ephemdecs,*ephemjds;
 	char *flignes;
 	int longligne=255;
 	int planetnum;
 	char objename[10000],orbitformat[15],orbitfile[1024],field[500];
-	double ra1,ra2,ra3,dec1,dec3,mu,mu2;
+	double ra1=0,ra2=0,ra3=0,dec1=0,dec3=0,mu,mu2;
    Tcl_DString dsptr;
 	double equinoxe=J2000;
 	int astrometric=1,ephemphys=0;
@@ -6099,7 +6099,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 			   mc_hd2ah(ha,dec2,latitude,&az,&h);
 				sun_site=h;
 				sun_gise=az-PI;
-				// --- Transforme les coordonnées moyennes en coordonnees observées
+				// --- Transforme les coordonnÃ©es moyennes en coordonnees observÃ©es
 				// --- aberration annuelle
 				mc_aberration_annuelle(jd,ra,dec,&asd2,&dec2,1);
 				ra=asd2;
@@ -6150,7 +6150,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 					jd=jddeb+djd;
 					ra=ra0;
 					dec=dec0;
-					/* --- coordonnées horizontales---*/
+					/* --- coordonnÃ©es horizontales---*/
 					mc_ad2hd(jd,longitude,ra,&ha);
 					mc_hd2ah(ha,dec,latitude,&az,&h);
 					star_site=h;
@@ -6166,7 +6166,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 					h+=refraction;
 			      mc_hd2parallactic(ha,dec,latitude,&parallactic);
 					star_site=h;
-					// --- Transforme les coordonnees observées en coordonnées télescope
+					// --- Transforme les coordonnees observÃ©es en coordonnÃ©es tÃ©lescope
 					if ((strcmp(PointingModelFile,"")!=0)&&(matx!=NULL)&&(vecy!=NULL)) {
 						tane=tan(h);
 						cosa=cos(az);
@@ -6189,16 +6189,16 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 							matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.;
 							if (strcmp(vecy[k].type,"IA")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; }
 							if (strcmp(vecy[k].type,"IE")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-							if (strcmp(vecy[k].type,"NPAE")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=tane; } 
-							if (strcmp(vecy[k].type,"CA")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sece; } 
+							if (strcmp(vecy[k].type,"NPAE")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=tane; }
+							if (strcmp(vecy[k].type,"CA")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sece; }
 							if (strcmp(vecy[k].type,"AN")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sina*tane; }
 							if (strcmp(vecy[k].type,"AW")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-cosa*tane; }
-							if (strcmp(vecy[k].type,"ACEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosa; } 
-							if (strcmp(vecy[k].type,"ECEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
+							if (strcmp(vecy[k].type,"ACEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosa; }
+							if (strcmp(vecy[k].type,"ECEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 							if (strcmp(vecy[k].type,"ACES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sina; }
-							if (strcmp(vecy[k].type,"ECES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
-							if (strcmp(vecy[k].type,"NRX")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; } 
-							if (strcmp(vecy[k].type,"NRY")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=tane; } 
+							if (strcmp(vecy[k].type,"ECES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"NRX")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; }
+							if (strcmp(vecy[k].type,"NRY")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=tane; }
 							if (strcmp(vecy[k].type,"ACEC2")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos2a; }
 							if (strcmp(vecy[k].type,"ACES2")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2a; }
 							if (strcmp(vecy[k].type,"AN2")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2a*tane; }
@@ -6229,16 +6229,16 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 							matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.;
 							if (strcmp(vecy[k].type,"IA")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 							if (strcmp(vecy[k].type,"IE")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; }
-							if (strcmp(vecy[k].type,"NPAE")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
-							if (strcmp(vecy[k].type,"CA")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
+							if (strcmp(vecy[k].type,"NPAE")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"CA")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 							if (strcmp(vecy[k].type,"AN")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosa; }
 							if (strcmp(vecy[k].type,"AW")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sina; }
-							if (strcmp(vecy[k].type,"ACEC")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
-							if (strcmp(vecy[k].type,"ECEC")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cose; } 
+							if (strcmp(vecy[k].type,"ACEC")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"ECEC")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cose; }
 							if (strcmp(vecy[k].type,"ACES")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-							if (strcmp(vecy[k].type,"ECES")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sine; } 
+							if (strcmp(vecy[k].type,"ECES")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sine; }
 							if (strcmp(vecy[k].type,"NRX")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-sine; }
-							if (strcmp(vecy[k].type,"NRY")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cose; } 
+							if (strcmp(vecy[k].type,"NRY")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cose; }
 							if (strcmp(vecy[k].type,"ACEC2")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 							if (strcmp(vecy[k].type,"ACES2")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 							if (strcmp(vecy[k].type,"AN2")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos2a; }
@@ -6417,7 +6417,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 					jd=floor(jddeb-0.5)+sod/86400.;
 					nlig++;
 					mc_ah2hd(az,h,latitude,&ha,&dec);
-					/* --- coordonnées horizontales---*/
+					/* --- coordonnÃ©es horizontales---*/
 					star_site=h;
 					star_gise=az-PI;
 					mc_sepangle(star_gise,sun_gise,star_site,sun_site,&sep,&posangle);
@@ -6431,7 +6431,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 					h+=refraction;
 			      mc_hd2parallactic(ha,dec,latitude,&parallactic);
 					star_site=h;
-					// --- Transforme les coordonnees observées en coordonnées télescope
+					// --- Transforme les coordonnees observÃ©es en coordonnÃ©es tÃ©lescope
 					if ((strcmp(PointingModelFile,"")!=0)&&(matx!=NULL)&&(vecy!=NULL)) {
 						tane=tan(h);
 						cosa=cos(az);
@@ -6454,16 +6454,16 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 							matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.;
 							if (strcmp(vecy[k].type,"IA")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; }
 							if (strcmp(vecy[k].type,"IE")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-							if (strcmp(vecy[k].type,"NPAE")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=tane; } 
-							if (strcmp(vecy[k].type,"CA")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sece; } 
+							if (strcmp(vecy[k].type,"NPAE")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=tane; }
+							if (strcmp(vecy[k].type,"CA")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sece; }
 							if (strcmp(vecy[k].type,"AN")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sina*tane; }
 							if (strcmp(vecy[k].type,"AW")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-cosa*tane; }
-							if (strcmp(vecy[k].type,"ACEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosa; } 
-							if (strcmp(vecy[k].type,"ECEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
+							if (strcmp(vecy[k].type,"ACEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosa; }
+							if (strcmp(vecy[k].type,"ECEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 							if (strcmp(vecy[k].type,"ACES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sina; }
-							if (strcmp(vecy[k].type,"ECES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
-							if (strcmp(vecy[k].type,"NRX")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; } 
-							if (strcmp(vecy[k].type,"NRY")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=tane; } 
+							if (strcmp(vecy[k].type,"ECES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"NRX")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; }
+							if (strcmp(vecy[k].type,"NRY")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=tane; }
 							if (strcmp(vecy[k].type,"ACEC2")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos2a; }
 							if (strcmp(vecy[k].type,"ACES2")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2a; }
 							if (strcmp(vecy[k].type,"AN2")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2a*tane; }
@@ -6494,16 +6494,16 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 							matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.;
 							if (strcmp(vecy[k].type,"IA")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 							if (strcmp(vecy[k].type,"IE")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; }
-							if (strcmp(vecy[k].type,"NPAE")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
-							if (strcmp(vecy[k].type,"CA")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
+							if (strcmp(vecy[k].type,"NPAE")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"CA")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 							if (strcmp(vecy[k].type,"AN")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosa; }
 							if (strcmp(vecy[k].type,"AW")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sina; }
-							if (strcmp(vecy[k].type,"ACEC")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
-							if (strcmp(vecy[k].type,"ECEC")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cose; } 
+							if (strcmp(vecy[k].type,"ACEC")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"ECEC")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cose; }
 							if (strcmp(vecy[k].type,"ACES")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-							if (strcmp(vecy[k].type,"ECES")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sine; } 
+							if (strcmp(vecy[k].type,"ECES")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sine; }
 							if (strcmp(vecy[k].type,"NRX")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-sine; }
-							if (strcmp(vecy[k].type,"NRY")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cose; } 
+							if (strcmp(vecy[k].type,"NRY")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cose; }
 							if (strcmp(vecy[k].type,"ACEC2")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 							if (strcmp(vecy[k].type,"ACES2")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 							if (strcmp(vecy[k].type,"AN2")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos2a; }
@@ -6621,12 +6621,12 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 			if (argc>7) {
 				mctcl_decode_date(interp,argv[7],&jd);
 			}
-			// --- on ramene le point d'amer en coordonnées RA,DEC J2000.0
+			// --- on ramene le point d'amer en coordonnÃ©es RA,DEC J2000.0
 			gise*=(DR);
 			site*=(DR);
 			az=gise-PI;
 			h=site;
-			/* --- coordonnées horizontales---*/
+			/* --- coordonnÃ©es horizontales---*/
 			mc_ah2hd(az,h,latitude,&ha,&dec);
 			mc_hd2ad(jd,longitude,ha,&ra);
 			/* --- calcul de la precession ---*/
@@ -6691,7 +6691,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				ra*=(DR);
 				dec*=(DR);
 				strcpy(flignes+nb_star*longligne,s);
-				/* --- coordonnées horizontales---*/
+				/* --- coordonnÃ©es horizontales---*/
 				mc_ad2hd(jd,longitude,ra,&ha);
 				mc_hd2ah(ha,dec,latitude,&az,&h);
 				star_site=h;
@@ -6714,7 +6714,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				sscanf(s,"%d %lf %lf %lf",&kk,&mag,&ra,&dec);
 				ra*=(DR);
 				dec*=(DR);
-				/* --- coordonnées horizontales---*/
+				/* --- coordonnÃ©es horizontales---*/
 				mc_ad2hd(jd,longitude,ra,&ha);
 				mc_hd2ah(ha,dec,latitude,&az,&h);
 				h/=(DR);
@@ -6748,7 +6748,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 		*/
 		if (matx!=NULL) { free(matx); }
 		if (vecy!=NULL) { free(vecy); }
-      return result;     
+      return result;
    }
 }
 
@@ -6766,7 +6766,7 @@ mc_astrology 1967-08-23T18:00:00 {GPS 2 E 48 120}
 
    double longi,latitude,altitude,rhocosphip,rhosinphip;
    char s[1000];
-   double equinox=J2000;
+//   double equinox=J2000;
    double llp[10],mmp[10],uup[10],jd,jjd,ls,bs,rs,eps,xs,ys,zs;
    double dxeq,dyeq,dzeq;
 	double dpsi,deps,az,h,h1,h2,az1,az2;
