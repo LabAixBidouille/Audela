@@ -2,7 +2,7 @@
 # Fichier : supernovae_go.tcl
 # Description : Outil pour l'observation des SnAudes
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: supernovae_go.tcl,v 1.18 2009-09-13 19:59:26 robertdelmas Exp $
+# Mise a jour $Id: supernovae_go.tcl,v 1.19 2009-10-31 14:59:57 robertdelmas Exp $
 #
 
 #============================================================
@@ -131,6 +131,14 @@ proc ::supernovae::createPanel { this } {
 #------------------------------------------------------------
 proc ::supernovae::startTool { visuNo } {
    variable This
+   global audace
+
+   #--- Les mots cles RA, DEC, XPIXSZ et YPIXSZ sont obligatoires pour "snprism" de snmacro.tcl
+   #--- OBJNAME a ete rajoute car il est couple avec RA et DEC dans keyword.tcl
+   ::keyword::setKeywordState $audace(visuNo) [ list OBJNAME RA DEC XPIXSZ YPIXSZ ]
+
+   #--- Je force la capture des mots cles OBJNAME, RA et DEC en automatique
+   ::keyword::setKeywordsRaDecAuto
 
    pack $This -side left -fill y
 }
@@ -141,11 +149,18 @@ proc ::supernovae::startTool { visuNo } {
 #------------------------------------------------------------
 proc ::supernovae::stopTool { visuNo } {
    variable This
+   global audace
 
    #--- Je verifie si une operation est en cours
    if { $::sn(exit_visu) == 1 } {
       return -1
    }
+
+   #--- Les mots cles RA, DEC, XPIXSZ et YPIXSZ ne sont plus obligatoires
+   ::keyword::setKeywordState $audace(visuNo) [ list ]
+
+   #--- Je force la capture des mots cles OBJNAME, RA et DEC en manuel
+   ::keyword::setKeywordsRaDecManuel
 
    #---
    pack forget $This
@@ -163,7 +178,7 @@ proc ::supernovae::supernovaeBuildIF { This } {
       #--- Frame du titre
       frame $This.fra1 -borderwidth 2 -relief groove
 
-         #--- Label du titre
+         #--- Bouton du titre
          Button $This.fra1.but -borderwidth 1 \
             -text "$panneau(supernovae,aide1)\n$panneau(supernovae,titre)" \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::supernovae::getPluginType ] ] \
