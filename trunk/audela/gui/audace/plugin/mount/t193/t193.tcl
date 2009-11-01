@@ -2,12 +2,13 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.20 2009-10-24 22:05:33 robertdelmas Exp $
+# Mise a jour $Id: t193.tcl,v 1.21 2009-11-01 21:44:07 michelpujol Exp $
 #
 
+package provide t193 1.0
+package require audela 1.4.0
+
 namespace eval ::t193 {
-   package provide t193 1.0
-   package require audela 1.5
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] t193.cap ]
@@ -719,6 +720,15 @@ proc ::t193::getPluginProperty { propertyName } {
       hasManualMotion         { return 1 }
       hasControlSuivi         { return 1 }
       hasCorrectionRefraction { return 0 }
+      hasMotionWhile          { 
+         if {$::conf(t193,mode) == "ETHERNET"} {
+            #--- les corrections sont demandees avec une distance en arseconde
+            return 2
+         } else {
+            #--- les corrections sont demandees avec une duree en seconde
+            return 1
+         }
+      }
       hasModel                { return 0 }
       hasPark                 { return 0 }
       hasUnpark               { return 0 }
