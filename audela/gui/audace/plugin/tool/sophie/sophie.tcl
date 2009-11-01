@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.37 2009-10-31 11:34:10 robertdelmas Exp $
+# @version   $Id: sophie.tcl,v 1.38 2009-11-01 21:34:17 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -226,8 +226,8 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(guideEnabled)        0
    set private(mountEnabled)        0
    set private(acquisitionState)    0        ; #--- etat de l'acquisition continue 0=arrete  1=en cours
-   set private(targetRa)            "0h0m0s" ; #--- ascension droite de la cible en HMS
-   set private(targetDec)           "0d0m0s" ; #--- declinaison de la cible en DMS
+   set private(targetRa)            "00h00m00s"    ; #--- ascension droite de la cible en HMS
+   set private(targetDec)           "+00d00m00s"   ; #--- declinaison de la cible en DMS
    set private(xWindow)             1        ; #--- abscisse du coin bas gauche du fenetrage
    set private(yWindow)             1        ; #--- ordonnee du coin bas gauche du fenetrage
    set private(biasFileName)        ""
