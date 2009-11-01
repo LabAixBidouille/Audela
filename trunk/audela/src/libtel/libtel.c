@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.13 2009-10-19 21:17:09 michelpujol Exp $
+// $Id: libtel.c,v 1.14 2009-11-01 21:31:19 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -949,8 +949,12 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   }
                }
             }
-            tel_radec_goto(tel);
-            Tcl_SetResult(interp,"",TCL_VOLATILE);
+            if ( tel_radec_goto(tel) == 0 ) {
+               Tcl_SetResult(interp,"",TCL_VOLATILE);
+            } else {
+               Tcl_SetResult(interp,tel->msg,TCL_VOLATILE);
+               result = TCL_ERROR;
+            }
          } else {
             sprintf(ligne,"Usage: %s %s goto {angle_ra angle_dec} ?-rate value? ?-blocking boolean? ?-backlash boolean?",argv[0],argv[1]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -1032,8 +1036,12 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             if ((strcmp(argv[3],"off")==0)||(strcmp(argv[3],"0")==0)) {
                tel->radec_motor=1;
             }
-            tel_radec_motor(tel);
-            Tcl_SetResult(interp,"",TCL_VOLATILE);
+            if ( tel_radec_motor(tel) == 0 ) {
+               Tcl_SetResult(interp,"",TCL_VOLATILE);
+            } else {
+               Tcl_SetResult(interp,tel->msg,TCL_VOLATILE);
+               result = TCL_ERROR;
+            }
          } else {
             sprintf(ligne,"Usage: %s %s motor on|off",argv[0],argv[1]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
