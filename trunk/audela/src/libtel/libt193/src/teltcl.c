@@ -105,11 +105,11 @@ int cmdTelCorrect(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    char ligne[256];
    struct telprop *tel;
    char *direction;
-   int duration;
+   double distance;
    
    tel = (struct telprop *)clientData;
-   if(argc!=4) {
-      sprintf(ligne,"Usage: %s %s {n,e,w,s} {0...9999}",argv[0],argv[1]);
+   if(argc!=5) {
+      sprintf(ligne,"Usage: %s %s {n,e,w,s} speed distance",argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       return TCL_ERROR;
    } else {
@@ -135,17 +135,22 @@ int cmdTelCorrect(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          return TCL_ERROR;
       }
-      if (Tcl_GetInt(interp, argv[3], &duration) != TCL_OK) {
-         sprintf(ligne,"Usage: %s %s direction time\ntime shall be an integer between 0 and 9999",argv[0],argv[1]);
+      if (Tcl_GetDouble(interp, argv[3], &tel->radec_move_rate) != TCL_OK) {
+         sprintf(ligne,"Usage: %s %s spped time\ntime shall be an float between 0.0 and 1.0",argv[0],argv[1]);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          return TCL_ERROR;
       }
-      if ((duration<0)||(duration>9999)) {
-         sprintf(ligne,"Usage: %s %s direction time\ntime shall be between 0 and 9999",argv[0],argv[1]);
+      if (Tcl_GetDouble(interp, argv[4], &distance) != TCL_OK) {
+         sprintf(ligne,"Usage: %s %s distance \ndistance shall be an integer between 0 and 9999",argv[0],argv[1]);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          return TCL_ERROR;
       }
-      //mytel_correct(tel,direction,duration);
+      if ( mytel_correct(tel,direction,distance) == 0 ) {
+         Tcl_SetResult(interp,"",TCL_VOLATILE);
+      } else {
+         Tcl_SetResult(interp,tel->msg,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
    }
    return TCL_OK;
 }

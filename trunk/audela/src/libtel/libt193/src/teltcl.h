@@ -29,4 +29,5 @@ int cmdTelCorrect(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 //int cmdTelSendCommand(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelConsoleLog(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelTest(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+
 #endif

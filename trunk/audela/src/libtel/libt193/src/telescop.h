@@ -55,13 +55,14 @@ struct telprop {
    int filterCommand;
    Tcl_Channel telescopeCommandSocket;
    Tcl_Channel telescopeNotificationSocket;
-   //int telescopeCommandSocket;
-   //int telescopeNotificationSocket;
    char telescopeHost[128];
    int  telescopeCommandPort;
    int  telescopeNotificationPort;
    void * telescopeNotificationThread;
-   //pthread_mutex_t mutex;
+   char ra[12] ;   // ascension droite courante
+   char dec[12] ;  // declinaison courante
+   int radecNotification ; // 1=marche 0=arret des notifications des coordonnees radec
+   int isMoving ;   // 1=mouvement en cours 0=pas de mouvement en cours
 };
 
 int tel_init(struct telprop *tel, int argc, char **argv);
@@ -95,6 +96,6 @@ int tel_filter_stop(struct  telprop *tel);
 int tel_filter_extremity(struct telprop *tel, char * extremity);
 
 int mytel_tcleval(struct telprop *tel,char *ligne);
-int mytel_correct(struct telprop *tel,char *direction, int duration);
+int mytel_correct(struct telprop *tel,char *direction, double distance);
 #endif
 

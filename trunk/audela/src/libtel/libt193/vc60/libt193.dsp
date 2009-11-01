@@ -104,6 +104,10 @@ SOURCE=..\..\libtel.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\socketT193Tcl.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\telescop.c
 # End Source File
 # Begin Source File
@@ -121,6 +125,18 @@ SOURCE=..\src\libname.h
 # Begin Source File
 
 SOURCE=..\..\..\include\libtel\libstruc.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\include\libtel\libtel.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\external\include\win\NIDAQmx.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\socketT193.h
 # End Source File
 # Begin Source File
 
