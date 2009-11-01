@@ -2,12 +2,13 @@
 # Fichier : t193pad.tcl
 # Description : Raquette specifique au T193 de l'OHP
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: t193pad.tcl,v 1.1 2009-10-25 13:27:08 robertdelmas Exp $
+# Mise a jour $Id: t193pad.tcl,v 1.2 2009-11-01 21:46:16 michelpujol Exp $
 #
 
+package provide t193pad 1.0
+package require audela 1.4.0
+
 namespace eval ::t193pad {
-   package provide t193pad 1.0
-   package require audela 1.4.0
    source [ file join [file dirname [info script]] t193pad.cap ]
 
    #------------------------------------------------------------
@@ -30,8 +31,7 @@ namespace eval ::t193pad {
    # return : valeur de la propriete, ou "" si la propriete n'existe pas
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
-      switch $propertyName {
-      }
+      
    }
 
    #------------------------------------------------------------
@@ -80,8 +80,8 @@ namespace eval ::t193pad {
       variable private
       global caption conf
 
-      set private(targetRa)      "0h0m0s"
-      set private(targetDec)     "0d0m0s"
+      set private(targetRa)      "00h00m00s"
+      set private(targetDec)     "+00d00m00s"
       set private(controleSuivi) "$caption(t193pad,suivi_marche)"
       set private(positionFoc)   "0"
       set private(positionDome)  "0"
@@ -335,12 +335,12 @@ namespace eval ::t193pad {
          radiobutton $This.frame2.s.controleSuiviOn -indicatoron 0 -font [ list {Arial} 10 bold ] \
             -bg $color(gray_pad) -fg $color(white) -selectcolor $color(gray_pad) \
             -text "$caption(t193pad,suivi_marche)" -value "$caption(t193pad,suivi_marche)" \
-            -variable ::t193pad::private(controleSuivi) -command "::telescope::controleSuivi"
+            -variable ::t193pad::private(controleSuivi) -command "::t193pad::setSlew"
          pack $This.frame2.s.controleSuiviOn -expand 1 -fill x -side left -pady 2
          radiobutton $This.frame2.s.controleSuiviOff -indicatoron 0 -font [ list {Arial} 10 bold ] \
             -bg $color(gray_pad) -fg $color(white) -selectcolor $color(gray_pad) \
             -text "$caption(t193pad,suivi_arret)" -value "$caption(t193pad,suivi_arret)" \
-            -variable ::t193pad::private(controleSuivi) -command "::telescope::controleSuivi"
+            -variable ::t193pad::private(controleSuivi) -command "::t193pad::setSlew"
          pack $This.frame2.s.controleSuiviOff -expand 1 -fill x -side left -pady 2
       }
 
@@ -375,13 +375,13 @@ namespace eval ::t193pad {
       set zone(e) $This.frame2.we.canv1
       set zone(w) $This.frame2.we.canv2
       set zone(s) $This.frame2.s.canv1
-      bind $zone(e) <ButtonPress-1>   { catch { ::telescope::move e } }
+      bind $zone(e) <ButtonPress-1>   { ::telescope::move e }
       bind $zone(e) <ButtonRelease-1> { ::telescope::stop e }
-      bind $zone(w) <ButtonPress-1>   { catch { ::telescope::move w } }
+      bind $zone(w) <ButtonPress-1>   { ::telescope::move w }
       bind $zone(w) <ButtonRelease-1> { ::telescope::stop w }
-      bind $zone(s) <ButtonPress-1>   { catch { ::telescope::move s } }
+      bind $zone(s) <ButtonPress-1>   { ::telescope::move s }
       bind $zone(s) <ButtonRelease-1> { ::telescope::stop s }
-      bind $zone(n) <ButtonPress-1>   { catch { ::telescope::move n } }
+      bind $zone(n) <ButtonPress-1>   { ::telescope::move n }
       bind $zone(n) <ButtonRelease-1> { ::telescope::stop n }
 
       #--- Bind de la vitesse de la monture
@@ -522,9 +522,29 @@ namespace eval ::t193pad {
    proc cmdStartGoto { } {
       variable This
       variable private
-
-      ::telescope::goto [ list $private(targetRa) $private(targetDec) ] "0" $This.frame3.buttonGoto
+      set catchError [catch { 
+         ::telescope::goto [ list $private(targetRa) $private(targetDec) ] 0 $This.frame3.buttonGoto
+      }]
+      if { $catchError != 0 } {
+         ::tkutil::displayErrorInfo $::caption(t193pad,titre)
+      }
    }
+   
+   #------------------------------------------------------------
+   #  setSlew
+   #     marche/arret du suivi
+   #------------------------------------------------------------
+   proc setSlew { } {
+      variable private
+
+      set catchError [catch { 
+         ::telescope::controleSuivi
+      }]
+      if { $catchError != 0 } {
+         ::tkutil::displayErrorInfo $::caption(t193pad,titre)
+      }
+   }
+
 
 }
 
