@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.22 2009-10-25 13:24:55 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.23 2009-11-01 21:50:45 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -17,7 +17,7 @@ namespace eval ::camerathread {
 # guideSophie lance la boucle d'acquisition continue
 #
 #------------------------------------------------------------
-proc ::camerathread::guideSophie { exptime originCoord targetCoord cameraAngle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse intervalle } {
+proc ::camerathread::guideSophie { exptime originCoord targetCoord cameraAngle targetBoxSize mountEnabled mountMotionWhile alphaSpeed deltaSpeed alphaReverse deltaReverse intervalle } {
    variable private
 
    if { $private(acquisitionState) == 1 } {
@@ -32,6 +32,7 @@ proc ::camerathread::guideSophie { exptime originCoord targetCoord cameraAngle t
    set private(targetBoxSize)        $targetBoxSize
    set private(cameraAngle)          $cameraAngle
    set private(mountEnabled)         $mountEnabled
+   set private(mountMotionWhile)     $mountMotionWhile
    set private(alphaSpeed)           $alphaSpeed
    set private(deltaSpeed)           $deltaSpeed
    set private(alphaReverse)         $alphaReverse
@@ -442,8 +443,18 @@ proc ::camerathread::sophieAcquisitionLoop { } {
                   set deltaDelay [expr abs($deltaCorrection) / $private(deltaSpeed)  ]
                   ###::camerathread::disp  "camerathread: telescope move [format "%s %.3fs" $alphaDirection $alphaDelay ]   [format "%s %.3fs" $deltaDirection $deltaDelay ]\n"
                   #--- tel1 radec move n|s|e|w ?rate? ?delay (ms)?
-                  tel1 radec move $alphaDirection 0.1 $alphaDelay
-                  tel1 radec move $deltaDirection 0.1 $deltaDelay
+                 switch $private(mountMotionWhile) {
+                    1 {
+                       #--- envoie d'une commande move avec la duree en seconde
+                       tel1 radec move $alphaDirection 0.1 $alphaDelay
+                       tel1 radec move $deltaDirection 0.1 $deltaDelay                                                 
+                    }
+                    2 {
+                       #--- envoie d'une commande correct avec la distance en arcseconde
+                       tel1 correct $alphaDirection 0.1 [expr abs($alphaCorrection)]
+                       tel1 correct $deltaDirection 0.1 [expr abs($deltaCorrection)]                         
+                    }
+                 }
                }
             }
          }
