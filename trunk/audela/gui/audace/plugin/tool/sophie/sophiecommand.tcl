@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.41 2009-10-25 13:30:18 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.42 2009-11-01 21:50:34 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -1669,7 +1669,7 @@ proc ::sophie::startAcquisition { visuNo } {
       set targetX [ expr ( [lindex $private(targetCoord) 0] - $private(xWindow) + 1 ) / $private(xBinning) ]
       set targetY [ expr ( [lindex $private(targetCoord) 1] - $private(yWindow) + 1 ) / $private(yBinning) ]
       set targetBoxSize [ expr int( $private(targetBoxSize) / (2.0 * $private(xBinning) )) ]
-
+      
       #--- je fais l'acquisition
       ::camera::guideSophie $private(camItem) "::sophie::callbackAcquisition $visuNo" \
          $::conf(sophie,exposure)           \
@@ -1678,6 +1678,7 @@ proc ::sophie::startAcquisition { visuNo } {
          $cameraAngle                       \
          $targetBoxSize                     \
          $private(mountEnabled)             \
+         [::confTel::getPluginProperty hasMotionWhile] \
          $alphaSpeed                        \
          $deltaSpeed                        \
          $::conf(sophie,alphaReverse)       \
@@ -2073,6 +2074,7 @@ proc ::sophie::removeAcquisitionListener { visuNo cmd } {
 # @param cameraAngle angle de la camera
 # @param targetBoxSize taille de la zone de recherche de l'etoile
 # @param mountEnabled  1=envoyer les corrections a la monture. 0=ne pas envoyer les corrections
+# @param mountCorrection  0=commandes move/stop 1=commande move avec duree 2=commande correct avec distance en arsec 
 # @param alphaSpeed    vitesse de correction alpha de la monture en arcsec/seconde de temps
 # @param deltaSpeed    vitesse de correction delta de la monture en arcsec/seconde de temps
 # @param alphaReverse  1=inverser le sens des correction en alpha. 0=ne pas inverser le sens des corrections
@@ -2080,11 +2082,11 @@ proc ::sophie::removeAcquisitionListener { visuNo cmd } {
 # @param intervalle    intervalle de temps d'attente entre 2 poses (en seconde)
 # @return rien
 #------------------------------------------------------------
-proc ::camera::guideSophie { camItem callback exptime originCoord targetCoord cameraAngle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse intervalle } {
+proc ::camera::guideSophie { camItem callback exptime originCoord targetCoord cameraAngle targetBoxSize mountEnabled mountCorrection alphaSpeed deltaSpeed alphaReverse deltaReverse intervalle } {
    variable private
 
    set private($camItem,callback) $callback
    set camThreadNo $private($camItem,threadNo)
-   ::thread::send -async $camThreadNo [list ::camerathread::guideSophie $exptime $originCoord $targetCoord $cameraAngle $targetBoxSize $mountEnabled $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $intervalle ]
+   ::thread::send -async $camThreadNo [list ::camerathread::guideSophie $exptime $originCoord $targetCoord $cameraAngle $targetBoxSize $mountEnabled $mountCorrection $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $intervalle ]
 }
 
