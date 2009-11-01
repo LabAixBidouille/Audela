@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.45 2009-10-25 11:14:20 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.46 2009-11-01 21:41:41 michelpujol Exp $
 #
 
 namespace eval ::telescope {
@@ -231,6 +231,8 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
             #--- j'attends que la variable soit remise a zero
             vwait ::audace(telescope,goto)
          }
+      } else {
+         afficheCoord
       }
       #--- je restaure le mode slewpath si necessaire
       slewpathShort2Long
@@ -256,17 +258,31 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
 proc ::telescope::surveille_goto { radec0 { But_Goto "" } { But_Match "" } } {
    global audace
 
-   set radec1 [ tel$audace(telNo) radec coord ]
-   afficheCoord
-   set ra0 [ mc_angle2deg [ lindex $radec0 0 ] 360 ]
-   set dec0 [ mc_angle2deg [ lindex $radec0 1 ] 90 ]
-   set ra1 [ mc_angle2deg [ lindex $radec1 0 ] 360 ]
-   set dec1 [ mc_angle2deg [ lindex $radec1 1 ] 90 ]
-   set sepangle [ mc_anglesep [ list $ra0 $dec0 $ra1 $dec1 ] ]
-   if { [ lindex $sepangle 0 ] > 0.1 } {
-      ::telescope::surveille_goto [ list $radec1 ] $But_Goto $But_Match
-      return 1
+   if { $audace(telNo) != 0 } {
+      set radec1 [ tel$audace(telNo) radec coord ]
+      console::disp "surveille_goto radec0=$radec0 radec1=$radec1\n"
+      afficheCoord
+      set ra0 [ mc_angle2deg [ lindex $radec0 0 ] 360 ]
+      set dec0 [ mc_angle2deg [ lindex $radec0 1 ] 90 ]
+      set ra1 [ mc_angle2deg [ lindex $radec1 0 ] 360 ]
+      set dec1 [ mc_angle2deg [ lindex $radec1 1 ] 90 ]
+      set sepangle [ mc_anglesep [ list $ra0 $dec0 $ra1 $dec1 ] ]
+      if { [ lindex $sepangle 0 ] > 0.1 } {
+         after 1000 ::telescope::surveille_goto [ list $radec1 ] $But_Goto $But_Match
+         return 1
+      } else {
+         if { $But_Goto != "" } {
+            $But_Goto configure -relief raised -state normal
+         }
+         if { $But_Match != "" } {
+            $But_Match configure -relief raised -state normal
+         }
+         set ::audace(telescope,goto) "0"
+         update
+         return 0
+      }
    } else {
+      #--- j'arrete la surveillance car le telescope a ete arrete pendant le GOTO
       if { $But_Goto != "" } {
          $But_Goto configure -relief raised -state normal
       }
@@ -275,7 +291,7 @@ proc ::telescope::surveille_goto { radec0 { But_Goto "" } { But_Match "" } } {
       }
       set ::audace(telescope,goto) "0"
       update
-      return 0
+      return 0      
    }
 }
 
@@ -553,6 +569,15 @@ proc ::telescope::incrementSpeed { } {
             "6" { setSpeed "7" }
             default { setSpeed "1" }
          }
+      } elseif { $conf(telescope) == "t193" } {
+         #--- Pour t193, l'increment peut prendre 2 valeurs ( 1 2 )
+         if { $audace(telescope,speed) == "1" } {
+            setSpeed "2"
+         } elseif { $audace(telescope,speed) == "2" } {
+            setSpeed "1"
+         } else {
+            setSpeed "1"
+         }
       } else {
          #--- Inactif pour les autres montures
          setSpeed "0"
@@ -719,6 +744,23 @@ proc ::telescope::setSpeed { { value "2" } } {
                set audace(telescope,rate) "10"
                set statustel(speed) "10"
             }
+         }
+      } elseif { $conf(telescope) == "t193" } {
+         if { $value == "1" } {
+            set audace(telescope,speed) "1"
+            set audace(telescope,labelspeed) "1"
+            set audace(telescope,rate) "0"
+            set statustel(speed) "0"
+         } elseif { $value == "2" } {
+            set audace(telescope,speed) "2"
+            set audace(telescope,labelspeed) "2"
+            set audace(telescope,rate) "0.33"
+            set statustel(speed) "0.33"
+         } else {
+            set audace(telescope,speed) "1"
+            set audace(telescope,labelspeed) "1"
+            set audace(telescope,rate) "0"
+            set statustel(speed) "0"
          }
       } else {
          set audace(telescope,speed) "1"
