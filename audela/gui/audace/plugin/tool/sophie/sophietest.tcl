@@ -2,7 +2,7 @@
 # @file     sophietest.tcl
 # @brief    Fichier du namespace ::sophie::test
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietest.tcl,v 1.19 2009-10-19 21:09:46 michelpujol Exp $
+# @version  $Id: sophietest.tcl,v 1.20 2009-11-01 21:47:37 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -17,41 +17,13 @@ namespace eval ::sophie::test {
    set private(telescopeControl,dec) ""
    set private(telescopeControl,raSpeed) ""
    set private(telescopeControl,decSpeed) ""
+   set private(telescopeControl,slewMode) ""
+   set private(telescopeControl,sideralSpeed)   "15.0"   ; #--- vitesse de 360 degres/jour soit 15 arsec/seconde vers l'ouest 
+   set private(telescopeControl,lunarSpeed)     "14.375" ; #--- vitesse de (360-15) degrés/jour soit 14.375 arsec/seconde vers l'ouest   
+   set private(telescopeControl,guidingSpeed)   "3.75"   ; #--- vitesse de correction en centrage (le triple de la vitesse siderale)
+   set private(telescopeControl,centeringSpeed) "45.0"   ; #--- vitesse de correction en guidage (le quart de la vitesse siderale en arcsec/s
+   set private(telescopeControl,gotoSpeed)      "6500.0"   ; #--- vitesse de goto (500 fois la vitesse siderale en arcsec/s
 }
-
-      #--- je mesure la position de l'etoile et le trou de la fibre
-      # buf$bufNo fibercentro
-      # Parameters IN:
-      # @param     Argv[2]= [list x1 y1 x2 y2 ] fenetre de detection
-      # @param     Argv[3]=biasBufNo            numero du buffer du bias
-      # @param     Argv[4]=maskBufNo            numero du buffer du masque
-      # @param     Argv[5]=sumBufNo             numero du buffer de l'image integree
-      # @param     Argv[6]=fiberBufNo           numero du buffer de l'image resultat
-      # @param     Argv[7]=maskRadius           rayon du masque
-      # @param     Argv[8]=originSumMinCounter  nombre d'acquisition de l'image integree
-      # @param     Argv[9]=originSumCounter     compteur d'integration de l'image de l'origine
-      # @param     Argv[10]=previousFiberX      abcisse du centre de la fibre
-      # @param     Argv[11]=previousFiberY      ordonnee du centre de la fibre
-      # @param     Argv[12]=maskFwhm            largeur a mi hauteur de la gaussienne
-      # @param     Argv[13]=findFiber           1=recherche de l'entrï¿½e de fibre , 0= ne pas rechercher
-      # @param     Argv[14]=pixelMinCount       nombre minimal de pixels pour accepter l'image
-      # @param     Argv[15]=maskPercent         pourcentage du niveau du mask
-      #
-      # @return si TCL_OK
-      #            list[0] starStatus           resultat de la recherche de la fibre (DETECTED NO_SIGNAL)
-      #            list[1] starX                abcisse du centre de la fibre   (pixel binnï¿½)
-      #            list[2] starY                ordonnee du centre de la fibre  (pixel binnï¿½
-      #            list[3] fiberStatus          resultat de la recherche de la fibre (DETECTED NO_SIGNAL)
-      #            list[4] fiberX               abcisse du centre de la fibre  (pixel binnï¿½)
-      #            list[5] fiberY               ordonnee du centre de la fibre (pixel binnï¿½)
-      #            list[6] measuredFwhmX        gaussienne mesuree (pixel binnï¿½)
-      #            list[7] measuredFwhmY        gaussienne mesuree (pixel binnï¿½)
-      #            list[8] background           fond du ciel (ADU)
-      #            list[9] maxIntensity         intensite max (ADU)
-      #            list[10] message             message d'information
-      #
-      #         si TCL_ERREUR
-      #            message d'erreur
 
 #------------------------------------------------------------
 # simulHp
@@ -292,7 +264,8 @@ proc ::sophie::test::fermer { } {
 
    #--- je referme la socket du pc de guidage
    ::sophie::test::closeSocketSophie
-
+   set private(geometry) [ wm geometry $private(frm) ]
+   set ::conf(sophie,simulation,geometry) $private(geometry)
    destroy $private(frm)
 }
 
@@ -302,6 +275,8 @@ proc ::sophie::test::fermer { } {
 #------------------------------------------------------------
 proc ::sophie::test::createDialogSimul { } {
    variable private
+
+   if { ! [ info exists ::conf(sophie,simulation,geometry) ] } { set ::conf(sophie,simulation,geometry) "540x820+30+30" }
 
    #--- j'initialise les variables
    set private(host) "localhost"
@@ -326,17 +301,15 @@ proc ::sophie::test::createDialogSimul { } {
    #--- Creation de la fenetre $frm de niveau le plus haut
    toplevel $frm -class Toplevel
    wm title $frm $::caption(sophie,simulation)
-   set posxSimul [ lindex [ split [ wm geometry $::audace(base) ] "+" ] 1 ]
-   set posySimul [ lindex [ split [ wm geometry $::audace(base) ] "+" ] 2 ]
-   wm geometry $frm +[ expr $posxSimul + 134 ]+[ expr $posySimul + 60 ]
+   wm geometry $frm $::conf(sophie,simulation,geometry)
    wm resizable $frm 1 1
    wm protocol $frm WM_DELETE_WINDOW ::sophie::test::fermer
 
-   #--- On utilise les valeurs contenues dans le tableau conf pour l'initialisation
+	#--- On utilise les valeurs contenues dans le tableau conf pour l'initialisation
    set private(simulation)                $::conf(sophie,simulation)
    set private(simulationGenericFileName) $::conf(sophie,simulationGenericFileName)
 
-   #--- Frame pour la simulation des acquisitions
+   #--- Frame pour la simulation des acquisitions   
    TitleFrame $frm.simulAcquisition -borderwidth 2 -relief groove -text $::caption(sophie,simulAcquisition)
 
       #--- Frame pour la simulation
@@ -370,7 +343,7 @@ proc ::sophie::test::createDialogSimul { } {
       pack $frm.simulAcquisition.filename -in [ $frm.simulAcquisition getframe ] \
          -side top -fill both -expand 1
 
-   pack $frm.simulAcquisition -side top -fill both -expand 1
+   pack $frm.simulAcquisition -side top -fill x -expand 0
 
    #--- Frame pour l'interface avec le PC Sophie
    TitleFrame $frm.pcsophie -borderwidth 2 -relief groove -text $::caption(sophie,simulPCSophie)
@@ -398,7 +371,12 @@ proc ::sophie::test::createDialogSimul { } {
       button $frm.pcsophie.getstat -text "GET STAT" -command [list ::sophie::test::sendPcGuidage "GET_STAT" ]
       grid $frm.pcsophie.getstat -in [ $frm.pcsophie getframe ] -row 3 -column 3 -sticky ens -padx 2
 
-   pack $frm.pcsophie -in $frm -side top -fill both -expand 1
+      grid columnconfigure [$frm.pcsophie getframe] 0 -weight 1
+      grid columnconfigure [$frm.pcsophie getframe] 1 -weight 1
+      grid columnconfigure [$frm.pcsophie getframe] 2 -weight 1
+      grid columnconfigure [$frm.pcsophie getframe] 3 -weight 1
+      
+   pack $frm.pcsophie -in $frm -side top -fill x -expand 0
 
    #--- Frame pour le test d'impulsion vers le telescope
    TitleFrame $frm.pulse -borderwidth 2 -relief groove -text $::caption(sophie,testImpulsion)
@@ -427,45 +405,89 @@ proc ::sophie::test::createDialogSimul { } {
       button $frm.pulse.stop -text $::caption(sophie,stop) -command "::sophie::test::stopPulse"
       grid $frm.pulse.stop -in [ $frm.pulse getframe ] -row 3 -column 1 -sticky ens -padx 2
 
-   pack $frm.pulse -in $frm -side top -fill both -expand 1
+      grid columnconfigure [$frm.pulse getframe] 0 -weight 1
+      grid columnconfigure [$frm.pulse getframe] 1 -weight 1
+      
+   pack $frm.pulse -in $frm -side top -fill x -expand 0
 
    #--- Frame pour l'interface de controle du T193
    TitleFrame $frm.pccontrol -borderwidth 2 -relief groove -text $::caption(sophie,simul,telescopeControl,title)
 
       #--- Bouton connect et disconnect
-      button $frm.pccontrol.connect -text "Demarrer interface" -command "::sophie::test::connectTelescopeControl"
-      grid $frm.pccontrol.connect -in [ $frm.pccontrol getframe ] -row 0 -column 0 -sticky ens -padx 2
+      button $frm.pccontrol.connect -text "Demarrer le simulateur de l'interface de controle" -command "::sophie::test::connectTelescopeControl"
+      grid $frm.pccontrol.connect -in [$frm.pccontrol getframe] -row 0 -column 0 -columnspan 4 -sticky "" -padx 2
 
-      #--- host
-      label $frm.pccontrol.hostLabel -text $::caption(sophie,host)
-      grid $frm.pccontrol.hostLabel -in [ $frm.pccontrol getframe ] -row 0 -column 1 -sticky ens -padx 2
-      entry $frm.pccontrol.hostEntry -textvariable ::sophie::test::private(telescopeControl,host)
-      grid $frm.pccontrol.hostEntry -in [ $frm.pccontrol getframe ] -row 0 -column 2 -sticky ens -padx 2
+      #--- affiche les positions et les vitesses  Ra Dec  
+      label $frm.pccontrol.labelRA -text "RA position"
+      grid $frm.pccontrol.labelRA -in [$frm.pccontrol getframe] -row 1 -column 0 -sticky w -padx 0
+      label $frm.pccontrol.entryRA   -textvariable ::sophie::test::private(telescopeControl,ra) -relief  ridge
+      grid $frm.pccontrol.entryRA -in [$frm.pccontrol getframe] -row 1 -column 1 -sticky ew -padx 2
 
+      label $frm.pccontrol.labelRaSpeed -text "Vitesse (arsec/sec)"
+      grid $frm.pccontrol.labelRaSpeed -in [$frm.pccontrol getframe] -row 1 -column 2 -sticky w -padx 0
+      label $frm.pccontrol.entryRaSpeed   -textvariable ::sophie::test::private(telescopeControl,raSpeed) -relief  ridge
+      grid $frm.pccontrol.entryRaSpeed -in [$frm.pccontrol getframe] -row 1 -column 3 -sticky ew -padx 2
 
-      #--- affiche RA Dec
-      label $frm.pccontrol.labelRA -text "RA"
-      grid $frm.pccontrol.labelRA -in [ $frm.pccontrol getframe ] -row 1 -column 1 -sticky ens -padx 0
-      entry $frm.pccontrol.entryRA   -textvariable ::sophie::test::private(telescopeControl,ra)
-      grid $frm.pccontrol.entryRA -in [ $frm.pccontrol getframe ] -row 1 -column 2 -sticky ens -padx 2
-      label $frm.pccontrol.labelDec -text "DEC"
-      grid $frm.pccontrol.labelDec -in [ $frm.pccontrol getframe ] -row 2 -column 1 -sticky ens -padx 0
-      entry $frm.pccontrol.entryDec   -textvariable ::sophie::test::private(telescopeControl,dec)
-      grid $frm.pccontrol.entryDec -in [ $frm.pccontrol getframe ] -row 2 -column 2 -sticky ens -padx 2
+      label $frm.pccontrol.labelDec -text "DEC position"
+      grid $frm.pccontrol.labelDec -in [$frm.pccontrol getframe] -row 2 -column 0 -sticky w -padx 0
+      label $frm.pccontrol.entryDec   -textvariable ::sophie::test::private(telescopeControl,dec) -relief  ridge
+      grid $frm.pccontrol.entryDec -in [$frm.pccontrol getframe] -row 2 -column 1 -sticky ew -padx 2
 
-      label $frm.pccontrol.labelRaSpeed -text "ra speed"
-      grid $frm.pccontrol.labelRaSpeed -in [ $frm.pccontrol getframe ] -row 1 -column 3 -sticky ens -padx 0
-      entry $frm.pccontrol.entryRaSpeed   -textvariable ::sophie::test::private(telescopeControl,raSpeed)
-      grid $frm.pccontrol.entryRaSpeed -in [ $frm.pccontrol getframe ] -row 1 -column 4 -sticky ens -padx 2
+      label $frm.pccontrol.labelDecSpeed -text "Vitesse (arsec/sec)"
+      grid $frm.pccontrol.labelDecSpeed -in [$frm.pccontrol getframe] -row 2 -column 2 -sticky w -padx 0
+      label $frm.pccontrol.entryDecSpeed   -textvariable ::sophie::test::private(telescopeControl,decSpeed) -relief  ridge
+      grid $frm.pccontrol.entryDecSpeed -in [$frm.pccontrol getframe] -row 2 -column 3 -sticky ew -padx 2
 
-      label $frm.pccontrol.labelDecSpeed -text "dec speed"
-      grid $frm.pccontrol.labelDecSpeed -in [ $frm.pccontrol getframe ] -row 2 -column 3 -sticky ens -padx 0
-      entry $frm.pccontrol.entryDecSpeed   -textvariable ::sophie::test::private(telescopeControl,decSpeed)
-      grid $frm.pccontrol.entryDecSpeed -in [ $frm.pccontrol getframe ] -row 2 -column 4 -sticky ens -padx 2
+      #--- affiche le mode de suivi  
+      label $frm.pccontrol.labelSlewMode -text "Suivi Mode"
+      grid $frm.pccontrol.labelSlewMode -in [$frm.pccontrol getframe] -row 3 -column 0 -sticky w -padx 0
+      label $frm.pccontrol.entrySlewMode   -textvariable ::sophie::test::private(telescopeControl,slewMode) -relief  ridge
+      grid $frm.pccontrol.entrySlewMode -in [$frm.pccontrol getframe] -row 3 -column 1 -sticky ew -padx 2
 
+      #--- configuration 
+      label $frm.pccontrol.labelConfiguration -text "Configuration des vitesses (arsec/sec)"
+      grid $frm.pccontrol.labelConfiguration -in [$frm.pccontrol getframe] -row 4 -column 0 -columnspan 4 -sticky w -padx 0
 
-   pack $frm.pccontrol -in $frm -side top -fill both -expand 1
+      label $frm.pccontrol.labelGuidingSpeed -text "Vitesse guidage)" -justify left
+      grid $frm.pccontrol.labelGuidingSpeed -in [$frm.pccontrol getframe] -row 5 -column 0 -sticky w -padx 0
+      entry $frm.pccontrol.entryGuidingSpeed -textvariable ::sophie::test::private(telescopeControl,guidingSpeed)
+      grid $frm.pccontrol.entryGuidingSpeed -in [$frm.pccontrol getframe] -row 5 -column 1 -sticky w -padx 2
 
+      label $frm.pccontrol.labelCenteringSpeed -text "Vitesse centrage" -justify left
+      grid $frm.pccontrol.labelCenteringSpeed -in [$frm.pccontrol getframe] -row 5 -column 2 -sticky w -padx 0
+      entry $frm.pccontrol.entryCenteringSpeed -textvariable ::sophie::test::private(telescopeControl,centeringSpeed)
+      grid $frm.pccontrol.entryCenteringSpeed -in [$frm.pccontrol getframe] -row 5 -column 3 -sticky w -padx 2
+   
+      label $frm.pccontrol.labelGotoSpeed -text "Vitesse goto" -justify left
+      grid $frm.pccontrol.labelGotoSpeed -in [$frm.pccontrol getframe] -row 6 -column 0 -sticky w -padx 0
+      entry $frm.pccontrol.entryGotoSpeed -textvariable ::sophie::test::private(telescopeControl,gotoSpeed)
+      grid $frm.pccontrol.entryGotoSpeed -in [$frm.pccontrol getframe] -row 6 -column 1 -sticky w -padx 2
+
+      label $frm.pccontrol.labelSideralSpeed -text "Vitesse siderale"
+      grid $frm.pccontrol.labelSideralSpeed -in [$frm.pccontrol getframe] -row 7 -column 0 -sticky w -padx 0
+      entry $frm.pccontrol.entrySideralSpeed -textvariable ::sophie::test::private(telescopeControl,sideralSpeed)
+      grid $frm.pccontrol.entrySideralSpeed -in [$frm.pccontrol getframe] -row 7 -column 1 -sticky w -padx 2
+
+      label $frm.pccontrol.labelLunarSpeed -text "Vitesse lunaire"
+      grid $frm.pccontrol.labelLunarSpeed -in [$frm.pccontrol getframe] -row 7 -column 2 -sticky w -padx 0
+      entry $frm.pccontrol.entryLunarSpeed -textvariable ::sophie::test::private(telescopeControl,lunarSpeed)
+      grid $frm.pccontrol.entryLunarSpeed -in [$frm.pccontrol getframe] -row 7 -column 3 -sticky w -padx 2
+
+      button $frm.pccontrol.validate -text "Enregistrer" -command "::sophie::test::configure"
+      grid $frm.pccontrol.validate -in [$frm.pccontrol getframe] -row 8 -column 0 -columnspan 4 -sticky nw -padx 2
+   
+      grid columnconfigure [$frm.pccontrol getframe] 0 -weight 1
+      grid columnconfigure [$frm.pccontrol getframe] 1 -weight 1
+      grid columnconfigure [$frm.pccontrol getframe] 2 -weight 1
+      grid columnconfigure [$frm.pccontrol getframe] 3 -weight 1
+      grid columnconfigure [$frm.pccontrol getframe] 4 -weight 1
+      grid columnconfigure [$frm.pccontrol getframe] 5 -weight 1
+      grid columnconfigure [$frm.pccontrol getframe] 6 -weight 1
+      grid columnconfigure [$frm.pccontrol getframe] 7 -weight 1
+      grid columnconfigure [$frm.pccontrol getframe] 8 -weight 1
+      ###grid columnconfigure [$frm.pccontrol getframe] 9 -weight 1
+      
+      pack $frm.pccontrol -in $frm -side top -anchor w -fill x -expand 0 
 
    #--- Frame pour les boutons
    frame $frm.frameButton -borderwidth 1 -relief raised
@@ -480,7 +502,7 @@ proc ::sophie::test::createDialogSimul { } {
          -command "::sophie::test::fermer"
       pack $frm.butFermer -in $frm.frameButton -anchor center -side right -padx 5 -pady 5 -ipadx 10 -ipady 5
 
-   pack $frm.frameButton -side top -fill x
+   pack $frm.frameButton -side bottom -fill x -expand 0
 
    #--- La fenetre est active
    focus $frm
@@ -687,20 +709,19 @@ proc ::sophie::test::connectTelescopeControl { } {
    set catchError [ catch {
       if { $private(controlThreadId) == "" } {
 
+         #--- je charge le programme du simulateur dans un thread dedie
          set private(controlThreadId) [thread::create]
          set sourceFileName [file join $::audace(rep_audela) [file join $::audace(rep_plugin) tool sophie sophietestcontrol.tcl]]
          ::thread::send $private(controlThreadId) [list uplevel #0 source \"$sourceFileName\"]
-         ::thread::send $private(controlThreadId) "::sophie::test::init [thread::id] $::conf(t193,telescopeCommandPort) $::conf(t193,telescopeNotificationPort)"
-
+         ::thread::send $private(controlThreadId) [list ::sophie::testcontrol::init [thread::id] $::conf(t193,telescopeCommandPort) $::conf(t193,telescopeNotificationPort) ]
+         ::sophie::test::configure
          #--- j'ouvre la socket de commande en attente de la connexion d'un client
-         ###::sophie::test::openTelescopeControlSocket
-         console::disp "::sophie::test::connectTelescopeControl avant openTelescopeControlSocket\n"
-         ::thread::send $private(controlThreadId)  "::sophie::test::openTelescopeControlSocket"
-         $private(frm).pccontrol.connect configure -text "Arreter interface"
+         ::thread::send $private(controlThreadId)  [list ::sophie::testcontrol::openTelescopeControlSocket ]
+         $private(frm).pccontrol.connect configure -text "ARRETER le simulateur de l'interface de controle"
       } else {
          #--- je referme les sockets et j'arrete le thread
          closeTelescopeControl
-         $private(frm).pccontrol.connect configure -text ""Démarrer interface""
+         $private(frm).pccontrol.connect configure -text "Demarrer le simulateur de l'interface de controle"
       }
    }]
 
@@ -712,42 +733,53 @@ proc ::sophie::test::connectTelescopeControl { } {
 
 #------------------------------------------------------------
 # closeTelescopeControl
-#    connecter/deconnecter au PC de guidage
+#    arrete le simulateur
 #------------------------------------------------------------
 proc ::sophie::test::closeTelescopeControl { } {
    variable private
    if { $private(controlThreadId) != "" } {
-      ::thread::send $private(controlThreadId)  "::sophie::test::closeTelescopeControlSocket"
+      ::thread::send $private(controlThreadId)  [list ::sophie::testcontrol::closeTelescopeControlSocket ]
       thread::release $private(controlThreadId)
       set private(controlThreadId) ""
    }
 }
 
-
 #------------------------------------------------------------
-# writeTelescopeNotificationSocket
-#    envoi une notification a l'interface de controle
-#------------------------------------------------------------
-proc ::sophie::test::writeTelescopeNotificationSocket { notification } {
-   variable private
-
-   ::thread::send $private(controlThreadId) [list ::sophie::test::writeTelescopeNotificationSocket $notification]
-}
-
-#------------------------------------------------------------
-# setRadec
+# updateGui
 #    met a jour l'affichage des coordonnees RADEC
+#   cette procedure est appelee par le thread du simulteur chaque fois que le teslescope change de position
 #------------------------------------------------------------
-proc ::sophie::test::setRadec { ra dec raSpeed decSpeed } {
+proc ::sophie::test::updateGui { ra dec raSpeed decSpeed slewMode slewSpeed} {
    variable private
-   set private(telescopeControl,ra)  $ra
-   set private(telescopeControl,dec) $dec
-   set private(telescopeControl,raSpeed) $raSpeed
-   set private(telescopeControl,decSpeed) $decSpeed
+   set private(telescopeControl,ra)        [format "%8.4f" $ra]
+   set private(telescopeControl,raSpeed)   $raSpeed
+   set private(telescopeControl,dec)       [format "%8.4f" $dec]
+   set private(telescopeControl,decSpeed)  $decSpeed
+   set private(telescopeControl,slewMode)  $slewMode
+   set private(telescopeControl,slewSpeed) $slewSpeed
+}
+
+#------------------------------------------------------------
+# configure
+#   envoi les parametres de configuration au thread de simulation 
+#   cette procedure est appelee par le thread du simulteur chaque fois que le teslescope change de position
+#------------------------------------------------------------
+proc ::sophie::test::configure { } {
+   variable private
+   ::thread::send -async $private(controlThreadId) [list ::sophie::testcontrol::configure \
+         $private(telescopeControl,sideralSpeed) $private(telescopeControl,lunarSpeed) \
+         $private(telescopeControl,guidingSpeed) $private(telescopeControl,centeringSpeed) \
+         $private(telescopeControl,gotoSpeed) \
+         $::audace(posobs,observateur,gps)]
 }
 
 
-###::sophie::simul
-###::sophie::test::connectTelescopeControl
+
+#--- demarrage du contexte pour les tests 
+#::sophie::simul
+#::sophie::test::connectTelescopeControl
+#set ::conf(telescope) "t193"
+#set ::confTel::private(mountName) $::conf(telescope)
+#::confTel::configureMonture
 #  source audace/plugin/tool/sophie/sophietest.tcl
 
