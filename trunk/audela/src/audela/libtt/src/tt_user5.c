@@ -219,20 +219,26 @@ int tt_ima_rot(TT_IMA_SERIES *pseries)
    sin_theta = sin(theta);
 
    if (((0<theta)&&(theta<90.0*TT_PI/180))||((-360.0*TT_PI/180<theta)&&(theta<-270.0*TT_PI/180))) {
-		w= (int) ( floor (cos_theta*p_in->naxis1+sin_theta*p_in->naxis2)+1);
-		h= (int) ( floor (sin_theta*p_in->naxis1+cos_theta*p_in->naxis2)+1);
+		w= (int) ( floor (cos_theta*p_in->naxis1+sin_theta*p_in->naxis2));
+		h= (int) ( floor (sin_theta*p_in->naxis1+cos_theta*p_in->naxis2));
    } else if (((-90.0*TT_PI/180<theta)&&(theta<0))||((270.0*TT_PI/180<theta)&&(theta<360.0*TT_PI/180))) {
-		w= (int) ( floor (cos_theta*p_in->naxis1-sin_theta*p_in->naxis2)+1);
-		h= (int) ( floor (-sin_theta*p_in->naxis1+cos_theta*p_in->naxis2)+1);
+		w= (int) ( floor (cos_theta*p_in->naxis1-sin_theta*p_in->naxis2));
+		h= (int) ( floor (-sin_theta*p_in->naxis1+cos_theta*p_in->naxis2));
    } else if(((90.0*TT_PI/180<theta)&&(theta<180.0*TT_PI/180))||((-270.0*TT_PI/180<theta)&&(theta<-180.0*TT_PI/180))) {
-		w= (int) ( floor (-cos_theta*p_in->naxis1+sin_theta*p_in->naxis2)+1);
-		h= (int) ( floor (sin_theta*p_in->naxis1-cos_theta*p_in->naxis2)+1);
+		w= (int) ( floor (-cos_theta*p_in->naxis1+sin_theta*p_in->naxis2));
+		h= (int) ( floor (sin_theta*p_in->naxis1-cos_theta*p_in->naxis2));
    } else if(((-180.0*TT_PI/180<theta)&&(theta<-90.0*TT_PI/180))||((180.0*TT_PI/180<theta)&&(theta<270.0*TT_PI/180))) {
-		w= (int) ( floor (-cos_theta*p_in->naxis1-sin_theta*p_in->naxis2)+1);
-		h= (int) ( floor (-sin_theta*p_in->naxis1-cos_theta*p_in->naxis2)+1);
+		w= (int) ( floor (-cos_theta*p_in->naxis1-sin_theta*p_in->naxis2));
+		h= (int) ( floor (-sin_theta*p_in->naxis1-cos_theta*p_in->naxis2));
    } else {
 		w=p_in->naxis1;
 		h=p_in->naxis2;
+   }
+   if ((w%2!=0)&&(w>1)) {
+		w=w-1;
+   }
+   if ((h%2!=0)&&(h>1)) {
+		h=h-1;
    }
    /* --- coordonnéees du centre de rotation dans l'image initiale --- */
    x0=pseries->user5.x0;
@@ -254,7 +260,7 @@ int tt_ima_rot(TT_IMA_SERIES *pseries)
          old_x = x-(x1-x0);
          old_y = y-(y1-y0);
          value = interpol2(pseries,p_in,old_x,old_y,1);
-         p_tmp1->p[x+y*w]=(TT_PTYPE)(value);
+		 p_tmp1->p[x+y*w]=(TT_PTYPE)(value);
       } 
    } 
    a[0]=1;
