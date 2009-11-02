@@ -2,11 +2,11 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.21 2009-11-01 21:44:07 michelpujol Exp $
+# Mise a jour $Id: t193.tcl,v 1.22 2009-11-02 23:35:36 michelpujol Exp $
 #
 
 package provide t193 1.0
-package require audela 1.4.0
+package require audela 1.5
 
 namespace eval ::t193 {
 
@@ -98,8 +98,8 @@ proc ::t193::initPlugin { } {
    if { ! [ info exists conf(t193,deltaGuidingSpeed) ] }         { set conf(t193,deltaGuidingSpeed)         "3.0" }
    #--- configuration du mode Ethernet
    if { ! [ info exists conf(t193,hostEthernet) ] }              { set conf(t193,hostEthernet)              "192.168.128.157" }
-   if { ! [ info exists conf(t193,telescopeCommandPort) ] }      { set conf(t193,telescopeCommandPort)      "1026" }
-   if { ! [ info exists conf(t193,telescopeNotificationPort) ] } { set conf(t193,telescopeNotificationPort) "1027" }
+   if { ! [ info exists conf(t193,telescopeCommandPort) ] }      { set conf(t193,telescopeCommandPort)      "5025" }
+   if { ! [ info exists conf(t193,telescopeNotificationPort) ] } { set conf(t193,telescopeNotificationPort) "5026" }
    #--- duree de deplacement entre les 2 butees (mini et maxi) de l'attenuateur
    if { ! [ info exists conf(t193,dureeMaxAttenuateur) ] }       { set conf(t193,dureeMaxAttenuateur)       "16" }
    #--- traces dans la Console
@@ -191,15 +191,45 @@ proc ::t193::fillConfigPage { frm } {
    frame $frm.frame2 -borderwidth 0 -relief raised
    pack $frm.frame2 -side top -fill x
 
-   TitleFrame $frm.mode -borderwidth 2 -relief ridge -text "$caption(t193,mode)"
+   TitleFrame $frm.mode -borderwidth 2 -relief ridge -text $caption(t193,mode)
    pack $frm.mode -side top -fill x
 
-   TitleFrame $frm.carteUSB -borderwidth 2 -relief ridge -text "$caption(t193,carteUSB)"
+   TitleFrame $frm.carteUSB -borderwidth 2 -relief ridge -text $caption(t193,carteUSB)
    pack $frm.carteUSB -side top -fill x
 
-   TitleFrame $frm.ethernet -borderwidth 2 -relief ridge -text "$caption(t193,ethernet)"
+   TitleFrame $frm.ethernet -borderwidth 2 -relief ridge -text $caption(t193,ethernet)
+      #--- Definition du host Ethernet
+      label $frm.labhost -text $caption(t193,host)
+      pack $frm.labhost -in [ $frm.ethernet getframe ] -anchor n -side left -padx 2 -pady 2  
+      #--- Entry du host Ethernet
+      entry $frm.host -textvariable ::t193::private(hostEthernet) -width 15 -justify center
+      pack $frm.host -in [ $frm.ethernet getframe ] -anchor n -side left -padx 2 -pady 2
+   
+      #--- Definition du port Ethernet de commande
+      label $frm.labportCommand -text $caption(t193,portCommand)
+      pack $frm.labportCommand -in [ $frm.ethernet getframe ] -anchor n -side left -padx 2 -pady 2  
+      #--- Entry du port Ethernet de commande
+      entry $frm.portCommand -textvariable ::t193::private(telescopeCommandPort) -width 7 -justify center
+      pack $frm.portCommand -in [ $frm.ethernet getframe ] -anchor n -side left -padx 2 -pady 2
+   
+      #--- Definition du port Ethernet de notification
+      label $frm.labportNotification -text $caption(t193,portNotification)
+      pack $frm.labportNotification -in [ $frm.ethernet getframe ] -anchor n -side left -padx 2 -pady 2  
+      #--- Entry du port Ethernet de notification
+      entry $frm.portNotification -textvariable ::t193::private(telescopeNotificationPort) -width 7 -justify center
+      pack $frm.portNotification -in [ $frm.ethernet getframe ] -anchor n -side left -padx 2 -pady 2
+
    pack $frm.ethernet -side top -fill x
 
+   TitleFrame $frm.attenuateur -borderwidth 2 -relief ridge -text $::caption(t193,attenuateur)
+      #--- Definition du nom de la carte USB-6501 et de son port
+      label $frm.attenuateur.label -text $caption(t193,nom_carte)
+      pack $frm.attenuateur.label -in [$frm.attenuateur getframe] -anchor n -side left -padx 2 -pady 2      
+      #--- Entry du nom de la carte USB-6501
+      entry $frm.attenuateur.nomCarte -textvariable ::t193::private(nomCarte) -width 15 -justify left
+      pack $frm.attenuateur.nomCarte -in [$frm.attenuateur getframe] -anchor n -side left -padx 2 -pady 2
+   pack $frm.attenuateur -side top -fill x
+ 
    frame $frm.frame3 -borderwidth 0 -relief raised
    pack $frm.frame3 -in [ $frm.carteUSB getframe ] -side top -fill x
 
@@ -278,30 +308,6 @@ proc ::t193::fillConfigPage { frm } {
    #--- Definition de la longueur de l'impulsion minimale
    label $frm.lab3 -text "$caption(t193,minDelay)"
    pack $frm.lab3 -in $frm.frame4 -anchor n -side right -padx 0 -pady 5
-
-   #--- Definition du host Ethernet
-   label $frm.labhost -text "$caption(t193,host)"
-   pack $frm.labhost -in [ $frm.ethernet getframe ] -anchor n -side left -padx 10 -pady 10
-
-   #--- Entry du host Ethernet
-   entry $frm.host -textvariable ::t193::private(hostEthernet) -width 15 -justify center
-   pack $frm.host -in [ $frm.ethernet getframe ] -anchor n -side left -padx 0 -pady 10
-
-   #--- Definition du port Ethernet de commande
-   label $frm.labportCommand -text "$caption(t193,portCommand)"
-   pack $frm.labportCommand -in [ $frm.ethernet getframe ] -anchor n -side left -padx 10 -pady 10
-
-   #--- Entry du port Ethernet de commande
-   entry $frm.portCommand -textvariable ::t193::private(telescopeCommandPort) -width 7 -justify center
-   pack $frm.portCommand -in [ $frm.ethernet getframe ] -anchor n -side left -padx 0 -pady 10
-
-   #--- Definition du port Ethernet de notification
-   label $frm.labportNotification -text "$caption(t193,portNotification)"
-   pack $frm.labportNotification -in [ $frm.ethernet getframe ] -anchor n -side left -padx 10 -pady 10
-
-   #--- Entry du port Ethernet de notification
-   entry $frm.portNotification -textvariable ::t193::private(telescopeNotificationPort) -width 7 -justify center
-   pack $frm.portNotification -in [ $frm.ethernet getframe ] -anchor n -side left -padx 0 -pady 10
 
    #--- Frame des vitesses
    frame $frm.frame3.speed -borderwidth 0
@@ -602,10 +608,12 @@ proc ::t193::configureConfigPage { } {
    if { [ winfo exists $private(frm) ] } {
       if { $private(mode) == "HP1000" } {
          pack forget $private(frm).ethernet
+         pack forget $private(frm).attenuateur
          pack $private(frm).carteUSB -side top -fill x
       } elseif { $private(mode) == "ETHERNET" } {
          pack forget $private(frm).carteUSB
          pack $private(frm).ethernet -side top -fill x
+         pack $private(frm).attenuateur -side top -fill x
       }
       if { [ ::t193::isReady ] == 1 } {
          #--- J'active les boutons de l'interface
