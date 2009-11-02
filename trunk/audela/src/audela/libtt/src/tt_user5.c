@@ -194,7 +194,7 @@ int tt_user5_ima_stack_dispatch1(TT_IMA_STACK *pstack,int *fct_found, int *msg)
 /**************************************************************************/
 //buf1 imaseries "ROTENTIERE X0=1024 Y0=1024 ANGLE=45 nullpixel=0"
 
-int tt_ima_rot(TT_IMA_SERIES *pseries)
+int tt_ima_rot(TT_IMA_SERIES *pseries)	
 {
    TT_IMA *p_in,*p_out, *p_tmp1;
    int index;
@@ -255,8 +255,16 @@ int tt_ima_rot(TT_IMA_SERIES *pseries)
          old_y = y-(y1-y0);
          value = interpol2(pseries,p_in,old_x,old_y,1);
          p_tmp1->p[x+y*w]=(TT_PTYPE)(value);
-      } /* end of y-loop */
-   } /* end of x_loop */
+      } 
+   } 
+   a[0]=1;
+   a[1]=0;
+   a[2]=x1-x0;
+   a[3]=0;
+   a[4]=1;
+   a[5]=y1-y0;
+   tt_util_update_wcs(p_in,p_tmp1,a,2,NULL);
+
    //tt_imasaver(p_tmp1,"D:/translation.fit",16);
   
    /* --- rotation de l'image dans la grande image --- */
@@ -278,7 +286,7 @@ int tt_ima_rot(TT_IMA_SERIES *pseries)
    a[3]=-sin_theta;
    a[4]=cos_theta;
    a[5]=sin_theta*x1-cos_theta*y1+y1;
-   tt_util_update_wcs(p_in,p_out,a,2,NULL);
+   tt_util_update_wcs(p_tmp1,p_out,a,2,NULL);
 
    /* --- calcul des temps (pour l'entete fits) ---*/
    pseries->jj_stack=pseries->jj[index-1];
