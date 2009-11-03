@@ -241,7 +241,7 @@ unsigned char Image::AudelaAImage(Tcl_Interp *interp, unsigned short numbuf) {
   /*-- on recupere les pixels --*/
   //Yassine
   //sprintf(lignetcl,"buf%d getpixels %d",numbuf, (int)adresse_float);
-  sprintf(lignetcl,"buf%d getpixels %d",numbuf, (long)adresse_float);
+  sprintf(lignetcl,"buf%d getpixels %ld",numbuf, (long)adresse_float);
   if( Tcl_Eval(interp,lignetcl) != TCL_OK  ) { return TCL_ERROR; }
 
   /* -- recherche le mot cle DATE-OBS dans l'entete FITS --*/
@@ -280,7 +280,7 @@ unsigned char Image::ImageAAudela(Tcl_Interp *interp, unsigned short numbuf) {
   /*-- on copie le contenu de l'image dans un tampon AudeLA --*/
   //Yassine
   //sprintf(lignetcl,"buf%d setpixels CLASS_GRAY %d %d  FORMAT_FLOAT COMPRESS_NONE %d",numbuf ,(int)naxis1, (int)naxis2, (int)adresse_float);
-  sprintf(lignetcl,"buf%d setpixels CLASS_GRAY %d %d  FORMAT_FLOAT COMPRESS_NONE %d",numbuf ,(int)naxis1, (int)naxis2, (long)adresse_float);
+  sprintf(lignetcl,"buf%d setpixels CLASS_GRAY %d %d  FORMAT_FLOAT COMPRESS_NONE %ld",numbuf ,(int)naxis1, (int)naxis2, (long)adresse_float);
   if( Tcl_Eval(interp,lignetcl) != TCL_OK  ) { return TCL_ERROR; }
 
   return(TCL_OK);

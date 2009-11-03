@@ -357,9 +357,9 @@ unsigned char Image::Dxx(Image* image1)
   /* --- procedure principale */
   for (y=0 ; y<naxis2 ; y++) {
     pixel_2 = (*image1).LectureFloat(0, y, &retour);
-    if (retour == 1) return(1);
+    if (retour == 1) return 1;
     pixel_3 = (*image1).LectureFloat(1, y, &retour);
-    if (retour == 1) return(1);
+    if (retour == 1) return 1;
     pixel_result = pixel_3 - pixel_2;
     EcritureFloat(0, y, pixel_result);
   }
@@ -368,11 +368,11 @@ unsigned char Image::Dxx(Image* image1)
     for (y=0 ; y<naxis2 ; y++) {
 
       pixel_1 = (*image1).LectureFloat(x-1, y, &retour);
-      if (retour == 1) return(1);
+      if (retour == 1) return 1;
       pixel_2 = (*image1).LectureFloat(x, y, &retour);
-      if (retour == 1) return(1);
+      if (retour == 1) return 1;
       pixel_3 = (*image1).LectureFloat(x+1, y, &retour);
-      if (retour == 1) return(1);
+      if (retour == 1) return 1;
       pixel_result = pixel_3 - 2 * pixel_2 + pixel_1;
       EcritureFloat(x, y, pixel_result);
     }
@@ -381,14 +381,14 @@ unsigned char Image::Dxx(Image* image1)
   for (y=0 ; y<naxis2 ; y++) {
 
     pixel_1 = (*image1).LectureFloat(naxis1 - 2, y, &retour);
-    if (retour = 1) return(1);
+    if (retour == 1) return 1;
     pixel_2 = (*image1).LectureFloat(naxis1 - 1, y, &retour);
-    if (retour = 1) return(1);
+    if (retour == 1) return 1;
     pixel_result = - pixel_2 + pixel_1;
     EcritureFloat(naxis1-1, y, pixel_result);
   }
 
-  return(retour);
+  return retour;
 }
 
 
