@@ -95,12 +95,12 @@ void *ThreadReceiveSocket(void *dummy)
 {
     const int BufferSize = 1600;
     int NbPacket;
-    int NbByteReceived[41];
+    unsigned int NbByteReceived[41];
     fd_set ReceiveStatus;
     FD_ZERO(&ReceiveStatus);
     FD_SET(SocketHandle, &ReceiveStatus);
 #ifdef UDPSOCKET_DEBUG
-    printf("%f Création de la tache n°%d\n", GetTimeStamp(), tache++);
+    printf("%f CrÃ©ation de la tache no %d\n", GetTimeStamp(), tache++);
 #endif
     Thread_running = true;
 
