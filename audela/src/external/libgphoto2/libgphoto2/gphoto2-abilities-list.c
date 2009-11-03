@@ -1,7 +1,7 @@
 /** \file gphoto2-abilities-list.c
  * \brief List of supported camera models including their abilities.
  *
- * \author Copyright © 2000 Scott Fritzinger
+ * \author Copyright ï¿½ 2000 Scott Fritzinger
  *
  * \par
  * This library is free software; you can redistribute it and/or
@@ -208,7 +208,7 @@ gp_abilities_list_load_dir (CameraAbilitiesList *list, const char *dir,
       ////strcat(filename,".dll");
   		lh = lt_dlopen (filename);
 #else 
-         if( strstr(strlwr((char *) filename), "libgphoto2_") == NULL ) {
+         if( strstr(tolower((char *) filename), "libgphoto2_") == NULL ) {
             continue;
 
          }
