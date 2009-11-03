@@ -15,10 +15,9 @@ include ../../../Makefile1
 CXXFLAGS += -I $(EXTINC)
 
 
+
 $(OUTPUT): $(OBJ) $(OUTPUTDIR)/libgphoto2.so 
-	@echo "*lib:" > libdigicam.specs
-	@echo "    -rpath ." >> libdigicam.specs
-	$(LD) $(LDFLAGS) -specs libdigicam.specs -L$(OUTPUTDIR) -lgphoto2 -o $@ $(OBJ)
+	$(LD) -L$(OUTPUTDIR) $(LDFLAGS) -Xlinker -rpath $(OUTPUTDIR) -lgphoto2 -o $@ $(OBJ)
 	$(CP) $@ $(OUTPUTDIR)
-	@$(RM) libdigicam.specs
+
 
