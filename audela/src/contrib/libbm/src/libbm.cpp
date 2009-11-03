@@ -17,12 +17,12 @@ extern "C" int Bm_Init(Tcl_Interp*interp)
 #endif
 {
    if(Tcl_InitStubs(interp,"8.4",0)==NULL) {
-      Tcl_SetResult(interp,"Tcl Stubs initialization failed in libbm.",TCL_STATIC);
+      Tcl_SetResult(interp,(char*)"Tcl Stubs initialization failed in libbm.",TCL_STATIC);
       return TCL_ERROR;
    }
 
-  // Si les deux DLLs ont bien été chargées, on enregistre
-  // les fonctions de la bibliothèque qui seront alors disponibles
+  // Si les deux DLLs ont bien ï¿½tï¿½ chargï¿½es, on enregistre
+  // les fonctions de la bibliothï¿½que qui seront alors disponibles
   // depuis l'interpreteur TCL, de la meme maniere que toutes les
   // autres fonctions TCL.
   // Ajoutez ici les fonctions externes...
