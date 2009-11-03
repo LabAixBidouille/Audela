@@ -1,7 +1,3 @@
-################################################################################
-# Automatically-generated file. Do not edit!
-################################################################################
-
 -include ../makefile.init
 
 RM := rm -rf
@@ -42,6 +38,7 @@ clean:
 
 install: all
 	cp libgphoto2.so     ../../../../../bin/libgphoto2.so
+	cp ../libgphoto2.h ../../../include/libgphoto2.h
 	-@echo ' '
 
 .PHONY: all clean dependents install
