@@ -103,7 +103,7 @@
 
 /* #define UDPSOCKET_DEBUG */
 
-/* les types utilisés: */
+/* les types utilisÃ©s: */
 typedef unsigned char TBuffer[1600];
 typedef TBuffer *PBuffer;
 #ifdef LINUX
@@ -181,6 +181,6 @@ int send_broadcast(int fd, unsigned char *buffer, int nbytes, unsigned short por
 
 int send_ip_addr(int fd, unsigned short port, unsigned char Ip1, unsigned char Ip2, unsigned char Ip3, unsigned char Ip4);
 
-int receive_data(const char *addr, int n_packet, PBufferList buffer, unsigned const int *n_byte_recvd_list);
+int receive_data(const char *addr, int n_packet, PBufferList buffer, const unsigned int *n_byte_recvd_list);
 
 #endif				/* ifndef UDPSOCKETCOMPONENT_H */
