@@ -1,10 +1,10 @@
 #
 # Fichier : audela.cap
-# Mise a jour $Id: audela.cap,v 1.7 2008-04-26 11:07:16 robertdelmas Exp $
+# Mise a jour $Id: audela.cap,v 1.8 2009-11-04 18:38:55 robertdelmas Exp $
 #
 
 #=========================================================================
-#   D�but de la d�claration des textes localis�s (internationalisation)
+#   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
 global caption
@@ -15,11 +15,11 @@ set caption(audela,main_title)        "AudeLA"
 set caption(audela,language)          "Language Selection:"
 set caption(audela,launch)            "Run AudeLA"
 
-# *************** Version fran�aise ***************************
+# *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audela,main_title)     "AudeLA"
-   set caption(audela,language)       "S�lection de la langue :"
+   set caption(audela,language)       "Sélection de la langue :"
    set caption(audela,launch)         "Lancer AudeLA"
 
 # *************** Version italienne ***************************
@@ -33,7 +33,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(audela,main_title)     "AudeLA"
-   set caption(audela,language)       "Selecci� de idioma:"
+   set caption(audela,language)       "Selecció de idioma:"
    set caption(audela,launch)         "Arrancar AudeLA"
 
 # *************** Version allemande ***************************
@@ -41,13 +41,13 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audela,main_title)     "AudeLA"
    set caption(audela,language)       "Sprache Wahl:"
-   set caption(audela,launch)         "Ausf�hren AudeLA"
+   set caption(audela,launch)         "Ausführen AudeLA"
 
-# *************** Version portugaise ****************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(audela,main_title)     "AudeLA"
-   set caption(audela,language)       "Selec��o de idioma:"
+   set caption(audela,language)       "Selecção de idioma:"
    set caption(audela,launch)         "Executar AudeLA"
 
 # *************** Version danoise *****************************
@@ -55,11 +55,25 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audela,main_title)     "AudeLA"
    set caption(audela,language)       "Valg af sprog:"
-   set caption(audela,launch)         "K�r AudeLA"
+   set caption(audela,launch)         "Kør AudeLA"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(audela,main_title)     "AudeLA"
+   set caption(audela,language)       "Вибір мови:"
+   set caption(audela,launch)         "Запустити AudeLA"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(audela,main_title)     "AudeLA"
+   set caption(audela,language)       "Выбор языка:"
+   set caption(audela,launch)         "Запустить AudeLA"
 
 }
 
 #=========================================================================
-#   Fin de la d�claration des textes localis�s (internationalisation)
+#   Fin de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
