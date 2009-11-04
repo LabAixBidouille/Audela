@@ -1,10 +1,10 @@
 #
 # Fichier : fullscreen.cap
-# Mise a jour $Id: fullscreen.cap,v 1.10 2007-01-27 14:44:41 robertdelmas Exp $
+# Mise a jour $Id: fullscreen.cap,v 1.11 2009-11-04 18:36:26 robertdelmas Exp $
 #
 
 #=========================================================================
-#   DÈbut de la dÈclaration des textes localisÈs (internationalisation)
+#   D√©but de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -36,12 +36,12 @@ set caption(fullscreen,slide_show1)         "Slideshow:"
 set caption(fullscreen,slide_show_delai)    "Delay"
 set caption(fullscreen,seconde)             "second"
 
-# *************** Version franÁaise ***************************
+# *************** Version fran√ßaise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    #--- Menu
    set caption(fullscreen,next_image)       "Image suivante"
-   set caption(fullscreen,previous_image)   "Image prÈcÈdente"
+   set caption(fullscreen,previous_image)   "Image pr√©c√©dente"
    set caption(fullscreen,slide_show)       "Diaporama"
    set caption(fullscreen,configure)        "Configurer..."
    set caption(fullscreen,close)            "Fermer (Echap)"
@@ -57,11 +57,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,help)             "Aide..."
 
    #--- Interface de configuration
-   set caption(fullscreen,title)            "Configuration de la fenÍtre plein Ècran"
+   set caption(fullscreen,title)            "Configuration de la fen√™tre plein √©cran"
    set caption(fullscreen,color_label)      "Couleur du fond"
-   set caption(fullscreen,auto_start_anim)  "DÈmarrer les animations automatiquement"
+   set caption(fullscreen,auto_start_anim)  "D√©marrer les animations automatiquement"
    set caption(fullscreen,slide_show1)      "Diaporama :"
-   set caption(fullscreen,slide_show_delai) "DÈlai"
+   set caption(fullscreen,slide_show_delai) "D√©lai"
    set caption(fullscreen,seconde)          "seconde"
 
 # *************** Version italienne ***************************
@@ -102,7 +102,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,configure)        "Configurar..."
    set caption(fullscreen,close)            "Cerrar (Esc)"
    set caption(fullscreen,zoom_auto)        "Auto"
-   set caption(fullscreen,animation)        "AnimaciÛn"
+   set caption(fullscreen,animation)        "Animaci√≥n"
    set caption(fullscreen,zoom)             "Zoom"
    set caption(fullscreen,zoom_0.125)       "x 0.125"
    set caption(fullscreen,zoom_0.25)        "x 0.25"
@@ -113,9 +113,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,help)             "Ayuda..."
 
    #--- Interface de configuration
-   set caption(fullscreen,title)            "ConfiguraciÛn de pantalla completa"
+   set caption(fullscreen,title)            "Configuraci√≥n de pantalla completa"
    set caption(fullscreen,color_label)      "Color de fondo"
-   set caption(fullscreen,auto_start_anim)  "Comenzar la animaciÛn autom·ticamente"
+   set caption(fullscreen,auto_start_anim)  "Comenzar la animaci√≥n autom√°ticamente"
    set caption(fullscreen,slide_show1)      "Diapositivas:"
    set caption(fullscreen,slide_show_delai) "Tiempo"
    set caption(fullscreen,seconde)          "segundo"
@@ -124,11 +124,11 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    #--- Menu
-   set caption(fullscreen,next_image)       "N‰chstes Bild"
+   set caption(fullscreen,next_image)       "N√§chstes Bild"
    set caption(fullscreen,previous_image)   "Voriges Bild"
    set caption(fullscreen,slide_show)       "Diashow"
    set caption(fullscreen,configure)        "Konfigurieren..."
-   set caption(fullscreen,close)            "Schlieﬂen (Esc)"
+   set caption(fullscreen,close)            "Schlie√üen (Esc)"
    set caption(fullscreen,zoom_auto)        "Auto"
    set caption(fullscreen,animation)        "Animation"
    set caption(fullscreen,zoom)             "Zoom"
@@ -148,17 +148,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,slide_show_delai) "Abwarten"
    set caption(fullscreen,seconde)          "Sekunde"
 
-# *************** Version portugaise ****************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    #--- Menu
-   set caption(fullscreen,next_image)       "PrÛxima Imagem"
+   set caption(fullscreen,next_image)       "Pr√≥xima Imagem"
    set caption(fullscreen,previous_image)   "Imagem Anterior"
    set caption(fullscreen,slide_show)       "Slideshow"
-   set caption(fullscreen,configure)        "ConfiguraÁ„o..."
+   set caption(fullscreen,configure)        "Configura√ß√£o..."
    set caption(fullscreen,close)            "Fechar (Esc)"
    set caption(fullscreen,zoom_auto)        "Auto"
-   set caption(fullscreen,animation)        "AnimaÁ„o"
+   set caption(fullscreen,animation)        "Anima√ß√£o"
    set caption(fullscreen,zoom)             "Zoom"
    set caption(fullscreen,zoom_0.125)       "x 0.125"
    set caption(fullscreen,zoom_0.25)        "x 0.25"
@@ -169,9 +169,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,help)             "Ajuda..."
 
    #--- Interface de configuration
-   set caption(fullscreen,title)            "ConfiguraÁıes da janela em ecr„ inteiro"
+   set caption(fullscreen,title)            "Configura√ß√µes da janela em ecr√£ inteiro"
    set caption(fullscreen,color_label)      "Cor de fundo"
-   set caption(fullscreen,auto_start_anim)  "ComeÁar AnimaÁ„o Automaticamente"
+   set caption(fullscreen,auto_start_anim)  "Come√ßar Anima√ß√£o Automaticamente"
    set caption(fullscreen,slide_show1)      "Slideshow:"
    set caption(fullscreen,slide_show_delai) "Atraso"
    set caption(fullscreen,seconde)          "segundo"
@@ -180,10 +180,10 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    #--- Menu
-   set caption(FullScreen,next_image)       "NÊste billede"
-   set caption(FullScreen,previous_image)   "ForegÂende billede"
+   set caption(FullScreen,next_image)       "N√¶ste billede"
+   set caption(FullScreen,previous_image)   "Foreg√•ende billede"
    set caption(FullScreen,slide_show)       "Slideshow"
-   set caption(FullScreen,configure)        "OpsÊtning..."
+   set caption(FullScreen,configure)        "Ops√¶tning..."
    set caption(fullscreen,close)            "Luk (Esc)"
    set caption(fullscreen,zoom_auto)        "Auto"
    set caption(FullScreen,animation)        "Animation"
@@ -194,19 +194,75 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,zoom_1)           "x 1"
    set caption(fullscreen,zoom_2)           "x 2"
    set caption(fullscreen,zoom_4)           "x 4"
-   set caption(fullscreen,help)             "HjÊlp..."
+   set caption(fullscreen,help)             "Hj√¶lp..."
 
    #--- Interface de configuration
-   set caption(FullScreen,title)            "Windows-indstilling til fuld skÊrm"
+   set caption(FullScreen,title)            "Windows-indstilling til fuld sk√¶rm"
    set caption(FullScreen,color_label)      "Baggrundsfarve"
    set caption(FullScreen,auto_start_anim)  "Start animation automatisk"
    set caption(fullscreen,slide_show1)      "Slideshow:"
    set caption(fullscreen,slide_show_delai) "Forsinkelse"
    set caption(fullscreen,seconde)          "sekund"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   #--- Menu
+   set caption(fullscreen,next_image)       "Next Image"
+   set caption(fullscreen,previous_image)   "Previous Image"
+   set caption(fullscreen,slide_show)       "Slideshow"
+   set caption(fullscreen,configure)        "Set up..."
+   set caption(fullscreen,close)            "Close (Esc)"
+   set caption(fullscreen,zoom_auto)        "Auto"
+   set caption(fullscreen,animation)        "Animation"
+   set caption(fullscreen,zoom)             "Zoom"
+   set caption(fullscreen,zoom_0.125)       "x 0.125"
+   set caption(fullscreen,zoom_0.25)        "x 0.25"
+   set caption(fullscreen,zoom_0.5)         "x 0.5"
+   set caption(fullscreen,zoom_1)           "x 1"
+   set caption(fullscreen,zoom_2)           "x 2"
+   set caption(fullscreen,zoom_4)           "x 4"
+   set caption(fullscreen,help)             "Help..."
+
+   #--- Interface de configuration
+   set caption(fullscreen,title)            "Full Screen Window Settings"
+   set caption(fullscreen,color_label)      "Background Color"
+   set caption(fullscreen,auto_start_anim)  "Start Animation Automatically"
+   set caption(fullscreen,slide_show1)      "Slideshow:"
+   set caption(fullscreen,slide_show_delai) "Delay"
+   set caption(fullscreen,seconde)          "second"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   #--- Menu
+   set caption(fullscreen,next_image)       "Next Image"
+   set caption(fullscreen,previous_image)   "Previous Image"
+   set caption(fullscreen,slide_show)       "Slideshow"
+   set caption(fullscreen,configure)        "Set up..."
+   set caption(fullscreen,close)            "Close (Esc)"
+   set caption(fullscreen,zoom_auto)        "Auto"
+   set caption(fullscreen,animation)        "Animation"
+   set caption(fullscreen,zoom)             "Zoom"
+   set caption(fullscreen,zoom_0.125)       "x 0.125"
+   set caption(fullscreen,zoom_0.25)        "x 0.25"
+   set caption(fullscreen,zoom_0.5)         "x 0.5"
+   set caption(fullscreen,zoom_1)           "x 1"
+   set caption(fullscreen,zoom_2)           "x 2"
+   set caption(fullscreen,zoom_4)           "x 4"
+   set caption(fullscreen,help)             "Help..."
+
+   #--- Interface de configuration
+   set caption(fullscreen,title)            "Full Screen Window Settings"
+   set caption(fullscreen,color_label)      "Background Color"
+   set caption(fullscreen,auto_start_anim)  "Start Animation Automatically"
+   set caption(fullscreen,slide_show1)      "Slideshow:"
+   set caption(fullscreen,slide_show_delai) "Delay"
+   set caption(fullscreen,seconde)          "second"
+
 }
 
 #=========================================================================
-#   Fin de la dÈclaration des textes localisÈs (internationalisation)
+#   Fin de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 

@@ -1,10 +1,10 @@
 #
 # Fichier : carte.cap
-# Mise a jour $Id: carte.cap,v 1.5 2007-01-27 14:36:29 robertdelmas Exp $
+# Mise a jour $Id: carte.cap,v 1.6 2009-11-04 18:30:58 robertdelmas Exp $
 #
 
 #=========================================================================
-#   DÈbut de la dÈclaration des textes localisÈs (internationalisation)
+#   D√©but de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -16,13 +16,13 @@ set caption(carte,error_no_image)         "Please display an image first."
 set caption(carte,error_no_map)           "No external chart is selected.\nDo you want to choose an external chart?"
 set caption(carte,error_image_buffer)     "This image has no celestial coordinates."
 
-# *************** Version franÁaise ***************************
+# *************** Version fran√ßaise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(carte,title)               "Carte externe"
    set caption(carte,error_no_image)      "Veuillez d'abord afficher une image."
-   set caption(carte,error_no_map)        "Aucune carte externe n'est sÈlectionnÈe.\nVoulez-vous choisir une carte externe ?"
-   set caption(carte,error_image_buffer)  "Cette image n'a pas de coordonnÈe cÈleste."
+   set caption(carte,error_no_map)        "Aucune carte externe n'est s√©lectionn√©e.\nVoulez-vous choisir une carte externe ?"
+   set caption(carte,error_image_buffer)  "Cette image n'a pas de coordonn√©e c√©leste."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -43,30 +43,46 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(carte,title)               "ƒuﬂere Karte"
+   set caption(carte,title)               "√Ñu√üere Karte"
    set caption(carte,error_no_image)      "Bitte ein Bild erst anzeigen."
-   set caption(carte,error_no_map)        "Keine ‰uﬂere Karte gew‰hlt.\nWollen sie eine ‰uﬂere Karte w‰hlen ?"
+   set caption(carte,error_no_map)        "Keine √§u√üere Karte gew√§hlt.\nWollen sie eine √§u√üere Karte w√§hlen ?"
    set caption(carte,error_image_buffer)  "Dieses Bild hat keinen Himmel Koordinaten."
 
-# *************** Version portugaise ***************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(carte,title)               "Mapa externo"
    set caption(carte,error_no_image)      "Por favor, mostre primeiro uma imagem."
    set caption(carte,error_no_map)        "Nenhum mapa externo seleccionado.\nDeseja escolher um mapa externo?"
-   set caption(carte,error_image_buffer)  "Esta imagem n„o tem coordenadas celestes."
+   set caption(carte,error_image_buffer)  "Esta imagem n√£o tem coordenadas celestes."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(carte,title)               "Eksternt stjernekort"
-   set caption(carte,error_no_image)      "Vis et billede f¯rst."
-   set caption(carte,error_no_map)        "Intet eksternt kort er valgt.\nÿnsker du at vÊlge et eksternt kort?"
+   set caption(carte,error_no_image)      "Vis et billede f√∏rst."
+   set caption(carte,error_no_map)        "Intet eksternt kort er valgt.\n√ònsker du at v√¶lge et eksternt kort?"
    set caption(carte,error_image_buffer)  "Dette billede har ingen celeste-koordinater."
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(carte,title)               "External Chart"
+   set caption(carte,error_no_image)      "Please display an image first."
+   set caption(carte,error_no_map)        "No external chart is selected.\nDo you want to choose an external chart?"
+   set caption(carte,error_image_buffer)  "This image has no celestial coordinates."
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(carte,title)               "External Chart"
+   set caption(carte,error_no_image)      "Please display an image first."
+   set caption(carte,error_no_map)        "No external chart is selected.\nDo you want to choose an external chart?"
+   set caption(carte,error_image_buffer)  "This image has no celestial coordinates."
 
 }
 
 #=========================================================================
-#   Fin de la dÈclaration des textes localisÈs (internationalisation)
+#   Fin de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 

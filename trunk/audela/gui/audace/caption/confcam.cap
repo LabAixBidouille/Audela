@@ -1,10 +1,10 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.47 2008-12-20 14:54:32 robertdelmas Exp $
+# Mise a jour $Id: confcam.cap,v 1.48 2009-11-04 18:31:50 robertdelmas Exp $
 #
 
 #=========================================================================
-#   DÈbut de la dÈclaration des textes localisÈs (internationalisation)
+#   D√©but de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -37,34 +37,34 @@ set caption(confcam,seeconsole)                 "See details in the Terminal scr
 set caption(confcam,pb)                         "Problem"
 set caption(confcam,onlycam+obt)                "Sorry, this function is not\navailable with this camera."
 
-# *************** Version franÁaise ***************************
+# *************** Version fran√ßaise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(confcam,config)                  "Configuration de la camÈra"
-   set caption(confcam,creer_au_demarrage)      "Connexion automatique de cette camÈra au prochain dÈmarrage"
+   set caption(confcam,config)                  "Configuration de la cam√©ra"
+   set caption(confcam,creer_au_demarrage)      "Connexion automatique de cette cam√©ra au prochain d√©marrage"
    set caption(confcam,nouvelle_visu)           "nouvelle"
    set caption(confcam,ok)                      "OK"
    set caption(confcam,appliquer)               "Appliquer"
    set caption(confcam,fermer)                  "Fermer"
    set caption(confcam,aide)                    "Aide"
-   set caption(confcam,arreter)                 "ArrÍter"
+   set caption(confcam,arreter)                 "Arr√™ter"
 
    set caption(confcam,obtu_ouvert)             "Ouvert"
-   set caption(confcam,obtu_ferme)              "FermÈ"
+   set caption(confcam,obtu_ferme)              "Ferm√©"
    set caption(confcam,obtu_synchro)            "Synchro"
 
-   set caption(confcam,camera)                  "CamÈra :"
+   set caption(confcam,camera)                  "Cam√©ra :"
 
    set caption(confcam,attention)               "Attention"
    set caption(confcam,connexion_texte1)        "Veuillez patienter quelques secondes"
-   set caption(confcam,connexion_texte2)        "pendant la connexion de votre camÈra."
-   set caption(confcam,connexion_texte3)        "Une seule camÈra de ce type peut Ítre connectÈe.\nVeuillez en choisir une autre."
-   set caption(confcam,notroot)                 "Vous devez Ítre root pour utiliser cette camÈra."
-   set caption(confcam,cannotcreatecam)         "La camÈra ne peut pas Ítre crÈÈe."
-   set caption(confcam,seeconsole)              "DÈtails dans la Console."
+   set caption(confcam,connexion_texte2)        "pendant la connexion de votre cam√©ra."
+   set caption(confcam,connexion_texte3)        "Une seule cam√©ra de ce type peut √™tre connect√©e.\nVeuillez en choisir une autre."
+   set caption(confcam,notroot)                 "Vous devez √™tre root pour utiliser cette cam√©ra."
+   set caption(confcam,cannotcreatecam)         "La cam√©ra ne peut pas √™tre cr√©√©e."
+   set caption(confcam,seeconsole)              "D√©tails dans la Console."
 
-   set caption(confcam,pb)                      "ProblËme"
-   set caption(confcam,onlycam+obt)             "DÈsolÈ, cette fonction n'est pas\ndisponible avec cette camÈra."
+   set caption(confcam,pb)                      "Probl√®me"
+   set caption(confcam,onlycam+obt)             "D√©sol√©, cette fonction n'est pas\ndisponible avec cette cam√©ra."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -98,8 +98,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(confcam,config)                  "ConfiguraciÛn de la c·mara"
-   set caption(confcam,creer_au_demarrage)      "La prÛxima vez que se ejecute el programa, la c·mara se conecta autom·ticamente"
+   set caption(confcam,config)                  "Configuraci√≥n de la c√°mara"
+   set caption(confcam,creer_au_demarrage)      "La pr√≥xima vez que se ejecute el programa, la c√°mara se conecta autom√°ticamente"
    set caption(confcam,nouvelle_visu)           "nueva"
    set caption(confcam,ok)                      "OK"
    set caption(confcam,appliquer)               "Aplicar"
@@ -111,28 +111,28 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,obtu_ferme)              "Cerrado"
    set caption(confcam,obtu_synchro)            "Sincro"
 
-   set caption(confcam,camera)                  "C·mara:"
+   set caption(confcam,camera)                  "C√°mara:"
 
-   set caption(confcam,attention)               "!Cuidado°"
-   set caption(confcam,connexion_texte1)        "Conectando con la c·mara..."
+   set caption(confcam,attention)               "!Cuidado¬°"
+   set caption(confcam,connexion_texte1)        "Conectando con la c√°mara..."
    set caption(confcam,connexion_texte2)        "Por favor, espere unos segundos."
    set caption(confcam,connexion_texte3)        "Solo se puede conectar una camara de este tipo.\nPor favor, seleccione otra camara."
-   set caption(confcam,notroot)                 "Debe ser root para usar esta c·mara."
-   set caption(confcam,cannotcreatecam)         "La c·mara no puede ser creada."
+   set caption(confcam,notroot)                 "Debe ser root para usar esta c√°mara."
+   set caption(confcam,cannotcreatecam)         "La c√°mara no puede ser creada."
    set caption(confcam,seeconsole)              "Ver detalles en la Consola."
 
    set caption(confcam,pb)                      "Problema"
-   set caption(confcam,onlycam+obt)             "Lo siento, esta funciÛn\nno est· disponible en\neste modelo de c·mara."
+   set caption(confcam,onlycam+obt)             "Lo siento, esta funci√≥n\nno est√° disponible en\neste modelo de c√°mara."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(confcam,config)                  "Kamera Konfiguration"
-   set caption(confcam,creer_au_demarrage)      "N‰chste Mal diese Kamera automatisch anschlieﬂen"
+   set caption(confcam,creer_au_demarrage)      "N√§chste Mal diese Kamera automatisch anschlie√üen"
    set caption(confcam,nouvelle_visu)           "neue"
    set caption(confcam,ok)                      "OK"
    set caption(confcam,appliquer)               "Anwenden"
-   set caption(confcam,fermer)                  "Schlieﬂen"
+   set caption(confcam,fermer)                  "Schlie√üen"
    set caption(confcam,aide)                    "Hilfe"
    set caption(confcam,arreter)                 "Halten"
 
@@ -144,20 +144,20 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,attention)               "Achtung"
    set caption(confcam,connexion_texte1)        "Bitte, einige Sekunden warten"
-   set caption(confcam,connexion_texte2)        "w‰hrend das Kamera Anschluﬂ."
-   set caption(confcam,connexion_texte3)        "Nur eine Kamera dieser Typ kann verbunden sein.\nBitte eine andere w‰hlen.."
-   set caption(confcam,notroot)                 "Um diese Kamera zu verwenden m¸ssen Sie root sein."
+   set caption(confcam,connexion_texte2)        "w√§hrend das Kamera Anschlu√ü."
+   set caption(confcam,connexion_texte3)        "Nur eine Kamera dieser Typ kann verbunden sein.\nBitte eine andere w√§hlen.."
+   set caption(confcam,notroot)                 "Um diese Kamera zu verwenden m√ºssen Sie root sein."
    set caption(confcam,cannotcreatecam)         "Die Kamera kann nicht hergestellt werden."
    set caption(confcam,seeconsole)              "Siehe Details auf der Konsole."
 
    set caption(confcam,pb)                      "Problem"
-   set caption(confcam,onlycam+obt)             "Diese Funktion ist leider nicht\nmit diese Kamera verf¸gbar."
+   set caption(confcam,onlycam+obt)             "Diese Funktion ist leider nicht\nmit diese Kamera verf√ºgbar."
 
-# *************** Version portugaise ****************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(confcam,config)                  "ConfiguraÁ„o da c‚mara"
-   set caption(confcam,creer_au_demarrage)      "Conectar a c‚mara automaticamente na prÛxima vez que o software for executado"
+   set caption(confcam,config)                  "Configura√ß√£o da c√¢mara"
+   set caption(confcam,creer_au_demarrage)      "Conectar a c√¢mara automaticamente na pr√≥xima vez que o software for executado"
    set caption(confcam,nouvelle_visu)           "novo"
    set caption(confcam,ok)                      "OK"
    set caption(confcam,appliquer)               "Aplicar"
@@ -169,18 +169,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,obtu_ferme)              "Fechado"
    set caption(confcam,obtu_synchro)            "Sincro"
 
-   set caption(confcam,camera)                  "C‚mara:"
+   set caption(confcam,camera)                  "C√¢mara:"
 
    set caption(confcam,attention)               "Aviso"
-   set caption(confcam,connexion_texte1)        "Conex„o da c‚mara em curso..."
+   set caption(confcam,connexion_texte1)        "Conex√£o da c√¢mara em curso..."
    set caption(confcam,connexion_texte2)        "Por favor aguarde alguns segundos."
-   set caption(confcam,connexion_texte3)        "Apenas uma c‚mara deste tipo pode ser conectada.\nPor favor escolha outra c‚mara."
-   set caption(confcam,notroot)                 "VocÍ tem que estar na raiz para utilizar esta c‚mara."
-   set caption(confcam,cannotcreatecam)         "A c‚mara n„o pode ser criada."
+   set caption(confcam,connexion_texte3)        "Apenas uma c√¢mara deste tipo pode ser conectada.\nPor favor escolha outra c√¢mara."
+   set caption(confcam,notroot)                 "Voc√™ tem que estar na raiz para utilizar esta c√¢mara."
+   set caption(confcam,cannotcreatecam)         "A c√¢mara n√£o pode ser criada."
    set caption(confcam,seeconsole)              "Ver detalhes na Consola."
 
    set caption(confcam,pb)                      "Problema"
-   set caption(confcam,onlycam+obt)             "Desculpe, esta funÁ„o n„o est·\ndisponÌvel com esta c‚mara."
+   set caption(confcam,onlycam+obt)             "Desculpe, esta fun√ß√£o n√£o est√°\ndispon√≠vel com esta c√¢mara."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -211,9 +211,67 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,pb)                      "Problem"
    set caption(confcam,onlycam+obt)             "Sorry, this function is not\navailable with this camera."
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(confcam,config)                  "Camera Setup"
+   set caption(confcam,creer_au_demarrage)      "Next time software is run connect this camera automatically"
+   set caption(confcam,nouvelle_visu)           "new"
+   set caption(confcam,ok)                      "OK"
+   set caption(confcam,appliquer)               "Apply"
+   set caption(confcam,fermer)                  "Close"
+   set caption(confcam,aide)                    "Help"
+   set caption(confcam,arreter)                 "Stop"
+
+   set caption(confcam,obtu_ouvert)             "Open"
+   set caption(confcam,obtu_ferme)              "Closed"
+   set caption(confcam,obtu_synchro)            "Synchro"
+
+   set caption(confcam,camera)                  "Camera:"
+
+   set caption(confcam,attention)               "Warning"
+   set caption(confcam,connexion_texte1)        "Camera Connection in Progress..."
+   set caption(confcam,connexion_texte2)        "Please wait a few seconds."
+   set caption(confcam,connexion_texte3)        "Only one of this camera can be connected.\nPlease choose another camera."
+   set caption(confcam,notroot)                 "You must be root to use this camera."
+   set caption(confcam,cannotcreatecam)         "The link with the camera can not be created."
+   set caption(confcam,seeconsole)              "See details in the Terminal screen."
+
+   set caption(confcam,pb)                      "Problem"
+   set caption(confcam,onlycam+obt)             "Sorry, this function is not\navailable with this camera."
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(confcam,config)                  "Camera Setup"
+   set caption(confcam,creer_au_demarrage)      "Next time software is run connect this camera automatically"
+   set caption(confcam,nouvelle_visu)           "new"
+   set caption(confcam,ok)                      "OK"
+   set caption(confcam,appliquer)               "Apply"
+   set caption(confcam,fermer)                  "Close"
+   set caption(confcam,aide)                    "Help"
+   set caption(confcam,arreter)                 "Stop"
+
+   set caption(confcam,obtu_ouvert)             "Open"
+   set caption(confcam,obtu_ferme)              "Closed"
+   set caption(confcam,obtu_synchro)            "Synchro"
+
+   set caption(confcam,camera)                  "Camera:"
+
+   set caption(confcam,attention)               "Warning"
+   set caption(confcam,connexion_texte1)        "Camera Connection in Progress..."
+   set caption(confcam,connexion_texte2)        "Please wait a few seconds."
+   set caption(confcam,connexion_texte3)        "Only one of this camera can be connected.\nPlease choose another camera."
+   set caption(confcam,notroot)                 "You must be root to use this camera."
+   set caption(confcam,cannotcreatecam)         "The link with the camera can not be created."
+   set caption(confcam,seeconsole)              "See details in the Terminal screen."
+
+   set caption(confcam,pb)                      "Problem"
+   set caption(confcam,onlycam+obt)             "Sorry, this function is not\navailable with this camera."
+
 }
 
 #=========================================================================
-#   Fin de la dÈclaration des textes localisÈs (internationalisation)
+#   Fin de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 

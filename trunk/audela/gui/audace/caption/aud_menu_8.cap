@@ -1,10 +1,10 @@
 #
 # Fichier : aud_menu_8.cap
-# Mise a jour $Id: aud_menu_8.cap,v 1.6 2009-05-09 21:10:02 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_8.cap,v 1.7 2009-11-04 18:29:49 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -25,7 +25,7 @@ set caption(audace,console_gagne)                     "Access OK"
 set caption(audace,console_annule)                    "Cancelled"
 set caption(audace,console_rate)                      "Access not possible"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,aide)                      "Aide"
@@ -38,9 +38,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,notice_pdf)                "Notices (.pdf)"
    set caption(audace,menu,a_propos_de)               "A propos de ..."
 
-   set caption(audace,console_gagne)                  "Accès réussi"
-   set caption(audace,console_annule)                 "Annulé"
-   set caption(audace,console_rate)                   "Accès non possible"
+   set caption(audace,console_gagne)                  "AccÃ¨s rÃ©ussi"
+   set caption(audace,console_annule)                 "AnnulÃ©"
+   set caption(audace,console_rate)                   "AccÃ¨s non possible"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -87,33 +87,33 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,site_internet)             "Webseite (Internet)"
    set caption(audace,menu,site_dd)                   "Webseite (auf die Festplatte nachbilden)"
    set caption(audace,menu,notice_pdf)                "Bedienungsanleitung (.pdf)"
-   set caption(audace,menu,a_propos_de)               "Über AudeLA"
+   set caption(audace,menu,a_propos_de)               "Ãœber AudeLA"
 
    set caption(audace,console_gagne)                  "Zugriff gelungen"
    set caption(audace,console_annule)                 "Annulliert"
-   set caption(audace,console_rate)                   "Unmöglichen Zugang"
+   set caption(audace,console_rate)                   "UnmÃ¶glichen Zugang"
 
-# *************** Version portugaise ****************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(audace,menu,aide)                      "Ajuda"
-   set caption(audace,menu,sommaire)                  "Conteúdos"
-   set caption(audace,menu,fonctions)                 "Indice de funções"
+   set caption(audace,menu,sommaire)                  "ConteÃºdos"
+   set caption(audace,menu,fonctions)                 "Indice de funÃ§Ãµes"
    set caption(audace,menu,tutorial)                  "Tutorial"
    set caption(audace,menu,site_audela)               "Site Web"
    set caption(audace,menu,site_internet)             "Site Web (Internet)"
-   set caption(audace,menu,site_dd)                   "Site Web (cópia de disco rígido)"
+   set caption(audace,menu,site_dd)                   "Site Web (cÃ³pia de disco rÃ­gido)"
    set caption(audace,menu,notice_pdf)                "Manuais de utilizador (.pdf)"
    set caption(audace,menu,a_propos_de)               "Sobre..."
 
    set caption(audace,console_gagne)                  "Acesso OK"
    set caption(audace,console_annule)                 "Cancelado"
-   set caption(audace,console_rate)                   "O acesso não é possivel"
+   set caption(audace,console_rate)                   "O acesso nÃ£o Ã© possivel"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(audace,menu,aide)                      "Hjælp"
+   set caption(audace,menu,aide)                      "HjÃ¦lp"
    set caption(audace,menu,sommaire)                  "Indhold"
    set caption(audace,menu,fonctions)                 "Funktionsindex"
    set caption(audace,menu,tutorial)                  "Tutorial"
@@ -127,9 +127,43 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,console_annule)                 "Annulleret"
    set caption(audace,console_rate)                   "Ingen adgang"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(audace,menu,aide)                      "Help"
+   set caption(audace,menu,sommaire)                  "Contents"
+   set caption(audace,menu,fonctions)                 "Function Index"
+   set caption(audace,menu,tutorial)                  "Tutorial"
+   set caption(audace,menu,site_audela)               "Web Site"
+   set caption(audace,menu,site_internet)             "Web Site (Internet)"
+   set caption(audace,menu,site_dd)                   "Web Site (Hard Disk Copy)"
+   set caption(audace,menu,notice_pdf)                "User Guides (.pdf)"
+   set caption(audace,menu,a_propos_de)               "About..."
+
+   set caption(audace,console_gagne)                  "Access OK"
+   set caption(audace,console_annule)                 "Cancelled"
+   set caption(audace,console_rate)                   "Access not possible"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(audace,menu,aide)                      "Help"
+   set caption(audace,menu,sommaire)                  "Contents"
+   set caption(audace,menu,fonctions)                 "Function Index"
+   set caption(audace,menu,tutorial)                  "Tutorial"
+   set caption(audace,menu,site_audela)               "Web Site"
+   set caption(audace,menu,site_internet)             "Web Site (Internet)"
+   set caption(audace,menu,site_dd)                   "Web Site (Hard Disk Copy)"
+   set caption(audace,menu,notice_pdf)                "User Guides (.pdf)"
+   set caption(audace,menu,a_propos_de)               "About..."
+
+   set caption(audace,console_gagne)                  "Access OK"
+   set caption(audace,console_annule)                 "Cancelled"
+   set caption(audace,console_rate)                   "Access not possible"
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

@@ -1,10 +1,10 @@
 #
 # Fichier : conflink.cap
-# Mise a jour $Id: conflink.cap,v 1.13 2007-12-07 22:44:35 robertdelmas Exp $
+# Mise a jour $Id: conflink.cap,v 1.14 2009-11-04 18:34:09 robertdelmas Exp $
 #
 
 #=========================================================================
-#   DÈbut de la dÈclaration des textes localisÈs (internationalisation)
+#   D√©but de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -21,18 +21,18 @@ set caption(conflink,aide)                   "Help"
 
 set caption(conflink,pas_liaison)            "No Link."
 
-# *************** Version franÁaise ***************************
+# *************** Version fran√ßaise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(conflink,liaison)             "Liaison :"
    set caption(conflink,config)              "Configuration de la liaison"
-   set caption(conflink,creer_au_demarrage)  "Connexion automatique de cette liaison au prochain dÈmarrage"
+   set caption(conflink,creer_au_demarrage)  "Connexion automatique de cette liaison au prochain d√©marrage"
    set caption(conflink,ok)                  "OK"
    set caption(conflink,appliquer)           "Appliquer"
    set caption(conflink,fermer)              "Fermer"
    set caption(conflink,aide)                "Aide"
 
-   set caption(conflink,pas_liaison)         "Il n'y a pas de liaison prÈsente."
+   set caption(conflink,pas_liaison)         "Il n'y a pas de liaison pr√©sente."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -52,7 +52,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(conflink,liaison)             "Enlace:"
    set caption(conflink,config)              "Configuracion del enlace"
-   set caption(conflink,creer_au_demarrage)  "La prÛxima vez que se ejecute el programa, el enlace se conecta autom·ticamente"
+   set caption(conflink,creer_au_demarrage)  "La pr√≥xima vez que se ejecute el programa, el enlace se conecta autom√°ticamente"
    set caption(conflink,ok)                  "OK"
    set caption(conflink,appliquer)           "Aplicar"
    set caption(conflink,fermer)              "Cerrar"
@@ -65,26 +65,26 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(conflink,liaison)             "Link :"
    set caption(conflink,config)              "Link Konfiguration"
-   set caption(conflink,creer_au_demarrage)  "N‰chste Mal diesem Link automatisch anschlieﬂen"
+   set caption(conflink,creer_au_demarrage)  "N√§chste Mal diesem Link automatisch anschlie√üen"
    set caption(conflink,ok)                  "OK"
    set caption(conflink,appliquer)           "Anwenden"
-   set caption(conflink,fermer)              "Schlieﬂen"
+   set caption(conflink,fermer)              "Schlie√üen"
    set caption(conflink,aide)                "Hilfe"
 
    set caption(conflink,pas_liaison)         "Kein Link."
 
-# *************** Version portugaise ****************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(conflink,liaison)             "LigaÁ„o:"
-   set caption(conflink,config)              "ConfiguraÁ„o da ligaÁ„o"
-   set caption(conflink,creer_au_demarrage)  "Estabelecer esta ligaÁ„o automaticamente da prÛxima vez que o software for executado"
+   set caption(conflink,liaison)             "Liga√ß√£o:"
+   set caption(conflink,config)              "Configura√ß√£o da liga√ß√£o"
+   set caption(conflink,creer_au_demarrage)  "Estabelecer esta liga√ß√£o automaticamente da pr√≥xima vez que o software for executado"
    set caption(conflink,ok)                  "OK"
    set caption(conflink,appliquer)           "Aplicar"
    set caption(conflink,fermer)              "Fechar"
    set caption(conflink,aide)                "Ajuda"
 
-   set caption(conflink,pas_liaison)         "Sem ligaÁ„o."
+   set caption(conflink,pas_liaison)         "Sem liga√ß√£o."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -99,9 +99,35 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(conflink,pas_liaison)         "No Link."
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(conflink,liaison)             "Link:"
+   set caption(conflink,config)              "Link Configuration"
+   set caption(conflink,creer_au_demarrage)  "Next time software is run connect this link automatically"
+   set caption(conflink,ok)                  "OK"
+   set caption(conflink,appliquer)           "Apply"
+   set caption(conflink,fermer)              "Close"
+   set caption(conflink,aide)                "Help"
+
+   set caption(conflink,pas_liaison)         "No Link."
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(conflink,liaison)             "Link:"
+   set caption(conflink,config)              "Link Configuration"
+   set caption(conflink,creer_au_demarrage)  "Next time software is run connect this link automatically"
+   set caption(conflink,ok)                  "OK"
+   set caption(conflink,appliquer)           "Apply"
+   set caption(conflink,fermer)              "Close"
+   set caption(conflink,aide)                "Help"
+
+   set caption(conflink,pas_liaison)         "No Link."
+
 }
 
 #=========================================================================
-#   Fin de la dÈclaration des textes localisÈs (internationalisation)
+#   Fin de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 

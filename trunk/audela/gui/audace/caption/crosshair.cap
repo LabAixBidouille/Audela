@@ -1,10 +1,10 @@
 #
 # Fichier : crosshair.cap
-# Mise a jour $Id: crosshair.cap,v 1.5 2007-01-27 14:41:33 robertdelmas Exp $
+# Mise a jour $Id: crosshair.cap,v 1.6 2009-11-04 18:35:14 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -17,14 +17,14 @@ set caption(crosshair,current_state_label)      "Display"
 set caption(crosshair,color_label)              "Color"
 set caption(crosshair,color_crosshair)          "Crosshair Color"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(crosshair,titre)                 "Réticule"
-   set caption(crosshair,default_state_label)   "Afficher au démarrage"
+   set caption(crosshair,titre)                 "RÃ©ticule"
+   set caption(crosshair,default_state_label)   "Afficher au dÃ©marrage"
    set caption(crosshair,current_state_label)   "Afficher"
    set caption(crosshair,color_label)           "Couleur"
-   set caption(crosshair,color_crosshair)       "Couleur du réticule"
+   set caption(crosshair,color_crosshair)       "Couleur du rÃ©ticule"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -38,11 +38,11 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(crosshair,titre)                 "Retículo"
+   set caption(crosshair,titre)                 "RetÃ­culo"
    set caption(crosshair,default_state_label)   "Mostrar al arrancar"
    set caption(crosshair,current_state_label)   "Pantalla"
    set caption(crosshair,color_label)           "Color"
-   set caption(crosshair,color_crosshair)       "Color del retículo"
+   set caption(crosshair,color_crosshair)       "Color del retÃ­culo"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -53,27 +53,45 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(crosshair,color_label)           "Farbe"
    set caption(crosshair,color_crosshair)       "Farbe des Fadenkreuzes"
 
-# *************** Version portugaise ***************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(crosshair,titre)                 "Retículo"
+   set caption(crosshair,titre)                 "RetÃ­culo"
    set caption(crosshair,default_state_label)   "Mostrar ao iniciar"
    set caption(crosshair,current_state_label)   "Mostrar"
    set caption(crosshair,color_label)           "Cor"
-   set caption(crosshair,color_crosshair)       "Cor do retículo"
+   set caption(crosshair,color_crosshair)       "Cor do retÃ­culo"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(crosshair,titre)                 "Trådkors"
+   set caption(crosshair,titre)                 "TrÃ¥dkors"
    set caption(crosshair,default_state_label)   "Vis ved Opstart"
    set caption(crosshair,current_state_label)   "Vis"
    set caption(crosshair,color_label)           "Farve"
-   set caption(crosshair,color_crosshair)       "Trådkors-farve"
+   set caption(crosshair,color_crosshair)       "TrÃ¥dkors-farve"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(crosshair,titre)                 "Crosshair"
+   set caption(crosshair,default_state_label)   "Display on Start-up"
+   set caption(crosshair,current_state_label)   "Display"
+   set caption(crosshair,color_label)           "Color"
+   set caption(crosshair,color_crosshair)       "Crosshair Color"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(crosshair,titre)                 "Crosshair"
+   set caption(crosshair,default_state_label)   "Display on Start-up"
+   set caption(crosshair,current_state_label)   "Display"
+   set caption(crosshair,color_label)           "Color"
+   set caption(crosshair,color_crosshair)       "Crosshair Color"
 
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
