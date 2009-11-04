@@ -2,7 +2,10 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.107 2009-10-16 17:42:21 michelpujol Exp $
+# Mise a jour $Id: aud.tcl,v 1.108 2009-11-04 18:44:30 robertdelmas Exp $
+
+#--- Prise en compte du codage UTF-8
+encoding system utf-8
 
 #--- Chargement du package BWidget
 package require BWidget
