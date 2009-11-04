@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.38 2009-11-01 21:34:17 michelpujol Exp $
+# @version   $Id: sophie.tcl,v 1.39 2009-11-04 18:48:46 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -255,8 +255,9 @@ proc ::sophie::createPluginInstance { { in "" } { visuNo 1 } } {
 
          #--- Bouton du titre
          Button $frm.titre.but1 -borderwidth 1 -text "$::caption(sophie,aide1)\n$::caption(sophie,titre)" \
-            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory \
-               [ ::sophie::getPluginType ] ] [ ::sophie::getPluginDirectory ] [ ::sophie::getPluginHelp ]"
+            -command {::audace::Lance_Notice_pdf [ file join $::audace(rep_plugin) tool sophie guidage_193_manuel_utilisateur.pdf ]}
+           ### -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory \
+           ###    [ ::sophie::getPluginType ] ] [ ::sophie::getPluginDirectory ] [ ::sophie::getPluginHelp ]"
          pack $frm.titre.but1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $frm.titre.but1 -text $::caption(sophie,aide)
 
