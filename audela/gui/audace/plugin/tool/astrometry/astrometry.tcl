@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.2 2009-02-07 11:07:18 robertdelmas Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.3 2009-11-04 09:02:17 alainklotz Exp $
 #
 
 #============================================================
@@ -1011,7 +1011,11 @@ namespace eval ::astrometry {
          set numorder [string range $a 5 5]
             set a4 [expr $numorder]
          if {$a4==0} {
-            set a4 ""
+            if {$a3==""} {
+               set a4 ""
+            } else {
+               set a4 "0"
+            }
          }
       } else {
          #--- Decode l'annee et la seconde lettre
