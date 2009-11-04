@@ -5,7 +5,7 @@
 #               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.57 2009-05-08 12:42:02 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.58 2009-11-04 18:46:29 robertdelmas Exp $
 #
 
 #
@@ -2606,10 +2606,24 @@ namespace eval ::confLangue {
          -command { ::confLangue::choisirLangue danish }
       pack $This.danish -in $This.frame4 -side left -padx 5 -pady 5
 
-      #--- Drapeau English
+      #--- Drapeau Ukrainian
       image create photo imageflag7
-      imageflag7 configure -file [ file join $::audela_start_dir gb.gif ] -format gif
-      button $This.english -image imageflag7 -relief solid -borderwidth 0 \
+      imageflag7 configure -file [ file join $::audela_start_dir ua.gif ] -format gif
+      button $This.ukrainian -image imageflag7 -relief solid -borderwidth 0 \
+         -command { ::confLangue::choisirLangue ukrainian }
+      pack $This.ukrainian -in $This.frame4 -side left -padx 5 -pady 5
+
+      #--- Drapeau Russian
+      image create photo imageflag8
+      imageflag8 configure -file [ file join $::audela_start_dir ru.gif ] -format gif
+      button $This.russian -image imageflag8 -relief solid -borderwidth 0 \
+         -command { ::confLangue::choisirLangue russian }
+      pack $This.russian -in $This.frame4 -side left -padx 5 -pady 5
+
+      #--- Drapeau English
+      image create photo imageflag9
+      imageflag9 configure -file [ file join $::audela_start_dir gb.gif ] -format gif
+      button $This.english -image imageflag9 -relief solid -borderwidth 0 \
          -command { ::confLangue::choisirLangue english }
       pack $This.english -in $This.frame4 -side left -padx 5 -pady 5
 
@@ -2787,6 +2801,12 @@ namespace eval ::confVersion {
 
       label $This.lab17 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright13)"
       pack $This.lab17 -in $This.frame1 -padx 30 -pady 2
+
+      label $This.lab18 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright14)"
+      pack $This.lab18 -in $This.frame1 -padx 30 -pady 2
+
+      label $This.lab19 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright15)"
+      pack $This.lab19 -in $This.frame1 -padx 30 -pady 2
 
       #--- Cree le bouton 'Fermer'
       button $This.but_fermer -text "$caption(confgene,fermer)" -width 7 -borderwidth 2 \
