@@ -1,10 +1,10 @@
 #
 # Fichier : telescope.cap
-# Mise a jour $Id: telescope.cap,v 1.18 2009-10-25 13:13:18 robertdelmas Exp $
+# Mise a jour $Id: telescope.cap,v 1.19 2009-11-04 18:37:46 robertdelmas Exp $
 #
 
 #=========================================================================
-#   DÈbut de la dÈclaration des textes localisÈs (internationalisation)
+#   D√©but de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -54,24 +54,24 @@ set caption(telescope,mobile_dec)          "Declination Speed"
 
 set caption(telescope,2points)             ":"
 
-# *************** Version franÁaise ***************************
+# *************** Version fran√ßaise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(telescope,interro)          "?"
-   set caption(telescope,init)             "Initialisation tÈl."
+   set caption(telescope,init)             "Initialisation t√©l."
    set caption(telescope,suivi_marche)     "Suivi On"
    set caption(telescope,suivi_arret)      "Suivi Off"
 
-   set caption(telescope,inittelscp0)      "Initialisation du tÈlescope"
-   set caption(telescope,inittelscp1)      "AprËs avoir pointÈ votre instrument sur Gamma"
-   set caption(telescope,inittelscp2)      "CassiopÈe, vous devez initialiser le tÈlescope"
+   set caption(telescope,inittelscp0)      "Initialisation du t√©lescope"
+   set caption(telescope,inittelscp1)      "Apr√®s avoir point√© votre instrument sur Gamma"
+   set caption(telescope,inittelscp2)      "Cassiop√©e, vous devez initialiser le t√©lescope"
    set caption(telescope,inittelscp3)      "en appuyant 2 fois sur le bouton 'petite vitesse'"
    set caption(telescope,inittelscp4)      "de la raquette. Si vous avez choisi Alioth dans"
    set caption(telescope,inittelscp5)      "la Grande Ourse, vous devez appuyer 2 fois sur"
    set caption(telescope,inittelscp6)      "le bouton 'vitesse moyenne'."
-   set caption(telescope,inittelscp7)      "A la fermeture de cette fenÍtre, l'affichage des"
-   set caption(telescope,inittelscp8)      "coordonnÈes (Ascension Droite et DÈclinaison) du"
-   set caption(telescope,inittelscp9)      "tÈlescope sera mis ‡ jour."
+   set caption(telescope,inittelscp7)      "A la fermeture de cette fen√™tre, l'affichage des"
+   set caption(telescope,inittelscp8)      "coordonn√©es (Ascension Droite et D√©clinaison) du"
+   set caption(telescope,inittelscp9)      "t√©lescope sera mis √† jour."
 
    set caption(telescope,match)            "MATCH"
    set caption(telescope,match_confirm)    "Voulez-vous poursuivre ?"
@@ -79,24 +79,24 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telescope,match_alg_add)    "Alignement additionnel"
    set caption(telescope,match_cancel)     "Annuler"
    set caption(telescope,tel)              "Monture"
-   set caption(telescope,non_connecte)     "non connectÈe"
+   set caption(telescope,non_connecte)     "non connect√©e"
    set caption(telescope,pas_coord1)       "Pas de"
-   set caption(telescope,pas_coord2)       "coordonnÈe"
+   set caption(telescope,pas_coord2)       "coordonn√©e"
    set caption(telescope,astre_est)        "L'astre n'est"
-   set caption(telescope,pas_leve)         "pas levÈ."
+   set caption(telescope,pas_leve)         "pas lev√©."
    set caption(telescope,x1)               "x1"
    set caption(telescope,x5)               "x5"
    set caption(telescope,200)              "200"
    set caption(telescope,NS)               "NS"
    set caption(telescope,HS)               "HS"
    set caption(telescope,modele_gemini)    "Losmandy Gemini"
-   set caption(telescope,cote_est)         "CotÈ est"
-   set caption(telescope,cote_ouest)       "CotÈ ouest"
+   set caption(telescope,cote_est)         "Cot√© est"
+   set caption(telescope,cote_ouest)       "Cot√© ouest"
 
-   set caption(telescope,mobile_etoile)    "Suivi sidÈral"
-   set caption(telescope,ctl_mobile:)      "ContrÙle de la vitesse de suivi :"
+   set caption(telescope,mobile_etoile)    "Suivi sid√©ral"
+   set caption(telescope,ctl_mobile:)      "Contr√¥le de la vitesse de suivi :"
    set caption(telescope,mobile_ad)        "Vitesse en ascension droite"
-   set caption(telescope,mobile_dec)       "Vitesse en dÈclinaison"
+   set caption(telescope,mobile_dec)       "Vitesse en d√©clinaison"
 
    set caption(telescope,2points)          ":"
 
@@ -150,31 +150,31 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(telescope,interro)          "?"
-   set caption(telescope,init)             "InicializaciÛn tel."
+   set caption(telescope,init)             "Inicializaci√≥n tel."
    set caption(telescope,suivi_marche)     "Seguimiento On"
    set caption(telescope,suivi_arret)      "Seguimiento Off"
 
-   set caption(telescope,inittelscp0)      "InicializaciÛn de telescopio"
+   set caption(telescope,inittelscp0)      "Inicializaci√≥n de telescopio"
    set caption(telescope,inittelscp1)      "Despues de apuntar el instrumento a Gamma"
    set caption(telescope,inittelscp2)      "Cassiopeia, hay que inicializar el telescopio"
    set caption(telescope,inittelscp3)      "presionando dos veces el boton 'velocidad baja'"
    set caption(telescope,inittelscp4)      "del controlador de mano. Si ha escogido Alioth"
    set caption(telescope,inittelscp5)      "en la Osa Mayor, debe presionar dos veces"
    set caption(telescope,inittelscp6)      "el boton'velocidad media'."
-   set caption(telescope,inittelscp7)      "La presentaciÛn de las coordenadas"
-   set caption(telescope,inittelscp8)      "AscensiÛn Recta y DeclinaciÛn del telescopio"
+   set caption(telescope,inittelscp7)      "La presentaci√≥n de las coordenadas"
+   set caption(telescope,inittelscp8)      "Ascensi√≥n Recta y Declinaci√≥n del telescopio"
    set caption(telescope,inittelscp9)      "se actualizan al cerrar esta ventana."
 
    set caption(telescope,match)            "MATCH"
    set caption(telescope,match_confirm)    "Continuar?"
-   set caption(telescope,match_alg_init)   "AlineaciÛn inicial"
+   set caption(telescope,match_alg_init)   "Alineaci√≥n inicial"
    set caption(telescope,match_alg_add)    "Alineamiento adicional"
    set caption(telescope,match_cancel)     "Cancelar"
    set caption(telescope,tel)              "Montura"
    set caption(telescope,non_connecte)     "no conectado"
    set caption(telescope,pas_coord1)       "Sin"
    set caption(telescope,pas_coord2)       "coordenadas"
-   set caption(telescope,astre_est)        "El astro est·"
+   set caption(telescope,astre_est)        "El astro est√°"
    set caption(telescope,pas_leve)         "bajo el horizonte."
    set caption(telescope,x1)               "x1"
    set caption(telescope,x5)               "x5"
@@ -185,10 +185,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telescope,cote_est)         "Lado Este"
    set caption(telescope,cote_ouest)       "Lado Oeste"
 
-   set caption(telescope,mobile_etoile)    "Seguimiento sidÈreo"
+   set caption(telescope,mobile_etoile)    "Seguimiento sid√©reo"
    set caption(telescope,ctl_mobile:)      "Ctrl. de la velocidad de seguimiento:"
-   set caption(telescope,mobile_ad)        "Velocidad en AscensiÛn Recta"
-   set caption(telescope,mobile_dec)       "Velocidad en DeclinaciÛn"
+   set caption(telescope,mobile_ad)        "Velocidad en Ascensi√≥n Recta"
+   set caption(telescope,mobile_dec)       "Velocidad en Declinaci√≥n"
 
    set caption(telescope,2points)          ":"
 
@@ -201,18 +201,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telescope,suivi_arret)      "Folgung aus"
 
    set caption(telescope,inittelscp0)      "Teleskop Initialisieren"
-   set caption(telescope,inittelscp1)      "Nachdem sie eures Ger‰t auf Gamma Cassiopee positioniert"
-   set caption(telescope,inittelscp2)      "haben, m¸ssen sie eures Teleskop initialisieren"
+   set caption(telescope,inittelscp1)      "Nachdem sie eures Ger√§t auf Gamma Cassiopee positioniert"
+   set caption(telescope,inittelscp2)      "haben, m√ºssen sie eures Teleskop initialisieren"
    set caption(telescope,inittelscp3)      "bei Zweimahl auf dem Knopf 'Kleines Tempo' von"
-   set caption(telescope,inittelscp4)      "den Hand Kontroller dr¸cken. Haben sie Alioth in das groﬂe"
-   set caption(telescope,inittelscp5)      "B‰r gew‰hlt, m¸ssen sie zweimal auf dem Knopf"
-   set caption(telescope,inittelscp6)      "'Mittelwert Tempo' dr¸cken."
-   set caption(telescope,inittelscp7)      "Wenn das Fenster schlieﬂt, isst das Anzeigen des"
+   set caption(telescope,inittelscp4)      "den Hand Kontroller dr√ºcken. Haben sie Alioth in das gro√üe"
+   set caption(telescope,inittelscp5)      "B√§r gew√§hlt, m√ºssen sie zweimal auf dem Knopf"
+   set caption(telescope,inittelscp6)      "'Mittelwert Tempo' dr√ºcken."
+   set caption(telescope,inittelscp7)      "Wenn das Fenster schlie√üt, isst das Anzeigen des"
    set caption(telescope,inittelscp8)      "Teleskop Koordinate (Rektaszension und"
    set caption(telescope,inittelscp9)      "Deklination) aktualisiert."
 
    set caption(telescope,match)            "MATCH"
-   set caption(telescope,match_confirm)    "Vollen sie weiterf¸hren ?"
+   set caption(telescope,match_confirm)    "Vollen sie weiterf√ºhren ?"
    set caption(telescope,match_alg_init)   "Initiale Linie"
    set caption(telescope,match_alg_add)    "Zusatz Linie"
    set caption(telescope,match_cancel)     "Annullieren"
@@ -238,24 +238,24 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(telescope,2points)          ":"
 
-# *************** Version portugaise ****************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(telescope,interro)          "?"
-   set caption(telescope,init)             "InicializaÁ„o do TelescÛpio"
+   set caption(telescope,init)             "Inicializa√ß√£o do Telesc√≥pio"
    set caption(telescope,suivi_marche)     "Seguimento On"
    set caption(telescope,suivi_arret)      "Seguimento Off"
 
-   set caption(telescope,inittelscp0)      "InicializaÁ„o do TelescÛpio"
-   set caption(telescope,inittelscp1)      "Depois de ter apontado o seu telescÛpio para Gamma"
-   set caption(telescope,inittelscp2)      "Cassiopeia, inicialize o telescÛpio fazendo"
-   set caption(telescope,inittelscp3)      "duplo-clique no bot„o de baixa velocidade do"
-   set caption(telescope,inittelscp4)      "controlador de m„o. Se escolher Alioth na"
-   set caption(telescope,inittelscp5)      "Ursa Maior, clique no bot„o de Velocidade MÈdia"
+   set caption(telescope,inittelscp0)      "Inicializa√ß√£o do Telesc√≥pio"
+   set caption(telescope,inittelscp1)      "Depois de ter apontado o seu telesc√≥pio para Gamma"
+   set caption(telescope,inittelscp2)      "Cassiopeia, inicialize o telesc√≥pio fazendo"
+   set caption(telescope,inittelscp3)      "duplo-clique no bot√£o de baixa velocidade do"
+   set caption(telescope,inittelscp4)      "controlador de m√£o. Se escolher Alioth na"
+   set caption(telescope,inittelscp5)      "Ursa Maior, clique no bot√£o de Velocidade M√©dia"
    set caption(telescope,inittelscp6)      "com duplo-clique."
-   set caption(telescope,inittelscp7)      "Quando a janela È fechada, o"
+   set caption(telescope,inittelscp7)      "Quando a janela √© fechada, o"
    set caption(telescope,inittelscp8)      "display das coordenadas AR e DEC"
-   set caption(telescope,inittelscp9)      "È actualizado."
+   set caption(telescope,inittelscp9)      "√© actualizado."
 
    set caption(telescope,match)            "MATCH"
    set caption(telescope,match_confirm)    "Continuar?"
@@ -264,9 +264,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telescope,match_cancel)     "Cancelar"
    set caption(telescope,tel)              "Montagem"
    set caption(telescope,non_connecte)     "Disconectado"
-   set caption(telescope,pas_coord1)       "N„o"
+   set caption(telescope,pas_coord1)       "N√£o"
    set caption(telescope,pas_coord2)       "Coordenada"
-   set caption(telescope,astre_est)        "O alvo È"
+   set caption(telescope,astre_est)        "O alvo √©"
    set caption(telescope,pas_leve)         "abaixo do horizonte."
    set caption(telescope,x1)               "x1"
    set caption(telescope,x5)               "x5"
@@ -279,8 +279,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(telescope,mobile_etoile)    "Seguimento sideral"
    set caption(telescope,ctl_mobile:)      "Controlo da velocidade de seguimento:"
-   set caption(telescope,mobile_ad)        "Velocidade em ascens„o recta"
-   set caption(telescope,mobile_dec)       "Velocidade em declinaÁ„o"
+   set caption(telescope,mobile_ad)        "Velocidade em ascens√£o recta"
+   set caption(telescope,mobile_dec)       "Velocidade em declina√ß√£o"
 
    set caption(telescope,2points)          ":"
 
@@ -330,9 +330,101 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(telescope,2points)          ":"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(telescope,interro)          "?"
+   set caption(telescope,init)             "Tel. Initialization"
+   set caption(telescope,suivi_marche)     "Tracking On"
+   set caption(telescope,suivi_arret)      "Tracking Off"
+
+   set caption(telescope,inittelscp0)      "Telescope Initialization"
+   set caption(telescope,inittelscp1)      "After you have aimed your scope to Gamma"
+   set caption(telescope,inittelscp2)      "Cassiopeia, reset the scope by pressing"
+   set caption(telescope,inittelscp3)      "twice on the Slow Speed button of the"
+   set caption(telescope,inittelscp4)      "hand controller. If you chose Alioth in"
+   set caption(telescope,inittelscp5)      "the Big Dipper, press the Medium Speed"
+   set caption(telescope,inittelscp6)      "button twice."
+   set caption(telescope,inittelscp7)      "When the window is closed, the"
+   set caption(telescope,inittelscp8)      "display of the scope RA and"
+   set caption(telescope,inittelscp9)      "Dec. coordinates is updated."
+
+   set caption(telescope,match)            "MATCH"
+   set caption(telescope,match_confirm)    "Continue?"
+   set caption(telescope,match_alg_init)   "Initial Alignment"
+   set caption(telescope,match_alg_add)    "Additional Alignment"
+   set caption(telescope,match_cancel)     "Cancel"
+   set caption(telescope,tel)              "Mount"
+   set caption(telescope,non_connecte)     "not connected"
+   set caption(telescope,pas_coord1)       "No"
+   set caption(telescope,pas_coord2)       "Coordinate"
+   set caption(telescope,astre_est)        "The target is"
+   set caption(telescope,pas_leve)         "below the horizon."
+   set caption(telescope,x1)               "x1"
+   set caption(telescope,x5)               "x5"
+   set caption(telescope,200)              "200"
+   set caption(telescope,NS)               "NS"
+   set caption(telescope,HS)               "HS"
+   set caption(telescope,modele_gemini)    "Losmandy Gemini"
+   set caption(telescope,cote_est)         "East Side"
+   set caption(telescope,cote_ouest)       "West Side"
+
+   set caption(telescope,mobile_etoile)    "Sidereal Tracking"
+   set caption(telescope,ctl_mobile:)      "Tracking Speed Control:"
+   set caption(telescope,mobile_ad)        "Right Ascension Speed"
+   set caption(telescope,mobile_dec)       "Declination Speed"
+
+   set caption(telescope,2points)          ":"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(telescope,interro)          "?"
+   set caption(telescope,init)             "Tel. Initialization"
+   set caption(telescope,suivi_marche)     "Tracking On"
+   set caption(telescope,suivi_arret)      "Tracking Off"
+
+   set caption(telescope,inittelscp0)      "Telescope Initialization"
+   set caption(telescope,inittelscp1)      "After you have aimed your scope to Gamma"
+   set caption(telescope,inittelscp2)      "Cassiopeia, reset the scope by pressing"
+   set caption(telescope,inittelscp3)      "twice on the Slow Speed button of the"
+   set caption(telescope,inittelscp4)      "hand controller. If you chose Alioth in"
+   set caption(telescope,inittelscp5)      "the Big Dipper, press the Medium Speed"
+   set caption(telescope,inittelscp6)      "button twice."
+   set caption(telescope,inittelscp7)      "When the window is closed, the"
+   set caption(telescope,inittelscp8)      "display of the scope RA and"
+   set caption(telescope,inittelscp9)      "Dec. coordinates is updated."
+
+   set caption(telescope,match)            "MATCH"
+   set caption(telescope,match_confirm)    "Continue?"
+   set caption(telescope,match_alg_init)   "Initial Alignment"
+   set caption(telescope,match_alg_add)    "Additional Alignment"
+   set caption(telescope,match_cancel)     "Cancel"
+   set caption(telescope,tel)              "Mount"
+   set caption(telescope,non_connecte)     "not connected"
+   set caption(telescope,pas_coord1)       "No"
+   set caption(telescope,pas_coord2)       "Coordinate"
+   set caption(telescope,astre_est)        "The target is"
+   set caption(telescope,pas_leve)         "below the horizon."
+   set caption(telescope,x1)               "x1"
+   set caption(telescope,x5)               "x5"
+   set caption(telescope,200)              "200"
+   set caption(telescope,NS)               "NS"
+   set caption(telescope,HS)               "HS"
+   set caption(telescope,modele_gemini)    "Losmandy Gemini"
+   set caption(telescope,cote_est)         "East Side"
+   set caption(telescope,cote_ouest)       "West Side"
+
+   set caption(telescope,mobile_etoile)    "Sidereal Tracking"
+   set caption(telescope,ctl_mobile:)      "Tracking Speed Control:"
+   set caption(telescope,mobile_ad)        "Right Ascension Speed"
+   set caption(telescope,mobile_dec)       "Declination Speed"
+
+   set caption(telescope,2points)          ":"
+
 }
 
 #=========================================================================
-#   Fin de la dÈclaration des textes localisÈs (internationalisation)
+#   Fin de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 

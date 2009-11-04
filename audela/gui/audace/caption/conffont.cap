@@ -1,10 +1,10 @@
 #
 # Fichier : conffont.cap
-# Mise a jour $Id: conffont.cap,v 1.2 2008-12-05 19:10:53 robertdelmas Exp $
+# Mise a jour $Id: conffont.cap,v 1.3 2009-11-04 18:33:00 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -20,14 +20,14 @@ set caption(conffont,police)             "Font"
 set caption(conffont,style)              "Style"
 set caption(conffont,taille)             "Size"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(conffont,title)           "Police de caractères"
-   set caption(conffont,selection)       "Sélection de la police de caractères : "
-   set caption(conffont,couleur_defaut)  "Rétablir les polices de caractères d'origine"
-   set caption(conffont,confirmation)    "Etes-vous sûr de vouloir rétablir les polices de caractères d'origine ?"
-   set caption(conffont,button_restore)  "Police de caractères d'origine"
+   set caption(conffont,title)           "Police de caractÃ¨res"
+   set caption(conffont,selection)       "SÃ©lection de la police de caractÃ¨res : "
+   set caption(conffont,couleur_defaut)  "RÃ©tablir les polices de caractÃ¨res d'origine"
+   set caption(conffont,confirmation)    "Etes-vous sÃ»r de vouloir rÃ©tablir les polices de caractÃ¨res d'origine ?"
+   set caption(conffont,button_restore)  "Police de caractÃ¨res d'origine"
    set caption(conffont,police)          "Police"
    set caption(conffont,style)           "Style"
    set caption(conffont,taille)          "Taille"
@@ -48,31 +48,31 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(conffont,title)           "Fuentes"
-   set caption(conffont,selection)       "Selección de fuentes: "
+   set caption(conffont,selection)       "SelecciÃ³n de fuentes: "
    set caption(conffont,couleur_defaut)  "Establecer fuentes originales"
-   set caption(conffont,confirmation)    "¿Seguro que quiere las fuentes originales?"
+   set caption(conffont,confirmation)    "Â¿Seguro que quiere las fuentes originales?"
    set caption(conffont,button_restore)  "Fuentes originales"
    set caption(conffont,police)          "Fuente"
    set caption(conffont,style)           "Estilo"
-   set caption(conffont,taille)          "Tamaño"
+   set caption(conffont,taille)          "TamaÃ±o"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(conffont,title)           "Schriftgrößen"
-   set caption(conffont,selection)       "Schriftgrößen Auswahl: "
-   set caption(conffont,couleur_defaut)  "Schriftgrößen umstellen"
-   set caption(conffont,confirmation)    "Wollen sie wirklich das Schriftgrößen umstellen?"
-   set caption(conffont,button_restore)  "Standard-Schriftgrößen"
+   set caption(conffont,title)           "SchriftgrÃ¶ÃŸen"
+   set caption(conffont,selection)       "SchriftgrÃ¶ÃŸen Auswahl: "
+   set caption(conffont,couleur_defaut)  "SchriftgrÃ¶ÃŸen umstellen"
+   set caption(conffont,confirmation)    "Wollen sie wirklich das SchriftgrÃ¶ÃŸen umstellen?"
+   set caption(conffont,button_restore)  "Standard-SchriftgrÃ¶ÃŸen"
    set caption(conffont,police)          "Schrift"
    set caption(conffont,style)           "Style"
-   set caption(conffont,taille)          "Größe"
+   set caption(conffont,taille)          "GrÃ¶ÃŸe"
 
-# *************** Version portugaise ****************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(conffont,title)           "Tipos de letra"
-   set caption(conffont,selection)       "Selecção de tipo de letra: "
+   set caption(conffont,selection)       "SelecÃ§Ã£o de tipo de letra: "
    set caption(conffont,couleur_defaut)  "Restabelecer os tipos de letra de origem"
    set caption(conffont,confirmation)    "Tem a certeza que deseja restabelecer os tipos de letra de origem?"
    set caption(conffont,button_restore)  "Tipos de letra de origem"
@@ -86,15 +86,39 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conffont,title)           "Skrifttype"
    set caption(conffont,selection)       "Valg af skrifttype: "
    set caption(conffont,couleur_defaut)  "Gendan srrifttype"
-   set caption(conffont,confirmation)    "Er du sikker på, at du vil gendanne skrifttype?"
+   set caption(conffont,confirmation)    "Er du sikker pÃ¥, at du vil gendanne skrifttype?"
    set caption(conffont,button_restore)  "Standard skrifttype"
    set caption(conffont,police)          "Skrifttype"
    set caption(conffont,style)           "Stil"
-   set caption(conffont,taille)          "Størrelse"
+   set caption(conffont,taille)          "StÃ¸rrelse"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(conffont,title)           "Fonts"
+   set caption(conffont,selection)       "Font Selection: "
+   set caption(conffont,couleur_defaut)  "Reset Fonts"
+   set caption(conffont,confirmation)    "Are you sure you want to reset fonts?"
+   set caption(conffont,button_restore)  "Default Fonts"
+   set caption(conffont,police)          "Font"
+   set caption(conffont,style)           "Style"
+   set caption(conffont,taille)          "Size"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(conffont,title)           "Fonts"
+   set caption(conffont,selection)       "Font Selection: "
+   set caption(conffont,couleur_defaut)  "Reset Fonts"
+   set caption(conffont,confirmation)    "Are you sure you want to reset fonts?"
+   set caption(conffont,button_restore)  "Default Fonts"
+   set caption(conffont,police)          "Font"
+   set caption(conffont,style)           "Style"
+   set caption(conffont,taille)          "Size"
 
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

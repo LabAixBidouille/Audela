@@ -1,10 +1,10 @@
 #
 # Fichier : tkutil.cap
-# Mise a jour $Id: tkutil.cap,v 1.14 2009-05-08 06:54:57 robertdelmas Exp $
+# Mise a jour $Id: tkutil.cap,v 1.15 2009-11-04 18:38:03 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -46,13 +46,13 @@ set caption(tkutil,fichier_pdf)           "User Guides"
 set caption(tkutil,fichier_html)          "HTML Files"
 set caption(tkutil,fichier_jar)           "JAR Files"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(tkutil,charger_image)      "Ouvrir une image"
    set caption(tkutil,sauver_image)       "Enregistrer une image"
    set caption(tkutil,sauver_image_jpeg)  "Enregistrer une image en jpeg"
-   set caption(tkutil,editer_script)      "Editer un script"
+  set caption(tkutil,editer_script)      "Editer un script"
    set caption(tkutil,lancer_script)      "Lancer un script"
    set caption(tkutil,editer_notice)      "Notices (.pdf)"
    set caption(tkutil,editer_site_web)    "Site Web"
@@ -61,9 +61,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,editeur_pdf)        "Voir les notices (.pdf) :"
    set caption(tkutil,editeur_page_web)   "Navigateur Web :"
    set caption(tkutil,editeur_image)      "Visualiseur d'images :"
-   set caption(tkutil,editer_modpoi)      "Sélectionner un modèle de pointage :"
-   set caption(tkutil,editer_fichier)     "Fichier à rechercher :"
-   set caption(tkutil,executable_java)    "Interpréteur Java :"
+   set caption(tkutil,editer_modpoi)      "SÃ©lectionner un modÃ¨le de pointage :"
+   set caption(tkutil,editer_fichier)     "Fichier Ã  rechercher :"
+   set caption(tkutil,executable_java)    "InterprÃ©teur Java :"
    set caption(tkutil,executable_aladin)  "Aladin :"
 
    set caption(tkutil,image_file)         "Fichiers Image"
@@ -132,17 +132,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,lancer_script)      "Ejecutar un script"
    set caption(tkutil,editer_notice)      "Manuales de Usuario (.pdf)"
    set caption(tkutil,editer_site_web)    "Sitio Web"
-   set caption(tkutil,editer_catalogue)   "Abrir un catálogo de usuario"
+   set caption(tkutil,editer_catalogue)   "Abrir un catÃ¡logo de usuario"
    set caption(tkutil,editeur_script)     "Editor de scripts:"
    set caption(tkutil,editeur_pdf)        "Ver guia de usuario (.pdf):"
    set caption(tkutil,editeur_page_web)   "Navegador Web:"
-   set caption(tkutil,editeur_image)      "Visualizador de imágenes:"
+   set caption(tkutil,editeur_image)      "Visualizador de imÃ¡genes:"
    set caption(tkutil,editer_modpoi)      "Elige un modelo de apuntado:"
    set caption(tkutil,editer_fichier)     "Fichero a buscar:"
    set caption(tkutil,executable_java)    "Java:"
    set caption(tkutil,executable_aladin)  "Aladin:"
 
-   set caption(tkutil,image_file)         "Ficheros Imágenes"
+   set caption(tkutil,image_file)         "Ficheros ImÃ¡genes"
    set caption(tkutil,image_fits)         "Ficheros FITS"
    set caption(tkutil,image_bmp)          "Ficheros BMP"
    set caption(tkutil,image_gif)          "Ficheros GIF"
@@ -156,26 +156,26 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_tcl)        "Scripts TCL"
    set caption(tkutil,fichier_txt)        "Ficheros de texto"
    set caption(tkutil,fichier_tous)       "Todos"
-   set caption(tkutil,fichier_pdf)        "Guías de usuario"
+   set caption(tkutil,fichier_pdf)        "GuÃ­as de usuario"
    set caption(tkutil,fichier_html)       "Ficheros HTML"
    set caption(tkutil,fichier_jar)        "Ficheros JAR"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(tkutil,charger_image)      "Ein Bild öffnen"
+   set caption(tkutil,charger_image)      "Ein Bild Ã¶ffnen"
    set caption(tkutil,sauver_image)       "Ein Bild speichern"
    set caption(tkutil,sauver_image_jpeg)  "In JPEG ein Bild speichern"
    set caption(tkutil,editer_script)      "Ein Skript editieren"
-   set caption(tkutil,lancer_script)      "Ein Skript ausführen"
+   set caption(tkutil,lancer_script)      "Ein Skript ausfÃ¼hren"
    set caption(tkutil,editer_notice)      "Hinweisen (.pdf)"
    set caption(tkutil,editer_site_web)    "Webseite"
-   set caption(tkutil,editer_catalogue)   "Ein Benutzer Katalog öffnen"
+   set caption(tkutil,editer_catalogue)   "Ein Benutzer Katalog Ã¶ffnen"
    set caption(tkutil,editeur_script)     "Skripten Editor:"
    set caption(tkutil,editeur_pdf)        "Hinweisen ansehen (.pdf):"
    set caption(tkutil,editeur_page_web)   "Web Navigator:"
    set caption(tkutil,editeur_image)      "Bild Zeichner:"
-   set caption(tkutil,editer_modpoi)      "Ein Schwenken Vorlage wählen:"
+   set caption(tkutil,editer_modpoi)      "Ein Schwenken Vorlage wÃ¤hlen:"
    set caption(tkutil,editer_fichier)     "Datei zu suchen:"
    set caption(tkutil,executable_java)    "Java:"
    set caption(tkutil,executable_aladin)  "Aladin:"
@@ -198,7 +198,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_html)       "HTML Datei"
    set caption(tkutil,fichier_jar)        "JAR Datei"
 
-# *************** Version portugaise ***************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(tkutil,charger_image)      "Abrir imagem"
@@ -208,7 +208,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,lancer_script)      "Executar um script"
    set caption(tkutil,editer_notice)      "Manuais de Utilizador (.pdf)"
    set caption(tkutil,editer_site_web)    "WebSite"
-   set caption(tkutil,editer_catalogue)   "Abrir um catálogo de utilizador"
+   set caption(tkutil,editer_catalogue)   "Abrir um catÃ¡logo de utilizador"
    set caption(tkutil,editeur_script)     "Editor de scripts:"
    set caption(tkutil,editeur_pdf)        "Ver guia de utilizador (.pdf):"
    set caption(tkutil,editeur_page_web)   "Navegador Web:"
@@ -239,20 +239,20 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(tkutil,charger_image)      "Åbn billede"
+   set caption(tkutil,charger_image)      "Ã…bn billede"
    set caption(tkutil,sauver_image)       "Gem billede"
    set caption(tkutil,sauver_image_jpeg)  "Gem billede som Jpeg"
    set caption(tkutil,editer_script)      "Rediger en skript"
-   set caption(tkutil,lancer_script)      "Kør en skript"
+   set caption(tkutil,lancer_script)      "KÃ¸r en skript"
    set caption(tkutil,editer_notice)      "Brugsanvisning (.pdf)"
    set caption(tkutil,editer_site_web)    "Hjemmeside"
-   set caption(tkutil,editer_catalogue)   "Åbn et bruger-katalog"
+   set caption(tkutil,editer_catalogue)   "Ã…bn et bruger-katalog"
    set caption(tkutil,editeur_script)     "Script Editor:"
    set caption(tkutil,editeur_pdf)        "Se brugsanvisning (.pdf):"
    set caption(tkutil,editeur_page_web)   "Web Browser:"
    set caption(tkutil,editeur_image)      "Billedvisning:"
-   set caption(tkutil,editer_modpoi)      "Vælg en guiding-model:"
-   set caption(tkutil,editer_fichier)     "Søg fil:"
+   set caption(tkutil,editer_modpoi)      "VÃ¦lg en guiding-model:"
+   set caption(tkutil,editer_fichier)     "SÃ¸g fil:"
    set caption(tkutil,executable_java)    "Java:"
    set caption(tkutil,executable_aladin)  "Aladin:"
 
@@ -274,9 +274,85 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_html)       "HTML Filer"
    set caption(tkutil,fichier_jar)        "JAR Filer"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(tkutil,charger_image)      "Open Image"
+   set caption(tkutil,sauver_image)       "Save Image"
+   set caption(tkutil,sauver_image_jpeg)  "Save Image as Jpeg"
+   set caption(tkutil,editer_script)      "Edit a script"
+   set caption(tkutil,lancer_script)      "Run a script"
+   set caption(tkutil,editer_notice)      "User Guides (.pdf)"
+   set caption(tkutil,editer_site_web)    "Web Site"
+   set caption(tkutil,editer_catalogue)   "Open a user catalog"
+   set caption(tkutil,editeur_script)     "Script Editor:"
+   set caption(tkutil,editeur_pdf)        "See User Guides (.pdf):"
+   set caption(tkutil,editeur_page_web)   "Web Browser:"
+   set caption(tkutil,editeur_image)      "Viewer:"
+   set caption(tkutil,editer_modpoi)      "Choose a pointing model:"
+   set caption(tkutil,editer_fichier)     "File To Be Searched:"
+   set caption(tkutil,executable_java)    "Java Binary:"
+   set caption(tkutil,executable_aladin)  "Aladin Binary:"
+
+   set caption(tkutil,image_file)         "Image Files"
+   set caption(tkutil,image_fits)         "FITS Files"
+   set caption(tkutil,image_bmp)          "BMP Files"
+   set caption(tkutil,image_gif)          "GIF Files"
+   set caption(tkutil,image_jpeg)         "JPEG Files"
+   set caption(tkutil,image_png)          "PNG Files"
+   set caption(tkutil,image_tiff)         "TIFF Files"
+   set caption(tkutil,image_xbm)          "XBM Files"
+   set caption(tkutil,image_xpm)          "XPM Files"
+   set caption(tkutil,image_postscript)   "Postscript Files"
+   set caption(tkutil,image_raw)          "RAW Files"
+   set caption(tkutil,fichier_tcl)        "TCL Scripts"
+   set caption(tkutil,fichier_txt)        "Text Files"
+   set caption(tkutil,fichier_tous)       "All Files"
+   set caption(tkutil,fichier_pdf)        "User Guides"
+   set caption(tkutil,fichier_html)       "HTML Files"
+   set caption(tkutil,fichier_jar)        "JAR Files"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(tkutil,charger_image)      "Open Image"
+   set caption(tkutil,sauver_image)       "Save Image"
+   set caption(tkutil,sauver_image_jpeg)  "Save Image as Jpeg"
+   set caption(tkutil,editer_script)      "Edit a script"
+   set caption(tkutil,lancer_script)      "Run a script"
+   set caption(tkutil,editer_notice)      "User Guides (.pdf)"
+   set caption(tkutil,editer_site_web)    "Web Site"
+   set caption(tkutil,editer_catalogue)   "Open a user catalog"
+   set caption(tkutil,editeur_script)     "Script Editor:"
+   set caption(tkutil,editeur_pdf)        "See User Guides (.pdf):"
+   set caption(tkutil,editeur_page_web)   "Web Browser:"
+   set caption(tkutil,editeur_image)      "Viewer:"
+   set caption(tkutil,editer_modpoi)      "Choose a pointing model:"
+   set caption(tkutil,editer_fichier)     "File To Be Searched:"
+   set caption(tkutil,executable_java)    "Java Binary:"
+   set caption(tkutil,executable_aladin)  "Aladin Binary:"
+
+   set caption(tkutil,image_file)         "Image Files"
+   set caption(tkutil,image_fits)         "FITS Files"
+   set caption(tkutil,image_bmp)          "BMP Files"
+   set caption(tkutil,image_gif)          "GIF Files"
+   set caption(tkutil,image_jpeg)         "JPEG Files"
+   set caption(tkutil,image_png)          "PNG Files"
+   set caption(tkutil,image_tiff)         "TIFF Files"
+   set caption(tkutil,image_xbm)          "XBM Files"
+   set caption(tkutil,image_xpm)          "XPM Files"
+   set caption(tkutil,image_postscript)   "Postscript Files"
+   set caption(tkutil,image_raw)          "RAW Files"
+   set caption(tkutil,fichier_tcl)        "TCL Scripts"
+   set caption(tkutil,fichier_txt)        "Text Files"
+   set caption(tkutil,fichier_tous)       "All Files"
+   set caption(tkutil,fichier_pdf)        "User Guides"
+   set caption(tkutil,fichier_html)       "HTML Files"
+   set caption(tkutil,fichier_jar)        "JAR Files"
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

@@ -1,10 +1,10 @@
 #
 # Fichier : aud_menu_4.cap
-# Mise a jour $Id: aud_menu_4.cap,v 1.10 2009-05-26 17:13:33 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_4.cap,v 1.11 2009-11-04 18:28:44 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -56,14 +56,14 @@ set caption(traiteFilters,coef_invalides)               "Invalid Coefficients."
 
 set caption(traiteFilters,traitement_en_cours)          "Processing in progress..."
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,traitement)                  "Traitement"
    set caption(audace,menu,masque_flou)                 "Masque flou"
    set caption(audace,menu,filtre_passe-bas)            "Filtre passe-bas"
    set caption(audace,menu,filtre_passe-haut)           "Filtre passe-haut"
-   set caption(audace,menu,filtre_median)               "Filtre médian"
+   set caption(audace,menu,filtre_median)               "Filtre mÃ©dian"
    set caption(audace,menu,filtre_minimum)              "Filtre minimum"
    set caption(audace,menu,filtre_maximum)              "Filtre maximum"
    set caption(audace,menu,filtre_gaussien)             "Filtre gaussien"
@@ -71,21 +71,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ond_mexicain)                "Ondelette de type chapeau mexicain"
    set caption(audace,menu,log)                         "Logarithme"
 
-   set caption(traiteFilters,image_affichee)            "Sur l'image affichée"
-   set caption(traiteFilters,_image_affichee_)          "(sur l'image affichée)"
+   set caption(traiteFilters,image_affichee)            "Sur l'image affichÃ©e"
+   set caption(traiteFilters,_image_affichee_)          "(sur l'image affichÃ©e)"
    set caption(traiteFilters,image_a_choisir)           "Sur une image du disque dur"
    set caption(traiteFilters,filtres)                   "Filtres :"
    set caption(traiteFilters,parcourir)                 "..."
-   set caption(traiteFilters,entree)                    "Image d'entrée :"
+   set caption(traiteFilters,entree)                    "Image d'entrÃ©e :"
    set caption(traiteFilters,sortie)                    "Image de sortie :"
-   set caption(traiteFilters,valeur_par_defaut)         "Valeurs par défaut"
-   set caption(traiteFilters,coef_etalement)            "Coefficient d'étalement :"
+   set caption(traiteFilters,valeur_par_defaut)         "Valeurs par dÃ©faut"
+   set caption(traiteFilters,coef_etalement)            "Coefficient d'Ã©talement :"
    set caption(traiteFilters,coef_mult)                 "Coefficient multiplicatif :"
-   set caption(traiteFilters,coef_efficacite)           "Efficacité :"
+   set caption(traiteFilters,coef_efficacite)           "EfficacitÃ© :"
    set caption(traiteFilters,efficacite_min)            "1 : Aucun effet"
    set caption(traiteFilters,efficacite_max)            "0 : Maximale"
    set caption(traiteFilters,offset)                    "Offset :"
-   set caption(traiteFilters,afficher_image_fin)        "Afficher l'image à la fin du traitement"
+   set caption(traiteFilters,afficher_image_fin)        "Afficher l'image Ã  la fin du traitement"
    set caption(traiteFilters,taille_noyau)              "Taille du noyau (pixels) :"
 
    set caption(traiteFilters,ok)                        "OK"
@@ -94,11 +94,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,aide)                      "Aide"
 
    set caption(traiteFilters,attention)                 "Attention !"
-   set caption(traiteFilters,header_noimage)            "Il n'y a pas d'image actuellement en mémoire."
-   set caption(traiteFilters,choix_image_dd)            "Choisissez une image stockée sur le disque dur."
-   set caption(traiteFilters,choix_coefficient)         "Définissez le coefficient."
-   set caption(traiteFilters,choix_coefficients)        "Définissez les coefficients."
-   set caption(traiteFilters,coef_manquant)             "Définissez le coefficient manquant."
+   set caption(traiteFilters,header_noimage)            "Il n'y a pas d'image actuellement en mÃ©moire."
+   set caption(traiteFilters,choix_image_dd)            "Choisissez une image stockÃ©e sur le disque dur."
+   set caption(traiteFilters,choix_coefficient)         "DÃ©finissez le coefficient."
+   set caption(traiteFilters,choix_coefficients)        "DÃ©finissez les coefficients."
+   set caption(traiteFilters,coef_manquant)             "DÃ©finissez le coefficient manquant."
    set caption(traiteFilters,coef_invalide)             "Coefficient invalide."
    set caption(traiteFilters,coef_invalides)            "Coefficients invalides."
 
@@ -156,12 +156,12 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(audace,menu,traitement)                  "Procesando"
-   set caption(audace,menu,masque_flou)                 "Máscara desenfocada"
+   set caption(audace,menu,masque_flou)                 "MÃ¡scara desenfocada"
    set caption(audace,menu,filtre_passe-bas)            "Filtro paso bajo"
    set caption(audace,menu,filtre_passe-haut)           "Filtro paso alto"
    set caption(audace,menu,filtre_median)               "Filtro de mediana"
-   set caption(audace,menu,filtre_minimum)              "Filtro de mínimo"
-   set caption(audace,menu,filtre_maximum)              "Filtro de máximo"
+   set caption(audace,menu,filtre_minimum)              "Filtro de mÃ­nimo"
+   set caption(audace,menu,filtre_maximum)              "Filtro de mÃ¡ximo"
    set caption(audace,menu,filtre_gaussien)             "Filtro gausiano"
    set caption(audace,menu,ond_morlet)                  "Wavelet de tipo Morlet"
    set caption(audace,menu,ond_mexicain)                "Wavelte de tipo sombrero mejicano"
@@ -175,28 +175,28 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,entree)                    "Imagen de entrada:"
    set caption(traiteFilters,sortie)                    "Imagen de salida:"
    set caption(traiteFilters,valeur_par_defaut)         "Valores por defecto"
-   set caption(traiteFilters,coef_etalement)            "Coeficiente de dispersión:"
+   set caption(traiteFilters,coef_etalement)            "Coeficiente de dispersiÃ³n:"
    set caption(traiteFilters,coef_mult)                 "Factor multiplicativo:"
    set caption(traiteFilters,coef_efficacite)           "Eficiencia:"
    set caption(traiteFilters,efficacite_min)            "1: Sin efecto"
-   set caption(traiteFilters,efficacite_max)            "0: Eficiencia máxima"
+   set caption(traiteFilters,efficacite_max)            "0: Eficiencia mÃ¡xima"
    set caption(traiteFilters,offset)                    "Pedestal:"
    set caption(traiteFilters,afficher_image_fin)        "Moastrar imagen al completar el proceso"
-   set caption(traiteFilters,taille_noyau)              "Tamaño del núcleo (píxeles):"
+   set caption(traiteFilters,taille_noyau)              "TamaÃ±o del nÃºcleo (pÃ­xeles):"
 
    set caption(traiteFilters,ok)                        "OK"
    set caption(traiteFilters,appliquer)                 "Aplicar"
    set caption(traiteFilters,fermer)                    "Cerrar"
    set caption(traiteFilters,aide)                      "Ayuda"
 
-   set caption(traiteFilters,attention)                 "!Cuidado¡"
-   set caption(traiteFilters,header_noimage)            "No existe una imágen cargada en la memoria."
+   set caption(traiteFilters,attention)                 "!CuidadoÂ¡"
+   set caption(traiteFilters,header_noimage)            "No existe una imÃ¡gen cargada en la memoria."
    set caption(traiteFilters,choix_image_dd)            "Por favor, seleccione una imagenen el disco duro."
    set caption(traiteFilters,choix_coefficient)         "Define el coeficiente."
    set caption(traiteFilters,choix_coefficients)        "Define los coeficientes."
    set caption(traiteFilters,coef_manquant)             "Defina el coeficiente que falta."
-   set caption(traiteFilters,coef_invalide)             "Coeficiente inválido."
-   set caption(traiteFilters,coef_invalides)            "Coeficientes inválidos."
+   set caption(traiteFilters,coef_invalide)             "Coeficiente invÃ¡lido."
+   set caption(traiteFilters,coef_invalides)            "Coeficientes invÃ¡lidos."
 
    set caption(traiteFilters,traitement_en_cours)       "Procesando..."
 
@@ -205,11 +205,11 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,traitement)                  "Aufbereitung"
    set caption(audace,menu,masque_flou)                 "Unscharf Maske"
-   set caption(audace,menu,filtre_passe-bas)            "Niederpaß Filter"
-   set caption(audace,menu,filtre_passe-haut)           "Hochpaß Filter"
+   set caption(audace,menu,filtre_passe-bas)            "NiederpaÃŸ Filter"
+   set caption(audace,menu,filtre_passe-haut)           "HochpaÃŸ Filter"
    set caption(audace,menu,filtre_median)               "Median Filter"
    set caption(audace,menu,filtre_minimum)              "Mindest Filter"
-   set caption(audace,menu,filtre_maximum)              "Höchst Filter"
+   set caption(audace,menu,filtre_maximum)              "HÃ¶chst Filter"
    set caption(audace,menu,filtre_gaussien)             "Gaussich Filter"
    set caption(audace,menu,ond_morlet)                  "Morlet Typ Wellche"
    set caption(audace,menu,ond_mexicain)                "Mexican Hut Typ Wellche"
@@ -230,55 +230,55 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,efficacite_max)            "0: Maximale Wirksamkeit"
    set caption(traiteFilters,offset)                    "Offset:"
    set caption(traiteFilters,afficher_image_fin)        "Das Bild nach die Behandlung anzeigen"
-   set caption(traiteFilters,taille_noyau)              "Kernel-Größe (Rasterpunkten):"
+   set caption(traiteFilters,taille_noyau)              "Kernel-GrÃ¶ÃŸe (Rasterpunkten):"
 
    set caption(traiteFilters,ok)                        "OK"
    set caption(traiteFilters,appliquer)                 "Anwenden"
-   set caption(traiteFilters,fermer)                    "Schließen"
+   set caption(traiteFilters,fermer)                    "SchlieÃŸen"
    set caption(traiteFilters,aide)                      "Hilfe"
 
    set caption(traiteFilters,attention)                 "Achtung!"
    set caption(traiteFilters,header_noimage)            "Es ist jetzt kein Bild im Speicher."
-   set caption(traiteFilters,choix_image_dd)            "Wählen sie ein Bild von die Festplatte."
+   set caption(traiteFilters,choix_image_dd)            "WÃ¤hlen sie ein Bild von die Festplatte."
    set caption(traiteFilters,choix_coefficient)         "Bestimmen sie den Koeffizient."
    set caption(traiteFilters,choix_coefficients)        "Bestimmen sie die Kofficienten."
    set caption(traiteFilters,coef_manquant)             "Bestimmen sie den fehlenden Koeffizient."
-   set caption(traiteFilters,coef_invalide)             "Ungültigen Koeffizient."
-   set caption(traiteFilters,coef_invalides)            "Ungültigen Koeffizienten."
+   set caption(traiteFilters,coef_invalide)             "UngÃ¼ltigen Koeffizient."
+   set caption(traiteFilters,coef_invalides)            "UngÃ¼ltigen Koeffizienten."
 
    set caption(traiteFilters,traitement_en_cours)       "Aufbereitung im Gange..."
 
-# *************** Version portugaise ****************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(audace,menu,traitement)                  "Tratamento"
-   set caption(audace,menu,masque_flou)                 "Máscara de focagem"
+   set caption(audace,menu,masque_flou)                 "MÃ¡scara de focagem"
    set caption(audace,menu,filtre_passe-bas)            "Filtro passa-baixo"
    set caption(audace,menu,filtre_passe-haut)           "Filtro passa-alto"
-   set caption(audace,menu,filtre_median)               "Filtro médio"
-   set caption(audace,menu,filtre_minimum)              "Filtro mínimo"
-   set caption(audace,menu,filtre_maximum)              "Filtro máximo"
+   set caption(audace,menu,filtre_median)               "Filtro mÃ©dio"
+   set caption(audace,menu,filtre_minimum)              "Filtro mÃ­nimo"
+   set caption(audace,menu,filtre_maximum)              "Filtro mÃ¡ximo"
    set caption(audace,menu,filtre_gaussien)             "Filtro gaussiano"
    set caption(audace,menu,ond_morlet)                  "Wavelet do tipo Morlet"
-   set caption(audace,menu,ond_mexicain)                "Wavelet do tipo chapéu mexicano"
+   set caption(audace,menu,ond_mexicain)                "Wavelet do tipo chapÃ©u mexicano"
    set caption(audace,menu,log)                         "Logaritmo"
 
    set caption(traiteFilters,image_affichee)            "Na imagem apresentada"
    set caption(traiteFilters,_image_affichee_)          "(na imagem apresentada)"
-   set caption(traiteFilters,image_a_choisir)           "Sobre uma imagem do disco rígido"
+   set caption(traiteFilters,image_a_choisir)           "Sobre uma imagem do disco rÃ­gido"
    set caption(traiteFilters,filtres)                   "Filtros:"
    set caption(traiteFilters,parcourir)                 "..."
    set caption(traiteFilters,entree)                    "Imagem de entrada:"
-   set caption(traiteFilters,sortie)                    "Imagem de saída:"
+   set caption(traiteFilters,sortie)                    "Imagem de saÃ­da:"
    set caption(traiteFilters,valeur_par_defaut)         "Valor por defeito"
-   set caption(traiteFilters,coef_etalement)            "Coeficiente de dispersão:"
-   set caption(traiteFilters,coef_mult)                 "Factor de multiplicação:"
-   set caption(traiteFilters,coef_efficacite)           "Eficiência:"
+   set caption(traiteFilters,coef_etalement)            "Coeficiente de dispersÃ£o:"
+   set caption(traiteFilters,coef_mult)                 "Factor de multiplicaÃ§Ã£o:"
+   set caption(traiteFilters,coef_efficacite)           "EficiÃªncia:"
    set caption(traiteFilters,efficacite_min)            "1: Sem Efeito"
-   set caption(traiteFilters,efficacite_max)            "0: Máxima Eficiência"
+   set caption(traiteFilters,efficacite_max)            "0: MÃ¡xima EficiÃªncia"
    set caption(traiteFilters,offset)                    "Offset:"
    set caption(traiteFilters,afficher_image_fin)        "Apresentar imagem no fim do processamento"
-   set caption(traiteFilters,taille_noyau)              "Tamanho do kernel (píxeis):"
+   set caption(traiteFilters,taille_noyau)              "Tamanho do kernel (pÃ­xeis):"
 
    set caption(traiteFilters,ok)                        "OK"
    set caption(traiteFilters,appliquer)                 "Aplicar"
@@ -286,13 +286,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,aide)                      "Ajuda"
 
    set caption(traiteFilters,attention)                 "Aviso!"
-   set caption(traiteFilters,header_noimage)            "Não existe imagem carregada em memória."
+   set caption(traiteFilters,header_noimage)            "NÃ£o existe imagem carregada em memÃ³ria."
    set caption(traiteFilters,choix_image_dd)            "Por favor escolha uma imagem no disco duro."
    set caption(traiteFilters,choix_coefficient)         "Defina os coeficientes."
    set caption(traiteFilters,choix_coefficients)        "Defina os coeficientes."
    set caption(traiteFilters,coef_manquant)             "Defina os coeficientes que faltam."
-   set caption(traiteFilters,coef_invalide)             "Coeficiente Inválido."
-   set caption(traiteFilters,coef_invalides)            "Coeficientes Inválidos."
+   set caption(traiteFilters,coef_invalide)             "Coeficiente InvÃ¡lido."
+   set caption(traiteFilters,coef_invalides)            "Coeficientes InvÃ¡lidos."
 
    set caption(traiteFilters,traitement_en_cours)       "Tratamento em curso..."
 
@@ -302,40 +302,40 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,traitement)                  "Processing"
    set caption(audace,menu,masque_flou)                 "Uskarp maske"
    set caption(audace,menu,filtre_passe-bas)            "Lav pas filter"
-   set caption(audace,menu,filtre_passe-haut)           "Høj pas filter"
+   set caption(audace,menu,filtre_passe-haut)           "HÃ¸j pas filter"
    set caption(audace,menu,filtre_median)               "Median filter"
    set caption(audace,menu,filtre_minimum)              "Minimum filter"
    set caption(audace,menu,filtre_maximum)              "Maksimum filter"
    set caption(audace,menu,filtre_gaussien)             "Gauss filter"
-   set caption(audace,menu,ond_morlet)                  "Bølge af type Morlet"
-   set caption(audace,menu,ond_mexicain)                "Mexicansk hat bølgetype"
+   set caption(audace,menu,ond_morlet)                  "BÃ¸lge af type Morlet"
+   set caption(audace,menu,ond_mexicain)                "Mexicansk hat bÃ¸lgetype"
    set caption(audace,menu,log)                         "Logaritme"
 
-   set caption(traiteFilters,image_affichee)            "På det viste billede"
-   set caption(traiteFilters,_image_affichee_)          "(på det viste billede)"
-   set caption(traiteFilters,image_a_choisir)           "På et billede på harddisken"
+   set caption(traiteFilters,image_affichee)            "PÃ¥ det viste billede"
+   set caption(traiteFilters,_image_affichee_)          "(pÃ¥ det viste billede)"
+   set caption(traiteFilters,image_a_choisir)           "PÃ¥ et billede pÃ¥ harddisken"
    set caption(traiteFilters,filtres)                   "Filter:"
    set caption(traiteFilters,parcourir)                 "..."
-   set caption(traiteFilters,entree)                    "Indlæs billede:"
+   set caption(traiteFilters,entree)                    "IndlÃ¦s billede:"
    set caption(traiteFilters,sortie)                    "Output billede:"
-   set caption(traiteFilters,valeur_par_defaut)         "Default værdier"
+   set caption(traiteFilters,valeur_par_defaut)         "Default vÃ¦rdier"
    set caption(traiteFilters,coef_etalement)            "Spredningsfaktor:"
    set caption(traiteFilters,coef_mult)                 "Multiplikationsfaktor:"
    set caption(traiteFilters,coef_efficacite)           "Virkegrad:"
    set caption(traiteFilters,efficacite_min)            "1: Ingen virkning"
    set caption(traiteFilters,efficacite_max)            "0: Maksimal virkning"
    set caption(traiteFilters,offset)                    "Offset:"
-   set caption(traiteFilters,afficher_image_fin)        "Vis billede når behandling er udført"
-   set caption(traiteFilters,taille_noyau)              "Kerne-størrelse (pixels):"
+   set caption(traiteFilters,afficher_image_fin)        "Vis billede nÃ¥r behandling er udfÃ¸rt"
+   set caption(traiteFilters,taille_noyau)              "Kerne-stÃ¸rrelse (pixels):"
 
    set caption(traiteFilters,ok)                        "OK"
    set caption(traiteFilters,appliquer)                 "Anvend"
    set caption(traiteFilters,fermer)                    "Luk"
-   set caption(traiteFilters,aide)                      "Hjælp"
+   set caption(traiteFilters,aide)                      "HjÃ¦lp"
 
    set caption(traiteFilters,attention)                 "Advarsel!"
    set caption(traiteFilters,header_noimage)            "Intet billede i memory."
-   set caption(traiteFilters,choix_image_dd)            "Vælg et billede på harddisken."
+   set caption(traiteFilters,choix_image_dd)            "VÃ¦lg et billede pÃ¥ harddisken."
    set caption(traiteFilters,choix_coefficient)         "Definer koefficienten."
    set caption(traiteFilters,choix_coefficients)        "Definer koefficienterne."
    set caption(traiteFilters,coef_manquant)             "Definer den manglende koefficient."
@@ -344,9 +344,105 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(traiteFilters,traitement_en_cours)       "Processing er aktiv"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(audace,menu,traitement)                  "Processing"
+   set caption(audace,menu,masque_flou)                 "Unsharp Mask"
+   set caption(audace,menu,filtre_passe-bas)            "Low Pass Filter"
+   set caption(audace,menu,filtre_passe-haut)           "High Pass Filter"
+   set caption(audace,menu,filtre_median)               "Median Filter"
+   set caption(audace,menu,filtre_minimum)              "Minimum Filter"
+   set caption(audace,menu,filtre_maximum)              "Maximum Filter"
+   set caption(audace,menu,filtre_gaussien)             "Gaussian Filter"
+   set caption(audace,menu,ond_morlet)                  "Morlet Type Wavelet"
+   set caption(audace,menu,ond_mexicain)                "Mexican Hat Type Wavelet"
+   set caption(audace,menu,log)                         "Logarithm"
+
+   set caption(traiteFilters,image_affichee)            "On Image Displayed"
+   set caption(traiteFilters,_image_affichee_)          "(On Image Displayed)"
+   set caption(traiteFilters,image_a_choisir)           "To an Image on the Hard Disk"
+   set caption(traiteFilters,filtres)                   "Filters:"
+   set caption(traiteFilters,parcourir)                 "..."
+   set caption(traiteFilters,entree)                    "Input Image:"
+   set caption(traiteFilters,sortie)                    "Output Image:"
+   set caption(traiteFilters,valeur_par_defaut)         "Default Values"
+   set caption(traiteFilters,coef_etalement)            "Spreading Factor:"
+   set caption(traiteFilters,coef_mult)                 "Multiplying Factor:"
+   set caption(traiteFilters,coef_efficacite)           "Efficiency:"
+   set caption(traiteFilters,efficacite_min)            "1: No Effect"
+   set caption(traiteFilters,efficacite_max)            "0: Maximum Efficiency"
+   set caption(traiteFilters,offset)                    "Offset:"
+   set caption(traiteFilters,afficher_image_fin)        "Display image when processing is completed"
+   set caption(traiteFilters,taille_noyau)              "Kernel size (pixels):"
+
+   set caption(traiteFilters,ok)                        "OK"
+   set caption(traiteFilters,appliquer)                 "Apply"
+   set caption(traiteFilters,fermer)                    "Close"
+   set caption(traiteFilters,aide)                      "Help"
+
+   set caption(traiteFilters,attention)                 "Warning!"
+   set caption(traiteFilters,header_noimage)            "No Image in Memory."
+   set caption(traiteFilters,choix_image_dd)            "Please select an image on the hard disk."
+   set caption(traiteFilters,choix_coefficient)         "Define the coefficient."
+   set caption(traiteFilters,choix_coefficients)        "Define the coefficients."
+   set caption(traiteFilters,coef_manquant)             "Define the missing coefficient."
+   set caption(traiteFilters,coef_invalide)             "Invalid Coefficient."
+   set caption(traiteFilters,coef_invalides)            "Invalid Coefficients."
+
+   set caption(traiteFilters,traitement_en_cours)       "Processing in progress..."
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(audace,menu,traitement)                  "Processing"
+   set caption(audace,menu,masque_flou)                 "Unsharp Mask"
+   set caption(audace,menu,filtre_passe-bas)            "Low Pass Filter"
+   set caption(audace,menu,filtre_passe-haut)           "High Pass Filter"
+   set caption(audace,menu,filtre_median)               "Median Filter"
+   set caption(audace,menu,filtre_minimum)              "Minimum Filter"
+   set caption(audace,menu,filtre_maximum)              "Maximum Filter"
+   set caption(audace,menu,filtre_gaussien)             "Gaussian Filter"
+   set caption(audace,menu,ond_morlet)                  "Morlet Type Wavelet"
+   set caption(audace,menu,ond_mexicain)                "Mexican Hat Type Wavelet"
+   set caption(audace,menu,log)                         "Logarithm"
+
+   set caption(traiteFilters,image_affichee)            "On Image Displayed"
+   set caption(traiteFilters,_image_affichee_)          "(On Image Displayed)"
+   set caption(traiteFilters,image_a_choisir)           "To an Image on the Hard Disk"
+   set caption(traiteFilters,filtres)                   "Filters:"
+   set caption(traiteFilters,parcourir)                 "..."
+   set caption(traiteFilters,entree)                    "Input Image:"
+   set caption(traiteFilters,sortie)                    "Output Image:"
+   set caption(traiteFilters,valeur_par_defaut)         "Default Values"
+   set caption(traiteFilters,coef_etalement)            "Spreading Factor:"
+   set caption(traiteFilters,coef_mult)                 "Multiplying Factor:"
+   set caption(traiteFilters,coef_efficacite)           "Efficiency:"
+   set caption(traiteFilters,efficacite_min)            "1: No Effect"
+   set caption(traiteFilters,efficacite_max)            "0: Maximum Efficiency"
+   set caption(traiteFilters,offset)                    "Offset:"
+   set caption(traiteFilters,afficher_image_fin)        "Display image when processing is completed"
+   set caption(traiteFilters,taille_noyau)              "Kernel size (pixels):"
+
+   set caption(traiteFilters,ok)                        "OK"
+   set caption(traiteFilters,appliquer)                 "Apply"
+   set caption(traiteFilters,fermer)                    "Close"
+   set caption(traiteFilters,aide)                      "Help"
+
+   set caption(traiteFilters,attention)                 "Warning!"
+   set caption(traiteFilters,header_noimage)            "No Image in Memory."
+   set caption(traiteFilters,choix_image_dd)            "Please select an image on the hard disk."
+   set caption(traiteFilters,choix_coefficient)         "Define the coefficient."
+   set caption(traiteFilters,choix_coefficients)        "Define the coefficients."
+   set caption(traiteFilters,coef_manquant)             "Define the missing coefficient."
+   set caption(traiteFilters,coef_invalide)             "Invalid Coefficient."
+   set caption(traiteFilters,coef_invalides)            "Invalid Coefficients."
+
+   set caption(traiteFilters,traitement_en_cours)       "Processing in progress..."
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

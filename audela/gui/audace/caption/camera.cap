@@ -1,10 +1,10 @@
 #
 # Fichier : camera.cap
-# Mise a jour $Id: camera.cap,v 1.12 2009-05-08 17:07:03 robertdelmas Exp $
+# Mise a jour $Id: camera.cap,v 1.13 2009-11-04 18:30:24 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -22,7 +22,7 @@ set caption(camera,lignes)               "lines"
 set caption(camera,attente)              "Waiting:"
 set caption(camera,numerisation)         "Read CCD"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(camera,image_acquisition) "Aud'ACE - Acquisition de"
@@ -59,8 +59,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(camera,seconde)           "segundo"
    set caption(camera,secondes)          "segundos"
    set caption(camera,sec)               "seg."
-   set caption(camera,ligne)             "línea"
-   set caption(camera,lignes)            "líneas"
+   set caption(camera,ligne)             "lÃ­nea"
+   set caption(camera,lignes)            "lÃ­neas"
    set caption(camera,attente)           "Esperando:"
    set caption(camera,numerisation)      "Leer CCD"
 
@@ -81,7 +81,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(camera,image_acquisition) "Aud'ACE - Acquisição de"
+   set caption(camera,image_acquisition) "Aud'ACE - AcquisiÃ§Ã£o de"
 
    set caption(camera,en_cours)          "A adquirir..."
    set caption(camera,seconde)           "segundo"
@@ -104,11 +104,35 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(camera,ligne)             "linie"
    set caption(camera,lignes)            "linjer"
    set caption(camera,attente)           "Venter:"
-   set caption(camera,numerisation)      "Læs CCD"
+   set caption(camera,numerisation)      "LÃ¦s CCD"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(camera,en_cours)          "Acquiring..."
+   set caption(camera,seconde)           "second"
+   set caption(camera,secondes)          "seconds"
+   set caption(camera,sec)               "sec."
+   set caption(camera,ligne)             "line"
+   set caption(camera,lignes)            "lines"
+   set caption(camera,attente)           "Waiting:"
+   set caption(camera,numerisation)      "Read CCD"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(camera,en_cours)          "Acquiring..."
+   set caption(camera,seconde)           "second"
+   set caption(camera,secondes)          "seconds"
+   set caption(camera,sec)               "sec."
+   set caption(camera,ligne)             "line"
+   set caption(camera,lignes)            "lines"
+   set caption(camera,attente)           "Waiting:"
+   set caption(camera,numerisation)      "Read CCD"
 
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

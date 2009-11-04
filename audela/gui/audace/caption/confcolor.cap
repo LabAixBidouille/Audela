@@ -1,10 +1,10 @@
 #
 # Fichier : confcolor.cap
-# Mise a jour $Id: confcolor.cap,v 1.6 2007-01-27 14:39:02 robertdelmas Exp $
+# Mise a jour $Id: confcolor.cap,v 1.7 2009-11-04 18:32:26 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -20,16 +20,16 @@ set caption(confcolor,couleur_defaut)     "Return to Default Colors"
 set caption(confcolor,confirmation)       "Are you sure you want to return to the default colors?"
 set caption(confcolor,button_restore)     "Default Colors"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcolor,title)           "Apparence"
-   set caption(confcolor,selection)       "Sélection de la couleur : "
+   set caption(confcolor,selection)       "SÃ©lection de la couleur : "
    set caption(confcolor,vision)          "Vision :"
    set caption(confcolor,diurne)          "Diurne"
    set caption(confcolor,nocturne)        "Nocturne"
-   set caption(confcolor,couleur_defaut)  "Rétablir les couleurs d'origine"
-   set caption(confcolor,confirmation)    "Etes-vous sûr de vouloir rétablir les couleurs d'origine ?"
+   set caption(confcolor,couleur_defaut)  "RÃ©tablir les couleurs d'origine"
+   set caption(confcolor,confirmation)    "Etes-vous sÃ»r de vouloir rÃ©tablir les couleurs d'origine ?"
    set caption(confcolor,button_restore)  "Couleurs d'origine"
 
 # *************** Version italienne ***************************
@@ -48,8 +48,8 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(confcolor,title)           "Apariencia"
-   set caption(confcolor,selection)       "Selección de color: "
-   set caption(confcolor,vision)          "Visión:"
+   set caption(confcolor,selection)       "SelecciÃ³n de color: "
+   set caption(confcolor,vision)          "VisiÃ³n:"
    set caption(confcolor,diurne)          "Diurno"
    set caption(confcolor,nocturne)        "Nocturno"
    set caption(confcolor,couleur_defaut)  "Restablecer los colores por defecto"
@@ -62,23 +62,23 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcolor,title)           "Erscheinung"
    set caption(confcolor,selection)       "Farbe Wahl: "
    set caption(confcolor,vision)          "Vision:"
-   set caption(confcolor,diurne)          "Täglich"
-   set caption(confcolor,nocturne)        "Nächtlich"
+   set caption(confcolor,diurne)          "TÃ¤glich"
+   set caption(confcolor,nocturne)        "NÃ¤chtlich"
    set caption(confcolor,couleur_defaut)  "Die voreingestellten Farben wiederherstellen"
    set caption(confcolor,confirmation)    "Sind sie sicher die voreingestellten Farben wiederherstellen wollen?"
    set caption(confcolor,button_restore)  "Voreingestellten Farben"
 
-# *************** Version portugaise ****************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(confcolor,title)           "Aparência"
-   set caption(confcolor,selection)       "Selecção de cor: "
-   set caption(confcolor,vision)          "Visão:"
+   set caption(confcolor,title)           "AparÃªncia"
+   set caption(confcolor,selection)       "SelecÃ§Ã£o de cor: "
+   set caption(confcolor,vision)          "VisÃ£o:"
    set caption(confcolor,diurne)          "Dia"
    set caption(confcolor,nocturne)        "Noite"
-   set caption(confcolor,couleur_defaut)  "Voltar às Cores Padrão"
-   set caption(confcolor,confirmation)    "Tem a certeza que quer voltar às cores padrão?"
-   set caption(confcolor,button_restore)  "Cores Padrão"
+   set caption(confcolor,couleur_defaut)  "Voltar Ã s Cores PadrÃ£o"
+   set caption(confcolor,confirmation)    "Tem a certeza que quer voltar Ã s cores padrÃ£o?"
+   set caption(confcolor,button_restore)  "Cores PadrÃ£o"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -89,12 +89,36 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcolor,diurne)          "Dag"
    set caption(confcolor,nocturne)        "Natte"
    set caption(confcolor,couleur_defaut)  "Gendan standardfarver"
-   set caption(confcolor,confirmation)    "Er du sikker på, du ønsker at gendanne standardfarver?"
+   set caption(confcolor,confirmation)    "Er du sikker pÃ¥, du Ã¸nsker at gendanne standardfarver?"
    set caption(confcolor,button_restore)  "Standardfarver"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(confcolor,title)           "Appearance"
+   set caption(confcolor,selection)       "Color Selection: "
+   set caption(confcolor,vision)          "Vision:"
+   set caption(confcolor,diurne)          "Day"
+   set caption(confcolor,nocturne)        "Night"
+   set caption(confcolor,couleur_defaut)  "Return to Default Colors"
+   set caption(confcolor,confirmation)    "Are you sure you want to return to the default colors?"
+   set caption(confcolor,button_restore)  "Default Colors"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(confcolor,title)           "Appearance"
+   set caption(confcolor,selection)       "Color Selection: "
+   set caption(confcolor,vision)          "Vision:"
+   set caption(confcolor,diurne)          "Day"
+   set caption(confcolor,nocturne)        "Night"
+   set caption(confcolor,couleur_defaut)  "Return to Default Colors"
+   set caption(confcolor,confirmation)    "Are you sure you want to return to the default colors?"
+   set caption(confcolor,button_restore)  "Default Colors"
 
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

@@ -1,10 +1,10 @@
 #
 # Fichier : conftel.cap
-# Mise a jour $Id: conftel.cap,v 1.29 2008-12-22 09:28:24 robertdelmas Exp $
+# Mise a jour $Id: conftel.cap,v 1.30 2009-11-04 18:34:58 robertdelmas Exp $
 #
 
 #=========================================================================
-#   DÈbut de la dÈclaration des textes localisÈs (internationalisation)
+#   D√©but de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -27,22 +27,22 @@ set caption(conftel,seeconsole)                       "See details in the Termin
 
 set caption(conftel,mount)                            "Mount"
 
-# *************** Version franÁaise ***************************
+# *************** Version fran√ßaise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(conftel,config)                        "Configuration de la monture"
-   set caption(conftel,creer_au_demarrage)            "Connexion automatique de cette monture au prochain dÈmarrage"
+   set caption(conftel,creer_au_demarrage)            "Connexion automatique de cette monture au prochain d√©marrage"
    set caption(conftel,ok)                            "OK"
    set caption(conftel,appliquer)                     "Appliquer"
    set caption(conftel,fermer)                        "Fermer"
    set caption(conftel,aide)                          "Aide"
-   set caption(conftel,arreter)                       "ArrÍter"
+   set caption(conftel,arreter)                       "Arr√™ter"
 
    set caption(conftel,attention)                     "Attention"
    set caption(conftel,connexion_texte1)              "Veuillez patienter quelques secondes"
    set caption(conftel,connexion_texte2)              "pendant la connexion de votre monture."
-   set caption(conftel,cannotcreatecam)               "La monture ne peut pas Ítre crÈÈe."
-   set caption(conftel,seeconsole)                    "DÈtails dans la Console."
+   set caption(conftel,cannotcreatecam)               "La monture ne peut pas √™tre cr√©√©e."
+   set caption(conftel,seeconsole)                    "D√©tails dans la Console."
 
    set caption(conftel,mount)                         "Monture"
 
@@ -68,15 +68,15 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(conftel,config)                        "ConfiguraciÛn de la montura"
-   set caption(conftel,creer_au_demarrage)            "La prÛxima vez que se ejecute el programa, la montura se conecta autom·ticamente"
+   set caption(conftel,config)                        "Configuraci√≥n de la montura"
+   set caption(conftel,creer_au_demarrage)            "La pr√≥xima vez que se ejecute el programa, la montura se conecta autom√°ticamente"
    set caption(conftel,ok)                            "OK"
    set caption(conftel,appliquer)                     "Aplicar"
    set caption(conftel,fermer)                        "Cerrar"
    set caption(conftel,aide)                          "Ayuda"
    set caption(conftel,arreter)                       "Parar"
 
-   set caption(conftel,attention)                     "!Cuidado°"
+   set caption(conftel,attention)                     "!Cuidado¬°"
    set caption(conftel,connexion_texte1)              "Conectando con la montura..."
    set caption(conftel,connexion_texte2)              "Por favor, espere unos segundos."
    set caption(conftel,cannotcreatecam)               "La montura no puede ser creada."
@@ -88,26 +88,26 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(conftel,config)                        "Montierung Konfiguration"
-   set caption(conftel,creer_au_demarrage)            "N‰chste Mal dieses Montierung automatisch anschlieﬂen"
+   set caption(conftel,creer_au_demarrage)            "N√§chste Mal dieses Montierung automatisch anschlie√üen"
    set caption(conftel,ok)                            "OK"
    set caption(conftel,appliquer)                     "Anwenden"
-   set caption(conftel,fermer)                        "Schlieﬂen"
+   set caption(conftel,fermer)                        "Schlie√üen"
    set caption(conftel,aide)                          "Hilfe"
    set caption(conftel,arreter)                       "Halten"
 
    set caption(conftel,attention)                     "Achtung"
    set caption(conftel,connexion_texte1)              "Bitte, einige Sekunden warten"
-   set caption(conftel,connexion_texte2)              "w‰hrend das Montierung Anschluﬂ."
+   set caption(conftel,connexion_texte2)              "w√§hrend das Montierung Anschlu√ü."
    set caption(conftel,cannotcreatecam)               "Das Montierung kann nicht hergestellt werden."
    set caption(conftel,seeconsole)                    "Siehe Details auf der Konsole."
 
    set caption(conftel,mount)                         "Montierung"
 
-# *************** Version portugaise ****************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(conftel,config)                        "ConfiguraÁ„o da montagem"
-   set caption(conftel,creer_au_demarrage)            "Ligar a montagem automaticamente da prÛxima vez que o software for executado"
+   set caption(conftel,config)                        "Configura√ß√£o da montagem"
+   set caption(conftel,creer_au_demarrage)            "Ligar a montagem automaticamente da pr√≥xima vez que o software for executado"
    set caption(conftel,ok)                            "OK"
    set caption(conftel,appliquer)                     "Aplicar"
    set caption(conftel,fermer)                        "Fechar"
@@ -115,9 +115,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,arreter)                       "Parar"
 
    set caption(conftel,attention)                     "Aviso"
-   set caption(conftel,connexion_texte1)              "LigaÁ„o da Montagem em curso..."
+   set caption(conftel,connexion_texte1)              "Liga√ß√£o da Montagem em curso..."
    set caption(conftel,connexion_texte2)              "Por favor aguarde alguns segundos."
-   set caption(conftel,cannotcreatecam)               "Da montagem n„o pode ser criada."
+   set caption(conftel,cannotcreatecam)               "Da montagem n√£o pode ser criada."
    set caption(conftel,seeconsole)                    "Ver detalhes na Consola."
 
    set caption(conftel,mount)                         "Montagem"
@@ -141,9 +141,47 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(conftel,mount)                         "Mount"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(conftel,config)                        "Mount Setup"
+   set caption(conftel,creer_au_demarrage)            "Next time software is run connect this mount automatically"
+   set caption(conftel,ok)                            "OK"
+   set caption(conftel,appliquer)                     "Apply"
+   set caption(conftel,fermer)                        "Close"
+   set caption(conftel,aide)                          "Help"
+   set caption(conftel,arreter)                       "Stop"
+
+   set caption(conftel,attention)                     "Warning"
+   set caption(conftel,connexion_texte1)              "Mount Connection in Progress..."
+   set caption(conftel,connexion_texte2)              "Please wait a few seconds."
+   set caption(conftel,cannotcreatecam)               "The link with the mount can not be created."
+   set caption(conftel,seeconsole)                    "See details in the Terminal screen."
+
+   set caption(conftel,mount)                         "Mount"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(conftel,config)                        "Mount Setup"
+   set caption(conftel,creer_au_demarrage)            "Next time software is run connect this mount automatically"
+   set caption(conftel,ok)                            "OK"
+   set caption(conftel,appliquer)                     "Apply"
+   set caption(conftel,fermer)                        "Close"
+   set caption(conftel,aide)                          "Help"
+   set caption(conftel,arreter)                       "Stop"
+
+   set caption(conftel,attention)                     "Warning"
+   set caption(conftel,connexion_texte1)              "Mount Connection in Progress..."
+   set caption(conftel,connexion_texte2)              "Please wait a few seconds."
+   set caption(conftel,cannotcreatecam)               "The link with the mount can not be created."
+   set caption(conftel,seeconsole)                    "See details in the Terminal screen."
+
+   set caption(conftel,mount)                         "Mount"
+
 }
 
 #=========================================================================
-#   Fin de la dÈclaration des textes localisÈs (internationalisation)
+#   Fin de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 

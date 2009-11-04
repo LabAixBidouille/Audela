@@ -1,10 +1,10 @@
 #
 # Fichier : divers.cap
-# Mise a jour $Id: divers.cap,v 1.8 2009-06-04 16:27:40 robertdelmas Exp $
+# Mise a jour $Id: divers.cap,v 1.9 2009-11-04 18:35:31 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -68,20 +68,20 @@ set caption(divers,nom_invalide)                      "The following file name i
 set caption(divers,copyjpeg)                          "Save as Jpeg"
 set caption(divers,libgsl)                            "\nThe libgsl and libgslcblas libraries are missing."
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    # Autres
    set caption(divers,audace)                         "Aud'ACE"
-   set caption(divers,oubli_param_opt)                "Paramètre manquant pour l'option suivante : "
+   set caption(divers,oubli_param_opt)                "ParamÃ¨tre manquant pour l'option suivante : "
    set caption(divers,invalide_opt)                   "L'option suivante est invalide : "
-   set caption(divers,tracebox)                       "Veuillez tracer un cadre à la souris."
-   set caption(divers,series_trreg_cadre-ref)         "Détermination du cadre de référence pour la sous-série suivante : "
-   set caption(divers,series_trreg_cadre-a-rec)       "Détermination du cadre pour la registration de la sous-série suivante : "
-   set caption(divers,series_trreg_transl)            "Translation pour la sous-série suivante : "
-   set caption(divers,series_trreg_rot)               "Rotation pour la sous-série suivante : "
-   set caption(divers,erreur,serie_existe)            "Erreur, la série suivante n'existe pas : "
-   set caption(divers,nom_invalide)                   "Le nom de fichier suivant est invalide (présence de caractères accentués) : "
+   set caption(divers,tracebox)                       "Veuillez tracer un cadre Ã  la souris."
+   set caption(divers,series_trreg_cadre-ref)         "DÃ©termination du cadre de rÃ©fÃ©rence pour la sous-sÃ©rie suivante : "
+   set caption(divers,series_trreg_cadre-a-rec)       "DÃ©termination du cadre pour la registration de la sous-sÃ©rie suivante : "
+   set caption(divers,series_trreg_transl)            "Translation pour la sous-sÃ©rie suivante : "
+   set caption(divers,series_trreg_rot)               "Rotation pour la sous-sÃ©rie suivante : "
+   set caption(divers,erreur,serie_existe)            "Erreur, la sÃ©rie suivante n'existe pas : "
+   set caption(divers,nom_invalide)                   "Le nom de fichier suivant est invalide (prÃ©sence de caractÃ¨res accentuÃ©s) : "
    set caption(divers,copyjpeg)                       "Enregistrer en Jpeg"
    set caption(divers,libgsl)                         "\nLes librairies libgsl et libgslcblas sont manquantes."
 
@@ -107,13 +107,13 @@ if { [ string compare $langage "french" ] == "0" } {
 
    # Autres
    set caption(divers,audace)                         "Aud'ACE"
-   set caption(divers,oubli_param_opt)                "Falta algún parámetro para la siguiente opción: "
-   set caption(divers,invalide_opt)                   "Esta opción es incorrecta: "
-   set caption(divers,tracebox)                       "Porfavor, dibuje un recuadro con el ratón."
+   set caption(divers,oubli_param_opt)                "Falta algÃºn parÃ¡metro para la siguiente opciÃ³n: "
+   set caption(divers,invalide_opt)                   "Esta opciÃ³n es incorrecta: "
+   set caption(divers,tracebox)                       "Porfavor, dibuje un recuadro con el ratÃ³n."
    set caption(divers,series_trreg_cadre-ref)         "Definiendo el recuadro de referencia para la sub-serie siguiente: "
    set caption(divers,series_trreg_cadre-a-rec)       "Definiendo el recuadro para alinear las siguiente sub-serie: "
-   set caption(divers,series_trreg_transl)            "Traslación para la siguiente sub-serie: "
-   set caption(divers,series_trreg_rot)               "Rotación para la siguiente sub-serie: "
+   set caption(divers,series_trreg_transl)            "TraslaciÃ³n para la siguiente sub-serie: "
+   set caption(divers,series_trreg_rot)               "RotaciÃ³n para la siguiente sub-serie: "
    set caption(divers,erreur,serie_existe)            "Error, no existe la serie siguiente: "
    set caption(divers,nom_invalide)                   "El siguiente nombre de fichero es incorrecto (contiene caracteres acentuados): "
    set caption(divers,copyjpeg)                       "Guardar JPEG"
@@ -124,13 +124,13 @@ if { [ string compare $langage "french" ] == "0" } {
 
    # Autres
    set caption(divers,audace)                         "Aud'ACE"
-   set caption(divers,oubli_param_opt)                "Fehlende Parameter für die Volgende Option: "
-   set caption(divers,invalide_opt)                   "Die Volgende Option ist ungültig: "
+   set caption(divers,oubli_param_opt)                "Fehlende Parameter fÃ¼r die Volgende Option: "
+   set caption(divers,invalide_opt)                   "Die Volgende Option ist ungÃ¼ltig: "
    set caption(divers,tracebox)                       "Bitte, einen Rahmen mit der Mause zeichnen."
-   set caption(divers,series_trreg_cadre-ref)         "Der Betzugsrahmen für den folgenden Untersatz bestimmen: "
-   set caption(divers,series_trreg_cadre-a-rec)       "Der Registrationsrahmen für den folgenden Untersatz bestimmen: "
-   set caption(divers,series_trreg_transl)            "Verschiebung für den folgenden Untersatz: "
-   set caption(divers,series_trreg_rot)               "Umdrehung für den folgenden Untersatz: "
+   set caption(divers,series_trreg_cadre-ref)         "Der Betzugsrahmen fÃ¼r den folgenden Untersatz bestimmen: "
+   set caption(divers,series_trreg_cadre-a-rec)       "Der Registrationsrahmen fÃ¼r den folgenden Untersatz bestimmen: "
+   set caption(divers,series_trreg_transl)            "Verschiebung fÃ¼r den folgenden Untersatz: "
+   set caption(divers,series_trreg_rot)               "Umdrehung fÃ¼r den folgenden Untersatz: "
    set caption(divers,erreur,serie_existe)            "Irrtum, die Folgende Serie existiert nicht: "
    set caption(divers,nom_invalide)                   "Der Name dieser Datei ist inkorrekt (Gegenwart von betonten Buchstaben): "
    set caption(divers,copyjpeg)                       "In JPEG speichern"
@@ -141,17 +141,17 @@ if { [ string compare $langage "french" ] == "0" } {
 
    # Autres
    set caption(divers,audace)                         "Aud'ACE"
-   set caption(divers,oubli_param_opt)                "Falta um parâmetro para a seguinte opção: "
-   set caption(divers,invalide_opt)                   "Esta opção não é válida: "
+   set caption(divers,oubli_param_opt)                "Falta um parÃ¢metro para a seguinte opÃ§Ã£o: "
+   set caption(divers,invalide_opt)                   "Esta opÃ§Ã£o nÃ£o Ã© vÃ¡lida: "
    set caption(divers,tracebox)                       "Por favor, desenhe um quadrado com o rato."
-   set caption(divers,series_trreg_cadre-ref)         "A definir o quadrado de referência para a sub-série seguinte: "
+   set caption(divers,series_trreg_cadre-ref)         "A definir o quadrado de referÃªncia para a sub-sÃ©rie seguinte: "
    set caption(divers,series_trreg_cadre-a-rec)       "A definir o quadrado para alinhar as seguintes sub-serie: "
-   set caption(divers,series_trreg_transl)            "Translação para a seguinte sub-série: "
-   set caption(divers,series_trreg_rot)               "Rotação para a seguinte sub-série: "
-   set caption(divers,erreur,serie_existe)            "Erro, não existe a série seguinte: "
-   set caption(divers,nom_invalide)                   "O seguinte nome de ficheiro não é válido (contém caracteres com acento): "
+   set caption(divers,series_trreg_transl)            "TranslaÃ§Ã£o para a seguinte sub-sÃ©rie: "
+   set caption(divers,series_trreg_rot)               "RotaÃ§Ã£o para a seguinte sub-sÃ©rie: "
+   set caption(divers,erreur,serie_existe)            "Erro, nÃ£o existe a sÃ©rie seguinte: "
+   set caption(divers,nom_invalide)                   "O seguinte nome de ficheiro nÃ£o Ã© vÃ¡lido (contÃ©m caracteres com acento): "
    set caption(divers,copyjpeg)                       "Guardar como JPEG"
-   set caption(divers,libgsl)                         "\nAs livrarias libgsl e libgslcblas não foram encontradas."
+   set caption(divers,libgsl)                         "\nAs livrarias libgsl e libgslcblas nÃ£o foram encontradas."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -161,18 +161,52 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(divers,oubli_param_opt)                "Manglende parameter til flg. valg: "
    set caption(divers,invalide_opt)                   "Flg. valg er ugyldig: "
    set caption(divers,tracebox)                       "Tegn en ramme med musen."
-   set caption(divers,series_trreg_cadre-ref)         "Definér referenceramme til de følgende sub-serier: "
+   set caption(divers,series_trreg_cadre-ref)         "DefinÃ©r referenceramme til de fÃ¸lgende sub-serier: "
    set caption(divers,series_trreg_cadre-a-rec)       "Definering af ramme for at registrere flg. sub-serie: "
-   set caption(divers,series_trreg_transl)            "Overførsel af den flg. sub-serie: "
+   set caption(divers,series_trreg_transl)            "OverfÃ¸rsel af den flg. sub-serie: "
    set caption(divers,series_trreg_rot)               "Rotation af den flg. Sub-serie: "
-   set caption(divers,erreur,serie_existe)            "Fejl! Den følgende serie eksisterer ikke: "
-   set caption(divers,nom_invalide)                   "Følgende filnavn er ugyldigt (indeholder forbudte karakterer): "
+   set caption(divers,erreur,serie_existe)            "Fejl! Den fÃ¸lgende serie eksisterer ikke: "
+   set caption(divers,nom_invalide)                   "FÃ¸lgende filnavn er ugyldigt (indeholder forbudte karakterer): "
    set caption(divers,copyjpeg)                       "Gem som Jpeg"
    set caption(divers,libgsl)                         "\nBibliotekerne libgsl og libgslcblas er ikke oprettet."
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   # Autres
+   set caption(divers,audace)                         "Aud'ACE"
+   set caption(divers,oubli_param_opt)                "Missing Parameter for the Following Option: "
+   set caption(divers,invalide_opt)                   "Following Option is invalid: "
+   set caption(divers,tracebox)                       "Please draw a square with your mouse."
+   set caption(divers,series_trreg_cadre-ref)         "Defining the Reference Square for the Following Sub-series: "
+   set caption(divers,series_trreg_cadre-a-rec)       "Defining the Square to Register the Following Sub-series: "
+   set caption(divers,series_trreg_transl)            "Translation for the Following Sub-series: "
+   set caption(divers,series_trreg_rot)               "Rotation for the Following Sub-series: "
+   set caption(divers,erreur,serie_existe)            "Error - The following series does not exist: "
+   set caption(divers,nom_invalide)                   "The following file name is invalid (contains accented characters): "
+   set caption(divers,copyjpeg)                       "Save as Jpeg"
+   set caption(divers,libgsl)                         "\nThe libgsl and libgslcblas libraries are missing."
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   # Autres
+   set caption(divers,audace)                         "Aud'ACE"
+   set caption(divers,oubli_param_opt)                "Missing Parameter for the Following Option: "
+   set caption(divers,invalide_opt)                   "Following Option is invalid: "
+   set caption(divers,tracebox)                       "Please draw a square with your mouse."
+   set caption(divers,series_trreg_cadre-ref)         "Defining the Reference Square for the Following Sub-series: "
+   set caption(divers,series_trreg_cadre-a-rec)       "Defining the Square to Register the Following Sub-series: "
+   set caption(divers,series_trreg_transl)            "Translation for the Following Sub-series: "
+   set caption(divers,series_trreg_rot)               "Rotation for the Following Sub-series: "
+   set caption(divers,erreur,serie_existe)            "Error - The following series does not exist: "
+   set caption(divers,nom_invalide)                   "The following file name is invalid (contains accented characters): "
+   set caption(divers,copyjpeg)                       "Save as Jpeg"
+   set caption(divers,libgsl)                         "\nThe libgsl and libgslcblas libraries are missing."
 
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

@@ -1,10 +1,10 @@
 #
 # Fichier : poly.cap
-# Mise a jour $Id: poly.cap,v 1.5 2007-01-27 14:49:38 robertdelmas Exp $
+# Mise a jour $Id: poly.cap,v 1.6 2009-11-04 18:37:30 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -31,17 +31,17 @@ set caption(poly,series_trreg_cadre-a-rec)      "Defining the square to register
 set caption(poly,series_trreg_transl)           "Translation for the following sub-series:"
 set caption(poly,series_trreg_rot)              "Rotation for the following sub-series:"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    # Autres
-   set caption(poly,erreur_seriesApoly)         "Erreur dans seriesApoly : les séries à transformer en série polychrome n'ont pas des index compatibles.\n"
-   set caption(poly,erreur_polyAseries)         "Erreur dans polyAseries : le nombre de couleurs de la série polychrome n'est pas compatible avec la liste des séries monochromes de destination.\n"
-   set caption(poly,tracebox)                   "Veuillez tracer un cadre à la souris."
-   set caption(poly,series_trreg_cadre-ref)     "Détermination du cadre de référence pour la sous-série suivante :"
-   set caption(poly,series_trreg_cadre-a-rec)   "Détermination du cadre pour la registration de la sous-série suivante :"
-   set caption(poly,series_trreg_transl)        "Translation pour la sous-série suivante :"
-   set caption(poly,series_trreg_rot)           "Rotation pour la sous-série suivante :"
+   set caption(poly,erreur_seriesApoly)         "Erreur dans seriesApoly : Les sÃ©ries Ã  transformer en sÃ©rie polychrome n'ont pas des index compatibles.\n"
+   set caption(poly,erreur_polyAseries)         "Erreur dans polyAseries : Le nombre de couleurs de la sÃ©rie polychrome n'est pas compatible avec la liste des sÃ©ries monochromes de destination.\n"
+   set caption(poly,tracebox)                   "Veuillez tracer un cadre Ã  la souris."
+   set caption(poly,series_trreg_cadre-ref)     "DÃ©termination du cadre de rÃ©fÃ©rence pour la sous-sÃ©rie suivante :"
+   set caption(poly,series_trreg_cadre-a-rec)   "DÃ©termination du cadre pour la registration de la sous-sÃ©rie suivante :"
+   set caption(poly,series_trreg_transl)        "Translation pour la sous-sÃ©rie suivante :"
+   set caption(poly,series_trreg_rot)           "Rotation pour la sous-sÃ©rie suivante :"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -59,37 +59,37 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    # Autres
-   set caption(poly,erreur_seriesApoly)         "Error en seriesApoly: La serie que debia transformarse en una serie multicolor no tiene índices compatibles.\n"
-   set caption(poly,erreur_polyAseries)         "Error en polyAseries: El numero de colores en la serie multicolor no es compatible con la serie monocromática destino.\n"
-   set caption(poly,tracebox)                   "Porfavor, dibuje un recuadro con el ratón."
+   set caption(poly,erreur_seriesApoly)         "Error en seriesApoly: La serie que debia transformarse en una serie multicolor no tiene Ã­ndices compatibles.\n"
+   set caption(poly,erreur_polyAseries)         "Error en polyAseries: El numero de colores en la serie multicolor no es compatible con la serie monocromÃ¡tica destino.\n"
+   set caption(poly,tracebox)                   "Porfavor, dibuje un recuadro con el ratÃ³n."
    set caption(poly,series_trreg_cadre-ref)     "Definiendo el recuadro de referencoa para la siguiente sub-series:"
    set caption(poly,series_trreg_cadre-a-rec)   "Definiendo el recuadro para registrar las siguiente sub-serie:"
-   set caption(poly,series_trreg_transl)        "Traslación para la siguiente sub-serie:"
-   set caption(poly,series_trreg_rot)           "Rotación para la siguiente sub-serie:"
+   set caption(poly,series_trreg_transl)        "TraslaciÃ³n para la siguiente sub-serie:"
+   set caption(poly,series_trreg_rot)           "RotaciÃ³n para la siguiente sub-serie:"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    # Autres
-   set caption(poly,erreur_seriesApoly)         "Irrtum in seriesApoly: Die Sätzen in Polychromische Sätzen zu umfolgen haben keinen kompatibel Zeiger.\n"
-   set caption(poly,erreur_polyAseries)         "Irrtum in polyAseries: Der Farben Zahl der Polychromischen Satz ist nicht kompatibel mit die ziel Liste der monochromatischen Sätze.\n"
+   set caption(poly,erreur_seriesApoly)         "Irrtum in seriesApoly: Die SÃ¤tzen in Polychromische SÃ¤tzen zu umfolgen haben keinen kompatibel Zeiger.\n"
+   set caption(poly,erreur_polyAseries)         "Irrtum in polyAseries: Der Farben Zahl der Polychromischen Satz ist nicht kompatibel mit die ziel Liste der monochromatischen SÃ¤tze.\n"
    set caption(poly,tracebox)                   "Bitte, einen Rahmen mit der Mause zeichnen."
-   set caption(poly,series_trreg_cadre-ref)     "Bestimmung der Referenz Rahmen für den folgende Untersatz:"
-   set caption(poly,series_trreg_cadre-a-rec)   "Bestimmung der Referenz Rahmen für die Registration der folgenden Untersatz:"
-   set caption(poly,series_trreg_transl)        "Translation für den folgenden Untersatz:"
-   set caption(poly,series_trreg_rot)           "Umsatz für den folgenden Untersatz:"
+   set caption(poly,series_trreg_cadre-ref)     "Bestimmung der Referenz Rahmen fÃ¼r den folgende Untersatz:"
+   set caption(poly,series_trreg_cadre-a-rec)   "Bestimmung der Referenz Rahmen fÃ¼r die Registration der folgenden Untersatz:"
+   set caption(poly,series_trreg_transl)        "Translation fÃ¼r den folgenden Untersatz:"
+   set caption(poly,series_trreg_rot)           "Umsatz fÃ¼r den folgenden Untersatz:"
 
-# *************** Version portugaise ****************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    # Autres
-   set caption(poly,erreur_seriesApoly)            "Erro em seriesApoly: A série que devia ser transformada numa série multicolor não tem índices compatíveis.\n"
-   set caption(poly,erreur_polyAseries)            "Erro em polyAseries: O número de cores na série multicolor não é compatível com a série monocromática.\n"
+   set caption(poly,erreur_seriesApoly)            "Erro em seriesApoly: A sÃ©rie que devia ser transformada numa sÃ©rie multicolor nÃ£o tem Ã­ndices compatÃ­veis.\n"
+   set caption(poly,erreur_polyAseries)            "Erro em polyAseries: O nÃºmero de cores na sÃ©rie multicolor nÃ£o Ã© compatÃ­vel com a sÃ©rie monocromÃ¡tica.\n"
    set caption(poly,tracebox)                      "Por favor desenho um quadrado com o rato."
-   set caption(poly,series_trreg_cadre-ref)        "A definir o quadrado de referência para as seguintes sub-séries:"
-   set caption(poly,series_trreg_cadre-a-rec)      "A definir o quadrado para registar as seguintes sub-séries:"
-   set caption(poly,series_trreg_transl)           "Translação para as seguintes sub-séries:"
-   set caption(poly,series_trreg_rot)              "Rotação para as seguintes sub-séries:"
+   set caption(poly,series_trreg_cadre-ref)        "A definir o quadrado de referÃªncia para as seguintes sub-sÃ©ries:"
+   set caption(poly,series_trreg_cadre-a-rec)      "A definir o quadrado para registar as seguintes sub-sÃ©ries:"
+   set caption(poly,series_trreg_transl)           "TranslaÃ§Ã£o para as seguintes sub-sÃ©ries:"
+   set caption(poly,series_trreg_rot)              "RotaÃ§Ã£o para as seguintes sub-sÃ©ries:"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -103,9 +103,33 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(poly,series_trreg_transl)        "Translation for the following sub-series:"
    set caption(poly,series_trreg_rot)           "Rotation for the following sub-series:"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   # Autres
+   set caption(poly,erreur_seriesApoly)         "Error in seriesApoly: The series to be transformed into multicolored series do not have compatible indexes.\n"
+   set caption(poly,erreur_polyAseries)         "Error in polyAseries: The number of colors in the multicolored series is not compatible with the list of target monochromatic series.\n"
+   set caption(poly,tracebox)                   "Please draw a square with your mouse."
+   set caption(poly,series_trreg_cadre-ref)     "Defining the reference square for the following sub-series:"
+   set caption(poly,series_trreg_cadre-a-rec)   "Defining the square to register the following sub-series:"
+   set caption(poly,series_trreg_transl)        "Translation for the following sub-series:"
+   set caption(poly,series_trreg_rot)           "Rotation for the following sub-series:"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   # Autres
+   set caption(poly,erreur_seriesApoly)         "Error in seriesApoly: The series to be transformed into multicolored series do not have compatible indexes.\n"
+   set caption(poly,erreur_polyAseries)         "Error in polyAseries: The number of colors in the multicolored series is not compatible with the list of target monochromatic series.\n"
+   set caption(poly,tracebox)                   "Please draw a square with your mouse."
+   set caption(poly,series_trreg_cadre-ref)     "Defining the reference square for the following sub-series:"
+   set caption(poly,series_trreg_cadre-a-rec)   "Defining the square to register the following sub-series:"
+   set caption(poly,series_trreg_transl)        "Translation for the following sub-series:"
+   set caption(poly,series_trreg_rot)           "Rotation for the following sub-series:"
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
