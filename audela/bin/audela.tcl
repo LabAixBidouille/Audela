@@ -1,5 +1,5 @@
 #
-# Update $Id: audela.tcl,v 1.14 2009-07-06 17:55:14 michelpujol Exp $
+# Update $Id: audela.tcl,v 1.15 2009-11-04 18:41:39 robertdelmas Exp $
 #
 #--- Welcome to the AudeLA-Interfaces Easy Launcher
 #
@@ -18,12 +18,14 @@
 #---       ...
 #
 
-#--- add audela/lib directory to ::auto_path if it doesn't already exist
+#--- Taking into account the coding UTF-8
+encoding system utf-8
+
+#--- Add audela/lib directory to ::auto_path if it doesn't already exist
 set audelaLibPath [file join [file join [file dirname [file dirname [info nameofexecutable]] ] lib]]
 if { [lsearch $::auto_path $audelaLibPath] == -1 } {
    lappend ::auto_path $audelaLibPath
 }
-
 
 set nameofexecutable [file tail [file rootname [info nameofexecutable]]]
 if {($nameofexecutable!="audela")&&([file exists ../ros]==1)} {
@@ -106,18 +108,16 @@ proc basecaption { {langage ""} } {
 #--- Call the language initialisation
 global caption
 
-set caption(lg) { "french" "italian" "spanish" "german" "portuguese" "danish" "english" }
+set caption(lg) { "french" "italian" "spanish" "german" "portuguese" "danish" "ukrainian" "russian" "english" }
 set langage [basecaption]
 
 #--- Create the toplevel window
 set base .choice
 toplevel $base -class Toplevel
-wm geometry $base 510x150+10+10
+wm geometry $base 640x150+10+10
 wm focusmodel $base passive
-wm maxsize $base 510 150
-wm minsize $base 510 150
 wm overrideredirect $base 0
-wm resizable $base 1 1
+wm resizable $base 0 0
 wm deiconify $base
 wm title $base $caption(audela,main_title)
 bind $base <Destroy> { destroy .choice ; exit }
@@ -159,19 +159,29 @@ frame $base.fra1
    imageflag6 configure -file da.gif -format gif
    label $base.fra1.danish -image imageflag6 -borderwidth 0 -relief solid
    pack $base.fra1.danish -side left -padx 5 -pady 5
-   #--- English
+   #--- Ukrainian
    image create photo imageflag7
-   imageflag7 configure -file gb.gif -format gif
-   label $base.fra1.english -image imageflag7 -borderwidth 0 -relief solid
+   imageflag7 configure -file ua.gif -format gif
+   label $base.fra1.ukrainian -image imageflag7 -borderwidth 0 -relief solid
+   pack $base.fra1.ukrainian -side left -padx 5 -pady 5
+   #--- Russian
+   image create photo imageflag8
+   imageflag8 configure -file ru.gif -format gif
+   label $base.fra1.russian -image imageflag8 -borderwidth 0 -relief solid
+   pack $base.fra1.russian -side left -padx 5 -pady 5
+   #--- English
+   image create photo imageflag9
+   imageflag9 configure -file gb.gif -format gif
+   label $base.fra1.english -image imageflag9 -borderwidth 0 -relief solid
    pack $base.fra1.english -side left -padx 5 -pady 5
 pack $base.fra1 -side top -in $base
 
 $base.fra1.$::langage configure -borderwidth 3
 
 #--- Create the button
-button $base.but2 -text "$caption(audela,launch)" -width 12 -font { Arial 20 bold } -command { apply }
-pack $base.but2 -anchor center -side top -fill x -padx 4 -pady 4 \
-   -in $base -anchor center -expand 1 -fill both -side top
+button $base.but2 -text "$caption(audela,launch)" -font { Arial 20 bold } -command { apply }
+pack $base.but2 -anchor center -side top -padx 4 -pady 4 \
+   -in $base -anchor center -expand 1 -fill none -side top
 
 #--- Bindings on flag images
 bind $base.fra1.french <ButtonPress-1> { selectLangage "[lindex $::caption(lg) 0]" }
@@ -180,5 +190,7 @@ bind $base.fra1.spanish <ButtonPress-1> { selectLangage "[lindex $::caption(lg) 
 bind $base.fra1.german <ButtonPress-1> { selectLangage "[lindex $::caption(lg) 3]" }
 bind $base.fra1.portuguese <ButtonPress-1> { selectLangage "[lindex $::caption(lg) 4]" }
 bind $base.fra1.danish <ButtonPress-1> { selectLangage "[lindex $::caption(lg) 5]" }
-bind $base.fra1.english <ButtonPress-1> { selectLangage "[lindex $::caption(lg) 6]" }
+bind $base.fra1.ukrainian <ButtonPress-1> { selectLangage "[lindex $::caption(lg) 6]" }
+bind $base.fra1.russian <ButtonPress-1> { selectLangage "[lindex $::caption(lg) 7]" }
+bind $base.fra1.english <ButtonPress-1> { selectLangage "[lindex $::caption(lg) 8]" }
 
