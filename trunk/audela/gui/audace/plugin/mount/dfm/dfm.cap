@@ -1,10 +1,10 @@
 #
 # Fichier : dfm.cap
-# Mise a jour $Id: dfm.cap,v 1.1 2008-12-07 15:07:07 robertdelmas Exp $
+# Mise a jour $Id: dfm.cap,v 1.2 2009-11-05 22:45:07 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -25,7 +25,7 @@ set caption(dfm,2points)                    ":"
 set caption(dfm,titre_site_web)             "Reference Web Site:"
 set caption(dfm,site_dfm)                   "http://www.dfmengineering.com/"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(dfm,monture)                 "DFM"
@@ -33,13 +33,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dfm,host)                    "Host"
    set caption(dfm,port)                    "Port"
    set caption(dfm,configurer)              "Configurer"
-   set caption(dfm,controle)                "Contrôle"
-   set caption(dfm,raquette_tel)            "Raquette à l'écran"
+   set caption(dfm,controle)                "ContrÃ´le"
+   set caption(dfm,raquette_tel)            "Raquette Ã  l'Ã©cran"
 
    set caption(dfm,port_dfm)                "Port DFM"
    set caption(dfm,2points)                 ":"
 
-   set caption(dfm,titre_site_web)          "Site Web de référence :"
+   set caption(dfm,titre_site_web)          "Site Web de rÃ©fÃ©rence :"
    set caption(dfm,site_dfm)                "http://www.dfmengineering.com/"
 
 # *************** Version italienne ***************************
@@ -93,21 +93,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dfm,titre_site_web)          "Referenz Webseite:"
    set caption(dfm,site_dfm)                "http://www.dfmengineering.com/"
 
-# *************** Version portugaise ***************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(dfm,monture)                 "DFM"
    set caption(dfm,mode)                    "Modo"
    set caption(dfm,host)                    "Host"
    set caption(dfm,port)                    "Porta"
-   set caption(dfm,configurer)              "Configuração"
+   set caption(dfm,configurer)              "ConfiguraÃ§Ã£o"
    set caption(dfm,controle)                "Controlo"
-   set caption(dfm,raquette_tel)            "Controlador de mão no ecrã"
+   set caption(dfm,raquette_tel)            "Controlador de mÃ£o no ecrÃ£"
 
    set caption(dfm,port_dfm)                "Porta DFM"
    set caption(dfm,2points)                 ":"
 
-   set caption(dfm,titre_site_web)          "Site Web de referência:"
+   set caption(dfm,titre_site_web)          "Site Web de referÃªncia:"
    set caption(dfm,site_dfm)                "http://www.dfmengineering.com/"
 
 # *************** Version danoise *****************************
@@ -127,9 +127,43 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dfm,titre_site_web)          "Reference Web Site:"
    set caption(dfm,site_dfm)                "http://www.dfmengineering.com/"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(dfm,monture)                 "DFM"
+   set caption(dfm,mode)                    "Mode"
+   set caption(dfm,host)                    "Host"
+   set caption(dfm,port)                    "Port"
+   set caption(dfm,configurer)              "Set up"
+   set caption(dfm,controle)                "Control"
+   set caption(dfm,raquette_tel)            "Hand controller on screen"
+
+   set caption(dfm,port_dfm)                "DFM Port"
+   set caption(dfm,2points)                 ":"
+
+   set caption(dfm,titre_site_web)          "Reference Web Site:"
+   set caption(dfm,site_dfm)                "http://www.dfmengineering.com/"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(dfm,monture)                 "DFM"
+   set caption(dfm,mode)                    "Mode"
+   set caption(dfm,host)                    "Host"
+   set caption(dfm,port)                    "Port"
+   set caption(dfm,configurer)              "Set up"
+   set caption(dfm,controle)                "Control"
+   set caption(dfm,raquette_tel)            "Hand controller on screen"
+
+   set caption(dfm,port_dfm)                "DFM Port"
+   set caption(dfm,2points)                 ":"
+
+   set caption(dfm,titre_site_web)          "Reference Web Site:"
+   set caption(dfm,site_dfm)                "http://www.dfmengineering.com/"
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

@@ -1,10 +1,10 @@
 #
 # Fichier : ascom.cap
-# Mise a jour $Id: ascom.cap,v 1.3 2008-12-22 17:33:21 robertdelmas Exp $
+# Mise a jour $Id: ascom.cap,v 1.4 2009-11-05 22:43:47 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -21,17 +21,17 @@ set caption(ascom,2points)                       ":"
 set caption(ascom,titre_site_web)                "Reference Web Site:"
 set caption(ascom,site_web_ref)                  "http://ascom-standards.org/"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(ascom,monture)                    "ASCOM"
    set caption(ascom,driver)                     "Driver ASCOM"
    set caption(ascom,configurer)                 "Configurer"
-   set caption(ascom,raquette_tel)               "Raquette à l'écran"
+   set caption(ascom,raquette_tel)               "Raquette Ã  l'Ã©cran"
 
    set caption(ascom,2points)                    ":"
 
-   set caption(ascom,titre_site_web)             "Site Web de référence :"
+   set caption(ascom,titre_site_web)             "Site Web de rÃ©fÃ©rence :"
    set caption(ascom,site_web_ref)               "http://ascom-standards.org/"
 
 # *************** Version italienne ***************************
@@ -73,17 +73,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ascom,titre_site_web)             "Referenz Webseite:"
    set caption(ascom,site_web_ref)               "http://ascom-standards.org/"
 
-# *************** Version portugaise ***************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(ascom,monture)                    "ASCOM"
    set caption(ascom,driver)                     "Driver ASCOM"
-   set caption(ascom,configurer)                 "Configuração"
-   set caption(ascom,raquette_tel)               "Controlador de mão no ecrã"
+   set caption(ascom,configurer)                 "ConfiguraÃ§Ã£o"
+   set caption(ascom,raquette_tel)               "Controlador de mÃ£o no ecrÃ£"
 
    set caption(ascom,2points)                    ":"
 
-   set caption(ascom,titre_site_web)             "Site Web de referência:"
+   set caption(ascom,titre_site_web)             "Site Web de referÃªncia:"
    set caption(ascom,site_web_ref)               "http://ascom-standards.org/"
 
 # *************** Version danoise *****************************
@@ -99,9 +99,35 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ascom,titre_site_web)             "Reference Web Site:"
    set caption(ascom,site_web_ref)               "http://ascom-standards.org/"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(ascom,monture)                    "ASCOM"
+   set caption(ascom,driver)                     "ASCOM Driver"
+   set caption(ascom,configurer)                 "Set up"
+   set caption(ascom,raquette_tel)               "Hand controller on screen"
+
+   set caption(ascom,2points)                    ":"
+
+   set caption(ascom,titre_site_web)             "Reference Web Site:"
+   set caption(ascom,site_web_ref)               "http://ascom-standards.org/"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(ascom,monture)                    "ASCOM"
+   set caption(ascom,driver)                     "ASCOM Driver"
+   set caption(ascom,configurer)                 "Set up"
+   set caption(ascom,raquette_tel)               "Hand controller on screen"
+
+   set caption(ascom,2points)                    ":"
+
+   set caption(ascom,titre_site_web)             "Reference Web Site:"
+   set caption(ascom,site_web_ref)               "http://ascom-standards.org/"
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

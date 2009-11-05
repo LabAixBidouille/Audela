@@ -1,10 +1,10 @@
 #
 # Fichier : audecom.cap
-# Mise a jour $Id: audecom.cap,v 1.15 2008-12-06 18:21:12 robertdelmas Exp $
+# Mise a jour $Id: audecom.cap,v 1.16 2009-11-05 22:44:02 robertdelmas Exp $
 #
 
 #=========================================================================
-#   DÈbut de la dÈclaration des textes localisÈs (internationalisation)
+#   D√©but de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -38,34 +38,34 @@ set caption(audecom,2points)                      ":"
 set caption(audecom,document_ref)                 "Reference Document:"
 set caption(audecom,doc_audecom)                  "AudeCom-V41.pdf"
 
-# *************** Version franÁaise ***************************
+# *************** Version fran√ßaise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audecom,monture)                   "AudeCom"
    set caption(audecom,port)                      "Port"
    set caption(audecom,configurer)                "Configurer"
-   set caption(audecom,controle)                  "ContrÙle"
+   set caption(audecom,controle)                  "Contr√¥le"
    set caption(audecom,ouranos)                   "AudeCom + Ouranos"
    set caption(audecom,pec)                       "Active le PEC"
-   set caption(audecom,king)                      "Active le suivi ‡ la vitesse de King"
+   set caption(audecom,king)                      "Active le suivi √† la vitesse de King"
    set caption(audecom,mobile)                    "Active le suivi d'objets mobiles"
-   set caption(audecom,mont_allemande)            "Monture Èquatoriale allemande"
-   set caption(audecom,para_moteur)               "ParamËtres moteurs"
-   set caption(audecom,para_foc)                  "ParamËtres de la focalisation"
+   set caption(audecom,mont_allemande)            "Monture √©quatoriale allemande"
+   set caption(audecom,para_moteur)               "Param√®tres moteurs"
+   set caption(audecom,para_foc)                  "Param√®tres de la focalisation"
    set caption(audecom,prog_pec)                  "Programmation du PEC"
-   set caption(audecom,ctl_king)                  "ContrÙle de la vitesse de King"
-   set caption(audecom,ctl_mobile)                "ContrÙle de la vitesse de suivi"
-   set caption(audecom,ver_firmware)              "Logiciel du microcontrÙleur : V"
-   set caption(audecom,position_telescope)        "Position du tÈlescope :"
-   set caption(audecom,change_position_telescope) "Changer la position d'origine du tÈlescope :"
-   set caption(audecom,raquette_tel)              "Raquette ‡ l'Ècran"
+   set caption(audecom,ctl_king)                  "Contr√¥le de la vitesse de King"
+   set caption(audecom,ctl_mobile)                "Contr√¥le de la vitesse de suivi"
+   set caption(audecom,ver_firmware)              "Logiciel du microcontr√¥leur : V"
+   set caption(audecom,position_telescope)        "Position du t√©lescope :"
+   set caption(audecom,change_position_telescope) "Changer la position d'origine du t√©lescope :"
+   set caption(audecom,raquette_tel)              "Raquette √† l'√©cran"
    set caption(audecom,soleil)                    "Soleil"
    set caption(audecom,lune)                      "Lune"
 
    set caption(audecom,port_audecom)              "Port AudeCom"
    set caption(audecom,2points)                   ":"
 
-   set caption(audecom,document_ref)              "Document de rÈfÈrence :"
+   set caption(audecom,document_ref)              "Document de r√©f√©rence :"
    set caption(audecom,doc_audecom)               "AudeCom-V41.pdf"
 
 # *************** Version italienne ***************************
@@ -108,16 +108,16 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,ouranos)                   "AudeCom + Ouranos"
    set caption(audecom,pec)                       "Activar PEC"
    set caption(audecom,king)                      "Activar de seguimiento usando velocidad King"
-   set caption(audecom,mobile)                    "Activar el seguimiento de objetos mÛviles"
+   set caption(audecom,mobile)                    "Activar el seguimiento de objetos m√≥viles"
    set caption(audecom,mont_allemande)            "Montura ecuatorial alemana"
    set caption(audecom,para_moteur)               "Parametros de motores"
-   set caption(audecom,para_foc)                  "Parametros de focalizaciÛn"
-   set caption(audecom,prog_pec)                  "ProgramaciÛn del PEC"
+   set caption(audecom,para_foc)                  "Parametros de focalizaci√≥n"
+   set caption(audecom,prog_pec)                  "Programaci√≥n del PEC"
    set caption(audecom,ctl_king)                  "Control de la velocidad King"
    set caption(audecom,ctl_mobile)                "Ctrl. de la velocidad de seguimiento"
    set caption(audecom,ver_firmware)              "Software de microcontrolador: V"
-   set caption(audecom,position_telescope)        "SituaciÛn del Telescopio:"
-   set caption(audecom,change_position_telescope) "Cambiar la posiciÛn inicial del telescopio:"
+   set caption(audecom,position_telescope)        "Situaci√≥n del Telescopio:"
+   set caption(audecom,change_position_telescope) "Cambiar la posici√≥n inicial del telescopio:"
    set caption(audecom,raquette_tel)              "Controlador virtual"
    set caption(audecom,soleil)                    "Sol"
    set caption(audecom,lune)                      "Luna"
@@ -139,7 +139,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,pec)                       "PEC aktivieren"
    set caption(audecom,king)                      "King Tempo Folgung aktivieren"
    set caption(audecom,mobile)                    "Bewegliche Objekten Folgung aktivieren"
-   set caption(audecom,mont_allemande)            "Deutschen ‰quatorialen Montierung"
+   set caption(audecom,mont_allemande)            "Deutschen √§quatorialen Montierung"
    set caption(audecom,para_moteur)               "Motoren Parametern"
    set caption(audecom,para_foc)                  "Fokussierung Parametern"
    set caption(audecom,prog_pec)                  "PEC Tempo"
@@ -147,7 +147,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,ctl_mobile)                "Folgung Tempo Kontrolle"
    set caption(audecom,ver_firmware)              "Mikrokontroller Software: V"
    set caption(audecom,position_telescope)        "Teleskop Stellung:"
-   set caption(audecom,change_position_telescope) "Die beginn Position des Teleskop ‰ndern:"
+   set caption(audecom,change_position_telescope) "Die beginn Position des Teleskop √§ndern:"
    set caption(audecom,raquette_tel)              "Hand Kontroller am Bildschirm"
    set caption(audecom,soleil)                    "Sonne"
    set caption(audecom,lune)                      "Mond"
@@ -163,29 +163,29 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audecom,monture)                   "AudeCom"
    set caption(audecom,port)                      "Porta"
-   set caption(audecom,configurer)                "ConfiguraÁ„o"
+   set caption(audecom,configurer)                "Configura√ß√£o"
    set caption(audecom,controle)                  "Controlo"
    set caption(audecom,ouranos)                   "AudeCom + Ouranos"
    set caption(audecom,pec)                       "Ligar PEC"
    set caption(audecom,king)                      "Ligar guiagem utilizando velocidade King"
    set caption(audecom,mobile)                    "Liga a guiagem de objectos em movimento"
-   set caption(audecom,mont_allemande)            "Montagem Equatorial Alem„"
-   set caption(audecom,para_moteur)               "Par‚metros do Motor"
-   set caption(audecom,para_foc)                  "Par‚metros da Focagem"
-   set caption(audecom,prog_pec)                  "ProgramaÁ„o PEC"
+   set caption(audecom,mont_allemande)            "Montagem Equatorial Alem√£"
+   set caption(audecom,para_moteur)               "Par√¢metros do Motor"
+   set caption(audecom,para_foc)                  "Par√¢metros da Focagem"
+   set caption(audecom,prog_pec)                  "Programa√ß√£o PEC"
    set caption(audecom,ctl_king)                  "Controlo da Velocidade King"
    set caption(audecom,ctl_mobile)                "Controlo da Velocidade de Seguimento"
    set caption(audecom,ver_firmware)              "Software do Microcontrolador Software: V"
-   set caption(audecom,position_telescope)        "PosiÁ„o do TelescÛpio:"
-   set caption(audecom,change_position_telescope) "Mudar a PosiÁ„o Inicial do TelescÛpio:"
-   set caption(audecom,raquette_tel)              "Controlador de m„o no ecr„"
+   set caption(audecom,position_telescope)        "Posi√ß√£o do Telesc√≥pio:"
+   set caption(audecom,change_position_telescope) "Mudar a Posi√ß√£o Inicial do Telesc√≥pio:"
+   set caption(audecom,raquette_tel)              "Controlador de m√£o no ecr√£"
    set caption(audecom,soleil)                    "Sol"
    set caption(audecom,lune)                      "Lua"
 
    set caption(audecom,port_audecom)              "Porta AudeCom"
    set caption(audecom,2points)                   ":"
 
-   set caption(audecom,document_ref)              "Documento de referÍncia:"
+   set caption(audecom,document_ref)              "Documento de refer√™ncia:"
    set caption(audecom,doc_audecom)               "AudeCom-V41.pdf"
 
 # *************** Version danoise *****************************
@@ -218,9 +218,69 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,document_ref)              "Reference Document:"
    set caption(audecom,doc_audecom)               "AudeCom-V41.pdf"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(audecom,monture)                   "AudeCom"
+   set caption(audecom,port)                      "Port"
+   set caption(audecom,configurer)                "Set up"
+   set caption(audecom,controle)                  "Control"
+   set caption(audecom,ouranos)                   "AudeCom + Ouranos"
+   set caption(audecom,pec)                       "Enable PEC"
+   set caption(audecom,king)                      "Enable Tracking using King Speed"
+   set caption(audecom,mobile)                    "Enables the Tracking of Moving Objects"
+   set caption(audecom,mont_allemande)            "German Equatorial Mount"
+   set caption(audecom,para_moteur)               "Motor Parameters"
+   set caption(audecom,para_foc)                  "Focus Parameters"
+   set caption(audecom,prog_pec)                  "PEC Programming"
+   set caption(audecom,ctl_king)                  "King Speed Control"
+   set caption(audecom,ctl_mobile)                "Tracking Speed Control"
+   set caption(audecom,ver_firmware)              "Microcontroller Software: V"
+   set caption(audecom,position_telescope)        "Telescope Position:"
+   set caption(audecom,change_position_telescope) "Change the Telescope Initial Position:"
+   set caption(audecom,raquette_tel)              "Hand controller on screen"
+   set caption(audecom,soleil)                    "Sun"
+   set caption(audecom,lune)                      "Moon"
+
+   set caption(audecom,port_audecom)              "AudeCom Port"
+   set caption(audecom,2points)                   ":"
+
+   set caption(audecom,document_ref)              "Reference Document:"
+   set caption(audecom,doc_audecom)               "AudeCom-V41.pdf"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(audecom,monture)                   "AudeCom"
+   set caption(audecom,port)                      "Port"
+   set caption(audecom,configurer)                "Set up"
+   set caption(audecom,controle)                  "Control"
+   set caption(audecom,ouranos)                   "AudeCom + Ouranos"
+   set caption(audecom,pec)                       "Enable PEC"
+   set caption(audecom,king)                      "Enable Tracking using King Speed"
+   set caption(audecom,mobile)                    "Enables the Tracking of Moving Objects"
+   set caption(audecom,mont_allemande)            "German Equatorial Mount"
+   set caption(audecom,para_moteur)               "Motor Parameters"
+   set caption(audecom,para_foc)                  "Focus Parameters"
+   set caption(audecom,prog_pec)                  "PEC Programming"
+   set caption(audecom,ctl_king)                  "King Speed Control"
+   set caption(audecom,ctl_mobile)                "Tracking Speed Control"
+   set caption(audecom,ver_firmware)              "Microcontroller Software: V"
+   set caption(audecom,position_telescope)        "Telescope Position:"
+   set caption(audecom,change_position_telescope) "Change the Telescope Initial Position:"
+   set caption(audecom,raquette_tel)              "Hand controller on screen"
+   set caption(audecom,soleil)                    "Sun"
+   set caption(audecom,lune)                      "Moon"
+
+   set caption(audecom,port_audecom)              "AudeCom Port"
+   set caption(audecom,2points)                   ":"
+
+   set caption(audecom,document_ref)              "Reference Document:"
+   set caption(audecom,doc_audecom)               "AudeCom-V41.pdf"
+
 }
 
 #=========================================================================
-#   Fin de la dÈclaration des textes localisÈs (internationalisation)
+#   Fin de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 

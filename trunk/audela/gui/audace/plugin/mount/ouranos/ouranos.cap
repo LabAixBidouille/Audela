@@ -1,10 +1,10 @@
 #
 # Fichier : ouranos.cap
-# Mise a jour $Id: ouranos.cap,v 1.6 2008-12-22 09:27:47 robertdelmas Exp $
+# Mise a jour $Id: ouranos.cap,v 1.7 2009-11-05 22:46:10 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -18,9 +18,9 @@ set caption(ouranos,on)                          "on"
 set caption(ouranos,off)                         "off"
 set caption(ouranos,ferme)                       "Closed"
 set caption(ouranos,inv)                         "Reversal"
-set caption(ouranos,init1)                       "Dec. = 90°"
-set caption(ouranos,init2)                       "Dec. = 0°"
-set caption(ouranos,init3)                       "Dec. = -90°"
+set caption(ouranos,init1)                       "Dec. = 90Â°"
+set caption(ouranos,init2)                       "Dec. = 0Â°"
+set caption(ouranos,init3)                       "Dec. = -90Â°"
 set caption(ouranos,frequence)                   "every"
 set caption(ouranos,pas)                         "steps"
 set caption(ouranos,seconde)                     "sec."
@@ -50,46 +50,46 @@ set caption(ouranos,2points)                     ":"
 set caption(ouranos,titre_site_web)              "Reference Web Site:"
 set caption(ouranos,site_ouranos)                "http://www.microtec.net/~pdufour/ouranosa.htm"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(ouranos,monture)                  "Ouranos"
-   set caption(ouranos,unites)                   "Coordonnées"
+   set caption(ouranos,unites)                   "CoordonnÃ©es"
    set caption(ouranos,raquette)                 "Raquette Ouranos"
    set caption(ouranos,on)                       "on"
    set caption(ouranos,off)                      "off"
-   set caption(ouranos,ferme)                    "Fermé"
+   set caption(ouranos,ferme)                    "FermÃ©"
    set caption(ouranos,inv)                      "Inversion"
-   set caption(ouranos,init1)                    "Déc. = 90°"
-   set caption(ouranos,init2)                    "Déc. = 0°"
-   set caption(ouranos,init3)                    "Déc. = -90°"
+   set caption(ouranos,init1)                    "DÃ©c. = 90Â°"
+   set caption(ouranos,init2)                    "DÃ©c. = 0Â°"
+   set caption(ouranos,init3)                    "DÃ©c. = -90Â°"
    set caption(ouranos,frequence)                "toutes les"
    set caption(ouranos,pas)                      "pas"
    set caption(ouranos,seconde)                  "sec."
-   set caption(ouranos,res_codeur)               "Résolution encodeur"
-   set caption(ouranos,res_codeurs)              "Résolution des encodeurs :"
-   set caption(ouranos,reglage)                  "Régler"
+   set caption(ouranos,res_codeur)               "RÃ©solution encodeur"
+   set caption(ouranos,res_codeurs)              "RÃ©solution des encodeurs :"
+   set caption(ouranos,reglage)                  "RÃ©gler"
    set caption(ouranos,stop)                     "Stopper"
    set caption(ouranos,lire)                     "Lire"
    set caption(ouranos,port)                     "Port"
    set caption(ouranos,configurer)               "Configurer"
-   set caption(ouranos,controle)                 "Contrôle"
+   set caption(ouranos,controle)                 "ContrÃ´le"
 
-   set caption(ouranos,pos_tel)                  "Ouranos - Position du télescope"
+   set caption(ouranos,pos_tel)                  "Ouranos - Position du tÃ©lescope"
    set caption(ouranos,ad1)                      "Ascension Droite :"
-   set caption(ouranos,dec1)                     "Déclinaison :"
+   set caption(ouranos,dec1)                     "DÃ©clinaison :"
    set caption(ouranos,x1)                       "x1"
    set caption(ouranos,x5)                       "x5"
    set caption(ouranos,:5)                       ":5"
 
    set caption(ouranos,ra)                       "AD"
-   set caption(ouranos,dec)                      "Déc."
+   set caption(ouranos,dec)                      "DÃ©c."
    set caption(ouranos,et)                       "et"
 
    set caption(ouranos,port_ouranos)             "Port Ouranos"
    set caption(ouranos,2points)                  ":"
 
-   set caption(ouranos,titre_site_web)           "Site Web de référence :"
+   set caption(ouranos,titre_site_web)           "Site Web de rÃ©fÃ©rence :"
    set caption(ouranos,site_ouranos)             "http://www.microtec.net/~pdufour/ouranos.htm"
 
 # *************** Version italienne ***************************
@@ -102,9 +102,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ouranos,off)                      "off"
    set caption(ouranos,ferme)                    "Chiuso"
    set caption(ouranos,inv)                      "Inversione"
-   set caption(ouranos,init1)                    "Dec. = 90°"
-   set caption(ouranos,init2)                    "Dec. = 0°"
-   set caption(ouranos,init3)                    "Dec. = -90°"
+   set caption(ouranos,init1)                    "Dec. = 90Â°"
+   set caption(ouranos,init2)                    "Dec. = 0Â°"
+   set caption(ouranos,init3)                    "Dec. = -90Â°"
    set caption(ouranos,frequence)                "tutti i"
    set caption(ouranos,pas)                      "steps"
    set caption(ouranos,seconde)                  "sec."
@@ -144,14 +144,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ouranos,off)                      "off"
    set caption(ouranos,ferme)                    "Cerrado"
    set caption(ouranos,inv)                      "Inverso"
-   set caption(ouranos,init1)                    "Dec. = 90°"
-   set caption(ouranos,init2)                    "Dec. = 0°"
-   set caption(ouranos,init3)                    "Dec. = -90°"
+   set caption(ouranos,init1)                    "Dec. = 90Â°"
+   set caption(ouranos,init2)                    "Dec. = 0Â°"
+   set caption(ouranos,init3)                    "Dec. = -90Â°"
    set caption(ouranos,frequence)                "cada"
    set caption(ouranos,pas)                      "pasos"
    set caption(ouranos,seconde)                  "seg."
    set caption(ouranos,res_codeur)               "Resolucion Encoder"
-   set caption(ouranos,res_codeurs)              "Resolución Encoders:"
+   set caption(ouranos,res_codeurs)              "ResoluciÃ³n Encoders:"
    set caption(ouranos,reglage)                  "Ajustar"
    set caption(ouranos,stop)                     "Stop"
    set caption(ouranos,lire)                     "Leer"
@@ -159,9 +159,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ouranos,configurer)               "Configurar"
    set caption(ouranos,controle)                 "Control"
 
-   set caption(ouranos,pos_tel)                  "Ouranos - Posición Telescopio"
-   set caption(ouranos,ad1)                      "Ascensión Recta:"
-   set caption(ouranos,dec1)                     "Declinación:"
+   set caption(ouranos,pos_tel)                  "Ouranos - PosiciÃ³n Telescopio"
+   set caption(ouranos,ad1)                      "AscensiÃ³n Recta:"
+   set caption(ouranos,dec1)                     "DeclinaciÃ³n:"
    set caption(ouranos,x1)                       "x1"
    set caption(ouranos,x5)                       "x5"
    set caption(ouranos,:5)                       ":5"
@@ -186,14 +186,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ouranos,off)                      "aus"
    set caption(ouranos,ferme)                    "Geschlossen"
    set caption(ouranos,inv)                      "Umkehrung"
-   set caption(ouranos,init1)                    "Dek. = 90°"
-   set caption(ouranos,init2)                    "Dek. = 0°"
-   set caption(ouranos,init3)                    "Dek. = -90°"
+   set caption(ouranos,init1)                    "Dek. = 90Â°"
+   set caption(ouranos,init2)                    "Dek. = 0Â°"
+   set caption(ouranos,init3)                    "Dek. = -90Â°"
    set caption(ouranos,frequence)                "Alle"
    set caption(ouranos,pas)                      "Schritt"
    set caption(ouranos,seconde)                  "sek."
-   set caption(ouranos,res_codeur)               "Kodierer Auflösung"
-   set caption(ouranos,res_codeurs)              "Auflösung des Kodierer:"
+   set caption(ouranos,res_codeur)               "Kodierer AuflÃ¶sung"
+   set caption(ouranos,res_codeurs)              "AuflÃ¶sung des Kodierer:"
    set caption(ouranos,reglage)                  "Aufstellen"
    set caption(ouranos,stop)                     "Halten"
    set caption(ouranos,lire)                     "Lesen"
@@ -218,34 +218,34 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ouranos,titre_site_web)           "Referenz Webseite:"
    set caption(ouranos,site_ouranos)             "http://www.microtec.net/~pdufour/ouranosa.htm"
 
-# *************** Version portugaise ***************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(ouranos,monture)                  "Ouranos"
    set caption(ouranos,unites)                   "Coordenadas"
-   set caption(ouranos,raquette)                 "Controlador de mão Ouranos"
+   set caption(ouranos,raquette)                 "Controlador de mÃ£o Ouranos"
    set caption(ouranos,on)                       "on"
    set caption(ouranos,off)                      "off"
    set caption(ouranos,ferme)                    "Fechado"
    set caption(ouranos,inv)                      "Inverso"
-   set caption(ouranos,init1)                    "Dec. = 90°"
-   set caption(ouranos,init2)                    "Dec. = 0°"
-   set caption(ouranos,init3)                    "Dec. = -90°"
+   set caption(ouranos,init1)                    "Dec. = 90Â°"
+   set caption(ouranos,init2)                    "Dec. = 0Â°"
+   set caption(ouranos,init3)                    "Dec. = -90Â°"
    set caption(ouranos,frequence)                "todos"
    set caption(ouranos,pas)                      "passos"
    set caption(ouranos,seconde)                  "seg."
-   set caption(ouranos,res_codeur)               "Resolução do codificador"
-   set caption(ouranos,res_codeurs)              "Resolução dos codificadores:"
+   set caption(ouranos,res_codeur)               "ResoluÃ§Ã£o do codificador"
+   set caption(ouranos,res_codeurs)              "ResoluÃ§Ã£o dos codificadores:"
    set caption(ouranos,reglage)                  "Ajustar"
    set caption(ouranos,stop)                     "Parar"
    set caption(ouranos,lire)                     "Ler"
    set caption(ouranos,port)                     "Porta"
-   set caption(ouranos,configurer)               "Configuração"
+   set caption(ouranos,configurer)               "ConfiguraÃ§Ã£o"
    set caption(ouranos,controle)                 "Controlo"
 
-   set caption(ouranos,pos_tel)                  "Ouranos - Posição do telescópio"
-   set caption(ouranos,ad1)                      "Ascenção Recta :"
-   set caption(ouranos,dec1)                     "Declinação :"
+   set caption(ouranos,pos_tel)                  "Ouranos - PosiÃ§Ã£o do telescÃ³pio"
+   set caption(ouranos,ad1)                      "AscenÃ§Ã£o Recta:"
+   set caption(ouranos,dec1)                     "DeclinaÃ§Ã£o:"
    set caption(ouranos,x1)                       "x1"
    set caption(ouranos,x5)                       "x5"
    set caption(ouranos,:5)                       ":5"
@@ -257,7 +257,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ouranos,port_ouranos)             "Porta Ouranos"
    set caption(ouranos,2points)                  ":"
 
-   set caption(ouranos,titre_site_web)           "Site Web de referência:"
+   set caption(ouranos,titre_site_web)           "Site Web de referÃªncia:"
    set caption(ouranos,site_ouranos)             "http://www.microtec.net/~pdufour/ouranosa.htm"
 
 # *************** Version danoise *****************************
@@ -270,9 +270,93 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ouranos,off)                      "off"
    set caption(ouranos,ferme)                    "Closed"
    set caption(ouranos,inv)                      "Reversal"
-   set caption(ouranos,init1)                    "Dec. = 90°"
-   set caption(ouranos,init2)                    "Dec. = 0°"
-   set caption(ouranos,init3)                    "Dec. = -90°"
+   set caption(ouranos,init1)                    "Dec. = 90Â°"
+   set caption(ouranos,init2)                    "Dec. = 0Â°"
+   set caption(ouranos,init3)                    "Dec. = -90Â°"
+   set caption(ouranos,frequence)                "every"
+   set caption(ouranos,pas)                      "steps"
+   set caption(ouranos,seconde)                  "sec."
+   set caption(ouranos,res_codeur)               "Encoder Resolution"
+   set caption(ouranos,res_codeurs)              "Encoders Resolution:"
+   set caption(ouranos,reglage)                  "Adjust"
+   set caption(ouranos,stop)                     "Stop"
+   set caption(ouranos,lire)                     "Read"
+   set caption(ouranos,port)                     "Port"
+   set caption(ouranos,configurer)               "Set up"
+   set caption(ouranos,controle)                 "Control"
+
+   set caption(ouranos,pos_tel)                  "Ouranos - Telescope Position"
+   set caption(ouranos,ad1)                      "Right Ascension:"
+   set caption(ouranos,dec1)                     "Declination:"
+   set caption(ouranos,x1)                       "x1"
+   set caption(ouranos,x5)                       "x5"
+   set caption(ouranos,:5)                       ":5"
+
+   set caption(ouranos,ra)                       "RA"
+   set caption(ouranos,dec)                      "Dec."
+   set caption(ouranos,et)                       "and"
+
+   set caption(ouranos,port_ouranos)             "Ouranos Port"
+   set caption(ouranos,2points)                  ":"
+
+   set caption(ouranos,titre_site_web)           "Reference Web Site:"
+   set caption(ouranos,site_ouranos)             "http://www.microtec.net/~pdufour/ouranosa.htm"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(ouranos,monture)                  "Ouranos"
+   set caption(ouranos,unites)                   "Coordinates"
+   set caption(ouranos,raquette)                 "Ouranos Hand Controller"
+   set caption(ouranos,on)                       "on"
+   set caption(ouranos,off)                      "off"
+   set caption(ouranos,ferme)                    "Closed"
+   set caption(ouranos,inv)                      "Reversal"
+   set caption(ouranos,init1)                    "Dec. = 90Â°"
+   set caption(ouranos,init2)                    "Dec. = 0Â°"
+   set caption(ouranos,init3)                    "Dec. = -90Â°"
+   set caption(ouranos,frequence)                "every"
+   set caption(ouranos,pas)                      "steps"
+   set caption(ouranos,seconde)                  "sec."
+   set caption(ouranos,res_codeur)               "Encoder Resolution"
+   set caption(ouranos,res_codeurs)              "Encoders Resolution:"
+   set caption(ouranos,reglage)                  "Adjust"
+   set caption(ouranos,stop)                     "Stop"
+   set caption(ouranos,lire)                     "Read"
+   set caption(ouranos,port)                     "Port"
+   set caption(ouranos,configurer)               "Set up"
+   set caption(ouranos,controle)                 "Control"
+
+   set caption(ouranos,pos_tel)                  "Ouranos - Telescope Position"
+   set caption(ouranos,ad1)                      "Right Ascension:"
+   set caption(ouranos,dec1)                     "Declination:"
+   set caption(ouranos,x1)                       "x1"
+   set caption(ouranos,x5)                       "x5"
+   set caption(ouranos,:5)                       ":5"
+
+   set caption(ouranos,ra)                       "RA"
+   set caption(ouranos,dec)                      "Dec."
+   set caption(ouranos,et)                       "and"
+
+   set caption(ouranos,port_ouranos)             "Ouranos Port"
+   set caption(ouranos,2points)                  ":"
+
+   set caption(ouranos,titre_site_web)           "Reference Web Site:"
+   set caption(ouranos,site_ouranos)             "http://www.microtec.net/~pdufour/ouranosa.htm"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(ouranos,monture)                  "Ouranos"
+   set caption(ouranos,unites)                   "Coordinates"
+   set caption(ouranos,raquette)                 "Ouranos Hand Controller"
+   set caption(ouranos,on)                       "on"
+   set caption(ouranos,off)                      "off"
+   set caption(ouranos,ferme)                    "Closed"
+   set caption(ouranos,inv)                      "Reversal"
+   set caption(ouranos,init1)                    "Dec. = 90Â°"
+   set caption(ouranos,init2)                    "Dec. = 0Â°"
+   set caption(ouranos,init3)                    "Dec. = -90Â°"
    set caption(ouranos,frequence)                "every"
    set caption(ouranos,pas)                      "steps"
    set caption(ouranos,seconde)                  "sec."
@@ -305,6 +389,6 @@ if { [ string compare $langage "french" ] == "0" } {
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
