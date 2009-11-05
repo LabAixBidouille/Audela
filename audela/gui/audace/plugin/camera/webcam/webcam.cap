@@ -1,10 +1,10 @@
 #
 # Fichier : webcam.cap
-# Mise a jour $Id: webcam.cap,v 1.11 2008-12-30 21:42:56 robertdelmas Exp $
+# Mise a jour $Id: webcam.cap,v 1.12 2009-11-05 18:19:44 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -40,34 +40,34 @@ set caption(webcam,titre_site_web)              "Reference Web Site:"
 set caption(webcam,site_web_ref)                "http://www.astrocam.org/"
 set caption(webcam,site_web_chambers)           "http://www.pmdo.com/wintro.htm"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(webcam,camera)                   "WebCam"
 
-   set caption(webcam,canal_usb)                "Canal vidéo USB"
-   set caption(webcam,mode_video)               "Mode vidéo"
+   set caption(webcam,canal_usb)                "Canal vidÃ©o USB"
+  set caption(webcam,mode_video)               "Mode vidÃ©o"
    set caption(webcam,miroir_x)                 "Miroir horizontal"
    set caption(webcam,miroir_y)                 "Miroir vertical"
    set caption(webcam,longuepose)               "Option longue pose (S. Chambers)"
    set caption(webcam,longuepose1)              "Longue pose"
-   set caption(webcam,longueposeport)           "Port de contrôle de l'option"
+   set caption(webcam,longueposeport)           "Port de contrÃ´le de l'option"
    set caption(webcam,configurer)               "Configurer"
-   set caption(webcam,longueposebit)            "Numéro du bit de commande"
-   set caption(webcam,longueposestart)          "Commande au début de la pose"
-   set caption(webcam,conf_source)              "Sélection de la source vidéo"
-   set caption(webcam,format_video)             "Sélection du format vidéo"
-   set caption(webcam,ccd_N_B)                  "WebCam modifiée avec CCD N&B"
+   set caption(webcam,longueposebit)            "NumÃ©ro du bit de commande"
+   set caption(webcam,longueposestart)          "Commande au dÃ©but de la pose"
+   set caption(webcam,conf_source)              "SÃ©lection de la source vidÃ©o"
+   set caption(webcam,format_video)             "SÃ©lection du format vidÃ©o"
+   set caption(webcam,ccd_N_B)                  "WebCam modifiÃ©e avec CCD N&B"
    set caption(webcam,switchedConnexion)        "Utilisation en alternance des WebCams"
 
    set caption(webcam,shutter)                  "Obturateur"
    set caption(webcam,gain)                     "Gain"
    set caption(webcam,auto)                     "Auto"
    set caption(webcam,framerate)                "Images/s"
-   set caption(webcam,validFrame)               "Numéro de l'image"
+   set caption(webcam,validFrame)               "NumÃ©ro de l'image"
    set caption(webcam,2points)                  ":"
 
-   set caption(webcam,titre_site_web)           "Site Web de référence :"
+   set caption(webcam,titre_site_web)           "Site Web de rÃ©fÃ©rence :"
    set caption(webcam,site_web_ref)             "http://www.astrocam.org/"
    set caption(webcam,site_web_chambers)        "http://www.pmdo.com/wintro.htm"
 
@@ -108,26 +108,26 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(webcam,camera)                   "WebCam"
 
-   set caption(webcam,canal_usb)                "Canal vídeo USB"
-   set caption(webcam,mode_video)               "Modo vídeo"
+   set caption(webcam,canal_usb)                "Canal vÃ­deo USB"
+   set caption(webcam,mode_video)               "Modo vÃ­deo"
    set caption(webcam,miroir_x)                 "Espejo horizontal"
    set caption(webcam,miroir_y)                 "Espejo vertical"
-   set caption(webcam,longuepose)               "Opcion de exposición larga (S. Chambers)"
-   set caption(webcam,longuepose1)              "Exposición larga"
+   set caption(webcam,longuepose)               "Opcion de exposiciÃ³n larga (S. Chambers)"
+   set caption(webcam,longuepose1)              "ExposiciÃ³n larga"
    set caption(webcam,longueposeport)           "Puerto de control para la opcion"
    set caption(webcam,configurer)               "Configurar"
-   set caption(webcam,longueposebit)            "Número del bit de control"
-   set caption(webcam,longueposestart)          "Control cuando empieza la exposición"
-   set caption(webcam,conf_source)              "Selección de la entrada de vídeo"
-   set caption(webcam,format_video)             "Selección de formato de vídeo"
+   set caption(webcam,longueposebit)            "NÃºmero del bit de control"
+   set caption(webcam,longueposestart)          "Control cuando empieza la exposiciÃ³n"
+   set caption(webcam,conf_source)              "SelecciÃ³n de la entrada de vÃ­deo"
+   set caption(webcam,format_video)             "SelecciÃ³n de formato de vÃ­deo"
    set caption(webcam,ccd_N_B)                  "CCD WebCam Blanco y Negro modificada"
-   set caption(webcam,switchedConnexion)        "Utilización en alternancia de las WebCams"
+   set caption(webcam,switchedConnexion)        "UtilizaciÃ³n en alternancia de las WebCams"
 
    set caption(webcam,shutter)                  "Obturador"
    set caption(webcam,gain)                     "Ganancia"
    set caption(webcam,auto)                     "Auto"
-   set caption(webcam,framerate)                "Imágenes/s"
-   set caption(webcam,validFrame)               "Número de la imagen"
+   set caption(webcam,framerate)                "ImÃ¡genes/s"
+   set caption(webcam,validFrame)               "NÃºmero de la imagen"
 
    set caption(webcam,2points)                  ":"
 
@@ -152,7 +152,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,longueposestart)          "Anfang der Belichtung Antrieb"
    set caption(webcam,conf_source)              "Wahl der Videoquelle"
    set caption(webcam,format_video)             "Wahl des Videoformats"
-   set caption(webcam,ccd_N_B)                  "Veränderte Schwartz/Weiss WebCam CCD"
+   set caption(webcam,ccd_N_B)                  "VerÃ¤nderte Schwartz/Weiss WebCam CCD"
    set caption(webcam,switchedConnexion)        "Zwischen WebCam wechseln"
    set caption(webcam,validFrame)               "Nummer des Bildes"
 
@@ -167,7 +167,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,site_web_ref)             "http://www.astrocam.org/"
    set caption(webcam,site_web_chambers)        "http://www.pmdo.com/wintro.htm"
 
-# *************** Version portugaise ***************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(webcam,camera)                   "WebCam"
@@ -176,17 +176,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,mode_video)               "Modo video"
    set caption(webcam,miroir_x)                 "Espelho Horizontal"
    set caption(webcam,miroir_y)                 "Espelho Vertical"
-   set caption(webcam,longuepose)               "Opção de Longa Exposição S. Chambers"
-   set caption(webcam,longuepose1)              "Longa Exposição"
-   set caption(webcam,longueposeport)           "Controlo do Porto para a Opção"
+   set caption(webcam,longuepose)               "OpÃ§Ã£o de Longa ExposiÃ§Ã£o S. Chambers"
+   set caption(webcam,longuepose1)              "Longa ExposiÃ§Ã£o"
+   set caption(webcam,longueposeport)           "Controlo do Porto para a OpÃ§Ã£o"
    set caption(webcam,configurer)               "Configurar"
-   set caption(webcam,longueposebit)            "Controlo do Número do Bit"
-   set caption(webcam,longueposestart)          "Controlar o Início da Exposição"
-   set caption(webcam,conf_source)              "Selecção de Fonte Video"
-   set caption(webcam,format_video)             "Selecção do Formato Video"
+   set caption(webcam,longueposebit)            "Controlo do NÃºmero do Bit"
+   set caption(webcam,longueposestart)          "Controlar o InÃ­cio da ExposiÃ§Ã£o"
+   set caption(webcam,conf_source)              "SelecÃ§Ã£o de Fonte Video"
+   set caption(webcam,format_video)             "SelecÃ§Ã£o do Formato Video"
    set caption(webcam,ccd_N_B)                  "WebCam Modificada (CCD B&W)"
-   set caption(webcam,switchedConnexion)        "Utilização alternada de WebCams"
-   set caption(webcam,validFrame)               "Número de imagem"
+   set caption(webcam,switchedConnexion)        "UtilizaÃ§Ã£o alternada de WebCams"
+   set caption(webcam,validFrame)               "NÃºmero de imagem"
 
    set caption(webcam,shutter)                  "Obturador"
    set caption(webcam,gain)                     "Ganho"
@@ -195,7 +195,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(webcam,2points)                  ":"
 
-   set caption(webcam,titre_site_web)           "Site Web de referência:"
+   set caption(webcam,titre_site_web)           "Site Web de referÃªncia:"
    set caption(webcam,site_web_ref)             "http://www.astrocam.org/"
    set caption(webcam,site_web_chambers)        "http://www.pmdo.com/wintro.htm"
 
@@ -205,7 +205,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,camera)                   "WebCam"
 
    set caption(webcam,canal_usb)                "USB Video Channel"
-   set caption(webcam,mode_video)               "Video måde"
+   set caption(webcam,mode_video)               "Video mÃ¥de"
    set caption(webcam,miroir_x)                 "Horisontal spejl"
    set caption(webcam,miroir_y)                 "Vertikal spejl"
    set caption(webcam,longuepose)               "S. Chambers Long Exposure Option"
@@ -231,9 +231,73 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,site_web_ref)             "http://www.astrocam.org/"
    set caption(webcam,site_web_chambers)        "http://www.pmdo.com/wintro.htm"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(webcam,camera)                   "WebCam"
+
+   set caption(webcam,canal_usb)                "USB Video Channel"
+   set caption(webcam,mode_video)               "Video Mode"
+   set caption(webcam,miroir_x)                 "Horizontal Mirror"
+   set caption(webcam,miroir_y)                 "Vertical Mirror"
+   set caption(webcam,longuepose)               "S. Chambers Long Exposure Option"
+   set caption(webcam,longuepose1)              "Long Exposure"
+   set caption(webcam,longueposeport)           "Control Port for the Option"
+   set caption(webcam,configurer)               "Set up"
+   set caption(webcam,longueposebit)            "Control Bit Number"
+   set caption(webcam,longueposestart)          "Control when exposure begins"
+   set caption(webcam,conf_source)              "Video Source Selection"
+   set caption(webcam,format_video)             "Video Format Selection"
+   set caption(webcam,ccd_N_B)                  "B&W CCD Modified WebCam"
+   set caption(webcam,switchedConnexion)        "Toggle between WebCams"
+
+   set caption(webcam,shutter)                  "Shutter"
+   set caption(webcam,gain)                     "Gain"
+   set caption(webcam,auto)                     "Auto"
+   set caption(webcam,framerate)                "Images/s"
+   set caption(webcam,validFrame)               "Image Number"
+
+   set caption(webcam,2points)                  ":"
+
+   set caption(webcam,titre_site_web)           "Reference Web Site:"
+   set caption(webcam,site_web_ref)             "http://www.astrocam.org/"
+   set caption(webcam,site_web_chambers)        "http://www.pmdo.com/wintro.htm"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(webcam,camera)                   "WebCam"
+
+   set caption(webcam,canal_usb)                "USB Video Channel"
+   set caption(webcam,mode_video)               "Video Mode"
+   set caption(webcam,miroir_x)                 "Horizontal Mirror"
+   set caption(webcam,miroir_y)                 "Vertical Mirror"
+   set caption(webcam,longuepose)               "S. Chambers Long Exposure Option"
+   set caption(webcam,longuepose1)              "Long Exposure"
+   set caption(webcam,longueposeport)           "Control Port for the Option"
+   set caption(webcam,configurer)               "Set up"
+   set caption(webcam,longueposebit)            "Control Bit Number"
+   set caption(webcam,longueposestart)          "Control when exposure begins"
+   set caption(webcam,conf_source)              "Video Source Selection"
+   set caption(webcam,format_video)             "Video Format Selection"
+   set caption(webcam,ccd_N_B)                  "B&W CCD Modified WebCam"
+   set caption(webcam,switchedConnexion)        "Toggle between WebCams"
+
+   set caption(webcam,shutter)                  "Shutter"
+   set caption(webcam,gain)                     "Gain"
+   set caption(webcam,auto)                     "Auto"
+   set caption(webcam,framerate)                "Images/s"
+   set caption(webcam,validFrame)               "Image Number"
+
+   set caption(webcam,2points)                  ":"
+
+   set caption(webcam,titre_site_web)           "Reference Web Site:"
+   set caption(webcam,site_web_ref)             "http://www.astrocam.org/"
+   set caption(webcam,site_web_chambers)        "http://www.pmdo.com/wintro.htm"
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

@@ -1,10 +1,10 @@
 #
 # Fichier : gphoto2.cap
-# Mise a jour $Id: gphoto2.cap,v 1.6 2007-12-04 22:18:15 robertdelmas Exp $
+# Mise a jour $Id: gphoto2.cap,v 1.7 2009-11-05 18:23:34 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -14,11 +14,11 @@ global caption langage
 set caption(gphoto2,titre)           "GPhoto2"
 set caption(dslr,debug)              "Debug Mode"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(gphoto2,titre)        "GPhoto2"
-   set caption(dslr,debug)           "Mode débug"
+   set caption(dslr,debug)           "Mode dÃ©bug"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -49,9 +49,22 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(gphoto2,titre)        "GPhoto2"
    set caption(dslr,debug)           "Debug Mode"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(gphoto2,titre)        "GPhoto2"
+   set caption(dslr,debug)           "Debug Mode"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(gphoto2,titre)        "GPhoto2"
+   set caption(dslr,debug)           "Debug Mode"
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

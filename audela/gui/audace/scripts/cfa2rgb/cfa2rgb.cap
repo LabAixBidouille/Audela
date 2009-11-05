@@ -1,10 +1,10 @@
 #
 # Fichier : cfa2rgb.cap
-# Mise a jour $Id: cfa2rgb.cap,v 1.4 2009-09-19 12:01:35 robertdelmas Exp $
+# Mise a jour $Id: cfa2rgb.cap,v 1.5 2009-11-05 18:26:34 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -30,22 +30,22 @@ set caption(cfa2rgb,appliquer)               "Apply"
 set caption(cfa2rgb,fermer)                  "Close"
 set caption(cfa2rgb,aide)                    "Help"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(cfa2rgb,titre)                "Prétraitement - Conversion CFA ---> RVB"
+   set caption(cfa2rgb,titre)                "PrÃ©traitement - Conversion CFA ---> RVB"
 
    set caption(cfa2rgb,label_1)              "Les images du dossier %s et ses sous-dossiers"
    set caption(cfa2rgb,label_2)              "Les images du dossier %s uniquement"
    set caption(cfa2rgb,label_3)              "Traitement du dossier"
-   set caption(cfa2rgb,label_4)              "Image affichée"
+   set caption(cfa2rgb,label_4)              "Image affichÃ©e"
    set caption(cfa2rgb,label_5)              "Echec du chargement de %s"
    set caption(cfa2rgb,label_6)              "Conversion de %s"
    set caption(cfa2rgb,attention)            "Attention"
    set caption(cfa2rgb,erreur)               "Erreur"
    set caption(cfa2rgb,msg_01)               "Conversion en cours..."
-   set caption(cfa2rgb,msg_02)               "Conversion terminée"
-   set caption(cfa2rgb,msg_03)               "Pas de format CFA à convertir"
+   set caption(cfa2rgb,msg_02)               "Conversion terminÃ©e"
+   set caption(cfa2rgb,msg_03)               "Pas de format CFA Ã  convertir"
    set caption(cfa2rgb,msg_04)               "Erreur d'analyse"
 
    set caption(cfa2rgb,appliquer)            "Appliquer"
@@ -79,18 +79,18 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cfa2rgb,titre)                "Preprocesando - Conversion CFA --> RVA"
 
-   set caption(cfa2rgb,label_1)              "Las imágenes de la carpeta %s y sus subcarpetas"
-   set caption(cfa2rgb,label_2)              "Las imágenes de la carpeta %s unicamente"
+   set caption(cfa2rgb,label_1)              "Las imÃ¡genes de la carpeta %s y sus subcarpetas"
+   set caption(cfa2rgb,label_2)              "Las imÃ¡genes de la carpeta %s unicamente"
    set caption(cfa2rgb,label_3)              "Procesando la carpeta"
-   set caption(cfa2rgb,label_4)              "Imágen presentada"
+   set caption(cfa2rgb,label_4)              "ImÃ¡gen presentada"
    set caption(cfa2rgb,label_5)              "Fallo al cargar %s"
-   set caption(cfa2rgb,label_6)              "Conversión de %s"
+   set caption(cfa2rgb,label_6)              "ConversiÃ³n de %s"
    set caption(cfa2rgb,attention)            "Aviso"
    set caption(cfa2rgb,erreur)               "Error"
-   set caption(cfa2rgb,msg_01)               "Conversión en curso..."
-   set caption(cfa2rgb,msg_02)               "Conversión completada"
+   set caption(cfa2rgb,msg_01)               "ConversiÃ³n en curso..."
+   set caption(cfa2rgb,msg_02)               "ConversiÃ³n completada"
    set caption(cfa2rgb,msg_03)               "No hay ficheros CFA a convertir"
-   set caption(cfa2rgb,msg_04)               "Error de análisis"
+   set caption(cfa2rgb,msg_04)               "Error de anÃ¡lisis"
 
    set caption(cfa2rgb,appliquer)            "Aplicar"
    set caption(cfa2rgb,fermer)               "Cerrar"
@@ -115,25 +115,25 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cfa2rgb,msg_04)               "Analyse Irrtum"
 
    set caption(cfa2rgb,appliquer)            "Anwenden"
-   set caption(cfa2rgb,fermer)               "Schließen"
+   set caption(cfa2rgb,fermer)               "SchlieÃŸen"
    set caption(cfa2rgb,aide)                 "Hilfe"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(cfa2rgb,titre)                "Pré-tratamento - Conversão CFA ---> RGB"
+   set caption(cfa2rgb,titre)                "PrÃ©-tratamento - ConversÃ£o CFA ---> RGB"
 
    set caption(cfa2rgb,label_1)              "# Les images du dossier %s et ses sous-dossiers"
    set caption(cfa2rgb,label_2)              "# Les images du dossier %s uniquement"
    set caption(cfa2rgb,label_3)              "# Traitement du dossier"
-   set caption(cfa2rgb,label_4)              "# Image affichée"
+   set caption(cfa2rgb,label_4)              "# Image affichÃ©e"
    set caption(cfa2rgb,label_5)              "# Echec de chargement de %s"
    set caption(cfa2rgb,label_6)              "# Conversion de %s"
    set caption(cfa2rgb,attention)            "Aviso"
    set caption(cfa2rgb,erreur)               "Erro"
    set caption(cfa2rgb,msg_01)               "# Conversion en cours..."
-   set caption(cfa2rgb,msg_02)               "# Conversion terminée"
-   set caption(cfa2rgb,msg_03)               "# Pas de format CFA à convertir"
+   set caption(cfa2rgb,msg_02)               "# Conversion terminÃ©e"
+   set caption(cfa2rgb,msg_03)               "# Pas de format CFA Ã  convertir"
    set caption(cfa2rgb,msg_04)               "# Erreur d'analyse"
 
    set caption(cfa2rgb,appliquer)            "Aplicar"
@@ -162,9 +162,53 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cfa2rgb,fermer)               "Close"
    set caption(cfa2rgb,aide)                 "Help"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(cfa2rgb,titre)                "Preprocessing - CFA ---> RGB Conversion"
+
+   set caption(cfa2rgb,label_1)              "Images in folder %s and its sub-folders"
+   set caption(cfa2rgb,label_2)              "Images in folder %s only"
+   set caption(cfa2rgb,label_3)              "Processing folder"
+   set caption(cfa2rgb,label_4)              "Displayed Image"
+   set caption(cfa2rgb,label_5)              "Failed to load %s"
+   set caption(cfa2rgb,label_6)              "Convert %s"
+   set caption(cfa2rgb,attention)            "Warning"
+   set caption(cfa2rgb,erreur)               "Error"
+   set caption(cfa2rgb,msg_01)               "Converting..."
+   set caption(cfa2rgb,msg_02)               "Conversion completed"
+   set caption(cfa2rgb,msg_03)               "No CFA files to convert"
+   set caption(cfa2rgb,msg_04)               "Analysis Error"
+
+   set caption(cfa2rgb,appliquer)            "Apply"
+   set caption(cfa2rgb,fermer)               "Close"
+   set caption(cfa2rgb,aide)                 "Help"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(cfa2rgb,titre)                "Preprocessing - CFA ---> RGB Conversion"
+
+   set caption(cfa2rgb,label_1)              "Images in folder %s and its sub-folders"
+   set caption(cfa2rgb,label_2)              "Images in folder %s only"
+   set caption(cfa2rgb,label_3)              "Processing folder"
+   set caption(cfa2rgb,label_4)              "Displayed Image"
+   set caption(cfa2rgb,label_5)              "Failed to load %s"
+   set caption(cfa2rgb,label_6)              "Convert %s"
+   set caption(cfa2rgb,attention)            "Warning"
+   set caption(cfa2rgb,erreur)               "Error"
+   set caption(cfa2rgb,msg_01)               "Converting..."
+   set caption(cfa2rgb,msg_02)               "Conversion completed"
+   set caption(cfa2rgb,msg_03)               "No CFA files to convert"
+   set caption(cfa2rgb,msg_04)               "Analysis Error"
+
+   set caption(cfa2rgb,appliquer)            "Apply"
+   set caption(cfa2rgb,fermer)               "Close"
+   set caption(cfa2rgb,aide)                 "Help"
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

@@ -1,10 +1,10 @@
 #
 # Fichier : kitty.cap
-# Mise a jour $Id: kitty.cap,v 1.8 2008-12-20 14:53:17 robertdelmas Exp $
+# Mise a jour $Id: kitty.cap,v 1.9 2009-11-05 18:18:12 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -23,7 +23,7 @@ set caption(kitty,refroidissement_2)            "Cooling:"
 set caption(kitty,refroidissement_on)           "On"
 set caption(kitty,refroidissement_off)          "Off"
 set caption(kitty,temperature_CCD)              "CCD Temperature:"
-set caption(kitty,deg_c)                        "°C"
+set caption(kitty,deg_c)                        "Â°C"
 set caption(kitty,test)                         "SX28 Test"
 
 set caption(kitty,port_camera)                  "Kitty Port - Model"
@@ -32,7 +32,7 @@ set caption(kitty,2points)                      ":"
 set caption(kitty,titre_site_web)               "Reference Web Site:"
 set caption(kitty,site_web_ref)                 "http://perso.wanadoo.fr/bernard.dalstein/"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(kitty,camera)                    "Kitty"
@@ -45,15 +45,15 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,miroir_y)                  "Miroir vertical"
    set caption(kitty,refroidissement_2)         "Refroidissement :"
    set caption(kitty,refroidissement_on)        "Marche"
-   set caption(kitty,refroidissement_off)       "Arrêt"
-   set caption(kitty,temperature_CCD)           "Température du CCD :"
-   set caption(kitty,deg_c)                     "°C"
+   set caption(kitty,refroidissement_off)       "ArrÃªt"
+   set caption(kitty,temperature_CCD)           "TempÃ©rature du CCD :"
+   set caption(kitty,deg_c)                     "Â°C"
    set caption(kitty,test)                      "Test du SX28"
 
    set caption(kitty,port_camera)               "Port Kitty"
    set caption(kitty,2points)                   ":"
 
-   set caption(kitty,titre_site_web)            "Site Web de référence :"
+   set caption(kitty,titre_site_web)            "Site Web de rÃ©fÃ©rence :"
    set caption(kitty,site_web_ref)              "http://perso.wanadoo.fr/bernard.dalstein/"
 
 # *************** Version italienne ***************************
@@ -71,7 +71,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,refroidissement_on)        "On"
    set caption(kitty,refroidissement_off)       "Off"
    set caption(kitty,temperature_CCD)           "CCD Temperatura:"
-   set caption(kitty,deg_c)                     "°C"
+   set caption(kitty,deg_c)                     "Â°C"
    set caption(kitty,test)                      "SX28 Test"
 
    set caption(kitty,port_camera)               "Porta Kitty"
@@ -88,14 +88,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,kitty_2)                   "Kitty K2"
    set caption(kitty,port)                      "Puerto"
    set caption(kitty,configurer)                "Configurar"
-   set caption(kitty,acquisition)               "Adquisición"
+   set caption(kitty,acquisition)               "AdquisiciÃ³n"
    set caption(kitty,miroir_x)                  "Espejo horizontal"
    set caption(kitty,miroir_y)                  "Espejo vertical"
    set caption(kitty,refroidissement_2)         "Enfriar:"
    set caption(kitty,refroidissement_on)        "On"
    set caption(kitty,refroidissement_off)       "Off"
    set caption(kitty,temperature_CCD)           "Temperatura CCD:"
-   set caption(kitty,deg_c)                     "°C"
+   set caption(kitty,deg_c)                     "Â°C"
    set caption(kitty,test)                      "Test SX28"
 
    set caption(kitty,port_camera)               "Puerto Kitty"
@@ -115,11 +115,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,acquisition)               "Belichtung"
    set caption(kitty,miroir_x)                  "Horizontale Spiegel"
    set caption(kitty,miroir_y)                  "Verticale Spiegel"
-   set caption(kitty,refroidissement_2)         "Kühlen:"
+   set caption(kitty,refroidissement_2)         "KÃ¼hlen:"
    set caption(kitty,refroidissement_on)        "Ein"
    set caption(kitty,refroidissement_off)       "Aus"
    set caption(kitty,temperature_CCD)           "Temperatur CCD:"
-   set caption(kitty,deg_c)                     "°C"
+   set caption(kitty,deg_c)                     "Â°C"
    set caption(kitty,test)                      "Test SX28"
 
    set caption(kitty,port_camera)               "Kitty Port - Modell"
@@ -128,7 +128,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,titre_site_web)            "Referenz Webseite:"
    set caption(kitty,site_web_ref)              "http://perso.wanadoo.fr/bernard.dalstein/"
 
-# *************** Version portugaise ***************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(kitty,camera)                    "Kitty"
@@ -136,20 +136,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,kitty_2)                   "Kitty K2"
    set caption(kitty,port)                      "Porto"
    set caption(kitty,configurer)                "Configurar"
-   set caption(kitty,acquisition)               "Aquisição"
+   set caption(kitty,acquisition)               "AquisiÃ§Ã£o"
    set caption(kitty,miroir_x)                  "Espelho Horizontal"
    set caption(kitty,miroir_y)                  "Espelho Vertical"
    set caption(kitty,refroidissement_2)         "Arrefecimento:"
    set caption(kitty,refroidissement_on)        "Ligado"
    set caption(kitty,refroidissement_off)       "Desligado"
    set caption(kitty,temperature_CCD)           "Temperatura do CCD:"
-   set caption(kitty,deg_c)                     "°C"
+   set caption(kitty,deg_c)                     "Â°C"
    set caption(kitty,test)                      "Teste SX28"
 
    set caption(kitty,port_camera)               "Porta Kitty"
    set caption(kitty,2points)                   ":"
 
-   set caption(kitty,titre_site_web)            "Site Web de referência:"
+   set caption(kitty,titre_site_web)            "Site Web de referÃªncia:"
    set caption(kitty,site_web_ref)              "http://perso.wanadoo.fr/bernard.dalstein/"
 
 # *************** Version danoise *****************************
@@ -167,7 +167,55 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,refroidissement_on)        "On"
    set caption(kitty,refroidissement_off)       "Off"
    set caption(kitty,temperature_CCD)           "CCD Temperature:"
-   set caption(kitty,deg_c)                     "°C"
+   set caption(kitty,deg_c)                     "Â°C"
+   set caption(kitty,test)                      "SX28 Test"
+
+   set caption(kitty,port_camera)               "Kitty Port - Model"
+   set caption(kitty,2points)                   ":"
+
+   set caption(kitty,titre_site_web)            "Reference Web Site:"
+   set caption(kitty,site_web_ref)              "http://perso.wanadoo.fr/bernard.dalstein/"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(kitty,camera)                    "Kitty"
+
+   set caption(kitty,kitty_2)                   "Kitty K2"
+   set caption(kitty,port)                      "Port"
+   set caption(kitty,configurer)                "Set up"
+   set caption(kitty,acquisition)               "Acquisition"
+   set caption(kitty,miroir_x)                  "Horizontal Mirror"
+   set caption(kitty,miroir_y)                  "Vertical Mirror"
+   set caption(kitty,refroidissement_2)         "Cooling:"
+   set caption(kitty,refroidissement_on)        "On"
+   set caption(kitty,refroidissement_off)       "Off"
+   set caption(kitty,temperature_CCD)           "CCD Temperature:"
+   set caption(kitty,deg_c)                     "Â°C"
+   set caption(kitty,test)                      "SX28 Test"
+
+   set caption(kitty,port_camera)               "Kitty Port - Model"
+   set caption(kitty,2points)                   ":"
+
+   set caption(kitty,titre_site_web)            "Reference Web Site:"
+   set caption(kitty,site_web_ref)              "http://perso.wanadoo.fr/bernard.dalstein/"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(kitty,camera)                    "Kitty"
+
+   set caption(kitty,kitty_2)                   "Kitty K2"
+   set caption(kitty,port)                      "Port"
+   set caption(kitty,configurer)                "Set up"
+   set caption(kitty,acquisition)               "Acquisition"
+   set caption(kitty,miroir_x)                  "Horizontal Mirror"
+   set caption(kitty,miroir_y)                  "Vertical Mirror"
+   set caption(kitty,refroidissement_2)         "Cooling:"
+   set caption(kitty,refroidissement_on)        "On"
+   set caption(kitty,refroidissement_off)       "Off"
+   set caption(kitty,temperature_CCD)           "CCD Temperature:"
+   set caption(kitty,deg_c)                     "Â°C"
    set caption(kitty,test)                      "SX28 Test"
 
    set caption(kitty,port_camera)               "Kitty Port - Model"
@@ -179,6 +227,6 @@ if { [ string compare $langage "french" ] == "0" } {
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

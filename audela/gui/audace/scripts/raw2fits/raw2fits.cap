@@ -1,10 +1,10 @@
 #
 # Fichier : raw2fits.cap
-# Mise a jour $Id: raw2fits.cap,v 1.7 2009-09-19 12:01:00 robertdelmas Exp $
+# Mise a jour $Id: raw2fits.cap,v 1.8 2009-11-05 18:27:20 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -28,21 +28,21 @@ set caption(raw2fits,appliquer)              "Apply"
 set caption(raw2fits,fermer)                 "Close"
 set caption(raw2fits,aide)                   "Help"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(raw2fits,titre)               "Conversion d'images brutes RAW au format FITS"
 
-   set caption(raw2fits,label_1)             "Les images du dossier %s et ses sous-dossiers vont être renumérotées"
-   set caption(raw2fits,label_2)             "Les images du dossier %s uniquement vont être renumérotées"
+   set caption(raw2fits,label_1)             "Les images du dossier %s et ses sous-dossiers vont Ãªtre renumÃ©rotÃ©es"
+   set caption(raw2fits,label_2)             "Les images du dossier %s uniquement vont Ãªtre renumÃ©rotÃ©es"
    set caption(raw2fits,label_3)             "Traitement du dossier"
-   set caption(raw2fits,label_4)             "Image affichée"
+   set caption(raw2fits,label_4)             "Image affichÃ©e"
    set caption(raw2fits,label_5)             "Echec du chargement de %s : %s"
    set caption(raw2fits,label_6)             "Conversion de %s --> %s"
    set caption(raw2fits,erreur)              "Erreur"
    set caption(raw2fits,msg_01)              "Conversion en cours..."
-   set caption(raw2fits,msg_02)              "Conversion terminée"
-   set caption(raw2fits,msg_03)              "Pas de format RAW à convertir"
+   set caption(raw2fits,msg_02)              "Conversion terminÃ©e"
+   set caption(raw2fits,msg_03)              "Pas de format RAW Ã  convertir"
 
    set caption(raw2fits,appliquer)           "Appliquer"
    set caption(raw2fits,fermer)              "Fermer"
@@ -71,17 +71,17 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(raw2fits,titre)               "Conversión de imágenes brutas RAW a formato FITS"
+   set caption(raw2fits,titre)               "ConversiÃ³n de imÃ¡genes brutas RAW a formato FITS"
 
-   set caption(raw2fits,label_1)             "Las imágenes de la carpeta %s y sus subcarpetas van a ser renumeradas"
-   set caption(raw2fits,label_2)             "Las imágenes de la carpeta %s unicamente seran renumeradas"
+   set caption(raw2fits,label_1)             "Las imÃ¡genes de la carpeta %s y sus subcarpetas van a ser renumeradas"
+   set caption(raw2fits,label_2)             "Las imÃ¡genes de la carpeta %s unicamente seran renumeradas"
    set caption(raw2fits,label_3)             "Procesando la carpeta"
-   set caption(raw2fits,label_4)             "Imágen presentada"
+   set caption(raw2fits,label_4)             "ImÃ¡gen presentada"
    set caption(raw2fits,label_5)             "Fallo al cargar %s: %s"
-   set caption(raw2fits,label_6)             "Conversión de %s --> %s"
+   set caption(raw2fits,label_6)             "ConversiÃ³n de %s --> %s"
    set caption(raw2fits,erreur)              "Error"
-   set caption(raw2fits,msg_01)              "Conversión en curso..."
-   set caption(raw2fits,msg_02)              "Conversión completada"
+   set caption(raw2fits,msg_01)              "ConversiÃ³n en curso..."
+   set caption(raw2fits,msg_02)              "ConversiÃ³n completada"
    set caption(raw2fits,msg_03)              "No hay ficheros RAW a convertir"
 
    set caption(raw2fits,appliquer)           "Aplicar"
@@ -105,7 +105,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(raw2fits,msg_03)              "Keine Raw Datei zu konvertieren"
 
    set caption(raw2fits,appliquer)           "Anwenden"
-   set caption(raw2fits,fermer)              "Schließen"
+   set caption(raw2fits,fermer)              "SchlieÃŸen"
    set caption(raw2fits,aide)                "Hilfe"
 
 # *************** Version portugaise **************************
@@ -113,16 +113,16 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(raw2fits,titre)               "# Conversion d'images brutes RAW au format FITS"
 
-   set caption(raw2fits,label_1)             "# Les images du dossier %s et ses sous-dossiers vont être renumérotées"
-   set caption(raw2fits,label_2)             "# Les images du dossier %s uniquement vont être renumérotées"
+   set caption(raw2fits,label_1)             "# Les images du dossier %s et ses sous-dossiers vont Ãªtre renumÃ©rotÃ©es"
+   set caption(raw2fits,label_2)             "# Les images du dossier %s uniquement vont Ãªtre renumÃ©rotÃ©es"
    set caption(raw2fits,label_3)             "# Traitement du dossier"
-   set caption(raw2fits,label_4)             "# Image affichée"
-   set caption(raw2fits,label_5)             "# Echec du chargement de %s : %s"
+   set caption(raw2fits,label_4)             "# Image affichÃ©e"
+   set caption(raw2fits,label_5)             "# Echec du chargement de %s: %s"
    set caption(raw2fits,label_6)             "# Conversion de %s --> %s"
    set caption(raw2fits,erreur)              "Erro"
    set caption(raw2fits,msg_01)              "# Conversion en cours..."
-   set caption(raw2fits,msg_02)              "# Conversion terminée"
-   set caption(raw2fits,msg_03)              "# Pas de format RAW à convertir"
+   set caption(raw2fits,msg_02)              "# Conversion terminÃ©e"
+   set caption(raw2fits,msg_03)              "# Pas de format RAW Ã  convertir"
 
    set caption(raw2fits,appliquer)           "Aplicar"
    set caption(raw2fits,fermer)              "Fechar"
@@ -148,9 +148,49 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(raw2fits,fermer)              "Close"
    set caption(raw2fits,aide)                "Help"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(raw2fits,titre)               "Convert RAW files to FITS format"
+
+   set caption(raw2fits,label_1)             "Images in folder %s and its sub-folders will be renumbered"
+   set caption(raw2fits,label_2)             "Images in folder %s only will be renumbered"
+   set caption(raw2fits,label_3)             "Processing folder"
+   set caption(raw2fits,label_4)             "Displayed Image"
+   set caption(raw2fits,label_5)             "Failed to load %s: %s"
+   set caption(raw2fits,label_6)             "Convert %s --> %s"
+   set caption(raw2fits,erreur)              "Error"
+   set caption(raw2fits,msg_01)              "Converting..."
+   set caption(raw2fits,msg_02)              "Conversion completed"
+   set caption(raw2fits,msg_03)              "No RAW files to convert"
+
+   set caption(raw2fits,appliquer)           "Apply"
+   set caption(raw2fits,fermer)              "Close"
+   set caption(raw2fits,aide)                "Help"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(raw2fits,titre)               "Convert RAW files to FITS format"
+
+   set caption(raw2fits,label_1)             "Images in folder %s and its sub-folders will be renumbered"
+   set caption(raw2fits,label_2)             "Images in folder %s only will be renumbered"
+   set caption(raw2fits,label_3)             "Processing folder"
+   set caption(raw2fits,label_4)             "Displayed Image"
+   set caption(raw2fits,label_5)             "Failed to load %s: %s"
+   set caption(raw2fits,label_6)             "Convert %s --> %s"
+   set caption(raw2fits,erreur)              "Error"
+   set caption(raw2fits,msg_01)              "Converting..."
+   set caption(raw2fits,msg_02)              "Conversion completed"
+   set caption(raw2fits,msg_03)              "No RAW files to convert"
+
+   set caption(raw2fits,appliquer)           "Apply"
+   set caption(raw2fits,fermer)              "Close"
+   set caption(raw2fits,aide)                "Help"
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

@@ -1,10 +1,10 @@
 #
 # Fichier : fingerlakes.cap
-# Mise a jour $Id: fingerlakes.cap,v 1.13 2009-09-18 17:21:14 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.cap,v 1.14 2009-11-05 18:17:42 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -18,7 +18,7 @@ set caption(fingerlakes,obtu_ferme)                   "Closed"
 set caption(fingerlakes,obtu_synchro)                 "Synchro"
 
 set caption(fingerlakes,refroidissement)              "Cooling to Temperature"
-set caption(fingerlakes,deg_c)                        "°C"
+set caption(fingerlakes,deg_c)                        "Â°C"
 set caption(fingerlakes,refroidissement_1)            ""
 set caption(fingerlakes,temperature_CCD)              "CCD Temperature:"
 set caption(fingerlakes,power)                        "Peltier Stage Power:"
@@ -33,19 +33,19 @@ set caption(fingerlakes,2points)                      ":"
 set caption(fingerlakes,titre_site_web)               "Reference Web Site:"
 set caption(fingerlakes,site_web_ref)                 "http://www.fli-cam.com"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(fingerlakes,camera)                    "FLI"
 
    set caption(fingerlakes,obtu_ouvert)               "Ouvert"
-   set caption(fingerlakes,obtu_ferme)                "Fermé"
+   set caption(fingerlakes,obtu_ferme)                "FermÃ©"
    set caption(fingerlakes,obtu_synchro)              "Synchro"
 
-   set caption(fingerlakes,refroidissement)           "Refroidissement à la température de"
-   set caption(fingerlakes,deg_c)                     "°C"
+   set caption(fingerlakes,refroidissement)           "Refroidissement Ã  la tempÃ©rature de"
+   set caption(fingerlakes,deg_c)                     "Â°C"
    set caption(fingerlakes,refroidissement_1)         ""
-   set caption(fingerlakes,temperature_CCD)           "Température du CCD :"
+   set caption(fingerlakes,temperature_CCD)           "TempÃ©rature du CCD :"
    set caption(fingerlakes,power)                     "Puissance Peltier :"
    set caption(fingerlakes,miroir_x)                  "Miroir horizontal"
    set caption(fingerlakes,miroir_y)                  "Miroir vertical"
@@ -55,7 +55,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,port_camera)               "Port FLI"
    set caption(fingerlakes,2points)                   ":"
 
-   set caption(fingerlakes,titre_site_web)            "Site Web de référence :"
+   set caption(fingerlakes,titre_site_web)            "Site Web de rÃ©fÃ©rence :"
    set caption(fingerlakes,site_web_ref)              "http://www.fli-cam.com"
 
 # *************** Version italienne ***************************
@@ -68,14 +68,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,obtu_synchro)              "Sincronizza"
 
    set caption(fingerlakes,refroidissement)           "Raffreddamento alla temperatura di"
-   set caption(fingerlakes,deg_c)                     "°C"
+   set caption(fingerlakes,deg_c)                     "Â°C"
    set caption(fingerlakes,refroidissement_1)         ""
    set caption(fingerlakes,temperature_CCD)           "CCD Temperatura:"
    set caption(fingerlakes,power)                     "Potenza stadio Peltier:"
    set caption(fingerlakes,miroir_x)                  "Specchio orizzontale"
    set caption(fingerlakes,miroir_y)                  "Specchio verticale"
    set caption(fingerlakes,fonc_obtu)                 "Funzionamento otturatore"
-   set caption(fingerlakes,readSpeed)                 "Velocità di lettura"
+   set caption(fingerlakes,readSpeed)                 "VelocitÃ  di lettura"
 
    set caption(fingerlakes,port_camera)               "Porta FLI"
    set caption(fingerlakes,2points)                   ":"
@@ -93,10 +93,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,obtu_synchro)              "Sincro"
 
    set caption(fingerlakes,refroidissement)           "Enfriar hasta temperatura"
-   set caption(fingerlakes,deg_c)                     "°C"
+   set caption(fingerlakes,deg_c)                     "Â°C"
    set caption(fingerlakes,refroidissement_1)         ""
    set caption(fingerlakes,temperature_CCD)           "Temperatura CCD:"
-   set caption(fingerlakes,power)                     "Alimentación Etapa Peltier:"
+   set caption(fingerlakes,power)                     "AlimentaciÃ³n Etapa Peltier:"
    set caption(fingerlakes,miroir_x)                  "Espejo horizontal"
    set caption(fingerlakes,miroir_y)                  "Espejo vertical"
    set caption(fingerlakes,fonc_obtu)                 "Funcionamiento del obturador"
@@ -118,10 +118,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,obtu_synchro)              "Synchro"
 
    set caption(fingerlakes,refroidissement)           "Temperatur bis zu"
-   set caption(fingerlakes,deg_c)                     "°C"
-   set caption(fingerlakes,refroidissement_1)         "kühlen."
+   set caption(fingerlakes,deg_c)                     "Â°C"
+   set caption(fingerlakes,refroidissement_1)         "kÃ¼hlen."
    set caption(fingerlakes,temperature_CCD)           "Temperatur CCD:"
-   set caption(fingerlakes,power)                     "Peltier Stärke:"
+   set caption(fingerlakes,power)                     "Peltier StÃ¤rke:"
    set caption(fingerlakes,miroir_x)                  "Horizontale Spiegel"
    set caption(fingerlakes,miroir_y)                  "Verticale Spiegel"
    set caption(fingerlakes,fonc_obtu)                 "Verschluss Arbeiten"
@@ -133,7 +133,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,titre_site_web)            "Referenz Webseite:"
    set caption(fingerlakes,site_web_ref)              "http://www.fli-cam.com"
 
-# *************** Version portugaise ***************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(fingerlakes,camera)                    "FLI"
@@ -142,20 +142,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,obtu_ferme)                "Fechado"
    set caption(fingerlakes,obtu_synchro)              "Sincro"
 
-   set caption(fingerlakes,refroidissement)           "Arrefecendo até Temperatura"
-   set caption(fingerlakes,deg_c)                     "°C"
+   set caption(fingerlakes,refroidissement)           "Arrefecendo atÃ© Temperatura"
+   set caption(fingerlakes,deg_c)                     "Â°C"
    set caption(fingerlakes,refroidissement_1)         ""
    set caption(fingerlakes,temperature_CCD)           "Temperatura do CCD:"
-   set caption(fingerlakes,power)                     "Nível de Potência do Peltier:"
+   set caption(fingerlakes,power)                     "NÃ­vel de PotÃªncia do Peltier:"
    set caption(fingerlakes,miroir_x)                  "Espelho Horizontal"
    set caption(fingerlakes,miroir_y)                  "Espelho Vertical"
-   set caption(fingerlakes,fonc_obtu)                 "Operação do obturador"
+   set caption(fingerlakes,fonc_obtu)                 "OperaÃ§Ã£o do obturador"
    set caption(fingerlakes,readSpeed)                 "# Vitesse de lecture"
 
    set caption(fingerlakes,port_camera)               "Porta FLI"
    set caption(fingerlakes,2points)                   ":"
 
-   set caption(fingerlakes,titre_site_web)            "Site Web de referência:"
+   set caption(fingerlakes,titre_site_web)            "Site Web de referÃªncia:"
    set caption(fingerlakes,site_web_ref)              "http://www.fli-cam.com"
 
 # *************** Version danoise *****************************
@@ -168,7 +168,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,obtu_synchro)              "Synchro"
 
    set caption(fingerlakes,refroidissement)           "Cooling to Temperature"
-   set caption(fingerlakes,deg_c)                     "°C"
+   set caption(fingerlakes,deg_c)                     "Â°C"
    set caption(fingerlakes,refroidissement_1)         ""
    set caption(fingerlakes,temperature_CCD)           "CCD Temperature:"
    set caption(fingerlakes,power)                     "Peltier Stage Power:"
@@ -183,9 +183,59 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,titre_site_web)            "Reference Web Site:"
    set caption(fingerlakes,site_web_ref)              "http://www.fli-cam.com"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(fingerlakes,camera)                    "FLI"
+
+   set caption(fingerlakes,obtu_ouvert)               "Open"
+   set caption(fingerlakes,obtu_ferme)                "Closed"
+   set caption(fingerlakes,obtu_synchro)              "Synchro"
+
+   set caption(fingerlakes,refroidissement)           "Cooling to Temperature"
+   set caption(fingerlakes,deg_c)                     "Â°C"
+   set caption(fingerlakes,refroidissement_1)         ""
+   set caption(fingerlakes,temperature_CCD)           "CCD Temperature:"
+   set caption(fingerlakes,power)                     "Peltier Stage Power:"
+   set caption(fingerlakes,miroir_x)                  "Horizontal Mirror"
+   set caption(fingerlakes,miroir_y)                  "Vertical Mirror"
+   set caption(fingerlakes,fonc_obtu)                 "Shutter Operation"
+   set caption(fingerlakes,readSpeed)                 "Read Speed"
+
+   set caption(fingerlakes,port_camera)               "FLI Port"
+   set caption(fingerlakes,2points)                   ":"
+
+   set caption(fingerlakes,titre_site_web)            "Reference Web Site:"
+   set caption(fingerlakes,site_web_ref)              "http://www.fli-cam.com"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(fingerlakes,camera)                    "FLI"
+
+   set caption(fingerlakes,obtu_ouvert)               "Open"
+   set caption(fingerlakes,obtu_ferme)                "Closed"
+   set caption(fingerlakes,obtu_synchro)              "Synchro"
+
+   set caption(fingerlakes,refroidissement)           "Cooling to Temperature"
+   set caption(fingerlakes,deg_c)                     "Â°C"
+   set caption(fingerlakes,refroidissement_1)         ""
+   set caption(fingerlakes,temperature_CCD)           "CCD Temperature:"
+   set caption(fingerlakes,power)                     "Peltier Stage Power:"
+   set caption(fingerlakes,miroir_x)                  "Horizontal Mirror"
+   set caption(fingerlakes,miroir_y)                  "Vertical Mirror"
+   set caption(fingerlakes,fonc_obtu)                 "Shutter Operation"
+   set caption(fingerlakes,readSpeed)                 "Read Speed"
+
+   set caption(fingerlakes,port_camera)               "FLI Port"
+   set caption(fingerlakes,2points)                   ":"
+
+   set caption(fingerlakes,titre_site_web)            "Reference Web Site:"
+   set caption(fingerlakes,site_web_ref)              "http://www.fli-cam.com"
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

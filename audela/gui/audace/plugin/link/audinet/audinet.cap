@@ -1,10 +1,10 @@
 #
 # Fichier : audinet.cap
-# Mise a jour $Id: audinet.cap,v 1.8 2007-01-27 14:34:45 robertdelmas Exp $
+# Mise a jour $Id: audinet.cap,v 1.9 2009-11-05 18:22:19 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -35,7 +35,7 @@ set caption(audinet,erreur_setip)               "Network not found."
 set caption(audinet,site_web_ref)               "Reference Web Site:"
 set caption(audinet,site_audinet)               "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audinet,titre)                   "AudiNet"
@@ -45,21 +45,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audinet,protocole_udp)           "udp"
    set caption(audinet,protocole_tcp)           "tcp"
    set caption(audinet,tempo_udp)               "Temporisation UDP"
-   set caption(audinet,debug)                   "Mode débug"
+   set caption(audinet,debug)                   "Mode dÃ©bug"
    set caption(audinet,test_audinet)            "Tester l'adresse IP (ping)"
-   set caption(audinet,envoyer_adresse_aud)     "Envoyer ce numéro IP à l'AudiNet/LXnet avant la connexion"
+   set caption(audinet,envoyer_adresse_aud)     "Envoyer ce numÃ©ro IP Ã  l'AudiNet/LXnet avant la connexion"
    set caption(audinet,mac_address)             "Adresse MAC"
 
-   set caption(audinet,autoflush)               "Purge du buffer série"
+   set caption(audinet,autoflush)               "Purge du buffer sÃ©rie"
    set caption(audinet,focuser_type)            "Type de focaliseur"
    set caption(audinet,focuser_i2c_address)     "Port I2C"
 
-   set caption(audinet,appareil_connecte)       "Il y a un appareil à l'adresse IP :"
-   set caption(audinet,pas_appareil_connecte)   "Il n'y a pas d'appareil à l'adresse IP :"
+   set caption(audinet,appareil_connecte)       "Il y a un appareil Ã  l'adresse IP :"
+   set caption(audinet,pas_appareil_connecte)   "Il n'y a pas d'appareil Ã  l'adresse IP :"
    set caption(audinet,message_ping)            "Message de retour de la fonction ping :"
-   set caption(audinet,erreur_setip)            "Réseau non trouvé."
+   set caption(audinet,erreur_setip)            "RÃ©seau non trouvÃ©."
 
-   set caption(audinet,site_web_ref)            "Site Web de référence :"
+   set caption(audinet,site_web_ref)            "Site Web de rÃ©fÃ©rence :"
    set caption(audinet,site_audinet)            "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet.htm"
 
 # *************** Version italienne ***************************
@@ -100,16 +100,16 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audinet,protocole_tcp)           "tcp"
    set caption(audinet,tempo_udp)               "Tiempo de retardo UDP"
    set caption(audinet,debug)                   "Modo depuracion"
-   set caption(audinet,test_audinet)            "Porbar la dirección IP (ping)"
-   set caption(audinet,envoyer_adresse_aud)     "Envia esta dirección IP a AudiNet/LXnet antes de la conexión"
-   set caption(audinet,mac_address)             "Dirección MAC"
+   set caption(audinet,test_audinet)            "Porbar la direcciÃ³n IP (ping)"
+   set caption(audinet,envoyer_adresse_aud)     "Envia esta direcciÃ³n IP a AudiNet/LXnet antes de la conexiÃ³n"
+   set caption(audinet,mac_address)             "DirecciÃ³n MAC"
 
    set caption(audinet,autoflush)               "Borrado del puerto serie"
    set caption(audinet,focuser_type)            "Tipo de enfocador"
    set caption(audinet,focuser_i2c_address)     "Puerto I2C "
 
-   set caption(audinet,appareil_connecte)       "Ya existe un dispositivo en la dirección IP:"
-   set caption(audinet,pas_appareil_connecte)   "No existe dispositivo en la dirección IP:"
+   set caption(audinet,appareil_connecte)       "Ya existe un dispositivo en la direcciÃ³n IP:"
+   set caption(audinet,pas_appareil_connecte)   "No existe dispositivo en la direcciÃ³n IP:"
    set caption(audinet,message_ping)            "Mensaje devuelto por la utilidad ping:"
    set caption(audinet,erreur_setip)            "No se encuentra la red."
 
@@ -127,7 +127,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audinet,protocole_tcp)           "tcp"
    set caption(audinet,tempo_udp)               "Abwarten Zeit UDP"
    set caption(audinet,debug)                   "Debug Modus"
-   set caption(audinet,test_audinet)            "IP Adresse prüfen (Ping)"
+   set caption(audinet,test_audinet)            "IP Adresse prÃ¼fen (Ping)"
    set caption(audinet,envoyer_adresse_aud)     "Diese IP Nummer zu AudiNet/LXnet vor den Zusammenhang schicken"
    set caption(audinet,mac_address)             "MAC Adresse"
 
@@ -135,9 +135,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audinet,focuser_type)            "Scharfeinstellung Typ"
    set caption(audinet,focuser_i2c_address)     "I2C Port"
 
-   set caption(audinet,appareil_connecte)       "Ein Gerät mit diese IP Nummer existiert:"
-   set caption(audinet,pas_appareil_connecte)   "Kein Gerät mit diese IP Nummer existiert:"
-   set caption(audinet,message_ping)            "Ping Funktion Rückkehr Meldung:"
+   set caption(audinet,appareil_connecte)       "Ein GerÃ¤t mit diese IP Nummer existiert:"
+   set caption(audinet,pas_appareil_connecte)   "Kein GerÃ¤t mit diese IP Nummer existiert:"
+   set caption(audinet,message_ping)            "Ping Funktion RÃ¼ckkehr Meldung:"
    set caption(audinet,erreur_setip)            "Netz nicht gefunden."
 
    set caption(audinet,site_web_ref)            "Referenz Webseite:"
@@ -152,22 +152,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audinet,protocole_audinet)       "Protocolo"
    set caption(audinet,protocole_udp)           "udp"
    set caption(audinet,protocole_tcp)           "tcp"
-   set caption(audinet,tempo_udp)               "Temporização UDP"
+   set caption(audinet,tempo_udp)               "TemporizaÃ§Ã£o UDP"
    set caption(audinet,debug)                   "Modo debug"
-   set caption(audinet,test_audinet)            "Testar o endereço IP (ping)"
-   set caption(audinet,envoyer_adresse_aud)     "Enviar este número IP para AudiNet/LXnet antes da ligação"
-   set caption(audinet,mac_address)             "Endereço MAC"
+   set caption(audinet,test_audinet)            "Testar o endereÃ§o IP (ping)"
+   set caption(audinet,envoyer_adresse_aud)     "Enviar este nÃºmero IP para AudiNet/LXnet antes da ligaÃ§Ã£o"
+   set caption(audinet,mac_address)             "EndereÃ§o MAC"
 
-   set caption(audinet,autoflush)               "Limpar do buffer série"
+   set caption(audinet,autoflush)               "Limpar do buffer sÃ©rie"
    set caption(audinet,focuser_type)            "Tipo de focador"
    set caption(audinet,focuser_i2c_address)     "Porta I2C"
 
-   set caption(audinet,appareil_connecte)       "Existe um dispositivo no endereço IP:"
-   set caption(audinet,pas_appareil_connecte)   "Não existe um dispositivo no endereço IP:"
-   set caption(audinet,message_ping)            "Mensagem de retorno da função ping:"
-   set caption(audinet,erreur_setip)            "Rede não encontrada."
+   set caption(audinet,appareil_connecte)       "Existe um dispositivo no endereÃ§o IP:"
+   set caption(audinet,pas_appareil_connecte)   "NÃ£o existe um dispositivo no endereÃ§o IP:"
+   set caption(audinet,message_ping)            "Mensagem de retorno da funÃ§Ã£o ping:"
+   set caption(audinet,erreur_setip)            "Rede nÃ£o encontrada."
 
-   set caption(audinet,site_web_ref)            "Site Web de referência:"
+   set caption(audinet,site_web_ref)            "Site Web de referÃªncia:"
    set caption(audinet,site_audinet)            "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet.htm"
 
 # *************** Version danoise *****************************
@@ -197,9 +197,63 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audinet,site_web_ref)            "Reference Web Site:"
    set caption(audinet,site_audinet)            "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(audinet,titre)                   "AudiNet"
+
+   set caption(audinet,host_audinet)            "Host AudiNet/LXnet"
+   set caption(audinet,protocole_audinet)       "Protocol"
+   set caption(audinet,protocole_udp)           "udp"
+   set caption(audinet,protocole_tcp)           "tcp"
+   set caption(audinet,tempo_udp)               "UDP Delay Time"
+   set caption(audinet,debug)                   "Debug Mode"
+   set caption(audinet,test_audinet)            "Test IP Address (ping)"
+   set caption(audinet,envoyer_adresse_aud)     "Send this IP number to AudiNet/LXnet before the connection"
+   set caption(audinet,mac_address)             "MAC Address"
+
+   set caption(audinet,autoflush)               "Autoflush Serial Com"
+   set caption(audinet,focuser_type)            "Focuser Type"
+   set caption(audinet,focuser_i2c_address)     "I2C Port"
+
+   set caption(audinet,appareil_connecte)       "There is a device at IP address:"
+   set caption(audinet,pas_appareil_connecte)   "There is no device at IP address:"
+   set caption(audinet,message_ping)            "Return Message of Ping Function:"
+   set caption(audinet,erreur_setip)            "Network not found."
+
+   set caption(audinet,site_web_ref)            "Reference Web Site:"
+   set caption(audinet,site_audinet)            "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(audinet,titre)                   "AudiNet"
+
+   set caption(audinet,host_audinet)            "Host AudiNet/LXnet"
+   set caption(audinet,protocole_audinet)       "Protocol"
+   set caption(audinet,protocole_udp)           "udp"
+   set caption(audinet,protocole_tcp)           "tcp"
+   set caption(audinet,tempo_udp)               "UDP Delay Time"
+   set caption(audinet,debug)                   "Debug Mode"
+   set caption(audinet,test_audinet)            "Test IP Address (ping)"
+   set caption(audinet,envoyer_adresse_aud)     "Send this IP number to AudiNet/LXnet before the connection"
+   set caption(audinet,mac_address)             "MAC Address"
+
+   set caption(audinet,autoflush)               "Autoflush Serial Com"
+   set caption(audinet,focuser_type)            "Focuser Type"
+   set caption(audinet,focuser_i2c_address)     "I2C Port"
+
+   set caption(audinet,appareil_connecte)       "There is a device at IP address:"
+   set caption(audinet,pas_appareil_connecte)   "There is no device at IP address:"
+   set caption(audinet,message_ping)            "Return Message of Ping Function:"
+   set caption(audinet,erreur_setip)            "Network not found."
+
+   set caption(audinet,site_web_ref)            "Reference Web Site:"
+   set caption(audinet,site_audinet)            "http://perso.wanadoo.fr/michel.pujol/logiciels/audinet/audinet_en.htm"
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

@@ -1,10 +1,10 @@
 #
 # Fichier : obtu_pierre.cap
-# Mise a jour $Id: obtu_pierre.cap,v 1.7 2007-01-27 14:48:22 robertdelmas Exp $
+# Mise a jour $Id: obtu_pierre.cap,v 1.8 2009-11-05 18:16:24 robertdelmas Exp $
 #
 
 #=========================================================================
-#   DÈbut de la dÈclaration des textes localisÈs (internationalisation)
+#   D√©but de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -25,22 +25,22 @@ set caption(obtu_pierre,e)                "Free"
 set caption(obtu_pierre,t)                "15"
 set caption(obtu_pierre,flag)             "Deep Sky (1) or Planets (2)"
 
-# *************** Version franÁaise ***************************
+# *************** Version fran√ßaise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(obtu_pierre,title)         "RÈglage des paramËtres de l'obturateur"
+   set caption(obtu_pierre,title)         "R√©glage des param√®tres de l'obturateur"
    set caption(obtu_pierre,title_pth)     "Obturateur de Pierre Thierry"
    set caption(obtu_pierre,valider)       "Valider ces valeurs"
    set caption(obtu_pierre,fermer)        "Fermer"
    set caption(obtu_pierre,synchro)       "Synchro"
    set caption(obtu_pierre,ouvert)        "Ouvert"
-   set caption(obtu_pierre,ferme)         "FermÈ"
-   set caption(obtu_pierre,a)             "FermÈ : 1080"
+   set caption(obtu_pierre,ferme)         "Ferm√©"
+   set caption(obtu_pierre,a)             "Ferm√© : 1080"
    set caption(obtu_pierre,b)             "Ouvert : 1180"
-   set caption(obtu_pierre,c)             "FermÈ : 1280"
+   set caption(obtu_pierre,c)             "Ferm√© : 1280"
    set caption(obtu_pierre,e)             "Libre"
    set caption(obtu_pierre,t)             "15"
-   set caption(obtu_pierre,flag)          "Ciel Profond (1) ou PlanËtes (2)"
+   set caption(obtu_pierre,flag)          "Ciel Profond (1) ou Plan√®tes (2)"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -62,7 +62,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(obtu_pierre,title)         "ConfiguraciÛn par·metros obturador"
+   set caption(obtu_pierre,title)         "Configuraci√≥n par√°metros obturador"
    set caption(obtu_pierre,title_pth)     "Obturador de Pierre Thierry"
    set caption(obtu_pierre,valider)       "Validar estos valores"
    set caption(obtu_pierre,fermer)        "Cerrar"
@@ -81,8 +81,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(obtu_pierre,title)         "Verschluss Parametern einstellung"
    set caption(obtu_pierre,title_pth)     "Pierre Thierry Verschluss"
-   set caption(obtu_pierre,valider)       "Diese Werte g¸ltig machen"
-   set caption(obtu_pierre,fermer)        "Schlieﬂen"
+   set caption(obtu_pierre,valider)       "Diese Werte g√ºltig machen"
+   set caption(obtu_pierre,fermer)        "Schlie√üen"
    set caption(obtu_pierre,synchro)       "Synchro"
    set caption(obtu_pierre,ouvert)        "Offen"
    set caption(obtu_pierre,ferme)         "Geschlossen"
@@ -96,19 +96,19 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(obtu_pierre,title)         "Ajustamento dos Par‚metros do Obturador"
+   set caption(obtu_pierre,title)         "Ajustamento dos Par√¢metros do Obturador"
    set caption(obtu_pierre,title_pth)     "Obturador do Pierre Thierry"
    set caption(obtu_pierre,valider)       "Validar estes valores"
    set caption(obtu_pierre,fermer)        "Fechar"
    set caption(obtu_pierre,synchro)       "Sincro"
    set caption(obtu_pierre,ouvert)        "Aberto"
    set caption(obtu_pierre,ferme)         "Fechado"
-   set caption(obtu_pierre,a)             "Fechado : 1080"
-   set caption(obtu_pierre,b)             "Aberto : 1180"
-   set caption(obtu_pierre,c)             "Fechado : 1280"
+   set caption(obtu_pierre,a)             "Fechado: 1080"
+   set caption(obtu_pierre,b)             "Aberto: 1180"
+   set caption(obtu_pierre,c)             "Fechado: 1280"
    set caption(obtu_pierre,e)             "Livre"
    set caption(obtu_pierre,t)             "15"
-   set caption(obtu_pierre,flag)          "CÈu Profundo (1) ou Planetas (2)"
+   set caption(obtu_pierre,flag)          "C√©u Profundo (1) ou Planetas (2)"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -127,9 +127,43 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obtu_pierre,t)             "15"
    set caption(obtu_pierre,flag)          "Deep Sky (1) or Planets (2)"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(obtu_pierre,title)         "Shutter Parameter Setting"
+   set caption(obtu_pierre,title_pth)     "Pierre Thierry's Shutter"
+   set caption(obtu_pierre,valider)       "Enable these values"
+   set caption(obtu_pierre,fermer)        "Close"
+   set caption(obtu_pierre,synchro)       "Synchro"
+   set caption(obtu_pierre,ouvert)        "Open"
+   set caption(obtu_pierre,ferme)         "Closed"
+   set caption(obtu_pierre,a)             "Closed: 1080"
+   set caption(obtu_pierre,b)             "Open: 1180"
+   set caption(obtu_pierre,c)             "Closed: 1280"
+   set caption(obtu_pierre,e)             "Free"
+   set caption(obtu_pierre,t)             "15"
+   set caption(obtu_pierre,flag)          "Deep Sky (1) or Planets (2)"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(obtu_pierre,title)         "Shutter Parameter Setting"
+   set caption(obtu_pierre,title_pth)     "Pierre Thierry's Shutter"
+   set caption(obtu_pierre,valider)       "Enable these values"
+   set caption(obtu_pierre,fermer)        "Close"
+   set caption(obtu_pierre,synchro)       "Synchro"
+   set caption(obtu_pierre,ouvert)        "Open"
+   set caption(obtu_pierre,ferme)         "Closed"
+   set caption(obtu_pierre,a)             "Closed: 1080"
+   set caption(obtu_pierre,b)             "Open: 1180"
+   set caption(obtu_pierre,c)             "Closed: 1280"
+   set caption(obtu_pierre,e)             "Free"
+   set caption(obtu_pierre,t)             "15"
+   set caption(obtu_pierre,flag)          "Deep Sky (1) or Planets (2)"
+
 }
 
 #=========================================================================
-#   Fin de la dÈclaration des textes localisÈs (internationalisation)
+#   Fin de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 

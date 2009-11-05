@@ -1,10 +1,10 @@
 #
 # Fichier : scr1300xtc.cap
-# Mise a jour $Id: scr1300xtc.cap,v 1.4 2008-12-20 14:53:40 robertdelmas Exp $
+# Mise a jour $Id: scr1300xtc.cap,v 1.5 2009-11-05 18:19:00 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -25,7 +25,7 @@ set caption(scr1300xtc,2points)                      ":"
 set caption(scr1300xtc,titre_site_web)               "Reference Web Site:"
 set caption(scr1300xtc,site_web_ref)                 "http://synonyme.nerim.net/imagerie/HomePage.html"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scr1300xtc,camera)                    "SCR1300XTC"
@@ -39,7 +39,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,port_camera)               "Port SCR1300XTC"
    set caption(scr1300xtc,2points)                   ":"
 
-   set caption(scr1300xtc,titre_site_web)            "Site Web de référence :"
+   set caption(scr1300xtc,titre_site_web)            "Site Web de rÃ©fÃ©rence :"
    set caption(scr1300xtc,site_web_ref)              "http://synonyme.nerim.net/imagerie/HomePage.html"
 
 # *************** Version italienne ***************************
@@ -66,7 +66,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scr1300xtc,port)                      "Puerto"
    set caption(scr1300xtc,configurer)                "Configurar"
-   set caption(scr1300xtc,acquisition)               "Adquisición"
+   set caption(scr1300xtc,acquisition)               "AdquisiciÃ³n"
    set caption(scr1300xtc,miroir_x)                  "Espejo horizontal"
    set caption(scr1300xtc,miroir_y)                  "Espejo vertical"
 
@@ -93,21 +93,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,titre_site_web)            "Referenz Webseite:"
    set caption(scr1300xtc,site_web_ref)              "http://synonyme.nerim.net/imagerie/HomePage.html"
 
-# *************** Version portugaise ***************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(scr1300xtc,camera)                    "SCR1300XTC"
 
    set caption(scr1300xtc,port)                      "Porto"
    set caption(scr1300xtc,configurer)                "Configurar"
-   set caption(scr1300xtc,acquisition)               "Aquisição"
+   set caption(scr1300xtc,acquisition)               "AquisiÃ§Ã£o"
    set caption(scr1300xtc,miroir_x)                  "Espelho Horizontal"
    set caption(scr1300xtc,miroir_y)                  "Espelho Vertical"
 
    set caption(scr1300xtc,port_camera)               "Porta SCR1300XTC"
    set caption(scr1300xtc,2points)                   ":"
 
-   set caption(scr1300xtc,titre_site_web)            "Site Web de referência:"
+   set caption(scr1300xtc,titre_site_web)            "Site Web de referÃªncia:"
    set caption(scr1300xtc,site_web_ref)              "http://synonyme.nerim.net/imagerie/HomePage.html"
 
 # *************** Version danoise *****************************
@@ -127,9 +127,43 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,titre_site_web)            "Reference Web Site:"
    set caption(scr1300xtc,site_web_ref)              "http://synonyme.nerim.net/imagerie/HomePage.html"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(scr1300xtc,camera)                    "SCR1300XTC"
+
+   set caption(scr1300xtc,port)                      "Port"
+   set caption(scr1300xtc,configurer)                "Set up"
+   set caption(scr1300xtc,acquisition)               "Acquisition"
+   set caption(scr1300xtc,miroir_x)                  "Horizontal Mirror"
+   set caption(scr1300xtc,miroir_y)                  "Vertical Mirror"
+
+   set caption(scr1300xtc,port_camera)               "SCR1300XTC Port"
+   set caption(scr1300xtc,2points)                   ":"
+
+   set caption(scr1300xtc,titre_site_web)            "Reference Web Site:"
+   set caption(scr1300xtc,site_web_ref)              "http://synonyme.nerim.net/imagerie/HomePage.html"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(scr1300xtc,camera)                    "SCR1300XTC"
+
+   set caption(scr1300xtc,port)                      "Port"
+   set caption(scr1300xtc,configurer)                "Set up"
+   set caption(scr1300xtc,acquisition)               "Acquisition"
+   set caption(scr1300xtc,miroir_x)                  "Horizontal Mirror"
+   set caption(scr1300xtc,miroir_y)                  "Vertical Mirror"
+
+   set caption(scr1300xtc,port_camera)               "SCR1300XTC Port"
+   set caption(scr1300xtc,2points)                   ":"
+
+   set caption(scr1300xtc,titre_site_web)            "Reference Web Site:"
+   set caption(scr1300xtc,site_web_ref)              "http://synonyme.nerim.net/imagerie/HomePage.html"
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

@@ -1,10 +1,10 @@
 #
 # Fichier : starlight.cap
-# Mise a jour $Id: starlight.cap,v 1.6 2008-12-20 14:53:53 robertdelmas Exp $
+# Mise a jour $Id: starlight.cap,v 1.7 2009-11-05 18:19:14 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -31,7 +31,7 @@ set caption(starlight,2points)                      ":"
 set caption(starlight,titre_site_web)               "Reference Web Site:"
 set caption(starlight,site_web_ref)                 "http://www.starlight-xpress.co.uk/index.htm"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(starlight,camera)                    "Starlight"
@@ -44,14 +44,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(starlight,acquisition)               "Acquisition"
    set caption(starlight,miroir_x)                  "Miroir horizontal"
    set caption(starlight,miroir_y)                  "Miroir vertical"
-   set caption(starlight,accelerateur)              "Boîtier accélérateur de port parallèle"
+   set caption(starlight,accelerateur)              "BoÃ®tier accÃ©lÃ©rateur de port parallÃ¨le"
    set caption(starlight,sans_accelerateur)         "sans"
    set caption(starlight,avec_accelerateur)         "avec"
 
    set caption(starlight,port_camera)               "Port Starlight"
    set caption(starlight,2points)                   ":"
 
-   set caption(starlight,titre_site_web)            "Site Web de référence :"
+   set caption(starlight,titre_site_web)            "Site Web de rÃ©fÃ©rence :"
    set caption(starlight,site_web_ref)              "http://www.starlight-xpress.co.uk/index.htm"
 
 # *************** Version italienne ***************************
@@ -87,7 +87,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(starlight,hx5)                       "HX516"
    set caption(starlight,port)                      "Puerto"
    set caption(starlight,configurer)                "Configurar"
-   set caption(starlight,acquisition)               "Adquisición"
+   set caption(starlight,acquisition)               "AdquisiciÃ³n"
    set caption(starlight,miroir_x)                  "Espejo horizontal"
    set caption(starlight,miroir_y)                  "Espejo vertical"
    set caption(starlight,accelerateur)              "Caja aceleradora de puerto paralelo"
@@ -113,7 +113,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(starlight,acquisition)               "Belichtung"
    set caption(starlight,miroir_x)                  "Horizontale Spiegel"
    set caption(starlight,miroir_y)                  "Verticale Spiegel"
-   set caption(starlight,accelerateur)              "Parallel Port Beschleuniger Gehäuse"
+   set caption(starlight,accelerateur)              "Parallel Port Beschleuniger GehÃ¤use"
    set caption(starlight,sans_accelerateur)         "ohne"
    set caption(starlight,avec_accelerateur)         "mit"
 
@@ -123,7 +123,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(starlight,titre_site_web)            "Referenz Webseite:"
    set caption(starlight,site_web_ref)              "http://www.starlight-xpress.co.uk/index.htm"
 
-# *************** Version portugaise ***************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(starlight,camera)                    "Starlight"
@@ -133,17 +133,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(starlight,hx5)                       "HX516"
    set caption(starlight,port)                      "Porto"
    set caption(starlight,configurer)                "Configurar"
-   set caption(starlight,acquisition)               "Aquisição"
+   set caption(starlight,acquisition)               "AquisiÃ§Ã£o"
    set caption(starlight,miroir_x)                  "Espelho Horizontal"
    set caption(starlight,miroir_y)                  "Espelho Vertical"
-   set caption(starlight,accelerateur)              "Caixa de Aceleração da porta Paralela"
+   set caption(starlight,accelerateur)              "Caixa de AceleraÃ§Ã£o da porta Paralela"
    set caption(starlight,sans_accelerateur)         "sem"
    set caption(starlight,avec_accelerateur)         "com"
 
    set caption(starlight,port_camera)               "Porta Starlight"
    set caption(starlight,2points)                   ":"
 
-   set caption(starlight,titre_site_web)            "Site Web de referência:"
+   set caption(starlight,titre_site_web)            "Site Web de referÃªncia:"
    set caption(starlight,site_web_ref)              "http://www.starlight-xpress.co.uk/index.htm"
 
 # *************** Version danoise *****************************
@@ -169,9 +169,55 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(starlight,titre_site_web)            "Reference Web Site:"
    set caption(starlight,site_web_ref)              "http://www.starlight-xpress.co.uk/index.htm"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(starlight,camera)                    "Starlight"
+
+   set caption(starlight,mx5)                       "MX516"
+   set caption(starlight,mx9)                       "MX916"
+   set caption(starlight,hx5)                       "HX516"
+   set caption(starlight,port)                      "Port"
+   set caption(starlight,configurer)                "Set up"
+   set caption(starlight,acquisition)               "Acquisition"
+   set caption(starlight,miroir_x)                  "Horizontal Mirror"
+   set caption(starlight,miroir_y)                  "Vertical Mirror"
+   set caption(starlight,accelerateur)              "Parallel Port Accelerator Box"
+   set caption(starlight,sans_accelerateur)         "without"
+   set caption(starlight,avec_accelerateur)         "with"
+
+   set caption(starlight,port_camera)               "Starlight Port - Model"
+   set caption(starlight,2points)                   ":"
+
+   set caption(starlight,titre_site_web)            "Reference Web Site:"
+   set caption(starlight,site_web_ref)              "http://www.starlight-xpress.co.uk/index.htm"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(starlight,camera)                    "Starlight"
+
+   set caption(starlight,mx5)                       "MX516"
+   set caption(starlight,mx9)                       "MX916"
+   set caption(starlight,hx5)                       "HX516"
+   set caption(starlight,port)                      "Port"
+   set caption(starlight,configurer)                "Set up"
+   set caption(starlight,acquisition)               "Acquisition"
+   set caption(starlight,miroir_x)                  "Horizontal Mirror"
+   set caption(starlight,miroir_y)                  "Vertical Mirror"
+   set caption(starlight,accelerateur)              "Parallel Port Accelerator Box"
+   set caption(starlight,sans_accelerateur)         "without"
+   set caption(starlight,avec_accelerateur)         "with"
+
+   set caption(starlight,port_camera)               "Starlight Port - Model"
+   set caption(starlight,2points)                   ":"
+
+   set caption(starlight,titre_site_web)            "Reference Web Site:"
+   set caption(starlight,site_web_ref)              "http://www.starlight-xpress.co.uk/index.htm"
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

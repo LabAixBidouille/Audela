@@ -1,10 +1,10 @@
 #
 # Fichier : serialport.cap
-# Mise a jour $Id: serialport.cap,v 1.20 2008-12-06 18:22:30 robertdelmas Exp $
+# Mise a jour $Id: serialport.cap,v 1.21 2009-11-05 18:24:34 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -17,14 +17,14 @@ set caption(serialport,used)            "Used Serial Ports"
 set caption(serialport,refresh)         "Reload"
 set caption(serialport,port_exclus)     "COM port to be excluded (internal modem, etc.)"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(serialport,titre)        "Port série"
-   set caption(serialport,available)    "Ports séries disponibles"
-   set caption(serialport,used)         "Ports séries utilisés"
-   set caption(serialport,refresh)      "Rafraîchir"
-   set caption(serialport,port_exclus)  "Port COM à exclure (modem interne, etc.)"
+   set caption(serialport,titre)        "Port sÃ©rie"
+   set caption(serialport,available)    "Ports sÃ©ries disponibles"
+   set caption(serialport,used)         "Ports sÃ©ries utilisÃ©s"
+   set caption(serialport,refresh)      "RafraÃ®chir"
+   set caption(serialport,port_exclus)  "Port COM Ã  exclure (modem interne, etc.)"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -47,18 +47,18 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(serialport,titre)        "Serial Anschlüss"
-   set caption(serialport,available)    "Serial Anschlüssen verfügbar"
+   set caption(serialport,titre)        "Serial AnschlÃ¼ss"
+   set caption(serialport,available)    "Serial AnschlÃ¼ssen verfÃ¼gbar"
    set caption(serialport,used)         "Serielle Schnittstelle"
    set caption(serialport,refresh)      "Aktualisieren"
-   set caption(serialport,port_exclus)  "COM Port zu ausschließen (inneren Modem, etc.)"
+   set caption(serialport,port_exclus)  "COM Port zu ausschlieÃŸen (inneren Modem, etc.)"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(serialport,titre)        "Porta série"
-   set caption(serialport,available)    "Portas série disponiveis"
-   set caption(serialport,used)         "Portas série utilizadas"
+   set caption(serialport,titre)        "Porta sÃ©rie"
+   set caption(serialport,available)    "Portas sÃ©rie disponiveis"
+   set caption(serialport,used)         "Portas sÃ©rie utilizadas"
    set caption(serialport,refresh)      "Actualizar"
    set caption(serialport,port_exclus)  "Porta COM a excluir (modem interno, etc.)"
 
@@ -68,12 +68,30 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(serialport,titre)        "Seriel port"
    set caption(serialport,available)    "Serielle porte disponible"
    set caption(serialport,used)         "Anvendte serielle porte"
-   set caption(serialport,refresh)      "Genindlæs"
-   set caption(serialport,port_exclus)  "COM-port som fravælges (indbygget modem osv.)"
+   set caption(serialport,refresh)      "GenindlÃ¦s"
+   set caption(serialport,port_exclus)  "COM-port som fravÃ¦lges (indbygget modem osv.)"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(serialport,titre)        "Serial Port"
+   set caption(serialport,available)    "Serial Ports Available"
+   set caption(serialport,used)         "Used Serial Ports"
+   set caption(serialport,refresh)      "Reload"
+   set caption(serialport,port_exclus)  "COM port to be excluded (internal modem, etc.)"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(serialport,titre)        "Serial Port"
+   set caption(serialport,available)    "Serial Ports Available"
+   set caption(serialport,used)         "Used Serial Ports"
+   set caption(serialport,refresh)      "Reload"
+   set caption(serialport,port_exclus)  "COM port to be excluded (internal modem, etc.)"
 
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
