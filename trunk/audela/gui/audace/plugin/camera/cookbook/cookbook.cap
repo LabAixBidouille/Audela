@@ -1,10 +1,10 @@
 #
 # Fichier : cookbook.cap
-# Mise a jour $Id: cookbook.cap,v 1.4 2008-12-20 14:52:27 robertdelmas Exp $
+# Mise a jour $Id: cookbook.cap,v 1.5 2009-11-05 18:17:11 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -26,7 +26,7 @@ set caption(cookbook,2points)                      ":"
 set caption(cookbook,titre_site_web)               "Reference Web Site:"
 set caption(cookbook,site_web_ref)                 "http://www.wvi.com/~rberry/cookbook/cookbook.htm"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cookbook,camera)                    "CB245"
@@ -36,12 +36,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cookbook,acquisition)               "Acquisition"
    set caption(cookbook,miroir_x)                  "Miroir horizontal"
    set caption(cookbook,miroir_y)                  "Miroir vertical"
-   set caption(cookbook,delai)                     "Délai"
+   set caption(cookbook,delai)                     "DÃ©lai"
 
    set caption(cookbook,port_camera)               "Port CB245"
    set caption(cookbook,2points)                   ":"
 
-   set caption(cookbook,titre_site_web)            "Site Web de référence :"
+   set caption(cookbook,titre_site_web)            "Site Web de rÃ©fÃ©rence :"
    set caption(cookbook,site_web_ref)              "http://www.wvi.com/~rberry/cookbook/cookbook.htm"
 
 # *************** Version italienne ***************************
@@ -69,7 +69,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cookbook,port)                      "Puerto"
    set caption(cookbook,configurer)                "Configurar"
-   set caption(cookbook,acquisition)               "Adquisición"
+   set caption(cookbook,acquisition)               "AdquisiciÃ³n"
    set caption(cookbook,miroir_x)                  "Espejo horizontal"
    set caption(cookbook,miroir_y)                  "Espejo vertical"
    set caption(cookbook,delai)                     "Retraso"
@@ -98,14 +98,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cookbook,titre_site_web)            "Referenz Webseite:"
    set caption(cookbook,site_web_ref)              "http://www.wvi.com/~rberry/cookbook/cookbook.htm"
 
-# *************** Version portugaise ***************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(cookbook,camera)                    "CB245"
 
    set caption(cookbook,port)                      "Porto"
    set caption(cookbook,configurer)                "Configurar"
-   set caption(cookbook,acquisition)               "Aquisição"
+   set caption(cookbook,acquisition)               "AquisiÃ§Ã£o"
    set caption(cookbook,miroir_x)                  "Espelho Horizontal"
    set caption(cookbook,miroir_y)                  "Espelho Vertical"
    set caption(cookbook,delai)                     "Atraso"
@@ -113,7 +113,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cookbook,port_camera)               "Porta CB245"
    set caption(cookbook,2points)                   ":"
 
-   set caption(cookbook,titre_site_web)            "Site Web de referência:"
+   set caption(cookbook,titre_site_web)            "Site Web de referÃªncia:"
    set caption(cookbook,site_web_ref)              "http://www.wvi.com/~rberry/cookbook/cookbook.htm"
 
 # *************** Version danoise *****************************
@@ -134,9 +134,45 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cookbook,titre_site_web)            "Reference Web Site:"
    set caption(cookbook,site_web_ref)              "http://www.wvi.com/~rberry/cookbook/cookbook.htm"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(cookbook,camera)                    "CB245"
+
+   set caption(cookbook,port)                      "Port"
+   set caption(cookbook,configurer)                "Set up"
+   set caption(cookbook,acquisition)               "Acquisition"
+   set caption(cookbook,miroir_x)                  "Horizontal Mirror"
+   set caption(cookbook,miroir_y)                  "Vertical Mirror"
+   set caption(cookbook,delai)                     "Delay"
+
+   set caption(cookbook,port_camera)               "CB245 Port"
+   set caption(cookbook,2points)                   ":"
+
+   set caption(cookbook,titre_site_web)            "Reference Web Site:"
+   set caption(cookbook,site_web_ref)              "http://www.wvi.com/~rberry/cookbook/cookbook.htm"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(cookbook,camera)                    "CB245"
+
+   set caption(cookbook,port)                      "Port"
+   set caption(cookbook,configurer)                "Set up"
+   set caption(cookbook,acquisition)               "Acquisition"
+   set caption(cookbook,miroir_x)                  "Horizontal Mirror"
+   set caption(cookbook,miroir_y)                  "Vertical Mirror"
+   set caption(cookbook,delai)                     "Delay"
+
+   set caption(cookbook,port_camera)               "CB245 Port"
+   set caption(cookbook,2points)                   ":"
+
+   set caption(cookbook,titre_site_web)            "Reference Web Site:"
+   set caption(cookbook,site_web_ref)              "http://www.wvi.com/~rberry/cookbook/cookbook.htm"
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

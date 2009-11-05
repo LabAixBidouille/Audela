@@ -1,10 +1,10 @@
 #
 # Fichier : cemes.cap
-# Mise a jour $Id: cemes.cap,v 1.6 2008-12-20 14:52:12 robertdelmas Exp $
+# Mise a jour $Id: cemes.cap,v 1.7 2009-11-05 18:16:56 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -18,7 +18,7 @@ set caption(cemes,obtu_ferme)                   "Closed"
 set caption(cemes,obtu_synchro)                 "Synchro"
 
 set caption(cemes,refroidissement)              "Cooling to Temperature"
-set caption(cemes,deg_c)                        "°C"
+set caption(cemes,deg_c)                        "Â°C"
 set caption(cemes,refroidissement_1)            ""
 set caption(cemes,temperature_CCD)              "CCD Temperature:"
 set caption(cemes,miroir_x)                     "Horizontal Mirror"
@@ -31,19 +31,19 @@ set caption(cemes,2points)                      ":"
 set caption(cemes,titre_site_web)               "Reference Web Site:"
 set caption(cemes,site_web_ref)                 "http://www.cemes.fr/r1_labo/electro.htm"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cemes,camera)                    "Cemes"
 
    set caption(cemes,obtu_ouvert)               "Ouvert"
-   set caption(cemes,obtu_ferme)                "Fermé"
+   set caption(cemes,obtu_ferme)                "FermÃ©"
    set caption(cemes,obtu_synchro)              "Synchro"
 
-   set caption(cemes,refroidissement)           "Refroidissement à la température de"
-   set caption(cemes,deg_c)                     "°C"
+   set caption(cemes,refroidissement)           "Refroidissement Ã  la tempÃ©rature de"
+   set caption(cemes,deg_c)                     "Â°C"
    set caption(cemes,refroidissement_1)         ""
-   set caption(cemes,temperature_CCD)           "Température du CCD :"
+   set caption(cemes,temperature_CCD)           "TempÃ©rature du CCD :"
    set caption(cemes,miroir_x)                  "Miroir horizontal"
    set caption(cemes,miroir_y)                  "Miroir vertical"
    set caption(cemes,fonc_obtu)                 "Fonctionnement de l'obturateur"
@@ -51,7 +51,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cemes,port_camera)               "Port CEMES"
    set caption(cemes,2points)                   ":"
 
-   set caption(cemes,titre_site_web)            "Site Web de référence :"
+   set caption(cemes,titre_site_web)            "Site Web de rÃ©fÃ©rence :"
    set caption(cemes,site_web_ref)              "http://www.cemes.fr/r1_labo/electro.htm"
 
 # *************** Version italienne ***************************
@@ -64,7 +64,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cemes,obtu_synchro)              "Sincronizza"
 
    set caption(cemes,refroidissement)           "Raffreddamento alla temperatura di"
-   set caption(cemes,deg_c)                     "°C"
+   set caption(cemes,deg_c)                     "Â°C"
    set caption(cemes,refroidissement_1)         ""
    set caption(cemes,temperature_CCD)           "CCD Temperatura:"
    set caption(cemes,miroir_x)                  "Specchio orizzontale"
@@ -87,7 +87,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cemes,obtu_synchro)              "Sincro"
 
    set caption(cemes,refroidissement)           "Enfriar hasta temperatura"
-   set caption(cemes,deg_c)                     "°C"
+   set caption(cemes,deg_c)                     "Â°C"
    set caption(cemes,refroidissement_1)         ""
    set caption(cemes,temperature_CCD)           "Temperatura CCD:"
    set caption(cemes,miroir_x)                  "Espejo horizontal"
@@ -110,8 +110,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cemes,obtu_synchro)              "Synchro"
 
    set caption(cemes,refroidissement)           "Temperatur bis zu"
-   set caption(cemes,deg_c)                     "°C"
-   set caption(cemes,refroidissement_1)         "kühlen."
+   set caption(cemes,deg_c)                     "Â°C"
+   set caption(cemes,refroidissement_1)         "kÃ¼hlen."
    set caption(cemes,temperature_CCD)           "Temperatur CCD:"
    set caption(cemes,miroir_x)                  "Horizontale Spiegel"
    set caption(cemes,miroir_y)                  "Verticale Spiegel"
@@ -123,7 +123,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cemes,titre_site_web)            "Referenz Webseite:"
    set caption(cemes,site_web_ref)              "http://www.cemes.fr/r1_labo/electro.htm"
 
-# *************** Version portugaise ***************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(cemes,camera)                    "Cemes"
@@ -132,18 +132,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cemes,obtu_ferme)                "Fechado"
    set caption(cemes,obtu_synchro)              "Sincro"
 
-   set caption(cemes,refroidissement)           "Arrefecendo até Temperatura"
-   set caption(cemes,deg_c)                     "°C"
+   set caption(cemes,refroidissement)           "Arrefecendo atÃ© Temperatura"
+   set caption(cemes,deg_c)                     "Â°C"
    set caption(cemes,refroidissement_1)         ""
    set caption(cemes,temperature_CCD)           "Temperatura do CCD:"
    set caption(cemes,miroir_x)                  "Espelho Horizontal"
    set caption(cemes,miroir_y)                  "Espelho Vertical"
-   set caption(cemes,fonc_obtu)                 "Operação do obturador"
+   set caption(cemes,fonc_obtu)                 "OperaÃ§Ã£o do obturador"
 
    set caption(cemes,port_camera)               "Porta CEMES"
    set caption(cemes,2points)                   ":"
 
-   set caption(cemes,titre_site_web)            "Site Web de referência:"
+   set caption(cemes,titre_site_web)            "Site Web de referÃªncia:"
    set caption(cemes,site_web_ref)              "http://www.cemes.fr/r1_labo/electro.htm"
 
 # *************** Version danoise *****************************
@@ -156,7 +156,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cemes,obtu_synchro)              "Synchro"
 
    set caption(cemes,refroidissement)           "Cooling to Temperature"
-   set caption(cemes,deg_c)                     "°C"
+   set caption(cemes,deg_c)                     "Â°C"
    set caption(cemes,refroidissement_1)         ""
    set caption(cemes,temperature_CCD)           "CCD Temperature:"
    set caption(cemes,miroir_x)                  "Horisontal spejl"
@@ -169,9 +169,55 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cemes,titre_site_web)            "Reference Web Site:"
    set caption(cemes,site_web_ref)              "http://www.cemes.fr/r1_labo/electro.htm"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(cemes,camera)                    "Cemes"
+
+   set caption(cemes,obtu_ouvert)               "Open"
+   set caption(cemes,obtu_ferme)                "Closed"
+   set caption(cemes,obtu_synchro)              "Synchro"
+
+   set caption(cemes,refroidissement)           "Cooling to Temperature"
+   set caption(cemes,deg_c)                     "Â°C"
+   set caption(cemes,refroidissement_1)         ""
+   set caption(cemes,temperature_CCD)           "CCD Temperature:"
+   set caption(cemes,miroir_x)                  "Horizontal Mirror"
+   set caption(cemes,miroir_y)                  "Vertical Mirror"
+   set caption(cemes,fonc_obtu)                 "Shutter Operation"
+
+   set caption(cemes,port_camera)               "CEMES Port"
+   set caption(cemes,2points)                   ":"
+
+   set caption(cemes,titre_site_web)            "Reference Web Site:"
+   set caption(cemes,site_web_ref)              "http://www.cemes.fr/r1_labo/electro.htm"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(cemes,camera)                    "Cemes"
+
+   set caption(cemes,obtu_ouvert)               "Open"
+   set caption(cemes,obtu_ferme)                "Closed"
+   set caption(cemes,obtu_synchro)              "Synchro"
+
+   set caption(cemes,refroidissement)           "Cooling to Temperature"
+   set caption(cemes,deg_c)                     "Â°C"
+   set caption(cemes,refroidissement_1)         ""
+   set caption(cemes,temperature_CCD)           "CCD Temperature:"
+   set caption(cemes,miroir_x)                  "Horizontal Mirror"
+   set caption(cemes,miroir_y)                  "Vertical Mirror"
+   set caption(cemes,fonc_obtu)                 "Shutter Operation"
+
+   set caption(cemes,port_camera)               "CEMES Port"
+   set caption(cemes,2points)                   ":"
+
+   set caption(cemes,titre_site_web)            "Reference Web Site:"
+   set caption(cemes,site_web_ref)              "http://www.cemes.fr/r1_labo/electro.htm"
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

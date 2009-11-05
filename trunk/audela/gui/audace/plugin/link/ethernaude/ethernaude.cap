@@ -1,10 +1,10 @@
 #
 # Fichier : ethernaude.cap
-# Mise a jour $Id: ethernaude.cap,v 1.15 2009-05-09 21:10:45 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.cap,v 1.16 2009-11-05 18:22:50 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -30,26 +30,26 @@ set caption(ethernaude,message_ping)               "Return Message of Ping Funct
 set caption(ethernaude,site_web_ref)               "Reference Web Site:"
 set caption(ethernaude,site_ethernaude)            "http://astrosurf.com/ethernaude/"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(ethernaude,titre)                   "EthernAude"
 
    set caption(ethernaude,host_ethernaude)         "Host EthernAude"
    set caption(ethernaude,test_ethernaude)         "Tester l'adresse IP (ping)"
-   set caption(ethernaude,envoyer_adresse_eth)     "Envoyer ce numéro IP à l'EthernAude avant la connexion"
-   set caption(ethernaude,debug)                   "Mode débug"
+   set caption(ethernaude,envoyer_adresse_eth)     "Envoyer ce numÃ©ro IP Ã  l'EthernAude avant la connexion"
+   set caption(ethernaude,debug)                   "Mode dÃ©bug"
    set caption(ethernaude,lecture_pixel)           "Lecture d'un pixel"
    set caption(ethernaude,micro_sec)               "microsecondes"
-   set caption(ethernaude,tutorial_ethernaude)     "Présentation et tutoriel"
-   set caption(ethernaude,coord_gps)               "Coordonnées GPS de l'observateur"
+   set caption(ethernaude,tutorial_ethernaude)     "PrÃ©sentation et tutoriel"
+   set caption(ethernaude,coord_gps)               "CoordonnÃ©es GPS de l'observateur"
    set caption(ethernaude,alaudine_nt)             "Alimentation AlAudine NT avec port I2C"
 
-   set caption(ethernaude,appareil_connecte)       "Il y a un appareil à l'adresse IP :"
-   set caption(ethernaude,pas_appareil_connecte)   "Il n'y a pas d'appareil à l'adresse IP :"
+   set caption(ethernaude,appareil_connecte)       "Il y a un appareil Ã  l'adresse IP :"
+   set caption(ethernaude,pas_appareil_connecte)   "Il n'y a pas d'appareil Ã  l'adresse IP :"
    set caption(ethernaude,message_ping)            "Message de retour de la fonction ping :"
 
-   set caption(ethernaude,site_web_ref)            "Site Web de référence :"
+   set caption(ethernaude,site_web_ref)            "Site Web de rÃ©fÃ©rence :"
    set caption(ethernaude,site_ethernaude)         "http://astrosurf.com/ethernaude/"
 
 # *************** Version italienne ***************************
@@ -80,17 +80,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,titre)                   "EthernAude"
 
    set caption(ethernaude,host_ethernaude)         "Host EthernAude"
-   set caption(ethernaude,test_ethernaude)         "Porbar la dirección IP (ping)"
-   set caption(ethernaude,envoyer_adresse_eth)     "Envia esta dirección IP a EthernAude antes de la conexión"
+   set caption(ethernaude,test_ethernaude)         "Porbar la direcciÃ³n IP (ping)"
+   set caption(ethernaude,envoyer_adresse_eth)     "Envia esta direcciÃ³n IP a EthernAude antes de la conexiÃ³n"
    set caption(ethernaude,debug)                   "Modo depuracion"
-   set caption(ethernaude,lecture_pixel)           "Lectura de un píxel"
+   set caption(ethernaude,lecture_pixel)           "Lectura de un pÃ­xel"
    set caption(ethernaude,micro_sec)               "microsegundos"
-   set caption(ethernaude,tutorial_ethernaude)     "Introducción y tutorial"
+   set caption(ethernaude,tutorial_ethernaude)     "IntroducciÃ³n y tutorial"
    set caption(ethernaude,coord_gps)               "Coordenadas GPS del observador"
-   set caption(ethernaude,alaudine_nt)             "Alimentación AlAudine NT con puerto I2C"
+   set caption(ethernaude,alaudine_nt)             "AlimentaciÃ³n AlAudine NT con puerto I2C"
 
-   set caption(ethernaude,appareil_connecte)       "Ya existe un dispositivo en la dirección IP:"
-   set caption(ethernaude,pas_appareil_connecte)   "No existe dispositivo en la dirección IP:"
+   set caption(ethernaude,appareil_connecte)       "Ya existe un dispositivo en la direcciÃ³n IP:"
+   set caption(ethernaude,pas_appareil_connecte)   "No existe dispositivo en la direcciÃ³n IP:"
    set caption(ethernaude,message_ping)            "Mensaje devuelto por la utilidad ping:"
 
    set caption(ethernaude,site_web_ref)            "Sitio Web de referencia:"
@@ -102,7 +102,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,titre)                   "EthernAude"
 
    set caption(ethernaude,host_ethernaude)         "Host EthernAude"
-   set caption(ethernaude,test_ethernaude)         "IP Adresse prüfen (Ping)"
+   set caption(ethernaude,test_ethernaude)         "IP Adresse prÃ¼fen (Ping)"
    set caption(ethernaude,envoyer_adresse_eth)     "Diese IP Nummer zu EthernAude vor den Zusammenhang schicken"
    set caption(ethernaude,debug)                   "Debug Modus"
    set caption(ethernaude,lecture_pixel)           "Ein Rasterpunkt abtasten"
@@ -111,9 +111,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,coord_gps)               "Beobachter GPS Koordinaten"
    set caption(ethernaude,alaudine_nt)             "AlAudine NT mit I2C Port Stromversorgung"
 
-   set caption(ethernaude,appareil_connecte)       "Ein Gerät mit diese IP Nummer existiert:"
-   set caption(ethernaude,pas_appareil_connecte)   "Kein Gerät mit diese IP Nummer existiert:"
-   set caption(ethernaude,message_ping)            "Ping Funktion Rückkehr Meldung:"
+   set caption(ethernaude,appareil_connecte)       "Ein GerÃ¤t mit diese IP Nummer existiert:"
+   set caption(ethernaude,pas_appareil_connecte)   "Kein GerÃ¤t mit diese IP Nummer existiert:"
+   set caption(ethernaude,message_ping)            "Ping Funktion RÃ¼ckkehr Meldung:"
 
    set caption(ethernaude,site_web_ref)            "Referenz Webseite:"
    set caption(ethernaude,site_ethernaude)         "http://astrosurf.com/ethernaude/"
@@ -124,20 +124,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,titre)                   "EthernAude"
 
    set caption(ethernaude,host_ethernaude)         "Host EthernAude"
-   set caption(ethernaude,test_ethernaude)         "Testar o endereço IP (ping)"
-   set caption(ethernaude,envoyer_adresse_eth)     "Enviar este número IP para EthernAude antes da ligação"
+   set caption(ethernaude,test_ethernaude)         "Testar o endereÃ§o IP (ping)"
+   set caption(ethernaude,envoyer_adresse_eth)     "Enviar este nÃºmero IP para EthernAude antes da ligaÃ§Ã£o"
    set caption(ethernaude,debug)                   "Modo debug"
    set caption(ethernaude,lecture_pixel)           "Leitura de um pixel"
    set caption(ethernaude,micro_sec)               "microsegundos"
-   set caption(ethernaude,tutorial_ethernaude)     "Apresentação e tutorial"
+   set caption(ethernaude,tutorial_ethernaude)     "ApresentaÃ§Ã£o e tutorial"
    set caption(ethernaude,coord_gps)               "Coordenadas GPS do observador"
-   set caption(ethernaude,alaudine_nt)             "Alimentação AlAudine NT com porta I2C"
+   set caption(ethernaude,alaudine_nt)             "AlimentaÃ§Ã£o AlAudine NT com porta I2C"
 
-   set caption(ethernaude,appareil_connecte)       "Existe um dispositivo no endereço IP:"
-   set caption(ethernaude,pas_appareil_connecte)   "Não existe um dispositivo no endereço IP:"
-   set caption(ethernaude,message_ping)            "Mensagem de retorno da função ping:"
+   set caption(ethernaude,appareil_connecte)       "Existe um dispositivo no endereÃ§o IP:"
+   set caption(ethernaude,pas_appareil_connecte)   "NÃ£o existe um dispositivo no endereÃ§o IP:"
+   set caption(ethernaude,message_ping)            "Mensagem de retorno da funÃ§Ã£o ping:"
 
-   set caption(ethernaude,site_web_ref)            "Site Web de referência:"
+   set caption(ethernaude,site_web_ref)            "Site Web de referÃªncia:"
    set caption(ethernaude,site_ethernaude)         "http://astrosurf.com/ethernaude/"
 
 # *************** Version danoise *****************************
@@ -162,9 +162,53 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ethernaude,site_web_ref)            "Reference Web Site:"
    set caption(ethernaude,site_ethernaude)         "http://astrosurf.com/ethernaude/"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(ethernaude,titre)                   "EthernAude"
+
+   set caption(ethernaude,host_ethernaude)         "Host EthernAude"
+   set caption(ethernaude,test_ethernaude)         "Test IP Address (ping)"
+   set caption(ethernaude,envoyer_adresse_eth)     "Send this IP number to EthernAude before the connection"
+   set caption(ethernaude,debug)                   "Debug Mode"
+   set caption(ethernaude,lecture_pixel)           "Reading of One Pixel"
+   set caption(ethernaude,micro_sec)               "microseconds"
+   set caption(ethernaude,tutorial_ethernaude)     "Overview and Tutorial"
+   set caption(ethernaude,coord_gps)               "GPS Coordinates of the Observer"
+   set caption(ethernaude,alaudine_nt)             "AlAudine NT Supply with I2C Port"
+
+   set caption(ethernaude,appareil_connecte)       "There is a device at IP address:"
+   set caption(ethernaude,pas_appareil_connecte)   "There is no device at IP address:"
+   set caption(ethernaude,message_ping)            "Return Message of Ping Function:"
+
+   set caption(ethernaude,site_web_ref)            "Reference Web Site:"
+   set caption(ethernaude,site_ethernaude)         "http://astrosurf.com/ethernaude/"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(ethernaude,titre)                   "EthernAude"
+
+   set caption(ethernaude,host_ethernaude)         "Host EthernAude"
+   set caption(ethernaude,test_ethernaude)         "Test IP Address (ping)"
+   set caption(ethernaude,envoyer_adresse_eth)     "Send this IP number to EthernAude before the connection"
+   set caption(ethernaude,debug)                   "Debug Mode"
+   set caption(ethernaude,lecture_pixel)           "Reading of One Pixel"
+   set caption(ethernaude,micro_sec)               "microseconds"
+   set caption(ethernaude,tutorial_ethernaude)     "Overview and Tutorial"
+   set caption(ethernaude,coord_gps)               "GPS Coordinates of the Observer"
+   set caption(ethernaude,alaudine_nt)             "AlAudine NT Supply with I2C Port"
+
+   set caption(ethernaude,appareil_connecte)       "There is a device at IP address:"
+   set caption(ethernaude,pas_appareil_connecte)   "There is no device at IP address:"
+   set caption(ethernaude,message_ping)            "Return Message of Ping Function:"
+
+   set caption(ethernaude,site_web_ref)            "Reference Web Site:"
+   set caption(ethernaude,site_ethernaude)         "http://astrosurf.com/ethernaude/"
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

@@ -1,10 +1,10 @@
 #
 # Fichier : detection.cap
-# Mise a jour $Id: detection.cap,v 1.11 2009-01-10 10:40:50 robertdelmas Exp $
+# Mise a jour $Id: detection.cap,v 1.12 2009-11-05 18:26:49 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -27,24 +27,24 @@ set caption(detection,number)                   "Number"
 set caption(detection,save_image_file)          "Save Image File"
 set caption(detection,detection_complete)       "Detection Completed"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(detection,start_detection)       "Début de la détection"
+   set caption(detection,start_detection)       "DÃ©but de la dÃ©tection"
    set caption(detection,binning)               "Binning"
    set caption(detection,wait_before_exposure)  "Pause avant l'exposition"
    set caption(detection,seconds)               "seconde(s)"
    set caption(detection,time_exposure)         "Temps d'exposition"
    set caption(detection,number_exposures)      "Nombre d'exposition(s)"
-   set caption(detection,iteration)             "Itération"
-   set caption(detection,wait_before_serie)     "Pause avant la série"
-   set caption(detection,heading_name)          "En-tête fichier"
-   set caption(detection,serie)                 "Série"
+   set caption(detection,iteration)             "ItÃ©ration"
+   set caption(detection,wait_before_serie)     "Pause avant la sÃ©rie"
+   set caption(detection,heading_name)          "En-tÃªte fichier"
+   set caption(detection,serie)                 "SÃ©rie"
    set caption(detection,goto_position)         "Pointage position"
    set caption(detection,acq_position)          "Acquisition position"
-   set caption(detection,number)                "Numéro"
+   set caption(detection,number)                "NumÃ©ro"
    set caption(detection,save_image_file)       "Sauvegarde fichier image"
-   set caption(detection,detection_complete)    "Fin de la détection"
+   set caption(detection,detection_complete)    "Fin de la dÃ©tection"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -68,21 +68,21 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(detection,start_detection)       "Empezando la detección"
+   set caption(detection,start_detection)       "Empezando la detecciÃ³n"
    set caption(detection,binning)               "Binning"
-   set caption(detection,wait_before_exposure)  "Pausa antes de la exposición"
+   set caption(detection,wait_before_exposure)  "Pausa antes de la exposiciÃ³n"
    set caption(detection,seconds)               "segundo"
-   set caption(detection,time_exposure)         "Tiempo de exposición"
-   set caption(detection,number_exposures)      "Número de exposiciones"
-   set caption(detection,iteration)             "Iteración"
+   set caption(detection,time_exposure)         "Tiempo de exposiciÃ³n"
+   set caption(detection,number_exposures)      "NÃºmero de exposiciones"
+   set caption(detection,iteration)             "IteraciÃ³n"
    set caption(detection,wait_before_serie)     "Pausa antes de la serie"
    set caption(detection,heading_name)          "Cabecera de fichero"
    set caption(detection,serie)                 "Serie"
-   set caption(detection,goto_position)         "Ir a posición"
-   set caption(detection,acq_position)          "Posición de adquisición"
-   set caption(detection,number)                "Número"
+   set caption(detection,goto_position)         "Ir a posiciÃ³n"
+   set caption(detection,acq_position)          "PosiciÃ³n de adquisiciÃ³n"
+   set caption(detection,number)                "NÃºmero"
    set caption(detection,save_image_file)       "Guardar imagen de fichero"
-   set caption(detection,detection_complete)    "Detección completa"
+   set caption(detection,detection_complete)    "DetecciÃ³n completa"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -106,21 +106,21 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(detection,start_detection)       "Início da detecção"
+   set caption(detection,start_detection)       "InÃ­cio da detecÃ§Ã£o"
    set caption(detection,binning)               "Binning"
-   set caption(detection,wait_before_exposure)  "Pausa antes da exposição"
+   set caption(detection,wait_before_exposure)  "Pausa antes da exposiÃ§Ã£o"
    set caption(detection,seconds)               "segundo(s)"
-   set caption(detection,time_exposure)         "Tempo de exposição"
-   set caption(detection,number_exposures)      "Número de exposição(ões)"
-   set caption(detection,iteration)             "Iteração"
-   set caption(detection,wait_before_serie)     "Pausa antes da série"
-   set caption(detection,heading_name)          "Cabeçalho do Ficheiro"
-   set caption(detection,serie)                 "Série"
-   set caption(detection,goto_position)         "Posição de apontamento"
-   set caption(detection,acq_position)          "Posição de aquisição"
-   set caption(detection,number)                "Número"
+   set caption(detection,time_exposure)         "Tempo de exposiÃ§Ã£o"
+   set caption(detection,number_exposures)      "NÃºmero de exposiÃ§Ã£o(Ãµes)"
+   set caption(detection,iteration)             "IteraÃ§Ã£o"
+   set caption(detection,wait_before_serie)     "Pausa antes da sÃ©rie"
+   set caption(detection,heading_name)          "CabeÃ§alho do Ficheiro"
+   set caption(detection,serie)                 "SÃ©rie"
+   set caption(detection,goto_position)         "PosiÃ§Ã£o de apontamento"
+   set caption(detection,acq_position)          "PosiÃ§Ã£o de aquisiÃ§Ã£o"
+   set caption(detection,number)                "NÃºmero"
    set caption(detection,save_image_file)       "Guardar o ficheiro imagem"
-   set caption(detection,detection_complete)    "Fim da detecção"
+   set caption(detection,detection_complete)    "Fim da detecÃ§Ã£o"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -141,9 +141,47 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(detection,save_image_file)       "Save Image File"
    set caption(detection,detection_complete)    "Detection Completed"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(detection,start_detection)       "Start Detecting"
+   set caption(detection,binning)               "Binning"
+   set caption(detection,wait_before_exposure)  "Wait Before Exposure"
+   set caption(detection,seconds)               "second(s)"
+   set caption(detection,time_exposure)         "Exposure Time"
+   set caption(detection,number_exposures)      "Exposure Number"
+   set caption(detection,iteration)             "Iteration"
+   set caption(detection,wait_before_serie)     "Wait Before Series"
+   set caption(detection,heading_name)          "File Header"
+   set caption(detection,serie)                 "Series"
+   set caption(detection,goto_position)         "Go to Position"
+   set caption(detection,acq_position)          "Position Acquisition"
+   set caption(detection,number)                "Number"
+   set caption(detection,save_image_file)       "Save Image File"
+   set caption(detection,detection_complete)    "Detection Completed"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(detection,start_detection)       "Start Detecting"
+   set caption(detection,binning)               "Binning"
+   set caption(detection,wait_before_exposure)  "Wait Before Exposure"
+   set caption(detection,seconds)               "second(s)"
+   set caption(detection,time_exposure)         "Exposure Time"
+   set caption(detection,number_exposures)      "Exposure Number"
+   set caption(detection,iteration)             "Iteration"
+   set caption(detection,wait_before_serie)     "Wait Before Series"
+   set caption(detection,heading_name)          "File Header"
+   set caption(detection,serie)                 "Series"
+   set caption(detection,goto_position)         "Go to Position"
+   set caption(detection,acq_position)          "Position Acquisition"
+   set caption(detection,number)                "Number"
+   set caption(detection,save_image_file)       "Save Image File"
+   set caption(detection,detection_complete)    "Detection Completed"
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

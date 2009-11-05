@@ -1,10 +1,10 @@
 #
 # Fichier : cartedicielv2.cap
-# Mise a jour $Id: carteducielv2.cap,v 1.8 2007-05-20 09:18:38 robertdelmas Exp $
+# Mise a jour $Id: carteducielv2.cap,v 1.9 2009-11-05 18:20:05 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -32,29 +32,29 @@ set caption(carteducielv2,gagne)             "Access OK"
 set caption(carteducielv2,no_connect)        "Connexion to Sky Charts aborted."
 set caption(carteducielv2,coord_no_found)    "Impossible to find the chart center coordinates."
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(carteducielv2,titre)          "Cartes du Ciel V2"
    set caption(carteducielv2,fov_label)      "Champ :"
    set caption(carteducielv2,fov_state)      "Champ fixe"
    set caption(carteducielv2,fov_value)      "Taille du champ (xxdxxmxxs)"
-   set caption(carteducielv2,fichier)        "Fichier à rechercher"
+   set caption(carteducielv2,fichier)        "Fichier Ã  rechercher"
    set caption(carteducielv2,a_partir_de)    "A partir de"
    set caption(carteducielv2,rechercher)     "Recherche\n(Automatique)"
    set caption(carteducielv2,parcourir)      "..."
    set caption(carteducielv2,dossier)        "A partir du dossier :"
-   set caption(carteducielv2,site_web)       "Site Web de référence :"
+   set caption(carteducielv2,site_web)       "Site Web de rÃ©fÃ©rence :"
    set caption(carteducielv2,site_web_ref)   "http://www.astrosurf.com/astropc/cartes/index.html"
    set caption(carteducielv2,attention)      "Attention"
    set caption(carteducielv2,option)         "Option :"
-   set caption(carteducielv2,creation)       "Création d'une carte de champ avec Cartes Du Ciel"
-   set caption(carteducielv2,lance)          "Pour utiliser cette option, le logiciel Cartes Du Ciel doit déjà être lancé.\n\nVoulez-vous lancer Cartes du Ciel ?"
-   set caption(carteducielv2,verification)   "Vérifiez que Cartes du Ciel V2 est installé et sélectionné\ndans le menu 'Configuration --> Carte'."
-   set caption(carteducielv2,rate)           "Accès non possible"
-   set caption(carteducielv2,gagne)          "Accès réussi"
-   set caption(carteducielv2,no_connect)     "La connexion à Cartes du Ciel a échoué."
-   set caption(carteducielv2,coord_no_found) "Coordonnées du centre de la carte introuvables."
+   set caption(carteducielv2,creation)       "CrÃ©ation d'une carte de champ avec Cartes Du Ciel"
+   set caption(carteducielv2,lance)          "Pour utiliser cette option, le logiciel Cartes Du Ciel doit dÃ©jÃ  Ãªtre lancÃ©.\n\nVoulez-vous lancer Cartes du Ciel ?"
+   set caption(carteducielv2,verification)   "VÃ©rifiez que Cartes du Ciel V2 est installÃ© et sÃ©lectionnÃ©\ndans le menu 'Configuration --> Carte'."
+   set caption(carteducielv2,rate)           "AccÃ¨s non possible"
+   set caption(carteducielv2,gagne)          "AccÃ¨s rÃ©ussi"
+   set caption(carteducielv2,no_connect)     "La connexion Ã  Cartes du Ciel a Ã©chouÃ©."
+   set caption(carteducielv2,coord_no_found) "CoordonnÃ©es du centre de la carte introuvables."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -86,22 +86,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv2,titre)          "Cartas Celestes V2"
    set caption(carteducielv2,fov_label)      "Campo:"
    set caption(carteducielv2,fov_state)      "Campo fijo"
-   set caption(carteducielv2,fov_value)      "Tamaño del campo (xxdxxmxxs)"
+   set caption(carteducielv2,fov_value)      "TamaÃ±o del campo (xxdxxmxxs)"
    set caption(carteducielv2,fichier)        "Fichero a buscar"
    set caption(carteducielv2,a_partir_de)    "Desde"
-   set caption(carteducielv2,rechercher)     "Buscar\n(Automático)"
+   set caption(carteducielv2,rechercher)     "Buscar\n(AutomÃ¡tico)"
    set caption(carteducielv2,parcourir)      "..."
    set caption(carteducielv2,dossier)        "Desde la carpeta:"
    set caption(carteducielv2,site_web)       "Sitio Web de referencia:"
    set caption(carteducielv2,site_web_ref)   "http://www.iespana.es/cartes-du-ciel/"
    set caption(carteducielv2,attention)      "Aviso"
-   set caption(carteducielv2,option)         "Opción:"
-   set caption(carteducielv2,creation)       "Creación de un mapa de campo con Cartas Celestes"
-   set caption(carteducielv2,lance)          "Para utilizar esta opción, Cartas Celestes debe estar ejecutándose.\n\nEjecutar Cartas Celestes?"
-   set caption(carteducielv2,verification)   "Comproba si Cartas Celestes V2 está instalado y\nseleccionado en el menú 'Configuración --> Mapa'."
+   set caption(carteducielv2,option)         "OpciÃ³n:"
+   set caption(carteducielv2,creation)       "CreaciÃ³n de un mapa de campo con Cartas Celestes"
+   set caption(carteducielv2,lance)          "Para utilizar esta opciÃ³n, Cartas Celestes debe estar ejecutÃ¡ndose.\n\nEjecutar Cartas Celestes?"
+   set caption(carteducielv2,verification)   "Comproba si Cartas Celestes V2 estÃ¡ instalado y\nseleccionado en el menÃº 'ConfiguraciÃ³n --> Mapa'."
    set caption(carteducielv2,rate)           "El acceso no es posible"
    set caption(carteducielv2,gagne)          "Acceso correcto"
-   set caption(carteducielv2,no_connect)     "Conexión a Cartas Celestes abortada."
+   set caption(carteducielv2,no_connect)     "ConexiÃ³n a Cartas Celestes abortada."
    set caption(carteducielv2,coord_no_found) "Imposible encontrar las coordenadas en el centro del mapa."
 
 # *************** Version allemande ***************************
@@ -110,7 +110,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv2,titre)          "Sternkarten V2"
    set caption(carteducielv2,fov_label)      "Feld:"
    set caption(carteducielv2,fov_state)      "Ortsfesten Feld"
-   set caption(carteducielv2,fov_value)      "Größe des Feld (xxdxxmxxs)"
+   set caption(carteducielv2,fov_value)      "GrÃ¶ÃŸe des Feld (xxdxxmxxs)"
    set caption(carteducielv2,fichier)        "Datei zu suchen"
    set caption(carteducielv2,a_partir_de)    "Von"
    set caption(carteducielv2,rechercher)     "Suchen\n(Automatisch)"
@@ -121,11 +121,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv2,attention)      "Achtung"
    set caption(carteducielv2,option)         "Wahl:"
    set caption(carteducielv2,creation)       "Feldkarte mit Sternkarten schaffen"
-   set caption(carteducielv2,lance)          "Um diesen Wahl zu nützen, muss Sternkarten schon gestart sein.\n\nWollen sie Sternkarten starten ?"
-   set caption(carteducielv2,verification)   "Kontrolieren sie dass Sternkarten V2 in das Menu\n'Konfiguration --> Karte' installiert und gewählt ist."
-   set caption(carteducielv2,rate)           "Unmöglichen Zugang"
+   set caption(carteducielv2,lance)          "Um diesen Wahl zu nÃ¼tzen, muss Sternkarten schon gestart sein.\n\nWollen sie Sternkarten starten ?"
+   set caption(carteducielv2,verification)   "Kontrolieren sie dass Sternkarten V2 in das Menu\n'Konfiguration --> Karte' installiert und gewÃ¤hlt ist."
+   set caption(carteducielv2,rate)           "UnmÃ¶glichen Zugang"
    set caption(carteducielv2,gagne)          "Zugriff gelungen"
-   set caption(carteducielv2,no_connect)     "Der Anschluß zu der Sternkarten ist durchgefallen."
+   set caption(carteducielv2,no_connect)     "Der AnschluÃŸ zu der Sternkarten ist durchgefallen."
    set caption(carteducielv2,coord_no_found) "Koordinate des Zentrum der Karte unauffindbar."
 
 # *************** Version portugaise **************************
@@ -137,20 +137,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv2,fov_value)      "Tamanho do campo (xxdxxmxxs)"
    set caption(carteducielv2,fichier)        "Ficheiro a procurar"
    set caption(carteducielv2,a_partir_de)    "A partir da"
-   set caption(carteducielv2,rechercher)     "Procurar\n(Automático)"
+   set caption(carteducielv2,rechercher)     "Procurar\n(AutomÃ¡tico)"
    set caption(carteducielv2,parcourir)      "..."
    set caption(carteducielv2,dossier)        "A partir da pasta:"
-   set caption(carteducielv2,site_web)       "Site Web de referência:"
+   set caption(carteducielv2,site_web)       "Site Web de referÃªncia:"
    set caption(carteducielv2,site_web_ref)   "http://www.astrosurf.com/astropc/cartes/index.html"
-   set caption(carteducielv2,attention)      "Atenção"
-   set caption(carteducielv2,option)         "Opção:"
-   set caption(carteducielv2,creation)       "Criação de uma carta de campo com Carta Celeste"
-   set caption(carteducielv2,lance)          "Para utilizar esta opção, o software Carta Celeste tem que estar em execução.\n\nDeseja iniciar Carta Celeste ?"
-   set caption(carteducielv2,verification)   "Verifique que Carta Celeste V2 se encontra instalada e seleccionada\nno menu 'Configuração --> Carta'."
+   set caption(carteducielv2,attention)      "AtenÃ§Ã£o"
+   set caption(carteducielv2,option)         "OpÃ§Ã£o:"
+   set caption(carteducielv2,creation)       "CriaÃ§Ã£o de uma carta de campo com Carta Celeste"
+   set caption(carteducielv2,lance)          "Para utilizar esta opÃ§Ã£o, o software Carta Celeste tem que estar em execuÃ§Ã£o.\n\nDeseja iniciar Carta Celeste ?"
+   set caption(carteducielv2,verification)   "Verifique que Carta Celeste V2 se encontra instalada e seleccionada\nno menu 'ConfiguraÃ§Ã£o --> Carta'."
    set caption(carteducielv2,rate)           "Acesso falhado"
    set caption(carteducielv2,gagne)          "Acesso OK"
-   set caption(carteducielv2,no_connect)     "A ligação à Carta Celeste foi abortada."
-   set caption(carteducielv2,coord_no_found) "Coordenadas do centro da carta não encontradas."
+   set caption(carteducielv2,no_connect)     "A ligaÃ§Ã£o Ã  Carta Celeste foi abortada."
+   set caption(carteducielv2,coord_no_found) "Coordenadas do centro da carta nÃ£o encontradas."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -158,10 +158,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv2,titre)          "Sky Charts V2"
    set caption(carteducielv2,fov_label)      "Synsfelt:"
    set caption(carteducielv2,fov_state)      "Fast synsfelt"
-   set caption(carteducielv2,fov_value)      "Feltets størrelse (xxdxxmxxs)"
-   set caption(carteducielv2,fichier)        "Søg fil"
+   set caption(carteducielv2,fov_value)      "Feltets stÃ¸rrelse (xxdxxmxxs)"
+   set caption(carteducielv2,fichier)        "SÃ¸g fil"
    set caption(carteducielv2,a_partir_de)    "Fra"
-   set caption(carteducielv2,rechercher)     "Søg\n(Automatisk)"
+   set caption(carteducielv2,rechercher)     "SÃ¸g\n(Automatisk)"
    set caption(carteducielv2,parcourir)      "..."
    set caption(carteducielv2,dossier)        "Fra folder:"
    set caption(carteducielv2,site_web)       "Henvisning til Websider:"
@@ -169,16 +169,64 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv2,attention)      "Advarsel"
    set caption(carteducielv2,option)         "Valg:"
    set caption(carteducielv2,creation)       "Fremstil feltkort vha. Sky Charts"
-   set caption(carteducielv2,lance)          "For at benytte denne mulighed, skal Sky Charts være startet.\n\nKør Sky Charts?"
-   set caption(carteducielv2,verification)   "Kontrollér at Sky Charts V2 er installeret og valgt\ni'Konfiguration --> Kort' menuen."
+   set caption(carteducielv2,lance)          "For at benytte denne mulighed, skal Sky Charts vÃ¦re startet.\n\nKÃ¸r Sky Charts?"
+   set caption(carteducielv2,verification)   "KontrollÃ©r at Sky Charts V2 er installeret og valgt\ni'Konfiguration --> Kort' menuen."
    set caption(carteducielv2,rate)           "Ingen adgang"
    set caption(carteducielv2,gagne)          "Adgang: OK!"
    set caption(carteducielv2,no_connect)     "Forbindelse til stjernekort afbrudt."
    set caption(carteducielv2,coord_no_found) "Kortets center-koordinater kan ikke findes."
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(carteducielv2,titre)          "Sky Charts V2"
+   set caption(carteducielv2,fov_label)      "Field of View:"
+   set caption(carteducielv2,fov_state)      "Fixed Field of View"
+   set caption(carteducielv2,fov_value)      "Size (xxdxxmxxs)"
+   set caption(carteducielv2,fichier)        "File To Be Searched"
+   set caption(carteducielv2,a_partir_de)    "From"
+   set caption(carteducielv2,rechercher)     "Search\n(Automatic)"
+   set caption(carteducielv2,parcourir)      "..."
+   set caption(carteducielv2,dossier)        "From Folder:"
+   set caption(carteducielv2,site_web)       "Reference Web Site:"
+   set caption(carteducielv2,site_web_ref)   "http://www.stargazing.net/astropc/index.html"
+   set caption(carteducielv2,attention)      "Warning"
+   set caption(carteducielv2,option)         "Option:"
+   set caption(carteducielv2,creation)       "Field Chart Creation with Sky Charts"
+   set caption(carteducielv2,lance)          "To use this option, Sky Charts must already be running.\n\nRun Sky Charts?"
+   set caption(carteducielv2,verification)   "Check Sky Charts V2 is installed and selected\nin the 'Setup --> Chart' menu."
+   set caption(carteducielv2,rate)           "Access not possible"
+   set caption(carteducielv2,gagne)          "Access OK"
+   set caption(carteducielv2,no_connect)     "Connexion to Sky Charts aborted."
+   set caption(carteducielv2,coord_no_found) "Impossible to find the chart center coordinates."
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(carteducielv2,titre)          "Sky Charts V2"
+   set caption(carteducielv2,fov_label)      "Field of View:"
+   set caption(carteducielv2,fov_state)      "Fixed Field of View"
+   set caption(carteducielv2,fov_value)      "Size (xxdxxmxxs)"
+   set caption(carteducielv2,fichier)        "File To Be Searched"
+   set caption(carteducielv2,a_partir_de)    "From"
+   set caption(carteducielv2,rechercher)     "Search\n(Automatic)"
+   set caption(carteducielv2,parcourir)      "..."
+   set caption(carteducielv2,dossier)        "From Folder:"
+   set caption(carteducielv2,site_web)       "Reference Web Site:"
+   set caption(carteducielv2,site_web_ref)   "http://www.stargazing.net/astropc/index.html"
+   set caption(carteducielv2,attention)      "Warning"
+   set caption(carteducielv2,option)         "Option:"
+   set caption(carteducielv2,creation)       "Field Chart Creation with Sky Charts"
+   set caption(carteducielv2,lance)          "To use this option, Sky Charts must already be running.\n\nRun Sky Charts?"
+   set caption(carteducielv2,verification)   "Check Sky Charts V2 is installed and selected\nin the 'Setup --> Chart' menu."
+   set caption(carteducielv2,rate)           "Access not possible"
+   set caption(carteducielv2,gagne)          "Access OK"
+   set caption(carteducielv2,no_connect)     "Connexion to Sky Charts aborted."
+   set caption(carteducielv2,coord_no_found) "Impossible to find the chart center coordinates."
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

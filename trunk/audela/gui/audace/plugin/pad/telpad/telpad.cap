@@ -1,10 +1,10 @@
 #
 # Fichier : telpad.cap
-# Mise a jour $Id: telpad.cap,v 1.8 2007-12-04 22:17:44 robertdelmas Exp $
+# Mise a jour $Id: telpad.cap,v 1.9 2009-11-05 18:26:04 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -20,7 +20,7 @@ set caption(telpad,ouest)           "W"
 
 set caption(telpad,moteur_foc)      "Focusing Motor"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(telpad,titre)        "TelPad"
@@ -87,14 +87,38 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(telpad,nord)         "N"
    set caption(telpad,sud)          "S"
-   set caption(telpad,est)          "Ø"
+   set caption(telpad,est)          "Ã˜"
    set caption(telpad,ouest)        "V"
 
    set caption(telpad,moteur_foc)   "Fokuseringsmotor"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(telpad,titre)        "TelPad"
+
+   set caption(telpad,nord)         "N"
+   set caption(telpad,sud)          "S"
+   set caption(telpad,est)          "E"
+   set caption(telpad,ouest)        "W"
+
+   set caption(telpad,moteur_foc)   "Focusing Motor"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(telpad,titre)        "TelPad"
+
+   set caption(telpad,nord)         "N"
+   set caption(telpad,sud)          "S"
+   set caption(telpad,est)          "E"
+   set caption(telpad,ouest)        "W"
+
+   set caption(telpad,moteur_foc)   "Focusing Motor"
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

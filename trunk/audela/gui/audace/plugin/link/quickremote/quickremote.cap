@@ -1,10 +1,10 @@
 #
 # Fichier : quickremote.cap
-# Mise a jour $Id: quickremote.cap,v 1.12 2007-01-27 14:50:33 robertdelmas Exp $
+# Mise a jour $Id: quickremote.cap,v 1.13 2009-11-05 18:24:19 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -16,12 +16,12 @@ set caption(quickremote,available)       "QuickRemote available"
 set caption(quickremote,refresh)         "Reload"
 set caption(quickremote,error)           "Error Message:"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(quickremote,titre)        "QuickRemote"
    set caption(quickremote,available)    "QuickRemote disponibles"
-   set caption(quickremote,refresh)      "Rafraîchir"
+   set caption(quickremote,refresh)      "RafraÃ®chir"
    set caption(quickremote,error)        "Message d'erreur :"
 
 # *************** Version italienne ***************************
@@ -44,7 +44,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(quickremote,titre)        "QuickRemote"
-   set caption(quickremote,available)    "QuickRemote verfügbar"
+   set caption(quickremote,available)    "QuickRemote verfÃ¼gbar"
    set caption(quickremote,refresh)      "Aktualisieren"
    set caption(quickremote,error)        "Fehlermeldung:"
 
@@ -52,7 +52,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(quickremote,titre)        "QuickRemote"
-   set caption(quickremote,available)    "QuickRemote disponível"
+   set caption(quickremote,available)    "QuickRemote disponÃ­vel"
    set caption(quickremote,refresh)      "Actualizar"
    set caption(quickremote,error)        "Mensagem de erro:"
 
@@ -61,12 +61,28 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(quickremote,titre)        "QuickRemote"
    set caption(quickremote,available)    "QuickRemote disponible"
-   set caption(quickremote,refresh)      "Genindlæs"
+   set caption(quickremote,refresh)      "GenindlÃ¦s"
    set caption(quickremote,error)        "Fejlmeddelelse:"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(quickremote,titre)        "QuickRemote"
+   set caption(quickremote,available)    "QuickRemote available"
+   set caption(quickremote,refresh)      "Reload"
+   set caption(quickremote,error)        "Error Message:"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(quickremote,titre)        "QuickRemote"
+   set caption(quickremote,available)    "QuickRemote available"
+   set caption(quickremote,refresh)      "Reload"
+   set caption(quickremote,error)        "Error Message:"
 
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

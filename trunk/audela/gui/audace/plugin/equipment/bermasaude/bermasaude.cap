@@ -1,10 +1,10 @@
 #
 # Fichier : bermasaude.cap
-# Mise a jour $Id: bermasaude.cap,v 1.18 2008-12-06 18:21:37 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.cap,v 1.19 2009-11-05 18:20:52 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -47,25 +47,25 @@ set caption(bermasaude,bermasaude_filtre_encours_2)    "filter in progress..."
 set caption(bermasaude,arreter)                        "Stop"
 set caption(bermasaude,creer_au_demarrage)             "Next time software is run connect this equipment automatically"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(bermasaude,titre)                       "Roue à filtres"
+   set caption(bermasaude,titre)                       "Roue Ã  filtres"
 
    set caption(bermasaude,port)                        "Port"
    set caption(bermasaude,configurer)                  "Configurer"
-   set caption(bermasaude,controle)                    "Contrôle"
+   set caption(bermasaude,controle)                    "ContrÃ´le"
    set caption(bermasaude,bermasaude_combinaison)      "Combinaison choisie"
    set caption(bermasaude,bermasaude_bvri)             "BVRI"
    set caption(bermasaude,bermasaude_cmj)              "CMJ"
-   set caption(bermasaude,bermasaude_version_micro)    "Logiciel du microcontrôleur :"
-   set caption(bermasaude,bermasaude_nbr_filtres_1)    "Cette roue à filtres a"
+   set caption(bermasaude,bermasaude_version_micro)    "Logiciel du microcontrÃ´leur :"
+   set caption(bermasaude,bermasaude_nbr_filtres_1)    "Cette roue Ã  filtres a"
    set caption(bermasaude,bermasaude_nbr_filtres_2)    "positions."
 
-   set caption(bermasaude,bermasaude_port)             "Port Roue à filtres"
+   set caption(bermasaude,bermasaude_port)             "Port Roue Ã  filtres"
    set caption(bermasaude,caractere_2points)           ":"
 
-   set caption(bermasaude,site_web)                    "Site Web de référence :"
+   set caption(bermasaude,site_web)                    "Site Web de rÃ©fÃ©rence :"
    set caption(bermasaude,site_web_ref)                "http://www.astrosurf.com/bernasconi/rouefilt/rouefilt.htm"
 
    set caption(bermasaude,bermasaude_vide)             "Pas de filtre"
@@ -79,12 +79,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,bermasaude_filtre_arrive_1)  "Le filtre"
    set caption(bermasaude,bermasaude_filtre_arrive_2)  "est disponible."
    set caption(bermasaude,bermasaude_filtre_depart_1)  "Le filtre"
-   set caption(bermasaude,bermasaude_filtre_depart_2)  "va être changé."
+   set caption(bermasaude,bermasaude_filtre_depart_2)  "va Ãªtre changÃ©."
    set caption(bermasaude,bermasaude_filtre_encours_1) "Positionnement du filtre"
    set caption(bermasaude,bermasaude_filtre_encours_2) "en cours..."
 
-   set caption(bermasaude,arreter)                     "Arrêter"
-   set caption(bermasaude,creer_au_demarrage)          "Connexion automatique de cet équipement au prochain démarrage"
+   set caption(bermasaude,arreter)                     "ArrÃªter"
+   set caption(bermasaude,creer_au_demarrage)          "Connexion automatique de cet Ã©quipement au prochain dÃ©marrage"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -133,7 +133,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,port)                        "Puerto"
    set caption(bermasaude,configurer)                  "Configurar"
    set caption(bermasaude,controle)                    "Control"
-   set caption(bermasaude,bermasaude_combinaison)      "Combinación elegida"
+   set caption(bermasaude,bermasaude_combinaison)      "CombinaciÃ³n elegida"
    set caption(bermasaude,bermasaude_bvri)             "AVRI"
    set caption(bermasaude,bermasaude_cmj)              "CMA"
    set caption(bermasaude,bermasaude_version_micro)    "Software de microcontrolador:"
@@ -162,7 +162,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,bermasaude_filtre_encours_2) "en progreso..."
 
    set caption(bermasaude,arreter)                     "Parar"
-   set caption(bermasaude,creer_au_demarrage)          "La próxima vez que se ejecute el programa, el equipo se conecta automáticamente"
+   set caption(bermasaude,creer_au_demarrage)          "La prÃ³xima vez que se ejecute el programa, el equipo se conecta automÃ¡ticamente"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -172,7 +172,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,port)                        "Port"
    set caption(bermasaude,configurer)                  "Konfigurieren"
    set caption(bermasaude,controle)                    "Kontroll"
-   set caption(bermasaude,bermasaude_combinaison)      "Gewähtes Kombination"
+   set caption(bermasaude,bermasaude_combinaison)      "GewÃ¤htes Kombination"
    set caption(bermasaude,bermasaude_bvri)             "BGRI"
    set caption(bermasaude,bermasaude_cmj)              "CMY"
    set caption(bermasaude,bermasaude_version_micro)    "Mikrokontroller Software:"
@@ -187,21 +187,21 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(bermasaude,bermasaude_vide)             "Keinen Filter"
    set caption(bermasaude,bermasaude_bleu)             "Blau"
-   set caption(bermasaude,bermasaude_vert)             "Grün"
+   set caption(bermasaude,bermasaude_vert)             "GrÃ¼n"
    set caption(bermasaude,bermasaude_rouge)            "Rot"
    set caption(bermasaude,bermasaude_infrarouge)       "Infrarot"
    set caption(bermasaude,bermasaude_cyan)             "Zyan"
    set caption(bermasaude,bermasaude_magenta)          "Magenta"
    set caption(bermasaude,bermasaude_jaune)            "Gelb"
    set caption(bermasaude,bermasaude_filtre_arrive_1)  "Der"
-   set caption(bermasaude,bermasaude_filtre_arrive_2)  "Filter ist verfügbar."
+   set caption(bermasaude,bermasaude_filtre_arrive_2)  "Filter ist verfÃ¼gbar."
    set caption(bermasaude,bermasaude_filtre_depart_1)  "Der"
-   set caption(bermasaude,bermasaude_filtre_depart_2)  "Filter wird jetzt geändert."
+   set caption(bermasaude,bermasaude_filtre_depart_2)  "Filter wird jetzt geÃ¤ndert."
    set caption(bermasaude,bermasaude_filtre_encours_1) "Der"
    set caption(bermasaude,bermasaude_filtre_encours_2) "Filter Einstellung laufend..."
 
    set caption(bermasaude,arreter)                     "Halten"
-   set caption(bermasaude,creer_au_demarrage)          "Nächste Mal diese Einrichtung automatisch anschließen"
+   set caption(bermasaude,creer_au_demarrage)          "NÃ¤chste Mal diese Einrichtung automatisch anschlieÃŸen"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -209,19 +209,19 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,titre)                       "Roda de filtros"
 
    set caption(bermasaude,port)                        "Porta"
-   set caption(bermasaude,configurer)                  "Configuração"
+   set caption(bermasaude,configurer)                  "ConfiguraÃ§Ã£o"
    set caption(bermasaude,controle)                    "Controlo"
-   set caption(bermasaude,bermasaude_combinaison)      "Combinação escolhida"
+   set caption(bermasaude,bermasaude_combinaison)      "CombinaÃ§Ã£o escolhida"
    set caption(bermasaude,bermasaude_bvri)             "BGRI"
    set caption(bermasaude,bermasaude_cmj)              "CMY"
    set caption(bermasaude,bermasaude_version_micro)    "Software do microcontrolador:"
    set caption(bermasaude,bermasaude_nbr_filtres_1)    "Esta roda de filtros tem"
-   set caption(bermasaude,bermasaude_nbr_filtres_2)    "posições."
+   set caption(bermasaude,bermasaude_nbr_filtres_2)    "posiÃ§Ãµes."
 
    set caption(bermasaude,bermasaude_port)             "Porta Roda de filtros"
    set caption(bermasaude,caractere_2points)           ":"
 
-   set caption(bermasaude,site_web)                    "Site Web de referência:"
+   set caption(bermasaude,site_web)                    "Site Web de referÃªncia:"
    set caption(bermasaude,site_web_ref)                "http://www.astrosurf.com/bernasconi/rouefilt/rouefilt.htm"
 
    set caption(bermasaude,bermasaude_vide)             "Sem filtro"
@@ -233,14 +233,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,bermasaude_magenta)          "Magenta"
    set caption(bermasaude,bermasaude_jaune)            "Amarelo"
    set caption(bermasaude,bermasaude_filtre_arrive_1)  "O filtro"
-   set caption(bermasaude,bermasaude_filtre_arrive_2)  "está disponível."
+   set caption(bermasaude,bermasaude_filtre_arrive_2)  "estÃ¡ disponÃ­vel."
    set caption(bermasaude,bermasaude_filtre_depart_1)  "O filtro"
-   set caption(bermasaude,bermasaude_filtre_depart_2)  "será alterado."
+   set caption(bermasaude,bermasaude_filtre_depart_2)  "serÃ¡ alterado."
    set caption(bermasaude,bermasaude_filtre_encours_1) "Posicionamento do filtro"
    set caption(bermasaude,bermasaude_filtre_encours_2) "em curso..."
 
    set caption(bermasaude,arreter)                     "Parar"
-   set caption(bermasaude,creer_au_demarrage)          "O equipamento conecta-se automaticamente na próxima execução do programa"
+   set caption(bermasaude,creer_au_demarrage)          "O equipamento conecta-se automaticamente na prÃ³xima execuÃ§Ã£o do programa"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -248,7 +248,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,titre)                       "Filterhjul"
 
    set caption(bermasaude,port)                        "Port"
-   set caption(bermasaude,configurer)                  "Opsætning"
+   set caption(bermasaude,configurer)                  "OpsÃ¦tning"
    set caption(bermasaude,controle)                    "Kontrol"
    set caption(bermasaude,bermasaude_combinaison)      "Valgt combination"
    set caption(bermasaude,bermasaude_bvri)             "BGRI"
@@ -264,26 +264,104 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,site_web_ref)                "http://www.astrosurf.com/bernasconi/rouefilt/rouefilt.htm"
 
    set caption(bermasaude,bermasaude_vide)             "Intet filter"
-   set caption(bermasaude,bermasaude_bleu)             "Blå"
-   set caption(bermasaude,bermasaude_vert)             "Grøn"
-   set caption(bermasaude,bermasaude_rouge)            "Rød"
-   set caption(bermasaude,bermasaude_infrarouge)       "Infrarød"
+   set caption(bermasaude,bermasaude_bleu)             "BlÃ¥"
+   set caption(bermasaude,bermasaude_vert)             "GrÃ¸n"
+   set caption(bermasaude,bermasaude_rouge)            "RÃ¸d"
+   set caption(bermasaude,bermasaude_infrarouge)       "InfrarÃ¸d"
    set caption(bermasaude,bermasaude_cyan)             "Cyan"
    set caption(bermasaude,bermasaude_magenta)          "Magenta"
    set caption(bermasaude,bermasaude_jaune)            "Gul"
    set caption(bermasaude,bermasaude_filtre_arrive_1)  ""
-   set caption(bermasaude,bermasaude_filtre_arrive_2)  "filter er til rådighed."
+   set caption(bermasaude,bermasaude_filtre_arrive_2)  "filter er til rÃ¥dighed."
    set caption(bermasaude,bermasaude_filtre_depart_1)  ""
    set caption(bermasaude,bermasaude_filtre_depart_2)  "filter skiftes."
    set caption(bermasaude,bermasaude_filtre_encours_1) "Anbringelse af"
-   set caption(bermasaude,bermasaude_filtre_encours_2) "filter udføres..."
+   set caption(bermasaude,bermasaude_filtre_encours_2) "filter udfÃ¸res..."
 
    set caption(bermasaude,arreter)                     "Stop"
-   set caption(bermasaude,creer_au_demarrage)          "Tilslut automatisk dette udstyr ved næste start"
+   set caption(bermasaude,creer_au_demarrage)          "Tilslut automatisk dette udstyr ved nÃ¦ste start"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(bermasaude,titre)                       "Filter Wheel"
+
+   set caption(bermasaude,port)                        "Port"
+   set caption(bermasaude,configurer)                  "Set up"
+   set caption(bermasaude,controle)                    "Control"
+   set caption(bermasaude,bermasaude_combinaison)      "Chosen Combination"
+   set caption(bermasaude,bermasaude_bvri)             "BGRI"
+   set caption(bermasaude,bermasaude_cmj)              "CMY"
+   set caption(bermasaude,bermasaude_version_micro)    "Microcontroller software:"
+   set caption(bermasaude,bermasaude_nbr_filtres_1)    "This filter wheel has"
+   set caption(bermasaude,bermasaude_nbr_filtres_2)    "positions."
+
+   set caption(bermasaude,bermasaude_port)             "Filter Wheel Port"
+   set caption(bermasaude,caractere_2points)           ":"
+
+   set caption(bermasaude,site_web)                    "Reference Web Site:"
+   set caption(bermasaude,site_web_ref)                "http://www.astrosurf.com/bernasconi/rouefilt/rouefilt.htm"
+
+   set caption(bermasaude,bermasaude_vide)             "No Filter"
+   set caption(bermasaude,bermasaude_bleu)             "Blue"
+   set caption(bermasaude,bermasaude_vert)             "Green"
+   set caption(bermasaude,bermasaude_rouge)            "Red"
+   set caption(bermasaude,bermasaude_infrarouge)       "InfraRed"
+   set caption(bermasaude,bermasaude_cyan)             "Cyan"
+   set caption(bermasaude,bermasaude_magenta)          "Magenta"
+   set caption(bermasaude,bermasaude_jaune)            "Yellow"
+   set caption(bermasaude,bermasaude_filtre_arrive_1)  "The"
+   set caption(bermasaude,bermasaude_filtre_arrive_2)  "filter is available."
+   set caption(bermasaude,bermasaude_filtre_depart_1)  "The"
+   set caption(bermasaude,bermasaude_filtre_depart_2)  "filter is about to change."
+   set caption(bermasaude,bermasaude_filtre_encours_1) "Positioning of"
+   set caption(bermasaude,bermasaude_filtre_encours_2) "filter in progress..."
+
+   set caption(bermasaude,arreter)                     "Stop"
+   set caption(bermasaude,creer_au_demarrage)          "Next time software is run connect this equipment automatically"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(bermasaude,titre)                       "Filter Wheel"
+
+   set caption(bermasaude,port)                        "Port"
+   set caption(bermasaude,configurer)                  "Set up"
+   set caption(bermasaude,controle)                    "Control"
+   set caption(bermasaude,bermasaude_combinaison)      "Chosen Combination"
+   set caption(bermasaude,bermasaude_bvri)             "BGRI"
+   set caption(bermasaude,bermasaude_cmj)              "CMY"
+   set caption(bermasaude,bermasaude_version_micro)    "Microcontroller software:"
+   set caption(bermasaude,bermasaude_nbr_filtres_1)    "This filter wheel has"
+   set caption(bermasaude,bermasaude_nbr_filtres_2)    "positions."
+
+   set caption(bermasaude,bermasaude_port)             "Filter Wheel Port"
+   set caption(bermasaude,caractere_2points)           ":"
+
+   set caption(bermasaude,site_web)                    "Reference Web Site:"
+   set caption(bermasaude,site_web_ref)                "http://www.astrosurf.com/bernasconi/rouefilt/rouefilt.htm"
+
+   set caption(bermasaude,bermasaude_vide)             "No Filter"
+   set caption(bermasaude,bermasaude_bleu)             "Blue"
+   set caption(bermasaude,bermasaude_vert)             "Green"
+   set caption(bermasaude,bermasaude_rouge)            "Red"
+   set caption(bermasaude,bermasaude_infrarouge)       "InfraRed"
+   set caption(bermasaude,bermasaude_cyan)             "Cyan"
+   set caption(bermasaude,bermasaude_magenta)          "Magenta"
+   set caption(bermasaude,bermasaude_jaune)            "Yellow"
+   set caption(bermasaude,bermasaude_filtre_arrive_1)  "The"
+   set caption(bermasaude,bermasaude_filtre_arrive_2)  "filter is available."
+   set caption(bermasaude,bermasaude_filtre_depart_1)  "The"
+   set caption(bermasaude,bermasaude_filtre_depart_2)  "filter is about to change."
+   set caption(bermasaude,bermasaude_filtre_encours_1) "Positioning of"
+   set caption(bermasaude,bermasaude_filtre_encours_2) "filter in progress..."
+
+   set caption(bermasaude,arreter)                     "Stop"
+   set caption(bermasaude,creer_au_demarrage)          "Next time software is run connect this equipment automatically"
 
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

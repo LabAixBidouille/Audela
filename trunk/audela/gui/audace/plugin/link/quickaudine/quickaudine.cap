@@ -1,10 +1,10 @@
 #
 # Fichier : quickaudine.cap
-# Mise a jour $Id: quickaudine.cap,v 1.17 2007-07-05 22:14:24 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.cap,v 1.18 2009-11-05 18:24:04 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -20,13 +20,13 @@ set caption(quickaudine,lecture_pixel)    "Reading of One Pixel"
 set caption(quickaudine,micro_sec)        "microseconds"
 set caption(quickaudine,error)            "Error Message:"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(quickaudine,titre)         "QuickAudine"
    set caption(quickaudine,available)     "QuickAudine disponibles"
-   set caption(quickaudine,refresh)       "Rafraîchir"
-   set caption(quickaudine,delayshutter)  "Délai avant la lecture du CCD"
+   set caption(quickaudine,refresh)       "RafraÃ®chir"
+   set caption(quickaudine,delayshutter)  "DÃ©lai avant la lecture du CCD"
    set caption(quickaudine,unite)         "1/100 s"
    set caption(quickaudine,lecture_pixel) "Lecture d'un pixel"
    set caption(quickaudine,micro_sec)     "microsecondes"
@@ -52,7 +52,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(quickaudine,refresh)       "Recargar"
    set caption(quickaudine,delayshutter)  "Retardo anterior a la lectura CCD"
    set caption(quickaudine,unite)         "1/100 s"
-   set caption(quickaudine,lecture_pixel) "Lectura de un píxel"
+   set caption(quickaudine,lecture_pixel) "Lectura de un pÃ­xel"
    set caption(quickaudine,micro_sec)     "microsegundos"
    set caption(quickaudine,error)         "Mensaje de error:"
 
@@ -60,7 +60,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(quickaudine,titre)         "QuickAudine"
-   set caption(quickaudine,available)     "QuickAudine verfügbar"
+   set caption(quickaudine,available)     "QuickAudine verfÃ¼gbar"
    set caption(quickaudine,refresh)       "Aktualisieren"
    set caption(quickaudine,delayshutter)  "Aufschub vor CCD Lesung"
    set caption(quickaudine,unite)         "1/100 s"
@@ -72,7 +72,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(quickaudine,titre)         "QuickAudine"
-   set caption(quickaudine,available)     "QuickAudine disponível"
+   set caption(quickaudine,available)     "QuickAudine disponÃ­vel"
    set caption(quickaudine,refresh)       "Actualizar"
    set caption(quickaudine,delayshutter)  "Atraso antes da leitura do CCD"
    set caption(quickaudine,unite)         "1/100 s"
@@ -85,16 +85,40 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(quickaudine,titre)         "QuickAudine"
    set caption(quickaudine,available)     "QuickAudine disponible"
-   set caption(quickaudine,refresh)       "Genindlæs"
-   set caption(quickaudine,delayshutter)  "Forsinkelse før udlæsning af CCD"
+   set caption(quickaudine,refresh)       "GenindlÃ¦s"
+   set caption(quickaudine,delayshutter)  "Forsinkelse fÃ¸r udlÃ¦sning af CCD"
    set caption(quickaudine,unite)         "1/100 s"
-   set caption(quickaudine,lecture_pixel) "Læsning af én pixel"
+   set caption(quickaudine,lecture_pixel) "LÃ¦sning af Ã©n pixel"
    set caption(quickaudine,micro_sec)     "microsekunder"
    set caption(quickaudine,error)         "Fejlmeddelelse:"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(quickaudine,titre)         "QuickAudine"
+   set caption(quickaudine,available)     "QuickAudine available"
+   set caption(quickaudine,refresh)       "Reload"
+   set caption(quickaudine,delayshutter)  "Delay Before Reading CCD"
+   set caption(quickaudine,unite)         "1/100 s"
+   set caption(quickaudine,lecture_pixel) "Reading of One Pixel"
+   set caption(quickaudine,micro_sec)     "microseconds"
+   set caption(quickaudine,error)         "Error Message:"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(quickaudine,titre)         "QuickAudine"
+   set caption(quickaudine,available)     "QuickAudine available"
+   set caption(quickaudine,refresh)       "Reload"
+   set caption(quickaudine,delayshutter)  "Delay Before Reading CCD"
+   set caption(quickaudine,unite)         "1/100 s"
+   set caption(quickaudine,lecture_pixel) "Reading of One Pixel"
+   set caption(quickaudine,micro_sec)     "microseconds"
+   set caption(quickaudine,error)         "Error Message:"
 
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

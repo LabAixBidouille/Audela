@@ -1,10 +1,10 @@
 #
 # Fichier : guide.cap
-# Mise a jour $Id: guide.cap,v 1.7 2007-05-20 09:19:49 robertdelmas Exp $
+# Mise a jour $Id: guide.cap,v 1.8 2009-11-05 18:20:35 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -28,25 +28,25 @@ set caption(guide,verification)     "Check GUIDE is installed and selected\nin t
 set caption(guide,rate)             "Access not possible"
 set caption(guide,gagne)            "Access OK"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(guide,titre)         "Guide"
-   set caption(guide,fichier)       "Fichier à rechercher"
+   set caption(guide,fichier)       "Fichier Ã  rechercher"
    set caption(guide,a_partir_de)   "A partir de"
    set caption(guide,rechercher)    "Recherche\n(Automatique)"
    set caption(guide,parcourir)     "..."
    set caption(guide,dossier)       "A partir du dossier :"
-   set caption(guide,site_web)      "Site Web de référence :"
+   set caption(guide,site_web)      "Site Web de rÃ©fÃ©rence :"
    set caption(guide,site_web_ref)  "http://www.projectpluto.com"
    set caption(guide,attention)     "Attention"
    set caption(guide,option)        "Option :"
-   set caption(guide,creation)      "Création d'une carte de champ avec GUIDE"
-   set caption(guide,non)           "Pour utiliser cette option, le logiciel GUIDE doit déjà être lancé."
+   set caption(guide,creation)      "CrÃ©ation d'une carte de champ avec GUIDE"
+   set caption(guide,non)           "Pour utiliser cette option, le logiciel GUIDE doit dÃ©jÃ  Ãªtre lancÃ©."
    set caption(guide,lance)         "Voulez-vous lancer GUIDE ?"
-   set caption(guide,verification)  "Vérifiez que GUIDE est installé et sélectionné dans\nle menu 'Configuration --> Carte'."
-   set caption(guide,rate)          "Accès non possible"
-   set caption(guide,gagne)         "Accès réussi"
+   set caption(guide,verification)  "VÃ©rifiez que GUIDE est installÃ© et sÃ©lectionnÃ© dans\nle menu 'Configuration --> Carte'."
+   set caption(guide,rate)          "AccÃ¨s non possible"
+   set caption(guide,gagne)         "AccÃ¨s rÃ©ussi"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -74,17 +74,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(guide,titre)         "Guide"
    set caption(guide,fichier)       "Fichero a buscar"
    set caption(guide,a_partir_de)   "Desde "
-   set caption(guide,rechercher)    "Buscar\n(Automático)"
+   set caption(guide,rechercher)    "Buscar\n(AutomÃ¡tico)"
    set caption(guide,parcourir)     "..."
    set caption(guide,dossier)       "Desde la carpeta:"
    set caption(guide,site_web)      "Sitio Web de referencia:"
    set caption(guide,site_web_ref)  "http://www.projectpluto.com"
    set caption(guide,attention)     "Aviso"
-   set caption(guide,option)        "Opción:"
-   set caption(guide,creation)      "Creación de un mapa de campo con GUIDE"
-   set caption(guide,non)           "Para utilizar esta opción, GUIDE debe estar ejecutándose."
+   set caption(guide,option)        "OpciÃ³n:"
+   set caption(guide,creation)      "CreaciÃ³n de un mapa de campo con GUIDE"
+   set caption(guide,non)           "Para utilizar esta opciÃ³n, GUIDE debe estar ejecutÃ¡ndose."
    set caption(guide,lance)         "Ejecutar GUIDE?"
-   set caption(guide,verification)  "Comproba si GUIDE está instalado y seleccionado\nen el menú 'Configuración --> Mapa'."
+   set caption(guide,verification)  "Comproba si GUIDE estÃ¡ instalado y seleccionado\nen el menÃº 'ConfiguraciÃ³n --> Mapa'."
    set caption(guide,rate)          "El acceso no es posible"
    set caption(guide,gagne)         "Acceso correcto"
 
@@ -102,10 +102,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(guide,attention)     "Achtung"
    set caption(guide,option)        "Wahl:"
    set caption(guide,creation)      "Feldkarte mit GUIDE schaffen"
-   set caption(guide,non)           "Um diesen Wahl zu nützen, muss GUIDE schon gestart sein."
+   set caption(guide,non)           "Um diesen Wahl zu nÃ¼tzen, muss GUIDE schon gestart sein."
    set caption(guide,lance)         "Wollen sie GUIDE starten ?"
-   set caption(guide,verification)  "Kontrolieren sie dass GUIDE in das Menu\n'Konfiguration --> Karte' installiert und gewählt ist."
-   set caption(guide,rate)          "Unmöglichen Zugang"
+   set caption(guide,verification)  "Kontrolieren sie dass GUIDE in das Menu\n'Konfiguration --> Karte' installiert und gewÃ¤hlt ist."
+   set caption(guide,rate)          "UnmÃ¶glichen Zugang"
    set caption(guide,gagne)         "Zugriff gelungen"
 
 # *************** Version portugaise **************************
@@ -114,17 +114,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(guide,titre)         "Guide"
    set caption(guide,fichier)       "Ficheiro a procurar"
    set caption(guide,a_partir_de)   "A partir da"
-   set caption(guide,rechercher)    "Procurar\n(Automático)"
+   set caption(guide,rechercher)    "Procurar\n(AutomÃ¡tico)"
    set caption(guide,parcourir)     "..."
    set caption(guide,dossier)       "A partir da pasta:"
    set caption(guide,site_web)      "Site Web de referencia:"
    set caption(guide,site_web_ref)  "http://www.projectpluto.com"
-   set caption(guide,attention)     "Atenção"
-   set caption(guide,option)        "Opção:"
-   set caption(guide,creation)      "Criação de uma carta de campo com GUIDE"
-   set caption(guide,non)           "Para utilizar esta opção, o software GUIDE tem de estar em execução."
+   set caption(guide,attention)     "AtenÃ§Ã£o"
+   set caption(guide,option)        "OpÃ§Ã£o:"
+   set caption(guide,creation)      "CriaÃ§Ã£o de uma carta de campo com GUIDE"
+   set caption(guide,non)           "Para utilizar esta opÃ§Ã£o, o software GUIDE tem de estar em execuÃ§Ã£o."
    set caption(guide,lance)         "Deseja iniciar GUIDE ?"
-   set caption(guide,verification)  "Verifique que GUIDE se encontra instalado e seleccionado no\n menu 'Configuração --> Carta'."
+   set caption(guide,verification)  "Verifique que GUIDE se encontra instalado e seleccionado no\n menu 'ConfiguraÃ§Ã£o --> Carta'."
    set caption(guide,rate)          "Acesso falhado"
    set caption(guide,gagne)         "Acesso OK"
 
@@ -132,9 +132,9 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(guide,titre)         "Guide"
-   set caption(guide,fichier)       "Søg fil"
+   set caption(guide,fichier)       "SÃ¸g fil"
    set caption(guide,a_partir_de)   "Fra"
-   set caption(guide,rechercher)    "Søg\n(Automatisk)"
+   set caption(guide,rechercher)    "SÃ¸g\n(Automatisk)"
    set caption(guide,parcourir)     "..."
    set caption(guide,dossier)       "Fra folder:"
    set caption(guide,site_web)      "Henvisning til Websider:"
@@ -142,15 +142,55 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(guide,attention)     "Advarsel"
    set caption(guide,option)        "Valg:"
    set caption(guide,creation)      "Fremstil feltkort vha. GUIDE"
-   set caption(guide,non)           "For at benytte denne mulighed, skal GUIDE være startet."
-   set caption(guide,lance)         "Kør GUIDE?"
-   set caption(guide,verification)  "Kontrollér at GUIDE er installeret og valgt\ni 'Konfiguration --> Kort' menu."
+   set caption(guide,non)           "For at benytte denne mulighed, skal GUIDE vÃ¦re startet."
+   set caption(guide,lance)         "KÃ¸r GUIDE?"
+   set caption(guide,verification)  "KontrollÃ©r at GUIDE er installeret og valgt\ni 'Konfiguration --> Kort' menu."
    set caption(guide,rate)          "Ingen adgang"
    set caption(guide,gagne)         "Adgang: OK!"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(guide,titre)         "Guide"
+   set caption(guide,fichier)       "File To Be Searched"
+   set caption(guide,a_partir_de)   "From"
+   set caption(guide,rechercher)    "Search\n(Automatic)"
+   set caption(guide,parcourir)     "..."
+   set caption(guide,dossier)       "From Folder:"
+   set caption(guide,site_web)      "Reference Web Site:"
+   set caption(guide,site_web_ref)  "http://www.projectpluto.com"
+   set caption(guide,attention)     "Warning"
+   set caption(guide,option)        "Option:"
+   set caption(guide,creation)      "Field Chart Creation with GUIDE"
+   set caption(guide,non)           "To use this option, GUIDE must already be running."
+   set caption(guide,lance)         "Run GUIDE?"
+   set caption(guide,verification)  "Check GUIDE is installed and selected\nin the 'Setup --> Chart' menu."
+   set caption(guide,rate)          "Access not possible"
+   set caption(guide,gagne)         "Access OK"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(guide,titre)         "Guide"
+   set caption(guide,fichier)       "File To Be Searched"
+   set caption(guide,a_partir_de)   "From"
+   set caption(guide,rechercher)    "Search\n(Automatic)"
+   set caption(guide,parcourir)     "..."
+   set caption(guide,dossier)       "From Folder:"
+   set caption(guide,site_web)      "Reference Web Site:"
+   set caption(guide,site_web_ref)  "http://www.projectpluto.com"
+   set caption(guide,attention)     "Warning"
+   set caption(guide,option)        "Option:"
+   set caption(guide,creation)      "Field Chart Creation with GUIDE"
+   set caption(guide,non)           "To use this option, GUIDE must already be running."
+   set caption(guide,lance)         "Run GUIDE?"
+   set caption(guide,verification)  "Check GUIDE is installed and selected\nin the 'Setup --> Chart' menu."
+   set caption(guide,rate)          "Access not possible"
+   set caption(guide,gagne)         "Access OK"
 
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

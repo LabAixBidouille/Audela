@@ -1,10 +1,10 @@
 #
 # Fichier : focuserjmi.cap
-# Mise a jour $Id: focuserjmi.cap,v 1.9 2009-06-06 13:25:18 robertdelmas Exp $
+# Mise a jour $Id: focuserjmi.cap,v 1.10 2009-11-05 18:21:22 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -24,21 +24,21 @@ set caption(focuserjmi,test)                  "Test"
 set caption(focuserjmi,arreter)               "Stop"
 set caption(focuserjmi,creer_au_demarrage)    "Next time software is run connect this equipment automatically"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(focuserjmi,label)              "Focaliseur JMI"
    set caption(focuserjmi,link)               "Liaison"
    set caption(focuserjmi,configure)          "Configurer"
-   set caption(focuserjmi,bitStart)           "Numéro du bit de démarrage"
-   set caption(focuserjmi,bitDirection)       "Numéro du bit de direction"
+   set caption(focuserjmi,bitStart)           "NumÃ©ro du bit de dÃ©marrage"
+   set caption(focuserjmi,bitDirection)       "NumÃ©ro du bit de direction"
    set caption(focuserjmi,manualPulse)        "Impulsion manuelle"
-   set caption(focuserjmi,fixedPulse)         "Impulsion de durée fixe"
-   set caption(focuserjmi,duration)           "Durée (secondes)"
+   set caption(focuserjmi,fixedPulse)         "Impulsion de durÃ©e fixe"
+   set caption(focuserjmi,duration)           "DurÃ©e (secondes)"
    set caption(focuserjmi,test)               "Test"
 
-   set caption(focuserjmi,arreter)            "Arrêter"
-   set caption(focuserjmi,creer_au_demarrage) "Connexion automatique de cet équipement au prochain démarrage"
+   set caption(focuserjmi,arreter)            "ArrÃªter"
+   set caption(focuserjmi,creer_au_demarrage) "Connexion automatique de cet Ã©quipement au prochain dÃ©marrage"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -63,14 +63,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserjmi,link)               "Enlace"
    set caption(focuserjmi,configure)          "Configurar"
    set caption(focuserjmi,bitStart)           "Numero del bit de comienzo"
-   set caption(focuserjmi,bitDirection)       "Numero del bit de dirección"
+   set caption(focuserjmi,bitDirection)       "Numero del bit de direcciÃ³n"
    set caption(focuserjmi,manualPulse)        "Pulso manual"
-   set caption(focuserjmi,fixedPulse)         "Pulso de duración fija"
-   set caption(focuserjmi,duration)           "Duración (segundos)"
+   set caption(focuserjmi,fixedPulse)         "Pulso de duraciÃ³n fija"
+   set caption(focuserjmi,duration)           "DuraciÃ³n (segundos)"
    set caption(focuserjmi,test)               "Test"
 
    set caption(focuserjmi,arreter)            "Parar"
-   set caption(focuserjmi,creer_au_demarrage) "La próxima vez que se ejecute el programa, el equipo se conecta automáticamente"
+   set caption(focuserjmi,creer_au_demarrage) "La prÃ³xima vez que se ejecute el programa, el equipo se conecta automÃ¡ticamente"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -86,43 +86,75 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserjmi,test)               "Test"
 
    set caption(focuserjmi,arreter)            "Halten"
-   set caption(focuserjmi,creer_au_demarrage) "Nächste Mal diese Einrichtung automatisch anschließen"
+   set caption(focuserjmi,creer_au_demarrage) "NÃ¤chste Mal diese Einrichtung automatisch anschlieÃŸen"
 
-# *************** Version portugaise ***************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(focuserjmi,label)              "Focador JMI"
-   set caption(focuserjmi,link)               "Ligação"
+   set caption(focuserjmi,link)               "LigaÃ§Ã£o"
    set caption(focuserjmi,configure)          "Configurar"
-   set caption(focuserjmi,bitStart)           "Número do bit inicial"
-   set caption(focuserjmi,bitDirection)       "Número do bit de direcção"
+   set caption(focuserjmi,bitStart)           "NÃºmero do bit inicial"
+   set caption(focuserjmi,bitDirection)       "NÃºmero do bit de direcÃ§Ã£o"
    set caption(focuserjmi,manualPulse)        "Impulso manual"
-   set caption(focuserjmi,fixedPulse)         "Impulso de duração fixa"
-   set caption(focuserjmi,duration)           "Duração (segundos)"
+   set caption(focuserjmi,fixedPulse)         "Impulso de duraÃ§Ã£o fixa"
+   set caption(focuserjmi,duration)           "DuraÃ§Ã£o (segundos)"
    set caption(focuserjmi,test)               "Teste"
 
    set caption(focuserjmi,arreter)            "Parar"
-   set caption(focuserjmi,creer_au_demarrage) "O equipamento conecta-se automaticamente na próxima execução do programa"
+   set caption(focuserjmi,creer_au_demarrage) "O equipamento conecta-se automaticamente na prÃ³xima execuÃ§Ã£o do programa"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(focuserjmi,label)              "JMI Focuser"
    set caption(focuserjmi,link)               "Link"
-   set caption(focuserjmi,configure)          "Opsætning"
-   set caption(focuserjmi,bitStart)           "Start bit-værdi"
-   set caption(focuserjmi,bitDirection)       "Retnings bit-værdi"
+   set caption(focuserjmi,configure)          "OpsÃ¦tning"
+   set caption(focuserjmi,bitStart)           "Start bit-vÃ¦rdi"
+   set caption(focuserjmi,bitDirection)       "Retnings bit-vÃ¦rdi"
    set caption(focuserjmi,manualPulse)        "Manuel impuls"
    set caption(focuserjmi,fixedPulse)         "Fast impuls tid"
    set caption(focuserjmi,duration)           "Tid (sekunder)"
    set caption(focuserjmi,test)               "Test"
 
    set caption(focuserjmi,arreter)            "Stop"
-   set caption(focuserjmi,creer_au_demarrage) "Tilslut automatisk dette udstyr ved næste start"
+   set caption(focuserjmi,creer_au_demarrage) "Tilslut automatisk dette udstyr ved nÃ¦ste start"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(focuserjmi,label)              "JMI Focuser"
+   set caption(focuserjmi,link)               "Link"
+   set caption(focuserjmi,configure)          "Set up"
+   set caption(focuserjmi,bitStart)           "Start Bit Number"
+   set caption(focuserjmi,bitDirection)       "Direction Bit Number"
+   set caption(focuserjmi,manualPulse)        "Manual Pulse"
+   set caption(focuserjmi,fixedPulse)         "Fixed Time Pulse"
+   set caption(focuserjmi,duration)           "Time (seconds)"
+   set caption(focuserjmi,test)               "Test"
+
+   set caption(focuserjmi,arreter)            "Stop"
+   set caption(focuserjmi,creer_au_demarrage) "Next time software is run connect this equipment automatically"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(focuserjmi,label)              "JMI Focuser"
+   set caption(focuserjmi,link)               "Link"
+   set caption(focuserjmi,configure)          "Set up"
+   set caption(focuserjmi,bitStart)           "Start Bit Number"
+   set caption(focuserjmi,bitDirection)       "Direction Bit Number"
+   set caption(focuserjmi,manualPulse)        "Manual Pulse"
+   set caption(focuserjmi,fixedPulse)         "Fixed Time Pulse"
+   set caption(focuserjmi,duration)           "Time (seconds)"
+   set caption(focuserjmi,test)               "Test"
+
+   set caption(focuserjmi,arreter)            "Stop"
+   set caption(focuserjmi,creer_au_demarrage) "Next time software is run connect this equipment automatically"
 
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

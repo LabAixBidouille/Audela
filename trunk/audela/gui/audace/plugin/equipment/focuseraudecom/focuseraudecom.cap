@@ -1,10 +1,10 @@
 #
 # Fichier : focuseraudecom.cap
-# Mise a jour $Id: focuseraudecom.cap,v 1.6 2008-12-21 11:40:38 robertdelmas Exp $
+# Mise a jour $Id: focuseraudecom.cap,v 1.7 2009-11-05 18:21:07 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -23,16 +23,16 @@ set caption(focuseraudecom,x1)             "x1"
 set caption(focuseraudecom,x5)             "x5"
 set caption(focuseraudecom,interro)        "?"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(focuseraudecom,label)       "Focaliseur AudeCom"
-   set caption(focuseraudecom,link)        "Les commandes sont envoyées à la monture AudeCom."
+   set caption(focuseraudecom,link)        "Les commandes sont envoyÃ©es Ã  la monture AudeCom."
 
    set caption(focuseraudecom,attention)   "Attention"
-   set caption(focuseraudecom,msg1)        "Pour cette raquette, vous avez sélectionné le focaliseur AudeCom."
+   set caption(focuseraudecom,msg1)        "Pour cette raquette, vous avez sÃ©lectionnÃ© le focaliseur AudeCom."
    set caption(focuseraudecom,msg2)        "Il ne fonctionne pas avec cette monture."
-   set caption(focuseraudecom,msg3)        "Pour cet outil, vous avez sélectionné le focaliseur AudeCom."
+   set caption(focuseraudecom,msg3)        "Pour cet outil, vous avez sÃ©lectionnÃ© le focaliseur AudeCom."
 
    set caption(focuseraudecom,x1)          "x1"
    set caption(focuseraudecom,x5)          "x5"
@@ -75,24 +75,24 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuseraudecom,link)        "Die Steuervorrichtungen sind zum AudeCom Montierung geschickt."
 
    set caption(focuseraudecom,attention)   "Achtung"
-   set caption(focuseraudecom,msg1)        "Für diese Hand Kontroller haben Sie den AudeCom Scharfeinsteller gewählt."
+   set caption(focuseraudecom,msg1)        "FÃ¼r diese Hand Kontroller haben Sie den AudeCom Scharfeinsteller gewÃ¤hlt."
    set caption(focuseraudecom,msg2)        "Es funktioniert nicht mit dieses Montierung."
-   set caption(focuseraudecom,msg3)        "Für diese Geräte haben Sie den AudeCom Scharfeinsteller gewählt."
+   set caption(focuseraudecom,msg3)        "FÃ¼r diese GerÃ¤te haben Sie den AudeCom Scharfeinsteller gewÃ¤hlt."
 
    set caption(focuseraudecom,x1)          "x1"
    set caption(focuseraudecom,x5)          "x5"
    set caption(focuseraudecom,interro)     "?"
 
-# *************** Version portugaise ***************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(focuseraudecom,label)       "Focador AudeCom"
-   set caption(focuseraudecom,link)        "Os comandos são enviados à montagem AudeCom."
+   set caption(focuseraudecom,link)        "Os comandos sÃ£o enviados Ã  montagem AudeCom."
 
    set caption(focuseraudecom,attention)   "Aviso"
-   set caption(focuseraudecom,msg1)        "Você escolheu o focador AudeCom para este controlador de mão."
-   set caption(focuseraudecom,msg2)        "Não pode ser usado com esta montagem."
-   set caption(focuseraudecom,msg3)        "Você escolheu o focador AudeCom para esta ferramenta."
+   set caption(focuseraudecom,msg1)        "VocÃª escolheu o focador AudeCom para este controlador de mÃ£o."
+   set caption(focuseraudecom,msg2)        "NÃ£o pode ser usado com esta montagem."
+   set caption(focuseraudecom,msg3)        "VocÃª escolheu o focador AudeCom para esta ferramenta."
 
    set caption(focuseraudecom,x1)          "x1"
    set caption(focuseraudecom,x5)          "x5"
@@ -105,9 +105,39 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuseraudecom,link)        "Kommando er sendt til AudeCom monteringen."
 
    set caption(focuseraudecom,attention)   "Advarsel"
-   set caption(focuseraudecom,msg1)        "Du har valgt AudeCom fokuseringen til denne håndkontrol."
+   set caption(focuseraudecom,msg1)        "Du har valgt AudeCom fokuseringen til denne hÃ¥ndkontrol."
    set caption(focuseraudecom,msg2)        "Den kan ikke benyttes med denne montering."
-   set caption(focuseraudecom,msg3)        "Du har valgt AudeCom fokuseringen til dette værktøj."
+   set caption(focuseraudecom,msg3)        "Du har valgt AudeCom fokuseringen til dette vÃ¦rktÃ¸j."
+
+   set caption(focuseraudecom,x1)          "x1"
+   set caption(focuseraudecom,x5)          "x5"
+   set caption(focuseraudecom,interro)     "?"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(focuseraudecom,label)       "AudeCom Focuser"
+   set caption(focuseraudecom,link)        "Controls are sent to the AudeCom mount."
+
+   set caption(focuseraudecom,attention)   "Warning"
+   set caption(focuseraudecom,msg1)        "You chose the AudeCom focuser for this hand controller."
+   set caption(focuseraudecom,msg2)        "It cannot be used with this mount."
+   set caption(focuseraudecom,msg3)        "You chose the AudeCom focuser for this tool."
+
+   set caption(focuseraudecom,x1)          "x1"
+   set caption(focuseraudecom,x5)          "x5"
+   set caption(focuseraudecom,interro)     "?"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(focuseraudecom,label)       "AudeCom Focuser"
+   set caption(focuseraudecom,link)        "Controls are sent to the AudeCom mount."
+
+   set caption(focuseraudecom,attention)   "Warning"
+   set caption(focuseraudecom,msg1)        "You chose the AudeCom focuser for this hand controller."
+   set caption(focuseraudecom,msg2)        "It cannot be used with this mount."
+   set caption(focuseraudecom,msg3)        "You chose the AudeCom focuser for this tool."
 
    set caption(focuseraudecom,x1)          "x1"
    set caption(focuseraudecom,x5)          "x5"
@@ -116,6 +146,6 @@ if { [ string compare $langage "french" ] == "0" } {
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

@@ -1,10 +1,10 @@
 #
 # Fichier : superpad.cap
-# Mise a jour $Id: superpad.cap,v 1.8 2007-12-04 22:17:22 robertdelmas Exp $
+# Mise a jour $Id: superpad.cap,v 1.9 2009-11-05 18:25:35 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -25,22 +25,22 @@ set caption(superpad,buttonCenter)           "Center"
 set caption(superpad,buttonAlign)            "Alignment"
 set caption(superpad,StarWindowTitle)        "Select one star"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(superpad,titre)               "SuperPad"
    set caption(superpad,pad_size)            "Sa taille"
    set caption(superpad,center_speed)        "Coefficient de centrage"
    set caption(superpad,telescope)           "Monture"
-   set caption(superpad,non_connecte)        "non connectée"
+   set caption(superpad,non_connecte)        "non connectÃ©e"
    set caption(superpad,ErrorMessageTitle)   "Erreur"
-   set caption(superpad,CenterStarErrMsg)    "Impossible de centrer tant qu'il n'y a pas d'image affichée."
+   set caption(superpad,CenterStarErrMsg)    "Impossible de centrer tant qu'il n'y a pas d'image affichÃ©e."
    set caption(superpad,buttonSkyMap)        "Carte"
    set caption(superpad,buttonGoto)          "GOTO"
    set caption(superpad,buttonStopGoto)      "STOP"
    set caption(superpad,buttonCenter)        "Centrer"
    set caption(superpad,buttonAlign)         "Alignement"
-   set caption(superpad,StarWindowTitle)     "Sélectionner une étoile"
+   set caption(superpad,StarWindowTitle)     "SÃ©lectionner une Ã©toile"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -63,7 +63,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(superpad,titre)               "SuperPad"
-   set caption(superpad,pad_size)            "Su tamaño"
+   set caption(superpad,pad_size)            "Su tamaÃ±o"
    set caption(superpad,center_speed)        "Factor de centrado"
    set caption(superpad,telescope)           "Montura"
    set caption(superpad,non_connecte)        "no conectado"
@@ -80,18 +80,18 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(superpad,titre)               "SuperPad"
-   set caption(superpad,pad_size)            "Ihre Größe"
+   set caption(superpad,pad_size)            "Ihre GrÃ¶ÃŸe"
    set caption(superpad,center_speed)        "Zentrierung Faktor"
    set caption(superpad,telescope)           "Montierung"
    set caption(superpad,non_connecte)        "nicht verbun."
    set caption(superpad,ErrorMessageTitle)   "Irrtum"
-   set caption(superpad,CenterStarErrMsg)    "Zentrierung unmöglich wenn kein Bild gezeigt ist."
+   set caption(superpad,CenterStarErrMsg)    "Zentrierung unmÃ¶glich wenn kein Bild gezeigt ist."
    set caption(superpad,buttonSkyMap)        "Karte"
    set caption(superpad,buttonGoto)          "GOTO"
    set caption(superpad,buttonStopGoto)      "STOP"
    set caption(superpad,buttonCenter)        "Zentrum"
    set caption(superpad,buttonAlign)         "Ausrichtung"
-   set caption(superpad,StarWindowTitle)     "Ein Stern wählen"
+   set caption(superpad,StarWindowTitle)     "Ein Stern wÃ¤hlen"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -100,7 +100,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(superpad,pad_size)            "Seu tamanho"
    set caption(superpad,center_speed)        "Coeficiente de centragem"
    set caption(superpad,telescope)           "Montagem"
-   set caption(superpad,non_connecte)        "não conectado"
+   set caption(superpad,non_connecte)        "nÃ£o conectado"
    set caption(superpad,ErrorMessageTitle)   "Erro"
    set caption(superpad,CenterStarErrMsg)    "Impossivel de centrar sem imagem afixada."
    set caption(superpad,buttonSkyMap)        "Carta"
@@ -114,7 +114,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(superpad,titre)               "SuperPad"
-   set caption(superpad,pad_size)            "Dens størrelse"
+   set caption(superpad,pad_size)            "Dens stÃ¸rrelse"
    set caption(superpad,center_speed)        "Centreringsfaktor"
    set caption(superpad,telescope)           "Montering"
    set caption(superpad,non_connecte)        "ikke tilsluttet"
@@ -125,11 +125,45 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(superpad,buttonStopGoto)      "STOP"
    set caption(superpad,buttonCenter)        "Centrere"
    set caption(superpad,buttonAlign)         "Justering"
-   set caption(superpad,StarWindowTitle)     "Vælg en stjerne"
+   set caption(superpad,StarWindowTitle)     "VÃ¦lg en stjerne"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(superpad,titre)               "SuperPad"
+   set caption(superpad,pad_size)            "Its size"
+   set caption(superpad,center_speed)        "Centering Factor"
+   set caption(superpad,telescope)           "Mount"
+   set caption(superpad,non_connecte)        "not connected"
+   set caption(superpad,ErrorMessageTitle)   "Error"
+   set caption(superpad,CenterStarErrMsg)    "Centering impossible if no image is displayed."
+   set caption(superpad,buttonSkyMap)        "Chart"
+   set caption(superpad,buttonGoto)          "GOTO"
+   set caption(superpad,buttonStopGoto)      "STOP"
+   set caption(superpad,buttonCenter)        "Center"
+   set caption(superpad,buttonAlign)         "Alignment"
+   set caption(superpad,StarWindowTitle)     "Select one star"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(superpad,titre)               "SuperPad"
+   set caption(superpad,pad_size)            "Its size"
+   set caption(superpad,center_speed)        "Centering Factor"
+   set caption(superpad,telescope)           "Mount"
+   set caption(superpad,non_connecte)        "not connected"
+   set caption(superpad,ErrorMessageTitle)   "Error"
+   set caption(superpad,CenterStarErrMsg)    "Centering impossible if no image is displayed."
+   set caption(superpad,buttonSkyMap)        "Chart"
+   set caption(superpad,buttonGoto)          "GOTO"
+   set caption(superpad,buttonStopGoto)      "STOP"
+   set caption(superpad,buttonCenter)        "Center"
+   set caption(superpad,buttonAlign)         "Alignment"
+   set caption(superpad,StarWindowTitle)     "Select one star"
 
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

@@ -1,10 +1,10 @@
 #
 # Fichier : vellemank8056.cap
-# Mise a jour $Id: vellemank8056.cap,v 1.2 2009-03-16 19:13:53 robertdelmas Exp $
+# Mise a jour $Id: vellemank8056.cap,v 1.3 2009-11-05 18:25:05 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -17,14 +17,14 @@ set caption(vellemank8056,refresh)         "Reload"
 set caption(vellemank8056,test)            "Test"
 set caption(vellemank8056,stop)            "Stop"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(vellemank8056,titre)        "Velleman K8056"
-   set caption(vellemank8056,serialPort)   "Port série"
-   set caption(vellemank8056,refresh)      "Rafraîchir"
+   set caption(vellemank8056,serialPort)   "Port sÃ©rie"
+   set caption(vellemank8056,refresh)      "RafraÃ®chir"
    set caption(vellemank8056,test)         "Test"
-   set caption(vellemank8056,stop)         "Arrêter"
+   set caption(vellemank8056,stop)         "ArrÃªter"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -48,7 +48,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(vellemank8056,titre)        "Velleman K8056"
-   set caption(vellemank8056,serialPort)   "Serial Anschlüss"
+   set caption(vellemank8056,serialPort)   "Serial AnschlÃ¼ss"
    set caption(vellemank8056,refresh)      "Aktualisieren"
    set caption(vellemank8056,test)         "Test"
    set caption(vellemank8056,stop)         "Halten"
@@ -57,7 +57,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(vellemank8056,titre)        "Velleman K8056"
-   set caption(vellemank8056,serialPort)   "Porta série"
+   set caption(vellemank8056,serialPort)   "Porta sÃ©rie"
    set caption(vellemank8056,refresh)      "Actualizar"
    set caption(vellemank8056,test)         "Teste"
    set caption(vellemank8056,stop)         "Parar"
@@ -67,13 +67,31 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(vellemank8056,titre)        "Velleman K8056"
    set caption(vellemank8056,serialPort)   "Seriel port"
-   set caption(vellemank8056,refresh)      "Genindlæs"
+   set caption(vellemank8056,refresh)      "GenindlÃ¦s"
+   set caption(vellemank8056,test)         "Test"
+   set caption(vellemank8056,stop)         "Stop"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(vellemank8056,titre)        "Velleman K8056"
+   set caption(vellemank8056,serialPort)   "Serial Port"
+   set caption(vellemank8056,refresh)      "Reload"
+   set caption(vellemank8056,test)         "Test"
+   set caption(vellemank8056,stop)         "Stop"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(vellemank8056,titre)        "Velleman K8056"
+   set caption(vellemank8056,serialPort)   "Serial Port"
+   set caption(vellemank8056,refresh)      "Reload"
    set caption(vellemank8056,test)         "Test"
    set caption(vellemank8056,stop)         "Stop"
 
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

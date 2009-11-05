@@ -1,10 +1,10 @@
 #
 # Fichier : th7852a.cap
-# Mise a jour $Id: th7852a.cap,v 1.5 2008-12-20 14:54:04 robertdelmas Exp $
+# Mise a jour $Id: th7852a.cap,v 1.6 2009-11-05 18:19:29 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -24,7 +24,7 @@ set caption(th7852a,bus_ISA)                      "Bus ISA"
 set caption(th7852a,titre_site_web)               "Reference Web Site:"
 set caption(th7852a,site_web_ref)                 "To be created"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(th7852a,camera)                    "TH7852A"
@@ -37,8 +37,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,2points)                   ":"
    set caption(th7852a,bus_ISA)                   "Bus ISA"
 
-   set caption(th7852a,titre_site_web)            "Site Web de référence :"
-   set caption(th7852a,site_web_ref)              "A créer"
+   set caption(th7852a,titre_site_web)            "Site Web de rÃ©fÃ©rence :"
+   set caption(th7852a,site_web_ref)              "A crÃ©er"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -88,7 +88,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,titre_site_web)            "Referenz Webseite:"
    set caption(th7852a,site_web_ref)              "Zu schaffen"
 
-# *************** Version portugaise ***************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(th7852a,camera)                    "TH7852A"
@@ -101,7 +101,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,2points)                   ":"
    set caption(th7852a,bus_ISA)                   "Bus ISA"
 
-   set caption(th7852a,titre_site_web)            "Site Web de referência:"
+   set caption(th7852a,titre_site_web)            "Site Web de referÃªncia:"
    set caption(th7852a,site_web_ref)              "A criar"
 
 # *************** Version danoise *****************************
@@ -120,9 +120,41 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,titre_site_web)            "Reference Web Site:"
    set caption(th7852a,site_web_ref)              "To be created"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(th7852a,camera)                    "TH7852A"
+
+   set caption(th7852a,miroir_x)                  "Horizontal Mirror"
+   set caption(th7852a,miroir_y)                  "Vertical Mirror"
+   set caption(th7852a,coef)                      "Coefficient"
+
+   set caption(th7852a,port_camera)               "TH7852A Port"
+   set caption(th7852a,2points)                   ":"
+   set caption(th7852a,bus_ISA)                   "Bus ISA"
+
+   set caption(th7852a,titre_site_web)            "Reference Web Site:"
+   set caption(th7852a,site_web_ref)              "To be created"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(th7852a,camera)                    "TH7852A"
+
+   set caption(th7852a,miroir_x)                  "Horizontal Mirror"
+   set caption(th7852a,miroir_y)                  "Vertical Mirror"
+   set caption(th7852a,coef)                      "Coefficient"
+
+   set caption(th7852a,port_camera)               "TH7852A Port"
+   set caption(th7852a,2points)                   ":"
+   set caption(th7852a,bus_ISA)                   "Bus ISA"
+
+   set caption(th7852a,titre_site_web)            "Reference Web Site:"
+   set caption(th7852a,site_web_ref)              "To be created"
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
