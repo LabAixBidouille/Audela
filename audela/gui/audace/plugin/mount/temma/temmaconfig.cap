@@ -1,10 +1,10 @@
 #
 # Fichier : temmaconfig.cap
-# Mise a jour $Id: temmaconfig.cap,v 1.1 2007-06-19 20:15:25 robertdelmas Exp $
+# Mise a jour $Id: temmaconfig.cap,v 1.2 2009-11-05 22:46:57 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -24,33 +24,33 @@ set caption(temmaconfig,para_mobile_comete)       "Comet, Asteroid or UFO"
 set caption(temmaconfig,2points)                  ":"
 
 set caption(temmaconfig,para_mobile,aide0)        "Use an integral number to enter the travelling speed of your object.\
-                                                 \nLimit Values: ±21541 in RA and ±600 in DEC.\
+                                                 \nLimit Values: Â±21541 in RA and Â±600 in DEC.\
                                                  \n-21541: Sidereal tracking slowed down at 0.75x the sidereal speed.\
                                                  \n+21541: Sidereal tracking accelerated at 1.25x the sidereal speed.\
-                                                 \n-600: Movement at +10°/day in North direction.\
-                                                 \n+600: Movement at -10°/day in South direction."
+                                                 \n-600: Movement at +10Â°/day in North direction.\
+                                                 \n+600: Movement at -10Â°/day in South direction."
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(temmaconfig,ok)                    "OK"
    set caption(temmaconfig,annuler)               "Annuler"
 
    set caption(temmaconfig,para_mobile)           "Suivi d'objets mobiles"
-   set caption(temmaconfig,para_ctl_mobile)       "Contrôle de la vitesse de suivi :"
+   set caption(temmaconfig,para_ctl_mobile)       "ContrÃ´le de la vitesse de suivi :"
    set caption(temmaconfig,para_mobile_ad)        "Vitesse en ascension droite"
-   set caption(temmaconfig,para_mobile_dec)       "Vitesse en déclinaison"
-   set caption(temmaconfig,para_mobile_etoile)    "Suivi sidéral"
-   set caption(temmaconfig,para_mobile_comete)    "Comète, astéroïde ou OVNI"
+   set caption(temmaconfig,para_mobile_dec)       "Vitesse en dÃ©clinaison"
+   set caption(temmaconfig,para_mobile_etoile)    "Suivi sidÃ©ral"
+   set caption(temmaconfig,para_mobile_comete)    "ComÃ¨te, astÃ©roÃ¯de ou OVNI"
 
    set caption(temmaconfig,2points)               ":"
 
-   set caption(temmaconfig,para_mobile,aide0)     "Indiquer sous la forme d'un entier la vitesse de déplacement de votre objet.\
-                                                 \nValeurs limites : +/-21541 en ascension droite et +/-600 en déclinaison.\
-                                                 \n-21541 : Suivi sidéral ralenti à 0,75x la vitesse sidérale.\
-                                                 \n+21541 : Suivi sidéral accéléré à 1,25x la vitesse sidérale.\
-                                                 \n-600 : Mouvement à +10°/jour dans la direction nord.\
-                                                 \n+600 : Mouvement à -10°/jour dans la direction sud."
+   set caption(temmaconfig,para_mobile,aide0)     "Indiquer sous la forme d'un entier la vitesse de dÃ©placement de votre objet.\
+                                                 \nValeurs limites : +/-21541 en ascension droite et +/-600 en dÃ©clinaison.\
+                                                 \n-21541 : Suivi sidÃ©ral ralenti Ã  0,75x la vitesse sidÃ©rale.\
+                                                 \n+21541 : Suivi sidÃ©ral accÃ©lÃ©rÃ© Ã  1,25x la vitesse sidÃ©rale.\
+                                                 \n-600 : Mouvement Ã  +10Â°/jour dans la direction nord.\
+                                                 \n+600 : Mouvement Ã  -10Â°/jour dans la direction sud."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -68,11 +68,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temmaconfig,2points)               ":"
 
    set caption(temmaconfig,para_mobile,aide0)     "Usate un numero intero per indicare la velocita` di spostamento dell' oggetto.\
-                                                 \nValori limite: ±21541 in AR and ±600 in DEC.\
+                                                 \nValori limite: Â±21541 in AR and Â±600 in DEC.\
                                                  \n-21541: Tracciamento siderale rallentato a 0.75x della velocita' siderale.\
                                                  \n+21541: Tracciamento siderale accelerato a 1.25x della velocita` siderale.\
-                                                 \n-600: Movimento a +10°/giorno in direzione Nord.\
-                                                 \n+600: Movimento a -10°/giorno in direzione Sud."
+                                                 \n-600: Movimento a +10Â°/giorno in direzione Nord.\
+                                                 \n+600: Movimento a -10Â°/giorno in direzione Sud."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -80,21 +80,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temmaconfig,ok)                    "OK"
    set caption(temmaconfig,annuler)               "Cancelar"
 
-   set caption(temmaconfig,para_mobile)           "Seguimiento de objetos móviles"
+   set caption(temmaconfig,para_mobile)           "Seguimiento de objetos mÃ³viles"
    set caption(temmaconfig,para_ctl_mobile)       "Ctrl. de la velocidad de seguimiento:"
-   set caption(temmaconfig,para_mobile_ad)        "Velocidad en Ascensión Recta"
-   set caption(temmaconfig,para_mobile_dec)       "Velocidad en Declinación"
-   set caption(temmaconfig,para_mobile_etoile)    "Seguimiento sidéreo"
+   set caption(temmaconfig,para_mobile_ad)        "Velocidad en AscensiÃ³n Recta"
+   set caption(temmaconfig,para_mobile_dec)       "Velocidad en DeclinaciÃ³n"
+   set caption(temmaconfig,para_mobile_etoile)    "Seguimiento sidÃ©reo"
    set caption(temmaconfig,para_mobile_comete)    "Cometa, asteroide u OVNI"
 
    set caption(temmaconfig,2points)               ":"
 
-   set caption(temmaconfig,para_mobile,aide0)     "Introducir un número entero para la velocidad de tu objecto.\
-                                                 \nValores límite: ±21541 en AR y ±600 en DEC.\
+   set caption(temmaconfig,para_mobile,aide0)     "Introducir un nÃºmero entero para la velocidad de tu objecto.\
+                                                 \nValores lÃ­mite: Â±21541 en AR y Â±600 en DEC.\
                                                  \n-21541: Velocidad siderea ralentizada a 0.75x de su valor nominal.\
                                                  \n+21541: Velocidad siderea acelerada a 1.25x de su valor nominal.\
-                                                 \n-600: Movimiento a +10°/día en sentido Norte.\
-                                                 \n+600: Movimiento a +10°/día en sentido Sur."
+                                                 \n-600: Movimiento a +10Â°/dÃ­a en sentido Norte.\
+                                                 \n+600: Movimiento a +10Â°/dÃ­a en sentido Sur."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -112,11 +112,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temmaconfig,2points)               ":"
 
    set caption(temmaconfig,para_mobile,aide0)     "Geben sie das Bewegung Tempo euren Objekt in die Gestalt eines Ganz.\
-                                                 \nGränze Werten: ±21541 in RA und ±600 in DEK.\
+                                                 \nGrÃ¤nze Werten: Â±21541 in RA und Â±600 in DEK.\
                                                  \n-21541: Siderische Folgung bis 0.75 der siderische Geschwindigzeit verlangsamt.\
                                                  \nSiderische Folgung bis 1,25 der siderische Geschwindigzeit verschnellt.\
-                                                 \n-600: Bewegung von +10°/Tag in die nord Richtung.\
-                                                 \n+600: Bewegung von -10°/Tag in die süd Richtung."
+                                                 \n-600: Bewegung von +10Â°/Tag in die nord Richtung.\
+                                                 \n+600: Bewegung von -10Â°/Tag in die sÃ¼d Richtung."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -124,21 +124,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temmaconfig,ok)                    "OK"
    set caption(temmaconfig,annuler)               "Anular"
 
-   set caption(temmaconfig,para_mobile)           "Seguimento de objectos móveis"
-   set caption(temmaconfig,para_ctl_mobile)       "Controlo da velocidade de seguimento :"
-   set caption(temmaconfig,para_mobile_ad)        "Velocidade em ascenção recta"
-   set caption(temmaconfig,para_mobile_dec)       "Velocidade em declinação"
+   set caption(temmaconfig,para_mobile)           "Seguimento de objectos mÃ³veis"
+   set caption(temmaconfig,para_ctl_mobile)       "Controlo da velocidade de seguimento:"
+   set caption(temmaconfig,para_mobile_ad)        "Velocidade em ascenÃ§Ã£o recta"
+   set caption(temmaconfig,para_mobile_dec)       "Velocidade em declinaÃ§Ã£o"
    set caption(temmaconfig,para_mobile_etoile)    "Seguimento sideral"
-   set caption(temmaconfig,para_mobile_comete)    "Cometa, asteróide ou OVNI"
+   set caption(temmaconfig,para_mobile_comete)    "Cometa, asterÃ³ide ou OVNI"
 
    set caption(temmaconfig,2points)               ":"
 
    set caption(temmaconfig,para_mobile,aide0)     "Indicar sobre a forma de inteiro a velocidade de deslocamento do objecto.\
-                                                 \nValores limites : +/-21541 em ascenção recta e +/-600 en declinação.\
-                                                 \n-21541 : Seguimento sideral desacelerado a 0,75x da velocidade sideral.\
-                                                 \n+21541 : Seguimento sideral acelerado a 1,25x da velocidade sideral.\
-                                                 \n-600 : Movimento a +10°/dia na direcção norte.\
-                                                 \n+600 : Movimento a -10°/dia na direcção sul."
+                                                 \nValores limites: +/-21541 em ascenÃ§Ã£o recta e +/-600 en declinaÃ§Ã£o.\
+                                                 \n-21541: Seguimento sideral desacelerado a 0,75x da velocidade sideral.\
+                                                 \n+21541: Seguimento sideral acelerado a 1,25x da velocidade sideral.\
+                                                 \n-600: Movimento a +10Â°/dia na direcÃ§Ã£o norte.\
+                                                 \n+600: Movimento a -10Â°/dia na direcÃ§Ã£o sul."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -156,15 +156,59 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temmaconfig,2points)               ":"
 
    set caption(temmaconfig,para_mobile,aide0)     "Use an integral number to enter the travelling speed of your object.\
-                                                 \nLimit Values: ±21541 in RA and ±600 in DEC.\
+                                                 \nLimit Values: Â±21541 in RA and Â±600 in DEC.\
                                                  \n-21541: Sidereal tracking slowed down at 0.75x the sidereal speed.\
                                                  \n+21541: Sidereal tracking accelerated at 1.25x the sidereal speed.\
-                                                 \n-600: Movement at +10°/day in North direction.\
-                                                 \n+600: Movement at -10°/day in South direction."
+                                                 \n-600: Movement at +10Â°/day in North direction.\
+                                                 \n+600: Movement at -10Â°/day in South direction."
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(temmaconfig,ok)                    "OK"
+   set caption(temmaconfig,annuler)               "Cancel"
+
+   set caption(temmaconfig,para_mobile)           "Tracking of Moving Objects"
+   set caption(temmaconfig,para_ctl_mobile)       "Tracking Speed Control:"
+   set caption(temmaconfig,para_mobile_ad)        "Right Ascension Speed"
+   set caption(temmaconfig,para_mobile_dec)       "Declination Speed"
+   set caption(temmaconfig,para_mobile_etoile)    "Sidereal Tracking"
+   set caption(temmaconfig,para_mobile_comete)    "Comet, Asteroid or UFO"
+
+   set caption(temmaconfig,2points)               ":"
+
+   set caption(temmaconfig,para_mobile,aide0)     "Use an integral number to enter the travelling speed of your object.\
+                                                 \nLimit Values: Â±21541 in RA and Â±600 in DEC.\
+                                                 \n-21541: Sidereal tracking slowed down at 0.75x the sidereal speed.\
+                                                 \n+21541: Sidereal tracking accelerated at 1.25x the sidereal speed.\
+                                                 \n-600: Movement at +10Â°/day in North direction.\
+                                                 \n+600: Movement at -10Â°/day in South direction."
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(temmaconfig,ok)                    "OK"
+   set caption(temmaconfig,annuler)               "Cancel"
+
+   set caption(temmaconfig,para_mobile)           "Tracking of Moving Objects"
+   set caption(temmaconfig,para_ctl_mobile)       "Tracking Speed Control:"
+   set caption(temmaconfig,para_mobile_ad)        "Right Ascension Speed"
+   set caption(temmaconfig,para_mobile_dec)       "Declination Speed"
+   set caption(temmaconfig,para_mobile_etoile)    "Sidereal Tracking"
+   set caption(temmaconfig,para_mobile_comete)    "Comet, Asteroid or UFO"
+
+   set caption(temmaconfig,2points)               ":"
+
+   set caption(temmaconfig,para_mobile,aide0)     "Use an integral number to enter the travelling speed of your object.\
+                                                 \nLimit Values: Â±21541 in RA and Â±600 in DEC.\
+                                                 \n-21541: Sidereal tracking slowed down at 0.75x the sidereal speed.\
+                                                 \n+21541: Sidereal tracking accelerated at 1.25x the sidereal speed.\
+                                                 \n-600: Movement at +10Â°/day in North direction.\
+                                                 \n+600: Movement at -10Â°/day in South direction."
 
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

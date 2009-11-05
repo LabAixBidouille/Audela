@@ -1,10 +1,10 @@
 #
 # Fichier : celestron.cap
-# Mise a jour $Id: celestron.cap,v 1.4 2009-02-12 18:25:24 robertdelmas Exp $
+# Mise a jour $Id: celestron.cap,v 1.5 2009-11-05 22:44:36 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -26,22 +26,22 @@ set caption(celestron,2points)                   ":"
 set caption(celestron,titre_site_web)            "Reference Web Site:"
 set caption(celestron,site_celestron)            "http://www.celestron.com/"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(celestron,monture)                "Celestron"
    set caption(celestron,format_court_long)      "court long"
    set caption(celestron,port)                   "Port"
    set caption(celestron,configurer)             "Configurer"
-   set caption(celestron,controle)               "Contrôle"
+   set caption(celestron,controle)               "ContrÃ´le"
    set caption(celestron,format)                 "Format"
-   set caption(celestron,maj_celestron)          "Mise à jour heure, longitude, latitude et altitude du Celestron"
-   set caption(celestron,raquette_tel)           "Raquette à l'écran"
+   set caption(celestron,maj_celestron)          "Mise Ã  jour heure, longitude, latitude et altitude du Celestron"
+   set caption(celestron,raquette_tel)           "Raquette Ã  l'Ã©cran"
 
    set caption(celestron,port_celestron)         "Port Celestron"
    set caption(celestron,2points)                ":"
 
-   set caption(celestron,titre_site_web)         "Site Web de référence :"
+   set caption(celestron,titre_site_web)         "Site Web de rÃ©fÃ©rence :"
    set caption(celestron,site_celestron)         "http://www.celestron.com/"
 
 # *************** Version italienne ***************************
@@ -89,7 +89,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(celestron,configurer)             "Konfigurieren"
    set caption(celestron,controle)               "Kontroll"
    set caption(celestron,format)                 "Format"
-   set caption(celestron,maj_celestron)          "Zeit, Länge, Breite, Höhe des Celestron Aktualisierung"
+   set caption(celestron,maj_celestron)          "Zeit, LÃ¤nge, Breite, HÃ¶he des Celestron Aktualisierung"
    set caption(celestron,raquette_tel)           "Hand Kontroller am Bildschirm"
 
    set caption(celestron,port_celestron)         "Celestron Port"
@@ -98,22 +98,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(celestron,titre_site_web)         "Referenz Webseite:"
    set caption(celestron,site_celestron)         "http://www.celestron.com/"
 
-# *************** Version portugaise ***************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(celestron,monture)                "Celestron"
    set caption(celestron,format_court_long)      "Curto Longo"
    set caption(celestron,port)                   "Porta"
-   set caption(celestron,configurer)             "Configuração"
+   set caption(celestron,configurer)             "ConfiguraÃ§Ã£o"
    set caption(celestron,controle)               "Controlo"
    set caption(celestron,format)                 "Formato"
    set caption(celestron,maj_celestron)          "Actualizar tempo, longitude, latitude e altitude do Celestron"
-   set caption(celestron,raquette_tel)           "Controlador de mão no ecrã"
+   set caption(celestron,raquette_tel)           "Controlador de mÃ£o no ecrÃ£"
 
    set caption(celestron,port_celestron)         "Porta Celestron"
    set caption(celestron,2points)                ":"
 
-   set caption(celestron,titre_site_web)         "Site Web de referência:"
+   set caption(celestron,titre_site_web)         "Site Web de referÃªncia:"
    set caption(celestron,site_celestron)         "http://www.celestron.com/"
 
 # *************** Version danoise *****************************
@@ -134,9 +134,45 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(celestron,titre_site_web)         "Reference Web Site:"
    set caption(celestron,site_celestron)         "http://www.celestron.com/"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(celestron,monture)                "Celestron"
+   set caption(celestron,format_court_long)      "Short Long"
+   set caption(celestron,port)                   "Port"
+   set caption(celestron,configurer)             "Set up"
+   set caption(celestron,controle)               "Control"
+   set caption(celestron,format)                 "Format"
+   set caption(celestron,maj_celestron)          "Update time, longitude, latitude and altitude of Celestron"
+   set caption(celestron,raquette_tel)           "Hand controller on screen"
+
+   set caption(celestron,port_celestron)         "Celestron Port"
+   set caption(celestron,2points)                ":"
+
+   set caption(celestron,titre_site_web)         "Reference Web Site:"
+   set caption(celestron,site_celestron)         "http://www.celestron.com/"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(celestron,monture)                "Celestron"
+   set caption(celestron,format_court_long)      "Short Long"
+   set caption(celestron,port)                   "Port"
+   set caption(celestron,configurer)             "Set up"
+   set caption(celestron,controle)               "Control"
+   set caption(celestron,format)                 "Format"
+   set caption(celestron,maj_celestron)          "Update time, longitude, latitude and altitude of Celestron"
+   set caption(celestron,raquette_tel)           "Hand controller on screen"
+
+   set caption(celestron,port_celestron)         "Celestron Port"
+   set caption(celestron,2points)                ":"
+
+   set caption(celestron,titre_site_web)         "Reference Web Site:"
+   set caption(celestron,site_celestron)         "http://www.celestron.com/"
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

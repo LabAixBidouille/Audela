@@ -1,10 +1,10 @@
 #
 # Fichier : temma.cap
-# Mise a jour $Id: temma.cap,v 1.10 2008-12-06 18:22:39 robertdelmas Exp $
+# Mise a jour $Id: temma.cap,v 1.11 2009-11-05 22:46:41 robertdelmas Exp $
 #
 
 #=========================================================================
-#   DÈbut de la dÈclaration des textes localisÈs (internationalisation)
+#   D√©but de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -41,37 +41,37 @@ set caption(temma,2points)                       ":"
 set caption(temma,titre_site_web)                "Reference Web Site:"
 set caption(temma,site_temma)                    "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
 
-# *************** Version franÁaise ***************************
+# *************** Version fran√ßaise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(temma,monture)                    "Temma"
    set caption(temma,port)                       "Port"
    set caption(temma,configurer)                 "Configurer"
-   set caption(temma,controle)                   "ContrÙle"
-   set caption(temma,modele)                     "ModËle"
+   set caption(temma,controle)                   "Contr√¥le"
+   set caption(temma,modele)                     "Mod√®le"
    set caption(temma,version)                    "Version :"
    set caption(temma,modele_1)                   "EM-10/200-Temma-PC-Jr"
    set caption(temma,modele_2)                   "EM-200/500-NJP-Temma-PC"
-   set caption(temma,modele_3)                   "SÈrie-Temma2"
+   set caption(temma,modele_3)                   "S√©rie-Temma2"
    set caption(temma,init_module)                "Initialisation de l'interface Temma :"
    set caption(temma,latitude)                   "Latitude :"
    set caption(temma,correc_AD)                  "Correction de la vitesse normale en AD"
-   set caption(temma,correc_Dec)                 "Correction de la vitesse normale en DÈc."
-   set caption(temma,liaison_AD_Dec)             "Corrections AD et DÈc. liÈes"
-   set caption(temma,init_zenith)                "Initialisation au zÈnith"
-   set caption(temma,ctl_mobile)                 "ContrÙle de la vitesse de suivi"
-   set caption(temma,mobile_etoile)              "Suivi sidÈral"
-   set caption(temma,ctl_mobile:)                "ContrÙle de la vitesse de suivi :"
+   set caption(temma,correc_Dec)                 "Correction de la vitesse normale en D√©c."
+   set caption(temma,liaison_AD_Dec)             "Corrections AD et D√©c. li√©es"
+   set caption(temma,init_zenith)                "Initialisation au z√©nith"
+   set caption(temma,ctl_mobile)                 "Contr√¥le de la vitesse de suivi"
+   set caption(temma,mobile_etoile)              "Suivi sid√©ral"
+   set caption(temma,ctl_mobile:)                "Contr√¥le de la vitesse de suivi :"
    set caption(temma,mobile_ad)                  "Vitesse en ascension droite"
-   set caption(temma,mobile_dec)                 "Vitesse en dÈclinaison"
-   set caption(temma,position_telescope)         "Position du tÈlescope :"
-   set caption(temma,change_position_telescope)  "Changer la position d'origine du tÈlescope :"
-   set caption(temma,raquette_tel)               "Raquette ‡ l'Ècran"
+   set caption(temma,mobile_dec)                 "Vitesse en d√©clinaison"
+   set caption(temma,position_telescope)         "Position du t√©lescope :"
+   set caption(temma,change_position_telescope)  "Changer la position d'origine du t√©lescope :"
+   set caption(temma,raquette_tel)               "Raquette √† l'√©cran"
 
    set caption(temma,port_temma)                 "Port Temma"
    set caption(temma,2points)                    ":"
 
-   set caption(temma,titre_site_web)             "Site Web de rÈfÈrence :"
+   set caption(temma,titre_site_web)             "Site Web de r√©f√©rence :"
    set caption(temma,site_temma)                 "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
 
 # *************** Version italienne ***************************
@@ -115,7 +115,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,configurer)                 "Configurar"
    set caption(temma,controle)                   "Control"
    set caption(temma,modele)                     "Modelo"
-   set caption(temma,version)                    "VersiÛn:"
+   set caption(temma,version)                    "Versi√≥n:"
    set caption(temma,modele_1)                   "EM-10/200-Temma-PC-Jr"
    set caption(temma,modele_2)                   "EM-200/500-NJP-Temma-PC"
    set caption(temma,modele_3)                   "Serie-Temma2"
@@ -124,14 +124,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,correc_AD)                  "Ajustes de A.R. Velocidad Normal"
    set caption(temma,correc_Dec)                 "Ajustes de Dec. Velocidad Normal"
    set caption(temma,liaison_AD_Dec)             "Ajustes de AR. y Dec. ligados"
-   set caption(temma,init_zenith)                "InicializaciÛn de Zenit"
+   set caption(temma,init_zenith)                "Inicializaci√≥n de Zenit"
    set caption(temma,ctl_mobile)                 "Ctrl. de la velocidad de seguimiento"
-   set caption(temma,mobile_etoile)              "Seguimiento sidÈreo"
+   set caption(temma,mobile_etoile)              "Seguimiento sid√©reo"
    set caption(temma,ctl_mobile:)                "Ctrl. de la velocidad de seguimiento:"
-   set caption(temma,mobile_ad)                  "Velocidad en AscensiÛn Recta"
-   set caption(temma,mobile_dec)                 "Velocidad en DeclinaciÛn"
-   set caption(temma,position_telescope)         "SituaciÛn del Telescopio:"
-   set caption(temma,change_position_telescope)  "Cambiar la posiciÛn inicial del telescopio:"
+   set caption(temma,mobile_ad)                  "Velocidad en Ascensi√≥n Recta"
+   set caption(temma,mobile_dec)                 "Velocidad en Declinaci√≥n"
+   set caption(temma,position_telescope)         "Situaci√≥n del Telescopio:"
+   set caption(temma,change_position_telescope)  "Cambiar la posici√≥n inicial del telescopio:"
    set caption(temma,raquette_tel)               "Controlador virtual"
 
    set caption(temma,port_temma)                 "Puerto Temma"
@@ -164,7 +164,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,mobile_ad)                  "Rektaszension Tempo"
    set caption(temma,mobile_dec)                 "Deklination Tempo"
    set caption(temma,position_telescope)         "Teleskop Stellung:"
-   set caption(temma,change_position_telescope)  "Die beginn Position des Teleskop ‰ndern:"
+   set caption(temma,change_position_telescope)  "Die beginn Position des Teleskop √§ndern:"
    set caption(temma,raquette_tel)               "Hand Kontroller am Bildschirm"
 
    set caption(temma,port_temma)                 "Temma Port"
@@ -178,32 +178,32 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(temma,monture)                    "Temma"
    set caption(temma,port)                       "Porta"
-   set caption(temma,configurer)                 "ConfiguraÁ„o"
+   set caption(temma,configurer)                 "Configura√ß√£o"
    set caption(temma,controle)                   "Controlo"
    set caption(temma,modele)                     "Modelo"
-   set caption(temma,version)                    "Vers„o:"
+   set caption(temma,version)                    "Vers√£o:"
    set caption(temma,modele_1)                   "EM-10/200-Temma-PC-Jr"
    set caption(temma,modele_2)                   "EM-200/500-NJP-Temma-PC"
    set caption(temma,modele_3)                   "Series-Temma2"
-   set caption(temma,init_module)                "ConfiguraÁ„o do Interface Temma:"
+   set caption(temma,init_module)                "Configura√ß√£o do Interface Temma:"
    set caption(temma,latitude)                   "Latitude:"
-   set caption(temma,correc_AD)                  "Ajuste da velocidade normal de ascenÁ„o recta (AR)"
-   set caption(temma,correc_Dec)                 "Ajuste da velocidade normal de declinaÁ„o (DEC)"
+   set caption(temma,correc_AD)                  "Ajuste da velocidade normal de ascen√ß√£o recta (AR)"
+   set caption(temma,correc_Dec)                 "Ajuste da velocidade normal de declina√ß√£o (DEC)"
    set caption(temma,liaison_AD_Dec)             "Ajustes em AR e DEC efectuados"
-   set caption(temma,init_zenith)                "InicializaÁ„o Zenith"
+   set caption(temma,init_zenith)                "Inicializa√ß√£o Zenith"
    set caption(temma,ctl_mobile)                 "Controlo da Velocidade de Guiagem"
    set caption(temma,mobile_etoile)              "Seguimento sideral"
    set caption(temma,ctl_mobile:)                "Controlo da velocidade de seguimento:"
-   set caption(temma,mobile_ad)                  "Velocidade em ascens„o recta"
-   set caption(temma,mobile_dec)                 "Velocidade em declinaÁ„o"
-   set caption(temma,position_telescope)         "PosiÁ„o do TelescÛpio:"
-   set caption(temma,change_position_telescope)  "Mudar a PosiÁ„o Inicial do TelescÛpio:"
-   set caption(temma,raquette_tel)               "Controlador de m„o no ecr„"
+   set caption(temma,mobile_ad)                  "Velocidade em ascens√£o recta"
+   set caption(temma,mobile_dec)                 "Velocidade em declina√ß√£o"
+   set caption(temma,position_telescope)         "Posi√ß√£o do Telesc√≥pio:"
+   set caption(temma,change_position_telescope)  "Mudar a Posi√ß√£o Inicial do Telesc√≥pio:"
+   set caption(temma,raquette_tel)               "Controlador de m√£o no ecr√£"
 
    set caption(temma,port_temma)                 "Porta Temma"
    set caption(temma,2points)                    ":"
 
-   set caption(temma,titre_site_web)             "Site Web de referÍncia:"
+   set caption(temma,titre_site_web)             "Site Web de refer√™ncia:"
    set caption(temma,site_temma)                 "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
 
 # *************** Version danoise *****************************
@@ -239,9 +239,75 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,titre_site_web)             "Reference Web Site:"
    set caption(temma,site_temma)                 "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(temma,monture)                    "Temma"
+   set caption(temma,port)                       "Port"
+   set caption(temma,configurer)                 "Set up"
+   set caption(temma,controle)                   "Control"
+   set caption(temma,modele)                     "Model"
+   set caption(temma,version)                    "Version:"
+   set caption(temma,modele_1)                   "EM-10/200-Temma-PC-Jr"
+   set caption(temma,modele_2)                   "EM-200/500-NJP-Temma-PC"
+   set caption(temma,modele_3)                   "Series-Temma2"
+   set caption(temma,init_module)                "Temma Interface Setup:"
+   set caption(temma,latitude)                   "Latitude:"
+   set caption(temma,correc_AD)                  "Adjustment of RA Normal Speed"
+   set caption(temma,correc_Dec)                 "Adjustment of Dec. Normal Speed"
+   set caption(temma,liaison_AD_Dec)             "RA and Dec. Adjustments Linked"
+   set caption(temma,init_zenith)                "Zenith Initialization"
+   set caption(temma,ctl_mobile)                 "Tracking Speed Control"
+   set caption(temma,mobile_etoile)              "Sidereal Tracking"
+   set caption(temma,ctl_mobile:)                "Tracking Speed Control:"
+   set caption(temma,mobile_ad)                  "Right Ascension Speed"
+   set caption(temma,mobile_dec)                 "Declination Speed"
+   set caption(temma,position_telescope)         "Telescope Position:"
+   set caption(temma,change_position_telescope)  "Change the Telescope Initial Position:"
+   set caption(temma,raquette_tel)               "Hand controller on screen"
+
+   set caption(temma,port_temma)                 "Temma Port"
+   set caption(temma,2points)                    ":"
+
+   set caption(temma,titre_site_web)             "Reference Web Site:"
+   set caption(temma,site_temma)                 "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(temma,monture)                    "Temma"
+   set caption(temma,port)                       "Port"
+   set caption(temma,configurer)                 "Set up"
+   set caption(temma,controle)                   "Control"
+   set caption(temma,modele)                     "Model"
+   set caption(temma,version)                    "Version:"
+   set caption(temma,modele_1)                   "EM-10/200-Temma-PC-Jr"
+   set caption(temma,modele_2)                   "EM-200/500-NJP-Temma-PC"
+   set caption(temma,modele_3)                   "Series-Temma2"
+   set caption(temma,init_module)                "Temma Interface Setup:"
+   set caption(temma,latitude)                   "Latitude:"
+   set caption(temma,correc_AD)                  "Adjustment of RA Normal Speed"
+   set caption(temma,correc_Dec)                 "Adjustment of Dec. Normal Speed"
+   set caption(temma,liaison_AD_Dec)             "RA and Dec. Adjustments Linked"
+   set caption(temma,init_zenith)                "Zenith Initialization"
+   set caption(temma,ctl_mobile)                 "Tracking Speed Control"
+   set caption(temma,mobile_etoile)              "Sidereal Tracking"
+   set caption(temma,ctl_mobile:)                "Tracking Speed Control:"
+   set caption(temma,mobile_ad)                  "Right Ascension Speed"
+   set caption(temma,mobile_dec)                 "Declination Speed"
+   set caption(temma,position_telescope)         "Telescope Position:"
+   set caption(temma,change_position_telescope)  "Change the Telescope Initial Position:"
+   set caption(temma,raquette_tel)               "Hand controller on screen"
+
+   set caption(temma,port_temma)                 "Temma Port"
+   set caption(temma,2points)                    ":"
+
+   set caption(temma,titre_site_web)             "Reference Web Site:"
+   set caption(temma,site_temma)                 "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
+
 }
 
 #=========================================================================
-#   Fin de la dÈclaration des textes localisÈs (internationalisation)
+#   Fin de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 

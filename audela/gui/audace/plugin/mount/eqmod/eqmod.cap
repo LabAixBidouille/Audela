@@ -1,10 +1,10 @@
 #
 # Fichier : eqmod.cap
-# Mise a jour $Id: eqmod.cap,v 1.7 2009-06-04 16:27:59 robertdelmas Exp $
+# Mise a jour $Id: eqmod.cap,v 1.8 2009-11-05 22:45:23 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -34,30 +34,30 @@ set caption(eqmod,2points)                   ":"
 set caption(eqmod,titre_site_web)            "Reference Web Site:"
 set caption(eqmod,site_eqmod)                "http://eq-mod.sourceforge.net/introindex.html"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(eqmod,monture)                "EQMOD"
    set caption(eqmod,port)                   "Port"
    set caption(eqmod,configurer)             "Configurer"
-   set caption(eqmod,controle)               "Contrôle"
-   set caption(eqmod,raquette_tel)           "Raquette à l'écran"
+   set caption(eqmod,controle)               "ContrÃ´le"
+   set caption(eqmod,raquette_tel)           "Raquette Ã  l'Ã©cran"
 
-   set caption(eqmod,tube_ouest)             "Tube à l'ouest"
-   set caption(eqmod,tube_est)               "Tube à l'est"
+   set caption(eqmod,tube_ouest)             "Tube Ã  l'ouest"
+   set caption(eqmod,tube_est)               "Tube Ã  l'est"
    set caption(eqmod,moteur_on)              "Moteur On"
    set caption(eqmod,N/A)                    "------"
    set caption(eqmod,angle_horaire)          "Angle horaire :"
    set caption(eqmod,AD)                     "Ascension Droite :"
-   set caption(eqmod,DEC)                    "Déclinaison :"
+   set caption(eqmod,DEC)                    "DÃ©clinaison :"
    set caption(eqmod,position_AD)            "Position AD :"
-   set caption(eqmod,position_DEC)           "Position Déc. :"
-   set caption(eqmod,valeurDefaut)           "Valeur par défaut :"
+   set caption(eqmod,position_DEC)           "Position DÃ©c. :"
+   set caption(eqmod,valeurDefaut)           "Valeur par dÃ©faut :"
 
    set caption(eqmod,port_eqmod)             "Port EQMOD"
    set caption(eqmod,2points)                ":"
 
-   set caption(eqmod,titre_site_web)         "Site Web de référence :"
+   set caption(eqmod,titre_site_web)         "Site Web de rÃ©fÃ©rence :"
    set caption(eqmod,site_eqmod)             "http://www.freewebs.com/eq6modfr/"
 
 # *************** Version italienne ***************************
@@ -100,10 +100,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,moteur_on)              "Motor On"
    set caption(eqmod,N/A)                    "------"
    set caption(eqmod,angle_horaire)          "Angulo horario:"
-   set caption(eqmod,AD)                     "Ascensión Recta:"
-   set caption(eqmod,DEC)                    "Declinación:"
-   set caption(eqmod,position_AD)            "Posición AR:"
-   set caption(eqmod,position_DEC)           "Posición Dec.:"
+   set caption(eqmod,AD)                     "AscensiÃ³n Recta:"
+   set caption(eqmod,DEC)                    "DeclinaciÃ³n:"
+   set caption(eqmod,position_AD)            "PosiciÃ³n AR:"
+   set caption(eqmod,position_DEC)           "PosiciÃ³n Dec.:"
    set caption(eqmod,valeurDefaut)           "Valor por defecto:"
 
    set caption(eqmod,port_eqmod)             "Puerto EQMOD"
@@ -138,30 +138,30 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,titre_site_web)         "Referenz Webseite:"
    set caption(eqmod,site_eqmod)             "http://eq-mod.sourceforge.net/introindex.html"
 
-# *************** Version portugaise ***************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(eqmod,monture)                "EQMOD"
    set caption(eqmod,port)                   "Porta"
-   set caption(eqmod,configurer)             "Configuração"
+   set caption(eqmod,configurer)             "ConfiguraÃ§Ã£o"
    set caption(eqmod,controle)               "Controlo"
-   set caption(eqmod,raquette_tel)           "Controlador de mão no ecrã"
+   set caption(eqmod,raquette_tel)           "Controlador de mÃ£o no ecrÃ£"
 
    set caption(eqmod,tube_ouest)             "Tubo a oeste"
    set caption(eqmod,tube_est)               "Tubo a este"
    set caption(eqmod,moteur_on)              "Motor On"
    set caption(eqmod,N/A)                    "------"
-   set caption(eqmod,angle_horaire)          "Ângulo horário:"
-   set caption(eqmod,AD)                     "Ascenção Recta:"
-   set caption(eqmod,DEC)                    "Declinação:"
-   set caption(eqmod,position_AD)            "Posição AR:"
-   set caption(eqmod,position_DEC)           "Posição Dec.:"
+   set caption(eqmod,angle_horaire)          "Ã‚ngulo horÃ¡rio:"
+   set caption(eqmod,AD)                     "AscenÃ§Ã£o Recta:"
+   set caption(eqmod,DEC)                    "DeclinaÃ§Ã£o:"
+   set caption(eqmod,position_AD)            "PosiÃ§Ã£o AR:"
+   set caption(eqmod,position_DEC)           "PosiÃ§Ã£o Dec.:"
    set caption(eqmod,valeurDefaut)           "Valor por defeito:"
 
    set caption(eqmod,port_eqmod)             "Porta EQMOD"
    set caption(eqmod,2points)                ":"
 
-   set caption(eqmod,titre_site_web)         "Site Web de referência:"
+   set caption(eqmod,titre_site_web)         "Site Web de referÃªncia:"
    set caption(eqmod,site_eqmod)             "http://eq-mod.sourceforge.net/introindex.html"
 
 # *************** Version danoise *****************************
@@ -190,9 +190,61 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,titre_site_web)         "Reference Web Site:"
    set caption(eqmod,site_eqmod)             "http://eq-mod.sourceforge.net/introindex.html"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(eqmod,monture)                "EQMOD"
+   set caption(eqmod,port)                   "Port"
+   set caption(eqmod,configurer)             "Set up"
+   set caption(eqmod,controle)               "Control"
+   set caption(eqmod,raquette_tel)           "Hand controller on screen"
+
+   set caption(eqmod,tube_ouest)             "Tube to West"
+   set caption(eqmod,tube_est)               "Tube to East"
+   set caption(eqmod,moteur_on)              "Motor On"
+   set caption(eqmod,N/A)                    "------"
+   set caption(eqmod,angle_horaire)          "Hour Angle:"
+   set caption(eqmod,AD)                     "Right Ascension:"
+   set caption(eqmod,DEC)                    "Declination:"
+   set caption(eqmod,position_AD)            "RA Position:"
+   set caption(eqmod,position_DEC)           "Dec. Position:"
+   set caption(eqmod,valeurDefaut)           "Default Value:"
+
+   set caption(eqmod,port_eqmod)             "EQMOD Port"
+   set caption(eqmod,2points)                ":"
+
+   set caption(eqmod,titre_site_web)         "Reference Web Site:"
+   set caption(eqmod,site_eqmod)             "http://eq-mod.sourceforge.net/introindex.html"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(eqmod,monture)                "EQMOD"
+   set caption(eqmod,port)                   "Port"
+   set caption(eqmod,configurer)             "Set up"
+   set caption(eqmod,controle)               "Control"
+   set caption(eqmod,raquette_tel)           "Hand controller on screen"
+
+   set caption(eqmod,tube_ouest)             "Tube to West"
+   set caption(eqmod,tube_est)               "Tube to East"
+   set caption(eqmod,moteur_on)              "Motor On"
+   set caption(eqmod,N/A)                    "------"
+   set caption(eqmod,angle_horaire)          "Hour Angle:"
+   set caption(eqmod,AD)                     "Right Ascension:"
+   set caption(eqmod,DEC)                    "Declination:"
+   set caption(eqmod,position_AD)            "RA Position:"
+   set caption(eqmod,position_DEC)           "Dec. Position:"
+   set caption(eqmod,valeurDefaut)           "Default Value:"
+
+   set caption(eqmod,port_eqmod)             "EQMOD Port"
+   set caption(eqmod,2points)                ":"
+
+   set caption(eqmod,titre_site_web)         "Reference Web Site:"
+   set caption(eqmod,site_eqmod)             "http://eq-mod.sourceforge.net/introindex.html"
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
