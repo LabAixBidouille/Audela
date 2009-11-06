@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.33 2009-09-20 16:15:43 michelpujol Exp $
+ * $Id: libcam.c,v 1.34 2009-11-06 23:06:51 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -418,8 +418,8 @@ static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, ch
          return TCL_ERROR;
       }
 
-      cam->bufno = CAM_INI[0].numbuf;
-      cam->telno = CAM_INI[0].numtel;
+      cam->bufno = 0;
+      cam->telno = 0;
       cam->timerExpiration = NULL;
       camm = camprops;
       if (camm == NULL) {
@@ -643,72 +643,28 @@ void libcam_GetCurrentFITSDate_function(Tcl_Interp * interp, char *s, char *func
 void libcam_get_tel_coord(Tcl_Interp * interp, double *ra, double *dec, struct camprop *cam, int *status)
 {
    char s[500];
-   int k, argcc;
-   char **argvv = NULL;
-   /* Try to read telescop coordinates (k!=-1 if telescop exists) */
-   //strcpy(s, "tel::list");
-   //Tcl_Eval(interp, s);
-   sprintf(s,"if { $::camerathread::private(mainThreadNo)==0 } { \n\
-         ::tel::list \n\
-      } else { \n\
-         ::thread::send $::camerathread::private(mainThreadNo) ::tel::list \n\
-      }");
-   Tcl_Eval(interp, s);
-
-   *status = 1;
-   k = -1;
-   //printf("libcam.c: libcam_get_tel_coord: interp->result=%s\n",interp->result);
-   if (Tcl_SplitList(interp, interp->result, &argcc, &argvv) == TCL_OK) {
-      //printf("libcam.c: libcam_get_tel_coord: argcc=%d\n",argcc);
-      if (argcc > 0) {
-         for (k = 0; k < argcc; k++) {
-            //printf("libcam.c: libcam_get_tel_coord: k=%d\n",k);
-            if (atoi(argvv[k]) == cam->telno) {
-               break;
-            }
-         }
-      }
-      if (k >= argcc) {
-         k = -1;
-      }
-      Tcl_Free((char *) argvv);
-   }
-   //printf("libcam.c: libcam_get_tel_coord: definitive k=%d\n",k);
-
    *ra = 0.;
    *dec = 0.;
-   if (k != -1) {
-      /* Read the coordinates */
-      sprintf(s,"if { $::camerathread::private(mainThreadNo)==0 } { \n\
-            tel%d coord \n\
-         } else { \n\
-            ::thread::send $::camerathread::private(mainThreadNo) [ list tel%d coord ] \n\
-         }",cam->telno, cam->telno);
-      Tcl_Eval(interp, s);
-      //printf("libcam.c / libcam_get_tel_coord: %s = %s\n",s,interp->result);
-      *ra = 0.;
-      *dec = 0.;
-      if (Tcl_SplitList(interp, interp->result, &argcc, &argvv) == TCL_OK) {
-         if (argcc >= 2) {
-            *status = 0;
-            sprintf(s,"if { $::camerathread::private(mainThreadNo)==0 } { \n\
-                  mc_angle2deg %s \n\
-               } else { \n\
-                  ::thread::send $::camerathread::private(mainThreadNo) [ list mc_angle2deg %s ] \n\
-               }", argvv[0], argvv[0]);
-            Tcl_Eval(interp, s);
-            //printf("libcam.c / libcam_get_tel_coord: %s = %s\n",s,interp->result);
-            *ra = (double) atof(interp->result);
-            sprintf(s,"if { $::camerathread::private(mainThreadNo)==0 } { \n\
-                  mc_angle2deg %s 90 \n\
-               } else { \n\
-                  ::thread::send $::camerathread::private(mainThreadNo) [ list mc_angle2deg %s 90 ] \n\
-               }", argvv[1], argvv[1]);
-            Tcl_Eval(interp, s);
-            //printf("libcam.c / libcam_get_tel_coord: %s = %s\n",s,interp->result);
-            *dec = (double) atof(interp->result);
+   *status = 1;
+   if ( cam->telno != 0 ) {
+      sprintf(s,"tel%d coord", cam->telno );
+      if ( Tcl_Eval(interp, s) == TCL_OK ) {
+         int argcc;
+         char **argvv = NULL;
+
+         if (Tcl_SplitList(interp, interp->result, &argcc, &argvv) == TCL_OK) {
+            if (argcc >= 2) {
+               sprintf(s,"mc_angle2deg %s", argvv[0]);
+               if ( Tcl_Eval(interp, s) == TCL_OK) {
+                  *ra = (double) atof(interp->result);
+                  sprintf(s,"mc_angle2deg %s 90", argvv[1]);
+                  if ( Tcl_Eval(interp, s) == TCL_OK) {
+                     *dec = (double) atof(interp->result);
+                     *status = 0;
+                  }
+               }
+            }
          }
-         Tcl_Free((char *) argvv);
       }
    }
 }
