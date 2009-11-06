@@ -2,16 +2,17 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.40 2009-07-13 21:39:45 robertdelmas Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.41 2009-11-06 18:45:48 michelpujol Exp $
 #
+
+package provide autoguider 1.3
+package require audela 1.5.0
 
 #==============================================================
 #   Declaration du namespace autoguider
 #    initialise le namespace
 #==============================================================
 namespace eval ::autoguider {
-   package provide autoguider 1.2
-   package require audela 1.4.0
 
    #--- Je charge le fichier caption pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] autoguider.cap ]
@@ -138,6 +139,7 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
    set private($visuNo,mountEnabled)      0
    set private($visuNo,acquisitionState)  0
    set private($visuNo,acquisitionResult) ""
+   set private($visuNo,flux)              "0"
    set private($visuNo,dx)                "0.00"
    set private($visuNo,dy)                "0.00"
    set private($visuNo,delay,alpha)       "0.00"
@@ -148,6 +150,8 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
    set private($visuNo,camBufNo)          "0"
    set private($visuNo,cumulCounter)      "0"
    ###set private($visuNo,cumulFileName)     "autoguider_cumul_visu$visuNo"
+
+   set private($visuNo,redColor)     "#ff9582" ; #--- rouge tendre
 
    #--- Petit raccourci bien pratique
    set This $private($visuNo,This)
@@ -245,6 +249,8 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
       button $This.suivi.center -text "$caption(autoguider,centrer)" -height 1 \
         -borderwidth 1 -pady 2 -command "::autoguider::startCenter $visuNo"
 
+      label $This.suivi.fluxLabel    -text "$caption(autoguider,ecart_origine_etoile)"
+      label $This.suivi.fluxValue    -textvariable ::autoguider::private($visuNo,flux) -width 5 -justify right
       label $This.suivi.label_d      -text "$caption(autoguider,ecart_origine_etoile)"
       label $This.suivi.dx           -textvariable ::autoguider::private($visuNo,dx) -width 5
       label $This.suivi.dy           -textvariable ::autoguider::private($visuNo,dy) -width 5
@@ -258,17 +264,19 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
       grid $This.suivi.but_showtarget -row 1 -column 0 -columnspan 3 -sticky {}
       grid $This.suivi.but_showaxis   -row 2 -column 0 -columnspan 3 -sticky {}
       grid $This.suivi.montEnabled    -row 3 -column 0 -columnspan 3 -sticky {}
-      grid $This.suivi.label_d        -row 4 -column 0 -sticky w
-      grid $This.suivi.dx             -row 4 -column 1 -sticky w
-      grid $This.suivi.dy             -row 4 -column 2 -sticky w
-      grid $This.suivi.label_delay    -row 5 -column 0 -sticky w
-      grid $This.suivi.delay_alpha    -row 5 -column 1 -sticky w
-      grid $This.suivi.delay_delta    -row 5 -column 2 -sticky w
-      grid $This.suivi.label_clock    -row 6 -column 0 -sticky w
-      grid $This.suivi.lab_clock      -row 6 -column 1 -columnspan 2
-      grid $This.suivi.search         -row 7 -column 0 -columnspan 3 -sticky ew
-      grid $This.suivi.clear          -row 8 -column 0 -columnspan 3 -sticky ew
-      grid $This.suivi.center         -row 9 -column 0 -columnspan 3 -sticky ew
+      grid $This.suivi.fluxLabel      -row 4 -column 0 -sticky w
+      grid $This.suivi.fluxValue      -row 4 -column 1 -sticky w
+      grid $This.suivi.label_d        -row 5 -column 0 -sticky w
+      grid $This.suivi.dx             -row 5 -column 1 -sticky w
+      grid $This.suivi.dy             -row 5 -column 2 -sticky w
+      grid $This.suivi.label_delay    -row 6 -column 0 -sticky w
+      grid $This.suivi.delay_alpha    -row 6 -column 1 -sticky w
+      grid $This.suivi.delay_delta    -row 6 -column 2 -sticky w
+      grid $This.suivi.label_clock    -row 7 -column 0 -sticky w
+      grid $This.suivi.lab_clock      -row 7 -column 1 -columnspan 2
+      grid $This.suivi.search         -row 8 -column 0 -columnspan 3 -sticky ew
+      grid $This.suivi.clear          -row 9 -column 0 -columnspan 3 -sticky ew
+      grid $This.suivi.center         -row 10 -column 0 -columnspan 3 -sticky ew
       grid $This.suivi -sticky nsew
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $This
@@ -362,9 +370,10 @@ proc ::autoguider::startTool { { visuNo 1 } } {
    pack $private($visuNo,This) -fill y -side top
 
    #--- je change le bind du bouton droit de la souris sur le canvas
-   ::confVisu::createBindCanvas $visuNo <ButtonPress-3> "::autoguider::setOrigin $visuNo %x %y"
+   ##::confVisu::createBindCanvas $visuNo <Button-3> "::autoguider::setOrigin $visuNo %x %y"
+   ::confVisu::addBindDisplay  $visuNo <Button-3> "::autoguider::setOrigin $visuNo %x %y"
    #--- je change le bind du double-clic du bouton gauche de la souris sur le canvas
-   ::confVisu::createBindCanvas $visuNo <Double-1> "::autoguider::setTargetCoord $visuNo %x %y"
+   ::confVisu::createBindCanvas $visuNo <Double-Button-1> "::autoguider::setTargetCoord $visuNo %x %y"
 
    #--- j'active la mise a jour automatique de l'affichage quand on change de camera
    ::confVisu::addCameraListener $visuNo "::autoguider::adaptPanel $visuNo"
@@ -417,9 +426,11 @@ proc ::autoguider::stopTool { visuNo } {
    [::confVisu::getCanvas $visuNo] delete autoguiderstar
 
    #--- je restaure le bind par defaut du bouton droit de la souris
-   ::confVisu::createBindCanvas $visuNo <ButtonPress-3> "default"
+   ###::confVisu::createBindCanvas $visuNo <Button-3> "default"
+   ::confVisu::removeBindDisplay  $visuNo <Button-3> "::autoguider::setOrigin $visuNo %x %y"
+   
    #--- je restaure le bind par defaut du double-clic du bouton gauche de la souris
-   ::confVisu::createBindCanvas $visuNo <Double-1> "default"
+   ::confVisu::createBindCanvas $visuNo <Double-Button-1> "default"
 
    #--- je masque le panneau
    pack forget $private($visuNo,This)
@@ -647,40 +658,56 @@ proc ::autoguider::startGuiding { visuNo } {
 proc ::autoguider::callbackAcquisition { visuNo command args } {
    variable private
 
-   ###console::disp "callbackAcquisition visu=$visuNo command=$command args=$args\n"
-   switch $command  {
-      "autovisu" {
-         if { $::conf(autoguider,showImage) == "1" } {
-            ::confVisu::autovisu $visuNo
-            ###visu1 disp
-         }
-         #--- j'affiche les axes si ce n'est pas deja fait
-         if {  [$private($visuNo,hCanvas) gettags axis ] == "" } {
-            createAlphaDeltaAxis $visuNo $::conf(autoguider,originCoord) $::conf(autoguider,angle)
-         }
-         set private($visuNo,interval) [format "%###0d ms" [lindex $args 0]]
-      }
-      "error" {
-         ###console::disp "callbackGuide visu=$visuNo command=$command $args\n"
-         ::autoguider::stopAcquisition $visuNo
-      }
-      "targetCoord" {
-         set private($visuNo,targetCoord) [lindex $args 0]
-         ::autoguider::moveTarget $visuNo [lindex $args 0]
-         set private($visuNo,dx) [format "%##0.1f" [lindex $args 1]]
-         set private($visuNo,dy) [format "%##0.1f" [lindex $args 2]]
-      }
-      "mountInfo" {
-         set private($visuNo,delay,alpha) "[lindex $args 1] [lindex $args 0]"
-         set private($visuNo,delay,delta) "[lindex $args 3] [lindex $args 2]"
-      }
-      "acquisitionResult" {
-         #--- je recupere la liste des etoiles
-         set private($visuNo,acquisitionResult) [lindex $args 0]
-         ::autoguider::stopAcquisition $visuNo
-      }
-   }
+   set catchError [ catch {
 
+      ###console::disp "callbackAcquisition visu=$visuNo command=$command args=$args\n"
+      switch $command  {
+         "autovisu" {
+            if { $::conf(autoguider,showImage) == "1" } {
+               ::confVisu::autovisu $visuNo
+               ###visu1 disp
+            }
+            #--- j'affiche les axes si ce n'est pas deja fait
+            if {  [$private($visuNo,hCanvas) gettags axis ] == "" } {
+               createAlphaDeltaAxis $visuNo $::conf(autoguider,originCoord) $::conf(autoguider,angle)
+            }
+            set private($visuNo,interval) [format "%###0d ms" [lindex $args 0]]
+         }
+         "error" {
+            console::affiche_erreur "callbackGuide visu=$visuNo command=$command $args\n"
+            ::autoguider::stopAcquisition $visuNo
+         }
+         "targetCoord" {
+            # args : $starStatus $starCoord $dx $dy $maxIntensity $istar $cstar $astar $message
+            set starStatus [lindex $args 0]
+            set private($visuNo,targetCoord) [lindex $args 1]
+            set private($visuNo,dx) [format "%##0.1f" [lindex $args 2]]
+            set private($visuNo,dy) [format "%##0.1f" [lindex $args 3]]
+            set private($visuNo,flux) [format "%##0.0f" [lindex $args 4]]
+            ::autoguider::setFlux $visuNo $starStatus
+            ::autoguider::moveTarget $visuNo $private($visuNo,targetCoord)
+         }
+         "mountInfo" {
+            set private($visuNo,delay,alpha) "[lindex $args 1] [lindex $args 0]"
+            set private($visuNo,delay,delta) "[lindex $args 3] [lindex $args 2]"
+         }
+         "acquisitionResult" {
+            #--- je recupere la liste des etoiles
+            set private($visuNo,acquisitionResult) [lindex $args 0]
+            ::autoguider::stopAcquisition $visuNo
+         }
+      }
+
+   } ]
+
+   #--- je traite les erreur imprevues
+   if { $catchError != 0 } {
+      #--- J'arrete les acquisitions
+      stopAcquisition $visuNo
+      #--- j'affiche et je trace le message d'erreur
+      ::tkutil::displayErrorInfo $::caption(autoguider,titre)
+   }
+      
 }
 
 #------------------------------------------------------------
@@ -739,7 +766,7 @@ proc ::autoguider::setOrigin { visuNo x y } {
    createAlphaDeltaAxis $visuNo $::conf(autoguider,originCoord) $::conf(autoguider,angle)
 
    ::camera::setParam [::confVisu::getCamItem $visuNo] "originCoord" $::conf(autoguider,originCoord)
-
+   return -code break
 }
 
 ##------------------------------------------------------------
@@ -1130,6 +1157,26 @@ proc ::autoguider::setShowAlphaDeltaAxis { visuNo } {
    ###   #--- create axis
    ###   createAlphaDeltaAxis $visuNo $::conf(autoguider,originCoord) $::conf(autoguider,angle)
    ###}
+}
+
+#------------------------------------------------------------
+# setFlux
+#    affiche change la couleur de fond du widget du flux
+#    si l'etoile n'est pas detectee, affiche le fond en rouge
+#    sinon affiche le fond avec la couleur par defaut
+#------------------------------------------------------------
+proc ::autoguider::setFlux { visuNo starStatus } {
+   variable private
+  
+   if { $starStatus == "NO_SIGNAL" } {
+      #--- j'affiche le voyant en rouge
+      $private($visuNo,This).suivi.fluxLabel configure -bg   $private($visuNo,redColor)
+      $private($visuNo,This).suivi.fluxValue configure -bg   $private($visuNo,redColor)
+   } else {
+      #--- j'affiche le voyant avec la couleur par defaut 
+      $private($visuNo,This).suivi.fluxLabel configure -bg   $::audace(color,backColor)
+      $private($visuNo,This).suivi.fluxValue configure -bg   $::audace(color,backColor)
+   }
 }
 
 #------------------------------------------------------------
