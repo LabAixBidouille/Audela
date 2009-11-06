@@ -67,7 +67,6 @@ CBuffer::CBuffer() : CDevice()
    initialMipsLo = 0;
    initialMipsHi = 0;
 
-
 }
 
 
@@ -1811,26 +1810,37 @@ void CBuffer::AstroPhotom(int x1, int y1, int x2, int y2, int method, double r1,
  * AstroSlitCentro
  *  calcule le baricentre du signal sur une fente de spectrometre
  *
- *  Parameters IN:
- *    x1,y1,x2,y2 : fenetre de recherche
- *    y0     :  position de la fente
- *    w      :  distance entre les deux levres
- *    w2     :  largeur d'une levre
+ *  @param     x1 fenetre de detection de l'etoile (coin bas gauche )
+ *  @param     y1 fenetre de detection de l'etoile
+ *  @param     x2 fenetre de detection de l'etoile ( coin haud droit )
+ *  @param     y2 fenetre de detection de l'etoile
+ *  @param     starDetectionMode 1=fit de gaussienne  2=barycentre
+ *  @param     pixelMinCount nombre minimal de pixels au dessus du seuil de qualite 
+ *  @param     slitWidth   largeur de la fente (en pixel)
+ *  @param     signalRatio ratio pour convertir le rapport de flux en nombre de pixels  
  *  Parameters OUT:
- *    *xc, *yc :  baricentre du signal sur les levres
- *    *maxi    :  intensite maximale
+ *  @param     starStatus     resultat de la recherche de l'etoile (DISABLED, DETECTED, NO_SIGNAL)
+ *  @param     *xc abcisse du centre de l'etoile
+ *  @param     *yc *rdonnee du centre de l'etoile 
+ *  @param     maxIntensity   intensite max
+ *  @param     message        message d'information
  *  Return :
  *    void
  *
  */
-void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2, int slitWidth, double signalRatio, double *xc, double *yc, TYPE_PIXELS* maxi,double *signal1, double *signal2) {
-   int i, j;                          // Index de parcours de l'image
-   TYPE_PIXELS *p = NULL;
+void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2, 
+                              int starDetectionMode, int pixelMinCount,
+                              int slitWidth, double signalRatio, 
+                              char *starStatus, double *xc, double *yc, 
+                              TYPE_PIXELS* maxIntensity, char * message) 
+{
+   int i, j;                         
+   TYPE_PIXELS *imgPix=NULL, *imgOffset,  *imgPtr;
    double *colSum = NULL;
    double s1, s2, v, tableOffset, pixelOffset;
    int width, height, naxis1, naxis2, y0;
    double gauss[4], ecart;
-   //double sumRatio;
+   double qualityMin;
 
    naxis1 = GetWidth();
    naxis2 = GetHeight();
@@ -1846,149 +1856,185 @@ void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2, int slitWidth, dou
    height = y2-y1+1;
    y0     = height/2;
 
-   p = (TYPE_PIXELS *) malloc(width * height * sizeof(float));
+   strcpy(starStatus,"DISABLED");
+   strcpy(message,"");
+
+   imgPix = (TYPE_PIXELS *) malloc(width * height * sizeof(float));
    // Yassine
-   //pix->GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) p);
-   pix->GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (long) p);
-   *maxi=0;
+   pix->GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (long) imgPix);
 
+         // ----------------------------------------------------
+   // je calcule la qualite qualityMin à= dbgmean + 6.0 * dbgsigma
+   // ----------------------------------------------------
+   int ttResult;
+   int datatype = TFLOAT;
+   double dlocut, dhicut, dmaxi, dmini, dmean, dsigma, dbgmean, dbgsigma, dcontrast;
 
-   /////////////////////////////////////////////////////////////////
-   //je calcule le centre de gravite sur l'axe X et la valeur du pixel maxi
-   /////////////////////////////////////////////////////////////////
-   s1=0;
-   s2=0;
+   ttResult = Libtt_main(TT_PTR_STATIMA,13,imgPix,&datatype,&width,&height,
+      &dlocut,&dhicut,&dmaxi,&dmini,&dmean,&dsigma,&dbgmean,&dbgsigma,&dcontrast);
+   if(ttResult) {
+      free(imgPix);
+      throw CErrorLibtt(ttResult);
+   }
+   *maxIntensity = (TYPE_PIXELS ) dmaxi;
+   //*background   = dbgmean;
+   qualityMin = dbgmean + 6.0 * dbgsigma;
 
-   colSum=(double *) calloc(width,sizeof(double));
-   for (i=0;i<width;i++) {
-      v=0;
-      // projection marginale suivant X (somme de la colonne)
-      for (j=0;j<height;j++) {
-         v+=(double)p[i+j*width];
-         // je repere la valeur maxi des pixels
-         if (p[i+j*width]> *maxi) *maxi=p[i+j*width];
+   // ----------------------------------------------------
+   // j'ajuste une gaussienne pour le calcul de la FWHM,
+   // et je compte les pixels qui sont au dessus du seuil de qualite
+   // ----------------------------------------------------
+   double px[4], py[4];
+   double errx, erry;
+   TYPE_PIXELS *iX=NULL, *iY=NULL;
+   double *dX=NULL, *dY=NULL;
+
+   // je cree les variables de travail pour l'ajustement de la gaussienne
+   iX = (TYPE_PIXELS*)calloc(width,sizeof(TYPE_PIXELS));
+   dX = (double*)calloc(width,sizeof(double));
+   iY = (TYPE_PIXELS*)calloc(height,sizeof(TYPE_PIXELS));
+   dY = (double*)calloc(height,sizeof(double));
+   int pixelCount = 0;
+
+   for(j=0;j<height;j++) {
+      imgOffset  = imgPix  + j * width;
+      for(i=0;i<width;i++) {
+         imgPtr  = imgOffset+i;
+         *(iX+i) += *imgPtr;
+         *(iY+j) += *imgPtr;
+         // j'incremente le compteur des pixels au dessus du seuil
+         if ( (double)*imgPtr > qualityMin ) {
+            pixelCount++;
+         }
       }
-      colSum[i]=v;
    }
 
-   // offset = moyenne des 3 colonnes de chaque cotes
-   tableOffset=(colSum[0]+colSum[1]+colSum[2]+colSum[width-1]+colSum[width-2]+colSum[width-3])/6.0;
-   pixelOffset = tableOffset/height;
+   for(i=0;i<width;i++)  *(dX+i) = (double)*(iX+i);
+   for(i=0;i<height;i++) *(dY+i) = (double)*(iY+i);
 
-   // je soustrait l'offset
-   for (i=0;i<width;i++) {
-      colSum[i] -= tableOffset;
-   }
+   pix->fitgauss1d(width,dX,px,&errx);
+   pix->fitgauss1d(height,dY,py,&erry);
 
-   // calcul du centre de gravite sur l'axe X
-   //if (s2==0) {
-   //   *xc=width/2 ;
-   //} else {
-   //   *xc=s1/s2+1;
-   //}
+   //*measuredFwhmX = px[2];
+   //*measuredFwhmY = py[2];
 
-   /*     gauss[0]=intensite maximum de la gaussienne     */
-   /*     gauss[1]=indice du maximum de la gaussienne     */
-   /*     gauss[2]=fwhm                                   */
-   /*     gauss[3]=fond                                   */
-   pix->fitgauss1d(width,colSum,gauss, &ecart);
+   //je libere la memoire
+   if (iX!=NULL)  free(iX);
+   if (dX!=NULL)  free(dX);
+   if (iY!=NULL)  free(iY);
+   if (dY!=NULL)  free(dY);
 
-   //printf("offset=%.2f max=%.0f x=%.2f fwhm=%.2f fond=%.2f ecart=%.2f\n", pixelOffset, gauss[0], gauss[1], gauss[2] , gauss[3], ecart);
-   if (gauss[1]>0  && gauss[1] < width && gauss[2] > 1.9 ) {
-      *xc = gauss[1];
+   // ----------------------------------------------------
+   // je verifie le seuil de qualite
+   // ----------------------------------------------------
+   if (  pixelCount < pixelMinCount ) {
+      *xc = width/2  +x1;
+      *yc = height/2 +y1;
+      strcpy(starStatus, "NO_SIGNAL");
+      if (imgPix!=NULL)  free(imgPix);
+      return;
+   } 
+      
+   strcpy(starStatus, "DETECTED");
+   
+
+   // je calcule la position de l'etoile    
+   if ( starDetectionMode == 1 ) {
+      /////////////////////////////////////////////////////////////////
+      // je detecte l'etoile par ajustement de gaussienne sur les 2 axes
+      /////////////////////////////////////////////////////////////////
+      *xc = px[1] + x1;
+      *yc = py[1] + y1;
    } else {
-      *xc=width/2 ;
-   }
-
-   // je change de repere de coordonnees
-   *xc += x1;
-
-
-   /////////////////////////////////////////////
-   //je calcule le centre de gravite sur l'axe Y
-   /////////////////////////////////////////////
-   s1=0;
-   s2=0;
-   // je calcule le signal sur la levre haute
-   for (i=0;i<width;i++) {
-      for (j=y0+slitWidth/2;j<height;j++) {
-         v = p[i+j*width] -pixelOffset;
-         if ( v <0 ) v =0;
-         s1+=(double) v;
+      /////////////////////////////////////////////////////////////////
+      //je detecte l'etoile par ajustement de gaussienne sur l'axe X et calcul du centre de gravite sur l'axe Y
+      /////////////////////////////////////////////////////////////////
+      s1=0;
+      s2=0;
+      
+      colSum=(double *) calloc(width,sizeof(double));
+      for (i=0;i<width;i++) {
+         v=0;
+         // projection marginale suivant X (somme de la colonne)
+         for (j=0;j<height;j++) {
+            v+=(double)imgPix[i+j*width];
+         }
+         colSum[i]=v;
       }
-   }
-
-
-   // je calcule le signal sur la levre basse
-   for (i=0;i<width;i++) {
-      for (j=0;j<y0-slitWidth/2;j++) {
-         v = p[i+j*width] -pixelOffset;
-         if ( v <0 ) v =0;
-         s2+=(double)v;
+      
+      // offset = moyenne des 3 colonnes de chaque cotes
+      tableOffset=(colSum[0]+colSum[1]+colSum[2]+colSum[width-1]+colSum[width-2]+colSum[width-3])/6.0;
+      pixelOffset = tableOffset/height;
+      
+      // je soustrait l'offset
+      for (i=0;i<width;i++) {
+         colSum[i] -= tableOffset;
       }
+      
+      // j'ajuste une gaussienne l'axe X
+      //     gauss[0]=intensite maximum de la gaussienne     
+      //     gauss[1]=indice du maximum de la gaussienne     
+      //     gauss[2]=fwhm                                   
+      //     gauss[3]=fond                                   
+      pix->fitgauss1d(width,colSum,gauss, &ecart);
+      
+      //printf("offset=%.2f max=%.0f x=%.2f fwhm=%.2f fond=%.2f ecart=%.2f\n", pixelOffset, gauss[0], gauss[1], gauss[2] , gauss[3], ecart);
+      if (gauss[1]>0  && gauss[1] < width ) {
+         *xc = gauss[1];
+      } else {
+         // je prend le centre de l'image (c'est a dire la position precedente)
+         // si l'ajustement de la gaussienne donne un resultat hors de l'image
+         *xc = width/2 ;
+      }
+      
+      // je change de repere de coordonnees
+      *xc += x1;
+      
+      
+      /////////////////////////////////////////////
+      //je calcule le centre de gravite sur l'axe Y
+      /////////////////////////////////////////////
+      s1=0;
+      s2=0;
+      // je calcule le signal sur la levre haute
+      for (i=0;i<width;i++) {
+         for (j=y0+slitWidth/2;j<height;j++) {
+            v = imgPix[i+j*width] -pixelOffset;
+            if ( v <0 ) v =0;
+            s1+=(double) v;
+         }
+      }
+      
+      
+      // je calcule le signal sur la levre basse
+      for (i=0;i<width;i++) {
+         for (j=0;j<y0-slitWidth/2;j++) {
+            v = imgPix[i+j*width] -pixelOffset;
+            if ( v <0 ) v =0;
+            s2+=(double)v;
+         }
+      }
+            
+      *yc = (double) y0;
+      
+      if ( s1 > s2 ) {
+         v = s1;
+      } else {
+         v = s2;
+      }
+      if ( v != 0.0 ) {
+         *yc += signalRatio * (s1-s2)/v;
+      }
+      
+      // ecretage des valeurs
+      //   if ( *yc < 0.0 )      *yc = 0.0;
+      //   if ( *yc > (double)height ) *yc = (double)height;      
+      
+      // je change de repere de coordonnees
+      *yc += y1;
    }
-
-
-/*
-   if (s1==0.0 && s2 == 0.0)
-      *yc=(double)y0;
-   else if (s2/s1>= 1.0 && s2/s1< 1.1 )
-      *yc=(double)y0;
-   else if (s2/s1>= 1.1 && s2/s1<1.2 )
-      *yc=(double)y0-1.0;
-   else if (s2/s1>= 1.2 && s2/s1<1.4)
-      *yc=(double)y0-2.0;
-   else if (s2/s1>= 1.4 && s2/s1<1.8)
-      *yc=(double)y0-3.0;
-   else if (s2/s1>= 1.8)
-      *yc=(double)y0-4.0;
-
-   else if (s1/s2<1.1)
-      *yc=(double)y0;
-   else if (s1/s2>=  1.1 && s1/s2<1.2 )
-      *yc=(double)y0+1.0;
-   else if (s1/s2>=  1.2 && s1/s2<1.4 )
-      *yc=(double)y0+2.0;
-   else if (s1/s2>=  1.4 && s1/s2<1.8)
-      *yc=(double)y0+3.0;
-   else if (s1/s2>= 1.8 )
-      *yc=(double)y0+4.0;
-*/
-
-/*
-   if (s1==0.0) s1 = 1.0;
-   if (s2==0.0) s2 = 1.0;
-
-   if (s2>=s1) {
-      sumRatio = (s2/s1 - 1.0) * (-1.0);
-   } else  {
-      sumRatio = (s1/s2 - 1.0) ;
-   }
-   // je convertis le ratio des flux en nombre de pixels sur l'axe y
-   *yc=(double)y0 +   sumRatio * signalRatio;
-
- */
-   *yc = (double) y0;
-
-   if ( s1 > s2 ) {
-      v = s1;
-   } else {
-      v = s2;
-   }
-   if ( v != 0.0 ) {
-      *yc += signalRatio * (s1-s2)/v;
-   }
-
-   // ecretage des valeurs
-//   if ( *yc < 0.0 )      *yc = 0.0;
-//   if ( *yc > (double)height ) *yc = (double)height;
-
-
-   // je change de repere de coordonnees
-   *yc += y1;
-   *signal1 = s1;
-   *signal2 = s2;
-   if (p!=NULL) free(p);
+   // je libere la imgPix
+   if (imgPix!=NULL) free(imgPix);
    if (colSum!=NULL) free(colSum);
 
 }
@@ -2019,9 +2065,9 @@ void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2, int slitWidth, dou
  *  @param     pixelMinCount  nombre minimal de pixels (facteur de qualite)
  *  @param     biasValue      valeur du bias
  *  Parameters OUT:
- *  @param     starStatus     resultat de la recherche de la fibre
- *  @param     starX          abcisse du centre de la fibre
- *  @param     starY          ordonnee du centre de la fibre
+ *  @param     starStatus     resultat de la recherche de l'etoile
+ *  @param     starX          abcisse du centre de l'etoile
+ *  @param     starY          ordonnee du centre de l'etoile
  *  @param     fiberStatus    resultat de la recherche de la fibre
  *  @param     fiberX         abcisse du centre de la fibre
  *  @param     fiberY         ordonnee du centre de la fibre
@@ -2052,7 +2098,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
    int naxis1, naxis2;  // taille de l'image
    int width, height;   // taille de la zone a analyser
    TYPE_PIXELS flux,sx,sy;
-   TYPE_PIXELS *imgPix  =NULL, *imgOffset,  *imgPtr;;
+   TYPE_PIXELS *imgPix  =NULL, *imgOffset,  *imgPtr;
    TYPE_PIXELS *maskPix =NULL, *maskOffset, *maskPtr;
    TYPE_PIXELS *sumPix  =NULL, *sumOffset,  *sumPtr;
    TYPE_PIXELS *fiberPix=NULL, *fiberOffset,  *fiberPtr;
