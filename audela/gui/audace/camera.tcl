@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: camera.tcl,v 1.34 2009-09-20 13:54:23 michelpujol Exp $
+# Mise a jour $Id: camera.tcl,v 1.35 2009-11-06 23:09:38 michelpujol Exp $
 #
 # Procedures utilisees par confCam
 #   ::camera::create : cree une camera
@@ -130,6 +130,7 @@ proc ::camera::create { camItem } {
       ::thread::copycommand $private($camItem,threadNo) "ttscript2"
       ::thread::copycommand $private($camItem,threadNo) "mc_date2jd"
       ::thread::copycommand $private($camItem,threadNo) "mc_date2iso8601"
+      ::thread::copycommand $private($camItem,threadNo) "mc_angle2deg"
 
       #--- J'ajoute la commande de liaison longue pose dans la thread de la camera
       if { [::confCam::getPluginProperty $camItem "hasLongExposure"] == 1 } {
