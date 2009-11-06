@@ -125,7 +125,11 @@ int tel_close(struct telprop *tel)
 /* ------------------------------ */
 {
    char s[1024];
-   strcpy(s,"set telcmd $::ascom_variable(1)"); mytel_tcleval(tel,s);
+   strcpy(s,"set telcmd $::ascom_variable(1)"); 
+   // je verifie que le telescope n'a pas ete arrete (existence de la variable ::ascom_variable(1) )
+   if ( mytel_tcleval(tel,s)!=TCL_OK) {
+      return 1;
+   }
    strcpy(s,"$telcmd Connected 0"); mytel_tcleval(tel,s);
    sprintf(s,"unset ::ascom_variable(1)"); mytel_tcleval(tel,s);
    return 0;
@@ -283,7 +287,11 @@ int mytel_radec_init(struct telprop *tel)
    char s[1024];
    char ra[100];
    char dec[100];
-   strcpy(s,"set telcmd $::ascom_variable(1)"); mytel_tcleval(tel,s);
+   strcpy(s,"set telcmd $::ascom_variable(1)"); 
+   // je verifie que le telescope n'a pas ete arrete (existence de la variable ::ascom_variable(1) )
+   if ( mytel_tcleval(tel,s)!=TCL_OK) {
+      return 1;
+   }
    strcpy(s,"$telcmd CamSync"); 
    if ( mytel_tcleval(tel,s)==0) {
       return 1;
@@ -309,7 +317,11 @@ int mytel_radec_state(struct telprop *tel,char *result)
 {
    char s[1024];
    int slewing=0,tracking=0,connected=0;
-   strcpy(s,"set telcmd $::ascom_variable(1)"); mytel_tcleval(tel,s);
+   strcpy(s,"set telcmd $::ascom_variable(1)");
+   // je verifie que le telescope n'a pas ete arrete (existence de la variable ::ascom_variable(1) )
+   if ( mytel_tcleval(tel,s)!=TCL_OK) {
+      return 1;
+   }
    strcpy(s,"$telcmd Connected"); mytel_tcleval(tel,s);
    if (strcmp(tel->interp->result,"1")==0) {
       connected=1;
@@ -331,7 +343,11 @@ int mytel_radec_goto(struct telprop *tel)
    char s[1024];
    char ra[100];
    char dec[100];
-   strcpy(s,"set telcmd $::ascom_variable(1)"); mytel_tcleval(tel,s);
+   strcpy(s,"set telcmd $::ascom_variable(1)"); 
+   // je verifie que le telescope n'a pas ete arrete (existence de la variable ::ascom_variable(1) )
+   if ( mytel_tcleval(tel,s)!=TCL_OK) {
+      return 1;
+   }
    strcpy(s,"$telcmd CanSlew"); 
    if ( mytel_tcleval(tel,s)!=TCL_OK) {
       return 1;
@@ -365,7 +381,11 @@ int mytel_radec_move(struct telprop *tel,char *direction)
    /*sprintf(s,"after 50"); mytel_tcleval(tel,s);*/
    sprintf(s,"lindex [string toupper %s] 0",direction); mytel_tcleval(tel,s);
    strcpy(direc,tel->interp->result);
-   strcpy(s,"set telcmd $::ascom_variable(1)"); mytel_tcleval(tel,s);
+   strcpy(s,"set telcmd $::ascom_variable(1)");
+   // je verifie que le telescope n'a pas ete arrete (existence de la variable ::ascom_variable(1) )
+   if ( mytel_tcleval(tel,s)!=TCL_OK) {
+      return 1;
+   }
    if ((strcmp(direc,"S")==0)||(strcmp(direc,"W")==0)) {
       rate*=-1;
    }
@@ -391,7 +411,11 @@ int mytel_radec_stop(struct telprop *tel,char *direction)
    /*sprintf(s,"after 50"); mytel_tcleval(tel,s);*/
    sprintf(s,"lindex [string toupper %s] 0",direction); mytel_tcleval(tel,s);
    strcpy(direc,tel->interp->result);
-   strcpy(s,"set telcmd $::ascom_variable(1)"); mytel_tcleval(tel,s);
+   strcpy(s,"set telcmd $::ascom_variable(1)");
+   // je verifie que le telescope n'a pas ete arrete (existence de la variable ::ascom_variable(1) )
+   if ( mytel_tcleval(tel,s)!=TCL_OK) {
+      return 1;
+   }
    if ((strcmp(direc,"S")==0)||(strcmp(direc,"W")==0)) {
       rate*=-1;
    }
@@ -435,7 +459,12 @@ int mytel_radec_coord(struct telprop *tel,char *result)
 {
    char s[1024];
    char ss[1024];
-   strcpy(s,"set telcmd $::ascom_variable(1)"); mytel_tcleval(tel,s);
+   strcpy(s,"set telcmd $::ascom_variable(1)");
+   // je verifie que le telescope n'a pas ete arrete (existence de la variable ::ascom_variable(1) )
+   if ( mytel_tcleval(tel,s)!=TCL_OK) {
+      return 1;
+   }
+
    strcpy(s,"$telcmd RightAscension"); 
    if ( mytel_tcleval(tel,s)!=TCL_OK) {
       strcpy(result,tel->interp->result);
@@ -486,7 +515,12 @@ int mytel_focus_coord(struct telprop *tel,char *result)
 int mytel_date_get(struct telprop *tel,char *ligne)
 {
    char s[1024];
-   strcpy(s,"set telcmd $::ascom_variable(1)"); mytel_tcleval(tel,s);
+   strcpy(s,"set telcmd $::ascom_variable(1)"); 
+   // je verifie que le telescope n'a pas ete arrete (existence de la variable ::ascom_variable(1) )
+   if ( mytel_tcleval(tel,s)!=TCL_OK) {
+      return 1;
+   }
+
    strcpy(s,"mc_date2ymdhms [expr [mc_date2jd 1899-12-30T00:00:00]+[$telcmd UTCDate]]"); mytel_tcleval(tel,s);
    sprintf(ligne,"%s",tel->interp->result);
    return 0;
@@ -495,7 +529,11 @@ int mytel_date_get(struct telprop *tel,char *ligne)
 int mytel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s)
 {
    char ss[1024];
-   strcpy(ss,"set telcmd $::ascom_variable(1)"); mytel_tcleval(tel,ss);
+   strcpy(ss,"set telcmd $::ascom_variable(1)");
+   // je verifie que le telescope n'a pas ete arrete (existence de la variable ::ascom_variable(1) )
+   if ( mytel_tcleval(tel,ss)!=TCL_OK) {
+      return 1;
+   }
    sprintf(ss,"$telcmd UTCDate [expr [mc_date2jd [list %d %d %d %d %d %f]]-[mc_date2jd 1899-12-30T00:00:00]]",y,m,d,h,min,s); mytel_tcleval(tel,ss);
    return 0;
 }
@@ -507,7 +545,12 @@ int mytel_home_get(struct telprop *tel,char *ligne)
    char ew[2];
    double latitude;
    double altitude;
-   strcpy(s,"set telcmd $::ascom_variable(1)"); mytel_tcleval(tel,s);
+   strcpy(s,"set telcmd $::ascom_variable(1)");
+   // je verifie que le telescope n'a pas ete arrete (existence de la variable ::ascom_variable(1) )
+   if ( mytel_tcleval(tel,s)!=TCL_OK) {
+      return 1;
+   }
+
    strcpy(s,"$telcmd SiteElevation"); 
    if ( mytel_tcleval(tel,s)!=TCL_OK) {
       return 1;
@@ -537,7 +580,11 @@ int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude
 {
    /* conf(posobs,observateur,gps) */
    char s[1024],ss[1024];
-   strcpy(s,"set telcmd $::ascom_variable(1)"); mytel_tcleval(tel,s);
+   strcpy(s,"set telcmd $::ascom_variable(1)"); 
+   // je verifie que le telescope n'a pas ete arrete (existence de la variable ::ascom_variable(1) )
+   if ( mytel_tcleval(tel,s)!=TCL_OK) {
+      return 1;
+   }
    sprintf(ss,"%f",altitude);
    mytel_decimalsymbol(ss,'.',tel->sDecimal,ss);
    sprintf(s,"$telcmd SiteElevation %s",ss); 
