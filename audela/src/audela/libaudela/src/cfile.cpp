@@ -462,10 +462,10 @@ void CFile::loadRaw(char * filename, int dataTypeOut, CPixels **pixels, CFitsKey
       (*keywords)->Add("DATE-OBS", &gmtDate,            TSTRING, "", "");
       (*keywords)->Add("EXPOSURE", &dataInfo.shutter,   TFLOAT,  "","s");
       (*keywords)->Add("CAMERA",   &camera,             TSTRING, "" , "");
-      (*keywords)->Add("RAW_FILTER",  &filter,          TSTRING, "", "" );
-      (*keywords)->Add("RAW_COLORS",  &dataInfo.colors,  TINT,    "raw colors", "" );
-      (*keywords)->Add("RAW_BLACK",   &dataInfo.black,   TINT,    "raw low cut", "" );
-      (*keywords)->Add("RAW_MAXIMUM", &dataInfo.maximum, TINT,   "raw hight cut", "" );
+      (*keywords)->Add("RAWFILTE",  &filter,            TSTRING, "Raw bayer matrix keys", "" );
+      (*keywords)->Add("RAWCOLOR",  &dataInfo.colors,   TINT,    "Raw color plane number", "" );
+      (*keywords)->Add("RAWBLACK",   &dataInfo.black,   TINT,    "Raw low cut", "" );
+      (*keywords)->Add("RAWMAXI", &dataInfo.maximum,    TINT,    "Raw hight cut", "" );
 
       // l'espace memoire decodedData cree par la librairie libdcjpeg doit etre desalloué par cette meme librairie.
       libdcraw_freeBuffer(decodedData);
@@ -504,26 +504,26 @@ void CFile::cfa2Rgb(CPixels *cfaPixels, CFitsKeywords *cfaKeywords, int interpol
    // je recupere les parametres indispensable a l'interpolation
    dataInfo.width =  cfaPixels->GetWidth();
    dataInfo.height = cfaPixels->GetHeight();
-   if ( (kwd = cfaKeywords->FindKeyword("RAW_COLORS")) != NULL ) {      
+   if ( (kwd = cfaKeywords->FindKeyword("RAWCOLOR")) != NULL ) {      
       dataInfo.colors = kwd->GetIntValue();
    } else {
-      throw CError("CFile::cfa2Rgb: not a RAW image, keyword RAW_COLORS not found");
+      throw CError("CFile::cfa2Rgb: not a RAW image, keyword RAWCOLOR not found");
 
    }
-   if ( (kwd = cfaKeywords->FindKeyword("RAW_BLACK")) != NULL ) {      
+   if ( (kwd = cfaKeywords->FindKeyword("RAWBLACK")) != NULL ) {      
       dataInfo.black = kwd->GetIntValue();
    } else {
-      throw CError("CFile::cfa2Rgb: not a RAW image, keyword RAW_BLACK not found");
+      throw CError("CFile::cfa2Rgb: not a RAW image, keyword RAWBLACK not found");
    }
-   if ( (kwd = cfaKeywords->FindKeyword("RAW_MAXIMUM")) != NULL ) {      
+   if ( (kwd = cfaKeywords->FindKeyword("RAWMAXI")) != NULL ) {      
       dataInfo.maximum = kwd->GetIntValue();
    } else {
-      throw CError("CFile::cfa2Rgb: not a RAW image, keyword RAW_MAXIMUM not found");
+      throw CError("CFile::cfa2Rgb: not a RAW image, keyword RAWMAXI not found");
    }
-   if ( (kwd = cfaKeywords->FindKeyword("RAW_FILTER")) != NULL ) {      
+   if ( (kwd = cfaKeywords->FindKeyword("RAWFILTE")) != NULL ) {      
       sscanf(kwd->GetStringValue(),"%u",&dataInfo.filters);
    } else {
-      throw CError("CFile::cfa2Rgb: not a RAW image, keyword RAW_FILTER not found");
+      throw CError("CFile::cfa2Rgb: not a RAW image, keyword RAWFILTE not found");
    }
 
    // je recupere les valeurs des pixels

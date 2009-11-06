@@ -1551,10 +1551,10 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
                }
                // j'ajoute les mots cles specifique a une image RAW
                sprintf(filter, "%u",dataInfo.filters);
-               keywords->Add("RAW_FILTER",  &filter,          TSTRING, "", "" );
-               keywords->Add("RAW_COLORS",  &dataInfo.colors,  TINT,    "raw colors", "" );
-               keywords->Add("RAW_BLACK",   &dataInfo.black,   TINT,    "raw low cut", "" );
-               keywords->Add("RAW_MAXIMUM", &dataInfo.maximum, TINT,   "raw hight cut", "" );
+               keywords->Add("RAWFILTE", &filter,          TSTRING,  "Raw bayer matrix keys", "" );
+               keywords->Add("RAWCOLOR", &dataInfo.colors,  TINT,    "Raw color plane number", "" );
+               keywords->Add("RAWBLACK", &dataInfo.black,   TINT,    "Raw low cut", "" );
+               keywords->Add("RAWMAXI", &dataInfo.maximum, TINT,     "Raw hight cut", "" );
 
             } else {
                throw CError("libdcraw_decodeBuffer error=%d", result);
