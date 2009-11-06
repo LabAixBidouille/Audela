@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libstruc.h,v 1.13 2009-05-30 09:08:52 michelpujol Exp $
+ * $Id: libstruc.h,v 1.14 2009-11-06 23:06:51 michelpujol Exp $
  */
 
 #ifndef __LIBSTRUC_H__
@@ -145,8 +145,6 @@ struct camini {
     int biny;
     double exptime;
     int shutterindex;
-    int numbuf;
-    int numtel;
     int portindex;
     int coolerindex;
     double check_temperature;
@@ -170,8 +168,6 @@ struct camini {
     1,1,         /* default bin x,y */ \
     1.,          /* default exptime */ \
     1,           /* default state of shutter (1=synchro) */ \
-    1,           /* default num buf for the image */ \
-    1,           /* default num tel for the coordinates taken */ \
     0,           /* default port index (0=lpt1) */ \
     1,           /* default cooler index (1=on) */ \
     -15.,        /* default value for temperature checked */ \

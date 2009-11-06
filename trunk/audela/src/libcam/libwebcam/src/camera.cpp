@@ -71,8 +71,6 @@ struct camini CAM_INI[] = {
     1, 1,            /* default bin x,y */
     1.,              /* default exptime */
     1,               /* default state of shutter (1=synchro) */
-    1,               /* default num buf for the image */
-    1,               /* default num tel for the coordinates taken */
     0,               /* default port index (0=lpt1) */
     1,               /* default cooler index (1=on) */
     -15.,            /* default value for temperature checked */
@@ -94,8 +92,6 @@ struct camini CAM_INI[] = {
     1, 1,            /* default bin x,y */
     1.,              /* default exptime */
     1,               /* default state of shutter (1=synchro) */
-    1,               /* default num buf for the image */
-    1,               /* default num tel for the coordinates taken */
     0,               /* default port index (0=lpt1) */
     1,               /* default cooler index (1=on) */
     -15.,            /* default value for temperature checked */
@@ -117,8 +113,6 @@ struct camini CAM_INI[] = {
     1, 1,            /* default bin x,y */
     1.,              /* default exptime */
     1,               /* default state of shutter (1=synchro) */
-    1,               /* default num buf for the image */
-    1,               /* default num tel for the coordinates taken */
     0,               /* default port index (0=lpt1) */
     1,               /* default cooler index (1=on) */
     -15.,            /* default value for temperature checked */
@@ -140,8 +134,6 @@ struct camini CAM_INI[] = {
     1, 1,            /* default bin x,y */
     1.,              /* default exptime */
     1,               /* default state of shutter (1=synchro) */
-    1,               /* default num buf for the image */
-    1,               /* default num tel for the coordinates taken */
     0,               /* default port index (0=lpt1) */
     1,               /* default cooler index (1=on) */
     -15.,            /* default value for temperature checked */

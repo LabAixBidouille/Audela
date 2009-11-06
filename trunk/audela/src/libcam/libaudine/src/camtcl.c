@@ -911,195 +911,195 @@ int cmdAudineScan(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
     ligne = (char *) calloc(200, sizeof(char));
     ligne2 = (char *) calloc(200, sizeof(char));
     if (argc < 6) {
-	sprintf(ligne, msgtcl, argv[0], argv[1]);
-	Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-	retour = TCL_ERROR;
+       sprintf(ligne, msgtcl, argv[0], argv[1]);
+       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+       retour = TCL_ERROR;
     } else {
-	cam = (struct camprop *) clientData;
-	if (TheScanStruct == NULL) {
-	    if (Tcl_GetInt(interp, argv[2], &w) != TCL_OK) {
-		sprintf(ligne2, "%s\nwidth : must be an integer between 1 and %d", msgtcl, cam->nb_photox);
-		sprintf(ligne, ligne2, argv[0], argv[1]);
-		Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-		retour = TCL_ERROR;
-	    } else if (Tcl_GetInt(interp, argv[3], &h) != TCL_OK) {
-		sprintf(ligne2, "%s\nheight : must be an integer >= 1", msgtcl);
-		sprintf(ligne, ligne2, argv[0], argv[1]);
-		Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-		retour = TCL_ERROR;
-	    } else if (Tcl_GetInt(interp, argv[4], &binx) != TCL_OK) {
-		sprintf(ligne2, "%s\nbin : must be an integer >= 1", msgtcl);
-		sprintf(ligne, ligne2, argv[0], argv[1]);
-		Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-		retour = TCL_ERROR;
-	    } else if (Tcl_GetDouble(interp, argv[5], &dt) != TCL_OK) {
-		sprintf(ligne2, "%s\ndt : must be an floating point number >= 0, expressed in milliseconds", msgtcl);
-		sprintf(ligne, ligne2, argv[0], argv[1]);
-		Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-		retour = TCL_ERROR;
-	    } else {
-		for (i = 6; i < argc; i++) {
-		    if ((strcmp(argv[i], "-offset") == 0) || (strcmp(argv[i], "-firstpix") == 0)) {
-			if (Tcl_GetInt(interp, argv[++i], &offset) != TCL_OK) {
-			    sprintf(ligne, "Usage: %s %s width height bin dt ?-biny biny? ?-firstpix index? ?-blocking? ?-perfo?\nfirstpix index \"%s\" must be an integer", argv[0], argv[1], argv[i]);
-			    Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-			    ok = 0;
-			}
-		    } else if (strcmp(argv[i], "-biny") == 0) {
-			if (Tcl_GetInt(interp, argv[++i], &biny) != TCL_OK) {
-			    sprintf(ligne, "Usage: %s %s width height bin dt ?-biny biny? ?-firstpix index? ?-blocking? ?-perfo?\nfirstpix index \"%s\" must be an integer", argv[0], argv[1], argv[i]);
-			    Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-			    ok = 0;
-			}
-		    } else if (strcmp(argv[i], "-fast") == 0) {
-			loopmilli1 = 0.;
-			if (i < argc - 1) {
-			    loopmilli1 = atof(argv[i + 1]);
-			}
-			blocking = 1;
-		    } else if (strcmp(argv[i], "-perfo") == 0) {
-			keep_perfos = 1;
-		    } else if (strcmp(argv[i], "-tmpfile") == 0) {
-			fileima = 1;
-		    }
-		}
-		if (ok) {
-		    // Pour avertir les gens du status de la camera. 
-		    //sprintf(ligne, "status_cam%d", cam->camno);
-		    //Tcl_SetVar(interp, ligne, "exp", TCL_GLOBAL_ONLY);
-          setCameraStatus(cam,interp,"exp");
-		    idt = (int) dt;
-		    TheScanStruct = (ScanStruct *) calloc(1, sizeof(ScanStruct));
-		    TheScanStruct->clientData = clientData;
-		    TheScanStruct->interp = interp;
-		    TheScanStruct->dateobs = (char *) calloc(32, sizeof(char));
-		    TheScanStruct->dateend = (char *) calloc(32, sizeof(char));
-		    if (offset > cam->nb_photox) {
-			offset = cam->nb_photox;
-		    }
-		    if (offset < 1) {
-			offset = 1;
-		    }
-		    if (w < 1) {
-			w = 1;
-		    }
-		    if (offset + w > cam->nb_photox) {
-			w = cam->nb_photox - (offset - 1);
-		    }
-		    TheScanStruct->width = w;
-		    TheScanStruct->offset = offset;
-		    TheScanStruct->height = h;
-		    if (binx < 1) {
-			binx = 1;
-		    }
-		    if (biny < 1) {
-			biny = 1;
-		    }
-		    TheScanStruct->binx = binx;
-		    TheScanStruct->biny = biny;
-		    if (dt < 0) {
-			dt = -dt;
-		    }
-		    TheScanStruct->dt = (float) dt;
-		    TheScanStruct->y = 0;
-		    TheScanStruct->blocking = blocking;
-		    TheScanStruct->keep_perfos = keep_perfos;
-		    TheScanStruct->fileima = fileima;
-		    TheScanStruct->fima = NULL;
-		    TheScanStruct->dts = (int *) calloc(h, sizeof(int));
-		    TheScanStruct->stop = 0;
-		    TheScanStruct->pix = NULL;
-		    TheScanStruct->pix2 = NULL;
-		    TheScanStruct->loopmilli1 = (unsigned long) loopmilli1;
-		    /* --- reserve de memoire ou fichier pour les datas intermediaires */
-		    if (TheScanStruct->fileima == 1) {
-			TheScanStruct->fima = fopen("#scan.bin", "wb");
-			if (TheScanStruct->fima == NULL) {
-			    TheScanStruct->fileima = 0;
-			}
-		    }
-		    if (TheScanStruct->fileima == 0) {
-			TheScanStruct->pix = (unsigned short *) calloc((unsigned int) (w * h / binx), sizeof(unsigned short));
-			TheScanStruct->pix2 = TheScanStruct->pix;
-			if (TheScanStruct->pix == NULL) {
-			    TheScanStruct->fileima = 1;
-			}
-			if (TheScanStruct->fileima == 1) {
-			    TheScanStruct->fima = fopen("#scan.bin", "wb");
-			    if (TheScanStruct->fima == NULL) {
-				/* traiter ce cas ou l'on ne peut pas enregistrer l'image */
-				/* ni ds la memoire, ni ds le disque */
-			    }
-			}
-		    }
-		    /* mesure de la difference entre le temps systeme et le temps TU */
-		    libcam_GetCurrentFITSDate(interp, ligne);
-		    strcpy(ligne2, ligne);
-		    libcam_GetCurrentFITSDate_function(interp, ligne2, "::audace::date_sys2ut");
-		    sprintf(text, "expr [[mc_date2jd %s]-[mc_date2jd %s]]", ligne2, ligne);
-		    if (Tcl_Eval(interp, text) == TCL_OK) {
-			TheScanStruct->tumoinstl = atof(interp->result);
-		    }
-		    /* coordonnes du telescope au debut de l'acquisition */
-		    libcam_get_tel_coord(interp, &TheScanStruct->ra, &TheScanStruct->dec, cam, &status);
-		    if (status == 1) {
-			TheScanStruct->ra = -1.;
-		    }
-		    /* Nettoyage du ccd */
-		    CAM_DRV.start_exp(cam, "amplion");
-		    Tcl_Eval(interp, "clock seconds");
-		    cam->clockbegin = (int) atoi(interp->result);
-		    TheScanStruct->t0 = libcam_getms();
-		    /* Declenche le premier evenement */
-		    if (blocking == 0) {
-			TheScanStruct->TimerToken = Tcl_CreateTimerHandler(idt, AudineScanCallback, (ClientData) cam);
-			libcam_GetCurrentFITSDate(interp, TheScanStruct->dateobs);
-			libcam_GetCurrentFITSDate_function(interp, TheScanStruct->dateobs, "::audace::date_sys2ut");
-			Tcl_ResetResult(interp);
-		    } else {
-			nb_lignes = TheScanStruct->height;
-			libcam_GetCurrentFITSDate(interp, TheScanStruct->dateobs);
-			libcam_GetCurrentFITSDate_function(interp, TheScanStruct->dateobs, "::audace::date_sys2ut");
-			if (cam->authorized == 1) {
-			    if (cam->interrupt == 1) {
-				libcam_bloquer();
-			    }
-			    for (i = 0; i < nb_lignes; i++) {
-				AudineScanCallback((ClientData) cam);
-				next_occur = (long) TheScanStruct->dt;
-				TheScanStruct->last_delta = (int) next_occur;
-				TheScanStruct->dts[i] = (int) next_occur;
-				for (msloop10 = 0, msloop = 0; msloop < next_occur * TheScanStruct->loopmilli1; msloop++) {
-				    msloops[msloop10] = (unsigned long) (0);
-				    if (++msloop10 > 9) {
-					msloop10 = 0;
-				    }
-				}
-			    }
-			    if (cam->interrupt == 1) {
-				libcam_debloquer();
-			    }
-			    if (cam->interrupt == 1) {
-				update_clock();
-			    }
-			}
-			libcam_GetCurrentFITSDate(interp, TheScanStruct->dateend);
-			libcam_GetCurrentFITSDate_function(interp, TheScanStruct->dateend, "::audace::date_sys2ut");
-			AudineScanTerminateSequence(clientData, cam->camno, "Normally terminated.");
-		    }
-		} else {
-		    retour = TCL_ERROR;
-		}
-	    }
-	} else {
-	    sprintf(ligne, "Camera already in use");
-	    Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-	    retour = TCL_ERROR;
-	}
-    }
-    free(ligne);
-    free(ligne2);
-    return retour;
+       cam = (struct camprop *) clientData;
+       if (TheScanStruct == NULL) {
+          if (Tcl_GetInt(interp, argv[2], &w) != TCL_OK) {
+             sprintf(ligne2, "%s\nwidth : must be an integer between 1 and %d", msgtcl, cam->nb_photox);
+             sprintf(ligne, ligne2, argv[0], argv[1]);
+             Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+             retour = TCL_ERROR;
+          } else if (Tcl_GetInt(interp, argv[3], &h) != TCL_OK) {
+             sprintf(ligne2, "%s\nheight : must be an integer >= 1", msgtcl);
+             sprintf(ligne, ligne2, argv[0], argv[1]);
+             Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+             retour = TCL_ERROR;
+          } else if (Tcl_GetInt(interp, argv[4], &binx) != TCL_OK) {
+             sprintf(ligne2, "%s\nbin : must be an integer >= 1", msgtcl);
+             sprintf(ligne, ligne2, argv[0], argv[1]);
+             Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+             retour = TCL_ERROR;
+          } else if (Tcl_GetDouble(interp, argv[5], &dt) != TCL_OK) {
+             sprintf(ligne2, "%s\ndt : must be an floating point number >= 0, expressed in milliseconds", msgtcl);
+             sprintf(ligne, ligne2, argv[0], argv[1]);
+             Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+             retour = TCL_ERROR;
+          } else {
+             for (i = 6; i < argc; i++) {
+                if ((strcmp(argv[i], "-offset") == 0) || (strcmp(argv[i], "-firstpix") == 0)) {
+                   if (Tcl_GetInt(interp, argv[++i], &offset) != TCL_OK) {
+                      sprintf(ligne, "Usage: %s %s width height bin dt ?-biny biny? ?-firstpix index? ?-blocking? ?-perfo?\nfirstpix index \"%s\" must be an integer", argv[0], argv[1], argv[i]);
+                      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+                      ok = 0;
+                   }
+                } else if (strcmp(argv[i], "-biny") == 0) {
+                   if (Tcl_GetInt(interp, argv[++i], &biny) != TCL_OK) {
+                      sprintf(ligne, "Usage: %s %s width height bin dt ?-biny biny? ?-firstpix index? ?-blocking? ?-perfo?\nfirstpix index \"%s\" must be an integer", argv[0], argv[1], argv[i]);
+                      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+                      ok = 0;
+                   }
+                } else if (strcmp(argv[i], "-fast") == 0) {
+                   loopmilli1 = 0.;
+                   if (i < argc - 1) {
+                      loopmilli1 = atof(argv[i + 1]);
+                   }
+                   blocking = 1;
+                } else if (strcmp(argv[i], "-perfo") == 0) {
+                   keep_perfos = 1;
+                } else if (strcmp(argv[i], "-tmpfile") == 0) {
+                   fileima = 1;
+                }
+             }
+             if (ok) {
+                // Pour avertir les gens du status de la camera. 
+                //sprintf(ligne, "status_cam%d", cam->camno);
+                //Tcl_SetVar(interp, ligne, "exp", TCL_GLOBAL_ONLY);
+                setCameraStatus(cam,interp,"exp");
+                idt = (int) dt;
+                TheScanStruct = (ScanStruct *) calloc(1, sizeof(ScanStruct));
+                TheScanStruct->clientData = clientData;
+                TheScanStruct->interp = interp;
+                TheScanStruct->dateobs = (char *) calloc(32, sizeof(char));
+                TheScanStruct->dateend = (char *) calloc(32, sizeof(char));
+                if (offset > cam->nb_photox) {
+                   offset = cam->nb_photox;
+                }
+                if (offset < 1) {
+                   offset = 1;
+                }
+                if (w < 1) {
+                   w = 1;
+                }
+                if (offset + w > cam->nb_photox) {
+                   w = cam->nb_photox - (offset - 1);
+                }
+                TheScanStruct->width = w;
+                TheScanStruct->offset = offset;
+                TheScanStruct->height = h;
+                if (binx < 1) {
+                   binx = 1;
+                }
+                if (biny < 1) {
+                   biny = 1;
+                }
+                TheScanStruct->binx = binx;
+                TheScanStruct->biny = biny;
+                if (dt < 0) {
+                   dt = -dt;
+                }
+                TheScanStruct->dt = (float) dt;
+                TheScanStruct->y = 0;
+                TheScanStruct->blocking = blocking;
+                TheScanStruct->keep_perfos = keep_perfos;
+                TheScanStruct->fileima = fileima;
+                TheScanStruct->fima = NULL;
+                TheScanStruct->dts = (int *) calloc(h, sizeof(int));
+                TheScanStruct->stop = 0;
+                TheScanStruct->pix = NULL;
+                TheScanStruct->pix2 = NULL;
+                TheScanStruct->loopmilli1 = (unsigned long) loopmilli1;
+                /* --- reserve de memoire ou fichier pour les datas intermediaires */
+                if (TheScanStruct->fileima == 1) {
+                   TheScanStruct->fima = fopen("#scan.bin", "wb");
+                   if (TheScanStruct->fima == NULL) {
+                      TheScanStruct->fileima = 0;
+                   }
+                }
+                if (TheScanStruct->fileima == 0) {
+                   TheScanStruct->pix = (unsigned short *) calloc((unsigned int) (w * h / binx), sizeof(unsigned short));
+                   TheScanStruct->pix2 = TheScanStruct->pix;
+                   if (TheScanStruct->pix == NULL) {
+                      TheScanStruct->fileima = 1;
+                   }
+                   if (TheScanStruct->fileima == 1) {
+                      TheScanStruct->fima = fopen("#scan.bin", "wb");
+                      if (TheScanStruct->fima == NULL) {
+                         /* traiter ce cas ou l'on ne peut pas enregistrer l'image */
+                         /* ni ds la memoire, ni ds le disque */
+                      }
+                   }
+                }
+                /* mesure de la difference entre le temps systeme et le temps TU */
+                libcam_GetCurrentFITSDate(interp, ligne);
+                strcpy(ligne2, ligne);
+                libcam_GetCurrentFITSDate_function(interp, ligne2, "::audace::date_sys2ut");
+                sprintf(text, "expr [[mc_date2jd %s]-[mc_date2jd %s]]", ligne2, ligne);
+                if (Tcl_Eval(interp, text) == TCL_OK) {
+                   TheScanStruct->tumoinstl = atof(interp->result);
+                }
+                /* coordonnes du telescope au debut de l'acquisition */
+                libcam_get_tel_coord(interp, &TheScanStruct->ra, &TheScanStruct->dec, cam, &status);
+                if (status == 1) {
+                   TheScanStruct->ra = -1.;
+                }
+                /* Nettoyage du ccd */
+                CAM_DRV.start_exp(cam, "amplion");
+                Tcl_Eval(interp, "clock seconds");
+                cam->clockbegin = (int) atoi(interp->result);
+                TheScanStruct->t0 = libcam_getms();
+                /* Declenche le premier evenement */
+                if (blocking == 0) {
+                   TheScanStruct->TimerToken = Tcl_CreateTimerHandler(idt, AudineScanCallback, (ClientData) cam);
+                   libcam_GetCurrentFITSDate(interp, TheScanStruct->dateobs);
+                   libcam_GetCurrentFITSDate_function(interp, TheScanStruct->dateobs, "::audace::date_sys2ut");
+                   Tcl_ResetResult(interp);
+                } else {
+                   nb_lignes = TheScanStruct->height;
+                   libcam_GetCurrentFITSDate(interp, TheScanStruct->dateobs);
+                   libcam_GetCurrentFITSDate_function(interp, TheScanStruct->dateobs, "::audace::date_sys2ut");
+                   if (cam->authorized == 1) {
+                      if (cam->interrupt == 1) {
+                         libcam_bloquer();
+                      }
+                      for (i = 0; i < nb_lignes; i++) {
+                         AudineScanCallback((ClientData) cam);
+                         next_occur = (long) TheScanStruct->dt;
+                         TheScanStruct->last_delta = (int) next_occur;
+                         TheScanStruct->dts[i] = (int) next_occur;
+                         for (msloop10 = 0, msloop = 0; msloop < next_occur * TheScanStruct->loopmilli1; msloop++) {
+                            msloops[msloop10] = (unsigned long) (0);
+                            if (++msloop10 > 9) {
+                               msloop10 = 0;
+                            }
+                         }
+                      }
+                      if (cam->interrupt == 1) {
+                         libcam_debloquer();
+                      }
+                      if (cam->interrupt == 1) {
+                         update_clock();
+                      }
+                   }
+                   libcam_GetCurrentFITSDate(interp, TheScanStruct->dateend);
+                   libcam_GetCurrentFITSDate_function(interp, TheScanStruct->dateend, "::audace::date_sys2ut");
+                   AudineScanTerminateSequence(clientData, cam->camno, "Normally terminated.");
+                }
+             } else {
+                retour = TCL_ERROR;
+             }
+         }
+      } else {
+         sprintf(ligne, "Camera already in use");
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         retour = TCL_ERROR;
+      }
+   }
+   free(ligne);
+   free(ligne2);
+   return retour;
 }
 
 /*

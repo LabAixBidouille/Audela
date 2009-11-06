@@ -697,9 +697,9 @@ int CmdFitsConvert3d(ClientData clientData, Tcl_Interp *interp, int argc, char *
    float *ptot=NULL,*p=NULL;
    int nelem,naxis=3;
    CFitsKeywords *keywords;
-
+   
    int nb_arg_min = 5;        // Nombre minimal d'arguments
-
+   
    if(argc<nb_arg_min) {
       sprintf(ligne,"Usage: %s genericname nb extension filename3d",argv[0]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -724,8 +724,8 @@ int CmdFitsConvert3d(ClientData clientData, Tcl_Interp *interp, int argc, char *
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             return TCL_ERROR;
          }
-     	 keywords = new CFitsKeywords();
-     	 keywords->GetFromArray(nbkeys0,&keynames0,&values0,&comments0,&units0,&datatypes0);
+         keywords = new CFitsKeywords();
+         keywords->GetFromArray(nbkeys0,&keynames0,&values0,&comments0,&units0,&datatypes0);
          keywords->Add("NAXIS", &naxis,TINT,"","");
          keywords->Add("NAXIS3",&nb,TINT,"","");
          nbkeys0=keywords->GetKeywordNb();
@@ -738,13 +738,25 @@ int CmdFitsConvert3d(ClientData clientData, Tcl_Interp *interp, int argc, char *
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             return TCL_ERROR;
          }
-     	 keywords->SetToArray(&keynames0,&values0,&comments0,&units0,&datatypes0);
+         keywords->SetToArray(&keynames0,&values0,&comments0,&units0,&datatypes0);
          for (kk=0;kk<nbkeys0;kk++) {
             if (strcmp(keynames0[kk],"NAXIS1")==0) { naxis10=atoi(values0[kk]); }
             if (strcmp(keynames0[kk],"NAXIS2")==0) { naxis20=atoi(values0[kk]); }
             if (strcmp(keynames0[kk],"BITPIX")==0) { bitpix=atoi(values0[kk]); }
             if (strcmp(keynames0[kk],"BZERO")==0) { bzero=atoi(values0[kk]); }
          }
+
+         if ( naxis10 <= 0 ) {
+            sprintf(ligne,"FitsConvert3d error NAXIS1=% in %s", naxis10, filein);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         }
+         if ( naxis20 <= 0 ) {
+            sprintf(ligne,"FitsConvert3d error NAXIS2=% in %s", naxis20, filein);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         }
+   
          ptot=(float*)calloc((unsigned int)sizeof(double),naxis10*naxis20*nb);
          if (ptot==NULL) {
             sprintf(ligne,"Not enough memory for a cubic image of %dx%dx%d pixels",naxis1,naxis2,nb);

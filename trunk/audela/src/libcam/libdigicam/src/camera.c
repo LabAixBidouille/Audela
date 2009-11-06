@@ -27,7 +27,7 @@
  * dans le fichier camera.h
  */
 
-// $Id: camera.c,v 1.12 2009-03-14 14:49:42 michelpujol Exp $
+// $Id: camera.c,v 1.13 2009-11-06 23:06:50 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -71,8 +71,6 @@ struct camini CAM_INI[] = {
       1, 1,			/* default bin x,y */
       1.,			/* default exptime */
       1,				/* default state of shutter (1=synchro) */
-      1,				/* default num buf for the image */
-      1,				/* default num tel for the coordinates taken */
       0,				/* default port index (0=lpt1) */
       1,				/* default cooler index (1=on) */
       -15.,			/* default value for temperature checked */

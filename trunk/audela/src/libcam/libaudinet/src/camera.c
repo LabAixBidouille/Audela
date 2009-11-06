@@ -26,7 +26,7 @@
  * La structure "camprop" peut etre adaptee
  * dans le fichier camera.h
  *
- * $Id: camera.c,v 1.7 2007-01-22 20:53:59 michelpujol Exp $
+ * $Id: camera.c,v 1.8 2009-11-06 23:06:50 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -101,8 +101,6 @@ struct camini CAM_INI[] = {
      1, 1,			/* default bin x,y */
      1.,			/* default exptime */
      1,				/* default state of shutter (1=synchro) */
-     1,				/* default num buf for the image */
-     1,				/* default num tel for the coordinates taken */
      0,				/* default port index (0=lpt1) */
      1,				/* default cooler index (1=on) */
      -15.,			/* default value for temperature checked */
@@ -124,8 +122,6 @@ struct camini CAM_INI[] = {
      1, 1,			/* default bin x,y */
      1.,			/* default exptime */
      1,				/* default state of shutter (1=synchro) */
-     1,				/* default num buf for the image */
-     1,				/* default num tel for the coordinates taken */
      0,				/* default port index (0=lpt1) */
      1,				/* default cooler index (1=on) */
      -15.,			/* default value for temperature checked */
@@ -147,8 +143,6 @@ struct camini CAM_INI[] = {
      1, 1,			/* default bin x,y */
      1.,			/* default exptime */
      1,				/* default state of shutter (1=synchro) */
-     1,				/* default num buf for the image */
-     1,				/* default num tel for the coordinates taken */
      0,				/* default port index (0=lpt1) */
      1,				/* default cooler index (1=on) */
      -15.,			/* default value for temperature checked */
