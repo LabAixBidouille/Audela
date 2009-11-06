@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.35 2009-10-01 09:17:21 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.36 2009-11-06 09:07:27 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -17,65 +17,67 @@ namespace eval ::zadkopad {
    #------------------------------------------------------------
     proc archive_zadkopad { } {
        global ros
-
-       set logdate [gren_nightdate now]
-       set logcurrent "$ros(caption,logfile)/zadkopad.log"
-       set logdestin  "$ros(caption,logfile)/zadkopad_$logdate.log"
-       set logwww     "$ros(caption,logfilehttpd)/zadkopad_$logdate.log"
-       set logcurrentwww     "$ros(caption,logfilehttpd)/zadkopad.log"
-       set dirwww     "$ros(caption,logfilehttpd)"
-       #zadko_info "logdate: $logdate, logcurrent: $logcurrent; logdestin: $logdestin"
-       set error [ catch {
-        set res1 [file exists $logdestin]
-        set res2 [file exists $logcurrent]
-        if {($res2==1)&&($res1==0)} {
-                 zadko_info "Archivage du fichier $ros(common,nameofexecutable).log"
-                 zadko_info "------------------------------------------------------"
-                 file copy -force -- "$logcurrent"  "$logdestin"
-                 catch {file delete "$logcurrent" }
-          } elseif {($res2==1)&&($res1==1)} {
-                zadko_info "Archivage du fichier $ros(common,nameofexecutable).log"
-                zadko_info "------------------------------------------------------"
-                set fopen [open $logcurrent r]
-                set contenu [read $fopen]          
-                close $fopen
-                set fopen [open $logdestin a]
-                puts $fopen $contenu
-                close $fopen
-                catch {file delete "$logcurrent" }
-          }
-       } msg ]
-    
-       if {$error==1} {
-          zadko_info "Log Manager Error (log): $msg"
-       }
-    
-        set error [ catch {
-        set res1 [file exists $logwww]
-        set res2 [file exists $logdestin]
         
-        if {($res2==1)&&($res1==0)} {
-                zadko_info "Archivage web du fichier zadkopad.log"
-                zadko_info "------------------------------------------------------"
-                file mkdir $dirwww
-                file copy -force -- "$logcurrent"  "$dirwww"
-                file copy -force -- "$logdestin"  "$dirwww"
-          } elseif {($res2==1)&&($res1==1)} {
-                zadko_info "Archivage web du fichier zadkopad.log"
-                zadko_info "------------------------------------------------------"
-                set fopen [open $logdestin r]
-                set contenu2 [read $fopen]           
-                close $fopen
-                set fopen [open $logwww a]
-                puts $fopen $contenu
-                puts $fopen $contenu2
-                close $fopen
-          }
-        } msg ]
-    
-       if {$error==1} {
-          zadko_info "Log Manager Error (wwwroot): $msg"
-       }   
+       if {[info exists ros(caption,logfile)]!=0} {  
+           set logdate [gren_nightdate now]
+           set logcurrent "$ros(caption,logfile)/zadkopad.log"
+           set logdestin  "$ros(caption,logfile)/zadkopad_$logdate.log"
+           set logwww     "$ros(caption,logfilehttpd)/zadkopad_$logdate.log"
+           set logcurrentwww     "$ros(caption,logfilehttpd)/zadkopad.log"
+           set dirwww     "$ros(caption,logfilehttpd)"
+           #zadko_info "logdate: $logdate, logcurrent: $logcurrent; logdestin: $logdestin"
+           set error [ catch {
+            set res1 [file exists $logdestin]
+            set res2 [file exists $logcurrent]
+            if {($res2==1)&&($res1==0)} {
+                     zadko_info "Archivage du fichier $ros(common,nameofexecutable).log"
+                     zadko_info "------------------------------------------------------"
+                     file copy -force -- "$logcurrent"  "$logdestin"
+                     catch {file delete "$logcurrent" }
+              } elseif {($res2==1)&&($res1==1)} {
+                    zadko_info "Archivage du fichier $ros(common,nameofexecutable).log"
+                    zadko_info "------------------------------------------------------"
+                    set fopen [open $logcurrent r]
+                    set contenu [read $fopen]          
+                    close $fopen
+                    set fopen [open $logdestin a]
+                    puts $fopen $contenu
+                    close $fopen
+                    catch {file delete "$logcurrent" }
+              }
+           } msg ]
+        
+           if {$error==1} {
+              zadko_info "Log Manager Error (log): $msg"
+           }
+        
+            set error [ catch {
+            set res1 [file exists $logwww]
+            set res2 [file exists $logdestin]
+            
+            if {($res2==1)&&($res1==0)} {
+                    zadko_info "Archivage web du fichier zadkopad.log"
+                    zadko_info "------------------------------------------------------"
+                    file mkdir $dirwww
+                    file copy -force -- "$logcurrent"  "$dirwww"
+                    file copy -force -- "$logdestin"  "$dirwww"
+              } elseif {($res2==1)&&($res1==1)} {
+                    zadko_info "Archivage web du fichier zadkopad.log"
+                    zadko_info "------------------------------------------------------"
+                    set fopen [open $logdestin r]
+                    set contenu2 [read $fopen]           
+                    close $fopen
+                    set fopen [open $logwww a]
+                    puts $fopen $contenu
+                    puts $fopen $contenu2
+                    close $fopen
+              }
+            } msg ]
+        
+           if {$error==1} {
+              zadko_info "Log Manager Error (wwwroot): $msg"
+           }   
+       }
     }
    #------------------------------------------------------------
    #  Creation du fichier log
@@ -103,52 +105,54 @@ namespace eval ::zadkopad {
         
         set mesage ""
         ::console::disp "$msg \n"
-        
-        # --- gestion du fichier log
-        set ros(caption,namelogfile) zadkopad.log
-        set ros(caption,logfile)    "$ros(root,logs)/logs/zadkopad"
-        set ros(caption,logfilehttpd)    "$ros(root,htdocs)/htdocs/ros/logs/zadkopad"
-        # --- Retourne la date de l'instant actuel
-        set date [mc_date2ymdhms now]
-        set date "[format "%04d-%02d-%02d %02d:%02d:%06.3f" [lindex $date 0] [lindex $date 1] [lindex $date 2] [lindex $date 3] [lindex $date 4] [lindex $date 5]]"
-        append mesage "$date "
-        append mesage $msg  
-        
-        catch {
-            file mkdir $ros(caption,logfile)
-            set fid [open "$ros(caption,logfile)/$ros(caption,namelogfile)" "a"]
-            puts $fid $mesage
-            close $fid
-        }
-        catch {
-            file mkdir $ros(caption,logfilehttpd)
-            set fid [open "$ros(caption,logfilehttpd)/$ros(caption,namelogfile)" "a"]
-            puts $fid $mesage
-            close $fid
-        }
-        
-        # --- historique des 50 dernieres lignes
-        if {[info exists ros(common,log,lasts)]==0} {
-            set ros(common,log,lasts) "$mesage"
-        } else {
-            if {[info exists ros(common,log,nlig_lasts)]==0} {
-                set ros(common,log,nlig_lasts) 30
+        if {[info exists ros(root,logs)]!=0} {  
+            # --- gestion du fichier log
+            set ros(caption,namelogfile) zadkopad.log
+            set ros(caption,logfile)    "$ros(root,logs)/logs/zadkopad"
+            set ros(caption,logfilehttpd)    "$ros(root,htdocs)/htdocs/ros/logs/zadkopad"
+   
+            # --- Retourne la date de l'instant actuel
+            set date [mc_date2ymdhms now]
+            set date "[format "%04d-%02d-%02d %02d:%02d:%06.3f" [lindex $date 0] [lindex $date 1] [lindex $date 2] [lindex $date 3] [lindex $date 4] [lindex $date 5]]"
+            append mesage "$date "
+            append mesage $msg  
+            
+            catch {
+                file mkdir $ros(caption,logfile)
+                set fid [open "$ros(caption,logfile)/$ros(caption,namelogfile)" "a"]
+                puts $fid $mesage
+                close $fid
             }
-            set n [llength $ros(common,log,lasts)]
-            set kfin [expr $n-1]
-            set kdeb [expr $kfin-$ros(common,log,nlig_lasts)]
-            if {$kdeb<0} { set kdeb 0 }
-            set ros(common,log,lasts) [lrange $ros(common,log,lasts) $kdeb $kfin]
-            lappend ros(common,log,lasts) "$mesage\n"
-            set lignes ""
-            foreach ligne $ros(common,log,lasts) {
-                append lignes "$ligne"
+            catch {
+                file mkdir $ros(caption,logfilehttpd)
+                set fid [open "$ros(caption,logfilehttpd)/$ros(caption,namelogfile)" "a"]
+                puts $fid $mesage
+                close $fid
             }
-            file mkdir $ros(caption,logfilehttpd)
-            set fid [open "$ros(caption,logfilehttpd)/[file rootname [file tail $ros(caption,namelogfile)]]_last[file extension [file tail $ros(caption,namelogfile)]]" "w"]
-            puts $fid $lignes
-            close $fid
-        }
+            
+            # --- historique des 50 dernieres lignes
+            if {[info exists ros(common,log,lasts)]==0} {
+                set ros(common,log,lasts) "$mesage"
+            } else {
+                if {[info exists ros(common,log,nlig_lasts)]==0} {
+                    set ros(common,log,nlig_lasts) 30
+                }
+                set n [llength $ros(common,log,lasts)]
+                set kfin [expr $n-1]
+                set kdeb [expr $kfin-$ros(common,log,nlig_lasts)]
+                if {$kdeb<0} { set kdeb 0 }
+                set ros(common,log,lasts) [lrange $ros(common,log,lasts) $kdeb $kfin]
+                lappend ros(common,log,lasts) "$mesage\n"
+                set lignes ""
+                foreach ligne $ros(common,log,lasts) {
+                    append lignes "$ligne"
+                }
+                file mkdir $ros(caption,logfilehttpd)
+                set fid [open "$ros(caption,logfilehttpd)/[file rootname [file tail $ros(caption,namelogfile)]]_last[file extension [file tail $ros(caption,namelogfile)]]" "w"]
+                puts $fid $lignes
+                close $fid
+            }
+       }
    }
    #------------------------------------------------------------
    #  initPlugin
@@ -157,52 +161,16 @@ namespace eval ::zadkopad {
    proc initPlugin { } {
 		global port modetelescope stopcalcul paramhorloge telnum ros textloadfile
 		
-		# --- Initialisation des variables ros du telescope
-		set ros(common,nameofexecutable) "telescope"
-		set port(adressePCcontrol) 121.200.43.11
-		set port(maj) 30032
-		set port(tel) 30011
-		set port(gard) 30001
-		set modetelescope 0
-		set stopcalcul 0
-		set paramhorloge(init) 0
-		set telnum 1
-		
-		# hostname and IP number sorted from routables to non routables
-        set res [hostaddress]
-        set res [lrange $res 0 [expr [llength $res]-2]]
-        set non_routables {10.0 172.16 192.168 169.254}
-        set ip0s ""
-        set ip1s ""
-        foreach re $res {
-        	set ip [lindex $re 0].[lindex $re 1]
-        	if {[lsearch $non_routables $ip]>=0} {
-        		lappend ip1s $re
-        	} else {
-        		lappend ip0s $re
-        	}
-        }
-        set ips ""
-        foreach ip0 $ip0s {
-        	lappend ips $ip0
-        }
-        foreach ip1 $ip1s {
-        	lappend ips $ip1
-        }
-        # IP number is preferable that is routable
-        set ip0 [lindex $ips 0]
-        set ros(common,hostname) [lindex [hostaddress] end]
-        set ros(common,ip) [lindex $ip0 0].[lindex $ip0 1].[lindex $ip0 2].[lindex $ip0 3]
-        set ros(common,ip2) [lindex $ip0 0].[lindex $ip0 1].[lindex $ip0 2]
-        set ros(common,ip3) [lindex $ip0 0].[lindex $ip0 1]
-		### pour test ###
-		#set ros(common,hostname) ikon
-        #set ros(common,ip) 121.200.43.5 
-		###
+
 		set textloadfile ""
         set err [catch {source "[pwd]/../ros/root.tcl"}]
         if {$err==1} {
             append textloadfile "load problem of file root.tcl"
+        }   
+        # --- Initialisation des variables ros du telescope
+		set err [catch {source "$ros(root,conf)/conf/src/zadko/conf_zadko.tcl"}]
+        if {$err==1} {
+            append textloadfile "load problem of file conf_zadko.tcl"       
         }   
         set err [catch {source "$ros(root,ros)/src/common/macros.tcl"}]
         if {$err==1} {
@@ -367,11 +335,16 @@ namespace eval ::zadkopad {
    #  return rien
    #------------------------------------------------------------
    proc createPluginInstance { } {
-      global conf
-
-      #--- Affiche la raquette
-      zadkopad::run $conf(zadkopad,padsize) $conf(zadkopad,position)
-
+      global conf ros
+      
+       set err [catch {source "$ros(root,conf)/conf/src/zadko/conf_zadko.tcl"}]
+       if {$err==1} {
+            tk_messageBox -icon error -message "You don't have authorization to use Zadko Pad" -type ok
+			return     
+       }  else {
+           #--- Affiche la raquette
+            zadkopad::run $conf(zadkopad,padsize) $conf(zadkopad,position)
+       } 
       return
    }
 
@@ -383,27 +356,30 @@ namespace eval ::zadkopad {
    #------------------------------------------------------------
    proc deletePluginInstance { } {
       global audace conf paramhorloge modetelescope port ros
-
-      if { [ winfo exists .zadkopad ] } {
-         #--- Enregistre la position de la raquette
-         set geom [wm geometry .zadkopad]
-         set deb [expr 1+[string first + $geom ]]
-         set fin [string length $geom]
-         set conf(zadkopad,position) [string range $geom $deb $fin]
+    
+      set err [catch {source "$ros(root,conf)/conf/src/zadko/conf_zadko.tcl"}]
+      if {$err!=1} {
+          if { [ winfo exists .zadkopad ] } {
+             #--- Enregistre la position de la raquette
+             set geom [wm geometry .zadkopad]
+             set deb [expr 1+[string first + $geom ]]
+             set fin [string length $geom]
+             set conf(zadkopad,position) [string range $geom $deb $fin]
+          }
+    	  set paramhorloge(sortie) "1"
+    	  set modetelescope 0
+    	  if {$ros(common,mode)=="zadko_australia_pcwincam"} {
+        	  #--- rend la main a ros
+        	  modeZADKO 0
+    	  }
+    	  set paramhorloge(init) 0
+    	  #--- archive le fichier log
+    	  archive_zadkopad
+          #--- Supprime la raquette
+          destroy .zadkopad
+    
+          return
       }
-	  set paramhorloge(sortie) "1"
-	  set modetelescope 0
-	  if {$ros(common,mode)=="zadko_australia_pcwincam"} {
-    	  #--- rend la main a ros
-    	  modeZADKO 0
-	  }
-	  set paramhorloge(init) 0
-	  #--- archive le fichier log
-	  archive_zadkopad
-      #--- Supprime la raquette
-      destroy .zadkopad
-
-      return
    }
 
    #------------------------------------------------------------
