@@ -1,10 +1,10 @@
 #
 # Fichier : acqcolor.cap
-# Mise a jour $Id: acqcolor.cap,v 1.10 2009-04-19 12:51:46 robertdelmas Exp $
+# Mise a jour $Id: acqcolor.cap,v 1.11 2009-11-06 19:06:00 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -41,9 +41,9 @@ set caption(acqcolor,2_fenetre)              "2 or"
 set caption(acqcolor,2_fenetre_pth)          "2 PTh"
 set caption(acqcolor,entete_fits_noimage)    "No Image in Memory."
 
-set caption(acqcolor,tiret)            "-"
+set caption(acqcolor,tiret)                  "-"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqcolor,main_title)          "Imagerie couleur"
@@ -51,32 +51,32 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqcolor,save)                "Enregistrer sous..."
    set caption(acqcolor,saveauto)            "Enregistrer"
    set caption(acqcolor,pointage)            "Pointage 2x2"
-   set caption(acqcolor,acqfen)              "Acq. fenêtre"
-   set caption(acqcolor,obtu)                "Régler l'obturateur"
+   set caption(acqcolor,acqfen)              "Acq. fenÃªtre"
+   set caption(acqcolor,obtu)                "RÃ©gler l'obturateur"
    set caption(acqcolor,jpeg)                "Enregistrer en Jpeg"
    set caption(acqcolor,sec)                 "sec. :"
-   set caption(acqcolor,raz)                 "Rinçage CCD"
+   set caption(acqcolor,raz)                 "RinÃ§age CCD"
    set caption(acqcolor,lecture)             "Lecture CCD"
    set caption(acqcolor,total)               "Acquisition 1x1"
-   set caption(acqcolor,acqserie)            "Acq. série"
+   set caption(acqcolor,acqserie)            "Acq. sÃ©rie"
    set caption(acqcolor,nbimage)             "Nombre :"
-   set caption(acqcolor,attente)             "Délai (ms) :"
-   set caption(acqcolor,seprvb)              "Séparation RVB"
+   set caption(acqcolor,attente)             "DÃ©lai (ms) :"
+   set caption(acqcolor,seprvb)              "SÃ©paration RVB"
    set caption(acqcolor,trichro)             "Trichromie"
-   set caption(acqcolor,smedianrvb)          "Médiane"
-   set caption(acqcolor,entete_fits)         "En-tête FITS"
-   set caption(acqcolor,entete_fits_B)       "En-tête FITS - Image bleue"
-   set caption(acqcolor,entete_fits_V)       "En-tête FITS - Image verte"
-   set caption(acqcolor,entete_fits_R)       "En-tête FITS - Image rouge"
-   set caption(acqcolor,luminosite)          "Luminosité"
+   set caption(acqcolor,smedianrvb)          "MÃ©diane"
+   set caption(acqcolor,entete_fits)         "En-tÃªte FITS"
+   set caption(acqcolor,entete_fits_B)       "En-tÃªte FITS - Image bleue"
+   set caption(acqcolor,entete_fits_V)       "En-tÃªte FITS - Image verte"
+   set caption(acqcolor,entete_fits_R)       "En-tÃªte FITS - Image rouge"
+   set caption(acqcolor,luminosite)          "LuminositÃ©"
    set caption(acqcolor,vert)                "Vert"
    set caption(acqcolor,bleu)                "Bleu"
    set caption(acqcolor,1_fenetre)           "1 zone d'affichage ou"
    set caption(acqcolor,2_fenetre)           "2 ou"
    set caption(acqcolor,2_fenetre_pth)       "2 PTh"
-   set caption(acqcolor,entete_fits_noimage) "Il n'y a pas d'image actuellement en mémoire."
+   set caption(acqcolor,entete_fits_noimage) "Il n'y a pas d'image actuellement en mÃ©moire."
 
-   set caption(acqcolor,tiret)         "-"
+   set caption(acqcolor,tiret)               "-"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -103,7 +103,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqcolor,entete_fits_B)       "Intestazione FITS - Immagine blu"
    set caption(acqcolor,entete_fits_V)       "Intestazione FITS - Immagine verde"
    set caption(acqcolor,entete_fits_R)       "Intestazione FITS - Immagine rossa"
-   set caption(acqcolor,luminosite)          "Luminosità"
+   set caption(acqcolor,luminosite)          "LuminositÃ "
    set caption(acqcolor,vert)                "Verde"
    set caption(acqcolor,bleu)                "Blu"
    set caption(acqcolor,1_fenetre)           "1 zona visualizzazione o"
@@ -111,7 +111,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqcolor,2_fenetre_pth)       "2 PTh"
    set caption(acqcolor,entete_fits_noimage) "Nessuna immagine in memoria."
 
-   set caption(acqcolor,tiret)         "-"
+   set caption(acqcolor,tiret)               "-"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -122,17 +122,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqcolor,saveauto)            "Guardar"
    set caption(acqcolor,pointage)            "Apuntar 2x2"
    set caption(acqcolor,acqfen)              "Ventana de Adq."
-   set caption(acqcolor,obtu)                "Configuración obturador"
+   set caption(acqcolor,obtu)                "ConfiguraciÃ³n obturador"
    set caption(acqcolor,jpeg)                "Guardar JPEG"
    set caption(acqcolor,sec)                 "seg.:"
    set caption(acqcolor,raz)                 "Limpiar CCD"
    set caption(acqcolor,lecture)             "Leer CCD"
-   set caption(acqcolor,total)               "Adquisición 1x1"
+   set caption(acqcolor,total)               "AdquisiciÃ³n 1x1"
    set caption(acqcolor,acqserie)            "Adq. de una serie"
    set caption(acqcolor,nbimage)             "Numero:"
    set caption(acqcolor,attente)             "Retraso (ms):"
-   set caption(acqcolor,seprvb)              "Separación RVA"
-   set caption(acqcolor,trichro)             "Proceso de tricromía"
+   set caption(acqcolor,seprvb)              "SeparaciÃ³n RVA"
+   set caption(acqcolor,trichro)             "Proceso de tricromÃ­a"
    set caption(acqcolor,smedianrvb)          "Mediana"
    set caption(acqcolor,entete_fits)         "Cabecera FITS"
    set caption(acqcolor,entete_fits_B)       "Cabecera FITS - Imagen azul"
@@ -142,17 +142,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqcolor,vert)                "Verde"
    set caption(acqcolor,bleu)                "Azul"
    set caption(acqcolor,1_fenetre)           "1 amagen o"
-   set caption(acqcolor,2_fenetre)           "2 imágenes o"
+   set caption(acqcolor,2_fenetre)           "2 imÃ¡genes o"
    set caption(acqcolor,2_fenetre_pth)       "2 PTh"
-   set caption(acqcolor,entete_fits_noimage) "No existe una imágen cargada en la memoria."
+   set caption(acqcolor,entete_fits_noimage) "No existe una imÃ¡gen cargada en la memoria."
 
-   set caption(acqcolor,tiret)         "-"
+   set caption(acqcolor,tiret)               "-"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(acqcolor,main_title)          "Farbe Bildsache"
-   set caption(acqcolor,load)                "Öffnen"
+   set caption(acqcolor,load)                "Ã–ffnen"
    set caption(acqcolor,save)                "Speichern mit..."
    set caption(acqcolor,saveauto)            "Speichern"
    set caption(acqcolor,pointage)            "Schwenken 2x2"
@@ -160,7 +160,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqcolor,obtu)                "Der Verschluss einstellen"
    set caption(acqcolor,jpeg)                "In Jpeg speichern"
    set caption(acqcolor,sec)                 "sek.:"
-   set caption(acqcolor,raz)                 "CCD Löschung"
+   set caption(acqcolor,raz)                 "CCD LÃ¶schung"
    set caption(acqcolor,lecture)             "CCD Lesen"
    set caption(acqcolor,total)               "Belichtung 1x1"
    set caption(acqcolor,acqserie)            "Reihe Anschaf."
@@ -171,17 +171,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqcolor,smedianrvb)          "Medianwert"
    set caption(acqcolor,entete_fits)         "FITS Vorsatz"
    set caption(acqcolor,entete_fits_B)       "FITS Vorsatz - Blaue Bild"
-   set caption(acqcolor,entete_fits_V)       "FITS Vorsatz - Grüne Bild"
+   set caption(acqcolor,entete_fits_V)       "FITS Vorsatz - GrÃ¼ne Bild"
    set caption(acqcolor,entete_fits_R)       "FITS Vorsatz - Rote Bild"
-   set caption(acqcolor,luminosite)          "Lichtstärke"
-   set caption(acqcolor,vert)                "Grün"
+   set caption(acqcolor,luminosite)          "LichtstÃ¤rke"
+   set caption(acqcolor,vert)                "GrÃ¼n"
    set caption(acqcolor,bleu)                "Blau"
    set caption(acqcolor,1_fenetre)           "1 Anzeigenzone oder"
    set caption(acqcolor,2_fenetre)           "2 oder"
    set caption(acqcolor,2_fenetre_pth)       "2 PTh"
    set caption(acqcolor,entete_fits_noimage) "Es ist jetzt kein Bild im Speicher."
 
-   set caption(acqcolor,tiret)         "-"
+   set caption(acqcolor,tiret)               "-"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -191,32 +191,32 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqcolor,save)                "Guardar como..."
    set caption(acqcolor,saveauto)            "Guardar"
    set caption(acqcolor,pointage)            "Pointage 2x2"
-   set caption(acqcolor,acqfen)              "Janela de aquisição"
+   set caption(acqcolor,acqfen)              "Janela de aquisiÃ§Ã£o"
    set caption(acqcolor,obtu)                "Regular o obturador"
    set caption(acqcolor,jpeg)                "Guardar em JPEG"
-   set caption(acqcolor,sec)                 "seg. :"
+   set caption(acqcolor,sec)                 "seg.:"
    set caption(acqcolor,raz)                 "Limpeza CCD"
    set caption(acqcolor,lecture)             "Leitura CCD"
-   set caption(acqcolor,total)               "Aquisição 1x1"
-   set caption(acqcolor,acqserie)            "Aqu. série"
-   set caption(acqcolor,nbimage)             "Número :"
-   set caption(acqcolor,attente)             "atraso (ms) :"
-   set caption(acqcolor,seprvb)              "Separação RGB"
+   set caption(acqcolor,total)               "AquisiÃ§Ã£o 1x1"
+   set caption(acqcolor,acqserie)            "Aqu. sÃ©rie"
+   set caption(acqcolor,nbimage)             "NÃºmero:"
+   set caption(acqcolor,attente)             "atraso (ms):"
+   set caption(acqcolor,seprvb)              "SeparaÃ§Ã£o RGB"
    set caption(acqcolor,trichro)             "Tricromia"
    set caption(acqcolor,smedianrvb)          "Mediana"
-   set caption(acqcolor,entete_fits)         "Cabeçalho FITS"
-   set caption(acqcolor,entete_fits_B)       "Cabeçalho FITS - Imagem azul"
-   set caption(acqcolor,entete_fits_V)       "Cabeçalho FITS - Imagem verde"
-   set caption(acqcolor,entete_fits_R)       "Cabeçalho FITS - Imagem vermelha"
+   set caption(acqcolor,entete_fits)         "CabeÃ§alho FITS"
+   set caption(acqcolor,entete_fits_B)       "CabeÃ§alho FITS - Imagem azul"
+   set caption(acqcolor,entete_fits_V)       "CabeÃ§alho FITS - Imagem verde"
+   set caption(acqcolor,entete_fits_R)       "CabeÃ§alho FITS - Imagem vermelha"
    set caption(acqcolor,luminosite)          "Luminosidade"
    set caption(acqcolor,vert)                "Verde"
    set caption(acqcolor,bleu)                "Azul"
    set caption(acqcolor,1_fenetre)           "1 janela ou"
    set caption(acqcolor,2_fenetre)           "2 ou"
    set caption(acqcolor,2_fenetre_pth)       "2 PTh"
-   set caption(acqcolor,entete_fits_noimage) "Actualmente não existe nenhuma imagem em memória."
+   set caption(acqcolor,entete_fits_noimage) "Actualmente nÃ£o existe nenhuma imagem em memÃ³ria."
 
-   set caption(acqcolor,tiret)         "-"
+   set caption(acqcolor,tiret)               "-"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -251,11 +251,81 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqcolor,2_fenetre_pth)       "2 PTh"
    set caption(acqcolor,entete_fits_noimage) "No Image in Memory."
 
-   set caption(acqcolor,tiret)         "-"
+   set caption(acqcolor,tiret)               "-"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(acqcolor,main_title)          "Color Imaging"
+   set caption(acqcolor,load)                "Open"
+   set caption(acqcolor,save)                "Save as..."
+   set caption(acqcolor,saveauto)            "Save"
+   set caption(acqcolor,pointage)            "Aiming 2x2"
+   set caption(acqcolor,acqfen)              "Window Acq."
+   set caption(acqcolor,obtu)                "Shutter Setting"
+   set caption(acqcolor,jpeg)                "Save as Jpeg"
+   set caption(acqcolor,sec)                 "sec.:"
+   set caption(acqcolor,raz)                 "Wash CCD"
+   set caption(acqcolor,lecture)             "Read CCD"
+   set caption(acqcolor,total)               "Acquisition 1x1"
+   set caption(acqcolor,acqserie)            "Series Acq."
+   set caption(acqcolor,nbimage)             "Number:"
+   set caption(acqcolor,attente)             "Delay (ms):"
+   set caption(acqcolor,seprvb)              "RGB Separation"
+   set caption(acqcolor,trichro)             "Three-colour Process"
+   set caption(acqcolor,smedianrvb)          "Median"
+   set caption(acqcolor,entete_fits)         "FITS Header"
+   set caption(acqcolor,entete_fits_B)       "FITS Header - Blue Image"
+   set caption(acqcolor,entete_fits_V)       "FITS Header - Green Image"
+   set caption(acqcolor,entete_fits_R)       "FITS Header - Red Image"
+   set caption(acqcolor,luminosite)          "Luminosity"
+   set caption(acqcolor,vert)                "Green"
+   set caption(acqcolor,bleu)                "Blue"
+   set caption(acqcolor,1_fenetre)           "1 Display or"
+   set caption(acqcolor,2_fenetre)           "2 or"
+   set caption(acqcolor,2_fenetre_pth)       "2 PTh"
+   set caption(acqcolor,entete_fits_noimage) "No Image in Memory."
+
+   set caption(acqcolor,tiret)               "-"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(acqcolor,main_title)          "Color Imaging"
+   set caption(acqcolor,load)                "Open"
+   set caption(acqcolor,save)                "Save as..."
+   set caption(acqcolor,saveauto)            "Save"
+   set caption(acqcolor,pointage)            "Aiming 2x2"
+   set caption(acqcolor,acqfen)              "Window Acq."
+   set caption(acqcolor,obtu)                "Shutter Setting"
+   set caption(acqcolor,jpeg)                "Save as Jpeg"
+   set caption(acqcolor,sec)                 "sec.:"
+   set caption(acqcolor,raz)                 "Wash CCD"
+   set caption(acqcolor,lecture)             "Read CCD"
+   set caption(acqcolor,total)               "Acquisition 1x1"
+   set caption(acqcolor,acqserie)            "Series Acq."
+   set caption(acqcolor,nbimage)             "Number:"
+   set caption(acqcolor,attente)             "Delay (ms):"
+   set caption(acqcolor,seprvb)              "RGB Separation"
+   set caption(acqcolor,trichro)             "Three-colour Process"
+   set caption(acqcolor,smedianrvb)          "Median"
+   set caption(acqcolor,entete_fits)         "FITS Header"
+   set caption(acqcolor,entete_fits_B)       "FITS Header - Blue Image"
+   set caption(acqcolor,entete_fits_V)       "FITS Header - Green Image"
+   set caption(acqcolor,entete_fits_R)       "FITS Header - Red Image"
+   set caption(acqcolor,luminosite)          "Luminosity"
+   set caption(acqcolor,vert)                "Green"
+   set caption(acqcolor,bleu)                "Blue"
+   set caption(acqcolor,1_fenetre)           "1 Display or"
+   set caption(acqcolor,2_fenetre)           "2 or"
+   set caption(acqcolor,2_fenetre_pth)       "2 PTh"
+   set caption(acqcolor,entete_fits_noimage) "No Image in Memory."
+
+   set caption(acqcolor,tiret)               "-"
 
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

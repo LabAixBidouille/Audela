@@ -1,10 +1,10 @@
 #
 # Fichier : seprvb.cap
-# Mise a jour $Id: seprvb.cap,v 1.7 2008-11-16 21:17:06 robertdelmas Exp $
+# Mise a jour $Id: seprvb.cap,v 1.8 2009-11-06 19:10:21 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -20,17 +20,17 @@ set caption(seprvb,nom_images)      "Generic name for RGB images"
 set caption(seprvb,nbre_images)     "Images Number"
 set caption(seprvb,executer)        "Run"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(seprvb,interro)      "?"
-   set caption(seprvb,titre)        "Séparation des plans couleur"
-   set caption(seprvb,comment)      "Création des images rouges/vertes/bleues"
-   set caption(seprvb,rep_images)   "Répertoire des images"
+   set caption(seprvb,titre)        "SÃ©paration des plans couleur"
+  set caption(seprvb,comment)      "CrÃ©ation des images rouges/vertes/bleues"
+   set caption(seprvb,rep_images)   "RÃ©pertoire des images"
    set caption(seprvb,parcourir)    "..."
-   set caption(seprvb,nom_images)   "Nom générique des images RVB"
+   set caption(seprvb,nom_images)   "Nom gÃ©nÃ©rique des images RVB"
    set caption(seprvb,nbre_images)  "Nombre d'images"
-   set caption(seprvb,executer)     "Exécuter"
+   set caption(seprvb,executer)     "ExÃ©cuter"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -48,12 +48,12 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(seprvb,interro)      "?"
-   set caption(seprvb,titre)        "Separación de los planos de color"
-   set caption(seprvb,comment)      "Creando imágenes rojo/verde/azul"
-   set caption(seprvb,rep_images)   "Directorio de imágenes"
+   set caption(seprvb,titre)        "SeparaciÃ³n de los planos de color"
+   set caption(seprvb,comment)      "Creando imÃ¡genes rojo/verde/azul"
+   set caption(seprvb,rep_images)   "Directorio de imÃ¡genes"
    set caption(seprvb,parcourir)    "..."
-   set caption(seprvb,nom_images)   "Nombre genérico de las imágenes RVA"
-   set caption(seprvb,nbre_images)  "Numero imágenes"
+   set caption(seprvb,nom_images)   "Nombre genÃ©rico de las imÃ¡genes RVA"
+   set caption(seprvb,nbre_images)  "Numero imÃ¡genes"
    set caption(seprvb,executer)     "Ejecutar"
 
 # *************** Version allemande ***************************
@@ -61,10 +61,10 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(seprvb,interro)      "?"
    set caption(seprvb,titre)        "Farben Ebene Trennung"
-   set caption(seprvb,comment)      "Rot/Grün/Blau Bilder Schaffung"
+   set caption(seprvb,comment)      "Rot/GrÃ¼n/Blau Bilder Schaffung"
    set caption(seprvb,rep_images)   "Bilder Verzeichnis"
    set caption(seprvb,parcourir)    "..."
-   set caption(seprvb,nom_images)   "Generischen Nahmen für RGB Bilder"
+   set caption(seprvb,nom_images)   "Generischen Nahmen fÃ¼r RGB Bilder"
    set caption(seprvb,nbre_images)  "Bilder Zahl"
    set caption(seprvb,executer)     "Starten"
 
@@ -72,12 +72,12 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(seprvb,interro)      "?"
-   set caption(seprvb,titre)        "Separação dos planos a cores"
-   set caption(seprvb,comment)      "Criação de imagens vermelhas/verdes/azuis"
-   set caption(seprvb,rep_images)   "Directório das imagens"
+   set caption(seprvb,titre)        "SeparaÃ§Ã£o dos planos a cores"
+   set caption(seprvb,comment)      "CriaÃ§Ã£o de imagens vermelhas/verdes/azuis"
+   set caption(seprvb,rep_images)   "DirectÃ³rio das imagens"
    set caption(seprvb,parcourir)    "..."
-   set caption(seprvb,nom_images)   "Nome genérico das imagens RGB"
-   set caption(seprvb,nbre_images)  "Número das imagens"
+   set caption(seprvb,nom_images)   "Nome genÃ©rico das imagens RGB"
+   set caption(seprvb,nbre_images)  "NÃºmero das imagens"
    set caption(seprvb,executer)     "Executar"
 
 # *************** Version danoise *****************************
@@ -92,9 +92,33 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seprvb,nbre_images)  "Images Number"
    set caption(seprvb,executer)     "Run"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(seprvb,interro)      "?"
+   set caption(seprvb,titre)        "Color Plane Separation"
+   set caption(seprvb,comment)      "Creating Red/Green/Blue Images"
+   set caption(seprvb,rep_images)   "Image Folder"
+   set caption(seprvb,parcourir)    "..."
+   set caption(seprvb,nom_images)   "Generic name for RGB images"
+   set caption(seprvb,nbre_images)  "Images Number"
+   set caption(seprvb,executer)     "Run"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(seprvb,interro)      "?"
+   set caption(seprvb,titre)        "Color Plane Separation"
+   set caption(seprvb,comment)      "Creating Red/Green/Blue Images"
+   set caption(seprvb,rep_images)   "Image Folder"
+   set caption(seprvb,parcourir)    "..."
+   set caption(seprvb,nom_images)   "Generic name for RGB images"
+   set caption(seprvb,nbre_images)  "Images Number"
+   set caption(seprvb,executer)     "Run"
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

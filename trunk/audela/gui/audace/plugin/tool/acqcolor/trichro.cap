@@ -1,10 +1,10 @@
 #
 # Fichier : trichro.cap
-# Mise a jour $Id: trichro.cap,v 1.7 2008-11-16 21:17:33 robertdelmas Exp $
+# Mise a jour $Id: trichro.cap,v 1.8 2009-11-06 19:10:54 robertdelmas Exp $
 #
 
 #=========================================================================
-#   DÈbut de la dÈclaration des textes localisÈs (internationalisation)
+#   D√©but de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -22,19 +22,19 @@ set caption(trichro,image_b)        "Name of Blue Image"
 set caption(trichro,nom_image)      "Name of RGB Image"
 set caption(trichro,executer)       "Run"
 
-# *************** Version franÁaise ***************************
+# *************** Version fran√ßaise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(trichro,interro)     "?"
    set caption(trichro,titre)       "Importer une trichromie"
    set caption(trichro,comment)     "Fusion des images rouges/vertes/bleues"
-   set caption(trichro,rep_images)  "RÈpertoire des images"
+   set caption(trichro,rep_images)  "R√©pertoire des images"
    set caption(trichro,parcourir)   "..."
    set caption(trichro,image_r)     "Nom de l'image rouge"
    set caption(trichro,image_v)     "Nom de l'image verte"
    set caption(trichro,image_b)     "Nom de l'image bleue"
    set caption(trichro,nom_image)   "Nom de l'image RVB"
-   set caption(trichro,executer)    "ExÈcuter"
+   set caption(trichro,executer)    "Ex√©cuter"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -55,8 +55,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(trichro,interro)     "?"
    set caption(trichro,titre)       "Importar una imagen de tres colores"
-   set caption(trichro,comment)     "FusiÛn de im·genes rojo/verde/azul"
-   set caption(trichro,rep_images)  "Directorio de im·genes"
+   set caption(trichro,comment)     "Fusi√≥n de im√°genes rojo/verde/azul"
+   set caption(trichro,rep_images)  "Directorio de im√°genes"
    set caption(trichro,parcourir)   "..."
    set caption(trichro,image_r)     "Nombre de la imagen roja"
    set caption(trichro,image_v)     "Nombre de la imagen verde"
@@ -68,12 +68,12 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(trichro,interro)     "?"
-   set caption(trichro,titre)       "Eine Dreifarbenverfahren einf¸hren"
-   set caption(trichro,comment)     "Rot/gr¸n/blauen Bilder zusammenschluﬂ"
+   set caption(trichro,titre)       "Eine Dreifarbenverfahren einf√ºhren"
+   set caption(trichro,comment)     "Rot/gr√ºn/blauen Bilder zusammenschlu√ü"
    set caption(trichro,rep_images)  "Bilder Verzeichnis"
    set caption(trichro,parcourir)   "..."
    set caption(trichro,image_r)     "Rote Bild Nahmen"
-   set caption(trichro,image_v)     "Gr¸ne Bild Nahmen"
+   set caption(trichro,image_v)     "Gr√ºne Bild Nahmen"
    set caption(trichro,image_b)     "Blaue Bild Nahmen"
    set caption(trichro,nom_image)   "RGB Bild Nahmen"
    set caption(trichro,executer)    "Starten"
@@ -83,8 +83,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(trichro,interro)     "?"
    set caption(trichro,titre)       "Importar uma tricromia"
-   set caption(trichro,comment)     "Fus„o das imagens vermelhas/verdes/azuis"
-   set caption(trichro,rep_images)  "DirectÛrio das imagens"
+   set caption(trichro,comment)     "Fus√£o das imagens vermelhas/verdes/azuis"
+   set caption(trichro,rep_images)  "Direct√≥rio das imagens"
    set caption(trichro,parcourir)   "..."
    set caption(trichro,image_r)     "Nome da imagem vermelha"
    set caption(trichro,image_v)     "Nome da imagem verde"
@@ -106,9 +106,37 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trichro,nom_image)   "Name of RGB Image"
    set caption(trichro,executer)    "Run"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(trichro,interro)     "?"
+   set caption(trichro,titre)       "Import a three-color image"
+   set caption(trichro,comment)     "Merging of Red/Green/Blue Images"
+   set caption(trichro,rep_images)  "Image Folder"
+   set caption(trichro,parcourir)   "..."
+   set caption(trichro,image_r)     "Name of Red Image"
+   set caption(trichro,image_v)     "Name of Green Image"
+   set caption(trichro,image_b)     "Name of Blue Image"
+   set caption(trichro,nom_image)   "Name of RGB Image"
+   set caption(trichro,executer)    "Run"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(trichro,interro)     "?"
+   set caption(trichro,titre)       "Import a three-color image"
+   set caption(trichro,comment)     "Merging of Red/Green/Blue Images"
+   set caption(trichro,rep_images)  "Image Folder"
+   set caption(trichro,parcourir)   "..."
+   set caption(trichro,image_r)     "Name of Red Image"
+   set caption(trichro,image_v)     "Name of Green Image"
+   set caption(trichro,image_b)     "Name of Blue Image"
+   set caption(trichro,nom_image)   "Name of RGB Image"
+   set caption(trichro,executer)    "Run"
+
 }
 
 #=========================================================================
-#   Fin de la dÈclaration des textes localisÈs (internationalisation)
+#   Fin de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 
