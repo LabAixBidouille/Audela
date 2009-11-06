@@ -3640,7 +3640,7 @@ int cmdFitGauss(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                retour = TCL_ERROR;
             }
-         Tcl_Free((char*)listArgv);
+            Tcl_Free((char*)listArgv);
          }
       }
    }
@@ -4190,7 +4190,7 @@ int cmdMult(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    return retour;
 }
 
-int cmdAutocuts(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+int cmdAutocuts(ClientData clientData, Tcl_Interp *interp, int , char *argv[])
 /**************************************************************************/
 {
 
@@ -4217,7 +4217,7 @@ int cmdAutocuts(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    return retour;
 }
 
-int cmdRestoreInitialCut(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+int cmdRestoreInitialCut(ClientData clientData, Tcl_Interp *interp, int , char *argv[])
 /**************************************************************************/
 {
    CBuffer *buffer;          // Buffer de travail pour cette fonction.
@@ -4571,7 +4571,7 @@ int cmdUnifyBg(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
 //   calcul si un point (x y) est dans un polygone (x1 y1 x2 y2 .... )
 //
 //
-int cmdRegion(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+int cmdRegion(ClientData , Tcl_Interp *interp, int argc, char *argv[])
 {
    char *ligne;
    int retour = TCL_OK;
@@ -4656,24 +4656,40 @@ int cmdRegion(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 
 
 //==============================================================================
-// buf$i slitcentro {x1 y1 x2 y2} slitwidth   --
+// buf$i slitcentro {x1 y1 x2 y2} starDetectionMode pixelMinCount slitWidth signalRatio 
 //   Fonction de calcul du centroide sur une fente.
 //
+//  Parameters IN:
+//  @param     Argv[2]=[list x1 y1 x2 y2] fenetre de detection de l'etoile
+//  @param     Argv[3]=starDetectionMode  1=ajustement de gaussienne  2=slit
+//  @param     Argv[4]=pixelMinCount      nombre minimal de pixels (nombre entier)
+//  @param     Argv[5]=slitWidth          largeur de la fente (nombre entier de pixels)
+//  @param     Argv[6]=signalRatio        ratio pour convertir le rapport de flux en nombre de pixels 
 //
+//  @return 
+//             list[0] starStatus       resultat de la recherche de l'etoile
+//             list[1] starX            abcisse du centre de l'etoile
+//             list[2] starY            ordonnee du centre de l'etoile
+//             list[3] maxIntensity     intensite max
+//             list[4] message          message d'information
+//==============================================================================
+
 int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
    enum {CMD_CENTRO=1,CMD_FLUX,CMD_PHOT};
-   int x1, y1, x2, y2, slitWidth, temp;                // Position de la fenetre
+   int x1, y1, x2, y2, slitWidth, temp;               
+   int starDetectionMode;                       
    double signalRatio;
-   int retour;
+   int pixelMinCount=0; 
+   int retour = TCL_OK;
    char ligne[1000];
    CBuffer *buffer;
    char **listArgv;                   // Liste des argulents passes a getpix.
    int listArgc;                      // Nombre d'elements dans la liste des coordonnees.
-   char parameters[]= "{x1 y1 x2 y2} slitwidth signalRatio";
+   char parameters[]= "{x1 y1 x2 y2} starDetectionMode pixelMinCount slitWidth signalRatio";
 
-   // On recupere les parametres (et eventuellement on en met par defaut).
-   if(argc!=5) {
+   // je recupere les parametres
+   if(argc!=7) {
       sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],parameters);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       retour = TCL_ERROR;
@@ -4703,18 +4719,33 @@ int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
             sprintf(ligne,"Usage: %s %s %s\ny2 must be an integer",argv[0],argv[1],parameters);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             retour = TCL_ERROR;
-         } else if(Tcl_GetInt(interp,argv[3],&slitWidth)!=TCL_OK) {
+         }
+      if(Tcl_GetInt(interp,argv[3],&starDetectionMode)!=TCL_OK) {
+         sprintf(ligne,"starDetectionMode=%d is not integer", starDetectionMode);
+         Tcl_AppendResult(interp,ligne,(char *) NULL);
+         retour = TCL_ERROR;
+      } 
+      if(Tcl_GetInt(interp,argv[4],&pixelMinCount)!=TCL_OK) {
+         sprintf(ligne,"pixelMinCount=%d is not integer", pixelMinCount);
+         Tcl_AppendResult(interp,ligne,(char *) NULL);
+         retour = TCL_ERROR;
+      } 
+      if(Tcl_GetInt(interp,argv[5],&slitWidth)!=TCL_OK) {
             sprintf(ligne,"Usage: %s %s %s\nslitwidth must be an integer",argv[0],argv[1],parameters);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             retour = TCL_ERROR;
-         } else if(Tcl_GetDouble(interp,argv[4],&signalRatio)!=TCL_OK) {
+      }
+      if(Tcl_GetDouble(interp,argv[6],&signalRatio)!=TCL_OK) {
             sprintf(ligne,"Usage: %s %s %s\nsignalRatio must be a float",argv[0],argv[1],parameters);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             retour = TCL_ERROR;
-         } else {
-            double xc, yc;                     // centroide sur la fente
-            double signal1, signal2;           // signal sur les levres basse et haute
-            TYPE_PIXELS maxi;
+      }
+
+      if ( retour == TCL_OK ) {
+            char starStatus[128];
+            double xc, yc;                     
+            TYPE_PIXELS maxIntensity;
+            char message[1024];
 
             buffer = (CBuffer*)clientData;
             try {
@@ -4728,14 +4759,23 @@ int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
                   y1 = y2;
                   y2 = temp;
                }
-               if( slitWidth >= (y2-y1) ) {
+               if( starDetectionMode == 2 && slitWidth >= (y2-y1) ) {
                   sprintf(ligne,"Usage: %s %s %s\nslitwidth is too large",argv[0],argv[1],parameters);
                   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                   retour = TCL_ERROR;
                }
 
-               buffer->AstroSlitCentro(x1, y1, x2, y2, slitWidth, signalRatio, &xc, &yc, &maxi, &signal1, &signal2);
-               sprintf(ligne,"%f %f %f %f %f",xc, yc, maxi, signal1, signal2);
+               // passage dans le repere d'origine (0,0)
+               x1 -= 1; y1 -= 1; x2 -= 1; y2 -= 1;
+
+               buffer->AstroSlitCentro(x1, y1, x2, y2, starDetectionMode, pixelMinCount, 
+                   slitWidth, signalRatio, 
+                   starStatus, &xc, &yc, &maxIntensity, message);
+
+               // retour dans le repere d'origine (1,1)
+               xc  += 1; yc  += 1;
+
+               sprintf(ligne,"{%s} %f %f %f {%s}", starStatus, xc, yc, maxIntensity, message);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                retour = TCL_OK;
             } catch(const CError& e) {
@@ -4757,7 +4797,7 @@ int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 //
  *  Parameters IN:
  *  @param     Argv[2]=[list x1 y1 x2 y2] fenetre de detection de l'etoile
- *  @param     Argv[3]=starDetectionMode  1=fit de gaussienne  2=barycentre
+ *  @param     Argv[3]=starDetectionMode  1=ajustement de gaussienne  2=barycentre
  *  @param     Argv[4]=integratedImage 0=pas d'image integree, 1=image integree centree la fenetre, 2=image integree centree sur la consigne
  *  @param     Argv[5]=findFiber       recherche de l'entr�e de fibre
  *  @param     Argv[6]=maskBufNo       numero du buffer du masque
@@ -4774,17 +4814,17 @@ int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
  *  @param     Argv[17]=biasValue      valeur du bias
  *
  *  @return si TCL_OK 
- *             list[0] starStatus      resultat de la recherche de la fibre
- *             list[1] starX            abcisse du centre de la fibre
- *             list[2] starY            ordonnee du centre de la fibre
- *             list[3] fiberStatus      resultat de la recherche de la fibre
- *             list[4] fiberX           abcisse du centre de la fibre
- *             list[5] fiberY           ordonnee du centre de la fibre
- *             list[6] measuredFwhmX    gaussienne mesuree
- *             list[7] measuredFwhmY    gaussienne mesuree
- *             list[8] background       fond du ciel
- *             list[9] maxIntensity     intensite max
- *             list[10] message         message d'information
+ *             list[0] starStatus      resultat de la recherche de l'etoile
+ *             list[1] starX           abcisse du centre de l'etoile
+ *             list[2] starY           ordonnee du centre de l'etoile
+ *             list[3] fiberStatus     resultat de la recherche de la fibre
+ *             list[4] fiberX          abcisse du centre de la fibre
+ *             list[5] fiberY          ordonnee du centre de la fibre
+ *             list[6] measuredFwhmX   gaussienne mesuree
+ *             list[7] measuredFwhmY   gaussienne mesuree
+ *             list[8] background      fond du ciel
+ *             list[9] maxIntensity    intensite max
+ *             list[10] message        message d'information
  *          si TCL_ERREUR 
  *             message d'erreur
 */
@@ -4933,7 +4973,7 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
          retour = TCL_ERROR;
       } 
 
-      // passage dans le rep�re d'origine (0,0)
+      // passage dans le repere d'origine (0,0)
       x1 -= 1; y1 -= 1; x2 -= 1; y2 -= 1;
       previousFiberX -= 1; previousFiberY -= 1; 
 
