@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqzadko.tcl,v 1.8 2009-09-25 08:28:48 myrtillelaas Exp $
+# Mise a jour $Id: acqzadko.tcl,v 1.9 2009-11-06 09:07:10 myrtillelaas Exp $
 #
 
 #==============================================================
@@ -2406,7 +2406,7 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
    #--- Trame du bouton affichage de la raquette
    frame $panneau(acqzadko,$visuNo,This).raquette -borderwidth 2 -relief groove
       button $panneau(acqzadko,$visuNo,This).raquette.but -borderwidth 1 -text $caption(acqzadko,raquettetel) \
-        -command "::zadkopad::run"
+        -command "::confPad::run"
       pack $panneau(acqzadko,$visuNo,This).raquette.but -side top -fill x -in $panneau(acqzadko,$visuNo,This).raquette -ipadx 5 -ipady 4
    pack $panneau(acqzadko,$visuNo,This).raquette -side top -fill x
    
