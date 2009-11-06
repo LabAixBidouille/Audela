@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.22 2009-10-31 14:55:06 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.23 2009-11-06 23:55:10 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -244,8 +244,8 @@ proc ::keyword::run { visuNo } {
    package require Tablelist
 
    #--- Creation des variables de la boite de configuration de l'en-tete FITS si elles n'existent pas
-   if { ! [ info exists ::conf(keyword,visu$visuNo,check) ] }    { set ::conf(keyword,visu$visuNo,check)    "" }
-   if { ! [ info exists ::conf(keyword,visu$visuNo,disabled) ] } { set ::conf(keyword,visu$visuNo,disabled) "" }
+   if { ! [ info exists ::conf(keyword,visu$visuNo,check) ] } { set ::conf(keyword,visu$visuNo,check) "" }
+   if { ! [ info exists private($visuNo,disabled) ] }         { set private($visuNo,disabled)         "" }
 
    #--- j'ajoute un listener sur la configuration de l'observatoire
    ::confPosObs::addPosObsListener [list ::keyword::onChangeConfPosObs $visuNo]
@@ -1089,10 +1089,9 @@ proc ::keyword::selectKeywords { visuNo keywordNameList } {
    variable private
 
    #--- Creation des variables de la boite de configuration de l'en-tete FITS si elles n'existent pas
-   if { ! [ info exists ::conf(keyword,visu$visuNo,check) ] }    { set ::conf(keyword,visu$visuNo,check)    "" }
-   if { ! [ info exists ::conf(keyword,visu$visuNo,disabled) ] } { set ::conf(keyword,visu$visuNo,disabled) "" }
+   if { ! [ info exists ::conf(keyword,visu$visuNo,check) ] } { set ::conf(keyword,visu$visuNo,check) "" }
+   if { ! [ info exists private($visuNo,disabled) ] }         { set private($visuNo,disabled)         "" }
 
-   set ::conf(keyword,visu$visuNo,disabled) ""
    foreach keywordName $keywordNameList {
       if { [lsearch $::conf(keyword,visu$visuNo,check) "$visuNo,check,$keywordName" ] == -1 } {
          lappend ::conf(keyword,visu$visuNo,check) "$visuNo,check,$keywordName"
@@ -1111,9 +1110,9 @@ proc ::keyword::selectKeywords { visuNo keywordNameList } {
 proc ::keyword::setKeywordState { visuNo keywordNameList } {
    variable private
 
-   set ::conf(keyword,visu$visuNo,disabled) ""
+   set private($visuNo,disabled) ""
    foreach keywordName $keywordNameList {
-      lappend ::conf(keyword,visu$visuNo,disabled) "$keywordName"
+      lappend private($visuNo,disabled) "$keywordName"
    }
 
    if { [info exists private($visuNo,frm)] == 1 } {
@@ -1126,7 +1125,7 @@ proc ::keyword::setKeywordState { visuNo keywordNameList } {
 #------------------------------------------------------------------------------
 # setCheckButtonState
 #    met les checkbutton a l'etat disabled si leur nom est dans la variable
-#    ::conf(keyword,visu$visuNo,disabled)
+#    private($visuNo,disabled)
 #    sinon met les checkbutton a l'etat normal
 #
 # Parametres :
@@ -1140,7 +1139,7 @@ proc ::keyword::setCheckButtonState { visuNo } {
       #--- je recupere le nomTK du checkbutton
       set w [$::keyword::private($visuNo,table) windowpath $i,available ]
       #--- je recupere la valeur
-      if { [lsearch $::conf(keyword,visu$visuNo,disabled) $keywordName ] == -1 } {
+      if { [lsearch $private($visuNo,disabled) $keywordName ] == -1 } {
          $w configure -state normal
       } else {
          $w configure -state disabled
@@ -1151,7 +1150,7 @@ proc ::keyword::setCheckButtonState { visuNo } {
 #------------------------------------------------------------------------------
 # setWidgetColumnModificationState
 #    met les widgets de la colonne modification a l'etat disabled si leur nom est
-#    dans la variable ::conf(keyword,visu$visuNo,disabled)
+#    dans la variable private($visuNo,disabled)
 #    sinon met les widgets de la colonne modification a l'etat normal
 #
 # Parametres :
@@ -1166,7 +1165,7 @@ proc ::keyword::setWidgetColumnModificationState { visuNo } {
       set w [$::keyword::private($visuNo,table) windowpath $i,modification ]
       #--- je recupere la valeur
       if { $w != "" } {
-         if { [lsearch $::conf(keyword,visu$visuNo,disabled) $keywordName ] == -1 } {
+         if { [lsearch $private($visuNo,disabled) $keywordName ] == -1 } {
             $w configure -state normal
          } else {
             $w configure -state disabled
