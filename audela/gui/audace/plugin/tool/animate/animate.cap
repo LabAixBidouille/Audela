@@ -1,10 +1,10 @@
 #
 # Fichier : animate.cap
-# Mise a jour $Id: animate.cap,v 1.13 2009-07-13 21:34:12 robertdelmas Exp $
+# Mise a jour $Id: animate.cap,v 1.14 2009-11-06 19:08:59 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -28,25 +28,25 @@ set caption(animate,delai)                "Delay:"
 set caption(animate,nb_boucles1)          "Loop Number:"
 set caption(animate,nbre_entier)          "Must be an integer (>0)."
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(animate,animation)         "Animation"
    set caption(animate,help_titre)        "Aide de cet outil"
    set caption(animate,help_titre1)       "Aide de l'outil :"
-   set caption(animate,nom_generique)     "Nom générique"
+   set caption(animate,nom_generique)     "Nom gÃ©nÃ©rique"
    set caption(animate,parcourir)         "..."
    set caption(animate,nb_images)         "Nombre\nd'images"
-   set caption(animate,delai_ms)          "Délai (ms)"
+   set caption(animate,delai_ms)          "DÃ©lai (ms)"
    set caption(animate,nb_boucles)        "Nombre de\nboucles"
    set caption(animate,go_animation)      "Go Animation"
    set caption(animate,attention)         "Attention"
-   set caption(animate,erreur)            "Le nombre d'images demandées est supérieur au nombre d'images disponibles."
-   set caption(animate,rep-images)        "Les images doivent impérativement être issues du répertoire des images\n(Configuration --> Répertoires)."
+   set caption(animate,erreur)            "Le nombre d'images demandÃ©es est supÃ©rieur au nombre d'images disponibles."
+   set caption(animate,rep-images)        "Les images doivent impÃ©rativement Ãªtre issues du rÃ©pertoire des images\n(Configuration --> RÃ©pertoires)."
    set caption(animate,nb_images1)        "Nombre d'images :"
-   set caption(animate,delai)             "Délai :"
+   set caption(animate,delai)             "DÃ©lai :"
    set caption(animate,nb_boucles1)       "Nombre de boucles :"
-   set caption(animate,nbre_entier)       "Doit être un entier (>0)."
+   set caption(animate,nbre_entier)       "Doit Ãªtre un entier (>0)."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -71,18 +71,18 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(animate,animation)         "Animación"
+   set caption(animate,animation)         "AnimaciÃ³n"
    set caption(animate,help_titre)        "Ayuda para esta herramienta"
    set caption(animate,help_titre1)       "Ajuda para del herramienta:"
-   set caption(animate,nom_generique)     "Nom. genérico"
+   set caption(animate,nom_generique)     "Nom. genÃ©rico"
    set caption(animate,parcourir)         "..."
    set caption(animate,nb_images)         "Numero\nimagenes"
    set caption(animate,delai_ms)          "Retraso (ms)"
    set caption(animate,nb_boucles)        "Numero\nrepeticiones"
    set caption(animate,go_animation)      "Animar"
-   set caption(animate,attention)         "!Cuidado¡"
-   set caption(animate,erreur)            "El numero de imágenes solicitadas excede el número de imágenes disponibles."
-   set caption(animate,rep-images)        "Las imágenes deben provenir de la carpeta de imágenes\n(Configuración --> Directorios)."
+   set caption(animate,attention)         "!CuidadoÂ¡"
+   set caption(animate,erreur)            "El numero de imÃ¡genes solicitadas excede el nÃºmero de imÃ¡genes disponibles."
+   set caption(animate,rep-images)        "Las imÃ¡genes deben provenir de la carpeta de imÃ¡genes\n(ConfiguraciÃ³n --> Directorios)."
    set caption(animate,nb_images1)        "Numero imagenes:"
    set caption(animate,delai)             "Retraso:"
    set caption(animate,nb_boucles1)       "Numero repeticiones:"
@@ -92,8 +92,8 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(animate,animation)         "Animation"
-   set caption(animate,help_titre)        "Hilfe für dieses Gerät"
-   set caption(animate,help_titre1)       "Hilfe für die Gerät:"
+   set caption(animate,help_titre)        "Hilfe fÃ¼r dieses GerÃ¤t"
+   set caption(animate,help_titre1)       "Hilfe fÃ¼r die GerÃ¤t:"
    set caption(animate,nom_generique)     "Gattungsnamen"
    set caption(animate,parcourir)         "..."
    set caption(animate,nb_images)         "Bilder\nZahl"
@@ -101,8 +101,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(animate,nb_boucles)        "Schleifen\nZahl"
    set caption(animate,go_animation)      "Go Animation"
    set caption(animate,attention)         "Achtung"
-   set caption(animate,erreur)            "Die gewünschte Bildern Anzahl ist größer als der verfügbaren Bilder Anzahl."
-   set caption(animate,rep-images)        "Die Bilder müssen vom Bilder Verzeichnis kommen\n(Konfiguration --> Verzeichnis)."
+   set caption(animate,erreur)            "Die gewÃ¼nschte Bildern Anzahl ist grÃ¶ÃŸer als der verfÃ¼gbaren Bilder Anzahl."
+   set caption(animate,rep-images)        "Die Bilder mÃ¼ssen vom Bilder Verzeichnis kommen\n(Konfiguration --> Verzeichnis)."
    set caption(animate,nb_images1)        "Bilder Zahl:"
    set caption(animate,delai)             "Zeitraum:"
    set caption(animate,nb_boucles1)       "Schleifen Zahl:"
@@ -111,46 +111,86 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(animate,animation)         "Animação"
+   set caption(animate,animation)         "AnimaÃ§Ã£o"
    set caption(animate,help_titre)        "Ajuda para esta ferramenta"
    set caption(animate,help_titre1)       "Ajuda para del ferramenta:"
-   set caption(animate,nom_generique)     "Nome genérico"
+   set caption(animate,nom_generique)     "Nome genÃ©rico"
    set caption(animate,parcourir)         "..."
-   set caption(animate,nb_images)         "Número\nde imagens"
+   set caption(animate,nb_images)         "NÃºmero\nde imagens"
    set caption(animate,delai_ms)          "Atraso (ms)"
-   set caption(animate,nb_boucles)        "Número de\nciclos"
-   set caption(animate,go_animation)      "Iniciar Animação"
-   set caption(animate,attention)         "Atenção"
-   set caption(animate,erreur)            "O número de imagens pedidas é superior ao número de imagens disponíveis."
-   set caption(animate,rep-images)        "As imagens têm que estar contidas na pasta de imagens\n(Configuração --> Pastas)."
-   set caption(animate,nb_images1)        "Número de imagens:"
+   set caption(animate,nb_boucles)        "NÃºmero de\nciclos"
+   set caption(animate,go_animation)      "Iniciar AnimaÃ§Ã£o"
+   set caption(animate,attention)         "AtenÃ§Ã£o"
+   set caption(animate,erreur)            "O nÃºmero de imagens pedidas Ã© superior ao nÃºmero de imagens disponÃ­veis."
+   set caption(animate,rep-images)        "As imagens tÃªm que estar contidas na pasta de imagens\n(ConfiguraÃ§Ã£o --> Pastas)."
+   set caption(animate,nb_images1)        "NÃºmero de imagens:"
    set caption(animate,delai)             "Atraso:"
-   set caption(animate,nb_boucles1)       "Número de ciclos:"
+   set caption(animate,nb_boucles1)       "NÃºmero de ciclos:"
    set caption(animate,nbre_entier)       "Deve ser um inteiro (>0)."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(animate,animation)         "Animation"
-   set caption(animate,help_titre)        "Hjælp til dette værktøj"
-   set caption(animate,help_titre1)       "Hjælp til i værktøj:"
-   set caption(animate,nom_generique)     "Fælles filnavn"
+   set caption(animate,help_titre)        "HjÃ¦lp til dette vÃ¦rktÃ¸j"
+   set caption(animate,help_titre1)       "HjÃ¦lp til i vÃ¦rktÃ¸j:"
+   set caption(animate,nom_generique)     "FÃ¦lles filnavn"
    set caption(animate,parcourir)         "..."
    set caption(animate,nb_images)         "Billedantal"
    set caption(animate,delai_ms)          "Forsinkelse (ms)"
-   set caption(animate,nb_boucles)        "Antal\ngennemkørsler"
+   set caption(animate,nb_boucles)        "Antal\ngennemkÃ¸rsler"
    set caption(animate,go_animation)      "Start amination"
    set caption(animate,attention)         "Advarsel"
-   set caption(animate,erreur)            "Antal af valgte billeder er større end det antal, der er til rådighed."
+   set caption(animate,erreur)            "Antal af valgte billeder er stÃ¸rre end det antal, der er til rÃ¥dighed."
    set caption(animate,rep-images)        "Billederne skal ligge i billed-folderen\n(Konfiguration --> Mappe)."
    set caption(animate,nb_images1)        "Billedantal:"
    set caption(animate,delai)             "Forsinkelse:"
-   set caption(animate,nb_boucles1)       "Antal gennemkørsler:"
-   set caption(animate,nbre_entier)       "Skal være et helt tal (>0)."
+   set caption(animate,nb_boucles1)       "Antal gennemkÃ¸rsler:"
+   set caption(animate,nbre_entier)       "Skal vÃ¦re et helt tal (>0)."
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(animate,animation)         "Animate"
+   set caption(animate,help_titre)        "Help for this Tool"
+   set caption(animate,help_titre1)       "Help for the Tool:"
+   set caption(animate,nom_generique)     "Generic Filename"
+   set caption(animate,parcourir)         "..."
+   set caption(animate,nb_images)         "Image\nNumber"
+   set caption(animate,delai_ms)          "Delay (ms)"
+   set caption(animate,nb_boucles)        "Loop\nNumber"
+   set caption(animate,go_animation)      "Go Animate"
+   set caption(animate,attention)         "Warning"
+   set caption(animate,erreur)            "The requested number of images is greater than the number of available images."
+   set caption(animate,rep-images)        "Images must come from the image folder\n(Setup --> Folders)."
+   set caption(animate,nb_images1)        "Image Number:"
+   set caption(animate,delai)             "Delay:"
+   set caption(animate,nb_boucles1)       "Loop Number:"
+   set caption(animate,nbre_entier)       "Must be an integer (>0)."
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(animate,animation)         "Animate"
+   set caption(animate,help_titre)        "Help for this Tool"
+   set caption(animate,help_titre1)       "Help for the Tool:"
+   set caption(animate,nom_generique)     "Generic Filename"
+   set caption(animate,parcourir)         "..."
+   set caption(animate,nb_images)         "Image\nNumber"
+   set caption(animate,delai_ms)          "Delay (ms)"
+   set caption(animate,nb_boucles)        "Loop\nNumber"
+   set caption(animate,go_animation)      "Go Animate"
+   set caption(animate,attention)         "Warning"
+   set caption(animate,erreur)            "The requested number of images is greater than the number of available images."
+   set caption(animate,rep-images)        "Images must come from the image folder\n(Setup --> Folders)."
+   set caption(animate,nb_images1)        "Image Number:"
+   set caption(animate,delai)             "Delay:"
+   set caption(animate,nb_boucles1)       "Loop Number:"
+   set caption(animate,nbre_entier)       "Must be an integer (>0)."
 
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
