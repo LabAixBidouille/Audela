@@ -3,7 +3,7 @@
 # Description : procedures d'acqusitition et de traitement avec
 #         plusieurs cameras simultanées exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise a jour $Id: camerathread.tcl,v 1.14 2009-09-20 13:40:50 michelpujol Exp $
+# Mise a jour $Id: camerathread.tcl,v 1.15 2009-11-06 18:47:45 michelpujol Exp $
 #
 
 namespace eval ::camerathread {
@@ -333,13 +333,21 @@ proc ::camerathread::processAcquisitionLoop { } {
             set y2 [expr int($y) + $private(targetBoxSize)]
             ###set centro [buf$bufNo centro "[list $x1 $y1 $x2 $y2]"]
             ###set private(targetCoord) [lrange $centro 0 1]
-            set centro [buf$bufNo fitgauss "[list $x1 $y1 $x2 $y2]"]
-            set private(targetCoord) [list [lindex $centro 1] [lindex $centro 5]]
-###::camerathread::disp  "PSF= y1=$y1 y2=$y2 $centro \n"
+            ###set centro [buf$bufNo fitgauss "[list $x1 $y1 $x2 $y2]"]
+            set starDetectionMode 1 
+            set pixelMinCount 50            
+            set centro [buf$bufNo slitcentro "[list $x1 $y1 $x2 $y2]" $starDetectionMode $pixelMinCount $private(slitWidth) $private(slitRatio)]
+            set starStatus [lindex $centro 0]
+            set starX      [lindex $centro 1]
+            set starY      [lindex $centro 2]
+            set maxIntensity  [lindex $centro 3]
+            set message       [lindex $centro 4]
+            if { $starStatus == "DETECTED" } {
+               set private(targetCoord) [list $starX $starY ]
+            }               
+###::camerathread::disp  "PSF= y1=$y1 y2=$y2 starStatus=$starStatus result=$centro\n"
          } elseif { $private(detection)=="SLIT" } {
-            #--- SLIT : je cherche l'etoile dans la zone cible proche de la fente du psectroscope
-            set ydelta [expr abs([lindex $private(originCoord) 1] - [lindex $private(targetCoord) 1]) ]
-            set yslit [expr $private(slitWidth) ]
+            #--- SLIT : je cherche l'etoile dans la zone cible proche de la fente
             if { $private(dynamicDectection) == "SLIT" } {
                 #--- l'etoile était proche de la fente dans l'image précédente
                 set x  [lindex $private(targetCoord) 0]
@@ -424,39 +432,48 @@ proc ::camerathread::processAcquisitionLoop { } {
                lappend astar [list $ximapic $yimapic $xobspic $yobspic]
             }
             close $fcom
+            
+            set starStatus "DETECTED" 
+            set maxIntensity 0
+            set message ""
          }
 
          #--- je calcule l'ecart de position par rapport a la position d'origine
-         set dx [expr [lindex $private(targetCoord) 0] - [lindex $private(originCoord) 0] ]
-         set dy [expr [lindex $private(targetCoord) 1] - [lindex $private(originCoord) 1] ]
-
-         #--- je diminue les valeurs de dx et dy si elles depassent la taille de la zone de detection de l'etoile
-         if { $dx > $private(targetBoxSize) } {
-            set dx $private(targetBoxSize)
-         } elseif { $dx <  -$private(targetBoxSize) } {
-            set dx [expr -$private(targetBoxSize) ]
-         }
-
-         if { $dy > $private(targetBoxSize) } {
-            set dy $private(targetBoxSize)
-         } elseif { $dy <  -$private(targetBoxSize) } {
-            set dy [expr -$private(targetBoxSize) ]
-         }
-
-         if { $private(detection)=="SLIT" } {
-            #--- je calcule la methode de detection pour la prochaine image
-            if { $private(dynamicDectection) == "PSF" } {
-                if {  [expr abs($dy) < ($yslit * 0.7)] } {
-                    set private(dynamicDectection) "SLIT"
-                }
-            } else {
-                if { [expr abs($dy) > ($yslit * 1) ] } {
-                    set private(dynamicDectection) "PSF"
-                }
+         if { $starStatus == "DETECTED" } {
+            set dx [expr [lindex $private(targetCoord) 0] - [lindex $private(originCoord) 0] ]
+            set dy [expr [lindex $private(targetCoord) 1] - [lindex $private(originCoord) 1] ]
+   
+            #--- je diminue les valeurs de dx et dy si elles depassent la taille de la zone de detection de l'etoile
+            if { $dx > $private(targetBoxSize) } {
+               set dx $private(targetBoxSize)
+            } elseif { $dx <  -$private(targetBoxSize) } {
+               set dx [expr -$private(targetBoxSize) ]
             }
+   
+            if { $dy > $private(targetBoxSize) } {
+               set dy $private(targetBoxSize)
+            } elseif { $dy <  -$private(targetBoxSize) } {
+               set dy [expr -$private(targetBoxSize) ]
+            }
+   
+            if { $private(detection)=="SLIT" } {
+               #--- je calcule la methode de detection pour la prochaine image
+               if { $private(dynamicDectection) == "PSF" } {
+                   if {  [expr abs($dy) < ($private(slitWidth) * 0.7)] } {
+                       set private(dynamicDectection) "SLIT"
+                   }
+               } else {
+                   if { [expr abs($dy) > ($private(slitWidth) * 1) ] } {
+                       set private(dynamicDectection) "PSF"
+                   }
+               }
+            }
+         } else {
+            set dx 0.0
+            set dy 0.0
          }
 
-         ::camerathread::notify "targetCoord" $private(targetCoord) $dx $dy $istar $cstar $astar
+         ::camerathread::notify "targetCoord" $starStatus $private(targetCoord) $dx $dy $maxIntensity $istar $cstar $astar $message
 
          #--- je deplace le telescope
          if { $private(mountEnabled) == 1 && $private(acquisitionState) == "1" } {

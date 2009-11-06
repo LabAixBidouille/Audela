@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.31 2009-10-25 13:13:53 robertdelmas Exp $
+# Mise a jour $Id: autoguider.cap,v 1.32 2009-11-06 18:45:03 michelpujol Exp $
 #
 
 #=========================================================================
@@ -29,6 +29,7 @@ set caption(autoguider,intervalle)               "Interval"
 set caption(autoguider,rechercher)               "Search"
 set caption(autoguider,effacer)                  "Remove"
 set caption(autoguider,centrer)                  "Center"
+set caption(autoguider,intensiteMax)             "Intensity (ADU)"
 
 set caption(autoguider,pose)                     "Exp."
 set caption(autoguider,binning)                  "Binning"
@@ -92,6 +93,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,rechercher)            "Rechercher"
    set caption(autoguider,effacer)               "Effacer"
    set caption(autoguider,centrer)               "Centrer"
+   set caption(autoguider,intensiteMax)          "Intensitée (ADU)"
 
    set caption(autoguider,pose)                  "Pose"
    set caption(autoguider,binning)               "Binning"
@@ -155,7 +157,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,rechercher)            "Ricercare"
    set caption(autoguider,effacer)               "Cancella"
    set caption(autoguider,centrer)               "Centrare"
-
+   set caption(autoguider,intensiteMax)          "#Intensitée (ADU)"
+   
    set caption(autoguider,pose)                  "Posa"
    set caption(autoguider,binning)               "Binning"
    set caption(autoguider,GO)                    "GO CCD"
@@ -218,7 +221,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,rechercher)            "Buscar"
    set caption(autoguider,effacer)               "Eliminar"
    set caption(autoguider,centrer)               "Centro"
-
+   set caption(autoguider,intensiteMax)          "#Intensitée (ADU)"
+   
    set caption(autoguider,pose)                  "Exp."
    set caption(autoguider,binning)               "Binning"
    set caption(autoguider,GO)                    "GO CCD"
@@ -281,6 +285,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,rechercher)            "Suchen"
    set caption(autoguider,effacer)               "Wegradieren"
    set caption(autoguider,centrer)               "Zentrum"
+   set caption(autoguider,intensiteMax)          "#Intensitée (ADU)"
 
    set caption(autoguider,pose)                  "Bel."
    set caption(autoguider,binning)               "Binning"
@@ -344,6 +349,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,rechercher)            "Procurar"
    set caption(autoguider,effacer)               "Remover"
    set caption(autoguider,centrer)               "Centrar"
+   set caption(autoguider,intensiteMax)          "#Intensitée (ADU)"
 
    set caption(autoguider,pose)                  "Exposição"
    set caption(autoguider,binning)               "Binning"
@@ -407,6 +413,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,rechercher)            "Search"
    set caption(autoguider,effacer)               "Remove"
    set caption(autoguider,centrer)               "Center"
+   set caption(autoguider,intensiteMax)          "#Intensitée (ADU)"
 
    set caption(autoguider,pose)                  "Exp."
    set caption(autoguider,binning)               "Binning"
