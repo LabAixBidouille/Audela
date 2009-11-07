@@ -1,10 +1,10 @@
 #
 # Fichier : visio.cap
-# Mise a jour $Id: visio.cap,v 1.10 2009-07-14 08:05:39 robertdelmas Exp $
+# Mise a jour $Id: visio.cap,v 1.11 2009-11-07 17:06:36 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -38,18 +38,18 @@ set caption(visio,aide)                   "Help"
 set caption(visio,ok)                     "OK"
 set caption(visio,quitter)                "Exit"
 
-#--- Textes fenêtres renommer série
+#--- Textes fenÃªtres renommer sÃ©rie
 set caption(visio,renommer2)              "Renaming the current series"
 set caption(visio,oldserie)               "Current Name:"
 set caption(visio,newserie)               "New Name:"
 set caption(visio,confirmrenom)           "This name already exists. Both series will be reindexed.\nContinue?"
 
-#--- Textes fenêtre supprimer série
+#--- Textes fenÃªtre supprimer sÃ©rie
 set caption(visio,oui)                    "Yes"
 set caption(visio,non)                    "No"
 set caption(visio,confirmsuppr)           "Do you confirm you want to delete the current series?"
 
-#--- Textes fenêtre copie ZIP
+#--- Textes fenÃªtre copie ZIP
 set caption(visio,zip)                    "ZIP Mode"
 set caption(visio,feninidisket)           "Save zip to Floppy"
 set caption(visio,fenfulldisket)          "Copy to Floppy Disk Number "
@@ -63,7 +63,7 @@ set caption(visio,achtung)                "CAUTION: All files on this floppy wil
 set caption(visio,full1)                  "Floppy disk full."
 set caption(visio,full2)                  "Please insert new floppy in drive A:."
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    #--- Textes interface principale
@@ -78,43 +78,43 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio,avt+)                "++"
    set caption(visio,charger)             "Go"
    set caption(visio,suppr_fichier)       "Suppr fichier"
-   set caption(visio,serie)               "Mode série"
-   set caption(visio,suppr_lacunes)       "Renuméroter"
+   set caption(visio,serie)               "Mode sÃ©rie"
+   set caption(visio,suppr_lacunes)       "RenumÃ©roter"
    set caption(visio,renommer)            "Renommer"
    set caption(visio,suppr_serie)         "Supprimer"
    set caption(visio,save_toA)            "Sauver des\nfichiers zip sur A:"
    set caption(visio,copie_fromA)         "Copier des fichiers\nzip depuis A:"
    set caption(visio,annuler)             "Annuler"
-   set caption(visio,nom_invalide)        "Le nom de fichier suivant est invalide (présence de caractères accentués) : "
-   set caption(visio,rep_images_audace)   "Répertoire images d'Aud'ACE"
+   set caption(visio,nom_invalide)        "Le nom de fichier suivant est invalide (prÃ©sence de caractÃ¨res accentuÃ©s) : "
+   set caption(visio,rep_images_audace)   "RÃ©pertoire images d'Aud'ACE"
 
    #--- Textes boutons
    set caption(visio,aide)                "Aide"
    set caption(visio,ok)                  "OK"
-   set caption(visio,quitter)             "Quitter"
+  set caption(visio,quitter)             "Quitter"
 
-   #--- Textes fenêtres renommer série
-   set caption(visio,renommer2)           "Renommer la série courante"
+   #--- Textes fenÃªtres renommer sÃ©rie
+   set caption(visio,renommer2)           "Renommer la sÃ©rie courante"
    set caption(visio,oldserie)            "Nom actuel :"
    set caption(visio,newserie)            "Nouveau nom :"
-   set caption(visio,confirmrenom)        "Le nom proposé existe déjà. Les deux séries seront réindexées.\nVoulez-vous poursuivre ?"
+   set caption(visio,confirmrenom)        "Le nom proposÃ© existe dÃ©jÃ . Les deux sÃ©ries seront rÃ©indexÃ©es.\nVoulez-vous poursuivre ?"
 
-   #--- Textes fenêtre supprimer série
+   #--- Textes fenÃªtre supprimer sÃ©rie
    set caption(visio,oui)                 "Oui"
    set caption(visio,non)                 "Non"
-   set caption(visio,confirmsuppr)        "Confirmer la suppression de la série courante ?"
+   set caption(visio,confirmsuppr)        "Confirmer la suppression de la sÃ©rie courante ?"
 
-   #--- Textes fenêtre copie ZIP
+   #--- Textes fenÃªtre copie ZIP
    set caption(visio,zip)                 "Mode ZIP"
    set caption(visio,feninidisket)        "Sauvegarde zip sur disquette"
-   set caption(visio,fenfulldisket)       "Copie terminée sur la disquette n°"
+   set caption(visio,fenfulldisket)       "Copie terminÃ©e sur la disquette nÂ°"
    set caption(visio,fenfulldisket1)      ""
-   set caption(visio,saveserie_toA)       "Sauve la série courante sur A:"
-   set caption(visio,saverep_toA)         "Sauve le répertoire courant sur A:"
+   set caption(visio,saveserie_toA)       "Sauve la sÃ©rie courante sur A:"
+   set caption(visio,saverep_toA)         "Sauve le rÃ©pertoire courant sur A:"
    set caption(visio,save_continue)       "Continuer"
-   set caption(visio,save_stop)           "Arrêter"
+   set caption(visio,save_stop)           "ArrÃªter"
    set caption(visio,init1)               "Veuillez introduire une disquette dans le lecteur A:."
-   set caption(visio,achtung)             "ATTENTION : Tous les fichiers initialement présents sur cette disquette seront détruits."
+   set caption(visio,achtung)             "ATTENTION : Tous les fichiers initialement prÃ©sents sur cette disquette seront dÃ©truits."
    set caption(visio,full1)               "La disquette de destination est pleine."
    set caption(visio,full2)               "Veuillez introduire une nouvelle disquette dans le lecteur A:."
 
@@ -148,21 +148,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio,ok)                  "OK"
    set caption(visio,quitter)             "Esci"
 
-   #--- Textes fenêtres renommer série
+   #--- Textes fenÃªtres renommer sÃ©rie
    set caption(visio,renommer2)           "Rinominare la serie corrente"
    set caption(visio,oldserie)            "Nome attuale:"
    set caption(visio,newserie)            "Nuovo nome:"
    set caption(visio,confirmrenom)        "Il nome proposto esiste gia'. Le due serie saranno reindicizzate.\nVolete continuare ?"
 
-   #--- Textes fenêtre supprimer série
+   #--- Textes fenÃªtre supprimer sÃ©rie
    set caption(visio,oui)                 "Si"
    set caption(visio,non)                 "No"
    set caption(visio,confirmsuppr)        "Confermare l'eliminazione della serie corrente?"
 
-   #--- Textes fenêtre copie ZIP
+   #--- Textes fenÃªtre copie ZIP
    set caption(visio,zip)                 "Modalita` ZIP"
    set caption(visio,feninidisket)        "Salvataggio zip su dischetto"
-   set caption(visio,fenfulldisket)       "Copia terminata sul dischetto n°"
+   set caption(visio,fenfulldisket)       "Copia terminata sul dischetto nÂ°"
    set caption(visio,fenfulldisket1)      ""
    set caption(visio,saveserie_toA)       "Salva la sequenza corrente su A:"
    set caption(visio,saverep_toA)         "Salvare la directory corrente su A:"
@@ -196,28 +196,28 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio,copie_fromA)         "Copiar ficheros\nzip de A:"
    set caption(visio,annuler)             "Cancelar"
    set caption(visio,nom_invalide)        "El siguiente nombre de fichero es incorrecto (contiene caracteres acentuados): "
-   set caption(visio,rep_images_audace)   "Carpeta de imágenes de Aud'ACE"
+   set caption(visio,rep_images_audace)   "Carpeta de imÃ¡genes de Aud'ACE"
 
    #--- Textes boutons
    set caption(visio,aide)                "Ayuda"
    set caption(visio,ok)                  "OK"
    set caption(visio,quitter)             "Salir"
 
-   #--- Textes fenêtres renommer série
+   #--- Textes fenÃªtres renommer sÃ©rie
    set caption(visio,renommer2)           "Renombrar la serie actual"
    set caption(visio,oldserie)            "Nombre actual:"
    set caption(visio,newserie)            "Nombre nuevo:"
-   set caption(visio,confirmrenom)        "Este nombre ya existe. Ambas series serán reindexadas.\nContinuar?"
+   set caption(visio,confirmrenom)        "Este nombre ya existe. Ambas series serÃ¡n reindexadas.\nContinuar?"
 
-   #--- Textes fenêtre supprimer série
-   set caption(visio,oui)                 "Sí"
+   #--- Textes fenÃªtre supprimer sÃ©rie
+   set caption(visio,oui)                 "SÃ­"
    set caption(visio,non)                 "No"
    set caption(visio,confirmsuppr)        "Confirma que quire borrar la serie actual?"
 
-   #--- Textes fenêtre copie ZIP
+   #--- Textes fenÃªtre copie ZIP
    set caption(visio,zip)                 "Modo ZIP"
    set caption(visio,feninidisket)        "Guardair zip a disquete"
-   set caption(visio,fenfulldisket)       "Completada la copia al disquete número "
+   set caption(visio,fenfulldisket)       "Completada la copia al disquete nÃºmero "
    set caption(visio,fenfulldisket1)      ""
    set caption(visio,saveserie_toA)       "Guardar la serie actual a A:"
    set caption(visio,saverep_toA)         "Guardar directorio actual a A:"
@@ -234,8 +234,8 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- Textes interface principale
    set caption(visio,audace)              "Aud'ACE"
    set caption(visio,titre)               "Diabetrachter"
-   set caption(visio,help_titre)          "Hilfe für dieses Gerät"
-   set caption(visio,help_titre1)         "Hilfe für die Gerät:"
+   set caption(visio,help_titre)          "Hilfe fÃ¼r dieses GerÃ¤t"
+   set caption(visio,help_titre1)         "Hilfe fÃ¼r die GerÃ¤t:"
    set caption(visio,visu)                "Visu"
    set caption(visio,arr1)                "-1"
    set caption(visio,avt1)                "+1"
@@ -246,7 +246,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio,serie)               "Reihe Modus"
    set caption(visio,suppr_lacunes)       "Wiedernumerieren"
    set caption(visio,renommer)            "Wiedernennen"
-   set caption(visio,suppr_serie)         "Löschen"
+   set caption(visio,suppr_serie)         "LÃ¶schen"
    set caption(visio,save_toA)            "Zip Dateien in\nA: speichern"
    set caption(visio,copie_fromA)         "Zip Dateien von\nA: nachahmen"
    set caption(visio,annuler)             "Annullieren"
@@ -258,28 +258,28 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio,ok)                  "OK"
    set caption(visio,quitter)             "Programm beenden"
 
-   #--- Textes fenêtres renommer série
+   #--- Textes fenÃªtres renommer sÃ©rie
    set caption(visio,renommer2)           "Den laufenden Reihe wiedernennen"
    set caption(visio,oldserie)            "Jetzigen Namen:"
    set caption(visio,newserie)            "Neuen Namen:"
-   set caption(visio,confirmrenom)        "Der vorgelegten Namen existiert schon. Die zwei Sätzen werden wiederindexiert.\nVollen sie weiterführen ?"
+   set caption(visio,confirmrenom)        "Der vorgelegten Namen existiert schon. Die zwei SÃ¤tzen werden wiederindexiert.\nVollen sie weiterfÃ¼hren ?"
 
-   #--- Textes fenêtre supprimer série
+   #--- Textes fenÃªtre supprimer sÃ©rie
    set caption(visio,oui)                 "Ja"
    set caption(visio,non)                 "Nein"
-   set caption(visio,confirmsuppr)        "Die jetzigen Reihe Abschaffung bestätigen ?"
+   set caption(visio,confirmsuppr)        "Die jetzigen Reihe Abschaffung bestÃ¤tigen ?"
 
-   #--- Textes fenêtre copie ZIP
+   #--- Textes fenÃªtre copie ZIP
    set caption(visio,zip)                 "ZIP Modus"
    set caption(visio,feninidisket)        "Auf Diskette Zip SIcherung"
    set caption(visio,fenfulldisket)       "Kopie beenedet auf Diskette Num. "
    set caption(visio,fenfulldisket1)      ""
    set caption(visio,saveserie_toA)       "Den aktuellen Reihe auf A: speichern"
    set caption(visio,saverep_toA)         "Speichert das aktuellen Register auf A:"
-   set caption(visio,save_continue)       "Weiterführen"
+   set caption(visio,save_continue)       "WeiterfÃ¼hren"
    set caption(visio,save_stop)           "Halten"
    set caption(visio,init1)               "Die Diskette bitte in das A laufwerk einschieben."
-   set caption(visio,achtung)             "ACHTUNG: Alle Dateien anfänglich auf diese Diskette werden beseitigt."
+   set caption(visio,achtung)             "ACHTUNG: Alle Dateien anfÃ¤nglich auf diese Diskette werden beseitigt."
    set caption(visio,full1)               "Die Ziel Diskette ist voll."
    set caption(visio,full2)               "Eine neue DIskette Bitte in das A Laufwerk einschieben."
 
@@ -298,47 +298,47 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio,avt+)                "++"
    set caption(visio,charger)             "Go"
    set caption(visio,suppr_fichier)       "Apagar ficheiro"
-   set caption(visio,serie)               "Modo série"
+   set caption(visio,serie)               "Modo sÃ©rie"
    set caption(visio,suppr_lacunes)       "Renumerar"
    set caption(visio,renommer)            "Mudar o nome"
    set caption(visio,suppr_serie)         "Eliminar"
    set caption(visio,save_toA)            "Guardar os\nficheiros zip em A:"
    set caption(visio,copie_fromA)         "Copiar os ficheiros\nzip de A:"
    set caption(visio,annuler)             "Cancelar"
-   set caption(visio,nom_invalide)        "O nome de ficheiro seguinte não é válido (contém caracteres acentuados) : "
-   set caption(visio,rep_images_audace)   "Directório imagens de Aud'ACE"
+   set caption(visio,nom_invalide)        "O nome de ficheiro seguinte nÃ£o Ã© vÃ¡lido (contÃ©m caracteres acentuados): "
+   set caption(visio,rep_images_audace)   "DirectÃ³rio imagens de Aud'ACE"
 
    #--- Textes boutons
    set caption(visio,aide)                "Ajuda"
    set caption(visio,ok)                  "OK"
    set caption(visio,quitter)             "Sair"
 
-   #--- Textes fenêtres renommer série
-   set caption(visio,renommer2)           "Mudar o nome da série actual"
-   set caption(visio,oldserie)            "Nome actual :"
-   set caption(visio,newserie)            "Novo nome :"
-   set caption(visio,confirmrenom)        "O nome escolhido já existe. As duas séries serão indexadas de novo.\nDeseja continuar ?"
+   #--- Textes fenÃªtres renommer sÃ©rie
+   set caption(visio,renommer2)           "Mudar o nome da sÃ©rie actual"
+   set caption(visio,oldserie)            "Nome actual:"
+   set caption(visio,newserie)            "Novo nome:"
+   set caption(visio,confirmrenom)        "O nome escolhido jÃ¡ existe. As duas sÃ©ries serÃ£o indexadas de novo.\nDeseja continuar ?"
 
-   #--- Textes fenêtre supprimer série
+   #--- Textes fenÃªtre supprimer sÃ©rie
    set caption(visio,oui)                 "Sim"
-   set caption(visio,non)                 "Não"
-   set caption(visio,confirmsuppr)        "Tem a certeza que deseja eliminar a série actual ?"
+   set caption(visio,non)                 "NÃ£o"
+   set caption(visio,confirmsuppr)        "Tem a certeza que deseja eliminar a sÃ©rie actual ?"
 
-   #--- Textes fenêtre copie ZIP
+   #--- Textes fenÃªtre copie ZIP
    set caption(visio,zip)                 "Modo ZIP"
    set caption(visio,feninidisket)        "Guardar zip em disquete"
-   set caption(visio,fenfulldisket)       "Cópia terminada para a disquete n°"
+   set caption(visio,fenfulldisket)       "CÃ³pia terminada para a disquete nÂ°"
    set caption(visio,fenfulldisket1)      ""
-   set caption(visio,saveserie_toA)       "Guarda a série actual em A:"
-   set caption(visio,saverep_toA)         "Guarda o directório actual em A:"
+   set caption(visio,saveserie_toA)       "Guarda a sÃ©rie actual em A:"
+   set caption(visio,saverep_toA)         "Guarda o directÃ³rio actual em A:"
    set caption(visio,save_continue)       "Continuar"
    set caption(visio,save_stop)           "Parar"
    set caption(visio,init1)               "Introduza uma disquete no leitor A:."
-   set caption(visio,achtung)             "ATENCÃO : Todos os ficheiros inicialmente presentes nesta disquete serão destruídos."
-   set caption(visio,full1)               "A disquete de destino está cheia."
+   set caption(visio,achtung)             "ATENCÃƒO: Todos os ficheiros inicialmente presentes nesta disquete serÃ£o destruÃ­dos."
+   set caption(visio,full1)               "A disquete de destino estÃ¡ cheia."
    set caption(visio,full2)               "Introduza uma nova disquete no leitor A:."
 
-# *************** Version danoise ***************************
+# **************** Version danoise ****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    #--- Textes interface principale
@@ -368,18 +368,128 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio,ok)                  "OK"
    set caption(visio,quitter)             "Exit"
 
-   #--- Textes fenêtres renommer série
+   #--- Textes fenÃªtres renommer sÃ©rie
    set caption(visio,renommer2)           "Renaming the current series"
    set caption(visio,oldserie)            "Current Name:"
    set caption(visio,newserie)            "New Name:"
    set caption(visio,confirmrenom)        "This name already exists. Both series will be reindexed.\nContinue?"
 
-   #--- Textes fenêtre supprimer série
+   #--- Textes fenÃªtre supprimer sÃ©rie
    set caption(visio,oui)                 "Yes"
    set caption(visio,non)                 "No"
    set caption(visio,confirmsuppr)        "Do you confirm you want to delete the current series?"
 
-   #--- Textes fenêtre copie ZIP
+   #--- Textes fenÃªtre copie ZIP
+   set caption(visio,zip)                 "ZIP Mode"
+   set caption(visio,feninidisket)        "Save zip to Floppy"
+   set caption(visio,fenfulldisket)       "Copy to Floppy Disk Number "
+   set caption(visio,fenfulldisket1)      " Completed"
+   set caption(visio,saveserie_toA)       "Save Current Series to A:"
+   set caption(visio,saverep_toA)         "Save Current Directory to A:"
+   set caption(visio,save_continue)       "Go"
+   set caption(visio,save_stop)           "Stop"
+   set caption(visio,init1)               "Please Insert a Floppy in Drive A:."
+   set caption(visio,achtung)             "CAUTION: All files on this floppy will be erased."
+   set caption(visio,full1)               "Floppy disk full."
+   set caption(visio,full2)               "Please insert new floppy in drive A:."
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   #--- Textes interface principale
+   set caption(visio,audace)              "Aud'ACE"
+   set caption(visio,titre)               "Viewer"
+   set caption(visio,help_titre)          "Help for this Tool"
+   set caption(visio,help_titre1)         "Help for the Tool:"
+   set caption(visio,visu)                "View"
+   set caption(visio,arr1)                "-1"
+   set caption(visio,avt1)                "+1"
+   set caption(visio,arr-)                "--"
+   set caption(visio,avt+)                "++"
+   set caption(visio,charger)             "Go"
+   set caption(visio,suppr_fichier)       "Delete File"
+   set caption(visio,serie)               "Series Mode"
+   set caption(visio,suppr_lacunes)       "Renumber"
+   set caption(visio,renommer)            "Rename"
+   set caption(visio,suppr_serie)         "Delete"
+   set caption(visio,save_toA)            "Save zip files\nto A:"
+   set caption(visio,copie_fromA)         "Copy zip files\nfrom A:"
+   set caption(visio,annuler)             "Cancel"
+   set caption(visio,nom_invalide)        "The following file name is invalid (contains accented characters): "
+   set caption(visio,rep_images_audace)   "Aud'ACE Image Folder"
+
+   #--- Textes boutons
+   set caption(visio,aide)                "Help"
+   set caption(visio,ok)                  "OK"
+   set caption(visio,quitter)             "Exit"
+
+   #--- Textes fenÃªtres renommer sÃ©rie
+   set caption(visio,renommer2)           "Renaming the current series"
+   set caption(visio,oldserie)            "Current Name:"
+   set caption(visio,newserie)            "New Name:"
+   set caption(visio,confirmrenom)        "This name already exists. Both series will be reindexed.\nContinue?"
+
+   #--- Textes fenÃªtre supprimer sÃ©rie
+   set caption(visio,oui)                 "Yes"
+   set caption(visio,non)                 "No"
+   set caption(visio,confirmsuppr)        "Do you confirm you want to delete the current series?"
+
+   #--- Textes fenÃªtre copie ZIP
+   set caption(visio,zip)                 "ZIP Mode"
+   set caption(visio,feninidisket)        "Save zip to Floppy"
+   set caption(visio,fenfulldisket)       "Copy to Floppy Disk Number "
+   set caption(visio,fenfulldisket1)      " Completed"
+   set caption(visio,saveserie_toA)       "Save Current Series to A:"
+   set caption(visio,saverep_toA)         "Save Current Directory to A:"
+   set caption(visio,save_continue)       "Go"
+   set caption(visio,save_stop)           "Stop"
+   set caption(visio,init1)               "Please Insert a Floppy in Drive A:."
+   set caption(visio,achtung)             "CAUTION: All files on this floppy will be erased."
+   set caption(visio,full1)               "Floppy disk full."
+   set caption(visio,full2)               "Please insert new floppy in drive A:."
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   #--- Textes interface principale
+   set caption(visio,audace)              "Aud'ACE"
+   set caption(visio,titre)               "Viewer"
+   set caption(visio,help_titre)          "Help for this Tool"
+   set caption(visio,help_titre1)         "Help for the Tool:"
+   set caption(visio,visu)                "View"
+   set caption(visio,arr1)                "-1"
+   set caption(visio,avt1)                "+1"
+   set caption(visio,arr-)                "--"
+   set caption(visio,avt+)                "++"
+   set caption(visio,charger)             "Go"
+   set caption(visio,suppr_fichier)       "Delete File"
+   set caption(visio,serie)               "Series Mode"
+   set caption(visio,suppr_lacunes)       "Renumber"
+   set caption(visio,renommer)            "Rename"
+   set caption(visio,suppr_serie)         "Delete"
+   set caption(visio,save_toA)            "Save zip files\nto A:"
+   set caption(visio,copie_fromA)         "Copy zip files\nfrom A:"
+   set caption(visio,annuler)             "Cancel"
+   set caption(visio,nom_invalide)        "The following file name is invalid (contains accented characters): "
+   set caption(visio,rep_images_audace)   "Aud'ACE Image Folder"
+
+   #--- Textes boutons
+   set caption(visio,aide)                "Help"
+   set caption(visio,ok)                  "OK"
+   set caption(visio,quitter)             "Exit"
+
+   #--- Textes fenÃªtres renommer sÃ©rie
+   set caption(visio,renommer2)           "Renaming the current series"
+   set caption(visio,oldserie)            "Current Name:"
+   set caption(visio,newserie)            "New Name:"
+   set caption(visio,confirmrenom)        "This name already exists. Both series will be reindexed.\nContinue?"
+
+   #--- Textes fenÃªtre supprimer sÃ©rie
+   set caption(visio,oui)                 "Yes"
+   set caption(visio,non)                 "No"
+   set caption(visio,confirmsuppr)        "Do you confirm you want to delete the current series?"
+
+   #--- Textes fenÃªtre copie ZIP
    set caption(visio,zip)                 "ZIP Mode"
    set caption(visio,feninidisket)        "Save zip to Floppy"
    set caption(visio,fenfulldisket)       "Copy to Floppy Disk Number "
@@ -396,6 +506,6 @@ if { [ string compare $langage "french" ] == "0" } {
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
