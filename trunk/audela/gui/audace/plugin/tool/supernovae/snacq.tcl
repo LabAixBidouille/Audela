@@ -2,7 +2,7 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snacq.tcl,v 1.19 2009-10-31 15:01:30 robertdelmas Exp $
+# Mise a jour $Id: snacq.tcl,v 1.20 2009-11-07 22:23:28 robertdelmas Exp $
 #
 
 # ===================================================================
@@ -994,7 +994,7 @@ proc snacq_go { {sndebug 0} } {
          if {$sndebug==0} {
             #--- Pointe le telescope
             if {$indice_image==1} {
-               ::telescope::goto [ list $ra $dec ] "1"
+               ::telescope::goto [ list $ra $dec ] "1" "" "" [lindex $ligne 0]
             }
 
             #--- Delai d'attente a la demande de Robin
@@ -1057,17 +1057,14 @@ proc snacq_go { {sndebug 0} } {
                set name "[lindex $ligne 0]"
             }
 
-            #--- Formatage de l'ascension droite et de la declinaison
-            set rad [mc_angle2deg [lindex $ligne 1]h[lindex $ligne 2]m[lindex $ligne 3]s ]
-            set decd [mc_angle2deg [lindex $ligne 4]d[lindex $ligne 5]m[lindex $ligne 6]s 90 ]
-            #--- Rajoute le mot cle OBJNAME
-            ::keyword::setKeywordValue $audace(visuNo) "OBJNAME" [lindex $ligne 0]
             #--- Rajoute des mots cles dans l'en-tete FITS
             foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
                buf$audace(bufNo) setkwd $keyword
             }
+
             #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
             ::confVisu::setFileName $audace(visuNo) ""
+
             #--- Mot cles pour compatibilité Prism
             snprism
 
