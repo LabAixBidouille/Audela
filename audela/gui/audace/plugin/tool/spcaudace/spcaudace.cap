@@ -1,10 +1,10 @@
 #
 # Fichier : spcaudace.cap
-# Mise a jour $Id: spcaudace.cap,v 1.3 2008-06-15 09:31:45 robertdelmas Exp $
+# Mise a jour $Id: spcaudace.cap,v 1.4 2009-11-07 16:28:36 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -13,7 +13,7 @@ global caption langage
 
 set caption(spcaudace,spc_audace)                         "Spectropscopy: SpcAud'ACE"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(spcaudace,spc_audace)                      "Spectroscopie : SpcAud'ACE"
@@ -43,9 +43,19 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(spcaudace,spc_audace)                      "Spectroscopy: SpcAud'ACE"
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(spcaudace,spc_audace)                      "Spectropscopy: SpcAud'ACE"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(spcaudace,spc_audace)                      "Spectropscopy: SpcAud'ACE"
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
