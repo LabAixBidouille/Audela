@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.23 2009-11-06 23:55:10 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.24 2009-11-07 22:28:03 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -153,6 +153,7 @@ proc ::keyword::init { } {
    if { ! [ info exists ::conf(keyword,listTypeImage) ] }     { set ::conf(keyword,listTypeImage)     [ list Offset Dark Flat Object Lamp ] }
    if { ! [ info exists ::conf(keyword,GotoManuelAuto) ] }    { set ::conf(keyword,GotoManuelAuto)    "$::caption(keyword,manuel)" }
    if { ! [ info exists ::conf(keyword,GotoManuelAutoBis) ] } { set ::conf(keyword,GotoManuelAutoBis) "$::caption(keyword,manuel)" }
+   if { ! [ info exists ::conf(keyword,GotoManuelAutoTer) ] } { set ::conf(keyword,GotoManuelAutoTer) "$::caption(keyword,manuel)" }
    if { ! [ info exists ::conf(keyword,typeImageSelected) ] } { set ::conf(keyword,typeImageSelected) "Object" }
 
    #--- Initialisation de variables
@@ -210,9 +211,9 @@ proc ::keyword::init { } {
    lappend private(infosMotsClefs) [ list "INSTRUME" $::caption(keyword,instrument)  ::keyword::private(equipement)          normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Instrument"                                    "" ]
    lappend private(infosMotsClefs) [ list "DETNAM"   $::caption(keyword,instrument)  ::keyword::private(detectorName)        normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Detector"                                      "" ]
    lappend private(infosMotsClefs) [ list "OBJNAME"  $::caption(keyword,cible)       ::keyword::private(objName)             normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAuto)           0  "" "string" "Object name"                                   "" ]
-   lappend private(infosMotsClefs) [ list "RA"       $::caption(keyword,cible)       ::keyword::private(ra)                  normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAuto)           0  "" "float"  "Object Right Ascension"                        "degres" ]
-   lappend private(infosMotsClefs) [ list "DEC"      $::caption(keyword,cible)       ::keyword::private(dec)                 normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAuto)           0  "" "float"  "Object Declination"                            "degres" ]
-   lappend private(infosMotsClefs) [ list "EQUINOX"  $::caption(keyword,cible)       ::keyword::private(equinoxe)            normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAutoBis)        0  "" "string" "Coordinates equinox"                           "" ]
+   lappend private(infosMotsClefs) [ list "RA"       $::caption(keyword,cible)       ::keyword::private(ra)                  normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAutoBis)        0  "" "float"  "Object Right Ascension"                        "degres" ]
+   lappend private(infosMotsClefs) [ list "DEC"      $::caption(keyword,cible)       ::keyword::private(dec)                 normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAutoBis)        0  "" "float"  "Object Declination"                            "degres" ]
+   lappend private(infosMotsClefs) [ list "EQUINOX"  $::caption(keyword,cible)       ::keyword::private(equinoxe)            normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAutoTer)        0  "" "string" "Coordinates equinox"                           "" ]
    lappend private(infosMotsClefs) [ list "RADECSYS" $::caption(keyword,cible)       ::keyword::private(radecsys)            normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Coordinates system"                            "" ]
    lappend private(infosMotsClefs) [ list "IMAGETYP" $::caption(keyword,acquisition) ::keyword::private(typeImage)           readonly ""                             ""                                             $::keyword::private(listTypeImage)  ::conf(keyword,typeImageSelected)        0  "" "string" "Image type"                                    "" ]
    lappend private(infosMotsClefs) [ list "SERIESID" $::caption(keyword,acquisition) ::keyword::private(seriesId)            normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Series identifiant"                            "" ]
@@ -269,6 +270,15 @@ proc ::keyword::run { visuNo } {
 
    #--- je recupere la consigne et la temperature du CCD
    onChangeTemperature $visuNo
+
+   #--- je recupere le nom de l'objet  (si mode automatique)
+   onChangeObjname $visuNo
+
+   #--- je recupere l'ascension droite et la declinaison l'objet (si mode automatique)
+   onChangeRaDec $visuNo
+
+   #--- je recupere l'equinoxe des coordonnees de l'objet  (si mode automatique)
+   onChangeEquinox $visuNo
 
    #--- je mets a jour la procedure a appeler pour rafraichir CCD_TEMP
    for { set i 0 } { $i < [ llength $private(infosMotsClefs) ] } { incr i } {
@@ -350,7 +360,7 @@ proc ::keyword::onChangeConfOptic { visuNo args } {
 
 #------------------------------------------------------------------------------
 # onChangeTemperature
-#    met a jour le mots cle de la temperature
+#    met a jour le mot cles de la temperature
 #
 # Parametres :
 #    visuNo
@@ -393,6 +403,58 @@ proc ::keyword::onChangeCellDim { visuNo args } {
 }
 
 #------------------------------------------------------------------------------
+# onChangeObjname
+#    met a jour le mot cles du nom de l'objet
+#
+# Parametres :
+#    visuNo
+# Return :
+#    rien
+#------------------------------------------------------------------------------
+proc ::keyword::onChangeObjname { visuNo } {
+   variable private
+
+   if { $::conf(keyword,GotoManuelAuto) == "$::caption(keyword,automatic)" } {
+      set private(objName) $::audace(telescope,targetname)
+   }
+}
+
+#------------------------------------------------------------------------------
+# onChangeRaDec
+#    met a jour les mots cles de l'ascension droite et de la declinaison de l'objet
+#
+# Parametres :
+#    visuNo
+# Return :
+#    rien
+#------------------------------------------------------------------------------
+proc ::keyword::onChangeRaDec { visuNo } {
+   variable private
+
+   if { $::conf(keyword,GotoManuelAutoBis) == "$::caption(keyword,automatic)" } {
+      set private(ra)  $::audace(telescope,targetRa)
+      set private(dec) $::audace(telescope,targetDec)
+   }
+}
+
+#------------------------------------------------------------------------------
+# onChangeEquinox
+#    met a jour le mot cles de l'equinoxe des coordonnees de l'objet
+#
+# Parametres :
+#    visuNo
+# Return :
+#    rien
+#------------------------------------------------------------------------------
+proc ::keyword::onChangeEquinox { visuNo } {
+   variable private
+
+   if { $::conf(keyword,GotoManuelAutoTer) == "$::caption(keyword,automatic)" } {
+      set private(equinoxe) $::audace(telescope,targetEquinox)
+   }
+}
+
+#------------------------------------------------------------------------------
 # openSetTemperature
 #    ouvre la fenetre pour mettre a jour la consigne de temperature
 #
@@ -425,63 +487,61 @@ proc ::keyword::openSetTemperature { visuNo } {
 proc ::keyword::onChangeValueComboBox { visuNo } {
    variable private
 
-   #--- Mots cles RA et DEC
+   #--- Mot cles OBJNAME
    if { $::conf(keyword,GotoManuelAuto) == "$::caption(keyword,automatic)" } {
-      #--- Je recupere le nomTK des entry
+      #--- Je recupere le nomTK de l'entry
       set wOBJNAME [$::keyword::private($visuNo,table) windowpath OBJNAME,valeur ]
-      set wRA      [$::keyword::private($visuNo,table) windowpath RA,valeur ]
-      set wDEC     [$::keyword::private($visuNo,table) windowpath DEC,valeur ]
-      #--- Je configure l'etat des entry
+      #--- Je configure l'etat de l'entry
       $wOBJNAME configure -state disabled
-      $wRA      configure -state disabled
-      $wDEC     configure -state disabled
-      #--- Je recupere les RA et DEC de la procedure ::telescope::goto
-      set private(objName)  $::audace(telescope,targetname)
-      set private(ra)       $::audace(telescope,getra)
-      set private(dec)      $::audace(telescope,getdec)
-      if { $::conf(keyword,GotoManuelAutoBis) == "$::caption(keyword,automatic)" } {
-         #--- Je recupere le nomTK des entry
-         set wEQUINOX [$::keyword::private($visuNo,table) windowpath EQUINOX,valeur ]
-         #--- Je configure l'etat des entry
-         $wEQUINOX configure -state disabled
-         #--- Je recupere l'equinoxe
-         set private(equinoxe) $::audace(telescope,targetEquinox)
-      } elseif { $::conf(keyword,GotoManuelAutoBis) == "$::caption(keyword,manuel)" } {
-         #--- Je recupere le nomTK des entry
-         set wEQUINOX [$::keyword::private($visuNo,table) windowpath EQUINOX,valeur ]
-         #--- Je configure l'etat des entry
-         $wEQUINOX configure -state normal
-         #--- Je vide le champ correspondant
-         set private(equinoxe) ""
-      }
+      #--- Je recupere OBJNAME
+      set private(objName) $::audace(telescope,targetname)
    } elseif { $::conf(keyword,GotoManuelAuto) == "$::caption(keyword,manuel)" } {
-      #--- Je recupere le nomTK des entry
+      #--- Je recupere le nomTK de l'entry
       set wOBJNAME [$::keyword::private($visuNo,table) windowpath OBJNAME,valeur ]
-      set wRA      [$::keyword::private($visuNo,table) windowpath RA,valeur ]
-      set wDEC     [$::keyword::private($visuNo,table) windowpath DEC,valeur ]
-      #--- Je configure l'etat des entry
+      #--- Je configure l'etat de l'entry
       $wOBJNAME configure -state normal
-      $wRA      configure -state normal
-      $wDEC     configure -state normal
+      #--- Je vide le champ correspondant
+      set private(objName) ""
+   }
+
+   #--- Mots cles RA et DEC
+   if { $::conf(keyword,GotoManuelAutoBis) == "$::caption(keyword,automatic)" } {
+      #--- Je recupere le nomTK des entry
+      set wRA  [$::keyword::private($visuNo,table) windowpath RA,valeur ]
+      set wDEC [$::keyword::private($visuNo,table) windowpath DEC,valeur ]
+      #--- Je configure l'etat des entry
+      $wRA  configure -state disabled
+      $wDEC configure -state disabled
+      #--- Je recupere les RA et DEC de la cible
+      set private(ra)  $::audace(telescope,targetRa)
+      set private(dec) $::audace(telescope,targetDec)
+   } elseif { $::conf(keyword,GotoManuelAutoBis) == "$::caption(keyword,manuel)" } {
+      #--- Je recupere le nomTK des entry
+      set wRA  [$::keyword::private($visuNo,table) windowpath RA,valeur ]
+      set wDEC [$::keyword::private($visuNo,table) windowpath DEC,valeur ]
+      #--- Je configure l'etat des entry
+      $wRA  configure -state normal
+      $wDEC configure -state normal
       #--- Je vide les champs correspondants
-      set private(objName)  ""
-      set private(ra)       ""
-      set private(dec)      ""
-      if { $::conf(keyword,GotoManuelAutoBis) == "$::caption(keyword,automatic)" } {
-         #--- Je recupere le nomTK des entry
-         set wEQUINOX [$::keyword::private($visuNo,table) windowpath EQUINOX,valeur ]
-         #--- Je configure l'etat des entry
-         $wEQUINOX configure -state disabled
-         #--- Je recupere l'equinoxe
-         set private(equinoxe) $::audace(telescope,targetEquinox)
-      } elseif { $::conf(keyword,GotoManuelAutoBis) == "$::caption(keyword,manuel)" } {
-         #--- Je recupere le nomTK des entry
-         set wEQUINOX [$::keyword::private($visuNo,table) windowpath EQUINOX,valeur ]
-         #--- Je configure l'etat des entry
-         $wEQUINOX configure -state normal
-         #--- Je vide le champ correspondant
-         set private(equinoxe) ""
-      }
+      set private(ra)  ""
+      set private(dec) ""
+   }
+
+   #--- Mot cles EQUINOX
+   if { $::conf(keyword,GotoManuelAutoTer) == "$::caption(keyword,automatic)" } {
+      #--- Je recupere le nomTK de l'entry
+      set wEQUINOX [$::keyword::private($visuNo,table) windowpath EQUINOX,valeur ]
+     #--- Je configure l'etat de l'entry
+      $wEQUINOX configure -state disabled
+      #--- Je recupere l'equinoxe
+      set private(equinoxe) $::audace(telescope,targetEquinox)
+   } elseif { $::conf(keyword,GotoManuelAutoTer) == "$::caption(keyword,manuel)" } {
+      #--- Je recupere le nomTK de l'entry
+      set wEQUINOX [$::keyword::private($visuNo,table) windowpath EQUINOX,valeur ]
+      #--- Je configure l'etat de l'entry
+      $wEQUINOX configure -state normal
+     #--- Je vide le champ correspondant
+      set private(equinoxe) ""
    }
 
    #--- Mot cles IMAGETYP
@@ -599,23 +659,45 @@ proc ::keyword::cmdCancelNewValueTypeImage { } {
 }
 
 #------------------------------------------------------------------------------
+# setKeywordsObjRaDecAuto
+#    fonction appelee par rendre la capture des mots cles OBJNAME, RA et DEC automatique
+# Return :
+#    rien
+#------------------------------------------------------------------------------
+proc ::keyword::setKeywordsObjRaDecAuto { } {
+   set ::conf(keyword,GotoManuelAuto)    "$::caption(keyword,automatic)"
+   set ::conf(keyword,GotoManuelAutoBis) "$::caption(keyword,automatic)"
+}
+
+#------------------------------------------------------------------------------
+# setKeywordsObjRaDecManuel
+#    fonction appelee par rendre la capture des mots cles OBJNAME, RA et DEC manuelle
+# Return :
+#    rien
+#------------------------------------------------------------------------------
+proc ::keyword::setKeywordsObjRaDecManuel { } {
+   set ::conf(keyword,GotoManuelAuto)    "$::caption(keyword,manuel)"
+   set ::conf(keyword,GotoManuelAutoBis) "$::caption(keyword,manuel)"
+}
+
+#------------------------------------------------------------------------------
 # setKeywordsRaDecAuto
-#    fonction appelee par rendre la capture les mots cles OBJNAME, RA et DEC automatique
+#    fonction appelee par rendre la capture des mots cles RA et DEC automatique
 # Return :
 #    rien
 #------------------------------------------------------------------------------
 proc ::keyword::setKeywordsRaDecAuto { } {
-   set ::conf(keyword,GotoManuelAuto) "$::caption(keyword,automatic)"
+   set ::conf(keyword,GotoManuelAutoBis) "$::caption(keyword,automatic)"
 }
 
 #------------------------------------------------------------------------------
 # setKeywordsRaDecManuel
-#    fonction appelee par rendre la capture les mots cles OBJNAME, RA et DEC manuelle
+#    fonction appelee par rendre la capture des mots cles RA et DEC manuelle
 # Return :
 #    rien
 #------------------------------------------------------------------------------
 proc ::keyword::setKeywordsRaDecManuel { } {
-   set ::conf(keyword,GotoManuelAuto) "$::caption(keyword,manuel)"
+   set ::conf(keyword,GotoManuelAutoBis) "$::caption(keyword,manuel)"
 }
 
 #------------------------------------------------------------------------------
@@ -645,6 +727,15 @@ proc ::keyword::getKeywords { visuNo { keywordNameList "" } } {
    #--- je recupere les dimensions des photosites
    onChangeCellDim $visuNo
 
+   #--- je recupere le nom de l'objet (si mode automatique)
+   onChangeObjname $visuNo
+
+   #--- je recupere l'ascension droite et la declinaison l'objet (si mode automatique)
+   onChangeRaDec $visuNo
+
+   #--- je recupere l'equinoxe des coordonnees de l'objet (si mode automatique)
+   onChangeEquinox $visuNo
+
    if { [llength $keywordNameList] == 0 } {
       #--- je recupere les mots cles coches
       set result ""
@@ -654,6 +745,7 @@ proc ::keyword::getKeywords { visuNo { keywordNameList "" } } {
             if { [ lindex $infosMotClef 0 ] == $motclef } {
                #--- je recupere la temperature du CCD
                if { $motclef == "CCD_TEMP" } {
+                  #--- je recupere la temperature du CCD
                   onChangeTemperature $visuNo
                }
                set textVariable [lindex $infosMotClef 2]
@@ -663,20 +755,12 @@ proc ::keyword::getKeywords { visuNo { keywordNameList "" } } {
                set unite        [lindex $infosMotClef 12]
                #--- Conversion du RA et DEC en degres decimaux
                if { $motclef == "RA" } {
-                  if { $::conf(keyword,GotoManuelAuto) == "$::caption(keyword,automatic)" } {
-                     ::telescope::afficheCoord
-                     set valeur $::audace(telescope,getra)
-                  }
                   set valeur [ mc_angle2deg $valeur ]
                }
                if { $motclef == "DEC" } {
-                  if { $::conf(keyword,GotoManuelAuto) == "$::caption(keyword,automatic)" } {
-                     ::telescope::afficheCoord
-                     set valeur $::audace(telescope,getdec)
-                  }
                   set valeur [ mc_angle2deg $valeur ]
                }
-               #--- j'ajoute les mots clef dans le resultat
+               #--- j'ajoute les mots cles dans le resultat
                lappend result [list $motclef $valeur $type $commentaire $unite]
                break
             }
@@ -697,7 +781,7 @@ proc ::keyword::getKeywords { visuNo { keywordNameList "" } } {
                set type         [lindex $infosMotClef 10]
                set commentaire  [lindex $infosMotClef 11]
                set unite        [lindex $infosMotClef 12]
-               #--- j'ajoute les mots clef dans le resultat
+               #--- j'ajoute les mots cles dans le resultat
                lappend result [list $keywordName $valeur $type $commentaire $unite]
                break
             }
@@ -1073,7 +1157,7 @@ proc ::keyword::setKeywordValue { visuNo keywordName keywordValue} {
          return
       }
    }
-   #--- je retourne un message d'erreur si le mot cle n'a pas ete trouve
+   #--- je retourne un message d'erreur si le mot cles n'a pas ete trouve
    error "keyword $keywordName unknown"
 }
 
