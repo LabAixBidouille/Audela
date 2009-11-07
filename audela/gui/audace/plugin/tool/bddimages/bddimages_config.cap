@@ -1,38 +1,44 @@
 #
 # Fichier : bddimages_config.cap
+# Mise a jour $Id: bddimages_config.cap,v 1.2 2009-11-07 14:10:43 robertdelmas Exp $
 #
 
 #=========================================================================
-#   DÈbut de la dÈclaration des textes localisÈs (internationalisation)
+#   D√©but de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
 set caption(bddimages_config,main_title)     "BddImages - Configuration"
-set caption(bddimages_config,titre)	     "Statut de la base de donnÈes"
+set caption(bddimages_config,titre)          "Statut de la base de donn√©es"
 set caption(bddimages_config,label_ok)       "Statut .........................."
 set caption(bddimages_config,label_nbimg)    "Nb d'images......................"
 set caption(bddimages_config,label_nbheader) "Nb de header....................."
 
-set caption(bddimages_config,aide)	     "Aide"
-set caption(bddimages_config,save)	     "Sauver"
-set caption(bddimages_config,fermer)	     "Fermer"
+set caption(bddimages_config,aide)           "Aide"
+set caption(bddimages_config,save)           "Sauver"
+set caption(bddimages_config,fermer)         "Fermer"
 
 set caption(bddimages_config,msg_erreur)     "Erreur"
-set caption(bddimages_config,msg_internet)   "Une connexion ‡ Internet opÈrationnelle est nÈcessaire pour accÈder ‡ la base de donnÈes."
+set caption(bddimages_config,msg_internet)   "Une connexion √† Internet op√©rationnelle est n√©cessaire pour acc√©der √† la base de donn√©es."
 
-set caption(bddimages_config,access)	     "AccÈs ‡ la base de donnÈes"
-set caption(bddimages_config,login)	     "Login"
-set caption(bddimages_config,pass)	     "Mot de passe"
-set caption(bddimages_config,serv)	     "Adresse IP du serveur Mysql"
-set caption(bddimages_config,dir)	     "Repertoires de travail"
-set caption(bddimages_config,dirbase)	     "Repertoire de la base"
-set caption(bddimages_config,dirinco)	     "Repertoire incoming par defaut"
-set caption(bddimages_config,dirfits)	     "Repertoire des fichiers FITS"
-set caption(bddimages_config,dircata)	     "Repertoire des catalogues"
-set caption(bddimages_config,direrr)	     "Repertoire des fichiers en erreur"
-set caption(bddimages_config,dirlog)	     "Repertoire des logs"
-set caption(bddimages_config,variables)	     "Variables diverses"
-set caption(bddimages_config,listlimit)	     "Limite pour la liste d'insertion"
+set caption(bddimages_config,access)         "Acc√©s √† la base de donn√©es"
+set caption(bddimages_config,login)          "Login"
+set caption(bddimages_config,pass)           "Mot de passe"
+set caption(bddimages_config,serv)           "Adresse IP du serveur Mysql"
+set caption(bddimages_config,dir)            "R√©pertoires de travail"
+set caption(bddimages_config,dirbase)        "R√©pertoires de la base"
+set caption(bddimages_config,dirinco)        "R√©pertoires incoming par d√©faut"
+set caption(bddimages_config,dirfits)        "R√©pertoires des fichiers FITS"
+set caption(bddimages_config,dircata)        "R√©pertoires des catalogues"
+set caption(bddimages_config,direrr)         "R√©pertoires des fichiers en erreur"
+set caption(bddimages_config,dirlog)         "R√©pertoires des logs"
+set caption(bddimages_config,variables)      "Variables diverses"
+set caption(bddimages_config,listlimit)      "Limite pour la liste d'insertion"
 
-set caption(bddimages_config,test)	     "Test"
+set caption(bddimages_config,test)           "Test"
+
+#=========================================================================
+#   Fin de la d√©claration des textes localis√©s (internationalisation)
+#=========================================================================
+
