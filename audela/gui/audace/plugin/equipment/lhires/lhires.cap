@@ -1,10 +1,10 @@
 #
 # Fichier : lhires.cap
-# Mise a jour $Id: lhires.cap,v 1.1 2009-11-07 08:37:38 michelpujol Exp $
+# Mise a jour $Id: lhires.cap,v 1.2 2009-11-07 09:10:32 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -14,23 +14,29 @@ global caption langage
 set caption(lhires,label)                 "Lhires 3"
 set caption(lhires,link)                  "Link"
 set caption(lhires,configure)             "Set up"
-set caption(lhires,bitLampOn)             "ON Bit Number"
-set caption(lhires,bitLampOff)            "OFF Bit Number"
+set caption(lhires,bitLampOn)             "Start Bit Number"
+set caption(lhires,bitLampOff)            "Direction Bit Number"
+
+set caption(lhires,lampDown)              "Test: Switch on and pull down"
+set caption(lhires,lampUp)                "Test: Switch off and pull up"
 
 set caption(lhires,arreter)               "Stop"
 set caption(lhires,creer_au_demarrage)    "Next time software is run connect this equipment automatically"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(lhires,label)              "Lhires 3"
    set caption(lhires,link)               "Liaison"
    set caption(lhires,configure)          "Configurer"
-   set caption(lhires,bitLampOn)          "Numéro du bit pour allumer le néon"
-   set caption(lhires,bitLampOff)         "Numéro du bit pour éteindre le néon"
+   set caption(lhires,bitLampOn)          "NumÃ©ro du bit de dÃ©marrage"
+   set caption(lhires,bitLampOff)         "NumÃ©ro du bit de direction"
 
-   set caption(lhires,arreter)            "Arrêter"
-   set caption(lhires,creer_au_demarrage) "Connexion automatique de cet équipement au prochain démarrage"
+   set caption(lhires,lampDown)           "Test : Allumer et abaisser"
+   set caption(lhires,lampUp)             "Test : Eteindre et relever"
+
+   set caption(lhires,arreter)            "ArrÃªter"
+   set caption(lhires,creer_au_demarrage) "Connexion automatique de cet Ã©quipement au prochain dÃ©marrage"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -40,6 +46,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lhires,configure)          "Configurare"
    set caption(lhires,bitLampOn)          "Numero del bit di start"
    set caption(lhires,bitLampOff)         "Numero del bit di direzione"
+
+   set caption(lhires,lampDown)           "# Test : Allumer et abaisser"
+   set caption(lhires,lampUp)             "# Test : Eteindre et relever"
 
    set caption(lhires,arreter)            "Ferma"
    set caption(lhires,creer_au_demarrage) "Connessione automatica di questo equipaggiamento alla prossima esecuzione del software"
@@ -51,10 +60,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lhires,link)               "Enlace"
    set caption(lhires,configure)          "Configurar"
    set caption(lhires,bitLampOn)          "Numero del bit de comienzo"
-   set caption(lhires,bitLampOff)         "Numero del bit de dirección"
+   set caption(lhires,bitLampOff)         "Numero del bit de direcciÃ³n"
+
+   set caption(lhires,lampDown)           "# Test : Allumer et abaisser"
+   set caption(lhires,lampUp)             "# Test : Eteindre et relever"
 
    set caption(lhires,arreter)            "Parar"
-   set caption(lhires,creer_au_demarrage) "La próxima vez que se ejecute el programa, el equipo se conecta automáticamente"
+   set caption(lhires,creer_au_demarrage) "La prÃ³xima vez que se ejecute el programa, el equipo se conecta automÃ¡ticamente"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -65,36 +77,75 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lhires,bitLampOn)          "Nummer der Start Bit"
    set caption(lhires,bitLampOff)         "Nummer der Direktion Bit"
 
-   set caption(lhires,arreter)            "Halten"
-   set caption(lhires,creer_au_demarrage) "Nächste Mal diese Einrichtung automatisch anschließen"
+   set caption(lhires,lampDown)           "# Test : Allumer et abaisser"
+   set caption(lhires,lampUp)             "# Test : Eteindre et relever"
 
-# *************** Version portugaise ***************************
+   set caption(lhires,arreter)            "Halten"
+   set caption(lhires,creer_au_demarrage) "NÃ¤chste Mal diese Einrichtung automatisch anschlieÃŸen"
+
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(lhires,label)              "Lhires 3"
-   set caption(lhires,link)               "Ligação"
+   set caption(lhires,link)               "LigaÃ§Ã£o"
    set caption(lhires,configure)          "Configurar"
-   set caption(lhires,bitLampOn)          "Número do bit inicial"
-   set caption(lhires,bitLampOff)         "Número do bit de direcção"
+   set caption(lhires,bitLampOn)          "NÃºmero do bit inicial"
+   set caption(lhires,bitLampOff)         "NÃºmero do bit de direcÃ§Ã£o"
+
+   set caption(lhires,lampDown)           "# Test : Allumer et abaisser"
+   set caption(lhires,lampUp)             "# Test : Eteindre et relever"
 
    set caption(lhires,arreter)            "Parar"
-   set caption(lhires,creer_au_demarrage) "O equipamento conecta-se automaticamente na próxima execução do programa"
+   set caption(lhires,creer_au_demarrage) "O equipamento conecta-se automaticamente na prÃ³xima execuÃ§Ã£o do programa"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(lhires,label)              "Lhires 3"
    set caption(lhires,link)               "Link"
-   set caption(lhires,configure)          "Opsætning"
-   set caption(lhires,bitLampOn)           "Start bit-værdi"
-   set caption(lhires,bitLampOff)       "Retnings bit-værdi"
+   set caption(lhires,configure)          "OpsÃ¦tning"
+   set caption(lhires,bitLampOn)          "Start bit-vÃ¦rdi"
+   set caption(lhires,bitLampOff)         "Retnings bit-vÃ¦rdi"
+
+   set caption(lhires,lampDown)           "# Test : Allumer et abaisser"
+   set caption(lhires,lampUp)             "# Test : Eteindre et relever"
 
    set caption(lhires,arreter)            "Stop"
-   set caption(lhires,creer_au_demarrage) "Tilslut automatisk dette udstyr ved næste start"
+   set caption(lhires,creer_au_demarrage) "Tilslut automatisk dette udstyr ved nÃ¦ste start"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(lhires,label)              "Lhires 3"
+   set caption(lhires,link)               "Link"
+   set caption(lhires,configure)          "Set up"
+   set caption(lhires,bitLampOn)          "Start Bit Number"
+   set caption(lhires,bitLampOff)         "Direction Bit Number"
+
+   set caption(lhires,lampDown)           "Test: Switch on and pull down"
+   set caption(lhires,lampUp)             "Test: Switch off and pull up"
+
+   set caption(lhires,arreter)            "Stop"
+   set caption(lhires,creer_au_demarrage) "Next time software is run connect this equipment automatically"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(lhires,label)              "Lhires 3"
+   set caption(lhires,link)               "Link"
+   set caption(lhires,configure)          "Set up"
+   set caption(lhires,bitLampOn)          "Start Bit Number"
+   set caption(lhires,bitLampOff)         "Direction Bit Number"
+
+   set caption(lhires,lampDown)           "Test: Switch on and pull down"
+   set caption(lhires,lampUp)             "Test: Switch off and pull up"
+
+   set caption(lhires,arreter)            "Stop"
+   set caption(lhires,creer_au_demarrage) "Next time software is run connect this equipment automatically"
 
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
