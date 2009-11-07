@@ -1,38 +1,41 @@
 #
 # Fichier : bddimages_status.cap
+# Mise a jour $Id: bddimages_status.cap,v 1.2 2009-11-07 14:11:58 robertdelmas Exp $
 #
 
 #=========================================================================
-#   D�but de la d�claration des textes localis�s (internationalisation)
+#   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global caption
-
-
-global caption
+global caption langage
 
 set caption(bddimages_status,main_title)     "BddImages - Statut"
-set caption(bddimages_status,titre)	     "Statut de la base de donn�es"
+set caption(bddimages_status,titre)          "Statut de la base de données"
 
 set caption(bddimages_status,label_bdd)      "Information du Serveur Mysql"
 set caption(bddimages_status,label_connect)  "Connexion Serveur................"
 set caption(bddimages_status,label_nbimg)    "Nb d'images......................"
 set caption(bddimages_status,label_nbheader) "Nb de header....................."
 
-set caption(bddimages_status,label_rep)      "Information du Syst�me de fichiers"
+set caption(bddimages_status,label_rep)      "Information du système de fichiers"
 set caption(bddimages_status,label_nbimgrep) "Nb d'images sur disque............"
 set caption(bddimages_status,label_nbimginc) "Nb d'images dans incoming........."
-set caption(bddimages_status,label_nbimgerr)  "Nb d'images en erreur............."
+set caption(bddimages_status,label_nbimgerr) "Nb d'images en erreur............."
 
-set caption(bddimages_status,raz)	     "RAZ Base de donn�es"
-set caption(bddimages_status,verif)	     "Verification"
-set caption(bddimages_status,aide)	     "Aide"
-set caption(bddimages_status,fermer)	     "Fermer"
+set caption(bddimages_status,raz)            "RAZ Base de données"
+set caption(bddimages_status,verif)          "Vérification"
+set caption(bddimages_status,aide)           "Aide"
+set caption(bddimages_status,fermer)         "Fermer"
 
 set caption(bddimages_status,msg_erreur)     "Erreur"
-set caption(bddimages_status,msg_internet)   "Reconnection � la base."
+set caption(bddimages_status,msg_internet)   "Reconnexion à la base."
 
 set caption(bddimages_status,msg_prevent)    "Attention !"
-set caption(bddimages_status,msg_prevent2)   "Ceci va remettre a zero la base de donnees. Cela va effacer les donnees sur le disque ainsi qu'effacer les donnees situees sur le serveur SQL. En etes vous sur ?"
+set caption(bddimages_status,msg_prevent2)   "Ceci va remettre à zéro la base de données. Cela va effacer les données sur le disque ainsi qu'effacer les données situées sur le serveur SQL. En êtes-vous sûr ?"
 set caption(bddimages_status,efface)         "Effacement de la base"
 set caption(bddimages_status,mdprootsql)     "Mot de passe root du serveur SQL"
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

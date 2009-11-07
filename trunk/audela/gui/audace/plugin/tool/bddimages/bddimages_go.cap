@@ -1,22 +1,27 @@
 #
 # Fichier : bddimages_go.cap
+# Mise a jour $Id: bddimages_go.cap,v 1.3 2009-11-07 14:10:58 robertdelmas Exp $
 #
 
 #=========================================================================
-#   DÈbut de la dÈclaration des textes localisÈs (internationalisation)
+#   D√©but de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 
-global caption
+global caption langage
 
-   set caption(bddimages_go,titre)              "Base de donnÈes d'images"
-   set caption(bddimages_go,bddimages)          "Base de donnÈes\nd'images"
-   set caption(bddimages_go,help_titre)         "Aide de cet outil"
-   set caption(bddimages_go,help_titre1)        "Aide de l'outil :"
+set caption(bddimages_go,titre)              "Base de donn√©es d'images"
+set caption(bddimages_go,bddimages)          "Base de donn√©es\nd'images"
+set caption(bddimages_go,help_titre)         "Aide de cet outil"
+set caption(bddimages_go,help_titre1)        "Aide de l'outil :"
 
-   set caption(bddimages_go,configuration)      "Configuration"
-   set caption(bddimages_go,status)             "Statut de la BDD"
-   set caption(bddimages_go,insertion)          "Insertion d'images"
-   set caption(bddimages_go,recherche)          "Recherche"
-   set caption(bddimages_go,test)               "Test"
-   set caption(bddimages_go,ressource)          "re-source"
+set caption(bddimages_go,configuration)      "Configuration"
+set caption(bddimages_go,status)             "Statut de la BDD"
+set caption(bddimages_go,insertion)          "Insertion d'images"
+set caption(bddimages_go,recherche)          "Recherche"
+set caption(bddimages_go,test)               "Test"
+set caption(bddimages_go,ressource)          "re-source"
+
+#=========================================================================
+#   Fin de la d√©claration des textes localis√©s (internationalisation)
+#=========================================================================
 
