@@ -1,6 +1,6 @@
 #
 # Fichier : t193pad.cap
-# Mise a jour $Id: t193pad.cap,v 1.3 2009-11-05 18:25:49 robertdelmas Exp $
+# Mise a jour $Id: t193pad.cap,v 1.4 2009-11-07 14:07:51 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -77,8 +77,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193pad,moteur_foc)        "Motore della focheggiamento"
    set caption(t193pad,gotoFoc)           "GOTO focheg."
 
-   set caption(t193pad,dome)              "# Dôme"
-   set caption(t193pad,synchroMonture)    "# Synchro avec le télescope"
+   set caption(t193pad,dome)              "Cupola"
+   set caption(t193pad,synchroMonture)    "Sincronizza con il telescopio"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
