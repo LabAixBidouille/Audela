@@ -2,7 +2,7 @@
 # Fichier : snmacros.tcl
 # Description : Macros des scripts pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snmacros.tcl,v 1.9 2009-10-31 09:14:42 robertdelmas Exp $
+# Mise a jour $Id: snmacros.tcl,v 1.10 2009-11-07 09:16:21 robertdelmas Exp $
 #
 
 proc globgalsn { args } {
@@ -556,7 +556,7 @@ proc snprism { } {
    set cdeltm2 [ expr $ypixelsz / 1000. ]
    set binx $snconf(binning)
    set biny $snconf(binning)
-  set crval1 $ra
+   set crval1 $ra
    set crval2 $dec
    set cdelt1 [expr atan($cdeltm1/$focmm)]
    set cdelt2 [expr atan($cdeltm2/$focmm)]
