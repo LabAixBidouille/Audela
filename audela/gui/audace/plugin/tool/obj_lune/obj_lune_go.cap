@@ -1,10 +1,10 @@
 #
 # Fichier : obj_lune_go.cap
-# Mise a jour $Id: obj_lune_go.cap,v 1.7 2007-04-12 17:44:09 robertdelmas Exp $
+# Mise a jour $Id: obj_lune_go.cap,v 1.8 2009-11-07 15:01:17 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -13,7 +13,7 @@ global caption langage
 
 set caption(obj_lune_go,obj_lune)         "Destination Moon"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(obj_lune_go,obj_lune)      "Objectif Lune"
@@ -41,11 +41,21 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(obj_lune_go,obj_lune)      "Destination Månen"
+   set caption(obj_lune_go,obj_lune)      "Destination MÃ¥nen"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(obj_lune_go,obj_lune)      "Destination Moon"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(obj_lune_go,obj_lune)      "Destination Moon"
 
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
