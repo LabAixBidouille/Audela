@@ -1,10 +1,10 @@
 #
 # Fichier : viseur_polaire_taka.cap
-# Mise a jour $Id: viseur_polaire_taka.cap,v 1.6 2007-01-27 14:59:38 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_taka.cap,v 1.7 2009-11-07 17:06:19 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -24,16 +24,16 @@ set caption(viseur_taka,appliquer)           "Apply"
 set caption(viseur_taka,aide)                "Help"
 set caption(viseur_taka,fermer)              "Close"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(viseur_taka,titre)            "Viseur polaire de type Takahashi"
-   set caption(viseur_taka,texte)            "Viseur polaire avec niveau à bulle"
+   set caption(viseur_taka,texte)            "Viseur polaire avec niveau Ã  bulle"
    set caption(viseur_taka,long)             "Longitude :"
    set caption(viseur_taka,ah_polaire)       "Angle horaire de la Polaire :"
    set caption(viseur_taka,taille)           "Sa taille"
    set caption(viseur_taka,couleur_fond)     "Couleur du fond"
-   set caption(viseur_taka,couleur_reticule) "Couleur du réticule"
+   set caption(viseur_taka,couleur_reticule) "Couleur du rÃ©ticule"
    set caption(viseur_taka,couleur_etoile)   "Couleur de la Polaire"
    set caption(viseur_taka,ok)               "OK"
    set caption(viseur_taka,appliquer)        "Appliquer"
@@ -63,9 +63,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(viseur_taka,texte)            "Buscador de la polar con burbuja de nivel"
    set caption(viseur_taka,long)             "Longitud:"
    set caption(viseur_taka,ah_polaire)       "Angulo horario de la estrella Polar:"
-   set caption(viseur_taka,taille)           "Su tamaño"
+   set caption(viseur_taka,taille)           "Su tamaÃ±o"
    set caption(viseur_taka,couleur_fond)     "Color de fondo"
-   set caption(viseur_taka,couleur_reticule) "Color del retículo"
+   set caption(viseur_taka,couleur_reticule) "Color del retÃ­culo"
    set caption(viseur_taka,couleur_etoile)   "Color de la estrella Polar"
    set caption(viseur_taka,ok)               "OK"
    set caption(viseur_taka,appliquer)        "Aplicar"
@@ -77,27 +77,27 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(viseur_taka,titre)            "Takahashi Modell Polar Sucher"
    set caption(viseur_taka,texte)            "Polar Sucher mit Wasserwaage"
-   set caption(viseur_taka,long)             "Länge:"
+   set caption(viseur_taka,long)             "LÃ¤nge:"
    set caption(viseur_taka,ah_polaire)       "Polar Zeitwinkel:"
-   set caption(viseur_taka,taille)           "Ihre Größe"
+   set caption(viseur_taka,taille)           "Ihre GrÃ¶ÃŸe"
    set caption(viseur_taka,couleur_fond)     "Hintergrund Farbe"
    set caption(viseur_taka,couleur_reticule) "Fadenkreuz Farbe"
    set caption(viseur_taka,couleur_etoile)   "Polarstern Farbe"
    set caption(viseur_taka,ok)               "OK"
    set caption(viseur_taka,appliquer)        "Anwenden"
    set caption(viseur_taka,aide)             "Hilfe"
-   set caption(viseur_taka,fermer)           "Schließen"
+   set caption(viseur_taka,fermer)           "SchlieÃŸen"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(viseur_taka,titre)            "Buscador polar de tipo Takahashi"
-   set caption(viseur_taka,texte)            "Buscador polar com bolha de nível"
-   set caption(viseur_taka,long)             "Longitude :"
-   set caption(viseur_taka,ah_polaire)       "Ângulo horário da Polar :"
+  set caption(viseur_taka,titre)            "Buscador polar de tipo Takahashi"
+   set caption(viseur_taka,texte)            "Buscador polar com bolha de nÃ­vel"
+   set caption(viseur_taka,long)             "Longitude:"
+   set caption(viseur_taka,ah_polaire)       "Ã‚ngulo horÃ¡rio da Polar:"
    set caption(viseur_taka,taille)           "Seu tamanho"
    set caption(viseur_taka,couleur_fond)     "Cor do fundo"
-   set caption(viseur_taka,couleur_reticule) "Cor do retículo"
+   set caption(viseur_taka,couleur_reticule) "Cor do retÃ­culo"
    set caption(viseur_taka,couleur_etoile)   "Cor da Polar"
    set caption(viseur_taka,ok)               "OK"
    set caption(viseur_taka,appliquer)        "Aplicar"
@@ -107,22 +107,54 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(viseur_taka,titre)            "Polsøger af Takahashi typen"
-   set caption(viseur_taka,texte)            "Polsøger med libelle"
-   set caption(viseur_taka,long)             "Geografisk længde:"
+   set caption(viseur_taka,titre)            "PolsÃ¸ger af Takahashi typen"
+   set caption(viseur_taka,texte)            "PolsÃ¸ger med libelle"
+   set caption(viseur_taka,long)             "Geografisk lÃ¦ngde:"
    set caption(viseur_taka,ah_polaire)       "Polstjernens timevinkel:"
-   set caption(viseur_taka,taille)           "Dens størrelse"
+   set caption(viseur_taka,taille)           "Dens stÃ¸rrelse"
    set caption(viseur_taka,couleur_fond)     "Baggrundsfarve"
-   set caption(viseur_taka,couleur_reticule) "Trådkors farve"
+   set caption(viseur_taka,couleur_reticule) "TrÃ¥dkors farve"
    set caption(viseur_taka,couleur_etoile)   "Polstjernens farve"
    set caption(viseur_taka,ok)               "OK"
    set caption(viseur_taka,appliquer)        "Anvend"
-   set caption(viseur_taka,aide)             "Hjælp"
+   set caption(viseur_taka,aide)             "HjÃ¦lp"
    set caption(viseur_taka,fermer)           "Luk"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(viseur_taka,titre)            "Takahashi Type Polar Finder"
+   set caption(viseur_taka,texte)            "Polar Finder with Bubble Level"
+   set caption(viseur_taka,long)             "Longitude:"
+   set caption(viseur_taka,ah_polaire)       "Hour Angle of Polar Star:"
+   set caption(viseur_taka,taille)           "Its size"
+   set caption(viseur_taka,couleur_fond)     "Background Color"
+   set caption(viseur_taka,couleur_reticule) "Reticle Color"
+   set caption(viseur_taka,couleur_etoile)   "Polar Star Color"
+   set caption(viseur_taka,ok)               "OK"
+   set caption(viseur_taka,appliquer)        "Apply"
+   set caption(viseur_taka,aide)             "Help"
+   set caption(viseur_taka,fermer)           "Close"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(viseur_taka,titre)            "Takahashi Type Polar Finder"
+   set caption(viseur_taka,texte)            "Polar Finder with Bubble Level"
+   set caption(viseur_taka,long)             "Longitude:"
+   set caption(viseur_taka,ah_polaire)       "Hour Angle of Polar Star:"
+   set caption(viseur_taka,taille)           "Its size"
+   set caption(viseur_taka,couleur_fond)     "Background Color"
+   set caption(viseur_taka,couleur_reticule) "Reticle Color"
+   set caption(viseur_taka,couleur_etoile)   "Polar Star Color"
+   set caption(viseur_taka,ok)               "OK"
+   set caption(viseur_taka,appliquer)        "Apply"
+   set caption(viseur_taka,aide)             "Help"
+   set caption(viseur_taka,fermer)           "Close"
 
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
