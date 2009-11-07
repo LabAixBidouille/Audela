@@ -1,10 +1,10 @@
 #
 # Fichier : telshift_go.cap
-# Mise a jour $Id: telshift_go.cap,v 1.7 2007-04-12 20:29:40 robertdelmas Exp $
+# Mise a jour $Id: telshift_go.cap,v 1.8 2009-11-07 16:31:15 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -13,10 +13,10 @@ global caption langage
 
 set caption(telshift_go,telshift)         "Shoot and Shift"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(telshift_go,telshift)      "Imager & déplacer"
+   set caption(telshift_go,telshift)      "Imager & dÃ©placer"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -41,11 +41,21 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(telshift_go,telshift)      "Eksponér og flyt"
+   set caption(telshift_go,telshift)      "EksponÃ©r og flyt"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(telshift_go,telshift)      "Shoot and Shift"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(telshift_go,telshift)      "Shoot and Shift"
 
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

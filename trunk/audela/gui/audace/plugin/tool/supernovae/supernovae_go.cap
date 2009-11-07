@@ -1,10 +1,10 @@
 #
 # Fichier : supernovae_go.cap
-# Mise a jour $Id: supernovae_go.cap,v 1.9 2009-07-14 08:04:42 robertdelmas Exp $
+# Mise a jour $Id: supernovae_go.cap,v 1.10 2009-11-07 16:30:42 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -18,7 +18,7 @@ set caption(supernovae_go,recherche_sn)      "Search for\nsupernovae"
 set caption(supernovae_go,sn_acq)            "Sn Acq."
 set caption(supernovae_go,sn_visu)           "Sn View"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(supernovae_go,supernovae)     "Supernovae"
@@ -52,8 +52,8 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(supernovae_go,supernovae)     "Supernovae"
-   set caption(supernovae_go,help,titre)     "Hilfe für dieses Gerät"
-   set caption(supernovae_go,help,titre1)    "Hilfe für die Gerät:"
+   set caption(supernovae_go,help,titre)     "Hilfe fÃ¼r dieses GerÃ¤t"
+   set caption(supernovae_go,help,titre1)    "Hilfe fÃ¼r die GerÃ¤t:"
    set caption(supernovae_go,recherche_sn)   "Supernovae\nsuchen"
    set caption(supernovae_go,sn_acq)         "Sn Anschaf."
    set caption(supernovae_go,sn_visu)        "Sn Visu"
@@ -66,21 +66,41 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(supernovae_go,help,titre1)    "Ajuda para del ferramenta:"
    set caption(supernovae_go,recherche_sn)   "Procurar\nsupernova"
    set caption(supernovae_go,sn_acq)         "Aqu. Sn"
-   set caption(supernovae_go,sn_visu)        "Visualização Sn"
+   set caption(supernovae_go,sn_visu)        "VisualizaÃ§Ã£o Sn"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(supernovae_go,supernovae)     "Supernova"
-   set caption(supernovae_go,help,titre)     "Hjælp til dette værktøj"
-   set caption(supernovae_go,help,titre1)    "Hjælp til i værktøj:"
-   set caption(supernovae_go,recherche_sn)   "Søgning efter\nsupernova"
-   set caption(supernovae_go,sn_acq)         "Sn Eksponér"
+   set caption(supernovae_go,help,titre)     "HjÃ¦lp til dette vÃ¦rktÃ¸j"
+   set caption(supernovae_go,help,titre1)    "HjÃ¦lp til i vÃ¦rktÃ¸j:"
+   set caption(supernovae_go,recherche_sn)   "SÃ¸gning efter\nsupernova"
+   set caption(supernovae_go,sn_acq)         "Sn EksponÃ©r"
    set caption(supernovae_go,sn_visu)        "Sn Se"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(supernovae_go,supernovae)     "Supernovae"
+   set caption(supernovae_go,help,titre)     "Help for this Tool"
+   set caption(supernovae_go,help,titre1)    "Help for the Tool:"
+   set caption(supernovae_go,recherche_sn)   "Search for\nsupernovae"
+   set caption(supernovae_go,sn_acq)         "Sn Acq."
+   set caption(supernovae_go,sn_visu)        "Sn View"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(supernovae_go,supernovae)     "Supernovae"
+   set caption(supernovae_go,help,titre)     "Help for this Tool"
+   set caption(supernovae_go,help,titre1)    "Help for the Tool:"
+   set caption(supernovae_go,recherche_sn)   "Search for\nsupernovae"
+   set caption(supernovae_go,sn_acq)         "Sn Acq."
+   set caption(supernovae_go,sn_visu)        "Sn View"
 
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

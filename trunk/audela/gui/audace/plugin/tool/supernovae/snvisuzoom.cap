@@ -1,10 +1,10 @@
 #
 # Fichier : snvisuzoom.cap
-# Mise a jour $Id: snvisuzoom.cap,v 1.6 2007-01-27 14:55:30 robertdelmas Exp $
+# Mise a jour $Id: snvisuzoom.cap,v 1.7 2009-11-07 16:30:26 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -15,7 +15,7 @@ set caption(snvisuzoom,zoom_main_title)      "Sn View - Zoom 1"
 set caption(snvisuzoom,zoom_main_title_d)    "Sn View - Zoom 2"
 set caption(snvisuzoom,wait)                 "Wait..."
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(snvisuzoom,zoom_main_title)   "Sn Visu - Loupe 1"
@@ -25,7 +25,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(snvisuzoom,zoom_main_title)   "Vista Sn - Zoom 1"
+  set caption(snvisuzoom,zoom_main_title)   "Vista Sn - Zoom 1"
    set caption(snvisuzoom,zoom_main_title_d) "Vista Sn - Zoom 2"
    set caption(snvisuzoom,wait)              "Attesa..."
 
@@ -46,20 +46,34 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(snvisuzoom,zoom_main_title)   "Visualização Sn - Zoom 1"
-   set caption(snvisuzoom,zoom_main_title_d) "Visualização Sn - Zoom 2"
+   set caption(snvisuzoom,zoom_main_title)   "VisualizaÃ§Ã£o Sn - Zoom 1"
+   set caption(snvisuzoom,zoom_main_title_d) "VisualizaÃ§Ã£o Sn - Zoom 2"
    set caption(snvisuzoom,wait)              "Aguardar..."
 
-# *************** Version danoise ***************************
+# **************** Version danoise ****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(snvisuzoom,zoom_main_title)   "Sn Se - Zoom 1"
    set caption(snvisuzoom,zoom_main_title_d) "Sn Se - Zoom 2"
    set caption(snvisuzoom,wait)              "Vent..."
 
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(snvisuzoom,zoom_main_title)   "Sn View - Zoom 1"
+   set caption(snvisuzoom,zoom_main_title_d) "Sn View - Zoom 2"
+   set caption(snvisuzoom,wait)              "Wait..."
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(snvisuzoom,zoom_main_title)   "Sn View - Zoom 1"
+   set caption(snvisuzoom,zoom_main_title_d) "Sn View - Zoom 2"
+   set caption(snvisuzoom,wait)              "Wait..."
+
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
