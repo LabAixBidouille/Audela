@@ -1,10 +1,10 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.33 2009-11-06 19:20:51 robertdelmas Exp $
+# Mise a jour $Id: autoguider.cap,v 1.34 2009-11-07 14:08:25 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -44,7 +44,7 @@ set caption(autoguider,detection_psf)            "Star"
 set caption(autoguider,detection_fente)          "Slit"
 
 set caption(autoguider,inclinaison)              "Camera Tilt"
-set caption(autoguider,angle)                    "Angle (°)"
+set caption(autoguider,angle)                    "Angle (Â°)"
 set caption(autoguider,go)                       "GO"
 set caption(autoguider,stop)                     "STOP"
 set caption(autoguider,running)                  "Learning in progress"
@@ -72,19 +72,19 @@ set caption(autoguider,searchFwhm)               "Min. Fwhm"
 set caption(autoguider,searchRadius)             "Search Radius (pixel)"
 set caption(autoguider,searchThreshold)          "Min. Luminosity (2)"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(autoguider,menu)                  "Autoguidage"
    set caption(autoguider,titre)                 "Autoguidage"
    set caption(autoguider,help_titre)            "Aide de cet outil"
    set caption(autoguider,help_titre1)           "Aide de l'outil :"
-   set caption(autoguider,pb)                    "Problème"
-   set caption(autoguider,selcam)                "Vous devez d'abord sélectionner une caméra\n(menu Configuration/Caméra)."
+   set caption(autoguider,pb)                    "ProblÃ¨me"
+   set caption(autoguider,selcam)                "Vous devez d'abord sÃ©lectionner une camÃ©ra\n(menu Configuration/CamÃ©ra)."
 
    set caption(autoguider,image)                 "Image"
    set caption(autoguider,cible)                 "Cible"
-   set caption(autoguider,axe_AD)                "Axes (AD, Déc.)"
+   set caption(autoguider,axe_AD)                "Axes (AD, DÃ©c.)"
    set caption(autoguider,ctrl_monture)          "Suivi actif"
    set caption(autoguider,config_guidage)        "Configuration..."
    set caption(autoguider,ecart_origine_etoile)  "Ecart"
@@ -93,7 +93,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,rechercher)            "Rechercher"
    set caption(autoguider,effacer)               "Effacer"
    set caption(autoguider,centrer)               "Centrer"
-   set caption(autoguider,intensiteMax)          "Intensité (ADU)"
+   set caption(autoguider,intensiteMax)          "IntensitÃ© (ADU)"
 
    set caption(autoguider,pose)                  "Pose"
    set caption(autoguider,binning)               "Binning"
@@ -101,23 +101,23 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,STOP)                  "STOP\nCCD"
 
    set caption(autoguider,seuil)                 "Seuil (pixels)"
-   set caption(autoguider,detection)             "Détection étoile"
+   set caption(autoguider,detection)             "DÃ©tection Ã©toile"
    set caption(autoguider,apprenti)              "Apprentissage"
    set caption(autoguider,vitesse)               "Vitesse (ms/pixel)"
    set caption(autoguider,detection_psf)         "Etoile"
    set caption(autoguider,detection_fente)       "Fente"
 
-   set caption(autoguider,inclinaison)           "Inclinaison de la caméra"
-   set caption(autoguider,angle)                 "Angle (°)"
+   set caption(autoguider,inclinaison)           "Inclinaison de la camÃ©ra"
+   set caption(autoguider,angle)                 "Angle (Â°)"
    set caption(autoguider,go)                    "GO"
    set caption(autoguider,stop)                  "STOP"
    set caption(autoguider,running)               "Apprentissage en cours"
-   set caption(autoguider,delay)                 "Délai (s)"
+   set caption(autoguider,delay)                 "DÃ©lai (s)"
    set caption(autoguider,targetBoxSize)         "Taille de la zone"
    set caption(autoguider,AD)                    "Ascension Droite"
-   set caption(autoguider,declinaison)           "Déclinaison"
+   set caption(autoguider,declinaison)           "DÃ©clinaison"
    set caption(autoguider,aller_vers)            "Aller vers"
-   set caption(autoguider,clic_etoile)           "Cliquer sur l'étoile"
+   set caption(autoguider,clic_etoile)           "Cliquer sur l'Ã©toile"
 
    set caption(autoguider,cumulTitle)            "Cumul des acquisitions"
    set caption(autoguider,cumulEnabled)          "Activer le cumul"
@@ -130,11 +130,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,alphaReverse)          "Inverser le sens"
    set caption(autoguider,deltaReverse)          "Inverser le sens"
 
-   set caption(autoguider,searchTitle)           "Recherche d'étoile"
-   set caption(autoguider,searchThreshin)        "Intensité mini (1)"
+   set caption(autoguider,searchTitle)           "Recherche d'Ã©toile"
+   set caption(autoguider,searchThreshin)        "IntensitÃ© mini (1)"
    set caption(autoguider,searchFwhm)            "Fwhm mini"
    set caption(autoguider,searchRadius)          "Rayon de recherche (pixel)"
-   set caption(autoguider,searchThreshold)       "Intensité mini (2)"
+   set caption(autoguider,searchThreshold)       "IntensitÃ© mini (2)"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -172,7 +172,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,detection_fente)       "Fenditura"
 
    set caption(autoguider,inclinaison)           "Inclinazione della camera"
-   set caption(autoguider,angle)                 "Angolo (°)"
+   set caption(autoguider,angle)                 "Angolo (Â°)"
    set caption(autoguider,go)                    "GO"
    set caption(autoguider,stop)                  "STOP"
    set caption(autoguider,running)               "Apprendimento in corso"
@@ -203,19 +203,19 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(autoguider,menu)                  "Autoguía"
-   set caption(autoguider,titre)                 "Autoguía"
+   set caption(autoguider,menu)                  "AutoguÃ­a"
+   set caption(autoguider,titre)                 "AutoguÃ­a"
    set caption(autoguider,help_titre)            "Ayuda para esta herramienta"
    set caption(autoguider,help_titre1)           "Ajuda para del herramienta:"
    set caption(autoguider,pb)                    "Problema"
-   set caption(autoguider,selcam)                "Debe seleccionar primero una cámara\n(menú Configuración/Cámara)."
+   set caption(autoguider,selcam)                "Debe seleccionar primero una cÃ¡mara\n(menÃº ConfiguraciÃ³n/CÃ¡mara)."
 
    set caption(autoguider,image)                 "Imagen"
    set caption(autoguider,cible)                 "Objetivo"
    set caption(autoguider,axe_AD)                "Ejes (AR, Dec)"
    set caption(autoguider,ctrl_monture)          "Seguimiento On"
-   set caption(autoguider,config_guidage)        "Configuración..."
-   set caption(autoguider,ecart_origine_etoile)  "Desviación"
+   set caption(autoguider,config_guidage)        "ConfiguraciÃ³n..."
+   set caption(autoguider,ecart_origine_etoile)  "DesviaciÃ³n"
    set caption(autoguider,impulsion)             "Impulsos"
    set caption(autoguider,intervalle)            "Intervalo"
    set caption(autoguider,rechercher)            "Buscar"
@@ -229,21 +229,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,STOP)                  "STOP\nCCD"
 
    set caption(autoguider,seuil)                 "Nivel (pixels)"
-   set caption(autoguider,detection)             "Detección de estrella"
+   set caption(autoguider,detection)             "DetecciÃ³n de estrella"
    set caption(autoguider,apprenti)              "Aprendizaje"
    set caption(autoguider,vitesse)               "Velocidad (ms/pixel)"
    set caption(autoguider,detection_psf)         "Estrella"
    set caption(autoguider,detection_fente)       "Rendija"
 
    set caption(autoguider,inclinaison)           "Inclinacion camara"
-   set caption(autoguider,angle)                 "Angulo (°)"
+   set caption(autoguider,angle)                 "Angulo (Â°)"
    set caption(autoguider,go)                    "GO"
    set caption(autoguider,stop)                  "STOP"
    set caption(autoguider,running)               "Aprendizaje en proceso"
    set caption(autoguider,delay)                 "Retraso (s)"
-   set caption(autoguider,targetBoxSize)         "Tamaño zona"
-   set caption(autoguider,AD)                    "Ascensión Recta"
-   set caption(autoguider,declinaison)           "Declinación"
+   set caption(autoguider,targetBoxSize)         "TamaÃ±o zona"
+   set caption(autoguider,AD)                    "AscensiÃ³n Recta"
+   set caption(autoguider,declinaison)           "DeclinaciÃ³n"
    set caption(autoguider,aller_vers)            "Ir a"
    set caption(autoguider,clic_etoile)           "Click en la estrella"
 
@@ -259,20 +259,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,deltaReverse)          "Invertir el movimiento"
 
    set caption(autoguider,searchTitle)           "Busqueda de estrella"
-   set caption(autoguider,searchThreshin)        "Mínima luminosidad (1)"
+   set caption(autoguider,searchThreshin)        "MÃ­nima luminosidad (1)"
    set caption(autoguider,searchFwhm)            "Fwhm minimo"
-   set caption(autoguider,searchRadius)          "Radio de búsqueda (pixel)"
-   set caption(autoguider,searchThreshold)       "Mínima luminosidad (2)"
+   set caption(autoguider,searchRadius)          "Radio de bÃºsqueda (pixel)"
+   set caption(autoguider,searchThreshold)       "MÃ­nima luminosidad (2)"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(autoguider,menu)                  "Automatische Steuerung"
    set caption(autoguider,titre)                 "Automatische Steuerung"
-   set caption(autoguider,help_titre)            "Hilfe für dieses Gerät"
-   set caption(autoguider,help_titre1)           "Hilfe für die Gerät:"
+   set caption(autoguider,help_titre)            "Hilfe fÃ¼r dieses GerÃ¤t"
+   set caption(autoguider,help_titre1)           "Hilfe fÃ¼r die GerÃ¤t:"
    set caption(autoguider,pb)                    "Problem"
-   set caption(autoguider,selcam)                "Sie müssen erst eine Kamera wählen\n(Konfiguration/Kamera Menu)."
+   set caption(autoguider,selcam)                "Sie mÃ¼ssen erst eine Kamera wÃ¤hlen\n(Konfiguration/Kamera Menu)."
 
    set caption(autoguider,image)                 "Bild"
    set caption(autoguider,cible)                 "Ziel"
@@ -285,7 +285,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,rechercher)            "Suchen"
    set caption(autoguider,effacer)               "Wegradieren"
    set caption(autoguider,centrer)               "Zentrum"
-   set caption(autoguider,intensiteMax)          "Lichtstärke (ADU)"
+   set caption(autoguider,intensiteMax)          "LichtstÃ¤rke (ADU)"
 
    set caption(autoguider,pose)                  "Bel."
    set caption(autoguider,binning)               "Binning"
@@ -300,25 +300,25 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,detection_fente)       "Schlitz"
 
    set caption(autoguider,inclinaison)           "Kamera Neigung"
-   set caption(autoguider,angle)                 "Winkel (°)"
+   set caption(autoguider,angle)                 "Winkel (Â°)"
    set caption(autoguider,go)                    "GO"
    set caption(autoguider,stop)                  "STOP"
    set caption(autoguider,running)               "Lernen laufend"
    set caption(autoguider,delay)                 "Zeitraum (s)"
-   set caption(autoguider,targetBoxSize)         "Größe der Zone"
+   set caption(autoguider,targetBoxSize)         "GrÃ¶ÃŸe der Zone"
    set caption(autoguider,AD)                    "Rektaszension"
    set caption(autoguider,declinaison)           "Deklination"
    set caption(autoguider,aller_vers)            "zu gehen"
    set caption(autoguider,clic_etoile)           "auf das Stern klicken"
 
    set caption(autoguider,cumulTitle)            "Aufnahme kumulieren"
-   set caption(autoguider,cumulEnabled)          "Kumulierung befähigen"
+   set caption(autoguider,cumulEnabled)          "Kumulierung befÃ¤higen"
    set caption(autoguider,cumulNb)               "Aufnahme Zahl"
    set caption(autoguider,darkTitle)             "Dark Abziehung"
    set caption(autoguider,darkFileName)          "Dark Datei"
-   set caption(autoguider,darkEnabled)           "Abziehung befähigen"
+   set caption(autoguider,darkEnabled)           "Abziehung befÃ¤higen"
    set caption(autoguider,slitWidth)             "Schlitz Breite (pixels)"
-   set caption(autoguider,slitRatio)             "Verhältnis (%/pixel)"
+   set caption(autoguider,slitRatio)             "VerhÃ¤ltnis (%/pixel)"
    set caption(autoguider,alphaReverse)          "Richtung umkehren"
    set caption(autoguider,deltaReverse)          "Richtung umkehren"
 
@@ -336,13 +336,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,help_titre)            "Ajuda para esta ferramenta"
    set caption(autoguider,help_titre1)           "Ajuda para del ferramenta:"
    set caption(autoguider,pb)                    "Problema"
-   set caption(autoguider,selcam)                "Deve seleccionar primeiro uma câmara\n(menu Configuração/Câmara)."
+   set caption(autoguider,selcam)                "Deve seleccionar primeiro uma cÃ¢mara\n(menu ConfiguraÃ§Ã£o/CÃ¢mara)."
 
    set caption(autoguider,image)                 "Imagem"
    set caption(autoguider,cible)                 "Alvo"
    set caption(autoguider,axe_AD)                "Eixos (AR, Dec.)"
    set caption(autoguider,ctrl_monture)          "Seguimento activo"
-   set caption(autoguider,config_guidage)        "Configuração..."
+   set caption(autoguider,config_guidage)        "ConfiguraÃ§Ã£o..."
    set caption(autoguider,ecart_origine_etoile)  "Desvio"
    set caption(autoguider,impulsion)             "Impulsos"
    set caption(autoguider,intervalle)            "Intervalo"
@@ -351,36 +351,36 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,centrer)               "Centrar"
    set caption(autoguider,intensiteMax)          "Intensidade (ADU)"
 
-   set caption(autoguider,pose)                  "Exposição"
+   set caption(autoguider,pose)                  "ExposiÃ§Ã£o"
    set caption(autoguider,binning)               "Binning"
    set caption(autoguider,GO)                    "GO CCD"
    set caption(autoguider,STOP)                  "STOP\nCCD"
 
    set caption(autoguider,seuil)                 "Limiar (pixels)"
-   set caption(autoguider,detection)             "Detecção estrela"
+   set caption(autoguider,detection)             "DetecÃ§Ã£o estrela"
    set caption(autoguider,apprenti)              "Aprendizagem"
    set caption(autoguider,vitesse)               "Velocidade (ms/pixel)"
    set caption(autoguider,detection_psf)         "Estrela"
    set caption(autoguider,detection_fente)       "Fenda"
 
-   set caption(autoguider,inclinaison)           "Inclinação da câmara"
-   set caption(autoguider,angle)                 "Ângulo (°)"
+   set caption(autoguider,inclinaison)           "InclinaÃ§Ã£o da cÃ¢mara"
+   set caption(autoguider,angle)                 "Ã‚ngulo (Â°)"
    set caption(autoguider,go)                    "GO"
    set caption(autoguider,stop)                  "STOP"
    set caption(autoguider,running)               "Aprendizagem em curso"
    set caption(autoguider,delay)                 "Atraso (s)"
    set caption(autoguider,targetBoxSize)         "Tamanho da zona"
-   set caption(autoguider,AD)                    "Ascenção Recta"
-   set caption(autoguider,declinaison)           "Declinação"
+   set caption(autoguider,AD)                    "AscenÃ§Ã£o Recta"
+   set caption(autoguider,declinaison)           "DeclinaÃ§Ã£o"
    set caption(autoguider,aller_vers)            "Ir para"
    set caption(autoguider,clic_etoile)           "Clicar sobre a estrela"
 
-   set caption(autoguider,cumulTitle)            "Somar aquisições"
+   set caption(autoguider,cumulTitle)            "Somar aquisiÃ§Ãµes"
    set caption(autoguider,cumulEnabled)          "Activar soma"
-   set caption(autoguider,cumulNb)               "Número de aquisições"
-   set caption(autoguider,darkTitle)             "Subtracção do dark"
+   set caption(autoguider,cumulNb)               "NÃºmero de aquisiÃ§Ãµes"
+   set caption(autoguider,darkTitle)             "SubtracÃ§Ã£o do dark"
    set caption(autoguider,darkFileName)          "Ficheiro dark"
-   set caption(autoguider,darkEnabled)           "Activar subtracção"
+   set caption(autoguider,darkEnabled)           "Activar subtracÃ§Ã£o"
    set caption(autoguider,slitWidth)             "Largura da fenda (pixels)"
    set caption(autoguider,slitRatio)             "Coeficiente (%/pixel)"
    set caption(autoguider,alphaReverse)          "Inverter sentido"
@@ -428,7 +428,135 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,detection_fente)       "Slit"
 
    set caption(autoguider,inclinaison)           "Camera Tilt"
-   set caption(autoguider,angle)                 "Angle (°)"
+   set caption(autoguider,angle)                 "Angle (Â°)"
+   set caption(autoguider,go)                    "GO"
+   set caption(autoguider,stop)                  "STOP"
+   set caption(autoguider,running)               "Learning in progress"
+   set caption(autoguider,delay)                 "Delay (s)"
+   set caption(autoguider,targetBoxSize)         "Area Size"
+   set caption(autoguider,AD)                    "Right Ascension"
+   set caption(autoguider,declinaison)           "Declination"
+   set caption(autoguider,aller_vers)            "Go to"
+   set caption(autoguider,clic_etoile)           "Click on the star"
+
+   set caption(autoguider,cumulTitle)            "Add Exposures "
+   set caption(autoguider,cumulEnabled)          "Enable Addition"
+   set caption(autoguider,cumulNb)               "Number of Exposures"
+   set caption(autoguider,darkTitle)             "Dark Frame Subtraction"
+   set caption(autoguider,darkFileName)          "Dark Frame File"
+   set caption(autoguider,darkEnabled)           "Enable Subtraction"
+   set caption(autoguider,slitWidth)             "Slit Width (pixels)"
+   set caption(autoguider,slitRatio)             "Ratio (% / pixel)"
+   set caption(autoguider,alphaReverse)          "Reverse movement"
+   set caption(autoguider,deltaReverse)          "Reverse movement"
+
+   set caption(autoguider,searchTitle)           "Star Search"
+   set caption(autoguider,searchThreshin)        "Min. Luminosity (1)"
+   set caption(autoguider,searchFwhm)            "Min. Fwhm"
+   set caption(autoguider,searchRadius)          "Search Radius (pixel)"
+   set caption(autoguider,searchThreshold)       "Min. Luminosity (2)"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(autoguider,menu)                  "Autoguider"
+   set caption(autoguider,titre)                 "Autoguider"
+   set caption(autoguider,help_titre)            "Help for this Tool"
+   set caption(autoguider,help_titre1)           "Help for the Tool:"
+   set caption(autoguider,pb)                    "Problem"
+   set caption(autoguider,selcam)                "You must select a camera first\n(Setup/Camera)."
+
+   set caption(autoguider,image)                 "Image"
+   set caption(autoguider,cible)                 "Target"
+   set caption(autoguider,axe_AD)                "Axes (RA, Dec)"
+   set caption(autoguider,ctrl_monture)          "Tracking On"
+   set caption(autoguider,config_guidage)        "Setup..."
+   set caption(autoguider,ecart_origine_etoile)  "Deviation"
+   set caption(autoguider,impulsion)             "Pulse"
+   set caption(autoguider,intervalle)            "Interval"
+   set caption(autoguider,rechercher)            "Search"
+   set caption(autoguider,effacer)               "Remove"
+   set caption(autoguider,centrer)               "Center"
+   set caption(autoguider,intensiteMax)          "Intensity (ADU)"
+
+   set caption(autoguider,pose)                  "Exp."
+   set caption(autoguider,binning)               "Binning"
+   set caption(autoguider,GO)                    "GO CCD"
+   set caption(autoguider,STOP)                  "STOP\nCCD"
+
+   set caption(autoguider,seuil)                 "Threshold (pixels)"
+   set caption(autoguider,detection)             "Star Detection"
+   set caption(autoguider,apprenti)              "Learning"
+   set caption(autoguider,vitesse)               "Speed (ms/pixel)"
+   set caption(autoguider,detection_psf)         "Star"
+   set caption(autoguider,detection_fente)       "Slit"
+
+   set caption(autoguider,inclinaison)           "Camera Tilt"
+   set caption(autoguider,angle)                 "Angle (Â°)"
+   set caption(autoguider,go)                    "GO"
+   set caption(autoguider,stop)                  "STOP"
+   set caption(autoguider,running)               "Learning in progress"
+   set caption(autoguider,delay)                 "Delay (s)"
+   set caption(autoguider,targetBoxSize)         "Area Size"
+   set caption(autoguider,AD)                    "Right Ascension"
+   set caption(autoguider,declinaison)           "Declination"
+   set caption(autoguider,aller_vers)            "Go to"
+   set caption(autoguider,clic_etoile)           "Click on the star"
+
+   set caption(autoguider,cumulTitle)            "Add Exposures "
+   set caption(autoguider,cumulEnabled)          "Enable Addition"
+   set caption(autoguider,cumulNb)               "Number of Exposures"
+   set caption(autoguider,darkTitle)             "Dark Frame Subtraction"
+   set caption(autoguider,darkFileName)          "Dark Frame File"
+   set caption(autoguider,darkEnabled)           "Enable Subtraction"
+   set caption(autoguider,slitWidth)             "Slit Width (pixels)"
+   set caption(autoguider,slitRatio)             "Ratio (% / pixel)"
+   set caption(autoguider,alphaReverse)          "Reverse movement"
+   set caption(autoguider,deltaReverse)          "Reverse movement"
+
+   set caption(autoguider,searchTitle)           "Star Search"
+   set caption(autoguider,searchThreshin)        "Min. Luminosity (1)"
+   set caption(autoguider,searchFwhm)            "Min. Fwhm"
+   set caption(autoguider,searchRadius)          "Search Radius (pixel)"
+   set caption(autoguider,searchThreshold)       "Min. Luminosity (2)"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(autoguider,menu)                  "Autoguider"
+   set caption(autoguider,titre)                 "Autoguider"
+   set caption(autoguider,help_titre)            "Help for this Tool"
+   set caption(autoguider,help_titre1)           "Help for the Tool:"
+   set caption(autoguider,pb)                    "Problem"
+   set caption(autoguider,selcam)                "You must select a camera first\n(Setup/Camera)."
+
+   set caption(autoguider,image)                 "Image"
+   set caption(autoguider,cible)                 "Target"
+   set caption(autoguider,axe_AD)                "Axes (RA, Dec)"
+   set caption(autoguider,ctrl_monture)          "Tracking On"
+   set caption(autoguider,config_guidage)        "Setup..."
+   set caption(autoguider,ecart_origine_etoile)  "Deviation"
+   set caption(autoguider,impulsion)             "Pulse"
+   set caption(autoguider,intervalle)            "Interval"
+   set caption(autoguider,rechercher)            "Search"
+   set caption(autoguider,effacer)               "Remove"
+   set caption(autoguider,centrer)               "Center"
+   set caption(autoguider,intensiteMax)          "Intensity (ADU)"
+
+   set caption(autoguider,pose)                  "Exp."
+   set caption(autoguider,binning)               "Binning"
+   set caption(autoguider,GO)                    "GO CCD"
+   set caption(autoguider,STOP)                  "STOP\nCCD"
+
+   set caption(autoguider,seuil)                 "Threshold (pixels)"
+   set caption(autoguider,detection)             "Star Detection"
+   set caption(autoguider,apprenti)              "Learning"
+   set caption(autoguider,vitesse)               "Speed (ms/pixel)"
+   set caption(autoguider,detection_psf)         "Star"
+   set caption(autoguider,detection_fente)       "Slit"
+
+   set caption(autoguider,inclinaison)           "Camera Tilt"
+   set caption(autoguider,angle)                 "Angle (Â°)"
    set caption(autoguider,go)                    "GO"
    set caption(autoguider,stop)                  "STOP"
    set caption(autoguider,running)               "Learning in progress"
@@ -459,6 +587,6 @@ if { [ string compare $langage "french" ] == "0" } {
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
