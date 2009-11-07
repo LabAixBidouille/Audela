@@ -1,10 +1,10 @@
 #
 # Fichier : fieldchart.cap
-# Mise a jour $Id: fieldchart.cap,v 1.2 2009-10-31 20:38:10 robertdelmas Exp $
+# Mise a jour $Id: fieldchart.cap,v 1.3 2009-11-07 14:58:45 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -28,9 +28,9 @@ set caption(fieldchart,hauteur_image)                 "Image Height"
 set caption(fieldchart,prendre_image)                 "Take from image"
 set caption(fieldchart,ad_centre)                     "Right Ascension of the Center"
 set caption(fieldchart,dec_centre)                    "Declination of the Center"
-set caption(fieldchart,inclinaison_camera)            "Camera Tilt (°)"
+set caption(fieldchart,inclinaison_camera)            "Camera Tilt (Â°)"
 set caption(fieldchart,focale_instrument)             "Equipment Focal Length (m)"
-set caption(fieldchart,taille_pixels)                 "Pixel Size (µm)"
+set caption(fieldchart,taille_pixels)                 "Pixel Size (Âµm)"
 set caption(fieldchart,pas_etoile)                    "No stars in this field."
 
 set caption(fieldchart,erreur)                        "Error"
@@ -45,18 +45,18 @@ set caption(fieldchart,effacer)                       "Remove"
 set caption(fieldchart,fermer)                        "Close"
 set caption(fieldchart,aide)                          "Help"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(fieldchart,carte_champ)                "Carte de champ"
    set caption(fieldchart,titre)                      "Superposer la carte de champ"
-   set caption(fieldchart,recherche)                  "Chemin d'accès au catalogue"
+   set caption(fieldchart,recherche)                  "Chemin d'accÃ¨s au catalogue"
    set caption(fieldchart,microcat)                   "MicroCat"
    set caption(fieldchart,tycho)                      "MicroCat-Tycho"
    set caption(fieldchart,loneos)                     "MicroCat-Loneos"
    set caption(fieldchart,parcourir)                  "..."
    set caption(fieldchart,x)                          " x "
-   set caption(fieldchart,champ_image)                "Paramètres de champ de l'image"
+   set caption(fieldchart,champ_image)                "ParamÃ¨tres de champ de l'image"
    set caption(fieldchart,catalogue)                  "Carte"
    set caption(fieldchart,cat_microcat)               "Catalogue MicroCat"
    set caption(fieldchart,magnitude_limite)           "Magnitude limite"
@@ -64,16 +64,16 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,hauteur_image)              "Hauteur de l'image"
    set caption(fieldchart,prendre_image)              "Prendre de l'image"
    set caption(fieldchart,ad_centre)                  "Ascension Droite du centre"
-   set caption(fieldchart,dec_centre)                 "Déclinaison du centre"
-   set caption(fieldchart,inclinaison_camera)         "Inclinaison de la caméra (en °)"
+   set caption(fieldchart,dec_centre)                 "DÃ©clinaison du centre"
+   set caption(fieldchart,inclinaison_camera)         "Inclinaison de la camÃ©ra (en Â°)"
    set caption(fieldchart,focale_instrument)          "Focale de l'instrument (en m)"
-   set caption(fieldchart,taille_pixels)              "Taille des pixels (en µm)"
-   set caption(fieldchart,pas_etoile)                 "Pas d'étoile dans ce champ."
+   set caption(fieldchart,taille_pixels)              "Taille des pixels (en Âµm)"
+   set caption(fieldchart,pas_etoile)                 "Pas d'Ã©toile dans ce champ."
 
    set caption(fieldchart,erreur)                     "Erreur"
    set caption(fieldchart,attention)                  "Attention !"
 
-   set caption(fieldchart,loadMicrocat_1)             "Vous devez télécharger le catalogue MicroCat à l'adresse :"
+   set caption(fieldchart,loadMicrocat_1)             "Vous devez tÃ©lÃ©charger le catalogue MicroCat Ã  l'adresse :"
    set caption(fieldchart,loadMicrocat_2)             "http://www.audela.org/download/microcat.tgz"
 
    set caption(fieldchart,ok)                         "OK"
@@ -102,9 +102,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,prendre_image)              "Ottieni da immagine"
    set caption(fieldchart,ad_centre)                  "Ascensione Retta centro immagine"
    set caption(fieldchart,dec_centre)                 "Declinazione centro immagine"
-   set caption(fieldchart,inclinaison_camera)         "Inclinazione camera CCD (°)"
+   set caption(fieldchart,inclinaison_camera)         "Inclinazione camera CCD (Â°)"
    set caption(fieldchart,focale_instrument)          "Lunghezza focale telescopio (m)"
-   set caption(fieldchart,taille_pixels)              "Dimensione dei pixel (µm)"
+   set caption(fieldchart,taille_pixels)              "Dimensione dei pixel (Âµm)"
    set caption(fieldchart,pas_etoile)                 "Nessuna stella nel campo."
 
    set caption(fieldchart,erreur)                     "Errore"
@@ -124,7 +124,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(fieldchart,carte_champ)                "Mapa de campo"
    set caption(fieldchart,titre)                      "Superponer mapa del campo"
-   set caption(fieldchart,recherche)                  "Ruta al catálogo"
+   set caption(fieldchart,recherche)                  "Ruta al catÃ¡logo"
    set caption(fieldchart,microcat)                   "MicroCat"
    set caption(fieldchart,tycho)                      "MicroCat-Tycho"
    set caption(fieldchart,loneos)                     "MicroCat-Loneos"
@@ -132,22 +132,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,x)                          " x "
    set caption(fieldchart,champ_image)                "Parametros del campo de imagen"
    set caption(fieldchart,catalogue)                  "Mapa"
-   set caption(fieldchart,cat_microcat)               "Catálogo MicroCat"
+   set caption(fieldchart,cat_microcat)               "CatÃ¡logo MicroCat"
    set caption(fieldchart,magnitude_limite)           "Magnitud limite"
    set caption(fieldchart,largeur_image)              "Anchura de imagen"
    set caption(fieldchart,hauteur_image)              "Altura de imagen"
    set caption(fieldchart,prendre_image)              "Tomar de imagen"
-   set caption(fieldchart,ad_centre)                  "Ascensión Recta del centro"
-   set caption(fieldchart,dec_centre)                 "Declinación del centro"
-   set caption(fieldchart,inclinaison_camera)         "Inclinación de cámara (°)"
+   set caption(fieldchart,ad_centre)                  "AscensiÃ³n Recta del centro"
+   set caption(fieldchart,dec_centre)                 "DeclinaciÃ³n del centro"
+   set caption(fieldchart,inclinaison_camera)         "InclinaciÃ³n de cÃ¡mara (Â°)"
    set caption(fieldchart,focale_instrument)          "Distancia focal del equipo (m)"
-   set caption(fieldchart,taille_pixels)              "Tamaño de píxeles (µm)"
+   set caption(fieldchart,taille_pixels)              "TamaÃ±o de pÃ­xeles (Âµm)"
    set caption(fieldchart,pas_etoile)                 "No hay estrellas en este campo."
 
    set caption(fieldchart,erreur)                     "Error"
-   set caption(fieldchart,attention)                  "!Cuidado¡"
+   set caption(fieldchart,attention)                  "!CuidadoÂ¡"
 
-   set caption(fieldchart,loadMicrocat_1)             "Por favor, descargue catálogo MicroCat de:"
+   set caption(fieldchart,loadMicrocat_1)             "Por favor, descargue catÃ¡logo MicroCat de:"
    set caption(fieldchart,loadMicrocat_2)             "http://www.audela.org/download/microcat.tgz"
 
    set caption(fieldchart,ok)                         "OK"
@@ -160,7 +160,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(fieldchart,carte_champ)                "Feld Karte"
-   set caption(fieldchart,titre)                      "Die Feld Karte überlagern"
+   set caption(fieldchart,titre)                      "Die Feld Karte Ã¼berlagern"
    set caption(fieldchart,recherche)                  "Weg zum Katalog"
    set caption(fieldchart,microcat)                   "MicroCat"
    set caption(fieldchart,tycho)                      "MicroCat-Tycho"
@@ -170,58 +170,58 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,champ_image)                "Bild Feld Parametern"
    set caption(fieldchart,catalogue)                  "Karte"
    set caption(fieldchart,cat_microcat)               "MicroCat Katalog"
-   set caption(fieldchart,magnitude_limite)           "Größeklasse Grenze"
+   set caption(fieldchart,magnitude_limite)           "GrÃ¶ÃŸeklasse Grenze"
    set caption(fieldchart,largeur_image)              "Bild Breite"
-   set caption(fieldchart,hauteur_image)              "Bild Höhe"
+   set caption(fieldchart,hauteur_image)              "Bild HÃ¶he"
    set caption(fieldchart,prendre_image)              "Vom Bild nehmen"
    set caption(fieldchart,ad_centre)                  "Centrum Rektaszension"
    set caption(fieldchart,dec_centre)                 "Centrum Deklination"
-   set caption(fieldchart,inclinaison_camera)         "Kamera Neigung (°)"
+   set caption(fieldchart,inclinaison_camera)         "Kamera Neigung (Â°)"
    set caption(fieldchart,focale_instrument)          "Brennweite des Teleskop (m)"
-   set caption(fieldchart,taille_pixels)              "Rasterpunkten Größe (in µm)"
+   set caption(fieldchart,taille_pixels)              "Rasterpunkten GrÃ¶ÃŸe (in Âµm)"
    set caption(fieldchart,pas_etoile)                 "Kein Stern in diesem Feld."
 
    set caption(fieldchart,erreur)                     "Irrtum"
    set caption(fieldchart,attention)                  "Achtung!"
 
-   set caption(fieldchart,loadMicrocat_1)             "Sie müssen die MicroCat Katalog von die Adresse:"
+   set caption(fieldchart,loadMicrocat_1)             "Sie mÃ¼ssen die MicroCat Katalog von die Adresse:"
    set caption(fieldchart,loadMicrocat_2)             "http://www.audela.org/download/microcat.tgz"
 
    set caption(fieldchart,ok)                         "OK"
    set caption(fieldchart,appliquer)                  "Anwenden"
    set caption(fieldchart,effacer)                    "Wegradieren"
-   set caption(fieldchart,fermer)                     "Schließen"
+   set caption(fieldchart,fermer)                     "SchlieÃŸen"
    set caption(fieldchart,aide)                       "Hilfe"
 
-# *************** Version portugaise ***************************
+# *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(fieldchart,carte_champ)                "Mapa de campo"
    set caption(fieldchart,titre)                      "Superimpor mapa de campo"
-   set caption(fieldchart,recherche)                  "Caminho para o catálogo"
+   set caption(fieldchart,recherche)                  "Caminho para o catÃ¡logo"
    set caption(fieldchart,microcat)                   "MicroCat"
    set caption(fieldchart,tycho)                      "MicroCat-Tycho"
    set caption(fieldchart,loneos)                     "MicroCat-Loneos"
    set caption(fieldchart,parcourir)                  "..."
    set caption(fieldchart,x)                          " x "
-   set caption(fieldchart,champ_image)                "Parâmetros do campo da imagem"
+   set caption(fieldchart,champ_image)                "ParÃ¢metros do campo da imagem"
    set caption(fieldchart,catalogue)                  "Mapa"
-   set caption(fieldchart,cat_microcat)               "Catálogo MicroCat"
+   set caption(fieldchart,cat_microcat)               "CatÃ¡logo MicroCat"
    set caption(fieldchart,magnitude_limite)           "Magnitude Limite"
    set caption(fieldchart,largeur_image)              "Largura da imagem"
    set caption(fieldchart,hauteur_image)              "Altura da imagem"
    set caption(fieldchart,prendre_image)              "Receber de imagem"
-   set caption(fieldchart,ad_centre)                  "Ascenção recta do centro"
-   set caption(fieldchart,dec_centre)                 "Declinação do centro"
-   set caption(fieldchart,inclinaison_camera)         "Inclinação da câmara (°)"
-   set caption(fieldchart,focale_instrument)          "Distância Focal do Equipamento (m)"
-   set caption(fieldchart,taille_pixels)              "Tamanho do Pixel (µm)"
+   set caption(fieldchart,ad_centre)                  "AscenÃ§Ã£o recta do centro"
+   set caption(fieldchart,dec_centre)                 "DeclinaÃ§Ã£o do centro"
+   set caption(fieldchart,inclinaison_camera)         "InclinaÃ§Ã£o da cÃ¢mara (Â°)"
+   set caption(fieldchart,focale_instrument)          "DistÃ¢ncia Focal do Equipamento (m)"
+   set caption(fieldchart,taille_pixels)              "Tamanho do Pixel (Âµm)"
    set caption(fieldchart,pas_etoile)                 "Campo sem estrelas."
 
    set caption(fieldchart,erreur)                     "Erro"
    set caption(fieldchart,attention)                  "Aviso!"
 
-   set caption(fieldchart,loadMicrocat_1)             "Deve descarregar as MicroCat catálogo no endereço:"
+   set caption(fieldchart,loadMicrocat_1)             "Deve descarregar as MicroCat catÃ¡logo no endereÃ§o:"
    set caption(fieldchart,loadMicrocat_2)             "http://www.audela.org/download/microcat.tgz"
 
    set caption(fieldchart,ok)                         "OK"
@@ -234,7 +234,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(fieldchart,carte_champ)                "Felt kort"
-   set caption(fieldchart,titre)                      "Læg Feltkort på"
+   set caption(fieldchart,titre)                      "LÃ¦g Feltkort pÃ¥"
    set caption(fieldchart,recherche)                  "Sti til katalog"
    set caption(fieldchart,microcat)                   "MicroCat"
    set caption(fieldchart,tycho)                      "MicroCat-Tycho"
@@ -244,32 +244,106 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,champ_image)                "Billedfelt-parameter"
    set caption(fieldchart,catalogue)                  "Kort"
    set caption(fieldchart,cat_microcat)               "MicroCat Katalog"
-   set caption(fieldchart,magnitude_limite)           "Stjerne-Magnitude-grænse"
+   set caption(fieldchart,magnitude_limite)           "Stjerne-Magnitude-grÃ¦nse"
    set caption(fieldchart,largeur_image)              "Billedbredde"
-   set caption(fieldchart,hauteur_image)              "Billedhøjde"
+   set caption(fieldchart,hauteur_image)              "BilledhÃ¸jde"
    set caption(fieldchart,prendre_image)              "Fra billede"
    set caption(fieldchart,ad_centre)                  "Centerets Rektascension"
    set caption(fieldchart,dec_centre)                 "Centerets Deklination"
-   set caption(fieldchart,inclinaison_camera)         "Kamera-hældning (°)"
-   set caption(fieldchart,focale_instrument)          "Udstyrets brændvidde (m)"
-   set caption(fieldchart,taille_pixels)              "Pixelstørrelse (µm)"
+   set caption(fieldchart,inclinaison_camera)         "Kamera-hÃ¦ldning (Â°)"
+   set caption(fieldchart,focale_instrument)          "Udstyrets brÃ¦ndvidde (m)"
+   set caption(fieldchart,taille_pixels)              "PixelstÃ¸rrelse (Âµm)"
    set caption(fieldchart,pas_etoile)                 "Ingen stjerner i dette felt."
 
    set caption(fieldchart,erreur)                     "Fejl"
    set caption(fieldchart,attention)                  "Advarsel!"
 
-   set caption(fieldchart,loadMicrocat_1)             "Vær venlig at downloade MicroCat katalog fra:"
+   set caption(fieldchart,loadMicrocat_1)             "VÃ¦r venlig at downloade MicroCat katalog fra:"
    set caption(fieldchart,loadMicrocat_2)             "http://www.audela.org/download/microcat.tgz"
 
    set caption(fieldchart,ok)                         "OK"
    set caption(fieldchart,appliquer)                  "Anvend"
    set caption(fieldchart,effacer)                    "Fjern"
    set caption(fieldchart,fermer)                     "Luk"
-   set caption(fieldchart,aide)                       "Hjælp"
+   set caption(fieldchart,aide)                       "HjÃ¦lp"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(fieldchart,carte_champ)                "Field Chart"
+   set caption(fieldchart,titre)                      "Superimpose Field Chart"
+   set caption(fieldchart,recherche)                  "Path to the Catalog"
+   set caption(fieldchart,microcat)                   "MicroCat"
+   set caption(fieldchart,tycho)                      "MicroCat-Tycho"
+   set caption(fieldchart,loneos)                     "MicroCat-Loneos"
+   set caption(fieldchart,parcourir)                  "..."
+   set caption(fieldchart,x)                          " x "
+   set caption(fieldchart,champ_image)                "Image Field Parameters"
+   set caption(fieldchart,catalogue)                  "Chart"
+   set caption(fieldchart,cat_microcat)               "MicroCat Catalogue"
+   set caption(fieldchart,magnitude_limite)           "Limit Magnitude"
+   set caption(fieldchart,largeur_image)              "Image Width"
+   set caption(fieldchart,hauteur_image)              "Image Height"
+   set caption(fieldchart,prendre_image)              "Take from image"
+   set caption(fieldchart,ad_centre)                  "Right Ascension of the Center"
+   set caption(fieldchart,dec_centre)                 "Declination of the Center"
+   set caption(fieldchart,inclinaison_camera)         "Camera Tilt (Â°)"
+   set caption(fieldchart,focale_instrument)          "Equipment Focal Length (m)"
+   set caption(fieldchart,taille_pixels)              "Pixel Size (Âµm)"
+   set caption(fieldchart,pas_etoile)                 "No stars in this field."
+
+   set caption(fieldchart,erreur)                     "Error"
+   set caption(fieldchart,attention)                  "Warning!"
+
+   set caption(fieldchart,loadMicrocat_1)             "Please download MicroCat catalog from:"
+   set caption(fieldchart,loadMicrocat_2)             "http://www.audela.org/download/microcat.tgz"
+
+   set caption(fieldchart,ok)                         "OK"
+   set caption(fieldchart,appliquer)                  "Apply"
+   set caption(fieldchart,effacer)                    "Remove"
+   set caption(fieldchart,fermer)                     "Close"
+   set caption(fieldchart,aide)                       "Help"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(fieldchart,carte_champ)                "Field Chart"
+   set caption(fieldchart,titre)                      "Superimpose Field Chart"
+   set caption(fieldchart,recherche)                  "Path to the Catalog"
+   set caption(fieldchart,microcat)                   "MicroCat"
+   set caption(fieldchart,tycho)                      "MicroCat-Tycho"
+   set caption(fieldchart,loneos)                     "MicroCat-Loneos"
+   set caption(fieldchart,parcourir)                  "..."
+   set caption(fieldchart,x)                          " x "
+   set caption(fieldchart,champ_image)                "Image Field Parameters"
+   set caption(fieldchart,catalogue)                  "Chart"
+   set caption(fieldchart,cat_microcat)               "MicroCat Catalogue"
+   set caption(fieldchart,magnitude_limite)           "Limit Magnitude"
+   set caption(fieldchart,largeur_image)              "Image Width"
+   set caption(fieldchart,hauteur_image)              "Image Height"
+   set caption(fieldchart,prendre_image)              "Take from image"
+   set caption(fieldchart,ad_centre)                  "Right Ascension of the Center"
+   set caption(fieldchart,dec_centre)                 "Declination of the Center"
+   set caption(fieldchart,inclinaison_camera)         "Camera Tilt (Â°)"
+   set caption(fieldchart,focale_instrument)          "Equipment Focal Length (m)"
+   set caption(fieldchart,taille_pixels)              "Pixel Size (Âµm)"
+   set caption(fieldchart,pas_etoile)                 "No stars in this field."
+
+   set caption(fieldchart,erreur)                     "Error"
+   set caption(fieldchart,attention)                  "Warning!"
+
+   set caption(fieldchart,loadMicrocat_1)             "Please download MicroCat catalog from:"
+   set caption(fieldchart,loadMicrocat_2)             "http://www.audela.org/download/microcat.tgz"
+
+   set caption(fieldchart,ok)                         "OK"
+   set caption(fieldchart,appliquer)                  "Apply"
+   set caption(fieldchart,effacer)                    "Remove"
+   set caption(fieldchart,fermer)                     "Close"
+   set caption(fieldchart,aide)                       "Help"
 
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 

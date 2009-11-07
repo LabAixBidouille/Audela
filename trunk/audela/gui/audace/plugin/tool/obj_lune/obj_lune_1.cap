@@ -1,10 +1,10 @@
 #
 # Fichier : obj_lune_1.cap
-# Mise a jour $Id: obj_lune_1.cap,v 1.6 2007-01-27 14:47:40 robertdelmas Exp $
+# Mise a jour $Id: obj_lune_1.cap,v 1.7 2009-11-07 15:00:45 robertdelmas Exp $
 #
 
 #=========================================================================
-#   Début de la déclaration des textes localisés (internationalisation)
+#   DÃ©but de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
 global caption langage
@@ -15,7 +15,7 @@ set caption(obj_lune1,pourcentage)              "%"
 set caption(obj_lune1,jour)                     "day"
 set caption(obj_lune1,jours)                    "days"
 set caption(obj_lune1,km)                       "km"
-set caption(obj_lune1,degre)                    "°"
+set caption(obj_lune1,degre)                    "Â°"
 set caption(obj_lune1,minute_arc)               "'"
 
 set caption(obj_lune1,nord)                     "North"
@@ -23,14 +23,14 @@ set caption(obj_lune1,sud)                      "South"
 set caption(obj_lune1,est)                      "East"
 set caption(obj_lune1,ouest)                    "West"
 
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(obj_lune1,pourcentage)           "%"
    set caption(obj_lune1,jour)                  "jour"
    set caption(obj_lune1,jours)                 "jours"
    set caption(obj_lune1,km)                    "km"
-   set caption(obj_lune1,degre)                 "°"
+   set caption(obj_lune1,degre)                 "Â°"
    set caption(obj_lune1,minute_arc)            "'"
 
    set caption(obj_lune1,nord)                  "Nord"
@@ -45,7 +45,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune1,jour)                  "giorno"
    set caption(obj_lune1,jours)                 "giorni"
    set caption(obj_lune1,km)                    "km"
-   set caption(obj_lune1,degre)                 "°"
+   set caption(obj_lune1,degre)                 "Â°"
    set caption(obj_lune1,minute_arc)            "'"
 
    set caption(obj_lune1,nord)                  "Nord"
@@ -57,10 +57,10 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(obj_lune1,pourcentage)           "%"
-   set caption(obj_lune1,jour)                  "día"
-   set caption(obj_lune1,jours)                 "días"
+   set caption(obj_lune1,jour)                  "dÃ­a"
+   set caption(obj_lune1,jours)                 "dÃ­as"
    set caption(obj_lune1,km)                    "km"
-   set caption(obj_lune1,degre)                 "°"
+   set caption(obj_lune1,degre)                 "Â°"
    set caption(obj_lune1,minute_arc)            "'"
 
    set caption(obj_lune1,nord)                  "Norte"
@@ -75,7 +75,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune1,jour)                  "Tag"
    set caption(obj_lune1,jours)                 "Tagen"
    set caption(obj_lune1,km)                    "km"
-   set caption(obj_lune1,degre)                 "°"
+   set caption(obj_lune1,degre)                 "Â°"
    set caption(obj_lune1,minute_arc)            "'"
 
    set caption(obj_lune1,nord)                  "Nord"
@@ -90,7 +90,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune1,jour)                  "dia"
    set caption(obj_lune1,jours)                 "dias"
    set caption(obj_lune1,km)                    "km"
-   set caption(obj_lune1,degre)                 "°"
+   set caption(obj_lune1,degre)                 "Â°"
    set caption(obj_lune1,minute_arc)            "'"
 
    set caption(obj_lune1,nord)                  "Norte"
@@ -105,17 +105,47 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune1,jour)                  "dag"
    set caption(obj_lune1,jours)                 "dage"
    set caption(obj_lune1,km)                    "km"
-   set caption(obj_lune1,degre)                 "°"
+   set caption(obj_lune1,degre)                 "Â°"
    set caption(obj_lune1,minute_arc)            "'"
 
    set caption(obj_lune1,nord)                  "Nord"
    set caption(obj_lune1,sud)                   "Syd"
-   set caption(obj_lune1,est)                   "Øst"
+   set caption(obj_lune1,est)                   "Ã˜st"
    set caption(obj_lune1,ouest)                 "Vest"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(obj_lune1,pourcentage)           "%"
+   set caption(obj_lune1,jour)                  "day"
+   set caption(obj_lune1,jours)                 "days"
+   set caption(obj_lune1,km)                    "km"
+   set caption(obj_lune1,degre)                 "Â°"
+   set caption(obj_lune1,minute_arc)            "'"
+
+   set caption(obj_lune1,nord)                  "North"
+   set caption(obj_lune1,sud)                   "South"
+   set caption(obj_lune1,est)                   "East"
+   set caption(obj_lune1,ouest)                 "West"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(obj_lune1,pourcentage)           "%"
+   set caption(obj_lune1,jour)                  "day"
+   set caption(obj_lune1,jours)                 "days"
+   set caption(obj_lune1,km)                    "km"
+   set caption(obj_lune1,degre)                 "Â°"
+   set caption(obj_lune1,minute_arc)            "'"
+
+   set caption(obj_lune1,nord)                  "North"
+   set caption(obj_lune1,sud)                   "South"
+   set caption(obj_lune1,est)                   "East"
+   set caption(obj_lune1,ouest)                 "West"
 
 }
 
 #=========================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #=========================================================================
 
