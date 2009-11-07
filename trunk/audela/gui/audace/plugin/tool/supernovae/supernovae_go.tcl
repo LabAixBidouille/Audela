@@ -2,7 +2,7 @@
 # Fichier : supernovae_go.tcl
 # Description : Outil pour l'observation des SnAudes
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: supernovae_go.tcl,v 1.19 2009-10-31 14:59:57 robertdelmas Exp $
+# Mise a jour $Id: supernovae_go.tcl,v 1.20 2009-11-07 22:21:12 robertdelmas Exp $
 #
 
 #============================================================
@@ -133,12 +133,16 @@ proc ::supernovae::startTool { visuNo } {
    variable This
    global audace
 
+   #--- Je selectionne les mots cles optionnels a ajouter dans les images
    #--- Les mots cles RA, DEC, XPIXSZ et YPIXSZ sont obligatoires pour "snprism" de snmacro.tcl
-   #--- OBJNAME a ete rajoute car il est couple avec RA et DEC dans keyword.tcl
+   #--- OBJNAME a ete rajoute car il caracterise le nom de l'objet pointe
+   ::keyword::selectKeywords $visuNo [ list OBJNAME RA DEC XPIXSZ YPIXSZ ]
+
+   #--- Je selectionne la liste des mots cles non modifiables
    ::keyword::setKeywordState $audace(visuNo) [ list OBJNAME RA DEC XPIXSZ YPIXSZ ]
 
    #--- Je force la capture des mots cles OBJNAME, RA et DEC en automatique
-   ::keyword::setKeywordsRaDecAuto
+   ::keyword::setKeywordsObjRaDecAuto
 
    pack $This -side left -fill y
 }
@@ -156,11 +160,11 @@ proc ::supernovae::stopTool { visuNo } {
       return -1
    }
 
-   #--- Les mots cles RA, DEC, XPIXSZ et YPIXSZ ne sont plus obligatoires
+   #--- Les mots cles OBJNAME, RA, DEC, XPIXSZ et YPIXSZ sont a nouveau modifiables
    ::keyword::setKeywordState $audace(visuNo) [ list ]
 
    #--- Je force la capture des mots cles OBJNAME, RA et DEC en manuel
-   ::keyword::setKeywordsRaDecManuel
+   ::keyword::setKeywordsObjRaDecManuel
 
    #---
    pack forget $This
