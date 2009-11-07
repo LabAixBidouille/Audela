@@ -73,8 +73,8 @@
 //#import "progid:CCDSimulator.Camera"
 //#import "progid:AscomMasterInterfaces"
 //#import "progid:AscomInterfacesLib"
-#import "file:C:\Program Files\Fichiers communs\ASCOM\Interface\AscomMasterInterfaces.tlb"
-
+//#import "file:C:\Program Files\Fichiers communs\ASCOM\Interface\AscomMasterInterfaces.tlb"
+#import "file:..\..\..\external\lib\AscomMasterInterfaces.tlb"
 //
 // Required for IDictionaryPtr which is used by DriverHelper.Profile
 //
