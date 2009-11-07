@@ -712,6 +712,18 @@ Package=<4>
 
 ################################################################################
 
+Project: "libt193"=".\libtel\libt193\vc60\t193.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+################################################################################
+
 Project: "temma"=".\libtel\libtemma\vc60\temma.dsp" - Package Owner=<4>
 
 Package=<5>
