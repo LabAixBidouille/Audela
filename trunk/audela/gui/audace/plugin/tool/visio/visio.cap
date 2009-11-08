@@ -1,6 +1,6 @@
 #
 # Fichier : visio.cap
-# Mise a jour $Id: visio.cap,v 1.11 2009-11-07 17:06:36 robertdelmas Exp $
+# Mise a jour $Id: visio.cap,v 1.12 2009-11-08 13:59:53 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -52,8 +52,7 @@ set caption(visio,confirmsuppr)           "Do you confirm you want to delete the
 #--- Textes fenêtre copie ZIP
 set caption(visio,zip)                    "ZIP Mode"
 set caption(visio,feninidisket)           "Save zip to Floppy"
-set caption(visio,fenfulldisket)          "Copy to Floppy Disk Number "
-set caption(visio,fenfulldisket1)         " Completed"
+set caption(visio,fenfulldisket)          "Copy to Floppy Disk Number %s Completed"
 set caption(visio,saveserie_toA)          "Save Current Series to A:"
 set caption(visio,saverep_toA)            "Save Current Directory to A:"
 set caption(visio,save_continue)          "Go"
@@ -107,8 +106,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- Textes fenêtre copie ZIP
    set caption(visio,zip)                 "Mode ZIP"
    set caption(visio,feninidisket)        "Sauvegarde zip sur disquette"
-   set caption(visio,fenfulldisket)       "Copie terminée sur la disquette n°"
-   set caption(visio,fenfulldisket1)      ""
+   set caption(visio,fenfulldisket)       "Copie terminée sur la disquette n°%s"
    set caption(visio,saveserie_toA)       "Sauve la série courante sur A:"
    set caption(visio,saverep_toA)         "Sauve le répertoire courant sur A:"
    set caption(visio,save_continue)       "Continuer"
@@ -162,8 +160,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- Textes fenêtre copie ZIP
    set caption(visio,zip)                 "Modalita` ZIP"
    set caption(visio,feninidisket)        "Salvataggio zip su dischetto"
-   set caption(visio,fenfulldisket)       "Copia terminata sul dischetto n°"
-   set caption(visio,fenfulldisket1)      ""
+   set caption(visio,fenfulldisket)       "Copia terminata sul dischetto n°%s"
    set caption(visio,saveserie_toA)       "Salva la sequenza corrente su A:"
    set caption(visio,saverep_toA)         "Salvare la directory corrente su A:"
    set caption(visio,save_continue)       "Continua"
@@ -217,8 +214,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- Textes fenêtre copie ZIP
    set caption(visio,zip)                 "Modo ZIP"
    set caption(visio,feninidisket)        "Guardair zip a disquete"
-   set caption(visio,fenfulldisket)       "Completada la copia al disquete número "
-   set caption(visio,fenfulldisket1)      ""
+   set caption(visio,fenfulldisket)       "Completada la copia al disquete número %s"
    set caption(visio,saveserie_toA)       "Guardar la serie actual a A:"
    set caption(visio,saverep_toA)         "Guardar directorio actual a A:"
    set caption(visio,save_continue)       "Ir a"
@@ -272,8 +268,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- Textes fenêtre copie ZIP
    set caption(visio,zip)                 "ZIP Modus"
    set caption(visio,feninidisket)        "Auf Diskette Zip SIcherung"
-   set caption(visio,fenfulldisket)       "Kopie beenedet auf Diskette Num. "
-   set caption(visio,fenfulldisket1)      ""
+   set caption(visio,fenfulldisket)       "Kopie beenedet auf Diskette Num. %s"
    set caption(visio,saveserie_toA)       "Den aktuellen Reihe auf A: speichern"
    set caption(visio,saverep_toA)         "Speichert das aktuellen Register auf A:"
    set caption(visio,save_continue)       "Weiterführen"
@@ -327,8 +322,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- Textes fenêtre copie ZIP
    set caption(visio,zip)                 "Modo ZIP"
    set caption(visio,feninidisket)        "Guardar zip em disquete"
-   set caption(visio,fenfulldisket)       "Cópia terminada para a disquete n°"
-   set caption(visio,fenfulldisket1)      ""
+   set caption(visio,fenfulldisket)       "Cópia terminada para a disquete n°%s"
    set caption(visio,saveserie_toA)       "Guarda a série actual em A:"
    set caption(visio,saverep_toA)         "Guarda o directório actual em A:"
    set caption(visio,save_continue)       "Continuar"
@@ -382,8 +376,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- Textes fenêtre copie ZIP
    set caption(visio,zip)                 "ZIP Mode"
    set caption(visio,feninidisket)        "Save zip to Floppy"
-   set caption(visio,fenfulldisket)       "Copy to Floppy Disk Number "
-   set caption(visio,fenfulldisket1)      " Completed"
+   set caption(visio,fenfulldisket)       "Copy to Floppy Disk Number %s Completed"
    set caption(visio,saveserie_toA)       "Save Current Series to A:"
    set caption(visio,saverep_toA)         "Save Current Directory to A:"
    set caption(visio,save_continue)       "Go"
@@ -437,8 +430,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- Textes fenêtre copie ZIP
    set caption(visio,zip)                 "ZIP Mode"
    set caption(visio,feninidisket)        "Save zip to Floppy"
-   set caption(visio,fenfulldisket)       "Copy to Floppy Disk Number "
-   set caption(visio,fenfulldisket1)      " Completed"
+   set caption(visio,fenfulldisket)       "Copy to Floppy Disk Number %s Completed"
    set caption(visio,saveserie_toA)       "Save Current Series to A:"
    set caption(visio,saverep_toA)         "Save Current Directory to A:"
    set caption(visio,save_continue)       "Go"
@@ -492,8 +484,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- Textes fenêtre copie ZIP
    set caption(visio,zip)                 "ZIP Mode"
    set caption(visio,feninidisket)        "Save zip to Floppy"
-   set caption(visio,fenfulldisket)       "Copy to Floppy Disk Number "
-   set caption(visio,fenfulldisket1)      " Completed"
+   set caption(visio,fenfulldisket)       "Copy to Floppy Disk Number %s Completed"
    set caption(visio,saveserie_toA)       "Save Current Series to A:"
    set caption(visio,saverep_toA)         "Save Current Directory to A:"
    set caption(visio,save_continue)       "Go"
