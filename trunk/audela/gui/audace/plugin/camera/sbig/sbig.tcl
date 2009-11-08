@@ -2,7 +2,7 @@
 # Fichier : sbig.tcl
 # Description : Configuration de la camera SBIG
 # Auteur : Robert DELMAS
-# Mise a jour $Id: sbig.tcl,v 1.24 2008-12-20 14:53:29 robertdelmas Exp $
+# Mise a jour $Id: sbig.tcl,v 1.25 2009-11-08 14:28:32 robertdelmas Exp $
 #
 
 namespace eval ::sbig {
@@ -285,7 +285,7 @@ proc ::sbig::fillConfigPage { frm camItem } {
             entry $frm.frame2.frame6.frame7.temp -textvariable ::sbig::widget(temp) -width 4 -justify center
             pack $frm.frame2.frame6.frame7.temp -anchor center -side left -padx 5 -pady 5
 
-            label $frm.frame2.frame6.frame7.tempdeg -text "$caption(sbig,deg_c) $caption(sbig,refroidissement_1)"
+            label $frm.frame2.frame6.frame7.tempdeg -text "$caption(sbig,refroidissement_1)"
             pack $frm.frame2.frame6.frame7.tempdeg -anchor center -side left -padx 0 -pady 5
 
          pack $frm.frame2.frame6.frame7 -side top -fill none -padx 30

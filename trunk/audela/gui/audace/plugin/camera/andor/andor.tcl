@@ -2,7 +2,7 @@
 # Fichier : andor.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise a jour $Id: andor.tcl,v 1.20 2008-12-20 14:51:42 robertdelmas Exp $
+# Mise a jour $Id: andor.tcl,v 1.21 2009-11-08 14:26:26 robertdelmas Exp $
 #
 
 namespace eval ::andor {
@@ -264,7 +264,7 @@ proc ::andor::fillConfigPage { frm camItem } {
             pack $frm.frame2.frame6.frame10.temp -anchor center -side left -padx 5 -pady 5
 
             label $frm.frame2.frame6.frame10.tempdeg \
-               -text "$caption(andor,deg_c) $caption(andor,refroidissement_1)"
+               -text "$caption(andor,refroidissement_1)"
             pack $frm.frame2.frame6.frame10.tempdeg -side left -fill x -padx 0 -pady 5
 
          pack $frm.frame2.frame6.frame10 -side top -fill x -padx 10
