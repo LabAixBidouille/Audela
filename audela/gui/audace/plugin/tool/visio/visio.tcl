@@ -2,7 +2,7 @@
 # Fichier : visio.tcl
 # Description : Outil de visionnage d'images fits + gestion des series d'images
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: visio.tcl,v 1.19 2009-07-14 08:10:10 robertdelmas Exp $
+# Mise a jour $Id: visio.tcl,v 1.20 2009-11-08 14:00:10 robertdelmas Exp $
 #
 
 # ========================================================
@@ -122,14 +122,14 @@ namespace eval ::visio {
       #--- (pour une disquette, 1457664 octets)
       set panneau(visio,capacite_lecteur_amovible) 1457664
 
-      #---
-      set panneau(visio,repertoire) $audace(rep_images)
-      set panneau(visio,nb_repertoires) 0
-      set panneau(visio,nom_generique) ""
+      #--- Mise à jour de variables
+      set panneau(visio,repertoire)        $audace(rep_images)
+      set panneau(visio,nb_repertoires)    0
+      set panneau(visio,nom_generique)     ""
       set panneau(visio,nb_nom_generiques) 0
-      set panneau(visio,index) ""
-      set panneau(visio,new_serie) ""
-      set panneau(visio,quelle_serie) "1"
+      set panneau(visio,index)             ""
+      set panneau(visio,new_serie)         ""
+      set panneau(visio,quelle_serie)      "1"
 
       #--- Extensions prises en charge
       #--- Liste des extensions FITS prises en charge (independemment de $conf(extension,defaut)
@@ -175,11 +175,14 @@ namespace eval ::visio {
    #------------------------------------------------------------
    proc startTool { visuNo } {
       variable This
+      global panneau
 
+      #--- Rafraichissement des sous-repertoires
       visio::upd_repertoires
-
+      #--- Affichage de l'outil
       pack $This -side left -fill y
-
+      #--- Mise a jour de l'affichage du repertoire des images
+      $This.panneau.repertoire configure -text $panneau(visio,repertoire)
    }
 
    #------------------------------------------------------------
@@ -283,8 +286,10 @@ namespace eval ::visio {
       variable This
       global panneau
 
+      #--- Mise a jour de la variable contenant le nom du repertoire des images
       set panneau(visio,repertoire) $repertoire
-      $This.panneau.repertoire config -text $panneau(visio,repertoire)
+      #--- Mise a jour de l'affichage du repertoire des images
+      $This.panneau.repertoire configure -text $panneau(visio,repertoire)
 
       visio::upd_repertoires
    }
@@ -827,7 +832,6 @@ proc visioBuildIF { This } {
    global audace caption panneau
 
 #--- Trame du panneau
-
    frame $This -borderwidth 2 -relief groove
 
    #--- Trame du titre panneau
@@ -955,8 +959,9 @@ proc CreeFenIniDisket { } {
    if {[winfo exists $audace(base).feninidisket] == 0} {
       #--- Creation de la fenetre
       toplevel $audace(base).feninidisket
-      wm geometry $audace(base).feninidisket 530x130+120+120
+      wm geometry $audace(base).feninidisket 530x130+250+260
       wm title $audace(base).feninidisket $caption(visio,feninidisket)
+      wm transient $audace(base).feninidisket $audace(base)
 
       #--- Textes d'avertissement
       label $audace(base).feninidisket.lab1 -text $caption(visio,init1)
@@ -1000,9 +1005,11 @@ proc CreeFenFullDisket { } {
 
    if {[winfo exists $audace(base).fenfulldisket] == 0} {
       #--- Creation de la fenetre
+      set title [ format $caption(visio,fenfulldisket) $panneau(visio,disquetteNo) ]
       toplevel $audace(base).fenfulldisket
-      wm geometry $audace(base).fenfulldisket 420x130+170+150
-      wm title $audace(base).fenfulldisket "$caption(visio,fenfulldisket)$panneau(visio,disquetteNo)$caption(visio,fenfulldisket1)"
+      wm geometry $audace(base).fenfulldisket 420x130+310+250
+      wm title $audace(base).fenfulldisket $title
+      wm transient $audace(base).fenfulldisket $audace(base)
 
       #--- Textes d'avertissement
       label $audace(base).fenfulldisket.lab1 -text $caption(visio,full1)
@@ -1042,7 +1049,8 @@ proc CreeFenConfirmSuppr { } {
       #--- Creation de la fenetre
       toplevel $audace(base).fenconfirmsuppr
       wm geometry $audace(base).fenconfirmsuppr 380x80+170+150
-      wm title $audace(base).fenconfirmsuppr ""
+      wm title $audace(base).fenconfirmsuppr $caption(visio,suppr_serie)
+      wm transient $audace(base).fenconfirmsuppr $audace(base)
 
       #--- Textes d'avertissement
       label $audace(base).fenconfirmsuppr.lab -text $caption(visio,confirmsuppr)
@@ -1079,6 +1087,7 @@ proc CreeFenRenommer { } {
       toplevel $audace(base).fenrenommer
       wm geometry $audace(base).fenrenommer 270x70+170+150
       wm title $audace(base).fenrenommer $caption(visio,renommer2)
+      wm transient $audace(base).fenrenommer $audace(base)
 
       #--- Vieux nom de serie
       frame $audace(base).fenrenommer.old
@@ -1126,7 +1135,8 @@ proc CreeFenConfirmRenom { } {
       #--- Creation de la fenetre
       toplevel $audace(base).fenconfirmrenom
       wm geometry $audace(base).fenconfirmrenom 450x80+170+150
-      wm title $audace(base).fenconfirmrenom ""
+      wm title $audace(base).fenconfirmrenom $caption(visio,renommer)
+      wm transient $audace(base).fenconfirmrenom $audace(base)
 
       #--- Textes d'avertissement
       label $audace(base).fenconfirmrenom.lab -text $caption(visio,confirmrenom)
