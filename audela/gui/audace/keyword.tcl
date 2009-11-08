@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.24 2009-11-07 22:28:03 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.25 2009-11-08 08:22:00 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -701,6 +701,26 @@ proc ::keyword::setKeywordsRaDecManuel { } {
 }
 
 #------------------------------------------------------------------------------
+# setKeywordsEquinoxAuto
+#    fonction appelee par rendre la capture du mot cles EQUINOX automatique
+# Return :
+#    rien
+#------------------------------------------------------------------------------
+proc ::keyword::setKeywordsEquinoxAuto { } {
+   set ::conf(keyword,GotoManuelAutoTer) "$::caption(keyword,automatic)"
+}
+
+#------------------------------------------------------------------------------
+# setKeywordsEquinoxManuel
+#    fonction appelee par rendre la capture du mot cles EQUINOX manuelle
+# Return :
+#    rien
+#------------------------------------------------------------------------------
+proc ::keyword::setKeywordsEquinoxManuel { } {
+   set ::conf(keyword,GotoManuelAutoTer) "$::caption(keyword,manuel)"
+}
+
+#------------------------------------------------------------------------------
 # getKeywords
 #    retourne la liste des mots cles coches
 #
@@ -1180,6 +1200,24 @@ proc ::keyword::selectKeywords { visuNo keywordNameList } {
       if { [lsearch $::conf(keyword,visu$visuNo,check) "$visuNo,check,$keywordName" ] == -1 } {
          lappend ::conf(keyword,visu$visuNo,check) "$visuNo,check,$keywordName"
       }
+   }
+}
+
+#------------------------------------------------------------------------------
+# deselectKeywords
+#    deselectionne des mots cles
+#
+# Parametres :
+#    visuNo
+#    keywordNameList : liste des mots cles
+#------------------------------------------------------------------------------
+proc ::keyword::deselectKeywords { visuNo keywordNameList } {
+   variable private
+
+   foreach keywordName $keywordNameList {
+      set var "$visuNo,check,$keywordName"
+      set idx [ lsearch -exact $::conf(keyword,visu$visuNo,check) $var ]
+      set ::conf(keyword,visu$visuNo,check) [ lreplace $::conf(keyword,visu$visuNo,check) $idx $idx "" ]
    }
 }
 
