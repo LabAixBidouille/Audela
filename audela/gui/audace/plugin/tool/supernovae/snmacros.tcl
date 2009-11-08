@@ -2,7 +2,7 @@
 # Fichier : snmacros.tcl
 # Description : Macros des scripts pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snmacros.tcl,v 1.10 2009-11-07 09:16:21 robertdelmas Exp $
+# Mise a jour $Id: snmacros.tcl,v 1.11 2009-11-08 11:36:50 robertdelmas Exp $
 #
 
 proc globgalsn { args } {
@@ -363,7 +363,7 @@ proc makebias {} {
 
    sninfo "$caption(snmacros,obscurite)"
    sninfo ""
-   sninfo "$caption(snmacros,acqde1) $nbdarks $caption(snmacros,bias)"
+   sninfo "[ format $caption(snmacros,acqde1) $nbdarks ]"
    sninfo ""
 
    for {set k 1} {$k <= $nbdarks} {incr k} {
@@ -459,7 +459,7 @@ proc makedark {} {
 
    sninfo "$caption(snmacros,obscurite)"
    sninfo ""
-   sninfo "$caption(snmacros,acqde2) $nbdarks $caption(snmacros,darkde) $expt $caption(snmacros,seconde)"
+   sninfo "[ format $caption(snmacros,acqde2) $nbdarks $expt ]"
    sninfo ""
 
    for {set k 1} {$k <= $nbdarks} {incr k} {
