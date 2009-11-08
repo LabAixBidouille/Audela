@@ -2,7 +2,7 @@
 # Fichier : qsi.tcl
 # Description : Configuration de la camera QSI
 # Auteur : Michel Pujol
-# Mise a jour $Id: qsi.tcl,v 1.6 2009-09-19 15:35:08 robertdelmas Exp $
+# Mise a jour $Id: qsi.tcl,v 1.7 2009-11-08 14:27:59 robertdelmas Exp $
 #
 
 namespace eval ::qsi {
@@ -206,7 +206,7 @@ proc ::qsi::fillConfigPage { frm camItem } {
             entry $frm.frame2.frame6.frame7.setTemp -textvariable ::conf(qsi,setTemperature) -width 4 -justify center
             pack $frm.frame2.frame6.frame7.setTemp -anchor w -side left -padx 5 -pady 5 -expand 0
 
-            label $frm.frame2.frame6.frame7.tempdeg -text "$caption(qsi,deg_c) $caption(qsi,refroidissement_1)"
+            label $frm.frame2.frame6.frame7.tempdeg -text "$caption(qsi,refroidissement_1)"
             pack $frm.frame2.frame6.frame7.tempdeg -anchor w -side left -padx 0 -pady 5 -expand 0
 
          pack $frm.frame2.frame6.frame7 -side top -fill none -padx 30 -expand 0

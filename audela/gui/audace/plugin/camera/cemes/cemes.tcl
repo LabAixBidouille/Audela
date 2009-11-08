@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.36 2008-12-20 14:52:12 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.37 2009-11-08 14:26:57 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -183,7 +183,7 @@ proc ::cemes::fillConfigPage { frm camItem } {
                pack $frm.frame1.frame3.frame5.frame6.temp -anchor center -side left -padx 5 -pady 5
 
                label $frm.frame1.frame3.frame5.frame6.tempdeg \
-                  -text "$caption(cemes,deg_c) $caption(cemes,refroidissement_1)"
+                  -text "$caption(cemes,refroidissement_1)"
                pack $frm.frame1.frame3.frame5.frame6.tempdeg -side left -fill x -padx 0 -pady 5
 
             pack $frm.frame1.frame3.frame5.frame6 -side top -fill x -padx 10

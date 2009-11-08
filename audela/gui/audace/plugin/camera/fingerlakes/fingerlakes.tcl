@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.37 2009-09-07 20:02:23 michelpujol Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.38 2009-11-08 14:27:29 robertdelmas Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -188,7 +188,7 @@ proc ::fingerlakes::fillConfigPage { frm camItem } {
                pack $frm.frame1.frame3.frame5.frame6.temp -anchor center -side left -padx 5 -pady 5
 
                label $frm.frame1.frame3.frame5.frame6.tempdeg \
-                  -text "$caption(fingerlakes,deg_c) $caption(fingerlakes,refroidissement_1)"
+                  -text "$caption(fingerlakes,refroidissement_1)"
                pack $frm.frame1.frame3.frame5.frame6.tempdeg -side left -fill x -padx 0 -pady 5
 
             pack $frm.frame1.frame3.frame5.frame6 -side top -fill x -padx 10
