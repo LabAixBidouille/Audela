@@ -2,7 +2,7 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: bermasaude.tcl,v 1.25 2009-03-14 00:01:42 michelpujol Exp $
+# Mise a jour $Id: bermasaude.tcl,v 1.26 2009-11-08 15:02:43 robertdelmas Exp $
 #
 
 #
@@ -336,18 +336,18 @@ namespace eval bermasaude {
          while { [ ::bermasaude::bermasaude_etat_roue $ttybermasaude ] == "1" } {
             after 1000
          }
-         console::affiche_erreur "$caption(bermasaude,bermasaude_port)\
+         console::affiche_entete "$caption(bermasaude,bermasaude_port)\
             $caption(bermasaude,caractere_2points) $conf(bermasaude,port)\n"
-         console::affiche_erreur "$caption(bermasaude,bermasaude_combinaison)\
+         console::affiche_entete "$caption(bermasaude,bermasaude_combinaison)\
             $caption(bermasaude,caractere_2points) [ lindex "$caption(bermasaude,bermasaude_bvri) \
             $caption(bermasaude,bermasaude_cmj)" $conf(bermasaude,combi) ]\n"
          #--- Demande et affiche la version du logiciel du microcontroleur
          set v_firmware [ ::bermasaude::bermasaude_v_firmware $ttybermasaude ]
-         console::affiche_erreur "$caption(bermasaude,bermasaude_version_micro) $v_firmware\n"
+         console::affiche_entete "$caption(bermasaude,bermasaude_version_micro) $v_firmware\n"
          #--- Demande et affiche le nombre de filtres de la roue
          set nbr_filtres [ ::bermasaude::bermasaude_nbr_filtres $ttybermasaude ]
-         console::affiche_erreur "$caption(bermasaude,bermasaude_nbr_filtres_1)\
-            $nbr_filtres $caption(bermasaude,bermasaude_nbr_filtres_2)\n\n"
+         console::affiche_entete "[ format $caption(bermasaude,bermasaude_nbr_filtres)\
+            $nbr_filtres ]\n\n"
          set bermasaude(connect) "1"
          #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par l'equipement)
          set linkNo [ ::confLink::create $conf(bermasaude,port) "bermasaude" "control" "" -noopen ]
@@ -536,8 +536,8 @@ namespace eval bermasaude {
             after 1000
          }
          set num_filtre_position [ ::bermasaude::bermasaude_position $ttybermasaude ]
-         ::console::affiche_resultat "$caption(bermasaude,bermasaude_filtre_arrive_1)\
-            $bermasaude(caption_position_$num_filtre_position) $caption(bermasaude,bermasaude_filtre_arrive_2)\n\n"
+         ::console::affiche_resultat "[ format $caption(bermasaude,bermasaude_filtre_arrive)\
+            $bermasaude(caption_position_$num_filtre_position) ]\n\n"
          bell
       }
    }
@@ -641,12 +641,12 @@ namespace eval bermasaude {
 
          #--- Demande la position courante de la roue a filtres
          set num_filtre_position [ ::bermasaude::bermasaude_position $ttybermasaude ]
-         ::console::affiche_resultat "$caption(bermasaude,bermasaude_filtre_depart_1)\
-            $bermasaude(caption_position_$num_filtre_position) $caption(bermasaude,bermasaude_filtre_depart_2)\n"
+         ::console::affiche_resultat "[ format $caption(bermasaude,bermasaude_filtre_depart)\
+            $bermasaude(caption_position_$num_filtre_position) ]\n"
 
          #--- Envoi l'ordre a la roue a filtres
-         ::console::affiche_resultat "$caption(bermasaude,bermasaude_filtre_encours_1)\
-            $bermasaude(caption_position_$bermasaude(position)) $caption(bermasaude,bermasaude_filtre_encours_2)\n"
+         ::console::affiche_resultat "[ format $caption(bermasaude,bermasaude_filtre_encours)\
+            $bermasaude(caption_position_$bermasaude(position)) ]\n"
          set num_filtre_arrive [ ::bermasaude::bermasaude_aller_a $ttybermasaude [ list $bermasaude(position) ] ]
 
          #--- Affichage de la position de destination
@@ -654,9 +654,8 @@ namespace eval bermasaude {
             after 1000
          }
          set num_filtre_position_arrivee [ ::bermasaude::bermasaude_position $ttybermasaude ]
-         ::console::affiche_erreur "$caption(bermasaude,bermasaude_filtre_arrive_1)\
-            $bermasaude(caption_position_$num_filtre_position_arrivee)\
-            $caption(bermasaude,bermasaude_filtre_arrive_2)\n\n"
+         ::console::affiche_entete "[ format $caption(bermasaude,bermasaude_filtre_arrive)\
+            $bermasaude(caption_position_$num_filtre_position_arrivee) ]\n\n"
          bell
 
          #--- Gestion des boutons actifs/inactifs
