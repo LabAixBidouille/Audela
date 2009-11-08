@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.48 2009-07-13 22:57:25 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.49 2009-11-08 08:23:22 robertdelmas Exp $
 #
 
 #============================================================
@@ -429,7 +429,7 @@ proc ::scan::updateCellDim { args } {
 proc ::scan::startTool { visuNo } {
    variable This
    variable parametres
-   global caption panneau
+   global audace caption panneau
 
    #--- Chargement de la configuration
    chargementVar
@@ -462,6 +462,16 @@ proc ::scan::startTool { visuNo } {
    #--- Mise a jour de la dimension du pixel a la connexion d'une camera
    updateCellDim
 
+   #--- Je selectionne les mots cles optionnels a decocher
+   #--- Les mots cles RA et DEC doivent obligatoirement etre decoches
+   ::keyword::deselectKeywords $audace(visuNo) [ list RA DEC ]
+
+   #--- Je selectionne la liste des mots cles non modifiables
+   ::keyword::setKeywordState $audace(visuNo) [ list RA DEC ]
+
+   #--- Je force la capture des mots cles RA et DEC en manuel
+   ::keyword::setKeywordsRaDecManuel
+
    #--- Mise en service de la surveillance de la connexion d'une camera
    ::confVisu::addCameraListener $visuNo ::scan::adaptOutilScan
    ::confVisu::addCameraListener $visuNo ::scan::updateCellDim
@@ -481,7 +491,7 @@ proc ::scan::startTool { visuNo } {
 #------------------------------------------------------------
 proc ::scan::stopTool { visuNo } {
    variable This
-   global panneau
+   global audace panneau
 
    #--- Je verifie si une operation est en cours
    if { $panneau(scan,acquisition) == 1 } {
@@ -490,6 +500,9 @@ proc ::scan::stopTool { visuNo } {
 
    #--- Sauvegarde de la configuration
    enregistrementVar
+
+   #--- Les mots cles RA et DEC sont a nouveau modifiables
+   ::keyword::setKeywordState $audace(visuNo) [ list ]
 
    #--- Arret de la surveillance de la connexion d'une camera
    ::confVisu::removeCameraListener $visuNo ::scan::adaptOutilScan
