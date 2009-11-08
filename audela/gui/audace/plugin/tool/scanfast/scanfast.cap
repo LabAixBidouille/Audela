@@ -1,6 +1,6 @@
 #
 # Fichier : scanfast.cap
-# Mise a jour $Id: scanfast.cap,v 1.22 2009-11-07 16:26:20 robertdelmas Exp $
+# Mise a jour $Id: scanfast.cap,v 1.23 2009-11-08 08:23:59 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,8 +12,7 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(scanfast,comment1)            "SCAN Calibration Procedure in FAST mode:"
-set caption(scanfast,comment2)            "Calculation total time is about"
-set caption(scanfast,secondes)            "seconds..."
+set caption(scanfast,comment2)            "Calculation total time is about %s seconds..."
 set caption(scanfast,comment3)            "Idle Time Calculation:"
 set caption(scanfast,comment4)            "Idle Time"
 set caption(scanfast,ms/ligne)            "ms/line"
@@ -21,8 +20,7 @@ set caption(scanfast,comment5)            "You will not be able to use"
 set caption(scanfast,ms)                  "ms"
 set caption(scanfast,comment6)            "Calculation of the 'number of loops' required:"
 set caption(scanfast,iteration)           "Looping Process"
-set caption(scanfast,comment7)            "Wait about"
-set caption(scanfast,comment7a)           ""
+set caption(scanfast,comment7)            "Wait about %s seconds..."
 set caption(scanfast,comment8)            "Loop Number"
 set caption(scanfast,comment9)            "Recommended Value"
 set caption(scanfast,comment10)           "You can now run the command:"
@@ -74,8 +72,7 @@ set caption(scanfast,calcul_confirm)      "Run parameters calculation?"
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scanfast,comment1)         "Procédure de calibration du SCAN en mode FAST :"
-   set caption(scanfast,comment2)         "Durée totale du calcul estimée à"
-   set caption(scanfast,secondes)         "secondes..."
+   set caption(scanfast,comment2)         "Durée totale du calcul estimée à %s secondes..."
    set caption(scanfast,comment3)         "Détermination du temps mort :"
    set caption(scanfast,comment4)         "Temps mort"
    set caption(scanfast,ms/ligne)         "ms/ligne"
@@ -83,8 +80,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,ms)               "ms"
    set caption(scanfast,comment6)         "Détermination du 'nombre de boucles' nécessaires :"
    set caption(scanfast,iteration)        "Itération"
-   set caption(scanfast,comment7)         "Attendre environ"
-   set caption(scanfast,comment7a)        ""
+   set caption(scanfast,comment7)         "Attendre environ %s secondes..."
    set caption(scanfast,comment8)         "Nombre de boucles"
    set caption(scanfast,comment9)         "Valeur conseillée"
    set caption(scanfast,comment10)        "Vous pouvez désormais lancer la commande :"
@@ -136,8 +132,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(scanfast,comment1)         "Procedura di calibrazione dello SCAN in modo FAST:"
-   set caption(scanfast,comment2)         "Durata totale del calcolo stimata in"
-   set caption(scanfast,secondes)         "secondi..."
+   set caption(scanfast,comment2)         "Durata totale del calcolo stimata in %s secondi..."
    set caption(scanfast,comment3)         "Calcolo dei tempi morti:"
    set caption(scanfast,comment4)         "Tempi morti"
    set caption(scanfast,ms/ligne)         "ms/linea"
@@ -145,8 +140,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,ms)               "ms"
    set caption(scanfast,comment6)         "Determinazione del 'numero di ripetizioni' necessari:"
    set caption(scanfast,iteration)        "Iterazione"
-   set caption(scanfast,comment7)         "Attendere"
-   set caption(scanfast,comment7a)        ""
+   set caption(scanfast,comment7)         "Attendere %s secondi..."
    set caption(scanfast,comment8)         "Numero ripetizioni"
    set caption(scanfast,comment9)         "Valore consigliato"
    set caption(scanfast,comment10)        "Potete ora lanciare il comando:"
@@ -198,8 +192,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(scanfast,comment1)         "Procedimiento de calibración SCAN en modo FAST:"
-   set caption(scanfast,comment2)         "El tiempo total de calculo esperado es de"
-   set caption(scanfast,secondes)         "segundos..."
+   set caption(scanfast,comment2)         "El tiempo total de calculo esperado es de %s segundos..."
    set caption(scanfast,comment3)         "Calculo de tiempo muerto:"
    set caption(scanfast,comment4)         "Tiempo muerto"
    set caption(scanfast,ms/ligne)         "ms/línea"
@@ -207,8 +200,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,ms)               "ms"
    set caption(scanfast,comment6)         "Cálculo del 'número repeticiones' requerido:"
    set caption(scanfast,iteration)        "Iteración"
-   set caption(scanfast,comment7)         "Espera de"
-   set caption(scanfast,comment7a)        ""
+   set caption(scanfast,comment7)         "Espera de %s segundos..."
    set caption(scanfast,comment8)         "Numero repeticiones"
    set caption(scanfast,comment9)         "Valor recomendado"
    set caption(scanfast,comment10)        "Puede ejecutar el comando ahora:"
@@ -260,8 +252,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(scanfast,comment1)         "SCAN Kalibrierung in FAST Modus verfahren:"
-   set caption(scanfast,comment2)         "Gesamte Rechnung Zeit irgendwo"
-   set caption(scanfast,secondes)         "Sekunden..."
+   set caption(scanfast,comment2)         "Gesamte Rechnung Zeit irgendwo %s Sekunden..."
    set caption(scanfast,comment3)         "Totzeit Rechnung:"
    set caption(scanfast,comment4)         "Totzeit"
    set caption(scanfast,ms/ligne)         "ms/Linie"
@@ -269,8 +260,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,ms)               "ms"
    set caption(scanfast,comment6)         "Notwendigen 'Schleifen Zahl' Rechnung:"
    set caption(scanfast,iteration)        "Schlingung"
-   set caption(scanfast,comment7)         "Ungefähr"
-   set caption(scanfast,comment7a)        "warten"
+   set caption(scanfast,comment7)         "Ungefähr %s Sekunden warten..."
    set caption(scanfast,comment8)         "Schleifen Zahl"
    set caption(scanfast,comment9)         "Empfohlenes Wert"
    set caption(scanfast,comment10)        "Sie können jetzt den Befehl laufen lassen:"
@@ -322,8 +312,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(scanfast,comment1)         "Procedimento de calibração SCAN em modo FAST:"
-   set caption(scanfast,comment2)         "Duração total do cálculo estimado em"
-   set caption(scanfast,secondes)         "segundos..."
+   set caption(scanfast,comment2)         "Duração total do cálculo estimado em %s segundos..."
    set caption(scanfast,comment3)         "Determinação do tempo morto:"
    set caption(scanfast,comment4)         "Tempo morto"
    set caption(scanfast,ms/ligne)         "ms/linha"
@@ -331,8 +320,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,ms)               "ms"
    set caption(scanfast,comment6)         "Determinação do 'número de ciclos' necessários:"
    set caption(scanfast,iteration)        "Iteração"
-   set caption(scanfast,comment7)         "Aguardar cerca de"
-   set caption(scanfast,comment7a)        ""
+   set caption(scanfast,comment7)         "Aguardar cerca de %s segundos..."
    set caption(scanfast,comment8)         "Número de ciclos"
    set caption(scanfast,comment9)         "Valor recomendado"
    set caption(scanfast,comment10)        "Pode executar o comando:"
@@ -384,8 +372,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(scanfast,comment1)         "SCAN Calibration Procedure in FAST mode:"
-   set caption(scanfast,comment2)         "Calculation total time is about"
-   set caption(scanfast,secondes)         "seconds..."
+   set caption(scanfast,comment2)         "Calculation total time is about %s seconds..."
    set caption(scanfast,comment3)         "Idle Time Calculation:"
    set caption(scanfast,comment4)         "Idle Time"
    set caption(scanfast,ms/ligne)         "ms/line"
@@ -393,8 +380,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,ms)               "ms"
    set caption(scanfast,comment6)         "Calculation of the number of loops required:"
    set caption(scanfast,iteration)        "Looping Process"
-   set caption(scanfast,comment7)         "Wait about"
-   set caption(scanfast,comment7a)        ""
+   set caption(scanfast,comment7)         "Wait about %s seconds..."
    set caption(scanfast,comment8)         "Loop Number"
    set caption(scanfast,comment9)         "Recommended Value"
    set caption(scanfast,comment10)        "You can now run the command:"
@@ -446,8 +432,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
    set caption(scanfast,comment1)         "SCAN Calibration Procedure in FAST mode:"
-   set caption(scanfast,comment2)         "Calculation total time is about"
-   set caption(scanfast,secondes)         "seconds..."
+   set caption(scanfast,comment2)         "Calculation total time is about %s seconds..."
    set caption(scanfast,comment3)         "Idle Time Calculation:"
    set caption(scanfast,comment4)         "Idle Time"
    set caption(scanfast,ms/ligne)         "ms/line"
@@ -455,8 +440,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,ms)               "ms"
    set caption(scanfast,comment6)         "Calculation of the 'number of loops' required:"
    set caption(scanfast,iteration)        "Looping Process"
-   set caption(scanfast,comment7)         "Wait about"
-   set caption(scanfast,comment7a)        ""
+   set caption(scanfast,comment7)         "Wait about %s seconds..."
    set caption(scanfast,comment8)         "Loop Number"
    set caption(scanfast,comment9)         "Recommended Value"
    set caption(scanfast,comment10)        "You can now run the command:"
@@ -508,8 +492,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
    set caption(scanfast,comment1)         "SCAN Calibration Procedure in FAST mode:"
-   set caption(scanfast,comment2)         "Calculation total time is about"
-   set caption(scanfast,secondes)         "seconds..."
+   set caption(scanfast,comment2)         "Calculation total time is about %s seconds..."
    set caption(scanfast,comment3)         "Idle Time Calculation:"
    set caption(scanfast,comment4)         "Idle Time"
    set caption(scanfast,ms/ligne)         "ms/line"
@@ -517,8 +500,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,ms)               "ms"
    set caption(scanfast,comment6)         "Calculation of the 'number of loops' required:"
    set caption(scanfast,iteration)        "Looping Process"
-   set caption(scanfast,comment7)         "Wait about"
-   set caption(scanfast,comment7a)        ""
+   set caption(scanfast,comment7)         "Wait about %s seconds..."
    set caption(scanfast,comment8)         "Loop Number"
    set caption(scanfast,comment9)         "Recommended Value"
    set caption(scanfast,comment10)        "You can now run the command:"
