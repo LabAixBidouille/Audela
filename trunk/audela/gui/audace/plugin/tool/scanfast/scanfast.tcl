@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.48 2009-07-13 22:58:02 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.49 2009-11-08 08:24:29 robertdelmas Exp $
 #
 
 global panneau
@@ -30,7 +30,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
    ::console::affiche_resultat "\n"
    ::console::affiche_resultat "$caption(scanfast,comment1)\n"
    ::console::affiche_resultat "\n"
-   ::console::affiche_resultat "$caption(scanfast,comment2) [ expr int($hautpix*$dt*3/1000.) ] $caption(scanfast,secondes)\n"
+   ::console::affiche_resultat "[ format $caption(scanfast,comment2) [ expr int($hautpix*$dt*3/1000.) ] ]\n"
    ::console::affiche_resultat "\n"
    ::console::affiche_resultat "$caption(scanfast,comment3)\n"
    cam$audace(camNo) scan $largpix $hautpix $bin 0 -firstpix $firstpix -fast 0 -tmpfile -biny $bin
@@ -49,7 +49,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
    ::console::affiche_resultat "\n"
    set speed [ cam$audace(camNo) scanloop ]
    ::console::affiche_resultat "$caption(scanfast,iteration) 0 :\n"
-   ::console::affiche_resultat "$caption(scanfast,comment7) [ expr int($hautpix*$dt/1000.) ] $caption(scanfast,secondes) $caption(scanfast,comment7a)\n"
+   ::console::affiche_resultat "[ format $caption(scanfast,comment7) [ expr int($hautpix*$dt/1000.) ] ]\n"
    cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -firstpix $firstpix -fast $speed -tmpfile -biny $bin
    set dteff [ lindex [ buf$audace(bufNo) getkwd DTEFF ] 1 ]
    ::console::affiche_resultat "   $caption(scanfast,comment8) = $speed ([ expr 1000*$dteff ] $caption(scanfast,ms/ligne))\n"
@@ -57,7 +57,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
    ::console::affiche_resultat "      $caption(scanfast,comment9) = $speed\n"
    ::console::affiche_resultat "\n"
    ::console::affiche_resultat "$caption(scanfast,iteration) 1 :\n"
-   ::console::affiche_resultat "$caption(scanfast,comment7) [ expr int($hautpix*$dt/1000.) ] $caption(scanfast,secondes) $caption(scanfast,comment7a)\n"
+   ::console::affiche_resultat "[ format $caption(scanfast,comment7) [ expr int($hautpix*$dt/1000.) ] ]\n"
    cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -firstpix $firstpix -fast $speed -tmpfile -biny $bin
    set dteff [ lindex [ buf$audace(bufNo) getkwd DTEFF ] 1 ]
    ::console::affiche_resultat "   $caption(scanfast,comment8) = $speed ([ expr 1000*$dteff ] $caption(scanfast,ms/ligne))\n"
@@ -66,7 +66,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
    ::console::affiche_resultat "\n"
    if { [ expr int($hautpix*$dt/1000.) ] < "20" } {
       ::console::affiche_resultat "$caption(scanfast,iteration) 2 :\n"
-      ::console::affiche_resultat "$caption(scanfast,comment7) [ expr int($hautpix*$dt/1000.) ] $caption(scanfast,secondes) $caption(scanfast,comment7a)\n"
+      ::console::affiche_resultat "[ format $caption(scanfast,comment7) [ expr int($hautpix*$dt/1000.) ] ]\n"
       cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -firstpix $firstpix -fast $speed -tmpfile -biny $bin
       set dteff [ lindex [ buf$audace(bufNo) getkwd DTEFF ] 1 ]
       ::console::affiche_resultat "   $caption(scanfast,comment8) = $speed ([ expr 1000*$dteff ] $caption(scanfast,ms/ligne))\n"
@@ -74,7 +74,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
       ::console::affiche_resultat "      $caption(scanfast,comment9) = $speed\n"
       ::console::affiche_resultat "\n"
       ::console::affiche_resultat "$caption(scanfast,iteration) 3 :\n"
-      ::console::affiche_resultat "$caption(scanfast,comment7) [ expr int($hautpix*$dt/1000.) ] $caption(scanfast,secondes) $caption(scanfast,comment7a)\n"
+      ::console::affiche_resultat "[ format $caption(scanfast,comment7) [ expr int($hautpix*$dt/1000.) ] ]\n"
       cam$audace(camNo) scan $largpix $hautpix $bin $dt0 -firstpix $firstpix -fast $speed -tmpfile -biny $bin
       set dteff [ lindex [ buf$audace(bufNo) getkwd DTEFF ] 1 ]
       ::console::affiche_resultat "   $caption(scanfast,comment8) = $speed ([ expr 1000*$dteff ] $caption(scanfast,ms/ligne))\n"
@@ -497,7 +497,7 @@ proc ::scanfast::adaptOutilScanfast { args } {
 proc ::scanfast::startTool { visuNo } {
    variable This
    variable parametres
-   global caption panneau
+   global audace caption panneau
 
    #--- Chargement de la configuration
    chargementVar
@@ -524,6 +524,16 @@ proc ::scanfast::startTool { visuNo } {
    #--- Configuration dynamique de l'outil en fonction de la liaison
    adaptOutilScanfast
 
+   #--- Je selectionne les mots cles optionnels a decocher
+   #--- Les mots cles RA et DEC doivent obligatoirement etre decoches
+   ::keyword::deselectKeywords $audace(visuNo) [ list RA DEC ]
+
+   #--- Je selectionne la liste des mots cles non modifiables
+   ::keyword::setKeywordState $audace(visuNo) [ list RA DEC ]
+
+   #--- Je force la capture des mots cles RA et DEC en manuel
+   ::keyword::setKeywordsRaDecManuel
+
    #--- Mise en service de la surveillance de la connexion d'une camera
    ::confVisu::addCameraListener $visuNo ::scanfast::adaptOutilScanfast
 
@@ -542,7 +552,7 @@ proc ::scanfast::startTool { visuNo } {
 #------------------------------------------------------------
 proc ::scanfast::stopTool { visuNo } {
    variable This
-   global panneau
+   global audace panneau
 
    #--- Je verifie si une operation est en cours
    if { $panneau(scanfast,acquisition) == 1 } {
@@ -551,6 +561,9 @@ proc ::scanfast::stopTool { visuNo } {
 
    #--- Sauvegarde de la configuration
    enregistrementVar
+
+   #--- Les mots cles RA et DEC sont a nouveau modifiables
+   ::keyword::setKeywordState $audace(visuNo) [ list ]
 
    #--- Arret de la surveillance de la connexion d'une camera
    ::confVisu::removeCameraListener $visuNo ::scanfast::adaptOutilScanfast
