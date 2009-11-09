@@ -1,6 +1,6 @@
 #
 # Fichier : t193.cap
-# Mise a jour $Id: t193.cap,v 1.13 2009-11-05 22:46:26 robertdelmas Exp $
+# Mise a jour $Id: t193.cap,v 1.14 2009-11-09 16:35:20 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -204,16 +204,16 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,monture)                 "T193"
    set caption(t193,port)                    "Porta Com HP1000"
    set caption(t193,configurer)              "Configuração"
-   set caption(t193,rappelAlpha)             "# Vitesse de rappel en A.D. (arcsec/sec.)"
-   set caption(t193,rappelDelta)             "# Vitesse de rappel en Déc. (arcsec/sec.)"
+   set caption(t193,rappelAlpha)             "Velocidade de guia A.R. (arcsec/sec.)"
+   set caption(t193,rappelDelta)             "Velocidade de guia Dec. (arcsec/sec.)"
    set caption(t193,mode)                    "Modo"
-   set caption(t193,carteUSB)                "# Carte USB NI"
-   set caption(t193,ethernet)                "# Ethernet"
+   set caption(t193,carteUSB)                "Carta USB NI"
+   set caption(t193,ethernet)                "Ethernet"
    set caption(t193,nom_carte)               "Nome da carta USB-6501"
-   set caption(t193,minDelay)                "# Impulsion minimale (ms)"
+   set caption(t193,minDelay)                "Impulso mínimo (ms)"
    set caption(t193,host)                    "Host"
-   set caption(t193,portNotification)        "# Port de notification"
-   set caption(t193,portCommand)             "# Port de commande"
+   set caption(t193,portNotification)        "Porto de notificação"
+   set caption(t193,portCommand)             "Porto de comando"
    set caption(t193,raquette)                "Controlador de mão"
    set caption(t193,nord)                    "N"
    set caption(t193,sud)                     "S"

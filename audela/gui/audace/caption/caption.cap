@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.66 2009-11-04 18:30:42 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.67 2009-11-09 16:33:42 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -432,13 +432,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,non_connecte)                 "Não conectado"
    set caption(confVisu,fitsHduList)                  "HDU"
    set caption(confVisu,fermeture_impossible)         "Impossível parar Aud'ACE devido a uma operação em curso na ferramenta: %s"
-   set caption(confVisu,fermeture_outil_impossible)   "# Impossible d'arrêter %s car une opération est en cours."
+   set caption(confVisu,fermeture_outil_impossible)   "Impossível parar %s porque uma operação está em curso."
 
    set caption(plotxy,figure)                         "Figura"
 
    set caption(sectiongraph,title)                    "Gráfico da secção"
-   set caption(sectiongraph,refreshAuto)              "# Rafraîchissement automatique"
-   set caption(sectiongraph,refreshManuel)            "# Rafraîchir maintenant"
+   set caption(sectiongraph,refreshAuto)              "Actualização automática"
+   set caption(sectiongraph,refreshManuel)            "Actualizar agora"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

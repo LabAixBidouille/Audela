@@ -1,6 +1,6 @@
 #
 # Fichier : keyword.cap
-# Mise a jour $Id: keyword.cap,v 1.21 2009-11-04 18:37:02 robertdelmas Exp $
+# Mise a jour $Id: keyword.cap,v 1.22 2009-11-09 16:33:59 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -423,11 +423,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,IMAGETYP)           "Tipo de imagem"
    set caption(keyword,description,SERIESID)           "Identificador de série"
    set caption(keyword,description,EXPTIME)            "Tempo de exposição"
-   set caption(keyword,description,RA_MEAN)            "# Correction moyenne de l'ascension droite"
-   set caption(keyword,description,RA_RMS)             "# Correction RMS de l'ascension droite"
-   set caption(keyword,description,DEC_MEAN)           "# Correction moyenne de la déclinaison"
-   set caption(keyword,description,DEC_RMS)            "# Correction RMS de la déclinaison"
-   set caption(keyword,description,SEEING)             "# FWHM moyenne"
+   set caption(keyword,description,RA_MEAN)            "Correcção média da Ascensão Recta"
+   set caption(keyword,description,RA_RMS)             "Correcção RMS da Ascensão Recta"
+   set caption(keyword,description,DEC_MEAN)           "Correcção média da declinação"
+   set caption(keyword,description,DEC_RMS)            "Correcção RMS da declinação"
+   set caption(keyword,description,SEEING)             "Média FWHM"
    set caption(keyword,description,SKYLEVEL)           "Fundo do céu"
    set caption(keyword,description,SWCREATE)           "Software de aquisição"
    set caption(keyword,description,SWMODIFY)           "Software de processamento"
@@ -436,8 +436,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(keyword,manuel)                         "Manual"
    set caption(keyword,automatic)                      "Automático"
-   set caption(keyword,newValue)                       "# Entrer une valeur"
-   set caption(keyword,saisirNewValue)                 "# Nouvelle valeur"
+   set caption(keyword,newValue)                       "Inserir um valor"
+   set caption(keyword,saisirNewValue)                 "Novo valor"
    set caption(keyword,annuler)                        "Cancelar"
 
 # *************** Version danoise *****************************

@@ -1,6 +1,6 @@
 #
 # Fichier : cfa2rgb.cap
-# Mise a jour $Id: cfa2rgb.cap,v 1.5 2009-11-05 18:26:34 robertdelmas Exp $
+# Mise a jour $Id: cfa2rgb.cap,v 1.6 2009-11-09 16:36:45 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -123,18 +123,18 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cfa2rgb,titre)                "Pré-tratamento - Conversão CFA ---> RGB"
 
-   set caption(cfa2rgb,label_1)              "# Les images du dossier %s et ses sous-dossiers"
-   set caption(cfa2rgb,label_2)              "# Les images du dossier %s uniquement"
-   set caption(cfa2rgb,label_3)              "# Traitement du dossier"
-   set caption(cfa2rgb,label_4)              "# Image affichée"
-   set caption(cfa2rgb,label_5)              "# Echec de chargement de %s"
-   set caption(cfa2rgb,label_6)              "# Conversion de %s"
+   set caption(cfa2rgb,label_1)              "Imagens na pasta %s e suas sub-pastas"
+   set caption(cfa2rgb,label_2)              "As imagens na pasta %s unicamente"
+   set caption(cfa2rgb,label_3)              "Tratamento da pasta"
+   set caption(cfa2rgb,label_4)              "Imagem mostrada"
+   set caption(cfa2rgb,label_5)              "Falha no carregamento de %s"
+   set caption(cfa2rgb,label_6)              "Conversão de %s"
    set caption(cfa2rgb,attention)            "Aviso"
    set caption(cfa2rgb,erreur)               "Erro"
-   set caption(cfa2rgb,msg_01)               "# Conversion en cours..."
-   set caption(cfa2rgb,msg_02)               "# Conversion terminée"
-   set caption(cfa2rgb,msg_03)               "# Pas de format CFA à convertir"
-   set caption(cfa2rgb,msg_04)               "# Erreur d'analyse"
+   set caption(cfa2rgb,msg_01)               "Conversão em curso..."
+   set caption(cfa2rgb,msg_02)               "Conversão terminada"
+   set caption(cfa2rgb,msg_03)               "Nenhum formato CFA para converter"
+   set caption(cfa2rgb,msg_04)               "Erro de análise"
 
    set caption(cfa2rgb,appliquer)            "Aplicar"
    set caption(cfa2rgb,fermer)               "Fechar"

@@ -1,6 +1,6 @@
 #
 # Fichier : convert.cap
-# Mise a jour $Id: convert.cap,v 1.3 2009-11-07 14:09:34 robertdelmas Exp $
+# Mise a jour $Id: convert.cap,v 1.4 2009-11-09 16:36:11 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -46,8 +46,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(convert,menu)              "# Convertir l'image FITS affichée"
-   set caption(convert,titre)             "# Convertir l'image FITS affichée"
+   set caption(convert,menu)              "Converter a imagem FITS apresentada"
+   set caption(convert,titre)             "Converter a imagem FITS apresentada"
    set caption(convert,erreur)            "Erro"
 
 # *************** Version danoise *****************************

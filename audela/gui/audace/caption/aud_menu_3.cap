@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.37 2009-11-04 18:28:28 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.38 2009-11-09 16:33:01 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -749,7 +749,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,cte_invalide)              "Constante Inválida."
    set caption(pretraitement,en_cours)                  "Pré-tratamento em curso..."
    set caption(pretraitement,fin_traitement)            "Fim do pré-tratamento."
-   set caption(pretraitement,sup_boite)                 "# Supprimer le cadre à la fin du traitement"
+   set caption(pretraitement,sup_boite)                 "Eliminar frame após processamento"
    set caption(pretraitement,tracer_boite)              "Por favor desenhe um quadrado com o seu rato."
    set caption(pretraitement,appuyer_ok)                "De seguida, prima OK."
    set caption(pretraitement,definir_cte)               "Defina uma constante."
