@@ -1,6 +1,6 @@
 #
 # Fichier : ascomcam.cap
-# Mise a jour $Id: ascomcam.cap,v 1.5 2009-11-05 18:15:53 robertdelmas Exp $
+# Mise a jour $Id: ascomcam.cap,v 1.6 2009-11-09 16:34:14 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -132,10 +132,10 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(ascomcam,camera)                    "ASCOM"
-   set caption(ascomcam,port)                      "# Choix de la caméra"
+   set caption(ascomcam,port)                      "Selecção da câmara"
 
    set caption(ascomcam,configurer)                "Configuração"
-   set caption(ascomcam,install)                   "# La mise à jour de %s %V%s est terminée."
+   set caption(ascomcam,install)                   "Actualização de %s V%s concluída."
 
    set caption(ascomcam,miroir_x)                  "Espelho Horizontal"
    set caption(ascomcam,miroir_y)                  "Espelho Vertical"
@@ -143,7 +143,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ascomcam,port_camera)               "Driver ASCOM"
    set caption(ascomcam,2points)                   ":"
 
-   set caption(ascomcam,installNewVersion)         "# Fin de l'installation de la librairie %s du plug-in ascomcam v%s."
+   set caption(ascomcam,installNewVersion)         "Instalação da livraria %s do plug-in ascomcam v%s concluída."
 
    set caption(ascomcam,obtu_ouvert)               "Aberto"
    set caption(ascomcam,obtu_ferme)                "Fechado"

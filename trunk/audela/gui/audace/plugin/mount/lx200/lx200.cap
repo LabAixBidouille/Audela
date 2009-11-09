@@ -1,6 +1,6 @@
 #
 # Fichier : lx200.cap
-# Mise a jour $Id: lx200.cap,v 1.15 2009-11-05 22:45:54 robertdelmas Exp $
+# Mise a jour $Id: lx200.cap,v 1.16 2009-11-09 16:35:04 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -242,9 +242,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,modele_astro_physics)       "Astro-Physics"
    set caption(lx200,format)                     "Formato"
    set caption(lx200,maj_lx200)                  "Actualizar tempo, longitude, latitude e altitude do LX200"
-   set caption(lx200,rappelAD)                   "# Vitesse de rappel en A.D. (arcsec/sec.)"
-   set caption(lx200,rappelDec)                  "# Vitesse de rappel en Déc. (arcsec/sec.)"
-   set caption(lx200,vitesseSiderale)            "# (vitesse sidérale = 15 arcsec/sec.)"
+   set caption(lx200,rappelAD)                   "Velocidade de guia A.R. (arcsec/sec.)"
+   set caption(lx200,rappelDec)                  "Velocidade de guia Dec. (arcsec/sec.)"
+   set caption(lx200,vitesseSiderale)            "(velocidade sideral = 15 arcsec/sec.)"
    set caption(lx200,tracesConsole)              "Log na Consola"
    set caption(lx200,ite-lente_tempo)            "Tempo"
    set caption(lx200,ite-lente_A0,go)            "GO A0"

@@ -1,6 +1,6 @@
 #
 # Fichier : raw2fits.cap
-# Mise a jour $Id: raw2fits.cap,v 1.8 2009-11-05 18:27:20 robertdelmas Exp $
+# Mise a jour $Id: raw2fits.cap,v 1.9 2009-11-09 16:37:05 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -111,18 +111,18 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(raw2fits,titre)               "# Conversion d'images brutes RAW au format FITS"
+   set caption(raw2fits,titre)               "Converter ficheiros RAW em formato FITS"
 
-   set caption(raw2fits,label_1)             "# Les images du dossier %s et ses sous-dossiers vont être renumérotées"
-   set caption(raw2fits,label_2)             "# Les images du dossier %s uniquement vont être renumérotées"
-   set caption(raw2fits,label_3)             "# Traitement du dossier"
-   set caption(raw2fits,label_4)             "# Image affichée"
-   set caption(raw2fits,label_5)             "# Echec du chargement de %s: %s"
-   set caption(raw2fits,label_6)             "# Conversion de %s --> %s"
+   set caption(raw2fits,label_1)             "Imagens na pasta %s e suas sub-pastas vão ser renumeradas"
+   set caption(raw2fits,label_2)             "As imagens na pasta %s vão ser unicamente renumeradas"
+   set caption(raw2fits,label_3)             "Tratamento da pasta"
+   set caption(raw2fits,label_4)             "Imagem mostrada"
+   set caption(raw2fits,label_5)             "Falha no carregamento de %s: %s"
+   set caption(raw2fits,label_6)             "Conversão de %s --> %s"
    set caption(raw2fits,erreur)              "Erro"
-   set caption(raw2fits,msg_01)              "# Conversion en cours..."
-   set caption(raw2fits,msg_02)              "# Conversion terminée"
-   set caption(raw2fits,msg_03)              "# Pas de format RAW à convertir"
+   set caption(raw2fits,msg_01)              "Conversão em curso..."
+   set caption(raw2fits,msg_02)              "Conversão terminada"
+   set caption(raw2fits,msg_03)              "Nenhum formato RAW para converter"
 
    set caption(raw2fits,appliquer)           "Aplicar"
    set caption(raw2fits,fermer)              "Fechar"

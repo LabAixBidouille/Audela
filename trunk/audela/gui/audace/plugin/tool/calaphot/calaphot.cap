@@ -1,6 +1,6 @@
 #
 # Fichier : calaphot.cap
-# Mise a jour $Id: calaphot.cap,v 1.5 2009-11-07 14:08:47 robertdelmas Exp $
+# Mise a jour $Id: calaphot.cap,v 1.6 2009-11-09 16:35:54 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -227,7 +227,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,filtre_optique)      "Filtre optique"
    set calaphot(texte,suivant)             "Suivant"
    set calaphot(texte,s_saturation)        "Niveau de saturation (en ADU)"
-   set calaphot(texte,mode_sextractor)     "via Sextractor"
+   set calaphot(texte,mode_sextractor)     "Via Sextractor"
    set calaphot(texte,reprise_astres)      "Reprise des objets déjà saisis"
    set calaphot(texte,reprise_astres_0)    "Non"
    set calaphot(texte,reprise_astres_1)    "Oui"
@@ -341,7 +341,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,filtre_optique)      "Filtro ottico"
    set calaphot(texte,suivant)             "Seguente"
    set calaphot(texte,s_saturation)        "Livello di saturazione (ADU)"
-   set calaphot(texte,mode_sextractor)     "via Sextractor"
+   set calaphot(texte,mode_sextractor)     "Via Sextractor"
    set calaphot(texte,reprise_astres)      "Uso degli oggetti precedentemente selezionati"
    set calaphot(texte,reprise_astres_0)    "No"
    set calaphot(texte,reprise_astres_1)    "Si"
@@ -455,7 +455,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,filtre_optique)      "Filtro óptico"
    set calaphot(texte,suivant)             "Siguiente"
    set calaphot(texte,s_saturation)        "Nivel de saturación (en ADU)"
-   set calaphot(texte,mode_sextractor)     "via Sextractor"
+   set calaphot(texte,mode_sextractor)     "Via Sextractor"
    set calaphot(texte,reprise_astres)      "Usando objetos ya seleccionados"
    set calaphot(texte,reprise_astres_0)    "No"
    set calaphot(texte,reprise_astres_1)    "Sí"
@@ -585,7 +585,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set calaphot(texte,titre_menu)          "# Differential Photometry"
+   set calaphot(texte,titre_menu)          "Fotometria diferencial"
    set calaphot(texte,titre_saisie)        "Parâmetros do script de fotometria"
    set calaphot(texte,operateur)           "Nome do operador"
    set calaphot(texte,objet)               "Nome do objecto"
@@ -681,19 +681,19 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,champ2)              " deve ser seleccionado"
    set calaphot(texte,filtre_optique)      "Filtro óptico"
    set calaphot(texte,suivant)             "Seguinte"
-   set calaphot(texte,s_saturation)        "# Saturation level (ADU)"
-   set calaphot(texte,mode_sextractor)     "# Using Sextractor"
-   set calaphot(texte,reprise_astres)      "# Using the previously selected objects"
+   set calaphot(texte,s_saturation)        "Nível de saturação (ADU)"
+   set calaphot(texte,mode_sextractor)     "Via Sextractor"
+   set calaphot(texte,reprise_astres)      "Retoma de objectos já seleccionados"
    set calaphot(texte,reprise_astres_0)    "Não"
    set calaphot(texte,reprise_astres_1)    "Sim"
-   set calaphot(texte,param_sextractor)    "# Parameters for the Sextractor Mode"
+   set calaphot(texte,param_sextractor)    "Parâmetros para o modo Sextractor"
    set calaphot(texte,tri_images_0)        "Não"
    set calaphot(texte,tri_images_1)        "Sim"
-   set calaphot(texte,detection_ini)       "# The Calaphot version has changed: The calaphot.ini settings will be reset."
+   set calaphot(texte,detection_ini)       "Alteração de versão Calaphot: o conteúdo de calaphot.ini será reiniciado."
    set calaphot(texte,aide)                "Ajuda"
-   set calaphot(texte,pas_image_valide)    "# No valid image. You should check the minimum S/N ratio."
+   set calaphot(texte,pas_image_valide)    "Nenhuma imagem válida. Verifique o limite de SNR."
    set calaphot(texte,image)               "Imagem"
-   set calaphot(texte,temps_pose_nul)      "# Void exposure duration"
+   set calaphot(texte,temps_pose_nul)      "Tempo de exposição nulo"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {

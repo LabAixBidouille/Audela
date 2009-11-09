@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_5.cap
-# Mise a jour $Id: aud_menu_5.cap,v 1.14 2009-11-04 18:29:01 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_5.cap,v 1.15 2009-11-09 16:33:18 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -256,8 +256,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,histo_adu)                      "Unidades digitais (ADU)"
    set caption(audace,histo_nbpix)                    "Número de pixeis"
 
-   set caption(audace,refreshAuto)                    "# Rafraîchissement automatique"
-   set caption(audace,refreshManuel)                  "# Rafraîchir maintenant"
+   set caption(audace,refreshAuto)                    "Actualização automática"
+   set caption(audace,refreshManuel)                  "Actualizar agora"
 
    set caption(audace,maxi)                           "Max.: "
    set caption(audace,mini)                           "Min.: "

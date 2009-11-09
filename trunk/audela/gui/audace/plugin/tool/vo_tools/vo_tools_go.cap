@@ -1,6 +1,6 @@
 #
 # Fichier : vo_tools_go.cap
-# Mise a jour $Id: vo_tools_go.cap,v 1.19 2009-11-07 17:07:56 robertdelmas Exp $
+# Mise a jour $Id: vo_tools_go.cap,v 1.20 2009-11-09 16:36:27 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -104,9 +104,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,cone-search)          "Procura de\ncorpos do Sistema\nSolar\nobserváveis"
    set caption(vo_tools_go,resolver)             "Procura de\ncorpos do Sistema\nSolar em torno\nde um corpo celeste"
    set caption(vo_tools_go,statut)               "Estado do serviço\nSkyBoT"
-   set caption(vo_tools_go,samp_menu_interop)    "# Interop Menu"
+   set caption(vo_tools_go,samp_menu_interop)    "Menu Interop"
    set caption(vo_tools_go,samp_menu_help)       "Ajuda"
-   set caption(vo_tools_go,samp_menu_broadcast)  "# Diffuser l'image"
+   set caption(vo_tools_go,samp_menu_broadcast)  "Difundir imagem"
    set caption(vo_tools_go,samp_menu_connect)    "Conectar"
    set caption(vo_tools_go,samp_menu_disconnect) "Desconectar"
 

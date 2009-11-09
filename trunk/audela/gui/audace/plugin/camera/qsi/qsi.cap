@@ -1,6 +1,6 @@
 #
 # Fichier :qsi.cap
-# Mise a jour $Id: qsi.cap,v 1.5 2009-11-08 14:27:44 robertdelmas Exp $
+# Mise a jour $Id: qsi.cap,v 1.6 2009-11-09 16:34:47 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -165,7 +165,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(qsi,port_camera)               "Driver QSI"
    set caption(qsi,2points)                   ":"
 
-   set caption(qsi,installNewVersion)         "# Fin de l'installation de la librairie %s du plug-in qsi v%s."
+   set caption(qsi,installNewVersion)         "Instalação da livraria %s do plug-in qsi v%s concluída."
 
    set caption(qsi,titre_site_web)            "Site Web de referência:"
    set caption(qsi,site_web_ref)              "http://www.qsimaging.com"
