@@ -1,6 +1,6 @@
 #
 # Fichier :qsi.cap
-# Mise a jour $Id: qsi.cap,v 1.6 2009-11-09 16:34:47 robertdelmas Exp $
+# Mise a jour $Id: qsi.cap,v 1.7 2009-11-11 15:48:37 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -23,6 +23,9 @@ set caption(qsi,puissance_peltier)            "Peltier Stage Power: "
 set caption(qsi,ccdTemp)                      "CCD Temperature:"
 set caption(qsi,setTemp)                      "Set Temperature:"
 set caption(qsi,filters)                      "Filter"
+
+set caption(qsi,connexion_avec_roue)          "QSI Camera: Connection with filter wheel"
+set caption(qsi,connexion_sans_roue)          "QSI Camera: Connection without filter wheel"
 
 set caption(qsi,obtu_ferme)                   "Closed"
 set caption(qsi,obtu_synchro)                 "Synchro"
@@ -51,6 +54,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(qsi,setTemp)                   "Consigne de température :"
    set caption(qsi,filters)                   "Filtre"
 
+   set caption(qsi,connexion_avec_roue)       "Caméra QSI : Connexion avec roue à filtres"
+   set caption(qsi,connexion_sans_roue)       "Caméra QSI : Connexion sans roue à filtres"
+
    set caption(qsi,obtu_ferme)                "Fermé"
    set caption(qsi,obtu_synchro)              "Synchro"
 
@@ -77,6 +83,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(qsi,ccdTemp)                   "CCD Temperatura:"
    set caption(qsi,setTemp)                   "Set Temperatura:"
    set caption(qsi,filters)                   "Filtro"
+
+   set caption(qsi,connexion_avec_roue)       "Camera QSI: Connessione con ruota portafiltri"
+   set caption(qsi,connexion_sans_roue)       "Camera QSI: Connessione senza ruota portafiltri"
 
    set caption(qsi,obtu_ferme)                "Chiuso"
    set caption(qsi,obtu_synchro)              "Sincronizza"
@@ -105,6 +114,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(qsi,setTemp)                   "Establezca la temperatura:"
    set caption(qsi,filters)                   "Filtro"
 
+   set caption(qsi,connexion_avec_roue)       "Camara QSI: Conexion con rueda de filtros"
+   set caption(qsi,connexion_sans_roue)       "Camara QSI: Conexion sin rueda de filtros"
+
    set caption(qsi,obtu_ferme)                "Cerrado"
    set caption(qsi,obtu_synchro)              "Sincro"
 
@@ -131,6 +143,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(qsi,ccdTemp)                   "Temperatur CCD:"
    set caption(qsi,setTemp)                   "Temperatur Einstellung:"
    set caption(qsi,filters)                   "Filter"
+
+   set caption(qsi,connexion_avec_roue)       "QSI Kamera: Anschluß mit Filterrad"
+   set caption(qsi,connexion_sans_roue)       "QSI Kamera: Anschluß ohne Filterrad"
 
    set caption(qsi,obtu_ferme)                "Geschlossen"
    set caption(qsi,obtu_synchro)              "Synchro"
@@ -159,6 +174,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(qsi,setTemp)                   "Definir temperatura:"
    set caption(qsi,filters)                   "Filtro"
 
+   set caption(qsi,connexion_avec_roue)       "Câmara QSI: Conexão com roda de filtros"
+   set caption(qsi,connexion_sans_roue)       "Câmara QSI: Conexão sem roda de filtros"
+
    set caption(qsi,obtu_ferme)                "Fechado"
    set caption(qsi,obtu_synchro)              "Sincro"
 
@@ -185,6 +203,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(qsi,ccdTemp)                   "CCD Temperature:"
    set caption(qsi,setTemp)                   "Set Temperature"
    set caption(qsi,filters)                   "Filter"
+
+   set caption(qsi,connexion_avec_roue)       "QSI Camera: Connection with filter wheel"
+   set caption(qsi,connexion_sans_roue)       "QSI Camera: Connection without filter wheel"
 
    set caption(qsi,obtu_ferme)                "Closed"
    set caption(qsi,obtu_synchro)              "Synchro"
@@ -213,6 +234,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(qsi,setTemp)                   "Set Temperature:"
    set caption(qsi,filters)                   "Filter"
 
+   set caption(qsi,connexion_avec_roue)       "QSI Camera: Connection with filter wheel"
+   set caption(qsi,connexion_sans_roue)       "QSI Camera: Connection without filter wheel"
+
    set caption(qsi,obtu_ferme)                "Closed"
    set caption(qsi,obtu_synchro)              "Synchro"
 
@@ -239,6 +263,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(qsi,ccdTemp)                   "CCD Temperature:"
    set caption(qsi,setTemp)                   "Set Temperature:"
    set caption(qsi,filters)                   "Filter"
+
+   set caption(qsi,connexion_avec_roue)       "QSI Camera: Connection with filter wheel"
+   set caption(qsi,connexion_sans_roue)       "QSI Camera: Connection without filter wheel"
 
    set caption(qsi,obtu_ferme)                "Closed"
    set caption(qsi,obtu_synchro)              "Synchro"
