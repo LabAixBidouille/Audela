@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_7.cap
-# Mise a jour $Id: aud_menu_7.cap,v 1.21 2009-11-04 18:29:34 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.cap,v 1.22 2009-11-11 14:32:36 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -37,7 +37,7 @@ set caption(audace,menu,sauve_config)             "Save Setup"
 set caption(cwdWindow,repertoire)                 "Folders"
 set caption(cwdWindow,repertoire_images)          "Image Folder:"
 set caption(cwdWindow,label_sous_rep)             "New Sub-folder"
-set caption(cwdWindow,label_sous_rep,aucun)       "No sub-folder"
+set caption(cwdWindow,label_sous_rep,aucun)       "No sub-folders"
 set caption(cwdWindow,label_sous_rep,fixe)        "Sub-folder Name"
 set caption(cwdWindow,label_sous_rep,date)        "Date for today"
 set caption(cwdWindow,creation_sous_rep)          "Create"
@@ -317,9 +317,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,repertoire)              "Pastas"
    set caption(cwdWindow,repertoire_images)       "Pasta das imagens:"
    set caption(cwdWindow,label_sous_rep)          "Nova Sub-Pasta"
-   set caption(cwdWindow,label_sous_rep,aucun)    "# Pas de sous-répertoire"
-   set caption(cwdWindow,label_sous_rep,fixe)     "# Nom du sous-répertoire"
-   set caption(cwdWindow,label_sous_rep,date)     "# Date du jour"
+   set caption(cwdWindow,label_sous_rep,aucun)    "Nenhuma sub-pasta"
+   set caption(cwdWindow,label_sous_rep,fixe)     "Nome da sub-pasta"
+   set caption(cwdWindow,label_sous_rep,date)     "Data de hoje"
    set caption(cwdWindow,creation_sous_rep)       "Criar"
    set caption(cwdWindow,repertoire_scripts)      "Pasta de scripts:"
    set caption(cwdWindow,repertoire_catalogues)   "Pasta de catálogos:"
@@ -373,9 +373,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,repertoire)              "Mappe"
    set caption(cwdWindow,repertoire_images)       "Billedmappe:"
    set caption(cwdWindow,label_sous_rep)          "Ny undermappe"
-   set caption(cwdWindow,label_sous_rep,aucun)    "# Pas de sous-répertoire"
-   set caption(cwdWindow,label_sous_rep,fixe)     "# Nom du sous-répertoire"
-   set caption(cwdWindow,label_sous_rep,date)     "# Date du jour"
+   set caption(cwdWindow,label_sous_rep,aucun)    "Ingen undermapper"
+   set caption(cwdWindow,label_sous_rep,fixe)     "Navn på undermappe"
+   set caption(cwdWindow,label_sous_rep,date)     "Dags dato"
    set caption(cwdWindow,creation_sous_rep)       "Dan"
    set caption(cwdWindow,repertoire_scripts)      "Skriptmappe:"
    set caption(cwdWindow,repertoire_catalogues)   "Katalogmappe:"
@@ -429,7 +429,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,repertoire)              "Folders"
    set caption(cwdWindow,repertoire_images)       "Image Folder:"
    set caption(cwdWindow,label_sous_rep)          "New Sub-folder"
-   set caption(cwdWindow,label_sous_rep,aucun)    "No sub-folder"
+   set caption(cwdWindow,label_sous_rep,aucun)    "No sub-folders"
    set caption(cwdWindow,label_sous_rep,fixe)     "Sub-folder Name"
    set caption(cwdWindow,label_sous_rep,date)     "Date for today"
    set caption(cwdWindow,creation_sous_rep)       "Create"
@@ -485,7 +485,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,repertoire)              "Folders"
    set caption(cwdWindow,repertoire_images)       "Image Folder:"
    set caption(cwdWindow,label_sous_rep)          "New Sub-folder"
-   set caption(cwdWindow,label_sous_rep,aucun)    "No sub-folder"
+   set caption(cwdWindow,label_sous_rep,aucun)    "No sub-folders"
    set caption(cwdWindow,label_sous_rep,fixe)     "Sub-folder Name"
    set caption(cwdWindow,label_sous_rep,date)     "Date for today"
    set caption(cwdWindow,creation_sous_rep)       "Create"

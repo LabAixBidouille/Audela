@@ -1,6 +1,6 @@
 #
 # Fichier : t193pad.cap
-# Mise a jour $Id: t193pad.cap,v 1.4 2009-11-07 14:07:51 robertdelmas Exp $
+# Mise a jour $Id: t193pad.cap,v 1.5 2009-11-11 14:32:54 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -149,8 +149,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193pad,moteur_foc)        "Motor de focagem"
    set caption(t193pad,gotoFoc)           "GOTO focagem"
 
-   set caption(t193pad,dome)              "# Dôme"
-   set caption(t193pad,synchroMonture)    "# Synchro avec le télescope"
+   set caption(t193pad,dome)              "Abóbada"
+   set caption(t193pad,synchroMonture)    "Sincronização com o telescópio"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -167,14 +167,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193pad,RA)                "RA"
    set caption(t193pad,DEC)               "Dec."
 
-   set caption(t193pad,suivi_marche)      "# Tracking On"
-   set caption(t193pad,suivi_arret)       "# Tracking Off"
+   set caption(t193pad,suivi_marche)      "Tracking tilsluttet"
+   set caption(t193pad,suivi_arret)       "Tracking frakoblet"
 
    set caption(t193pad,moteur_foc)        "Fokuseringsmotor"
    set caption(t193pad,gotoFoc)           "GOTO Fokus."
 
-   set caption(t193pad,dome)              "# Dôme"
-   set caption(t193pad,synchroMonture)    "# Synchro avec le télescope"
+   set caption(t193pad,dome)              "Kuppel"
+   set caption(t193pad,synchroMonture)    "Synkroniseret med teleskop"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
