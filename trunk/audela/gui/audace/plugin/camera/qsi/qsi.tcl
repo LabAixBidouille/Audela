@@ -2,7 +2,7 @@
 # Fichier : qsi.tcl
 # Description : Configuration de la camera QSI
 # Auteur : Michel Pujol
-# Mise a jour $Id: qsi.tcl,v 1.7 2009-11-08 14:27:59 robertdelmas Exp $
+# Mise a jour $Id: qsi.tcl,v 1.8 2009-11-11 15:48:00 robertdelmas Exp $
 #
 
 namespace eval ::qsi {
@@ -249,8 +249,6 @@ proc ::qsi::fillConfigPage { frm camItem } {
 
       pack $frm.frame2.frame6 -side left -expand 0 -padx 60
 
-   ###pack $frm.frame2 -side top -fill both -expand 1
-
    pack $frm.frame2 -side bottom -fill x -pady 2
 
    #--- Mise a jour dynamique des couleurs
@@ -287,7 +285,7 @@ proc ::qsi::configureCamera { camItem bufNo } {
       }
       #--- Je cree la camera
       set camNo [ cam::create qsi USB ]
-      console::affiche_erreur "$caption(qsi,port_camera) $caption(qsi,2points) USB\n"
+      console::affiche_entete "$caption(qsi,port_camera) $caption(qsi,2points) USB\n"
       console::affiche_saut "\n"
       #--- Je change de variable
       set private($camItem,camNo) $camNo
@@ -320,9 +318,9 @@ proc ::qsi::configureCamera { camItem bufNo } {
          $private(frm).frame2.frame6.wheel.filterList configure -values  $private(filterNames)
          $private(frm).frame2.frame6.wheel.filterList setvalue "@$::conf(qsi,filterNo)"
          cam$camNo wheel position $::conf(qsi,filterNo)
-         console::disp "Camera QSI: connexion avec roue a filtre\n"
+         console::disp "$::caption(qsi,connexion_avec_roue)\n"
       } else {
-         console::disp "Camera QSI: connexion sans roue a filtre\n"
+         console::disp "$::caption(qsi,connexion_sans_roue)\n"
       }
       #--- j'adapte l'etat des widgets
       ::qsi::setWigetState $camItem
@@ -465,15 +463,11 @@ proc ::qsi::setConfigTemperature { camItem } {
       set frm $private(frm)
      if { [ winfo exists $frm ] } {
          if { $::conf(qsi,cool) == "1" } {
-            ###pack $frm.frame2.frame6.frame7.setTemp -anchor center -side left -padx 5 -pady 5
-            ###pack $frm.frame2.frame6.frame7.tempdeg -side left -fill x -padx 0 -pady 5
             $frm.frame2.frame6.frame7.setTemp configure -state normal
             $frm.frame2.frame6.frame7.tempdeg configure -state normal
             $frm.frame2.frame6.frame8.power configure   -state normal
             $frm.frame2.frame6.frame9.ccdtemp configure -state normal
          } else {
-            ###pack forget $frm.frame2.frame6.frame7.setTemp
-            ###pack forget $frm.frame2.frame6.frame7.tempdeg
             $frm.frame2.frame6.frame7.setTemp configure -state disabled
             $frm.frame2.frame6.frame7.tempdeg configure -state disabled
             $frm.frame2.frame6.frame8.power configure   -state disabled
