@@ -1,6 +1,6 @@
 #
 # Fichier : scanfast.cap
-# Mise a jour $Id: scanfast.cap,v 1.23 2009-11-08 08:23:59 robertdelmas Exp $
+# Mise a jour $Id: scanfast.cap,v 1.24 2009-11-11 15:50:18 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -305,7 +305,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,fichier_existe)   "Diese Datei ist schon auf die Platte.\nBestätigen sie die Speicherung?"
 
    set caption(scanfast,attention)        "Achtung"
-   set caption(scanfast,message)          "Diese Software funktioniert nur mit eine Audine Kamera durch einen Parallel\nAnschluss oder EthernAude Schnittstelle getrieben."
+   set caption(scanfast,message)          "Diese Software funktioniert nur mit eine Audine Kamera durch einen Parallel\nAnschluß oder EthernAude Schnittstelle getrieben."
    set caption(scanfast,calcul_confirm)   "Wollen sie eine Parameter Rechnung laufen lassen?"
 
 # *************** Version portugaise **************************

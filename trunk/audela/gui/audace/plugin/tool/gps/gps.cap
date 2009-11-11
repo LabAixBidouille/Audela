@@ -1,6 +1,6 @@
 #
 # Fichier : gps.cap
-# Mise a jour $Id: gps.cap,v 1.14 2009-11-07 14:59:16 robertdelmas Exp $
+# Mise a jour $Id: gps.cap,v 1.15 2009-11-11 15:49:44 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -309,7 +309,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,intervalle_synchro)       "Synchro (s)"
    set caption(gps,help,titre)               "Hilfe für dieses Gerät"
    set caption(gps,help,titre1)              "Hilfe für die Gerät:"
-   set caption(gps,non_rs232)                "Diesen Anschluss ist nicht ein RS232 Anschluss."
+   set caption(gps,non_rs232)                "Diesen Anschluß ist nicht ein RS232 Anschluß."
    set caption(gps,droit_acces)              "Sie haben nicht genügend Recht um die System Uhr einzustellen.\nSie müssen Verwaltungsbeamte von diesen Computer sein."
    set caption(gps,pas_synchro)              "Keine Synchronisation"
 
