@@ -1,6 +1,6 @@
 #
 # Fichier : webcam.cap
-# Mise a jour $Id: webcam.cap,v 1.12 2009-11-05 18:19:44 robertdelmas Exp $
+# Mise a jour $Id: webcam.cap,v 1.13 2009-11-12 18:18:34 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -46,7 +46,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,camera)                   "WebCam"
 
    set caption(webcam,canal_usb)                "Canal vidéo USB"
-  set caption(webcam,mode_video)               "Mode vidéo"
+   set caption(webcam,mode_video)               "Mode vidéo"
    set caption(webcam,miroir_x)                 "Miroir horizontal"
    set caption(webcam,miroir_y)                 "Miroir vertical"
    set caption(webcam,longuepose)               "Option longue pose (S. Chambers)"
