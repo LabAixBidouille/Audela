@@ -81,7 +81,7 @@ AudeLA est capable de piloter les equipements suivants :
 - Focaliseur AudeCom,
 - Focaliseur JMI,
 - Focaliseur LX200,
-- Lhires III,
+- Lhires 3,
 - Roue a filtres developpee dans le cadre de l'association Aude.
 
 Bien entendu les auteurs ne disposent pas de tout ce materiel cite. Ils les ont
@@ -323,8 +323,8 @@ Les auteurs initiaux de AudeLA sont :
 
 Par la suite, ils ont ete rejoints par :
  - Robert DELMAS <delmas.robert@wanadoo.fr>,
- - Christian JASINSKI <chris.jasinski@gmail.com>,
- - Michel PUJOL <michel-pujol@wanadoo.fr>.
+ - Christian JASINSKI <christian.jasinski@gmail.com>,
+ - Michel PUJOL <michel-pujol@orange.fr>.
 
 Ils forment "The AudeLA Core Team" (TACT), nom employe pour le copyright dans
 les sources.
@@ -333,16 +333,15 @@ les sources.
 7. Contributions
 ================
 
-Un bon nombre de personnes ont contribue a AudeLA ou Aud'ACE. Citons dans
-le desordre :
+Un bon nombre de personnes ont contribue a AudeLA ou Aud'ACE. Citons dans le desordre :
  - Jacques MICHELET <jacques.michelet@laposte.net> : Librairie libjm et
    outils GPS et King, scripts de photometrie (calaphot) et de tri par
    fwhm (tri_fwhm).
  - Francois COCHARD <francois.cochard@wanadoo.fr> : Outils Acquisition et
    Pretraitement.
  - Olivier THIZY <thizy@free.fr> : Script de photometrie (calaphot).
- - Raymond ZACHANTKE <zachantk@club-internet.fr> : Outil APN et monture
-   Ouranos.
+ - Raymond ZACHANTKE <zachantk@club-internet.fr> : Outil APN, monture
+   Ouranos et divers scripts pour le traitement d'images d'APN.
  - Philippe KAUFFMANN <philippe.kauffmann@free.fr> : Monture AudeCom.
  - Guillaume SPITZER <gspitzer@free.fr> : Librairie libgs pour
    l'interfacage avec "Guide".
@@ -363,14 +362,21 @@ le desordre :
  - Raoul BEHREND <raoul.behrend@obs.unige.ch> : Utilitaires pour la
    conversion d'images au format FITS.
  - Jerome BERTHIER <berthier@imcce.fr> : Outil pour l'Observatoire Virtuel.
+ - Frederic VACHIER <vachier@imcce.fr> : Outil pour l'Observatoire Virtuel.
+ - Stephane VAILLANT <vaillant@imcce.fr> : Outil pour l'Observatoire Virtuel.
  - Sylvain GIRARD <zesly@wanadoo.fr> : Driver libk2 de la camera Kitty2.
- - Jim CADIEN <jcadien1@gmail.com> : Support pour la camera Cookbook et SBIG (linux).
+ - Jim CADIEN <jcadien1@gmail.com> : Support pour la camera Cookbook et SBIG (Linux).
+ - Laurent JORDA : Traitement d'images de cometes (AfRho).
+ - Jean-François COLIAC : Traitement d'images de cometes (AfRho).
  - Dark VADOR <vador@darkstar.com> : Inspiration permanente.
  - Christian JASINSKI, Dez FUTAK, Dan HOLLER : Traduction anglaise.
  - Fausto MANENTI : Traduction italienne.
- - Rafael GONZALEZ FUENTETAJA, Cristobal GARCIA : Traduction espagnole.
+ - Rafael GONZALEZ FUENTETAJA, Cristobal GARCIA, Jesus IGLESIAS : Traduction espagnole.
  - Philippe KAUFFMANN, Joerg HOEBELMANN : Traduction allemande.
+ - Luis GOUVEIA, Leandro FONSECA : Traduction portugaise.
  - Knud STRANDBAEK : Traduction danoise.
+ - Oleg MALIY : Traduction ukrainienne.
+ - Oleg MALIY : Traduction russe.
 
 Que ceux qui ont ete oublies nous excusent, et se manifestent aupres des auteurs
 pour rectifier l'injustice qu'ils subissent.
@@ -384,8 +390,10 @@ pour rectifier l'injustice qu'ils subissent.
  - Dp : Communication sur protocole IP de bas niveau (TCP, RCP, UDP, SMTP, etc.).
  - HelpViewer : Affichage d'une aide.
  - Img : Librairie de chargement de formats d'images standards (jpg, bmp, etc.).
+ - Math : Librairie pour les calculs mathematiques.
  - Memchan : Librairie pour l'outil "Mise a jour d'AudeLA".
  - Mk4tcl : Librairie pour l'outil "Mise a jour d'AudeLA".
+ - MySqlTcl : Librairie pour la gestion de bases de donnees.
  - SuperGrid : Positionne automatiquement les widgets dans une grille.
  - TableList : Affichage d'une liste avec parametrage des colonnes (outil Visionneuse bis).
  - TclDOM : Extension DOM pour skybot/virtual observatory. http://tclxml.sourceforge.net
@@ -395,8 +403,10 @@ pour rectifier l'injustice qu'ils subissent.
  - TCom : Protocole Microsoft COM (pour interfaces ASCOM).
  - Thread : Multi-thread.
  - TkHtml : Widget permettant d'afficher une page HTML.
+ - Tls : Communication par https.
  - TMCI : Gestion du format video avi.
  - Trf : Librairie pour l'outil "Mise a jour d'AudeLA".
+ - Twapi : Extension qui donne acces a des fonctions de l'API de Windows via Tcl (Tcl Windows API).
  - Vfs : Librairie pour l'outil "Mise a jour d'AudeLA".
  - Zlibtcl : Librairie pour l'outil "Mise a jour d'AudeLA".
  - CFITSIO (2.51).
@@ -415,5 +425,5 @@ Les Auteurs.
 
 AudeLA, page d'accueil : http://www.audela.org
 
-Copyright (C)1999-2009, The AudeLA Core Team.
+Copyright (C)1999-2010, The AudeLA Core Team.
 
