@@ -253,3 +253,139 @@ int Cmd_aktcl_statcata(ClientData clientData, Tcl_Interp *interp, int argc, char
    }
    return TCL_OK;
 }
+
+/****************************************************************************************/
+int ak_fitspline(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *ff)
+/****************************************************************************************
+/* Entrees :                                                                            */
+/*  x[0..n1..n2]                                                                        */
+/*  y[0..n1..n2]                                                                        */
+/*  dy[0..n1..n2]                                                                       */
+/*  s = parametre 0-1                                                                   */
+/* Sorties :                                                                            */
+/*  xx[0..nn]                                                                           */
+/*  ff[0..nn]                                                                           */
+/*                                                                                      */
+/* x et xx doivent etre pralablement tries en ordre croissants                          */
+/****************************************************************************************/
+{
+	int i,m1,m2,n,ii;
+	double e,f,f2,g,h,p;
+	double *r,*r1,*r2,*t,*t1,*u,*v;
+	double *a,*b,*c,*d;
+
+	n=(n2+1)-(n1-1)+1;
+	r=(double*)calloc(n,sizeof(double));
+	if (r==NULL) { return 1; }
+	r1=(double*)calloc(n,sizeof(double));
+	if (r1==NULL) { free(r); return 1; }
+	r2=(double*)calloc(n,sizeof(double));
+	if (r2==NULL) { free(r); free(r1); return 1; }
+	t=(double*)calloc(n,sizeof(double));
+	if (t==NULL) { free(r); free(r1); free(r2); return 1; }
+	t1=(double*)calloc(n,sizeof(double));
+	if (t1==NULL) { free(r); free(r1); free(r2); free(t); return 1; }
+	u=(double*)calloc(n,sizeof(double));
+	if (u==NULL) { free(r); free(r1); free(r2); free(t); free(t1) ; return 1; }
+	v=(double*)calloc(n,sizeof(double));
+	if (v==NULL) { free(r); free(r1); free(r2); free(t); free(t1) ; free(u); return 1; }
+	a=(double*)calloc(n,sizeof(double));
+	if (a==NULL) { free(r); free(r1); free(r2); free(t); free(t1) ; free(u); free(v) ; return 1; }
+	b=(double*)calloc(n,sizeof(double));
+	if (b==NULL) { free(r); free(r1); free(r2); free(t); free(t1) ; free(u); free(v) ; free(a); return 1; }
+	c=(double*)calloc(n,sizeof(double));
+	if (c==NULL) { free(r); free(r1); free(r2); free(t); free(t1) ; free(u); free(v) ; free(a); free(b) ; return 1; }
+	d=(double*)calloc(n,sizeof(double));
+	if (d==NULL) { free(r); free(r1); free(r2); free(t); free(t1) ; free(u); free(v) ; free(a); free(b); free(c) ; return 1; }
+
+	m1=n1-1;
+	m2=n2+1;
+	r[m1]=r[n1]=r1[n2]=r2[n2]=r2[m2]=u[m1]=u[n1]=u[n2]=u[m2]=p=0;
+	m1=n1+1;
+	m2=n2-1;
+	h=x[m1]-x[n1];
+	f=(y[m1]-y[n1])/h;
+	for (i=m1;i<=m2;i++) {
+		g=h;
+		h=x[i+1]-x[i];
+		e=f;
+		f=(y[i+1]-y[i])/h;
+		a[i]=f-e;
+		t[i]=2*(g+h)/3;
+		t1[i]=h/3;
+		r2[i]=dy[i-1]/g;
+		r[i]=dy[i+1]/h;
+	}
+	for (i=m1;i<=m2;i++) {
+		b[i]=r[i]*r[i]+r1[i]*r1[i]+r2[i]*r2[i];
+		c[i]=r[i]*r1[i+1]+r1[i]*r2[i+1];
+		d[i]=r[i]*r2[i+2];
+	}
+	f2=-s;
+	while (1==1) {
+		//:next_interation
+		for (i=m1;i<=m2;i++) {
+			r1[i-1]=f*r[i-1];
+			r2[i-2]=g*r[i-2];
+			r[i]=1/(p*b[i]+t[i]-f*r1[i-1]-g*r2[i-2]);
+			u[i]=a[i]-r1[i-1]*u[i-1]-r2[i-2]*u[i-2];
+			f=p*c[i]+t1[i]-h*r1[i-1];
+			g=h;
+			h=d[i]*p;
+		}
+		for (i=m2;i>=m1;i--) {
+			u[i]=r[i]*u[i]-r1[i]*u[i+1]-r2[i]*u[i+2];
+		}
+		e=h=0;
+		for (i=n1;i<=m2;i++) {
+			g=h;
+			h=(u[i+1]-u[i])/(x[i+1]-x[i]);
+			v[i]=(h-g)*dy[i]*dy[i];
+			e=e+v[i]*(h-g);
+		}
+		g=v[n2]=-h*dy[n2]*dy[n2];
+		e=e-g*h;
+		g=f2;
+		f2=e*p*p;
+		if ((f2>=s)||(f2<=g)) {
+			break;
+		}
+		f=0;
+		h=(v[m1]-v[n1])/(x[m1]-x[n1]);
+		for (i=m1;i<=m2;i++) {
+			g=h;
+			h=(v[i+1]-v[i])/(x[i+1]-x[i]);
+			g=h-g-r1[i-1]*r[i-1]-r2[i-2]*r[i-2];
+			f=f+g*r[i]*g;
+			r[i]=g;
+		}
+		h=e-p*f;
+		if (h<=0) {
+			break;
+		}
+		p=p+(s-f2)/((sqrt(s/e)+p)*h);
+		//goto next_iteration;
+	}
+	// use negative branch of square root, if the sequence of absissae x[i] is strictly decreasing
+	for (i=n1;i<=n2;i++) {
+		a[i]=y[i]-p*v[i];
+		c[i]=u[i];
+	}
+	for (i=n1;i<=m2;i++) {
+		h=x[i+1]-x[i];
+		d[i]=(c[i+1]-c[i])/(3*h);
+		b[i]=(a[i+1]-a[i])/h-(h*d[i]+c[i])*h;
+	}
+	// --- compute the final vector
+	for (ii=0;ii<nn;ii++) {
+		for (i=n1;i<=n2;i++) {
+			if ((xx[ii]>=x[i])&&(xx[ii]<x[i+1])) {
+				h=xx[ii]-x[i];
+				ff[ii]=((d[i]*h+c[i])*h+b[i])*h+a[i];
+				break;
+			}
+		}
+	}
+	free(r); free(r1); free(r2); free(t); free(t1) ; free(u); free(v) ; free(a); free(b); free(c) ; free(d);
+	return 0;
+}
