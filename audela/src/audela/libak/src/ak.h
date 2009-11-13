@@ -91,6 +91,7 @@ int ak_util_qsort_double(double *x,int kdeb,int n,int *index);
 int ak_util_qsort_verif(int index);
 int ak_util_meansigma(double *x,int kdeb,int n,double *mean,double *sigma);
 /*int Cmd_aktcl_photometric_parallax_avmap(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);*/
+int ak_fitspline(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *fxx);
 
 #endif
 
