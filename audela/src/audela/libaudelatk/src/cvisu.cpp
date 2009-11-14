@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Denis MARCHAIS <denis.marchais@free.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -137,7 +137,7 @@ int CVisu::CreateImage(int num)
    }
    imgnum = num;
 
-   delete ligne;
+   delete[] ligne;
    return 0;
 }
 
@@ -153,12 +153,12 @@ int CVisu::CreatePaletteFromFile(char *filename)
    int index = 0;
    char *path = NULL;
    int palette_dir_len;
-   
+
    // Charge le fichier de palette et verifie s'il est correct.
-   // Le fichier de palette est un fichier texte de 256 lignes, 
+   // Le fichier de palette est un fichier texte de 256 lignes,
    // chacune faite de 4 nombres : l'index dans la palette (0..255),
-   // suivi de l'intensite du rouge, du vert, et du bleu. Chaque 
-   // valeur doit etre comprise entre 0 (noir) et 255 (saturation). 
+   // suivi de l'intensite du rouge, du vert, et du bleu. Chaque
+   // valeur doit etre comprise entre 0 (noir) et 255 (saturation).
    // Des commentaires peuvent etre ajoutes, apres le signe # (comme en TCL),
    // Exemple:
    // # Ce fichier definit une palette inversee
@@ -217,7 +217,7 @@ int CVisu::CreatePaletteFromFile(char *filename)
       }
    }
    fclose(paletteFile);
- 
+
    // Si OK, alors recopier la palette.
    if (index==256) {
       // Si la palette existe deja, elle est detruite
@@ -494,7 +494,7 @@ void CVisu::SetMode(int mode)
 
 
    switch(mode) {
-   case 1 : 
+   case 1 :
       // je cree une image "photo"
       sprintf(ligne,"image delete image%d",imgnum);
       result = Tcl_Eval(interp,ligne);
@@ -503,7 +503,7 @@ void CVisu::SetMode(int mode)
          result = Tcl_Eval(interp,ligne);
       }
       break;
-   case 2 : 
+   case 2 :
       // je cree une image video
       sprintf(ligne,"image delete image%d",imgnum);
       result = Tcl_Eval(interp,ligne);
@@ -512,12 +512,12 @@ void CVisu::SetMode(int mode)
          result = Tcl_Eval(interp,ligne);
       }
       break;
-   default: 
+   default:
       result = TCL_ERROR;
 
    }
 
-   if ( result == TCL_OK) { 
+   if ( result == TCL_OK) {
       // j'enregistre le mode
       this->mode = mode ;
    }
@@ -593,7 +593,7 @@ double CVisu::SetZoom(double z)
  *   sans reafficher
  *
  * Results:
- *	   0 si OK, 
+ *	   0 si OK,
  *
  *----------------------------------------------------------------------
  */
@@ -608,10 +608,10 @@ int CVisu::UpdateDisplay()
    int orgw, orgh;          // picture width, height
    int orgww, orgwh;        // original window width, height
    float cuts[6];
-   
+
 
    if ( mode == 2 ) {
-      char ligne[256];      
+      char ligne[256];
       // je change le zoom de la video
       sprintf(ligne,"image%d configure -zoom %f",imgnum, this->zoom);
       Tcl_Eval(interp,ligne);
@@ -642,19 +642,19 @@ int CVisu::UpdateDisplay()
    // calcul de largeur et de la hauteur d'affichage
    if( buffer->GetHeight()==1) {
       // une image 1D est etalee sur plusieurs lignes
-      orgww = xx2 - xx1 + 1; // Largeur 
+      orgww = xx2 - xx1 + 1; // Largeur
       orgwh = thickness_1d;
    } else {
-      // image 2D 
-      orgww = xx2 - xx1 + 1; // Largeur 
-      orgwh = yy2 - yy1 + 1; // Hauteur 
+      // image 2D
+      orgww = xx2 - xx1 + 1; // Largeur
+      orgwh = yy2 - yy1 + 1; // Hauteur
    }
 
    if ( zoom * zoom * orgww * orgwh > 16777216 ) {
       // Tk_PhotoPutBlock ne supporte pas les tailles d'image > 16Mo
       return ELIBSTD_NO_MEMORY_FOR_DISPLAY;
    }
-   
+
    ptr = (unsigned char*)malloc(orgww*orgwh*4);
    if(ptr==NULL) {
       return ELIBSTD_NO_MEMORY_FOR_DISPLAY;
@@ -668,8 +668,8 @@ int CVisu::UpdateDisplay()
    cuts[4] = hicutBlue;
    cuts[5] = locutBlue;
 
-   // je recuperer les pixels 
-   buffer->GetPixelsVisu(xx1,yy1,xx2,yy2, mirrorX, mirrorY, 
+   // je recuperer les pixels
+   buffer->GetPixelsVisu(xx1,yy1,xx2,yy2, mirrorX, mirrorY,
       cuts,
       pal.pal, ptr);
 
@@ -688,7 +688,7 @@ int CVisu::UpdateDisplay()
       // ptr pointe sur le nouveau buffer contenant la ligne dupliquee
       ptr = ptr2;
    }
-      
+
    // Preparation de la structure a passer a TCL/TK pour afficher l'image.
    pib.pixelPtr = ptr;
    pib.width = orgww;
@@ -709,8 +709,8 @@ int CVisu::UpdateDisplay()
       return ELIBSTD_NO_TKPHOTO_HANDLE;
    }
 
-   // affichage de l'image 
-   // remarque : si orgww==0 et orgwh==0 , il faut utiliser Tk_PhotoPutBlock car Tk_PhotoPutZoomedBlock 
+   // affichage de l'image
+   // remarque : si orgww==0 et orgwh==0 , il faut utiliser Tk_PhotoPutBlock car Tk_PhotoPutZoomedBlock
    //            ne supporte pas une image de taille nulle (boucle interne infinie)
    if( zoom == 1 || (orgww==0 && orgwh==0)) {
       Tk_PhotoPutBlock(ph,&pib,0,0, orgww,orgwh);
