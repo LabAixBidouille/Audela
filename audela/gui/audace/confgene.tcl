@@ -5,7 +5,7 @@
 #               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.58 2009-11-04 18:46:29 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.59 2009-11-14 11:55:24 robertdelmas Exp $
 #
 
 #
@@ -479,12 +479,12 @@ namespace eval ::confPosObs {
       ::confPosObs::config::run "copy"
    }
 
-   #--- Namespace pour les boite de gestion des noms d'observatoire
+   #--- Namespace pour les fenetres de gestion des noms d'observatoire
    namespace eval ::confPosObs::config {
 
       #
       # confPosObs::config::run
-      #--- Cree la fenetre de reglage de la vitesse en bauds du port serie
+      #--- Cree les fenetres de gestion des noms d'observatoire
       #
       proc run { action } {
          global audace confgene
@@ -584,8 +584,8 @@ namespace eval ::confPosObs {
 
       #
       # confPosObs::config::cbCommand
-      # (appelee par la combobox a chaque changement de selection)
       # Affiche les valeurs dans les widgets pour la configuration choisie
+      # (appelee par la combobox a chaque changement de selection)
       #
       proc cbCommand { cb } {
          global conf confgene
@@ -623,7 +623,7 @@ namespace eval ::confPosObs {
          set confgene(posobs,copy_nom_observatoire)  "$confgene(posobs,nom_observatoire)"
          set confgene(posobs,nom_observatoire_copie) ""
 
-         #--- Frame du choix de la vitesse en bauds du port serie
+         #--- Frame de la gestion des noms de configuration
          frame $frm.config -borderwidth 0 -relief raised
 
             if { $confgene(action) == "add" } {
