@@ -11,7 +11,7 @@ SRCDIR       = ../src
 DEPENDENCIES = $(patsubst %.a,%.depend,$(OUTPUT))
 
 CXXFLAGS     = -c -fno-strict-aliasing -fPIC -Wall -O2 -I ../../../include -I ../../../external/include -I $(SRCDIR)
-LDFLAGS      = -shared -ldl -lm
+LDFLAGS      = -shared -ldl -lm -L../../../external/lib -lcfitsio ../../../external/lib/libjpeg.a
 
 SRC = $(SRCDIR)/files.c $(SRCDIR)/fs_fsio1.c $(SRCDIR)/fs_fsio2.c \
       $(SRCDIR)/fs_macr1.c $(SRCDIR)/fs_macr2.c $(SRCDIR)/fs_macr3.c \
@@ -31,7 +31,7 @@ all: $(OUTPUT)
 
 $(OUTPUT): $(OBJ)
 	@echo "*** Linking library $@"
-	$(LD) $(LDFLAGS) -o $@ $? ../../../external/lib/libcfitsio.a ../../../external/lib/libjpeg.a
+	$(LD) $(LDFLAGS) -o $@ $?
 	$(CP) $@ $(OUTPUTDIR)
 
 %.o: $(SRCDIR)/%.c
