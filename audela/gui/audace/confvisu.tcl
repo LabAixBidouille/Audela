@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.113 2009-10-24 22:08:05 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.114 2009-11-14 18:50:56 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -18,16 +18,14 @@ namespace eval ::confVisu {
 
       #--- je charge la librairie libfitstcl
       #--- (ne fonctionne pas encore sur linux)
-      if { $::tcl_platform(os) != "Linux" } {
-         set oldPath "[pwd]"
-         set catchResult [ catch {
-            cd $::audela_start_dir
-            load libfitstcl[info sharedlibextension]
-         } ]
-         cd "$oldPath"
-         if { $catchResult == 1 } {
-            ::console::affiche_erreur "::confVisu::init $::errorInfo\n"
-         }
+      set oldPath "[pwd]"
+      set catchResult [ catch {
+         cd $::audela_start_dir
+         load libfitstcl[info sharedlibextension]
+      } ]
+      cd "$oldPath"
+      if { $catchResult == 1 } {
+         ::console::affiche_erreur "::confVisu::init $::errorInfo\n"
       }
    }
 
