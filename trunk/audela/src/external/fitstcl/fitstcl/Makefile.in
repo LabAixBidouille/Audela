@@ -1,5 +1,5 @@
 # FITS TCL makefile.in
-# $Id: Makefile.in,v 1.1 2009-03-14 11:23:18 michelpujol Exp $
+# $Id: Makefile.in,v 1.2 2009-11-14 17:10:14 michelpujol Exp $
 
 #----------------------------------------------------------------------------
 # Definitions:
@@ -12,7 +12,9 @@ SHARED_CFILE	= tclShared.c
 
 OBJECTS		= ${CFILES:.c=.o}
 LOCAL_OBJ	= ${OBJECTS} ${SHARED_CFILE:.c=.o}
-SHARED_OBJ	= ${LOCAL_OBJ} ${CFITSIO_DIR}/*.o
+### modif michel
+###SHARED_OBJ	= ${LOCAL_OBJ} ${CFITSIO_DIR}/*.o
+SHARED_OBJ	= ${LOCAL_OBJ}
 
 STATIC_LIB	= lib${LIBRARY}.a
 SHARED_LIB	= lib${LIBRARY}${SHLIB_SUFFIX}
@@ -36,7 +38,9 @@ TCL_INC_PATH	= @TCL_INC_PATH@
 TCL_LIB_PATH	= @TCL_PATH@
 TCL_LIB		= @TCL_LIB@
 CFITSIO_DIR	= @CFITSIODIR@
-SHLIB_LD_LIBS 	= @LIBS@ @SHLIB_LD_LIBS@
+### modif michel
+###SHLIB_LD_LIBS 	= @LIBS@ @SHLIB_LD_LIBS@
+SHLIB_LD_LIBS 	= @LIBS@ @SHLIB_LD_LIBS@ -L${INSTALLDIR}/lib -lcfitsio
 
 #----------------------------------------------------------------------------
 # Targets:
@@ -99,7 +103,7 @@ distclean: clean
 #----------------------------------------------------------------------------
 # Make target which outputs the list of the .o contained in the fitsTcl lib
 # useful to build a single big shared library containing Tcl/Tk and other
-# extensions.  used for the Tcl Plugin. 
+# extensions.  used for the Tcl Plugin.
 #----------------------------------------------------------------------------
 fitstclLibObjs:
 	@echo ${OBJECTS}
@@ -110,6 +114,9 @@ fitstclLibObjs:
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 1.1  2009/03/14 11:23:18  michelpujol
+# source de libfitstcl pour compilation avec TCL8.5 et machine 64 bits
+#
 # Revision 1.17  2006/09/25 15:27:02  irby
 # Do not remove wcssub.o prior to creating libfitstcl.  As of cfitsio
 # v3.004 the wcssub routine is needed by fitsTcl.
