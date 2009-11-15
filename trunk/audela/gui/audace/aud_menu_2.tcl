@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_2.tcl
 # Description : Script regroupant les fonctionnalites du menu Affichage
-# Mise a jour $Id: aud_menu_2.tcl,v 1.17 2009-10-31 20:40:40 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.tcl,v 1.18 2009-11-15 15:44:29 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -358,7 +358,7 @@ namespace eval ::audace {
 
    #
    # ::audace::fonction_transfertok visuNo
-   # Procedure correspondant a l'appui sur le bouton OK de la boite "fonction de transfert"
+   # Procedure correspondant a l'appui sur le bouton OK de la fenetre "fonction de transfert"
    #
    proc fonction_transfertok { visuNo } {
       global conf tmp
@@ -376,7 +376,7 @@ namespace eval ::audace {
 
    #
    # ::audace::fonction_transfertquit visuNo
-   # Procedure correspondant a l'appui sur bouton Quitter de la boite "fonction de transfert"
+   # Procedure correspondant a l'appui sur bouton Quitter de la fenetre "fonction de transfert"
    #
    proc fonction_transfertquit { visuNo } {
       global conf tmp
@@ -402,7 +402,7 @@ namespace eval ::audace {
 
    #
    # ::audace::fonction_transfert_recup_position visuNo
-   # Recupere les coordonnees de la boite de dialogue de la "fonction de transfert"
+   # Recupere les coordonnees de la fenetre de dialogue de la "fonction de transfert"
    #
    proc fonction_transfert_recup_position { visuNo } {
       global conf
@@ -423,7 +423,7 @@ namespace eval ::seuilWindow {
 
    #
    # ::seuilWindow::run base visuNo
-   # Lance la boite de dialogue de reglage des seuils de visualisation
+   # Lance la fenetre de dialogue de reglage des seuils de visualisation
    #
    proc run { base visuNo } {
       global seuilWindow
@@ -829,7 +829,7 @@ namespace eval ::seuilWindow {
 
    #
    # ::seuilWindow::seuils_recup_position visuNo
-   # Recupere les coordonnees de la boite de dialogue des seuils
+   # Recupere les coordonnees de la fenetre de dialogue des seuils
    #
    proc seuils_recup_position { visuNo } {
       global conf seuilWindow
@@ -843,4 +843,399 @@ namespace eval ::seuilWindow {
 }
 
 ########################### Fin du namespace seuilWindow ###########################
+
+namespace eval ::seuilCouleur {
+
+   #
+   # ::seuilCouleur::run this
+   # Lance la fenetre de dialogue pour le reglage de la balance RVB
+   #
+   proc run { base visuNo } {
+      variable widget
+      global seuilCouleur
+
+      #---
+      ::seuilCouleur::initConf $visuNo
+      ::seuilCouleur::confToWidget $visuNo
+      #---
+      set seuilCouleur($visuNo,base) $base
+      set seuilCouleur($visuNo,This) $base.seuilcouleur
+      if { [ winfo exists $seuilCouleur($visuNo,This) ] } {
+         wm withdraw $seuilCouleur($visuNo,This)
+         wm deiconify $seuilCouleur($visuNo,This)
+         focus $seuilCouleur($visuNo,This)
+      } else {
+         if { [ info exists seuilCouleur(seuils,$visuNo,geometry) ] } {
+            set deb [ expr 1 + [ string first + $seuilCouleur(seuils,$visuNo,geometry) ] ]
+            set fin [ string length $seuilCouleur(seuils,$visuNo,geometry) ]
+            set widget(seuils,$visuNo,position) "+[string range $seuilCouleur(seuils,$visuNo,geometry) $deb $fin]"
+         }
+         ::seuilCouleur::createDialog $visuNo
+      }
+   }
+
+   #
+   # ::seuilCouleur::initConf
+   # Initialisation des variables de configuration
+   #
+   proc initConf { visuNo } {
+      global conf
+
+      if { ! [ info exists conf(seuilCouleur,visu$visuNo,position) ] } { set conf(seuilCouleur,visu$visuNo,position) "+350+75" }
+   }
+
+   #
+   # ::seuilCouleur::confToWidget
+   # Charge les variables de configuration dans des variables locales
+   #
+   proc confToWidget { visuNo } {
+      variable widget
+      global conf
+
+      set widget(seuils,$visuNo,position) "$conf(seuilCouleur,visu$visuNo,position)"
+   }
+
+   #
+   # ::seuilCouleur::widgetToConf
+   # Charge les variables locales dans des variables de configuration
+   #
+   proc widgetToConf { visuNo } {
+      variable widget
+      global conf
+
+      set conf(seuilCouleur,visu$visuNo,position) "$widget(seuils,$visuNo,position)"
+   }
+
+   #
+   # ::seuilCouleur::recupPosition
+   # Recupere la position de la fenetre
+   #
+   proc recupPosition { visuNo } {
+      variable widget
+      global seuilCouleur
+
+      set seuilCouleur(seuils,$visuNo,geometry) [wm geometry $seuilCouleur($visuNo,This)]
+      set deb [ expr 1 + [ string first + $seuilCouleur(seuils,$visuNo,geometry) ] ]
+      set fin [ string length $seuilCouleur(seuils,$visuNo,geometry) ]
+      set widget(seuils,$visuNo,position) "+[string range $seuilCouleur(seuils,$visuNo,geometry) $deb $fin]"
+      #---
+      ::seuilCouleur::widgetToConf $visuNo
+   }
+
+   #
+   # ::seuilCouleur::createDialog
+   # Creation de l'interface graphique
+   #
+   proc createDialog { visuNo } {
+      variable widget
+      global audace caption color conf seuilCouleur
+
+      #--- Initialisation de variables
+      set seuilCouleur(enregister) "0"
+      set seuilCouleur(avancement) ""
+      ::seuilCouleur::initSeuils
+
+      #---
+      toplevel $seuilCouleur($visuNo,This)
+      wm resizable $seuilCouleur($visuNo,This) 0 0
+      wm deiconify $seuilCouleur($visuNo,This)
+      wm title $seuilCouleur($visuNo,This) "$caption(audace,menu,affichage) (visu$visuNo)"
+      wm geometry $seuilCouleur($visuNo,This) $widget(seuils,$visuNo,position)
+      wm transient $seuilCouleur($visuNo,This) $seuilCouleur($visuNo,base)
+      wm protocol $seuilCouleur($visuNo,This) WM_DELETE_WINDOW "::seuilCouleur::cmdClose $visuNo"
+
+      #---
+      frame $seuilCouleur($visuNo,This).usr -borderwidth 0 -relief raised
+
+         frame $seuilCouleur($visuNo,This).usr.1 -borderwidth 1 -relief raised
+            label $seuilCouleur($visuNo,This).usr.1.lab1 \
+               -textvariable "caption(seuilCouleur,image_affichee)"
+            pack $seuilCouleur($visuNo,This).usr.1.lab1 -side left -padx 10 -pady 5
+         pack $seuilCouleur($visuNo,This).usr.1 -side top -fill both
+
+         frame $seuilCouleur($visuNo,This).usr.2 -borderwidth 1 -relief raised
+            label $seuilCouleur($visuNo,This).usr.2.lab5 \
+               -text "$caption(seuilCouleur,selection_zone_blanche)"
+            pack $seuilCouleur($visuNo,This).usr.2.lab5 -side top -padx 5 -pady 10
+            button $seuilCouleur($visuNo,This).usr.2.btn1 \
+               -text "$caption(seuilCouleur,confirmer_zone_blanche)" \
+               -command "::seuilCouleur::confirmerBlanc $visuNo"
+            pack $seuilCouleur($visuNo,This).usr.2.btn1 -side top -ipadx 15 -ipady 5
+            label $seuilCouleur($visuNo,This).usr.2.lab6 \
+               -text "$caption(seuilCouleur,selection_zone_noire)"
+            pack $seuilCouleur($visuNo,This).usr.2.lab6 -side top -padx 5 -pady 10
+            button $seuilCouleur($visuNo,This).usr.2.btn2 \
+               -text "$caption(seuilCouleur,confirmer_zone_noire)" \
+               -command "::seuilCouleur::confirmerNoir $visuNo"
+            pack $seuilCouleur($visuNo,This).usr.2.btn2 -side top -ipadx 15 -ipady 5
+            checkbutton $seuilCouleur($visuNo,This).usr.2.che1 -justify left \
+               -text "$caption(seuilCouleur,enregister_seuils)" -variable seuilCouleur(enregister)
+            pack $seuilCouleur($visuNo,This).usr.2.che1 -side left -padx 10 -pady 10
+         pack $seuilCouleur($visuNo,This).usr.2 -side top -fill both
+
+         frame $seuilCouleur($visuNo,This).usr.3 -borderwidth 1 -relief raised
+            label $seuilCouleur($visuNo,This).usr.3.labURL1 \
+               -textvariable "seuilCouleur(avancement)" -fg $color(blue)
+            pack $seuilCouleur($visuNo,This).usr.3.labURL1 -side top -padx 10 -pady 5
+         pack $seuilCouleur($visuNo,This).usr.3 -side top -fill both
+
+      pack $seuilCouleur($visuNo,This).usr -side top -fill both -expand 1
+
+      frame $seuilCouleur($visuNo,This).cmd -borderwidth 1 -relief raised
+
+         button $seuilCouleur($visuNo,This).cmd.ok -text "$caption(aud_menu_3,ok)" -width 7 \
+            -command "::seuilCouleur::cmdOk $visuNo"
+         if { $conf(ok+appliquer)=="1" } {
+            pack $seuilCouleur($visuNo,This).cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
+         }
+
+         button $seuilCouleur($visuNo,This).cmd.appliquer -text "$caption(aud_menu_3,appliquer)" \
+            -width 8 -command "::seuilCouleur::cmdApply $visuNo"
+         pack $seuilCouleur($visuNo,This).cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
+
+         button $seuilCouleur($visuNo,This).cmd.fermer -text "$caption(aud_menu_3,fermer)" -width 7 \
+            -command "::seuilCouleur::cmdClose $visuNo"
+         pack $seuilCouleur($visuNo,This).cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
+
+         button $seuilCouleur($visuNo,This).cmd.aide -text "$caption(aud_menu_3,aide)" -width 7 \
+            -command "::seuilCouleur::afficheAide"
+         pack $seuilCouleur($visuNo,This).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
+
+      pack $seuilCouleur($visuNo,This).cmd -side top -fill x
+
+      #---
+      bind $seuilCouleur($visuNo,This) <Key-Return> "::seuilCouleur::cmdOk $visuNo"
+      bind $seuilCouleur($visuNo,This) <Key-Escape> "::seuilCouleur::cmdClose $visuNo"
+
+      #---
+      focus $seuilCouleur($visuNo,This)
+
+      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+      bind $seuilCouleur($visuNo,This) <Key-F1> { ::console::GiveFocus }
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $seuilCouleur($visuNo,This)
+   }
+
+   #
+   # ::seuilCouleur::cmdOk
+   # Procedure correspondant a l'appui sur le bouton OK
+   #
+   proc cmdOk { visuNo } {
+      ::seuilCouleur::cmdApply $visuNo
+      ::seuilCouleur::cmdClose $visuNo
+   }
+
+   #
+   # ::seuilCouleur::cmdApply
+   # Procedure correspondant a l'appui sur le bouton Appliquer
+   #
+   proc cmdApply { visuNo } {
+      global audace caption conf seuilCouleur
+
+      #---
+      set seuilCouleur(avancement) "$caption(seuilCouleur,en_cours)"
+      update
+
+      #--- Il faut une image affichee
+      if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] != "1" } {
+         tk_messageBox -title "$caption(seuilCouleur,attention)" -type ok \
+            -message "$caption(seuilCouleur,header_noimage)"
+         set seuilCouleur(avancement) ""
+         return
+      }
+
+      #--- Traitement
+      set catchError [ catch {
+        #--- Affectation des niveaux maxi et mini pour le Rouge, le Vert et le Bleu
+         set mycuts [ list $seuilCouleur(blanc_R) $seuilCouleur(noir_R) $seuilCouleur(blanc_V) $seuilCouleur(noir_V) $seuilCouleur(blanc_B) $seuilCouleur(noir_B) ]
+         if { $seuilCouleur(blanc_R) == "" } {
+            tk_messageBox -title "$caption(seuilCouleur,attention)" -icon error \
+               -message "$caption(seuilCouleur,pas_selection_blanc)"
+            set seuilCouleur(avancement) ""
+            return
+         } elseif { $seuilCouleur(noir_R) == "" } {
+            tk_messageBox -title "$caption(seuilCouleur,attention)" -icon error \
+               -message "$caption(seuilCouleur,pas_selection_noir)"
+            set seuilCouleur(avancement) ""
+            return
+         } elseif { $seuilCouleur(blanc_V) == "" } {
+            tk_messageBox -title "$caption(seuilCouleur,attention)" -icon error \
+               -message "$caption(seuilCouleur,pas_couleur)"
+            ::seuilCouleur::initSeuils
+            set seuilCouleur(avancement) ""
+            return
+         }
+         visu$visuNo cut $mycuts
+         #--- Affichage de l'image
+         visu$visuNo disp
+         #--- Enregistrement de l'image avec les nouveaux seuils
+         if { $seuilCouleur(enregister) == "1" } {
+            #--- Je recupere le numero du buffer de la visu
+            set bufNo [ ::confVisu::getBufNo $visuNo ]
+            #--- Je mets les mots cles des seuils hauts a jour
+            set hir [ buf$bufNo getkwd MIPS-HIR ]
+            buf$bufNo setkwd [ lreplace $hir 1 1 $seuilCouleur(blanc_R) ]
+            set hig [ buf$bufNo getkwd MIPS-HIG ]
+            buf$bufNo setkwd [ lreplace $hig 1 1 $seuilCouleur(blanc_V) ]
+            set hib [ buf$bufNo getkwd MIPS-HIB ]
+            buf$bufNo setkwd [ lreplace $hib 1 1 $seuilCouleur(blanc_B) ]
+            #--- Je mets les mots cles des seuils bas a jour
+            set lor [ buf$bufNo getkwd MIPS-LOR ]
+            buf$bufNo setkwd [ lreplace $lor 1 1 $seuilCouleur(noir_R) ]
+            set log [ buf$bufNo getkwd MIPS-LOG ]
+            buf$bufNo setkwd [ lreplace $log 1 1 $seuilCouleur(noir_V) ]
+            set lob [ buf$bufNo getkwd MIPS-LOB ]
+            buf$bufNo setkwd [ lreplace $lob 1 1 $seuilCouleur(noir_B) ]
+            #--- J'enregistre l'image modifiee en changeant son nom
+            ::audace::enregistrer_sous $visuNo
+         }
+         #---
+         ::seuilCouleur::initSeuils
+         set seuilCouleur(avancement) "$caption(seuilCouleur,fin_traitement)"
+      } m ]
+      if { $catchError == "1" } {
+         tk_messageBox -title "$caption(seuilCouleur,attention)" -icon error -message "$m"
+         set seuilCouleur(avancement) ""
+      }
+      ::seuilCouleur::recupPosition $visuNo
+   }
+
+   #
+   # ::seuilCouleur::cmdClose
+   # Procedure correspondant a l'appui sur le bouton Fermer
+   #
+   proc cmdClose { visuNo } {
+      global seuilCouleur
+
+      ::seuilCouleur::recupPosition $visuNo
+      destroy $seuilCouleur($visuNo,This)
+      unset seuilCouleur($visuNo,This)
+   }
+
+   #
+   # ::seuilCouleur::afficheAide
+   # Procedure correspondant a l'appui sur le bouton Aide
+   #
+   proc afficheAide { } {
+      global help
+
+      #---
+      ::audace::showHelpItem "$help(dir,affichage)" "1035balance_rvb.htm"
+   }
+
+   #
+   # ::seuilCouleur::confirmerBlanc
+   # Confirme la selection de la zone blanche de l'image
+   #
+   proc confirmerBlanc { visuNo } {
+      global audace caption seuilCouleur
+
+      #--- Retourne les coordonnees de la zone selectionnee avec la souris
+      set box [ ::confVisu::getBox $visuNo ]
+      if { $box == "" } {
+         set seuilCouleur(blanc_R) ""
+         set seuilCouleur(blanc_V) ""
+         set seuilCouleur(blanc_B) ""
+         tk_messageBox -title "$caption(seuilCouleur,attention)" -icon error \
+            -message "$caption(seuilCouleur,pas_selection_blanc)"
+         return
+      }
+
+      #--- Calcule les coordonnees du centre de la zone selectionnee avec la souris
+      if { [ lindex $box 0 ] < [ lindex $box 2 ] } {
+         set X1 [ lindex $box 0 ]
+         set X2 [ lindex $box 2 ]
+      } else {
+         set X1 [ lindex $box 2 ]
+         set X2 [ lindex $box 0 ]
+         }
+      if { [ lindex $box 1 ] < [ lindex $box 3 ] } {
+         set Y1 [ lindex $box 1 ]
+         set Y2 [ lindex $box 3 ]
+      } else {
+         set Y1 [ lindex $box 3 ]
+         set Y2 [ lindex $box 1 ]
+      }
+      set Xmoy [ expr int( $X1 + ( $X2 - $X1 ) / 2. ) ]
+      set Ymoy [ expr int( $Y1 + ( $Y2 - $Y1 ) / 2. ) ]
+
+      #--- Retourne les intensites R, V et B du centre de la zone selectionnee avec la souris
+      set intensite_blanc [ buf$audace(bufNo) getpix [ list $Xmoy $Ymoy ] ]
+      set seuilCouleur(blanc_R) [ lindex $intensite_blanc 1 ]
+      set seuilCouleur(blanc_V) [ lindex $intensite_blanc 2 ]
+      set seuilCouleur(blanc_B) [ lindex $intensite_blanc 3 ]
+
+      #--- Suppression de la zone selectionnee avec la souris si elle existe
+      if { [ lindex [ list [ ::confVisu::getBox $visuNo ] ] 0 ] != "" } {
+         ::confVisu::deleteBox $visuNo
+      }
+   }
+
+   #
+   # ::seuilCouleur::confirmerNoir
+   # Confirme la selection de la zone noire de l'image
+   #
+   proc confirmerNoir { visuNo } {
+      global audace caption seuilCouleur
+
+      #--- Retourne les coordonnees de la zone selectionnee avec la souris
+      set box [ ::confVisu::getBox $visuNo ]
+      if { $box == "" } {
+         set seuilCouleur(noir_R) ""
+         set seuilCouleur(noir_V) ""
+         set seuilCouleur(noir_B) ""
+         tk_messageBox -title "$caption(seuilCouleur,attention)" -icon error \
+            -message "$caption(seuilCouleur,pas_selection_noir)"
+         return
+      }
+
+      #--- Calcule les coordonnees du centre de la zone selectionnee avec la souris
+      if { [ lindex $box 0 ] < [ lindex $box 2 ] } {
+         set X1 [ lindex $box 0 ]
+         set X2 [ lindex $box 2 ]
+      } else {
+         set X1 [ lindex $box 2 ]
+         set X2 [ lindex $box 0 ]
+         }
+      if { [ lindex $box 1 ] < [ lindex $box 3 ] } {
+         set Y1 [ lindex $box 1 ]
+         set Y2 [ lindex $box 3 ]
+      } else {
+         set Y1 [ lindex $box 3 ]
+         set Y2 [ lindex $box 1 ]
+      }
+      set Xmoy [ expr int( $X1 + ( $X2 - $X1 ) / 2. ) ]
+      set Ymoy [ expr int( $Y1 + ( $Y2 - $Y1 ) / 2. ) ]
+
+      #--- Retourne les intensites R, V et B du centre de la zone selectionnee avec la souris
+      set intensite_noir [ buf$audace(bufNo) getpix [ list $Xmoy $Ymoy ] ]
+      set seuilCouleur(noir_R) [ lindex $intensite_noir 1 ]
+      set seuilCouleur(noir_V) [ lindex $intensite_noir 2 ]
+      set seuilCouleur(noir_B) [ lindex $intensite_noir 3 ]
+
+      #--- Suppression de la zone selectionnee avec la souris si elle existe
+      if { [ lindex [ list [ ::confVisu::getBox $visuNo ] ] 0 ] != "" } {
+         ::confVisu::deleteBox $visuNo
+      }
+   }
+
+   #
+   # ::seuilCouleur::initSeuils
+   # Initialise a vide les seuils maxi et mini de chaque couleur
+   #
+   proc initSeuils { } {
+      global seuilCouleur
+
+      set seuilCouleur(blanc_R) ""
+      set seuilCouleur(blanc_V) ""
+      set seuilCouleur(blanc_B) ""
+      set seuilCouleur(noir_R)  ""
+      set seuilCouleur(noir_V)  ""
+      set seuilCouleur(noir_B)  ""
+   }
+
+}
+
+########################## Fin du namespace seuilCouleur ##########################
 
