@@ -54,6 +54,18 @@ Package=<4>
 }}}
 
 ###############################################################################
+
+Project: "libfli"=".\external\fli\fli-dist-1.71\libfli\windows\libfli.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
 #  loader dynamique de DLL/SO  pour libgphoto2
 Project: "libltdl"=".\external\libgphoto2\libltdl\vc60\libltdl.dsp" - Package Owner=<4>
 
@@ -140,6 +152,18 @@ Package=<4>
 ###############################################################################
 
 Project: "external_blt"=".\external\blt\vc60\external_blt.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "sextractor"=".\external\sextractor\sextractor\vc60-2.5.0\sextractor.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
