@@ -2,7 +2,7 @@
 # Fichier : hisis.tcl
 # Description : Configuration de la camera Hi-SIS
 # Auteur : Robert DELMAS
-# Mise a jour $Id: hisis.tcl,v 1.18 2009-11-15 13:34:31 michelpujol Exp $
+# Mise a jour $Id: hisis.tcl,v 1.19 2009-11-15 15:48:21 robertdelmas Exp $
 #
 
 namespace eval ::hisis {
@@ -92,7 +92,7 @@ proc ::hisis::initPlugin { } {
    if { ! [ info exists conf(hisis,modele) ] }   { set conf(hisis,modele)   "22" }
    if { ! [ info exists conf(hisis,port) ] }     { set conf(hisis,port)     "LPT1:" }
    if { ! [ info exists conf(hisis,res) ] }      { set conf(hisis,res)      "12 bits" }
-   if { ! [ info exists conf(hisis,debug) ] }    { set conf(hisis,debug) "0" }
+   if { ! [ info exists conf(hisis,debug) ] }    { set conf(hisis,debug)    "0" }
    #--- Initialisation
    set private(A,camNo) "0"
    set private(B,camNo) "0"
@@ -310,19 +310,20 @@ proc ::hisis::fillConfigPage { frm camItem } {
 
             pack $frm.frame3.frame5.frame7.frame9 -side left -fill both -expand 1
 
-            #--- Frame des miroirs en x et en y
+            #--- Frame des miroirs en x, en y et debug
             frame $frm.frame3.frame5.frame7.frame10 -borderwidth 0 -relief raised
 
-               #--- Miroir en x et en y , et debug
+               #--- Miroir en x
                checkbutton $frm.frame3.frame5.frame7.frame10.mirx -text "$caption(hisis,miroir_x)" \
                   -highlightthickness 0 -variable ::hisis::private(mirh)
                pack $frm.frame3.frame5.frame7.frame10.mirx -anchor w -side top -padx 10 -pady 10
 
                #--- Mode debug
-               checkbutton $frm.frame3.frame5.frame7.frame10.debug -text "$caption(hisis,debug) (hisis.log)" -highlightthickness 0 \
-                  -variable ::hisis::private(debug)
+               checkbutton $frm.frame3.frame5.frame7.frame10.debug -text "$caption(hisis,debug) (hisis.log)" \
+                  -highlightthickness 0 -variable ::hisis::private(debug)
                pack $frm.frame3.frame5.frame7.frame10.debug -anchor w -side bottom -padx 10 -pady 10
 
+               #--- Miroir en y
                checkbutton $frm.frame3.frame5.frame7.frame10.miry -text "$caption(hisis,miroir_y)" \
                   -highlightthickness 0 -variable ::hisis::private(mirv)
                pack $frm.frame3.frame5.frame7.frame10.miry -anchor w -side bottom -padx 10 -pady 10
@@ -422,9 +423,10 @@ proc ::hisis::configureCamera { camItem bufNo } {
 
    set catchResult [ catch {
       #--- je verifie que la camera n'est deja utilisee
-      if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
+      if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0 } {
          error "" "" "CameraUnique"
       }
+      #--- mode debug
       if { $::conf(hisis,debug) == 1 } {
          # LOG_NONE    0
          # LOG_ERROR   1
@@ -435,7 +437,6 @@ proc ::hisis::configureCamera { camItem bufNo } {
       } else {
          set logLevel 0
       }
-
       if { $conf(hisis,modele) == "11" } {
          #--- Je cree la camera
          if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS11 -loglevel $logLevel ] } m ] == 1 } {
