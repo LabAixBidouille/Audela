@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.114 2009-11-14 18:50:56 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.115 2009-11-15 15:41:18 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -600,6 +600,7 @@ namespace eval ::confVisu {
                #--- Je mets a jour la taille du reticule
                ::confVisu::redrawCrosshair $visuNo
                ::confVisu::setMode $visuNo "image"
+
             } elseif { $mode == "graph" } {
                #--- j'affiche une image 1D sous forme de courbe
 
@@ -661,9 +662,10 @@ namespace eval ::confVisu {
                $tkgraph configure  -plotbackground "white"
                #--- j'affiche le graphe
                ::confVisu::setMode $visuNo "graph"
-            } elseif { $mode == "table" } {
-               #--- j'affiche une table
 
+            } elseif { $mode == "table" } {
+
+               #--- j'affiche une table
                set hFile ""
                set catchResult [catch {
                   #--- j'affiche la tkTable
@@ -1901,8 +1903,8 @@ namespace eval ::confVisu {
          " ::confVisu::close $visuNo "
 
       Menu           $visuNo "$caption(audace,menu,affichage)"
-
       Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,nouvelle_visu)" ::confVisu::create
+
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_grise)" \
               "1" "conf(visu_palette,visu$visuNo,mode)" " ::audace::MAJ_palette $visuNo "
@@ -1912,8 +1914,9 @@ namespace eval ::confVisu {
               "3" "conf(visu_palette,visu$visuNo,mode)" " ::audace::MAJ_palette $visuNo "
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,palette_arc_en_ciel)" \
               "4" "conf(visu_palette,visu$visuNo,mode)" " ::audace::MAJ_palette $visuNo "
+
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
-      Menu_Cascade $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,fcttransfert_titre)"
+      Menu_Cascade   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,fcttransfert_titre)"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_lin)" \
               "1" "conf(fonction_transfert,visu$visuNo,mode)" " ::audace::fonction_transfert $visuNo "
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_log)" \
@@ -1922,9 +1925,12 @@ namespace eval ::confVisu {
               "3" "conf(fonction_transfert,visu$visuNo,mode)" " ::audace::fonction_transfert $visuNo "
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_arc)" \
               "4" "conf(fonction_transfert,visu$visuNo,mode)" " ::audace::fonction_transfert $visuNo "
+
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
-      Menu_Command $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,seuils)..." \
+      Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,seuils)..." \
               "::seuilWindow::run $This $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,balance_rvb)..." \
+              "::seuilCouleur::run $This $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
@@ -1947,18 +1953,18 @@ namespace eval ::confVisu {
               "::confVisu::private($visuNo,zoom)" "::confVisu::setZoom $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
-      Menu_Check $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,plein_ecran)" \
+      Menu_Check     $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,plein_ecran)" \
                "::confVisu::private($visuNo,fullscreen)" "::confVisu::setFullScreen $visuNo"
-      Menu_Separator $visuNo "$caption(audace,menu,affichage)"
 
-      Menu_Check $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,miroir_x)" \
+      Menu_Separator $visuNo "$caption(audace,menu,affichage)"
+      Menu_Check     $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,miroir_x)" \
               "::confVisu::private($visuNo,mirror_x)" "::confVisu::setMirrorX $visuNo"
-      Menu_Check $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,miroir_y)" \
+      Menu_Check     $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,miroir_y)" \
               "::confVisu::private($visuNo,mirror_y)" "::confVisu::setMirrorY $visuNo"
-      Menu_Check $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,window)" \
+      Menu_Check     $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,window)" \
               "::confVisu::private($visuNo,window)" "::confVisu::setWindow $visuNo"
-      Menu_Separator $visuNo "$caption(audace,menu,affichage)"
 
+      Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
          "$caption(audace,menu,vision_nocturne)" "1" "conf(confcolor,menu_night_vision)" \
          "::confColor::switchDayNight ; \
@@ -1967,8 +1973,8 @@ namespace eval ::confVisu {
                ::confColor::run $visuNo\
             } \
          "
-      Menu_Separator $visuNo "$caption(audace,menu,affichage)"
 
+      Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Command   $visuNo "$caption(audace,menu,affichage)" "[::Crosshair::getLabel]..." \
               "::Crosshair::run $visuNo"
 
@@ -1985,6 +1991,7 @@ namespace eval ::confVisu {
 
       Menu           $visuNo "$caption(audace,menu,tool)"
       Menu_Command   $visuNo "$caption(audace,menu,tool)" "$caption(audace,menu,pas_outil)" "::confVisu::stopTool $visuNo"
+
       Menu_Separator $visuNo "$caption(audace,menu,tool)"
       #--- Remplissage du menu deroulant outils
       set liste ""
