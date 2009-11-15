@@ -1,5 +1,5 @@
 #
-# Update $Id: audela.tcl,v 1.15 2009-11-04 18:41:39 robertdelmas Exp $
+# Update $Id: audela.tcl,v 1.16 2009-11-15 13:47:51 michelpujol Exp $
 #
 #--- Welcome to the AudeLA-Interfaces Easy Launcher
 #
@@ -32,7 +32,7 @@ if {($nameofexecutable!="audela")&&([file exists ../ros]==1)} {
    catch {source ros.tcl}
 }
 
-source "version.tcl"
+source version.tcl
 
 if {[file exists audace.txt]==1} {
    set langage english
