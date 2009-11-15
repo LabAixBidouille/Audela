@@ -1,6 +1,6 @@
 #
 # Fichier : lhires.cap
-# Mise a jour $Id: lhires.cap,v 1.2 2009-11-07 09:10:32 robertdelmas Exp $
+# Mise a jour $Id: lhires.cap,v 1.3 2009-11-15 15:55:37 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -17,8 +17,8 @@ set caption(lhires,configure)             "Set up"
 set caption(lhires,bitLampOn)             "Start Bit Number"
 set caption(lhires,bitLampOff)            "Direction Bit Number"
 
-set caption(lhires,lampDown)              "Test: Switch on and pull down"
-set caption(lhires,lampUp)                "Test: Switch off and pull up"
+set caption(lhires,lampDown)              "Test: Switch on the calibration lamp"
+set caption(lhires,lampUp)                "Test: Switch off the calibration lamp"
 
 set caption(lhires,arreter)               "Stop"
 set caption(lhires,creer_au_demarrage)    "Next time software is run connect this equipment automatically"
@@ -32,8 +32,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lhires,bitLampOn)          "Numéro du bit de démarrage"
    set caption(lhires,bitLampOff)         "Numéro du bit de direction"
 
-   set caption(lhires,lampDown)           "Test : Allumer et abaisser"
-   set caption(lhires,lampUp)             "Test : Eteindre et relever"
+   set caption(lhires,lampDown)           "Test : Allumer la lampe de calibration"
+   set caption(lhires,lampUp)             "Test : Eteindre la lampe de calibration"
 
    set caption(lhires,arreter)            "Arrêter"
    set caption(lhires,creer_au_demarrage) "Connexion automatique de cet équipement au prochain démarrage"
@@ -47,8 +47,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lhires,bitLampOn)          "Numero del bit di start"
    set caption(lhires,bitLampOff)         "Numero del bit di direzione"
 
-   set caption(lhires,lampDown)           "# Test : Allumer et abaisser"
-   set caption(lhires,lampUp)             "# Test : Eteindre et relever"
+   set caption(lhires,lampDown)           "# Test : Allumer la lampe de calibration"
+   set caption(lhires,lampUp)             "# Test : Eteindre la lampe de calibration"
 
    set caption(lhires,arreter)            "Ferma"
    set caption(lhires,creer_au_demarrage) "Connessione automatica di questo equipaggiamento alla prossima esecuzione del software"
@@ -62,8 +62,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lhires,bitLampOn)          "Numero del bit de comienzo"
    set caption(lhires,bitLampOff)         "Numero del bit de dirección"
 
-   set caption(lhires,lampDown)           "# Test : Allumer et abaisser"
-   set caption(lhires,lampUp)             "# Test : Eteindre et relever"
+   set caption(lhires,lampDown)           "# Test : Allumer la lampe de calibration"
+   set caption(lhires,lampUp)             "# Test : Eteindre la lampe de calibration"
 
    set caption(lhires,arreter)            "Parar"
    set caption(lhires,creer_au_demarrage) "La próxima vez que se ejecute el programa, el equipo se conecta automáticamente"
@@ -77,8 +77,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lhires,bitLampOn)          "Nummer der Start Bit"
    set caption(lhires,bitLampOff)         "Nummer der Direktion Bit"
 
-   set caption(lhires,lampDown)           "# Test : Allumer et abaisser"
-   set caption(lhires,lampUp)             "# Test : Eteindre et relever"
+   set caption(lhires,lampDown)           "# Test : Allumer la lampe de calibration"
+   set caption(lhires,lampUp)             "# Test : Eteindre la lampe de calibration"
 
    set caption(lhires,arreter)            "Halten"
    set caption(lhires,creer_au_demarrage) "Nächste Mal diese Einrichtung automatisch anschließen"
@@ -92,8 +92,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lhires,bitLampOn)          "Número do bit inicial"
    set caption(lhires,bitLampOff)         "Número do bit de direcção"
 
-   set caption(lhires,lampDown)           "# Test : Allumer et abaisser"
-   set caption(lhires,lampUp)             "# Test : Eteindre et relever"
+   set caption(lhires,lampDown)           "# Test : Allumer la lampe de calibration"
+   set caption(lhires,lampUp)             "# Test : Eteindre la lampe de calibration"
 
    set caption(lhires,arreter)            "Parar"
    set caption(lhires,creer_au_demarrage) "O equipamento conecta-se automaticamente na próxima execução do programa"
@@ -107,8 +107,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lhires,bitLampOn)          "Start bit-værdi"
    set caption(lhires,bitLampOff)         "Retnings bit-værdi"
 
-   set caption(lhires,lampDown)           "# Test : Allumer et abaisser"
-   set caption(lhires,lampUp)             "# Test : Eteindre et relever"
+   set caption(lhires,lampDown)           "Test: Tænd kalibreringslampe"
+   set caption(lhires,lampUp)             "Test: Sluk kalibreringslampe"
 
    set caption(lhires,arreter)            "Stop"
    set caption(lhires,creer_au_demarrage) "Tilslut automatisk dette udstyr ved næste start"
@@ -122,8 +122,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lhires,bitLampOn)          "Start Bit Number"
    set caption(lhires,bitLampOff)         "Direction Bit Number"
 
-   set caption(lhires,lampDown)           "Test: Switch on and pull down"
-   set caption(lhires,lampUp)             "Test: Switch off and pull up"
+   set caption(lhires,lampDown)           "Test: Switch on the calibration lamp"
+   set caption(lhires,lampUp)             "Test: Switch off the calibration lamp"
 
    set caption(lhires,arreter)            "Stop"
    set caption(lhires,creer_au_demarrage) "Next time software is run connect this equipment automatically"
@@ -137,8 +137,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lhires,bitLampOn)          "Start Bit Number"
    set caption(lhires,bitLampOff)         "Direction Bit Number"
 
-   set caption(lhires,lampDown)           "Test: Switch on and pull down"
-   set caption(lhires,lampUp)             "Test: Switch off and pull up"
+   set caption(lhires,lampDown)           "Test: Switch on the calibration lamp"
+   set caption(lhires,lampUp)             "Test: Switch off the calibration lamp"
 
    set caption(lhires,arreter)            "Stop"
    set caption(lhires,creer_au_demarrage) "Next time software is run connect this equipment automatically"
