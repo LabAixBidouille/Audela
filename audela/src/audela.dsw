@@ -66,6 +66,19 @@ Package=<4>
 }}}
 
 ###############################################################################
+
+Project: "external_jpeg6b.dsp"=".\external\jpeg6b\external_jpeg6b.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+
+###############################################################################
 #  loader dynamique de DLL/SO  pour libgphoto2
 Project: "libltdl"=".\external\libgphoto2\libltdl\vc60\libltdl.dsp" - Package Owner=<4>
 
