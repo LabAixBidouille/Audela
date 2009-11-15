@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_2.cap
-# Mise a jour $Id: aud_menu_2.cap,v 1.11 2009-11-04 18:28:09 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.cap,v 1.12 2009-11-15 15:42:24 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -66,6 +66,20 @@ set caption(seuilWindow,appliquer)                    "Apply"
 set caption(seuilWindow,fermer)                       "Close"
 set caption(seuilWindow,aide)                         "Help"
 
+set caption(seuilCouleur,image_affichee)              "On Image Displayed:"
+set caption(seuilCouleur,selection_zone_noire)        "Using your mouse, select a black area in the image"
+set caption(seuilCouleur,selection_zone_blanche)      "Using your mouse, select a white area in the image"
+set caption(seuilCouleur,confirmer_zone_noire)        "Please confirm the black area is selected"
+set caption(seuilCouleur,confirmer_zone_blanche)      "Please confirm the white area is selected"
+set caption(seuilCouleur,pas_selection_noir)          "No black area selected."
+set caption(seuilCouleur,pas_selection_blanc)         "No white area selected."
+set caption(seuilCouleur,pas_couleur)                 "This is not a color image."
+set caption(seuilCouleur,enregister_seuils)           "# Enregistrer l'image avec les nouveaux seuils\n(visualisable à l'identique uniquement en\nmode 'Seuils initiaux')"
+set caption(seuilCouleur,attention)                   "Warning"
+set caption(seuilCouleur,header_noimage)              "No Image in Memory."
+set caption(seuilCouleur,en_cours)                    "Preprocessing in progress..."
+set caption(seuilCouleur,fin_traitement)              "End of Preprocessing."
+
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
@@ -123,6 +137,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilWindow,appliquer)                 "Appliquer"
    set caption(seuilWindow,fermer)                    "Fermer"
    set caption(seuilWindow,aide)                      "Aide"
+
+   set caption(seuilCouleur,image_affichee)           "Sur l'image affichée :"
+   set caption(seuilCouleur,selection_zone_noire)     "Sélectionner à la souris une zone noire dans l'image"
+   set caption(seuilCouleur,selection_zone_blanche)   "Sélectionner à la souris une zone blanche dans l'image"
+   set caption(seuilCouleur,confirmer_zone_noire)     "Confirmer la sélection de la zone noire"
+   set caption(seuilCouleur,confirmer_zone_blanche)   "Confirmer la sélection de la zone blanche"
+   set caption(seuilCouleur,pas_selection_noir)       "Vous n'avez pas sélectionné la zone noire."
+   set caption(seuilCouleur,pas_selection_blanc)      "Vous n'avez pas sélectionné la zone blanche."
+   set caption(seuilCouleur,pas_couleur)              "Ce n'est pas une image couleur."
+   set caption(seuilCouleur,enregister_seuils)        "Enregistrer l'image avec les nouveaux seuils\n(visualisable à l'identique uniquement en\nmode 'Seuils initiaux')"
+   set caption(seuilCouleur,attention)                "Attention"
+   set caption(seuilCouleur,header_noimage)           "Il n'y a pas d'image actuellement en mémoire."
+   set caption(seuilCouleur,en_cours)                 "Prétraitement en cours..."
+   set caption(seuilCouleur,fin_traitement)           "Fin du prétraitement."
+
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -182,6 +211,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilWindow,fermer)                    "Chiudi"
    set caption(seuilWindow,aide)                      "Aiuto"
 
+   set caption(seuilCouleur,image_affichee)           "Sull'immagine visualizzata:"
+   set caption(seuilCouleur,selection_zone_noire)     "Selezionare una zona nera con il mouse"
+   set caption(seuilCouleur,selection_zone_blanche)   "Selezionare una zona bianca con il mouse"
+   set caption(seuilCouleur,confirmer_zone_noire)     "Confermare la selezione della zona nera"
+   set caption(seuilCouleur,confirmer_zone_blanche)   "Confermare la selezione della zona bianca"
+   set caption(seuilCouleur,pas_selection_noir)       "Nessuna zona nera e' stata selezionata."
+   set caption(seuilCouleur,pas_selection_blanc)      "Nessuna zona bianca e' stata selezionata."
+   set caption(seuilCouleur,pas_couleur)              "Questa non e' una immagine a colori."
+   set caption(seuilCouleur,enregister_seuils)        "# Enregistrer l'image avec les nouveaux seuils\n(visualisable à l'identique uniquement en\nmode 'Seuils initiaux')"
+   set caption(seuilCouleur,attention)                "Attenzione"
+   set caption(seuilCouleur,header_noimage)           "Nessuna immagine in memoria."
+   set caption(seuilCouleur,en_cours)                 "Pretrattamento in corso..."
+   set caption(seuilCouleur,fin_traitement)           "Fine del Pretrattamento."
+
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
@@ -239,6 +282,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilWindow,appliquer)                 "Aplicar"
    set caption(seuilWindow,fermer)                    "Cerrar"
    set caption(seuilWindow,aide)                      "Ayuda"
+
+   set caption(seuilCouleur,image_affichee)           "En la imagen mostrada:"
+   set caption(seuilCouleur,selection_zone_noire)     "Seleccione con el ratón una zona negra en la imagen"
+   set caption(seuilCouleur,selection_zone_blanche)   "Seleccione con el ratón una zona blanca en la imagen"
+   set caption(seuilCouleur,confirmer_zone_noire)     "Confirme la selección de la zona negra"
+   set caption(seuilCouleur,confirmer_zone_blanche)   "Confirme la selección de la zona blanca"
+   set caption(seuilCouleur,pas_selection_noir)       "No ha seleccionado la zona negra."
+   set caption(seuilCouleur,pas_selection_blanc)      "No ha seleccionado la zona blanca."
+   set caption(seuilCouleur,pas_couleur)              "No es una imagen en color."
+   set caption(seuilCouleur,enregister_seuils)        "# Enregistrer l'image avec les nouveaux seuils\n(visualisable à l'identique uniquement en\nmode 'Seuils initiaux')"
+   set caption(seuilCouleur,attention)                "Cuidado"
+   set caption(seuilCouleur,header_noimage)           "No existe una imágen cargada en la memoria."
+   set caption(seuilCouleur,en_cours)                 "Preprocesando..."
+   set caption(seuilCouleur,fin_traitement)           "Fin de preprocesando."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -298,6 +355,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilWindow,fermer)                    "Schließen"
    set caption(seuilWindow,aide)                      "Hilfe"
 
+   set caption(seuilCouleur,image_affichee)           "In ezeigtes Bild:"
+   set caption(seuilCouleur,selection_zone_noire)     "Eine schwatze Zone mit die Maus im Bild wählen"
+   set caption(seuilCouleur,selection_zone_blanche)   "Eine weiße Zone mit die Maus im Bild wählen"
+   set caption(seuilCouleur,confirmer_zone_noire)     "Die schwarze Zone Wahl bestätigen"
+   set caption(seuilCouleur,confirmer_zone_blanche)   "Die weiße Zone Wahl bestätigen"
+   set caption(seuilCouleur,pas_selection_noir)       "Sie haben die schwarze Zone bestätigt."
+   set caption(seuilCouleur,pas_selection_blanc)      "Sie haben die weiße Zone bestätigt."
+   set caption(seuilCouleur,pas_couleur)              "Das ist kein Farbbild."
+   set caption(seuilCouleur,enregister_seuils)        "# Enregistrer l'image avec les nouveaux seuils\n(visualisable à l'identique uniquement en\nmode 'Seuils initiaux')"
+   set caption(seuilCouleur,attention)                "Achtung"
+   set caption(seuilCouleur,header_noimage)           "Es ist jetzt kein Bild im Speicher."
+   set caption(seuilCouleur,en_cours)                 "Voraufbereitung im Gange..."
+   set caption(seuilCouleur,fin_traitement)           "Voraufbereitung Ende."
+
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
@@ -355,6 +426,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilWindow,appliquer)                 "Aplicar"
    set caption(seuilWindow,fermer)                    "Fechar"
    set caption(seuilWindow,aide)                      "Ajuda"
+
+   set caption(seuilCouleur,image_affichee)           "Na imagem apresentada:"
+   set caption(seuilCouleur,selection_zone_noire)     "Usando o rato, seleccione uma zona preta na imagem"
+   set caption(seuilCouleur,selection_zone_blanche)   "Usando o rato, seleccione uma zona branca na imagem"
+   set caption(seuilCouleur,confirmer_zone_noire)     "Por favor confirme a selecção da zona preta"
+   set caption(seuilCouleur,confirmer_zone_blanche)   "Por favor confirme a selecção da zona branca"
+   set caption(seuilCouleur,pas_selection_noir)       "Nenhuma área preta foi seleccionada."
+   set caption(seuilCouleur,pas_selection_blanc)      "Nenhuma área branca foi seleccionada."
+   set caption(seuilCouleur,pas_couleur)              "Esta imagem não é a cores."
+   set caption(seuilCouleur,enregister_seuils)        "# Enregistrer l'image avec les nouveaux seuils\n(visualisable à l'identique uniquement en\nmode 'Seuils initiaux')"
+   set caption(seuilCouleur,attention)                "Aviso"
+   set caption(seuilCouleur,header_noimage)           "Não existe imagem carregada em memória."
+   set caption(seuilCouleur,en_cours)                 "Pré-tratamento em curso..."
+   set caption(seuilCouleur,fin_traitement)           "Fim do pré-tratamento."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -414,6 +499,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilWindow,fermer)                    "Luk"
    set caption(seuilWindow,aide)                      "Hjælp"
 
+   set caption(seuilCouleur,image_affichee)           "På det viste billede:"
+   set caption(seuilCouleur,selection_zone_noire)     "Vælg med musen et sort område i billedet!"
+   set caption(seuilCouleur,selection_zone_blanche)   "Vælg med musen et hvidt område i billedet!"
+   set caption(seuilCouleur,confirmer_zone_noire)     "Bekræft valg af sort område!"
+   set caption(seuilCouleur,confirmer_zone_blanche)   "Bekræft valg af hvidt område!"
+   set caption(seuilCouleur,pas_selection_noir)       "Sort område er ikke valgt!"
+   set caption(seuilCouleur,pas_selection_blanc)      "Hvidt område er ikke valgt!"
+   set caption(seuilCouleur,pas_couleur)              "Dette er ikke et farvebillede."
+   set caption(seuilCouleur,enregister_seuils)        "# Enregistrer l'image avec les nouveaux seuils\n(visualisable à l'identique uniquement en\nmode 'Seuils initiaux')"
+   set caption(seuilCouleur,attention)                "Advarsel"
+   set caption(seuilCouleur,header_noimage)           "Intet billede i memory."
+   set caption(seuilCouleur,en_cours)                 "Preprocessing er aktiv..."
+   set caption(seuilCouleur,fin_traitement)           "Slut på preprocessing."
+
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
@@ -472,6 +571,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilWindow,fermer)                    "Close"
    set caption(seuilWindow,aide)                      "Help"
 
+   set caption(seuilCouleur,image_affichee)           "On Image Displayed:"
+   set caption(seuilCouleur,selection_zone_noire)     "Using your mouse, select a black area in the image"
+   set caption(seuilCouleur,selection_zone_blanche)   "Using your mouse, select a white area in the image"
+   set caption(seuilCouleur,confirmer_zone_noire)     "Please confirm the black area is selected"
+   set caption(seuilCouleur,confirmer_zone_blanche)   "Please confirm the white area is selected"
+   set caption(seuilCouleur,pas_selection_noir)       "No black area selected."
+   set caption(seuilCouleur,pas_selection_blanc)      "No white area selected."
+   set caption(seuilCouleur,pas_couleur)              "This is not a color image."
+   set caption(seuilCouleur,enregister_seuils)        "# Enregistrer l'image avec les nouveaux seuils\n(visualisable à l'identique uniquement en\nmode 'Seuils initiaux')"
+   set caption(seuilCouleur,attention)                "Warning"
+   set caption(seuilCouleur,header_noimage)           "No Image in Memory."
+   set caption(seuilCouleur,en_cours)                 "Preprocessing in progress..."
+   set caption(seuilCouleur,fin_traitement)           "End of Preprocessing."
+
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
@@ -529,6 +642,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilWindow,appliquer)                 "Apply"
    set caption(seuilWindow,fermer)                    "Close"
    set caption(seuilWindow,aide)                      "Help"
+
+   set caption(seuilCouleur,image_affichee)           "On Image Displayed:"
+   set caption(seuilCouleur,selection_zone_noire)     "Using your mouse, select a black area in the image"
+   set caption(seuilCouleur,selection_zone_blanche)   "Using your mouse, select a white area in the image"
+   set caption(seuilCouleur,confirmer_zone_noire)     "Please confirm the black area is selected"
+   set caption(seuilCouleur,confirmer_zone_blanche)   "Please confirm the white area is selected"
+   set caption(seuilCouleur,pas_selection_noir)       "No black area selected."
+   set caption(seuilCouleur,pas_selection_blanc)      "No white area selected."
+   set caption(seuilCouleur,pas_couleur)              "This is not a color image."
+   set caption(seuilCouleur,enregister_seuils)        "# Enregistrer l'image avec les nouveaux seuils\n(visualisable à l'identique uniquement en\nmode 'Seuils initiaux')"
+   set caption(seuilCouleur,attention)                "Warning"
+   set caption(seuilCouleur,header_noimage)           "No Image in Memory."
+   set caption(seuilCouleur,en_cours)                 "Preprocessing in progress..."
+   set caption(seuilCouleur,fin_traitement)           "End of Preprocessing."
 
 }
 
