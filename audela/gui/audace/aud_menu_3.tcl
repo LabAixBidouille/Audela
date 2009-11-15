@@ -1,14 +1,14 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.48 2009-06-18 17:02:32 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.49 2009-11-15 15:46:15 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
 
    #
    # ::pretraitement::run type_pretraitement this
-   # Lance la boite de dialogue pour les pretraitements sur une images
+   # Lance la fenetre de dialogue pour les pretraitements sur une images
    # this : Chemin de la fenetre
    #
    proc run { type_pretraitement this } {
@@ -2407,7 +2407,7 @@ namespace eval ::traiteImage {
 
    #
    # ::traiteImage::run type_pretraitement_image this
-   # Lance la boite de dialogue pour les pretraitements sur une images
+   # Lance la fenetre de dialogue pour les pretraitements sur une images
    #
    # this : Chemin de la fenetre
    proc run { type_pretraitement_image this } {
@@ -2561,19 +2561,6 @@ namespace eval ::traiteImage {
                pack $This.usr.2.23.btn1 -side left -padx 10 -pady 5 -ipady 5
            # pack $This.usr.2.23 -side top -fill both
 
-            frame $This.usr.2.24 -borderwidth 0 -relief flat
-               label $This.usr.2.24.lab5 -text "$caption(pretraitement,selection_zone_blanche)"
-               pack $This.usr.2.24.lab5 -side top -padx 5 -pady 10
-               button $This.usr.2.24.btn1 -text "$caption(pretraitement,confirmer_zone_blanche)" \
-                  -command { ::traiteImage::confirmerBlanc }
-               pack $This.usr.2.24.btn1 -side top -ipady 5 -fill x
-               label $This.usr.2.24.lab6 -text "$caption(pretraitement,selection_zone_noire)"
-               pack $This.usr.2.24.lab6 -side top -padx 5 -pady 10
-               button $This.usr.2.24.btn2 -text "$caption(pretraitement,confirmer_zone_noire)" \
-                  -command { ::traiteImage::confirmerNoir }
-               pack $This.usr.2.24.btn2 -side top -ipady 5 -fill x
-           # pack $This.usr.2.24 -side top -fill both
-
         # pack $This.usr.2 -side bottom -fill both
 
          frame $This.usr.1 -borderwidth 1 -relief raised
@@ -2581,7 +2568,7 @@ namespace eval ::traiteImage {
             pack $This.usr.1.lab1 -side left -padx 10 -pady 5
             #--- Liste des pretraitements disponibles
             set list_traiteImage [ list $caption(audace,menu,r+v+b2rvb) $caption(audace,menu,rvb2r+v+b) \
-               $caption(audace,menu,cfa2rvb) $caption(audace,menu,balance_rvb) ]
+               $caption(audace,menu,cfa2rvb) ]
             #---
             menubutton $This.usr.1.but1 -textvariable traiteImage(captionOperation) -menu $This.usr.1.but1.menu \
                -relief raised
@@ -2645,8 +2632,6 @@ namespace eval ::traiteImage {
          set traiteImage(captionOperation) "$caption(audace,menu,rvb2r+v+b)"
       } elseif { $type_pretraitement_image == "cfa2rvb" } {
          set traiteImage(captionOperation) "$caption(audace,menu,cfa2rvb)"
-      } elseif { $type_pretraitement_image == "balance_rvb" } {
-         set traiteImage(captionOperation) "$caption(audace,menu,balance_rvb)"
       }
    }
 
@@ -2664,8 +2649,6 @@ namespace eval ::traiteImage {
          set traiteImage(operation) "rvb2r+v+b"
       } elseif { $type_pretraitement_image == "$caption(audace,menu,cfa2rvb)" } {
          set traiteImage(operation) "cfa2rvb"
-      } elseif { $type_pretraitement_image == "$caption(audace,menu,balance_rvb)" } {
-         set traiteImage(operation) "balance_rvb"
       }
    }
 
@@ -2751,7 +2734,7 @@ namespace eval ::traiteImage {
                set kwdNaxis [ buf$audace(bufNo) getkwd NAXIS ]
                set kwdNaxis [ lreplace $kwdNaxis 1 1 "2" ]
                buf$audace(bufNo) setkwd $kwdNaxis
-               #---J'enregistre les 3 plans dans 3 fichiers separes
+               #--- J'enregistre les 3 plans dans 3 fichiers separes
                buf$audace(bufNo) setkwd [ list RGBFILTR R string "Color extracted (Red)" "" ]
                buf$audace(bufNo) save3d [ file join $audace(rep_images) $traiteImage(rvbWindow_r+v+b_filename)1 ] 3 1 1
                buf$audace(bufNo) setkwd [ list RGBFILTR G string "Color extracted (Green)" "" ]
@@ -2773,38 +2756,6 @@ namespace eval ::traiteImage {
             set catchError [ catch {
                buf$audace(bufNo) cfa2rgb 1
                ::audace::autovisu $audace(visuNo)
-               set traiteImage(avancement) "$caption(pretraitement,fin_traitement)"
-            } m ]
-            if { $catchError == "1" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-               set traiteImage(avancement) ""
-            }
-         }
-         "balance_rvb" {
-            set catchError [ catch {
-               #--- Affectation des niveaux maxi et mini pour le Rouge, le Vert et le Bleu
-               set mycuts [ list $traiteImage(blanc_R) $traiteImage(noir_R) $traiteImage(blanc_V) $traiteImage(noir_V) $traiteImage(blanc_B) $traiteImage(noir_B) ]
-               if { $traiteImage(blanc_R) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                     -message "$caption(pretraitement,pas_selection_blanc)"
-                  set traiteImage(avancement) ""
-                  return
-               } elseif { $traiteImage(noir_R) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                     -message "$caption(pretraitement,pas_selection_noir)"
-                  set traiteImage(avancement) ""
-                  return
-               } elseif { $traiteImage(blanc_V) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                     -message "$caption(pretraitement,pas_couleur)"
-                  ::traiteImage::initSeuils
-                  set traiteImage(avancement) ""
-                  return
-               }
-               visu$audace(visuNo) cut $mycuts
-               #--- Affichage de l'image
-               visu$audace(visuNo) disp
-               ::traiteImage::initSeuils
                set traiteImage(avancement) "$caption(pretraitement,fin_traitement)"
             } m ]
             if { $catchError == "1" } {
@@ -2842,8 +2793,6 @@ namespace eval ::traiteImage {
          set traiteImage(page_web) "1016rvb2r+v+b"
       } elseif { $traiteImage(operation) == "cfa2rvb" } {
          set traiteImage(page_web) "1017cfa2rvb"
-      } elseif { $traiteImage(operation) == "balance_rvb" } {
-         set traiteImage(page_web) "1018balance_rvb"
       }
 
       #---
@@ -2874,7 +2823,6 @@ namespace eval ::traiteImage {
             pack $This.usr.2.21 -in $This.usr.2 -side top -fill both
             pack forget $This.usr.2.22
             pack forget $This.usr.2.23
-            pack forget $This.usr.2.24
             pack $This.usr.1 -side top -fill both
          }
          "rvb2r+v+b" {
@@ -2885,7 +2833,6 @@ namespace eval ::traiteImage {
             pack forget $This.usr.2.21
             pack $This.usr.2.22 -in $This.usr.2 -side top -fill both
             pack $This.usr.2.23 -in $This.usr.2 -side top -fill both
-            pack forget $This.usr.2.24
             pack $This.usr.1 -side top -fill both
          }
          "cfa2rvb" {
@@ -2896,18 +2843,6 @@ namespace eval ::traiteImage {
             pack forget $This.usr.2.21
             pack forget $This.usr.2.22
             pack forget $This.usr.2.23
-            pack forget $This.usr.2.24
-            pack $This.usr.1 -side top -fill both
-         }
-         "balance_rvb" {
-            pack forget $This.usr.0
-            pack $This.usr.3 -side bottom -fill both
-            pack $This.usr.2 -side bottom -fill both
-            pack forget $This.usr.2.20
-            pack forget $This.usr.2.21
-            pack forget $This.usr.2.22
-            pack forget $This.usr.2.23
-            pack $This.usr.2.24 -side top -fill both
             pack $This.usr.1 -side top -fill both
          }
       }
@@ -3076,7 +3011,7 @@ namespace eval ::traiteWindow {
 
    #
    # ::traiteWindow::run type_pretraitement this
-   # Lance la boite de dialogue pour les pretraitements sur une images
+   # Lance la fenetre de dialogue pour les pretraitements sur une images
    # this : Chemin de la fenetre
    #
    proc run { type_pretraitement this } {
@@ -3695,7 +3630,7 @@ namespace eval ::faireImageRef {
 
    #
    # ::faireImageRef::run type_image_reference this
-   # Lance la boite de dialogue pour les pretraitements sur une images
+   # Lance la fenetre de dialogue pour les pretraitements sur une images
    # this : Chemin de la fenetre
    #
    proc run { type_image_reference this } {
@@ -4729,7 +4664,7 @@ namespace eval ::faireImageRef {
 
    #
    # ::faireImageRef::griserActiver_1
-   # Fonction destinee a inhiber ou a activer l'affichage du champ offset de la boite pretraitement
+   # Fonction destinee a inhiber ou a activer l'affichage du champ offset de la fenetre pretraitement
    #
    proc griserActiver_1 { } {
       variable This
@@ -4752,7 +4687,7 @@ namespace eval ::faireImageRef {
 
    #
    # ::faireImageRef::griserActiver_2
-   # Fonction destinee a inhiber ou a activer l'affichage du champ dark de la boite pretraitement
+   # Fonction destinee a inhiber ou a activer l'affichage du champ dark de la fenetre pretraitement
    #
    proc griserActiver_2 { } {
       variable This
@@ -4775,7 +4710,7 @@ namespace eval ::faireImageRef {
 
    #
    # ::faireImageRef::griserActiver_3
-   # Fonction destinee a inhiber ou a activer l'affichage du champ flat-field de la boite pretraitement
+   # Fonction destinee a inhiber ou a activer l'affichage du champ flat-field de la fenetre pretraitement
    #
    proc griserActiver_3 { } {
       variable This
@@ -4800,7 +4735,7 @@ namespace eval ::faireImageRef {
 
    #
    # ::faireImageRef::griserActiver_4
-   # Fonction destinee a inhiber ou a activer l'affichage du champ cste de normalisation de la boite pretraitement
+   # Fonction destinee a inhiber ou a activer l'affichage du champ cste de normalisation de la fenetre pretraitement
    #
    proc griserActiver_4 { } {
       variable This
@@ -4815,7 +4750,7 @@ namespace eval ::faireImageRef {
 
    #
    # ::faireImageRef::griserActiver_5
-   # Fonction destinee a inhiber ou a activer l'affichage du champ offset de la boite flat-field
+   # Fonction destinee a inhiber ou a activer l'affichage du champ offset de la fenetre flat-field
    #
    proc griserActiver_5 { } {
       variable This
@@ -4833,7 +4768,7 @@ namespace eval ::faireImageRef {
 
    #
    # ::faireImageRef::griserActiver_6
-   # Fonction destinee a inhiber ou a activer l'affichage du champ dark de la boite flat-field
+   # Fonction destinee a inhiber ou a activer l'affichage du champ dark de la fenetre flat-field
    #
    proc griserActiver_6 { } {
       variable This
@@ -4851,7 +4786,7 @@ namespace eval ::faireImageRef {
 
    #
    # ::faireImageRef::griserActiver_7
-   # Fonction destinee a inhiber ou a activer l'affichage du champ cste de normalisation de la boite flat-field
+   # Fonction destinee a inhiber ou a activer l'affichage du champ cste de normalisation de la fenetre flat-field
    #
    proc griserActiver_7 { } {
       variable This
@@ -4866,7 +4801,7 @@ namespace eval ::faireImageRef {
 
    #
    # ::faireImageRef::griserActiver_8
-   # Fonction destinee a inhiber ou a activer l'affichage du champ offset de la boite dark
+   # Fonction destinee a inhiber ou a activer l'affichage du champ offset de la fenetre dark
    #
    proc griserActiver_8 { } {
       variable This
@@ -4883,7 +4818,7 @@ namespace eval ::faireImageRef {
 
    #
    # ::faireImageRef::degriserActiver
-   # Fonction destinee a activer l'affichage des champs offset, dark et flat-field de la boite pretraitement
+   # Fonction destinee a activer l'affichage des champs offset, dark et flat-field de la fenetre pretraitement
    #
    proc degriserActiver { } {
       variable This
