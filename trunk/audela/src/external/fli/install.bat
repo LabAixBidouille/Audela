@@ -1,3 +1,4 @@
+echo on
 set FLI=fli-dist-1.71\libfli
 mkdir ..\include
 mkdir ..\lib
