@@ -2809,17 +2809,24 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 
 	if (i==0) {
 		if ((strcmp (struct_elem,"RECTANGLE")==0)&&(y1==1)) {
-			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
-				p_tmp1->p[kkk]=-p_in->p[kkk];
-			}
 			if (x1<150) {
+				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+					p_tmp1->p[kkk]=-p_in->p[kkk];
+				}
 				erosionByAnchor_1D_horizontal_courSE(p_tmp1, p_out,naxis1,naxis2,x1,bitpix);
+				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+					p_out->p[kkk]=-p_out->p[kkk];
+				}
 			} else {
+				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+					p_tmp1->p[kkk]=(65517-p_in->p[kkk])/2;
+				}
 				erosionByAnchor_1D_horizontal_longSE(p_tmp1, p_out,naxis1,naxis2,x1,bitpix);
+				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+					p_out->p[kkk]=-p_out->p[kkk]*2+65517;
+				}
 			}
-			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
-				p_out->p[kkk]=-p_out->p[kkk];
-			}
+			
 		} else {
 			dilate (p_in,p_out,se,x1,y1,sizex,sizey,naxis1,naxis2);
 		}
@@ -2856,20 +2863,27 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 	i=strcmp (nom_trait,"CLOSE");
 	if (i==0) {
 		if ((strcmp (struct_elem,"RECTANGLE")==0)&&(y1==1)) {
-			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
-				p_tmp2->p[kkk]=-p_in->p[kkk];
-			}
 			if (x1<150) {
+				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+					p_tmp2->p[kkk]=-p_in->p[kkk];
+				}
 				erosionByAnchor_1D_horizontal_courSE(p_tmp2, p_tmp1,naxis1,naxis2,x1,bitpix);
 			} else {
+				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+					p_tmp2->p[kkk]=(65517-p_in->p[kkk])/2;
+				}
 				erosionByAnchor_1D_horizontal_longSE(p_tmp2, p_tmp1,naxis1,naxis2,x1,bitpix);
 			}
-			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
-				p_tmp1->p[kkk]=-p_tmp1->p[kkk];
-			}
+			
 			if (x1<150) {
+				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+					p_tmp1->p[kkk]=-p_tmp1->p[kkk];
+				}
 				erosionByAnchor_1D_horizontal_courSE(p_tmp1, p_out,naxis1,naxis2,x1,bitpix);
 			} else {
+				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+					p_tmp1->p[kkk]=-p_tmp1->p[kkk]*2+65517;
+				}
 				erosionByAnchor_1D_horizontal_longSE(p_tmp1, p_out,naxis1,naxis2,x1,bitpix);
 			}
 
@@ -2962,20 +2976,26 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 		
 		if ((strcmp (struct_elem,"RECTANGLE")==0)&&(y1==1)) {
 			/* --- fermeture  --- */
-			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
-				p_tmp2->p[kkk]=-p_in->p[kkk];
-			}
 			if (x1<150) {
+				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+					p_tmp2->p[kkk]=-p_in->p[kkk];
+				}
 				erosionByAnchor_1D_horizontal_courSE(p_tmp2, p_tmp1,naxis1,naxis2,x1,bitpix);
 			} else {
+				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image spéciale pour contrer gestion des histo
+					p_tmp2->p[kkk]=(65517-p_in->p[kkk])/2;
+				}
 				erosionByAnchor_1D_horizontal_longSE(p_tmp2, p_tmp1,naxis1,naxis2,x1,bitpix);
 			}			
-			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
-				p_tmp1->p[kkk]=-p_tmp1->p[kkk];
-			}
 			if (x1<150) {
+				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+					p_tmp1->p[kkk]=-p_tmp1->p[kkk];
+				}
 				erosionByAnchor_1D_horizontal_courSE(p_tmp1, p_out,naxis1,naxis2,x1,bitpix);
 			} else {
+				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+					p_tmp1->p[kkk]=-p_tmp1->p[kkk]*2+65517;
+				}
 				erosionByAnchor_1D_horizontal_longSE(p_tmp1, p_out,naxis1,naxis2,x1,bitpix);
 			}
 			/* --- ouverture --- */
@@ -3075,17 +3095,24 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 				erosionByAnchor_1D_horizontal_longSE(p_in, p_tmp1,naxis1,naxis2,x1,bitpix);
 			}
 			/* --- dilation --- */
-			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
-				p_tmp2->p[kkk]=-p_in->p[kkk];
-			}
 			if (x1<150) {
+				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+					p_tmp2->p[kkk]=-p_in->p[kkk];
+				}
 				erosionByAnchor_1D_horizontal_courSE(p_tmp2, p_out,naxis1,naxis2,x1,bitpix);
+				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+					p_out->p[kkk]=-p_out->p[kkk];
+				}
 			} else {
+				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+					p_tmp2->p[kkk]=(65517-p_in->p[kkk])/2;
+				}
 				erosionByAnchor_1D_horizontal_longSE(p_tmp2, p_out,naxis1,naxis2,x1,bitpix);
+				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+					p_out->p[kkk]=-p_out->p[kkk]*2+65517;
+				}
 			}
-			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
-				p_out->p[kkk]=-p_out->p[kkk];
-			}
+			
 		} else {
 			erode (p_in,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
 			dilate (p_in,p_out,se,x1,y1,sizex,sizey,naxis1,naxis2);
@@ -3110,19 +3137,27 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 				} else {
 					erosionByAnchor_1D_horizontal_longSE(p_in, p_tmp2,naxis1,naxis2,x1,bitpix);
 				}
-				/* --- dilation --- */
-				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
-					p_in->p[kkk]=-p_in->p[kkk];
-				}
+				/* --- dilation --- */	
 				if (x1<150) {
+					for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+						p_in->p[kkk]=-p_in->p[kkk];
+					}
 					erosionByAnchor_1D_horizontal_courSE(p_in, p_tmp1,naxis1,naxis2,x1,bitpix);
+					for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+						p_tmp1->p[kkk]=-p_tmp1->p[kkk];
+						p_in->p[kkk]=-p_in->p[kkk];
+					}
 				} else {
+					for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+						p_in->p[kkk]=(65517-p_in->p[kkk])/2;
+					}
 					erosionByAnchor_1D_horizontal_longSE(p_in, p_tmp1,naxis1,naxis2,x1,bitpix);
+					for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+						p_tmp1->p[kkk]=-p_tmp1->p[kkk]*2+65517;
+						p_in->p[kkk]=-p_in->p[kkk]*2+65517;
+					}
 				}
-				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
-					p_tmp1->p[kkk]=-p_tmp1->p[kkk];
-					p_in->p[kkk]=-p_in->p[kkk];
-				}
+				
 			} else {
 				erode (p_in,p_tmp2,se,x1,y1,sizex,sizey,naxis1,naxis2);
 				dilate (p_in,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
@@ -3278,17 +3313,25 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 					erosionByAnchor_1D_horizontal_longSE(p_in, p_tmp2,naxis1,naxis2,x1,bitpix);
 				}
 				/* --- dilation --- */
-				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
-					p_in->p[kkk]=-p_in->p[kkk];
-				}
+				
 				if (x1<150) {
+					for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+						p_in->p[kkk]=-p_in->p[kkk];
+					}
 					erosionByAnchor_1D_horizontal_courSE(p_in, p_tmp1,naxis1,naxis2,x1,bitpix);
+					for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+						p_tmp1->p[kkk]=-p_tmp1->p[kkk];
+						p_in->p[kkk]=-p_in->p[kkk];
+					}
 				} else {
+					for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+						p_in->p[kkk]=(65517-p_in->p[kkk])/2;
+					}
 					erosionByAnchor_1D_horizontal_longSE(p_in, p_tmp1,naxis1,naxis2,x1,bitpix);
-				}
-				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
-					p_tmp1->p[kkk]=-p_tmp1->p[kkk];
-					p_in->p[kkk]=-p_in->p[kkk];
+					for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+						p_tmp1->p[kkk]=-p_tmp1->p[kkk]*2+65517;
+						p_in->p[kkk]=-p_in->p[kkk]*2+65517;
+					}
 				}	
 			} else {
 				erode (p_in,p_tmp2,se,x1,y1,sizex,sizey,naxis1,naxis2);
@@ -3656,7 +3699,7 @@ int erosionByAnchor_1D_horizontal_longSE(TT_IMA* pin, TT_IMA* pout, int imageWid
 
 	/* Initialisation of the histogram */
 	if (bitpix==0) {bitpix=16;}
-	nbrBytes =(long) pow(2,bitpix)*sizeof(int);
+	nbrBytes =(long) pow(2,bitpix)*sizeof(double);
 	histo = (double *)malloc(nbrBytes);
 
 	/* Row by row */
@@ -3992,7 +4035,7 @@ int openingByAnchor_1D_horizontal_longSE(TT_IMA* pout, int imageWidth, int image
 
 	/* Initialisation of the histogram */
 	if (bitpix==0) {bitpix=16;}
-	nbrBytes = (long) pow(2,bitpix)*sizeof(int);
+	nbrBytes = (long) pow(2,bitpix)*sizeof(double);
 	histo = (double *)malloc(nbrBytes);
 
 	/* Row by row */
