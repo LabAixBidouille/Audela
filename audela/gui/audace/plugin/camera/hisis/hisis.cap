@@ -1,6 +1,6 @@
 #
 # Fichier : hisis.cap
-# Mise a jour $Id: hisis.cap,v 1.7 2009-11-05 18:17:57 robertdelmas Exp $
+# Mise a jour $Id: hisis.cap,v 1.8 2009-11-15 13:34:30 michelpujol Exp $
 #
 
 #=========================================================================
@@ -39,6 +39,7 @@ set caption(hisis,delai_a)                      "Delay a"
 set caption(hisis,delai_b)                      "Delay b"
 set caption(hisis,delai_c)                      "Delay c"
 set caption(hisis,fonc_obtu)                    "Shutter Operation"
+set caption(hisis,debug)                        "Debug Mode"
 
 set caption(hisis,port_camera)                  "Hi-SIS Port - Model"
 set caption(hisis,2points)                      ":"
@@ -77,6 +78,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,delai_b)                   "Délai b"
    set caption(hisis,delai_c)                   "Délai c"
    set caption(hisis,fonc_obtu)                 "Fonctionnement de l'obturateur"
+   set caption(hisis,debug)                     "Mode débug"
 
    set caption(hisis,port_camera)               "Port Hi-SIS"
    set caption(hisis,2points)                   ":"
@@ -115,6 +117,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,delai_b)                   "Intervallo b"
    set caption(hisis,delai_c)                   "Intervallo c"
    set caption(hisis,fonc_obtu)                 "Funzionamento otturatore"
+   set caption(hisis,debug)                     "Modalita` debug"
 
    set caption(hisis,port_camera)               "Porta Hi-SIS"
    set caption(hisis,2points)                   ":"
@@ -153,6 +156,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,delai_b)                   "Retraso b"
    set caption(hisis,delai_c)                   "Retraso c"
    set caption(hisis,fonc_obtu)                 "Funcionamiento del obturador"
+   set caption(hisis,debug)                     "Modo depuracion"
 
    set caption(hisis,port_camera)               "Puerto Hi-SIS"
    set caption(hisis,2points)                   ":"
@@ -191,6 +195,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,delai_b)                   "Zeitraum b"
    set caption(hisis,delai_c)                   "Zeitraum c"
    set caption(hisis,fonc_obtu)                 "Verschluss Arbeiten"
+   set caption(hisis,debug)                     "Debug Modus"
 
    set caption(hisis,port_camera)               "Hi-SIS Port - Modell"
    set caption(hisis,2points)                   ":"
@@ -229,6 +234,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,delai_b)                   "Atraso b"
    set caption(hisis,delai_c)                   "Atraso c"
    set caption(hisis,fonc_obtu)                 "Operação do obturador"
+   set caption(hisis,debug)                     "Modo debug"
 
    set caption(hisis,port_camera)               "Porta Hi-SIS"
    set caption(hisis,2points)                   ":"
@@ -267,6 +273,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,delai_b)                   "Delay b"
    set caption(hisis,delai_c)                   "Delay c"
    set caption(hisis,fonc_obtu)                 "Shutter Operation"
+   set caption(hisis,debug)                     "Debug Mode"
 
    set caption(hisis,port_camera)               "Hi-SIS Port - Model"
    set caption(hisis,2points)                   ":"
@@ -305,6 +312,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,delai_b)                   "Delay b"
    set caption(hisis,delai_c)                   "Delay c"
    set caption(hisis,fonc_obtu)                 "Shutter Operation"
+   set caption(hisis,debug)                     "Debug Mode"
 
    set caption(hisis,port_camera)               "Hi-SIS Port - Model"
    set caption(hisis,2points)                   ":"
@@ -343,6 +351,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,delai_b)                   "Delay b"
    set caption(hisis,delai_c)                   "Delay c"
    set caption(hisis,fonc_obtu)                 "Shutter Operation"
+   set caption(hisis,debug)                     "Debug Mode"
 
    set caption(hisis,port_camera)               "Hi-SIS Port - Model"
    set caption(hisis,2points)                   ":"
