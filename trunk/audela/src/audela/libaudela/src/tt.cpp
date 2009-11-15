@@ -692,9 +692,9 @@ int CmdFitsConvert3d(ClientData clientData, Tcl_Interp *interp, int argc, char *
    char filein[1000];
    char fileout[1000];
    int nb,naxis3;
-   int naxis1,naxis2,naxis10,naxis20,datatype;
-   int bitpix,bzero;
-   float *ptot=NULL,*p=NULL;
+   int naxis1=0,naxis2=0,naxis10,naxis20,datatype;
+   int bitpix=0,bzero;
+   float *ptot=NULL,*pixelPlan=NULL;
    int nelem,naxis=3;
    CFitsKeywords *keywords;
    
@@ -736,6 +736,7 @@ int CmdFitsConvert3d(ClientData clientData, Tcl_Interp *interp, int argc, char *
             Libtt_main(TT_ERROR_MESSAGE,2,&msg,ligne2);
             strcpy(ligne,"Error allokeys in libtt");
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            delete keywords;
             return TCL_ERROR;
          }
          keywords->SetToArray(&keynames0,&values0,&comments0,&units0,&datatypes0);
@@ -749,21 +750,25 @@ int CmdFitsConvert3d(ClientData clientData, Tcl_Interp *interp, int argc, char *
          if ( naxis10 <= 0 ) {
             sprintf(ligne,"FitsConvert3d error NAXIS1=% in %s", naxis10, filein);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            delete keywords;
+            Libtt_main(TT_PTR_FREEKEYS,5,&keynames0,&values0, &comments0,&units0,&datatypes0);
             return TCL_ERROR;
          }
          if ( naxis20 <= 0 ) {
             sprintf(ligne,"FitsConvert3d error NAXIS2=% in %s", naxis20, filein);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            delete keywords;
+            Libtt_main(TT_PTR_FREEKEYS,5,&keynames0,&values0, &comments0,&units0,&datatypes0);
             return TCL_ERROR;
          }
    
-         ptot=(float*)calloc((unsigned int)sizeof(double),naxis10*naxis20*nb);
+         ptot=(float*)calloc((unsigned int)sizeof(float),naxis10*naxis20*nb);
          if (ptot==NULL) {
-            sprintf(ligne,"Not enough memory for a cubic image of %dx%dx%d pixels",naxis1,naxis2,nb);
+            sprintf(ligne,"Not enough memory for a cubic image of %dx%dx%d pixels",naxis10,naxis20,nb);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             Libtt_main(TT_PTR_FREEKEYS,5,&keynames0,&values0,&comments0,&units0,&datatypes0);
             return TCL_ERROR;
-         }
+         }         
       } else {
          msg=Libtt_main(TT_PTR_LOADKEYS,7,filein,&nbkeys,&keynames,&values,
             &comments,&units,&datatypes);
@@ -795,10 +800,20 @@ int CmdFitsConvert3d(ClientData clientData, Tcl_Interp *interp, int argc, char *
          }
       }
       datatype=TFLOAT;
-      msg=Libtt_main(TT_PTR_LOADIMA,5,filein,&datatype,&p,&naxis1,&naxis2);
-      nelem=naxis10*naxis20;
-      for (kk=0;kk<nelem;kk++) {
-         ptot[(k-1)*nelem+kk]=p[kk];
+      msg=Libtt_main(TT_PTR_LOADIMA,5,filein,&datatype,&pixelPlan,&naxis1,&naxis2);
+      if (msg) {
+            sprintf(ligne,"Error loading %s",filein);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            Libtt_main(TT_PTR_FREEKEYS,5,&keynames0,&values0,&comments0,&units0,&datatypes0);
+            Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+            if (ptot != NULL ) { free(ptot);}
+            return TCL_ERROR;         
+      } else {
+         nelem=naxis10*naxis20;
+         for (kk=0;kk<nelem;kk++) {
+            ptot[(k-1)*nelem+kk]=pixelPlan[kk];
+         }
+         Libtt_main(TT_PTR_FREEPTR,1,&pixelPlan);
       }
    }
    datatype=TFLOAT;
@@ -818,8 +833,12 @@ int CmdFitsConvert3d(ClientData clientData, Tcl_Interp *interp, int argc, char *
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       Libtt_main(TT_PTR_FREEKEYS,5,&keynames0,&values0,&comments0,&units0,&datatypes0);
       Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+      if (ptot != NULL ) { free(ptot);}
       return TCL_ERROR;
    }
+
+   if (ptot != NULL ) { free(ptot);}
+
    Libtt_main(TT_PTR_FREEKEYS,5,&keynames0,&values0,&comments0,&units0,&datatypes0);
    Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
    return TCL_OK;
