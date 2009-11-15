@@ -1,6 +1,6 @@
 #
 # Fichier : keyword.cap
-# Mise a jour $Id: keyword.cap,v 1.22 2009-11-09 16:33:59 robertdelmas Exp $
+# Mise a jour $Id: keyword.cap,v 1.23 2009-11-15 15:52:41 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,6 +13,15 @@ global caption langage
 
 set caption(keyword,header_title)                      "FITS Header"
 set caption(keyword,header_noimage)                    "No Image in Memory."
+
+#--- Choix de la configuration
+set caption(keyword,nom_config)                        "Setup Name"
+set caption(keyword,ajouter_config)                    "Add Setup"
+set caption(keyword,supprimer_config)                  "Delete"
+set caption(keyword,copier_config)                     "Copy"
+set caption(keyword,config_a_ajouter)                  "Name of Setup to Add"
+set caption(keyword,config_a_supprimer)                "Name of Setup to Delete"
+set caption(keyword,config_a_copier)                   "Data of Setup to Copy"
 
 #--- Fenetre de configuration
 set caption(keyword,titre)                             "FITS Keywords"
@@ -86,6 +95,15 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,header_title)                   "En-tête FITS"
    set caption(keyword,header_noimage)                 "Il n'y a pas d'image actuellement en mémoire."
 
+   #--- Choix de la configuration
+   set caption(keyword,nom_config)                     "Nom de la configuration"
+   set caption(keyword,ajouter_config)                 "Ajouter une configuration"
+   set caption(keyword,supprimer_config)               "Supprimer"
+   set caption(keyword,copier_config)                  "Copier"
+   set caption(keyword,config_a_ajouter)               "Nom de la configuration à ajouter"
+   set caption(keyword,config_a_supprimer)             "Nom de la configuration à supprimer"
+   set caption(keyword,config_a_copier)                "Données de la configuration à copier"
+
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "Mots clés FITS"
    set caption(keyword,camera)                         "Caméra"
@@ -157,6 +175,15 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(keyword,header_title)                   "Intestazione FITS"
    set caption(keyword,header_noimage)                 "Nessuna immagine in memoria."
+
+   #--- Choix de la configuration
+   set caption(keyword,nom_config)                     "# Nom de la configuration"
+   set caption(keyword,ajouter_config)                 "# Ajouter une configuration"
+   set caption(keyword,supprimer_config)               "Cancella"
+   set caption(keyword,copier_config)                  "Copia"
+   set caption(keyword,config_a_ajouter)               "# Nom de la configuration à ajouter"
+   set caption(keyword,config_a_supprimer)             "# Nom de la configuration à supprimer"
+   set caption(keyword,config_a_copier)                "# Données de la configuration à copier"
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "Parole chiave FITS"
@@ -230,6 +257,15 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,header_title)                   "Cabecera FITS"
    set caption(keyword,header_noimage)                 "No existe una imágen cargada en la memoria."
 
+   #--- Choix de la configuration
+   set caption(keyword,nom_config)                     "# Nom de la configuration"
+   set caption(keyword,ajouter_config)                 "# Ajouter une configuration"
+   set caption(keyword,supprimer_config)               "Suprimir"
+   set caption(keyword,copier_config)                  "Copiar"
+   set caption(keyword,config_a_ajouter)               "# Nom de la configuration à ajouter"
+   set caption(keyword,config_a_supprimer)             "# Nom de la configuration à supprimer"
+   set caption(keyword,config_a_copier)                "# Données de la configuration à copier"
+
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "Palabras clave FITS"
    set caption(keyword,camera)                         "Cámara"
@@ -301,6 +337,15 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(keyword,header_title)                   "FITS Vorsatz"
    set caption(keyword,header_noimage)                 "Es ist jetzt kein Bild im Speicher."
+
+   #--- Choix de la configuration
+   set caption(keyword,nom_config)                     "# Nom de la configuration"
+   set caption(keyword,ajouter_config)                 "# Ajouter une configuration"
+   set caption(keyword,supprimer_config)               "Löschen"
+   set caption(keyword,copier_config)                  "Nachbilden"
+   set caption(keyword,config_a_ajouter)               "# Nom de la configuration à ajouter"
+   set caption(keyword,config_a_supprimer)             "# Nom de la configuration à supprimer"
+   set caption(keyword,config_a_copier)                "# Données de la configuration à copier"
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "FITS Stichwörter"
@@ -374,6 +419,15 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,header_title)                   "Cabeçalho FITS"
    set caption(keyword,header_noimage)                 "Não existe imagem carregada em memória."
 
+   #--- Choix de la configuration
+   set caption(keyword,nom_config)                     "# Nom de la configuration"
+   set caption(keyword,ajouter_config)                 "# Ajouter une configuration"
+   set caption(keyword,supprimer_config)               "Apagar"
+   set caption(keyword,copier_config)                  "Copiar"
+   set caption(keyword,config_a_ajouter)               "# Nom de la configuration à ajouter"
+   set caption(keyword,config_a_supprimer)             "# Nom de la configuration à supprimer"
+   set caption(keyword,config_a_copier)                "# Données de la configuration à copier"
+
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "Palavras-chave FITS"
    set caption(keyword,camera)                         "Câmara"
@@ -445,6 +499,15 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(keyword,header_title)                   "FITS Header"
    set caption(keyword,header_noimage)                 "No Image in Memory."
+
+   #--- Choix de la configuration
+   set caption(keyword,nom_config)                     "Setup Name"
+   set caption(keyword,ajouter_config)                 "Add Setup"
+   set caption(keyword,supprimer_config)               "Delete"
+   set caption(keyword,copier_config)                  "Copy"
+   set caption(keyword,config_a_ajouter)               "Name of Setup to Add"
+   set caption(keyword,config_a_supprimer)             "Name of Setup to Delete"
+   set caption(keyword,config_a_copier)                "Data of Setup to Copy"
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "FITS Keywords"
@@ -518,6 +581,15 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,header_title)                   "FITS Header"
    set caption(keyword,header_noimage)                 "No Image in Memory."
 
+   #--- Choix de la configuration
+   set caption(keyword,nom_config)                     "Setup Name"
+   set caption(keyword,ajouter_config)                 "Add Setup"
+   set caption(keyword,supprimer_config)               "Delete"
+   set caption(keyword,copier_config)                  "Copy"
+   set caption(keyword,config_a_ajouter)               "Name of Setup to Add"
+   set caption(keyword,config_a_supprimer)             "Name of Setup to Delete"
+   set caption(keyword,config_a_copier)                "Data of Setup to Copy"
+
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "FITS Keywords"
    set caption(keyword,camera)                         "Camera"
@@ -589,6 +661,15 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(keyword,header_title)                   "FITS Header"
    set caption(keyword,header_noimage)                 "No Image in Memory."
+
+   #--- Choix de la configuration
+   set caption(keyword,nom_config)                     "Setup Name"
+   set caption(keyword,ajouter_config)                 "Add Setup"
+   set caption(keyword,supprimer_config)               "Delete"
+   set caption(keyword,copier_config)                  "Copy"
+   set caption(keyword,config_a_ajouter)               "Name of Setup to Add"
+   set caption(keyword,config_a_supprimer)             "Name of Setup to Delete"
+   set caption(keyword,config_a_copier)                "Data of Setup to Copy"
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "FITS Keywords"
