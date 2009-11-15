@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.25 2009-11-08 08:22:00 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.26 2009-11-15 15:54:41 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -18,13 +18,12 @@ namespace eval ::keyword {
 #------------------------------------------------------------------------------
 proc ::keyword::header { visuNo args } {
    variable private
-   global caption color conf
 
    #--- Initialisation
    set base [ ::confVisu::getBase $visuNo ]
    if { ! [ info exists conf(geometry_header_$visuNo) ] } { set conf(geometry_header_$visuNo) "632x303+3+75" }
    #---
-   set private(geometry_header_$visuNo) $conf(geometry_header_$visuNo)
+   set private(geometry_header_$visuNo) $::conf(geometry_header_$visuNo)
    #---
    if { [ winfo exists $base.header ] == 0 } {
       toplevel $base.header
@@ -49,14 +48,14 @@ proc ::keyword::header { visuNo args } {
       $base.header.slb.list delete 1.0 end
    }
    #---
-   wm title $base.header "$caption(keyword,header_title) (visu$visuNo) - [::confVisu::getFileName $visuNo]"
+   wm title $base.header "$::caption(keyword,header_title) (visu$visuNo) - [::confVisu::getFileName $visuNo]"
    #---
    if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] == "1" } {
-      $base.header.slb.list tag configure keyw -foreground $color(blue)
-      $base.header.slb.list tag configure egal -foreground $color(black)
-      $base.header.slb.list tag configure valu -foreground $color(red)
-      $base.header.slb.list tag configure comm -foreground $color(green1)
-      $base.header.slb.list tag configure unit -foreground $color(orange)
+      $base.header.slb.list tag configure keyw -foreground $::color(blue)
+      $base.header.slb.list tag configure egal -foreground $::color(black)
+      $base.header.slb.list tag configure valu -foreground $::color(red)
+      $base.header.slb.list tag configure comm -foreground $::color(green1)
+      $base.header.slb.list tag configure unit -foreground $::color(orange)
       foreach kwd [ lsort -dictionary [ buf[ ::confVisu::getBufNo $visuNo ] getkwds ] ] {
          set liste [ buf[ ::confVisu::getBufNo $visuNo ] getkwd $kwd ]
          set koff 0
@@ -75,7 +74,7 @@ proc ::keyword::header { visuNo args } {
          $base.header.slb.list insert end "[lindex $liste [expr $koff+4]]\n" unit
       }
    } else {
-      $base.header.slb.list insert end "$caption(keyword,header_noimage)"
+      $base.header.slb.list insert end "$::caption(keyword,header_noimage)"
    }
 }
 
@@ -102,12 +101,11 @@ proc ::keyword::closeHeader { visuNo } {
 #------------------------------------------------------------------------------
 proc ::keyword::headerRecupPosition { visuNo } {
    variable private
-   global conf
 
    #---
    set private(geometry_header_$visuNo) [ wm geometry [ ::confVisu::getBase $visuNo ].header ]
    #---
-   set conf(geometry_header_$visuNo) $private(geometry_header_$visuNo)
+   set ::conf(geometry_header_$visuNo) $private(geometry_header_$visuNo)
 }
 
 #########################################################################################################
@@ -120,17 +118,15 @@ proc ::keyword::headerRecupPosition { visuNo } {
 #    visuNo
 #------------------------------------------------------------------------------
 proc ::keyword::addJDayOBSandEND { } {
-   global audace
-
    #--- Rajoute la date de debut de pose en jour julien dans l'en-tete FITS
-   set date_obs [ lindex [ buf$audace(bufNo) getkwd DATE-OBS ] 1 ]
+   set date_obs [ lindex [ buf$::audace(bufNo) getkwd DATE-OBS ] 1 ]
    set date_obs [ mc_date2jd $date_obs ]
-   buf$audace(bufNo) setkwd [list JDAY-OBS $date_obs string "Julian Day for begin of scan exposure" ""]
+   buf$::audace(bufNo) setkwd [list JDAY-OBS $date_obs string "Julian Day for begin of scan exposure" ""]
 
    #--- Rajoute la date de fin de pose en jour julien dans l'en-tete FITS
-   set date_end [ lindex [ buf$audace(bufNo) getkwd DATE-END ] 1 ]
+   set date_end [ lindex [ buf$::audace(bufNo) getkwd DATE-END ] 1 ]
    set date_end [ mc_date2jd $date_end ]
-   buf$audace(bufNo) setkwd [list JDAY-END $date_end string "Julian Day for end of scan exposure" ""]
+   buf$::audace(bufNo) setkwd [list JDAY-END $date_end string "Julian Day for end of scan exposure" ""]
 }
 
 #########################################################################################################
@@ -155,6 +151,8 @@ proc ::keyword::init { } {
    if { ! [ info exists ::conf(keyword,GotoManuelAutoBis) ] } { set ::conf(keyword,GotoManuelAutoBis) "$::caption(keyword,manuel)" }
    if { ! [ info exists ::conf(keyword,GotoManuelAutoTer) ] } { set ::conf(keyword,GotoManuelAutoTer) "$::caption(keyword,manuel)" }
    if { ! [ info exists ::conf(keyword,typeImageSelected) ] } { set ::conf(keyword,typeImageSelected) "Object" }
+
+   set private(nameConfig)          ""
 
    #--- Initialisation de variables
    set private(nom_observateur)     ""
@@ -188,46 +186,47 @@ proc ::keyword::init { } {
    set private(commentaire)         ""
 
    #--- Liste pour les combobox
+   set private(listConfig)          ""
    set private(listTypeImage)       "$::conf(keyword,listTypeImage)"
    lappend private(listTypeImage)   "$::caption(keyword,newValue)"
    set private(listOutilsGoto)      [ list $::caption(keyword,manuel) $::caption(keyword,automatic) ]
 
    #--- On cree la liste des caracteristiques (nom, categorie, variable, procedure, etc.) des mots cles
    set private(infosMotsClefs) ""
-   lappend private(infosMotsClefs) [ list "OBSERVER" $::caption(keyword,lieu)        ::keyword::private(nom_observateur)     readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observer name"                                 "" ]
-   lappend private(infosMotsClefs) [ list "SITENAME" $::caption(keyword,lieu)        ::keyword::private(nom_observatoire)    readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observatory name"                              "" ]
-   lappend private(infosMotsClefs) [ list "IAU_CODE" $::caption(keyword,lieu)        ::conf(posobs,station_uai)              readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observatory IAU Code"                          "" ]
-   lappend private(infosMotsClefs) [ list "SITELONG" $::caption(keyword,lieu)        ::conf(posobs,estouest_long)            readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observatory longitude"                         "degres, minutes, seconds" ]
-   lappend private(infosMotsClefs) [ list "SITELAT"  $::caption(keyword,lieu)        ::conf(posobs,nordsud_lat)              readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observatory latitude"                          "degres, minutes, seconds" ]
-   lappend private(infosMotsClefs) [ list "SITEELEV" $::caption(keyword,lieu)        ::conf(posobs,altitude)                 readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Height of the observatory above the sea level" "m: meter" ]
-   lappend private(infosMotsClefs) [ list "GEODSYS"  $::caption(keyword,lieu)        ::conf(posobs,ref_geodesique)           readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Geodetic datum for observatory position"       "" ]
-   lappend private(infosMotsClefs) [ list "TELESCOP" $::caption(keyword,instrument)  ::keyword::private(instrument)          readonly $::caption(keyword,parcourir)  "::confOptic::run 1"                           ""                                  ""                                       "" "" "string" "Telescop"                                      "" ]
-   lappend private(infosMotsClefs) [ list "APTDIA"   $::caption(keyword,instrument)  ::keyword::private(diametre)            readonly $::caption(keyword,parcourir)  "::confOptic::run 1"                           ""                                  ""                                       "" "" "float"  "Telescop diameter"                             "m: meter" ]
-   lappend private(infosMotsClefs) [ list "FOCLEN"   $::caption(keyword,instrument)  ::keyword::private(focale_resultante)   readonly $::caption(keyword,parcourir)  "::confOptic::run 1"                           ""                                  ""                                       "" "" "float"  "Resulting focal length of the telescop"        "m: meter" ]
-   lappend private(infosMotsClefs) [ list "XPIXSZ"   $::caption(keyword,instrument)  ::keyword::private(cell_dim_x)          readonly $::caption(keyword,parcourir)  "::confCam::run"                               ""                                  ""                                       "" "" "float"  "Pixel width"                                   "micron" ]
-   lappend private(infosMotsClefs) [ list "YPIXSZ"   $::caption(keyword,instrument)  ::keyword::private(cell_dim_y)          readonly $::caption(keyword,parcourir)  "::confCam::run"                               ""                                  ""                                       "" "" "float"  "Pixel height"                                  "micron" ]
-   lappend private(infosMotsClefs) [ list "SET_TEMP" $::caption(keyword,instrument)  ::keyword::private(set_temperature_ccd) readonly $::caption(keyword,parcourir)  "::keyword::openSetTemperature"                ""                                  ""                                       "" "" "float"  "Set CCD temperature"                           "degres Celsius" ]
-   lappend private(infosMotsClefs) [ list "CCD_TEMP" $::caption(keyword,instrument)  ::keyword::private(temperature_ccd)     readonly $::caption(keyword,rafraichir) "::keyword::onChangeTemperature"               ""                                  ""                                       "" "" "float"  "Actual CCD temperature"                        "degres Celsius" ]
-   lappend private(infosMotsClefs) [ list "INSTRUME" $::caption(keyword,instrument)  ::keyword::private(equipement)          normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Instrument"                                    "" ]
-   lappend private(infosMotsClefs) [ list "DETNAM"   $::caption(keyword,instrument)  ::keyword::private(detectorName)        normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Detector"                                      "" ]
-   lappend private(infosMotsClefs) [ list "OBJNAME"  $::caption(keyword,cible)       ::keyword::private(objName)             normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAuto)           0  "" "string" "Object name"                                   "" ]
-   lappend private(infosMotsClefs) [ list "RA"       $::caption(keyword,cible)       ::keyword::private(ra)                  normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAutoBis)        0  "" "float"  "Object Right Ascension"                        "degres" ]
-   lappend private(infosMotsClefs) [ list "DEC"      $::caption(keyword,cible)       ::keyword::private(dec)                 normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAutoBis)        0  "" "float"  "Object Declination"                            "degres" ]
-   lappend private(infosMotsClefs) [ list "EQUINOX"  $::caption(keyword,cible)       ::keyword::private(equinoxe)            normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAutoTer)        0  "" "string" "Coordinates equinox"                           "" ]
-   lappend private(infosMotsClefs) [ list "RADECSYS" $::caption(keyword,cible)       ::keyword::private(radecsys)            normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Coordinates system"                            "" ]
-   lappend private(infosMotsClefs) [ list "IMAGETYP" $::caption(keyword,acquisition) ::keyword::private(typeImage)           readonly ""                             ""                                             $::keyword::private(listTypeImage)  ::conf(keyword,typeImageSelected)        0  "" "string" "Image type"                                    "" ]
-   lappend private(infosMotsClefs) [ list "SERIESID" $::caption(keyword,acquisition) ::keyword::private(seriesId)            normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Series identifiant"                            "" ]
-   lappend private(infosMotsClefs) [ list "EXPTIME"  $::caption(keyword,acquisition) ::keyword::private(expTime)             normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "Exposure time"                                 "s" ]
-   lappend private(infosMotsClefs) [ list "RA_MEAN"  $::caption(keyword,acquisition) ::keyword::private(raMean)              normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "RA mean correction"                            "arsec" ]
-   lappend private(infosMotsClefs) [ list "RA_RMS"   $::caption(keyword,acquisition) ::keyword::private(raRms)               normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "RA rms correction"                             "arsec" ]
-   lappend private(infosMotsClefs) [ list "DEC_MEAN" $::caption(keyword,acquisition) ::keyword::private(decMean)             normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "DEC mean correction"                           "arsec" ]
-   lappend private(infosMotsClefs) [ list "DEC_RMS"  $::caption(keyword,acquisition) ::keyword::private(decRms)              normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "DEC rms correction"                            "arsec" ]
-   lappend private(infosMotsClefs) [ list "SEEING"   $::caption(keyword,acquisition) ::keyword::private(seeing)              normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "Seeing as stellar full-width at half-maximum"  "arsec" ]
-   lappend private(infosMotsClefs) [ list "SKYLEVEL" $::caption(keyword,acquisition) ::keyword::private(skylevel)            normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "Sky backgound level"  "ADU" ]
-   lappend private(infosMotsClefs) [ list "SWCREATE" $::caption(keyword,logiciel)    ::keyword::private(name_software)       readonly ""                             ""                                             ""                                  ""                                       "" "" "string" "Acquisition software: http://www.audela.org/"  "" ]
-   lappend private(infosMotsClefs) [ list "SWMODIFY" $::caption(keyword,logiciel)    ::keyword::private(name_software)       readonly ""                             ""                                             ""                                  ""                                       "" "" "string" "Processing software: http://www.audela.org/"   "" ]
-   lappend private(infosMotsClefs) [ list "CONFNAME" $::caption(keyword,instrument)  ::keyword::private(confName)            normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Configuration name"                            "" ]
-   lappend private(infosMotsClefs) [ list "COMMENT"  $::caption(keyword,divers)      ::keyword::private(commentaire)         normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Comment"                                       "" ]
+   lappend private(infosMotsClefs) [ list "OBSERVER" $::caption(keyword,lieu)        ::keyword::private(nom_observateur)     readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observer name"                                   "" ]
+   lappend private(infosMotsClefs) [ list "SITENAME" $::caption(keyword,lieu)        ::keyword::private(nom_observatoire)    readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observatory name"                                "" ]
+   lappend private(infosMotsClefs) [ list "IAU_CODE" $::caption(keyword,lieu)        ::conf(posobs,station_uai)              readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observatory IAU Code"                            "" ]
+   lappend private(infosMotsClefs) [ list "SITELONG" $::caption(keyword,lieu)        ::conf(posobs,estouest_long)            readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observatory longitude"                           "degres, minutes, seconds" ]
+   lappend private(infosMotsClefs) [ list "SITELAT"  $::caption(keyword,lieu)        ::conf(posobs,nordsud_lat)              readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observatory latitude"                            "degres, minutes, seconds" ]
+   lappend private(infosMotsClefs) [ list "SITEELEV" $::caption(keyword,lieu)        ::conf(posobs,altitude)                 readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observatory elevation above the sea level"       "m: meter" ]
+   lappend private(infosMotsClefs) [ list "GEODSYS"  $::caption(keyword,lieu)        ::conf(posobs,ref_geodesique)           readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Geodetic datum for observatory position"         "" ]
+   lappend private(infosMotsClefs) [ list "TELESCOP" $::caption(keyword,instrument)  ::keyword::private(instrument)          readonly $::caption(keyword,parcourir)  "::confOptic::run 1"                           ""                                  ""                                       "" "" "string" "Telescop"                                        "" ]
+   lappend private(infosMotsClefs) [ list "APTDIA"   $::caption(keyword,instrument)  ::keyword::private(diametre)            readonly $::caption(keyword,parcourir)  "::confOptic::run 1"                           ""                                  ""                                       "" "" "float"  "Telescop diameter"                               "m: meter" ]
+   lappend private(infosMotsClefs) [ list "FOCLEN"   $::caption(keyword,instrument)  ::keyword::private(focale_resultante)   readonly $::caption(keyword,parcourir)  "::confOptic::run 1"                           ""                                  ""                                       "" "" "float"  "Resulting focal length of the telescop"          "m: meter" ]
+   lappend private(infosMotsClefs) [ list "XPIXSZ"   $::caption(keyword,instrument)  ::keyword::private(cell_dim_x)          readonly $::caption(keyword,parcourir)  "::confCam::run"                               ""                                  ""                                       "" "" "float"  "Pixel width"                                     "micron" ]
+   lappend private(infosMotsClefs) [ list "YPIXSZ"   $::caption(keyword,instrument)  ::keyword::private(cell_dim_y)          readonly $::caption(keyword,parcourir)  "::confCam::run"                               ""                                  ""                                       "" "" "float"  "Pixel height"                                    "micron" ]
+   lappend private(infosMotsClefs) [ list "SET_TEMP" $::caption(keyword,instrument)  ::keyword::private(set_temperature_ccd) readonly $::caption(keyword,parcourir)  "::keyword::openSetTemperature"                ""                                  ""                                       "" "" "float"  "Set CCD temperature"                             "degres Celsius" ]
+   lappend private(infosMotsClefs) [ list "CCD_TEMP" $::caption(keyword,instrument)  ::keyword::private(temperature_ccd)     readonly $::caption(keyword,rafraichir) "::keyword::onChangeTemperature"               ""                                  ""                                       "" "" "float"  "Actual CCD temperature"                          "degres Celsius" ]
+   lappend private(infosMotsClefs) [ list "INSTRUME" $::caption(keyword,instrument)  ::keyword::private(equipement)          normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Instrument"                                      "" ]
+   lappend private(infosMotsClefs) [ list "DETNAM"   $::caption(keyword,instrument)  ::keyword::private(detectorName)        normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Detector"                                        "" ]
+   lappend private(infosMotsClefs) [ list "OBJNAME"  $::caption(keyword,cible)       ::keyword::private(objName)             normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAuto)           0  "" "string" "Object observed"                                 "" ]
+   lappend private(infosMotsClefs) [ list "RA"       $::caption(keyword,cible)       ::keyword::private(ra)                  normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAutoBis)        0  "" "float"  "Object Right Ascension"                          "degres" ]
+   lappend private(infosMotsClefs) [ list "DEC"      $::caption(keyword,cible)       ::keyword::private(dec)                 normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAutoBis)        0  "" "float"  "Object Declination"                              "degres" ]
+   lappend private(infosMotsClefs) [ list "EQUINOX"  $::caption(keyword,cible)       ::keyword::private(equinoxe)            normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAutoTer)        0  "" "string" "Coordinates equinox"                             "" ]
+   lappend private(infosMotsClefs) [ list "RADECSYS" $::caption(keyword,cible)       ::keyword::private(radecsys)            normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Coordinates system"                              "" ]
+   lappend private(infosMotsClefs) [ list "IMAGETYP" $::caption(keyword,acquisition) ::keyword::private(typeImage)           readonly ""                             ""                                             $::keyword::private(listTypeImage)  ::conf(keyword,typeImageSelected)        0  "" "string" "Image type"                                      "" ]
+   lappend private(infosMotsClefs) [ list "SERIESID" $::caption(keyword,acquisition) ::keyword::private(seriesId)            normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Series identifiant"                              "" ]
+   lappend private(infosMotsClefs) [ list "EXPTIME"  $::caption(keyword,acquisition) ::keyword::private(expTime)             normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "Exposure time"                                   "s" ]
+   lappend private(infosMotsClefs) [ list "RA_MEAN"  $::caption(keyword,acquisition) ::keyword::private(raMean)              normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "RA mean correction"                              "arsec" ]
+   lappend private(infosMotsClefs) [ list "RA_RMS"   $::caption(keyword,acquisition) ::keyword::private(raRms)               normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "RA rms correction"                               "arsec" ]
+   lappend private(infosMotsClefs) [ list "DEC_MEAN" $::caption(keyword,acquisition) ::keyword::private(decMean)             normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "DEC mean correction"                             "arsec" ]
+   lappend private(infosMotsClefs) [ list "DEC_RMS"  $::caption(keyword,acquisition) ::keyword::private(decRms)              normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "DEC rms correction"                              "arsec" ]
+   lappend private(infosMotsClefs) [ list "SEEING"   $::caption(keyword,acquisition) ::keyword::private(seeing)              normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "Seeing as stellar full-width at half-maximum"    "arsec" ]
+   lappend private(infosMotsClefs) [ list "SKYLEVEL" $::caption(keyword,acquisition) ::keyword::private(skylevel)            normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "Sky backgound level"                             "ADU" ]
+   lappend private(infosMotsClefs) [ list "SWCREATE" $::caption(keyword,logiciel)    ::keyword::private(name_software)       readonly ""                             ""                                             ""                                  ""                                       "" "" "string" "Acquisition software: http://www.audela.org/"    "" ]
+   lappend private(infosMotsClefs) [ list "SWMODIFY" $::caption(keyword,logiciel)    ::keyword::private(name_software)       readonly ""                             ""                                             ""                                  ""                                       "" "" "string" "Processing software: http://www.audela.org/"     "" ]
+   lappend private(infosMotsClefs) [ list "CONFNAME" $::caption(keyword,instrument)  ::keyword::private(confName)            normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Configuration name"                              "" ]
+   lappend private(infosMotsClefs) [ list "COMMENT"  $::caption(keyword,divers)      ::keyword::private(commentaire)         normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Comment"                                         "" ]
 }
 
 #------------------------------------------------------------------------------
@@ -236,7 +235,6 @@ proc ::keyword::init { } {
 #
 # Parametres :
 #    visuNo
-#    this : Chemin de la fenetre
 #------------------------------------------------------------------------------
 proc ::keyword::run { visuNo } {
    variable private
@@ -856,6 +854,47 @@ proc ::keyword::createDialog { visuNo } {
    wm title $frm "$::caption(keyword,titre) (visu$visuNo - $::caption(keyword,camera) [ ::confVisu::getCamItem $visuNo ])"
    wm protocol $frm WM_DELETE_WINDOW "::keyword::cmdClose $visuNo"
 
+   #--- Frame de gestion de la configuration des mots cles
+   frame $frm.config -borderwidth 1 -relief raised
+
+      #--- Frame de la combobox de choix de la configuration des mots cles
+      frame $frm.config.choix -borderwidth 0 -relief raised
+
+         #--- Nom de la configuration
+         label $frm.config.choix.labconfig -text "$::caption(keyword,nom_config)"
+         pack $frm.config.choix.labconfig -anchor w -side left -padx 10 -pady 5
+
+         ComboBox $frm.config.choix.configHeader \
+            -width 42         \
+            -height 10        \
+            -relief sunken    \
+            -borderwidth 2    \
+            -editable 0       \
+            -textvariable ::private(nameConfig) \
+            -modifycmd "::keyword::config::cbCommand $frm.config.choix.configHeader" \
+            -values $::keyword::private(listConfig)
+         pack $frm.config.choix.configHeader -anchor w -side left -padx 10 -pady 5
+
+      pack $frm.config.choix -side top -fill x -expand 0
+
+      #--- Frame des boutons
+      frame $frm.config.but -borderwidth 0 -relief raised
+
+         #--- Gestion des noms des configurations
+         button $frm.config.but.add -text "$::caption(keyword,ajouter_config)" -borderwidth 2 \
+            -command "::keyword::addConfig $visuNo"
+         pack $frm.config.but.add -anchor center -side left -padx 5 -pady 5 -ipadx 5
+         button $frm.config.but.del -text "$::caption(keyword,supprimer_config)" -borderwidth 2 \
+            -command "::keyword::delConfig $visuNo"
+         pack $frm.config.but.del -anchor center -side left -padx 5 -pady 5 -ipadx 5
+         button $frm.config.but.copy -text "$::caption(keyword,copier_config)" -borderwidth 2 \
+            -command "::keyword::copyConfig $visuNo"
+         pack $frm.config.but.copy -anchor center -side left -padx 5 -pady 5 -ipadx 5
+
+      pack $frm.config.but -side bottom -fill x -expand 0
+
+   pack $frm.config -side top -fill x -expand 0
+
    #--- Frame des boutons
    frame $frm.cmd -borderwidth 1 -relief raised
 
@@ -1293,6 +1332,219 @@ proc ::keyword::setWidgetColumnModificationState { visuNo } {
             $w configure -state disabled
          }
       }
+   }
+}
+
+#------------------------------------------------------------------------------
+# addConfig
+#    Ajout d'une nouvelle configuration dans la liste
+#
+# Parametres :
+#    visuNo
+#------------------------------------------------------------------------------
+proc ::keyword::addConfig { visuNo } {
+   ::keyword::config::run $visuNo "add"
+}
+
+#------------------------------------------------------------------------------
+# delConfig
+#    Suppression d'une configuration dans la liste
+#
+# Parametres :
+#    visuNo
+#------------------------------------------------------------------------------
+proc ::keyword::delConfig { visuNo } {
+   ::keyword::config::run $visuNo "del"
+}
+
+#------------------------------------------------------------------------------
+# copyConfig
+#    Copie d'une configuration de la liste
+#
+# Parametres :
+#    visuNo
+#------------------------------------------------------------------------------
+proc ::keyword::copyConfig { visuNo } {
+   ::keyword::config::run $visuNo "copy"
+}
+
+#--- Namespace pour les fenetres de gestion des noms de configuration
+namespace eval ::keyword::config {
+}
+
+#------------------------------------------------------------------------------
+# run
+#    Cree les fenetres de gestion des noms de configuration
+#
+# Parametres :
+#    visuNo
+#    action : add, del ou copy
+#------------------------------------------------------------------------------
+proc ::keyword::config::run { visuNo action } {
+   variable private
+
+   set private(action) "$action"
+   ::confGenerique::run "1" "$::audace(base).manageHeader" "::keyword::config" -modal 0
+   set posx_config [ lindex [ split [ wm geometry $::keyword::private($visuNo,frm) ] "+" ] 1 ]
+   set posy_config [ lindex [ split [ wm geometry $::keyword::private($visuNo,frm) ] "+" ] 2 ]
+   wm geometry $::audace(base).manageHeader +[ expr $posx_config + 0 ]+[ expr $posy_config + 90 ]
+}
+
+#------------------------------------------------------------------------------
+# getLabel
+#    Retourne le nom de la fenetre de configuration
+#
+# Parametres :
+#    rien
+#------------------------------------------------------------------------------
+proc ::keyword::config::getLabel { } {
+   return "$::caption(keyword,nom_config)"
+}
+
+#------------------------------------------------------------------------------
+# fillConfigPage
+#    Creation de l'interface graphique
+#
+# Parametres :
+#    frm
+#    visuNo
+#------------------------------------------------------------------------------
+proc ::keyword::config::fillConfigPage { frm visuNo } {
+   variable private
+
+   #--- Initialisation de variables
+   set private(frame)            $frm
+   set private(newNameConfig)    ""
+   set private(delNameConfig)    "$::keyword::private(nameConfig)"
+   set private(nameCopyConfig)   "$::keyword::private(nameConfig)"
+   set private(nameConfigCopied) ""
+
+   #--- Frame de la gestion des noms de configuration
+   frame $frm.setup -borderwidth 0 -relief raised
+
+      if { $private(action) == "add" } {
+
+         label $frm.setup.addConfig -text $::caption(keyword,config_a_ajouter)
+         pack $frm.setup.addConfig -anchor nw -side left -padx 10 -pady 10
+
+         entry $frm.setup.nameAddConfig -textvariable private(newNameConfig) -width 42
+         pack $frm.setup.nameAddConfig  -anchor w -side left -padx 10 -pady 5
+
+      } elseif { $private(action) == "del" } {
+
+         label $frm.setup.delConfig -text $::caption(keyword,config_a_supprimer)
+         pack $frm.setup.delConfig -anchor nw -side left -padx 10 -pady 10
+
+         ComboBox $frm.setup.nameDelConfig \
+            -width 42         \
+            -height 10        \
+            -relief sunken    \
+            -borderwidth 2    \
+            -editable 0       \
+            -textvariable ::private(delNameConfig) \
+            -modifycmd "::keyword::config::config::cbCommand $frm.setup.nameDelConfig" \
+            -values $::keyword::private(listConfig)
+         pack $frm.setup.nameDelConfig -anchor w -side right -padx 10 -pady 5
+
+      } elseif { $private(action) == "copy" } {
+
+         frame $frm.setup.frame1 -borderwidth 0 -relief raised
+
+            label $frm.setup.frame1.copyConfig -text $::caption(keyword,config_a_copier)
+            pack $frm.setup.frame1.copyConfig -anchor nw -side left -padx 10 -pady 10
+
+            ComboBox $frm.setup.frame1.nameCopyConfig \
+               -width 42         \
+               -height 10        \
+               -relief sunken    \
+               -borderwidth 2    \
+               -editable 0       \
+               -textvariable ::private(nameCopyConfig) \
+               -modifycmd "::keyword::config::config::cbCommand $frm.setup.frame1.nameCopyConfig" \
+               -values $::keyword::private(listConfig)
+            pack $frm.setup.frame1.nameCopyConfig -anchor w -side right -padx 10 -pady 5
+
+         pack $frm.setup.frame1 -side top -fill both -expand 1
+
+         frame $frm.setup.frame2 -borderwidth 0 -relief raised
+
+            label $frm.setup.frame2.nameConfig -text $::caption(keyword,nom_config)
+            pack $frm.setup.frame2.nameConfig -anchor nw -side left -padx 10 -pady 10
+
+            entry $frm.setup.frame2.nameConfigCopied -textvariable ::private(nameConfigCopied) -width 42
+            pack $frm.setup.frame2.nameConfigCopied -anchor w -side left -padx 10 -pady 5
+
+         pack $frm.setup.frame2 -side top -fill both -expand 1
+
+      }
+
+   pack $frm.setup -side top -fill both -expand 1
+}
+
+#------------------------------------------------------------------------------
+# apply
+#    Fonction 'Appliquer' pour memoriser et appliquer la configuration
+#
+# Parametres :
+#    visuNo
+#------------------------------------------------------------------------------
+proc ::keyword::config::apply { visuNo } {
+   variable private
+
+   if { $private(action) == "add" } {
+      if { $private(newNameConfig) != "" } {
+         set ::keyword::private(nameConfig) "$private(newNameConfig)"
+      }
+   } elseif { $private(action) == "del" } {
+      if { $private(delNameConfig) != "" } {
+         set index "$private(index_del)"
+
+      }
+   } elseif { $private(action) == "copy" } {
+      if { $private(nameCopyConfig) != "" } {
+         set index "$private(index_copy)"
+
+      }
+   }
+}
+
+#------------------------------------------------------------------------------
+# closeWindow
+#    Fonction appellee lors de l'appui sur le bouton 'Fermer'
+#
+# Parametres :
+#    visuNo
+#------------------------------------------------------------------------------
+proc ::keyword::config::closeWindow { visuNo } {
+}
+
+#------------------------------------------------------------------------------
+# cbCommand
+#    Affiche les valeurs dans les widgets pour la configuration choisie
+#    (appelee par la combobox a chaque changement de selection)
+#
+# Parametres :
+#    cb : Element selectionne
+#------------------------------------------------------------------------------
+proc ::keyword::config::cbCommand { cb } {
+   variable private
+
+   #--- Je recupere l'index de l'element selectionne
+   set index [ $cb getvalue ]
+   if { "$index" == "" } {
+      set index 0
+   }
+
+   #--- Je recupere les attributs de la configuration
+  ### array set configurationHeader $::conf(posobs,config_observatoire,$index)
+
+   #--- Je copie les valeurs dans les widgets de la configuration choisie
+   if { $private(action) == "del" } {
+     ### set private(delNameConfig) $configurationHeader(nameConfig)
+      set private(index_del)     "$index"
+   } elseif { $private(action) == "copy" } {
+     ### set private(nameCopyConfig) $configurationHeader(nameConfig)
+      set private(index_copy)     "$index"
    }
 }
 
