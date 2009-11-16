@@ -2,7 +2,7 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: ethernaude.tcl,v 1.28 2009-04-30 20:04:22 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.tcl,v 1.29 2009-11-16 23:16:10 robertdelmas Exp $
 #
 
 namespace eval ethernaude {
@@ -153,7 +153,7 @@ proc ::ethernaude::fillConfigPage { frm } {
    pack $frm.ipsetting -in $frm.frame2 -anchor center -side left -padx 10 -pady 2
 
    #--- EthernAude en mode debug ou non
-   checkbutton $frm.debug -text "$caption(ethernaude,debug)" -highlightthickness 0 \
+   checkbutton $frm.debug -text "$caption(ethernaude,debug) (eth.txt)" -highlightthickness 0 \
       -variable ::ethernaude::widget(ethernaude,debug)
    pack $frm.debug -in $frm.frame2 -anchor center -side right -padx 10 -pady 2
 
