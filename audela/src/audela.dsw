@@ -749,7 +749,7 @@ Package=<4>
 
 ################################################################################
 
-Project: "libt193"=".\libtel\libt193\vc60\t193.dsp" - Package Owner=<4>
+Project: "libt193"=".\libtel\libt193\vc60\libt193.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
