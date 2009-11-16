@@ -2,7 +2,7 @@
 # Fichier : audinet.tcl
 # Description : Interface de liaison AudiNet
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: audinet.tcl,v 1.17 2009-03-13 23:51:36 michelpujol Exp $
+# Mise a jour $Id: audinet.tcl,v 1.18 2009-11-16 23:15:20 robertdelmas Exp $
 #
 
 namespace eval audinet {
@@ -219,7 +219,7 @@ proc ::audinet::fillConfigPage { frm } {
    pack $frm.udptempo -in $frm.frame3 -anchor center -side left -padx 10 -pady 5
 
    #--- AudiNet en mode debug ou non
-   checkbutton $frm.debug -text "$caption(audinet,debug)" -highlightthickness 0 \
+   checkbutton $frm.debug -text "$caption(audinet,debug) (audinet.log)" -highlightthickness 0 \
       -variable ::audinet::widget(audinet,debug)
    pack $frm.debug -in $frm.frame3 -anchor center -side right -padx 10 -pady 2
 
