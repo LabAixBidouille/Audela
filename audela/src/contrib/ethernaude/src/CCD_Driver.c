@@ -443,7 +443,7 @@ int GetClockModes(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
     paramCCD_put(-1, ligne, ParamCCDOut, 0);
     sprintf(ligne, "PixelsPrescanX = %d", ethvar.PixelsPrescanX);
     paramCCD_put(-1, ligne, ParamCCDOut, 0);
-    sprintf(ligne, "PixelsPrescanY = %d", ethvar.PixelsPrescanY-4);
+    sprintf(ligne, "PixelsPrescanY = %d", ethvar.PixelsPrescanY);
     paramCCD_put(-1, ligne, ParamCCDOut, 0);
     sprintf(ligne, "PixelsOverscanX = %d", ethvar.PixelsOverscanX);
     paramCCD_put(-1, ligne, ParamCCDOut, 0);
@@ -458,14 +458,17 @@ int GetClockModes(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
     paramCCD_put(-1, "SpeedReadout = 150", ParamCCDOut, 0);
     paramCCD_put(-1, "NumberPorts = 1", ParamCCDOut, 0);
     paramCCD_put(-1, "GainPort1 = 4", ParamCCDOut, 0);
-    sprintf(ligne, "InfoCCD_PixelsSizeX = %d", ethvar.InfoCCD_PixelsSizeX);
-    sprintf(ligne, "InfoCCD_PixelsSizeY = %d", ethvar.InfoCCD_PixelsSizeY);
-    paramCCD_put(-1, ligne, ParamCCDOut, 0);
+    //sprintf(ligne, "InfoCCD_PixelsSizeX = %d", ethvar.InfoCCD_PixelsSizeX);
+    //sprintf(ligne, "InfoCCD_PixelsSizeY = %d", ethvar.InfoCCD_PixelsSizeY);
+    //paramCCD_put(-1, ligne, ParamCCDOut, 0);
     sprintf(ligne, "BitPerPixels = %d", ethvar.BitPerPixels);
     paramCCD_put(-1, ligne, ParamCCDOut, 0);
     paramCCD_put(-1, "HasWindowingCaps = TRUE", ParamCCDOut, 0);
     paramCCD_put(-1, "HasBinningCaps = TRUE", ParamCCDOut, 0);
     paramCCD_put(-1, "AllBinningPossible = TRUE", ParamCCDOut, 0);
+    paramCCD_put(-1, "HasTDIBinningCaps = TRUE", ParamCCDOut, 0);
+    paramCCD_put(-1, "TDIBinningXMax = 2", ParamCCDOut, 0);
+    paramCCD_put(-1, "TDIBinningYMax = 64", ParamCCDOut, 0);
     return 0;
 }
 
@@ -632,6 +635,8 @@ int CCDStatus(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
 	strcpy(ethvar.CCDStatus, "EXPOSURE_PENDING");
     if (Exposure_Completed == true)
 	strcpy(ethvar.CCDStatus, "EXPOSURE_COMPLETED");
+    if (Readout_in_Progress == true)
+	strcpy(ethvar.CCDStatus, "READOUT_in_PROGRESS");
     paramCCD_put(-1, "SUCCES", ParamCCDOut, 0);
     #ifdef CCDDRIVER_DEBUG
     printf("%f CCDStatus=%s\n", GetTimeStamp(), ethvar.CCDStatus);
