@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.68 2009-11-11 15:49:18 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.69 2009-11-16 17:25:59 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -373,7 +373,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,porttalk_titre)                 "Comunicação de portas:"
    set caption(audace,porttalk_erreur)                "Erro de comunicação de portas"
-   set caption(audace,porttalk_msg_erreur)            "Executar uninstallporttalk.exe desde bin, apagar porttalk.sys da pasta system32/drivers e correr o AudeLA novamente."
+   set caption(audace,porttalk_msg_erreur)            "Executar uninstallporttalk.exe desde bin, eliminar porttalk.sys da pasta system32/drivers e correr o AudeLA novamente."
    set caption(audace,porttalk_message)               "Não mostrar esta imagem outra vez."
 
    set caption(audace,port_com_dispo)                 "Portas COM disponíveis:"
