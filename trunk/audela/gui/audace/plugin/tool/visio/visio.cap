@@ -1,6 +1,6 @@
 #
 # Fichier : visio.cap
-# Mise a jour $Id: visio.cap,v 1.12 2009-11-08 13:59:53 robertdelmas Exp $
+# Mise a jour $Id: visio.cap,v 1.13 2009-11-16 17:30:13 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -76,7 +76,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio,arr-)                "--"
    set caption(visio,avt+)                "++"
    set caption(visio,charger)             "Go"
-   set caption(visio,suppr_fichier)       "Suppr fichier"
+   set caption(visio,suppr_fichier)       "Supprimer un fichier"
    set caption(visio,serie)               "Mode série"
    set caption(visio,suppr_lacunes)       "Renuméroter"
    set caption(visio,renommer)            "Renommer"
@@ -292,7 +292,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio,arr-)                "--"
    set caption(visio,avt+)                "++"
    set caption(visio,charger)             "Go"
-   set caption(visio,suppr_fichier)       "Apagar ficheiro"
+   set caption(visio,suppr_fichier)       "Eliminar ficheiro"
    set caption(visio,serie)               "Modo série"
    set caption(visio,suppr_lacunes)       "Renumerar"
    set caption(visio,renommer)            "Mudar o nome"
