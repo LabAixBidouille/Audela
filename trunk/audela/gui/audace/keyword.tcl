@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.26 2009-11-15 15:54:41 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.27 2009-11-16 21:59:05 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -21,7 +21,7 @@ proc ::keyword::header { visuNo args } {
 
    #--- Initialisation
    set base [ ::confVisu::getBase $visuNo ]
-   if { ! [ info exists conf(geometry_header_$visuNo) ] } { set conf(geometry_header_$visuNo) "632x303+3+75" }
+   if { ! [ info exists ::conf(geometry_header_$visuNo) ] } { set ::conf(geometry_header_$visuNo) "632x303+3+75" }
    #---
    set private(geometry_header_$visuNo) $::conf(geometry_header_$visuNo)
    #---
