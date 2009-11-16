@@ -2,7 +2,7 @@
 # Fichier : gphoto2.tcl
 # Description : Interface de liaison GPhoto2
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: gphoto2.tcl,v 1.14 2009-03-13 23:51:36 michelpujol Exp $
+# Mise a jour $Id: gphoto2.tcl,v 1.15 2009-11-16 23:17:10 robertdelmas Exp $
 #
 
 namespace eval gphoto2 {
@@ -131,7 +131,7 @@ proc ::gphoto2::fillConfigPage { frm } {
    set widget(frm) $frm
 
    #--- Mode debug
-   checkbutton $frm.debug -text "$caption(dslr,debug)" -highlightthickness 0 \
+   checkbutton $frm.debug -text "$caption(dslr,debug) (libgphoto.log)" -highlightthickness 0 \
       -variable ::gphoto2::widget(gphoto2,debug)
    pack $frm.debug -in $frm -anchor center -side left -padx 10 -pady 2
 
