@@ -301,7 +301,7 @@ ros_meteo close vantage
 	         Tcl_DStringAppend(&dsptr,Buf,-1);
 	         sprintf(Buf,"%.2d ",TimeStamp.hour);
 	         Tcl_DStringAppend(&dsptr,Buf,-1);
-	         sprintf(Buf,"%.2d}",TimeStamp.minute);
+	         sprintf(Buf,"%.2d} ",TimeStamp.minute);
 	         Tcl_DStringAppend(&dsptr,Buf,-1);
          }
          /* --- ---*/
