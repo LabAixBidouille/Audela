@@ -228,7 +228,7 @@ ros_meteo close vantage
       }
       /* --- ---*/
       if ((mode==1)&&(modele==1)) {
-         port=3;
+         port=5;
          vitesse=19200;
          if (argc>=5) {
             port=atoi(argv[3]);
