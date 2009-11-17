@@ -1,5 +1,5 @@
 # FITS TCL makefile.in
-# $Id: Makefile.in,v 1.2 2009-11-14 17:10:14 michelpujol Exp $
+# $Id: Makefile.in,v 1.3 2009-11-17 09:28:34 jacquesmichelet Exp $
 
 #----------------------------------------------------------------------------
 # Definitions:
@@ -32,7 +32,7 @@ DEFS		= @DEFS@
 C_LIB_OPTION	= @C_LIB_OPTION@
 SHLIB_SUFFIX	= @SHLIB_SUFFIX@
 SHLIB_LD 	= @SHLIB_LD@
-LD_FLAGS 	= @LD_FLAGS@
+LD_FLAGS 	= @LD_FLAGS@ -Wl,-rpath=$(INSTALLDIR)/lib
 
 TCL_INC_PATH	= @TCL_INC_PATH@
 TCL_LIB_PATH	= @TCL_PATH@
@@ -114,6 +114,9 @@ fitstclLibObjs:
 
 #
 # $Log: not supported by cvs2svn $
+# Revision 1.2  2009/11/14 17:10:14  michelpujol
+# modification pour utiliser la librairie dynamique libcfitsio.so au lieu d'inclure les *.o de cfitsio
+#
 # Revision 1.1  2009/03/14 11:23:18  michelpujol
 # source de libfitstcl pour compilation avec TCL8.5 et machine 64 bits
 #
