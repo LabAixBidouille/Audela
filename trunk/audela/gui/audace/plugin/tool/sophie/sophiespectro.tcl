@@ -2,7 +2,7 @@
 # @file     sophiespectro.tcl
 # @brief    fichier du namespace ::sophie::spectro
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiespectro.tcl,v 1.10 2009-10-25 13:26:24 michelpujol Exp $
+# @version  $Id: sophiespectro.tcl,v 1.11 2009-11-17 17:01:03 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -241,7 +241,7 @@ proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms seeing
          set shortName [string map { ":" "-" } $shortName]
          #--- j'ajoute le repertoire dans le nom du fichier
          set fileName [file join $::audace(rep_images) $shortName]
-         #--- j'ajoute les mot cles dans l'image integree
+         #--- j'ajoute les mots cles dans l'image integree
          ::keyword::setKeywordValue $visuNo "RA_MEAN"  $alphaMean
          ::keyword::setKeywordValue $visuNo "RA_RMS"   $alphaRms
          ::keyword::setKeywordValue $visuNo "DEC_MEAN" $deltaMean
@@ -252,7 +252,7 @@ proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms seeing
          ::keyword::setKeywordValue $visuNo "TELESCOP" $::conf(telescope)
          ::keyword::setKeywordValue $visuNo "SWCREATE" "[::audela::getPluginTitle] $::audela(version)"
          set keywordNameList [list RA_MEAN RA_RMS DEC_MEAN DEC_RMS SEEING SKYLEVEL DETNAM TELESCOP SWCREATE]
-         #--- j'ajoute des mots clefs dans l'en-tete FITS de l'image
+         #--- j'ajoute des mots cles dans l'en-tete FITS de l'image
          foreach keyword [ ::keyword::getKeywords $visuNo $keywordNameList] {
             #--- j'ajoute tous les mots cles qui ne sont pas vide
             buf$sumBufNo setkwd $keyword

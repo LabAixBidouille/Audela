@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqzadko.tcl,v 1.9 2009-11-06 09:07:10 myrtillelaas Exp $
+# Mise a jour $Id: acqzadko.tcl,v 1.10 2009-11-17 16:56:54 robertdelmas Exp $
 #
 
 #==============================================================
@@ -34,7 +34,7 @@ proc ::acqzadko::createPluginInstance { { in "" } { visuNo 1 } } {
     		twapi::end_process $res -force
        }
    }
-   
+
    #---
    set panneau(acqzadko,$visuNo,base) "$in"
    set panneau(acqzadko,$visuNo,This) "$in.acqzadko"
@@ -152,7 +152,7 @@ proc ::acqzadko::deletePluginInstance { visuNo } {
     		set res [twapi::create_process "[pwd]/../bin/camera.exe" -startdir "[pwd]/../bin"]
        }
    }
-		
+
    #set process_id [lindex $res 0]
    #set thread_id [lindex $res 1]
    #---
@@ -1335,7 +1335,7 @@ proc ::acqzadko::Go { visuNo } {
             after 10 ::acqzadko::loadLastImage $visuNo $camNo
          }
 
-         #--- Rajoute des mots clefs dans l'en-tete FITS
+         #--- Rajoute des mots cles dans l'en-tete FITS
          foreach keyword [ ::keyword::getKeywords $visuNo ] {
             buf$bufNo setkwd $keyword
          }
@@ -2393,24 +2393,24 @@ proc ::acqzadko::acqzadkoBuildIF { visuNo } {
         -command "::acqzadkoSetup::run $visuNo $base.acqzadkoSetup"
       pack $panneau(acqzadko,$visuNo,This).config.but -side top -fill x -in $panneau(acqzadko,$visuNo,This).config -ipadx 5 -ipady 4
    pack $panneau(acqzadko,$visuNo,This).config -side top -fill x
-   
-########################### 
+
+###########################
    #--- Trame du bouton de connection de la camera
    frame $panneau(acqzadko,$visuNo,This).camera -borderwidth 2 -relief groove
       button $panneau(acqzadko,$visuNo,This).camera.but -borderwidth 1 -text $caption(acqzadko,connectioncamera) \
         -command "::confCam::run"
       pack $panneau(acqzadko,$visuNo,This).camera.but -side top -fill x -in $panneau(acqzadko,$visuNo,This).camera -ipadx 5 -ipady 4
    pack $panneau(acqzadko,$visuNo,This).camera -side top -fill x
-   
-   
+
+
    #--- Trame du bouton affichage de la raquette
    frame $panneau(acqzadko,$visuNo,This).raquette -borderwidth 2 -relief groove
       button $panneau(acqzadko,$visuNo,This).raquette.but -borderwidth 1 -text $caption(acqzadko,raquettetel) \
         -command "::confPad::run"
       pack $panneau(acqzadko,$visuNo,This).raquette.but -side top -fill x -in $panneau(acqzadko,$visuNo,This).raquette -ipadx 5 -ipady 4
    pack $panneau(acqzadko,$visuNo,This).raquette -side top -fill x
-   
-###########################    
+
+###########################
    #--- Trame du temps de pose
    frame $panneau(acqzadko,$visuNo,This).pose -borderwidth 2 -relief ridge
       menubutton $panneau(acqzadko,$visuNo,This).pose.but -text $caption(acqzadko,pose) \

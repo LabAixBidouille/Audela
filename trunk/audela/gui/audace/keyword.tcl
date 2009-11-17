@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.27 2009-11-16 21:59:05 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.28 2009-11-17 16:54:26 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -358,7 +358,7 @@ proc ::keyword::onChangeConfOptic { visuNo args } {
 
 #------------------------------------------------------------------------------
 # onChangeTemperature
-#    met a jour le mot cles de la temperature
+#    met a jour le mot cle de la temperature
 #
 # Parametres :
 #    visuNo
@@ -402,7 +402,7 @@ proc ::keyword::onChangeCellDim { visuNo args } {
 
 #------------------------------------------------------------------------------
 # onChangeObjname
-#    met a jour le mot cles du nom de l'objet
+#    met a jour le mot cle du nom de l'objet
 #
 # Parametres :
 #    visuNo
@@ -437,7 +437,7 @@ proc ::keyword::onChangeRaDec { visuNo } {
 
 #------------------------------------------------------------------------------
 # onChangeEquinox
-#    met a jour le mot cles de l'equinoxe des coordonnees de l'objet
+#    met a jour le mot cle de l'equinoxe des coordonnees de l'objet
 #
 # Parametres :
 #    visuNo
@@ -485,7 +485,7 @@ proc ::keyword::openSetTemperature { visuNo } {
 proc ::keyword::onChangeValueComboBox { visuNo } {
    variable private
 
-   #--- Mot cles OBJNAME
+   #--- Mot cle OBJNAME
    if { $::conf(keyword,GotoManuelAuto) == "$::caption(keyword,automatic)" } {
       #--- Je recupere le nomTK de l'entry
       set wOBJNAME [$::keyword::private($visuNo,table) windowpath OBJNAME,valeur ]
@@ -525,7 +525,7 @@ proc ::keyword::onChangeValueComboBox { visuNo } {
       set private(dec) ""
    }
 
-   #--- Mot cles EQUINOX
+   #--- Mot cle EQUINOX
    if { $::conf(keyword,GotoManuelAutoTer) == "$::caption(keyword,automatic)" } {
       #--- Je recupere le nomTK de l'entry
       set wEQUINOX [$::keyword::private($visuNo,table) windowpath EQUINOX,valeur ]
@@ -542,7 +542,7 @@ proc ::keyword::onChangeValueComboBox { visuNo } {
       set private(equinoxe) ""
    }
 
-   #--- Mot cles IMAGETYP
+   #--- Mot cle IMAGETYP
    if { $::conf(keyword,typeImageSelected) == "$::caption(keyword,newValue)" } {
       #--- Je choisis une valeur non disponible dans la liste
       set private(tempTypeImage) $private(typeImage)
@@ -700,7 +700,7 @@ proc ::keyword::setKeywordsRaDecManuel { } {
 
 #------------------------------------------------------------------------------
 # setKeywordsEquinoxAuto
-#    fonction appelee par rendre la capture du mot cles EQUINOX automatique
+#    fonction appelee par rendre la capture du mot cle EQUINOX automatique
 # Return :
 #    rien
 #------------------------------------------------------------------------------
@@ -710,7 +710,7 @@ proc ::keyword::setKeywordsEquinoxAuto { } {
 
 #------------------------------------------------------------------------------
 # setKeywordsEquinoxManuel
-#    fonction appelee par rendre la capture du mot cles EQUINOX manuelle
+#    fonction appelee par rendre la capture du mot cle EQUINOX manuelle
 # Return :
 #    rien
 #------------------------------------------------------------------------------
@@ -987,9 +987,9 @@ proc ::keyword::createDialog { visuNo } {
 #
 # Parametres :
 #    visuNo        : numero de la visu
-#    motclef       : nom du mot cles
-#    categorie     : categorie du mot cles
-#    textvariable  : variable contenant la valeur du mot cles
+#    motclef       : nom du mot cle
+#    categorie     : categorie du mot cle
+#    textvariable  : variable contenant la valeur du mot cle
 #    stateVariable : etat de l'entry
 #    caption       : etiquette du bouton
 #    command       : procedure a appeler quand on clique sur le bouton
@@ -1026,7 +1026,7 @@ proc ::keyword::ajouteLigne { visuNo motclef categorie textvariable stateVariabl
 #
 # Parametres :
 #    visuNo       : numero de la visu
-#    motclef      : nom du mot cles
+#    motclef      : nom du mot cle
 #    tbl          : nom Tk de la table
 #    row          : numero de ligne
 #    col          : numero de colonne
@@ -1216,7 +1216,7 @@ proc ::keyword::setKeywordValue { visuNo keywordName keywordValue} {
          return
       }
    }
-   #--- je retourne un message d'erreur si le mot cles n'a pas ete trouve
+   #--- je retourne un message d'erreur si le mot cle n'a pas ete trouve
    error "keyword $keywordName unknown"
 }
 

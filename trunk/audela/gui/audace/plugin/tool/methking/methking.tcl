@@ -2,7 +2,7 @@
 # Fichier : methking.tcl
 # Description : Outil d'aide a la mise en station par la methode de King
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: methking.tcl,v 1.25 2009-07-13 22:56:19 robertdelmas Exp $
+# Mise a jour $Id: methking.tcl,v 1.26 2009-11-17 16:59:08 robertdelmas Exp $
 #
 
 #============================================================
@@ -564,7 +564,7 @@ namespace eval ::methking {
    proc decalage {} {
       global audace
 
-      # --- recupere la liste des mots cle de l'image Fi..chuuut
+      # --- recupere la liste des mots cles de l'image Fi..chuuut
       set listkey [buf$audace(bufNo) getkwds]
       # --- on evalue chaque (each) mot cle
       foreach key $listkey {

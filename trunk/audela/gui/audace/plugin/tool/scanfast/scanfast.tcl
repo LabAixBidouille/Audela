@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.49 2009-11-08 08:24:29 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.50 2009-11-17 17:00:23 robertdelmas Exp $
 #
 
 global panneau
@@ -800,7 +800,7 @@ proc ::scanfast::cmdGo { { motor motoron } } {
             }
          }
 
-         #--- Rajoute des mots clefs dans l'en-tete FITS
+         #--- Rajoute des mots cles dans l'en-tete FITS
          foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
             buf$audace(bufNo) setkwd $keyword
          }

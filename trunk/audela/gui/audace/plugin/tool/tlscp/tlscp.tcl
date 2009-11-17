@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.29 2009-11-01 21:42:53 michelpujol Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.30 2009-11-17 17:03:03 robertdelmas Exp $
 #
 
 #============================================================
@@ -913,7 +913,7 @@ proc ::tlscp::startAcquisition { visuNo  } {
    #--- j'attend la fin de l'acquisition
    vwait ::tlscp::private($visuNo,acquisitionState)
 
-   #--- Rajoute des mots clefs dans l'en-tete FITS
+   #--- Rajoute des mots cles dans l'en-tete FITS
    set bufNo [ ::confVisu::getBufNo $visuNo ]
    foreach keyword [ ::keyword::getKeywords $visuNo ] {
       buf$bufNo setkwd $keyword
@@ -1022,7 +1022,7 @@ proc ::tlscp::startCenter { visuNo { methode "" } } {
    #--- j'attends la fin du centrage
    vwait ::tlscp::private($visuNo,acquisitionState)
 
-   #--- j'ajoute les mots clefs dans l'en-tete FITS
+   #--- j'ajoute les mots cles dans l'en-tete FITS
    set bufNo [::confVisu::getBufNo $visuNo]
    foreach keyword [ ::keyword::getKeywords $visuNo ] {
       buf$bufNo setkwd $keyword

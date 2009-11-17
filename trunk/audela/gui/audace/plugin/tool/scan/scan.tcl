@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.49 2009-11-08 08:23:22 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.50 2009-11-17 16:59:45 robertdelmas Exp $
 #
 
 #============================================================
@@ -667,7 +667,7 @@ proc ::scan::cmdGo { { motor motoron } } {
          #--- Appel a la fonction d'acquisition
          scan $w $h $bin $binY $dt $f
 
-         #--- Rajoute des mots clefs dans l'en-tete FITS
+         #--- Rajoute des mots cles dans l'en-tete FITS
          foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
             buf$audace(bufNo) setkwd $keyword
          }
