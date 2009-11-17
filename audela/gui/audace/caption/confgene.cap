@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.31 2009-11-16 17:31:40 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.32 2009-11-17 23:06:48 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -112,7 +112,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,type_fenetre)                       "Type de fenêtre"
 
-  set caption(confgene,fichier_image)                      "Fichiers image"
+   set caption(confgene,fichier_image)                      "Fichiers image"
    set caption(confgene,fichier_image_fits)                 "Fichiers FITS"
    set caption(confgene,fichier_images_seuils_visu)         "Enregistrer les images avec les seuils de la visu"
    set caption(confgene,fichier_images_choix_format)        "Enregistrer les images au format :"
@@ -228,10 +228,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,nom_observatoire:)                  "Nome dell'osservatorio:"
    set caption(confgene,nom_observatoire)                   "Nome dell'osservatorio"
    set caption(confgene,ajouter_observatoire)               "Aggiungi osservatorio"
-   set caption(confgene,supprimer_observatoire)             "Cancella"
+   set caption(confgene,supprimer_observatoire)             "Eliminare"
    set caption(confgene,copier_observatoire)                "Copia"
    set caption(confgene,observatoire_a_ajouter)             "Nome dell'osservatorio da aggiungere"
-   set caption(confgene,observatoire_a_supprimer)           "Nome dell'osservatorio da cancellare"
+   set caption(confgene,observatoire_a_supprimer)           "Nome dell'osservatorio da eliminare"
    set caption(confgene,observatoire_a_copier)              "Dati Osservatorio da copiare"
    set caption(confgene,position_longitude)                 "Longitudine:"
    set caption(confgene,position_est)                       "E"

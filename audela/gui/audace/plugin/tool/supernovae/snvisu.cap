@@ -1,6 +1,6 @@
 #
 # Fichier : snvisu.cap
-# Mise a jour $Id: snvisu.cap,v 1.16 2009-11-07 16:30:11 robertdelmas Exp $
+# Mise a jour $Id: snvisu.cap,v 1.17 2009-11-17 23:07:04 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -112,7 +112,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snvisu,html_title)      "Sn Visu - Html"
    set caption(snvisu,cancel)          "Annuler"
    set caption(snvisu,go)              "GO"
-  set caption(snvisu,offsetns)        "Offset N/S"
+   set caption(snvisu,offsetns)        "Offset N/S"
    set caption(snvisu,north)           "N"
    set caption(snvisu,south)           "S"
    set caption(snvisu,invert,flip)     "Inverser haut/bas"

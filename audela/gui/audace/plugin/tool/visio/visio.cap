@@ -1,6 +1,6 @@
 #
 # Fichier : visio.cap
-# Mise a jour $Id: visio.cap,v 1.13 2009-11-16 17:30:13 robertdelmas Exp $
+# Mise a jour $Id: visio.cap,v 1.14 2009-11-17 23:07:20 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -90,7 +90,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- Textes boutons
    set caption(visio,aide)                "Aide"
    set caption(visio,ok)                  "OK"
-  set caption(visio,quitter)             "Quitter"
+   set caption(visio,quitter)             "Quitter"
 
    #--- Textes fenêtres renommer série
    set caption(visio,renommer2)           "Renommer la série courante"
