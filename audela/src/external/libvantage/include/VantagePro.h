@@ -3,6 +3,8 @@
 
 //#include <windows.h>
 
+#pragma warning (disable : 4996)
+
 /**********************************************************************/
 #define DllAccess extern "C"  __declspec( dllexport )
 
@@ -65,10 +67,25 @@
 // Wind Cup Size constants
 #define LARGE_WIND_CUPS       (1)
 #define SMALL_WIND_CUPS       (2)
+#define OTHER_WIND_CUPS       (3)
 
 // Temperature Averaging settings
 #define TEMPERATURE_SAMPLED   (1)
 #define TEMPERATURE_AVERAGED  (2)
+
+
+// These are the indexes of the "system Timeouts" used in SetSystemTimeOuts()
+#define  TO_STANDARD       (0)
+#define  TO_DUMP_AFTER     (1)
+#define  TO_MODEM          (2)
+#define  TO_LOOPBACK       (3)
+#define  TO_LOOP           (4)
+#define  TO_FLUSH          (5)
+#define  TO_DONE           (6)
+#define  TO_STANDARD_MODEM (7)
+#define  TO_STANDARD_MONITOR  (8)
+#define  TO_STANDARD_MONITOR_MODEM  (9)
+#define  TO_AUTO_DETECT		(10)
 
 /**********************************************************************/
 // List of pre-defined Time Zones
@@ -122,7 +139,7 @@
 #define TZ_WELLINGTON      (46)  // +12:00 Wellington, Auckland 
 
 #define TZ_FIRST_TIME_ZONE (TZ_ENIWETOK)
-#define TZ_LAST_TIME_ZONE  (TZ_WELLINGTON)
+//#define TZ_LAST_TIME_ZONE  (TZ_WELLINGTON)
 
 struct DateTime
 {   
@@ -419,8 +436,14 @@ struct ActiveAlarmFields
 DllAccess float     _stdcall GetDllVersion_V(void);
 DllAccess short int _stdcall OpenCommPort_V (short int comPort, int baudRate);
 DllAccess short int _stdcall OpenDefaultCommPort_V (void);
+DllAccess short int _stdcall OpenUSBPort_V (unsigned int usbDeviceSerialNumber);
+DllAccess unsigned int _stdcall GetUSBDevSerialNumber_V();
+DllAccess short int _stdcall OpenTCPIPPort_V (const char *tcpPort, const char *IPAddr);
 DllAccess short int _stdcall CloseCommPort_V (void);
+DllAccess short int _stdcall CloseUSBPort_V (void);
+DllAccess short int _stdcall CloseTCPIPPort_V (void);
 DllAccess short int _stdcall SetCommTimeoutVal_V(short int ReadTimeout, short int WriteTimeout);
+DllAccess short int _stdcall SetVantageTimeoutVal_V(short int timeOutType);
 DllAccess void      _stdcall GetUnits_V(WeatherUnits* Units);
 DllAccess short int _stdcall SetUnits_V (WeatherUnits* Units);
 DllAccess char      _stdcall GetRainCollectorModel_V(void);
@@ -442,7 +465,7 @@ DllAccess short int _stdcall SetArchivePeriod_V (int intervalCode);
 DllAccess short int _stdcall PutTotalRain_V (short TotalRain);
 
 DllAccess short int _stdcall GetStationFirmwareDate_V ( DateTimeStamp *timeStamp);
-DllAccess short int _stdcall GetReceptionData_V ( ReceptionStats *receptionStats);
+DllAccess short int _stdcall GetStationFirmwareVersion_V ( char *verSt);DllAccess short int _stdcall GetReceptionData_V ( ReceptionStats *receptionStats);
 DllAccess short int _stdcall GetVantageLat_V ( LatLonValue *latitude);
 DllAccess short int _stdcall SetVantageLat_V ( LatLonValue *latitude);
 DllAccess short int _stdcall GetVantageLon_V ( LatLonValue *longitude);
@@ -686,6 +709,7 @@ DllAccess short int _stdcall ClearHiLeafWetAlarm_V(short sensorNumber);
 
 //Download functions
 DllAccess int       _stdcall DownloadData_V(DateTimeStamp dateTimeStamp);
+DllAccess int       _stdcall DownloadWebData_V(DateTimeStamp dateTimeStamp, char *userName, char *password);
 DllAccess short int _stdcall GetNumberOfArchiveRecords_V(void);
 DllAccess short int _stdcall GetMemoryArchiveRecordCount_V(void);
 DllAccess short int _stdcall GetMemoryArchiveCountAfterDate_V(DateTimeStamp *dateTimeStamp);
