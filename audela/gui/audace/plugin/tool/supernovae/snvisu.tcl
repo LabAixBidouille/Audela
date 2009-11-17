@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.36 2009-01-11 11:59:36 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.37 2009-11-17 17:02:23 robertdelmas Exp $
 #
 
 #--- Conventions pour ce script :
@@ -2305,7 +2305,7 @@ proc displayMap { } {
       set ra  [lindex [buf$num(buffer1) getkwd RA] 1]
       set dec [lindex [buf$num(buffer1) getkwd DEC] 1]
 
-      #--- si l'image du premier buffer n'a pas les mots clef, je chercher dans le second buffer
+      #--- si l'image du premier buffer n'a pas les mots cles, je chercher dans le second buffer
       if { "$ra" == "" && "$dec" == "" } {
          set ra  [lindex [buf$num(buffer2) getkwd RA] 1]
          set dec [lindex [buf$num(buffer2) getkwd DEC] 1]

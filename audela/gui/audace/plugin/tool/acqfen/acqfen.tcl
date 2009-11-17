@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.26 2009-07-13 21:38:06 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.27 2009-11-17 16:55:57 robertdelmas Exp $
 #
 
 # =========================================================
@@ -471,7 +471,7 @@ namespace eval ::acqfen {
                   }
                }
 
-               #--- Rajoute des mots clefs dans l'en-tete FITS
+               #--- Rajoute des mots cles dans l'en-tete FITS
                foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
                   buf$audace(bufNo) setkwd $keyword
                }
@@ -1255,7 +1255,7 @@ namespace eval ::acqfen {
          after [expr int(1000*$panneau(acqfen,pose))] [cam$audace(camNo) read]
       }
 
-      #--- Rajoute des mots clefs dans l'en-tete FITS
+      #--- Rajoute des mots cles dans l'en-tete FITS
       foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
          buf$audace(bufNo) setkwd $keyword
       }

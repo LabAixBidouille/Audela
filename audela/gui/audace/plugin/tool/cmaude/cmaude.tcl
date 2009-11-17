@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude.tcl,v 1.23 2009-10-24 22:06:50 robertdelmas Exp $
+# Mise a jour $Id: cmaude.tcl,v 1.24 2009-11-17 16:58:28 robertdelmas Exp $
 #
 # Remarks :
 # The definition of some variables (binning, exp. time, rythm, etc.)
@@ -604,7 +604,7 @@ namespace eval ::cmaude {
       #--- Attente de la fin de la pose
       vwait status_cam$numcam
 
-      #--- Rajoute des mots clefs dans l'en-tete FITS
+      #--- Rajoute des mots cles dans l'en-tete FITS
       foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
          buf$audace(bufNo) setkwd $keyword
       }

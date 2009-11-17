@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.115 2009-11-15 15:41:18 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.116 2009-11-17 16:53:23 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -612,7 +612,7 @@ namespace eval ::confVisu {
                    $tkgraph element create line$visuNo -symbol none -smooth natural
                }
 
-               #--- je recupere les mots clefs
+               #--- je recupere les mots cles
                set bufNo [getBufNo $visuNo]
                set size   [lindex [buf$bufNo getkwd NAXIS1] 1]
                set crval1 [lindex [buf$bufNo getkwd CRVAL1] 1]

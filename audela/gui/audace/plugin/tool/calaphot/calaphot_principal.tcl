@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.4 2009-06-09 07:56:36 jacquesmichelet Exp $
+# $Id: calaphot_principal.tcl,v 1.5 2009-11-17 16:57:48 robertdelmas Exp $
 #
 
 ###catch {namespace delete ::Calaphot}
@@ -729,7 +729,7 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [info level [info level]]
 
-        # --- recupere la liste des mots cle  de l'image FITS
+        # --- recupere la liste des mots cles de l'image FITS
         set listkey [lsort -dictionary [buf$audace(bufNo) getkwds]]
         # --- on evalue chaque mot cle
         foreach key $listkey {
@@ -887,12 +887,12 @@ namespace eval ::CalaPhot {
 
         Message debug "%s\n" [info level [info level]]
 
-        # Recherche du mot clef DATE-OBS dans l'en-t� e FITS
+        # Recherche du mot cle DATE-OBS dans l'en-tete FITS
         set date [buf$audace(bufNo) getkwd DATE-OBS]
         set date [lindex $date 1]
         # Si la date n'est pas au format Y2K (date+heure)...
         if {[string range $date 10 10] != "T"} {
-            # Recherche mot clef TIME-OBS
+            # Recherche mot cle TIME-OBS
             set time [buf$audace(bufNo) getkwd TIME-OBS]
             set time [lindex $time 1]
             if {[string length $time] != 0} {

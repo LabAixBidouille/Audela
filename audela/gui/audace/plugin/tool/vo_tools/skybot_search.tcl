@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER
-# Mise a jour $Id: skybot_search.tcl,v 1.26 2009-07-30 11:24:29 svaillant Exp $
+# Mise a jour $Id: skybot_search.tcl,v 1.27 2009-11-17 17:03:49 robertdelmas Exp $
 #
 
 namespace eval skybot_Search {
@@ -239,7 +239,7 @@ namespace eval skybot_Search {
           #--- Ouvre la fenetre de choix des images
           set voconf(nom_image) [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
        }
-      
+
        #--- Extraction et chargement du fichier
        if { $voconf(nom_image) != "" } {
           loadima $voconf(nom_image)
@@ -511,11 +511,11 @@ namespace eval skybot_Search {
       global audace
       global caption
 
-      #--- Recherche du mot clef DATE-OBS dans l'en-tete FITS
+      #--- Recherche du mot cle DATE-OBS dans l'en-tete FITS
       set date [ lindex [ buf$audace(bufNo) getkwd DATE-OBS ] 1 ]
       #--- Si la date n'est pas au format ISO 8601 (date + heure)
       if { [ string range $date 10 10 ] != "T" } {
-         #--- Recherche le mot clef TIME-OBS
+         #--- Recherche le mot cle TIME-OBS
          set time [ buf$audace(bufNo) getkwd TIME-OBS ]
          set time [ lindex $time 1 ]
          if { [ string length $time ] != "0" } {

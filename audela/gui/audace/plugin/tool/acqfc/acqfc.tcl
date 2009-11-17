@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.87 2009-07-13 21:37:12 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.88 2009-11-17 16:55:14 robertdelmas Exp $
 #
 
 #==============================================================
@@ -1316,7 +1316,7 @@ proc ::acqfc::Go { visuNo } {
             after 10 ::acqfc::loadLastImage $visuNo $camNo
          }
 
-         #--- Rajoute des mots clefs dans l'en-tete FITS
+         #--- Rajoute des mots cles dans l'en-tete FITS
          foreach keyword [ ::keyword::getKeywords $visuNo ] {
             buf$bufNo setkwd $keyword
          }

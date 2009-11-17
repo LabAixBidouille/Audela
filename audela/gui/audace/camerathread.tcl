@@ -3,7 +3,7 @@
 # Description : procedures d'acqusitition et de traitement avec
 #         plusieurs cameras simultanées exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise a jour $Id: camerathread.tcl,v 1.15 2009-11-06 18:47:45 michelpujol Exp $
+# Mise a jour $Id: camerathread.tcl,v 1.16 2009-11-17 16:52:39 robertdelmas Exp $
 #
 
 namespace eval ::camerathread {
@@ -334,8 +334,8 @@ proc ::camerathread::processAcquisitionLoop { } {
             ###set centro [buf$bufNo centro "[list $x1 $y1 $x2 $y2]"]
             ###set private(targetCoord) [lrange $centro 0 1]
             ###set centro [buf$bufNo fitgauss "[list $x1 $y1 $x2 $y2]"]
-            set starDetectionMode 1 
-            set pixelMinCount 50            
+            set starDetectionMode 1
+            set pixelMinCount 50
             set centro [buf$bufNo slitcentro "[list $x1 $y1 $x2 $y2]" $starDetectionMode $pixelMinCount $private(slitWidth) $private(slitRatio)]
             set starStatus [lindex $centro 0]
             set starX      [lindex $centro 1]
@@ -344,7 +344,7 @@ proc ::camerathread::processAcquisitionLoop { } {
             set message       [lindex $centro 4]
             if { $starStatus == "DETECTED" } {
                set private(targetCoord) [list $starX $starY ]
-            }               
+            }
 ###::camerathread::disp  "PSF= y1=$y1 y2=$y2 starStatus=$starStatus result=$centro\n"
          } elseif { $private(detection)=="SLIT" } {
             #--- SLIT : je cherche l'etoile dans la zone cible proche de la fente
@@ -394,7 +394,7 @@ proc ::camerathread::processAcquisitionLoop { } {
                $private(maxMagnitude) \
                $private(delta) $private(epsilon)
 
-            #--- je charge l'image avec les nouveaux mots cle
+            #--- je charge l'image avec les nouveaux mots cles
             buf$bufNo load [file join $tempPath $fileName]
             #--- je calcule les coordonnees (x,y) correspondant au (ra,dec) cible
             set private(targetCoord)  [buf$bufNo radec2xy $private(radec) 1]
@@ -432,8 +432,8 @@ proc ::camerathread::processAcquisitionLoop { } {
                lappend astar [list $ximapic $yimapic $xobspic $yobspic]
             }
             close $fcom
-            
-            set starStatus "DETECTED" 
+
+            set starStatus "DETECTED"
             set maxIntensity 0
             set message ""
          }
@@ -442,20 +442,20 @@ proc ::camerathread::processAcquisitionLoop { } {
          if { $starStatus == "DETECTED" } {
             set dx [expr [lindex $private(targetCoord) 0] - [lindex $private(originCoord) 0] ]
             set dy [expr [lindex $private(targetCoord) 1] - [lindex $private(originCoord) 1] ]
-   
+
             #--- je diminue les valeurs de dx et dy si elles depassent la taille de la zone de detection de l'etoile
             if { $dx > $private(targetBoxSize) } {
                set dx $private(targetBoxSize)
             } elseif { $dx <  -$private(targetBoxSize) } {
                set dx [expr -$private(targetBoxSize) ]
             }
-   
+
             if { $dy > $private(targetBoxSize) } {
                set dy $private(targetBoxSize)
             } elseif { $dy <  -$private(targetBoxSize) } {
                set dy [expr -$private(targetBoxSize) ]
             }
-   
+
             if { $private(detection)=="SLIT" } {
                #--- je calcule la methode de detection pour la prochaine image
                if { $private(dynamicDectection) == "PSF" } {
@@ -778,7 +778,7 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
    } elseif { $detection=="BOGUMIL" } {
       set searchBox [list 1 1 [buf$bufNo getpixelswidth] [buf$bufNo getpixelsheight]]
       set searchBorder [expr $radius + 2]
-      #--- j'ajoute les mots cle necessaire a l'astrometrie
+      #--- j'ajoute les mots cles necessaires a l'astrometrie
       buf$bufNo setkwd [list "OBJEFILE" "$resultFile" string "" "" ]
       buf$bufNo setkwd [list "OBJEKEY" "test" string "" "" ]
       buf$bufNo setkwd [list "TTNAME" "OBJELIST" string "Table name" "" ]
@@ -794,7 +794,7 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
    #  output
    #     dummy.fit    avec les nouveaux mots cles
    #     cdummy.fit   contenant la table des etoiles trouvées dans le catalogue
-   #     cdummy.jpg  ( superposition des étoiles du catalogue sur l'image de départ
+   #     cdummy.jpg   superposition des étoiles du catalogue sur l'image de départ
    #     usno.lst
    ttscript2 "IMA/SERIES \"$tempPath\" \"$fileName\" . . \"$ext\" \"$tempPath\" \"$fileName\" . \"$ext\" CATCHART \"path_astromcatalog=$cataloguePath\" astromcatalog=$catalogueName \"catafile=${tempPath}/c$fileName$ext\" \"magrlim=$maxMagnitude\" \"magblim=$maxMagnitude\""
 
