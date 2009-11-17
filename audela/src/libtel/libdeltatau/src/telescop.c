@@ -808,6 +808,7 @@ int deltatau_put(struct telprop *tel,char *cmd)
 int deltatau_read(struct telprop *tel,char *res)
 {
    char s[2048];
+   int n;
 	if (tel->type==0) {
 		/* --- trancoder l'hexadécimal de res en numérique ---*/
 		strcpy(s,"\
@@ -850,6 +851,10 @@ int deltatau_read(struct telprop *tel,char *res)
 #if defined(OS_WIN)
 	if (tel->type==1) {
 		sprintf(res,"%s",tel->pmac_response);
+		n=(int)strlen(res);
+		if (n>=1) {
+			res[n-1]='\0';
+		}
 	}
 #endif
    return 0;
