@@ -170,7 +170,7 @@ int Cmd_rostcl_meteo(ClientData clientData, Tcl_Interp *interp, int argc, char *
 /* I/O with meteo stations                                                  */
 /****************************************************************************/
 /*
-ros_meteo open vantage
+ros_meteo open vantage 1 19200
 ros_meteo read vantage
 ros_meteo close vantage
 */
@@ -235,7 +235,8 @@ ros_meteo close vantage
             vitesse=atoi(argv[4]);
          }
          CloseCommPort_V();
-         // Meteo 3 19200 0 1 2 1 0.2 1
+		 /* http://www.davisnet.com/support/weather/software_dllsdk.asp */
+         // Meteo 1 19200 0 1 2 1 0.2 1
          // TableEtat.Port = atoi(argv_tcl[1]);    3 
 	      // TableEtat.Vitesse = atoi(argv_tcl[2]); 19200
 	      // TableEtat.Temp = atoi(argv_tcl[3]);    0
@@ -249,8 +250,15 @@ ros_meteo close vantage
             Tcl_SetResult(interp,s,TCL_VOLATILE);
             return TCL_ERROR;
          }
-      	InitStation_V();
+		 SetVantageTimeoutVal_V(TO_DUMP_AFTER);
       	SetCommTimeoutVal_V(4000,4000);
+      	Valeur=(double)InitStation_V();
+		if (Valeur!=0) {
+            sprintf(s,"connection problem with meteostation (error code is %d)",(int)Valeur);
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            return TCL_ERROR;
+		}
+
       	Unites.TempUnit = 0;
 	      Unites.RainUnit = 1;
 	      Unites.BaromUnit = 2;
@@ -291,6 +299,7 @@ ros_meteo close vantage
       /* --- ---*/
       if ((mode==2)&&(modele==1)) {
    	   Tcl_DStringInit(&dsptr);
+		LoadCurrentVantageData_V ();
          /* --- ---*/	
          if(GetStationTime_V ( &TimeStamp) == 0) {
          	sprintf(Buf,"{%.2d ",TimeStamp.month);
