@@ -219,6 +219,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		tel->speed_track_dec=0.; /* (deg/s) */
 		tel->speed_slew_ra=20.; /* (deg/s) */
 		tel->speed_slew_dec=20.; /* (deg/s) */
+		tel->radec_speed_ra_conversion=10.; /* (ADU)/(deg) */
 		tel->radec_speed_dec_conversion=10.; /* (ADU)/(deg) */
 		tel->radec_position_conversion=10000.; /* (ADU)/(deg) */
 		tel->radec_move_rate_max=1.0; /* deg/s */
@@ -308,21 +309,22 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		tel->speed_track_dec=0.; /* (deg/s) */
 		tel->speed_slew_ra=20.; /* (deg/s) */
 		tel->speed_slew_dec=20.; /* (deg/s) */
+		tel->radec_speed_ra_conversion=-10.; /* (ADU)/(deg) */
 		tel->radec_speed_dec_conversion=10.; /* (ADU)/(deg) */
 		tel->radec_position_conversion=-10000.; /* (ADU)/(deg) */
 		tel->radec_move_rate_max=1.0; /* deg/s */
-      tel->radec_tol=10 ; /* 10 arcsec */
-		/* --- Match --- */
-		tel->ha00=0.;
-		tel->roth00=0;
-		tel->dec00=43.75203;
-		tel->rotd00=0;
-		/* --- stops --- */
-		tel->stop_e_uc=-1624651;
-		tel->stop_w_uc=1549515;
+		tel->radec_tol=10 ; /* 10 arcsec */
 		/* --- Home --- */
 		tel->latitude=43.75203;
 		sprintf(tel->home0,"GPS 6.92353 E %+.6f 1320.0",tel->latitude);
+		/* --- Match --- */
+		tel->ha00=0.;
+		tel->roth00=1595000;
+		tel->dec00=43.75203;
+		tel->rotd00=800000;
+		/* --- stops --- */
+		tel->stop_w_uc=3100000;
+		tel->stop_e_uc=1000;
 	}
 #endif
    /* --- sortie --- */
@@ -523,7 +525,7 @@ int mytel_radec_goto(struct telprop *tel)
    if (tel->radec_goto_blocking==1) {
       /* A loop is actived until the telescope is stopped */
       deltatau_positions12(tel,&p10,&p20);
-      tol=(tel->radec_position_conversion)/3600.*tel->radec_tol; /* tolerance +/- 20 arcsec */
+      tol=fabs((tel->radec_position_conversion)/3600.*tel->radec_tol); /* tolerance +/- 20 arcsec */
       while (1==1) {
    	   time_in++;
          sprintf(s,"after 350"); mytel_tcleval(tel,s);
@@ -566,7 +568,7 @@ int mytel_hadec_goto(struct telprop *tel)
    if (tel->radec_goto_blocking==1) {
       /* A loop is actived until the telescope is stopped */
       deltatau_positions12(tel,&p10,&p20);
-      tol=(tel->radec_position_conversion)/3600.*tel->radec_tol; /* tolerance +/- 20 arcsec */
+      tol=fabs((tel->radec_position_conversion)/3600.*tel->radec_tol); /* tolerance +/- 20 arcsec */
       while (1==1) {
    	   time_in++;
          sprintf(s,"after 350"); mytel_tcleval(tel,s);
@@ -598,7 +600,6 @@ int mytel_radec_move(struct telprop *tel,char *direction)
    } else if (tel->radec_move_rate<0.) {
       tel->radec_move_rate=0.;
    }
-   v=tel->radec_move_rate*tel->radec_move_rate_max*tel->radec_speed_dec_conversion;
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    sprintf(s,"lindex [string toupper %s] 0",direction); mytel_tcleval(tel,s);
    strcpy(direc,tel->interp->result);
@@ -606,15 +607,19 @@ int mytel_radec_move(struct telprop *tel,char *direction)
    if (strcmp(direc,"N")==0) {
       axe='2';
       sens='-';
+	   v=tel->radec_move_rate*tel->radec_move_rate_max*tel->radec_speed_dec_conversion;
    } else if (strcmp(direc,"S")==0) {
       axe='2';
       sens='+';
+	v=tel->radec_move_rate*tel->radec_move_rate_max*tel->radec_speed_dec_conversion;
    } else if (strcmp(direc,"E")==0) {
       axe='1';
       sens='-';
+	v=tel->radec_move_rate*tel->radec_move_rate_max*tel->radec_speed_ra_conversion;
    } else if (strcmp(direc,"W")==0) {
       axe='1';
       sens='+';
+	   v=tel->radec_move_rate*tel->radec_move_rate_max*tel->radec_speed_ra_conversion;
    }
    sprintf(s,"#%cI%c22=%.12f",axe,axe,v);
    res=deltatau_put(tel,s);
@@ -1166,7 +1171,7 @@ int deltatau_goto(struct telprop *tel)
       }
    }
    axe='1';
-   v=tel->speed_slew_ra*tel->radec_speed_dec_conversion;
+   v=tel->speed_slew_ra*tel->radec_speed_ra_conversion;
    sprintf(s,"#%cI%c22=%.12f",axe,axe,v);
    res=deltatau_put(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
@@ -1221,7 +1226,7 @@ int deltatau_hadec_goto(struct telprop *tel)
       }
    }
    axe='1';
-   v=tel->speed_slew_ra*tel->radec_speed_dec_conversion;
+   v=tel->speed_slew_ra*tel->radec_speed_ra_conversion;
    sprintf(s,"#%cI%c22=%.12f",axe,axe,v);
    res=deltatau_put(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
@@ -1296,7 +1301,7 @@ int deltatau_suivi_marche (struct telprop *tel)
    int res;
    double v;
    /*--- Track alpha */
-   v=tel->speed_track_ra*tel->radec_speed_dec_conversion;
+   v=tel->speed_track_ra*tel->radec_speed_ra_conversion;
    axe='1';
    sprintf(s,"#%cI%c22=%.12f",axe,axe,v);
    res=deltatau_put(tel,s);

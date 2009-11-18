@@ -48,6 +48,7 @@ struct telprop {
    double speed_track_dec; /* (deg/s) */
    double speed_slew_ra; /* (deg/s) */
    double speed_slew_dec; /* (deg/s) */
+   double radec_speed_ra_conversion; /* (UC)/(deg/s) */
    double radec_speed_dec_conversion; /* (UC)/(deg/s) */
    double radec_position_conversion; /* (UC)/(deg) */
    double track_diurnal; /* (deg/s) */

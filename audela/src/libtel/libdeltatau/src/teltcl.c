@@ -216,7 +216,7 @@ int cmdTelPosition(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
    }
    sprintf(ligne,"{speed_1 %s ADU/s} ",s);
    Tcl_DStringAppend(&dsptr,ligne,-1);
-   sprintf(ligne,"{speed_deg_1 %e ADU/s} ",atof(s)/tel->radec_speed_dec_conversion);
+   sprintf(ligne,"{speed_deg_1 %e ADU/s} ",atof(s)/tel->radec_speed_ra_conversion);
    Tcl_DStringAppend(&dsptr,ligne,-1);
    /* --- Lecture AXE 2 (delta) --- */
    axe='2';
