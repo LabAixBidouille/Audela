@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.19 2009-05-04 21:27:12 robertdelmas Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.20 2009-11-19 22:16:49 robertdelmas Exp $
 #
 
 namespace eval tkutil:: {
@@ -55,27 +55,6 @@ proc ::tkutil::getOpenFileType { } {
       [ list "$caption(tkutil,image_raw)"        {.CRW .CR2 .NEF .DNG} ] \
       [ list "$caption(tkutil,fichier_tous)"     *            ]
 }
-
-      ###[ list "$caption(tkutil,image_file)"       {.bmp}       ] \
-      ###[ list "$caption(tkutil,image_file)"       {.gif}       ] \
-      ###[ list "$caption(tkutil,image_file)"       {.png}       ] \
-      ###[ list "$caption(tkutil,image_file)"       {.tiff .tif} ] \
-      ###[ list "$caption(tkutil,image_file)"       {.xbm}       ] \
-      ###[ list "$caption(tkutil,image_file)"       {.xpm}       ] \
-      ###[ list "$caption(tkutil,image_file)"       {.ps .eps}   ] \
-      ###[ list "$caption(tkutil,image_file)"       {.ps .eps}   ] \
-      ###[ list "$caption(tkutil,image_bmp)"        {.bmp}       ] \
-      ###[ list "$caption(tkutil,image_gif)"        {.gif}       ] \
-      ###[ list "$caption(tkutil,image_png)"        {.png}       ] \
-      ###[ list "$caption(tkutil,image_tiff)"       {.tiff .tif} ] \
-      ###[ list "$caption(tkutil,image_xbm)"        {.xbm}       ] \
-      ###[ list "$caption(tkutil,image_xpm)"        {.xpm}       ] \
-      ###[ list "$caption(tkutil,image_postscript)" {.ps .eps}   ] \
-      ###[ list "$caption(tkutil,image_gif)"        {}      GIFF ] \
-      ###[ list "$caption(tkutil,image_jpeg)"       {}      JPEG ] \
-      ###[ list "$caption(tkutil,image_png)"        {}      PNGF ] \
-      ###[ list "$caption(tkutil,image_tiff)"       {}      TIFF ] \
-      ###[ list "$caption(tkutil,image_raw)"        {.crw .nef}  ] \
 
 #
 # box_load parent initialdir numero_buffer type
@@ -136,8 +115,8 @@ proc ::tkutil::box_load { { parent } { initialdir } { numero_buffer } { type } {
    #---
    catch {
       #--- Je detruis la boite de dialogue cree par tk_getOpenFile
-      #--- Car sous Linux la fenetre n'est pas detruite a la fin de l'utilisation (bug de linux ?)
-     ### ::console::disp "box_load [ winfo children .audace.__tk_filedialog.f2 ] \n"
+      #--- car sous Linux la fenetre n'est pas detruite a la fin de
+      #--- l'utilisation (bug de linux ?)
       destroy $parent.__tk_filedialog
    }
    #---
@@ -161,8 +140,8 @@ proc ::tkutil::box_load_html { { parent } { initialdir } { numero_buffer } { typ
    #---
    catch {
       #--- Je detruis la boite de dialogue cree par tk_getOpenFile
-      #--- Car sous Linux la fenetre n'est pas detruite a la fin de l'utilisation (bug de linux ?)
-     ### ::console::disp "box_load [ winfo children .audace.__tk_filedialog.f2 ] \n"
+      #--- car sous Linux la fenetre n'est pas detruite a la fin de
+      #--- l'utilisation (bug de linux ?)
       destroy $parent.__tk_filedialog
    }
    #---
@@ -170,53 +149,88 @@ proc ::tkutil::box_load_html { { parent } { initialdir } { numero_buffer } { typ
 }
 
 #
-# getSaveFileType
+# getSavefiletype
 #    Gere les differentes extensions des fichiers images, ainsi que le cas ou l'extension
 #    des fichiers FITS est differente de .fit, de .fts et de .fits
 #
 proc ::tkutil::getSaveFileType { } {
    variable saveFileType
-   global audace caption
+   global audace caption conf
 
    #---
    set saveFileType [ list ]
    #---
    if { ( [ buf$audace(bufNo) extension ] != ".fit" ) && ( [ buf$audace(bufNo) extension ] != ".fts" ) &&
-      ( [ buf$audace(bufNo) extension ] != ".fits" ) } {
-      lappend saveFileType \
-         [ list "$caption(tkutil,image_fits)"       [ buf$audace(bufNo) extension ] ] \
-         [ list "$caption(tkutil,image_fits) gz"    [ buf$audace(bufNo) extension ].gz ]
+      ( [ buf$audace(bufNo) extension ] != ".fits" ) && ( [ buf$audace(bufNo) extension ] != ".jpg" ) &&
+      ( [ buf$audace(bufNo) extension ] != ".crw" ) && ( [ buf$audace(bufNo) extension ] != ".CRW" ) &&
+      ( [ buf$audace(bufNo) extension ] != ".cr2" ) && ( [ buf$audace(bufNo) extension ] != ".CR2" ) &&
+      ( [ buf$audace(bufNo) extension ] != ".nef" ) && ( [ buf$audace(bufNo) extension ] != ".NEF" ) &&
+      ( [ buf$audace(bufNo) extension ] != ".dng" ) && ( [ buf$audace(bufNo) extension ] != ".DNG" ) } {
+      if { $conf(fichier,compres) == "0" } {
+         lappend saveFileType \
+            [ list "$caption(tkutil,image_fits)"       [ buf$audace(bufNo) extension ] ] \
+            [ list "$caption(tkutil,image_fits) gz"    [ buf$audace(bufNo) extension ].gz ]
+      } elseif { $conf(fichier,compres) == "1" } {
+         lappend saveFileType \
+            [ list "$caption(tkutil,image_fits) gz"    [ buf$audace(bufNo) extension ].gz ] \
+            [ list "$caption(tkutil,image_fits)"       [ buf$audace(bufNo) extension ] ]
+      }
    }
    #---
-   lappend saveFileType \
-      [ list "$caption(tkutil,image_fits) "      {.fit}       ] \
-      [ list "$caption(tkutil,image_fits) 1"     {.fit.gz}    ] \
-      [ list "$caption(tkutil,image_fits) 2"     {.fts}       ] \
-      [ list "$caption(tkutil,image_fits) 3"     {.fts.gz}    ] \
-      [ list "$caption(tkutil,image_fits) 4"     {.fits}      ] \
-      [ list "$caption(tkutil,image_fits) 5"     {.fits.gz}   ] \
-      [ list "$caption(tkutil,image_jpeg)"       {.jpg}       ] \
-      [ list "$caption(tkutil,image_raw)."       {.crw }      ] \
-      [ list "$caption(tkutil,image_raw).1"      {.CRW }      ] \
-      [ list "$caption(tkutil,image_raw) 2"      {.cr2}       ] \
-      [ list "$caption(tkutil,image_raw) 3"      {.CR2}       ] \
-      [ list "$caption(tkutil,image_raw) 4"      {.nef }      ] \
-      [ list "$caption(tkutil,image_raw) 5"      {.NEF }      ] \
-      [ list "$caption(tkutil,image_raw) 6"      {.dng}       ] \
-      [ list "$caption(tkutil,image_raw) 7"      {.DNG}       ]
-}
+   set a [ list "$caption(tkutil,image_fits) "      {.fit}       ]
+   set b [ list "$caption(tkutil,image_fits) 1"     {.fit.gz}    ]
+   set c [ list "$caption(tkutil,image_fits) 2"     {.fts}       ]
+   set d [ list "$caption(tkutil,image_fits) 3"     {.fts.gz}    ]
+   set e [ list "$caption(tkutil,image_fits) 4"     {.fits}      ]
+   set f [ list "$caption(tkutil,image_fits) 5"     {.fits.gz}   ]
+   set g [ list "$caption(tkutil,image_jpeg)"       {.jpg}       ]
+   set h [ list "$caption(tkutil,image_raw)."       {.crw }      ]
+   set i [ list "$caption(tkutil,image_raw).1"      {.CRW }      ]
+   set j [ list "$caption(tkutil,image_raw) 2"      {.cr2}       ]
+   set k [ list "$caption(tkutil,image_raw) 3"      {.CR2}       ]
+   set l [ list "$caption(tkutil,image_raw) 4"      {.nef }      ]
+   set m [ list "$caption(tkutil,image_raw) 5"      {.NEF }      ]
+   set n [ list "$caption(tkutil,image_raw) 6"      {.dng}       ]
+   set o [ list "$caption(tkutil,image_raw) 7"      {.DNG}       ]
 
-      ###[ list "$caption(tkutil,image_bmp)"        {.bmp}       ] \
-      ###[ list "$caption(tkutil,image_gif)"        {.gif}       ] \
-      ###[ list "$caption(tkutil,image_png)"        {.png}       ] \
-      ###[ list "$caption(tkutil,image_tiff)"       {.tif}       ] \
-      ###[ list "$caption(tkutil,image_xbm)"        {.xbm}       ] \
-      ###[ list "$caption(tkutil,image_xpm)"        {.xpm}       ] \
-      ###[ list "$caption(tkutil,image_postscript)" {.eps}       ] \
-      ###[ list "$caption(tkutil,image_gif)"        {}      GIFF ] \
-      ###[ list "$caption(tkutil,image_jpeg)"       {}      JPEG ] \
-      ###[ list "$caption(tkutil,image_png)"        {}      PNGF ] \
-      ###[ list "$caption(tkutil,image_tiff)"       {}      TIFF ] \
+   if { [ buf$audace(bufNo) extension ] == ".fit" } {
+      if { $conf(fichier,compres) == "0" } {
+         lappend saveFileType $a $b $c $d $e $f $g $h $i $j $k $l $m $n $o
+      } elseif { $conf(fichier,compres) == "1" } {
+         lappend saveFileType $b $a $c $d $e $f $g $h $i $j $k $l $m $n $o
+      }
+   } elseif { [ buf$audace(bufNo) extension ] == ".fts" } {
+      if { $conf(fichier,compres) == "0" } {
+         lappend saveFileType $c $d $a $b $e $f $g $h $i $j $k $l $m $n $o
+      } elseif { $conf(fichier,compres) == "1" } {
+         lappend saveFileType $d $c $a $b $e $f $g $h $i $j $k $l $m $n $o
+      }
+   } elseif { [ buf$audace(bufNo) extension ] == ".fits" } {
+      if { $conf(fichier,compres) == "0" } {
+         lappend saveFileType $e $f $a $b $c $d $g $h $i $j $k $l $m $n $o
+      } elseif { $conf(fichier,compres) == "1" } {
+         lappend saveFileType $f $e $a $b $c $d $g $h $i $j $k $l $m $n $o
+      }
+   } elseif { [ buf$audace(bufNo) extension ] == ".jpg" } {
+      lappend saveFileType $g $a $b $c $d $e $f $h $i $j $k $l $m $n $o
+   } elseif { [ buf$audace(bufNo) extension ] == ".crw" } {
+      lappend saveFileType $h $i $j $k $l $m $n $o $a $b $c $d $e $f $g
+   } elseif { [ buf$audace(bufNo) extension ] == ".CRW" } {
+      lappend saveFileType $i $h $j $k $l $m $n $o $a $b $c $d $e $f $g
+   } elseif { [ buf$audace(bufNo) extension ] == ".cr2" } {
+      lappend saveFileType $j $k $h $i $l $m $n $o $a $b $c $d $e $f $g
+   } elseif { [ buf$audace(bufNo) extension ] == ".CR2" } {
+      lappend saveFileType $k $j $h $i $l $m $n $o $a $b $c $d $e $f $g
+   } elseif { [ buf$audace(bufNo) extension ] == ".nef" } {
+      lappend saveFileType $l $m $h $i $j $k $n $o $a $b $c $d $e $f $g
+   } elseif { [ buf$audace(bufNo) extension ] == ".NEF" } {
+      lappend saveFileType $m $l $h $i $j $k $n $o $a $b $c $d $e $f $g
+   } elseif { [ buf$audace(bufNo) extension ] == ".dng" } {
+      lappend saveFileType $n $o $h $i $j $k $l $m $a $b $c $d $e $f $g
+   } elseif { [ buf$audace(bufNo) extension ] == ".DNG" } {
+      lappend saveFileType $o $n $h $i $j $k $l $m $a $b $c $d $e $f $g
+   }
+}
 
 #
 # box_save parent initialdir numero_buffer type
@@ -224,18 +238,19 @@ proc ::tkutil::getSaveFileType { } {
 #
 proc ::tkutil::box_save { { parent } { initialdir } { numero_buffer } { type } { visuNo "" } } {
    variable saveFileType
-   global caption
+   global caption conf
 
    #--- Ouvre la fenetre de choix des fichiers
    if { $type == "1" } {
       set title "$caption(tkutil,sauver_image) (visu$visuNo)"
       ::tkutil::getSaveFileType
       set filetypes "$saveFileType"
+      set filename [ tk_getSaveFile -title $title -filetypes $filetypes -initialdir $initialdir -parent $parent ]
    } elseif { $type == "2" } {
       set title "$caption(tkutil,sauver_image_jpeg) (visu1)"
       set filetypes [ list [ list "$caption(tkutil,image_jpeg)" ".jpg" ] ]
+      set filename [ tk_getSaveFile -title $title -filetypes $filetypes -initialdir $initialdir -parent $parent ]
    }
-   set filename [ tk_getSaveFile -title $title -filetypes $filetypes -initialdir $initialdir -parent $parent ]
    if { $filename == "" } {
       return
    }
