@@ -376,7 +376,9 @@ Blt_EnterNamespace(interp, nsPtr)
 
     framePtr = Blt_Malloc(sizeof(Tcl_CallFrame));
     assert(framePtr);
-    if (Tcl_PushCallFrame(interp, framePtr, (Tcl_Namespace *)nsPtr, 0)
+    //modif michel
+    //if (Tcl_PushCallFrame(interp, framePtr, (Tcl_Namespace *)nsPtr, 0)
+    if (Tcl_PushCallFrame(interp, framePtr, (Tcl_Namespace *)NULL, 0)
 	!= TCL_OK) {
 	Blt_Free(framePtr);
 	return NULL;
