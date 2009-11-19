@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_2.tcl
 # Description : Script regroupant les fonctionnalites du menu Affichage
-# Mise a jour $Id: aud_menu_2.tcl,v 1.18 2009-11-15 15:44:29 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.tcl,v 1.19 2009-11-19 22:09:41 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -1047,7 +1047,7 @@ namespace eval ::seuilCouleur {
 
       #--- Traitement
       set catchError [ catch {
-        #--- Affectation des niveaux maxi et mini pour le Rouge, le Vert et le Bleu
+         #--- Affectation des niveaux maxi et mini pour le Rouge, le Vert et le Bleu
          set mycuts [ list $seuilCouleur(blanc_R) $seuilCouleur(noir_R) $seuilCouleur(blanc_V) $seuilCouleur(noir_V) $seuilCouleur(blanc_B) $seuilCouleur(noir_B) ]
          if { $seuilCouleur(blanc_R) == "" } {
             tk_messageBox -title "$caption(seuilCouleur,attention)" -icon error \
@@ -1073,20 +1073,16 @@ namespace eval ::seuilCouleur {
          if { $seuilCouleur(enregister) == "1" } {
             #--- Je recupere le numero du buffer de la visu
             set bufNo [ ::confVisu::getBufNo $visuNo ]
-            #--- Je mets les mots cles des seuils hauts a jour
-            set hir [ buf$bufNo getkwd MIPS-HIR ]
-            buf$bufNo setkwd [ lreplace $hir 1 1 $seuilCouleur(blanc_R) ]
-            set hig [ buf$bufNo getkwd MIPS-HIG ]
-            buf$bufNo setkwd [ lreplace $hig 1 1 $seuilCouleur(blanc_V) ]
-            set hib [ buf$bufNo getkwd MIPS-HIB ]
-            buf$bufNo setkwd [ lreplace $hib 1 1 $seuilCouleur(blanc_B) ]
-            #--- Je mets les mots cles des seuils bas a jour
-            set lor [ buf$bufNo getkwd MIPS-LOR ]
-            buf$bufNo setkwd [ lreplace $lor 1 1 $seuilCouleur(noir_R) ]
-            set log [ buf$bufNo getkwd MIPS-LOG ]
-            buf$bufNo setkwd [ lreplace $log 1 1 $seuilCouleur(noir_V) ]
-            set lob [ buf$bufNo getkwd MIPS-LOB ]
-            buf$bufNo setkwd [ lreplace $lob 1 1 $seuilCouleur(noir_B) ]
+            #--- Je mets les mots cles des seuils a jour
+            set kwds { "MIPS-HIR" "MIPS-LOR" "MIPS-HIG" "MIPS-LOG" "MIPS-HIB" "MIPS-LOB" }
+            foreach kwd $kwds val $mycuts {
+               #--- Je capture le mot cle existant
+               set data [ buf$audace(bufNo) getkwd $kwd ]
+               #--- Je remplace la valeur par la valeur actuelle
+               set data [ lreplace $data 1 1 $val ]
+               #--- Je sauve le mot cle modifie
+               buf$audace(bufNo) setkwd $data
+            }
             #--- J'enregistre l'image modifiee en changeant son nom
             ::audace::enregistrer_sous $visuNo
          }
@@ -1134,42 +1130,23 @@ namespace eval ::seuilCouleur {
       #--- Retourne les coordonnees de la zone selectionnee avec la souris
       set box [ ::confVisu::getBox $visuNo ]
       if { $box == "" } {
-         set seuilCouleur(blanc_R) ""
-         set seuilCouleur(blanc_V) ""
-         set seuilCouleur(blanc_B) ""
+         #--- J'initialise les seuils
+         lassign [ list "" "" "" ] set seuilCouleur(blanc_R) seuilCouleur(blanc_V) seuilCouleur(blanc_B)
+         #---
          tk_messageBox -title "$caption(seuilCouleur,attention)" -icon error \
             -message "$caption(seuilCouleur,pas_selection_blanc)"
          return
       }
 
       #--- Calcule les coordonnees du centre de la zone selectionnee avec la souris
-      if { [ lindex $box 0 ] < [ lindex $box 2 ] } {
-         set X1 [ lindex $box 0 ]
-         set X2 [ lindex $box 2 ]
-      } else {
-         set X1 [ lindex $box 2 ]
-         set X2 [ lindex $box 0 ]
-         }
-      if { [ lindex $box 1 ] < [ lindex $box 3 ] } {
-         set Y1 [ lindex $box 1 ]
-         set Y2 [ lindex $box 3 ]
-      } else {
-         set Y1 [ lindex $box 3 ]
-         set Y2 [ lindex $box 1 ]
-      }
-      set Xmoy [ expr int( $X1 + ( $X2 - $X1 ) / 2. ) ]
-      set Ymoy [ expr int( $Y1 + ( $Y2 - $Y1 ) / 2. ) ]
+      set Xmoy [ expr int( ( [ lindex $box 2 ] + [ lindex $box 0 ] ) / 2. ) ]
+      set Ymoy [ expr int( ( [ lindex $box 3 ] + [ lindex $box 1 ] ) / 2. ) ]
 
       #--- Retourne les intensites R, V et B du centre de la zone selectionnee avec la souris
-      set intensite_blanc [ buf$audace(bufNo) getpix [ list $Xmoy $Ymoy ] ]
-      set seuilCouleur(blanc_R) [ lindex $intensite_blanc 1 ]
-      set seuilCouleur(blanc_V) [ lindex $intensite_blanc 2 ]
-      set seuilCouleur(blanc_B) [ lindex $intensite_blanc 3 ]
+      lassign [ buf$audace(bufNo) getpix [ list $Xmoy $Ymoy ] ] nihil seuilCouleur(blanc_R) seuilCouleur(blanc_V) seuilCouleur(blanc_B)
 
-      #--- Suppression de la zone selectionnee avec la souris si elle existe
-      if { [ lindex [ list [ ::confVisu::getBox $visuNo ] ] 0 ] != "" } {
-         ::confVisu::deleteBox $visuNo
-      }
+      #--- Suppression de la zone selectionnee avec la souris
+      ::confVisu::deleteBox $visuNo
    }
 
    #
@@ -1182,42 +1159,23 @@ namespace eval ::seuilCouleur {
       #--- Retourne les coordonnees de la zone selectionnee avec la souris
       set box [ ::confVisu::getBox $visuNo ]
       if { $box == "" } {
-         set seuilCouleur(noir_R) ""
-         set seuilCouleur(noir_V) ""
-         set seuilCouleur(noir_B) ""
+         #--- J'initialise les seuils
+         lassign [ list "" "" "" ] set seuilCouleur(noir_R) seuilCouleur(noir_V) seuilCouleur(noir_B)
+         #---
          tk_messageBox -title "$caption(seuilCouleur,attention)" -icon error \
             -message "$caption(seuilCouleur,pas_selection_noir)"
          return
       }
 
       #--- Calcule les coordonnees du centre de la zone selectionnee avec la souris
-      if { [ lindex $box 0 ] < [ lindex $box 2 ] } {
-         set X1 [ lindex $box 0 ]
-         set X2 [ lindex $box 2 ]
-      } else {
-         set X1 [ lindex $box 2 ]
-         set X2 [ lindex $box 0 ]
-         }
-      if { [ lindex $box 1 ] < [ lindex $box 3 ] } {
-         set Y1 [ lindex $box 1 ]
-         set Y2 [ lindex $box 3 ]
-      } else {
-         set Y1 [ lindex $box 3 ]
-         set Y2 [ lindex $box 1 ]
-      }
-      set Xmoy [ expr int( $X1 + ( $X2 - $X1 ) / 2. ) ]
-      set Ymoy [ expr int( $Y1 + ( $Y2 - $Y1 ) / 2. ) ]
+      set Xmoy [ expr int( ( [ lindex $box 2 ] + [ lindex $box 0 ] ) / 2.0 ) ]
+      set Ymoy [ expr int( ( [ lindex $box 3 ] + [ lindex $box 1 ] ) / 2.0 ) ]
 
       #--- Retourne les intensites R, V et B du centre de la zone selectionnee avec la souris
-      set intensite_noir [ buf$audace(bufNo) getpix [ list $Xmoy $Ymoy ] ]
-      set seuilCouleur(noir_R) [ lindex $intensite_noir 1 ]
-      set seuilCouleur(noir_V) [ lindex $intensite_noir 2 ]
-      set seuilCouleur(noir_B) [ lindex $intensite_noir 3 ]
+      lassign [ buf$audace(bufNo) getpix [ list $Xmoy $Ymoy ] ] nihil seuilCouleur(noir_R) seuilCouleur(noir_V) seuilCouleur(noir_B)
 
-      #--- Suppression de la zone selectionnee avec la souris si elle existe
-      if { [ lindex [ list [ ::confVisu::getBox $visuNo ] ] 0 ] != "" } {
-         ::confVisu::deleteBox $visuNo
-      }
+      #--- Suppression de la zone selectionnee avec la souris
+      ::confVisu::deleteBox $visuNo
    }
 
    #
@@ -1227,14 +1185,9 @@ namespace eval ::seuilCouleur {
    proc initSeuils { } {
       global seuilCouleur
 
-      set seuilCouleur(blanc_R) ""
-      set seuilCouleur(blanc_V) ""
-      set seuilCouleur(blanc_B) ""
-      set seuilCouleur(noir_R)  ""
-      set seuilCouleur(noir_V)  ""
-      set seuilCouleur(noir_B)  ""
+      lassign [ list "" "" "" "" "" "" ] seuilCouleur(blanc_R) seuilCouleur(blanc_V) \
+         seuilCouleur(blanc_B) seuilCouleur(noir_R) seuilCouleur(noir_V) seuilCouleur(noir_B)
    }
-
 }
 
 ########################## Fin du namespace seuilCouleur ##########################
