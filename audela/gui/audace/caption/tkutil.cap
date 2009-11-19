@@ -1,6 +1,6 @@
 #
 # Fichier : tkutil.cap
-# Mise a jour $Id: tkutil.cap,v 1.15 2009-11-04 18:38:03 robertdelmas Exp $
+# Mise a jour $Id: tkutil.cap,v 1.16 2009-11-19 22:08:43 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -52,7 +52,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,charger_image)      "Ouvrir une image"
    set caption(tkutil,sauver_image)       "Enregistrer une image"
    set caption(tkutil,sauver_image_jpeg)  "Enregistrer une image en jpeg"
-  set caption(tkutil,editer_script)      "Editer un script"
+   set caption(tkutil,editer_script)      "Editer un script"
    set caption(tkutil,lancer_script)      "Lancer un script"
    set caption(tkutil,editer_notice)      "Notices (.pdf)"
    set caption(tkutil,editer_site_web)    "Site Web"
