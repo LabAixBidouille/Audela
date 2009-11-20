@@ -1,7 +1,7 @@
 .PHONY: build install clean distclean
 
 include ../../Makefile.defs
-DIR = cfitsio3090
+DIR = cfitsio3210
 
 build:
 	( cd $(DIR) ; chmod +x configure ; ./configure --prefix=`pwd`/../.. )
