@@ -3,6 +3,7 @@
 include ../../Makefile.defs
 
 DIR = fitstcl
+CFITSIO=$(ROOT)/external/cfitsio/cfitsio3210
 
 
 #
@@ -11,8 +12,9 @@ build:
 		cd $(DIR) && \
       echo AUD_TCL_BIN_DIR=$(AUD_TCL_BIN_DIR) ; \
       echo include=$(ROOT)/external/tcl/tcl/include  ; \
+		echo include=$(CFITSIO) ; \
 		chmod +x configure ; \
-		./configure --prefix=$(ROOT)/../bin --with-tcl=$(AUD_TCL_BIN_DIR) --with-tcl-includes=$(ROOT)/external/tcl/tcl/include  --with-cfitsio=$(ROOT)/external/cfitsio/cfitsio3090 --enable-threads --prefix=`pwd`/../.. ; \
+		./configure --prefix=$(ROOT)/../bin --with-tcl=$(AUD_TCL_BIN_DIR) --with-tcl-includes=$(ROOT)/external/tcl/tcl/include  --with-cfitsio=$(CFITSIO) --enable-threads --prefix=`pwd`/../.. ; \
 		 \
 	fi;
 	#--- create dynamic library libfitstcl.so
