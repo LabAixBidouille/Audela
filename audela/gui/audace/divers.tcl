@@ -2,7 +2,7 @@
 # Fichier divers.tcl
 # Description : Ce script regroupe diverses petites fonctions
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: divers.tcl,v 1.13 2009-09-05 21:52:31 michelpujol Exp $
+# Mise a jour $Id: divers.tcl,v 1.14 2009-11-20 15:28:11 robertdelmas Exp $
 #
 
 # Documentation : voir le fichier divers.htm dans le dossier doc_html
@@ -2629,6 +2629,9 @@ proc suppr_accents {args} {
       } elseif {[string first "â" $chaine]>=0} {
          set index [string first "â" $chaine]
          return [suppr_accents [string replace $chaine $index $index "a"]]
+      } elseif {[string first "ç" $chaine]>=0} {
+         set index [string first "ç" $chaine]
+         return [suppr_accents [string replace $chaine $index $index "c"]]
       } elseif {[string first "é" $chaine]>=0} {
          set index [string first "é" $chaine]
          return [suppr_accents [string replace $chaine $index $index "e"]]
@@ -2640,6 +2643,9 @@ proc suppr_accents {args} {
          return [suppr_accents [string replace $chaine $index $index "e"]]
       } elseif {[string first "î" $chaine]>=0} {
          set index [string first "î" $chaine]
+         return [suppr_accents [string replace $chaine $index $index "i"]]
+      } elseif {[string first "ï" $chaine]>=0} {
+         set index [string first "ï" $chaine]
          return [suppr_accents [string replace $chaine $index $index "i"]]
       } elseif {[string first "ô" $chaine]>=0} {
          set index [string first "ô" $chaine]
