@@ -99,6 +99,9 @@ static Value *TreeNextValue _ANSI_ARGS_((Blt_TreeKeySearch *srchPtr));
 #if (SIZEOF_VOID_P == 8)
 #define RANDOM_INDEX(i)		HashOneWord(mask, downshift, i)
 #define BITSPERWORD		64
+//modif Yassine
+#define START_LOGSIZE		10 
+#define MAX_LIST_VALUES		40 
 #else 
 
 #define START_LOGSIZE		5 /* Initial hash table size is 32. */
