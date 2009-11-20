@@ -13,7 +13,6 @@ EXPORTS
 	ffbfeof
 	ffbfwt
 	ffgrsz
-	fits_get_num_files
 	ffgtbb
 	ffgi1b
 	ffgi2b
@@ -1340,9 +1339,6 @@ EXPORTS
 	ffr2e
 	ffd2f
 	ffd2e
-	ffrrgn
-	fftrgn
-	fffrgn
 	ffpthp
 	ffpscl
 	ffpnul
