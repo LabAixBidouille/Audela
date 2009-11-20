@@ -5772,6 +5772,9 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	double x,y;
 	double ttsec,jdtt;
 	int ttsecok=0;
+	double dpsi,deps,eps,tsl,tand,dasd,ddec;
+	double h0,az0;
+	int corrections;
 
    if(argc<2) {
       sprintf(s,"Usage: %s Action ?parameters?", argv[0]);
@@ -5850,8 +5853,8 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				} else {
 					jdtt+=ttsec/86400.;
 				}
-				//sprintf(s,"lindex [mc_ephem %s %12.5f {RA DEC LONGI LATI LONGI_SUN LATI_SUN POSNORTH APPDIAMPOL APPDIAMEQU} -topo {%s} -equinox apparent] 0",objename,jdtt,home);
-				sprintf(s,"lindex [mc_ephem %s %12.5f {RA DEC LONGI LATI LONGI_SUN LATI_SUN POSNORTH APPDIAMPOL APPDIAMEQU} -topo {%s} -equinox J2000.0] 0",objename,jd,home);
+				sprintf(s,"lindex [mc_ephem %s %12.5f {RA DEC LONGI LATI LONGI_SUN LATI_SUN POSNORTH APPDIAMPOL APPDIAMEQU} -topo {%s} -equinox apparent] 0",objename,jdtt,home);
+				//sprintf(s,"lindex [mc_ephem %s %12.5f {RA DEC LONGI LATI LONGI_SUN LATI_SUN POSNORTH APPDIAMPOL APPDIAMEQU} -topo {%s} -equinox J2000.0] 0",objename,jd,home);
 				res=Tcl_Eval(interp,s);
 				if (res==TCL_OK) {
 					strcpy(ligne,interp->result);
@@ -6299,7 +6302,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	      /* --- decode InputType ---*/
 			else if (strcmp(InputType,"SATEL_EPHEM_FILE")==0) {
 				if (argc<8) {
-					sprintf(s,"Usage: %s corrected_positions SATEL_EPHEM_FILE OutputFile DateDeb DateFin InputFile Home ?temperature? ?pressure? ?PointingModelFile?", argv[0]);
+					sprintf(s,"Usage: %s corrected_positions SATEL_EPHEM_FILE OutputFile DateDeb DateFin InputFile Home ?temperature? ?pressure? ?PointingModelFile? ?corrections?", argv[0]);
 					Tcl_SetResult(interp,s,TCL_VOLATILE);
 					result = TCL_ERROR;
 					return(result);
@@ -6332,6 +6335,11 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				} else {
 					strcpy(PointingModelFile,"");
 				}
+				if (argc>11) {
+					corrections=atoi(argv[k++]);
+				} else {
+					corrections=0;
+				}
 				/* --- charge le modele de pointage ---*/
 				if (strcmp(PointingModelFile,"")!=0) {
 					sprintf(s,"source \"%s\"",PointingModelFile);
@@ -6362,6 +6370,10 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 						}
 					}
 				}
+				/* --- obliquite moyenne --- */
+				mc_obliqmoy((jdfin+jddeb)/2.,&eps);
+				/* --- nutation ---*/
+				mc_nutation((jdfin+jddeb)/2.,1,&dpsi,&deps);
 				/* --- calculs ---*/
 				duree=(jdfin-jddeb);
 				if (duree<=0) {
@@ -6414,9 +6426,37 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 					sscanf(s,"%lf %lf %lf %lf",&sod,&h,&az,&distance);
 					az=(az-180.)*DR;
 					h*=(DR);
+					az0=fmod(az+2*PI,2*PI);
+					h0=h;
 					jd=floor(jddeb-0.5)+sod/86400.;
 					nlig++;
 					mc_ah2hd(az,h,latitude,&ha,&dec);
+					/* --- correction de la nutation ---*/
+					/**/
+					if (nlig==8001) {
+						nlig=nlig+0;
+					}
+					/**/
+					if (corrections==1) {
+						/* --- correction "a la Veillet" sur le temps sideral uniquement ---*/
+						mc_tsl(jd,-longitude,&tsl);
+						ra=tsl-ha;
+						tsl-=dpsi*cos(eps);
+						ha=tsl-ra;
+						mc_hd2ah(ha,dec,latitude,&az,&h);
+					}
+					if (corrections==2) {
+						/* --- correction de nutation sur les coordonnees du satellite ---*/
+						mc_tsl(jd,-longitude,&tsl);
+						ra=tsl-ha;
+						tand=tan(dec);
+						dasd=(cos(eps)+sin(eps)*sin(ra)*tand)*dpsi-cos(ra)*tand*deps;
+						ddec=sin(eps)*cos(ra)*dpsi+sin(ra)*deps;
+						ra+=dasd;
+						dec+=ddec;
+						ha=tsl-ra;
+						mc_hd2ah(ha,dec,latitude,&az,&h);
+					}
 					/* --- coordonnées horizontales---*/
 					star_site=h;
 					star_gise=az-PI;

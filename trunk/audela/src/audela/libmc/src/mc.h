@@ -504,6 +504,15 @@ typedef struct {
 	double coef;
 } mc_modpoi_vecy;
 
+/* --- Catalogue astrometrique */
+typedef struct {
+   int id;
+	double ra;
+	double dec;
+	double mura;
+	double mudec;
+	double plx;
+} mc_cata_astrom;
 
 /***************************************************************************/
 /***************************************************************************/
