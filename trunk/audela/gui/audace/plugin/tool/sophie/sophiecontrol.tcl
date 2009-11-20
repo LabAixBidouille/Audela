@@ -2,7 +2,7 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.36 2009-10-25 13:28:23 michelpujol Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.37 2009-11-20 22:31:36 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -151,7 +151,6 @@ proc ::sophie::control::run { visuNo tkbase } {
    $frm.guidage.positionconsigne.correction.ecartConsigne_simple axis configure x -hide true
    $frm.guidage.ecarts.graph_simple axis configure x -hide true
    $frm.guidage.corrections.graph_simple axis configure x -hide true
-
 }
 
 #------------------------------------------------------------
@@ -166,7 +165,6 @@ proc ::sophie::control::closeWindow { visuNo } {
       set ::conf(sophie,controlWindowPosition) [ winfo geometry [winfo toplevel $private(frm)]]
       destroy [ winfo toplevel $private(frm) ]
    }
-
 }
 
 #------------------------------------------------------------
@@ -827,7 +825,7 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
          $frm.guidage.corrections.graph_simple  element create ecartNul  \
             -xdata ::sophieAbcisse -ydata ::sophieEcartNul -mapy y \
             -color black -symbol none  -label ""
-         
+
          grid $frm.guidage.corrections.graph_simple \
             -in [ $frm.guidage.corrections getframe ] \
             -row 1 -column 0 -sticky nsew
@@ -836,7 +834,6 @@ proc ::sophie::control::fillConfigPage { frm visuNo } {
       pack $frm.guidage.corrections -side top -anchor w -fill x -expand 1
 
     # pack $frm.guidage -side top -fill both
-
 }
 
 ##------------------------------------------------------------
@@ -973,7 +970,6 @@ proc ::sophie::control::onScrollOrigin { visuNo args } {
 
    #--- je met a jour l'affichage de la fenetre principale
    ::sophie::setGuidingMode $visuNo
-
 }
 
 #------------------------------------------------------------
@@ -1000,7 +996,6 @@ proc ::sophie::control::createGraph { visuNo graph height } {
    bind $graph <B1-Motion>       "::sophie::control::onGraphRegionMotion $visuNo %W %x %y"
    bind $graph <ButtonRelease-1> "::sophie::control::onGraphRegionEnd $visuNo %W %x %y"
    bind $graph <ButtonRelease-3> "::sophie::control::onGraphUnzoom $graph"
-
 }
 
 ##------------------------------------------------------------
@@ -1192,8 +1187,8 @@ proc ::sophie::control::setAcquisitionSophie { state } {
 #    met a jour le nom du fichier bias
 #
 # @param biasState  etat du bias
-#     - OK   le bias est charge  (biasMessage contient le nom du fichier)
-#     - NONE pas de bias demande (biasMessage est vide)
+#     - OK    le bias est charge  (biasMessage contient le nom du fichier)
+#     - NONE  pas de bias demande (biasMessage est vide)
 #     - ERROR erreur pendant le chargement de bias (biasMessage contient le libelle du message d'erreur)
 # @param biasMessage  nom du fichier bias ou message d'erreur
 # @return rien
@@ -1217,27 +1212,26 @@ proc ::sophie::control::setRealDelay { delay } {
 
    #--- je formate le delai avant de l'afficher
    set private(realDelay) [format "%6.3f" $delay ]
-
 }
 
 ##------------------------------------------------------------
 # setCenterInformation
 #    affiche les informations de centrage
 #
-# @param starDetection  0=etoile non detecte 1=etoile detecte
-# @param fiberStatus  resultat detection de la fibre = DETECTED NO_SIGNAL TOO_FAR OUTSIDE LOW_SIGNAL INTEGRATING DISABLED
-# @param originX  abcisse de la consigne en pixel
-# @param originY  ordonnee de la consigne en pixel
-# @param starX  abcisse de l'etoile en pixel
-# @param starY  ordonnee de l'etoile en pixel
-# @param fwhmX  largeur a mi hauter sur l'axe X
-# @param fwhmY  largeur a mi hauter sur l'axe Y
-# @param background  fond du ciel
-# @param maxIntensity  intensité max
-# @param starDx  ecart de l'abcisse de l'etoile en pixel
-# @param starDy  ecart de l'ordonne de l'etoile en pixel
-# @param alphaDiff  ecart de l'ascension droite de l'etoile en arcseconde
-# @param deltaDiff  ecart de la declinaison de l'etoile en arcseconde
+# @param starDetection    0=etoile non detecte 1=etoile detecte
+# @param fiberStatus      resultat detection de la fibre = DETECTED NO_SIGNAL TOO_FAR OUTSIDE LOW_SIGNAL INTEGRATING DISABLED
+# @param originX          abcisse de la consigne en pixel
+# @param originY          ordonnee de la consigne en pixel
+# @param starX            abcisse de l'etoile en pixel
+# @param starY            ordonnee de l'etoile en pixel
+# @param fwhmX            largeur a mi hauter sur l'axe X
+# @param fwhmY            largeur a mi hauter sur l'axe Y
+# @param background       fond du ciel
+# @param maxIntensity     intensité max
+# @param starDx           ecart de l'abcisse de l'etoile en pixel
+# @param starDy           ecart de l'ordonne de l'etoile en pixel
+# @param alphaDiff        ecart de l'ascension droite de l'etoile en arcseconde
+# @param deltaDiff        ecart de la declinaison de l'etoile en arcseconde
 # @param alphaCorrection  correction du telescope en alpha (en arcseconde)
 # @param deltaCorrection  correction du telescope en delta (en arcseconde)
 #
@@ -1304,15 +1298,15 @@ proc ::sophie::control::setCenterInformation { starDetection fiberStatus originX
    set private(indicateursFwhmY)      [format "%6.1f" $fwhmY]
    set private(indicateursFondDeCiel) [format "%6.1f" $background]
    set private(indicateursFluxMax)    [format "%6.1f" $maxIntensity]
-   
+
    if { $private(indicateursFluxMax) < $::conf(sophie,minIntensity) } {
-      #--- je mets en rouge le fond du wigdet du flux max, si le flux max est inferieur au minimum requis   
+      #--- je mets en rouge le fond du wigdet du flux max, si le flux max est inferieur au minimum requis
       $frm.seeing.labelfluxMax configure -bg $private(inactiveColor)
       $frm.seeing.entryfluxMax configure -bg $private(inactiveColor)
    } else {
       #--- je restaure la couleur du fond par defaut
       $frm.seeing.labelfluxMax configure -bg $::audace(color,backColor)
-      $frm.seeing.entryfluxMax configure -bg $::audace(color,entryBackColor) 
+      $frm.seeing.entryfluxMax configure -bg $::audace(color,entryBackColor)
    }
 }
 
@@ -1321,16 +1315,16 @@ proc ::sophie::control::setCenterInformation { starDetection fiberStatus originX
 #    affiche les informations de focalisation
 #
 # @param starDetection 0=etoile non detecte 1=etoile detecte
-# @param fiberStatus  resultat detection de la fibre = DETECTED NO_SIGNAL TOO_FAR OUTSIDE LOW_SIGNAL INTEGRATING DISABLED
-# @param originY  ordonnee de la consigne en pixel
-# @param starX   abcisse de l'etoile en pixel
-# @param starY   ordonnee de l'etoile en pixel
-# @param fwhmX   largeur a mi hauteur sur l'axe X (arcsec)
-# @param fwhmY   largeur a mi hauteur sur l'axe Y (arcsec)
-# @param alphaDiff  ecart de l'ascension droite de l'etoile en arcseconde
-# @param deltaDiff  ecart de la declinaison de l'etoile en arcseconde
-# @param background   fond du ciel
-# @param maxIntensity intensité max
+# @param fiberStatus   resultat detection de la fibre = DETECTED NO_SIGNAL TOO_FAR OUTSIDE LOW_SIGNAL INTEGRATING DISABLED
+# @param originY       ordonnee de la consigne en pixel
+# @param starX         abcisse de l'etoile en pixel
+# @param starY         ordonnee de l'etoile en pixel
+# @param fwhmX         largeur a mi hauteur sur l'axe X (arcsec)
+# @param fwhmY         largeur a mi hauteur sur l'axe Y (arcsec)
+# @param alphaDiff     ecart de l'ascension droite de l'etoile en arcseconde
+# @param deltaDiff     ecart de la declinaison de l'etoile en arcseconde
+# @param background    fond du ciel
+# @param maxIntensity  intensité max
 #
 # @return rien
 #------------------------------------------------------------
@@ -1392,15 +1386,15 @@ proc ::sophie::control::setFocusInformation { starDetection fiberStatus originX 
    set private(indicateursFluxMax)    [format "%6.1f" $maxIntensity]
 
    if { $private(indicateursFluxMax) < $::conf(sophie,minIntensity) } {
-      #--- je mets en rouge le fond du wigdet du flux max, si le flux max est inferieur au minimum requis   
+      #--- je mets en rouge le fond du wigdet du flux max, si le flux max est inferieur au minimum requis
       $frm.seeing.labelfluxMax configure -bg $private(inactiveColor)
       $frm.seeing.entryfluxMax configure -bg $private(inactiveColor)
    } else {
       #--- je restaure la couleur du fond par defaut
       $frm.seeing.labelfluxMax configure -bg $::audace(color,backColor)
-      $frm.seeing.entryfluxMax configure -bg $::audace(color,entryBackColor) 
+      $frm.seeing.entryfluxMax configure -bg $::audace(color,entryBackColor)
    }
-      
+
    #--- j'ajoute la valeur dans le graphe FwhmX
    ::sophieFwhmX append $fwhmX
    if { [::sophieFwhmX length] >= $private(vectorLength) } {
@@ -1427,19 +1421,19 @@ proc ::sophie::control::setFocusInformation { starDetection fiberStatus originX 
 # setGuideInformation
 #    affiche les informations de guidage
 #
-# @param starDetection 0=etoile non detecte 1=etoile detecte
-# @param fiberStatus  resultat detection de la fibre = DETECTED NO_SIGNAL TOO_FAR OUTSIDE LOW_SIGNAL INTEGRATING DISABLED
-# @param originX  abcisse de la consigne (en pixel)
-# @param originY  ordonnee de la consigne (en pixel)
-# @param starX   abcisse de l'etoile (en pixel)
-# @param starY   ordonnee de l'etoile (en pixel)
-# @param starDx  ecart alpha de l'etoile (en arcsec)
-# @param starDy  ecart delta de l'etoile (en arcsec)
+# @param starDetection    0=etoile non detecte 1=etoile detecte
+# @param fiberStatus      resultat detection de la fibre = DETECTED NO_SIGNAL TOO_FAR OUTSIDE LOW_SIGNAL INTEGRATING DISABLED
+# @param originX          abcisse de la consigne (en pixel)
+# @param originY          ordonnee de la consigne (en pixel)
+# @param starX            abcisse de l'etoile (en pixel)
+# @param starY            ordonnee de l'etoile (en pixel)
+# @param starDx           ecart alpha de l'etoile (en arcsec)
+# @param starDy           ecart delta de l'etoile (en arcsec)
 # @param alphaCorrection  correction en alpha (en arcsec)
 # @param deltaCorrection  correction en delta (en arcsec)
-# @param originDx correction de la consigne en X  (en pixel)
-# @param originDy correction de la consigne en Y  (en pixel)
-# @param maxIntensity  intensité max
+# @param originDx         correction de la consigne en X  (en pixel)
+# @param originDy         correction de la consigne en Y  (en pixel)
+# @param maxIntensity     intensité max
 # @return null
 #------------------------------------------------------------
 proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX originY starX starY starDx starDy alphaCorrection deltaCorrection originDx originDy maxIntensity} {
@@ -1491,18 +1485,17 @@ proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX 
       }
    }
 
-   
-   set private(positionEtoileX)   [format "%6.1f" $starX]
-   set private(positionEtoileY)   [format "%6.1f" $starY]
-   set private(positionConsigneX) [format "%6.1f" $originX]
-   set private(positionConsigneY) [format "%6.1f" $originY]
-   set private(ecartConsigneX)    [format "%6.2f" $originDx]
-   set private(ecartConsigneY)    [format "%6.2f" $originDy]
-   set private(ecartEtoileX)      [format "%6.2f" $starDx]
-   set private(ecartEtoileY)      [format "%6.2f" $starDy]
-   set private(alphaCorrection)   [format "%6.2f" $alphaCorrection]
-   set private(deltaCorrection)   [format "%6.2f" $deltaCorrection]
-   set private(indicateursFluxMax)    [format "%6.1f" $maxIntensity]
+   set private(positionEtoileX)    [format "%6.1f" $starX]
+   set private(positionEtoileY)    [format "%6.1f" $starY]
+   set private(positionConsigneX)  [format "%6.1f" $originX]
+   set private(positionConsigneY)  [format "%6.1f" $originY]
+   set private(ecartConsigneX)     [format "%6.2f" $originDx]
+   set private(ecartConsigneY)     [format "%6.2f" $originDy]
+   set private(ecartEtoileX)       [format "%6.2f" $starDx]
+   set private(ecartEtoileY)       [format "%6.2f" $starDy]
+   set private(alphaCorrection)    [format "%6.2f" $alphaCorrection]
+   set private(deltaCorrection)    [format "%6.2f" $deltaCorrection]
+   set private(indicateursFluxMax) [format "%6.1f" $maxIntensity]
 
    if { $private(indicateursFluxMax) < $::conf(sophie,minIntensity) } {
       #--- je mets en rouge le fond du wigdet du flux max, si le flux max est inferieur au minimum requis
@@ -1511,9 +1504,9 @@ proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX 
    } else {
       #--- je restaure la couleur du fond par defaut
       $frm.guidage.seeing.labelfluxMax configure -bg $::audace(color,backColor)
-      $frm.guidage.seeing.entryfluxMax configure -bg $::audace(color,entryBackColor) 
+      $frm.guidage.seeing.entryfluxMax configure -bg $::audace(color,entryBackColor)
    }
-   
+
    #--- j'ajoute la valeur le graphe sophieEcartConsigneX
    ::sophieEcartConsigneX append $originDx
    if { [::sophieEcartConsigneX length] >= $private(vectorLength) } {
@@ -1556,11 +1549,12 @@ proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX 
       ::sophieCorrectionDelta delete 0
    }
 }
+
 ##------------------------------------------------------------
 # setSeeing
 #   memorise le seeing
-# @param xFwhm       seeing sur l'axe x (en arsec)
-# @param yFwhm       seeing sur l'axe y (en arsec)
+# @param xFwhm     seeing sur l'axe x (en arsec)
+# @param yFwhm     seeing sur l'axe y (en arsec)
 # #param skyLevel  fond du ciel (en ADU)
 #------------------------------------------------------------
 proc ::sophie::control::setSeeing { xFwhm yFwhm skyLevel} {
@@ -1569,7 +1563,7 @@ proc ::sophie::control::setSeeing { xFwhm yFwhm skyLevel} {
    set private(indicateursFwhmX)      [format "%6.2f" $xFwhm]
    set private(indicateursFwhmY)      [format "%6.2f" $yFwhm]
    set private(indicateursFondDeCiel) [format "%6.1f" $skyLevel]
-   
+
 }
 
 ##------------------------------------------------------------
@@ -1583,8 +1577,8 @@ proc ::sophie::control::setSeeing { xFwhm yFwhm skyLevel} {
 proc ::sophie::control::setOriginCoords { originX originY } {
    variable private
 
-   set private(positionObjetX)   [format "%6.1f" $originX]
-   set private(positionObjetY)   [format "%6.1f" $originY]
+   set private(positionObjetX) [format "%6.1f" $originX]
+   set private(positionObjetY) [format "%6.1f" $originY]
 }
 
 ##------------------------------------------------------------
@@ -1598,15 +1592,16 @@ proc ::sophie::control::setOriginCoords { originX originY } {
 proc ::sophie::control::setTargetCoords { starX starY } {
    variable private
 
-   set private(positionEtoileX)   [format "%6.1f" $starX]
-   set private(positionEtoileY)   [format "%6.1f" $starY]
+   set private(positionEtoileX) [format "%6.1f" $starX]
+   set private(positionEtoileY) [format "%6.1f" $starY]
 }
 
-#
-# ::fingerlakes::dispTempFLI
-#    Affiche la temperature du CCD
-#
-
+#------------------------------------------------------------
+# dispTempFLI
+#   affiche la temperature du CCD
+# @param item de la camera
+# @return rien
+#------------------------------------------------------------
 proc ::sophie::control::dispTempFLI { camItem } {
    variable private
    global caption
@@ -1700,7 +1695,6 @@ proc ::sophie::control::onGraphMotion { graph xScreen yScreen } {
    if {$ly>8} { set y [ string range $y 0 7 ] }
    $graph crosshairs configure -position @$xScreen,$yScreen
 }
-
 
 #------------------------------------------------------------
 # onGraphRegionStart
