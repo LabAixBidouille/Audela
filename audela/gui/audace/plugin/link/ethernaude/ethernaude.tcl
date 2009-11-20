@@ -2,7 +2,7 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: ethernaude.tcl,v 1.29 2009-11-16 23:16:10 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.tcl,v 1.30 2009-11-20 14:18:57 robertdelmas Exp $
 #
 
 namespace eval ethernaude {
@@ -332,7 +332,7 @@ proc ::ethernaude::initPlugin { } {
 proc ::ethernaude::initConf { } {
    global conf
 
-   if { ! [ info exists conf(ethernaude,host) ] }      { set conf(ethernaude,host)      "169.254.164.70" }
+   if { ! [ info exists conf(ethernaude,host) ] }      { set conf(ethernaude,host)      "169.254.189.70" }
    if { ! [ info exists conf(ethernaude,ipsetting) ] } { set conf(ethernaude,ipsetting) "0" }
    if { ! [ info exists conf(ethernaude,debug) ] }     { set conf(ethernaude,debug)     "0" }
    if { ! [ info exists conf(ethernaude,canspeed) ] }  { set conf(ethernaude,canspeed)  "9" }
