@@ -2,7 +2,7 @@
 # Fichier : alaudine_nt.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: alaudine_nt.tcl,v 1.20 2009-03-06 23:56:09 robertdelmas Exp $
+# Mise a jour $Id: alaudine_nt.tcl,v 1.21 2009-11-20 14:20:44 robertdelmas Exp $
 #
 
 namespace eval AlAudine_NT {
@@ -60,6 +60,20 @@ namespace eval AlAudine_NT {
    }
 
    #
+   # AlAudine_NT::initConf
+   # Initialisation de variables de configuration
+   #
+   proc initConf { } {
+      global conf
+
+      #--- Initialisation de variables de configuration
+      if { ! [ info exists conf(alaudine_nt,evaluation) ] }        { set conf(alaudine_nt,evaluation)        "25.0" }
+      if { ! [ info exists conf(alaudine_nt,delta_t_max) ] }       { set conf(alaudine_nt,delta_t_max)       "30.0" }
+      set t_ccd [ expr $conf(alaudine_nt,evaluation) - $conf(alaudine_nt,delta_t_max) / 2. ]
+      if { ! [ info exists conf(alaudine_nt,temp_ccd_souhaite) ] } { set conf(alaudine_nt,temp_ccd_souhaite) "$t_ccd" }
+   }
+
+   #
    # AlAudine_NT::recup_position
    # Permet de recuperer et de sauvegarder la position de la fenetre de configuration de l'alimentation
    #
@@ -84,12 +98,9 @@ namespace eval AlAudine_NT {
       #--- Chargement des captions
       source [ file join $audace(rep_plugin) link ethernaude alaudine_nt.cap ]
 
-      #--- initConf
-      if { ! [ info exists conf(alaudine_nt,position) ] }          { set conf(alaudine_nt,position)          "+600+490" }
-      if { ! [ info exists conf(alaudine_nt,evaluation) ] }        { set conf(alaudine_nt,evaluation)        "25.0" }
-      if { ! [ info exists conf(alaudine_nt,delta_t_max) ] }       { set conf(alaudine_nt,delta_t_max)       "30.0" }
-      set t_ccd [ expr $conf(alaudine_nt,evaluation) - $conf(alaudine_nt,delta_t_max) / 2. ]
-      if { ! [ info exists conf(alaudine_nt,temp_ccd_souhaite) ] } { set conf(alaudine_nt,temp_ccd_souhaite) "$t_ccd" }
+      #--- Initialisation de variables de configuration
+      if { ! [ info exists conf(alaudine_nt,position) ] } { set conf(alaudine_nt,position) "+600+490" }
+      ::AlAudine_NT::initConf
 
       #--- confToWidget
       set private(evaluation)        $conf(alaudine_nt,evaluation)
@@ -189,7 +200,7 @@ namespace eval AlAudine_NT {
       scale $This.temp_ccd_souhaite_variant -from $tmp_ccd_min -to $tmp_ccd_max -length 300 \
          -orient horizontal -showvalue true -tickinterval 5 -resolution 0.1 \
          -borderwidth 2 -relief groove -variable ::AlAudine_NT::private(temp_ccd_souhaite) -width 10 \
-         -command { ::AlAudine_NT::reglageTemp }
+         -command "::AlAudine_NT::reglageTemp"
       pack $This.temp_ccd_souhaite_variant -in $This.frame6 -anchor center -side left -padx 5 -pady 0
 
       entry $This.temp_ccd_souhaite -textvariable ::AlAudine_NT::private(temp_ccd_souhaite) -width 5 -justify center
@@ -222,21 +233,21 @@ namespace eval AlAudine_NT {
       }
 
       #--- Cree le bouton 'OK'
-      button $This.frame2.ok -text "$caption(alaudine_nt,ok)" -width 7 -command { ::AlAudine_NT::ok }
+      button $This.frame2.ok -text "$caption(alaudine_nt,ok)" -width 7 -command "::AlAudine_NT::ok"
       if { $conf(ok+appliquer) == "1" } {
          pack $This.frame2.ok -in $This.frame2 -side left -padx 3 -pady 3 -ipady 5 -fill x
       }
 
       #--- Cree le bouton 'Appliquer'
-      button $This.frame2.appliquer -text "$caption(alaudine_nt,appliquer)" -width 8 -command { ::AlAudine_NT::appliquer }
+      button $This.frame2.appliquer -text "$caption(alaudine_nt,appliquer)" -width 8 -command "::AlAudine_NT::appliquer"
       pack $This.frame2.appliquer -in $This.frame2 -side left -padx 3 -pady 3 -ipady 5 -fill x
 
       #--- Cree le bouton 'Fermer'
-      button $This.frame2.fermer -text "$caption(alaudine_nt,fermer)" -width 7 -command { ::AlAudine_NT::fermer }
+      button $This.frame2.fermer -text "$caption(alaudine_nt,fermer)" -width 7 -command "::AlAudine_NT::fermer"
       pack $This.frame2.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
 
       #--- Cree le bouton 'Aide'
-      button $This.frame2.aide -text "$caption(alaudine_nt,aide)" -width 7 -command { ::AlAudine_NT::afficherAide }
+      button $This.frame2.aide -text "$caption(alaudine_nt,aide)" -width 7 -command "::AlAudine_NT::afficherAide"
       pack $This.frame2.aide -in $This.frame2 -side right -padx 3 -pady 3 -ipady 5 -fill x
 
       #--- La fenetre est active
