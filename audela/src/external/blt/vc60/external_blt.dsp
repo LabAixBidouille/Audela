@@ -42,8 +42,9 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
+F90=df.exe
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "BLT_EXPORTS" /YX /FD /c
-# ADD CPP /nologo /MT /w /W0 /O2 /I "../blt2.4z/src" /I "../../include/win" /D "WIN32" /D "_WINDOWS" /D "TCL_THREADS" /D "__STDC__" /YX /FD /GD /GD /c
+# ADD CPP /nologo /MD /w /W0 /O2 /I "../blt2.4z/src" /I "../../include/win" /D "WIN32" /D "_WINDOWS" /D "TCL_THREADS" /D "__STDC__" /YX /FD /GD /GD /c
 # SUBTRACT CPP /Fr
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -55,6 +56,7 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib tcl85t.lib tk85t.lib /nologo /dll /machine:I386 /out:"Release/blt24.dll" /libpath:"../../lib"
+# SUBTRACT LINK32 /nodefaultlib
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PostBuild_Cmds=install.bat Release
@@ -73,8 +75,9 @@ PostBuild_Cmds=install.bat Release
 # PROP Intermediate_Dir "Debug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
+F90=df.exe
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "BLT_EXPORTS" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /w /W0 /Od /I "../blt2.4z/src" /I "../../include/win" /D "WIN32" /D "CONSOLE" /D "TCL_THREADS" /D "__STDC__" /FR /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /w /W0 /Od /I "../blt2.4z/src" /I "../../include/win" /D "WIN32" /D "CONSOLE" /D "TCL_THREADS" /D "__STDC__" /FR /YX /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x40c /d "_DEBUG"
