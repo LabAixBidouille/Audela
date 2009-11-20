@@ -2,7 +2,7 @@
 # Fichier : audine.tcl
 # Description : Configuration de la camera Audine
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audine.tcl,v 1.24 2009-04-26 15:57:53 robertdelmas Exp $
+# Mise a jour $Id: audine.tcl,v 1.25 2009-11-20 14:22:07 robertdelmas Exp $
 #
 
 namespace eval ::audine {
@@ -630,6 +630,9 @@ proc ::audine::confAudineInactif { camItem } {
 proc ::audine::setTempCCD { } {
    global conf
 
+   if { ! [ info exists conf(alaudine_nt,temp_ccd_souhaite) ] } {
+      ::AlAudine_NT::initConf
+   }
    return $conf(alaudine_nt,temp_ccd_souhaite)
 }
 
