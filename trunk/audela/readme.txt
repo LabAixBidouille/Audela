@@ -409,8 +409,8 @@ pour rectifier l'injustice qu'ils subissent.
  - Twapi : Extension qui donne acces a des fonctions de l'API de Windows via Tcl (Tcl Windows API).
  - Vfs : Librairie pour l'outil "Mise a jour d'AudeLA".
  - Zlibtcl : Librairie pour l'outil "Mise a jour d'AudeLA".
- - CFITSIO (2.51).
- - Sextractor (2.5.0).
+ - CFITSIO.
+ - Sextractor.
  - jpeg6b.
  - GZIP.
  - Porttalk.
