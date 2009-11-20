@@ -9,7 +9,7 @@
 #
 ########################################################################################
 
-# Mise a jour $Id: make_packages.sh,v 1.11 2009-07-17 14:01:12 bmauclaire Exp $
+# Mise a jour $Id: make_packages.sh,v 1.12 2009-11-20 18:10:16 bmauclaire Exp $
 
 
 #--- Utilisation du script :
@@ -17,7 +17,15 @@
 # 2. ./make_packages.sh nom_distribution_linux (debian ou ubuntu ou mandriva)
 # Rem: les actions root sont faites via sudo) :
 #
-#--- Compilation multithreadee :
+#--- Compilation sous Debian :
+# 1. cd audela/src
+# 2. make clean
+# 3. chmod u+x ./configure
+# 4. ./configure --with-tcl=/usr/share/tcltk/tcl8.5 --with-tk=/usr/share/tcltk/tk8.5
+# 5. make external && make contrib && make
+# 6. Modifier le numero de version dans audela/bin/version.tcl
+#
+#--- Compilation multithreadee avant le 10/11/2009 (obsolete) :
 # 1. Avoir, dans cet exemple, un repetoire lib contenant les .a de tcltk multithreade au meme niveau que le repertoire audela issu de CVS.
 # 2. Compiler tcl/tk avec les options de multithread
 # 3. Copier les fichiers libtcl8.4.so et libtk8.4.so multithreadés dans le repertoire audela/bin sinon "plantage Exception point flottant"
@@ -27,12 +35,12 @@
 # 7. Renommer les fichiers speciaux libthread2.6.5.1.so_debian (issu de la compilation d'Audela) et placer Thread2.6.5.1.so_mandriva dans le repertoire audela/lib/thread2.6.5.1/
 # La version fabriquee sera notee comme multithreadee si les 2 fichiers libtcl8.4.so et libtk8.4.so sont presents dans le rep bin d'Audela.
 #
-#--- Compilation monothreadee :
+#--- Compilation monothreadee avant le 10/11/2009 (obsolete) :
 # 1. chmod u+x ./configure ;
 # 2. ./configure
 # 3. make external && make contrib && make // ou make all.
 #
-#--- Modifications a faire avant execution :
+#--- Modifications a faire avant execution avaltn le 10/11/2009 (obsolete) :
 # 1. Que la version soit multithreadee ou non, il faut que les fichiers libtcl8.4.so et libtcl8.4.so soient presents dans /usr/lib/ de la machine destination pour que BLT fonctionne. Donc installer les paquets tcl et tk.
 # 2. Effacer le repertoire audela/lib/thread2.6/
 # 3. cp audela/src/external/libftd2xx/lib/libftd2xx.so.0.4.16 audela/audela/bin/
@@ -46,11 +54,11 @@
 # Visiblement non necessaires : tclxml, tcllib, tclvfs.
 #-- Dependances Linux du paquet :
 #- Debian :
-depends_debian="libstdc++6, libgsl0, gnuplot-x11, libusb-0.1-4, tclvfs, libtk-img, tclx8.4"
+depends_debian="libstdc++6, libgsl0ldbl, gnuplot-x11, libusb-0.1-4, tclvfs, libtk-img, tk8.5"
 # depends_debian="tk8.4, libstdc++6, libgsl0, gnuplot-x11, gzip, libusb-0.1-4, tclxml, tcllib, tclvfs, libtk-img, blt"
 # depends_debian="libc6, libgcc1, libgsl0, libstdc++6, libusb-0.1-4, tcl8.4, tk8.4, tclthread, libx11-6, libxau6, gnuplot-x11, gzip, tclxml, tcllib, tclvfs, libtk-img, blt"
 #- Ubuntu :
-depends_ubuntu="libstdc++6, libgsl0ldbl, gnuplot-x11, libusb-0.1-4, tclvfs, libtk-img, tclx8.4"
+depends_ubuntu="libstdc++6, libgsl0ldbl, gnuplot-x11, libusb-0.1-4, tclvfs, libtk-img, tk8.5"
 # depends_ubuntu="tk8.4, libstdc++6, libgsl0ldbl, gnuplot-x11, gzip, libusb-0.1-4, tclxml, tcllib, tclvfs, libtk-img, blt"
 # depends_ubuntu="libc6, libgcc1, libgsl0ldbl, libstdc++6, libusb-0.1-4, tcl8.4, tk8.4, gnuplot-x11, gzip, tclxml, tcllib, tclvfs, libtk-img, blt"
 #- Mandriva :
@@ -64,12 +72,15 @@ rep_audela_ready="../../.."
 rep_bin="$rep_audela_ready/bin"
 rep_audela_src="../.."
 sous_rep_libthread="lib/thread2.6.5.1"
-version_tcltk="8.4"
+version_tcltk="8.5"
 #-- Sont aussi definis apres les choix :
 # BUILD_DIR=audela-$DAILY
 # INST_DIR=/usr/lib/audela-$DAILY
 # DIRECTORY=$BUILD_DIR$INST_DIR
 # rep_libtcltk="/usr/lib" ou rep_libtcltk="$INST_DIR/bin"
+nom_paquet="audela"
+lesuffixe=""
+rep_libtcltk="/usr/lib"
 
 
 
@@ -125,11 +136,10 @@ fi
 #DAILY=`date +"%Y%m%d"`
 noteversion=`grep "audela(version)" $rep_bin/version.tcl | tr -d '"'`
 laversion=`expr "$noteversion" : '.*\s\([0-9]*\.[0-9]*\.[0-9]*\).*'`
-info_audela=`ls -gG $rep_bin/audela`
+info_audela=`ls -gGl --time-style=long-iso $rep_bin/audela`
 ladate=`expr "$info_audela" : '.*\([0-9][0-9][0-9][0-9]\-[0-9][0-9]\-[0-9][0-9]\).*'`
 DAILY=$laversion.`echo $ladate | tr -d '-'`
 echo "Creation des paquets AudeLA version $DAILY :"
-
 
 BUILD_DIR=audela-$DAILY
 INST_DIR=/usr/lib/audela-$DAILY
@@ -148,28 +158,14 @@ mkdir -p $BUILD_DIR
 #--- Creation des fichiers necessaire a l'empaquetage :
 echo "Creation des fichiers necessaire a l'empaquetage..."
 #-- Gesion multithreadee avec la variable $liens qui seront a realiser en postinst :
-if test -e $rep_bin/libtcl$version_tcltk.so
+if test ! -e $rep_libtcl/libtcl$version_tcltk.so
 then
-    nom_paquet="audela-thread"
-    lesuffixe="thread"
-    rep_libtcltk="$INST_DIR/bin"
     liens="#
-#- Fichiers libs .so.0 necessaires pour BLT :
-ln -s $rep_libtcltk/libtcl$version_tcltk.so $rep_libtcltk/libtcl$version_tcltk.so.0
-ln -s $rep_libtcltk/libtk$version_tcltk.so $rep_libtcltk/libtk$version_tcltk.so.0
+#- Fichiers libs .so necessaires pour BLT mais fournis que par les paquets tcl/tk-dev :
+ln -s $rep_libtcltk/libtcl$version_tcltk.so.0 $rep_libtcltk/libtcl$version_tcltk.so
+ln -s $rep_libtcltk/libtk$version_tcltk.so.0 $rep_libtcltk/libtk$version_tcltk.so
 "
-    #liens="#"
-else
-    nom_paquet="audela-mono"
-    lesuffixe="mono"
-    rep_libtcltk="/usr/lib"
-    liens="#
-#- Compense un probleme dans l'edition de lien d'Audela :
-#- il faut a Audela les lib.so (lien realise par le paquet de tk-dev) au lieu de .so.0
-#- (pour BLT et dispo ds paquet binaire) Mais c'est MAL de faire ainsi !
-if test -e $rep_libtcltk/libtcl$version_tcltk.so || test -h $rep_libtcltk/libtcl$version_tcltk.so ; then echo "" ; elif test -e $rep_libtcltk/libtcl$version_tcltk.so.0 ; then ln -s $rep_libtcltk/libtcl$version_tcltk.so.0 $rep_libtcltk/libtcl$version_tcltk.so ; fi
-if test -e $rep_libtcltk/libtk$version_tcltk.so || test -h $rep_libtcltk/libtk$version_tcltk.so ; then echo "" ; elif test -e $rep_libtcltk/libtk$version_tcltk.so.0 ; then ln -s $rep_libtcltk/libtk$version_tcltk.so.0 $rep_libtcltk/libtk$version_tcltk.so ; fi
-"
+    liens=""
 fi
 
 
@@ -222,10 +218,10 @@ chmod 555 $BUILD_DIR/DEBIAN/postinst
 echo "#!/bin/sh
 set -e
 rm -f /usr/bin/audela
-if test -h $rep_libtcltk/libtcl$version_tcltk.so.0 ; then rm -rf $INST_DIR ; fi
-# Automatically added by dh_installmenu
+# rm -rf $INST_DIR
+#-- Automatically added by dh_installmenu
 if [ -x \"`which update-menus 2>/dev/null`\" ]; then update-menus ; fi
-# End automatically added section
+#-- End automatically added section
 " > $BUILD_DIR/DEBIAN/postrm
 chmod 555 $BUILD_DIR/DEBIAN/postrm
 
@@ -306,7 +302,7 @@ cp audela.xpm $BUILD_DIR/usr/share/pixmaps/
 
 #--- Creation du paquet :
 echo "Creation du paquet Debian..."
-sudo dpkg -b $BUILD_DIR $BUILD_DIR-$lesuffixe.deb
+sudo dpkg -b $BUILD_DIR $BUILD_DIR$lesuffixe.deb
 luser=`whoami`
 sudo chown $luser.$luser *.deb
 echo "Paquet DEB cree."
