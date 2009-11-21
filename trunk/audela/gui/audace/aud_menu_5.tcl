@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_5.tcl
 # Description : Script regroupant les fonctionnalites du menu Analyse
-# Mise a jour $Id: aud_menu_5.tcl,v 1.10 2009-06-12 17:32:39 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_5.tcl,v 1.11 2009-11-21 23:35:11 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -887,14 +887,20 @@ proc subfitgauss { visuNo } {
 # Cicatrise l'interieur d'une fenetre d'une image
 #
 proc scar { visuNo } {
-   #--- Capture de la fenetre d'analyse
+   #--- Je memorise le nom du fichier
+   set filename [ ::confVisu::getFileName $visuNo ]
+   #--- Je capture la fenetre d'analyse
    set box [ ::confVisu::getBox $visuNo ]
    if { $box == "" } {
       return
    }
-   #--- Lecture des parametres dans la fenetre
+   #--- Je lis les parametres dans la fenetre
    set valeurs [ buf[::confVisu::getBufNo $visuNo] scar $box ]
    ::confVisu::autovisu $visuNo
+   #--- Je recupere le nom du fichier si l'option est demandee
+   if { $::conf(cicatriser_changer_garder) == "1" } {
+      ::confVisu::setFileName $visuNo $filename
+   }
 }
 
 ###################################################################################
