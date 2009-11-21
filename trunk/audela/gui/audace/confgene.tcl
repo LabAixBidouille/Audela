@@ -5,7 +5,7 @@
 #               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.59 2009-11-14 11:55:24 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.60 2009-11-21 23:33:50 robertdelmas Exp $
 #
 
 #
@@ -1531,12 +1531,13 @@ namespace eval ::confFichierIma {
       global conf
 
       #--- Initialisation indispensable de 3 variables dans aud.tcl (::audace::Recup_Config)
-      if { ! [ info exists conf(save_seuils_visu) ] }     { set conf(save_seuils_visu)     "1" }
-      if { ! [ info exists conf(format_fichier_image) ] } { set conf(format_fichier_image) "0" }
-      if { ! [ info exists conf(extension,defaut) ] }     { set conf(extension,defaut)     ".fit" }
-      if { ! [ info exists conf(fichier,compres) ] }      { set conf(fichier,compres)      "0" }
-      if { ! [ info exists conf(jpegquality,defaut) ] }   { set conf(jpegquality,defaut)   "80" }
-      if { ! [ info exists conf(list_extension) ] }       { set conf(list_extension)       ".fit .fit.gz .fts .fts.gz .fits .fits.gz .jpeg .jpg .crw .cr2 .nef .dng" }
+      if { ! [ info exists conf(cicatriser_changer_garder) ] } { set conf(cicatriser_changer_garder) "0" }
+      if { ! [ info exists conf(save_seuils_visu) ] }          { set conf(save_seuils_visu)          "1" }
+      if { ! [ info exists conf(format_fichier_image) ] }      { set conf(format_fichier_image)      "0" }
+      if { ! [ info exists conf(extension,defaut) ] }          { set conf(extension,defaut)          ".fit" }
+      if { ! [ info exists conf(fichier,compres) ] }           { set conf(fichier,compres)           "0" }
+      if { ! [ info exists conf(jpegquality,defaut) ] }        { set conf(jpegquality,defaut)        "80" }
+      if { ! [ info exists conf(list_extension) ] }            { set conf(list_extension)            ".fit .fit.gz .fts .fts.gz .fits .fits.gz .jpeg .jpg .crw .cr2 .nef .dng" }
       #---
       set conf(extension,new)   $conf(extension,defaut)
       set conf(jpegquality,new) $conf(jpegquality,defaut)
@@ -1547,12 +1548,13 @@ namespace eval ::confFichierIma {
       global audace caption color conf confgene
 
       #--- confToWidget
-      set confgene(fichier,save_seuils_visu) $conf(save_seuils_visu)
-      set confgene(fichier,format)           $conf(format_fichier_image)
-      set confgene(extension,new)            $conf(extension,new)
-      set confgene(fichier,compres)          $conf(fichier,compres)
-      set confgene(jpegquality,new)          $conf(jpegquality,new)
-      set confgene(fichier,list_extension)   $conf(list_extension)
+      set confgene(fichier,cicatriser_changer_garder) $conf(cicatriser_changer_garder)
+      set confgene(fichier,save_seuils_visu)          $conf(save_seuils_visu)
+      set confgene(fichier,format)                    $conf(format_fichier_image)
+      set confgene(extension,new)                     $conf(extension,new)
+      set confgene(fichier,compres)                   $conf(fichier,compres)
+      set confgene(jpegquality,new)                   $conf(jpegquality,new)
+      set confgene(fichier,list_extension)            $conf(list_extension)
 
       #---
       if { [winfo exists $This] } {
@@ -1579,6 +1581,9 @@ namespace eval ::confFichierIma {
 
       frame $This.frame2 -borderwidth 1 -relief raised
       pack $This.frame2 -side top -fill x
+
+      TitleFrame $This.frame2a -borderwidth 2 -relief ridge -text "$caption(confgene,fichier_image_nom)"
+      pack $This.frame2a -in $This.frame1 -side top -fill both -expand 1 -padx 2 -pady 2
 
       TitleFrame $This.frame3 -borderwidth 2 -relief ridge -text "$caption(confgene,fichier_image_fits)"
       pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1 -padx 2 -pady 2
@@ -1616,9 +1621,25 @@ namespace eval ::confFichierIma {
       frame $This.frame14 -borderwidth 0 -relief raised
       pack $This.frame14 -in [ $This.frame4 getframe ] -side top -fill both -expand 1
 
+      #--- Enregistrer une image en choisissant le format
+      label $This.lab0 -text "$caption(confgene,fichier_image_analyse_cicatriser)"
+      pack $This.lab0 -in [ $This.frame2a getframe ] -anchor w -side top -padx 10 -pady 5
+
+      #--- Radio-bouton pour le format entier
+      radiobutton $This.radio1 -anchor nw -highlightthickness 0 \
+         -text "$caption(confgene,fichier_image_changer_nom)" -value 0 \
+         -variable confgene(fichier,cicatriser_changer_garder)
+      pack $This.radio1 -in [ $This.frame2a getframe ] -anchor w -side top -padx 30 -pady 5
+
+      #--- Radio-bouton pour le format flottant
+      radiobutton $This.radio2 -anchor nw -highlightthickness 0 \
+         -text "$caption(confgene,fichier_image_garder_nom)" -value 1 \
+         -variable confgene(fichier,cicatriser_changer_garder)
+      pack $This.radio2 -in [ $This.frame2a getframe ] -anchor w -side top -padx 30 -pady 5
+
       #--- Enregistrer une image en conservant ou non les seuils de la visu
-      checkbutton $This.save_seuils_visu -text "$caption(confgene,fichier_images_seuils_visu)" -highlightthickness 0 \
-         -variable confgene(fichier,save_seuils_visu)
+      checkbutton $This.save_seuils_visu -text "$caption(confgene,fichier_images_seuils_visu)" \
+         -highlightthickness 0 -variable confgene(fichier,save_seuils_visu)
       pack $This.save_seuils_visu -in $This.frame5 -anchor center -side left -padx 10 -pady 5
 
       #--- Enregistrer une image en choisissant le format
@@ -1650,8 +1671,8 @@ namespace eval ::confFichierIma {
       pack $This.newext -in $This.frame10 -anchor center -side right -padx 10 -pady 5
 
       #--- Ouvre le choix aux fichiers compresses
-      checkbutton $This.compress -text "$caption(confgene,fichier_image_compres)" -highlightthickness 0 \
-         -variable confgene(fichier,compres)
+      checkbutton $This.compress -text "$caption(confgene,fichier_image_compres)" \
+         -highlightthickness 0 -variable confgene(fichier,compres)
       pack $This.compress -in $This.frame11 -anchor center -side left -padx 10 -pady 5
 
       #--- Rappelle le taux de qualite d'enregistrement par defaut des fichiers Jpeg
@@ -1709,14 +1730,15 @@ namespace eval ::confFichierIma {
    proc widgetToConf { } {
       global conf confgene
 
-      set conf(save_seuils_visu)     $confgene(fichier,save_seuils_visu)
-      set conf(format_fichier_image) $confgene(fichier,format)
-      set conf(extension,defaut)     $confgene(extension,new)
-      set conf(extension,new)        $confgene(extension,new)
-      set conf(fichier,compres)      $confgene(fichier,compres)
-      set conf(jpegquality,defaut)   $confgene(jpegquality,new)
-      set conf(jpegquality,new)      $confgene(jpegquality,new)
-      set conf(list_extension)       $confgene(fichier,list_extension)
+      set conf(cicatriser_changer_garder) $confgene(fichier,cicatriser_changer_garder)
+      set conf(save_seuils_visu)          $confgene(fichier,save_seuils_visu)
+      set conf(format_fichier_image)      $confgene(fichier,format)
+      set conf(extension,defaut)          $confgene(extension,new)
+      set conf(extension,new)             $confgene(extension,new)
+      set conf(fichier,compres)           $confgene(fichier,compres)
+      set conf(jpegquality,defaut)        $confgene(jpegquality,new)
+      set conf(jpegquality,new)           $confgene(jpegquality,new)
+      set conf(list_extension)            $confgene(fichier,list_extension)
    }
 
    proc MajExtension { } {
@@ -1733,16 +1755,6 @@ namespace eval ::confFichierIma {
          $This.compress configure -variable confgene(fichier,compres)
          set conf(fichier,compres) $confgene(fichier,compres)
       }
-
-     ### if { ( $conf(extension,new) == ".bmp" ) || ( $conf(extension,new) == ".gif" ) || ( $conf(extension,new) == ".jpg" ) \
-     ###    || ( $conf(extension,new) == ".jpeg" ) || ( $conf(extension,new) == ".png" ) || ( $conf(extension,new) == ".tif" ) \
-     ###    || ( $conf(extension,new) == ".xbm" ) || ( $conf(extension,new) == ".xpm" ) || ( $conf(extension,new) == ".eps" ) \
-     ###    || ( $conf(extension,new) == ".crw" ) || ( $conf(extension,new) == ".cr2" ) || ( $conf(extension,new) == ".nef" ) \
-     ###    || ( $conf(extension,new) == ".dng" ) } {
-     ###    set confgene(fichier,compres) "0"
-     ###    $This.compress configure -variable confgene(fichier,compres)
-     ###    set conf(fichier,compres) $confgene(fichier,compres)
-     ### }
 
       #--- Mise a jour de l'extension des fichiers image pour toutes les visu disponibles
       foreach visuNo [ ::visu::list ] {
