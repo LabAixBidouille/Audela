@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.32 2009-11-17 23:06:48 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.33 2009-11-21 23:28:57 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -19,6 +19,10 @@ set caption(confgene,aide)                                  "Help"
 set caption(confgene,type_fenetre)                          "Window Type"
 
 set caption(confgene,fichier_image)                         "Image Files"
+set caption(confgene,fichier_image_nom)                     "File Name"
+set caption(confgene,fichier_image_analyse_cicatriser)      "Analysis --> Cosmetic Repair"
+set caption(confgene,fichier_image_changer_nom)             "Change file name when saving"
+set caption(confgene,fichier_image_garder_nom)              "Keep file name when saving"
 set caption(confgene,fichier_image_fits)                    "FITS Files"
 set caption(confgene,fichier_images_seuils_visu)            "Save Image with Display Thresholds"
 set caption(confgene,fichier_images_choix_format)           "Save images as:"
@@ -113,6 +117,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,type_fenetre)                       "Type de fenêtre"
 
    set caption(confgene,fichier_image)                      "Fichiers image"
+   set caption(confgene,fichier_image_nom)                  "Nom du fichier"
+   set caption(confgene,fichier_image_analyse_cicatriser)   "Analyse --> Cicatriser"
+   set caption(confgene,fichier_image_changer_nom)          "Changer le nom du fichier à l'enregistrement"
+   set caption(confgene,fichier_image_garder_nom)           "Garder le nom du fichier à l'enregistrement"
    set caption(confgene,fichier_image_fits)                 "Fichiers FITS"
    set caption(confgene,fichier_images_seuils_visu)         "Enregistrer les images avec les seuils de la visu"
    set caption(confgene,fichier_images_choix_format)        "Enregistrer les images au format :"
@@ -207,6 +215,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,type_fenetre)                       "Tipo di finestra"
 
    set caption(confgene,fichier_image)                      "Files immagine"
+   set caption(confgene,fichier_image_nom)                  "Nome file"
+   set caption(confgene,fichier_image_analyse_cicatriser)   "Analisi --> Mascherare"
+   set caption(confgene,fichier_image_changer_nom)          "# Changer le nom du fichier à l'enregistrement"
+   set caption(confgene,fichier_image_garder_nom)           "# Garder le nom du fichier à l'enregistrement"
    set caption(confgene,fichier_image_fits)                 "Files FITS"
    set caption(confgene,fichier_images_seuils_visu)         "Salvare le immagini con la soglia di visualizzazione"
    set caption(confgene,fichier_images_choix_format)        "Salvare immagini come:"
@@ -301,6 +313,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,type_fenetre)                       "Tipo de ventana"
 
    set caption(confgene,fichier_image)                      "Ficheros de imágenes"
+   set caption(confgene,fichier_image_nom)                  "Nombre de fichero"
+   set caption(confgene,fichier_image_analyse_cicatriser)   "Análisis --> Scar"
+   set caption(confgene,fichier_image_changer_nom)          "# Changer le nom du fichier à l'enregistrement"
+   set caption(confgene,fichier_image_garder_nom)           "# Garder le nom du fichier à l'enregistrement"
    set caption(confgene,fichier_image_fits)                 "Ficheros FITS"
    set caption(confgene,fichier_images_seuils_visu)         "Guardar imagen con los umbrales de visualización"
    set caption(confgene,fichier_images_choix_format)        "Guardar imagenes en formato:"
@@ -395,6 +411,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,type_fenetre)                       "Fenster Typ"
 
    set caption(confgene,fichier_image)                      "Bild Datei"
+   set caption(confgene,fichier_image_nom)                  "Dateien Namen"
+   set caption(confgene,fichier_image_analyse_cicatriser)   "Analyse --> Verheilen"
+   set caption(confgene,fichier_image_changer_nom)          "# Changer le nom du fichier à l'enregistrement"
+   set caption(confgene,fichier_image_garder_nom)           "# Garder le nom du fichier à l'enregistrement"
    set caption(confgene,fichier_image_fits)                 "FITS Datei"
    set caption(confgene,fichier_images_seuils_visu)         "Bilder mit Entfaltung Schwellen speichern"
    set caption(confgene,fichier_images_choix_format)        "Bilder im Format speichern:"
@@ -489,6 +509,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,type_fenetre)                       "Tipo de janela"
 
    set caption(confgene,fichier_image)                      "Ficheiros de imagens"
+   set caption(confgene,fichier_image_nom)                  "Nome do Ficheiro"
+   set caption(confgene,fichier_image_analyse_cicatriser)   "Análise --> Reparação cosmética (scar)"
+   set caption(confgene,fichier_image_changer_nom)          "# Changer le nom du fichier à l'enregistrement"
+   set caption(confgene,fichier_image_garder_nom)           "# Garder le nom du fichier à l'enregistrement"
    set caption(confgene,fichier_image_fits)                 "Ficheiros FITS"
    set caption(confgene,fichier_images_seuils_visu)         "Guardar as imagens com os limiares de visualização"
    set caption(confgene,fichier_images_choix_format)        "Guardar as imagens em formato:"
@@ -583,6 +607,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,type_fenetre)                       "Vindue-type"
 
    set caption(confgene,fichier_image)                      "Billedfil"
+   set caption(confgene,fichier_image_nom)                  "Filnavn"
+   set caption(confgene,fichier_image_analyse_cicatriser)   "Analyse --> Kosmetisk reparering"
+   set caption(confgene,fichier_image_changer_nom)          "# Changer le nom du fichier à l'enregistrement"
+   set caption(confgene,fichier_image_garder_nom)           "# Garder le nom du fichier à l'enregistrement"
    set caption(confgene,fichier_image_fits)                 "FITS Filer"
    set caption(confgene,fichier_images_seuils_visu)         "Gem billedet med vist tærskelværdi"
    set caption(confgene,fichier_images_choix_format)        "Gem billeder som:"
@@ -677,6 +705,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,type_fenetre)                       "Window Type"
 
    set caption(confgene,fichier_image)                      "Image Files"
+   set caption(confgene,fichier_image_nom)                  "File Name"
+   set caption(confgene,fichier_image_analyse_cicatriser)   "Analysis --> Cosmetic Repair"
+   set caption(confgene,fichier_image_changer_nom)          "Change file name when saving"
+   set caption(confgene,fichier_image_garder_nom)           "Keep file name when saving"
    set caption(confgene,fichier_image_fits)                 "FITS Files"
    set caption(confgene,fichier_images_seuils_visu)         "Save Image with Display Thresholds"
    set caption(confgene,fichier_images_choix_format)        "Save images as:"
@@ -771,6 +803,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,type_fenetre)                       "Window Type"
 
    set caption(confgene,fichier_image)                      "Image Files"
+   set caption(confgene,fichier_image_nom)                  "File Name"
+   set caption(confgene,fichier_image_analyse_cicatriser)   "Analysis --> Cosmetic Repair"
+   set caption(confgene,fichier_image_changer_nom)          "Change file name when saving"
+   set caption(confgene,fichier_image_garder_nom)           "Keep file name when saving"
    set caption(confgene,fichier_image_fits)                 "FITS Files"
    set caption(confgene,fichier_images_seuils_visu)         "Save Image with Display Thresholds"
    set caption(confgene,fichier_images_choix_format)        "Save images as:"
