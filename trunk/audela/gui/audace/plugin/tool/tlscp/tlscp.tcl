@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.30 2009-11-17 17:03:03 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.31 2009-11-21 21:51:11 robertdelmas Exp $
 #
 
 #============================================================
@@ -592,6 +592,17 @@ proc ::tlscp::adaptPanel { visuNo args } {
 proc ::tlscp::startTool { visuNo } {
    variable private
 
+   #--- Je selectionne les mots cles optionnels a ajouter dans les images
+   #--- Ce sont les mots cles OBJNAME, RA, DEC et EQUINOX
+   ::keyword::selectKeywords $visuNo [ list OBJNAME RA DEC EQUINOX ]
+
+   #--- Je selectionne la liste des mots cles non modifiables
+   ::keyword::setKeywordState $visuNo [ list OBJNAME RA DEC EQUINOX ]
+
+   #--- Je force la capture des mots cles OBJNAME, RA, DEC et EQUINOX en automatique
+   ::keyword::setKeywordsObjRaDecAuto
+   ::keyword::setKeywordsEquinoxAuto
+
    #--- j'active les traces et affiche l'outil
    trace add variable ::conf(telescope) write "::tlscp::adaptPanel $visuNo"
    if { [ ::confTel::getPluginProperty hasModel ] == "1" } {
@@ -633,6 +644,13 @@ proc ::tlscp::stopTool { visuNo } {
    if { $private($visuNo,pose_en_cours) == 1 } {
       return -1
    }
+
+   #--- Les mots cles OBJNAME, RA, DEC et EQUINOX sont a nouveau modifiables
+   ::keyword::setKeywordState $visuNo [ list ]
+
+   #--- Je force la capture des mots cles OBJNAME, RA, DEC et EQUINOX en manuel
+   ::keyword::setKeywordsObjRaDecManuel
+   ::keyword::setKeywordsEquinoxManuel
 
    #--- je masque les axes
    ::tlscp::deleteAlphaDeltaAxis $visuNo
@@ -1031,21 +1049,13 @@ proc ::tlscp::startCenter { visuNo { methode "" } } {
    #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
    ::confVisu::setFileName $visuNo ""
 
-   #--- j'affiche marques autour des etoiles
+   #--- j'affiche les marques autour des etoiles
    if { $private($visuNo,acquisitionResult) != "" } {
-      #--- j'ajoute les mots cles dans l'image
-      set bufNo [::confVisu::getBufNo $visuNo]
-      buf$bufNo setkwd [list "RA"  $ra  double "reference coordinate for naxis1" "degree" ]
-      buf$bufNo setkwd [list "DEC" $dec double "reference coordinate for naxis2" "degree" ]
-      buf$bufNo setkwd [list "OBJNAME" $private($visuNo,nomObjet) string "object name" "" ]
-      buf$bufNo setkwd [list "EQUINOX" "J2000.0" string "Coordinates equinox" "" ]
-
       #--- je cree un cercle rouge autour de l'etoile centree
       set coord [::confVisu::picture2Canvas $visuNo $private($visuNo,acquisitionResult) ]
       set x [lindex $coord 0]
       set y [lindex $coord 1]
       [::confVisu::getCanvas $visuNo] create oval [expr $x-8] [expr $y-8] [expr $x+8] [expr $y+8] -fill {} -outline red -width 2 -activewidth 3 -tag tlscpstar
-
       ::confVisu::setAvailableScale $visuNo "xy_radec"
    }
 
