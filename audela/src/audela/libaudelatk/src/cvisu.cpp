@@ -94,7 +94,7 @@ int CVisu::ClearImage()
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return 0;
 }
 
@@ -223,11 +223,11 @@ int CVisu::CreatePaletteFromFile(char *filename)
       // Si la palette existe deja, elle est detruite
       if((pal.pal)[0]!=NULL) {
          for(i=0;i<3;i++) {
-            delete (pal.pal)[i];
+            delete[] (pal.pal)[i];
          }
       }
       if(pal.filename!=NULL) {
-         delete pal.filename;
+         delete[] pal.filename;
       }
       // Recopie de la palette
       pal.typ = Pal_File;
