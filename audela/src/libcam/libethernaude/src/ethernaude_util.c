@@ -1,7 +1,7 @@
 /* ethernaude_util.c
- * 
+ *
  * Copyright (C) 2002-2004 Michel MEUNIER <michel.meunier@tiscali.fr>
- * 
+ *
  * Mettre ici le texte de la license.
  *
  */
@@ -460,31 +460,33 @@ int util_param_decode(char *ligne, char *keyword, char *value, int *paramtype)
     /* ========= extract value ====== */
     len = strlen(ligne);
     for (kk = 0, k = posequal + 1; k < len; k++, kk++) {
-	c = ligne[k];
-	dummy[kk] = c;
+	   c = ligne[k];
+	   dummy[kk] = c;
     }
     dummy[kk] = '\0';
-    /* - trim left spaces of the dummy - */
-    len = strlen(dummy);
-    k = 0;
-    kdeb = 0;
-    while (dummy[k] == ' ') {
-	k++;
+    if ( strlen( dummy ) > 0 ) {
+        /* - trim left spaces of the dummy - */
+        len = strlen(dummy);
+        k = 0;
+        kdeb = 0;
+        while (dummy[k] == ' ') {
+            k++;
+        }
+        kdeb = k;
+        /* - trim right spaces of the keyword - */
+        len = strlen(dummy);
+        k = len;
+        kfin = len;
+        while (dummy[k - 1] == ' ') {
+            k--;
+        }
+        kfin = k;
+        /* - trim all spaces of keyword - */
+        for (k = 0; k < kfin; k++) {
+            dummy[k] = dummy[k + kdeb];
+        }
+        dummy[k] = '\0';
     }
-    kdeb = k;
-    /* - trim right spaces of the keyword - */
-    len = strlen(dummy);
-    k = len;
-    kfin = len;
-    while (dummy[k - 1] == ' ') {
-	k--;
-    }
-    kfin = k;
-    /* - supress trim spaces of keyword - */
-    for (k = 0; k < kfin; k++) {
-	dummy[k] = dummy[k + kdeb];
-    }
-    dummy[k] = '\0';
     strcpy(value, dummy);
     *paramtype = 0;
 
