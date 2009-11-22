@@ -5,7 +5,7 @@
 #               pose, choix des outils, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.60 2009-11-21 23:33:50 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.61 2009-11-22 12:56:24 robertdelmas Exp $
 #
 
 #
@@ -1582,9 +1582,6 @@ namespace eval ::confFichierIma {
       frame $This.frame2 -borderwidth 1 -relief raised
       pack $This.frame2 -side top -fill x
 
-      TitleFrame $This.frame2a -borderwidth 2 -relief ridge -text "$caption(confgene,fichier_image_nom)"
-      pack $This.frame2a -in $This.frame1 -side top -fill both -expand 1 -padx 2 -pady 2
-
       TitleFrame $This.frame3 -borderwidth 2 -relief ridge -text "$caption(confgene,fichier_image_fits)"
       pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1 -padx 2 -pady 2
 
@@ -1620,22 +1617,6 @@ namespace eval ::confFichierIma {
 
       frame $This.frame14 -borderwidth 0 -relief raised
       pack $This.frame14 -in [ $This.frame4 getframe ] -side top -fill both -expand 1
-
-      #--- Enregistrer une image en choisissant le format
-      label $This.lab0 -text "$caption(confgene,fichier_image_analyse_cicatriser)"
-      pack $This.lab0 -in [ $This.frame2a getframe ] -anchor w -side top -padx 10 -pady 5
-
-      #--- Radio-bouton pour le format entier
-      radiobutton $This.radio1 -anchor nw -highlightthickness 0 \
-         -text "$caption(confgene,fichier_image_changer_nom)" -value 0 \
-         -variable confgene(fichier,cicatriser_changer_garder)
-      pack $This.radio1 -in [ $This.frame2a getframe ] -anchor w -side top -padx 30 -pady 5
-
-      #--- Radio-bouton pour le format flottant
-      radiobutton $This.radio2 -anchor nw -highlightthickness 0 \
-         -text "$caption(confgene,fichier_image_garder_nom)" -value 1 \
-         -variable confgene(fichier,cicatriser_changer_garder)
-      pack $This.radio2 -in [ $This.frame2a getframe ] -anchor w -side top -padx 30 -pady 5
 
       #--- Enregistrer une image en conservant ou non les seuils de la visu
       checkbutton $This.save_seuils_visu -text "$caption(confgene,fichier_images_seuils_visu)" \
