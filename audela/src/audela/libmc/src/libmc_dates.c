@@ -214,6 +214,7 @@ int Cmd_mctcl_date2iso8601(ClientData clientData, Tcl_Interp *interp, int argc, 
 	   d=(d-hh)*60.;
 	   mm=floor(d);
 	   ss=(d-mm)*60.;
+		ss=(floor(ss*1e3))/1e3;
       sprintf(s,"%04d-%02d-%02dT%02d:%02d:%06.3f",y,m,(int)floor(jour),(int)hh,(int)mm,ss);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_OK;

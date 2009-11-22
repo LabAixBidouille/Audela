@@ -105,10 +105,12 @@ void mc_date_jd(int annee, int mois, double jour, double *jj)
    }
    aa=floor(a/100);
    bb=2-aa+floor(aa/4);
-   jd=floor(365.25*(a+4716))+floor(30.6001*(m+1))+j+bb-1524.5;
+   jd=floor(365.25*(a+4716))+floor(30.6001*(m+1))+bb-1524.5;
+	jd=jd+j;
    if (jd<2299160.5) {
       /* --- julian date ---*/
-      jd=floor(365.25*(a+4716))+floor(30.6001*(m+1))+j-1524.5;
+      jd=floor(365.25*(a+4716))+floor(30.6001*(m+1))-1524.5;
+		jd=jd+j;
    }
    *jj=jd;
 }
