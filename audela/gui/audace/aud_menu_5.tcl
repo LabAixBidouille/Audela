@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_5.tcl
 # Description : Script regroupant les fonctionnalites du menu Analyse
-# Mise a jour $Id: aud_menu_5.tcl,v 1.11 2009-11-21 23:35:11 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_5.tcl,v 1.12 2009-11-22 12:58:25 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -896,11 +896,10 @@ proc scar { visuNo } {
    }
    #--- Je lis les parametres dans la fenetre
    set valeurs [ buf[::confVisu::getBufNo $visuNo] scar $box ]
+   #--- Je rafraichis l'affichage
    ::confVisu::autovisu $visuNo
-   #--- Je recupere le nom du fichier si l'option est demandee
-   if { $::conf(cicatriser_changer_garder) == "1" } {
-      ::confVisu::setFileName $visuNo $filename
-   }
+   #--- Je recupere le nom du fichier
+   ::confVisu::setFileName $visuNo $filename
 }
 
 ###################################################################################
