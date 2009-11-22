@@ -258,15 +258,19 @@ int Cmd_aktcl_statcata(ClientData clientData, Tcl_Interp *interp, int argc, char
 int ak_fitspline(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *ff)
 /****************************************************************************************
 /* Entrees :                                                                            */
-/*  x[0..n1..n2]                                                                        */
-/*  y[0..n1..n2]                                                                        */
-/*  dy[0..n1..n2]                                                                       */
-/*  s = parametre 0-1                                                                   */
+/*  x[1..n1..n2]                                                                        */
+/*  y[1..n1..n2]                                                                        */
+/*  dy[1..n1..n2] (ne pas mettre zero !!!)                                              */
+/*  s = parametre de lissage >=0 (=0 spline sans lissage)                               */
+/*  xx[1..nn] vecteur des points a calculer                                             */
+/*            xx[1]>=x[n1+2] et xx[nn]<=x[n2-1]                                         */
 /* Sorties :                                                                            */
-/*  xx[0..nn]                                                                           */
-/*  ff[0..nn]                                                                           */
+/*  ff[1..nn] valeurs calculees pour chaque point du vecteur xx                         */
 /*                                                                                      */
+/* Attention : les indices commencent a 1                                               */
 /* x et xx doivent etre pralablement tries en ordre croissants                          */
+/*                                                                                      */
+/*Christian H. Reinsch, Numerische Mathematik 10, 177-183 (1967)                        */
 /****************************************************************************************/
 {
 	int i,m1,m2,n,ii;
@@ -274,7 +278,7 @@ int ak_fitspline(int n1,int n2,double *x, double *y, double *dy, double s,int nn
 	double *r,*r1,*r2,*t,*t1,*u,*v;
 	double *a,*b,*c,*d;
 
-	n=(n2+1)-(n1-1)+1;
+	n=(n2+1)-(n1-1)+2;
 	r=(double*)calloc(n,sizeof(double));
 	if (r==NULL) { return 1; }
 	r1=(double*)calloc(n,sizeof(double));
@@ -315,6 +319,7 @@ int ak_fitspline(int n1,int n2,double *x, double *y, double *dy, double s,int nn
 		t1[i]=h/3;
 		r2[i]=dy[i-1]/g;
 		r[i]=dy[i+1]/h;
+		r1[i]=-dy[i]/g-dy[i]/h;
 	}
 	for (i=m1;i<=m2;i++) {
 		b[i]=r[i]*r[i]+r1[i]*r1[i]+r2[i]*r2[i];
@@ -377,8 +382,9 @@ int ak_fitspline(int n1,int n2,double *x, double *y, double *dy, double s,int nn
 		b[i]=(a[i+1]-a[i])/h-(h*d[i]+c[i])*h;
 	}
 	// --- compute the final vector
-	for (ii=0;ii<nn;ii++) {
-		for (i=n1;i<=n2;i++) {
+	for (ii=1;ii<=nn;ii++) {
+		ff[ii]=0;
+		for (i=n1;i<n2;i++) {
 			if ((xx[ii]>=x[i])&&(xx[ii]<x[i+1])) {
 				h=xx[ii]-x[i];
 				ff[ii]=((d[i]*h+c[i])*h+b[i])*h+a[i];

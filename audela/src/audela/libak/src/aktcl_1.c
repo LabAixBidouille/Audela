@@ -3154,20 +3154,20 @@ int Cmd_aktcl_fitspline(ClientData clientData, Tcl_Interp *interp, int argc, cha
 		}
       /* --- Memory input allocations ---*/
 		n=nx;
-		x=(double*)calloc(n,sizeof(double));
+		x=(double*)calloc(n+1,sizeof(double));
 		if (x==NULL) {
 			sprintf(st,"Allocation error for vector x (%d elements)",n);
 			Tcl_SetResult(interp,st,TCL_VOLATILE);
 			return TCL_ERROR;
 		}
-		y=(double*)calloc(n,sizeof(double));
+		y=(double*)calloc(n+1,sizeof(double));
 		if (y==NULL) {
 			sprintf(st,"Allocation error for vector y (%d elements)",n);
 			Tcl_SetResult(interp,st,TCL_VOLATILE);
 			free(x);
 			return TCL_ERROR;
 		}
-		dy=(double*)calloc(n,sizeof(double));
+		dy=(double*)calloc(n+1,sizeof(double));
 		if (dy==NULL) {
 			sprintf(st,"Allocation error for vector dy (%d elements)",n);
 			Tcl_SetResult(interp,st,TCL_VOLATILE);
@@ -3178,15 +3178,17 @@ int Cmd_aktcl_fitspline(ClientData clientData, Tcl_Interp *interp, int argc, cha
       /* --- decodage des input arguments ---*/
       code=Tcl_SplitList(interp,argv[1],&argcc,&argvv);
       if (code==TCL_OK) {
+			x[0]=0;
 			for (k=0;k<n;k++) {
-				x[k]=atof(argvv[k]);
+				x[k+1]=atof(argvv[k]);
 			}
          Tcl_Free((char *) argvv);
 		}
       code=Tcl_SplitList(interp,argv[2],&argcc,&argvv);
       if (code==TCL_OK) {
+			y[0]=0;
 			for (k=0;k<n;k++) {
-				y[k]=atof(argvv[k]);
+				y[k+1]=atof(argvv[k]);
 			}
          Tcl_Free((char *) argvv);
 		}
@@ -3200,8 +3202,9 @@ int Cmd_aktcl_fitspline(ClientData clientData, Tcl_Interp *interp, int argc, cha
 				Tcl_Free((char *) argvv);
 			}
 		} else {
+			dy[0]=1.;
 			for (k=0;k<n;k++) {
-				dy[k]=1.;
+				dy[k+1]=1.;
 			}
 		}
       /* --- decodage des output arguments ---*/
@@ -3214,14 +3217,14 @@ int Cmd_aktcl_fitspline(ClientData clientData, Tcl_Interp *interp, int argc, cha
 			nn=n-2;
 		}
       /* --- Memory output allocations ---*/
-		xx=(double*)calloc(nn,sizeof(double));
+		xx=(double*)calloc(nn+1,sizeof(double));
 		if (xx==NULL) {
 			sprintf(st,"Allocation error for vector xx (%d elements)",nn);
 			Tcl_SetResult(interp,st,TCL_VOLATILE);
 			free(x); free(y); free(dy);
 			return TCL_ERROR;
 		}
-		ff=(double*)calloc(nn,sizeof(double));
+		ff=(double*)calloc(nn+1,sizeof(double));
 		if (ff==NULL) {
 			sprintf(st,"Allocation error for vector ff (%d elements)",nn);
 			Tcl_SetResult(interp,st,TCL_VOLATILE);
@@ -3232,29 +3235,30 @@ int Cmd_aktcl_fitspline(ClientData clientData, Tcl_Interp *interp, int argc, cha
 		if (argc>=6) {
 			code=Tcl_SplitList(interp,argv[5],&argcc,&argvv);
 			if (code==TCL_OK) {
+				xx[0]=x[0];
 				for (kk=0;kk<nn;kk++) {
-					xx[kk]=atof(argvv[kk]);
+					xx[kk+1]=atof(argvv[kk]);
 				}
 				Tcl_Free((char *) argvv);
 			}
 		} else {
-			for (kk=1;kk<nn-1;kk++) {
-				xx[kk]=x[kk];
+			for (kk=0;kk<nn;kk++) {
+				xx[kk+1]=x[kk+2];
 			}
 		}
 		/* --- call the computation ---*/
-		ak_fitspline(1,n-1,x,y,dy,s,nn,xx,ff);
+		ak_fitspline(1,n,x,y,dy,s,nn,xx,ff);
 		/* --- outputs ---*/
       Tcl_DStringInit(&dsptr);
       Tcl_DStringAppend(&dsptr,"{",-1);
 		for (kk=0;kk<nn;kk++) {
-			sprintf(st,"%g ",xx[kk]);
+			sprintf(st,"%s ",ak_d2s(xx[kk+1]));
          Tcl_DStringAppend(&dsptr,st,-1);
       }
       Tcl_DStringAppend(&dsptr,"} ",-1);
       Tcl_DStringAppend(&dsptr,"{",-1);
 		for (kk=0;kk<nn;kk++) {
-			sprintf(st,"%g ",ff[kk]);
+			sprintf(st,"%s ",ak_d2s(ff[kk+1]));
          Tcl_DStringAppend(&dsptr,st,-1);
       }
       Tcl_DStringAppend(&dsptr,"} ",-1);
@@ -3263,4 +3267,22 @@ int Cmd_aktcl_fitspline(ClientData clientData, Tcl_Interp *interp, int argc, cha
 		free(x); free(y); free(dy); free(xx); free(ff);
 	}
    return TCL_OK;
+}
+
+char *ak_d2s(double val)
+/***************************************************************************/
+/* Double to String conversion with many digits                            */
+/***************************************************************************/
+/***************************************************************************/
+{
+   int kk,nn;
+   static char s[200];
+   sprintf(s,"%13.12g",val);
+	nn=(int)strlen(s);
+	for (kk=0;kk<nn;kk++) {
+		if (s[kk]!=' ') {
+			break;
+		}
+	}		
+   return s+kk;
 }
