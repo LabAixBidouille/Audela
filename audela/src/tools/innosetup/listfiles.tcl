@@ -3,11 +3,11 @@
 # Fichier : listfiles.tcl
 # Description : genere un fichier texte pour Inno setup
 # Auteur : Alain KLOTZ
-# Date de MAJ : 3 juillet 2007
+# $Id: listfiles.tcl,v 1.29 2009-11-22 21:50:07 michelpujol Exp $
 #
 # source [pwd]/../src/tools/innosetup/listfiles.tcl
 
-set version 1.6.0
+set version 1.5.20091122
 #set makes audela
 set makes {audela bin src ros}
 
@@ -68,7 +68,7 @@ proc analdir { base } {
             regsub -all ${base0} "$thisfile" "./" name3
             set repertoires [split "$name3" /]
             set level [llength $repertoires]
-            
+
             # Traitement des cas particuliers
             if {[string range $shortname 0 1]==".#"} {
 	            catch {file delete -force -- "$thisfile"}
@@ -86,13 +86,38 @@ proc analdir { base } {
             if {(($make=="audela")||($make=="bin"))&&($shortname=="audace.txt")&&($level==3)} {
                continue
             }
+            if {(($make=="audela")||($make=="bin"))&&($level==3)} {
+                  if { $shortname=="audace.txt"
+                    || $shortname=="audela.pl"
+                    || $shortname=="audela.sh"
+                    || $shortname=="makefile"
+                    || $shortname=="pkgIndex.tcl.in"
+                    || $shortname=="version.tcl.in"
+                    || $shortname=="Makefile"
+                    || $shortname=="default.nnw"
+                    || $shortname=="config.sex"
+                    || $shortname=="config.param"
+                    || $shortname=="tt_last.err"
+                    || $shortname=="tt.err"
+                    } {
+                  continue
+               }
+            }
+            if {(($make=="audela")||($make=="bin"))&&($level==4)} {
+                  if { $shortname=="fonction_transfert.pal"
+                    || $shortname=="config.ini"
+                    || $shortname=="config.bak"
+                   } {
+                  continue
+               }
+            }
             if {($make=="audela") && ($shortname=="PortTalk.sys")} {
                append result "Source: \"$name1\"; DestDir: \"$name2\"; \n"
             }
             set extension [file extension "$thisfile"]
             if {(($make!="audela")&&($make!="bin")) && (($extension == ".sbr") || ($extension == ".opt") || ($extension == ".ncb")) } {
                continue
-            }            
+            }
             if {($make=="audela") && (($extension==".vxd") || ($extension==".VXD"))} {
                set name2 "{sys}"
             }
