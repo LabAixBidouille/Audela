@@ -198,6 +198,7 @@ int Cmd_aktcl_fitspline(ClientData clientData, Tcl_Interp *interp, int argc, cha
 /*      Prototypes des fonctions utiles qui melangent C et Tcl             */
 /***************************************************************************/
 int aktcl_getinfoimage(Tcl_Interp *interp,int numbuf, ak_image *image);
+char *ak_d2s(double val);
 
 #endif
 
