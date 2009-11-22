@@ -46,7 +46,7 @@ F90=df.exe
 # ADD BASE F90 /compile_only /include:"Release/" /dll /nologo /warn:nofileopt
 # ADD F90 /compile_only /include:"Release/" /dll /nologo /warn:nofileopt
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "FITSTCL_EXPORTS" /YX /FD /c
-# ADD CPP /nologo /MT /w /W0 /GX /O2 /I "..\..\include" /I "..\..\include\win" /I "..\..\cfitsio\cfitsio3090" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "FITSTCL_EXPORTS" /D "__WIN32__" /FR /YX /FD /c
+# ADD CPP /nologo /MD /w /W0 /GX /O2 /I "..\..\include" /I "..\..\include\win" /I "..\..\cfitsio\cfitsio3090" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "FITSTCL_EXPORTS" /D "__WIN32__" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
