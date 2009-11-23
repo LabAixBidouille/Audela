@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.46 2009-11-01 21:41:41 michelpujol Exp $
+# Mise a jour $Id: telescope.tcl,v 1.47 2009-11-23 21:47:34 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -30,7 +30,7 @@ proc ::telescope::init { } {
    set audace(telescope,targetRa)      "00h00m00"
    set audace(telescope,targetDec)     "+00d00m00"
    set audace(telescope,targetname)    ""
-   set audace(telescope,targetEquinox) "J2000"
+   set audace(telescope,targetEquinox) "J2000.0"
    set audace(telescope,rate)          "1"
    set audace(telescope,labelspeed)    "$caption(telescope,interro)"
    set audace(telescope,speed)         "1"
@@ -114,7 +114,7 @@ proc ::telescope::initTel { this visuNo } {
 # Return :
 #    Rien
 #------------------------------------------------------------
-proc ::telescope::match { radec { radecEquinox "J2000" } } {
+proc ::telescope::match { radec { radecEquinox "J2000.0" } } {
    variable private
    global audace caption conf
 
@@ -176,7 +176,7 @@ proc ::telescope::match { radec { radecEquinox "J2000" } } {
 #    0 si OK
 #    -1 si erreur (monture absente)
 #------------------------------------------------------------
-proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { objectName "" } { radecEquinox "J2000" } } {
+proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { objectName "" } { radecEquinox "J2000.0" } } {
    global audace caption cataGoto catalogue conf
 
    if { [ ::tel::list ] != "" } {
@@ -291,7 +291,7 @@ proc ::telescope::surveille_goto { radec0 { But_Goto "" } { But_Match "" } } {
       }
       set ::audace(telescope,goto) "0"
       update
-      return 0      
+      return 0
    }
 }
 
