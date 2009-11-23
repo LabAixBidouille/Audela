@@ -1,6 +1,6 @@
 #
 # Fichier : modpoi.cap
-# Mise a jour $Id: modpoi.cap,v 1.19 2009-11-23 19:53:42 robertdelmas Exp $
+# Mise a jour $Id: modpoi.cap,v 1.20 2009-11-23 20:41:51 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -297,7 +297,7 @@ des directions :"
 Procedura per la misura dei difetti\n\
 di puntamento del vostro telescopio e\n\
 calcolo della funzione di passaggio\n\
-tra le coordinate  J2000.0 e \n\
+tra le coordinate J2000.0 e \n\
 le coordinate di puntamento.\n\n\
 Questo modulo e' adattato da TPOINT.\n\
 Tiene conto dei difetti \n\
