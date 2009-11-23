@@ -1,6 +1,6 @@
 #
 # Fichier : obj_lune.cap
-# Mise a jour $Id: obj_lune.cap,v 1.11 2009-11-07 15:00:30 robertdelmas Exp $
+# Mise a jour $Id: obj_lune.cap,v 1.12 2009-11-23 20:41:27 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -51,8 +51,8 @@ set caption(obj_lune,longitude)              "Lunar Longitude:"
 set caption(obj_lune,dimension)              "Size (km):"
 set caption(obj_lune,carte_atlas)            "Gründ Atlas Map:"
 set caption(obj_lune,objectif)               "GOTO Coordinates:"
-set caption(obj_lune,ad)                     "RA (J2000):"
-set caption(obj_lune,dec)                    "Dec. (J2000):"
+set caption(obj_lune,ad)                     "RA (J2000.0):"
+set caption(obj_lune,dec)                    "Dec. (J2000.0):"
 
 set caption(obj_lune,date)                   "Date:"
 set caption(obj_lune,heure)                  "Universal Time (UT):"
@@ -124,8 +124,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,dimension)           "Dimension (en km) :"
    set caption(obj_lune,carte_atlas)         "Carte Atlas Gründ :"
    set caption(obj_lune,objectif)            "Coordonnées du GOTO :"
-   set caption(obj_lune,ad)                  "AD (J2000) :"
-   set caption(obj_lune,dec)                 "Déc. (J2000) :"
+   set caption(obj_lune,ad)                  "AD (J2000.0) :"
+   set caption(obj_lune,dec)                 "Déc. (J2000.0) :"
 
    set caption(obj_lune,date)                "Date :"
    set caption(obj_lune,heure)               "Temps Universel (TU) :"
@@ -197,8 +197,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,dimension)           "Dimensioni (in km):"
    set caption(obj_lune,carte_atlas)         "Carta Atlas Gründ:"
    set caption(obj_lune,objectif)            "Coordinates del GOTO:"
-   set caption(obj_lune,ad)                  "AR (J2000):"
-   set caption(obj_lune,dec)                 "Dec. (J2000):"
+   set caption(obj_lune,ad)                  "AR (J2000.0):"
+   set caption(obj_lune,dec)                 "Dec. (J2000.0):"
 
    set caption(obj_lune,date)                "Data:"
    set caption(obj_lune,heure)               "Tempo Universale (TU):"
@@ -270,8 +270,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,dimension)           "Dimensión (en km):"
    set caption(obj_lune,carte_atlas)         "Mapa del Atlas Gründ:"
    set caption(obj_lune,objectif)            "Coordenadas de GOTO:"
-   set caption(obj_lune,ad)                  "AR (J2000):"
-   set caption(obj_lune,dec)                 "Dec. (J2000):"
+   set caption(obj_lune,ad)                  "AR (J2000.0):"
+   set caption(obj_lune,dec)                 "Dec. (J2000.0):"
 
    set caption(obj_lune,date)                "Datos:"
    set caption(obj_lune,heure)               "Tiempo Universal (TU):"
@@ -343,8 +343,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,dimension)           "Maß (in km):"
    set caption(obj_lune,carte_atlas)         "Gründ Atlas Karte:"
    set caption(obj_lune,objectif)            "GOTO Koordinaten:"
-   set caption(obj_lune,ad)                  "AD (J2000):"
-   set caption(obj_lune,dec)                 "Dek. (J2000):"
+   set caption(obj_lune,ad)                  "AD (J2000.0):"
+   set caption(obj_lune,dec)                 "Dek. (J2000.0):"
 
    set caption(obj_lune,date)                "Datum:"
    set caption(obj_lune,heure)               "Weltzeit (WZ):"
@@ -416,8 +416,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,dimension)           "Dimensão (em km):"
    set caption(obj_lune,carte_atlas)         "Mapa Atlas Gründ:"
    set caption(obj_lune,objectif)            "Coordenadas do GOTO:"
-   set caption(obj_lune,ad)                  "AR (J2000):"
-   set caption(obj_lune,dec)                 "Dec. (J2000):"
+   set caption(obj_lune,ad)                  "AR (J2000.0):"
+   set caption(obj_lune,dec)                 "Dec. (J2000.0):"
 
    set caption(obj_lune,date)                "Data:"
    set caption(obj_lune,heure)               "Tempo Universal (TU):"
@@ -489,8 +489,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,dimension)           "Størrelse (km):"
    set caption(obj_lune,carte_atlas)         "Gründ Atlas kort:"
    set caption(obj_lune,objectif)            "GOTO flg. koordinater:"
-   set caption(obj_lune,ad)                  "RA (J2000):"
-   set caption(obj_lune,dec)                 "Dec. (J2000):"
+   set caption(obj_lune,ad)                  "RA (J2000.0):"
+   set caption(obj_lune,dec)                 "Dec. (J2000.0):"
 
    set caption(obj_lune,date)                "Dato:"
    set caption(obj_lune,heure)               "Universal Tid (UT):"
@@ -562,8 +562,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,dimension)           "Size (km):"
    set caption(obj_lune,carte_atlas)         "Gründ Atlas Map:"
    set caption(obj_lune,objectif)            "GOTO Coordinates:"
-   set caption(obj_lune,ad)                  "RA (J2000):"
-   set caption(obj_lune,dec)                 "Dec. (J2000):"
+   set caption(obj_lune,ad)                  "RA (J2000.0):"
+   set caption(obj_lune,dec)                 "Dec. (J2000.0):"
 
    set caption(obj_lune,date)                "Date:"
    set caption(obj_lune,heure)               "Universal Time (UT):"
@@ -635,8 +635,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,dimension)           "Size (km):"
    set caption(obj_lune,carte_atlas)         "Gründ Atlas Map:"
    set caption(obj_lune,objectif)            "GOTO Coordinates:"
-   set caption(obj_lune,ad)                  "RA (J2000):"
-   set caption(obj_lune,dec)                 "Dec. (J2000):"
+   set caption(obj_lune,ad)                  "RA (J2000.0):"
+   set caption(obj_lune,dec)                 "Dec. (J2000.0):"
 
    set caption(obj_lune,date)                "Date:"
    set caption(obj_lune,heure)               "Universal Time (UT):"
