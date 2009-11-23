@@ -1,6 +1,6 @@
 #
 # Fichier : modpoi.cap
-# Mise a jour $Id: modpoi.cap,v 1.18 2009-11-07 14:59:50 robertdelmas Exp $
+# Mise a jour $Id: modpoi.cap,v 1.19 2009-11-23 19:53:42 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -684,9 +684,9 @@ Richtung Hand Kontroller Knöpfe drücken:"
    set caption(modpoi,shift-e)               "Nach Ost schieben:"
    set caption(modpoi,iteration)             "Schlingung"
 
-   set caption(modpoi,define_mame_modpoi)    "Den Nahmen des Richtung Modell bestimmen"
+   set caption(modpoi,define_mame_modpoi)    "Den Namen des Richtung Modell bestimmen"
    set caption(modpoi,parcourir)             "..."
-   set caption(modpoi,name_modpoi)           "Richtung Modell Nahmen"
+   set caption(modpoi,name_modpoi)           "Richtung Modell Namen"
    set caption(modpoi,ok)                    "OK"
 
 # *************** Version portugaise **************************

@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_7.cap
-# Mise a jour $Id: aud_menu_7.cap,v 1.22 2009-11-11 14:32:36 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.cap,v 1.23 2009-11-23 19:52:51 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -262,7 +262,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,repertoire_images)       "Bilder Verzeichnis:"
    set caption(cwdWindow,label_sous_rep)          "Neuer Unter-Verzeichnis"
    set caption(cwdWindow,label_sous_rep,aucun)    "Kein Unter-Verzeichnis"
-   set caption(cwdWindow,label_sous_rep,fixe)     "Unter-Verzeichnis Nahmen"
+   set caption(cwdWindow,label_sous_rep,fixe)     "Unter-Verzeichnis Namen"
    set caption(cwdWindow,label_sous_rep,date)     "Heutiges Datum"
    set caption(cwdWindow,creation_sous_rep)       "Schaffen"
    set caption(cwdWindow,repertoire_scripts)      "Skripten Verzeichnis:"

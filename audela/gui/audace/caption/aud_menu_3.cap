@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.39 2009-11-15 15:43:41 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.40 2009-11-23 19:52:34 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -553,10 +553,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,faire_dark)                  "Ein Schwartz Bild treiben"
    set caption(audace,menu,faire_flat_field)            "Ein Flat-Field Bild treiben"
 
-   set caption(pretraitement,image_gene_entree_r+v+b)   "Generischen Nahmen für R, G, und B Input Bilder:"
-   set caption(pretraitement,image_sortie_rvb)          "Output RGB Bild Nahmen:"
-   set caption(pretraitement,image_entree_rvb)          "Input RGB Bild Nahmen:"
-   set caption(pretraitement,image_gene_sortie_r+v+b)   "Generischen Nahmen für R, G, und B Output Bilder:"
+   set caption(pretraitement,image_gene_entree_r+v+b)   "Generischen Namen für R, G, und B Input Bilder:"
+   set caption(pretraitement,image_sortie_rvb)          "Output RGB Bild Namen:"
+   set caption(pretraitement,image_entree_rvb)          "Input RGB Bild Namen:"
+   set caption(pretraitement,image_gene_sortie_r+v+b)   "Generischen Namen für R, G, und B Output Bilder:"
    set caption(pretraitement,ajouter_cte)               "Eine Konstante addieren (Cste):"
    set caption(pretraitement,cte_mult)                  "Multiplikation Konstante (Cste):"
    set caption(pretraitement,valeur_fond_ciel)          "Hinterhimmel Wert:"
@@ -635,9 +635,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,non_valide)                "Voraufbereitung ohne Neigung, Schwarz und Flat-Field Bild unmöglich."
 
    set caption(pretraitement,liste_serie)               "Index Liste:"
-   set caption(pretraitement,nom_generique)             "Generischen Nahmen:"
-   set caption(pretraitement,nom_generique_ok)          "Das ist ein Datei Generischen Nahmen."
-   set caption(pretraitement,nom_generique_ko)          "Das ist kein Datei Generischen Nahmen."
+   set caption(pretraitement,nom_generique)             "Generischen Namen:"
+   set caption(pretraitement,nom_generique_ok)          "Das ist ein Datei Generischen Namen."
+   set caption(pretraitement,nom_generique_ko)          "Das ist kein Datei Generischen Namen."
    set caption(pretraitement,fichier_manquant)          "Eine oder mehrere Dateien fehlen in diese Serie."
    set caption(pretraitement,renumerotation)            "Sie müssen diese Serie neu nummerieren bevor die Vorbehandlung Weitermachen."
    set caption(pretraitement,pas_renumerotation)        "Die Serie ist nicht neu nummeriert geworden, sie müssen die Vorbehandlung halten."
