@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows uniquement
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv2.tcl,v 1.22 2008-11-16 15:45:08 robertdelmas Exp $
+# Mise a jour $Id: carteducielv2.tcl,v 1.23 2009-11-23 20:56:11 robertdelmas Exp $
 #
 
 namespace eval carteducielv2 {
@@ -480,11 +480,11 @@ proc ::carteducielv2::selectObject { objectName } {
 #     par communication DDE (en attendant une communication pas socket TCP ?)
 #
 #  return [list $ra $dec $objName $magnitude ]
-#     $ra : right ascension  (ex: "16h41m42")
-#     $dec : declinaison     (ex: "+36d28m00")
-#     $equinox: equinoxe     (ex: "J2000"  ou "now" )
-#     $objName: object name  (ex: "M 13")
-#     $magnitude: object magnitude  (ex: "5.6")
+#     $ra : right ascension        (ex: "16h41m42")
+#     $dec : declinaison           (ex: "+36d28m00")
+#     $equinox: equinoxe           (ex: "J2000.0" ou "now" )
+#     $objName: object name        (ex: "M 13")
+#     $magnitude: object magnitude (ex: "5.6")
 #
 #  Remarque : Si aucun objet n'est selectionne dans Cartes du Ciel v2,
 #  alors getSelectedObject retourne les coordonnees du centre de la carte
