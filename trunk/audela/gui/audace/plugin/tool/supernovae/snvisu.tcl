@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.37 2009-11-17 17:02:23 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.38 2009-11-23 20:54:34 robertdelmas Exp $
 #
 
 #--- Conventions pour ce script :
@@ -2283,13 +2283,13 @@ proc snBlinkImage { } {
 #  displayMap
 #  affiche la carte avec l'objet
 #
-#  Recupere les coordoonnees J2000 de l'objet dans le fichier fit ou sn.log
+#  Recupere les coordoonnees J2000.0 de l'objet dans le fichier fit ou sn.log
 #  et envoie la commande a carteduciel "moveTo  rah ram ras decd decm decs "
 #  Si les coordonnees ne sont pas trouvees, utilise le nom du fichier comme
-#  nom d'objet et envoie la commande " find objectname"
+#  nom d'objet et envoie la commande "find objectname"
 #
-#  petite erreur negligeable : comme je n'ai pas les coordonnees J2000,
-#  j'envoi les coordonnes du jour
+#  Petite erreur negligeable : Comme je n'ai pas les coordonnees J2000.0,
+#  j'envoie les coordonnes du jour
 #===============================================
 proc displayMap { } {
    global rep
