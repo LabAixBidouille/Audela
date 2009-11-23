@@ -1,6 +1,6 @@
 #
 # Fichier : keyword.cap
-# Mise a jour $Id: keyword.cap,v 1.23 2009-11-15 15:52:41 robertdelmas Exp $
+# Mise a jour $Id: keyword.cap,v 1.24 2009-11-23 19:51:45 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -177,13 +177,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,header_noimage)                 "Nessuna immagine in memoria."
 
    #--- Choix de la configuration
-   set caption(keyword,nom_config)                     "# Nom de la configuration"
-   set caption(keyword,ajouter_config)                 "# Ajouter une configuration"
-   set caption(keyword,supprimer_config)               "Cancella"
+   set caption(keyword,nom_config)                     "Nome della configurazione"
+   set caption(keyword,ajouter_config)                 "Aggiungere una configurazione"
+   set caption(keyword,supprimer_config)               "Eliminare"
    set caption(keyword,copier_config)                  "Copia"
-   set caption(keyword,config_a_ajouter)               "# Nom de la configuration à ajouter"
-   set caption(keyword,config_a_supprimer)             "# Nom de la configuration à supprimer"
-   set caption(keyword,config_a_copier)                "# Données de la configuration à copier"
+   set caption(keyword,config_a_ajouter)               "Nome della cofigurazione da aggiungere"
+   set caption(keyword,config_a_supprimer)             "Nome della configurazione da eliminare"
+   set caption(keyword,config_a_copier)                "Dati della configurazione da copiare"
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "Parole chiave FITS"
@@ -258,13 +258,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,header_noimage)                 "No existe una imágen cargada en la memoria."
 
    #--- Choix de la configuration
-   set caption(keyword,nom_config)                     "# Nom de la configuration"
-   set caption(keyword,ajouter_config)                 "# Ajouter une configuration"
+   set caption(keyword,nom_config)                     "Nombre de la configuración"
+   set caption(keyword,ajouter_config)                 "Añadir una configuración"
    set caption(keyword,supprimer_config)               "Suprimir"
    set caption(keyword,copier_config)                  "Copiar"
-   set caption(keyword,config_a_ajouter)               "# Nom de la configuration à ajouter"
-   set caption(keyword,config_a_supprimer)             "# Nom de la configuration à supprimer"
-   set caption(keyword,config_a_copier)                "# Données de la configuration à copier"
+   set caption(keyword,config_a_ajouter)               "Nombre de la configuración a añadir"
+   set caption(keyword,config_a_supprimer)             "Nombre de la configuración a suprimir"
+   set caption(keyword,config_a_copier)                "Nombre de la configuración a copiar"
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "Palabras clave FITS"
@@ -339,13 +339,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,header_noimage)                 "Es ist jetzt kein Bild im Speicher."
 
    #--- Choix de la configuration
-   set caption(keyword,nom_config)                     "# Nom de la configuration"
-   set caption(keyword,ajouter_config)                 "# Ajouter une configuration"
+   set caption(keyword,nom_config)                     "Konfigurationsname"
+   set caption(keyword,ajouter_config)                 "Eine Konfiguration addieren"
    set caption(keyword,supprimer_config)               "Löschen"
    set caption(keyword,copier_config)                  "Nachbilden"
-   set caption(keyword,config_a_ajouter)               "# Nom de la configuration à ajouter"
-   set caption(keyword,config_a_supprimer)             "# Nom de la configuration à supprimer"
-   set caption(keyword,config_a_copier)                "# Données de la configuration à copier"
+   set caption(keyword,config_a_ajouter)               "Konfigurationsname zu addieren"
+   set caption(keyword,config_a_supprimer)             "Konfigurationsname zu löschen"
+   set caption(keyword,config_a_copier)                "Konfiguration Daten zu nachbilden"
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "FITS Stichwörter"
@@ -372,14 +372,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,divers)                         "Verschieden"
 
    #--- Mots clefs
-   set caption(keyword,description,OBSERVER)           "Nahmen der Beobachter"
-   set caption(keyword,description,SITENAME)           "Nahmen der Sternwarte"
+   set caption(keyword,description,OBSERVER)           "Namen der Beobachter"
+   set caption(keyword,description,SITENAME)           "Namen der Sternwarte"
    set caption(keyword,description,IAU_CODE)           "Sternwarte UAI Code"
    set caption(keyword,description,SITELONG)           "Länge"
    set caption(keyword,description,SITELAT)            "Breite"
    set caption(keyword,description,SITEELEV)           "Höhe"
    set caption(keyword,description,GEODSYS)            "Geodätischen Bezugsystem"
-   set caption(keyword,description,TELESCOP)           "Teleskop (Nahmen, Barlow, Verkleinerter)"
+   set caption(keyword,description,TELESCOP)           "Teleskop (Namen, Barlow, Verkleinerter)"
    set caption(keyword,description,APTDIA)             "Durchmesser (m)"
    set caption(keyword,description,FOCLEN)             "Folgende Brennweite (m)"
    set caption(keyword,description,XPIXSZ)             "Pixel Breite (µm)"
@@ -388,7 +388,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,CCD_TEMP)           "Temperatur CCD"
    set caption(keyword,description,INSTRUME)           "Einrichtung"
    set caption(keyword,description,DETNAM)             "Kamera"
-   set caption(keyword,description,OBJNAME)            "Objekt Nahmen"
+   set caption(keyword,description,OBJNAME)            "Objekt Namen"
    set caption(keyword,description,RA)                 "Rektaszension"
    set caption(keyword,description,DEC)                "Deklination"
    set caption(keyword,description,EQUINOX)            "Equinox Koordinaten"
@@ -420,13 +420,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,header_noimage)                 "Não existe imagem carregada em memória."
 
    #--- Choix de la configuration
-   set caption(keyword,nom_config)                     "# Nom de la configuration"
-   set caption(keyword,ajouter_config)                 "# Ajouter une configuration"
-   set caption(keyword,supprimer_config)               "Apagar"
+   set caption(keyword,nom_config)                     "Nome da configuração"
+   set caption(keyword,ajouter_config)                 "Adicionar configuração"
+   set caption(keyword,supprimer_config)               "Eliminar"
    set caption(keyword,copier_config)                  "Copiar"
-   set caption(keyword,config_a_ajouter)               "# Nom de la configuration à ajouter"
-   set caption(keyword,config_a_supprimer)             "# Nom de la configuration à supprimer"
-   set caption(keyword,config_a_copier)                "# Données de la configuration à copier"
+   set caption(keyword,config_a_ajouter)               "Nome da configuração a adicionar"
+   set caption(keyword,config_a_supprimer)             "Nome da configuração a eliminar"
+   set caption(keyword,config_a_copier)                "Dados da configuração a copiar"
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "Palavras-chave FITS"
