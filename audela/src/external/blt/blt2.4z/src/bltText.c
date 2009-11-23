@@ -48,6 +48,9 @@ DrawTextLayout(display, drawable, gc, font, x, y, textPtr)
 
     fragPtr = textPtr->fragArr;
     for (i = 0; i < textPtr->nFrags; i++, fragPtr++) {
+//modif michel
+//patch https://bugzilla.redhat.com/show_bug.cgi?id=504388
+#ifdef WIN32
 #if HAVE_UTF
 	Tk_DrawChars(display, drawable, gc, font, fragPtr->text,
 	    fragPtr->count, x + fragPtr->x, y + fragPtr->y);
@@ -55,6 +58,10 @@ DrawTextLayout(display, drawable, gc, font, x, y, textPtr)
 	XDrawString(display, drawable, gc, x + fragPtr->x, y + fragPtr->y,
 	    fragPtr->text, fragPtr->count);
 #endif /*HAVE_UTF*/
+#else
+   XDrawString(display, drawable, gc, x + fragPtr->x, y + fragPtr->y,
+       fragPtr->text, fragPtr->count);
+#endif /*WIN32*/
     }
 }
 
@@ -89,7 +96,7 @@ Blt_GetTextLayout(string, tsPtr)
     Tk_FontMetrics fontMetrics;
 
     Tk_GetFontMetrics(tsPtr->font, &fontMetrics);
-    lineHeight = fontMetrics.linespace + 
+    lineHeight = fontMetrics.linespace +
 	tsPtr->leader + tsPtr->shadow.offset;
     nFrags = 0;
     for (p = string; *p != '\0'; p++) {
@@ -554,7 +561,7 @@ Blt_CreateTextBitmap(tkwin, textPtr, tsPtr, bmWidthPtr, bmHeightPtr)
 
 	/* Replace the text pixmap with a rotated one */
 
-	rotBitmap = Blt_RotateBitmap(tkwin, bitmap, width, height, 
+	rotBitmap = Blt_RotateBitmap(tkwin, bitmap, width, height,
 		tsPtr->theta, bmWidthPtr, bmHeightPtr);
 	assert(rotBitmap);
 	if (rotBitmap != None) {
@@ -587,7 +594,7 @@ Blt_InitTextStyle(tsPtr)
 }
 
 void
-Blt_SetDrawTextStyle(tsPtr, font, gc, normalColor, activeColor, shadowColor, 
+Blt_SetDrawTextStyle(tsPtr, font, gc, normalColor, activeColor, shadowColor,
 	theta, anchor, justify, leader, shadowOffset)
     TextStyle *tsPtr;
     Tk_Font font;
@@ -612,7 +619,7 @@ Blt_SetDrawTextStyle(tsPtr, font, gc, normalColor, activeColor, shadowColor,
 }
 
 void
-Blt_SetPrintTextStyle(tsPtr, font, fgColor, activeColor, shadowColor, theta, 
+Blt_SetPrintTextStyle(tsPtr, font, fgColor, activeColor, shadowColor, theta,
 	anchor, justify, leader, shadowOffset)
     TextStyle *tsPtr;
     Tk_Font font;
@@ -699,12 +706,12 @@ Blt_DrawTextLayout(tkwin, drawable, textPtr, tsPtr, x, y)
 	    if (color1 != NULL) {
 		XSetForeground(display, tsPtr->gc, color1->pixel);
 	    }
-	    DrawTextLayout(display, drawable, tsPtr->gc, tsPtr->font, x + 1, 
+	    DrawTextLayout(display, drawable, tsPtr->gc, tsPtr->font, x + 1,
 		y + 1, textPtr);
 	    if (color2 != NULL) {
 		XSetForeground(display, tsPtr->gc, color2->pixel);
 	    }
-	    DrawTextLayout(display, drawable, tsPtr->gc, tsPtr->font, x, y, 
+	    DrawTextLayout(display, drawable, tsPtr->gc, tsPtr->font, x, y,
 		textPtr);
 
 	    /* Reset the foreground color back to its original setting,
@@ -715,14 +722,14 @@ Blt_DrawTextLayout(tkwin, drawable, textPtr, tsPtr, x, y)
 	}
 	if ((tsPtr->shadow.offset > 0) && (tsPtr->shadow.color != NULL)) {
 	    XSetForeground(display, tsPtr->gc, tsPtr->shadow.color->pixel);
-	    DrawTextLayout(display, drawable, tsPtr->gc, tsPtr->font, 
+	    DrawTextLayout(display, drawable, tsPtr->gc, tsPtr->font,
 		   x + tsPtr->shadow.offset, y + tsPtr->shadow.offset, textPtr);
 	    XSetForeground(display, tsPtr->gc, tsPtr->color->pixel);
 	}
 	if (active) {
 	    XSetForeground(display, tsPtr->gc, tsPtr->activeColor->pixel);
 	}
-	DrawTextLayout(display, drawable, tsPtr->gc, tsPtr->font, x, y, 
+	DrawTextLayout(display, drawable, tsPtr->gc, tsPtr->font, x, y,
 		textPtr);
 	if (active) {
 	    XSetForeground(display, tsPtr->gc, tsPtr->color->pixel);
@@ -764,13 +771,13 @@ Blt_DrawTextLayout(tkwin, drawable, textPtr, tsPtr, x, y)
 	    XSetForeground(display, tsPtr->gc, color1->pixel);
 	}
 	XSetClipOrigin(display, tsPtr->gc, x + 1, y + 1);
-	XCopyPlane(display, bitmap, drawable, tsPtr->gc, 0, 0, width, 
+	XCopyPlane(display, bitmap, drawable, tsPtr->gc, 0, 0, width,
 		height, x + 1, y + 1, 1);
 	if (color2 != NULL) {
 	    XSetForeground(display, tsPtr->gc, color2->pixel);
 	}
 	XSetClipOrigin(display, tsPtr->gc, x, y);
-	XCopyPlane(display, bitmap, drawable, tsPtr->gc, 0, 0, width, 
+	XCopyPlane(display, bitmap, drawable, tsPtr->gc, 0, 0, width,
 		height, x, y, 1);
 	XSetForeground(display, tsPtr->gc, tsPtr->color->pixel);
     } else {
@@ -778,7 +785,7 @@ Blt_DrawTextLayout(tkwin, drawable, textPtr, tsPtr, x, y)
 	    XSetClipOrigin(display, tsPtr->gc, x + tsPtr->shadow.offset,
 			   y + tsPtr->shadow.offset);
 	    XSetForeground(display, tsPtr->gc, tsPtr->shadow.color->pixel);
-	    XCopyPlane(display, bitmap, drawable, tsPtr->gc, 0, 0, width, 
+	    XCopyPlane(display, bitmap, drawable, tsPtr->gc, 0, 0, width,
 		height, x + tsPtr->shadow.offset, y + tsPtr->shadow.offset, 1);
 	    XSetForeground(display, tsPtr->gc, tsPtr->color->pixel);
 	}
@@ -786,7 +793,7 @@ Blt_DrawTextLayout(tkwin, drawable, textPtr, tsPtr, x, y)
 	    XSetForeground(display, tsPtr->gc, tsPtr->activeColor->pixel);
 	}
 	XSetClipOrigin(display, tsPtr->gc, x, y);
-	XCopyPlane(display, bitmap, drawable, tsPtr->gc, 0, 0, width, height, 
+	XCopyPlane(display, bitmap, drawable, tsPtr->gc, 0, 0, width, height,
 		x, y, 1);
 	if (active) {
 	    XSetForeground(display, tsPtr->gc, tsPtr->color->pixel);
@@ -823,7 +830,7 @@ Blt_DrawText2(tkwin, drawable, string, tsPtr, x, y, areaPtr)
     if (theta != 0.0) {
 	double rotWidth, rotHeight;
 
-	Blt_GetBoundingBox(width, height, theta, &rotWidth, &rotHeight, 
+	Blt_GetBoundingBox(width, height, theta, &rotWidth, &rotHeight,
 	   (Point2D *)NULL);
 	width = ROUND(rotWidth);
 	height = ROUND(rotHeight);
