@@ -2,7 +2,7 @@
 # Fichier : supernovae_go.tcl
 # Description : Outil pour l'observation des SnAudes
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: supernovae_go.tcl,v 1.20 2009-11-07 22:21:12 robertdelmas Exp $
+# Mise a jour $Id: supernovae_go.tcl,v 1.21 2009-11-23 19:28:04 michelpujol Exp $
 #
 
 #============================================================
@@ -156,8 +156,10 @@ proc ::supernovae::stopTool { visuNo } {
    global audace
 
    #--- Je verifie si une operation est en cours
-   if { $::sn(exit_visu) == 1 } {
-      return -1
+   if { [info exists ::sn(exit_visu)] } {
+      if { $::sn(exit_visu) == 1 } {
+         return -1
+      }
    }
 
    #--- Les mots cles OBJNAME, RA, DEC, XPIXSZ et YPIXSZ sont a nouveau modifiables
