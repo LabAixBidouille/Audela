@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.31 2009-11-21 21:51:11 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.32 2009-11-23 21:06:22 robertdelmas Exp $
 #
 
 #============================================================
@@ -1008,14 +1008,14 @@ proc ::tlscp::startCenter { visuNo { methode "" } } {
    #--- RAZ du resultat
    set private($visuNo,acquisitionResult) ""
 
-   #--- je recupere les coordonnees J2000 pour le centrage aux coordonnees
+   #--- je recupere les coordonnees J2000.0 pour le centrage aux coordonnees
    if { $private($visuNo,equinoxObjet) == "J2000.0" || $private($visuNo,equinoxObjet) == "J2000" } {
       set ra  $private($visuNo,raObjet)
       set dec $private($visuNo,decObjet)
       set ra  [string trim [mc_angle2deg $ra ]]
       set dec [string trim [mc_angle2deg $dec ]]
    } else {
-      #--- je calcule les coordonnees J2000
+      #--- je calcule les coordonnees J2000.0
       set dateNow   [::audace::date_sys2ut now]
       set listRaDec [::telescope::apparent2catalogmean $private($visuNo,raObjet) $private($visuNo,decObjet) $dateNow J2000.0 ]
       set ra        [lindex $listRaDec 0]
