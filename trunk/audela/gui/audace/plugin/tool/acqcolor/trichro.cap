@@ -1,6 +1,6 @@
 #
 # Fichier : trichro.cap
-# Mise a jour $Id: trichro.cap,v 1.8 2009-11-06 19:10:54 robertdelmas Exp $
+# Mise a jour $Id: trichro.cap,v 1.9 2009-11-23 19:54:51 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -72,10 +72,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trichro,comment)     "Rot/grün/blauen Bilder zusammenschluß"
    set caption(trichro,rep_images)  "Bilder Verzeichnis"
    set caption(trichro,parcourir)   "..."
-   set caption(trichro,image_r)     "Rote Bild Nahmen"
-   set caption(trichro,image_v)     "Grüne Bild Nahmen"
-   set caption(trichro,image_b)     "Blaue Bild Nahmen"
-   set caption(trichro,nom_image)   "RGB Bild Nahmen"
+   set caption(trichro,image_r)     "Rote Bild Namen"
+   set caption(trichro,image_v)     "Grüne Bild Namen"
+   set caption(trichro,image_b)     "Blaue Bild Namen"
+   set caption(trichro,nom_image)   "RGB Bild Namen"
    set caption(trichro,executer)    "Starten"
 
 # *************** Version portugaise **************************

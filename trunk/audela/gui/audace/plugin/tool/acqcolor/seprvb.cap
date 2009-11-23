@@ -1,6 +1,6 @@
 #
 # Fichier : seprvb.cap
-# Mise a jour $Id: seprvb.cap,v 1.8 2009-11-06 19:10:21 robertdelmas Exp $
+# Mise a jour $Id: seprvb.cap,v 1.9 2009-11-23 19:54:02 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -64,7 +64,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seprvb,comment)      "Rot/Grün/Blau Bilder Schaffung"
    set caption(seprvb,rep_images)   "Bilder Verzeichnis"
    set caption(seprvb,parcourir)    "..."
-   set caption(seprvb,nom_images)   "Generischen Nahmen für RGB Bilder"
+   set caption(seprvb,nom_images)   "Generischen Namen für RGB Bilder"
    set caption(seprvb,nbre_images)  "Bilder Zahl"
    set caption(seprvb,executer)     "Starten"
 

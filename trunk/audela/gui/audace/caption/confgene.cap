@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.34 2009-11-22 12:56:05 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.35 2009-11-23 19:53:26 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -396,7 +396,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,fichier_image)                      "Bild Datei"
    set caption(confgene,fichier_image_fits)                 "FITS Datei"
-   set caption(confgene,fichier_images_seuils_visu)         "Bilder mit Entfaltung Schwellen speichern"
+   set caption(confgene,fichier_images_seuils_visu)         "Bilder mit Entfaltung Schwellenwerte speichern"
    set caption(confgene,fichier_images_choix_format)        "Bilder im Format speichern:"
    set caption(confgene,fichier_images_entier)              "Ganz (16 bits)"
    set caption(confgene,fichier_images_flottant)            "Fließkomma (32 bits)"
@@ -413,14 +413,14 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,position)                           "Beobachter-Position"
    set caption(confgene,nom_observateur)                    "Beobachters Namen (70 Zeichen max.):"
-   set caption(confgene,nom_observatoire:)                  "Nahmen der Sternwarte:"
-   set caption(confgene,nom_observatoire)                   "Nahmen der Sternwarte"
-   set caption(confgene,ajouter_observatoire)               "Zu Sternwarte beitragen"
+   set caption(confgene,nom_observatoire:)                  "Namen der Sternwarte:"
+   set caption(confgene,nom_observatoire)                   "Namen der Sternwarte"
+   set caption(confgene,ajouter_observatoire)               "Eine Sternwarte addieren"
    set caption(confgene,supprimer_observatoire)             "Löschen"
    set caption(confgene,copier_observatoire)                "Nachbilden"
-   set caption(confgene,observatoire_a_ajouter)             "Namen der Sternwarte bei zu tragen"
+   set caption(confgene,observatoire_a_ajouter)             "Namen der Sternwarte zu addieren"
    set caption(confgene,observatoire_a_supprimer)           "Namen der Sternwarte zu löschen"
-   set caption(confgene,observatoire_a_copier)              "Daten der Sternwarte nach zu bilden"
+   set caption(confgene,observatoire_a_copier)              "Daten der Sternwarte zu nachbilden"
    set caption(confgene,position_longitude)                 "Länge:"
    set caption(confgene,position_est)                       "O"
    set caption(confgene,position_ouest)                     "W"

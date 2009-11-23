@@ -1,6 +1,6 @@
 #
 # Fichier : visio2.cap
-# Mise a jour $Id: visio2.cap,v 1.15 2009-11-07 17:06:52 robertdelmas Exp $
+# Mise a jour $Id: visio2.cap,v 1.16 2009-11-23 19:55:08 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -359,7 +359,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,remark1)               "Die avi, mov, mpeg Dateien nötigen das tmci Programmpaket (nur Windows)."
 
    #--- fenetre de renommage des fichiers
-   set caption(visio2,genericName)           "Generischen Nahmen"
+   set caption(visio2,genericName)           "Generischen Namen"
    set caption(visio2,firstIndex)            "Ersten Index"
    set caption(visio2,rename_file_confirm)   "Sind die sicher dies Datei umbenennen zu willen?"
    set caption(visio2,overwrite)             "Die existierende Dateien überschreiben"

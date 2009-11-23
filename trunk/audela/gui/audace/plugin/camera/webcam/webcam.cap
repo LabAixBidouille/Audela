@@ -1,6 +1,6 @@
 #
 # Fichier : webcam.cap
-# Mise a jour $Id: webcam.cap,v 1.13 2009-11-12 18:18:34 robertdelmas Exp $
+# Mise a jour $Id: webcam.cap,v 1.14 2009-11-23 19:55:24 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -65,6 +65,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,auto)                     "Auto"
    set caption(webcam,framerate)                "Images/s"
    set caption(webcam,validFrame)               "Numéro de l'image"
+
    set caption(webcam,2points)                  ":"
 
    set caption(webcam,titre_site_web)           "Site Web de référence :"

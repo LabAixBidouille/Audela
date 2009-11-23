@@ -1,6 +1,6 @@
 #
 # Fichier : calaphot.cap
-# Mise a jour $Id: calaphot.cap,v 1.6 2009-11-09 16:35:54 robertdelmas Exp $
+# Mise a jour $Id: calaphot.cap,v 1.7 2009-11-23 19:53:09 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -473,17 +473,17 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set calaphot(texte,titre_menu)          "Differential Licht Messung"
    set calaphot(texte,titre_saisie)        "Skript Photomessung Parametern"
-   set calaphot(texte,operateur)           "Bedienungsperson Nahmen"
-   set calaphot(texte,objet)               "Objekt Nahmen"
+   set calaphot(texte,operateur)           "Bedienungsperson Namen"
+   set calaphot(texte,objet)               "Objekt Namen"
    set calaphot(texte,code_UAI)            "Sternwarte UAI Kode"
-   set calaphot(texte,source)              "Gattungsnahmen der Bilder"
+   set calaphot(texte,source)              "Gattungsnamen der Bilder"
    set calaphot(texte,indice_premier)      "Erste Bild Index"
    set calaphot(texte,indice_dernier)      "Letztes Bild Index"
    set calaphot(texte,tailleboite)         "Halbe Breite des Fenstern"
    set calaphot(texte,o_rayon1)            "Innerkreis Halbmesser (in FWHM Zahl)"
    set calaphot(texte,o_rayon2)            "Zentralkreis Halbmesser (in FWHM Zahl)"
    set calaphot(texte,o_rayon3)            "Außerkreis Halbmesser (in FWHM Zahl)"
-   set calaphot(texte,sortie)              "Nahmen der Erfolg Text Datei"
+   set calaphot(texte,sortie)              "Namen der Erfolg Text Datei"
    set calaphot(texte,signal_bruit)        "S/R Verhältnis Grenze"
    set calaphot(texte,mode)                "Rechnung Modus"
    set calaphot(texte,mode_ouverture)      "Öffnung Phot."
@@ -553,7 +553,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,pas_etoile_ind)      "Keinen Stern zu löschen"
    set calaphot(texte,bruit_lecture)       "Abtastung Rauschen (e-)"
    set calaphot(texte,arret)               "Halten"
-   set calaphot(texte,fichier_cl)          "Nahmen des Erfolg Postscript Datei"
+   set calaphot(texte,fichier_cl)          "Namen des Erfolg Postscript Datei"
    set calaphot(texte,rien_a_voir)         "Keine Lichtkurve zu zeigen"
    set calaphot(texte,tri_images)          "Mit steigend Datum Bilder Aussortierung"
    # Texte sans accent (pour les fichiers Postscripts)

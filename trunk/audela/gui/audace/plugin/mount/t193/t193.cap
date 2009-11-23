@@ -1,6 +1,6 @@
 #
 # Fichier : t193.cap
-# Mise a jour $Id: t193.cap,v 1.14 2009-11-09 16:35:20 robertdelmas Exp $
+# Mise a jour $Id: t193.cap,v 1.15 2009-11-23 19:54:34 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -171,7 +171,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,mode)                    "Modus"
    set caption(t193,carteUSB)                "NI USB Karte"
    set caption(t193,ethernet)                "Ethernet"
-   set caption(t193,nom_carte)               "USB-6501 Karte Nahmen"
+   set caption(t193,nom_carte)               "USB-6501 Karte Namen"
    set caption(t193,minDelay)                "Minimal Pulsschlag (ms)"
    set caption(t193,host)                    "Host"
    set caption(t193,portNotification)        "Benachrichtigten Port"

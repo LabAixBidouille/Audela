@@ -1,6 +1,6 @@
 #
 # Fichier : smedianrvb.cap
-# Mise a jour $Id: smedianrvb.cap,v 1.8 2009-11-06 19:10:38 robertdelmas Exp $
+# Mise a jour $Id: smedianrvb.cap,v 1.9 2009-11-23 19:54:17 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -77,7 +77,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(smedianrvb,comment2)    "Löscht die zwischen Dateien aus"
    set caption(smedianrvb,rep_images)  "Bilder Verzeichnis"
    set caption(smedianrvb,parcourir)   "..."
-   set caption(smedianrvb,nom_images)  "Generischen Nahmen für RGB Bilder"
+   set caption(smedianrvb,nom_images)  "Generischen Namen für RGB Bilder"
    set caption(smedianrvb,nbre_images) "Bilder Zahl"
    set caption(smedianrvb,nom_med)     "Mittelbild Namen"
    set caption(smedianrvb,comment3)    "Kommentar: Das angerzeigte Mittelbild speichern"
