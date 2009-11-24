@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.49 2009-11-15 15:46:15 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.50 2009-11-24 21:06:22 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -2502,7 +2502,6 @@ namespace eval ::traiteImage {
       set traiteImage(rvbWindow_r+v+b_filename) ""
       set traiteImage(rvbWindow_rvb_filename)   ""
       set traiteImage(avancement)               ""
-      ::traiteImage::initSeuils
 
       #---
       toplevel $This
@@ -2894,113 +2893,6 @@ namespace eval ::traiteImage {
       } else {
          set traiteImage(image_A) "$caption(pretraitement,image_affichee:)"
       }
-   }
-
-   #
-   # ::traiteImage::confirmerBlanc
-   # Confirme la selection de la zone blanche de l'image
-   #
-   proc confirmerBlanc { } {
-      global audace traiteImage
-
-      #--- Retourne les coordonnees de la zone selectionnee avec la souris
-      set box [ ::confVisu::getBox $audace(visuNo) ]
-      if { $box == "" } {
-         set traiteImage(blanc_R) ""
-         set traiteImage(blanc_V) ""
-         set traiteImage(blanc_B) ""
-         return
-      }
-
-      #--- Calcule les coordonnees du centre de la zone selectionnee avec la souris
-      if { [ lindex $box 0 ] < [ lindex $box 2 ] } {
-         set X1 [ lindex $box 0 ]
-         set X2 [ lindex $box 2 ]
-      } else {
-         set X1 [ lindex $box 2 ]
-         set X2 [ lindex $box 0 ]
-         }
-      if { [ lindex $box 1 ] < [ lindex $box 3 ] } {
-         set Y1 [ lindex $box 1 ]
-         set Y2 [ lindex $box 3 ]
-      } else {
-         set Y1 [ lindex $box 3 ]
-         set Y2 [ lindex $box 1 ]
-      }
-      set Xmoy [ expr int( $X1 + ( $X2 - $X1 ) / 2. ) ]
-      set Ymoy [ expr int( $Y1 + ( $Y2 - $Y1 ) / 2. ) ]
-
-      #--- Retourne les intensites R, V et B du centre de la zone selectionnee avec la souris
-      set intensite_blanc [ buf$audace(bufNo) getpix [ list $Xmoy $Ymoy ] ]
-      set traiteImage(blanc_R) [ lindex $intensite_blanc 1 ]
-      set traiteImage(blanc_V) [ lindex $intensite_blanc 2 ]
-      set traiteImage(blanc_B) [ lindex $intensite_blanc 3 ]
-
-      #--- Suppression de la zone selectionnee avec la souris si elle existe
-      if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] != "" } {
-         ::confVisu::deleteBox $audace(visuNo)
-      }
-   }
-
-   #
-   # ::traiteImage::confirmerNoir
-   # Confirme la selection de la zone noire de l'image
-   #
-   proc confirmerNoir { } {
-      global audace traiteImage
-
-      #--- Retourne les coordonnees de la zone selectionnee avec la souris
-      set box [ ::confVisu::getBox $audace(visuNo) ]
-      if { $box == "" } {
-         set traiteImage(noir_R) ""
-         set traiteImage(noir_V) ""
-         set traiteImage(noir_B) ""
-         return
-      }
-
-      #--- Calcule les coordonnees du centre de la zone selectionnee avec la souris
-      if { [ lindex $box 0 ] < [ lindex $box 2 ] } {
-         set X1 [ lindex $box 0 ]
-         set X2 [ lindex $box 2 ]
-      } else {
-         set X1 [ lindex $box 2 ]
-         set X2 [ lindex $box 0 ]
-         }
-      if { [ lindex $box 1 ] < [ lindex $box 3 ] } {
-         set Y1 [ lindex $box 1 ]
-         set Y2 [ lindex $box 3 ]
-      } else {
-         set Y1 [ lindex $box 3 ]
-         set Y2 [ lindex $box 1 ]
-      }
-      set Xmoy [ expr int( $X1 + ( $X2 - $X1 ) / 2. ) ]
-      set Ymoy [ expr int( $Y1 + ( $Y2 - $Y1 ) / 2. ) ]
-
-      #--- Retourne les intensites R, V et B du centre de la zone selectionnee avec la souris
-      set intensite_noir [ buf$audace(bufNo) getpix [ list $Xmoy $Ymoy ] ]
-      set traiteImage(noir_R) [ lindex $intensite_noir 1 ]
-      set traiteImage(noir_V) [ lindex $intensite_noir 2 ]
-      set traiteImage(noir_B) [ lindex $intensite_noir 3 ]
-
-      #--- Suppression de la zone selectionnee avec la souris si elle existe
-      if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] != "" } {
-         ::confVisu::deleteBox $audace(visuNo)
-      }
-   }
-
-   #
-   # ::traiteImage::initSeuils
-   # Initialise a vide les seuils maxi et mini de chaque couleur
-   #
-   proc initSeuils { } {
-      global traiteImage
-
-      set traiteImage(blanc_R) ""
-      set traiteImage(blanc_V) ""
-      set traiteImage(blanc_B) ""
-      set traiteImage(noir_R)  ""
-      set traiteImage(noir_V)  ""
-      set traiteImage(noir_B)  ""
    }
 
 }
