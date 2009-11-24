@@ -9,7 +9,7 @@
 #
 ########################################################################################
 
-# Mise a jour $Id: make_packages.sh,v 1.13 2009-11-24 11:33:06 bmauclaire Exp $
+# Mise a jour $Id: make_packages.sh,v 1.14 2009-11-24 23:12:49 bmauclaire Exp $
 
 
 #--- Utilisation du script :
@@ -137,9 +137,13 @@ fi
 #DAILY=`date +"%Y%m%d"`
 noteversion=`grep "audela(version)" $rep_bin/version.tcl | tr -d '"'`
 laversion=`expr "$noteversion" : '.*\s\([0-9]*\.[0-9]*\.[0-9]*\).*'`
-info_audela=`ls -gGl --time-style=long-iso $rep_bin/audela`
-ladate=`expr "$info_audela" : '.*\([0-9][0-9][0-9][0-9]\-[0-9][0-9]\-[0-9][0-9]\).*'`
-DAILY=$laversion.`echo $ladate | tr -d '-'`
+#info_audela=`ls -gGl --time-style=long-iso $rep_bin/audela`
+#ladate=`expr "$info_audela" : '.*\([0-9][0-9][0-9][0-9]\-[0-9][0-9]\-[0-9][0-9]\).*'`
+#DAILY=$laversion.`echo $ladate | tr -d '-'`
+d1=`grep "audela(date)" $rep_bin/version.tcl | tr -d '"'`
+d2=`expr "$d1" : '.*\s\([0-9]*\/[0-9]*\/[0-9]*\).*'`
+ladate=`echo "$d2" | sed -e 's/\///g'`
+DAILY=$laversion-$ladate
 echo "Creation des paquets AudeLA version $DAILY :"
 
 BUILD_DIR=audela-$DAILY
