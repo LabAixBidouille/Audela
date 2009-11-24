@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.88 2009-11-17 16:55:14 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.89 2009-11-24 22:49:06 robertdelmas Exp $
 #
 
 #==============================================================
@@ -1114,7 +1114,8 @@ proc ::acqfc::Go { visuNo } {
    }
 
    #--- Modification du bouton, pour eviter un second lancement
-   $panneau(acqfc,$visuNo,This).go_stop.but configure -text $caption(acqfc,stop) -command "::acqfc::Stop $visuNo"
+   $panneau(acqfc,$visuNo,This).go_stop.but configure -text $caption(acqfc,stop) \
+      -command "::acqfc::Stop $visuNo"
    #--- Verrouille tous les boutons et champs de texte pendant les acquisitions
    $panneau(acqfc,$visuNo,This).pose.but configure -state disabled
    $panneau(acqfc,$visuNo,This).pose.entr configure -state disabled
@@ -1310,7 +1311,6 @@ proc ::acqfc::Go { visuNo } {
             break
          }
 
-
          #--- Chargement de l'image precedente (si telecharge_mode = 3 et si mode = serie, continu, continu 1 ou continu 2)
          if { $loadMode == "3" && $panneau(acqfc,$visuNo,mode) >= "1" && $panneau(acqfc,$visuNo,mode) <= "5" } {
             after 10 ::acqfc::loadLastImage $visuNo $camNo
@@ -1320,6 +1320,7 @@ proc ::acqfc::Go { visuNo } {
          foreach keyword [ ::keyword::getKeywords $visuNo ] {
             buf$bufNo setkwd $keyword
          }
+
          #--- je trace la duree réelle de la pose s'il y a eu une interruption
          if { $panneau(acqfc,$visuNo,demande_arret) == "1" } {
             set exposure [ lindex [ buf$bufNo getkwd EXPOSURE ] 1 ]
@@ -1648,7 +1649,7 @@ proc ::acqfc::Go { visuNo } {
 
    #--- Pose en cours
    set panneau(acqfc,$visuNo,pose_en_cours) "0"
-
+   #--- Pas de demande d'arret
    set panneau(acqfc,$visuNo,demande_arret) 0
    #--- Effacement de la barre de progression quand la pose est terminee
    ::acqfc::avancementPose $visuNo -1
@@ -1705,15 +1706,15 @@ proc ::acqfc::Stop { visuNo } {
 
    #--- Je desactive le bouton "STOP"
    $panneau(acqfc,$visuNo,This).go_stop.but configure -state disabled
-   #--- On annule la sonnerie
-   catch { after cancel $audace(after,bell,id) }
-   #--- Annulation de l'alarme de fin de pose
-   catch { after cancel bell }
 
-   #--- Je positionne l'indicateur d'interruption de pose
-   set panneau(acqfc,$visuNo,demande_arret) "1"
    #--- j'interromps la pose
    if { $panneau(acqfc,$visuNo,mode) == "1" } {
+      #--- Je positionne l'indicateur d'interruption de pose
+      set panneau(acqfc,$visuNo,demande_arret) "1"
+      #--- On annule la sonnerie
+      catch { after cancel $audace(after,bell,id) }
+      #--- Annulation de l'alarme de fin de pose
+      catch { after cancel bell }
       #--- J'arrete la capture de l'image
       ::camera::stopAcquisition [::confVisu::getCamItem $visuNo]
    } else {
@@ -1724,22 +1725,38 @@ proc ::acqfc::Stop { visuNo } {
                  -message $caption(acqfc,arret_serie) \
              ]
             if { $choix == "no" } {
+               #--- Je positionne l'indicateur d'interruption de pose
+               set panneau(acqfc,$visuNo,demande_arret) "1"
                #--- Je positionne l'indicateur d'enregistrement d'image interrompue
                set panneau(acqfc,$visuNo,sauve_img_interrompue) "1"
+               #--- On annule la sonnerie
+               catch { after cancel $audace(after,bell,id) }
+               #--- Annulation de l'alarme de fin de pose
+               catch { after cancel bell }
                #--- J'arrete l'acquisition courante
                ::camera::stopAcquisition [::confVisu::getCamItem $visuNo]
             } else {
+               #--- Je positionne l'indicateur d'interruption de pose a 1 s de la fin de la pose
+               ::acqfc::stopSerie $visuNo
                #--- Je positionne l'indicateur d'enregistrement d'image interrompue
                set panneau(acqfc,$visuNo,sauve_img_interrompue) "0"
             }
          } else {
+            #--- Je positionne l'indicateur d'interruption de pose a 1 s de la fin de la pose
+            ::acqfc::stopSerie $visuNo
             #--- s'il reste moins de 10 secondes, je ne pose pas de question a l'utilisateur
             #--- la serie s'arretera a la fin de l'image en cours
             set panneau(acqfc,$visuNo,sauve_img_interrompue) "0"
          }
       } else {
+         #--- Je positionne l'indicateur d'interruption de pose
+         set panneau(acqfc,$visuNo,demande_arret) "1"
          #--- Je positionne l'indicateur d'enregistrement d'image interrompue
          set panneau(acqfc,$visuNo,sauve_img_interrompue) "1"
+         #--- On annule la sonnerie
+         catch { after cancel $audace(after,bell,id) }
+         #--- Annulation de l'alarme de fin de pose
+         catch { after cancel bell }
          #--- J'arrete l'acquisition courante
          ::camera::stopAcquisition [::confVisu::getCamItem $visuNo]
       }
@@ -1747,7 +1764,23 @@ proc ::acqfc::Stop { visuNo } {
 }
 #***** Fin de la procedure Go/Stop *****************************
 
-#***** Procedure chargement differe d'image ****
+#***** Procedure arret de la serie *****************************
+proc ::acqfc::stopSerie { visuNo } {
+   global panneau
+
+   set t [cam$panneau(acqfc,$visuNo,camNo) timer -1 ]
+   if { $t > 1 } {
+      #--- je lance l'iteration suivante avec un delai de 1000 millisecondes
+      #--- (mode asynchone pour eviter l'empilement des appels recursifs)
+      set valeur [after 1000 ::acqfc::stopSerie $visuNo]
+   } else {
+      #--- je ne relance pas le timer et j'arrete la pose
+      set panneau(acqfc,$visuNo,demande_arret) "1"
+   }
+}
+#***** Fin de la procedure arret de la serie *******************
+
+#***** Procedure chargement differe d'image ********************
 proc ::acqfc::loadLastImage { visuNo camNo } {
    set result [ catch { cam$camNo loadlastimage } msg ]
    if { $result == "1" } {
