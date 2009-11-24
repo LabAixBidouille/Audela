@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.47 2009-11-23 21:47:34 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.48 2009-11-24 18:34:10 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -260,7 +260,7 @@ proc ::telescope::surveille_goto { radec0 { But_Goto "" } { But_Match "" } } {
 
    if { $audace(telNo) != 0 } {
       set radec1 [ tel$audace(telNo) radec coord ]
-      console::disp "surveille_goto radec0=$radec0 radec1=$radec1\n"
+     ### console::disp "surveille_goto radec0=$radec0 radec1=$radec1\n"
       afficheCoord
       set ra0 [ mc_angle2deg [ lindex $radec0 0 ] 360 ]
       set dec0 [ mc_angle2deg [ lindex $radec0 1 ] 90 ]
