@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_2.tcl
 # Description : Script regroupant les fonctionnalites du menu Affichage
-# Mise a jour $Id: aud_menu_2.tcl,v 1.19 2009-11-19 22:09:41 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.tcl,v 1.20 2009-11-24 17:55:52 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -1031,7 +1031,7 @@ namespace eval ::seuilCouleur {
    # Procedure correspondant a l'appui sur le bouton Appliquer
    #
    proc cmdApply { visuNo } {
-      global audace caption conf seuilCouleur
+      global caption conf seuilCouleur
 
       #---
       set seuilCouleur(avancement) "$caption(seuilCouleur,en_cours)"
@@ -1077,11 +1077,11 @@ namespace eval ::seuilCouleur {
             set kwds { "MIPS-HIR" "MIPS-LOR" "MIPS-HIG" "MIPS-LOG" "MIPS-HIB" "MIPS-LOB" }
             foreach kwd $kwds val $mycuts {
                #--- Je capture le mot cle existant
-               set data [ buf$audace(bufNo) getkwd $kwd ]
+               set data [ buf$bufNo getkwd $kwd ]
                #--- Je remplace la valeur par la valeur actuelle
                set data [ lreplace $data 1 1 $val ]
                #--- Je sauve le mot cle modifie
-               buf$audace(bufNo) setkwd $data
+               buf$bufNo setkwd $data
             }
             #--- J'enregistre l'image modifiee en changeant son nom
             ::audace::enregistrer_sous $visuNo
@@ -1142,8 +1142,11 @@ namespace eval ::seuilCouleur {
       set Xmoy [ expr int( ( [ lindex $box 2 ] + [ lindex $box 0 ] ) / 2. ) ]
       set Ymoy [ expr int( ( [ lindex $box 3 ] + [ lindex $box 1 ] ) / 2. ) ]
 
+      #--- Je recupere le numero du buffer de la visu
+      set bufNo [ ::confVisu::getBufNo $visuNo ]
+
       #--- Retourne les intensites R, V et B du centre de la zone selectionnee avec la souris
-      lassign [ buf$audace(bufNo) getpix [ list $Xmoy $Ymoy ] ] nihil seuilCouleur(blanc_R) seuilCouleur(blanc_V) seuilCouleur(blanc_B)
+      lassign [ buf$bufNo getpix [ list $Xmoy $Ymoy ] ] nihil seuilCouleur(blanc_R) seuilCouleur(blanc_V) seuilCouleur(blanc_B)
 
       #--- Suppression de la zone selectionnee avec la souris
       ::confVisu::deleteBox $visuNo
@@ -1171,8 +1174,11 @@ namespace eval ::seuilCouleur {
       set Xmoy [ expr int( ( [ lindex $box 2 ] + [ lindex $box 0 ] ) / 2.0 ) ]
       set Ymoy [ expr int( ( [ lindex $box 3 ] + [ lindex $box 1 ] ) / 2.0 ) ]
 
+      #--- Je recupere le numero du buffer de la visu
+      set bufNo [ ::confVisu::getBufNo $visuNo ]
+
       #--- Retourne les intensites R, V et B du centre de la zone selectionnee avec la souris
-      lassign [ buf$audace(bufNo) getpix [ list $Xmoy $Ymoy ] ] nihil seuilCouleur(noir_R) seuilCouleur(noir_V) seuilCouleur(noir_B)
+      lassign [ buf$bufNo getpix [ list $Xmoy $Ymoy ] ] nihil seuilCouleur(noir_R) seuilCouleur(noir_V) seuilCouleur(noir_B)
 
       #--- Suppression de la zone selectionnee avec la souris
       ::confVisu::deleteBox $visuNo
