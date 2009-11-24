@@ -9,7 +9,7 @@
 #
 ########################################################################################
 
-# Mise a jour $Id: make_packages.sh,v 1.12 2009-11-20 18:10:16 bmauclaire Exp $
+# Mise a jour $Id: make_packages.sh,v 1.13 2009-11-24 11:33:06 bmauclaire Exp $
 
 
 #--- Utilisation du script :
@@ -78,6 +78,7 @@ version_tcltk="8.5"
 # INST_DIR=/usr/lib/audela-$DAILY
 # DIRECTORY=$BUILD_DIR$INST_DIR
 # rep_libtcltk="/usr/lib" ou rep_libtcltk="$INST_DIR/bin"
+#- Le paquet s'appelle desormais "audela" et non plus "audela-thread" :
 nom_paquet="audela"
 lesuffixe=""
 rep_libtcltk="/usr/lib"
