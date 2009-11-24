@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.28 2009-11-17 16:54:26 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.29 2009-11-24 19:55:46 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -198,7 +198,7 @@ proc ::keyword::init { } {
    lappend private(infosMotsClefs) [ list "IAU_CODE" $::caption(keyword,lieu)        ::conf(posobs,station_uai)              readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observatory IAU Code"                            "" ]
    lappend private(infosMotsClefs) [ list "SITELONG" $::caption(keyword,lieu)        ::conf(posobs,estouest_long)            readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observatory longitude"                           "degres, minutes, seconds" ]
    lappend private(infosMotsClefs) [ list "SITELAT"  $::caption(keyword,lieu)        ::conf(posobs,nordsud_lat)              readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observatory latitude"                            "degres, minutes, seconds" ]
-   lappend private(infosMotsClefs) [ list "SITEELEV" $::caption(keyword,lieu)        ::conf(posobs,altitude)                 readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observatory elevation above the sea level"       "m: meter" ]
+   lappend private(infosMotsClefs) [ list "SITEELEV" $::caption(keyword,lieu)        ::conf(posobs,altitude)         readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observatory elevation above the sea level"       "m: meter" ]
    lappend private(infosMotsClefs) [ list "GEODSYS"  $::caption(keyword,lieu)        ::conf(posobs,ref_geodesique)           readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Geodetic datum for observatory position"         "" ]
    lappend private(infosMotsClefs) [ list "TELESCOP" $::caption(keyword,instrument)  ::keyword::private(instrument)          readonly $::caption(keyword,parcourir)  "::confOptic::run 1"                           ""                                  ""                                       "" "" "string" "Telescop"                                        "" ]
    lappend private(infosMotsClefs) [ list "APTDIA"   $::caption(keyword,instrument)  ::keyword::private(diametre)            readonly $::caption(keyword,parcourir)  "::confOptic::run 1"                           ""                                  ""                                       "" "" "float"  "Telescop diameter"                               "m: meter" ]
@@ -212,7 +212,7 @@ proc ::keyword::init { } {
    lappend private(infosMotsClefs) [ list "OBJNAME"  $::caption(keyword,cible)       ::keyword::private(objName)             normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAuto)           0  "" "string" "Object observed"                                 "" ]
    lappend private(infosMotsClefs) [ list "RA"       $::caption(keyword,cible)       ::keyword::private(ra)                  normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAutoBis)        0  "" "float"  "Object Right Ascension"                          "degres" ]
    lappend private(infosMotsClefs) [ list "DEC"      $::caption(keyword,cible)       ::keyword::private(dec)                 normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAutoBis)        0  "" "float"  "Object Declination"                              "degres" ]
-   lappend private(infosMotsClefs) [ list "EQUINOX"  $::caption(keyword,cible)       ::keyword::private(equinoxe)            normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAutoTer)        0  "" "string" "Coordinates equinox"                             "" ]
+   lappend private(infosMotsClefs) [ list "EQUINOX"  $::caption(keyword,cible)       ::keyword::private(equinoxe)            normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAutoTer)        0  "" "float"  "Coordinates equinox"                             "" ]
    lappend private(infosMotsClefs) [ list "RADECSYS" $::caption(keyword,cible)       ::keyword::private(radecsys)            normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Coordinates system"                              "" ]
    lappend private(infosMotsClefs) [ list "IMAGETYP" $::caption(keyword,acquisition) ::keyword::private(typeImage)           readonly ""                             ""                                             $::keyword::private(listTypeImage)  ::conf(keyword,typeImageSelected)        0  "" "string" "Image type"                                      "" ]
    lappend private(infosMotsClefs) [ list "SERIESID" $::caption(keyword,acquisition) ::keyword::private(seriesId)            normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Series identifiant"                              "" ]
@@ -763,7 +763,6 @@ proc ::keyword::getKeywords { visuNo { keywordNameList "" } } {
             if { [ lindex $infosMotClef 0 ] == $motclef } {
                #--- je recupere la temperature du CCD
                if { $motclef == "CCD_TEMP" } {
-                  #--- je recupere la temperature du CCD
                   onChangeTemperature $visuNo
                }
                set textVariable [lindex $infosMotClef 2]
@@ -771,12 +770,21 @@ proc ::keyword::getKeywords { visuNo { keywordNameList "" } } {
                set type         [lindex $infosMotClef 10]
                set commentaire  [lindex $infosMotClef 11]
                set unite        [lindex $infosMotClef 12]
-               #--- Conversion du RA et DEC en degres decimaux
+               #--- je convertis RA et DEC en degres decimaux
                if { $motclef == "RA" } {
                   set valeur [ mc_angle2deg $valeur ]
                }
                if { $motclef == "DEC" } {
                   set valeur [ mc_angle2deg $valeur ]
+               }
+               #--- je mets en forme l'equinoxe
+               if { $motclef == "EQUINOX" } {
+                  set valeur [ ::keyword::equinoxCompliant $valeur ]
+                  if { $valeur == "now" } {
+                     set type "string"
+                  } else {
+                     set type "float"
+                  }
                }
                #--- j'ajoute les mots cles dans le resultat
                lappend result [list $motclef $valeur $type $commentaire $unite]
@@ -827,6 +835,23 @@ proc ::keyword::headerFitsCompliant { stringInput } {
    set res [regsub -all {[ü;û;ù]} $res u]
    set res [regsub -all {[ç]} $res c]
    set res [regsub -all {[']} $res " "]
+   set stringOutput $res
+   return $stringOutput
+}
+
+#------------------------------------------------------------------------------
+# equinoxCompliant
+#    rend l'equinoxe conforme a la norme
+#
+# Parametres :
+#    stringInput : equinoxe
+# return
+#    stringOutput : equinoxe conforme
+#------------------------------------------------------------------------------
+proc ::keyword::equinoxCompliant { stringInput } {
+   set res $stringInput
+   set res [ regsub -all {[J]} $res "" ]
+   set res [ regsub -all {[B]} $res "" ]
    set stringOutput $res
    return $stringOutput
 }
