@@ -3,7 +3,7 @@
 # Description : procedures d'acqusitition et de traitement avec
 #         plusieurs cameras simultanées exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise a jour $Id: camerathread.tcl,v 1.16 2009-11-17 16:52:39 robertdelmas Exp $
+# Mise a jour $Id: camerathread.tcl,v 1.17 2009-11-24 18:32:25 robertdelmas Exp $
 #
 
 namespace eval ::camerathread {
@@ -752,11 +752,11 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
    buf$bufNo setkwd [list "CRVAL2"     $crval2     float {[pixel] reference pixel for naxis2} "pixel" ]
    buf$bufNo setkwd [list "FOCLEN"     $foclen     double "Focal length" "m"]
    buf$bufNo setkwd [list "CROTA2"     $crota2     double "position angle" "deg"]
-   buf$bufNo setkwd [list "CTYPE1"     "RA---TAN" string "Gnomonic projection" "" ]
-   buf$bufNo setkwd [list "CTYPE2"     "DEC--TAN" string "Gnomonic projection" "" ]
-   buf$bufNo setkwd [list "CUNIT1"     "deg" string "Angles are degrees always" "" ]
-   buf$bufNo setkwd [list "CUNIT2"     "deg" string "Angles are degrees always" "" ]
-   buf$bufNo setkwd [list "EQUINOX"    "2000" string "System of equatorial coordinates" "" ]
+   buf$bufNo setkwd [list "CTYPE1"     "RA---TAN"  string "Gnomonic projection" "" ]
+   buf$bufNo setkwd [list "CTYPE2"     "DEC--TAN"  string "Gnomonic projection" "" ]
+   buf$bufNo setkwd [list "CUNIT1"     "deg"       string "Angles are degrees always" "" ]
+   buf$bufNo setkwd [list "CUNIT2"     "deg"       string "Angles are degrees always" "" ]
+   buf$bufNo setkwd [list "EQUINOX"    "2000.0"    float  "System of equatorial coordinates" "" ]
 
 
    #---- recherche des étoiles dans l'image
