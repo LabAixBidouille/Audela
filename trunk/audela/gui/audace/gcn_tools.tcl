@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.33 2009-09-29 23:41:37 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.34 2009-11-25 13:23:24 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -635,7 +635,7 @@ proc gcn_decode { longs sockname } {
          set gcn($sockname,descr,burst_ra) [expr $gcn($sockname,long,burst_ra)*0.0001]
          set gcn($sockname,descr,burst_dec) [expr $gcn($sockname,long,burst_dec)*0.0001]
          set gcn($sockname,descr,trigger_num) [expr int($gcn($sockname,long,4))] ; # identificateur du trigger
-         set grb_date [expr $gcn($sockname,long,burst_tjd)-13370.-1.+[mcc_date2jd {2005 1 1}]] ; # TJD=13370 is 01 Jan 2005
+         set grb_date [expr $gcn($sockname,long,burst_tjd)-13370.-1.+[mc_date2jd {2005 1 1}]] ; # TJD=13370 is 01 Jan 2005
          set grb_time [expr $gcn($sockname,long,burst_sod)/100.]
          set gcn($sockname,descr,burst_jd) [expr $grb_date+$grb_time/86400.] ; # jd du trigger
          set gcn($sockname,descr,grb_error) [expr 0.0001*$gcn($sockname,long,burst_error)*60.]; # boite d'erreur en arcmin
