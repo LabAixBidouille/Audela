@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.32 2009-07-31 12:19:14 svaillant Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.33 2009-11-25 14:06:25 denismarchais Exp $
 #
 
 namespace eval cataGoto {
@@ -1472,7 +1472,7 @@ namespace eval cataGoto {
          set cataGoto(carte,nom_objet)  "#etoile#"
          set cataGoto(carte,ad)         "[lindex $thisstar 3]h[lindex $thisstar 4]m[lindex $thisstar 5]s"
          set cataGoto(carte,dec)        "[lindex $thisstar 6]d[lindex $thisstar 7]'[lindex $thisstar 8]"
-         set cataGoto(carte,dec)        $cataGoto(carte,dec)"
+         set cataGoto(carte,dec)        "$cataGoto(carte,dec)"
          set cataGoto(carte,zoom_objet) "6"
          #--- Preparation des affichages hauteur et azimut
          set catalogue(etoile_altaz) [mc_radec2altaz $catalogue(etoile_ad) $catalogue(etoile_dec) $audace(posobs,observateur,gps) [::audace::date_sys2ut now] ]
