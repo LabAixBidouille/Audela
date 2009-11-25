@@ -117,14 +117,14 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    tel->tubepos             = TUBE_OUEST;
    tel->track_diurnal       = 360.0/86164.; // 0.00417807901212;
    tel->speed_track_ra      = tel->track_diurnal; // (deg/s)
-   tel->speed_track_dec     = 0.; // (deg/s)
-   tel->speed_slew_ra       = 3.; // (deg/s)  temps mort=4s
-   tel->speed_slew_dec      = 3.; // (deg/s)  temps mort=4s
+   tel->speed_track_dec     = 0.;  // (deg/s)
+   tel->speed_slew_ra       = 3.;  // (deg/s)  temps mort=4s
+   tel->speed_slew_dec      = 3.;  // (deg/s)  temps mort=4s
    tel->radec_move_rate_max = 1.0; // deg/s
-   tel->ha00=0.;
-   tel->roth00=0;
-   tel->dec00=0.;
-   tel->rotd00=0;
+   //tel->ha00=0.;
+   //tel->roth00=0;
+   //tel->dec00=0.;
+   //tel->rotd00=0;
    tel->tempo=50;
    tel->ha_pointing=0; // Le mettre a 1 avant action_goto pour ne pas re-enclencher le suivi.
    tel->mouchard=0; // 0=pas de fichier log

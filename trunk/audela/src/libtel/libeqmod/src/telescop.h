@@ -35,42 +35,36 @@ struct telprop {
    COMMON_TELSTRUCT
    /* Ajoutez ici les variables necessaires a votre telescope */
    int tempo;
-	//int type; /* =0:UMAC =1:PMAC-PCI */
-   //char ip[50];
-   char home0[60]; /* home used by tel1 home */
-   char home[60]; /* home */
-   double latitude; /* degrees */
-	int mouchard;
-	int param_e1;
-	int param_e2;
-	int param_a1;
-	int param_a2;
-	int param_b1;
-	int param_b2;
-	int param_g1;
-	int param_g2;
-	int param_f1;
-	int param_f2;
-	int param_s1;
-	int param_s2;
-   double ha00; /* ha (degrees) at a given roth00 */
-   double dec00; /* dec (degrees) at a given rotd00 */
-   int roth00; /* (uc) */
-   int rotd00; /* (uc) */
-   double speed_track_ra; /* (deg/s) */
-   double speed_track_dec; /* (deg/s) */
-   double speed_slew_ra; /* (deg/s) */
-   double speed_slew_dec; /* (deg/s) */
-   double radec_speed_dec_conversion; /* (UC)/(deg/s) */
-   double radec_position_conversion; /* (UC)/(deg) */
-   double track_diurnal; /* (deg/s) */
-   int stop_e_uc; /* butee mecanique est */
-   int stop_w_uc; /* butee mecanique ouest */
-   double radec_move_rate_max; /* vitesse max (deg/s) pour move -rate 1 */
+   char home0[60];                    // home used by tel1 home
+   char home[60];                     // home
+   double latitude;                   // degrees
+   int mouchard;
+   int param_e1;
+   int param_e2;
+   int param_a1;
+   int param_a2;
+   int param_b1;
+   int param_b2;
+   int param_g1;
+   int param_g2;
+   int param_f1;
+   int param_f2;
+   int param_s1;
+   int param_s2;
+   double speed_track_ra;             // (deg/s)
+   double speed_track_dec;            // (deg/s)
+   double speed_slew_ra;              // (deg/s)
+   double speed_slew_dec;             // (deg/s)
+   double radec_speed_dec_conversion; // (UC)/(deg/s) */
+   double radec_position_conversion;  // (UC)/(deg) */
+   double track_diurnal;              // (deg/s)
+   int stop_e_uc;                     // butee mecanique est (en pas codeurs)
+   int stop_w_uc;                     // butee mecanique ouest (en pas codeurs)
+   double radec_move_rate_max;        // vitesse max (deg/s) pour move -rate 1
    int state;
    int old_state;
-   int slew_axis; // variable qui indique que est l'axe en cours de slew 0: aucun, 1: RA, 2: DEC, 3: RA+DEC.
-   int tubepos; // 0: tube a l'ouest ; 1: tube a l'est
+   int slew_axis;                     // variable qui indique que est l'axe en cours de slew 0: aucun, 1: RA, 2: DEC, 3: RA+DEC.
+   int tubepos;                       // 0: tube a l'ouest ; 1: tube a l'est
    int ha_pointing;
 };
 
