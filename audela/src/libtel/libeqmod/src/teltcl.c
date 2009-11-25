@@ -433,35 +433,20 @@ int cmdTelLimits(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 int cmdTelOrientation(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 	char s[100];
 	struct telprop *tel;
-	char comment[]="Usage: %s %s ?east|west?";
+	char comment[]="Usage: %s %s";
 	
-	if (argc>3) {
+	if (argc!=2) {
 		sprintf(s,comment,argv[0],argv[1]);
 		Tcl_SetResult(interp,s,TCL_VOLATILE);
 		return TCL_ERROR;
 	}
 	tel = (struct telprop*)clientData;
-	if (argc == 2) {
-		if (tel->retournement == 0) {
-			Tcl_SetResult(interp,"west",TCL_STATIC);
-		} else {
-			Tcl_SetResult(interp,"east",TCL_STATIC);
-		}
-		return TCL_OK;
+	if (tel->tubepos == 0) {
+		Tcl_SetResult(interp,"west",TCL_STATIC);
+	} else {
+		Tcl_SetResult(interp,"east",TCL_STATIC);
 	}
-	if ( !strcmp(argv[2],"west") ) {
-		tel->retournement = 0;
-		Tcl_ResetResult(interp);
-		return TCL_OK;
-	} else if ( !strcmp(argv[2],"east") ) {
-		tel->retournement = 1;
-		Tcl_ResetResult(interp);
-		return TCL_OK;
-	}
-	sprintf(s,comment,argv[0],argv[1]);
-	strcat(s," invalid direction");
-	Tcl_SetResult(interp,s,TCL_VOLATILE);
-	return TCL_ERROR;
+	return TCL_OK;
 }
 
 /*
