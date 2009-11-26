@@ -2,7 +2,7 @@
 # Fichier : eqmod.tcl
 # Description : Configuration de la monture EQMOD
 # Auteur : Robert DELMAS
-# Mise a jour $Id: eqmod.tcl,v 1.6 2009-11-25 14:28:23 denismarchais Exp $
+# Mise a jour $Id: eqmod.tcl,v 1.7 2009-11-26 19:07:27 denismarchais Exp $
 #
 
 namespace eval ::eqmod {
@@ -299,20 +299,23 @@ proc ::eqmod::fillConfigPage { frm } {
 #
 proc ::eqmod::configureMonture { } {
    variable private
-   global caption conf
+   global caption conf confgene
 
    set catchResult [ catch {
       #--- Je cree la monture
+      ::console::affiche_resultat "Localisation de la monture: $confgene(posobs,observateur,gps)\n"
       if { $conf(eqmod,moteur_on) == 1 } {
          set telNo [ tel::create eqmod $conf(eqmod,port) \
             $conf(eqmod,tube_e_w) \
             -point $conf(eqmod,initpos) \
+            -gps $confgene(posobs,observateur,gps) \
             -startmotor \
          ]
       } else {
          set telNo [ tel::create eqmod $conf(eqmod,port) \
             $conf(eqmod,tube_e_w) \
-            -point $::eqmod::private(eqmod,initpos) \
+            -point $conf(eqmod,initpos) \
+            -gps $confgene(posobs,observateur,gps) \
          ]
       }
       #--- J'affiche un message d'information dans la Console
@@ -323,10 +326,6 @@ proc ::eqmod::configureMonture { } {
       set linkNo [ ::confLink::create $conf(eqmod,port) "tel$telNo" "control" [ tel$telNo product ] ]
       #--- Je change de variable
       set private(telNo) $telNo
-      #--- Gestion du bouton actif/inactif
-#      ::eqmod::confEQMOD
-      #--- Affichage des positions moteurs
-#::eqmod::dispCoord
    } ]
 
    if { $catchResult == "1" } {
