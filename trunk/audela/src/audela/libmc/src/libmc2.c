@@ -22,6 +22,7 @@
 
 #include "libmc.h"
 
+
 struct obsreq {
    double quota_user;
    double priority;
