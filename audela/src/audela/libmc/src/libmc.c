@@ -108,6 +108,7 @@
    Tcl_CreateCommand(interp,"mc_meo",(Tcl_CmdProc *)Cmd_mctcl_meo,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_date2ttutc",(Tcl_CmdProc *)Cmd_mctcl_date2ttutc,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_astrology",(Tcl_CmdProc *)Cmd_mctcl_astrology,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"mc_scheduler",(Tcl_CmdProc *)Cmd_mctcl_scheduler,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
 
    Tcl_PkgProvide(interp,"libmc","1.0");
 

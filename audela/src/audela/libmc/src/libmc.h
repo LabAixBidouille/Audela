@@ -96,6 +96,7 @@
  int Cmd_mctcl_datescomp(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
  int Cmd_mctcl_obsreq(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+ int Cmd_mctcl_scheduler(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
  int Cmd_mctcl_home2gps(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
  int Cmd_mctcl_home2mpc(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);

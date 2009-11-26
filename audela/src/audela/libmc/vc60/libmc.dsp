@@ -106,6 +106,10 @@ SOURCE=..\src\libmc2.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\libmc3.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\libmc_angles.c
 # End Source File
 # Begin Source File
@@ -115,6 +119,10 @@ SOURCE=..\src\libmc_dates.c
 # Begin Source File
 
 SOURCE=..\src\mc_cart1.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\mc_cata1.c
 # End Source File
 # Begin Source File
 
@@ -203,6 +211,10 @@ SOURCE=..\src\mc_plnt3.c
 # Begin Source File
 
 SOURCE=..\src\mc_plnt4.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\mc_scdl1.c
 # End Source File
 # Begin Source File
 

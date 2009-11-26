@@ -854,6 +854,9 @@ double mc_GetUsnoBleueMagnitude(int magL);
 double mc_GetUsnoRedMagnitude(int magL);
 int mc_util_astrom_radec2xy(mc_ASTROM *p,double ra,double dec, double *x,double *y);
 int mc_util_astrom_xy2radec(mc_ASTROM *p, double x,double y,double *ra,double *dec);
+int mc_fitspline(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *ff);
+int mc_scheduler1(double jd, double longmpc, double rhocosphip, double rhosinphip);
+
 
 /***************************************************************************/
 /* Integration numerique pour le mouvement des n corps.                    */
@@ -1051,6 +1054,15 @@ int mc_htm2radec(char *htm,double *ra,double *dec,int *niter,double *ra0,double 
    Retourne le ra,dec a paertir du code Hierarchical Triangle Mesh.
 */
 
+
+/***************************************************************************/
+/* Utilitaires de petits calculs astro (magnitudes, elongation ...)        */
+/***************************************************************************/
+/*
+MC_UTIL2.C
+int mc_fitspline(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *ff);
+   Fit by splines with smooth
+*/
 
 /***************************************************************************/
 /* Transformations du temps (jour julien, temps dynamique ...)             */
