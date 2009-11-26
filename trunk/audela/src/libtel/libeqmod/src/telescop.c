@@ -106,7 +106,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 /* --- called by : ::tel::create                         --- */
 /* --------------------------------------------------------- */
 {
-   int k,num,res, i, start_motor;
+   int k,num,res, i, j, start_motor;
    char s[1024],ssres[1024];
    char ss[256],ssusb[256];
    double ha, dec;
@@ -121,13 +121,11 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    tel->speed_slew_ra       = 3.;  // (deg/s)  temps mort=4s
    tel->speed_slew_dec      = 3.;  // (deg/s)  temps mort=4s
    tel->radec_move_rate_max = 1.0; // deg/s
-   //tel->ha00=0.;
-   //tel->roth00=0;
-   //tel->dec00=0.;
-   //tel->rotd00=0;
    tel->tempo=50;
    tel->ha_pointing=0; // Le mettre a 1 avant action_goto pour ne pas re-enclencher le suivi.
    tel->mouchard=0; // 0=pas de fichier log
+   tel->latitude=43.75203;
+   sprintf(tel->home,"GPS 6.92353 E %+.6f 1320.0",tel->latitude);
 
    start_motor = 0;
    ha = 0.0;
@@ -183,6 +181,15 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    sprintf(s,"fconfigure %s -mode \"9600,n,8,1\" -buffering none -translation {binary binary} -blocking 0",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);
 
+   // Transcoder l'hexadecimal de res en numerique signe
+   strcpy(s,"proc eqmod_decode {s} {return [ expr int(0x[ string range $s 4 5 ][ string range $s 2 3 ][ string range $s 0 1 ]00) / 256 ]}");
+   mytel_tcleval(tel,s);
+
+   // Transcoder le numerique en res hexadecimal
+   strcpy(s,"proc eqmod_encode {int} {set s [ string range [ format %08X $int ] 2 end ];return [ string range $s 4 5 ][ string range $s 2 3 ][ string range $s 0 1 ]}");
+   mytel_tcleval(tel,s);
+
+
    PRINTF("Options:\n");
    for (i=0;i<argc;i++) {
       if ( ! strcmp(argv[i],"-mouchard") ) {
@@ -192,6 +199,11 @@ int tel_init(struct telprop *tel, int argc, char **argv)
       if ( ! strcmp(argv[i],"-east") ) {
          PRINTF("  Tube a l'est\n");
          tel->tubepos = TUBE_EST;
+      }
+      if ( ! strcmp(argv[i],"-gps") ) {
+         PRINTF("  Localisation de la monture: %s\n",argv[i+1]);
+         sprintf(tel->home,"%s %s %s %s %s",argv[i+1],argv[i+2],argv[i+3],argv[i+4],argv[i+5]);
+         tel->latitude = atof(argv[i+4]);
       }
       if ( ! strcmp(argv[i],"-point") ) {
          if ( ! strcmp(argv[i+1],"east") ) {
@@ -230,6 +242,12 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    if (tel->mouchard==1) {
       f=fopen("mouchard_eqmod.txt","wt");
       fclose(f);
+         sprintf(s,"puts %d",argc);
+         mytel_tcleval(tel,s);
+	 for (j=0;j<argc;j++) {
+            sprintf(s,"puts \"%s\"",argv[j]);
+            mytel_tcleval(tel,s);
+         }
    }
 
    // Initialisation de la communication avec la monture
@@ -310,10 +328,10 @@ int tel_init(struct telprop *tel, int argc, char **argv)
       //    DEC: commande + (les codeurs incrementent) = CCW.
       //    DEC: commande - (les codeurs decrementent) = CW
       // Codeurs initialises en HA=0, DEC=0
-      eqmod_encode(tel,ha * tel->radec_position_conversion,ss);
+      eqmod_encode(tel,(int)(ha * tel->radec_position_conversion),ss);
       sprintf(s,":E1%s",ss); eqmod_putread(tel,s,ss);
       PRINTF("  %s\n",s);
-      eqmod_encode(tel,dec * tel->radec_position_conversion,ss);
+      eqmod_encode(tel,(int)(dec * tel->radec_position_conversion),ss);
       sprintf(s,":E2%s",ss); eqmod_putread(tel,s,ss);
       PRINTF("  %s\n",s);
    } else {
@@ -335,13 +353,9 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    // Limites de pointage
    //tel->stop_e_uc=-tel->param_a1/2;
    //tel->stop_w_uc=tel->param_a1/2;
-   tel->stop_e_uc = -10.0 * tel->radec_position_conversion;
-   tel->stop_w_uc = 10.0 * tel->radec_position_conversion;
+   tel->stop_e_uc = (int)(-10.0 * tel->radec_position_conversion);
+   tel->stop_w_uc = (int)(10.0 * tel->radec_position_conversion);
    
-   // Home
-   tel->latitude=43.75203;
-   sprintf(tel->home0,"GPS 6.92353 E %+.6f 1320.0",tel->latitude);
-
    tel->old_state = tel->state;
    tel->state = EQMOD_STATE_HALT;
 
@@ -503,7 +517,7 @@ int tel_home_get(struct telprop *tel,char *ligne)
 /* --- called by : tel1 home --- */
 /* ----------------------------- */
 {
-   strcpy(ligne,tel->home0);
+   strcpy(ligne,tel->home);
    return 0;
 }
 
@@ -519,7 +533,7 @@ int tel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,d
    }
    if (latitude>90.) {latitude=90.;}
    if (latitude<-90.) {latitude=-90.;}
-   sprintf(tel->home0,"GPS %f %c %f %f",longitude,ew[0],latitude,altitude);
+   sprintf(tel->home,"GPS %f %c %f %f",longitude,ew[0],latitude,altitude);
    tel->latitude=latitude;
    return 0;
 }
@@ -625,9 +639,6 @@ int eqmod_putread(struct telprop *tel,char *cmd,char *res)
 int eqmod_decode(struct telprop *tel,char *chars,int *num)
 {
    char s[2048];
-   // Transcoder l'hexadecimal de res en numerique signe ---*/
-   strcpy(s,"proc eqmod_decode {s} {return [ expr int(0x[ string range $s 4 5 ][ string range $s 2 3 ][ string range $s 0 1 ]00) / 256 ]}");
-   mytel_tcleval(tel,s);
    sprintf(s,"eqmod_decode %s",chars);
    if (mytel_tcleval(tel,s)==1) {
       *num=0;
@@ -640,9 +651,6 @@ int eqmod_decode(struct telprop *tel,char *chars,int *num)
 int eqmod_encode(struct telprop *tel,int num,char *chars)
 {
    char s[2048];
-   // --- Transcoder le numerique en res hexadecimal ---*/
-   strcpy(s,"proc eqmod_encode {int} {set s [ string range [ format %08X $int ] 2 end ];return [ string range $s 4 5 ][ string range $s 2 3 ][ string range $s 0 1 ]}");
-   mytel_tcleval(tel,s);
    sprintf(s,"eqmod_encode %d",num);
    if (mytel_tcleval(tel,s)==1) {
       strcpy(chars,tel->interp->result);
@@ -704,7 +712,7 @@ int eqmod_positions12(struct telprop *tel,int *p1,int *p2)
 void eqmod_codeur2skypos(struct telprop *tel, int hastep, int decstep, double *ha, double *ra, double *dec)
 {
    double lst, int_ha, int_dec, int_ra;
-   const int deg90 = 90.0 * tel->radec_position_conversion;
+   const int deg90 = (int)(90.0 * tel->radec_position_conversion);
 
    PRINTF("  Conversion codeur->radec (PosTube=%s , k=%f steps/°, 90°=%d)\n",TubePos2string(tel->tubepos),tel->radec_position_conversion,deg90);
 
@@ -859,28 +867,6 @@ int eqmod_hadec_match(struct telprop *tel)
 /* ---------------------------------------------------------------*/
 /* ---------------------------------------------------------------*/
 
-int eqmod_home(struct telprop *tel, char *home_default)
-{
-   char s[1024];
-   if (strcmp(tel->home0,"")!=0) {
-      strcpy(tel->home,tel->home0);
-      return 0;
-   }
-   sprintf(s,"info exists audace(posobs,observateur,gps)");
-   mytel_tcleval(tel,s);
-   if (strcmp(tel->interp->result,"1")==0) {
-      sprintf(s,"set audace(posobs,observateur,gps)");
-      mytel_tcleval(tel,s);
-      strcpy(tel->home,tel->interp->result);
-   } else {
-      if (strcmp(home_default,"")!=0) {
-         strcpy(tel->home,home_default);
-      }
-   }
-   return 0;
-}
-
-
 // eqmod_tsl
 //  Calcule le temps sideral local.
 //  Si non NULL, les parametres h, m, sec sont mis a jour.
@@ -894,7 +880,6 @@ double eqmod_tsl(struct telprop *tel,int *h, int *m,double *sec)
    double int_sec;
 
    /* --- temps sideral local */
-   eqmod_home(tel,"");
    eqmod_GetCurrentFITSDate_function(tel->interp,ss,"::audace::date_sys2ut");
    sprintf(s,"mc_date2lst %s {%s}",ss,tel->home);
    mytel_tcleval(tel,s);
@@ -1067,7 +1052,7 @@ int eqmod2_goto(struct telprop *tel)
    int HA0, DEC0;
    double ha0, dec0, dha, ddec;
    int retournement;
-   const int DEG90 = 90.0 * tel->radec_position_conversion;
+   const int DEG90 = (int)(90.0 * tel->radec_position_conversion);
    
    printf("GOTO:\n");
    	

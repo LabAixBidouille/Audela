@@ -35,8 +35,7 @@ struct telprop {
    COMMON_TELSTRUCT
    /* Ajoutez ici les variables necessaires a votre telescope */
    int tempo;
-   char home0[60];                    // home used by tel1 home
-   char home[60];                     // home
+   char home[60];                     // location of the pier, conforming to libmc's GPS standard
    double latitude;                   // degrees
    int mouchard;
    int param_e1;
@@ -108,7 +107,6 @@ int eqmod_hadec_coord(struct telprop *tel,char *result);
 
 
 int eqmod_settsl(struct telprop *tel);
-int eqmod_home(struct telprop *tel, char *home_default);
 double eqmod_tsl(struct telprop *tel,int *h, int *m,double *sec);
 void eqmod_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function);
 
