@@ -1,7 +1,7 @@
 #
 # Fichier : console.tcl
 # Description : Creation de la Console
-# Mise a jour $Id: console.tcl,v 1.13 2009-11-04 18:47:54 robertdelmas Exp $
+# Mise a jour $Id: console.tcl,v 1.14 2009-11-26 18:59:24 michelpujol Exp $
 #
 
 namespace eval ::console {
@@ -155,7 +155,7 @@ namespace eval ::console {
    proc affiche_entete {ligne} {
       variable This
 
-      $This.txt1 insert insert $ligne style_entete
+      $This.txt1 insert end $ligne style_entete
       $This.txt1 see insert
    }
 
@@ -169,7 +169,7 @@ namespace eval ::console {
    proc disp {line} {
       variable This
 
-      $This.txt1 insert insert $line style_cmd
+      $This.txt1 insert end $line style_cmd
       $This.txt1 see insert
    }
 
