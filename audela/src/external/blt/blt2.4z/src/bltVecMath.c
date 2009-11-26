@@ -1893,6 +1893,12 @@ VectorFunc(clientData, interp, vPtr)
 }
 
 
+//modif michel
+//pour supprimer l'erreur VC9 : floor :error C2099: l'initialiseur n'est pas une constante 
+#ifdef WIN32
+#pragma function (floor)
+#endif
+
 static MathFunction mathFunctions[] =
 {
     {"abs", (GenericMathProc *) ComponentFunc, (ClientData)Fabs},
