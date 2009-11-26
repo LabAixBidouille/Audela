@@ -1,4 +1,11 @@
 # Robotic Observatory Control
+
+#--- Add audela/lib directory to ::auto_path if it doesn't already exist
+set audelaLibPath [file join [file join [file dirname [file dirname [info nameofexecutable]] ] lib]]
+if { [lsearch $::auto_path $audelaLibPath] == -1 } {
+	   lappend ::auto_path $audelaLibPath
+   }
+
 set err [catch {wm withdraw .} msg]
 set ros(withtk) 1
 if {$err==1} {
