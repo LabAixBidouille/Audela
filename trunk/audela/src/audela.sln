@@ -5,6 +5,16 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libqsi", "libcam\libqsi\vc9
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libascomcam", "libcam\libascomcam\vc90\libascomcam.vcproj", "{66ADD21C-621A-499C-BF64-93D2729A2A5F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libfli", "external\fli\fli-dist-1.71\libfli\windows\libfli.vcproj", "{C8568204-BDCE-4DA8-B382-E1573A9BDDD6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_andor", "external\andor\vc90\external_andor.vcproj", "{581968FB-5133-44E0-B991-2055AAE359CB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_blt", "external\blt\vc90\external_blt.vcproj", "{DA52EB2C-7258-47F6-87B5-DC137052C482}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_cfitsio", "external\cfitsio\vc90\external_cfitsio.vcproj", "{55983A0B-C057-416C-9AB2-C8B9D01D7D2C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_fitstcl", "external\fitstcl\vc90\external_fitstcl.vcproj", "{2E31F74D-753C-471C-90BB-1C70C6CEED08}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -19,6 +29,26 @@ Global
 		{66ADD21C-621A-499C-BF64-93D2729A2A5F}.Debug|Win32.Build.0 = Debug|Win32
 		{66ADD21C-621A-499C-BF64-93D2729A2A5F}.Release|Win32.ActiveCfg = Release|Win32
 		{66ADD21C-621A-499C-BF64-93D2729A2A5F}.Release|Win32.Build.0 = Release|Win32
+		{C8568204-BDCE-4DA8-B382-E1573A9BDDD6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C8568204-BDCE-4DA8-B382-E1573A9BDDD6}.Debug|Win32.Build.0 = Debug|Win32
+		{C8568204-BDCE-4DA8-B382-E1573A9BDDD6}.Release|Win32.ActiveCfg = Release|Win32
+		{C8568204-BDCE-4DA8-B382-E1573A9BDDD6}.Release|Win32.Build.0 = Release|Win32
+		{581968FB-5133-44E0-B991-2055AAE359CB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{581968FB-5133-44E0-B991-2055AAE359CB}.Debug|Win32.Build.0 = Debug|Win32
+		{581968FB-5133-44E0-B991-2055AAE359CB}.Release|Win32.ActiveCfg = Release|Win32
+		{581968FB-5133-44E0-B991-2055AAE359CB}.Release|Win32.Build.0 = Release|Win32
+		{DA52EB2C-7258-47F6-87B5-DC137052C482}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DA52EB2C-7258-47F6-87B5-DC137052C482}.Debug|Win32.Build.0 = Debug|Win32
+		{DA52EB2C-7258-47F6-87B5-DC137052C482}.Release|Win32.ActiveCfg = Release|Win32
+		{DA52EB2C-7258-47F6-87B5-DC137052C482}.Release|Win32.Build.0 = Release|Win32
+		{55983A0B-C057-416C-9AB2-C8B9D01D7D2C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{55983A0B-C057-416C-9AB2-C8B9D01D7D2C}.Debug|Win32.Build.0 = Debug|Win32
+		{55983A0B-C057-416C-9AB2-C8B9D01D7D2C}.Release|Win32.ActiveCfg = Release|Win32
+		{55983A0B-C057-416C-9AB2-C8B9D01D7D2C}.Release|Win32.Build.0 = Release|Win32
+		{2E31F74D-753C-471C-90BB-1C70C6CEED08}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2E31F74D-753C-471C-90BB-1C70C6CEED08}.Debug|Win32.Build.0 = Debug|Win32
+		{2E31F74D-753C-471C-90BB-1C70C6CEED08}.Release|Win32.ActiveCfg = Release|Win32
+		{2E31F74D-753C-471C-90BB-1C70C6CEED08}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
