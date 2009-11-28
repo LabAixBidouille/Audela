@@ -196,7 +196,7 @@ fi
 
 LIBTELS="libaudecom libcelestron libcombit libdeltatau libdfm libeqmod liblx200 liblxnet libouranos libtemma"
 
-LIBLINKS="libparallelport libquickremote"
+LIBLINKS="libparallelport libserialport libquickremote"
 
 AC_MSG_RESULT([CXXFLAGS = $CXXFLAGS])
 AC_MSG_RESULT([LDFLAGS  = $LDFLAGS])
