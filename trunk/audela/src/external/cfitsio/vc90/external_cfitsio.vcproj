@@ -213,7 +213,7 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
-				RelativePath="..\cfitsio3090\buffers.c"
+				RelativePath="..\cfitsio3210\buffers.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -233,7 +233,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\cfileio.c"
+				RelativePath="..\cfitsio3210\cfileio.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -257,7 +257,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\checksum.c"
+				RelativePath="..\cfitsio3210\checksum.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -277,7 +277,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\compress.c"
+				RelativePath="..\cfitsio3210\compress.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -297,7 +297,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\drvrfile.c"
+				RelativePath="..\cfitsio3210\drvrfile.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -317,7 +317,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\drvrmem.c"
+				RelativePath="..\cfitsio3210\drvrmem.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -337,7 +337,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\editcol.c"
+				RelativePath="..\cfitsio3210\editcol.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -357,7 +357,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\edithdu.c"
+				RelativePath="..\cfitsio3210\edithdu.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -377,7 +377,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\eval_f.c"
+				RelativePath="..\cfitsio3210\eval_f.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -397,7 +397,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\eval_l.c"
+				RelativePath="..\cfitsio3210\eval_l.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -417,7 +417,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\eval_y.c"
+				RelativePath="..\cfitsio3210\eval_y.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -437,7 +437,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\f77_wrap1.c"
+				RelativePath="..\cfitsio3210\f77_wrap1.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -457,7 +457,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\f77_wrap2.c"
+				RelativePath="..\cfitsio3210\f77_wrap2.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -477,7 +477,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\f77_wrap3.c"
+				RelativePath="..\cfitsio3210\f77_wrap3.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -497,7 +497,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\f77_wrap4.c"
+				RelativePath="..\cfitsio3210\f77_wrap4.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -517,7 +517,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\fits_hcompress.c"
+				RelativePath="..\cfitsio3210\fits_hcompress.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -537,7 +537,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\fits_hdecompress.c"
+				RelativePath="..\cfitsio3210\fits_hdecompress.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -557,7 +557,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\fitscore.c"
+				RelativePath="..\cfitsio3210\fitscore.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -577,7 +577,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\getcol.c"
+				RelativePath="..\cfitsio3210\getcol.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -597,7 +597,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\getcolb.c"
+				RelativePath="..\cfitsio3210\getcolb.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -617,7 +617,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\getcold.c"
+				RelativePath="..\cfitsio3210\getcold.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -637,7 +637,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\getcole.c"
+				RelativePath="..\cfitsio3210\getcole.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -657,7 +657,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\getcoli.c"
+				RelativePath="..\cfitsio3210\getcoli.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -677,7 +677,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\getcolj.c"
+				RelativePath="..\cfitsio3210\getcolj.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -697,7 +697,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\getcolk.c"
+				RelativePath="..\cfitsio3210\getcolk.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -717,7 +717,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\getcoll.c"
+				RelativePath="..\cfitsio3210\getcoll.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -737,7 +737,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\getcols.c"
+				RelativePath="..\cfitsio3210\getcols.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -757,7 +757,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\getcolsb.c"
+				RelativePath="..\cfitsio3210\getcolsb.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -777,7 +777,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\getcolui.c"
+				RelativePath="..\cfitsio3210\getcolui.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -797,7 +797,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\getcoluj.c"
+				RelativePath="..\cfitsio3210\getcoluj.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -817,7 +817,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\getcoluk.c"
+				RelativePath="..\cfitsio3210\getcoluk.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -837,7 +837,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\getkey.c"
+				RelativePath="..\cfitsio3210\getkey.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -857,7 +857,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\group.c"
+				RelativePath="..\cfitsio3210\group.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -877,7 +877,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\grparser.c"
+				RelativePath="..\cfitsio3210\grparser.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -897,7 +897,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\histo.c"
+				RelativePath="..\cfitsio3210\histo.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -917,7 +917,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\imcompress.c"
+				RelativePath="..\cfitsio3210\imcompress.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -937,7 +937,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\iraffits.c"
+				RelativePath="..\cfitsio3210\iraffits.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -957,7 +957,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\modkey.c"
+				RelativePath="..\cfitsio3210\modkey.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -977,7 +977,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\pliocomp.c"
+				RelativePath="..\cfitsio3210\pliocomp.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -997,7 +997,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\putcol.c"
+				RelativePath="..\cfitsio3210\putcol.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1017,7 +1017,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\putcolb.c"
+				RelativePath="..\cfitsio3210\putcolb.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1037,7 +1037,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\putcold.c"
+				RelativePath="..\cfitsio3210\putcold.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1057,7 +1057,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\putcole.c"
+				RelativePath="..\cfitsio3210\putcole.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1077,7 +1077,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\putcoli.c"
+				RelativePath="..\cfitsio3210\putcoli.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1097,7 +1097,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\putcolj.c"
+				RelativePath="..\cfitsio3210\putcolj.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1117,7 +1117,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\putcolk.c"
+				RelativePath="..\cfitsio3210\putcolk.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1137,7 +1137,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\putcoll.c"
+				RelativePath="..\cfitsio3210\putcoll.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1157,7 +1157,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\putcols.c"
+				RelativePath="..\cfitsio3210\putcols.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1177,7 +1177,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\putcolsb.c"
+				RelativePath="..\cfitsio3210\putcolsb.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1197,7 +1197,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\putcolu.c"
+				RelativePath="..\cfitsio3210\putcolu.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1217,7 +1217,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\putcolui.c"
+				RelativePath="..\cfitsio3210\putcolui.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1237,7 +1237,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\putcoluj.c"
+				RelativePath="..\cfitsio3210\putcoluj.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1257,7 +1257,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\putcoluk.c"
+				RelativePath="..\cfitsio3210\putcoluk.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1277,7 +1277,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\putkey.c"
+				RelativePath="..\cfitsio3210\putkey.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1297,7 +1297,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\quantize.c"
+				RelativePath="..\cfitsio3210\quantize.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1317,7 +1317,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\region.c"
+				RelativePath="..\cfitsio3210\region.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1337,7 +1337,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\ricecomp.c"
+				RelativePath="..\cfitsio3210\ricecomp.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1357,7 +1357,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\scalnull.c"
+				RelativePath="..\cfitsio3210\scalnull.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1377,7 +1377,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\swapproc.c"
+				RelativePath="..\cfitsio3210\swapproc.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1397,7 +1397,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\wcssub.c"
+				RelativePath="..\cfitsio3210\wcssub.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1417,7 +1417,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\cfitsio3090\wcsutil.c"
+				RelativePath="..\cfitsio3210\wcsutil.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
