@@ -1,3 +1,15 @@
+# -----------------------------------------------------------
+# --- Note pour le developpement de l'interface ASCOM
+# Les fichiers AscomMasterInterfaces.h et AscomMasterInterfaces.lib
+# ne sont plus fournis ASCOM. Ils sont generes automatiquement par
+# VisualC++ v9 a partir du fichier AscomMasterInterfaces.tlb
+# en fonction du systeme d'exploitation.
+#
+# --- Note pour l'utilisation de l'interface de camera ASCOM
+# Avant de lancer Audela , l'utilisateur doit installer le driver de
+# ASCOM disponible sur http://ascom-standards.org
+# -----------------------------------------------------------
+
 CP= copy
 RM= -@del /f /q
 
