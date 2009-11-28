@@ -7,19 +7,19 @@
 CFG=external_cfitsio - Win32 Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "cfitsio.mak".
-!MESSAGE 
+!MESSAGE
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "cfitsio.mak" CFG="external_cfitsio - Win32 Debug"
-!MESSAGE 
+!MESSAGE
 !MESSAGE Possible choices for configuration are:
-!MESSAGE 
+!MESSAGE
 !MESSAGE "external_cfitsio - Win32 Release" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE "external_cfitsio - Win32 Debug" (based on "Win32 (x86) Dynamic-Link Library")
-!MESSAGE 
+!MESSAGE
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
@@ -89,7 +89,7 @@ SOURCE="$(InputPath)"
 PostBuild_Cmds=../install.bat Debug
 # End Special Build Tool
 
-!ENDIF 
+!ENDIF
 
 # Begin Target
 
@@ -100,11 +100,11 @@ PostBuild_Cmds=../install.bat Debug
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=..\cfitsio3090\buffers.c
+SOURCE=..\cfitsio3210\buffers.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\cfileio.c
+SOURCE=..\cfitsio3210\cfileio.c
 # End Source File
 # Begin Source File
 
@@ -112,239 +112,239 @@ SOURCE=.\cfitsio.def
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\checksum.c
+SOURCE=..\cfitsio3210\checksum.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\compress.c
+SOURCE=..\cfitsio3210\compress.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\drvrfile.c
+SOURCE=..\cfitsio3210\drvrfile.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\drvrmem.c
+SOURCE=..\cfitsio3210\drvrmem.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\editcol.c
+SOURCE=..\cfitsio3210\editcol.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\edithdu.c
+SOURCE=..\cfitsio3210\edithdu.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\eval_f.c
+SOURCE=..\cfitsio3210\eval_f.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\eval_l.c
+SOURCE=..\cfitsio3210\eval_l.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\eval_y.c
+SOURCE=..\cfitsio3210\eval_y.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\f77_wrap1.c
+SOURCE=..\cfitsio3210\f77_wrap1.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\f77_wrap2.c
+SOURCE=..\cfitsio3210\f77_wrap2.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\f77_wrap3.c
+SOURCE=..\cfitsio3210\f77_wrap3.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\f77_wrap4.c
+SOURCE=..\cfitsio3210\f77_wrap4.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\fits_hcompress.c
+SOURCE=..\cfitsio3210\fits_hcompress.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\fits_hdecompress.c
+SOURCE=..\cfitsio3210\fits_hdecompress.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\fitscore.c
+SOURCE=..\cfitsio3210\fitscore.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\getcol.c
+SOURCE=..\cfitsio3210\getcol.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\getcolb.c
+SOURCE=..\cfitsio3210\getcolb.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\getcold.c
+SOURCE=..\cfitsio3210\getcold.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\getcole.c
+SOURCE=..\cfitsio3210\getcole.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\getcoli.c
+SOURCE=..\cfitsio3210\getcoli.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\getcolj.c
+SOURCE=..\cfitsio3210\getcolj.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\getcolk.c
+SOURCE=..\cfitsio3210\getcolk.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\getcoll.c
+SOURCE=..\cfitsio3210\getcoll.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\getcols.c
+SOURCE=..\cfitsio3210\getcols.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\getcolsb.c
+SOURCE=..\cfitsio3210\getcolsb.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\getcolui.c
+SOURCE=..\cfitsio3210\getcolui.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\getcoluj.c
+SOURCE=..\cfitsio3210\getcoluj.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\getcoluk.c
+SOURCE=..\cfitsio3210\getcoluk.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\getkey.c
+SOURCE=..\cfitsio3210\getkey.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\group.c
+SOURCE=..\cfitsio3210\group.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\grparser.c
+SOURCE=..\cfitsio3210\grparser.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\histo.c
+SOURCE=..\cfitsio3210\histo.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\imcompress.c
+SOURCE=..\cfitsio3210\imcompress.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\iraffits.c
+SOURCE=..\cfitsio3210\iraffits.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\modkey.c
+SOURCE=..\cfitsio3210\modkey.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\pliocomp.c
+SOURCE=..\cfitsio3210\pliocomp.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\putcol.c
+SOURCE=..\cfitsio3210\putcol.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\putcolb.c
+SOURCE=..\cfitsio3210\putcolb.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\putcold.c
+SOURCE=..\cfitsio3210\putcold.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\putcole.c
+SOURCE=..\cfitsio3210\putcole.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\putcoli.c
+SOURCE=..\cfitsio3210\putcoli.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\putcolj.c
+SOURCE=..\cfitsio3210\putcolj.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\putcolk.c
+SOURCE=..\cfitsio3210\putcolk.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\putcoll.c
+SOURCE=..\cfitsio3210\putcoll.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\putcols.c
+SOURCE=..\cfitsio3210\putcols.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\putcolsb.c
+SOURCE=..\cfitsio3210\putcolsb.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\putcolu.c
+SOURCE=..\cfitsio3210\putcolu.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\putcolui.c
+SOURCE=..\cfitsio3210\putcolui.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\putcoluj.c
+SOURCE=..\cfitsio3210\putcoluj.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\putcoluk.c
+SOURCE=..\cfitsio3210\putcoluk.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\putkey.c
+SOURCE=..\cfitsio3210\putkey.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\quantize.c
+SOURCE=..\cfitsio3210\quantize.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\region.c
+SOURCE=..\cfitsio3210\region.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\ricecomp.c
+SOURCE=..\cfitsio3210\ricecomp.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\scalnull.c
+SOURCE=..\cfitsio3210\scalnull.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\swapproc.c
+SOURCE=..\cfitsio3210\swapproc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\wcssub.c
+SOURCE=..\cfitsio3210\wcssub.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\cfitsio3090\wcsutil.c
+SOURCE=..\cfitsio3210\wcsutil.c
 # End Source File
 # End Group
 # Begin Group "Header Files"
