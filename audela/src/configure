@@ -6836,7 +6836,7 @@ fi
 
 LIBTELS="libaudecom libcelestron libcombit libdeltatau libdfm libeqmod liblx200 liblxnet libouranos libtemma"
 
-LIBLINKS="libparallelport libquickremote"
+LIBLINKS="libparallelport libserialport libquickremote"
 
 { $as_echo "$as_me:$LINENO: result: CXXFLAGS = $CXXFLAGS" >&5
 $as_echo "CXXFLAGS = $CXXFLAGS" >&6; }
@@ -7528,7 +7528,8 @@ $debug ||
 if test -n "$CONFIG_FILES"; then
 
 
-ac_cr=''
+ac_cr='
+'
 ac_cs_awk_cr=`$AWK 'BEGIN { print "a\rb" }' </dev/null 2>/dev/null`
 if test "$ac_cs_awk_cr" = "a${ac_cr}b"; then
   ac_cs_awk_cr='\\r'
