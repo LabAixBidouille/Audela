@@ -45,13 +45,13 @@
 #include <stdio.h>
 #include <winioctl.h>
 #include <errno.h>
+#include <conio.h>
 
 #include "../libfli-libfli.h"
 #include "../libfli-debug.h"
 #include "../libfli-camera.h"
 
 #pragma intrinsic(_inp,_inpw,_inpd,_outp,_outpw,_outpd)
-
 #define CCDPAR_TYPE ((ULONG) 43000)
 #define CCDPAR_IOCTL_BASE ((USHORT) 2833)
 
@@ -150,7 +150,7 @@ long ECPReadByte(flidev_t dev, unsigned char *byte, unsigned long *timeout)
 		}
 		*byte = _inp(DPORT);
 		pdata &= ~0x02;
-		outp(CPORT,pdata);
+		_outp(CPORT,pdata);
 		while((_inp(SPORT) & 0x40) == 0)
 		{
 			if((*timeout) == 0)
@@ -161,7 +161,7 @@ long ECPReadByte(flidev_t dev, unsigned char *byte, unsigned long *timeout)
 		 (*timeout)--;
 		}
 		pdata |= 0x02;
-		outp(CPORT,pdata);
+		_outp(CPORT,pdata);
 	}
 	else
 	{
@@ -260,10 +260,10 @@ long ECPWriteByte(flidev_t dev, unsigned char byte, unsigned long *timeout)
   
 	if (io->notecp == TRUE)
 	{
-		outp(DPORT,byte);
+		_outp(DPORT,byte);
 		pdata = _inp(CPORT);
 		pdata |= 0x01;
-		outp(CPORT,pdata);
+		_outp(CPORT,pdata);
 		while((_inp(SPORT) & 0x80) > 0)
 		{
 			if((*timeout) == 0)
@@ -274,7 +274,7 @@ long ECPWriteByte(flidev_t dev, unsigned char byte, unsigned long *timeout)
 			(*timeout)--;
 		}
 		pdata &= ~0x01;
-		outp(CPORT,pdata);
+		_outp(CPORT,pdata);
 		while((_inp(SPORT) & 0x80) == 0)
 		{
 			if((*timeout) == 0)
@@ -287,7 +287,7 @@ long ECPWriteByte(flidev_t dev, unsigned char byte, unsigned long *timeout)
 	}
 	else
 	{
-		outp(FPORT, byte);
+		_outp(FPORT, byte);
 		/* Check FIFO status */
 		while((_inp(EPORT) & 0x01) == 0)
 		{
