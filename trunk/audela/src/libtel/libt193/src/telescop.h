@@ -62,7 +62,7 @@ struct telprop {
    char ra[12] ;   // ascension droite courante
    char dec[12] ;  // declinaison courante
    int radecNotification ; // 1=marche 0=arret des notifications des coordonnees radec
-   int isMoving ;   // 1=mouvement en cours 0=pas de mouvement en cours
+   int radecIsMoving ;   // 1=mouvement en cours 0=pas de mouvement en cours
 };
 
 int tel_init(struct telprop *tel, int argc, char **argv);
@@ -97,5 +97,19 @@ int tel_filter_extremity(struct telprop *tel, char * extremity);
 
 int mytel_tcleval(struct telprop *tel,char *ligne);
 int mytel_correct(struct telprop *tel,char *direction, double distance);
+
+//codes retours avec l'interface
+#define BACKCMD_RECEIVED	  0 // Commande prise en compte : acquittement d'envoi de commande à la PMAC (sans erreur)
+#define BACKCMD_COMPLETED	  1 // Commande terminée        : acquittement de fin de commande sur la PMAC (sans erreur)
+#define BACKCMD_UNKNOWN		  2 // Commande inconnue ou erreur de paramètre ou erreur de type
+#define BACKCMD_ERRREFUSED	  3 // Commande refusée (mouvement en cours, etc.)
+#define BACKCMD_ERRCOMM		  4 // Accès PMAC impossible
+#define BACKCMD_ERRMOTOR	  5 // Problème moteur
+#define BACKCMD_ERRLIM		  6 // Butée atteinte (option)
+#define BACKCMD_ERRCONTROL	  7 // Couple moteur dépassé/erreur poursuite (option)
+#define BACKCMD_MOTORSTOPPED  5 // Moteur déjà arrêté (commande STOP)
+
+#define BACKCMD_BAD_PARAM_NUMBER 101 // nombre de parametres incorrect
+
 #endif
 
