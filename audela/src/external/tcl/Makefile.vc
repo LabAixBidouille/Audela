@@ -1,0 +1,27 @@
+CP= copy
+RM= -@del /f /q
+RD= -@rmdir /s /q
+
+SOURCE=tcl
+EXTERNAL_INCLUDE=..\include\win
+EXTERNAL_INCLUDE_X11=..\include\win\x11
+EXTERNAL_LIB=..\lib
+AUDELA_BIN=..\..\..\bin
+
+build:
+
+install: build
+	if not exist $(EXTERNAL_INCLUDE)     mkdir $(EXTERNAL_INCLUDE)
+	if not exist $(EXTERNAL_INCLUDE_X11) mkdir $(EXTERNAL_INCLUDE_X11)
+	if not exist $(EXTERNAL_LIB)         mkdir $(EXTERNAL_LIB)
+	if not exist $(AUDELA_BIN)           mkdir $(AUDELA_BIN)
+	$(CP) $(SOURCE)\include\*.h          $(EXTERNAL_INCLUDE)
+	$(CP) $(SOURCE)\include\x11\*.h      $(EXTERNAL_INCLUDE_X11)
+	$(CP) $(SOURCE)\bin\tcl85t.dll       $(AUDELA_BIN)
+	$(CP) $(SOURCE)\bin\tk85t.dll        $(AUDELA_BIN)
+
+clean:
+	$(RD) $(EXTERNAL_INCLUDE_X11)
+	$(RM) $(AUDELA_BIN)\tcl85t.dll
+	$(RM) $(AUDELA_BIN)\tk85t.dll
+    @echo Some include files have not been wiped from the $(EXTERNAL_INCLUDE) directory
