@@ -4,33 +4,33 @@ image were written by R. White at the STScI and were obtained from the STScI at
 http://www.stsci.edu/software/hcompress.html
 
 This source file is a concatination of the following sources files in the
-original distribution 
-  hinv.c 
-  hsmooth.c 
-  undigitize.c 
-  decode.c 
-  dodecode.c 
-  qtree_decode.c 
-  qread.c 
+original distribution
+  hinv.c
+  hsmooth.c
+  undigitize.c
+  decode.c
+  dodecode.c
+  qtree_decode.c
+  qread.c
   bit_input.c
 
 
 The following modifications have been made to the original code:
 
   - commented out redundant "include" statements
-  - added the nextchar global variable 
+  - added the nextchar global variable
   - changed all the 'extern' declarations to 'static', since all the routines are in
     the same source file
   - changed the first parameter in decode (and in lower level routines from a file stream
     to a char array
-  - modified the myread routine, and lower level byte reading routines,  to copy 
+  - modified the myread routine, and lower level byte reading routines,  to copy
     the input bytes to a char array, instead of reading them from a file stream
   - changed the function declarations to the more modern ANSI C style
   - changed calls to printf and perror to call the CFITSIO ffpmsg routine
   - replace "exit" statements with "return" statements
 
  ############################################################################  */
- 
+
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -81,12 +81,12 @@ static void read_bdirect64(unsigned char *infile, LONGLONG a[], int n, int nqx, 
 static int  input_huffman(unsigned char *infile);
 
 /* ---------------------------------------------------------------------- */
-int fits_hdecompress(unsigned char *input, int smooth, int *a, int *ny, int *nx, 
+int fits_hdecompress(unsigned char *input, int smooth, int *a, int *ny, int *nx,
                      int *scale, int *status)
 {
-  /* 
+  /*
      decompress the input byte stream using the H-compress algorithm
-  
+
    input  - input array of compressed bytes
    a - pre-allocated array to hold the output uncompressed image
    nx - returned X axis size
@@ -109,7 +109,7 @@ int stat;
 
         *status = stat;
 	if (stat) return(*status);
-	
+
 	/*
 	 * Un-Digitize
 	 */
@@ -120,16 +120,16 @@ int stat;
 	 */
 	stat = hinv(a, *nx, *ny, smooth, *scale);
         *status = stat;
-	
+
   return(*status);
 }
 /* ---------------------------------------------------------------------- */
-int fits_hdecompress64(unsigned char *input, int smooth, LONGLONG *a, int *ny, int *nx, 
+int fits_hdecompress64(unsigned char *input, int smooth, LONGLONG *a, int *ny, int *nx,
                      int *scale, int *status)
 {
-  /* 
+  /*
      decompress the input byte stream using the H-compress algorithm
-  
+
    input  - input array of compressed bytes
    a - pre-allocated array to hold the output uncompressed image
    nx - returned X axis size
@@ -152,7 +152,7 @@ int fits_hdecompress64(unsigned char *input, int smooth, LONGLONG *a, int *ny, i
 
         *status = stat;
 	if (stat) return(*status);
-	
+
 	/*
 	 * Un-Digitize
 	 */
@@ -164,13 +164,13 @@ int fits_hdecompress64(unsigned char *input, int smooth, LONGLONG *a, int *ny, i
 	stat = hinv64(a, *nx, *ny, smooth, *scale);
 
         *status = stat;
-	
+
          /* pack the I*8 values back into an I*4 array */
         iarray = (int *) a;
 	nval = (*nx) * (*ny);
 
 	for (ii = 0; ii < nval; ii++)
-	   iarray[ii] = (int) a[ii];	
+	   iarray[ii] = (int) a[ii];
 
   return(*status);
 }
@@ -178,8 +178,8 @@ int fits_hdecompress64(unsigned char *input, int smooth, LONGLONG *a, int *ny, i
 /*  ############################################################################  */
 /*  ############################################################################  */
 
-/* Copyright (c) 1993 Association of Universities for Research 
- * in Astronomy. All rights reserved. Produced under National   
+/* Copyright (c) 1993 Association of Universities for Research
+ * in Astronomy. All rights reserved. Produced under National
  * Aeronautics and Space Administration Contract No. NAS5-26555.
  */
 /* hinv.c   Inverse H-transform of NX x NY integer image
@@ -188,11 +188,11 @@ int fits_hdecompress64(unsigned char *input, int smooth, LONGLONG *a, int *ny, i
  */
 
 /*  ############################################################################  */
-static int 
+static int
 hinv(int a[], int nx, int ny, int smooth ,int scale)
 /*
-int smooth;    0 for no smoothing, else smooth during inversion 
-int scale;     used if smoothing is specified 
+int smooth;    0 for no smoothing, else smooth during inversion
+int scale;     used if smoothing is specified
 */
 {
 int nmax, log2n, i, j, k;
@@ -214,7 +214,7 @@ int *tmp;
 	}
 	/*
 	 * get temporary storage for shuffling elements
-	 */  
+	 */
 	tmp = (int *) malloc(((nmax+1)/2)*sizeof(int));
 	if (tmp == (int *) NULL) {
 		ffpmsg("hinv: insufficient memory");
@@ -379,11 +379,11 @@ int *tmp;
 	return(0);
 }
 /*  ############################################################################  */
-static int 
+static int
 hinv64(LONGLONG a[], int nx, int ny, int smooth ,int scale)
 /*
-int smooth;    0 for no smoothing, else smooth during inversion 
-int scale;     used if smoothing is specified 
+int smooth;    0 for no smoothing, else smooth during inversion
+int scale;     used if smoothing is specified
 */
 {
 int nmax, log2n, i, j, k;
@@ -406,7 +406,7 @@ LONGLONG *tmp;
 	}
 	/*
 	 * get temporary storage for shuffling elements
-	 */  
+	 */
 	tmp = (LONGLONG *) malloc(((nmax+1)/2)*sizeof(LONGLONG));
 	if (tmp == (LONGLONG *) NULL) {
 		ffpmsg("hinv64: insufficient memory");
@@ -575,16 +575,16 @@ LONGLONG *tmp;
 static void
 unshuffle(int a[], int n, int n2, int tmp[])
 /*
-int a[];	 array to shuffle					
-int n;		 number of elements to shuffle	
-int n2;		 second dimension					
-int tmp[];	 scratch storage					
+int a[];	 array to shuffle
+int n;		 number of elements to shuffle
+int n2;		 second dimension
+int tmp[];	 scratch storage
 */
 {
 int i;
 int nhalf;
 int *p1, *p2, *pt;
- 
+
 	/*
 	 * copy 2nd half of array to tmp
 	 */
@@ -621,16 +621,16 @@ int *p1, *p2, *pt;
 static void
 unshuffle64(LONGLONG a[], int n, int n2, LONGLONG tmp[])
 /*
-LONGLONG a[];	 array to shuffle					
-int n;		 number of elements to shuffle	
-int n2;		 second dimension					
-LONGLONG tmp[];	 scratch storage					
+LONGLONG a[];	 array to shuffle
+int n;		 number of elements to shuffle
+int n2;		 second dimension
+LONGLONG tmp[];	 scratch storage
 */
 {
 int i;
 int nhalf;
 LONGLONG *p1, *p2, *pt;
- 
+
 	/*
 	 * copy 2nd half of array to tmp
 	 */
@@ -667,8 +667,8 @@ LONGLONG *p1, *p2, *pt;
 /*  ############################################################################  */
 /*  ############################################################################  */
 
-/* Copyright (c) 1993 Association of Universities for Research 
- * in Astronomy. All rights reserved. Produced under National   
+/* Copyright (c) 1993 Association of Universities for Research
+ * in Astronomy. All rights reserved. Produced under National
  * Aeronautics and Space Administration Contract No. NAS5-26555.
  */
 /* hsmooth.c	Smooth H-transform image by adjusting coefficients toward
@@ -678,13 +678,13 @@ LONGLONG *p1, *p2, *pt;
  */
 
 /*  ############################################################################  */
-static void 
+static void
 hsmooth(int a[], int nxtop, int nytop, int ny, int scale)
 /*
-int a[];			 array of H-transform coefficients		
-int nxtop,nytop;	 size of coefficient block to use			
-int ny;				 actual 1st dimension of array			
-int scale;			 truncation scale factor that was used	
+int a[];			 array of H-transform coefficients
+int nxtop,nytop;	 size of coefficient block to use
+int ny;				 actual 1st dimension of array
+int scale;			 truncation scale factor that was used
 */
 {
 int i, j;
@@ -833,13 +833,13 @@ int m1,m2;
 	}
 }
 /*  ############################################################################  */
-static void 
+static void
 hsmooth64(LONGLONG a[], int nxtop, int nytop, int ny, int scale)
 /*
-LONGLONG a[];			 array of H-transform coefficients		
-int nxtop,nytop;	 size of coefficient block to use			
-int ny;				 actual 1st dimension of array			
-int scale;			 truncation scale factor that was used	
+LONGLONG a[];			 array of H-transform coefficients
+int nxtop,nytop;	 size of coefficient block to use
+int ny;				 actual 1st dimension of array
+int scale;			 truncation scale factor that was used
 */
 {
 int i, j;
@@ -990,8 +990,8 @@ LONGLONG hm, h0, hp, hmm, hpm, hmp, hpp, hx2, hy2, diff, dmax, dmin, s, smax, m1
 
 /*  ############################################################################  */
 /*  ############################################################################  */
-/* Copyright (c) 1993 Association of Universities for Research 
- * in Astronomy. All rights reserved. Produced under National   
+/* Copyright (c) 1993 Association of Universities for Research
+ * in Astronomy. All rights reserved. Produced under National
  * Aeronautics and Space Administration Contract No. NAS5-26555.
  */
 /* undigitize.c		undigitize H-transform
@@ -1022,14 +1022,14 @@ LONGLONG *p, scale64;
 	 */
 	if (scale <= 1) return;
 	scale64 = (LONGLONG) scale;   /* use a 64-bit int for efficiency in the big loop */
-	
+
 	for (p=a; p <= &a[nx*ny-1]; p++) *p = (*p)*scale64;
 }
 
 /*  ############################################################################  */
 /*  ############################################################################  */
-/* Copyright (c) 1993 Association of Universities for Research 
- * in Astronomy. All rights reserved. Produced under National   
+/* Copyright (c) 1993 Association of Universities for Research
+ * in Astronomy. All rights reserved. Produced under National
  * Aeronautics and Space Administration Contract No. NAS5-26555.
  */
 /* decode.c		read codes from infile and construct array
@@ -1043,10 +1043,10 @@ static char code_magic[2] = { (char)0xDD, (char)0x99 };
 /*  ############################################################################  */
 static int decode(unsigned char *infile, int *a, int *nx, int *ny, int *scale)
 /*
-char *infile;				 input file							
-int  *a;				 address of output array [nx][ny]		
-int  *nx,*ny;				 size of output array					
-int  *scale;				 scale factor for digitization		
+char *infile;				 input file
+int  *a;				 address of output array [nx][ny]
+int  *nx,*ny;				 size of output array
+int  *scale;				 scale factor for digitization
 */
 {
 LONGLONG sumall;
@@ -1056,7 +1056,7 @@ char tmagic[2];
 
 	/* initialize the byte read position to the beginning of the array */;
 	nextchar = 0;
-	
+
 	/*
 	 * File starts either with special 2-byte magic code or with
 	 * FITS keyword "SIMPLE  ="
@@ -1072,7 +1072,7 @@ char tmagic[2];
 	*nx =readint(infile);				/* x size of image			*/
 	*ny =readint(infile);				/* y size of image			*/
 	*scale=readint(infile);				/* scale factor for digitization	*/
-	
+
 	nel = (*nx) * (*ny);
 
 	/* sum of all pixels	*/
@@ -1091,10 +1091,10 @@ char tmagic[2];
 /*  ############################################################################  */
 static int decode64(unsigned char *infile, LONGLONG *a, int *nx, int *ny, int *scale)
 /*
-char *infile;				 input file							
-LONGLONG  *a;				 address of output array [nx][ny]		
-int  *nx,*ny;				 size of output array					
-int  *scale;				 scale factor for digitization		
+char *infile;				 input file
+LONGLONG  *a;				 address of output array [nx][ny]
+int  *nx,*ny;				 size of output array
+int  *scale;				 scale factor for digitization
 */
 {
 int nel, stat;
@@ -1104,7 +1104,7 @@ char tmagic[2];
 
 	/* initialize the byte read position to the beginning of the array */;
 	nextchar = 0;
-	
+
 	/*
 	 * File starts either with special 2-byte magic code or with
 	 * FITS keyword "SIMPLE  ="
@@ -1120,7 +1120,7 @@ char tmagic[2];
 	*nx =readint(infile);				/* x size of image			*/
 	*ny =readint(infile);				/* y size of image			*/
 	*scale=readint(infile);				/* scale factor for digitization	*/
-	
+
 	nel = (*nx) * (*ny);
 
 	/* sum of all pixels	*/
@@ -1141,8 +1141,8 @@ char tmagic[2];
 
 /*  ############################################################################  */
 /*  ############################################################################  */
-/* Copyright (c) 1993 Association of Universities for Research 
- * in Astronomy. All rights reserved. Produced under National   
+/* Copyright (c) 1993 Association of Universities for Research
+ * in Astronomy. All rights reserved. Produced under National
  * Aeronautics and Space Administration Contract No. NAS5-26555.
  */
 /* dodecode.c	Decode stream of characters on infile and return array
@@ -1156,8 +1156,8 @@ char tmagic[2];
 static int
 dodecode(unsigned char *infile, int a[], int nx, int ny, unsigned char nbitplanes[3])
 
-/* int a[];					 			
-   int nx,ny;					 Array dimensions are [nx][ny]		
+/* int a[];
+   int nx,ny;					 Array dimensions are [nx][ny]
    unsigned char nbitplanes[3];		 Number of bit planes in quadrants
 */
 {
@@ -1180,16 +1180,16 @@ int i, nel, nx2, ny2, stat;
 	 */
 	stat = qtree_decode(infile, &a[0],          ny, nx2,  ny2,  nbitplanes[0]);
         if (stat) return(stat);
-	
+
 	stat = qtree_decode(infile, &a[ny2],        ny, nx2,  ny/2, nbitplanes[1]);
         if (stat) return(stat);
-	
+
 	stat = qtree_decode(infile, &a[ny*nx2],     ny, nx/2, ny2,  nbitplanes[1]);
         if (stat) return(stat);
-	
+
 	stat = qtree_decode(infile, &a[ny*nx2+ny2], ny, nx/2, ny/2, nbitplanes[2]);
         if (stat) return(stat);
-	
+
 	/*
 	 * make sure there is an EOF symbol (nybble=0) at end
 	 */
@@ -1215,8 +1215,8 @@ int i, nel, nx2, ny2, stat;
 static int
 dodecode64(unsigned char *infile, LONGLONG a[], int nx, int ny, unsigned char nbitplanes[3])
 
-/* LONGLONG a[];					 			
-   int nx,ny;					 Array dimensions are [nx][ny]		
+/* LONGLONG a[];
+   int nx,ny;					 Array dimensions are [nx][ny]
    unsigned char nbitplanes[3];		 Number of bit planes in quadrants
 */
 {
@@ -1239,16 +1239,16 @@ int i, nel, nx2, ny2, stat;
 	 */
 	stat = qtree_decode64(infile, &a[0],          ny, nx2,  ny2,  nbitplanes[0]);
         if (stat) return(stat);
-	
+
 	stat = qtree_decode64(infile, &a[ny2],        ny, nx2,  ny/2, nbitplanes[1]);
         if (stat) return(stat);
-	
+
 	stat = qtree_decode64(infile, &a[ny*nx2],     ny, nx/2, ny2,  nbitplanes[1]);
         if (stat) return(stat);
-	
+
 	stat = qtree_decode64(infile, &a[ny*nx2+ny2], ny, nx/2, ny/2, nbitplanes[2]);
         if (stat) return(stat);
-	
+
 	/*
 	 * make sure there is an EOF symbol (nybble=0) at end
 	 */
@@ -1271,8 +1271,8 @@ int i, nel, nx2, ny2, stat;
 
 /*  ############################################################################  */
 /*  ############################################################################  */
-/* Copyright (c) 1993 Association of Universities for Research 
- * in Astronomy. All rights reserved. Produced under National   
+/* Copyright (c) 1993 Association of Universities for Research
+ * in Astronomy. All rights reserved. Produced under National
  * Aeronautics and Space Administration Contract No. NAS5-26555.
  */
 /* qtree_decode.c	Read stream of codes from infile and construct bit planes
@@ -1287,11 +1287,11 @@ qtree_decode(unsigned char *infile, int a[], int n, int nqx, int nqy, int nbitpl
 
 /*
 char *infile;
-int a[];				 a is 2-D array with dimensions (n,n)	
-int n;					 length of full row in a				
-int nqx;				 partial length of row to decode		
-int nqy;				 partial length of column (<=n)		
-int nbitplanes;				 number of bitplanes to decode		
+int a[];				 a is 2-D array with dimensions (n,n)
+int n;					 length of full row in a
+int nqx;				 partial length of row to decode
+int nqy;				 partial length of column (<=n)
+int nbitplanes;				 number of bitplanes to decode
 */
 {
 int log2n, k, bit, b, nqmax;
@@ -1377,11 +1377,11 @@ qtree_decode64(unsigned char *infile, LONGLONG a[], int n, int nqx, int nqy, int
 
 /*
 char *infile;
-LONGLONG a[];				 a is 2-D array with dimensions (n,n)	
-int n;					 length of full row in a				
-int nqx;				 partial length of row to decode		
-int nqy;				 partial length of column (<=n)		
-int nbitplanes;				 number of bitplanes to decode		
+LONGLONG a[];				 a is 2-D array with dimensions (n,n)
+int n;					 length of full row in a
+int nqx;				 partial length of row to decode
+int nqy;				 partial length of column (<=n)
+int nbitplanes;				 number of bitplanes to decode
 */
 {
 int log2n, k, bit, b, nqmax;
@@ -1520,7 +1520,7 @@ int s00, s10;
 
   /* Note:
      Unlike the case in qtree_bitins, this code runs faster on a 32-bit linux
-     machine using the s10 intermediate variable, rather that using s00+n. 
+     machine using the s10 intermediate variable, rather that using s00+n.
      Go figure!
   */
 		s00 = n*i;				/* s00 is index of b[i,j]	*/
@@ -1703,7 +1703,7 @@ int s00;
 int plane_val;
 
 	plane_val = 1 << bit;
-	
+
 	/*
 	 * expand each 2x2 block
 	 */
@@ -2291,7 +2291,7 @@ int i;
 	}
 */
         input_nnybble(infile, ((nqx+1)/2) * ((nqy+1)/2), scratch);
-	
+
 	/*
 	 * insert in bitplane BIT of image A
 	 */
@@ -2394,8 +2394,8 @@ int c;
 
 /*  ############################################################################  */
 /*  ############################################################################  */
-/* Copyright (c) 1993 Association of Universities for Research 
- * in Astronomy. All rights reserved. Produced under National   
+/* Copyright (c) 1993 Association of Universities for Research
+ * in Astronomy. All rights reserved. Produced under National
  * Aeronautics and Space Administration Contract No. NAS5-26555.
  */
 /* qread.c	Read binary data
@@ -2414,7 +2414,7 @@ unsigned char b[4];
 	 * need for byte-swapping.
 	 *
          *  This routine is only called to read the first 3 values
-	 *  in the compressed file, so it doesn't have to be 
+	 *  in the compressed file, so it doesn't have to be
 	 *  super-efficient
 	 */
 	for (i=0; i<4; i++) qread(infile,(char *) &b[i],1);
@@ -2436,7 +2436,7 @@ unsigned char b[8];
 	 * need for byte-swapping.
 	 *
          *  This routine is only called to read the first 3 values
-	 *  in the compressed file, so it doesn't have to be 
+	 *  in the compressed file, so it doesn't have to be
 	 *  super-efficient
 	 */
 	for (i=0; i<8; i++) qread(infile,(char *) &b[i],1);
@@ -2491,7 +2491,7 @@ static int input_bit(unsigned char *infile)
 
 		buffer2 = infile[nextchar];
 		nextchar++;
-		
+
 		bits_to_go = 8;
 	}
 	/*
@@ -2525,7 +2525,7 @@ static int input_nbits(unsigned char *infile, int n)
 
         /* there was a slight gain in speed by replacing the following line */
 /*	return( (buffer2>>bits_to_go) & ((1<<n)-1) ); */
-	return( (buffer2>>bits_to_go) & (*(mask+n)) ); 
+	return( (buffer2>>bits_to_go) & (*(mask+n)) );
 }
 /*  ############################################################################  */
 /* INPUT 4 BITS  */
@@ -2546,7 +2546,7 @@ static int input_nybble(unsigned char *infile)
 	 */
 	bits_to_go -= 4;
 
-	return( (buffer2>>bits_to_go) & 15 ); 
+	return( (buffer2>>bits_to_go) & 15 );
 }
 /*  ############################################################################  */
 /* INPUT array of 4 BITS  */
@@ -2564,25 +2564,25 @@ if (bits_to_go != 8) input_nbits(infile, bits_to_go);
 		array[0] = input_nybble(infile);
 		return(0);
 	}
-	
+
 	if (bits_to_go == 8) {
 		/*
-		   already have 2 full nybbles in buffer2, so 
+		   already have 2 full nybbles in buffer2, so
 		   backspace the infile array to reuse last char
 		*/
 		nextchar--;
 		bits_to_go = 0;
 	}
-	
+
 	/* bits_to_go now has a value in the range 0 - 7.  After adding  */
-	/* another byte, bits_to_go effectively will be in range 8 - 15 */	
+	/* another byte, bits_to_go effectively will be in range 8 - 15 */
 
 	shift1 = bits_to_go + 4;   /* shift1 will be in range 4 - 11 */
 	shift2 = bits_to_go;	   /* shift2 will be in range 0 -  7 */
 	kk = 0;
 
 	/* special case */
-	if (bits_to_go == 0) 
+	if (bits_to_go == 0)
 	{
 	    for (ii = 0; ii < n/2; ii++) {
 		/*
@@ -2614,5 +2614,5 @@ if (bits_to_go != 8) input_nbits(infile, bits_to_go);
 		array[n-1] = input_nybble(infile);
 	}
 
-	return( (buffer2>>bits_to_go) & 15 ); 
+	return( (buffer2>>bits_to_go) & 15 );
 }

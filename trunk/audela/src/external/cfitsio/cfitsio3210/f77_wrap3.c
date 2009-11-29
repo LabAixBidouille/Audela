@@ -35,7 +35,7 @@
      Fortran. f77_wrap1.c primarily holds routines operating on whole
      files and extension headers.  f77_wrap2.c handle routines which
      read and write the data portion, plus miscellaneous extra routines.
-     
+
         File created by Peter Wilson (HSTX), Oct-Dec. 1997
 ************************************************************************/
 
@@ -86,7 +86,7 @@ void Cffpknl( fitsfile *fptr, char *keyroot, int nstart, int nkeys,
               int *numval, char **comment, int *status )
 {
    int i;
- 
+
    for( i=0; i<nkeys; i++ )
       numval[i] = F2CLOGICAL(numval[i]);
    ffpknl( fptr, keyroot, nstart, nkeys, numval, comment, status );
@@ -288,7 +288,7 @@ CFARGT14(NCF,DCF,ABSOFT_cf2(VOID),FITSUNIT,STRING,INT,INT,PSTRINGV,PINT,PINT,CF_
       B5N = 0;      /*  number found, or none if error.       */
    else
       B5N = *A6;
-		      
+
    RCF(FITSUNIT,1)
    RCF(STRING,2)
    RCF(INT,3)
@@ -305,7 +305,7 @@ void Cffgknl( fitsfile *fptr, char *keyroot, int nstart, int nkeys,
               int *numval, int *nfound, int *status )
 {
    int i;
- 
+
    for( i=0; i<nkeys; i++ )  /*  This preserves array elements across call  */
       numval[i] = F2CLOGICAL(numval[i]);
    ffgknl( fptr, keyroot, nstart, nkeys, numval, nfound, status );

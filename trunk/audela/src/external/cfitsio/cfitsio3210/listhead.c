@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     {
       fits_get_hdu_num(fptr, &hdupos);  /* Get the current HDU position */
 
-      /* List only a single header if a specific extension was given */ 
+      /* List only a single header if a specific extension was given */
       if (hdupos != 1 || strchr(argv[1], '[')) single = 1;
 
       for (; !status; hdupos++)  /* Main loop through each extension */

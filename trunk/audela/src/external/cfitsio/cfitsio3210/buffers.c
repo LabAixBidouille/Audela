@@ -35,8 +35,8 @@ int ffmbyt(fitsfile *fptr,    /* I - FITS file pointer                */
     record = (long) (bytepos / IOBUFLEN);  /* zero-indexed record number */
 
     /* if this is not the current record, then load it */
-    if ( ((fptr->Fptr)->curbuf < 0) || 
-         (record != (fptr->Fptr)->bufrecnum[(fptr->Fptr)->curbuf])) 
+    if ( ((fptr->Fptr)->curbuf < 0) ||
+         (record != (fptr->Fptr)->bufrecnum[(fptr->Fptr)->curbuf]))
         ffldrc(fptr, record, err_mode, status);
 
     if (*status <= 0)
@@ -135,7 +135,7 @@ int ffpbyt(fitsfile *fptr,   /* I - FITS file pointer                    */
       {
         /* read next record */
         ffread(fptr->Fptr, IOBUFLEN, (fptr->Fptr)->iobuffer + (nbuff * IOBUFLEN), status);
-        (fptr->Fptr)->io_pos += IOBUFLEN; 
+        (fptr->Fptr)->io_pos += IOBUFLEN;
       }
 
       /* copy remaining bytes from user buffer into current IO buffer */
@@ -143,7 +143,7 @@ int ffpbyt(fitsfile *fptr,   /* I - FITS file pointer                    */
       (fptr->Fptr)->dirty[nbuff] = TRUE;       /* mark record as having been modified */
       (fptr->Fptr)->bufrecnum[nbuff] = recend; /* record number */
 
-      (fptr->Fptr)->logfilesize = maxvalue((fptr->Fptr)->logfilesize, 
+      (fptr->Fptr)->logfilesize = maxvalue((fptr->Fptr)->logfilesize,
                                        (LONGLONG)(recend + 1) * IOBUFLEN);
       (fptr->Fptr)->bytepos = filepos + nwrite + ntodo;
     }
@@ -208,7 +208,7 @@ int ffpbytoff(fitsfile *fptr, /* I - FITS file pointer                   */
     record = (fptr->Fptr)->bufrecnum[bcurrent];  /* zero-indexed record number */
     bufpos = (long) ((fptr->Fptr)->bytepos - ((LONGLONG)record * IOBUFLEN)); /* start pos */
     nspace = IOBUFLEN - bufpos;  /* amount of space left in buffer */
-    ioptr = (fptr->Fptr)->iobuffer + (bcurrent * IOBUFLEN) + bufpos;  
+    ioptr = (fptr->Fptr)->iobuffer + (bcurrent * IOBUFLEN) + bufpos;
 
     for (ii = 1; ii < ngroups; ii++)  /* write all but the last group */
     {
@@ -246,10 +246,10 @@ int ffpbytoff(fitsfile *fptr, /* I - FITS file pointer                   */
 
         bufpos = (-nspace) % IOBUFLEN; /* starting buffer pos */
         nspace = IOBUFLEN - bufpos;
-        ioptr = (fptr->Fptr)->iobuffer + (bcurrent * IOBUFLEN) + bufpos;  
+        ioptr = (fptr->Fptr)->iobuffer + (bcurrent * IOBUFLEN) + bufpos;
       }
     }
-      
+
     /* now write the last group */
     nwrite = minvalue(gsize, nspace);
     memcpy(ioptr, cptr, nwrite);
@@ -309,7 +309,7 @@ int ffgbyt(fitsfile *fptr,    /* I - FITS file pointer             */
 
       for (ii = 0; ii < NIOBUF; ii++) /* flush any affected buffers to disk */
       {
-        if ((fptr->Fptr)->dirty[ii] && 
+        if ((fptr->Fptr)->dirty[ii] &&
             (fptr->Fptr)->bufrecnum[ii] >= recstart && (fptr->Fptr)->bufrecnum[ii] <= recend)
             {
               ffbfwt(fptr->Fptr, ii, status);    /* flush modified buffer to disk */
@@ -392,7 +392,7 @@ int ffgbytoff(fitsfile *fptr, /* I - FITS file pointer                   */
     record = (fptr->Fptr)->bufrecnum[bcurrent];  /* zero-indexed record number */
     bufpos = (long) ((fptr->Fptr)->bytepos - ((LONGLONG)record * IOBUFLEN)); /* start pos */
     nspace = IOBUFLEN - bufpos;  /* amount of space left in buffer */
-    ioptr = (fptr->Fptr)->iobuffer + (bcurrent * IOBUFLEN) + bufpos;  
+    ioptr = (fptr->Fptr)->iobuffer + (bcurrent * IOBUFLEN) + bufpos;
 
     for (ii = 1; ii < ngroups; ii++)  /* read all but the last group */
     {
@@ -497,7 +497,7 @@ int ffldrc(fitsfile *fptr,        /* I - FITS file pointer             */
          return(*status = END_OF_FILE);
 
     if (ffwhbf(fptr, &nbuff) < 0)  /* which buffer should we reuse? */
-       return(*status = TOO_MANY_FILES); 
+       return(*status = TOO_MANY_FILES);
 
     if ((fptr->Fptr)->dirty[nbuff])
        ffbfwt(fptr->Fptr, nbuff, status); /* write dirty buffer to disk */
@@ -510,7 +510,7 @@ int ffldrc(fitsfile *fptr,        /* I - FITS file pointer             */
       else
          memset((fptr->Fptr)->iobuffer + (nbuff * IOBUFLEN),  0, IOBUFLEN);  /* zero fill */
 
-      (fptr->Fptr)->logfilesize = maxvalue((fptr->Fptr)->logfilesize, 
+      (fptr->Fptr)->logfilesize = maxvalue((fptr->Fptr)->logfilesize,
               rstart + IOBUFLEN);
 
       (fptr->Fptr)->dirty[nbuff] = TRUE;  /* mark record as having been modified */
@@ -531,11 +531,11 @@ updatebuf:
     (fptr->Fptr)->curbuf = nbuff; /* this is the current buffer for this file */
 
     if (ibuff < 0)
-    { 
+    {
       /* find the current position of the buffer in the age index */
       for (ibuff = 0; ibuff < NIOBUF; ibuff++)
          if ((fptr->Fptr)->ageindex[ibuff] == nbuff)
-            break;  
+            break;
     }
 
     /* increment the age of all the buffers that were younger than it */
@@ -673,7 +673,7 @@ int ffbfwt(FITSfile *Fptr,        /* I - FITS file pointer           */
       Fptr->dirty[nbuff] = FALSE;
     }
 
-    else  /* if record is beyond the EOF, append any other records */ 
+    else  /* if record is beyond the EOF, append any other records */
           /* and/or insert fill values if necessary */
     {
       /* move to EOF */
@@ -704,8 +704,8 @@ int ffbfwt(FITSfile *Fptr,        /* I - FITS file pointer           */
 
         /* append 1 or more fill records if necessary */
         if (filepos > Fptr->filesize)
-        {                    
-          nloop = (long) ((filepos - (Fptr->filesize)) / IOBUFLEN); 
+        {
+          nloop = (long) ((filepos - (Fptr->filesize)) / IOBUFLEN);
           for (jj = 0; jj < nloop && !(*status); jj++)
             ffwrite(Fptr, IOBUFLEN, zeros, status);
 
@@ -713,7 +713,7 @@ int ffbfwt(FITSfile *Fptr,        /* I - FITS file pointer           */
 ffseek(Fptr, filepos);
 */
           Fptr->filesize = filepos;   /* increment the file size */
-        } 
+        }
 
         /* write the buffer itself */
         ffwrite(Fptr, IOBUFLEN, Fptr->iobuffer + (ibuff * IOBUFLEN), status);
@@ -725,7 +725,7 @@ ffseek(Fptr, filepos);
       Fptr->io_pos = Fptr->filesize;  /* currently positioned at EOF */
     }
 
-    return(*status);       
+    return(*status);
 }
 /*--------------------------------------------------------------------------*/
 int ffgrsz( fitsfile *fptr, /* I - FITS file pionter                        */
@@ -759,7 +759,7 @@ int ffgrsz( fitsfile *fptr, /* I - FITS file pionter                        */
     {
       *ndata = (long) (((NIOBUF - 1) * IOBUFLEN) / maxvalue(1,
                (fptr->Fptr)->rowlength));
-      *ndata = maxvalue(1, *ndata); 
+      *ndata = maxvalue(1, *ndata);
     }
 
     return(*status);
@@ -1164,8 +1164,8 @@ int ffptbb(fitsfile *fptr,        /* I - FITS file pointer                 */
         else
         {
             /* manally update heap starting address */
-            (fptr->Fptr)->heapstart += 
-            ((LONGLONG)(endrow - (fptr->Fptr)->numrows) * 
+            (fptr->Fptr)->heapstart +=
+            ((LONGLONG)(endrow - (fptr->Fptr)->numrows) *
                     (fptr->Fptr)->rowlength );
 
             (fptr->Fptr)->numrows = endrow; /* update number of rows */

@@ -15,19 +15,19 @@ void ieevpr (unsigned int *native, unsigned int *ieee, int *nelem)
 
         unanval = (unsigned int *) &nanval;
         options = CVT$M_BIG_ENDIAN;
-        
+
         n = *nelem;
         status = CVT$_NORMAL;
 
         for (i = 0; i < n ; i++) {
 
             status = CVT$CONVERT_FLOAT (&native[i], CVT$K_VAX_F,
-                                        &ieee[i], CVT$K_IEEE_S, 
+                                        &ieee[i], CVT$K_IEEE_S,
                                         options);
            if (status != CVT$_NORMAL) {
                  ieee[i] = *unanval;
            }
-        }       
+        }
 
 }
 /* IEEVPAKD -- Pack a native double floating point vector into an IEEE one.
@@ -42,20 +42,20 @@ void ieevpd (unsigned long *native, unsigned long *ieee, int *nelem)
 
         unanval = (unsigned long *) &nanval;
         options = CVT$M_BIG_ENDIAN;
-        
+
         n = *nelem * 2;
         status = CVT$_NORMAL;
 
         for (i = 0; i < n ; i=i+2) {
 
             status = CVT$CONVERT_FLOAT (&native[i], CVT$K_VAX_D,
-                                        &ieee[i], CVT$K_IEEE_T, 
+                                        &ieee[i], CVT$K_IEEE_T,
                                         options);
            if (status != CVT$_NORMAL) {
                  ieee[i]   = *unanval;
                  ieee[i+1] = *unanval;
            }
-        }       
+        }
 
 }
 /* IEEVUPKR -- Unpack an ieee vector into native single floating point vector.
@@ -70,14 +70,14 @@ void ieevur (unsigned int *ieee, unsigned int *native, int *nelem)
 
         unanval = (unsigned int *) &nanval;
         options = CVT$M_ERR_UNDERFLOW+CVT$M_BIG_ENDIAN;
-        
+
         n = *nelem;
 
         status = CVT$_NORMAL;
 
         for (j = 0; j < n ; j++) {
            status = CVT$CONVERT_FLOAT (&ieee[j], CVT$K_IEEE_S,
-                                        &native[j], CVT$K_VAX_F, 
+                                        &native[j], CVT$K_VAX_F,
                                         options);
            if (status != CVT$_NORMAL)
               switch(status) {
@@ -88,7 +88,7 @@ void ieevur (unsigned int *ieee, unsigned int *native, int *nelem)
                  native[j]   = *unanval;
                  break;
               default:
-                 native[j] = 0;             
+                 native[j] = 0;
               }
         }
 }
@@ -103,15 +103,15 @@ void ieevud (unsigned long *ieee, unsigned long *native, int *nelem)
         int     j,n;
 
         unanval = (unsigned long *) &nanval;
-        options = CVT$M_BIG_ENDIAN + CVT$M_ERR_UNDERFLOW; 
-        
+        options = CVT$M_BIG_ENDIAN + CVT$M_ERR_UNDERFLOW;
+
         n = *nelem * 2;
 
         status = CVT$_NORMAL;
 
         for (j = 0; j < n ; j=j+2) {
            status = CVT$CONVERT_FLOAT (&ieee[j], CVT$K_IEEE_T,
-                                        &native[j], CVT$K_VAX_D, 
+                                        &native[j], CVT$K_VAX_D,
                                         options);
            if (status != CVT$_NORMAL)
               switch(status) {
@@ -123,8 +123,8 @@ void ieevud (unsigned long *ieee, unsigned long *native, int *nelem)
                  native[j+1] = *unanval;
                  break;
               default:
-                 native[j]   = 0;             
-                 native[j+1] = 0;             
+                 native[j]   = 0;
+                 native[j+1] = 0;
               }
         }
 }

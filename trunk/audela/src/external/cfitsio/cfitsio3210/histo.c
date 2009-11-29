@@ -51,11 +51,11 @@ int ffbins(char *binspec,   /* I - binning specification */
    bin binsize                  - 2D histogram with binsize on each axis
    bin xcol                     - 1D histogram on column xcol
    bin (xcol, ycol) = binsize   - 2D histogram with binsize on each axis
-   bin x=min:max:size, y=min:max:size, z..., t... 
+   bin x=min:max:size, y=min:max:size, z..., t...
    bin x=:max, y=::size
    bin x=size, y=min::size
 
-   most other reasonable combinations are supported.        
+   most other reasonable combinations are supported.
 */
     int ii, slen, defaulttype;
     char *ptr, tmpname[30], *file_expr = NULL;
@@ -269,7 +269,7 @@ int ffbins(char *binspec,   /* I - binning specification */
                 ptr++;  /* comma separates the next column specification */
         }
         else if (*ptr == ',')
-        {          
+        {
             ptr++;  /* comma separates the next column specification */
         }
         else
@@ -295,7 +295,7 @@ int ffbins(char *binspec,   /* I - binning specification */
     /* special case: if a single number was entered it should be      */
     /* interpreted as the binning factor for the default X and Y axes */
 
-    if (*histaxis == 1 && *colname[0] == '\0' && 
+    if (*histaxis == 1 && *colname[0] == '\0' &&
          minin[0] == DOUBLENULLVALUE && maxin[0] == DOUBLENULLVALUE)
     {
         *histaxis = 2;
@@ -306,7 +306,7 @@ getweight:
     if (*ptr == ';')  /* looks like a weighting factor is given */
     {
         ptr++;
-       
+
         while (*ptr == ' ')  /* skip over blanks */
             ptr++;
 
@@ -355,17 +355,17 @@ getweight:
     return(*status);
 }
 /*--------------------------------------------------------------------------*/
-int ffbinr(char **ptr, 
-                   char *colname, 
+int ffbinr(char **ptr,
+                   char *colname,
                    double *minin,
-                   double *maxin, 
+                   double *maxin,
                    double *binsizein,
                    char *minname,
                    char *maxname,
                    char *binname,
                    int *status)
 /*
-   Parse the input binning range specification string, returning 
+   Parse the input binning range specification string, returning
    the column name, histogram min and max values, and bin size.
 */
 {
@@ -513,7 +513,7 @@ int ffhist2(fitsfile **fptr,  /* IO - pointer to table with X and Y cols;    */
     else
         return(*status = BAD_DATATYPE);
 
-    
+
     /*    Calculate the binning parameters:    */
     /*   columm numbers, axes length, min values,  max values, and binsizes.  */
 
@@ -524,7 +524,7 @@ int ffhist2(fitsfile **fptr,  /* IO - pointer to table with X and Y cols;    */
         ffpmsg("failed to determine binning parameters");
         return(*status);
     }
- 
+
     /* get the histogramming weighting factor, if any */
     if (*wtcol)
     {
@@ -582,10 +582,10 @@ int ffhist2(fitsfile **fptr,  /* IO - pointer to table with X and Y cols;    */
 
     /* if the table columns have no WCS keywords, then write default keywords */
     fits_write_keys_histo(*fptr, histptr, naxis, colnum, status);
-    
+
     /* update the WCS keywords for the ref. pixel location, and pixel size */
-    fits_rebin_wcs(histptr, naxis, amin, binsize,  status);      
-    
+    fits_rebin_wcs(histptr, naxis, amin, binsize,  status);
+
     /* now compute the output image by binning the column values */
     if (fits_make_hist(*fptr, histptr, bitpix, naxis, haxes, colnum, amin, amax,
         binsize, weight, wtcolnum, recip, selectrow, status) > 0)
@@ -593,7 +593,7 @@ int ffhist2(fitsfile **fptr,  /* IO - pointer to table with X and Y cols;    */
         ffpmsg("failed to calculate new histogram values");
         return(*status);
     }
-              
+
     /* finally, close the original file and return ptr to the new image */
     ffclos(*fptr, status);
     *fptr = histptr;
@@ -634,7 +634,7 @@ int ffhist(fitsfile **fptr,  /* IO - pointer to table with X and Y cols;    */
     long  offset = 0;
     long n_per_loop = -1;  /* force whole array to be passed at one time */
     histType histData;    /* Structure holding histogram info for iterator */
-    
+
     float amin[4], amax[4], binsize[4], maxbin[4];
     float datamin = FLOATNULLVALUE, datamax = FLOATNULLVALUE;
     char svalue[FLEN_VALUE];
@@ -823,7 +823,7 @@ int ffhist(fitsfile **fptr,  /* IO - pointer to table with X and Y cols;    */
 
       /* use TLMINn and TLMAXn keyword values if min and max were not given */
       /* else use actual data min and max if TLMINn and TLMAXn don't exist */
- 
+
       if (minin[ii] == DOUBLENULLVALUE)
       {
         ffkeyn("TLMIN", histData.hcolnum[ii], keyname, status);
@@ -927,7 +927,7 @@ int ffhist(fitsfile **fptr,  /* IO - pointer to table with X and Y cols;    */
           amax[ii] = (float) (amax[ii] - 0.5);
         }
       }
-      else if (use_datamax)  
+      else if (use_datamax)
       {
         /* Either the column datatype and/or the limits are floating point, */
         /* and the histogram limits are being defined by the min and max */
@@ -935,10 +935,10 @@ int ffhist(fitsfile **fptr,  /* IO - pointer to table with X and Y cols;    */
         /* make sure that pixels that are equal to the maximum or are */
         /* in the last partial bin are included.  */
 
-        maxbin[ii] = (amax[ii] - amin[ii]) / binsize[ii]; 
+        maxbin[ii] = (amax[ii] - amin[ii]) / binsize[ii];
         haxes[ii] = (long) (maxbin[ii] + 1);
       }
-      else  
+      else
       {
         /*  float datatype column and/or limits, and the maximum value to */
         /*  include in the histogram is specified by the calling program. */
@@ -994,7 +994,7 @@ int ffhist(fitsfile **fptr,  /* IO - pointer to table with X and Y cols;    */
        histData.weight = (float) (1.0 / histData.weight);
 
     histData.wtrecip = recip;
-        
+
     /* size of histogram is now known, so create temp output file */
     if (ffinit(&histptr, outfile, status) > 0)
     {
@@ -1016,7 +1016,7 @@ int ffhist(fitsfile **fptr,  /* IO - pointer to table with X and Y cols;    */
        fits_read_record(*fptr, ii, card, status);
        if (fits_get_keyclass(card) >= 120)
            fits_write_record(histptr, card, status);
-    }           
+    }
 
     /* Set global variables with histogram parameter values.    */
     /* Use separate scalar variables rather than arrays because */
@@ -1187,7 +1187,7 @@ int ffhist(fitsfile **fptr,  /* IO - pointer to table with X and Y cols;    */
       strcat(card,"_");
       ffkeyn(card, histData.hcolnum[0], keyname, &tstatus);
       ffgky(*fptr, TDOUBLE, keyname, &dvalue, card, &tstatus);
-      if (!tstatus) 
+      if (!tstatus)
          ffpky(histptr, TDOUBLE, "PC1_1", &dvalue, card, &tstatus);
 
       tstatus = 0;
@@ -1204,9 +1204,9 @@ int ffhist(fitsfile **fptr,  /* IO - pointer to table with X and Y cols;    */
       strcat(card,"_");
       ffkeyn(card, histData.hcolnum[1], keyname, &tstatus);
       ffgky(*fptr, TDOUBLE, keyname, &dvalue, card, &tstatus);
-      if (!tstatus) 
+      if (!tstatus)
          ffpky(histptr, TDOUBLE, "PC1_2", &dvalue, card, &tstatus);
- 
+
       tstatus = 0;
       keyname[1] = 'C';
       ffgky(*fptr, TDOUBLE, keyname, &dvalue, card, &tstatus);
@@ -1214,16 +1214,16 @@ int ffhist(fitsfile **fptr,  /* IO - pointer to table with X and Y cols;    */
         dvalue *=  binsize[0];
         ffpky(histptr, TDOUBLE, "CD1_2", &dvalue, card, &tstatus);
       }
-       
+
       /* PC2_1 */
       tstatus = 0;
       ffkeyn("TP", histData.hcolnum[1], card, &tstatus);
       strcat(card,"_");
       ffkeyn(card, histData.hcolnum[0], keyname, &tstatus);
       ffgky(*fptr, TDOUBLE, keyname, &dvalue, card, &tstatus);
-      if (!tstatus) 
+      if (!tstatus)
          ffpky(histptr, TDOUBLE, "PC2_1", &dvalue, card, &tstatus);
- 
+
       tstatus = 0;
       keyname[1] = 'C';
       ffgky(*fptr, TDOUBLE, keyname, &dvalue, card, &tstatus);
@@ -1231,16 +1231,16 @@ int ffhist(fitsfile **fptr,  /* IO - pointer to table with X and Y cols;    */
          dvalue *=  binsize[1];
          ffpky(histptr, TDOUBLE, "CD2_1", &dvalue, card, &tstatus);
       }
-       
+
        /* PC2_2 */
       tstatus = 0;
       ffkeyn("TP", histData.hcolnum[1], card, &tstatus);
       strcat(card,"_");
       ffkeyn(card, histData.hcolnum[1], keyname, &tstatus);
       ffgky(*fptr, TDOUBLE, keyname, &dvalue, card, &tstatus);
-      if (!tstatus) 
+      if (!tstatus)
          ffpky(histptr, TDOUBLE, "PC2_2", &dvalue, card, &tstatus);
-        
+
       tstatus = 0;
       keyname[1] = 'C';
       ffgky(*fptr, TDOUBLE, keyname, &dvalue, card, &tstatus);
@@ -1248,8 +1248,8 @@ int ffhist(fitsfile **fptr,  /* IO - pointer to table with X and Y cols;    */
          dvalue *=  binsize[1];
          ffpky(histptr, TDOUBLE, "CD2_2", &dvalue, card, &tstatus);
       }
-    }   
-       
+    }
+
     /* finally, close the original file and return ptr to the new image */
     ffclos(*fptr, status);
     *fptr = histptr;
@@ -1289,7 +1289,7 @@ int fits_calc_binning(
     float datamin, datamax;
 
     /* check inputs */
-    
+
     if (*status > 0)
         return(*status);
 
@@ -1302,7 +1302,7 @@ int fits_calc_binning(
     /* reset position to the correct HDU if necessary */
     if ((fptr)->HDUposition != ((fptr)->Fptr)->curhdu)
         ffmahd(fptr, ((fptr)->HDUposition) + 1, NULL, status);
-    
+
     /* ============================================================= */
     /* The CPREF keyword, if it exists, gives the preferred columns. */
     /* Otherwise, assume "X", "Y", "Z", and "T"  */
@@ -1378,7 +1378,7 @@ int fits_calc_binning(
 	 2  name given by CPREF keyword, or
 	 3  assume X, Y, Z and T for the name
       */
-	  
+
       if (*colname[ii] == '\0')
       {
          strcpy(colname[ii], cpref[ii]); /* try using the preferred column */
@@ -1437,7 +1437,7 @@ int fits_calc_binning(
 
       datamin = FLOATNULLVALUE;
       datamax = FLOATNULLVALUE;
-      
+
       if (*minname[ii])
       {
          if (ffgky(fptr, TDOUBLE, minname[ii], &minin[ii], NULL, status) )
@@ -1534,7 +1534,7 @@ int fits_calc_binning(
 
       /* use TDBINn keyword or else 1 if bin size is not given */
       if (binsizein[ii] != DOUBLENULLVALUE)
-      { 
+      {
          binsize[ii] = (float) binsizein[ii];
       }
       else
@@ -1587,7 +1587,7 @@ int fits_calc_binning(
           amax[ii] = (float) (amax[ii] - 0.5);
         }
       }
-      else if (use_datamax)  
+      else if (use_datamax)
       {
         /* Either the column datatype and/or the limits are floating point, */
         /* and the histogram limits are being defined by the min and max */
@@ -1595,9 +1595,9 @@ int fits_calc_binning(
         /* make sure that pixels that are equal to the maximum or are */
         /* in the last partial bin are included.  */
 
-        haxes[ii] = (long) (((amax[ii] - amin[ii]) / binsize[ii]) + 1.); 
+        haxes[ii] = (long) (((amax[ii] - amin[ii]) / binsize[ii]) + 1.);
       }
-      else  
+      else
       {
         /*  float datatype column and/or limits, and the maximum value to */
         /*  include in the histogram is specified by the calling program. */
@@ -1625,15 +1625,15 @@ int fits_write_keys_histo(
       fitsfile *histptr,  /* I - pointer to output histogram image HDU      */
       int naxis,        /* I - number of axes in the histogram image      */
       int *colnum,      /* I - column numbers (array length = naxis)      */
-      int *status)     
-{      
+      int *status)
+{
    /*  Write default WCS keywords in the output histogram image header */
    /*  if the keywords do not already exist.   */
 
     int ii, tstatus;
     char keyname[FLEN_KEYWORD], svalue[FLEN_VALUE];
     double dvalue;
-    
+
     if (*status > 0)
         return(*status);
 
@@ -1643,9 +1643,9 @@ int fits_write_keys_histo(
        tstatus = 0;
        ffkeyn("CTYPE", ii+1, keyname, &tstatus);
        ffgky(histptr, TSTRING, keyname, svalue, NULL, &tstatus);
-       
+
        if (!tstatus) continue;  /* keyword already exists, so skip to next axis */
-       
+
        /* use column name as the axis name */
        tstatus = 0;
        ffkeyn("TTYPE", colnum[ii], keyname, &tstatus);
@@ -1681,7 +1681,7 @@ int fits_write_keys_histo(
        ffpky(histptr, TDOUBLE, keyname, &dvalue, "Reference Value", &tstatus);
 
        /*  CDELTn - unit size of pixels  */
-       dvalue = 1.0;  
+       dvalue = 1.0;
        tstatus = 0;
        dvalue = 1.;
        ffkeyn("CDELT", ii + 1, keyname, &tstatus);
@@ -1696,25 +1696,25 @@ int fits_rebin_wcs(
       int naxis,        /* I - number of axes in the histogram image   */
       float *amin,        /* I - first pixel include in each axis        */
       float *binsize,     /* I - binning factor for each axis            */
-      int *status)      
-{      
+      int *status)
+{
    /*  Update the  WCS keywords that define the location of the reference */
    /*  pixel, and the pixel size, along each axis.   */
 
     int ii, jj, tstatus, reset ;
     char keyname[FLEN_KEYWORD], svalue[FLEN_VALUE];
     double dvalue;
-    
+
     if (*status > 0)
         return(*status);
-  
+
     for (ii = 0; ii < naxis; ii++)
     {
        reset = 0;  /* flag to reset the reference pixel */
        tstatus = 0;
        ffkeyn("CRVAL", ii + 1, keyname, &tstatus);
        /* get previous (pre-binning) value */
-       ffgky(fptr, TDOUBLE, keyname, &dvalue, NULL, &tstatus); 
+       ffgky(fptr, TDOUBLE, keyname, &dvalue, NULL, &tstatus);
        if (!tstatus && dvalue == 1.0)
            reset = 1;
 
@@ -1723,7 +1723,7 @@ int fits_rebin_wcs(
        ffkeyn("CRPIX", ii + 1, keyname, &tstatus);
 
        /* get previous (pre-binning) value */
-       ffgky(fptr, TDOUBLE, keyname, &dvalue, NULL, &tstatus); 
+       ffgky(fptr, TDOUBLE, keyname, &dvalue, NULL, &tstatus);
 
        if (!tstatus)
        {
@@ -1731,7 +1731,7 @@ int fits_rebin_wcs(
 	      reset = 0;
 
            /* updated value to give pixel location after binning */
-           dvalue = (dvalue - amin[ii]) / ((double) binsize[ii]) + .5;  
+           dvalue = (dvalue - amin[ii]) / ((double) binsize[ii]) + .5;
 
            fits_modify_key_dbl(fptr, keyname, dvalue, -14, NULL, &tstatus);
        } else {
@@ -1743,7 +1743,7 @@ int fits_rebin_wcs(
        ffkeyn("CDELT", ii + 1, keyname, &tstatus);
 
        /* get previous (pre-binning) value */
-       ffgky(fptr, TDOUBLE, keyname, &dvalue, NULL, &tstatus); 
+       ffgky(fptr, TDOUBLE, keyname, &dvalue, NULL, &tstatus);
 
        if (!tstatus)
        {
@@ -1751,7 +1751,7 @@ int fits_rebin_wcs(
 	      reset = 0;
 
            /* updated to give post-binning value */
-           dvalue = dvalue * binsize[ii];  
+           dvalue = dvalue * binsize[ii];
 
            fits_modify_key_dbl(fptr, keyname, dvalue, -14, NULL, &tstatus);
        }
@@ -1767,12 +1767,12 @@ int fits_rebin_wcs(
 	     ffkeyn(svalue, ii + 1, keyname, &tstatus);
 
              /* get previous (pre-binning) value */
-             ffgky(fptr, TDOUBLE, keyname, &dvalue, NULL, &tstatus); 
+             ffgky(fptr, TDOUBLE, keyname, &dvalue, NULL, &tstatus);
 
              if (!tstatus)
              {
                 /* updated to give post-binning value */
-               dvalue = dvalue * binsize[ii];  
+               dvalue = dvalue * binsize[ii];
 
                fits_modify_key_dbl(fptr, keyname, dvalue, -14, NULL, &tstatus);
              }
@@ -1783,13 +1783,13 @@ int fits_rebin_wcs(
           /* the original CRPIX, CRVAL, and CDELT keywords were all = 1.0 */
 	  /* In this special case, reset the reference pixel to be the */
 	  /* first pixel in the array (instead of possibly far off the array) */
- 
+
            dvalue = 1.0;
            ffkeyn("CRPIX", ii + 1, keyname, &tstatus);
            fits_modify_key_dbl(fptr, keyname, dvalue, -14, NULL, &tstatus);
 
            ffkeyn("CRVAL", ii + 1, keyname, &tstatus);
-	   dvalue = amin[ii] + (binsize[ii] / 2.0);	  
+	   dvalue = amin[ii] + (binsize[ii] / 2.0);
            fits_modify_key_dbl(fptr, keyname, dvalue, -14, NULL, &tstatus);
 	}
 
@@ -1817,7 +1817,7 @@ int fits_make_hist(fitsfile *fptr, /* IO - pointer to table with X and Y cols; *
                              /* row will be skipped.  Ingnored if *selectrow*/
                              /* is equal to NULL.                           */
     int *status)
-{		  
+{
     int ii, imagetype, datatype;
     int n_cols = 1;
     long imin, imax, ibin;
@@ -1828,7 +1828,7 @@ int fits_make_hist(fitsfile *fptr, /* IO - pointer to table with X and Y cols; *
     iteratorCol imagepars[1];
 
     /* check inputs */
-    
+
     if (*status > 0)
         return(*status);
 
@@ -1843,11 +1843,11 @@ int fits_make_hist(fitsfile *fptr, /* IO - pointer to table with X and Y cols; *
     else if (bitpix == SHORT_IMG)
          imagetype = TSHORT;
     else if (bitpix == LONG_IMG)
-         imagetype = TINT;    
+         imagetype = TINT;
     else if (bitpix == FLOAT_IMG)
-         imagetype = TFLOAT;    
+         imagetype = TFLOAT;
     else if (bitpix == DOUBLE_IMG)
-         imagetype = TDOUBLE;    
+         imagetype = TDOUBLE;
     else
         return(*status = BAD_DATATYPE);
 
@@ -1873,11 +1873,11 @@ int fits_make_hist(fitsfile *fptr, /* IO - pointer to table with X and Y cols; *
           tbin[ii] =  -binsize[ii];  /* reverse the sign of binsize */
       else
           tbin[ii] =   binsize[ii];  /* binsize has the correct sign */
-          
+
       imin = (long) tmin[ii];
       imax = (long) tmax[ii];
       ibin = (long) tbin[ii];
-    
+
       /* get the datatype of the column */
       fits_get_coltype(fptr, colnum[ii], &datatype, NULL, NULL, status);
 
@@ -1902,7 +1902,7 @@ int fits_make_hist(fitsfile *fptr, /* IO - pointer to table with X and Y cols; *
           tmax[ii] = tmax[ii] - 0.5F;
         }
       } else {  /* not an integer column with integer limits */
-          maxbin[ii] = (tmax[ii] - tmin[ii]) / tbin[ii]; 
+          maxbin[ii] = (tmax[ii] - tmin[ii]) / tbin[ii];
       }
     }
 
@@ -1951,13 +1951,13 @@ int fits_make_hist(fitsfile *fptr, /* IO - pointer to table with X and Y cols; *
     /* call the iterator function to write out the histogram image */
     fits_iterate_data(n_cols, imagepars, offset, n_per_loop,
                           ffwritehisto, (void*)&histData, status);
-       
+
     return(*status);
 }
 /*--------------------------------------------------------------------------*/
-int fits_get_col_minmax(fitsfile *fptr, int colnum, float *datamin, 
+int fits_get_col_minmax(fitsfile *fptr, int colnum, float *datamin,
                      float *datamax, int *status)
-/* 
+/*
    Simple utility routine to compute the min and max value in a column
 */
 {
@@ -2107,7 +2107,7 @@ int ffcalchist(long totalrows, long offset, long firstrow, long nrows,
     }   /* end of Initialization procedures */
 
     /*  Main loop: increment the histogram at position of each event */
-    for (ii = 1; ii <= nrows; ii++) 
+    for (ii = 1; ii <= nrows; ii++)
     {
         if (rowselect)     /* if a row selector array is supplied... */
         {
@@ -2156,7 +2156,7 @@ int ffcalchist(long totalrows, long offset, long firstrow, long nrows,
                 continue;
 
             ipix += (iaxisbin * incr3);
- 
+
             if (histData.haxis > 3)
             {
               if (col4[ii] == FLOATNULLVALUE)

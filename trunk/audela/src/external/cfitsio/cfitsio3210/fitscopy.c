@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
       /* Create the output file */
       if ( !fits_create_file(&outfptr, argv[2], &status) )
       {
- 
+
         /* copy the previous, current, and following HDUs */
         fits_copy_file(infptr, outfptr, 1, 1, 1, &status);
 

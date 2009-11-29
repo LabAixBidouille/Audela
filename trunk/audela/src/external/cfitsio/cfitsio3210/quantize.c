@@ -1,6 +1,6 @@
 /*
   The following code is based on algorithms written by Richard White at STScI and made
-  available for use in CFITSIO in July 1999 and updated in January 2008. 
+  available for use in CFITSIO in July 1999 and updated in January 2008.
 */
 
 # include <stdio.h>
@@ -24,37 +24,37 @@
 			       /* possible for the compressed values to slightly */
 			       /* exceed the range of the actual (lossless) values */
 			       /* so we must reserve a little more space */
-			       
+
 /* more than this many standard deviations from the mean is an outlier */
 # define SIGMA_CLIP     5.
 # define NITER          3	/* number of sigma-clipping iterations */
 
-static int FnMeanSigma_short(short *array, long npix, int nullcheck, 
-  short nullvalue, long *ngoodpix, double *mean, double *sigma, int *status);       
+static int FnMeanSigma_short(short *array, long npix, int nullcheck,
+  short nullvalue, long *ngoodpix, double *mean, double *sigma, int *status);
 static int FnMeanSigma_int(int *array, long npix, int nullcheck,
-  int nullvalue, long *ngoodpix, double *mean, double *sigma, int *status);       
+  int nullvalue, long *ngoodpix, double *mean, double *sigma, int *status);
 static int FnMeanSigma_float(float *array, long npix, int nullcheck,
-  float nullvalue, long *ngoodpix, double *mean, double *sigma, int *status);       
+  float nullvalue, long *ngoodpix, double *mean, double *sigma, int *status);
 static int FnMeanSigma_double(double *array, long npix, int nullcheck,
-  double nullvalue, long *ngoodpix, double *mean, double *sigma, int *status);       
+  double nullvalue, long *ngoodpix, double *mean, double *sigma, int *status);
 
-static int FnNoise3_short(short *array, long nx, long ny, int nullcheck, 
-   short nullvalue, long *ngood, short *minval, short *maxval, double *noise, int *status);       
-static int FnNoise3_int(int *array, long nx, long ny, int nullcheck, 
-   int nullvalue, long *ngood, int *minval, int *maxval, double *noise, int *status);          
-static int FnNoise3_float(float *array, long nx, long ny, int nullcheck, 
-   float nullvalue, long *ngood, float *minval, float *maxval, double *noise, int *status);        
-static int FnNoise3_double(double *array, long nx, long ny, int nullcheck, 
-   double nullvalue, long *ngood, double *minval, double *maxval, double *noise, int *status);        
+static int FnNoise3_short(short *array, long nx, long ny, int nullcheck,
+   short nullvalue, long *ngood, short *minval, short *maxval, double *noise, int *status);
+static int FnNoise3_int(int *array, long nx, long ny, int nullcheck,
+   int nullvalue, long *ngood, int *minval, int *maxval, double *noise, int *status);
+static int FnNoise3_float(float *array, long nx, long ny, int nullcheck,
+   float nullvalue, long *ngood, float *minval, float *maxval, double *noise, int *status);
+static int FnNoise3_double(double *array, long nx, long ny, int nullcheck,
+   double nullvalue, long *ngood, double *minval, double *maxval, double *noise, int *status);
 
-static int FnNoise1_short(short *array, long nx, long ny, 
-   int nullcheck, short nullvalue, double *noise, int *status);       
-static int FnNoise1_int(int *array, long nx, long ny, 
-   int nullcheck, int nullvalue, double *noise, int *status);       
-static int FnNoise1_float(float *array, long nx, long ny, 
-   int nullcheck, float nullvalue, double *noise, int *status);       
-static int FnNoise1_double(double *array, long nx, long ny, 
-   int nullcheck, double nullvalue, double *noise, int *status);       
+static int FnNoise1_short(short *array, long nx, long ny,
+   int nullcheck, short nullvalue, double *noise, int *status);
+static int FnNoise1_int(int *array, long nx, long ny,
+   int nullcheck, int nullvalue, double *noise, int *status);
+static int FnNoise1_float(float *array, long nx, long ny,
+   int nullcheck, float nullvalue, double *noise, int *status);
+static int FnNoise1_double(double *array, long nx, long ny,
+   int nullcheck, double nullvalue, double *noise, int *status);
 
 static int FnCompare_short (const void *, const void *);
 static int FnCompare_int (const void *, const void *);
@@ -66,7 +66,7 @@ static int quick_select_int(int arr[], int n);
 static double quick_select_double(double arr[], int n);
 
 /*---------------------------------------------------------------------------*/
-int fits_quantize_float (long row, float fdata[], long nxpix, long nypix, int nullcheck, 
+int fits_quantize_float (long row, float fdata[], long nxpix, long nypix, int nullcheck,
 	float in_null_value, float qlevel, int idata[], double *bscale,
 	double *bzero, int *iminval, int *imaxval) {
 
@@ -113,13 +113,13 @@ If the function value is zero, the data were not copied to idata.
 
 	    /* estimate background noise using 3rd order absolute pixel differences */
 	    FnNoise3_float(fdata, nxpix, nypix, nullcheck, in_null_value, &ngood,
-	        &minval, &maxval, &stdev, &status);      
+	        &minval, &maxval, &stdev, &status);
 
 	    /* substitute sigma-clipping if median is zero */
 	    if (stdev == 0.0) {
 
-		FnNoise1_float(fdata, nxpix, nypix, nullcheck, in_null_value, 
-		&stdev, &status);       
+		FnNoise1_float(fdata, nxpix, nypix, nullcheck, in_null_value,
+		&stdev, &status);
 	    }
 
 	    if (qlevel == 0.)
@@ -136,7 +136,7 @@ If the function value is zero, the data were not copied to idata.
 
 	    /* only nned to calculate the min and max values */
 	    FnNoise3_float(fdata, nxpix, nypix, nullcheck, in_null_value, 0,
-	        &minval, &maxval, 0, &status);      
+	        &minval, &maxval, 0, &status);
  	}
 
         /* check that the range of quantized levels is not > range of int */
@@ -144,7 +144,7 @@ If the function value is zero, the data were not copied to idata.
 	    return (0);			/* don't quantize */
 
         if (row > 0) { /* we need to dither the quantized values */
-            if (!fits_rand_value) 
+            if (!fits_rand_value)
 	        if (fits_init_randoms()) return(MEMORY_ALLOCATION);
 
 	    /* initialize the index to the next random number in the list */
@@ -169,7 +169,7 @@ If the function value is zero, the data were not copied to idata.
 
             if (row > 0) {  /* dither the values when quantizing */
               for (i = 0;  i < nx;  i++) {
-	    
+
 		idata[i] =  NINT(((fdata[i] - zeropt) / delta) + fits_rand_value[nextrand] - 0.5);
 
                 nextrand++;
@@ -184,7 +184,7 @@ If the function value is zero, the data were not copied to idata.
        	        for (i = 0;  i < nx;  i++) {
 	            idata[i] = NINT ((fdata[i] - zeropt) / delta);
                 }
-            } 
+            }
         }
         else {
             /* data contains null values; shift the range to be */
@@ -211,7 +211,7 @@ If the function value is zero, the data were not copied to idata.
 	       for (i = 0;  i < nx;  i++) {
                  if (fdata[i] != in_null_value)
 		    idata[i] =  NINT((fdata[i] - zeropt) / delta);
-                 else 
+                 else
                     idata[i] = NULL_VALUE;
                }
             }
@@ -229,7 +229,7 @@ If the function value is zero, the data were not copied to idata.
 	return (1);			/* yes, data have been quantized */
 }
 /*---------------------------------------------------------------------------*/
-int fits_quantize_double (long row, double fdata[], long nxpix, long nypix, int nullcheck, 
+int fits_quantize_double (long row, double fdata[], long nxpix, long nypix, int nullcheck,
 	double in_null_value, float qlevel, int idata[], double *bscale,
 	double *bzero, int *iminval, int *imaxval) {
 
@@ -275,13 +275,13 @@ If the function value is zero, the data were not copied to idata.
 
 	    /* estimate background noise using 3rd order absolute pixel differences */
 	    FnNoise3_double(fdata, nxpix, nypix, nullcheck, in_null_value, &ngood,
-	        &minval, &maxval, &stdev, &status);      
+	        &minval, &maxval, &stdev, &status);
 
 	    /* substitute sigma-clipping if median is zero */
 	    if (stdev == 0.0) {
 
-		FnNoise1_double(fdata, nxpix, nypix, nullcheck, in_null_value, 
-		&stdev, &status);       
+		FnNoise1_double(fdata, nxpix, nypix, nullcheck, in_null_value,
+		&stdev, &status);
 	    }
 
 	    if (qlevel == 0.)
@@ -298,7 +298,7 @@ If the function value is zero, the data were not copied to idata.
 
 	    /* only nned to calculate the min and max values */
 	    FnNoise3_double(fdata, nxpix, nypix, nullcheck, in_null_value, 0,
-	        &minval, &maxval, 0, &status);      
+	        &minval, &maxval, 0, &status);
  	}
 
         /* check that the range of quantized levels is not > range of int */
@@ -306,7 +306,7 @@ If the function value is zero, the data were not copied to idata.
 	    return (0);			/* don't quantize */
 
         if (row > 0) { /* we need to dither the quantized values */
-            if (!fits_rand_value) 
+            if (!fits_rand_value)
 	       if (fits_init_randoms()) return(MEMORY_ALLOCATION);
 
 	    /* initialize the index to the next random number in the list */
@@ -344,7 +344,7 @@ If the function value is zero, the data were not copied to idata.
        	        for (i = 0;  i < nx;  i++) {
 	            idata[i] = NINT ((fdata[i] - zeropt) / delta);
                 }
-            } 
+            }
         }
         else {
             /* data contains null values; shift the range to be */
@@ -364,13 +364,13 @@ If the function value is zero, the data were not copied to idata.
 		if (nextrand == N_RANDOM) {
                         iseed++;
 	                nextrand = (int) (fits_rand_value[iseed] * 500);
-                } 
+                }
               }
             } else {  /* do not dither the values */
 	       for (i = 0;  i < nx;  i++) {
                  if (fdata[i] != in_null_value)
 		    idata[i] =  NINT((fdata[i] - zeropt) / delta);
-                 else 
+                 else
                     idata[i] = NULL_VALUE;
                }
             }
@@ -416,7 +416,7 @@ int fits_img_stats_short(short *array, /*  2 dimensional array of image pixels *
 
 	/* need to calculate mean and/or sigma and/or limits? */
 	if (mean || sigma ) {
-		FnMeanSigma_short(array, nx * ny, nullcheck, nullvalue, 
+		FnMeanSigma_short(array, nx * ny, nullcheck, nullvalue,
 			&ngood, &xmean, &xsigma, status);
 
 	    if (ngoodpix) *ngoodpix = ngood;
@@ -425,14 +425,14 @@ int fits_img_stats_short(short *array, /*  2 dimensional array of image pixels *
 	}
 
 	if (noise1) {
-		FnNoise1_short(array, nx, ny, nullcheck, nullvalue, 
+		FnNoise1_short(array, nx, ny, nullcheck, nullvalue,
 		  &xnoise, status);
 
 		*noise1  = xnoise;
 	}
 
 	if (minvalue || maxvalue || noise3) {
-		FnNoise3_short(array, nx, ny, nullcheck, nullvalue, 
+		FnNoise3_short(array, nx, ny, nullcheck, nullvalue,
 			&ngood, &minval, &maxval, &xnoise, status);
 
 		if (ngoodpix) *ngoodpix = ngood;
@@ -471,7 +471,7 @@ int fits_img_stats_int(int *array, /*  2 dimensional array of image pixels */
 
 	/* need to calculate mean and/or sigma and/or limits? */
 	if (mean || sigma ) {
-		FnMeanSigma_int(array, nx * ny, nullcheck, nullvalue, 
+		FnMeanSigma_int(array, nx * ny, nullcheck, nullvalue,
 			&ngood, &xmean, &xsigma, status);
 
 	    if (ngoodpix) *ngoodpix = ngood;
@@ -480,14 +480,14 @@ int fits_img_stats_int(int *array, /*  2 dimensional array of image pixels */
 	}
 
 	if (noise1) {
-		FnNoise1_int(array, nx, ny, nullcheck, nullvalue, 
+		FnNoise1_int(array, nx, ny, nullcheck, nullvalue,
 		  &xnoise, status);
 
 		*noise1  = xnoise;
 	}
 
 	if (minvalue || maxvalue || noise3) {
-		FnNoise3_int(array, nx, ny, nullcheck, nullvalue, 
+		FnNoise3_int(array, nx, ny, nullcheck, nullvalue,
 			&ngood, &minval, &maxval, &xnoise, status);
 
 		if (ngoodpix) *ngoodpix = ngood;
@@ -526,7 +526,7 @@ int fits_img_stats_float(float *array, /*  2 dimensional array of image pixels *
 
 	/* need to calculate mean and/or sigma and/or limits? */
 	if (mean || sigma ) {
-		FnMeanSigma_float(array, nx * ny, nullcheck, nullvalue, 
+		FnMeanSigma_float(array, nx * ny, nullcheck, nullvalue,
 			&ngood, &xmean, &xsigma, status);
 
 	    if (ngoodpix) *ngoodpix = ngood;
@@ -535,14 +535,14 @@ int fits_img_stats_float(float *array, /*  2 dimensional array of image pixels *
 	}
 
 	if (noise1) {
-		FnNoise1_float(array, nx, ny, nullcheck, nullvalue, 
+		FnNoise1_float(array, nx, ny, nullcheck, nullvalue,
 		  &xnoise, status);
 
 		*noise1  = xnoise;
 	}
 
 	if (minvalue || maxvalue || noise3) {
-		FnNoise3_float(array, nx, ny, nullcheck, nullvalue, 
+		FnNoise3_float(array, nx, ny, nullcheck, nullvalue,
 			&ngood, &minval, &maxval, &xnoise, status);
 
 		if (ngoodpix) *ngoodpix = ngood;
@@ -560,7 +560,7 @@ static int FnMeanSigma_short
 	short nullvalue,    /* value of null pixels, if nullcheck is true */
 
    /* returned parameters */
-   
+
 	long *ngoodpix,     /* number of non-null pixels in the image */
 	double *mean,       /* returned mean value of all non-null pixels */
 	double *sigma,      /* returned R.M.S. value of all non-null pixels */
@@ -575,7 +575,7 @@ Compute mean and RMS sigma of the non-null pixels in the input array.
 	double sum = 0., sum2 = 0., xtemp;
 
 	value = array;
-	    
+
 	if (nullcheck) {
 	        for (ii = 0; ii < npix; ii++, value++) {
 		    if (*value != nullvalue) {
@@ -607,7 +607,7 @@ Compute mean and RMS sigma of the non-null pixels in the input array.
 		if (ngoodpix) *ngoodpix = 0;
 	        if (mean)     *mean = 0.;
 		if (sigma)    *sigma = 0.;
-	}	    
+	}
 	return(*status);
 }
 /*--------------------------------------------------------------------------*/
@@ -618,7 +618,7 @@ static int FnMeanSigma_int
 	int nullvalue,    /* value of null pixels, if nullcheck is true */
 
    /* returned parameters */
-   
+
 	long *ngoodpix,     /* number of non-null pixels in the image */
 	double *mean,       /* returned mean value of all non-null pixels */
 	double *sigma,      /* returned R.M.S. value of all non-null pixels */
@@ -633,7 +633,7 @@ Compute mean and RMS sigma of the non-null pixels in the input array.
 	double sum = 0., sum2 = 0., xtemp;
 
 	value = array;
-	    
+
 	if (nullcheck) {
 	        for (ii = 0; ii < npix; ii++, value++) {
 		    if (*value != nullvalue) {
@@ -665,7 +665,7 @@ Compute mean and RMS sigma of the non-null pixels in the input array.
 		if (ngoodpix) *ngoodpix = 0;
 	        if (mean)     *mean = 0.;
 		if (sigma)    *sigma = 0.;
-	}	    
+	}
 	return(*status);
 }
 /*--------------------------------------------------------------------------*/
@@ -676,7 +676,7 @@ static int FnMeanSigma_float
 	float nullvalue,    /* value of null pixels, if nullcheck is true */
 
    /* returned parameters */
-   
+
 	long *ngoodpix,     /* number of non-null pixels in the image */
 	double *mean,       /* returned mean value of all non-null pixels */
 	double *sigma,      /* returned R.M.S. value of all non-null pixels */
@@ -691,7 +691,7 @@ Compute mean and RMS sigma of the non-null pixels in the input array.
 	double sum = 0., sum2 = 0., xtemp;
 
 	value = array;
-	    
+
 	if (nullcheck) {
 	        for (ii = 0; ii < npix; ii++, value++) {
 		    if (*value != nullvalue) {
@@ -723,7 +723,7 @@ Compute mean and RMS sigma of the non-null pixels in the input array.
 		if (ngoodpix) *ngoodpix = 0;
 	        if (mean)     *mean = 0.;
 		if (sigma)    *sigma = 0.;
-	}	    
+	}
 	return(*status);
 }
 /*--------------------------------------------------------------------------*/
@@ -734,7 +734,7 @@ static int FnMeanSigma_double
 	double nullvalue,    /* value of null pixels, if nullcheck is true */
 
    /* returned parameters */
-   
+
 	long *ngoodpix,     /* number of non-null pixels in the image */
 	double *mean,       /* returned mean value of all non-null pixels */
 	double *sigma,      /* returned R.M.S. value of all non-null pixels */
@@ -749,7 +749,7 @@ Compute mean and RMS sigma of the non-null pixels in the input array.
 	double sum = 0., sum2 = 0., xtemp;
 
 	value = array;
-	    
+
 	if (nullcheck) {
 	        for (ii = 0; ii < npix; ii++, value++) {
 		    if (*value != nullvalue) {
@@ -781,7 +781,7 @@ Compute mean and RMS sigma of the non-null pixels in the input array.
 		if (ngoodpix) *ngoodpix = 0;
 	        if (mean)     *mean = 0.;
 		if (sigma)    *sigma = 0.;
-	}	    
+	}
 	return(*status);
 }
 /*--------------------------------------------------------------------------*/
@@ -791,7 +791,7 @@ static int FnNoise3_short
         long ny,            /* number of rows in the image */
 	int nullcheck,      /* check for null values, if true */
 	short nullvalue,    /* value of null pixels, if nullcheck is true */
-   /* returned parameters */   
+   /* returned parameters */
 	long *ngood,        /* number of good, non-null pixels? */
 	short *minval,    /* minimum non-null value */
 	short *maxval,    /* maximum non-null value */
@@ -801,13 +801,13 @@ static int FnNoise3_short
 /*
 Estimate the median and background noise in the input image using 3rd order differences.
 
-The noise in the background of the image is calculated using the 3rd order algorithm 
+The noise in the background of the image is calculated using the 3rd order algorithm
 developed for deriving the signal to noise ratio in spectra
 (see issue #42 of the ST-ECF newsletter, http://www.stecf.org/documents/newsletter/)
 
   noise = 1.482602 / sqrt(6) * median (abs(2*flux(i) - flux(i-2) - flux(i+2)))
 
-The returned estimates are the median of the values that are computed for each 
+The returned estimates are the median of the values that are computed for each
 row of the image.
 */
 {
@@ -815,7 +815,7 @@ row of the image.
 	short *differences, *rowpix, v1, v2, v3, v4, v5;
 	short xminval = SHRT_MAX, xmaxval = SHRT_MIN, do_range = 0;
 	double *diffs, xnoise = 0, sigma;
-	
+
 	if (nx < 5) {
 		/* treat entire array as an image with a single row */
 		nx = nx * ny;
@@ -843,7 +843,7 @@ row of the image.
 
 	/* do we need to compute the min and max value? */
 	if (minval || maxval) do_range = 1;
-	
+
         /* allocate arrays used to compute the median and noise estimates */
 	differences = calloc(nx, sizeof(short));
 	if (!differences) {
@@ -883,7 +883,7 @@ row of the image.
 
 		if (ii == nx) continue;  /* hit end of row */
 		v2 = rowpix[ii];  /* store the good pixel value */
-		
+
 		if (do_range) {
 			if (v2 < xminval) xminval = v2;
 			if (v2 > xmaxval) xmaxval = v2;
@@ -901,7 +901,7 @@ row of the image.
 			if (v3 < xminval) xminval = v3;
 			if (v3 > xmaxval) xmaxval = v3;
 		}
-				
+
 		/* find the 4nd valid pixel in row (to be skipped) */
 		ii++;
 		if (nullcheck)
@@ -914,7 +914,7 @@ row of the image.
 			if (v4 < xminval) xminval = v4;
 			if (v4 > xmaxval) xmaxval = v4;
 		}
-		
+
 		/* now populate the differences arrays */
 		/* for the remaining pixels in the row */
 		nvals = 0;
@@ -923,7 +923,7 @@ row of the image.
 		    /* find the next valid pixel in row */
                     if (nullcheck)
 		        while (ii < nx && rowpix[ii] == nullvalue) ii++;
-		     
+
 		    if (ii == nx) break;  /* hit end of row */
 		    v5 = rowpix[ii];  /* store the good pixel value */
 
@@ -935,7 +935,7 @@ row of the image.
 		    /* construct array of 3rd order absolute differences */
 		    if (!(v1 == v2 && v2 == v3 && v3 == v4 && v4 == v5)) {
 		        differences[nvals] = abs((2 * v3) - v1 - v5);
-		        nvals++;  
+		        nvals++;
 		    } else {
 		        /* ignore constant background regions */
 			ngoodpix++;
@@ -966,17 +966,17 @@ row of the image.
 	}  /* end of loop over rows */
 
 	    /* compute median of the values for each row */
-	if (nrows == 0) { 
+	if (nrows == 0) {
 	       xnoise = 0;
 	} else if (nrows == 1) {
 	       xnoise = diffs[0];
-	} else {	    
+	} else {
 
 
 	       qsort(diffs, nrows, sizeof(double), FnCompare_double);
 	       xnoise =  (diffs[(nrows - 1)/2] + diffs[nrows/2]) / 2.;
 
-              FnMeanSigma_double(diffs, nrows, 0, 0.0, 0, &xnoise, &sigma, status); 
+              FnMeanSigma_double(diffs, nrows, 0, 0.0, 0, &xnoise, &sigma, status);
 
 	      /* do a 4.5 sigma rejection of outliers */
 	      jj = 0;
@@ -986,10 +986,10 @@ row of the image.
 		   if (jj != ii)
 		       diffs[jj] = diffs[ii];
 		   jj++;
-	        } 
+	        }
 	      }
 	      if (ii != jj)
-                FnMeanSigma_double(diffs, jj, 0, 0.0, 0, &xnoise, &sigma, status); 
+                FnMeanSigma_double(diffs, jj, 0, 0.0, 0, &xnoise, &sigma, status);
 	}
 
 	if (ngood)  *ngood  = ngoodpix;
@@ -1009,7 +1009,7 @@ static int FnNoise3_int
         long ny,            /* number of rows in the image */
 	int nullcheck,      /* check for null values, if true */
 	int nullvalue,    /* value of null pixels, if nullcheck is true */
-   /* returned parameters */   
+   /* returned parameters */
 	long *ngood,        /* number of good, non-null pixels? */
 	int *minval,    /* minimum non-null value */
 	int *maxval,    /* maximum non-null value */
@@ -1019,13 +1019,13 @@ static int FnNoise3_int
 /*
 Estimate the background noise in the input image using 3rd order differences.
 
-The noise in the background of the image is calculated using the 3rd order algorithm 
+The noise in the background of the image is calculated using the 3rd order algorithm
 developed for deriving the signal to noise ratio in spectra
 (see issue #42 of the ST-ECF newsletter, http://www.stecf.org/documents/newsletter/)
 
   noise = 1.482602 / sqrt(6) * median (abs(2*flux(i) - flux(i-2) - flux(i+2)))
 
-The returned estimates are the median of the values that are computed for each 
+The returned estimates are the median of the values that are computed for each
 row of the image.
 */
 {
@@ -1033,7 +1033,7 @@ row of the image.
 	int *differences, *rowpix, v1, v2, v3, v4, v5;
 	int xminval = INT_MAX, xmaxval = INT_MIN, do_range = 0;
 	double *diffs, xnoise = 0, sigma;
-	
+
 	if (nx < 5) {
 		/* treat entire array as an image with a single row */
 		nx = nx * ny;
@@ -1061,7 +1061,7 @@ row of the image.
 
 	/* do we need to compute the min and max value? */
 	if (minval || maxval) do_range = 1;
-	
+
         /* allocate arrays used to compute the median and noise estimates */
 	differences = calloc(nx, sizeof(int));
 	if (!differences) {
@@ -1101,7 +1101,7 @@ row of the image.
 
 		if (ii == nx) continue;  /* hit end of row */
 		v2 = rowpix[ii];  /* store the good pixel value */
-		
+
 		if (do_range) {
 			if (v2 < xminval) xminval = v2;
 			if (v2 > xmaxval) xmaxval = v2;
@@ -1119,7 +1119,7 @@ row of the image.
 			if (v3 < xminval) xminval = v3;
 			if (v3 > xmaxval) xmaxval = v3;
 		}
-				
+
 		/* find the 4nd valid pixel in row (to be skipped) */
 		ii++;
 		if (nullcheck)
@@ -1132,7 +1132,7 @@ row of the image.
 			if (v4 < xminval) xminval = v4;
 			if (v4 > xmaxval) xmaxval = v4;
 		}
-		
+
 		/* now populate the differences arrays */
 		/* for the remaining pixels in the row */
 		nvals = 0;
@@ -1141,7 +1141,7 @@ row of the image.
 		    /* find the next valid pixel in row */
                     if (nullcheck)
 		        while (ii < nx && rowpix[ii] == nullvalue) ii++;
-		     
+
 		    if (ii == nx) break;  /* hit end of row */
 		    v5 = rowpix[ii];  /* store the good pixel value */
 
@@ -1153,7 +1153,7 @@ row of the image.
 		    /* construct array of 3rd order absolute differences */
 		    if (!(v1 == v2 && v2 == v3 && v3 == v4 && v4 == v5)) {
 		        differences[nvals] = abs((2 * v3) - v1 - v5);
-		        nvals++;  
+		        nvals++;
 		    } else {
 		        /* ignore constant background regions */
 			ngoodpix++;
@@ -1183,16 +1183,16 @@ row of the image.
 	}  /* end of loop over rows */
 
 	    /* compute median of the values for each row */
-	if (nrows == 0) { 
+	if (nrows == 0) {
 	       xnoise = 0;
 	} else if (nrows == 1) {
 	       xnoise = diffs[0];
-	} else {	    
+	} else {
 
 	       qsort(diffs, nrows, sizeof(double), FnCompare_double);
 	       xnoise =  (diffs[(nrows - 1)/2] + diffs[nrows/2]) / 2.;
 
-              FnMeanSigma_double(diffs, nrows, 0, 0.0, 0, &xnoise, &sigma, status); 
+              FnMeanSigma_double(diffs, nrows, 0, 0.0, 0, &xnoise, &sigma, status);
 
 	      /* do a 4.5 sigma rejection of outliers */
 	      jj = 0;
@@ -1205,7 +1205,7 @@ row of the image.
 	        }
 	      }
 	      if (ii != jj)
-                FnMeanSigma_double(diffs, jj, 0, 0.0, 0, &xnoise, &sigma, status); 
+                FnMeanSigma_double(diffs, jj, 0, 0.0, 0, &xnoise, &sigma, status);
 	}
 
 	if (ngood)  *ngood  = ngoodpix;
@@ -1225,7 +1225,7 @@ static int FnNoise3_float
         long ny,            /* number of rows in the image */
 	int nullcheck,      /* check for null values, if true */
 	float nullvalue,    /* value of null pixels, if nullcheck is true */
-   /* returned parameters */   
+   /* returned parameters */
 	long *ngood,        /* number of good, non-null pixels? */
 	float *minval,    /* minimum non-null value */
 	float *maxval,    /* maximum non-null value */
@@ -1235,13 +1235,13 @@ static int FnNoise3_float
 /*
 Estimate the median and background noise in the input image using 3rd order differences.
 
-The noise in the background of the image is calculated using the 3rd order algorithm 
+The noise in the background of the image is calculated using the 3rd order algorithm
 developed for deriving the signal to noise ratio in spectra
 (see issue #42 of the ST-ECF newsletter, http://www.stecf.org/documents/newsletter/)
 
   noise = 1.482602 / sqrt(6) * median (abs(2*flux(i) - flux(i-2) - flux(i+2)))
 
-The returned estimates are the median of the values that are computed for each 
+The returned estimates are the median of the values that are computed for each
 row of the image.
 */
 {
@@ -1250,7 +1250,7 @@ row of the image.
 	float xminval = FLT_MAX, xmaxval = FLT_MIN;
 	int do_range = 0;
 	double *diffs, xnoise = 0;
-	
+
 	if (nx < 5) {
 		/* treat entire array as an image with a single row */
 		nx = nx * ny;
@@ -1278,7 +1278,7 @@ row of the image.
 
 	/* do we need to compute the min and max value? */
 	if (minval || maxval) do_range = 1;
-	
+
         /* allocate arrays used to compute the median and noise estimates */
 	if (noise) {
 	    differences = calloc(nx, sizeof(float));
@@ -1320,7 +1320,7 @@ row of the image.
 
 		if (ii == nx) continue;  /* hit end of row */
 		v2 = rowpix[ii];  /* store the good pixel value */
-		
+
 		if (do_range) {
 			if (v2 < xminval) xminval = v2;
 			if (v2 > xmaxval) xmaxval = v2;
@@ -1338,7 +1338,7 @@ row of the image.
 			if (v3 < xminval) xminval = v3;
 			if (v3 > xmaxval) xmaxval = v3;
 		}
-				
+
 		/* find the 4nd valid pixel in row (to be skipped) */
 		ii++;
 		if (nullcheck)
@@ -1351,7 +1351,7 @@ row of the image.
 			if (v4 < xminval) xminval = v4;
 			if (v4 > xmaxval) xmaxval = v4;
 		}
-		
+
 		/* now populate the differences arrays */
 		/* for the remaining pixels in the row */
 		nvals = 0;
@@ -1362,7 +1362,7 @@ row of the image.
 		        while (ii < nx && rowpix[ii] == nullvalue) {
 			  ii++;
 		        }
-			
+
 		    if (ii == nx) break;  /* hit end of row */
 		    v5 = rowpix[ii];  /* store the good pixel value */
 
@@ -1376,7 +1376,7 @@ row of the image.
 		        if (!(v1 == v2 && v2 == v3 && v3 == v4 && v4 == v5)) {
 
 		            differences[nvals] = (float) fabs((2. * v3) - v1 - v5);
-		            nvals++;  
+		            nvals++;
 		       } else {
 		            /* ignore constant background regions */
 			    ngoodpix++;
@@ -1409,11 +1409,11 @@ row of the image.
 
 	    /* compute median of the values for each row */
 	if (noise) {
-	    if (nrows == 0) { 
+	    if (nrows == 0) {
 	       xnoise = 0;
 	    } else if (nrows == 1) {
 	       xnoise = diffs[0];
-	    } else {	    
+	    } else {
 	       qsort(diffs, nrows, sizeof(double), FnCompare_double);
 	       xnoise =  (diffs[(nrows - 1)/2] + diffs[nrows/2]) / 2.;
 	    }
@@ -1437,7 +1437,7 @@ static int FnNoise3_double
         long ny,            /* number of rows in the image */
 	int nullcheck,      /* check for null values, if true */
 	double nullvalue,    /* value of null pixels, if nullcheck is true */
-   /* returned parameters */   
+   /* returned parameters */
 	long *ngood,        /* number of good, non-null pixels? */
 	double *minval,    /* minimum non-null value */
 	double *maxval,    /* maximum non-null value */
@@ -1447,13 +1447,13 @@ static int FnNoise3_double
 /*
 Estimate the median and background noise in the input image using 3rd order differences.
 
-The noise in the background of the image is calculated using the 3rd order algorithm 
+The noise in the background of the image is calculated using the 3rd order algorithm
 developed for deriving the signal to noise ratio in spectra
 (see issue #42 of the ST-ECF newsletter, http://www.stecf.org/documents/newsletter/)
 
   noise = 1.482602 / sqrt(6) * median (abs(2*flux(i) - flux(i-2) - flux(i+2)))
 
-The returned estimates are the median of the values that are computed for each 
+The returned estimates are the median of the values that are computed for each
 row of the image.
 */
 {
@@ -1462,7 +1462,7 @@ row of the image.
 	double xminval = DBL_MAX, xmaxval = DBL_MIN;
 	int do_range = 0;
 	double *diffs, xnoise = 0;
-	
+
 	if (nx < 5) {
 		/* treat entire array as an image with a single row */
 		nx = nx * ny;
@@ -1490,7 +1490,7 @@ row of the image.
 
 	/* do we need to compute the min and max value? */
 	if (minval || maxval) do_range = 1;
-	
+
         /* allocate arrays used to compute the median and noise estimates */
 	if (noise) {
 	    differences = calloc(nx, sizeof(double));
@@ -1532,7 +1532,7 @@ row of the image.
 
 		if (ii == nx) continue;  /* hit end of row */
 		v2 = rowpix[ii];  /* store the good pixel value */
-		
+
 		if (do_range) {
 			if (v2 < xminval) xminval = v2;
 			if (v2 > xmaxval) xmaxval = v2;
@@ -1550,7 +1550,7 @@ row of the image.
 			if (v3 < xminval) xminval = v3;
 			if (v3 > xmaxval) xmaxval = v3;
 		}
-				
+
 		/* find the 4nd valid pixel in row (to be skipped) */
 		ii++;
 		if (nullcheck)
@@ -1563,7 +1563,7 @@ row of the image.
 			if (v4 < xminval) xminval = v4;
 			if (v4 > xmaxval) xmaxval = v4;
 		}
-		
+
 		/* now populate the differences arrays */
 		/* for the remaining pixels in the row */
 		nvals = 0;
@@ -1572,7 +1572,7 @@ row of the image.
 		    /* find the next valid pixel in row */
                     if (nullcheck)
 		        while (ii < nx && rowpix[ii] == nullvalue) ii++;
-		     
+
 		    if (ii == nx) break;  /* hit end of row */
 		    v5 = rowpix[ii];  /* store the good pixel value */
 
@@ -1586,7 +1586,7 @@ row of the image.
 		        if (!(v1 == v2 && v2 == v3 && v3 == v4 && v4 == v5)) {
 
 		            differences[nvals] = fabs((2. * v3) - v1 - v5);
-		            nvals++;  
+		            nvals++;
 		        } else {
 		            /* ignore constant background regions */
 			    ngoodpix++;
@@ -1619,11 +1619,11 @@ row of the image.
 
 	    /* compute median of the values for each row */
 	if (noise) {
-	    if (nrows == 0) { 
+	    if (nrows == 0) {
 	       xnoise = 0;
 	    } else if (nrows == 1) {
 	       xnoise = diffs[0];
-	    } else {	    
+	    } else {
 	       qsort(diffs, nrows, sizeof(double), FnCompare_double);
 	       xnoise =  (diffs[(nrows - 1)/2] + diffs[nrows/2]) / 2.;
 	    }
@@ -1647,7 +1647,7 @@ static int FnNoise1_short
         long ny,            /* number of rows in the image */
 	int nullcheck,      /* check for null values, if true */
 	short nullvalue,    /* value of null pixels, if nullcheck is true */
-   /* returned parameters */   
+   /* returned parameters */
 	double *noise,      /* returned R.M.S. value of all non-null pixels */
 	int *status)        /* error status */
 /*
@@ -1655,7 +1655,7 @@ Estimate the background noise in the input image using sigma of 1st order differ
 
   noise = 1.0 / sqrt(2) * rms of (flux[i] - flux[i-1])
 
-The returned estimate is the median of the values that are computed for each 
+The returned estimate is the median of the values that are computed for each
 row of the image.
 */
 {
@@ -1669,7 +1669,7 @@ row of the image.
 		*noise = 0;
 		return(*status);
 	}
-	
+
         /* allocate arrays used to compute the median and noise estimates */
 	differences = calloc(nx, sizeof(short));
 	if (!differences) {
@@ -1705,13 +1705,13 @@ row of the image.
 		    /* find the next valid pixel in row */
                     if (nullcheck)
 		        while (ii < nx && rowpix[ii] == nullvalue) ii++;
-		     
+
 		    if (ii == nx) break;  /* hit end of row */
-		
+
 		    /* construct array of 1st order differences */
 		    differences[nvals] = v1 - rowpix[ii];
 
-		    nvals++;  
+		    nvals++;
 		    /* shift over 1 pixel */
 		    v1 = rowpix[ii];
 	        }  /* end of loop over pixels in the row */
@@ -1745,7 +1745,7 @@ row of the image.
 	}  /* end of loop over rows */
 
 	/* compute median of the values for each row */
-	if (nrows == 0) { 
+	if (nrows == 0) {
 	       xnoise = 0;
 	} else if (nrows == 1) {
 	       xnoise = diffs[0];
@@ -1768,7 +1768,7 @@ static int FnNoise1_int
         long ny,            /* number of rows in the image */
 	int nullcheck,      /* check for null values, if true */
 	int nullvalue,    /* value of null pixels, if nullcheck is true */
-   /* returned parameters */   
+   /* returned parameters */
 	double *noise,      /* returned R.M.S. value of all non-null pixels */
 	int *status)        /* error status */
 /*
@@ -1776,7 +1776,7 @@ Estimate the background noise in the input image using sigma of 1st order differ
 
   noise = 1.0 / sqrt(2) * rms of (flux[i] - flux[i-1])
 
-The returned estimate is the median of the values that are computed for each 
+The returned estimate is the median of the values that are computed for each
 row of the image.
 */
 {
@@ -1790,7 +1790,7 @@ row of the image.
 		*noise = 0;
 		return(*status);
 	}
-	
+
         /* allocate arrays used to compute the median and noise estimates */
 	differences = calloc(nx, sizeof(int));
 	if (!differences) {
@@ -1826,13 +1826,13 @@ row of the image.
 		    /* find the next valid pixel in row */
                     if (nullcheck)
 		        while (ii < nx && rowpix[ii] == nullvalue) ii++;
-		     
+
 		    if (ii == nx) break;  /* hit end of row */
-		
+
 		    /* construct array of 1st order differences */
 		    differences[nvals] = v1 - rowpix[ii];
 
-		    nvals++;  
+		    nvals++;
 		    /* shift over 1 pixel */
 		    v1 = rowpix[ii];
 	        }  /* end of loop over pixels in the row */
@@ -1866,7 +1866,7 @@ row of the image.
 	}  /* end of loop over rows */
 
 	/* compute median of the values for each row */
-	if (nrows == 0) { 
+	if (nrows == 0) {
 	       xnoise = 0;
 	} else if (nrows == 1) {
 	       xnoise = diffs[0];
@@ -1889,7 +1889,7 @@ static int FnNoise1_float
         long ny,            /* number of rows in the image */
 	int nullcheck,      /* check for null values, if true */
 	float nullvalue,    /* value of null pixels, if nullcheck is true */
-   /* returned parameters */   
+   /* returned parameters */
 	double *noise,      /* returned R.M.S. value of all non-null pixels */
 	int *status)        /* error status */
 /*
@@ -1897,7 +1897,7 @@ Estimate the background noise in the input image using sigma of 1st order differ
 
   noise = 1.0 / sqrt(2) * rms of (flux[i] - flux[i-1])
 
-The returned estimate is the median of the values that are computed for each 
+The returned estimate is the median of the values that are computed for each
 row of the image.
 */
 {
@@ -1911,7 +1911,7 @@ row of the image.
 		*noise = 0;
 		return(*status);
 	}
-	
+
         /* allocate arrays used to compute the median and noise estimates */
 	differences = calloc(nx, sizeof(float));
 	if (!differences) {
@@ -1947,13 +1947,13 @@ row of the image.
 		    /* find the next valid pixel in row */
                     if (nullcheck)
 		        while (ii < nx && rowpix[ii] == nullvalue) ii++;
-		     
+
 		    if (ii == nx) break;  /* hit end of row */
-		
+
 		    /* construct array of 1st order differences */
 		    differences[nvals] = v1 - rowpix[ii];
 
-		    nvals++;  
+		    nvals++;
 		    /* shift over 1 pixel */
 		    v1 = rowpix[ii];
 	        }  /* end of loop over pixels in the row */
@@ -1987,7 +1987,7 @@ row of the image.
 	}  /* end of loop over rows */
 
 	/* compute median of the values for each row */
-	if (nrows == 0) { 
+	if (nrows == 0) {
 	       xnoise = 0;
 	} else if (nrows == 1) {
 	       xnoise = diffs[0];
@@ -2010,7 +2010,7 @@ static int FnNoise1_double
         long ny,            /* number of rows in the image */
 	int nullcheck,      /* check for null values, if true */
 	double nullvalue,    /* value of null pixels, if nullcheck is true */
-   /* returned parameters */   
+   /* returned parameters */
 	double *noise,      /* returned R.M.S. value of all non-null pixels */
 	int *status)        /* error status */
 /*
@@ -2018,7 +2018,7 @@ Estimate the background noise in the input image using sigma of 1st order differ
 
   noise = 1.0 / sqrt(2) * rms of (flux[i] - flux[i-1])
 
-The returned estimate is the median of the values that are computed for each 
+The returned estimate is the median of the values that are computed for each
 row of the image.
 */
 {
@@ -2032,7 +2032,7 @@ row of the image.
 		*noise = 0;
 		return(*status);
 	}
-	
+
         /* allocate arrays used to compute the median and noise estimates */
 	differences = calloc(nx, sizeof(double));
 	if (!differences) {
@@ -2068,13 +2068,13 @@ row of the image.
 		    /* find the next valid pixel in row */
                     if (nullcheck)
 		        while (ii < nx && rowpix[ii] == nullvalue) ii++;
-		     
+
 		    if (ii == nx) break;  /* hit end of row */
-		
+
 		    /* construct array of 1st order differences */
 		    differences[nvals] = v1 - rowpix[ii];
 
-		    nvals++;  
+		    nvals++;
 		    /* shift over 1 pixel */
 		    v1 = rowpix[ii];
 	        }  /* end of loop over pixels in the row */
@@ -2108,7 +2108,7 @@ row of the image.
 	}  /* end of loop over rows */
 
 	/* compute median of the values for each row */
-	if (nrows == 0) { 
+	if (nrows == 0) {
 	       xnoise = 0;
 	} else if (nrows == 1) {
 	       xnoise = diffs[0];
@@ -2129,7 +2129,7 @@ static int FnCompare_short(const void *v1, const void *v2)
 {
    const short *i1 = v1;
    const short *i2 = v2;
-   
+
    if (*i1 < *i2)
      return(-1);
    else if (*i1 > *i2)
@@ -2142,7 +2142,7 @@ static int FnCompare_int(const void *v1, const void *v2)
 {
    const int *i1 = v1;
    const int *i2 = v2;
-   
+
    if (*i1 < *i2)
      return(-1);
    else if (*i1 > *i2)
@@ -2155,7 +2155,7 @@ static int FnCompare_float(const void *v1, const void *v2)
 {
    const float *i1 = v1;
    const float *i2 = v2;
-   
+
    if (*i1 < *i2)
      return(-1);
    else if (*i1 > *i2)
@@ -2168,7 +2168,7 @@ static int FnCompare_double(const void *v1, const void *v2)
 {
    const double *i1 = v1;
    const double *i2 = v2;
-   
+
    if (*i1 < *i2)
      return(-1);
    else if (*i1 > *i2)
@@ -2189,7 +2189,7 @@ static int FnCompare_double(const void *v1, const void *v2)
 
 #define ELEM_SWAP(a,b) { register float t=(a);(a)=(b);(b)=t; }
 
-static float quick_select_float(float arr[], int n) 
+static float quick_select_float(float arr[], int n)
 {
     int low, high ;
     int median;
@@ -2245,7 +2245,7 @@ static float quick_select_float(float arr[], int n)
 
 #define ELEM_SWAP(a,b) { register short t=(a);(a)=(b);(b)=t; }
 
-static short quick_select_short(short arr[], int n) 
+static short quick_select_short(short arr[], int n)
 {
     int low, high ;
     int median;
@@ -2301,7 +2301,7 @@ static short quick_select_short(short arr[], int n)
 
 #define ELEM_SWAP(a,b) { register int t=(a);(a)=(b);(b)=t; }
 
-static int quick_select_int(int arr[], int n) 
+static int quick_select_int(int arr[], int n)
 {
     int low, high ;
     int median;
@@ -2357,7 +2357,7 @@ static int quick_select_int(int arr[], int n)
 
 #define ELEM_SWAP(a,b) { register double t=(a);(a)=(b);(b)=t; }
 
-static double quick_select_double(double arr[], int n) 
+static double quick_select_double(double arr[], int n)
 {
     int low, high ;
     int median;

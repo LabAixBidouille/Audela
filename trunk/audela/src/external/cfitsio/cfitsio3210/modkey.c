@@ -92,7 +92,7 @@ int ffuky( fitsfile *fptr,     /* I - FITS file pointer        */
         *status = BAD_DATATYPE;
 
     return(*status);
-} 
+}
 /*--------------------------------------------------------------------------*/
 int ffukyu(fitsfile *fptr,    /* I - FITS file pointer  */
            const char *keyname,     /* I - keyword name       */
@@ -118,7 +118,7 @@ int ffukys(fitsfile *fptr,    /* I - FITS file pointer  */
            const char *keyname,     /* I - keyword name       */
            char *value,       /* I - keyword value      */
            char *comm,        /* I - keyword comment    */
-           int *status)       /* IO - error status      */ 
+           int *status)       /* IO - error status      */
 {
     int tstatus;
 
@@ -139,7 +139,7 @@ int ffukls(fitsfile *fptr,    /* I - FITS file pointer  */
            const char *keyname,     /* I - keyword name       */
            char *value,       /* I - keyword value      */
            char *comm,        /* I - keyword comment    */
-           int *status)       /* IO - error status      */ 
+           int *status)       /* IO - error status      */
 {
     /* update a long string keyword */
 
@@ -202,7 +202,7 @@ int ffukyj(fitsfile *fptr,    /* I - FITS file pointer  */
 int ffukyf(fitsfile *fptr,    /* I - FITS file pointer  */
            const char *keyname,     /* I - keyword name       */
            float value,       /* I - keyword value      */
-           int decim,         /* I - no of decimals     */         
+           int decim,         /* I - no of decimals     */
            char *comm,        /* I - keyword comment    */
            int *status)       /* IO - error status      */
 {
@@ -290,7 +290,7 @@ int ffukyd(fitsfile *fptr,    /* I - FITS file pointer  */
 int ffukfc(fitsfile *fptr,    /* I - FITS file pointer  */
            const char *keyname,     /* I - keyword name       */
            float *value,      /* I - keyword value      */
-           int decim,         /* I - no of decimals     */         
+           int decim,         /* I - no of decimals     */
            char *comm,        /* I - keyword comment    */
            int *status)       /* IO - error status      */
 {
@@ -456,7 +456,7 @@ int ffmnam(fitsfile *fptr,    /* I - FITS file pointer     */
     char comm[FLEN_COMMENT];
     char value[FLEN_VALUE];
     char card[FLEN_CARD];
- 
+
     if (*status > 0)           /* inherit input status value if > 0 */
         return(*status);
 
@@ -477,7 +477,7 @@ int ffmcom(fitsfile *fptr,    /* I - FITS file pointer  */
     char oldcomm[FLEN_COMMENT];
     char value[FLEN_VALUE];
     char card[FLEN_CARD];
- 
+
     if (*status > 0)           /* inherit input status value if > 0 */
         return(*status);
 
@@ -497,7 +497,7 @@ int ffpunt(fitsfile *fptr,    /* I - FITS file pointer   */
 /*
     Write (put) the units string into the comment field of the existing
     keyword. This routine uses a local FITS convention (not defined in the
-    official FITS standard) in which the units are enclosed in 
+    official FITS standard) in which the units are enclosed in
     square brackets following the '/' comment field delimiter, e.g.:
 
     KEYWORD =                   12 / [kpc] comment string goes here
@@ -509,7 +509,7 @@ int ffpunt(fitsfile *fptr,    /* I - FITS file pointer   */
     char card[FLEN_CARD];
     char *loc;
     size_t len;
- 
+
     if (*status > 0)           /* inherit input status value if > 0 */
         return(*status);
 
@@ -522,7 +522,7 @@ int ffpunt(fitsfile *fptr,    /* I - FITS file pointer   */
         strcpy(newcomm, "[");
         strncat(newcomm, unit, 45);  /* max allowed length is about 45 chars */
         strcat(newcomm, "] ");
-        len = strlen(newcomm);  
+        len = strlen(newcomm);
         len = FLEN_COMMENT - len - 1;  /* amount of space left in the field */
     }
     else
@@ -675,7 +675,7 @@ int ffmkls( fitsfile *fptr,     /* I - FITS file pointer        */
         /* move back to previous position to ensure that we delete */
         /* the right keyword in case there are more than one keyword */
         /* with this same name. */
-        ffgrec(fptr, keypos - 1, card, status); 
+        ffgrec(fptr, keypos - 1, card, status);
     }
     else
         strcpy(comm, incomm);  /* copy the input comment string */
@@ -689,7 +689,7 @@ int ffmkls( fitsfile *fptr,     /* I - FITS file pointer        */
     /* now construct the new keyword, and insert into header */
     remain = strlen(value);    /* number of characters to write out */
     next = 0;                  /* pointer to next character to write */
-    
+
     /* count the number of single quote characters in the string */
     nquote = 0;
     cptr = strchr(value, '\'');   /* search for quote character */
@@ -703,7 +703,7 @@ int ffmkls( fitsfile *fptr,     /* I - FITS file pointer        */
 
     strncpy(tmpkeyname, keyname, 80);
     tmpkeyname[80] = '\0';
-    
+
     cptr = tmpkeyname;
     while(*cptr == ' ')   /* skip over leading spaces in name */
         cptr++;
@@ -720,7 +720,7 @@ int ffmkls( fitsfile *fptr,     /* I - FITS file pointer        */
     else
     {
         /* This a HIERARCH keyword */
-        if (FSTRNCMP(cptr, "HIERARCH ", 9) && 
+        if (FSTRNCMP(cptr, "HIERARCH ", 9) &&
             FSTRNCMP(cptr, "hierarch ", 9))
             nchar = 66 - nquote - namelen;
         else
@@ -760,7 +760,7 @@ int ffmkls( fitsfile *fptr,     /* I - FITS file pointer        */
         }
 
         ffirec(fptr, keypos, card, status);  /* insert the keyword */
-       
+
         keypos++;        /* next insert position */
         contin = 1;
         remain -= nchar;
@@ -1087,7 +1087,7 @@ int ffikyu(fitsfile *fptr,    /* I - FITS file pointer  */
            char *comm,        /* I - keyword comment    */
            int *status)       /* IO - error status      */
 /*
-  Insert a null-valued keyword and comment into the FITS header.  
+  Insert a null-valued keyword and comment into the FITS header.
 */
 {
     char valstring[FLEN_VALUE];
@@ -1147,7 +1147,7 @@ int ffikls( fitsfile *fptr,     /* I - FITS file pointer        */
     /*  construct the new keyword, and insert into header */
     remain = strlen(value);    /* number of characters to write out */
     next = 0;                  /* pointer to next character to write */
-    
+
     /* count the number of single quote characters in the string */
     nquote = 0;
     cptr = strchr(value, '\'');   /* search for quote character */
@@ -1162,7 +1162,7 @@ int ffikls( fitsfile *fptr,     /* I - FITS file pointer        */
 
     strncpy(tmpkeyname, keyname, 80);
     tmpkeyname[80] = '\0';
-    
+
     cptr = tmpkeyname;
     while(*cptr == ' ')   /* skip over leading spaces in name */
         cptr++;
@@ -1179,7 +1179,7 @@ int ffikls( fitsfile *fptr,     /* I - FITS file pointer        */
     else
     {
         /* This a HIERARCH keyword */
-        if (FSTRNCMP(cptr, "HIERARCH ", 9) && 
+        if (FSTRNCMP(cptr, "HIERARCH ", 9) &&
             FSTRNCMP(cptr, "hierarch ", 9))
             nchar = 66 - nquote - namelen;
         else
@@ -1219,7 +1219,7 @@ int ffikls( fitsfile *fptr,     /* I - FITS file pointer        */
         }
 
         ffikey(fptr, card, status);  /* insert the keyword */
-       
+
         contin = 1;
         remain -= nchar;
         next  += nchar;
@@ -1270,7 +1270,7 @@ int ffikyf(fitsfile *fptr,    /* I - FITS file pointer  */
            const char *keyname,     /* I - keyword name       */
            float value,       /* I - keyword value      */
            int decim,         /* I - no of decimals     */
-           char *comm,        /* I - keyword comment    */ 
+           char *comm,        /* I - keyword comment    */
            int *status)       /* IO - error status      */
 {
     char valstring[FLEN_VALUE];
@@ -1290,7 +1290,7 @@ int ffikye(fitsfile *fptr,    /* I - FITS file pointer  */
            const char *keyname,     /* I - keyword name       */
            float value,       /* I - keyword value      */
            int decim,         /* I - no of decimals     */
-           char *comm,        /* I - keyword comment    */ 
+           char *comm,        /* I - keyword comment    */
            int *status)       /* IO - error status      */
 {
     char valstring[FLEN_VALUE];
@@ -1310,7 +1310,7 @@ int ffikyg(fitsfile *fptr,    /* I - FITS file pointer  */
            const char *keyname,     /* I - keyword name       */
            double value,      /* I - keyword value      */
            int decim,         /* I - no of decimals     */
-           char *comm,        /* I - keyword comment    */ 
+           char *comm,        /* I - keyword comment    */
            int *status)       /* IO - error status      */
 {
     char valstring[FLEN_VALUE];
@@ -1330,7 +1330,7 @@ int ffikyd(fitsfile *fptr,    /* I - FITS file pointer  */
            const char *keyname,     /* I - keyword name       */
            double value,      /* I - keyword value      */
            int decim,         /* I - no of decimals     */
-           char *comm,        /* I - keyword comment    */ 
+           char *comm,        /* I - keyword comment    */
            int *status)       /* IO - error status      */
 {
     char valstring[FLEN_VALUE];
@@ -1350,7 +1350,7 @@ int ffikfc(fitsfile *fptr,    /* I - FITS file pointer  */
            const char *keyname,     /* I - keyword name       */
            float *value,      /* I - keyword value      */
            int decim,         /* I - no of decimals     */
-           char *comm,        /* I - keyword comment    */ 
+           char *comm,        /* I - keyword comment    */
            int *status)       /* IO - error status      */
 {
     char valstring[FLEN_VALUE], tmpstring[FLEN_VALUE];
@@ -1377,7 +1377,7 @@ int ffikyc(fitsfile *fptr,    /* I - FITS file pointer  */
            const char *keyname,     /* I - keyword name       */
            float *value,      /* I - keyword value      */
            int decim,         /* I - no of decimals     */
-           char *comm,        /* I - keyword comment    */ 
+           char *comm,        /* I - keyword comment    */
            int *status)       /* IO - error status      */
 {
     char valstring[FLEN_VALUE], tmpstring[FLEN_VALUE];
@@ -1404,7 +1404,7 @@ int ffikfm(fitsfile *fptr,    /* I - FITS file pointer  */
            const char *keyname,     /* I - keyword name       */
            double *value,     /* I - keyword value      */
            int decim,         /* I - no of decimals     */
-           char *comm,        /* I - keyword comment    */ 
+           char *comm,        /* I - keyword comment    */
            int *status)       /* IO - error status      */
 {
     char valstring[FLEN_VALUE], tmpstring[FLEN_VALUE];
@@ -1432,7 +1432,7 @@ int ffikym(fitsfile *fptr,    /* I - FITS file pointer  */
            const char *keyname,     /* I - keyword name       */
            double *value,     /* I - keyword value      */
            int decim,         /* I - no of decimals     */
-           char *comm,        /* I - keyword comment    */ 
+           char *comm,        /* I - keyword comment    */
            int *status)       /* IO - error status      */
 {
     char valstring[FLEN_VALUE], tmpstring[FLEN_VALUE];
@@ -1492,11 +1492,11 @@ int ffikey(fitsfile *fptr,    /* I - FITS file pointer  */
     {
         nblocks = 1;
         if (ffiblk(fptr, nblocks, 0, status) > 0) /* add new 2880-byte block*/
-            return(*status);  
+            return(*status);
     }
 
     /* no. keywords to shift */
-    nshift= (int) (( (fptr->Fptr)->headend - (fptr->Fptr)->nextkey ) / 80); 
+    nshift= (int) (( (fptr->Fptr)->headend - (fptr->Fptr)->nextkey ) / 80);
 
     strncpy(buff2, card, 80);     /* copy card to output buffer */
     buff2[80] = '\0';
@@ -1619,7 +1619,7 @@ int ffdrec(fitsfile *fptr,   /* I - FITS file pointer  */
         return(*status = KEY_OUT_BOUNDS);
     }
 
-    bytepos = (fptr->Fptr)->headend - 80;  /* last keyword in header */  
+    bytepos = (fptr->Fptr)->headend - 80;  /* last keyword in header */
 
     /* construct a blank keyword */
     strcpy(buff2, "                                        ");

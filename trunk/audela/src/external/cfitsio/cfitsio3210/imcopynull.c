@@ -71,14 +71,14 @@ int main(int argc, char *argv[])
     fits_open_file(&infptr, argv[1], READONLY, &status);
     fits_create_file(&outfptr, argv[2], &status);
 
-    if (status != 0) {    
+    if (status != 0) {
         fits_report_error(stderr, status);
         return(status);
     }
 
     fits_get_hdu_num(infptr, &hdupos);  /* Get the current HDU position */
 
-    /* Copy only a single HDU if a specific extension was given */ 
+    /* Copy only a single HDU if a specific extension was given */
     if (hdupos != 1 || strchr(argv[1], '[')) single = 1;
 
     for (; !status; hdupos++)  /* Main loop through each extension */
@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
              * naxes[5] * naxes[6] * naxes[7] * naxes[8];
       }
 
-      if (hdutype != IMAGE_HDU || naxis == 0 || totpix == 0) { 
+      if (hdutype != IMAGE_HDU || naxis == 0 || totpix == 0) {
 
           /* just copy tables and null images */
           fits_copy_hdu(infptr, outfptr, 0, &status);
@@ -109,14 +109,14 @@ int main(int argc, char *argv[])
           fits_create_img(outfptr, bitpix, naxis, naxes, &status);
 
           /* copy all the user keywords (not the structural keywords) */
-          fits_get_hdrspace(infptr, &nkeys, NULL, &status); 
+          fits_get_hdrspace(infptr, &nkeys, NULL, &status);
 
           for (ii = 1; ii <= nkeys; ii++) {
               fits_read_record(infptr, ii, card, &status);
               if (fits_get_keyclass(card) > TYP_CMPRS_KEY)
                   fits_write_record(outfptr, card, &status);
           }
-	  
+
           /* for integer datatype, we don't have to worry about null values */
 	  nulptr = &nulval;
 
@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
           while (totpix > 0 && !status)
           {
              /* read all or part of image then write it back to the output file */
-             fits_read_img(infptr, datatype, first, npix, 
+             fits_read_img(infptr, datatype, first, npix,
                      nulptr, array, &anynul, &status);
              fits_write_imgnull(outfptr, datatype, first, npix, array, nulptr, &status);
              totpix = totpix - npix;

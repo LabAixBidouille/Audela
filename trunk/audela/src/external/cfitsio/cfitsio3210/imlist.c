@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
           }
         }
         fits_close_file(fptr, &status);
-    } 
+    }
 
     if (status) fits_report_error(stderr, status); /* print any error message */
     return(status);

@@ -21,7 +21,7 @@ int ffrsim(fitsfile *fptr,      /* I - FITS file pointer           */
 {
     LONGLONG tnaxes[99];
     int ii;
-    
+
     if (*status > 0)
         return(*status);
 
@@ -58,7 +58,7 @@ int ffrsimll(fitsfile *fptr,    /* I - FITS file pointer           */
     }
          /* rescan header if data structure is undefined */
     else if ((fptr->Fptr)->datastart == DATA_UNDEFINED)
-        if ( ffrdef(fptr, status) > 0)               
+        if ( ffrdef(fptr, status) > 0)
             return(*status);
 
     /* get current image size parameters */
@@ -76,7 +76,7 @@ int ffrsimll(fitsfile *fptr,    /* I - FITS file pointer           */
 
     /* test that the new values are legal */
 
-    if (longbitpix != BYTE_IMG && longbitpix != SHORT_IMG && 
+    if (longbitpix != BYTE_IMG && longbitpix != SHORT_IMG &&
         longbitpix != LONG_IMG && longbitpix != LONGLONG_IMG &&
         longbitpix != FLOAT_IMG && longbitpix != DOUBLE_IMG)
     {
@@ -120,7 +120,7 @@ int ffrsimll(fitsfile *fptr,    /* I - FITS file pointer           */
     {
         oldsize = 1;
         for (ii = 0; ii < onaxis; ii++)
-            oldsize *= onaxes[ii];  
+            oldsize *= onaxes[ii];
         oldsize = (oldsize + pcount) * gcount * (abs(obitpix) / 8);
     }
 
@@ -132,13 +132,13 @@ int ffrsimll(fitsfile *fptr,    /* I - FITS file pointer           */
     if (newsize > oldsize)   /* have to insert new blocks for image */
     {
         nblocks = (long) (newsize - oldsize);
-        if (ffiblk(fptr, nblocks, 1, status) > 0)  
+        if (ffiblk(fptr, nblocks, 1, status) > 0)
             return(*status);
     }
     else if (oldsize > newsize)  /* have to delete blocks from image */
     {
         nblocks = (long) (oldsize - newsize);
-        if (ffdblk(fptr, nblocks, status) > 0)  
+        if (ffdblk(fptr, nblocks, status) > 0)
             return(*status);
     }
 
@@ -158,7 +158,7 @@ int ffrsimll(fitsfile *fptr,    /* I - FITS file pointer           */
     }
 
     /* modify the existing NAXISn keywords */
-    nmodify = minvalue(naxis, onaxis); 
+    nmodify = minvalue(naxis, onaxis);
     for (ii = 0; ii < nmodify; ii++)
     {
         ffkeyn("NAXIS", ii+1, keyname, status);
@@ -167,7 +167,7 @@ int ffrsimll(fitsfile *fptr,    /* I - FITS file pointer           */
 
     if (naxis > onaxis)  /* insert additional NAXISn keywords */
     {
-        strcpy(comment,"length of data axis");  
+        strcpy(comment,"length of data axis");
         for (ii = onaxis; ii < naxis; ii++)
         {
             ffkeyn("NAXIS", ii+1, keyname, status);
@@ -230,7 +230,7 @@ int ffirow(fitsfile *fptr,  /* I - FITS file pointer                        */
     }
          /* rescan header if data structure is undefined */
     else if ((fptr->Fptr)->datastart == DATA_UNDEFINED)
-        if ( ffrdef(fptr, status) > 0)               
+        if ( ffrdef(fptr, status) > 0)
             return(*status);
 
     if ((fptr->Fptr)->hdutype == IMAGE_HDU)
@@ -317,7 +317,7 @@ int ffdrow(fitsfile *fptr,  /* I - FITS file pointer                        */
     }
         /* rescan header if data structure is undefined */
     else if ((fptr->Fptr)->datastart == DATA_UNDEFINED)
-        if ( ffrdef(fptr, status) > 0)               
+        if ( ffrdef(fptr, status) > 0)
             return(*status);
 
     if ((fptr->Fptr)->hdutype == IMAGE_HDU)
@@ -369,7 +369,7 @@ int ffdrow(fitsfile *fptr,  /* I - FITS file pointer                        */
     nblock = (long) ((nshift + freespace) / 2880);   /* number of blocks */
 
     /* delete integral number blocks */
-    if (nblock > 0) 
+    if (nblock > 0)
         ffdblk(fptr, nblock, status);
 
     /* update the heap starting address */
@@ -405,7 +405,7 @@ and gives a list of rows or row ranges separated by commas.
     int nranges, nranges2, ii;
     long *minrow, *maxrow, nrows, *rowarray, jj, kk;
     LONGLONG naxis2;
-    
+
     if (*status > 0)
         return(*status);
 
@@ -415,7 +415,7 @@ and gives a list of rows or row ranges separated by commas.
     }
         /* rescan header if data structure is undefined */
     else if ((fptr->Fptr)->datastart == DATA_UNDEFINED)
-        if ( ffrdef(fptr, status) > 0)               
+        if ( ffrdef(fptr, status) > 0)
             return(*status);
 
     if ((fptr->Fptr)->hdutype == IMAGE_HDU)
@@ -431,7 +431,7 @@ and gives a list of rows or row ranges separated by commas.
     cptr = ranges;
     for (nranges = 1; (cptr = strchr(cptr, ',')); nranges++)
         cptr++;
- 
+
     minrow = calloc(nranges, sizeof(long));
     maxrow = calloc(nranges, sizeof(long));
 
@@ -473,7 +473,7 @@ and gives a list of rows or row ranges separated by commas.
 
     /* delete the rows */
     ffdrws(fptr, rowarray, nrows, status);
-    
+
     free(rowarray);
     free(maxrow);
     free(minrow);
@@ -501,7 +501,7 @@ int ffdrws(fitsfile *fptr,  /* I - FITS file pointer                        */
 
     /* rescan header if data structure is undefined */
     if ((fptr->Fptr)->datastart == DATA_UNDEFINED)
-        if ( ffrdef(fptr, status) > 0)               
+        if ( ffrdef(fptr, status) > 0)
             return(*status);
 
     if ((fptr->Fptr)->hdutype == IMAGE_HDU)
@@ -555,7 +555,7 @@ int ffdrws(fitsfile *fptr,  /* I - FITS file pointer                        */
     /* work through the list of rows to delete */
     for (ii = 1; ii < nrows; nextrow++, nextrowpos += naxis1)
     {
-        if (nextrow < rownum[ii])  
+        if (nextrow < rownum[ii])
         {   /* keep this row, so copy it to the new position */
 
             ffmbyt(fptr, nextrowpos, REPORT_EOF, status);
@@ -595,17 +595,17 @@ int ffdrws(fitsfile *fptr,  /* I - FITS file pointer                        */
         }
         insertpos  += naxis1;
         nextrowpos += naxis1;
-        nextrow++; 
+        nextrow++;
     }
     free(buffer);
-    
+
     /* now delete the empty rows at the end of the table */
     ffdrow(fptr, naxis2 - nrows + 1, nrows, status);
 
     /* Update the heap data, if any.  This will remove any orphaned data */
     /* that was only pointed to by the rows that have been deleted */
     ffcmph(fptr, status);
-    
+
     return(*status);
 }
 /*--------------------------------------------------------------------------*/
@@ -630,7 +630,7 @@ int ffdrwsll(fitsfile *fptr, /* I - FITS file pointer                        */
 
     /* rescan header if data structure is undefined */
     if ((fptr->Fptr)->datastart == DATA_UNDEFINED)
-        if ( ffrdef(fptr, status) > 0)               
+        if ( ffrdef(fptr, status) > 0)
             return(*status);
 
     if ((fptr->Fptr)->hdutype == IMAGE_HDU)
@@ -684,7 +684,7 @@ int ffdrwsll(fitsfile *fptr, /* I - FITS file pointer                        */
     /* work through the list of rows to delete */
     for (ii = 1; ii < nrows; nextrow++, nextrowpos += naxis1)
     {
-        if (nextrow < rownum[ii])  
+        if (nextrow < rownum[ii])
         {   /* keep this row, so copy it to the new position */
 
             ffmbyt(fptr, nextrowpos, REPORT_EOF, status);
@@ -724,17 +724,17 @@ int ffdrwsll(fitsfile *fptr, /* I - FITS file pointer                        */
         }
         insertpos  += naxis1;
         nextrowpos += naxis1;
-        nextrow++; 
+        nextrow++;
     }
     free(buffer);
-    
+
     /* now delete the empty rows at the end of the table */
     ffdrow(fptr, naxis2 - nrows + 1, nrows, status);
 
     /* Update the heap data, if any.  This will remove any orphaned data */
     /* that was only pointed to by the rows that have been deleted */
     ffcmph(fptr, status);
-    
+
     return(*status);
 }
 /*--------------------------------------------------------------------------*/
@@ -749,12 +749,12 @@ int ffrwrg(
 {
 /*
    parse the input list of row ranges, returning the number of ranges,
-   and the min and max row value in each range. 
+   and the min and max row value in each range.
 
-   The only characters allowed in the input rowlist are 
-       decimal digits, minus sign, and comma (and non-significant spaces) 
+   The only characters allowed in the input rowlist are
+       decimal digits, minus sign, and comma (and non-significant spaces)
 
-   Example:  
+   Example:
 
      list = "10-20, 30-35,50"
 
@@ -779,7 +779,7 @@ int ffrwrg(
     *numranges = 0;
 
     while (*next == ' ')next++;   /* skip spaces */
-   
+
     while (*next != '\0') {
 
       /* find min value of next range; *next must be '-' or a digit */
@@ -887,12 +887,12 @@ int ffrwrgll(
 {
 /*
    parse the input list of row ranges, returning the number of ranges,
-   and the min and max row value in each range. 
+   and the min and max row value in each range.
 
-   The only characters allowed in the input rowlist are 
-       decimal digits, minus sign, and comma (and non-significant spaces) 
+   The only characters allowed in the input rowlist are
+       decimal digits, minus sign, and comma (and non-significant spaces)
 
-   Example:  
+   Example:
 
      list = "10-20, 30-35,50"
 
@@ -918,7 +918,7 @@ int ffrwrgll(
     *numranges = 0;
 
     while (*next == ' ')next++;   /* skip spaces */
-   
+
     while (*next != '\0') {
 
       /* find min value of next range; *next must be '-' or a digit */
@@ -1075,7 +1075,7 @@ int fficls(fitsfile *fptr,  /* I - FITS file pointer                        */
     }
         /* rescan header if data structure is undefined */
     else if ((fptr->Fptr)->datastart == DATA_UNDEFINED)
-        if ( ffrdef(fptr, status) > 0)               
+        if ( ffrdef(fptr, status) > 0)
             return(*status);
 
     if ((fptr->Fptr)->hdutype == IMAGE_HDU)
@@ -1120,7 +1120,7 @@ int fficls(fitsfile *fptr,  /* I - FITS file pointer                        */
         }
     }
 
-    if (*status > 0) 
+    if (*status > 0)
         return(*status);
 
     /* get the current size of the table */
@@ -1207,11 +1207,11 @@ int fficls(fitsfile *fptr,  /* I - FITS file pointer                        */
         ffupch(tfm);         /* make sure format is in upper case */
         ffkeyn("TFORM", colnum, keyname, status);
 
-        if (abs(datacode) == TSBYTE) 
+        if (abs(datacode) == TSBYTE)
         {
            /* Replace the 'S' with an 'B' in the TFORMn code */
            cptr = tfm;
-           while (*cptr != 'S') 
+           while (*cptr != 'S')
               cptr++;
 
            *cptr = 'B';
@@ -1227,11 +1227,11 @@ int fficls(fitsfile *fptr,  /* I - FITS file pointer                        */
            strcpy(comm, "data are not scaled");
            ffpkyg(fptr, keyname, 1., 0, comm, status);
         }
-        else if (abs(datacode) == TUSHORT) 
+        else if (abs(datacode) == TUSHORT)
         {
            /* Replace the 'U' with an 'I' in the TFORMn code */
            cptr = tfm;
-           while (*cptr != 'U') 
+           while (*cptr != 'U')
               cptr++;
 
            *cptr = 'I';
@@ -1247,11 +1247,11 @@ int fficls(fitsfile *fptr,  /* I - FITS file pointer                        */
            strcpy(comm, "data are not scaled");
            ffpkyg(fptr, keyname, 1., 0, comm, status);
         }
-        else if (abs(datacode) == TULONG) 
+        else if (abs(datacode) == TULONG)
         {
            /* Replace the 'V' with an 'J' in the TFORMn code */
            cptr = tfm;
-           while (*cptr != 'V') 
+           while (*cptr != 'V')
               cptr++;
 
            *cptr = 'J';
@@ -1318,7 +1318,7 @@ int ffmvec(fitsfile *fptr,  /* I - FITS file pointer                        */
     }
         /* rescan header if data structure is undefined */
     else if ((fptr->Fptr)->datastart == DATA_UNDEFINED)
-        if ( ffrdef(fptr, status) > 0)               
+        if ( ffrdef(fptr, status) > 0)
             return(*status);
 
     if ((fptr->Fptr)->hdutype != BINARY_TBL)
@@ -1411,7 +1411,7 @@ int ffmvec(fitsfile *fptr,  /* I - FITS file pointer                        */
 
       /* delete elements from the vector */
       ffcdel(fptr, naxis1, naxis2, -delbyte, firstcol, status);
- 
+
       /* abs heap pos */
       firstbyte = (fptr->Fptr)->datastart + (fptr->Fptr)->heapstart;
       ndelete = (LONGLONG)delbyte * naxis2; /* size of shift (negative) */
@@ -1463,7 +1463,7 @@ int ffmvec(fitsfile *fptr,  /* I - FITS file pointer                        */
     /* write as a double value because the LONGLONG conversion */
     /* character in sprintf is platform dependent ( %lld, %ld, %I64d ) */
 
-    sprintf(tfm,"%.0f%s",(double) newveclen, tcode); 
+    sprintf(tfm,"%.0f%s",(double) newveclen, tcode);
 
     ffkeyn("TFORM", colnum, keyname, status);  /* Keyword name */
     ffmkys(fptr, keyname, tfm, "&", status);   /* modify TFORM keyword */
@@ -1544,7 +1544,7 @@ int ffcpcl(fitsfile *infptr,    /* I - FITS file pointer to input file  */
         ffkeyn("TTYPE", incol, keyname, &tstatus);
         ffgkys(infptr, keyname, ttype, ttype_comm, &tstatus);
         ffkeyn("TFORM", incol, keyname, &tstatus);
-    
+
         if (ffgkys(infptr, keyname, tform, tform_comm, &tstatus) )
         {
           ffpmsg
@@ -1728,22 +1728,22 @@ int ffcpcl(fitsfile *infptr,    /* I - FITS file pointer to input file  */
 
         /* read from input table */
         if (typecode == TLOGICAL)
-            ffgcl(infptr, incol, firstrow, firstelem, ntodo, 
+            ffgcl(infptr, incol, firstrow, firstelem, ntodo,
                        lvalues, status);
         else if (typecode == TSTRING)
             ffgcvs(infptr, incol, firstrow, firstelem, ntodo,
                        nulstr, strarray, &anynull, status);
 
-        else if (typecode == TCOMPLEX)  
-            ffgcvc(infptr, incol, firstrow, firstelem, ntodo, fnull, 
+        else if (typecode == TCOMPLEX)
+            ffgcvc(infptr, incol, firstrow, firstelem, ntodo, fnull,
                    fvalues, &anynull, status);
 
         else if (typecode == TDBLCOMPLEX)
-            ffgcvm(infptr, incol, firstrow, firstelem, ntodo, dnull, 
+            ffgcvm(infptr, incol, firstrow, firstelem, ntodo, dnull,
                    dvalues, &anynull, status);
 
         else       /* all numerical types */
-            ffgcvd(infptr, incol, firstrow, firstelem, ntodo, dnull, 
+            ffgcvd(infptr, incol, firstrow, firstelem, ntodo, dnull,
                    dvalues, &anynull, status);
 
         if (*status > 0)
@@ -1757,7 +1757,7 @@ int ffcpcl(fitsfile *infptr,    /* I - FITS file pointer to input file  */
         {
             nullflag = 2;
 
-            ffpcnl(outfptr, colnum, firstrow, firstelem, ntodo, 
+            ffpcnl(outfptr, colnum, firstrow, firstelem, ntodo,
                        lvalues, nullflag, status);
 
         }
@@ -1772,25 +1772,25 @@ int ffcpcl(fitsfile *infptr,    /* I - FITS file pointer to input file  */
                        strarray, status);
         }
 
-        else if (typecode == TCOMPLEX)  
+        else if (typecode == TCOMPLEX)
         {                      /* doesn't support writing nulls */
-            ffpclc(outfptr, colnum, firstrow, firstelem, ntodo, 
+            ffpclc(outfptr, colnum, firstrow, firstelem, ntodo,
                        fvalues, status);
         }
 
-        else if (typecode == TDBLCOMPLEX)  
+        else if (typecode == TDBLCOMPLEX)
         {                      /* doesn't support writing nulls */
-            ffpclm(outfptr, colnum, firstrow, firstelem, ntodo, 
+            ffpclm(outfptr, colnum, firstrow, firstelem, ntodo,
                        dvalues, status);
         }
 
         else  /* all other numerical types */
         {
             if (anynull)
-                ffpcnd(outfptr, colnum, firstrow, firstelem, ntodo, 
+                ffpcnd(outfptr, colnum, firstrow, firstelem, ntodo,
                        dvalues, dnull, status);
             else
-                ffpcld(outfptr, colnum, firstrow, firstelem, ntodo, 
+                ffpcld(outfptr, colnum, firstrow, firstelem, ntodo,
                        dvalues, status);
         }
 
@@ -1872,7 +1872,7 @@ int ffdcol(fitsfile *fptr,  /* I - FITS file pointer                        */
     }
     /* rescan header if data structure is undefined */
     else if ((fptr->Fptr)->datastart == DATA_UNDEFINED)
-        if ( ffrdef(fptr, status) > 0)               
+        if ( ffrdef(fptr, status) > 0)
             return(*status);
 
     if ((fptr->Fptr)->hdutype == IMAGE_HDU)
@@ -1975,10 +1975,10 @@ int ffdcol(fitsfile *fptr,  /* I - FITS file pointer                        */
     }
 
     /* update the mandatory keywords */
-    ffmkyj(fptr, "TFIELDS", ((fptr->Fptr)->tfield) - 1, "&", status);        
+    ffmkyj(fptr, "TFIELDS", ((fptr->Fptr)->tfield) - 1, "&", status);
     ffmkyj(fptr,  "NAXIS1",   naxis1 - delbyte, "&", status);
     /*
-      delete the index keywords starting with 'T' associated with the 
+      delete the index keywords starting with 'T' associated with the
       deleted column and subtract 1 from index of all higher keywords
     */
     ffkshf(fptr, colnum, (fptr->Fptr)->tfield, -1, status);
@@ -2078,7 +2078,7 @@ int ffcins(fitsfile *fptr,  /* I - FITS file pointer                        */
           fbyte = (nseg - 1) * 10000 + bytepos + 1;
           nbytes = naxis1 - (nseg - 1) * 10000;
           for (ii = 0; ii < nseg; ii++)
-          { 
+          {
             /* read the row to be shifted (work backwards thru the table) */
             ffgtbb(fptr, irow, fbyte, nbytes, buffer, status);
             (fptr->Fptr)->rowlength =   newlen;  /* new row length */
@@ -2178,7 +2178,7 @@ int ffcdel(fitsfile *fptr,  /* I - FITS file pointer                        */
 
           nbytes = newlen - (nseg - 1) * 10000;
           for (ii = 0; ii < nseg; ii++)
-          { 
+          {
             ffgtbb(fptr, irow, i2, nbytes, buffer, status); /* read bytes */
             (fptr->Fptr)->rowlength = newlen;  /* new row length */
 
@@ -2201,7 +2201,7 @@ int ffcdel(fitsfile *fptr,  /* I - FITS file pointer                        */
           i2 = i1 + ndelete;
           nbytes = remain - (nseg - 1) * 10000;
           for (ii = 0; ii < nseg; ii++)
-          { 
+          {
             ffgtbb(fptr, naxis2, i2, nbytes, buffer, status);
             (fptr->Fptr)->rowlength = newlen;  /* new row length */
 
@@ -2242,7 +2242,7 @@ int ffkshf(fitsfile *fptr,  /* I - FITS file pointer                        */
     /* go thru header starting with the 9th keyword looking for 'TxxxxNNN' */
 
     for (nrec = 9; nrec <= nkeys; nrec++)
-    {     
+    {
         ffgrec(fptr, nrec, rec, status);
 
         if (rec[0] == 'T')
@@ -2273,7 +2273,7 @@ int ffkshf(fitsfile *fptr,  /* I - FITS file pointer                        */
 
               if (tstatus == 0 && ivalue >= colmin && ivalue <= colmax)
               {
-                if (incre <= 0 && ivalue == colmin)       
+                if (incre <= 0 && ivalue == colmin)
                 {
                   ffdrec(fptr, nrec, status); /* delete keyword */
                   nkeys = nkeys - 1;
@@ -2284,7 +2284,7 @@ int ffkshf(fitsfile *fptr,  /* I - FITS file pointer                        */
                   ivalue = ivalue + incre;
                   q[0] = '\0';
                   strncat(q, rec, i1);
-     
+
                   ffkeyn(q, ivalue, newkey, status);
                   strncpy(rec, "        ", 8);    /* erase old keyword name */
                   i1 = strlen(newkey);

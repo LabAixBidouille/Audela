@@ -20,7 +20,7 @@ main()
     int status, nkeys, keypos, hdutype, ii, jj;
     char filename[]  = "iter_a.fit";     /* name of rate FITS file */
 
-    status = 0; 
+    status = 0;
 
     fits_open_file(&fptr, filename, READWRITE, &status); /* open file */
 
@@ -53,7 +53,7 @@ main()
 }
 /*--------------------------------------------------------------------------*/
 int flux_rate(long totalrows, long offset, long firstrow, long nrows,
-             int ncols, iteratorCol *cols, void *user_strct ) 
+             int ncols, iteratorCol *cols, void *user_strct )
 
 /*
    Sample iterator function that calculates the output flux 'rate' column
@@ -139,7 +139,7 @@ int flux_rate(long totalrows, long offset, long firstrow, long nrows,
     {
         /*  update the LIVETIME keyword value */
 
-        fits_update_key(cols[0].fptr, TFLOAT, "LIVETIME", &livetime, 
+        fits_update_key(cols[0].fptr, TFLOAT, "LIVETIME", &livetime,
                  "total integration time", &status);
         printf("livetime = %f\n", livetime);
    }

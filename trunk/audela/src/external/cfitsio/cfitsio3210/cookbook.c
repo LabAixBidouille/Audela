@@ -6,7 +6,7 @@
   Every program which uses the CFITSIO interface must include the
   the fitsio.h header file.  This contains the prototypes for all
   the routines and defines the error status values and other symbolic
-  constants used in the interface.  
+  constants used in the interface.
 */
 #include "fitsio.h"
 
@@ -64,10 +64,10 @@ void writeimage( void )
     /* initialize FITS image parameters */
     char filename[] = "atestfil.fit";             /* name for new FITS file */
     int bitpix   =  USHORT_IMG; /* 16-bit unsigned short pixel values       */
-    long naxis    =   2;  /* 2-dimensional image                            */    
+    long naxis    =   2;  /* 2-dimensional image                            */
     long naxes[2] = { 300, 200 };   /* image is 300 pixels wide by 200 rows */
 
-    /* allocate memory for the whole image */ 
+    /* allocate memory for the whole image */
     array[0] = (unsigned short *)malloc( naxes[0] * naxes[1]
                                         * sizeof( unsigned short ) );
 
@@ -91,7 +91,7 @@ void writeimage( void )
     /* in this case.                                                */
 
     if ( fits_create_img(fptr,  bitpix, naxis, naxes, &status) )
-         printerror( status );          
+         printerror( status );
 
     /* initialize the values in the image with a linear ramp function */
     for (jj = 0; jj < naxes[1]; jj++)
@@ -107,7 +107,7 @@ void writeimage( void )
     /* write the array of unsigned integers to the FITS file */
     if ( fits_write_img(fptr, TUSHORT, fpixel, nelements, array[0], &status) )
         printerror( status );
-      
+
     free( array[0] );  /* free previously allocated memory */
 
     /* write another optional keyword to the header */
@@ -115,10 +115,10 @@ void writeimage( void )
     exposure = 1500.;
     if ( fits_update_key(fptr, TLONG, "EXPOSURE", &exposure,
          "Total Exposure Time", &status) )
-         printerror( status );           
+         printerror( status );
 
     if ( fits_close_file(fptr, &status) )                /* close the file */
-         printerror( status );           
+         printerror( status );
 
     return;
 }
@@ -152,7 +152,7 @@ void writeascii ( void )
     status=0;
 
     /* open with write access the FITS file containing a primary array */
-    if ( fits_open_file(&fptr, filename, READWRITE, &status) ) 
+    if ( fits_open_file(&fptr, filename, READWRITE, &status) )
          printerror( status );
 
     /* append a new empty ASCII table onto the FITS file */
@@ -208,7 +208,7 @@ void writebintable ( void )
     status=0;
 
     /* open the FITS file containing a primary array and an ASCII table */
-    if ( fits_open_file(&fptr, filename, READWRITE, &status) ) 
+    if ( fits_open_file(&fptr, filename, READWRITE, &status) )
          printerror( status );
 
     if ( fits_movabs_hdu(fptr, 2, &hdutype, &status) ) /* move to 2nd HDU */
@@ -256,7 +256,7 @@ void copyhdu( void)
     remove(outfilename);            /* Delete old file if it already exists */
 
     /* open the existing FITS file */
-    if ( fits_open_file(&infptr, infilename, READONLY, &status) ) 
+    if ( fits_open_file(&infptr, infilename, READONLY, &status) )
          printerror( status );
 
     if (fits_create_file(&outfptr, outfilename, &status)) /*create FITS file*/
@@ -302,7 +302,7 @@ void selectrows( void )
 
     /* open the existing FITS files */
     if ( fits_open_file(&infptr,  infilename,  READONLY,  &status) ||
-         fits_open_file(&outfptr, outfilename, READWRITE, &status) ) 
+         fits_open_file(&outfptr, outfilename, READWRITE, &status) )
          printerror( status );
 
     /* move to the 3rd HDU in the input file (a binary table in this case) */
@@ -322,13 +322,13 @@ void selectrows( void )
          printerror( status );
 
     /* get number of keywords */
-    if ( fits_get_hdrpos(infptr, &nkeys, &keypos, &status) ) 
+    if ( fits_get_hdrpos(infptr, &nkeys, &keypos, &status) )
          printerror( status );
 
     /* copy all the keywords from the input to the output extension */
     for (ii = 1; ii <= nkeys; ii++)  {
-        fits_read_record (infptr, ii, card, &status); 
-        fits_write_record(outfptr,    card, &status); 
+        fits_read_record (infptr, ii, card, &status);
+        fits_write_record(outfptr,    card, &status);
     }
 
     /* read the NAXIS1 and NAXIS2 keyword to get table size */
@@ -343,7 +343,7 @@ void selectrows( void )
     frow = 1;
     felem = 1;
     nullval = -99.;
-    if (fits_read_col(infptr, TFLOAT, colnum, frow, felem, naxes[1], 
+    if (fits_read_col(infptr, TFLOAT, colnum, frow, felem, naxes[1],
         &nullval, density, &anynulls, &status) )
         printerror( status );
 
@@ -354,8 +354,8 @@ void selectrows( void )
     for (noutrows = 0, irow = 1; irow <= naxes[1]; irow++)  {
       if (density[irow - 1] < 3.0)  {
         noutrows++;
-        fits_read_tblbytes( infptr, irow,      1, naxes[0], buffer, &status); 
-        fits_write_tblbytes(outfptr, noutrows, 1, naxes[0], buffer, &status); 
+        fits_read_tblbytes( infptr, irow,      1, naxes[0], buffer, &status);
+        fits_write_tblbytes(outfptr, noutrows, 1, naxes[0], buffer, &status);
     } }
 
     /* update the NAXIS2 keyword with the correct number of rows */
@@ -382,11 +382,11 @@ void readheader ( void )
 
     status = 0;
 
-    if ( fits_open_file(&fptr, filename, READONLY, &status) ) 
+    if ( fits_open_file(&fptr, filename, READONLY, &status) )
          printerror( status );
 
     /* attempt to move to next HDU, until we get an EOF error */
-    for (ii = 1; !(fits_movabs_hdu(fptr, ii, &hdutype, &status) ); ii++) 
+    for (ii = 1; !(fits_movabs_hdu(fptr, ii, &hdutype, &status) ); ii++)
     {
         /* get no. of keywords */
         if (fits_get_hdrpos(fptr, &nkeys, &keypos, &status) )
@@ -487,7 +487,7 @@ void readtable( void )
     int status, hdunum, hdutype,  nfound, anynull, ii;
     long frow, felem, nelem, longnull, dia[6];
     float floatnull, den[6];
-    char strnull[10], *name[6], *ttype[3]; 
+    char strnull[10], *name[6], *ttype[3];
 
     char filename[]  = "atestfil.fit";     /* name of existing FITS file   */
 
@@ -500,12 +500,12 @@ void readtable( void )
         ttype[ii] = (char *) malloc(FLEN_VALUE);  /* max label length = 69 */
 
     for (ii = 0; ii < 6; ii++)    /* allocate space for string column value */
-        name[ii] = (char *) malloc(10);   
+        name[ii] = (char *) malloc(10);
 
     for (hdunum = 2; hdunum <= 3; hdunum++) /*read ASCII, then binary table */
     {
       /* move to the HDU */
-      if ( fits_movabs_hdu(fptr, hdunum, &hdutype, &status) ) 
+      if ( fits_movabs_hdu(fptr, hdunum, &hdutype, &status) )
            printerror( status );
 
       if (hdutype == ASCII_TBL)
@@ -530,7 +530,7 @@ void readtable( void )
       longnull  = 0;
       floatnull = 0.;
 
-      /*  read the columns */  
+      /*  read the columns */
       fits_read_col(fptr, TSTRING, 1, frow, felem, nelem, strnull,  name,
                     &anynull, &status);
       fits_read_col(fptr, TLONG, 2, frow, felem, nelem, &longnull,  dia,
@@ -548,7 +548,7 @@ void readtable( void )
     for (ii = 0; ii < 6; ii++)      /* free the memory for the string column */
         free( name[ii] );
 
-    if ( fits_close_file(fptr, &status) ) 
+    if ( fits_close_file(fptr, &status) )
          printerror( status );
 
     return;

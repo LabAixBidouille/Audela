@@ -19,7 +19,7 @@ main()
     int status, nkeys, keypos, hdutype, ii, jj;
     char filename[]  = "iter_image.fit";     /* name of rate FITS file */
 
-    status = 0; 
+    status = 0;
 
     fits_open_file(&fptr, filename, READWRITE, &status); /* open file */
 
@@ -49,7 +49,7 @@ main()
 }
 /*--------------------------------------------------------------------------*/
 int zero_image(long totalrows, long offset, long firstrow, long nrows,
-             int ncols, iteratorCol *cols, void *user_strct ) 
+             int ncols, iteratorCol *cols, void *user_strct )
 
 /*
    Sample iterator function that calculates the output flux 'rate' column
@@ -88,6 +88,6 @@ int zero_image(long totalrows, long offset, long firstrow, long nrows,
        counts[ii] = 1.;
     }
     printf("firstrows, nrows = %d %d\n", firstrow, nrows);
-    
+
     return(0);  /* return successful status */
 }

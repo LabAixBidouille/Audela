@@ -72,9 +72,9 @@ int ffpcls( fitsfile *fptr,  /* I - FITS file pointer                       */
         tform, &twidth, &tcode, &maxelem, &startpos,  &elemnum, &incre,
         &repeat, &rowlen, &hdutype, &tnull, snull, status) > 0)
         return(*status);
-	
+
       /* simply move to write position, then write the string */
-      ffmbyt(fptr, startpos, IGNORE_EOF, status); 
+      ffmbyt(fptr, startpos, IGNORE_EOF, status);
       ffpbyt(fptr, nchar, array[0], status);
 
       if (*status > 0)  /* test for error during previous write operation */
@@ -100,7 +100,7 @@ int ffpcls( fitsfile *fptr,  /* I - FITS file pointer                       */
         maxelem = 1;
         incre = twidth;
         repeat = 1;
-      }   
+      }
 
       blanks = (char *) malloc(twidth); /* string for blank fill values */
       if (!blanks)
@@ -114,9 +114,9 @@ int ffpcls( fitsfile *fptr,  /* I - FITS file pointer                       */
 
       remain = nelem;           /* remaining number of values to write  */
     }
-    else 
+    else
       return(*status = NOT_ASCII_COL);
- 
+
     /*-------------------------------------------------------*/
     /*  Now write the strings to the FITS column.            */
     /*-------------------------------------------------------*/
@@ -130,7 +130,7 @@ int ffpcls( fitsfile *fptr,  /* I - FITS file pointer                       */
          will fit in the buffer space or to the number of pixels that remain
          in the current vector, which ever is smaller.
       */
-      ntodo = (long) minvalue(remain, maxelem);      
+      ntodo = (long) minvalue(remain, maxelem);
       ntodo = (long) minvalue(ntodo, (repeat - elemnum));
 
       wrtptr = startpos + (rownum * rowlen) + (elemnum * incre);
@@ -215,7 +215,7 @@ int ffpcns( fitsfile *fptr,  /* I - FITS file pointer                       */
 /*
   Write an array of elements to the specified column of a table.  Any input
   pixels flagged as null will be replaced by the appropriate
-  null value in the output FITS file. 
+  null value in the output FITS file.
 */
 {
     long repeat, width, ngood = 0, nbad = 0, ii;

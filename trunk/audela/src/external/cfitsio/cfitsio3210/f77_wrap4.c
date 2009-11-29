@@ -4,11 +4,11 @@
      prevent compile-time memory errors (from expansion of compiler commands).
      f77_wrap1.c was split into f77_wrap1.c and f77_wrap3.c, and
      f77_wrap2.c was split into f77_wrap2.c and f77_wrap4.c:
-       
-       f77_wrap1.c contains routines operating on whole files and some 
+
+       f77_wrap1.c contains routines operating on whole files and some
        utility routines.
-     
-       f77_wrap2.c contains routines operating on primary array, image, 
+
+       f77_wrap2.c contains routines operating on primary array, image,
        or column elements.
 
        f77_wrap3.c contains routines operating on headers & keywords.
@@ -35,7 +35,7 @@
      Fortran. f77_wrap1.c primarily holds routines operating on whole
      files and extension headers.  f77_wrap2.c handle routines which
      read and write the data portion, plus miscellaneous extra routines.
-     
+
         File created by Peter Wilson (HSTX), Oct-Dec. 1997
 ************************************************************************/
 
@@ -54,7 +54,7 @@ typedef struct {
 
 /*        Declare protoypes to make C++ happy       */
 int Cwork_fn(long, long, long, long, int, iteratorCol *, void *);
-void Cffiter( int n_cols, int *units, int *colnum, char *colname[], 
+void Cffiter( int n_cols, int *units, int *colnum, char *colname[],
 	      int *datatype, int *iotype,
               long offset, long n_per_loop, void *Fwork_fn,
 	      void *userData, int *status);
@@ -71,7 +71,7 @@ void Cffiter( int n_cols, int *units, int *colnum, char *colname[],
 /*  supplied parameter pointer.                                   */
 /******************************************************************/
 
-void Cffiter( int n_cols, int *units, int *colnum, char *colname[], 
+void Cffiter( int n_cols, int *units, int *colnum, char *colname[],
 	      int *datatype, int *iotype,
               long offset, long n_per_loop, void *Fwork_fn,
 	      void *userData, int *status)
@@ -96,7 +96,7 @@ void Cffiter( int n_cols, int *units, int *colnum, char *colname[],
       cols[i].iotype   = iotype[i];
    }
 
-   ffiter( n_cols, cols, offset, n_per_loop, Cwork_fn, 
+   ffiter( n_cols, cols, offset, n_per_loop, Cwork_fn,
 	   (void*)&FuserData, status );
    free(cols);
 }
@@ -199,7 +199,7 @@ int Cwork_fn( long total_n, long offset,       long first_n,    long n_values,
 	      /*  cfortran.h cannot handle all the desired  */
               /*  'ptrs' nor the indirect function call.    */
 
-      PLONG_cfTYPE a1,a2,a3,a4;    /* Do this in case longs are */ 
+      PLONG_cfTYPE a1,a2,a3,a4;    /* Do this in case longs are */
       FtnUserData *f;              /* not the same size as ints */
 
       a1 = total_n;
@@ -262,8 +262,8 @@ CFARGT14(NCF,DCF,ABSOFT_cf2(VOID),LONG,PSTRING,PINT,CF_0,CF_0,CF_0,CF_0,CF_0,CF_
    QCF(PINT,3)
    char str[21];
 
-   ffi2c( TCF(fti2c,LONG,1,0) 
-          TCF(fti2c,PSTRING,2,1) 
+   ffi2c( TCF(fti2c,LONG,1,0)
+          TCF(fti2c,PSTRING,2,1)
           TCF(fti2c,PINT,3,1) );
 
    sprintf(str,"%20s",B2);
@@ -284,8 +284,8 @@ CFARGT14(NCF,DCF,ABSOFT_cf2(VOID),LOGICAL,PSTRING,PINT,CF_0,CF_0,CF_0,CF_0,CF_0,
    QCF(PINT,3)
    char str[21];
 
-   ffl2c( TCF(ftl2c,LOGICAL,1,0) 
-          TCF(ftl2c,PSTRING,2,1) 
+   ffl2c( TCF(ftl2c,LOGICAL,1,0)
+          TCF(ftl2c,PSTRING,2,1)
           TCF(ftl2c,PINT,3,1) );
 
    sprintf(str,"%20s",B2);
@@ -309,9 +309,9 @@ CFARGT14(NCF,DCF,ABSOFT_cf2(VOID),FLOAT,INT,PSTRING,PINT,CF_0,CF_0,CF_0,CF_0,CF_
    QCF(PINT,4)
    char str[21];
 
-   ffr2f( TCF(ftr2f,FLOAT,1,0) 
-          TCF(ftr2f,INT,2,1) 
-          TCF(ftr2f,PSTRING,3,1) 
+   ffr2f( TCF(ftr2f,FLOAT,1,0)
+          TCF(ftr2f,INT,2,1)
+          TCF(ftr2f,PSTRING,3,1)
           TCF(ftr2f,PINT,4,1) );
 
    sprintf(str,"%20s",B3);
@@ -334,9 +334,9 @@ CFARGT14(NCF,DCF,ABSOFT_cf2(VOID),FLOAT,INT,PSTRING,PINT,CF_0,CF_0,CF_0,CF_0,CF_
    QCF(PINT,4)
    char str[21];
 
-   ffr2e( TCF(ftr2e,FLOAT,1,0) 
-          TCF(ftr2e,INT,2,1) 
-          TCF(ftr2e,PSTRING,3,1) 
+   ffr2e( TCF(ftr2e,FLOAT,1,0)
+          TCF(ftr2e,INT,2,1)
+          TCF(ftr2e,PSTRING,3,1)
           TCF(ftr2e,PINT,4,1) );
 
    sprintf(str,"%20s",B3);
@@ -359,9 +359,9 @@ CFARGT14(NCF,DCF,ABSOFT_cf2(VOID),DOUBLE,INT,PSTRING,PINT,CF_0,CF_0,CF_0,CF_0,CF
    QCF(PINT,4)
    char str[21];
 
-   ffd2f( TCF(ftd2f,DOUBLE,1,0) 
-          TCF(ftd2f,INT,2,1) 
-          TCF(ftd2f,PSTRING,3,1) 
+   ffd2f( TCF(ftd2f,DOUBLE,1,0)
+          TCF(ftd2f,INT,2,1)
+          TCF(ftd2f,PSTRING,3,1)
           TCF(ftd2f,PINT,4,1) );
 
    sprintf(str,"%20s",B3);
@@ -389,9 +389,9 @@ CFARGT14(NCF,DCF,ABSOFT_cf2(VOID),DOUBLE,INT,PSTRING,PINT,PINT,CF_0,CF_0,CF_0,CF
    vlen = TCF(ftd2e,PINT,4,0);
 
    /*  C version of routine doesn't use the 4th parameter, vlen  */
-   ffd2e( TCF(ftd2e,DOUBLE,1,0) 
-          TCF(ftd2e,INT,2,1) 
-          TCF(ftd2e,PSTRING,3,1) 
+   ffd2e( TCF(ftd2e,DOUBLE,1,0)
+          TCF(ftd2e,INT,2,1)
+          TCF(ftd2e,PSTRING,3,1)
           TCF(ftd2e,PINT,5,1) );
 
    *vlen = strlen(B3);
@@ -430,7 +430,7 @@ FCALLSCSUB3(ffc2l,FTC2L,ftc2l,STRING,PINT,PINT)
   equivalent of the C 'off_t' type, which may be 32 or 64 bits long
   depending on the compiler.
   -W.Pence (7/21/00)
-  
+
 FCALLSCSUB4(ffmbyt,FTMBYT,ftmbyt,FITSUNIT,LONG,LOGICAL,PINT)
 */
 

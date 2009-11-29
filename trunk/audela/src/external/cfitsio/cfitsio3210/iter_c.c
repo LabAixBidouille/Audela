@@ -99,7 +99,7 @@ int writehisto(long totaln, long offset, long firstn, long nvalues,
     fits_movnam_hdu(tblptr, BINARY_TBL, "EVENTS", 0, &status);
     if (status)
        return(status);
-   
+
     n_cols = 2; /* number of columns */
 
     /* define input column structure members for the iterator function */
@@ -107,7 +107,7 @@ int writehisto(long totaln, long offset, long firstn, long nvalues,
     fits_iter_set_by_name(&cols[1], tblptr, "Y", TLONG, InputCol);
 
     rows_per_loop = 0;  /* take default number of rows per interation */
-    rowoffset = 0;     
+    rowoffset = 0;
 
     /* calculate the histogram */
     printf("Calling calchisto iterator work function... %d\n", status);
@@ -157,7 +157,7 @@ int calchisto(long totalrows, long offset, long firstrow, long nrows,
     /*  Main loop: increment the 2D histogram at position of each event */
     /*------------------------------------------------------------------*/
 
-    for (ii = 1; ii <= nrows; ii++) 
+    for (ii = 1; ii <= nrows; ii++)
     {
         xbin = xcol[ii] / xbinsize;
         ybin = ycol[ii] / ybinsize;

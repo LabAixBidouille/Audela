@@ -56,7 +56,7 @@ SERVICES PROVIDED HEREUNDER."
 
 #ifdef _REENTRANT
 /*
-    Fitsio_Lock and Fitsio_Pthread_Status are declared in fitsio2.h. 
+    Fitsio_Lock and Fitsio_Pthread_Status are declared in fitsio2.h.
 */
 pthread_mutex_t Fitsio_Lock;
 int Fitsio_Pthread_Status = 0;
@@ -76,20 +76,20 @@ float ffvers(float *version)  /* IO - version number */
    Previous releases:
       *version = 3.20    31 Aug 2009
       *version = 3.18    12 May 2009 (beta version)
-      *version = 3.14    18 Mar 2009 
-      *version = 3.13     5 Jan 2009 
-      *version = 3.12     8 Oct 2008 
-      *version = 3.11    19 Sep 2008 
-      *version = 3.10    20 Aug 2008 
-      *version = 3.09     3 Jun 2008 
+      *version = 3.14    18 Mar 2009
+      *version = 3.13     5 Jan 2009
+      *version = 3.12     8 Oct 2008
+      *version = 3.11    19 Sep 2008
+      *version = 3.10    20 Aug 2008
+      *version = 3.09     3 Jun 2008
       *version = 3.08    15 Apr 2007  (internal release)
       *version = 3.07     5 Nov 2007  (internal release)
-      *version = 3.06    27 Aug 2007  
+      *version = 3.06    27 Aug 2007
       *version = 3.05    12 Jul 2007  (internal release)
       *version = 3.03    11 Dec 2006
       *version = 3.02    18 Sep 2006
       *version = 3.01       May 2006 included in FTOOLS 6.1 release
-      *version = 3.006   20 Feb 2006 
+      *version = 3.006   20 Feb 2006
       *version = 3.005   20 Dec 2005 (beta, in heasoft swift release
       *version = 3.004   16 Sep 2005 (beta, in heasoft swift release
       *version = 3.003   28 Jul 2005 (beta, in heasoft swift release
@@ -696,12 +696,12 @@ void ffxmsg( int action,
   and simpler to implement.
 
   Action Code:
-DelAll     1  delete all messages on the error stack 
-DelMark    2  delete messages back to and including the 1st marker 
-DelNewest  3  delete the newest message from the stack 
-GetMesg    4  pop and return oldest message, ignoring marks 
-PutMesg    5  add a new message to the stack 
-PutMark    6  add a marker to the stack 
+DelAll     1  delete all messages on the error stack
+DelMark    2  delete messages back to and including the 1st marker
+DelNewest  3  delete the newest message from the stack
+GetMesg    4  pop and return oldest message, ignoring marks
+PutMesg    5  add a new message to the stack
+PutMark    6  add a marker to the stack
 
 */
 {
@@ -712,7 +712,7 @@ PutMark    6  add a marker to the stack
     static int nummsg = 0;
 
     FFLOCK;
-    
+
     if (action == DelAll)  /* clear the whole message stack */
     {
       for (ii = 0; ii < nummsg; ii ++)
@@ -723,7 +723,7 @@ PutMark    6  add a marker to the stack
     else if (action == DelMark)  /* clear up to and including first marker */
     {
       while (nummsg > 0) {
-        nummsg--;  
+        nummsg--;
         markflag = *txtbuff[nummsg]; /* store possible marker character */
         *txtbuff[nummsg] = '\0';  /* clear the buffer for this msg */
 
@@ -731,23 +731,23 @@ PutMark    6  add a marker to the stack
            break;   /* found a marker, so quit */
       }
     }
-    else if (action == DelNewest)  /* remove newest message from stack */ 
+    else if (action == DelNewest)  /* remove newest message from stack */
     {
       if (nummsg > 0)
       {
-        nummsg--;  
+        nummsg--;
         *txtbuff[nummsg] = '\0';  /* clear the buffer for this msg */
       }
     }
-    else if (action == GetMesg)  /* pop and return oldest message from stack */ 
+    else if (action == GetMesg)  /* pop and return oldest message from stack */
     {                            /* ignoring markers */
       while (nummsg > 0)
       {
          strcpy(errmsg, txtbuff[0]);   /* copy oldest message to output */
 
          *txtbuff[0] = '\0';  /* clear the buffer for this msg */
-           
-         nummsg--;  
+
+         nummsg--;
          for (ii = 0; ii < nummsg; ii++)
              txtbuff[ii] = txtbuff[ii + 1]; /* shift remaining pointers */
 
@@ -862,7 +862,7 @@ int fftkey(const char *keyword,    /* I -  keyword name */
   Test that the keyword name conforms to the FITS standard.  Must contain
   only capital letters, digits, minus or underscore chars.  Trailing spaces
   are allowed.  If the input status value is less than zero, then the test
-  is modified so that upper or lower case letters are allowed, and no 
+  is modified so that upper or lower case letters are allowed, and no
   error messages are printed if the keyword is not legal.
 */
 {
@@ -898,13 +898,13 @@ int fftkey(const char *keyword,    /* I -  keyword name */
                         keyword);
                      ffpmsg(msg);
                   }
-                  return(*status = BAD_KEYCHAR);        
+                  return(*status = BAD_KEYCHAR);
                 }
               }
         else if (keyword[ii] == ' ')
             spaces = 1;
 
-        else     
+        else
         {
           if (*status == 0)
           {
@@ -914,16 +914,16 @@ int fftkey(const char *keyword,    /* I -  keyword name */
             ffpmsg(msg);
 
             /* explicitly flag the 2 most common cases */
-            if (keyword[ii] == 0) 
-                ffpmsg(" (This a NULL (0) character).");                
+            if (keyword[ii] == 0)
+                ffpmsg(" (This a NULL (0) character).");
             else if (keyword[ii] == 9)
-                ffpmsg(" (This an ASCII TAB (9) character).");   
-          }             
+                ffpmsg(" (This an ASCII TAB (9) character).");
+          }
 
-          return(*status = BAD_KEYCHAR);        
-        }                
+          return(*status = BAD_KEYCHAR);
+        }
     }
-    return(*status);        
+    return(*status);
 }
 /*--------------------------------------------------------------------------*/
 int fftrec(char *card,       /* I -  keyword card to test */
@@ -945,7 +945,7 @@ int fftrec(char *card,       /* I -  keyword card to test */
     {
         if (card[ii] < 32 || card[ii] > 126)
         {
-            sprintf(msg, 
+            sprintf(msg,
            "Character %d in this keyword is illegal. Hex Value = %X",
               (int) (ii+1), (int) card[ii] );
             ffpmsg(msg);
@@ -953,10 +953,10 @@ int fftrec(char *card,       /* I -  keyword card to test */
             strncpy(msg, card, 80);
             msg[80] = '\0';
             ffpmsg(msg);
-            return(*status = BAD_KEYCHAR);        
+            return(*status = BAD_KEYCHAR);
         }
     }
-    return(*status);        
+    return(*status);
 }
 /*--------------------------------------------------------------------------*/
 void ffupch(char *string)
@@ -1010,12 +1010,12 @@ int ffmkky(const char *keyname,   /* I - keyword name    */
 
         namelen = cptr - tmpname + 1;
     }
-    
+
     if (namelen <= 8  && (fftkey(keyname, &tstatus) <= 0) )
     {
         /* a normal FITS keyword */
         strcat(card, tmpname);   /* copy keyword name to buffer */
-   
+
         for (ii = namelen; ii < 8; ii++)
             card[ii] = ' ';      /* pad keyword name with spaces */
 
@@ -1037,7 +1037,7 @@ int ffmkky(const char *keyname,   /* I - keyword name    */
         }
 
         /* Don't repeat HIERARCH if the keyword already contains it */
-        if (FSTRNCMP(tmpname, "HIERARCH ", 9) && 
+        if (FSTRNCMP(tmpname, "HIERARCH ", 9) &&
             FSTRNCMP(tmpname, "hierarch ", 9))
             strcat(card, "HIERARCH ");
         else
@@ -1048,7 +1048,7 @@ int ffmkky(const char *keyname,   /* I - keyword name    */
         namelen += 12;
     }
 
-    len = strlen(value);        
+    len = strlen(value);
     if (len > 0)
     {
         if (value[0] == '\'')  /* is this a quoted string value? */
@@ -1113,14 +1113,14 @@ int ffmkky(const char *keyname,   /* I - keyword name    */
           {
             strcat(card, " / ");   /* append comment separator */
             strncat(card, comm, 77 - len); /* append comment (what fits) */
-          } 
+          }
         }
     }
     else
     {
       if (namelen == 10)  /* This case applies to normal keywords only */
       {
-        card[8] = ' '; /* keywords with no value have no '=' */ 
+        card[8] = ' '; /* keywords with no value have no '=' */
         if (comm)
         {
           strncat(card, comm, 80 - namelen); /* append comment (what fits) */
@@ -1159,7 +1159,7 @@ int ffmkey(fitsfile *fptr,    /* I - FITS file pointer  */
     fftrec(tcard, status);        /* test rest of keyword for legal chars   */
 
     /* move position of keyword to be over written */
-    ffmbyt(fptr, ((fptr->Fptr)->nextkey) - 80, REPORT_EOF, status); 
+    ffmbyt(fptr, ((fptr->Fptr)->nextkey) - 80, REPORT_EOF, status);
     ffpbyt(fptr, 80, tcard, status);   /* write the 80 byte card */
 
     return(*status);
@@ -1241,7 +1241,7 @@ int ffpsvc(char *card,    /* I - FITS header card (nominally 80 bytes long) */
         comm[0] = '\0';
 
     cardlen = strlen(card);
-    
+
     /* support for ESO HIERARCH keywords; find the '=' */
     if (FSTRNCMP(card, "HIERARCH ", 9) == 0)
     {
@@ -1324,10 +1324,10 @@ int ffpsvc(char *card,    /* I - FITS header card (nominally 80 bytes long) */
         {
             if (card[ii] == '\'')  /*  is this the closing quote?  */
             {
-                if (card[ii+1] == '\'')  /* 2 successive quotes? */ 
+                if (card[ii+1] == '\'')  /* 2 successive quotes? */
                 {
                    value[jj] = card[ii];
-                   ii++;  
+                   ii++;
                    jj++;
                 }
                 else
@@ -1368,7 +1368,7 @@ int ffpsvc(char *card,    /* I - FITS header card (nominally 80 bytes long) */
         nblank++;
         strncpy(value, &card[ii], nblank);
         value[nblank] = '\0';
-        ii = ii + nblank;        
+        ii = ii + nblank;
     }
     else   /*  an integer, floating point, or logical FITS value string  */
     {
@@ -1409,24 +1409,24 @@ int ffpsvc(char *card,    /* I - FITS header card (nominally 80 bytes long) */
 /*--------------------------------------------------------------------------*/
 int ffgthd(char *tmplt, /* I - input header template string */
            char *card,  /* O - returned FITS header record */
-           int *hdtype, /* O - how to interpreter the returned card string */ 
+           int *hdtype, /* O - how to interpreter the returned card string */
             /*
               -2 = modify the name of a keyword; the old keyword name
                    is returned starting at address chars[0]; the new name
                    is returned starting at address char[40] (to be consistent
-                   with the Fortran version).  Both names are null terminated. 
+                   with the Fortran version).  Both names are null terminated.
               -1 = card contains the name of a keyword that is to be deleted
-               0 = append this keyword if it doesn't already exist, or 
+               0 = append this keyword if it doesn't already exist, or
                    modify the value if the keyword already exists.
-               1 = append this comment keyword ('HISTORY', 
-                   'COMMENT', or blank keyword name) 
+               1 = append this comment keyword ('HISTORY',
+                   'COMMENT', or blank keyword name)
                2  =  this is the END keyword; do not write it to the header
             */
            int *status)   /* IO - error status   */
 /*
   'Get Template HeaDer'
   parse a template header line and create a formated
-  character string which is suitable for appending to a FITS header 
+  character string which is suitable for appending to a FITS header
 */
 {
     char keyname[FLEN_KEYWORD], value[140], comment[140];
@@ -1449,7 +1449,7 @@ int ffgthd(char *tmplt, /* I - input header template string */
     }
 
     tok = tmplt;   /* point to start of template string */
- 
+
     keyname[0] = '\0';
     value[0]   = '\0';
     comment[0] = '\0';
@@ -1589,8 +1589,8 @@ int ffgthd(char *tmplt, /* I - input header template string */
             tok++;  /* temporarily move past the quote char */
             len = strcspn(tok, "'");  /* length of quoted string */
             tok--;
-            strncat(value, tok, len + 2); 
- 
+            strncat(value, tok, len + 2);
+
             tok += len + 1;
             if (tok[0] != '\'')   /* check there is a closing quote */
               return(*status = NO_QUOTE);
@@ -1610,36 +1610,36 @@ int ffgthd(char *tmplt, /* I - input header template string */
 
           strncat(value, tok, len);
           if (!( (tok[0] == 'T' || tok[0] == 'F') &&
-                 (tok[1] == ' ' || tok[1] == '/' || tok[1] == '\0') )) 
+                 (tok[1] == ' ' || tok[1] == '/' || tok[1] == '\0') ))
           {
              /* not a logical value */
 
             dval = strtod(value, &suffix); /* try to read value as number */
 
             if (*suffix != '\0' && *suffix != ' ' && *suffix != '/')
-            { 
+            {
                 /* value not recognized as a number; might be because it */
-                /* contains a 'd' or 'D' exponent character  */ 
+                /* contains a 'd' or 'D' exponent character  */
                 strcpy(tvalue, value);
                 loc = strchr(tvalue, 'D');
                 if (loc)
-                {          
-                    *loc = 'E'; /*  replace D's with E's. */ 
+                {
+                    *loc = 'E'; /*  replace D's with E's. */
                     dval = strtod(tvalue, &suffix); /* read value again */
                 }
                 else
                 {
                     loc = strchr(tvalue, 'd');
                     if (loc)
-                    {          
-                        *loc = 'E'; /*  replace d's with E's. */ 
+                    {
+                        *loc = 'E'; /*  replace d's with E's. */
                         dval = strtod(tvalue, &suffix); /* read value again */
                     }
                 }
             }
-   
+
             if (*suffix != '\0' && *suffix != ' ' && *suffix != '/')
-            { 
+            {
               /* value is not a number; must enclose it in quotes */
               strcpy(value, "'");
               strncat(value, tok, len);
@@ -1648,22 +1648,22 @@ int ffgthd(char *tmplt, /* I - input header template string */
               /* the following useless statement stops the compiler warning */
               /* that dval is not used anywhere */
               if (dval == 0.)
-                 len += (int) dval; 
+                 len += (int) dval;
             }
-            else  
+            else
             {
                 /* value is a number; convert any 'e' to 'E', or 'd' to 'D' */
                 loc = strchr(value, 'e');
                 if (loc)
-                {          
-                    *loc = 'E';  
+                {
+                    *loc = 'E';
                 }
                 else
                 {
                     loc = strchr(value, 'd');
                     if (loc)
-                    {          
-                        *loc = 'D';  
+                    {
+                        *loc = 'D';
                     }
                 }
             }
@@ -1713,7 +1713,7 @@ int fits_translate_keyword(
 
       int *status)        /* IO - error status */
 
-/* 
+/*
 
 Translate a keyword name to a new name, based on a set of patterns.
 The user passes an array of patterns to be matched.  Input pattern
@@ -1751,13 +1751,13 @@ Special output pattern characters:
 
     "+" - copy the input unchanged
 
-The inrec string could be just the 8-char keyword name, or the entire 
+The inrec string could be just the 8-char keyword name, or the entire
 80-char header record.  Characters 9 = 80 in the input string simply get
 appended to the translated keyword name.
 
-If n_range = 0, then only keywords with 'n' equal to n_value will be 
-considered as a pattern match.  If n_range = +1, then all values of 
-'n' greater than or equal to n_value will be a match, and if -1, 
+If n_range = 0, then only keywords with 'n' equal to n_value will be
+considered as a pattern match.  If n_range = +1, then all values of
+'n' greater than or equal to n_value will be a match, and if -1,
 then values of 'n' less than or equal to n_value will match.
 
   This routine was written by Craig Markwardt, GSFC
@@ -1774,7 +1774,7 @@ then values of 'n' less than or equal to n_value will match.
 
     if (*status > 0)
         return(*status);
-    if ((inrec == 0) || (outrec == 0)) 
+    if ((inrec == 0) || (outrec == 0))
       return (*status = NULL_INPUT_PTR);
 
     *outrec = '\0';
@@ -1783,7 +1783,7 @@ then values of 'n' less than or equal to n_value will match.
 */
     if (*inrec == '\0')
        strcpy(inrec, " ");
-       
+
     oldp = '\0';
     firstfail = 0;
 
@@ -1791,33 +1791,33 @@ then values of 'n' less than or equal to n_value will match.
     for (pat=0; pat < npat; pat++) {
 
       spat = patterns[pat][0];
-      
+
       i1 = 0; j1 = 0; m1 = -1; n1 = -1; a = ' ';  /* Initialize the place-holders */
       pass = 0;
-      
+
       /* Pass the wildcard pattern */
-      if (spat[0] == '*') { 
+      if (spat[0] == '*') {
 	pass = 1;
 	break;
       }
-      
+
       /* Optimization: if we have seen this initial pattern character before,
 	 then it must have failed, and we can skip the pattern */
       if (firstfail && spat[0] == oldp) continue;
       oldp = spat[0];
 
-      /* 
+      /*
 	 ip = index of pattern character being matched
 	 ic = index of keyname character being matched
 	 firstfail = 1 if we fail on the first characteor (0=not)
       */
-      
+
       for (ip=0, ic=0, firstfail=1;
 	   (spat[ip]) && (ic < 8);
 	   ip++, ic++, firstfail=0) {
 	c = inrec[ic];
 	s = spat[ip];
-	
+
 	if (s == 'i') {
 	  /* Special pattern: 'i' placeholder */
 	  if (isdigit(c)) { i1 = c - '0'; pass = 1;}
@@ -1830,16 +1830,16 @@ then values of 'n' less than or equal to n_value will match.
 	  pass = 0;
 	  if (isdigit(c)) {
 	    pass = 1;  /* NOTE, could fail below */
-	    
+
 	    /* Parse decimal number */
-	    while (ic<8 && isdigit(c)) { 
+	    while (ic<8 && isdigit(c)) {
 	      val = val*10 + (c - '0');
 	      ic++; c = inrec[ic];
 	    }
 	    ic--; c = inrec[ic];
-	    
-	    if (s == 'n') { 
-	      
+
+	    if (s == 'n') {
+
 	      /* Is it a column number? */
 	      if ( val >= 1 && val <= 999 &&                    /* Row range check */
 		   (((n_range == 0) && (val == n_value)) ||     /* Strict equality */
@@ -1850,14 +1850,14 @@ then values of 'n' less than or equal to n_value will match.
 		pass = 0;
 	      }
 	    } else if (s == 'm') {
-	      
+
 	      /* Generic number */
-	      m1 = val; 
+	      m1 = val;
 	    }
 	  }
 	} else if (s == 'a') {
 	  /* Special pattern: coordinate designator */
-	  if (isupper(c) || c == ' ') { a = c; pass = 1;} 
+	  if (isupper(c) || c == ' ') { a = c; pass = 1;}
 	} else if (s == '?') {
 	  /* Match any individual character */
 	  pass = 1;
@@ -1868,10 +1868,10 @@ then values of 'n' less than or equal to n_value will match.
 	  /* FAIL */
 	  pass = 0;
 	}
-	
+
 	if (!pass) break;
       }
-      
+
 
       /* Must pass to the end of the keyword.  No partial matches allowed */
       if (pass && (ic >= 8 || inrec[ic] == ' ')) break;
@@ -1979,17 +1979,17 @@ int fits_translate_keywords(
 
       ffgrec(infptr, nrec, rec, status);
 
-      fits_translate_keyword(rec, outrec, patterns, npat, 
-			     n_value, n_offset, n_range, 
+      fits_translate_keyword(rec, outrec, patterns, npat,
+			     n_value, n_offset, n_range,
 			     &pat_num, &i, &j, &m, &n, status);
-      
+
       if (outrec[0]) {
 	ffprec(outfptr, outrec, status); /* copy the keyword */
 	rec[8] = 0; outrec[8] = 0;
       } else {
 	rec[8] = 0; outrec[8] = 0;
       }
-    }	
+    }
 
     return(*status);
 }
@@ -2078,7 +2078,7 @@ int fits_copy_pixlist2image(
 
 			   {"TDIM#",   "-"       },
 			   {"THEAP",   "-"       },
-			   {"EXTNAME", "-"       }, 
+			   {"EXTNAME", "-"       },
 			   {"EXTVER",  "-"       },
 			   {"EXTLEVEL","-"       },
 			   {"CHECKSUM","-"       },
@@ -2086,9 +2086,9 @@ int fits_copy_pixlist2image(
 			   {"NAXLEN",  "-"       },
 			   {"AXLEN#",  "-"       },
 			   {"CPREF",  "-"       },
-			   
+
                            /* Delete table keywords related to other columns */
-			   {"T????#a", "-"       }, 
+			   {"T????#a", "-"       },
  			   {"TC??#a",  "-"       },
  			   {"T??#_#",  "-"       },
  			   {"TWCS#a",  "-"       },
@@ -2138,16 +2138,16 @@ int fits_copy_pixlist2image(
 
       ffgrec(infptr, nrec, rec, status);
 
-      fits_translate_pixkeyword(rec, outrec, patterns, npat, 
-			     naxis, colnum, 
+      fits_translate_pixkeyword(rec, outrec, patterns, npat,
+			     naxis, colnum,
 			     &pat_num, &iret, &jret, &nret, &mret, &lret, status);
 
       if (outrec[0]) {
 	ffprec(outfptr, outrec, status); /* copy the keyword */
-      } 
+      }
 
       rec[8] = 0; outrec[8] = 0;
-    }	
+    }
 
     return(*status);
 }
@@ -2169,8 +2169,8 @@ int fits_translate_pixkeyword(
       int *m,
       int *l,
       int *status)        /* IO - error status */
-      
-/* 
+
+/*
 
 Translate a keyword name to a new name, based on a set of patterns.
 The user passes an array of patterns to be matched.  Input pattern
@@ -2208,13 +2208,13 @@ Special output pattern characters:
 
     "+" - copy the input unchanged
 
-The inrec string could be just the 8-char keyword name, or the entire 
+The inrec string could be just the 8-char keyword name, or the entire
 80-char header record.  Characters 9 = 80 in the input string simply get
 appended to the translated keyword name.
 
-If n_range = 0, then only keywords with 'n' equal to n_value will be 
-considered as a pattern match.  If n_range = +1, then all values of 
-'n' greater than or equal to n_value will be a match, and if -1, 
+If n_range = 0, then only keywords with 'n' equal to n_value will be
+considered as a pattern match.  If n_range = +1, then all values of
+'n' greater than or equal to n_value will be a match, and if -1,
 then values of 'n' less than or equal to n_value will match.
 
 */
@@ -2231,7 +2231,7 @@ then values of 'n' less than or equal to n_value will match.
     if (*status > 0)
         return(*status);
 
-    if ((inrec == 0) || (outrec == 0)) 
+    if ((inrec == 0) || (outrec == 0))
       return (*status = NULL_INPUT_PTR);
 
     *outrec = '\0';
@@ -2244,27 +2244,27 @@ then values of 'n' less than or equal to n_value will match.
     for (pat=0; pat < npat; pat++) {
 
       spat = patterns[pat][0];
-      
+
       i1 = 0; j1 = 0;   a = ' ';  /* Initialize the place-holders */
       pass = 0;
-      
+
       /* Pass the wildcard pattern */
-      if (spat[0] == '*') { 
+      if (spat[0] == '*') {
 	pass = 1;
 	break;
       }
-      
+
       /* Optimization: if we have seen this initial pattern character before,
 	 then it must have failed, and we can skip the pattern */
       if (firstfail && spat[0] == oldp) continue;
       oldp = spat[0];
 
-      /* 
+      /*
 	 ip = index of pattern character being matched
 	 ic = index of keyname character being matched
 	 firstfail = 1 if we fail on the first characteor (0=not)
       */
-      
+
       for (ip=0, ic=0, firstfail=1;
 	   (spat[ip]) && (ic < 8);
 	   ip++, ic++, firstfail=0) {
@@ -2283,48 +2283,48 @@ then values of 'n' less than or equal to n_value will match.
 	  pass = 0;
 	  if (isdigit(c)) {
 	    pass = 1;  /* NOTE, could fail below */
-	    
+
 	    /* Parse decimal number */
-	    while (ic<8 && isdigit(c)) { 
+	    while (ic<8 && isdigit(c)) {
 	      val = val*10 + (c - '0');
 	      ic++; c = inrec[ic];
 	    }
 	    ic--; c = inrec[ic];
 
-	    if (s == 'n' || s == 'm') { 
-	      
+	    if (s == 'n' || s == 'm') {
+
 	      /* Is it a column number? */
 	      if ( val >= 1 && val <= 999) {
-	         
+
 		 if (val == colnum[0])
-		     val = 1; 
-		 else if (val == colnum[1]) 
-		     val = 2; 
-		 else if (val == colnum[2]) 
-		     val = 3; 
-		 else if (val == colnum[3]) 
-		     val = 4; 
+		     val = 1;
+		 else if (val == colnum[1])
+		     val = 2;
+		 else if (val == colnum[2])
+		     val = 3;
+		 else if (val == colnum[3])
+		     val = 4;
 		 else {
 		     pass = 0;
-		     val = 0; 
+		     val = 0;
 		 }
 
 	         if (s == 'n')
 		    nval = val;
 		 else
 		    mval = val;
- 
+
               } else {
 		  pass = 0;
               }
 	    } else if (s == 'l') {
 	      /* Generic number */
-	      lval = val; 
+	      lval = val;
 	    }
 	  }
 	} else if (s == 'a') {
 	  /* Special pattern: coordinate designator */
-	  if (isupper(c) || c == ' ') { a = c; pass = 1;} 
+	  if (isupper(c) || c == ' ') { a = c; pass = 1;}
 	} else if (s == '?') {
 	  /* Match any individual character */
 	  pass = 1;
@@ -2335,10 +2335,10 @@ then values of 'n' less than or equal to n_value will match.
 	  /* FAIL */
 	  pass = 0;
 	}
-	
+
 	if (!pass) break;
       }
-      
+
 
       /* Must pass to the end of the keyword.  No partial matches allowed */
       if (pass && (ic >= 8 || inrec[ic] == ' ')) break;
@@ -2481,7 +2481,7 @@ int ffasfm(char *tform,    /* I - format code from the TFORMn keyword */
     form++;  /* point to the start of field width */
 
     if (datacode == TSTRING || datacode == TLONG)
-    { 
+    {
         /*-----------------------------------------------*/
         /*              A or I data formats:             */
         /*-----------------------------------------------*/
@@ -2494,7 +2494,7 @@ int ffasfm(char *tform,    /* I - format code from the TFORMn keyword */
                 *status = BAD_TFORM;
             }
             else
-            {                
+            {
                 /* set to shorter precision if I4 or less */
                 if (width <= 4 && datacode == TLONG)
                     datacode = TSHORT;
@@ -2502,7 +2502,7 @@ int ffasfm(char *tform,    /* I - format code from the TFORMn keyword */
         }
     }
     else
-    {  
+    {
         /*-----------------------------------------------*/
         /*              F, E or D data formats:          */
         /*-----------------------------------------------*/
@@ -2533,7 +2533,7 @@ int ffasfm(char *tform,    /* I - format code from the TFORMn keyword */
                         *decimals = longval;  /* long to short convertion */
 
                     if (longval >= width)  /* width < no. of decimals */
-                        *status = BAD_TFORM; 
+                        *status = BAD_TFORM;
 
                     if (longval > 6 && *temp == 'E')
                         datacode = TDOUBLE;  /* type double if >6 digits */
@@ -2633,7 +2633,7 @@ int ffbnfm(char *tform,     /* I - format code from the TFORMn keyword */
         variable = 0;
 
     if (form[0] == 'U')  /* internal code to signify unsigned integer */
-    { 
+    {
         datacode = TUSHORT;
         width = 2;
     }
@@ -2687,7 +2687,7 @@ int ffbnfm(char *tform,     /* I - format code from the TFORMn keyword */
 
         if (iread != 1 || (!variable && (width > repeat)) )
             width = repeat;
-  
+
     }
     else if (form[0] == 'L')
     {
@@ -2824,7 +2824,7 @@ int ffbnfmll(char *tform,     /* I - format code from the TFORMn keyword */
         variable = 0;
 
     if (form[0] == 'U')  /* internal code to signify unsigned integer */
-    { 
+    {
         datacode = TUSHORT;
         width = 2;
     }
@@ -2878,7 +2878,7 @@ int ffbnfmll(char *tform,     /* I - format code from the TFORMn keyword */
 
         if (iread != 1 || (!variable && (width > repeat)) )
             width = (long) repeat;
-  
+
     }
     else if (form[0] == 'L')
     {
@@ -3030,7 +3030,7 @@ int ffgcno( fitsfile *fptr,  /* I - FITS file pionter                       */
             int  *status)    /* IO - error status                           */
 /*
   Determine the column number corresponding to an input column name.
-  The first column of the table = column 1;  
+  The first column of the table = column 1;
   This supports the * and ? wild cards in the input template.
 */
 {
@@ -3167,7 +3167,7 @@ int ffgcnn( fitsfile *fptr,  /* I - FITS file pointer                       */
             }
         }
     }
-    
+
     startcol = *colnum;  /* save pointer for next time */
     return(*status);
 }
@@ -3189,9 +3189,9 @@ void ffcmps(char *templt,   /* I - input template (may have wildcards)      */
   when looking for a match.  If there is no literal match, then
   it interpretes it as a wild card.  So the template 'AB*DE'
   is considered to be an exact rather than a wild card match to
-  the string 'AB*DE'.  The '#' wild card in the template string will 
+  the string 'AB*DE'.  The '#' wild card in the template string will
   match any consecutive string of decimal digits in the colname.
-  
+
 */
 {
     int ii, found, t1, s1, wildsearch = 0, tsave = 0, ssave = 0;
@@ -3211,7 +3211,7 @@ void ffcmps(char *templt,   /* I - input template (may have wildcards)      */
 
     for (ii = strlen(col) - 1; ii >= 0 && col[ii] == ' '; ii--)
         col[ii] = '\0';
-       
+
     if (!casesen)
     {             /* convert both strings to uppercase before comparison */
         ffupch(temp);
@@ -3232,16 +3232,16 @@ void ffcmps(char *templt,   /* I - input template (may have wildcards)      */
     while(1)  /* compare corresponding chars in each string */
     {
       if (temp[t1] == '\0' && col[s1] == '\0')
-      { 
+      {
          /* completely scanned both strings so they match */
          *match = TRUE;
          return;
       }
       else if (temp[t1] == '\0')
-      { 
+      {
         if (wildsearch)
         {
-            /* 
+            /*
                the previous wildcard search may have been going down
                a blind alley.  Backtrack, and resume the wildcard
                search with the next character in the string.
@@ -3256,7 +3256,7 @@ void ffcmps(char *templt,   /* I - input template (may have wildcards)      */
         }
       }
       else if (col[s1] == '\0')
-      { 
+      {
          /* reached end of other string; they match if the next */
          /* character in the template string is a '*' wild card */
 
@@ -3279,8 +3279,8 @@ void ffcmps(char *templt,   /* I - input template (may have wildcards)      */
         t1++;  /* increment both pointers */
 
         /* find the end of the string of digits */
-        while (isdigit((int) col[s1]) ) 
-            s1++;        
+        while (isdigit((int) col[s1]) )
+            s1++;
       }
       else if (temp[t1] == '*')
       {
@@ -3321,7 +3321,7 @@ void ffcmps(char *templt,   /* I - input template (may have wildcards)      */
       {
         if (wildsearch)
         {
-            /* 
+            /*
                the previous wildcard search may have been going down
                a blind alley.  Backtrack, and resume the wildcard
                search with the next character in the string.
@@ -3344,7 +3344,7 @@ int ffgtcl( fitsfile *fptr,  /* I - FITS file pointer                       */
             long *width,     /* O - if ASCII, width of field or unit string */
             int  *status)    /* IO - error status                           */
 /*
-  Get Type of table column. 
+  Get Type of table column.
   Returns the datatype code of the column, as well as the vector
   repeat count and (if it is an ASCII character column) the
   width of the field or a unit string within the field.  This supports the
@@ -3353,18 +3353,18 @@ int ffgtcl( fitsfile *fptr,  /* I - FITS file pointer                       */
 */
 {
     LONGLONG trepeat, twidth;
-    
+
     ffgtclll(fptr, colnum, typecode, &trepeat, &twidth, status);
 
     if (*status > 0)
         return(*status);
-	
+
     if (repeat)
         *repeat= (long) trepeat;
-      
+
     if (width)
         *width = (long) twidth;
-    
+
     return(*status);
 }
 /*--------------------------------------------------------------------------*/
@@ -3375,7 +3375,7 @@ int ffgtclll( fitsfile *fptr,  /* I - FITS file pointer                       */
             LONGLONG *width, /* O - if ASCII, width of field or unit string */
             int  *status)    /* IO - error status                           */
 /*
-  Get Type of table column. 
+  Get Type of table column.
   Returns the datatype code of the column, as well as the vector
   repeat count and (if it is an ASCII character column) the
   width of the field or a unit string within the field.  This supports the
@@ -3410,7 +3410,7 @@ int ffgtclll( fitsfile *fptr,  /* I - FITS file pointer                       */
     {
        ffasfm(colptr->tform, typecode, &tmpwidth, &decims, status);
        *width = tmpwidth;
-       
+
       if (repeat)
            *repeat = 1;
     }
@@ -3436,7 +3436,7 @@ int ffeqty( fitsfile *fptr,  /* I - FITS file pointer                       */
             long *width,     /* O - if ASCII, width of field or unit string */
             int  *status)    /* IO - error status                           */
 /*
-  Get the 'equivalent' table column type. 
+  Get the 'equivalent' table column type.
 
   This routine is similar to the ffgtcl routine (which returns the physical
   datatype of the column, as stored in the FITS file) except that if the
@@ -3444,7 +3444,7 @@ int ffeqty( fitsfile *fptr,  /* I - FITS file pointer                       */
   the 'equivalent' datatype.  Thus, if the column is defined as '1I'  (short
   integer) this routine may return the type as 'TUSHORT' or as 'TFLOAT'
   depending on the TSCALn and TZEROn values.
-  
+
   Returns the datatype code of the column, as well as the vector
   repeat count and (if it is an ASCII character column) the
   width of the field or a unit string within the field.  This supports the
@@ -3453,7 +3453,7 @@ int ffeqty( fitsfile *fptr,  /* I - FITS file pointer                       */
 */
 {
     LONGLONG trepeat, twidth;
-    
+
     ffeqtyll(fptr, colnum, typecode, &trepeat, &twidth, status);
 
     if (repeat)
@@ -3472,7 +3472,7 @@ int ffeqtyll( fitsfile *fptr,  /* I - FITS file pointer                       */
             LONGLONG *width,     /* O - if ASCII, width of field or unit string */
             int  *status)    /* IO - error status                           */
 /*
-  Get the 'equivalent' table column type. 
+  Get the 'equivalent' table column type.
 
   This routine is similar to the ffgtcl routine (which returns the physical
   datatype of the column, as stored in the FITS file) except that if the
@@ -3480,7 +3480,7 @@ int ffeqtyll( fitsfile *fptr,  /* I - FITS file pointer                       */
   the 'equivalent' datatype.  Thus, if the column is defined as '1I'  (short
   integer) this routine may return the type as 'TUSHORT' or as 'TFLOAT'
   depending on the TSCALn and TZEROn values.
-  
+
   Returns the datatype code of the column, as well as the vector
   repeat count and (if it is an ASCII character column) the
   width of the field or a unit string within the field.  This supports the
@@ -3544,7 +3544,7 @@ int ffeqtyll( fitsfile *fptr,  /* I - FITS file pointer                       */
 
     if (tscale == 1.0 && tzero == 0.0)  /* no scaling */
         return(*status);
- 
+
     tcode = abs(*typecode);
 
     switch (tcode)
@@ -3558,13 +3558,13 @@ int ffeqtyll( fitsfile *fptr,  /* I - FITS file pointer                       */
         min_val = -32768.0;
         max_val =  32767.0;
         break;
-        
+
       case TLONG:
 
         min_val = -2147483648.0;
         max_val =  2147483647.0;
         break;
-        
+
       default:  /* don't have to deal with other data types */
         return(*status);
     }
@@ -3590,12 +3590,12 @@ int ffeqtyll( fitsfile *fptr,  /* I - FITS file pointer                       */
 
     /*
        In all the remaining cases, TSCALn and TZEROn are integers,
-       and not equal to 1 and 0, respectively.  
+       and not equal to 1 and 0, respectively.
     */
 
     } else if ((min_val == -128.) && (max_val == 127.)) {
         effcode = TSBYTE;
- 
+
     } else if ((min_val >= -32768.0) && (max_val <= 32767.0)) {
         effcode = TSHORT;
 
@@ -3610,7 +3610,7 @@ int ffeqtyll( fitsfile *fptr,  /* I - FITS file pointer                       */
 
     } else {  /* exceeds the range of a 32-bit integer */
         effcode = TDOUBLE;
-    }   
+    }
 
     /* return the effective datatype code (negative if variable length col.) */
     if (*typecode < 0)  /* variable length array column */
@@ -3790,7 +3790,7 @@ int ffgbcl( fitsfile *fptr,   /* I - FITS file pointer                      */
 */
 {
     LONGLONG trepeat, ttnull;
-    
+
     if (*status > 0)
         return(*status);
 
@@ -3948,13 +3948,13 @@ int ffghadll(fitsfile *fptr,     /* I - FITS file pointer                     */
     }
 
     if (headstart)
-        *headstart = (fptr->Fptr)->headstart[(fptr->Fptr)->curhdu];       
+        *headstart = (fptr->Fptr)->headstart[(fptr->Fptr)->curhdu];
 
     if (datastart)
         *datastart = (fptr->Fptr)->datastart;
 
     if (dataend)
-        *dataend = (fptr->Fptr)->headstart[((fptr->Fptr)->curhdu) + 1];       
+        *dataend = (fptr->Fptr)->headstart[((fptr->Fptr)->curhdu) + 1];
 
     return(*status);
 }
@@ -3985,13 +3985,13 @@ int ffghof(fitsfile *fptr,     /* I - FITS file pointer                     */
     }
 
     if (headstart)
-        *headstart = (OFF_T) (fptr->Fptr)->headstart[(fptr->Fptr)->curhdu];       
+        *headstart = (OFF_T) (fptr->Fptr)->headstart[(fptr->Fptr)->curhdu];
 
     if (datastart)
         *datastart = (OFF_T) (fptr->Fptr)->datastart;
 
     if (dataend)
-        *dataend   = (OFF_T) (fptr->Fptr)->headstart[((fptr->Fptr)->curhdu) + 1];       
+        *dataend   = (OFF_T) (fptr->Fptr)->headstart[((fptr->Fptr)->curhdu) + 1];
 
     return(*status);
 }
@@ -4034,7 +4034,7 @@ int ffghad(fitsfile *fptr,     /* I - FITS file pointer                     */
         if (edata > LONG_MAX)
             *status = NUM_OVERFLOW;
         else
-            *dataend = (long) edata;       
+            *dataend = (long) edata;
     }
 
     return(*status);
@@ -4137,7 +4137,7 @@ int ffrhdu(fitsfile *fptr,    /* I - FITS file pointer */
     {
         if (card[0] == 0  ||
             card[0] == 10)     /* some editors append this character to EOF */
-        {           
+        {
             *status = END_OF_FILE;
         }
         else
@@ -4152,7 +4152,7 @@ int ffrhdu(fitsfile *fptr,    /* I - FITS file pointer */
     /*  compare the starting position of the next HDU (if any) with the size */
     /*  of the whole file to see if this is the last HDU in the file */
 
-    if ((fptr->Fptr)->headstart[ (fptr->Fptr)->curhdu + 1] < 
+    if ((fptr->Fptr)->headstart[ (fptr->Fptr)->curhdu + 1] <
         (fptr->Fptr)->logfilesize )
     {
         (fptr->Fptr)->lasthdu = 0;  /* no, not the last HDU */
@@ -4166,7 +4166,7 @@ int ffrhdu(fitsfile *fptr,    /* I - FITS file pointer */
         /* Without this code, CFITSIO would repeatedly realloc  memory */
         /* to incrementally increase the size of the file by 2880 bytes */
         /* at a time, until it reached the final size */
- 
+
         ffurlt(fptr, urltype, status);
         if (!strcmp(urltype,"mem://") || !strcmp(urltype,"memkeep://"))
         {
@@ -4181,7 +4181,7 @@ int ffpinit(fitsfile *fptr,      /* I - FITS file pointer */
            int *status)          /* IO - error status     */
 /*
   initialize the parameters defining the structure of the primary array
-  or an Image extension 
+  or an Image extension
 */
 {
     int groups, tstatus, simple, bitpix, naxis, extend, nspace;
@@ -4206,7 +4206,7 @@ int ffpinit(fitsfile *fptr,      /* I - FITS file pointer */
     tstatus = *status;
 
     /* get all the descriptive info about this HDU */
-    ffgphd(fptr, 999, &simple, &bitpix, &naxis, naxes, &pcount, &gcount, 
+    ffgphd(fptr, 999, &simple, &bitpix, &naxis, naxes, &pcount, &gcount,
            &extend, &bscale, &bzero, &blank, &nspace, status);
 
     if (*status == NOT_IMAGE)
@@ -4215,7 +4215,7 @@ int ffpinit(fitsfile *fptr,      /* I - FITS file pointer */
         return(*status);
 
     /*
-       the logical end of the header is 80 bytes before the current position, 
+       the logical end of the header is 80 bytes before the current position,
        minus any trailing blank keywords just before the END keyword.
     */
     (fptr->Fptr)->headend = (fptr->Fptr)->nextkey - (80 * (nspace + 1));
@@ -4263,7 +4263,7 @@ int ffpinit(fitsfile *fptr,      /* I - FITS file pointer */
         ttype=TDOUBLE;
         bytlen=8;
     }
-        
+
     /*   calculate the size of the primary array  */
     (fptr->Fptr)->imgdim = naxis;
     if (naxis == 0)
@@ -4295,13 +4295,13 @@ int ffpinit(fitsfile *fptr,      /* I - FITS file pointer */
     */
 
     (fptr->Fptr)->headstart[ (fptr->Fptr)->curhdu + 1] =
-         (fptr->Fptr)->datastart + 
+         (fptr->Fptr)->datastart +
          ( ((LONGLONG) pcount + npix) * bytlen * gcount + 2879) / 2880 * 2880;
 
     /*
       initialize the fictitious heap starting address (immediately following
       the array data) and a zero length heap.  This is used to find the
-      end of the data when checking the fill values in the last block. 
+      end of the data when checking the fill values in the last block.
     */
     (fptr->Fptr)->heapstart = (npix + pcount) * bytlen * gcount;
     (fptr->Fptr)->heapsize = 0;
@@ -4380,7 +4380,7 @@ int ffpinit(fitsfile *fptr,      /* I - FITS file pointer */
         }
 
         /* copy the table structure address to the fitsfile structure */
-        (fptr->Fptr)->tableptr = colptr; 
+        (fptr->Fptr)->tableptr = colptr;
 
         /* the first column represents the group parameters, if any */
         colptr->tbcol = 0;
@@ -4395,7 +4395,7 @@ int ffpinit(fitsfile *fptr,      /* I - FITS file pointer */
 
         /* the second column represents the image array */
         colptr->tbcol = pcount * bytlen; /* col starts after the group parms */
-        colptr->tdatatype = ttype; 
+        colptr->tdatatype = ttype;
         colptr->twidth = bytlen;
         colptr->trepeat = npix;
         colptr->tscale = bscale;
@@ -4413,7 +4413,7 @@ int ffainit(fitsfile *fptr,      /* I - FITS file pointer */
             int *status)         /* IO - error status     */
 {
 /*
-  initialize the parameters defining the structure of an ASCII table 
+  initialize the parameters defining the structure of an ASCII table
 */
     int  ii, nspace;
     long tfield;
@@ -4433,7 +4433,7 @@ int ffainit(fitsfile *fptr,      /* I - FITS file pointer */
     (fptr->Fptr)->headend = (fptr->Fptr)->logfilesize;  /* set max size */
 
     /* get table parameters and test that the header is a valid: */
-    if (ffgttb(fptr, &rowlen, &nrows, &pcount, &tfield, status) > 0)  
+    if (ffgttb(fptr, &rowlen, &nrows, &pcount, &tfield, status) > 0)
        return(*status);
 
     if (pcount != 0)
@@ -4479,7 +4479,7 @@ int ffainit(fitsfile *fptr,      /* I - FITS file pointer */
     }
 
     /* copy the table structure address to the fitsfile structure */
-    (fptr->Fptr)->tableptr = colptr; 
+    (fptr->Fptr)->tableptr = colptr;
 
     /*  initialize the table field parameters */
     for (ii = 0; ii < tfield; ii++, colptr++)
@@ -4495,7 +4495,7 @@ int ffainit(fitsfile *fptr,      /* I - FITS file pointer */
     /*
       Initialize the fictitious heap starting address (immediately following
       the table data) and a zero length heap.  This is used to find the
-      end of the table data when checking the fill values in the last block. 
+      end of the table data when checking the fill values in the last block.
       There is no special data following an ASCII table.
     */
     (fptr->Fptr)->numrows = nrows;
@@ -4565,7 +4565,7 @@ int ffainit(fitsfile *fptr,      /* I - FITS file pointer */
             return(*status = NO_TBCOL);
         }
 
-        else if ((fptr->Fptr)->rowlength != 0 && 
+        else if ((fptr->Fptr)->rowlength != 0 &&
                 (tbcoln < 0 || tbcoln >= (fptr->Fptr)->rowlength ) )
         {
             ffkeyn("TBCOL", ii+1, name, status);  /* construct keyword name */
@@ -4575,7 +4575,7 @@ int ffainit(fitsfile *fptr,      /* I - FITS file pointer */
             return(*status = BAD_TBCOL);
         }
 
-        else if ((fptr->Fptr)->rowlength != 0 && 
+        else if ((fptr->Fptr)->rowlength != 0 &&
                  tbcoln + colptr->twidth > (fptr->Fptr)->rowlength )
         {
             sprintf(message,"Column %d is too wide to fit in table (ffainit)",
@@ -4594,9 +4594,9 @@ int ffainit(fitsfile *fptr,      /* I - FITS file pointer */
       any trailing blank keywords just before the END keyword.
     */
     (fptr->Fptr)->headend = (fptr->Fptr)->nextkey - (80 * (nspace + 1));
- 
+
     /* the data unit begins at the beginning of the next logical block */
-    (fptr->Fptr)->datastart = (((fptr->Fptr)->nextkey - 80) / 2880 + 1) 
+    (fptr->Fptr)->datastart = (((fptr->Fptr)->nextkey - 80) / 2880 + 1)
                               * 2880;
 
     /* the next HDU begins in the next logical block after the data  */
@@ -4614,7 +4614,7 @@ int ffbinit(fitsfile *fptr,     /* I - FITS file pointer */
             int *status)        /* IO - error status     */
 {
 /*
-  initialize the parameters defining the structure of a binary table 
+  initialize the parameters defining the structure of a binary table
 */
     int  ii, nspace;
     long tfield;
@@ -4672,7 +4672,7 @@ int ffbinit(fitsfile *fptr,     /* I - FITS file pointer */
     }
 
     /* copy the table structure address to the fitsfile structure */
-    (fptr->Fptr)->tableptr = colptr; 
+    (fptr->Fptr)->tableptr = colptr;
 
     /* initialize the table field parameters */
     for (ii = 0; ii < tfield; ii++, colptr++)
@@ -4689,7 +4689,7 @@ int ffbinit(fitsfile *fptr,     /* I - FITS file pointer */
     /*
       Initialize the heap starting address (immediately following
       the table data) and the size of the heap.  This is used to find the
-      end of the table data when checking the fill values in the last block. 
+      end of the table data when checking the fill values in the last block.
     */
     (fptr->Fptr)->numrows = nrows;
     (fptr->Fptr)->origrows = nrows;
@@ -4763,13 +4763,13 @@ int ffbinit(fitsfile *fptr,     /* I - FITS file pointer */
     */
 
     (fptr->Fptr)->headend = (fptr->Fptr)->nextkey - (80 * (nspace + 1));
- 
+
     /* the data unit begins at the beginning of the next logical block */
-    (fptr->Fptr)->datastart = (((fptr->Fptr)->nextkey - 80) / 2880 + 1) 
+    (fptr->Fptr)->datastart = (((fptr->Fptr)->nextkey - 80) / 2880 + 1)
                               * 2880;
 
     /* the next HDU begins in the next logical block after the data  */
-    (fptr->Fptr)->headstart[ (fptr->Fptr)->curhdu + 1] = 
+    (fptr->Fptr)->headstart[ (fptr->Fptr)->curhdu + 1] =
          (fptr->Fptr)->datastart +
          ( (rowlen * nrows + pcount + 2879) / 2880 * 2880 );
 
@@ -4779,7 +4779,7 @@ int ffbinit(fitsfile *fptr,     /* I - FITS file pointer */
     if (totalwidth != rowlen)
     {
         sprintf(message,
-        "NAXIS1 = %ld is not equal to the sum of column widths: %ld", 
+        "NAXIS1 = %ld is not equal to the sum of column widths: %ld",
         (long) rowlen, (long) totalwidth);
         ffpmsg(message);
         *status = BAD_ROW_WIDTH;
@@ -4877,7 +4877,7 @@ int ffgtbc(fitsfile *fptr,    /* I - FITS file pointer          */
         {
             nbytes =  colptr->trepeat * (colptr->tdatatype / 10);
         }
-        else  if ((colptr->tform[0] == 'P') || (colptr->tform[1] == 'P')) 
+        else  if ((colptr->tform[0] == 'P') || (colptr->tform[1] == 'P'))
 	   /* this is a 'P' variable length descriptor (neg. tdatatype) */
             nbytes = 8;
 	else
@@ -4897,7 +4897,7 @@ int ffgtbp(fitsfile *fptr,     /* I - FITS file pointer   */
 /*
   Get TaBle Parameter.  The input keyword name begins with the letter T.
   Test if the keyword is one of the table column definition keywords
-  of an ASCII or binary table. If so, decode it and update the value 
+  of an ASCII or binary table. If so, decode it and update the value
   in the structure.
 */
     int tstatus, datacode, decimals;
@@ -5073,7 +5073,7 @@ int ffgtbp(fitsfile *fptr,     /* I - FITS file pointer   */
         }
         else  /* binary table */
         {
-            if (ffc2jj(value, &jjvalue, &tstatus) > 0) 
+            if (ffc2jj(value, &jjvalue, &tstatus) > 0)
             {
                 sprintf(message,
                 "Error reading value of %s as an integer: %s", name, value);
@@ -5088,7 +5088,7 @@ int ffgtbp(fitsfile *fptr,     /* I - FITS file pointer   */
     else if(!FSTRNCMP(name + 1, "DIM", 3) )
     {
         if ((fptr->Fptr)->hdutype == ASCII_TBL)  /* ASCII table */
-            return(*status);  /* ASCII tables don't support TDIMn keyword */ 
+            return(*status);  /* ASCII tables don't support TDIMn keyword */
 
         /* get the index number */
         if( ffc2ii(name + 4, &nfield, &tstatus) > 0) /* read index no. */
@@ -5103,7 +5103,7 @@ int ffgtbp(fitsfile *fptr,     /* I - FITS file pointer   */
         /* uninitialized columns have tdatatype set = -9999 */
         if (colptr->tdatatype != -9999 && colptr->tdatatype != TSTRING)
 	    return(*status);     /* this is not an ASCII string column */
-	   
+
         loc = strchr(value, '(' );  /* find the opening parenthesis */
         if (!loc)
             return(*status);   /* not a proper TDIM keyword */
@@ -5118,9 +5118,9 @@ int ffgtbp(fitsfile *fptr,     /* I - FITS file pointer   */
     else if (!FSTRNCMP(name + 1, "HEAP", 4) )
     {
         if ((fptr->Fptr)->hdutype == ASCII_TBL)  /* ASCII table */
-            return(*status);  /* ASCII tables don't have a heap */ 
+            return(*status);  /* ASCII tables don't have a heap */
 
-        if (ffc2jj(value, &jjvalue, &tstatus) > 0) 
+        if (ffc2jj(value, &jjvalue, &tstatus) > 0)
         {
             sprintf(message,
             "Error reading value of %s as an integer: %s", name, value);
@@ -5162,7 +5162,7 @@ int ffgcprll( fitsfile *fptr, /* I - FITS file pointer                      */
         char *snull,    /* O - null value for ASCII table columns           */
         int *status)    /* IO - error status                                */
 /*
-  Get Column PaRameters, and test starting row and element numbers for 
+  Get Column PaRameters, and test starting row and element numbers for
   validity.  This is a workhorse routine that is call by nearly every
   other routine that reads or writes to FITS files.
 */
@@ -5180,15 +5180,15 @@ int ffgcprll( fitsfile *fptr, /* I - FITS file pointer                      */
 
     } else if ((fptr->Fptr)->datastart == DATA_UNDEFINED) {
         /* rescan header if data structure is undefined */
-        if ( ffrdef(fptr, status) > 0)               
+        if ( ffrdef(fptr, status) > 0)
             return(*status);
 
     } else if (writemode > 0) {
         /* (re)write END header keyword, if not done already */
-	if ((fptr->Fptr)->ENDpos != 
+	if ((fptr->Fptr)->ENDpos !=
 	   maxvalue((fptr->Fptr)->headend , (fptr->Fptr)->datastart -2880)) {
 	      ffwend(fptr, status);
-        } 
+        }
     }
 
     /* Do sanity check of input parameters */
@@ -5327,7 +5327,7 @@ int ffgcprll( fitsfile *fptr, /* I - FITS file pointer                      */
         }
     }
     else
-       *maxelem = DBUFFSIZE / *twidth; 
+       *maxelem = DBUFFSIZE / *twidth;
 
     /* calc starting byte position to 1st element of col  */
     /*  (this does not apply to variable length columns)  */
@@ -5341,7 +5341,7 @@ int ffgcprll( fitsfile *fptr, /* I - FITS file pointer                      */
         yet known or defined.
       */
         if (*repeat < *elemnum + nelem)
-            *repeat = *elemnum + nelem; 
+            *repeat = *elemnum + nelem;
     }
     else if (*tcode > 0)     /*  Fixed length table column  */
     {
@@ -5380,8 +5380,8 @@ int ffgcprll( fitsfile *fptr, /* I - FITS file pointer                      */
                 else
                 {
                   /* update heap starting address */
-                  (fptr->Fptr)->heapstart += 
-                  ((LONGLONG)(endrow - (fptr->Fptr)->numrows) * 
+                  (fptr->Fptr)->heapstart +=
+                  ((LONGLONG)(endrow - (fptr->Fptr)->numrows) *
                           (fptr->Fptr)->rowlength );
 
                   (fptr->Fptr)->numrows = endrow; /* update number of rows */
@@ -5396,11 +5396,11 @@ int ffgcprll( fitsfile *fptr, /* I - FITS file pointer                      */
             {
               if (firstrow > (fptr->Fptr)->numrows)
               {
-                sprintf(message, 
+                sprintf(message,
                   "Attempted to read from group %ld of the HDU,", (long) firstrow);
                 ffpmsg(message);
 
-                sprintf(message, 
+                sprintf(message,
                   "however the HDU only contains %ld group(s).",
                    (long) ((fptr->Fptr)->numrows) );
                 ffpmsg(message);
@@ -5408,11 +5408,11 @@ int ffgcprll( fitsfile *fptr, /* I - FITS file pointer                      */
               else
               {
                 ffpmsg("Attempt to read past end of array:");
-                sprintf(message, 
+                sprintf(message,
                   "  Image has  %ld elements;", (long) *repeat);
                 ffpmsg(message);
 
-                sprintf(message, 
+                sprintf(message,
                 "  Tried to read %ld elements starting at element %ld.",
                 (long) nelem, (long) firstelem);
                 ffpmsg(message);
@@ -5421,12 +5421,12 @@ int ffgcprll( fitsfile *fptr, /* I - FITS file pointer                      */
             else
             {
               ffpmsg("Attempt to read past end of table:");
-              sprintf(message, 
+              sprintf(message,
                 "  Table has %.0f rows with %.0f elements per row;",
                     (double) ((fptr->Fptr)->numrows), (double) *repeat);
               ffpmsg(message);
 
-              sprintf(message, 
+              sprintf(message,
               "  Tried to read %.0f elements starting at row %.0f, element %.0f.",
               (double) nelem, (double) firstrow, (double) ((*elemnum) + 1));
               ffpmsg(message);
@@ -5446,14 +5446,14 @@ int ffgcprll( fitsfile *fptr, /* I - FITS file pointer                      */
 
             If writemode == 2, then the calling program does not want to
             have this efficiency trick applied.
-          */           
+          */
             *incre = (long) *rowlen;
             *repeat = nelem;
         }
     }
     else    /*  Variable length Binary Table column */
     {
-      *tcode *= (-1);  
+      *tcode *= (-1);
 
       if (writemode)    /* return next empty heap address for writing */
       {
@@ -5481,7 +5481,7 @@ int ffgcprll( fitsfile *fptr, /* I - FITS file pointer                      */
               if (colptr->tdatatype <= -TCOMPLEX)
               {
                 /* divide repeat count by 2 to get no. of complex values */
-                ffpdes(fptr, colnum, firstrow, *repeat / 2, 
+                ffpdes(fptr, colnum, firstrow, *repeat / 2,
                       heapoffset, status);
               }
               else
@@ -5510,14 +5510,14 @@ int ffgcprll( fitsfile *fptr, /* I - FITS file pointer                      */
         }
 
         /*  calculate starting position (for writing new data) in the heap */
-        *startpos = datastart + (fptr->Fptr)->heapstart + 
+        *startpos = datastart + (fptr->Fptr)->heapstart +
                     (fptr->Fptr)->heapsize;
 
         /*  write the descriptor into the fixed length part of table */
         if (colptr->tdatatype <= -TCOMPLEX)
         {
           /* divide repeat count by 2 to get no. of complex values */
-          ffpdes(fptr, colnum, firstrow, *repeat / 2, 
+          ffpdes(fptr, colnum, firstrow, *repeat / 2,
                 (fptr->Fptr)->heapsize, status);
         }
         else
@@ -5531,14 +5531,14 @@ int ffgcprll( fitsfile *fptr, /* I - FITS file pointer                      */
         /* If so, then have to insert more blocks. */
         if ( !((fptr->Fptr)->lasthdu) )
         {
-            endpos = datastart + (fptr->Fptr)->heapstart + 
+            endpos = datastart + (fptr->Fptr)->heapstart +
                      (fptr->Fptr)->heapsize + ( *repeat * (*incre));
 
             if (endpos > (fptr->Fptr)->headstart[ (fptr->Fptr)->curhdu + 1])
             {
                 /* calc the number of blocks that need to be added */
-                nblock = (long) (((endpos - 1 - 
-                         (fptr->Fptr)->headstart[ (fptr->Fptr)->curhdu + 1] ) 
+                nblock = (long) (((endpos - 1 -
+                         (fptr->Fptr)->headstart[ (fptr->Fptr)->curhdu + 1] )
                          / 2880) + 1);
 
                 if (ffiblk(fptr, nblock, 1, status) > 0) /* insert blocks */
@@ -5553,14 +5553,14 @@ int ffgcprll( fitsfile *fptr, /* I - FITS file pointer                      */
         }
 
         /* increment the address to the next empty heap position */
-        (fptr->Fptr)->heapsize += ( *repeat * (*incre)); 
+        (fptr->Fptr)->heapsize += ( *repeat * (*incre));
       }
       else    /*  get the read start position in the heap */
       {
         if ( firstrow > (fptr->Fptr)->numrows)
         {
             ffpmsg("Attempt to read past end of table");
-            sprintf(message, 
+            sprintf(message,
                 "  Table has %.0f rows and tried to read row %.0f.",
                 (double) ((fptr->Fptr)->numrows), (double) firstrow);
             ffpmsg(message);
@@ -5577,11 +5577,11 @@ int ffgcprll( fitsfile *fptr, /* I - FITS file pointer                      */
 
         if (*elemnum >= *repeat)
         {
-            sprintf(message, 
+            sprintf(message,
          "Starting element to read in variable length column is too large: %ld",
                     (long) firstelem);
             ffpmsg(message);
-            sprintf(message, 
+            sprintf(message,
          "  This row only contains %ld elements", (long) *repeat);
             ffpmsg(message);
             return(*status = BAD_ELEM_NUM);
@@ -5621,14 +5621,14 @@ int fftheap(fitsfile *fptr, /* I - FITS file pointer                         */
         ffmahd(fptr, (fptr->HDUposition) + 1, NULL, status);
 
     /* rescan header to make sure everything is up to date */
-    else if ( ffrdef(fptr, status) > 0)               
+    else if ( ffrdef(fptr, status) > 0)
         return(*status);
 
     if (valid) *valid = TRUE;
     if (heapsz) *heapsz = (fptr->Fptr)->heapsize;
     if (unused) *unused = 0;
     if (overlap) *overlap = 0;
-    
+
     /* return if this is not a binary table HDU or if the heap is empty */
     if ( (fptr->Fptr)->hdutype != BINARY_TBL || (fptr->Fptr)->heapsize == 0 )
         return(*status);
@@ -5750,7 +5750,7 @@ int ffcmph(fitsfile *fptr,  /* I -FITS file pointer                         */
         ffclos(tptr, status);
         return(*status = MEMORY_ALLOCATION);
     }
-    
+
     readheapstart  = (tptr->Fptr)->datastart + (tptr->Fptr)->heapstart;
     writeheapstart = (fptr->Fptr)->datastart + (fptr->Fptr)->heapstart;
 
@@ -5799,8 +5799,8 @@ int ffcmph(fitsfile *fptr,  /* I -FITS file pointer                         */
               if (endpos > (fptr->Fptr)->headstart[ (fptr->Fptr)->curhdu + 1])
               {
                 /* calc the number of blocks that need to be added */
-                nblock = (long) (((endpos - 1 - 
-                         (fptr->Fptr)->headstart[ (fptr->Fptr)->curhdu + 1] ) 
+                nblock = (long) (((endpos - 1 -
+                         (fptr->Fptr)->headstart[ (fptr->Fptr)->curhdu + 1] )
                          / 2880) + 1);
 
                 if (ffiblk(fptr, nblock, 1, status) > 0) /* insert blocks */
@@ -5818,12 +5818,12 @@ int ffcmph(fitsfile *fptr,  /* I -FITS file pointer                         */
             ffgbyt(tptr, nbytes, buffer, status);
 
             /* write arrray of bytes back to original file */
-            ffmbyt(fptr, writeheapstart + (fptr->Fptr)->heapsize, 
+            ffmbyt(fptr, writeheapstart + (fptr->Fptr)->heapsize,
                     IGNORE_EOF, status);
             ffpbyt(fptr, nbytes, buffer, status);
 
             /* write descriptor */
-            ffpdes(fptr, jj, ii, repeat, 
+            ffpdes(fptr, jj, ii, repeat,
                    (fptr->Fptr)->heapsize, status);
 
             (fptr->Fptr)->heapsize += nbytes; /* update heapsize */
@@ -5876,7 +5876,7 @@ int ffgdes(fitsfile *fptr, /* I - FITS file pointer                         */
 */
 {
     LONGLONG lengthjj, heapaddrjj;
-    
+
     if (ffgdesll(fptr, colnum, rownum, &lengthjj, &heapaddrjj, status) > 0)
         return(*status);
 
@@ -5888,7 +5888,7 @@ int ffgdes(fitsfile *fptr, /* I - FITS file pointer                         */
 	else
             *length = (long) lengthjj;
     }
-    
+
     if (heapaddr) {
         if (heapaddrjj > LONG_MAX)
 	    *status = NUM_OVERFLOW;
@@ -5917,7 +5917,7 @@ int ffgdesll(fitsfile *fptr,   /* I - FITS file pointer                       */
 
     if (*status > 0)
        return(*status);
-       
+
     /* reset position to the correct HDU if necessary */
     if (fptr->HDUposition != (fptr->Fptr)->curhdu)
         ffmahd(fptr, (fptr->HDUposition) + 1, NULL, status);
@@ -5933,14 +5933,14 @@ int ffgdesll(fitsfile *fptr,   /* I - FITS file pointer                       */
         return(*status);
     }
 
-    bytepos = (fptr->Fptr)->datastart + 
+    bytepos = (fptr->Fptr)->datastart +
                   ((fptr->Fptr)->rowlength * (rownum - 1)) +
                    colptr->tbcol;
 
     if (colptr->tform[0] == 'P' || colptr->tform[1] == 'P')
     {
         /* read 4-byte descriptor */
-        if (ffgi4b(fptr, bytepos, 2, 4, (INT32BIT *) descript4, status) <= 0) 
+        if (ffgi4b(fptr, bytepos, 2, 4, (INT32BIT *) descript4, status) <= 0)
         {
            if (length)
              *length = (LONGLONG) descript4[0];   /* 1st word is the length  */
@@ -5952,14 +5952,14 @@ int ffgdesll(fitsfile *fptr,   /* I - FITS file pointer                       */
     else  /* this is for 'Q' columns */
     {
         /* read 8 byte descriptor */
-        if (ffgi8b(fptr, bytepos, 2, 8, (long *) descript8, status) <= 0) 
+        if (ffgi8b(fptr, bytepos, 2, 8, (long *) descript8, status) <= 0)
         {
            if (length)
              *length = descript8[0];   /* 1st word is the length  */
            if (heapaddr)
              *heapaddr = descript8[1]; /* 2nd word is the address */
         }
-    }     
+    }
 
     return(*status);
 }
@@ -5998,9 +5998,9 @@ int ffgdess(fitsfile *fptr, /* I - FITS file pointer                        */
         *status = NOT_VARI_LEN;
         return(*status);
     }
-    
+
     rowsize = (fptr->Fptr)->rowlength;
-    bytepos = (fptr->Fptr)->datastart + 
+    bytepos = (fptr->Fptr)->datastart +
                   (rowsize  * (firstrow - 1)) +
                   colptr->tbcol;
 
@@ -6011,7 +6011,7 @@ int ffgdess(fitsfile *fptr, /* I - FITS file pointer                        */
         {
 	    /* read descriptors */
             if (ffgi4b(fptr, bytepos, 2, 4, descript4, status) <= 0)
-	    { 
+	    {
               if (length) {
                 *length =   (long) descript4[0];   /* 1st word is the length  */
                 length++;
@@ -6034,7 +6034,7 @@ int ffgdess(fitsfile *fptr, /* I - FITS file pointer                        */
         {
 	    /* read descriptors */
             if (ffgi8b(fptr, bytepos, 2, 8, (long *) descript8, status) <= 0)
-	    { 
+	    {
               if (length) {
 	        if (descript8[0] > LONG_MAX)*status = NUM_OVERFLOW;
                 *length =   (long) descript8[0];   /* 1st word is the length  */
@@ -6090,7 +6090,7 @@ int ffgdessll(fitsfile *fptr, /* I - FITS file pointer                      */
     }
 
     rowsize = (fptr->Fptr)->rowlength;
-    bytepos = (fptr->Fptr)->datastart + 
+    bytepos = (fptr->Fptr)->datastart +
                   (rowsize  * (firstrow - 1)) +
                   colptr->tbcol;
 
@@ -6101,7 +6101,7 @@ int ffgdessll(fitsfile *fptr, /* I - FITS file pointer                      */
         {
 	    /* read descriptors */
             if (ffgi4b(fptr, bytepos, 2, 4, (INT32BIT *) descript4, status) <= 0)
-	    { 
+	    {
               if (length) {
                 *length =   (LONGLONG) descript4[0];   /* 1st word is the length  */
                 length++;
@@ -6125,7 +6125,7 @@ int ffgdessll(fitsfile *fptr, /* I - FITS file pointer                      */
 	    /* read descriptors */
 	    /* cast to type (long *) even though it is actually (LONGLONG *) */
             if (ffgi8b(fptr, bytepos, 2, 8, (long *) descript8, status) <= 0)
-	    { 
+	    {
               if (length) {
                 *length =   descript8[0];   /* 1st word is the length  */
                 length++;
@@ -6175,7 +6175,7 @@ int ffpdes(fitsfile *fptr,  /* I - FITS file pointer                         */
     if (colptr->tdatatype >= 0)
         *status = NOT_VARI_LEN;
 
-    bytepos = (fptr->Fptr)->datastart + 
+    bytepos = (fptr->Fptr)->datastart +
                   ((fptr->Fptr)->rowlength * (rownum - 1)) +
                   colptr->tbcol;
 
@@ -6189,17 +6189,17 @@ int ffpdes(fitsfile *fptr,  /* I - FITS file pointer                         */
 	    *status = NUM_OVERFLOW;
             return(*status);
         }
-           
+
         descript4[0] = (unsigned int) length;   /* 1st word is the length  */
         descript4[1] = (unsigned int) heapaddr; /* 2nd word is the address */
- 
+
         ffpi4b(fptr, 2, 4, (INT32BIT *) descript4, status); /* write the descriptor */
     }
     else /* this is a 'Q' descriptor column */
     {
         descript8[0] =  length;   /* 1st word is the length  */
         descript8[1] =  heapaddr; /* 2nd word is the address */
- 
+
         ffpi8b(fptr, 2, 8, (long *) descript8, status); /* write the descriptor */
     }
 
@@ -6228,13 +6228,13 @@ int ffchdu(fitsfile *fptr,      /* I - FITS file pointer */
         urltype2driver("stream://", &stdriver);
 
         /* don't rescan header in special case of writing to stdout */
-        if (((fptr->Fptr)->driver != stdriver)) 
-             ffrdef(fptr, status); 
+        if (((fptr->Fptr)->driver != stdriver))
+             ffrdef(fptr, status);
 
         if ((fptr->Fptr)->heapsize > 0) {
           ffuptf(fptr, status);  /* update the variable length TFORM values */
         }
-	
+
         ffpdfl(fptr, status);  /* insure correct data file values */
     }
 
@@ -6318,7 +6318,7 @@ int ffuptf(fitsfile *fptr,      /* I - FITS file pointer */
           /* construct the new keyword value */
           strcpy(newform, "'");
           tmp = strchr(tform, '(');  /* truncate old length, if present */
-          if (tmp) *tmp = 0;       
+          if (tmp) *tmp = 0;
           strcat(newform, tform);
 
           /* print as double, because the string-to-64-bit */
@@ -6453,8 +6453,8 @@ int ffhdef(fitsfile *fptr,      /* I - FITS file pointer                    */
       /* the number of new keywords to be added.  */
 
       delta = (((fptr->Fptr)->headend + (morekeys * 80)) / 2880 + 1)
-                                * 2880 - (fptr->Fptr)->datastart; 
-              
+                                * 2880 - (fptr->Fptr)->datastart;
+
       (fptr->Fptr)->datastart += delta;
 
       (fptr->Fptr)->headstart[ (fptr->Fptr)->curhdu + 1] += delta;
@@ -6493,7 +6493,7 @@ int ffwend(fitsfile *fptr,       /* I - FITS file pointer */
     strcat(blankkey, "                                        ");
     strcpy(endkey, "END                                     ");
     strcat(endkey, "                                        ");
-  
+
     /* check if header is already correctly terminated with END and fill */
     tstatus=0;
     ffmbyt(fptr, endpos, REPORT_EOF, &tstatus); /* move to header end */
@@ -6524,7 +6524,7 @@ int ffwend(fitsfile *fptr,       /* I - FITS file pointer */
     /*
     The END keyword must either be placed immediately after the last
     keyword that was written (as indicated by the headend value), or
-    must be in the first 80 bytes of the 2880-byte FITS record immediately 
+    must be in the first 80 bytes of the 2880-byte FITS record immediately
     preceeding the data unit, whichever is further in the file. The
     latter will occur if space has been reserved for more header keywords
     which have not yet been written.
@@ -6534,7 +6534,7 @@ int ffwend(fitsfile *fptr,       /* I - FITS file pointer */
     ffmbyt(fptr, endpos, REPORT_EOF, status);  /* move to END position */
 
     ffpbyt(fptr, 80, endkey, status); /*  write the END keyword to header */
-    
+
     /* store this position, for later reference */
     (fptr->Fptr)->ENDpos = endpos;
 
@@ -6717,8 +6717,8 @@ int ffcdfl( fitsfile *fptr, int *status)
    if( (fptr->Fptr)->heapstart==0 ) return( *status );
 
    /* calculate starting position of the fill bytes, if any */
-   filpos = (fptr->Fptr)->datastart 
-          + (fptr->Fptr)->heapstart 
+   filpos = (fptr->Fptr)->datastart
+          + (fptr->Fptr)->heapstart
           + (fptr->Fptr)->heapsize;
 
    /*   calculate the number of fill bytes   */
@@ -6738,9 +6738,9 @@ int ffcdfl( fitsfile *fptr, int *status)
       chfill = 32;         /* ASCII tables are filled with spaces */
    else
       chfill = 0;          /* all other extensions are filled with zeros */
-   
+
    /*   check for all zeros or blanks   */
-   
+
    for(i=0;i<nfill;i++) {
       if( chbuff[i] != chfill ) {
          *status=BAD_DATA_FILL;
@@ -6810,7 +6810,7 @@ int ffdblk(fitsfile *fptr,      /* I - FITS file pointer                    */
            int *status)         /* IO - error status                        */
 /*
   Delete the specified number of 2880-byte blocks from the end
-  of the CHDU by shifting all following extensions up this 
+  of the CHDU by shifting all following extensions up this
   number of blocks.
 */
 {
@@ -6824,15 +6824,15 @@ int ffdblk(fitsfile *fptr,      /* I - FITS file pointer                    */
     tstatus = 0;
     /* pointers to the read and write positions */
 
-    readpos = (fptr->Fptr)->datastart + 
-                   (fptr->Fptr)->heapstart + 
+    readpos = (fptr->Fptr)->datastart +
+                   (fptr->Fptr)->heapstart +
                    (fptr->Fptr)->heapsize;
     readpos = ((readpos + 2879) / 2880) * 2880; /* start of block */
 
 /*  the following formula is wrong because the current data unit
     may have been extended without updating the headstart value
     of the following HDU.
-    
+
     readpos = (fptr->Fptr)->headstart[((fptr->Fptr)->curhdu) + 1];
 */
     writepos = readpos - ((LONGLONG)nblocks * 2880);
@@ -6887,12 +6887,12 @@ int ffghdt(fitsfile *fptr,      /* I - FITS file pointer             */
     if (*status > 0)
         return(*status);
 
-    if (fptr->HDUposition == 0 && (fptr->Fptr)->headend == 0) { 
+    if (fptr->HDUposition == 0 && (fptr->Fptr)->headend == 0) {
          /* empty primary array is alway an IMAGE_HDU */
          *exttype = IMAGE_HDU;
     }
     else {
- 
+
         /* reset position to the correct HDU if necessary */
         if (fptr->HDUposition != (fptr->Fptr)->curhdu)
         {
@@ -6901,7 +6901,7 @@ int ffghdt(fitsfile *fptr,      /* I - FITS file pointer             */
         else if ((fptr->Fptr)->datastart == DATA_UNDEFINED)
         {
             /* rescan header if data structure is undefined */
-            if ( ffrdef(fptr, status) > 0)               
+            if ( ffrdef(fptr, status) > 0)
                 return(*status);
         }
 
@@ -6931,7 +6931,7 @@ int fits_is_compressed_image(fitsfile *fptr,  /* I - FITS file pointer  */
     else if ((fptr->Fptr)->datastart == DATA_UNDEFINED)
     {
         /* rescan header if data structure is undefined */
-        if ( ffrdef(fptr, status) > 0)               
+        if ( ffrdef(fptr, status) > 0)
             return(*status);
     }
 
@@ -7105,13 +7105,13 @@ int ffgiet( fitsfile *fptr,  /* I - FITS file pointer                       */
         min_val = -32768.0;
         max_val =  32767.0;
         break;
-        
+
       case LONG_IMG:
 
         min_val = -2147483648.0;
         max_val =  2147483647.0;
         break;
-        
+
       default:  /* don't have to deal with other data types */
         return(*status);
     }
@@ -7137,7 +7137,7 @@ int ffgiet( fitsfile *fptr,  /* I - FITS file pointer                       */
 
     /*
        In all the remaining cases, BSCALE and BZERO are integers,
-       and not equal to 1 and 0, respectively.  
+       and not equal to 1 and 0, respectively.
     */
 
     } else if ((min_val == -128.) && (max_val == 127.)) {
@@ -7157,7 +7157,7 @@ int ffgiet( fitsfile *fptr,  /* I - FITS file pointer                       */
 
     } else {  /* exceeds the range of a 32-bit integer */
        *imgtype = DOUBLE_IMG;
-    }   
+    }
 
     return(*status);
 }
@@ -7294,7 +7294,7 @@ int ffmahd(fitsfile *fptr,      /* I - FITS file pointer             */
            int *status)         /* IO - error status                 */
 /*
   Move to Absolute Header Data unit.  Move to the specified HDU
-  and read the header to initialize the table structure.  Note that extnum 
+  and read the header to initialize the table structure.  Note that extnum
   is one based, so the primary array is extnum = 1.
 */
 {
@@ -7310,12 +7310,12 @@ int ffmahd(fitsfile *fptr,      /* I - FITS file pointer             */
     {
         /* allocate more space for the headstart array */
         ptr = (LONGLONG*) realloc( (fptr->Fptr)->headstart,
-                        (hdunum + 1001) * sizeof(LONGLONG) ); 
+                        (hdunum + 1001) * sizeof(LONGLONG) );
 
         if (ptr == NULL)
            return (*status = MEMORY_ALLOCATION);
         else {
-          (fptr->Fptr)->MAXHDU = hdunum + 1000; 
+          (fptr->Fptr)->MAXHDU = hdunum + 1000;
           (fptr->Fptr)->headstart = ptr;
         }
     }
@@ -7327,7 +7327,7 @@ int ffmahd(fitsfile *fptr,      /* I - FITS file pointer             */
     {
         /* move directly to the extension if we know that it exists,
            otherwise move to the highest known extension.  */
-        
+
         moveto = minvalue(hdunum - 1, ((fptr->Fptr)->maxhdu) + 1);
 
         /* test if HDU exists */
@@ -7370,12 +7370,12 @@ int ffmahd(fitsfile *fptr,      /* I - FITS file pointer             */
 }
 /*--------------------------------------------------------------------------*/
 int ffmrhd(fitsfile *fptr,      /* I - FITS file pointer                    */
-           int hdumov,          /* I - rel. no. of HDUs to move by (+ or -) */ 
+           int hdumov,          /* I - rel. no. of HDUs to move by (+ or -) */
            int *exttype,        /* O - type of extension, 0, 1, or 2        */
            int *status)         /* IO - error status                        */
 /*
   Move a Relative number of Header Data units.  Offset to the specified
-  extension and read the header to initialize the HDU structure. 
+  extension and read the header to initialize the HDU structure.
 */
 {
     int extnum;
@@ -7423,12 +7423,12 @@ int ffmnhd(fitsfile *fptr,      /* I - FITS file pointer                    */
        treated literally, if the actual EXTNAME also ends with a #.
        Setting putback = 1 means that we need to test for this case later on.
     */
-        
+
     if ((fptr->Fptr)->only_one) {  /* if true, name orignally ended with a # */
        slen = strlen(hduname);
        if (hduname[slen - 1] != '#') /* This will fail if real EXTNAME value */
            putback = 1;              /*  ends with 2 # characters. */
-    } 
+    }
 
     for (ii=1; 1; ii++)    /* loop over all HDUs until EOF */
     {
@@ -7439,10 +7439,10 @@ int ffmnhd(fitsfile *fptr,      /* I - FITS file pointer                    */
            return(*status = BAD_HDU_NUM);   /* couldn't find desired HDU */
         }
 
-        alttype = -1; 
+        alttype = -1;
         if (fits_is_compressed_image(fptr, status))
             alttype = BINARY_TBL;
-        
+
         /* Does this HDU have a matching type? */
         if (exttype == ANY_HDU || hdutype == exttype || hdutype == alttype)
         {
@@ -7455,7 +7455,7 @@ int ffmnhd(fitsfile *fptr,      /* I - FITS file pointer                    */
 		   chopped = 0;
 	           slen = strlen(extname);
 		   if (extname[slen - 1] == '#') {
-		       extname[slen - 1] = '\0'; 
+		       extname[slen - 1] = '\0';
                        chopped = 1;
                    }
                }
@@ -7495,7 +7495,7 @@ int ffmnhd(fitsfile *fptr,      /* I - FITS file pointer                    */
                 {
                     if (chopped) {
                         /* The # was literally part of the name, not a flag */
-	                (fptr->Fptr)->only_one = 0;  
+	                (fptr->Fptr)->only_one = 0;
                     }
                     return(*status);    /* found matching name and vers */
                 }
@@ -7504,7 +7504,7 @@ int ffmnhd(fitsfile *fptr,      /* I - FITS file pointer                    */
              {
                  if (chopped) {
                      /* The # was literally part of the name, not a flag */
-	            (fptr->Fptr)->only_one = 0;  
+	            (fptr->Fptr)->only_one = 0;
                  }
                  return(*status);    /* found matching name */
              }
@@ -7546,7 +7546,7 @@ int ffthdu(fitsfile *fptr,      /* I - FITS file pointer                    */
 }
 /*--------------------------------------------------------------------------*/
 int ffgext(fitsfile *fptr,      /* I - FITS file pointer                */
-           int hdunum,          /* I - no. of HDU to move get (0 based) */ 
+           int hdunum,          /* I - no. of HDU to move get (0 based) */
            int *exttype,        /* O - type of extension, 0, 1, or 2    */
            int *status)         /* IO - error status                    */
 /*
@@ -7585,7 +7585,7 @@ int ffgext(fitsfile *fptr,      /* I - FITS file pointer                */
 }
 /*--------------------------------------------------------------------------*/
 int ffiblk(fitsfile *fptr,      /* I - FITS file pointer               */
-           long nblock,         /* I - no. of blocks to insert         */ 
+           long nblock,         /* I - no. of blocks to insert         */
            int headdata,        /* I - insert where? 0=header, 1=data  */
                                 /*     -1=beginning of file            */
            int *status)         /* IO - error status                   */
@@ -7603,7 +7603,7 @@ int ffiblk(fitsfile *fptr,      /* I - FITS file pointer               */
 
     if (*status > 0 || nblock <= 0)
         return(*status);
-        
+
     tstatus = *status;
 
     if (headdata == 0 || (fptr->Fptr)->hdutype == ASCII_TBL)
@@ -7611,7 +7611,7 @@ int ffiblk(fitsfile *fptr,      /* I - FITS file pointer               */
     else
         charfill = 0;   /* images and binary tables have zero fill */
 
-    if (headdata == 0)  
+    if (headdata == 0)
         insertpt = (fptr->Fptr)->datastart;  /* insert just before data, or */
     else if (headdata == -1)
     {
@@ -7620,8 +7620,8 @@ int ffiblk(fitsfile *fptr,      /* I - FITS file pointer               */
     }
     else                                     /* at end of data, */
     {
-        insertpt = (fptr->Fptr)->datastart + 
-                   (fptr->Fptr)->heapstart + 
+        insertpt = (fptr->Fptr)->datastart +
+                   (fptr->Fptr)->heapstart +
                    (fptr->Fptr)->heapsize;
         insertpt = ((insertpt + 2879) / 2880) * 2880; /* start of block */
 
@@ -7737,7 +7737,7 @@ int ffgkcl(char *tcard)
 
    TYP_CMPRS_KEY:
             The experimental keywords used in the compressed image format
-                  ZIMAGE, ZCMPTYPE, ZNAMEn, ZVALn, ZTILEn, 
+                  ZIMAGE, ZCMPTYPE, ZNAMEn, ZVALn, ZTILEn,
                   ZBITPIX, ZNAXISn, ZSCALE, ZZERO, ZBLANK,
                   EXTNAME = 'COMPRESSED_IMAGE'
 		  ZSIMPLE, ZTENSION, ZEXTEND, ZBLOCKED, ZPCOUNT, ZGCOUNT
@@ -7762,7 +7762,7 @@ int ffgkcl(char *tcard)
            Primary array:
                   WCAXES, CTYPEn, CUNITn, CRVALn, CRPIXn, CROTAn, CDELTn
                   CDj_is, PVj_ms, LONPOLEs, LATPOLEs
-  
+
            Pixel list:
                   TCTYPn, TCTYns, TCUNIn, TCUNns, TCRVLn, TCRVns, TCRPXn, TCRPks,
                   TCDn_k, TCn_ks, TPVn_m, TPn_ms, TCDLTn, TCROTn
@@ -7770,7 +7770,7 @@ int ffgkcl(char *tcard)
            Bintable vector:
                   jCTYPn, jCTYns, jCUNIn, jCUNns, jCRVLn, jCRVns, iCRPXn, iCRPns,
                   jiCDn, jiCDns, jPVn_m, jPn_ms, jCDLTn, jCROTn
-                
+
    TYP_REFSYS_KEY:
                    EQUINOXs, EPOCH, MJD-OBSs, RADECSYS, RADESYSs
 
@@ -7780,7 +7780,7 @@ int ffgkcl(char *tcard)
 
    TYP_USER_KEY:  all other keywords
 
-*/ 
+*/
 {
     char card[20], *card1, *card5;
 
@@ -8271,7 +8271,7 @@ int ffgkcl(char *tcard)
 	        return (TYP_WCS_KEY);
         }
     }
-    
+
     else if (*card >= '0' && *card <= '9')
     {
       if (*card1 == 'C')
@@ -8354,7 +8354,7 @@ int ffgkcl(char *tcard)
       }
       else if (*card1 >= '0' && *card1 <= '9')
       {   /* 2 digits at beginning of keyword */
-	
+
 	    if ( (*(card + 2) == 'P') && (*(card + 3) == 'C') )
 	    {
                if (*(card + 4) >= '0' && *(card + 4) <= '9')
@@ -8366,9 +8366,9 @@ int ffgkcl(char *tcard)
 	        return (TYP_WCS_KEY);  /*  ijCDn keyword */
             }
       }
-      
+
     }
-    
+
     return (TYP_USER_KEY);  /* by default all others are user keywords */
 }
 /*--------------------------------------------------------------------------*/
@@ -8426,9 +8426,9 @@ int ffc2x(char *cval,   /* I - formatted string representation of the value */
         ffc2dd(cval, dval, status);
     else if (*dtype == 'L')
         ffc2ll(cval, lval, status);
-    else 
+    else
         ffc2s(cval, sval, status);   /* C and X formats */
-        
+
     return(*status);
 }
 /*--------------------------------------------------------------------------*/
@@ -8455,9 +8455,9 @@ int ffc2xx(char *cval,   /* I - formatted string representation of the value */
         ffc2dd(cval, dval, status);
     else if (*dtype == 'L')
         ffc2ll(cval, lval, status);
-    else 
+    else
         ffc2s(cval, sval, status);   /* C and X formats */
-        
+
     return(*status);
 }
 /*--------------------------------------------------------------------------*/
@@ -8472,13 +8472,13 @@ int ffc2i(char *cval,   /* I - string representation of the value */
     char dtype, sval[81], msg[81];
     int lval;
     double dval;
-    
+
     if (*status > 0)           /* inherit input status value if > 0 */
         return(*status);
 
     if (cval[0] == '\0')
         return(*status = VALUE_UNDEFINED);  /* null value string */
-        
+
     /* convert the keyword to its native datatype */
     ffc2x(cval, &dtype, ival, &lval, sval, &dval, status);
 
@@ -8533,13 +8533,13 @@ int ffc2j(char *cval,     /* I - string representation of the value */
     char dtype, sval[81], msg[81];
     int lval;
     double dval;
-    
+
     if (*status > 0)           /* inherit input status value if > 0 */
         return(*status);
 
     if (cval[0] == '\0')
         return(*status = VALUE_UNDEFINED);  /* null value string */
-        
+
     /* convert the keyword to its native datatype */
     ffc2xx(cval, &dtype, ival, &lval, sval, &dval, status);
 
@@ -8594,7 +8594,7 @@ int ffc2l(char *cval,  /* I - string representation of the value */
     char dtype, sval[81], msg[81];
     long ival;
     double dval;
-    
+
     if (*status > 0)           /* inherit input status value if > 0 */
         return(*status);
 
@@ -8644,7 +8644,7 @@ int ffc2r(char *cval,   /* I - string representation of the value */
 {
     char dtype, sval[81], msg[81];
     int lval;
-    
+
     if (*status > 0)           /* inherit input status value if > 0 */
         return(*status);
 
@@ -8663,10 +8663,10 @@ int ffc2r(char *cval,   /* I - string representation of the value */
     else if (dtype == 'C')
     {
         /* try reading the string as a number */
-        ffc2s(cval, sval, status); 
+        ffc2s(cval, sval, status);
         ffc2rr(sval, fval, status);
     }
-    else 
+    else
         *status = BAD_FLOATKEY;
 
     if (*status > 0)
@@ -8691,7 +8691,7 @@ int ffc2d(char *cval,   /* I - string representation of the value */
 {
     char dtype, sval[81], msg[81];
     int lval;
-    
+
     if (*status > 0)           /* inherit input status value if > 0 */
         return(*status);
 
@@ -8710,10 +8710,10 @@ int ffc2d(char *cval,   /* I - string representation of the value */
     else if (dtype == 'C')
     {
         /* try reading the string as a number */
-        ffc2s(cval, sval, status); 
+        ffc2s(cval, sval, status);
         ffc2dd(sval, dval, status);
     }
-    else 
+    else
         *status = BAD_DOUBLEKEY;
 
     if (*status > 0)
@@ -8745,7 +8745,7 @@ int ffc2ii(char *cval,  /* I - string representation of the value */
     *ival = strtol(cval, &loc, 10);  /* read the string as an integer */
 
     /* check for read error, or junk following the integer */
-    if (*loc != '\0' && *loc != ' ' ) 
+    if (*loc != '\0' && *loc != ' ' )
         *status = BAD_C2I;
 
     if (errno == ERANGE)
@@ -8793,7 +8793,7 @@ int ffc2jj(char *cval,  /* I - string representation of the value */
 #endif
 
     /* check for read error, or junk following the integer */
-    if (*loc != '\0' && *loc != ' ' ) 
+    if (*loc != '\0' && *loc != ' ' )
         *status = BAD_C2I;
 
     if (errno == ERANGE)
@@ -8821,7 +8821,7 @@ int ffc2ll(char *cval,  /* I - string representation of the value: T or F */
 
     if (cval[0] == 'T')
         *lval = 1;
-    else                
+    else
         *lval = 0;        /* any character besides T is considered false */
 
     return(*status);
@@ -8833,7 +8833,7 @@ int ffc2s(char *instr,  /* I - null terminated quoted input string */
 /*
     convert an input quoted string to an unquoted string by removing
     the leading and trailing quote character.  Also, replace any
-    pairs of single quote characters with just a single quote 
+    pairs of single quote characters with just a single quote
     character (FITS used a pair of single quotes to represent
     a literal quote character within the string).
 */
@@ -8906,7 +8906,7 @@ int ffc2rr(char *cval,   /* I - string representation of the value */
         strncat(msg,cval,30);
         ffpmsg(msg);
 
-        *status = BAD_C2F;   
+        *status = BAD_C2F;
     }
 
     if (errno == ERANGE)
@@ -8939,7 +8939,7 @@ int ffc2dd(char *cval,   /* I - string representation of the value */
     loc = strchr(tval, 'D');
 
     if (loc)            /*  The C language does not support a 'D' */
-       *loc = 'E';      /*  exponent so replace any D's with E's. */               
+       *loc = 'E';      /*  exponent so replace any D's with E's. */
     errno = 0;
     *dval = 0.;
     *dval = strtod(tval, &loc);  /* read the string as an double */
@@ -8951,7 +8951,7 @@ int ffc2dd(char *cval,   /* I - string representation of the value */
         strncat(msg,cval,30);
         ffpmsg(msg);
 
-        *status = BAD_C2D;   
+        *status = BAD_C2D;
     }
 
     if (errno == ERANGE)

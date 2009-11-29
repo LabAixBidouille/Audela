@@ -58,7 +58,7 @@ void ffswap4(INT32BIT *ivalues,  /* IO - pointer to floats to be swapped    */
         *cvalues++ = u.cvals[3]; /* copy the 4 bytes in turn */
         *cvalues++ = u.cvals[2];
         *cvalues++ = u.cvals[1];
-        *cvalues++ = u.cvals[0]; 
+        *cvalues++ = u.cvals[0];
     }
     return;
 }

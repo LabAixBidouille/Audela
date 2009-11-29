@@ -40,7 +40,7 @@ int ffpcll( fitsfile *fptr,  /* I - FITS file pointer                       */
         &repeat, &rowlen, &hdutype, &tnull, snull, status) > 0)
         return(*status);
 
-    if (tcode != TLOGICAL)   
+    if (tcode != TLOGICAL)
         return(*status = NOT_LOGICAL_COL);
 
     /*---------------------------------------------------------------------*/
@@ -101,7 +101,7 @@ int ffpcnl( fitsfile *fptr,  /* I - FITS file pointer                       */
 /*
   Write an array of elements to the specified column of a table.  Any input
   pixels flagged as null will be replaced by the appropriate
-  null value in the output FITS file. 
+  null value in the output FITS file.
 */
 {
     tcolumn *colptr;
@@ -213,7 +213,7 @@ int ffpclx( fitsfile *fptr,  /* I - FITS file pointer                       */
   write an array of logical values to a specified bit or byte
   column of the binary table.   If larray is TRUE, then the corresponding
   bit is set to 1, otherwise it is set to 0.
-  The binary table column being written to must have datatype 'B' or 'X'. 
+  The binary table column being written to must have datatype 'B' or 'X'.
 */
 {
     LONGLONG offset, bstart, repeat, rowlen, elemnum, rstart, estart, tnull;
@@ -244,7 +244,7 @@ int ffpclx( fitsfile *fptr,  /* I - FITS file pointer                       */
 
     /* rescan header if data structure is undefined */
     else if ((fptr->Fptr)->datastart == DATA_UNDEFINED)
-        if ( ffrdef(fptr, status) > 0)               
+        if ( ffrdef(fptr, status) > 0)
             return(*status);
 
     fbyte = (fbit + 7) / 8;
@@ -333,7 +333,7 @@ int ffpclx( fitsfile *fptr,  /* I - FITS file pointer                       */
 
       /* move back, to be able to overwrite the byte */
       ffmbyt(fptr, bstart, IGNORE_EOF, status);
- 
+
       for (ii = bitloc; (ii < 8) && (ndone < nbit); ii++, ndone++)
       {
         if(larray[ndone])

@@ -47,7 +47,7 @@ int fp_get_param (int argc, char *argv[], fpstate *fpptr)
 	        !strcmp(argv[iarg], "-q0") )  /* 1 special case */
 	    {
 
-		/* Rice is the default, so -r is superfluous 
+		/* Rice is the default, so -r is superfluous
 		 */
 		if (       argv[iarg][1] == 'r') {
 		    fpptr->comptype = RICE_1;
@@ -184,7 +184,7 @@ int fp_get_param (int argc, char *argv[], fpstate *fpptr)
 		break;
 	}
 
-	if (fpptr->scale != 0. && 
+	if (fpptr->scale != 0. &&
 	         fpptr->comptype != HCOMPRESS_1 && fpptr->test_all != 1) {
 
 	    fp_msg ("Error: `-s' requires `-h or -T'\n"); exit (-1);
@@ -236,8 +236,8 @@ return(0);
 }
 
 /* ================================================================== */
-int fp_hint (void) 
-{ fp_msg ("      `fpack -H' for help\n"); 
+int fp_hint (void)
+{ fp_msg ("      `fpack -H' for help\n");
 return(0);
 }
 

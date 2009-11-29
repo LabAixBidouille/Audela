@@ -4,11 +4,11 @@
      prevent compile-time memory errors (from expansion of compiler commands).
      f77_wrap1.c was split into f77_wrap1.c and f77_wrap3.c, and
      f77_wrap2.c was split into f77_wrap2.c and f77_wrap4.c:
-       
-       f77_wrap1.c contains routines operating on whole files and some 
+
+       f77_wrap1.c contains routines operating on whole files and some
        utility routines.
-     
-       f77_wrap2.c contains routines operating on primary array, image, 
+
+       f77_wrap2.c contains routines operating on primary array, image,
        or column elements.
 
        f77_wrap3.c contains routines operating on headers & keywords.
@@ -35,7 +35,7 @@
      Fortran. f77_wrap1.c primarily holds routines operating on whole
      files and extension headers.  f77_wrap2.c handle routines which
      read and write the data portion, plus miscellaneous extra routines.
-     
+
         File created by Peter Wilson (HSTX), Oct-Dec. 1997
 ************************************************************************/
 
@@ -134,11 +134,11 @@ void Cffgsfb( fitsfile *fptr, int colnum, int naxis, long *naxes, long *blc, lon
    char *Cflagval;
    long nflagval;
    int i;
- 
+
    for( nflagval=1, i=0; i<naxis; i++ )
       nflagval *= (trc[i]-blc[i])/inc[i]+1;
    Cflagval = F2CcopyLogVect(nflagval, flagval );
-   ffgsfb( fptr, colnum, naxis, naxes, blc, trc, inc, array, Cflagval, anynul, status );   
+   ffgsfb( fptr, colnum, naxis, naxes, blc, trc, inc, array, Cflagval, anynul, status );
    C2FcopyLogVect(nflagval, flagval, Cflagval);
 }
 #define ftgsfb_LONGV_A4 A3+1
@@ -154,11 +154,11 @@ void Cffgsfi( fitsfile *fptr, int colnum, int naxis, long *naxes, long *blc, lon
    char *Cflagval;
    long nflagval;
    int i;
- 
+
    for( nflagval=1, i=0; i<naxis; i++ )
       nflagval *= (trc[i]-blc[i])/inc[i]+1;
    Cflagval = F2CcopyLogVect(nflagval, flagval );
-   ffgsfi( fptr, colnum, naxis, naxes, blc, trc, inc, array, Cflagval, anynul, status );   
+   ffgsfi( fptr, colnum, naxis, naxes, blc, trc, inc, array, Cflagval, anynul, status );
    C2FcopyLogVect(nflagval, flagval, Cflagval);
 }
 #define ftgsfi_LONGV_A4 A3+1
@@ -174,11 +174,11 @@ void Cffgsfk( fitsfile *fptr, int colnum, int naxis, long *naxes, long *blc, lon
    char *Cflagval;
    long nflagval;
    int i;
- 
+
    for( nflagval=1, i=0; i<naxis; i++ )
       nflagval *= (trc[i]-blc[i])/inc[i]+1;
    Cflagval = F2CcopyLogVect(nflagval, flagval );
-   ffgsfk( fptr, colnum, naxis, naxes, blc, trc, inc, array, Cflagval, anynul, status );   
+   ffgsfk( fptr, colnum, naxis, naxes, blc, trc, inc, array, Cflagval, anynul, status );
    C2FcopyLogVect(nflagval, flagval, Cflagval);
 }
 #define ftgsfj_LONGV_A4 A3+1
@@ -195,11 +195,11 @@ void Cffgsfjj( fitsfile *fptr, int colnum, int naxis, long *naxes, long *blc, lo
    char *Cflagval;
    long nflagval;
    int i;
- 
+
    for( nflagval=1, i=0; i<naxis; i++ )
       nflagval *= (trc[i]-blc[i])/inc[i]+1;
    Cflagval = F2CcopyLogVect(nflagval, flagval );
-   ffgsfjj( fptr, colnum, naxis, naxes, blc, trc, inc, array, Cflagval, anynul, status );   
+   ffgsfjj( fptr, colnum, naxis, naxes, blc, trc, inc, array, Cflagval, anynul, status );
    C2FcopyLogVect(nflagval, flagval, Cflagval);
 }
 #define ftgsfk_LONGV_A4 A3+1
@@ -216,11 +216,11 @@ void Cffgsfe( fitsfile *fptr, int colnum, int naxis, long *naxes, long *blc, lon
    char *Cflagval;
    long nflagval;
    int i;
- 
+
    for( nflagval=1, i=0; i<naxis; i++ )
       nflagval *= (trc[i]-blc[i])/inc[i]+1;
    Cflagval = F2CcopyLogVect(nflagval, flagval );
-   ffgsfe( fptr, colnum, naxis, naxes, blc, trc, inc, array, Cflagval, anynul, status );   
+   ffgsfe( fptr, colnum, naxis, naxes, blc, trc, inc, array, Cflagval, anynul, status );
    C2FcopyLogVect(nflagval, flagval, Cflagval);
 }
 #define ftgsfe_LONGV_A4 A3+1
@@ -236,11 +236,11 @@ void Cffgsfd( fitsfile *fptr, int colnum, int naxis, long *naxes, long *blc, lon
    char *Cflagval;
    long nflagval;
    int i;
- 
+
    for( nflagval=1, i=0; i<naxis; i++ )
       nflagval *= (trc[i]-blc[i])/inc[i]+1;
    Cflagval = F2CcopyLogVect(nflagval, flagval );
-   ffgsfd( fptr, colnum, naxis, naxes, blc, trc, inc, array, Cflagval, anynul, status );   
+   ffgsfd( fptr, colnum, naxis, naxes, blc, trc, inc, array, Cflagval, anynul, status );
    C2FcopyLogVect(nflagval, flagval, Cflagval);
 }
 #define ftgsfd_LONGV_A4 A3+1
@@ -296,7 +296,7 @@ CFARGT14(NCF,DCF,ABSOFT_cf2(VOID),FITSUNIT,INT,LONG,LONG,LONG,STRING,PSTRINGV,PL
    /*  put off variable 7 (array) until column type is learned  */
    anynul =    TCF(ftgcvs,PLOGICAL,8,0);
    status =    TCF(ftgcvs,PINT,9,0);
-   
+
    ffgtcl( fptr, colnum, &type, &repeat, (long *)&gMinStrLen, status );
    if( type<0 ) velem = 1;   /*  Variable length column  */
    else velem = nelem;
@@ -350,7 +350,7 @@ CFARGT14(NCF,DCF,ABSOFT_cf2(VOID),FITSUNIT,INT,LONGLONG,LONGLONG,LONG,STRING,PST
    /*  put off variable 7 (array) until column type is learned  */
    anynul =    TCF(ftgcvsll,PLOGICAL,8,0);
    status =    TCF(ftgcvsll,PINT,9,0);
-   
+
    ffgtcl( fptr, colnum, &type, &repeat, (long *)&gMinStrLen, status );
    if( type<0 ) velem = 1;   /*  Variable length column  */
    else velem = nelem;
@@ -454,7 +454,7 @@ CFARGT14(NCF,DCF,ABSOFT_cf2(VOID),FITSUNIT,INT,LONG,LONG,LONG,PSTRINGV,LOGICALV,
    long repeat;
    unsigned long gMinStrLen=80L;  /* gMin = width */
    char **array, *nularray;
- 
+
    fptr =      TCF(ftgcfs,FITSUNIT,1,0);
    colnum =    TCF(ftgcfs,INT,2,0);
    firstrow =  TCF(ftgcfs,LONG,3,0);
@@ -464,7 +464,7 @@ CFARGT14(NCF,DCF,ABSOFT_cf2(VOID),FITSUNIT,INT,LONG,LONG,LONG,PSTRINGV,LOGICALV,
    nularray =  TCF(ftgcfs,LOGICALV,7,0);
    anynul =    TCF(ftgcfs,PLOGICAL,8,0);
    status =    TCF(ftgcfs,PINT,9,0);
-   
+
    ffgtcl( fptr, colnum, &type, &repeat, (long*)&gMinStrLen, status );
    if( type<0 ) velem = 1;   /*  Variable length column  */
    else velem = nelem;
@@ -512,9 +512,9 @@ void Cffgcfc( fitsfile *fptr, int colnum, long firstrow, long firstelem, long ne
 void Cffgcfc( fitsfile *fptr, int colnum, long firstrow, long firstelem, long nelem, float *array, int *nularray, int *anynul, int *status )
 {
    char *Cnularray;
- 
+
    Cnularray = F2CcopyLogVect(nelem*2, nularray );
-   ffgcfc( fptr, colnum, firstrow, firstelem, nelem, array, Cnularray, anynul, status );   
+   ffgcfc( fptr, colnum, firstrow, firstelem, nelem, array, Cnularray, anynul, status );
    C2FcopyLogVect(nelem*2, nularray, Cnularray );
 }
 FCALLSCSUB9(Cffgcfc,FTGCFC,ftgcfc,FITSUNIT,INT,LONG,LONG,LONG,FLOATV,INTV,PLOGICAL,PINT)
@@ -524,9 +524,9 @@ void Cffgcfm( fitsfile *fptr, int colnum, long firstrow, long firstelem, long ne
 void Cffgcfm( fitsfile *fptr, int colnum, long firstrow, long firstelem, long nelem, double *array, int *nularray, int *anynul, int *status )
 {
    char *Cnularray;
- 
+
    Cnularray = F2CcopyLogVect(nelem*2, nularray );
-   ffgcfm( fptr, colnum, firstrow, firstelem, nelem, array, Cnularray, anynul, status );   
+   ffgcfm( fptr, colnum, firstrow, firstelem, nelem, array, Cnularray, anynul, status );
    C2FcopyLogVect(nelem*2, nularray, Cnularray );
 }
 FCALLSCSUB9(Cffgcfm,FTGCFM,ftgcfm,FITSUNIT,INT,LONG,LONG,LONG,DOUBLEV,INTV,PLOGICAL,PINT)

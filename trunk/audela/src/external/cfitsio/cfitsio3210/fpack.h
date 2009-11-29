@@ -81,7 +81,7 @@ int fp_get_param (int argc, char *argv[], fpstate *fpptr);
 void abort_fpack(int sig);
 int fp_usage (void);
 int fp_help (void);
-int fp_hint (void); 
+int fp_hint (void);
 int fp_init (fpstate *fpptr);
 int fp_list (int argc, char *argv[], fpstate fpvar);
 int fp_info (char *infits);
@@ -91,16 +91,16 @@ int fp_loop (int argc, char *argv[], int unpack, fpstate fpvar);
 int fp_pack (char *infits, char *outfits, fpstate fpvar, int *islossless);
 int fp_unpack (char *infits, char *outfits, fpstate fpvar);
 int fp_test (char *infits, char *outfits, char *outfits2, fpstate fpvar);
-int fp_pack_hdu (fitsfile *infptr, fitsfile *outfptr, fpstate fpvar, 
+int fp_pack_hdu (fitsfile *infptr, fitsfile *outfptr, fpstate fpvar,
     int *islossless, int *status);
 int fp_unpack_hdu (fitsfile *infptr, fitsfile *outfptr, int *status);
-int fits_read_image_speed (fitsfile *infptr, float *whole_elapse, 
+int fits_read_image_speed (fitsfile *infptr, float *whole_elapse,
     float *whole_cpu, float *row_elapse, float *row_cpu, int *status);
-int fp_test_hdu (fitsfile *infptr, fitsfile *outfptr, fitsfile *outfptr2, 
+int fp_test_hdu (fitsfile *infptr, fitsfile *outfptr, fitsfile *outfptr2,
 	fpstate fpvar, int *status);
 int marktime(int *status);
 int gettime(float *elapse, float *elapscpu, int *status);
-int fits_read_image_speed (fitsfile *infptr, float *whole_elapse, 
+int fits_read_image_speed (fitsfile *infptr, float *whole_elapse,
     float *whole_cpu, float *row_elapse, float *row_cpu, int *status);
 
 int fp_i2stat(fitsfile *infptr, int naxis, long *naxes, int *status);
@@ -110,7 +110,7 @@ int fp_i2rescale(fitsfile *infptr, int naxis, long *naxes, double rescale,
     fitsfile *outfptr, int *status);
 int fp_i4rescale(fitsfile *infptr, int naxis, long *naxes, double rescale,
     fitsfile *outfptr, int *status);
-    
+
 int fp_msg (char *msg);
 int fp_version (void);
 int fp_noop (void);
