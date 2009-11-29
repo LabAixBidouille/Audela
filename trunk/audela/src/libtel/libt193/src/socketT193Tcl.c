@@ -83,7 +83,7 @@ int socket_openTelescopeCommandSocket(struct telprop *tel, char * ethernetHost, 
    }
    
    if ( tclResult == TCL_OK ) {
-      tclResult = Tcl_SetChannelOption(tel->interp, tel->telescopeCommandSocket, "-blocking", "true");
+      tclResult = Tcl_SetChannelOption(tel->interp, tel->telescopeCommandSocket, "-blocking", "false");
       if ( tclResult == TCL_ERROR ) {
          sprintf(tel->msg,"set channel option blocking error %d . %s", Tcl_GetErrno() , tel->interp->result);
       }
@@ -174,8 +174,22 @@ int socket_readTelescopeCommandSocket(struct telprop *tel, char *response, int* 
 int socket_writeTelescopeCommandSocket(struct telprop *tel, char *command, char *response) {
    int tclResult; 
    int result; 
+   int nbIteration = 5000; // timeout en millisecondes
+   Tcl_DString responseRead;
 
-   tclResult = Tcl_WriteChars(tel->telescopeCommandSocket, command, strlen(command));
+
+   // je purge la socket      
+   Tcl_DStringInit(&responseRead);
+   do {
+      tclResult = Tcl_Gets(tel->telescopeCommandSocket, &responseRead);
+      if ( tclResult == 0 ) {
+         sprintf(tel->msg,"purge"); 
+      }
+   } while ( tclResult != -1 );
+   Tcl_DStringFree(&responseRead);
+
+   // j'envoie la commande
+	tclResult = Tcl_WriteChars(tel->telescopeCommandSocket, command, strlen(command));
    if ( tclResult > -1 ) {
       result = 0;
    } else {
@@ -187,26 +201,56 @@ int socket_writeTelescopeCommandSocket(struct telprop *tel, char *command, char 
       sprintf(tel->msg,"write telescope command socket error (flush): %s", tel->interp->result); 
       result = 1;
    }
+   // j'attends une millisecond, le temps de donner la main au TCL de mettre la reponse dans le buffer de retour
+   Tcl_Sleep(1);
+
    // je lis la reponse
    if ( result == 0 ) {
       Tcl_DString responseRead;
       Tcl_DStringInit(&responseRead);
-      tclResult = Tcl_Gets(tel->telescopeCommandSocket, &responseRead);
-      if ( tclResult != -1 ) {
-         strcpy(response, Tcl_DStringValue(&responseRead));
-         result = 0;
-      } else {
-         sprintf(tel->msg,"read telescope command socket error: %s", tel->interp->result); 
-         strcpy(response, "");
-         result = 1;
-      }
+      strcpy(response,"");
+      do {
+         // je lis la socket
+         tclResult = Tcl_Gets(tel->telescopeCommandSocket, &responseRead);
+         if ( tclResult != -1 ) {
+            // je copie la reponse dans la variable de sortie
+            strcpy(response, Tcl_DStringValue(&responseRead));  
+         } else {
+            int errnoCode = Tcl_GetErrno();
+            if ( Tcl_InputBlocked(tel->telescopeCommandSocket) == 0 ) {
+               // c'est une erreur
+               sprintf(tel->msg,"read telescope command socket error: %s", tel->interp->result); 
+               strcpy(response, "");
+               result = 1;
+               break;
+            } else {
+               // il n'y a plus rien a lire sur la socket
+               if ( strlen(response) != 0 ) {
+                  // j'ai deja la réponse , je sors de la boucle      
+                  result = 0; 
+                  break;
+               } else {
+                  // je n'ai pas la reponse, je fais une autre lecture
+                  if ( nbIteration > 0 ) { 
+                     // j'attends un peu avant de faire la nouvelle lecture
+                     Tcl_Sleep(5);
+                     nbIteration -= 5; 
+                  } else {
+                     // le nombre maximum d'iteration est atteint
+                     sprintf(tel->msg,"read telescope command timeout"); 
+                     result = 1;
+                     break;
+                  }
+               }
+            }
+         }
+      } while ( 1 );
+         
       Tcl_DStringFree(&responseRead);
    }
    
    return result;
 }
-
-
 
 //////////////////////////////////////////////////////////////////////
 //  gestion de TelescopeNotificationSocket
@@ -234,6 +278,7 @@ int socket_openTelescopeNotificationSocket(struct telprop *tel, char * host, int
       tclResult = TCL_OK;
    }
    
+   // je configure la socket 
    //fconfigure $channel -buffering line -blocking true -translation binary -encoding binary
    if ( tclResult == TCL_OK ) {
       tclResult = Tcl_SetChannelOption(tel->interp, tel->telescopeNotificationSocket, "-buffering", "line");
@@ -308,96 +353,18 @@ void socket_readTelescopeNotificationSocket(ClientData clientData, int mask) {
    struct telprop *tel = (struct telprop *)clientData;
    int tclResult; 
 
-   Tcl_DString lineRead;
-   Tcl_DStringInit(&lineRead);
-   tclResult = Tcl_Gets(tel->telescopeNotificationSocket, &lineRead);
+   Tcl_DString notificationLineRead;
+   Tcl_DStringInit(&notificationLineRead);
+   tclResult = Tcl_Gets(tel->telescopeNotificationSocket, &notificationLineRead);
    if ( tclResult != -1 ) {
-      mytel_processNotification(tel, Tcl_DStringValue(&lineRead));
+      mytel_processNotification(tel, Tcl_DStringValue(&notificationLineRead));
    }
-   Tcl_DStringFree(&lineRead);
+   Tcl_DStringFree(&notificationLineRead);
 
 
    return ;
 }
 
 
-//////////////////////////////////////////////////////////////////////
-//  gestion de la thread de lecture des notifications 
-/////////////////////////////////////////////////////////////////////
-
-/**
- * socket_readTelescopeNotification
- *   traite les notifications recues sur la socket notification de l'interface de controle du telescope
- * @param tel  
- * @return none
- */
-/*
-void * socket_readTelescopeNotification(struct telprop *tel) {
-   int tclResult;
-   int result;
-   Tcl_DString lineRead;
-   int  nbArrayElements;
-   char notifArray0[DATA_SOCKET_SIZE];
-   char notifArray1[DATA_SOCKET_SIZE];
-   char notifArray2[DATA_SOCKET_SIZE];
-   char notifArray3[DATA_SOCKET_SIZE];
-   char notifArray4[DATA_SOCKET_SIZE];
-   char notifArray5[DATA_SOCKET_SIZE];
-   
-   Tcl_DStringInit(&lineRead);
-    // j'ouvre la socket de lecture des donnees
-   result = socket_openTelescopeNotificationSocket(tel, tel->telescopeHost, tel->telescopeNotificationPort);
-
-   // je traite les notifications
-   
-   
-   while (tel->telescopeNotificationSocket != NULL ) {
-      tclResult = Tcl_Gets(tel->telescopeNotificationSocket, &lineRead);
-      if ( tclResult != -1 ) {
-         nbArrayElements = sscanf(Tcl_DStringValue(&lineRead), "!%s %s %s %s %s %s@", 
-            notifArray0, notifArray1, notifArray2, notifArray3, notifArray4, notifArray5);
-
-         if ( nbArrayElements < 2 ) {
-            // 
-            continue;
-         }
-
-         // je traite la notification
-         if ( strcmp( notifArray0, "RADEC")==0 ) {
-            //sprintf(command,"!RADEC STOP %c @\n", direction2 );
-            if ( strcmp( notifArray1, "COORD")==0 ) {
-            
-            
-            } else if ( strcmp( notifArray1, "COORD")==0 ) {
-
-            }
-
-         } else if ( strcmp( notifArray0 , "FOC")==0 ) {
-            //strcpy(notification, Tcl_DStringValue(&lineRead));
-         } else if ( strcmp( notifArray0 , "CLOSE_SOCKET")==0 ) {
-            Tcl_Close(tel->interp, tel->telescopeNotificationSocket);
-         }
-         result = 0;
-      } else {
-         if ( Tcl_Eof(tel->telescopeNotificationSocket) != 0 ) {
-            // la socket a ete fermee par le serveur , j'arrete la lecture
-            break;
-         } else {
-            // j'envoi un message d'erreur pour tracer l'erreur imprevue.
-         }
-      }
-      Tcl_DStringFree(&lineRead);
-
-   }
-   
-   // j'attend que le mutex soir debloque par la thread principale pour fermer la socket 
-   pthread_mutex_lock(&tel->mutex);
-   socket_closeTelescopeNotificationSocket(tel);
-   pthread_mutex_unlock(&tel->mutex);
-
-   // je termine le thread
-   return NULL;
-}
-*/
 
 
