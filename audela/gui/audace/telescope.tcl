@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.48 2009-11-24 18:34:10 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.49 2009-11-29 10:54:50 michelpujol Exp $
 #
 
 namespace eval ::telescope {
@@ -175,6 +175,7 @@ proc ::telescope::match { radec { radecEquinox "J2000.0" } } {
 # Return :
 #    0 si OK
 #    -1 si erreur (monture absente)
+#   erreur a catcher pour les autres erreurs
 #------------------------------------------------------------
 proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { objectName "" } { radecEquinox "J2000.0" } } {
    global audace caption cataGoto catalogue conf
@@ -207,7 +208,7 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
             #--- Boucle tant que la monture n'est pas arretee (si on n'utilise pas le mode bloquant du goto)
             set audace(telescope,goto) "1"
             set radec0 [ tel$audace(telNo) radec coord ]
-            set surveilleResultat [ ::telescope::surveille_goto [ list $radec0 ] $But_Goto $But_Match ]
+            set surveilleResultat [ ::telescope::surveille_goto [ list $radec0 ]]
             if { $surveilleResultat == 1 } {
                #--- j'attends que la variable soit remise a zero
                vwait ::audace(telescope,goto)
@@ -216,27 +217,43 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
          #--- je traite le mode slewpath (si long, je passe en short pour le rattrapage des jeux)
          slewpathLong2Short
       }
-      #---
-      if { $audace(telescope,stopgoto) == "1" } {
-         return 0
-      }
+      
       #--- Goto
-      tel$audace(telNo) radec goto $list_radec -blocking $blocking
-      if { $blocking == 0 } {
-         #--- Boucle tant que la monture n'est pas arretee (si on n'utilise pas le mode bloquant du goto)
-         set audace(telescope,goto) "1"
-         set radec0 [ tel$audace(telNo) radec coord ]
-         set surveilleResultat [ ::telescope::surveille_goto [ list $radec0 ] $But_Goto $But_Match ]
-         if { $surveilleResultat == 1 } {
-            #--- j'attends que la variable soit remise a zero
-            vwait ::audace(telescope,goto)
+      set catchError [catch {
+         if { $audace(telescope,stopgoto) == "0" } {
+               tel$audace(telNo) radec goto $list_radec -blocking $blocking
+            if { $blocking == 0 } {
+               #--- Boucle tant que la monture n'est pas arretee (si on n'utilise pas le mode bloquant du goto)
+               set audace(telescope,goto) "1"
+               set radec0 [ tel$audace(telNo) radec coord ]
+               set surveilleResultat [ ::telescope::surveille_goto [ list $radec0 ] ]
+               if { $surveilleResultat == 1 } {
+                  #--- j'attends que la variable soit remise a zero
+                  vwait ::audace(telescope,goto)
+               }
+            } else {
+               afficheCoord
+            }
          }
-      } else {
-         afficheCoord
-      }
+      }]
+      
       #--- je restaure le mode slewpath si necessaire
       slewpathShort2Long
-      return 0
+      
+      #--- je mets a jour les boutons avant de retourner un eventuel message d'erreur 
+      if { $But_Goto != "" } {
+         $But_Goto configure -relief raised -state normal
+      }
+      if { $But_Match != "" } {
+         $But_Match configure -relief raised -state normal
+      }        
+
+      if { $catchError != 0 } {
+         #--- je retoune l'erreur 
+         error $::errorInfo
+      } else {
+         return 0                      
+      }
    } else {
       ::confTel::run
       return -1
@@ -255,12 +272,11 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
 #    0 si derniere boucle
 #    1 si nouvelle boucle est lancee
 #------------------------------------------------------------
-proc ::telescope::surveille_goto { radec0 { But_Goto "" } { But_Match "" } } {
+proc ::telescope::surveille_goto { radec0 } {
    global audace
 
    if { $audace(telNo) != 0 } {
       set radec1 [ tel$audace(telNo) radec coord ]
-     ### console::disp "surveille_goto radec0=$radec0 radec1=$radec1\n"
       afficheCoord
       set ra0 [ mc_angle2deg [ lindex $radec0 0 ] 360 ]
       set dec0 [ mc_angle2deg [ lindex $radec0 1 ] 90 ]
@@ -268,27 +284,16 @@ proc ::telescope::surveille_goto { radec0 { But_Goto "" } { But_Match "" } } {
       set dec1 [ mc_angle2deg [ lindex $radec1 1 ] 90 ]
       set sepangle [ mc_anglesep [ list $ra0 $dec0 $ra1 $dec1 ] ]
       if { [ lindex $sepangle 0 ] > 0.1 } {
-         after 1000 ::telescope::surveille_goto [ list $radec1 ] $But_Goto $But_Match
+         after 1000 ::telescope::surveille_goto [ list $radec1 ]
          return 1
       } else {
-         if { $But_Goto != "" } {
-            $But_Goto configure -relief raised -state normal
-         }
-         if { $But_Match != "" } {
-            $But_Match configure -relief raised -state normal
-         }
+         #--- j'arrete la surveillance car le GOTO est termine
          set ::audace(telescope,goto) "0"
          update
          return 0
       }
    } else {
       #--- j'arrete la surveillance car le telescope a ete arrete pendant le GOTO
-      if { $But_Goto != "" } {
-         $But_Goto configure -relief raised -state normal
-      }
-      if { $But_Match != "" } {
-         $But_Match configure -relief raised -state normal
-      }
       set ::audace(telescope,goto) "0"
       update
       return 0
