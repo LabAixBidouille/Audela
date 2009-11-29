@@ -4,11 +4,11 @@
      prevent compile-time memory errors (from expansion of compiler commands).
      f77_wrap1.c was split into f77_wrap1.c and f77_wrap3.c, and
      f77_wrap2.c was split into f77_wrap2.c and f77_wrap4.c:
-       
-       f77_wrap1.c contains routines operating on whole files and some 
+
+       f77_wrap1.c contains routines operating on whole files and some
        utility routines.
-     
-       f77_wrap2.c contains routines operating on primary array, image, 
+
+       f77_wrap2.c contains routines operating on primary array, image,
        or column elements.
 
        f77_wrap3.c contains routines operating on headers & keywords.
@@ -35,7 +35,7 @@
      Fortran. f77_wrap1.c primarily holds routines operating on whole
      files and extension headers.  f77_wrap2.c handle routines which
      read and write the data portion, plus miscellaneous extra routines.
-     
+
         File created by Peter Wilson (HSTX), Oct-Dec. 1997
 ************************************************************************/
 
@@ -119,7 +119,7 @@ fitsfile* CUnit2FITS(int unit)
 {
     if( unit<1 || unit>=MAXFITSFILES )
         return(0);
-	
+
     return(gFitsFiles[unit]);
 }
 
@@ -256,7 +256,7 @@ FCALLSCSUB4(Cffdkinit,FTDKINIT,ftdkinit,PFITSUNIT,STRING,INT,PINT)
 
 void Cfftplt( fitsfile **fptr, const char *filename, const char *tempname,
 	      int *status );
-void Cfftplt( fitsfile **fptr, const char *filename, const char *tempname, 
+void Cfftplt( fitsfile **fptr, const char *filename, const char *tempname,
 	      int *status )
 {
    if( *fptr==NULL || *fptr==(fitsfile*)1 ) {

@@ -18,41 +18,41 @@ will not support reading or writing of FITS files in compressed format.
 
 void ffpmsg(const char *err_message);
 
-int uncompress2mem(char *filename, 
-             FILE *diskfile, 
-             char **buffptr, 
-             size_t *buffsize, 
+int uncompress2mem(char *filename,
+             FILE *diskfile,
+             char **buffptr,
+             size_t *buffsize,
              void *(*mem_realloc)(void *p, size_t newsize),
              size_t *filesize,
              int *status);
 
-int uncompress2mem_from_mem(                                                
-             char *inmemptr,     
-             size_t inmemsize, 
-             char **buffptr,  
-             size_t *buffsize,  
-             void *(*mem_realloc)(void *p, size_t newsize), 
-             size_t *filesize,  
+int uncompress2mem_from_mem(
+             char *inmemptr,
+             size_t inmemsize,
+             char **buffptr,
+             size_t *buffsize,
+             void *(*mem_realloc)(void *p, size_t newsize),
+             size_t *filesize,
              int *status);
 
-int uncompress2file(char *filename, 
-             FILE *indiskfile, 
-             FILE *outdiskfile, 
+int uncompress2file(char *filename,
+             FILE *indiskfile,
+             FILE *outdiskfile,
              int *status);
 
-int compress2mem_from_mem(                                                
-             char *inmemptr,     
-             size_t inmemsize, 
-             char **buffptr,  
-             size_t *buffsize,  
-             void *(*mem_realloc)(void *p, size_t newsize), 
-             size_t *filesize,  
+int compress2mem_from_mem(
+             char *inmemptr,
+             size_t inmemsize,
+             char **buffptr,
+             size_t *buffsize,
+             void *(*mem_realloc)(void *p, size_t newsize),
+             size_t *filesize,
              int *status);
 
-int compress2file_from_mem(                                                
-             char *inmemptr,     
-             size_t inmemsize, 
-             FILE *outdiskfile, 
+int compress2file_from_mem(
+             char *inmemptr,
+             size_t inmemsize,
+             FILE *outdiskfile,
              size_t *filesize,   /* O - size of file, in bytes              */
              int *status);
 /*--------------------------------------------------------------------------*/
@@ -77,7 +77,7 @@ int uncompress2mem(char *filename,  /* name of input file                 */
     return(*status = 414);
 }
 /*--------------------------------------------------------------------------*/
-int uncompress2mem_from_mem(                                                
+int uncompress2mem_from_mem(
              char *inmemptr,     /* I - memory pointer to compressed bytes */
              size_t inmemsize,   /* I - size of input compressed file      */
              char **buffptr,   /* IO - memory pointer                      */
@@ -105,7 +105,7 @@ int uncompress2file(char *filename,  /* name of input file                  */
              int *status)        /* IO - error status                       */
 
 /*
-  Uncompress the file into file. 
+  Uncompress the file into file.
 */
 {
     if (*status > 0)
@@ -115,7 +115,7 @@ int uncompress2file(char *filename,  /* name of input file                  */
     return(*status = 414);
 }
 /*--------------------------------------------------------------------------*/
-int compress2mem_from_mem(                                                
+int compress2mem_from_mem(
              char *inmemptr,     /* I - memory pointer to uncompressed bytes */
              size_t inmemsize,   /* I - size of input uncompressed file      */
              char **buffptr,   /* IO - memory pointer for compressed file    */
@@ -137,14 +137,14 @@ int compress2mem_from_mem(
     return(*status = 413);
 }
 /*--------------------------------------------------------------------------*/
-int compress2file_from_mem(                                                
+int compress2file_from_mem(
              char *inmemptr,     /* I - memory pointer to uncompressed bytes */
              size_t inmemsize,   /* I - size of input uncompressed file      */
-             FILE *outdiskfile, 
+             FILE *outdiskfile,
              size_t *filesize,   /* O - size of file, in bytes              */
              int *status)
 /*
-  Compress the memory file into disk file. 
+  Compress the memory file into disk file.
 */
 {
     if (*status > 0)

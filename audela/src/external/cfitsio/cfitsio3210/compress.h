@@ -119,7 +119,7 @@ local int  get_method   OF((FILE *in));
 
 local ulg  updcrc        OF((uch *s, unsigned n));
 local int  fill_inbuf    OF((int eof_ok));
-local void flush_outbuf  OF((void));  
+local void flush_outbuf  OF((void));
 local void flush_window  OF((void));
 local void write_buf     OF((voidp buf, unsigned cnt));
 local void error         OF((char *m));

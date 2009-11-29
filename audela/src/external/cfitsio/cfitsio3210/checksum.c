@@ -16,11 +16,11 @@ int ffcsum(fitsfile *fptr,      /* I - FITS file pointer                  */
 /*
     Calculate a 32-bit 1's complement checksum of the FITS 2880-byte blocks.
     This routine is based on the C algorithm developed by Rob
-    Seaman at NOAO that was presented at the 1994 ADASS conference,  
+    Seaman at NOAO that was presented at the 1994 ADASS conference,
     published in the Astronomical Society of the Pacific Conference Series.
     This uses a 32-bit 1's complement checksum in which the overflow bits
     are permuted back into the sum and therefore all bit positions are
-    sampled evenly. 
+    sampled evenly.
 */
 {
     long ii, jj;
@@ -73,8 +73,8 @@ void ffesum(unsigned long sum,  /* I - accumulated checksum                */
            int complm,          /* I - = 1 to encode complement of the sum */
            char *ascii)         /* O - 16-char ASCII encoded checksum      */
 /*
-    encode the 32 bit checksum by converting every 
-    2 bits of each byte into an ASCII character (32 bit word encoded 
+    encode the 32 bit checksum by converting every
+    2 bits of each byte into an ASCII character (32 bit word encoded
     as 16 character string).   Only ASCII letters and digits are used
     to encode the values (no ASCII punctuation characters).
 
@@ -266,7 +266,7 @@ int ffpcks(fitsfile *fptr,      /* I - FITS file pointer                  */
 
     if (dsum != olddsum)
     {
-        /* update the DATASUM keyword with the correct value */ 
+        /* update the DATASUM keyword with the correct value */
         sprintf(datasum, "%lu", dsum);
         ffmkys(fptr, "DATASUM", datasum, datacomm, status);
 
@@ -276,7 +276,7 @@ int ffpcks(fitsfile *fptr,      /* I - FITS file pointer                  */
             strcpy(checksum, "0000000000000000");
             ffmkys(fptr, "CHECKSUM", checksum, chkcomm, status);
         }
-    }        
+    }
 
     if (strcmp(checksum, "0000000000000000") )
     {

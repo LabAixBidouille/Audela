@@ -85,7 +85,7 @@ int str_iter(long totalrows, long offset, long firstrow, long nrows,
 
     /*  NOTE: 1st element of array is the null pixel value!  */
     /*  Loop from 1 to nrows, not 0 to nrows - 1.  */
-   
+
     for (ii = 1; ii <= nrows; ii++)
     {
       printf("%s %d\n", stringvals[ii], logicalvals[ii]);
@@ -109,6 +109,6 @@ int str_iter(long totalrows, long offset, long firstrow, long nrows,
     {
       /* no action required in this case */
     }
- 
+
     return(0);
 }

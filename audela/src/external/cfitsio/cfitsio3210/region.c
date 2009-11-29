@@ -92,7 +92,7 @@ int fits_read_ascii_region( const char *filename,
       free( aRgn );
       return( *status = FILE_NOT_OPENED );
    }
-   
+
    /*  Read in file, line by line  */
 
    while( fgets(currLine,allocLen,rgnFile) != NULL ) {
@@ -183,13 +183,13 @@ int fits_read_ascii_region( const char *filename,
                   if( !paramPtr )  /* Allow for a blank line */
                      done = 1;
                   break;
-               case ':':  
+               case ':':
                   currLoc++;
                   if ( paramPtr ) cFmt = hhmmss_fmt; /* set format if parameter has : */
                   break;
                case 'd':
                   currLoc++;
-                  if ( paramPtr ) cFmt = degree_fmt; /* set format if parameter has d */  
+                  if ( paramPtr ) cFmt = degree_fmt; /* set format if parameter has d */
                   break;
                case ',':
                   nParams++;  /* Fall through to default */
@@ -233,7 +233,7 @@ int fits_read_ascii_region( const char *filename,
 				namePtr += 5;
 				cFmt = degree_fmt;
 
-            /* the following 5 cases support region files created by POW 
+            /* the following 5 cases support region files created by POW
 	       (or ds9 Version 4.x) which
                may have lines containing  only a format code, not followed
                by a ';' (and with no region specifier on the line).  We use
@@ -299,7 +299,7 @@ int fits_read_ascii_region( const char *filename,
 	    newShape->param.gen.cosT = 0.0;
 
             while( *namePtr==' ' ) namePtr++;
-            
+
 			/*  Check for the shape's sign  */
 
             if( *namePtr=='+' ) {
@@ -351,7 +351,7 @@ int fits_read_ascii_region( const char *filename,
                newShape->param.gen.p[6] = 0.0;
                newShape->param.gen.p[7] = 0.0;
                nCoords = 2;
-            } else if( !strcasecmp( namePtr, "box"    ) 
+            } else if( !strcasecmp( namePtr, "box"    )
                     || !strcasecmp( namePtr, "rotbox" ) ) {
 	       if( nParams < 4 || nParams > 8 ) {
 		 *status = PARSE_SYNTAX_ERR;
@@ -512,7 +512,7 @@ int fits_read_ascii_region( const char *filename,
                      *status = NO_WCS_KEY;
                      goto error;
                   }
-                  
+
                   if( ffxypx(  X,  Y, wcs->xrefval, wcs->yrefval,
                                       wcs->xrefpix, wcs->yrefpix,
                                       wcs->xinc,    wcs->yinc,
@@ -558,7 +558,7 @@ int fits_read_ascii_region( const char *filename,
 		     ffpmsg("Error converting region to pixel coordinates.");
 		     goto error;
 		  }
-		 
+
 		  coords[i] = sqrt( pow(x-coords[0],2) + pow(y-coords[1],2) );
 
                }
@@ -567,7 +567,7 @@ int fits_read_ascii_region( const char *filename,
 	    /* special case for elliptannulus and boxannulus if only one angle
 	       was given */
 
-	    if ( (newShape->shape == elliptannulus_rgn || 
+	    if ( (newShape->shape == elliptannulus_rgn ||
 		  newShape->shape == boxannulus_rgn ) && nParams == 7 ) {
 	      coords[7] = coords[6];
 	    }
@@ -576,7 +576,7 @@ int fits_read_ascii_region( const char *filename,
             /*    If regions are specified in WCS coordintes, then the angles */
             /*    are relative to the WCS system, not the pixel X,Y system */
 
-	    if( cFmt!=pixel_fmt ) {	    
+	    if( cFmt!=pixel_fmt ) {
 	      switch( newShape->shape ) {
 	      case sector_rgn:
 	      case panda_rgn:
@@ -610,7 +610,7 @@ int fits_read_ascii_region( const char *filename,
          }  /* End of while( *currLoc ) */
 /*
   if (coords)printf("%.8f %.8f %.8f %.8f %.8f\n",
-   coords[0],coords[1],coords[2],coords[3],coords[4]); 
+   coords[0],coords[1],coords[2],coords[3],coords[4]);
 */
       }  /* End of if...else parse line */
    }   /* End of while( fgets(rgnFile) ) */
@@ -671,7 +671,7 @@ int fits_in_region( double    X,
     /*   the point is not already included and this is an include region, */
     /* or the point is included and this is an excluded region */
 
-    if ( (!comp_result && Shapes->sign) || (comp_result && !Shapes->sign) ) { 
+    if ( (!comp_result && Shapes->sign) || (comp_result && !Shapes->sign) ) {
 
       comp_result = 1;
 
@@ -709,7 +709,7 @@ int fits_in_region( double    X,
 	   /* Repeat test for inner box */
 	   x =  xprime * Shapes->param.gen.b + yprime * Shapes->param.gen.a;
 	   y = -xprime * Shapes->param.gen.a + yprime * Shapes->param.gen.b;
-	   
+
 	   dx = 0.5 * Shapes->param.gen.p[2];
 	   dy = 0.5 * Shapes->param.gen.p[3];
 	   if( (x >= -dx) && (x <= dx) && (y >= -dy) && (y <= dy) )
@@ -961,12 +961,12 @@ int fits_in_region( double    X,
 
       if( !Shapes->sign ) comp_result = !comp_result;
 
-     } 
+     }
 
    }
 
    result = result || comp_result;
-   
+
    return( result );
 }
 
@@ -1012,7 +1012,7 @@ static int Pt_in_Poly( double x,
       if( (y>prevY && y>=nextY) || (y<prevY && y<=nextY)
           || (x>prevX && x>=nextX) )
          continue;
-      
+
       /* Check to see if x,y lies right on the segment */
 
       if( x>=prevX || x>nextX ) {
@@ -1056,7 +1056,7 @@ static int Pt_in_Poly( double x,
 /*---------------------------------------------------------------------------*/
 void fits_set_region_components ( SAORegion *aRgn )
 {
-/* 
+/*
    Internal routine to turn a collection of regions read from an ascii file into
    the more complex structure that is allowed by the FITS REGION extension with
    multiple components. Regions are anded within components and ored between them
@@ -1271,7 +1271,7 @@ void fits_setup_shape ( RgnShape *newShape)
       R = coords[3]/2.0;
     }
     break;
-    
+
   case point_rgn:
     R = 1.0;
     break;
@@ -1372,9 +1372,9 @@ void fits_setup_shape ( RgnShape *newShape)
 }
 
 /*---------------------------------------------------------------------------*/
-int fits_read_fits_region ( fitsfile *fptr, 
-			    WCSdata *wcs, 
-			    SAORegion **Rgn, 
+int fits_read_fits_region ( fitsfile *fptr,
+			    WCSdata *wcs,
+			    SAORegion **Rgn,
 			    int *status)
 /*  Read regions from a FITS region extension and return the information     */
 /*  in the "SAORegion" structure.  If it is nonNULL, use wcs to convert the  */
@@ -1396,10 +1396,10 @@ int fits_read_fits_region ( fitsfile *fptr,
 				    "RECTANGLE","ROTRECTANGLE","POLYGON","PIE",
 				    "SECTOR","DIAMOND","RHOMBUS","ROTDIAMOND",
 				    "ROTRHOMBUS"};
-  int shapetype[17] = {point_rgn, circle_rgn, ellipse_rgn, annulus_rgn, 
-		       elliptannulus_rgn, box_rgn, box_rgn, boxannulus_rgn, 
-		       rectangle_rgn, rectangle_rgn, poly_rgn, sector_rgn, 
-		       sector_rgn, diamond_rgn, diamond_rgn, diamond_rgn, 
+  int shapetype[17] = {point_rgn, circle_rgn, ellipse_rgn, annulus_rgn,
+		       elliptannulus_rgn, box_rgn, box_rgn, boxannulus_rgn,
+		       rectangle_rgn, rectangle_rgn, poly_rgn, sector_rgn,
+		       sector_rgn, diamond_rgn, diamond_rgn, diamond_rgn,
 		       diamond_rgn};
   SAORegion *aRgn;
   RgnShape *newShape;
@@ -1573,7 +1573,7 @@ int fits_read_fits_region ( fitsfile *fptr,
 	break;
       }
       coords++;
-      
+
       if ( ffgcvd(fptr, icol[1], i, j+1, 1, DOUBLENULLVALUE, coords, &anynul, status) ) {
 	ffpmsg("Failed to read Y column for polygon region");
 	goto error;
@@ -1585,7 +1585,7 @@ int fits_read_fits_region ( fitsfile *fptr,
 	break;
       }
       coords++;
- 
+
       if (j == 0) {  /* save the first X and Y coordinate */
         Xsave = *(coords - 2);
 	Ysave = *(coords - 1);
@@ -1619,13 +1619,13 @@ int fits_read_fits_region ( fitsfile *fptr,
       coords += npos*2;
     }
 
-  /* read R. Circle requires one number; Box, Diamond, Ellipse, Annulus, Sector 
-     and Panda two; Boxannulus and Elliptannulus four; Point, Rectangle and 
+  /* read R. Circle requires one number; Box, Diamond, Ellipse, Annulus, Sector
+     and Panda two; Boxannulus and Elliptannulus four; Point, Rectangle and
      Polygon none. */
 
     npos = 0;
     switch ( newShape->shape ) {
-    case circle_rgn: 
+    case circle_rgn:
       npos = 1;
       break;
     case box_rgn:
@@ -1670,8 +1670,8 @@ int fits_read_fits_region ( fitsfile *fptr,
       }
     }
 
-  /* read ROTANG. Requires two values for Boxannulus, Elliptannulus, Sector, 
-     Panda; one for Box, Diamond, Ellipse; and none for Circle, Point, Annulus, 
+  /* read ROTANG. Requires two values for Boxannulus, Elliptannulus, Sector,
+     Panda; one for Box, Diamond, Ellipse; and none for Circle, Point, Annulus,
      Rectangle, Polygon */
 
     npos = 0;

@@ -92,23 +92,23 @@ int gsiftp_open(char *filename, int rwmode, int *handle)
   } else {
     num_streams = 1;
   }
-  
+
   if (rwmode) {
     gsiftpopen = 2;
   } else {
     gsiftpopen = 1;
   }
- 
+
   if (gsiftpurl)
     free(gsiftpurl);
- 
+
   gsiftpurl = strdup(filename);
 
   if (setjmp(env) != 0) {
     ffpmsg("Timeout (gsiftp_open)");
     goto error;
   }
-  
+
   signal(SIGALRM, signal_handler);
   alarm(NETTIMEOUT);
 
@@ -117,10 +117,10 @@ int gsiftp_open(char *filename, int rwmode, int *handle)
     ffpmsg("Unable to open gsiftp file (gsiftp_open)");
     ffpmsg(filename);
     goto error;
-  } 
-  
+  }
+
   fclose(gsiftpfile);
-  
+
   signal(SIGALRM, SIG_DFL);
   alarm(0);
 
@@ -162,16 +162,16 @@ int gsiftp_flush(int handle)
   } else {
     num_streams = 1;
   }
-  
+
   int rc = file_flush(handle);
 
   if (gsiftpopen != 1) {
-  
+
     if (setjmp(env) != 0) {
       ffpmsg("Timeout (gsiftp_write)");
       goto error;
     }
-  
+
     signal(SIGALRM, signal_handler);
     alarm(NETTIMEOUT);
 
@@ -180,14 +180,14 @@ int gsiftp_flush(int handle)
       ffpmsg("Unable to open gsiftp file (gsiftp_flush)");
       ffpmsg(gsiftpurl);
       goto error;
-    } 
-  
+    }
+
     fclose(gsiftpfile);
-  
+
     signal(SIGALRM, SIG_DFL);
     alarm(0);
   }
-  
+
   return rc;
 
   error:
@@ -214,7 +214,7 @@ int gsiftp_write(int hdl, void *buffer, long nbytes)
 int gsiftp_close(int handle)
 {
     unlink(gsiftp_tmpfile);
-    
+
     if (gsiftp_tmpdir)
         rmdir(gsiftp_tmpdir);
 
@@ -229,7 +229,7 @@ static void done_cb( void * 				user_arg,
     if(err){
         fprintf(stderr, "%s", globus_object_printable_to_string(err));
     }
-    
+
     globus_mutex_lock(&lock);
     done = GLOBUS_TRUE;
     globus_cond_signal(&cond);
@@ -321,7 +321,7 @@ int gsiftp_get(char *filename, FILE **gsiftpfile, int num_streams)
     globus_result_t 			result;
     globus_ftp_client_restart_marker_t	restart;
     globus_ftp_control_type_t 		filetype;
-   
+
     globus_module_activate(GLOBUS_FTP_CLIENT_MODULE);
     globus_mutex_init(&lock, GLOBUS_NULL);
     globus_cond_init(&cond, GLOBUS_NULL);
@@ -333,38 +333,38 @@ int gsiftp_get(char *filename, FILE **gsiftpfile, int num_streams)
     globus_ftp_client_operationattr_set_mode(
             &attr,
             GLOBUS_FTP_CONTROL_MODE_EXTENDED_BLOCK);
-   
+
     if (num_streams >= 1)
     {
         parallelism.mode = GLOBUS_FTP_CONTROL_PARALLELISM_FIXED;
         parallelism.fixed.size = num_streams;
-       
+
         globus_ftp_client_operationattr_set_parallelism(
             &attr,
             &parallelism);
     }
-   
+
     globus_ftp_client_operationattr_set_layout(&attr,
                                                &layout);
-   
+
     filetype = GLOBUS_FTP_CONTROL_TYPE_IMAGE;
     globus_ftp_client_operationattr_set_type (&attr,
                                               filetype);
-   
+
     globus_ftp_client_handle_init(&handle, &handle_attr);
-   
+
     done = GLOBUS_FALSE;
 
     strcpy(gsiurl,"gsiftp://");
     strcat(gsiurl,filename);
 
     *gsiftpfile = fopen(gsiftp_tmpfile,"w+");
-    
+
     if (!*gsiftpfile) {
         ffpmsg("Unable to open temporary file!");
         return (FILE_NOT_OPENED);
     }
-   
+
     result = globus_ftp_client_get(&handle,
                                    gsiurl,
                                    &attr,
@@ -384,7 +384,7 @@ int gsiftp_get(char *filename, FILE **gsiftpfile, int num_streams)
                                         data_cb_read,
                                         (void*) *gsiftpfile);
     }
-   
+
     globus_mutex_lock(&lock);
 
     while(!done) {
@@ -394,7 +394,7 @@ int gsiftp_get(char *filename, FILE **gsiftpfile, int num_streams)
     globus_mutex_unlock(&lock);
     globus_ftp_client_handle_destroy(&handle);
     globus_module_deactivate_all();
-   
+
     return 0;
 }
 
@@ -413,7 +413,7 @@ int gsiftp_put(char *filename, FILE **gsiftpfile, int num_streams)
     globus_result_t 			result;
     globus_ftp_client_restart_marker_t	restart;
     globus_ftp_control_type_t 		filetype;
-   
+
     globus_module_activate(GLOBUS_FTP_CLIENT_MODULE);
     globus_mutex_init(&lock, GLOBUS_NULL);
     globus_cond_init(&cond, GLOBUS_NULL);
@@ -425,28 +425,28 @@ int gsiftp_put(char *filename, FILE **gsiftpfile, int num_streams)
     globus_ftp_client_operationattr_set_mode(
             &attr,
             GLOBUS_FTP_CONTROL_MODE_EXTENDED_BLOCK);
-   
+
     if (num_streams >= 1)
     {
         parallelism.mode = GLOBUS_FTP_CONTROL_PARALLELISM_FIXED;
         parallelism.fixed.size = num_streams;
-       
+
         globus_ftp_client_operationattr_set_parallelism(
             &attr,
             &parallelism);
     }
-   
+
     globus_ftp_client_operationattr_set_layout(&attr,
                                                &layout);
-   
+
     filetype = GLOBUS_FTP_CONTROL_TYPE_IMAGE;
     globus_ftp_client_operationattr_set_type (&attr,
                                               filetype);
-   
+
     globus_ftp_client_handle_init(&handle, &handle_attr);
-   
+
     done = GLOBUS_FALSE;
-    
+
     strcpy(gsiurl,"gsiftp://");
     strcat(gsiurl,filename);
 
@@ -456,7 +456,7 @@ int gsiftp_put(char *filename, FILE **gsiftpfile, int num_streams)
         ffpmsg("Unable to open temporary file!");
         return (FILE_NOT_OPENED);
     }
-   
+
     result = globus_ftp_client_put(&handle,
                                    gsiurl,
                                    &attr,
@@ -491,7 +491,7 @@ int gsiftp_put(char *filename, FILE **gsiftpfile, int num_streams)
                 (void*) *gsiftpfile);
         }
     }
-   
+
     globus_mutex_lock(&lock);
 
     while(!done) {
@@ -501,7 +501,7 @@ int gsiftp_put(char *filename, FILE **gsiftpfile, int num_streams)
     globus_mutex_unlock(&lock);
     globus_ftp_client_handle_destroy(&handle);
     globus_module_deactivate_all();
-   
+
     return 0;
 }
 
@@ -510,7 +510,7 @@ static void signal_handler(int sig) {
   switch (sig) {
   case SIGALRM:    /* process for alarm */
     longjmp(env,sig);
-    
+
   default: {
       /* Hmm, shouldn't have happend */
       exit(sig);

@@ -1,4 +1,4 @@
-/* 
+/*
  * winDumpExts.c --
  * Author:   Gordon Chaffee, Scott Stanton
  *
@@ -35,7 +35,7 @@
 /*
  *----------------------------------------------------------------------
  * GetArgcArgv --
- * 
+ *
  *	Break up a line into argc argv
  *----------------------------------------------------------------------
  */
@@ -134,7 +134,7 @@ void
 GetSectionName(WORD section, PSTR buffer, unsigned cbBuffer)
 {
     char tempbuffer[10];
-	
+
     switch ( (SHORT)section )
     {
       case IMAGE_SYM_UNDEFINED: strcpy(tempbuffer, "UNDEF"); break;
@@ -142,7 +142,7 @@ GetSectionName(WORD section, PSTR buffer, unsigned cbBuffer)
       case IMAGE_SYM_DEBUG:	  strcpy(tempbuffer, "DEBUG"); break;
       default: wsprintf(tempbuffer, "%-5X", section);
     }
-	
+
     strncpy(buffer, tempbuffer, cbBuffer-1);
 }
 
@@ -160,19 +160,19 @@ DumpSymbolTable(PIMAGE_SYMBOL pSymbolTable, FILE *fout, unsigned cSymbols)
     unsigned i;
     PSTR stringTable;
     char sectionName[10];
-	
+
     fprintf(fout, "Symbol Table - %X entries  (* = auxillary symbol)\n",
 	    cSymbols);
 
-    fprintf(fout, 
+    fprintf(fout,
      "Indx Name                 Value    Section    cAux  Type    Storage\n"
      "---- -------------------- -------- ---------- ----- ------- --------\n");
 
     /*
      * The string table apparently starts right after the symbol table
      */
-    stringTable = (PSTR)&pSymbolTable[cSymbols]; 
-		
+    stringTable = (PSTR)&pSymbolTable[cSymbols];
+
     for ( i=0; i < cSymbols; i++ ) {
 	fprintf(fout, "%04X ", i);
 	if ( pSymbolTable->N.Name.Short != 0 )
@@ -218,12 +218,12 @@ DumpExternals(PIMAGE_SYMBOL pSymbolTable, FILE *fout, unsigned cSymbols)
     PSTR stringTable;
     char *s, *f;
     char symbol[1024];
-	
+
     /*
      * The string table apparently starts right after the symbol table
      */
-    stringTable = (PSTR)&pSymbolTable[cSymbols]; 
-		
+    stringTable = (PSTR)&pSymbolTable[cSymbols];
+
     for ( i=0; i < cSymbols; i++ ) {
 	if (pSymbolTable->SectionNumber > 0 && pSymbolTable->Type == 0x20) {
 	    if (pSymbolTable->StorageClass == IMAGE_SYM_CLASS_EXTERNAL) {
@@ -244,7 +244,7 @@ DumpExternals(PIMAGE_SYMBOL pSymbolTable, FILE *fout, unsigned cSymbols)
 		    s = &symbol[1];
 		}
 #endif
-		if ((stricmp(s, "DllEntryPoint") != 0) 
+		if ((stricmp(s, "DllEntryPoint") != 0)
 			&& (stricmp(s, "DllMain") != 0)) {
 		    fprintf(fout, "\t%s\n", s);
 		}
@@ -273,7 +273,7 @@ DumpObjFile(PIMAGE_FILE_HEADER pImageFileHeader, FILE *fout, int full)
 {
     PIMAGE_SYMBOL PCOFFSymbolTable;
     DWORD COFFSymbolCount;
-    
+
     PCOFFSymbolTable = (PIMAGE_SYMBOL)
 	((DWORD)pImageFileHeader + pImageFileHeader->PointerToSymbolTable);
     COFFSymbolCount = pImageFileHeader->NumberOfSymbols;
@@ -326,7 +326,7 @@ DumpROMFObjFile(LPVOID pBuffer, FILE *fout)
 		strncpy(symbol, ((char*)pBuffer) + 6, length);
 		symbol[length] = '\0';
 		s = symbol;
-		if ((stricmp(s, "DllEntryPoint") != 0) 
+		if ((stricmp(s, "DllEntryPoint") != 0)
 			&& (stricmp(s, "DllMain") != 0)) {
 		    if (s[0] == '_') {
 			s++;
@@ -357,10 +357,10 @@ DumpFile(LPSTR filename, FILE *fout, int full)
     HANDLE hFileMapping;
     LPVOID lpFileBase;
     PIMAGE_DOS_HEADER dosHeader;
-	
+
     hFile = CreateFile(filename, GENERIC_READ, FILE_SHARE_READ, NULL,
 		       OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-					
+
     if (hFile == INVALID_HANDLE_VALUE) {
 	fprintf(stderr, "Couldn't open file with CreateFile()\n");
 	return;
@@ -460,7 +460,7 @@ main(int argc, char **argv)
     } else {
 	fout = stdout;
     }
-    
+
     if (! full) {
 	char *dllname = argv[arg];
 	arg++;

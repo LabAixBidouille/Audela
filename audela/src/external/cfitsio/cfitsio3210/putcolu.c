@@ -83,14 +83,14 @@ int ffpclu( fitsfile *fptr,  /* I - FITS file pointer                       */
             int  *status)    /* IO - error status                           */
 /*
   Set elements of a table column to the appropriate null value for the column
-  The column number may refer to a real column in an ASCII or binary table, 
+  The column number may refer to a real column in an ASCII or binary table,
   or it may refer to a virtual column in a 1 or more grouped FITS primary
   array.  FITSIO treats a primary array as a binary table
   with 2 vector columns: the first column contains the group parameters (often
   with length = 0) and the second column contains the array of image pixels.
   Each row of the table represents a group in the case of multigroup FITS
   images.
-  
+
   This routine support COMPLEX and DOUBLE COMPLEX binary table columns, and
   sets both the real and imaginary components of the element to a NaN.
 */
@@ -114,7 +114,7 @@ int ffpclu( fitsfile *fptr,  /* I - FITS file pointer                       */
         return(*status);
 
     nelem = nelempar;
-    
+
     largeelem = firstelem;
 
     /*---------------------------------------------------*/
@@ -173,7 +173,7 @@ int ffpclu( fitsfile *fptr,  /* I - FITS file pointer                       */
     else if ( tcode == TBYTE  ||
               tcode == TSHORT ||
               tcode == TLONG  ||
-              tcode == TLONGLONG) 
+              tcode == TLONGLONG)
     {
       if (tnull == NULL_UNDEFINED)
       {
@@ -226,10 +226,10 @@ int ffpclu( fitsfile *fptr,  /* I - FITS file pointer                       */
 
         ffmbyt(fptr, wrtptr, IGNORE_EOF, status); /* move to write position */
 
-        switch (tcode) 
+        switch (tcode)
         {
             case (TBYTE):
- 
+
                 for (ii = 0; ii < ntodo; ii++)
                   ffpbyt(fptr, 1,  &i1null, status);
                 break;
@@ -265,7 +265,7 @@ int ffpclu( fitsfile *fptr,  /* I - FITS file pointer                       */
                 break;
 
             case (TLOGICAL):
- 
+
                 for (ii = 0; ii < ntodo; ii++)
                   ffpbyt(fptr, 1, &lognul, status);
                 break;
@@ -276,7 +276,7 @@ int ffpclu( fitsfile *fptr,  /* I - FITS file pointer                       */
                 break;
 
             default:  /*  error trap  */
-                sprintf(message, 
+                sprintf(message,
                    "Cannot write null value to column %d which has format %s",
                      colnum,tform);
                 ffpmsg(message);
@@ -332,17 +332,17 @@ int ffpcluc( fitsfile *fptr,  /* I - FITS file pointer                       */
             int  *status)    /* IO - error status                           */
 /*
   Set elements of a table column to the appropriate null value for the column
-  The column number may refer to a real column in an ASCII or binary table, 
+  The column number may refer to a real column in an ASCII or binary table,
   or it may refer to a virtual column in a 1 or more grouped FITS primary
   array.  FITSIO treats a primary array as a binary table
   with 2 vector columns: the first column contains the group parameters (often
   with length = 0) and the second column contains the array of image pixels.
   Each row of the table represents a group in the case of multigroup FITS
   images.
-  
+
   This routine does not do anything special in the case of COMPLEX table columns
   (unlike the similar ffpclu routine).  This routine is mainly for use by
-  ffpcne which already compensates for the effective doubling of the number of 
+  ffpcne which already compensates for the effective doubling of the number of
   elements in a complex column.
 */
 {
@@ -379,7 +379,7 @@ int ffpcluc( fitsfile *fptr,  /* I - FITS file pointer                       */
     fits_get_coltype(fptr, colnum, &tcode, NULL, NULL, status);
     if (tcode < 0)
          writemode = 0;  /* this is a variable length column */
-    
+
     if (ffgcprll( fptr, colnum, firstrow, firstelem, nelem, writemode, &scale,
        &zero, tform, &twidth, &tcode, &maxelem, &startpos,  &elemnum, &incre,
         &repeat, &rowlen, &hdutype, &tnull, snull, status) > 0)
@@ -415,7 +415,7 @@ int ffpcluc( fitsfile *fptr,  /* I - FITS file pointer                       */
     else if ( tcode == TBYTE  ||
               tcode == TSHORT ||
               tcode == TLONG  ||
-              tcode == TLONGLONG) 
+              tcode == TLONGLONG)
     {
       if (tnull == NULL_UNDEFINED)
       {
@@ -468,10 +468,10 @@ int ffpcluc( fitsfile *fptr,  /* I - FITS file pointer                       */
 
         ffmbyt(fptr, wrtptr, IGNORE_EOF, status); /* move to write position */
 
-        switch (tcode) 
+        switch (tcode)
         {
             case (TBYTE):
- 
+
                 for (ii = 0; ii < ntodo; ii++)
                   ffpbyt(fptr, 1,  &i1null, status);
                 break;
@@ -507,7 +507,7 @@ int ffpcluc( fitsfile *fptr,  /* I - FITS file pointer                       */
                 break;
 
             case (TLOGICAL):
- 
+
                 for (ii = 0; ii < ntodo; ii++)
                   ffpbyt(fptr, 1, &lognul, status);
                 break;
@@ -518,7 +518,7 @@ int ffpcluc( fitsfile *fptr,  /* I - FITS file pointer                       */
                 break;
 
             default:  /*  error trap  */
-                sprintf(message, 
+                sprintf(message,
                    "Cannot write null value to column %d which has format %s",
                      colnum,tform);
                 ffpmsg(message);
@@ -568,10 +568,10 @@ int ffpcluc( fitsfile *fptr,  /* I - FITS file pointer                       */
 /*--------------------------------------------------------------------------*/
 int ffprwu(fitsfile *fptr,
            LONGLONG firstrow,
-           LONGLONG nrows, 
+           LONGLONG nrows,
            int *status)
 
-/* 
+/*
  * fits_write_nullrows / ffprwu - write TNULLs to all columns in one or more rows
  *
  * fitsfile *fptr - pointer to FITS HDU opened for read/write
@@ -581,7 +581,7 @@ int ffprwu(fitsfile *fptr,
  *
  * RETURNS: CFITSIO status code
  *
- * written by Craig Markwardt, GSFC 
+ * written by Craig Markwardt, GSFC
  */
 {
   LONGLONG ntotrows;
@@ -597,7 +597,7 @@ int ffprwu(fitsfile *fptr,
   fits_get_num_rowsll(fptr, &ntotrows, status);
 
   if (firstrow + nrows - 1 > ntotrows) return (*status = BAD_ROW_NUM);
-  
+
   fits_get_num_cols(fptr, &ncols, status);
   if (*status) return *status;
 
@@ -612,7 +612,7 @@ int ffprwu(fitsfile *fptr,
        count, since the repeat count is the *character* count, not the
        nstring count.  Divide by string width to get number of
        strings. */
-    
+
     if (typecode == TSTRING) repeat /= width;
 
     /* Write NULLs */
@@ -621,9 +621,9 @@ int ffprwu(fitsfile *fptr,
 
     /* ignore error if no null value is defined for the column */
     if (nullstatus && nullstatus != NO_NULL) return (*status = nullstatus);
-    
+
   }
-    
+
   return *status;
 }
 

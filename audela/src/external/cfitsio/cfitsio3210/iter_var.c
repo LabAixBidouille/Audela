@@ -20,7 +20,7 @@ main()
     int status, nkeys, keypos, hdutype, ii, jj;
     char filename[]  = "vari.fits";     /* name of rate FITS file */
 
-    status = 0; 
+    status = 0;
 
     fits_open_file(&fptr, filename, READWRITE, &status); /* open file */
 
@@ -51,7 +51,7 @@ main()
 }
 /*--------------------------------------------------------------------------*/
 int flux_rate(long totalrows, long offset, long firstrow, long nrows,
-             int ncols, iteratorCol *cols, void *user_strct ) 
+             int ncols, iteratorCol *cols, void *user_strct )
 
 /*
    Sample iterator function that calculates the output flux 'rate' column
@@ -92,7 +92,7 @@ printf("Datatype of column = %d\n",fits_iter_get_datatype(&cols[0]));
     {
        repeat = fits_iter_get_repeat(&cols[0]);
        printf ("repeat = %d, %d\n",repeat, counts[1]);
-       
+
     }
 
 

@@ -70,7 +70,7 @@ int ffpscl(fitsfile *fptr,      /* I - FITS file pointer               */
     }
 
     /* set pointer to the first 'column' (contains group parameters if any) */
-    colptr = (fptr->Fptr)->tableptr; 
+    colptr = (fptr->Fptr)->tableptr;
 
     colptr++;   /* increment to the 2nd 'column' pointer  (the image itself) */
 
@@ -110,7 +110,7 @@ int ffpnul(fitsfile *fptr,      /* I - FITS file pointer                */
         return(*status);
 
     /* set pointer to the first 'column' (contains group parameters if any) */
-    colptr = (fptr->Fptr)->tableptr; 
+    colptr = (fptr->Fptr)->tableptr;
 
     colptr++;   /* increment to the 2nd 'column' pointer  (the image itself) */
 
@@ -184,7 +184,7 @@ int fftnul(fitsfile *fptr,      /* I - FITS file pointer                  */
 
     if (hdutype != BINARY_TBL)
         return(*status = NOT_BTABLE);        /* not proper HDU type */
- 
+
     colptr = (fptr->Fptr)->tableptr;   /* set pointer to the first column */
     colptr += (colnum - 1);    /* increment to the correct column */
 
@@ -218,7 +218,7 @@ int ffsnul(fitsfile *fptr,      /* I - FITS file pointer                  */
 
     if (hdutype != ASCII_TBL)
         return(*status = NOT_ATABLE);        /* not proper HDU type */
- 
+
     colptr = (fptr->Fptr)->tableptr;   /* set pointer to the first column */
     colptr += (colnum - 1);    /* increment to the correct column */
 

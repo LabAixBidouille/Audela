@@ -20,7 +20,7 @@ int ffghsp(fitsfile *fptr,  /* I - FITS file pointer                     */
            int *status)     /* IO - error status                         */
 /*
   returns the number of existing keywords (not counting the END keyword)
-  and the number of more keyword that will fit in the current header 
+  and the number of more keyword that will fit in the current header
   without having to insert more FITS blocks.
 */
 {
@@ -31,7 +31,7 @@ int ffghsp(fitsfile *fptr,  /* I - FITS file pointer                     */
         ffmahd(fptr, (fptr->HDUposition) + 1, NULL, status);
 
     if (nexist)
-        *nexist = (int) (( ((fptr->Fptr)->headend) - 
+        *nexist = (int) (( ((fptr->Fptr)->headend) -
                 ((fptr->Fptr)->headstart[(fptr->Fptr)->curhdu]) ) / 80);
 
     if ((fptr->Fptr)->datastart == DATA_UNDEFINED)
@@ -82,7 +82,7 @@ int ffnchk(fitsfile *fptr,  /* I - FITS file pointer                     */
     LONGLONG bytepos;
     int length, nullpos;
     char block[2881];
-    
+
     if (*status > 0)
         return(*status);
 
@@ -97,7 +97,7 @@ int ffnchk(fitsfile *fptr,  /* I - FITS file pointer                     */
     else
     {
         /* calculate number of blocks in the header */
-        nblock = (long) (( (fptr->Fptr)->datastart - 
+        nblock = (long) (( (fptr->Fptr)->datastart -
                    (fptr->Fptr)->headstart[(fptr->Fptr)->curhdu] ) / 2880);
     }
 
@@ -126,7 +126,7 @@ int ffmaky(fitsfile *fptr,    /* I - FITS file pointer                    */
           int *status)        /* IO - error status                        */
 {
 /*
-  move pointer to the specified absolute keyword position.  E.g. this keyword 
+  move pointer to the specified absolute keyword position.  E.g. this keyword
   will then be read by the next call to ffgnky.
 */
     if (fptr->HDUposition != (fptr->Fptr)->curhdu)
@@ -186,8 +186,8 @@ int ffgnky(fitsfile *fptr,  /* I - FITS file pointer     */
     endhead = maxvalue( ((fptr->Fptr)->headend), ((fptr->Fptr)->datastart - 2880) );
 
     /* nextkey must be < endhead and > than  headstart */
-    if (bytepos > endhead ||  
-        bytepos < (fptr->Fptr)->headstart[(fptr->Fptr)->curhdu] ) 
+    if (bytepos > endhead ||
+        bytepos < (fptr->Fptr)->headstart[(fptr->Fptr)->curhdu] )
     {
         nrec= (int) ((bytepos - (fptr->Fptr)->headstart[(fptr->Fptr)->curhdu]) / 80 + 1);
         sprintf(message, "Cannot get keyword number %d.  It does not exist.",
@@ -195,12 +195,12 @@ int ffgnky(fitsfile *fptr,  /* I - FITS file pointer     */
         ffpmsg(message);
         return(*status = KEY_OUT_BOUNDS);
     }
-      
+
     ffmbyt(fptr, bytepos, REPORT_EOF, status);  /* move to read pos. */
 
     card[80] = '\0';  /* make sure card is terminate, even if ffgbyt fails */
 
-    if (ffgbyt(fptr, 80, card, status) <= 0) 
+    if (ffgbyt(fptr, 80, card, status) <= 0)
     {
         (fptr->Fptr)->nextkey += 80;   /* increment pointer to next keyword */
 
@@ -242,7 +242,7 @@ int ffgnxk( fitsfile *fptr,     /* I - FITS file pointer              */
     while( ffgcrd(fptr, "*", keybuf, status) <= 0)
     {
         ffgknm(keybuf, keyname, &namelen, status); /* get the keyword name */
-        
+
         /* does keyword match any names in the include list? */
         for (ii = 0; ii < ninc; ii++)
         {
@@ -393,7 +393,7 @@ int ffgky( fitsfile *fptr,     /* I - FITS file pointer        */
         *status = BAD_DATATYPE;
 
     return(*status);
-} 
+}
 /*--------------------------------------------------------------------------*/
 int ffgkey( fitsfile *fptr,     /* I - FITS file pointer        */
             const char *keyname,      /* I - name of keyword to read  */
@@ -434,7 +434,7 @@ int ffgrec( fitsfile *fptr,     /* I - FITS file pointer          */
 /*
   Read (get) the nrec-th keyword, returning the entire keyword card up to
   80 characters long.  The first keyword in the header has nrec = 1, not 0.
-  The returned card value is null terminated with any trailing blank 
+  The returned card value is null terminated with any trailing blank
   characters removed.  If nrec = 0, then this routine simply moves the
   current header pointer to the top of the header.
 */
@@ -464,12 +464,12 @@ int ffgcrd( fitsfile *fptr,     /* I - FITS file pointer        */
 /*
   Read (get) the named keyword, returning the entire keyword card up to
   80 characters long.  The first keyword in the header has nrec = 1, not 0.
-  The returned card value is null terminated with any trailing blank 
+  The returned card value is null terminated with any trailing blank
   characters removed.
 
   If the input name contains wild cards ('?' matches any single char
   and '*' matches any sequence of chars, # matches any string of decimal
-  digits) then the search ends once the end of header is reached and does 
+  digits) then the search ends once the end of header is reached and does
   not automatically resume from the top of the header.
 */
 {
@@ -482,7 +482,7 @@ int ffgcrd( fitsfile *fptr,     /* I - FITS file pointer        */
         return(*status);
 
     *keyname = '\0';
-    
+
     while (name[ii] == ' ')  /* skip leading blanks in name */
         ii++;
 
@@ -495,7 +495,7 @@ int ffgcrd( fitsfile *fptr,     /* I - FITS file pointer        */
 
     keyname[namelen] = '\0';  /* terminate the name */
 
-    for (ii=0; ii < namelen; ii++)       
+    for (ii=0; ii < namelen; ii++)
         keyname[ii] = toupper(keyname[ii]);    /*  make upper case  */
 
     if (FSTRNCMP("HIERARCH", keyname, 8) == 0)
@@ -532,8 +532,8 @@ int ffgcrd( fitsfile *fptr,     /* I - FITS file pointer        */
 
     namelen_limit = namelen;
     gotstar = 0;
-    if (namelen < 9 && 
-       (strchr(keyname,'?') || (gotstar = strchr(keyname,'*')) || 
+    if (namelen < 9 &&
+       (strchr(keyname,'?') || (gotstar = strchr(keyname,'*')) ||
         strchr(keyname,'#')) )
     {
         wild = 1;
@@ -543,7 +543,7 @@ int ffgcrd( fitsfile *fptr,     /* I - FITS file pointer        */
         /* Thus we need to compare keywords whose names have at least */
         /* namelen - 2 characters.                                   */
         if (gotstar)
-           namelen_limit -= 2;           
+           namelen_limit -= 2;
     }
     else
         wild = 0;
@@ -568,12 +568,12 @@ int ffgcrd( fitsfile *fptr,     /* I - FITS file pointer        */
           ffgknm(card, cardname, &cardlen, status); /* get the keyword name */
 
           if (cardlen >= namelen_limit)  /* can't match if card < name */
-          { 
+          {
             /* if there are no wild cards, lengths must be the same */
             if (!( !wild && cardlen != namelen) )
             {
               for (ii=0; ii < cardlen; ii++)
-              {    
+              {
                 /* make sure keyword is in uppercase */
                 if (cardname[ii] > 96)
                 {
@@ -612,7 +612,7 @@ int ffgcrd( fitsfile *fptr,     /* I - FITS file pointer        */
             break;  /* stop at end of header if template contains wildcards */
 
       ffmaky(fptr, 1, status);  /* reset pointer to beginning of header */
-      ntodo = nextkey - 1;      /* number of keyword to read */ 
+      ntodo = nextkey - 1;      /* number of keyword to read */
     }
 
     return(*status = KEY_NO_EXIST);  /* couldn't find the keyword */
@@ -693,7 +693,7 @@ int ffgunt( fitsfile *fptr,     /* I - FITS file pointer         */
 /*
     Read (get) the units string from the comment field of the existing
     keyword. This routine uses a local FITS convention (not defined in the
-    official FITS standard) in which the units are enclosed in 
+    official FITS standard) in which the units are enclosed in
     square brackets following the '/' comment field delimiter, e.g.:
 
     KEYWORD =                   12 / [kpc] comment string goes here
@@ -718,7 +718,7 @@ int ffgunt( fitsfile *fptr,     /* I - FITS file pointer         */
      }
      else
         unit[0] = '\0';
- 
+
     return(*status);
 }
 /*--------------------------------------------------------------------------*/
@@ -729,7 +729,7 @@ int ffgkys( fitsfile *fptr,     /* I - FITS file pointer         */
             int  *status)       /* IO - error status             */
 /*
   Get KeYword with a String value:
-  Read (get) a simple string valued keyword.  The returned value may be up to 
+  Read (get) a simple string valued keyword.  The returned value may be up to
   68 chars long ( + 1 null terminator char).  The routine does not support the
   HEASARC convention for continuing long string values over multiple keywords.
   The ffgkls routine may be used to read long continued strings. The returned
@@ -744,7 +744,7 @@ int ffgkys( fitsfile *fptr,     /* I - FITS file pointer         */
     ffgkey(fptr, keyname, valstring, comm, status);  /* read the keyword */
     value[0] = '\0';
     ffc2s(valstring, value, status);   /* remove quotes from string */
- 
+
     return(*status);
 }
 /*--------------------------------------------------------------------------*/
@@ -793,7 +793,7 @@ int ffgkls( fitsfile *fptr,     /* I - FITS file pointer         */
 
       /* If last character is a & then value may be continued on next keyword */
       contin = 1;
-      while (contin)  
+      while (contin)
       {
         if (len && *(*value+len-1) == '&')  /*  is last char an anpersand?  */
         {
@@ -995,7 +995,7 @@ int ffgkyc( fitsfile *fptr,     /* I - FITS file pointer         */
     }
 
     valstring[0] = ' ';            /* delete the opening parenthesis */
-    len = strcspn(valstring, ")" );  
+    len = strcspn(valstring, ")" );
     valstring[len] = '\0';         /* delete the closing parenthesis */
 
     len = strcspn(valstring, ",");
@@ -1035,7 +1035,7 @@ int ffgkym( fitsfile *fptr,     /* I - FITS file pointer         */
     }
 
     valstring[0] = ' ';            /* delete the opening parenthesis */
-    len = strcspn(valstring, ")" );  
+    len = strcspn(valstring, ")" );
     valstring[len] = '\0';         /* delete the closing parenthesis */
 
     len = strcspn(valstring, ",");
@@ -1145,7 +1145,7 @@ int ffgkns( fitsfile *fptr,     /* I - FITS file pointer                    */
             int  *status)       /* IO - error status                        */
 /*
   Read (get) an indexed array of keywords with index numbers between
-  NSTART and (NSTART + NMAX -1) inclusive.  
+  NSTART and (NSTART + NMAX -1) inclusive.
   This routine does NOT support the HEASARC long string convention.
 */
 {
@@ -1162,7 +1162,7 @@ int ffgkns( fitsfile *fptr,     /* I - FITS file pointer                    */
 
     keyroot[0] = '\0';
     strncat(keyroot, keyname, 8);
-     
+
     lenroot = strlen(keyroot);
     if (lenroot == 0 || lenroot > 7)     /*  root must be 1 - 7 chars long  */
         return(*status);
@@ -1173,7 +1173,7 @@ int ffgkns( fitsfile *fptr,     /* I - FITS file pointer                    */
     ffghps(fptr, &nkeys, &mkeys, status);  /*  get the number of keywords  */
 
     undefinedval = FALSE;
-    for (ii=3; ii <= nkeys; ii++)  
+    for (ii=3; ii <= nkeys; ii++)
     {
        if (ffgrec(fptr, ii, card, status) > 0)     /*  get next keyword  */
            return(*status);
@@ -1191,7 +1191,7 @@ int ffgkns( fitsfile *fptr,     /* I - FITS file pointer                    */
                 ffpsvc(card, svalue, comm, status);  /*  parse the value */
                 ffc2s(svalue, value[ival-nstart], status); /* convert */
                 if (ival - nstart + 1 > *nfound)
-                      *nfound = ival - nstart + 1;  /*  max found */ 
+                      *nfound = ival - nstart + 1;  /*  max found */
 
                 if (*status == VALUE_UNDEFINED)
                 {
@@ -1217,7 +1217,7 @@ int ffgknl( fitsfile *fptr,     /* I - FITS file pointer                    */
             int  *status)       /* IO - error status                        */
 /*
   Read (get) an indexed array of keywords with index numbers between
-  NSTART and (NSTART + NMAX -1) inclusive.  
+  NSTART and (NSTART + NMAX -1) inclusive.
   The returned value = 1 if the keyword is true, else = 0 if false.
 */
 {
@@ -1247,7 +1247,7 @@ int ffgknl( fitsfile *fptr,     /* I - FITS file pointer                    */
     ffmaky(fptr, 3, status);  /* move to 3rd keyword (skip 1st 2 keywords) */
 
     undefinedval = FALSE;
-    for (ii=3; ii <= nkeys; ii++)  
+    for (ii=3; ii <= nkeys; ii++)
     {
        if (ffgnky(fptr, card, status) > 0)     /*  get next keyword  */
            return(*status);
@@ -1265,7 +1265,7 @@ int ffgknl( fitsfile *fptr,     /* I - FITS file pointer                    */
                 ffpsvc(card, svalue, comm, status);   /*  parse the value */
                 ffc2l(svalue, &value[ival-nstart], status); /* convert*/
                 if (ival - nstart + 1 > *nfound)
-                      *nfound = ival - nstart + 1;  /*  max found */ 
+                      *nfound = ival - nstart + 1;  /*  max found */
 
                 if (*status == VALUE_UNDEFINED)
                 {
@@ -1291,7 +1291,7 @@ int ffgknj( fitsfile *fptr,     /* I - FITS file pointer                    */
             int  *status)       /* IO - error status                        */
 /*
   Read (get) an indexed array of keywords with index numbers between
-  NSTART and (NSTART + NMAX -1) inclusive.  
+  NSTART and (NSTART + NMAX -1) inclusive.
 */
 {
     int nend, lenroot, ii, nkeys, mkeys, tstatus, undefinedval;
@@ -1320,7 +1320,7 @@ int ffgknj( fitsfile *fptr,     /* I - FITS file pointer                    */
     ffmaky(fptr, 3, status);  /* move to 3rd keyword (skip 1st 2 keywords) */
 
     undefinedval = FALSE;
-    for (ii=3; ii <= nkeys; ii++)  
+    for (ii=3; ii <= nkeys; ii++)
     {
        if (ffgnky(fptr, card, status) > 0)     /*  get next keyword  */
            return(*status);
@@ -1338,7 +1338,7 @@ int ffgknj( fitsfile *fptr,     /* I - FITS file pointer                    */
                 ffpsvc(card, svalue, comm, status);   /*  parse the value */
                 ffc2i(svalue, &value[ival-nstart], status);  /* convert */
                 if (ival - nstart + 1 > *nfound)
-                      *nfound = ival - nstart + 1;  /*  max found */ 
+                      *nfound = ival - nstart + 1;  /*  max found */
 
                 if (*status == VALUE_UNDEFINED)
                 {
@@ -1364,7 +1364,7 @@ int ffgknjj( fitsfile *fptr,    /* I - FITS file pointer                    */
             int  *status)       /* IO - error status                        */
 /*
   Read (get) an indexed array of keywords with index numbers between
-  NSTART and (NSTART + NMAX -1) inclusive.  
+  NSTART and (NSTART + NMAX -1) inclusive.
 */
 {
     int nend, lenroot, ii, nkeys, mkeys, tstatus, undefinedval;
@@ -1393,7 +1393,7 @@ int ffgknjj( fitsfile *fptr,    /* I - FITS file pointer                    */
     ffmaky(fptr, 3, status);  /* move to 3rd keyword (skip 1st 2 keywords) */
 
     undefinedval = FALSE;
-    for (ii=3; ii <= nkeys; ii++)  
+    for (ii=3; ii <= nkeys; ii++)
     {
        if (ffgnky(fptr, card, status) > 0)     /*  get next keyword  */
            return(*status);
@@ -1411,7 +1411,7 @@ int ffgknjj( fitsfile *fptr,    /* I - FITS file pointer                    */
                 ffpsvc(card, svalue, comm, status);   /*  parse the value */
                 ffc2j(svalue, &value[ival-nstart], status);  /* convert */
                 if (ival - nstart + 1 > *nfound)
-                      *nfound = ival - nstart + 1;  /*  max found */ 
+                      *nfound = ival - nstart + 1;  /*  max found */
 
                 if (*status == VALUE_UNDEFINED)
                 {
@@ -1437,7 +1437,7 @@ int ffgkne( fitsfile *fptr,     /* I - FITS file pointer                    */
             int  *status)       /* IO - error status                        */
 /*
   Read (get) an indexed array of keywords with index numbers between
-  NSTART and (NSTART + NMAX -1) inclusive.  
+  NSTART and (NSTART + NMAX -1) inclusive.
 */
 {
     int nend, lenroot, ii, nkeys, mkeys, tstatus, undefinedval;
@@ -1466,7 +1466,7 @@ int ffgkne( fitsfile *fptr,     /* I - FITS file pointer                    */
     ffmaky(fptr, 3, status);  /* move to 3rd keyword (skip 1st 2 keywords) */
 
     undefinedval = FALSE;
-    for (ii=3; ii <= nkeys; ii++)  
+    for (ii=3; ii <= nkeys; ii++)
     {
        if (ffgnky(fptr, card, status) > 0)     /*  get next keyword  */
            return(*status);
@@ -1484,7 +1484,7 @@ int ffgkne( fitsfile *fptr,     /* I - FITS file pointer                    */
                 ffpsvc(card, svalue, comm, status);   /*  parse the value */
                 ffc2r(svalue, &value[ival-nstart], status); /* convert */
                 if (ival - nstart + 1 > *nfound)
-                      *nfound = ival - nstart + 1;  /*  max found */ 
+                      *nfound = ival - nstart + 1;  /*  max found */
 
                 if (*status == VALUE_UNDEFINED)
                 {
@@ -1510,7 +1510,7 @@ int ffgknd( fitsfile *fptr,     /* I - FITS file pointer                    */
             int  *status)       /* IO - error status                        */
 /*
   Read (get) an indexed array of keywords with index numbers between
-  NSTART and (NSTART + NMAX -1) inclusive.  
+  NSTART and (NSTART + NMAX -1) inclusive.
 */
 {
     int nend, lenroot, ii, nkeys, mkeys, tstatus, undefinedval;
@@ -1539,7 +1539,7 @@ int ffgknd( fitsfile *fptr,     /* I - FITS file pointer                    */
     ffmaky(fptr, 3, status);  /* move to 3rd keyword (skip 1st 2 keywords) */
 
     undefinedval = FALSE;
-    for (ii=3; ii <= nkeys; ii++)  
+    for (ii=3; ii <= nkeys; ii++)
     {
        if (ffgnky(fptr, card, status) > 0)     /*  get next keyword  */
            return(*status);
@@ -1557,7 +1557,7 @@ int ffgknd( fitsfile *fptr,     /* I - FITS file pointer                    */
                 ffpsvc(card, svalue, comm, status);   /*  parse the value */
                 ffc2d(svalue, &value[ival-nstart], status); /* convert */
                 if (ival - nstart + 1 > *nfound)
-                      *nfound = ival - nstart + 1;  /*  max found */ 
+                      *nfound = ival - nstart + 1;  /*  max found */
 
                 if (*status == VALUE_UNDEFINED)
                 {
@@ -1827,7 +1827,7 @@ int ffghpr(fitsfile *fptr,  /* I - FITS file pointer                        */
 
     ffgphd(fptr, maxdim, simple, bitpix, naxis, tnaxes, pcount, gcount, extend,
           &ddummy, &ddummy, &lldummy, &idummy, status);
-	  
+
     if (naxis && naxes) {
          for (ii = 0; (ii < *naxis) && (ii < maxdim); ii++)
 	     naxes[ii] = (long) tnaxes[ii];
@@ -1954,13 +1954,13 @@ int ffghtb(fitsfile *fptr,  /* I - FITS file pointer                        */
         for (ii = 0; ii < maxf; ii++)
         {   /* initialize optional keyword values */
             if (ttype)
-                *ttype[ii] = '\0';   
+                *ttype[ii] = '\0';
 
             if (tunit)
                 *tunit[ii] = '\0';
         }
 
-   
+
         if (ttype)
             ffgkns(fptr, "TTYPE", 1, maxf, ttype, &nfound, status);
 
@@ -2097,13 +2097,13 @@ int ffghtbll(fitsfile *fptr, /* I - FITS file pointer                        */
         for (ii = 0; ii < maxf; ii++)
         {   /* initialize optional keyword values */
             if (ttype)
-                *ttype[ii] = '\0';   
+                *ttype[ii] = '\0';
 
             if (tunit)
                 *tunit[ii] = '\0';
         }
 
-   
+
         if (ttype)
             ffgkns(fptr, "TTYPE", 1, maxf, ttype, &nfound, status);
 
@@ -2234,7 +2234,7 @@ int ffghbn(fitsfile *fptr,  /* I - FITS file pointer                        */
         for (ii = 0; ii < maxf; ii++)
         {   /* initialize optional keyword values */
             if (ttype)
-                *ttype[ii] = '\0';   
+                *ttype[ii] = '\0';
 
             if (tunit)
                 *tunit[ii] = '\0';
@@ -2357,7 +2357,7 @@ int ffghbnll(fitsfile *fptr,  /* I - FITS file pointer                        */
         for (ii = 0; ii < maxf; ii++)
         {   /* initialize optional keyword values */
             if (ttype)
-                *ttype[ii] = '\0';   
+                *ttype[ii] = '\0';
 
             if (tunit)
                 *tunit[ii] = '\0';
@@ -2632,7 +2632,7 @@ int ffgphd(fitsfile *fptr,  /* I - FITS file pointer                        */
     found_end = 0;
     tstatus = *status;
 
-    for (; !found_end; nextkey++)  
+    for (; !found_end; nextkey++)
     {
       /* get next keyword */
       /* don't use ffgkyn here because it trys to parse the card to read */
@@ -2646,7 +2646,7 @@ int ffgphd(fitsfile *fptr,  /* I - FITS file pointer                        */
           found_end = 1;  /* simply hit the end of the header */
           *status = tstatus;  /* reset error status */
         }
-        else          
+        else
         {
           ffpmsg("Failed to find the END keyword in header (ffgphd).");
         }
@@ -2863,10 +2863,10 @@ int ffgtkn(fitsfile *fptr,  /* I - FITS file pointer              */
 */
     char keyname[FLEN_KEYWORD], valuestring[FLEN_VALUE];
     char comm[FLEN_COMMENT], message[FLEN_ERRMSG];
-   
+
     if (*status > 0)
         return(*status);
-    
+
     keyname[0] = '\0';
     valuestring[0] = '\0';
 
@@ -2917,10 +2917,10 @@ int ffgtknjj(fitsfile *fptr,  /* I - FITS file pointer              */
 */
     char keyname[FLEN_KEYWORD], valuestring[FLEN_VALUE];
     char comm[FLEN_COMMENT], message[FLEN_ERRMSG];
-   
+
     if (*status > 0)
         return(*status);
-    
+
     keyname[0] = '\0';
     valuestring[0] = '\0';
 
@@ -2969,10 +2969,10 @@ int fftkyn(fitsfile *fptr,  /* I - FITS file pointer              */
 */
     char keyname[FLEN_KEYWORD], valuestring[FLEN_VALUE];
     char comm[FLEN_COMMENT], message[FLEN_ERRMSG];
-   
+
     if (*status > 0)
         return(*status);
-    
+
     keyname[0] = '\0';
     valuestring[0] = '\0';
 
@@ -3054,7 +3054,7 @@ int ffhdr2str( fitsfile *fptr,  /* I - FITS file pointer                    */
 /*
   read header keywords into a long string of chars.  This routine allocates
   memory for the string, so the calling routine must eventually free the
-  memory when it is not needed any more.  If exclude_comm is TRUE, then all 
+  memory when it is not needed any more.  If exclude_comm is TRUE, then all
   the COMMENT, HISTORY, and <blank> keywords will be excluded from the output
   string of keywords.  Any other list of keywords to be excluded may be
   specified with the exclist parameter.
@@ -3075,7 +3075,7 @@ int ffhdr2str( fitsfile *fptr,  /* I - FITS file pointer                    */
 
     /* allocate memory for all the keywords */
     /* (will reallocate it later to minimize the memory size) */
-    
+
     *header = (char *) calloc ( (totkeys + 1) * 80 + 1, 1);
     if (!(*header))
     {
@@ -3088,7 +3088,7 @@ int ffhdr2str( fitsfile *fptr,  /* I - FITS file pointer                    */
     casesn = FALSE;
 
     /* read every keyword */
-    for (ii = 1; ii <= totkeys; ii++) 
+    for (ii = 1; ii <= totkeys; ii++)
     {
         ffgrec(fptr, ii, keybuf, status);
         /* pad record with blanks so that it is at least 80 chars long */
@@ -3097,7 +3097,7 @@ int ffhdr2str( fitsfile *fptr,  /* I - FITS file pointer                    */
 
         keyname[0] = '\0';
         strncat(keyname, keybuf, 8); /* copy the keyword name */
-        
+
         if (exclude_comm)
         {
             if (!FSTRCMP("COMMENT ", keyname) ||
@@ -3131,7 +3131,7 @@ int ffhdr2str( fitsfile *fptr,  /* I - FITS file pointer                    */
 
     *headptr = '\0';   /* terminate the header string */
     /* minimize the allocated memory */
-    *header = (char *) realloc(*header, (*nkeys *80) + 1);  
+    *header = (char *) realloc(*header, (*nkeys *80) + 1);
 
     return(*status);
 }

@@ -139,7 +139,7 @@ static int hgeti4(char* hstring, char* keyword, int* val);
 static int hgets(char* hstring, char* keyword, int lstr, char* string);
 static char* hgetc(char* hstring, char* keyword);
 static char* ksearch(char* hstring, char* keyword);
-static char *blsearch (char* hstring, char* keyword);	
+static char *blsearch (char* hstring, char* keyword);
 static char *strsrch (char* s1,	char* s2);
 static char *strnsrch (	char* s1,char* s2,int ls1);
 static void hputi4(char* hstring,char* keyword,	int ival);
@@ -148,7 +148,7 @@ static void hputcom(char* hstring,char* keyword,char* comment);
 static void hputl(char* hstring,char* keyword,int lval);
 static void hputc(char* hstring,char* keyword,char* cval);
 static int getirafpixname (char *hdrname, char *irafheader, char *pixfilename, int *status);
-int iraf2mem(char *filename, char **buffptr, size_t *buffsize, 
+int iraf2mem(char *filename, char **buffptr, size_t *buffsize,
       size_t *filesize, int *status);
 
 void ffpmsg(const char *err_message);
@@ -184,7 +184,7 @@ int fits_delete_iraf_file(char *filename,     /* name of input file             
 
     remove(filename);
     remove(pixfilename);
-    
+
     return(*status);
 }
 
@@ -332,7 +332,7 @@ static int irafrdimage (
     char pixname[SZ_IM2PIXFILE+1];
     char errmsg[81];
     size_t newfilesize;
- 
+
     fitsheader = *buffptr;           /* pointer to start of header */
 
     /* Convert pixel file name to character string */
@@ -403,7 +403,7 @@ static int irafrdimage (
 	bytepix = bitpix / 8;
 
     nbimage = naxis1 * naxis2 * naxis3 * naxis4 * bytepix;
-    
+
     newfilesize = *filesize + nbimage;  /* header + data */
     newfilesize = (((newfilesize - 1) / 2880 ) + 1 ) * 2880;
 
@@ -615,7 +615,7 @@ static int iraftofits (
     if (imhver == 1)
         swapdata = swaphead; /* vers 1 data has same swapness as header */
     else
-        swapdata = irafgeti4 (irafheader, IM2_SWAPPED); 
+        swapdata = irafgeti4 (irafheader, IM2_SWAPPED);
 
     /*  Set pixel size in FITS header */
     pixtype = irafgeti4 (irafheader, impixtype);
@@ -745,7 +745,7 @@ static int iraftofits (
           pixname = newpixname;
 	  }
 	}
-	
+
     if ((bang = strchr (pixname, '!')) != NULL )
 	hputs (fitsheader,"PIXFILE",bang+1);
     else
@@ -914,7 +914,7 @@ static int getirafpixname (
           pixname = newpixname;
 	  }
 	}
-	
+
     if ((bang = strchr (pixname, '!')) != NULL )
 	strcpy(pixfilename,bang+1);
     else
@@ -1300,7 +1300,7 @@ int *ival;
 char *value;
 double dval;
 int minint;
-char val[30]; 
+char val[30];
 
 /* Get value and comment from header string */
 	value = hgetc (hstring,keyword);
@@ -1732,7 +1732,7 @@ int	ls1;	/* Length of string being searched */
     clast = s2[ls2-1];
     s1e = s1 + ls1 - ls2 + 1;
     s = s1;
-    while (s < s1e) { 
+    while (s < s1e) {
 
 	/* Search for first character in pattern string */
 	if (*s == cfirst) {
@@ -1909,10 +1909,10 @@ char *value;	/* character string containing the value for variable
 
     /*  If parameter is not found, find a place to put it */
     if (v1 == NULL) {
-	
+
 	/* First look for blank lines before END */
         v1 = blsearch (hstring, "END");
-    
+
 	/*  Otherwise, create a space for it at the end of the header */
 	if (v1 == NULL) {
 	    ve = ksearch (hstring,"END");

@@ -70,7 +70,7 @@ int ffgpfj( fitsfile *fptr,   /* I - FITS file pointer                       */
   Read an array of values from the primary array. Data conversion
   and scaling will be performed if necessary (e.g, if the datatype of
   the FITS array is not the same as the array being read).
-  Any undefined pixels in the returned array will be set = 0 and the 
+  Any undefined pixels in the returned array will be set = 0 and the
   corresponding nularray value will be set = 1.
   ANYNUL is returned with a value of .true. if any pixels are undefined.
 */
@@ -120,7 +120,7 @@ int ffg2dj(fitsfile *fptr,  /* I - FITS file pointer                       */
 {
     /* call the 3D reading routine, with the 3rd dimension = 1 */
 
-    ffg3dj(fptr, group, nulval, ncols, naxis2, naxis1, naxis2, 1, array, 
+    ffg3dj(fptr, group, nulval, ncols, naxis2, naxis1, naxis2, 1, array,
            anynul, status);
 
     return(*status);
@@ -361,7 +361,7 @@ int ffgsvj(fitsfile *fptr, /* I - FITS file pointer                         */
             for (i1 = str[1]*dir[1]; i1 <= stp[1]*dir[1]; i1 += incr[1])
             {
 
-              felem=str[0] + (i1 - dir[1]) * dsize[1] + (i2 - dir[2]) * dsize[2] + 
+              felem=str[0] + (i1 - dir[1]) * dsize[1] + (i2 - dir[2]) * dsize[2] +
                              (i3 - dir[3]) * dsize[3] + (i4 - dir[4]) * dsize[4] +
                              (i5 - dir[5]) * dsize[5] + (i6 - dir[6]) * dsize[6] +
                              (i7 - dir[7]) * dsize[7] + (i8 - dir[8]) * dsize[8];
@@ -525,7 +525,7 @@ int ffgsfj(fitsfile *fptr, /* I - FITS file pointer                         */
            {
             for (i1 = str[1]; i1 <= stp[1]; i1 += incr[1])
             {
-              felem=str[0] + (i1 - 1) * dsize[1] + (i2 - 1) * dsize[2] + 
+              felem=str[0] + (i1 - 1) * dsize[1] + (i2 - 1) * dsize[2] +
                              (i3 - 1) * dsize[3] + (i4 - 1) * dsize[4] +
                              (i5 - 1) * dsize[5] + (i6 - 1) * dsize[6] +
                              (i7 - 1) * dsize[7] + (i8 - 1) * dsize[8];
@@ -591,7 +591,7 @@ int ffgcvj(fitsfile *fptr,   /* I - FITS file pointer                       */
 /*
   Read an array of values from a column in the current FITS HDU. Automatic
   datatype conversion will be performed if the datatype of the column does not
-  match the datatype of the array parameter. The output values will be scaled 
+  match the datatype of the array parameter. The output values will be scaled
   by the FITS TSCALn and TZEROn values if these values have been defined.
   Any undefined pixels will be set equal to the value of 'nulval' unless
   nulval = 0 in which case no checks for undefined pixels will be made.
@@ -616,9 +616,9 @@ int ffgcfj(fitsfile *fptr,   /* I - FITS file pointer                       */
 /*
   Read an array of values from a column in the current FITS HDU. Automatic
   datatype conversion will be performed if the datatype of the column does not
-  match the datatype of the array parameter. The output values will be scaled 
+  match the datatype of the array parameter. The output values will be scaled
   by the FITS TSCALn and TZEROn values if these values have been defined.
-  Nularray will be set = 1 if the corresponding array pixel is undefined, 
+  Nularray will be set = 1 if the corresponding array pixel is undefined,
   otherwise nularray will = 0.
 */
 {
@@ -645,7 +645,7 @@ int ffgclj( fitsfile *fptr,   /* I - FITS file pointer                       */
             int  *status)     /* IO - error status                           */
 /*
   Read an array of values from a column in the current FITS HDU.
-  The column number may refer to a real column in an ASCII or binary table, 
+  The column number may refer to a real column in an ASCII or binary table,
   or it may refer be a virtual column in a 1 or more grouped FITS primary
   array or image extension.  FITSIO treats a primary array as a binary table
   with 2 vector columns: the first column contains the group parameters (often
@@ -653,7 +653,7 @@ int ffgclj( fitsfile *fptr,   /* I - FITS file pointer                       */
   Each row of the table represents a group in the case of multigroup FITS
   images.
 
-  The output array of values will be converted from the datatype of the column 
+  The output array of values will be converted from the datatype of the column
   and will be scaled by the FITS TSCALn and TZEROn values if necessary.
 */
 {
@@ -698,7 +698,7 @@ int ffgclj( fitsfile *fptr,   /* I - FITS file pointer                       */
     if (tcode == TSTRING)    /* setup for ASCII tables */
     {
       /* get the number of implied decimal places if no explicit decmal point */
-      ffasfm(tform, &xcode, &xwidth, &decimals, status); 
+      ffasfm(tform, &xcode, &xwidth, &decimals, status);
       for(ii = 0; ii < decimals; ii++)
         power *= 10.;
     }
@@ -710,7 +710,7 @@ int ffgclj( fitsfile *fptr,   /* I - FITS file pointer                       */
     if (nultyp == 1 && nulval == 0)
        nulcheck = 0;    /* calling routine does not want to check for nulls */
 
-    else if (tcode%10 == 1 &&        /* if reading an integer column, and  */ 
+    else if (tcode%10 == 1 &&        /* if reading an integer column, and  */
             tnull == NULL_UNDEFINED) /* if a null value is not defined,    */
             nulcheck = 0;            /* then do not check for null values. */
 
@@ -769,50 +769,50 @@ int ffgclj( fitsfile *fptr,   /* I - FITS file pointer                       */
 
         readptr = startpos + ((LONGLONG)rownum * rowlen) + (elemnum * (incre / elemincre));
 
-        switch (tcode) 
+        switch (tcode)
         {
             case (TLONG):
                 ffgi4b(fptr, readptr, ntodo, incre, (INT32BIT *) &array[next],
                        status);
                 if (convert)
-                    fffi4i4((INT32BIT *) &array[next], ntodo, scale, zero, 
-                           nulcheck, (INT32BIT) tnull, nulval, &nularray[next], 
+                    fffi4i4((INT32BIT *) &array[next], ntodo, scale, zero,
+                           nulcheck, (INT32BIT) tnull, nulval, &nularray[next],
                             anynul, &array[next], status);
                 break;
             case (TLONGLONG):
                 ffgi8b(fptr, readptr, ntodo, incre, (long *) buffer, status);
-                fffi8i4((LONGLONG *) buffer, ntodo, scale, zero, 
-                           nulcheck, tnull, nulval, &nularray[next], 
+                fffi8i4((LONGLONG *) buffer, ntodo, scale, zero,
+                           nulcheck, tnull, nulval, &nularray[next],
                             anynul, &array[next], status);
                 break;
             case (TBYTE):
                 ffgi1b(fptr, readptr, ntodo, incre, (unsigned char *) buffer,
                        status);
-                fffi1i4((unsigned char *) buffer, ntodo, scale, zero, nulcheck, 
-                     (unsigned char) tnull, nulval, &nularray[next], anynul, 
+                fffi1i4((unsigned char *) buffer, ntodo, scale, zero, nulcheck,
+                     (unsigned char) tnull, nulval, &nularray[next], anynul,
                      &array[next], status);
                 break;
             case (TSHORT):
                 ffgi2b(fptr, readptr, ntodo, incre, (short  *) buffer, status);
-                fffi2i4((short  *) buffer, ntodo, scale, zero, nulcheck, 
-                      (short) tnull, nulval, &nularray[next], anynul, 
+                fffi2i4((short  *) buffer, ntodo, scale, zero, nulcheck,
+                      (short) tnull, nulval, &nularray[next], anynul,
                       &array[next], status);
                 break;
             case (TFLOAT):
                 ffgr4b(fptr, readptr, ntodo, incre, (float  *) buffer, status);
-                fffr4i4((float  *) buffer, ntodo, scale, zero, nulcheck, 
-                       nulval, &nularray[next], anynul, 
+                fffr4i4((float  *) buffer, ntodo, scale, zero, nulcheck,
+                       nulval, &nularray[next], anynul,
                        &array[next], status);
                 break;
             case (TDOUBLE):
                 ffgr8b(fptr, readptr, ntodo, incre, (double *) buffer, status);
-                fffr8i4((double *) buffer, ntodo, scale, zero, nulcheck, 
-                          nulval, &nularray[next], anynul, 
+                fffr8i4((double *) buffer, ntodo, scale, zero, nulcheck,
+                          nulval, &nularray[next], anynul,
                           &array[next], status);
                 break;
             case (TSTRING):
                 ffmbyt(fptr, readptr, REPORT_EOF, status);
-       
+
                 if (incre == twidth)    /* contiguous bytes */
                      ffgbyt(fptr, ntodo * twidth, buffer, status);
                 else
@@ -825,7 +825,7 @@ int ffgclj( fitsfile *fptr,   /* I - FITS file pointer                       */
                 break;
 
             default:  /*  error trap for invalid column format */
-                sprintf(message, 
+                sprintf(message,
                    "Cannot read numbers from column %d which has format %s",
                     colnum, tform);
                 ffpmsg(message);
@@ -910,12 +910,12 @@ int fffi1i4(unsigned char *input, /* I - array of values to be converted     */
   Copy input to output following reading of the input from a FITS file.
   Check for null values and do datatype conversion and scaling if required.
   The nullcheck code value determines how any null values in the input array
-  are treated.  A null value is an input pixel that is equal to tnull.  If 
+  are treated.  A null value is an input pixel that is equal to tnull.  If
   nullcheck = 0, then no checking for nulls is performed and any null values
   will be transformed just like any other pixel.  If nullcheck = 1, then the
   output pixel will be set = nullval if the corresponding input pixel is null.
   If nullcheck = 2, then if the pixel is null then the corresponding value of
-  nullarray will be set to 1; the value of nullarray for non-null pixels 
+  nullarray will be set to 1; the value of nullarray for non-null pixels
   will = 0.  The anynull parameter will be set = 1 if any of the returned
   pixels are null, otherwise anynull will be returned with a value = 0;
 */
@@ -926,7 +926,7 @@ int fffi1i4(unsigned char *input, /* I - array of values to be converted     */
     if (nullcheck == 0)     /* no null checking required */
     {
         if (scale == 1. && zero == 0.)      /* no scaling */
-        {       
+        {
             for (ii = 0; ii < ntodo; ii++)
                 output[ii] = (long) input[ii];  /* copy input to output */
         }
@@ -954,7 +954,7 @@ int fffi1i4(unsigned char *input, /* I - array of values to be converted     */
     else        /* must check for null values */
     {
         if (scale == 1. && zero == 0.)  /* no scaling */
-        {       
+        {
             for (ii = 0; ii < ntodo; ii++)
             {
                 if (input[ii] == tnull)
@@ -1021,12 +1021,12 @@ int fffi2i4(short *input,         /* I - array of values to be converted     */
   Copy input to output following reading of the input from a FITS file.
   Check for null values and do datatype conversion and scaling if required.
   The nullcheck code value determines how any null values in the input array
-  are treated.  A null value is an input pixel that is equal to tnull.  If 
+  are treated.  A null value is an input pixel that is equal to tnull.  If
   nullcheck = 0, then no checking for nulls is performed and any null values
   will be transformed just like any other pixel.  If nullcheck = 1, then the
   output pixel will be set = nullval if the corresponding input pixel is null.
   If nullcheck = 2, then if the pixel is null then the corresponding value of
-  nullarray will be set to 1; the value of nullarray for non-null pixels 
+  nullarray will be set to 1; the value of nullarray for non-null pixels
   will = 0.  The anynull parameter will be set = 1 if any of the returned
   pixels are null, otherwise anynull will be returned with a value = 0;
 */
@@ -1037,7 +1037,7 @@ int fffi2i4(short *input,         /* I - array of values to be converted     */
     if (nullcheck == 0)     /* no null checking required */
     {
         if (scale == 1. && zero == 0.)      /* no scaling */
-        {       
+        {
             for (ii = 0; ii < ntodo; ii++)
                 output[ii] = (long) input[ii];   /* copy input to output */
         }
@@ -1065,7 +1065,7 @@ int fffi2i4(short *input,         /* I - array of values to be converted     */
     else        /* must check for null values */
     {
         if (scale == 1. && zero == 0.)  /* no scaling */
-        {       
+        {
             for (ii = 0; ii < ntodo; ii++)
             {
                 if (input[ii] == tnull)
@@ -1132,12 +1132,12 @@ int fffi4i4(INT32BIT *input,      /* I - array of values to be converted     */
   Copy input to output following reading of the input from a FITS file.
   Check for null values and do datatype conversion and scaling if required.
   The nullcheck code value determines how any null values in the input array
-  are treated.  A null value is an input pixel that is equal to tnull.  If 
+  are treated.  A null value is an input pixel that is equal to tnull.  If
   nullcheck = 0, then no checking for nulls is performed and any null values
   will be transformed just like any other pixel.  If nullcheck = 1, then the
   output pixel will be set = nullval if the corresponding input pixel is null.
   If nullcheck = 2, then if the pixel is null then the corresponding value of
-  nullarray will be set to 1; the value of nullarray for non-null pixels 
+  nullarray will be set to 1; the value of nullarray for non-null pixels
   will = 0.  The anynull parameter will be set = 1 if any of the returned
   pixels are null, otherwise anynull will be returned with a value = 0;
 
@@ -1152,7 +1152,7 @@ int fffi4i4(INT32BIT *input,      /* I - array of values to be converted     */
     if (nullcheck == 0)     /* no null checking required */
     {
         if (scale == 1. && zero == 0.)      /* no scaling */
-        {       
+        {
             for (ii = ntodo - 1; ii >= 0; ii--)
                 output[ii] = (long) input[ii];   /* copy input to output */
         }
@@ -1180,7 +1180,7 @@ int fffi4i4(INT32BIT *input,      /* I - array of values to be converted     */
     else        /* must check for null values */
     {
         if (scale == 1. && zero == 0.)  /* no scaling */
-        {       
+        {
             for (ii = ntodo - 1; ii >= 0; ii--)
             {
                 if (input[ii] == tnull)
@@ -1248,12 +1248,12 @@ int fffi8i4(LONGLONG *input,      /* I - array of values to be converted     */
   Copy input to output following reading of the input from a FITS file.
   Check for null values and do datatype conversion and scaling if required.
   The nullcheck code value determines how any null values in the input array
-  are treated.  A null value is an input pixel that is equal to tnull.  If 
+  are treated.  A null value is an input pixel that is equal to tnull.  If
   nullcheck = 0, then no checking for nulls is performed and any null values
   will be transformed just like any other pixel.  If nullcheck = 1, then the
   output pixel will be set = nullval if the corresponding input pixel is null.
   If nullcheck = 2, then if the pixel is null then the corresponding value of
-  nullarray will be set to 1; the value of nullarray for non-null pixels 
+  nullarray will be set to 1; the value of nullarray for non-null pixels
   will = 0.  The anynull parameter will be set = 1 if any of the returned
   pixels are null, otherwise anynull will be returned with a value = 0;
 */
@@ -1264,7 +1264,7 @@ int fffi8i4(LONGLONG *input,      /* I - array of values to be converted     */
     if (nullcheck == 0)     /* no null checking required */
     {
         if (scale == 1. && zero == 0.)      /* no scaling */
-        {       
+        {
             for (ii = 0; ii < ntodo; ii++)
             {
                 if (input[ii] < LONG_MIN)
@@ -1305,7 +1305,7 @@ int fffi8i4(LONGLONG *input,      /* I - array of values to be converted     */
     else        /* must check for null values */
     {
         if (scale == 1. && zero == 0.)  /* no scaling */
-        {       
+        {
             for (ii = 0; ii < ntodo; ii++)
             {
                 if (input[ii] == tnull)
@@ -1384,12 +1384,12 @@ int fffr4i4(float *input,         /* I - array of values to be converted     */
   Copy input to output following reading of the input from a FITS file.
   Check for null values and do datatype conversion and scaling if required.
   The nullcheck code value determines how any null values in the input array
-  are treated.  A null value is an input pixel that is equal to NaN.  If 
+  are treated.  A null value is an input pixel that is equal to NaN.  If
   nullcheck = 0, then no checking for nulls is performed and any null values
   will be transformed just like any other pixel.  If nullcheck = 1, then the
   output pixel will be set = nullval if the corresponding input pixel is null.
   If nullcheck = 2, then if the pixel is null then the corresponding value of
-  nullarray will be set to 1; the value of nullarray for non-null pixels 
+  nullarray will be set to 1; the value of nullarray for non-null pixels
   will = 0.  The anynull parameter will be set = 1 if any of the returned
   pixels are null, otherwise anynull will be returned with a value = 0;
 */
@@ -1401,7 +1401,7 @@ int fffr4i4(float *input,         /* I - array of values to be converted     */
     if (nullcheck == 0)     /* no null checking required */
     {
         if (scale == 1. && zero == 0.)      /* no scaling */
-        {       
+        {
             for (ii = 0; ii < ntodo; ii++)
             {
                 if (input[ii] < DLONG_MIN)
@@ -1448,7 +1448,7 @@ int fffr4i4(float *input,         /* I - array of values to be converted     */
 #endif
 
         if (scale == 1. && zero == 0.)  /* no scaling */
-        {       
+        {
             for (ii = 0; ii < ntodo; ii++, sptr += 2)
             {
               if (0 != (iret = fnan(*sptr) ) )  /* test for NaN or underflow */
@@ -1488,7 +1488,7 @@ int fffr4i4(float *input,         /* I - array of values to be converted     */
               if (0 != (iret = fnan(*sptr) ) )  /* test for NaN or underflow */
               {
                   if (iret == 1)  /* is it a NaN? */
-                  {  
+                  {
                     *anynull = 1;
                     if (nullcheck == 1)
                         output[ii] = nullval;
@@ -1550,12 +1550,12 @@ int fffr8i4(double *input,        /* I - array of values to be converted     */
   Copy input to output following reading of the input from a FITS file.
   Check for null values and do datatype conversion and scaling if required.
   The nullcheck code value determines how any null values in the input array
-  are treated.  A null value is an input pixel that is equal to NaN.  If 
+  are treated.  A null value is an input pixel that is equal to NaN.  If
   nullcheck = 0, then no checking for nulls is performed and any null values
   will be transformed just like any other pixel.  If nullcheck = 1, then the
   output pixel will be set = nullval if the corresponding input pixel is null.
   If nullcheck = 2, then if the pixel is null then the corresponding value of
-  nullarray will be set to 1; the value of nullarray for non-null pixels 
+  nullarray will be set to 1; the value of nullarray for non-null pixels
   will = 0.  The anynull parameter will be set = 1 if any of the returned
   pixels are null, otherwise anynull will be returned with a value = 0;
 */
@@ -1567,7 +1567,7 @@ int fffr8i4(double *input,        /* I - array of values to be converted     */
     if (nullcheck == 0)     /* no null checking required */
     {
         if (scale == 1. && zero == 0.)      /* no scaling */
-        {       
+        {
             for (ii = 0; ii < ntodo; ii++)
             {
                 if (input[ii] < DLONG_MIN)
@@ -1613,7 +1613,7 @@ int fffr8i4(double *input,        /* I - array of values to be converted     */
         sptr += 3;       /* point to MSBs */
 #endif
         if (scale == 1. && zero == 0.)  /* no scaling */
-        {       
+        {
             for (ii = 0; ii < ntodo; ii++, sptr += 4)
             {
               if (0 != (iret = dnan(*sptr)) )  /* test for NaN or underflow */
@@ -1653,7 +1653,7 @@ int fffr8i4(double *input,        /* I - array of values to be converted     */
               if (0 != (iret = dnan(*sptr)) )  /* test for NaN or underflow */
               {
                   if (iret == 1)  /* is it a NaN? */
-                  {  
+                  {
                     *anynull = 1;
                     if (nullcheck == 1)
                         output[ii] = nullval;
@@ -1722,7 +1722,7 @@ int fffstri4(char *input,         /* I - array of values to be converted     */
   no special checking for nulls is performed.  If nullcheck = 1, then the
   output pixel will be set = nullval if the corresponding input pixel is null.
   If nullcheck = 2, then if the pixel is null then the corresponding value of
-  nullarray will be set to 1; the value of nullarray for non-null pixels 
+  nullarray will be set to 1; the value of nullarray for non-null pixels
   will = 0.  The anynull parameter will be set = 1 if any of the returned
   pixels are null, otherwise anynull will be returned with a value = 0;
 */
@@ -1748,12 +1748,12 @@ int fffstri4(char *input,         /* I - array of values to be converted     */
 
       /* check if null value is defined, and if the    */
       /* column string is identical to the null string */
-      if (snull[0] != ASCII_NULL_UNDEFINED && 
+      if (snull[0] != ASCII_NULL_UNDEFINED &&
          !strncmp(snull, cptr, nullen) )
       {
-        if (nullcheck)  
+        if (nullcheck)
         {
-          *anynull = 1;    
+          *anynull = 1;
           if (nullcheck == 1)
             output[ii] = nullval;
           else
@@ -1819,7 +1819,7 @@ int fffstri4(char *input,         /* I - array of values to be converted     */
           cptr++;
           while (*cptr == ' ')         /* skip blanks */
               cptr++;
-  
+
           if (*cptr == '-' || *cptr == '+')  /* check for exponent sign */
           {
             if (*cptr == '-')
@@ -1941,7 +1941,7 @@ int ffgpfjj(fitsfile *fptr,   /* I - FITS file pointer                       */
   Read an array of values from the primary array. Data conversion
   and scaling will be performed if necessary (e.g, if the datatype of
   the FITS array is not the same as the array being read).
-  Any undefined pixels in the returned array will be set = 0 and the 
+  Any undefined pixels in the returned array will be set = 0 and the
   corresponding nularray value will be set = 1.
   ANYNUL is returned with a value of .true. if any pixels are undefined.
 */
@@ -1992,7 +1992,7 @@ int ffg2djj(fitsfile *fptr, /* I - FITS file pointer                       */
 {
     /* call the 3D reading routine, with the 3rd dimension = 1 */
 
-    ffg3djj(fptr, group, nulval, ncols, naxis2, naxis1, naxis2, 1, array, 
+    ffg3djj(fptr, group, nulval, ncols, naxis2, naxis1, naxis2, 1, array,
            anynul, status);
 
     return(*status);
@@ -2234,7 +2234,7 @@ int ffgsvjj(fitsfile *fptr, /* I - FITS file pointer                         */
             for (i1 = str[1]*dir[1]; i1 <= stp[1]*dir[1]; i1 += incr[1])
             {
 
-              felem=str[0] + (i1 - dir[1]) * dsize[1] + (i2 - dir[2]) * dsize[2] + 
+              felem=str[0] + (i1 - dir[1]) * dsize[1] + (i2 - dir[2]) * dsize[2] +
                              (i3 - dir[3]) * dsize[3] + (i4 - dir[4]) * dsize[4] +
                              (i5 - dir[5]) * dsize[5] + (i6 - dir[6]) * dsize[6] +
                              (i7 - dir[7]) * dsize[7] + (i8 - dir[8]) * dsize[8];
@@ -2398,7 +2398,7 @@ int ffgsfjj(fitsfile *fptr, /* I - FITS file pointer                         */
            {
             for (i1 = str[1]; i1 <= stp[1]; i1 += incr[1])
             {
-              felem=str[0] + (i1 - 1) * dsize[1] + (i2 - 1) * dsize[2] + 
+              felem=str[0] + (i1 - 1) * dsize[1] + (i2 - 1) * dsize[2] +
                              (i3 - 1) * dsize[3] + (i4 - 1) * dsize[4] +
                              (i5 - 1) * dsize[5] + (i6 - 1) * dsize[6] +
                              (i7 - 1) * dsize[7] + (i8 - 1) * dsize[8];
@@ -2466,7 +2466,7 @@ int ffgcvjj(fitsfile *fptr,  /* I - FITS file pointer                       */
 /*
   Read an array of values from a column in the current FITS HDU. Automatic
   datatype conversion will be performed if the datatype of the column does not
-  match the datatype of the array parameter. The output values will be scaled 
+  match the datatype of the array parameter. The output values will be scaled
   by the FITS TSCALn and TZEROn values if these values have been defined.
   Any undefined pixels will be set equal to the value of 'nulval' unless
   nulval = 0 in which case no checks for undefined pixels will be made.
@@ -2491,9 +2491,9 @@ int ffgcfjj(fitsfile *fptr,  /* I - FITS file pointer                       */
 /*
   Read an array of values from a column in the current FITS HDU. Automatic
   datatype conversion will be performed if the datatype of the column does not
-  match the datatype of the array parameter. The output values will be scaled 
+  match the datatype of the array parameter. The output values will be scaled
   by the FITS TSCALn and TZEROn values if these values have been defined.
-  Nularray will be set = 1 if the corresponding array pixel is undefined, 
+  Nularray will be set = 1 if the corresponding array pixel is undefined,
   otherwise nularray will = 0.
 */
 {
@@ -2520,7 +2520,7 @@ int ffgcljj( fitsfile *fptr,   /* I - FITS file pointer                       */
             int  *status)     /* IO - error status                           */
 /*
   Read an array of values from a column in the current FITS HDU.
-  The column number may refer to a real column in an ASCII or binary table, 
+  The column number may refer to a real column in an ASCII or binary table,
   or it may refer be a virtual column in a 1 or more grouped FITS primary
   array or image extension.  FITSIO treats a primary array as a binary table
   with 2 vector columns: the first column contains the group parameters (often
@@ -2528,7 +2528,7 @@ int ffgcljj( fitsfile *fptr,   /* I - FITS file pointer                       */
   Each row of the table represents a group in the case of multigroup FITS
   images.
 
-  The output array of values will be converted from the datatype of the column 
+  The output array of values will be converted from the datatype of the column
   and will be scaled by the FITS TSCALn and TZEROn values if necessary.
 */
 {
@@ -2573,7 +2573,7 @@ int ffgcljj( fitsfile *fptr,   /* I - FITS file pointer                       */
     if (tcode == TSTRING)    /* setup for ASCII tables */
     {
       /* get the number of implied decimal places if no explicit decmal point */
-      ffasfm(tform, &xcode, &xwidth, &decimals, status); 
+      ffasfm(tform, &xcode, &xwidth, &decimals, status);
       for(ii = 0; ii < decimals; ii++)
         power *= 10.;
     }
@@ -2585,7 +2585,7 @@ int ffgcljj( fitsfile *fptr,   /* I - FITS file pointer                       */
     if (nultyp == 1 && nulval == 0)
        nulcheck = 0;    /* calling routine does not want to check for nulls */
 
-    else if (tcode%10 == 1 &&        /* if reading an integer column, and  */ 
+    else if (tcode%10 == 1 &&        /* if reading an integer column, and  */
             tnull == NULL_UNDEFINED) /* if a null value is not defined,    */
             nulcheck = 0;            /* then do not check for null values. */
 
@@ -2644,51 +2644,51 @@ int ffgcljj( fitsfile *fptr,   /* I - FITS file pointer                       */
 
         readptr = startpos + ((LONGLONG)rownum * rowlen) + (elemnum * (incre / elemincre));
 
-        switch (tcode) 
+        switch (tcode)
         {
             case (TLONGLONG):
                 ffgi8b(fptr, readptr, ntodo, incre, (long *) &array[next],
                        status);
                 if (convert)
-                    fffi8i8((LONGLONG *) &array[next], ntodo, scale, zero, 
-                           nulcheck, tnull, nulval, &nularray[next], 
+                    fffi8i8((LONGLONG *) &array[next], ntodo, scale, zero,
+                           nulcheck, tnull, nulval, &nularray[next],
                            anynul, &array[next], status);
                 break;
             case (TLONG):
                 ffgi4b(fptr, readptr, ntodo, incre, (INT32BIT *) buffer,
                        status);
-                fffi4i8((INT32BIT *) buffer, ntodo, scale, zero, 
-                        nulcheck, (INT32BIT) tnull, nulval, &nularray[next], 
+                fffi4i8((INT32BIT *) buffer, ntodo, scale, zero,
+                        nulcheck, (INT32BIT) tnull, nulval, &nularray[next],
                         anynul, &array[next], status);
                 break;
             case (TBYTE):
                 ffgi1b(fptr, readptr, ntodo, incre, (unsigned char *) buffer,
                        status);
-                fffi1i8((unsigned char *) buffer, ntodo, scale, zero, nulcheck, 
-                     (unsigned char) tnull, nulval, &nularray[next], anynul, 
+                fffi1i8((unsigned char *) buffer, ntodo, scale, zero, nulcheck,
+                     (unsigned char) tnull, nulval, &nularray[next], anynul,
                      &array[next], status);
                 break;
             case (TSHORT):
                 ffgi2b(fptr, readptr, ntodo, incre, (short  *) buffer, status);
-                fffi2i8((short  *) buffer, ntodo, scale, zero, nulcheck, 
-                      (short) tnull, nulval, &nularray[next], anynul, 
+                fffi2i8((short  *) buffer, ntodo, scale, zero, nulcheck,
+                      (short) tnull, nulval, &nularray[next], anynul,
                       &array[next], status);
                 break;
             case (TFLOAT):
                 ffgr4b(fptr, readptr, ntodo, incre, (float  *) buffer, status);
-                fffr4i8((float  *) buffer, ntodo, scale, zero, nulcheck, 
-                       nulval, &nularray[next], anynul, 
+                fffr4i8((float  *) buffer, ntodo, scale, zero, nulcheck,
+                       nulval, &nularray[next], anynul,
                        &array[next], status);
                 break;
             case (TDOUBLE):
                 ffgr8b(fptr, readptr, ntodo, incre, (double *) buffer, status);
-                fffr8i8((double *) buffer, ntodo, scale, zero, nulcheck, 
-                          nulval, &nularray[next], anynul, 
+                fffr8i8((double *) buffer, ntodo, scale, zero, nulcheck,
+                          nulval, &nularray[next], anynul,
                           &array[next], status);
                 break;
             case (TSTRING):
                 ffmbyt(fptr, readptr, REPORT_EOF, status);
-       
+
                 if (incre == twidth)    /* contiguous bytes */
                      ffgbyt(fptr, ntodo * twidth, buffer, status);
                 else
@@ -2701,7 +2701,7 @@ int ffgcljj( fitsfile *fptr,   /* I - FITS file pointer                       */
                 break;
 
             default:  /*  error trap for invalid column format */
-                sprintf(message, 
+                sprintf(message,
                    "Cannot read numbers from column %d which has format %s",
                     colnum, tform);
                 ffpmsg(message);
@@ -2786,12 +2786,12 @@ int fffi1i8(unsigned char *input, /* I - array of values to be converted     */
   Copy input to output following reading of the input from a FITS file.
   Check for null values and do datatype conversion and scaling if required.
   The nullcheck code value determines how any null values in the input array
-  are treated.  A null value is an input pixel that is equal to tnull.  If 
+  are treated.  A null value is an input pixel that is equal to tnull.  If
   nullcheck = 0, then no checking for nulls is performed and any null values
   will be transformed just like any other pixel.  If nullcheck = 1, then the
   output pixel will be set = nullval if the corresponding input pixel is null.
   If nullcheck = 2, then if the pixel is null then the corresponding value of
-  nullarray will be set to 1; the value of nullarray for non-null pixels 
+  nullarray will be set to 1; the value of nullarray for non-null pixels
   will = 0.  The anynull parameter will be set = 1 if any of the returned
   pixels are null, otherwise anynull will be returned with a value = 0;
 */
@@ -2802,7 +2802,7 @@ int fffi1i8(unsigned char *input, /* I - array of values to be converted     */
     if (nullcheck == 0)     /* no null checking required */
     {
         if (scale == 1. && zero == 0.)      /* no scaling */
-        {       
+        {
             for (ii = 0; ii < ntodo; ii++)
                 output[ii] = (LONGLONG) input[ii];  /* copy input to output */
         }
@@ -2830,7 +2830,7 @@ int fffi1i8(unsigned char *input, /* I - array of values to be converted     */
     else        /* must check for null values */
     {
         if (scale == 1. && zero == 0.)  /* no scaling */
-        {       
+        {
             for (ii = 0; ii < ntodo; ii++)
             {
                 if (input[ii] == tnull)
@@ -2897,12 +2897,12 @@ int fffi2i8(short *input,         /* I - array of values to be converted     */
   Copy input to output following reading of the input from a FITS file.
   Check for null values and do datatype conversion and scaling if required.
   The nullcheck code value determines how any null values in the input array
-  are treated.  A null value is an input pixel that is equal to tnull.  If 
+  are treated.  A null value is an input pixel that is equal to tnull.  If
   nullcheck = 0, then no checking for nulls is performed and any null values
   will be transformed just like any other pixel.  If nullcheck = 1, then the
   output pixel will be set = nullval if the corresponding input pixel is null.
   If nullcheck = 2, then if the pixel is null then the corresponding value of
-  nullarray will be set to 1; the value of nullarray for non-null pixels 
+  nullarray will be set to 1; the value of nullarray for non-null pixels
   will = 0.  The anynull parameter will be set = 1 if any of the returned
   pixels are null, otherwise anynull will be returned with a value = 0;
 */
@@ -2913,7 +2913,7 @@ int fffi2i8(short *input,         /* I - array of values to be converted     */
     if (nullcheck == 0)     /* no null checking required */
     {
         if (scale == 1. && zero == 0.)      /* no scaling */
-        {       
+        {
             for (ii = 0; ii < ntodo; ii++)
                 output[ii] = (LONGLONG) input[ii];   /* copy input to output */
         }
@@ -2941,7 +2941,7 @@ int fffi2i8(short *input,         /* I - array of values to be converted     */
     else        /* must check for null values */
     {
         if (scale == 1. && zero == 0.)  /* no scaling */
-        {       
+        {
             for (ii = 0; ii < ntodo; ii++)
             {
                 if (input[ii] == tnull)
@@ -3008,12 +3008,12 @@ int fffi4i8(INT32BIT *input,      /* I - array of values to be converted     */
   Copy input to output following reading of the input from a FITS file.
   Check for null values and do datatype conversion and scaling if required.
   The nullcheck code value determines how any null values in the input array
-  are treated.  A null value is an input pixel that is equal to tnull.  If 
+  are treated.  A null value is an input pixel that is equal to tnull.  If
   nullcheck = 0, then no checking for nulls is performed and any null values
   will be transformed just like any other pixel.  If nullcheck = 1, then the
   output pixel will be set = nullval if the corresponding input pixel is null.
   If nullcheck = 2, then if the pixel is null then the corresponding value of
-  nullarray will be set to 1; the value of nullarray for non-null pixels 
+  nullarray will be set to 1; the value of nullarray for non-null pixels
   will = 0.  The anynull parameter will be set = 1 if any of the returned
   pixels are null, otherwise anynull will be returned with a value = 0;
 */
@@ -3024,7 +3024,7 @@ int fffi4i8(INT32BIT *input,      /* I - array of values to be converted     */
     if (nullcheck == 0)     /* no null checking required */
     {
         if (scale == 1. && zero == 0.)      /* no scaling */
-        {       
+        {
             for (ii = 0; ii < ntodo; ii++)
                 output[ii] = (LONGLONG) input[ii];   /* copy input to output */
         }
@@ -3052,7 +3052,7 @@ int fffi4i8(INT32BIT *input,      /* I - array of values to be converted     */
     else        /* must check for null values */
     {
         if (scale == 1. && zero == 0.)  /* no scaling */
-        {       
+        {
             for (ii = 0; ii < ntodo; ii++)
             {
                 if (input[ii] == tnull)
@@ -3120,12 +3120,12 @@ int fffi8i8(LONGLONG *input,      /* I - array of values to be converted     */
   Copy input to output following reading of the input from a FITS file.
   Check for null values and do datatype conversion and scaling if required.
   The nullcheck code value determines how any null values in the input array
-  are treated.  A null value is an input pixel that is equal to tnull.  If 
+  are treated.  A null value is an input pixel that is equal to tnull.  If
   nullcheck = 0, then no checking for nulls is performed and any null values
   will be transformed just like any other pixel.  If nullcheck = 1, then the
   output pixel will be set = nullval if the corresponding input pixel is null.
   If nullcheck = 2, then if the pixel is null then the corresponding value of
-  nullarray will be set to 1; the value of nullarray for non-null pixels 
+  nullarray will be set to 1; the value of nullarray for non-null pixels
   will = 0.  The anynull parameter will be set = 1 if any of the returned
   pixels are null, otherwise anynull will be returned with a value = 0;
 */
@@ -3136,7 +3136,7 @@ int fffi8i8(LONGLONG *input,      /* I - array of values to be converted     */
     if (nullcheck == 0)     /* no null checking required */
     {
         if (scale == 1. && zero == 0.)      /* no scaling */
-        {       
+        {
             for (ii = 0; ii < ntodo; ii++)
                 output[ii] =  input[ii];   /* copy input to output */
         }
@@ -3164,7 +3164,7 @@ int fffi8i8(LONGLONG *input,      /* I - array of values to be converted     */
     else        /* must check for null values */
     {
         if (scale == 1. && zero == 0.)  /* no scaling */
-        {       
+        {
             for (ii = 0; ii < ntodo; ii++)
             {
                 if (input[ii] == tnull)
@@ -3231,12 +3231,12 @@ int fffr4i8(float *input,         /* I - array of values to be converted     */
   Copy input to output following reading of the input from a FITS file.
   Check for null values and do datatype conversion and scaling if required.
   The nullcheck code value determines how any null values in the input array
-  are treated.  A null value is an input pixel that is equal to NaN.  If 
+  are treated.  A null value is an input pixel that is equal to NaN.  If
   nullcheck = 0, then no checking for nulls is performed and any null values
   will be transformed just like any other pixel.  If nullcheck = 1, then the
   output pixel will be set = nullval if the corresponding input pixel is null.
   If nullcheck = 2, then if the pixel is null then the corresponding value of
-  nullarray will be set to 1; the value of nullarray for non-null pixels 
+  nullarray will be set to 1; the value of nullarray for non-null pixels
   will = 0.  The anynull parameter will be set = 1 if any of the returned
   pixels are null, otherwise anynull will be returned with a value = 0;
 */
@@ -3248,7 +3248,7 @@ int fffr4i8(float *input,         /* I - array of values to be converted     */
     if (nullcheck == 0)     /* no null checking required */
     {
         if (scale == 1. && zero == 0.)      /* no scaling */
-        {       
+        {
             for (ii = 0; ii < ntodo; ii++)
             {
                 if (input[ii] < DLONGLONG_MIN)
@@ -3295,7 +3295,7 @@ int fffr4i8(float *input,         /* I - array of values to be converted     */
 #endif
 
         if (scale == 1. && zero == 0.)  /* no scaling */
-        {       
+        {
             for (ii = 0; ii < ntodo; ii++, sptr += 2)
             {
               if (0 != (iret = fnan(*sptr) ) )  /* test for NaN or underflow */
@@ -3335,7 +3335,7 @@ int fffr4i8(float *input,         /* I - array of values to be converted     */
               if (0 != (iret = fnan(*sptr) ) )  /* test for NaN or underflow */
               {
                   if (iret == 1)  /* is it a NaN? */
-                  {  
+                  {
                     *anynull = 1;
                     if (nullcheck == 1)
                         output[ii] = nullval;
@@ -3397,12 +3397,12 @@ int fffr8i8(double *input,        /* I - array of values to be converted     */
   Copy input to output following reading of the input from a FITS file.
   Check for null values and do datatype conversion and scaling if required.
   The nullcheck code value determines how any null values in the input array
-  are treated.  A null value is an input pixel that is equal to NaN.  If 
+  are treated.  A null value is an input pixel that is equal to NaN.  If
   nullcheck = 0, then no checking for nulls is performed and any null values
   will be transformed just like any other pixel.  If nullcheck = 1, then the
   output pixel will be set = nullval if the corresponding input pixel is null.
   If nullcheck = 2, then if the pixel is null then the corresponding value of
-  nullarray will be set to 1; the value of nullarray for non-null pixels 
+  nullarray will be set to 1; the value of nullarray for non-null pixels
   will = 0.  The anynull parameter will be set = 1 if any of the returned
   pixels are null, otherwise anynull will be returned with a value = 0;
 */
@@ -3414,7 +3414,7 @@ int fffr8i8(double *input,        /* I - array of values to be converted     */
     if (nullcheck == 0)     /* no null checking required */
     {
         if (scale == 1. && zero == 0.)      /* no scaling */
-        {       
+        {
             for (ii = 0; ii < ntodo; ii++)
             {
                 if (input[ii] < DLONGLONG_MIN)
@@ -3460,7 +3460,7 @@ int fffr8i8(double *input,        /* I - array of values to be converted     */
         sptr += 3;       /* point to MSBs */
 #endif
         if (scale == 1. && zero == 0.)  /* no scaling */
-        {       
+        {
             for (ii = 0; ii < ntodo; ii++, sptr += 4)
             {
               if (0 != (iret = dnan(*sptr)) )  /* test for NaN or underflow */
@@ -3500,7 +3500,7 @@ int fffr8i8(double *input,        /* I - array of values to be converted     */
               if (0 != (iret = dnan(*sptr)) )  /* test for NaN or underflow */
               {
                   if (iret == 1)  /* is it a NaN? */
-                  {  
+                  {
                     *anynull = 1;
                     if (nullcheck == 1)
                         output[ii] = nullval;
@@ -3569,7 +3569,7 @@ int fffstri8(char *input,         /* I - array of values to be converted     */
   no special checking for nulls is performed.  If nullcheck = 1, then the
   output pixel will be set = nullval if the corresponding input pixel is null.
   If nullcheck = 2, then if the pixel is null then the corresponding value of
-  nullarray will be set to 1; the value of nullarray for non-null pixels 
+  nullarray will be set to 1; the value of nullarray for non-null pixels
   will = 0.  The anynull parameter will be set = 1 if any of the returned
   pixels are null, otherwise anynull will be returned with a value = 0;
 */
@@ -3595,12 +3595,12 @@ int fffstri8(char *input,         /* I - array of values to be converted     */
 
       /* check if null value is defined, and if the    */
       /* column string is identical to the null string */
-      if (snull[0] != ASCII_NULL_UNDEFINED && 
+      if (snull[0] != ASCII_NULL_UNDEFINED &&
          !strncmp(snull, cptr, nullen) )
       {
-        if (nullcheck)  
+        if (nullcheck)
         {
-          *anynull = 1;    
+          *anynull = 1;
           if (nullcheck == 1)
             output[ii] = nullval;
           else
@@ -3666,7 +3666,7 @@ int fffstri8(char *input,         /* I - array of values to be converted     */
           cptr++;
           while (*cptr == ' ')         /* skip blanks */
               cptr++;
-  
+
           if (*cptr == '-' || *cptr == '+')  /* check for exponent sign */
           {
             if (*cptr == '-')

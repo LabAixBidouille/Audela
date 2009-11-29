@@ -263,7 +263,7 @@ int ffsrow( fitsfile *infptr,   /* I - Input FITS file                      */
       FFUNLOCK;
       return( *status = MEMORY_ALLOCATION );
    }
-   
+
    /* make sure array is zero terminated */
    ((char*)Info.dataPtr)[inExt.numRows] = 0;
 
@@ -302,7 +302,7 @@ int ffsrow( fitsfile *infptr,   /* I - Input FITS file                      */
          outloc = inloc;
       } else {
          outloc = (long) (outExt.numRows + 1);
-         if (outloc > 1) 
+         if (outloc > 1)
             ffirow( outfptr, outExt.numRows, nGood, status );
       }
 
@@ -465,7 +465,7 @@ int ffcrow( fitsfile *fptr,      /* I - Input FITS file                      */
    Info.dataPtr = array;
    Info.nullPtr = nulval;
    Info.maxRows = nelements / nelem1;
-   
+
    if( ffiter( gParse.nCols, gParse.colData, firstrow-1, 0,
                parse_data, (void*)&Info, status ) == -1 )
       *status=0;  /* -1 indicates exitted without error before end... OK */
@@ -604,7 +604,7 @@ int ffcalc_rng( fitsfile *infptr,   /* I - Input FITS file                  */
                   return( *status = NOT_BTABLE );
                case TLONG:     strcpy(tform,"I11");     break;
                case TDOUBLE:   strcpy(tform,"D23.15");  break;
-               case TSTRING:   
+               case TSTRING:
                case TBIT:      sprintf(tform,"A%ld",nelem);  break;
                }
             }
@@ -637,7 +637,7 @@ int ffcalc_rng( fitsfile *infptr,   /* I - Input FITS file                  */
                   nullVal = LONG_MIN;
                else if( typecode==TLONGLONG )
                   nullVal = LONGLONG_MIN;
-		  
+
                if( nullVal ) {
                   ffpkyj( outfptr, nullKwd, nullVal, "Null value", status );
                   fits_set_btblnull( outfptr, colNo, nullVal, status );
@@ -851,8 +851,8 @@ int ffiprs( fitsfile *fptr,      /* I - Input FITS file                     */
    {
       /* this might be a 1D or null image with no NAXIS2 keyword */
       gParse.totalRows = 0;
-   } 
-   
+   }
+
 
    /*  Copy expression into parser... read from file if necessary  */
 
@@ -1233,7 +1233,7 @@ int parse_data( long    totalrows,     /* I - Total rows to be processed     */
                          ( result->value.data.strptr[kk][jj]=='1' );
                    }
              }
-             break; 
+             break;
           case TSTRING:
              if( constant ) {
                 for( jj=0; jj<ntodo; jj++ ) {
@@ -1304,7 +1304,7 @@ int parse_data( long    totalrows,     /* I - Total rows to be processed     */
     else if( userInfo->dataPtr == NULL ) {
        if( userInfo->datatype == TSTRING )
           memcpy( *(char **)Null, zeros, 2 );
-       else 
+       else
           memcpy( Null, zeros, datasize );
     }
 
@@ -1421,7 +1421,7 @@ static void Setup_DataArrays( int nCols, iteratorCol *cols,
             break;
          }
          while( len-- ) {
-            varData->undef[len] = 
+            varData->undef[len] =
                ( barray[0]!=0 && barray[0]==barray[len+1] );
          }
          varData->data  = barray + 1;
@@ -1437,7 +1437,7 @@ static void Setup_DataArrays( int nCols, iteratorCol *cols,
             break;
          }
          while( len-- ) {
-            varData->undef[len] = 
+            varData->undef[len] =
                ( iarray[0]!=0L && iarray[0]==iarray[len+1] );
          }
          varData->data  = iarray + 1;
@@ -1453,7 +1453,7 @@ static void Setup_DataArrays( int nCols, iteratorCol *cols,
             break;
          }
          while( len-- ) {
-            varData->undef[len] = 
+            varData->undef[len] =
                ( rarray[0]!=0.0 && rarray[0]==rarray[len+1]);
          }
          varData->data  = rarray + 1;
@@ -1570,7 +1570,7 @@ int ffcvtn( int   inputType,  /* I - Data type of input array               */
                   *status = OVERFLOW_ERR;
                   ((unsigned char*)output)[i] = UCHAR_MAX;
                } else
-                  ((unsigned char*)output)[i] = 
+                  ((unsigned char*)output)[i] =
                      (unsigned char) ((long*)input)[i];
             }
          }
@@ -1855,7 +1855,7 @@ int fffrwc( fitsfile *fptr,        /* I - Input FITS file                    */
    fits_get_colnum( fptr, CASEINSEN, parCol,  &gParse.parCol , status );
    fits_get_colnum( fptr, CASEINSEN, valCol,  &gParse.valCol, status );
    if( *status ) return( *status );
-   
+
    if( ffiprs( fptr, 1, expr, MAXDIMS, &Info.datatype, &nelem,
                &naxis, naxes, status ) ) {
       ffcprs();
@@ -1878,7 +1878,7 @@ int fffrwc( fitsfile *fptr,        /* I - Input FITS file                    */
    /*******************************************/
    /* Allocate data arrays for each parameter */
    /*******************************************/
-   
+
    parNo = gParse.nCols;
    while( parNo-- ) {
       switch( gParse.colData[parNo].datatype ) {
@@ -1927,11 +1927,11 @@ int fffrwc( fitsfile *fptr,        /* I - Input FITS file                    */
          return( *status );
       }
    }
-   
+
    /**********************************************************************/
    /* Read data from columns needed for the expression and then parse it */
    /**********************************************************************/
-   
+
    if( !uncompress_hkdata( fptr, ntimes, times, status ) ) {
       if( constant ) {
          result = gParse.Nodes[gParse.resultNode].value.data.log;
@@ -1945,18 +1945,18 @@ int fffrwc( fitsfile *fptr,        /* I - Input FITS file                    */
                                      gParse.colData, (void*)&Info );
       }
    }
-   
+
    /************/
    /* Clean up */
    /************/
-   
+
    parNo = gParse.nCols;
    while ( parNo-- ) {
       if( gParse.colData[parNo].datatype==TSTRING )
          FREE( ((char **)gParse.colData[parNo].array)[0] );
       FREE( gParse.colData[parNo].array );
    }
-   
+
    if( constant ) gParse.nCols = nCol;
 
    ffcprs();
@@ -2056,7 +2056,7 @@ int uncompress_hkdata( fitsfile *fptr,
    parNo = gParse.nCols;
    while( parNo-- )
       if( !found[parNo] ) {
-         sprintf( parName, "Parameter not found: %-30s", 
+         sprintf( parName, "Parameter not found: %-30s",
                   gParse.varData[parNo].name );
          ffpmsg( parName );
          *status = PARSE_SYNTAX_ERR;
@@ -2293,7 +2293,7 @@ else { /* HDU holds a table */
          gParse.status = status;
          return pERROR;
       }
-   
+
    if( fits_get_coltype( fptr, colnum, &typecode,
                          &repeat, &width, &status ) ) {
       gParse.status = status;
@@ -2322,19 +2322,19 @@ if (gParse.hdutype != IMAGE_HDU) {
    case TBYTE:
    case TSHORT:
    case TLONG:
-      /* The datatype of column with TZERO and TSCALE keywords might be 
-         float or double. 
+      /* The datatype of column with TZERO and TSCALE keywords might be
+         float or double.
       */
       sprintf(temp,"TZERO%d",colnum);
       istatus = 0;
       if(fits_read_key(fptr,TDOUBLE,temp,&tzero,NULL,&istatus)) {
           tzero = 0.0;
-      } 
+      }
       sprintf(temp,"TSCAL%d",colnum);
       istatus = 0;
       if(fits_read_key(fptr,TDOUBLE,temp,&tscale,NULL,&istatus)) {
           tscale = 1.0;
-      } 
+      }
       if (tscale == 1.0 && (tzero == 0.0 || tzero == 32768.0 )) {
           varInfo->type     = LONG;
           colIter->datatype = TLONG;
@@ -2352,7 +2352,7 @@ if (gParse.hdutype != IMAGE_HDU) {
       }
       type = COLUMN;
       break;
-/* 
+/*
   For now, treat 8-byte integer columns as type double.
   This can lose precision, so the better long term solution
   will be to add support for TLONGLONG as a separate datatype.
@@ -2431,12 +2431,12 @@ static int find_keywd(char *keyname, void *itslval )
       gParse.status = status;
       return( pERROR );
    }
-      
+
    if( fits_get_keytype( keyvalue, &dtype, &status ) ) {
       gParse.status = status;
       return( pERROR );
    }
-      
+
    switch( dtype ) {
    case 'C':
       fits_read_key_str( fptr, keyname, keyvalue, NULL, &status );
@@ -2514,7 +2514,7 @@ static int load_column( int varNum, long fRow, long nRows,
     if (DEBUG_PIXFILTER)
         printf("load_column: IMAGE_HDU fRow=%ld, nRows=%ld => %d\n",
                         fRow, nRows, status);
-  } else { 
+  } else {
 
    nelem = nRows * var->repeat;
 

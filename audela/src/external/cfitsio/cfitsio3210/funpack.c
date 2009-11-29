@@ -100,7 +100,7 @@ int fu_get_param (int argc, char *argv[], fpstate *fpptr)
 	    } else
 		break;
 	}
-	
+
 	if (fpptr->extname[0] && fpptr->clobber || fpptr->delete_input) {
 	    fp_msg ("Error: -E option may not be used with -F or -D\n");
 	    fu_usage (); exit (-1);

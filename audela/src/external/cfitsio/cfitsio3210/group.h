@@ -25,7 +25,7 @@ int ffgtgc(fitsfile *gfptr, int *xtensionCol, int *extnameCol, int *extverCol,
 
 int ffgmul(fitsfile *mfptr, int rmopt, int *status);
 
-int ffgmf(fitsfile *gfptr, char *xtension, char *extname, int extver,	   
+int ffgmf(fitsfile *gfptr, char *xtension, char *extname, int extver,
 	  int position,	char *location,	long *member, int *status);
 
 int ffgtrmr(fitsfile *gfptr, HDUtracker *HDU, int *status);
@@ -33,10 +33,10 @@ int ffgtrmr(fitsfile *gfptr, HDUtracker *HDU, int *status);
 int ffgtcpr(fitsfile *infptr, fitsfile *outfptr, int cpopt, HDUtracker *HDU,
 	    int *status);
 
-int fftsad(fitsfile *mfptr, HDUtracker *HDU, int *newPosition, 
+int fftsad(fitsfile *mfptr, HDUtracker *HDU, int *newPosition,
 	   char *newFileName);
 
-int fftsud(fitsfile *mfptr, HDUtracker *HDU, int newPosition, 
+int fftsud(fitsfile *mfptr, HDUtracker *HDU, int newPosition,
 	   char *newFileName);
 
 void prepare_keyvalue(char *keyvalue);
@@ -47,8 +47,8 @@ int fits_url2path(char *inpath, char *outpath, int  *status);
 
 int fits_get_cwd(char *cwd, int *status);
 
-int fits_get_url(fitsfile *fptr, char *realURL, char *startURL, 
-		 char *realAccess, char *startAccess, int *iostate, 
+int fits_get_url(fitsfile *fptr, char *realURL, char *startURL,
+		 char *realAccess, char *startAccess, int *iostate,
 		 int *status);
 
 int fits_clean_url(char *inURL, char *outURL, int *status);

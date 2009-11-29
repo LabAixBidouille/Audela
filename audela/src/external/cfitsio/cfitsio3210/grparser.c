@@ -24,7 +24,7 @@
 		case multiple EXTNAME keywords will present in HDU header.
 23-Oct-98: bugfix: unnecessary space was written to FITS file for blank
 		keywords.
-24-Oct-98: syntax change: empty lines and lines with only whitespaces are 
+24-Oct-98: syntax change: empty lines and lines with only whitespaces are
 		written to FITS files as blank keywords (if inside group/hdu
 		definition). Previously lines had to have at least 8 spaces.
 		Please note, that due to pecularities of CFITSIO if the
@@ -57,10 +57,10 @@
                 which keyword names can effectively be longer than 8 characters.
                 Example:
                 HIERARCH  LongKeywordName = 'value' / comment
-30-Jan-2003 Wm Pence, bugfix: ngp_read_xtension was testing for "ASCIITABLE" 
+30-Jan-2003 Wm Pence, bugfix: ngp_read_xtension was testing for "ASCIITABLE"
                 instead of "TABLE" as the XTENSION value of an ASCII table,
                 and it did not allow for optional trailing spaces in the
-                "IMAGE" or "TABLE" string. 
+                "IMAGE" or "TABLE" string.
 16-Dec-2003 James Peachey: ngp_keyword_all_write was modified to apply
                 comments from the template file to the output file in
                 the case of reserved keywords (e.g. tform#, ttype# etcetera).
@@ -255,7 +255,7 @@ int	ngp_line_from_file(FILE *fp, char **p)
 
    if (NULL == fp) return(NGP_NUL_PTR);		/* check for stupid args */
    if (NULL == p) return(NGP_NUL_PTR);		/* more foolproof checks */
-   
+
    r = NGP_OK;					/* initialize stuff, reset err code */
    llen = 0;					/* 0 characters read so far */
    *p = (char *)ngp_alloc(1);			/* preallocate 1 byte */
@@ -265,13 +265,13 @@ int	ngp_line_from_file(FILE *fp, char **p)
    for (;;)
     { c = getc(fp);				/* get next character */
       if (EOF == c)				/* EOF signalled ? */
-        { 
+        {
           if (ferror(fp)) r = NGP_READ_ERR;	/* was it real error or simply EOF ? */
 	  if (0 == llen) return(NGP_EOF);	/* signal EOF only if 0 characters read so far */
           break;
         }
       if ('\n' == c) break;			/* end of line character ? */
-      
+
       llen++;					/* we have new character, make room for it */
       alen = ((llen + NGP_ALLOCCHUNK) / NGP_ALLOCCHUNK) * NGP_ALLOCCHUNK;
       if (alen > allocsize)
@@ -293,7 +293,7 @@ int	ngp_line_from_file(FILE *fp, char **p)
        else
          { *p = p2;
            (*p)[llen - 1] = 0;			/* copy \0 to buffer */
-         }         
+         }
      }
    else
      { (*p)[llen - 1] = 0;			/* necessary when line read was empty */
@@ -303,7 +303,7 @@ int	ngp_line_from_file(FILE *fp, char **p)
      { ngp_free(*p);
        *p = NULL;
      }
-   
+
    return(r);					/* return  status code */
  }
 
@@ -346,7 +346,7 @@ int	ngp_free_prevline(void)
 int	ngp_read_line_buffered(FILE *fp)
  {
    ngp_free_line();				/* first free current line (if any) */
-   
+
    if (NULL != ngp_prevline.line)		/* if cached, return cached line */
      { ngp_curline = ngp_prevline;
        ngp_prevline.line = NULL;
@@ -404,7 +404,7 @@ int	ngp_extract_tokens(NGP_RAW_LINE *cl)
         }
       if ((' ' != *p) && ('\t' != *p)) break;
       if (i >= 7)
-        { 
+        {
           cl->comment = p + 1;
           for (s = cl->comment;; s++)		/* filter out any EOS characters in comment */
            { if ('\n' == *s) *s = 0;
@@ -476,7 +476,7 @@ int	ngp_extract_tokens(NGP_RAW_LINE *cl)
        cl->type = NGP_TTYPE_UNKNOWN;
        return(NGP_OK);
      }
-       
+
    for (;; p++)
     { if ((0 == *p) || ('\n' == *p))  return(NGP_OK);	/* test if at end of string */
       if ((' ' == *p) || ('\t' == *p)) continue; /* skip whitespace */
@@ -484,7 +484,7 @@ int	ngp_extract_tokens(NGP_RAW_LINE *cl)
       if ('=' != *p) break;			/* ignore initial equal sign */
       cl_flags |= NGP_FOUND_EQUAL_SIGN;
     }
-      
+
    if ('/' == *p)				/* no value specified, comment only */
      { p++;
        if ((' ' == *p) || ('\t' == *p)) p++;
@@ -509,14 +509,14 @@ int	ngp_extract_tokens(NGP_RAW_LINE *cl)
                 { *s = 0; return(NGP_OK); }
               if (('\t' == p[1]) || (' ' == p[1])) /* duoblequote was string terminator */
                 { *s = 0; p++; break; }
-              if ('\'' == p[1]) p++;		/* doublequote is inside string, convert "" -> " */ 
+              if ('\'' == p[1]) p++;		/* doublequote is inside string, convert "" -> " */
             }
 
           *(s++) = *(p++);			/* compact string in place, necess. by "" -> " conversion */
         }
      }
    else						/* regular token */
-     { 
+     {
        cl->value = p;				/* set pointer to token */
        cl->type = NGP_TTYPE_UNKNOWN;		/* we dont know type at the moment */
        for (;; p++)				/* we need to find 1st whitespace */
@@ -526,12 +526,12 @@ int	ngp_extract_tokens(NGP_RAW_LINE *cl)
         }
        if (*p)  *(p++) = 0;			/* found so terminate string with zero */
      }
-       
+
    for (;; p++)
     { if ((0 == *p) || ('\n' == *p))  return(NGP_OK);	/* test if at end of string */
       if ((' ' != *p) && ('\t' != *p)) break;	/* skip whitespace */
     }
-      
+
    if ('/' == *p)				/* no value specified, comment only */
      { p++;
        if ((' ' == *p) || ('\t' == *p)) p++;
@@ -579,19 +579,19 @@ int	ngp_include_file(char *fname)		/* try to open include file */
 	      strcpy(cp, p2);
 #ifdef  MSDOS
               strcat(cp, "\\");			/* abs. pathname for MSDOS */
-               
+
 #else
               strcat(cp, "/");			/* and for unix */
 #endif
 	      strcat(cp, fname);
-	  
+
 	      ngp_fp[ngp_inclevel] = fopen(cp, "r");
 	      ngp_free(cp);
 
 	      if (NULL != ngp_fp[ngp_inclevel]) break;
 	    }
         }
-                                      
+
        if (NULL == ngp_fp[ngp_inclevel])	/* finally try to open relative to top level */
          {
 #ifdef  MSDOS
@@ -633,7 +633,7 @@ int	ngp_read_line(int ignore_blank_lines)
 
    if (ngp_inclevel <= 0)		/* do some sanity checking first */
      { ngp_keyidx = NGP_TOKEN_EOF;	/* no parents, so report error */
-       return(NGP_OK);	
+       return(NGP_OK);
      }
    if (ngp_inclevel > NGP_MAX_INCLUDE)  return(NGP_INC_NESTING);
    if (NULL == ngp_fp[ngp_inclevel - 1]) return(NGP_NUL_PTR);
@@ -648,7 +648,7 @@ int	ngp_read_line(int ignore_blank_lines)
 		ngp_fp[ngp_inclevel] = NULL;
 		if (ngp_inclevel <= 0)
 		  { ngp_keyidx = NGP_TOKEN_EOF;	/* no parents, so report error */
-		    return(NGP_OK);	
+		    return(NGP_OK);
 		  }
 		continue;
 
@@ -658,19 +658,19 @@ int	ngp_read_line(int ignore_blank_lines)
 	 default:
 		return(r);
        }
-      
+
       switch (ngp_curline.line[0])
        { case 0: if (0 == ignore_blank_lines) break; /* ignore empty lines if told so */
          case '#': continue;			/* ignore comment lines */
        }
-      
+
       r = ngp_extract_tokens(&ngp_curline);	/* analyse line, extract tokens and comment */
       if (NGP_OK != r) return(r);
 
       if (NULL == ngp_curline.name)  continue;	/* skip lines consisting only of whitespaces */
 
       for (k = 0; k < strlen(ngp_curline.name); k++)
-       { if ((ngp_curline.name[k] >= 'a') && (ngp_curline.name[k] <= 'z')) 
+       { if ((ngp_curline.name[k] >= 'a') && (ngp_curline.name[k] <= 'z'))
            ngp_curline.name[k] += 'A' - 'a';	/* force keyword to be upper case */
          if (k == 7) break;  /* only first 8 chars are required to be upper case */
        }
@@ -746,10 +746,10 @@ int	ngp_read_line(int ignore_blank_lines)
       ngp_linkey.name[NGP_MAX_NAME - 1] = 0;
 
       if (strlen(ngp_linkey.name) > FLEN_KEYWORD)  /* WDP: 20-Jun-2002:  mod to support HIERARCH */
-        { 
+        {
            return(NGP_BAD_ARG);		/* cfitsio does not allow names > 8 chars */
         }
-      
+
       return(NGP_OK);			/* we have valid non empty line, so return success */
     }
  }
@@ -763,7 +763,7 @@ int	ngp_keyword_is_write(NGP_TOKEN *ngp_tok)
    static char *nm[] = { "NAXIS", "TFORM", "TTYPE", NULL } ;
 
                         /* non indexed variables not allowed to write */
-  
+
    static char *nmni[] = { "SIMPLE", "XTENSION", "BITPIX", "NAXIS", "PCOUNT",
                            "GCOUNT", "TFIELDS", "THEAP", "EXTEND", "EXTVER",
                            NULL } ;
@@ -773,14 +773,14 @@ int	ngp_keyword_is_write(NGP_TOKEN *ngp_tok)
    for (j = 0; ; j++)           /* first check non indexed */
     { if (NULL == nmni[j]) break;
       if (0 == strcmp(nmni[j], ngp_tok->name)) return(NGP_BAD_ARG);
-    } 
+    }
 
    for (j = 0; ; j++)           /* now check indexed */
     { if (NULL == nm[j]) return(NGP_OK);
       l = strlen(nm[j]);
       if ((l < 1) || (l > 5)) continue;
       if (0 == strncmp(nm[j], ngp_tok->name, l)) break;
-    } 
+    }
 
    if ((ngp_tok->name[l] < '1') || (ngp_tok->name[l] > '9')) return(NGP_OK);
    spc = 0;
@@ -807,7 +807,7 @@ int     ngp_keyword_all_write(NGP_HDU *ngph, fitsfile *ffp, int mode)
    if (NULL == ngph) return(NGP_NUL_PTR);
    if (NULL == ffp) return(NGP_NUL_PTR);
    r = NGP_OK;
-   
+
    for (i=0; i<ngph->tokcnt; i++)
     { r = ngp_keyword_is_write(&(ngph->tok[i]));
       if ((NGP_REALLY_ALL & mode) || (NGP_OK == r))
@@ -857,7 +857,7 @@ int     ngp_keyword_all_write(NGP_HDU *ngph, fitsfile *ffp, int mode)
         }
       if (r) return(r);
     }
-     
+
    fits_set_hdustruc(ffp, &r);				/* resync cfitsio */
    return(r);
  }
@@ -898,7 +898,7 @@ int	ngp_hdu_clear(NGP_HDU *ngph)
 
 int	ngp_hdu_insert_token(NGP_HDU *ngph, NGP_TOKEN *newtok)
  { NGP_TOKEN *tkp;
-   
+
    if (NULL == ngph) return(NGP_NUL_PTR);
    if (NULL == newtok) return(NGP_NUL_PTR);
 
@@ -908,7 +908,7 @@ int	ngp_hdu_insert_token(NGP_HDU *ngph, NGP_TOKEN *newtok)
      tkp = (NGP_TOKEN *)ngp_realloc(ngph->tok, (ngph->tokcnt + 1) * sizeof(NGP_TOKEN));
 
    if (NULL == tkp) return(NGP_NO_MEMORY);
-       
+
    ngph->tok = tkp;
    ngph->tok[ngph->tokcnt] = *newtok;
 
@@ -939,10 +939,10 @@ int	ngp_append_columns(fitsfile *ff, NGP_HDU *ngph, int aftercol)
    exitflg = 0;
 
    for (j=aftercol; j<NGP_MAX_ARRAY_DIM; j++)	/* 0 for table, 6 for group */
-    { 
+    {
       my_tform = NULL;
       my_ttype = "";
-    
+
       for (i=0; ; i++)
        { if (1 == sscanf(ngph->tok[i].name, "TFORM%d%c", &ngph_i, &ngph_ctmp))
            { if ((NGP_TTYPE_STRING == ngph->tok[i].type) && (ngph_i == (j + 1)))
@@ -954,9 +954,9 @@ int	ngp_append_columns(fitsfile *ff, NGP_HDU *ngph, int aftercol)
                { my_ttype = ngph->tok[i].value.s;
                }
            }
-         
+
          if ((NULL != my_tform) && (my_ttype[0])) break;
-         
+
          if (i < (ngph->tokcnt - 1)) continue;
          exitflg = 1;
          break;
@@ -993,18 +993,18 @@ int	ngp_read_xtension(fitsfile *ff, int parent_hn, int simple_mode)
        default:	if (NGP_TOKEN_SIMPLE != ngp_keyidx) return(NGP_TOKEN_NOT_EXPECT);
 		break;
      }
-       	
+
    if (NGP_OK != (r = ngp_hdu_insert_token(&ngph, &ngp_linkey))) return(r);
 
    for (;;)
     { if (NGP_OK != (r = ngp_read_line(0))) return(r);	/* EOF always means error here */
       exflg = 0;
       switch (ngp_keyidx)
-       { 
+       {
 	 case NGP_TOKEN_SIMPLE:
 	 		r = NGP_TOKEN_NOT_EXPECT;
 			break;
-	 		                        
+
 	 case NGP_TOKEN_END:
          case NGP_TOKEN_XTENSION:
          case NGP_TOKEN_GROUP:
@@ -1077,7 +1077,7 @@ int	ngp_read_xtension(fitsfile *ff, int parent_hn, int simple_mode)
 			if (NGP_XTENSION_FIRST == ((NGP_XTENSION_FIRST | NGP_XTENSION_SIMPLE) & simple_mode))
 			  { 		/* if caller signals that this is 1st HDU in file */
 					/* and it is IMAGE defined with XTENSION, then we */
-					/* need create dummy Primary HDU */			  
+					/* need create dummy Primary HDU */
 			    fits_create_img(ff, 16, 0, NULL, &r);
 			  }
 					/* create image */
@@ -1116,7 +1116,7 @@ int	ngp_read_xtension(fitsfile *ff, int parent_hn, int simple_mode)
    if ((NGP_OK == r) && (NULL != ngph_extname))
      { r = ngp_get_extver(ngph_extname, &my_version);	/* write correct ext version number */
        lv = my_version;		/* bugfix - 22-Jan-99, BO - nonalignment of OSF/Alpha */
-       fits_write_key(ff, TLONG, "EXTVER", &lv, "auto assigned by template parser", &r); 
+       fits_write_key(ff, TLONG, "EXTVER", &lv, "auto assigned by template parser", &r);
      }
 
    if (NGP_OK == r)
@@ -1206,7 +1206,7 @@ int	ngp_read_group(fitsfile *ff, char *grpname, int parent_hn)
 			        sprintf(ngp_linkey.name + l - 1, "%d", incrementor_index);
 			      }
 			  }
-         		r = ngp_hdu_insert_token(&ngph, &ngp_linkey); 
+         		r = ngp_hdu_insert_token(&ngph, &ngp_linkey);
 			break;			/* here we can add keyword */
        }
       if (NGP_OK != r) break;
@@ -1290,18 +1290,18 @@ int	fits_execute_template(fitsfile *ff, char *ngp_template, int *status)
        fits_movabs_hdu(ff, my_hn, &tmp0, status);
      }
    if (NGP_OK != *status) return(*status);
-                                                                          
+
    if (NGP_OK != (*status = ngp_include_file(ngp_template))) return(*status);
 
    for (i = strlen(ngp_template) - 1; i >= 0; i--) /* strlen is > 0, otherwise fopen failed */
-    { 
+    {
 #ifdef MSDOS
       if ('\\' == ngp_template[i]) break;
 #else
       if ('/' == ngp_template[i]) break;
 #endif
-    } 
-      
+    }
+
    i++;
    if (i > (NGP_MAX_FNAME - 1)) i = NGP_MAX_FNAME - 1;
 
@@ -1358,7 +1358,7 @@ int	fits_execute_template(fitsfile *ff, char *ngp_template, int *status)
    ngp_free_line();		/* deallocate last line (if any) */
    ngp_free_prevline();		/* deallocate cached line (if any) */
    ngp_delete_extver_tab();	/* delete extver table (if present), error ignored */
-   
+
    *status = r;
    return(r);
  }

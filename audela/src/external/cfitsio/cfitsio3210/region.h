@@ -34,7 +34,7 @@ typedef enum {
 } shapeType;
 
 typedef enum { pixel_fmt, degree_fmt, hhmmss_fmt } coordFmt;
-   
+
 typedef struct {
    char      sign;        /*  Include or exclude?        */
    shapeType shape;       /*  Shape of this region       */

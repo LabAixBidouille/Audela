@@ -36,7 +36,7 @@ int ffgpxv( fitsfile *fptr,   /* I - FITS file pointer                       */
 
     /* get the size of the image */
     ffgidm(fptr, &naxis, status);
-    
+
     for (ii=0; ii < naxis; ii++)
        tfirstpix[ii] = firstpix[ii];
 
@@ -702,37 +702,37 @@ int ffgpf(  fitsfile *fptr,   /* I - FITS file pointer                       */
 
     if (datatype == TBYTE)
     {
-        ffgpfb(fptr, 1, firstelem, nelem, 
+        ffgpfb(fptr, 1, firstelem, nelem,
                (unsigned char *) array, nullarray, anynul, status);
     }
     else if (datatype == TSBYTE)
     {
-        ffgpfsb(fptr, 1, firstelem, nelem, 
+        ffgpfsb(fptr, 1, firstelem, nelem,
                (signed char *) array, nullarray, anynul, status);
     }
     else if (datatype == TUSHORT)
     {
-        ffgpfui(fptr, 1, firstelem, nelem, 
+        ffgpfui(fptr, 1, firstelem, nelem,
                (unsigned short *) array, nullarray, anynul, status);
     }
     else if (datatype == TSHORT)
     {
-        ffgpfi(fptr, 1, firstelem, nelem, 
+        ffgpfi(fptr, 1, firstelem, nelem,
                (short *) array, nullarray, anynul, status);
     }
     else if (datatype == TUINT)
     {
-        ffgpfuk(fptr, 1, firstelem, nelem, 
+        ffgpfuk(fptr, 1, firstelem, nelem,
                (unsigned int *) array, nullarray, anynul, status);
     }
     else if (datatype == TINT)
     {
-        ffgpfk(fptr, 1, firstelem, nelem, 
+        ffgpfk(fptr, 1, firstelem, nelem,
                (int *) array, nullarray, anynul, status);
     }
     else if (datatype == TULONG)
     {
-        ffgpfuj(fptr, 1, firstelem, nelem, 
+        ffgpfuj(fptr, 1, firstelem, nelem,
                (unsigned long *) array, nullarray, anynul, status);
     }
     else if (datatype == TLONG)
@@ -747,7 +747,7 @@ int ffgpf(  fitsfile *fptr,   /* I - FITS file pointer                       */
     }
     else if (datatype == TFLOAT)
     {
-        ffgpfe(fptr, 1, firstelem, nelem, 
+        ffgpfe(fptr, 1, firstelem, nelem,
                (float *) array, nullarray, anynul, status);
     }
     else if (datatype == TDOUBLE)
@@ -853,7 +853,7 @@ int ffgcv(  fitsfile *fptr,   /* I - FITS file pointer                       */
                (unsigned long *) array, cdummy, anynul, status);
       else
         ffgcluj(fptr, colnum, firstrow, firstelem, nelem, 1, 1,
-               *(unsigned long *) nulval, 
+               *(unsigned long *) nulval,
                (unsigned long *) array, cdummy, anynul, status);
     }
     else if (datatype == TLONG)
@@ -904,10 +904,10 @@ int ffgcv(  fitsfile *fptr,   /* I - FITS file pointer                       */
     else if (datatype == TDBLCOMPLEX)
     {
       if (nulval == 0)
-        ffgcld(fptr, colnum, firstrow, (firstelem - 1) * 2 + 1, nelem * 2, 
+        ffgcld(fptr, colnum, firstrow, (firstelem - 1) * 2 + 1, nelem * 2,
          1, 1, 0., (double *) array, cdummy, anynul, status);
       else
-        ffgcld(fptr, colnum, firstrow, (firstelem - 1) * 2 + 1, nelem * 2, 
+        ffgcld(fptr, colnum, firstrow, (firstelem - 1) * 2 + 1, nelem * 2,
          1, 1, *(double *) nulval, (double *) array, cdummy, anynul, status);
     }
 
@@ -925,7 +925,7 @@ int ffgcv(  fitsfile *fptr,   /* I - FITS file pointer                       */
       if (nulval == 0)
       {
         cdummy[0] = '\0';
-        ffgcls(fptr, colnum, firstrow, firstelem, nelem, 1, 
+        ffgcls(fptr, colnum, firstrow, firstelem, nelem, 1,
              cdummy, (char **) array, cdummy, anynul, status);
       }
       else
@@ -1003,7 +1003,7 @@ int ffgcf(  fitsfile *fptr,   /* I - FITS file pointer                       */
     else if (datatype == TULONG)
     {
         ffgcluj(fptr, colnum, firstrow, firstelem, nelem, 1, 2,
-               *(unsigned long *) nulval, 
+               *(unsigned long *) nulval,
                (unsigned long *) array, nullarray, anynul, status);
     }
     else if (datatype == TLONG)
@@ -1033,7 +1033,7 @@ int ffgcf(  fitsfile *fptr,   /* I - FITS file pointer                       */
     }
     else if (datatype == TDBLCOMPLEX)
     {
-        ffgcfm(fptr, colnum, firstrow, firstelem, nelem, 
+        ffgcfm(fptr, colnum, firstrow, firstelem, nelem,
            (double *) array, nullarray, anynul, status);
     }
 

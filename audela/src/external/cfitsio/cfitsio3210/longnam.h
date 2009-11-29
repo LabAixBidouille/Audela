@@ -14,7 +14,7 @@
 #define fits_parse_rangell    ffrwrgll
 #define fits_open_memfile   ffomem
 
-/* 
+/*
    use the following special macro to test that the fitsio.h include
    file that was used to build the CFITSIO library is the same version
    as included when compiling the application program
@@ -69,7 +69,7 @@
 #define fits_write_key          ffpky
 #define fits_write_key_unit     ffpunt
 #define fits_write_comment      ffpcom
-#define fits_write_history      ffphis 
+#define fits_write_history      ffphis
 #define fits_write_date         ffpdat
 #define fits_get_system_time    ffgstm
 #define fits_get_system_date    ffgsdt
@@ -564,22 +564,22 @@
 #define fits_calculator_rng     ffcalc_rng
 #define fits_test_expr          fftexp
 
-#define fits_create_group       ffgtcr 
-#define fits_insert_group       ffgtis 
-#define fits_change_group       ffgtch 
-#define fits_remove_group       ffgtrm 
-#define fits_copy_group         ffgtcp 
-#define fits_merge_groups       ffgtmg 
-#define fits_compact_group      ffgtcm 
-#define fits_verify_group       ffgtvf 
-#define fits_open_group         ffgtop 
-#define fits_add_group_member   ffgtam 
-#define fits_get_num_members    ffgtnm 
+#define fits_create_group       ffgtcr
+#define fits_insert_group       ffgtis
+#define fits_change_group       ffgtch
+#define fits_remove_group       ffgtrm
+#define fits_copy_group         ffgtcp
+#define fits_merge_groups       ffgtmg
+#define fits_compact_group      ffgtcm
+#define fits_verify_group       ffgtvf
+#define fits_open_group         ffgtop
+#define fits_add_group_member   ffgtam
+#define fits_get_num_members    ffgtnm
 
-#define fits_get_num_groups     ffgmng 
-#define fits_open_member        ffgmop 
-#define fits_copy_member        ffgmcp 
-#define fits_transfer_member    ffgmtf 
+#define fits_get_num_groups     ffgmng
+#define fits_open_member        ffgmop
+#define fits_copy_member        ffgmcp
+#define fits_transfer_member    ffgmtf
 #define fits_remove_member      ffgmrm
 
 #endif

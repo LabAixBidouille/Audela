@@ -110,7 +110,7 @@ int ffgcll( fitsfile *fptr,   /* I - FITS file pointer                       */
     if (anynul)
        *anynul = 0;
 
-    if (nultyp == 2)      
+    if (nultyp == 2)
        memset(nularray, 0, (size_t) nelem);   /* initialize nullarray */
 
     /*---------------------------------------------------*/
@@ -121,9 +121,9 @@ int ffgcll( fitsfile *fptr,   /* I - FITS file pointer                       */
         &repeat, &rowlen, &hdutype, &tnull, snull, status) > 0)
         return(*status);
 
-    if (tcode != TLOGICAL)   
+    if (tcode != TLOGICAL)
         return(*status = NOT_LOGICAL_COL);
- 
+
     /*------------------------------------------------------------------*/
     /*  Decide whether to check for null values in the input FITS file: */
     /*------------------------------------------------------------------*/
@@ -145,9 +145,9 @@ int ffgcll( fitsfile *fptr,   /* I - FITS file pointer                       */
     {
       /*
          limit the number of pixels to read at one time to the number that
-         remain in the current vector.    
+         remain in the current vector.
       */
-      ntodo = (long) minvalue(ntodo, maxelem);      
+      ntodo = (long) minvalue(ntodo, maxelem);
       ntodo = (long) minvalue(ntodo, (repeat - elemnum));
 
       readptr = startpos + (rowlen * rownum) + (elemnum * incre);
@@ -160,7 +160,7 @@ int ffgcll( fitsfile *fptr,   /* I - FITS file pointer                       */
       {
         if (*buffptr == 'T')
           array[next] = 1;
-        else if (*buffptr =='F') 
+        else if (*buffptr =='F')
           array[next] = 0;
         else if (*buffptr == 0)
         {
@@ -221,7 +221,7 @@ int ffgcx(  fitsfile *fptr,  /* I - FITS file pointer                       */
   read an array of logical values from a specified bit or byte
   column of the binary table.    larray is set = TRUE, if the corresponding
   bit = 1, otherwise it is set to FALSE.
-  The binary table column being read from must have datatype 'B' or 'X'. 
+  The binary table column being read from must have datatype 'B' or 'X'.
 */
 {
     LONGLONG bstart;
@@ -249,7 +249,7 @@ int ffgcx(  fitsfile *fptr,  /* I - FITS file pointer                       */
 
     /* rescan header if data structure is undefined */
     else if ((fptr->Fptr)->datastart == DATA_UNDEFINED)
-        if ( ffrdef(fptr, status) > 0)               
+        if ( ffrdef(fptr, status) > 0)
             return(*status);
 
     fbyte = (long) ((fbit + 7) / 8);
@@ -325,7 +325,7 @@ int ffgcx(  fitsfile *fptr,  /* I - FITS file pointer                       */
       if (!descrp)
       {
         estart++;
-        if (estart == repeat) 
+        if (estart == repeat)
         {
           /* move the i/o pointer to the next row of pixels */
           estart = 0;
@@ -351,7 +351,7 @@ int ffgcxui(fitsfile *fptr,   /* I - FITS file pointer                       */
 /*
   Read a consecutive string of bits from an 'X' or 'B' column and
   interprete them as an unsigned integer.  The number of bits must be
-  less than or equal to 16 or the total number of bits in the column, 
+  less than or equal to 16 or the total number of bits in the column,
   which ever is less.
 */
 {
@@ -393,7 +393,7 @@ int ffgcxui(fitsfile *fptr,   /* I - FITS file pointer                       */
 
     /* rescan header if data structure is undefined */
     else if ((fptr->Fptr)->datastart == DATA_UNDEFINED)
-        if ( ffrdef(fptr, status) > 0)               
+        if ( ffrdef(fptr, status) > 0)
             return(*status);
 
     if ((fptr->Fptr)->hdutype != BINARY_TBL)
@@ -412,7 +412,7 @@ int ffgcxui(fitsfile *fptr,   /* I - FITS file pointer                       */
         ffpmsg(message);
 
         return(*status = BAD_COL_NUM);
-    }       
+    }
 
     colptr  = (fptr->Fptr)->tableptr;   /* point to first column */
     colptr += (colnum - 1);     /* offset to correct column structure */
@@ -427,7 +427,7 @@ int ffgcxui(fitsfile *fptr,   /* I - FITS file pointer                       */
     lastbyte  = (input_first_bit + input_nbits - 2) / 8 + 1;
     nbytes = lastbyte - firstbyte + 1;
 
-    if (colptr->tdatatype == TBIT && 
+    if (colptr->tdatatype == TBIT &&
         input_first_bit + input_nbits - 1 > (long) colptr->trepeat)
     {
         ffpmsg("Too many bits. Tried to read past width of column (ffgcxui)");
@@ -442,7 +442,7 @@ int ffgcxui(fitsfile *fptr,   /* I - FITS file pointer                       */
     for (ii = 0; ii < nrows; ii++)
     {
         /* read the relevant bytes from the row */
-        if (ffgcvui(fptr, colnum, firstrow+ii, firstbyte, nbytes, 0, 
+        if (ffgcvui(fptr, colnum, firstrow+ii, firstbyte, nbytes, 0,
                colbyte, NULL, status) > 0)
         {
              ffpmsg("Error reading bytes from column (ffgcxui)");
@@ -459,7 +459,7 @@ int ffgcxui(fitsfile *fptr,   /* I - FITS file pointer                       */
         {
             bytenum = firstbit / 8;
 
-            startbit = firstbit % 8;  
+            startbit = firstbit % 8;
             numbits = minvalue(nbits, 8 - startbit);
             endbit = startbit + numbits - 1;
 
@@ -488,7 +488,7 @@ int ffgcxuk(fitsfile *fptr,   /* I - FITS file pointer                       */
 /*
   Read a consecutive string of bits from an 'X' or 'B' column and
   interprete them as an unsigned integer.  The number of bits must be
-  less than or equal to 32 or the total number of bits in the column, 
+  less than or equal to 32 or the total number of bits in the column,
   which ever is less.
 */
 {
@@ -530,7 +530,7 @@ int ffgcxuk(fitsfile *fptr,   /* I - FITS file pointer                       */
 
     /* rescan header if data structure is undefined */
     else if ((fptr->Fptr)->datastart == DATA_UNDEFINED)
-        if ( ffrdef(fptr, status) > 0)               
+        if ( ffrdef(fptr, status) > 0)
             return(*status);
 
     if ((fptr->Fptr)->hdutype != BINARY_TBL)
@@ -549,7 +549,7 @@ int ffgcxuk(fitsfile *fptr,   /* I - FITS file pointer                       */
         ffpmsg(message);
 
         return(*status = BAD_COL_NUM);
-    }       
+    }
 
     colptr  = (fptr->Fptr)->tableptr;   /* point to first column */
     colptr += (colnum - 1);     /* offset to correct column structure */
@@ -564,7 +564,7 @@ int ffgcxuk(fitsfile *fptr,   /* I - FITS file pointer                       */
     lastbyte  = (input_first_bit + input_nbits - 2) / 8 + 1;
     nbytes = lastbyte - firstbyte + 1;
 
-    if (colptr->tdatatype == TBIT && 
+    if (colptr->tdatatype == TBIT &&
         input_first_bit + input_nbits - 1 > (long) colptr->trepeat)
     {
         ffpmsg("Too many bits. Tried to read past width of column (ffgcxuk)");
@@ -579,7 +579,7 @@ int ffgcxuk(fitsfile *fptr,   /* I - FITS file pointer                       */
     for (ii = 0; ii < nrows; ii++)
     {
         /* read the relevant bytes from the row */
-        if (ffgcvuk(fptr, colnum, firstrow+ii, firstbyte, nbytes, 0, 
+        if (ffgcvuk(fptr, colnum, firstrow+ii, firstbyte, nbytes, 0,
                colbyte, NULL, status) > 0)
         {
              ffpmsg("Error reading bytes from column (ffgcxuk)");
@@ -596,7 +596,7 @@ int ffgcxuk(fitsfile *fptr,   /* I - FITS file pointer                       */
         {
             bytenum = firstbit / 8;
 
-            startbit = firstbit % 8;  
+            startbit = firstbit % 8;
             numbits = minvalue(nbits, 8 - startbit);
             endbit = startbit + numbits - 1;
 

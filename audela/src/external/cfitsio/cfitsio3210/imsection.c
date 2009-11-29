@@ -4,7 +4,7 @@
 
 int main(int argc, char *argv[])
 {
-    fitsfile *infptr, *outfptr; 
+    fitsfile *infptr, *outfptr;
     int status = 0;
     char infile[180], extspec[30], section[100];
 
@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 
     fits_parse_input_url(argv[1], NULL, infile, NULL, extspec, section,
        NULL, NULL, &status);
-       
+
     /* if no section is specified, take whole image */
     if (strlen(section) == 0) strcpy(section, "*,*");
 
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
         strcat(infile, extspec);
         strcat(infile, "]");
     }
-    
+
     /* open the input file */
     fits_open_file(&infptr, infile, READONLY, &status);
 

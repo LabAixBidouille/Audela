@@ -13,21 +13,21 @@ int ffwldp(double xpix, double ypix, double xref, double yref,
 /*  worldpos.c -- WCS Algorithms from Classic AIPS.
     Copyright (C) 1994
     Associated Universities, Inc. Washington DC, USA.
-   
+
     This library is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public License as published by
     the Free Software Foundation; either version 2 of the License, or (at your
     option) any later version.
-   
+
     This library is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
     License for more details.
-   
+
     You should have received a copy of the GNU Library General Public License
     along with this library; if not, write to the Free Software Foundation,
     Inc., 675 Massachusetts Ave, Cambridge, MA 02139, USA.
-   
+
     Correspondence concerning AIPS should be addressed as follows:
            Internet email: aipsmail@nrao.edu
            Postal address: AIPS Group
@@ -42,8 +42,8 @@ int ffwldp(double xpix, double ypix, double xref, double yref,
     geometries ("-SIN", "-TAN", "-ARC", "-NCP", "-GLS", "-MER", "-AIT"
     and "-STG"):
 
-        worldpos() converts from pixel location to RA,Dec 
-        xypix()    converts from RA,Dec         to pixel location   
+        worldpos() converts from pixel location to RA,Dec
+        xypix()    converts from RA,Dec         to pixel location
 
     where "(RA,Dec)" are more generically (long,lat). These functions
     are based on the WCS implementation of Classic AIPS, an
@@ -65,9 +65,9 @@ int ffwldp(double xpix, double ypix, double xref, double yref,
     case of SIN).  WCS syntax and semantics for various advanced
     features is discussed in the draft WCS proposal by Greisen and
     Calabretta at:
-    
+
         ftp://fits.cv.nrao.edu/fits/documents/wcs/wcs.all.ps.Z
-    
+
                 -=-=-=-
 
     The original version of this code was Emailed to D.Wells on
@@ -80,10 +80,10 @@ int ffwldp(double xpix, double ypix, double xref, double yref,
     3) changed float-->double to get more than 7 significant figures
     4) testpos.c circularity test failed on MER and AIT. B.Cotton
        found that "..there were a couple of lines of code [in] the wrong
-       place as a result of merging several Fortran routines." 
+       place as a result of merging several Fortran routines."
     5) testpos.c found 0h wraparound in xypix() and worldpos().
     6) E.Greisen recommended removal of various redundant if-statements,
-       and addition of a 360d difference test to MER case of worldpos(). 
+       and addition of a 360d difference test to MER case of worldpos().
 */
 
 /*-----------------------------------------------------------------------*/
@@ -154,7 +154,7 @@ int ffwldp(double xpix, double ypix, double xref, double yref,
       rat =  ra0 + l;
       dect = dec0 + m;
       break;
-    case 1:   /* -SIN sin*/ 
+    case 1:   /* -SIN sin*/
       if (sins>1.0) return(*status = 501);
       coss = sqrt (1.0 - sins);
       dt = sin0 * coss + cos0 * m;
@@ -291,7 +291,7 @@ int ffwldp(double xpix, double ypix, double xref, double yref,
   return(*status);
 }  /* End of worldpos */
 /*--------------------------------------------------------------------------*/
-int ffxypx(double xpos, double ypos, double xref, double yref, 
+int ffxypx(double xpos, double ypos, double xref, double yref,
       double xrefpix, double yrefpix, double xinc, double yinc, double rot,
       char *type, double *xpix, double *ypix, int *status)
 /* WDP  1/97: changed name of routine from xypix to ffxypx    */
@@ -371,7 +371,7 @@ int ffxypx(double xpos, double ypos, double xref, double yref,
 
 /* process by case  */
   switch (itype) {
-    case 1:   /* -SIN sin*/ 
+    case 1:   /* -SIN sin*/
          if (sint<0.0) return(*status = 501);
          m = sins * cos(dec0) - coss * sin(dec0) * cos(ra-ra0);
       break;
@@ -397,7 +397,7 @@ int ffxypx(double xpos, double ypos, double xref, double yref,
          if (m<-1.0) m = -1.0;
          if (m>1.0) m = 1.0;
          m = acos (m);
-         if (m!=0) 
+         if (m!=0)
             m = m / sin(m);
          else
             m = 1.0;
@@ -405,7 +405,7 @@ int ffxypx(double xpos, double ypos, double xref, double yref,
          m = (sins * cos(dec0) - coss * sin(dec0) * cos(ra-ra0)) * m;
       break;
     case 4:   /* -NCP North celestial pole*/
-         if (dec0==0.0) 
+         if (dec0==0.0)
 	     return(*status = 501);  /* can't stand the equator */
          else
 	   m = (cos(dec0) - coss * cos(ra-ra0)) / sin(dec0);

@@ -367,65 +367,65 @@ static unsigned outcnt;     /* bytes in output buffer */
 
 /* prototype for the following functions */
 int uncompress_main(
-             int  uncompress_type,             
-             char *filename,  
-             FILE *indiskfile,  
-             FILE *outdiskfile, 
+             int  uncompress_type,
+             char *filename,
+             FILE *indiskfile,
+             FILE *outdiskfile,
 
-             char *inmemptr,  
-             size_t inmemsize, 
+             char *inmemptr,
+             size_t inmemsize,
 
-             char **buffptr, 
-             size_t *buffsize,  
+             char **buffptr,
+             size_t *buffsize,
              void *(*mem_realloc)(void *p, size_t newsize),
-             size_t *filesize,  
+             size_t *filesize,
              int *status);
-int uncompress2mem(char *filename, 
-             FILE *diskfile, 
-             char **buffptr, 
-             size_t *buffsize, 
+int uncompress2mem(char *filename,
+             FILE *diskfile,
+             char **buffptr,
+             size_t *buffsize,
              void *(*mem_realloc)(void *p, size_t newsize),
              size_t *filesize,
              int *status);
 
-int uncompress2mem_from_mem(                                                
-             char *inmemptr,     
-             size_t inmemsize, 
-             char **buffptr,  
-             size_t *buffsize,  
-             void *(*mem_realloc)(void *p, size_t newsize), 
-             size_t *filesize,  
+int uncompress2mem_from_mem(
+             char *inmemptr,
+             size_t inmemsize,
+             char **buffptr,
+             size_t *buffsize,
+             void *(*mem_realloc)(void *p, size_t newsize),
+             size_t *filesize,
              int *status);
 
-int uncompress2file(char *filename, 
-             FILE *indiskfile, 
-             FILE *outdiskfile, 
+int uncompress2file(char *filename,
+             FILE *indiskfile,
+             FILE *outdiskfile,
              int *status);
 
-int compress_main(                                                
+int compress_main(
              int compress_type,
              char *inmemptr,
              size_t inmemsize,
-             FILE *outdiskfile,   
-             char **buffptr, 
-             size_t *buffsize, 
-             void *(*mem_realloc)(void *p, size_t newsize), 
-             size_t *filesize,  
-             int *status);
-	     
-int compress2mem_from_mem(                                                
-             char *inmemptr,     
-             size_t inmemsize, 
-             char **buffptr,  
-             size_t *buffsize,  
-             void *(*mem_realloc)(void *p, size_t newsize), 
-             size_t *filesize,  
+             FILE *outdiskfile,
+             char **buffptr,
+             size_t *buffsize,
+             void *(*mem_realloc)(void *p, size_t newsize),
+             size_t *filesize,
              int *status);
 
-int compress2file_from_mem(                                                
-             char *inmemptr,     
-             size_t inmemsize, 
-             FILE *outdiskfile, 
+int compress2mem_from_mem(
+             char *inmemptr,
+             size_t inmemsize,
+             char **buffptr,
+             size_t *buffsize,
+             void *(*mem_realloc)(void *p, size_t newsize),
+             size_t *filesize,
+             int *status);
+
+int compress2file_from_mem(
+             char *inmemptr,
+             size_t inmemsize,
+             FILE *outdiskfile,
              size_t *filesize,   /* O - size of file, in bytes              */
              int *status);
 
@@ -464,13 +464,13 @@ int uncompress2mem(char *filename,  /* name of input file                 */
     if (*status > 0)
         return(*status);
 
-    uncompress_main(1, filename, diskfile, NULL, NULL, (size_t) NULL, 
+    uncompress_main(1, filename, diskfile, NULL, NULL, (size_t) NULL,
         buffptr, buffsize, mem_realloc, filesize, status);
-    
+
     return(*status);
 }
 /*--------------------------------------------------------------------------*/
-int uncompress2mem_from_mem(                                                
+int uncompress2mem_from_mem(
              char *inmemptr,     /* I - memory pointer to compressed bytes */
              size_t inmemsize,   /* I - size of input compressed file      */
              char **buffptr,   /* IO - memory pointer                      */
@@ -501,7 +501,7 @@ int uncompress2file(char *filename,  /* name of input file                  */
              int *status)        /* IO - error status                       */
 
 /*
-  Uncompress the file into file. 
+  Uncompress the file into file.
 */
 {
     if (*status > 0)
@@ -514,7 +514,7 @@ int uncompress2file(char *filename,  /* name of input file                  */
 }
 /*--------------------------------------------------------------------------*/
 int uncompress_main(
-             int  uncompress_type,             
+             int  uncompress_type,
              char *filename,       /* name of input file                 */
              FILE *indiskfile,     /* I - file pointer                        */
              FILE *outdiskfile,    /* I - output file pointer               */
@@ -522,7 +522,7 @@ int uncompress_main(
              char *inmemptr,     /* I - memory pointer to compressed bytes */
              size_t inmemsize,   /* I - size of input compressed file      */
 
-             
+
              char **buffptr,   /* IO - memory pointer                     */
              size_t *buffsize,   /* IO - size of buffer, in bytes           */
              void *(*mem_realloc)(void *p, size_t newsize), /* function     */
@@ -579,7 +579,7 @@ int uncompress_main(
 
     part_nb = 0;
 
-    method = get_method(ifd); 
+    method = get_method(ifd);
     if (method < 0)
     {
         FFUNLOCK;
@@ -610,7 +610,7 @@ int uncompress_main(
 }
 
 /*--------------------------------------------------------------------------*/
-int compress2mem_from_mem(                                                
+int compress2mem_from_mem(
              char *inmemptr,     /* I - memory pointer to uncompressed bytes */
              size_t inmemsize,   /* I - size of input uncompressed file      */
              char **buffptr,   /* IO - memory pointer for compressed file    */
@@ -634,14 +634,14 @@ int compress2mem_from_mem(
     return(*status);
 }
 /*--------------------------------------------------------------------------*/
-int compress2file_from_mem(                                                
+int compress2file_from_mem(
              char *inmemptr,     /* I - memory pointer to uncompressed bytes */
              size_t inmemsize,   /* I - size of input uncompressed file      */
-             FILE *outdiskfile, 
+             FILE *outdiskfile,
              size_t *filesize,   /* O - size of file, in bytes              */
              int *status)
 /*
-  Compress the memory file into disk file. 
+  Compress the memory file into disk file.
 */
 {
     if (*status > 0)
@@ -653,12 +653,12 @@ int compress2file_from_mem(
     return(*status);
 }
 /*--------------------------------------------------------------------------*/
-int compress_main(                                                
+int compress_main(
              int compress_type,
              char *inmemptr,     /* I - memory pointer to uncompressed bytes */
              size_t inmemsize,   /* I - size of input uncompressed file      */
 
-             FILE *outdiskfile,   
+             FILE *outdiskfile,
 
              char **buffptr,   /* IO - memory pointer for compressed file    */
              size_t *buffsize,   /* IO - size of buffer, in bytes           */
@@ -668,7 +668,7 @@ int compress_main(
              int *status)        /* IO - error status                       */
 
 /*
-  Compress the file into memory or to a File. 
+  Compress the file into memory or to a File.
 */
 {
     uch  flags = 0;         /* general purpose bit flags */
@@ -688,7 +688,7 @@ int compress_main(
         memptr = (void **) buffptr;
         memsize = buffsize;
         realloc_fn = mem_realloc;
-    
+
     } else if (compress_type == 2) {
 
         in_memptr =  inmemptr;
@@ -708,16 +708,16 @@ int compress_main(
 
     part_nb = 0;
 
-    method = DEFLATED; 
+    method = DEFLATED;
 
     /* write gzip header bytes */
 
     put_byte(GZIP_MAGIC[0]); /* magic header */
     put_byte(GZIP_MAGIC[1]);
     put_byte(DEFLATED);      /* compression method */
-    put_byte(flags);         
+    put_byte(flags);
 
-/* 
+/*
  just write zero as dummy value for the timestamp
     put_long(time_stamp);
 */
@@ -1066,7 +1066,7 @@ local void write_buf(buf, cnt)
             error("malloc failed while uncompressing (write_buf)");
             exit_code = ERROR;
             return;
-        }  
+        }
       }
       /* copy  into memory buffer */
       memcpy((char *) *memptr + bytes_out, (char *) buf, cnt);
@@ -1281,7 +1281,7 @@ local void make_table(nchar, bitlen, tablebits, table)
     if ((start[17] & 0xffff) != 0 || tablebits > 16) /* 16 for weight below */
     {
 	error("Bad table (case b)\n");
- 
+
         exit_code = ERROR;
         return;
     }
@@ -1631,22 +1631,22 @@ typedef unsigned short	count_short;
 typedef unsigned long 	cmp_code_int;
 
 #define MAXCODE(n)	(1L << (n))
-    
+
 #ifndef	REGISTERS
 #	define	REGISTERS	2
 #endif
-#define	REG1	
-#define	REG2	
-#define	REG3	
-#define	REG4	
-#define	REG5	
-#define	REG6	
-#define	REG7	
-#define	REG8	
-#define	REG9	
+#define	REG1
+#define	REG2
+#define	REG3
+#define	REG4
+#define	REG5
+#define	REG6
+#define	REG7
+#define	REG8
+#define	REG9
 #define	REG10
-#define	REG11	
-#define	REG12	
+#define	REG11
+#define	REG12
 #define	REG13
 #define	REG14
 #define	REG15
@@ -1715,11 +1715,11 @@ typedef unsigned long 	cmp_code_int;
 #	undef	REG16
 #	define	REG16	register
 #endif
-    
+
 #ifndef	BYTEORDER
 #	define	BYTEORDER	0000
 #endif
-	
+
 #ifndef	NOALLIGN
 #	define	NOALLIGN	0
 #endif
@@ -1788,7 +1788,7 @@ int block_mode = BLOCK_MODE; /* block compress mode -C compatible with 2.0 */
  *   The magic header has already been checked and skipped.
  *   bytes_in and bytes_out have been initialized.
  */
-local int unlzw(in, out) 
+local int unlzw(in, out)
     FILE *in, *out;    /* input and output file descriptors */
 {
     REG2   char_type  *stackp;
@@ -1806,7 +1806,7 @@ local int unlzw(in, out)
     REG14  code_int   maxmaxcode;
     REG15  int        n_bits;
     REG16  int        rsize;
-    
+
     ofd = out;
 
 #ifdef MAXSEG_64K
@@ -1820,7 +1820,7 @@ local int unlzw(in, out)
     }
     maxbits &= BIT_MASK;
     maxmaxcode = MAXCODE(maxbits);
-    
+
     if (maxbits > BITS) {
 	error("compressed with too many bits; cannot handle file");
 	exit_code = ERROR;
@@ -1835,9 +1835,9 @@ local int unlzw(in, out)
     posbits = inptr<<3;
 
     free_ent = ((block_mode) ? FIRST : 256);
-    
+
     clear_tab_prefixof(); /* Initialize the first 256 entries in the table. */
-    
+
     for (code = 255 ; code >= 0 ; --code) {
 	tab_suffixof(code) = (char_type)code;
     }
@@ -1845,16 +1845,16 @@ local int unlzw(in, out)
 	REG1 int i;
 	int  e;
 	int  o;
-	
+
     resetbuf:
 	e = insize-(o = (posbits>>3));
-	
+
 	for (i = 0 ; i < e ; ++i) {
 	    inbuf[i] = inbuf[i+o];
 	}
 	insize = e;
 	posbits = 0;
-	
+
 	if (insize < INBUF_EXTRA) {
 /*  modified to use fread instead of read - WDP 10/22/97  */
 /*	    if ((rsize = read(in, (char*)inbuf+insize, INBUFSIZ)) == EOF) { */
@@ -1867,9 +1867,9 @@ local int unlzw(in, out)
 	    insize += rsize;
 	    bytes_in += (ulg)rsize;
 	}
-	inbits = ((rsize != 0) ? ((long)insize - insize%n_bits)<<3 : 
+	inbits = ((rsize != 0) ? ((long)insize - insize%n_bits)<<3 :
 		  ((long)insize<<3)-(n_bits-1));
-	
+
 	while (inbits > posbits) {
 	    if (free_ent > maxcode) {
 		posbits = ((posbits-1) +
@@ -1907,7 +1907,7 @@ local int unlzw(in, out)
 	    }
 	    incode = code;
 	    stackp = de_stack;
-	    
+
 	    if (code >= free_ent) { /* Special case for KwKwK string. */
 		if (code > free_ent) {
 		    if (outpos > 0) {
@@ -1929,11 +1929,11 @@ local int unlzw(in, out)
 		code = tab_prefixof(code);
 	    }
 	    *--stackp =	(char_type)(finchar = tab_suffixof(code));
-	    
+
 	    /* And put them out in forward order */
 	    {
 	/*	REG1 int	i;   already defined above (WDP) */
-	    
+
 		if (outpos+(i = (de_stack-stackp)) >= OUTBUFSIZ) {
 		    do {
 			if (i > OUTBUFSIZ-outpos) i = OUTBUFSIZ-outpos;
@@ -1960,11 +1960,11 @@ local int unlzw(in, out)
 		tab_prefixof(code) = (unsigned short)oldcode;
 		tab_suffixof(code) = (char_type)finchar;
 		free_ent = code+1;
-	    } 
+	    }
 	    oldcode = incode;	/* Remember previous code.	*/
 	}
     } while (rsize != 0);
-    
+
     if (outpos > 0) {
 	write_buf((char*)outbuf, outpos);
 	bytes_out += (ulg)outpos;
@@ -2458,7 +2458,7 @@ local int unzip(in, out)
    chunks), otherwise the dynamic method is used.  In the latter case, the
    codes are customized to the probabilities in the current block, and so
    can code it much better than the pre-determined fixed codes.
- 
+
    The Huffman codes themselves are decoded using a mutli-level table
    lookup, in order to maximize the speed of decoding plus the speed of
    building the decoding tables.  See the comments below that precede the
@@ -2508,7 +2508,7 @@ static ush cpdext[] = {         /* Extra bits for distance codes */
 
 /* Macros for inflate() bit peeking and grabbing.
    The usage is:
-   
+
         NEEDBITS(j)
         x = b & mask_bits[j];
         DUMPBITS(j)
@@ -2636,7 +2636,7 @@ int *m;                 /* maximum lookup bits, returns actual */
   memzero(c, sizeof(c));
   p = b;  i = n;
   do {
-    Tracecv(*p, (stderr, (n-i >= ' ' && n-i <= '~' ? "%c %d\n" : "0x%x %d\n"), 
+    Tracecv(*p, (stderr, (n-i >= ' ' && n-i <= '~' ? "%c %d\n" : "0x%x %d\n"),
 	    n-i, *p));
     c[*p]++;                    /* assume all entries <= BMAX */
     p++;                      /* Can't combine with above line (Solaris bug) */
@@ -2819,7 +2819,7 @@ struct huft *t;         /* table to free */
     q = (--p)->v.t;
     free((char*)p);
     p = q;
-  } 
+  }
   return 0;
 }
 
@@ -2851,7 +2851,7 @@ int bl, bd;             /* number of bits decoded by tl[] and td[] */
   for (;;)                      /* do until end of block */
   {
 
-/* 
+/*
 The NEEDBITS macro (which calls NEXTBYTE, which calls get_byte, which
 finally calls fill_inbuf) has no way to return an error in the case of
 unexpected EOF.  The original gunzip program simply exits in this case,
@@ -2861,7 +2861,7 @@ infinite loop then we will return with an error.
 WDP - Nov 1999.
 */
 
-nloop++;               
+nloop++;
 if (nloop > 500000)
 {
   error("'inflate_codes' is in infinite loop; corrupt compressed file??");
@@ -3903,7 +3903,7 @@ local ulg deflate_fast()
                      * the next lookahead bytes will be emitted as literals.
                      */
                 } while (--match_length != 0);
-	        strstart++; 
+	        strstart++;
             } else {
 	        strstart += match_length;
 	        match_length = 0;
@@ -3918,7 +3918,7 @@ local ulg deflate_fast()
             Tracevv((stderr,"%c",window[strstart]));
             flush = ct_tally (0, window[strstart]);
             lookahead--;
-	    strstart++; 
+	    strstart++;
         }
         if (flush) FLUSH_BLOCK(0), block_start = strstart;
 
@@ -4372,7 +4372,7 @@ void ct_init(attr, methodp)
 
     file_method = methodp;
     compressed_len = input_len = 0L;
-        
+
     if (static_dtree[0].Len != 0) return; /* ct_init already called */
 
     /* Initialize the mapping length (0..255) -> length code (0..28) */
@@ -5272,7 +5272,7 @@ void copy_block(buf, len, header)
     bi_windup();              /* align on byte boundary */
 
     if (header) {
-        put_short((ush)len);   
+        put_short((ush)len);
         put_short((ush)~len);
 #ifdef DEBUG
         bits_sent += 2*16;
