@@ -1,13 +1,15 @@
+# Makefile trampoline vers le repertoire sextractor situe dessous (heritage du passe)
+
 .PHONY: build install clean distclean
 
 build:
-	@make -C sextractor/linux
+	$(MAKE) -C sextractor/linux
 
-install: build
-	cp -f sextractor/linux/sex ../../../bin
+install:
+	$(MAKE) -C sextractor/linux install
 
 clean:
-	@make -C sextractor/linux clean
+	$(MAKE) -C sextractor/linux clean
 
-distclean: clean
-	rm -f *~ *.bak
+distclean: 
+	$(MAKE) -C sextractor/linux distclean
