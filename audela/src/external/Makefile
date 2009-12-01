@@ -11,7 +11,7 @@ $(MYTARGETS):
 	mkdir -p lib
 	(cd $@; make ; make install)
 
-clean cleanall install:
+clean cleanall distclean install:
 	@$(foreach DIR, $(MYTARGETS), make -C $(DIR) $@ ; )
 
 
