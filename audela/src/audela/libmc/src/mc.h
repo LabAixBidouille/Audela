@@ -509,6 +509,7 @@ typedef struct {
    int id;
 	double ra;
 	double dec;
+	double mag;
 	double mura;
 	double mudec;
 	double plx;
@@ -855,7 +856,10 @@ double mc_GetUsnoRedMagnitude(int magL);
 int mc_util_astrom_radec2xy(mc_ASTROM *p,double ra,double dec, double *x,double *y);
 int mc_util_astrom_xy2radec(mc_ASTROM *p, double x,double y,double *ra,double *dec);
 int mc_fitspline(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *ff);
+int mc_interplin1(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *ff);
+char *mc_d2s(double val);
 int mc_scheduler1(double jd, double longmpc, double rhocosphip, double rhosinphip);
+int mc_readhip(char *hip_main_file, char *bits, double *values, int *nstars, mc_cata_astrom *hips);
 
 
 /***************************************************************************/
@@ -1062,6 +1066,10 @@ int mc_htm2radec(char *htm,double *ra,double *dec,int *niter,double *ra0,double 
 MC_UTIL2.C
 int mc_fitspline(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *ff);
    Fit by splines with smooth
+int mc_interplin1(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *ff);
+   Interpolation lineaire
+char *mc_d2s(double val)
+   Double to String conversion with many digits
 */
 
 /***************************************************************************/
@@ -1271,6 +1279,9 @@ double mc_GetUsnoBleueMagnitude(int magL);
 double mc_GetUsnoRedMagnitude(int magL);
 int mc_util_astrom_radec2xy(TT_ASTROM *p,double ra,double dec, double *x,double *y);
 int mc_util_astrom_xy2radec(mc_ASTROM *p, double x,double y,double *ra,double *dec);
+
+MC_CATA1.C
+int mc_readhip(char *hip_main_file, char *bits, double *values, int *nstars, mc_cata_astrom *hips);
 */
 
 /***************************************************************************/

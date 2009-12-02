@@ -152,6 +152,12 @@
 
  int Cmd_mctcl_astrology(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
+ int Cmd_mctcl_readhip(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+ int Cmd_mctcl_nearesthip(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+ int Cmd_mctcl_hip2tel(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+ int Cmd_mctcl_listamers(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+ int Cmd_mctcl_horizon(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+
 /*--- Point d'entree de la DLL */
 #ifdef LIBRARY_DLL
    __declspec(dllexport) int __cdecl Mc_Init(Tcl_Interp *interp);
