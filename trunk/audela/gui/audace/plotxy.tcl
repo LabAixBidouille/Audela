@@ -2,7 +2,7 @@
 # Fichier : plotxy.tcl
 # Description : Realisation de graphes a partir de 2 listes de nombres
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: plotxy.tcl,v 1.6 2008-01-03 22:05:08 robertdelmas Exp $
+# Mise a jour $Id: plotxy.tcl,v 1.7 2009-12-02 08:22:05 alainklotz Exp $
 #
 # La syntaxe est la plus proche possible de Matlab
 #
@@ -58,7 +58,7 @@ namespace eval ::plotxy {
             set plotxy(fig$num,ydir) normal
             set plotxy(fig$num,xdir) normal
             if {$plotxy(audace)==1} {
-               set plotxy(fig$num,plotbackground) $audace(color,entryTextColor)
+               set plotxy(fig$num,plotbackground) $audace(color,backColor)
                set plotxy(fig$num,bgcolor)        $audace(color,backColor)
                set plotxy(fig$num,fgcolor)        $audace(color,textColor)
                set plotxy(fig$num,caption) "$caption(plotxy,figure) $num"
