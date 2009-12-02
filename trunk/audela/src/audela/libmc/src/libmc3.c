@@ -22,6 +22,1228 @@
 
 #include "libmc.h"
 
+int Cmd_mctcl_readhip(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Read the Hiparcos catalog                                                */
+/****************************************************************************/
+/*
+set List_hip [mc_readhip c:/d/meo/hip_main.dat -double_stars 0 -plx_max 100 -mu_max 100 -mag_max 35 -mag_min 3 -dec_max 15 -dec_min -5 -max_nbstars 10]
+*/
+/****************************************************************************/
+{
+	char s[1024],filename[1024];
+	int nstars,k,max_nbstars=0;
+	double values[32];
+	char flags[32];
+	double equinox=2451545.00000,epoch=2448349.06250;
+	mc_cata_astrom *hips;
+   Tcl_DString dsptr;
+   if(argc<2) {
+      sprintf(s,"Usage: %s Filename ?-double_stars 0|1? ?-plx_max mas? ?-mu_max mas/yr? ?-mag_max mag? ?-mag_min mag? ?-dec_max deg? ?-dec_min deg? ?-max_nbstars int?", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+ 	   return TCL_ERROR;
+   } else {
+		strcpy(flags,"0000000");
+		values[0]=0;
+		values[1]=200000;
+		values[2]=200000;
+		values[3]=24;
+		values[4]=-24;
+		values[5]=90;
+		values[6]=-90;
+	   Tcl_DStringInit(&dsptr);
+		strcpy(filename,argv[1]);
+		if (argc>=3) {
+			for (k=2;k<argc-1;k++) {
+				if (strcmp(argv[k],"-double_stars")==0) { flags[0]='1'; values[0]=atof(argv[k+1]); }
+				if (strcmp(argv[k],"-plx_max")==0)      { flags[1]='1'; values[1]=atof(argv[k+1]); }
+				if (strcmp(argv[k],"-mu_max")==0)       { flags[2]='1'; values[2]=atof(argv[k+1]); }
+				if (strcmp(argv[k],"-mag_max")==0)      { flags[3]='1'; values[3]=atof(argv[k+1]); }
+				if (strcmp(argv[k],"-mag_min")==0)      { flags[4]='1'; values[4]=atof(argv[k+1]); }
+				if (strcmp(argv[k],"-dec_max")==0)      { flags[5]='1'; values[5]=atof(argv[k+1]); }
+				if (strcmp(argv[k],"-dec_min")==0)      { flags[6]='1'; values[6]=atof(argv[k+1]); }
+				if (strcmp(argv[k],"-max_nbstars")==0)  { max_nbstars=atoi(argv[k+1]); }
+			}
+		}
+		hips=NULL;
+		mc_readhip(filename,flags,values,&nstars,hips);
+		if (nstars>0) {
+			hips=(mc_cata_astrom*)calloc(nstars,sizeof(mc_cata_astrom));
+			mc_readhip(filename,flags,values,&nstars,hips);
+			if ((nstars>max_nbstars)&&(max_nbstars>0)) {
+				nstars=max_nbstars;
+			}
+			for (k=0;k<nstars;k++) {
+				sprintf(s,"%d ",hips[k].id);
+				strcat(s,mc_d2s(hips[k].mag));
+				strcat(s," ");
+				strcat(s,mc_d2s(hips[k].ra));
+				strcat(s," ");
+				strcat(s,mc_d2s(hips[k].dec));
+				strcat(s," ");
+				strcat(s,mc_d2s(equinox));
+				strcat(s," ");
+				strcat(s,mc_d2s(epoch));
+				strcat(s," ");
+				strcat(s,mc_d2s(hips[k].mura));
+				strcat(s," ");
+				strcat(s,mc_d2s(hips[k].mudec));
+				strcat(s," ");
+				strcat(s,mc_d2s(hips[k].plx));
+				Tcl_DStringAppendElement(&dsptr,s);
+			}
+		}
+      Tcl_DStringResult(interp,&dsptr);
+      Tcl_DStringFree(&dsptr);
+		free(hips);
+	}
+	return TCL_OK;
+}
+
+int Cmd_mctcl_horizon(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Retourne la ligne d'horizon                                              */
+/****************************************************************************/
+/*
+mc_horizon Type_coords List_coords
+
+Type_coords = "HADEC" ou "ALTAZ"
+
+List_coords = {dec ha_rise ha_set} ou {az elev} (degrees)
+
+Sortie : {az elev} pour az=0 à 360 par pas de 1 deg.
+
+Exemple :
+
+set res [mc_horizon {GPS 5 E 43 1230} ALTAZ { {0 0} {90 15} {135 15} {150 16} {170 20} {180 35} {190 20} {225 15} {270 10} }]
+
+set ros(trireq,horizon,coords) ""
+lappend ros(trireq,horizon,coords) [list -38 350 10]
+lappend ros(trireq,horizon,coords) [list -30 [mc_angle2deg 23h00] [mc_angle2deg 2h55]]
+lappend ros(trireq,horizon,coords) [list -15 [mc_angle2deg 20h50] [mc_angle2deg 4h50]]
+lappend ros(trireq,horizon,coords) [list   0 [mc_angle2deg 19h35] [mc_angle2deg 5h30]]
+lappend ros(trireq,horizon,coords) [list  20 [mc_angle2deg 19h30] [mc_angle2deg 7h00]]
+lappend ros(trireq,horizon,coords) [list  30 [mc_angle2deg 19h10] [mc_angle2deg 8h15]]
+lappend ros(trireq,horizon,coords) [list  40 [mc_angle2deg 16h35] [mc_angle2deg 8h50]]
+set res [mc_horizon {GPS 5 E 43 1230} HADEC $ros(trireq,horizon,coords)]
+set xs [lindex $res 0]
+set ys [lindex $res 1]
+::plotxy::plot $xs $ys r
+*/
+/****************************************************************************/
+{
+	char s[1024];
+	char **argvv=NULL;
+	char **argvvv=NULL;
+	int argcc,argccc;
+	int type=0,code,kc,ncoords;
+   Tcl_DString dsptr;
+	double *coord1s=NULL,*coord2s=NULL,*coord3s=NULL;
+	int *kcoords=NULL,*kazs,naz,nhaz=360;
+	double *azs,*elevs,*dummys;
+	double *hazs,*helevs;
+   double rhocosphip=0.,rhosinphip=0.,longmpc=0.;
+   double latitude,altitude,latrad,az,h,ha,dec;
+	double decmin,decmax,deccirc;
+	int *kdecs,ndec,nhdec=180,kk,kcc;
+	double *decs,*ha_rises,*ha_sets;
+	double *hdecs,*hha_rises,*hha_sets;
+	double ha_set_lim,ha_rise_lim;
+
+   if(argc<2) {
+      sprintf(s,"Usage: %s Home Type_coords List_coords", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+ 	   return TCL_ERROR;
+   } else {
+	   Tcl_DStringInit(&dsptr);
+      /* --- decode le Home ---*/
+      longmpc=0.;
+      rhocosphip=0.;
+      rhosinphip=0.;
+      mctcl_decode_topo(interp,argv[1],&longmpc,&rhocosphip,&rhosinphip);
+		mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
+		latrad=latitude*(DR);
+      /* --- decode le type de coordonnees d'entree ---*/
+		mc_strupr(argv[2],s);
+		if (s[0]=='A') {
+			type=1;
+		}
+      /* --- decode les coordonnees ---*/
+      code=Tcl_SplitList(interp,argv[3],&argcc,&argvv);
+		ncoords=argcc;
+		kcoords=(int*)calloc(ncoords,sizeof(int));
+		coord1s=(double*)calloc(ncoords,sizeof(double));
+		coord2s=(double*)calloc(ncoords,sizeof(double));
+		coord3s=(double*)calloc(ncoords,sizeof(double));
+		for (kc=0;kc<ncoords;kc++) {
+	      code=Tcl_SplitList(interp,argvv[kc],&argccc,&argvvv);
+			kcoords[kc]=kc;
+			if (argccc>=1) { coord1s[kc]=atof(argvvv[0]); }
+			if (argccc>=2) { coord2s[kc]=atof(argvvv[1]); }
+			if (argccc>=3) { coord3s[kc]=atof(argvvv[2]); }
+			if (argvvv!=NULL) { Tcl_Free((char *) argvvv); }
+		}
+		/* ============= */
+		/* === altaz === */
+		/* ============= */
+		if (type==0) {
+			naz=2*ncoords;
+		} else {
+			naz=ncoords;
+		}
+		kazs=(int*)calloc(naz+2,sizeof(int));
+		azs=(double*)calloc(naz+2,sizeof(double));
+		elevs=(double*)calloc(naz+2,sizeof(double));
+		dummys=(double*)calloc(naz+2,sizeof(double));
+		hazs=(double*)calloc(nhaz+2,sizeof(double));
+		helevs=(double*)calloc(nhaz+2,sizeof(double));
+		if (type==0) {
+			for (kc=0;kc<ncoords;kc++) {
+				mc_hd2ah(coord2s[kc]*(DR),coord1s[kc]*(DR),latrad,&az,&h);
+				azs[2*kc+1]=az/(DR);
+				elevs[2*kc+1]=h/(DR);
+				kazs[2*kc+1]=2*kc+1;
+				mc_hd2ah(coord3s[kc]*(DR),coord1s[kc]*(DR),latrad,&az,&h);
+				azs[2*kc+2]=az/(DR);
+				elevs[2*kc+2]=h/(DR);
+				kazs[2*kc+2]=2*kc+2;
+			}
+		} else {
+			for (kc=0;kc<ncoords;kc++) {
+				azs[kc+1]=coord1s[kc];
+				elevs[kc+1]=coord2s[kc];
+				kazs[kc+1]=kc+1;
+			}
+		}
+      /* --- tri az croissant ---*/
+		mc_quicksort_double(azs,1,naz,kazs);
+		for (kc=1;kc<=naz;kc++) {
+			dummys[kc]=elevs[kazs[kc]];
+		}
+		for (kc=1;kc<=naz;kc++) {
+			elevs[kc]=dummys[kc];
+			dummys[kc]=0.1;
+		}
+		azs[0]=azs[naz]-360.;
+		elevs[0]=elevs[naz];
+		dummys[0]=dummys[naz];
+		azs[naz+1]=azs[1]+360.;
+		elevs[naz+1]=elevs[1];
+		dummys[naz+1]=dummys[1];
+		/* --- resultats altaz bruts ---*/
+		/*
+		Tcl_DStringAppend(&dsptr,"{",-1);
+		for (kc=1;kc<naz;kc++) {
+			sprintf(s,"%s ",mc_d2s(azs[kc]));
+			Tcl_DStringAppend(&dsptr,s,-1);
+		}
+		Tcl_DStringAppend(&dsptr,"} {",-1);
+		for (kc=1;kc<naz;kc++) {
+			sprintf(s,"%s ",mc_d2s(elevs[kc]));
+			Tcl_DStringAppend(&dsptr,s,-1);
+		}
+		Tcl_DStringAppend(&dsptr,"} ",-1);
+		*/
+		/* --- call the computation ---*/
+		for (kc=1;kc<=nhaz+1;kc++) {
+			hazs[kc]=(kc-1)*360./nhaz;
+		}
+		mc_interplin1(0,naz+1,azs,elevs,dummys,0.5,nhaz,hazs,helevs);
+		/* --- resultats altaz recheantillonnes ---*/
+		Tcl_DStringAppend(&dsptr,"{",-1);
+		for (kc=1;kc<=nhaz;kc++) {
+			sprintf(s,"%s ",mc_d2s(hazs[kc]));
+			Tcl_DStringAppend(&dsptr,s,-1);
+		}
+		Tcl_DStringAppend(&dsptr,"} {",-1);
+		for (kc=1;kc<=nhaz;kc++) {
+			sprintf(s,"%s ",mc_d2s(helevs[kc]));
+			Tcl_DStringAppend(&dsptr,s,-1);
+		}
+		Tcl_DStringAppend(&dsptr,"} ",-1);
+		/* --- libere les pointeurs ---*/
+		free(dummys);
+		/* ============= */
+		/* === hadec === */
+		/* ============= */
+		if (latitude>0) {
+			decmin=latitude-90;
+			decmax=90;
+			deccirc=90-latitude;
+		} else {
+			decmax=90+latitude;
+			decmin=-90;
+			deccirc=-90-latitude;
+		}
+		if (type==0) {
+			ndec=ncoords;
+		} else {
+			ndec=nhaz/2;
+		}
+		kdecs=(int*)calloc(ndec+4,sizeof(int));
+		decs=(double*)calloc(ndec+4,sizeof(double));
+		ha_sets=(double*)calloc(ndec+4,sizeof(double));
+		ha_rises=(double*)calloc(ndec+4,sizeof(double));
+		dummys=(double*)calloc(ndec+4,sizeof(double));
+		hdecs=(double*)calloc(nhdec+2,sizeof(double));
+		hha_rises=(double*)calloc(nhdec+2,sizeof(double));
+		hha_sets=(double*)calloc(nhdec+2,sizeof(double));
+		/* --- input type ALTAZ, we use the output altaz results ---*/
+		if (type==1) {
+			decs[0]=-90;
+			if (latitude>0) {
+				ha_rises[0]=360;
+				ha_sets[0]=0;
+			} else {
+				ha_rises[0]=180;
+				ha_sets[0]=180;
+			}
+			kdecs[0]=0;
+			if (latitude>0) {
+				decs[1]=decmin;
+				ha_rises[1]=360;
+				ha_sets[1]=0;
+			} else {
+				decs[1]=decs[0];
+				ha_rises[1]=ha_rises[0];
+				ha_sets[1]=ha_rises[0];
+			}
+			kdecs[1]=1;
+			// [ 2 -> 2+ndec-1 ]
+			if (latitude>0) {
+				decs[2+ndec]=90;
+				ha_rises[2+ndec]=180;
+				ha_sets[2+ndec]=180;
+			} else {
+				decs[2+ndec]=decmax;
+				ha_rises[2+ndec]=360;
+				ha_sets[2+ndec]=0;
+			}
+			kdecs[2+ndec]=2+ndec;
+			decs[2+ndec+1]=90;
+			if (latitude>0) {
+				ha_rises[2+ndec+1]=180;
+				ha_sets[2+ndec+1]=180;
+			} else {
+				ha_rises[2+ndec+1]=360;
+				ha_sets[2+ndec+1]=0;
+			}
+			kdecs[2+ndec+1]=2+ndec+1;
+			/* --- HA rise (kk=0) set (kk=1) ---*/
+			for (kk=0;kk<2;kk++) {
+				if (kk==0) {
+					for (kc=0;kc<nhaz/2;kc++) {
+						kcc=kc+nhaz/2+1;
+						mc_ah2hd(hazs[kcc]*(DR),helevs[kcc]*(DR),latrad,&ha,&dec);
+						decs[kc+2]=dec/(DR);
+						ha_rises[kc+2]=ha/(DR);
+						kdecs[kc+2]=kc+2;
+					}
+				}
+				if (kk==1) {
+					for (kc=0;kc<nhaz/2;kc++) {
+						kcc=kc+1;
+						mc_ah2hd(hazs[kcc]*(DR),helevs[kcc]*(DR),latrad,&ha,&dec);
+						decs[kc+2]=dec/(DR);
+						ha_sets[kc+2]=ha/(DR);
+						kdecs[kc+2]=kc+2;
+					}
+				}
+			}
+			/* --- tri dec croissant ---*/
+			mc_quicksort_double(decs,0,ndec+3,kdecs);
+			if (kk==0) {
+				for (kc=0;kc<ndec+4;kc++) {
+					dummys[kc]=ha_rises[kdecs[kc]];
+				}
+				for (kc=0;kc<ndec+4;kc++) {
+					ha_rises[kc]=dummys[kc];
+					dummys[kc]=0.1;
+				}
+			}
+			if (kk==1) {
+				for (kc=0;kc<ndec+4;kc++) {
+					dummys[kc]=ha_sets[kdecs[kc]];
+				}
+				for (kc=0;kc<ndec+4;kc++) {
+					ha_sets[kc]=dummys[kc];
+					dummys[kc]=0.1;
+				}
+			}
+			/* --- call the computation ---*/
+			for (kc=1;kc<nhdec+1;kc++) {
+				hdecs[kc]=(kc-1)*180./nhdec-90.;
+			}
+			if ((kk==0)) {
+				mc_interplin1(0,ndec+3,decs,ha_rises,dummys,0.5,nhdec,hdecs,hha_rises);
+			}
+			if ((kk==1)) {
+				mc_interplin1(0,ndec+3,decs,ha_sets,dummys,0.5,nhdec,hdecs,hha_sets);
+			}
+		}
+		/* --- input type HADEC, we use the input hadec parameters ---*/
+		if (type==0) {
+			ha_set_lim=180;
+			ha_rise_lim=180;
+			for (kc=0;kc<ncoords;kc++) {
+				dec=coord1s[kc];
+				if ((latitude>0)&&(dec>deccirc)) {
+					deccirc=dec;
+				}
+				if ((latitude>0)&&(dec>=90)) {
+					ha_rise_lim=coord2s[kc];
+					ha_set_lim=coord3s[kc];
+				}
+				if ((latitude<0)&&(dec<deccirc)) {
+					deccirc=dec;
+				}
+				if ((latitude<0)&&(dec<=-90)) {
+					ha_rise_lim=coord2s[kc];
+					ha_set_lim=coord3s[kc];
+				}
+			}
+			decs[0]=-90;
+			if (latitude>0) {
+				ha_rises[0]=360;
+				ha_sets[0]=0;
+			} else {
+				ha_rises[0]=ha_rise_lim;
+				ha_sets[0]=ha_set_lim;
+			}
+			kdecs[0]=0;
+			if (latitude>0) {
+				decs[1]=decmin;
+				ha_rises[1]=360;
+				ha_sets[1]=0;
+			} else {
+				decs[1]=deccirc;
+				ha_rises[1]=180;
+				ha_sets[1]=180;
+			}
+			kdecs[1]=1;
+			// [ 2 -> 2+ndec-1 ]
+			if (latitude>0) {
+				decs[2+ndec]=deccirc;
+				ha_rises[2+ndec]=180;
+				ha_sets[2+ndec]=180;
+			} else {
+				decs[2+ndec]=decmax;
+				ha_rises[2+ndec]=360;
+				ha_sets[2+ndec]=0;
+			}
+			kdecs[2+ndec]=2+ndec;
+			decs[2+ndec+1]=90;
+			if (latitude>0) {
+				ha_rises[2+ndec+1]=ha_rise_lim;
+				ha_sets[2+ndec+1]=ha_set_lim;
+			} else {
+				ha_rises[2+ndec+1]=360;
+				ha_sets[2+ndec+1]=0;
+			}
+			kdecs[2+ndec+1]=2+ndec+1;
+			for (kc=0;kc<ncoords;kc++) {
+				decs[kc+2]=coord1s[kc];
+				ha_rises[kc+2]=coord2s[kc];
+				ha_sets[kc+2]=coord3s[kc];
+				kdecs[kc+2]=kc+2;
+			}
+			/* --- tri dec croissant ---*/
+			mc_quicksort_double(decs,0,ndec+3,kdecs);
+			for (kc=0;kc<ndec+4;kc++) {
+				dummys[kc]=ha_rises[kdecs[kc]];
+			}
+			for (kc=0;kc<ndec+4;kc++) {
+				ha_rises[kc]=dummys[kc];
+			}
+			for (kc=0;kc<ndec+4;kc++) {
+				dummys[kc]=ha_sets[kdecs[kc]];
+			}
+			for (kc=0;kc<ndec+4;kc++) {
+				ha_sets[kc]=dummys[kc];
+				dummys[kc]=0.1;
+			}
+			/* --- resultats hadec bruts ---*/
+			/*
+			Tcl_DStringAppend(&dsptr,"{",-1);
+			for (kc=1;kc<ndec;kc++) {
+				sprintf(s,"%s ",mc_d2s(decs[kc]));
+				Tcl_DStringAppend(&dsptr,s,-1);
+			}
+			Tcl_DStringAppend(&dsptr,"} {",-1);
+			for (kc=1;kc<ndec;kc++) {
+				sprintf(s,"%s ",mc_d2s(ha_sets[kc]));
+				Tcl_DStringAppend(&dsptr,s,-1);
+			}
+			Tcl_DStringAppend(&dsptr,"} {",-1);
+			for (kc=1;kc<ndec;kc++) {
+				sprintf(s,"%s ",mc_d2s(ha_rises[kc]));
+				Tcl_DStringAppend(&dsptr,s,-1);
+			}
+			Tcl_DStringAppend(&dsptr,"} ",-1);
+			*/
+			/* --- call the computation ---*/
+			for (kc=1;kc<nhdec+1;kc++) {
+				hdecs[kc]=(kc-1)*180./nhdec-90.;
+			}
+			mc_interplin1(0,ndec+3,decs,ha_rises,dummys,0.5,nhdec,hdecs,hha_rises);
+			mc_interplin1(0,ndec+3,decs,ha_sets,dummys,0.5,nhdec,hdecs,hha_sets);
+		}
+		/* --- resultats altaz recheantillonnes ---*/
+		Tcl_DStringAppend(&dsptr,"{",-1);
+		for (kc=1;kc<=nhdec;kc++) {
+			sprintf(s,"%s ",mc_d2s(hdecs[kc]));
+			Tcl_DStringAppend(&dsptr,s,-1);
+		}
+		Tcl_DStringAppend(&dsptr,"} {",-1);
+		for (kc=1;kc<=nhdec;kc++) {
+			sprintf(s,"%s ",mc_d2s(hha_sets[kc]));
+			Tcl_DStringAppend(&dsptr,s,-1);
+		}
+		Tcl_DStringAppend(&dsptr,"} {",-1);
+		for (kc=1;kc<=nhdec;kc++) {
+			sprintf(s,"%s ",mc_d2s(hha_rises[kc]));
+			Tcl_DStringAppend(&dsptr,s,-1);
+		}
+		Tcl_DStringAppend(&dsptr,"} ",-1);
+		/* --- libere les pointeurs ---*/
+		free(elevs);
+		free(azs);
+		free(kazs);
+		free(helevs);
+		free(hazs);
+		free(ha_rises);
+		free(ha_sets);
+		free(decs);
+		free(kdecs);
+		free(hha_rises);
+		free(hha_sets);
+		free(hdecs);
+		free(dummys);
+		/* === libere les pointeurs generaux === */
+      Tcl_DStringResult(interp,&dsptr);
+      Tcl_DStringFree(&dsptr);
+		if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+		free(coord1s);
+		free(coord2s);
+		free(coord3s);
+		free(kcoords);
+	}
+	return TCL_OK;
+}
+
+int Cmd_mctcl_nearesthip(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* List of the nearest stars in the Hiparcos catalog                        */
+/****************************************************************************/
+/*
+set List_hip [mc_readhip c:/d/meo/hip_main.dat -double_stars 0 -plx_max 100 -mu_max 100 -mag_max 35 -mag_min 3 -dec_max 15 -dec_min -5 -max_nbstars 20]
+mc_nearesthip 120.45 -60.23 $List_hip -max_nbstars 10
+*/
+/****************************************************************************/
+{
+	char s[1024];
+	int nstars,k,max_nbstars=0;
+	double equinox=2451545.00000,epoch=2448349.06250;
+	mc_cata_astrom *hips;
+	double ra,dec,ra0,dec0,c,cosd0,sind0;
+	char **argvv=NULL;
+	char **argvvv=NULL;
+	int argcc,argccc;
+	double *arr;
+	int *karr,code,ks;
+   Tcl_DString dsptr;
+
+   if(argc<4) {
+      sprintf(s,"Usage: %s Angle_Ra Angle_Dec List_Hip ?-max_nbstars nbstars?", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+ 	   return TCL_ERROR;
+   } else {
+	   Tcl_DStringInit(&dsptr);
+      /* --- decode l'angle RA ---*/
+      mctcl_decode_angle(interp,argv[1],&ra0);
+      ra0*=(DR);
+      /* --- decode l'angle DEC ---*/
+      mctcl_decode_angle(interp,argv[2],&dec0);
+      dec0*=(DR);
+		cosd0=cos(dec0);
+		sind0=sin(dec0);
+      /* --- decode le catalogue ---*/
+      code=Tcl_SplitList(interp,argv[3],&argcc,&argvv);
+		nstars=argcc;
+		hips=(mc_cata_astrom*)calloc(nstars,sizeof(mc_cata_astrom));
+		arr=(double*)calloc(nstars,sizeof(double));
+		karr=(int*)calloc(nstars,sizeof(int));
+		for (ks=0;ks<nstars;ks++) {
+	      code=Tcl_SplitList(interp,argvv[ks],&argccc,&argvvv);
+			if (argccc>=1) { hips[ks].id  = atoi(argvvv[0]); }
+			if (argccc>=2) { hips[ks].mag = atof(argvvv[1]); }
+			if (argccc>=3) { hips[ks].ra  = atof(argvvv[2]); }
+			if (argccc>=4) { hips[ks].dec = atof(argvvv[3]); }
+			if (argccc>=7) { hips[ks].mura = atoi(argvvv[6]); }
+			if (argccc>=8) { hips[ks].mudec = atoi(argvvv[7]); }
+			if (argccc>=9) { hips[ks].plx = atoi(argvvv[8]); }
+			if (argvvv!=NULL) { Tcl_Free((char *) argvvv); }
+			karr[ks]=ks;
+	      /* --- sepangle ---*/
+			ra= hips[ks].ra*(DR);
+			dec= hips[ks].dec*(DR);
+			c=(sind0*sin(dec)+cosd0*cos(dec)*cos(ra0-ra));
+			if (c<-1.) {c=-1.;}
+			if (c>1.) {c=1.;}
+			c=acos(c);
+			arr[ks]=c;
+		}
+	   if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+		/* --- decode les options ---*/
+		if (argc>=6) {
+			for (k=4;k<argc-1;k++) {
+				if (strcmp(argv[k],"-max_nbstars")==0)  { max_nbstars=atoi(argv[k+1]); }
+			}
+		}
+      /* --- tri sepangle croissant ---*/
+		mc_quicksort_double(arr,0,nstars-1,karr);
+      /* --- sortie des resultats ---*/
+		if ((nstars>max_nbstars)&&(max_nbstars>0)) {
+			nstars=max_nbstars;
+		}
+		for (ks=0;ks<nstars;ks++) {
+			k=karr[ks];
+			sprintf(s,"%d ",hips[k].id);
+			strcat(s,mc_d2s(hips[k].mag));
+			strcat(s," ");
+			strcat(s,mc_d2s(hips[k].ra));
+			strcat(s," ");
+			strcat(s,mc_d2s(hips[k].dec));
+			strcat(s," ");
+			strcat(s,mc_d2s(equinox));
+			strcat(s," ");
+			strcat(s,mc_d2s(epoch));
+			strcat(s," ");
+			strcat(s,mc_d2s(hips[k].mura));
+			strcat(s," ");
+			strcat(s,mc_d2s(hips[k].mudec));
+			strcat(s," ");
+			strcat(s,mc_d2s(hips[k].plx));
+			strcat(s," ");
+			strcat(s,mc_d2s(arr[ks]/(DR)));
+			Tcl_DStringAppendElement(&dsptr,s);
+		}
+      Tcl_DStringResult(interp,&dsptr);
+      Tcl_DStringFree(&dsptr);
+		free(hips);
+		free(arr);
+		free(karr);
+	}
+	return TCL_OK;
+}
+
+int Cmd_mctcl_listamers(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Compute a list of amer positions to perform a regular grid for a pointing model */
+/****************************************************************************/
+/*
+mc_listamers EQUATORIAL 10 4 now {GPS 5 E 43 1230}
+mc_listamers ALTAZ 12 3 now {GPS 5 E 43 1230} 7.5 367.5 10 90
+
+set List_hip [mc_readhip c:/d/meo/hip_main.dat -double_stars 0 -plx_max 100 -mu_max 100 -mag_max 35 -mag_min 3 -dec_min -45]
+set n [llength $List_hip]
+
+set coords [lindex [mc_listamers EQUATORIAL 10 4 now {GPS 5 E 43 1230}] 0]
+set ra [lindex $coords 0]
+set dec [lindex $coords 1]
+set hip [mc_nearesthip $ra $dec $List_hip -max_nbstars 5]
+mc_hip2tel [lindex $hip 0] now {GPS 5 E 43 1230} 101325 290
+*/
+{
+	char s[1024];
+	int type=0; // =0 equatorial, =1 altaz
+	int naxis1,k1,naxis2,k2,k;
+	double mini1,maxi1,mini2,maxi2,d1,d2,c1,c2;
+   double rhocosphip=0.,rhosinphip=0.,longmpc=0.;
+   double latitude,altitude,latrad,jd,ra,dec,ha,az,h;
+   Tcl_DString dsptr;
+	double *hazs,*helevs,*hdecs,*hha_rises,*hha_sets;
+	int hnaz,hndec,valid;
+	char **argvv=NULL,**argvvv=NULL;
+	int argcc,argccc,code;
+
+   if(argc<6) {
+      sprintf(s,"Usage: %s type_axis naxis1 naxis2 Date Home ?mini1 maxi1 mini2 maxi2?", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+ 	   return TCL_ERROR;
+   } else {
+	   Tcl_DStringInit(&dsptr);
+      /* --- decode les coordonnees catalogue ---*/
+		mc_strupr(argv[1],s);
+		if (s[0]=='A') {
+			type=1;
+		}
+		naxis1=atoi(argv[2]);
+		naxis2=atoi(argv[3]);
+      /* --- decode la Date ---*/
+	  	mctcl_decode_date(interp,argv[4],&jd);
+      /* --- decode le Home ---*/
+      longmpc=0.;
+      rhocosphip=0.;
+      rhosinphip=0.;
+      mctcl_decode_topo(interp,argv[5],&longmpc,&rhocosphip,&rhosinphip);
+		mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
+		latrad=latitude*(DR);
+		/* --- limits ---*/
+		mini1=0;
+		maxi1=360.;
+		if (type==1) {
+			mini2=0.;
+			maxi2=90.;
+		} else {
+			if (latitude>=0) {
+				mini2=latitude-90.;
+				maxi2=90.;
+			} else {
+				mini2=-90.;
+				maxi2=90.+latitude;
+			}
+		}
+		if (argc>9) {
+			if (strcmp(argv[6],"*")!=0) { mini1=atof(argv[6]); }
+			if (strcmp(argv[7],"*")!=0) { maxi1=atof(argv[7]); }
+			if (strcmp(argv[8],"*")!=0) { mini2=atof(argv[8]); }
+			if (strcmp(argv[9],"*")!=0) { maxi2=atof(argv[9]); }
+		}
+		/* --- horizon ---*/
+		hnaz=0;
+		hndec=0;
+		if (argc>10) {
+	      code=Tcl_SplitList(interp,argv[10],&argcc,&argvv);
+			if (argcc>=5) {
+				/* --- az --*/
+				code=Tcl_SplitList(interp,argvv[0],&argccc,&argvvv);
+				hnaz=argccc;
+				hazs=(double*)calloc(hnaz,sizeof(double));
+				for (k=0;k<hnaz;k++) {
+					hazs[k]=atof(argvvv[k]);
+				}
+				if (argvvv!=NULL) { Tcl_Free((char *) argvvv); }
+				/* --- elev --*/
+				code=Tcl_SplitList(interp,argvv[1],&argccc,&argvvv);
+				hnaz=argccc;
+				helevs=(double*)calloc(hnaz,sizeof(double));
+				for (k=0;k<hnaz;k++) {
+					helevs[k]=atof(argvvv[k]);
+				}
+				if (argvvv!=NULL) { Tcl_Free((char *) argvvv); }
+				/* --- dec --*/
+				code=Tcl_SplitList(interp,argvv[2],&argccc,&argvvv);
+				hndec=argccc;
+				hdecs=(double*)calloc(hndec,sizeof(double));
+				for (k=0;k<hndec;k++) {
+					hdecs[k]=atof(argvvv[k]);
+				}
+				if (argvvv!=NULL) { Tcl_Free((char *) argvvv); }
+				/* --- ha_set --*/
+				code=Tcl_SplitList(interp,argvv[3],&argccc,&argvvv);
+				hndec=argccc;
+				hha_sets=(double*)calloc(hndec,sizeof(double));
+				for (k=0;k<hndec;k++) {
+					hha_sets[k]=atof(argvvv[k]);
+				}
+				if (argvvv!=NULL) { Tcl_Free((char *) argvvv); }
+				/* --- ha_rise --*/
+				code=Tcl_SplitList(interp,argvv[4],&argccc,&argvvv);
+				hndec=argccc;
+				hha_rises=(double*)calloc(hndec,sizeof(double));
+				for (k=0;k<hndec;k++) {
+					hha_rises[k]=atof(argvvv[k]);
+				}
+				if (argvvv!=NULL) { Tcl_Free((char *) argvvv); }
+			}
+			if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+		}
+		d1=(maxi1-mini1)/naxis1;
+		d2=(maxi2-mini2)/naxis2;
+		for (k1=0;k1<naxis1;k1++) {
+			c1=mini1+d1*(0.5+k1);
+			for (k2=0;k2<naxis2;k2++) {
+				c2=mini2+d2*(0.5+k2);
+				if (type==0) {
+					ha=c1*(DR);
+					dec=c2*(DR);
+					mc_hd2ad(jd,longmpc,ha,&ra);
+					mc_hd2ah(ha,dec,latrad,&az,&h);
+				} else {
+					az=c1*(DR);
+					h=c2*(DR);
+					mc_ah2hd(az,h,latrad,&ha,&dec);
+					mc_hd2ad(jd,longmpc,ha,&ra);
+				}
+				ra/=(DR);
+				dec/=(DR);
+				ha/=(DR);
+				az/=(DR);
+				h/=(DR);
+				valid=1;
+				if (hnaz>0) {
+					/* --- condition sur l'elevation ---*/
+					for (k=0;k<hnaz-1;k++) {
+						if ((az>hazs[k])&&(az<=hazs[k+1])) {
+							if (h<helevs[k]) { 
+								valid=0; 
+							}
+							break;
+						}
+					}
+					/* --- condition sur l'angle horaire ---*/
+					for (k=0;k<hndec-1;k++) {
+						if ((dec>hdecs[k])&&(dec<=hdecs[k+1])) {
+							if ((ha<=hha_rises[k])&&(ha>=hha_sets[k])) {
+								valid=0; 
+							}
+							break;
+						}
+					}
+				}
+				if ((h>0)&&(valid==1)) {
+					strcpy(s,"");
+					strcat(s,mc_d2s(ra));
+					strcat(s," ");
+					strcat(s,mc_d2s(dec));
+					strcat(s," ");
+					strcat(s,mc_d2s(ha));
+					strcat(s," ");
+					strcat(s,mc_d2s(az));
+					strcat(s," ");
+					strcat(s,mc_d2s(h));
+					Tcl_DStringAppendElement(&dsptr,s);
+				}
+			}
+		}
+      Tcl_DStringResult(interp,&dsptr);
+      Tcl_DStringFree(&dsptr);
+		if (hnaz>0) {
+			free(hazs);
+			free(helevs);
+			free(hdecs);
+			free(hha_rises);
+			free(hha_sets);
+		}
+	}
+	return TCL_OK;
+}
+
+int Cmd_mctcl_hip2tel(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Convert (RA,DEC) coordinates into telescope coordinates                  */
+/****************************************************************************/
+/*
+mc_hip2tel {0 2.5 10 40 J2000 J2000 0 0 0} now {GPS 5 E 43 1230} 101325 290
+
+List_coords = {id mag ra dec equinox epoch mura mudec plx}
+Date
+Home
+Pressure 101325
+Temperature 290
+List_ModelSymbols
+List_ModelValues
+*/
+{
+	char s[1024];
+	double equinox=2451545.00000,epoch=2448349.06250;
+	mc_cata_astrom hips;
+	int code,argcc;
+	char **argvv=NULL;
+	double jd,longmpc;
+	mc_modpoi_matx *matx=NULL; /* 2*nb_star */
+	mc_modpoi_vecy *vecy=NULL; /* nb_coef */
+	int nb_coef,nb_star,k,kk;
+   double rhocosphip=0.,rhosinphip=0.;
+   double latitude,altitude,latrad;
+	double ra,cosdec,mura,mudec,parallax,temperature,pressure;
+	double dec,asd2,dec2;
+	double ha,az,h,ddec=0.,dha=0.,refraction=0.;
+	double tane,cosa,sina,cose,sine,sece,cos2a,sin2a,cos3a,sin3a,cos4a,sin4a,dh=0.,daz=0.;
+	double cos5a,sin5a,cos6a,sin6a;
+	double rat,dect,hat,ht,azt,dra;
+	double tand,cosh,sinh,cosd,sind,cosl,sinl,secd;
+	double cos2h,cos3h,cos4h,cos2d,cos3d,cos4d;
+	double sin2h,sin3h,sin4h,sin2d,sin3d,sin4d;
+
+   if(argc<4) {
+      sprintf(s,"Usage: %s List_coords Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues?", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+ 	   return TCL_ERROR;
+   } else {
+      /* --- decode les coordonnees catalogue ---*/
+      code=Tcl_SplitList(interp,argv[1],&argcc,&argvv);
+		if (argcc>8) {
+			hips.id  = atoi(argvv[0]);
+			hips.mag = atof(argvv[1]);
+			hips.ra  = atof(argvv[2]);
+			hips.dec = atof(argvv[3]);
+	  	   mctcl_decode_date(interp,argvv[4],&equinox);
+	  	   mctcl_decode_date(interp,argvv[5],&epoch);
+			hips.mura = atoi(argvv[6]);
+			hips.mudec = atoi(argvv[7]);
+			hips.plx = atoi(argvv[8]);
+			if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+		} else {
+			// traite l'erreur
+			return TCL_ERROR;
+		}
+      /* --- decode la Date ---*/
+	  	mctcl_decode_date(interp,argv[2],&jd);
+      /* --- decode le Home ---*/
+      longmpc=0.;
+      rhocosphip=0.;
+      rhosinphip=0.;
+      mctcl_decode_topo(interp,argv[3],&longmpc,&rhocosphip,&rhosinphip);
+		mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
+		latrad=latitude*(DR);
+		/* --- Pressure ---*/
+		pressure=atof(argv[4]);
+		/* --- Temperature ---*/
+		temperature=atof(argv[5]);
+		/* --- decode le Modele de pointage ---*/
+		nb_coef=0;
+		if (argc>=8) {
+			code=Tcl_SplitList(interp,argv[6],&argcc,&argvv);
+			if (argcc>0) {
+				nb_coef=argcc;
+				vecy=(mc_modpoi_vecy*)calloc(nb_coef,sizeof(mc_modpoi_vecy));
+				for (k=0;k<argcc;k++) {
+					vecy[k].k=k;
+					strcpy(vecy[k].type,argvv[k]);
+				}
+				if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+				code=Tcl_SplitList(interp,argv[7],&argcc,&argvv);
+				if (argcc!=nb_coef) {
+					// Traite l'erreur nb_symbol == nb_coef
+					return TCL_ERROR;
+				}
+				for (k=0;k<argcc;k++) {
+					vecy[k].coef=atof(argvv[k]);
+				}
+				if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+			} else {
+				if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+			}
+		}
+		/* === CALCULS === */
+      ra=hips.ra*(DR);
+      dec=hips.dec*(DR);
+		cosdec=cos(dec);
+		mura=hips.mura*1e-3/86400/cosdec;
+		mudec=hips.mudec*1e-3/86400;
+		parallax=hips.plx;
+		/* --- aberration annuelle ---*/
+		mc_aberration_annuelle(jd,ra,dec,&asd2,&dec2,1);
+		ra=asd2;
+		dec=dec2;
+		/* --- calcul de mouvement propre ---*/
+		ra+=(jd-epoch)/365.25*mura;
+		dec+=(jd-epoch)/365.25*mudec;
+		/* --- calcul de la precession ---*/
+		mc_precad(equinox,ra,dec,jd,&asd2,&dec2);
+		ra=asd2;
+		dec=dec2;
+		/* --- correction de parallaxe stellaire*/
+		if (parallax>0) {
+		   mc_parallaxe_stellaire(jd,ra,dec,&asd2,&dec2,parallax);
+			ra=asd2;
+			dec=dec2;
+		}
+		/* --- correction de nutation */
+		mc_nutradec(jd,ra,dec,&asd2,&dec2,1);
+		ra=asd2;
+		dec=dec2;
+		/* --- aberration de l'aberration diurne*/
+		mc_aberration_diurne(jd,ra,dec,longmpc,rhocosphip,rhosinphip,&asd2,&dec2,1);
+		ra=asd2;
+		dec=dec2;
+		/* --- coordonnees horizontales---*/
+		mc_ad2hd(jd,longmpc,ra,&ha);
+		mc_hd2ah(ha,dec,latrad,&az,&h);
+		/* --- refraction ---*/
+		mc_refraction(h,1,temperature,pressure,&refraction);
+		h+=refraction;
+		mc_ah2hd(az,h,latrad,&ha,&dec);
+		rat=ra;
+		dect=dec;
+		hat=ha;
+		ht=h;
+		azt=az;
+		/* --- Modele de pointage ---*/
+		if (nb_coef>0) {
+			nb_star=1;
+			matx=(mc_modpoi_matx*)malloc(2*nb_star*nb_coef*sizeof(mc_modpoi_matx));
+			/* --- altaz corrections ---*/
+			tane=tan(h);
+			cosa=cos(az);
+			sina=sin(az);
+			cose=cos(h);
+			sine=sin(h);
+			sece=1./cos(h);
+			cos2a=cos(2.*az);
+			sin2a=sin(2.*az);
+			cos3a=cos(3.*az);
+			sin3a=sin(3.*az);
+			cos4a=cos(4.*az);
+			sin4a=sin(4.*az);
+			cos5a=cos(5.*az);
+			sin5a=sin(5.*az);
+			cos6a=cos(6.*az);
+			sin6a=sin(6.*az);
+			kk=0;
+			for (k=0;k<nb_coef;k++) {
+				matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.;
+				if (strcmp(vecy[k].type,"IA")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; }
+				if (strcmp(vecy[k].type,"IE")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"NPAE")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=tane; }
+				if (strcmp(vecy[k].type,"CA")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sece; }
+				if (strcmp(vecy[k].type,"AN")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sina*tane; }
+				if (strcmp(vecy[k].type,"AW")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-cosa*tane; }
+				if (strcmp(vecy[k].type,"ACEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosa; }
+				if (strcmp(vecy[k].type,"ECEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"ACES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sina; }
+				if (strcmp(vecy[k].type,"ECES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"NRX")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; }
+				if (strcmp(vecy[k].type,"NRY")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=tane; }
+				if (strcmp(vecy[k].type,"ACEC2")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos2a; }
+				if (strcmp(vecy[k].type,"ACES2")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2a; }
+				if (strcmp(vecy[k].type,"AN2")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2a*tane; }
+				if (strcmp(vecy[k].type,"AW2")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-cos2a*tane; }
+				if (strcmp(vecy[k].type,"ACEC3")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos3a; }
+				if (strcmp(vecy[k].type,"ACES3")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin3a; }
+				if (strcmp(vecy[k].type,"AN3")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin3a*tane; }
+				if (strcmp(vecy[k].type,"AW3")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-cos3a*tane; }
+				if (strcmp(vecy[k].type,"ACEC4")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos4a; }
+				if (strcmp(vecy[k].type,"ACES4")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin4a; }
+				if (strcmp(vecy[k].type,"AN4")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin4a*tane; }
+				if (strcmp(vecy[k].type,"AW4")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-cos4a*tane; }
+				if (strcmp(vecy[k].type,"ACEC5")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos5a; }
+				if (strcmp(vecy[k].type,"ACES5")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin5a; }
+				if (strcmp(vecy[k].type,"AN5")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin5a*tane; }
+				if (strcmp(vecy[k].type,"AW5")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-cos5a*tane; }
+				if (strcmp(vecy[k].type,"ACEC6")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos6a; }
+				if (strcmp(vecy[k].type,"ACES6")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin6a; }
+				if (strcmp(vecy[k].type,"AN6")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin6a*tane; }
+				if (strcmp(vecy[k].type,"AW6")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-cos6a*tane; }
+				kk++;
+			}
+			daz=0.;
+			for (k=0;k<nb_coef;k++) {
+				daz+=(matx[k].coef*vecy[k].coef);
+			}
+			for (k=0;k<nb_coef;k++) {
+				matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.;
+				if (strcmp(vecy[k].type,"IA")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"IE")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; }
+				if (strcmp(vecy[k].type,"NPAE")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"CA")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"AN")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosa; }
+				if (strcmp(vecy[k].type,"AW")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sina; }
+				if (strcmp(vecy[k].type,"ACEC")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"ECEC")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cose; }
+				if (strcmp(vecy[k].type,"ACES")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"ECES")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sine; }
+				if (strcmp(vecy[k].type,"NRX")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-sine; }
+				if (strcmp(vecy[k].type,"NRY")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cose; }
+				if (strcmp(vecy[k].type,"ACEC2")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"ACES2")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"AN2")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos2a; }
+				if (strcmp(vecy[k].type,"AW2")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2a; }
+				if (strcmp(vecy[k].type,"ACEC3")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"ACES3")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"AN3")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos3a; }
+				if (strcmp(vecy[k].type,"AW3")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin3a; }
+				if (strcmp(vecy[k].type,"ACEC4")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"ACES4")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"AN4")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos4a; }
+				if (strcmp(vecy[k].type,"AW4")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin4a; }
+				if (strcmp(vecy[k].type,"ACEC5")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"ACES5")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"AN5")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos5a; }
+				if (strcmp(vecy[k].type,"AW5")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin5a; }
+				if (strcmp(vecy[k].type,"ACEC6")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"ACES6")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"AN6")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos6a; }
+				if (strcmp(vecy[k].type,"AW6")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin6a; }
+				kk++;
+			}
+			dh=0.;
+			for (k=0;k<nb_coef;k++) {
+				dh+=(matx[nb_coef+k].coef*vecy[k].coef);
+			}
+			/* --- equatorial corrections ---*/
+			tand=tan(dec);
+			cosh=cos(ha);
+			sinh=sin(ha);
+			cosd=cos(dec);
+			sind=sin(dec);
+			cosl=cos(latrad);
+			sinl=sin(latrad);
+			secd=1./cos(dec);
+			cos2h=cos(2.*ha);
+			sin2h=sin(2.*ha);
+			cos3h=cos(3.*ha);
+			sin3h=sin(3.*ha);
+			cos4h=cos(4.*ha);
+			sin4h=sin(4.*ha);
+			cos2d=cos(2.*dec);
+			sin2d=sin(2.*dec);
+			cos3d=cos(3.*dec);
+			sin3d=sin(3.*dec);
+			cos4d=cos(4.*dec);
+			sin4d=sin(4.*dec);
+			kk=0;
+			for (k=0;k<nb_coef;k++) {
+				matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.;
+				if (strcmp(vecy[k].type,"IH")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; }
+				if (strcmp(vecy[k].type,"ID")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"NP")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=tand; }
+				if (strcmp(vecy[k].type,"CH")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=secd; }
+				if (strcmp(vecy[k].type,"ME")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sinh*tand; }
+				if (strcmp(vecy[k].type,"MA")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-cosh*tand; }
+				if (strcmp(vecy[k].type,"TF")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosl*sinh/cosd; }
+				if (strcmp(vecy[k].type,"FO")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"DAF")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosl*cosh+sinl*tand; }
+				if (strcmp(vecy[k].type,"HF")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sinh/cosd; }
+				if (strcmp(vecy[k].type,"TX")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=(cosl*sinh*cosd)/(sind*sinl+cosd*cosh*cosl); }
+				if (strcmp(vecy[k].type,"DNP")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sinh*tand; }
+				if (strcmp(vecy[k].type,"EHS")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sinh*sinh*tand; }
+				if (strcmp(vecy[k].type,"EHC")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sinh*cosh*tand; }
+				if (strcmp(vecy[k].type,"HCEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosh; }
+				if (strcmp(vecy[k].type,"DCEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"HCES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sinh; }
+				if (strcmp(vecy[k].type,"DCES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"D2HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"D3HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"D4HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"D2HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"D3HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"D4HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"X2HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2h/cosd; }
+				if (strcmp(vecy[k].type,"X3HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin3h/cosd; }
+				if (strcmp(vecy[k].type,"X4HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin4h/cosd; }
+				if (strcmp(vecy[k].type,"X2HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos2h/cosd; }
+				if (strcmp(vecy[k].type,"X3HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos3h/cosd; }
+				if (strcmp(vecy[k].type,"X4HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos4h/cosd; }
+				kk++;
+			}
+			dha=0.;
+			for (k=0;k<nb_coef;k++) {
+				dha+=(matx[k].coef*vecy[k].coef);
+			}
+			for (k=0;k<nb_coef;k++) {
+				matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.;
+				if (strcmp(vecy[k].type,"IH")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"ID")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; }
+				if (strcmp(vecy[k].type,"NP")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"CH")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"ME")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosh; }
+				if (strcmp(vecy[k].type,"MA")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sinh; }
+				if (strcmp(vecy[k].type,"TF")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosl*cosh*sind-sinl*cosd; }
+				if (strcmp(vecy[k].type,"FO")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosh; }
+				if (strcmp(vecy[k].type,"DAF")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"HF")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"TX")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=(cosl*cosh*sind-sinl*cosd)/(sind*sinl+cosd*cosh*cosl); }
+				if (strcmp(vecy[k].type,"DNP")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0; }
+				if (strcmp(vecy[k].type,"EHS")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sinh*cosh; }
+				if (strcmp(vecy[k].type,"EHC")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosh*cosh; }
+				if (strcmp(vecy[k].type,"HCEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"DCEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosd; }
+				if (strcmp(vecy[k].type,"HCES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"DCES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sind; }
+				if (strcmp(vecy[k].type,"D2HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2d; }
+				if (strcmp(vecy[k].type,"D3HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin3d; }
+				if (strcmp(vecy[k].type,"D4HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin4d; }
+				if (strcmp(vecy[k].type,"D2HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos2d; }
+				if (strcmp(vecy[k].type,"D3HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos3d; }
+				if (strcmp(vecy[k].type,"D4HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos4d; }
+				if (strcmp(vecy[k].type,"X2HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"X3HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"X4HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"X2HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"X3HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				if (strcmp(vecy[k].type,"X4HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+				kk++;
+			}
+			ddec=0.;
+			for (k=0;k<nb_coef;k++) {
+				ddec+=(matx[k].coef*vecy[k].coef);
+			}
+			/* --- corrections pure EQU of coordinates ---*/
+			if (((dha!=0)||(ddec!=0))&&(daz==0)&&(dh==0)) {
+				ha=hat+dha/60*(DR);
+				dec=dect+ddec/60*(DR);
+				if (dec>PISUR2)  { dec=PISUR2-(dec-PISUR2); ha+=(PI); }
+				if (dec<-PISUR2) { dec=-PISUR2+(-PISUR2-dec); ha+=(PI); }
+			   ha=fmod(4*PI+ha,2*PI);
+				mc_hd2ah(ha,dec,latrad,&az,&h);
+				mc_hd2ad(jd,longmpc,ha,&ra);
+				daz=az-azt;
+				if (daz<-PI) { daz+=2*(PI); }
+				if (daz>PI)  { daz-=2*(PI); }
+				dh=h-ht;
+				dra=ra-rat;
+				if (dra<-PI) { dra+=2*(PI); }
+				if (dra>PI)  { dra-=2*(PI); }
+			}
+			/* --- corrections pure ALTAZ of coordinates ---*/
+			if (((daz!=0)||(dh!=0))&&(dha==0)&&(ddec==0)) {
+				az=azt+daz/60*(DR);
+				h=ht+dh/60*(DR);
+				if (h>PISUR2)  { h=PISUR2-(h-PISUR2); az+=(PI); }
+				if (h<-PISUR2) { h=-PISUR2+(-PISUR2-h); az+=(PI); }
+			   az=fmod(4*PI+az,2*PI);
+				mc_ah2hd(az,h,latrad,&ha,&dec);
+				mc_hd2ad(jd,longmpc,ha,&ra);
+				dha=ha-hat;
+				if (dha<-PI) { dha+=2*(PI); }
+				if (dha>PI)  { dha-=2*(PI); }
+				ddec=dec-dect;
+				dra=ra-rat;
+				if (dra<-PI) { dra+=2*(PI); }
+				if (dra>PI)  { dra-=2*(PI); }
+			}
+			/* --- free pointers ---*/
+			if (matx!=NULL) { free(matx); }
+			if (vecy!=NULL) { free(vecy); }
+		}
+		strcpy(s,"");
+		strcat(s,mc_d2s(rat/(DR)));
+		strcat(s," ");
+		strcat(s,mc_d2s(dect/(DR)));
+		strcat(s," ");
+		strcat(s,mc_d2s(hat/(DR)));
+		strcat(s," ");
+		strcat(s,mc_d2s(azt/(DR)));
+		strcat(s," ");
+		strcat(s,mc_d2s(ht/(DR)));
+		strcat(s," ");
+		strcat(s,mc_d2s(dra/60));
+		strcat(s," ");
+		strcat(s,mc_d2s(ddec/60));
+		strcat(s," ");
+		strcat(s,mc_d2s(dha/60));
+		strcat(s," ");
+		strcat(s,mc_d2s(daz/60));
+		strcat(s," ");
+		strcat(s,mc_d2s(dh/60));
+		strcat(s," ");
+		strcat(s,mc_d2s(ra/(DR)));
+		strcat(s," ");
+		strcat(s,mc_d2s(dec/(DR)));
+		strcat(s," ");
+		strcat(s,mc_d2s(ha/(DR)));
+		strcat(s," ");
+		strcat(s,mc_d2s(az/(DR)));
+		strcat(s," ");
+		strcat(s,mc_d2s(h/(DR)));
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+	}
+	return TCL_OK;
+}
+
 int Cmd_mctcl_scheduler(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /****************************************************************************/
 /****************************************************************************/
@@ -44,10 +1266,9 @@ mc_scheduler now {GPS 5 E 43 1230}
       longmpc=0.;
       rhocosphip=0.;
       rhosinphip=0.;
-		/* --- appel aux calculs ---*/
       mctcl_decode_topo(interp,argv[2],&longmpc,&rhocosphip,&rhosinphip);
+		/* --- appel aux calculs ---*/
 		mc_scheduler1(jd,longmpc,rhocosphip,rhosinphip);
-	}
-	return TCL_OK;
+	}	return TCL_OK;
 }
 

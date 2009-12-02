@@ -1,0 +1,547 @@
+<!DOCTYPE doctype PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+
+
+                                
+  
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+
+                                
+  
+  
+  <meta name="Author" content="Alain Klotz">
+
+
+                                
+  
+  
+  <meta name="GENERATOR" content="Mozilla/4.5 [fr] (Win98; I) [Netscape]">
+
+
+  
+  
+  <title>Librairie MC : Manuel de l'utilisateur</title>
+</head>
+
+
+<body>
+
+
+                
+<center><b><font size="+3">LIB MC</font></b> <br>
+
+Cr&eacute;ation et utilisation d'un mod&egrave;le de pointage avec
+la&nbsp; librairie de calculs de m&eacute;canique c&eacute;leste <br>
+
+
+       version 20091102<br>
+
+
+       Alain KLOTZ        
+<p><b><font size="+3">Manuel de l'utilisateur</font></b></p>
+
+
+       </center>
+
+
+                
+<p>Le pointage d'un t&eacute;lescope est r&eacute;alis&eacute; &agrave;
+partir de coordonn&eacute;es lues dans des catalogues. Ces
+coordonn&eacute;es ne sont pas exactement celles &agrave; envoyer au
+t&eacute;lescope. Il faut d'abord corriger les coordonn&eacute;es
+catalogues en coordonn&eacute;es apparentes qui prennent en compte les
+mouvements de la Terre. Il faut ensuite corriger les coordonn&eacute;es
+apparentes en coordonn&eacute;es t&eacute;lescopes pour prendre en
+compte les imperfections &eacute;lectro-m&eacute;caniques du
+t&eacute;lescope. Le mod&egrave;le de pointage, stricto sensus ne
+concerne que le passage des coodonn&eacute;es apparente vers les
+coordonn&eacute;es t&eacute;lescope. AudeLA propose la fonction
+mc_coords2tel qui calcul les coordonn&eacute;es apparentes et
+t&eacute;lescope &agrave; partir des coordonn&eacute;es catalogue.</p>
+
+<p>Les coordonn&eacute;es telescope exigent un apprentissage des
+imperfections &eacute;lectro-m&eacute;caniques. Pour cela, on effectue
+des pointages d'&eacute;toiles du catalogue Hipparcos,
+r&eacute;put&eacute; pour sa grande pr&eacute;cision. Le pointage pour
+l'apprentissage doit &ecirc;tre fait r&eacute;guli&egrave;rement sur le
+ciel. Pour cela, AudeLA propose la fonction mc_listamers qui retourne
+les coordonn&eacute;es &agrave; pointer sur le ciel.</p>
+
+<br>
+
+<hr style="width: 100%; height: 2px;">MANUEL DE REFERENCE<br>
+
+<br>
+
+<span style="font-weight: bold;">mc_readhip</span> : Charge le catalogue Hipparcos en m&eacute;moire Tcl<br>
+
+<span style="font-weight: bold;">mc_listamers</span> : G&eacute;n&egrave;re une liste de coordonn&eacute;es &agrave; pointer pour cr&eacute;er un mod&egrave;le de pointage.<br>
+
+<span style="font-weight: bold;">mc_nearesthip</span> : G&eacute;n&egrave;re la liste d'&eacute;toiles Hipparcos les plus proches d'une coordonn&eacute;e.<br>
+
+<span style="font-weight: bold;">mc_hip2tel</span> : Conversion de coordonn&eacute;es catalogue vers les coordonn&eacute;es &agrave; envoyer au t&eacute;lescope.<br>
+
+<span style="font-weight: bold;">mc_horizon</span> : G&eacute;n&egrave;re des listes pour tenir d'obtacles qui bouchent l'horizon d'observation<br>
+<br>
+
+DETAIL DES FONCTIONS<br>
+
+<ul>
+
+  <li><span style="font-weight: bold;">mc_readhip</span> : Charge le catalogue Hipparcos en m&eacute;moire Tcl :</li>
+
+</ul>
+
+<p>D&eacute;finition :&nbsp;</p>
+
+mc_readhip Filename ?-double_stars 0|1? ?-plx_max mas? ?-mu_max mas/yr?
+?-mag_max mag? ?-mag_min mag? ?-dec_max deg? ?-dec_min deg?
+?-max_nbstars int?<br>
+
+<br>
+
+Filename : Nom du fichier du catalogue Hipparcos original.<br>
+
+<p>-double_stars :&nbsp;0 pour ne pas prendre les etoiles doubles<br>
+
+-plx_max : pour prendre une limite sur plx (en mas)<br>
+
+-mu_max : pour prendre une limite sur mura et mudec (en mas/yr)<br>
+
+-mag_max : s&eacute;lectionner des &eacute;toiles de magnitude &lt;&nbsp;mag_max (mag)<br>
+
+-mag_min : s&eacute;lectionner des &eacute;toiles de magnitude &gt; mag_min (mag)<br>
+
+-dec_max : s&eacute;lectionner des &eacute;toiles de d&eacute;clinaison &lt; dec_max (deg)<br>
+
+-dec_min : s&eacute;lectionner des &eacute;toiles de d&eacute;clinaison &gt; dec_min (deg)<br>
+
+-max_nbstars : s&eacute;lectionner uniquement un nombre restraint d'&eacute;toiles.</p>
+
+Sorties :<br>
+
+<br>
+
+Une liste dont chaque &eacute;l&eacute;ment repr&eacute;sente une
+&eacute;toile. Chaque &eacute;toile est d&eacute;finie par une liste
+dont l'ordre des &eacute;l&eacute;ments est:<br>
+
+<br>
+
+ID : identifiant (num&eacute;ro Hip, entier)<br>
+
+mag : magnitude V de Hipparcos<br>
+
+RA : acsension droite (deg)<br>
+
+DEC : d&eacute;clinaison (deg)<br>
+
+equinox : Equinoxe de r&eacute;f&eacute;rence<br>
+
+epoch : Epoque des observations<br>
+
+mura : mouvement propre sur RA (mas/yr)<br>
+
+mudec : mouvement propre sur DEC (mas/yr)<br>
+
+plx : parallaxe (mas)<br>
+
+<br>
+
+Exemple :
+<p>set List_hip [mc_readhip c:/d/meo/hip_main.dat -double_stars 0 -plx_max 100 -mu_max 100 -mag_max 35 -mag_min 3 -dec_min -45]<br>
+
+</p>
+
+<ul>
+
+  <li><span style="font-weight: bold;">mc_listamers</span> : G&eacute;n&egrave;re une liste de coordonn&eacute;es &agrave; pointer pour cr&eacute;er un mod&egrave;le de pointage.</li>
+
+</ul>
+
+<p>D&eacute;finition : </p>
+
+<p>mc_listamers type_axis naxis1 naxis2 Date Home ?mini1 maxi1 mini2 maxi2? ?horizons?</p>
+
+Type_axis : EQUATORIAL ou ALTAZ. A choisir en fonction du type de monture.
+<p>Naxis1 : Nombre d'angles horaires (en Type_axis=EQUATORIAL) ou nombre d'azimuts (en Type_axis=ALTAZ).</p>
+
+<p>Naxis2 : Nombre de d&eacute;clinaisons (en Type_axis=EQUATORIAL) ou nombre d'&eacute;l&eacute;vations (en Type_axis=ALTAZ).</p>
+
+<p>Date : Date pour laquelle on veut effectuer un pointage.</p>
+
+<p>Home : Lieu d'observation.</p>
+
+<p>Mini1 : Valeur minimale des pointages sur l'axe 1 (deg). Utiliser * pour avoir une valeur par d&eacute;faut.</p>
+
+<p>Maxi1 : Valeur maximale des pointages sur l'axe 1 (deg). Utiliser * pour avoir une valeur par d&eacute;faut.</p>
+
+<p>Mini2 : Valeur minimale des pointages sur l'axe 2 (deg). Utiliser * pour avoir une valeur par d&eacute;faut.</p>
+
+<p>Maxi2 : Valeur maximale des pointages sur l'axe 2 (deg). Utiliser * pour avoir une valeur par d&eacute;faut.</p>
+<p>Horizons : Liste de sortie de la fonction mc_horizon pour tenir
+compte des impossibilit&eacute;s de pointage avec un horizon complexe.</p>
+
+<p>Sorties :</p>
+
+<p>Une liste dont chaque &eacute;l&eacute;ment repr&eacute;sente un
+pointage. Chaque pointage est d&eacute;fini par une liste dont l'ordre
+des &eacute;l&eacute;ments est:</p>
+
+<p>RA : Acsension droite (deg)<br>
+
+DEC : D&eacute;clinaison (deg)<br>
+
+HA : Angle horaire (deg)<br>
+
+az : Azimut (deg)<br>
+
+elev : Elevation (deg)<br>
+
+</p>
+
+<p>Exemples :</p>
+
+<p>mc_listamers EQUATORIAL 10 4 now {GPS 5 E 43 1230}]</p>
+
+<p>mc_listamers ALTAZ 12 3 now {GPS 5 E 43 1230} 7.5 367.5 10 90</p>
+
+<ul>
+
+  <li><span style="font-weight: bold;">mc_nearesthip</span>&nbsp;:&nbsp;G&eacute;n&egrave;re la liste d'&eacute;toiles Hipparcos les plus proches d'une coordonn&eacute;e.</li>
+
+</ul>
+
+<p>D&eacute;finition :&nbsp;<br>
+
+</p>
+
+<p>mc_nearesthip Angle_Ra Angle_Dec List_Hip ?-max_nbstars nbstars?</p>
+
+Angle_RA : Acsension droite<br>
+
+Angle_Dec : D&eacute;clinaison<br>
+
+List_Hip : Catalogue Hipparcos en sortie de la fonction mc_readhip.<br>
+
+<p>-max_nbstars : Limite le nombre d'&eacute;toiles en sortie.</p>
+
+<p>Sorties :<br>
+
+<br>
+
+Une liste dont chaque &eacute;l&eacute;ment repr&eacute;sente une
+&eacute;toile. Chaque &eacute;toile est d&eacute;finie par une liste
+dont l'ordre des &eacute;l&eacute;ments est:<br>
+
+<br>
+
+ID : identifiant (num&eacute;ro Hip, entier)<br>
+
+mag : magnitude V de Hipparcos<br>
+
+RA : acsension droite (deg)<br>
+
+DEC : d&eacute;clinaison (deg)<br>
+
+equinox : Equinoxe de r&eacute;f&eacute;rence<br>
+
+epoch : Epoque des observations<br>
+
+mura : mouvement propre sur RA (mas/yr)<br>
+
+mudec : mouvement propre sur DEC (mas/yr)<br>
+
+plx : parallaxe (mas)<br>
+
+dist : distance de l'&eacute;toile &agrave; la coordonn&eacute;e nominale (deg)</p>
+
+<p>Exemples :</p>
+
+set hip [mc_nearesthip $ra $dec $List_hip -max_nbstars 5]
+<ul>
+
+  <li><span style="font-weight: bold;">mc_hip2tel</span> : Conversion de coordonn&eacute;es catalogue vers les coordonn&eacute;es &agrave; envoyer au t&eacute;lescope.</li>
+
+</ul>
+
+<p>D&eacute;finition :</p>
+
+
+<p>mc_hip2tel List_coords Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues?<br>
+<br>
+
+List_coords : Liste de type Hipparcos {id mag ra dec equinox epoch mura mudec plx}<br>
+
+Date : Date UTC du pointage<br>
+
+Home : Localisation du t&eacute;lescope<br>
+
+Pressure : Pression atmosph&eacute;rique (Pa). Utiliser 101325 Pa par d&eacute;faut.<br>
+
+Temperature Temp&eacute;rature sol (K). Utiliser 290 K par d&eacute;faut.<br>
+
+List_ModelSymbols : Symbols des coeffcicients du mod&egrave;le de pointage<br>
+
+List_ModelValues : Valeurs des coeffcients du mod&egrave;le de pointage.<br>
+
+</p>
+
+<p>Sorties :&nbsp;</p>
+
+<p>Liste de 15 &eacute;l&eacute;ments :</p>
+
+<p>RA : Acsension droite apparente sans mod&egrave;le (deg)<br>
+
+DEC : D&eacute;clinaison apparente sans mod&egrave;le (deg)<br>
+
+HA : Angle horaire apparente sans mod&egrave;le (deg)<br>
+
+az : Azimut apparente sans mod&egrave;le (deg)<br>
+
+elev : Elevation apparente sans mod&egrave;le (deg)</p>
+
+<p>dRA : Valeur &agrave; ajouter &agrave; RA pour pointer avec le mod&egrave;le (deg)<br>
+
+dDEC : Valeur &agrave; ajouter &agrave; DEC pour pointer avec le mod&egrave;le (deg)<br>
+
+dHA : Valeur &agrave; ajouter &agrave; HA pour pointer avec le mod&egrave;le (deg)<br>
+
+daz : Valeur &agrave; ajouter &agrave; az pour pointer avec le mod&egrave;le (deg)<br>
+
+delev : Valeur &agrave; ajouter &agrave; elev pour pointer avec le mod&egrave;le (deg)</p>
+
+<p>RA : Acsension droite apparente avec mod&egrave;le (deg)<br>
+
+DEC : D&eacute;clinaison apparente avec mod&egrave;le (deg)<br>
+
+HA : Angle horaire apparente avec mod&egrave;le (deg)<br>
+
+az : Azimut apparente avec&nbsp; mod&egrave;le (deg)<br>
+
+elev : Elevation apparente avec mod&egrave;le (deg)</p>
+
+<p>Exemples :</p>
+
+<p>mc_hip2tel {0 2.5 10 40 J2000 J2000 0 0 0} now {GPS 5 E 43 1230} 101325 290<br>
+
+</p>
+
+<ul>
+  <li><span style="font-weight: bold;">mc_horizon</span> : G&eacute;n&egrave;re des listes pour tenir d'obtacles qui bouchent l'horizon d'observation</li>
+</ul>
+<p>D&eacute;finition :</p>
+
+
+<p>mc_horizon Home Type_coords List_coords<br>
+<br>
+Home : Localisation du t&eacute;lescope</p>
+<p>Type_coords : ALTAZ=Les coordonn&eacute;es de List_coords sont de type altaz. HADEC=Les coordonn&eacute;es de type hadec.</p>
+<p>List_coords : D&eacute;finition de points critiques limitant
+l'observation &agrave; l'horizon. Si Type_coords=ALTAZ, List_coords est
+une liste compos&eacute;e d'&eacute;l&eacute;ments de type {azimut
+elevation} exprim&eacute;s en degr&eacute;s.&nbsp;Si Type_coords=HADEC,
+List_coords est une liste compos&eacute;e d'&eacute;l&eacute;ments de
+type {d&eacute;clinaison angle_horaire_est angle_horaire_ouest}
+exprim&eacute;s en degr&eacute;s. </p>
+<p>Sorties :&nbsp;</p>
+
+<p>On trouvera 5 listes&nbsp;</p>
+
+<p>Liste 0 : liste des azimuts de l'horizon {0 1 2 3 4 .... 360}</p>
+<p>Liste 1 : liste des &eacute;l&eacute;vations (en degr&eacute;s) correspondant &agrave; la liste d'azimuts.</p>
+<p>Liste 2 : liste des d&eacute;clinaisons {-90 -89 .... 89 90}</p>
+<p>Liste 3 : liste des angles horaires du couchant (ouest, en
+degr&eacute;s) correspondant &agrave; la liste des d&eacute;clinaisons.</p>
+<p>Liste 4 : liste des angles horaires du levant (est, en degr&eacute;s) correspondant &agrave; la liste des d&eacute;clinaisons.</p>
+<p>Exemples :</p>
+set horizon ""<br>
+lappend horizon [list -38 350 10]<br>
+lappend horizon [list -30 [mc_angle2deg 23h00] [mc_angle2deg 2h55]]<br>
+lappend horizon [list -15 [mc_angle2deg 20h50] [mc_angle2deg 4h50]]<br>
+lappend horizon [list&nbsp;&nbsp; 0 [mc_angle2deg 19h35] [mc_angle2deg 5h30]]<br>
+lappend horizon [list&nbsp; 20 [mc_angle2deg 19h30] [mc_angle2deg 7h00]]<br>
+lappend horizon [list&nbsp; 30 [mc_angle2deg 19h10] [mc_angle2deg 8h15]]<br>
+lappend horizon [list&nbsp; 40 [mc_angle2deg 16h35] [mc_angle2deg 8h50]]<br>
+lappend horizon [list&nbsp; 90 [mc_angle2deg 15h35] [mc_angle2deg 8h30]]<br>
+set res [mc_horizon {GPS 5 E 43 1230} HADEC $horizon]<br>
+set xs [lindex $res 2]<br>
+set ys [lindex $res 3]<br>
+::plotxy::plot $xs $ys r<br>
+<br>
+set horizon ""<br>
+lappend horizon [list 0 10]<br>
+lappend horizon [list 45 10]<br>
+lappend horizon [list 90 20]<br>
+lappend horizon [list 135 30]<br>
+lappend horizon [list 180 20]<br>
+lappend horizon [list 225 10]<br>
+lappend horizon [list 270 10]<br>
+lappend horizon [list 335 10]<br>
+set res [mc_horizon {GPS 5 E 43 1230} ALTAZ $horizon]<br>
+set xs [lindex $res 2]<br>
+set ys [lindex $res 4]<br>
+::plotxy::plot $xs $ys r<br>
+<br>
+set horizon ""<br>
+lappend horizon [list&nbsp; 90 [mc_angle2deg 23h00] [mc_angle2deg 13h00]]<br>
+lappend horizon [list&nbsp; 80 [mc_angle2deg 21h45] [mc_angle2deg 12h50]]<br>
+lappend horizon [list&nbsp; 70 [mc_angle2deg 20h45] [mc_angle2deg 12h00]]<br>
+lappend horizon [list&nbsp; 60 [mc_angle2deg 20h00] [mc_angle2deg 11h30]]<br>
+lappend horizon [list&nbsp; 50 [mc_angle2deg 19h30] [mc_angle2deg 10h30]]<br>
+lappend horizon [list&nbsp; 40 [mc_angle2deg 18h30] [mc_angle2deg&nbsp; 9h00]]<br>
+lappend horizon [list&nbsp; 30 [mc_angle2deg 18h00] [mc_angle2deg&nbsp; 7h50]]<br>
+lappend horizon [list&nbsp; 20 [mc_angle2deg 19h00] [mc_angle2deg&nbsp; 7h00]]<br>
+lappend horizon [list&nbsp; 10 [mc_angle2deg 19h20] [mc_angle2deg&nbsp; 6h30]]<br>
+lappend horizon [list&nbsp;&nbsp; 0 [mc_angle2deg 20h00] [mc_angle2deg&nbsp; 6h00]]<br>
+lappend horizon [list -10 [mc_angle2deg 20h20] [mc_angle2deg&nbsp; 5h00]]<br>
+lappend horizon [list -20 [mc_angle2deg 21h00] [mc_angle2deg&nbsp; 3h30]]<br>
+lappend horizon [list -30 [mc_angle2deg 22h00] [mc_angle2deg&nbsp; 3h10]]<br>
+lappend horizon [list -40 [mc_angle2deg 23h00] [mc_angle2deg&nbsp; 2h30]]<br>
+set res [mc_horizon {GPS 5 E 43 1230} HADEC $horizon]<br>
+set xs [lindex $res 0]<br>
+set ys [lindex $res 1]<br>
+::plotxy::plot $xs $ys r<br>
+<br>
+<hr style="width: 100%; height: 2px;">MANUEL UTILISATEUR<br>
+
+<br>
+
+Exemple pour effectuer des pointages pour cr&eacute;er un mod&egrave;le :<br>
+
+<br>
+# === Definition de la ligne d'horizon locale<br>
+
+set home {GPS 5.7157 E 43.9319 633.9}<br>
+set horizon ""<br>
+lappend horizon [list&nbsp; 90 [mc_angle2deg 23h00] [mc_angle2deg 13h00]]<br>
+lappend horizon [list&nbsp; 80 [mc_angle2deg 21h45] [mc_angle2deg 12h50]]<br>
+lappend horizon [list&nbsp; 70 [mc_angle2deg 20h45] [mc_angle2deg 12h00]]<br>
+lappend horizon [list&nbsp; 60 [mc_angle2deg 20h00] [mc_angle2deg 11h30]]<br>
+lappend horizon [list&nbsp; 50 [mc_angle2deg 19h30] [mc_angle2deg 10h30]]<br>
+lappend horizon [list&nbsp; 40 [mc_angle2deg 18h30] [mc_angle2deg&nbsp; 9h00]]<br>
+lappend horizon [list&nbsp; 30 [mc_angle2deg 18h00] [mc_angle2deg&nbsp; 7h50]]<br>
+lappend horizon [list&nbsp; 20 [mc_angle2deg 19h00] [mc_angle2deg&nbsp; 7h00]]<br>
+lappend horizon [list&nbsp; 10 [mc_angle2deg 19h20] [mc_angle2deg&nbsp; 6h30]]<br>
+lappend horizon [list&nbsp;&nbsp; 0 [mc_angle2deg 20h00] [mc_angle2deg&nbsp; 6h00]]<br>
+lappend horizon [list -10 [mc_angle2deg 20h20] [mc_angle2deg&nbsp; 5h00]]<br>
+lappend horizon [list -20 [mc_angle2deg 21h00] [mc_angle2deg&nbsp; 3h30]]<br>
+lappend horizon [list -30 [mc_angle2deg 22h00] [mc_angle2deg&nbsp; 3h10]]<br>
+lappend horizon [list -40 [mc_angle2deg 23h00] [mc_angle2deg&nbsp; 2h30]]<br>
+set horizons [mc_horizon $home HADEC $horizon]<br>
+<br>
+
+# === Charge le catalogue Hipparcos en memoire<br>
+
+set List_hip [mc_readhip c:/d/meo/hip_main.dat -double_stars 0 -plx_max 100 -mu_max 100 -mag_max 35 -mag_min 3]<br>
+
+set n [llength $List_hip]<br>
+
+<br>
+
+# === Calcule le nombre de points d'amer<br>
+
+set nb_angles_horaires 10<br>
+
+set nb_declinaisons 4<br>
+set coords&nbsp;[mc_listamers EQUATORIAL $nb_angles_horaires $nb_declinaisons&nbsp; now $home * * * * $horizons]<br>
+
+set ncoords [llength $coords]<br>
+
+<br>
+
+# === Visualise la carte des points d'amer<br>
+::plotxy::figure 1<br>
+::plotxy::clf 1<br>
+foreach coord $coords {<br>
+&nbsp;&nbsp; set az&nbsp;&nbsp; [lindex $coord 3]<br>
+&nbsp;&nbsp; set elev [lindex $coord 4]<br>
+&nbsp;&nbsp; ::plotxy::plot $az $elev or<br>
+&nbsp;&nbsp; ::plotxy::hold on<br>
+}<br>
+set x [lindex $horizons 0]<br>
+set y [lindex $horizons 1]<br>
+::plotxy::plot $x $y r<br>
+::plotxy::xlabel "azimuth (degrees)"<br>
+::plotxy::ylabel "elevation (degrees)"<br>
+::plotxy::position {20 20 800 400}<br>
+<br>
+
+# === Boucle de pointages sur les points d'amer<br>
+
+set decalages ""<br>
+
+for {set k 0} {$k&lt;$ncoords} {incr k} {<br>
+
+<br>
+
+<div style="margin-left: 40px;"># === S&eacute;lectionne l'amer &agrave; observer<br>
+
+set coords [lindex [mc_listamers EQUATORIAL $nb_angles_horaires $nb_declinaisons&nbsp; now $home * * * * $horizons] $k]<br>
+
+set ra_cat [lindex $coords 0]<br>
+
+set dec_cat [lindex $coords 1]<br>
+
+# === Choisit l'&eacute;toile Hipparcos la plus proche du point d'amer<br>
+
+set hips [mc_nearesthip $ra_cat $dec_cat $List_hip -max_nbstars 5]<br>
+
+set hip [lindex $hips 0] ; # la plus proche<br>
+
+# === Pr&eacute;pare le pointage du t&eacute;lescope<br>
+
+set pressure 101325<br>
+
+set temperature 290<br>
+
+# -&gt; lire pressure et temperature sur la station meteo<br>
+
+set date now<br>
+
+mc_hip2tel $hip $date $home $pressure $temperature<br>
+
+set ra_tel [lindex $coords 10]<br>
+
+set dec_tel [lindex $coords 11]<br>
+
+set ha_tel [lindex $coords 12]<br>
+
+set az_tel [lindex $coords 13]<br>
+
+set elev_tel [lindex $coords 14]<br>
+
+# === Pointer le t&eacute;lescope aux coordonn&eacute;es ($ra_tel et $dec_tel)<br>
+
+# === Recentrer l'&eacute;toile au centre du champ<br>
+
+# === Noter les coordonn&eacute;es $ra_obs $dec_obs<br>
+
+set dha [expr ($ra_obs - $ra_tel)*60.]<br>
+
+set ddec [expr ($dec_obs - $dec_tel)*60.]<br>
+
+set&nbsp;id [lindex $hip 0]<br>
+
+# === Ajouter un &eacute;l&eacute;ment dans la liste des d&eacute;calages<br>
+set decalage "$id $date $ha_tel $dec_tel $dha $ddec"<br>
+
+lappend decalages $decalage<br>
+set f [open "decalages.txt" a]<br>
+puts $f $decalage<br>
+close $f<br>
+
+</div>
+
+}<br>
+
+<br>
+
+<br>
+
+
+</body>
+</html>

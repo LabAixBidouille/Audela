@@ -219,3 +219,62 @@ int mc_fitspline(int n1,int n2,double *x, double *y, double *dy, double s,int nn
 	free(r); free(r1); free(r2); free(t); free(t1) ; free(u); free(v) ; free(a); free(b); free(c) ; free(d);
 	return 0;
 }
+
+/****************************************************************************************/
+int mc_interplin1(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *ff)
+/****************************************************************************************
+/* Interpolation lineaire */
+/* Entrees :                                                                            */
+/*  x[1..n1..n2]                                                                        */
+/*  y[1..n1..n2]                                                                        */
+/*  dy[1..n1..n2] (ne pas mettre zero !!!)                                              */
+/*  s = parametre de lissage (non utilise)                                              */
+/*  xx[1..nn] vecteur des points a calculer                                             */
+/*            xx[1]>=x[n1+2] et xx[nn]<=x[n2-1]                                         */
+/* Sorties :                                                                            */
+/*  ff[1..nn] valeurs calculees pour chaque point du vecteur xx                         */
+/*                                                                                      */
+/* Attention : les indices commencent a 1                                               */
+/* x et xx doivent etre pralablement tries en ordre croissants                          */
+/*                                                                                      */
+/****************************************************************************************/
+{
+	int kk,k;
+	double xx0;
+	for (kk=1;kk<=nn;kk++) {
+		xx0=xx[kk];
+		if (xx0<x[n1]) {
+			ff[kk]=0;
+			continue;
+		}
+		if (xx0>x[n2]) {
+			ff[kk]=0;
+			continue;
+		}
+		for (k=n1+1;k<=n2;k++) {
+			if (xx0<=x[k]) {
+				break;
+			}
+		}
+		ff[kk]=y[k-1]+(xx0-x[k-1])/(x[k]-x[k-1])*(y[k]-y[k-1]);
+	}
+	return 0;
+}
+
+char *mc_d2s(double val)
+/***************************************************************************/
+/* Double to String conversion with many digits                            */
+/***************************************************************************/
+/***************************************************************************/
+{
+   int kk,nn;
+   static char s[200];
+   sprintf(s,"%13.12g",val);
+	nn=(int)strlen(s);
+	for (kk=0;kk<nn;kk++) {
+		if (s[kk]!=' ') {
+			break;
+		}
+	}		
+   return s+kk;
+}
