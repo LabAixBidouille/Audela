@@ -17,6 +17,7 @@ build:
 install:
 	@if [ ! -d $(EXTINC)/linux ]; then mkdir -p $(EXTINC)/linux; fi
 	$(CP) -f include/linux/0.4.16/*.h $(EXTINC)/linux
+	@if [ ! -d $(EXTLIB) ]; then mkdir -p $(EXTLIB); fi
 	$(CP) -f lib$(lib_version)/libftd2xx.so.0.4.16    $(EXTLIB)/libftd2xx.so
 	$(CP) -f lib$(lib_version)/libftd2xx.so.0.4.16    $(OUTPUTDIR)/libftd2xx.so.0
 	chmod +x $(OUTPUTDIR)/libftd2xx.so.0
@@ -24,8 +25,9 @@ install:
 clean:
 	$(RM) $(EXTINC)/linux/ftd2xx.h
 	$(RM) $(EXTINC)/linux/WinTypes.h
+	$(RM) $(EXTLIB)/libftd2xx.so.0
 	$(RM) $(OUTPUTDIR)/libftd2xx.so.0
 
 distclean: clean
-	rm -f *~ *.bak
+	$(RM) -f *~ *.bak
 
