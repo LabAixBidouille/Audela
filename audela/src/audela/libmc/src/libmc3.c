@@ -854,18 +854,14 @@ List_ModelValues
 	double jd,longmpc;
 	mc_modpoi_matx *matx=NULL; /* 2*nb_star */
 	mc_modpoi_vecy *vecy=NULL; /* nb_coef */
-	int nb_coef,nb_star,k,kk;
+	int nb_coef,nb_star,k;
    double rhocosphip=0.,rhosinphip=0.;
    double latitude,altitude,latrad;
 	double ra,cosdec,mura,mudec,parallax,temperature,pressure;
 	double dec,asd2,dec2;
 	double ha,az,h,ddec=0.,dha=0.,refraction=0.;
-	double tane,cosa,sina,cose,sine,sece,cos2a,sin2a,cos3a,sin3a,cos4a,sin4a,dh=0.,daz=0.;
-	double cos5a,sin5a,cos6a,sin6a;
+	double dh=0.,daz=0.;
 	double rat,dect,hat,ht,azt,dra;
-	double tand,cosh,sinh,cosd,sind,cosl,sinl,secd;
-	double cos2h,cos3h,cos4h,cos2d,cos3d,cos4d;
-	double sin2h,sin3h,sin4h,sin2d,sin3d,sin4d;
 
    if(argc<4) {
       sprintf(s,"Usage: %s List_coords Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues?", argv[0]);
@@ -976,201 +972,11 @@ List_ModelValues
 			nb_star=1;
 			matx=(mc_modpoi_matx*)malloc(2*nb_star*nb_coef*sizeof(mc_modpoi_matx));
 			/* --- altaz corrections ---*/
-			tane=tan(h);
-			cosa=cos(az);
-			sina=sin(az);
-			cose=cos(h);
-			sine=sin(h);
-			sece=1./cos(h);
-			cos2a=cos(2.*az);
-			sin2a=sin(2.*az);
-			cos3a=cos(3.*az);
-			sin3a=sin(3.*az);
-			cos4a=cos(4.*az);
-			sin4a=sin(4.*az);
-			cos5a=cos(5.*az);
-			sin5a=sin(5.*az);
-			cos6a=cos(6.*az);
-			sin6a=sin(6.*az);
-			kk=0;
-			for (k=0;k<nb_coef;k++) {
-				matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.;
-				if (strcmp(vecy[k].type,"IA")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; }
-				if (strcmp(vecy[k].type,"IE")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"NPAE")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=tane; }
-				if (strcmp(vecy[k].type,"CA")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sece; }
-				if (strcmp(vecy[k].type,"AN")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sina*tane; }
-				if (strcmp(vecy[k].type,"AW")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-cosa*tane; }
-				if (strcmp(vecy[k].type,"ACEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosa; }
-				if (strcmp(vecy[k].type,"ECEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"ACES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sina; }
-				if (strcmp(vecy[k].type,"ECES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"NRX")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; }
-				if (strcmp(vecy[k].type,"NRY")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=tane; }
-				if (strcmp(vecy[k].type,"ACEC2")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos2a; }
-				if (strcmp(vecy[k].type,"ACES2")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2a; }
-				if (strcmp(vecy[k].type,"AN2")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2a*tane; }
-				if (strcmp(vecy[k].type,"AW2")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-cos2a*tane; }
-				if (strcmp(vecy[k].type,"ACEC3")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos3a; }
-				if (strcmp(vecy[k].type,"ACES3")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin3a; }
-				if (strcmp(vecy[k].type,"AN3")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin3a*tane; }
-				if (strcmp(vecy[k].type,"AW3")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-cos3a*tane; }
-				if (strcmp(vecy[k].type,"ACEC4")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos4a; }
-				if (strcmp(vecy[k].type,"ACES4")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin4a; }
-				if (strcmp(vecy[k].type,"AN4")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin4a*tane; }
-				if (strcmp(vecy[k].type,"AW4")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-cos4a*tane; }
-				if (strcmp(vecy[k].type,"ACEC5")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos5a; }
-				if (strcmp(vecy[k].type,"ACES5")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin5a; }
-				if (strcmp(vecy[k].type,"AN5")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin5a*tane; }
-				if (strcmp(vecy[k].type,"AW5")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-cos5a*tane; }
-				if (strcmp(vecy[k].type,"ACEC6")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos6a; }
-				if (strcmp(vecy[k].type,"ACES6")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin6a; }
-				if (strcmp(vecy[k].type,"AN6")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin6a*tane; }
-				if (strcmp(vecy[k].type,"AW6")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-cos6a*tane; }
-				kk++;
-			}
-			daz=0.;
-			for (k=0;k<nb_coef;k++) {
-				daz+=(matx[k].coef*vecy[k].coef);
-			}
-			for (k=0;k<nb_coef;k++) {
-				matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.;
-				if (strcmp(vecy[k].type,"IA")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"IE")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; }
-				if (strcmp(vecy[k].type,"NPAE")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"CA")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"AN")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosa; }
-				if (strcmp(vecy[k].type,"AW")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sina; }
-				if (strcmp(vecy[k].type,"ACEC")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"ECEC")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cose; }
-				if (strcmp(vecy[k].type,"ACES")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"ECES")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sine; }
-				if (strcmp(vecy[k].type,"NRX")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-sine; }
-				if (strcmp(vecy[k].type,"NRY")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cose; }
-				if (strcmp(vecy[k].type,"ACEC2")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"ACES2")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"AN2")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos2a; }
-				if (strcmp(vecy[k].type,"AW2")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2a; }
-				if (strcmp(vecy[k].type,"ACEC3")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"ACES3")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"AN3")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos3a; }
-				if (strcmp(vecy[k].type,"AW3")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin3a; }
-				if (strcmp(vecy[k].type,"ACEC4")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"ACES4")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"AN4")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos4a; }
-				if (strcmp(vecy[k].type,"AW4")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin4a; }
-				if (strcmp(vecy[k].type,"ACEC5")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"ACES5")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"AN5")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos5a; }
-				if (strcmp(vecy[k].type,"AW5")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin5a; }
-				if (strcmp(vecy[k].type,"ACEC6")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"ACES6")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"AN6")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos6a; }
-				if (strcmp(vecy[k].type,"AW6")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin6a; }
-				kk++;
-			}
-			dh=0.;
-			for (k=0;k<nb_coef;k++) {
-				dh+=(matx[nb_coef+k].coef*vecy[k].coef);
-			}
-			/* --- equatorial corrections ---*/
-			tand=tan(dec);
-			cosh=cos(ha);
-			sinh=sin(ha);
-			cosd=cos(dec);
-			sind=sin(dec);
-			cosl=cos(latrad);
-			sinl=sin(latrad);
-			secd=1./cos(dec);
-			cos2h=cos(2.*ha);
-			sin2h=sin(2.*ha);
-			cos3h=cos(3.*ha);
-			sin3h=sin(3.*ha);
-			cos4h=cos(4.*ha);
-			sin4h=sin(4.*ha);
-			cos2d=cos(2.*dec);
-			sin2d=sin(2.*dec);
-			cos3d=cos(3.*dec);
-			sin3d=sin(3.*dec);
-			cos4d=cos(4.*dec);
-			sin4d=sin(4.*dec);
-			kk=0;
-			for (k=0;k<nb_coef;k++) {
-				matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.;
-				if (strcmp(vecy[k].type,"IH")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; }
-				if (strcmp(vecy[k].type,"ID")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"NP")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=tand; }
-				if (strcmp(vecy[k].type,"CH")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=secd; }
-				if (strcmp(vecy[k].type,"ME")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sinh*tand; }
-				if (strcmp(vecy[k].type,"MA")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-cosh*tand; }
-				if (strcmp(vecy[k].type,"TF")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosl*sinh/cosd; }
-				if (strcmp(vecy[k].type,"FO")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"DAF")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosl*cosh+sinl*tand; }
-				if (strcmp(vecy[k].type,"HF")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sinh/cosd; }
-				if (strcmp(vecy[k].type,"TX")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=(cosl*sinh*cosd)/(sind*sinl+cosd*cosh*cosl); }
-				if (strcmp(vecy[k].type,"DNP")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sinh*tand; }
-				if (strcmp(vecy[k].type,"EHS")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sinh*sinh*tand; }
-				if (strcmp(vecy[k].type,"EHC")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sinh*cosh*tand; }
-				if (strcmp(vecy[k].type,"HCEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosh; }
-				if (strcmp(vecy[k].type,"DCEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"HCES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sinh; }
-				if (strcmp(vecy[k].type,"DCES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"D2HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"D3HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"D4HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"D2HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"D3HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"D4HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"X2HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2h/cosd; }
-				if (strcmp(vecy[k].type,"X3HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin3h/cosd; }
-				if (strcmp(vecy[k].type,"X4HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin4h/cosd; }
-				if (strcmp(vecy[k].type,"X2HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos2h/cosd; }
-				if (strcmp(vecy[k].type,"X3HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos3h/cosd; }
-				if (strcmp(vecy[k].type,"X4HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos4h/cosd; }
-				kk++;
-			}
-			dha=0.;
-			for (k=0;k<nb_coef;k++) {
-				dha+=(matx[k].coef*vecy[k].coef);
-			}
-			for (k=0;k<nb_coef;k++) {
-				matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.;
-				if (strcmp(vecy[k].type,"IH")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"ID")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; }
-				if (strcmp(vecy[k].type,"NP")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"CH")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"ME")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosh; }
-				if (strcmp(vecy[k].type,"MA")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sinh; }
-				if (strcmp(vecy[k].type,"TF")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosl*cosh*sind-sinl*cosd; }
-				if (strcmp(vecy[k].type,"FO")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosh; }
-				if (strcmp(vecy[k].type,"DAF")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"HF")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"TX")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=(cosl*cosh*sind-sinl*cosd)/(sind*sinl+cosd*cosh*cosl); }
-				if (strcmp(vecy[k].type,"DNP")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0; }
-				if (strcmp(vecy[k].type,"EHS")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sinh*cosh; }
-				if (strcmp(vecy[k].type,"EHC")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosh*cosh; }
-				if (strcmp(vecy[k].type,"HCEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"DCEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosd; }
-				if (strcmp(vecy[k].type,"HCES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"DCES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sind; }
-				if (strcmp(vecy[k].type,"D2HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2d; }
-				if (strcmp(vecy[k].type,"D3HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin3d; }
-				if (strcmp(vecy[k].type,"D4HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin4d; }
-				if (strcmp(vecy[k].type,"D2HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos2d; }
-				if (strcmp(vecy[k].type,"D3HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos3d; }
-				if (strcmp(vecy[k].type,"D4HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos4d; }
-				if (strcmp(vecy[k].type,"X2HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"X3HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"X4HS")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"X2HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"X3HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				if (strcmp(vecy[k].type,"X4HC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-				kk++;
-			}
-			ddec=0.;
-			for (k=0;k<nb_coef;k++) {
-				ddec+=(matx[k].coef*vecy[k].coef);
-			}
+			daz=mc_modpoi_addobs_az(az,h,nb_coef,vecy,matx);
+			dh=mc_modpoi_addobs_h(az,h,nb_coef,vecy,matx);
+			/* --- hadec corrections ---*/
+			dha=mc_modpoi_addobs_ha(ha,dec,latrad,nb_coef,vecy,matx);
+			ddec=mc_modpoi_addobs_dec(ha,dec,latrad,nb_coef,vecy,matx);
 			/* --- corrections pure EQU of coordinates ---*/
 			if (((dha!=0)||(ddec!=0))&&(daz==0)&&(dh==0)) {
 				ha=hat+dha/60*(DR);
@@ -1240,6 +1046,206 @@ List_ModelValues
 		strcat(s," ");
 		strcat(s,mc_d2s(h/(DR)));
       Tcl_SetResult(interp,s,TCL_VOLATILE);
+	}
+	return TCL_OK;
+}
+
+int Cmd_mctcl_compute_matrix_modpoi(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Compute the pointing model from an observation file                      */
+/****************************************************************************/
+/*
+mc_compute_modpoi $decalages ALTAZ $home {IA IE NPAE CA AN AW ACEC ECEC ACES ECES NRX NRY ACEC2 ACES2 ACEC3 ACES3 AN2 AW2 AN3 AW3 ACEC4 ACES4 AN4 AW4 ACEC5 ACES5 AN5 AW5 ACEC6 ACES6 AN6 AW6}
+
+ListeObs {id jd coord1 coord2 dcoord1 dcoord2 pressure temperature}
+TypeObs EQUATORIAL || ALTAZ
+Home
+List_ModelSymbols
+*/
+{
+	char s[1024];
+	int code,argcc,argccc;
+	char **argvv=NULL,**argvvv=NULL;
+	double longmpc;
+	mc_modpoi_matx *matx=NULL; /* 2*nb_star */
+	mc_modpoi_vecy *vecy=NULL; /* nb_coef */
+	int nb_coef,nb_star,k,kc;
+   double rhocosphip=0.,rhosinphip=0.;
+   double latitude,altitude,latrad;
+	int type,pb,desc[4],kmax=4,nb_desc;
+	double *coord1s=NULL,*coord2s=NULL;
+	double *dcoord1s=NULL,*dcoord2s=NULL;
+   Tcl_DString dsptr_mat;
+   Tcl_DString dsptr_vec;
+   Tcl_DString dsptr_vecw;
+
+   if(argc<4) {
+      sprintf(s,"Usage: %s ListeObs TypeObs Home List_ModelSymbols ?DescObs?", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+ 	   return TCL_ERROR;
+   } else {
+		/* --- decode la liste du descripteur des observations ---*/
+		desc[0]=0; // az ou ha
+		desc[1]=1; // elev ou dec
+		desc[2]=2; // daz ou dha
+		desc[3]=3; // delev ou ddec
+		if (argc>5) {
+			code=Tcl_SplitList(interp,argv[5],&argcc,&argvv);
+			nb_desc=argcc;
+			if (nb_desc>=4) {
+				desc[0]=atoi(argvv[0]);
+				desc[1]=atoi(argvv[1]);
+				desc[2]=atoi(argvv[2]);
+				desc[3]=atoi(argvv[3]);
+			}
+			if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+		}
+		for (k=0;k<4;k++) {
+			if (desc[k]>kmax) {kmax=desc[k];}
+		}
+		/* --- decode la liste des observations ---*/
+		nb_star=0;
+		code=Tcl_SplitList(interp,argv[1],&argcc,&argvv);
+		nb_star=argcc;
+		pb=0;
+		if (nb_star>0) {
+			coord1s=(double*)calloc(nb_star,sizeof(double));
+			coord2s=(double*)calloc(nb_star,sizeof(double));
+			dcoord1s=(double*)calloc(nb_star,sizeof(double));
+			dcoord2s=(double*)calloc(nb_star,sizeof(double));
+			for (k=0;k<nb_star;k++) {
+				code=Tcl_SplitList(interp,argvv[k],&argccc,&argvvv);
+				if (argccc<kmax) {
+					// traiter l'erreur
+					pb=1;
+					if (argvvv!=NULL) { Tcl_Free((char *) argvvv); }
+					break;
+				}
+				coord1s[k]=atof(argvvv[desc[0]])*(DR);
+				coord2s[k]=atof(argvvv[desc[1]])*(DR);
+				dcoord1s[k]=atof(argvvv[desc[2]]);
+				dcoord2s[k]=atof(argvvv[desc[3]]);
+				if (argvvv!=NULL) { Tcl_Free((char *) argvvv); }
+			}
+		} else {
+			// traiter l'erreur
+			return TCL_ERROR;
+		}
+		if (pb==1) {
+			// traiter l'erreur
+			return TCL_ERROR;
+		}
+		if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+      /* --- decode le type de coordonnees d'entree ---*/
+		mc_strupr(argv[2],s);
+		if (s[0]=='A') {
+			type=1;
+		}
+      /* --- decode le Home ---*/
+      longmpc=0.;
+      rhocosphip=0.;
+      rhosinphip=0.;
+      mctcl_decode_topo(interp,argv[3],&longmpc,&rhocosphip,&rhosinphip);
+		mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
+		latrad=latitude*(DR);
+		/* --- decode les termes du modele de pointage ---*/
+		nb_coef=0;
+		code=Tcl_SplitList(interp,argv[4],&argcc,&argvv);
+		nb_coef=argcc;
+		if (nb_coef>0) {
+			vecy=(mc_modpoi_vecy*)calloc(nb_coef,sizeof(mc_modpoi_vecy));
+			for (k=0;k<argcc;k++) {
+				vecy[k].k=k;
+				strcpy(vecy[k].type,argvv[k]);
+				vecy[k].coef=0;
+			}
+		}
+		if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+		/* --- analyse les observations ---*/
+	   Tcl_DStringInit(&dsptr_mat);
+	   Tcl_DStringInit(&dsptr_vec);
+	   Tcl_DStringInit(&dsptr_vecw);
+		//matx=(mc_modpoi_matx*)malloc(2*nb_star*nb_coef*sizeof(mc_modpoi_matx));
+		matx=(mc_modpoi_matx*)malloc(nb_coef*sizeof(mc_modpoi_matx));
+		Tcl_DStringAppend(&dsptr_vec,"{",-1);
+		Tcl_DStringAppend(&dsptr_vecw,"{",-1);
+		Tcl_DStringAppend(&dsptr_mat,"{",-1);
+		for (k=0;k<nb_star;k++) {
+			if (type==0) {
+				/* --- ha corrections ---*/
+				mc_modpoi_addobs_ha(coord1s[k],coord2s[k],latrad,nb_coef,vecy,matx);
+				Tcl_DStringAppend(&dsptr_mat,"{",-1);
+				for (kc=0;kc<nb_coef;kc++) {
+					sprintf(s,"%s ",mc_d2s(matx[k].coef));
+					Tcl_DStringAppend(&dsptr_mat,s,-1);
+				}
+				Tcl_DStringAppend(&dsptr_mat,"} ",-1);
+				sprintf(s,"%s ",mc_d2s(dcoord1s[k]));
+				Tcl_DStringAppend(&dsptr_vec,s,-1);
+				sprintf(s,"%s ",mc_d2s(0.5));
+				Tcl_DStringAppend(&dsptr_vecw,s,-1);
+				/* --- dec corrections ---*/
+				mc_modpoi_addobs_dec(coord1s[k],coord2s[k],latrad,nb_coef,vecy,matx);
+				Tcl_DStringAppend(&dsptr_mat,"{",-1);
+				for (kc=0;kc<nb_coef;kc++) {
+					sprintf(s,"%s ",mc_d2s(matx[k].coef));
+					Tcl_DStringAppend(&dsptr_mat,s,-1);
+				}
+				Tcl_DStringAppend(&dsptr_mat,"} ",-1);
+				sprintf(s,"%s ",mc_d2s(dcoord2s[k]));
+				Tcl_DStringAppend(&dsptr_vec,s,-1);
+				sprintf(s,"%s ",mc_d2s(0.5));
+				Tcl_DStringAppend(&dsptr_vecw,s,-1);
+			}
+			if (type==1) {
+				/* --- az corrections ---*/
+				for (kc=0;kc<nb_coef;kc++) {
+					matx[kc].coef=0;
+				}
+				mc_modpoi_addobs_az(coord1s[k],coord2s[k],nb_coef,vecy,matx);
+				Tcl_DStringAppend(&dsptr_mat,"{",-1);
+				for (kc=0;kc<nb_coef;kc++) {
+					sprintf(s,"%s ",mc_d2s(matx[kc].coef));
+					Tcl_DStringAppend(&dsptr_mat,s,-1);
+				}
+				Tcl_DStringAppend(&dsptr_mat,"} ",-1);
+				sprintf(s,"%s ",mc_d2s(dcoord1s[k]));
+				Tcl_DStringAppend(&dsptr_vec,s,-1);
+				sprintf(s,"%s ",mc_d2s(0.5));
+				Tcl_DStringAppend(&dsptr_vecw,s,-1);
+				/* --- elev corrections ---*/
+				for (kc=0;kc<nb_coef;kc++) {
+					matx[kc].coef=0;
+				}
+				mc_modpoi_addobs_h(coord1s[k],coord2s[k],nb_coef,vecy,matx);
+				Tcl_DStringAppend(&dsptr_mat,"{",-1);
+				for (kc=0;kc<nb_coef;kc++) {
+					sprintf(s,"%s ",mc_d2s(matx[kc].coef));
+					Tcl_DStringAppend(&dsptr_mat,s,-1);
+				}
+				Tcl_DStringAppend(&dsptr_mat,"} ",-1);
+				sprintf(s,"%s ",mc_d2s(dcoord2s[k]));
+				Tcl_DStringAppend(&dsptr_vec,s,-1);
+				sprintf(s,"%s ",mc_d2s(0.5));
+				Tcl_DStringAppend(&dsptr_vecw,s,-1);
+			}
+
+		}
+		Tcl_DStringAppend(&dsptr_vec,"} ",-1);
+		Tcl_DStringAppend(&dsptr_vecw,"} ",-1);
+		Tcl_DStringAppend(&dsptr_mat,"} ",-1);
+		Tcl_DStringAppend(&dsptr_mat,dsptr_vec.string,-1);
+		Tcl_DStringAppend(&dsptr_mat,dsptr_vecw.string,-1);
+      Tcl_DStringResult(interp,&dsptr_mat);
+      Tcl_DStringFree(&dsptr_mat);
+      Tcl_DStringFree(&dsptr_vec);
+      Tcl_DStringFree(&dsptr_vecw);
+		free(matx);
+		free(vecy);
+		free(coord1s);
+		free(coord2s);
+		free(dcoord1s);
+		free(dcoord2s);
 	}
 	return TCL_OK;
 }
