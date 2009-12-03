@@ -872,6 +872,14 @@ void mc_rk45(double tdeb, double tfin, double *x, int dimx, char *nom_fichier_ou
 void mc_equa_dif2(double *x,int dimx,double *z,double *masse);
 
 /***************************************************************************/
+/* Modele de pointage                                                      */
+/***************************************************************************/
+double mc_modpoi_addobs_az(double az,double h,int nb_coef,mc_modpoi_vecy *vecy,mc_modpoi_matx *matx);
+double mc_modpoi_addobs_h(double az,double h,int nb_coef,mc_modpoi_vecy *vecy,mc_modpoi_matx *matx);
+double mc_modpoi_addobs_ha(double ha,double dec,double latrad,int nb_coef,mc_modpoi_vecy *vecy,mc_modpoi_matx *matx);
+double mc_modpoi_addobs_dec(double ha,double dec,double latrad,int nb_coef,mc_modpoi_vecy *vecy,mc_modpoi_matx *matx);
+
+/***************************************************************************/
 /***************************************************************************/
 /**               INTITULE ET LOCALISATION DES FONCTIONS                  **/
 /***************************************************************************/
@@ -1458,4 +1466,18 @@ void mc_jd2lbr1g(double jj, double *l, double *m, double *u, double *ll0, double
 void mc_jd2lbr1h(double jj, double *l, double *m, double *u, double *ll0, double *bb0, double *rr0);
    Fonction de calcul planetaire appelee en interne par mc_jd2lbr1b.
    PLUTON
+*/
+
+/***************************************************************************/
+/* Modele de pointage                                                      */
+/***************************************************************************/
+/*
+double mc_modpoi_addobs_az(double az,double h,int nb_coef,mc_modpoi_vecy *vecy,mc_modpoi_matx *matx);
+   Fill a line of the matrix of the pointing model
+double mc_modpoi_addobs_h(double az,double h,int nb_coef,mc_modpoi_vecy *vecy,mc_modpoi_matx *matx);
+   Fill a line of the matrix of the pointing model
+double mc_modpoi_addobs_ha(double ha,double dec,int nb_coef,mc_modpoi_vecy *vecy,mc_modpoi_matx *matx);
+   Fill a line of the matrix of the pointing model
+double mc_modpoi_addobs_dec(double ha,double dec,int nb_coef,mc_modpoi_vecy *vecy,mc_modpoi_matx *matx);
+   Fill a line of the matrix of the pointing model
 */
