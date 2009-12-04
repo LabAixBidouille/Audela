@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.51 2009-12-04 13:15:29 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.52 2009-12-04 21:56:42 michelpujol Exp $
 #
 
 namespace eval ::telescope {
@@ -37,6 +37,7 @@ proc ::telescope::init { } {
    set audace(telescope,goto)          "0"
    set audace(telescope,inittel)       "$caption(telescope,init)"
    set audace(telescope,controle)      "$caption(telescope,suivi_marche)"
+   set audace(telescope,currentFocus)  "0.0"
 
    set private(tescopeIsMoving)        "0"
 }
