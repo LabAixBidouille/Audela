@@ -437,6 +437,11 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 
          result = mytel_sendRadecCoord(tel, 1, ra, dec);
       }
+      
+      if ( result == 0 ) {
+         tel->radec_motor = 0;
+         result = tel_radec_motor(tel);
+      }
 
    } else {
       sprintf(tel->msg,"Invalid connection mode %s", argv[2]);
@@ -924,6 +929,8 @@ int mytel_correct(struct telprop *tel,char *direction, double distance)
    if ( tel->radecIsMoving != 0 ) {
       sprintf(tel->msg, "tel_radec_goto already moving");
       result = 1;          
+   } else {
+		result = 0;
    }
 
    if (result == 0 ) {

@@ -145,6 +145,7 @@ int socket_closeTelescopeCommandSocket(struct telprop *tel) {
  */
 int socket_readTelescopeCommandSocket(struct telprop *tel, char *response, int* len) {
    int tclResult; 
+   FILE *flog;
 
    Tcl_DString responseRead;
    Tcl_DStringInit(&responseRead);
@@ -152,6 +153,11 @@ int socket_readTelescopeCommandSocket(struct telprop *tel, char *response, int* 
    if ( tclResult != -1 ) {
       strcpy(response, Tcl_DStringValue(&responseRead));
       *len = tclResult;
+
+	  flog = fopen("mouchard_protocole_T193.txt", "at");
+	  fprintf(flog, "REPONSE  = %s\n", response);
+	  fclose(flog);
+
    } else {
       sprintf(tel->msg,"read telescope command socket error: %s", tel->interp->result); 
       strcpy(response, "");
@@ -176,7 +182,11 @@ int socket_writeTelescopeCommandSocket(struct telprop *tel, char *command, char 
    int result; 
    int nbIteration = 5000; // timeout en millisecondes
    Tcl_DString responseRead;
-
+   FILE *flog;
+   
+   flog = fopen("mouchard_protocole_T193.txt", "at");
+   fprintf(flog, "\nCOMMANDE = %s", command);
+   fclose(flog);
 
    // je purge la socket      
    Tcl_DStringInit(&responseRead);
@@ -184,6 +194,9 @@ int socket_writeTelescopeCommandSocket(struct telprop *tel, char *command, char 
       tclResult = Tcl_Gets(tel->telescopeCommandSocket, &responseRead);
       if ( tclResult == 0 ) {
          sprintf(tel->msg,"purge"); 
+		 flog = fopen("mouchard_protocole_T193.txt", "at");
+		 fprintf(flog, "\nPURGE  = %s", responseRead);
+		 fclose(flog);
       }
    } while ( tclResult != -1 );
    Tcl_DStringFree(&responseRead);
@@ -246,6 +259,10 @@ int socket_writeTelescopeCommandSocket(struct telprop *tel, char *command, char 
          }
       } while ( 1 );
          
+	  flog = fopen("mouchard_protocole_T193.txt", "at");
+      fprintf(flog, "REPONSE  = %s\n", response);
+	  fclose(flog);
+
       Tcl_DStringFree(&responseRead);
    }
    
