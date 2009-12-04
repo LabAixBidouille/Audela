@@ -76,16 +76,9 @@ double mytel_stopTimer(struct telprop *tel);
 int mytel_sendUsbCommandTelescop(struct telprop *tel, int command);
 int mytel_sendCommandFilter(struct telprop *tel, int command);
 
-//int mytel_openTelescopeNotificationSocket(struct telprop *tel, char * ethernetHost, int ethernetNotificationPort);
-//int mytel_closeTelescopeNotificationSocket(struct telprop *tel);
-//void mytel_readTelescopeNotificationSocket(ClientData clientData, int mask);
-//char * mytel_sendTelescopeCommand(struct telprop *tel,  char *command1, char *command2, char *paramFormat, ...) ;
-
-int mytel_sendRadecCoord(struct telprop *tel, int mode, char *ra, char *dec );
-
-
+int mytel_setRadecNotification(struct telprop *tel, int mode);
+int mytel_setFocusNotification(struct telprop *tel, int mode);
 void mytel_processNotification(struct telprop *tel, char * notification);
-//void *mytel_readTelescopeNotification(struct telprop *tel);
 
 /* ========================================================= */
 /* ========================================================= */
@@ -157,7 +150,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 
    strcpy(tel->ra,"00h00m00.00s"); 
    strcpy(tel->dec, "+00d00m00.00s"); 
-   tel->radecNotification = 0;
+   //tel->radecNotification = 0;
    tel->radec_motor = 0; 
    tel->radecIsMoving = 0;
 
@@ -423,22 +416,21 @@ int tel_init(struct telprop *tel, int argc, char **argv)
       
       // j'ouvre la socket de commande du telescope
       result = socket_openTelescopeCommandSocket(tel, tel->telescopeHost, tel->telescopeCommandPort);
-
+      
       // j'ouvre la socket de notification du telescope
       if ( result == 0 ) {
          result = socket_openTelescopeNotificationSocket(tel, tel->telescopeHost, tel->telescopeNotificationPort);
       }
-
-
+      
+      
       // je demande a recevoir les coordonnees en permanence 
-      if ( result == 0 ) {
-         char ra[NOTIFICATION_MAX_SIZE];
-         char dec[NOTIFICATION_MAX_SIZE];
-
-         result = mytel_sendRadecCoord(tel, 1, ra, dec);
+      if ( result == 0 ) {         
+         result = mytel_setRadecNotification(tel, 1);
       }
       
+      // j'active le suivi
       if ( result == 0 ) {
+         // attention, il faut mettre 0 tel->radec_motor pour activer le suici
          tel->radec_motor = 0;
          result = tel_radec_motor(tel);
       }
@@ -500,36 +492,41 @@ int tel_close(struct telprop *tel)
 
    // je ferme la socket de commande du telescope
    if ( tel->telescopeCommandSocket != NULL ) {
-      char ra[NOTIFICATION_MAX_SIZE];
-      char dec[NOTIFICATION_MAX_SIZE];
-
-      mytel_sendRadecCoord(tel, 1, ra, dec);
+      // j'arrete les notifications des coordonnees
+      mytel_setRadecNotification(tel, 0);
+      // je ferme la socket de commande
       socket_closeTelescopeCommandSocket(tel);
    }
 
    // je ferme la socket de notification du telescope 
    if ( tel->telescopeNotificationSocket != NULL ) {
       socket_closeTelescopeNotificationSocket(tel);
-      //int tclResult;
-      //pthread_mutex_unlock(&tel->mutex);
-      // tclResult = Tcl_Close( tel->interp, tel->telescopeNotificationSocket);
-      // tel->telescopeNotificationSocket = NULL; 
-      // if ( tclResult != TCL_OK ) {
-      //   sprintf(tel->msg,"Close telescope notification socket error: %s", tel->interp->result);
-      // }
-      //WSACleanup ();
    }
 
    return 0;
 }
 
+
+
+/////////////////////////////////////////////////////////////////////////
+//
+//  commandes RADEC de positionnement de la monture
+//
+/////////////////////////////////////////////////////////////////////////
+
+
+/**
+ * tel_radec_init
+ *   rien a faire pour cette monture
+ *
+ * @param tel   pointeur d'une structure telprop contenant les attributs du telescope
+ * @return 0=OK 1=erreur
+ */
 int tel_radec_init(struct telprop *tel)
-/* ----------------------------------- */
-/* --- called by : tel1 radec init --- */
-/* ----------------------------------- */
 {
    return 0;
 }
+
 
 /**
  * tel_radec_coord
@@ -579,16 +576,60 @@ int tel_radec_coord(struct telprop *tel,char *coord)
 }
 
 
+//-------------------------------------------------------------
+// mytel_setRadecNotification
+//
+// demande a recevoir les coordonnes sur la socket de notification
+//
+// @param tel   pointeur structure telprop
+// @param mode  0 : arret de la notification des coordonnees radec
+//              1 : marche de la notification des coordonnees radec
+// @return 0 = OK,  1= erreur
+//-------------------------------------------------------------
+int mytel_setRadecNotification(struct telprop *tel, int mode )
+{
+   int result; 
+   
+   if ( tel->telescopeCommandSocket != 0 ) {
+      char command[NOTIFICATION_MAX_SIZE];
+      char response[NOTIFICATION_MAX_SIZE];
+      sprintf(command,"!RADEC COORD %d @\n", mode);
+      result = socket_writeTelescopeCommandSocket(tel,command,response);
+      if ( result == 0 ) {
+         int returnCode;
+         int readValue = sscanf(response,"!RADEC COORD %d @", &returnCode);
+         if (readValue != 1) {
+            sprintf(tel->msg,"setRadecNotification error: readValue=%d %s", readValue, response );
+            result = 1;
+         } else {
+            if ( returnCode != 0 ) {
+               sprintf(tel->msg,"setRadecNotification error: returnCode=%d", returnCode );
+               result = 1;
+            } else {
+               // je memorise l'etat des notifications (1=marche 0=arret)
+               switch (mode) {
+               case 0 : 
+               //   tel->radecNotification = 0;
+                  break;
+               case 1 : 
+               //   tel->radecNotification = 1;
+                  break; 
+               }                  
+            }
+         }
+      }
+   } else {
+      result = 0; 
+   }
+   return result;
+}
+
+
 int tel_radec_state(struct telprop *tel,char *text)
 /* ------------------------------------ */
 /* --- called by : tel1 radec state --- */
 /* ------------------------------------ */
 {
-   //int result;
-   //char ra[NOTIFICATION_MAX_SIZE];
-   //char dec[NOTIFICATION_MAX_SIZE];
-   
-   //result1 = mytel_sendRadecCoord(tel, 1, ra, dec);
    sprintf(text,"");
    return 0;
 }
@@ -799,10 +840,17 @@ int tel_radec_move(struct telprop *tel,char *direction)
    return result;
 }
 
+//-------------------------------------------------------------
+// tel_radec_stop
+//
+// arret du mouvement en ascension droite (E ou W) ou en declinaison (N ou S)
+// ou arret sur les deux axes (T)
+//
+// @param tel   pointeur structure telprop
+// @param direction direction de la correction N,S, E, W ,T 
+// @return  0 = OK,  1= erreur
+//-------------------------------------------------------------
 int tel_radec_stop(struct telprop *tel,char *direction)
-/* ----------------------------------- */
-/* --- called by : tel1 radec stop --- */
-/* ----------------------------------- */
 {
    int result ;
 
@@ -912,7 +960,8 @@ int tel_radec_stop(struct telprop *tel,char *direction)
 //-------------------------------------------------------------
 // mytel_correct
 //
-// envoie une correction en ascension droite ou en declinaison   
+// envoie une correction en ascension droite ou en declinaison
+// avec une distance donnee en arcseconde   
 //
 // @param tel   pointeur structure telprop
 // @param direction direction de la correction N,S, E, W  
@@ -1046,6 +1095,14 @@ int tel_radec_motor(struct telprop *tel) {
    return result;
 }
 
+
+////////////////////////////////////////////////////////////////////
+//
+//  FOCALISATION
+//
+////////////////////////////////////////////////////////////////////
+
+
 int tel_focus_init(struct telprop *tel)
 /* ----------------------------------- */
 /* --- called by : tel1 focus init --- */
@@ -1054,36 +1111,251 @@ int tel_focus_init(struct telprop *tel)
    return 0;
 }
 
-int tel_focus_coord(struct telprop *tel,char *result)
-/* ------------------------------------ */
-/* --- called by : tel1 focus coord --- */
-/* ------------------------------------ */
+//-------------------------------------------------------------
+// tel_focus_coord
+//
+//    recupere la position de la focalisation
+//
+// @param tel   pointeur structure telprop
+// @param result 
+//          + : augmentation de la foc
+//          - : diminution de la foc 
+// @return  0 = OK,  1= erreur
+//-------------------------------------------------------------
+int tel_focus_coord(struct telprop *tel,char *position)
 {
-   return 0;
+   int result;
+   if (tel->telescopeCommandSocket != NULL) {
+      char command[NOTIFICATION_MAX_SIZE];
+      char response[NOTIFICATION_MAX_SIZE];
+      sprintf(command,"!FOC COORD 2 @\n" );
+      result = socket_writeTelescopeCommandSocket(tel,command,response);
+      if ( result == 0 ) {
+         int returnCode;
+
+         int readValue = sscanf(response,"!FOC COORD %d %s @", &returnCode, position);
+         if (readValue != 2) {
+            sprintf(tel->msg,"tel_radec_coord error: readValue=%d %s", readValue, response );
+            result = 1;
+         } else {
+            if ( returnCode != 0 ) {
+               sprintf(tel->msg,"tel_radec_coord error: returnCode=%d", returnCode );
+               result = 1;
+            } else {
+               // je copie les coordonnees dans la variable de sortie
+               result = 0;
+            }
+         }
+      }
+   } else {
+      // je retourne une reponse par defaut 
+      strcpy(position,"0.0");
+      result = 0; 
+   }
+
+
+   return result;
 }
 
+//-------------------------------------------------------------
+// tel_focus_move
+//
+//    deplacement a une position qui est dans tel->focus0 
+//
+// @param tel   pointeur structure telprop
+// @param direction 
+//          + : augmentation de la foc
+//          - : diminution de la foc 
+// @return  0 = OK,  1= erreur
+//-------------------------------------------------------------
 int tel_focus_goto(struct telprop *tel)
-/* ----------------------------------- */
-/* --- called by : tel1 focus goto --- */
-/* ----------------------------------- */
 {
-   return 0;
+  int result = 0;
+
+  if (tel->telescopeCommandSocket != NULL) {
+
+      if ( result == 0 ) {
+         char command[NOTIFICATION_MAX_SIZE];
+         char response[NOTIFICATION_MAX_SIZE];
+         sprintf(command,"!FOC GOTO %6.2f @\n", tel->focus0 );  
+		 //envoi de la commande et recupération de la reponse 
+         result = socket_writeTelescopeCommandSocket(tel, command, response);
+
+         if ( result == 0 ) {
+            int returnCode;
+			// j'extrait le code retour
+            int readValue = sscanf(response,"!FOC GOTO %d @", &returnCode);
+            if (readValue != 1) {
+               sprintf(tel->msg,"FOC STOP error: readValue=%d response=%s", readValue, response );
+               result = 1;
+            } else {
+               if ( returnCode != 0 ) {
+                  sprintf(tel->msg,"FOC GOTO error: returnCode=%d", returnCode );
+                  result = 1;
+               } 
+            }
+         }
+      }
+   }
+   return result;
 }
 
+//-------------------------------------------------------------
+// tel_focus_move
+//
+//    commande marche/arret de la focalisation
+//     tel->radec_motor = 0  marche 
+//     tel->radec_motor = 1  arret 
+//
+// @param tel   pointeur structure telprop
+// @param direction 
+//          + : augmentation de la foc
+//          - : diminution de la foc 
+// @return  0 = OK,  1= erreur
+//-------------------------------------------------------------
 int tel_focus_move(struct telprop *tel,char *direction)
-/* ----------------------------------- */
-/* --- called by : tel1 focus move --- */
-/* ----------------------------------- */
 {
-   return 0;
+  int result = 0;
+  char direction2 =direction[0]; 
+
+  if (tel->telescopeCommandSocket != NULL) {
+      // je verifie s'il n'y a pas deja un mouvement en cours
+      if ( tel->focIsMoving != 0 ) {
+         sprintf(tel->msg, "focalisation already moving");
+         result = 1;          
+      }
+
+      if ( result == 0 ) {
+         
+         // je verifie la valeur
+         switch (direction2) {
+            case '+' : 
+            case '-' : 
+               result = 0; 
+               break;
+            default : 
+               sprintf(tel->msg,"invalid direction %s",direction);
+               result = 1;
+         }
+      }
+      
+      // j'active la notification des coordonnées pendant le deplacement
+      if ( result == 0 ) {
+         result = mytel_setFocusNotification(tel, 1);
+      }
+
+      if ( result == 0 ) {
+         char command[NOTIFICATION_MAX_SIZE];
+         char response[NOTIFICATION_MAX_SIZE];
+         if ( tel->focus_move_rate == 0.0 ) {
+            // vitesse lente
+            sprintf(command,"!FOC MOVE %c L 0 @\n", direction2 );  
+         } else {
+            // vitesse de rapide
+			   sprintf(command,"!FOC MOVE %c R 0 @\n", direction2 );
+         } 
+		  //envoi du mouvement et recupération du code 0
+         result = socket_writeTelescopeCommandSocket(tel, command, response);
+
+         if ( result == 0 ) {
+            int returnCode;
+            int readValue = sscanf(response,"!FOC MOVE %d @", &returnCode);
+            if (readValue != 1) {
+               sprintf(tel->msg,"FOC MOVE error: readValue=%d response=%s", readValue, response );
+               result = 1;
+            } else {
+               if ( returnCode != 0 ) {
+                  sprintf(tel->msg,"FOC MOVE error: returnCode=%d", returnCode );
+                  result = 1;
+               } 
+            }
+         }
+      }
+   }
+   return result;
 }
 
-int tel_focus_stop(struct telprop *tel,char *direction)
-/* ----------------------------------- */
-/* --- called by : tel1 focus stop --- */
-/* ----------------------------------- */
+//-------------------------------------------------------------
+// tel_focus_stop
+//
+// arret du mouvement de focalisation 
+// @param tel   pointeur structure telprop
+// @param direction parametre non utilisé
+// @return  0 = OK,  1= erreur
+//-------------------------------------------------------------
+int tel_focus_stop(struct telprop *tel,char * direction)
 {
-   return 0;
+  int result = 0;
+
+  if (tel->telescopeCommandSocket != NULL) {
+
+      if ( result == 0 ) {
+         char command[NOTIFICATION_MAX_SIZE];
+         char response[NOTIFICATION_MAX_SIZE];
+         sprintf(command,"!FOC STOP @\n");  
+		   //envoi de la commande et recupere la reponse
+         result = socket_writeTelescopeCommandSocket(tel, command, response);
+
+         if ( result == 0 ) {
+            int returnCode;
+            int readValue = sscanf(response,"!FOC STOP %d @", &returnCode);
+            if (readValue != 1) {
+               sprintf(tel->msg,"FOC STOP error: readValue=%d response=%s", readValue, response );
+               result = 1;
+            } else {
+               if ( returnCode != 0 ) {
+                  sprintf(tel->msg,"FOC STOP error: returnCode=%d", returnCode );
+                  result = 1;
+               } 
+            }
+         }
+
+         // j'arrete les notifications de la position meme s'il ya une erreur dans la commande précedente
+         result = mytel_setFocusNotification(tel, 0);
+
+      }
+   }
+   return result;
+}
+
+//-------------------------------------------------------------
+// mytel_setFocusNotification
+//
+// demande a recevoir la position du focus sur la socket de notification
+//
+// @param tel   pointeur structure telprop
+// @param mode  0 : arret de la notification de la position du focus
+//              1 : marche de la notification de la position du focus
+// @return 0 = OK,  1= erreur
+//-------------------------------------------------------------
+int mytel_setFocusNotification(struct telprop *tel, int mode )
+{
+   int result; 
+   
+   if ( tel->telescopeCommandSocket != 0 ) {
+      char command[NOTIFICATION_MAX_SIZE];
+      char response[NOTIFICATION_MAX_SIZE];
+      sprintf(command,"!FOC COORD %d @\n", mode);
+      result = socket_writeTelescopeCommandSocket(tel,command,response);
+      if ( result == 0 ) {
+         int returnCode;
+         int readValue = sscanf(response,"!FOC COORD %d @", &returnCode);
+         if (readValue != 1) {
+            sprintf(tel->msg,"tel_radec_coord error: readValue=%d %s", readValue, response );
+            result = 1;
+         } else {
+            if ( returnCode != 0 ) {
+               sprintf(tel->msg,"tel_radec_coord error: returnCode=%d", returnCode );
+               result = 1;
+            } else {
+               result = 0;
+            }
+         }
+      }
+   } else {
+      result = 0; 
+   }
+   return result;
 }
 
 int tel_focus_motor(struct telprop *tel)
@@ -1134,9 +1406,11 @@ int tel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,d
 }
 
 
-//-------------------------------------------------------------
+////////////////////////////////////////////////////////////////////
+//
 // gestion des atténuateurs 
-//-------------------------------------------------------------
+//
+////////////////////////////////////////////////////////////////////
 
 
 //-------------------------------------------------------------
@@ -1558,70 +1832,10 @@ int mytel_getBit(struct telprop *tel, unsigned char notification, int numbit)
 }
 
 
-
-
-
 //-------------------------------------------------------------
-// mytel_sendRadecCoord
+// mytel_sendNotificationError
 //
-// demande les coordonnees
-//
-// @param tel   pointeur structure telprop
-// @param mode  0 : arret de la notification des coordonnees radec
-//              1 : marche de la notification des coordonnees radec
-//              2 : demande de coordonnees radec immediate 
-// @return         0 = OK,  1= erreur
-//-------------------------------------------------------------
-int mytel_sendRadecCoord(struct telprop *tel, int mode, char *ra, char *dec )
-{
-   int result; 
-   
-   if ( tel->telescopeCommandSocket != 0 ) {
-      if (mode == 2 && tel->radecNotification == 1) {
-         // je retourne les coordonnes recue
-         strcpy(ra, tel->ra);
-         strcpy(dec, tel->dec);
-         result = 0; 
-      } else {         
-         char command[NOTIFICATION_MAX_SIZE];
-         char response[NOTIFICATION_MAX_SIZE];
-         sprintf(command,"!RADEC COORD %d @\n", mode);
-         result = socket_writeTelescopeCommandSocket(tel,command,response);
-         if ( result == 0 ) {
-            int returnCode;
-            int readValue = sscanf(response,"!RADEC COORD %d %s %s @", &returnCode, ra, dec);
-            if (readValue != 3) {
-               sprintf(tel->msg,"tel_radec_coord error: readValue=%d %s", readValue, response );
-               result = 1;
-            } else {
-               if ( returnCode != 0 ) {
-                  sprintf(tel->msg,"tel_radec_coord error: returnCode=%d", returnCode );
-                  result = 1;
-               } else {
-                  // je memorise l'etat des notifications (1=marche 0=arret)
-                  switch (mode) {
-                  case 0 : 
-                     tel->radecNotification = 0;
-                     break;
-                  case 1 : 
-                     tel->radecNotification = 1;
-                     break; 
-                  }                  
-               }
-            }
-         }
-      }
-   } else {
-      result = 0; 
-   }
-   return result;
-}
-
-
-//-------------------------------------------------------------
-// mytel_processNotification
-//
-// traite une notification 
+// affiche une erreur dans la console pour signaler une notification erronee
 //
 // @param tel   pointeur structure telprop
 // @param notification  
@@ -1632,11 +1846,12 @@ void mytel_sendNotificationError(struct telprop *tel, int errorNo, char *message
    char ligne[1200];
    va_list mkr;
    
-   // j'assemble la commande 
+   // je formate le message 
    va_start(mkr, messageFormat);
    vsprintf(message, messageFormat, mkr);
 	va_end (mkr);
 
+   // j'affiche une erreur dans la console
    if ( strcmp(tel->telThreadId,"") == 0 ) {
       sprintf(ligne,"error \"t193 error=%d notification=%s \" ",errorNo, message); 
    } else {
@@ -1648,49 +1863,46 @@ void mytel_sendNotificationError(struct telprop *tel, int errorNo, char *message
 //-------------------------------------------------------------
 // mytel_processNotification
 //
-// traite une notification 
+// traite les notifications suivantes : 
+// 
+//   
+//     "!RADEC COORD [Code retour] [mouvement] [suivi] [alpha] [delta] @"
+//     "!RADEC FOC [Code retour] [mouvement] [position] @"
 //
 // @param tel   pointeur structure telprop
 // @param notification  
 // @return  0 = OK,  1= erreur
 //-------------------------------------------------------------
 void mytel_processNotification(struct telprop *tel, char * notification) {
-   int result; 
    int  nbArrayElements;
-   char notifArray0[NOTIFICATION_MAX_SIZE]= {'\0'} ;
-   char notifArray1[NOTIFICATION_MAX_SIZE];
-   char notifArray2[NOTIFICATION_MAX_SIZE];
-   char notifArray3[NOTIFICATION_MAX_SIZE];
-   char notifArray4[NOTIFICATION_MAX_SIZE];
-   char notifArray5[NOTIFICATION_MAX_SIZE];
+   char command1[NOTIFICATION_MAX_SIZE]= {'\0'} ;
+   char command2[NOTIFICATION_MAX_SIZE];
       
-   nbArrayElements = sscanf(notification, "!%s %s %s %s %s %s@", 
-      notifArray0, notifArray1, notifArray2, notifArray3, notifArray4, notifArray5);
+   nbArrayElements = sscanf(notification, "!%s %s @", command1, command2);
    
-   if ( nbArrayElements > 2 ) {
+   if ( nbArrayElements == 2 ) {
       // je traite la notification
-      if ( strcmp( notifArray0, "RADEC")==0 ) {
-         if ( strcmp( notifArray1, "COORD")==0 ) {
-            // traitement de "!RADEC COORD [Code retour] [mouvement] [alpha] [delta] @"
-            // je verifie que le nopmbre de valeurs lues est 6
-            if ( nbArrayElements == 6 ) {
+      if ( strcmp( command1, "RADEC")==0) {
+         if ( strcmp( command2, "COORD")==0 ) {
+            int returnCode;
+            int moveCode;
+            int slewCode;
+            char ra[NOTIFICATION_MAX_SIZE];
+            char dec[NOTIFICATION_MAX_SIZE];
+            // traitement de "!RADEC COORD [Code retour] [mouvement] [suivi] [alpha] [delta] @"
+            nbArrayElements = sscanf(notification, "!RADEC COORD %d %d %d %s %s @", &returnCode, &moveCode, &slewCode, ra, dec);
+            // je verifie que le nombre de valeurs lues
+            if ( nbArrayElements == 5 ) {
                // je verifie le code retour 
-               if ( strcmp(notifArray2, "0")== 0) {
-                  char ligne[1024];
-                  
+               if ( returnCode == 0) {
+                  char ligne[1024];                  
                   // je memorise le mouvement
-                  if ( strcmp( notifArray3, "0")== 0) {
-                     // il n'y a pas de mouvement en cours
-                     tel->radecIsMoving = 0;
-                  } else {
-                     // un mouvement est en cours
-                     tel->radecIsMoving = 1;                  
-                  }
+                  tel->radecIsMoving = moveCode;
                   // je notifie les nouvelles coordonnes au thread principal                
                   if ( strcmp(tel->telThreadId,"") == 0 ) {
-                     sprintf(ligne,"set ::audace(telescope,getra) \"%s\" ; set ::audace(telescope,getdec) \"%s\" ",notifArray4, notifArray5); 
+                     sprintf(ligne,"set ::audace(telescope,getra) \"%s\" ; set ::audace(telescope,getdec) \"%s\" ",ra, dec); 
                   } else {
-                     sprintf(ligne,"::thread::send -async %s { set ::audace(telescope,getra) \"%s\" ; set ::audace(telescope,getdec) \"%s\" ;update} " , tel->mainThreadId, notifArray4 , notifArray5); 
+                     sprintf(ligne,"::thread::send -async %s { set ::audace(telescope,getra) \"%s\" ; set ::audace(telescope,getdec) \"%s\" ;update} " , tel->mainThreadId, ra , dec); 
                   }
                   Tcl_Eval(tel->interp,ligne);
                }
@@ -1698,17 +1910,44 @@ void mytel_processNotification(struct telprop *tel, char * notification) {
                mytel_sendNotificationError(tel, BACKCMD_BAD_PARAM_NUMBER, notification);
             }
             
-         } else if ( strcmp( notifArray0 , "FOC")==0 ) {
-            //strcpy(notification, Tcl_DStringValue(&lineRead));
+         } else {
+            mytel_sendNotificationError(tel, BACKCMD_BAD_PARAM_NUMBER, notification);
          }
-      }
-      result = 0;
+      } else if ( strcmp( command1, "FOC")==0) {
+         if ( strcmp( command2, "COORD")==0 ) {
+            int returnCode;
+            int moveCode;
+            float position;
+
+            // traitement de "!FOC COORD [Code retour] [mouvement] [position] @"
+            nbArrayElements = sscanf(notification, "!FOC COORD %d %d %f @", &returnCode, &moveCode, &position);
+            // je verifie que le nombre de valeurs lues est 5
+            if ( nbArrayElements >= 3 ) {
+               // je verifie le code retour 
+               if ( returnCode == 0) {
+                  char ligne[1024];
+                  
+                  // je memorise le mouvement
+                  tel->focIsMoving = moveCode;
+                  // je notifie les nouvelles coordonnes au thread principal                
+                  if ( strcmp(tel->telThreadId,"") == 0 ) {
+                     sprintf(ligne,"set ::audace(telescope,currentFocus) %s", position); 
+                  } else {
+                     sprintf(ligne,"::thread::send -async %s { set ::audace(telescope,currentFocus) %6.2f ; update }" , tel->mainThreadId, position); 
+                  }
+                  Tcl_Eval(tel->interp,ligne);
+               }
+            } else {
+               mytel_sendNotificationError(tel, BACKCMD_BAD_PARAM_NUMBER, notification);
+            }            
+         } else {
+            mytel_sendNotificationError(tel, BACKCMD_BAD_PARAM_NUMBER, notification);
+         }
+	  }
    } else {
       mytel_sendNotificationError(tel, BACKCMD_BAD_PARAM_NUMBER, notification);
    }
 }
-
-
 
 
 //////////////////////////////////////////////////////////////////////

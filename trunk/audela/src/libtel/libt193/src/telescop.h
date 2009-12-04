@@ -61,8 +61,9 @@ struct telprop {
    void * telescopeNotificationThread;
    char ra[12] ;   // ascension droite courante
    char dec[12] ;  // declinaison courante
-   int radecNotification ; // 1=marche 0=arret des notifications des coordonnees radec
-   int radecIsMoving ;   // 1=mouvement en cours 0=pas de mouvement en cours
+   //int radecNotification ; // 1=marche 0=arret des notifications des coordonnees radec
+   int radecIsMoving ;   // 1=mouvement en cours 0=pas de mouvement en cours 
+   int focIsMoving ;   // 1=mouvement en cours 0=pas de mouvement en cours de la focalisation
 };
 
 int tel_init(struct telprop *tel, int argc, char **argv);
