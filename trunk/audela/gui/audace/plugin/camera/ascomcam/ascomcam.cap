@@ -1,6 +1,6 @@
 #
 # Fichier : ascomcam.cap
-# Mise a jour $Id: ascomcam.cap,v 1.6 2009-11-09 16:34:14 robertdelmas Exp $
+# Mise a jour $Id: ascomcam.cap,v 1.7 2009-12-04 17:57:48 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,7 +12,7 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(ascomcam,camera)                       "ASCOM"
-set caption(ascomcam,port)                         "Camera Selection"
+set caption(ascomcam,modele)                       "Camera Selection"
 
 set caption(ascomcam,configurer)                   "Set up"
 set caption(ascomcam,install)                      "%s V%s update completed."
@@ -36,7 +36,7 @@ set caption(ascomcam,site_web_ref)                 "http://ascom-standards.org"
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(ascomcam,camera)                    "ASCOM"
-   set caption(ascomcam,port)                      "Choix de la caméra"
+   set caption(ascomcam,modele)                    "Choix de la caméra"
 
    set caption(ascomcam,configurer)                "Configurer"
    set caption(ascomcam,install)                   "La mise à jour de %s V%s est terminée."
@@ -60,7 +60,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(ascomcam,camera)                    "ASCOM"
-   set caption(ascomcam,port)                      "Selezione della camera"
+   set caption(ascomcam,modele)                    "Selezione della camera"
 
    set caption(ascomcam,configurer)                "Configurare"
    set caption(ascomcam,install)                   "L'aggiornamento di %s V%s è terminato."
@@ -84,7 +84,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(ascomcam,camera)                    "ASCOM"
-   set caption(ascomcam,port)                      "Selección de cámara"
+   set caption(ascomcam,modele)                    "Selección de cámara"
 
    set caption(ascomcam,configurer)                "Configurar"
    set caption(ascomcam,install)                   "Actualización de %s V%s terminada."
@@ -108,7 +108,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(ascomcam,camera)                    "ASCOM"
-   set caption(ascomcam,port)                      "Kamera Auswahl"
+   set caption(ascomcam,modele)                    "Kamera Auswahl"
 
    set caption(ascomcam,configurer)                "Konfigurieren"
    set caption(ascomcam,install)                   "%s V%s Update beendet."
@@ -132,7 +132,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(ascomcam,camera)                    "ASCOM"
-   set caption(ascomcam,port)                      "Selecção da câmara"
+   set caption(ascomcam,modele)                    "Selecção da câmara"
 
    set caption(ascomcam,configurer)                "Configuração"
    set caption(ascomcam,install)                   "Actualização de %s V%s concluída."
@@ -156,7 +156,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(ascomcam,camera)                    "ASCOM"
-   set caption(ascomcam,port)                      "Camera Selection"
+   set caption(ascomcam,modele)                    "Camera Selection"
 
    set caption(ascomcam,configurer)                "Set up"
    set caption(ascomcam,install)                   "%s V%s update completed."
@@ -180,7 +180,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
    set caption(ascomcam,camera)                    "ASCOM"
-   set caption(ascomcam,port)                      "Camera Selection"
+   set caption(ascomcam,modele)                    "Camera Selection"
 
    set caption(ascomcam,configurer)                "Set up"
    set caption(ascomcam,install)                   "%s V%s update completed."
@@ -204,7 +204,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
    set caption(ascomcam,camera)                    "ASCOM"
-   set caption(ascomcam,port)                      "Camera Selection"
+   set caption(ascomcam,modele)                    "Camera Selection"
 
    set caption(ascomcam,configurer)                "Set up"
    set caption(ascomcam,install)                   "%s V%s update completed."
