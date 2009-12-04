@@ -2,7 +2,7 @@
 # Fichier : ascomcam.tcl
 # Description : Configuration de la camera ASCOM
 # Auteur : Michel PUJOL
-# Mise a jour $Id: ascomcam.tcl,v 1.7 2009-11-11 15:09:43 robertdelmas Exp $
+# Mise a jour $Id: ascomcam.tcl,v 1.8 2009-12-04 18:03:04 robertdelmas Exp $
 #
 
 namespace eval ::ascomcam {
@@ -95,7 +95,7 @@ proc ::ascomcam::initPlugin { } {
    variable private
 
    #--- Initialise les variables de la camera ASCOM
-   if { ! [ info exists ::conf(ascomcam,port) ] }     { set ::conf(ascomcam,port)     "LPT1:" }
+   if { ! [ info exists ::conf(ascomcam,modele) ] }   { set ::conf(ascomcam,modele)   "" }
    if { ! [ info exists ::conf(ascomcam,mirh) ] }     { set ::conf(ascomcam,mirh)     "0" }
    if { ! [ info exists ::conf(ascomcam,mirv) ] }     { set ::conf(ascomcam,mirv)     "0" }
    if { ! [ info exists ::conf(ascomcam,foncobtu) ] } { set ::conf(ascomcam,foncobtu) "2" }
@@ -106,7 +106,7 @@ proc ::ascomcam::initPlugin { } {
    set private(C,camNo)      "0"
 
    set private(ascomDrivers) ""
-   set private(port)         ""
+   set private(modele)       ""
 }
 
 #
@@ -117,7 +117,7 @@ proc ::ascomcam::confToWidget { } {
    variable private
 
    #--- Recupere la configuration de la camera ASCOM dans le tableau private(...)
-   set private(port)    $::conf(ascomcam,port)
+   set private(modele)  $::conf(ascomcam,modele)
    set private(mirh)    $::conf(ascomcam,mirh)
    set private(mirv)    $::conf(ascomcam,mirv)
    set widget(foncobtu) [ lindex "$::caption(ascomcam,obtu_ouvert) $::caption(ascomcam,obtu_ferme) $::caption(ascomcam,obtu_synchro)" $::conf(ascomcam,foncobtu) ]
@@ -131,9 +131,9 @@ proc ::ascomcam::widgetToConf { camItem } {
    variable private
 
    #--- Memorise la configuration de la camera ASCOM dans le tableau conf(ascomcam,...)
-   set ::conf(ascomcam,port) $private(port)
-   set ::conf(ascomcam,mirh) $private(mirh)
-   set ::conf(ascomcam,mirv) $private(mirv)
+   set ::conf(ascomcam,modele) $private(modele)
+   set ::conf(ascomcam,mirh)   $private(mirh)
+   set ::conf(ascomcam,mirv)   $private(mirv)
 }
 
 #
@@ -154,6 +154,7 @@ proc ::ascomcam::fillConfigPage { frm camItem } {
 
    package require tcom
    package require registry
+   #--- Plugins ASCOM installes sur le PC
    set private(ascomDrivers) ""
    set catchError [ catch {
       set keyList [ ::registry keys "HKEY_LOCAL_MACHINE\\Software\\ASCOM\\Camera Drivers" ]
@@ -161,7 +162,7 @@ proc ::ascomcam::fillConfigPage { frm camItem } {
    if { $catchError == 0 } {
       foreach key $keyList {
          if { [ catch { ::registry get "HKEY_LOCAL_MACHINE\\Software\\ASCOM\\Camera Drivers\\$key" "" } r ] == 0 } {
-            ####lappend private(ascomDrivers) [list $r $key]
+            ###lappend private(ascomDrivers) [list $r $key]
             lappend private(ascomDrivers) [list $key]
          }
       }
@@ -170,37 +171,37 @@ proc ::ascomcam::fillConfigPage { frm camItem } {
    if { [llength $private(ascomDrivers) ] > 0 } {
       #--- si la liste n'est pas vide,
       #--- je verifie que la valeur par defaut existe dans la liste
-      if { [ lsearch -exact $private(ascomDrivers) $private(port) ] == -1 } {
+      if { [ lsearch -exact $private(ascomDrivers) $private(modele) ] == -1 } {
          #--- si la valeur par defaut n'existe pas dans la liste,
          #--- je la remplace par le premier item de la liste
-         set private(port) [lindex $private(ascomDrivers) 0]
+         set private(modele) [lindex $private(ascomDrivers) 0]
       }
    } else {
       #--- si la liste est vide, on continue quand meme
-      set private(port) ""
+      set private(modele) ""
    }
 
-   #--- Frame de la configuration du port, des miroirs en x et en y et du parametrage du delai
+   #--- Frame de la configuration du plugin et des miroirs en x et en y
    frame $frm.frame1 -borderwidth 0 -relief raised
 
-      #--- Frame de la configuration du port
+      #--- Frame de la configuration du plugin
       frame $frm.frame1.frame3 -borderwidth 0 -relief raised
 
-         #--- Definition du port
-         label $frm.frame1.frame3.lab1 -text "$caption(ascomcam,port)"
+         #--- Definition du plugin
+         label $frm.frame1.frame3.lab1 -text "$caption(ascomcam,modele)"
          pack $frm.frame1.frame3.lab1 -anchor center -side left -padx 10 -pady 30
 
-         #--- Choix du port ou de la liaison
-         ComboBox $frm.frame1.frame3.port \
+         #--- Choix du plugin
+         ComboBox $frm.frame1.frame3.driver \
             -height [ llength $private(ascomDrivers) ] \
             -relief sunken                \
             -borderwidth 1                \
             -editable 0                   \
-            -textvariable ::ascomcam::private(port) \
+            -textvariable ::ascomcam::private(modele) \
             -values $private(ascomDrivers)
-         pack $frm.frame1.frame3.port -fill x -expand 1 -anchor center -side left -padx 10 -pady 10
+         pack $frm.frame1.frame3.driver -fill x -expand 1 -anchor center -side left -padx 10 -pady 10
 
-         #--- Bouton de configuration des ports et liaisons
+         #--- Bouton de configuration du plugin
          button $frm.frame1.frame3.configure -text "$caption(ascomcam,configurer)" -relief raised \
             -command "::ascomcam::configureDriver "
          pack $frm.frame1.frame3.configure -anchor center -side left -pady 28 -ipadx 10 -ipady 1 -expand 0
@@ -253,8 +254,8 @@ proc ::ascomcam::configureCamera { camItem bufNo } {
          error "" "CameraUnique"
       }
       #--- Je cree la camera
-      set camNo [ cam::create ascomcam \"$conf(ascomcam,port)\" ]
-      console::affiche_entete "$caption(ascomcam,port_camera) $caption(ascomcam,2points) $conf(ascomcam,port)\n"
+      set camNo [ cam::create ascomcam \"$conf(ascomcam,modele)\" ]
+      console::affiche_entete "$caption(ascomcam,port_camera) $caption(ascomcam,2points) $conf(ascomcam,modele)\n"
       console::affiche_saut "\n"
       #--- Je change de variable
       set private($camItem,camNo) $camNo
@@ -387,7 +388,7 @@ proc ::ascomcam::configureDriver { } {
    package require tcom
    package require registry
 
-   set private(portObject)  [ ::tcom::ref createobj $private(port) ]
+   set private(portObject) [ ::tcom::ref createobj $private(modele) ]
 
    after idle $private(portObject) SetupDialog
 
@@ -427,6 +428,5 @@ proc ::ascomcam::setShutter { camItem shutterState ShutterOptionList } {
          }
       }
    }
-   }
-
+}
 
