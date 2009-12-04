@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.32 2009-11-23 21:06:22 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.33 2009-12-04 12:37:58 robertdelmas Exp $
 #
 
 #============================================================
@@ -701,18 +701,13 @@ proc ::tlscp::cmdMatch { visuNo } {
 #------------------------------------------------------------
 proc ::tlscp::cmdGoto { visuNo } {
    variable private
-   global audace caption cataGoto catalogue
+   global audace caption
 
    #--- Gestion graphique des boutons GOTO et Stop
    $private($visuNo,This).fra2.fra2a.but1 configure -relief groove -state disabled
    $private($visuNo,This).fra2.fra2a.but2 configure -text $caption(tlscp,stop_goto) \
       -command "::tlscp::cmdStopGoto $visuNo"
    update
-
-   #--- Affichage de champ dans une carte. Parametres : nom_objet, ad, dec, zoom_objet, avant_plan
-   if { $cataGoto(carte,validation) == "1" } {
-      ::carte::gotoObject $cataGoto(carte,nom_objet) $cataGoto(carte,ad) $cataGoto(carte,dec) $cataGoto(carte,zoom_objet) $cataGoto(carte,avant_plan)
-   }
 
    #--- Cas particulier si le premier pointage est en mode coordonnees
    if { $private($visuNo,menu) == "$caption(tlscp,coord)" } {
