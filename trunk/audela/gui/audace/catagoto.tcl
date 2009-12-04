@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.33 2009-11-25 14:06:25 denismarchais Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.34 2009-12-04 12:42:21 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -746,16 +746,14 @@ namespace eval cataGoto {
       pack $audace(base).cataAsteroide.frame8 -side top -fill both -expand 1
 
       #--- Gere l'option de creation d'une carte de champ
-      if { [::carte::isReady] == "0" } {
-         frame $audace(base).cataAsteroide.frame9 -borderwidth 1 -relief raised
-            checkbutton $audace(base).cataAsteroide.frame9.carte -text "$caption(catagoto,carte_champ)" \
-               -highlightthickness 0 -variable cataGoto(carte,validation)
-            pack $audace(base).cataAsteroide.frame9.carte -side top -fill both -expand 1
-            checkbutton $audace(base).cataAsteroide.frame9.cartea -text "$caption(catagoto,carte_champ_devant)" \
-               -highlightthickness 0 -variable cataGoto(carte,avant_plan)
-            pack $audace(base).cataAsteroide.frame9.cartea -side top -fill both -expand 1
-         pack $audace(base).cataAsteroide.frame9 -side top -fill both -expand 1
-      }
+      frame $audace(base).cataAsteroide.frame9 -borderwidth 1 -relief raised
+         checkbutton $audace(base).cataAsteroide.frame9.carte -text "$caption(catagoto,carte_champ)" \
+            -highlightthickness 0 -variable cataGoto(carte,validation)
+         pack $audace(base).cataAsteroide.frame9.carte -side top -fill both -expand 1
+         checkbutton $audace(base).cataAsteroide.frame9.cartea -text "$caption(catagoto,carte_champ_devant)" \
+            -highlightthickness 0 -variable cataGoto(carte,avant_plan)
+         pack $audace(base).cataAsteroide.frame9.cartea -side top -fill both -expand 1
+      pack $audace(base).cataAsteroide.frame9 -side top -fill both -expand 1
 
       #--- Cree l'affichage d'un checkbutton
       frame $audace(base).cataAsteroide.frame10 -borderwidth 1 -relief raised
@@ -1097,16 +1095,14 @@ namespace eval cataGoto {
       pack $audace(base).cataObjet.frame8 -side top -fill both -expand 1
 
       #--- Gere l'option de creation d'une carte de champ
-      if { [::carte::isReady] == "0" } {
-         frame $audace(base).cataObjet.frame9 -borderwidth 1 -relief raised
-            checkbutton $audace(base).cataObjet.frame9.carte -text "$caption(catagoto,carte_champ)" \
-               -highlightthickness 0 -variable cataGoto(carte,validation)
-            pack $audace(base).cataObjet.frame9.carte -side top -fill both -expand 1
-            checkbutton $audace(base).cataObjet.frame9.cartea -text "$caption(catagoto,carte_champ_devant)" \
-               -highlightthickness 0 -variable cataGoto(carte,avant_plan)
-            pack $audace(base).cataObjet.frame9.cartea -side top -fill both -expand 1
-         pack $audace(base).cataObjet.frame9 -side top -fill both -expand 1
-      }
+      frame $audace(base).cataObjet.frame9 -borderwidth 1 -relief raised
+         checkbutton $audace(base).cataObjet.frame9.carte -text "$caption(catagoto,carte_champ)" \
+            -highlightthickness 0 -variable cataGoto(carte,validation)
+         pack $audace(base).cataObjet.frame9.carte -side top -fill both -expand 1
+         checkbutton $audace(base).cataObjet.frame9.cartea -text "$caption(catagoto,carte_champ_devant)" \
+            -highlightthickness 0 -variable cataGoto(carte,avant_plan)
+         pack $audace(base).cataObjet.frame9.cartea -side top -fill both -expand 1
+      pack $audace(base).cataObjet.frame9 -side top -fill both -expand 1
 
       #--- Cree l'affichage d'un checkbutton
       frame $audace(base).cataObjet.frame10 -borderwidth 1 -relief raised
@@ -1381,16 +1377,14 @@ namespace eval cataGoto {
       pack $audace(base).cataEtoile.frame9 -side bottom -fill both -expand 1
 
       #--- Gere l'option de creation d'une carte de champ
-      if { [::carte::isReady] == "0" } {
-         frame $audace(base).cataEtoile.frame8 -borderwidth 1 -relief raised
-            checkbutton $audace(base).cataEtoile.frame8.carte -text "$caption(catagoto,carte_champ)" \
-               -highlightthickness 0 -variable cataGoto(carte,validation)
-            pack $audace(base).cataEtoile.frame8.carte -side top -fill both -expand 1
-            checkbutton $audace(base).cataEtoile.frame8.cartea -text "$caption(catagoto,carte_champ_devant)" \
-               -highlightthickness 0 -variable cataGoto(carte,avant_plan)
-            pack $audace(base).cataEtoile.frame8.cartea -side top -fill both -expand 1
-         pack $audace(base).cataEtoile.frame8 -side bottom -fill both -expand 1
-      }
+      frame $audace(base).cataEtoile.frame8 -borderwidth 1 -relief raised
+         checkbutton $audace(base).cataEtoile.frame8.carte -text "$caption(catagoto,carte_champ)" \
+            -highlightthickness 0 -variable cataGoto(carte,validation)
+         pack $audace(base).cataEtoile.frame8.carte -side top -fill both -expand 1
+         checkbutton $audace(base).cataEtoile.frame8.cartea -text "$caption(catagoto,carte_champ_devant)" \
+            -highlightthickness 0 -variable cataGoto(carte,avant_plan)
+         pack $audace(base).cataEtoile.frame8.cartea -side top -fill both -expand 1
+      pack $audace(base).cataEtoile.frame8 -side bottom -fill both -expand 1
 
       #--- Cree l'affichage des limites en hauteur
       frame $audace(base).cataEtoile.frame7 -borderwidth 1 -relief raised
