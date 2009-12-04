@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.14 2009-11-01 21:31:19 michelpujol Exp $
+// $Id: libtel.c,v 1.15 2009-12-04 21:54:14 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -1132,8 +1132,10 @@ int cmdTelFocus(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
          /* --- stop ---*/
          if (argc>=4) {
             tel_focus_stop(tel,argv[3]);
+            Tcl_SetResult(interp,"",TCL_VOLATILE);
          } else {
             tel_focus_stop(tel,"");
+            Tcl_SetResult(interp,"",TCL_VOLATILE);
          }
       } else if (strcmp(argv[2],"motor")==0) {
          /* --- motor ---*/
