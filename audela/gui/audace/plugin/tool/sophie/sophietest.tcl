@@ -2,7 +2,7 @@
 # @file     sophietest.tcl
 # @brief    Fichier du namespace ::sophie::test
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietest.tcl,v 1.20 2009-11-01 21:47:37 michelpujol Exp $
+# @version  $Id: sophietest.tcl,v 1.21 2009-12-04 21:55:31 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -23,6 +23,9 @@ namespace eval ::sophie::test {
    set private(telescopeControl,guidingSpeed)   "3.75"   ; #--- vitesse de correction en centrage (le triple de la vitesse siderale)
    set private(telescopeControl,centeringSpeed) "45.0"   ; #--- vitesse de correction en guidage (le quart de la vitesse siderale en arcsec/s
    set private(telescopeControl,gotoSpeed)      "6500.0"   ; #--- vitesse de goto (500 fois la vitesse siderale en arcsec/s
+   set private(telescopeControl,focusPosition)  "0.0"
+   set private(telescopeControl,focusSpeed)  "0"
+    
 }
 
 #------------------------------------------------------------
@@ -448,7 +451,7 @@ proc ::sophie::test::createDialogSimul { } {
       label $frm.pccontrol.labelConfiguration -text "Configuration des vitesses (arsec/sec)"
       grid $frm.pccontrol.labelConfiguration -in [$frm.pccontrol getframe] -row 4 -column 0 -columnspan 4 -sticky w -padx 0
 
-      label $frm.pccontrol.labelGuidingSpeed -text "Vitesse guidage)" -justify left
+      label $frm.pccontrol.labelGuidingSpeed -text "Vitesse guidage" -justify left
       grid $frm.pccontrol.labelGuidingSpeed -in [$frm.pccontrol getframe] -row 5 -column 0 -sticky w -padx 0
       entry $frm.pccontrol.entryGuidingSpeed -textvariable ::sophie::test::private(telescopeControl,guidingSpeed)
       grid $frm.pccontrol.entryGuidingSpeed -in [$frm.pccontrol getframe] -row 5 -column 1 -sticky w -padx 2
@@ -473,8 +476,18 @@ proc ::sophie::test::createDialogSimul { } {
       entry $frm.pccontrol.entryLunarSpeed -textvariable ::sophie::test::private(telescopeControl,lunarSpeed)
       grid $frm.pccontrol.entryLunarSpeed -in [$frm.pccontrol getframe] -row 7 -column 3 -sticky w -padx 2
 
+      label $frm.pccontrol.labelFocusPosition -text "Focus position (%) " -justify left
+      grid $frm.pccontrol.labelFocusPosition -in [$frm.pccontrol getframe] -row 8 -column 0 -sticky w -padx 0
+      entry $frm.pccontrol.entryFocusPosition -textvariable ::sophie::test::private(telescopeControl,focusPosition)
+      grid $frm.pccontrol.entryFocusPosition -in [$frm.pccontrol getframe] -row 8 -column 1 -sticky w -padx 2
+
+      label $frm.pccontrol.labelFocusSpeed -text "vitesse (%/s)" -justify left
+      grid $frm.pccontrol.labelFocusSpeed -in [$frm.pccontrol getframe] -row 8 -column 2 -sticky w -padx 0
+      entry $frm.pccontrol.entryFocusSpeed -textvariable ::sophie::test::private(telescopeControl,focusSpeed)
+      grid $frm.pccontrol.entryFocusSpeed -in [$frm.pccontrol getframe] -row 8 -column 3 -sticky w -padx 2
+
       button $frm.pccontrol.validate -text "Enregistrer" -command "::sophie::test::configure"
-      grid $frm.pccontrol.validate -in [$frm.pccontrol getframe] -row 8 -column 0 -columnspan 4 -sticky nw -padx 2
+      grid $frm.pccontrol.validate -in [$frm.pccontrol getframe] -row 9 -column 0 -columnspan 4 -sticky nw -padx 2
    
       grid columnconfigure [$frm.pccontrol getframe] 0 -weight 1
       grid columnconfigure [$frm.pccontrol getframe] 1 -weight 1
@@ -485,7 +498,7 @@ proc ::sophie::test::createDialogSimul { } {
       grid columnconfigure [$frm.pccontrol getframe] 6 -weight 1
       grid columnconfigure [$frm.pccontrol getframe] 7 -weight 1
       grid columnconfigure [$frm.pccontrol getframe] 8 -weight 1
-      ###grid columnconfigure [$frm.pccontrol getframe] 9 -weight 1
+      grid columnconfigure [$frm.pccontrol getframe] 9 -weight 1
       
       pack $frm.pccontrol -in $frm -side top -anchor w -fill x -expand 0 
 
@@ -749,7 +762,7 @@ proc ::sophie::test::closeTelescopeControl { } {
 #    met a jour l'affichage des coordonnees RADEC
 #   cette procedure est appelee par le thread du simulteur chaque fois que le teslescope change de position
 #------------------------------------------------------------
-proc ::sophie::test::updateGui { ra dec raSpeed decSpeed slewMode slewSpeed} {
+proc ::sophie::test::updateGui { ra dec raSpeed decSpeed slewMode slewSpeed focusPosition focusSpeed } {
    variable private
    set private(telescopeControl,ra)        [format "%8.4f" $ra]
    set private(telescopeControl,raSpeed)   $raSpeed
@@ -757,6 +770,9 @@ proc ::sophie::test::updateGui { ra dec raSpeed decSpeed slewMode slewSpeed} {
    set private(telescopeControl,decSpeed)  $decSpeed
    set private(telescopeControl,slewMode)  $slewMode
    set private(telescopeControl,slewSpeed) $slewSpeed
+   set private(telescopeControl,focusPosition) $focusPosition
+   set private(telescopeControl,focusSpeed) $focusSpeed
+            
 }
 
 #------------------------------------------------------------
