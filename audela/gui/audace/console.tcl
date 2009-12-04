@@ -1,13 +1,10 @@
 #
 # Fichier : console.tcl
 # Description : Creation de la Console
-# Mise a jour $Id: console.tcl,v 1.14 2009-11-26 18:59:24 michelpujol Exp $
+# Mise a jour $Id: console.tcl,v 1.15 2009-12-04 15:48:07 robertdelmas Exp $
 #
 
 namespace eval ::console {
-
-   variable This
-   variable CmdLine
 
    proc create { { this "" } } {
       variable This
@@ -93,10 +90,9 @@ namespace eval ::console {
       bind $This.txt1 <Key-Return> {console::onTxt1KeyReturn %W; break;}
       bind $This.ent1 <Key-Return> {console::onEnt1KeyReturn %W; break;}
       bind $This.ent1 <Key-Escape> {console::onEnt1KeyEsc %W; break;}
-      bind $This.ent1 <Key-Up> {console::onEnt1KeyUp %W; break;}
-      bind $This.ent1 <Key-Down> {console::onEnt1KeyDown %W; break;}
-
-      bind $This.txt1 <Key-F1> {console::onTxt1KeyF1 %W; break;}
+      bind $This.ent1 <Key-Up>     {console::onEnt1KeyUp %W; break;}
+      bind $This.ent1 <Key-Down>   {console::onEnt1KeyDown %W; break;}
+      bind $This.txt1 <Key-F1>     {console::onTxt1KeyF1 %W; break;}
    }
 
    proc GiveFocus {} {
@@ -162,7 +158,7 @@ namespace eval ::console {
    proc affiche_prompt {ligne} {
       variable This
 
-      $This.txt1 insert insert $ligne style_prompt
+      $This.txt1 insert end $ligne style_prompt
       $This.txt1 see insert
    }
 
