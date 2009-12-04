@@ -2,7 +2,7 @@
 # @file     sophiesimulcontrol.tcl
 # @brief    Fichier du namespace ::sophie::testcontrol
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietestcontrol.tcl,v 1.4 2009-11-29 11:11:45 michelpujol Exp $
+# @version  $Id: sophietestcontrol.tcl,v 1.5 2009-12-04 21:55:31 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -49,7 +49,15 @@ proc ::sophie::testcontrol::init { mainThreadNo telescopeCommandPort telescopeNo
    set private(motor,mode)    "NONE"      ; #--- NONE, ILLIMITED_MOVE, LIMITED_MOVE, GOTO
    set private(goto,raSpeed)  0.0
    set private(goto,decSpeed) 0.0
-
+   
+   set private(focus,mode)    "NONE"
+   set private(focus,speed)   0.0         ; #--- vitesse courante du focus
+   set private(focus,L)       1           ; #--- vitesse lente de focus ( 1% par seconde)        
+   set private(motor,R)       5           ; #--- vitesse rapide du focu ( 5% par seconde) 
+   set private(focus,position)  "0"       ; #--- position courante du focus 
+   set private(focus,targetPosition)  "0" ; #--- position cible du focus pour un GOTO ou un MOVE limite
+   set private(focus,notificationEnabled) "0"  ; #---notification de la position du focus
+   
    #--- je charge la librairie de calcul de mecanique celeste dans le thread
    set binDirectory [file dirname [info nameofexecutable]]
    load [file join $binDirectory libmc[info sharedlibextension]]
@@ -216,22 +224,16 @@ proc ::sophie::testcontrol::readTelescopeCommandSocket { channel } {
                      switch [lindex $commandArray 2] {
                         "0" {
                            #--- j'arrete de l'envoi periodique des coordonnees
-                           stopRadecCoord
+                           set returnCode [stopRadecCoordNotification]
                            #--- je retourne la reponse
-                           set raHms  [mc_angle2hms $private(motor,ra) 360 zero 2 auto string]
-                           set decDms [mc_angle2dms $private(motor,dec) 90 zero 2 + string]
-                           set returnCode 0
-                           set response [format "!RADEC COORD %d %s %s @" $returnCode $raHms $decDms ]
+                           set response [format "!RADEC COORD %d @" $returnCode ]
                            writeTelescopeCommandSocket $channel $response
                         }
                         "1" {
                            #--- je demarre l'envoi periodique des coordonnees (boucle infinie en tache de fond)
-                           startRadecCoord
+                           set returnCode [startRadecCoordNotification]
                            #--- je retourne la reponse
-                           set returnCode 0
-                           set raHms  [mc_angle2hms $private(motor,ra) 360 zero 2 auto string]
-                           set decDms [mc_angle2dms $private(motor,dec) 90 zero 2 + string]
-                           set response [format "!RADEC COORD %d %s %s @" $returnCode $raHms $decDms ]
+                           set response [format "!RADEC COORD %d @" $returnCode ]
                            writeTelescopeCommandSocket $channel $response
                            #--- envoi des coordonnees
                         }
@@ -268,11 +270,61 @@ proc ::sophie::testcontrol::readTelescopeCommandSocket { channel } {
                }
             }
             "!FOC" {
-               disp "::sophie::testcontrol::readTelescopeCommandSocket invalid [lindex $commandArray 0] command=$command\n"
-               #--- je retourne une erreur 19= NOT IMPLEMENTED
-               set returnCode 19 ;
-               set response [format "!RADEC COORD %d @" $returnCode ]
-               writeTelescopeCommandSocket $channel $response
+               switch [lindex $commandArray 1] {
+                  MOVE {
+                     #---  je recupere la direction et la vitesse
+                     set direction [lindex $commandArray 2]
+                     set speedCode [lindex $commandArray 3]
+                     set distance  [lindex $commandArray 4]                     
+                     set returnCode [startFocusMove $direction $speedCode $distance]
+                     #--- je retourne la reponse
+                     set response [format "!FOC MOVE %d @" $returnCode ]
+                     writeTelescopeCommandSocket $channel $response
+                  }
+                  STOP {
+                     set returnCode [stopFocusMove]
+                     set response [format "!FOC STOP %d @" $returnCode]
+                     writeTelescopeCommandSocket $channel $response
+                  }
+                  COORD {
+                     switch [lindex $commandArray 2] {
+                        "0" {
+                           #--- j'arrete de l'envoi periodique de la position
+                           set returnCode [stopFocusNotification]
+                           #--- je retourne la reponse
+                           set response [format "!FOC COORD %d @" $returnCode ]
+                           writeTelescopeCommandSocket $channel $response
+                        }
+                        "1" {
+                           #--- je demarre l'envoi periodique des coordonnees (boucle infinie en tache de fond)
+                           set returnCode [startFocusNotification]
+                           #--- je retourne la reponse
+                           set response [format "!FOC COORD %d @" $returnCode ]
+                           writeTelescopeCommandSocket $channel $response
+                        }
+                        "2" {
+                           #--- je retourne la position immediatement dans la reponse
+                           set returnCode 0
+                           set response [format "!FOC COORD %d %s @" $returnCode $private(focus,position) ]
+                           writeTelescopeCommandSocket $channel $response
+                        }
+                     }
+                  }
+                  GOTO {
+                     set returnCode [startRadecGoto [lindex $commandArray 2] [lindex $commandArray 3]]
+                     #--- j'envoie le code retour
+                     set raHms  [mc_angle2hms $private(motor,ra) 360 zero 2 auto string]
+                     set decDms [mc_angle2dms $private(motor,dec) 90 zero 2 + string]
+                     set response [format "!RADEC GOTO %d %s %s @" $returnCode $raHms $decDms ]
+                     writeTelescopeCommandSocket $channel $response
+                  }
+                  default {
+                     #--- j'envoie le code retour 99
+                     set response [format "!RADEC [lindex $commandArray 1] 99 @" ]
+                     writeTelescopeCommandSocket $channel $response
+                     disp "::sophie::testcontrol::readTelescopeCommandSocket invalid [lindex $commandArray 1] command=$command\n"
+                  }
+               }
             }
             default {
                #--- j'envoie le code retour 99
@@ -336,30 +388,40 @@ proc ::sophie::testcontrol::writeTelescopeNotificationSocket { notification } {
 
 }
 
+#############################################################
+#
+#  RADEC
+#
+#############################################################
+
 #------------------------------------------------------------
-# startRadecCoord
-#   demarre l'envoi des coordonnees au PC de guidage
+# startRadecCoordNotification
+#   demarre l'envoi des notifications coordonnees 
 #
 # @param donnees a envoyer
+# @return code retour 0=OK , 1=Erreur
 #------------------------------------------------------------
-proc ::sophie::testcontrol::startRadecCoord { } {
+proc ::sophie::testcontrol::startRadecCoordNotification { } {
    variable private
 
    if { $private(radecCoord,enabled) == 0 } {
       set private(radecCoord,enabled) 1
       after 1000 ::sophie::testcontrol::sendRadecCoord
    }
+   return 0
 }
 
 #------------------------------------------------------------
-# stopRadecCoord
+# stopRadecCoordNotification
 #   arrete l'envoi des coordonnees au PC de guidage
 #
 # @param donnees a envoyer
+# @return code retour 0=OK , 1=Erreur
 #------------------------------------------------------------
-proc ::sophie::testcontrol::stopRadecCoord { } {
+proc ::sophie::testcontrol::stopRadecCoordNotification { } {
    variable private
    set private(radecCoord,enabled) 0
+   return 0
 }
 
 #------------------------------------------------------------
@@ -384,7 +446,7 @@ proc ::sophie::testcontrol::sendRadecCoord { } {
       }
    }
    set returnCode 0
-   set response [format "!RADEC COORD %d %s %s %s @" $returnCode $moveCode $raHms $decDms ]
+   set response [format "!RADEC COORD %d %s %s %s %s @" $returnCode $moveCode $private(motor,slewMode) $raHms $decDms ]
    ###disp "sendRadecCoord response=$response\n"
    ::sophie::testcontrol::writeTelescopeNotificationSocket $response
    if { $private(radecCoord,enabled) == 1 } {
@@ -600,7 +662,7 @@ proc ::sophie::testcontrol::simulateMotor { } {
 
       switch $private(motor,mode) {
          "NONE" {
-            #--- je simule le suivi en ascension droite (la declinaison n'est pas modifiee
+            #--- je simule l'arret du suivi en ascension droite (la declinaison n'est pas modifiee)
             set private(motor,ra) [expr $private(motor,ra) + $delay * (15.0 - $private(motor,slewSpeed,$private(motor,slewMode)))  / 3600.0  ]
          }
          "ILLIMITED_MOVE" {
@@ -620,11 +682,13 @@ proc ::sophie::testcontrol::simulateMotor { } {
             } else {
                set private(motor,dec) $private(target,dec)
             }
-disp "simulateMotor delai=$delay ra=$private(motor,ra) dec=$private(motor,dec) target=$private(target,ra) $private(target,dec)\n"
 
             if { $private(motor,ra) == $private(target,ra) && $private(motor,dec) == $private(target,dec) } {
                #--- je memorise l'arret du MOVE
                set private(motor,mode) "NONE"
+               set private(motor,raSpeed) 0
+               set private(motor,decSpeed) 0
+               disp "simulateMotor fin de mouvement limité\n"
                #--- j'envoie une notification pour signaler que le GOTO est termine
                ::sophie::testcontrol::sendRadecCoord
             }
@@ -644,6 +708,7 @@ disp "simulateMotor delai=$delay ra=$private(motor,ra) dec=$private(motor,dec) t
 
             if { $private(motor,ra) == $private(target,ra) && $private(motor,dec) == $private(target,dec) } {
                #--- je memorise l'arret du GOTO
+               disp "simulateMotor fin de mouvement limité\n"
                set private(motor,mode) "NONE"
                #--- j'envoie une notification pour signaler que le GOTO est termine
                ::sophie::testcontrol::sendRadecCoord
@@ -651,6 +716,47 @@ disp "simulateMotor delai=$delay ra=$private(motor,ra) dec=$private(motor,dec) t
          }
       }
 
+      switch $private(focus,mode) {
+         "NONE" {
+            #--- rien a faire 
+         }
+         "ILLIMITED_MOVE" {
+            #--- je simule le deplacement illimitee
+            set private(focus,position) [expr $private(focus,position) + $delay * $private(focus,speed) ]
+         }
+         "LIMITED_MOVE" {
+            #--- je simule le deplacement limite
+            if { [expr abs($private(focus,position) - $private(focus,targetPosition)) > abs($delay * $private(focus,speed)) ] } {
+               set private(focus,position) [expr $private(focus,position) + $delay * $private(focus,speed) ]
+            } else {
+               #--- l'ecart est tout petit, je considere qu'on a atteint la position cible
+               set private(focus,position) $private(focus,targetPosition)
+            }
+            if { $private(focus,position) == $private(focus,targetPosition) } {
+               #--- je memorise l'arret du MOVE
+               set private(focus,mode) "NONE"
+               #--- j'envoie une notification pour signaler que le MOVE est termine
+               ::sophie::testcontrol::sendFocusPosition
+            }
+         }
+         "GOTO" {
+            #--- je simule le GOTO
+            if { [expr abs($private(focus,position) - $private(focus,targetPosition)) > abs($delay * $private(focus,speed)) ] } {
+               set private(focus,position) [expr $private(focus,position) + $delay * $private(focus,speed) ]
+            } else {
+               #--- l'ecart est tout petit, je considere qu'on a atteint la position cible
+               set private(focus,position) $private(focus,targetPosition)
+            }
+
+            if { $private(focus,position) == $private(focus,targetPosition) } {
+               #--- je memorise l'arret du GOTO
+               set private(focus,mode) "NONE"
+               #--- j'envoie une notification pour signaler que le GOTO est termine
+               ::sophie::testcontrol::sendFocusPosition
+            }
+         }         
+      }
+      
       ###disp "simulateMotor delai=$delay ra=$private(motor,ra) dec=$private(motor,ra) \n"
 
       #--- je met a jour la fenetre du simulateur
@@ -663,6 +769,148 @@ disp "simulateMotor delai=$delay ra=$private(motor,ra) dec=$private(motor,dec) t
       ::sophie::testcontrol::disp  "$::errorInfo \n"
    }
 }
+
+#############################################################
+#
+#  FOCUS
+#
+#############################################################
+
+
+#------------------------------------------------------------
+# startFocusMove
+#   demarre un mouvement du focus 
+#
+# @param direction + ou -
+# @param speedCode L ou R
+# @param distance en arcsec
+# @return code retour 0=OK , 1=Erreur
+#------------------------------------------------------------
+proc ::sophie::testcontrol::startFocusMove { direction speedCode distance} {
+   variable private
+
+   set catchError [ catch {
+      set result 0
+      
+      if { $private(focus,mode) == "NONE" } {
+         set speed $private(focus,$speedCode)
+
+         #--- je change la vitesse de la monture
+         switch $direction {
+            "+" {
+               set private(focus,speed) $speed
+            }
+            "-" {
+               set private(focus,speed) [expr 0 - $speed]
+            }
+            default {
+               set result 2  ; # erreur: direction incorrecte    
+            }               
+         }
+
+         if { $result == 0 } {
+            if { $distance == 0 } {
+               set private(focus,mode) "ILLIMITED_MOVE"
+            } else {
+               set private(focus,mode) "LIMITED_MOVE"
+               #--- je calcule les coordonnees cibles
+               switch $direction {
+                  "+" {
+                     set private(focus,targetPosition) [expr $private(focus,position) + $distance ]
+                  }
+                  "-" {
+                     set private(focus,targePosition) [expr $private(focus,position) - $distance ]
+                  }
+               }
+            }
+         }
+      } else {
+         #--- erreur: le focus est deja en mouvement
+         set result 1
+      }
+   }]
+
+   if { $catchError != 0 } {
+      ::sophie::testcontrol::disp  "$::errorInfo \n"
+      set result 1
+   }
+
+   return $result
+}
+
+#------------------------------------------------------------
+# stopFocusMove
+#   arrete un mouvement du focus
+#
+# @param direction N S E W
+#------------------------------------------------------------
+proc ::sophie::testcontrol::stopFocusMove { } {
+   variable private
+
+   set private(focus,speed) 0.0
+   set private(focus,mode) "NONE"
+
+   return 0
+}
+
+#------------------------------------------------------------
+# startFocusNotification
+#   demarre l'envoi des notifications de la position du focus 
+#
+# @return code retour 0=OK , 1=Erreur
+#------------------------------------------------------------
+proc ::sophie::testcontrol::startFocusNotification { } {
+   variable private
+
+   if { $private(focus,notificationEnabled) == 0 } {
+      set private(focus,notificationEnabled) 1
+      after 500 ::sophie::testcontrol::sendFocusPosition
+   }
+   return 0
+}
+
+#------------------------------------------------------------
+# stopFocusNotification
+#   arrete l'envoi des notifications de la position du focus 
+#
+# @return code retour 0=OK , 1=Erreur
+#------------------------------------------------------------
+proc ::sophie::testcontrol::stopFocusNotification { } {
+   variable private
+   set private(focus,notificationEnabled) 0
+   return 0
+}
+
+#------------------------------------------------------------
+# sendFocusPosition
+#   envoie une donnee au PC de guidage
+#
+# @param donnees a envoyer
+#------------------------------------------------------------
+proc ::sophie::testcontrol::sendFocusPosition { } {
+   variable private
+
+   switch $private(focus,mode) {
+      "NONE" {
+         #--- le focus n'est pas  en mouvement
+         set moveCode 0
+      }
+      default {
+         #--- le focus est en mouvement
+         set moveCode 1
+      }
+   }
+   set returnCode 0
+   set response [format "!FOC COORD %d %d %s @" $returnCode $moveCode $private(focus,position)]
+   disp "sendFocusPosition $response private(focus,notificationEnabled)=$private(focus,notificationEnabled)\n"
+   ::sophie::testcontrol::writeTelescopeNotificationSocket $response
+   if { $private(focus,notificationEnabled) == 1 } {
+      #--- je lance une nouvelle iteration apres 1000 miliscondes
+      after 1000 ::sophie::testcontrol::sendFocusPosition
+   }
+}
+
+
 
 
 #------------------------------------------------------------
@@ -696,7 +944,11 @@ proc ::sophie::testcontrol::updateGui { } {
    variable private
 
    ::thread::send -async $private(mainThreadNo) \
-      [list ::sophie::test::updateGui $private(motor,ra) $private(motor,dec) [expr $private(motor,raSpeed)+ $private(motor,slewSpeed,$private(motor,slewMode))]  $private(motor,decSpeed) $private(motor,slewMode) $private(motor,slewSpeed,$private(motor,slewMode)) ]
+      [list ::sophie::test::updateGui $private(motor,ra) $private(motor,dec) \
+            [expr $private(motor,raSpeed)+ $private(motor,slewSpeed,$private(motor,slewMode))]  \
+       $private(motor,decSpeed) \
+       $private(motor,slewMode) $private(motor,slewSpeed,$private(motor,slewMode)) \
+       [format "%6.2f" $private(focus,position)] $private(focus,speed) ]
 }
 
 
