@@ -2,7 +2,7 @@
 # Fichier : ascom.tcl
 # Description : Configuration de la monture ASCOM
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ascom.tcl,v 1.15 2008-12-22 17:34:46 robertdelmas Exp $
+# Mise a jour $Id: ascom.tcl,v 1.16 2009-12-04 17:59:44 robertdelmas Exp $
 #
 
 namespace eval ::ascom {
@@ -86,13 +86,13 @@ proc ::ascom::initPlugin { } {
    set private(telNo) "0"
 
    #--- Plugins ASCOM installes sur le PC
-   set private(ascom_drivers) ""
+   set private(ascomDrivers) ""
    if { [ lindex $::tcl_platform(os) 0 ] == "Windows" } {
       set erreur [ catch { ::registry keys "HKEY_LOCAL_MACHINE\\SOFTWARE\\ASCOM\\Telescope Drivers" } msg ]
       if { $erreur == "0" } {
          foreach key [ ::registry keys "HKEY_LOCAL_MACHINE\\SOFTWARE\\ASCOM\\Telescope Drivers" ] {
             if { [ catch { ::registry get "HKEY_LOCAL_MACHINE\\SOFTWARE\\ASCOM\\Telescope Drivers\\$key" "" } r ] == 0 } {
-               lappend private(ascom_drivers) [list $r $key]
+               lappend private(ascomDrivers) [list $r $key]
             }
          }
       } else {
@@ -100,7 +100,7 @@ proc ::ascom::initPlugin { } {
          if { $erreur == "0" } {
             foreach key [ ::registry keys "HKEY_LOCAL_MACHINE\\Software\\ASCOM\\Telescope Drivers" ] {
                if { [ catch { ::registry get "HKEY_LOCAL_MACHINE\\Software\\ASCOM\\Telescope Drivers\\$key" "" } r ] == 0 } {
-                  lappend private(ascom_drivers) [list $r $key]
+                  lappend private(ascomDrivers) [list $r $key]
                }
             }
          }
@@ -108,7 +108,7 @@ proc ::ascom::initPlugin { } {
    }
 
    #--- Initialise les variables de la monture ASCOM
-   if { ! [ info exists conf(ascom,modele) ] } { set conf(ascom,modele) [ lindex $private(ascom_drivers) 0 ] }
+   if { ! [ info exists conf(ascom,modele) ] } { set conf(ascom,modele) [ lindex $private(ascomDrivers) 0 ] }
 }
 
 #
@@ -166,13 +166,13 @@ proc ::ascom::fillConfigPage { frm } {
    pack $frm.lab1 -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
 
    ComboBox $frm.driver \
-      -width [ ::tkutil::lgEntryComboBox $private(ascom_drivers) ] \
-      -height [ llength $private(ascom_drivers) ] \
+      -width [ ::tkutil::lgEntryComboBox $private(ascomDrivers) ] \
+      -height [ llength $private(ascomDrivers) ] \
       -relief sunken    \
       -borderwidth 1    \
-      -textvariable ::ascom::private(modele) \
       -editable 0       \
-      -values $private(ascom_drivers)
+      -textvariable ::ascom::private(modele) \
+      -values $private(ascomDrivers)
    pack $frm.driver -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
 
    #--- Bouton de configuration du plugin
@@ -213,8 +213,7 @@ proc ::ascom::configureMonture { } {
       #--- Je cree la monture
       set telNo [ tel::create ascom "unknown" [ lindex $conf(ascom,modele) 1 ] ]
       #--- J'affiche un message d'information dans la Console
-      ::console::affiche_entete "$caption(ascom,driver) \
-         $caption(ascom,2points) [ lindex $conf(ascom,modele) 1 ] \n"
+      ::console::affiche_entete "$caption(ascom,driver) $caption(ascom,2points) [ lindex $conf(ascom,modele) 1 ]\n"
       ::console::affiche_saut "\n"
       #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
      ### set linkNo [ ::confLink::create $conf(ascom,port) "tel$telNo" "control" [ tel$telNo product ] ]
