@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.49 2009-11-29 10:54:50 michelpujol Exp $
+# Mise a jour $Id: telescope.tcl,v 1.50 2009-12-04 12:40:45 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -178,7 +178,7 @@ proc ::telescope::match { radec { radecEquinox "J2000.0" } } {
 #   erreur a catcher pour les autres erreurs
 #------------------------------------------------------------
 proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { objectName "" } { radecEquinox "J2000.0" } } {
-   global audace caption cataGoto catalogue conf
+   global audace caption cataGoto conf
 
    if { [ ::tel::list ] != "" } {
       set audace(telescope,targetRa)      [lindex $list_radec 0]
@@ -197,7 +197,9 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
       update
       #--- Affichage du champ dans une carte. Parametres : nom_objet, ad, dec, zoom_objet, avant_plan
       if { $cataGoto(carte,validation) == "1" } {
-         ::carte::gotoObject $cataGoto(carte,nom_objet) $cataGoto(carte,ad) $cataGoto(carte,dec) $cataGoto(carte,zoom_objet) $cataGoto(carte,avant_plan)
+         if { [::carte::isReady] == "0" } {
+            ::carte::gotoObject $cataGoto(carte,nom_objet) $cataGoto(carte,ad) $cataGoto(carte,dec) $cataGoto(carte,zoom_objet) $cataGoto(carte,avant_plan)
+         }
       }
       #--- Cas d'un Goto avec rattrapage des jeux
       set audace(telescope,stopgoto) "0"
@@ -217,7 +219,7 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
          #--- je traite le mode slewpath (si long, je passe en short pour le rattrapage des jeux)
          slewpathLong2Short
       }
-      
+
       #--- Goto
       set catchError [catch {
          if { $audace(telescope,stopgoto) == "0" } {
@@ -236,23 +238,23 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
             }
          }
       }]
-      
+
       #--- je restaure le mode slewpath si necessaire
       slewpathShort2Long
-      
-      #--- je mets a jour les boutons avant de retourner un eventuel message d'erreur 
+
+      #--- je mets a jour les boutons avant de retourner un eventuel message d'erreur
       if { $But_Goto != "" } {
          $But_Goto configure -relief raised -state normal
       }
       if { $But_Match != "" } {
          $But_Match configure -relief raised -state normal
-      }        
+      }
 
       if { $catchError != 0 } {
-         #--- je retoune l'erreur 
+         #--- je retoune l'erreur
          error $::errorInfo
       } else {
-         return 0                      
+         return 0
       }
    } else {
       ::confTel::run
