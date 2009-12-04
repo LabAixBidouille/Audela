@@ -2,7 +2,7 @@
 # Fichier : t193pad.tcl
 # Description : Raquette specifique au T193 de l'OHP
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: t193pad.tcl,v 1.3 2009-11-29 11:20:16 michelpujol Exp $
+# Mise a jour $Id: t193pad.tcl,v 1.4 2009-12-04 22:04:01 michelpujol Exp $
 #
 
 namespace eval ::t193pad {
@@ -88,7 +88,6 @@ proc ::t193pad::initConf { } {
    set private(targetRa)      "00h00m00.00s"
    set private(targetDec)     "+00d00m00.00s"
    set private(controleSuivi) 1    ; #--- le suivi est actif par defaut
-   set private(positionFoc)   "0"
    set private(positionDome)  "0"
    set private(synchro)       "1"
 
@@ -312,7 +311,7 @@ proc ::t193pad::createDialog { } {
       -font [ list {Arial} 12 bold ] \
       -fg $color(white) \
       -bg $color(gray_pad) \
-      -text "$caption(t193pad,ouest)" \
+      -text $caption(t193pad,ouest) \
       -width 2  \
       -anchor center \
       -relief ridge
@@ -327,7 +326,7 @@ proc ::t193pad::createDialog { } {
       -font [ list {Arial} 12 bold ] \
       -fg $color(white) \
       -bg $color(gray_pad) \
-      -text "$caption(t193pad,sud)" \
+      -text $caption(t193pad,sud) \
       -width 2  \
       -anchor center \
       -relief ridge
@@ -418,7 +417,7 @@ proc ::t193pad::createDialog { } {
    pack $This.frame4.pm.canv1 -expand 0 -side left -padx 10 -pady 4
 
    #--- Label pour la position de la focalisation courante
-   label $This.frame4.pm.positionFoc -textvariable ::t193pad::private(positionFoc) \
+   label $This.frame4.pm.positionFoc -textvariable ::audace(telescope,currentFocus) \
       -bg $color(blue_pad) -fg $color(white) -font [ list {Arial} 12 bold ] -width 10 \
       -borderwidth 0 -relief flat
    pack $This.frame4.pm.positionFoc -expand 1 -side left
@@ -454,10 +453,10 @@ proc ::t193pad::createDialog { } {
    #--- Bind des boutons '+' et '-'
    set zone(moins) $This.frame4.pm.canv1
    set zone(plus)  $This.frame4.pm.canv2
-   bind $zone(moins) <ButtonPress-1>   { catch { ::focus::move $::conf(t193pad,focuserLabel) - } }
-   bind $zone(moins) <ButtonRelease-1> { ::focus::move $::conf(t193pad,focuserLabel) stop }
-   bind $zone(plus)  <ButtonPress-1>   { catch { ::focus::move $::conf(t193pad,focuserLabel) + } }
-   bind $zone(plus)  <ButtonRelease-1> { ::focus::move $::conf(t193pad,focuserLabel) stop }
+   bind $zone(moins) <ButtonPress-1>   { ::t193pad::startFocus "-" }
+   bind $zone(moins) <ButtonRelease-1> { ::t193pad::stopFocus }
+   bind $zone(plus)  <ButtonPress-1>   { ::t193pad::startFocus "+" }
+   bind $zone(plus)  <ButtonRelease-1> { ::t193pad::stopFocus }
 
    #--- Bind de la vitesse du moteur de focalisation
    bind $This.frame4.vitesseFocus <ButtonPress-1> { ::focus::incrementSpeed $::conf(t193pad,focuserLabel) pad }
@@ -561,6 +560,64 @@ proc ::t193pad::setSlew { } {
       $This.frame2.s.controleSuivi configure -text $::caption(t193pad,suivi_arret)           
    }
    
+   if { $catchError != 0 } {
+      ::tkutil::displayErrorInfo $::caption(t193pad,titre)
+   }
+}
+
+#------------------------------------------------------------
+#  setSlew
+#     marche/arret du suivi
+#------------------------------------------------------------
+proc ::t193pad::setSlew { } {
+   variable private
+   variable This
+
+   set catchError [catch { 
+      ::telescope::controleSuivi
+   }]
+   
+   #--- je mets a jour les widgets avant d'afficher un eventuel message d'erreur 
+   if { $::audace(telescope,controle) == $::caption(telescope,suivi_marche) } {
+      set private(controleSuivi) 1
+      $This.frame2.s.controleSuivi configure -text $::caption(t193pad,suivi_marche)
+   } else {
+      set private(controleSuivi) 0
+      $This.frame2.s.controleSuivi configure -text $::caption(t193pad,suivi_arret)           
+   }
+   
+   if { $catchError != 0 } {
+      ::tkutil::displayErrorInfo $::caption(t193pad,titre)
+   }
+}
+
+#------------------------------------------------------------
+#  startFocus
+#     demarre le mouvement du focus du T193
+#------------------------------------------------------------
+proc ::t193pad::startFocus { direction } {
+   variable private
+   variable This
+
+   set catchError [catch { 
+      tel$::audace(telNo) focus move $direction
+   }]
+      
+   if { $catchError != 0 } {
+      ::tkutil::displayErrorInfo $::caption(t193pad,titre)
+   }
+}
+
+#------------------------------------------------------------
+#  stopFocus
+#     arrete le mouvement du focus du T193
+#------------------------------------------------------------
+proc ::t193pad::stopFocus {  } {
+   
+   set catchError [catch { 
+      tel$::audace(telNo) focus stop 
+   }]
+      
    if { $catchError != 0 } {
       ::tkutil::displayErrorInfo $::caption(t193pad,titre)
    }
