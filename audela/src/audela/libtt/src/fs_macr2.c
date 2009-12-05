@@ -672,7 +672,7 @@ int macr_read_keys(void *arg1)
 	 libfiles_main(FS_FITS_CLOSE_FILE,1,fptr);
 	 return(msg);
       }
-      if ((int*)datatype!=NULL) {
+      if (&datatype!=NULL) {
 	 if      (dtype=='C') { datatype=TSTRING; }
 	 else if (dtype=='L') { datatype=TSTRING; }
 	 else if (dtype=='I') { datatype=TINT; }
