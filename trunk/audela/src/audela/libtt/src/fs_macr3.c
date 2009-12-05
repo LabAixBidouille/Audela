@@ -102,7 +102,8 @@ int macr_fits2gif(void *arg1,void *arg2,void *arg3,void *arg4,void *arg5,void *a
    long *naxes;
    float *p;
    char *nom_fichier_fits,*nom_fichier_gif,*keyname,charvalue[FLEN_VALUE];
-   int bitpix,typehdu,numhdu,firstelem,nelements;
+   int bitpix,typehdu,numhdu;
+	long firstelem,nelements;
    int type_seuil,nbkeys,k,kk;
    double seuil_bas,seuil_haut,delta_seuil;
 

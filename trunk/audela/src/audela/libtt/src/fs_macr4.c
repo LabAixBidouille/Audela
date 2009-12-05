@@ -53,7 +53,8 @@ int macr_short2jpg(void *arg1,void *arg2,void *arg3,void *arg4,void *arg5,void *
 /***************************************************************************/
 {
    int i,j;
-   int imax,jmax,nelements;
+   int imax,jmax;
+	long nelements;
    unsigned char *buf,c;
    char *nom_fichier_jpg;
    int naxis1,naxis2,color_space,qualite;
@@ -145,7 +146,8 @@ int macr_fits2jpg(void *arg1,void *arg2,void *arg3,void *arg4,void *arg5,void *a
    long *naxes;
    float *p;
    char *nom_fichier_fits,*nom_fichier_jpg,*keyname,charvalue[FLEN_VALUE];
-   int bitpix,typehdu,numhdu,firstelem,nelements;
+   int bitpix,typehdu,numhdu;
+	long firstelem,nelements;
    int type_seuil,nbkeys,k,kk;
    double seuil_bas,seuil_haut,delta_seuil;
    char comment[FLEN_COMMENT];
