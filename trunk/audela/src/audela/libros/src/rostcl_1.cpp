@@ -480,7 +480,7 @@ ros_gps close symmetricom
 				// Convert Binary Time to structure
 				majtime = gmtime( &majc );
 				// ignore the very first reading
-				sprintf(s,"%04d/%02d/%02dT%02d:%02d:%02d.%06lu",majtime->tm_year+1900,majtime->tm_mon+1,majtime->tm_mday,majtime->tm_hour,majtime->tm_min, majtime->tm_sec,min);
+				sprintf(s,"%04d-%02d-%02dT%02d:%02d:%02d.%06lu",majtime->tm_year+1900,majtime->tm_mon+1,majtime->tm_mday,majtime->tm_hour,majtime->tm_min, majtime->tm_sec,min);
 			}
          /* --- ---*/	
 			Tcl_SetResult(interp,s,TCL_VOLATILE);
