@@ -1,0 +1,134 @@
+#
+# Fichier : ohp_t193.cap
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(ohp_t193,titre)                "Pointing of T193"
+set caption(ohp_t193,tu)                   "Universal Time:"
+set caption(ohp_t193,tsl)                  "Local Sidereal Time:"
+set caption(ohp_t193,ad0)                  "Right Ascension (raw):"
+set caption(ohp_t193,dec0)                 "Declination (raw):"
+set caption(ohp_t193,ad)                   "Right Ascension (model):"
+set caption(ohp_t193,dec)                  "Declination (model):"
+set caption(ohp_t193,valider)              "Enter"
+set caption(ohp_t193,angle_horaire)        "Hour Angle (model):"
+set caption(ohp_t193,azimut)               "Azimuth:"
+set caption(ohp_t193,hauteur)              "Elevation:"
+set caption(ohp_t193,haold)                "H.Angle (old):"
+set caption(ohp_t193,decold)               "Dec. (old):"
+set caption(ohp_t193,adshort)              "RA (hms) :"
+set caption(ohp_t193,decshort)             "Dec (dms) :"
+set caption(ohp_t193,fichierlog)           "Log file:"
+set caption(ohp_t193,modeldescr)           "To create a new model: Menu Outils -> Modèle de pointage" 
+set caption(ohp_t193,modelisoff)           "Push this buttom to use a pointing model" 
+set caption(ohp_t193,modelison)            "Push this buttom to stop to use a pointing model" 
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+#   set caption(ohp_t193,titre)             "Pointage T193"
+#   set caption(ohp_t193,tu)                "Temps Universel :"
+#   set caption(ohp_t193,tsl)               "Temps Sidéral Local :"
+#   set caption(ohp_t193,ad0)               "Ascension Droite (brut) :"
+#   set caption(ohp_t193,dec0)              "Déclinaison (brut) :"
+#   set caption(ohp_t193,ad)                "Ascension Droite (modèle) :"
+#   set caption(ohp_t193,dec)               "Déclinaison (modèle) :"
+#   set caption(ohp_t193,angle_horaire)     "Angle Horaire (modèle) :"
+   set caption(ohp_t193,titre)             "T193"
+   set caption(ohp_t193,tu)                "  TU\t"
+   set caption(ohp_t193,tsl)               "  TS\t"
+   set caption(ohp_t193,ad0)               " ALPHA (brut) : "
+   set caption(ohp_t193,dec0)              " DELTA (brut) : "
+   set caption(ohp_t193,ad)                "  ALPHA\t"
+   set caption(ohp_t193,dec)               "  DELTA\t"
+   set caption(ohp_t193,angle_horaire)     "  HA\t"
+   set caption(ohp_t193,valider)           "Valider"
+   set caption(ohp_t193,azimut)            "Azimut :"
+   set caption(ohp_t193,hauteur)           "Hauteur :"
+   set caption(ohp_t193,haold)             "Angle H. (old) :"
+   set caption(ohp_t193,decold)            "Dec. (old) :"
+   set caption(ohp_t193,adshort)           "RA (hms) :"
+   set caption(ohp_t193,decshort)          "Dec (dms) :"
+   set caption(ohp_t193,fichierlog)        "Fichier log :"
+   set caption(ohp_t193,modeldescr)        "Pour créer un nouveau modèle: Menu Outils -> Modèle de pointage" 
+   set caption(ohp_t193,modelisoff)        "Appuyer sur ce bouton pour utiliser un modèle de pointage" 
+   set caption(ohp_t193,modelison)         "Appuyer sur ce bouton pour ne plus utiliser de modèle de pointage" 
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(ohp_t193,titre)             "Orologio astronomico"
+   set caption(ohp_t193,tu)                "Tempo Universale:"
+   set caption(ohp_t193,tsl)               "Tempo Siderale Locale:"
+   set caption(ohp_t193,ad)                "Ascensione Retta :"
+   set caption(ohp_t193,dec)               "Declinazione :"
+   set caption(ohp_t193,valider)           "Convalidare"
+   set caption(ohp_t193,angle_horaire)     "Angolo orario:"
+   set caption(ohp_t193,azimut)            "Azimuth:"
+   set caption(ohp_t193,hauteur)           "Elevazione:"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(ohp_t193,titre)             "El reloj del astrónomo"
+   set caption(ohp_t193,tu)                "Tiempo Universal:"
+   set caption(ohp_t193,tsl)               "Tiempo Sideral Local:"
+   set caption(ohp_t193,ad)                "Ascensión Recta :"
+   set caption(ohp_t193,dec)               "Declinación :"
+   set caption(ohp_t193,valider)           "Validar"
+   set caption(ohp_t193,angle_horaire)     "Angulo horario:"
+   set caption(ohp_t193,azimut)            "Azimuth:"
+   set caption(ohp_t193,hauteur)           "Elevación:"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(ohp_t193,titre)             "Die Uhr vom Astronom"
+   set caption(ohp_t193,tu)                "Weltzeit:"
+   set caption(ohp_t193,tsl)               "Lokale Siderische Zeit:"
+   set caption(ohp_t193,ad)                "Rektaszension :"
+   set caption(ohp_t193,dec)               "Deklination :"
+   set caption(ohp_t193,valider)           "Eingeben"
+   set caption(ohp_t193,angle_horaire)     "Zeit Winkel:"
+   set caption(ohp_t193,azimut)            "Azimut:"
+   set caption(ohp_t193,hauteur)           "Höhe:"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(ohp_t193,titre)             "Relógio do astrónomo"
+   set caption(ohp_t193,tu)                "Tempo Universal :"
+   set caption(ohp_t193,tsl)               "Tempo Sideral Local :"
+   set caption(ohp_t193,ad)                "Ascenção Recta  :"
+   set caption(ohp_t193,dec)               "Declinação  :"
+   set caption(ohp_t193,valider)           "Validar"
+   set caption(ohp_t193,angle_horaire)     "Ângulo Horário :"
+   set caption(ohp_t193,azimut)            "Azimute :"
+   set caption(ohp_t193,hauteur)           "Altura :"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(ohp_t193,titre)             "The astronomer's clock"
+   set caption(ohp_t193,tu)                "Universal Time:"
+   set caption(ohp_t193,tsl)               "Local Sidereal Time:"
+   set caption(ohp_t193,ad)                "Right Ascension :"
+   set caption(ohp_t193,dec)               "Declination :"
+   set caption(ohp_t193,valider)           "Enter"
+   set caption(ohp_t193,angle_horaire)     "Hour Angle:"
+   set caption(ohp_t193,azimut)            "Azimuth:"
+   set caption(ohp_t193,hauteur)           "Elevation:"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
