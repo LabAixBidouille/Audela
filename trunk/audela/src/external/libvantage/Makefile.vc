@@ -16,7 +16,9 @@ install: build
 	$(CP) $(SOURCE)\lib\VantagePro.lib   $(EXTERNAL_LIB)
 	$(CP) $(SOURCE)\lib\VantagePro.dll   $(AUDELA_BIN)
 
+
 clean:
 	$(RM) $(EXTERNAL_INCLUDE)\VantagePro.h
 	$(RM) $(EXTERNAL_LIB)\VantagePro.lib
 	$(RM) $(AUDELA_BIN)\VantagePro.dll
+
