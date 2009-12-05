@@ -391,7 +391,8 @@ int tt_util_ttima2ptr(TT_IMA *p_in,void *array,int datatype,int iaxis3)
 /* iaxis3 dans le cas de NAXIS=3.                                          */
 /***************************************************************************/
 {
-   int nelements,k,off;
+   int k,off;
+	long nelements; 
    nelements=p_in->naxis1*p_in->naxis2;
    off=0;
    if (p_in->naxis3>1) {
