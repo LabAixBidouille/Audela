@@ -153,6 +153,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    //tel->radecNotification = 0;
    tel->radec_motor = 0; 
    tel->radecIsMoving = 0;
+   tel->focus_goto_blocking = 0;
 
    // je lis les parametres optionels
    for (i=3;i<argc-1;i++) {
@@ -1177,13 +1178,13 @@ int tel_focus_goto(struct telprop *tel)
       if ( result == 0 ) {
          char command[NOTIFICATION_MAX_SIZE];
          char response[NOTIFICATION_MAX_SIZE];
-         sprintf(command,"!FOC GOTO %6.2f @\n", tel->focus0 );  
-		 //envoi de la commande et recupération de la reponse 
+         sprintf(command,"!FOC GOTO %.2f @\n", tel->focus0 );  
+		   //envoi de la commande et recupération de la reponse 
          result = socket_writeTelescopeCommandSocket(tel, command, response);
 
          if ( result == 0 ) {
             int returnCode;
-			// j'extrait le code retour
+			   // j'extrait le code retour
             int readValue = sscanf(response,"!FOC GOTO %d @", &returnCode);
             if (readValue != 1) {
                sprintf(tel->msg,"FOC STOP error: readValue=%d response=%s", readValue, response );
@@ -1192,7 +1193,21 @@ int tel_focus_goto(struct telprop *tel)
                if ( returnCode != 0 ) {
                   sprintf(tel->msg,"FOC GOTO error: returnCode=%d", returnCode );
                   result = 1;
-               } 
+               } else {                  
+                  // j'active les notifications de la position du focus
+                  result = mytel_setFocusNotification(tel, 1);
+                  // si le goto est lance en mode bloquant , j'attends la fin du deplacement
+                  if ( tel->focus_goto_blocking == 1 ) {
+                     int foundEvent = 1;
+                     tel->focusIsMoving = 1;
+                     // j'attend la fin du mouvement (tel->moving est mis a jour par mytel_processNotification ) 
+                     while (tel->focusIsMoving && foundEvent) {
+                        foundEvent = Tcl_DoOneEvent(TCL_ALL_EVENTS);
+                        Tcl_Sleep(1);
+                     }
+                  }
+                  result = 0;
+               }
             }
          }
       }
@@ -1220,7 +1235,7 @@ int tel_focus_move(struct telprop *tel,char *direction)
 
   if (tel->telescopeCommandSocket != NULL) {
       // je verifie s'il n'y a pas deja un mouvement en cours
-      if ( tel->focIsMoving != 0 ) {
+      if ( tel->focusIsMoving != 0 ) {
          sprintf(tel->msg, "focalisation already moving");
          result = 1;          
       }
@@ -1240,6 +1255,7 @@ int tel_focus_move(struct telprop *tel,char *direction)
       }
       
       // j'active la notification des coordonnées pendant le deplacement
+      // la notification sera desactivee a la fin du deplacement par mytel_processNotification
       if ( result == 0 ) {
          result = mytel_setFocusNotification(tel, 1);
       }
@@ -1309,10 +1325,6 @@ int tel_focus_stop(struct telprop *tel,char * direction)
                } 
             }
          }
-
-         // j'arrete les notifications de la position meme s'il ya une erreur dans la commande précedente
-         result = mytel_setFocusNotification(tel, 0);
-
       }
    }
    return result;
@@ -1928,7 +1940,11 @@ void mytel_processNotification(struct telprop *tel, char * notification) {
                   char ligne[1024];
                   
                   // je memorise le mouvement
-                  tel->focIsMoving = moveCode;
+                  tel->focusIsMoving = moveCode;
+                  // j'arrete la notification si le mouvement est termine
+                  if ( tel->focusIsMoving == 0 ) {
+                     mytel_setFocusNotification(tel, 0);
+                  }
                   // je notifie les nouvelles coordonnes au thread principal                
                   if ( strcmp(tel->telThreadId,"") == 0 ) {
                      sprintf(ligne,"set ::audace(telescope,currentFocus) %s", position); 
@@ -1939,7 +1955,7 @@ void mytel_processNotification(struct telprop *tel, char * notification) {
                }
             } else {
                mytel_sendNotificationError(tel, BACKCMD_BAD_PARAM_NUMBER, notification);
-            }            
+            }   
          } else {
             mytel_sendNotificationError(tel, BACKCMD_BAD_PARAM_NUMBER, notification);
          }
