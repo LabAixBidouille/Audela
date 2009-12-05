@@ -2,7 +2,7 @@
 # Fichier : t193pad.tcl
 # Description : Raquette specifique au T193 de l'OHP
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: t193pad.tcl,v 1.4 2009-12-04 22:04:01 michelpujol Exp $
+# Mise a jour $Id: t193pad.tcl,v 1.5 2009-12-05 08:57:55 michelpujol Exp $
 #
 
 namespace eval ::t193pad {
@@ -90,6 +90,7 @@ proc ::t193pad::initConf { } {
    set private(controleSuivi) 1    ; #--- le suivi est actif par defaut
    set private(positionDome)  "0"
    set private(synchro)       "1"
+   set private(gotoFocus)     0
 
    return
 }
@@ -442,11 +443,11 @@ proc ::t193pad::createDialog { } {
    #--- Bouton GOTOFoc
    button $This.frame4.buttonGotoFoc -borderwidth 1 -width 10\
       -font [ list {Arial} 10 bold ] -text $caption(t193pad,gotoFoc) -relief ridge \
-      -fg $color(white) -bg $color(gray_pad) -command "  "
+      -fg $color(white) -bg $color(gray_pad) -command "::t193pad::gotoFocus"
    pack $This.frame4.buttonGotoFoc -anchor center -fill x -side left -pady 2
 
    #--- LabelEntry pour la position du GOTO de la focalisation
-   LabelEntry $This.frame4.positionGotoFoc -textvariable ::t193pad::private(gotoFoc) \
+   LabelEntry $This.frame4.positionGotoFoc -textvariable ::t193pad::private(gotoFocus) \
       -width 10 -entrybg $color(gray_pad) -justify center -font [ list {Arial} 10 bold ]
    pack $This.frame4.positionGotoFoc -anchor center -fill none -pady 2
 
@@ -597,7 +598,6 @@ proc ::t193pad::setSlew { } {
 #------------------------------------------------------------
 proc ::t193pad::startFocus { direction } {
    variable private
-   variable This
 
    set catchError [catch { 
       tel$::audace(telNo) focus move $direction
@@ -613,9 +613,27 @@ proc ::t193pad::startFocus { direction } {
 #     arrete le mouvement du focus du T193
 #------------------------------------------------------------
 proc ::t193pad::stopFocus {  } {
-   
+   variable private
+      
    set catchError [catch { 
       tel$::audace(telNo) focus stop 
+   }]
+      
+   if { $catchError != 0 } {
+      ::tkutil::displayErrorInfo $::caption(t193pad,titre)
+   }
+}
+
+#------------------------------------------------------------
+#  gotoFocus
+#     lance un goto du focus
+#------------------------------------------------------------
+proc ::t193pad::gotoFocus {  } {
+   variable private
+      
+   set catchError [catch { 
+      #--- format de la commande : tel1 focus goto number ?-rate value? ?-blocking boolean?
+      tel$::audace(telNo) focus goto $private(gotoFocus) -blocking 0
    }]
       
    if { $catchError != 0 } {
