@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.34 2009-12-04 12:42:21 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.35 2009-12-05 08:57:23 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -784,6 +784,9 @@ namespace eval cataGoto {
          pack $audace(base).cataAsteroide.frame11.fermer -side right -padx 10 -pady 5 -ipady 5
       pack $audace(base).cataAsteroide.frame11 -side top -fill both -expand 1
 
+      #--- On donne le focus a l'entry de l'objet
+      focus $audace(base).cataAsteroide.frame1.obj_choisi_ref
+
       #--- Binding sur le bouton Rechercher
       bind $audace(base).cataAsteroide <Key-Return> "::cataGoto::rechercheAsteroide"
 
@@ -1132,6 +1135,9 @@ namespace eval cataGoto {
             -command "::cataGoto::cataObjetFermer"
          pack $audace(base).cataObjet.frame11.fermer -side right -padx 10 -pady 5 -ipady 5
       pack $audace(base).cataObjet.frame11 -side top -fill both -expand 1
+
+      #--- On positionne le curseur a droite du dernier caractere
+      $audace(base).cataObjet.frame1.obj_choisi_ref icursor end
 
       #--- On donne le focus a l'entry de l'objet
       focus $audace(base).cataObjet.frame1.obj_choisi_ref
