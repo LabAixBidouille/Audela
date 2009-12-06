@@ -27,3 +27,4 @@ clean:
 	-@regsvr32 /u /s $(EXTERNAL_LIB)\QSICamera.dll
 	$(RM) $(EXTERNAL_LIB)\QSICamera.dll
 
+
