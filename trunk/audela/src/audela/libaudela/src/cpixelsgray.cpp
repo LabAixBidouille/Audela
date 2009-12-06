@@ -219,7 +219,7 @@ void CPixelsGray::Add(char *filename, float offset)
    s = new char[512];
    sprintf(s,"ADD \"file=%s\" offset=%f",filename,offset);
    msg = Libtt_main(TT_PTR_IMASERIES,7,&pix,&datatype,&naxis1,&naxis2,&pix,&datatype,s);
-   delete s;
+   delete[] s;
    if(msg) throw CErrorLibtt(msg);
 
 }
@@ -331,12 +331,12 @@ void CPixelsGray::BinY(int y1, int y2, int height)
        }
    }
 
-   // ne surtout pas oublier de mettre à jour les nouvelles dimensions
+   // ne surtout pas oublier de mettre Ã¨ jour les nouvelles dimensions
    naxis2 = height;
 
-   // je libére l'ancien espace mémoire
+   // je libÃ¨re l'ancien espace mÃ¨moire
    free(pix);
-   // j'affcete le nouvel espce mémoire
+   // j'affcete le nouvel espce mÃ¨moire
    pix = out;
 }
 
@@ -373,7 +373,7 @@ void CPixelsGray::Div(char *filename, float constante)
    s = new char[512];
    sprintf(s,"DIV \"file=%s\" constant=%f",filename,constante);
    msg = Libtt_main(TT_PTR_IMASERIES,7,&pix,&datatype,&naxis1,&naxis2,&pix,&datatype,s);
-   delete s;
+   delete[] s;
    if(msg) throw CErrorLibtt(msg);
 
 }
@@ -386,7 +386,7 @@ int CPixelsGray::GetHeight(void) {
 
 /**
   retourne le pointeur du tableau interne de pixels
-  fonction obsolète. Remplace par SetPixels/GetPixels/SetPix/GetPix
+  fonction obsolÃ¨te. Remplace par SetPixels/GetPixels/SetPix/GetPix
 */
 void CPixelsGray::GetPixelsPointer(TYPE_PIXELS **pixels) {
    *pixels = pix;
@@ -394,12 +394,12 @@ void CPixelsGray::GetPixelsPointer(TYPE_PIXELS **pixels) {
 
 /**
   GetPixels
-  retourne le tableau de pixels correspondant à la fenetre (x1,y1)-(x2,y2)
+  retourne le tableau de pixels correspondant Ã  la fenetre (x1,y1)-(x2,y2)
   en inlcuant les valeur limites x=x1, x=x2, y=y1 , y=y2
 **/
 // Yassine
 //void CPixelsGray::GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, int pixels) {
-void CPixelsGray::GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, long pixels) {
+void CPixelsGray::GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, void* pixels) {
    int width  = x2-x1+1;
    int x, y;
 
@@ -454,9 +454,7 @@ void CPixelsGray::GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFo
 
 }
 
-// Yassine
-// void CPixelsGray::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, int pixels) {
-void CPixelsGray::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, long pixels) {
+void CPixelsGray::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, void* pixels) {
    int width  = x2-x1+1;
    int x, y;
    TYPE_PIXELS *ptr, *out;
@@ -515,16 +513,16 @@ void CPixelsGray::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat 
 }
 
 
-/** 
+/**
  * GetPixelsRgb
- * retourne les intensités de la zone (x1,y1)-(x2,y2)
- * dans le format RGB : 3 octets par pixel ( rouge, vert, bleu) 
- * en tenant compte des mirrois X ou Y éventuels, des seuils haut et bas et de la palette de couleurs
+ * retourne les intensitÃ¨s de la zone (x1,y1)-(x2,y2)
+ * dans le format RGB : 3 octets par pixel ( rouge, vert, bleu)
+ * en tenant compte des mirrois X ou Y Ã¨ventuels, des seuils haut et bas et de la palette de couleurs
  *
  * @param x1       abcisse du coin bas gauche de la zone
- * @param y1       ordonnee du coin bas gauche de la zone 
+ * @param y1       ordonnee du coin bas gauche de la zone
  * @param x2       abcisse du coin haut, doit de la zone
- * @param x2       ordonnée du coin haut, doit de la zone
+ * @param x2       ordonnÃ¨e du coin haut, doit de la zone
  * @param mirrorX  0: pas de miroir horizontal, 1: miroir horizontal
  * @param mirrorY  0: pas de miroir vertical, 1 : miroir vertical
  * @param cuts     tableau des 6 seuils : haut rouge, bas rouge, haut vert bas vert , haut bleu , bas bleu
@@ -535,7 +533,7 @@ void CPixelsGray::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat 
  */
 void CPixelsGray::GetPixelsRgb( int x1,int y1,int x2, int y2,
             int mirrorX, int mirrorY, float *cuts,
-            unsigned char *palette[3], unsigned char *ptr) 
+            unsigned char *palette[3], unsigned char *ptr)
 {
    int i, j;
    int orgww, orgwh;                // original window width, height
@@ -562,7 +560,7 @@ void CPixelsGray::GetPixelsRgb( int x1,int y1,int x2, int y2,
       } else {
          ydest = (j - y1)*orgww ;
       }
-    
+
       for(i=x1;i<=x2;i++) {
          if(mirrorX == 0) {
             xdest = i-x1;
@@ -578,16 +576,16 @@ void CPixelsGray::GetPixelsRgb( int x1,int y1,int x2, int y2,
    }
 }
 
-/** 
+/**
  * GetPixelsVisu
- * retourne les intensités de la zone (x1,y1)-(x2,y2)
- * dans le format compatible avec la visu : 4 octets par pixel ( rouge, vert, bleu, inutilisé) 
- * en tenant compte des mirrois X ou Y éventuels, des seuils haut et bas et de la palette de couleurs
+ * retourne les intensitÃ¨s de la zone (x1,y1)-(x2,y2)
+ * dans le format compatible avec la visu : 4 octets par pixel ( rouge, vert, bleu, inutilisÃ¨)
+ * en tenant compte des mirrois X ou Y Ã¨ventuels, des seuils haut et bas et de la palette de couleurs
  *
  * @param x1       abcisse du coin bas gauche de la zone
- * @param y1       ordonnee du coin bas gauche de la zone 
+ * @param y1       ordonnee du coin bas gauche de la zone
  * @param x2       abcisse du coin haut, doit de la zone
- * @param x2       ordonnée du coin haut, doit de la zone
+ * @param x2       ordonnÃ¨e du coin haut, doit de la zone
  * @param mirrorX  0: pas de miroir horizontal, 1: miroir horizontal
  * @param mirrorY  0: pas de miroir vertical, 1 : miroir vertical
  * @param cuts     tableau des 6 seuils : haut rouge, bas rouge, haut vert bas vert , haut bleu , bas bleu
@@ -680,7 +678,7 @@ int CPixelsGray::GetPlanes(void) {
  * Results:
  *    returns 1 if pixels are ready, otherwise 0.
  * Side effects:
- *    verifie si une image est chargée c.a.d si la taille est superieure a 1x1
+ *    verifie si une image est chargÃ¨e c.a.d si la taille est superieure a 1x1
  */
 int CPixelsGray::IsPixelsReady(void) {
    if( naxis1 != 0 && naxis2 != 0 ) {
@@ -699,7 +697,7 @@ void CPixelsGray::Log(float coef, float offset)
    s = new char[128];;
    sprintf(s,"LOG coeff=%f offsetlog=%f",coef,offset);
    msg = Libtt_main(TT_PTR_IMASERIES,7,&pix,&datatype,&naxis1,&naxis2,&pix,&datatype,s);
-   delete s;
+   delete[] s;
    if(msg) throw CErrorLibtt(msg);
 }
 
@@ -719,7 +717,7 @@ void CPixelsGray::MirX()
    s = new char[32];
    strcpy(s,"INVERT mirror");
    msg = Libtt_main(TT_PTR_IMASERIES,7,&pix,&datatype,&naxis1,&naxis2,&pix,&datatype,s);
-   delete s;
+   delete[] s;
    if(msg) throw CErrorLibtt(msg);
 }
 
@@ -733,7 +731,7 @@ void CPixelsGray::MirY()
    s = new char[32];
    strcpy(s,"INVERT flip");
    msg = Libtt_main(TT_PTR_IMASERIES,7,&pix,&datatype,&naxis1,&naxis2,&pix,&datatype,s);
-   delete s;
+   delete[] s;
    if(msg) throw CErrorLibtt(msg);
 }
 */
@@ -749,7 +747,7 @@ void CPixelsGray::NGain(float gain)
    s = new char[128];
    sprintf(s,"NORMGAIN normgain_value=%f",gain);
    msg = Libtt_main(TT_PTR_IMASERIES,7,&pix,&datatype,&naxis1,&naxis2,&pix,&datatype,s);
-   delete s;
+   delete[] s;
    if(msg) throw CErrorLibtt(msg);
 }
 
@@ -762,7 +760,7 @@ void CPixelsGray::NOffset(float offset)
    s = new char[128];
    sprintf(s,"NORMOFFSET normoffset_value=%f",offset);
    msg = Libtt_main(TT_PTR_IMASERIES,7,&pix,&datatype,&naxis1,&naxis2,&pix,&datatype,s);
-   delete s;
+   delete[] s;
    if(msg) throw CErrorLibtt(msg);
 }
 
@@ -776,7 +774,7 @@ void CPixelsGray::Offset(float offset)
 
    sprintf(s,"OFFSET offset=%f",offset);
    msg = Libtt_main(TT_PTR_IMASERIES,7,&pix,&datatype,&naxis1,&naxis2,&pix,&datatype,s);
-   delete s;
+   delete[] s;
    if(msg) throw CErrorLibtt(msg);
 
 }
@@ -802,7 +800,7 @@ void CPixelsGray::Rot(float x0, float y0, float angle)
    s = new char[128];
    sprintf(s,"ROT x0=%f y0=%f angle=%f",x0,y0,angle);
    msg = Libtt_main(TT_PTR_IMASERIES,7,&pix,&datatype,&naxis1,&naxis2,&pix,&datatype,s);
-   delete s;
+   delete[] s;
    if(msg) throw CErrorLibtt(msg);
 }
 
@@ -815,7 +813,7 @@ void CPixelsGray::Sub(char *filename, float offset)
    s = new char[1024];;
    sprintf(s,"SUB \"file=%s\" offset=%f",filename,offset);
    msg = Libtt_main(TT_PTR_IMASERIES,7,&pix,&datatype,&naxis1,&naxis2,&pix,&datatype,s);
-   delete s;
+   delete[] s;
    if(msg) throw CErrorLibtt(msg);
 }
 
@@ -881,11 +879,11 @@ void CPixelsGray::UnifyBg()
       lineIndex=0;
       for(y1=0; y1 < naxis2 ; y1 +=hRect) {
 
-         // calcul de coordonnées de la fenetre
+         // calcul de coordonnÃ¨es de la fenetre
          if( x1 + wRect < naxis1) {
             x2 = x1 + wRect;
          } else {
-            // cas du dernier rectangle à droite
+            // cas du dernier rectangle Ã¨ droite
             x2 = naxis1-1;
          }
          if( y1 + hRect < naxis2) {
@@ -924,7 +922,7 @@ void CPixelsGray::UnifyBg()
          sumBgmean +=dbgmean;
          nbBgmean++;
 
-         // je memorise les coordonnées du centre le fenetre
+         // je memorise les coordonnÃ¨es du centre le fenetre
          columns[colIndex]= xc;
          lines[lineIndex] = yc;
 
@@ -942,7 +940,7 @@ void CPixelsGray::UnifyBg()
    //logInfo("nbCol=%d nbLine=%d", nbCol, nbLine);
 
    // -----------------------------------------------------------
-   // je calcule le fond du ciel pour les points intermédiaires
+   // je calcule le fond du ciel pour les points intermÃ¨diaires
    // -----------------------------------------------------------
 
    // calcul des columns
@@ -963,7 +961,7 @@ void CPixelsGray::UnifyBg()
 
          // je calcule les bornes de la droite de regression  y1, y2
          if(lineIndex == 0 ) {
-            y1 = 0 ;          // première fenetre en haut
+            y1 = 0 ;          // premiÃ¨re fenetre en haut
          } else {
             y1 = yc1;
          }
@@ -1000,7 +998,7 @@ void CPixelsGray::UnifyBg()
 
          // je calcule les bornes de la droite de regression  x1, x2
          if(colIndex == 0 ) {
-            x1 = 0 ;          // première fenetre a gauche
+            x1 = 0 ;          // premiÃ¨re fenetre a gauche
          } else {
             x1 = xc1;
          }
@@ -1021,7 +1019,7 @@ void CPixelsGray::UnifyBg()
    meanBgmean = sumBgmean / nbBgmean;
 
    // -----------------------------------------------------------
-   // je soustrait le fond du ciel à l'image originale
+   // je soustrait le fond du ciel Ã¨ l'image originale
    // -----------------------------------------------------------
    for(x=0; x < naxis1 ; x++) {
       for(y=0; y < naxis2 ; y++) {
@@ -1048,7 +1046,7 @@ void CPixelsGray::Unsmear(float coef)
    s = new char [128];
    sprintf(s,"UNSMEARING unsmearing=%f",coef);
    msg = Libtt_main(TT_PTR_IMASERIES,7,&pix,&datatype,&naxis1,&naxis2,&pix,&datatype,s);
-   delete s;
+   delete[] s;
    if(msg) throw CErrorLibtt(msg);
 }
 

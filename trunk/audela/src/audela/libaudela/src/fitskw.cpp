@@ -141,7 +141,7 @@ void CFitsKeyword::GetIntValue(int*data,int*default_data)
 /*
  * CFitsKeyword::GetPtrValue
  *    retoune la valeur du mot cle sous forme d'un pointeur
- *    sur la variable corresdant au datatype du mot clé
+ *    sur la variable corresdant au datatype du mot clï¿½
  *
  */
 void * CFitsKeyword::GetPtrValue()

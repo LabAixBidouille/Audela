@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Denis MARCHAIS <denis.marchais@free.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -88,7 +88,7 @@ class LIBAUDELA_API CBuffer : public CDevice {
 protected:
    mc_ASTROM *p_ast;
    int saving_type;
-   /* utilise les d�finitions suivantes :
+   /* utilise les définitions suivantes :
    #define BYTE_IMG      8
    #define SHORT_IMG    16
    #define LONG_IMG     32
@@ -96,7 +96,7 @@ protected:
    #define DOUBLE_IMG  -64
    */
    int compress_type;
-   /* utilise les d�finitions suivantes :
+   /* utilise les définitions suivantes :
    #define BUFCOMPRESS_NONE      0
    #define BUFCOMPRESS_GZIP      1
    */
@@ -107,7 +107,7 @@ protected:
    float          initialMipsHi;
    static char    *FileFormatName [];
    char           temporaryRawFileName[255];
-   pthread_mutex_t mutex; 
+   pthread_mutex_t mutex;
    pthread_mutexattr_t mutexAttr;
    void BoxBackground(TYPE_PIXELS *ppix, double xc,double yc,double radius,double percent,int *nb, double *bg);
    int util_qsort_double(double *x,int kdeb,int n,int *index);
@@ -122,23 +122,23 @@ public:
    int A_StarList(int x1, int y1, int x2, int y2, double threshin,char *filename, int fileFormat, double fwhm,int radius,
 						int border,double threshold,int after_gauss);
    void Add(char *filename, float offset);
-   void AstroFlux(int x1, int y1, int x2, int y2, 
-                     TYPE_PIXELS* flux, TYPE_PIXELS* maxi, int *xmax, int* ymax, 
+   void AstroFlux(int x1, int y1, int x2, int y2,
+                     TYPE_PIXELS* flux, TYPE_PIXELS* maxi, int *xmax, int* ymax,
                      TYPE_PIXELS *moy, TYPE_PIXELS *seuil, int *nbpix);
    void AstroCentro(int x1, int y1, int x2, int y2, int xmax, int ymax,
                      TYPE_PIXELS seuil,float* sx, float* sy, float* r);
-   void AstroPhoto(int x1, int y1, int x2, int y2, int xmax, int ymax, 
+   void AstroPhoto(int x1, int y1, int x2, int y2, int xmax, int ymax,
                      TYPE_PIXELS moy, double *dFlux, int* ntot);
-   void AstroPhotom(int x1, int y1, int x2, int y2, int method, double r1, double r2,double r3, 
+   void AstroPhotom(int x1, int y1, int x2, int y2, int method, double r1, double r2,double r3,
                       double *flux, double* f23, double* fmoy, double* sigma, int *n1);
    void AstroBaricenter(int x1, int y1, int x2, int y2, double *xc, double *yc);
-   void AstroSlitCentro(int x1, int y1, int x2, int y2, 
+   void AstroSlitCentro(int x1, int y1, int x2, int y2,
                         int starDetectionMode, int pixelMinCount,
-                        int slitWidth, double signalRatio, 
-                        char *starStatus, double *xc, double *yc, 
+                        int slitWidth, double signalRatio,
+                        char *starStatus, double *xc, double *yc,
                         TYPE_PIXELS* maxIntensity, char * message);
-   void AstroFiberCentro(int x1, int y1, int x2, int y2, 
-                          int starDetectionMode, int integratedImage, int findFiber, 
+   void AstroFiberCentro(int x1, int y1, int x2, int y2,
+                          int starDetectionMode, int integratedImage, int findFiber,
                           int maskBufNo, int sumBufNo, int fiberBufNo,
                           int maskRadius, double maskFwhm, double maskPercent,
                           int originSumMinCounter, int originSumCounter,
@@ -183,7 +183,7 @@ public:
    void GetPixelsRgb( int x1,int y1,int x2, int y2,
             int mirrorX, int mirrorY, float *cuts,
             unsigned char *palette[3], unsigned char *ptr);
-   void GetPixelsVisu( int x1,int y1,int x2, int y2, 
+   void GetPixelsVisu( int x1,int y1,int x2, int y2,
             int mirrorX, int mirrorY, float *cuts,
             unsigned char *palette[3], unsigned char *ptr);
    int  GetSavingType();
@@ -226,7 +226,7 @@ public:
    void SetSavingType(int st);
    void Sub(char *filename, float offset);
    void TtImaSeries(char *s);
-   void Stat(int x1,int y1,int x2,int y2, 
+   void Stat(int x1,int y1,int x2,int y2,
             float *locut, float *hicut,  float *maxi,    float *mini,   float *mean,
             float *sigma, float *bgmean, float *bgsigma, float *contrast);
    void Scar( int x1,int y1,int x2,int y2);
