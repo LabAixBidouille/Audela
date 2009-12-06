@@ -20,3 +20,4 @@ clean:
 	$(RM) $(AUDELA_BIN)\scriptis.exe
 	$(RM) $(AUDELA_BIN)\CCD_Driver.dll
 	$(RM) $(AUDELA_BIN)\cygwin1.dll
+	

@@ -15,13 +15,33 @@ install: build
 	if not exist $(EXTERNAL_INCLUDE_X11) mkdir $(EXTERNAL_INCLUDE_X11)
 	if not exist $(EXTERNAL_LIB)         mkdir $(EXTERNAL_LIB)
 	if not exist $(AUDELA_BIN)           mkdir $(AUDELA_BIN)
-	$(CP) $(SOURCE)\include\*.h          $(EXTERNAL_INCLUDE)
+	$(CP) $(SOURCE)\include\tcl.h            $(EXTERNAL_INCLUDE)
+	$(CP) $(SOURCE)\include\tclDecls.h       $(EXTERNAL_INCLUDE)
+	$(CP) $(SOURCE)\include\tclPlatDecls.h   $(EXTERNAL_INCLUDE)
+	$(CP) $(SOURCE)\include\tk.h             $(EXTERNAL_INCLUDE)
+	$(CP) $(SOURCE)\include\tkDecls.h        $(EXTERNAL_INCLUDE)
+	$(CP) $(SOURCE)\include\tkIntXlibDecls.h $(EXTERNAL_INCLUDE)
+	$(CP) $(SOURCE)\include\tkPlatDecls.h    $(EXTERNAL_INCLUDE)
 	$(CP) $(SOURCE)\include\x11\*.h      $(EXTERNAL_INCLUDE_X11)
+	$(CP) $(SOURCE)\lib\tclstub85.lib    $(EXTERNAL_LIB)
+	$(CP) $(SOURCE)\lib\tkstub85.lib     $(EXTERNAL_LIB)
+	$(CP) $(SOURCE)\lib\tcl85t.lib       $(EXTERNAL_LIB)
+	$(CP) $(SOURCE)\lib\tk85t.lib        $(EXTERNAL_LIB)
 	$(CP) $(SOURCE)\bin\tcl85t.dll       $(AUDELA_BIN)
 	$(CP) $(SOURCE)\bin\tk85t.dll        $(AUDELA_BIN)
 
 clean:
+	$(RM) $(EXTERNAL_INCLUDE)\tcl.h            
+	$(RM) $(EXTERNAL_INCLUDE)\tclDecls.h       
+	$(RM) $(EXTERNAL_INCLUDE)\tclPlatDecls.h   
+	$(RM) $(EXTERNAL_INCLUDE)\tk.h             
+	$(RM) $(EXTERNAL_INCLUDE)\tkDecls.h        
+	$(RM) $(EXTERNAL_INCLUDE)\tkIntXlibDecls.h 
+	$(RM) $(EXTERNAL_INCLUDE)\tkPlatDecls.h    
 	$(RD) $(EXTERNAL_INCLUDE_X11)
+	$(RM) $(EXTERNAL_LIB)\tclstub85.lib    
+	$(RM) $(EXTERNAL_LIB)\tkstub85.lib    
+	$(RM) $(EXTERNAL_LIB)\tcl85t.lib       
+	$(RM) $(EXTERNAL_LIB)\tk85t.lib        
 	$(RM) $(AUDELA_BIN)\tcl85t.dll
 	$(RM) $(AUDELA_BIN)\tk85t.dll
-    @echo Some include files have not been wiped from the $(EXTERNAL_INCLUDE) directory

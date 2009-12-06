@@ -1,4 +1,3 @@
-
 CP= copy
 RM= -@del /f /q
 
@@ -13,5 +12,7 @@ install: build
 
 clean:
 	$(RM) $(AUDELA_BIN)\K8055D.dll
+
+
 
 
