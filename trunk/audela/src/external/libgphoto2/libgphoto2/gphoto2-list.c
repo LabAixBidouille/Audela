@@ -387,7 +387,11 @@ gp_list_populate  (CameraList *list, const char *format, int count)
 
 	gp_list_reset (list);
 	for (x = 0; x < count; x++) {
-		snprintf (buf, sizeof (buf), format, x + 1);
+#ifdef WIN32
+		_snprintf (buf, sizeof (buf), format, x + 1);
+#else 
+      snprintf (buf, sizeof (buf), format, x + 1);
+#endif
 		CHECK_RESULT (gp_list_append (list, buf, NULL));
 	}
 
