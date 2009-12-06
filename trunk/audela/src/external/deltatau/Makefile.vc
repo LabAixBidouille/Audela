@@ -21,5 +21,3 @@ clean:
 	$(RD) $(EXTERNAL_INCLUDE)
 	$(RM) $(EXTERNAL_LIB)\Pmac.lib
 	$(RM) $(AUDELA_BIN)\Pmac.dll
-
-
