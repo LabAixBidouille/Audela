@@ -90,7 +90,7 @@ the environment.  Jump to this line to read the new instructions.
 #	TMP_DIR=<path>
 #	OUT_DIR=<path>
 #		Hooks to allow the intermediate and output directories to be
-#		changed.  $(OUT_DIR) is assumed to be 
+#		changed.  $(OUT_DIR) is assumed to be
 #		$(BINROOT)\(Release|Debug) based on if symbols are requested.
 #		$(TMP_DIR) will de $(OUT_DIR)\<buildtype> by default.
 #
@@ -135,7 +135,7 @@ the environment.  Jump to this line to read the new instructions.
 MSG = ^
 You must run this makefile only from the directory it is in.^
 Please `cd` to its location first.
-!error $(MSG) 
+!error $(MSG)
 !endif
 
 PROJECT=thread
@@ -235,13 +235,13 @@ lflags	= -nologo -machine:$(MACHINE) $(ldebug)
 lflags	= $(lflags) -profile
 !endif
 
-!if $(ALIGN98_HACK) && !$(STATIC_BUILD)
-# align sections for PE size savings.
-lflags	= $(lflags) -opt:nowin98
-!else if !$(ALIGN98_HACK) && $(STATIC_BUILD)
-# align sections for speed in loading by choosing the virtual page size.
-lflags	= $(lflags) -align:4096
-!endif
+### !if $(ALIGN98_HACK) && !$(STATIC_BUILD)
+### # align sections for PE size savings.
+### lflags	= $(lflags) -opt:nowin98
+### !else if !$(ALIGN98_HACK) && $(STATIC_BUILD)
+### # align sections for speed in loading by choosing the virtual page size.
+### lflags	= $(lflags) -align:4096
+### !endif
 
 !if $(LOIMPACT)
 lflags	= $(lflags) -ws:aggressive
@@ -354,13 +354,14 @@ $(GENERICDIR)\threadSvKeylistCmd.c : $(GENERICDIR)\tclThread.h
 
 clean:
 	@echo Cleaning non-output build files...
-	@$(RMDIR) $(TMP_DIR)
+	-@$(RMDIR) $(TMP_DIR)
 	@echo Deleting output file $(THREADLIB) ...
 	@del $(THREADLIB)
 
 hose: clean
-	@echo Deleting output file $(THREADLIB) ...
-	@del $(THREADLIB)
+	@echo Deleting output file $(SCRIPT_INSTALL_DIR)\$(THREADLIB) ...
+	@del $(SCRIPT_INSTALL_DIR)\libthread$(DOTVERSION).$(EXT)
+	@del $(SCRIPT_INSTALL_DIR)\pkgindex.tcl
 
 
 .SUFFIXES:
