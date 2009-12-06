@@ -239,11 +239,11 @@
 
 #ifdef WIN32
 // refinition des fonctions pour les version de VisualC++ anterieurres a VC90
-//#if _MSC_VER < 1500
-//#define vsnprintf _vsnprintf
+#if _MSC_VER < 1500
+#define vsnprintf _vsnprintf
 //#define snprintf _snprintf
-//#endif
-#define timezone _timezone
+#endif
+//#define timezone _timezone
 #define usleep( delay )  Sleep(delay)
 #define sleep( delay )  Sleep(delay *1000)
 #define EXPORT_STATIC
