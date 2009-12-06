@@ -4,6 +4,7 @@
 	Version="9,00"
 	Name="external_fitstcl"
 	ProjectGUID="{2E31F74D-753C-471C-90BB-1C70C6CEED08}"
+	RootNamespace="external_fitstcl"
 	TargetFrameworkVersion="0"
 	>
 	<Platforms>
@@ -50,7 +51,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\..\include,..\..\include\win,..\..\cfitsio\cfitsio3090"
-				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;_USRDLL;FITSTCL_EXPORTS;__WIN32__;_export=__cdecl"
+				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;_USRDLL;FITSTCL_EXPORTS;_CRT_SECURE_NO_WARNINGS;__WIN32__;_export=__cdecl"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -59,7 +60,7 @@
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				BrowseInformation="1"
-				WarningLevel="1"
+				WarningLevel="0"
 				SuppressStartupBanner="true"
 			/>
 			<Tool
@@ -148,16 +149,16 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\include,..\..\include\win,..\..\cfitsio\cfitsio3090"
-				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_USRDLL;FITSTCL_EXPORTS;__WIN32__"
+				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_USRDLL;FITSTCL_EXPORTS;_CRT_SECURE_NO_WARNINGS;__WIN32__"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				PrecompiledHeaderFile=".\Debug/external_fitstcl.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
 				BrowseInformation="1"
-				WarningLevel="3"
+				WarningLevel="0"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
 			/>
@@ -380,14 +381,6 @@
 		<Filter
 			Name="Header Files"
 			>
-			<File
-				RelativePath="..\fitstcl\fitsTcl.h"
-				>
-			</File>
-			<File
-				RelativePath="..\fitstcl\fitsTclInt.h"
-				>
-			</File>
 		</Filter>
 	</Files>
 	<Globals>
