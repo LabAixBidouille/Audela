@@ -2,7 +2,7 @@
 # Fichier : qsi.tcl
 # Description : Configuration de la camera QSI
 # Auteur : Michel Pujol
-# Mise a jour $Id: qsi.tcl,v 1.9 2009-12-06 09:40:11 michelpujol Exp $
+# Mise a jour $Id: qsi.tcl,v 1.10 2009-12-06 17:53:02 michelpujol Exp $
 #
 
 namespace eval ::qsi {
@@ -315,8 +315,12 @@ proc ::qsi::configureCamera { camItem bufNo } {
             #--- je remplace par le numero du premier filtre
             set ::conf(qsi,filterNo) 0
          }
-         $private(frm).frame2.frame6.wheel.filterList configure -values  $private(filterNames)
-         $private(frm).frame2.frame6.wheel.filterList setvalue "@$::conf(qsi,filterNo)"
+         if { [ info exists private(frm) ] } {
+             if { [ winfo exists $private(frm) ] } {           
+               $private(frm).frame2.frame6.wheel.filterList configure -values  $private(filterNames)
+               $private(frm).frame2.frame6.wheel.filterList setvalue "@$::conf(qsi,filterNo)"
+             }
+         }
          cam$camNo wheel position $::conf(qsi,filterNo)
          console::disp "$::caption(qsi,connexion_avec_roue)\n"
       } else {
