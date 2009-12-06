@@ -2,7 +2,7 @@
 # Fichier : obj_lune.tcl
 # Description : Outil dedie a la Lune, avec Goto vers un site choisi, ephemerides et cartographie
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune.tcl,v 1.17 2009-03-14 00:02:25 michelpujol Exp $
+# Mise a jour $Id: obj_lune.tcl,v 1.18 2009-12-06 16:26:51 robertdelmas Exp $
 #
 
 global audace
@@ -141,9 +141,9 @@ namespace eval ::obj_lune {
       if { [ info exists conf(obj_lune,wmgeometry) ] == "1" } {
          wm geometry $This $conf(obj_lune,wmgeometry)
       } else {
-         wm geometry $This 620x455+10+10
+         wm geometry $This 620x480+10+10
       }
-      wm minsize $This 620 455
+      wm minsize $This 620 480
       wm resizable $This 1 1
       wm deiconify $This
       wm title $This "$caption(obj_lune,titre)"
@@ -190,6 +190,9 @@ namespace eval ::obj_lune {
          $notebook raise [ $notebook page 0 ]
 
       pack $This.usr -side top -fill both -expand 1
+
+      #--- Focus a la fenetre
+      focus $This
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
       bind $This <Key-F1> { ::console::GiveFocus }
