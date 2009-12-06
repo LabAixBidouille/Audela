@@ -11,7 +11,7 @@
  * This file contains all the "glue code" required to use the canon
  * driver with libgphoto2.
  *
- * $Id: library.c,v 1.2 2007-03-24 22:41:24 michelpujol Exp $
+ * $Id: library.c,v 1.3 2009-12-06 15:44:31 michelpujol Exp $
  *
  ****************************************************************************/
 /****************************************************************************
@@ -70,7 +70,7 @@
 /* required for time conversions in camera_summary() */
 //modif michel 
 #ifdef WIN32
-#define timezone _timezone
+//#define timezone _timezone
 #else
 extern long int timezone;
 #endif

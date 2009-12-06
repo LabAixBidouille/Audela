@@ -15,7 +15,7 @@
  * and usb.c, keeping the common protocols/busses support in this
  * file.
  *
- * $Id: canon.c,v 1.1 2006-12-03 09:56:40 michelpujol Exp $
+ * $Id: canon.c,v 1.2 2009-12-06 15:45:04 michelpujol Exp $
  */
 
 #include "config.h"
@@ -441,7 +441,7 @@ const struct canonValueStruct canonValueQuality[] =
 /* required for time conversions in canon_int_set_time() */
 //modif michel 
 #ifdef WIN32
-#define timezone _timezone
+//#define timezone _timezone
 #else
 extern long int timezone;
 #endif
