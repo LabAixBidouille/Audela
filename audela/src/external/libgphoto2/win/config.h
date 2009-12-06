@@ -238,12 +238,15 @@
 #define VERSION "2.1.6"
 
 #ifdef WIN32
-#define vsnprintf _vsnprintf
-#define snprintf _snprintf
+// refinition des fonctions pour les version de VisualC++ anterieurres a VC90
+//#if _MSC_VER < 1500
+//#define vsnprintf _vsnprintf
+//#define snprintf _snprintf
+//#endif
 #define timezone _timezone
 #define usleep( delay )  Sleep(delay)
 #define sleep( delay )  Sleep(delay *1000)
-#define EXPORT_STATIC  
+#define EXPORT_STATIC
 #define INLINE          _inline
 typedef char            int8_t ;
 typedef short           int16_t ;
