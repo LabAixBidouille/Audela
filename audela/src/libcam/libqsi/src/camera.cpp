@@ -288,7 +288,6 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    cam->binx = 1;
    cam->biny = 1;
 
-
    cam_update_window(cam);	// met a jour x1,y1,x2,y2,h,w dans cam
    strcpy(cam->date_obs, "2000-01-01T12:00:00");
    strcpy(cam->date_end, cam->date_obs);
@@ -355,20 +354,13 @@ void cam_update_window(struct camprop *cam)
    }
 
    // je prend en compte le binning
-   cam->w = (cam->x2 - cam->x1) / cam->binx +1;
-   cam->h = (cam->y2 - cam->y1) / cam->biny +1;
+   cam->w = (cam->x2 - cam->x1 +1) / cam->binx;
+   cam->h = (cam->y2 - cam->y1 +1) / cam->biny;
    x1 = cam->x1  / cam->binx;
    x2 = x1 + cam->w -1;
    y1 = cam->y1 / cam->biny;
    y2 = y1 + cam->h -1;
 
-   // je configure la camera.
-   // The frame to be captured is defined by four properties, StartX, StartY, which define the upperleft
-   // corner of the frame, and NumX and NumY the define the binned size of the frame.
-   // If binning is active, value is in binned pixels, start position for the X and Y axis are 0 based.
-   //
-   // Attention , il faut d'abord mettre a jour l'origine (StartX,StartY) avant la taille de la fenetre
-   // car sinon on risque de provoquer une exception (cas de l'ancienne origine hors de la fenetre)
    if ( cam->mirrorv == 1 ) {
       // j'applique un miroir vertical en inversant les ordonnees de la fenetre
       x1 = (maxx / cam->binx ) - x2 -1;
@@ -380,6 +372,21 @@ void cam_update_window(struct camprop *cam)
       // 0---------------(w-y2)---(w-y1)---(w-1)  
       y1 = (maxy / cam->biny ) - y2 -1;
    }
+
+   // je configure la camera.
+   // ATTENTION : The frame to be captured is defined by four properties, StartX, StartY, which define the upperleft
+   // corner of the frame, and NumX and NumY the define the binned size of the frame.
+   // If binning is active, value is in binned pixels, start position for the X and Y axis are 0 based.
+   //
+   // Restrictions on binning are:
+   // The properties BinX and BinY specify the number of bits per bin for each axis. 
+   // If CanAsymmetricBin is False, BinX must equal BinY.
+   // MaxXBin and MaxYBin specify the maximum number of bits per bin allowed by the camera for each axis. 
+   // Therefore, BinX <=MaxXBin and BinY <= MaxYBin.
+   // The total number of bits in a image frame must not exceed the CCD dimension. Therefore, 
+   //    (StartX + NumX) * BinX <= CameraXSize and (StartY + NumY) * BinY <= CameraYSize
+   // Attention , il faut d'abord mettre a jour l'origine (StartX,StartY) avant la taille de la nouvelle fenetre
+   // car sinon on risque de provoquer une exception si l'ancienne origine hors de la nouvelle fenetre.
 
    cam->params->pCam->StartX = x1 ;
    cam->params->pCam->StartY = y1 ;
@@ -625,6 +632,8 @@ void qsiGetTemperatureInfo(struct camprop *cam, double *setTemperature, double *
 
 void cam_set_binning(int binx, int biny, struct camprop *cam)
 {
+   int previousBinX;
+   int previousBinY;
    cam_log(LOG_DEBUG,"cam_set_binning debut. binx=%d biny=%d",binx, biny);
    if ( cam->params->pCam == NULL ) {
       cam_log(LOG_ERROR,"cam_set_binning camera not initialized");
@@ -632,11 +641,29 @@ void cam_set_binning(int binx, int biny, struct camprop *cam)
       return;
    }
    try {
+      previousBinX = cam->binx;
+      previousBinY = cam->biny;
+
+      if ( binx > cam->params->pCam->MaxBinX ) {
+         cam_log(LOG_ERROR,"Error: binning X is greater than %d",cam->params->pCam->MaxBinX);
+         sprintf(cam->msg, "Error: binning X is greater than %d",cam->params->pCam->MaxBinX);
+         return; 
+      }
+
+      if ( biny > cam->params->pCam->MaxBinY ) {
+         cam_log(LOG_ERROR,"Error: binning Y is greater than %d",cam->params->pCam->MaxBinY);
+         sprintf(cam->msg, "Error: binning Y is greater than %d",cam->params->pCam->MaxBinY);
+         return; 
+      }
+      cam->binx = binx;
+      cam->biny = biny;
+      cam->w = (cam->x2 - cam->x1 +1) / cam->binx;
+      cam->h = (cam->y2 - cam->y1 +1) / cam->biny;
+      cam->params->pCam->NumX = cam->w;
+      cam->params->pCam->NumY = cam->h;
       cam->params->pCam->BinX = binx;
       cam->params->pCam->BinY = biny;
       cam_log(LOG_DEBUG,"cam_set_binning apres binx=%d biny=%d",binx, biny);
-      cam->binx = binx;
-      cam->biny = biny;
       cam_log(LOG_DEBUG,"cam_set_binning fin OK");
    } catch (_com_error &e) {
       cam_log(LOG_ERROR,"cam_init connection error=%s",e.ErrorMessage());
@@ -805,6 +832,38 @@ int qsiGetWheelNames(struct camprop *cam, char **names)
       return -1;
    }
 }
+
+// ---------------------------------------------------------------------------
+// qsiGetWheelNames 
+//    retourne les noms des positions de la roue filtre 
+// @param **names  : pointeur de pointeu de chaine de caracteres
+// @return 
+//    0  si pas d'erreur
+//    -1 si erreur , le libelle de l'erreur est dans cam->msg
+// ---------------------------------------------------------------------------
+
+int qsiGetProperty(struct camprop *cam, char *propertyName, char *propertyValue)
+{
+   if ( cam->params->pCam == NULL ) {
+      cam_log(LOG_ERROR,"qsiGetWheelNames camera not initialized");
+      sprintf(cam->msg, "qsiGetWheelNames camera not initialized");
+      return -1;
+   }
+   try {
+
+      if ( strcmp(propertyName,"MaxBinX") == 0 ) {
+         sprintf(propertyValue,"%d",cam->params->pCam->MaxBinX);
+      } else if ( strcmp(propertyName,"MaxBinY") == 0 ) {
+         sprintf(propertyValue,"%d",cam->params->pCam->MaxBinY);
+      }
+      return 0;
+   } catch (...) {
+      cam_log(LOG_ERROR,"qsiGetWheelNames error exception");
+      sprintf(cam->msg, "qsiGetWheelNames error exception");
+      return -1;
+   }
+}
+
 
 
 
