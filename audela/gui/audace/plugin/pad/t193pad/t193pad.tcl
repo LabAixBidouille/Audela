@@ -2,11 +2,11 @@
 # Fichier : t193pad.tcl
 # Description : Raquette specifique au T193 de l'OHP
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: t193pad.tcl,v 1.5 2009-12-05 08:57:55 michelpujol Exp $
+# Mise a jour $Id: t193pad.tcl,v 1.6 2009-12-06 17:33:18 robertdelmas Exp $
 #
 
 namespace eval ::t193pad {
-   
+
    package provide t193pad 1.0
    package require audela 1.4.0
 
@@ -33,7 +33,7 @@ proc ::t193pad::initPlugin { } {
 # return : valeur de la propriete, ou "" si la propriete n'existe pas
 #------------------------------------------------------------
 proc ::t193pad::getPluginProperty { propertyName } {
-   
+
 }
 
 #------------------------------------------------------------
@@ -158,8 +158,8 @@ proc ::t193pad::createPluginInstance { } {
    if { $conf(superpad,focuserLabel) != "" } {
       ::$conf(superpad,focuserLabel)::createPlugin
    }
-   
-  
+
+
    #--- Affiche la raquette
    t193pad::run
 
@@ -345,31 +345,31 @@ proc ::t193pad::createDialog { } {
       ###   -text "$caption(t193pad,suivi_arret)" -value "$caption(t193pad,suivi_arret)" \
       ###   -variable ::t193pad::private(controleSuivi) -command "::t193pad::setSlew"
       ###pack $This.frame2.s.controleSuiviOff -expand 1 -fill x -side left -pady 2
-	       
+
       checkbutton $This.frame2.s.controleSuivi -indicatoron 0 -font [ list {Arial} 10 bold ] \
       -bg $color(gray_pad) -fg $color(white) -selectcolor $color(gray_pad) \
       -text $caption(t193pad,suivi_marche)  \
       -variable ::t193pad::private(controleSuivi) -command "::t193pad::setSlew"
-       
+
       pack $This.frame2.s.controleSuivi -expand 1 -fill none -side left -anchor center -pady 2
    }
 
    #--- LabelEntry pour AD
    LabelEntry $This.frame3.ad -label $caption(t193pad,RA) \
-      -textvariable ::t193pad::private(targetRa) -width 13 -fg $color(white) \
+      -textvariable ::t193pad::private(targetRa) -width 14 -fg $color(white) \
       -bg $color(blue_pad) -entrybg $color(gray_pad) -justify center \
       -labelfont [ list {Arial} 10 bold ] -font [ list {Arial} 10 bold ]
    pack $This.frame3.ad -anchor center -fill none -pady 2
 
    #--- LabelEntry pour DEC
    LabelEntry $This.frame3.dec -label $caption(t193pad,DEC) \
-      -textvariable ::t193pad::private(targetDec) -width 13 -fg $color(white) \
+      -textvariable ::t193pad::private(targetDec) -width 14 -fg $color(white) \
       -bg $color(blue_pad) -entrybg $color(gray_pad) -justify center \
       -labelfont [ list {Arial} 10 bold ] -font [ list {Arial} 10 bold ]
    pack $This.frame3.dec -anchor center -fill none -pady 2
 
    #--- Bouton GOTO
-   button $This.frame3.buttonGoto -borderwidth 1 -width 16\
+   button $This.frame3.buttonGoto -borderwidth 1 -width 16 \
       -font [ list {Arial} 10 bold ] -text $caption(t193pad,goto) -relief ridge \
       -fg $color(white) -bg $color(gray_pad) -command "::t193pad::cmdStartGoto"
    pack $This.frame3.buttonGoto -anchor center -fill x -side left -pady 2
@@ -532,7 +532,7 @@ proc ::t193pad::createDialog { } {
 proc ::t193pad::cmdStartGoto { } {
    variable This
    variable private
-   set catchError [catch { 
+   set catchError [catch {
       ::telescope::goto [ list $private(targetRa) $private(targetDec) ] 0 $This.frame3.buttonGoto
    }]
    if { $catchError != 0 } {
@@ -548,19 +548,19 @@ proc ::t193pad::setSlew { } {
    variable private
    variable This
 
-   set catchError [catch { 
+   set catchError [catch {
       ::telescope::controleSuivi
    }]
-   
-   #--- je mets a jour les widgets avant d'afficher un eventuel message d'erreur 
+
+   #--- je mets a jour les widgets avant d'afficher un eventuel message d'erreur
    if { $::audace(telescope,controle) == $::caption(telescope,suivi_marche) } {
       set private(controleSuivi) 1
       $This.frame2.s.controleSuivi configure -text $::caption(t193pad,suivi_marche)
    } else {
       set private(controleSuivi) 0
-      $This.frame2.s.controleSuivi configure -text $::caption(t193pad,suivi_arret)           
+      $This.frame2.s.controleSuivi configure -text $::caption(t193pad,suivi_arret)
    }
-   
+
    if { $catchError != 0 } {
       ::tkutil::displayErrorInfo $::caption(t193pad,titre)
    }
@@ -574,19 +574,19 @@ proc ::t193pad::setSlew { } {
    variable private
    variable This
 
-   set catchError [catch { 
+   set catchError [catch {
       ::telescope::controleSuivi
    }]
-   
-   #--- je mets a jour les widgets avant d'afficher un eventuel message d'erreur 
+
+   #--- je mets a jour les widgets avant d'afficher un eventuel message d'erreur
    if { $::audace(telescope,controle) == $::caption(telescope,suivi_marche) } {
       set private(controleSuivi) 1
       $This.frame2.s.controleSuivi configure -text $::caption(t193pad,suivi_marche)
    } else {
       set private(controleSuivi) 0
-      $This.frame2.s.controleSuivi configure -text $::caption(t193pad,suivi_arret)           
+      $This.frame2.s.controleSuivi configure -text $::caption(t193pad,suivi_arret)
    }
-   
+
    if { $catchError != 0 } {
       ::tkutil::displayErrorInfo $::caption(t193pad,titre)
    }
@@ -599,10 +599,10 @@ proc ::t193pad::setSlew { } {
 proc ::t193pad::startFocus { direction } {
    variable private
 
-   set catchError [catch { 
+   set catchError [catch {
       tel$::audace(telNo) focus move $direction
    }]
-      
+
    if { $catchError != 0 } {
       ::tkutil::displayErrorInfo $::caption(t193pad,titre)
    }
@@ -614,11 +614,11 @@ proc ::t193pad::startFocus { direction } {
 #------------------------------------------------------------
 proc ::t193pad::stopFocus {  } {
    variable private
-      
-   set catchError [catch { 
-      tel$::audace(telNo) focus stop 
+
+   set catchError [catch {
+      tel$::audace(telNo) focus stop
    }]
-      
+
    if { $catchError != 0 } {
       ::tkutil::displayErrorInfo $::caption(t193pad,titre)
    }
@@ -630,12 +630,12 @@ proc ::t193pad::stopFocus {  } {
 #------------------------------------------------------------
 proc ::t193pad::gotoFocus {  } {
    variable private
-      
-   set catchError [catch { 
+
+   set catchError [catch {
       #--- format de la commande : tel1 focus goto number ?-rate value? ?-blocking boolean?
       tel$::audace(telNo) focus goto $private(gotoFocus) -blocking 0
    }]
-      
+
    if { $catchError != 0 } {
       ::tkutil::displayErrorInfo $::caption(t193pad,titre)
    }
