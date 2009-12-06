@@ -2,14 +2,12 @@
 # Fichier : t193pad.tcl
 # Description : Raquette specifique au T193 de l'OHP
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: t193pad.tcl,v 1.6 2009-12-06 17:33:18 robertdelmas Exp $
+# Mise a jour $Id: t193pad.tcl,v 1.7 2009-12-06 22:48:23 robertdelmas Exp $
 #
 
 namespace eval ::t193pad {
-
    package provide t193pad 1.0
    package require audela 1.4.0
-
    source [ file join [file dirname [info script]] t193pad.cap ]
 }
 
@@ -82,7 +80,7 @@ proc ::t193pad::initConf { } {
    variable private
    global caption conf
 
-   if { ! [ info exists conf(t193pad,wmgeometry) ] }   { set conf(t193pad,wmgeometry)   "205x486+643+214" }
+   if { ! [ info exists conf(t193pad,wmgeometry) ] }   { set conf(t193pad,wmgeometry)   "240x520+643+180" }
    if { ! [ info exists conf(t193pad,focuserLabel) ] } { set conf(t193pad,focuserLabel) "" }
 
    set private(targetRa)      "00h00m00.00s"
@@ -159,7 +157,6 @@ proc ::t193pad::createPluginInstance { } {
       ::$conf(superpad,focuserLabel)::createPlugin
    }
 
-
    #--- Affiche la raquette
    t193pad::run
 
@@ -179,8 +176,8 @@ proc ::t193pad::deletePluginInstance { } {
    #--- Ferme la raquette
    if { [ info exists This ] == 1 } {
       if { [ winfo exists $This ] == 1 } {
-	 set conf(t193pad,wmgeometry) [ wm geometry $This ]
-	destroy $This
+         set conf(t193pad,wmgeometry) [ wm geometry $This ]
+         destroy $This
       }
    }
 }
@@ -212,7 +209,6 @@ proc ::t193pad::run { } {
 
    #--- Je refraichis l'affichage des coordonnees
    ::telescope::afficheCoord
-
 }
 
 #------------------------------------------------------------
@@ -234,7 +230,7 @@ proc ::t193pad::createDialog { } {
    if { [ info exists conf(t193pad,wmgeometry) ] == "1" } {
       wm geometry $This $conf(t193pad,wmgeometry)
    } else {
-      wm geometry $This 205x486+643+214
+      wm geometry $This 240x520+643+180
    }
    wm resizable $This 1 1
    wm protocol $This WM_DELETE_WINDOW ::t193pad::deletePluginInstance
@@ -257,12 +253,12 @@ proc ::t193pad::createDialog { } {
 
    #--- Label pour AD
    label $This.frame1.ent1 -textvariable audace(telescope,getra) \
-      -fg $color(white) -bg $color(blue_pad) -font [ list {Arial} 10 bold ]
+      -fg $color(white) -bg $color(blue_pad) -font [ list {Arial} 12 bold ]
    pack $This.frame1.ent1 -anchor center -fill none -pady 1
 
    #--- Label pour DEC
    label $This.frame1.ent2 -textvariable audace(telescope,getdec) \
-      -fg $color(white) -bg $color(blue_pad) -font [ list {Arial} 10 bold ]
+      -fg $color(white) -bg $color(blue_pad) -font [ list {Arial} 12 bold ]
    pack $This.frame1.ent2 -anchor center -fill none -pady 1
 
    #--- Bind de l'affichage des coordonnees
@@ -281,7 +277,7 @@ proc ::t193pad::createDialog { } {
       -fg $color(white) \
       -bg $color(gray_pad) \
       -text "$caption(t193pad,nord)" \
-      -width 2  \
+      -width 2 \
       -anchor center \
       -relief ridge
    pack $This.frame2.n.canv1 -expand 0 -side top -padx 10 -pady 4
@@ -296,7 +292,7 @@ proc ::t193pad::createDialog { } {
       -fg $color(white) \
       -bg $color(gray_pad) \
       -text "$caption(t193pad,est)" \
-      -width 2  \
+      -width 2 \
       -anchor center \
       -relief ridge
    pack $This.frame2.we.canv1 -expand 0 -side left -padx 10 -pady 4
@@ -313,7 +309,7 @@ proc ::t193pad::createDialog { } {
       -fg $color(white) \
       -bg $color(gray_pad) \
       -text $caption(t193pad,ouest) \
-      -width 2  \
+      -width 2 \
       -anchor center \
       -relief ridge
    pack $This.frame2.we.canv2 -expand 0 -side right -padx 10 -pady 4
@@ -328,29 +324,17 @@ proc ::t193pad::createDialog { } {
       -fg $color(white) \
       -bg $color(gray_pad) \
       -text $caption(t193pad,sud) \
-      -width 2  \
+      -width 2 \
       -anchor center \
       -relief ridge
    pack $This.frame2.s.canv1 -expand 0 -side top -padx 10 -pady 4
 
-   #--- Label du controle du suivi : Suivi on ou off
+   #--- Label du controle du suivi : Suivi on ou Suivi off
    if { [ ::confTel::getPluginProperty hasControlSuivi ] == "1" } {
-      ###radiobutton $This.frame2.s.controleSuiviOn -indicatoron 0 -font [ list {Arial} 10 bold ] \
-      ###   -bg $color(gray_pad) -fg $color(white) -selectcolor $color(gray_pad) \
-      ###   -text "$caption(t193pad,suivi_marche)" -value "$caption(t193pad,suivi_marche)" \
-      ###   -variable ::t193pad::private(controleSuivi) -command "::t193pad::setSlew"
-      ###pack $This.frame2.s.controleSuiviOn -expand 1 -fill x -side left -pady 2
-      ###radiobutton $This.frame2.s.controleSuiviOff -indicatoron 0 -font [ list {Arial} 10 bold ] \
-      ###   -bg $color(gray_pad) -fg $color(white) -selectcolor $color(gray_pad) \
-      ###   -text "$caption(t193pad,suivi_arret)" -value "$caption(t193pad,suivi_arret)" \
-      ###   -variable ::t193pad::private(controleSuivi) -command "::t193pad::setSlew"
-      ###pack $This.frame2.s.controleSuiviOff -expand 1 -fill x -side left -pady 2
-
-      checkbutton $This.frame2.s.controleSuivi -indicatoron 0 -font [ list {Arial} 10 bold ] \
-      -bg $color(gray_pad) -fg $color(white) -selectcolor $color(gray_pad) \
-      -text $caption(t193pad,suivi_marche)  \
-      -variable ::t193pad::private(controleSuivi) -command "::t193pad::setSlew"
-
+      checkbutton $This.frame2.s.controleSuivi -indicatoron 0 -font [ list {Arial} 12 bold ] \
+         -bg $color(gray_pad) -fg $color(white) -selectcolor $color(gray_pad) \
+         -text $caption(t193pad,suivi_marche) -variable ::t193pad::private(controleSuivi) \
+         -command "::t193pad::setSlew"
       pack $This.frame2.s.controleSuivi -expand 1 -fill none -side left -anchor center -pady 2
    }
 
@@ -358,25 +342,25 @@ proc ::t193pad::createDialog { } {
    LabelEntry $This.frame3.ad -label $caption(t193pad,RA) \
       -textvariable ::t193pad::private(targetRa) -width 14 -fg $color(white) \
       -bg $color(blue_pad) -entrybg $color(gray_pad) -justify center \
-      -labelfont [ list {Arial} 10 bold ] -font [ list {Arial} 10 bold ]
+      -labelfont [ list {Arial} 10 bold ] -font [ list {Arial} 12 bold ]
    pack $This.frame3.ad -anchor center -fill none -pady 2
 
    #--- LabelEntry pour DEC
    LabelEntry $This.frame3.dec -label $caption(t193pad,DEC) \
       -textvariable ::t193pad::private(targetDec) -width 14 -fg $color(white) \
       -bg $color(blue_pad) -entrybg $color(gray_pad) -justify center \
-      -labelfont [ list {Arial} 10 bold ] -font [ list {Arial} 10 bold ]
+      -labelfont [ list {Arial} 10 bold ] -font [ list {Arial} 12 bold ]
    pack $This.frame3.dec -anchor center -fill none -pady 2
 
    #--- Bouton GOTO
-   button $This.frame3.buttonGoto -borderwidth 1 -width 16 \
-      -font [ list {Arial} 10 bold ] -text $caption(t193pad,goto) -relief ridge \
+   button $This.frame3.buttonGoto -borderwidth 1 -width 14 \
+      -font [ list {Arial} 12 bold ] -text $caption(t193pad,goto) -relief ridge \
       -fg $color(white) -bg $color(gray_pad) -command "::t193pad::cmdStartGoto"
    pack $This.frame3.buttonGoto -anchor center -fill x -side left -pady 2
 
    #--- Bouton Stop GOTO
    button $This.frame3.buttonStopGoto -borderwidth 1 -width 10 \
-      -font [ list {Arial} 10 bold ] -text $caption(t193pad,stopGoto) -relief ridge \
+      -font [ list {Arial} 12 bold ] -text $caption(t193pad,stopGoto) -relief ridge \
       -fg $color(white) -bg $color(gray_pad) -command "::telescope::stopGoto"
    pack $This.frame3.buttonStopGoto -anchor center -fill x -pady 2
 
@@ -399,7 +383,7 @@ proc ::t193pad::createDialog { } {
 
    #--- Label pour le moteur de focalisation
    label $This.frame4.focus -text $caption(t193pad,moteur_foc) -relief flat \
-      -fg $color(white) -bg $color(blue_pad) -font [ list {Arial} 10 bold ]
+      -fg $color(white) -bg $color(blue_pad) -font [ list {Arial} 12 bold ]
    pack $This.frame4.focus -anchor center -fill none -padx 4 -pady 1
 
    #--- Frame pour les boutons '-' et '+'
@@ -412,7 +396,7 @@ proc ::t193pad::createDialog { } {
       -fg $color(white) \
       -bg $color(gray_pad) \
       -text "-" \
-      -width 2  \
+      -width 2 \
       -anchor center \
       -relief ridge
    pack $This.frame4.pm.canv1 -expand 0 -side left -padx 10 -pady 4
@@ -429,7 +413,7 @@ proc ::t193pad::createDialog { } {
       -fg $color(white) \
       -bg $color(gray_pad) \
       -text "+" \
-      -width 2  \
+      -width 2 \
       -anchor center \
       -relief ridge
    pack $This.frame4.pm.canv2 -expand 0 -side right -padx 10 -pady 4
@@ -441,14 +425,14 @@ proc ::t193pad::createDialog { } {
    pack $This.frame4.vitesseFocus -anchor center -fill none -pady 2
 
    #--- Bouton GOTOFoc
-   button $This.frame4.buttonGotoFoc -borderwidth 1 -width 10\
-      -font [ list {Arial} 10 bold ] -text $caption(t193pad,gotoFoc) -relief ridge \
+   button $This.frame4.buttonGotoFoc -borderwidth 1 -width 10 \
+      -font [ list {Arial} 12 bold ] -text $caption(t193pad,gotoFoc) -relief ridge \
       -fg $color(white) -bg $color(gray_pad) -command "::t193pad::gotoFocus"
    pack $This.frame4.buttonGotoFoc -anchor center -fill x -side left -pady 2
 
    #--- LabelEntry pour la position du GOTO de la focalisation
    LabelEntry $This.frame4.positionGotoFoc -textvariable ::t193pad::private(gotoFocus) \
-      -width 10 -entrybg $color(gray_pad) -justify center -font [ list {Arial} 10 bold ]
+      -width 10 -entrybg $color(gray_pad) -justify center -font [ list {Arial} 12 bold ]
    pack $This.frame4.positionGotoFoc -anchor center -fill none -pady 2
 
    #--- Bind des boutons '+' et '-'
@@ -464,7 +448,7 @@ proc ::t193pad::createDialog { } {
 
    #--- Label pour le dome
    label $This.frame5.dome -text $caption(t193pad,dome) -relief flat \
-      -fg $color(white) -bg $color(blue_pad) -font [ list {Arial} 10 bold ]
+      -fg $color(white) -bg $color(blue_pad) -font [ list {Arial} 12 bold ]
    pack $This.frame5.dome -anchor center -fill none -padx 4 -pady 1
 
    #--- Frame pour les boutons '-' et '+'
@@ -477,7 +461,7 @@ proc ::t193pad::createDialog { } {
       -fg $color(white) \
       -bg $color(gray_pad) \
       -text "-" \
-      -width 2  \
+      -width 2 \
       -anchor center \
       -relief ridge
    pack $This.frame5.pm.canv1 -expand 0 -side left -padx 10 -pady 4
@@ -494,7 +478,7 @@ proc ::t193pad::createDialog { } {
       -fg $color(white) \
       -bg $color(gray_pad) \
       -text "+" \
-      -width 2  \
+      -width 2 \
       -anchor center \
       -relief ridge
    pack $This.frame5.pm.canv2 -expand 0 -side right -padx 10 -pady 4
@@ -504,7 +488,7 @@ proc ::t193pad::createDialog { } {
       -variable ::t193pad::private(synchro) -bg $color(blue_pad) -fg $color(white) \
       -activebackground $color(blue_pad) -activeforeground $color(white) \
       -selectcolor $color(blue_pad) -highlightbackground $color(blue_pad) \
-      -font [ list {Arial} 10 bold ] -command "  "
+      -font [ list {Arial} 12 bold ] -command "  "
    pack $This.frame5.check -anchor center -fill none -pady 2
 
    #--- Bind des boutons '+' et '-'
@@ -640,6 +624,4 @@ proc ::t193pad::gotoFocus {  } {
       ::tkutil::displayErrorInfo $::caption(t193pad,titre)
    }
 }
-
-
 
