@@ -2,7 +2,7 @@
 # Fichier : qsi.tcl
 # Description : Configuration de la camera QSI
 # Auteur : Michel Pujol
-# Mise a jour $Id: qsi.tcl,v 1.8 2009-11-11 15:48:00 robertdelmas Exp $
+# Mise a jour $Id: qsi.tcl,v 1.9 2009-12-06 09:40:11 michelpujol Exp $
 #
 
 namespace eval ::qsi {
@@ -367,7 +367,20 @@ proc ::qsi::getPluginProperty { camItem propertyName } {
    variable private
 
    switch $propertyName {
-      binningList      { return [ list 1x1 2x2 3x3 4x4 ] }
+      binningList      {
+         if { $private($camItem,camNo) != "0" } {
+            #--- je recupere la valeur maximale du binning sur l'axe X
+            set maxBinX [cam$private($camItem,camNo) property MaxBinX]
+            #--- je cree la liste des binnings possibles
+            set binList ""
+            for { set i 1 } {$i <= $maxBinX} {incr i} {
+               lappend binList "${i}x${i}"
+            }
+            return $binList
+         } else {
+            return ""
+         }   
+      }
       binningXListScan { return [ list "" ] }
       binningYListScan { return [ list "" ] }
       dynamic          { return [ list 65535 0 ] }

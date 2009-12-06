@@ -147,3 +147,30 @@ int cmdQsiWheel(ClientData clientData, Tcl_Interp * interp, int argc, char *argv
    return result;
 }
 
+int cmdQsiProperty(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+   char ligne[1024];
+   int result;
+   struct camprop *cam;
+   cam = (struct camprop *) clientData;
+   if ( argc != 3 ) {
+      sprintf(ligne, "Usage: %s %s [property name]", argv[0], argv[1]);
+      result = TCL_ERROR;
+   } else {
+      char propertyValue[1024]; 
+
+      result = qsiGetProperty(cam, argv[2], propertyValue);
+      if ( result == 0 ) {
+         sprintf(ligne, "%s", propertyValue);
+         result = TCL_OK;
+      } else {
+         sprintf(ligne, "%s", cam->msg);
+         result = TCL_ERROR;
+      }
+   }
+      
+   Tcl_SetResult(interp, ligne, TCL_VOLATILE);   
+   return result;
+}
+
+

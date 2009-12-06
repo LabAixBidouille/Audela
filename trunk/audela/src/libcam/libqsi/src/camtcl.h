@@ -26,12 +26,14 @@
 #define SPECIFIC_CMDLIST \
     {"infotemp", (Tcl_CmdProc *) cmdQsiInfotemp},\
     {"setup",    (Tcl_CmdProc *) cmdQsiSetupDialog},\
-    {"wheel",    (Tcl_CmdProc *) cmdQsiWheel},
+    {"wheel",    (Tcl_CmdProc *) cmdQsiWheel}, \
+    {"property",    (Tcl_CmdProc *) cmdQsiProperty},
 
 
  /* === Specific commands for that camera === */
 int cmdQsiInfotemp(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdQsiSetupDialog(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdQsiWheel(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdQsiProperty(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 
 #endif

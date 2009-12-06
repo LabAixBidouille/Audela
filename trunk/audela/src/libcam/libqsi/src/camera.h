@@ -72,6 +72,7 @@ void qsiSetupDialog(struct camprop *cam);
 int qsiSetWheelPosition(struct camprop *cam, int position);
 int qsiGetWheelPosition(struct camprop *cam, int *position);
 int qsiGetWheelNames(struct camprop *cam, char **names);
+int qsiGetProperty(struct camprop *cam, char *propertyName, char *propertyValue);
 
 #ifdef __cplusplus
 }            /* End of extern "C" */
