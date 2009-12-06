@@ -194,19 +194,19 @@
 					/>
 				</FileConfiguration>
 			</File>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl"
-			>
-			<File
-				RelativePath="..\..\win\config.h"
+			<Filter
+				Name="Header Files"
+				Filter="h;hpp;hxx;hm;inl"
 				>
-			</File>
-			<File
-				RelativePath="..\ltdl.h"
-				>
-			</File>
+				<File
+					RelativePath="..\..\win\config.h"
+					>
+				</File>
+				<File
+					RelativePath="..\ltdl.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>
