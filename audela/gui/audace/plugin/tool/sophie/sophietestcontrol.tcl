@@ -2,7 +2,7 @@
 # @file     sophiesimulcontrol.tcl
 # @brief    Fichier du namespace ::sophie::testcontrol
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietestcontrol.tcl,v 1.5 2009-12-04 21:55:31 michelpujol Exp $
+# @version  $Id: sophietestcontrol.tcl,v 1.6 2009-12-06 17:55:06 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -53,7 +53,8 @@ proc ::sophie::testcontrol::init { mainThreadNo telescopeCommandPort telescopeNo
    set private(focus,mode)    "NONE"
    set private(focus,speed)   0.0         ; #--- vitesse courante du focus
    set private(focus,L)       1           ; #--- vitesse lente de focus ( 1% par seconde)        
-   set private(motor,R)       5           ; #--- vitesse rapide du focu ( 5% par seconde) 
+   set private(focus,R)       5           ; #--- vitesse rapide du focus ( 5% par seconde) 
+   set private(focus,goto)    5           ; #--- vitesse du goto du focus( 5% par seconde) 
    set private(focus,position)  "0"       ; #--- position courante du focus 
    set private(focus,targetPosition)  "0" ; #--- position cible du focus pour un GOTO ou un MOVE limite
    set private(focus,notificationEnabled) "0"  ; #---notification de la position du focus
@@ -311,11 +312,10 @@ proc ::sophie::testcontrol::readTelescopeCommandSocket { channel } {
                      }
                   }
                   GOTO {
-                     set returnCode [startRadecGoto [lindex $commandArray 2] [lindex $commandArray 3]]
+                     disp "::sophie::testcontrol::readTelescopeCommandSocket FOC GOTO: $commandArray\n"
+                     set returnCode [startFocusGoto [lindex $commandArray 2] ]
                      #--- j'envoie le code retour
-                     set raHms  [mc_angle2hms $private(motor,ra) 360 zero 2 auto string]
-                     set decDms [mc_angle2dms $private(motor,dec) 90 zero 2 + string]
-                     set response [format "!RADEC GOTO %d %s %s @" $returnCode $raHms $decDms ]
+                     set response [format "!FOC GOTO %d @" $returnCode ]
                      writeTelescopeCommandSocket $channel $response
                   }
                   default {
@@ -643,6 +643,175 @@ proc ::sophie::testcontrol::startRadecGoto { ra dec } {
    return $result
 }
 
+
+#############################################################
+#
+#  FOCUS
+#
+#############################################################
+
+
+#------------------------------------------------------------
+# startFocusMove
+#   demarre un mouvement du focus 
+#
+# @param direction + ou -
+# @param speedCode L ou R
+# @param distance en arcsec
+# @return code retour 0=OK , 1=Erreur
+#------------------------------------------------------------
+proc ::sophie::testcontrol::startFocusMove { direction speedCode distance} {
+   variable private
+
+   set catchError [ catch {
+      set result 0
+      
+      if { $private(focus,mode) == "NONE" } {
+         set speed $private(focus,$speedCode)
+
+         #--- je change la vitesse de la monture
+         switch $direction {
+            "+" {
+               set private(focus,speed) $speed
+            }
+            "-" {
+               set private(focus,speed) [expr 0 - $speed]
+            }
+            default {
+               set result 2  ; # erreur: direction incorrecte    
+            }               
+         }
+
+         if { $result == 0 } {
+            if { $distance == 0 } {
+               set private(focus,mode) "ILLIMITED_MOVE"
+            } else {
+               set private(focus,mode) "LIMITED_MOVE"
+               #--- je calcule les coordonnees cibles
+               switch $direction {
+                  "+" {
+                     set private(focus,targetPosition) [expr $private(focus,position) + $distance ]
+                  }
+                  "-" {
+                     set private(focus,targePosition) [expr $private(focus,position) - $distance ]
+                  }
+               }
+            }
+         }
+      } else {
+         #--- erreur: le focus est deja en mouvement
+         set result 1
+      }
+   }]
+
+   if { $catchError != 0 } {
+      ::sophie::testcontrol::disp  "$::errorInfo \n"
+      set result 1
+   }
+
+   return $result
+}
+
+#------------------------------------------------------------
+# startFocusGoto
+#   demarre un goto du focus 
+#
+# @param targetPosition position cibble du goto
+# @return code retour 0=OK , 1=Erreur
+#------------------------------------------------------------
+proc ::sophie::testcontrol::startFocusGoto { targetPosition } {
+   variable private
+
+   disp "::sophie::testcontrol::startFocusGoto targetPosition=$targetPosition \n"
+   if { $private(motor,mode) == "NONE" } {
+      #--- je calcule le sens de deplacement 
+      if { $targetPosition > $private(focus,position) } {
+         set private(focus,speed) $private(focus,goto)
+      } else {
+         set private(focus,speed) [expr 0 - $private(focus,goto)]
+      }
+      #--- je memorise la position cible
+      set private(focus,targetPosition) $targetPosition
+      set private(focus,mode) "GOTO"
+      set result 0
+   } else {
+      set result 1
+   }
+   return $result
+}
+
+#------------------------------------------------------------
+# stopFocusMove
+#   arrete un mouvement du focus
+#
+# @param direction N S E W
+#------------------------------------------------------------
+proc ::sophie::testcontrol::stopFocusMove { } {
+   variable private
+
+   set private(focus,speed) 0.0
+   set private(focus,mode) "NONE"
+
+   return 0
+}
+
+#------------------------------------------------------------
+# startFocusNotification
+#   demarre l'envoi des notifications de la position du focus 
+#
+# @return code retour 0=OK , 1=Erreur
+#------------------------------------------------------------
+proc ::sophie::testcontrol::startFocusNotification { } {
+   variable private
+
+   if { $private(focus,notificationEnabled) == 0 } {
+      set private(focus,notificationEnabled) 1
+      after 500 ::sophie::testcontrol::sendFocusPosition
+   }
+   return 0
+}
+
+#------------------------------------------------------------
+# stopFocusNotification
+#   arrete l'envoi des notifications de la position du focus 
+#
+# @return code retour 0=OK , 1=Erreur
+#------------------------------------------------------------
+proc ::sophie::testcontrol::stopFocusNotification { } {
+   variable private
+   set private(focus,notificationEnabled) 0
+   return 0
+}
+
+#------------------------------------------------------------
+# sendFocusPosition
+#   envoie une donnee au PC de guidage
+#
+# @param donnees a envoyer
+#------------------------------------------------------------
+proc ::sophie::testcontrol::sendFocusPosition { } {
+   variable private
+
+   switch $private(focus,mode) {
+      "NONE" {
+         #--- le focus n'est pas  en mouvement
+         set moveCode 0
+      }
+      default {
+         #--- le focus est en mouvement
+         set moveCode 1
+      }
+   }
+   set returnCode 0
+   set response [format "!FOC COORD %d %d %s @" $returnCode $moveCode $private(focus,position)]
+   disp "sendFocusPosition $response private(focus,notificationEnabled)=$private(focus,notificationEnabled)\n"
+   ::sophie::testcontrol::writeTelescopeNotificationSocket $response
+   if { $private(focus,notificationEnabled) == 1 } {
+      #--- je lance une nouvelle iteration apres 1000 miliscondes
+      after 1000 ::sophie::testcontrol::sendFocusPosition
+   }
+}
+
 #------------------------------------------------------------
 # simulateMotor
 #   simule un mouvement de moteur en modifiant les coordonnes
@@ -743,9 +912,11 @@ proc ::sophie::testcontrol::simulateMotor { } {
             #--- je simule le GOTO
             if { [expr abs($private(focus,position) - $private(focus,targetPosition)) > abs($delay * $private(focus,speed)) ] } {
                set private(focus,position) [expr $private(focus,position) + $delay * $private(focus,speed) ]
+               disp "simulateMotor delai=$delay private(focus,position)=$private(focus,position)\n"
             } else {
                #--- l'ecart est tout petit, je considere qu'on a atteint la position cible
                set private(focus,position) $private(focus,targetPosition)
+               disp "simulateMotor delai=$delay private(focus,position)=$private(focus,position) FIN \n"
             }
 
             if { $private(focus,position) == $private(focus,targetPosition) } {
@@ -769,147 +940,6 @@ proc ::sophie::testcontrol::simulateMotor { } {
       ::sophie::testcontrol::disp  "$::errorInfo \n"
    }
 }
-
-#############################################################
-#
-#  FOCUS
-#
-#############################################################
-
-
-#------------------------------------------------------------
-# startFocusMove
-#   demarre un mouvement du focus 
-#
-# @param direction + ou -
-# @param speedCode L ou R
-# @param distance en arcsec
-# @return code retour 0=OK , 1=Erreur
-#------------------------------------------------------------
-proc ::sophie::testcontrol::startFocusMove { direction speedCode distance} {
-   variable private
-
-   set catchError [ catch {
-      set result 0
-      
-      if { $private(focus,mode) == "NONE" } {
-         set speed $private(focus,$speedCode)
-
-         #--- je change la vitesse de la monture
-         switch $direction {
-            "+" {
-               set private(focus,speed) $speed
-            }
-            "-" {
-               set private(focus,speed) [expr 0 - $speed]
-            }
-            default {
-               set result 2  ; # erreur: direction incorrecte    
-            }               
-         }
-
-         if { $result == 0 } {
-            if { $distance == 0 } {
-               set private(focus,mode) "ILLIMITED_MOVE"
-            } else {
-               set private(focus,mode) "LIMITED_MOVE"
-               #--- je calcule les coordonnees cibles
-               switch $direction {
-                  "+" {
-                     set private(focus,targetPosition) [expr $private(focus,position) + $distance ]
-                  }
-                  "-" {
-                     set private(focus,targePosition) [expr $private(focus,position) - $distance ]
-                  }
-               }
-            }
-         }
-      } else {
-         #--- erreur: le focus est deja en mouvement
-         set result 1
-      }
-   }]
-
-   if { $catchError != 0 } {
-      ::sophie::testcontrol::disp  "$::errorInfo \n"
-      set result 1
-   }
-
-   return $result
-}
-
-#------------------------------------------------------------
-# stopFocusMove
-#   arrete un mouvement du focus
-#
-# @param direction N S E W
-#------------------------------------------------------------
-proc ::sophie::testcontrol::stopFocusMove { } {
-   variable private
-
-   set private(focus,speed) 0.0
-   set private(focus,mode) "NONE"
-
-   return 0
-}
-
-#------------------------------------------------------------
-# startFocusNotification
-#   demarre l'envoi des notifications de la position du focus 
-#
-# @return code retour 0=OK , 1=Erreur
-#------------------------------------------------------------
-proc ::sophie::testcontrol::startFocusNotification { } {
-   variable private
-
-   if { $private(focus,notificationEnabled) == 0 } {
-      set private(focus,notificationEnabled) 1
-      after 500 ::sophie::testcontrol::sendFocusPosition
-   }
-   return 0
-}
-
-#------------------------------------------------------------
-# stopFocusNotification
-#   arrete l'envoi des notifications de la position du focus 
-#
-# @return code retour 0=OK , 1=Erreur
-#------------------------------------------------------------
-proc ::sophie::testcontrol::stopFocusNotification { } {
-   variable private
-   set private(focus,notificationEnabled) 0
-   return 0
-}
-
-#------------------------------------------------------------
-# sendFocusPosition
-#   envoie une donnee au PC de guidage
-#
-# @param donnees a envoyer
-#------------------------------------------------------------
-proc ::sophie::testcontrol::sendFocusPosition { } {
-   variable private
-
-   switch $private(focus,mode) {
-      "NONE" {
-         #--- le focus n'est pas  en mouvement
-         set moveCode 0
-      }
-      default {
-         #--- le focus est en mouvement
-         set moveCode 1
-      }
-   }
-   set returnCode 0
-   set response [format "!FOC COORD %d %d %s @" $returnCode $moveCode $private(focus,position)]
-   disp "sendFocusPosition $response private(focus,notificationEnabled)=$private(focus,notificationEnabled)\n"
-   ::sophie::testcontrol::writeTelescopeNotificationSocket $response
-   if { $private(focus,notificationEnabled) == 1 } {
-      #--- je lance une nouvelle iteration apres 1000 miliscondes
-      after 1000 ::sophie::testcontrol::sendFocusPosition
-   }
-}
-
 
 
 
