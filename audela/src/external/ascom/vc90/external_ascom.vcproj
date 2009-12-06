@@ -24,10 +24,10 @@
 			>
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="nmake /f Makefile.mak"
-				ReBuildCommandLine=""
-				CleanCommandLine=""
-				Output="external_andor.exe"
+				BuildCommandLine="cd ..&amp; nmake /f Makefile.vc install"
+				ReBuildCommandLine="cd ..&amp; nmake /f Makefile.vc clean install"
+				CleanCommandLine="cd ..&amp; nmake /f Makefile.vc clean"
+				Output=""
 				PreprocessorDefinitions="WIN32;_DEBUG"
 				IncludeSearchPath=""
 				ForcedIncludes=""
