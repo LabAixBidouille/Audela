@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.15 2009-12-04 21:54:14 michelpujol Exp $
+// $Id: libtel.c,v 1.16 2009-12-06 09:52:00 alainklotz Exp $
 
 #include "sysexp.h"
 
@@ -221,6 +221,7 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
                Tcl_SetResult(interp, s, TCL_VOLATILE);
                return TCL_ERROR;
             }
+
             // je duplique la commande "mc_angle2deg" dans la thread du telescope
             sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_angle2deg");
             if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
@@ -236,6 +237,7 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
                Tcl_SetResult(interp, s, TCL_VOLATILE);
                return TCL_ERROR;
             }
+
             // je duplique la commande "mc_date2ymdhms" dans la thread du telescope
             sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_date2ymdhms");
             if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
@@ -244,6 +246,14 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
                return TCL_ERROR;
             }
             
+            // je duplique la commande "mc_date2jd" dans la thread du telescope
+            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_date2jd");
+            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
+               sprintf(s, "cmdTelCreate: %s",interp->result);
+               Tcl_SetResult(interp, s, TCL_VOLATILE);
+               return TCL_ERROR;
+            }
+
             // je duplique la commande "mc_angle2dms" dans la thread du telescope
             sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_angle2dms");
             if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
