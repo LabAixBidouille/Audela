@@ -6,7 +6,7 @@
 #endif
 
 #ifdef __WIN32__
-int _export Fitstcl_Init (Tcl_Interp *interp);
+int Fitstcl_Init (Tcl_Interp *interp);
 #else 
 int Fitstcl_Init (Tcl_Interp *interp);
 #endif
