@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9,00"
 	Name="external_andor"
-	ProjectGUID="{581968FB-5133-44E0-B991-2055AAE359CB}"
+	ProjectGUID="{37B665F3-8846-4702-9A95-450112EF4268}"
 	RootNamespace="external_andor"
 	Keyword="MakeFileProj"
 	TargetFrameworkVersion="196613"
@@ -24,9 +24,9 @@
 			>
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="nmake /f Makefile.mak"
-				ReBuildCommandLine=""
-				CleanCommandLine=""
+				BuildCommandLine="cd ..&amp; nmake /f Makefile.vc install"
+				ReBuildCommandLine="cd ..&amp; nmake /f Makefile.vc clean install"
+				CleanCommandLine="cd ..&amp; nmake /f Makefile.vc clean"
 				Output="external_andor.exe"
 				PreprocessorDefinitions="WIN32;_DEBUG"
 				IncludeSearchPath=""
