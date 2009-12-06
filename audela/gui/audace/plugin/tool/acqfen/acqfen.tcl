@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.27 2009-11-17 16:55:57 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.28 2009-12-06 17:54:07 michelpujol Exp $
 #
 
 # =========================================================
@@ -114,7 +114,7 @@ namespace eval ::acqfen {
 
       set This $this
       #--- Recuperation de la derniere configuration de prise de vue
-      ::acqfen::Chargement_Var
+      ::acqfen::chargerParametres
       set panneau(acqfen,titre)        $caption(acqfen,titre)
       set panneau(acqfen,ht_onglet)    280
       set panneau(acqfen,go_stop_cent) "go"
@@ -192,16 +192,16 @@ namespace eval ::acqfen {
       set panneau(acqfen,affpleinetrame) 1
       set panneau(acqfen,afffenetrees)   1
 
-      acqfenBuildIF $This
+      ::acqfenBuildIF $This
 
-      ::acqfen::ActuAff
+      ::acqfen::actualiserAffichage
 
       pack $This.mode.$panneau(acqfen,mode) -anchor nw -fill x
 
    }
 
-#***** Procedure Chargement_Var ********************************
-   proc Chargement_Var { } {
+#***** Procedure chargerParametres ********************************
+   proc chargerParametres { } {
       variable parametres
       global audace
 
@@ -216,10 +216,10 @@ namespace eval ::acqfen {
       if { ! [ info exists parametres(acqfen,bin) ] }           { set parametres(acqfen,bin)           "1" }   ; #--- Binning       : 1x1
       if { ! [ info exists parametres(acqfen,mode) ] }          { set parametres(acqfen,mode)          "une" } ; #--- Mode          : Une image
    }
-#***** Fin de la procedure Chargement_Var **********************
+#***** Fin de la procedure chargerParametres **********************
 
-#***** Procedure Enregistrement_Var ****************************
-   proc Enregistrement_Var { } {
+#***** Procedure enregistrerparametres ****************************
+   proc enregistrerparametres { } {
       variable parametres
       global audace panneau
 
@@ -243,7 +243,7 @@ namespace eval ::acqfen {
          }
       }
    }
-#***** Fin de la procedure Enregistrement_Var ******************
+#***** Fin de la procedure enregistrerparametres ******************
 
    #------------------------------------------------------------
    # startTool
@@ -269,7 +269,7 @@ namespace eval ::acqfen {
       }
 
       #--- Sauvegarde de la configuration de prise de vue
-      ::acqfen::Enregistrement_Var
+      ::acqfen::enregistrerparametres
 
       #--- Initialisation du fenetrage
       catch {
@@ -284,7 +284,7 @@ namespace eval ::acqfen {
    # ==================================================================
 
    #--- Procedure de changement du binning (acquisitions fenetrees)
-   proc ChangeBin { } {
+   proc changerBinning { } {
       variable This
       global caption panneau
 
@@ -300,7 +300,7 @@ namespace eval ::acqfen {
    }
 
    #--- Procedure de changement du binning (acquisitions pleine trame)
-   proc ChangeBinCent { } {
+   proc changerBinningCent { } {
       variable This
       global caption panneau
 
@@ -322,7 +322,7 @@ namespace eval ::acqfen {
    }
 
    #--- Procedures de changement d'affichage des reglages
-   proc ChangeAffPleineTrame { } {
+   proc changerAffPleineTrame { } {
       variable This
       global panneau
 
@@ -349,10 +349,10 @@ namespace eval ::acqfen {
          }
       }
       pack forget $This.mode
-      acqfen::ActuAff
+      acqfen::actualiserAffichage
    }
 
-   proc ChangeAffFenetrees { } {
+   proc changerAffFenetrees { } {
       variable This
       global panneau
 
@@ -379,10 +379,10 @@ namespace eval ::acqfen {
          }
       }
       pack forget $This.mode
-      acqfen::ActuAff
+      acqfen::actualiserAffichage
    }
 
-   proc ActuAff { } {
+   proc actualiserAffichage { } {
       variable This
       global panneau
 
@@ -411,7 +411,7 @@ namespace eval ::acqfen {
    }
 
    #--- Procedure d'acquisition pleine trame
-   proc GoStopCent { } {
+   proc goStopCent { } {
       variable This
       global audace caption panneau
 
@@ -419,92 +419,109 @@ namespace eval ::acqfen {
 
          switch -exact -- $panneau(acqfen,go_stop_cent) {
             "go" {
-               #--- Mise a jour de variable
-               set panneau(acqfen,acquisition) "1"
-
-               #--- Modification du bouton, pour eviter un second lancement
-               set panneau(acqfen,go_stop_cent) stop
-               $This.acqcent.but configure -text $caption(acqfen,stop)
-               $This.acqcentred.but configure -text $caption(acqfen,stop)
-
-               #--- Suppression de la zone selectionnee avec la souris
-               if { [ lindex [ list [ ::confVisu::getBox 1 ] ] 0 ] != "" } {
-                  ::confVisu::deleteBox
-               }
-
-               #--- Mise a jour en-tete audace
-               wm title $audace(base) "$caption(acqfen,audace)"
-
-               #--- La commande exptime permet de fixer le temps de pose de l'image.
-               cam$audace(camNo) exptime $panneau(acqfen,pose_centrage)
-
-               #--- La commande bin permet de fixer le binning.
-               cam$audace(camNo) bin [list $panneau(acqfen,bin_centrage) $panneau(acqfen,bin_centrage)]
-
-               #--- La commande window permet de fixer le fenetrage de numerisation du CCD
-               cam$audace(camNo) window [list 1 1 [lindex [cam$audace(camNo) nbcells] 0] [lindex [cam$audace(camNo) nbcells] 1]]
-
-               #--- Cas des poses de 0 s : Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
-               if { $panneau(acqfen,pose_centrage) == "0" } {
-                  ::camera::Avancement_pose "1"
-               }
-
-               #--- Lecture du CCD
-               cam$audace(camNo) acq
-
-               #--- Alarme sonore de fin de pose
-               ::camera::alarme_sonore $panneau(acqfen,pose_centrage)
-
-               #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
-               ::camera::gestionPose $panneau(acqfen,pose_centrage) 1 cam$audace(camNo) buf$audace(bufNo)
-
-               #--- Applique un zoom ou un scale (re-echantillonnage)
-               if {$panneau(acqfen,typezoom)=="zoom"} {
-                  #--- Applique un zoom
-                  visu$audace(visuNo) zoom $panneau(acqfen,bin_centrage)
-               } else {
-                  #--- Applique un scale (re-echantillonne) si la camera possede bien le binning demande
-                  #--- L'image finale a la meme dimension a l'ecran que l'image en binning 1x1
-                  set binningCamera "$panneau(acqfen,bin_centrage)x$panneau(acqfen,bin_centrage)"
-                  if { [ lsearch [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningList ] $binningCamera ] != "-1" } {
-                     buf$audace(bufNo) scale [list $panneau(acqfen,bin_centrage) $panneau(acqfen,bin_centrage)] 1
+               set catchError [ catch {
+                  #--- Mise a jour de variable
+                  set panneau(acqfen,acquisition) "1"
+   
+                  #--- Modification du bouton, pour eviter un second lancement
+                  set panneau(acqfen,go_stop_cent) stop
+                  $This.acqcent.but configure -text $caption(acqfen,stop)
+                  $This.acqcentred.but configure -text $caption(acqfen,stop)
+   
+                  #--- Suppression de la zone selectionnee avec la souris
+                  if { [ lindex [ list [ ::confVisu::getBox 1 ] ] 0 ] != "" } {
+                     ::confVisu::deleteBox
                   }
+   
+                  #--- Mise a jour en-tete audace
+                  wm title $audace(base) "$caption(acqfen,audace)"
+   
+                  #--- La commande exptime permet de fixer le temps de pose de l'image.
+                  cam$audace(camNo) exptime $panneau(acqfen,pose_centrage)
+   
+                  #--- La commande bin permet de fixer le binning.
+                  cam$audace(camNo) bin [list $panneau(acqfen,bin_centrage) $panneau(acqfen,bin_centrage)]
+   
+                  #--- La commande window permet de fixer le fenetrage de numerisation du CCD
+                  cam$audace(camNo) window [list 1 1 [lindex [cam$audace(camNo) nbcells] 0] [lindex [cam$audace(camNo) nbcells] 1]]
+   
+                  #--- Cas des poses de 0 s : Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
+                  if { $panneau(acqfen,pose_centrage) == "0" } {
+                     ::camera::Avancement_pose "1"
+                  }
+   
+                  #--- Lecture du CCD
+                  cam$audace(camNo) acq
+                  #--- mise a jour de status_cam (pour multithread)
+                  update
+                  #--- Alarme sonore de fin de pose
+                  ::camera::alarme_sonore $panneau(acqfen,pose_centrage)
+                  #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
+                  ::camera::gestionPose $panneau(acqfen,pose_centrage) 1 cam$audace(camNo) buf$audace(bufNo)
+                                                               
+                  #--- Applique un zoom ou un scale (re-echantillonnage)
+                  if {$panneau(acqfen,typezoom)=="zoom"} {
+                     #--- Applique un zoom
+                     visu$audace(visuNo) zoom $panneau(acqfen,bin_centrage)
+                  } else {
+                     #--- Applique un scale (re-echantillonne) si la camera possede bien le binning demande
+                     #--- L'image finale a la meme dimension a l'ecran que l'image en binning 1x1
+                     set binningCamera "$panneau(acqfen,bin_centrage)x$panneau(acqfen,bin_centrage)"
+                     if { [ lsearch [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningList ] $binningCamera ] != "-1" } {
+                        buf$audace(bufNo) scale [list $panneau(acqfen,bin_centrage) $panneau(acqfen,bin_centrage)] 1
+                     }
+                  }
+   
+                  #--- Rajoute des mots cles dans l'en-tete FITS
+                  foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
+                     buf$audace(bufNo) setkwd $keyword
+                  }
+   
+                  #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
+                  ::confVisu::setFileName $audace(visuNo) ""
+   
+                  #--- Affichage avec visu auto.
+                  audace::autovisu $audace(visuNo)
+   
+                  #--- On restitue l'affichage du bouton "GO":
+                  set panneau(acqfen,go_stop_cent) go
+                  $This.acqcent.but configure -text $caption(acqfen,GO)
+                  $This.acqcentred.but configure -text $caption(acqfen,GO)
+   
+                  #--- On modifie le bouton "Go" des acquisitions fenetrees
+                  $This.acq.but configure -text $caption(acqfen,actuxy) -command ::acqfen::actualiserCoordonnees
+                  $This.acqred.but configure -text $caption(acqfen,actuxy) -command ::acqfen::actualiserCoordonnees
+   
+                  #--- RAZ du fenetrage
+                  set panneau(acqfen,X1) "-"
+                  set panneau(acqfen,Y1) "-"
+                  set panneau(acqfen,X2) "-"
+                  set panneau(acqfen,Y2) "-"
+                  place forget $This.acq.matrice_color_invariant.fen
+                  place forget $This.acqred.matrice_color_invariant.fen
+                  $This.acq.matrice_color_invariant.fen config -width $panneau(acqfen,mtx_x) -height $panneau(acqfen,mtx_y)
+                  $This.acqred.matrice_color_invariant.fen config -width $panneau(acqfen,mtx_x) -height $panneau(acqfen,mtx_y)
+                  place $This.acq.matrice_color_invariant.fen -x 0 -y 0
+                  place $This.acqred.matrice_color_invariant.fen -x 0 -y 0
+   
+                  #--- Mise a jour de variable
+                  set panneau(acqfen,acquisition) "0"
+                  
+               } ]
+               if { $catchError == 1 } {
+                  #--- j'affiche et je trace le message d'erreur
+                  ::tkutil::displayErrorInfo $::caption(acqfen,titre_fenetrees)
+                  #--- j'arrete la gestionde pose
+                  ###::camera::gestionPose $panneau(acqfen,pose_centrage) 0 cam$audace(camNo) buf$audace(bufNo)
+                  ::camera::Avancement_pose "0"
+                  #--- je restaure les boutons
+                  set panneau(acqfen,go_stop_cent) go
+                  $This.acqcent.but configure -text $::caption(acqfen,GO)
+                  $This.acqcentred.but configure -text $::caption(acqfen,GO)
+                  set panneau(acqfen,acquisition) "0"
+                                    
                }
-
-               #--- Rajoute des mots cles dans l'en-tete FITS
-               foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
-                  buf$audace(bufNo) setkwd $keyword
-               }
-
-               #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
-               ::confVisu::setFileName $audace(visuNo) ""
-
-               #--- Affichage avec visu auto.
-               audace::autovisu $audace(visuNo)
-
-               #--- On restitue l'affichage du bouton "GO":
-               set panneau(acqfen,go_stop_cent) go
-               $This.acqcent.but configure -text $caption(acqfen,GO)
-               $This.acqcentred.but configure -text $caption(acqfen,GO)
-
-               #--- On modifie le bouton "Go" des acquisitions fenetrees
-               $This.acq.but configure -text $caption(acqfen,actuxy) -command ::acqfen::ActuCoord
-               $This.acqred.but configure -text $caption(acqfen,actuxy) -command ::acqfen::ActuCoord
-
-               #--- RAZ du fenetrage
-               set panneau(acqfen,X1) "-"
-               set panneau(acqfen,Y1) "-"
-               set panneau(acqfen,X2) "-"
-               set panneau(acqfen,Y2) "-"
-               place forget $This.acq.matrice_color_invariant.fen
-               place forget $This.acqred.matrice_color_invariant.fen
-               $This.acq.matrice_color_invariant.fen config -width $panneau(acqfen,mtx_x) -height $panneau(acqfen,mtx_y)
-               $This.acqred.matrice_color_invariant.fen config -width $panneau(acqfen,mtx_x) -height $panneau(acqfen,mtx_y)
-               place $This.acq.matrice_color_invariant.fen -x 0 -y 0
-               place $This.acqred.matrice_color_invariant.fen -x 0 -y 0
-
-               #--- Mise a jour de variable
-               set panneau(acqfen,acquisition) "0"
+        
             }
             "stop" {
                #--- Mise a jour de variable
@@ -525,7 +542,7 @@ namespace eval ::acqfen {
    }
 
    #--- Procedures d'acquisitions fenetrees
-   proc GoStop { } {
+   proc goStop { } {
       variable This
       global audace caption conf panneau
 
@@ -585,7 +602,7 @@ namespace eval ::acqfen {
                         return
                      }
                      #--- On verifie que le nom de fichier ne contient pas de caracteres interdits
-                     if {[acqfen::TestChaine $panneau(acqfen,nom_image)] == 0} {
+                     if {[acqfen::testerChaine $panneau(acqfen,nom_image)] == 0} {
                         tk_messageBox -title $caption(acqfen,pb) -type ok \
                            -message $caption(acqfen,mauvcar)
                         #--- On restitue l'affichage du bouton "GO" :
@@ -605,7 +622,7 @@ namespace eval ::acqfen {
                         return
                      }
                      #--- On verifie que l'index est bien un nombre entier
-                     if {[acqfen::TestEntier $panneau(acqfen,index)] == 0} {
+                     if {[acqfen::testerEntier $panneau(acqfen,index)] == 0} {
                         tk_messageBox -title $caption(acqfen,pb) -type ok \
                            -message $caption(acqfen,indinv)
                         #--- On restitue l'affichage du bouton "GO" :
@@ -637,7 +654,7 @@ namespace eval ::acqfen {
                         return
                      }
                      #--- On verifie que le nombre d'images a faire est bien un nombre entier
-                     if {[acqfen::TestEntier $panneau(acqfen,nb_images)] == 0} {
+                     if {[acqfen::testerEntier $panneau(acqfen,nb_images)] == 0} {
                         tk_messageBox -title $caption(acqfen,pb) -type ok \
                            -message $caption(acqfen,nbiminv)
                         #--- On restitue l'affichage du bouton "GO" :
@@ -691,7 +708,7 @@ namespace eval ::acqfen {
                               saveima [append nom $panneau(acqfen,index)]
                               incr panneau(acqfen,index)
                               #--- Corrections eventuelles de suivi
-                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::deplacerFenetre}
                            }
                         }
                         "21" {
@@ -726,7 +743,7 @@ namespace eval ::acqfen {
                               saveima [append nom $panneau(acqfen,index)]
                               incr panneau(acqfen,index)
                               #--- Corrections eventuelles de suivi
-                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::deplacerFenetre}
                            }
                         }
                         "31" {
@@ -753,7 +770,7 @@ namespace eval ::acqfen {
                               saveima [append nom $panneau(acqfen,index)]
                               incr panneau(acqfen,index)
                               #--- Corrections eventuelles de suivi
-                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::deplacerFenetre}
                            }
                            #--- Affichage avec visu auto
                            audace::autovisu $audace(visuNo)
@@ -773,7 +790,7 @@ namespace eval ::acqfen {
                               lappend liste_buffers [list $buftmp $panneau(acqfen,index)]
                               incr panneau(acqfen,index)
                               #--- Corrections eventuelles de suivi
-                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::deplacerFenetre}
                            }
                            #--- Sauvegarde des images sur le disque
                            foreach ima $liste_buffers {
@@ -819,7 +836,7 @@ namespace eval ::acqfen {
                               lappend liste_buffers [list $buftmp $panneau(acqfen,index)]
                               incr panneau(acqfen,index)
                               #--- Corrections eventuelles de suivi
-                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::deplacerFenetre}
                            }
                            #--- Sauvegarde des images sur le disque
                            foreach ima $liste_buffers {
@@ -857,7 +874,7 @@ namespace eval ::acqfen {
                               lappend liste_buffers [list $buftmp $panneau(acqfen,index)]
                               incr panneau(acqfen,index)
                               #--- Corrections eventuelles de suivi
-                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::deplacerFenetre}
                            }
                            #--- Sauvegarde des images sur le disque
                            foreach ima $liste_buffers {
@@ -910,7 +927,7 @@ namespace eval ::acqfen {
                         return
                      }
                      #--- On verifie que le nom de fichier ne contient pas de caracteres interdits
-                     if {[acqfen::TestChaine $panneau(acqfen,nom_image)] == 0} {
+                     if {[acqfen::testerChaine $panneau(acqfen,nom_image)] == 0} {
                         tk_messageBox -title $caption(acqfen,pb) -type ok \
                            -message $caption(acqfen,mauvcar)
                         #--- On restitue l'affichage du bouton "GO" :
@@ -930,7 +947,7 @@ namespace eval ::acqfen {
                         return
                      }
                      #--- On verifie que l'index est bien un nombre entier
-                     if {[acqfen::TestEntier $panneau(acqfen,index)] == 0} {
+                     if {[acqfen::testerEntier $panneau(acqfen,index)] == 0} {
                         tk_messageBox -title $caption(acqfen,pb) -type ok \
                            -message $caption(acqfen,indinv)
                         #--- On restitue l'affichage du bouton "GO" :
@@ -997,7 +1014,7 @@ namespace eval ::acqfen {
                                  incr panneau(acqfen,index)
                               }
                               #--- Corrections eventuelles de suivi
-                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::deplacerFenetre}
                            }
                         }
                         "21" {
@@ -1033,7 +1050,7 @@ namespace eval ::acqfen {
                                  incr panneau(acqfen,index)
                               }
                               #--- Corrections eventuelles de suivi
-                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::deplacerFenetre}
                            }
                         }
                         "31" {
@@ -1061,7 +1078,7 @@ namespace eval ::acqfen {
                                  incr panneau(acqfen,index)
                               }
                               #--- Corrections eventuelles de suivi
-                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::deplacerFenetre}
                            }
                            #--- Affichage avec visu auto
                            audace::autovisu $audace(visuNo)
@@ -1082,7 +1099,7 @@ namespace eval ::acqfen {
                                  incr panneau(acqfen,index)
                               }
                               #--- Corrections eventuelles de suivi
-                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::deplacerFenetre}
                            }
                            #--- Sauvegarde des images sur le disque
                            foreach ima $liste_buffers {
@@ -1126,7 +1143,7 @@ namespace eval ::acqfen {
                                  incr panneau(acqfen,index)
                               }
                               #--- Corrections eventuelles de suivi
-                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::deplacerFenetre}
                            }
                            #--- Sauvegarde des images sur le disque
                            foreach ima $liste_buffers {
@@ -1162,7 +1179,7 @@ namespace eval ::acqfen {
                                  incr panneau(acqfen,index)
                               }
                               #--- Corrections eventuelles de suivi
-                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::deplacerFenetre}
                            }
                            #--- Sauvegarde des images sur le disque
                            foreach ima $liste_buffers {
@@ -1220,58 +1237,76 @@ namespace eval ::acqfen {
    proc acq_acqfen { } {
       global audace panneau
 
-      #--- Raccourcis
-      set camxis1 [lindex [cam$audace(camNo) nbcells] 0]
-      set camxis2 [lindex [cam$audace(camNo) nbcells] 1]
-
-      #--- La commande bin permet de fixer le binning.
-      cam$audace(camNo) bin [list $panneau(acqfen,bin) $panneau(acqfen,bin)]
-
-      #--- La commande window permet de fixer le fenetrage de numerisation du CCD
-      if {$panneau(acqfen,X1) == "-"} {
-         cam$audace(camNo) window [list 1 1 $camxis1 $camxis2]
-      } else {
-         cam$audace(camNo) window [list $panneau(acqfen,X1) $panneau(acqfen,Y1) \
-         $panneau(acqfen,X2) $panneau(acqfen,Y2)]
-      }
-
-      #--- Acquisition
-      if {$panneau(acqfen,fenreglfen1)=="1"} {
-         #--- Acquisitions avec nombre d'effacements prealables par defaut
-         #--- La commande exptime permet de fixer le temps de pose de l'image.
-         cam$audace(camNo) exptime $panneau(acqfen,pose)
-         #--- Cas des poses de 0 s : Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
-         if { $panneau(acqfen,pose) == "0" } {
-            ::camera::Avancement_pose "1"
+      set catchError [ catch {
+         #--- Raccourcis
+         set camxis1 [lindex [cam$audace(camNo) nbcells] 0]
+         set camxis2 [lindex [cam$audace(camNo) nbcells] 1]
+   
+         #--- La commande bin permet de fixer le binning.
+         cam$audace(camNo) bin [list $panneau(acqfen,bin) $panneau(acqfen,bin)]
+   
+         #--- La commande window permet de fixer le fenetrage de numerisation du CCD
+         if {$panneau(acqfen,X1) == "-"} {
+            cam$audace(camNo) window [list 1 1 $camxis1 $camxis2]
+         } else {
+            cam$audace(camNo) window [list $panneau(acqfen,X1) $panneau(acqfen,Y1) \
+            $panneau(acqfen,X2) $panneau(acqfen,Y2)]
          }
+   
          #--- Acquisition
-         cam$audace(camNo) acq
-         #--- Alarme sonore de fin de pose
-         ::camera::alarme_sonore $panneau(acqfen,pose)
-         #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
-         ::camera::gestionPose $panneau(acqfen,pose) 1 cam$audace(camNo) buf$audace(bufNo)
-      } else {
-         for {set k 1} {$k<=$panneau(acqfen,fenreglfen12)} {incr k} {cam$audace(camNo) wipe}
-         after [expr int(1000*$panneau(acqfen,pose))] [cam$audace(camNo) read]
-      }
-
-      #--- Rajoute des mots cles dans l'en-tete FITS
-      foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
-         buf$audace(bufNo) setkwd $keyword
-      }
-
-      #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
-      ::confVisu::setFileName $audace(visuNo) ""
-
-      #--- Fenetrage sur le buffer si la camera ne possede pas le mode fenetrage (APN et WebCam)
-      if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] hasWindow ] == "0" } {
-         buf$audace(bufNo) window [list $panneau(acqfen,X1) $panneau(acqfen,Y1) \
-         $panneau(acqfen,X2) $panneau(acqfen,Y2)]
+         if {$panneau(acqfen,fenreglfen1)=="1"} {
+            #--- Acquisitions avec nombre d'effacements prealables par defaut
+            #--- La commande exptime permet de fixer le temps de pose de l'image.
+            cam$audace(camNo) exptime $panneau(acqfen,pose)
+            #--- Cas des poses de 0 s : Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
+            if { $panneau(acqfen,pose) == "0" } {
+               ::camera::Avancement_pose "1"
+            }
+            #--- Acquisition
+            cam$audace(camNo) acq
+            #--- mise a jour de status_cam (pour multithread)
+            update
+            #--- Alarme sonore de fin de pose
+            ::camera::alarme_sonore $panneau(acqfen,pose)
+            #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
+            ::camera::gestionPose $panneau(acqfen,pose) 1 cam$audace(camNo) buf$audace(bufNo)
+            
+            #--- Attente de la fin de la pose
+            vwait status_cam$audace(camNo)
+         
+            #--- Attente de la fin de la pose (evolution pour le multithread)
+            set statusVariableName "::status_cam$audace(camNo)"
+            if { [set $statusVariableName] == "exp" } {
+               vwait $statusVariableName
+            }
+         } else {
+            for {set k 1} {$k<=$panneau(acqfen,fenreglfen12)} {incr k} {cam$audace(camNo) wipe}
+            after [expr int(1000*$panneau(acqfen,pose))] [cam$audace(camNo) read]
+         }
+   
+         #--- Rajoute des mots cles dans l'en-tete FITS
+         foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
+            buf$audace(bufNo) setkwd $keyword
+         }
+   
+         #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
+         ::confVisu::setFileName $audace(visuNo) ""
+   
+         #--- Fenetrage sur le buffer si la camera ne possede pas le mode fenetrage (APN et WebCam)
+         if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] hasWindow ] == "0" } {
+            buf$audace(bufNo) window [list $panneau(acqfen,X1) $panneau(acqfen,Y1) \
+            $panneau(acqfen,X2) $panneau(acqfen,Y2)]
+         }
+         
+      } ]
+      if { $catchError == 1 } {
+         #--- j'affiche et je trace le message d'erreur
+         ::tkutil::displayErrorInfo $::caption(acqfen,titre_fenetrees)
       }
    }
 
    #--- Procedures d'actualisation des coordonnees
-   proc ActuCoord { { visuNo "1" } } {
+   proc actualiserCoordonnees { { visuNo "1" } } {
       variable This
       global audace caption panneau
 
@@ -1307,13 +1342,13 @@ namespace eval ::acqfen {
             -y [expr $panneau(acqfen,mtx_y)*([lindex [cam$audace(camNo) nbcells] 1]-$panneau(acqfen,Y1))/[lindex [cam$audace(camNo) nbcells] 1]-$hauteur]
 
          #--- On modifie le bouton "Go" des acquisitions fenetrees
-         $This.acq.but configure -text $caption(acqfen,GO) -command ::acqfen::GoStop
-         $This.acqred.but configure -text $caption(acqfen,GO) -command ::acqfen::GoStop
+         $This.acq.but configure -text $caption(acqfen,GO) -command ::acqfen::goStop
+         $This.acqred.but configure -text $caption(acqfen,GO) -command ::acqfen::goStop
       }
    }
 
    #--- Procedure de gestion du mode d'acquisition
-   proc ChangeMode { } {
+   proc changerMode { } {
       variable This
       global caption panneau
 
@@ -1346,7 +1381,7 @@ namespace eval ::acqfen {
    }
 
    #--- Procedure de suivi par deplacement de la fenetre
-   proc depl_fen { } {
+   proc deplacerFenetre { } {
       global audace
 
       set dimx [lindex [buf$audace(bufNo) getkwd NAXIS1 ] 1]
@@ -1379,7 +1414,7 @@ namespace eval ::acqfen {
 #--- Cette routine est largement inspiree de Acq.tcl, livre avec Audela.
 #--- Procedure lancee par appui sur le bouton "enregistrer", uniquement dans le
 #--- mode "Une image".
-   proc SauveUneImage { } {
+   proc sauveUneImage { } {
       global audace caption panneau
 
       #--- Enregistrement de l'extension des fichiers
@@ -1398,7 +1433,7 @@ namespace eval ::acqfen {
          return
       }
       #--- Verifie que le nom de fichier ne contient pas de caracteres interdits
-      if {[acqfen::TestChaine $panneau(acqfen,nom_image)] == 0} {
+      if {[acqfen::testerChaine $panneau(acqfen,nom_image)] == 0} {
          tk_messageBox -title $caption(acqfen,pb) -type ok \
             -message $caption(acqfen,mauvcar)
          return
@@ -1412,7 +1447,7 @@ namespace eval ::acqfen {
             return
          }
          #--- Verifier que l'index est bien un nombre entier
-         if {[acqfen::TestEntier $panneau(acqfen,index)] == 0} {
+         if {[acqfen::testerEntier $panneau(acqfen,index)] == 0} {
             tk_messageBox -title $caption(acqfen,pb) -type ok \
                -message $caption(acqfen,indinv)
             return
@@ -1452,7 +1487,7 @@ namespace eval ::acqfen {
 #***** Procedure de test de validite d'un entier *****************
 #--- Cette procedure (copiee de Methking) verifie que la chaine passee en argument decrit
 #--- bien un entier. Elle retourne 1 si c'est la cas, et 0 si ce n'est pas un entier.
-   proc TestEntier { valeur } {
+   proc testerEntier { valeur } {
       set test 1
       for {set i 0} {$i < [string length $valeur]} {incr i} {
          set a [string index $valeur $i]
@@ -1468,7 +1503,7 @@ namespace eval ::acqfen {
 #***** Procedure de test de validite d'une chaine de caracteres *******
 #--- Cette procedure verifie que la chaine passee en argument ne contient que des caracteres
 #--- valides. Elle retourne 1 si c'est la cas, et 0 si ce n'est pas valable.
-   proc TestChaine { valeur } {
+   proc testerChaine { valeur } {
       set test 1
       for {set i 0} {$i < [string length $valeur]} {incr i} {
          set a [string index $valeur $i]
@@ -1548,7 +1583,7 @@ frame $This -borderwidth 2 -relief groove
 
       #--- Sous-titre "acquisition pleine trame"
       button $This.acqcent.titre -text $caption(acqfen,titre_centrage) -borderwidth 0 \
-         -command ::acqfen::ChangeAffPleineTrame
+         -command ::acqfen::changerAffPleineTrame
       pack $This.acqcent.titre -expand true -fill x -pady 2
 
       #--- Sous-trame pour temps de pose
@@ -1580,11 +1615,11 @@ frame $This -borderwidth 2 -relief groove
 
       #--- Bouton binning
       button $This.acqcent.butbin -text $caption(acqfen,bin,$panneau(acqfen,bin_centrage)) \
-         -command ::acqfen::ChangeBinCent
+         -command ::acqfen::changerBinningCent
       pack $This.acqcent.butbin -expand true
 
       #--- Bouton Go/Stop
-      button $This.acqcent.but -text $caption(acqfen,GO) -borderwidth 3 -command ::acqfen::GoStopCent
+      button $This.acqcent.but -text $caption(acqfen,GO) -borderwidth 3 -command ::acqfen::goStopCent
       pack $This.acqcent.but -expand true -fill both
 
    #--- Trame acquisition centrage (version reduite)
@@ -1592,11 +1627,11 @@ frame $This -borderwidth 2 -relief groove
 
       #--- Sous-titre "acquisition pleine trame"
       button $This.acqcentred.titre -text $caption(acqfen,titre_centrage) -borderwidth 0 \
-         -command ::acqfen::ChangeAffPleineTrame
+         -command ::acqfen::changerAffPleineTrame
       pack $This.acqcentred.titre -expand true -fill x -pady 2
 
       #--- Bouton Go/Stop
-      button $This.acqcentred.but -text $caption(acqfen,GO) -borderwidth 3 -command ::acqfen::GoStopCent
+      button $This.acqcentred.but -text $caption(acqfen,GO) -borderwidth 3 -command ::acqfen::goStopCent
       pack $This.acqcentred.but -expand true -fill both
 
    #--- Trame acquisition (version complete)
@@ -1604,7 +1639,7 @@ frame $This -borderwidth 2 -relief groove
 
       #--- Sous-titre "acquisitions fenetrees"
       button $This.acq.titre -text $caption(acqfen,titre_fenetrees) -borderwidth 0 \
-         -command ::acqfen::ChangeAffFenetrees
+         -command ::acqfen::changerAffFenetrees
       pack $This.acq.titre -expand true -fill x -pady 2
 
       #--- Sous-trame pour temps de pose
@@ -1636,7 +1671,7 @@ frame $This -borderwidth 2 -relief groove
 
       #--- Bouton binning
       button $This.acq.butbin -text $caption(acqfen,bin,$panneau(acqfen,bin)) \
-         -command ::acqfen::ChangeBin
+         -command ::acqfen::changerBinning
       pack $This.acq.butbin -expand true
 
       #--- Representation matrice CCD
@@ -1648,7 +1683,7 @@ frame $This -borderwidth 2 -relief groove
       pack $This.acq.matrice_color_invariant.fen
 
       #--- Bouton Go/Stop
-      button $This.acq.but -text $caption(acqfen,actuxy) -borderwidth 3 -command ::acqfen::ActuCoord
+      button $This.acq.but -text $caption(acqfen,actuxy) -borderwidth 3 -command ::acqfen::actualiserCoordonnees
       pack $This.acq.but -expand true -fill both
 
    #--- Trame acquisition (version reduite)
@@ -1656,7 +1691,7 @@ frame $This -borderwidth 2 -relief groove
 
       #--- Sous-titre "acquisitions fenetrees"
       button $This.acqred.titre -text $caption(acqfen,titre_fenetrees) -borderwidth 0 \
-         -command ::acqfen::ChangeAffFenetrees
+         -command ::acqfen::changerAffFenetrees
       pack $This.acqred.titre -expand true -fill x -pady 2
 
       #--- Representation matrice CCD
@@ -1668,13 +1703,13 @@ frame $This -borderwidth 2 -relief groove
       pack $This.acqred.matrice_color_invariant.fen
 
       #--- Bouton Go/Stop
-      button $This.acqred.but -text $caption(acqfen,actuxy) -borderwidth 3 -command ::acqfen::ActuCoord
+      button $This.acqred.but -text $caption(acqfen,actuxy) -borderwidth 3 -command ::acqfen::actualiserCoordonnees
       pack $This.acqred.but -expand true -fill both
 
    #--- Trame du mode d'acquisition
    frame $This.mode -borderwidth 2 -relief groove
 
-      button $This.mode.but -text $panneau(acqfen,bouton_mode) -command ::acqfen::ChangeMode
+      button $This.mode.but -text $panneau(acqfen,bouton_mode) -command ::acqfen::changerMode
       pack $This.mode.but -expand true -fill both
 
       #--- Definition du sous-panneau "Mode: Une seule image"
@@ -1697,7 +1732,7 @@ frame $This -borderwidth 2 -relief groove
             button $This.mode.une.index.but -text "1" -width 3 -command {set panneau(acqfen,index) 1}
             pack $This.mode.une.index.but -side right -fill x
          pack $This.mode.une.index -expand true -fill both
-         button $This.mode.une.sauve -text $caption(acqfen,sauvegde) -command ::acqfen::SauveUneImage
+         button $This.mode.une.sauve -text $caption(acqfen,sauvegde) -command ::acqfen::sauveUneImage
          pack $This.mode.une.sauve -expand true -fill both
 
       #--- Definition du sous-panneau "Mode: Serie d'image"
