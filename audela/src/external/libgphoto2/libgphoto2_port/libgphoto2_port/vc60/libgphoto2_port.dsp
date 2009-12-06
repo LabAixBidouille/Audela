@@ -42,6 +42,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir ""
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
+F90=df.exe
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "LIBGPHOTO2_PORT_EXPORTS" /YX /FD /c
 # ADD CPP /nologo /MD /w /W0 /GX /O2 /I "../../../win" /I "../../../libgphoto2_port/libgphoto2_port" /I "../../../libltdl" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "LIBGPHOTO2_PORT_EXPORTS" /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -68,6 +69,7 @@ LINK32=link.exe
 # PROP Intermediate_Dir ""
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
+F90=df.exe
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "LIBGPHOTO2_PORT_EXPORTS" /YX /FD /GZ /c
 # ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../../win" /I "../../../libgphoto2_port/libgphoto2_port" /I "../../../libltdl" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "LIBGPHOTO2_PORT_EXPORTS" /FR /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -123,6 +125,10 @@ SOURCE=".\libgphoto2-port.def"
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=..\..\..\win\config.h
+# End Source File
 # Begin Source File
 
 SOURCE="..\gphoto2-port-info-list.h"
