@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Michel PUJOL <michel-pujol@wanadoo.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -57,16 +57,16 @@ CPixelsRgb::~CPixelsRgb()
  * Cree un objet de la classe CPixelsRgb et l'initalise avec les donnees
  * pointee par le parametre "pixels".
  * Les donnes "pixels" doivent contenir width*height*3 elements.
- * et doivent etre dans l'ordre : 
- *  R(0,0)G(0,0)B(0,0) R(1,0)G(1.0)B(1,0) R(2,0) ... 
+ * et doivent etre dans l'ordre :
+ *  R(0,0)G(0,0)B(0,0) R(1,0)G(1.0)B(1,0) R(2,0) ...
  * Si pixels est nul, l'objet est cree mais les donnees ne sont pas initialisees.
  *
- * Parameters: 
+ * Parameters:
  *    width       : Largeur en pixels
  *    height      : Hauteur en pixels
  *    pixelFormat : Format des donnees FORMAT_BYTE ou FORMAT_SHORT ou FORMAT_USHORT ou FORMAT_FLOAT
- *    pixels      : pointeur des donnees. Si pixels vaut 0, l'objet CPixelsRgb est cree 
- *                  mais les donnees ne sont pas initialisees 
+ *    pixels      : pointeur des donnees. Si pixels vaut 0, l'objet CPixelsRgb est cree
+ *                  mais les donnees ne sont pas initialisees
  *    reverseX    : vaut 0 ou 1. Si reverseX=1, les valeurs sur l'axe x sont inversees (= miroir vertical)
  *    reverseY    : vaut 0 ou 1. Si reverseY=1, les valeurs sur l'axe y sont inversees (= miroir horizontal)
  * Results:
@@ -76,30 +76,30 @@ CPixelsRgb::~CPixelsRgb()
  *----------------------------------------------------------------------
  */
 
-CPixelsRgb::CPixelsRgb(int width, int height, TPixelFormat pixelFormat, void * pixels, int reverseX, int reverseY) 
+CPixelsRgb::CPixelsRgb(int width, int height, TPixelFormat pixelFormat, void * pixels, int reverseX, int reverseY)
 {
    long size;
    long t, x, y;
    naxis  = 3;
    naxis1 = width;
    naxis2 = height;
-   
+
    size = naxis1*naxis2*naxis;
    pix = (TYPE_PIXELS_RGB*)malloc(size * sizeof(TYPE_PIXELS_RGB));
    if(pix==0) {
       throw CError(ELIBSTD_NO_MEMORY_FOR_PIXELS);
    }
-      
+
    if( pixels != 0 ) {
       t = size;
-      
+
       switch( pixelFormat ) {
       case FORMAT_BYTE:
          {
             unsigned char * pixelPtr = (unsigned char *) pixels;
             TYPE_PIXELS_RGB * pixCur = pix;
             if (reverseY == 0) {
-               while(--t>=0) *(pixCur++) = (TYPE_PIXELS_RGB) *(pixelPtr++);               
+               while(--t>=0) *(pixCur++) = (TYPE_PIXELS_RGB) *(pixelPtr++);
             } else {
                for (y=height-1; y>=0; y--) {
                   t = width*y*naxis;
@@ -110,14 +110,14 @@ CPixelsRgb::CPixelsRgb(int width, int height, TPixelFormat pixelFormat, void * p
             }
          }
          break;
-         
+
       case FORMAT_SHORT:
          {
             short * pixelPtr = (short *) pixels;
             TYPE_PIXELS_RGB * pixCur = pix;
             if (reverseY == 0) {
                while(--t>=0) {
-                  *(pixCur++) = (TYPE_PIXELS_RGB) *(pixelPtr++);               
+                  *(pixCur++) = (TYPE_PIXELS_RGB) *(pixelPtr++);
                }
             } else {
                for (y=height-1; y>=0; y--) {
@@ -135,7 +135,7 @@ CPixelsRgb::CPixelsRgb(int width, int height, TPixelFormat pixelFormat, void * p
             TYPE_PIXELS_RGB * pixCur = pix;
             if (reverseY == 0) {
                while(--t>=0) {
-                  *(pixCur++) = (TYPE_PIXELS_RGB) *(pixelPtr++);               
+                  *(pixCur++) = (TYPE_PIXELS_RGB) *(pixelPtr++);
                }
             } else {
                for (y=height-1; y>=0; y--) {
@@ -147,12 +147,12 @@ CPixelsRgb::CPixelsRgb(int width, int height, TPixelFormat pixelFormat, void * p
             }
          }
          break;
-      case FORMAT_FLOAT: 
+      case FORMAT_FLOAT:
          {
             float     * pixelPtr = (float *) pixels;
             TYPE_PIXELS_RGB * pixCur = pix;
             if (reverseY == 0) {
-               while(--t>=0) *(pixCur++) = (TYPE_PIXELS_RGB) *(pixelPtr++);               
+               while(--t>=0) *(pixCur++) = (TYPE_PIXELS_RGB) *(pixelPtr++);
             } else {
                for (y=height-1; y>=0; y--) {
                   t = width*y*naxis;
@@ -163,10 +163,10 @@ CPixelsRgb::CPixelsRgb(int width, int height, TPixelFormat pixelFormat, void * p
             }
          }
          break;
-      default : 
+      default :
          free(pix);
          throw CError(ELIBSTD_NO_MEMORY_FOR_PIXELS);
-         break;            
+         break;
       }
    }
    // j'inverse les pixels si reverseX=1
@@ -181,19 +181,19 @@ CPixelsRgb::CPixelsRgb(int width, int height, TPixelFormat pixelFormat, void * p
  * Cree un objet de la classe CPixelsRgb et l'initalise avec les donnees
  * pointee par le parametre "pixels" (voir Tk
  * Les donnes "pixels" width*height*3 elements dasn l'ordre suivant :
- *  R(0,0)G(0,0)B(0,0) R(1,0)G(1.0)B(1,0) R(2,0) ... 
- * 
- * Parameters: 
+ *  R(0,0)G(0,0)B(0,0) R(1,0)G(1.0)B(1,0) R(2,0) ...
+ *
+ * Parameters:
  *    width       : Largeur en pixels
  *    height      : Hauteur en pixels
  *    pixelSize   : Nombre de couleurs (3 ou 4)
- *    offset      : offset des couleurs  
+ *    offset      : offset des couleurs
  *                   offset[0] offet du rouge
  *                   offset[1] offet du vert
  *                   offset[2] offet du bleu
  *                   offset[3] offet du alpha
- *    pitch       : non utilise  
- *    pixels      : pointeur des donnees FORMAT_BYTE (un octet par couleur).  
+ *    pitch       : non utilise
+ *    pixels      : pointeur des donnees FORMAT_BYTE (un octet par couleur).
  * Results:
  *    Genere une exception CError en cas d'erreur.
  * Side effects:
@@ -204,9 +204,9 @@ CPixelsRgb::CPixelsRgb(int width, int height, TPixelFormat pixelFormat, void * p
 CPixelsRgb::CPixelsRgb(int width, int height, int pixelSize, int offset[4], int pitch, unsigned char * pixels)
 {
    long size;
-   long base;         
+   long base;
    long reverse = 1;
-   
+
 
    if (height<0) {
       height = -height;
@@ -222,15 +222,15 @@ CPixelsRgb::CPixelsRgb(int width, int height, int pixelSize, int offset[4], int 
    if(pix==NULL) {
       throw CError(ELIBSTD_NO_MEMORY_FOR_PIXELS);
    }
-   
+
    if( pixels != NULL ) {
       if( pixelSize == 3 && offset[0] == 0 &&  offset[1] == 1 && offset[2] == 2 ) {
-         // si les octets sont déjà ordonnés , je copie le buffer
+         // si les octets sont dï¿½jï¿½ ordonnï¿½s , je copie le buffer
          memcpy(pix, pixels, size );
       } else if ( pixelSize == 3 || pixelSize == 4 ) {
-         int x, y; 
-         TYPE_PIXELS_RGB *pix2 = pix; 
-         
+         int x, y;
+         TYPE_PIXELS_RGB *pix2 = pix;
+
          if (reverse == 0) {
             for(y=0;y<naxis2;y++) {
                for(x=0;x<naxis1;x++) {
@@ -252,18 +252,18 @@ CPixelsRgb::CPixelsRgb(int width, int height, int pixelSize, int offset[4], int 
                }
             }
          }
-         
+
       } else {
          // non implemente pour 2 couleurs
          free(pix);
          throw CError(ELIBSTD_NOT_IMPLEMENTED);
       }
    } else {
-      // si les valeurs de pixels ne sont pas fournies , je mets tout à zero
+      // si les valeurs de pixels ne sont pas fournies , je mets tout ï¿½ zero
       int t = size;
       while(--t>0) *(pix+t) = 0;
    }
-   
+
 }
 
 
@@ -273,14 +273,14 @@ CPixelsRgb::CPixelsRgb(int width, int height, int pixelSize, int offset[4], int 
  * Cree un objet de la classe CPixelsRgb et l'initalise avec les donnees
  * pointee par le parametre "pixelsR" "pixelsG" "pixelsB".
  * Les donnes "pixelsR" "pixelsG" "pixelsB" doivent contenir chacun width*height elements.
- * 
- * Parameters: 
+ *
+ * Parameters:
  *    width       : Largeur en pixels
  *    height      : Hauteur en pixels
  *    pixelFormat : Format des donnees FORMAT_BYTE ou FORMAT_SHORT ou FORMAT_USHORT ou FORMAT_FLOAT
- *    pixelsR     : pointeur des donnees rouge.  
- *    pixelsG     : pointeur des donnees vert.  
- *    pixelsB     : pointeur des donnees bleu.  
+ *    pixelsR     : pointeur des donnees rouge.
+ *    pixelsG     : pointeur des donnees vert.
+ *    pixelsB     : pointeur des donnees bleu.
  * Results:
  *    Genere une exception CError en cas d'erreur.
  * Side effects:
@@ -375,19 +375,19 @@ void CPixelsRgb::Add(char *filename, float offset)
    int datatype;
    char s[512];
    int t;
-   
+
    TYPE_PIXELS_RGB *pixelsR, *pixelsG, *pixelsB;
    TYPE_PIXELS_RGB *pixCurR, *pixCurG, *pixCurB;
    TYPE_PIXELS_RGB *pixCur;
-   
+
    try {
       pixelsR = (TYPE_PIXELS_RGB *)malloc(naxis1*naxis2 * sizeof(TYPE_PIXELS_RGB));
       pixelsG = (TYPE_PIXELS_RGB *)malloc(naxis1*naxis2 * sizeof(TYPE_PIXELS_RGB));
       pixelsB = (TYPE_PIXELS_RGB *)malloc(naxis1*naxis2 * sizeof(TYPE_PIXELS_RGB));
-      
-      // je recupere l'image a traiter en séparant les 3 plans
-      GetPixels( pixelsR, pixelsG, pixelsB); 
-      
+
+      // je recupere l'image a traiter en sï¿½parant les 3 plans
+      GetPixels( pixelsR, pixelsG, pixelsB);
+
       //datatype = TFLOAT;
       datatype = TSHORT;
       sprintf(s,"ADD \"file=%s\" offset=%f",filename,offset);
@@ -397,7 +397,7 @@ void CPixelsRgb::Add(char *filename, float offset)
       if(msg) throw CErrorLibtt(msg);
       msg = Libtt_main(TT_PTR_IMASERIES,7,&pixelsB,&datatype,&naxis1,&naxis2,&pixelsB,&datatype,s);
       if(msg) throw CErrorLibtt(msg);
-      
+
       // j'enregistre la nouvelle image
       pixCurR = pixelsR;
       pixCurG = pixelsG;
@@ -408,12 +408,12 @@ void CPixelsRgb::Add(char *filename, float offset)
          *(pixCur++) = *(pixCurR++);
          *(pixCur++) = *(pixCurG++);
          *(pixCur++) = *(pixCurB++);
-      }      
+      }
       free(pixelsR);
       free(pixelsG);
       free(pixelsB);
    } catch (const CError& e) {
-      // je libere la memoire reservee avant l'arrivée de l'erreur
+      // je libere la memoire reservee avant l'arrivï¿½e de l'erreur
       if(pixelsR) free(pixelsR);
       if(pixelsG) free(pixelsG);
       if(pixelsB) free(pixelsB);
@@ -421,12 +421,12 @@ void CPixelsRgb::Add(char *filename, float offset)
    }
 }
 
-/** 
+/**
  *  Autocut
  *
- *  retourne les seuils par défaut d'un image couleur 
- *    valeur fixe en première approximation.
- */ 
+ *  retourne les seuils par dï¿½faut d'un image couleur
+ *    valeur fixe en premiï¿½re approximation.
+ */
 void CPixelsRgb::Autocut(double *phicut,double *plocut,double *pmode)
 {
    *plocut =-1;
@@ -454,41 +454,41 @@ void CPixelsRgb::BinY(int y1, int y2, int height)
    {
          return ELIBSTD_HEIGHT_POSITIVE;
 
-   } 
+   }
    if ((y1 < 0) || (y2 < 0) || (y1 > naxis2-1) || (y2 > naxis2-1))
    {
          return ELIBSTD_Y1Y2_NOT_IN_1NAXIS2;
-   } 
+   }
 
    if(y1 > y2)
    {
        temp = y2;
        y2 = y1;
        y1 = temp;
-   } 
+   }
 
    out = (TYPE_PIXELS*)calloc(naxis1*height,sizeof(TYPE_PIXELS));
    if( out == NULL ) {
       return ELIBSTD_NO_MEMORY_FOR_PIXELS;
    }
 
-   // bining 
+   // bining
    for(x = 0; x < naxis1;x++)
    {
        value = (float)0;
        for(y=y1;y<=y2;y++)
        {
           value += pix[x+y*naxis1];
-       } 
+       }
        for(y=0;y<height;y++)
        {
           out[x+y*naxis1]=value;
-       } 
-   } 
+       }
+   }
 
 
    naxis1 = naxis1;
-   naxis2 = height; 
+   naxis2 = height;
 
    //CreateBuffer(w,height);
    //memcpy(pix,out,w*height*sizeof(TYPE_PIXELS));
@@ -541,16 +541,16 @@ void CPixelsRgb::Div(char *filename, float constante)
    TYPE_PIXELS_RGB *pixelsR, *pixelsG, *pixelsB;
    TYPE_PIXELS_RGB *pixCurR, *pixCurG, *pixCurB;
    TYPE_PIXELS_RGB *pixCur;
-   
+
    try {
       pixelsR = (TYPE_PIXELS_RGB *)malloc(naxis1*naxis2 * sizeof(TYPE_PIXELS_RGB));
       pixelsG = (TYPE_PIXELS_RGB *)malloc(naxis1*naxis2 * sizeof(TYPE_PIXELS_RGB));
       pixelsB = (TYPE_PIXELS_RGB *)malloc(naxis1*naxis2 * sizeof(TYPE_PIXELS_RGB));
-      
-      // je recupere l'image a traiter en séparant les 3 plans
-      GetPixels( pixelsR, pixelsG, pixelsB); 
-      
-      //datatype = TFLOAT;      
+
+      // je recupere l'image a traiter en sï¿½parant les 3 plans
+      GetPixels( pixelsR, pixelsG, pixelsB);
+
+      //datatype = TFLOAT;
       datatype = TSHORT;
       sprintf(s,"DIV \"file=%s\" constant=%f",filename,constante);
       msg = Libtt_main(TT_PTR_IMASERIES,7,&pixelsR,&datatype,&naxis1,&naxis2,&pixelsR,&datatype,s);
@@ -559,7 +559,7 @@ void CPixelsRgb::Div(char *filename, float constante)
       if(msg) throw CErrorLibtt(msg);
       msg = Libtt_main(TT_PTR_IMASERIES,7,&pixelsB,&datatype,&naxis1,&naxis2,&pixelsB,&datatype,s);
       if(msg) throw CErrorLibtt(msg);
-      
+
       // j'enregistre la nouvelle image
       pixCurR = pixelsR;
       pixCurG = pixelsG;
@@ -570,12 +570,12 @@ void CPixelsRgb::Div(char *filename, float constante)
          *(pixCur++) = *(pixCurR++);
          *(pixCur++) = *(pixCurG++);
          *(pixCur++) = *(pixCurB++);
-      }      
+      }
       free(pixelsR);
       free(pixelsG);
       free(pixelsB);
    } catch (const CError& e) {
-      // je libere cla memoire attribuée avant l'arrivée de l'erreur
+      // je libere cla memoire attribuï¿½e avant l'arrivï¿½e de l'erreur
       if(pixelsR) free(pixelsR);
       if(pixelsG) free(pixelsG);
       if(pixelsB) free(pixelsB);
@@ -594,12 +594,10 @@ int CPixelsRgb::GetHeight(void) {
 
 //void CPixelsRgb::GetPixels(TYPE_PIXELS **pixels) {
 //   throw CError(ELIBSTD_NOT_IMPLEMENTED);
-// 
+//
 //}
 
-// Yassine
-//void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFormat, TColorPlane plane, int pixels) {
-void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFormat, TColorPlane plane, long pixels) {
+void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFormat, TColorPlane plane, void* pixels) {
    int x, y;
    int width  = x2-x1+1;
    TYPE_PIXELS_RGB  *ptr;
@@ -612,7 +610,7 @@ void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFo
          case PLANE_R:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*y+x1) * naxis;
-               out = (unsigned char *) pixels + width*(y-y1);               
+               out = (unsigned char *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   *(out++) = (unsigned char) *(ptr++);
                   ptr++;  // skip G
@@ -623,7 +621,7 @@ void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFo
          case PLANE_G:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*y+x1) * naxis;
-               out = (unsigned char *) pixels + width*(y-y1);               
+               out = (unsigned char *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   ptr++;   // skip R
                   *(out++) = (unsigned char) *(ptr++);
@@ -634,7 +632,7 @@ void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFo
          case PLANE_B:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*y+x1) * naxis;
-               out = (unsigned char *) pixels + width*(y-y1);               
+               out = (unsigned char *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   ptr++;    // skip R
                   ptr++;    // skip G
@@ -679,7 +677,7 @@ void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFo
          case PLANE_R:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*y+x1) * naxis;
-               out = (short *) pixels + width*(y-y1);               
+               out = (short *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   *(out++) = (short) *(ptr++);
                   ptr++;  // skip G
@@ -690,7 +688,7 @@ void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFo
          case PLANE_G:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*y+x1) * naxis;
-               out = (short *) pixels + width*(y-y1);               
+               out = (short *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   ptr++;   // skip R
                   *(out++) = (short) *(ptr++);
@@ -701,7 +699,7 @@ void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFo
          case PLANE_B:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*y+x1) * naxis;
-               out = (short *) pixels + width*(y-y1);               
+               out = (short *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   ptr++;   // skip R
                   ptr++;   // skip G
@@ -713,7 +711,7 @@ void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFo
             for(y=y1;y<=y2;y++) {
                float val;
                ptr = pix +(naxis1*y+x1) * naxis;
-               out = (short *) pixels + width*(y-y1);               
+               out = (short *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   val = (float)*(ptr++);
                   val += (float)*(ptr++);
@@ -746,7 +744,7 @@ void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFo
          case PLANE_R:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*y+x1) * naxis;
-               out = (unsigned short *) pixels + width*(y-y1);               
+               out = (unsigned short *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   *(out++) = (unsigned short) *(ptr++);
                   ptr++;  // skip G
@@ -757,7 +755,7 @@ void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFo
          case PLANE_G:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*y+x1) * naxis;
-               out = (unsigned short *) pixels + width*(y-y1);               
+               out = (unsigned short *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   ptr++;   // skip R
                   *(out++) = (unsigned short) *(ptr++);
@@ -768,7 +766,7 @@ void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFo
          case PLANE_B:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*y+x1) * naxis;
-               out = (unsigned short *) pixels + width*(y-y1);               
+               out = (unsigned short *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   ptr++;   // skip R
                   ptr++;   // skip G
@@ -780,7 +778,7 @@ void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFo
             for(y=y1;y<=y2;y++) {
                float val;
                ptr = pix +(naxis1*y+x1) * naxis;
-               out = (unsigned short *) pixels + width*(y-y1);               
+               out = (unsigned short *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   val = (float)*(ptr++);
                   val += (float)*(ptr++);
@@ -806,14 +804,14 @@ void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFo
          }
       }
       break;
-   case FORMAT_FLOAT: 
+   case FORMAT_FLOAT:
       {
          float * out = (float *) pixels;
          switch( plane ) {
          case PLANE_R:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*y+x1) * naxis;
-               out = (float *) pixels + width*(y-y1);               
+               out = (float *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   *(out++) = (float) *(ptr++);
                   ptr++;  // skip G
@@ -824,7 +822,7 @@ void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFo
          case PLANE_G:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*y+x1) * naxis;
-               out = (float *) pixels + width*(y-y1);               
+               out = (float *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   ptr++;   // skip R
                   *(out++) = (float) *(ptr++);
@@ -835,7 +833,7 @@ void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFo
          case PLANE_B:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*y+x1) * naxis;
-               out = (float *) pixels + width*(y-y1);               
+               out = (float *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   ptr++;    // skip R
                   ptr++;    // skip G
@@ -847,7 +845,7 @@ void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFo
             for(y=y1;y<=y2;y++) {
                float val;
                ptr = pix +(naxis1*y+x1) * naxis;
-               out = (float *) pixels + width*(y-y1);               
+               out = (float *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   val = (float)*(ptr++);
                   val += (float)*(ptr++);
@@ -873,16 +871,14 @@ void CPixelsRgb::GetPixels(int x1, int y1, int x2, int y2 , TPixelFormat pixelFo
          }
       break;
       }
-   default : 
+   default :
       throw CError(ELIBSTD_NO_MEMORY_FOR_PIXELS);
       break;
-      
+
    }
 }
 
-// Yassine
-// void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, int pixels) {
-void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, long pixels) {
+void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, void* pixels) {
    int x, y;
    int width  = x2-x1+1;
    TYPE_PIXELS_RGB  *ptr;
@@ -895,7 +891,7 @@ void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat p
          case PLANE_R:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
-               out = (unsigned char *) pixels + width*(y-y1);               
+               out = (unsigned char *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   *(out++) = (unsigned char) *(ptr++);
                   ptr++;  // skip G
@@ -906,7 +902,7 @@ void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat p
          case PLANE_G:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
-               out = (unsigned char *) pixels + width*(y-y1);               
+               out = (unsigned char *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   ptr++;   // skip R
                   *(out++) = (unsigned char) *(ptr++);
@@ -917,7 +913,7 @@ void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat p
          case PLANE_B:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
-               out = (unsigned char *) pixels + width*(y-y1);               
+               out = (unsigned char *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   ptr++;    // skip R
                   ptr++;    // skip G
@@ -929,7 +925,7 @@ void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat p
             for(y=y1;y<=y2;y++) {
                float val;
                ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
-               out = (unsigned char *) pixels + width*(y-y1);               
+               out = (unsigned char *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   val = (float)*(ptr++);
                   val += (float)*(ptr++);
@@ -962,7 +958,7 @@ void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat p
          case PLANE_R:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
-               out = (short *) pixels + width*(y-y1);               
+               out = (short *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   *(out++) = (short) *(ptr++);
                   ptr++;  // skip G
@@ -973,7 +969,7 @@ void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat p
          case PLANE_G:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
-               out = (short *) pixels + width*(y-y1);               
+               out = (short *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   ptr++;   // skip R
                   *(out++) = (short) *(ptr++);
@@ -984,7 +980,7 @@ void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat p
          case PLANE_B:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
-               out = (short *) pixels + width*(y-y1);               
+               out = (short *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   ptr++;   // skip R
                   ptr++;   // skip G
@@ -996,7 +992,7 @@ void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat p
             for(y=y1;y<=y2;y++) {
                float val;
                ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
-               out = (short *) pixels + width*(y-y1);               
+               out = (short *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   val = (float)*(ptr++);
                   val += (float)*(ptr++);
@@ -1029,7 +1025,7 @@ void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat p
          case PLANE_R:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
-               out = (unsigned short *) pixels + width*(y-y1);               
+               out = (unsigned short *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   *(out++) = (unsigned short) *(ptr++);
                   ptr++;  // skip G
@@ -1040,7 +1036,7 @@ void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat p
          case PLANE_G:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
-               out = (unsigned short *) pixels + width*(y-y1);               
+               out = (unsigned short *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   ptr++;   // skip R
                   *(out++) = (unsigned short) *(ptr++);
@@ -1051,7 +1047,7 @@ void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat p
          case PLANE_B:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
-               out = (unsigned short *) pixels + width*(y-y1);               
+               out = (unsigned short *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   ptr++;   // skip R
                   ptr++;   // skip G
@@ -1063,7 +1059,7 @@ void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat p
             for(y=y1;y<=y2;y++) {
                float val;
                ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
-               out = (unsigned short *) pixels + width*(y-y1);               
+               out = (unsigned short *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   val = (float)*(ptr++);
                   val += (float)*(ptr++);
@@ -1089,14 +1085,14 @@ void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat p
          }
       }
       break;
-   case FORMAT_FLOAT: 
+   case FORMAT_FLOAT:
       {
          float * out = (float *) pixels;
          switch( plane ) {
          case PLANE_R:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
-               out = (float *) pixels + width*(y-y1);               
+               out = (float *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   *(out++) = (float) *(ptr++);
                   ptr++;  // skip G
@@ -1107,7 +1103,7 @@ void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat p
          case PLANE_G:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
-               out = (float *) pixels + width*(y-y1);               
+               out = (float *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   ptr++;   // skip R
                   *(out++) = (float) *(ptr++);
@@ -1118,7 +1114,7 @@ void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat p
          case PLANE_B:
             for(y=y1;y<=y2;y++) {
                ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
-               out = (float *) pixels + width*(y-y1);               
+               out = (float *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   ptr++;    // skip R
                   ptr++;    // skip G
@@ -1130,7 +1126,7 @@ void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat p
             for(y=y1;y<=y2;y++) {
                float val;
                ptr = pix +(naxis1*(naxis2-y-1)+x1) * naxis;
-               out = (float *) pixels + width*(y-y1);               
+               out = (float *) pixels + width*(y-y1);
                for(x=x1;x<=x2;x++) {
                   val = (float)*(ptr++);
                   val += (float)*(ptr++);
@@ -1156,10 +1152,10 @@ void CPixelsRgb::GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat p
          }
       break;
       }
-   default: 
+   default:
       throw CError(ELIBSTD_NO_MEMORY_FOR_PIXELS);
       break;
-      
+
    }
 }
 
@@ -1182,7 +1178,7 @@ void CPixelsRgb::GetPixels(TYPE_PIXELS_RGB *pixelsR, TYPE_PIXELS_RGB *pixelsG, T
    }
 }
 
-/* 
+/*
  * GetPixGray
  * retourne la somme des 3 couleurs du pixel
  */
@@ -1199,12 +1195,12 @@ void CPixelsRgb::GetPix(int *plane, TYPE_PIXELS *val1,TYPE_PIXELS *val2,TYPE_PIX
    //  position des couleur du pixel (x,y): ptr = (y*naxis1+x)*3 + offset
    ptr = pix + (y*naxis1+x)*naxis;
    *plane = 3;
-   *val1 = (float) *(ptr + 0); 
+   *val1 = (float) *(ptr + 0);
    *val2 = (float) *(ptr + 1);
    *val3 = (float) *(ptr + 2);
 }
 
-/** 
+/**
   retourne le pointeur du tableau interne de pixels
   Non implemente pour les pixelzs RGB
 */
@@ -1212,16 +1208,16 @@ void CPixelsRgb::GetPixelsPointer(TYPE_PIXELS **pixels) {
       throw CError(ELIBSTD_NOT_IMPLEMENTED);
 }
 
-/** 
+/**
  * GetPixelsRgb
- * retourne les intensités de la zone (x1,y1)-(x2,y2)
- * dans le format RGB : 3 octets par pixel ( rouge, vert, bleu) 
- * en tenant compte des mirrois X ou Y éventuels, des seuils haut et bas et de la palette de couleurs
+ * retourne les intensitï¿½s de la zone (x1,y1)-(x2,y2)
+ * dans le format RGB : 3 octets par pixel ( rouge, vert, bleu)
+ * en tenant compte des mirrois X ou Y ï¿½ventuels, des seuils haut et bas et de la palette de couleurs
  *
  * @param x1       abcisse du coin bas gauche de la zone
- * @param y1       ordonnee du coin bas gauche de la zone 
+ * @param y1       ordonnee du coin bas gauche de la zone
  * @param x2       abcisse du coin haut, doit de la zone
- * @param x2       ordonnée du coin haut, doit de la zone
+ * @param x2       ordonnï¿½e du coin haut, doit de la zone
  * @param mirrorX  0: pas de miroir horizontal, 1: miroir horizontal
  * @param mirrorY  0: pas de miroir vertical, 1 : miroir vertical
  * @param cuts     tableau des 6 seuils : haut rouge, bas rouge, haut vert bas vert , haut bleu , bas bleu
@@ -1233,7 +1229,7 @@ void CPixelsRgb::GetPixelsPointer(TYPE_PIXELS **pixels) {
 
 void CPixelsRgb::GetPixelsRgb( int x1,int y1,int x2, int y2,
             int mirrorX, int mirrorY, float *cuts,
-             unsigned char *palette[3], unsigned char *ptr) 
+             unsigned char *palette[3], unsigned char *ptr)
 {
    int i, j;
    int orgww, orgwh;        // original window width, height
@@ -1251,30 +1247,30 @@ void CPixelsRgb::GetPixelsRgb( int x1,int y1,int x2, int y2,
 
    orgww = x2 - x1 + 1; // Largeur de la fenetre au depart
    orgwh = y2 - y1 + 1; // Hauteur ...
- 
-   if(fshRed==fsbRed) { 
-      fsbRed -= (float)1e-1; 
+
+   if(fshRed==fsbRed) {
+      fsbRed -= (float)1e-1;
    }
    dynRed = (float)256. / (fshRed - fsbRed);
-   
-   if(fshGreen==fsbGreen) { 
-      fsbGreen -= (float)1e-1; 
+
+   if(fshGreen==fsbGreen) {
+      fsbGreen -= (float)1e-1;
    }
    dynGreen = (float)256. / (fshGreen - fsbGreen);
-   
-   if(fshBlue==fsbBlue) { 
-      fsbBlue -= (float)1e-1; 
+
+   if(fshBlue==fsbBlue) {
+      fsbBlue -= (float)1e-1;
    }
    dynBlue = (float)256. / (fshBlue - fsbBlue);
-   
-   
+
+
    for(j=y1;j<=y2; j++) {
       if(mirrorY == 0) {
          ydest = ((y2-y1) - (j -y1) )*orgww ;
       } else {
          ydest = (j - y1)*orgww ;
       }
-    
+
       for(i=x1;i<=x2;i++) {
          if(mirrorX == 0) {
             xdest = i-x1;
@@ -1286,20 +1282,20 @@ void CPixelsRgb::GetPixelsRgb( int x1,int y1,int x2, int y2,
          pdest[ydest+xdest][1] = palette[1][(unsigned char)min(max(((float)pix[base+1]-fsbGreen)*dynGreen,0),255)];
          pdest[ydest+xdest][2] = palette[2][(unsigned char)min(max(((float)pix[base+2]-fsbBlue) *dynBlue,0),255)];
       }
-   }   
+   }
 }
 
 
-/** 
+/**
  * GetPixelsVisu
- * retourne les intensités de la zone (x1,y1)-(x2,y2)
- * dans le format compatible avec la visu : 4 octets par pixel ( rouge, vert, bleu, inutilisé) 
- * en tenant compte des mirrois X ou Y éventuels, des seuils haut et bas et de la palette de couleurs
+ * retourne les intensitï¿½s de la zone (x1,y1)-(x2,y2)
+ * dans le format compatible avec la visu : 4 octets par pixel ( rouge, vert, bleu, inutilisï¿½)
+ * en tenant compte des mirrois X ou Y ï¿½ventuels, des seuils haut et bas et de la palette de couleurs
  *
  * @param x1       abcisse du coin bas gauche de la zone
- * @param y1       ordonnee du coin bas gauche de la zone 
+ * @param y1       ordonnee du coin bas gauche de la zone
  * @param x2       abcisse du coin haut, doit de la zone
- * @param x2       ordonnée du coin haut, doit de la zone
+ * @param x2       ordonnï¿½e du coin haut, doit de la zone
  * @param mirrorX  0: pas de miroir horizontal, 1: miroir horizontal
  * @param mirrorY  0: pas de miroir vertical, 1 : miroir vertical
  * @param cuts     tableau des 6 seuils : haut rouge, bas rouge, haut vert bas vert , haut bleu , bas bleu
@@ -1311,11 +1307,11 @@ void CPixelsRgb::GetPixelsRgb( int x1,int y1,int x2, int y2,
 
 void CPixelsRgb::GetPixelsVisu( int x1,int y1,int x2, int y2,
             int mirrorX, int mirrorY,
-                  //double hicutRed,   double locutRed, 
+                  //double hicutRed,   double locutRed,
                   //double hicutGreen, double locutGreen,
                   //double hicutBlue,  double locutBlue,
                   float *cuts,
-                  unsigned char *palette[3], unsigned char *ptr) 
+                  unsigned char *palette[3], unsigned char *ptr)
 {
    int i, j;
    int orgww, orgwh;        // original window width, height
@@ -1339,30 +1335,30 @@ void CPixelsRgb::GetPixelsVisu( int x1,int y1,int x2, int y2,
 
    orgww = x2 - x1 + 1; // Largeur de la fenetre au depart
    orgwh = y2 - y1 + 1; // Hauteur ...
- 
-   if(fshRed==fsbRed) { 
-      fsbRed -= (float)1e-1; 
+
+   if(fshRed==fsbRed) {
+      fsbRed -= (float)1e-1;
    }
    dynRed = (float)256. / (fshRed - fsbRed);
-   
-   if(fshGreen==fsbGreen) { 
-      fsbGreen -= (float)1e-1; 
+
+   if(fshGreen==fsbGreen) {
+      fsbGreen -= (float)1e-1;
    }
    dynGreen = (float)256. / (fshGreen - fsbGreen);
-   
-   if(fshBlue==fsbBlue) { 
-      fsbBlue -= (float)1e-1; 
+
+   if(fshBlue==fsbBlue) {
+      fsbBlue -= (float)1e-1;
    }
    dynBlue = (float)256. / (fshBlue - fsbBlue);
-   
-   
+
+
    for(j=y1;j<=y2; j++) {
       if(mirrorY == 0) {
          ydest = ((y2-y1) - (j -y1) )*orgww ;
       } else {
          ydest = (j - y1)*orgww ;
       }
-    
+
       for(i=x1;i<=x2;i++) {
          if(mirrorX == 0) {
             xdest = i-x1;
@@ -1374,7 +1370,7 @@ void CPixelsRgb::GetPixelsVisu( int x1,int y1,int x2, int y2,
          pdest[ydest+xdest][1] = palette[1][(unsigned char)min(max(((float)pix[base+1]-fsbGreen)*dynGreen,0),255)];
          pdest[ydest+xdest][2] = palette[2][(unsigned char)min(max(((float)pix[base+2]-fsbBlue) *dynBlue,0),255)];
       }
-   }   
+   }
 }
 
 int CPixelsRgb::GetWidth(void) {
@@ -1392,12 +1388,12 @@ int CPixelsRgb::GetPlanes(void) {
  * IsPixelsReady
  *    informe si une image est presente dans le buffer
  *
- * Parameters: 
+ * Parameters:
  *    none
  * Results:
  *    returns 1 if pixels are ready, otherwise 0.
  * Side effects:
- *    verifie si une image est chargée c.a.d si la taille est superieure a 1x1
+ *    verifie si une image est chargï¿½e c.a.d si la taille est superieure a 1x1
  *----------------------------------------------------------------------
  */
 int CPixelsRgb::IsPixelsReady(void) {
@@ -1417,16 +1413,16 @@ void CPixelsRgb::Log(float coef, float offset)
    int msg, datatype;
    char s[512];
    int t;
-   
+
 
     try {
       pixelsR = (TYPE_PIXELS_RGB *)calloc(naxis1*naxis2,sizeof(TYPE_PIXELS_RGB));
       pixelsG = (TYPE_PIXELS_RGB *)calloc(naxis1*naxis2,sizeof(TYPE_PIXELS_RGB));
       pixelsB = (TYPE_PIXELS_RGB *)calloc(naxis1*naxis2,sizeof(TYPE_PIXELS_RGB));
-      
-      // je recupere l'image a traiter en séparant les 3 plans
-      GetPixels( pixelsR, pixelsG, pixelsB); 
-            
+
+      // je recupere l'image a traiter en sï¿½parant les 3 plans
+      GetPixels( pixelsR, pixelsG, pixelsB);
+
       //datatype = TFLOAT;
       datatype = TSHORT;
       sprintf(s,"LOG coeff=%f offsetlog=%f",coef,offset);
@@ -1437,7 +1433,7 @@ void CPixelsRgb::Log(float coef, float offset)
       if(msg) throw CErrorLibtt(msg);
       msg = Libtt_main(TT_PTR_IMASERIES,7,&pixelsB,&datatype,&naxis1,&naxis2,&pixelsB,&datatype,s);
       if(msg) throw CErrorLibtt(msg);
-      
+
       // j'enregistre la nouvelle image
       pixCurR = pixelsR;
       pixCurG = pixelsG;
@@ -1454,7 +1450,7 @@ void CPixelsRgb::Log(float coef, float offset)
       free(pixelsB);
 
    } catch (const CError& e) {
-      // je libere la mémoire
+      // je libere la mï¿½moire
       if(pixelsR) free(pixelsR);
       if(pixelsG) free(pixelsG);
       if(pixelsB) free(pixelsB);
@@ -1467,11 +1463,11 @@ void CPixelsRgb::Log(float coef, float offset)
 void CPixelsRgb::MergePixels(TColorPlane plane, int pixels)
 {
    long t;
-   
+
    t = naxis1*naxis2;
 
    switch (plane) {
-      
+
       case PLANE_R :
       {
          TYPE_PIXELS     * pixelPtr = (float *) pixels;
@@ -1481,10 +1477,10 @@ void CPixelsRgb::MergePixels(TColorPlane plane, int pixels)
             pixCur++; // skip green element of pixel
             pixCur++; // skip blue  element of pixel
          }
-         
+
       }
       break;
-      
+
       case PLANE_G :
       {
          TYPE_PIXELS     * pixelPtr = (float *) pixels;
@@ -1497,7 +1493,7 @@ void CPixelsRgb::MergePixels(TColorPlane plane, int pixels)
          break;
       }
       break;
-      
+
       case PLANE_B :
       {
          TYPE_PIXELS     * pixelPtr = (float *) pixels;
@@ -1509,8 +1505,8 @@ void CPixelsRgb::MergePixels(TColorPlane plane, int pixels)
          }
       }
       break;
-      
-   
+
+
       default :
       {
          throw CError(ELIBSTD_NOT_IMPLEMENTED);
@@ -1518,7 +1514,7 @@ void CPixelsRgb::MergePixels(TColorPlane plane, int pixels)
       break;
    }
 }
-   
+
 
 void CPixelsRgb::MirX()
 {
@@ -1528,15 +1524,15 @@ void CPixelsRgb::MirX()
    int msg, datatype;
    char s[32];
    int t;
-   
+
    try {
       pixelsR = (TYPE_PIXELS_RGB *)malloc(naxis1*naxis2 * sizeof(TYPE_PIXELS_RGB));
       pixelsG = (TYPE_PIXELS_RGB *)malloc(naxis1*naxis2 * sizeof(TYPE_PIXELS_RGB));
       pixelsB = (TYPE_PIXELS_RGB *)malloc(naxis1*naxis2 * sizeof(TYPE_PIXELS_RGB));
-      
-      // je recupere l'image a traiter en séparant les 3 plans
-      GetPixels( pixelsR, pixelsG, pixelsB); 
-      
+
+      // je recupere l'image a traiter en sï¿½parant les 3 plans
+      GetPixels( pixelsR, pixelsG, pixelsB);
+
       // mirroir
       //datatype = TFLOAT;
       datatype = TSHORT;
@@ -1548,7 +1544,7 @@ void CPixelsRgb::MirX()
       if(msg) throw CErrorLibtt(msg);
       msg = Libtt_main(TT_PTR_IMASERIES,7,&pixelsB,&datatype,&naxis1,&naxis2,&pixelsB,&datatype,s);
       if(msg) throw CErrorLibtt(msg);
-      
+
       // j'enregistre la nouvelle image
       pixCurR = pixelsR;
       pixCurG = pixelsG;
@@ -1560,7 +1556,7 @@ void CPixelsRgb::MirX()
          *(pixCur++) = *(pixCurG++);
          *(pixCur++) = *(pixCurB++);
       }
-      
+
       free(pixelsR);
       free(pixelsG);
       free(pixelsB);
@@ -1585,15 +1581,15 @@ void CPixelsRgb::MirY()
    int msg, datatype;
    char s[32];
    int t;
-   
+
    try {
       pixelsR = (TYPE_PIXELS_RGB *)malloc(naxis1*naxis2 * sizeof(TYPE_PIXELS_RGB));
       pixelsG = (TYPE_PIXELS_RGB *)malloc(naxis1*naxis2 * sizeof(TYPE_PIXELS_RGB));
       pixelsB = (TYPE_PIXELS_RGB *)malloc(naxis1*naxis2 * sizeof(TYPE_PIXELS_RGB));
-      
-      // je recupere l'image a traiter en séparant les 3 plans
-      GetPixels( pixelsR, pixelsG, pixelsB); 
-            
+
+      // je recupere l'image a traiter en sï¿½parant les 3 plans
+      GetPixels( pixelsR, pixelsG, pixelsB);
+
       // mirroir
       //datatype = TFLOAT;
       datatype = TSHORT;
@@ -1605,7 +1601,7 @@ void CPixelsRgb::MirY()
       if(msg) throw CErrorLibtt(msg);
       msg = Libtt_main(TT_PTR_IMASERIES,7,&pixelsB,&datatype,&naxis1,&naxis2,&pixelsB,&datatype,s);
       if(msg) throw CErrorLibtt(msg);
-      
+
       // j'enregistre la nouvelle image
       pixCurR = pixelsR;
       pixCurG = pixelsG;
@@ -1622,7 +1618,7 @@ void CPixelsRgb::MirY()
       free(pixelsB);
 
    } catch (const CError& e) {
-      // je libere la mémoire
+      // je libere la mï¿½moire
       if(pixelsR) free(pixelsR);
       if(pixelsG) free(pixelsG);
       if(pixelsB) free(pixelsB);
@@ -1674,12 +1670,12 @@ void CPixelsRgb::NOffset(float offset)
 
 void CPixelsRgb::Offset(float offset)
 {
-   
+
    int datatype;
    char *s;
 
    throw CError(ELIBSTD_NOT_IMPLEMENTED);
-   
+
    //datatype = TFLOAT;
    datatype = TSHORT;
 
@@ -1756,7 +1752,7 @@ void CPixelsRgb::SetPix(TColorPlane plane, TYPE_PIXELS val,int x, int y)
       *(pix+(y*naxis1+x)*naxis+1) = (unsigned char)  val;
       *(pix+(y*naxis1+x)*naxis+2) = (unsigned char)  val;
       break;
-   default: 
+   default:
       throw CError("plane not authorized");
    }
 
@@ -1764,23 +1760,23 @@ void CPixelsRgb::SetPix(TColorPlane plane, TYPE_PIXELS val,int x, int y)
 
 void CPixelsRgb::Sub(char *filename, float offset)
 {
-   
+
    TYPE_PIXELS_RGB *pixelsR, *pixelsG, *pixelsB;
    TYPE_PIXELS_RGB *pixCurR, *pixCurG, *pixCurB;
    TYPE_PIXELS_RGB *pixCur;
    int msg, datatype;
    char s[512];
    int t;
-   
+
 
     try {
       pixelsR = (TYPE_PIXELS_RGB *)calloc(naxis1*naxis2,sizeof(TYPE_PIXELS_RGB));
       pixelsG = (TYPE_PIXELS_RGB *)calloc(naxis1*naxis2,sizeof(TYPE_PIXELS_RGB));
       pixelsB = (TYPE_PIXELS_RGB *)calloc(naxis1*naxis2,sizeof(TYPE_PIXELS_RGB));
-      
-      // je recupere l'image a traiter en séparant les 3 plans
-      GetPixels( pixelsR, pixelsG, pixelsB); 
-            
+
+      // je recupere l'image a traiter en sï¿½parant les 3 plans
+      GetPixels( pixelsR, pixelsG, pixelsB);
+
       //datatype = TFLOAT;
       datatype = TSHORT;
       sprintf(s,"SUB \"file=%s\" offset=%f",filename,offset);
@@ -1791,7 +1787,7 @@ void CPixelsRgb::Sub(char *filename, float offset)
       if(msg) throw CErrorLibtt(msg);
       msg = Libtt_main(TT_PTR_IMASERIES,7,&pixelsB,&datatype,&naxis1,&naxis2,&pixelsB,&datatype,s);
       if(msg) throw CErrorLibtt(msg);
-      
+
       // j'enregistre la nouvelle image
       pixCurR = pixelsR;
       pixCurG = pixelsG;
@@ -1808,7 +1804,7 @@ void CPixelsRgb::Sub(char *filename, float offset)
       free(pixelsB);
 
    } catch (const CError& e) {
-      // je libere la mémoire
+      // je libere la mï¿½moire
       if(pixelsR) free(pixelsR);
       if(pixelsG) free(pixelsG);
       if(pixelsB) free(pixelsB);
@@ -1818,10 +1814,10 @@ void CPixelsRgb::Sub(char *filename, float offset)
 }
 
 //***************************************************
-// unifybg                      
-//                                         
+// unifybg
+//
 // - decoupe l'image en fentres
-// - calcule le fond de ciel pour chaque fenetre 
+// - calcule le fond de ciel pour chaque fenetre
 // - construit une matrice du fond du ciel pour chaque pixel
 //   par interpolation entre les centres des rectangles
 //
@@ -1862,12 +1858,12 @@ void  CPixelsRgb::UnifyBg()
       }
    }
 
-   // lines des centres des fenetres 
+   // lines des centres des fenetres
    lines = (int*)calloc(nbLine,sizeof(int));
-   
+
    // columns des centres des fenetres
    columns = (int*)calloc(nbCol,sizeof(int));
-   
+
 
    // -----------------------------------------------------------
    // je calcule le fond du ciel de chaque fenetre (x,y)(x+wRect,y+hRect)
@@ -1876,12 +1872,12 @@ void  CPixelsRgb::UnifyBg()
    for(x1=0; x1 < naxis1 ; x1 +=wRect) {
       lineIndex=0;
       for(y1=0; y1 < naxis2 ; y1 +=hRect) {
-      
-         // calcul de coordonnées de la fenetre
+
+         // calcul de coordonnï¿½es de la fenetre
          if( x1 + wRect < naxis1) {
             x2 = x1 + wRect;
          } else {
-            // cas du dernier rectangle à droite
+            // cas du dernier rectangle ï¿½ droite
             x2 = naxis1-1;
          }
          if( y1 + hRect < naxis2) {
@@ -1894,8 +1890,8 @@ void  CPixelsRgb::UnifyBg()
          // calcul des coord. du centre de la fenetre
          xc = (x2-x1)/2 +x1;
          yc = (y2-y1)/2 +y1;
-        
-         // je copie les pixels de la fenetre 
+
+         // je copie les pixels de la fenetre
          naxis11 = x2-x1+1;
          naxis22 = y2-y1+1;
          pixel = (TYPE_PIXELS*)calloc(naxis11*naxis22,sizeof(TYPE_PIXELS));
@@ -1920,7 +1916,7 @@ void  CPixelsRgb::UnifyBg()
          sumBgmean +=dbgmean;
          nbBgmean++;
 
-         // je memorise les coordonnées du centre le fenetre
+         // je memorise les coordonnï¿½es du centre le fenetre
          columns[colIndex]= xc;
          lines[lineIndex] = yc;
 
@@ -1929,7 +1925,7 @@ void  CPixelsRgb::UnifyBg()
          //logInfo("1 x1=%d y1=%d x2=%d y2=%d bg=%f", x1, y1, x2, y2, dbgmean);
 
       }
-      
+
       colIndex++;
    }
 
@@ -1938,7 +1934,7 @@ void  CPixelsRgb::UnifyBg()
    //logInfo("nbCol=%d nbLine=%d", nbCol, nbLine);
 
    // -----------------------------------------------------------
-   // je calcule le fond du ciel pour les points intermédiaires
+   // je calcule le fond du ciel pour les points intermï¿½diaires
    // -----------------------------------------------------------
 
    // calcul des columns
@@ -1956,58 +1952,58 @@ void  CPixelsRgb::UnifyBg()
          v2 = matbg[yc2*naxis1+ xc ];
          a = (v2 - v1)/(yc2 - yc1);
          b = v1 - a * yc1;
- 
+
          // je calcule les bornes de la droite de regression  y1, y2
          if(lineIndex == 0 ) {
-            y1 = 0 ;          // première fenetre en haut
+            y1 = 0 ;          // premiï¿½re fenetre en haut
          } else {
             y1 = yc1;
          }
          if(lineIndex >= nbLine - 2 ) {
             y2 = naxis2 ;   // deniere fenetre en bas
          } else {
-            y2 = yc2;          
+            y2 = yc2;
          }
-         
-         // je calcule les points entre les deux bornes 
+
+         // je calcule les points entre les deux bornes
          for( y = y1; y < y2 ; y++) {
-            matbg[y*naxis1+ xc ]  = a * y + b; 
+            matbg[y*naxis1+ xc ]  = a * y + b;
          }
 
          //logInfo("col xc=%d yc1=%d yc2=%d y1=%d y2=%d", xc, yc1, yc2, y1, y2);
       }
    }
-                 
-   
+
+
    //  calcul des lignes
    for(yc=0; yc<naxis2; yc++ ) {
       for(colIndex=0; colIndex<nbCol-1; colIndex++) {
-         
+
          // je recupere les coordonness des deux points pour calculer la droite
          xc1 = columns[colIndex];
          xc2 = columns[colIndex+1];
-      
+
          // je calcule les coefs de la droite de regression v = ax +b
          // la doite passe par les 2 points (xc1,v1) et (xc2, v2)
          v1 = matbg[yc*naxis1+ xc1 ];
          v2 = matbg[yc*naxis1+ xc2 ];
          a = (v2 - v1)/(xc2 - xc1);
          b = v1 - a*xc1;
- 
+
          // je calcule les bornes de la droite de regression  x1, x2
          if(colIndex == 0 ) {
-            x1 = 0 ;          // première fenetre a gauche
+            x1 = 0 ;          // premiï¿½re fenetre a gauche
          } else {
             x1 = xc1;
          }
          if(colIndex == nbCol -2 ) {
             x2 = naxis1;   // deniere fenetre a droite
          } else {
-            x2 = xc2;          
+            x2 = xc2;
          }
-         
+
          for( x = x1; x < x2 ; x++) {
-            matbg[yc*naxis1+ x ]  = a * x + b; 
+            matbg[yc*naxis1+ x ]  = a * x + b;
          }
          //logInfo("line yc=%d xc1=%d xc2=%d x1=%d x2=%d v1=%f v2=%f", yc, xc1, xc2, x1, x2, v1, v2);
       }
@@ -2017,7 +2013,7 @@ void  CPixelsRgb::UnifyBg()
    meanBgmean = sumBgmean / nbBgmean;
 
    // -----------------------------------------------------------
-   // je soustrait le fond du ciel à l'image originale
+   // je soustrait le fond du ciel ï¿½ l'image originale
    // -----------------------------------------------------------
    for(x=0; x < naxis1 ; x++) {
       for(y=0; y < naxis2 ; y++) {
@@ -2063,11 +2059,11 @@ void CPixelsRgb::Window(int x1, int y1, int x2, int y2)
    if ((x1 < 0) || (x2 < 0) || (x1 > naxis1-1) || (x2 > naxis1-1))
    {
          return ELIBSTD_X1X2_NOT_IN_1NAXIS1;
-   } 
+   }
    if ((y1 < 0) || (y2 < 0) || (y1 > naxis2-1) || (y2 > naxis2-1))
    {
          return ELIBSTD_Y1Y2_NOT_IN_1NAXIS2;
-   } 
+   }
 
    if(x1 > x2)
    {
@@ -2092,17 +2088,17 @@ void CPixelsRgb::Window(int x1, int y1, int x2, int y2)
       return ELIBSTD_NO_MEMORY_FOR_PIXELS;
    }
 
-   // window 
+   // window
    for(x = 0; x < diff_x;x++)
    {
        for(y = 0;y < diff_y;y++)
        {
          out[x + y * diff_x] =  pix[(x1 + x) + (y1 + y) * naxis1];
-       } 
-   } 
+       }
+   }
 
    naxis1 = diff_x;
-   naxis2 = diff_y; 
+   naxis2 = diff_y;
    //memcpy(pix,out,diff_x*diff_y*sizeof(TYPE_PIXELS));
    free(pix);
    pix = out;

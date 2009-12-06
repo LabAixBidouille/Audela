@@ -321,7 +321,7 @@ int cmdCopyKwd(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
          }
       }
    }
-   free(ligne);
+   delete[] ligne;
    return retour;
 }
 
@@ -493,7 +493,7 @@ int cmdGetKwds(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
 	         }
    	      Tcl_SetResult(interp,s,TCL_VOLATILE);
       	   retour = TCL_OK;
-	         delete s;
+	         delete[] s;
          } else {
    	      Tcl_SetResult(interp,CError::message(ELIBSTD_NO_KWDS),TCL_VOLATILE);
 	         retour = TCL_ERROR;
@@ -501,7 +501,7 @@ int cmdGetKwds(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -546,7 +546,7 @@ int cmdImageReady(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
          retour = TCL_ERROR;
       }
    }
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -592,7 +592,7 @@ int cmdType(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
          retour = TCL_ERROR;
       }
    }
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -993,7 +993,7 @@ int cmdLoad3d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       free(nom_fichier);
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -1084,7 +1084,7 @@ int cmdCreate3d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    }
    Tcl_Free((char *) argvv);
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -1147,7 +1147,7 @@ int cmdSave1d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       free(nom_fichier);
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -1219,7 +1219,7 @@ int cmdSave3d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       free(nom_fichier);
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -1290,7 +1290,7 @@ int cmdSaveJpg(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
       free(nom_fichier);
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -1340,7 +1340,7 @@ int cmdCopyTo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -1644,7 +1644,7 @@ int cmdGetNaxis(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       retour = TCL_OK;
    }
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -1671,7 +1671,7 @@ int cmdGetPixelsHeight(ClientData clientData, Tcl_Interp *interp, int argc, char
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       retour = TCL_OK;
    }
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -1698,7 +1698,7 @@ int cmdGetPixelsWidth(ClientData clientData, Tcl_Interp *interp, int argc, char 
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       retour = TCL_OK;
    }
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -1781,9 +1781,9 @@ int cmdSetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 //         retour =  TCL_ERROR;
 //         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 //      }
- 
+
          pixelData = atol(argv[7]);
- 
+
       }
 
       keep_keywords = DONT_KEEP_KEYWORDS;
@@ -2320,7 +2320,7 @@ int cmdTtOffset(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -2374,7 +2374,7 @@ int cmdTtSub(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -2428,7 +2428,7 @@ int cmdTtAdd(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -2481,7 +2481,7 @@ int cmdTtDiv(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -2518,7 +2518,7 @@ int cmdTtNGain(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
          retour = TCL_ERROR;
       }
    }
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -2556,7 +2556,7 @@ int cmdTtNOffset(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -2595,7 +2595,7 @@ int cmdTtUnsmear(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -2657,7 +2657,7 @@ int cmdTtOpt(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -2756,7 +2756,7 @@ int cmdTtStat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -2796,7 +2796,7 @@ int cmdHistogram(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
             sprintf(ligne,"Usage: %s %s ?NbBins? ?min? ?max?\nmin must be a float",argv[0],argv[1]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             retour = TCL_ERROR;
-            delete ligne;
+            delete[] ligne;
             return retour;
          }
          mini=(float)minid;
@@ -2808,7 +2808,7 @@ int cmdHistogram(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
             sprintf(ligne,"Usage: %s %s ?NbBins? ?min? ?max?\nmax must be a float",argv[0],argv[1]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             retour = TCL_ERROR;
-            delete ligne;
+            delete[] ligne;
             return retour;
          }
          maxi=(float)maxid;
@@ -2820,7 +2820,7 @@ int cmdHistogram(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
             sprintf(ligne,"Usage: %s %s ?NbBins?\nNbBins must be an integer between 1 and 10000",argv[0],argv[1]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             retour = TCL_ERROR;
-            delete ligne;
+            delete[] ligne;
             return retour;
          }
          if (n>10000) {
@@ -2834,7 +2834,7 @@ int cmdHistogram(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
          strcpy(ligne,"Memory management problem");
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour = TCL_ERROR;
-         delete ligne;
+         delete[] ligne;
          return retour;
       }
       if ((meanadus=(float*)calloc(n,sizeof(float)))==NULL) {
@@ -2842,7 +2842,7 @@ int cmdHistogram(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour = TCL_ERROR;
          free(histo);
-         delete ligne;
+         delete[] ligne;
          return retour;
       }
       if ((adus=(float*)calloc(n+1,sizeof(float)))==NULL) {
@@ -2851,7 +2851,7 @@ int cmdHistogram(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
          retour = TCL_ERROR;
          free(meanadus);
          free(histo);
-         delete ligne;
+         delete[] ligne;
          return retour;
       }
       // Appel a la methode du buffer
@@ -2863,7 +2863,7 @@ int cmdHistogram(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
          strcpy(ligne,"Memory management problem");
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour = TCL_ERROR;
-         delete ligne;
+         delete[] ligne;
          free(meanadus);
          free(histo);
          free(adus);
@@ -2898,7 +2898,7 @@ int cmdHistogram(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
       free(adus);
       free(meanadus);
       } catch(const CError& e) {
-         if (s) delete s;
+         if (s) free( s );
          if(histo) free(histo);
          if(adus) free(adus);
          if(meanadus) free(meanadus);
@@ -2908,7 +2908,7 @@ int cmdHistogram(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
          retour = TCL_ERROR;
       }
    }
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -2935,7 +2935,7 @@ int cmdClipmin(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
          sprintf(ligne,"Usage: %s %s value\nValue must be a float",argv[0],argv[1]);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour = TCL_ERROR;
-         delete ligne;
+         delete[] ligne;
          return retour;
       }
       // Appel a la methode du buffer
@@ -2950,7 +2950,7 @@ int cmdClipmin(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
          retour = TCL_ERROR;
       }
    }
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -2977,7 +2977,7 @@ int cmdClipmax(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
          sprintf(ligne,"Usage: %s %s value\nValue must be a float",argv[0],argv[1]);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour = TCL_ERROR;
-         delete ligne;
+         delete[] ligne;
          return retour;
       }
       // Appel a la methode du buffer
@@ -2992,7 +2992,7 @@ int cmdClipmax(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
          retour = TCL_ERROR;
       }
    }
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -3038,7 +3038,7 @@ int cmdTtRot(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -3081,7 +3081,7 @@ int cmdTtLog(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -3114,7 +3114,7 @@ int cmdPointer(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -3149,10 +3149,10 @@ int cmdTtMirrorX(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
          retour = TCL_ERROR;
       }
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-      delete s;
+      delete[] s;
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -3186,10 +3186,10 @@ int cmdTtMirrorY(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
          retour = TCL_ERROR;
       }
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-      delete s;
+      delete[] s;
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -3427,7 +3427,7 @@ int cmdFwhm(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -3509,7 +3509,7 @@ int cmdScar(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -3645,7 +3645,7 @@ int cmdFitGauss(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -3669,7 +3669,7 @@ int cmdGauss(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
             sprintf(ligne,"Usage: %s %s {xc yc i0 fwhmx fwhmy} ?LimitAdu?\nLimitAdu must be a float",argv[0],argv[1]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             retour = TCL_ERROR;
-            delete ligne;
+            delete[] ligne;
             return retour;
          }
       }
@@ -3712,7 +3712,7 @@ int cmdGauss(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -3797,7 +3797,7 @@ int cmdScale(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             retour = TCL_ERROR;
          }
-         delete s;
+         delete[] s;
       }
    }
 
@@ -3857,7 +3857,7 @@ int cmdBinX(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -3912,7 +3912,7 @@ int cmdBinY(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -3967,7 +3967,7 @@ int cmdMedX(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -4022,7 +4022,7 @@ int cmdMedY(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -4063,7 +4063,7 @@ int cmdCfa2rgb(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
          }
       }
    }
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -4145,12 +4145,12 @@ int cmdWindow(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
                retour = TCL_ERROR;
             }
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-            delete s;
+            delete[] s;
          }
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -4183,10 +4183,10 @@ int cmdMult(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
          retour = TCL_ERROR;
       }
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-      delete s;
+      delete[] s;
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -4389,10 +4389,10 @@ int cmdA_StarList(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 				   sprintf(ligne,usage,argv[0],argv[1],"output format must be 1 or 2 (defaut=1)");
 				   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 				   retour = TCL_ERROR;
-               } 
-               else 
+               }
+               else
                {
-                   if ( fileFormat < 1 || fileFormat > 2 ) 
+                   if ( fileFormat < 1 || fileFormat > 2 )
                    {
 				      sprintf(ligne,usage,argv[0],argv[1],"output format must be 1 or 2 (defaut=1)");
 				      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -4415,7 +4415,7 @@ int cmdA_StarList(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 	   }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -4528,7 +4528,7 @@ int cmdFitGauss2d(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -4562,7 +4562,7 @@ int cmdUnifyBg(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -4649,14 +4649,14 @@ int cmdRegion(ClientData , Tcl_Interp *interp, int argc, char *argv[])
       retour = TCL_ERROR;
 #endif
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 
 }
 
 
 //==============================================================================
-// buf$i slitcentro {x1 y1 x2 y2} starDetectionMode pixelMinCount slitWidth signalRatio 
+// buf$i slitcentro {x1 y1 x2 y2} starDetectionMode pixelMinCount slitWidth signalRatio
 //   Fonction de calcul du centroide sur une fente.
 //
 //  Parameters IN:
@@ -4664,9 +4664,9 @@ int cmdRegion(ClientData , Tcl_Interp *interp, int argc, char *argv[])
 //  @param     Argv[3]=starDetectionMode  1=ajustement de gaussienne  2=slit
 //  @param     Argv[4]=pixelMinCount      nombre minimal de pixels (nombre entier)
 //  @param     Argv[5]=slitWidth          largeur de la fente (nombre entier de pixels)
-//  @param     Argv[6]=signalRatio        ratio pour convertir le rapport de flux en nombre de pixels 
+//  @param     Argv[6]=signalRatio        ratio pour convertir le rapport de flux en nombre de pixels
 //
-//  @return 
+//  @return
 //             list[0] starStatus       resultat de la recherche de l'etoile
 //             list[1] starX            abcisse du centre de l'etoile
 //             list[2] starY            ordonnee du centre de l'etoile
@@ -4677,10 +4677,10 @@ int cmdRegion(ClientData , Tcl_Interp *interp, int argc, char *argv[])
 int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
    enum {CMD_CENTRO=1,CMD_FLUX,CMD_PHOT};
-   int x1, y1, x2, y2, slitWidth, temp;               
-   int starDetectionMode;                       
+   int x1, y1, x2, y2, slitWidth, temp;
+   int starDetectionMode;
    double signalRatio;
-   int pixelMinCount=0; 
+   int pixelMinCount=0;
    int retour = TCL_OK;
    char ligne[1000];
    CBuffer *buffer;
@@ -4724,12 +4724,12 @@ int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
          sprintf(ligne,"starDetectionMode=%d is not integer", starDetectionMode);
          Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
-      } 
+      }
       if(Tcl_GetInt(interp,argv[4],&pixelMinCount)!=TCL_OK) {
          sprintf(ligne,"pixelMinCount=%d is not integer", pixelMinCount);
          Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
-      } 
+      }
       if(Tcl_GetInt(interp,argv[5],&slitWidth)!=TCL_OK) {
             sprintf(ligne,"Usage: %s %s %s\nslitwidth must be an integer",argv[0],argv[1],parameters);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -4743,7 +4743,7 @@ int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 
       if ( retour == TCL_OK ) {
             char starStatus[128];
-            double xc, yc;                     
+            double xc, yc;
             TYPE_PIXELS maxIntensity;
             char message[1024];
 
@@ -4768,8 +4768,8 @@ int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
                // passage dans le repere d'origine (0,0)
                x1 -= 1; y1 -= 1; x2 -= 1; y2 -= 1;
 
-               buffer->AstroSlitCentro(x1, y1, x2, y2, starDetectionMode, pixelMinCount, 
-                   slitWidth, signalRatio, 
+               buffer->AstroSlitCentro(x1, y1, x2, y2, starDetectionMode, pixelMinCount,
+                   slitWidth, signalRatio,
                    starStatus, &xc, &yc, &maxIntensity, message);
 
                // retour dans le repere d'origine (1,1)
@@ -4804,16 +4804,16 @@ int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
  *  @param     Argv[7]=sumBufNo        numero du buffer de l'image integree
  *  @param     Argv[8]=fiberBufNo      numero du buffer de l'image resultat
  *  @param     Argv[9]=originSumMinCounter   nombre d'images minimum a integrer pour mettre a jour la consigne
- *  @param     Argv[10]=originSumCounter   numero de l'acquisition courante 
+ *  @param     Argv[10]=originSumCounter   numero de l'acquisition courante
  *  @param     Argv[11]=previousFiberX abcisse du centre de la fibre
- *  @param     Argv[12]=previousFiberY ordonnee du centre de la fibre 
- *  @param     Argv[13]=maskRadius     rayon du masque 
+ *  @param     Argv[12]=previousFiberY ordonnee du centre de la fibre
+ *  @param     Argv[13]=maskRadius     rayon du masque
  *  @param     Argv[14]=maskFwhm       largeur a mi hauteur de la gaussienne du masque
  *  @param     Argv[15]=pixelMinCount  nombre minimal de pixels
  *  @param     Argv[16]=maskPercent    pourcentage du niveau du masque
  *  @param     Argv[17]=biasValue      valeur du bias
  *
- *  @return si TCL_OK 
+ *  @return si TCL_OK
  *             list[0] starStatus      resultat de la recherche de l'etoile
  *             list[1] starX           abcisse du centre de l'etoile
  *             list[2] starY           ordonnee du centre de l'etoile
@@ -4825,7 +4825,7 @@ int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
  *             list[8] background      fond du ciel
  *             list[9] maxIntensity    intensite max
  *             list[10] message        message d'information
- *          si TCL_ERREUR 
+ *          si TCL_ERREUR
  *             message d'erreur
 */
 int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
@@ -4845,7 +4845,7 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 
       int x1, y1, x2, y2;                // Position de la fenetre
       int starDetectionMode;
-      int integratedImage;                
+      int integratedImage;
       int findFiber;
       int maskBufNo=0, sumBufNo=0, fiberBufNo=0;
       int maskRadius=0;
@@ -4853,17 +4853,17 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
       double maskPercent=0;
       int originSumMinCounter=0, originSumCounter=0;
       double previousFiberX=0, previousFiberY=0;
-      int pixelMinCount=0;                // nombre minimal de pixels 
+      int pixelMinCount=0;                // nombre minimal de pixels
       double fiberX=0, fiberY=0;          // centre de l'entree de la fibre
       double starX=0, starY=0;            // baricentre de l'etoile
       char fiberStatus[128];
       char starStatus[128];
       double measuredFwhmX=0, measuredFwhmY=0;
       double background=0, maxIntensity=0;
-      double biasValue; 
+      double biasValue;
       int temp;
       CBuffer *buffer;
-      char message[1024]; 
+      char message[1024];
 
       // j'initialise le message d'erreur
       ligne[0] = 0; // chaine vide
@@ -4901,81 +4901,81 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
          sprintf(ligne,"starDetectionMode=%d is not integer", starDetectionMode);
          Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
-      } 
+      }
       if(Tcl_GetInt(interp,argv[4],&integratedImage)!=TCL_OK) {
          sprintf(ligne,"integratedImage=%d is not integer", integratedImage);
          Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
-      } 
+      }
       if(Tcl_GetInt(interp,argv[5],&findFiber)!=TCL_OK) {
          sprintf(ligne,"findFiber=%d is not integer", findFiber);
          Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
-      } 
+      }
       if(Tcl_GetInt(interp,argv[6],&maskBufNo)!=TCL_OK) {
          sprintf(ligne,"maskBufNo=%d is not integer", maskBufNo);
          Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
-      } 
+      }
       if(Tcl_GetInt(interp,argv[7],&sumBufNo)!=TCL_OK) {
          sprintf(ligne,"sumBufNo=%d is not integer", sumBufNo);
          Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
-      } 
+      }
       if(Tcl_GetInt(interp,argv[8],&fiberBufNo)!=TCL_OK) {
          sprintf(ligne,"fiberBufNo=%d is not integer", fiberBufNo);
          Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
-      } 
+      }
       if(Tcl_GetInt(interp,argv[9],&originSumMinCounter)!=TCL_OK) {
          sprintf(ligne,"originSumMinCounter=%d is not integer", originSumMinCounter);
          Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
-      } 
+      }
       if(Tcl_GetInt(interp,argv[10],&originSumCounter)!=TCL_OK) {
          sprintf(ligne,"originSumCounter=%d is not integer", originSumCounter);
          Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
-      } 
+      }
       if(Tcl_GetDouble(interp,argv[11],&previousFiberX)!=TCL_OK) {
          sprintf(ligne,"previousFiberX=%f is not double", previousFiberX);
          Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
-      } 
+      }
       if(Tcl_GetDouble(interp,argv[12],&previousFiberY)!=TCL_OK) {
          sprintf(ligne,"previousFiberY=%f is not double", previousFiberY);
          Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
-      } 
+      }
       if(Tcl_GetInt(interp,argv[13],&maskRadius)!=TCL_OK) {
          sprintf(ligne,"maskRadius=%d is not integer", maskRadius);
          Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
-      } 
+      }
       if(Tcl_GetDouble(interp,argv[14],&maskFwhm)!=TCL_OK) {
          sprintf(ligne,"maskFwhm=%f is not double", maskFwhm);
          Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
-      }       
+      }
       if(Tcl_GetInt(interp,argv[15],&pixelMinCount)!=TCL_OK) {
          sprintf(ligne,"pixelMinCount=%d is not integer", pixelMinCount);
          Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
-      } 
+      }
       if(Tcl_GetDouble(interp,argv[16],&maskPercent)!=TCL_OK) {
          sprintf(ligne,"maskPercent=%f is not double", maskPercent);
          Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
-      } 
+      }
       if(Tcl_GetDouble(interp,argv[17],&biasValue)!=TCL_OK) {
          sprintf(ligne,"biasValue=%f is not double", biasValue);
          Tcl_AppendResult(interp,ligne,(char *) NULL);
          retour = TCL_ERROR;
-      } 
+      }
 
       // passage dans le repere d'origine (0,0)
       x1 -= 1; y1 -= 1; x2 -= 1; y2 -= 1;
-      previousFiberX -= 1; previousFiberY -= 1; 
+      previousFiberX -= 1; previousFiberY -= 1;
 
       if ( retour == TCL_OK ) {
          buffer = (CBuffer*)clientData;
@@ -4991,31 +4991,31 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                y2 = temp;
             }
             strcpy(message,"");
-            buffer->AstroFiberCentro(x1, y1, x2, y2, 
-               starDetectionMode, integratedImage, findFiber, 
+            buffer->AstroFiberCentro(x1, y1, x2, y2,
+               starDetectionMode, integratedImage, findFiber,
                maskBufNo, sumBufNo, fiberBufNo,
                maskRadius, maskFwhm, maskPercent,
                originSumMinCounter, originSumCounter,
                previousFiberX, previousFiberY,
-               pixelMinCount, biasValue, 
+               pixelMinCount, biasValue,
                starStatus, &starX, &starY,
                fiberStatus, &fiberX, &fiberY,
                &measuredFwhmX, &measuredFwhmY,
                &background, &maxIntensity,
                message);
-            
+
                // retour dans le repere d'origine (1,1)
-               starX  += 1; 
+               starX  += 1;
                starY  += 1;
                fiberX += 1;
-               fiberY += 1; 
+               fiberY += 1;
 
-            
-            sprintf(ligne,"{%s} %f %f {%s} %f %f %f %f %f %f {%s}", 
-               starStatus, starX, starY, 
-               fiberStatus, fiberX, fiberY, 
+
+            sprintf(ligne,"{%s} %f %f {%s} %f %f %f %f %f %f {%s}",
+               starStatus, starX, starY,
+               fiberStatus, fiberX, fiberY,
                measuredFwhmX, measuredFwhmY, background, maxIntensity, message);
-            Tcl_SetResult(interp,ligne,TCL_VOLATILE); 
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             retour = TCL_OK;
          } catch(const CError& e) {
             sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
@@ -5024,7 +5024,7 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
          }
 
       }
-      Tcl_Free((char*)listArgv);      
+      Tcl_Free((char*)listArgv);
    }
    return retour;
 }
@@ -5105,7 +5105,7 @@ int cmdSubStars(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       }
       fclose(fascii);
    }
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -5221,6 +5221,8 @@ int cmdTtFitellip(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
       }
    }
 
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
+
+

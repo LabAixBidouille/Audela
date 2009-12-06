@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Denis MARCHAIS <denis.marchais@free.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -47,11 +47,11 @@ CFile::~CFile()
 /**
  *  loadFile
  *  charge un fichier
- * 
- *  parameters : 
+ *
+ *  parameters :
  *    arg1 (IN) : nom du fichier
  *  return :
- *    CFileFormat : file format 
+ *    CFileFormat : file format
  */
 CFileFormat CFile::loadFile(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords)
 {
@@ -59,49 +59,49 @@ CFileFormat CFile::loadFile(char * filename, int dataTypeOut, CPixels **pixels, 
 
    // je verifie le nom du fichier
    fileFormat = getFormatFromHeader(filename);
-   
+
    switch ( fileFormat ) {
    case CFILE_FITS :
       loadFits(filename, dataTypeOut, pixels, keywords);
       break;
-      
+
    case CFILE_JPEG :
       loadJpeg(filename, dataTypeOut, pixels, keywords);
       break;
-            
+
    //case CFILE_GIF :
    //   break;
-      
+
    //case CFILE_PNG :
    //   break;
-      
+
    case CFILE_RAW :
       loadRaw(filename, dataTypeOut, pixels, keywords);
       break;
-      
-   default : 
+
+   default :
       // unknown format
       throw CError("loadFile %s error : unknown format.",filename );
    }
-   
+
    return fileFormat;
 }
 
 /**
  *  saveFile
  *  enregistre dans un fichier
- * 
- *  parameters : 
+ *
+ *  parameters :
  *    arg1 (IN) : nom du fichier
  *  return :
- *    CFileFormat : file format 
+ *    CFileFormat : file format
  */
 /*
 CFileFormat CFile::saveFile(char * filename, int dataTypeOut, CPixels *pixels, CFitsKeywords *keywords)
 {
    CFileFormat fileFormat = CFILE_UNKNOWN;
 
-   
+
    return fileFormat;
 }
 */
@@ -128,7 +128,7 @@ void CFile::loadFits(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
       msg = Libtt_main(TT_PTR_LOADIMA3D,13,filename,&dataTypeOut,&iaxis3,&ppix,&naxis1,&naxis2,&naxis3,
          &nb_keys,&keynames,&values,&comments,&units,&datatypes);
       if(msg) throw CErrorLibtt(msg);
-      
+
       switch (dataTypeOut) {
          case TBYTE :
             pixelFormat = FORMAT_BYTE;
@@ -150,7 +150,7 @@ void CFile::loadFits(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
          // je copie les donnees dans la variable de sortie
          *pixels = new CPixelsGray(naxis1, naxis2, pixelFormat, ppix, 0, 0);
 
-         // je copie les mots cles dans la variable de sortie      
+         // je copie les mots cles dans la variable de sortie
          *keywords = new CFitsKeywords();
          (*keywords)->GetFromArray(nb_keys,&keynames,&values,&comments,&units,&datatypes);
 
@@ -159,18 +159,18 @@ void CFile::loadFits(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
          TYPE_PIXELS * ppixR = NULL;
          TYPE_PIXELS * ppixG = NULL ;
          TYPE_PIXELS * ppixB = ppix ;  // j'ai deja recupere le troisieme plan
-         
+
          iaxis3 = 1;
          msg = Libtt_main(TT_PTR_LOADIMA3D,13,filename,&dataTypeOut,&iaxis3,&ppixR,&naxis1,&naxis2,&naxis3,
    	      &nb_keys,&keynames,&values,&comments,&units,&datatypes);
             iaxis3 = 2;
             msg = Libtt_main(TT_PTR_LOADIMA3D,13,filename,&dataTypeOut,&iaxis3,&ppixG,&naxis1,&naxis2,&naxis3,
    	         &nb_keys,&keynames,&values,&comments,&units,&datatypes);
-         
+
          // je copie les pixels dans la variable de sortie
          *pixels = new CPixelsRgb(naxis1, naxis2, pixelFormat, ppixR, ppixG, ppixB);
-         
-         // je copie les mots cles dans la variable de sortie      
+
+         // je copie les mots cles dans la variable de sortie
          *keywords = new CFitsKeywords();
          (*keywords)->GetFromArray(nb_keys,&keynames,&values,&comments,&units,&datatypes);
          // je recupere les mots cles
@@ -179,19 +179,19 @@ void CFile::loadFits(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
          (*keywords)->Add("NAXIS", &naxis,TINT,"","");
          naxis3 = 3;
          (*keywords)->Add("NAXIS3",&naxis3,TINT,"","");
-         
+
       } else {
          throw CError("LoadFits error: plane number is not 1 or 3.");
       }
    } catch (const CError& e) {
-      // Liberation de la memoire allouée par libtt
+      // Liberation de la memoire allouï¿½e par libtt
       Libtt_main(TT_PTR_FREEPTR,1,&ppix);
       Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
       // je transmet l'erreur
       throw e;
    }
-   
-   // Liberation de la memoire allouee par libtt (pas nécessire de catcher les erreurs)
+
+   // Liberation de la memoire allouee par libtt (pas nï¿½cessire de catcher les erreurs)
    msg = Libtt_main(TT_PTR_FREEPTR,1,&ppix);
    msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
 }
@@ -210,7 +210,7 @@ void CFile::saveFits(char * filename, int dataTypeOut, CPixels *pixels, CFitsKey
    int *datatypes=NULL;
    int datatype;
 
-   // petir raccoruci sur les dimensions 
+   // petir raccourci sur les dimensions
    naxis1 = pixels->GetWidth();
    naxis2 = pixels->GetHeight();
 
@@ -218,37 +218,31 @@ void CFile::saveFits(char * filename, int dataTypeOut, CPixels *pixels, CFitsKey
       case CLASS_RGB :
          ppix = malloc(naxis1*naxis2*pixels->GetPlanes() * sizeof(TYPE_PIXELS_RGB));
          pixelsR = (TYPE_PIXELS_RGB *) ppix;
-         pixelsG = pixelsR + naxis1*naxis2; 
-         pixelsB = pixelsR + naxis1*naxis2*2; 
+         pixelsG = pixelsR + naxis1*naxis2;
+         pixelsB = pixelsR + naxis1*naxis2*2;
 
-         // je recupere l'image RGB a traiter en séparant les 3 plans
-         // Yassine
-         //pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_R, (int) pixelsR);
-         //pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_G, (int) pixelsG);
-         //pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_B, (int) pixelsB);
-         pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_R, (long) pixelsR);
-         pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_G, (long) pixelsG);
-         pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_B, (long) pixelsB);
-   
+         // je recupere l'image RGB a traiter en sÃ©parant les 3 plans
+         pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_R, (void*) pixelsR);
+         pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_G, (void*) pixelsG);
+         pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_SHORT, PLANE_B, (void*) pixelsB);
+
          // format des pixels en entree de libtt
          datatype = TSHORT;
          break;
-      default : 
-         // je recupere l'image GREY a traiter 
+      default :
+         // je recupere l'image GREY a traiter
          ppix = malloc(naxis1* naxis2 * sizeof(float));
-         // Yassine
-         //pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (int) ppix);
-         pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (long) ppix);
-         
+         pixels->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (void*) ppix);
+
          // format des pixels en entree de libtt
-         datatype = TFLOAT;         
+         datatype = TFLOAT;
          break;
    }
 
 
    // Collecte de renseignements pour la suite
    nb_keys = keywords->GetKeywordNb();
-   
+
    // Allocation de l'espace memoire pour les tableaux de mots-cles
    if (nb_keys>0) {
       msg = Libtt_main(TT_PTR_ALLOKEYS,6,&nb_keys,&keynames,&values,&comments,&units,&datatypes);
@@ -267,7 +261,7 @@ void CFile::saveFits(char * filename, int dataTypeOut, CPixels *pixels, CFitsKey
       free(ppix);
       throw CErrorLibtt(msg);
    }
-   
+
    // Liberation de la memoire allouee par libtt
    if (nb_keys>0) {
    msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
@@ -291,7 +285,7 @@ void CFile::saveFitsTable(char * outputFileName, CFitsKeywords *keywords, int nb
    char binary[20];
 
    strcpy(binary,"ascii");
-   nb_keys = keywords->GetKeywordNb();   
+   nb_keys = keywords->GetKeywordNb();
    // Allocation de l'espace memoire pour les tableaux de mots-cles
    if (nb_keys>0) {
       msg = Libtt_main(TT_PTR_ALLOKEYS,6,&nb_keys,&keynames,&values,&comments,&units,&datatypes);
@@ -332,14 +326,14 @@ void CFile::saveFitsTable(char * outputFileName, CFitsKeywords *keywords, int nb
    // j'enregistrement la table
    if ( nbCol == 9 ) {
       msg = Libtt_main(TT_PTR_SAVETBL,20,outputFileName,
-         columnType, columnUnits, columnTitle, binary, 
+         columnType, columnUnits, columnTitle, binary,
          &nb_keys,keynames,values,comments,units,datatypes,
          columnData[0],columnData[1],columnData[2],columnData[3],
          columnData[4],columnData[5],columnData[6],columnData[7],columnData[8]);
    }
    if ( nbCol == 13 ) {
       msg = Libtt_main(TT_PTR_SAVETBL,24,outputFileName,
-         columnType, columnUnits, columnTitle, binary, 
+         columnType, columnUnits, columnTitle, binary,
          &nb_keys,keynames,values,comments,units,datatypes,
          columnData[0],columnData[1],columnData[2],columnData[3],
          columnData[4],columnData[5],columnData[6],columnData[7],columnData[8],
@@ -348,7 +342,7 @@ void CFile::saveFitsTable(char * outputFileName, CFitsKeywords *keywords, int nb
    if(msg) {
       throw CErrorLibtt(msg);
    }
-   
+
    // Liberation de la memoire allouee par libtt
    if (nb_keys>0) {
    msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
@@ -365,14 +359,14 @@ void CFile::loadJpeg(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
    int   naxis, width, height, naxis3;
    float initialMipsLo, initialMipsHi;
    int result = -1;
-      
+
    if( strlen(filename) == 0 ) {
       throw new CError("loadJpeg : filename is empty");
    }
-   
+
    // TODO : recuperer les donnees EXIF
 
-   result  = libdcjpeg_loadFile(filename, &decodedData, &decodedSize, &naxis3, &width, &height);            
+   result  = libdcjpeg_loadFile(filename, &decodedData, &decodedSize, &naxis3, &width, &height);
    if (result == 0 )  {
 
       // je copie les pixels dans la variable de sortie *pixels
@@ -382,11 +376,11 @@ void CFile::loadJpeg(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
       } else if ( naxis3 == 3 ) {
          *pixels = new CPixelsRgb(width, height, FORMAT_BYTE, decodedData, 0, 0);
          naxis = 3;
-      } else { 
+      } else {
          throw new CError("loadJpeg : unsupported value naxis3=%d ", naxis3);
       }
 
-      // je copie les mots cles dans la variable de sortie *keywords 
+      // je copie les mots cles dans la variable de sortie *keywords
       *keywords = new CFitsKeywords();
       initialMipsLo = 0.0 ;
       initialMipsHi = 255.0;
@@ -398,17 +392,17 @@ void CFile::loadJpeg(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
       (*keywords)->Add("MIPS-LO",&initialMipsLo,TFLOAT,"Low cut","ADU");
       (*keywords)->Add("MIPS-HI",&initialMipsHi,TFLOAT,"Hight cut","ADU");
 
-      // l'espace memoire decodedData cree par la librairie libdcjpeg doit etre desalloué par cette meme librairie.
+      // l'espace memoire decodedData cree par la librairie libdcjpeg doit etre desallouï¿½ par cette meme librairie.
       libdcjpeg_freeBuffer(decodedData);
    } else {
       throw CError("libjpeg_decodeBuffer error=%d", result);
-   }   
+   }
 }
 
 void CFile::saveJpeg(char * filename, unsigned char *dataIn, CFitsKeywords *keywords, int planes,  int width, int height, int quality)
 {
-   
-   // TODO : copier les motclé dans les donnees EXIF
+
+   // TODO : copier les motclï¿½ dans les donnees EXIF
 
    libdcjpeg_saveFile(filename, dataIn, planes, width, height, quality);
 
@@ -426,12 +420,12 @@ void CFile::loadRaw(char * filename, int dataTypeOut, CPixels **pixels, CFitsKey
    char  gmtDate[70];
    char  camera[70];
    char  filter[70];
-      
+
    if( strlen(filename) == 0 ) {
       throw new CError("loadRaw : filename is empty");
    }
-   
-   result  = libdcraw_fileRaw2Cfa(filename, &dataInfo, &decodedData);            
+
+   result  = libdcraw_fileRaw2Cfa(filename, &dataInfo, &decodedData);
    if (result == 0 )  {
       naxis = 2;
       width  = dataInfo.width;
@@ -443,16 +437,16 @@ void CFile::loadRaw(char * filename, int dataTypeOut, CPixels **pixels, CFitsKey
       tmtime = gmtime( (const time_t *)&dataInfo.timestamp);
       strftime( gmtDate, 70, "%Y-%m-%dT%H:%M:%S", tmtime );
       // je recupere le nom de la camera
-      sprintf(camera, "%s %s",dataInfo.make,dataInfo.model);  
-      // je recupere le filtre 
+      sprintf(camera, "%s %s",dataInfo.make,dataInfo.model);
+      // je recupere le filtre
       // la valeur du filtre est convertie en chaine de caracteres Hexadecimale
-      // car les mots cles ne supportent pas les entiers non signés sur 4 octets
-      sprintf(filter, "%u",dataInfo.filters); 
-      
-      // je copie les pixels dans la variable de sortie 
+      // car les mots cles ne supportent pas les entiers non signï¿½s sur 4 octets
+      sprintf(filter, "%u",dataInfo.filters);
+
+      // je copie les pixels dans la variable de sortie
       *pixels = new CPixelsGray(dataInfo.width, dataInfo.height, FORMAT_USHORT, decodedData, 0, 0);
-                  
-      // je copie les mots cles dans la variable de sortie      
+
+      // je copie les mots cles dans la variable de sortie
       *keywords = new CFitsKeywords();
       (*keywords)->Add("NAXIS", &naxis,TINT,"","");
       (*keywords)->Add("NAXIS1",&width,TINT,"","");
@@ -467,11 +461,11 @@ void CFile::loadRaw(char * filename, int dataTypeOut, CPixels **pixels, CFitsKey
       (*keywords)->Add("RAWBLACK",   &dataInfo.black,   TINT,    "Raw low cut", "" );
       (*keywords)->Add("RAWMAXI", &dataInfo.maximum,    TINT,    "Raw hight cut", "" );
 
-      // l'espace memoire decodedData cree par la librairie libdcjpeg doit etre desalloué par cette meme librairie.
+      // l'espace memoire decodedData cree par la librairie libdcjpeg doit etre desallouï¿½ par cette meme librairie.
       libdcraw_freeBuffer(decodedData);
    } else {
       throw CError("libdcraw_fileRaw2Cfa error=%d", result);
-   }      
+   }
 }
 
 
@@ -487,7 +481,7 @@ void CFile::cfa2Rgb(CPixels *cfaPixels, CFitsKeywords *cfaKeywords, int interpol
 
    // je verifie que la methode d'interpolation est connue
    switch ( interpolationMethod ) {
-   case 1 : 
+   case 1 :
       method = LINEAR;
       break;
    case 2 :
@@ -504,23 +498,23 @@ void CFile::cfa2Rgb(CPixels *cfaPixels, CFitsKeywords *cfaKeywords, int interpol
    // je recupere les parametres indispensable a l'interpolation
    dataInfo.width =  cfaPixels->GetWidth();
    dataInfo.height = cfaPixels->GetHeight();
-   if ( (kwd = cfaKeywords->FindKeyword("RAWCOLOR")) != NULL ) {      
+   if ( (kwd = cfaKeywords->FindKeyword("RAWCOLOR")) != NULL ) {
       dataInfo.colors = kwd->GetIntValue();
    } else {
       throw CError("CFile::cfa2Rgb: not a RAW image, keyword RAWCOLOR not found");
 
    }
-   if ( (kwd = cfaKeywords->FindKeyword("RAWBLACK")) != NULL ) {      
+   if ( (kwd = cfaKeywords->FindKeyword("RAWBLACK")) != NULL ) {
       dataInfo.black = kwd->GetIntValue();
    } else {
       throw CError("CFile::cfa2Rgb: not a RAW image, keyword RAWBLACK not found");
    }
-   if ( (kwd = cfaKeywords->FindKeyword("RAWMAXI")) != NULL ) {      
+   if ( (kwd = cfaKeywords->FindKeyword("RAWMAXI")) != NULL ) {
       dataInfo.maximum = kwd->GetIntValue();
    } else {
       throw CError("CFile::cfa2Rgb: not a RAW image, keyword RAWMAXI not found");
    }
-   if ( (kwd = cfaKeywords->FindKeyword("RAWFILTE")) != NULL ) {      
+   if ( (kwd = cfaKeywords->FindKeyword("RAWFILTE")) != NULL ) {
       sscanf(kwd->GetStringValue(),"%u",&dataInfo.filters);
    } else {
       throw CError("CFile::cfa2Rgb: not a RAW image, keyword RAWFILTE not found");
@@ -531,22 +525,20 @@ void CFile::cfa2Rgb(CPixels *cfaPixels, CFitsKeywords *cfaKeywords, int interpol
    if( cfaData == NULL ) {
       CError("CFile::cfa2Rgb: enougth memory");
    }
-   // Yassine
-   //cfaPixels->GetPixels(0, 0, cfaPixels->GetWidth() -1,  cfaPixels->GetHeight() -1, FORMAT_USHORT, PLANE_GREY, (int) cfaData );
-   cfaPixels->GetPixels(0, 0, cfaPixels->GetWidth() -1,  cfaPixels->GetHeight() -1, FORMAT_USHORT, PLANE_GREY, (long) cfaData );
+   cfaPixels->GetPixels(0, 0, cfaPixels->GetWidth() -1,  cfaPixels->GetHeight() -1, FORMAT_USHORT, PLANE_GREY, (void*) cfaData );
 
    // je convertis l'image CFA en RGB
    result = libdcraw_bufferCfa2Rgb(cfaData, &dataInfo, method, &rgbData);
-   if (result == 0 )  {      
+   if (result == 0 )  {
       // je copie les pixels dans la variable de sortie (en inversant les Y)
       *rgbPixels = new CPixelsRgb(dataInfo.width, dataInfo.height, FORMAT_USHORT, rgbData, 0, 1);
-                  
-      // je cree les mots cles en sortie     
+
+      // je cree les mots cles en sortie
       *rgbKeywords = new CFitsKeywords();
       // je copie les mots cles de l'image CFA
       kwd = cfaKeywords->GetFirstKeyword();
       while( kwd != NULL ) {
-         (*rgbKeywords)->Add( kwd->GetName(), kwd->GetPtrValue(), kwd->GetDatatype(), 
+         (*rgbKeywords)->Add( kwd->GetName(), kwd->GetPtrValue(), kwd->GetDatatype(),
             kwd->GetComment(), kwd->GetUnit());
          kwd = kwd->next;
       }
@@ -559,33 +551,33 @@ void CFile::cfa2Rgb(CPixels *cfaPixels, CFitsKeywords *cfaKeywords, int interpol
       (*rgbKeywords)->Add("NAXIS2", &dataInfo.height,TINT,"","");
       (*rgbKeywords)->Add("NAXIS3",&naxis3,TINT,"","");
 
-      // l'espace memoire decodedData cree par la librairie libdcjpeg doit etre desalloué par cette meme librairie.
+      // l'espace memoire decodedData cree par la librairie libdcjpeg doit etre desallouï¿½ par cette meme librairie.
       libdcraw_freeBuffer(rgbData);
- 
+
       if (cfaData != NULL) free(cfaData);
-       
+
    } else {
       if (cfaData != NULL) free(cfaData);
       if (rgbData != NULL) libdcraw_freeBuffer(rgbData);
       throw CError("libdcraw_fileRaw2Cfa: error=%d", result);
-   }      
+   }
 
- 
+
 }
 
 
 /****************************************************************************
  * utilitaires
  ****************************************************************************/
- 
+
  /**
  *  getFormatFromHeader
  *  identifie le format du fichier
- * 
- *  parameters : 
+ *
+ *  parameters :
  *    arg1 (IN) : nom du fichier
  *  return :
- *    CFileFormat : file format 
+ *    CFileFormat : file format
  */
 CFileFormat CFile::getFormatFromHeader(char * filename)
 {
@@ -599,7 +591,7 @@ CFileFormat CFile::getFormatFromHeader(char * filename)
    char FitsHeader[]  = "SIMPLE";
    char JpgHeader[]  = { (char) 0xFF, (char) 0xD8 };
    char GzipHeader[]  = { (char) 0x1F, (char) 0x8B, (char) 0x08 };
-   
+
 
    // je verifie le nom du fichier
    if ( filename == NULL || strlen(filename) == 0 ) {
@@ -630,7 +622,7 @@ CFileFormat CFile::getFormatFromHeader(char * filename)
    free(filename0);
 
    // je lis les 10 premiers  octets
-   result = fread( line, 1, 10, fichier_in ); 
+   result = fread( line, 1, 10, fichier_in );
    if ( result != 10 ) {
       fclose(fichier_in);
       throw CError("File %s too small (less than 10 bytes)",filename);

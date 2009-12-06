@@ -22,6 +22,10 @@
 
 #include "sysexp.h"    /* definition de OS_* */
 
+#ifdef _MSC_VER
+    #pragma warning(disable: 4100) // unreferenced formal parameter
+#endif
+
 #if defined(OS_LIN)
 #   include <stdlib.h>
 #   include <string.h>

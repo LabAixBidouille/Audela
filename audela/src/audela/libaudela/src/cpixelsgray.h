@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Michel PUJOL <michel-pujol@wanadoo.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -44,15 +44,12 @@ public:
    int  GetWidth(void);
    void GetPix(int *plane, TYPE_PIXELS *val1,TYPE_PIXELS *val2,TYPE_PIXELS *val3,int x, int y);
    void GetPixelsPointer(TYPE_PIXELS **pixels);
-   // Yassine
-   // void GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, int pixels);
-   // void GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, int pixels);
-   void GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, long pixels);
-   void GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, long pixels);
+   void GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, void* pixels);
+   void GetPixelsReverse(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, void* pixels);
    void GetPixelsRgb( int x1,int y1,int x2, int y2,
                   int mirrorX, int mirrorY, float *cuts,
                   unsigned char *palette[3], unsigned char *ptr);
-   void GetPixelsVisu( int x1,int y1,int x2, int y2, 
+   void GetPixelsVisu( int x1,int y1,int x2, int y2,
                   int mirrorX, int mirrorY, float *cuts,
                   unsigned char *palette[3], unsigned char *ptr);
    int  IsPixelsReady(void);
@@ -74,8 +71,8 @@ public:
    TPixelClass getPixelClass() ;
 
 protected:
-	CPixelsGray(int width, int height, TYPE_PIXELS *ppix);
 	CPixelsGray();
+	CPixelsGray(int width, int height, TYPE_PIXELS *ppix);
 
    TYPE_PIXELS *pix;
    int naxis1;
