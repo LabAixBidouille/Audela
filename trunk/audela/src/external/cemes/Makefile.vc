@@ -5,7 +5,6 @@ SOURCE=.
 EXTERNAL_INCLUDE=..\include
 EXTERNAL_LIB=..\lib
 
-
 build:
 
 install: build
@@ -25,4 +24,5 @@ clean:
 	$(RM) $(EXTERNAL_INCLUDE)\Dask.h
 	$(RM) $(EXTERNAL_INCLUDE)\port.h
 	$(RM) $(EXTERNAL_LIB)\CID_HL.lib
+
 
