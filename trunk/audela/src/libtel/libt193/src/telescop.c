@@ -38,6 +38,7 @@
 #include <NIDAQmx.h>       // API pour driver NI-DAQmx (National Intrument)
 #include "telescop.h"
 #include "socketT193.h"
+#include "coordserver.h"
 
 
 
@@ -436,6 +437,9 @@ int tel_init(struct telprop *tel, int argc, char **argv)
          result = tel_radec_motor(tel);
       }
 
+      // j'initilise le serveur de coordonnees
+      socket_openCoordServerSocket(tel, 5028);
+
    } else {
       sprintf(tel->msg,"Invalid connection mode %s", argv[2]);
       result = 1;
@@ -502,6 +506,11 @@ int tel_close(struct telprop *tel)
    // je ferme la socket de notification du telescope 
    if ( tel->telescopeNotificationSocket != NULL ) {
       socket_closeTelescopeNotificationSocket(tel);
+   }
+
+   // je ferme la socket de notification des coordonnees 
+   if ( tel->telescopeCoordServerSocket != NULL ) {
+      socket_closeCoordServerSocket(tel);
    }
 
    return 0;
@@ -1910,6 +1919,9 @@ void mytel_processNotification(struct telprop *tel, char * notification) {
                   char ligne[1024];                  
                   // je memorise le mouvement
                   tel->radecIsMoving = moveCode;
+                  // j'envoie les coordonnes aux clients du serveur de coordonnees
+                  sprintf(ligne,"%s %s\n", ra, dec); 
+                  socket_writeCoordServerSocket(tel, ligne);
                   // je notifie les nouvelles coordonnes au thread principal                
                   if ( strcmp(tel->telThreadId,"") == 0 ) {
                      sprintf(ligne,"set ::audace(telescope,getra) \"%s\" ; set ::audace(telescope,getdec) \"%s\" ",ra, dec); 
