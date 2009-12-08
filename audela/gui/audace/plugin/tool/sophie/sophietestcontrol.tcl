@@ -2,7 +2,7 @@
 # @file     sophiesimulcontrol.tcl
 # @brief    Fichier du namespace ::sophie::testcontrol
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietestcontrol.tcl,v 1.6 2009-12-06 17:55:06 michelpujol Exp $
+# @version  $Id: sophietestcontrol.tcl,v 1.7 2009-12-08 22:57:29 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -406,7 +406,7 @@ proc ::sophie::testcontrol::startRadecCoordNotification { } {
 
    if { $private(radecCoord,enabled) == 0 } {
       set private(radecCoord,enabled) 1
-      after 1000 ::sophie::testcontrol::sendRadecCoord
+      after 1000 ::sophie::testcontrol::sendRadecCoordLoop
    }
    return 0
 }
@@ -423,6 +423,7 @@ proc ::sophie::testcontrol::stopRadecCoordNotification { } {
    set private(radecCoord,enabled) 0
    return 0
 }
+
 
 #------------------------------------------------------------
 # sendRadecCoord
@@ -449,9 +450,21 @@ proc ::sophie::testcontrol::sendRadecCoord { } {
    set response [format "!RADEC COORD %d %s %s %s %s @" $returnCode $moveCode $private(motor,slewMode) $raHms $decDms ]
    ###disp "sendRadecCoord response=$response\n"
    ::sophie::testcontrol::writeTelescopeNotificationSocket $response
+}
+
+#------------------------------------------------------------
+# sendRadecCoord
+#   envoie une donnee au PC de guidage
+#
+# @param donnees a envoyer
+#------------------------------------------------------------
+proc ::sophie::testcontrol::sendRadecCoordLoop { } {
+   variable private
+
+   sendRadecCoord
    if { $private(radecCoord,enabled) == 1 } {
       #--- je lance une nouvelle iteration apres 1000 miliscondes
-      after 1000 ::sophie::testcontrol::sendRadecCoord
+      after 1000 ::sophie::testcontrol::sendRadecCoordLoop
    }
 }
 
@@ -857,7 +870,7 @@ proc ::sophie::testcontrol::simulateMotor { } {
                set private(motor,mode) "NONE"
                set private(motor,raSpeed) 0
                set private(motor,decSpeed) 0
-               disp "simulateMotor fin de mouvement limité\n"
+               ##disp "simulateMotor fin de mouvement limité\n"
                #--- j'envoie une notification pour signaler que le GOTO est termine
                ::sophie::testcontrol::sendRadecCoord
             }

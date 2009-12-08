@@ -2,7 +2,7 @@
 # @file     sophietest.tcl
 # @brief    Fichier du namespace ::sophie::test
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietest.tcl,v 1.21 2009-12-04 21:55:31 michelpujol Exp $
+# @version  $Id: sophietest.tcl,v 1.22 2009-12-08 22:57:29 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -25,6 +25,8 @@ namespace eval ::sophie::test {
    set private(telescopeControl,gotoSpeed)      "6500.0"   ; #--- vitesse de goto (500 fois la vitesse siderale en arcsec/s
    set private(telescopeControl,focusPosition)  "0.0"
    set private(telescopeControl,focusSpeed)  "0"
+    
+   set private(clientCoord,socketChannel) ""
     
 }
 
@@ -789,6 +791,60 @@ proc ::sophie::test::configure { } {
          $::audace(posobs,observateur,gps)]
 }
 
+
+
+#============================================================
+#
+# SIMULATION D'UN AFFICHEUR DE COORDONNEES
+#
+#============================================================
+
+#------------------------------------------------------------
+# openSocketCoord
+#   ouvre une socket en ecriture pour simuler 
+#
+# @param host adress IP ou nom DNS du PC de guidage (parametre optionel, valeur par defaut= localhost)
+#------------------------------------------------------------
+proc ::sophie::test::openSocketCoord { } {
+   variable private
+
+   set private(clientCoord,socketChannel) [socket "localhost" "5028" ]
+   #---  -translation binary -encoding binary
+   fconfigure $private(clientCoord,socketChannel) -buffering line -blocking true -translation binary -encoding binary
+   ###fconfigure $private(clientCoord,socketChannel) -buffering line -blocking true 
+   fileevent $private(clientCoord,socketChannel) readable [list ::sophie::test::readSocketCoord ]
+
+}
+
+#------------------------------------------------------------
+# closeSocketCoord
+#   ferme la socket
+#
+#------------------------------------------------------------
+proc ::sophie::test::closeSocketCoord { } {
+   variable private
+   if { $private(clientCoord,socketChannel) != "" } {
+      close $private(clientCoord,socketChannel)
+      set private(clientCoord,socketChannel) ""
+   }
+}
+
+#------------------------------------------------------------
+# readSocketSophie
+#   envoie des donnes vers le PC de guidage
+#
+#------------------------------------------------------------
+proc ::sophie::test::readSocketCoord {  } {
+   variable private
+
+   if {[eof $private(clientCoord,socketChannel)] } {
+      ::sophie::test::closeSocketCoord
+      console::disp "readSocketCoord close socket\n"
+   } else {
+      set response [gets $private(clientCoord,socketChannel) ]
+      console::disp "readSocketCoord $response\n"
+   }
+}
 
 
 #--- demarrage du contexte pour les tests 
