@@ -2,13 +2,12 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.22 2009-11-02 23:35:36 michelpujol Exp $
+# Mise a jour $Id: t193.tcl,v 1.23 2009-12-08 22:58:28 michelpujol Exp $
 #
 
-package provide t193 1.0
-package require audela 1.5
-
 namespace eval ::t193 {
+   package provide t193 1.0
+   package require audela 1.5
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] t193.cap ]
