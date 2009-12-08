@@ -1332,6 +1332,8 @@ int tel_focus_stop(struct telprop *tel,char * direction)
                   sprintf(tel->msg,"FOC STOP error: returnCode=%d", returnCode );
                   result = 1;
                } 
+               // j'arrete la notification de la position du focuseur
+               mytel_setFocusNotification(tel, 0);
             }
          }
       }
@@ -1953,10 +1955,6 @@ void mytel_processNotification(struct telprop *tel, char * notification) {
                   
                   // je memorise le mouvement
                   tel->focusIsMoving = moveCode;
-                  // j'arrete la notification si le mouvement est termine
-                  if ( tel->focusIsMoving == 0 ) {
-                     mytel_setFocusNotification(tel, 0);
-                  }
                   // je notifie les nouvelles coordonnes au thread principal                
                   if ( strcmp(tel->telThreadId,"") == 0 ) {
                      sprintf(ligne,"set ::audace(telescope,currentFocus) %s", position); 
