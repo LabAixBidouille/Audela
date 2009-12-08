@@ -452,12 +452,16 @@ ros_gps close symmetricom
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				return TCL_ERROR;
 			}	
+			bcSetMode(MODE_GPS);
          sprintf(s,"Connection with %s is opened",argv[2]);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_OK;
       }
       /* --- reset ---*/
       if ((mode==2)&&(modele==1)) {
+      }
+      /* --- read time ---*/
+      if ((mode==3)&&(modele==1)) {
 			// Set the HeartBeat Counters and the mode to Sync -> 100 Hz
 			if ( bcSetHbt(1, 100, 100) == RC_ERROR ) {
 				sprintf(s,"Error setting HeartBeat Counters for device %s",argv[2]);
@@ -471,12 +475,11 @@ ros_gps close symmetricom
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				return TCL_ERROR;
 			}
-      }
-      /* --- read time ---*/
-      if ((mode==3)&&(modele==1)) {
 			strcpy(s,"0000-00-00T00:00:00.000");
 			if ( bcReadEventTime (&maj, &min) == RC_OK) {
 				majc = maj;
+				//pour la précision au millième de seconde et pas plus
+				min=(ULONG)(min*0.001);
 				// Convert Binary Time to structure
 				majtime = gmtime( &majc );
 				// ignore the very first reading
