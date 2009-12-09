@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_1.cap
-# Mise a jour $Id: aud_menu_1.cap,v 1.14 2009-11-04 18:38:38 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.cap,v 1.15 2009-12-09 15:59:55 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -310,7 +310,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,quitter)          "Вийти"
 
    set caption(audace,pas_ouvrir_fichier)    "Не можу відкрити файл:"
-   set caption(audace,fermeture_impossible)  "Aud'ACE не може бути зупинено із-за поточної діяльності інструмента: %s"
+   set caption(audace,fermeture_impossible)  "Aud'ACE не може бути зупинено через поточну діяльність інструмента: %s"
 
    set caption(audace,console_gagne)         "Є доступ"
    set caption(audace,console_annule)        "Скасовано"
@@ -331,7 +331,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(newscript,pas_de_nom)         "noname.tcl"
    set caption(newscript,nouveau_script)     "Новий скрипт"
    set caption(newscript,parcourir)          "..."
-   set caption(newscript,nom_script)         "Назва файла"
+   set caption(newscript,nom_script)         "Назва файлу"
    set caption(newscript,ok)                 "Гаразд"
    set caption(newscript,annuler)            "Скасувати"
    set caption(newscript,aide)               "Допомога"
