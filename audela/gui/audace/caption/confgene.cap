@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.36 2009-12-09 16:53:01 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.37 2009-12-09 23:11:09 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -20,7 +20,7 @@ set caption(confgene,type_fenetre)                          "Window Type"
 
 set caption(confgene,fichier_image)                         "Image Files"
 set caption(confgene,fichier_image_fits)                    "FITS Files"
-set caption(confgene,fichier_images_seuils_visu)            "Save Image with Display Thresholds"
+set caption(confgene,fichier_images_seuils_visu)            "Save Image with Display Thresholds\n(visible in 'Initial Thresholds' mode only)"
 set caption(confgene,fichier_images_choix_format)           "Save images as:"
 set caption(confgene,fichier_images_entier)                 "Integer (16 bits)"
 set caption(confgene,fichier_images_flottant)               "Floating (32 bits)"
@@ -114,7 +114,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,fichier_image)                      "Fichiers image"
    set caption(confgene,fichier_image_fits)                 "Fichiers FITS"
-   set caption(confgene,fichier_images_seuils_visu)         "Enregistrer les images avec les seuils de la visu"
+   set caption(confgene,fichier_images_seuils_visu)         "Enregistrer les images avec les seuils de la visu\n(visibles en mode 'Seuils initiaux' uniquement)"
    set caption(confgene,fichier_images_choix_format)        "Enregistrer les images au format :"
    set caption(confgene,fichier_images_entier)              "Entier (16 bits)"
    set caption(confgene,fichier_images_flottant)            "Flottant (32 bits)"
@@ -208,7 +208,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,fichier_image)                      "Files immagine"
    set caption(confgene,fichier_image_fits)                 "Files FITS"
-   set caption(confgene,fichier_images_seuils_visu)         "Salvare le immagini con la soglia di visualizzazione"
+   set caption(confgene,fichier_images_seuils_visu)         "Salvare le immagini con la soglia di visualizzazione\n(visibili solamente nel modo 'Soglie Iniziali')"
    set caption(confgene,fichier_images_choix_format)        "Salvare immagini come:"
    set caption(confgene,fichier_images_entier)              "Intero (16 bits)"
    set caption(confgene,fichier_images_flottant)            "Virgola mobile (32 bits)"
@@ -302,7 +302,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,fichier_image)                      "Ficheros de imágenes"
    set caption(confgene,fichier_image_fits)                 "Ficheros FITS"
-   set caption(confgene,fichier_images_seuils_visu)         "Guardar imagen con los umbrales de visualización"
+   set caption(confgene,fichier_images_seuils_visu)         "Guardar imagen con los umbrales de visualización\n(visibles en modo 'Umbrales iniciales' unicamente)"
    set caption(confgene,fichier_images_choix_format)        "Guardar imagenes en formato:"
    set caption(confgene,fichier_images_entier)              "Entero (16 bits)"
    set caption(confgene,fichier_images_flottant)            "Flotante (32 bits)"
@@ -396,7 +396,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,fichier_image)                      "Bild Datei"
    set caption(confgene,fichier_image_fits)                 "FITS Datei"
-   set caption(confgene,fichier_images_seuils_visu)         "Bilder mit Entfaltung Schwellenwerte speichern"
+   set caption(confgene,fichier_images_seuils_visu)         "Bilder mit Entfaltung Schwellenwerte speichern\n(nur sichtbar in 'Initialen Schwellenwerte' Modus)"
    set caption(confgene,fichier_images_choix_format)        "Bilder im Format speichern:"
    set caption(confgene,fichier_images_entier)              "Ganz (16 bits)"
    set caption(confgene,fichier_images_flottant)            "Fließkomma (32 bits)"
@@ -490,7 +490,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,fichier_image)                      "Ficheiros de imagens"
    set caption(confgene,fichier_image_fits)                 "Ficheiros FITS"
-   set caption(confgene,fichier_images_seuils_visu)         "Guardar as imagens com os limiares de visualização"
+   set caption(confgene,fichier_images_seuils_visu)         "Guardar as imagens com os limiares de visualização\n(visíveis apenas no modo 'Limiares Iniciais')"
    set caption(confgene,fichier_images_choix_format)        "Guardar as imagens em formato:"
    set caption(confgene,fichier_images_entier)              "Inteiro (16 bits)"
    set caption(confgene,fichier_images_flottant)            "Flutuante (32 bits)"
@@ -584,7 +584,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,fichier_image)                      "Billedfil"
    set caption(confgene,fichier_image_fits)                 "FITS Filer"
-   set caption(confgene,fichier_images_seuils_visu)         "Gem billedet med vist tærskelværdi"
+   set caption(confgene,fichier_images_seuils_visu)         "Gem billedet med vist tærskelværdi\n(kun synlige i 'Initial-værdier' opsætningen)"
    set caption(confgene,fichier_images_choix_format)        "Gem billeder som:"
    set caption(confgene,fichier_images_entier)              "Helt tal (16 bits)"
    set caption(confgene,fichier_images_flottant)            "Flydende (32 bits)"
@@ -678,7 +678,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,fichier_image)                      "Image Files"
    set caption(confgene,fichier_image_fits)                 "FITS Files"
-   set caption(confgene,fichier_images_seuils_visu)         "Save Image with Display Thresholds"
+   set caption(confgene,fichier_images_seuils_visu)         "Save Image with Display Thresholds\n(visible in 'Initial Thresholds' mode only)"
    set caption(confgene,fichier_images_choix_format)        "Save images as:"
    set caption(confgene,fichier_images_entier)              "Integer (16 bits)"
    set caption(confgene,fichier_images_flottant)            "Floating (32 bits)"
@@ -772,7 +772,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,fichier_image)                      "Image Files"
    set caption(confgene,fichier_image_fits)                 "FITS Files"
-   set caption(confgene,fichier_images_seuils_visu)         "Save Image with Display Thresholds"
+   set caption(confgene,fichier_images_seuils_visu)         "Save Image with Display Thresholds\n(visible in 'Initial Thresholds' mode only)"
    set caption(confgene,fichier_images_choix_format)        "Save images as:"
    set caption(confgene,fichier_images_entier)              "Integer (16 bits)"
    set caption(confgene,fichier_images_flottant)            "Floating (32 bits)"
