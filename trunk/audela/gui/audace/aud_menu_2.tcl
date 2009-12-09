@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_2.tcl
 # Description : Script regroupant les fonctionnalites du menu Affichage
-# Mise a jour $Id: aud_menu_2.tcl,v 1.20 2009-11-24 17:55:52 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.tcl,v 1.21 2009-12-09 23:18:44 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -422,11 +422,14 @@ namespace eval ::audace {
 namespace eval ::seuilWindow {
 
    #
-   # ::seuilWindow::run base visuNo
+   # ::seuilWindow::run visuNo
    # Lance la fenetre de dialogue de reglage des seuils de visualisation
    #
-   proc run { base visuNo } {
+   proc run { visuNo } {
       global seuilWindow
+
+      #--- Fenetre de base
+      set base $::confVisu::private($visuNo,This)
 
       ::seuilWindow::initConf $visuNo
       set seuilWindow($visuNo,This) $base.seuilwindow
@@ -443,7 +446,7 @@ namespace eval ::seuilWindow {
    }
 
    #
-   # ::seuilWindow::initConf [visuNo]
+   # ::seuilWindow::initConf visuNo
    # Initialise les variables de configuration
    #
    proc initConf { { visuNo 1 } } {
@@ -847,12 +850,15 @@ namespace eval ::seuilWindow {
 namespace eval ::seuilCouleur {
 
    #
-   # ::seuilCouleur::run this
+   # ::seuilCouleur::run visuNo
    # Lance la fenetre de dialogue pour le reglage de la balance RVB
    #
-   proc run { base visuNo } {
+   proc run { visuNo } {
       variable widget
       global seuilCouleur
+
+      #--- fenetre de base
+      set base $::confVisu::private($visuNo,This)
 
       #---
       ::seuilCouleur::initConf $visuNo
@@ -931,8 +937,7 @@ namespace eval ::seuilCouleur {
       global audace caption color conf seuilCouleur
 
       #--- Initialisation de variables
-      set seuilCouleur(enregister) "0"
-      set seuilCouleur(avancement) ""
+      set seuilCouleur(avancement,$visuNo) ""
       ::seuilCouleur::initSeuils
 
       #---
@@ -941,7 +946,7 @@ namespace eval ::seuilCouleur {
       wm deiconify $seuilCouleur($visuNo,This)
       wm title $seuilCouleur($visuNo,This) "$caption(audace,menu,affichage) (visu$visuNo)"
       wm geometry $seuilCouleur($visuNo,This) $widget(seuils,$visuNo,position)
-      wm transient $seuilCouleur($visuNo,This) $seuilCouleur($visuNo,base)
+      wm transient $seuilCouleur($visuNo,This) [ winfo parent $seuilCouleur($visuNo,This) ]
       wm protocol $seuilCouleur($visuNo,This) WM_DELETE_WINDOW "::seuilCouleur::cmdClose $visuNo"
 
       #---
@@ -956,26 +961,23 @@ namespace eval ::seuilCouleur {
          frame $seuilCouleur($visuNo,This).usr.2 -borderwidth 1 -relief raised
             label $seuilCouleur($visuNo,This).usr.2.lab5 \
                -text "$caption(seuilCouleur,selection_zone_blanche)"
-            pack $seuilCouleur($visuNo,This).usr.2.lab5 -side top -padx 5 -pady 10
+            pack $seuilCouleur($visuNo,This).usr.2.lab5 -side top -padx 5 -pady 5
             button $seuilCouleur($visuNo,This).usr.2.btn1 \
                -text "$caption(seuilCouleur,confirmer_zone_blanche)" \
                -command "::seuilCouleur::confirmerBlanc $visuNo"
-            pack $seuilCouleur($visuNo,This).usr.2.btn1 -side top -ipadx 15 -ipady 5
+            pack $seuilCouleur($visuNo,This).usr.2.btn1 -side top -pady 5 -ipadx 15 -ipady 5
             label $seuilCouleur($visuNo,This).usr.2.lab6 \
                -text "$caption(seuilCouleur,selection_zone_noire)"
-            pack $seuilCouleur($visuNo,This).usr.2.lab6 -side top -padx 5 -pady 10
+            pack $seuilCouleur($visuNo,This).usr.2.lab6 -side top -padx 5 -pady 5
             button $seuilCouleur($visuNo,This).usr.2.btn2 \
                -text "$caption(seuilCouleur,confirmer_zone_noire)" \
                -command "::seuilCouleur::confirmerNoir $visuNo"
-            pack $seuilCouleur($visuNo,This).usr.2.btn2 -side top -ipadx 15 -ipady 5
-            checkbutton $seuilCouleur($visuNo,This).usr.2.che1 -justify left \
-               -text "$caption(seuilCouleur,enregister_seuils)" -variable seuilCouleur(enregister)
-            pack $seuilCouleur($visuNo,This).usr.2.che1 -side left -padx 10 -pady 10
+            pack $seuilCouleur($visuNo,This).usr.2.btn2 -side top -pady 5 -ipadx 15 -ipady 5
          pack $seuilCouleur($visuNo,This).usr.2 -side top -fill both
 
          frame $seuilCouleur($visuNo,This).usr.3 -borderwidth 1 -relief raised
             label $seuilCouleur($visuNo,This).usr.3.labURL1 \
-               -textvariable "seuilCouleur(avancement)" -fg $color(blue)
+               -textvariable "seuilCouleur(avancement,$visuNo)" -fg $color(blue)
             pack $seuilCouleur($visuNo,This).usr.3.labURL1 -side top -padx 10 -pady 5
          pack $seuilCouleur($visuNo,This).usr.3 -side top -fill both
 
@@ -1031,17 +1033,18 @@ namespace eval ::seuilCouleur {
    # Procedure correspondant a l'appui sur le bouton Appliquer
    #
    proc cmdApply { visuNo } {
+      variable private
       global caption conf seuilCouleur
 
       #---
-      set seuilCouleur(avancement) "$caption(seuilCouleur,en_cours)"
+      set seuilCouleur(avancement,$visuNo) "$caption(seuilCouleur,en_cours)"
       update
 
       #--- Il faut une image affichee
       if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] != "1" } {
          tk_messageBox -title "$caption(seuilCouleur,attention)" -type ok \
             -message "$caption(seuilCouleur,header_noimage)"
-         set seuilCouleur(avancement) ""
+         set seuilCouleur(avancement,$visuNo) ""
          return
       }
 
@@ -1052,47 +1055,34 @@ namespace eval ::seuilCouleur {
          if { $seuilCouleur(blanc_R) == "" } {
             tk_messageBox -title "$caption(seuilCouleur,attention)" -icon error \
                -message "$caption(seuilCouleur,pas_selection_blanc)"
-            set seuilCouleur(avancement) ""
+            set seuilCouleur(avancement,$visuNo) ""
             return
          } elseif { $seuilCouleur(noir_R) == "" } {
             tk_messageBox -title "$caption(seuilCouleur,attention)" -icon error \
                -message "$caption(seuilCouleur,pas_selection_noir)"
-            set seuilCouleur(avancement) ""
+            set seuilCouleur(avancement,$visuNo) ""
             return
          } elseif { $seuilCouleur(blanc_V) == "" } {
             tk_messageBox -title "$caption(seuilCouleur,attention)" -icon error \
                -message "$caption(seuilCouleur,pas_couleur)"
             ::seuilCouleur::initSeuils
-            set seuilCouleur(avancement) ""
+            set seuilCouleur(avancement,$visuNo) ""
             return
          }
          visu$visuNo cut $mycuts
          #--- Affichage de l'image
          visu$visuNo disp
-         #--- Enregistrement de l'image avec les nouveaux seuils
-         if { $seuilCouleur(enregister) == "1" } {
-            #--- Je recupere le numero du buffer de la visu
-            set bufNo [ ::confVisu::getBufNo $visuNo ]
-            #--- Je mets les mots cles des seuils a jour
-            set kwds { "MIPS-HIR" "MIPS-LOR" "MIPS-HIG" "MIPS-LOG" "MIPS-HIB" "MIPS-LOB" }
-            foreach kwd $kwds val $mycuts {
-               #--- Je capture le mot cle existant
-               set data [ buf$bufNo getkwd $kwd ]
-               #--- Je remplace la valeur par la valeur actuelle
-               set data [ lreplace $data 1 1 $val ]
-               #--- Je sauve le mot cle modifie
-               buf$bufNo setkwd $data
-            }
-            #--- J'enregistre l'image modifiee en changeant son nom
-            ::audace::enregistrer_sous $visuNo
-         }
-         #---
+         #--- Chargement de la variable pour actualiser les glissieres RVB
+         set ::colorRGB::private(colorRGB,$visuNo,mycuts) $mycuts
+         #--- Actualisation des glissieres RVB
+         ::colorRGB::configureScale $visuNo
+         #--- Initialisation
          ::seuilCouleur::initSeuils
-         set seuilCouleur(avancement) "$caption(seuilCouleur,fin_traitement)"
+         set seuilCouleur(avancement,$visuNo) "$caption(seuilCouleur,fin_traitement)"
       } m ]
       if { $catchError == "1" } {
          tk_messageBox -title "$caption(seuilCouleur,attention)" -icon error -message "$m"
-         set seuilCouleur(avancement) ""
+         set seuilCouleur(avancement,$visuNo) ""
       }
       ::seuilCouleur::recupPosition $visuNo
    }
@@ -1125,7 +1115,7 @@ namespace eval ::seuilCouleur {
    # Confirme la selection de la zone blanche de l'image
    #
    proc confirmerBlanc { visuNo } {
-      global audace caption seuilCouleur
+      global caption seuilCouleur
 
       #--- Retourne les coordonnees de la zone selectionnee avec la souris
       set box [ ::confVisu::getBox $visuNo ]
@@ -1157,7 +1147,7 @@ namespace eval ::seuilCouleur {
    # Confirme la selection de la zone noire de l'image
    #
    proc confirmerNoir { visuNo } {
-      global audace caption seuilCouleur
+      global caption seuilCouleur
 
       #--- Retourne les coordonnees de la zone selectionnee avec la souris
       set box [ ::confVisu::getBox $visuNo ]
@@ -1197,4 +1187,303 @@ namespace eval ::seuilCouleur {
 }
 
 ########################## Fin du namespace seuilCouleur ##########################
+
+namespace eval ::colorRGB {
+
+   #########################################################################
+   #--- Filtre l'image et lit les seuils dans l'en-tête FITS               #
+   #########################################################################
+   proc run { visuNo } {
+      variable private
+
+      #---
+      ::colorRGB::initConf $visuNo
+      ::colorRGB::confToWidget $visuNo
+
+      #--- je recupere le numero du buffer de la visu
+      set bufNo [ ::confVisu::getBufNo $visuNo ]
+
+      #--- liste des mots cles a recuperer
+      set liste_kwd [ list MIPS-HIR MIPS-LOR MIPS-HIG MIPS-LOG MIPS-HIB MIPS-LOB ]
+      set liste_alternative [ list DATAMAX DATAMIN DATAMAX DATAMIN DATAMAX DATAMIN ]
+
+      foreach kwd $liste_kwd alterne $liste_alternative {
+
+         #--- capture le contenu du mot cle
+         catch { set data [ buf$bufNo getkwd $kwd ] }
+
+         #--- si le mot cle concernant la couleur est absent
+         if { [ lindex $data 1 ] == "" } { set data [ buf$bufNo getkwd $alterne ] }
+
+         #--- si la valeur est indefinie
+         set val [ lindex $data 1 ]
+         if { $val == "" } { set val 0 }
+
+         #--- etablit la liste des valeurs de seuils dans le bon ordre
+         lappend private(colorRGB,$visuNo,mycuts) $val
+      }
+
+      #--- fenetre de base
+      set base $::confVisu::private($visuNo,This)
+
+      #---
+      set private($visuNo,This) $base.colorRGB
+      if { [ winfo exists $private($visuNo,This) ] } {
+         wm withdraw $private($visuNo,This)
+         wm deiconify $private($visuNo,This)
+         focus $private($visuNo,This)
+         #--- actualise les glissieres
+         ::colorRGB::configureScale $visuNo
+      } else {
+         if { [ info exists private(colorRGB,$visuNo,geometry) ] } {
+            set deb [ expr 1 + [ string first + $private(colorRGB,$visuNo,geometry) ] ]
+            set fin [ string length $private(colorRGB,$visuNo,geometry) ]
+            set private(colorRGB,$visuNo,position) "+[string range $private(colorRGB,$visuNo,geometry) $deb $fin]"
+         }
+         ::colorRGB::createDialog $visuNo
+      }
+   }
+
+   #########################################################################
+   #--- Initialisation des variables de configuration                      #
+   #########################################################################
+   proc initConf { visuNo } {
+      variable private
+      global conf
+
+      if { ! [ info exists conf(colorRGB,visu$visuNo,position) ] } { set conf(colorRGB,visu$visuNo,position) "+350+75" }
+
+      set private(colorRGB,$visuNo,mycuts) ""
+   }
+
+   #########################################################################
+   #--- Charge les variables de configuration dans des variables locales   #
+   #########################################################################
+   proc confToWidget { visuNo } {
+      variable private
+      global conf
+
+      set private(colorRGB,$visuNo,position) "$conf(colorRGB,visu$visuNo,position)"
+   }
+
+   #########################################################################
+   #--- Charge les variables locales dans des variables de configuration   #
+   #########################################################################
+   proc widgetToConf { visuNo } {
+      variable private
+      global conf
+
+      set conf(colorRGB,visu$visuNo,position) "$private(colorRGB,$visuNo,position)"
+   }
+
+   #########################################################################
+   #--- Recupere la position de la fenetre                                 #
+   #########################################################################
+   proc recupPosition { visuNo } {
+      variable private
+
+      set private(colorRGB,$visuNo,geometry) [ wm geometry $private($visuNo,This) ]
+      set deb [ expr 1 + [ string first + $private(colorRGB,$visuNo,geometry) ] ]
+      set fin [ string length $private(colorRGB,$visuNo,geometry) ]
+      set private(colorRGB,$visuNo,position) "+[string range $private(colorRGB,$visuNo,geometry) $deb $fin]"
+      #---
+      ::colorRGB::widgetToConf $visuNo
+   }
+
+   #########################################################################
+   #--- Cree la fenetre de reglage des seuils                              #
+   #########################################################################
+   proc createDialog { visuNo } {
+      variable private
+      global audace caption
+
+      toplevel $private($visuNo,This)
+      wm resizable $private($visuNo,This) 0 0
+      wm deiconify $private($visuNo,This)
+      wm title $private($visuNo,This) "$caption(colorRGB,label_1) (visu$visuNo)"
+      wm geometry $private($visuNo,This) $private(colorRGB,$visuNo,position)
+      wm transient $private($visuNo,This) [ winfo parent $private($visuNo,This) ]
+      wm protocol $private($visuNo,This) WM_DELETE_WINDOW "::colorRGB::suppression"
+
+      #--- frame des glissieres
+      frame $private($visuNo,This).val -borderwidth 2 -relief raised
+
+         Label $private($visuNo,This).val.title_1 -text $caption(colorRGB,label_2)
+         grid $private($visuNo,This).val.title_1 -in $private($visuNo,This).val -row 0 -column 0
+         Label $private($visuNo,This).val.title_2 -text $caption(colorRGB,label_3)
+         grid $private($visuNo,This).val.title_2 -in $private($visuNo,This).val -row 0 -column 2
+
+         #--- les glissieres pour le rouge
+         ::colorRGB::createScale $visuNo $private($visuNo,This).val lor 1 0 $audace(color,cursor_rgb_red) $audace(color,cursor_rgb_actif)
+         ::colorRGB::createScale $visuNo $private($visuNo,This).val hir 1 2 $audace(color,cursor_rgb_red) $audace(color,cursor_rgb_actif)
+
+         #--- les glissieres pour le vert
+         ::colorRGB::createScale $visuNo $private($visuNo,This).val log 2 0 $audace(color,cursor_rgb_green) $audace(color,cursor_rgb_actif)
+         ::colorRGB::createScale $visuNo $private($visuNo,This).val hig 2 2 $audace(color,cursor_rgb_green) $audace(color,cursor_rgb_actif)
+
+         #--- les glissieres pour le bleu
+         ::colorRGB::createScale $visuNo $private($visuNo,This).val lob 3 0 $audace(color,cursor_rgb_blue) $audace(color,cursor_rgb_actif)
+         ::colorRGB::createScale $visuNo $private($visuNo,This).val hib 3 2 $audace(color,cursor_rgb_blue) $audace(color,cursor_rgb_actif)
+
+      pack $private($visuNo,This).val -in $private($visuNo,This)
+
+      #--- actualise les glissieres
+      ::colorRGB::configureScale $visuNo
+
+      #--- Focus
+      focus $private($visuNo,This)
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $private($visuNo,This)
+   }
+
+   #########################################################################
+   #--- Rafraichit la liste des seuils et la visu                          #
+   #########################################################################
+   proc updateVisu { visuNo } {
+      variable private
+
+      #--- rafraîchit la liste des 6 seuils
+      set private(colorRGB,$visuNo,mycuts) ""
+      foreach scale $private(colorRGB,child) {
+         lappend private(colorRGB,$visuNo,mycuts) [ $private($visuNo,This).val.$scale get ]
+      }
+
+      #--- actualise les glissieres
+      ::colorRGB::configureScale $visuNo
+
+      #--- rafraichit la visu
+      visu$visuNo cut $private(colorRGB,$visuNo,mycuts)
+      visu$visuNo disp
+   }
+
+   #########################################################################
+   #--- Configure les glissieres                                           #
+   #########################################################################
+   proc configureScale { visuNo } {
+      variable private
+
+      #--- etablit la liste des seuils bas et haut pour chaque couleur
+      foreach indice [ list 0 2 4 ] color [ list r g b ] {
+
+         #--- isole la valeur des seuils
+         set maxi [ expr { int([ lindex $private(colorRGB,$visuNo,mycuts) $indice ]) } ]
+         incr indice
+         set mini [ expr { int([ lindex $private(colorRGB,$visuNo,mycuts) $indice ]) } ]
+
+         #--- invers les seuils si lo > hi
+         if { $maxi < $mini } {
+            set private(colorRGB,$visuNo,mycuts) \
+               [ lreplace $private(colorRGB,$visuNo,mycuts) $indice $indice $maxi ]
+            incr indice -1
+            set private(colorRGB,$visuNo,mycuts) \
+               [ lreplace $private(colorRGB,$visuNo,mycuts) $indice $indice $mini ]
+        }
+
+         set range [ expr $maxi-$mini ]
+         if { [ expr $range ] == "0.0" } { set range 10000 }
+
+         set mini [ expr int($mini-$range) ]
+         set maxi [ expr int($maxi+$range) ]
+
+         set mini_maxi_$color [ list $mini $maxi ]
+      }
+
+      #--- configure les mini et maxi de chaque glissiere
+      set private(colorRGB,child) [ list hir lor hig log hib lob ]
+      foreach child $private(colorRGB,child) {
+
+         #--- identifie le plan couleur
+         set color [ string range $child end end ]
+
+         #--- selectionne la bonne liste de seuils
+         set seuils [ set mini_maxi_$color ]
+
+         #--- configure le mini et le maxi
+         $private($visuNo,This).val.$child configure \
+            -from [ lindex $seuils 0 ] -to [ lindex $seuils 1 ] -resolution 1
+
+         #--- fixe la valeur de chaque glissiere
+         set index [ lsearch -exact $private(colorRGB,child) $child ]
+         set val [ expr { int([ lindex $private(colorRGB,$visuNo,mycuts) $index ]) } ]
+         $private($visuNo,This).val.$child set $val
+      }
+   }
+
+   #########################################################################
+   #--- Sauve les nouveaux reglages dans l'en-tete FITS                    #
+   #########################################################################
+   proc saveKWD { visuNo } {
+      variable private
+
+      #--- je recupere le numero du buffer de la visu
+      set bufNo [ ::confVisu::getBufNo $visuNo ]
+
+      foreach scale $private(colorRGB,child) {
+
+         #--- definit le mot cle
+         set kwd "MIPS-[ string toupper $scale ]"
+
+         #--- capture le contenu du mot cle
+         set error [ catch { set data [ buf$bufNo getkwd $kwd ] } msg ]
+
+         if { $error == "0" } {
+
+            #--- recherche le rang dans la liste
+            set i [ lsearch $private(colorRGB,child) $scale ]
+
+            #--- remplace la valeur par la valeur actuelle
+            set data [ lreplace $data 1 1 [ lindex $private(colorRGB,$visuNo,mycuts) $i ] ]
+
+            #--- sauve le mot cle modifie
+            buf$bufNo setkwd $data
+
+         } else {
+
+            tk_messageBox -title $caption(seuilWindow,attention) -icon error -type ok \
+               -message $caption(colorRGB,msg)
+
+         }
+
+      }
+   }
+
+   #########################################################################
+   #--- Fermeture de le fenetre                                            #
+   #########################################################################
+   proc cmdClose { visuNo } {
+      variable private
+
+      if { [ info exists private($visuNo,This) ] } {
+         if { [ winfo exists $private($visuNo,This) ] } {
+            ::colorRGB::recupPosition $visuNo
+            destroy $private($visuNo,This)
+            unset private($visuNo,This)
+         }
+      }
+   }
+
+   #########################################################################
+   #--- Empeche la fenetre d'etre effacee                                  #
+   #########################################################################
+   proc suppression { } {
+   }
+
+   #########################################################################
+   #--- Cree une glissiere                                                 #
+   #    parametres : nom de la fenetre parent, enfant, row et column       #
+   #########################################################################
+   proc createScale { visuNo parent child r c bg activbg } {
+      variable private
+
+      scale $parent.$child -orient horizontal -length 150 -width 10 -showvalue 1 \
+         -sliderlength 20 -sliderrelief raised -borderwidth 1 \
+         -background $bg -activebackground $activbg
+      grid $parent.$child -in $parent -row $r -column $c
+      #--- binding permettant de recuperer la valeur et de refraichir la visu
+      bind $private($visuNo,This).val.$child <ButtonRelease> "::colorRGB::updateVisu $visuNo"
+   }
+}
+
+############################ Fin du namespace colorRGB ############################
 
