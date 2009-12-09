@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_2.cap
-# Mise a jour $Id: aud_menu_2.cap,v 1.14 2009-12-09 16:47:01 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.cap,v 1.15 2009-12-09 23:12:02 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -74,7 +74,6 @@ set caption(seuilCouleur,confirmer_zone_blanche)      "Please confirm the white 
 set caption(seuilCouleur,pas_selection_noir)          "No black area selected."
 set caption(seuilCouleur,pas_selection_blanc)         "No white area selected."
 set caption(seuilCouleur,pas_couleur)                 "This is not a color image."
-set caption(seuilCouleur,enregister_seuils)           "Save image with the new thresholds\n(visible in 'Initial Thresholds' mode only)"
 set caption(seuilCouleur,attention)                   "Warning"
 set caption(seuilCouleur,header_noimage)              "No Image in Memory."
 set caption(seuilCouleur,en_cours)                    "Preprocessing in progress..."
@@ -151,7 +150,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_selection_noir)       "Vous n'avez pas sélectionné la zone noire."
    set caption(seuilCouleur,pas_selection_blanc)      "Vous n'avez pas sélectionné la zone blanche."
    set caption(seuilCouleur,pas_couleur)              "Ce n'est pas une image couleur."
-   set caption(seuilCouleur,enregister_seuils)        "Enregistrer l'image avec les nouveaux seuils\n(visibles en mode 'Seuils initiaux' uniquement)"
    set caption(seuilCouleur,attention)                "Attention"
    set caption(seuilCouleur,header_noimage)           "Il n'y a pas d'image actuellement en mémoire."
    set caption(seuilCouleur,en_cours)                 "Prétraitement en cours..."
@@ -228,7 +226,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_selection_noir)       "Nessuna zona nera e' stata selezionata."
    set caption(seuilCouleur,pas_selection_blanc)      "Nessuna zona bianca e' stata selezionata."
    set caption(seuilCouleur,pas_couleur)              "Questa non e' una immagine a colori."
-   set caption(seuilCouleur,enregister_seuils)        "Salva l'immagine con le nuove soglie\n(visibili solamente nel modo 'Soglie Iniziali')"
    set caption(seuilCouleur,attention)                "Attenzione"
    set caption(seuilCouleur,header_noimage)           "Nessuna immagine in memoria."
    set caption(seuilCouleur,en_cours)                 "Pretrattamento in corso..."
@@ -305,7 +302,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_selection_noir)       "No ha seleccionado la zona negra."
    set caption(seuilCouleur,pas_selection_blanc)      "No ha seleccionado la zona blanca."
    set caption(seuilCouleur,pas_couleur)              "No es una imagen en color."
-   set caption(seuilCouleur,enregister_seuils)        "Guardar imagen con los nuevos umbrales\n(visibles en modo 'Umbrales iniciales' unicamente)"
    set caption(seuilCouleur,attention)                "Cuidado"
    set caption(seuilCouleur,header_noimage)           "No existe una imágen cargada en la memoria."
    set caption(seuilCouleur,en_cours)                 "Preprocesando..."
@@ -382,7 +378,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_selection_noir)       "Sie haben die schwarze Zone bestätigt."
    set caption(seuilCouleur,pas_selection_blanc)      "Sie haben die weiße Zone bestätigt."
    set caption(seuilCouleur,pas_couleur)              "Das ist kein Farbbild."
-   set caption(seuilCouleur,enregister_seuils)        "Das Bild mit der neuen Schwellenwerte speichern\n(nur sichtbar in 'Initialen Schwellenwerte' Modus)"
    set caption(seuilCouleur,attention)                "Achtung"
    set caption(seuilCouleur,header_noimage)           "Es ist jetzt kein Bild im Speicher."
    set caption(seuilCouleur,en_cours)                 "Voraufbereitung im Gange..."
@@ -459,7 +454,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_selection_noir)       "Nenhuma área preta foi seleccionada."
    set caption(seuilCouleur,pas_selection_blanc)      "Nenhuma área branca foi seleccionada."
    set caption(seuilCouleur,pas_couleur)              "Esta imagem não é a cores."
-   set caption(seuilCouleur,enregister_seuils)        "Salvar imagem com os novos limiares\n(visíveis apenas no modo 'Limiares Iniciais')"
    set caption(seuilCouleur,attention)                "Aviso"
    set caption(seuilCouleur,header_noimage)           "Não existe imagem carregada em memória."
    set caption(seuilCouleur,en_cours)                 "Pré-tratamento em curso..."
@@ -536,7 +530,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_selection_noir)       "Sort område er ikke valgt!"
    set caption(seuilCouleur,pas_selection_blanc)      "Hvidt område er ikke valgt!"
    set caption(seuilCouleur,pas_couleur)              "Dette er ikke et farvebillede."
-   set caption(seuilCouleur,enregister_seuils)        "Gem billede med de nye værdier\n(kun synlige i 'Initial-værdier' opsætningen)"
    set caption(seuilCouleur,attention)                "Advarsel"
    set caption(seuilCouleur,header_noimage)           "Intet billede i memory."
    set caption(seuilCouleur,en_cours)                 "Preprocessing er aktiv..."
@@ -613,7 +606,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_selection_noir)       "No black area selected."
    set caption(seuilCouleur,pas_selection_blanc)      "No white area selected."
    set caption(seuilCouleur,pas_couleur)              "This is not a color image."
-   set caption(seuilCouleur,enregister_seuils)        "Save image with the new thresholds\n(visible in 'Initial Thresholds' mode only)"
    set caption(seuilCouleur,attention)                "Warning"
    set caption(seuilCouleur,header_noimage)           "No Image in Memory."
    set caption(seuilCouleur,en_cours)                 "Preprocessing in progress..."
@@ -690,7 +682,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_selection_noir)       "No black area selected."
    set caption(seuilCouleur,pas_selection_blanc)      "No white area selected."
    set caption(seuilCouleur,pas_couleur)              "This is not a color image."
-   set caption(seuilCouleur,enregister_seuils)        "Save image with the new thresholds\n(visible in 'Initial Thresholds' mode only)"
    set caption(seuilCouleur,attention)                "Warning"
    set caption(seuilCouleur,header_noimage)           "No Image in Memory."
    set caption(seuilCouleur,en_cours)                 "Preprocessing in progress..."
