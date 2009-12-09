@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.116 2009-11-17 16:53:23 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.117 2009-12-09 23:16:31 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -482,6 +482,13 @@ namespace eval ::confVisu {
 
                #--- Si le buffer contient une image on met a jour les seuils
                if { [ buf$bufNo imageready ] == "1" } {
+                  #--- Si c'est une image couleur, j'affiche les glissieres R, V et B
+                  if { [ lindex [ buf$bufNo getkwd NAXIS ] 1 ] == "3" } {
+                     ::colorRGB::run $visuNo
+                  } else {
+                     ::colorRGB::cmdClose $visuNo
+                  }
+                  #---
                   switch -exact -- $conf(seuils,visu$visuNo,mode) {
                      disable {
                         if { $force == "-no" } {
@@ -1623,7 +1630,7 @@ namespace eval ::confVisu {
          grid configure $This.fra1.but_seuils_auto -column 0 -row 0 -rowspan 2 -sticky we -in $This.fra1 -padx 5
 
          button $This.fra1.but_config_glissieres -text "$caption(confVisu,boite_seuil)" \
-            -command "::seuilWindow::run $::confVisu::private($visuNo,This) $visuNo"
+            -command "::seuilWindow::run $visuNo"
          grid configure $This.fra1.but_config_glissieres -column 1 -row 0 -rowspan 2 -sticky {} -in $This.fra1 -padx 5
 
          scale $This.fra1.sca1 -orient horizontal -to 32767 -from -32768 -length 150 \
@@ -1928,9 +1935,9 @@ namespace eval ::confVisu {
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,seuils)..." \
-              "::seuilWindow::run $This $visuNo"
+              "::seuilWindow::run $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,balance_rvb)..." \
-              "::seuilCouleur::run $This $visuNo"
+              "::seuilCouleur::run $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
       Menu_Command_Radiobutton $visuNo "$caption(audace,menu,affichage)" \
@@ -2513,9 +2520,7 @@ namespace eval ::confVisu {
    }
 
    proc onCutLabelRightClick { visuNo } {
-      variable private
-
-      ::seuilWindow::run $private($visuNo,This) $visuNo
+      ::seuilWindow::run $visuNo
    }
 
    proc index2cut { visuNo val } {
