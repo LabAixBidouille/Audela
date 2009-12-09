@@ -1,6 +1,6 @@
 #
 # Fichier : audecomconfig.cap
-# Mise a jour $Id: audecomconfig.cap,v 1.5 2009-11-05 22:44:20 robertdelmas Exp $
+# Mise a jour $Id: audecomconfig.cap,v 1.6 2009-12-09 16:49:00 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -326,8 +326,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecomconfig,ok)                      "OK"
    set caption(audecomconfig,aide)                    "?"
    set caption(audecomconfig,point)                   "."
-   set caption(audecomconfig,annuler)                 "Cancella"
-   set caption(audecomconfig,fermer)                  "Chiudi"
+   set caption(audecomconfig,annuler)                 "Cancellare"
+   set caption(audecomconfig,fermer)                  "Chiudere"
 
    set caption(audecomconfig,para_mot)                "Parametri motore"
    set caption(audecomconfig,rat_jeu_ad)              "Ampiezza del recupero giochi in A.R."

@@ -1,6 +1,6 @@
 #
 # Fichier : eventaude_gps.cap
-# Mise a jour $Id: eventaude_gps.cap,v 1.22 2009-11-05 18:23:05 robertdelmas Exp $
+# Mise a jour $Id: eventaude_gps.cap,v 1.23 2009-12-09 16:55:10 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -97,8 +97,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eventaude_gps,maj_alt-)                "Aggiornamento dell'altitudine"
    set caption(eventaude_gps,confirm)                 "Volete continuare?"
    set caption(eventaude_gps,ok)                      "OK"
-   set caption(eventaude_gps,appliquer)               "Applica"
-   set caption(eventaude_gps,fermer)                  "Chiudi"
+   set caption(eventaude_gps,appliquer)               "Applicare"
+   set caption(eventaude_gps,fermer)                  "Chiudere"
    set caption(eventaude_gps,aide)                    "Aiuto"
 
    set caption(eventaude_gps,site_web_ref)            "Sito Web di riferimento:"

@@ -1,6 +1,6 @@
 #
 # Fichier : obtu_pierre.cap
-# Mise a jour $Id: obtu_pierre.cap,v 1.8 2009-11-05 18:16:24 robertdelmas Exp $
+# Mise a jour $Id: obtu_pierre.cap,v 1.9 2009-12-09 16:56:29 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -48,7 +48,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obtu_pierre,title)         "Regolazione dei parametri otturatore"
    set caption(obtu_pierre,title_pth)     "Otturatore di Pierre Thierry"
    set caption(obtu_pierre,valider)       "Abilitare questi valori"
-   set caption(obtu_pierre,fermer)        "Chiudi"
+   set caption(obtu_pierre,fermer)        "Chiudere"
    set caption(obtu_pierre,synchro)       "Sincronizza"
    set caption(obtu_pierre,ouvert)        "Aperto"
    set caption(obtu_pierre,ferme)         "Chiuso"

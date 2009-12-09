@@ -1,6 +1,6 @@
 #
 # Fichier : confeqt.cap
-# Mise a jour $Id: confeqt.cap,v 1.12 2009-11-04 18:32:43 robertdelmas Exp $
+# Mise a jour $Id: confeqt.cap,v 1.13 2009-12-09 16:52:45 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -48,8 +48,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,equipement)          "Equipaggiamento:"
    set caption(confeqt,config)              "Configurazione equipaggiamento"
    set caption(confeqt,ok)                  "OK"
-   set caption(confeqt,appliquer)           "Applica"
-   set caption(confeqt,fermer)              "Chiudi"
+   set caption(confeqt,appliquer)           "Applicare"
+   set caption(confeqt,fermer)              "Chiudere"
    set caption(confeqt,aide)                "Aiuto"
    set caption(confeqt,configurer)          "Configurare"
 

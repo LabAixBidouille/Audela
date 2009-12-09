@@ -1,6 +1,6 @@
 #
 # Fichier : acqvideo.cap
-# Mise a jour $Id: acqvideo.cap,v 1.4 2009-11-06 19:07:33 robertdelmas Exp $
+# Mise a jour $Id: acqvideo.cap,v 1.5 2009-12-09 16:45:18 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -229,8 +229,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqvideo,x2)                     "x2:"
    set caption(acqvideo,y2)                     "y2:"
    set caption(acqvideo,ok)                     "OK"
-   set caption(acqvideo,appliquer)              "Applica"
-   set caption(acqvideo,fermer)                 "Chiudi"
+   set caption(acqvideo,appliquer)              "Applicare"
+   set caption(acqvideo,fermer)                 "Chiudere"
    set caption(acqvideo,largeur_hauteur)        "Larghezza x Altezza (µm):"
    set caption(acqvideo,coord_x1_y1)            "Coordinate (x1,y1):"
    set caption(acqvideo,coord_x2_y2)            "Coordinate (x2,y2):"

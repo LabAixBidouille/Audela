@@ -1,6 +1,6 @@
 #
 # Fichier : confpad.cap
-# Mise a jour $Id: confpad.cap,v 1.14 2009-11-04 18:34:42 robertdelmas Exp $
+# Mise a jour $Id: confpad.cap,v 1.15 2009-12-09 16:53:46 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -40,8 +40,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confpad,raquette)     "Pulsantiera:"
    set caption(confpad,config)       "Configurazione pulsantiera"
    set caption(confpad,ok)           "OK"
-   set caption(confpad,appliquer)    "Applica"
-   set caption(confpad,fermer)       "Chiudi"
+   set caption(confpad,appliquer)    "Applicare"
+   set caption(confpad,fermer)       "Chiudere"
    set caption(confpad,aide)         "Aiuto"
    set caption(confpad,configurer)   "Configurare"
 

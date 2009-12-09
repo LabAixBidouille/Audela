@@ -1,6 +1,6 @@
 #
 # Fichier : keyword.cap
-# Mise a jour $Id: keyword.cap,v 1.24 2009-11-23 19:51:45 robertdelmas Exp $
+# Mise a jour $Id: keyword.cap,v 1.25 2009-12-09 16:55:57 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -191,9 +191,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,parcourir)                      "..."
    set caption(keyword,rafraichir)                     "Rinfresca"
    set caption(keyword,ok)                             "OK"
-   set caption(keyword,appliquer)                      "Applica"
+   set caption(keyword,appliquer)                      "Applicare"
    set caption(keyword,aide)                           "Aiuto"
-   set caption(keyword,fermer)                         "Chiudi"
+   set caption(keyword,fermer)                         "Chiudere"
 
    #--- Titres des colonnes
    set caption(keyword,colonne,categorie)              "Categorie"
@@ -249,7 +249,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,automatic)                      "Automatico"
    set caption(keyword,newValue)                       "Inserire un valore"
    set caption(keyword,saisirNewValue)                 "Nuovo valore"
-   set caption(keyword,annuler)                        "Cancella"
+   set caption(keyword,annuler)                        "Cancellare"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {

@@ -1,6 +1,6 @@
 #
 # Fichier : fullscreen.cap
-# Mise a jour $Id: fullscreen.cap,v 1.11 2009-11-04 18:36:26 robertdelmas Exp $
+# Mise a jour $Id: fullscreen.cap,v 1.12 2009-12-09 16:55:41 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -72,7 +72,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fullscreen,previous_image)   "Immagine precedente"
    set caption(fullscreen,slide_show)       "Slideshow"
    set caption(fullscreen,configure)        "Configurare..."
-   set caption(fullscreen,close)            "Chiudi (Esc)"
+   set caption(fullscreen,close)            "Chiudere (Esc)"
    set caption(fullscreen,zoom_auto)        "Auto"
    set caption(fullscreen,animation)        "Animazione"
    set caption(fullscreen,zoom)             "Zoom"

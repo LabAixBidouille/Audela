@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_1.cap
-# Mise a jour $Id: aud_menu_1.cap,v 1.15 2009-12-09 15:59:55 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.cap,v 1.16 2009-12-09 16:46:09 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -128,7 +128,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(newscript,parcourir)          "..."
    set caption(newscript,nom_script)         "Nome file"
    set caption(newscript,ok)                 "OK"
-   set caption(newscript,annuler)            "Cancella"
+   set caption(newscript,annuler)            "Cancellare"
    set caption(newscript,aide)               "Aiuto"
 
 # *************** Version espagnole ***************************

@@ -1,6 +1,6 @@
 #
 # Fichier : catagoto.cap
-# Mise a jour $Id: catagoto.cap,v 1.11 2009-12-04 12:35:57 robertdelmas Exp $
+# Mise a jour $Id: catagoto.cap,v 1.12 2009-12-09 16:51:38 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -160,8 +160,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(catagoto,carte_champ_devant)     "Visualizzazione della cartina del campo in primo piano\n(solamente per GUIDE)"
    set caption(catagoto,ok_toujours_visible)    "Bottone OK sempre visibile nella finestra"
    set caption(catagoto,ok)                     "OK"
-   set caption(catagoto,appliquer)              "Applica"
-   set caption(catagoto,fermer)                 "Chiudi"
+   set caption(catagoto,appliquer)              "Applicare"
+   set caption(catagoto,fermer)                 "Chiudere"
    set caption(catagoto,rechercher)             "Ricercare"
    set caption(catagoto,degre)                  "°"
    set caption(catagoto,minute_arc)             "'"

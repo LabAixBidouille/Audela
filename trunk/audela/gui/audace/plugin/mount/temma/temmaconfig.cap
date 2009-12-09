@@ -1,6 +1,6 @@
 #
 # Fichier : temmaconfig.cap
-# Mise a jour $Id: temmaconfig.cap,v 1.2 2009-11-05 22:46:57 robertdelmas Exp $
+# Mise a jour $Id: temmaconfig.cap,v 1.3 2009-12-09 16:58:33 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -56,7 +56,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(temmaconfig,ok)                    "OK"
-   set caption(temmaconfig,annuler)               "Cancella"
+   set caption(temmaconfig,annuler)               "Cancellare"
 
    set caption(temmaconfig,para_mobile)           "Inseguimento di oggetti mobili"
    set caption(temmaconfig,para_ctl_mobile)       "Controllo velocita` di inseguimento:"

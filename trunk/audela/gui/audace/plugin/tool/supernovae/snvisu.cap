@@ -1,6 +1,6 @@
 #
 # Fichier : snvisu.cap
-# Mise a jour $Id: snvisu.cap,v 1.17 2009-11-17 23:07:04 robertdelmas Exp $
+# Mise a jour $Id: snvisu.cap,v 1.18 2009-12-09 16:57:47 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -169,7 +169,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snvisu,save)            "Salvare\n(F4)"
    set caption(snvisu,html)            "Html"
    set caption(snvisu,goto)            "Vai a"
-   set caption(snvisu,exit)            "Chiudi"
+   set caption(snvisu,exit)            "Chiudere"
    set caption(snvisu,carte)           "Mappa"
    set caption(snvisu,configuration)   "Configurazione"
    set caption(snvisu,raccourcis)      "Aiuto"
@@ -184,7 +184,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snvisu,confirm)         "Volete continuare?"
 
    set caption(snvisu,html_title)      "Vista Sn - Html"
-   set caption(snvisu,cancel)          "Cancella"
+   set caption(snvisu,cancel)          "Cancellare"
    set caption(snvisu,go)              "GO"
    set caption(snvisu,offsetns)        "Offset N/S"
    set caption(snvisu,north)           "N"

@@ -1,6 +1,6 @@
 #
 # Fichier : conftel.cap
-# Mise a jour $Id: conftel.cap,v 1.30 2009-11-04 18:34:58 robertdelmas Exp $
+# Mise a jour $Id: conftel.cap,v 1.31 2009-12-09 16:54:02 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -52,8 +52,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,config)                        "Configurazione montatura"
    set caption(conftel,creer_au_demarrage)            "Connessione automatica di questa montatura alla prossima esecuzione del software"
    set caption(conftel,ok)                            "OK"
-   set caption(conftel,appliquer)                     "Applica"
-   set caption(conftel,fermer)                        "Chiudi"
+   set caption(conftel,appliquer)                     "Applicare"
+   set caption(conftel,fermer)                        "Chiudere"
    set caption(conftel,aide)                          "Aiuto"
    set caption(conftel,arreter)                       "Ferma"
 

@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_7.cap
-# Mise a jour $Id: aud_menu_7.cap,v 1.23 2009-11-23 19:52:51 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.cap,v 1.24 2009-12-09 16:48:42 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -172,8 +172,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(aud_menu_7,parcourir)              "..."
    set caption(aud_menu_7,ok)                     "OK"
-   set caption(aud_menu_7,appliquer)              "Applica"
-   set caption(aud_menu_7,fermer)                 "Chiudi"
+   set caption(aud_menu_7,appliquer)              "Applicare"
+   set caption(aud_menu_7,fermer)                 "Chiudere"
    set caption(aud_menu_7,aide)                   "Aiuto"
 
 # *************** Version espagnole ***************************

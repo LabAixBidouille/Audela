@@ -1,6 +1,6 @@
 #
 # Fichier : confcat.cap
-# Mise a jour $Id: confcat.cap,v 1.14 2009-11-04 18:32:07 robertdelmas Exp $
+# Mise a jour $Id: confcat.cap,v 1.15 2009-12-09 16:52:30 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -41,8 +41,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcat,config)              "Configurazione mappe"
    set caption(confcat,creer_au_demarrage)  "Connessione automatica di questa mappe alla prossima esecuzione del software"
    set caption(confcat,ok)                  "OK"
-   set caption(confcat,appliquer)           "Applica"
-   set caption(confcat,fermer)              "Chiudi"
+   set caption(confcat,appliquer)           "Applicare"
+   set caption(confcat,fermer)              "Chiudere"
    set caption(confcat,aide)                "Aiuto"
 
    set caption(confcat,pas_carte)           "Nen e` presente nessuna mappe."

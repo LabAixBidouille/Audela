@@ -1,6 +1,6 @@
 #
 # Fichier : acqapn.cap
-# Mise a jour $Id: acqapn.cap,v 1.19 2009-11-06 19:05:45 robertdelmas Exp $
+# Mise a jour $Id: acqapn.cap,v 1.20 2009-12-09 16:44:59 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -192,7 +192,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqapn,but,adopter)           "Salva"
    set caption(acqapn,but,charger)           "Carica"
    set caption(acqapn,but,editer)            "Edita"
-   set caption(acqapn,but,effacer)           "Cancella"
+   set caption(acqapn,but,effacer)           "Cancellare"
    set caption(acqapn,but,parametres)        "Parametri"
    set caption(acqapn,but,restaurer)         "Ripristina"
    set caption(acqapn,but,traiter)           "Trattamento immagine"

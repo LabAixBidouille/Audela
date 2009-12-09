@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.40 2009-11-23 19:52:34 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.41 2009-12-09 16:48:10 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -391,8 +391,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,fichier_indice_0)          "Il file con indice 0 porta ora l'ultimo indice della lista."
 
    set caption(aud_menu_3,ok)                           "OK"
-   set caption(aud_menu_3,appliquer)                    "Applica"
-   set caption(aud_menu_3,fermer)                       "Chiudi"
+   set caption(aud_menu_3,appliquer)                    "Applicare"
+   set caption(aud_menu_3,fermer)                       "Chiudere"
    set caption(aud_menu_3,aide)                         "Aiuto"
 
 # *************** Version espagnole ***************************

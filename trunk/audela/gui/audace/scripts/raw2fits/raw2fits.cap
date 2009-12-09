@@ -1,6 +1,6 @@
 #
 # Fichier : raw2fits.cap
-# Mise a jour $Id: raw2fits.cap,v 1.9 2009-11-09 16:37:05 robertdelmas Exp $
+# Mise a jour $Id: raw2fits.cap,v 1.10 2009-12-09 16:56:44 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -64,8 +64,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(raw2fits,msg_02)              "Conversione terminata"
    set caption(raw2fits,msg_03)              "Nessun formato RAW da convertire"
 
-   set caption(raw2fits,appliquer)           "Applica"
-   set caption(raw2fits,fermer)              "Chiudi"
+   set caption(raw2fits,appliquer)           "Applicare"
+   set caption(raw2fits,fermer)              "Chiudere"
    set caption(raw2fits,aide)                "Aiuto"
 
 # *************** Version espagnole ***************************

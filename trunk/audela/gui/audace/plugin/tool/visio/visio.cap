@@ -1,6 +1,6 @@
 #
 # Fichier : visio.cap
-# Mise a jour $Id: visio.cap,v 1.14 2009-11-17 23:07:20 robertdelmas Exp $
+# Mise a jour $Id: visio.cap,v 1.15 2009-12-09 16:59:35 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -137,7 +137,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio,suppr_serie)         "Eliminare"
    set caption(visio,save_toA)            "Salva file zip\nsul disco A:"
    set caption(visio,copie_fromA)         "Copia file\nzip su A:"
-   set caption(visio,annuler)             "Cancella"
+   set caption(visio,annuler)             "Cancellare"
    set caption(visio,nom_invalide)        "Il nome del seguente file non e' valido (contiene caratteri accentati): "
    set caption(visio,rep_images_audace)   "Cartella immagini di Aud'ACE"
 

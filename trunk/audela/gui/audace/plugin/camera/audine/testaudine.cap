@@ -1,6 +1,6 @@
 #
 # Fichier : testaudine.cap
-# Mise a jour $Id: testaudine.cap,v 1.8 2009-11-05 18:16:40 robertdelmas Exp $
+# Mise a jour $Id: testaudine.cap,v 1.9 2009-12-09 16:58:48 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -54,7 +54,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(testaudine,text3)    "Numero cicli di trasferimento zona immagine/registro orizzontale"
    set caption(testaudine,test2)    "Test 2"
    set caption(testaudine,text4)    "Numero dei cicli di lettura rapida"
-   set caption(testaudine,fermer)   "Chiudi"
+   set caption(testaudine,fermer)   "Chiudere"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {

@@ -1,6 +1,6 @@
 #
 # Fichier : confoptic.cap
-# Mise a jour $Id: confoptic.cap,v 1.19 2009-11-04 18:34:26 robertdelmas Exp $
+# Mise a jour $Id: confoptic.cap,v 1.20 2009-12-09 16:53:32 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -106,8 +106,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confoptic,calcul)             "Calcolàre"
 
    set caption(confoptic,ok)                 "OK"
-   set caption(confoptic,appliquer)          "Applica"
-   set caption(confoptic,fermer)             "Chiudi"
+   set caption(confoptic,appliquer)          "Applicare"
+   set caption(confoptic,fermer)             "Chiudere"
    set caption(confoptic,aide)               "Aiuto"
 
 # *************** Version espagnole ***************************
