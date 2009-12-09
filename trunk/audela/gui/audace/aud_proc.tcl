@@ -1,7 +1,7 @@
 #
 # Fichier : aud_proc.tcl
 # Description : Fonctions de chargement, sauvegarde et traitement d'images
-# Mise a jour $Id: aud_proc.tcl,v 1.12 2009-10-24 22:10:02 robertdelmas Exp $
+# Mise a jour $Id: aud_proc.tcl,v 1.13 2009-12-09 23:20:25 robertdelmas Exp $
 #
 
 #
@@ -169,30 +169,27 @@ proc saveima { { filename "?" } { visuNo 1 } } {
       buf$bufNo compress none
    }
 
-   #--- J'affecte au buffer les seuils initiaux
-   if { $conf(save_seuils_visu) == "0" } {
-      set tmp_sh [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ]
-      set tmp_sb [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ]
-      buf$bufNo initialcut
-   }
+  ### #--- J'affecte au buffer les seuils initiaux
+  ### if { $conf(save_seuils_visu) == "0" } {
+  ###    set tmp_sh [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ]
+  ###    set tmp_sb [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ]
+  ###    buf$bufNo initialcut
+  ### }
 
-   #--- Je memorise les seuils initiaux dans des mots cles specifiques a chaque plan couleur
-   if { [ lindex [ buf$audace(bufNo) getkwd NAXIS ] 1 ] == "3" } {
-      #--- J'identifie les seuils de visualisation
-      set listSeuils [ visu$audace(visuNo) cut ]
-      set tmp_shR [ lindex $listSeuils 0 ]
-      set tmp_sbR [ lindex $listSeuils 1 ]
-      set tmp_shG [ lindex $listSeuils 2 ]
-      set tmp_sbG [ lindex $listSeuils 3 ]
-      set tmp_shB [ lindex $listSeuils 4 ]
-      set tmp_sbB [ lindex $listSeuils 5 ]
-      #--- Je les memorise dans des mots cles specifique a chaque plan couleur
-      buf$bufNo setkwd [ list "MIPS-HIR" $tmp_shR float "Red Hight Cut" "ADU" ]
-      buf$bufNo setkwd [ list "MIPS-LOR" $tmp_sbR float "Red Low Cut" "ADU" ]
-      buf$bufNo setkwd [ list "MIPS-HIG" $tmp_shG float "Green Hight Cut" "ADU" ]
-      buf$bufNo setkwd [ list "MIPS-LOG" $tmp_sbG float "Green Low Cut" "ADU" ]
-      buf$bufNo setkwd [ list "MIPS-HIB" $tmp_shB float "Blue Hight Cut" "ADU" ]
-      buf$bufNo setkwd [ list "MIPS-LOB" $tmp_sbB float "Blue Low Cut" "ADU" ]
+   #--- Sauvegarde des seuils dans les mots cles
+   if { $conf(save_seuils_visu) == "1" } {
+      #--- Pour une image couleur
+      if { [ lindex [ buf$bufNo getkwd NAXIS ] 1 ] == "3" } {
+         ::colorRGB::saveKWD $visuNo
+      #--- Pour une image N&B
+      } elseif { [ lindex [ buf$bufNo getkwd NAXIS ] 1 ] == "2" } {
+
+         set mycuts [ visu$visuNo cut ]
+         ::console::disp "mycuts = $mycuts \n"
+         buf$bufNo setkwd [ list "MIPS-HI" [ lindex $mycuts 0 ] float "" "" ]
+         buf$bufNo setkwd [ list "MIPS-LO" [ lindex $mycuts 1 ] float "" "" ]
+
+      }
    }
 
    #--- Fenetre parent
@@ -217,11 +214,11 @@ proc saveima { { filename "?" } { visuNo 1 } } {
       ::confVisu::setFileName $visuNo "$filename"
    }
 
-   #--- J'affecte au buffer les seuils de la visu
-   if { $conf(save_seuils_visu) == "0" } {
-      buf$bufNo setkwd [ list "MIPS-HI" $tmp_sh float "" "" ]
-      buf$bufNo setkwd [ list "MIPS-LO" $tmp_sb float "" "" ]
-   }
+  ### #--- J'affecte au buffer les seuils de la visu
+  ### if { $conf(save_seuils_visu) == "0" } {
+  ###    buf$bufNo setkwd [ list "MIPS-HI" $tmp_sh float "" "" ]
+  ###    buf$bufNo setkwd [ list "MIPS-LO" $tmp_sb float "" "" ]
+  ### }
 
    return
 }
