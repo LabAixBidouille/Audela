@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_4.cap
-# Mise a jour $Id: aud_menu_4.cap,v 1.11 2009-11-04 18:28:44 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_4.cap,v 1.12 2009-12-09 16:48:25 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -137,8 +137,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(traiteFilters,taille_noyau)              "Dimensione del kernel (pixels):"
 
    set caption(traiteFilters,ok)                        "OK"
-   set caption(traiteFilters,appliquer)                 "Applica"
-   set caption(traiteFilters,fermer)                    "Chiudi"
+   set caption(traiteFilters,appliquer)                 "Applicare"
+   set caption(traiteFilters,fermer)                    "Chiudere"
    set caption(traiteFilters,aide)                      "Aiuto"
 
    set caption(traiteFilters,attention)                 "Attenzione!"

@@ -1,6 +1,6 @@
 #
 # Fichier : dlgshift.cap
-# Mise a jour $Id: dlgshift.cap,v 1.7 2009-11-06 19:09:34 robertdelmas Exp $
+# Mise a jour $Id: dlgshift.cap,v 1.8 2009-12-09 16:54:24 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -73,7 +73,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dlgshift,NS)               "NS"
    set caption(dlgshift,HS)               "HS"
    set caption(dlgshift,buttonSave)       "Salvare"
-   set caption(dlgshift,buttonCancel)     "Cancella"
+   set caption(dlgshift,buttonCancel)     "Cancellare"
    set caption(dlgshift,labelTelescope)   "Spostamento del telescopio in corso."
    set caption(dlgshift,labelStop)        "Arresto spostamento."
 

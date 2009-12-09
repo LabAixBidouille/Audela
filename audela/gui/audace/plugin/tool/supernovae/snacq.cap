@@ -1,6 +1,6 @@
 #
 # Fichier : snacq.cap
-# Mise a jour $Id: snacq.cap,v 1.12 2009-11-07 16:29:30 robertdelmas Exp $
+# Mise a jour $Id: snacq.cap,v 1.13 2009-12-09 16:57:32 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -151,7 +151,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,go2)                    "Simulazione"
    set caption(snacq,go)                     "Acquisizione"
    set caption(snacq,stop)                   "Stop"
-   set caption(snacq,exit)                   "Chiudi"
+   set caption(snacq,exit)                   "Chiudere"
    set caption(snacq,godark)                 "Dark"
    set caption(snacq,gobias)                 "Bias"
    set caption(snacq,help)                   "Aiuto"

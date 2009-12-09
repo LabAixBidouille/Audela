@@ -1,6 +1,6 @@
 #
 # Fichier : visio2.cap
-# Mise a jour $Id: visio2.cap,v 1.16 2009-11-23 19:55:08 robertdelmas Exp $
+# Mise a jour $Id: visio2.cap,v 1.17 2009-12-09 16:59:50 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -201,7 +201,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,delete_button0)        "OK"
    set caption(visio2,delete_button1)        "OK per tutti"
    set caption(visio2,delete_button2)        "No"
-   set caption(visio2,delete_button3)        "Cancella"
+   set caption(visio2,delete_button3)        "Cancellare"
    set caption(visio2,help,titre)            "Aiuto per questo tool"
    set caption(visio2,help,titre1)           "Aiuto per lo tool:"
 

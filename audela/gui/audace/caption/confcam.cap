@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.48 2009-11-04 18:31:50 robertdelmas Exp $
+# Mise a jour $Id: confcam.cap,v 1.49 2009-12-09 16:52:14 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -73,8 +73,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,creer_au_demarrage)      "Connessione automatica di questa camera alla prossima esecuzione del software"
    set caption(confcam,nouvelle_visu)           "nuovo"
    set caption(confcam,ok)                      "OK"
-   set caption(confcam,appliquer)               "Applica"
-   set caption(confcam,fermer)                  "Chiudi"
+   set caption(confcam,appliquer)               "Applicare"
+   set caption(confcam,fermer)                  "Chiudere"
    set caption(confcam,aide)                    "Aiuto"
    set caption(confcam,arreter)                 "Ferma"
 

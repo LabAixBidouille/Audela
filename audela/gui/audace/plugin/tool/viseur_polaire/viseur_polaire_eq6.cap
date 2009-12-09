@@ -1,6 +1,6 @@
 #
 # Fichier : viseur_polaire_eq6.cap
-# Mise a jour $Id: viseur_polaire_eq6.cap,v 1.7 2009-11-07 17:05:48 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_eq6.cap,v 1.8 2009-12-09 16:59:04 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -52,9 +52,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(viseur_eq6,couleur_reticule)  "Colore del reticolo"
    set caption(viseur_eq6,couleur_etoile)    "Colore delle stelle"
    set caption(viseur_eq6,ok)                "OK"
-   set caption(viseur_eq6,appliquer)         "Applica"
+   set caption(viseur_eq6,appliquer)         "Applicare"
    set caption(viseur_eq6,aide)              "Aiuto"
-   set caption(viseur_eq6,fermer)            "Chiudi"
+   set caption(viseur_eq6,fermer)            "Chiudere"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {

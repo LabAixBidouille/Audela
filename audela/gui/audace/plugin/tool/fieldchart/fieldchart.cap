@@ -1,6 +1,6 @@
 #
 # Fichier : fieldchart.cap
-# Mise a jour $Id: fieldchart.cap,v 1.3 2009-11-07 14:58:45 robertdelmas Exp $
+# Mise a jour $Id: fieldchart.cap,v 1.4 2009-12-09 16:55:25 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -114,9 +114,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,loadMicrocat_2)             "http://www.audela.org/download/microcat.tgz"
 
    set caption(fieldchart,ok)                         "OK"
-   set caption(fieldchart,appliquer)                  "Applica"
-   set caption(fieldchart,effacer)                    "Cancella"
-   set caption(fieldchart,fermer)                     "Chiudi"
+   set caption(fieldchart,appliquer)                  "Applicare"
+   set caption(fieldchart,effacer)                    "Cancellare"
+   set caption(fieldchart,fermer)                     "Chiudere"
    set caption(fieldchart,aide)                       "Aiuto"
 
 # *************** Version espagnole ***************************

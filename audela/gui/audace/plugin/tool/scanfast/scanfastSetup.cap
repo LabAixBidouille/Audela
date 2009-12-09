@@ -1,6 +1,6 @@
 #
 # Fichier : scanfastSetup.cap
-# Mise a jour $Id: scanfastSetup.cap,v 1.6 2009-11-07 16:26:38 robertdelmas Exp $
+# Mise a jour $Id: scanfastSetup.cap,v 1.7 2009-12-09 16:57:01 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -55,8 +55,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfastSetup,seconde)                "sec."
 
    set caption(scanfastSetup,ok)                     "OK"
-   set caption(scanfastSetup,appliquer)              "Applica"
-   set caption(scanfastSetup,fermer)                 "Chiudi"
+   set caption(scanfastSetup,appliquer)              "Applicare"
+   set caption(scanfastSetup,fermer)                 "Chiudere"
    set caption(scanfastSetup,aide)                   "Aiuto"
 
 # *************** Version espagnole ***************************

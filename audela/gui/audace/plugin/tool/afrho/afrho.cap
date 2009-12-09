@@ -1,6 +1,6 @@
 #
 # Fichier : afrho.cap
-# Mise a jour $Id: afrho.cap,v 1.2 2009-11-06 19:08:44 robertdelmas Exp $
+# Mise a jour $Id: afrho.cap,v 1.3 2009-12-09 16:45:35 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -136,8 +136,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(afrho,rep-images)             "Le immagini devono provenire dalla cartella immagini\n(Configurazione --> Directories)."
 
    set caption(afrho,ok)                     "OK"
-   set caption(afrho,appliquer)              "Applica"
-   set caption(afrho,fermer)                 "Chiudi"
+   set caption(afrho,appliquer)              "Applicare"
+   set caption(afrho,fermer)                 "Chiudere"
    set caption(afrho,aide)                   "Aiuto"
 
 # *************** Version espagnole ***************************

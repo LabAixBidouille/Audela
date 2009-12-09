@@ -1,6 +1,6 @@
 #
 # Fichier : cfa2rgb.cap
-# Mise a jour $Id: cfa2rgb.cap,v 1.6 2009-11-09 16:36:45 robertdelmas Exp $
+# Mise a jour $Id: cfa2rgb.cap,v 1.7 2009-12-09 16:51:57 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -70,8 +70,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cfa2rgb,msg_03)               "Nessun formato CFA da convertire"
    set caption(cfa2rgb,msg_04)               "Errore di analisi"
 
-   set caption(cfa2rgb,appliquer)            "Applica"
-   set caption(cfa2rgb,fermer)               "Chiudi"
+   set caption(cfa2rgb,appliquer)            "Applicare"
+   set caption(cfa2rgb,fermer)               "Chiudere"
    set caption(cfa2rgb,aide)                 "Aiuto"
 
 # *************** Version espagnole ***************************

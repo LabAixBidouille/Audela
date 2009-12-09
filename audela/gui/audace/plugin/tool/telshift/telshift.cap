@@ -1,6 +1,6 @@
 #
 # Fichier : telshift.cap
-# Mise a jour $Id: telshift.cap,v 1.9 2009-11-07 16:30:59 robertdelmas Exp $
+# Mise a jour $Id: telshift.cap,v 1.10 2009-12-09 16:58:19 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -89,7 +89,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(telshift,titre)         "Immagini con posizionamento del telescopio"
    set caption(telshift,ok)            "OK"
-   set caption(telshift,annuler)       "Cancella"
+   set caption(telshift,annuler)       "Cancellare"
    set caption(telshift,aide)          "Aiuto"
    set caption(telshift,nomfichier)    "Nome base del file immagine:"
    set caption(telshift,parametres)    "Parametri di posa:"

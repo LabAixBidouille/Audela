@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.34 2009-11-07 14:08:25 robertdelmas Exp $
+# Mise a jour $Id: autoguider.cap,v 1.35 2009-12-09 16:49:16 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -155,7 +155,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,impulsion)             "Impulsi"
    set caption(autoguider,intervalle)            "Intervallo"
    set caption(autoguider,rechercher)            "Ricercare"
-   set caption(autoguider,effacer)               "Cancella"
+   set caption(autoguider,effacer)               "Cancellare"
    set caption(autoguider,centrer)               "Centrare"
    set caption(autoguider,intensiteMax)          "Intensita (ADU)"
 

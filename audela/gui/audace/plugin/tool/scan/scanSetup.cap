@@ -1,6 +1,6 @@
 #
 # Fichier : scanSetup.cap
-# Mise a jour $Id: scanSetup.cap,v 1.6 2009-11-07 15:02:39 robertdelmas Exp $
+# Mise a jour $Id: scanSetup.cap,v 1.7 2009-12-09 16:57:16 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -55,8 +55,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanSetup,seconde)                "sec."
 
    set caption(scanSetup,ok)                     "OK"
-   set caption(scanSetup,appliquer)              "Applica"
-   set caption(scanSetup,fermer)                 "Chiudi"
+   set caption(scanSetup,appliquer)              "Applicare"
+   set caption(scanSetup,fermer)                 "Chiudere"
    set caption(scanSetup,aide)                   "Aiuto"
 
 # *************** Version espagnole ***************************

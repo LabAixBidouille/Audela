@@ -1,6 +1,6 @@
 #
 # Fichier : dlgshiftvideovideo.cap
-# Mise a jour $Id: dlgshiftvideo.cap,v 1.2 2009-11-06 19:10:06 robertdelmas Exp $
+# Mise a jour $Id: dlgshiftvideo.cap,v 1.3 2009-12-09 16:54:56 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -73,7 +73,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dlgshiftvideo,NS)               "NS"
    set caption(dlgshiftvideo,HS)               "HS"
    set caption(dlgshiftvideo,buttonSave)       "Salvare"
-   set caption(dlgshiftvideo,buttonCancel)     "Cancella"
+   set caption(dlgshiftvideo,buttonCancel)     "Cancellare"
    set caption(dlgshiftvideo,labelTelescope)   "Spostamento del telescopio in corso."
    set caption(dlgshiftvideo,labelStop)        "Arresto spostamento."
 

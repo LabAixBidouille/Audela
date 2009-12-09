@@ -1,6 +1,6 @@
 #
 # Fichier : alaudine_nt.cap
-# Mise a jour $Id: alaudine_nt.cap,v 1.13 2009-11-05 18:22:35 robertdelmas Exp $
+# Mise a jour $Id: alaudine_nt.cap,v 1.14 2009-12-09 16:45:52 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -64,8 +64,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(alaudine_nt,temp_ccd_souhaite)   "Temperatura CCD richiesta:"
    set caption(alaudine_nt,temp_ccd_mesure)     "Temperatura del CCD misurata:"
    set caption(alaudine_nt,ok)                  "OK"
-   set caption(alaudine_nt,appliquer)           "Applica"
-   set caption(alaudine_nt,fermer)              "Chiudi"
+   set caption(alaudine_nt,appliquer)           "Applicare"
+   set caption(alaudine_nt,fermer)              "Chiudere"
    set caption(alaudine_nt,aide)                "Aiuto"
 
    set caption(alaudine_nt,site_web_ref)        "Sito Web di riferimento:"

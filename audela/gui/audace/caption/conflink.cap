@@ -1,6 +1,6 @@
 #
 # Fichier : conflink.cap
-# Mise a jour $Id: conflink.cap,v 1.14 2009-11-04 18:34:09 robertdelmas Exp $
+# Mise a jour $Id: conflink.cap,v 1.15 2009-12-09 16:53:17 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -41,8 +41,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conflink,config)              "Configurazione del collegamento"
    set caption(conflink,creer_au_demarrage)  "Connessione automatica di questo collegamento alla prossima esecuzione del software"
    set caption(conflink,ok)                  "OK"
-   set caption(conflink,appliquer)           "Applica"
-   set caption(conflink,fermer)              "Chiudi"
+   set caption(conflink,appliquer)           "Applicare"
+   set caption(conflink,fermer)              "Chiudere"
    set caption(conflink,aide)                "Aiuto"
 
    set caption(conflink,pas_liaison)         "Nessun collegamento."
