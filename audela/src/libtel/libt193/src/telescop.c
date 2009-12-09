@@ -1906,24 +1906,31 @@ void mytel_processNotification(struct telprop *tel, char * notification) {
    if ( nbArrayElements == 2 ) {
       // je traite la notification
       if ( strcmp( command1, "RADEC")==0) {
-         if ( strcmp( command2, "COORD")==0 ) {
+         if ( strcmp( command2, "NOTIF")==0 ) {
             int returnCode;
             int moveCode;
             int slewCode;
+            char raCalage;
+            char decCalage;
+            char raBrut[NOTIFICATION_MAX_SIZE];
+            char decBrut[NOTIFICATION_MAX_SIZE];
             char ra[NOTIFICATION_MAX_SIZE];
             char dec[NOTIFICATION_MAX_SIZE];
             // traitement de "!RADEC COORD [Code retour] [mouvement] [suivi] [alpha] [delta] @"
-            nbArrayElements = sscanf(notification, "!RADEC COORD %d %d %d %s %s @", &returnCode, &moveCode, &slewCode, ra, dec);
+            nbArrayElements = sscanf(notification, "!RADEC NOTIF %d %d %d %c %c %s %s @", &returnCode, &moveCode, &slewCode, &raCalage, &decCalage, raBrut, decBrut);
             // je verifie que le nombre de valeurs lues
-            if ( nbArrayElements == 5 ) {
+            if ( nbArrayElements == 7 ) {
                // je verifie le code retour 
                if ( returnCode == 0) {
                   char ligne[1024];                  
                   // je memorise le mouvement
                   tel->radecIsMoving = moveCode;
+                  // je corrige les coordonnees avec le modèle de pointage
+                  // TODO : inserer ici le caoorection avec le modèle de pointage
+                  strcpy(ra, raBrut);   // pour l'instant je copie les coordonnees
+                  strcpy(dec, decBrut); 
                   // j'envoie les coordonnes aux clients du serveur de coordonnees
-                  sprintf(ligne,"%s %s\n", ra, dec); 
-                  socket_writeCoordServerSocket(tel, ligne);
+                  socket_writeCoordServerSocket(tel, returnCode, ra, dec, raBrut, decBrut, raCalage, decCalage);
                   // je notifie les nouvelles coordonnes au thread principal                
                   if ( strcmp(tel->telThreadId,"") == 0 ) {
                      sprintf(ligne,"set ::audace(telescope,getra) \"%s\" ; set ::audace(telescope,getdec) \"%s\" ",ra, dec); 
