@@ -2,7 +2,7 @@
 # Fichier : convert.tcl
 # Description : Conversion d'images FITS au format BMP, EMF, PS, ICO, JPEG/JPG, PDF, PNG, PSD ou TIFF
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: convert.tcl,v 1.1 2009-09-10 22:19:12 robertdelmas Exp $
+# Mise a jour $Id: convert.tcl,v 1.2 2009-12-09 16:12:37 robertdelmas Exp $
 #
 
 #============================================================
@@ -92,7 +92,7 @@ proc ::convert::initPlugin { tkbase } {
       "Adobe Photoshop" "Tiff rev. 6" ]
 
    #--- Liste des types a entrer dans nconvert pour les extensions utilisables
-   set private(liste_type) [ list bmp emf ps ico jpeg pdf png psd tiff wmf ]
+   set private(liste_type) [ list bmp emf ps ico jpeg pdf png psd tiff ]
 
    #--- Liste de listes pour afficher les formats dans la boite de dialogue
    foreach private(extension) $private(liste_extension) com $private(commentaires) {
@@ -170,11 +170,18 @@ proc ::convert::run { } {
 
    #--- Conversion de l'image FITS
    if { $private(extension) != "$::conf(extension,defaut)" } {
+
       #--- Initialise le chemin du programme de conversion
       set private(program) [ file join $::audace(rep_plugin) tool convert nconvert.exe ]
 
       #--- Cherche le code pour nconvert
       set i [ lsearch -exact $private(liste_extension) $private(extension) ]
+
+      #--- Arret si l'utilisateur ferme la fenetre
+      if { $i == "-1" } {
+         return
+      }
+
       set type [ lindex $private(liste_type) $i ]
 
       #--- Execute la conversion
@@ -184,11 +191,6 @@ proc ::convert::run { } {
       if { [ string first "OK" $msg ] == "-1" } {
          #--- Affiche le message d'erreur de nconvert
          tk_messageBox -title "$::caption(convert,erreur)" -icon error -type ok -message $msg
-      }
-
-      #--- Aud'Ace ne peut charger que les images jpeg
-      if { $type == "jpeg" } {
-         loadima $private(out)
       }
    }
 }
