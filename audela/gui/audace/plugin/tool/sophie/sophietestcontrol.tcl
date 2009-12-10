@@ -2,7 +2,7 @@
 # @file     sophiesimulcontrol.tcl
 # @brief    Fichier du namespace ::sophie::testcontrol
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietestcontrol.tcl,v 1.7 2009-12-08 22:57:29 michelpujol Exp $
+# @version  $Id: sophietestcontrol.tcl,v 1.8 2009-12-10 07:20:54 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -225,14 +225,14 @@ proc ::sophie::testcontrol::readTelescopeCommandSocket { channel } {
                      switch [lindex $commandArray 2] {
                         "0" {
                            #--- j'arrete de l'envoi periodique des coordonnees
-                           set returnCode [stopRadecCoordNotification]
+                           set returnCode [stopRadecNotification]
                            #--- je retourne la reponse
                            set response [format "!RADEC COORD %d @" $returnCode ]
                            writeTelescopeCommandSocket $channel $response
                         }
                         "1" {
                            #--- je demarre l'envoi periodique des coordonnees (boucle infinie en tache de fond)
-                           set returnCode [startRadecCoordNotification]
+                           set returnCode [startRadecNotification]
                            #--- je retourne la reponse
                            set response [format "!RADEC COORD %d @" $returnCode ]
                            writeTelescopeCommandSocket $channel $response
@@ -395,30 +395,30 @@ proc ::sophie::testcontrol::writeTelescopeNotificationSocket { notification } {
 #############################################################
 
 #------------------------------------------------------------
-# startRadecCoordNotification
+# startRadecNotification
 #   demarre l'envoi des notifications coordonnees 
 #
 # @param donnees a envoyer
 # @return code retour 0=OK , 1=Erreur
 #------------------------------------------------------------
-proc ::sophie::testcontrol::startRadecCoordNotification { } {
+proc ::sophie::testcontrol::startRadecNotification { } {
    variable private
 
    if { $private(radecCoord,enabled) == 0 } {
       set private(radecCoord,enabled) 1
-      after 1000 ::sophie::testcontrol::sendRadecCoordLoop
+      after 1000 ::sophie::testcontrol::sendRadecNotificationLoop
    }
    return 0
 }
 
 #------------------------------------------------------------
-# stopRadecCoordNotification
+# stopRadecNotification
 #   arrete l'envoi des coordonnees au PC de guidage
 #
 # @param donnees a envoyer
 # @return code retour 0=OK , 1=Erreur
 #------------------------------------------------------------
-proc ::sophie::testcontrol::stopRadecCoordNotification { } {
+proc ::sophie::testcontrol::stopRadecNotification { } {
    variable private
    set private(radecCoord,enabled) 0
    return 0
@@ -426,12 +426,12 @@ proc ::sophie::testcontrol::stopRadecCoordNotification { } {
 
 
 #------------------------------------------------------------
-# sendRadecCoord
+# sendRadecNotification
 #   envoie une donnee au PC de guidage
 #
 # @param donnees a envoyer
 #------------------------------------------------------------
-proc ::sophie::testcontrol::sendRadecCoord { } {
+proc ::sophie::testcontrol::sendRadecNotification { } {
    variable private
 
    set raHms  [mc_angle2hms $private(motor,ra) 360 zero 2 auto string ]
@@ -447,24 +447,27 @@ proc ::sophie::testcontrol::sendRadecCoord { } {
       }
    }
    set returnCode 0
-   set response [format "!RADEC COORD %d %s %s %s %s @" $returnCode $moveCode $private(motor,slewMode) $raHms $decDms ]
-   ###disp "sendRadecCoord response=$response\n"
+   set raCalage "C"
+   set decCalage "D"
+   set response [format "!RADEC NOTIF %d %d %s %s %s %s %s @" \
+      $returnCode $moveCode $private(motor,slewMode) $raCalage $decCalage $raHms $decDms ]
+   disp "sendRadecNotification response=$response\n"
    ::sophie::testcontrol::writeTelescopeNotificationSocket $response
 }
 
 #------------------------------------------------------------
-# sendRadecCoord
+# sendRadecNotification
 #   envoie une donnee au PC de guidage
 #
 # @param donnees a envoyer
 #------------------------------------------------------------
-proc ::sophie::testcontrol::sendRadecCoordLoop { } {
+proc ::sophie::testcontrol::sendRadecNotificationLoop { } {
    variable private
 
-   sendRadecCoord
+   sendRadecNotification
    if { $private(radecCoord,enabled) == 1 } {
       #--- je lance une nouvelle iteration apres 1000 miliscondes
-      after 1000 ::sophie::testcontrol::sendRadecCoordLoop
+      after 1000 ::sophie::testcontrol::sendRadecNotificationLoop
    }
 }
 
@@ -872,7 +875,7 @@ proc ::sophie::testcontrol::simulateMotor { } {
                set private(motor,decSpeed) 0
                ##disp "simulateMotor fin de mouvement limité\n"
                #--- j'envoie une notification pour signaler que le GOTO est termine
-               ::sophie::testcontrol::sendRadecCoord
+               ::sophie::testcontrol::sendRadecNotification
             }
          }
          "GOTO" {
@@ -893,7 +896,7 @@ proc ::sophie::testcontrol::simulateMotor { } {
                disp "simulateMotor fin de mouvement limité\n"
                set private(motor,mode) "NONE"
                #--- j'envoie une notification pour signaler que le GOTO est termine
-               ::sophie::testcontrol::sendRadecCoord
+               ::sophie::testcontrol::sendRadecNotification
             }
          }
       }
