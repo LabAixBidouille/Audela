@@ -19,13 +19,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-// Mise a jour $Id: coordserver.h,v 1.1 2009-12-08 22:56:13 michelpujol Exp $
+// Mise a jour $Id: coordserver.h,v 1.2 2009-12-10 07:18:20 michelpujol Exp $
 
 #ifndef __COORD_SERVER_H__
 #define __COORD_SERVER_H__
 
 int socket_openCoordServerSocket(struct telprop *tel, int coordServerPort);
 int socket_closeCoordServerSocket(struct telprop *tel) ;
-void socket_writeCoordServerSocket(struct telprop *tel, char * notification);
+void socket_writeCoordServerSocket(struct telprop *tel, int returnCode, char * a, char *dec, char *raBrut, char *decBrut, char raCalage, char decCalage);
 
 #endif

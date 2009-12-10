@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-// Mise a jour $Id: coordserver.c,v 1.1 2009-12-08 22:56:13 michelpujol Exp $
+// Mise a jour $Id: coordserver.c,v 1.2 2009-12-10 07:18:20 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -170,12 +170,45 @@ void socket_acceptCoordServerSocket(ClientData clientData, Tcl_Channel clientSoc
  * @param tel  
  * @return none
  */
-void socket_writeCoordServerSocket(struct telprop *tel, char * notification) {
+void socket_writeCoordServerSocket(struct telprop *tel, int returnCode, char * ra, char *dec, char *raBrut, char *decBrut, char raCalage, char decCalage) {
    int index;
 
    for( index=0; index < MAX_CLIENT_COORD; index++ ) {
       if ( clientCoordSocketList[index] != NULL ) { 
          int writeResult;
+         char notification[1024]; 
+         double universalTime =0;
+         double sideralTime =0;
+
+         // je prepare la notification 
+         // !RADEC COORD [Code retour] [TU] [TS] [alpha_corr] [delta_corr] [alpha_0] [delta_0] [calage_alpha] [calage_delta] @\n
+         // Code retour
+         //    0 à OK
+         //    5 à Problème moteur
+         //    6 à Butées atteintes
+         // TU
+         //    Format= %f
+         // TS
+         //    Format= %f
+         // alpha_corr : coordonnée alpha corrigée avec le modèle de pointage
+         //    Format = "%02dh%02dm%05.2fs"
+         // delta_corr : coordonnée delta corrigée avec le modèle de pointage
+         //    Format = "%1s%02dd%02dm%05.2fs"
+         // alpha_0 : coordonnée brute alpha
+         //    Format = "%02dh%02dm%05.2fs"
+         // delta_0 : coordonnée brute delta
+         //    Format = "%1s%02dd%02dm%05.2fs"
+         // calage_alpha
+         //    C : calé
+         //    D : décalé*
+         //    A : autre : ni calé ni décalé
+         // calage_delta
+         //    C : calé
+         //    D : décalé*
+         //    A : autre : ni calé ni décalé
+
+         sprintf(notification, "!RADEC COORD %d %f %f %s %s %s %s %c %c @\n", 
+            returnCode, universalTime, sideralTime, ra, dec, raBrut, decBrut, raCalage, decCalage); 
          writeResult = Tcl_WriteChars(clientCoordSocketList[index], notification, strlen(notification));
          if ( writeResult == -1) {
             Tcl_Close( tel->interp, clientCoordSocketList[index]);
