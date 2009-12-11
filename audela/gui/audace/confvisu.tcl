@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.117 2009-12-09 23:16:31 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.118 2009-12-11 18:56:55 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -274,7 +274,7 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    proc autovisu { visuNo { force "-no" } { fileName "" } { hduName "" } } {
       variable private
-      global caption conf
+      global audace caption conf
 
       #--- petit raccourci pour la suite
       set bufNo [visu$visuNo buf]
@@ -364,7 +364,7 @@ namespace eval ::confVisu {
                #--- j'affiche le nom du fichier
                ::confVisu::setFileName $visuNo $fileName
             } else {
-               #--- C'est le mem fichier, j'ai deja la liste des HDU
+               #--- C'est le meme fichier, j'ai deja la liste des HDU
                #--- je recupere le type de HDU pour savoir si les donnees
                #--- doivent etre chargees avec "buf load" pour une image 1D ou 2D
                #--- ou avec "fits open" pour une table
@@ -482,10 +482,30 @@ namespace eval ::confVisu {
 
                #--- Si le buffer contient une image on met a jour les seuils
                if { [ buf$bufNo imageready ] == "1" } {
-                  #--- Si c'est une image couleur, j'affiche les glissieres R, V et B
+                  #--- Cas d'une image couleur, j'affiche les glissieres R, V et B
                   if { [ lindex [ buf$bufNo getkwd NAXIS ] 1 ] == "3" } {
+                     #--- Je repositionne les poignees
+                     $private($visuNo,This).fra1.sca1 set 0.0
+                     $private($visuNo,This).fra1.sca2 set 0.0
+                     #--- Je desactive le reglage des seuils
+                     $private($visuNo,This).fra1.sca1 configure -state disabled \
+                        -background $audace(color,backColor) \
+                        -activebackground $audace(color,backColor)
+                     $private($visuNo,This).fra1.sca2 configure -state disabled \
+                        -background $audace(color,backColor) \
+                        -activebackground $audace(color,backColor)
+                     #--- J'affiche les glissieres R, V et B
                      ::colorRGB::run $visuNo
+                  #--- Cas d'une image N&B
                   } else {
+                     #--- J'active le reglage des seuils
+                     $private($visuNo,This).fra1.sca1 configure -state normal \
+                        -background $audace(color,cursor_blue) \
+                        -activebackground $audace(color,cursor_blue_actif)
+                     $private($visuNo,This).fra1.sca2 configure -state normal \
+                        -background $audace(color,cursor_blue) \
+                        -activebackground $audace(color,cursor_blue_actif)
+                     #--- Je supprime les glissieres R, V et B
                      ::colorRGB::cmdClose $visuNo
                   }
                   #---
@@ -1627,20 +1647,24 @@ namespace eval ::confVisu {
 
          button $This.fra1.but_seuils_auto -text "$caption(confVisu,seuil_auto)" \
             -command "::confVisu::onCutLabelLeftClick $visuNo" -width 5
-         grid configure $This.fra1.but_seuils_auto -column 0 -row 0 -rowspan 2 -sticky we -in $This.fra1 -padx 5
+         grid configure $This.fra1.but_seuils_auto -column 0 -row 0 -rowspan 2 -sticky we \
+            -in $This.fra1 -padx 5
 
          button $This.fra1.but_config_glissieres -text "$caption(confVisu,boite_seuil)" \
             -command "::seuilWindow::run $visuNo"
-         grid configure $This.fra1.but_config_glissieres -column 1 -row 0 -rowspan 2 -sticky {} -in $This.fra1 -padx 5
+         grid configure $This.fra1.but_config_glissieres -column 1 -row 0 -rowspan 2 -sticky {} \
+            -in $This.fra1 -padx 5
 
          scale $This.fra1.sca1 -orient horizontal -to 32767 -from -32768 -length 150 \
             -borderwidth 1 -showvalue 0 -width 10 -sliderlength 20 \
-            -background $audace(color,cursor_blue) -activebackground $audace(color,cursor_blue_actif) -relief raised
+            -background $audace(color,cursor_blue) -activebackground $audace(color,cursor_blue_actif) \
+            -relief raised
          grid configure $This.fra1.sca1 -column 2 -row 0 -sticky we -in $This.fra1 -pady 2
 
          scale $This.fra1.sca2 -orient horizontal -to 32767 -from -32768 -length 150 \
             -borderwidth 1 -showvalue 0 -width 10 -sliderlength 20 \
-            -background $audace(color,cursor_blue) -activebackground $audace(color,cursor_blue_actif) -relief raised
+            -background $audace(color,cursor_blue) -activebackground $audace(color,cursor_blue_actif) \
+            -relief raised
          grid configure $This.fra1.sca2 -column 2 -row 1 -sticky we -in $This.fra1 -pady 2
 
          label $This.fra1.lab1 -width 10 -text "$caption(confVisu,seuil_haut)"
@@ -2548,6 +2572,22 @@ namespace eval ::confVisu {
    proc ChangeCutsDisplay { visuNo } {
       variable private
 
+      set bufNo [ visu$visuNo buf ]
+      #---
+      if { ( [ lindex [ buf$bufNo getkwd NAXIS ] 1 ] == "3" ) || ( [ buf$bufNo imageready ] == "0" ) } {
+         #--- Je desactive le bind des glissieres
+         $private($visuNo,This).fra1.sca1 configure -command ""
+         $private($visuNo,This).fra1.sca2 configure -command ""
+         #--- J'efface les seuils haut et bas
+         $private($visuNo,This).fra1.lab1 configure -text "---"
+         $private($visuNo,This).fra1.lab2 configure -text "---"
+         return
+      } elseif { [ lindex [ buf$bufNo getkwd NAXIS ] 1 ] != "3" } {
+         #--- J'active le bind des glissieres
+         $private($visuNo,This).fra1.sca1 configure -command "::confVisu::onHiCutCommand $visuNo"
+         $private($visuNo,This).fra1.sca2 configure -command "::confVisu::onLoCutCommand $visuNo"
+      }
+      #---
       set sh [lindex [visu$visuNo cut] 0]
       set sb [lindex [visu$visuNo cut] 1]
       if { [ expr abs( $sh - $sb ) ] > "$private($visuNo,intervalleSHSB)" } {
