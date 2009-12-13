@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.23 2009-12-08 22:58:28 michelpujol Exp $
+# Mise a jour $Id: t193.tcl,v 1.24 2009-12-13 17:38:56 michelpujol Exp $
 #
 
 namespace eval ::t193 {
@@ -530,7 +530,11 @@ proc ::t193::configureMonture { } {
             ]
          }
       }
-
+      #--- Je configure la position geographique du telescope
+      #--- (la position geographique est utilisee pour calculer le temps sideral)
+      # tel$telno home GPS long e|w lat alt
+      tel$telNo home $::audace(posobs,observateur,gps)
+      
       #--- Je parametre le niveau de trace
       tel$telNo consolelog $::conf(t193,consoleLog)
 
