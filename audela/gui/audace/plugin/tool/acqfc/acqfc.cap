@@ -1,6 +1,6 @@
 #
 # Fichier : acqfc.cap
-# Mise a jour $Id: acqfc.cap,v 1.43 2009-11-06 19:06:34 robertdelmas Exp $
+# Mise a jour $Id: acqfc.cap,v 1.44 2009-12-13 16:34:01 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -17,6 +17,7 @@ set caption(acqfc,help_titre)                "Help for this Tool"
 set caption(acqfc,help_titre1)               "Help for the Tool:"
 set caption(acqfc,configuration)             "Setup"
 set caption(acqfc,pose)                      "Exp."
+set caption(acqfc,pose+reglages)             "Exposure and\nSettings"
 set caption(acqfc,sec)                       "sec."
 set caption(acqfc,bin)                       "Binning"
 set caption(acqfc,format)                    "Format"
@@ -107,6 +108,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,help_titre1)            "Aide de l'outil :"
    set caption(acqfc,configuration)          "Configuration"
    set caption(acqfc,pose)                   "Pose"
+   set caption(acqfc,pose+reglages)          "Pose et réglages"
    set caption(acqfc,sec)                    "sec."
    set caption(acqfc,bin)                    "Binning"
    set caption(acqfc,format)                 "Format"
@@ -198,6 +200,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,help_titre1)            "Aiuto per lo tool:"
    set caption(acqfc,configuration)          "Configurazione"
    set caption(acqfc,pose)                   "Posa"
+   set caption(acqfc,pose+reglages)          "Posa e\nimpostazioni"
    set caption(acqfc,sec)                    "sec."
    set caption(acqfc,bin)                    "Binning"
    set caption(acqfc,format)                 "Formato"
@@ -289,6 +292,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,help_titre1)            "Ajuda para del herramienta:"
    set caption(acqfc,configuration)          "Configuración"
    set caption(acqfc,pose)                   "Exp."
+   set caption(acqfc,pose+reglages)          "Exposición y\nconfiguración"
    set caption(acqfc,sec)                    "seg."
    set caption(acqfc,bin)                    "Binning"
    set caption(acqfc,format)                 "Formato"
@@ -380,6 +384,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,help_titre1)            "Hilfe für die Gerät:"
    set caption(acqfc,configuration)          "Konfiguration"
    set caption(acqfc,pose)                   "Bel."
+   set caption(acqfc,pose+reglages)          "Belichtung und\nEinstellungen"
    set caption(acqfc,sec)                    "sek."
    set caption(acqfc,bin)                    "Binning"
    set caption(acqfc,format)                 "Format"
@@ -471,6 +476,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,help_titre1)            "Ajuda para del ferramenta:"
    set caption(acqfc,configuration)          "Configuração"
    set caption(acqfc,pose)                   "Exposição"
+   set caption(acqfc,pose+reglages)          "Exposição e\ndefinições"
    set caption(acqfc,sec)                    "seg."
    set caption(acqfc,bin)                    "Binning"
    set caption(acqfc,format)                 "Formato"
@@ -562,6 +568,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,help_titre1)            "Help for the Tool:"
    set caption(acqfc,configuration)          "Setup"
    set caption(acqfc,pose)                   "Exp."
+   set caption(acqfc,pose+reglages)          "Exposure and\nSettings"
    set caption(acqfc,sec)                    "sec."
    set caption(acqfc,bin)                    "Binning"
    set caption(acqfc,format)                 "Format"
@@ -652,6 +659,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,help_titre1)            "Help for the Tool:"
    set caption(acqfc,configuration)          "Setup"
    set caption(acqfc,pose)                   "Exp."
+   set caption(acqfc,pose+reglages)          "Exposure and\nSettings"
    set caption(acqfc,sec)                    "sec."
    set caption(acqfc,bin)                    "Binning"
    set caption(acqfc,format)                 "Format"
@@ -742,6 +750,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,help_titre1)            "Help for the Tool:"
    set caption(acqfc,configuration)          "Setup"
    set caption(acqfc,pose)                   "Exp."
+   set caption(acqfc,pose+reglages)          "Exposure and\nSettings"
    set caption(acqfc,sec)                    "sec."
    set caption(acqfc,bin)                    "Binning"
    set caption(acqfc,format)                 "Format"
