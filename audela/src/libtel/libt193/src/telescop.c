@@ -45,7 +45,7 @@
 
 #define DAQmxErrChk(functionCall) if( DAQmxFailed(error=(functionCall)) ) goto Error; else
 
-#define NOTIFICATION_MAX_SIZE 128
+
  /*
  *  Definition of different cameras supported by this driver
  *  (see declaration in libstruc.h)
@@ -1381,6 +1381,18 @@ int mytel_setFocusNotification(struct telprop *tel, int mode )
    return result;
 }
 
+//-------------------------------------------------------------
+// tel_home_get
+//
+// Retourne le status de mmoteur de focus 
+// @param tel   pointeur structure telprop
+// @param gpsHome  chaine de caractere en sortie contenant la position GPS 
+// @return 0 = OK,  1= erreur
+//
+// @TODO il vaudrait mieux demander les cordonnees a l'interface de controle du T193
+//
+//-------------------------------------------------------------
+
 int tel_focus_motor(struct telprop *tel)
 /* ------------------------------------ */
 /* --- called by : tel1 focus motor --- */
@@ -1408,23 +1420,53 @@ int tel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s)
 
 }
 
-int tel_home_get(struct telprop *tel,char *ligne)
-/* ----------------------------- */
-/* --- called by : tel1 home --- */
-/* ----------------------------- */
+//-------------------------------------------------------------
+// tel_home_get
+//
+// Retourne la position geographique du telescope au format GPS
+// Format GPS :
+//   "GPS [longitude] [e|w] [signe][latitude] "
+//   "GPS %f %s %s%f"
+// Exemple : "GPS 5.7157 E 43.931892 633.9"
+//
+// @param tel   pointeur structure telprop
+// @param gpsHome  chaine de caractere en sortie contenant la position GPS 
+// @return 0 = OK,  1= erreur
+//
+// @TODO il vaudrait mieux demander les cordonnees a l'interface de controle du T193
+//
+//-------------------------------------------------------------
+int tel_home_get(struct telprop *tel,char *gpsHome)
 {
-   //return mytel_home_get(tel,ligne);
-      return 0;
+   strcpy(gpsHome,tel->gpsHome);
+   return 0;
 
 }
 
+
+//-------------------------------------------------------------
+// tel_home_set
+//
+// enregistre la position geographique du telescope au format GPS
+// Format GPS :
+//   "GPS [longitude] [e|w] [latitude] "
+//   "GPS %f %s %f"
+// Exemple : "GPS 5.7157 E 43.931892 633.9"
+//
+// @param tel   pointeur structure telprop
+// @param longitude  longitude du lieu
+// @param ew         e ou w  
+// @param latitude   latitude du lieu
+// @param altitude   altitude du lieu
+// @return 0 = OK,  1= erreur
+//
+// @TODO il vaudrait mieux envoyer les cordonnees a l'interface de controle du T193
+//
+//-------------------------------------------------------------
 int tel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,double altitude)
-/* ---------------------------------------------------- */
-/* --- called by : tel1 home {PGS long e|w lat alt} --- */
-/* ---------------------------------------------------- */
 {
-   //return mytel_home_set(tel,longitude,ew,latitude,altitude);
-      return 0;
+   sprintf(tel->gpsHome,"GPS %f %s %f %f",longitude,ew,latitude, altitude);
+   return 0;
 
 }
 
@@ -1926,7 +1968,7 @@ void mytel_processNotification(struct telprop *tel, char * notification) {
                   // je memorise le mouvement
                   tel->radecIsMoving = moveCode;
                   // je corrige les coordonnees avec le modèle de pointage
-                  // TODO : inserer ici le caoorection avec le modèle de pointage
+                  // TODO : inserer ici le correction avec le modèle de pointage
                   strcpy(ra, raBrut);   // pour l'instant je copie les coordonnees
                   strcpy(dec, decBrut); 
                   // j'envoie les coordonnes aux clients du serveur de coordonnees

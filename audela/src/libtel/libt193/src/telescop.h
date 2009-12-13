@@ -65,6 +65,7 @@ struct telprop {
    int radecIsMoving ;   // 1=mouvement en cours 0=pas de mouvement en cours 
    int focusIsMoving ;   // 1=mouvement en cours 0=pas de mouvement en cours de la focalisation
    Tcl_Channel telescopeCoordServerSocket;
+   char gpsHome[128] ;   // position GPS du telescope , exemple: "GPS 5.7157 E 43.931892 633.9"
 };
 
 int tel_init(struct telprop *tel, int argc, char **argv);
