@@ -2,7 +2,7 @@
 # Fichier : acqvideo.tcl
 # Description : Outil d'acquisition video
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: acqvideo.tcl,v 1.11 2009-07-13 21:38:51 robertdelmas Exp $
+# Mise a jour $Id: acqvideo.tcl,v 1.12 2009-12-13 16:40:31 robertdelmas Exp $
 #
 
 #==============================================================
@@ -1688,7 +1688,7 @@ proc acqvideoBuildIF { visuNo } {
 
    #--- Bouton de configuration de la WebCam
    frame $panneau(acqvideo,$visuNo,This).pose -borderwidth 2 -relief ridge
-      button $panneau(acqvideo,$visuNo,This).pose.conf -text $caption(acqvideo,pose) \
+      button $panneau(acqvideo,$visuNo,This).pose.conf -text $caption(acqvideo,pose+reglages) \
          -command "::acqvideo::webcamConfigure $visuNo"
       pack $panneau(acqvideo,$visuNo,This).pose.conf -fill x -expand true -ipady 3
    pack $panneau(acqvideo,$visuNo,This).pose -side top -fill x
