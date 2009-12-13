@@ -96,6 +96,10 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat;for;f90"
 # Begin Source File
 
+SOURCE=..\src\coordserver.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\libt193.def
 # End Source File
 # Begin Source File
@@ -118,6 +122,10 @@ SOURCE=..\src\teltcl.c
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl;fi;fd"
+# Begin Source File
+
+SOURCE=..\src\coordserver.h
+# End Source File
 # Begin Source File
 
 SOURCE=..\src\libname.h
