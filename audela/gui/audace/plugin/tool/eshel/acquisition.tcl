@@ -2,25 +2,21 @@
 # Fichier : acquisition.tcl
 # Description : acquisition eShel
 # Auteur : Michel PUJOL
-# Mise a jour $Id: acquisition.tcl,v 1.1 2009-11-07 08:13:07 michelpujol Exp $
+# Mise a jour $Id: acquisition.tcl,v 1.2 2009-12-13 16:42:11 robertdelmas Exp $
 #
 
 namespace eval ::eshel::acquisition {
    variable private
-   set private(currentSeriesId)  ""
+
+   set private(currentSeriesId) ""
 }
 
 proc ::eshel::acquisition::validateFitsData { value valueLabel } {
-
    if { [string length $value] > 70 } {
       error "$valueLabel is too large (must be < 70 C"
    }
 
-
-
 }
-
-
 
 ## startSequence ------------------------------------------------------------
 # lance une sequence d'acquisition
@@ -122,7 +118,6 @@ proc ::eshel::acquisition::startSequence { visuNo actionList { sequenceName "" }
    #--- petit raccourci bien utile
    set bufNo     [ ::confVisu::getBufNo $visuNo ]
 
-
    #--- Boucle des repetitions de la sequence
    for { set repeatCounter 1 } { $repeatCounter <= $sequenceRepeat && $private($visuNo,demande_arret) == 0 } { incr repeatCounter } {
       logInfo "$sequenceName: $::caption(eshel,acquisition,sequenceBegin) $repeatCounter/$sequenceRepeat\n"
@@ -216,7 +211,6 @@ proc ::eshel::acquisition::startSequence { visuNo actionList { sequenceName "" }
             #--- actionType != wait
             #--- je positionne l'indicateur d'etat de la sequence d'acquisition
             set private($visuNo,acquisitionState) "acquisition"
-
 
             #--- je configure le binning de la camera
             if { [::confCam::getPluginProperty $camItem hasBinning] == "1" } {
@@ -316,17 +310,17 @@ proc ::eshel::acquisition::startSequence { visuNo actionList { sequenceName "" }
 
                   #--- je donne les valeurs des mots clefs optionnels
                   set configId $::conf(eshel,currentInstrument)
-                  ::keyword::setKeywordValue $visuNo "IMAGETYP" $imageType
-                  ::keyword::setKeywordValue $visuNo "OBJNAME"  $actionParams(objectName)
-                  ::keyword::setKeywordValue $visuNo "SERIESID" $private(currentSeriesId)
-                  ::keyword::setKeywordValue $visuNo "DETNAM"   $::conf(eshel,instrument,config,$configId,cameraName)
-                  ::keyword::setKeywordValue $visuNo "INSTRUME" $::conf(eshel,instrument,config,$configId,spectroName)
-                  ::keyword::setKeywordValue $visuNo "TELESCOP" $::conf(eshel,instrument,config,$configId,telescopeName)
-                  ::keyword::setKeywordValue $visuNo "CONFNAME" $::conf(eshel,instrument,config,$configId,configName)
-                  ::keyword::setKeywordValue $visuNo "OBSERVER" $::conf(posobs,nom_observateur)
-                  ::keyword::setKeywordValue $visuNo "SWCREATE" "eShel-[package present eshel]"
+                  ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "IMAGETYP" $imageType
+                  ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "OBJNAME"  $actionParams(objectName)
+                  ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "SERIESID" $private(currentSeriesId)
+                  ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "DETNAM"   $::conf(eshel,instrument,config,$configId,cameraName)
+                  ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "INSTRUME" $::conf(eshel,instrument,config,$configId,spectroName)
+                  ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "TELESCOP" $::conf(eshel,instrument,config,$configId,telescopeName)
+                  ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "CONFNAME" $::conf(eshel,instrument,config,$configId,configName)
+                  ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "OBSERVER" $::conf(posobs,nom_observateur)
+                  ::keyword::setKeywordValue $visuNo $::conf(eshel,keywordConfigName) "SWCREATE" "eShel-[package present eshel]"
                   #--- j'ajoute des mots clefs dans l'en-tete FITS de l'image
-                  foreach keyword [ ::keyword::getKeywords $visuNo ] {
+                  foreach keyword [ ::keyword::getKeywords $visuNo $::conf(eshel,keywordConfigName) ] {
                      #--- j'ajoute tous les mots cles qui ne sont pas vide
                      buf$bufNo setkwd $keyword
                   }
@@ -450,7 +444,6 @@ proc ::eshel::acquisition::startSequence { visuNo actionList { sequenceName "" }
 
    } ; # fin de la boucle de repetion de la sequence
 
-
    logInfo "$sequenceName: $::caption(eshel,acquisition,sequenceEnd)\n"
    stopUpdateStatus $visuNo
    set private($visuNo,demande_arret) "0"
@@ -570,6 +563,7 @@ proc ::eshel::acquisition::stopUpdateStatus { visuNo } {
 #------------------------------------------------------------
 proc ::eshel::acquisition::updateStatus { visuNo statusLabel imageCount imageNb expTime camItem } {
    variable private
+
    if { $private($visuNo,updateStatus) == 1 } {
       set camNo [::confCam::getCamNo $camItem]
       if { $camNo == 0 } {
@@ -599,6 +593,7 @@ proc ::eshel::acquisition::updateStatus { visuNo statusLabel imageCount imageNb 
 #------------------------------------------------------------
 proc ::eshel::acquisition::getCurrentSeriesID { } {
    variable private
+
    return $private(currentSeriesId)
 }
 

@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqzadko.tcl,v 1.10 2009-11-17 16:56:54 robertdelmas Exp $
+# Mise a jour $Id: acqzadko.tcl,v 1.11 2009-12-13 16:40:55 robertdelmas Exp $
 #
 
 #==============================================================
@@ -514,6 +514,9 @@ proc ::acqzadko::Enregistrement_Var { visuNo } {
 #***** Procedure startTool *************************************
 proc ::acqzadko::startTool { { visuNo 1 } } {
    global panneau
+
+   #--- On cree la variable de configuration des mots cles
+   if { ! [ info exists ::conf(acqzadko,keywordConfigName) ] } { set ::conf(acqzadko,keywordConfigName) "default" }
 
    #--- Creation des fenetres auxiliaires si necessaire
    if { $panneau(acqzadko,$visuNo,mode) == "4" } {
@@ -1336,7 +1339,7 @@ proc ::acqzadko::Go { visuNo } {
          }
 
          #--- Rajoute des mots cles dans l'en-tete FITS
-         foreach keyword [ ::keyword::getKeywords $visuNo ] {
+         foreach keyword [ ::keyword::getKeywords $visuNo $::conf(acqzadko,keywordConfigName) ] {
             buf$bufNo setkwd $keyword
          }
          #--- je trace la duree réelle de la pose s'il y a eu une interruption

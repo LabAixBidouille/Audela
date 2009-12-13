@@ -2,7 +2,7 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snacq.tcl,v 1.21 2009-11-17 17:01:41 robertdelmas Exp $
+# Mise a jour $Id: snacq.tcl,v 1.22 2009-12-13 16:46:02 robertdelmas Exp $
 #
 
 # ===================================================================
@@ -493,7 +493,7 @@ pack $audace(base).snacq.frame16 \
    #--- Cree un boutton
    button $audace(base).snacq.frame16.but_mots_cles \
       -text "$caption(snacq,mots_cles)" -borderwidth 2 \
-      -command { ::keyword::run $audace(visuNo) }
+      -command { ::keyword::run $audace(visuNo) ::conf(supernovae,keywordConfigName) }
    pack $audace(base).snacq.frame16.but_mots_cles \
       -in $audace(base).snacq.frame16 -side left -anchor w \
       -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -638,7 +638,7 @@ bind $audace(base).snacq.frame10.labURL_position_localite <ButtonPress-1> {
 
 bind $audace(base).snacq.frame15.labURL_foclen <ButtonPress-1> {
    if {[::cam::list]!=""} {
-      ::keyword::run $audace(visuNo)
+      ::keyword::run $audace(visuNo) ::conf(supernovae,keywordConfigName)
       tkwait window $audace(base).keyword
       set snconf(foclen) $::keyword::private(focale_resultante)
       set cap3 "$snconf(foclen)"
@@ -1058,7 +1058,7 @@ proc snacq_go { {sndebug 0} } {
             }
 
             #--- Rajoute des mots cles dans l'en-tete FITS
-            foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
+            foreach keyword [ ::keyword::getKeywords $audace(visuNo) $::conf(supernovae,keywordConfigName) ] {
                buf$audace(bufNo) setkwd $keyword
             }
 

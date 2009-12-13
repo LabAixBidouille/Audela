@@ -3,17 +3,17 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.33 2009-12-04 12:37:58 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.34 2009-12-13 16:46:39 robertdelmas Exp $
 #
 
 #============================================================
 # Declaration du namespace tlscp
 #    initialise le namespace
 #============================================================
-package provide tlscp 1.1
-package require audela 1.4.0
 
 namespace eval ::tlscp {
+   package provide tlscp 1.1
+   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] tlscp.cap ]
@@ -592,16 +592,11 @@ proc ::tlscp::adaptPanel { visuNo args } {
 proc ::tlscp::startTool { visuNo } {
    variable private
 
-   #--- Je selectionne les mots cles optionnels a ajouter dans les images
-   #--- Ce sont les mots cles OBJNAME, RA, DEC et EQUINOX
-   ::keyword::selectKeywords $visuNo [ list OBJNAME RA DEC EQUINOX ]
+   #--- On cree la variable de configuration des mots cles
+   if { ! [ info exists ::conf(tlscp,keywordConfigName) ] } { set ::conf(tlscp,keywordConfigName) "default" }
 
-   #--- Je selectionne la liste des mots cles non modifiables
-   ::keyword::setKeywordState $visuNo [ list OBJNAME RA DEC EQUINOX ]
-
-   #--- Je force la capture des mots cles OBJNAME, RA, DEC et EQUINOX en automatique
-   ::keyword::setKeywordsObjRaDecAuto
-   ::keyword::setKeywordsEquinoxAuto
+   #--- Je selectionne les mots cles selon les exigences de l'outil
+   ::tlscp::configToolKeywords $visuNo
 
    #--- j'active les traces et affiche l'outil
    trace add variable ::conf(telescope) write "::tlscp::adaptPanel $visuNo"
@@ -646,7 +641,7 @@ proc ::tlscp::stopTool { visuNo } {
    }
 
    #--- Les mots cles OBJNAME, RA, DEC et EQUINOX sont a nouveau modifiables
-   ::keyword::setKeywordState $visuNo [ list ]
+   ::keyword::setKeywordState $visuNo $::conf(tlscp,keywordConfigName) [ list ]
 
    #--- Je force la capture des mots cles OBJNAME, RA, DEC et EQUINOX en manuel
    ::keyword::setKeywordsObjRaDecManuel
@@ -679,6 +674,28 @@ proc ::tlscp::stopTool { visuNo } {
       trace remove variable ::conf($::conf(telescope),modele) write "::tlscp::adaptPanel $visuNo"
    }
    pack forget $private($visuNo,This)
+}
+
+#------------------------------------------------------------
+# configToolKeywords
+#    configure les mots cles FITS de l'outil
+#------------------------------------------------------------
+proc ::tlscp::configToolKeywords { visuNo { configName "" } } {
+   #--- Je traite la variable configName
+   if { $configName != "" } {
+      set ::conf(tlscp,keywordConfigName) $configName
+   }
+
+   #--- Je selectionne les mots cles optionnels a ajouter dans les images
+   #--- Ce sont les mots cles OBJNAME, RA, DEC et EQUINOX
+   ::keyword::selectKeywords $visuNo $::conf(tlscp,keywordConfigName) [ list OBJNAME RA DEC EQUINOX ]
+
+   #--- Je selectionne la liste des mots cles non modifiables
+   ::keyword::setKeywordState $visuNo $::conf(tlscp,keywordConfigName) [ list OBJNAME RA DEC EQUINOX ]
+
+   #--- Je force la capture des mots cles OBJNAME, RA, DEC et EQUINOX en automatique
+   ::keyword::setKeywordsObjRaDecAuto
+   ::keyword::setKeywordsEquinoxAuto
 }
 
 #------------------------------------------------------------
@@ -928,7 +945,7 @@ proc ::tlscp::startAcquisition { visuNo  } {
 
    #--- Rajoute des mots cles dans l'en-tete FITS
    set bufNo [ ::confVisu::getBufNo $visuNo ]
-   foreach keyword [ ::keyword::getKeywords $visuNo ] {
+   foreach keyword [ ::keyword::getKeywords $visuNo $::conf(tlscp,keywordConfigName) ] {
       buf$bufNo setkwd $keyword
    }
 
@@ -1037,7 +1054,7 @@ proc ::tlscp::startCenter { visuNo { methode "" } } {
 
    #--- j'ajoute les mots cles dans l'en-tete FITS
    set bufNo [::confVisu::getBufNo $visuNo]
-   foreach keyword [ ::keyword::getKeywords $visuNo ] {
+   foreach keyword [ ::keyword::getKeywords $visuNo $::conf(tlscp,keywordConfigName) ] {
       buf$bufNo setkwd $keyword
    }
 
@@ -1906,7 +1923,7 @@ proc ::tlscp::config::fillConfigPage { frm visuNo } {
    frame $frm.fits
       label $frm.fits.labFits -text "$caption(tlscp,en-tete_fits)"
       button $frm.fits.buttonFits -text "$caption(tlscp,mots_cles)" \
-         -command "::keyword::run $visuNo"
+         -command "::keyword::run $visuNo ::conf(tlscp,keywordConfigName)"
       pack $frm.fits.labFits -anchor n -side left -pady 10
       pack $frm.fits.buttonFits -anchor n -side left -padx 6 -pady 10 -ipadx 20
 

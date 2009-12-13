@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.50 2009-11-17 16:59:45 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.51 2009-12-13 16:42:58 robertdelmas Exp $
 #
 
 #============================================================
@@ -429,7 +429,10 @@ proc ::scan::updateCellDim { args } {
 proc ::scan::startTool { visuNo } {
    variable This
    variable parametres
-   global audace caption panneau
+   global caption panneau
+
+   #--- On cree la variable de configuration des mots cles
+   if { ! [ info exists ::conf(scan,keywordConfigName) ] } { set ::conf(scan,keywordConfigName) "default" }
 
    #--- Chargement de la configuration
    chargementVar
@@ -462,15 +465,8 @@ proc ::scan::startTool { visuNo } {
    #--- Mise a jour de la dimension du pixel a la connexion d'une camera
    updateCellDim
 
-   #--- Je selectionne les mots cles optionnels a decocher
-   #--- Les mots cles RA et DEC doivent obligatoirement etre decoches
-   ::keyword::deselectKeywords $audace(visuNo) [ list RA DEC ]
-
-   #--- Je selectionne la liste des mots cles non modifiables
-   ::keyword::setKeywordState $audace(visuNo) [ list RA DEC ]
-
-   #--- Je force la capture des mots cles RA et DEC en manuel
-   ::keyword::setKeywordsRaDecManuel
+   #--- Je selectionne les mots cles selon les exigences de l'outil
+   ::scan::configToolKeywords $visuNo
 
    #--- Mise en service de la surveillance de la connexion d'une camera
    ::confVisu::addCameraListener $visuNo ::scan::adaptOutilScan
@@ -491,7 +487,7 @@ proc ::scan::startTool { visuNo } {
 #------------------------------------------------------------
 proc ::scan::stopTool { visuNo } {
    variable This
-   global audace panneau
+   global panneau
 
    #--- Je verifie si une operation est en cours
    if { $panneau(scan,acquisition) == 1 } {
@@ -502,7 +498,7 @@ proc ::scan::stopTool { visuNo } {
    enregistrementVar
 
    #--- Les mots cles RA et DEC sont a nouveau modifiables
-   ::keyword::setKeywordState $audace(visuNo) [ list ]
+   ::keyword::setKeywordState $visuNo $::conf(scan,keywordConfigName) [ list ]
 
    #--- Arret de la surveillance de la connexion d'une camera
    ::confVisu::removeCameraListener $visuNo ::scan::adaptOutilScan
@@ -510,6 +506,27 @@ proc ::scan::stopTool { visuNo } {
 
    #---
    pack forget $This
+}
+
+#------------------------------------------------------------
+# configToolKeywords
+#    configure les mots cles FITS de l'outil
+#------------------------------------------------------------
+proc ::scan::configToolKeywords { visuNo { configName "" } } {
+   #--- Je traite la variable configName
+   if { $configName != "" } {
+      set ::conf(scan,keywordConfigName) $configName
+   }
+
+   #--- Je selectionne les mots cles optionnels a decocher
+   #--- Les mots cles RA et DEC doivent obligatoirement etre decoches
+   ::keyword::deselectKeywords $visuNo $::conf(scan,keywordConfigName) [ list RA DEC ]
+
+   #--- Je selectionne la liste des mots cles non modifiables
+   ::keyword::setKeywordState $visuNo $::conf(scan,keywordConfigName) [ list RA DEC ]
+
+   #--- Je force la capture des mots cles RA et DEC en manuel
+   ::keyword::setKeywordsRaDecManuel
 }
 
 #------------------------------------------------------------
@@ -668,7 +685,7 @@ proc ::scan::cmdGo { { motor motoron } } {
          scan $w $h $bin $binY $dt $f
 
          #--- Rajoute des mots cles dans l'en-tete FITS
-         foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
+         foreach keyword [ ::keyword::getKeywords $audace(visuNo) $::conf(scan,keywordConfigName) ] {
             buf$audace(bufNo) setkwd $keyword
          }
 

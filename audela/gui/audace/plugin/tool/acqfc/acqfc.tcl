@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.89 2009-11-24 22:49:06 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.90 2009-12-13 16:39:31 robertdelmas Exp $
 #
 
 #==============================================================
@@ -495,6 +495,9 @@ proc ::acqfc::Enregistrement_Var { visuNo } {
 #***** Procedure startTool *************************************
 proc ::acqfc::startTool { { visuNo 1 } } {
    global panneau
+
+   #--- On cree la variable de configuration des mots cles
+   if { ! [ info exists ::conf(acqfc,keywordConfigName) ] } { set ::conf(acqfc,keywordConfigName) "default" }
 
    #--- Creation des fenetres auxiliaires si necessaire
    if { $panneau(acqfc,$visuNo,mode) == "4" } {
@@ -1317,7 +1320,7 @@ proc ::acqfc::Go { visuNo } {
          }
 
          #--- Rajoute des mots cles dans l'en-tete FITS
-         foreach keyword [ ::keyword::getKeywords $visuNo ] {
+         foreach keyword [ ::keyword::getKeywords $visuNo $::conf(acqfc,keywordConfigName) ] {
             buf$bufNo setkwd $keyword
          }
 
@@ -2429,7 +2432,7 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
    pack $panneau(acqfc,$visuNo,This).pose -side top -fill x
 
    #--- Bouton de configuration de la WebCam en lieu et place du widget pose
-   button $panneau(acqfc,$visuNo,This).pose.conf -text $caption(acqfc,pose) \
+   button $panneau(acqfc,$visuNo,This).pose.conf -text $caption(acqfc,pose+reglages) \
       -command "::acqfc::webcamConfigure $visuNo"
    pack $panneau(acqfc,$visuNo,This).pose.conf -fill x -expand true -ipady 3
 

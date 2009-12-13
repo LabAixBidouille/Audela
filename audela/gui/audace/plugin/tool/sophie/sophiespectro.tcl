@@ -2,7 +2,7 @@
 # @file     sophiespectro.tcl
 # @brief    fichier du namespace ::sophie::spectro
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiespectro.tcl,v 1.11 2009-11-17 17:01:03 robertdelmas Exp $
+# @version  $Id: sophiespectro.tcl,v 1.12 2009-12-13 16:45:08 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -242,18 +242,18 @@ proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms seeing
          #--- j'ajoute le repertoire dans le nom du fichier
          set fileName [file join $::audace(rep_images) $shortName]
          #--- j'ajoute les mots cles dans l'image integree
-         ::keyword::setKeywordValue $visuNo "RA_MEAN"  $alphaMean
-         ::keyword::setKeywordValue $visuNo "RA_RMS"   $alphaRms
-         ::keyword::setKeywordValue $visuNo "DEC_MEAN" $deltaMean
-         ::keyword::setKeywordValue $visuNo "DEC_RMS"  $deltaRms
-         ::keyword::setKeywordValue $visuNo "SEEING"   $seeing
-         ::keyword::setKeywordValue $visuNo "SKYLEVEL" $skyLevel
-         ::keyword::setKeywordValue $visuNo "DETNAM"   [::confCam::getPluginProperty $camItem "name"]
-         ::keyword::setKeywordValue $visuNo "TELESCOP" $::conf(telescope)
-         ::keyword::setKeywordValue $visuNo "SWCREATE" "[::audela::getPluginTitle] $::audela(version)"
+         ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "RA_MEAN"  $alphaMean
+         ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "RA_RMS"   $alphaRms
+         ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "DEC_MEAN" $deltaMean
+         ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "DEC_RMS"  $deltaRms
+         ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "SEEING"   $seeing
+         ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "SKYLEVEL" $skyLevel
+         ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "DETNAM"   [::confCam::getPluginProperty $camItem "name"]
+         ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "TELESCOP" $::conf(telescope)
+         ::keyword::setKeywordValue $visuNo $::conf(sophie,keywordConfigName) "SWCREATE" "[::audela::getPluginTitle] $::audela(version)"
          set keywordNameList [list RA_MEAN RA_RMS DEC_MEAN DEC_RMS SEEING SKYLEVEL DETNAM TELESCOP SWCREATE]
          #--- j'ajoute des mots cles dans l'en-tete FITS de l'image
-         foreach keyword [ ::keyword::getKeywords $visuNo $keywordNameList] {
+         foreach keyword [ ::keyword::getKeywords $visuNo $::conf(sophie,keywordConfigName) $keywordNameList] {
             #--- j'ajoute tous les mots cles qui ne sont pas vide
             buf$sumBufNo setkwd $keyword
          }

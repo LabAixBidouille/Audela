@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.39 2009-11-04 18:48:46 robertdelmas Exp $
+# @version   $Id: sophie.tcl,v 1.40 2009-12-13 16:44:35 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -479,6 +479,9 @@ proc ::sophie::deletePluginInstance { visuNo } {
 proc ::sophie::startTool { visuNo } {
    variable private
 
+   #--- On cree la variable de configuration des mots cles
+   if { ! [ info exists ::conf(sophie,keywordConfigName) ] } { set ::conf(sophie,keywordConfigName) "default" }
+
    pack $private(frm) -side left -fill y
 
    #--- je cree les bind pour les items "::sophie"
@@ -525,11 +528,8 @@ proc ::sophie::startTool { visuNo } {
    #--- j'intialise la position de l'attenuateur
    ::sophie::initFilter
 
-   #--- je selectionne les mots cles optionnels a ajouter dans les images
-   ::keyword::selectKeywords $visuNo [list RA_MEAN RA_RMS DEC_MEAN DEC_RMS DETNAM INSTRUME TELESCOP SITENAME SITELONG SITELAT SWCREATE]
-
-   #--- je selectionne la liste des mots cles non modifiables
-   ::keyword::setKeywordState $visuNo [list RA_MEAN RA_RMS DEC_MEAN DEC_RMS DETNAM INSTRUME TELESCOP ]
+   #--- Je selectionne les mots cles selon les exigences de l'outil
+   ::sophie::configToolKeywords $visuNo
 }
 
 #------------------------------------------------------------
@@ -582,9 +582,26 @@ proc ::sophie::stopTool { visuNo } {
    ::sophie::control::closeWindow $visuNo
 
    #--- je deselectionne la liste des mots cles non modifiables
-   ::keyword::setKeywordState $visuNo [list ]
+   ::keyword::setKeywordState $visuNo $::conf(sophie,keywordConfigName) [list ]
 
    #--- je masque l'outil
    pack forget $private(frm)
+}
+
+#------------------------------------------------------------
+# configToolKeywords
+#    configure les mots cles FITS de l'outil
+#------------------------------------------------------------
+proc ::sophie::configToolKeywords { visuNo { configName "" } } {
+   #--- Je traite la variable configName
+   if { $configName != "" } {
+      set ::conf(sophie,keywordConfigName) $configName
+   }
+
+   #--- je selectionne les mots cles optionnels a ajouter dans les images
+   ::keyword::selectKeywords $visuNo $::conf(sophie,keywordConfigName) [list RA_MEAN RA_RMS DEC_MEAN DEC_RMS DETNAM INSTRUME TELESCOP SITENAME SITELONG SITELAT SWCREATE]
+
+   #--- je selectionne la liste des mots cles non modifiables
+   ::keyword::setKeywordState $visuNo $::conf(sophie,keywordConfigName) [list RA_MEAN RA_RMS DEC_MEAN DEC_RMS DETNAM INSTRUME TELESCOP ]
 }
 

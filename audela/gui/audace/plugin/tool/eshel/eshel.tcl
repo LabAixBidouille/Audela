@@ -2,7 +2,7 @@
 # Fichier : eshel.tcl
 # Description : outil de fabrication des fichier Kit et de deploiement des plugin
 # Auteurs : Michel Pujol
-# Mise a jour $Id: eshel.tcl,v 1.1 2009-11-07 08:13:07 michelpujol Exp $
+# Mise a jour $Id: eshel.tcl,v 1.2 2009-12-13 16:42:26 robertdelmas Exp $
 #
 
 ##------------------------------------------------------------
@@ -107,7 +107,6 @@ proc ::eshel::deletePluginInstance { visuNo } {
    #--- je ferme le fichier de trace
    closeLogFile
 
-
 }
 
 #------------------------------------------------------------
@@ -146,77 +145,78 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
    }
 
    #--- je cree les variables globales si elles n'existaient pas
-   if { ! [ info exists conf(eshel,mainDirectory) ] }    { set conf(eshel,mainDirectory)    "$::audace(rep_images)" }
-   if { ! [ info exists conf(eshel,rawDirectory) ] }     { set conf(eshel,rawDirectory)     "$::audace(rep_images)/raw" }
-   if { ! [ info exists conf(eshel,referenceDirectory)]} { set conf(eshel,referenceDirectory) "$::audace(rep_images)/reference" }
-   if { ! [ info exists conf(eshel,tempDirectory) ] }    { set conf(eshel,tempDirectory)    "$::audace(rep_images)/temp" }
-   if { ! [ info exists conf(eshel,archiveDirectory) ] } { set conf(eshel,archiveDirectory) "$::audace(rep_images)/archive" }
-   if { ! [ info exists conf(eshel,processedDirectory)]} { set conf(eshel,processedDirectory) "$::audace(rep_images)/processed" }
-   if { ! [ info exists conf(eshel,scriptFileName) ] }   { set conf(eshel,scriptFileName)    "process.tcl" }
-   if { ! [ info exists conf(eshel,currentSequenceId) ] }  { set conf(eshel,currentSequenceId)   "object"}
-   if { ! [ info exists conf(eshel,expnb) ] }            { set conf(eshel,expnb)             1 }
-   if { ! [ info exists conf(eshel,exptime) ] }          { set conf(eshel,exptime)           1 }
-   if { ! [ info exists conf(eshel,objectList) ] }       { set conf(eshel,objectList)        "" }
-   if { ! [ info exists conf(eshel,instrume) ] }         { set conf(eshel,instrume)          "eShel #001" }
-   if { ! [ info exists conf(eshel,processAuto) ] }      { set conf(eshel,processAuto)       1 }
-   if { ! [ info exists conf(eshel,binning) ] }          { set conf(eshel,binning)           "1x1" }
-   if { ! [ info exists conf(eshel,repeat) ] }           { set conf(eshel,repeat)            1 }
-   if { ! [ info exists conf(eshel,showProfile) ] }      { set conf(eshel,showProfile)       1 }
-   if { ! [ info exists conf(eshel,enabledLogFile) ] }   { set conf(eshel,enabledLogFile)    1 }
-   if { ! [ info exists conf(eshel,enableComment) ] }    { set conf(eshel,enableComment)     1 }
-   if { ! [ info exists conf(eshel,enableGuidingUnit) ]} { set conf(eshel,enableGuidingUnit) 1 }
-   if { ! [ info exists conf(eshel,logFileName) ] }      { set conf(eshel,logFileName)       "eshellog.html" }
+   if { ! [ info exists conf(eshel,mainDirectory) ] }     { set conf(eshel,mainDirectory)      "$::audace(rep_images)" }
+   if { ! [ info exists conf(eshel,rawDirectory) ] }      { set conf(eshel,rawDirectory)       "$::audace(rep_images)/raw" }
+   if { ! [ info exists conf(eshel,referenceDirectory)]}  { set conf(eshel,referenceDirectory) "$::audace(rep_images)/reference" }
+   if { ! [ info exists conf(eshel,tempDirectory) ] }     { set conf(eshel,tempDirectory)      "$::audace(rep_images)/temp" }
+   if { ! [ info exists conf(eshel,archiveDirectory) ] }  { set conf(eshel,archiveDirectory)   "$::audace(rep_images)/archive" }
+   if { ! [ info exists conf(eshel,processedDirectory)]}  { set conf(eshel,processedDirectory) "$::audace(rep_images)/processed" }
+   if { ! [ info exists conf(eshel,scriptFileName) ] }    { set conf(eshel,scriptFileName)     "process.tcl" }
+   if { ! [ info exists conf(eshel,currentSequenceId) ] } { set conf(eshel,currentSequenceId)  "object"}
+   if { ! [ info exists conf(eshel,expnb) ] }             { set conf(eshel,expnb)              1 }
+   if { ! [ info exists conf(eshel,exptime) ] }           { set conf(eshel,exptime)            1 }
+   if { ! [ info exists conf(eshel,objectList) ] }        { set conf(eshel,objectList)         "" }
+   if { ! [ info exists conf(eshel,instrume) ] }          { set conf(eshel,instrume)           "eShel #001" }
+   if { ! [ info exists conf(eshel,processAuto) ] }       { set conf(eshel,processAuto)        1 }
+   if { ! [ info exists conf(eshel,binning) ] }           { set conf(eshel,binning)            "1x1" }
+   if { ! [ info exists conf(eshel,repeat) ] }            { set conf(eshel,repeat)             1 }
+   if { ! [ info exists conf(eshel,showProfile) ] }       { set conf(eshel,showProfile)        1 }
+   if { ! [ info exists conf(eshel,enabledLogFile) ] }    { set conf(eshel,enabledLogFile)     1 }
+   if { ! [ info exists conf(eshel,enableComment) ] }     { set conf(eshel,enableComment)      1 }
+   if { ! [ info exists conf(eshel,enableGuidingUnit) ]}  { set conf(eshel,enableGuidingUnit)  1 }
+   if { ! [ info exists conf(eshel,logFileName) ] }       { set conf(eshel,logFileName)        "eshellog.html" }
+   if { ! [ info exists conf(eshel,keywordConfigName) ] } { set conf(eshel,keywordConfigName)  "default" }
 
-   if { ! [ info exists conf(eshel,currentInstrument) ] } { set conf(eshel,currentInstrument) "default" }
+   if { ! [ info exists conf(eshel,currentInstrument) ] } { set conf(eshel,currentInstrument)  "default" }
 
    #--- Parametres instrument par defaut
    set prefix "eshel,instrument,config,default"
-   if { ! [ info exists conf($prefix,configName) ] }     { set conf($prefix,configName)   "default"     }
+   if { ! [ info exists conf($prefix,configName) ] }      { set conf($prefix,configName)       "default" }
    #------ Spectographe
-   if { ! [ info exists conf($prefix,spectroName) ] }    { set conf($prefix,spectroName)  "eshel"     }
-   if { ! [ info exists conf($prefix,alpha) ] }          { set conf($prefix,alpha)        62.2   }
-   if { ! [ info exists conf($prefix,gamma) ] }          { set conf($prefix,gamma)        5.75    }
-   if { ! [ info exists conf($prefix,grating) ] }        { set conf($prefix,grating)      79.0   }
-   if { ! [ info exists conf($prefix,focale) ] }         { set conf($prefix,focale)       85.0   }
-   if { ! [ info exists conf($prefix,spectrograhLink) ] } { set conf($prefix,spectrograhLink) "" }
-   if { ! [ info exists conf($prefix,mirror,bit) ] }     { set conf($prefix,mirror,bit)    1   }
-   if { ! [ info exists conf($prefix,thar,bit) ] }       { set conf($prefix,thar,bit)      2   }
-   if { ! [ info exists conf($prefix,flat,bit) ] }       { set conf($prefix,flat,bit)      3   }
-   if { ! [ info exists conf($prefix,neon,bit) ] }       { set conf($prefix,neon,bit)      4   }
+   if { ! [ info exists conf($prefix,spectroName) ] }     { set conf($prefix,spectroName)      "eshel" }
+   if { ! [ info exists conf($prefix,alpha) ] }           { set conf($prefix,alpha)            62.2 }
+   if { ! [ info exists conf($prefix,gamma) ] }           { set conf($prefix,gamma)            5.75 }
+   if { ! [ info exists conf($prefix,grating) ] }         { set conf($prefix,grating)          79.0 }
+   if { ! [ info exists conf($prefix,focale) ] }          { set conf($prefix,focale)           85.0 }
+   if { ! [ info exists conf($prefix,spectrograhLink) ] } { set conf($prefix,spectrograhLink)  "" }
+   if { ! [ info exists conf($prefix,mirror,bit) ] }      { set conf($prefix,mirror,bit)       1 }
+   if { ! [ info exists conf($prefix,thar,bit) ] }        { set conf($prefix,thar,bit)         2 }
+   if { ! [ info exists conf($prefix,flat,bit) ] }        { set conf($prefix,flat,bit)         3 }
+   if { ! [ info exists conf($prefix,neon,bit) ] }        { set conf($prefix,neon,bit)         4 }
    #------ Telescope
-   if { ! [ info exists conf($prefix,telescopeName) ] }  { set conf($prefix,telescopeName) "default telescope" }
+   if { ! [ info exists conf($prefix,telescopeName) ] }   { set conf($prefix,telescopeName)    "default telescope" }
    #------ Camera
-   if { ! [ info exists conf($prefix,cameraName) ] }     { set conf($prefix,cameraName)     "Audine Kaf 400" }
-   if { ! [ info exists conf($prefix,cameraLabel) ] }    { set conf($prefix,cameraLabel)    "Audine" }
-   if { ! [ info exists conf($prefix,cameraNamespace)] } { set conf($prefix,cameraNamespace) "audine" }
-   if { ! [ info exists conf($prefix,binning)] }         { set conf($prefix,binning)  [list 1 1 ] }
-   if { ! [ info exists conf($prefix,pixelSize) ] }      { set conf($prefix,pixelSize)    0.009    }
-   if { ! [ info exists conf($prefix,width) ] }          { set conf($prefix,width)        1530     }
-   if { ! [ info exists conf($prefix,height) ] }         { set conf($prefix,height)       1020     }
-   if { ! [ info exists conf($prefix,x1) ] }             { set conf($prefix,x1)           1        }
-   if { ! [ info exists conf($prefix,y1) ] }             { set conf($prefix,y1)           1        }
-   if { ! [ info exists conf($prefix,x2) ] }             { set conf($prefix,x2)           $conf($prefix,width) }
-   if { ! [ info exists conf($prefix,y2) ] }             { set conf($prefix,y2)           $conf($prefix,height) }
+   if { ! [ info exists conf($prefix,cameraName) ] }      { set conf($prefix,cameraName)       "Audine Kaf 400" }
+   if { ! [ info exists conf($prefix,cameraLabel) ] }     { set conf($prefix,cameraLabel)      "Audine" }
+   if { ! [ info exists conf($prefix,cameraNamespace)] }  { set conf($prefix,cameraNamespace)  "audine" }
+   if { ! [ info exists conf($prefix,binning)] }          { set conf($prefix,binning)          [list 1 1 ] }
+   if { ! [ info exists conf($prefix,pixelSize) ] }       { set conf($prefix,pixelSize)        0.009 }
+   if { ! [ info exists conf($prefix,width) ] }           { set conf($prefix,width)            1530 }
+   if { ! [ info exists conf($prefix,height) ] }          { set conf($prefix,height)           1020 }
+   if { ! [ info exists conf($prefix,x1) ] }              { set conf($prefix,x1)               1 }
+   if { ! [ info exists conf($prefix,y1) ] }              { set conf($prefix,y1)               1 }
+   if { ! [ info exists conf($prefix,x2) ] }              { set conf($prefix,x2)               $conf($prefix,width) }
+   if { ! [ info exists conf($prefix,y2) ] }              { set conf($prefix,y2)               $conf($prefix,height) }
    #------ Traitement
-   if { ! [ info exists conf($prefix,quickProcess) ] }   { set conf($prefix,quickProcess) 1           }
-   if { ! [ info exists conf($prefix,boxWide) ] }        { set conf($prefix,boxWide)      25          }
-   if { ! [ info exists conf($prefix,wideOrder) ] }      { set conf($prefix,wideOrder)    12          }
-   if { ! [ info exists conf($prefix,stepOrder) ] }      { set conf($prefix,stepOrder)    18          }
-   if { ! [ info exists conf($prefix,wideSky) ] }        { set conf($prefix,wideSky)      6           }
-   if { ! [ info exists conf($prefix,threshold) ] }      { set conf($prefix,threshold)    100         }
-   if { ! [ info exists conf($prefix,minOrder) ] }       { set conf($prefix,minOrder)     33          }
-   if { ! [ info exists conf($prefix,maxOrder) ] }       { set conf($prefix,maxOrder)     44          }
-   if { ! [ info exists conf($prefix,refNum) ] }         { set conf($prefix,refNum)       34          }
-   if { ! [ info exists conf($prefix,refX) ] }           { set conf($prefix,refX)         978         }
-   if { ! [ info exists conf($prefix,refY) ] }           { set conf($prefix,refY)         826         }
-   if { ! [ info exists conf($prefix,refLambda) ] }      { set conf($prefix,refLambda)    6583.906    }
-   if { ! [ info exists conf($prefix,calibIter) ] }      { set conf($prefix,calibIter)    3           }
-   if { ! [ info exists conf($prefix,hotPixelEnabled)] } { set conf($prefix,hotPixelEnabled) 0        }
-   if { ! [ info exists conf($prefix,hotPixelList) ] }   { set conf($prefix,hotPixelList) [list ]     }
-   if { ! [ info exists conf($prefix,cosmicEnabled)] }   { set conf($prefix,cosmicEnabled) 0          }
-   if { ! [ info exists conf($prefix,cosmicThreshold)] } { set conf($prefix,cosmicThreshold) 400      }
-   if { ! [ info exists conf($prefix,responseOption)] }  { set conf($prefix,responseOption) "AUTO" }
-   if { ! [ info exists conf($prefix,responseFileName)] }  { set conf($prefix,responseFileName) "" }
+   if { ! [ info exists conf($prefix,quickProcess) ] }    { set conf($prefix,quickProcess)     1 }
+   if { ! [ info exists conf($prefix,boxWide) ] }         { set conf($prefix,boxWide)          25 }
+   if { ! [ info exists conf($prefix,wideOrder) ] }       { set conf($prefix,wideOrder)        12 }
+   if { ! [ info exists conf($prefix,stepOrder) ] }       { set conf($prefix,stepOrder)        18 }
+   if { ! [ info exists conf($prefix,wideSky) ] }         { set conf($prefix,wideSky)          6 }
+   if { ! [ info exists conf($prefix,threshold) ] }       { set conf($prefix,threshold)        100 }
+   if { ! [ info exists conf($prefix,minOrder) ] }        { set conf($prefix,minOrder)         33 }
+   if { ! [ info exists conf($prefix,maxOrder) ] }        { set conf($prefix,maxOrder)         44 }
+   if { ! [ info exists conf($prefix,refNum) ] }          { set conf($prefix,refNum)           34 }
+   if { ! [ info exists conf($prefix,refX) ] }            { set conf($prefix,refX)             978 }
+   if { ! [ info exists conf($prefix,refY) ] }            { set conf($prefix,refY)             826 }
+   if { ! [ info exists conf($prefix,refLambda) ] }       { set conf($prefix,refLambda)        6583.906 }
+   if { ! [ info exists conf($prefix,calibIter) ] }       { set conf($prefix,calibIter)        3 }
+   if { ! [ info exists conf($prefix,hotPixelEnabled)] }  { set conf($prefix,hotPixelEnabled)  0 }
+   if { ! [ info exists conf($prefix,hotPixelList) ] }    { set conf($prefix,hotPixelList)     [list ] }
+   if { ! [ info exists conf($prefix,cosmicEnabled)] }    { set conf($prefix,cosmicEnabled)    0 }
+   if { ! [ info exists conf($prefix,cosmicThreshold)] }  { set conf($prefix,cosmicThreshold)  400 }
+   if { ! [ info exists conf($prefix,responseOption)] }   { set conf($prefix,responseOption)   "AUTO" }
+   if { ! [ info exists conf($prefix,responseFileName)] } { set conf($prefix,responseFileName) "" }
    #--- liste des mots clefs a mettre dans les acquisitions
    set conf(keyword,visu1,check) "1,check,IMAGETYP 1,check,SERIESID 1,check,DETNAM 1,check,TELESCOP 1,check,OBSERVER 1,check,OBJNAME 1,check,EXPOSURE 1,check,INSTRUME 1,check,SWCREATE 1,check,SITENAME 1,check,SITELONG 1,check,SITELAT 1,check,SITEELEV"
 
@@ -228,16 +228,16 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
          { 33 40  1510 0.0 } \
          { 34 50  1480 0.0 } \
          { 35 60  1470 0.0 } \
-         { 36 75  1455 0.0  } \
-         { 37 90  1440 0.0  } \
-         { 38 105 1425 0.0  } \
-         { 39 120 1410 0.0  } \
-         { 40 135 1395 0.0  } \
+         { 36 75  1455 0.0 } \
+         { 37 90  1440 0.0 } \
+         { 38 105 1425 0.0 } \
+         { 39 120 1410 0.0 } \
+         { 40 135 1395 0.0 } \
          { 41 150 1380 0.0 } \
          { 42 165 1365 0.0 } \
          { 43 180 1350 0.0 } \
          { 44 195 1335 0.0 } \
-         { 45 210 1320 0.0  } \
+         { 45 210 1320 0.0 } \
          { 46 225 1305 0.0 } \
          { 47 240 1290 0.0 } \
          { 48 260 1270 0.0 } \
@@ -400,7 +400,6 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
       }
    }
 
-
    #--- je verifie que toutes les configurations parametres ont bien toutes les variables
    #--- si ce n'est pas le cas, je cree la variable avec la valeur de la configuration "defaut"
    foreach configPath [array names ::conf eshel,instrument,config,*,orderDefinition] {
@@ -478,7 +477,6 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
          -modifycmd "::eshel::adaptPanel $visuNo"
       pack $frm.acq.sequence -in [$frm.acq getframe] -side top -fill x
 
-
       #--- Nom de l'objet
       frame $frm.acq.object -borderwidth 2 -relief ridge
          label $frm.acq.object.lab1 -text $caption(eshel,objname) -justify left -anchor w
@@ -496,7 +494,6 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
       pack $frm.acq.object -in [$frm.acq getframe] -side top -fill x -expand 1
       #--- je selectionne la premiere valeur par defaut
       $frm.acq.sequence setvalue first
-
 
       #--- Temps de pose
       frame $frm.acq.exptime -borderwidth 2 -relief ridge
@@ -622,12 +619,9 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
    $frm.acq.repeat.combo.e  validate
 }
 
-
-
 #------------------------------------------------------------
 # ::eshel::startTool
 #    affiche la fenetre de l'outil
-#
 #------------------------------------------------------------
 proc ::eshel::startTool { visuNo } {
    variable private
@@ -638,29 +632,44 @@ proc ::eshel::startTool { visuNo } {
    #--- je m'abonne a la surveillance des changements de camera
    ::confVisu::addCameraListener $visuNo "::eshel::adaptPanel $visuNo"
 
-   #--- je selectionne les mots clefs optionnel a ajouter dans les images
-   ::keyword::selectKeywords $visuNo [list IMAGETYP OBJNAME SERIESID DETNAM INSTRUME TELESCOP CONFNAME OBSERVER SITENAME SITELONG SITELAT SWCREATE]
-   #--- je selectionne la liste des mots clefs non modifiables
-   ::keyword::setKeywordState $visuNo [list IMAGETYP OBJNAME SERIESID DETNAM INSTRUME TELESCOP CONFNAME ]
+   #--- Je selectionne les mots cles selon les exigences de l'outil
+   ::eshel::configToolKeywords $visuNo
 
 }
 
 #------------------------------------------------------------
 # ::eshel::stopTool
 #    masque la fenetre de l'outil
-#
 #------------------------------------------------------------
 proc ::eshel::stopTool { visuNo } {
    variable private
 
    #--- je supprime la liste des mots clefs non modifiables
-   ::keyword::setKeywordState $visuNo ""
+   ::keyword::setKeywordState $visuNo $::conf(eshel,keywordConfigName) ""
 
    #--- je supprime l'abonnement a la surveillance des changements de camera
    ::confVisu::removeCameraListener $visuNo "::eshel::adaptPanel $visuNo"
 
    #--- je masque le panneau
    pack forget $private($visuNo,frm)
+
+}
+
+#------------------------------------------------------------
+# ::eshel::configToolKeywords
+#    configure les mots cles FITS de l'outil
+#------------------------------------------------------------
+proc ::eshel::configToolKeywords { visuNo { configName "" } } {
+   #--- Je traite la variable configName
+   if { $configName != "" } {
+      set ::conf(eshel,keywordConfigName) $configName
+   }
+
+   #--- je selectionne les mots clefs optionnel a ajouter dans les images
+   ::keyword::selectKeywords $visuNo $::conf(eshel,keywordConfigName) [list IMAGETYP OBJNAME SERIESID DETNAM INSTRUME TELESCOP CONFNAME OBSERVER SITENAME SITELONG SITELAT SWCREATE]
+
+   #--- je selectionne la liste des mots clefs non modifiables
+   ::keyword::setKeywordState $visuNo $::conf(eshel,keywordConfigName) [list IMAGETYP OBJNAME SERIESID DETNAM INSTRUME TELESCOP CONFNAME ]
 
 }
 
@@ -943,7 +952,6 @@ proc ::eshel::onStartAcquisition { visuNo args } {
       }
    } ;#--- fin switch sequenceType
 
-
    if { $::conf(eshel,enableComment)== 1  } {
       #--- je verifie que le commentaire est correct
       if { [info exists ::eshel::private(error,comment)] } {
@@ -1106,7 +1114,6 @@ proc ::eshel::setSequenceList { visuNo } {
       $private($visuNo,frm).acq.sequence setvalue "@0"
    }
 }
-
 
 #------------------------------------------------------------
 #  setProcessAuto
@@ -1410,6 +1417,4 @@ proc ::eshel::validateString { win event X oldX class minLength maxLength errorV
    }
 
 }
-
-
 
