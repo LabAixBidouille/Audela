@@ -1,7 +1,7 @@
 #
 # Fichier : aud_proc.tcl
 # Description : Fonctions de chargement, sauvegarde et traitement d'images
-# Mise a jour $Id: aud_proc.tcl,v 1.13 2009-12-09 23:20:25 robertdelmas Exp $
+# Mise a jour $Id: aud_proc.tcl,v 1.14 2009-12-13 11:53:18 robertdelmas Exp $
 #
 
 #
@@ -183,12 +183,9 @@ proc saveima { { filename "?" } { visuNo 1 } } {
          ::colorRGB::saveKWD $visuNo
       #--- Pour une image N&B
       } elseif { [ lindex [ buf$bufNo getkwd NAXIS ] 1 ] == "2" } {
-
          set mycuts [ visu$visuNo cut ]
-         ::console::disp "mycuts = $mycuts \n"
          buf$bufNo setkwd [ list "MIPS-HI" [ lindex $mycuts 0 ] float "" "" ]
          buf$bufNo setkwd [ list "MIPS-LO" [ lindex $mycuts 1 ] float "" "" ]
-
       }
    }
 
