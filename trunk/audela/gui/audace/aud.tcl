@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.111 2009-12-09 23:14:06 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.112 2009-12-13 16:48:28 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -1289,14 +1289,20 @@ namespace eval ::audace {
       #---
       set file_names [array names file_array]
       set mem_names [array names mem_array]
+      foreach a $file_names {
+         if {[lsearch -exact $mem_names $a]==-1} {
+           # ::console::affiche_erreur "$a not in memory\n"
+            return 1
+         }
+      }
       foreach a $mem_names {
          if {[lsearch -exact $file_names $a]==-1} {
            # ::console::affiche_erreur "$a not in file\n"
             return 1
          } else {
             if {[string compare [array get file_array $a] [array get mem_array $a]]!=0} {
-              # ::console::affiche_erreur "$a different between file and mem : \"[array get file_array $a]\" \"[array get mem_array $a]\"\n"
-               return 1;
+              # ::console::affiche_erreur "$a different between file and memory : \"[array get file_array $a]\" \"[array get mem_array $a]\"\n"
+               return 1
             }
          }
       }
@@ -1348,7 +1354,7 @@ namespace eval ::audace {
          }
          close $fid
       } erreur ]} {
-        tk_messageBox -icon error -message $erreur -type ok
+         tk_messageBox -icon error -message $erreur -type ok
       }
    }
 

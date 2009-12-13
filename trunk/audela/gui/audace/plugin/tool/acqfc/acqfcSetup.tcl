@@ -2,7 +2,7 @@
 # Fichier : acqfcSetup.tcl
 # Description : Configuration de certains parametres de l'outil Acquisition
 # Auteur : Robert DELMAS
-# Mise a jour $Id: acqfcSetup.tcl,v 1.17 2009-04-01 17:27:23 robertdelmas Exp $
+# Mise a jour $Id: acqfcSetup.tcl,v 1.18 2009-12-13 16:39:48 robertdelmas Exp $
 #
 
 namespace eval ::acqfcSetup {
@@ -150,7 +150,7 @@ namespace eval ::acqfcSetup {
 
             #--- Bouton d'acces aux mots cles
             button $panneau(acqfc,$visuNo,acqfcSetup).frame3.en-tete.but -text $caption(acqfcSetup,mots_cles) \
-               -command "::keyword::run $visuNo"
+               -command "::keyword::run $visuNo ::conf(acqfc,keywordConfigName)"
             pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.en-tete.but -side left -padx 6 -pady 10 -ipadx 20
 
          pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.en-tete -side top -fill both -expand 1

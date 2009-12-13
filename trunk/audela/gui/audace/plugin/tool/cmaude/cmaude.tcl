@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude.tcl,v 1.24 2009-11-17 16:58:28 robertdelmas Exp $
+# Mise a jour $Id: cmaude.tcl,v 1.25 2009-12-13 16:41:56 robertdelmas Exp $
 #
 # Remarks :
 # The definition of some variables (binning, exp. time, rythm, etc.)
@@ -172,6 +172,9 @@ namespace eval ::cmaude {
    proc startTool { visuNo } {
       variable This
       global caption
+
+      #--- On cree la variable de configuration des mots cles
+      if { ! [ info exists ::conf(cmaude,keywordConfigName) ] } { set ::conf(cmaude,keywordConfigName) "default" }
 
       pack $This -side left -fill y
       ::console::affiche_prompt "----------------------------\n"
@@ -605,7 +608,7 @@ namespace eval ::cmaude {
       vwait status_cam$numcam
 
       #--- Rajoute des mots cles dans l'en-tete FITS
-      foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
+      foreach keyword [ ::keyword::getKeywords $audace(visuNo) $::conf(cmaude,keywordConfigName) ] {
          buf$audace(bufNo) setkwd $keyword
       }
 
@@ -785,7 +788,7 @@ namespace eval ::cmaude::config {
 
          #--- Bouton d'acces aux mots cles
          button $This.frame3.but -text $caption(cmaude,mots_cles) \
-            -command "::keyword::run $audace(visuNo)"
+            -command "::keyword::run $audace(visuNo) ::conf(cmaude,keywordConfigName)"
          pack $This.frame3.but -side left -padx 6 -pady 10 -ipadx 20
 
       pack $This.frame3 -side top -fill both -expand 1

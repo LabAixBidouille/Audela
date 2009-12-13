@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.28 2009-12-06 17:54:07 michelpujol Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.29 2009-12-13 16:40:11 robertdelmas Exp $
 #
 
 # =========================================================
@@ -252,6 +252,9 @@ namespace eval ::acqfen {
    proc startTool { visuNo } {
       variable This
 
+      #--- On cree la variable de configuration des mots cles
+      if { ! [ info exists ::conf(acqfen,keywordConfigName) ] } { set ::conf(acqfen,keywordConfigName) "default" }
+
       pack $This -side left -fill y
    }
 
@@ -422,34 +425,34 @@ namespace eval ::acqfen {
                set catchError [ catch {
                   #--- Mise a jour de variable
                   set panneau(acqfen,acquisition) "1"
-   
+
                   #--- Modification du bouton, pour eviter un second lancement
                   set panneau(acqfen,go_stop_cent) stop
                   $This.acqcent.but configure -text $caption(acqfen,stop)
                   $This.acqcentred.but configure -text $caption(acqfen,stop)
-   
+
                   #--- Suppression de la zone selectionnee avec la souris
                   if { [ lindex [ list [ ::confVisu::getBox 1 ] ] 0 ] != "" } {
                      ::confVisu::deleteBox
                   }
-   
+
                   #--- Mise a jour en-tete audace
                   wm title $audace(base) "$caption(acqfen,audace)"
-   
+
                   #--- La commande exptime permet de fixer le temps de pose de l'image.
                   cam$audace(camNo) exptime $panneau(acqfen,pose_centrage)
-   
+
                   #--- La commande bin permet de fixer le binning.
                   cam$audace(camNo) bin [list $panneau(acqfen,bin_centrage) $panneau(acqfen,bin_centrage)]
-   
+
                   #--- La commande window permet de fixer le fenetrage de numerisation du CCD
                   cam$audace(camNo) window [list 1 1 [lindex [cam$audace(camNo) nbcells] 0] [lindex [cam$audace(camNo) nbcells] 1]]
-   
+
                   #--- Cas des poses de 0 s : Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
                   if { $panneau(acqfen,pose_centrage) == "0" } {
                      ::camera::Avancement_pose "1"
                   }
-   
+
                   #--- Lecture du CCD
                   cam$audace(camNo) acq
                   #--- mise a jour de status_cam (pour multithread)
@@ -458,7 +461,7 @@ namespace eval ::acqfen {
                   ::camera::alarme_sonore $panneau(acqfen,pose_centrage)
                   #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
                   ::camera::gestionPose $panneau(acqfen,pose_centrage) 1 cam$audace(camNo) buf$audace(bufNo)
-                                                               
+
                   #--- Applique un zoom ou un scale (re-echantillonnage)
                   if {$panneau(acqfen,typezoom)=="zoom"} {
                      #--- Applique un zoom
@@ -471,27 +474,27 @@ namespace eval ::acqfen {
                         buf$audace(bufNo) scale [list $panneau(acqfen,bin_centrage) $panneau(acqfen,bin_centrage)] 1
                      }
                   }
-   
+
                   #--- Rajoute des mots cles dans l'en-tete FITS
-                  foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
+                  foreach keyword [ ::keyword::getKeywords $audace(visuNo) $::conf(acqfen,keywordConfigName) ] {
                      buf$audace(bufNo) setkwd $keyword
                   }
-   
+
                   #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
                   ::confVisu::setFileName $audace(visuNo) ""
-   
+
                   #--- Affichage avec visu auto.
                   audace::autovisu $audace(visuNo)
-   
+
                   #--- On restitue l'affichage du bouton "GO":
                   set panneau(acqfen,go_stop_cent) go
                   $This.acqcent.but configure -text $caption(acqfen,GO)
                   $This.acqcentred.but configure -text $caption(acqfen,GO)
-   
+
                   #--- On modifie le bouton "Go" des acquisitions fenetrees
                   $This.acq.but configure -text $caption(acqfen,actuxy) -command ::acqfen::actualiserCoordonnees
                   $This.acqred.but configure -text $caption(acqfen,actuxy) -command ::acqfen::actualiserCoordonnees
-   
+
                   #--- RAZ du fenetrage
                   set panneau(acqfen,X1) "-"
                   set panneau(acqfen,Y1) "-"
@@ -503,10 +506,10 @@ namespace eval ::acqfen {
                   $This.acqred.matrice_color_invariant.fen config -width $panneau(acqfen,mtx_x) -height $panneau(acqfen,mtx_y)
                   place $This.acq.matrice_color_invariant.fen -x 0 -y 0
                   place $This.acqred.matrice_color_invariant.fen -x 0 -y 0
-   
+
                   #--- Mise a jour de variable
                   set panneau(acqfen,acquisition) "0"
-                  
+
                } ]
                if { $catchError == 1 } {
                   #--- j'affiche et je trace le message d'erreur
@@ -519,9 +522,9 @@ namespace eval ::acqfen {
                   $This.acqcent.but configure -text $::caption(acqfen,GO)
                   $This.acqcentred.but configure -text $::caption(acqfen,GO)
                   set panneau(acqfen,acquisition) "0"
-                                    
+
                }
-        
+
             }
             "stop" {
                #--- Mise a jour de variable
@@ -1241,10 +1244,10 @@ namespace eval ::acqfen {
          #--- Raccourcis
          set camxis1 [lindex [cam$audace(camNo) nbcells] 0]
          set camxis2 [lindex [cam$audace(camNo) nbcells] 1]
-   
+
          #--- La commande bin permet de fixer le binning.
          cam$audace(camNo) bin [list $panneau(acqfen,bin) $panneau(acqfen,bin)]
-   
+
          #--- La commande window permet de fixer le fenetrage de numerisation du CCD
          if {$panneau(acqfen,X1) == "-"} {
             cam$audace(camNo) window [list 1 1 $camxis1 $camxis2]
@@ -1252,7 +1255,7 @@ namespace eval ::acqfen {
             cam$audace(camNo) window [list $panneau(acqfen,X1) $panneau(acqfen,Y1) \
             $panneau(acqfen,X2) $panneau(acqfen,Y2)]
          }
-   
+
          #--- Acquisition
          if {$panneau(acqfen,fenreglfen1)=="1"} {
             #--- Acquisitions avec nombre d'effacements prealables par defaut
@@ -1270,10 +1273,10 @@ namespace eval ::acqfen {
             ::camera::alarme_sonore $panneau(acqfen,pose)
             #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
             ::camera::gestionPose $panneau(acqfen,pose) 1 cam$audace(camNo) buf$audace(bufNo)
-            
+
             #--- Attente de la fin de la pose
             vwait status_cam$audace(camNo)
-         
+
             #--- Attente de la fin de la pose (evolution pour le multithread)
             set statusVariableName "::status_cam$audace(camNo)"
             if { [set $statusVariableName] == "exp" } {
@@ -1283,21 +1286,21 @@ namespace eval ::acqfen {
             for {set k 1} {$k<=$panneau(acqfen,fenreglfen12)} {incr k} {cam$audace(camNo) wipe}
             after [expr int(1000*$panneau(acqfen,pose))] [cam$audace(camNo) read]
          }
-   
+
          #--- Rajoute des mots cles dans l'en-tete FITS
-         foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
+         foreach keyword [ ::keyword::getKeywords $audace(visuNo) $::conf(acqfen,keywordConfigName) ] {
             buf$audace(bufNo) setkwd $keyword
          }
-   
+
          #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
          ::confVisu::setFileName $audace(visuNo) ""
-   
+
          #--- Fenetrage sur le buffer si la camera ne possede pas le mode fenetrage (APN et WebCam)
          if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] hasWindow ] == "0" } {
             buf$audace(bufNo) window [list $panneau(acqfen,X1) $panneau(acqfen,Y1) \
             $panneau(acqfen,X2) $panneau(acqfen,Y2)]
          }
-         
+
       } ]
       if { $catchError == 1 } {
          #--- j'affiche et je trace le message d'erreur
@@ -1354,7 +1357,7 @@ namespace eval ::acqfen {
 
       switch -exact -- $panneau(acqfen,mode) {
          "une" {
-            #--- On efface  l'ancien sous-panneau
+            #--- On efface l'ancien sous-panneau
             pack forget $This.mode.une -fill x
             #--- On met le nouveau a sa place
             pack $This.mode.serie -fill x -anchor nw
@@ -1362,7 +1365,7 @@ namespace eval ::acqfen {
             set panneau(acqfen,mode) "serie"
          }
          "serie" {
-            #--- On efface  l'ancien sous-panneau
+            #--- On efface l'ancien sous-panneau
             pack forget $This.mode.serie -fill x
             #--- On met le nouveau a sa place
             pack $This.mode.continu -fill x -anchor nw
@@ -1370,7 +1373,7 @@ namespace eval ::acqfen {
             set panneau(acqfen,mode) "continu"
          }
          "continu" {
-            #--- On efface  l'ancien sous-panneau
+            #--- On efface l'ancien sous-panneau
             pack forget $This.mode.continu -fill x
             #--- On met le nouveau a sa place
             pack $This.mode.une -fill x -anchor nw
@@ -1828,7 +1831,7 @@ proc Creefenreglfen { } {
 
          #--- Bouton d'acces aux mots cles
          button $audace(base).fenreglfen.setup.but1 -text "$caption(acqfen,mots_cles)" \
-            -command "::keyword::run $audace(visuNo)"
+            -command "::keyword::run $audace(visuNo) ::conf(acqfen,keywordConfigName)"
          pack $audace(base).fenreglfen.setup.but1 -side left -padx 6 -pady 10 -ipadx 20
 
       pack $audace(base).fenreglfen.setup -side top -fill both -expand 1

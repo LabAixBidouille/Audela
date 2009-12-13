@@ -2,7 +2,7 @@
 # Fichier : session.tcl
 # Description : configuration des parametres de session
 # Auteur : Michel PUJOL
-# Mise a jour $Id: session.tcl,v 1.1 2009-11-07 08:13:07 michelpujol Exp $
+# Mise a jour $Id: session.tcl,v 1.2 2009-12-13 16:42:42 robertdelmas Exp $
 #
 
 ################################################################
@@ -55,7 +55,6 @@ proc ::eshel::session::closeWindow { visuNo } {
    variable private
    global caption
 
-
    if { $private(apply) == "error" } {
       set private(apply)  ""
       #--- je retourne 0 pour empecher de fermer la fenetre (voir ::confGenerique::run)
@@ -76,7 +75,6 @@ proc ::eshel::session::showHelp { } {
    ::audace::showHelpPlugin [::audace::getPluginTypeDirectory [::eshel::getPluginType]] \
       [::eshel::getPluginDirectory] [::eshel::getPluginHelp] "session"
 }
-
 
 ##------------------------------------------------------------
 # enregistre les modifications
@@ -108,8 +106,6 @@ proc ::eshel::session::apply { visuNo } {
       set private(closeWindow) 0
       return
    }
-
-
 
    if { $widget(mainDirectory) != "" } {
       #--- je normalise le nom du repertoire
@@ -157,7 +153,6 @@ proc ::eshel::session::apply { visuNo } {
    set ::conf(eshel,enableComment)     $widget(enableComment)
    set ::conf(eshel,enableGuidingUnit) $widget(enableGuidingUnit)
 
-
    #--- je mets a jour la fenetre principale pour prendre en compte les modifications de la session
    ::eshel::adaptPanel $visuNo
 
@@ -203,7 +198,6 @@ proc ::eshel::session::fillConfigPage { frm visuNo } {
    ###   set widget(mainDirectory) ""
    ###}
 
-
    #--- Noms des observeteurs
    label $frm.observerLabel   -text $caption(eshel,session,observer) -justify left
    entry $frm.observerEntry   -textvariable ::eshel::session::widget(observer)  -justify left \
@@ -231,7 +225,8 @@ proc ::eshel::session::fillConfigPage { frm visuNo } {
 
    #--- Label de l'en-tete FITS
    label $frm.fitsKeywordLabel -text "$::caption(eshel,session,fitsKeywordLabel)"
-   button $frm.fitsKeywordButton -text "$::caption(eshel,session,fitsKeywordButton)"  -command "::keyword::run $visuNo"
+   button $frm.fitsKeywordButton -text "$::caption(eshel,session,fitsKeywordButton)" \
+      -command "::keyword::run $visuNo ::conf(eshel,keywordConfigName)"
 
    #--- nom du site
    label $frm.siteLabel       -text $caption(eshel,session,site) -justify left
@@ -268,10 +263,8 @@ proc ::eshel::session::fillConfigPage { frm visuNo } {
    ##grid columnconfig $frm 1 -weight 0
    grid columnconfig $frm 1 -weight 1
 
-
    pack $frm  -side top -fill x -expand 1
 }
-
 
 ##------------------------------------------------------------
 # retourne le titre de la fenetre
@@ -318,7 +311,6 @@ proc ::eshel::session::selectParentDirectory { visuNo } {
    set widget(mainDirectory) [file nativename [ file dirname $widget(mainDirectory) ]]
 }
 
-
 ##------------------------------------------------------------
 # createSubDirectory
 # cree un sous répertoire et le selectionne comme repertoire principal
@@ -334,8 +326,4 @@ proc ::eshel::session::createSubDirectory { visuNo } {
    #--- le sous repertoire devient le repertoire principal
    set widget(mainDirectory) [file nativename $subDirectory]
 }
-
-
-
-
 

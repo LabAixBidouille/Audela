@@ -2,7 +2,7 @@
 # Fichier : acqzadkoSetup.tcl
 # Description : Configuration de certains parametres de l'outil Acquisition
 # Auteur : Robert DELMAS
-# Mise a jour $Id: acqzadkoSetup.tcl,v 1.1 2009-09-02 03:58:50 myrtillelaas Exp $
+# Mise a jour $Id: acqzadkoSetup.tcl,v 1.2 2009-12-13 16:41:11 robertdelmas Exp $
 #
 
 namespace eval ::acqzadkoSetup {
@@ -150,7 +150,7 @@ namespace eval ::acqzadkoSetup {
 
             #--- Bouton d'acces aux mots cles
             button $panneau(acqzadko,$visuNo,acqzadkoSetup).frame3.en-tete.but -text $caption(acqzadkoSetup,mots_cles) \
-               -command "::keyword::run $visuNo"
+               -command "::keyword::run $visuNo ::conf(acqzadko,keywordConfigName)"
             pack $panneau(acqzadko,$visuNo,acqzadkoSetup).frame3.en-tete.but -side left -padx 6 -pady 10 -ipadx 20
 
          pack $panneau(acqzadko,$visuNo,acqzadkoSetup).frame3.en-tete -side top -fill both -expand 1

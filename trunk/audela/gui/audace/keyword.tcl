@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.29 2009-11-24 19:55:46 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.30 2009-12-13 16:38:49 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -152,7 +152,18 @@ proc ::keyword::init { } {
    if { ! [ info exists ::conf(keyword,GotoManuelAutoTer) ] } { set ::conf(keyword,GotoManuelAutoTer) "$::caption(keyword,manuel)" }
    if { ! [ info exists ::conf(keyword,typeImageSelected) ] } { set ::conf(keyword,typeImageSelected) "Object" }
 
-   set private(nameConfig)          ""
+   #--- Configuration par defaut
+   if { ! [ info exists ::conf(keyword,default,configName) ] } {
+      set ::conf(keyword,default,configName) "default"
+   }
+   if { ! [ info exists ::conf(keyword,default,check) ] } {
+      if { [ info exists ::conf(keyword,visu1,check) ] } {
+         set ::conf(keyword,default,check) $::conf(keyword,visu1,check)
+         unset ::conf(keyword,visu1,check)
+      } else {
+         set ::conf(keyword,default,check) "1,check,DETNAM 1,check,EXPTIME 1,check,SWMODIFY 1,check,SWCREATE"
+      }
+   }
 
    #--- Initialisation de variables
    set private(nom_observateur)     ""
@@ -186,7 +197,6 @@ proc ::keyword::init { } {
    set private(commentaire)         ""
 
    #--- Liste pour les combobox
-   set private(listConfig)          ""
    set private(listTypeImage)       "$::conf(keyword,listTypeImage)"
    lappend private(listTypeImage)   "$::caption(keyword,newValue)"
    set private(listOutilsGoto)      [ list $::caption(keyword,manuel) $::caption(keyword,automatic) ]
@@ -236,15 +246,18 @@ proc ::keyword::init { } {
 # Parametres :
 #    visuNo
 #------------------------------------------------------------------------------
-proc ::keyword::run { visuNo } {
+proc ::keyword::run { visuNo configNameVariable } {
    variable private
 
    #--- je charge le package Tablelist
    package require Tablelist
 
+   #--- j'initialise le nom de la configuration
+   set private($visuNo,configName)         [ set $configNameVariable ]
+   set private($visuNo,configNameVariable) $configNameVariable
+
    #--- Creation des variables de la boite de configuration de l'en-tete FITS si elles n'existent pas
-   if { ! [ info exists ::conf(keyword,visu$visuNo,check) ] } { set ::conf(keyword,visu$visuNo,check) "" }
-   if { ! [ info exists private($visuNo,disabled) ] }         { set private($visuNo,disabled)         "" }
+   if { ! [ info exists private($visuNo,disabled) ] } { set private($visuNo,disabled) "" }
 
    #--- j'ajoute un listener sur la configuration de l'observatoire
    ::confPosObs::addPosObsListener [list ::keyword::onChangeConfPosObs $visuNo]
@@ -561,6 +574,7 @@ proc ::keyword::onChangeValueComboBox { visuNo } {
 #------------------------------------------------------------------------------
 # newValueTypeImage
 #    permet d'utiliser une valeur non propose dans la liste
+#
 # Parametres :
 #    visuNo
 # Return :
@@ -619,6 +633,7 @@ proc ::keyword::newValueTypeImage { visuNo } {
 #------------------------------------------------------------------------------
 # cmdOKNewValueTypeImage
 #    fonction appelee par l'appui sur le boutton OK
+#
 # Parametres :
 #    visuNo
 # Return :
@@ -643,6 +658,7 @@ proc ::keyword::cmdOKNewValueTypeImage { visuNo } {
 #------------------------------------------------------------------------------
 # cmdCancelNewValueTypeImage
 #    fonction appelee par l'appui sur le boutton Annuler
+#
 # Parametres :
 #    visuNo
 # Return :
@@ -659,6 +675,7 @@ proc ::keyword::cmdCancelNewValueTypeImage { } {
 #------------------------------------------------------------------------------
 # setKeywordsObjRaDecAuto
 #    fonction appelee par rendre la capture des mots cles OBJNAME, RA et DEC automatique
+#
 # Return :
 #    rien
 #------------------------------------------------------------------------------
@@ -670,6 +687,7 @@ proc ::keyword::setKeywordsObjRaDecAuto { } {
 #------------------------------------------------------------------------------
 # setKeywordsObjRaDecManuel
 #    fonction appelee par rendre la capture des mots cles OBJNAME, RA et DEC manuelle
+#
 # Return :
 #    rien
 #------------------------------------------------------------------------------
@@ -681,6 +699,7 @@ proc ::keyword::setKeywordsObjRaDecManuel { } {
 #------------------------------------------------------------------------------
 # setKeywordsRaDecAuto
 #    fonction appelee par rendre la capture des mots cles RA et DEC automatique
+#
 # Return :
 #    rien
 #------------------------------------------------------------------------------
@@ -691,6 +710,7 @@ proc ::keyword::setKeywordsRaDecAuto { } {
 #------------------------------------------------------------------------------
 # setKeywordsRaDecManuel
 #    fonction appelee par rendre la capture des mots cles RA et DEC manuelle
+#
 # Return :
 #    rien
 #------------------------------------------------------------------------------
@@ -701,6 +721,7 @@ proc ::keyword::setKeywordsRaDecManuel { } {
 #------------------------------------------------------------------------------
 # setKeywordsEquinoxAuto
 #    fonction appelee par rendre la capture du mot cle EQUINOX automatique
+#
 # Return :
 #    rien
 #------------------------------------------------------------------------------
@@ -711,6 +732,7 @@ proc ::keyword::setKeywordsEquinoxAuto { } {
 #------------------------------------------------------------------------------
 # setKeywordsEquinoxManuel
 #    fonction appelee par rendre la capture du mot cle EQUINOX manuelle
+#
 # Return :
 #    rien
 #------------------------------------------------------------------------------
@@ -722,19 +744,21 @@ proc ::keyword::setKeywordsEquinoxManuel { } {
 # getKeywords
 #    retourne la liste des mots cles coches
 #
-# @param visuNo  numero de la visu:
-# @param keywordNameList liste des mots cles
-# @return retourne la liste des mots cles coches
+# Parametres :
+#    visuNo          : Numero de la visu:
+#    keywordNameList : Liste des mots cles
+# Return :
+#    retourne la liste des mots cles coches
 #    exemple : {LATITUDE N43d39m59s} {OBSERVER mpujol} {SITENAME Beauzelle}
 #------------------------------------------------------------------------------
-proc ::keyword::getKeywords { visuNo { keywordNameList "" } } {
+proc ::keyword::getKeywords { visuNo configName { keywordNameList "" } } {
    variable private
+
+   #--- j'initialise le nom de la configuration
+   set private($visuNo,configName) $configName
 
    #--- je verifie que la visu existe
    ::confVisu::getBase $visuNo
-
-   #--- Creation de la variable de la boite de configuration de l'en-tete FITS si elle n'existe pas
-   if { ! [ info exists ::conf(keyword,visu$visuNo,check) ] } { set ::conf(keyword,visu$visuNo,check) "" }
 
    #--- je recupere la configuration de l'observateur et de l'observatoire
    onChangeConfPosObs $visuNo
@@ -757,7 +781,7 @@ proc ::keyword::getKeywords { visuNo { keywordNameList "" } } {
    if { [llength $keywordNameList] == 0 } {
       #--- je recupere les mots cles coches
       set result ""
-      foreach name $::conf(keyword,visu$visuNo,check) {
+      foreach name $::conf(keyword,$private($visuNo,configName),check) {
          set motclef [lindex [split $name ","] 2]
          foreach infosMotClef $private(infosMotsClefs) {
             if { [ lindex $infosMotClef 0 ] == $motclef } {
@@ -823,7 +847,7 @@ proc ::keyword::getKeywords { visuNo { keywordNameList "" } } {
 #
 # Parametres :
 #    stringInput : mots cles FITS
-# return
+# Return
 #    stringOutput : mots cles FITS conformes
 #------------------------------------------------------------------------------
 proc ::keyword::headerFitsCompliant { stringInput } {
@@ -845,7 +869,7 @@ proc ::keyword::headerFitsCompliant { stringInput } {
 #
 # Parametres :
 #    stringInput : equinoxe
-# return
+# Return
 #    stringOutput : equinoxe conforme
 #------------------------------------------------------------------------------
 proc ::keyword::equinoxCompliant { stringInput } {
@@ -885,6 +909,9 @@ proc ::keyword::createDialog { visuNo } {
       #--- Frame de la combobox de choix de la configuration des mots cles
       frame $frm.config.choix -borderwidth 0 -relief raised
 
+         #--- Liste des configurations
+         set configList [ ::keyword::getConfigurationList ]
+
          #--- Nom de la configuration
          label $frm.config.choix.labconfig -text "$::caption(keyword,nom_config)"
          pack $frm.config.choix.labconfig -anchor w -side left -padx 10 -pady 5
@@ -895,10 +922,23 @@ proc ::keyword::createDialog { visuNo } {
             -relief sunken    \
             -borderwidth 2    \
             -editable 0       \
-            -textvariable ::private(nameConfig) \
-            -modifycmd "::keyword::config::cbCommand $frm.config.choix.configHeader" \
-            -values $::keyword::private(listConfig)
+            -modifycmd "::keyword::cbCommand $visuNo" \
+            -values $configList
          pack $frm.config.choix.configHeader -anchor w -side left -padx 10 -pady 5
+
+         if { [info exists ::conf(keyword,$private($visuNo,configName),configName)] != 0 } {
+            set index [ lsearch $configList $::conf(keyword,$private($visuNo,configName),configName) ]
+            if { $index == -1 } {
+               #--- je selectionne la premiere configuration, si celle de la derniere utilisee n'existe plus
+               set index 0
+            }
+         } else {
+            #--- je selectionne la premiere configuration, si celle de la derniere utilisee n'existe plus
+            set index 0
+         }
+
+         #--- je selectionne la configuration dans la combobox
+         $frm.config.choix.configHeader setvalue "@$index"
 
       pack $frm.config.choix -side top -fill x -expand 0
 
@@ -981,7 +1021,7 @@ proc ::keyword::createDialog { visuNo } {
       }
 
       #--- je coche les lignes qui avaient ete cochees dans une session precedente
-      foreach check $::conf(keyword,visu$visuNo,check) {
+      foreach check $::conf(keyword,$private($visuNo,configName),check) {
          set private($check) 1
       }
 
@@ -1004,6 +1044,9 @@ proc ::keyword::createDialog { visuNo } {
 
    #--- je mets a jour l'etat des widgets de la colonne modification
    ::keyword::setWidgetColumnModificationState $visuNo
+
+   #--- je coche les mots cles de la configuration
+   ::keyword::cbCommand $visuNo
 }
 
 #------------------------------------------------------------------------------
@@ -1156,13 +1199,16 @@ proc ::keyword::cmdOk { visuNo } {
 proc ::keyword::cmdApply { visuNo} {
    variable private
 
+   #--- je recupere le nom de la configuration (attention il faut 2 $ !!!)
+   set $private($visuNo,configNameVariable) $private($visuNo,configName)
+
    #--- je memorise la configuration dans le tableau conf(...)
    set ::conf(keyword,geometry) $private($visuNo,geometry)
    #--- je sauvegarde la liste des mots cles coches
-   set ::conf(keyword,visu$visuNo,check) ""
+   set ::conf(keyword,$private($visuNo,configName),check) ""
    foreach name [array names private $visuNo,check,*] {
       if { $private($name) == 1 } {
-         lappend ::conf(keyword,visu$visuNo,check) [list $name]
+         lappend ::conf(keyword,$private($visuNo,configName),check) [list $name]
       }
    }
 }
@@ -1220,6 +1266,49 @@ proc ::keyword::recupPosDim { visuNo } {
    set ::conf(keyword,geometry) $private($visuNo,geometry)
 }
 
+#------------------------------------------------------------
+# getConfigurationList
+#    retourne la liste des configurations
+#
+# Return :
+#    la liste des configurations
+#------------------------------------------------------------
+proc ::keyword::getConfigurationList { } {
+   #--- Liste des configurations
+   set configList [list]
+   foreach configPath [array names ::conf keyword,*,configName] {
+      set configId [lindex [split $configPath "," ] 1]
+      lappend configList $::conf(keyword,$configId,configName)
+   }
+   #--- je trie par ordre alphabetique (l'option -dictionary est equivalente a nocase)
+   return [lsort -dictionary $configList ]
+}
+
+#------------------------------------------------------------
+# getConfigurationIdentifiant
+#   retourne l'identifiant d'une configuration en fonction de son nom
+#
+# Parametres
+#   name : nom de la configuration
+# Return :
+#   identifiant de la configuration
+#------------------------------------------------------------
+proc ::keyword::getConfigurationIdentifiant { name } {
+   variable private
+
+   #--- je fabrique l'identifiant a partir du nom en remplacant les caracteres interdits pas un "_"
+   set configId ""
+   for { set i 0 } { $i < [string length $name] } { incr i } {
+      set c [string index $name $i]
+      if { [string is wordchar $c ] == 0 } {
+         #--- je remplace le caractere par underscore, si le caractere n'est pas une lettre, un chiffre ou underscore
+         set c "_"
+      }
+      append configId $c
+   }
+   return $configId
+}
+
 #------------------------------------------------------------------------------
 # setKeywordValue
 #   change la valeur d'un mot cle
@@ -1228,11 +1317,14 @@ proc ::keyword::recupPosDim { visuNo } {
 #    visuNo       numero de la visu
 #    keywordName  nom du mot cle
 #    keywordValue valeur du mot cle
-# return
+# Return
 #    rien
 #------------------------------------------------------------------------------
-proc ::keyword::setKeywordValue { visuNo keywordName keywordValue} {
+proc ::keyword::setKeywordValue { visuNo configName keywordName keywordValue} {
    variable private
+
+   #--- j'initialise le nom de la configuration
+   set private($visuNo,configName) $configName
 
    foreach infosMotClef $private(infosMotsClefs) {
       if { [ lindex $infosMotClef 0 ] == $keywordName } {
@@ -1253,16 +1345,15 @@ proc ::keyword::setKeywordValue { visuNo keywordName keywordValue} {
 #    visuNo
 #    keywordNameList : liste des mots cles
 #------------------------------------------------------------------------------
-proc ::keyword::selectKeywords { visuNo keywordNameList } {
+proc ::keyword::selectKeywords { visuNo configName keywordNameList } {
    variable private
 
    #--- Creation des variables de la boite de configuration de l'en-tete FITS si elles n'existent pas
-   if { ! [ info exists ::conf(keyword,visu$visuNo,check) ] } { set ::conf(keyword,visu$visuNo,check) "" }
-   if { ! [ info exists private($visuNo,disabled) ] }         { set private($visuNo,disabled)         "" }
+   if { ! [ info exists private($visuNo,disabled) ] } { set private($visuNo,disabled) "" }
 
    foreach keywordName $keywordNameList {
-      if { [lsearch $::conf(keyword,visu$visuNo,check) "$visuNo,check,$keywordName" ] == -1 } {
-         lappend ::conf(keyword,visu$visuNo,check) "$visuNo,check,$keywordName"
+      if { [ lsearch $::conf(keyword,$configName,check) "1,check,$keywordName" ] == -1 } {
+         lappend ::conf(keyword,$configName,check) "1,check,$keywordName"
       }
    }
 }
@@ -1275,13 +1366,13 @@ proc ::keyword::selectKeywords { visuNo keywordNameList } {
 #    visuNo
 #    keywordNameList : liste des mots cles
 #------------------------------------------------------------------------------
-proc ::keyword::deselectKeywords { visuNo keywordNameList } {
+proc ::keyword::deselectKeywords { visuNo configName keywordNameList } {
    variable private
 
    foreach keywordName $keywordNameList {
-      set var "$visuNo,check,$keywordName"
-      set idx [ lsearch -exact $::conf(keyword,visu$visuNo,check) $var ]
-      set ::conf(keyword,visu$visuNo,check) [ lreplace $::conf(keyword,visu$visuNo,check) $idx $idx "" ]
+      set var "1,check,$keywordName"
+      set idx [ lsearch -exact $::conf(keyword,$configName,check) $var ]
+      set ::conf(keyword,$configName,check) [ lreplace $::conf(keyword,$configName,check) $idx $idx "" ]
    }
 }
 
@@ -1293,8 +1384,11 @@ proc ::keyword::deselectKeywords { visuNo keywordNameList } {
 #    visuNo
 #    keywordNameList : liste des mots cles
 #------------------------------------------------------------------------------
-proc ::keyword::setKeywordState { visuNo keywordNameList } {
+proc ::keyword::setKeywordState { visuNo configName keywordNameList } {
    variable private
+
+   #--- j'initialise le nom de la configuration
+   set private($visuNo,configName) $configName
 
    set private($visuNo,disabled) ""
    foreach keywordName $keywordNameList {
@@ -1325,7 +1419,7 @@ proc ::keyword::setCheckButtonState { visuNo } {
       #--- je recupere le nomTK du checkbutton
       set w [$::keyword::private($visuNo,table) windowpath $i,available ]
       #--- je recupere la valeur
-      if { [lsearch $private($visuNo,disabled) $keywordName ] == -1 } {
+      if { [ lsearch $private($visuNo,disabled) $keywordName ] == -1 } {
          $w configure -state normal
       } else {
          $w configure -state disabled
@@ -1351,7 +1445,7 @@ proc ::keyword::setWidgetColumnModificationState { visuNo } {
       set w [$::keyword::private($visuNo,table) windowpath $i,modification ]
       #--- je recupere la valeur
       if { $w != "" } {
-         if { [lsearch $private($visuNo,disabled) $keywordName ] == -1 } {
+         if { [ lsearch $private($visuNo,disabled) $keywordName ] == -1 } {
             $w configure -state normal
          } else {
             $w configure -state disabled
@@ -1368,7 +1462,9 @@ proc ::keyword::setWidgetColumnModificationState { visuNo } {
 #    visuNo
 #------------------------------------------------------------------------------
 proc ::keyword::addConfig { visuNo } {
-   ::keyword::config::run $visuNo "add"
+   variable private
+
+   ::keyword::config::run $visuNo "add" $private($visuNo,configName)
 }
 
 #------------------------------------------------------------------------------
@@ -1379,7 +1475,10 @@ proc ::keyword::addConfig { visuNo } {
 #    visuNo
 #------------------------------------------------------------------------------
 proc ::keyword::delConfig { visuNo } {
-   ::keyword::config::run $visuNo "del"
+   variable private
+
+   set ::keyword::config::private(action) "del"
+   ::keyword::config::apply $visuNo
 }
 
 #------------------------------------------------------------------------------
@@ -1390,7 +1489,36 @@ proc ::keyword::delConfig { visuNo } {
 #    visuNo
 #------------------------------------------------------------------------------
 proc ::keyword::copyConfig { visuNo } {
-   ::keyword::config::run $visuNo "copy"
+   variable private
+
+   ::keyword::config::run $visuNo "copy" $private($visuNo,configName)
+}
+
+#------------------------------------------------------------------------------
+# cbCommand
+#    Affiche les valeurs dans les widgets pour la configuration choisie
+#    (appelee par la combobox a chaque changement de selection)
+#
+# Parametres :
+#    cb : Element selectionne
+#------------------------------------------------------------------------------
+proc ::keyword::cbCommand { visuNo } {
+   variable private
+
+   #--- je recupere l'identifiant de la configuration correspondant a la ligne selectionnee dans la combobox
+   set tkCombo $private($visuNo,frm).config.choix.configHeader
+   set configId [ ::keyword::getConfigurationIdentifiant [ $tkCombo get ] ]
+   set private($visuNo,configName) $configId
+
+   #--- je decoche toutes les lignes
+   foreach check [ array names ::keyword::private 1,check,* ] {
+      set private($check) 0
+   }
+
+   #--- je coche les lignes
+   foreach check $::conf(keyword,$configId,check) {
+      set private($check) 1
+   }
 }
 
 #--- Namespace pour les fenetres de gestion des noms de configuration
@@ -1403,16 +1531,18 @@ namespace eval ::keyword::config {
 #
 # Parametres :
 #    visuNo
-#    action : add, del ou copy
+#    action : add ou copy
 #------------------------------------------------------------------------------
-proc ::keyword::config::run { visuNo action } {
+proc ::keyword::config::run { visuNo action configId } {
    variable private
 
-   set private(action) "$action"
+   set private(action)   $action
+   set private(configId) $configId
    ::confGenerique::run "1" "$::audace(base).manageHeader" "::keyword::config" -modal 0
    set posx_config [ lindex [ split [ wm geometry $::keyword::private($visuNo,frm) ] "+" ] 1 ]
    set posy_config [ lindex [ split [ wm geometry $::keyword::private($visuNo,frm) ] "+" ] 2 ]
    wm geometry $::audace(base).manageHeader +[ expr $posx_config + 0 ]+[ expr $posy_config + 90 ]
+   wm transient $::audace(base).manageHeader $::keyword::private($visuNo,frm)
 }
 
 #------------------------------------------------------------------------------
@@ -1423,7 +1553,15 @@ proc ::keyword::config::run { visuNo action } {
 #    rien
 #------------------------------------------------------------------------------
 proc ::keyword::config::getLabel { } {
-   return "$::caption(keyword,nom_config)"
+   variable private
+
+   if { $private(action) == "add" } {
+      return "$::caption(keyword,ajouter_config)"
+   } elseif { $private(action) == "del" } {
+      return "$::caption(keyword,supprimer_config)"
+   } elseif { $private(action) == "copy" } {
+      return "$::caption(keyword,copier_config)"
+   }
 }
 
 #------------------------------------------------------------------------------
@@ -1438,11 +1576,10 @@ proc ::keyword::config::fillConfigPage { frm visuNo } {
    variable private
 
    #--- Initialisation de variables
-   set private(frame)            $frm
-   set private(newNameConfig)    ""
-   set private(delNameConfig)    "$::keyword::private(nameConfig)"
-   set private(nameCopyConfig)   "$::keyword::private(nameConfig)"
-   set private(nameConfigCopied) ""
+   set private(frame)              $frm
+   set private(newNameConfig)      ""
+   set private(nameConfigCopied)   ""
+   set private($visuNo,applyError) "0"
 
    #--- Frame de la gestion des noms de configuration
    frame $frm.setup -borderwidth 0 -relief raised
@@ -1452,54 +1589,22 @@ proc ::keyword::config::fillConfigPage { frm visuNo } {
          label $frm.setup.addConfig -text $::caption(keyword,config_a_ajouter)
          pack $frm.setup.addConfig -anchor nw -side left -padx 10 -pady 10
 
-         entry $frm.setup.nameAddConfig -textvariable private(newNameConfig) -width 42
+         entry $frm.setup.nameAddConfig -textvariable ::keyword::config::private(newNameConfig) \
+            -width 42
          pack $frm.setup.nameAddConfig  -anchor w -side left -padx 10 -pady 5
 
-      } elseif { $private(action) == "del" } {
-
-         label $frm.setup.delConfig -text $::caption(keyword,config_a_supprimer)
-         pack $frm.setup.delConfig -anchor nw -side left -padx 10 -pady 10
-
-         ComboBox $frm.setup.nameDelConfig \
-            -width 42         \
-            -height 10        \
-            -relief sunken    \
-            -borderwidth 2    \
-            -editable 0       \
-            -textvariable ::private(delNameConfig) \
-            -modifycmd "::keyword::config::config::cbCommand $frm.setup.nameDelConfig" \
-            -values $::keyword::private(listConfig)
-         pack $frm.setup.nameDelConfig -anchor w -side right -padx 10 -pady 5
+         focus $frm.setup.nameAddConfig
 
       } elseif { $private(action) == "copy" } {
 
-         frame $frm.setup.frame1 -borderwidth 0 -relief raised
+         label $frm.setup.nameConfig -text $::caption(keyword,nom_nouvelle_config)
+         pack $frm.setup.nameConfig -anchor nw -side left -padx 10 -pady 10
 
-            label $frm.setup.frame1.copyConfig -text $::caption(keyword,config_a_copier)
-            pack $frm.setup.frame1.copyConfig -anchor nw -side left -padx 10 -pady 10
+         entry $frm.setup.nameConfigCopied -textvariable ::keyword::config::private(nameConfigCopied) \
+            -width 42
+         pack $frm.setup.nameConfigCopied -anchor w -side left -padx 10 -pady 5
 
-            ComboBox $frm.setup.frame1.nameCopyConfig \
-               -width 42         \
-               -height 10        \
-               -relief sunken    \
-               -borderwidth 2    \
-               -editable 0       \
-               -textvariable ::private(nameCopyConfig) \
-               -modifycmd "::keyword::config::config::cbCommand $frm.setup.frame1.nameCopyConfig" \
-               -values $::keyword::private(listConfig)
-            pack $frm.setup.frame1.nameCopyConfig -anchor w -side right -padx 10 -pady 5
-
-         pack $frm.setup.frame1 -side top -fill both -expand 1
-
-         frame $frm.setup.frame2 -borderwidth 0 -relief raised
-
-            label $frm.setup.frame2.nameConfig -text $::caption(keyword,nom_config)
-            pack $frm.setup.frame2.nameConfig -anchor nw -side left -padx 10 -pady 10
-
-            entry $frm.setup.frame2.nameConfigCopied -textvariable ::private(nameConfigCopied) -width 42
-            pack $frm.setup.frame2.nameConfigCopied -anchor w -side left -padx 10 -pady 5
-
-         pack $frm.setup.frame2 -side top -fill both -expand 1
+         focus $frm.setup.nameConfigCopied
 
       }
 
@@ -1517,19 +1622,137 @@ proc ::keyword::config::apply { visuNo } {
    variable private
 
    if { $private(action) == "add" } {
-      if { $private(newNameConfig) != "" } {
-         set ::keyword::private(nameConfig) "$private(newNameConfig)"
+
+      #--- je verifie que le nom n'est pas vide
+      if { $private(newNameConfig) == "" } {
+         tk_messageBox -message $::caption(keyword,errorEmptyName) \
+            -icon error -title $::caption(keyword,header_title)
+         set private($visuNo,applyError) "1"
+         return
       }
+
+      #--- je fabrique l'identifiant a partir du nom en remplacant les caracteres interdits pas un "_"
+      set configId [ ::keyword::getConfigurationIdentifiant $private(newNameConfig) ]
+
+      #--- je verifie que l'identifiant n'est pas deja attribue a une autre configuration
+      if { [info exists ::conf(keyword,$configId,configName)] == 1 } {
+         tk_messageBox -message $::caption(keyword,errorExistingName) \
+            -icon error -title $::caption(keyword,header_title)
+         set private($visuNo,applyError) "1"
+         return
+      }
+
+      set ::conf(keyword,$configId,configName) $private(newNameConfig)
+      set ::conf(keyword,$configId,check) ""
+
+      #--- je configure les mots cles selon les exigences de l'outil
+      set catchError [ catch {
+         ::[ ::confVisu::getTool $visuNo ]::configToolKeywords $visuNo $private(newNameConfig)
+      } m ]
+      if { $catchError == "1" } {
+         #--- S'il n'y a pas d'exigences, on passe...
+      }
+
+      #--- j'ajoute le nom de la configuration
+      set ::keyword::private($visuNo,configName) $configId
+
+      #--- j'ajoute la nouvelle configuration dans la combobox
+      set tkCombo $::keyword::private($visuNo,frm).config.choix.configHeader
+      set configList [$tkCombo cget -values]
+      lappend configList $private(newNameConfig)
+      set configList [lsort $configList]
+      $tkCombo configure -values $configList -height [ llength $configList ]
+
+      #--- je selectionne la nouvelle liste dans la combobox
+      set index [ lsearch $configList $private(newNameConfig) ]
+      $tkCombo setvalue "@$index"
+      ::keyword::cbCommand $visuNo
+
    } elseif { $private(action) == "del" } {
-      if { $private(delNameConfig) != "" } {
-         set index "$private(index_del)"
+
+      #--- je recupere l'identifiant de la configuration correspondant a la ligne selectionnee dans la combobox
+      set tkCombo $::keyword::private($visuNo,frm).config.choix.configHeader
+      set configId [ ::keyword::getConfigurationIdentifiant [ $tkCombo get ] ]
+      set private(configId) $configId
+
+      #--- je verifie que ce n'est pas la configuration par defaut
+      if { $private(configId) == "default" } {
+         #--- j'abandonne la suppression s'il s'agit de la configuration par defaut
+         tk_messageBox -message $::caption(keyword,errorDefaultName) \
+            -icon error -title $::caption(keyword,header_title)
+         return
+      }
+
+      #--- je demande la confirmation de la suppression
+      set result [ tk_messageBox -message "$::caption(keyword,confirmDeleteConfig) $::conf(keyword,$private(configId),configName)" \
+          -type okcancel -icon question -title $::caption(keyword,supprimer_config)]
+
+      if { $result == "ok" } {
+         #--- je supprime le nom de la configuration dans la combobox
+         set tkCombo $::keyword::private($visuNo,frm).config.choix.configHeader
+         set configList [$tkCombo cget -values]
+         set index [ lsearch $configList $::conf(keyword,$private(configId),configName) ]
+         set configList [lreplace $configList $index $index]
+         $tkCombo configure -values $configList -height [ llength $configList ]
+
+         #--- je supprime les parametres de la configuration
+         unset ::conf(keyword,$private(configId),configName)
+         unset ::conf(keyword,$private(configId),check)
+
+         #--- je selectionne l'item suivant a la place de celui qui vient d'etre supprime
+         if { $index == [llength $configList] } {
+            #--- je decremente l'index si l'element supprimé etait le dernier de la liste
+            incr index -1
+         }
+         $tkCombo setvalue "@$index"
+         ::keyword::cbCommand $visuNo
+
+         #--- je recupere le nom de la nouvelle configuration (attention il faut 2 $ !!!)
+         #--- pour eviter un bug, si je quitte Aud'ACE sans appuyer sur le bouton OK ou
+         #--- Appliquer de la fenetre de configuration des mots cles
+         set $::keyword::private($visuNo,configNameVariable) $::keyword::private($visuNo,configName)
 
       }
+
    } elseif { $private(action) == "copy" } {
-      if { $private(nameCopyConfig) != "" } {
-         set index "$private(index_copy)"
 
+      #--- je verifie que le nom n'est pas vide
+      if { $private(nameConfigCopied) == "" } {
+         tk_messageBox -message $::caption(keyword,errorEmptyName) \
+            -icon error -title $::caption(keyword,header_title)
+         set private($visuNo,applyError) "1"
+         return
       }
+
+      #--- je fabrique l'identifiant a partir du nom en remplacant les caracteres interdits pas un "_"
+      set configId [ ::keyword::getConfigurationIdentifiant $private(nameConfigCopied) ]
+
+      #--- je verifie que l'identifiant n'est pas deja attribue a une autre configuration
+      if { [info exists ::conf(keyword,$configId,configName)] == 1 } {
+         tk_messageBox -message $::caption(keyword,errorExistingName) \
+            -icon error -title $::caption(keyword,header_title)
+         set private($visuNo,applyError) "1"
+         return
+      }
+
+      set ::conf(keyword,$configId,configName) $private(nameConfigCopied)
+      set ::conf(keyword,$configId,check) $::conf(keyword,$private(configId),check)
+
+      #--- j'ajoute le nom de la configuration
+      set ::keyword::private($visuNo,configName) $configId
+
+      #--- j'ajoute la nouvelle configuration dans la combobox
+      set tkCombo $::keyword::private($visuNo,frm).config.choix.configHeader
+      set configList [$tkCombo cget -values]
+      lappend configList $private(nameConfigCopied)
+      set configList [lsort $configList]
+      $tkCombo configure -values $configList -height [ llength $configList ]
+
+      #--- je selectionne la nouvelle liste dans la combobox
+      set index [ lsearch $configList $private(nameConfigCopied) ]
+      $tkCombo setvalue "@$index"
+      ::keyword::cbCommand $visuNo
+
    }
 }
 
@@ -1541,35 +1764,12 @@ proc ::keyword::config::apply { visuNo } {
 #    visuNo
 #------------------------------------------------------------------------------
 proc ::keyword::config::closeWindow { visuNo } {
-}
-
-#------------------------------------------------------------------------------
-# cbCommand
-#    Affiche les valeurs dans les widgets pour la configuration choisie
-#    (appelee par la combobox a chaque changement de selection)
-#
-# Parametres :
-#    cb : Element selectionne
-#------------------------------------------------------------------------------
-proc ::keyword::config::cbCommand { cb } {
    variable private
 
-   #--- Je recupere l'index de l'element selectionne
-   set index [ $cb getvalue ]
-   if { "$index" == "" } {
-      set index 0
-   }
-
-   #--- Je recupere les attributs de la configuration
-  ### array set configurationHeader $::conf(posobs,config_observatoire,$index)
-
-   #--- Je copie les valeurs dans les widgets de la configuration choisie
-   if { $private(action) == "del" } {
-     ### set private(delNameConfig) $configurationHeader(nameConfig)
-      set private(index_del)     "$index"
-   } elseif { $private(action) == "copy" } {
-     ### set private(nameCopyConfig) $configurationHeader(nameConfig)
-      set private(index_copy)     "$index"
+   #--- Retourne 0 pour empecher de fermer la fenetre
+   if { $private($visuNo,applyError) == "1" } {
+      set private($visuNo,applyError) 0
+      return 0
    }
 }
 

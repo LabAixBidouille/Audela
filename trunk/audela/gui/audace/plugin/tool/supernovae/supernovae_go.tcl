@@ -2,7 +2,7 @@
 # Fichier : supernovae_go.tcl
 # Description : Outil pour l'observation des SnAudes
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: supernovae_go.tcl,v 1.21 2009-11-23 19:28:04 michelpujol Exp $
+# Mise a jour $Id: supernovae_go.tcl,v 1.22 2009-12-13 16:46:22 robertdelmas Exp $
 #
 
 #============================================================
@@ -131,18 +131,12 @@ proc ::supernovae::createPanel { this } {
 #------------------------------------------------------------
 proc ::supernovae::startTool { visuNo } {
    variable This
-   global audace
 
-   #--- Je selectionne les mots cles optionnels a ajouter dans les images
-   #--- Les mots cles RA, DEC, XPIXSZ et YPIXSZ sont obligatoires pour "snprism" de snmacro.tcl
-   #--- OBJNAME a ete rajoute car il caracterise le nom de l'objet pointe
-   ::keyword::selectKeywords $visuNo [ list OBJNAME RA DEC XPIXSZ YPIXSZ ]
+   #--- On cree la variable de configuration des mots cles
+   if { ! [ info exists ::conf(supernovae,keywordConfigName) ] } { set ::conf(supernovae,keywordConfigName) "default" }
 
-   #--- Je selectionne la liste des mots cles non modifiables
-   ::keyword::setKeywordState $audace(visuNo) [ list OBJNAME RA DEC XPIXSZ YPIXSZ ]
-
-   #--- Je force la capture des mots cles OBJNAME, RA et DEC en automatique
-   ::keyword::setKeywordsObjRaDecAuto
+   #--- Je selectionne les mots cles selon les exigences de l'outil
+   ::supernovae::configToolKeywords $visuNo
 
    pack $This -side left -fill y
 }
@@ -153,7 +147,6 @@ proc ::supernovae::startTool { visuNo } {
 #------------------------------------------------------------
 proc ::supernovae::stopTool { visuNo } {
    variable This
-   global audace
 
    #--- Je verifie si une operation est en cours
    if { [info exists ::sn(exit_visu)] } {
@@ -163,13 +156,35 @@ proc ::supernovae::stopTool { visuNo } {
    }
 
    #--- Les mots cles OBJNAME, RA, DEC, XPIXSZ et YPIXSZ sont a nouveau modifiables
-   ::keyword::setKeywordState $audace(visuNo) [ list ]
+   ::keyword::setKeywordState $visuNo $::conf(supernovae,keywordConfigName) [ list ]
 
    #--- Je force la capture des mots cles OBJNAME, RA et DEC en manuel
    ::keyword::setKeywordsObjRaDecManuel
 
    #---
    pack forget $This
+}
+
+#------------------------------------------------------------
+# ::supernovae::configToolKeywords
+#    configure les mots cles FITS de l'outil
+#------------------------------------------------------------
+proc ::supernovae::configToolKeywords { visuNo { configName "" } } {
+   #--- Je traite la variable configName
+   if { $configName != "" } {
+      set ::conf(supernovae,keywordConfigName) $configName
+   }
+
+   #--- Je selectionne les mots cles optionnels a ajouter dans les images
+   #--- Les mots cles RA, DEC, XPIXSZ et YPIXSZ sont obligatoires pour "snprism" de snmacro.tcl
+   #--- OBJNAME a ete rajoute car il caracterise le nom de l'objet pointe
+   ::keyword::selectKeywords $visuNo $::conf(supernovae,keywordConfigName) [ list OBJNAME RA DEC XPIXSZ YPIXSZ ]
+
+   #--- Je selectionne la liste des mots cles non modifiables
+   ::keyword::setKeywordState $visuNo $::conf(supernovae,keywordConfigName) [ list OBJNAME RA DEC XPIXSZ YPIXSZ ]
+
+   #--- Je force la capture des mots cles OBJNAME, RA et DEC en automatique
+   ::keyword::setKeywordsObjRaDecAuto
 }
 
 #------------------------------------------------------------

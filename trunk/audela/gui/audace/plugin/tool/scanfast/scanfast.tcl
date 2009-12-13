@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.50 2009-11-17 17:00:23 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.51 2009-12-13 16:44:05 robertdelmas Exp $
 #
 
 global panneau
@@ -497,7 +497,10 @@ proc ::scanfast::adaptOutilScanfast { args } {
 proc ::scanfast::startTool { visuNo } {
    variable This
    variable parametres
-   global audace caption panneau
+   global caption panneau
+
+   #--- On cree la variable de configuration des mots cles
+   if { ! [ info exists ::conf(scanfast,keywordConfigName) ] } { set ::conf(scanfast,keywordConfigName) "default" }
 
    #--- Chargement de la configuration
    chargementVar
@@ -524,15 +527,8 @@ proc ::scanfast::startTool { visuNo } {
    #--- Configuration dynamique de l'outil en fonction de la liaison
    adaptOutilScanfast
 
-   #--- Je selectionne les mots cles optionnels a decocher
-   #--- Les mots cles RA et DEC doivent obligatoirement etre decoches
-   ::keyword::deselectKeywords $audace(visuNo) [ list RA DEC ]
-
-   #--- Je selectionne la liste des mots cles non modifiables
-   ::keyword::setKeywordState $audace(visuNo) [ list RA DEC ]
-
-   #--- Je force la capture des mots cles RA et DEC en manuel
-   ::keyword::setKeywordsRaDecManuel
+   #--- Je selectionne les mots cles selon les exigences de l'outil
+   ::scanfast::configToolKeywords $visuNo
 
    #--- Mise en service de la surveillance de la connexion d'une camera
    ::confVisu::addCameraListener $visuNo ::scanfast::adaptOutilScanfast
@@ -552,7 +548,7 @@ proc ::scanfast::startTool { visuNo } {
 #------------------------------------------------------------
 proc ::scanfast::stopTool { visuNo } {
    variable This
-   global audace panneau
+   global panneau
 
    #--- Je verifie si une operation est en cours
    if { $panneau(scanfast,acquisition) == 1 } {
@@ -563,13 +559,34 @@ proc ::scanfast::stopTool { visuNo } {
    enregistrementVar
 
    #--- Les mots cles RA et DEC sont a nouveau modifiables
-   ::keyword::setKeywordState $audace(visuNo) [ list ]
+   ::keyword::setKeywordState $visuNo $::conf(scanfast,keywordConfigName) [ list ]
 
    #--- Arret de la surveillance de la connexion d'une camera
    ::confVisu::removeCameraListener $visuNo ::scanfast::adaptOutilScanfast
 
    #---
    pack forget $This
+}
+
+#------------------------------------------------------------
+# configToolKeywords
+#    configure les mots cles FITS de l'outil
+#------------------------------------------------------------
+proc ::scanfast::configToolKeywords { visuNo { configName "" } } {
+   #--- Je traite la variable configName
+   if { $configName != "" } {
+      set ::conf(scanfast,keywordConfigName) $configName
+   }
+
+   #--- Je selectionne les mots cles optionnels a decocher
+   #--- Les mots cles RA et DEC doivent obligatoirement etre decoches
+   ::keyword::deselectKeywords $visuNo $::conf(scanfast,keywordConfigName) [ list RA DEC ]
+
+   #--- Je selectionne la liste des mots cles non modifiables
+   ::keyword::setKeywordState $visuNo $::conf(scanfast,keywordConfigName) [ list RA DEC ]
+
+   #--- Je force la capture des mots cles RA et DEC en manuel
+   ::keyword::setKeywordsRaDecManuel
 }
 
 #------------------------------------------------------------
@@ -801,7 +818,7 @@ proc ::scanfast::cmdGo { { motor motoron } } {
          }
 
          #--- Rajoute des mots cles dans l'en-tete FITS
-         foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
+         foreach keyword [ ::keyword::getKeywords $audace(visuNo) $::conf(scanfast,keywordConfigName) ] {
             buf$audace(bufNo) setkwd $keyword
          }
 
