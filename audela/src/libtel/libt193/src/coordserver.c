@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-// Mise a jour $Id: coordserver.c,v 1.2 2009-12-10 07:18:20 michelpujol Exp $
+// Mise a jour $Id: coordserver.c,v 1.3 2009-12-13 17:34:17 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -175,10 +175,38 @@ void socket_writeCoordServerSocket(struct telprop *tel, int returnCode, char * r
 
    for( index=0; index < MAX_CLIENT_COORD; index++ ) {
       if ( clientCoordSocketList[index] != NULL ) { 
+         int tclResult;
          int writeResult;
          char notification[1024]; 
-         double universalTime =0;
-         double sideralTime =0;
+         char tu[21];
+         char ts[21];
+         char ligne[1024];
+         
+         // je recupere l'heure TU au format ISO8601
+         strcpy(ligne,"clock format [clock seconds] -gmt 1 -format %Y-%m-%dT%H:%M:%S");
+         tclResult = Tcl_Eval(tel->interp, ligne );
+         if ( tclResult == TCL_OK) {
+            // je mets en forme le temps TU
+            int tuy;
+            int tumo;
+            int tud;
+            int tuh;
+            int tum;
+            int tus;
+            sscanf(tel->interp->result,"%d-%d-%dT%d:%d:%d", &tuy, &tumo, &tud, &tuh, &tum, &tus);
+            sprintf(tu,"%02dh%02dm%02ds", tuh, tum, tus);
+            // je calcule le temps sideral       
+            sprintf(ligne,"mc_date2lst {%s} {%s}", tel->interp->result, tel->gpsHome);
+            tclResult = Tcl_Eval(tel->interp, ligne );
+         }
+         if ( tclResult == TCL_OK) {
+            // je mets en forme le temps TS 
+            int tsh;
+            int tsm;
+            int tss;
+            sscanf(tel->interp->result,"%d %d %d", &tsh, &tsm, &tss);
+            sprintf(ts,"%02dh%02dm%02ds", tsh, tsm, tss);
+         }
 
          // je prepare la notification 
          // !RADEC COORD [Code retour] [TU] [TS] [alpha_corr] [delta_corr] [alpha_0] [delta_0] [calage_alpha] [calage_delta] @\n
@@ -187,9 +215,9 @@ void socket_writeCoordServerSocket(struct telprop *tel, int returnCode, char * r
          //    5 à Problème moteur
          //    6 à Butées atteintes
          // TU
-         //    Format= %f
+         //    Format= %02dh%02dm%02ds
          // TS
-         //    Format= %f
+         //    Format= %02dh%02dm%02ds 
          // alpha_corr : coordonnée alpha corrigée avec le modèle de pointage
          //    Format = "%02dh%02dm%05.2fs"
          // delta_corr : coordonnée delta corrigée avec le modèle de pointage
@@ -200,15 +228,15 @@ void socket_writeCoordServerSocket(struct telprop *tel, int returnCode, char * r
          //    Format = "%1s%02dd%02dm%05.2fs"
          // calage_alpha
          //    C : calé
-         //    D : décalé*
+         //    D : décalé
          //    A : autre : ni calé ni décalé
          // calage_delta
          //    C : calé
-         //    D : décalé*
+         //    D : décalé
          //    A : autre : ni calé ni décalé
 
-         sprintf(notification, "!RADEC COORD %d %f %f %s %s %s %s %c %c @\n", 
-            returnCode, universalTime, sideralTime, ra, dec, raBrut, decBrut, raCalage, decCalage); 
+         sprintf(notification, "!RADEC COORD %d %s %s %s %s %s %s %c %c @\n", 
+            returnCode, tu, ts, ra, dec, raBrut, decBrut, raCalage, decCalage); 
          writeResult = Tcl_WriteChars(clientCoordSocketList[index], notification, strlen(notification));
          if ( writeResult == -1) {
             Tcl_Close( tel->interp, clientCoordSocketList[index]);
