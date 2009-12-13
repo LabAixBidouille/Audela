@@ -23,10 +23,10 @@
 #ifndef __SOCKET_T193_H__
 #define __SOCKET_T193_H__
 
+#define NOTIFICATION_MAX_SIZE 128
 
 int socket_openTelescopeCommandSocket(struct telprop *tel, char * ethernetHost, int ethernetCommandPort);
 int socket_closeTelescopeCommandSocket(struct telprop *tel);
-int socket_readTelescopeCommandSocket(struct telprop *tel, char *response, int* len);
 int socket_writeTelescopeCommandSocket(struct telprop *tel, char *command, char *response);
 
 int socket_openTelescopeNotificationSocket(struct telprop *tel, char * ethernetHost, int ethernetNotificationPort);

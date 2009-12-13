@@ -135,46 +135,12 @@ int socket_closeTelescopeCommandSocket(struct telprop *tel) {
    
 }
 
-
-
 /**
- * socket_readTelescopeCommandSocket 
- *   traite la reponse recue sur la socket de commande du telescope
- * @param tel  
- * @return none
- */
-int socket_readTelescopeCommandSocket(struct telprop *tel, char *response, int* len) {
-   int tclResult; 
-   FILE *flog;
-
-   Tcl_DString responseRead;
-   Tcl_DStringInit(&responseRead);
-   tclResult = Tcl_Gets(tel->telescopeCommandSocket, &responseRead);
-   if ( tclResult != -1 ) {
-      strcpy(response, Tcl_DStringValue(&responseRead));
-      *len = tclResult;
-
-	  flog = fopen("mouchard_protocole_T193.txt", "at");
-	  fprintf(flog, "REPONSE  = %s\n", response);
-	  fclose(flog);
-
-   } else {
-      sprintf(tel->msg,"read telescope command socket error: %s", tel->interp->result); 
-      strcpy(response, "");
-      *len = 0;
-   }
-   Tcl_DStringFree(&responseRead);
-
-   
-   return tclResult;
-}
-
-/**
- * socket_readTelescopeCommandSocket 
+ * socket_writeTelescopeCommandSocket 
  *   envoit une commande sur la socket de commande du telescope
  * @param tel   commande  d'une structure telprop contenant les attributs du telescope 
  * @param command  commmande a envoyer
- * @param response reponse lue
+ * @param response reponse lue (taille maximum NOTIFICATION_MAX_SIZE octets)
  * @return 0= OK ou 1=ERROR Le libelle de l'erreur est dans tel->msg
  */
 int socket_writeTelescopeCommandSocket(struct telprop *tel, char *command, char *response) {
@@ -227,7 +193,7 @@ int socket_writeTelescopeCommandSocket(struct telprop *tel, char *command, char 
          tclResult = Tcl_Gets(tel->telescopeCommandSocket, &responseRead);
          if ( tclResult != -1 ) {
             // je copie la reponse dans la variable de sortie
-            strcpy(response, Tcl_DStringValue(&responseRead));  
+            strncpy(response, Tcl_DStringValue(&responseRead),NOTIFICATION_MAX_SIZE);  
          } else {
             int errnoCode = Tcl_GetErrno();
             if ( Tcl_InputBlocked(tel->telescopeCommandSocket) == 0 ) {
