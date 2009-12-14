@@ -1243,6 +1243,13 @@ int tel_focus_move(struct telprop *tel,char *direction)
   char direction2 =direction[0]; 
 
   if (tel->telescopeCommandSocket != NULL) {
+
+      // j'active la notification des coordonnées pendant le deplacement
+      // la notification sera desactivee a la fin du deplacement par mytel_processNotification
+      if ( result == 0 ) {
+         result = mytel_setFocusNotification(tel, 1);
+      }
+
       // je verifie s'il n'y a pas deja un mouvement en cours
       if ( tel->focusIsMoving != 0 ) {
          sprintf(tel->msg, "focalisation already moving");
@@ -1263,12 +1270,6 @@ int tel_focus_move(struct telprop *tel,char *direction)
          }
       }
       
-      // j'active la notification des coordonnées pendant le deplacement
-      // la notification sera desactivee a la fin du deplacement par mytel_processNotification
-      if ( result == 0 ) {
-         result = mytel_setFocusNotification(tel, 1);
-      }
-
       if ( result == 0 ) {
          char command[NOTIFICATION_MAX_SIZE];
          char response[NOTIFICATION_MAX_SIZE];
