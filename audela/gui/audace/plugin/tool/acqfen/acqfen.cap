@@ -1,6 +1,6 @@
 #
 # Fichier : acqfen.cap
-# Mise a jour $Id: acqfen.cap,v 1.15 2009-11-06 19:07:17 robertdelmas Exp $
+# Mise a jour $Id: acqfen.cap,v 1.16 2009-12-14 17:48:46 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -289,7 +289,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
 #--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Einstellung Fenster für die Fenster Belichtungen"
-   set caption(acqfen,en-tete_fits)    "FITS Vorsatz"
+   set caption(acqfen,en-tete_fits)    "FITS Header"
    set caption(acqfen,mots_cles)       "Stichwörter"
    set caption(acqfen,fenreglfen1)     "CCD Löschung Zahl vor jede Belichtung"
    set caption(acqfen,fenreglfen11)    "Mangel Wahl"

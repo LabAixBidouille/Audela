@@ -1,6 +1,6 @@
 #
 # Fichier : tlscp.cap
-# Mise a jour $Id: tlscp.cap,v 1.15 2009-11-23 20:41:07 robertdelmas Exp $
+# Mise a jour $Id: tlscp.cap,v 1.16 2009-12-14 17:51:38 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -435,7 +435,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,searchRadius)       "Radius Durchsuchung (Pixel)"
    set caption(tlscp,searchThreshold)    "Min. Licht (2)"
 
-   set caption(tlscp,en-tete_fits)       "FITS Vorsatz"
+   set caption(tlscp,en-tete_fits)       "FITS Header"
    set caption(tlscp,mots_cles)          "Stichwörter"
    set caption(tlscp,ret_nord)           "Nord"
    set caption(tlscp,ret_sud)            "Sud"

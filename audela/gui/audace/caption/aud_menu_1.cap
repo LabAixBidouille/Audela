@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_1.cap
-# Mise a jour $Id: aud_menu_1.cap,v 1.16 2009-12-09 16:46:09 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.cap,v 1.17 2009-12-14 17:49:27 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -180,7 +180,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,enregistrer)      "Speichern"
    set caption(audace,menu,enregistrer_sous) "Speichern mit"
    set caption(audace,menu,copyjpeg)         "In JPEG speichern"
-   set caption(audace,menu,entete)           "FITS Vorsatz"
+   set caption(audace,menu,entete)           "FITS Header"
    set caption(audace,menu,nouveau_script)   "Neuen Skript"
    set caption(audace,menu,editer_script)    "Ein Skript editieren"
    set caption(audace,menu,lancer_script)    "Ein Skript ausführen"

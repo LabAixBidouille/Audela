@@ -1,6 +1,6 @@
 #
 # Fichier : acqfcSetup.cap
-# Mise a jour $Id: acqfcSetup.cap,v 1.17 2009-11-06 19:07:01 robertdelmas Exp $
+# Mise a jour $Id: acqfcSetup.cap,v 1.18 2009-12-14 17:48:29 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -64,7 +64,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(acqfcSetup,titre)                  "Belichtung - Konfiguration"
-   set caption(acqfcSetup,en-tete_fits)           "FITS Vorsatz"
+   set caption(acqfcSetup,en-tete_fits)           "FITS Header"
    set caption(acqfcSetup,mots_cles)              "Stichwörter"
    set caption(acqfcSetup,texte1)                 "Die Nachrichten am Bildschirm zeigen"
    set caption(acqfcSetup,texte2)                 "Die Zeit in die Log Datei speichern"

@@ -1,6 +1,6 @@
 #
 # Fichier : cmaude.cap
-# Mise a jour $Id: cmaude.cap,v 1.23 2009-11-07 14:09:19 robertdelmas Exp $
+# Mise a jour $Id: cmaude.cap,v 1.24 2009-12-14 17:49:46 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -455,7 +455,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,fichier_html)                "Schaffung oder Aktualisierung der HTML-Datei:"
 
    set caption(cmaude,titre_config)                "Belichtung (MASCOT) - Konfiguration"
-   set caption(cmaude,en-tete_fits)                "FITS Vorsatz"
+   set caption(cmaude,en-tete_fits)                "FITS Header"
    set caption(cmaude,mots_cles)                   "Stichwörter"
 
 # *************** Version portugaise **************************
