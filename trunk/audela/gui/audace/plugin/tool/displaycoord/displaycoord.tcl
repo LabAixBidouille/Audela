@@ -2,7 +2,7 @@
 # Fichier : displaycoord.tcl
 # Description : Outil pour l'observation des SnAudes
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: displaycoord.tcl,v 1.1 2009-12-13 17:25:37 michelpujol Exp $
+# Mise a jour $Id: displaycoord.tcl,v 1.2 2009-12-14 18:56:15 michelpujol Exp $
 #
 
 #============================================================
@@ -97,6 +97,9 @@ proc ::displaycoord::createPluginInstance { { tkParent "" } { visuNo 1 } } {
    if { ! [ info exists ::conf(displaycoord,windowPosition) ] } { set ::conf(displaycoord,windowPosition)     "640x480+50+15" }   
    if { ! [ info exists ::conf(displaycoord,windowMaximize) ] } { set ::conf(displaycoord,windowMaximize)     0 }   
    
+   set dir [ file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [getPluginType]] [getPluginDirectory]]
+   source [ file join $dir displayconfig.tcl ]
+         
    #--- j'intialise les variables locale
    set private(socketChannel) ""
    set private(etat) "NOT_CONNECTED"
@@ -171,11 +174,8 @@ proc ::displaycoord::startTool { visuNo } {
    #--- j'affiche la fenetre
    if { [winfo exists $private(base) ] == 0 } {
       ::displaycoord::createWindow $visuNo
-      #--- je connecte au serveur de coordonnees 
-      #--- avec un délai de 5 secondes pour ne pas retarder le demarrage d'Audela 
-      #--- si cet outil est lancé au démarrage d'audela 
-      set private(connexionTimerId) [after 5000 ::displaycoord::openSocketCoord ]  
-         
+      #--- je lance la boucle pour se connecter au serveur
+      startConnectionLoop                 
    } else {
       #--- si la fenetre existe deja, je lui donne le focus
       wm withdraw $private(base)
@@ -239,20 +239,32 @@ proc ::displaycoord::createWindow { visuNo } {
    #set private(ohp_t193,decinit) +00°00'00\"
    set private(ohp_t193,fichierlog) codeurs_t193.log
 
-   #--- titre 
+   
+   #--- frame principale
    frame $base.f -bg $private(color,back)
-   label $base.f.lab_titre \
+   
+   #--- titre et bouton de configuration
+   frame $base.f.titre -bg $private(color,back)   
+   label $base.f.titre.lab_titre \
      -bg $private(color,back) -fg $couleur_bleuclair \
      -font $private(fonttitle) -text $::caption(displaycoord,title)
-   pack $base.f.lab_titre -anchor c
+   ###pack $base.f.titre.lab_titre -anchor c 
+   grid $base.f.titre.lab_titre -row 0 -column 0 -sticky ew   
    
-   #--- Etat du telescope
+   button $base.f.titre.configuration  -text $::caption(displaycoord,configuration) \
+      -command "::displaycoord::config::run $private(base) $visuNo"   
+   ###pack $base.f.titre.configuration -anchor e -side right
+   grid $base.f.titre.configuration -row 0 -column 1 -sticky e -padx 4
+   grid columnconfig $base.f.titre 0 -weight 1
+   
+   pack $base.f.titre -fill x -pady 2 -anchor e
+   
+   #--- Etat du telescope   
    label $base.f.lab_etat \
       -bg $private(color,text) -fg $private(color,back) \
       -font $private(font1)
    pack $base.f.lab_etat -fill none -pady 2 -anchor e
- 
-   
+    
    #--- temps
    label $base.f.lab_tu \
      -bg $private(color,back) -fg $private(color,text) \
@@ -386,6 +398,23 @@ proc onResizeWindow { width height } {
 #######################################################################
 
 #------------------------------------------------------------
+# startConnectionLoop
+#   Ouvre une socket en lecture pour recevoir les notifications des coordonnees 
+#   Les parametres de la sconnexion sont dans des variables globales
+#     adresse/nom de host = ::conf(displaycoord,serverHost)
+#     port = ::conf(displaycoord,serverPort)
+#
+#------------------------------------------------------------
+proc ::displaycoord::startConnectionLoop { } {
+   variable private
+   
+   #--- je connecte au serveur de coordonnees 
+   #--- avec un délai de 5 secondes pour ne pas retarder le demarrage d'Audela 
+   #--- si cet outil est lancé au démarrage d'audela 
+   set private(connexionTimerId) [after 5000 ::displaycoord::openSocketCoord ]  
+   
+}
+#------------------------------------------------------------
 # openSocketCoord
 #   Ouvre une socket en lecture pour recevoir les notifications des coordonnees 
 #   Les parametres de la sconnexion sont dans des variables globales
@@ -397,13 +426,18 @@ proc ::displaycoord::openSocketCoord { } {
    variable private
    
    set catchError [ catch {
+      
+      if { $private(socketChannel) != "" } {
+          ::displaycoord::closeSocketCoord 
+      }
+      
       set private(socketChannel) [socket $::conf(displaycoord,serverHost) $::conf(displaycoord,serverPort) ]
       #---  -translation binary -encoding binary
       fconfigure $private(socketChannel) -buffering line -blocking true -translation binary -encoding binary
       fileevent $private(socketChannel) readable [list ::displaycoord::readSocketCoord ]
       
       set private(etat) "CONNECTED"
-      #--- j'affiche l'etat 
+      #--- j'affiche l'affichage (je fais comme si on avais recu une notification)
       readSocketCoord
       set private(connexionTimerId) ""
       ###console::disp "::displaycoord::openSocketCoord $private(etat)\n"
@@ -427,6 +461,8 @@ proc ::displaycoord::closeSocketCoord { } {
    if { $private(socketChannel) != "" } {
       close $private(socketChannel)
       set private(socketChannel) ""
+      #--- j'affiche l'affichage (je fais comme si on avais recu une notification)
+      readSocketCoord      
    } 
    
    #--- j'arrete le timer de reconnexion s'il etait lancé 
