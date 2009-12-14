@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.37 2009-12-09 23:11:09 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.38 2009-12-14 17:50:06 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -396,7 +396,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,fichier_image)                      "Bild Datei"
    set caption(confgene,fichier_image_fits)                 "FITS Datei"
-   set caption(confgene,fichier_images_seuils_visu)         "Bilder mit Entfaltung Schwellenwerte speichern\n(nur sichtbar in 'Initialen Schwellenwerte' Modus)"
+   set caption(confgene,fichier_images_seuils_visu)         "Bilder mit Entfaltung Schwellen speichern\n(nur sichtbar in 'Initialen Schwellen' Modus)"
    set caption(confgene,fichier_images_choix_format)        "Bilder im Format speichern:"
    set caption(confgene,fichier_images_entier)              "Ganz (16 bits)"
    set caption(confgene,fichier_images_flottant)            "Fließkomma (32 bits)"

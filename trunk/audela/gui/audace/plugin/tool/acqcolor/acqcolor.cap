@@ -1,6 +1,6 @@
 #
 # Fichier : acqcolor.cap
-# Mise a jour $Id: acqcolor.cap,v 1.11 2009-11-06 19:06:00 robertdelmas Exp $
+# Mise a jour $Id: acqcolor.cap,v 1.12 2009-12-14 17:48:08 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -169,10 +169,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqcolor,seprvb)              "RGB Scheidung"
    set caption(acqcolor,trichro)             "Dreifarbensystem"
    set caption(acqcolor,smedianrvb)          "Medianwert"
-   set caption(acqcolor,entete_fits)         "FITS Vorsatz"
-   set caption(acqcolor,entete_fits_B)       "FITS Vorsatz - Blaue Bild"
-   set caption(acqcolor,entete_fits_V)       "FITS Vorsatz - Grüne Bild"
-   set caption(acqcolor,entete_fits_R)       "FITS Vorsatz - Rote Bild"
+   set caption(acqcolor,entete_fits)         "FITS Header"
+   set caption(acqcolor,entete_fits_B)       "FITS Header - Blaue Bild"
+   set caption(acqcolor,entete_fits_V)       "FITS Header - Grüne Bild"
+   set caption(acqcolor,entete_fits_R)       "FITS Header - Rote Bild"
    set caption(acqcolor,luminosite)          "Lichtstärke"
    set caption(acqcolor,vert)                "Grün"
    set caption(acqcolor,bleu)                "Blau"

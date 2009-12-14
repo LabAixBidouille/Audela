@@ -1,6 +1,6 @@
 #
 # Fichier : acqzadkoSetup.cap
-# Mise a jour $Id: acqzadkoSetup.cap,v 1.2 2009-11-06 19:08:28 robertdelmas Exp $
+# Mise a jour $Id: acqzadkoSetup.cap,v 1.3 2009-12-14 17:49:08 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -64,7 +64,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(acqzadkoSetup,titre)                  "BelichtungZADKO - Konfiguration"
-   set caption(acqzadkoSetup,en-tete_fits)           "FITS Vorsatz"
+   set caption(acqzadkoSetup,en-tete_fits)           "FITS Header"
    set caption(acqzadkoSetup,mots_cles)              "Stichwörter"
    set caption(acqzadkoSetup,texte1)                 "Die Nachrichten am Bildschirm zeigen"
    set caption(acqzadkoSetup,texte2)                 "Die Zeit in die Log Datei speichern"

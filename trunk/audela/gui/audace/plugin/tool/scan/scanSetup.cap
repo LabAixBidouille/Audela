@@ -1,6 +1,6 @@
 #
 # Fichier : scanSetup.cap
-# Mise a jour $Id: scanSetup.cap,v 1.7 2009-12-09 16:57:16 robertdelmas Exp $
+# Mise a jour $Id: scanSetup.cap,v 1.8 2009-12-14 17:50:41 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -80,7 +80,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(scanSetup,configuration)          "Konfiguration"
-   set caption(scanSetup,en-tete_fits)           "FITS Vorsatz"
+   set caption(scanSetup,en-tete_fits)           "FITS Header"
    set caption(scanSetup,mots_cles)              "Stichwörter"
    set caption(scanSetup,titre)                  "Zwischen den RA Motor halten und den Anfang des Belichtung abwarten:"
    set caption(scanSetup,sans_scan)              "Kein Abwarten"

@@ -1,6 +1,6 @@
 #
 # Fichier : snacq.cap
-# Mise a jour $Id: snacq.cap,v 1.13 2009-12-09 16:57:32 robertdelmas Exp $
+# Mise a jour $Id: snacq.cap,v 1.14 2009-12-14 17:51:00 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -260,7 +260,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,maginf)                 "Niedere"
    set caption(snacq,foclen)                 "Brennweite Länge (m)"
    set caption(snacq,fits,OBSERVER)          "Beobachter"
-   set caption(snacq,en-tete_fits)           "FITS Vorsatz"
+   set caption(snacq,en-tete_fits)           "FITS Header"
    set caption(snacq,mots_cles)              "Stichwörter"
    set caption(snacq,go2)                    "Simulierung"
    set caption(snacq,go)                     "Belichtung"
