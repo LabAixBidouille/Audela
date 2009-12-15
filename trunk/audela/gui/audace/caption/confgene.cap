@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.38 2009-12-14 17:50:06 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.39 2009-12-15 17:34:41 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -322,10 +322,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,nom_observatoire:)                  "Nombre del observatorio:"
    set caption(confgene,nom_observatoire)                   "Nombre del observatorio"
    set caption(confgene,ajouter_observatoire)               "Añadir observatorio"
-   set caption(confgene,supprimer_observatoire)             "Suprimir"
+   set caption(confgene,supprimer_observatoire)             "Borrar"
    set caption(confgene,copier_observatoire)                "Copiar"
    set caption(confgene,observatoire_a_ajouter)             "Nombre del observatorio a añadir"
-   set caption(confgene,observatoire_a_supprimer)           "Nombre del observatorio a suprimir"
+   set caption(confgene,observatoire_a_supprimer)           "Nombre del observatorio a borrar"
    set caption(confgene,observatoire_a_copier)              "Datos del observatorio a copiar"
    set caption(confgene,position_longitude)                 "Longitud:"
    set caption(confgene,position_est)                       "E"
