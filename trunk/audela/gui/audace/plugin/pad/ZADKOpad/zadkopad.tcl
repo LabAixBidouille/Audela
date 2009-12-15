@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.36 2009-11-06 09:07:27 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.37 2009-12-15 13:18:39 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -177,19 +177,25 @@ namespace eval ::zadkopad {
             append textloadfile "load problem of file macros.tcl"
         }
         set err [catch {source "$ros(root,conf)/conf/src/common/variables_sites.tcl"}]
-        if {($err!=1)&&($ros(common,mode)=="zadko_australia_pcwincam")} {
-            set paramhorloge(dra) $ros(telescope,private,dra);               # offset (deg) for hour angle
-            set paramhorloge(ddec) $ros(telescope,private,ddec);             # offset (deg) for declination
+        if {($err!=1)&&($ros(common,mode)=="zadko_australia_pcwincam")} {          
             set paramhorloge(focus) $ros(telescope,private,focuscam1) ;      # valeur du bon focus
             set paramhorloge(speedra) $ros(telescope,speedtrack,mult,ra) ;   # coef multiplicateur du speedtrack
             #set paramhorloge(speeddec) $ros(telescope,speedtrack,mult,dec); # coef multiplicateur du speedtrack
         } else {
             append textloadfile "no offset values defined in variables_sites.tcl"
-            set paramhorloge(dra) 0;            # offset (deg) for hour angle
-            set paramhorloge(ddec) 0;           # offset (deg) for declination
             set paramhorloge(focus) 0;          # valeur du bon focus
             set paramhorloge(speedra) 0;        # coef multiplicateur du speedtrack
             #set paramhorloge(speeddec) 0;      # coef multiplicateur du speedtrack  
+       }
+       
+       set err [catch {source "$ros(root,conf)/conf/src/telescope/pointing_model_zadko.tcl"}]
+        if {($err!=1)&&($ros(common,mode)=="zadko_australia_pcwincam")} {
+            set paramhorloge(dra) $ros(telescope,private,dra);               # offset (deg) for hour angle
+            set paramhorloge(ddec) $ros(telescope,private,ddec);             # offset (deg) for declination      
+        } else {
+            append textloadfile "no offset values defined in pointing_model_zadko.tcl"
+            set paramhorloge(dra) 0;            # offset (deg) for hour angle
+            set paramhorloge(ddec) 0;           # offset (deg) for declination
        }
        
 	   #--- Cree les variables dans conf(...) si elles n'existent pas
