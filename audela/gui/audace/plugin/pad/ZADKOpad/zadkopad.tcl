@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.37 2009-12-15 13:18:39 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.38 2009-12-15 13:29:21 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -610,7 +610,7 @@ namespace eval ::zadkopad {
 			
 		#zadko_info "goto ra: $ra, dec: $dec, alt: $alt, ha: $ha"
 		# --- teste si les coordonnees sont pointables
-		if {(($ha<[expr 15*15])&&($ha>[expr 8*15]))||($alt<10)||($dec>45)||($dec<-89.5)} {			
+		if {(($ha<[expr 15*15])&&($ha>[expr 8*15]))||($alt<10)||($dec>43)||($dec<-89.5)} {			
 			# --- affiche un message d'erreur
 			zadko_info "tsl: $tsl"
 			set ts [mc_angle2deg [list $tsl] ]
