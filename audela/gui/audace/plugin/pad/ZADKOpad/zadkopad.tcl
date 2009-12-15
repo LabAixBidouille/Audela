@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.38 2009-12-15 13:29:21 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.39 2009-12-15 13:54:49 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -362,7 +362,7 @@ namespace eval ::zadkopad {
    #------------------------------------------------------------
    proc deletePluginInstance { } {
       global audace conf paramhorloge modetelescope port ros
-    
+      
       set err [catch {source "$ros(root,conf)/conf/src/zadko/conf_zadko.tcl"}]
       if {$err!=1} {
           if { [ winfo exists .zadkopad ] } {
@@ -501,13 +501,24 @@ namespace eval ::zadkopad {
 				# pour contrer le bug de DFM
 				#::zadkopad::stopfocus
 				#################################
-				set reponse [::zadkopad::roscommande [list telescope DO eval tel$telnum radec motor off]]
+				
+				#arret des moteurs de tracking 
+				set reponse [::zadkopad::roscommande [list telescope DO speedtrack 0 0]]
+				if {([lindex $reponse 0]>0)||([lindex $reponse 1]>0)} {
+    				zadko_info " problem with motor turn on"
+    				set reponse [::zadkopad::roscommande [list telescope DO eval tel$telnum radec motor off]]
+    				set reponse [::zadkopad::roscommande [list telescope DO speedtrack 0 0]]
+    				if {([lindex $reponse 0]>0)||([lindex $reponse 1]>0)} {
+        				zadko_info " PROBLEM with motor turn on"
+        				set reponse [::zadkopad::roscommande [list telescope DO eval tel$telnum radec motor off]]
+    				    set reponse [::zadkopad::roscommande [list telescope DO speedtrack 0 0]]
+    				}
+				}
 				# --- passer majordome en mode auto
 				#passer en mode manuel du majordome
 		 		set reponse [::zadkopad::dialoguesocket $port(adressePCcontrol) $port(maj) $texte]
 	 			
 	 	 		if {$reponse!=2} {
-	 			
 	 			}
 				#set reponse [::zadkopad::roscommande {majordome DO mysql ModeSysteme AUTO}]
 				#relancer si reponse pas bonne
