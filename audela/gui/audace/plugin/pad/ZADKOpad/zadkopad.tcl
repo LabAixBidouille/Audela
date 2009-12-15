@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.39 2009-12-15 13:54:49 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.40 2009-12-15 14:04:19 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -496,6 +496,7 @@ namespace eval ::zadkopad {
 			}
      		
 		} elseif {$mode==0} {
+    		zadko_info " closing the windows"
 			if {$modetelescope==1} {
 				#################################
 				# pour contrer le bug de DFM
@@ -503,6 +504,7 @@ namespace eval ::zadkopad {
 				#################################
 				
 				#arret des moteurs de tracking 
+				zadko_info " stop the motors"
 				set reponse [::zadkopad::roscommande [list telescope DO speedtrack 0 0]]
 				if {([lindex $reponse 0]>0)||([lindex $reponse 1]>0)} {
     				zadko_info " problem with motor turn on"
