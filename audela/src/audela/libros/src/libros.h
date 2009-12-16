@@ -63,6 +63,8 @@
 /* Les prototypes suivants concernent les fonctions des fichiers rostcl_*.c */
 /***************************************************************************/
 /***************************************************************************/
+	void ServeurGps(void *Parametre);
+	double ml_getGpsDate ();
 
 #include "rostcl.h"
 
