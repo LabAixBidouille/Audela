@@ -32,12 +32,12 @@
 #include "Bc637pci.h"
 #include <process.h>
 
+//pour gerer la datation par GPS: déclaration des varaiables globales
 HANDLE EventThreadGps;
 int ThreadGps;
 double DateGps;
-double DatePc;
 char DateGpst[50];
-double dateAncienne;
+double date=-1;
 
 /***************************************************************************/
 /* Define the entry point of the velleman driver to use it               */
@@ -475,7 +475,6 @@ ros_gps close symmetricom
       if ((mode==2)&&(modele==1)) {
 			//SetEvent(EventThreadGps); //Declenche le thread gps
 			//WaitForSingleObject(EventThreadGps,INFINITE); //Attende de demande d'image
-			//CloseHandle(EventThreadGps);
 			_beginthread(ServeurGps,0,NULL);
 			ThreadGps = 1;
 			SetEvent(EventThreadGps); //Declenche le thread gps
@@ -493,41 +492,20 @@ ros_gps close symmetricom
 	     }
       /* --- read time ---*/
       if ((mode==3)&&(modele==1)) {
-			//bcSetMode(MODE_GPS);
-			// Set the HeartBeat Counters and the mode to Sync -> 100 Hz
-			/*if ( bcSetHbt(1, 100, 100) == RC_ERROR ) {
-				sprintf(s,"Error setting HeartBeat Counters for device %s",argv[2]);
-				Tcl_SetResult(interp,s,TCL_VOLATILE);
-				return TCL_ERROR;
-			}	*/
-			// Enable Event, Rising Edge and Disable Lockout -> See Table 5-3 in manual
-			/*evt_enable = 0x08;
-			if ( bcSetReg (PCI_OFFSET_CTL, &evt_enable) == RC_ERROR ) {
-				sprintf(s,"Error setting Control Register for device %s",argv[2]);
-				Tcl_SetResult(interp,s,TCL_VOLATILE);
-				return TCL_ERROR;
-			}*/
-			/*bcReqOtherData(&otherdata);
-			sprintf(s,"{OtherData %d %d %d %d %d %d %d %d %d}",otherdata.mode,otherdata.hbtmode,otherdata.hbtcnt1,otherdata.hbtcnt2,otherdata.freq,otherdata.evtctl,otherdata.evtsense,otherdata.evtlock,otherdata.evtsrc);
-			Tcl_SetResult(interp,s,TCL_VOLATILE);*/
-
-		/*	strcpy(s,"0000-00-00T00:00:00.000");
-			if ( bcReadEventTime (&maj, &min) == RC_OK) {
-				majc = maj;
-				//pour la précision au millième de seconde et pas plus
-				// Convert Binary Time to structure
-				majtime = gmtime( &majc );
-				// ignore the very first reading
-				sprintf(s,"%04d-%02d-%02dT%02d:%02d:%02d.%06lu",majtime->tm_year+1900,majtime->tm_mon+1,majtime->tm_mday,majtime->tm_hour,majtime->tm_min, majtime->tm_sec,min);
-			}*/
-			sprintf(s,"%s",DateGpst);
-         /* --- ---*/	
-			Tcl_SetResult(interp,s,TCL_VOLATILE);
-         return TCL_OK;
+		  if (date==0) {
+			 sprintf(s,"Error GPS date");	
+			 Tcl_SetResult(interp,s,TCL_VOLATILE);
+			 return TCL_ERROR;
+		  } else {
+			 sprintf(s,"%s",DateGpst);	
+			 Tcl_SetResult(interp,s,TCL_VOLATILE);
+			 return TCL_OK;
+		  }
       }
       /* --- close ---*/
       if ((mode==4)&&(modele==1)) {
-			bcStopPCI();
+		 CloseHandle(EventThreadGps);
+		 bcStopPCI();
          sprintf(s,"Connection with %s is closed",argv[2]);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_OK;
@@ -567,12 +545,16 @@ void ServeurGps(void *Parametre)
 	// Stop Device
 	bcStopPCI (); 
 }
+//***************************************************************************
+//
+// fonction qui donne la date du dernier evenement exterieur
+//
+//***************************************************************************
 double ml_getGpsDate ()
 {	
-	//double diff
-	double date=-1;   
+	double diff;	   
 	#if defined(OS_WIN)
-   ULONG maj, evtmaj, evtmin, min;
+    ULONG maj, evtmaj, evtmin, min;
 	ULONG evt_enable;
 	int first_reading = 1;
 	struct tm *majtime;
@@ -595,8 +577,7 @@ double ml_getGpsDate ()
 
 	GetLocalTime(&Su);
 	maintenant =Su.wHour*3600.+Su.wMinute*60.+Su.wSecond+Su.wMilliseconds/1000.;
-//if(AcqData[NumeroImage].nom_objet[0] == '\0')
-//printf("%s",AcqData[NumeroImage].nom_objet[0]);
+
 	if ( bcReadEventTime (&maj, &min) == RC_OK){
 		
 		if ( maj != evtmaj || min != evtmin){
@@ -611,33 +592,14 @@ double ml_getGpsDate ()
 				majtime->tm_year+1900, majtime->tm_mon+1, majtime->tm_mday,
 				majtime->tm_hour, majtime->tm_min, majtime->tm_sec, min);
 
-			date= (majtime->tm_hour)*3600. + (majtime->tm_min)*60. + majtime->tm_sec + min*0.001;
-			/*printf( "\n heure : %f",majtime->tm_hour*1.);
-			printf( "\n minut : %f",majtime->tm_min*1.);
-			printf( "\n secon : %f",majtime->tm_sec*1.);
-			printf( "\n milli : %f",min*0.001);
-			printf( "\n date  : %15.11f",date/86400.);
-			printf ("\n DateGps et date : %15.11f,%15.11f",DateGps,date);*/
+			date= (majtime->tm_hour)*3600. + (majtime->tm_min)*60. + majtime->tm_sec + min*0.001;			
 
-			//test if the last picture has the same date then the current
-			/*diff = date - dateAncienne;
-			if (diff == 0 ){
-				sprintf(DateGpst,"0000-00-00T00:00:00.000");
-				date=0;
-				printf( "\nNo Event Time");
-			} else {
-				dateAncienne=date;
-				printf( "\nEvent Time: %02d/%02d/%d  %02d:%02d:%02d.%3d", 
-				majtime->tm_mon+1, majtime->tm_mday, majtime->tm_year+1900,
-				majtime->tm_hour, majtime->tm_min, majtime->tm_sec, min);
-			}
-
-			//test if the datePc and the dateGps are different (>30 sec)
+			//test if the datePc and the dateGps are different (>60 sec)
 			diff = maintenant-date;
-			if (diff>30 || diff<-30) {
+			if (diff>60 || diff<-60) {
 				sprintf(DateGpst,"0000-00-00T00:00:00.000");
 				date=0;
-			}*/
+			}
 		}	
 	} else {
 		date = 0;
