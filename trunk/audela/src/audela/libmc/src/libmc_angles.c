@@ -666,6 +666,441 @@ int Cmd_mctcl_xy2radec(ClientData clientData, Tcl_Interp *interp, int argc, char
    return(result);
 }
 
+int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,char *argv_coords,Tcl_DString *pdsptr,mc_HORIZON_ALTAZ **phorizon_altaz,mc_HORIZON_HADEC **phorizon_hadec)
+/****************************************************************************/
+/* Interpole la ligne d'horizon                                             */
+/****************************************************************************/
+/*                                                                          */
+/* Entrees :                 												             */
+/*                                                                          */
+/****************************************************************************/
+{
+	char s[1024];
+	char **argvv=NULL;
+	char **argvvv=NULL;
+	int argcc,argccc;
+	int type=0,code,kc,ncoords;
+   Tcl_DString dsptr;
+	double *coord1s=NULL,*coord2s=NULL,*coord3s=NULL;
+	int *kcoords=NULL,*kazs,naz,nhaz=360;
+	double *azs,*elevs,*dummys;
+	double *hazs,*helevs;
+   double rhocosphip=0.,rhosinphip=0.,longmpc=0.;
+   double latitude,altitude,latrad,az,h,ha,dec;
+	double decmin,decmax,deccirc;
+	int *kdecs,ndec,nhdec=180,kk,kcc;
+	double *decs,*ha_rises,*ha_sets;
+	double *hdecs,*hha_rises,*hha_sets;
+	double ha_set_lim,ha_rise_lim;
+	mc_HORIZON_ALTAZ *horizon_altaz;
+	mc_HORIZON_HADEC *horizon_hadec;
+	int nh_altaz=361,nh_hadec=181;
+
+	if (pdsptr!=NULL) {
+	   Tcl_DStringInit(&dsptr);
+		*pdsptr=dsptr;
+	}
+	if ((phorizon_altaz!=NULL)&&(phorizon_hadec!=NULL)) {
+		horizon_altaz=(mc_HORIZON_ALTAZ *)calloc(nh_altaz,sizeof(mc_HORIZON_ALTAZ));
+		horizon_hadec=(mc_HORIZON_HADEC *)calloc(nh_hadec,sizeof(mc_HORIZON_HADEC));
+		*phorizon_altaz=horizon_altaz;
+		*phorizon_hadec=horizon_hadec;
+	}
+   /* --- decode le Home ---*/
+   longmpc=0.;
+   rhocosphip=0.;
+   rhosinphip=0.;
+   mctcl_decode_topo(interp,argv_home,&longmpc,&rhocosphip,&rhosinphip);
+	mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
+	latrad=latitude*(DR);
+   /* --- decode le type de coordonnees d'entree ---*/
+	mc_strupr(argv_type,s);
+	if (s[0]=='A') {
+		type=1;
+	}
+   /* --- decode les coordonnees ---*/
+   code=Tcl_SplitList(interp,argv_coords,&argcc,&argvv);
+	ncoords=argcc;
+	kcoords=(int*)calloc(ncoords,sizeof(int));
+	coord1s=(double*)calloc(ncoords,sizeof(double));
+	coord2s=(double*)calloc(ncoords,sizeof(double));
+	coord3s=(double*)calloc(ncoords,sizeof(double));
+	for (kc=0;kc<ncoords;kc++) {
+	   code=Tcl_SplitList(interp,argvv[kc],&argccc,&argvvv);
+		kcoords[kc]=kc;
+		if (argccc>=1) { coord1s[kc]=atof(argvvv[0]); }
+		if (argccc>=2) { coord2s[kc]=atof(argvvv[1]); }
+		if (argccc>=3) { coord3s[kc]=atof(argvvv[2]); }
+		if (argvvv!=NULL) { Tcl_Free((char *) argvvv); }
+	}
+	/* ============= */
+	/* === altaz === */
+	/* ============= */
+	if (type==0) {
+		naz=2*ncoords;
+	} else {
+		naz=ncoords;
+	}
+	kazs=(int*)calloc(naz+2,sizeof(int));
+	azs=(double*)calloc(naz+2,sizeof(double));
+	elevs=(double*)calloc(naz+2,sizeof(double));
+	dummys=(double*)calloc(naz+2,sizeof(double));
+	hazs=(double*)calloc(nhaz+2,sizeof(double));
+	helevs=(double*)calloc(nhaz+2,sizeof(double));
+	if (type==0) {
+		for (kc=0;kc<ncoords;kc++) {
+			mc_hd2ah(coord2s[kc]*(DR),coord1s[kc]*(DR),latrad,&az,&h);
+			azs[2*kc+1]=az/(DR);
+			elevs[2*kc+1]=h/(DR);
+			kazs[2*kc+1]=2*kc+1;
+			mc_hd2ah(coord3s[kc]*(DR),coord1s[kc]*(DR),latrad,&az,&h);
+			azs[2*kc+2]=az/(DR);
+			elevs[2*kc+2]=h/(DR);
+			kazs[2*kc+2]=2*kc+2;
+		}
+	} else {
+		for (kc=0;kc<ncoords;kc++) {
+			azs[kc+1]=coord1s[kc];
+			elevs[kc+1]=coord2s[kc];
+			kazs[kc+1]=kc+1;
+		}
+	}
+   /* --- tri az croissant ---*/
+	mc_quicksort_double(azs,1,naz,kazs);
+	for (kc=1;kc<=naz;kc++) {
+		dummys[kc]=elevs[kazs[kc]];
+	}
+	for (kc=1;kc<=naz;kc++) {
+		elevs[kc]=dummys[kc];
+		dummys[kc]=0.1;
+	}
+	azs[0]=azs[naz]-360.;
+	elevs[0]=elevs[naz];
+	dummys[0]=dummys[naz];
+	azs[naz+1]=azs[1]+360.;
+	elevs[naz+1]=elevs[1];
+	dummys[naz+1]=dummys[1];
+	/* --- resultats altaz bruts ---*/
+	/*
+	if (pdsptr!=NULL) {
+		Tcl_DStringAppend(&dsptr,"{",-1);
+		for (kc=1;kc<naz;kc++) {
+			sprintf(s,"%s ",mc_d2s(azs[kc]));
+			Tcl_DStringAppend(&dsptr,s,-1);
+		}
+		Tcl_DStringAppend(&dsptr,"} {",-1);
+		for (kc=1;kc<naz;kc++) {
+			sprintf(s,"%s ",mc_d2s(elevs[kc]));
+			Tcl_DStringAppend(&dsptr,s,-1);
+		}
+		Tcl_DStringAppend(&dsptr,"} ",-1);
+	}
+	*/
+	/* --- call the computation ---*/
+	for (kc=1;kc<=nhaz+1;kc++) {
+		hazs[kc]=(kc-1)*360./nhaz;
+	}
+	mc_interplin1(0,naz+1,azs,elevs,dummys,0.5,nhaz,hazs,helevs);
+	/* --- resultats altaz recheantillonnes ---*/
+	if (pdsptr!=NULL) {
+		Tcl_DStringAppend(&dsptr,"{",-1);
+		for (kc=1;kc<=nhaz;kc++) {
+			sprintf(s,"%s ",mc_d2s(hazs[kc]));
+			Tcl_DStringAppend(&dsptr,s,-1);
+		}
+		Tcl_DStringAppend(&dsptr,"} {",-1);
+		for (kc=1;kc<=nhaz;kc++) {
+			sprintf(s,"%s ",mc_d2s(helevs[kc]));
+			Tcl_DStringAppend(&dsptr,s,-1);
+		}
+		Tcl_DStringAppend(&dsptr,"} ",-1);
+	}
+	if ((phorizon_altaz!=NULL)&&(phorizon_hadec!=NULL)) {
+		for (kc=1;kc<=nhaz;kc++) {
+			horizon_altaz[kc-1].az=hazs[kc];
+			horizon_altaz[kc-1].elev=helevs[kc];
+		}
+	}
+	/* --- libere les pointeurs ---*/
+	free(dummys);
+	/* ============= */
+	/* === hadec === */
+	/* ============= */
+	if (latitude>0) {
+		decmin=latitude-90;
+		decmax=90;
+		deccirc=90-latitude;
+	} else {
+		decmax=90+latitude;
+		decmin=-90;
+		deccirc=-90-latitude;
+	}
+	if (type==0) {
+		ndec=ncoords;
+	} else {
+		ndec=nhaz/2;
+	}
+	kdecs=(int*)calloc(ndec+4,sizeof(int));
+	decs=(double*)calloc(ndec+4,sizeof(double));
+	ha_sets=(double*)calloc(ndec+4,sizeof(double));
+	ha_rises=(double*)calloc(ndec+4,sizeof(double));
+	dummys=(double*)calloc(ndec+4,sizeof(double));
+	hdecs=(double*)calloc(nhdec+2,sizeof(double));
+	hha_rises=(double*)calloc(nhdec+2,sizeof(double));
+	hha_sets=(double*)calloc(nhdec+2,sizeof(double));
+	/* --- input type ALTAZ, we use the output altaz results ---*/
+	if (type==1) {
+		decs[0]=-90;
+		if (latitude>0) {
+			ha_rises[0]=360;
+			ha_sets[0]=0;
+		} else {
+			ha_rises[0]=180;
+			ha_sets[0]=180;
+		}
+		kdecs[0]=0;
+		if (latitude>0) {
+			decs[1]=decmin;
+			ha_rises[1]=360;
+			ha_sets[1]=0;
+		} else {
+			decs[1]=decs[0];
+			ha_rises[1]=ha_rises[0];
+			ha_sets[1]=ha_rises[0];
+		}
+		kdecs[1]=1;
+		// [ 2 -> 2+ndec-1 ]
+		if (latitude>0) {
+			decs[2+ndec]=90;
+			ha_rises[2+ndec]=180;
+			ha_sets[2+ndec]=180;
+		} else {
+			decs[2+ndec]=decmax;
+			ha_rises[2+ndec]=360;
+			ha_sets[2+ndec]=0;
+		}
+		kdecs[2+ndec]=2+ndec;
+		decs[2+ndec+1]=90;
+		if (latitude>0) {
+			ha_rises[2+ndec+1]=180;
+			ha_sets[2+ndec+1]=180;
+		} else {
+			ha_rises[2+ndec+1]=360;
+			ha_sets[2+ndec+1]=0;
+		}
+		kdecs[2+ndec+1]=2+ndec+1;
+		/* --- HA rise (kk=0) set (kk=1) ---*/
+		for (kk=0;kk<2;kk++) {
+			if (kk==0) {
+				for (kc=0;kc<nhaz/2;kc++) {
+					kcc=kc+nhaz/2+1;
+					mc_ah2hd(hazs[kcc]*(DR),helevs[kcc]*(DR),latrad,&ha,&dec);
+					decs[kc+2]=dec/(DR);
+					ha_rises[kc+2]=ha/(DR);
+					kdecs[kc+2]=kc+2;
+				}
+			}
+			if (kk==1) {
+				for (kc=0;kc<nhaz/2;kc++) {
+					kcc=kc+1;
+					mc_ah2hd(hazs[kcc]*(DR),helevs[kcc]*(DR),latrad,&ha,&dec);
+					decs[kc+2]=dec/(DR);
+					ha_sets[kc+2]=ha/(DR);
+					kdecs[kc+2]=kc+2;
+				}
+			}
+		}
+		/* --- tri dec croissant ---*/
+		mc_quicksort_double(decs,0,ndec+3,kdecs);
+		if (kk==0) {
+			for (kc=0;kc<ndec+4;kc++) {
+				dummys[kc]=ha_rises[kdecs[kc]];
+			}
+			for (kc=0;kc<ndec+4;kc++) {
+				ha_rises[kc]=dummys[kc];
+				dummys[kc]=0.1;
+			}
+		}
+		if (kk==1) {
+			for (kc=0;kc<ndec+4;kc++) {
+				dummys[kc]=ha_sets[kdecs[kc]];
+			}
+			for (kc=0;kc<ndec+4;kc++) {
+				ha_sets[kc]=dummys[kc];
+				dummys[kc]=0.1;
+			}
+		}
+		/* --- call the computation ---*/
+		for (kc=1;kc<nhdec+1;kc++) {
+			hdecs[kc]=(kc-1)*180./nhdec-90.;
+		}
+		if ((kk==0)) {
+			mc_interplin1(0,ndec+3,decs,ha_rises,dummys,0.5,nhdec,hdecs,hha_rises);
+		}
+		if ((kk==1)) {
+			mc_interplin1(0,ndec+3,decs,ha_sets,dummys,0.5,nhdec,hdecs,hha_sets);
+		}
+	}
+	/* --- input type HADEC, we use the input hadec parameters ---*/
+	if (type==0) {
+		ha_set_lim=180;
+		ha_rise_lim=180;
+		for (kc=0;kc<ncoords;kc++) {
+			dec=coord1s[kc];
+			if ((latitude>0)&&(dec>deccirc)) {
+				deccirc=dec;
+			}
+			if ((latitude>0)&&(dec>=90)) {
+				ha_rise_lim=coord2s[kc];
+				ha_set_lim=coord3s[kc];
+			}
+			if ((latitude<0)&&(dec<deccirc)) {
+				deccirc=dec;
+			}
+			if ((latitude<0)&&(dec<=-90)) {
+				ha_rise_lim=coord2s[kc];
+				ha_set_lim=coord3s[kc];
+			}
+		}
+		decs[0]=-90;
+		if (latitude>0) {
+			ha_rises[0]=360;
+			ha_sets[0]=0;
+		} else {
+			ha_rises[0]=ha_rise_lim;
+			ha_sets[0]=ha_set_lim;
+		}
+		kdecs[0]=0;
+		if (latitude>0) {
+			decs[1]=decmin;
+			ha_rises[1]=360;
+			ha_sets[1]=0;
+		} else {
+			decs[1]=deccirc;
+			ha_rises[1]=180;
+			ha_sets[1]=180;
+		}
+		kdecs[1]=1;
+		// [ 2 -> 2+ndec-1 ]
+		if (latitude>0) {
+			decs[2+ndec]=deccirc;
+			ha_rises[2+ndec]=180;
+			ha_sets[2+ndec]=180;
+		} else {
+			decs[2+ndec]=decmax;
+			ha_rises[2+ndec]=360;
+			ha_sets[2+ndec]=0;
+		}
+		kdecs[2+ndec]=2+ndec;
+		decs[2+ndec+1]=90;
+		if (latitude>0) {
+			ha_rises[2+ndec+1]=ha_rise_lim;
+			ha_sets[2+ndec+1]=ha_set_lim;
+		} else {
+			ha_rises[2+ndec+1]=360;
+			ha_sets[2+ndec+1]=0;
+		}
+		kdecs[2+ndec+1]=2+ndec+1;
+		for (kc=0;kc<ncoords;kc++) {
+			decs[kc+2]=coord1s[kc];
+			ha_rises[kc+2]=coord2s[kc];
+			ha_sets[kc+2]=coord3s[kc];
+			kdecs[kc+2]=kc+2;
+		}
+		/* --- tri dec croissant ---*/
+		mc_quicksort_double(decs,0,ndec+3,kdecs);
+		for (kc=0;kc<ndec+4;kc++) {
+			dummys[kc]=ha_rises[kdecs[kc]];
+		}
+		for (kc=0;kc<ndec+4;kc++) {
+			ha_rises[kc]=dummys[kc];
+		}
+		for (kc=0;kc<ndec+4;kc++) {
+			dummys[kc]=ha_sets[kdecs[kc]];
+		}
+		for (kc=0;kc<ndec+4;kc++) {
+			ha_sets[kc]=dummys[kc];
+			dummys[kc]=0.1;
+		}
+		/* --- resultats hadec bruts ---*/
+		/*
+		if (pdsptr!=NULL) {
+			Tcl_DStringAppend(&dsptr,"{",-1);
+			for (kc=1;kc<ndec;kc++) {
+				sprintf(s,"%s ",mc_d2s(decs[kc]));
+				Tcl_DStringAppend(&dsptr,s,-1);
+			}
+			Tcl_DStringAppend(&dsptr,"} {",-1);
+			for (kc=1;kc<ndec;kc++) {
+				sprintf(s,"%s ",mc_d2s(ha_sets[kc]));
+				Tcl_DStringAppend(&dsptr,s,-1);
+			}
+			Tcl_DStringAppend(&dsptr,"} {",-1);
+			for (kc=1;kc<ndec;kc++) {
+				sprintf(s,"%s ",mc_d2s(ha_rises[kc]));
+				Tcl_DStringAppend(&dsptr,s,-1);
+			}
+			Tcl_DStringAppend(&dsptr,"} ",-1);
+		}
+		*/
+		/* --- call the computation ---*/
+		for (kc=1;kc<nhdec+1;kc++) {
+			hdecs[kc]=(kc-1)*180./nhdec-90.;
+		}
+		mc_interplin1(0,ndec+3,decs,ha_rises,dummys,0.5,nhdec,hdecs,hha_rises);
+		mc_interplin1(0,ndec+3,decs,ha_sets,dummys,0.5,nhdec,hdecs,hha_sets);
+	}
+	/* --- resultats altaz recheantillonnes ---*/
+	if (pdsptr!=NULL) {
+		Tcl_DStringAppend(&dsptr,"{",-1);
+		for (kc=1;kc<=nhdec;kc++) {
+			sprintf(s,"%s ",mc_d2s(hdecs[kc]));
+			Tcl_DStringAppend(&dsptr,s,-1);
+		}
+		Tcl_DStringAppend(&dsptr,"} {",-1);
+		for (kc=1;kc<=nhdec;kc++) {
+			sprintf(s,"%s ",mc_d2s(hha_sets[kc]));
+			Tcl_DStringAppend(&dsptr,s,-1);
+		}
+		Tcl_DStringAppend(&dsptr,"} {",-1);
+		for (kc=1;kc<=nhdec;kc++) {
+			sprintf(s,"%s ",mc_d2s(hha_rises[kc]));
+			Tcl_DStringAppend(&dsptr,s,-1);
+		}
+		Tcl_DStringAppend(&dsptr,"} ",-1);
+	}
+	if ((phorizon_altaz!=NULL)&&(phorizon_hadec!=NULL)) {
+		for (kc=1;kc<=nhdec;kc++) {
+			horizon_hadec[kc-1].dec=hdecs[kc];
+			horizon_hadec[kc-1].ha_set=hha_sets[kc];
+			horizon_hadec[kc-1].ha_rise=hha_rises[kc];
+		}
+	}
+	/* --- libere les pointeurs ---*/
+	free(elevs);
+	free(azs);
+	free(kazs);
+	free(helevs);
+	free(hazs);
+	free(ha_rises);
+	free(ha_sets);
+	free(decs);
+	free(kdecs);
+	free(hha_rises);
+	free(hha_sets);
+	free(hdecs);
+	free(dummys);
+	if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+	free(coord1s);
+	free(coord2s);
+	free(coord3s);
+	free(kcoords);
+	if (pdsptr!=NULL) {
+		*pdsptr=dsptr;
+	}
+	return 0;
+}
+
 int Cmd_mctcl_radec2altaz(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /****************************************************************************/
 /* conversion ra,dec -> az,h,HA,parallactic                                 */
