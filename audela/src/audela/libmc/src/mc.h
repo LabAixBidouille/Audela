@@ -515,6 +515,17 @@ typedef struct {
 	double plx;
 } mc_cata_astrom;
 
+typedef struct {
+   double az;
+   double elev;
+} mc_HORIZON_ALTAZ;
+
+typedef struct {
+   double dec;
+   double ha_rise;
+   double ha_set;
+} mc_HORIZON_HADEC;
+
 /***************************************************************************/
 /***************************************************************************/
 /**                    DEFINITION DES FONCTIONS                           **/
@@ -858,7 +869,7 @@ int mc_util_astrom_xy2radec(mc_ASTROM *p, double x,double y,double *ra,double *d
 int mc_fitspline(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *ff);
 int mc_interplin1(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *ff);
 char *mc_d2s(double val);
-int mc_scheduler1(double jd, double longmpc, double rhocosphip, double rhosinphip);
+int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadec);
 int mc_readhip(char *hip_main_file, char *bits, double *values, int *nstars, mc_cata_astrom *hips);
 
 

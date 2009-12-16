@@ -39,26 +39,24 @@ typedef struct {
 } mc_SUNMOON;
 
 typedef struct {
-   double az;
-   double elev;
-   double ha;
-   double dec;
-} mc_HORIZON;
-
-typedef struct {
    double elev;
    double az;
    double moon_dist;
    double sun_dist;
-   double skylevel;
+   double skylevel550; // -1 = unvisible, >=0 expected skylight in w/m2/sr @ 550 nm
+   double skylevel1mu; // -1 = unvisible, >=0 expected skylight in w/m2/sr @ 1 micron
+   double skylevel2mu; // -1 = unvisible, >=0 expected skylight in w/m2/sr @ 2 microns
    double ha;
    double dec;
-} mc_OBJECT;
+} mc_OBJECTLOCAL;
 
 
-/************************************************************************/
-/************************************************************************/
-/************************************************************************/
+/*****************************************************************************/
+/*****************************************************************************/
+/* Compute the start and end dates for the next observing range.             */
+/* The observing range is based on consecutive meridian passages of the Sun. */
+/* Outputs : jd_prevmidsun and jd_nextmidsun                                 */
+/*****************************************************************************/
 int mc_scheduler_windowdates1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,double *jd_prevmidsun, double *jd_nextmidsun) {
 
 	double jd,djd,latitude,altitude,jd_max,jd1,jd2,dt;
@@ -117,7 +115,7 @@ int mc_scheduler_windowdates1(double jd_now, double longmpc, double rhocosphip, 
 	jd2=jd_max+90./86400;
 	for (jd=jd1,k=0;jd<=jd2;jd+=djd,k++) {
 		mc_adsolap(jd+dt,jd+dt,astrometric,longmpc,rhocosphip,rhosinphip,&ra,&dec,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
-	   mc_ad2hd(jd,longmpc,ra,&ha);
+		mc_ad2hd(jd,longmpc,ra,&ha);
 		if (k==0) { ha1=ha; continue; }
 		if ((ha1>PI)&&(ha<PI)) { break; }
 		ha1=ha;
@@ -126,33 +124,32 @@ int mc_scheduler_windowdates1(double jd_now, double longmpc, double rhocosphip, 
 	return 0;
 }
 
-/************************************************************************/
-/************************************************************************/
-/************************************************************************/
-int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosinphip) {
-
-	double jd_prevmidsun,jd_nextmidsun,djd,da;
-
-	double jd,latitude,altitude;
+/*****************************************************************************/
+/*****************************************************************************/
+/* Compute the vector of local conditions for Sun and Moon.                  */
+/* Outputs : njd, sunmoon                                                    */
+/*****************************************************************************/
+int mc_scheduler_sunmoon1(double longmpc, double rhocosphip, double rhosinphip,double jd_prevmidsun, double jd_nextmidsun,double djd, int *pnjd, mc_SUNMOON **psunmoon) {
+	double jd,latitude,altitude,da;
 	int astrometric,njd,njdm;
 	double ra,dec,delta,mag,diamapp,elong,phase,r,diamapp_equ,diamapp_pol,long1,long2,long3,lati,posangle_sun,posangle_north,long1_sun,lati_sun;
 	double ha,az,h,dt,jdtt,latrad,tsl,djdm;
-	mc_SUNMOON *sunmoon;
+	mc_SUNMOON *sunmoon=NULL;
 	double *dummy1s,*dummy2s,*dummy3s,*dummy4s,*dummy5s,*dummy6s;
 	int kjd;
 
-	// --- compute dates of the start-end of the schedule
-	mc_scheduler_windowdates1(jd_now,longmpc,rhocosphip,rhosinphip,&jd_prevmidsun,&jd_nextmidsun);
-
 	// --- initialize
+	*pnjd=0;
 	mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
 	latrad=latitude*(DR);
 	astrometric=0;
 
 	// --- prepare sur-ech vectors
-	djd=1./86400.;
+	//djd=1./86400.;
 	njd=(int)ceil((jd_nextmidsun-jd_prevmidsun)/djd);
 	sunmoon=(mc_SUNMOON*)calloc(njd+1,sizeof(mc_SUNMOON));
+	*psunmoon=sunmoon;
+	*pnjd=njd;
 	for (kjd=0;kjd<=njd;kjd++) {
 		jd=jd_prevmidsun+(jd_nextmidsun-jd_prevmidsun)*kjd/njd;
 		sunmoon[kjd].jd=jd;
@@ -225,14 +222,62 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 		sunmoon[kjd].sun_elev=dec/(DR); // elev
 	}
    //mc_adlunap(LUNE,jdtt,jd,jdtt,astrometric,longmpc,rhocosphip,rhosinphip,&ra,&dec,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
-	free(sunmoon);
 	free(dummy1s);
 	free(dummy2s);
 	free(dummy3s);
 	free(dummy4s);
 	free(dummy5s);
 	free(dummy6s);
+	return 0;
+}
+
+
+/************************************************************************/
+/************************************************************************/
+/************************************************************************/
+int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadec) {
+
+	double jd_prevmidsun,jd_nextmidsun,djd;
+	int njd;
+	mc_SUNMOON *sunmoon=NULL;
+	//mc_OBJECTLOCAL *objectlocal=NULL;
+
+	// --- compute dates of observing range (=the start-end of the schedule)
+	mc_scheduler_windowdates1(jd_now,longmpc,rhocosphip,rhosinphip,&jd_prevmidsun,&jd_nextmidsun);
+
+	// --- compute mc_SUNMOON vector for the observing range.
+	djd=1./86400.;
+	mc_scheduler_sunmoon1(longmpc,rhocosphip,rhosinphip,jd_prevmidsun,jd_nextmidsun,djd,&njd,&sunmoon);
+
+	// --- compute mc_OBJECTLOCAL vector for the observing range.
+	/*
+	ra=123*(DR);
+	dec=23*(DR);
+	equinox=J2000;
+	mura=0.;
+	mudec=0.;
+	epoch=(jd_prevmidsun+jd_nextmidsun)/2;
+	plx=0.;
+	*/
+	//mc_scheduler_objectlocal1(longmpc,rhocosphip,rhosinphip,objectdescr,njd,sunmoon,horizon_altaz,horizon_hadec,objectlocal);
+
+/*
+typedef struct {
+   double elev;
+   double az;
+   double ha;
+   double dec;
+   double moon_dist;
+   double sun_dist;
+   double skylevel; // -1 = masked by horizon limits, >=0 expected skylight in w/m2/sr @ defined microns
+} mc_OBJECTLOCAL;
+*/
+/*
+typedef struct {
+} mc_OBJECTDESCR;
+*/
 
    //mc_fitspline(n1,n2,x,y,dy,s,nn,xx,ff);
+	free(sunmoon);
    return 0;
 }
