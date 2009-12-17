@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.70 2009-12-09 16:49:31 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.71 2009-12-17 22:20:11 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -73,6 +73,10 @@ set caption(confVisu,non_connecte)                    "Not connected"
 set caption(confVisu,fitsHduList)                     "HDU"
 set caption(confVisu,fermeture_impossible)            "Aud'ACE cannot be stopped because of an on-going action in the tool: %s"
 set caption(confVisu,fermeture_outil_impossible)      "%s cannot be stopped because it is running."
+set caption(confVisu,label_1)                         "RGB Thresholds"
+set caption(confVisu,label_2)                         "Low Thresholds"
+set caption(confVisu,label_3)                         "High Thresholds"
+set caption(confVisu,msg)                             "The FITS header does not include the required keywords."
 
 set caption(plotxy,figure)                            "Figure"
 
@@ -145,6 +149,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,fitsHduList)                  "HDU"
    set caption(confVisu,fermeture_impossible)         "Impossible d'arrêter Aud'ACE car une opération est en cours dans l'outil : %s"
    set caption(confVisu,fermeture_outil_impossible)   "Impossible d'arrêter %s car une opération est en cours."
+   set caption(confVisu,label_1)                      "Seuils RVB"
+   set caption(confVisu,label_2)                      "Seuils bas"
+   set caption(confVisu,label_3)                      "Seuils hauts"
+   set caption(confVisu,msg)                          "L'en-tête FITS ne contient pas les mots clés nécessaires."
 
    set caption(plotxy,figure)                         "Figure"
 
@@ -217,6 +225,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,fitsHduList)                  "HDU"
    set caption(confVisu,fermeture_impossible)         "Impossibile arrestare Aud'ACE a causa di una operazione in corso nella utility: %s"
    set caption(confVisu,fermeture_outil_impossible)   "Impossibile fermare %s a causa di una operazione in corso."
+   set caption(confVisu,label_1)                      "# Seuils RVB"
+   set caption(confVisu,label_2)                      "# Seuils bas"
+   set caption(confVisu,label_3)                      "# Seuils hauts"
+   set caption(confVisu,msg)                          "# L'en-tête FITS ne contient pas les mots clés nécessaires."
 
    set caption(plotxy,figure)                         "Figura"
 
@@ -289,6 +301,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,fitsHduList)                  "HDU"
    set caption(confVisu,fermeture_impossible)         "Imposible detener Aud'ACE debido a una operción en curso en la herramienta: %s"
    set caption(confVisu,fermeture_outil_impossible)   "Imposible detener %s porque hay una operación en curso."
+   set caption(confVisu,label_1)                      "Umbrales RVA"
+   set caption(confVisu,label_2)                      "Umbrales bajos"
+   set caption(confVisu,label_3)                      "Umbrales altos"
+   set caption(confVisu,msg)                          "La cabecera FITS no contiene las palabras claves requeridas."
 
    set caption(plotxy,figure)                         "Figura"
 
@@ -361,6 +377,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,fitsHduList)                  "HDU"
    set caption(confVisu,fermeture_impossible)         "Unmöglich Aud’ACE zu beenden weil eine Aktion im %s Werkzeug an ist."
    set caption(confVisu,fermeture_outil_impossible)   "Unmöglich %s zu halten weil ein Vorgang ist laufend."
+   set caption(confVisu,label_1)                      "RGB Schwellen"
+   set caption(confVisu,label_2)                      "Niedrige Schwellen"
+   set caption(confVisu,label_3)                      "Hohe Schwellen"
+   set caption(confVisu,msg)                          "Die FITS Header hat die benötigten Stichwörter nicht."
 
    set caption(plotxy,figure)                         "Figur"
 
@@ -433,6 +453,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,fitsHduList)                  "HDU"
    set caption(confVisu,fermeture_impossible)         "Impossível parar Aud'ACE devido a uma operação em curso na ferramenta: %s"
    set caption(confVisu,fermeture_outil_impossible)   "Impossível parar %s porque uma operação está em curso."
+   set caption(confVisu,label_1)                      "# Seuils RVB"
+   set caption(confVisu,label_2)                      "# Seuils bas"
+   set caption(confVisu,label_3)                      "# Seuils hauts"
+   set caption(confVisu,msg)                          "# L'en-tête FITS ne contient pas les mots clés nécessaires."
 
    set caption(plotxy,figure)                         "Figura"
 
@@ -505,6 +529,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,fitsHduList)                  "HDU"
    set caption(confVisu,fermeture_impossible)         "Aud'ACE kan ikke afsluttes, da anden proces kører i værktøjet: %s"
    set caption(confVisu,fermeture_outil_impossible)   "%s kan ikke annulleres, da processen kører."
+   set caption(confVisu,label_1)                      "# Seuils RVB"
+   set caption(confVisu,label_2)                      "# Seuils bas"
+   set caption(confVisu,label_3)                      "# Seuils hauts"
+   set caption(confVisu,msg)                          "# L'en-tête FITS ne contient pas les mots clés nécessaires."
 
    set caption(plotxy,figure)                         "Figur"
 
@@ -577,6 +605,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,fitsHduList)                  "HDU"
    set caption(confVisu,fermeture_impossible)         "Aud'ACE cannot be stopped because of an on-going action in the tool: %s"
    set caption(confVisu,fermeture_outil_impossible)   "%s cannot be stopped because it is running."
+   set caption(confVisu,label_1)                      "RGB Thresholds"
+   set caption(confVisu,label_2)                      "Low Thresholds"
+   set caption(confVisu,label_3)                      "High Thresholds"
+   set caption(confVisu,msg)                          "The FITS header does not include the required keywords."
 
    set caption(plotxy,figure)                         "Figure"
 
@@ -649,6 +681,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,fitsHduList)                  "HDU"
    set caption(confVisu,fermeture_impossible)         "Aud'ACE cannot be stopped because of an on-going action in the tool: %s"
    set caption(confVisu,fermeture_outil_impossible)   "%s cannot be stopped because it is running."
+   set caption(confVisu,label_1)                      "RGB Thresholds"
+   set caption(confVisu,label_2)                      "Low Thresholds"
+   set caption(confVisu,label_3)                      "High Thresholds"
+   set caption(confVisu,msg)                          "The FITS header does not include the required keywords."
 
    set caption(plotxy,figure)                         "Figure"
 
