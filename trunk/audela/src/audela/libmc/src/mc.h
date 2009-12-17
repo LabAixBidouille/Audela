@@ -526,6 +526,60 @@ typedef struct {
    double ha_set;
 } mc_HORIZON_HADEC;
 
+typedef struct {
+	// --- constraints
+	double const_jd1; // start sequence (julian day)
+	double const_jd2; // stop sequence (julian day)
+	int const_immediate; // =1 start to observe early a s possible
+	double const_elev; // minimum elevation to observe
+	double const_fullmoondist; // minimum separation to the full moon
+	double const_sundist; // minimum separation to the sun
+	double const_skylightlevel; // minimum sky brithness (mag/"2)
+	int const_startexposures; // =0 start exposure as soon as possible, =1 wait a precise position
+	// --- user
+	int user; // index to define the user
+	double user_priority; // priority of the sequence
+	double user_quota; // quota of the user (0.-1.)
+	// ---
+	int axe_type; // 0=radec 1=hadec 2=altaz
+	int axe_njd; // number of defined positions
+	double axe_equinox;
+	double axe_epoch;
+	double axe_mura;
+	double axe_mudec;
+	double axe_plx;
+	double axe_jd[20]; // julian day of the positions
+	double axe_pos1[20]; // positions of the axis 1
+	double axe_pos2[20]; // positions of the axis 2
+	double axe_slew1; // slew velocity axis 1 (deg/sec)
+	double axe_slew2; // slew velocity axis 2 (deg/sec)
+	int axe_slew_synchro; // =0 is to axis slew together. =1 is axis slews after the other
+	// --- delays
+	double delay_slew; // delay to wait the telescope slewing complete (sec)
+	double delay_instrum; // delay to wait the instrument setup complete (sec)
+	double delay_exposures; // delay to wait the exposures (+readout) complete (sec)
+} mc_OBJECTDESCR;
+
+typedef struct {
+   double elev;
+   double az;
+   double ha;
+   double dec;
+   double moon_dist;
+   double sun_dist;
+   double skylevel; // 100 = masked by horizon limits, else expected skylight in mag/arcsec2 in V band
+} mc_OBJECTLOCAL;
+
+typedef struct {
+   double jd;
+   double sun_elev;
+   double sun_az;
+   double moon_elev;
+   double moon_az;
+   double moon_phase;
+   double lst;
+} mc_SUNMOON;
+
 /***************************************************************************/
 /***************************************************************************/
 /**                    DEFINITION DES FONCTIONS                           **/
@@ -869,7 +923,7 @@ int mc_util_astrom_xy2radec(mc_ASTROM *p, double x,double y,double *ra,double *d
 int mc_fitspline(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *ff);
 int mc_interplin1(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *ff);
 char *mc_d2s(double val);
-int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadec);
+int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadecint,int nobj,mc_OBJECTDESCR *objectdescr);
 int mc_readhip(char *hip_main_file, char *bits, double *values, int *nstars, mc_cata_astrom *hips);
 
 

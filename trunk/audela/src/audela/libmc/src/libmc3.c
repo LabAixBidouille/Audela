@@ -872,7 +872,7 @@ int Cmd_mctcl_scheduler(ClientData clientData, Tcl_Interp *interp, int argc, cha
 /****************************************************************************/
 /****************************************************************************/
 /*
-mc_scheduler now {GPS 5 E 43 1230} {} 
+mc_scheduler now {GPS 5 E 43 1230} {  { {AXE_TYPE 0} {AXES_0 now 14h34m 86d45'} {AXES_1 now 14h34m -16d45'} } { {AXE_TYPE 0} {AXES_0 now 15h +16d} }  } 
 */
 /****************************************************************************/
 {
@@ -880,6 +880,8 @@ mc_scheduler now {GPS 5 E 43 1230} {}
 	char s[1024];
 	mc_HORIZON_ALTAZ *horizon_altaz=NULL;
 	mc_HORIZON_HADEC *horizon_hadec=NULL;
+	mc_OBJECTDESCR *objectdescr=NULL;
+	int nobj=0;
 
    if(argc<3) {
       sprintf(s,"Usage: %s Date Home ListCandidates ?type_Horizon Horizon?", argv[0]);
@@ -893,16 +895,19 @@ mc_scheduler now {GPS 5 E 43 1230} {}
       rhocosphip=0.;
       rhosinphip=0.;
       mctcl_decode_topo(interp,argv[2],&longmpc,&rhocosphip,&rhosinphip);
+		/* --- decode les sequences ---*/
+		mctcl_decode_sequences(interp,&argv[3],&nobj,&objectdescr);
 		/* --- decode l'horizon ---*/
 		if (argc>5) {
 			mctcl_decode_horizon(interp,argv[2],argv[4],argv[5],NULL,&horizon_altaz,&horizon_hadec);
 		} else {
-			mctcl_decode_horizon(interp,argv[2],"ALTAZ","{{0 0} {90 0} {180 0} {270 0} {360 0}}",NULL,&horizon_altaz,&horizon_hadec);
+			mctcl_decode_horizon(interp,argv[2],"ALTAZ","{0 0} {90 0} {180 0} {270 0} {365 0}",NULL,&horizon_altaz,&horizon_hadec);
 		}
 		/* --- appel aux calculs ---*/
-		mc_scheduler1(jd,longmpc,rhocosphip,rhosinphip,horizon_altaz,horizon_hadec);
+		mc_scheduler1(jd,longmpc,rhocosphip,rhosinphip,horizon_altaz,horizon_hadec,nobj,objectdescr);
 		free(horizon_altaz);
 		free(horizon_hadec);
+		free(objectdescr);
 	}	return TCL_OK;
 }
 
