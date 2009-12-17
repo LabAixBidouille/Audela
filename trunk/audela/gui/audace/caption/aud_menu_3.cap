@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.41 2009-12-09 16:48:10 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.42 2009-12-17 22:17:06 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -15,7 +15,6 @@ set caption(audace,menu,pretraite)                      "Preprocessing"
 set caption(audace,menu,r+v+b2rvb)                      "R+G+B ---> RGB Conversion"
 set caption(audace,menu,rvb2r+v+b)                      "RGB ---> R+G+B Conversion"
 set caption(audace,menu,cfa2rvb)                        "CFA ---> RGB Conversion"
-set caption(audace,menu,balance_rvb)                    "RGB Balance"
 set caption(audace,menu,window1)                        "Crop"
 set caption(audace,menu,scale)                          "Resample"
 set caption(audace,menu,offset)                         "Add a Constant"
@@ -144,7 +143,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,r+v+b2rvb)                   "Conversion R+V+B ---> RVB"
    set caption(audace,menu,rvb2r+v+b)                   "Conversion RVB ---> R+V+B"
    set caption(audace,menu,cfa2rvb)                     "Conversion CFA ---> RVB"
-   set caption(audace,menu,balance_rvb)                 "Balance RVB"
    set caption(audace,menu,window1)                     "Recadrer"
    set caption(audace,menu,scale)                       "Re-échantillonner"
    set caption(audace,menu,offset)                      "Ajouter une constante"
@@ -273,7 +271,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,r+v+b2rvb)                   "Conversione R+V+B ---> RVB"
    set caption(audace,menu,rvb2r+v+b)                   "Conversione RVB ---> R+V+B"
    set caption(audace,menu,cfa2rvb)                     "Conversione CFA ---> RVB"
-   set caption(audace,menu,balance_rvb)                 "Bilanciamento RVB"
    set caption(audace,menu,window1)                     "Reinquadrare"
    set caption(audace,menu,scale)                       "Ricampionamento"
    set caption(audace,menu,offset)                      "Regolare una costante"
@@ -402,7 +399,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,r+v+b2rvb)                   "Conversion R+V+A ---> RVA"
    set caption(audace,menu,rvb2r+v+b)                   "Conversion RVA ---> R+V+A"
    set caption(audace,menu,cfa2rvb)                     "Conversion CFA --> RVA"
-   set caption(audace,menu,balance_rvb)                 "Balance RVA"
    set caption(audace,menu,window1)                     "Recortar"
    set caption(audace,menu,scale)                       "Remuestreo"
    set caption(audace,menu,offset)                      "Añadir una constante"
@@ -531,7 +527,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,r+v+b2rvb)                   "R+G+B ---> RGB Umstellung"
    set caption(audace,menu,rvb2r+v+b)                   "RGB ---> R+G+B Umstellung"
    set caption(audace,menu,cfa2rvb)                     "CFA ---> RGB Umstellung"
-   set caption(audace,menu,balance_rvb)                 "RGB Balance"
    set caption(audace,menu,window1)                     "Wieder einstellen"
    set caption(audace,menu,scale)                       "Wider proben"
    set caption(audace,menu,offset)                      "Eine Konstante addieren"
@@ -660,7 +655,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,r+v+b2rvb)                   "Conversão R+G+B ---> RGB"
    set caption(audace,menu,rvb2r+v+b)                   "Conversão RGB ---> R+G+B"
    set caption(audace,menu,cfa2rvb)                     "Conversão CFA ---> RGB"
-   set caption(audace,menu,balance_rvb)                 "Equilíbrio RGB"
    set caption(audace,menu,window1)                     "Recortar"
    set caption(audace,menu,scale)                       "Reamostrar"
    set caption(audace,menu,offset)                      "Adicionar constante"
@@ -789,7 +783,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,r+v+b2rvb)                   "Konvertering: R+G+B ---> RGB"
    set caption(audace,menu,rvb2r+v+b)                   "Konvertering: RGB ---> R+G+B"
    set caption(audace,menu,cfa2rvb)                     "Konvertering: CFA ---> RGB"
-   set caption(audace,menu,balance_rvb)                 "RGB balance"
    set caption(audace,menu,window1)                     "Beskære"
    set caption(audace,menu,scale)                       "Resampling"
    set caption(audace,menu,offset)                      "Tilføj en konstant"
@@ -918,7 +911,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,r+v+b2rvb)                   "R+G+B ---> RGB Conversion"
    set caption(audace,menu,rvb2r+v+b)                   "RGB ---> R+G+B Conversion"
    set caption(audace,menu,cfa2rvb)                     "CFA ---> RGB Conversion"
-   set caption(audace,menu,balance_rvb)                 "RGB Balance"
    set caption(audace,menu,window1)                     "Crop"
    set caption(audace,menu,scale)                       "Resample"
    set caption(audace,menu,offset)                      "Add a Constant"
@@ -1047,7 +1039,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,r+v+b2rvb)                   "R+G+B ---> RGB Conversion"
    set caption(audace,menu,rvb2r+v+b)                   "RGB ---> R+G+B Conversion"
    set caption(audace,menu,cfa2rvb)                     "CFA ---> RGB Conversion"
-   set caption(audace,menu,balance_rvb)                 "RGB Balance"
    set caption(audace,menu,window1)                     "Crop"
    set caption(audace,menu,scale)                       "Resample"
    set caption(audace,menu,offset)                      "Add a Constant"
