@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_2.cap
-# Mise a jour $Id: aud_menu_2.cap,v 1.15 2009-12-09 23:12:02 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.cap,v 1.16 2009-12-17 22:18:56 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -23,6 +23,7 @@ set caption(audace,menu,fcttransfert_log)             "Logarithmic"
 set caption(audace,menu,fcttransfert_exp)             "Exponential"
 set caption(audace,menu,fcttransfert_arc)             "Arc-tangent"
 set caption(audace,menu,seuils)                       "Thresholds"
+set caption(audace,menu,balance_rvb)                  "RGB Balance"
 set caption(audace,menu,zoom)                         "Zoom"
 set caption(audace,menu,zoom_0.125)                   "x 0.125"
 set caption(audace,menu,zoom_0.25)                    "x 0.25"
@@ -79,11 +80,6 @@ set caption(seuilCouleur,header_noimage)              "No Image in Memory."
 set caption(seuilCouleur,en_cours)                    "Preprocessing in progress..."
 set caption(seuilCouleur,fin_traitement)              "End of Preprocessing."
 
-set caption(colorRGB,label_1)                         "RGB Thresholds"
-set caption(colorRGB,label_2)                         "Low Thresholds"
-set caption(colorRGB,label_3)                         "High Thresholds"
-set caption(colorRGB,msg)                             "The FITS header does not include the required keywords."
-
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
@@ -99,6 +95,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,fcttransfert_exp)          "Exponentielle"
    set caption(audace,menu,fcttransfert_arc)          "Arctangente"
    set caption(audace,menu,seuils)                    "Seuils"
+   set caption(audace,menu,balance_rvb)               "Balance RVB"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,zoom_0.125)                "x 0.125"
    set caption(audace,menu,zoom_0.25)                 "x 0.25"
@@ -155,11 +152,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,en_cours)                 "Prétraitement en cours..."
    set caption(seuilCouleur,fin_traitement)           "Fin du prétraitement."
 
-   set caption(colorRGB,label_1)                      "Seuils RVB"
-   set caption(colorRGB,label_2)                      "Seuils bas"
-   set caption(colorRGB,label_3)                      "Seuils hauts"
-   set caption(colorRGB,msg)                          "L'en-tête FITS ne contient pas les mots clés nécessaires."
-
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
@@ -175,6 +167,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,fcttransfert_exp)          "Esponenziale"
    set caption(audace,menu,fcttransfert_arc)          "Arcotangente"
    set caption(audace,menu,seuils)                    "Soglie"
+   set caption(audace,menu,balance_rvb)               "Bilanciamento RVB"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,zoom_0.125)                "x 0.125"
    set caption(audace,menu,zoom_0.25)                 "x 0.25"
@@ -231,11 +224,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,en_cours)                 "Pretrattamento in corso..."
    set caption(seuilCouleur,fin_traitement)           "Fine del Pretrattamento."
 
-   set caption(colorRGB,label_1)                      "# Seuils RVB"
-   set caption(colorRGB,label_2)                      "# Seuils bas"
-   set caption(colorRGB,label_3)                      "# Seuils hauts"
-   set caption(colorRGB,msg)                          "# L'en-tête FITS ne contient pas les mots clés nécessaires."
-
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
@@ -251,6 +239,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,fcttransfert_exp)          "Exponencial"
    set caption(audace,menu,fcttransfert_arc)          "Arco-tangente"
    set caption(audace,menu,seuils)                    "Umbrales"
+   set caption(audace,menu,balance_rvb)               "Balance RVA"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,zoom_0.125)                "x 0.125"
    set caption(audace,menu,zoom_0.25)                 "x 0.25"
@@ -307,11 +296,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,en_cours)                 "Preprocesando..."
    set caption(seuilCouleur,fin_traitement)           "Fin de preprocesando."
 
-   set caption(colorRGB,label_1)                      "# Seuils RVB"
-   set caption(colorRGB,label_2)                      "# Seuils bas"
-   set caption(colorRGB,label_3)                      "# Seuils hauts"
-   set caption(colorRGB,msg)                          "# L'en-tête FITS ne contient pas les mots clés nécessaires."
-
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
@@ -326,7 +310,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,fcttransfert_log)          "Logarithmus"
    set caption(audace,menu,fcttransfert_exp)          "Exponential"
    set caption(audace,menu,fcttransfert_arc)          "Arctangente"
-   set caption(audace,menu,seuils)                    "Schwellenwerte"
+   set caption(audace,menu,seuils)                    "Schwellen"
+   set caption(audace,menu,balance_rvb)               "RGB Balance"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,zoom_0.125)                "x 0.125"
    set caption(audace,menu,zoom_0.25)                 "x 0.25"
@@ -346,11 +331,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(aud_menu_2,previsu)                    "Überschlag"
    set caption(aud_menu_2,quitter)                    "Programm beenden"
 
-   set caption(seuilWindow,titre)                     "Schwellenwerte"
+   set caption(seuilWindow,titre)                     "Schwellen"
    set caption(seuilWindow,intensite)                 "Lichtstärke:"
    set caption(seuilWindow,intensite_avec_zero)       "104.000000 - R:104.000000 V:175.000000 B:179.000000"
    set caption(seuilWindow,intensite_sans_zero)       "104 - R:104 V:175 B:179"
-   set caption(seuilWindow,intervalle_sh-sb)          "Schwelle Höchstwelle - Schwelle Tiefschwelle (X):"
+   set caption(seuilWindow,intervalle_sh-sb)          "Hohe Schwelle - Niedrige Schwelle (X):"
    set caption(seuilWindow,exemple>x)                 "Wenn SH-ST > X      Schwelle: 462"
    set caption(seuilWindow,exemple<x)                 "Wenn SH-ST <= X    Schwelle: 4.62e+002"
    set caption(seuilWindow,dynamique)                 "Dynamik:"
@@ -360,10 +345,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilWindow,manuel)                    "Manuell"
    set caption(seuilWindow,parcourir)                 "..."
    set caption(seuilWindow,pas_de_calcul_auto)        "Keine automatische Berechnung"
-   set caption(seuilWindow,loadima)                   "Aud'ACE Mangel Schwellenwerte (stat Funktion)"
-   set caption(seuilWindow,iris)                      "Iris Mangel Schwellenwerte:"
-   set caption(seuilWindow,histoauto)                 "Schwellenwerte in % vom Histogramm (oben/unten):"
-   set caption(seuilWindow,initiaux)                  "Initialen Schwellenwerte"
+   set caption(seuilWindow,loadima)                   "Aud'ACE Mangel Schwellen (stat Funktion)"
+   set caption(seuilWindow,iris)                      "Iris Mangel Schwellen:"
+   set caption(seuilWindow,histoauto)                 "Schwellen in % vom Histogramm (oben/unten):"
+   set caption(seuilWindow,initiaux)                  "Initialen Schwellen"
    set caption(seuilWindow,previsu)                   "Überschlag"
    set caption(seuilWindow,ok)                        "OK"
    set caption(seuilWindow,appliquer)                 "Anwenden"
@@ -383,11 +368,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,en_cours)                 "Voraufbereitung im Gange..."
    set caption(seuilCouleur,fin_traitement)           "Voraufbereitung Ende."
 
-   set caption(colorRGB,label_1)                      "# Seuils RVB"
-   set caption(colorRGB,label_2)                      "# Seuils bas"
-   set caption(colorRGB,label_3)                      "# Seuils hauts"
-   set caption(colorRGB,msg)                          "# L'en-tête FITS ne contient pas les mots clés nécessaires."
-
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
@@ -403,6 +383,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,fcttransfert_exp)          "Exponencial"
    set caption(audace,menu,fcttransfert_arc)          "Arco-tangente"
    set caption(audace,menu,seuils)                    "Limiares"
+   set caption(audace,menu,balance_rvb)               "Equilíbrio RGB"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,zoom_0.125)                "x 0.125"
    set caption(audace,menu,zoom_0.25)                 "x 0.25"
@@ -459,11 +440,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,en_cours)                 "Pré-tratamento em curso..."
    set caption(seuilCouleur,fin_traitement)           "Fim do pré-tratamento."
 
-   set caption(colorRGB,label_1)                      "# Seuils RVB"
-   set caption(colorRGB,label_2)                      "# Seuils bas"
-   set caption(colorRGB,label_3)                      "# Seuils hauts"
-   set caption(colorRGB,msg)                          "# L'en-tête FITS ne contient pas les mots clés nécessaires."
-
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
@@ -479,6 +455,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,fcttransfert_exp)          "Eksponentiel"
    set caption(audace,menu,fcttransfert_arc)          "Arcustangens"
    set caption(audace,menu,seuils)                    "Tærskelværdier"
+   set caption(audace,menu,balance_rvb)               "RGB balance"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,zoom_0.125)                "x 0.125"
    set caption(audace,menu,zoom_0.25)                 "x 0.25"
@@ -535,11 +512,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,en_cours)                 "Preprocessing er aktiv..."
    set caption(seuilCouleur,fin_traitement)           "Slut på preprocessing."
 
-   set caption(colorRGB,label_1)                      "# Seuils RVB"
-   set caption(colorRGB,label_2)                      "# Seuils bas"
-   set caption(colorRGB,label_3)                      "# Seuils hauts"
-   set caption(colorRGB,msg)                          "# L'en-tête FITS ne contient pas les mots clés nécessaires."
-
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
@@ -555,6 +527,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,fcttransfert_exp)          "Exponential"
    set caption(audace,menu,fcttransfert_arc)          "Arc-tangent"
    set caption(audace,menu,seuils)                    "Thresholds"
+   set caption(audace,menu,balance_rvb)               "RGB Balance"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,zoom_0.125)                "x 0.125"
    set caption(audace,menu,zoom_0.25)                 "x 0.25"
@@ -610,11 +583,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,header_noimage)           "No Image in Memory."
    set caption(seuilCouleur,en_cours)                 "Preprocessing in progress..."
    set caption(seuilCouleur,fin_traitement)           "End of Preprocessing."
-
-   set caption(colorRGB,label_1)                      "RGB Thresholds"
-   set caption(colorRGB,label_2)                      "Low Thresholds"
-   set caption(colorRGB,label_3)                      "High Thresholds"
-   set caption(colorRGB,msg)                          "The FITS header does not include the required keywords."
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -631,6 +599,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,fcttransfert_exp)          "Exponential"
    set caption(audace,menu,fcttransfert_arc)          "Arc-tangent"
    set caption(audace,menu,seuils)                    "Thresholds"
+   set caption(audace,menu,balance_rvb)               "RGB Balance"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,zoom_0.125)                "x 0.125"
    set caption(audace,menu,zoom_0.25)                 "x 0.25"
@@ -686,11 +655,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,header_noimage)           "No Image in Memory."
    set caption(seuilCouleur,en_cours)                 "Preprocessing in progress..."
    set caption(seuilCouleur,fin_traitement)           "End of Preprocessing."
-
-   set caption(colorRGB,label_1)                      "RGB Thresholds"
-   set caption(colorRGB,label_2)                      "Low Thresholds"
-   set caption(colorRGB,label_3)                      "High Thresholds"
-   set caption(colorRGB,msg)                          "The FITS header does not include the required keywords."
 
 }
 
