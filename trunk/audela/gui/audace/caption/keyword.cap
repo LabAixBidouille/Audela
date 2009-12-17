@@ -1,6 +1,6 @@
 #
 # Fichier : keyword.cap
-# Mise a jour $Id: keyword.cap,v 1.26 2009-12-13 16:33:19 robertdelmas Exp $
+# Mise a jour $Id: keyword.cap,v 1.27 2009-12-17 22:21:32 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -268,15 +268,15 @@ if { [ string compare $langage "french" ] == "0" } {
 
    #--- Choix de la configuration
    set caption(keyword,nom_config)                     "Nombre de la configuración"
-   set caption(keyword,nom_nouvelle_config)            "# Nom de la nouvelle configuration"
-   set caption(keyword,ajouter_config)                 "Añadir una configuración"
-   set caption(keyword,supprimer_config)               "Suprimir una configuración"
-   set caption(keyword,copier_config)                  "Copiar una configuración"
+   set caption(keyword,nom_nouvelle_config)            "Nombre de la nueva configuración"
+   set caption(keyword,ajouter_config)                 "Añadir configuración"
+   set caption(keyword,supprimer_config)               "Borrar configuración"
+   set caption(keyword,copier_config)                  "Copiar configuración"
    set caption(keyword,config_a_ajouter)               "Nombre de la configuración a añadir"
-   set caption(keyword,errorEmptyName)                 "# Le nom de la configuration est vide."
-   set caption(keyword,errorExistingName)              "# Le nom de la configuration est déjà utilisé."
-   set caption(keyword,errorDefaultName)               "# Cette configuration ne peut pas être supprimée."
-   set caption(keyword,confirmDeleteConfig)            "# Suppression de la configuration :"
+   set caption(keyword,errorEmptyName)                 "Nombre de configuración vacio."
+   set caption(keyword,errorExistingName)              "El nombre de configuración ya existe."
+   set caption(keyword,errorDefaultName)               "Esta configuración no puede ser borrada."
+   set caption(keyword,confirmDeleteConfig)            "Supresion de la configuración:"
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "Palabras clave FITS"
@@ -347,20 +347,20 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(keyword,header_title)                   "FITS Vorsatz"
+   set caption(keyword,header_title)                   "FITS Header"
    set caption(keyword,header_noimage)                 "Es ist jetzt kein Bild im Speicher."
 
    #--- Choix de la configuration
    set caption(keyword,nom_config)                     "Konfigurationsname"
-   set caption(keyword,nom_nouvelle_config)            "# Nom de la nouvelle configuration"
+   set caption(keyword,nom_nouvelle_config)            "Namen der neue Konfiguration"
    set caption(keyword,ajouter_config)                 "Eine Konfiguration addieren"
    set caption(keyword,supprimer_config)               "Eine Konfiguration löschen"
    set caption(keyword,copier_config)                  "Eine Konfiguration nachbilden"
    set caption(keyword,config_a_ajouter)               "Konfigurationsname zu addieren"
-   set caption(keyword,errorEmptyName)                 "# Le nom de la configuration est vide."
-   set caption(keyword,errorExistingName)              "# Le nom de la configuration est déjà utilisé."
-   set caption(keyword,errorDefaultName)               "# Cette configuration ne peut pas être supprimée."
-   set caption(keyword,confirmDeleteConfig)            "# Suppression de la configuration :"
+   set caption(keyword,errorEmptyName)                 "Der Namen der Konfiguration ist lehr."
+   set caption(keyword,errorExistingName)              "Der Namen der Konfiguration ist schon benutzt."
+   set caption(keyword,errorDefaultName)               "Diese Konfiguration kann nicht erlöscht werden."
+   set caption(keyword,confirmDeleteConfig)            "Konfiguration löschen:"
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "FITS Stichwörter"
