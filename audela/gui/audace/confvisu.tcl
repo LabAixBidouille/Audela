@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.118 2009-12-11 18:56:55 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.119 2009-12-17 22:26:16 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -410,7 +410,7 @@ namespace eval ::confVisu {
             set private($visuNo,currentHduNo) $hduNo
          } else {
             #--- je mets à jour le nom du fichier meme quand l'image ne
-            #--- proviens pas d'un fichier , mais d'une camera
+            #--- proviens pas d'un fichier, mais d'une camera
             #--- afin de permettre le rafraichissement des outils
             #--- qui sont abonnes au listener addFilenameListener
             set private($visuNo,fitsHduList) ""
@@ -420,9 +420,9 @@ namespace eval ::confVisu {
          #--- on affiche l'image
          if { $force != "-novisu" } {
             #--- je determine le mode d'affichage en fonction du type d'image
-            #---  si type=image2D alors  mode=image
-            #---  si type=image1D alors  mode=graph
-            #---  si type=table   alors  mode=table
+            #---  si type=image2D alors mode=image
+            #---  si type=image1D alors mode=graph
+            #---  si type=table   alors mode=table
             if { $private($visuNo,fitsHduList) != "" } {
                #---
                set hduInfo [lindex $private($visuNo,fitsHduList) [expr $private($visuNo,currentHduNo) -1]]
@@ -547,6 +547,10 @@ namespace eval ::confVisu {
                         buf$bufNo initialcut
                         if { [ lindex [ buf$bufNo getkwd NAXIS ] 1 ] == "3" } {
                            set mycuts [ list [ lindex [ buf$bufNo getkwd MIPS-HIR ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LOR ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-HIG ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LOG ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-HIB ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LOB ] 1 ] ]
+                           #--- traite le cas des images jpg en couleur qui n'ont que 2 seuils (HI et LO) avec NAXIS = 3
+                           if { $mycuts == "{} {} {} {} {} {}" } {
+                              set mycuts [ list [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ] ]
+                           }
                         } else {
                            set mycuts [ list [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ] ]
                         }
@@ -768,13 +772,13 @@ namespace eval ::confVisu {
       while { 1 } {
          set catchResult [catch { ::audace::MAJ_palette $visuNo } msg ]
          if { $catchResult == 1 && $msg == "NO MEMORY FOR DISPLAY" } {
-            #--- en cas d'erreur "NO MEMORY FOR DISPLAY" , j'essaie avec un zoom inferieur
+            #--- en cas d'erreur "NO MEMORY FOR DISPLAY", j'essaie avec un zoom inferieur
             set private($visuNo,zoom) [expr double($private($visuNo,zoom)) / 2]
             if { $private($visuNo,zoom) >= 1 } {
                 set private($visuNo,zoom) [expr int($private($visuNo,zoom))]
             }
             visu$visuNo zoom $private($visuNo,zoom)
-            console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY , visuNo=$visuNo zoom=$private($visuNo,zoom)\n"
+            console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY, visuNo=$visuNo zoom=$private($visuNo,zoom)\n"
          } else {
             break
          }
@@ -931,13 +935,13 @@ namespace eval ::confVisu {
       while { 1 } {
          set catchResult [catch { visu$visuNo disp } msg ]
          if { $catchResult == 1 && $msg == "NO MEMORY FOR DISPLAY" } {
-            #--- en cas d'erreur "NO MEMORY FOR DISPLAY" , j'essaie avec un zoom inferieur
+            #--- en cas d'erreur "NO MEMORY FOR DISPLAY", j'essaie avec un zoom inferieur
             set private($visuNo,zoom) [expr double($private($visuNo,zoom)) / 2]
             if { $private($visuNo,zoom) >= 1 } {
                 set private($visuNo,zoom) [expr int($private($visuNo,zoom))]
             }
             visu$visuNo zoom $private($visuNo,zoom)
-            console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY , visuNo=$visuNo set zoom=$private($visuNo,zoom)\n"
+            console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY, visuNo=$visuNo set zoom=$private($visuNo,zoom)\n"
          } else {
             break
          }
@@ -1481,7 +1485,7 @@ namespace eval ::confVisu {
    #    visuNo: numero de la visu
    #    toolName : nom de l'outil a lancer
    #  Remarque:
-   #    si toolName="" , alors l'outil courant est arrete. Aucun autre outil n'est pas demarré.
+   #    si toolName="", alors l'outil courant est arrete. Aucun autre outil n'est pas demarré.
    #------------------------------------------------------------
    proc selectTool { visuNo toolName } {
       variable private
@@ -2300,7 +2304,7 @@ namespace eval ::confVisu {
          #--- xi et yi sont des 'coordonnees-buffer'
          set xi $xc
          set yi $yc
-         #--- si le buffer ne contient qu'une ligne , j'affiche l'intensite de
+         #--- si le buffer ne contient qu'une ligne, j'affiche l'intensite de
          #--- cette ligne quelque soit la position verticale du curseur de la
          #--- souris dans l'image car c'est la meme valeur sur toute la colonne
          if { [buf$bufNo getpixelsheight]==1 } {
@@ -2328,8 +2332,8 @@ namespace eval ::confVisu {
             }
          } else {
             #--- je traite le cas ou la taille de l'image a ete changee dans le buffer et que
-            #--- et que les variables private($visuNo,picture_w) et private($visuNo,picture_w)
-            #--- ne sont pas enore à jour (par exemple acquisition en cours avec une camera)
+            #--- les variables private($visuNo,picture_w) et private($visuNo,picture_w) ne
+            #--- sont pas encore a jour (par exemple acquisition en cours avec une camera)
             set xi "$caption(confVisu,tiret)"
             set yi "$caption(confVisu,tiret)"
             set intensite "$caption(confVisu,I) $caption(confVisu,egale) $caption(confVisu,tiret)"
@@ -2607,13 +2611,13 @@ namespace eval ::confVisu {
          while { 1 } {
             set catchResult [catch { visu$visuNo disp } msg ]
             if { $catchResult == 1 && $msg == "NO MEMORY FOR DISPLAY" } {
-               #--- en cas d'erreur "NO MEMORY FOR DISPLAY" , j'essaie avec un zoom inferieur
+               #--- en cas d'erreur "NO MEMORY FOR DISPLAY", j'essaie avec un zoom inferieur
                set private($visuNo,zoom) [expr double($private($visuNo,zoom)) / 2]
                if { $private($visuNo,zoom) >= 1 } {
                    set private($visuNo,zoom) [expr int($private($visuNo,zoom))]
                }
                visu$visuNo zoom $private($visuNo,zoom)
-               console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY , visuNo=$visuNo set zoom=$private($visuNo,zoom)\n"
+               console::affiche_erreur "WARNING: NO MEMORY FOR DISPLAY, visuNo=$visuNo set zoom=$private($visuNo,zoom)\n"
             } else {
                break
             }
@@ -3214,7 +3218,7 @@ proc ::confVisu::deleteToolBar { visuNo } {
 #    affiche ou masque la barre d'outil
 # parameters
 #    visuNo : numero de la visu
-#    state  : 1= affiche , 0= masque
+#    state  : 1= affiche, 0= masque
 #
 #------------------------------------------------------------
 proc ::confVisu::showToolBar { visuNo state} {
@@ -3258,7 +3262,7 @@ proc ::confVisu::initHduList { visuNo fileName } {
    variable private
 
         if { [info command fits] == "" } {
-       #--- si la commande fits n'existe pas , on ne peut lire que le premier HDU
+       #--- si la commande fits n'existe pas, on ne peut lire que le premier HDU
        return ""
    }
    #--- je recupere la liste des HDU si on n'a pas precise le HDU en suffixe du nom de fichier
@@ -3517,4 +3521,362 @@ proc ::confVisu::onSelectHdu { visuNo { hduNo "" } } {
 }
 
 ::confVisu::init
+
+############################ Fin du namespace confVisu ############################
+
+# Auteur : Raymond ZATCHANTKE
+
+namespace eval ::colorRGB {
+
+   #########################################################################
+   #--- Filtre l'image et lit les seuils dans l'en-tête FITS               #
+   #########################################################################
+   proc run { visuNo } {
+      variable private
+
+      #---
+      ::colorRGB::initConf $visuNo
+      ::colorRGB::confToWidget $visuNo
+
+      #--- je recupere le numero du buffer de la visu
+      set bufNo [ ::confVisu::getBufNo $visuNo ]
+
+      #--- liste des mots cles a recuperer
+      set liste_kwd         [ list MIPS-HIR MIPS-LOR MIPS-HIG MIPS-LOG MIPS-HIB MIPS-LOB ]
+      set liste_alternative [ list DATAMAX DATAMIN DATAMAX DATAMIN DATAMAX DATAMIN ]
+
+      foreach kwd $liste_kwd alterne $liste_alternative {
+
+         #--- capture le contenu du mot cle
+         catch { set data [ buf$bufNo getkwd $kwd ] }
+
+         #--- si le mot cle concernant la couleur est absent
+         if { [ lindex $data 1 ] == "" } { set data [ buf$bufNo getkwd $alterne ] }
+
+         #--- si la valeur est indefinie
+         set val [ lindex $data 1 ]
+         if { $val == "" } { set val 0 }
+
+         #--- etablit la liste des valeurs de seuils dans le bon ordre
+         lappend private(colorRGB,$visuNo,mycuts) $val
+
+      }
+
+      #--- traite le cas des images jpg en couleur qui n'ont que 2 seuils (HI et LO) avec NAXIS = 3
+      if { $private(colorRGB,$visuNo,mycuts) == "0 0 0 0 0 0" } {
+
+         #--- lit les mots cles
+         set hi [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ]
+         set lo [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ]
+
+         set private(colorRGB,$visuNo,mycuts) "$hi $lo $hi $lo $hi $lo"
+
+      }
+
+      #--- fenetre de base
+      set base $::confVisu::private($visuNo,This)
+
+      #---
+      set private($visuNo,This) $base.colorRGB
+      if { [ winfo exists $private($visuNo,This) ] } {
+         wm withdraw $private($visuNo,This)
+         wm deiconify $private($visuNo,This)
+         focus $private($visuNo,This)
+         #--- actualise les glissieres
+         ::colorRGB::configureScale $visuNo
+      } else {
+         if { [ info exists private(colorRGB,$visuNo,geometry) ] } {
+            set deb [ expr 1 + [ string first + $private(colorRGB,$visuNo,geometry) ] ]
+            set fin [ string length $private(colorRGB,$visuNo,geometry) ]
+            set private(colorRGB,$visuNo,position) "+[string range $private(colorRGB,$visuNo,geometry) $deb $fin]"
+         }
+         ::colorRGB::createDialog $visuNo
+      }
+   }
+
+   #########################################################################
+   #--- Initialisation des variables de configuration                      #
+   #########################################################################
+   proc initConf { visuNo } {
+      variable private
+      global conf
+
+      if { ! [ info exists conf(colorRGB,visu$visuNo,position) ] } { set conf(colorRGB,visu$visuNo,position) "+350+75" }
+
+      set private(colorRGB,child)          [ list hir lor hig log hib lob ]
+      set private(colorRGB,$visuNo,mycuts) ""
+   }
+
+   #########################################################################
+   #--- Charge les variables de configuration dans des variables locales   #
+   #########################################################################
+   proc confToWidget { visuNo } {
+      variable private
+      global conf
+
+      set private(colorRGB,$visuNo,position) "$conf(colorRGB,visu$visuNo,position)"
+   }
+
+   #########################################################################
+   #--- Charge les variables locales dans des variables de configuration   #
+   #########################################################################
+   proc widgetToConf { visuNo } {
+      variable private
+      global conf
+
+      set conf(colorRGB,visu$visuNo,position) "$private(colorRGB,$visuNo,position)"
+   }
+
+   #########################################################################
+   #--- Recupere la position de la fenetre                                 #
+   #########################################################################
+   proc recupPosition { visuNo } {
+      variable private
+
+      set private(colorRGB,$visuNo,geometry) [ wm geometry $private($visuNo,This) ]
+      set deb [ expr 1 + [ string first + $private(colorRGB,$visuNo,geometry) ] ]
+      set fin [ string length $private(colorRGB,$visuNo,geometry) ]
+      set private(colorRGB,$visuNo,position) "+[string range $private(colorRGB,$visuNo,geometry) $deb $fin]"
+      #---
+      ::colorRGB::widgetToConf $visuNo
+   }
+
+   #########################################################################
+   #--- Cree la fenetre de reglage des seuils                              #
+   #########################################################################
+   proc createDialog { visuNo } {
+      variable private
+      global audace caption
+
+      toplevel $private($visuNo,This)
+      wm resizable $private($visuNo,This) 0 0
+      wm deiconify $private($visuNo,This)
+      wm title $private($visuNo,This) "$caption(confVisu,label_1) (visu$visuNo)"
+      wm geometry $private($visuNo,This) $private(colorRGB,$visuNo,position)
+      wm transient $private($visuNo,This) [ winfo parent $private($visuNo,This) ]
+      wm protocol $private($visuNo,This) WM_DELETE_WINDOW "::colorRGB::suppression"
+
+      #--- frame des glissieres
+      frame $private($visuNo,This).val_variant -borderwidth 2 -relief raised
+
+         Label $private($visuNo,This).val_variant.title_1 -text $caption(confVisu,label_2)
+         grid $private($visuNo,This).val_variant.title_1 -row 0 -column 0
+         Label $private($visuNo,This).val_variant.title_2 -text $caption(confVisu,label_3)
+         grid $private($visuNo,This).val_variant.title_2 -row 0 -column 2
+
+         #--- les glissieres pour le rouge
+         ::colorRGB::createScale $visuNo $private($visuNo,This).val_variant lor 1 0
+         Label $private($visuNo,This).val_variant.color_invariant_R -text "  " \
+            -bg $audace(color,cursor_rgb_red)
+         grid $private($visuNo,This).val_variant.color_invariant_R -row 1 -column 1 -sticky s
+         ::colorRGB::createScale $visuNo $private($visuNo,This).val_variant hir 1 2
+
+         #--- les glissieres pour le vert
+         ::colorRGB::createScale $visuNo $private($visuNo,This).val_variant log 2 0
+         Label $private($visuNo,This).val_variant.color_invariant_V -text "  " \
+            -bg $audace(color,cursor_rgb_green)
+         grid $private($visuNo,This).val_variant.color_invariant_V -row 2 -column 1 -sticky s
+         ::colorRGB::createScale $visuNo $private($visuNo,This).val_variant hig 2 2
+
+         #--- les glissieres pour le bleu
+         ::colorRGB::createScale $visuNo $private($visuNo,This).val_variant lob 3 0
+         Label $private($visuNo,This).val_variant.color_invariant_B -text "  " \
+            -bg $audace(color,cursor_rgb_blue)
+         grid $private($visuNo,This).val_variant.color_invariant_B -row 3 -column 1 -sticky s
+         ::colorRGB::createScale $visuNo $private($visuNo,This).val_variant hib 3 2
+
+      pack $private($visuNo,This).val_variant
+
+      #--- actualise les glissieres
+      ::colorRGB::configureScale $visuNo
+
+      #--- Focus
+      focus $private($visuNo,This)
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $private($visuNo,This)
+   }
+
+   #########################################################################
+   #--- Rafraichit la liste des seuils et la visu                          #
+   #########################################################################
+   proc updateVisu { visuNo } {
+      variable private
+
+      #--- rafraîchit la liste des 6 seuils
+      set private(colorRGB,$visuNo,mycuts) ""
+      foreach scale $private(colorRGB,child) {
+         lappend private(colorRGB,$visuNo,mycuts) [ $private($visuNo,This).val_variant.$scale get ]
+      }
+
+      #--- actualise les glissieres
+      ::colorRGB::configureScale $visuNo
+
+      #--- rafraichit la visu
+      visu$visuNo cut $private(colorRGB,$visuNo,mycuts)
+      visu$visuNo disp
+   }
+
+   #########################################################################
+   #--- Configure les glissieres                                           #
+   #########################################################################
+   proc configureScale { visuNo } {
+      variable private
+
+      #--- etablit la liste des seuils bas et haut pour chaque couleur
+      foreach indice [ list 0 2 4 ] color [ list r g b ] {
+
+         #--- isole la valeur des seuils
+         set maxi [ expr { int([ lindex $private(colorRGB,$visuNo,mycuts) $indice ]) } ]
+         incr indice
+         set mini [ expr { int([ lindex $private(colorRGB,$visuNo,mycuts) $indice ]) } ]
+
+         #--- invers les seuils si lo > hi
+         if { $maxi < $mini } {
+            set private(colorRGB,$visuNo,mycuts) \
+               [ lreplace $private(colorRGB,$visuNo,mycuts) $indice $indice $maxi ]
+            incr indice -1
+            set private(colorRGB,$visuNo,mycuts) \
+               [ lreplace $private(colorRGB,$visuNo,mycuts) $indice $indice $mini ]
+         }
+
+         set range [ expr $maxi-$mini ]
+         if { [ expr $range ] == "0.0" } { set range 10000 }
+
+         set mini [ expr int($mini-$range) ]
+         set maxi [ expr int($maxi+$range) ]
+
+         set mini_maxi_$color [ list $mini $maxi ]
+
+      }
+
+      #--- calcule la nouvelle dynamique de deplacement des curseurs a ressort
+      if { $::conf(seuils,auto_manuel) == 1 } {
+
+         #--- configure les mini et maxi de chaque glissiere
+         foreach child $private(colorRGB,child) {
+
+            #--- identifie le plan couleur
+            set color [ string range $child end end ]
+
+            #--- selectionne la bonne liste de seuils
+            set seuils [ set mini_maxi_$color ]
+
+            #--- configure le mini et le maxi
+            $private($visuNo,This).val_variant.$child configure \
+               -from [ lindex $seuils 0 ] -to [ lindex $seuils 1 ] -resolution 1
+
+            #--- fixe la valeur de chaque glissiere
+            set index [ lsearch -exact $private(colorRGB,child) $child ]
+            set val [ expr { int([ lindex $private(colorRGB,$visuNo,mycuts) $index ]) } ]
+            $private($visuNo,This).val_variant.$child set $val
+
+         }
+
+      #--- calcule la nouvelle dynamique de deplacement des curseurs normaux
+      } elseif { $::conf(seuils,auto_manuel) == 2 } {
+
+         #--- configure les mini et maxi de chaque glissiere
+         foreach child $private(colorRGB,child) {
+
+            $private($visuNo,This).val_variant.$child configure -from $::confVisu::private($visuNo,mindyn) -to $::confVisu::private($visuNo,maxdyn)
+
+         }
+
+      }
+
+   }
+
+   #########################################################################
+   #--- Sauve les nouveaux reglages dans l'en-tete FITS                    #
+   #########################################################################
+   proc saveKWD { visuNo } {
+      variable private
+
+      #--- initialise une variable
+      set private(colorRGB,child) [ list hir lor hig log hib lob ]
+
+      #--- recupere le numero du buffer de la visu
+      set bufNo [ ::confVisu::getBufNo $visuNo ]
+
+      #--- definit un mot cle inexistant
+      set mot_vide "{} {} {none} {} {}"
+
+      foreach scale $private(colorRGB,child) {
+
+         #--- definit le mot cle a rechercher
+         set kwd "MIPS-[ string toupper $scale ]"
+
+         #--- capture le contenu du mot cle
+         #--- retourne un mot vide si le kwd n'existe pas
+         set data [ buf$bufNo getkwd $kwd ]
+
+         #--- analyse le contenu du mot cle
+         if { $data != $mot_vide } {
+
+            #--- si le mot contient le mot cle recherche
+            #--- procédure normale
+            #--- recherche le rang dans la liste
+            set i [ lsearch $private(colorRGB,child) $scale ]
+
+            #--- remplace la valeur par la valeur actuelle
+            set data [ lreplace $data 1 1 [ lindex $private(colorRGB,$visuNo,mycuts) $i ] ]
+
+         } else {
+
+            #--- si le mot cle est vide
+            #--- par defaut cherche MIPS-HI ou MIPS-LO en lieu et place des seuils couleurs
+            set defaut_kwd "MIPS-[ string range [ string toupper $scale ] 0 1 ]"
+
+            #--- lit le mot cle
+            set data [ buf$bufNo getkwd $defaut_kwd ]
+
+            #--- substitue MIPS-HI par MIPS-HIR etc.
+            set data [ lreplace $data 0 0 $kwd ]
+
+         }
+
+         #--- sauve le mot cle modifie
+         buf$bufNo setkwd $data
+
+      }
+   }
+
+   #########################################################################
+   #--- Fermeture de le fenetre                                            #
+   #########################################################################
+   proc cmdClose { visuNo } {
+      variable private
+
+      if { [ info exists private($visuNo,This) ] } {
+         if { [ winfo exists $private($visuNo,This) ] } {
+            ::colorRGB::recupPosition $visuNo
+            destroy $private($visuNo,This)
+            unset private($visuNo,This)
+         }
+      }
+   }
+
+   #########################################################################
+   #--- Empeche la fenetre d'etre effacee                                  #
+   #########################################################################
+   proc suppression { } {
+   }
+
+   #########################################################################
+   #--- Cree une glissiere                                                 #
+   #    parametres : nom de la fenetre parent, enfant, row et column       #
+   #########################################################################
+   proc createScale { visuNo parent child r c } {
+      variable private
+
+      scale $parent.$child -orient horizontal -length 150 -width 10 -showvalue 1 \
+         -sliderlength 20 -sliderrelief raised -borderwidth 1
+      grid $parent.$child -in $parent -row $r -column $c
+      #--- binding permettant de recuperer la valeur et de rafraichir la visu
+      bind $parent.$child <ButtonRelease> "::colorRGB::updateVisu $visuNo"
+   }
+}
+
+############################ Fin du namespace colorRGB ############################
 
