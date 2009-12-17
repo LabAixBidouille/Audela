@@ -666,6 +666,116 @@ int Cmd_mctcl_xy2radec(ClientData clientData, Tcl_Interp *interp, int argc, char
    return(result);
 }
 
+int mctcl_decode_sequences(Tcl_Interp *interp, char *argv[],int *nobjects, mc_OBJECTDESCR **pobjectdescr)
+/****************************************************************************/
+/* Decode des sequences                                                     */
+/****************************************************************************/
+/*                                                                          */
+/* Entrees :                 												             */
+/*                                                                          */
+/****************************************************************************/
+{
+	char s[1024],key[100];
+	char **argvv=NULL;
+	char **argvvv=NULL;
+	char **argvvvv=NULL;
+	int argcc,argccc,argcccc,ko,kjd,nobjs,code,ka,kjdmax;
+	mc_OBJECTDESCR *objectdescr;
+   code=Tcl_SplitList(interp,argv[0],&argcc,&argvv);
+	nobjs=argcc;
+	*nobjects=nobjs;
+	if (pobjectdescr!=NULL) {
+		objectdescr=(mc_OBJECTDESCR *)calloc(nobjs,sizeof(mc_OBJECTDESCR));
+		*pobjectdescr=objectdescr;
+	}
+	// --- default values
+	for (ko=0;ko<nobjs;ko++) {
+		mc_date_jd(1900,1,1,&objectdescr[ko].const_jd1);
+		mc_date_jd(9999,1,1,&objectdescr[ko].const_jd2);
+		objectdescr[ko].const_immediate=0;
+		objectdescr[ko].const_elev=15.;
+		objectdescr[ko].const_fullmoondist=40.;
+		objectdescr[ko].const_sundist=20.;
+		objectdescr[ko].const_skylightlevel=16.;
+		objectdescr[ko].const_startexposures=0;
+		objectdescr[ko].user=-1;
+		objectdescr[ko].user_priority=1.;
+		objectdescr[ko].user_quota=1.;
+		objectdescr[ko].axe_type=0;
+		objectdescr[ko].axe_equinox=J2000;
+		objectdescr[ko].axe_epoch=J2000;
+		objectdescr[ko].axe_mura=0.;
+		objectdescr[ko].axe_mudec=0.;
+		objectdescr[ko].axe_plx=0.;
+		objectdescr[ko].axe_njd=0;
+		for (kjd=0;kjd<20;kjd++) {
+			objectdescr[ko].axe_jd[kjd]=0;
+			objectdescr[ko].axe_pos1[kjd]=0;
+			objectdescr[ko].axe_pos2[kjd]=0;
+		}
+		objectdescr[ko].axe_slew1=2;
+		objectdescr[ko].axe_slew2=2;
+		objectdescr[ko].axe_slew_synchro=0;
+		objectdescr[ko].delay_slew=10;
+		objectdescr[ko].delay_instrum=10;
+		objectdescr[ko].delay_exposures=60;
+	}
+	// --- default values
+	for (ko=0;ko<nobjs;ko++) {
+	   code=Tcl_SplitList(interp,argvv[ko],&argccc,&argvvv);
+		if (argccc<1) { 
+			if (argvvv!=NULL) { Tcl_Free((char *) argvvv); }
+			continue; 
+		}
+		kjdmax=-1;
+		for (ka=0;ka<argccc;ka++) {
+			code=Tcl_SplitList(interp,argvvv[ka],&argcccc,&argvvvv);
+			if (argcccc<1) { 
+				if (argvvvv!=NULL) { Tcl_Free((char *) argvvvv); }
+				continue; 
+			}
+			mc_strupr(argvvvv[0],key);
+			if (strcmp(key,"JD1")==0) { mctcl_decode_date(interp,argvvvv[1],&objectdescr[ko].const_jd1); }
+			if (strcmp(key,"JD2")==0) { mctcl_decode_date(interp,argvvvv[1],&objectdescr[ko].const_jd2); }
+			if (strcmp(key,"IMMEDIATE")==0) { objectdescr[ko].const_immediate=atoi(argvvvv[1]); }
+			if (strcmp(key,"ELEV")==0) { objectdescr[ko].const_elev=atof(argvvvv[1]); }
+			if (strcmp(key,"MOONDIST")==0) { objectdescr[ko].const_fullmoondist=atof(argvvvv[1]); }
+			if (strcmp(key,"SUNDIST")==0) { objectdescr[ko].const_sundist=atof(argvvvv[1]); }
+			if (strcmp(key,"SKYLEVEL")==0) { objectdescr[ko].const_skylightlevel=atof(argvvvv[1]); }
+			if (strcmp(key,"STAREXP")==0) { objectdescr[ko].const_startexposures=atoi(argvvvv[1]); }
+			if (strcmp(key,"IDUSER")==0) { objectdescr[ko].user=atoi(argvvvv[1]); }
+			if (strcmp(key,"UPRIORITY")==0) { objectdescr[ko].user_priority=atof(argvvvv[1]); }
+			if (strcmp(key,"UQUOTA")==0) { objectdescr[ko].user_quota=atof(argvvvv[1]); }
+			if (strcmp(key,"AXE_TYPE")==0) { objectdescr[ko].axe_type=atoi(argvvvv[1]); }
+			if (strcmp(key,"AXE_SLEW1")==0) { objectdescr[ko].axe_slew1=atof(argvvvv[1]); }
+			if (strcmp(key,"AXE_SLEW2")==0) { objectdescr[ko].axe_slew2=atof(argvvvv[1]); }
+			if (strcmp(key,"AXE_SLEW_SYNCHRO")==0) { objectdescr[ko].axe_slew_synchro=atoi(argvvvv[1]); }
+			if (strcmp(key,"AXE_EQUINOX")==0) { mctcl_decode_date(interp,argvvvv[1],&objectdescr[ko].axe_equinox); }
+			if (strcmp(key,"AXE_EPOCH")==0) { mctcl_decode_date(interp,argvvvv[1],&objectdescr[ko].axe_epoch); }
+			if (strcmp(key,"AXE_MURA")==0) { objectdescr[ko].axe_mura=atof(argvvvv[1]); }
+			if (strcmp(key,"AXE_MUDEC")==0) { objectdescr[ko].axe_mudec=atof(argvvvv[1]); }
+			if (strcmp(key,"AXE_PLX")==0) { objectdescr[ko].axe_plx=atof(argvvvv[1]); }
+			for (kjd=0;kjd<20;kjd++) {
+				sprintf(s,"AXES_%d",kjd);
+				if (strcmp(key,s)==0) {
+					if (kjd>=kjdmax) { kjdmax=kjd; }
+					mctcl_decode_date(interp,argvvvv[1],&objectdescr[ko].axe_jd[kjd]);
+			      mctcl_decode_angle(interp,argvvvv[2],&objectdescr[ko].axe_pos1[kjd]);
+			      mctcl_decode_angle(interp,argvvvv[3],&objectdescr[ko].axe_pos2[kjd]);
+				}
+			}
+			if (strcmp(key,"DELAY_SLEW")==0) { objectdescr[ko].delay_slew=atof(argvvvv[1]); }
+			if (strcmp(key,"DELAY_INSTRUM")==0) { objectdescr[ko].delay_instrum=atof(argvvvv[1]); }
+			if (strcmp(key,"DELAY_EXPOSURES")==0) { objectdescr[ko].delay_exposures=atof(argvvvv[1]); }
+			if (argvvvv!=NULL) { Tcl_Free((char *) argvvvv); }
+		}
+		objectdescr[ko].axe_njd=kjdmax;
+		if (argvvv!=NULL) { Tcl_Free((char *) argvvv); }
+	}
+	if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+	return 0;
+}
+
 int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,char *argv_coords,Tcl_DString *pdsptr,mc_HORIZON_ALTAZ **phorizon_altaz,mc_HORIZON_HADEC **phorizon_hadec)
 /****************************************************************************/
 /* Interpole la ligne d'horizon                                             */

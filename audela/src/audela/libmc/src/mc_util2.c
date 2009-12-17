@@ -242,6 +242,9 @@ int mc_interplin1(int n1,int n2,double *x, double *y, double *dy, double s,int n
 	int kk,k;
 	double xx0;
 	for (kk=1;kk<=nn;kk++) {
+		if (kk>86400) {
+			kk+=0;
+		}
 		xx0=xx[kk];
 		if (xx0<x[n1]) {
 			ff[kk]=0;
