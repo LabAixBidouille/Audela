@@ -29,15 +29,17 @@
 /* Le include rostcl.h ne contient des infos concernant Tcl.               */
 /***************************************************************************/
 #include "rostcl.h"
+
+#if defined(OS_WIN)
 #include "Bc637pci.h"
 #include <process.h>
-
 //pour gerer la datation par GPS: déclaration des varaiables globales
 HANDLE EventThreadGps;
 int ThreadGps;
 double DateGps;
 char DateGpst[50];
 double date=-1;
+#endif
 
 /***************************************************************************/
 /* Define the entry point of the velleman driver to use it               */
@@ -519,6 +521,7 @@ ros_gps close symmetricom
 #endif
    }
 }
+
 //***************************************************************************
 //
 // fonction qui attend l'evenement exterieur
@@ -527,6 +530,7 @@ ros_gps close symmetricom
 void ServeurGps(void *Parametre)
 {	
 	// Start Device
+#if defined OS_WIN
 	if ( bcStartPCI (0) != RC_OK ){
 		printf ("Error openning device!!!");
 	}	
@@ -544,6 +548,7 @@ void ServeurGps(void *Parametre)
 
 	// Stop Device
 	bcStopPCI (); 
+#endif
 }
 //***************************************************************************
 //
