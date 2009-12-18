@@ -72,8 +72,7 @@ int  CCaptureListener::onNewStatus(int statusID, char * message) {
             // pour eviter que l'erreur ne passe inapercue
             Tcl_BackgroundError(interp);
          }
-         Tcl_Eval(interp, "update");
-
+         Tcl_Eval(interp, "update idletasks");
       }
 
 
@@ -90,8 +89,7 @@ int  CCaptureListener::onNewStatus(int statusID, char * message) {
             // pour eviter que l'erreur ne passe inapercue
             Tcl_BackgroundError(interp);
          }
-         Tcl_Eval(interp, "update");
-
+         Tcl_Eval(interp, "update idletasks");
       }
 
       break;
