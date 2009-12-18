@@ -109,6 +109,7 @@
    Tcl_CreateCommand(interp,"mc_date2ttutc",(Tcl_CmdProc *)Cmd_mctcl_date2ttutc,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_astrology",(Tcl_CmdProc *)Cmd_mctcl_astrology,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_scheduler",(Tcl_CmdProc *)Cmd_mctcl_scheduler,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"mc_obsconditions",(Tcl_CmdProc *)Cmd_mctcl_obsconditions,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_readhip",(Tcl_CmdProc *)Cmd_mctcl_readhip,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_nearesthip",(Tcl_CmdProc *)Cmd_mctcl_nearesthip,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_hip2tel",(Tcl_CmdProc *)Cmd_mctcl_hip2tel,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
