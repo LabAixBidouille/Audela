@@ -758,7 +758,7 @@ int mctcl_decode_sequences(Tcl_Interp *interp, char *argv[],int *nobjects, mc_OB
 			for (kjd=0;kjd<20;kjd++) {
 				sprintf(s,"AXES_%d",kjd);
 				if (strcmp(key,s)==0) {
-					if (kjd>=kjdmax) { kjdmax=kjd; }
+					if (kjd+1>=kjdmax) { kjdmax=kjd+1; }
 					mctcl_decode_date(interp,argvvvv[1],&objectdescr[ko].axe_jd[kjd]);
 			      mctcl_decode_angle(interp,argvvvv[2],&objectdescr[ko].axe_pos1[kjd]);
 			      mctcl_decode_angle(interp,argvvvv[3],&objectdescr[ko].axe_pos2[kjd]);

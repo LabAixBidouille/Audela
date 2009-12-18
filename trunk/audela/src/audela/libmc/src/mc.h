@@ -531,9 +531,9 @@ typedef struct {
 	double const_jd1; // start sequence (julian day)
 	double const_jd2; // stop sequence (julian day)
 	int const_immediate; // =1 start to observe early a s possible
-	double const_elev; // minimum elevation to observe
-	double const_fullmoondist; // minimum separation to the full moon
-	double const_sundist; // minimum separation to the sun
+	double const_elev; // minimum elevation to observe (degrees)
+	double const_fullmoondist; // minimum separation to the full moon (degrees)
+	double const_sundist; // minimum separation to the sun (degrees)
 	double const_skylightlevel; // minimum sky brithness (mag/"2)
 	int const_startexposures; // =0 start exposure as soon as possible, =1 wait a precise position
 	// --- user
@@ -565,9 +565,10 @@ typedef struct {
    double az;
    double ha;
    double dec;
+   double ra;
    double moon_dist;
    double sun_dist;
-   double skylevel; // 100 = masked by horizon limits, else expected skylight in mag/arcsec2 in V band
+   double skylevel; // -50 = masked by horizon limits, else expected skylight in mag/arcsec2 in V band
 } mc_OBJECTLOCAL;
 
 typedef struct {
@@ -923,8 +924,15 @@ int mc_util_astrom_xy2radec(mc_ASTROM *p, double x,double y,double *ra,double *d
 int mc_fitspline(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *ff);
 int mc_interplin1(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *ff);
 char *mc_d2s(double val);
-int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadecint,int nobj,mc_OBJECTDESCR *objectdescr);
 int mc_readhip(char *hip_main_file, char *bits, double *values, int *nstars, mc_cata_astrom *hips);
+
+/***************************************************************************/
+/* Utilitaires de planificateur d'observations                             */
+/***************************************************************************/
+int mc_sheduler_interpcoords(mc_OBJECTDESCR *objectdescr,double jd,double *pos1,double *pos2);
+int mc_sheduler_corccoords(mc_OBJECTDESCR *objectdescr);
+int mc_obsconditions1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadec,int nobj,mc_OBJECTDESCR *objectdescr,double djd,char *fullfilename);
+int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosinphip,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadecint,int nobj,mc_OBJECTDESCR *objectdescr);
 
 
 /***************************************************************************/
