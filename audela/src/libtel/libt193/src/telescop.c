@@ -1043,7 +1043,7 @@ int mytel_correct(struct telprop *tel,char *direction, double distance)
                      int foundEvent = 1;
                      tel->radecIsMoving = 1;
                      // j'attend la fin du mouvement (tel->moving est mis a jour par mytel_processNotification ) 
-                     while (tel->radecIsMoving && foundEvent) {
+                     while (tel->radecIsMoving /*&& foundEvent*/) { //F.FILLION : modif pour éviter l'arrêt du guidage lors d'une correction en cours
                         foundEvent = Tcl_DoOneEvent(TCL_ALL_EVENTS);
                      }
                   }
