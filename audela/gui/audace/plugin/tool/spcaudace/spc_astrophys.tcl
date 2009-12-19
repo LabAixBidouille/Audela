@@ -1,30 +1,46 @@
 
-# ProcÈdures d'exploitation astrophysique des spectres
+# Proc√©dures d'exploitation astrophysique des spectres
 
-# Mise a jour $Id: spc_astrophys.tcl,v 1.4 2008-09-20 17:20:05 bmauclaire Exp $
+# Mise a jour $Id: spc_astrophys.tcl,v 1.5 2009-12-19 09:53:39 bmauclaire Exp $
 
 
 
 #************* Liste des focntions **********************#
 #
-# spc_vradiale : calcul la vitesse radiale ‡ partir de la FWHM de la raie modÈlisÈe par une gaussienne
-# spc_vexp : calcul la vitesse d'expansion ‡ partir de la FWHM de la raie modÈlisÈe par une gaussienne
-# spc_vrot : calcul la vitesse de rotation ‡ partir de la FWHM de la raie modÈlisÈe par une gaussienne
-# spc_npte : calcul la tempÈrature Èlectronique d'une nÈbuleuse
-# spc_npne : calcul la densitÈ Èlectronique d'une nÈbuleuse
-# spc_ne : calcul de la densitÈ Èlectronique. Fonction applicable pour les nÈbuleuses ‡ spectre d'Èmission.
-# spc_te : calcul de la tempÈrature Èlectronique. Fonction applicable pour les nÈbuleuses ‡ spectre d'Èmission.
+# spc_vdoppler : determination de la vitesse radiale en km/s √† l'aide du d√©calage d'une raie
+# spc_vhelio : calcul de la vitesse h√©liocentrique pour une correction de la vitesse radiale
+# spc_vradiale : calcul la vitesse radiale √† partir de la FWHM de la raie mod√©lis√©e par une gaussienne
+# spc_vradialecorr : determination de la vitesse radiale en km/s a l'aide du d√©calage d'une raie
+# spc_vexp : calcul la vitesse d'expansion √† partir de la FWHM de la raie mod√©lis√©e par une gaussienne
+# spc_vrot : calcul la vitesse de rotation √† partir de la FWHM de la raie mod√©lis√©e par une gaussienne
+# spc_npte : calcul la temp√©rature √©lectronique d'une n√©buleuse
+# spc_npne : calcul la densit√© √©lectronique d'une n√©buleuse
+# spc_ne : calcul de la densit√© √©lectronique. Fonction applicable pour les n√©buleuses √† spectre d'√©mission.
+# spc_te : calcul de la temp√©rature √©lectronique. Fonction applicable pour les n√©buleuses √† spectre d'√©mission.
+# spc_ewcourbe : tracer de largeur √©quivalente pour une s√©rie de spectres dans le r√©pertoire de travail
+# spc_ewcourbe_opt : tracer de largeur √©quivalente pour une s√©rie de spectres dans le r√©pertoire de travail
+# spc_ewdirw : tracer de largeur √©quivalente pour une s√©rie de spectres dans le r√©pertoire de travail
+# spc_ew : calcul de la largeur √©quivalente d'une raie (fait appel √† l'algorithme spc_ew3)
+# spc_ew1 : d√©termination de la largeur √©quivalente d'une raie spectrale modelisee par une gaussienne.
+# spc_ew2 : calcul de la largeur √©quivalente d'une raie par calcul d'air et avec calcul d'erreur
+# spc_ew3 : calcul de la largeur √©quivalente d'une raie avec determination des limites par intersection au continuum d'une gaussienne
+# spc_autoew4 : calcul la largeur equivalenbte d'une raie autmatique avec determiantion des limites et normalisation
+# spc_autoew3 : calcul automatique de la largeur equivalente et determine ldeb et lfin par intersection du spectre filtre passe bas avec la valeur icont du spectre normalis√©.
+# spc_autoew2 : calcul automatique de la largeur equivalente avec intersection au continuum et algo spc_ew3
+# spc_autoew1 : calcul automatique de la largeur equivalente avec intersection a 1.0
+# spc_autoew : calcul automatique de la largeur equivalente avec l'algo spc_autoew3
+# spc_vrmes : calcul du rapport V/R d'intensit√©s d'une raie √† deux pics.
 #
 ##########################################################
 
 
 
 ##########################################################
-# Procedure de determination de la vitesse radiale en km/s ‡ l'aide du dÈcalage d'une raie
+# Procedure de determination de la vitesse radiale en km/s √† l'aide du d√©calage d'une raie
 #
 # Auteur : Benjamin MAUCLAIRE
-# Date de crÈation : 13-07-2006
-# Date de mise ‡ jour : 13-07-2006
+# Date de cr√©ation : 13-07-2006
+# Date de mise √† jour : 13-07-2006
 # Arguments : delta_lambda lambda
 ##########################################################
 
@@ -41,7 +57,7 @@ proc spc_vdoppler { args } {
        ::console::affiche_resultat "La vitesse Doppler de l'objet est : $vrad km/s\n"
        return $vrad
    } else {
-       ::console::affiche_erreur "Usage: spc_vdoppler delta_lambda lambda_raie_rÈfÈrence\n\n"
+       ::console::affiche_erreur "Usage: spc_vdoppler delta_lambda lambda_raie_r√©f√©rence\n\n"
    }
 
 }
@@ -50,14 +66,14 @@ proc spc_vdoppler { args } {
 
 
 ##########################################################
-# Procedure de la vitesse hÈliocentrique pour une correction de la vitesse radiale
+# Procedure de la vitesse h√©liocentrique pour une correction de la vitesse radiale
 #
 # Auteur : Benjamin MAUCLAIRE
-# Date de crÈation : 08-02-2007
-# Date de mise ‡ jour : 08-02-2007
-# Arguments : profil_raies_ÈtalonnÈ lambda_raie_approchÈ lambda_rÈf ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?
-# Explication : la correciton hÈliocentrique possËde dÈj‡ le bon signe tandis que la vitesse hÈliocentrique non.
-#  La mesure de vitesse radiale nÈcessite d'Ítre corrigÈe de la vitesse hÈliocentrique mÍme si la calibration a ÈtÈ faite sur les raies telluriques car le centre du rÈfÈrentiel n'est pas la Terre mais le barycentre du SystËme Solaire.
+# Date de cr√©ation : 08-02-2007
+# Date de mise √† jour : 08-02-2007
+# Arguments : profil_raies_√©talonn√© lambda_raie_approch√© lambda_r√©f ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?
+# Explication : la correciton h√©liocentrique poss√®de d√©j√† le bon signe tandis que la vitesse h√©liocentrique non.
+#  La mesure de vitesse radiale n√©cessite d'√™tre corrig√©e de la vitesse h√©liocentrique m√™me si la calibration a √©t√© faite sur les raies telluriques car le centre du r√©f√©rentiel n'est pas la Terre mais le barycentre du Syst√®me Solaire.
 ##########################################################
 
 proc spc_vhelio { args } {
@@ -91,7 +107,7 @@ proc spc_vhelio { args } {
 	   set mm [ lindex $args 8 ]
 	   set aaaa [ lindex $args 9 ]
        } else {
-	   ::console::affiche_erreur "Usage: spc_vhelio profil_raies_ÈtalonnÈ ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
+	   ::console::affiche_erreur "Usage: spc_vhelio profil_raies_√©talonn√© ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
 	   return 0
        }
 
@@ -99,7 +115,7 @@ proc spc_vhelio { args } {
        buf$audace(bufNo) load "$audace(rep_images)/$spectre"
        set listemotsclef [ buf$audace(bufNo) getkwds ]
 
-       #--- DÈtermine les paramËtres de date et de coordonnÈes si nÈcessaire :
+       #--- D√©termine les param√®tres de date et de coordonn√©es si n√©cessaire :
        # mc_baryvel {2006 7 22} {19h24m58.00s} {11d57m00.0s} J2000.0
        if { [llength $args] == 1 } {
 	   # OBJCTRA = '00 16 42.089'
@@ -110,7 +126,7 @@ proc spc_vhelio { args } {
 	       set ra_s [ lindex $ra 0 ]
 	       set raf [ list "${ra_h}h${ra_m}m${ra_s}s" ]
 	   } else {
-	       ::console::affiche_resultat "Aucune corrdonnÈes trouvÈe.\n"
+	       ::console::affiche_resultat "Aucune corrdonn√©es trouv√©e.\n"
 	       return ""
 	   }
 	   # OBJCTDEC= '-05 23 52.444'
@@ -148,7 +164,7 @@ proc spc_vhelio { args } {
 	   set datef [ list $aaaa $mm $jj ]
        }
 
-       #--- Calcul de la vitesse hÈliocentrique :
+       #--- Calcul de la vitesse h√©liocentrique :
        set vhelio [ lindex [ mc_baryvel $datef $raf $decf J2000.0 ] 0 ]
        set deltal [ expr round($vhelio*$lambda_ref/299792.458*$precision)/$precision ]
        #--- Recherche la dispersion :
@@ -160,12 +176,12 @@ proc spc_vhelio { args } {
        }
 
 
-       #--- Formatage du rÈsultat :
-       #::console::affiche_resultat "La vitesse hÈliocentrique pour l'objet $raf ; $decf ‡ la date du $datef vaut :\n$vhelio±$erreurv km/s=$deltal±$dispersion A\n"
-       ::console::affiche_resultat "La vitesse hÈliocentrique pour l'objet $raf ; $decf ‡ la date du $datef vaut :\n$vhelio km/s <-> $deltal A +-$erreurv km/s\n"
+       #--- Formatage du r√©sultat :
+       #::console::affiche_resultat "La vitesse h√©liocentrique pour l'objet $raf ; $decf √† la date du $datef vaut :\n$vhelio¬±$erreurv km/s=$deltal¬±$dispersion A\n"
+       ::console::affiche_resultat "La vitesse h√©liocentrique pour l'objet $raf ; $decf √† la date du $datef vaut :\n$vhelio km/s <-> $deltal A +-$erreurv km/s\n"
        return $vhelio
    } else {
-	   ::console::affiche_erreur "Usage: spc_vhelio profil_raies_ÈtalonnÈ ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
+	   ::console::affiche_erreur "Usage: spc_vhelio profil_raies_√©talonn√© ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
    }
 }
 #*******************************************************************************#
@@ -173,12 +189,12 @@ proc spc_vhelio { args } {
 
 
 ##########################################################
-# Procedure de determination de la vitesse radiale en km/s ‡ l'aide du dÈcalage d'une raie
+# Procedure de determination de la vitesse radiale en km/s √† l'aide du d√©calage d'une raie
 #
 # Auteur : Benjamin MAUCLAIRE
-# Date de crÈation : 08-02-2007
-# Date de mise ‡ jour : 08-02-2007
-# Arguments : profil_raies_ÈtalonnÈ, lambda_raie_approchÈ, ?
+# Date de cr√©ation : 08-02-2007
+# Date de mise √† jour : 08-02-2007
+# Arguments : profil_raies_√©talonn√©, lambda_raie_approch√©, ?
 ##########################################################
 
 proc spc_vradiale { args } {
@@ -198,10 +214,10 @@ proc spc_vradiale { args } {
          set jd [ expr [ lindex [ buf$audace(bufNo) getkwd "MJD-OBS" ] 1 ] +2400000.5 ]
       }
 
-      #--- DÈtermine l'erreur sur la mesure :
+      #--- D√©termine l'erreur sur la mesure :
       set dispersion [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
 
-      #--- Centre gaussien de la raie ÈtudiÈ :
+      #--- Centre gaussien de la raie √©tudi√© :
       set lambda_centre [ spc_autocentergaussl $spectre $lambda_approchee $typeraie ]
 
       #--- Calcul la vitesse radiale : Acker p.101 Dunod 2005.
@@ -212,11 +228,11 @@ proc spc_vradiale { args } {
       #-- Erreur sur le calcul :
       set vraderr [ expr 299792.458*$dispersion/$lambda_ref ]
 
-      #--- Formatage du rÈsultat :
-      ::console::affiche_resultat "La vitesse radiale de l'objet le $jd JJ ‡ la longueur d'onde $lambda_centre A :\n\# Vrad=$vrad +- $vraderr km/s\n"
+      #--- Formatage du r√©sultat :
+      ::console::affiche_resultat "La vitesse radiale de l'objet le $jd JJ √† la longueur d'onde $lambda_centre A :\n\# Vrad=$vrad +- $vraderr km/s\n"
       return $vrad
    } else {
-       ::console::affiche_erreur "Usage: spc_vradiale profil_raies_ÈtalonnÈ type_raie (e/a) lambda_raie_approchÈ lambda_rÈf\n\n"
+       ::console::affiche_erreur "Usage: spc_vradiale profil_raies_√©talonn√© type_raie (e/a) lambda_raie_approch√© lambda_r√©f\n\n"
    }
 }
 #*******************************************************************************#
@@ -224,12 +240,12 @@ proc spc_vradiale { args } {
 
 
 ##########################################################
-# Procedure de determination de la vitesse radiale en km/s ‡ l'aide du dÈcalage d'une raie
+# Procedure de determination de la vitesse radiale en km/s √† l'aide du d√©calage d'une raie
 #
 # Auteur : Benjamin MAUCLAIRE
-# Date de crÈation : 08-02-2007
-# Date de mise ‡ jour : 08-02-2007
-# Arguments : profil_raies_ÈtalonnÈ, lambda_raie_approchÈ, ?
+# Date de cr√©ation : 08-02-2007
+# Date de mise √† jour : 08-02-2007
+# Arguments : profil_raies_√©talonn√©, lambda_raie_approch√©, ?
 ##########################################################
 
 proc spc_vradialecorr { args } {
@@ -269,18 +285,18 @@ proc spc_vradialecorr { args } {
 	   set mm [ lindex $args 12 ]
 	   set aaaa [ lindex $args 12 ]
        } else {
-	   ::console::affiche_erreur "Usage: spc_vradialecorr profil_raies_ÈtalonnÈ type_raie (e/a) lambda_raie_approchÈ lambda_rÈf ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
+	   ::console::affiche_erreur "Usage: spc_vradialecorr profil_raies_√©talonn√© type_raie (e/a) lambda_raie_approch√© lambda_r√©f ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
 	   return 0
        }
 
 
-       #--- Calcul la correction hÈliocentrique :
+       #--- Calcul la correction h√©liocentrique :
        # mc_baryvel {2006 7 22} {19h24m58.00s} {11d57m00.0s} J2000.0
        buf$audace(bufNo) load "$audace(rep_images)/$spectre"
        set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
        if { [llength $args] == 4 } {
           if { [ lindex [ buf$audace(bufNo) getkwd "OBJCTRA" ] 1 ] == "" } {
-             ::console::affiche_erreur "Il manque les coordonnÈes RA-DEC e l'objet.\nUsage: spc_vradialecorr profil_raies_ÈtalonnÈ type_raie (e/a) lambda_raie_approchÈ lambda_rÈf ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
+             ::console::affiche_erreur "Il manque les coordonn√©es RA-DEC e l'objet.\nUsage: spc_vradialecorr profil_raies_√©talonn√© type_raie (e/a) lambda_raie_approch√© lambda_r√©f ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
              return 0
           } else {
              set vhelio [ spc_vhelio $spectre ]
@@ -290,12 +306,12 @@ proc spc_vradialecorr { args } {
        } elseif { [llength $args] == 13 } {
 	   set vhelio [ spc_vhelio $spectre $ra_h $ra_m $ra_s $dec_d $dec_m $dec_s $dd $mm $aaaa ]
        } else {
-	   ::console::affiche_erreur "Impossible de calculer vhÈlio ; Usage: spc_vradiale profil_raies_ÈtalonnÈ type_raie (e/a) lambda_raie_approchÈ lambda_rÈf ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
+	   ::console::affiche_erreur "Impossible de calculer vh√©lio ; Usage: spc_vradiale profil_raies_√©talonn√© type_raie (e/a) lambda_raie_approch√© lambda_r√©f ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
 	   return 0
        }
        ::console::affiche_resultat "\n"
 
-       #--- Centre gaussien de la raie ÈtudiÈ :
+       #--- Centre gaussien de la raie √©tudi√© :
        set lambda_centre [ spc_autocentergaussl $spectre $lambda_approchee $typeraie ]
 
        #--- Calcul la vitesse radiale : Acker p.101 Dunod 2005.
@@ -305,12 +321,12 @@ proc spc_vradialecorr { args } {
        #-- The correction hc has to apply to the measured radial velocity: Vrad, real = Vrad,measured + hc.
        set vradcorrigee [ expr $vrad+$vhelio ]
 
-       #--- Formatage du rÈsultat :
+       #--- Formatage du r√©sultat :
        ::console::affiche_resultat "(Vrad=$vrad km/s, Vhelio=$vhelio km/s)\n\# La vitesse radiale de l'objet est :\n\# Vrad=$vradcorrigee +- $delta_vrad km/s\n"
        set results [ list $vradcorrigee $vrad $vhelio ]
        return $results
    } else {
-       ::console::affiche_erreur "Usage: spc_vradialecorr profil_raies_ÈtalonnÈ type_raie (e/a) lambda_raie_approchÈ lambda_rÈf ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
+       ::console::affiche_erreur "Usage: spc_vradialecorr profil_raies_√©talonn√© type_raie (e/a) lambda_raie_approch√© lambda_r√©f ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
    }
 }
 #*******************************************************************************#
@@ -319,13 +335,13 @@ proc spc_vradialecorr { args } {
 
 
 ##########################################################
-# Procedure de determination de la tempÈrature Èlectronique d'une nÈbuleuse ‡ raies d'Èmission
+# Procedure de determination de la temp√©rature √©lectronique d'une n√©buleuse √† raies d'√©mission
 #
 # Auteur : Benjamin MAUCLAIRE
-# Date de crÈation : 13-08-2005
-# Date de mise ‡ jour : 13-08-2005
+# Date de cr√©ation : 13-08-2005
+# Date de mise √† jour : 13-08-2005
 # Arguments : I_5007 I_4959 I_4363
-# ModËle utilisÈ : A. Acker, Astronomie, mÈthodes et calculs, MASSON, p.104.
+# Mod√®le utilis√© : A. Acker, Astronomie, m√©thodes et calculs, MASSON, p.104.
 ##########################################################
 
 proc spc_npte { args } {
@@ -350,7 +366,7 @@ proc spc_npte { args } {
 	 return 0
      }
 
-     #--- Calcul de la tempÈrature :
+     #--- Calcul de la temp√©rature :
      set R [ expr ($I_5007+$I_4959)/$I_4363 ]
      set Te [ expr (3.29*1E4)/(log($R/8.30)) ]
 
@@ -363,7 +379,7 @@ proc spc_npte { args } {
      }
 
      #--- Affichage du resultat :
-     ::console::affiche_resultat "Le tempÈrature Èlectronique de la nÈbuleuse est : $Te Kelvin ; dTe=$dTe\nR(OIII)=$R\n"
+     ::console::affiche_resultat "Le temp√©rature √©lectronique de la n√©buleuse est : $Te Kelvin ; dTe=$dTe\nR(OIII)=$R\n"
      set resul [ list $Te $dTe $R ]
      return $resul
    } else {
@@ -376,13 +392,13 @@ proc spc_npte { args } {
 
 
 ##########################################################
-# Procedure de determination de la tempÈrature Èlectronique d'une nÈbuleuse ‡ raies d'Èmission
+# Procedure de determination de la temp√©rature √©lectronique d'une n√©buleuse √† raies d'√©mission
 #
 # Auteur : Benjamin MAUCLAIRE
-# Date de crÈation : 13-08-2005
-# Date de mise ‡ jour : 23-01-2007
+# Date de cr√©ation : 13-08-2005
+# Date de mise √† jour : 23-01-2007
 # Arguments : profil_de_raies_etalonne largeur_raie
-# ModËle utilisÈ : A. Acker, Astronomie, mÈthodes et calculs, MASSON, p.104.
+# Mod√®le utilis√© : A. Acker, Astronomie, m√©thodes et calculs, MASSON, p.104.
 ##########################################################
 
 proc spc_te { args } {
@@ -395,7 +411,7 @@ proc spc_te { args } {
        set largeur [ lindex $args 1 ]
        set dlargeur [ expr $largeur/2. ]
 
-       #--- DÈtermination de la valeur du continuum de la raie :
+       #--- D√©termination de la valeur du continuum de la raie :
        buf$audace(bufNo) load "$audace(rep_images)/$fichier"
        set listemotsclef [ buf$audace(bufNo) getkwds ]
        if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
@@ -408,17 +424,22 @@ proc spc_te { args } {
        } else {
 	   set lambda 1.
        }
+       if { [ lsearch $listemotsclef "CRPIX1" ] !=-1 } {
+	   set crpix1 [ lindex [buf$audace(bufNo) getkwd "CRPIX1"] 1 ]
+       } else {
+	   set crpix1 1
+       }
        #-- Raie 1 :
        set ldeb1 [ expr 5006.8-$dlargeur ]
        set lfin1 [ expr 5006.8+$dlargeur ]
-       set xdeb [ expr round(($ldeb1-$lambda0)/$disp) ]
-       set xfin [ expr round(($lfin1-$lambda0)/$disp) ]
+       set xdeb [ expr round(($ldeb1-$lambda0)/$disp)+$crpix1 ]
+       set xfin [ expr round(($lfin1-$lambda0)/$disp)+$crpix1 ]
        set continuum1 [ lindex [ buf$audace(bufNo) fitgauss [ list $xdeb 1 $xfin 1 ] ] 3 ]
        #-- Raie 2 :
        set ldeb2 [ expr 4958.9-$dlargeur ]
        set lfin2 [ expr 4958.9+$dlargeur ]
-       set xdeb [ expr round(($ldeb2-$lambda0)/$disp) ]
-       set xfin [ expr round(($lfin2-$lambda0)/$disp) ]
+       set xdeb [ expr round(($ldeb2-$lambda0)/$disp)+$crpix1 ]
+       set xfin [ expr round(($lfin2-$lambda0)/$disp)+$crpix1 ]
        set continuum2 [ lindex [ buf$audace(bufNo) fitgauss [ list $xdeb 1 $xfin 1 ] ] 3 ]
        #-- Le continuum est choisi comme la plus petite des 2 valeurs :
        if { $continuum1<=$continuum2 } {
@@ -427,7 +448,7 @@ proc spc_te { args } {
 	   set continuum $continuum2
        }
        #set continuum [ expr 0.5*($continuum1+$continuum2) ]
-       ::console::affiche_resultat "Le continuum trouvÈ pour ($continuum1 ; $continuum2) vaut $continuum\n"
+       ::console::affiche_resultat "Le continuum trouv√© pour ($continuum1 ; $continuum2) vaut $continuum\n"
 
 
        #--- Calcul de l'intensite des raies [OIII] :
@@ -438,10 +459,10 @@ proc spc_te { args } {
        set lfin [ expr 4363+$dlargeur4363 ]
        set I_4363 [ spc_integratec $fichier $ldeb $lfin $continuum ]
 
-       #--- Calcul de la tempÈreture Èlectronique :
+       #--- Calcul de la temp√©reture √©lectronique :
        set R [ expr ($I_5007+$I_4959)/$I_4363 ]
        set Te [ expr (3.29*1E4)/(log($R/8.30)) ]
-       ::console::affiche_resultat "Le tempÈrature Èlectronique de la nÈbuleuse est : $Te Kelvin\nR(OIII)=$R\n"
+       ::console::affiche_resultat "Le temp√©rature √©lectronique de la n√©buleuse est : $Te Kelvin\nR(OIII)=$R\n"
        set resul [ list $Te $R ]
        return $resul
    } else {
@@ -454,16 +475,16 @@ proc spc_te { args } {
 
 
 ##########################################################
-# Procedure de determination de la tempÈrature Èlectronique d'une nÈbuleuse ‡ raies d'Èmission
+# Procedure de determination de la temp√©rature √©lectronique d'une n√©buleuse √† raies d'√©mission
 #
 # Auteur : Benjamin MAUCLAIRE
-# Date de crÈation : 13-08-2005
-# Date de mise ‡ jour : 13-08-20052007-01-20
+# Date de cr√©ation : 13-08-2005
+# Date de mise √† jour : 13-08-20052007-01-20
 # Arguments : Te I_6584 I_6548 I_5755
-# ModËle utilisÈ : Practical Amateur Spectroscopy,†Stephen F. TONKIN, Springer, p.164.
+# Mod√®le utilis√© : Practical Amateur Spectroscopy,¬†Stephen F. TONKIN, Springer, p.164.
 #        set Ne [ expr 1/(2.9*1E(-3))*((8.5*sqrt($Te)*10^(10800/$Te))/$R-1) ]
 # Nouveau modele : Astrnomie astrophysique, A. Acker, Dunod, 2005, p.278.
-# REmarque importante : les raies de l'azote sont utilisÈes pour le calcul de Te et pas Ne. Donc cette focntion n'est pas utilisÈe pour l'instant.
+# REmarque importante : les raies de l'azote sont utilis√©es pour le calcul de Te et pas Ne. Donc cette focntion n'est pas utilis√©e pour l'instant.
 ##########################################################
 
 proc spc_npne2 { args } {
@@ -491,11 +512,11 @@ proc spc_npne2 { args } {
 	   return 0
        }
 
-       #--- Calcul du rapport des raies et de la densite Èlectronique :
+       #--- Calcul du rapport des raies et de la densite √©lectronique :
        set R [ expr ($I_6584+$I_6548)/$I_5755 ]
        set Ne [ expr sqrt($Te)*1E4/25*(6.91*exp(25000/$Te)/$R-1) ]
 
-       #--- Calcul de l'erreur sur la densitÈ Ne :
+       #--- Calcul de l'erreur sur la densit√© Ne :
        if {[llength $args] == 8} {
 	   set dNe [ expr $Ne*(0.5*$dTe/$Te+(1/$R*(($dI1+$dI2)/($I_6584+$I_6548)+$dI3/$I_5755)+$dTe*25000/($R*$Te))*6.91*exp(25000/$Te)/(6.91/$R*exp(25000/$Te)-1)) ]
        } else {
@@ -505,7 +526,7 @@ proc spc_npne2 { args } {
 
 
        #--- Affichage et formatage des resultats :
-       ::console::affiche_resultat "Le densitÈ Èlectronique de la nÈbuleuse est : $Ne e-/cm^3 ; dNe=$dNe\nR(NII)=$R\n"
+       ::console::affiche_resultat "Le densit√© √©lectronique de la n√©buleuse est : $Ne e-/cm^3 ; dNe=$dNe\nR(NII)=$R\n"
        set resul [ list $Ne $dNe $R ]
        return $resul
    } else {
@@ -518,13 +539,13 @@ proc spc_npne2 { args } {
 
 
 ##########################################################
-# Procedure de determination de la tempÈrature Èlectronique d'une nÈbuleuse ‡ raies d'Èmission
+# Procedure de determination de la temp√©rature √©lectronique d'une n√©buleuse √† raies d'√©mission
 #
 # Auteur : Benjamin MAUCLAIRE
-# Date de crÈation : 13-08-2005
-# Date de mise ‡ jour : 23-01-2007
+# Date de cr√©ation : 13-08-2005
+# Date de mise √† jour : 23-01-2007
 # Arguments : Te I_6584 I_6548 I_5755
-# ModËle utilisÈ : Practical Amateur Spectroscopy,†Stephen F. TONKIN, Springer, p.164.
+# Mod√®le utilis√© : Practical Amateur Spectroscopy,¬†Stephen F. TONKIN, Springer, p.164.
 ##########################################################
 
 proc spc_npne { args } {
@@ -548,7 +569,7 @@ proc spc_npne { args } {
 	   ::console::affiche_erreur "Usage: spc_npne Te I_6717 I_6731 ?dTe dI6717 dI6731?\n\n"
        }
 
-       #--- Calcul du rapport des raies et de la densitÈ Èlectronique :
+       #--- Calcul du rapport des raies et de la densit√© √©lectronique :
        set R [ expr $I_6717/$I_6731 ]
        set Ne [ expr 100*sqrt($Te)*($R-1.49)/(5.617-12.8*$R) ]
 
@@ -559,8 +580,8 @@ proc spc_npne { args } {
 	   set dNe 0.
        }
 
-       #--- Formatage et affichage du rÈsultat :
-       ::console::affiche_resultat "Le densitÈ Èlectronique de la nÈbuleuse est : $Ne e-/cm^3 ; R(SII)=$R ; dNe=$dNe\n"
+       #--- Formatage et affichage du r√©sultat :
+       ::console::affiche_resultat "Le densit√© √©lectronique de la n√©buleuse est : $Ne e-/cm^3 ; R(SII)=$R ; dNe=$dNe\n"
        set resul [ list $Ne $dNe $R ]
        return $resul
    } else {
@@ -572,13 +593,13 @@ proc spc_npne { args } {
 
 
 ##########################################################
-# Procedure de determination de la tempÈrature Èlectronique d'une nÈbuleuse ‡ raies d'Èmission
+# Procedure de determination de la temp√©rature √©lectronique d'une n√©buleuse √† raies d'√©mission
 #
 # Auteur : Benjamin MAUCLAIRE
-# Date de crÈation : 23-01-2007
-# Date de mise ‡ jour : 23-01-2007
+# Date de cr√©ation : 23-01-2007
+# Date de mise √† jour : 23-01-2007
 # Arguments :
-# ModËle utilisÈ : A. Acker, Astronomie, mÈthodes et calculs, MASSON, p.105.
+# Mod√®le utilis√© : A. Acker, Astronomie, m√©thodes et calculs, MASSON, p.105.
 ##########################################################
 
 proc spc_ne { args } {
@@ -592,7 +613,7 @@ proc spc_ne { args } {
        set largeur [ lindex $args 2 ]
        set dlargeur [ expr $largeur/2. ]
 
-       #--- DÈtermination de la valeur du continuum de la raie :
+       #--- D√©termination de la valeur du continuum de la raie :
        buf$audace(bufNo) load "$audace(rep_images)/$fichier"
        set listemotsclef [ buf$audace(bufNo) getkwds ]
        if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
@@ -605,17 +626,22 @@ proc spc_ne { args } {
        } else {
 	   set lambda 1.
        }
+       if { [ lsearch $listemotsclef "CRPIX1" ] !=-1 } {
+	   set crpix1 [ lindex [buf$audace(bufNo) getkwd "CRPIX1"] 1 ]
+       } else {
+	   set crpix1 1
+       }
        #-- Raie 1 :
        set ldeb1 [ expr 6717-$dlargeur ]
        set lfin1 [ expr 6717+$dlargeur ]
-       set xdeb [ expr round(($ldeb1-$lambda0)/$disp) ]
-       set xfin [ expr round(($lfin1-$lambda0)/$disp) ]
+       set xdeb [ expr round(($ldeb1-$lambda0)/$disp)+$crpix1 ]
+       set xfin [ expr round(($lfin1-$lambda0)/$disp)+$crpix1 ]
        set continuum1 [ lindex [ buf$audace(bufNo) fitgauss [ list $xdeb 1 $xfin 1 ] ] 3 ]
        #-- Raie 2 :
        set ldeb2 [ expr 6731-$dlargeur ]
        set lfin2 [ expr 6731+$dlargeur ]
-       set xdeb [ expr round(($ldeb2-$lambda0)/$disp) ]
-       set xfin [ expr round(($lfin2-$lambda0)/$disp) ]
+       set xdeb [ expr round(($ldeb2-$lambda0)/$disp)+$crpix1 ]
+       set xfin [ expr round(($lfin2-$lambda0)/$disp)+$crpix1 ]
        set continuum2 [ lindex [ buf$audace(bufNo) fitgauss [ list $xdeb 1 $xfin 1 ] ] 3 ]
        #-- Le continuum est choisi comme la plus petite des 2 valeurs :
        if { $continuum1<=$continuum2 } {
@@ -624,16 +650,16 @@ proc spc_ne { args } {
 	   set continuum $continuum2
        }
        #set continuum [ expr 0.5*($continuum1+$continuum2) ]
-       ::console::affiche_resultat "Le continuum trouvÈ pour ($continuum1 ; $continuum2) vaut $continuum\n"
+       ::console::affiche_resultat "Le continuum trouv√© pour ($continuum1 ; $continuum2) vaut $continuum\n"
 
        #--- Calcul de l'intensite des raies [OIII] :
        set I_6717 [ spc_integratec $fichier $ldeb1 $lfin1 $continuum ]
        set I_6731 [ spc_integratec $fichier $ldeb2 $lfin2 $continuum ]
 
-       #--- Calcul de la tempÈreture Èlectronique :
+       #--- Calcul de la temp√©reture √©lectronique :
        set R [ expr $I_6717/$I_6731 ]
        set Ne [ expr 100*sqrt($Te)*($R-1.49)/(5.617-12.8*$R) ]
-       ::console::affiche_resultat "La densitÈ Èlectronique de la nÈbuleuse est : $Ne e-/cm^3 ; R(SII)=$R ; \n"
+       ::console::affiche_resultat "La densit√© √©lectronique de la n√©buleuse est : $Ne e-/cm^3 ; R(SII)=$R ; \n"
        set resul [ list $Ne $R ]
        return $resul
    } else {
@@ -646,13 +672,13 @@ proc spc_ne { args } {
 
 
 ##########################################################
-# Procedure de determination de la tempÈrature Èlectronique d'une nÈbuleuse ‡ raies d'Èmission
+# Procedure de determination de la temp√©rature √©lectronique d'une n√©buleuse √† raies d'√©mission
 #
 # Auteur : Benjamin MAUCLAIRE
-# Date de crÈation : 13-08-2005
-# Date de mise ‡ jour : 13-08-2005
+# Date de cr√©ation : 13-08-2005
+# Date de mise √† jour : 13-08-2005
 # Arguments : Te I_6584 I_6548 I_5755
-# ModËle utilisÈ : Practical Amateur Spectroscopy,†Stephen F. TONKIN, Springer, p.164.
+# Mod√®le utilis√© : Practical Amateur Spectroscopy,¬†Stephen F. TONKIN, Springer, p.164.
 ##########################################################
 
 proc spc_ne2 { args } {
@@ -668,7 +694,7 @@ proc spc_ne2 { args } {
 
      set R [ expr ($I_6584+$I_6548)/$I_5755 ]
      set Ne [ expr 1/(2.9*1E(-3))*((8.5*sqrt($Te)*10^(10800/$Te))/$R-1) ]
-     ::console::affiche_resultat "Le densitÈ Èlectronique de la nÈbuleuse est : $Ne Kelvin\n"
+     ::console::affiche_resultat "Le densit√© √©lectronique de la n√©buleuse est : $Ne Kelvin\n"
      return $Ne
    } else {
      ::console::affiche_erreur "Usage: spc_ne Te I_6584 I_6548 I_5755\n\n"
@@ -681,12 +707,12 @@ proc spc_ne2 { args } {
 
 
 ##########################################################
-# Procedure de tracer de largeur Èquivalente pour une sÈrie de spectres dans le rÈpertoire de travail
+# Procedure de tracer de largeur √©quivalente pour une s√©rie de spectres dans le r√©pertoire de travail
 #
 # Auteur : Benjamin MAUCLAIRE
-# Date de crÈation : 04-08-2005
-# Date de mise ‡ jour : 24-03-2007
-# Arguments : nom gÈnÈrique des profils de raies normalisÈs ‡ 1, longueur d'onde de la raie (A), largeur de la raie (A), type de raie (a/e)
+# Date de cr√©ation : 04-08-2005
+# Date de mise √† jour : 24-03-2007
+# Arguments : nom g√©n√©rique des profils de raies normalis√©s √† 1, longueur d'onde de la raie (A), largeur de la raie (A), type de raie (a/e)
 ##########################################################
 
 proc spc_ewcourbe { args } {
@@ -715,7 +741,7 @@ proc spc_ewcourbe { args } {
 		set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE" ] 1 ]
 	    }
 	    set date [ mc_date2jd $ladate ]
-	    #- Ne tient que des 4 premiËres dÈcimales du jour julien et retranche 50000 jours juliens
+	    #- Ne tient que des 4 premi√®res d√©cimales du jour julien et retranche 50000 jours juliens
 	    #lappend ldates [ expr int($date*10000.)/10000.-50000.+0.5 ]
 	    #lappend ldates [ expr round($date*10000.)/10000.-2400000.5 ]
 	    lappend ldates [ expr int(($date-2400000.5)*10000.)/10000. ]
@@ -724,7 +750,7 @@ proc spc_ewcourbe { args } {
 	    lappend list_sigmaew [ lindex $results 1 ]
 	}
 
-	#--- CrÈation du fichier de donnÈes
+	#--- Cr√©ation du fichier de donn√©es
 	# ::console::affiche_resultat "$ldates \n $list_ew\n"
 	set file_id1 [open "$audace(rep_images)/${ewfile}.dat" w+]
 	foreach sdate $ldates ew $list_ew sew $list_sigmaew {
@@ -732,7 +758,7 @@ proc spc_ewcourbe { args } {
 	}
 	close $file_id1
 
-	#--- CrÈation du script de tracage avec gnuplot :
+	#--- Cr√©ation du script de tracage avec gnuplot :
 	set ew0 [ lindex $list_ew 0 ]
 	if { $ew0<0 } {
 	    set invert_opt "reverse"
@@ -762,7 +788,7 @@ proc spc_ewcourbe { args } {
 	}
 
 
-	#--- Traitement du rÈsultat :
+	#--- Traitement du r√©sultat :
 	return "ew_courbe.png"
     } else {
 	::console::affiche_erreur "Usage: spc_ewcourbe lambda_raie\n\n"
@@ -772,12 +798,12 @@ proc spc_ewcourbe { args } {
 
 
 ##########################################################
-# Procedure de tracer de largeur Èquivalente pour une sÈrie de spectres dans le rÈpertoire de travail
+# Procedure de tracer de largeur √©quivalente pour une s√©rie de spectres dans le r√©pertoire de travail
 #
 # Auteur : Benjamin MAUCLAIRE
-# Date de crÈation : 04-08-2005
-# Date de mise ‡ jour : 10-05-2006
-# Arguments : nom gÈnÈrique des profils de raies normalisÈs ‡ 1, longueur d'onde de la raie (A), largeur de la raie (A), type de raie (a/e)
+# Date de cr√©ation : 04-08-2005
+# Date de mise √† jour : 10-05-2006
+# Arguments : nom g√©n√©rique des profils de raies normalis√©s √† 1, longueur d'onde de la raie (A), largeur de la raie (A), type de raie (a/e)
 ##########################################################
 
 proc spc_ewcourbe_opt { args } {
@@ -805,7 +831,7 @@ proc spc_ewcourbe_opt { args } {
 	    buf$audace(bufNo) load "$audace(rep_images)/$fichier"
 	    set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
 	    set date [ mc_date2jd $ladate ]
-	    # Ne tient que des 4 premiËres dÈcimales du jour julien et retranche 50000 jours juliens
+	    # Ne tient que des 4 premi√®res d√©cimales du jour julien et retranche 50000 jours juliens
 	    #lappend ldates [ expr int($date*10000.)/10000.-50000.+0.5 ]
 	    lappend ldates [ expr int(($date-2400000.5)*10000.)/10000. ]
 	    # lappend ldates [ expr $date-50000. ]
@@ -817,7 +843,7 @@ proc spc_ewcourbe_opt { args } {
 	    lappend list_ew [ spc_ew3 $fichier $ldeb $lfin ]
 	}
 
-	#--- CrÈation du fichier de donnÈes
+	#--- Cr√©ation du fichier de donn√©es
 	# ::console::affiche_resultat "$ldates \n $list_ew\n"
 	set file_id1 [open "$audace(rep_images)/${ewfile}.dat" w+]
 	foreach sdate $ldates ew $list_ew {
@@ -825,7 +851,7 @@ proc spc_ewcourbe_opt { args } {
 	}
 	close $file_id1
 
-	#--- CrÈation du script de tracage avec gnuplot :
+	#--- Cr√©ation du script de tracage avec gnuplot :
 	set ew0 [ lindex $list_ew 0 ]
 	if { $ew0<0 } {
 	    set invert_opt "reverse"
@@ -854,10 +880,10 @@ proc spc_ewcourbe_opt { args } {
 	    ::console::affiche_resultat "Configurer \"Editeurs/Visualisateur d'images\" pour permettre l'affichage du graphique\n"
 	}
 
-	#--- Traitement du rÈsultat :
+	#--- Traitement du r√©sultat :
 	return "ew_courbe.png"
     } else {
-	::console::affiche_erreur "Usage: spc_ewcourbe_opt nom_gÈnÈrique_profils_fits lambda_raie largeur_raie\n\n"
+	::console::affiche_erreur "Usage: spc_ewcourbe_opt nom_g√©n√©rique_profils_fits lambda_raie largeur_raie\n\n"
     }
 }
 #*******************************************************************************#
@@ -866,11 +892,11 @@ proc spc_ewcourbe_opt { args } {
 
 
 ##########################################################
-# Procedure de tracer de largeur Èquivalente pour une sÈrie de spectres dans le rÈpertoire de travail
+# Procedure de tracer de largeur √©quivalente pour une s√©rie de spectres dans le r√©pertoire de travail
 #
 # Auteur : Benjamin MAUCLAIRE
-# Date de crÈation : 18-03-2007
-# Date de mise ‡ jour : 18-03-2007
+# Date de cr√©ation : 18-03-2007
+# Date de mise √† jour : 18-03-2007
 # Arguments : longueur d'onde de la raie (A), largeur de la raie (A)
 ##########################################################
 
@@ -887,7 +913,7 @@ proc spc_ewdirw { args } {
 	set lambda [lindex $args 0 ]
 	set fileliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails *$conf(extension,defaut) ] ]
 
-	#--- CrÈe le fichier des rÈsultats :
+	#--- Cr√©e le fichier des r√©sultats :
 	set file_id1 [open "$audace(rep_images)/$ewfile" w+]
 	puts $file_id1 "NAME\tMJD date\tEW(wavelength's range)\tSigma(EW)\tSNR\r"
 	foreach fichier $fileliste {
@@ -897,7 +923,7 @@ proc spc_ewdirw { args } {
 	    set listemotsclef [ buf$audace(bufNo) getkwds ]
 	    if { [ lsearch $listemotsclef "MJD-OBS" ] !=-1 } {
 		set date [ lindex [ buf$audace(bufNo) getkwd "MJD-OBS" ] 1 ]
-		#- Ne tient que des 4 premiËres dÈcimales du jour julien
+		#- Ne tient que des 4 premi√®res d√©cimales du jour julien
 		set jddate [ expr int($date*10000.)/10000.+2400000.5 ]
 	    } elseif { [ lsearch $listemotsclef "DATE-OBS" ] !=-1 } {
 		set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
@@ -924,7 +950,7 @@ proc spc_ewdirw { args } {
 	close $file_id1
 
 	#--- Fin de script :
-	::console::affiche_resultat "Fichier des rÈsultats sauvÈ sous $ewfile\n"
+	::console::affiche_resultat "Fichier des r√©sultats sauv√© sous $ewfile\n"
 	return $ewfile
     } else {
 	::console::affiche_erreur "Usage: spc_ewdirw lambda_raie \n\n"
@@ -936,7 +962,7 @@ proc spc_ewdirw { args } {
 
 
 ####################################################################
-# ProcÈdure de calcul de la largeur Èquivalente d'une raie
+# Proc√©dure de calcul de la largeur √©quivalente d'une raie
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 26/05/2007
@@ -955,7 +981,7 @@ proc spc_ew { args } {
 
 	spc_ew3 $filename $lambda_deb $lambda_fin
     } else {
-	::console::affiche_erreur "Usage: spc_ew nom_profil_raies_calibrÈ lamba_debut lambda_fin\n"
+	::console::affiche_erreur "Usage: spc_ew nom_profil_raies_calibr√© lamba_debut lambda_fin\n"
     }
 }
 #***************************************************************************#
@@ -963,11 +989,11 @@ proc spc_ew { args } {
 
 
 ##########################################################
-# Procedure de dÈtermination de la largeur Èquivalente d'une raie spectrale modelisee par une gaussienne.
+# Procedure de d√©termination de la largeur √©quivalente d'une raie spectrale modelisee par une gaussienne.
 #
 # Auteur : Benjamin MAUCLAIRE
-# Date de crÈation : 12-08-2005
-# Date de mise ‡ jour : 21/12/2005-18/04/2006
+# Date de cr√©ation : 12-08-2005
+# Date de mise √† jour : 21/12/2005-18/04/2006
 # Arguments : fichier .fit du profil de raie, l_debut (wavelength), l_fin (wavelength), a/e (renseigne sur raie emission ou absorption)
 ##########################################################
 
@@ -986,8 +1012,9 @@ proc spc_ew1 { args } {
        buf$audace(bufNo) load "$audace(rep_images)/$fichier"
        set crval [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
        set cdelt [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
-       set xdeb [ expr int(($ldeb-$crval)/$cdelt) ]
-       set xfin [ expr int(($lfin-$crval)/$cdelt) ]
+       set crpix1 [lindex [buf$audace(bufNo) getkwd "CRPIX1"] 1]
+       set xdeb [ expr int(($ldeb-$crval)/$cdelt)+$crpix1 ]
+       set xfin [ expr int(($lfin-$crval)/$cdelt)+$crpix1 ]
        #-- coords contient : { x1 y1 x2 y2 }
 	##  -----------B
 	##  |          |
@@ -1019,7 +1046,7 @@ proc spc_ew1 { args } {
        #--- Calcul de EW
        #set aeqw [ expr sqrt(acos(-1.0)/log(2.0))*0.5*$fwhm ]
        # set aeqw [ expr sqrt((acos(-1.0)*$fwhm)/(8.0*sqrt(log(2.0))))*$i_continuum ]
-       #- 1.675x-0.904274 : coefficent de rÈajustement par rapport a Midas.
+       #- 1.675x-0.904274 : coefficent de r√©ajustement par rapport a Midas.
        #set aeqw [ expr sqrt((acos(-1.0)*$fwhm)/(8.0*sqrt(log(2.0))))*1.6751-1.15 ]
        # Klotz : 060416, A=imax*sqrt(pi)*sigma, GOOD
        set aeqw [ expr sqrt(acos(-1.0)/(8.0*log(2.0)))*$fwhm*$imax ]
@@ -1027,7 +1054,7 @@ proc spc_ew1 { args } {
        #set aeqw [ expr sqrt(acos(-1.0)*$fwhm/(sqrt(8.0*log(2.0)))) ]
        # A=sqrt(sigma*pi/2) car exp(-x/sigma)^2 et non exp(-x^2/2*sigma^2)
        #set aeqw [ expr sqrt(acos(-1.0)*$fwhm/(2*sqrt(8.0*log(2.0)))) ]
-       # A=sqrt(pi/2)*sigma, vÈritÈ calculÈ pour exp(-x/sigma)^2
+       # A=sqrt(pi/2)*sigma, v√©rit√© calcul√© pour exp(-x/sigma)^2
        #set aeqw [ expr sqrt(acos(-1.0)/(16.0*log(2.0)))*$fwhm ]
 
        if { [string compare $type "a"] == 0 } {
@@ -1035,7 +1062,7 @@ proc spc_ew1 { args } {
        } elseif { [string compare $type "e"] == 0 } {
 	   set eqw [ expr (-1.0)*$aeqw ]
        }
-       ::console::affiche_resultat "La largeur Èquivalente de la raie est : $eqw angstroms\n"
+       ::console::affiche_resultat "La largeur √©quivalente de la raie est : $eqw angstroms\n"
        return $eqw
    } else {
        ::console::affiche_erreur "Usage: spc_ew1 nom_fichier (de type fits et sans extension) x_debut x_fin a/e\n\n"
@@ -1082,7 +1109,7 @@ proc spc_ew_170406 { args } {
        #--- Calcul de EW
        #set aeqw [ expr sqrt(acos(-1.0)/log(2.0))*0.5*$fwhm ]
        # set aeqw [ expr sqrt((acos(-1.0)*$fwhm)/(8.0*sqrt(log(2.0))))*$i_continuum ]
-       #- 1.675x-0.904274 : coefficent de rÈajustement par rapport a Midas.
+       #- 1.675x-0.904274 : coefficent de r√©ajustement par rapport a Midas.
        #set aeqw [ expr sqrt((acos(-1.0)*$fwhm)/(8.0*sqrt(log(2.0))))*1.6751-1.15 ]
        # Klotz : 060416, A=imax*sqrt(pi)*sigma, GOOD
        set aeqw [ expr sqrt(acos(-1.0)/(8.0*log(2.0)))*$fwhm*$imax ]
@@ -1090,7 +1117,7 @@ proc spc_ew_170406 { args } {
        #set aeqw [ expr sqrt(acos(-1.0)*$fwhm/(sqrt(8.0*log(2.0)))) ]
        # A=sqrt(sigma*pi/2) car exp(-x/sigma)^2 et non exp(-x^2/2*sigma^2)
        #set aeqw [ expr sqrt(acos(-1.0)*$fwhm/(2*sqrt(8.0*log(2.0)))) ]
-       # A=sqrt(pi/2)*sigma, vÈritÈ calculÈ pour exp(-x/sigma)^2
+       # A=sqrt(pi/2)*sigma, v√©rit√© calcul√© pour exp(-x/sigma)^2
        #set aeqw [ expr sqrt(acos(-1.0)/(16.0*log(2.0)))*$fwhm ]
 
        if { [string compare $type "a"] == 0 } {
@@ -1098,7 +1125,7 @@ proc spc_ew_170406 { args } {
        } elseif { [string compare $type "e"] == 0 } {
 	   set eqw [ expr (-1.0)*$aeqw ]
        }
-       ::console::affiche_resultat "La largeur Èquivalente de la raie est : $eqw angstroms\n"
+       ::console::affiche_resultat "La largeur √©quivalente de la raie est : $eqw angstroms\n"
        return $eqw
    } else {
        ::console::affiche_erreur "Usage: spc_ew nom_fichier (de type fits et sans extension) x_debut x_fin a/e\n\n"
@@ -1145,7 +1172,7 @@ proc spc_ew_211205 { args } {
      } else {
 	 set eqw [ expr $intensity/$I_continum ]
      }
-     ::console::affiche_resultat "La largeur Èquivalente de la raie est : $eqw angstroms\n"
+     ::console::affiche_resultat "La largeur √©quivalente de la raie est : $eqw angstroms\n"
      return $eqw
 
    } else {
@@ -1157,7 +1184,7 @@ proc spc_ew_211205 { args } {
 
 
 ####################################################################
-# ProcÈdure de calcul de la largeur Èquivalente d'une raie
+# Proc√©dure de calcul de la largeur √©quivalente d'une raie
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 1-09-2006
@@ -1174,7 +1201,7 @@ proc spc_ew2 { args } {
 	set xdeb [ lindex $args 1 ]
 	set xfin [ lindex $args 2 ]
 
-	#--- Conversion des donnÈes en liste :
+	#--- Conversion des donn√©es en liste :
 	set listevals [ spc_fits2data $filename ]
 	set xvals [ lindex $listevals 0 ]
 	set yvals [ lindex $listevals 1 ]
@@ -1190,7 +1217,7 @@ proc spc_ew2 { args } {
 	set valsselect [ list $xsel $ysel ]
 	set intensity [ spc_aire $valsselect ]
 	set ew [ expr $intensity-($xfin-$xdeb) ]
-	#--- DÈtermine le type de raie : Èmission ou absorption et donne un signe ‡ EW
+	#--- D√©termine le type de raie : √©mission ou absorption et donne un signe √† EW
 	if { $intensity>=1 } {
 	    set ew [ expr -1.*$ew ]
 	}
@@ -1201,7 +1228,7 @@ proc spc_ew2 { args } {
 	set rapport [ expr $ew/$deltal ]
 	if { $rapport>=1.0 } {
 	    set deltal [ expr $ew+0.1 ]
-	    ::console::affiche_resultat "Attention : largeur d'intÈgration<EW !\n"
+	    ::console::affiche_resultat "Attention : largeur d'int√©gration<EW !\n"
 	}
 	if { $snr != 0 } {
 	    set sigma [ expr sqrt(1+1/(1-$ew/$deltal))*(($deltal-$ew)/$snr) ]
@@ -1211,7 +1238,7 @@ proc spc_ew2 { args } {
 	    set sigma 0
 	}
 
-        #--- Formatage des rÈsultats :
+        #--- Formatage des r√©sultats :
 	set l_fin [ expr 0.01*round($xfin*100) ]
 	set l_deb [ expr 0.01*round($xdeb*100) ]
 	set delta_l [ expr 0.01*round($deltal*100) ]
@@ -1219,21 +1246,21 @@ proc spc_ew2 { args } {
 	set sigma_ew [ expr 0.01*round($sigma*100) ]
 	set snr_short [ expr round($snr) ]
 
-	#--- Affichage des rÈsultats :
+	#--- Affichage des r√©sultats :
 	::console::affiche_resultat "\n"
 	::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short anstrom(s).\n"
 	::console::affiche_resultat "SNR=$snr_short.\n"
 	::console::affiche_resultat "Sigma(EW)=$sigma_ew angstrom.\n\n"
 	return $ew
     } else {
-	::console::affiche_erreur "Usage: spc_ew2 nom_profil_raies_normalisÈ lanmba_dep lambda_fin\n"
+	::console::affiche_erreur "Usage: spc_ew2 nom_profil_raies_normalis√© lanmba_dep lambda_fin\n"
     }
 }
 #***************************************************************************#
 
 
 ####################################################################
-# ProcÈdure de calcul de la largeur Èquivalente d'une raie
+# Proc√©dure de calcul de la largeur √©quivalente d'une raie
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 18-03-2007
@@ -1250,14 +1277,14 @@ proc spc_ew3 { args } {
        set xdeb [ lindex $args 1 ]
        set xfin [ lindex $args 2 ]
        
-       #--- Conversion des donnÈes en liste :
+       #--- Conversion des donn√©es en liste :
        set listevals [ spc_fits2data $filename ]
        set xvals [ lindex $listevals 0 ]
        set yvals [ lindex $listevals 1 ]
        set lmin [ lindex $xvals 0 ]
        set lmax [ lindex $xvals [ expr [ llength $xvals ] -1 ] ]
 
-       #--- DÈterminiation de la valeur du continuum :
+       #--- D√©terminiation de la valeur du continuum :
        #-- intervalles de calcul :  6655,  6640 6660, 6605 6671, 6645 6655, 6587 6661
        #set icont [ spc_icontinuum $filename ]
        set spectre_cont [ spc_extractcont $filename ]
@@ -1284,7 +1311,7 @@ proc spc_ew3 { args } {
 	}
 	::console::affiche_resultat "L'aire sans le continuum vaut $aire\n"
 
-	#--- Calcul la largeur Èquivalente :
+	#--- Calcul la largeur √©quivalente :
 	#set deltal [ expr abs($xfin-$xdeb) ]
 	#set dispersion_locale [ expr 1.*$deltal/[ llength $xsel ] ]
 	buf$audace(bufNo) load "$audace(rep_images)/$filename"
@@ -1294,7 +1321,7 @@ proc spc_ew3 { args } {
         set jd [ mc_date2jd $ladate ]
 	set ew [ expr -1.*$aire*$dispersion_locale/$icont ]
 
-	#--- DÈtermine le type de raie : Èmission ou absorption et donne un signe ‡ EW
+	#--- D√©termine le type de raie : √©mission ou absorption et donne un signe √† EW
 	if { 1==0 } {
 	  set valsselect [ list $xsel $ysel ]
 	  set intensity [ spc_aire $valsselect ]
@@ -1309,7 +1336,7 @@ proc spc_ew3 { args } {
 	set rapport [ expr $ew/$deltal ]
 	if { $rapport>=1.0 } {
 	    set deltal [ expr $ew+0.1 ]
-	    ::console::affiche_resultat "Attention : largeur d'intÈgration<EW !\n"
+	    ::console::affiche_resultat "Attention : largeur d'int√©gration<EW !\n"
 	}
 	if { $snr != 0 } {
 	    set sigma [ expr sqrt(1+1/(1-$ew/$deltal))*(($deltal-$ew)/$snr) ]
@@ -1319,7 +1346,7 @@ proc spc_ew3 { args } {
 	    set sigma 0
 	}
 
-        #--- Formatage des rÈsultats :
+        #--- Formatage des r√©sultats :
 	set l_fin [ expr 0.01*round($xfin*100) ]
 	set l_deb [ expr 0.01*round($xdeb*100) ]
 	set delta_l [ expr 0.01*round($deltal*100) ]
@@ -1327,7 +1354,7 @@ proc spc_ew3 { args } {
 	set sigma_ew [ expr 0.01*round($sigma*100) ]
 	set snr_short [ expr round($snr) ]
 
-	#--- Affichage des rÈsultats :
+	#--- Affichage des r√©sultats :
 	::console::affiche_resultat "\n"
         ::console::affiche_resultat "Date: $ladate\n"
         ::console::affiche_resultat "JD: $jd\n"
@@ -1336,7 +1363,7 @@ proc spc_ew3 { args } {
 	::console::affiche_resultat "SNR=$snr_short.\n\n"
 	return $ew
     } else {
-	::console::affiche_erreur "Usage: spc_ew3 nom_profil_raies_normalisÈ lanmba_dep lambda_fin\n"
+	::console::affiche_erreur "Usage: spc_ew3 nom_profil_raies_normalis√© lanmba_dep lambda_fin\n"
     }
 }
 #***************************************************************************#
@@ -1376,7 +1403,7 @@ proc spc_autoew4 { args } {
          set lambda_deb [ lindex $args 1 ]
          set lambda_fin [ lindex $args 2 ]
       } else {
-         ::console::affiche_erreur "Usage: spc_autoew4 nom_profil_raies_normalisÈ lambda_raie/lambda_deb lambda_fin\n"
+         ::console::affiche_erreur "Usage: spc_autoew4 nom_profil_raies_normalis√© lambda_raie/lambda_deb lambda_fin\n"
       }
 
       set filename_norma [ spc_autonorma $filename ]
@@ -1399,7 +1426,7 @@ proc spc_autoew4 { args } {
          #--- Trouve l'indice de la raie recherche dans la liste
          set i_lambda [ lsearch -glob $lambdas ${lambda_raie}* ]
 
-         #--- Recherche la longueur d'onde d'intersection du bord rouge de la raie avec le continuum normalisÈ ‡ 1 :
+         #--- Recherche la longueur d'onde d'intersection du bord rouge de la raie avec le continuum normalis√© √† 1 :
          for { set i $i_lambda } { $i<$len } { incr i } {
 	    set yval [ lindex $intensities $i ]
             set ycont [ lindex $iconti $i ]
@@ -1409,7 +1436,7 @@ proc spc_autoew4 { args } {
 	    }
          }
 
-         #--- Recherche la longueur d'onde d'intersection du bord bleu de la raie avec le continuum normalisÈ ‡ 1 :
+         #--- Recherche la longueur d'onde d'intersection du bord bleu de la raie avec le continuum normalis√© √† 1 :
          for { set i $i_lambda } { $i>=0 } { set i [ expr $i-1 ] } {
 	    set yval [ lindex $intensities $i ]
             set ycont [ lindex $iconti $i ]
@@ -1421,7 +1448,7 @@ proc spc_autoew4 { args } {
       }
       ::console::affiche_resultat "Limites trouvees : $lambda_deb $lambda_fin\n"
 
-      #--- DÈtermination de la largeur Èquivalente :
+      #--- D√©termination de la largeur √©quivalente :
       set ew [ spc_ew $filename_norma $lambda_deb $lambda_fin ]
       set deltal [ expr abs($lambda_fin-$lambda_deb) ]
 
@@ -1430,7 +1457,7 @@ proc spc_autoew4 { args } {
       set rapport [ expr $ew/$deltal ]
       if { $rapport>=1.0 } {
          set deltal [ expr $ew+0.1 ]
-         ::console::affiche_resultat "Attention : largeur d'intÈgration<EW !\n"
+         ::console::affiche_resultat "Attention : largeur d'int√©gration<EW !\n"
       }
       if { $snr != 0 } {
          set sigma [ expr sqrt(1+1/(1-$ew/$deltal))*(($deltal-$ew)/$snr) ]
@@ -1448,7 +1475,7 @@ proc spc_autoew4 { args } {
          file delete -force "$audace(rep_images)/$filename_norm_conti$conf(extension,defaut)"
       }
    }
-      #--- Formatage des rÈsultats :
+      #--- Formatage des r√©sultats :
       set l_fin [ expr 0.01*round($lambda_fin*100) ]
       set l_deb [ expr 0.01*round($lambda_deb*100) ]
       set delta_l [ expr 0.01*round($deltal*100) ]
@@ -1456,7 +1483,7 @@ proc spc_autoew4 { args } {
       set sigma_ew [ expr 0.01*round($sigma*100) ]
       set snr_short [ expr round($snr) ]
 
-      #--- Affichage des rÈsultats :
+      #--- Affichage des r√©sultats :
       ::console::affiche_resultat "\n"
       ::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short A.\n"
       ::console::affiche_resultat "Sigma(EW)=$sigma_ew A.\n"
@@ -1466,7 +1493,7 @@ proc spc_autoew4 { args } {
       set results [ list $ew_short $sigma_ew $snr_short "EW($delta_l=$l_deb-$l_fin)" ]
       return $results
    } else {
-      ::console::affiche_erreur "Usage: spc_autoew4 nom_profil_raies_normalisÈ lambda_raie/lambda_deb lambda_fin\n"
+      ::console::affiche_erreur "Usage: spc_autoew4 nom_profil_raies_normalis√© lambda_raie/lambda_deb lambda_fin\n"
    }
 }
 #***************************************************************************#
@@ -1480,7 +1507,7 @@ proc spc_autoew4 { args } {
 # Date creation : 2008-05-31
 # Date modification : 2008-05-31
 # Arguments : nom_profil_raies ?lambda_raie/ldeb lfin?
-# Algo : determine ldeb et lfin par intersection du spectre filtre passe bas avec la valeur icont du spectre normalisÈ.
+# Algo : determine ldeb et lfin par intersection du spectre filtre passe bas avec la valeur icont du spectre normalis√©.
 ####################################################################
 
 proc spc_autoew3 { args } {
@@ -1502,7 +1529,7 @@ proc spc_autoew3 { args } {
          set lambda_deb [ lindex $args 1 ]
          set lambda_fin [ lindex $args 2 ]
       } else {
-         ::console::affiche_erreur "Usage: spc_autoew3 nom_profil_raies_normalisÈ lambda_raie/lambda_deb lambda_fin\n"
+         ::console::affiche_erreur "Usage: spc_autoew3 nom_profil_raies_normalis√© lambda_raie/lambda_deb lambda_fin\n"
       }
 
       set filename_norma [ spc_autonorma $filename ]
@@ -1523,7 +1550,7 @@ proc spc_autoew3 { args } {
          #--- Trouve l'indice de la raie recherche dans la liste
          set i_lambda [ lsearch -glob $lambdas ${lambda_raie}* ]
 
-         #--- Recherche la longueur d'onde d'intersection du bord rouge de la raie avec le continuum normalisÈ ‡ 1 :
+         #--- Recherche la longueur d'onde d'intersection du bord rouge de la raie avec le continuum normalis√© √† 1 :
          for { set i $i_lambda } { $i<$len } { incr i } {
 	    set yval [ lindex $intensities $i ]
 	    if { [ expr abs($yval-$icont) ] <= $precision } {
@@ -1532,7 +1559,7 @@ proc spc_autoew3 { args } {
 	    }
          }
 
-         #--- Recherche la longueur d'onde d'intersection du bord bleu de la raie avec le continuum normalisÈ ‡ 1 :
+         #--- Recherche la longueur d'onde d'intersection du bord bleu de la raie avec le continuum normalis√© √† 1 :
          for { set i $i_lambda } { $i>=0 } { set i [ expr $i-1 ] } {
 	    set yval [ lindex $intensities $i ]
 	    if { [ expr abs($yval-$icont) ] <= $precision } {
@@ -1542,7 +1569,7 @@ proc spc_autoew3 { args } {
          }
       }
 
-      #--- DÈtermination de la largeur Èquivalente :
+      #--- D√©termination de la largeur √©quivalente :
       set ew [ spc_ew $filename_norma $lambda_deb $lambda_fin ]
       set deltal [ expr abs($lambda_fin-$lambda_deb) ]
 
@@ -1552,7 +1579,7 @@ proc spc_autoew3 { args } {
       set rapport [ expr $ew/$deltal ]
       if { $rapport>=1.0 } {
          set deltal [ expr $ew+0.1 ]
-         ::console::affiche_resultat "Attention : largeur d'intÈgration<EW !\n"
+         ::console::affiche_resultat "Attention : largeur d'int√©gration<EW !\n"
       }
       if { $snr != 0 } {
          set sigma [ expr sqrt(1+1/(1-$ew/$deltal))*(($deltal-$ew)/$snr) ]
@@ -1569,7 +1596,7 @@ proc spc_autoew3 { args } {
          # file delete -force "$audace(rep_images)/${filename}_conti$conf(extension,defaut)"
       }
 
-      #--- Formatage des rÈsultats :
+      #--- Formatage des r√©sultats :
       set l_fin [ expr 0.01*round($lambda_fin*100) ]
       set l_deb [ expr 0.01*round($lambda_deb*100) ]
       set delta_l [ expr 0.01*round($deltal*100) ]
@@ -1577,7 +1604,7 @@ proc spc_autoew3 { args } {
       set sigma_ew [ expr 0.01*round($sigma*100) ]
       set snr_short [ expr round($snr) ]
 
-      #--- Affichage des rÈsultats :
+      #--- Affichage des r√©sultats :
       ::console::affiche_resultat "\n"
       ::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short A.\n"
       ::console::affiche_resultat "Sigma(EW)=$sigma_ew A.\n"
@@ -1587,7 +1614,7 @@ proc spc_autoew3 { args } {
       set results [ list $ew_short $sigma_ew $snr_short "EW($delta_l=$l_deb-$l_fin)" ]
       return $results
    } else {
-      ::console::affiche_erreur "Usage: spc_autoew3 nom_profil_raies_normalisÈ lambda_raie/lambda_deb lambda_fin\n"
+      ::console::affiche_erreur "Usage: spc_autoew3 nom_profil_raies_normalis√© lambda_raie/lambda_deb lambda_fin\n"
    }
 }
 #***************************************************************************#
@@ -1636,11 +1663,11 @@ proc spc_autoew1 { args } {
          set i_lambda [ lsearch -glob $lambdas ${lambda_raie}* ]
          # ::console::affiche_resultat "Indice de la raie : $i_lambda\n"
 
-         #--- DÈterminiation de la valeur du continuum :
+         #--- D√©terminiation de la valeur du continuum :
          # set icont 1.0
          set icont [ spc_icontinuum $filename ]
 
-         #--- Recherche la longueur d'onde d'intersection du bord rouge de la raie avec le continuum normalisÈ ‡ 1 :
+         #--- Recherche la longueur d'onde d'intersection du bord rouge de la raie avec le continuum normalis√© √† 1 :
          for { set i $i_lambda } { $i<$len } { incr i } {
 	    set yval [ lindex $intensities $i ]
 	    if { [ expr abs($yval-$icont) ] <= $precision } {
@@ -1649,7 +1676,7 @@ proc spc_autoew1 { args } {
 	    }
          }
 
-         #--- Recherche la longueur d'onde d'intersection du bord bleu de la raie avec le continuum normalisÈ ‡ 1 :
+         #--- Recherche la longueur d'onde d'intersection du bord bleu de la raie avec le continuum normalis√© √† 1 :
          for { set i $i_lambda } { $i>=0 } { set i [ expr $i-1 ] } {
 	    set yval [ lindex $intensities $i ]
 	    if { [ expr abs($yval-$icont) ] <= $precision } {
@@ -1660,7 +1687,7 @@ proc spc_autoew1 { args } {
          }
       }
 
-      #--- DÈtermination de la largeur Èquivalente :
+      #--- D√©termination de la largeur √©quivalente :
       set ew [ spc_ew $filename $lambda_deb $lambda_fin ]
       set deltal [ expr abs($lambda_fin-$lambda_deb) ]
 
@@ -1670,7 +1697,7 @@ proc spc_autoew1 { args } {
       set rapport [ expr $ew/$deltal ]
       if { $rapport>=1.0 } {
          set deltal [ expr $ew+0.1 ]
-         ::console::affiche_resultat "Attention : largeur d'intÈgration<EW !\n"
+         ::console::affiche_resultat "Attention : largeur d'int√©gration<EW !\n"
       }
       if { $snr != 0 } {
          set sigma [ expr sqrt(1+1/(1-$ew/$deltal))*(($deltal-$ew)/$snr) ]
@@ -1680,7 +1707,7 @@ proc spc_autoew1 { args } {
          set sigma 0
       }
 
-      #--- Formatage des rÈsultats :
+      #--- Formatage des r√©sultats :
       set l_fin [ expr 0.01*round($lambda_fin*100) ]
       set l_deb [ expr 0.01*round($lambda_deb*100) ]
       set delta_l [ expr 0.01*round($deltal*100) ]
@@ -1688,7 +1715,7 @@ proc spc_autoew1 { args } {
       set sigma_ew [ expr 0.01*round($sigma*100) ]
       set snr_short [ expr round($snr) ]
 
-      #--- Affichage des rÈsultats :
+      #--- Affichage des r√©sultats :
       file delete -force "$audace(rep_images)/$filename$conf(extension,defaut)"
       ::console::affiche_resultat "\n"
       ::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short A.\n"
@@ -1733,7 +1760,7 @@ proc spc_autoew { args } {
          set lambda_deb [ lindex $args 1 ]
          set lambda_fin [ lindex $args 2 ]
       } else {
-         ::console::affiche_erreur "Usage: spc_autoew nom_profil_raies_normalisÈ lambda_raie/lambda_deb lambda_fin\n"
+         ::console::affiche_erreur "Usage: spc_autoew nom_profil_raies_normalis√© lambda_raie/lambda_deb lambda_fin\n"
          return 0
       }
 
@@ -1753,7 +1780,7 @@ proc spc_autoew { args } {
        #--- Traitement des resultats :
        return $results_ew
     } else {
-       ::console::affiche_erreur "Usage: spc_autoew nom_profil_raies_normalisÈ lambda_raie/lambda_deb lambda_fin\n"
+       ::console::affiche_erreur "Usage: spc_autoew nom_profil_raies_normalis√© lambda_raie/lambda_deb lambda_fin\n"
     }
 }
 #***************************************************************************#
@@ -1794,11 +1821,11 @@ proc spc_autoew2 { args } {
 	# ::console::affiche_resultat "Indice de la raie : $i_lambda\n"
 
 
-	#--- DÈterminiation de la valeur du continuum :
+	#--- D√©terminiation de la valeur du continuum :
 	# set icont 1.0
 	set icont [ spc_icontinuum $filename ]
 
-	#--- Recherche la longueur d'onde d'intersection du bord rouge de la raie avec le continuum normalisÈ ‡ 1 :
+	#--- Recherche la longueur d'onde d'intersection du bord rouge de la raie avec le continuum normalis√© √† 1 :
 	for { set i $i_lambda } { $i<$len } { incr i } {
 	    set yval [ lindex $intensities $i ]
 	    if { [ expr $yval-$icont ]<=$precision } {
@@ -1807,7 +1834,7 @@ proc spc_autoew2 { args } {
 	    }
 	}
 
-	#--- Recherche la longueur d'onde d'intersection du bord bleu de la raie avec le continuum normalisÈ ‡ 1 :
+	#--- Recherche la longueur d'onde d'intersection du bord bleu de la raie avec le continuum normalis√© √† 1 :
 	for { set i $i_lambda } { $i>=0 } { set i [ expr $i-1 ] } {
 	    set yval [ lindex $intensities $i ]
 	    if { [ expr $yval-$icont ]<=$precision } {
@@ -1817,7 +1844,7 @@ proc spc_autoew2 { args } {
 	    #::console::affiche_resultat "$diff\n"
 	}
 
-	#--- DÈtermination de la largeur Èquivalente :
+	#--- D√©termination de la largeur √©quivalente :
 	set ew [ spc_ew3 $filename $lambda_deb $lambda_fin ]
 	set deltal [ expr abs($lambda_fin-$lambda_deb) ]
 
@@ -1827,7 +1854,7 @@ proc spc_autoew2 { args } {
 	set rapport [ expr $ew/$deltal ]
 	if { $rapport>=1.0 } {
 	    set deltal [ expr $ew+0.1 ]
-	    ::console::affiche_resultat "Attention : largeur d'intÈgration<EW !\n"
+	    ::console::affiche_resultat "Attention : largeur d'int√©gration<EW !\n"
 	}
 	if { $snr != 0 } {
 	    set sigma [ expr sqrt(1+1/(1-$ew/$deltal))*(($deltal-$ew)/$snr) ]
@@ -1837,7 +1864,7 @@ proc spc_autoew2 { args } {
 	    set sigma 0
 	}
 
-        #--- Formatage des rÈsultats :
+        #--- Formatage des r√©sultats :
 	set l_fin [ expr 0.01*round($lambda_fin*100) ]
 	set l_deb [ expr 0.01*round($lambda_deb*100) ]
 	set delta_l [ expr 0.01*round($deltal*100) ]
@@ -1845,7 +1872,7 @@ proc spc_autoew2 { args } {
 	set sigma_ew [ expr 0.01*round($sigma*100) ]
 	set snr_short [ expr round($snr) ]
 
-	#--- Affichage des rÈsultats :
+	#--- Affichage des r√©sultats :
 	#::console::affiche_resultat "\n"
 	#::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short anstrom(s).\n"
 	#::console::affiche_resultat "SNR=$snr_short.\n"
@@ -1853,14 +1880,14 @@ proc spc_autoew2 { args } {
 	set results [ list $ew_short $sigma_ew $snr_short "EW($delta_l=$l_deb-$l_fin)" ]
 	return $results
     } else {
-	::console::affiche_erreur "Usage: spc_autoew2 nom_profil_raies_normalisÈ lambda_raie\n"
+	::console::affiche_erreur "Usage: spc_autoew2 nom_profil_raies_normalis√© lambda_raie\n"
     }
 }
 #***************************************************************************#
 
 
 ####################################################################
-# ProcÈdure de calcul d'intensitÈ d'une raie
+# Proc√©dure de calcul d'intensit√© d'une raie
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 24-02-2008
@@ -1980,7 +2007,7 @@ proc spc_vrmes { args } {
 	}
 	set len2 $k
 
-	#--- DÈtermination du maximum de la raie 1 par parabole :
+	#--- D√©termination du maximum de la raie 1 par parabole :
 	set coefs [ spc_ajustpolynome $nabscisses1 $nintensites1 2 150 o ]
 	set a [ lindex $coefs 0 ]
 	set b [ lindex $coefs 1 ]
@@ -1988,7 +2015,7 @@ proc spc_vrmes { args } {
 	set xm1 [ expr -$b/(2.*$c) ]
 	set imax1 [ expr $a+$b*$xm1+$c*$xm1*$xm1 ]
 
-	#--- DÈtermination du maximum de la raie 1 par parabole :
+	#--- D√©termination du maximum de la raie 1 par parabole :
 	set coefs [ spc_ajustpolynome $nabscisses2 $nintensites2 2 150 o ]
 	set a [ lindex $coefs 0 ]
 	set b [ lindex $coefs 1 ]
@@ -1996,7 +2023,7 @@ proc spc_vrmes { args } {
 	set xm2 [ expr -$b/(2.*$c) ]
 	set imax2 [ expr $a+$b*$xm2+$c*$xm2*$xm2 ]
 
-	#--- Utilisation des rÈsultats :
+	#--- Utilisation des r√©sultats :
 	#-- Raie V :
 	set ldeb1 [ lindex $nabscisses1 0 ]
 	set lfin1 [ lindex $nabscisses1 [ expr $len1-1 ] ]
@@ -2009,8 +2036,8 @@ proc spc_vrmes { args } {
 
 	#-- V/R :
 	set vr [ expr $imax1/$imax2 ]
-	::console::affiche_resultat "\n\# Raie V de centre $xc1 et d'intensitÈ $imax1.\n"
-	::console::affiche_resultat "Raie R de centre $xc2 et d'intensitÈ $imax2.\n"
+	::console::affiche_resultat "\n\# Raie V de centre $xc1 et d'intensit√© $imax1.\n"
+	::console::affiche_resultat "Raie R de centre $xc2 et d'intensit√© $imax2.\n"
 	::console::affiche_resultat "V/R=$vr.\n"
  	return $vr
     } else {
@@ -2020,6 +2047,95 @@ proc spc_vrmes { args } {
 #***************************************************************************#
 
 
+##########################################################
+# Procedure de tracer de largeur √©quivalente pour une s√©rie de spectres dans le r√©pertoire de travail
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de cr√©ation : 04-08-2005
+# Date de mise √† jour : 24-03-2007
+# Arguments : nom g√©n√©rique des profils de raies normalis√©s √† 1, longueur d'onde de la raie (A), largeur de la raie (A), type de raie (a/e)
+##########################################################
+
+proc spc_vrcourbe { args } {
+
+    global audace spcaudace
+    global conf
+    global tcl_platform
+
+    set ewfile "vrcourbe"
+    set ext ".dat"
+
+    if { [llength $args]==3 } {
+	set lambdaV [lindex $args 0 ]
+	set lambdaR [lindex $args 1 ]
+	set largeur [lindex $args 2 ]
+
+	set ldates ""
+	set list_ew ""
+	set intensite_raie 1
+	set fileliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails *$conf(extension,defaut) ] ]
+
+	foreach fichier $fileliste {
+	    ::console::affiche_resultat "\nTraitement de $fichier\n"
+	    buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+	    #set date [ lindex [buf$audace(bufNo) getkwd "MJD-OBS"] 1 ]
+	    set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
+	    if { [ string length $ladate ]<=10 } {
+		set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE" ] 1 ]
+	    }
+	    set date [ mc_date2jd $ladate ]
+	    #- Ne tient que des 4 premi√®res d√©cimales du jour julien et retranche 50000 jours juliens
+	    #lappend ldates [ expr int($date*10000.)/10000.-50000.+0.5 ]
+	    #lappend ldates [ expr round($date*10000.)/10000.-2400000.5 ]
+	    lappend ldates [ expr int(($date-2400000.5)*10000.)/10000. ]
+	    lappend list_ew [ spc_vrmes $fichier $lambdaV $lambdaR $largeur ]
+	}
+
+	#--- Cr√©ation du fichier de donn√©es
+	# ::console::affiche_resultat "$ldates \n $list_ew\n"
+	set file_id1 [open "$audace(rep_images)/${ewfile}.dat" w+]
+	foreach sdate $ldates ew $list_ew {
+	    puts $file_id1 "$sdate\t$ew"
+	}
+	close $file_id1
+
+	#--- Cr√©ation du script de tracage avec gnuplot :
+	set ew0 [ lindex $list_ew 0 ]
+	if { $ew0<0 } {
+	    set invert_opt "reverse"
+	} else {
+	    set invert_opt "noreverse"
+	}
+	set titre "Evolution du rapport V/R au cours du temps"
+	set legendey "V/R"
+	set legendex "Date (JD-2450000)"
+	set file_id2 [open "$audace(rep_images)/${ewfile}.gp" w+]
+	puts $file_id2 "call \"$spcaudace(repgp)/gp_points_err.cfg\" \"$audace(rep_images)/${ewfile}.dat\" \"$titre\" * * * * $invert_opt \"$audace(rep_images)/vr_courbe.png\" \"$legendex\" \"$legendey\" "
+	close $file_id2
+	if { $tcl_platform(os)=="Linux" } {
+	    set answer [ catch { exec gnuplot $audace(rep_images)/${ewfile}.gp } ]
+	    ::console::affiche_resultat "$answer\n"
+	} else {
+	    #-- wgnuplot et pgnuplot doivent etre dans le rep gp de spcaudace
+	    set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/${ewfile}.gp } ]
+	    ::console::affiche_resultat "$answer\n"
+	}
+
+	#--- Affichage du graphe PNG :
+	if { $conf(edit_viewer)!="" } {
+	    set answer [ catch { exec $conf(edit_viewer) "$audace(rep_images)/vr_courbe.png" & } ]
+	} else {
+	    ::console::affiche_resultat "Configurer \"Editeurs/Visualisateur d'images\" pour permettre l'affichage du graphique\n"
+	}
+
+
+	#--- Traitement du r√©sultat :
+	return "vr_courbe.png"
+    } else {
+	::console::affiche_erreur "Usage: spc_vrcourbe lambda_raie_R lambda_raie_V largeur_raie\n\n"
+    }
+}
+#*******************************************************************************#
 
 
 
@@ -2029,6 +2145,6 @@ proc spc_vrmes { args } {
 
 
 #==========================================================================#
-#           Acnciennes implÈmentations                                     #
+#           Acnciennes impl√©mentations                                     #
 #==========================================================================#
 

@@ -1,11 +1,79 @@
 # Fonctions de calculs numeriques : interpolation, ajustement...
 # source $audace(rep_scripts)/spcaudace/spc_numeric.tcl
 
-# Mise a jour $Id: spc_numeric.tcl,v 1.5 2009-10-23 18:38:59 bmauclaire Exp $
+# Mise a jour $Id: spc_numeric.tcl,v 1.6 2009-12-19 09:53:39 bmauclaire Exp $
+
+
+
+##########################################################
+# Procedure de calcul de la valeur du polynome de calibration a un pixel donn√©
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de cr√©ation : 28-11-2009
+# Date de mise √† jour : 28-11-2009
+# Arguments : pixelval crpix1 a b c d
+# Exemples :
+#  Coefs bon sens : spc_calpoly $k $crpix1 $spc_a $spc_b $spc_c $spc_d
+#  Coefs lineaires: spc_calpoly $k $crpix1 $lambda0 $dispersion 0 0
+#  Coefs inverses : spc_calpoly $k $crpix1 $spc_c $spc_b $spc_a 0
+# Remarque : dans une boucle pour calculer tous les lambdas, les pixels commencent √† 1.
+#
+##########################################################
+# buf$audace(bufNo) setkwd [ list "CRPIX1" $crpix1 int "Reference pixel" "pixel" ]
+
+proc spc_calpoly { args } {
+   
+   if { [ llength $args ]==6 } {
+      set xval [lindex $args 0 ]
+      set crpix1 [ lindex $args 1 ]
+      set a [lindex $args 2 ]
+      set b [lindex $args 3 ]
+      set c [lindex $args 4 ]
+      set d [lindex $args 5 ]
+
+      return [ expr $a*1.0+$b*($xval-$crpix1)*1.0+$c*pow($xval-$crpix1,2)*1.0+$d*pow($xval-$crpix1,3)*1.0 ]
+   } else {
+      ::console::affiche_erreur "Usage : spc_calpoly pixelval crpix1 a b c d\n\n"
+   }
+}
+#*********************************************************************#
+
+
+
+##########################################################
+# Procedure de division de nombres pris deux a deux dans deux listes
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de cr√©ation : 10-11-2009
+# Date de mise √† jour : 10-11-2009
+# Arguments : liste de nombres 1, liste de nombres 2
+##########################################################
+
+proc spc_divlist { args } {
+   
+   if { [ llength $args ]==2 } {
+      set numerateur [ lindex $args 0 ]
+      set denominateur [lindex $args 1 ]
+
+      set quotien [ list ]
+      foreach ordo1 $numerateur ordo2 $denominateur {
+         if { $ordo2 == 0.0 } {
+            lappend quotien 0.0
+         } else {
+            lappend quotien [ expr 1.*$ordo1/$ordo2 ]
+         }
+      }
+      return $quotien
+   } else {
+      ::console::affiche_erreur "Usage : spc_divlist \{liste valeurs du numerateur\} \{liste valeurs du denominateur\}\n\n"
+   }
+}
+#*********************************************************************#
+
 
 
 ####################################################################
-# ProcÈdure de calcul de la valeur moyenne et de l'ecart-type d'une liste de nombres
+# Proc√©dure de calcul de la valeur moyenne et de l'ecart-type d'une liste de nombres
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 08-10-2009
@@ -41,14 +109,15 @@ proc spc_statlist { args } {
       }
       set imean [ expr $imean/$len ]
 
-      #--- Calcul de l'ecart type non biaisÈ (http://fr.wikipedia.org/wiki/…cart_type) :
+      #--- Calcul de l'ecart type non biais√© (http://fr.wikipedia.org/wiki/√âcart_type) :
       set ecarttype 0.
       for {set i 0} {$i<$len} {incr i} {
-         set ecarttype [ expr $ecarttype+pow([ lindex $intensites $i ],2)-pow($imean,2) ]
+         #set ecarttype [ expr $ecarttype+pow([ lindex $intensites $i ],2)-pow($imean,2) ]
+         set ecarttype [ expr $ecarttype+pow([ lindex $intensites $i ]-$imean,2) ]
       }
       set ecarttype [ expr sqrt($ecarttype/($len-1)) ]
       
-      #--- Affichage des rÈsultats :
+      #--- Affichage des r√©sultats :
       set results [ list $imean $ecarttype ]
       #::console::affiche_resultat "Valeur moyenne $imean, ecart-type $ecarttype\n"
       return $results
@@ -60,7 +129,7 @@ proc spc_statlist { args } {
 
 
 ####################################################################
-# ProcÈdure de calcul de la valeur moyenne du continuum d'une liste de nombre
+# Proc√©dure de calcul de la valeur moyenne du continuum d'une liste de nombre
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 18-03-2007
@@ -78,7 +147,7 @@ proc spc_icontilist { args } {
     if { [ llength $args ]==1 } {
        set intensites [ lindex $args 0 ]
 
-       #--- DÈtermine les limites gauche et droite d'etude (valeurs != 0) :
+       #--- D√©termine les limites gauche et droite d'etude (valeurs != 0) :
        #- set limits [ spc_findnnul [ lindex [ spc_fits2data "$fichier" ] 1 ] ]
        #-- Initialisations :
        set len [ llength $intensites ]
@@ -106,7 +175,7 @@ proc spc_icontilist { args } {
        set naxis1 [ expr $i_sup-$i_inf+1 ]
        set largeur [ expr int($naxis1/$nbtranches) ]
        
-       #--- DÈtermine l'intensitÈ moyenne sur chaque tranches :
+       #--- D√©termine l'intensit√© moyenne sur chaque tranches :
        set listresults ""
        #- i : compteur du numero de la tranche de largeur "largeur".
        for {set i 0} {$i<$nbtranches} {incr i} {
@@ -123,7 +192,7 @@ proc spc_icontilist { args } {
        set listresults [ lsort -increasing -real -index 1 $listresults ]
        set icontinuum [ lindex [ lindex $listresults 0 ] 0 ]
        
-       #--- Affichage des rÈsultats :
+       #--- Affichage des r√©sultats :
        ::console::affiche_resultat "Le continuum vaut $icontinuum\n"
        return $icontinuum
     } else {
@@ -135,7 +204,7 @@ proc spc_icontilist { args } {
 
 
 ####################################################################
-# Procedure dÈterminant les bornes (indice) inf et sup d'un ensemble de valeurs o˘ elles sont diffÈrentes de 0
+# Procedure d√©terminant les bornes (indice) inf et sup d'un ensemble de valeurs o√π elles sont diff√©rentes de 0
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 14-07-2007
@@ -161,14 +230,14 @@ proc spc_findnnul { args } {
        return ""
     }
 
-   #--- Chargement des paramËtres du spectre :
+   #--- Chargement des param√®tres du spectre :
    set conti_min [ expr $frac_conti*[ spc_icontilist $intensites ] ]
    set naxis1 [ llength $intensites ]
    set dnaxis1 [ expr int(0.5*$naxis1) ]
    set xgauche [ expr int($naxis1*.15) ]
    set xdroite [ expr int($naxis1*.85) ]
    
-   #--- DÈtermine lambda_min et lambda_max :
+   #--- D√©termine lambda_min et lambda_max :
    set xlistdeb1 0
    for { set i 1 } { $i<$xgauche } { incr i } {
       set intA [ lindex $intensites $i ]
@@ -204,7 +273,7 @@ proc spc_findnnul { args } {
       }
    }
    
-   #--- Seconde passe pour effacer les irrÈductibles Èchantillons vraiment nuls, sinon teste la validite des limites trouvees :
+   #--- Seconde passe pour effacer les irr√©ductibles √©chantillons vraiment nuls, sinon teste la validite des limites trouvees :
    #-- Bord gauche :
    set xlistdeb $xlistdeb1
    if { $xlistdeb1<=$xgauche } {
@@ -216,7 +285,7 @@ proc spc_findnnul { args } {
       }
    } else {
       for {set i 0} {$i<$dnaxis1} {incr i} {
-         if { [ lindex $intentites $i ]>0 } {
+         if { [ lindex $intensites $i ]>0 } {
             set xlistdeb $i
             break
          }
@@ -237,7 +306,7 @@ proc spc_findnnul { args } {
       }
    } else {
       for {set i [ expr $naxis1-1 ]} {$i>=$dnaxis1} {incr i -1} {
-         if { [ lindex $intentites $i ]>0 } {
+         if { [ lindex $intensites $i ]>0 } {
             set xlistfin $i
             break
          }
@@ -261,26 +330,30 @@ proc spc_findnnul { args } {
 #############################################################################################
 # Procedure de reechantillonage d'unn profil spectral decrit sous forme de listes
 # Auteur : Patrick LAILLY
-# Date de cr√©ation : 12-12-08
+# Date de cr√É¬©ation : 12-12-08
 # Date de modification : 17-07-09
-# Cette proc√©dure r√©√©chantillone, selon un pas d'echantillonage sp√©cifi√© en Angstroems et 
-# commencant √† une longueur d'onde (variable crvalnew) sp√©cifi√©ee en angstroems, un 
-# profil de raies (cens√© √™tre calibr√© lin√©airement) decrit via une liste de lambdas et une 
-# liste d'intensit√©s  et retourne un liste donnant la liste des lambdas et la liste des 
-# intensit√©s du profil ainsi r√©√©chantillonn√©. crvalnew est cense etre compris dans l'intervalle
-# des lambdas donn√©s en argument. 
-# Il serait peut √™tre bon de prevoir des arguments optionnels pour le design du filtre dans le 
-# cas d'un sous-√©chantillonage
+# Cette proc√É¬©dure r√É¬©√É¬©chantillone, selon un pas d'echantillonage sp√É¬©cifi√É¬© en Angstroems et 
+# commencant √É¬† une longueur d'onde (variable crvalnew) sp√É¬©cifi√É¬©ee en angstroems, un 
+# profil de raies (cens√É¬© √É¬™tre calibr√É¬© lin√É¬©airement) decrit via une liste de lambdas et une 
+# liste d'intensit√É¬©s  et retourne un liste donnant la liste des lambdas et la liste des 
+# intensit√É¬©s du profil ainsi r√É¬©√É¬©chantillonn√É¬©. crvalnew est cense etre compris dans l'intervalle
+# des lambdas donn√É¬©s en argument. 
+# Il serait peut √É¬™tre bon de prevoir des arguments optionnels pour le design du filtre dans le 
+# cas d'un sous-√É¬©chantillonage
 # Exemple 
 # spc_resample_start naxis1 list_lambdas list_intensites .001 crvalnew
 ##############################################################################################
-proc spc_resample { args } {set nbargs [ llength $args ]
+proc spc_resample { args } {
+
+   set nbargs [ llength $args ]
    if { $nbargs == 4 } {
       set abscisses [ lindex $args 0 ]
       set ordonnees [ lindex $args 1 ]
       set newsamplingrate [ lindex $args 2 ]
       set crvalnew [ lindex $args 3 ]
-      # test calibration lin√©aire du profil entr√©
+      set crpix1 1
+
+      #--- Test calibration lin√©aire du profil entr√©e :
       set crval1 [ lindex $abscisses 0 ]
       set naxis1 [ llength $abscisses ]
       set naxis1_1 [ expr $naxis1 -1 ]
@@ -288,13 +361,15 @@ proc spc_resample { args } {set nbargs [ llength $args ]
       set dlambda_glob [ expr  $ecartlambda / $naxis1_1  ]
       set dlambda_first [ expr ( [ lindex $abscisses  1] -$crval1 ) ]
       if { [ expr abs ( $dlambda_glob - $dlambda_first ) ] > .0000001 } {
-	 		::console::affiche_erreur "spc_resample : le profil entr√© n'est pas calibr√© lin√©airement\n\n"
-	 		return 0
-	 	}
-		# test sur validite de crvalnew
-	 	if { [ lindex $abscisses  $naxis1_1] < $crvalnew || $crval1 > $crvalnew } {
-	 		::console::affiche_erreur "le parametre crvalnew n'est pas compris dans l'intervalle des lambdas donn√©s en argument \n\n"
-	 		return 0
+         ::console::affiche_erreur "spc_resample : le profil entr√© n'est pas calibr√© lin√©airement\n\n"
+         return 0
+      }
+
+
+      #--- Test sur validite de crvalnew :
+      if { [ lindex $abscisses  $naxis1_1] < $crvalnew || $crval1 > $crvalnew } {
+         ::console::affiche_erreur "Le parametre crvalnew n'est pas compris dans l'intervalle des lambdas donnees en argument \n\n"
+         return 0
       }
       set cdelt1 $dlambda_glob
       set precision 0.05
@@ -303,85 +378,88 @@ proc spc_resample { args } {set nbargs [ llength $args ]
       #set lambdamin $crvalnew
       set ecartlambda [ expr $lambdamax -$crvalnew ]
       set newnaxis1 [ expr int ( $ecartlambda / $newsamplingrate ) + 1 ]
-      ::console::affiche_resultat "avant reechantillonage : $naxis1 $cdelt1 $crval1 apres : $newnaxis1 $newsamplingrate $crvalnew\n"
+      ::console::affiche_resultat "Avant r√©√©chantillonage : naxis1=$naxis1, cdelt1=$cdelt1, crval1=$crval1\n\# Apr√®s : naxis1=$newnaxis1, cdelt1=$newsamplingrate, crval1=$crvalnew\n"
       if { $cdelt1 > $newsamplingrate } {
-	 		# cas sur√©chantillonage
-	 		::console::affiche_resultat "sur√©chantillonage des donn√©es \n"
-	 		#set den  $cdelt1
-	 		# reechantillonage du fichier selon newsamplingrate
-	 		set lambda [ list ]
-	 		set profile [ list ]
-	 		set ndeb 0
-	 		set ndebp1 [ expr $ndeb + 1 ]
-	 		for { set i 0 } { $i<$newnaxis1 } {incr i} {
-	    		set lambdai [ expr $crvalnew + $i * $newsamplingrate ]
-	    		lappend lambda $lambdai
-	    		while { $lambdai > [ expr $crval1 + $ndebp1 * $cdelt1] } {
-	       		incr ndebp1
-	      		incr ndeb		
-	    		}
-	    		# interpolation lineaire entre les donnees associees a ndeb et ndebp1
-	    		set lambdamoins [ lindex $abscisses $ndeb ]
-	    		set lambdaplus [ lindex $abscisses $ndebp1 ]
-	    		set intensmoins [ lindex $ordonnees $ndeb ]
-	    		set intensplus [ lindex $ordonnees $ndebp1 ]
-	    		set num  [ expr  ($intensplus - $intensmoins)*1. ]
-	    		set den  [ expr ($lambdaplus - $lambdamoins)*1. ]
-	    		set pente [ expr $num / $den ]
-	    		set inten [ expr $intensmoins*1. + $pente * ( $lambdai - $lambdamoins ) ]
-	    		#::console::affiche_resultat " ndeb= $ndeb lambda1= [ lindex $intensites_orig $ndeb ] lambda2= [ lindex $intensites_orig $ndebp1 ]\n"
-	    		lappend profile $inten			
-	 		}
-	 		::console::affiche_resultat " sortie echant_base \n"
-	 		set result [ list ]
-	 		lappend result $lambda
-	 		lappend result $profile
-	 		return $result
-	 	} else {
-	 		#cas souseechantillonage
-	 		::console::affiche_resultat "sous√©chantillonage des donn√©es \n"
-	 		#application d'un filtre adequat aux donnees
-	 		# alpha est la proportion par rapport a la frequence de Nyquist
-	 		set alpha 0.8
-	 		set coupure [ expr int ( 2.*$newsamplingrate / ( $alpha *$cdelt1 ) ) ]
-	 		set demilargeur [ expr int ($coupure / 2) +1 ]
-	 		set filteredata [ spc_passebas_pat $ordonnees $demilargeur $coupure ]
-		 	# attention aux effets de bord !!!!!!!!!!!!!
-			
-	 		# reechantillonage des donnees filtrees
-	 		#set den  $cdelt1
-	 		# reechantillonage du fichier selon newsamplingrate
-	 		set lambda [ list ]
-	 		set profile [ list ]
-	 		set ndeb 0
-	 		set ndebp1 [ expr $ndeb + 1 ]
-   		for { set i 0 } { $i<$newnaxis1 } {incr i} {
-	   		set lambdai [ expr $crvalnew + $i * $newsamplingrate ]
-	   		lappend lambda $lambdai
-	   		while { $lambdai > [ expr $crval1 + $ndebp1 * $cdelt1] } {
-	      		incr ndebp1
-	      		incr ndeb		
-	   		}
-	   		# interpolation lineaire entre les donnees associees a ndeb et ndebp1
-	   		set lambdamoins [ lindex $abscisses $ndeb ]
-	   		set lambdaplus [ lindex $abscisses $ndebp1 ]
-	   		set intensmoins [ lindex $filteredata $ndeb ]
-	   		set intensplus [ lindex $filteredata $ndebp1 ]
-	   		set num  [ expr  ($intensplus - $intensmoins)*1. ]
-	   		set den  [ expr ($lambdaplus - $lambdamoins)*1. ]
-	   		set pente [ expr $num / $den ]
-	   		set inten [ expr $intensmoins*1. + $pente * ( $lambdai - $lambdamoins ) ]
-	   		#::console::affiche_resultat " ndeb= $ndeb ndebp1= $ndebp1 ]\n"
-	   		lappend profile $inten			
-			}			
-		}
-		set result [ list ]
-   	lappend result $lambda
-   	lappend result $profile
-   	return $result
+         #--- Cas sur√©√©chantillonage :
+         ::console::affiche_resultat "Sur√©√©chantillonage des donn√©es...\n"
+         #-- Reechantillonage du fichier selon newsamplingrate :
+         set lambda [ list ]
+         set profile [ list ]
+         set ndeb 0
+         set ndebp1 [ expr $ndeb + 1 ]
+         #- for { set i 1 } { $i<=$newnaxis1 } {incr i} 
+         for { set i 0 } { $i<$newnaxis1 } {incr i} {
+            set lambdai [ expr $crvalnew + $i * $newsamplingrate ]
+            #- set lambdai [ spc_calpoly $i $crpix1 $crvalnew $newsamplingrate 0 0 ]
+            lappend lambda $lambdai
+            while { $lambdai > [ expr $crval1 + $ndebp1 * $cdelt1] } {
+            #- while { $lambdai > [ spc_calpoly $ndebp1 $crpix1 $crval1 $cdelt1 0 0 ] }
+               incr ndebp1
+               incr ndeb		
+            }
+            #-- Interpolation lineaire entre les donnees associees a ndeb et ndebp1 :
+            set lambdamoins [ lindex $abscisses $ndeb ]
+            set lambdaplus [ lindex $abscisses $ndebp1 ]
+            set intensmoins [ lindex $ordonnees $ndeb ]
+            set intensplus [ lindex $ordonnees $ndebp1 ]
+            set num  [ expr  ($intensplus - $intensmoins)*1. ]
+            set den  [ expr ($lambdaplus - $lambdamoins)*1. ]
+            set pente [ expr $num / $den ]
+            set inten [ expr $intensmoins*1. + $pente * ( $lambdai - $lambdamoins ) ]
+            #::console::affiche_resultat " ndeb= $ndeb lambda1= [ lindex $intensites_orig $ndeb ] lambda2= [ lindex $intensites_orig $ndebp1 ]\n"
+            lappend profile $inten			
+         }
+         ::console::affiche_resultat "Sortie echant_base \n"
+         set result [ list ]
+         lappend result $lambda
+         lappend result $profile
+         return $result
+      } else {
+         #--- Cas souseechantillonage :
+         ::console::affiche_resultat "Sous √©chantillonage des donn√©es...\n"
+         #-- Application d'un filtre adequat aux donnees
+         #-- alpha est la proportion par rapport a la frequence de Nyquist
+         set alpha 0.8
+         set coupure [ expr int ( 2.*$newsamplingrate / ( $alpha *$cdelt1 ) ) ]
+         set demilargeur [ expr int ($coupure / 2) +1 ]
+         set filteredata [ spc_passebas_pat $ordonnees $demilargeur $coupure ]
+         #-- Attention aux effets de bord !!!!!!!!!!!!!
+         
+         #-- Reechantillonage des donnees filtrees
+         #-- Reechantillonage du fichier selon newsamplingrate
+         set lambda [ list ]
+         set profile [ list ]
+         set ndeb 0
+         set ndebp1 [ expr $ndeb + 1 ]
+         #- for { set i 1 } { $i<=$newnaxis1 } {incr i} 
+         for { set i 0 } { $i<$newnaxis1 } {incr i} {
+            set lambdai [ expr $crvalnew + $i * $newsamplingrate ]
+            #- set lambdai [ spc_calpoly $i $crpix1 $crvalnew $newsamplingrate 0 0 ]
+            lappend lambda $lambdai
+            while { $lambdai > [ expr $crval1 + $ndebp1 * $cdelt1] } {
+            #- while { $lambdai > [ spc_calpoly $ndebp1 $crpix1 $crval1 $cdelt1 0 0 ] }
+               incr ndebp1
+               incr ndeb		
+            }
+            #-- Interpolation lineaire entre les donnees associees a ndeb et ndebp1
+            set lambdamoins [ lindex $abscisses $ndeb ]
+            set lambdaplus [ lindex $abscisses $ndebp1 ]
+            set intensmoins [ lindex $filteredata $ndeb ]
+            set intensplus [ lindex $filteredata $ndebp1 ]
+            set num  [ expr  ($intensplus - $intensmoins)*1. ]
+            set den  [ expr ($lambdaplus - $lambdamoins)*1. ]
+            set pente [ expr $num / $den ]
+            set inten [ expr $intensmoins*1. + $pente * ( $lambdai - $lambdamoins ) ]
+            #- ::console::affiche_resultat " ndeb= $ndeb ndebp1= $ndebp1 ]\n"
+            lappend profile $inten			
+         }			
+      }
+      set result [ list ]
+      lappend result $lambda
+      lappend result $profile
+      return $result
    } else {
-      ::console::affiche_erreur "Usage: spc_resample list_lambdas? list_intensites? newsamplingrate? \n\n"
-      return 0
+      ::console::affiche_erreur "Usage: spc_resample list_lambdas_lin√©aires list_intensites newsamplingrate \n\n"
    }
 }
 #****************************************************************#
@@ -415,7 +493,7 @@ proc bm_min { args } {
 
 
 ####################################################################
-#  Procedure de dÈtermination du maximum entre 2 valeurs
+#  Procedure de d√©termination du maximum entre 2 valeurs
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 11-12-2005
@@ -440,7 +518,7 @@ proc bm_max { args } {
 #****************************************************************#
 
 ####################################################################
-#  Procedure de dÈtermination de la valeur maximum contenue dans une liste
+#  Procedure de d√©termination de la valeur maximum contenue dans une liste
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 11-12-2005
@@ -484,7 +562,7 @@ proc bm_frac { args } {
 
 	
 ####################################################################
-# Calcul les coÈfficients du polynÙme interpolateur de Lagrange de degrÈ 2
+# Calcul les co√©fficients du polyn√¥me interpolateur de Lagrange de degr√© 2
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 29-01-2005
 # Date modification : 29-01-2005
@@ -493,7 +571,7 @@ proc bm_frac { args } {
 
 proc bm_pil2 { { x1 ""} { y1 ""} { x2 ""} { y2 ""} { x3 ""} { y3 ""} } {
 
-    # Calcul les coefficients du polynÙme interpolateur de Lagrange : lambda=a*x^2+b*x+c
+    # Calcul les coefficients du polyn√¥me interpolateur de Lagrange : lambda=a*x^2+b*x+c
     set a [expr $y1/(($x1-$x2)*($x1-$x2))+$y2/(($x2-$x1)*($x2-$x3))+$y3/(($x3-$x1)*($x3-$x2))]
     set b [expr -$y1*($x3+$x2)/(($x1-$x2)*($x1-$x2))-$y2*($x3+$x1)/(($x2-$x1)*($x2-$x3))-$y3*($x1+$x2)/(($x3-$x1)*($x3-$x2))]
     set c [expr $y1*$x3*$x2/(($x1-$x2)*($x1-$x2))+$y2*$x3*$x1/(($x2-$x1)*($x2-$x3))+$y3*$x1*$x2/(($x3-$x1)*($x3-$x2))]
@@ -505,7 +583,7 @@ proc bm_pil2 { { x1 ""} { y1 ""} { x2 ""} { y2 ""} { x3 ""} { y3 ""} } {
 
 
 ####################################################################
-# Calcul la valeur du polynÙme interpolateur de Lagrange de degrÈ 3 au point x
+# Calcul la valeur du polyn√¥me interpolateur de Lagrange de degr√© 3 au point x
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 25-02-2006
 # Date modification : 25-02-2006
@@ -543,7 +621,7 @@ proc spc_ajust { args } {
 	set ordonnees [lindex $contenu 1]
 	set len [llength $ordonnees]
 
-	#--- Calcul des coefficients du polynÙme d'ajustement
+	#--- Calcul des coefficients du polyn√¥me d'ajustement
 	# - calcul de la matrice X 
 	set n [llength $abscisses]
 	set x ""
@@ -570,9 +648,9 @@ proc spc_ajust { args } {
 	#set d [lindex $coeffs 3]
 	::console::affiche_resultat "Coefficients : $a+$b*x+$c*x^2\n"
 
-	#--- CrÈe les vecteur ‡ tracer
+	#--- Cr√©e les vecteur √† tracer
 	blt::vector x($len) y($len) yn($len)
-	for {set i $len} {$i > 0} {incr i -1} { 
+	for {set i $len} {$i >= 1} {incr i -1} { 
 	    set x($i-1) [lindex $abscisses [expr $i-1]]
 	    set y($i-1) [lindex $ordonnees [expr $i-1]]
 	    set yn($i-1) [expr $a+$b*$x($i-1)+$c*$x($i-1)*$x($i-1)]
@@ -626,7 +704,7 @@ proc spc_ajust { args } {
 	.testblt.g element create original -symbol none -x x -y y -color blue 
 	.testblt.g element create interpolation_deg2 -symbol none -x x -y yn -color red 
 
-	#--- Enregistrement des points du polynÙme d'ajustement
+	#--- Enregistrement des points du polyn√¥me d'ajustement
 	#set fileetalonnespc [ file rootname $filenamespc ]
 	##set filename ${fileetalonnespc}_dat$extsp
 	#set filename ${fileetalonnespc}$extsp
@@ -646,6 +724,57 @@ proc spc_ajust { args } {
 
 
 ####################################################################
+#  Procedure de calibration en longueur d'onde par une loi lineaire a+b*x
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 29-01-2005
+# Date modification : 29-01-05 / 09-12-05 / 26-12-05 / 11-11-09
+# Arguments : crpix1 pixel1 lambda1 pixel2 lambda2
+####################################################################
+
+proc spc_ajustdeg1cal { args } {
+
+  if { [llength $args]==3 } {
+     set pixelRef [ lindex $args 0 ]
+     set xvals [ lindex $args 1 ]
+     set lambdas [ lindex $args 2 ]
+
+     #--- Tri des raies par ordre coissant des abscisses :
+     set coords [ list [ lindex $xvals 0 ] [ lindex $lambdas 0 ] [ lindex $xvals 1 ] [ lindex $lambdas 1 ] ]
+     set couples [ list  ]
+     set len 4
+     for {set i 0} {$i<[expr $len-1]} { set i [ expr $i+2 ] } {
+        lappend couples [ list [ lindex $coords $i ] [ lindex $coords [ expr $i+1 ] ] ]
+     }
+     set couples [ lsort -index 0 -increasing -real $couples ]
+     
+     #--- R√©affecte les couples pixels,lambda :
+     set i 1
+     foreach element $couples {
+        set pixel$i [ lindex $element 0 ]
+        set lambda$i [ lindex $element 1 ]
+        incr i
+     }
+     
+    #--- Calcul des parametres spectraux
+    set deltax [expr 1.0*($pixel2-$pixel1)]
+    set dispersion [expr 1.0*($lambda2-$lambda1)/$deltax]
+    set lambdaRef [expr 1.0*($lambda1-$dispersion*($pixel1-$pixelRef))]
+    #set lambdaRef [expr 1.0*($lambda1-$dispersion*($pixel1-$pixelRef)-$dispersion)]
+
+    #--- Initialisation des mots clefs du fichier fits de sortie
+    ::console::affiche_resultat "\nLoi de calibration : $lambdaRef+$dispersion*x\n"
+    set results [ list $lambdaRef $dispersion ]
+    return $results
+  } else {
+    ::console::affiche_erreur "Usage: spc_ajustdeg1cal pixel_reference liste_abscisses liste_ordonnees \n\n"
+  }
+}
+#****************************************************************#
+
+
+
+####################################################################
 #  Procedure d'ajustement d'un nuage de points par une fonction affine (hp : nombre reels longs)
 #
 # Auteur : Benjamin MAUCLAIRE
@@ -660,16 +789,38 @@ proc spc_ajustdeg1hp { args } {
     global conf
     global audace
 
-    if {[llength $args] == 3} {
+    set nbargs [llength $args]
+    if { $nbargs==3 } {
        set abscisses_orig [lindex $args 0]
        set ordonnees [lindex $args 1]
        set erreur [lindex $args 2]
+    } elseif { $nbargs==4 } {
+       set abscisses_orig [lindex $args 0]
+       set ordonnees [lindex $args 1]
+       set erreur [lindex $args 2]
+       set crpix1 [ lindex $args 3 ]
+    } else {
+	::console::affiche_erreur "Usage: spc_ajustdeg1hp liste_abscisses liste_ordonnees erreur (ex. 1) ?crpix1?\n\n"
+       return ""
+    }
+
+    #--- Passage des absicsses avec une origine a 0 :
+    if { $nbargs==4 } {
+       set abscisses_new [ list ]
+       foreach absi $abscisses_orig {
+          lappend abscisses_new [ expr $absi-$crpix1 ]
+       }
+       set abscisses_orig $abscisses_new
+    }
+
+
+       #--- Initialisation de donnees :
        set len [llength $ordonnees]
        set n [ llength $abscisses_orig ]
        set abscisses_rangees [ lsort -real -increasing $abscisses_orig ]
        set abs_min [ lindex $abscisses_rangees 0 ]
        set abs_max [ lindex $abscisses_rangees [ expr $n -1 ] ]
-       ::console::affiche_resultat "$abs_min $abs_max\n"
+       ::console::affiche_resultat "Xmin=$abs_min ; Xmax=$abs_max\n"
 
        #--- Changement de variable (preconditionnement du systeme lineaire) :
        set aa [ expr 2. / ($abs_max - $abs_min ) ]
@@ -682,7 +833,7 @@ proc spc_ajustdeg1hp { args } {
           lappend abscisses $xi
        }
 
-	#--- Calcul des coefficients du polynÙme d'ajustement
+	#--- Calcul des coefficients du polyn√¥me d'ajustement
 	# - calcul de la matrice X 
 	set n [llength $abscisses]
 	set x ""
@@ -703,19 +854,16 @@ proc spc_ajustdeg1hp { args } {
 
 	set a0 [lindex $coeffs 0]
 	set b0 [lindex $coeffs 1]
-       #--- Retour aux variables d'origine :
-       set a [ expr $a0 + $b0 * $bb ]
-       set b [ expr $aa * $b0 ]
-	::console::affiche_resultat "Coefficients : $a+$b*x\nChi2=$chi2, Covar=$covar\n"
+        #--- Retour aux variables d'origine :
+        set a [ expr $a0 + $b0 * $bb ]
+        set b [ expr $aa * $b0 ]
+	::console::affiche_resultat "Coefficients : $a+$b*x \nChi2=$chi2, Covar=$covar\n"
 
 	set coefs [ list $a $b ]
 	# set adj_vals [list $coefs $abscisses $yadj]
 	set adj_vals [ list $coefs $chi2 $covar ]
 	#set adj_vals [ list $coefs ]
 	return $adj_vals
-    } else {
-	::console::affiche_erreur "Usage: spc_ajustdeg1hp liste_abscisses liste_ordonnees erreur (ex. 1)\n\n"
-    }
 }
 #****************************************************************#
 
@@ -728,20 +876,44 @@ proc spc_ajustdeg1hp { args } {
 # Date creation : 15-12-2005
 # Date modification : 01-10-2006
 # Arguments : liste abscisses, liste ordonnees, erreur
-####################################################################
-#spc_ajustdeg1 {218.67 127.32 16.67} {211 208 210.1} 1
-#{218.67 127.32 16.67} {211.022333817 208.007561837 210.100127057}
+# Exemple :
+# spc_ajustdeg1 {218.67 127.32 16.67} {211 208 210.1} 1
+#  {209.259939 0.003640} 209.259939+0.003640*x
+#  4.46881729484 {  { 1.047442 -0.005907 }  { -0.005907 0.000049 }  }
+# spc_ajustdeg1 {218.67 127.32 16.67} {211 208 210.1} 1 1
+#  Coefficients : 209.263579+0.003640*x
+###################################################################
 
 proc spc_ajustdeg1 { args } {
     global conf
     global audace
 
-    if {[llength $args] == 3} {
+    set nbargs [llength $args]
+    if { $nbargs==3 } {
        set abscisses [lindex $args 0]
        set ordonnees [lindex $args 1]
        set erreur [lindex $args 2]
+    } elseif { $nbargs==4 } {
+       set abscisses [lindex $args 0]
+       set ordonnees [lindex $args 1]
+       set erreur [lindex $args 2]
+       set crpix1 [ lindex $args 3 ]
+    } else {
+	::console::affiche_erreur "Usage: spc_ajustdeg1 liste_abscisses liste_ordonnees erreur (ex. 1) ?crpix1?\n\n"
+       return ""
+    }
 
-	#--- Calcul des coefficients du polynÙme d'ajustement
+       #--- Passage des absicsses avec une origine a 0 :
+       if { $nbargs==4 } {
+          set abscisses_new [ list ]
+          foreach absi $abscisses {
+             lappend abscisses_new [ expr $absi-$crpix1 ]
+          }
+          set abscisses $abscisses_new
+       }
+
+
+	#--- Calcul des coefficients du polyn√¥me d'ajustement
 	# - calcul de la matrice X 
 	set n [llength $abscisses]
 	set x ""
@@ -769,15 +941,12 @@ proc spc_ajustdeg1 { args } {
 	set adj_vals [ list $coefs $chi2 $covar ]
 	#set adj_vals [ list $coefs ]
 	return $adj_vals
-    } else {
-	::console::affiche_erreur "Usage: spc_ajustdeg1 liste_abscisses liste_ordonnees erreur (ex. 1)\n\n"
-    }
 }
 #****************************************************************#
 
 
 ####################################################################
-#  Procedure d'ajustement d'un nuage de points par un polynÙme de degrÈ 2
+#  Procedure d'ajustement d'un nuage de points par un polyn√¥me de degr√© 2
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 15-12-2005
@@ -791,111 +960,137 @@ proc spc_ajustdeg2 { args } {
    global conf
    global audace
 
-   if {[llength $args] == 3} {
-      set abscisses_orig [lindex $args 0]
-      set ordonnees [lindex $args 1]
-      set erreur [lindex $args 2]
-      set len [llength $ordonnees]
-      set n [llength $abscisses_orig]
-      set abscisses_rangees [ lsort -real -increasing $abscisses_orig ]
-      set abs_min [ lindex $abscisses_rangees 0 ]
-      set abs_max [ lindex $abscisses_rangees [ expr $n -1 ] ]
-      ::console::affiche_resultat "$abs_min $abs_max\n"
-
-      #--- Changement de variable (preconditionnement du systeme lineaire) :
-      set aa [ expr 2. / ($abs_max - $abs_min ) ]
-      #::console::affiche_resultat "aa= $aa\n"
-      set bb [ expr 1. - $aa * $abs_max ]
-      #::console::affiche_resultat "bb= $bb\n"
-      set abscisses [ list ]
-      for { set i 0 } { $i<$n } {incr i} {
-	 set xi [ expr $aa * [ lindex $abscisses_orig $i ] +$bb ]
-	 lappend abscisses $xi
-      }
-
-
-      #--- Calcul des coefficients du polynÙme d'ajustement :
-      #-- Calcul de la matrice X :
-      set n [llength $abscisses]
-      set x ""
-      set X "" 
-      for {set i 0} {$i<$n} {incr i} { 
-	 set xi [lindex $abscisses $i] 
-	 set ligne_i 1
-	 lappend erreurs $erreur
-	 lappend ligne_i $xi 
-	 lappend ligne_i [expr $xi*$xi]
-	 #lappend ligne_i [expr $xi*$xi*$xi]
-	 lappend X $ligne_i 
-      } 
-      #-- Calcul de l'ajustement :
-      set result [ gsl_mfitmultilin $ordonnees $X $erreurs ] 
-      #-- Extrait le resultat :
-      set coeffs [lindex $result 0] 
-      set chi2 [lindex $result 1] 
-      set covar [lindex $result 2]
-      ::console::affiche_resultat "Chi2=$chi2, Covar=$covar\n"
-      set a0 [lindex $coeffs 0]
-      set b0 [lindex $coeffs 1]
-      set c0 [lindex $coeffs 2]
-
-      #--- Retour aux variables d'origine :
-      set a [ expr $a0 + $b0 * $bb + $c0 * $bb* $bb ]
-      set b [ expr $aa * ( $b0 + 2. * $c0 * $bb ) ]
-      set c [ expr $aa * $aa * $c0 ]
-      ::console::affiche_resultat "Coefficients : $a+$b*x+$c*x^2\n"
-      set coefs [ list $a $b $c ]
-	
-
-      #-----------------------------------------------------------------------#
-      #--- CrÈe les vecteur ‡ tracer
-      set flag 0
-      if { $flag==1 } {
-	 blt::vector x($len) y($len) yn($len)
-	 for {set i $len} {$i > 0} {incr i -1} { 
-	    set x($i-1) [lindex $abscisses [expr $i-1]]
-	    set y($i-1) [lindex $ordonnees [expr $i-1]]
-	    set yn($i-1) [expr $a+$b*$x($i-1)+$c*$x($i-1)*$x($i-1)]
-	    #set yn($i-1) [expr $a+$b*$x($i-1)+$c*$x($i-1)*$x($i-1)+$d*$x($i-1)*$x($i-1)*$x($i-1)]
-	    #lappend yadj $yn($i-1)
-	    lappend listeyn $yn($i-1)
-	 }
-	 #set yadj $listeyn
-
-	 #--- Remet les valeurs calculees de listeyn dans l'ordre des abscisses (inverse)
-	 for {set j 0} {$j<$len} {incr j} {
-	    lappend yadj [ lindex $listeyn [expr $len-$j-1] ]
-	 }
-      }
-      #-----------------------------------------------------------------------#
-
-      #--- Remet les valeurs calculees de listeyn dans l'ordre des abscisses (inverse)
-      #set yadj ""
-      #for {set j 0} {$j<$len} {incr j} {
-      #    lappend yadj [ lindex $listeyn [expr $len-$j-1] ]
-      #}
-      ##for {set j $len} {$j>0} {incr j -1} {
-      ##    lappend yadj [ lindex $listeyn [expr $j-$len-1] ]
-      ##}
-
-      #--- Affichage du graphe
-      #  ::plotxy::plot $abscisses $yadj
-
-      set coefs [ list $a $b $c ]
-      # set adj_vals [list $coefs $abscisses $yadj]
-      set adj_vals [ list $coefs $chi2 $covar ]
-      #set adj_vals [ list $coefs ]
-      return $adj_vals
+   set nbargs [ llength $args ]
+   if { $nbargs==3 } {
+      set abscisses_orig [ lindex $args 0 ]
+      set ordonnees [ lindex $args 1 ]
+      set erreur [ lindex $args 2 ]
+   } elseif { $nbargs==4 } {
+      set abscisses_orig [ lindex $args 0 ]
+      set ordonnees [ lindex $args 1 ]
+      set erreur [ lindex $args 2 ]
+      set crpix1 [ lindex $args 3 ]
    } else {
-      ::console::affiche_erreur "Usage: spc_ajustdeg2 liste_abscisses liste_ordonnees erreur (ex. 1)\n\n"
+      ::console::affiche_erreur "Usage: spc_ajustdeg2 liste_abscisses liste_ordonnees erreur (ex. 1) ?crpix1?\n\n"
+      return ""
    }
+
+   #--- Passage des absicsses avec une origine a 0 :
+   if { $nbargs==4 } {
+      set abscisses_new [ list ]
+      foreach absi $abscisses_orig {
+         lappend abscisses_new [ expr $absi-$crpix1 ]
+      }
+      set abscisses_orig $abscisses_new
+   }
+   
+   #--- Initialisation de variables :
+   set len [llength $ordonnees]
+   set n [llength $abscisses_orig]
+   set abscisses_rangees [ lsort -real -increasing $abscisses_orig ]
+   set abs_min [ lindex $abscisses_rangees 0 ]
+   set abs_max [ lindex $abscisses_rangees [ expr $n -1 ] ]
+   ## ::console::affiche_resultat "$abs_min $abs_max\n"
+   
+   #--- Changement de variable (preconditionnement du systeme lineaire pour libgsl) :
+   set aa [ expr 2. / ($abs_max - $abs_min ) ]
+   ## ::console::affiche_resultat "aa= $aa\n"
+   set bb [ expr 1. - $aa * $abs_max ]
+   ## ::console::affiche_resultat "bb= $bb\n"
+   set abscisses [ list ]
+   for { set i 0 } { $i<$n } {incr i} {
+      set xi [ expr $aa * [ lindex $abscisses_orig $i ] +$bb ]
+      lappend abscisses $xi
+   }
+   
+   
+   #--- Calcul des coefficients du polyn√¥me d'ajustement :
+   #-- Calcul de la matrice X :
+   set n [ llength $abscisses ]
+   set x ""
+   set X "" 
+   for {set i 0} {$i<$n} {incr i} { 
+      set xi [lindex $abscisses $i] 
+      set ligne_i 1
+      lappend erreurs $erreur
+      lappend ligne_i $xi 
+      lappend ligne_i [expr $xi*$xi]
+      #lappend ligne_i [expr $xi*$xi*$xi]
+      lappend X $ligne_i 
+   } 
+   #-- Calcul de l'ajustement :
+   set result [ gsl_mfitmultilin $ordonnees $X $erreurs ] 
+   #-- Extrait le resultat :
+   set coeffs [lindex $result 0] 
+   set chi2 [lindex $result 1] 
+   set covar [lindex $result 2]
+   ::console::affiche_resultat "Chi2=$chi2, Covar=$covar\n"
+   set a0 [lindex $coeffs 0]
+   set b0 [lindex $coeffs 1]
+   set c0 [lindex $coeffs 2]
+   
+   #--- Retour aux variables d'origine :
+   set a [ expr $a0 + $b0 * $bb + $c0 * $bb* $bb ]
+   set b [ expr $aa * ( $b0 + 2. * $c0 * $bb ) ]
+   set c [ expr $aa * $aa * $c0 ]
+   ::console::affiche_resultat "Coefficients : $a+$b*x+$c*x^2\n"
+   set coefs [ list $a $b $c ]
+   
+   #--- Retour a des abscisses d'origine crpix1 : ERRONE LE RESULTAT
+   if { 1==0 } {
+      set an [ expr $a+$b*$crpix1+$c*pow($crpix1,2) ]
+      set bn [ expr $b+2*$c*$crpix1 ]
+      set a $an
+      set b $bn
+   }
+
+   
+   #-----------------------------------------------------------------------#
+   #--- Cr√©e les vecteur √† tracer
+   set flag 0
+   if { $flag==1 } {
+      blt::vector x($len) y($len) yn($len)
+      for {set i $len} {$i > 0} {incr i -1} { 
+         set x($i-1) [lindex $abscisses [expr $i-1]]
+         set y($i-1) [lindex $ordonnees [expr $i-1]]
+         set yn($i-1) [expr $a+$b*$x($i-1)+$c*$x($i-1)*$x($i-1)]
+         #set yn($i-1) [expr $a+$b*$x($i-1)+$c*$x($i-1)*$x($i-1)+$d*$x($i-1)*$x($i-1)*$x($i-1)]
+         #lappend yadj $yn($i-1)
+         lappend listeyn $yn($i-1)
+      }
+      #set yadj $listeyn
+      
+      #--- Remet les valeurs calculees de listeyn dans l'ordre des abscisses (inverse)
+      for {set j 0} {$j<$len} {incr j} {
+         lappend yadj [ lindex $listeyn [expr $len-$j-1] ]
+      }
+   }
+   #-----------------------------------------------------------------------#
+   
+   #--- Remet les valeurs calculees de listeyn dans l'ordre des abscisses (inverse)
+   #set yadj ""
+   #for {set j 0} {$j<$len} {incr j} {
+   #    lappend yadj [ lindex $listeyn [expr $len-$j-1] ]
+   #}
+   ##for {set j $len} {$j>0} {incr j -1} {
+   ##    lappend yadj [ lindex $listeyn [expr $j-$len-1] ]
+   ##}
+   
+   #--- Affichage du graphe
+   #  ::plotxy::plot $abscisses $yadj
+   
+   set coefs [ list $a $b $c ]
+   # set adj_vals [list $coefs $abscisses $yadj]
+   set adj_vals [ list $coefs $chi2 $covar ]
+   #set adj_vals [ list $coefs ]
+   return $adj_vals
 }
 #****************************************************************#
 
 
 
 ####################################################################
-#  Procedure d'ajustement d'un nuage de points par un polynÙme de degrÈ 3
+#  Procedure d'ajustement d'un nuage de points par un polyn√¥me de degr√© 3
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 15-12-2005
@@ -910,10 +1105,32 @@ proc spc_ajustdeg3 { args } {
    global conf
    global audace
 
-   if {[llength $args] == 3} {
+   set nbargs [ llength $args ]
+   if { $nbargs==3} {
       set abscisses_orig [lindex $args 0]
       set ordonnees [lindex $args 1]
       set erreur [lindex $args 2]
+   } elseif { $nbargs==4 } {
+      set abscisses_orig [ lindex $args 0 ]
+      set ordonnees [ lindex $args 1 ]
+      set erreur [ lindex $args 2 ]
+      set crpix1 [ lindex $args 3 ]
+   } else {
+      ::console::affiche_erreur "Usage: spc_ajustdeg3 liste_abscisses liste_ordonnees erreur (ex. 1) ?crpix1?\n\n"
+      return ""
+   }
+
+   #--- Passage des absicsses avec une origine a 0 :
+   if { $nbargs==4 } {
+      set abscisses_new [ list ]
+      foreach absi $abscisses_orig {
+         lappend abscisses_new [ expr $absi-$crpix1 ]
+      }
+      set abscisses_orig $abscisses_new
+   }
+   
+
+      #--- Initialisation de variables :
       set n [llength $abscisses_orig]
       set len [llength $ordonnees]
       set abscisses_rangees [ lsort -real -increasing $abscisses_orig ]
@@ -932,8 +1149,8 @@ proc spc_ajustdeg3 { args } {
 	 lappend abscisses $xi
       }
 
-      #--- Calcul des coefficients du polynÙme d'ajustement :
-      #-- Calcul de la matrice X : calcul les monÙnes correspondant aux diffÈrents degrÈs ‡ l'abscisse xi
+      #--- Calcul des coefficients du polyn√¥me d'ajustement :
+      #-- Calcul de la matrice X : calcul les mon√¥nes correspondant aux diff√©rents degr√©s √† l'abscisse xi
       set x ""
       set X "" 
       for {set i 0} {$i<$n} {incr i} { 
@@ -962,23 +1179,30 @@ proc spc_ajustdeg3 { args } {
       set b [ expr $aa * ( $b0 + 2. * $c0 * $bb + 3. * $d0 * $bb *$bb ) ]
       set c [ expr $aa * $aa * ($c0 + 3. * $d0 * $bb) ]
       set d [ expr $d0 * $aa * $aa *$aa ]
+
+      #--- Retour a des abscisses d'origine crpix1 : ERRONE LE RESULTAT
+      if { 0==1 } {
+         set an [ expr $a+$b*$crpix1+$c*pow($crpix1,2)+$d*pow($crpix1,3) ]
+         set bn [ expr $b+2*$c*$crpix1+3*$d*pow($crpix1,2) ]
+         set cn [ expr $c+3*$d*$crpix1 ]
+         set a $an
+         set b $bn
+         set c $cn
+      }
 	
-      ::console::affiche_resultat "Coefficients : $a+$b*x+$c*x^2+$d*x^3\n"
+      ::console::affiche_resultat "Coefficients B : $a+$b*x+$c*x^2+$d*x^3\n"
       set coefs [ list $a $b $c $d ]
       # set adj_vals [list $coefs $abscisses $yadj]
       set adj_vals [ list $coefs $chi2 $covar ]
       #set adj_vals [ list $coefs ]
       return $adj_vals
-   } else {
-      ::console::affiche_erreur "Usage: spc_ajustdeg3 liste_abscisses liste_ordonnees erreur (ex. 1)\n\n"
-   }
 }
 #****************************************************************#
 
 
 
 ####################################################################
-#  Procedure d'ajustement d'un nuage de points par un polynÙme de degrÈ 2
+#  Procedure d'ajustement d'un nuage de points par un polyn√¥me de degr√© 2
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 15-12-2005
@@ -998,7 +1222,7 @@ proc spc_ajustdeg2v1 { args } {
 	set erreur [lindex $args 2]
 	set len [llength $ordonnees]
 
-	#--- Calcul des coefficients du polynÙme d'ajustement
+	#--- Calcul des coefficients du polyn√¥me d'ajustement
 	# - calcul de la matrice X 
 	set n [llength $abscisses]
 	set x ""
@@ -1026,7 +1250,7 @@ proc spc_ajustdeg2v1 { args } {
 	::console::affiche_resultat "Coefficients : $a+$b*x+$c*x^2\nChi2=$chi2\n"
 
      #-----------------------------------------------------------------------#
-	#--- CrÈe les vecteur ‡ tracer
+	#--- Cr√©e les vecteur √† tracer
 	set flag 0
 	if { $flag==1 } {
 	blt::vector x($len) y($len) yn($len)
@@ -1074,7 +1298,7 @@ proc spc_ajustdeg2v1 { args } {
 
 
 ####################################################################
-#  Procedure d'ajustement d'un nuage de points par un polynÙme de degrÈ 3
+#  Procedure d'ajustement d'un nuage de points par un polyn√¥me de degr√© 3
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 15-12-2005
@@ -1095,8 +1319,8 @@ proc spc_ajustdeg3v1 { args } {
 	set erreur [lindex $args 2]
 	set len [llength $ordonnees]
 
-	#--- Calcul des coefficients du polynÙme d'ajustement :
-	# - calcul de la matrice X : calcul les monÙnes correspondant aux diffÈrents degrÈs ‡ l'abscisse xi
+	#--- Calcul des coefficients du polyn√¥me d'ajustement :
+	# - calcul de la matrice X : calcul les mon√¥nes correspondant aux diff√©rents degr√©s √† l'abscisse xi
 	set n [llength $abscisses]
        set lingne_i [ list ]
 	#set X ""
@@ -1137,7 +1361,7 @@ proc spc_ajustdeg3v1 { args } {
 
 
 ####################################################################
-#  ProcÈdure d'ajustement d'un nuage de points.
+#  Proc√©dure d'ajustement d'un nuage de points.
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 20-12-2005
@@ -1153,7 +1377,7 @@ proc spc_ajustfin { args } {
 	set fichier [ lindex $args 0 ]
 	set erreur [ lindex $args 1 ]
 
-	#--- Extraction des donnÈes et 1ier ajustement :
+	#--- Extraction des donn√©es et 1ier ajustement :
 	set coordonnees_cont [ spc_ajust $fichier 1 ]
 	set abscisses_cont [ lindex $coordonnees_cont 0 ]
 	set ordonnees_cont [ lindex $coordonnees_cont 1 ]
@@ -1166,7 +1390,7 @@ proc spc_ajustfin { args } {
 	buf$audace(bufNo) sub $audace(rep_images)/$nom_continuum 0
 	buf$audace(bufNo) save $audace(rep_images)/${nom_fichier}_diffconti
 
-	#--- Affinement de l'ajustement : enlËve les valeurs abÈrantes de la diffÈrence et ajoute la diffÈrence au continuum
+	#--- Affinement de l'ajustement : enl√®ve les valeurs ab√©rantes de la diff√©rence et ajoute la diff√©rence au continuum
 	set coords_diffconti [ spc_fits2data ${nom_fichier}_diffconti ]
 	set ordonnees [lindex [ spc_fits2data $fichier] 1 ]
 	set abs_diffconti [ lindex $coords_diffconti 0 ]
@@ -1213,7 +1437,7 @@ proc spc_ajustfin { args } {
 	::plotxy::title "bleu : orginal ; rouge : interpolation deg 2"
 
 
-	#--- Enregistrement des points du polynÙme d'ajustement
+	#--- Enregistrement des points du polyn√¥me d'ajustement
 	#set fileetalonnespc [ file rootname $filenamespc ]
 	##set filename ${fileetalonnespc}_dat$extsp
 	#set filename ${fileetalonnespc}$extsp
@@ -1234,27 +1458,46 @@ proc spc_ajustfin { args } {
 
 
 ####################################################################
-# ProcÈdure de calcul de la droite de rÈgression linÈaire par les moindres carrÈs
-# http://www.bibmath.net/dico/index.php3?action=affiche&quoi=./r/reglin.html
+# Proc√©dure de calcul de la droite de r√©gression lin√©aire par les moindres carr√©s
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 1-09-2006
 # Date modification : 1-09-2006
-# Arguments : {{liste xi} {liste yi}}
-# Exemple : spc_reglin {{0  0.1  0.4  1} {12 11 7 1}} doit trouver : -11.0699588477*x+11.9012345679 
+# Arguments : {liste xi} {liste yi}
+# Exemple : spc_reglin {0  0.1  0.4  1} {12 11 7 1} doit trouver : -11.0699588477*x+11.9012345679
+# Algo : droite de r√©gression lin√©aire par les moindres carr√©s
+# http://www.bibmath.net/dico/index.php3?action=affiche&quoi=./r/reglin.html
+# 
 ####################################################################
 
 proc spc_reglin { args } {
     global conf
     global audace
 
-    if { [llength $args] == 1 } {
-	set listevals [ lindex $args 0 ]
-	set valx [ lindex $listevals 0 ]
-	set valy [ lindex $listevals 1 ]
-	set len [ llength $valx ]
+    set nbargs [llength $args]
+    if { $nbargs==2 } {
+	set valx [ lindex $args 0 ]
+	set valy [ lindex $args 1 ]
+    } elseif { $nbargs==3 } {
+	set valx [ lindex $args 0 ]
+	set valy [ lindex $args 1 ]
+        set crpix1 [ lindex $args 2 ]
+    } else {
+	::console::affiche_erreur "Usage: spc_reglin {liste xi} {liste yi} ?crpix1?\n"
+        return ""
+    }
 
-	#--- Calcul des termes intervenant dans les coÈfficients :
+   #--- Passage des absicsses avec une origine a 0 :
+   if { $nbargs==3 } {
+      set nvlax [ list ]
+      foreach absi $valx {
+         lappend nvalx [ expr $absi-$crpix1 ]
+      }
+      set valx $nvalx
+   }
+
+	#--- Calcul des termes intervenant dans les co√©fficients :
+	set len [ llength $valx ]
 	set somme_x 0
 	set somme_y 0
 	set somme_x2 0
@@ -1269,29 +1512,26 @@ proc spc_reglin { args } {
 	    set somme_xy [ expr $somme_xy+$xi*$yi ]
 	}
 
-	#--- Calcul des coÈficients a et b :
+	#--- Calcul des co√©ficients a et b :
 	set a [ expr ($len*$somme_xy-$somme_x*$somme_y)/($len*$somme_x2-$somme_x*$somme_x) ]
 	set b [ expr ($somme_y*$somme_x2-$somme_x*$somme_xy)/($len*$somme_x2-$somme_x*$somme_x) ]
 
 	#--- Fin du script :
-	::console::affiche_resultat "La droite de rÈgression est : $a*x+$b\n"
+	::console::affiche_resultat "La droite de r√©gression est : $b+$a*x\n"
 	set coeffs [ list $a $b ]
 	return $coeffs
-    } else {
-	::console::affiche_erreur "Usage: spc_reglin {{liste xi} {liste yi}}\n"
-    }
 }
 #***************************************************************************#
 
 
 
 ####################################################################
-#  Procedure de linÈratisation par spline.
+#  Procedure de lin√©ratisation par spline.
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 11-12-2005
-# Date modification : 28-03-2006
-# Arguments : liste abscisses et liste ordonnÈes ‡ rÈÈchantillonner, liste absisses modËle d'Èchantilonnage, (o/n) reprÈsentation graphique
+# Date modification : 28-03-2006/05-12-2009
+# Arguments : liste abscisses et liste ordonn√©es √† r√©√©chantillonner, liste absisses mod√®le d'√©chantilonnage, (o/n) repr√©sentation graphique
 # Bug : a la premiere execution "# x vector "x" must be monotonically increasing"
 ####################################################################
 
@@ -1300,37 +1540,16 @@ proc spc_spline { args } {
     global audace
 
     if {[llength $args] == 4} {
-	#set fichier [ file rootname [ lindex $args 0 ] ]
-	#set fichier_abscisses [ lindex $args 1 ]
-	#set contenu [ spc_fits2data $fichier ]
 	set abscisses [ lindex $args 0 ]
 	set ordonnees [ lindex $args 1 ]
 	set nabscisses [ lindex $args 2 ]
 	set gflag [ lindex $args 3 ]
 
-	#--- Nombre d'ÈlÈments : 
+	#--- Nombre d'√©l√©ments : 
 	set len [ llength $ordonnees ]
 	set nlen [ llength $nabscisses ]
 
-	if { 1==0 } {
-	#--- Une liste commence ‡ 0 ; Un vecteur fits commence ‡ 1
-	blt::vector x($len) y($len) 
-	for {set i $len} {$i > 0} {incr i -1} { 
-	    set x($i-1) [lindex $abscisses $i]
-	    set y($i-1) [lindex $ordonnees $i]
-	}
-	x sort y
-
-	#--- CrÈation des abscisses des coordonnees interpolÈes
-	blt::vector sx($nlen)
-	for {set i 1} {$i <= $nlen} {incr i} { 
-	    set sx($i-1) [lindex $nabscisses $i]
-	}
-	
-	#--- Spline ---------------------------------------#
-	blt::vector sy($len)
-    }
-
+        #--- Creation des vecteurs :
 	blt::vector create x
 	x set $abscisses
 	blt::vector create y
@@ -1339,50 +1558,78 @@ proc spc_spline { args } {
 	sx set $nabscisses	
 	blt::vector create sy($nlen)
 
+        #-- Syntaxe generale :
 	# blt::spline natural x y sx sy
+	# blt::spline quadratic x y sx sy
 	# The spline command computes a spline fitting a set of data points (x and y vectors) and produces a vector of the interpolated images (y-coordinates) at a given set of x-coordinates.
-	#blt::spline quadratic x y sx sy
-	blt::spline natural x y sx sy
 
-	#--- Exportation des vecteurs coordonnÈes interpolÈes en liste puis fichier dat
-	for {set i 0} {$i<$nlen} {incr i} { 
+        #-- Syntaxe tcl8.4 :
+	blt::spline natural x y sx sy
+	#- Exportation des vecteurs coordonn√©es interpol√©es en liste puis fichier dat
+	for {set i 0} {$i<$nlen} {incr i} {
 	    lappend nordonnees $sy($i)
 	}
+
+        #-- Syntaxe tcl8.5 (Audela 1.6.0) :
+        # set nordonnees [ list ]
+	# blt::spline natural $abscisses $ordonnees $nabscisses $nordonnees
+        
+        #-- Resultat :
 	set ncoordonnees [ list $nabscisses $nordonnees ]
-	# ::console::affiche_resultat "Exportation au format fits des donnÈes interpolÈes sous ${fichier}_ech\n"
-	# spc_data2fits ${fichier}_ech $ncoordonnees float
 
 	#--- Affichage
 	if { [ string compare $gflag "o" ] == 0 } {
 	    #--- Meth1    
 	    ::plotxy::plot $nabscisses $nordonnees
-	    ::plotxy::plotbackground #FFFFFF
+	    ::plotxy::plotbackground #FFFFFF 
+	}
+	return $ncoordonnees
+     } else {
+	::console::affiche_erreur "Usage: spc_spline absisses ordonn√©es abscisses_mod√®les repr√©sentation_graphique (o/n)\n\n"
+     }
+}
+#****************************************************************#
 
-	    set flaga 0
-	    if { $flaga == 1} {
-	    #destroy .testblt
-	    #toplevel .testblt
-	    #blt::graph .testblt.g 
-	    #pack .testblt.g -in .testblt
-	    #.testblt.g element create line1 -symbol none -xdata sx -ydata sy -smooth natural
-	    #-- Meth2
-	    destroy .testblt
-	    toplevel .testblt
-	    blt::graph .testblt.g
-	    pack .testblt.g -in .testblt
-	    set ly [lsort $ordonnees]
-	    .testblt.g legend configure -position bottom
-	    .testblt.g axis configure x -min [lindex $abscisses 0] -max [lindex $abscisses $len]
-	    .testblt.g axis configure y -min [lindex $ly 0] -max [lindex $ly $len]
-	    .testblt.g element create original -symbol none -x x -y y -color blue 
-	    .testblt.g element create spline -symbol none -x sx -y sy -color red 
-	    #blt::table . .testblt
-	    }
+
+####################################################################
+#  Procedure de lin√©ratisation par spline.
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 11-12-2005
+# Date modification : 28-03-2006
+# Arguments : liste abscisses et liste ordonn√©es √† r√©√©chantillonner, liste absisses mod√®le d'√©chantilonnage, (o/n) repr√©sentation graphique
+# Bug : a la premiere execution "# x vector "x" must be monotonically increasing"
+####################################################################
+
+proc spc_spline85 { args } {
+    global conf
+    global audace
+
+    if {[llength $args] == 4} {
+	set abscisses [ lindex $args 0 ]
+	set ordonnees [ lindex $args 1 ]
+	set nabscisses [ lindex $args 2 ]
+	set gflag [ lindex $args 3 ]
+       
+        #-- Syntaxe generale :
+	# blt::spline natural x y sx sy
+	# blt::spline quadratic x y sx sy
+	# The spline command computes a spline fitting a set of data points (x and y vectors) and produces a vector of the interpolated images (y-coordinates) at a given set of x-coordinates.
+
+        #-- Syntaxe tcl8.5 (Audela 1.6.0) :
+        set nordonnees [ list ]
+	blt::spline natural $abscisses $ordonnees $nabscisses $nordonnees
+	set ncoordonnees [ list $nabscisses $nordonnees ]
+
+	#--- Affichage
+	if { [ string compare $gflag "o" ] == 0 } {
+	    ::plotxy::plot $nabscisses $nordonnees
+	    ::plotxy::plotbackground #FFFFFF
 	}
 
 	return $ncoordonnees
     } else {
-	::console::affiche_erreur "Usage: spc_spline absisses ordonnÈes abscisses_modËles reprÈsentation graphique (o/n)\n\n"
+	::console::affiche_erreur "Usage: spc_spline absisses ordonn√©es abscisses_mod√®les repr√©sentation_graphique (o/n)\n\n"
     }
 }
 #****************************************************************#
@@ -1390,7 +1637,7 @@ proc spc_spline { args } {
 
 
 ####################################################################
-#  ProcÈdure de construction d'une gaussienne.
+#  Proc√©dure de construction d'une gaussienne.
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 18-04-2006
@@ -1422,7 +1669,7 @@ proc spc_gaussienne { args } {
       set typeline [ lindex $args 4 ]
       set icont [ lindex $args 5 ]
    } else {
-      ::console::affiche_erreur "Usage: spc_gaussienne nom_fichier_fit_modËle lambda_centre imax fwhm type_raie(a/e) ?icontinuum?.\n\n"
+      ::console::affiche_erreur "Usage: spc_gaussienne nom_fichier_fit_mod√®le lambda_centre imax fwhm type_raie(a/e) ?icontinuum?.\n\n"
       return ""
    }
 
@@ -1433,8 +1680,9 @@ proc spc_gaussienne { args } {
       set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
       set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
       set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+      set crpix1 [ lindex [ buf$audace(bufNo) getkwd "CRPIX1" ] 1 ]
       #-- Traduit en pixels les valeurs fournies en arguments :
-      set xc [ expr ($lambda_c-$crval1)/$cdelt1 ]
+      set xc [ expr ($lambda_c-$crval1)/$cdelt1+$crpix1 ]
       set fwhm [ expr $lfwhm/$cdelt1 ]
 
       #--- Calcul les valeurs dela gaussienne entre [+-4 fhhm ] :
@@ -1445,7 +1693,7 @@ proc spc_gaussienne { args } {
       if { $xfin > $naxis1 } { set xfin $naxis1 }
 
       if { $typeline == "e" } {
-         for { set x 0 } { $x < $naxis1 } { incr x } {
+         for { set x 1 } { $x <= $naxis1 } { incr x } {
             if { ($x >= $xdeb) && ($x <= $xfin) } {
                # set y [ expr $imax*exp(-1.0*(($x-$xm)*($x-$xm))/(2.0*$sigma*$sigma)) ]
                # set y [ expr ($imax-$icont)*exp(-0.5*pow(($x-$xc)*2*sqrt(2*log(2))/$fwhm,2))+$icont ]
@@ -1455,11 +1703,11 @@ proc spc_gaussienne { args } {
             } else {
                set y $icont
             }
-            buf$audace(bufNo) setpix [ list [ expr $x+1 ] 1 ] $y
+            buf$audace(bufNo) setpix [ list $x 1 ] $y
          }
       } elseif { $typeline == "a" } {
-         for { set x 0 } { $x < $naxis1 } { incr x } {
-            #::console::affiche_resultat "point n∞ $x\n"
+         for { set x 1 } { $x <=$naxis1 } { incr x } {
+            #::console::affiche_resultat "point n¬∞ $x\n"
             
             if { ($x >= $xdeb) && ($x <= $xfin) } {
                # set y [ expr $imax*exp(-1.0*(($x-$xm)*($x-$xm))/(2.0*$sigma*$sigma)) ]
@@ -1470,23 +1718,23 @@ proc spc_gaussienne { args } {
             } else {
                set y $icont
             }
-            buf$audace(bufNo) setpix [ list [ expr $x+1 ] 1 ] $y
+            buf$audace(bufNo) setpix [ list $x 1 ] $y
          }
       }
 
      
-      #--- Sauvegarde du profil calibrÈ
+      #--- Sauvegarde du profil calibr√©
       buf$audace(bufNo) bitpix float
       buf$audace(bufNo) save "$audace(rep_images)/${filename}_gauss"
       buf$audace(bufNo) bitpix short
-      ::console::affiche_resultat "Courbe gaussienne sauvÈe sous ${filename}_gauss\n"
+      ::console::affiche_resultat "Courbe gaussienne sauv√©e sous ${filename}_gauss\n"
 }
 #****************************************************************#
 
 
 
 ####################################################################
-#  ProcÈdure de construction d'une gaussienne.
+#  Proc√©dure de construction d'une gaussienne.
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 18-04-2006
@@ -1510,8 +1758,8 @@ proc spc_gaussienne0 { args } {
 
 	buf$audace(bufNo) setpixels CLASS_GRAY $len 1 FORMAT_FLOAT COMPRESS_NONE 0
 	#-- Pas
-	buf$audace(bufNo) setkwd [list "CRPIX1" 1.0 float "" ""]
-	#-- Longueur d'onde de dÈpart
+	buf$audace(bufNo) setkwd [list "CRPIX1" 1 int "" ""]
+	#-- Longueur d'onde de d√©part
 	buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 double "" ""]
 	#-- Dispersion
 	buf$audace(bufNo) setkwd [list "CDELT1" 1.0 double "" ""]
@@ -1524,10 +1772,10 @@ proc spc_gaussienne0 { args } {
 	    #::console::affiche_resultat "y=$y\n"
 	}
 	
-	#--- Sauvegarde du profil calibrÈ
+	#--- Sauvegarde du profil calibr√©
 	buf$audace(bufNo) bitpix float
 	buf$audace(bufNo) save "$audace(rep_images)/$filename"
-	::console::affiche_resultat "Courbe gaussienne sauvÈe sous $filename\n"
+	::console::affiche_resultat "Courbe gaussienne sauv√©e sous $filename\n"
     } else {
 	::console::affiche_erreur "Usage: spc_gaussienne nom_fichier_fit_sortie imax xmoy sigma.\n\n"
     }
@@ -1538,7 +1786,7 @@ proc spc_gaussienne0 { args } {
 
 
 ####################################################################
-# ProcÈdure de calcul de la diffÈrence 2 ‡ 2 de 2 liste de valeurs.
+# Proc√©dure de calcul de la diff√©rence 2 √† 2 de 2 liste de valeurs.
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 14-10-2006
@@ -1565,14 +1813,14 @@ proc spc_ajustverif { args } {
 	}
 
 
-	#-- Calcul la diffÈrence 2 ‡ 2 :
+	#-- Calcul la diff√©rence 2 √† 2 :
 	foreach xa $liste1 xb $liste2 {
 	    set difference [ expr $xa-$xb ]
 	    lappend diffs $difference
 	    lappend sqdiffs [ expr $difference*$difference ]
 	}
 
-	#--- Calcul la moyenne et la norme des diffÈrence :
+	#--- Calcul la moyenne et la norme des diff√©rence :
 	set len [ llength $diffs ]
 	set moy 0
 	set norme 0
@@ -1591,7 +1839,7 @@ proc spc_ajustverif { args } {
 	    ::console::affiche_resultat "RMS=$rms\n"
 	}
 
-	::console::affiche_resultat "DiffÈrences : $diffs\nValeur moyenne : $moy\nNorme : $normem\nChi2=$chi2\n"
+	::console::affiche_resultat "Diff√©rences : $diffs\nValeur moyenne : $moy\nNorme : $normem\nChi2=$chi2\n"
 	set result [ list $moy $norme ]
 	return $result
     } else {
@@ -1603,7 +1851,7 @@ proc spc_ajustverif { args } {
 
 
 ####################################################################
-# ProcÈdure d'intÈgration d'une fonction numÈrique par la mÈthode des trapËzes
+# Proc√©dure d'int√©gration d'une fonction num√©rique par la m√©thode des trap√®zes
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 1-09-2006
@@ -1641,7 +1889,7 @@ proc spc_aire { args } {
 
 
 ####################################################################
-# ProcÈdure de dÈrivation d'une fonction numÈrique
+# Proc√©dure de d√©rivation d'une fonction num√©rique
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 1-09-2006
@@ -1701,18 +1949,18 @@ proc spc_bspline { args } {
 	#set valxs [ lindex $listevals 2 ]
 
 	#--- Initialise les longueurs de listes :
-	#-- Nombre de valeurs ‡ interpoler
+	#-- Nombre de valeurs √† interpoler
 	set N [ llength $valx ]
 	set Nu [ expr $N-3 ]
-	#-- Nombre de valeurs qui seront calculÈes : Èchantillonnage de du spline
+	#-- Nombre de valeurs qui seront calcul√©es : √©chantillonnage de du spline
 	set n [ expr 1+($N-3)*$Nu ]
 	#-- du=x(i+1)-x(i)
 	set du [ expr [ lindex $valx 1 ] - [ lindex $valx 0 ] ]
 
 
-	#--- Calcul des valaurs interpolÈes :
+	#--- Calcul des valaurs interpol√©es :
 	for {set i 1} { $i<[ expr $N-2] } {incr i} {
-	    #-- Valeurs utilisÈes par le spline :
+	    #-- Valeurs utilis√©es par le spline :
 	    set x0 [ lindex $valx [ expr $i-1 ] ]
 	    set x1 [ lindex $valx $i ]
  	    set x2 [ lindex $valx [ expr $i+1 ] ]
@@ -1733,7 +1981,7 @@ proc spc_bspline { args } {
 		set v2 [ expr $v*$v ]
 		set v3 [ expr $v*$v*$v ]
 
-		#-- Calcul des valeurs interpolÈes :
+		#-- Calcul des valeurs interpol√©es :
 		lappend xspline [ expr $x0*$v3/6.+$x1*(3.*$u3-6.*$u2+4.)/6.+$x2*(-3.*$u3+3.*$u2+3.*$u+1.)/6.+$x3*$u3/6. ]
 		lappend yspline [ expr $y0*$v3/6.+$y1*(3.*$u3-6.*$u2+4.)/6.+$y2*(-3.*$u3+3.*$u2+3.*$u+1.)/6.+$y3*$u3/6. ]
 	    }
@@ -1796,143 +2044,143 @@ proc spc_ajustpolynome { args } {
 
     set nb_args [ llength $args ]
     if { $nb_args<=5 } {
-	if { $nb_args==5 } {
-	    set abscissesorig [ lindex $args 0 ]
-	    set ordonneesorig [ lindex $args 1 ]
-	    set ndeg [ lindex $args 2 ]
-	    set tauxRMS [ lindex $args 3 ]
-	    set visu [ lindex $args 4 ]
-	} elseif { $nb_args==4 } {
-	    set abscissesorig [ lindex $args 0 ]
-	    set ordonneesorig [ lindex $args 1 ]
-	    set ndeg [ lindex $args 2 ]
-	    set tauxRMS [ lindex $args 3 ]
-	    set visu "n"	    
-	} else {
-	    ::console::affiche_erreur "Usage: spc_ajustpolynome liste_abscisses liste_ordonnees degrÈ_polynome (<=5) pourcent_RMS_a_rejeter ?visualisation (o/n)?\n\n"
-	    return ""
-	}
-
-	if { $ndeg>5 } {
-	    ::console::affiche_erreur "Le degrË du polynome doit etre <=5 \n\n"
-	    return 0
-	}
-	    
-        #--- Extraction des donnees :
-        set lenorig [llength $ordonneesorig ]
- 
-        
-	#-- elimination des termes nuls au bord
-	set limits [ spc_findnnul $ordonneesorig ]
-	set i_inf [ lindex $limits 0 ]
-	set i_sup [ lindex $limits 1 ]
-	set nmilieu0 [ expr $i_sup -$i_inf +1 ]
-	#-- nmilieu0 est le nb d'echantillons non nuls dans la partie effective du profil
-	set lambdamin [ lindex $abscissesorig $i_inf ]
-	set lambdamax [ lindex $abscissesorig $i_sup ]
-	set ecartlambda [ expr $lambdamax-$lambdamin ]
-	set abscisses [ list ]
-	set ordonnees [ list ]
-	set xx [ list ]
-	set poids [ list ]
-	set intens_moy 0.
-	for { set i $i_inf } { $i<=$i_sup } { incr i } {
-  		set xi [ lindex $abscissesorig $i ]
-		set xxi [ expr ($xi-$lambdamin)/$ecartlambda ]
-  		set yi [ lindex $ordonneesorig $i ]
-  		lappend abscisses $xi
-		lappend xx $xxi
-  		lappend ordonnees $yi
-		lappend poids 1.
-  		set intens_moy [ expr $intens_moy +$yi ]
-	}
-	set intens_moy [ expr $intens_moy/($nmilieu0*1.) ]
-	# intens_moy est la valeur moyenne de l'intensite
-	::console::affiche_resultat "intensite moyenne : $intens_moy \n"
-	
-	#calcul matrice B
-	set B [ list ]
-	for { set i 0 } { $i<$nmilieu0 } { incr i } {
-		set Bi [ list ]
-		for { set j 0 } { $j<=1 } { incr j } {
-		lappend Bi [ expr pow([ lindex $xx $i ],$j) ]
-		}
-	lappend B $Bi
-	}
-	
-
-	#-- calcul de l'ajustement
-	set result [ gsl_mfitmultilin $ordonnees $B $poids ]
-        #-- extrait le resultat
-        set coeffs [ lindex $result 0 ]
-        set chi2 [ lindex $result 1 ]
-        set covar [ lindex $result 2 ]
-        set riliss1 [ gsl_mmult $B $coeffs ]
-		
-
-	#-- evaluation et analyse des residus
-		
-	set resid [ gsl_msub $ordonnees $riliss1 ]
-	#::console::affiche_resultat "longueur B : [llength $B]\n"
-        #::console::affiche_resultat "longueur riliss : [llength $riliss1]\n"
-	set residtransp [ gsl_mtranspose $resid]
-
-	# les calculs ci-dessous sont ? la louche : il faudrati faire intervenir les poids
-	set rms_pat1  [ gsl_mmult $residtransp $resid ]
-	set rms_pat [ lindex $rms_pat1 0 ]
-	set rms_pat [ expr ($rms_pat/($nmilieu0*1.)) ]
-	set rms_pat [expr sqrt($rms_pat)]
-	::console::affiche_resultat "residu moyen (RMS) apres premiere etape : $rms_pat\n"
-	#--calcul des nouveaux poids censes eliminer les residus de raies
-	set seuilres [ expr $rms_pat*$tauxRMS*.01 ]
-	set poids [ list ]
-	for {set i 0} {$i<$nmilieu0} {incr i} {
-		set poidsi [ expr $intens_moy*.5 ]
-		set residi [ lindex $resid $i ]
-		if { [ expr abs($residi) ]>=$seuilres } {
-		set poidsi 0.
-		}
-		lappend poids $poidsi
-	}
-	
-	
-	#-- deuxieme etape du lissage
-	#calcul matrice B
-	set B [ list ]
-	for { set i 0 } { $i<$nmilieu0 } { incr i } {
-		set Bi [ list ]
-		for { set j 0 } { $j<=$ndeg } { incr j } {
-		lappend Bi [ expr pow([ lindex $xx $i ],$j) ]
-		}
-	lappend B $Bi
-	}
-	set riliss [ list ]
-	set result [ gsl_mfitmultilin $ordonnees $B $poids ]
-        #-- extrait le resultat
-        set coeffs [ lindex $result 0 ]
-        set chi2 [ lindex $result 1 ]
-        set covar [ lindex $result 2 ]
-	set riliss [ gsl_mmult $B $coeffs ]
-
-        #--- Affichage du resultat :
-	set testvisu "n"
-	if { $visu == "o" } {
-	    set numero_fig [ expr abs(int([lindex $coeffs 2 ]*10*rand())) ]
-	    #::plotxy::clf
-	    ::plotxy::figure $numero_fig
-	    ::plotxy::plot $abscissesorig $riliss r 1
-	    #::plotxy::plot $abscissesorig $riliss1 o 1
-	    ::plotxy::hold on
-	    ::plotxy::plot $abscissesorig $ordonneesorig ob 0
-	    #::plotxy::hold on
-	    #::plotxy::plot $abscissesorig $poids g 0
-	    ::plotxy::plotbackground #FFFFFF
-	    ::plotxy::title "bleu : original - rouge : lissage par polynome de degrÈ $ndeg"
-	    ::plotxy::hold off
-        }
-	return $coeffs	
+       if { $nb_args==5 } {
+          set abscissesorig [ lindex $args 0 ]
+          set ordonneesorig [ lindex $args 1 ]
+          set ndeg [ lindex $args 2 ]
+          set tauxRMS [ lindex $args 3 ]
+          set visu [ lindex $args 4 ]
+       } elseif { $nb_args==4 } {
+          set abscissesorig [ lindex $args 0 ]
+          set ordonneesorig [ lindex $args 1 ]
+          set ndeg [ lindex $args 2 ]
+          set tauxRMS [ lindex $args 3 ]
+          set visu "n"	    
+       } else {
+          ::console::affiche_erreur "Usage: spc_ajustpolynome liste_abscisses liste_ordonnees degr√©_polynome (<=5) pourcent_RMS_a_rejeter ?visualisation (o/n)?\n\n"
+          return ""
+       }
+       
+       if { $ndeg>5 } {
+          ::console::affiche_erreur "Le degr√® du polynome doit etre <=5 \n\n"
+          return 0
+       }
+       
+       #--- Extraction des donnees :
+       set lenorig [llength $ordonneesorig ]
+       
+       
+       #-- elimination des termes nuls au bord
+       set limits [ spc_findnnul $ordonneesorig ]
+       set i_inf [ lindex $limits 0 ]
+       set i_sup [ lindex $limits 1 ]
+       set nmilieu0 [ expr $i_sup -$i_inf +1 ]
+       #-- nmilieu0 est le nb d'echantillons non nuls dans la partie effective du profil
+       set lambdamin [ lindex $abscissesorig $i_inf ]
+       set lambdamax [ lindex $abscissesorig $i_sup ]
+       set ecartlambda [ expr $lambdamax-$lambdamin ]
+       set abscisses [ list ]
+       set ordonnees [ list ]
+       set xx [ list ]
+       set poids [ list ]
+       set intens_moy 0.
+       for { set i $i_inf } { $i<=$i_sup } { incr i } {
+          set xi [ lindex $abscissesorig $i ]
+          set xxi [ expr ($xi-$lambdamin)/$ecartlambda ]
+          set yi [ lindex $ordonneesorig $i ]
+          lappend abscisses $xi
+          lappend xx $xxi
+          lappend ordonnees $yi
+          lappend poids 1.
+          set intens_moy [ expr $intens_moy +$yi ]
+       }
+       set intens_moy [ expr $intens_moy/($nmilieu0*1.) ]
+       # intens_moy est la valeur moyenne de l'intensite
+       ::console::affiche_resultat "intensite moyenne : $intens_moy \n"
+       
+       #calcul matrice B
+       set B [ list ]
+       for { set i 0 } { $i<$nmilieu0 } { incr i } {
+          set Bi [ list ]
+          for { set j 0 } { $j<=1 } { incr j } {
+             lappend Bi [ expr pow([ lindex $xx $i ],$j) ]
+          }
+          lappend B $Bi
+       }
+       
+       
+       #-- calcul de l'ajustement
+       set result [ gsl_mfitmultilin $ordonnees $B $poids ]
+       #-- extrait le resultat
+       set coeffs [ lindex $result 0 ]
+       set chi2 [ lindex $result 1 ]
+       set covar [ lindex $result 2 ]
+       set riliss1 [ gsl_mmult $B $coeffs ]
+       
+       
+       #-- evaluation et analyse des residus
+       
+       set resid [ gsl_msub $ordonnees $riliss1 ]
+       #::console::affiche_resultat "longueur B : [llength $B]\n"
+       #::console::affiche_resultat "longueur riliss : [llength $riliss1]\n"
+       set residtransp [ gsl_mtranspose $resid]
+       
+       # les calculs ci-dessous sont ? la louche : il faudrati faire intervenir les poids
+       set rms_pat1  [ gsl_mmult $residtransp $resid ]
+       set rms_pat [ lindex $rms_pat1 0 ]
+       set rms_pat [ expr ($rms_pat/($nmilieu0*1.)) ]
+       set rms_pat [expr sqrt($rms_pat)]
+       ::console::affiche_resultat "residu moyen (RMS) apres premiere etape : $rms_pat\n"
+       #--calcul des nouveaux poids censes eliminer les residus de raies
+       set seuilres [ expr $rms_pat*$tauxRMS*.01 ]
+       set poids [ list ]
+       for {set i 0} {$i<$nmilieu0} {incr i} {
+          set poidsi [ expr $intens_moy*.5 ]
+          set residi [ lindex $resid $i ]
+          if { [ expr abs($residi) ]>=$seuilres } {
+             set poidsi 0.
+          }
+          lappend poids $poidsi
+       }
+       
+       
+       #-- deuxieme etape du lissage
+       #calcul matrice B
+       set B [ list ]
+       for { set i 0 } { $i<$nmilieu0 } { incr i } {
+          set Bi [ list ]
+          for { set j 0 } { $j<=$ndeg } { incr j } {
+             lappend Bi [ expr pow([ lindex $xx $i ],$j) ]
+          }
+          lappend B $Bi
+       }
+       set riliss [ list ]
+       set result [ gsl_mfitmultilin $ordonnees $B $poids ]
+       #-- extrait le resultat
+       set coeffs [ lindex $result 0 ]
+       set chi2 [ lindex $result 1 ]
+       set covar [ lindex $result 2 ]
+       set riliss [ gsl_mmult $B $coeffs ]
+       
+       #--- Affichage du resultat :
+       set testvisu "n"
+       if { $visu == "o" } {
+          set numero_fig [ expr abs(int([lindex $coeffs 2 ]*10*rand())) ]
+          #::plotxy::clf
+          ::plotxy::figure $numero_fig
+          ::plotxy::plot $abscissesorig $riliss r 1
+          #::plotxy::plot $abscissesorig $riliss1 o 1
+          ::plotxy::hold on
+          ::plotxy::plot $abscissesorig $ordonneesorig ob 0
+          #::plotxy::hold on
+          #::plotxy::plot $abscissesorig $poids g 0
+          ::plotxy::plotbackground #FFFFFF
+          ::plotxy::title "bleu : original - rouge : lissage par polynome de degr√© $ndeg"
+          ::plotxy::hold off
+       }
+       return $coeffs	
     } else {
-        ::console::affiche_erreur "Usage: spc_ajustpolynome liste_abscisses liste_ordonnees degrÈ_polynome (<=5) pourcent_RMS_a_rejeter ?visualisation (o/n)?\n\n"
+       ::console::affiche_erreur "Usage: spc_ajustpolynome liste_abscisses liste_ordonnees degr√©_polynome (<=5) pourcent_RMS_a_rejeter ?visualisation (o/n)?\n\n"
     }
 }
 
@@ -1971,7 +2219,7 @@ proc spc_ajust_ok_mais_sans_inversion { args } {
 	set ordonnees [lindex $contenu 1]
 	set len [llength $ordonnees]
 
-	#--- Calcul des coefficients du polynÙme d'ajustement
+	#--- Calcul des coefficients du polyn√¥me d'ajustement
 	# - calcul de la matrice X 
 	set n [llength $abscisses]
 	set x ""
@@ -1998,7 +2246,7 @@ proc spc_ajust_ok_mais_sans_inversion { args } {
 	#set d [lindex $coeffs 3]
 	::console::affiche_resultat "Coefficients : $a+$b*x+$c*x^2\n"
 
-	#--- CrÈe les vecteur ‡ tracer
+	#--- Cr√©e les vecteur √† tracer
 	blt::vector x($len) y($len) yn($len)
 	for {set i $len} {$i > 0} {incr i -1} { 
 	    set x($i-1) [lindex $abscisses [expr $i-1]]
@@ -2033,7 +2281,7 @@ proc spc_ajust_ok_mais_sans_inversion { args } {
 	.testblt.g element create original -symbol none -x x -y y -color blue 
 	.testblt.g element create interpolation_deg2 -symbol none -x x -y yn -color red 
 
-	#--- Enregistrement des points du polynÙme d'ajustement
+	#--- Enregistrement des points du polyn√¥me d'ajustement
 	#set fileetalonnespc [ file rootname $filenamespc ]
 	##set filename ${fileetalonnespc}_dat$extsp
 	#set filename ${fileetalonnespc}$extsp
@@ -2064,7 +2312,7 @@ proc spc_ajust_051215a { args } {
 	set ordonnees [lindex $contenu 1]
 	set len [llength $ordonnees]
 
-	#--- Calcul des coefficients du polynÙme d'ajustement
+	#--- Calcul des coefficients du polyn√¥me d'ajustement
 	# - calcul de la matrice X 
 	set n [llength $abscisses]
 	set x ""
@@ -2091,7 +2339,7 @@ proc spc_ajust_051215a { args } {
 	#set d [lindex $coeffs 3]
 	::console::affiche_resultat "Coefficients : $a+$b*x+$c*x^2\n"
 
-	#--- CrÈe les vecteur ‡ tracer
+	#--- Cr√©e les vecteur √† tracer
 	blt::vector x($len) y($len) yn($len)
 	set listeyn ""
 	for {set i $len} {$i > 0} {incr i -1} { 
@@ -2128,7 +2376,7 @@ proc spc_ajust_051215a { args } {
 	.testblt.g element create original -symbol none -x x -y y -color blue 
 	.testblt.g element create interpolation_deg2 -symbol none -x x -y yn -color red 
 
-	#--- Enregistrement des points du polynÙme d'ajustement
+	#--- Enregistrement des points du polyn√¥me d'ajustement
 	#set fileetalonnespc [ file rootname $filenamespc ]
 	##set filename ${fileetalonnespc}_dat$extsp
 	#set filename ${fileetalonnespc}$extsp
@@ -2175,7 +2423,7 @@ proc spc_resample0 { args } {
          lappend new_xvals [ expr $pas*$i+$lambda_deb ]
       }
 
-      #-- RÈÈchantillonne par spline les intensitÈs sur la nouvelle Èchelle en longueur d'onde :
+      #-- R√©√©chantillonne par spline les intensit√©s sur la nouvelle √©chelle en longueur d'onde :
       #-- Verifier les valeurs des lambdas pour eviter un "monoticaly error de BLT".
       set new_intensities [ lindex  [ spc_spline $xvals $yvals $nxvals n ] 1 ]
       return $new_coordonnees
@@ -2187,7 +2435,7 @@ proc spc_resample0 { args } {
 #******************************************************************************#
 
 ####################################################################
-# Procedure dÈterminant les bornes (indice) inf et sup d'un ensemble de valeurs o˘ elles sont diffÈrentes de 0
+# Procedure d√©terminant les bornes (indice) inf et sup d'un ensemble de valeurs o√π elles sont diff√©rentes de 0
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 14-07-2007
@@ -2201,16 +2449,16 @@ proc spc_findnnul_1 { args } {
     global audace
 
     if { [llength $args] == 1 } {
-        set liste_intentites [ lindex $args 0 ]
+        set liste_intensites [ lindex $args 0 ]
 
         #--- Initialisations :
-        set len [ llength $liste_intentites ]
+        set len [ llength $liste_intensites ]
         set i_inf 0
         set i_sup [ expr $len-1 ]
 
         #--- Recherche de i_inf :
         for {set i 0} {$i<$len} {incr i} {
-            if { [ lindex $liste_intentites $i ]>0 } {
+            if { [ lindex $liste_intensites $i ]>0 } {
                 set i_inf $i
                 break
             }
@@ -2218,13 +2466,13 @@ proc spc_findnnul_1 { args } {
 
         #--- Recherche de i_sup :
         for {set i [ expr $len-1 ]} {$i>=0} {incr i -1} {
-            if { [ lindex $liste_intentites $i ]>0 } {
+            if { [ lindex $liste_intensites $i ]>0 } {
                 set i_sup $i
                 break
             }
         }
 
-        #--- Traitement des rÈsultats :
+        #--- Traitement des r√©sultats :
         set results [ list $i_inf $i_sup ]
         return $results
     } else {
