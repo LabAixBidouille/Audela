@@ -2,7 +2,7 @@
 # Fichier : snmacros.tcl
 # Description : Macros des scripts pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snmacros.tcl,v 1.11 2009-11-08 11:36:50 robertdelmas Exp $
+# Mise a jour $Id: snmacros.tcl,v 1.12 2009-12-19 16:31:59 robertdelmas Exp $
 #
 
 proc globgalsn { args } {
@@ -119,10 +119,7 @@ proc sun_info_0h { {localite "GPS 2.33 e 48.8 67"} } {
 proc sunset { {hauteurlim "0"} {localite "GPS 2.33 e 48.8 67"} } {
    #--- Calcule le jour julien correspondant au prochain commencement de nuit
    #--- (fixee ici lorsque le soleil est a hauteur deg)
-   set now now
-   catch {
-      set now [::audace::date_sys2ut now]
-   }
+   set now [::audace::date_sys2ut now]
    set jd_deb [mc_date2jd $now]
    set k 0
    for {set jj [expr $jd_deb]} {$jj < [expr $jd_deb+1.]} {set jj [expr $jj+0.0005]} {
@@ -150,10 +147,7 @@ proc sunset { {hauteurlim "0"} {localite "GPS 2.33 e 48.8 67"} } {
 proc sunrise { {hauteurlim "0"} {localite "GPS 2.33 e 48.8 67"} } {
    #--- Calcule le jour julien correspondant a la prochaine fin de nuit
    #--- (fixee ici lorsque le soleil est a hauteur deg)
-   set now now
-   catch {
-      set now [::audace::date_sys2ut now]
-   }
+   set now [::audace::date_sys2ut now]
    set jd_deb [mc_date2jd $now]
    set k 0
    for {set jj [expr $jd_deb]} {$jj < [expr $jd_deb+1.]} {set jj [expr $jj+0.0005]} {
