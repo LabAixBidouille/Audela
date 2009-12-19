@@ -4,15 +4,15 @@
 #                                                                            #
 #****************************************************************************#
 
-# Mise a jour $Id: spc_external.tcl,v 1.2 2008-09-20 17:20:05 bmauclaire Exp $
+# Mise a jour $Id: spc_external.tcl,v 1.3 2009-12-19 09:54:34 bmauclaire Exp $
 
 
 
 ###############################################################################
-# Procédure de lancement du navigateur internet pour consulter la documentation d'SpcAudace
+# ProcÃ©dure de lancement du navigateur internet pour consulter la documentation d'SpcAudace
 # Auteur : Benjamin MAUCLAIRE
-# Date création :  28-08-2006
-# Date de mise à jour : 28-08-2006
+# Date crÃ©ation :  28-08-2006
+# Date de mise Ã  jour : 28-08-2006
 ################################################################################
 
 proc spc_help {} {
@@ -33,10 +33,10 @@ proc spc_help {} {
 
 
 ###############################################################################
-# Procédure de lancement du navigateur internet pour consulter le site d'SpcAudACE
+# ProcÃ©dure de lancement du navigateur internet pour consulter le site d'SpcAudACE
 # Auteur : Benjamin MAUCLAIRE
-# Date création :  02-02-2008
-# Date de mise à jour : 02-02-2008
+# Date crÃ©ation :  02-02-2008
+# Date de mise Ã  jour : 02-02-2008
 ################################################################################
 
 proc spc_webpage {} {
@@ -54,10 +54,10 @@ proc spc_webpage {} {
 
 
 ###############################################################################
-# Procédure de lancement du navigateur internet pour consulter le site arasbeam
+# ProcÃ©dure de lancement du navigateur internet pour consulter le site arasbeam
 # Auteur : Benjamin MAUCLAIRE
-# Date création :  20-09-2008
-# Date de mise à jour : 20-09-2008
+# Date crÃ©ation :  20-09-2008
+# Date de mise Ã  jour : 20-09-2008
 ################################################################################
 
 proc spc_arasbeam {} {
@@ -74,10 +74,10 @@ proc spc_arasbeam {} {
 
 
 ###############################################################################
-# Procédure de lancement du navigateur internet pour consulter la base BeSS
+# ProcÃ©dure de lancement du navigateur internet pour consulter la base BeSS
 # Auteur : Benjamin MAUCLAIRE
-# Date création :  23-04-2007
-# Date de mise à jour : 23-04-2007
+# Date crÃ©ation :  23-04-2007
+# Date de mise Ã  jour : 23-04-2007
 ################################################################################
 
 proc spc_bess {} {
@@ -96,10 +96,10 @@ proc spc_bess {} {
 
 
 ###############################################################################
-# Procédure de lancement du navigateur internet pour consulter la base UVES
+# ProcÃ©dure de lancement du navigateur internet pour consulter la base UVES
 # Auteur : Benjamin MAUCLAIRE
-# Date création :  23-04-2007
-# Date de mise à jour : 23-04-2007
+# Date crÃ©ation :  23-04-2007
+# Date de mise Ã  jour : 23-04-2007
 ################################################################################
 
 proc spc_uves {} {
@@ -117,10 +117,10 @@ proc spc_uves {} {
 
 
 ###############################################################################
-# Procédure de lancement du navigateur internet pour consulter la base Simbad
+# ProcÃ©dure de lancement du navigateur internet pour consulter la base Simbad
 # Auteur : Benjamin MAUCLAIRE
-# Date création :  24-04-2007
-# Date de mise à jour : 24-04-2007
+# Date crÃ©ation :  24-04-2007
+# Date de mise Ã  jour : 24-04-2007
 ################################################################################
 
 proc spc_simbad {} {
@@ -138,10 +138,10 @@ proc spc_simbad {} {
 
 
 ###############################################################################
-# Procédure de lancement du navigateur internet pour consulter la page des surveys
+# ProcÃ©dure de lancement du navigateur internet pour consulter la page des surveys
 # Auteur : Benjamin MAUCLAIRE
-# Date création :  24-04-2007
-# Date de mise à jour : 24-04-2007
+# Date crÃ©ation :  24-04-2007
+# Date de mise Ã  jour : 24-04-2007
 ################################################################################
 
 proc spc_surveys {} {
@@ -159,10 +159,10 @@ proc spc_surveys {} {
 
 
 ###############################################################################
-# Procédure de lancement du navigateur internet pour consulter la page Be de C. Buil
+# ProcÃ©dure de lancement du navigateur internet pour consulter la page Be de C. Buil
 # Auteur : Benjamin MAUCLAIRE
-# Date création :  24-04-2007
-# Date de mise à jour : 24-04-2007
+# Date crÃ©ation :  24-04-2007
+# Date de mise Ã  jour : 24-04-2007
 ################################################################################
 
 proc spc_bebuil {} {
@@ -180,10 +180,10 @@ proc spc_bebuil {} {
 
 
 ###############################################################################
-# Procédure de lancement du logiciel SPECTRUM
+# ProcÃ©dure de lancement du logiciel SPECTRUM
 # Auteur : Benjamin MAUCLAIRE
-# Date création :  23-04-2007
-# Date de mise à jour : 23-04-2007
+# Date crÃ©ation :  23-04-2007
+# Date de mise Ã  jour : 23-04-2007
 ################################################################################
 
 proc spc_spectrum {} {
