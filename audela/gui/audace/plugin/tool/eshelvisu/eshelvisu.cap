@@ -1,6 +1,6 @@
 #
 # Fichier : eshelvisu.cap
-# Mise a jour $Id: eshelvisu.cap,v 1.4 2009-12-12 09:35:30 robertdelmas Exp $
+# Mise a jour $Id: eshelvisu.cap,v 1.5 2009-12-19 09:11:44 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -139,7 +139,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(eshelvisu,table,column_name)           "Nom"
    set caption(eshelvisu,table,column_type)           "Type"
-  set caption(eshelvisu,table,column_series)          "Série"
+   set caption(eshelvisu,table,column_series)         "Série"
    set caption(eshelvisu,table,column_date)           "Date"
    set caption(eshelvisu,table,column_size)           "Taille"
 
@@ -247,9 +247,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshelvisu,table,slideshowError)        "# Sélectionner d'abord plusieurs images"
    set caption(eshelvisu,table,showDirectory)         "# Le répertoire est vide ou absent."
 
-  set caption(eshelvisu,table,column_name)           "# Nom"
+   set caption(eshelvisu,table,column_name)           "# Nom"
    set caption(eshelvisu,table,column_type)           "# Type"
-  set caption(eshelvisu,table,column_series)          "# Série"
+   set caption(eshelvisu,table,column_series)         "# Série"
    set caption(eshelvisu,table,column_date)           "# Date"
    set caption(eshelvisu,table,column_size)           "# Taille"
 
@@ -357,9 +357,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshelvisu,table,slideshowError)        "# Sélectionner d'abord plusieurs images"
    set caption(eshelvisu,table,showDirectory)         "# Le répertoire est vide ou absent."
 
-  set caption(eshelvisu,table,column_name)           "# Nom"
+   set caption(eshelvisu,table,column_name)           "# Nom"
    set caption(eshelvisu,table,column_type)           "# Type"
-  set caption(eshelvisu,table,column_series)          "# Série"
+   set caption(eshelvisu,table,column_series)         "# Série"
    set caption(eshelvisu,table,column_date)           "# Date"
    set caption(eshelvisu,table,column_size)           "# Taille"
 
@@ -467,9 +467,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshelvisu,table,slideshowError)        "# Sélectionner d'abord plusieurs images"
    set caption(eshelvisu,table,showDirectory)         "# Le répertoire est vide ou absent."
 
-  set caption(eshelvisu,table,column_name)           "# Nom"
+   set caption(eshelvisu,table,column_name)           "# Nom"
    set caption(eshelvisu,table,column_type)           "# Type"
-  set caption(eshelvisu,table,column_series)          "# Série"
+   set caption(eshelvisu,table,column_series)         "# Série"
    set caption(eshelvisu,table,column_date)           "# Date"
    set caption(eshelvisu,table,column_size)           "# Taille"
 
@@ -577,9 +577,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eshelvisu,table,slideshowError)        "# Sélectionner d'abord plusieurs images"
    set caption(eshelvisu,table,showDirectory)         "# Le répertoire est vide ou absent."
 
-  set caption(eshelvisu,table,column_name)           "# Nom"
+   set caption(eshelvisu,table,column_name)           "# Nom"
    set caption(eshelvisu,table,column_type)           "# Type"
-  set caption(eshelvisu,table,column_series)          "# Série"
+   set caption(eshelvisu,table,column_series)         "# Série"
    set caption(eshelvisu,table,column_date)           "# Date"
    set caption(eshelvisu,table,column_size)           "# Taille"
 

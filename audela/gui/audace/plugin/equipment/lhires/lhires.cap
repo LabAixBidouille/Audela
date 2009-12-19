@@ -1,6 +1,6 @@
 #
 # Fichier : lhires.cap
-# Mise a jour $Id: lhires.cap,v 1.4 2009-11-23 19:52:01 robertdelmas Exp $
+# Mise a jour $Id: lhires.cap,v 1.5 2009-12-19 09:14:47 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -50,7 +50,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lhires,lampDown)           "Test: Accendere la lampada di calibrazione"
    set caption(lhires,lampUp)             "Test: Spegnere la lampada di calibrazione"
 
-   set caption(lhires,arreter)            "Ferma"
+   set caption(lhires,arreter)            "Fermare"
    set caption(lhires,creer_au_demarrage) "Connessione automatica di questo equipaggiamento alla prossima esecuzione del software"
 
 # *************** Version espagnole ***************************

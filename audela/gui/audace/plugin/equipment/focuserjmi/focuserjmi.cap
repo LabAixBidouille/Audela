@@ -1,6 +1,6 @@
 #
 # Fichier : focuserjmi.cap
-# Mise a jour $Id: focuserjmi.cap,v 1.10 2009-11-05 18:21:22 robertdelmas Exp $
+# Mise a jour $Id: focuserjmi.cap,v 1.11 2009-12-19 09:12:15 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -53,7 +53,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserjmi,duration)           "Durata (secondi)"
    set caption(focuserjmi,test)               "Test"
 
-   set caption(focuserjmi,arreter)            "Ferma"
+   set caption(focuserjmi,arreter)            "Fermare"
    set caption(focuserjmi,creer_au_demarrage) "Connessione automatica di questo equipaggiamento alla prossima esecuzione del software"
 
 # *************** Version espagnole ***************************

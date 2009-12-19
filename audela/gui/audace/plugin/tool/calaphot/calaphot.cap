@@ -1,6 +1,6 @@
 #
 # Fichier : calaphot.cap
-# Mise a jour $Id: calaphot.cap,v 1.7 2009-11-23 19:53:09 robertdelmas Exp $
+# Mise a jour $Id: calaphot.cap,v 1.8 2009-12-19 09:09:45 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -148,7 +148,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,mode_modelisation)   "Modélisation d'étoiles"
    set calaphot(texte,continuer)           "Continuer"
    set calaphot(texte,annuler)             "Annuler"
-  set calaphot(texte,o_surechantillonage) "Facteur de division des pixels"
+   set calaphot(texte,o_surechantillonage) "Facteur de division des pixels"
    set calaphot(texte,err_indice)          "Erreur : Dernier indice inférieur ou égal au premier"
    set calaphot(texte,verification)        "Vérification des fichiers %s\[%d...%d\]%s"
    set calaphot(texte,err_existence_1)     "Le fichier"
@@ -260,8 +260,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,mode)                "Modalita' di calcolo"
    set calaphot(texte,mode_ouverture)      "Apertura fotometrica"
    set calaphot(texte,mode_modelisation)   "Modellazione stellare"
-   set calaphot(texte,continuer)           "Continua"
-   set calaphot(texte,annuler)             "Annulla"
+   set calaphot(texte,continuer)           "Continuare"
+   set calaphot(texte,annuler)             "Annullare"
    set calaphot(texte,o_surechantillonage) "Fattore di divisione dei pixel"
    set calaphot(texte,err_indice)          "Errore: ultimo indice inferiore o uguale al primo"
    set calaphot(texte,verification)        "Verifica di file %s\[%d...%d\]%s"

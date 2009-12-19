@@ -1,6 +1,6 @@
 #
 # Fichier : bermasaude.cap
-# Mise a jour $Id: bermasaude.cap,v 1.20 2009-11-08 15:02:26 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.cap,v 1.21 2009-12-19 09:09:24 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -110,7 +110,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,bermasaude_filtre_depart)    "Cambiare il filtro %s"
    set caption(bermasaude,bermasaude_filtre_encours)   "Posizionamento del filtro %s in corso..."
 
-   set caption(bermasaude,arreter)                     "Ferma"
+   set caption(bermasaude,arreter)                     "Fermare"
    set caption(bermasaude,creer_au_demarrage)          "Connessione automatica di questo equipaggiamento alla prossima esecuzione del software"
 
 # *************** Version espagnole ***************************

@@ -1,6 +1,6 @@
 #
 # Fichier : tlscp.cap
-# Mise a jour $Id: tlscp.cap,v 1.16 2009-12-14 17:51:38 robertdelmas Exp $
+# Mise a jour $Id: tlscp.cap,v 1.17 2009-12-19 09:21:23 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -106,7 +106,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,help_titre)         "Aide de cet outil"
    set caption(tlscp,help_titre1)        "Aide de l'outil :"
    set caption(tlscp,coord)              "Coord."
-  set caption(tlscp,planete)            "Planètes"
+   set caption(tlscp,planete)            "Planètes"
    set caption(tlscp,asteroide)          "Astéroïdes"
    set caption(tlscp,zenith)             "Zénith"
    set caption(tlscp,equinoxe)           "Equinoxe"

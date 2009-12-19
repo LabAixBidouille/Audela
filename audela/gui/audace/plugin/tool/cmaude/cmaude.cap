@@ -1,6 +1,6 @@
 #
 # Fichier : cmaude.cap
-# Mise a jour $Id: cmaude.cap,v 1.24 2009-12-14 17:49:46 robertdelmas Exp $
+# Mise a jour $Id: cmaude.cap,v 1.25 2009-12-19 09:10:19 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -109,7 +109,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,dark)                        "Image du dark"
    set caption(cmaude,overlay)                     "Image d'overlay"
    set caption(cmaude,nom_image)                   "Nom de l'image"
-  set caption(cmaude,page_html)                   "Création de la page HTML"
+   set caption(cmaude,page_html)                   "Création de la page HTML"
    set caption(cmaude,binning)                     "Binning"
    set caption(cmaude,temps_pose)                  "Pose (sec.)"
    set caption(cmaude,entre_2_images)              "Temps entre 2 images (sec.)"

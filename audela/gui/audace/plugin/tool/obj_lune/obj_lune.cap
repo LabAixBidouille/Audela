@@ -1,6 +1,6 @@
 #
 # Fichier : obj_lune.cap
-# Mise a jour $Id: obj_lune.cap,v 1.13 2009-12-09 16:56:13 robertdelmas Exp $
+# Mise a jour $Id: obj_lune.cap,v 1.14 2009-12-19 09:15:05 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -87,7 +87,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,titre)               "Objectif Lune"
    set caption(obj_lune,goto)                "GOTO"
    set caption(obj_lune,ephemerides)         "Ephémérides"
-  set caption(obj_lune,cartographie)        "Cartographie"
+   set caption(obj_lune,cartographie)        "Cartographie"
    set caption(obj_lune,carte_libration)     "Cartes des librations"
    set caption(obj_lune,meilleur_moment)     "Meilleure période pour l'observation"
    set caption(obj_lune,match)               "MATCH"

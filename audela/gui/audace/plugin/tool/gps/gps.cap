@@ -1,6 +1,6 @@
 #
 # Fichier : gps.cap
-# Mise a jour $Id: gps.cap,v 1.15 2009-11-11 15:49:44 robertdelmas Exp $
+# Mise a jour $Id: gps.cap,v 1.16 2009-12-19 09:12:51 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -94,7 +94,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,fermeture_serie)          "Fermeture liaison série"
    set caption(gps,titre_reglage_fin)        "Réglage"
    set caption(gps,ecoute_horloge)           "Bip-Bip"
-  set caption(gps,arret_horloge)            "Arrêt"
+   set caption(gps,arret_horloge)            "Arrêt"
    set caption(gps,avance)                   "Avance"
    set caption(gps,retard)                   "Retard"
    set caption(gps,m_synchro_temps_1)        "Recalage de l'heure PC de"
@@ -172,7 +172,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,decalage)                 "Offset (ms)"
    set caption(gps,reglage)                  "Valore di scostamento (ms)"
    set caption(gps,seuil_ok)                 "Precisione oraria (ms)"
-   set caption(gps,valider)                  "Conferma"
+   set caption(gps,valider)                  "Confermare"
    set caption(gps,erreur)                   "ERRORE"
    set caption(gps,type_non_entier)          "Almeno un valore non e' intero"
    set caption(gps,bienvenue)                "GPS"

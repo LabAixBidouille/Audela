@@ -1,6 +1,6 @@
 #
 # Fichier : viseur_polaire_go.cap
-# Mise a jour $Id: viseur_polaire_go.cap,v 1.8 2009-11-07 17:06:04 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_go.cap,v 1.9 2009-12-19 09:26:36 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -40,7 +40,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(viseur_polaire_go,titre)       "Buscador de la Polar"
    set caption(viseur_polaire_go,help_titre)  "Ayuda para esta herramienta"
-  set caption(viseur_polaire_go,help_titre1) "Ajuda para del herramienta:"
+   set caption(viseur_polaire_go,help_titre1) "Ajuda para del herramienta:"
    set caption(viseur_polaire_go,taka)        "Tipo\nTakahashi"
    set caption(viseur_polaire_go,eq6)         "Tipo\nEQ6"
 

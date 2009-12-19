@@ -1,6 +1,6 @@
 #
 # Fichier : snacq.cap
-# Mise a jour $Id: snacq.cap,v 1.14 2009-12-14 17:51:00 robertdelmas Exp $
+# Mise a jour $Id: snacq.cap,v 1.15 2009-12-19 09:21:08 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -79,7 +79,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,houest)                 "Angle horaire limite ouest"
    set caption(snacq,hest)                   "est"
    set caption(snacq,decinf)                 "Déclinaison limite inférieure"
-  set caption(snacq,decsup)                 "supérieure"
+   set caption(snacq,decsup)                 "supérieure"
    set caption(snacq,exptime)                "Exposition (sec.)"
    set caption(snacq,binning)                "Binning"
    set caption(snacq,nbimages)               "Nbre d'images par champ"
