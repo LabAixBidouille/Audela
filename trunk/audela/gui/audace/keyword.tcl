@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.30 2009-12-13 16:38:49 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.31 2009-12-19 17:27:11 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -1513,6 +1513,14 @@ proc ::keyword::cbCommand { visuNo } {
    #--- je decoche toutes les lignes
    foreach check [ array names ::keyword::private 1,check,* ] {
       set private($check) 0
+   }
+
+   #--- je configure les mots cles selon les exigences de l'outil
+   set catchError [ catch {
+      ::[ ::confVisu::getTool $visuNo ]::configToolKeywords $visuNo $private($visuNo,configName)
+   } m ]
+   if { $catchError == "1" } {
+      #--- S'il n'y a pas d'exigences, on passe...
    }
 
    #--- je coche les lignes
