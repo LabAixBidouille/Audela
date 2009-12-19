@@ -2,7 +2,7 @@
 # Fichier : viseur_polaire_eq6.tcl
 # Description : Positionne l'etoile polaire dans un viseau polaire de type EQ6 ou a constellations
 # Auteur : Robert DELMAS
-# Mise a jour $Id: viseur_polaire_eq6.tcl,v 1.11 2008-12-16 16:31:50 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_eq6.tcl,v 1.12 2009-12-19 16:18:15 robertdelmas Exp $
 #
 
 namespace eval ::viseurPolaireEQ6 {
@@ -339,10 +339,7 @@ namespace eval ::viseurPolaireEQ6 {
       global viseurPolaireEQ6
 
       #--- Initialisation du temps
-      set now now
-      catch {
-         set now [::audace::date_sys2ut now]
-      }
+      set now [ ::audace::date_sys2ut now ]
 
       #--- Coordonnees de la Polaire J2000.0
       set ad_LP "02h31m47.08"
@@ -354,8 +351,7 @@ namespace eval ::viseurPolaireEQ6 {
       set dec_LP_vrai [ lindex $ad_dec_v 1 ]
 
       #--- Preparation du calcul de l'angle horaire
-      set altaz_LP [ mc_radec2altaz $ad_LP_vrai $dec_LP_vrai $audace(posobs,observateur,gps) \
-         [ ::audace::date_sys2ut now ] ]
+      set altaz_LP [ mc_radec2altaz $ad_LP_vrai $dec_LP_vrai $audace(posobs,observateur,gps) $now ]
 
       #--- Angle horaire
       set anglehoraire_LP [ lindex $altaz_LP 2 ]
@@ -416,10 +412,7 @@ namespace eval ::viseurPolaireEQ6 {
       global audace
 
       #--- Initialisation du temps
-      set now now
-      catch {
-         set now [::audace::date_sys2ut now]
-      }
+      set now [ ::audace::date_sys2ut now ]
 
       #--- Constellation Cassiopee J2000.0
       #--- Epsilon Cas
@@ -445,8 +438,7 @@ namespace eval ::viseurPolaireEQ6 {
          set dec_cas_vrai($i) [ lindex $ad_dec_v($i) 1 ]
 
          #--- Preparation du calcul de l'angle horaire
-         set altaz_cas($i) [ mc_radec2altaz $ad_cas_vrai($i) $dec_cas_vrai($i) $audace(posobs,observateur,gps) \
-            [ ::audace::date_sys2ut now ] ]
+         set altaz_cas($i) [ mc_radec2altaz $ad_cas_vrai($i) $dec_cas_vrai($i) $audace(posobs,observateur,gps) $now ]
 
          #--- Angle horaire
          set anglehoraire_cas($i) [ lindex $altaz_cas($i) 2 ]
@@ -475,10 +467,7 @@ namespace eval ::viseurPolaireEQ6 {
       global audace
 
       #--- Initialisation du temps
-      set now now
-      catch {
-         set now [::audace::date_sys2ut now]
-      }
+      set now [ ::audace::date_sys2ut now ]
 
       #--- Constellation Grande Ourse J2000.0
       #--- Eta UMa
@@ -510,8 +499,7 @@ namespace eval ::viseurPolaireEQ6 {
          set dec_uma_vrai($i) [ lindex $ad_dec_v($i) 1 ]
 
          #--- Preparation du calcul de l'angle horaire
-         set altaz_uma($i) [ mc_radec2altaz $ad_uma_vrai($i) $dec_uma_vrai($i) $audace(posobs,observateur,gps) \
-            [ ::audace::date_sys2ut now ] ]
+         set altaz_uma($i) [ mc_radec2altaz $ad_uma_vrai($i) $dec_uma_vrai($i) $audace(posobs,observateur,gps) $now ]
 
          #--- Angle horaire
          set anglehoraire_uma($i) [ lindex $altaz_uma($i) 2 ]
