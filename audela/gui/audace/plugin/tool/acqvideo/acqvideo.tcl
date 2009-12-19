@@ -2,7 +2,7 @@
 # Fichier : acqvideo.tcl
 # Description : Outil d'acquisition video
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: acqvideo.tcl,v 1.12 2009-12-13 16:40:31 robertdelmas Exp $
+# Mise a jour $Id: acqvideo.tcl,v 1.13 2009-12-19 10:01:02 robertdelmas Exp $
 #
 
 #==============================================================
@@ -1165,8 +1165,8 @@ namespace eval ::acqvideo {
       frame $panneau(acqvideo,$visuNo,base).status_video.status -borderwidth 2 -relief ridge
          label $panneau(acqvideo,$visuNo,base).status_video.status.label -textvariable panneau(acqvideo,$visuNo,status) \
             -wraplength 150 -height 4 -pady 0
-         pack $panneau(acqvideo,$visuNo,base).status_video.status.label -anchor center -expand 0 -fill x -side top
-      pack $panneau(acqvideo,$visuNo,base).status_video.status -anchor center -fill y -pady 0 -ipadx 5 -ipady 0
+         pack $panneau(acqvideo,$visuNo,base).status_video.status.label -anchor center -expand 1 -fill both -side top
+      pack $panneau(acqvideo,$visuNo,base).status_video.status -anchor center -fill both -pady 0 -ipadx 5 -ipady 0
 
       #--- Frame pour l'acquisition fenetree
       frame $panneau(acqvideo,$visuNo,base).status_video.fenetrer -borderwidth 2 -relief ridge
