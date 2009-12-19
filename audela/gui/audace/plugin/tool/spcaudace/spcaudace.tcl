@@ -1,4 +1,4 @@
-# Mise a jour $Id: spcaudace.tcl,v 1.11 2009-10-23 18:45:32 bmauclaire Exp $
+# Mise a jour $Id: spcaudace.tcl,v 1.12 2009-12-19 09:57:48 bmauclaire Exp $
 
 
 ####################################################################################
@@ -49,7 +49,7 @@
 #============================================================
 namespace eval ::spcaudace {
    global caption
-   package provide spcaudace 1.5.4
+   package provide spcaudace 1.5.6
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [ file dirname [info script] ] spcaudace.cap ]
@@ -67,7 +67,7 @@ proc ::spcaudace::initPlugin { tkbase } {
 
    variable spcaudace
 
-   #--- Définition du repertoire d'SpcAudAce (spc_var pas encore charge) :
+   #--- DÃ©finition du repertoire d'SpcAudAce (spc_var pas encore charge) :
    if { [regexp {1.3.0} $audela(version) match resu ] } {
        set spcaudace(rep_spc) [ file join $audace(rep_scripts) spcaudace ]
        #source [ file join $repspc spc_cap.tcl ]
@@ -86,7 +86,7 @@ proc ::spcaudace::initPlugin { tkbase } {
    #-- A DEPLACER DANS CREATE_PLUGININSTANCE ?
    package require BLT
 
-   #-- Chargement des fonctionnalités :
+   #-- Chargement des fonctionnalitÃ©s :
    #--- Attention : il faut mettre uplevel devant la commande source
    #--- car les fichiers contiennent des procedures globales (qui ne sont pas dans le namespace)
    uplevel #0 "source \"[ file join $spcaudace(rep_spc) spc_ini.tcl ]\""
