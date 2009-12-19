@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi.tcl,v 1.22 2009-01-11 11:49:52 robertdelmas Exp $
+# Mise a jour $Id: modpoi.tcl,v 1.23 2009-12-19 16:38:05 robertdelmas Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -913,8 +913,7 @@ proc modpoi_wiz3 { { h0 0 } { d0 0 } { starindex 1 } } {
       destroy $modpoi(g,base)
    }
    #--- Choose the star
-   set now now
-   catch {set now [::audace::date_sys2ut now]}
+   set now [::audace::date_sys2ut now]
    set star [modpoi_choose_beststar $h0 $d0 $now]
    #---
    set modpoi(star$starindex) $star
@@ -1498,8 +1497,7 @@ proc modpoi_coord { } {
    }
    set modpoi(star$starindex,ra_cal) $modpoi(star$starindex,raadt)
    set modpoi(star$starindex,dec_cal) $modpoi(star$starindex,decadt)
-   set now now
-   catch {set now [::audace::date_sys2ut now]}
+   set now [::audace::date_sys2ut now]
    set modpoi(star$starindex,date) [mc_date2jd $now]
    set dummy [mc_radec2altaz $modpoi(star$starindex,ra_cal) $modpoi(star$starindex,dec_cal) $modpoi(var,home) $now]
    set modpoi(star$starindex,h_cal) [lindex $dummy 2]
@@ -2000,8 +1998,7 @@ proc modpoi_cat2tel { radec } {
    global modpoi
 
    #--- Catalog 2 observed
-   set now now
-   catch {set now [::audace::date_sys2ut now]}
+   set now [::audace::date_sys2ut now]
    set listv [modpoi_catalogmean2apparent [lindex $radec 0] [lindex $radec 1] J2000.0 $now]
    #--- Case :
    #--- The telescope mount computes the refraction corrections
@@ -2021,8 +2018,7 @@ proc modpoi_tel2cat { radec } {
    #--- Telescope 2 observed
    set radec [modpoi_passage $radec tel2cat ]
    #--- Observed 2 catalog
-   set now now
-   catch {set now [::audace::date_sys2ut now]}
+   set now [::audace::date_sys2ut now]
    #--- Case :
    #--- The telescope mount computes the refraction corrections
    #--- yes = 1 (case of the Meade LX200, Sky Sensor 2000, ...)
@@ -2049,8 +2045,7 @@ proc modpoi_passage { radec sens } {
    #--- Met en forme les valeurs
    set deltah 0
    set deltad 0
-   set now now
-   catch {set now [::audace::date_sys2ut now]}
+   set now [::audace::date_sys2ut now]
    set phi [lindex $modpoi(var,home) 3]
    set ra0 $ra
    set dec0 $dec

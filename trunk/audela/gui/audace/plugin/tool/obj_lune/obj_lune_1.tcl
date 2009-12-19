@@ -2,7 +2,7 @@
 # Fichier : obj_lune_1.tcl
 # Description : Programme de calcul (ephemerides, etc.)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune_1.tcl,v 1.8 2008-12-16 17:01:48 robertdelmas Exp $
+# Mise a jour $Id: obj_lune_1.tcl,v 1.9 2009-12-19 16:37:05 robertdelmas Exp $
 #
 
 namespace eval ::obj_lune {
@@ -16,10 +16,7 @@ namespace eval ::obj_lune {
 
       if { [ winfo exists $obj_lune(onglet2).frame8.lab6 ] } {
          #--- Preparation de l'heure TU pour le calcul des ephemerides
-         set now now
-         catch {
-            set now [::audace::date_sys2ut now]
-         }
+         set now [::audace::date_sys2ut now]
          #--- Calcul des ephemerides de la Lune
          set obj_lune(ephemerides) [mc_ephem {Moon} [list [mc_date2tt $now]] {OBJENAME RAH RAM RAS.S DECD DECM DECS.S MAG APPDIAM PHASE ALTITUDE AZIMUTH DELTA HA} -topo $audace(posobs,observateur,gps)]
          #--- Affichage de l'ascension droite et de la declinaison du centre du disque lunaire
@@ -223,10 +220,7 @@ namespace eval ::obj_lune {
 
       #--- Recherche de la premiere meilleure date
       #--- Preparation de l'heure TU pour le calcul des ephemerides
-      set now now
-      catch {
-         set now [::audace::date_sys2ut now]
-      }
+      set now [::audace::date_sys2ut now]
       #--- Initialisation de l'ecart en longitude
       set Ecart "0.5"
       #--- Mise en forme de la longitude selene dans le meme repere que la longitude du terminateur
@@ -291,10 +285,7 @@ namespace eval ::obj_lune {
       ::obj_lune::Lune_Dessine_Phase_Meilleure_Date $fraction_illu_0 $age_lune_now_0 $color(red)
       #--- Recherche de la deuxieme meilleure date
       #--- Preparation de l'heure TU pour le calcul des ephemerides
-      set now now
-      catch {
-         set now [::audace::date_sys2ut now]
-      }
+      set now [::audace::date_sys2ut now]
       #--- Recherche de l'autre meilleur moment
       for {set i 1} {$i <= 1440} {incr i} {
          #--- Transformation de la date en jours juliens

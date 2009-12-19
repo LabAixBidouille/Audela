@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude.tcl,v 1.25 2009-12-13 16:41:56 robertdelmas Exp $
+# Mise a jour $Id: cmaude.tcl,v 1.26 2009-12-19 16:39:42 robertdelmas Exp $
 #
 # Remarks :
 # The definition of some variables (binning, exp. time, rythm, etc.)
@@ -116,10 +116,7 @@ namespace eval ::cmaude {
       global audace caption compteur conf panneau
 
       #--- Initialisation de l'heure TU ou TL
-      set now now
-      catch {
-         set now [::audace::date_sys2ut now]
-      }
+      set now [::audace::date_sys2ut now]
       #--- Chargement des variables de configuration
       set fichier_cmaude [ file join $audace(rep_plugin) tool cmaude cmaude_ini.tcl ]
       if { [ file exists $fichier_cmaude ] } {
@@ -223,10 +220,7 @@ namespace eval ::cmaude {
          $This.fra2.but1 configure -relief groove -state disabled
          update
          #--- Initialisation de l'heure TU ou TL
-         set now now
-         catch {
-            set now [::audace::date_sys2ut now]
-         }
+         set now [::audace::date_sys2ut now]
          set loopexit "0"
          ::console::affiche_erreur "###############################\n"
          ::console::affiche_erreur "$caption(cmaude,debut_script)\n"
@@ -328,10 +322,7 @@ namespace eval ::cmaude {
                   break
                }
                #--- Bouclage sur l'heure systeme
-               set now now
-               catch {
-                  set now [::audace::date_sys2ut now]
-               }
+               set now [::audace::date_sys2ut now]
                update
                set actuel [mc_date2jd $now]
                ::console::affiche_erreur "$caption(cmaude,il_est_maintenant) [string range [mc_date2iso8601 $actuel] 11 20] $caption(cmaude,TU)\n"
@@ -346,10 +337,7 @@ namespace eval ::cmaude {
                      break
                   }
                   #--- Bouclage sur l'heure systeme
-                  set now now
-                  catch {
-                     set now [::audace::date_sys2ut now]
-                  }
+                  set now [::audace::date_sys2ut now]
                   update
                   set actuel [mc_date2jd $now]
                   set panneau(cmaude,status2) "$caption(cmaude,attendre_nuit)"
@@ -392,10 +380,7 @@ namespace eval ::cmaude {
                ::cmaude::cmdAcq
                incr compteur
                #--- Bouclage sur l'heure systeme
-               set now now
-               catch {
-                  set now [::audace::date_sys2ut now]
-               }
+               set now [::audace::date_sys2ut now]
                update
                set actuel [mc_date2jd $now]
                set flag [expr [expr $panneau(cmaude,rythm) / 86400.0] + $actuel]
@@ -405,10 +390,7 @@ namespace eval ::cmaude {
                      break
                   }
                   #--- Bouclage sur l'heure systeme
-                  set now now
-                  catch {
-                     set now [::audace::date_sys2ut now]
-                  }
+                  set now [::audace::date_sys2ut now]
                   update
                   set actuel [mc_date2jd $now]
                   set panneau(cmaude,status2) "$caption(cmaude,boucle_acquisition)"
@@ -499,10 +481,7 @@ namespace eval ::cmaude {
       global audace caption compteur namelog panneau
 
       #--- Initialisation de l'heure TU ou TL
-      set now now
-      catch {
-         set now [::audace::date_sys2ut now]
-      }
+      set now [::audace::date_sys2ut now]
       #--- Acquisition of an image
       set actuel [mc_date2jd $now]
       #--- Test of the astronomical twilight and of the presence of the Moon
@@ -634,10 +613,7 @@ namespace eval ::cmaude {
       set cmconf(localite) "$audace(posobs,observateur,gps)"
       set localite "$cmconf(localite)"
       #--- Initialisation de l'heure TU ou TL
-      set now now
-      catch {
-         set now [::audace::date_sys2ut now]
-      }
+      set now [::audace::date_sys2ut now]
       set nownow [mc_date2jd $now]
 
       set datheur [mc_date2ymdhms $nownow]
