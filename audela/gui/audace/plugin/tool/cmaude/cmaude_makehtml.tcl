@@ -2,7 +2,7 @@
 # Fichier : cmaude_makehtml.tcl
 # Description : Ecrit une page HTML au fur et a mesure de la nuit, ou sont disponibles les images JPG et FITS
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude_makehtml.tcl,v 1.3 2007-01-20 11:02:40 robertdelmas Exp $
+# Mise a jour $Id: cmaude_makehtml.tcl,v 1.4 2009-12-19 16:38:41 robertdelmas Exp $
 #
 
 variable cmconf
@@ -12,10 +12,7 @@ global compteur
 global loopexit
 
 #--- Initialisation de l'heure TU ou TL
-set now now
-catch {
-   set now [::audace::date_sys2ut now]
-}
+set now [::audace::date_sys2ut now]
 #--- Acquisition of an image
 set actuel [mc_date2jd $now]
 #---
