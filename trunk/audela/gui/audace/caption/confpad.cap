@@ -1,6 +1,6 @@
 #
 # Fichier : confpad.cap
-# Mise a jour $Id: confpad.cap,v 1.15 2009-12-09 16:53:46 robertdelmas Exp $
+# Mise a jour $Id: confpad.cap,v 1.16 2009-12-19 09:11:10 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -69,7 +69,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confpad,appliquer)    "Anwenden"
    set caption(confpad,fermer)       "Schließen"
    set caption(confpad,aide)         "Hilfe"
-  set caption(confpad,configurer)    "Konfigurieren"
+   set caption(confpad,configurer)   "Konfigurieren"
 
    set caption(confpad,pas_raquette) "Keine Hand Kontroller."
 

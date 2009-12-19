@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.49 2009-12-09 16:52:14 robertdelmas Exp $
+# Mise a jour $Id: confcam.cap,v 1.50 2009-12-19 09:10:35 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -76,7 +76,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,appliquer)               "Applicare"
    set caption(confcam,fermer)                  "Chiudere"
    set caption(confcam,aide)                    "Aiuto"
-   set caption(confcam,arreter)                 "Ferma"
+   set caption(confcam,arreter)                 "Fermare"
 
    set caption(confcam,obtu_ouvert)             "Aperto"
    set caption(confcam,obtu_ferme)              "Chiuso"

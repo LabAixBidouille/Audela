@@ -1,6 +1,6 @@
 #
 # Fichier : vellemank8056.cap
-# Mise a jour $Id: vellemank8056.cap,v 1.3 2009-11-05 18:25:05 robertdelmas Exp $
+# Mise a jour $Id: vellemank8056.cap,v 1.4 2009-12-19 09:26:13 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -33,7 +33,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vellemank8056,serialPort)   "Porta seriale"
    set caption(vellemank8056,refresh)      "Rinfresca"
    set caption(vellemank8056,test)         "Test"
-   set caption(vellemank8056,stop)         "Ferma"
+   set caption(vellemank8056,stop)         "Fermare"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {

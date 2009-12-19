@@ -1,6 +1,6 @@
 #
 # Fichier : visio.cap
-# Mise a jour $Id: visio.cap,v 1.15 2009-12-09 16:59:35 robertdelmas Exp $
+# Mise a jour $Id: visio.cap,v 1.16 2009-12-19 09:26:52 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -136,7 +136,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio,renommer)            "Rinominare"
    set caption(visio,suppr_serie)         "Eliminare"
    set caption(visio,save_toA)            "Salva file zip\nsul disco A:"
-   set caption(visio,copie_fromA)         "Copia file\nzip su A:"
+   set caption(visio,copie_fromA)         "Copiare file\nzip su A:"
    set caption(visio,annuler)             "Cancellare"
    set caption(visio,nom_invalide)        "Il nome del seguente file non e' valido (contiene caratteri accentati): "
    set caption(visio,rep_images_audace)   "Cartella immagini di Aud'ACE"
@@ -162,9 +162,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio,feninidisket)        "Salvataggio zip su dischetto"
    set caption(visio,fenfulldisket)       "Copia terminata sul dischetto n°%s"
    set caption(visio,saveserie_toA)       "Salva la sequenza corrente su A:"
-   set caption(visio,saverep_toA)         "Salvare la directory corrente su A:"
-   set caption(visio,save_continue)       "Continua"
-   set caption(visio,save_stop)           "Ferma"
+   set caption(visio,saverep_toA)         "Salva la directory corrente su A:"
+   set caption(visio,save_continue)       "Continuare"
+   set caption(visio,save_stop)           "Chiudere"
    set caption(visio,init1)               "Introdurre un dischetto nel lettore A:."
    set caption(visio,achtung)             "ATTENZIONE: Tutti i file presenti sul dischetto andranno perduti."
    set caption(visio,full1)               "Il dischetto di destinazione e` pieno."

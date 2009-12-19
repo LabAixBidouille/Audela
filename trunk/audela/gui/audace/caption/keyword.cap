@@ -1,6 +1,6 @@
 #
 # Fichier : keyword.cap
-# Mise a jour $Id: keyword.cap,v 1.27 2009-12-17 22:21:32 robertdelmas Exp $
+# Mise a jour $Id: keyword.cap,v 1.28 2009-12-19 09:14:28 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -184,15 +184,15 @@ if { [ string compare $langage "french" ] == "0" } {
 
    #--- Choix de la configuration
    set caption(keyword,nom_config)                     "Nome della configurazione"
-   set caption(keyword,nom_nouvelle_config)            "# Nom de la nouvelle configuration"
-   set caption(keyword,ajouter_config)                 "Aggiungere una configurazione"
-   set caption(keyword,supprimer_config)               "Eliminare una configurazione"
-   set caption(keyword,copier_config)                  "Copia una configurazione"
+   set caption(keyword,nom_nouvelle_config)            "Nome della nuova configurazione"
+   set caption(keyword,ajouter_config)                 "Aggiungere configurazione"
+   set caption(keyword,supprimer_config)               "Eliminare configurazione"
+   set caption(keyword,copier_config)                  "Copiare configurazione"
    set caption(keyword,config_a_ajouter)               "Nome della cofigurazione da aggiungere"
-   set caption(keyword,errorEmptyName)                 "# Le nom de la configuration est vide."
-   set caption(keyword,errorExistingName)              "# Le nom de la configuration est déjà utilisé."
-   set caption(keyword,errorDefaultName)               "# Cette configuration ne peut pas être supprimée."
-   set caption(keyword,confirmDeleteConfig)            "# Suppression de la configuration :"
+   set caption(keyword,errorEmptyName)                 "Nome della configurazione vuoto."
+   set caption(keyword,errorExistingName)              "Nome della configurazione già presente."
+   set caption(keyword,errorDefaultName)               "Configurazione non eliminabile."
+   set caption(keyword,confirmDeleteConfig)            "Eliminazione della configurazione:"
 
    #--- Fenetre de configuration
    set caption(keyword,titre)                          "Parole chiave FITS"

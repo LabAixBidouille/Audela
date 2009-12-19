@@ -1,6 +1,6 @@
 #
 # Fichier : vellemank8055.cap
-# Mise a jour $Id: vellemank8055.cap,v 1.5 2009-11-05 18:24:48 robertdelmas Exp $
+# Mise a jour $Id: vellemank8055.cap,v 1.6 2009-12-19 09:22:05 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -63,7 +63,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vellemank8055,chenillard)       "Auto test"
    set caption(vellemank8055,raz)              "Azzeramento"
    set caption(vellemank8055,lire)             "Leggere gli ingressi"
-   set caption(vellemank8055,stop)             "Ferma"
+   set caption(vellemank8055,stop)             "Fermare"
    set caption(vellemank8055,attention)        "Attenzione"
    set caption(vellemank8055,cannotcreatelink) "Il collegamento non e' stata creata."
    set caption(vellemank8055,seeconsole)       "Vedere i dettagli sul Console."

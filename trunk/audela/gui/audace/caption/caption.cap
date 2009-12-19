@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.71 2009-12-17 22:20:11 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.72 2009-12-19 09:10:02 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -225,10 +225,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,fitsHduList)                  "HDU"
    set caption(confVisu,fermeture_impossible)         "Impossibile arrestare Aud'ACE a causa di una operazione in corso nella utility: %s"
    set caption(confVisu,fermeture_outil_impossible)   "Impossibile fermare %s a causa di una operazione in corso."
-   set caption(confVisu,label_1)                      "# Seuils RVB"
-   set caption(confVisu,label_2)                      "# Seuils bas"
-   set caption(confVisu,label_3)                      "# Seuils hauts"
-   set caption(confVisu,msg)                          "# L'en-tête FITS ne contient pas les mots clés nécessaires."
+   set caption(confVisu,label_1)                      "Soglie RGB"
+   set caption(confVisu,label_2)                      "Soglie basse"
+   set caption(confVisu,label_3)                      "Soglie alte"
+   set caption(confVisu,msg)                          "Intestazione FITS non contiene le keyword necessarie."
 
    set caption(plotxy,figure)                         "Figura"
 

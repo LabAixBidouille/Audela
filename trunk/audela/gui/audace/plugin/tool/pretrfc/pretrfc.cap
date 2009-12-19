@@ -1,6 +1,6 @@
 #
 # Fichier : pretrfc.cap
-# Mise a jour $Id: pretrfc.cap,v 1.13 2009-11-07 15:01:34 robertdelmas Exp $
+# Mise a jour $Id: pretrfc.cap,v 1.14 2009-12-19 09:15:35 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -395,7 +395,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretrfc,fichBrutResDeja)         "Almeno un file di immagine pretrattata\ne' gia` esistente. Confermate?"
    set caption(pretrfc,fichNoirBrutAbs)         "Il file di dark per il trattamento\ndelle immagini stellari e` introvabile"
    set caption(pretrfc,fichPLUBrutAbs)          "Il file del flat per il trattamento\ndelle immagini stellari e` introvabile"
-   set caption(pretrfc,conf)                    "Conferma"
+   set caption(pretrfc,conf)                    "Confermare"
    set caption(pretrfc,pbmesserr)               "Problema con segnalazione di errore"
    set caption(pretrfc,debPrech)                "#------ Inizio del pretrattamento dei file di offset\n"
    set caption(pretrfc,finPrech)                "#------ Fine del pretrattamento dei file di offset\n\n"

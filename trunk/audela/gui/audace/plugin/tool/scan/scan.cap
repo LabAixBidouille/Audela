@@ -1,6 +1,6 @@
 #
 # Fichier : scan.cap
-# Mise a jour $Id: scan.cap,v 1.22 2009-11-11 15:50:02 robertdelmas Exp $
+# Mise a jour $Id: scan.cap,v 1.23 2009-12-19 09:19:35 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -61,7 +61,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scan,configuration)  "Configuration"
    set caption(scan,colonnes)       "Colonnes"
    set caption(scan,lignes)         "Lignes"
-  set caption(scan,pixel)          "Pixel"
+   set caption(scan,pixel)          "Pixel"
    set caption(scan,micron)         "µm"
    set caption(scan,interligne)     "Interligne"
    set caption(scan,focale)         "Focale"

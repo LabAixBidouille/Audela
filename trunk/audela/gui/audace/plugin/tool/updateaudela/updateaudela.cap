@@ -1,6 +1,6 @@
 #
 # Fichier : updateaudela.cap
-# Mise a jour $Id: updateaudela.cap,v 1.18 2009-11-07 16:31:48 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.cap,v 1.19 2009-12-19 09:21:41 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -313,7 +313,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(updateaudela,fileExists)         "File %s already exists.\nUpdate it?"
    set caption(updateaudela,directoryExists)    "Folder %s already exists.\nUpdate it?"
    set caption(updateaudela,directoryNotExits)  "Plug-in cannot be deleted. Folder %s does not exist."
-  set caption(updateaudela,directory)          "Folder %s already exists.\nUpdate it?"
+   set caption(updateaudela,directory)          "Folder %s already exists.\nUpdate it?"
    set caption(updateaudela,confirmDelete)      "Are you sure you want to delete %s?"
    set caption(updateaudela,makeKitOk)          "File %s is created."
    set caption(updateaudela,confirmInstall)     "Do you want to replace %s by %s?"
