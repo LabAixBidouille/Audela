@@ -248,22 +248,16 @@ void CBuffer::LoadFile(char *filename)
    // je sauvegarde les seuils initiaux et je convertis les seuils en float
    k = this->keywords->FindKeyword("MIPS-HI");
    if(k != NULL  ) {
-      // je convertis le seuil en float
-      if( k->GetDatatype() == TINT ) {
-         keywords->Add("MIPS-HI",(char *) &initialMipsHi,TFLOAT,"Hight cut","ADU");
-      }
-      // je sauvegarde la valeur initale du seuil
-      initialMipsHi = (float) k->GetIntValue();
+      initialMipsHi = k->GetFloatValue();
+   } else {
+      initialMipsHi = 0;
    }
 
    k = this->keywords->FindKeyword("MIPS-LO");
    if(k) {
-      // je convertis le seuil en float
-      if( k->GetDatatype() == TINT ) {
-         this->keywords->Add("MIPS-LO",&initialMipsLo,TFLOAT,"Low cut","ADU");
-      }
-      // je sauvegarde la valeur initale du seuil
       initialMipsLo = k->GetFloatValue();
+   } else {
+      initialMipsLo = 0;
    }
    pthread_mutex_unlock(&mutex);
 }
