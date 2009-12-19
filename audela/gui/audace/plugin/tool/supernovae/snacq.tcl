@@ -2,7 +2,7 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snacq.tcl,v 1.22 2009-12-13 16:46:02 robertdelmas Exp $
+# Mise a jour $Id: snacq.tcl,v 1.23 2009-12-19 16:31:43 robertdelmas Exp $
 #
 
 # ===================================================================
@@ -748,10 +748,7 @@ proc snacq_go { {sndebug 0} } {
    # ============================================
    # === Initialisation de l'heure (TU ou HL) ===
    # ============================================
-   set now now
-   catch {
-      set now [::audace::date_sys2ut now]
-   }
+   set now [::audace::date_sys2ut now]
 
    # ===================================================================
    # === Calcule les heures de la prochaine nuit et du prochain jour ===
@@ -787,10 +784,7 @@ proc snacq_go { {sndebug 0} } {
                   }
                }
                #--- Bouclage sur l'heure TU du systeme
-               set now now
-               catch {
-                  set now [::audace::date_sys2ut now]
-               }
+               set now [::audace::date_sys2ut now]
                update
             }
          }
@@ -849,10 +843,7 @@ proc snacq_go { {sndebug 0} } {
    set nbgal 0
    set nbgal2 0
    set listfileeventdone ""
-   set now now
-   catch {
-      set now [::audace::date_sys2ut now]
-   }
+   set now [::audace::date_sys2ut now]
    if {$sndebug==1} {
       if {[mc_date2jd $now]<$jj_debutnuit} {
          set nownow $jj_debutnuit
@@ -885,10 +876,7 @@ proc snacq_go { {sndebug 0} } {
       if {$sndebug==1} {
          set nownow [ expr ${nownow0} + $duree / 86400. * $nbgal2 ]
      } else {
-         set now now
-         catch {
-            set now [::audace::date_sys2ut now]
-         }
+         set now [::audace::date_sys2ut now]
          set nownow [mc_date2jd $now]
       }
 
