@@ -2,7 +2,7 @@
 # Fichier : viseur_polaire_taka.tcl
 # Description : Positionne l'etoile polaire dans un viseau polaire de type Takahashi ou à niveau
 # Auteur : Robert DELMAS
-# Mise a jour $Id: viseur_polaire_taka.tcl,v 1.12 2008-12-16 16:32:05 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_taka.tcl,v 1.13 2009-12-19 16:18:31 robertdelmas Exp $
 #
 
 namespace eval ::viseurPolaireTaka {
@@ -340,10 +340,7 @@ namespace eval ::viseurPolaireTaka {
       global viseurPolaireTaka
 
       #--- Initialisation du temps
-      set now now
-      catch {
-         set now [::audace::date_sys2ut now]
-      }
+      set now [ ::audace::date_sys2ut now ]
 
       #--- Coordonnees de la Polaire J2000.0
       set ad_LP "02h31m47.08"
@@ -355,8 +352,7 @@ namespace eval ::viseurPolaireTaka {
       set dec_LP_vrai [ lindex $ad_dec_v 1 ]
 
       #--- Preparation du calcul de l'angle horaire
-      set altaz_LP [ mc_radec2altaz $ad_LP_vrai $dec_LP_vrai $audace(posobs,observateur,gps) \
-         [ ::audace::date_sys2ut now ] ]
+      set altaz_LP [ mc_radec2altaz $ad_LP_vrai $dec_LP_vrai $audace(posobs,observateur,gps) $now ]
 
       #--- Angle horaire
       set anglehoraire_LP [ lindex $altaz_LP 2 ]
