@@ -1,7 +1,7 @@
 
 # Procédures liées à 'linterface graphique et au tracé des profils de raies.
 
-# Mise a jour $Id: spc_gui.tcl,v 1.6 2009-11-14 18:57:05 michelpujol Exp $
+# Mise a jour $Id: spc_gui.tcl,v 1.7 2009-12-19 09:53:39 bmauclaire Exp $
 
 
 
@@ -71,8 +71,8 @@ proc spc_winini { } {
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_file_space)
       if {$nbprinters>0} {
          for {set k 0} {$k<$nbprinters} {incr k} {
-             # .spc.menuBar.file add command -label "$caption(spcaudace,gui,print_on) [lindex $printernames $k]" -command "spc_print $k" -underline 0 -accelerator "Ctrl-P" -state disabled
-             .spc.menuBar.file add command -label "$caption(spcaudace,gui,print_on) [lindex $printernames $k]" -command "spc_print $k" -underline 0 -accelerator "Ctrl-P"
+	     # .spc.menuBar.file add command -label "$caption(spcaudace,gui,print_on) [lindex $printernames $k]" -command "spc_print $k" -underline 0 -accelerator "Ctrl-P" -state disabled
+	     .spc.menuBar.file add command -label "$caption(spcaudace,gui,print_on) [lindex $printernames $k]" -command "spc_print $k" -underline 0 -accelerator "Ctrl-P"
          }
       }
 
@@ -317,14 +317,14 @@ proc spc_winini { } {
 
 
 proc open_fitfile { {filenamespc_spatial ""} } {
-        ## Chargement : source $audace(rep_scripts)/profil_raie.tcl
-        ## Les var nommees audace_* sont globales
-        global audace
+	## Chargement : source $audace(rep_scripts)/profil_raie.tcl
+	## Les var nommees audace_* sont globales
+	global audace
         global caption
-        ## flag audace
-        global conf
-        global flag_ok
-        set extsp "dat"
+	## flag audace
+	global conf
+	global flag_ok
+	set extsp "dat"
 
         global caption
 
@@ -474,41 +474,41 @@ proc spc_loadmore { args } {
       #--- Génère la liste lambda, intensités :
       set spectre_data [ spc_fits2data "$filename" ]
 
-        set xlist [ lindex $spectre_data 0 ]
-        set ylist [ lindex $spectre_data 1 ]
-        set ymax [ lindex [ lsort -decreasing -real $ylist ] 0 ]
-        set ymin [ lindex [ lsort -increasing -real $ylist ] 0 ]
+	set xlist [ lindex $spectre_data 0 ]
+	set ylist [ lindex $spectre_data 1 ]
+	set ymax [ lindex [ lsort -decreasing -real $ylist ] 0 ]
+	set ymin [ lindex [ lsort -increasing -real $ylist ] 0 ]
 
-        #--- Créee les vecteurs BLT à tracer :
-        set len [ llength $xlist ]
-        blt::vector create gx$lineName
-        blt::vector create gy$lineName
+	#--- Créee les vecteurs BLT à tracer :
+	set len [ llength $xlist ]
+	blt::vector create gx$lineName
+	blt::vector create gy$lineName
 
-        #--- je copie les listes dans les vecteurs :
-        gx$lineName set $xlist
-        gy$lineName set $ylist
+	#--- je copie les listes dans les vecteurs :
+	gx$lineName set $xlist
+	gy$lineName set $ylist
 
-        #--- si la courbe existe deja, je la supprime :
-        if { [ .spc.g element exists $lineName ] } {
-            .spc.g element delete $lineName
-        }
+	#--- si la courbe existe deja, je la supprime :
+	if { [ .spc.g element exists $lineName ] } {
+	    .spc.g element delete $lineName
+	}
 
-        #--- je dessine la courbe :
-        if { [ llength $spcaudace(gloaded) ] == 0 } {
-            .spc.g configure -title "$filename"
-            .spc.g axis configure x2 -min [lindex $xlist 0] -max [ lindex $xlist [ expr $len-1 ] ]
-            .spc.g axis configure y2 -min $ymin -max $ymax
-            .spc.g axis configure x -min [lindex $xlist 0] -max [ lindex $xlist [ expr $len-1 ] ]
-            .spc.g axis configure y -min $ymin -max $ymax
-        }
-        .spc.g element create $lineName -symbol none -xdata gx$lineName -ydata gy$lineName -smooth natural -color $lineColor
+	#--- je dessine la courbe :
+	if { [ llength $spcaudace(gloaded) ] == 0 } {
+	    .spc.g configure -title "$filename"
+	    .spc.g axis configure x2 -min [lindex $xlist 0] -max [ lindex $xlist [ expr $len-1 ] ]
+	    .spc.g axis configure y2 -min $ymin -max $ymax
+	    .spc.g axis configure x -min [lindex $xlist 0] -max [ lindex $xlist [ expr $len-1 ] ]
+	    .spc.g axis configure y -min $ymin -max $ymax
+	}
+	.spc.g element create $lineName -symbol none -xdata gx$lineName -ydata gy$lineName -smooth natural -color $lineColor
 
-        #--- Traitement du résultat :
-        ::console::affiche_resultat "Nom du profil affiché de couleur $lineColor : $lineName\nNom à utiliser avec spc_gdelete \n"
-        lappend spcaudace(gloaded) "$lineName"
-        return "$lineName"
+	#--- Traitement du résultat :
+	::console::affiche_resultat "Nom du profil affiché de couleur $lineColor : $lineName\nEffacement avec : spc_gdelete $lineName\n"
+	lappend spcaudace(gloaded) "$lineName"
+	return "$lineName"
     } else {
-        ::console::affiche_erreur "Usage: spc_loadmore profil_raies_fits ?color (green, red,...)?\n\n"
+	::console::affiche_erreur "Usage: spc_loadmore profil_raies_fits ?color (green, red,...)?\n\n"
     }
 }
 #****************************************************************#
@@ -528,21 +528,21 @@ proc spc_gdelete { args } {
     global profilspc spcaudace
 
     if { [ llength $args ] == 1 } {
-        set nom_profil [ lindex $args 0 ]
+	set nom_profil [ lindex $args 0 ]
 
-        #--- si la courbe existe deja, je la supprime :
-        if { [ .spc.g element exists $nom_profil ] } {
-            .spc.g element delete $nom_profil
-            #-- Gère à défaut, les couleurs comme une lifo : PAS TOP
-            # set spcaudace(gcolor) [ expr $spcaudace(gcolor)-1 ]
-            if { $spcaudace(gcolor) < 0 } {
-                set spcaudace(gcolor) 0
-            }
-        } else {
-            ::console::affiche_resultat "Ce profil ne correspond à aucun nom de profil tracé.\n"
-        }
+	#--- si la courbe existe deja, je la supprime :
+	if { [ .spc.g element exists $nom_profil ] } {
+	    .spc.g element delete $nom_profil
+	    #-- Gère à défaut, les couleurs comme une lifo : PAS TOP
+	    # set spcaudace(gcolor) [ expr $spcaudace(gcolor)-1 ]
+	    if { $spcaudace(gcolor) < 0 } {
+		set spcaudace(gcolor) 0
+	    }
+	} else {
+	    ::console::affiche_resultat "Ce profil ne correspond à aucun nom de profil tracé.\n"
+	}
     } else {
-        ::console::affiche_erreur "Usage: spc_gdelete nom_profil_raies\n\n"
+	::console::affiche_erreur "Usage: spc_gdelete nom_profil_raies\n\n"
     }
 }
 #****************************************************************#
@@ -561,17 +561,17 @@ proc spc_setgcolor {} {
     set nbcolors [ expr [ llength $spcaudace(lgcolors) ]-1 ]
 
     if { [ llength $spcaudace(gloaded) ] == 0 } {
-        set spcaudace(gcolor) 0
-        return $spcaudace(gcolor)
+	set spcaudace(gcolor) 0
+	return $spcaudace(gcolor)
     } else {
-        if { $spcaudace(gcolor) < $nbcolors } {
-            set spcaudace(gcolor) [ expr $spcaudace(gcolor) + 1 ]
-            return $spcaudace(gcolor)
-        } else {
-            #-- Couleur sélectionnée est la première :
-            set spcaudace(gcolor) 0
-            return $spcaudace(gcolor)
-        }
+	if { $spcaudace(gcolor) < $nbcolors } {
+	    set spcaudace(gcolor) [ expr $spcaudace(gcolor) + 1 ]
+	    return $spcaudace(gcolor)
+	} else {
+	    #-- Couleur sélectionnée est la première :
+	    set spcaudace(gcolor) 0
+	    return $spcaudace(gcolor)
+	}
     }
 }
 #*********************************************************#
@@ -592,30 +592,30 @@ proc spc_gdeleteall { args } {
     global profilspc spcaudace
 
     if { [ llength $args ] == 0 } {
-        #--- Si aucune courbe tracée, ne fait rien :
-        if { [ llength $spcaudace(gloaded) ] ==  0 } {
-            return ""
-        }
-        set nb_profils 0
-        foreach nom_profil $spcaudace(gloaded) {
-            if { [ .spc.g element exists $nom_profil ] } {
-                .spc.g element delete $nom_profil
-                #set spcaudace(gcolor) [ expr $spcaudace(gcolor)-1 ]
-                if { $spcaudace(gcolor) < 0 } {
-                    set spcaudace(gcolor) 0
-                }
-                incr nb_profils
-            } else {
-                ::console::affiche_resultat "Ce profil ne correspond à aucun nom de profil tracé.\n"
-            }
-        }
-        set spcaudace(gcolor) 0
-        set spcaudace(gloaded) [ list ]
-        .spc.g configure -title ""
-        ::console::affiche_resultat "$nb_profils profil(s) effacé(s).\n"
-        return $nb_profils
+	#--- Si aucune courbe tracée, ne fait rien :
+	if { [ llength $spcaudace(gloaded) ] ==  0 } {
+	    return ""
+	}
+	set nb_profils 0
+	foreach nom_profil $spcaudace(gloaded) {
+	    if { [ .spc.g element exists $nom_profil ] } {
+		.spc.g element delete $nom_profil
+		#set spcaudace(gcolor) [ expr $spcaudace(gcolor)-1 ]
+		if { $spcaudace(gcolor) < 0 } {
+		    set spcaudace(gcolor) 0
+		}
+		incr nb_profils
+	    } else {
+		::console::affiche_resultat "Ce profil ne correspond à aucun nom de profil tracé.\n"
+	    }
+	}
+	set spcaudace(gcolor) 0
+	set spcaudace(gloaded) [ list ]
+	.spc.g configure -title ""
+	::console::affiche_resultat "$nb_profils profil(s) effacé(s).\n"
+	return $nb_profils
     } else {
-        ::console::affiche_erreur "Usage: spc_gdeleteall\n\n"
+	::console::affiche_erreur "Usage: spc_gdeleteall\n\n"
     }
 }
 #****************************************************************#
@@ -697,7 +697,8 @@ proc pvisu { } {
 
    #--- Affichage du graphique :
    .spc.g configure -title $profilspc(object)
-##   .spc.g axis configure y -title $caption(spcaudace,gui,intensity)
+   #-- Probleme avec BLT pour tcl8.5 :
+   #- .spc.g axis configure y -title $caption(spcaudace,gui,intensity)
    set profilspc(yunit) $caption(spcaudace,gui,adu)
    if { [ .spc.g element exists "line1" ] } {
        .spc.g element delete line1

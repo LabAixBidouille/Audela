@@ -1,6 +1,6 @@
 
 
-# Mise a jour $Id: spc_filter2.tcl,v 1.7 2009-09-19 14:01:17 bmauclaire Exp $
+# Mise a jour $Id: spc_filter2.tcl,v 1.8 2009-12-19 09:53:39 bmauclaire Exp $
 # Mise a jour Patrick Lailly 29 mai 2009
 
 
@@ -234,17 +234,17 @@ proc spc_passebas_pat { args } {
 }
 #****************************************************************#
 
-# Procedure de lissage d'un profil basse resolution typiquement un résultat de division, 
-# supposé calibré linéairement, via une fonction linéaire par morceaux en considerant comme 
+# Procedure de lissage d'un profil basse resolution typiquement un rÃ©sultat de division, 
+# supposÃ© calibrÃ© linÃ©airement, via une fonction linÃ©aire par morceaux en considerant comme 
 # donnee aberrante les echantillons situes a proximite de raies bien connues (raies
 # telluriques, dioxygene,...)
 # Auteur : Patrick LAILLY
 # Date creation : 01-12-2008
 # Date modification :01-12-2008
-# Algo : ajustement par moindres carrés des données (résultat division) par une fonction 
+# Algo : ajustement par moindres carrÃ©s des donnÃ©es (rÃ©sultat division) par une fonction 
 # lineaire par morceaux. La procedure fonctionne ici en mode automatique : elle ne prend pas en compte les echantillons 
 # situes dans des intervalles de longueurs d'ondes definis dans le fichier forgetlambda.dat : ces echantillons sont 
-# censes etre potentiellement contamines par des raies d'absorbtion ou, de facon plus générale contenir des données 
+# censes etre potentiellement contamines par des raies d'absorbtion ou, de facon plus gÃ©nÃ©rale contenir des donnÃ©es 
 # aberrantes. Un coefficient d'extension de la largeur de ces intervalles donne la souplesse requise en cas de calibration # imprecise. 
 # Le parametre nechant definit la largeur des intervalles sur lesquels la fonction est lineaire
 # (ce parametre n'a pas beaucoup d'importance tant qu'il n'est pas trop grand, la valeur 20
@@ -271,20 +271,20 @@ proc spc_passebas_pat { args } {
 # - etc.
 # 
 # Le parametre visu permet de s'assurer visuellement de la qualite du resultat et donne 
-# les échantillons pris en compte (ce sont ceux pour lesquels  la courbe verte prend une valeur
+# les Ã©chantillons pris en compte (ce sont ceux pour lesquels  la courbe verte prend une valeur
 # non nulle.  
 #
 # Arguments obligatoires : fichier .fit du profil de raie, nom du fichier.dat (avec chemin d'acces si ce fichier n'est 
-# pas dans le répertoire images d'Audela) donnant les intervalles de longueur d'ondes ou sont localisees 
-# les raies perturbatrices coefficient d'extension de la largeur de ces intervalles, poids de régularisation
+# pas dans le rÃ©pertoire images d'Audela) donnant les intervalles de longueur d'ondes ou sont localisees 
+# les raies perturbatrices coefficient d'extension de la largeur de ces intervalles, poids de rÃ©gularisation
 # Arguments facultatifs : liste_regul, visu ('o' ou 'n'), nechant
 # 
 # Exemples :
 # spc_lowresfilterfile resultat_division_150t "$audace(rep_images)/forgetlambda.dat" 1.1 1.
 # spc_lowresfilterfile resultat_division_150t "$audace(rep_images)/forgetlambda.dat" 1.1 1. {1. 2.} 'o' 18
-# La version tunée Benji pour le lissage de la RI ne demande que le nom du fichier de cette RI
+# La version tunÃ©e Benji pour le lissage de la RI ne demande que le nom du fichier de cette RI
 ####################################################################
-proc spc_lowresfilterfile {args } {
+proc spc_lowresfilterfile { args } {
    global conf
    global audace spcaudace
    if { [ llength $args ] == 7 || [ llength $args ] == 4 || [ llength $args ] == 1 } {
@@ -295,38 +295,43 @@ proc spc_lowresfilterfile {args } {
       set ext_coef 1.1
       set regul_weight 10.
       set regul_list {1. 2.}
-	 	lappend regul_list 1.
-	 	set visu 'o'
-	 	set nechant 18	
+      lappend regul_list 1.
+      set visu 'o'
+      set nechant 18	
       if { [ llength $args ] > 1 } {
       	set catalog_file [ lindex $args 1 ]
       	set ext_coef [ lindex $args 2 ]
       	set regul_weight [ lindex $args 3 ]
       	if { [ llength $args ] == 4 } {
-	 			set regul_list [ list ]
-	 			lappend regul_list 1.
-	 			set visu 'o'
-	 			set nechant 18	
-     		} else {
-	 			set regul_list [ lindex $args 4 ]
-	 			set visu [ lindex $args 5 ]
-	 			set nechant [ lindex $args 6 ]
-     	 	}
-		}
-      set filename [ spc_piecewiselinearfilter $profile $ext_coef $regul_weight 'auto' $catalog_file $nechant $regul_list $visu ] 
+           set regul_list [ list ]
+           lappend regul_list 1.
+           set visu 'o'
+           set nechant 18	
+        } else {
+           set regul_list [ lindex $args 4 ]
+           set visu [ lindex $args 5 ]
+           set nechant [ lindex $args 6 ]
+        }
+      }
+      set filename [ spc_piecewiselinearfilter $profile $ext_coef $regul_weight "auto" $catalog_file $nechant $regul_list $visu ] 
       return [ file rootname $filename ]
    } else { 
       ::console::affiche_erreur "Usage: spc_lowresfilterfile profile ? fichier_catalogue ? ext_coef ? regul_weight ?  options : regul_list ? visu ? nechant ?\n\n"
       return 0
    }
 }
-# Procedure de lissage d'un profil basse resolution typiquement un résultat de division, supposé calibré linéairement, 
-# via une fonction linéaire par morceaux en ne retenant que les données correspondant à des longueurs d'ondes spécifiées 
-# via une liste (lambda_list) donnée en argument.
+#***************************************************************************************#
+
+
+
+########################################################################################
+# Procedure de lissage d'un profil basse resolution typiquement un rÃ©sultat de division, supposÃ© calibrÃ© linÃ©airement, 
+# via une fonction linÃ©aire par morceaux en ne retenant que les donnÃ©es correspondant Ã  des longueurs d'ondes spÃ©cifiÃ©es 
+# via une liste (lambda_list) donnÃ©e en argument.
 # Auteur : Patrick LAILLY
 # Date creation : 01-12-2008
 # Date modification : 01-12-2008
-# Algo : ajustement par moindres carrés des données (résultat division) par une fonction 
+# Algo : ajustement par moindres carrÃ©s des donnÃ©es (rÃ©sultat division) par une fonction 
 # lineaire par morceaux. 
 # Le parametre nechant definit la largeur des intervalles sur lesquels la fonction est lineaire
 # (ce parametre n'a pas beaucoup d'importance tant qu'il n'est pas trop grand, la valeur 20
@@ -353,10 +358,10 @@ proc spc_lowresfilterfile {args } {
 # - etc.
 # 
 # Le parametre visu permet de s'assurer visuellement de la qualite du resultat et donne 
-# les échantillons pris en compte (ce sont ceux pour lesquels  la courbe verte prend une valeur
+# les Ã©chantillons pris en compte (ce sont ceux pour lesquels  la courbe verte prend une valeur
 # non nulle.  
 # 
-# Arguments : fichier .fit du profil de raie, liste donnant les longueurs d'ondes à prendre en compte, regul_weight, 
+# Arguments : fichier .fit du profil de raie, liste donnant les longueurs d'ondes Ã  prendre en compte, regul_weight, 
 # liste_regul, visu ('o' ou 'n'), nechant
 # 
 # Exemple: spc_lowresfilterlist resultat_division_150t_linear.fit {3643. 3688. 3847. 3909. 3989. 4158. 4246. 4415. 4583. 4743. 4965. 5346. 5745. 5807. 6300. 6640. 7013. 7386. 7538. 7740. } 300. {1. 1. 10000. 1000000. 500000. 10000. 1000.} 'o' 18
@@ -428,7 +433,7 @@ if { [ llength $args ]==2 } {
 
 ####################################################################
 # Procedure de calcul de la matrice B utilisee dans les algorithmes de 
-# lissage par des fonctions linÃ©aires morceaux (spc_pwl...)
+# lissage par des fonctions linÃƒÂ©aires morceaux (spc_pwl...)
 #
 # Auteur : Patrick LAILLY
 # Date creation : 15-05-2007
@@ -436,7 +441,8 @@ if { [ llength $args ]==2 } {
 #
 #     ***************************************************
 # l'appel de cette procedure meriterait d'etre sortie de la partie algo
-# on s'epargnerait ainsi plusieurs calculs de la matrice B dans spc_pwlri 
+# on s'epargnerait ainsi plusieurs calculs de la matrice B dans spc_pwlri
+####################################################################
 proc spc_calcmatB {args} {
    global conf
    global audace
@@ -520,24 +526,26 @@ proc spc_calcmatB {args} {
       return 0
    }
 }
+#*********************************************************************************#
+
 	
 
 ####################################################################
-# Procedure de lissage d'un profil basse resolution typiquement un résultat de division, #supposé calibré linéairement, via une fonction linéaire par morceaux en considerant comme 
+# Procedure de lissage d'un profil basse resolution typiquement un rÃ©sultat de division, #supposÃ© calibrÃ© linÃ©airement, via une fonction linÃ©aire par morceaux en considerant comme 
 # donnee aberrante les echantillons situes a proximite de raies bien connues (raies
 # telluriques, dioxygene,...)
 # Auteur : Patrick LAILLY
 # Date creation : 07-02-2008
 # Date modification : 1-11-2008
-# Algo : ajustement par moindres carrés des données (résultat division) par une fonction 
+# Algo : ajustement par moindres carrÃ©s des donnÃ©es (rÃ©sultat division) par une fonction 
 # lineaire par morceaux. La procedure fonctionne 
 
 # ou bien en mode automatique auquel cas elle ne prend pas en compte les echantillons situes
 # dans des intervalles de longueurs d'ondes definis dans le fichier forgetlambda.dat : ces echantillons sont censes etre potentiellement contamines par des raies d'absorbtion ou, de
-# facon plus générale contenir des données aberrantes. Un coefficient d'extension de la largeur de ces intervalles donne la souplesse requise en cas de calibration imprecise. 
+# facon plus gÃ©nÃ©rale contenir des donnÃ©es aberrantes. Un coefficient d'extension de la largeur de ces intervalles donne la souplesse requise en cas de calibration imprecise. 
 
-# ou bien en mode manuel auquel cas l'utilisteur spécifie la liste des longueurs d'ondes (en
-# Angstroems) où il souhaite prendre en compte l'information
+# ou bien en mode manuel auquel cas l'utilisteur spÃ©cifie la liste des longueurs d'ondes (en
+# Angstroems) oÃ¹ il souhaite prendre en compte l'information
 
 # Le parametre nechant definit la largeur des intervalles sur lesquels la fonction est lineaire
 # (ce parametre n'a pas beaucoup d'importance tant qu'il n'est pas trop grand, la valeur 20
@@ -564,7 +572,7 @@ proc spc_calcmatB {args} {
 # - etc.
 # 
 # Le parametre visu permet de s'assurer visuellement de la qualite du resultat et donne 
-# les échantillons pris en compte (ce sont ceux pour lesquels  la courbe verte prend une valeur
+# les Ã©chantillons pris en compte (ce sont ceux pour lesquels  la courbe verte prend une valeur
 # non nulle.  
 # Arguments : fichier .fit du profil de raie, coefficient d'extension de la 
 # largeur de ces intervalles, regul_weight, mode, (fichier .dat donnant les intervalles de
@@ -580,8 +588,8 @@ proc spc_piecewiselinearfilter { args } {
    set nul_pcent_intens .65
     
    
-   # regul_weight est le poids de régularisation
-   # nechant est le nombre d'intervalles contenus dans un macro intervalle (morceau linéaire de la fonction d'ajustemet)
+   # regul_weight est le poids de rÃ©gularisation
+   # nechant est le nombre d'intervalles contenus dans un macro intervalle (morceau linÃ©aire de la fonction d'ajustemet)
    # visu (=o ou n) indique si l'on veut ou non une visualisation du resultat
 	
    # Exemples :
@@ -594,8 +602,8 @@ proc spc_piecewiselinearfilter { args } {
     
 
    set nb_args [ llength $args ]
-   set mode1 'auto'
-   set mode2 'manu'
+   set mode1 "auto"
+   set mode2 "manu"
    if { $nb_args==8 || $nb_args==3 } {
 		
       set filenamespc [ lindex $args 0 ]
@@ -617,21 +625,27 @@ proc spc_piecewiselinearfilter { args } {
 	 set visu [ lindex $args 7 ]
       }
       if { $nb_args==3 } {
-	 set mode 'auto'
+	 set mode "auto"
 	 #set fileforgetlambda "$audace(rep_images)/forgetlambda.dat"
 	 set nechant 20
 	 set listeregul [ list ]
 	 lappend listeregul 1.
-	 set visu 'o'
+	 set visu "o"
       }
 	    
       #--- Extraction des donnees :
       #--- Gestion des profils selon la loi de calibration :
       buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
+      set listemotsclef [ buf$audace(bufNo) getkwds ]
       #-- Renseigne sur les parametres de l'image :
       set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
       set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
       set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+      if { [ lsearch $listemotsclef "CRPIX1" ] !=-1 } {
+         set crpix1 [ lindex [ buf$audace(bufNo) getkwd "CRPIX1" ] 1 ]
+      } else {
+         set crpix1 1
+      }
       set contenu [ spc_fits2data $filenamespc ]
       set abscissesorig [ lindex $contenu 0 ]
       set ordonneesorig [ lindex $contenu 1 ]
@@ -639,13 +653,13 @@ proc spc_piecewiselinearfilter { args } {
       ::console::affiche_resultat "dispersion = $cdelt1  [ expr [lindex $abscissesorig 1 ]- [lindex $abscissesorig 0 ]]\n"
       ::console::affiche_resultat "crval1= $crval1 [lindex $abscissesorig 0 ]\n"
       if { $naxis1 != $lenorig } {
-         ::console::affiche_erreur "naxis1 = $naxis1 doit etre egal a$lenorig\n"
+         ::console::affiche_erreur "naxis1 = $naxis1 doit etre egal a $lenorig\n"
       }
 
       #-- elimination des termes nuls au bord
       set limits [ spc_findnnul $ordonneesorig ]
-      # i_inf est le N° (suivant la numerotation des listes Tcl) du premier element non nul
-      # i_sup est le N° (suivant la numerotation des listes Tcl) du dernier element non nul
+      # i_inf est le NÂ° (suivant la numerotation des listes Tcl) du premier element non nul
+      # i_sup est le NÂ° (suivant la numerotation des listes Tcl) du dernier element non nul
       set i_inf [ lindex $limits 0 ]
       set i_sup [ lindex $limits 1 ]
       # set nechant_util [ expr $i_sup - $i_inf +1 ]
@@ -655,7 +669,7 @@ proc spc_piecewiselinearfilter { args } {
       set lambdamin [ lindex $abscissesorig $i_inf ]
       set lambdamax [ lindex $abscissesorig $i_sup ]
       set ecartlambda [ expr $lambdamax-$lambdamin ]
-      ::console::affiche_resultat "lambdamin= $lambdamin lambdamax= $lambdamax\n"
+      ::console::affiche_resultat "lambdamin= $lambdamin ; lambdamax= $lambdamax\n"
 		
       # modification des listes pour se limiter a l'intervalle lambdamin lambdamax et calcul de l'intensite moyenne
       set abscisses [ list ]
@@ -696,11 +710,11 @@ proc spc_piecewiselinearfilter { args } {
       set len [ llength $ordonnees ]
       set len_1 [ expr $len -1 ]
       if {$len != $nmilieu } {
-	 ::console::affiche_erreur "longueur profil utile $len $nmilieu\n"
+	 ::console::affiche_erreur "Longueur profil utile $len $nmilieu\n"
 	 return 0
       }
-      ::console::affiche_resultat "augmentation de la partie utile du profil $len au lieu de $nmilieu0 echantillons\n"
-      set lambdamax [ expr $lambdamin + $len_1* $cdelt1 ]
+      ::console::affiche_resultat "Augmentation de la partie utile du profil $len au lieu de $nmilieu0 echantillons\n"
+      set lambdamax [ expr $lambdamin+$len_1*$cdelt1 ]
       set ninter [expr int($len/$nechant)]
       set nbase [expr $ninter+1]
 	
@@ -758,7 +772,7 @@ proc spc_piecewiselinearfilter { args } {
 	    set lambda_i [ lindex $listepoints $i ]
 	    #::console::affiche_resultat "$lambda_i \n"
 	    if { $lambda_i > $lambdamax || $lambda_i < $lambdamin } {
-	       ::console::affiche_erreur "dans la liste de points la valeur $lambda_i n'appartient pas à la partie exploitable du spectre\n\n"
+	       ::console::affiche_erreur "dans la liste de points la valeur $lambda_i n'appartient pas Ã  la partie exploitable du spectre\n\n"
 	       return 0
 	    }
 	    # ci-dessous le calcul n'est valide que pour un spectre calibre lineairement
@@ -861,7 +875,7 @@ proc spc_piecewiselinearfilter { args } {
 	 if { [ lindex $riliss $i ] < $seuil_min } { set riliss [ lreplace $riliss $i $i $zero ] }
       }
 
-      #--- Rajout des valeurs nulles en début et en fin pour retrouver la dimension initiale du fichier de départ :
+      #--- Rajout des valeurs nulles en dÃ©but et en fin pour retrouver la dimension initiale du fichier de dÃ©part :
       set len_ini $lenorig
       set len_cut $nmilieu0
       set nb_insert_sup [ expr $lenorig-$i_inf-$nmilieu0 ]
@@ -884,10 +898,10 @@ proc spc_piecewiselinearfilter { args } {
       }
 #set lriliss_1 [ expr [ llength $riliss ] -1 ]
 #set poids [ lreplace $poids $lriliss_1 $lriliss_1 0 ]
-      ::console::affiche_resultat "Nombre d'éléments traités : [ llength $riliss ]\n"
+      ::console::affiche_resultat "Nombre d'Ã©lÃ©ments traitÃ©s : [ llength $riliss ]\n"
+
       #--- Affichage du resultat :
-      set testvisu 'n'
-      if { $visu != $testvisu } {       
+      if { $visu=="o" } {       
 	 ::plotxy::clf
 	 ::plotxy::figure 1
 	 ::plotxy::plot $abscissesorig $riliss r 1
@@ -902,21 +916,22 @@ proc spc_piecewiselinearfilter { args } {
 	 ##::plotxy::ylabel "y"
          ::plotxy::title "bleu : original; rouge : lissage; vert : poids"
       }
-	#--- Crée le fichier fits de sortie
+	#--- CrÃ©e le fichier fits de sortie
       set abscisses $abscissesorig 
       set filename [ file rootname $filenamespc ]
         
       buf$audace(bufNo) load "$audace(rep_images)/$filename"
+      buf$audace(bufNo) setkwd [ list "CRPIX1" $crpix1 int "Reference pixel" "pixel" ]
       set k 1
       foreach x $abscisses {
 	 buf$audace(bufNo) setpix [list $k 1] [ lindex $riliss [ expr $k-1 ] ]
          incr k
       }
-      #-- Sauvegarde du résultat :
+      #-- Sauvegarde du rÃ©sultat :
       buf$audace(bufNo) bitpix float
       buf$audace(bufNo) save "$audace(rep_images)/${filename}_lin$conf(extension,defaut)"
       buf$audace(bufNo) bitpix short
-      ::console::affiche_resultat "Fichier fits sauvé sous ${filename}_lin$conf(extension,defaut)\n"
+      ::console::affiche_resultat "Fichier fits sauvÃ© sous ${filename}_lin$conf(extension,defaut)\n"
       spc_passebas ${filename}_lin$conf(extension,defaut) 3
       file delete -force "$audace(rep_images)/${filename}_lin$conf(extension,defaut)"
       return ${filename}_lin_pbas$conf(extension,defaut)
@@ -925,6 +940,8 @@ proc spc_piecewiselinearfilter { args } {
       ::console::affiche_erreur "Usage: spc_piecewiselinearfilter fichier_profil.fit ? coef_extension ? poids regularisation ? forgetlambda.dat ? nechant ? liste_regul ? visualisation (o/n)? \n\n"
    }
 }
+#**********************************************************************************************#
+
 
 
 
@@ -933,18 +950,18 @@ proc spc_piecewiselinearfilter { args } {
 # Auteur : Patrick LAILLY
 # Date creation : 07-02-2008
 # Date modification : 6-04-2008
-# Algo : ajustement par moindres carrés des données (résultat division) par une fonction polynomiale 
-# L'ajustement se fait en 2 étapes : dans la premiere on estime l'ordre de grandeur des résidus (RMS des résidus). 
-# Ceci permet de détecter les données aberrantes (et notammant les restes de raies) : celles-ci sont recherchees automatiquement (absence de specification du dernier parametre taux_RMS) ou 
-# conformément aux spécifications de l'utilisateur (via la specification du dernier parametre 
-# taux_RMS). Dans ce cas  les données aberrantes sont définies  comme les données dont les résidus # sont en valeur absolue supérieurs au RMS précédemment calculé multiplié
+# Algo : ajustement par moindres carrÂÃ©s des donnÂÃ©es (rÂÃ©sultat division) par une fonction polynomiale 
+# L'ajustement se fait en 2 ÂÃ©tapes : dans la premiere on estime l'ordre de grandeur des rÂÃ©sidus (RMS des rÂÃ©sidus). 
+# Ceci permet de dÂÃ©tecter les donnÂÃ©es aberrantes (et notammant les restes de raies) : celles-ci sont recherchees automatiquement (absence de specification du dernier parametre taux_RMS) ou 
+# conformÂÃ©ment aux spÂÃ©cifications de l'utilisateur (via la specification du dernier parametre 
+# taux_RMS). Dans ce cas  les donnÂÃ©es aberrantes sont dÂÃ©finies  comme les donnÂÃ©es dont les rÂÃ©sidus # sont en valeur absolue supÂÃ©rieurs au RMS prÂÃ©cÂÃ©demment calculÂÃ© multipliÂÃ©
 # par le parametre tauxRMS.
-# Les données aberrantes ne sont pas prises en compte dans la deuxième étape du lissage qui 
-# fournit alors la réponse instrumentale.
+# Les donnÂÃ©es aberrantes ne sont pas prises en compte dans la deuxiÂÃ¨me ÂÃ©tape du lissage qui 
+# fournit alors la rÂÃ©ponse instrumentale.
 # elim en pour mille...................................3 erniers argument optionels
 #si derlier arg specifie :pas de calcul automatique et les 2 arguments precedents n'ont pas #d'imporatnce
 # Le parametre visu_RMS permet de controler visuellement la procedure de selection automatique des # donnees aberrantes. Enfin le controle de la qualite du resultat est donne via la courbe verte :
-# les échantillons non pris en compte dans la deuxieme etape du lissage sont ceux pour lesquels la # la courbe verte prend une valeur nulle. 
+# les ÂÃ©chantillons non pris en compte dans la deuxieme etape du lissage sont ceux pour lesquels la # la courbe verte prend une valeur nulle. 
 # Arguments : fichier .fit du profil de raie ndeg visus elim nbiter tauxRMS 
 ####################################################################
 
@@ -955,12 +972,12 @@ proc spc_extractcont { args } {
     set nul_pcent_intens .65
 
 
-   # ndeg est le degré choisi pour le polynome (ce nombre doit etre inferieur a 5)   
+   # ndeg est le degrÂÃ© choisi pour le polynome (ce nombre doit etre inferieur a 5)   
     
    # visu_RMS (=o ou n) indique si l'on veut ou non une visualisation du resultat 
    # tauxRMS specifie l'amplitude des residus (en % de la moyenne RMS) a partir de laquelle 
-   # les echantillons sont consirérés comme associés à des résidus de raies (cas ou 		# l'utilisateur ne veut pas faire appel a la procedure automatique et specifier lui meme
-   # le seuil de tri des données aberrantes)
+   # les echantillons sont consirÂÃ©rÂÃ©s comme associÂÃ©s ÂÃ  des rÂÃ©sidus de raies (cas ou 		# l'utilisateur ne veut pas faire appel a la procedure automatique et specifier lui meme
+   # le seuil de tri des donnÂÃ©es aberrantes)
    # Exemples :
    # spc_polynfilter resultat_division.fit 4 n 15 20 200
     
@@ -1006,7 +1023,7 @@ proc spc_extractcont { args } {
 
        #--- Test des arguments :
 	if { $ndeg>5 } {
-           ::console::affiche_erreur "Le degré du polynome doit etre <=5.\nUsage: spc_extractcont fichier_profil.fit ?degre polynome? ?visualisation (o/n)? ?tauxRMS?\n\n"
+           ::console::affiche_erreur "Le degrÂÃ© du polynome doit etre <=5.\nUsage: spc_extractcont fichier_profil.fit ?degre polynome? ?visualisation (o/n)? ?tauxRMS?\n\n"
            return 0
         }
 	if { [ expr pow ([ expr (1000-$elim)*.001 ],$nbiter) ]<0.7 } {
@@ -1239,7 +1256,7 @@ proc spc_extractcont { args } {
         }
        
 
-	#--- Rajout des valeurs nulles en début et en fin pour retrouver la dimension initiale du fichier de départ :
+	#--- Rajout des valeurs nulles en dÂÃ©but et en fin pour retrouver la dimension initiale du fichier de dÂÃ©part :
 	set len_ini $lenorig
 	set len_cut $nmilieu0
 	set nb_insert_sup [ expr $lenorig-$i_inf-$nmilieu0 ]
@@ -1252,11 +1269,11 @@ proc spc_extractcont { args } {
 	    	#set nouvpoids1 [ linsert $nouvpoids1 0 0.0 ]
         }
 	
-	::console::affiche_resultat "Nombre d'éléments traités : [ llength $riliss ]\n"
+	::console::affiche_resultat "Nombre d'ÂÃ©lÂÃ©ments traitÂÃ©s : [ llength $riliss ]\n"
 	
 	
 
-       #--- CrÃ©e le fichier fits de sortie
+       #--- CrÂÃƒÂÂ©e le fichier fits de sortie
 	set abscisses $abscissesorig 
         set filename [ file rootname $filenamespc ]
         
@@ -1266,11 +1283,11 @@ proc spc_extractcont { args } {
            buf$audace(bufNo) setpix [list $k 1] [ lindex $riliss [ expr $k-1 ] ]
            incr k
         }
-        #-- Sauvegarde du rÃ©sultat :
+        #-- Sauvegarde du rÂÃƒÂÂ©sultat :
         buf$audace(bufNo) bitpix float
         buf$audace(bufNo) save "$audace(rep_images)/${filename}_conti$conf(extension,defaut)"
         buf$audace(bufNo) bitpix short
-        ::console::affiche_resultat "Fichier fits sauvé sous ${filename}_conti$conf(extension,defaut)\n"
+        ::console::affiche_resultat "Fichier fits sauvÂÃ© sous ${filename}_conti$conf(extension,defaut)\n"
 
 	
       #--- Affichage du resultat :
@@ -1311,8 +1328,8 @@ proc spc_extractcont { args } {
 # Description :
 # Cette procedure cree un fichier .fit modelisant le spectre en absorbtion de l'eau sur un
 # continuum d'amplitude 1. Ce fichier est echantillone en conformite avec le profil donne par 
-# l'utilisateur. Il fait apparaitre des raies de l'eau creusees en conformite avec les rÃ©sultats
-# donnÃ©s, sur le profil utilisateur, par spc_fwhmo. Le profil utilisateur doit bien 
+# l'utilisateur. Il fait apparaitre des raies de l'eau creusees en conformite avec les rÂÃƒÂÂ©sultats
+# donnÂÃƒÂÂ©s, sur le profil utilisateur, par spc_fwhmo. Le profil utilisateur doit bien 
 # entendu avoir ete prealablement calibre sur les raies de l'eau...
 # 
 # Arguments : 
@@ -1322,16 +1339,16 @@ proc spc_extractcont { args } {
 # celui construit par Ch. Buil. Ce fichier est suppose etre dans le repertoire des images.
 
 # Sorties : 
-# fichier donnant le spectre de l'eau modelisÃ© (et donc pret a servir de denominateur 
+# fichier donnant le spectre de l'eau modelisÂÃƒÂÂ© (et donc pret a servir de denominateur 
 # en vue de l'adoucissement des raies de l'eau)
 
 
 # Remarques diverses
 # On utilise ici une definition un peu particuliere (definition de fwhm) de la gaussienne  
 # servant a modeliser les raies 
-# Cette procÃ©dure, bien qu'autonome, est utilisÃ©e surtout appelÃ©e par spc_dryprofile.
+# Cette procÂÃƒÂÂ©dure, bien qu'autonome, est utilisÂÃƒÂÂ©e surtout appelÂÃƒÂÂ©e par spc_dryprofile.
 # Reste a faire : gerer les largeurs de raies variables dans fichier Ch. Buil, calculer des 
-# profondeurs de raies a partir d'estimation sur l'ensemble du spectre donc par une procÃ©dure 
+# profondeurs de raies a partir d'estimation sur l'ensemble du spectre donc par une procÂÃƒÂÂ©dure 
 # autre que fwhmo 
 
 # Exemple : model_H2O profile.fit liste1 liste_mots_cles profil_eau.fit 
@@ -1385,7 +1402,7 @@ proc model_H2O  { args } {
    #set fwhm [ expr $sigma *  2. * sqrt ( 2. * log (2.) ) ]
    set fwhm [ expr $sigma * 2.354820045 ]
    ::console::affiche_resultat " fwhm modelisation $fwhm \n"
-   # le parametre ci dessous est un coefficient d'adoucissement redondant avec le coeff. utilisÃ©
+   # le parametre ci dessous est un coefficient d'adoucissement redondant avec le coeff. utilisÂÃƒÂÂ©
    # comme argument dans spc_dryprofile
    set coefadouc 1.025
 
@@ -1401,14 +1418,14 @@ proc model_H2O  { args } {
 	set mille [ expr $mille/$scalingfactor ]
 	set unsurcent [ expr 1./$cent ]
 	set unsurmille [ expr 1./$mille ]
-	# la philosophie : si la largeur des raies observÃ©es Ã  l'instrument (cette largeur
-	# caractÃ©rise la rÃ©solution du dit instrument) Ã©tait de .1 Angstroems, on creerait um profil
-	# modÃ¨le Ã©chantillonÃ© au pas de 1/100 Angstroem (un tel Ã©chantillonage est motivÃ© par un
-	# souci de prÃ©cision) en ayant habilllÃ© les raies par des gaussiennes analytiques centrÃ©es
-	# sur les longueurs d'ondes d'absorbtion arrondies au milliÃ¨me d'Angstroem. On voit donc
-	# apparaitre 2 Ã©chelles de travail (dans un rapport de 1 Ã  10). Si la fwhm donnÃ©e par
-	# l'instrument est autre, on utilise la meme stratÃ©gie Ã  un facteur d'Ã©chelle
-	# (scalingfactor) prÃ¨s. Dans un deuxime temps on reechantillone modelise selon la dispersion
+	# la philosophie : si la largeur des raies observÂÃƒÂÂ©es ÂÃƒÂÂ  l'instrument (cette largeur
+	# caractÂÃƒÂÂ©rise la rÂÃƒÂÂ©solution du dit instrument) ÂÃƒÂÂ©tait de .1 Angstroems, on creerait um profil
+	# modÂÃƒÂÂ¨le ÂÃƒÂÂ©chantillonÂÃƒÂÂ© au pas de 1/100 Angstroem (un tel ÂÃƒÂÂ©chantillonage est motivÂÃƒÂÂ© par un
+	# souci de prÂÃƒÂÂ©cision) en ayant habilllÂÃƒÂÂ© les raies par des gaussiennes analytiques centrÂÃƒÂÂ©es
+	# sur les longueurs d'ondes d'absorbtion arrondies au milliÂÃƒÂÂ¨me d'Angstroem. On voit donc
+	# apparaitre 2 ÂÃƒÂÂ©chelles de travail (dans un rapport de 1 ÂÃƒÂÂ  10). Si la fwhm donnÂÃƒÂÂ©e par
+	# l'instrument est autre, on utilise la meme stratÂÃƒÂÂ©gie ÂÃƒÂÂ  un facteur d'ÂÃƒÂÂ©chelle
+	# (scalingfactor) prÂÃƒÂÂ¨s. Dans un deuxime temps on reechantillone modelise selon la dispersion
 	# indiquee dans le header du profil utilisateur.
 	
 	set ideb [ expr int($lambdamin*$cent+$unsurmille) ]
@@ -1424,7 +1441,7 @@ proc model_H2O  { args } {
 	set profileref [ list ]
 	set lambdaref [ list ]
 	# la longueur d'onde (exprimee en centieme d'angstroem si fwhm=.1A ) d'un 
-	# echant de profileref est le nÂ° d'echant (avec la convention premier indice nul) + ideb
+	# echant de profileref est le nÂÃ‚ÂÂ° d'echant (avec la convention premier indice nul) + ideb
 
 	for {set k 0} { $k<$nechant} { incr k } {
 		lappend profileref 0.
@@ -1449,12 +1466,12 @@ proc model_H2O  { args } {
 	set sigma [ expr $fwhm*$mille/2.354820045 ]
 
 
-# calcul des raies elementaires sous forme de tableau a 2 indices k et i. Dans l'Ã©chelle de
-# rÃ©fÃ©rence l'ecnatillonage en i est au centieme d'angstrom, le passage d'une ligne du tableau
-# a l'autre (indice k) correspond a un dÃ©calage de un millieme d'angstrom)
-# Toujours dans l'Ã©chelle de rÃ©fÃ©rence et en adoptant la convention de numÃ©rotation Tcl, les
-# Ã©chantillons, indexÃ©s par i de la liste k donnent une gaussienne centrÃ©e sur
-# (i-nintervraie_2)*10-k en milliÃ¨mes d'Angstroems.
+# calcul des raies elementaires sous forme de tableau a 2 indices k et i. Dans l'ÂÃƒÂÂ©chelle de
+# rÂÃƒÂÂ©fÂÃƒÂÂ©rence l'ecnatillonage en i est au centieme d'angstrom, le passage d'une ligne du tableau
+# a l'autre (indice k) correspond a un dÂÃƒÂÂ©calage de un millieme d'angstrom)
+# Toujours dans l'ÂÃƒÂÂ©chelle de rÂÃƒÂÂ©fÂÃƒÂÂ©rence et en adoptant la convention de numÂÃƒÂÂ©rotation Tcl, les
+# ÂÃƒÂÂ©chantillons, indexÂÃƒÂÂ©s par i de la liste k donnent une gaussienne centrÂÃƒÂÂ©e sur
+# (i-nintervraie_2)*10-k en milliÂÃƒÂÂ¨mes d'Angstroems.
 	set raies_elem [ list ]
 	set denom1 -1.
 	set denom2 [ expr 2. * $sigma * $sigma ]
@@ -1598,21 +1615,21 @@ proc model_H2O  { args } {
 	
         #fin programme patrick
 #debut programme benji
- #--- CrÃ©ation du fichier fits
+ #--- CrÂÃƒÂÂ©ation du fichier fits
  	set nbunit "float"
  	set nbunit1 "double"
    buf$audace(bufNo) setpixels CLASS_GRAY $nax1 1 FORMAT_FLOAT COMPRESS_NONE 0
    buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
    buf$audace(bufNo) setkwd [list "NAXIS1" $nax1 int "" ""]
    buf$audace(bufNo) setkwd [list "NAXIS2" 1 int "" ""]
-        #-- Valeur minimale de l'abscisse (xdepart) : =0 si profil non Ã©talonnÃ©
+        #-- Valeur minimale de l'abscisse (xdepart) : =0 si profil non ÂÃƒÂÂ©talonnÂÃƒÂÂ©
    set xdepart [ expr 1.0*[lindex $lambda 0]]
    buf$audace(bufNo) setkwd [list "CRVAL1" $xdepart $nbunit1 "" "Angstrom"]
         #-- Dispersion
         #set dispersion $unsurcent
    buf$audace(bufNo) setkwd [list "CDELT1" $dispersion $nbunit1 "" "Angstrom/pixel"]
         #--- Rempli la matrice 1D du fichier fits avec les valeurs du profil de raie ---
-        # Une liste commence Ã  0 ; Un vecteur fits commence Ã  1
+        # Une liste commence ÂÃƒÂÂ  0 ; Un vecteur fits commence ÂÃƒÂÂ  1
         #set intensite [ list ]
    ::console::affiche_resultat " lambdamin= $lambdamin  lambdamax= $lambdamax \n"
    for {set k 0} { $k < $nax1 } {incr k} {
@@ -1622,7 +1639,7 @@ proc model_H2O  { args } {
    	buf$audace(bufNo) setpix [list [expr $k+1] 1] [lindex $profile $k ]
                 #set intensite 0
    }
-        #--- Sauvegarde du fichier fits ainsi crÃ©Ã©
+        #--- Sauvegarde du fichier fits ainsi crÂÃƒÂÂ©ÂÃƒÂÂ©
    buf$audace(bufNo) setkwd [ list "BSS_TELL" "yes" string "Tellurics lines correction" "" ]
    buf$audace(bufNo) bitpix float
    buf$audace(bufNo) save "$audace(rep_images)/$nom_fich_output"
@@ -1632,9 +1649,9 @@ proc model_H2O  { args } {
 }
 
 
-# ProcÃ©dure de caractÃ©risation de raies de l'eau prÃ©sentes sur un profil
-# Les raies sont supposÃ©es isolÃ©es (par opposition Ã  une superposition de raies voisines et
-# rendues non sÃ©parables par manque de rÃ©solution)
+# ProcÂÃƒÂÂ©dure de caractÂÃƒÂÂ©risation de raies de l'eau prÂÃƒÂÂ©sentes sur un profil
+# Les raies sont supposÂÃƒÂÂ©es isolÂÃƒÂÂ©es (par opposition ÂÃƒÂÂ  une superposition de raies voisines et
+# rendues non sÂÃƒÂÂ©parables par manque de rÂÃƒÂÂ©solution)
 proc spc_fwhmo { args } {
 	global conf
 	global audace spcaudace
@@ -1719,7 +1736,7 @@ proc spc_fwhmo { args } {
         # ::console::affiche_resultat "Lminsp=$lmin_spectre ; Lmaxsp=$lmax_spectre\n"
 
 
-        #--- CreÃƒÂ©e la liste de travail des raies de l'eau pour le spectre :
+        #--- CreÂÃƒÂƒÂÃ‚ÂÂ©e la liste de travail des raies de l'eau pour le spectre :
         if { [ expr $lmin_bib+$marge_bord ]<$lmin_spectre || [ expr $lmax_bib-$marge_bord ]<$lmax_spectre } {
             #-- Recherche la longueur minimum des raies raies telluriques utilisables (2 A) :
             set index_min 0
@@ -1812,7 +1829,7 @@ proc spc_fwhmo { args } {
             }
             lappend errors $mes_incertitude
         }
-        ::console::affiche_resultat "Liste des raies trouvÃ©es :\n$listelmesurees\n"
+        ::console::affiche_resultat "Liste des raies trouvÂÃƒÂÂ©es :\n$listelmesurees\n"
         #::console::affiche_resultat "Liste des x mesures :\n$listexmesures\n"
         ::console::affiche_resultat "Liste des raies du catalogue :\n$listeraies\n"
         #::console::affiche_resultat "Liste des x du catalogue :\n$listexraies\n"
@@ -1852,9 +1869,9 @@ proc spc_fwhmo { args } {
 
 
 ####################################################################
-# La procÃ©dure ci-dessous a Ã©tÃ© testÃ©e sur un certain nombre de profils Ã  haute resolution
-# (Lhires 3 2400 traits). Son comportement sur des donnÃ©es Ã  moins haute rÃ©solution (Lhires 3
-# 1200 traits par exemple) reste Ã  Ã©tudier. Par ailleurs un bon rapport signal sur bruit ne
+# La procÂÃƒÂÂ©dure ci-dessous a ÂÃƒÂÂ©tÂÃƒÂÂ© testÂÃƒÂÂ©e sur un certain nombre de profils ÂÃƒÂÂ  haute resolution
+# (Lhires 3 2400 traits). Son comportement sur des donnÂÃƒÂÂ©es ÂÃƒÂÂ  moins haute rÂÃƒÂÂ©solution (Lhires 3
+# 1200 traits par exemple) reste ÂÃƒÂÂ  ÂÃƒÂÂ©tudier. Par ailleurs un bon rapport signal sur bruit ne
 # nuit pas...
 
 
@@ -1870,14 +1887,14 @@ proc spc_fwhmo { args } {
 # l'adoucissement (en multipliant le denominateur par ce coeff.), la valeur par defaut est 1.
 # Arguments : nom fichier profil utilisateur, coefficient de modulation
 # 
-# Sorties : fichier profil sans les raies de l'eau (denomme comme le fichier de donnÃ©es avec le
-# suffixe_rmo) et fichier "profil_eau.fit" Ce dernier fichier, utilisÃ© pour la division du
+# Sorties : fichier profil sans les raies de l'eau (denomme comme le fichier de donnÂÃƒÂÂ©es avec le
+# suffixe_rmo) et fichier "profil_eau.fit" Ce dernier fichier, utilisÂÃƒÂÂ© pour la division du
 # profil utilisateur, peut etre visualise pour verification
 
-# Remarque : le fichier denominateur est cense s'appeler profil_eau.fit, Ãªtre situÃ© dans le 
-# rÃ©pertoire des images. Il est cense permettre la division par spc_div. L'utilisation
-# habituelle est la fabrication de ce fichier par la procÃ©dure model_H2O. A prevoir : un 
-# suffixe spÃ©cifique pour fichier apres Ã©limination des raies de l'eau.
+# Remarque : le fichier denominateur est cense s'appeler profil_eau.fit, ÂÃƒÂÂªtre situÂÃƒÂÂ© dans le 
+# rÂÃƒÂÂ©pertoire des images. Il est cense permettre la division par spc_div. L'utilisation
+# habituelle est la fabrication de ce fichier par la procÂÃƒÂÂ©dure model_H2O. A prevoir : un 
+# suffixe spÂÃƒÂÂ©cifique pour fichier apres ÂÃƒÂÂ©limination des raies de l'eau.
 # Exemple : spc_dryprofile profile_input.fit .8
 ####################################################################
 

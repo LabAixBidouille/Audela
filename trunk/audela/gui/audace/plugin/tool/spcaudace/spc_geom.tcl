@@ -1,15 +1,15 @@
 
-# Procedures des traitements géométriques
+# Procedures des traitements gÃ©omÃ©triques
 # Lancement en console : source $audace(rep_scripts)/spcaudace/spc_geom.tcl
 
-# Mise a jour $Id: spc_geom.tcl,v 1.2 2009-10-23 18:38:12 bmauclaire Exp $
+# Mise a jour $Id: spc_geom.tcl,v 1.3 2009-12-19 09:53:39 bmauclaire Exp $
 
 
 
 
 
 ####################################################################
-# Procedure de rotation de 180° d'un profil de raies ou d'une image
+# Procedure de rotation de 180Â° d'un profil de raies ou d'une image
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 18-02-2005
@@ -44,7 +44,7 @@ proc spc_rot180 { args } {
 	#visu
 	set filespc [ file rootname $filenamespc ]
 	buf$audace(bufNo) save "$audace(rep_images)/${filespc}_flip$conf(extension,defaut)"
-	::console::affiche_resultat "Image sauvée sous ${filespc}_flip$conf(extension,defaut).\n"
+	::console::affiche_resultat "Image sauvÃ©e sous ${filespc}_flip$conf(extension,defaut).\n"
 	return ${filespc}_flip
     } else {
 	::console::affiche_erreur "Usage: spc_rot180 fichier_fits\n\n"
@@ -54,7 +54,7 @@ proc spc_rot180 { args } {
 
 
 ####################################################################
-# Procedure de rotation de 180° d'un profil de raies ou d'une image
+# Procedure de rotation de 180Â° d'un profil de raies ou d'une image
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 18-02-2005
@@ -73,7 +73,7 @@ proc spc_flip { args } {
 	buf$audace(bufNo) mirrorx
 	set filespc [ file rootname $filenamespc ]
 	buf$audace(bufNo) save "$audace(rep_images)/${filespc}_flip$conf(extension,defaut)"
-	::console::affiche_resultat "Image sauvée sous ${filespc}_flip$conf(extension,defaut).\n"
+	::console::affiche_resultat "Image sauvÃ©e sous ${filespc}_flip$conf(extension,defaut).\n"
 	return ${filespc}_flip
     } else {
 	::console::affiche_erreur "Usage: spc_flip fichier_fits\n\n"
@@ -89,7 +89,7 @@ proc spc_flip { args } {
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 18-02-2005
 # Date modification : 27-12-2005
-# Arguments : fichier fits de l'image, coordonnées de 2 points pris sur l'axe incliné à redresser horizontalement
+# Arguments : fichier fits de l'image, coordonnÃ©es de 2 points pris sur l'axe inclinÃ© Ã  redresser horizontalement
 # A faire : determiner le photocentre autour des points M1 et M2 choisis.
 ####################################################################
 
@@ -113,12 +113,12 @@ proc spc_tilt { args } {
     set naxis2 [lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1]
 
     if { $x1 < $x2 } {
-    #--- Point M1 à gauche de M2
+    #--- Point M1 Ã  gauche de M2
 	#set xinf $x1
 	set yinf $y1
 	set angle [expr 180/$pi*atan(1.0*($y1-$y2)/($x2-$x1))]
     } else {
-    #--- Point M1 à droite de M2
+    #--- Point M1 Ã  droite de M2
 	#set xinf $x2
 	set yinf $y2
 	set angle [expr 180/$pi*atan(1.0*($y2-$y1)/($x1-$x2))]
@@ -129,7 +129,7 @@ proc spc_tilt { args } {
     #set newnaxis2 [expr $naxis2+int($naxis1*abs(tan($angle*$pi/180)))+1]
     #buf$audace(bufNo) setkwd [list "NAXIS2" "$newnaxis2" int "" ""]
     buf$audace(bufNo) rot $xinf $yinf $angle
-    ::console::affiche_resultat "Rotation d'angle ${angle}° autour de ($xinf,$yinf).\n"
+    ::console::affiche_resultat "Rotation d'angle ${angle}Â° autour de ($xinf,$yinf).\n"
 
     #--- Visualisation du resultat
     #visu
@@ -144,7 +144,7 @@ proc spc_tilt { args } {
     buf$audace(bufNo) setkwd [ list "SPC_TILT" $angle float "Tilt angle" "" ]
     buf$audace(bufNo) save "$audace(rep_images)/${filespc}_tilt$conf(extension,defaut)"
     #loadima ${filespc}_tilt$conf(extension,defaut)
-    ::console::affiche_resultat "Image sauvée sous ${filespc}_tilt$conf(extension,defaut).\n"
+    ::console::affiche_resultat "Image sauvÃ©e sous ${filespc}_tilt$conf(extension,defaut).\n"
   } else {
      ::console::affiche_erreur "Usage: spc_tilt fichier_fits x1 y1 x2 y2 (pris sur le spectre)\n\n"
   }
@@ -154,13 +154,13 @@ proc spc_tilt { args } {
 
 
 ####################################################################
-# Correction géométrique du "spc_smile" d'un spectre spatial 2D
-#  (déformation en courbure)
+# Correction gÃ©omÃ©trique du "spc_smile" d'un spectre spatial 2D
+#  (dÃ©formation en courbure)
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 21-02-2005
 # Date modification : 27-12-2005
-# Arguments : fichier fits de l'image, coordonnées de 3 points pris sur l'axe curvé à redresser horizontalement
+# Arguments : fichier fits de l'image, coordonnÃ©es de 3 points pris sur l'axe curvÃ© Ã  redresser horizontalement
 # A faire : determiner le photocentre autour des points M1, M2 et M3 choisis.
 ####################################################################
 
@@ -182,7 +182,7 @@ proc spc_smile { args } {
     set b [ lindex $listecoefs 1 ]
     set c [ lindex $listecoefs 2 ]
 
-    # Calcul des coordonnées du point extremum de la parabole
+    # Calcul des coordonnÃ©es du point extremum de la parabole
     set xextrem [ expr -1.0*$b/(2*$a) ]
     set yextrem [ expr ($b^2*($a-2)+4*$a*$c)/(4*$a) ]
 
@@ -205,7 +205,7 @@ proc spc_smile { args } {
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 26-08-2005
 # Date modification : 27-12-2005/06-10-09
-# Arguments : nom générique des fichiers .fit dont la forme est nom-n°.fit
+# Arguments : nom gÃ©nÃ©rique des fichiers .fit dont la forme est nom-nÂ°.fit
 ####################################################################
 
 proc spc_register { args } {
@@ -214,8 +214,8 @@ proc spc_register { args } {
 
    if { [llength $args] == 1 } {
        set filename [ lindex $args 0 ]
-       #- Détection fragile : * doit etre un nombre de 0 a n. glob -nocomplain ?
-       #- Améliorée le 14-08-2006
+       #- DÃ©tection fragile : * doit etre un nombre de 0 a n. glob -nocomplain ?
+       #- AmÃ©liorÃ©e le 14-08-2006
        set fileliste [ lsort -dictionary [ glob -dir $audace(rep_images) ${filename}\[0-9\]$conf(extension,defaut) ${filename}\[0-9\]\[0-9\]$conf(extension,defaut) ${filename}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
        # Les fichiers de fileliste contiennent aussi le nom du repertoire
        set nb_file [ llength $fileliste ]
@@ -224,7 +224,7 @@ proc spc_register { args } {
        set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
        set naxis2 [lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1]
        #set windowcoords [ list 1 1 3 $naxis2 ]
-       #-- Gestion des bordures lumineuses dues au prétraitement :
+       #-- Gestion des bordures lumineuses dues au prÃ©traitement :
        set y1 [ expr int(0.05*$naxis2) ]
        set y2 [ expr int(0.95*$naxis2) ]
        set windowcoords [ list 1 $y1 1 $y2 ]
@@ -235,15 +235,15 @@ proc spc_register { args } {
        set kk 1
 
        #::console::affiche_resultat "Liste : $fileliste\n"
-       #--- Effectue le binning des colonnes et détermine le centroïde en Y du spectre 2D
+       #--- Effectue le binning des colonnes et dÃ©termine le centroÃ¯de en Y du spectre 2D
        set fichier ""
        foreach rfichier $fileliste {
 	   set fichier [file tail $rfichier]
 	   buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-	   #-- Méthode du 27-12-2005 :
+	   #-- MÃ©thode du 27-12-2005 :
 	   # buf$audace(bufNo) binx 1 $naxis1 3
 	   # set ycentre [lindex [buf$audace(bufNo) centro $windowcoords] 1]
-	   #-- Méthode du 06-10-09 :
+	   #-- MÃ©thode du 06-10-09 :
 	   buf$audace(bufNo) imaseries "BINX x1=1 x2=$naxis1 height=1"
 	   set ycentre [ lindex [ buf$audace(bufNo) fitgauss $windowcoords ] 5 ]
 	   lappend ycoords $ycentre
@@ -266,16 +266,16 @@ proc spc_register { args } {
 	   #regexp {(.+)\-?[0-9]+} $fichier match nomfichier
 	   #buf$audace(bufNo) save "$audace(rep_images)/${nomfichier}_r-$kk$conf(extension,defaut)"
 	   buf$audace(bufNo) save "$audace(rep_images)/${filename}-r-$kk$conf(extension,defaut)"
-	   ::console::affiche_resultat "Spectre redressé sauvé sous ${filename}-r-$kk\n"
+	   ::console::affiche_resultat "Spectre redressÃ© sauvÃ© sous ${filename}-r-$kk\n"
 	   incr k
 	   incr kk
        }
-       #::console::affiche_resultat "Images sauvées sous ${nomfichier}-r-x$conf(extension,defaut)\n"
+       #::console::affiche_resultat "Images sauvÃ©es sous ${nomfichier}-r-x$conf(extension,defaut)\n"
        #return ${nomfichier}_r-
-       ::console::affiche_resultat "Images sauvées sous ${filename}-r-\n"
+       ::console::affiche_resultat "Images sauvÃ©es sous ${filename}-r-\n"
        return ${filename}-r-
    } else {
-       ::console::affiche_erreur "Usage: spc_register nom_générique_fichiers\n\n"
+       ::console::affiche_erreur "Usage: spc_register nom_gÃ©nÃ©rique_fichiers\n\n"
    }
 }
 ####################################################################
@@ -288,7 +288,7 @@ proc spc_register { args } {
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 2008-03-16
 # Date modification : 2008-03-16
-# Arguments : nom_spectre_lampe nom_générique_spectres_objet
+# Arguments : nom_spectre_lampe nom_gÃ©nÃ©rique_spectres_objet
 ####################################################################
 
 proc spc_registerh { args } {
@@ -305,12 +305,12 @@ proc spc_registerh { args } {
          set nomg_objet [ lindex $args 1 ]
          set wincoords [ lindex $args 2 ]
       } else {
-         ::console::affiche_erreur "Usage: spc_registerh nom_spectre_lampe ?nom_générique_spectres? ?coordonnees_zone_du_spectre?\n\n"
+         ::console::affiche_erreur "Usage: spc_registerh nom_spectre_lampe ?nom_gÃ©nÃ©rique_spectres? ?coordonnees_zone_du_spectre?\n\n"
          return ""
       }
 
-      #--- Crée la liste des spectres de la lampe et de l'objet (pretraite, smilex et tilt) :
-      #-- Détermine le nom générique des spectres de la lampe :
+      #--- CrÃ©e la liste des spectres de la lampe et de l'objet (pretraite, smilex et tilt) :
+      #-- DÃ©termine le nom gÃ©nÃ©rique des spectres de la lampe :
       buf$audace(bufNo) load "$audace(rep_images)/$nom_lampes"
       if { [ lindex [ buf$audace(bufNo) getkwd "SPC_LNM" ] 1 ] != "" } {
          set nom_lampe_orig [ lindex [ buf$audace(bufNo) getkwd "SPC_LNM" ] 1 ]
@@ -329,9 +329,9 @@ proc spc_registerh { args } {
       #set spobj1 [ lindex $spectresliste 0 ]
       #regexp {(.+)\-?[0-9]+} "$spobj1" match nomg_objet
 
-      #--- Corrections géométriques des spectres de la lampe :
-      #-- Récupère les coéfficients de déformation depuis le premier spectre d'objet :
-      ::console::affiche_resultat "\n**** Corrections géométriques du spectre 2D de calibration ****\n"
+      #--- Corrections gÃ©omÃ©triques des spectres de la lampe :
+      #-- RÃ©cupÃ¨re les coÃ©fficients de dÃ©formation depuis le premier spectre d'objet :
+      ::console::affiche_resultat "\n**** Corrections gÃ©omÃ©triques du spectre 2D de calibration ****\n"
       set spc_obj [ file tail [ lindex $spectresliste 0 ] ]
       buf$audace(bufNo) load "$audace(rep_images)/$spc_obj"
       set listemotsclef [ buf$audace(bufNo) getkwds ]
@@ -354,7 +354,7 @@ proc spc_registerh { args } {
          ::console::affiche_resultat "\n** Correction de l'inclinaison des raies (slant)... **\n"
          set lampesmilex [ spc_slant2imgs $nomg_lampe $pente ]
       } else {
-         ::console::affiche_resultat "\n** Aucune correction géométrique nécessaire. **\n"
+         ::console::affiche_resultat "\n** Aucune correction gÃ©omÃ©trique nÃ©cessaire. **\n"
          set lampesmilex "$nomg_lampe"
       }
 
@@ -372,7 +372,7 @@ proc spc_registerh { args } {
          }
       }
 
-      #--- Crée un profil de raies des spectres de la lampe :
+      #--- CrÃ©e un profil de raies des spectres de la lampe :
       #-- W : travaille pour l'instant qu'avec 2 spectres de lampe
       #-- Extrait le profil de raies :
       #- Lampe 1 :
@@ -389,15 +389,15 @@ proc spc_registerh { args } {
          set profil_lampe2 [ spc_profillampezone ${nomg_lampe}-tilt-$nb_lampes $wincoords ]
       }
 
-      #-- Détection des raies les plus brillantes :
-      #- Liste des coupes (x,I) et sélectionne la plus brillante :
+      #-- DÃ©tection des raies les plus brillantes :
+      #- Liste des coupes (x,I) et sÃ©lectionne la plus brillante :
       set listeraies [ spc_findbiglines $profil_lampe1 e ]
       set abscisselinemax1 [ lindex [ lindex $listeraies 0 ] 0 ]
       set listeraies [ spc_findbiglines $profil_lampe2 e ]
       set abscisselinemax2 [ lindex [ lindex $listeraies 0 ] 0 ]
 
-      #--- Détermine l'équation linéaire de la loi du décalage horizontal en pixel au cours du temps :
-      #-- Calcul l'écart en pixel la raie la plus braillante entre ces 2 spectres :
+      #--- DÃ©termine l'Ã©quation linÃ©aire de la loi du dÃ©calage horizontal en pixel au cours du temps :
+      #-- Calcul l'Ã©cart en pixel la raie la plus braillante entre ces 2 spectres :
       #set ecartx [ expr $abscisselinemax2-$abscisselinemax1 ]
       #-- Extrait la date du premier et dernier spectre de lampe :
       buf$audace(bufNo) load "$audace(rep_images)/$profil_lampe1"
@@ -405,13 +405,13 @@ proc spc_registerh { args } {
       buf$audace(bufNo) load "$audace(rep_images)/$profil_lampe2"
       set date2 [ mc_date2jd [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ] ]
 
-      #-- Détermine l'équation de la loi de décalage : decalage=a+b*temps
+      #-- DÃ©termine l'Ã©quation de la loi de dÃ©calage : decalage=a+b*temps
       set coefs [ lindex [ spc_ajustdeg1 [ list $date1 $date2 ] [ list $abscisselinemax1 $abscisselinemax2 ] .1 ] 0 ]
       set a [ lindex $coefs 0 ]
       set b [ lindex $coefs 1 ]
       ::console::affiche_resultat "Equation du recalage horizontal : $a+$b*Temps\n"
 
-      #--- Calcul de décalage horizontal des spectres et le corrige :
+      #--- Calcul de dÃ©calage horizontal des spectres et le corrige :
       ::console::affiche_resultat "\nRecalage horizontal de $nb_spobjet sepctres...\n"
       for { set i 1 } { $i<=$nb_spobjet } { incr i } {
          set nomspobj [ lindex $spectresliste [ expr $i-1 ] ]
@@ -429,11 +429,11 @@ proc spc_registerh { args } {
       file delete -force "$audace(rep_images)/${nomg_lampe}-tilt-1_spc$conf(extension,defaut)"
       file delete -force "$audace(rep_images)/${nomg_lampe}-tilt-${nb_lampes}_spc$conf(extension,defaut)"
 
-      #--- Affichage du résultat :
-      ::console::affiche_resultat "Fichiers recalés horizontalement sauvés sous ${nomg_objet}-regh-\n"
+      #--- Affichage du rÃ©sultat :
+      ::console::affiche_resultat "Fichiers recalÃ©s horizontalement sauvÃ©s sous ${nomg_objet}-regh-\n"
       return "${nomg_objet}-regh-"
    } else {
-       ::console::affiche_erreur "Usage: spc_registerh nom_spectre_lampe nom_générique_spectres\n\n"
+       ::console::affiche_erreur "Usage: spc_registerh nom_spectre_lampe nom_gÃ©nÃ©rique_spectres\n\n"
    }
 }
 ####################################################################
@@ -448,7 +448,7 @@ proc spc_registerh { args } {
 # Date creation : 26-08-2005
 # Date modification : 29-10-2005/27-12-2005/15-08-2006/13-02-07
 # Arguments : fichier .fit
-# Heuristique : si l'angle est supérieur a 6°, l'angle calculé ne correspond pas à la réalité de l'inclinaison du spectre.
+# Heuristique : si l'angle est supÃ©rieur a 6Â°, l'angle calculÃ© ne correspond pas Ã  la rÃ©alitÃ© de l'inclinaison du spectre.
 ####################################################################
 
 proc spc_tiltauto { args } {
@@ -483,13 +483,13 @@ proc spc_tiltauto { args } {
        set windowcoords [ list 1 1 3 $naxis2 ]
 
        #--- Algo : determine le centre des taches du bord gauche et droit et calcul l'angle.
-       #- Methode un peu fragile : trouve parfois un angle important (4 ou 15°) alors que ce n'est pas le cas.
-       #-- Binning des colonnes à l'extrême gauche de l'image
+       #- Methode un peu fragile : trouve parfois un angle important (4 ou 15Â°) alors que ce n'est pas le cas.
+       #-- Binning des colonnes Ã  l'extrÃªme gauche de l'image
        buf$audace(bufNo) binx [expr $largeur+1] [expr 2*$largeur] 3
        set x1 [ expr int(1.5*$largeur) ]
        set y1 [lindex [buf$audace(bufNo) centro $windowcoords] 1]
 
-       #-- Binning des colonnes à l'extrême droite de l'image
+       #-- Binning des colonnes Ã  l'extrÃªme droite de l'image
        buf$audace(bufNo) load "$audace(rep_images)/$filename"
        buf$audace(bufNo) binx [expr $naxis1-2*$largeur] [expr $naxis1-$largeur] 3
        set x2 [ expr int($naxis1-1.5*$largeur) ]
@@ -499,7 +499,7 @@ proc spc_tiltauto { args } {
        #- Angles>0 vers le haut de l'image
        set pente [ expr -1.0*($y1-$y2)/($x2-$x1) ]
        set angle [ expr 180/$pi*atan($pente) ]
-       ## Si l'angle est supérieur a 6°, l'angle calculé ne correspond pas à la réalité de l'inclinaison du spectre
+       ## Si l'angle est supÃ©rieur a 6Â°, l'angle calculÃ© ne correspond pas Ã  la rÃ©alitÃ© de l'inclinaison du spectre
        if { [ expr abs($angle) ] < $spcaudace(tilt_limit) } {
 	   set yinf [ expr int(0.5*($y1+$y2)) ]
 	   set xinf [ expr int($naxis1/2) ]
@@ -509,14 +509,14 @@ proc spc_tiltauto { args } {
 	   # buf$audace(bufNo) rot $xinf $yinf $angle
 	   buf$audace(bufNo) imaseries "TILT trans_x=0 trans_y=$pente"
            buf$audace(bufNo) setkwd [ list "SPC_TILT" $angle float "Tilt angle" "" ]
-	   ::console::affiche_resultat "Rotation d'angle ${angle}° autour de ($xinf,$yinf).\n"
+	   ::console::affiche_resultat "Rotation d'angle ${angle}Â° autour de ($xinf,$yinf).\n"
 	   buf$audace(bufNo) save "$audace(rep_images)/${filename}_tilt$conf(extension,defaut)"
-	   ::console::affiche_resultat "Image sauvée sous ${filename}_tilt$conf(extension,defaut).\n"
+	   ::console::affiche_resultat "Image sauvÃ©e sous ${filename}_tilt$conf(extension,defaut).\n"
 	   return ${filename}_tilt
        } else {
-	   ::console::affiche_resultat "Rotation d'angle 0° car angle=$angle est érroné.\n"
+	   ::console::affiche_resultat "Rotation d'angle 0Â° car angle=$angle est Ã©rronÃ©.\n"
 	   file copy -force "$audace(rep_images)/$filename$conf(extension,defaut)" "$audace(rep_images)/${filename}_tilt0$conf(extension,defaut)"
-	   ::console::affiche_resultat "Image sauvée sous ${filename}_tilt0$conf(extension,defaut).\n"
+	   ::console::affiche_resultat "Image sauvÃ©e sous ${filename}_tilt0$conf(extension,defaut).\n"
 	   return ${filename}_tilt0
        }
    } else {
@@ -529,7 +529,7 @@ proc spc_tiltauto { args } {
 
 
 ####################################################################
-#  Procedure de decoupage d'une tranche horizontale pour une série d'images 2D
+#  Procedure de decoupage d'une tranche horizontale pour une sÃ©rie d'images 2D
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 26-08-2005
@@ -549,7 +549,7 @@ proc spc_hcrop { args } {
        set ybas [ lindex $args 1 ]
        set fileliste [ lsort -dictionary [ glob -dir "$audace(rep_images)" "${filename}*$conf(extension,defaut)" ] ]
        set nbimg [ llength $fileliste ]
-       ::console::affiche_resultat "$nbimg images à traiter...\n"
+       ::console::affiche_resultat "$nbimg images Ã  traiter...\n"
 
        set fichier1 [ lindex $fileliste 0 ]
        buf$audace(bufNo) load "$audace(rep_images)/$fichier1"
@@ -564,13 +564,13 @@ proc spc_hcrop { args } {
 	   set nomfichierlg [ file rootname $fichier ]
 	   regexp {(.+)\-?[0-9]+} $nomfichierlg match nomfichier
 	   buf$audace(bufNo) save "$audace(rep_images)/${nomfichier}_hcrop-$kk$conf(extension,defaut)"
-	   #::console::affiche_resultat "Image $kk traitée\n"
+	   #::console::affiche_resultat "Image $kk traitÃ©e\n"
 	   incr kk
        }
-       ::console::affiche_resultat "Images sauvées sous $audace(rep_images)/${nomfichier}_hcrop-x$conf(extension,defaut)\n"
+       ::console::affiche_resultat "Images sauvÃ©es sous $audace(rep_images)/${nomfichier}_hcrop-x$conf(extension,defaut)\n"
        return ${nomfichier}_hcrop-
    } else {
-       ::console::affiche_erreur "Usage: spc_hcrop nom_gégérique_fichiers y_bas\n\n"
+       ::console::affiche_erreur "Usage: spc_hcrop nom_gÃ©gÃ©rique_fichiers y_bas\n\n"
    }
 }
 ####################################################################
@@ -578,7 +578,7 @@ proc spc_hcrop { args } {
 
 
 ####################################################################
-#  Procedure de decoupage d'une tranche verticale pour une série d'images 2D
+#  Procedure de decoupage d'une tranche verticale pour une sÃ©rie d'images 2D
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 03-11-2005
@@ -598,7 +598,7 @@ proc spc_vcrop { args } {
        set ybas [ lindex $args 1 ]
        set fileliste [ lsort -dictionary [ glob -dir "$audace(rep_images)" "${filename}*$conf(extension,defaut)" ] ]
        set nbimg [ llength $fileliste ]
-       ::console::affiche_resultat "$nbimg images à traiter...\n"
+       ::console::affiche_resultat "$nbimg images Ã  traiter...\n"
 
        set fichier1 [ lindex $fileliste 0 ]
        buf$audace(bufNo) load "$audace(rep_images)/$fichier1"
@@ -613,13 +613,13 @@ proc spc_vcrop { args } {
 	   set nomfichierlg [ file rootname $fichier ]
 	   regexp {(.+)\-[0-9]+} $nomfichierlg match nomfichier
 	   buf$audace(bufNo) save "$audace(rep_images)/${nomfichier}_vcrop-$kk$conf(extension,defaut)"
-	   #::console::affiche_resultat "Image $kk traitée\n"
+	   #::console::affiche_resultat "Image $kk traitÃ©e\n"
 	   incr kk
        }
-       ::console::affiche_resultat "Images sauvées sous $audace(rep_images)/${nomfichier}_vcrop-x$conf(extension,defaut)\n"
+       ::console::affiche_resultat "Images sauvÃ©es sous $audace(rep_images)/${nomfichier}_vcrop-x$conf(extension,defaut)\n"
        return ${nomfichier}_vcrop-
    } else {
-       ::console::affiche_erreur "Usage: spc_vcrop nom_gégérique_fichiers x_gauche\n\n"
+       ::console::affiche_erreur "Usage: spc_vcrop nom_gÃ©gÃ©rique_fichiers x_gauche\n\n"
    }
 }
 ####################################################################
@@ -627,12 +627,12 @@ proc spc_vcrop { args } {
 
 
 ####################################################################
-#  Procedure de decoupage d'une zone supérieure droite pour une série d'images 2D
+#  Procedure de decoupage d'une zone supÃ©rieure droite pour une sÃ©rie d'images 2D
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 03-11-2005
 # Date modification : 22-12-2005/27-12-05
-# Arguments : nom_générique x_gauche y_bas
+# Arguments : nom_gÃ©nÃ©rique x_gauche y_bas
 # Algorithme : cree une selction de l'image pour x>x_gauche et y>y_bas
 ####################################################################
 
@@ -649,7 +649,7 @@ proc spc_crop { args } {
        set fileliste [ lsort -dictionary [ glob -dir "$audace(rep_images)" "${filename}*$conf(extension,defaut)" ] ]
        # Les fichiers de fileliste contiennent aussi le nom du repertoire !
        set nbimg [ llength $fileliste ]
-       ::console::affiche_resultat "$nbimg images à traiter...\n"
+       ::console::affiche_resultat "$nbimg images Ã  traiter...\n"
 
        set fichier1 [file tail [ lindex $fileliste 0 ]]
        ::console::affiche_resultat "$fichier1\n"
@@ -668,15 +668,15 @@ proc spc_crop { args } {
 	   # set nomfichier [regexp {(.+)\-[0-9]+} $nomfichierlg match]
 	   # buf$audace(bufNo) save "$audace(rep_images)/${nomfichier}_crop-$kk$conf(extension,defaut)"
 	   buf$audace(bufNo) save "$audace(rep_images)/${filename}crop-$kk$conf(extension,defaut)"
-	   #::console::affiche_resultat "Image $kk traitée\n"
+	   #::console::affiche_resultat "Image $kk traitÃ©e\n"
 	   incr kk
        }
-       ::console::affiche_resultat "Images sauvées sous $audace(rep_images)/${filename}crop-x$conf(extension,defaut)\n"
+       ::console::affiche_resultat "Images sauvÃ©es sous $audace(rep_images)/${filename}crop-x$conf(extension,defaut)\n"
        #-- 060223 : nomfichier -> filename
        # return ${nomfichier}_crop-
        return ${filename}crop-
    } else {
-       ::console::affiche_erreur "Usage: spc_crop nom_gégérique_fichiers x_gauche y_bas\n\n"
+       ::console::affiche_erreur "Usage: spc_crop nom_gÃ©gÃ©rique_fichiers x_gauche y_bas\n\n"
    }
 }
 ####################################################################
@@ -684,7 +684,7 @@ proc spc_crop { args } {
 
 
 ####################################################################
-# Procédure de correction de raies courbées (lampe de calibration) par rapport à l'axe vertical : smile selon l'axe x.
+# ProcÃ©dure de correction de raies courbÃ©es (lampe de calibration) par rapport Ã  l'axe vertical : smile selon l'axe x.
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 28-05-2006
@@ -713,11 +713,11 @@ proc spc_smilex { args } {
 		set filenamespc "$spctrouve"
 		set flagmanuel "n"
 	    } else {
-		::console::affiche_erreur "Usage: spc_smilex spectre_lampe_calibration ?sélection_manuelle (o/n)?\n\n"
+		::console::affiche_erreur "Usage: spc_smilex spectre_lampe_calibration ?sÃ©lection_manuelle (o/n)?\n\n"
 		return 0
 	    }
 	} else {
-	    ::console::affiche_erreur "Usage: spc_smilex spectre_lampe_calibration ?sélection_manuelle (o/n)?\n\n"
+	    ::console::affiche_erreur "Usage: spc_smilex spectre_lampe_calibration ?sÃ©lection_manuelle (o/n)?\n\n"
 	    return 0
 	}
 
@@ -726,7 +726,7 @@ proc spc_smilex { args } {
 	#set xfin [ lindex $args 3 ]
 	#set yfin [ lindex $args 4 ]
 
-	#--- Initialisation de variables liées aux dimensions du spectre de la lampe de calibration :
+	#--- Initialisation de variables liÃ©es aux dimensions du spectre de la lampe de calibration :
 	#loadima "$audace(rep_images)/$filenamespc"
 	buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
 	::confVisu::autovisu 1
@@ -738,11 +738,11 @@ proc spc_smilex { args } {
 	#----- Si hauteur>hmax : on tient compte du smilex :
 	if { $naxis2i > $spcaudace(hmax) } {
 	    #------------------------------------------------------------------------#
-	    #--- Selection d'une raie à la sourie
+	    #--- Selection d'une raie Ã  la sourie
 	    if { $flagmanuel == "o" } {
-		::console::affiche_resultat "Sélectionnez un cadre autour d'une raie...\n"
+		::console::affiche_resultat "SÃ©lectionnez un cadre autour d'une raie...\n"
 		set flag_ok 0
-		# Création de la fenêtre
+		# CrÃ©ation de la fenÃªtre
 		if { [ winfo exists .benji ] } {
 		    destroy .benji
 		}
@@ -751,7 +751,7 @@ proc spc_smilex { args } {
 		wm title .benji "Get zone"
 		wm transient .benji .audace
 		#-- Textes d'avertissement
-		label .benji.lab -text "Sélectionnez un cadre autour d'une raie..."
+		label .benji.lab -text "SÃ©lectionnez un cadre autour d'une raie..."
 		pack .benji.lab -expand true -expand true -fill both
 		#-- Sous-trame pour boutons
 		frame .benji.but
@@ -774,9 +774,9 @@ proc spc_smilex { args } {
 		    destroy .benji
 		    return 0
 		}
-		#-- Découpage de la zone
+		#-- DÃ©coupage de la zone
 		if { [::confVisu::getBox 1] != "" } {
-		    #--- Détermination du rayon et du centre de courbure du raie verticale
+		    #--- DÃ©termination du rayon et du centre de courbure du raie verticale
 		    ##  -----------B
 		    ##  |          |
 		    ##  A-----------
@@ -791,9 +791,9 @@ proc spc_smilex { args } {
 	    } elseif { $flagmanuel == "n"} {
 		#------------------------------------------------------------------------#
 
-		#--- Détermine la zone à découper en traçant un profil en haut et en bas de l'image et détermine la fwhm du profil gaussien de la raie la plus à gauche de chaque profils :
-		# fichier fits du spectre spatial, ordonnée y de la ligne, ?hauteur à binner?
-		#-- Traitement du profil inférieur :
+		#--- DÃ©termine la zone Ã  dÃ©couper en traÃ§ant un profil en haut et en bas de l'image et dÃ©termine la fwhm du profil gaussien de la raie la plus Ã  gauche de chaque profils :
+		# fichier fits du spectre spatial, ordonnÃ©e y de la ligne, ?hauteur Ã  binner?
+		#-- Traitement du profil infÃ©rieur :
 		set hauteur 20
 		set yinf [ expr int($naxis2i*0.07) ]
 		if { [ expr $naxis2i-0.5*$hauteur ] >=1 } {
@@ -816,7 +816,7 @@ proc spc_smilex { args } {
 		}
 		file delete -force "$audace(rep_images)/$profil_inf$conf(extension,defaut)"
 
-		#-- Traitement du profil inférieur :
+		#-- Traitement du profil infÃ©rieur :
 		set hauteur 20
 		set ysup [ expr int($naxis2i*0.95) ]
 		if { [ expr $naxis2i-$hauteur*0.5 ] >=1 } {
@@ -843,7 +843,7 @@ proc spc_smilex { args } {
 		    set xinfzone [ expr int($xinf-30) ]
 		}
 
-		#-- Découpage de la zone :
+		#-- DÃ©coupage de la zone :
 		##  -----------B
 		##  |          |
 		##  A-----------
@@ -855,10 +855,10 @@ proc spc_smilex { args } {
 		buf$audace(bufNo) window $wincoords
 	    }
 
-	    #-- Détermination des dimensions de la zone sélectionnée
+	    #-- DÃ©termination des dimensions de la zone sÃ©lectionnÃ©e
 	    set naxis1 [lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
 	    set naxis2 [lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1 ]
-	    #-- Calcul de points présents sur la raie courbée par centrage gaussien sur une ligne
+	    #-- Calcul de points prÃ©sents sur la raie courbÃ©e par centrage gaussien sur une ligne
 	    ::console::affiche_resultat "Traitement de [expr $naxis2/$pas] lignes.\n"
 	    set yline 1
 	    while {$yline<=$naxis2} {
@@ -869,7 +869,7 @@ proc spc_smilex { args } {
 		set yline [ expr $yline+$pas-1 ]
 	    }
 
-	    #-- Calcul du polynome d'ajustement de degré 2 sur la raie courbee cx^2+bx+a :
+	    #-- Calcul du polynome d'ajustement de degrÃ© 2 sur la raie courbee cx^2+bx+a :
 	    set coefssmilex [ lindex [ spc_ajustdeg2 $ycoords $xcoords 1 ] 0 ]
 	    set c [ lindex $coefssmilex 2 ]
 	    set b [ lindex $coefssmilex 1 ]
@@ -881,23 +881,23 @@ proc spc_smilex { args } {
 
 	    #--- Correction du smile selon l'axe horizontal X ou du slant :
 	    if { $c == 0.0 } {
-		::console::affiche_resultat "Le spectre n'est pas affecté par un smile selon l'axe X.\n"
+		::console::affiche_resultat "Le spectre n'est pas affectÃ© par un smile selon l'axe X.\n"
 		if { $b != 0.0 } {
 		    set pente $b
 		    ::console::affiche_resultat "Correction du slant de pente $pente...\n"
 		    buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
 		    buf$audace(bufNo) imaseries "TILT trans_x=$pente trans_y=0"
-		    #-- Sauvegarde du spectre corrigé du slant :
+		    #-- Sauvegarde du spectre corrigÃ© du slant :
 		    # buf$audace(bufNo) setkwd [list "SPC_SLX1" 0 float "ycenter smilex" ""]
 		    # buf$audace(bufNo) setkwd [list "SPC_SLX2" 0 float "adeg2 smilex" ""]
 		    buf$audace(bufNo) setkwd [ list "SPC_SLA" $pente float "pente slant" "" ]
 		    buf$audace(bufNo) save "$audace(rep_images)/${filenamespc}_slt$conf(extension,defaut)"
 		    loadima "$audace(rep_images)/${filenamespc}_slt$conf(extension,defaut)"
-		    ::console::affiche_resultat "Image sauvée sous ${filenamespc}_slt$conf(extension,defaut). Coéfficents du slant : $pente, $c.\n Il faudra peut-être aussi corriger l'inclinaison du spectre.\n"
+		    ::console::affiche_resultat "Image sauvÃ©e sous ${filenamespc}_slt$conf(extension,defaut). CoÃ©fficents du slant : $pente, $c.\n Il faudra peut-Ãªtre aussi corriger l'inclinaison du spectre.\n"
 		    set results [ list ${filenamespc}_slt $c $b [ lindex $coefssmilex 0 ] $pente ]
 		    return $results
 		} else {
-		    ::console::affiche_resultat "Pas de correction du slant nécessaire non plus.\n"
+		    ::console::affiche_resultat "Pas de correction du slant nÃ©cessaire non plus.\n"
 		    return [ list $filenamespc ]
 		}
 	    } else {
@@ -911,32 +911,32 @@ proc spc_smilex { args } {
 		buf$audace(bufNo) setkwd [list "SPC_SLX2" $c float "coef deg2 smilex" ""]
 		buf$audace(bufNo) save "$audace(rep_images)/${filenamespc}_slx$conf(extension,defaut)"
 		loadima "$audace(rep_images)/${filenamespc}_slx$conf(extension,defaut)"
-		::console::affiche_resultat "Image sauvée sous ${filenamespc}_slx$conf(extension,defaut). Coéfficents du smilex : $ycenter, $c.\n Il faudra peut-être aussi corriger l'inclinaison du spectre.\n"
+		::console::affiche_resultat "Image sauvÃ©e sous ${filenamespc}_slx$conf(extension,defaut). CoÃ©fficents du smilex : $ycenter, $c.\n Il faudra peut-Ãªtre aussi corriger l'inclinaison du spectre.\n"
 		set results [ list ${filenamespc}_slx $c $b [lindex $coefssmilex 0] $ycenter  ]
 		return $results
 	    }
 	} else {
-	    ::console::affiche_resultat "La seule déformation horizontale est du slant...\n"
+	    ::console::affiche_resultat "La seule dÃ©formation horizontale est du slant...\n"
 	    set results [ spc_slant $filenamespc e ]
 	    return $results
 	}
     } else {
 	# ::console::affiche_erreur "Usage: spc_smilex spectre_lampe_calibration xdeb ydeb xfin yfin\n\n"
-	::console::affiche_erreur "Usage: spc_smilex spectre_lampe_calibration ?sélection_manuelle (o/n)?\n\n"
+	::console::affiche_erreur "Usage: spc_smilex spectre_lampe_calibration ?sÃ©lection_manuelle (o/n)?\n\n"
     }
 }
 #****************************************************************************
 
 
 ####################################################################
-# Procédure de correction des spectres courbés (stellaire) par rapport à l'axe horizontal : smile selon l'axe y.
+# ProcÃ©dure de correction des spectres courbÃ©s (stellaire) par rapport Ã  l'axe horizontal : smile selon l'axe y.
 #
-# Procédure de correction de raies courbées (lampe de calibration) par rapport à l'axe vertical : smile selon l'axe x d'une série d'images connaissant les coefficients.
+# ProcÃ©dure de correction de raies courbÃ©es (lampe de calibration) par rapport Ã  l'axe vertical : smile selon l'axe x d'une sÃ©rie d'images connaissant les coefficients.
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 21-09-2006
 # Date modification : 21-09-2006
-# Arguments : nom_générique_spectres_2D_fits ycenter a
+# Arguments : nom_gÃ©nÃ©rique_spectres_2D_fits ycenter a
 ####################################################################
 
 proc spc_smileximgs { args } {
@@ -950,8 +950,8 @@ proc spc_smileximgs { args } {
 	set ycenter [ lindex $args 1 ]
 	set a [ lindex $args 2 ]
 
-	::console::affiche_resultat "Coéfficients du smilex : ycenter=$ycenter, a=$a\n"
-	#--- Applique le smile au(x) spectre(s) incriminé(s)
+	::console::affiche_resultat "CoÃ©fficients du smilex : ycenter=$ycenter, a=$a\n"
+	#--- Applique le smile au(x) spectre(s) incriminÃ©(s)
 	if { [ file exists "$audace(rep_images)/$filename$conf(extension,defaut)" ] } {
 	    set nbsp 1
 	} else {
@@ -963,7 +963,7 @@ proc spc_smileximgs { args } {
 	    buf$audace(bufNo) load "$audace(rep_images)/$filename"
 	    buf$audace(bufNo) imaseries "SMILEX ycenter=$ycenter coef_smile2=$a"
 	    buf$audace(bufNo) save "$audace(rep_images)/${filename}-slx$conf(extension,defaut)"
-	    ::console::affiche_resultat "Spectre corrigé du smile en x sauvé sous ${filename}-slx$conf(extension,defaut)\n"
+	    ::console::affiche_resultat "Spectre corrigÃ© du smile en x sauvÃ© sous ${filename}-slx$conf(extension,defaut)\n"
 	    return ${filename}-slx
 	} else {
 	    set i 1
@@ -979,11 +979,11 @@ proc spc_smileximgs { args } {
 		incr i
 	    }
 	    #--- Messages d'information
-	    ::console::affiche_resultat "Spectres corrigés du smile en x sauvés sous ${filename}slx-\*$conf(extension,defaut).\n"
+	    ::console::affiche_resultat "Spectres corrigÃ©s du smile en x sauvÃ©s sous ${filename}slx-\*$conf(extension,defaut).\n"
 	    return ${filename}slx-
 	}
     } else {
-	::console::affiche_erreur "Usage: spc_smileximgs nom_générique_spectres_2D_fits ycenter a\n\n"
+	::console::affiche_erreur "Usage: spc_smileximgs nom_gÃ©nÃ©rique_spectres_2D_fits ycenter a\n\n"
     }
 }
 #********************************************************************************#
@@ -992,7 +992,7 @@ proc spc_smileximgs { args } {
 
 
 ####################################################################
-# Procédure de correction du raies courbées (lampe de calibration) : smile selon l'axe x et l'applique au spectre 2D à traiter avec ces paramètres.
+# ProcÃ©dure de correction du raies courbÃ©es (lampe de calibration) : smile selon l'axe x et l'applique au spectre 2D Ã  traiter avec ces paramÃ¨tres.
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 28-05-2006
@@ -1009,13 +1009,13 @@ proc spc_smilex2img { args } {
 	set spectrelampe [ lindex $args 0 ]
 	set spectre [ file rootname [ lindex $args 1 ] ]
 
-	#--- Détermine les coéfficients du smilex
+	#--- DÃ©termine les coÃ©fficients du smilex
 	set results [ spc_smilex $spectrelampe ]
 	#-- results : ${filespc}_slx $a $b [lindex $coefssmilex 0] $ycenter
 	set ycenter [ lindex $results 4 ]
 	set a [ lindex $results 1 ]
 
-	#--- Applique le smile au spectre incriminé
+	#--- Applique le smile au spectre incriminÃ©
 	buf$audace(bufNo) load "$audace(rep_images)/$spectre"
 	buf$audace(bufNo) imaseries "SMILEX ycenter=$ycenter coef_smile2=$a"
 
@@ -1024,7 +1024,7 @@ proc spc_smilex2img { args } {
         buf$audace(bufNo) setkwd [list "SPC_SLX1" $ycenter float "ycenter smilex" ""]
         buf$audace(bufNo) setkwd [list "SPC_SLX2" $a float "coef deg2 smilex" ""]
 	buf$audace(bufNo) save "$audace(rep_images)/${spectre}_slx$conf(extension,defaut)"
-	::console::affiche_resultat "Spectre corrigé du smile en x sauvé sous ${spectre}_slx$conf(extension,defaut).\n"
+	::console::affiche_resultat "Spectre corrigÃ© du smile en x sauvÃ© sous ${spectre}_slx$conf(extension,defaut).\n"
 	return ${spectre}_slx
     } else {
 	::console::affiche_erreur "Usage: spc_smilex2img spectre_lampe_calibration spectre_2D_a_corriger\n\n"
@@ -1035,12 +1035,12 @@ proc spc_smilex2img { args } {
 
 
 ####################################################################
-# Procédure de correction du raies courbées (lampe de calibration) : smile selon l'axe x et l'applique au spectre 2D à traiter avec ces paramètres.
+# ProcÃ©dure de correction du raies courbÃ©es (lampe de calibration) : smile selon l'axe x et l'applique au spectre 2D Ã  traiter avec ces paramÃ¨tres.
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 13-06-2006
 # Date modification : 14-06-2006
-# Arguments : spectre_lampe_calibration, spectre_a_traiter ou nom générique des pectres à traiter
+# Arguments : spectre_lampe_calibration, spectre_a_traiter ou nom gÃ©nÃ©rique des pectres Ã  traiter
 ####################################################################
 
 proc spc_smilex2imgs { args } {
@@ -1052,20 +1052,20 @@ proc spc_smilex2imgs { args } {
 	set spectrelampe [ lindex $args 0 ]
 	set filename [ file rootname [ lindex $args 1 ] ]
 
-	#--- Détermine les coéfficients du smilex
+	#--- DÃ©termine les coÃ©fficients du smilex
 	set results [ spc_smilex $spectrelampe ]
 	#-- results : ${filespc}_slx $a $b [lindex $coefssmilex 0] $ycenter
 	set ycenter [ lindex $results 4 ]
 	set a [ lindex $results 1 ]
 
-	#--- Applique le smile au(x) spectre(s) incriminé(s)
+	#--- Applique le smile au(x) spectre(s) incriminÃ©(s)
 	set liste_images [ lsort -dictionary [ glob -dir "$audace(rep_images)" "${filename}\[0-9\]*$conf(extension,defaut)" ] ]
 	set nbsp [ llength $liste_images ]
 	if { $nbsp ==  1 } {
 	    buf$audace(bufNo) load "$audace(rep_images)/$filename"
 	    buf$audace(bufNo) imaseries "SMILEX ycenter=$ycenter coef_smile2=$a"
 	    buf$audace(bufNo) save "$audace(rep_images)/${filename}-slx$conf(extension,defaut)"
-	    ::console::affiche_resultat "Spectre corrigé du smile en x sauvé sous ${filename}-slx$conf(extension,defaut)\n"
+	    ::console::affiche_resultat "Spectre corrigÃ© du smile en x sauvÃ© sous ${filename}-slx$conf(extension,defaut)\n"
 	    return ${filename}-slx
 	} else {
 	    set i 1
@@ -1081,7 +1081,7 @@ proc spc_smilex2imgs { args } {
 		incr i
 	    }
 	    #--- Messages d'information
-	    ::console::affiche_resultat "Spectres corrigés du smile en x sauvés sous ${filename}slx-\*$conf(extension,defaut).\n"
+	    ::console::affiche_resultat "Spectres corrigÃ©s du smile en x sauvÃ©s sous ${filename}slx-\*$conf(extension,defaut).\n"
 	    return ${filename}slx-
 	}
     } else {
@@ -1094,7 +1094,7 @@ proc spc_smilex2imgs { args } {
 
 
 ####################################################################
-# Procédure de correction des spectres courbés (stellaire) par rapport à l'axe horizontal : smile selon l'axe y.
+# ProcÃ©dure de correction des spectres courbÃ©s (stellaire) par rapport Ã  l'axe horizontal : smile selon l'axe y.
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 06-06-2006
@@ -1131,7 +1131,7 @@ proc spc_smiley { args } {
 	set naxis2 [lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1 ]
 	set pas [ expr int($pourcentimg*$naxis1) ]
 
-	#--- Détermination des paramètres de courbure du spectre
+	#--- DÃ©termination des paramÃ¨tres de courbure du spectre
 	::console::affiche_resultat "Traitement de [expr $naxis1/$pas] colonnes.\n"
 	set xline 1
 	while {$xline<=$naxis1} {
@@ -1144,7 +1144,7 @@ proc spc_smiley { args } {
 	    set xline [ expr $xline+$pas-1 ]
 	}
 
-	#-- Calcul du polynome d'ajustement de degré 2 sur la raie courbee
+	#-- Calcul du polynome d'ajustement de degrÃ© 2 sur la raie courbee
 	set coefssmiley [ lindex [ spc_ajustdeg2 $xcoords $ycoords 1 ] 0 ]
 	set a [ lindex $coefssmiley 2 ]
 	set b [ lindex $coefssmiley 1 ]
@@ -1154,7 +1154,7 @@ proc spc_smiley { args } {
 
 	#--- Correction du smile selon l'axe vertical Y
 	if { $a == 0 } {
-	    ::console::affiche_resultat "Le spectre n'est pas affecté par un smile selon l'axe Y.\n"
+	    ::console::affiche_resultat "Le spectre n'est pas affectÃ© par un smile selon l'axe Y.\n"
 	    return 0
 	} else {
 	    buf$audace(bufNo) imaseries "SMILEY xcenter=$xcenter coef_smile2=$a"
@@ -1166,7 +1166,7 @@ proc spc_smiley { args } {
         buf$audace(bufNo) setkwd [list "SPC_SLY2" $a float "coef deg2 smiley" ""]	
 	buf$audace(bufNo) save "$audace(rep_images)/${filespc}_sly$conf(extension,defaut)"
 	loadima "$audace(rep_images)/${filespc}_sly$conf(extension,defaut)"
-	::console::affiche_resultat "Image sauvée sous ${filespc}_sly$conf(extension,defaut).\n"
+	::console::affiche_resultat "Image sauvÃ©e sous ${filespc}_sly$conf(extension,defaut).\n"
 	set results [ list ${filespc}_sly $a $b [lindex $coefssmiley 0] $xcenter ]
 	return $results
     } else {
@@ -1178,13 +1178,13 @@ proc spc_smiley { args } {
 
 
 ####################################################################
-# Procédure de correction du raies inclinées dans le spectre : translations de lignes.
+# ProcÃ©dure de correction du raies inclinÃ©es dans le spectre : translations de lignes.
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 08-06-2006
 # Date modification : 08-06-2008/061220
 # Arguments 061220 (a faire ?)  : spectre 2D fits
-# Arguments 060806 : spectre 2D fits, type de raies a/e (absorption/émission)
+# Arguments 060806 : spectre 2D fits, type de raies a/e (absorption/Ã©mission)
 # Remarque : cette commande pourrait s'appeler aussi "spc_tiltx"
 ####################################################################
 
@@ -1198,15 +1198,15 @@ proc spc_slant { args } {
 	set filenamespc [ lindex $args 0 ]
 	set type [ lindex $args 1 ]
 
-	#--- Chargement du spectre et inversion si nécessaire
+	#--- Chargement du spectre et inversion si nÃ©cessaire
 	loadima $filenamespc
 	if { [string compare $type "a"] == 0 } {
 	    buf$audace(bufNo) mult -1.0
 	}
 
-	#--- Repérage de la partie supérieure de la raie  ----
+	#--- RepÃ©rage de la partie supÃ©rieure de la raie  ----
 	set flag_ok 0
-	#-- Création de la fenêtre
+	#-- CrÃ©ation de la fenÃªtre
 	if { [ winfo exists .benji ] } {
 	    destroy .benji
 	}
@@ -1215,7 +1215,7 @@ proc spc_slant { args } {
 	wm title .benji "Get zone"
 	wm transient .benji .audace
 	#-- Textes d'avertissement
-	label .benji.lab -text "Faites un cadre sur la partie supérieure d'une raie brillante (boîte petite)"
+	label .benji.lab -text "Faites un cadre sur la partie supÃ©rieure d'une raie brillante (boÃ®te petite)"
 	pack .benji.lab -expand true -expand true -fill both
 	#-- Sous-trame pour boutons
 	frame .benji.but
@@ -1237,17 +1237,17 @@ proc spc_slant { args } {
 	    destroy .benji
             return 0
 	}
-	#-- Determine le photocentre de la zone sélectionée
+	#-- Determine le photocentre de la zone sÃ©lectionÃ©e
 	set stats [ buf$audace(bufNo) stat ]
 	#set point_depart [ buf$audace(bufNo) centro $coords_zone [lindex $stats 6] ]
 	set point_depart [ lrange [ buf$audace(bufNo) centro $coords_zone [lindex $stats 6] ] 0 1]
-	::console::affiche_resultat "Partir supérieure de la raie : $point_depart\n"
+	::console::affiche_resultat "Partir supÃ©rieure de la raie : $point_depart\n"
 
 
 	#---------------------------------------------------------#
-	#--- Repérage de la partie inférieure de la raie  ----
+	#--- RepÃ©rage de la partie infÃ©rieure de la raie  ----
 	set flag_ok 0
-	#-- Création de la fenêtre
+	#-- CrÃ©ation de la fenÃªtre
 	if { [ winfo exists .benji ] } {
 	    destroy .benji
 	}
@@ -1256,7 +1256,7 @@ proc spc_slant { args } {
 	wm title .benji "Get zone"
 	wm transient .benji .audace
 	#-- Textes d'avertissement
-	label .benji.lab -text "Faites un cadre sur la partie inférieure de cette même raie (boîte petite)"
+	label .benji.lab -text "Faites un cadre sur la partie infÃ©rieure de cette mÃªme raie (boÃ®te petite)"
 	pack .benji.lab -expand true -expand true -fill both
 	#-- Sous-trame pour boutons
 	frame .benji.but
@@ -1278,10 +1278,10 @@ proc spc_slant { args } {
 	    destroy .benji
             return 0
 	}
-	#-- Determine le photocentre de la zone sélectionée
+	#-- Determine le photocentre de la zone sÃ©lectionÃ©e
 	set stats [ buf$audace(bufNo) stat ]
 	set point_final [ lrange [ buf$audace(bufNo) centro $coords_zone [lindex $stats 6] ] 0 1]
-	::console::affiche_resultat "Extrémité inférieure de la raie : $point_final\n"
+	::console::affiche_resultat "ExtrÃ©mitÃ© infÃ©rieure de la raie : $point_final\n"
 
 	#--- Correction du slant
 	set erra [ lindex $point_depart 2 ]
@@ -1317,7 +1317,7 @@ proc spc_slant { args } {
 	}
 	set filespc [ file rootname $filenamespc ]
 	buf$audace(bufNo) save "$audace(rep_images)/${filespc}_slant$conf(extension,defaut)"
-	::console::affiche_resultat "Image sauvée sous ${filespc}_slant$conf(extension,defaut).\n"
+	::console::affiche_resultat "Image sauvÃ©e sous ${filespc}_slant$conf(extension,defaut).\n"
 	loadima "$audace(rep_images)/${filespc}_slant$conf(extension,defaut)"
 	set results [ list ${filespc}_slant $pente ]
 	return $results
@@ -1330,7 +1330,7 @@ proc spc_slant { args } {
 
 
 ####################################################################
-# Procédure de correction du raies inclinées dans le spectre : translations de lignes et l'applique au spectre déformé. (inutile car applique la correction qu'à une image).
+# ProcÃ©dure de correction du raies inclinÃ©es dans le spectre : translations de lignes et l'applique au spectre dÃ©formÃ©. (inutile car applique la correction qu'Ã  une image).
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 08-06-2006
@@ -1348,10 +1348,10 @@ proc spc_slant2img { args } {
 	set spectrelampe [ lindex $args 0 ]
 	set spectre [ lindex $args 1 ]
 
-	#--- Détermine les coéfficients du slant
+	#--- DÃ©termine les coÃ©fficients du slant
 	set cd [ lindex [ spc_slant $spectrelamp ] 1 ]
 
-	#--- Applique le smile au spectre incriminé
+	#--- Applique le smile au spectre incriminÃ©
 	buf$audace(bufNo) load "$audace(rep_images)/$spectre"
 	buf$audace(bufNo) imaseries "TILT trans_x=$cd trans_y=0"
 
@@ -1359,7 +1359,7 @@ proc spc_slant2img { args } {
 	set filespc [ file rootname $spectre ]
 	buf$audace(bufNo) setkwd [list "SPC_SLA" $cd float "Slant slope" ""]
 	buf$audace(bufNo) save "$audace(rep_images)/${spectre}_slant$conf(extension,defaut)"
-	::console::affiche_resultat "Image sauvée sous ${filespc}_slant$conf(extension,defaut).\n"
+	::console::affiche_resultat "Image sauvÃ©e sous ${filespc}_slant$conf(extension,defaut).\n"
 	return ${spectre}_slant
     } else {
 	::console::affiche_erreur "Usage: spc_slant2img spectre_lampe_calibration spectre_2D_a_corriger\n\n"
@@ -1369,12 +1369,12 @@ proc spc_slant2img { args } {
 
 
 ####################################################################
-# Procédure de correction du raies inclinées dans le spectre : translations de lignes et l'applique à une série d'images déformées.
+# ProcÃ©dure de correction du raies inclinÃ©es dans le spectre : translations de lignes et l'applique Ã  une sÃ©rie d'images dÃ©formÃ©es.
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 28-12-2006
 # Date modification : 28-12-2006
-# Arguments : nom générique des fichiers à corriger, pente du slant
+# Arguments : nom gÃ©nÃ©rique des fichiers Ã  corriger, pente du slant
 ####################################################################
 
 proc spc_slant2imgs { args } {
@@ -1386,10 +1386,10 @@ proc spc_slant2imgs { args } {
 	set nom_spectres [ file rootname [ lindex $args 0 ] ]
 	set pente [ lindex $args 1 ]
 
-	#--- Construit la liste des images à traiter :
+	#--- Construit la liste des images Ã  traiter :
 	set liste_sp [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_spectres}\[0-9\]$conf(extension,defaut) ${nom_spectres}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_spectres}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 
-	#--- Applique le smile aux spectres incriminés :
+	#--- Applique le smile aux spectres incriminÃ©s :
 	set i 1
 	foreach spectre $liste_sp {
 	    set lespectre [ file tail $spectre ]
@@ -1397,20 +1397,20 @@ proc spc_slant2imgs { args } {
 	    buf$audace(bufNo) imaseries "TILT trans_x=$pente trans_y=0"
             buf$audace(bufNo) setkwd [list "SPC_SLA" $pente float "Slant slope" ""]
 	    buf$audace(bufNo) save "$audace(rep_images)/${nom_spectres}_slt-$i$conf(extension,defaut)"
-	    ::console::affiche_resultat "Image corrigée sauvée sous ${nom_spectres}_slt-$i$conf(extension,defaut).\n"
+	    ::console::affiche_resultat "Image corrigÃ©e sauvÃ©e sous ${nom_spectres}_slt-$i$conf(extension,defaut).\n"
 	    incr i
 	}
 
 	return ${nom_spectres}_slt-
     } else {
-	::console::affiche_erreur "Usage: spc_slant2imgs nom_générique_spectre2D_a_corriger pente_slant\n\n"
+	::console::affiche_erreur "Usage: spc_slant2imgs nom_gÃ©nÃ©rique_spectre2D_a_corriger pente_slant\n\n"
     }
 }
 #****************************************************************************
 
 
 ####################################################################
-# Détermine l'angle et les corrdonnées d'inclinaison d'un spectre
+# DÃ©termine l'angle et les corrdonnÃ©es d'inclinaison d'un spectre
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 20-03-2007
@@ -1453,16 +1453,16 @@ proc spc_findtilt { args } {
        set x_fin [ expr (1-$spcaudace(epaisseur_detect))*$naxis1 ]
 
 
-       #--- Calcul de l'angle avec 2 méthodes et les compare :
-       #- Methode un peu fragile : trouve parfois un angle important (4 ou 15°) alors que ce n'est pas le cas.
-       #-- Binning des colonnes à l'extrême gauche de l'image
+       #--- Calcul de l'angle avec 2 mÃ©thodes et les compare :
+       #- Methode un peu fragile : trouve parfois un angle important (4 ou 15Â°) alors que ce n'est pas le cas.
+       #-- Binning des colonnes Ã  l'extrÃªme gauche de l'image
        set largeur [ expr $naxis1/100 ]
        set windowcoords [ list 1 1 3 $naxis2 ]
        buf$audace(bufNo) imaseries "binx x1=[expr $largeur+1] x2=[expr 2*$largeur] width=3"
        set x1 [ expr int(1.5*$largeur) ]
        set y1 [lindex [buf$audace(bufNo) centro $windowcoords] 1]
 
-       #-- Binning des colonnes à l'extrême droite de l'image
+       #-- Binning des colonnes Ã  l'extrÃªme droite de l'image
        buf$audace(bufNo) load "$audace(rep_images)/$filename"
        buf$audace(bufNo) imaseries "binx x1=[expr $naxis1-2*$largeur] x2=[expr $naxis1-$largeur] width=3"
        set x2 [ expr int($naxis1-1.5*$largeur) ]
@@ -1471,19 +1471,19 @@ proc spc_findtilt { args } {
        #-- Angles>0 vers le haut de l'image
        set pente [ expr 1.0*($y1-$y2)/($x2-$x1) ]
        set angle [ expr -180./$pi*atan($pente) ]
-       #- Mise a 0 car methode peu précise : 2008-02-24
+       #- Mise a 0 car methode peu prÃ©cise : 2008-02-24
        #set angle 0.0
 
        #--- Test la valeur de l'angle :
        if { [expr abs($angle) ] < $spcaudace(tilt_limit) && abs($angle) != 0.0 } { 
-	   #-- Rotation d'angle "angle" et de centre=centre moyen de l'épaisseur du spectre :
+	   #-- Rotation d'angle "angle" et de centre=centre moyen de l'Ã©paisseur du spectre :
 	   set yinf [ expr round(0.5*($y1+$y2)) ]
            set xinf [ expr round($naxis1/2) ]
        } else {
-	   #-- Déterlmination du centre lumineux des profils de plusieurs colonnes :
-           ::console::affiche_resultat "Angle ($angle °) trouvé par la méthode 1 trop grand : méthode 2...\n"
+	   #-- DÃ©terlmination du centre lumineux des profils de plusieurs colonnes :
+           ::console::affiche_resultat "Angle ($angle Â°) trouvÃ© par la mÃ©thode 1 trop grand : mÃ©thode 2...\n"
 	   set xpas [ expr int($naxis1/$spcaudace(nb_coupes)) ]
-	   ::console::affiche_resultat "Pas entre chaque point de détection : $xpas\n"
+	   ::console::affiche_resultat "Pas entre chaque point de dÃ©tection : $xpas\n"
 	   set liste_x [ list ]
 	   set liste_y [ list ]
 	   for {set k $xpas} {$k <= $x_fin} {incr k} {
@@ -1493,12 +1493,14 @@ proc spc_findtilt { args } {
 	       set y2 [ expr int((1-$spcaudace(epaisseur_detect))*$naxis2) ]
 	       set windowcoords [ list 1 $y1 1 $y2 ]
 	       buf$audace(bufNo) load "$audace(rep_images)/$fsortie"
-	       lappend liste_y [ lindex [ buf$audace(bufNo) fitgauss $windowcoords ] 5 ]
+	       #- lappend liste_y [ lindex [ buf$audace(bufNo) fitgauss $windowcoords ] 5 ]
+               #- 091214 :
+               lappend liste_y [ lindex [ buf$audace(bufNo) centro $windowcoords ] 1 ]
 	       file delete -force "$audace(rep_images)/$fsortie$conf(extension,defaut)"
 	       set k [ expr $k+$xpas-1 ]
 	   }
 
-	   #-- Equation de la doite a+b*x passant par le profil incliné :
+	   #-- Equation de la doite a+b*x passant par le profil inclinÃ© :
 	   set coefs [ spc_ajustdeg1 $liste_x $liste_y 1. ]
 	   set a [ lindex [ lindex $coefs 0 ] 0 ]
 	   set b [ lindex [ lindex $coefs 0 ] 1 ]
@@ -1511,10 +1513,10 @@ proc spc_findtilt { args } {
 	   set yinf [ expr round($a+$b*$xinf) ]
        }
 
-       #--- Traitement du résultat :
+       #--- Traitement du rÃ©sultat :
        file delete -force "$audace(rep_images)/$filename$conf(extension,defaut)"
        set results [ list $angle $xinf $yinf $pente ]
-       ::console::affiche_resultat "\n\nAngle de rotation trouvé : ${angle}° autour de ($xinf,$yinf) de pente $pente.\n"
+       ::console::affiche_resultat "\n\nAngle de rotation trouvÃ© : ${angle}Â° autour de ($xinf,$yinf) de pente $pente.\n"
        return $results
    } else {
        ::console::affiche_erreur "Usage: spc_findtilt fichier\n\n"
@@ -1526,7 +1528,7 @@ proc spc_findtilt { args } {
 
 
 ####################################################################
-# Rotation d'un spectre avec l'angle te les corrdonnées du centre
+# Rotation d'un spectre avec l'angle te les corrdonnÃ©es du centre
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 20-03-2007
@@ -1552,10 +1554,10 @@ proc spc_tilt2 { args } {
        buf$audace(bufNo) imaseries "TILT trans_x=0 trans_y=$pente"
        buf$audace(bufNo) setkwd [ list "SPC_TILT" $angle float "Tilt angle" "" ]
        buf$audace(bufNo) save "$audace(rep_images)/${filename}_tilt$conf(extension,defaut)"
-       ::console::affiche_resultat "Rotation d'angle ${angle}° autour de ($xrot,$yrot) sauvé sous ${filename}_tilt$conf(extension,defaut).\n"
+       ::console::affiche_resultat "Rotation d'angle ${angle}Â° autour de ($xrot,$yrot) sauvÃ© sous ${filename}_tilt$conf(extension,defaut).\n"
        return ${filename}_tilt
    } else {
-       ::console::affiche_erreur "Usage: spc_tilt2 fichier_fits angle(°) xrot yrot\n\n"
+       ::console::affiche_erreur "Usage: spc_tilt2 fichier_fits angle(Â°) xrot yrot\n\n"
    }
 }
 #***************************************************************************#
@@ -1563,7 +1565,7 @@ proc spc_tilt2 { args } {
 
 
 ####################################################################
-# Rotation d'un spectre avec l'angle te les corrdonnées du centre
+# Rotation d'un spectre avec l'angle te les corrdonnÃ©es du centre
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 30-09-2007
@@ -1585,7 +1587,7 @@ proc spc_tilt3 { args } {
        buf$audace(bufNo) imaseries "TILT trans_x=0 trans_y=$pente"
        buf$audace(bufNo) setkwd [ list "SPC_TILT" $angle float "Tilt angle" "" ]
        buf$audace(bufNo) save "$audace(rep_images)/${filename}_tilt$conf(extension,defaut)"
-       ::console::affiche_resultat "Rotation sauvé sous ${filename}_tilt$conf(extension,defaut).\n"
+       ::console::affiche_resultat "Rotation sauvÃ© sous ${filename}_tilt$conf(extension,defaut).\n"
        return ${filename}_tilt
    } else {
        ::console::affiche_erreur "Usage: spc_tilt3 fichier_fits pente\n\n"
@@ -1596,13 +1598,13 @@ proc spc_tilt3 { args } {
 
 
 ####################################################################
-# Procédure de correction de l'inclinaison du spectre pour une série d'images
+# ProcÃ©dure de correction de l'inclinaison du spectre pour une sÃ©rie d'images
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 20-03-2007
 # Date modification : 21-03-2007
-# Arguments : nom générique des spectres à traiter
-# Algo : fait la somme des spectres inclines, detecte l'angle, applique la rotation trouvée aux fichiers
+# Arguments : nom gÃ©nÃ©rique des spectres Ã  traiter
+# Algo : fait la somme des spectres inclines, detecte l'angle, applique la rotation trouvÃ©e aux fichiers
 ####################################################################
 
 proc spc_tiltautoimgs { args } {
@@ -1618,36 +1620,37 @@ proc spc_tiltautoimgs { args } {
 	    set filename [ file rootname [ lindex $args 0 ] ]
 	    set reject [ lindex $args 1 ]
 	} else {
-	    ::console::affiche_erreur "Usage: spc_tiltautoimgs nom_générique_spectre_2D ?flag_reject (o/n)?\n\n"
+	    ::console::affiche_erreur "Usage: spc_tiltautoimgs nom_gÃ©nÃ©rique_spectre_2D ?flag_reject (o/n)?\n\n"
 	    return 0
 	}
 
-	#--- Applique le tilt au(x) spectre(s) incriminé(s)
+	#--- Applique le tilt au(x) spectre(s) incriminÃ©(s)
 	#-- Cas d'un seul fichier :
 	if { [ file exists "$filename$conf(extension,defaut)" ] } {
 	    set results [ spc_findtilt "$filename" ]
 	    set angle [ expr -1.*[ lindex $results 0 ] ]
 	    set xrot [ lindex $results 1 ]
 	    if { abs($angle)>$spcaudace(tilt_limit) } {
-		::console::affiche_erreur "Attention : angle limite de tilt $spcaudace(tilt_limit) dépassé : mise à 0°\n"
+		::console::affiche_erreur "Attention : angle limite de tilt $spcaudace(tilt_limit) dÃ©passÃ© : mise Ã  0Â°\n"
 		file copy -force "$audace(rep_images)/$filename$conf(extension,defaut)" "$audace(rep_images)/${filename}_tilt$conf(extension,defaut)"
 		set spectre_tilte "${filename}_tilt"
 		return "$spectre_tilte"
 	    } else {
 		set yrot [ lindex [ spc_detect $filename ] 0 ]
 		set spectre_tilte [ spc_tilt2 $filename $angle $xrot $yrot ]
-		::console::affiche_resultat "Spectre corrigé sauvé sous $spectre_tilte\n"
+		::console::affiche_resultat "Spectre corrigÃ© sauvÃ© sous $spectre_tilte\n"
 		return "$spectre_tilte"
 	    }
 	} else {
 	    #-- Cas de plusieurs fichiers :
 	    set liste_images [ lsort -dictionary [ glob -dir "$audace(rep_images)" -tails "${filename}\[0-9\]$conf(extension,defaut)" "${filename}\[0-9\]\[0-9\]$conf(extension,defaut)" "${filename}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut)" ] ]
 	    set nbsp [ llength $liste_images ]
-	    #--- Détermination de l'angle de tilt :
-	    ::console::affiche_resultat "Régistration verticale prélimiaire et somme de $nbsp spectres...\n"
+	    #--- DÃ©termination de l'angle de tilt :
+	    ::console::affiche_resultat "RÃ©gistration verticale prÃ©limiaire et somme de $nbsp spectres...\n"
 	    set freg [ spc_register "$filename" ]
 	    #- 070908 : sadd -> smean :
-	    set fsomme [ bm_smean "$freg" ]
+            #- 091214 : smean -> sadd :
+	    set fsomme [ bm_sadd "$freg" ]
 	    delete2 $freg $nbsp
 	    set results [ spc_findtilt "$fsomme" ]
 	    file delete -force "$audace(rep_images)/$fsomme$conf(extension,defaut)"
@@ -1659,28 +1662,28 @@ proc spc_tiltautoimgs { args } {
 	    if { abs($angle)>$spcaudace(tilt_limit) } {
 		set angle 0.0
 		set pente 0.0
-		::console::affiche_erreur "Attention : angle limite de tilt $spcaudace(tilt_limit) dépassé : mise à 0°\n"
+		::console::affiche_erreur "Attention : angle limite de tilt $spcaudace(tilt_limit) dÃ©passÃ© : mise Ã  0Â°\n"
 	    }
 
-	    #--- Tilt de la série d'images :
+	    #--- Tilt de la sÃ©rie d'images :
 	    set i 1
-	    ::console::affiche_resultat "$nbsp spectres à pivoter...\n\n"
+	    ::console::affiche_resultat "$nbsp spectres Ã  pivoter...\n\n"
 	    foreach lefichier $liste_images {
 		set fichier [ file rootname $lefichier ]
 		set yrot [ lindex [ spc_detect $fichier ] 0 ]
 		# set spectre_tilte [ spc_tilt2 $fichier $angle $xrot $yrot ]
 		set spectre_tilte [ spc_tilt3 $fichier $pente ]
 		file rename -force "$audace(rep_images)/$spectre_tilte$conf(extension,defaut)" "$audace(rep_images)/${filename}tilt-$i$conf(extension,defaut)"
-		::console::affiche_resultat "Spectre corrigé sauvé sous ${filename}tilt-$i$conf(extension,defaut).\n\n"
+		::console::affiche_resultat "Spectre corrigÃ© sauvÃ© sous ${filename}tilt-$i$conf(extension,defaut).\n\n"
 		incr i
 	    }
 
 	    #--- Messages d'information
-	    #::console::affiche_resultat "Spectre corrigés sauvés sous ${filename}tilt-\*$conf(extension,defaut).\n"
+	    #::console::affiche_resultat "Spectre corrigÃ©s sauvÃ©s sous ${filename}tilt-\*$conf(extension,defaut).\n"
 	    return ${filename}tilt-
 	}
     } else {
-	::console::affiche_erreur "Usage: spc_tiltautoimgs nom_générique_spectre_2D ?flag_reject (o/n)?\n\n"
+	::console::affiche_erreur "Usage: spc_tiltautoimgs nom_gÃ©nÃ©rique_spectre_2D ?flag_reject (o/n)?\n\n"
     }
 }
 #********************************************************************************#
@@ -1691,13 +1694,13 @@ proc spc_tiltautoimgs { args } {
 
 
 ####################################################################
-# Procédure d'élimination des spectres bruts inexploitables : passage nuageux...
+# ProcÃ©dure d'Ã©limination des spectres bruts inexploitables : passage nuageux...
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 15-08-2006
 # Date modification : 15-08-2006
-# Arguments : nom générique des spectres à traiter
-# Heuristique : si l'épaisseur du spectre est trop faible, l'image est considérée comme altérée.
+# Arguments : nom gÃ©nÃ©rique des spectres Ã  traiter
+# Heuristique : si l'Ã©paisseur du spectre est trop faible, l'image est considÃ©rÃ©e comme altÃ©rÃ©e.
 ####################################################################
 
 proc spc_reject { args } {
@@ -1711,16 +1714,16 @@ proc spc_reject { args } {
 	set listeimg [ lsort -dictionary [ glob -dir $audace(rep_images) ${nomgeneric}\[0-9\]*$conf(extension,defaut) ] ]
 	set nbimg [ llength $listeimg ]
 
-	#--- Heuristique : si l'épaisseur du spectre est trop faible, l'image est considérée comme altérée.
+	#--- Heuristique : si l'Ã©paisseur du spectre est trop faible, l'image est considÃ©rÃ©e comme altÃ©rÃ©e.
 	set i 0
-	::console::affiche_resultat "Vérification de $nbimg spectres...\n"
+	::console::affiche_resultat "VÃ©rification de $nbimg spectres...\n"
 	foreach spectre $listeimg {
 	    set fichier [ file tail [ file rootname $spectre ] ]
 	    set sp_hauteur [ lindex [ spc_detect $fichier ] 1 ]
 	    if { $sp_hauteur < $hauteur_min } {
 		incr i
 		file rename $audace(rep_images)/$fichier$conf(extension,defaut) $audace(rep_images)/bad_$fichier$conf(extension,defaut)
-		::console::affiche_resultat "Le spectre $fichier est altéré et est donc renomé en bad_$fichier\n"
+		::console::affiche_resultat "Le spectre $fichier est altÃ©rÃ© et est donc renomÃ© en bad_$fichier\n"
 	    }
 	}
 
@@ -1728,9 +1731,9 @@ proc spc_reject { args } {
 	if { $i >= 1 } {
 	    renumerote $nomgeneric
 	}
-	::console::affiche_resultat "$i spectre(s) retiré(s) de la série\n"
+	::console::affiche_resultat "$i spectre(s) retirÃ©(s) de la sÃ©rie\n"
     } else {
-	::console::affiche_erreur "Usage: spc_reject nom_générique_spectre_2D\n\n"
+	::console::affiche_erreur "Usage: spc_reject nom_gÃ©nÃ©rique_spectre_2D\n\n"
     }
 }
 #********************************************************************************#
@@ -1757,18 +1760,18 @@ proc spc_reject { args } {
 
 
 #================================================================================#
-#            Ancinennes implémentations                                          #
+#            Ancinennes implÃ©mentations                                          #
 #================================================================================#
 
 
 
 ####################################################################
-# Procédure de correction de l'inclinaison du spectre pour une série d'images
+# ProcÃ©dure de correction de l'inclinaison du spectre pour une sÃ©rie d'images
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 16-06-2006
 # Date modification : 15-08-2006/24-08-06
-# Arguments : nom générique des spectres à traiter
+# Arguments : nom gÃ©nÃ©rique des spectres Ã  traiter
 ####################################################################
 
 proc spc_tiltautoimgs_24082006 { args } {
@@ -1785,21 +1788,21 @@ proc spc_tiltautoimgs_24082006 { args } {
 	    set filename [ file rootname [ lindex $args 0 ] ]
 	    set reject [ lindex $args 1 ]
 	} else {
-	    ::console::affiche_erreur "Usage: spc_tiltautoimgs nom_générique_spectre_2D ?flag_reject (o/n)?\n\n"
+	    ::console::affiche_erreur "Usage: spc_tiltautoimgs nom_gÃ©nÃ©rique_spectre_2D ?flag_reject (o/n)?\n\n"
 	    return 0
 	}
 
-	#--- Applique le smile au(x) spectre(s) incriminé(s)
+	#--- Applique le smile au(x) spectre(s) incriminÃ©(s)
 	set liste_images [ lsort -dictionary [ glob -dir "$audace(rep_images)" "${filename}\[0-9\]*$conf(extension,defaut)" ] ]
 	set nbsp [ llength $liste_images ]
 	if { $nbsp==1 } {
 	    set spectre_tilt [ spc_tiltauto $filename ]
-	    ::console::affiche_resultat "Spectre corrigé sauvé sous $spectre_tilt$conf(extension,defaut)\n"
+	    ::console::affiche_resultat "Spectre corrigÃ© sauvÃ© sous $spectre_tilt$conf(extension,defaut)\n"
 	    return $spectre_tilt
 	} else {
 	    set i 1
 	    set nbspbad 0
-	    ::console::affiche_resultat "$nbsp spectres à traiter...\n\n"
+	    ::console::affiche_resultat "$nbsp spectres Ã  traiter...\n\n"
 	    foreach lefichier $liste_images {
 		set fichier [ file rootname [ file tail $lefichier ] ]
 		set spectre_tilte [ spc_tiltauto $fichier ]
@@ -1808,11 +1811,11 @@ proc spc_tiltautoimgs_24082006 { args } {
 		    if { $reject == "o" } {
 			file delete -force "$audace(rep_images)/$spectre_tilte$conf(extension,defaut)"
 			file copy -force "$audace(rep_images)/$fichier$conf(extension,defaut)" "$audace(rep_images)/${filename}tilt0-$i$conf(extension,defaut)"
-			::console::affiche_resultat "Spectre non corrigé sauvé sous ${filename}tilt0-$i$conf(extension,defaut).\n\n"
+			::console::affiche_resultat "Spectre non corrigÃ© sauvÃ© sous ${filename}tilt0-$i$conf(extension,defaut).\n\n"
 		    } elseif { $reject == "n" } {
 			file delete -force "$audace(rep_images)/$spectre_tilte$conf(extension,defaut)"
 			file copy -force "$audace(rep_images)/$fichier$conf(extension,defaut)" "$audace(rep_images)/${filename}tilt-$i$conf(extension,defaut)"
-			::console::affiche_resultat "Spectre non corrigé sauvé sous ${filename}tilt-$i$conf(extension,defaut).\n\n"
+			::console::affiche_resultat "Spectre non corrigÃ© sauvÃ© sous ${filename}tilt-$i$conf(extension,defaut).\n\n"
 		    } else {
 			::console::affiche_resultat "Mauvaise option de rejet de spectre.\n"
 			return 0
@@ -1820,7 +1823,7 @@ proc spc_tiltautoimgs_24082006 { args } {
 		    incr nbspbad
 		} else {
 		    file rename -force "$audace(rep_images)/$spectre_tilte$conf(extension,defaut)" "$audace(rep_images)/${filename}tilt-$i$conf(extension,defaut)"
-		    ::console::affiche_resultat "Spectre corrigé sauvé sous ${filename}tilt-$i$conf(extension,defaut).\n\n"
+		    ::console::affiche_resultat "Spectre corrigÃ© sauvÃ© sous ${filename}tilt-$i$conf(extension,defaut).\n\n"
 		}
 		incr i
 	    }
@@ -1831,11 +1834,11 @@ proc spc_tiltautoimgs_24082006 { args } {
 	    }
 
 	    #--- Messages d'information
-	    #::console::affiche_resultat "Spectre corrigés sauvés sous ${filename}tilt-\*$conf(extension,defaut).\n"
+	    #::console::affiche_resultat "Spectre corrigÃ©s sauvÃ©s sous ${filename}tilt-\*$conf(extension,defaut).\n"
 	    return ${filename}tilt-
 	}
     } else {
-	::console::affiche_erreur "Usage: spc_tiltautoimgs nom_générique_spectre_2D ?flag_reject (o/n)?\n\n"
+	::console::affiche_erreur "Usage: spc_tiltautoimgs nom_gÃ©nÃ©rique_spectre_2D ?flag_reject (o/n)?\n\n"
     }
 }
 #********************************************************************************#
