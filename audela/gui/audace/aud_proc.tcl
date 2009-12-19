@@ -1,7 +1,7 @@
 #
 # Fichier : aud_proc.tcl
 # Description : Fonctions de chargement, sauvegarde et traitement d'images
-# Mise a jour $Id: aud_proc.tcl,v 1.14 2009-12-13 11:53:18 robertdelmas Exp $
+# Mise a jour $Id: aud_proc.tcl,v 1.15 2009-12-19 10:12:07 robertdelmas Exp $
 #
 
 #
@@ -169,13 +169,6 @@ proc saveima { { filename "?" } { visuNo 1 } } {
       buf$bufNo compress none
    }
 
-  ### #--- J'affecte au buffer les seuils initiaux
-  ### if { $conf(save_seuils_visu) == "0" } {
-  ###    set tmp_sh [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ]
-  ###    set tmp_sb [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ]
-  ###    buf$bufNo initialcut
-  ### }
-
    #--- Sauvegarde des seuils dans les mots cles
    if { $conf(save_seuils_visu) == "1" } {
       #--- Pour une image couleur
@@ -210,12 +203,6 @@ proc saveima { { filename "?" } { visuNo 1 } } {
       #--- je met a jour le nom du fichier dans confvisu
       ::confVisu::setFileName $visuNo "$filename"
    }
-
-  ### #--- J'affecte au buffer les seuils de la visu
-  ### if { $conf(save_seuils_visu) == "0" } {
-  ###    buf$bufNo setkwd [ list "MIPS-HI" $tmp_sh float "" "" ]
-  ###    buf$bufNo setkwd [ list "MIPS-LO" $tmp_sb float "" "" ]
-  ### }
 
    return
 }
