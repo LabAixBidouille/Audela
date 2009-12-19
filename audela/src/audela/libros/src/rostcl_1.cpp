@@ -33,7 +33,7 @@
 #if defined(OS_WIN)
 #include "Bc637pci.h"
 #include <process.h>
-//pour gerer la datation par GPS: déclaration des varaiables globales
+//pour gerer la datation par GPS: dï¿½claration des varaiables globales
 HANDLE EventThreadGps;
 int ThreadGps;
 double DateGps;
@@ -200,6 +200,8 @@ ros_meteo close vantage
    double Valeur;
    DateTimeStamp TimeStamp;
    Tcl_DString dsptr;
+#else
+   char * message;
 #endif
 
    if(argc<3) {
@@ -248,7 +250,7 @@ ros_meteo close vantage
          CloseCommPort_V();
 		 /* http://www.davisnet.com/support/weather/software_dllsdk.asp */
          // Meteo 1 19200 0 1 2 1 0.2 1
-         // TableEtat.Port = atoi(argv_tcl[1]);    3 
+         // TableEtat.Port = atoi(argv_tcl[1]);    3
 	      // TableEtat.Vitesse = atoi(argv_tcl[2]); 19200
 	      // TableEtat.Temp = atoi(argv_tcl[3]);    0
 	      // TableEtat.Rain = atoi(argv_tcl[4]);    1
@@ -311,7 +313,7 @@ ros_meteo close vantage
       if ((mode==2)&&(modele==1)) {
    	   Tcl_DStringInit(&dsptr);
 		LoadCurrentVantageData_V ();
-         /* --- ---*/	
+         /* --- ---*/
          if(GetStationTime_V ( &TimeStamp) == 0) {
          	sprintf(Buf,"{%.2d ",TimeStamp.month);
 	         Tcl_DStringAppend(&dsptr,Buf,-1);
@@ -347,25 +349,25 @@ ros_meteo close vantage
       	//Valeur = Valeur*33.8639;
 	      sprintf(Buf,"%.2f ",Valeur);
 	      Tcl_DStringAppend(&dsptr,Buf,-1);
-         /* --- ---*/	
+         /* --- ---*/
       	Valeur = GetRainRate_V();
       	sprintf(Buf,"%.2f ",Valeur);
 	      Tcl_DStringAppend(&dsptr,Buf,-1);
-         /* --- ---*/	
+         /* --- ---*/
          Valeur = GetWindSpeed_V();
          Valeur = Valeur /1.944;
       	sprintf(Buf,"%.2f ",Valeur);
 	      Tcl_DStringAppend(&dsptr,Buf,-1);
-         /* --- ---*/	
+         /* --- ---*/
       	Valeur = GetWindDir_V();
       	sprintf(Buf,"%.2f ",Valeur);
 	      Tcl_DStringAppend(&dsptr,Buf,-1);
-         /* --- ---*/	
+         /* --- ---*/
          Valeur = GetDewPt_V();
       	Valeur = (5.0/9.0)*(Valeur-32);
 	      sprintf(Buf,"%.2f ",Valeur);
 	      Tcl_DStringAppend(&dsptr,Buf,-1);
-         /* --- ---*/	
+         /* --- ---*/
          Tcl_DStringResult(interp,&dsptr);
          Tcl_DStringFree(&dsptr);
          return TCL_OK;
@@ -378,7 +380,7 @@ ros_meteo close vantage
       	Valeur = (5.0/9.0)*(Valeur-32);
 	      sprintf(Buf,"%.2f ",Valeur);
 	      Tcl_DStringAppend(&dsptr,Buf,-1);
-         /* --- ---*/	
+         /* --- ---*/
          Tcl_DStringResult(interp,&dsptr);
          Tcl_DStringFree(&dsptr);
          return TCL_OK;
@@ -394,7 +396,9 @@ ros_meteo close vantage
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       return TCL_ERROR;
 #else
-      Tcl_SetResult(interp,"function not available",TCL_VOLATILE);
+      message = strdup( "function not available" );
+      Tcl_SetResult(interp, message, TCL_VOLATILE);
+      free( message );
       return TCL_ERROR;
 #endif
    }
@@ -423,6 +427,8 @@ ros_gps close symmetricom
 	HANDLE EventThreadGps;
 	//HANDLE hIntThrd;
 	//DWORD threadID;
+#else
+	char * message;
 #endif
 
    if(argc<3) {
@@ -467,10 +473,10 @@ ros_gps close symmetricom
 				printf(s,"Error opening device %s",argv[2]);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				return TCL_ERROR;
-			}	
+			}
 			bcSetMode(MODE_GPS);
          sprintf(s,"Connection with %s is opened",argv[2]);
-         Tcl_SetResult(interp,s,TCL_VOLATILE);		
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_OK;
       }
       /* --- reset ---*/
@@ -495,11 +501,11 @@ ros_gps close symmetricom
       /* --- read time ---*/
       if ((mode==3)&&(modele==1)) {
 		  if (date==0) {
-			 sprintf(s,"Error GPS date");	
+			 sprintf(s,"Error GPS date");
 			 Tcl_SetResult(interp,s,TCL_VOLATILE);
 			 return TCL_ERROR;
 		  } else {
-			 sprintf(s,"%s",DateGpst);	
+			 sprintf(s,"%s",DateGpst);
 			 Tcl_SetResult(interp,s,TCL_VOLATILE);
 			 return TCL_OK;
 		  }
@@ -516,7 +522,9 @@ ros_gps close symmetricom
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       return TCL_ERROR;
 #else
-      Tcl_SetResult(interp,"function not available",TCL_VOLATILE);
+      message = strdup( "function not available" );
+      Tcl_SetResult(interp, message, TCL_VOLATILE);
+      free( message );
       return TCL_ERROR;
 #endif
    }
@@ -528,13 +536,13 @@ ros_gps close symmetricom
 //
 //***************************************************************************
 void ServeurGps(void *Parametre)
-{	
+{
 	// Start Device
 #if defined OS_WIN
 	if ( bcStartPCI (0) != RC_OK ){
 		printf ("Error openning device!!!");
-	}	
-	
+	}
+
 	bcSetMode( MODE_GPS );
 
 	while(1)
@@ -543,11 +551,11 @@ void ServeurGps(void *Parametre)
 		WaitForSingleObject(EventThreadGps,INFINITE); //Attende de demande d'image
 		ThreadGps = 0; //Traitement
 		DateGps = ml_getGpsDate();
-	
+
 	}
 
 	// Stop Device
-	bcStopPCI (); 
+	bcStopPCI ();
 #endif
 }
 //***************************************************************************
@@ -556,9 +564,9 @@ void ServeurGps(void *Parametre)
 //
 //***************************************************************************
 double ml_getGpsDate ()
-{	
-	double diff;	   
-	#if defined(OS_WIN)
+{
+#if defined(OS_WIN)
+	double diff;
     ULONG maj, evtmaj, evtmin, min;
 	ULONG evt_enable;
 	int first_reading = 1;
@@ -575,7 +583,7 @@ double ml_getGpsDate ()
 	evt_enable = 0x08;
 	if ( bcSetReg (PCI_OFFSET_CTL, &evt_enable) == RC_ERROR )
 		printf("\nError setting Control Register!");
-	
+
 	evtmaj = evtmin = 0;
 
 	Sleep (2000);
@@ -584,20 +592,20 @@ double ml_getGpsDate ()
 	maintenant =Su.wHour*3600.+Su.wMinute*60.+Su.wSecond+Su.wMilliseconds/1000.;
 
 	if ( bcReadEventTime (&maj, &min) == RC_OK){
-		
+
 		if ( maj != evtmaj || min != evtmin){
-		
+
 			// Convert Binary Time to structure
 			majtime = gmtime( (const long *)&maj );
 
 			//pour la prcision au millime de seconde et pas plus
 			min=(unsigned long int)(min*0.001);
-				
-			sprintf(DateGpst,"%.2d-%.2d-%.2dT%.2d:%.2d:%.2d.%.2i", 
+
+			sprintf(DateGpst,"%.2d-%.2d-%.2dT%.2d:%.2d:%.2d.%.2i",
 				majtime->tm_year+1900, majtime->tm_mon+1, majtime->tm_mday,
 				majtime->tm_hour, majtime->tm_min, majtime->tm_sec, min);
 
-			date= (majtime->tm_hour)*3600. + (majtime->tm_min)*60. + majtime->tm_sec + min*0.001;			
+			date= (majtime->tm_hour)*3600. + (majtime->tm_min)*60. + majtime->tm_sec + min*0.001;
 
 			//test if the datePc and the dateGps are different (>60 sec)
 			diff = maintenant-date;
@@ -605,13 +613,15 @@ double ml_getGpsDate ()
 				sprintf(DateGpst,"0000-00-00T00:00:00.000");
 				date=0;
 			}
-		}	
+		}
 	} else {
 		date = 0;
 	}
-	
-	#endif
+
 	return date;
+#else
+	return 0;
+#endif
 }
 
 int Cmd_rostcl_velleman(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
@@ -633,6 +643,8 @@ ros_velleman close
 	long Data1,Data2,Data;
 	long CounterNr;
 	long DebounceTime;
+#else
+	char * message;
 #endif
 
    if(argc<2) {
@@ -1097,7 +1109,9 @@ ros_velleman close
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       return TCL_ERROR;
 #else
-      Tcl_SetResult(interp,"function not available",TCL_VOLATILE);
+      message = strdup( "function not available" );
+      Tcl_SetResult(interp, message, TCL_VOLATILE);
+      free( message );
       return TCL_ERROR;
 #endif
 	}

@@ -50,8 +50,11 @@
 #endif
 
 {
+   char * message;
    if(Tcl_InitStubs(interp,"8.3",0)==NULL) {
-      Tcl_SetResult(interp,"Tcl Stubs initialization failed in libros.",TCL_STATIC);
+	   message = strdup( "Tcl Stubs initialization failed in libros." );
+      Tcl_SetResult(interp, message, TCL_STATIC);
+      free( message );
       return TCL_ERROR;
    }
 
