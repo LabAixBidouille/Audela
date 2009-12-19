@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.35 2009-12-05 08:57:23 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.36 2009-12-19 17:25:56 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -473,10 +473,7 @@ namespace eval cataGoto {
       global audace caption cataGoto catalogue color conf
 
       #--- Preparation de l'heure TU
-      set now now
-      catch {
-         set now [::audace::date_sys2ut now]
-      }
+      set now [ ::audace::date_sys2ut now ]
 
       #--- Preparation des affichages nom, magnitude, AD et Dec.
       switch -exact -- $catalogue(planete_numero) {
@@ -580,7 +577,7 @@ namespace eval cataGoto {
       set catalogue(planete_dec) "[format "%02dd%02dm%03.1fs" [lindex [lindex $planete_choisie 0] 4] [lindex [lindex $planete_choisie 0] 5] [lindex [lindex $planete_choisie 0] 6] ]"
 
       #--- Preparation et affichage hauteur et azimut
-      set catalogue(planete_altaz) [mc_radec2altaz $catalogue(planete_ad) $catalogue(planete_dec) $audace(posobs,observateur,gps) [::audace::date_sys2ut now] ]
+      set catalogue(planete_altaz) [ mc_radec2altaz $catalogue(planete_ad) $catalogue(planete_dec) $audace(posobs,observateur,gps) $now ]
       #--- Hauteur
       set catalogue(planete_hauteur) "[format "%05.2f" [lindex $catalogue(planete_altaz) 1]]"
       if { $conf(cata,toujoursVisible) == "0" } {
@@ -910,7 +907,7 @@ namespace eval cataGoto {
       #--- Preparation et affichage hauteur et azimut
       if { "$catalogue(asteroide_choisi)" != "" } {
          if { $liste_objet != "" } {
-            set catalogue(asteroide_altaz) [mc_radec2altaz $catalogue(asteroide_ad) $catalogue(asteroide_dec) $audace(posobs,observateur,gps) [::audace::date_sys2ut now] ]
+            set catalogue(asteroide_altaz) [ mc_radec2altaz $catalogue(asteroide_ad) $catalogue(asteroide_dec) $audace(posobs,observateur,gps) [ ::audace::date_sys2ut now ] ]
             #--- Hauteur
             set catalogue(asteroide_hauteur) "[format "%05.2f" [lindex $catalogue(asteroide_altaz) 1]]"
             if { $conf(cata,toujoursVisible) == "0" } {
@@ -1240,7 +1237,7 @@ namespace eval cataGoto {
 
       #--- Preparation et affichage hauteur, azimut et angle horaire
       if { [lindex $objet_choisi 0] != "" } {
-         set catalogue(objet_altaz) [mc_radec2altaz $catalogue(M-NGC-IC_ad) $catalogue(M-NGC-IC_dec) $audace(posobs,observateur,gps) [::audace::date_sys2ut now] ]
+         set catalogue(objet_altaz) [ mc_radec2altaz $catalogue(M-NGC-IC_ad) $catalogue(M-NGC-IC_dec) $audace(posobs,observateur,gps) [ ::audace::date_sys2ut now ] ]
          #--- Hauteur
          set catalogue(objet_hauteur) "[format "%05.2f" [lindex $catalogue(objet_altaz) 1]]"
          if { $conf(cata,toujoursVisible) == "0" } {
@@ -1475,7 +1472,7 @@ namespace eval cataGoto {
          set cataGoto(carte,dec)        "$cataGoto(carte,dec)"
          set cataGoto(carte,zoom_objet) "6"
          #--- Preparation des affichages hauteur et azimut
-         set catalogue(etoile_altaz) [mc_radec2altaz $catalogue(etoile_ad) $catalogue(etoile_dec) $audace(posobs,observateur,gps) [::audace::date_sys2ut now] ]
+         set catalogue(etoile_altaz) [ mc_radec2altaz $catalogue(etoile_ad) $catalogue(etoile_dec) $audace(posobs,observateur,gps) [ ::audace::date_sys2ut now ] ]
          #--- Hauteur
          set catalogue(etoile_hauteur) "[format "%%05.2f" [lindex $catalogue(etoile_altaz) 1]]"
          if { $conf(cata,toujoursVisible) == "0" } {
@@ -1585,7 +1582,7 @@ namespace eval cataGoto {
          set tableEtBrillante($j)              [lindex $etbrillante $i]
          set tableEtBrillante(ad_$j)           "[lindex $tableEtBrillante($j) 3]h[lindex $tableEtBrillante($j) 4]m[lindex $tableEtBrillante($j) 5]"
          set tableEtBrillante(dec_$j)          "[lindex $tableEtBrillante($j) 6]d[lindex $tableEtBrillante($j) 7]m[lindex $tableEtBrillante($j) 8]"
-         set tableEtBrillante(altaz_$j)        [mc_radec2altaz $tableEtBrillante(ad_$j) $tableEtBrillante(dec_$j) $audace(posobs,observateur,gps) [::audace::date_sys2ut now] ]
+         set tableEtBrillante(altaz_$j)        [ mc_radec2altaz $tableEtBrillante(ad_$j) $tableEtBrillante(dec_$j) $audace(posobs,observateur,gps) [ ::audace::date_sys2ut now ] ]
          set tableEtBrillante(anglehoraire_$j) [lindex $tableEtBrillante(altaz_$j) 2]
       }
       pack $audace(base).cataEtoile.frame1.lb1 -side left -anchor nw
@@ -1831,7 +1828,7 @@ namespace eval cataGoto {
             $audace(base).cataObjetUtilisateur.frame8.appliquer configure -state disabled
          } else {
             #--- Preparation des affichages hauteur et azimut
-            set catalogue(objet_utilisateur_altaz) [mc_radec2altaz $catalogue(objet_utilisateur_ad) $catalogue(objet_utilisateur_dec) $audace(posobs,observateur,gps) [::audace::date_sys2ut now] ]
+            set catalogue(objet_utilisateur_altaz) [ mc_radec2altaz $catalogue(objet_utilisateur_ad) $catalogue(objet_utilisateur_dec) $audace(posobs,observateur,gps) [ ::audace::date_sys2ut now ] ]
             #--- Hauteur
             set catalogue(objet_utilisateur_hauteur) "[format "%%05.2f" [lindex $catalogue(objet_utilisateur_altaz) 1]]"
             if { $conf(cata,toujoursVisible) == "0" } {
