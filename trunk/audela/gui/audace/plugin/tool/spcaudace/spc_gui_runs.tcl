@@ -1,19 +1,19 @@
 #*****************************************************************************#
 #                                                                             #
-# Boîtes graphiques TK de saisie des paramètres pour les focntoins Spcaudace  #
+# BoÃ®tes graphiques TK de saisie des paramÃ¨tres pour les focntoins Spcaudace  #
 #                                                                             #
 #*****************************************************************************#
 # Chargement : source $audace(rep_scripts)/spcaudace/spc_gui_runs.tcl
 
-# Mise a jour $Id: spc_gui_runs.tcl,v 1.1 2008-06-14 16:36:20 bmauclaire Exp $
+# Mise a jour $Id: spc_gui_runs.tcl,v 1.2 2009-12-19 09:54:34 bmauclaire Exp $
 
 
 
 ########################################################################
-# Interface pour l'appel du panneau de prétraitement de Francois Cochard
+# Interface pour l'appel du panneau de prÃ©traitement de Francois Cochard
 #
 # Auteurs : Benjamin Mauclaire
-# Date de création : 14-07-2006
+# Date de crÃ©ation : 14-07-2006
 # Date de modification : 14-07-2006
 ########################################################################
 
@@ -26,10 +26,10 @@ proc spc_pretraitementfc_w {} {
 
 
 ########################################################################
-# Interface pour la réduction des spectres du Lhires III
+# Interface pour la rÃ©duction des spectres du Lhires III
 #
 # Auteurs : Benjamin Mauclaire
-# Date de création : 19-08-2006
+# Date de crÃ©ation : 19-08-2006
 # Date de modification : 19-08-2006
 ########################################################################
 
@@ -47,9 +47,9 @@ proc spc_specLhIII_w {} {
 # Interface pour la calibration en longueur d'onde a partir de 2 raies
 #
 # Auteurs : Benjamin Mauclaire
-# Date de création : 09-07-2006
+# Date de crÃ©ation : 09-07-2006
 # Date de modification : 09-07-2006
-# Utilisée par : spc_traitecalibre (meta)
+# UtilisÃ©e par : spc_traitecalibre (meta)
 # Args :
 ########################################################################
 
@@ -66,7 +66,7 @@ proc spc_calibre2file_w {} {
 	::console::affiche_erreur "$msg\n"
     }
 
-    #--- Récupératoin des paramètres saisis dans l'interface graphique
+    #--- RÃ©cupÃ©ratoin des paramÃ¨tres saisis dans l'interface graphique
     set audace(param_spc_audace,calibre2file,config,spectre)
     set audace(param_spc_audace,calibre2file,config,xa1)
     set audace(param_spc_audace,calibre2file,config,xa2)
@@ -99,9 +99,9 @@ proc spc_calibre2file_w {} {
 # Interface pour la calibration en longueur d'onde a partir de 2 raies
 #
 # Auteurs : Benjamin Mauclaire
-# Date de création : 09-07-2006
+# Date de crÃ©ation : 09-07-2006
 # Date de modification : 09-07-2006
-# Utilisée par : spc_traitecalibre (meta)
+# UtilisÃ©e par : spc_traitecalibre (meta)
 # Args :
 ########################################################################
 
@@ -118,7 +118,7 @@ proc spc_calibre2loifile_w {} {
 	::console::affiche_erreur "$msg\n"
     }
 
-    #--- Récupératoin des paramètres saisis dans l'interface graphique
+    #--- RÃ©cupÃ©ratoin des paramÃ¨tres saisis dans l'interface graphique
     set audace(param_spc_audace,calibre2loifile,config,spectre)
     set audace(param_spc_audace,calibre2loifile,config,lampe)
     set audace(param_spc_audace,calibre2loifile,config,xa1)
@@ -151,13 +151,13 @@ proc spc_calibre2loifile_w {} {
 
 
 ########################################################################
-# Interface pour le traitement des spectre : géométrie, calibration, correction réponse intrumentale, adoucissement
+# Interface pour le traitement des spectre : gÃ©omÃ©trie, calibration, correction rÃ©ponse intrumentale, adoucissement
 #
 # Auteurs : Benjamin Mauclaire
-# Date de création : 14-07-2006
+# Date de crÃ©ation : 14-07-2006
 # Date de modification : 14-07-2006
-# Utilisée par : spc_geom2calibre
-# Args : nom_generique_spectres_pretraites (sans extension) nom_spectre_lampe etoile_ref etoile_cat methode_reg (reg, spc) methode_détection_spectre (large, serre)  methode_sub_sky (moy, moy2, med, inf, sup, ack, none) methode_binning (add, rober, horne) normalisation (o/n)
+# UtilisÃ©e par : spc_geom2calibre
+# Args : nom_generique_spectres_pretraites (sans extension) nom_spectre_lampe etoile_ref etoile_cat methode_reg (reg, spc) methode_dÃ©tection_spectre (large, serre)  methode_sub_sky (moy, moy2, med, inf, sup, ack, none) methode_binning (add, rober, horne) normalisation (o/n)
 ########################################################################
 
 proc spc_geom2calibre_w {} {
@@ -173,7 +173,7 @@ proc spc_geom2calibre_w {} {
 	::console::affiche_erreur "$msg\n"
     }
 
-    #--- Récupératoin des paramètres saisis dans l'interface graphique
+    #--- RÃ©cupÃ©ratoin des paramÃ¨tres saisis dans l'interface graphique
     set flag 1
     if { $flag == 0 } {
     set audace(param_spc_audace,geom2calibre,config,spectres)
@@ -206,13 +206,13 @@ proc spc_geom2calibre_w {} {
 
 
 ########################################################################
-# Interface pour le traitement des spectre : géométrie, calibration, correction réponse intrumentale, normalisation
+# Interface pour le traitement des spectre : gÃ©omÃ©trie, calibration, correction rÃ©ponse intrumentale, normalisation
 #
 # Auteurs : Benjamin Mauclaire
-# Date de création : 14-07-2006
+# Date de crÃ©ation : 14-07-2006
 # Date de modification : 14-07-2006
-# Utilisée par : spc_geom2rinstrum
-# Args : nom_generique_spectres_pretraites (sans extension) nom_spectre_lampe etoile_ref etoile_cat methode_reg (reg, spc) methode_détection_spectre (large, serre)  methode_sub_sky (moy, moy2, med, inf, sup, ack, none) methode_binning (add, rober, horne) normalisation (o/n)
+# UtilisÃ©e par : spc_geom2rinstrum
+# Args : nom_generique_spectres_pretraites (sans extension) nom_spectre_lampe etoile_ref etoile_cat methode_reg (reg, spc) methode_dÃ©tection_spectre (large, serre)  methode_sub_sky (moy, moy2, med, inf, sup, ack, none) methode_binning (add, rober, horne) normalisation (o/n)
 ########################################################################
 
 proc spc_geom2rinstrum_w {} {
@@ -228,7 +228,7 @@ proc spc_geom2rinstrum_w {} {
 	::console::affiche_erreur "$msg\n"
     }
 
-    #--- Récupératoin des paramètres saisis dans l'interface graphique
+    #--- RÃ©cupÃ©ratoin des paramÃ¨tres saisis dans l'interface graphique
     set audace(param_spc_audace,geom2rinstrum,config,spectres)
     set audace(param_spc_audace,geom2rinstrum,config,lampe)
     set audace(param_spc_audace,geom2rinstrum,config,etoile_ref)
@@ -258,13 +258,13 @@ proc spc_geom2rinstrum_w {} {
 
 
 ########################################################################
-# Interface pour le traitement des spectre : prétraiement, géométrie, calibration
+# Interface pour le traitement des spectre : prÃ©traiement, gÃ©omÃ©trie, calibration
 #
 # Auteurs : Benjamin Mauclaire
-# Date de création : 09-07-2006
+# Date de crÃ©ation : 09-07-2006
 # Date de modification : 09-07-2006
-# Utilisée par : spc_traite2calibre (meta)
-# Args : nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_spectre_lampe methode_reg (reg, spc) methode_détection_spectre (large, serre)  methode_sub_sky (moy, moy2, med, inf, sup, ack, none) methode_binning (add, rober, horne) smooth (o/n)
+# UtilisÃ©e par : spc_traite2calibre (meta)
+# Args : nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_spectre_lampe methode_reg (reg, spc) methode_dÃ©tection_spectre (large, serre)  methode_sub_sky (moy, moy2, med, inf, sup, ack, none) methode_binning (add, rober, horne) smooth (o/n)
 ########################################################################
 
 proc spc_traite2calibre_w {} {
@@ -280,7 +280,7 @@ proc spc_traite2calibre_w {} {
 	::console::affiche_erreur "$msg\n"
     }
 
-    #--- Récupératoin des paramètres saisis dans l'interface graphique
+    #--- RÃ©cupÃ©ratoin des paramÃ¨tres saisis dans l'interface graphique
     set audace(param_spc_audace,traite2calibre,config,brut)
     set audace(param_spc_audace,traite2calibre,config,noir)
     set audace(param_spc_audace,traite2calibre,config,plu)
@@ -311,13 +311,13 @@ proc spc_traite2calibre_w {} {
 
 
 ########################################################################
-# Interface pour le traitement des spectre : prétraiement, géométrie, calibration, correction réponse intrumentale, normalisation
+# Interface pour le traitement des spectre : prÃ©traiement, gÃ©omÃ©trie, calibration, correction rÃ©ponse intrumentale, normalisation
 #
 # Auteurs : Benjamin Mauclaire
-# Date de création : 13-07-2006
+# Date de crÃ©ation : 13-07-2006
 # Date de modification : 13-07-2006
-# Utilisée par : spc_traite2rinstrum (meta)
-# Args : nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_spectre_lampe etoile_ref etoile_cat methode_reg (reg, spc) methode_détection_spectre (large, serre)  methode_sub_sky (moy, moy2, med, inf, sup, ack, none) methode_binning (add, rober, horne) normalisation (o/n)
+# UtilisÃ©e par : spc_traite2rinstrum (meta)
+# Args : nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_spectre_lampe etoile_ref etoile_cat methode_reg (reg, spc) methode_dÃ©tection_spectre (large, serre)  methode_sub_sky (moy, moy2, med, inf, sup, ack, none) methode_binning (add, rober, horne) normalisation (o/n)
 ########################################################################
 
 proc spc_traite2rinstrum_w {} {
@@ -333,7 +333,7 @@ proc spc_traite2rinstrum_w {} {
 	::console::affiche_erreur "$msg\n"
     }
 
-    #--- Récupératoin des paramètres saisis dans l'interface graphique
+    #--- RÃ©cupÃ©ratoin des paramÃ¨tres saisis dans l'interface graphique
     set audace(param_spc_audace,traite2rinstrum,config,brut)
     set audace(param_spc_audace,traite2rinstrum,config,noir)
     set audace(param_spc_audace,traite2rinstrum,config,plu)

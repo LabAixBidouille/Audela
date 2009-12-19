@@ -1,22 +1,22 @@
 #*****************************************************************************#
 #                                                                             #
-# Boîtes graphiques TK de saisie des paramètres pour les focntoins Spcaudace  #
+# BoÃ®tes graphiques TK de saisie des paramÃ¨tres pour les focntoins Spcaudace  #
 #                                                                             #
 #*****************************************************************************#
 # Chargement : source $audace(rep_scripts)/spcaudace/spc_gui_boxes.tcl
 
-# Mise a jour $Id: spc_gui_boxes.tcl,v 1.1 2008-06-14 16:36:20 bmauclaire Exp $
+# Mise a jour $Id: spc_gui_boxes.tcl,v 1.2 2009-12-19 09:54:34 bmauclaire Exp $
 
 
 
 ########################################################################
-# Boîte graphique de saisie des paramètres pour la fonction spc_export2png
-# Intitulé : Exportation au format PNG
+# BoÃ®te graphique de saisie des paramÃ¨tres pour la fonction spc_export2png
+# IntitulÃ© : Exportation au format PNG
 #
 # Auteurs : Benjamin Mauclaire
-# Date de création : 05-03-2007
+# Date de crÃ©ation : 05-03-2007
 # Date de modification : 05-03-2007
-# Utilisée par : spc_export2png
+# UtilisÃ©e par : spc_export2png
 # Args : nom_profil_de_raies_fits
 ########################################################################
 
@@ -44,7 +44,7 @@ namespace eval ::param_spc_audace_export2png {
       }
 
 
-      # === Initialisation des variables qui seront changées :
+      # === Initialisation des variables qui seront changÃ©es :
       set i 1
       foreach valmot $listevalmotsclef {
 	  if { $valmot != "" } {
@@ -109,7 +109,7 @@ namespace eval ::param_spc_audace_export2png {
       pack .param_spc_audace_export2png.buttons -in .param_spc_audace_export2png -fill x -pady 0 -padx 0 -anchor s -side bottom
 
 
-      #--- Message sur les caractères non autorisés :
+      #--- Message sur les caractÃ¨res non autorisÃ©s :
       label .param_spc_audace_export2png.message1 \
 	      -font [ list {Arial} 12 bold ] -text $caption(spcaudace,boxes,export2png,caractere)  \
 	      -borderwidth 0 -relief flat -bg $audace(param_spc_audace,export2png,color,backpad) \
@@ -273,9 +273,9 @@ namespace eval ::param_spc_audace_export2png {
       set yfin $audace(param_spc_audace,export2png,config,yfin)
       set listevalmots [ list $nom_objet $mot2 $mot3 ]
 
-      #--- Mise à jour des mots clef et création du graphique :
+      #--- Mise Ã  jour des mots clef et crÃ©ation du graphique :
       if { $nom_objet!="" && $mot2!="" && $mot3!=""  && $lambda_deb!="" && $lambda_fin!="" && $ydeb!="" && $yfin!="" } {
-	  #-- Mise à jour des mots clef :
+	  #-- Mise Ã  jour des mots clef :
 	  buf$audace(bufNo) load "$audace(rep_images)/$spectre"
 	  foreach valmot $listevalmots mot $spcaudace(motsheader) def $spcaudace(motsheaderdef) {
 	      buf$audace(bufNo) setkwd [ list "$mot" "$valmot" string "$def" "" ]
@@ -328,13 +328,13 @@ namespace eval ::param_spc_audace_export2png {
 
 
 ########################################################################
-# Boîte graphique de saisie des paramètres pour la fonction spc_traitenebula
-# Intitulé : Coordonnées de la zone du spectre
+# BoÃ®te graphique de saisie des paramÃ¨tres pour la fonction spc_traitenebula
+# IntitulÃ© : CoordonnÃ©es de la zone du spectre
 #
 # Auteurs : Benjamin Mauclaire
-# Date de création : 31-07-2007
+# Date de crÃ©ation : 31-07-2007
 # Date de modification : 31-07-2007
-# Utilisée par : spc_traitenebula
+# UtilisÃ©e par : spc_traitenebula
 # Args : spectre_2D liste_coordonnees_initiales_zone
 ########################################################################
 
@@ -414,7 +414,7 @@ namespace eval ::param_spc_audace_selectzone {
       pack .param_spc_audace_selectzone.buttons -in .param_spc_audace_selectzone -fill x -pady 0 -padx 0 -anchor s -side bottom
 
 
-      #--- Message sur les caractères non autorisés :
+      #--- Message sur les caractÃ¨res non autorisÃ©s :
       label .param_spc_audace_selectzone.message1 \
 	      -font [ list {Arial} 12 bold ] -text $caption(spcaudace,boxes,selectzone,aide) \
 	      -borderwidth 0 -relief flat -bg $audace(param_spc_audace,selectzone,color,backpad) \
@@ -533,7 +533,7 @@ namespace eval ::param_spc_audace_selectzone {
       set ysup $audace(param_spc_audace,selectzone,config,ysup)
       set listevalmots [ list $spectre $xinf $yinf $xsup $ysup ]
 
-      #--- Mise à jour des mots clef et création du graphique :
+      #--- Mise Ã  jour des mots clef et crÃ©ation du graphique :
       if { $spectre!="" && $xinf!="" && $yinf!=""  && $xsup!="" && $ysup!="" } {
 	  set spc_windowcoords [ list $xinf $yinf $xsup $ysup ]
 	  destroy .param_spc_audace_selectzone

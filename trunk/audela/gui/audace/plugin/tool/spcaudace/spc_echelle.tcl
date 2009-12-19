@@ -1,6 +1,6 @@
 ####################################################################################
 #
-# Routines de manipulation de spectres échelle tirés du spectroscope MUSICOS.
+# Routines de manipulation de spectres Ã©chelle tirÃ©s du spectroscope MUSICOS.
 # Auteur : 
 # Date de creation : 28-08-2005
 # Date de mise a jour : 28-08-2005
@@ -8,4 +8,4 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_echelle.tcl,v 1.1 2008-06-14 16:36:20 bmauclaire Exp $
+# Mise a jour $Id: spc_echelle.tcl,v 1.2 2009-12-19 09:54:34 bmauclaire Exp $

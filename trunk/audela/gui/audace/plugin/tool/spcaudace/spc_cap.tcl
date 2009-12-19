@@ -1,9 +1,9 @@
 #
-# Création : 2003
+# CrÃ©ation : 2003
 # Modification : 08/12/2005
 #
 
-# Mise a jour $Id: spc_cap.tcl,v 1.3 2009-07-18 18:27:23 bmauclaire Exp $
+# Mise a jour $Id: spc_cap.tcl,v 1.4 2009-12-19 09:54:34 bmauclaire Exp $
 
 
 global caption langage
@@ -57,7 +57,7 @@ global caption langage
    set caption(spcaudace,gui,spc_bessmodule_w)                   "Export a profil to BeSS's format"
 
 
-   #--- Menu Géométrie ---#
+   #--- Menu GÃ©omÃ©trie ---#
    set caption(spcaudace,gui,spc_geometrie)                      "Geometry"
    set caption(spcaudace,gui,spc_pretraitementfc_w)              "2D spectrum processing"
    set caption(spcaudace,gui,spc_pretrait)                       "2D spectrum expert processing"
@@ -129,8 +129,8 @@ global caption langage
    set caption(spcaudace,gui,spc_traitestellaire)                "2a) Stellar spectrum processing (simple mode)"
    set caption(spcaudace,gui,spc_traitenebula)                   "2b) Non stellar spectrum processing"
    set caption(spcaudace,gui,spc_traite2scalibre_w)              "Incorporating calibration corrections (without RI) to spectra"
-   # set caption(spcaudace,gui,spc_traitesimple2calibre_w)         "Prétraitement simple -> Calibration"
-   # set caption(spcaudace,gui,spc_traitesimple2rinstrum_w)        "Prétraitement simple -> Réponse instrumentale"
+   # set caption(spcaudace,gui,spc_traitesimple2calibre_w)         "PrÃ©traitement simple -> Calibration"
+   # set caption(spcaudace,gui,spc_traitesimple2rinstrum_w)        "PrÃ©traitement simple -> RÃ©ponse instrumentale"
    set caption(spcaudace,gui,spc_geom2calibre_w)                 "Geometrics corrections -> Wavelength calibration"
    set caption(spcaudace,gui,spc_geom2rinstrum_w)                "Geometrics corrections -> Intrsunmental reposne correction"
    set caption(spcaudace,gui,spc_specLhIII_w)                    "LhiresIII spectral preprocessing (empty)"
@@ -167,7 +167,7 @@ global caption langage
 
 
 #=====================================================================================================#
-# *************** Version française ***************************
+# *************** Version franÃ§aise ***************************
 if { [string compare $langage "french"] == "0" } {
 
      set caption(spcaudace,gui,main_title)                    "SpcAud'ACE : analyseur de spectres"
@@ -176,9 +176,9 @@ if { [string compare $langage "french"] == "0" } {
 
      #--- Divers ---#
      set caption(spcaudace,gui,pixel)                         "Position (pixel)"
-     set caption(spcaudace,gui,angstrom)                      "Angström"
-     set caption(spcaudace,gui,angstroms)                     "Longueur d'onde (Angström)"
-     set caption(spcaudace,gui,intensity)                     "Intensité (ADU)"
+     set caption(spcaudace,gui,angstrom)                      "AngstrÃ¶m"
+     set caption(spcaudace,gui,angstroms)                     "Longueur d'onde (AngstrÃ¶m)"
+     set caption(spcaudace,gui,intensity)                     "IntensitÃ© (ADU)"
      set caption(spcaudace,gui,adu)                           "ADU"
      set caption(spcaudace,gui,spc_profile)                   "profil SPC"
      set caption(spcaudace,gui,wait)                          "En cours..."
@@ -192,36 +192,36 @@ if { [string compare $langage "french"] == "0" } {
      set caption(spcaudace,gui,loadspctxt)                    "Charger un profil de raie dat"
      set caption(spcaudace,gui,spc_load)                      "Charger un profil de raies FITS ou DAT"
      set caption(spcaudace,gui,gloadmore)                     "Afficher d'autres profils de raies FITS"
-     set caption(spcaudace,gui,gdelete)                       "Effacer un profil de raies affiché"
-     set caption(spcaudace,gui,gdeleteall)                    "Effacer tous les profils de raies affichés"
-     set caption(spcaudace,gui,spc_repconf)                   "Configuration du répertoire de travail"
-     set caption(spcaudace,gui,spc_simbad)                    "Accès au site de la base Simbad"
-     set caption(spcaudace,gui,spc_bess)                      "Accès au site de la base BeSS"
-     set caption(spcaudace,gui,spc_arasbeam)                  "Accès au site ArasBeam"
-     set caption(spcaudace,gui,spc_uves)                      "Accès au site de la base UVES"
+     set caption(spcaudace,gui,gdelete)                       "Effacer un profil de raies affichÃ©"
+     set caption(spcaudace,gui,gdeleteall)                    "Effacer tous les profils de raies affichÃ©s"
+     set caption(spcaudace,gui,spc_repconf)                   "Configuration du rÃ©pertoire de travail"
+     set caption(spcaudace,gui,spc_simbad)                    "AccÃ¨s au site de la base Simbad"
+     set caption(spcaudace,gui,spc_bess)                      "AccÃ¨s au site de la base BeSS"
+     set caption(spcaudace,gui,spc_arasbeam)                  "AccÃ¨s au site ArasBeam"
+     set caption(spcaudace,gui,spc_uves)                      "AccÃ¨s au site de la base UVES"
      set caption(spcaudace,gui,print_on)                      "Imprimer avec "
-     set caption(spcaudace,gui,quitspc)                       "Quitter la fenêtre SpcAud'ACE"
+     set caption(spcaudace,gui,quitspc)                       "Quitter la fenÃªtre SpcAud'ACE"
 
 
      #--- Menu Conversions ---#
      set caption(spcaudace,gui,conv)                          "Conversions"
      set caption(spcaudace,gui,spc_spc2png_w)                 "Exporter un profil en image PNG"
-     set caption(spcaudace,gui,spc_spc2png2_w)                "Exporter un profil en image PNG (réglages fins)"
-     set caption(spcaudace,gui,writeps)                       "Fait une capture d'écran au format Postscript"
-     set caption(spcaudace,gui,writegif)                      "Fait une capture d'écran au format GIF"
+     set caption(spcaudace,gui,spc_spc2png2_w)                "Exporter un profil en image PNG (rÃ©glages fins)"
+     set caption(spcaudace,gui,writeps)                       "Fait une capture d'Ã©cran au format Postscript"
+     set caption(spcaudace,gui,writegif)                      "Fait une capture d'Ã©cran au format GIF"
      set caption(spcaudace,gui,spc_fit2ps)                    "Exporter un profil en Postscript"
-     set caption(spcaudace,gui,spc_fit2colors)                "Création d'un spectre coloré à partir du profil"
+     set caption(spcaudace,gui,spc_fit2colors)                "CrÃ©ation d'un spectre colorÃ© Ã  partir du profil"
      set caption(spcaudace,gui,spc_fits2dat_w)                "Conversion de profil FITS vers DAT"
      set caption(spcaudace,gui,spc_dat2fits_w)                "Conversion de profil DAT vers FITS"
      set caption(spcaudace,gui,spc_spc2fits_w)                "Conversion de profil SPC vers FITS"
-     set caption(spcaudace,gui,spc_spcs2fits_w)               "Conversion d'un répertoire de profils SPC vers FITS"
+     set caption(spcaudace,gui,spc_spcs2fits_w)               "Conversion d'un rÃ©pertoire de profils SPC vers FITS"
      set caption(spcaudace,gui,spc_bessmodule_w)              "Export de fichier au format base BeSS"
 
-     #--- Menu Géométrie ---#
-     set caption(spcaudace,gui,spc_geometrie)                 "Géométrie"
-     set caption(spcaudace,gui,spc_pretraitementfc_w)         "Prétraitement de spectres 2D"
-     set caption(spcaudace,gui,spc_pretrait)                  "Prétraitement expert de spectres 2D"
-     set caption(spcaudace,gui,spc_register_w)                "Appariement d'une série de spectres 2D"
+     #--- Menu GÃ©omÃ©trie ---#
+     set caption(spcaudace,gui,spc_geometrie)                 "GÃ©omÃ©trie"
+     set caption(spcaudace,gui,spc_pretraitementfc_w)         "PrÃ©traitement de spectres 2D"
+     set caption(spcaudace,gui,spc_pretrait)                  "PrÃ©traitement expert de spectres 2D"
+     set caption(spcaudace,gui,spc_register_w)                "Appariement d'une sÃ©rie de spectres 2D"
      set caption(spcaudace,gui,spc_rot180_w)                  "Inversion gauche-droite (2D/1D)"
      set caption(spcaudace,gui,spc_tiltauto_w)                "Rotation automatique (2D)"
      set caption(spcaudace,gui,spc_tilt_w)                    "Rotation manuelle"
@@ -233,87 +233,87 @@ if { [string compare $langage "french"] == "0" } {
 
      #--- Menu Profil de raies ---#
      set caption(spcaudace,gui,spc_profil)                    "Profil de raies"
-     set caption(spcaudace,gui,spc_profil_w)                  "Créer le profil automatique d'un spectre"
-     set caption(spcaudace,gui,spc_traitea_w)                 "Prétraitement d'une série et profil automatique"
-     set caption(spcaudace,gui,spc_extract_zone_w)            "Créer un profil à partir d'une zone"
+     set caption(spcaudace,gui,spc_profil_w)                  "CrÃ©er le profil automatique d'un spectre"
+     set caption(spcaudace,gui,spc_traitea_w)                 "PrÃ©traitement d'une sÃ©rie et profil automatique"
+     set caption(spcaudace,gui,spc_extract_zone_w)            "CrÃ©er un profil Ã  partir d'une zone"
      set caption(spcaudace,gui,spc_smooth)                    "Adoucissement par filtrage passe bas"
-     set caption(spcaudace,gui,spc_smooth2)                   "Adoucissement par filtrage non-linéaire"
+     set caption(spcaudace,gui,spc_smooth2)                   "Adoucissement par filtrage non-linÃ©aire"
      set caption(spcaudace,gui,spc_div)                       "Division de deux profils de raies"
      set caption(spcaudace,gui,spc_merge)                     "Raboutage de deux profils de raies"
-     set caption(spcaudace,gui,spc_echantdelt)                "Rééchantillonnage d'un profil avec un pas"
-     set caption(spcaudace,gui,spc_echantmodel)               "Rééchantillonnage d'un profil à l'identique d'un autre"
+     set caption(spcaudace,gui,spc_echantdelt)                "RÃ©Ã©chantillonnage d'un profil avec un pas"
+     set caption(spcaudace,gui,spc_echantmodel)               "RÃ©Ã©chantillonnage d'un profil Ã  l'identique d'un autre"
      set caption(spcaudace,gui,spc_extractcont)               "Extraction du continuum"
      set caption(spcaudace,gui,spc_dry)                       "Retrait des raies telluriques"
      set caption(spcaudace,gui,spc_calibre_space)             "---------------------------------------------------------------------------"
      set caption(spcaudace,gui,spc_norma_w)                   "Normalisation par extraction du continuum"
-     set caption(spcaudace,gui,spc_rescalecont_w)             "Mise à l'échelle à 1 du continuum"
+     set caption(spcaudace,gui,spc_rescalecont_w)             "Mise Ã  l'Ã©chelle Ã  1 du continuum"
 
 
      #--- Menu Mesures ---#
      set caption(spcaudace,gui,spc_mesures)                   "Mesures"
-     set caption(spcaudace,gui,spc_centergrav_w)              "Centre de gravité d'une raie"
+     set caption(spcaudace,gui,spc_centergrav_w)              "Centre de gravitÃ© d'une raie"
      set caption(spcaudace,gui,spc_centergauss_w)             "Centre gaussien d'une raie"
-     set caption(spcaudace,gui,spc_fwhm_w)                    "Largeur à mi-hauteur d'une raie"
-     set caption(spcaudace,gui,spc_ew_w)                      "Largeur équivalente d'une raie"
-     set caption(spcaudace,gui,spc_ew1_w)                      "Largeur équivalente d'une raie d'un spectre complexe"
-     set caption(spcaudace,gui,spc_intensity_w)               "Intensité d'une raie"
+     set caption(spcaudace,gui,spc_fwhm_w)                    "Largeur Ã  mi-hauteur d'une raie"
+     set caption(spcaudace,gui,spc_ew_w)                      "Largeur Ã©quivalente d'une raie"
+     set caption(spcaudace,gui,spc_ew1_w)                      "Largeur Ã©quivalente d'une raie d'un spectre complexe"
+     set caption(spcaudace,gui,spc_intensity_w)               "IntensitÃ© d'une raie"
      set caption(spcaudace,gui,spc_imax)                      "Valeur maximum d'une raie"
-     set caption(spcaudace,gui,spc_icontinuum)                "Intensité du continuum"
+     set caption(spcaudace,gui,spc_icontinuum)                "IntensitÃ© du continuum"
      set caption(spcaudace,gui,spc_snr)                       "SNR d'un profil de raies"
 
 
      #--- Menu Calibration ---#
      set caption(spcaudace,gui,spc_calibration)               "Calibration"
-     set caption(spcaudace,gui,spc_loadneon)                  "Visualiser le profil de raies du néon "
+     set caption(spcaudace,gui,spc_loadneon)                  "Visualiser le profil de raies du nÃ©on "
      set caption(spcaudace,gui,spc_calibre2file_w)            "Etalonnage en longueur d'onde"
-     set caption(spcaudace,gui,spc_calibre2loifile_w)         "Etalonnage en longueur d'onde avec lampe étalon"
-     set caption(spcaudace,gui,spc_calibredecal)              "Décalage du spectre en longueur d'onde"
-     set caption(spcaudace,gui,spc_linearcal)                 "Linéarise la loi de calibration"
-     set caption(spcaudace,gui,spc_corrvhelio)                "Correction de la vitesse héliocentrique"
+     set caption(spcaudace,gui,spc_calibre2loifile_w)         "Etalonnage en longueur d'onde avec lampe Ã©talon"
+     set caption(spcaudace,gui,spc_calibredecal)              "DÃ©calage du spectre en longueur d'onde"
+     set caption(spcaudace,gui,spc_linearcal)                 "LinÃ©arise la loi de calibration"
+     set caption(spcaudace,gui,spc_corrvhelio)                "Correction de la vitesse hÃ©liocentrique"
      set caption(spcaudace,gui,spc_calibretelluric)           "Etalonnage avec les raies telluriques"
      set caption(spcaudace,gui,spc_calobilan)                 "Bilan de la calibration avec les raies telluriques"
-     set caption(spcaudace,gui,spc_caloverif)                 "Vérifie la calibration avec les raies telluriques"
+     set caption(spcaudace,gui,spc_caloverif)                 "VÃ©rifie la calibration avec les raies telluriques"
      set caption(spcaudace,gui,spc_loadmh2o)                  "Superposer le profil de raies de l'eau"
      set caption(spcaudace,gui,spc_calibre_space)             "---------------------------------------------------------------------------"
-     set caption(spcaudace,gui,spc_rinstrum_w)                "Calcul de la réponse instrumentale"
-     set caption(spcaudace,gui,spc_rinstrumcorr_w)            "Correction de la réponse instrumentale"
-     set caption(spcaudace,gui,spc_divri)                     "Division par la réponse intrumentale"
+     set caption(spcaudace,gui,spc_rinstrum_w)                "Calcul de la rÃ©ponse instrumentale"
+     set caption(spcaudace,gui,spc_rinstrumcorr_w)            "Correction de la rÃ©ponse instrumentale"
+     set caption(spcaudace,gui,spc_divri)                     "Division par la rÃ©ponse intrumentale"
 
 
      #--- Menu Pipelines ---#
      set caption(spcaudace,gui,spc_pipelines)                 "Pipelines"
      set caption(spcaudace,gui,spc_pipelines_space)           "---------------------------------------------------------------------------"
-     set caption(spcaudace,gui,spc_traite2rinstrum_w)         "1) Calcul de la réponse instrumentale"
+     set caption(spcaudace,gui,spc_traite2rinstrum_w)         "1) Calcul de la rÃ©ponse instrumentale"
      set caption(spcaudace,gui,spc_lampe2calibre_w)           "Calibrations d'une lampe spectrale"
      set caption(spcaudace,gui,spc_traite2srinstrum_w)        "Application des calibrations aux spectres (mode expert)"
-     set caption(spcaudace,gui,spc_traitestellaire)           "2a) Réduction de spectres stellaires (mode simple)"
-     set caption(spcaudace,gui,spc_traitenebula)              "2b) Réduction de spectres non stellaires"
+     set caption(spcaudace,gui,spc_traitestellaire)           "2a) RÃ©duction de spectres stellaires (mode simple)"
+     set caption(spcaudace,gui,spc_traitenebula)              "2b) RÃ©duction de spectres non stellaires"
      set caption(spcaudace,gui,spc_traite2scalibre_w)         "Application des calibrations (sans RI) aux spectres"
-    # set caption(spcaudace,gui,spc_traitesimple2calibre_w)    "Prétraitement simple -> Calibration"
-    # set caption(spcaudace,gui,spc_traitesimple2rinstrum_w)   "Prétraitement simple -> Réponse instrumentale"
-     set caption(spcaudace,gui,spc_geom2calibre_w)            "Corrections géométriques -> Calibration"
-     set caption(spcaudace,gui,spc_geom2rinstrum_w)           "Corrections géométriques -> Correction instrumentale"
-     set caption(spcaudace,gui,spc_specLhIII_w)               "Réduction des spectres Lhires III (vide)"
+    # set caption(spcaudace,gui,spc_traitesimple2calibre_w)    "PrÃ©traitement simple -> Calibration"
+    # set caption(spcaudace,gui,spc_traitesimple2rinstrum_w)   "PrÃ©traitement simple -> RÃ©ponse instrumentale"
+     set caption(spcaudace,gui,spc_geom2calibre_w)            "Corrections gÃ©omÃ©triques -> Calibration"
+     set caption(spcaudace,gui,spc_geom2rinstrum_w)           "Corrections gÃ©omÃ©triques -> Correction instrumentale"
+     set caption(spcaudace,gui,spc_specLhIII_w)               "RÃ©duction des spectres Lhires III (vide)"
 
      #--- Menu Astrophysique ---#
      set caption(spcaudace,gui,spc_analyse)                   "Astrophysique"
-     set caption(spcaudace,gui,spc_surveys)                   "Site Internet pour la préparation de surveys"
-     set caption(spcaudace,gui,spc_bebuil)                    "Site Internet de liste d'étoiles Be"
-     set caption(spcaudace,gui,spc_chimie)                    "Repérage des espèces atomiques"
+     set caption(spcaudace,gui,spc_surveys)                   "Site Internet pour la prÃ©paration de surveys"
+     set caption(spcaudace,gui,spc_bebuil)                    "Site Internet de liste d'Ã©toiles Be"
+     set caption(spcaudace,gui,spc_chimie)                    "RepÃ©rage des espÃ¨ces atomiques"
      set caption(spcaudace,gui,spc_vradiale_w)                "Vitesse radiale"
-     set caption(spcaudace,gui,spc_vhelio)                    "Vitesse héliocentrique"
-     set caption(spcaudace,gui,spc_vradialecorr_w)            "Vitesse radiale corrigée de Vhélio"
+     set caption(spcaudace,gui,spc_vhelio)                    "Vitesse hÃ©liocentrique"
+     set caption(spcaudace,gui,spc_vradialecorr_w)            "Vitesse radiale corrigÃ©e de VhÃ©lio"
      set caption(spcaudace,gui,spc_vrmes_w)                   "Calculer le rapport V/R d'une raie"
      set caption(spcaudace,gui,spc_vexp_w)                    "Vitesse d'expension"
      set caption(spcaudace,gui,spc_vrot_w)                    "Vitesse de rotation"
-     set caption(spcaudace,gui,spc_te)                        "Température électronique (automatique)"
-     set caption(spcaudace,gui,spc_ne)                        "Densité électronique (automatique)"
-     set caption(spcaudace,gui,spc_npte_w)                    "Température électronique"
-     set caption(spcaudace,gui,spc_npne_w)                    "Densité électronique"
-     set caption(spcaudace,gui,spc_ewcourbe_w)                "Courbe EW=f(t) d'une série"
-     set caption(spcaudace,gui,spc_ewdirw)                    "Extraction de EW avec des infos dans un fichier d'une série"
-     set caption(spcaudace,gui,spc_normahbeta)                "Normalisation par rapport à l'intensité de la raie H-beta"
-     set caption(spcaudace,gui,spc_spectrum)                  "SPECTRUM : Synthèse de spectres"
+     set caption(spcaudace,gui,spc_te)                        "TempÃ©rature Ã©lectronique (automatique)"
+     set caption(spcaudace,gui,spc_ne)                        "DensitÃ© Ã©lectronique (automatique)"
+     set caption(spcaudace,gui,spc_npte_w)                    "TempÃ©rature Ã©lectronique"
+     set caption(spcaudace,gui,spc_npne_w)                    "DensitÃ© Ã©lectronique"
+     set caption(spcaudace,gui,spc_ewcourbe_w)                "Courbe EW=f(t) d'une sÃ©rie"
+     set caption(spcaudace,gui,spc_ewdirw)                    "Extraction de EW avec des infos dans un fichier d'une sÃ©rie"
+     set caption(spcaudace,gui,spc_normahbeta)                "Normalisation par rapport Ã  l'intensitÃ© de la raie H-beta"
+     set caption(spcaudace,gui,spc_spectrum)                  "SPECTRUM : SynthÃ¨se de spectres"
 
      #--- Menu Aide ---#
      set caption(spcaudace,gui,spc_aide)                      "Aide"
@@ -351,7 +351,7 @@ if { [string compare $langage "french"] == "0" } {
 }
 
 #================================================================================
-#   Fin de la déclaration des textes localisés (internationalisation)
+#   Fin de la dÃ©claration des textes localisÃ©s (internationalisation)
 #================================================================================
 
 #================================================================================#

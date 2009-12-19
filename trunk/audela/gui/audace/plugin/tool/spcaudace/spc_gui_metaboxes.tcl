@@ -1,11 +1,11 @@
 #*********************************************************************************#
 #                                                                                 #
-# Boîtes graphiques TK de saisie des paramètres pour les méta-focntions Spcaudace  #
+# BoÃ®tes graphiques TK de saisie des paramÃ¨tres pour les mÃ©ta-focntions Spcaudace  #
 #                                                                                 #
 #*********************************************************************************#
 # Chargement : source $audace(rep_scripts)/spcaudace/spc_gui_boxes.tcl
 
-# Mise a jour $Id: spc_gui_metaboxes.tcl,v 1.4 2009-01-02 20:50:59 bmauclaire Exp $
+# Mise a jour $Id: spc_gui_metaboxes.tcl,v 1.5 2009-12-19 09:54:34 bmauclaire Exp $
 
 
 
@@ -15,9 +15,9 @@ source [ file join [file dirname [info script]] spc_gui_metaboxes.cap ]
 # PRocedeure verifiant la validite des arguments saisie dans un formulaire graphique
 #
 # Auteurs : Benjamin Mauclaire
-# Date de création : 10-07-2006
+# Date de crÃ©ation : 10-07-2006
 # Date de modification : 10-08-2006
-# Utilisée par : les namespace
+# UtilisÃ©e par : les namespace
 # Retourne 1 si arguemntes valides, 0 si non valides (champs vides, fichier inexistants)
 ########################################################################
 
@@ -31,7 +31,7 @@ proc spc_testguiargs { listeargs } {
     #--  =1 si vide, =0 si pleine
     set flag_empty 0
 
-    #-- Liste des n° des champs :
+    #-- Liste des nÂ° des champs :
     set liste_args_vides ""
     set liste_files_out ""
 
@@ -83,12 +83,12 @@ proc spc_testguiargs { listeargs } {
 
 
 ########################################################################
-# Boîte graphique de saisie de s paramètres pour la calibration avec 2 raies
+# BoÃ®te graphique de saisie de s paramÃ¨tres pour la calibration avec 2 raies
 #
 # Auteurs : Alain Klotz, Benjamin Mauclaire
-# Date de création : 07-07-2006
+# Date de crÃ©ation : 07-07-2006
 # Date de modification : 07-07-2006
-# Utilisée par : spc_*2calibre (spc_traite2calibre, spc_geom2calibre,...), spc_*2instrum
+# UtilisÃ©e par : spc_*2calibre (spc_traite2calibre, spc_geom2calibre,...), spc_*2instrum
 ########################################################################
 
 namespace eval ::param_spc_audace_calibre2 {
@@ -298,12 +298,12 @@ if { $flag == 1 } {
 
 
 ########################################################################
-# Boîte graphique de saisie des paramètres pour la calibration avec 2 raies dedans
+# BoÃ®te graphique de saisie des paramÃ¨tres pour la calibration avec 2 raies dedans
 #
 # Auteurs : Benjamin Mauclaire
-# Date de création : 09-07-2006
+# Date de crÃ©ation : 09-07-2006
 # Date de modification : 09-07-2006
-# Utilisée par : spc_calibre2file (n'existe pas encore  : calibration avec 2 raies dans le profil)
+# UtilisÃ©e par : spc_calibre2file (n'existe pas encore  : calibration avec 2 raies dans le profil)
 ########################################################################
 
 namespace eval ::param_spc_audace_calibre2file {
@@ -512,12 +512,12 @@ namespace eval ::param_spc_audace_calibre2file {
 
 
 ########################################################################
-# Boîte graphique de saisie des paramètres pour la calibration avec 2 raies dedans
+# BoÃ®te graphique de saisie des paramÃ¨tres pour la calibration avec 2 raies dedans
 #
 # Auteurs : Benjamin Mauclaire
-# Date de création : 09-07-2006
+# Date de crÃ©ation : 09-07-2006
 # Date de modification : 09-07-2006
-# Utilisée par : spc_calibre2loifile
+# UtilisÃ©e par : spc_calibre2loifile
 ########################################################################
 
 namespace eval ::param_spc_audace_calibre2loifile {
@@ -631,14 +631,14 @@ namespace eval ::param_spc_audace_calibre2loifile {
 
 
 ########################################################################
-# Boîte graphique de saisie de s paramètres pour la metafonction spc_geom2calibre
-# Intitulé : Corrections géométriques -> calibration
+# BoÃ®te graphique de saisie de s paramÃ¨tres pour la metafonction spc_geom2calibre
+# IntitulÃ© : Corrections gÃ©omÃ©triques -> calibration
 #
 # Auteurs : Benjamin Mauclaire
-# Date de création : 14-07-2006
+# Date de crÃ©ation : 14-07-2006
 # Date de modification : 1-08-2006
-# Utilisée par : spc_geom2calibre
-# Args : nom_generique_spectres_pretraites nom_spectre_lampe etoile_ref etoile_cat methode_reg (reg, spc) methode_détection_spectre (large, serre)  methode_sub_sky (moy, moy2, med, inf, sup, ack, none) methode_binning (add, rober, horne) smooth (o/n)
+# UtilisÃ©e par : spc_geom2calibre
+# Args : nom_generique_spectres_pretraites nom_spectre_lampe etoile_ref etoile_cat methode_reg (reg, spc) methode_dÃ©tection_spectre (large, serre)  methode_sub_sky (moy, moy2, med, inf, sup, ack, none) methode_binning (add, rober, horne) smooth (o/n)
 ########################################################################
 
 namespace eval ::param_spc_audace_geom2calibre {
@@ -662,7 +662,7 @@ namespace eval ::param_spc_audace_geom2calibre {
          destroy .param_spc_audace_geom2calibre
       }
 
-      # === Initialisation des variables qui seront changées
+      # === Initialisation des variables qui seront changÃ©es
       set audace(param_spc_audace,geom2calibre,config,methreg) "spc"
       set audace(param_spc_audace,geom2calibre,config,methsel) "serre"
       set audace(param_spc_audace,geom2calibre,config,methsky) "med"
@@ -958,14 +958,14 @@ namespace eval ::param_spc_audace_geom2calibre {
 
 
 ########################################################################
-# Boîte graphique de saisie de s paramètres pour la metafonction spc_geom2rinstrum
-# Intitulé : Corrections géométriques -> réponse instrumentale
+# BoÃ®te graphique de saisie de s paramÃ¨tres pour la metafonction spc_geom2rinstrum
+# IntitulÃ© : Corrections gÃ©omÃ©triques -> rÃ©ponse instrumentale
 #
 # Auteurs : Benjamin Mauclaire
-# Date de création : 14-07-2006
+# Date de crÃ©ation : 14-07-2006
 # Date de modification : 13-08-2006
-# Utilisée par : spc_geom2rinstrum
-# Args : nom_générique_spectres_prétraités (sans extension) spectre_2D_lampe méthode_reg (reg, spc) uncosmic (o/n) méthode_détection_spectre (large, serre)  méthode_sub_sky (moy, moy2, med, inf, sup, back, none) mirrorx (o/n) méthode_bining (add, rober, horne) adoucissment (o/n) normalisation (o/n)
+# UtilisÃ©e par : spc_geom2rinstrum
+# Args : nom_gÃ©nÃ©rique_spectres_prÃ©traitÃ©s (sans extension) spectre_2D_lampe mÃ©thode_reg (reg, spc) uncosmic (o/n) mÃ©thode_dÃ©tection_spectre (large, serre)  mÃ©thode_sub_sky (moy, moy2, med, inf, sup, back, none) mirrorx (o/n) mÃ©thode_bining (add, rober, horne) adoucissment (o/n) normalisation (o/n)
 ########################################################################
 
 namespace eval ::param_spc_audace_geom2rinstrum {
@@ -989,7 +989,7 @@ namespace eval ::param_spc_audace_geom2rinstrum {
          destroy .param_spc_audace_geom2rinstrum
       }
 
-      # === Initialisation des variables qui seront changées
+      # === Initialisation des variables qui seront changÃ©es
       set audace(param_spc_audace,geom2rinstrum,config,methreg) "spc"
       set audace(param_spc_audace,geom2rinstrum,config,methsel) "serre"
       set audace(param_spc_audace,geom2rinstrum,config,methsky) "med"
@@ -1353,14 +1353,14 @@ namespace eval ::param_spc_audace_geom2rinstrum {
 
 
 ########################################################################
-# Boîte graphique de saisie de s paramètres pour la metafonction spc_geom2rinstrum
-# Intitulé : Corrections géométriques -> réponse instrumentale
+# BoÃ®te graphique de saisie de s paramÃ¨tres pour la metafonction spc_geom2rinstrum
+# IntitulÃ© : Corrections gÃ©omÃ©triques -> rÃ©ponse instrumentale
 #
 # Auteurs : Benjamin Mauclaire
-# Date de création : 14-07-2006
+# Date de crÃ©ation : 14-07-2006
 # Date de modification : 13-08-2006
-# Utilisée par : spc_geom2rinstrum
-# Args : nom_générique_spectres_prétraités (sans extension) spectre_2D_lampe méthode_reg (reg, spc) uncosmic (o/n) méthode_détection_spectre (large, serre)  méthode_sub_sky (moy, moy2, med, inf, sup, back, none) mirrorx (o/n) méthode_bining (add, rober, horne) adoucissment (o/n) normalisation (o/n)
+# UtilisÃ©e par : spc_geom2rinstrum
+# Args : nom_gÃ©nÃ©rique_spectres_prÃ©traitÃ©s (sans extension) spectre_2D_lampe mÃ©thode_reg (reg, spc) uncosmic (o/n) mÃ©thode_dÃ©tection_spectre (large, serre)  mÃ©thode_sub_sky (moy, moy2, med, inf, sup, back, none) mirrorx (o/n) mÃ©thode_bining (add, rober, horne) adoucissment (o/n) normalisation (o/n)
 ########################################################################
 
 namespace eval ::param_spc_audace_geom2rinstrum {
@@ -1384,7 +1384,7 @@ namespace eval ::param_spc_audace_geom2rinstrum {
          destroy .param_spc_audace_geom2rinstrum
       }
 
-      # === Initialisation des variables qui seront changées
+      # === Initialisation des variables qui seront changÃ©es
       set audace(param_spc_audace,geom2rinstrum,config,methreg) "spc"
       set audace(param_spc_audace,geom2rinstrum,config,methsel) "serre"
       set audace(param_spc_audace,geom2rinstrum,config,methsky) "med"
@@ -1747,14 +1747,14 @@ namespace eval ::param_spc_audace_geom2rinstrum {
 
 
 ########################################################################
-# Boîte graphique de saisie des paramètres pour la metafonction spc_calibrelampe
-# Intitulé : Calibration en longueur d'onde d'un spectre
+# BoÃ®te graphique de saisie des paramÃ¨tres pour la metafonction spc_calibrelampe
+# IntitulÃ© : Calibration en longueur d'onde d'un spectre
 #
 # Auteurs : Benjamin Mauclaire
-# Date de création : 14-07-2006
+# Date de crÃ©ation : 14-07-2006
 # Date de modification : 1-08-2006
-# Utilisée par : spc_calibrelampe
-# Args : nom_generique_spectres_pretraites nom_spectre_lampe etoile_ref etoile_cat methode_reg (reg, spc) methode_détection_spectre (large, serre)  methode_sub_sky (moy, moy2, med, inf, sup, ack, none) methode_binning (add, rober, horne) smooth (o/n)
+# UtilisÃ©e par : spc_calibrelampe
+# Args : nom_generique_spectres_pretraites nom_spectre_lampe etoile_ref etoile_cat methode_reg (reg, spc) methode_dÃ©tection_spectre (large, serre)  methode_sub_sky (moy, moy2, med, inf, sup, ack, none) methode_binning (add, rober, horne) smooth (o/n)
 ########################################################################
 
 namespace eval ::param_spc_audace_calibreprofil {
@@ -1778,7 +1778,7 @@ namespace eval ::param_spc_audace_calibreprofil {
 
       #::console::affiche_resultat "Abscisses : $listeabscisses\n"
       #::console::affiche_resultat "Lambdas : $listelambdaschem\n"
-      # === Initialisation des variables qui seront changées
+      # === Initialisation des variables qui seront changÃ©es
       set i 1
       foreach raie $listeabscisses_i {
 	  set intensite [ lindex $raie 1 ]
@@ -1923,7 +1923,7 @@ namespace eval ::param_spc_audace_calibreprofil {
       pack  .param_spc_audace_calibreprofil.lambda1.label -in .param_spc_audace_calibreprofil.lambda1 -side left -fill none
       #-- Partie Combobox
        #-height [ llength $listelambdaschem ]
-       #- On limite l'affichage de 30 longueurs d'onde, docn création automatique d'un ascenseur :
+       #- On limite l'affichage de 30 longueurs d'onde, docn crÃ©ation automatique d'un ascenseur :
       ComboBox .param_spc_audace_calibreprofil.lambda1.combobox \
          -width 12          \
          -height 6  \
@@ -2174,12 +2174,12 @@ namespace eval ::param_spc_audace_calibreprofil {
 	  }
       }
 
-      #--- Mise à vide des abscisses dont les lambda sont vides :
+      #--- Mise Ã  vide des abscisses dont les lambda sont vides :
       set i 0
       set listex [ list $x1 $x2 $x3 $x4 $x5 $x6 ]
 
       #--- Tri des deux listes x et Lmabda et reaffectation :
-      #-- Création de la liste contenant les couples (x,Lambda) :
+      #-- CrÃ©ation de la liste contenant les couples (x,Lambda) :
       set doubleliste [ list ]
       foreach x $listex lamb $listel {
 	  if { $lamb == "" } {
@@ -2190,7 +2190,7 @@ namespace eval ::param_spc_audace_calibreprofil {
 	  }
       }
 
-      #-- Réaffectation et initialisation à "" des abscisses Xi non utilisées :
+      #-- RÃ©affectation et initialisation Ã  "" des abscisses Xi non utilisÃ©es :
       set i 1
       foreach couple $doubleliste {
 	  set lambdaread [ lindex $couple 1 ]
@@ -2204,7 +2204,7 @@ namespace eval ::param_spc_audace_calibreprofil {
       }
 
 
-      #--- Extrait les longueurs d'onde de la chîne de caractère :
+      #--- Extrait les longueurs d'onde de la chÃ®ne de caractÃ¨re :
       set i 1
       set lambdas [ list $lambda1 $lambda2 $lambda3 $lambda4 $lambda5 $lambda6 ]
       foreach lambda $lambdas {
@@ -2219,9 +2219,9 @@ namespace eval ::param_spc_audace_calibreprofil {
 	  incr i
       }
 
-      #--- Calibration associée au nombre de raies données :
+      #--- Calibration associÃ©e au nombre de raies donnÃ©es :
       if { $x1!="" && $x2!="" && $x3=="" } {
-	  set spcalibre [ spc_calibre2 $lampe $x1 $lambda1 $x2 $lambda2 ]
+	  set spcalibre [ spc_calibren $lampe $x1 $lambda1 $x2 $lambda2 ]
 	  destroy .param_spc_audace_calibreprofil
 	  return $spcalibre
       } elseif { $x1!="" && $x2!="" && $x3!="" && $x4=="" } {
@@ -2277,14 +2277,14 @@ namespace eval ::param_spc_audace_calibreprofil {
 
 
 ########################################################################
-# Boîte graphique de saisie de s paramètres pour la metafonction spc_traite2scalibre
-# Intitulé : Traitement -> calibration (application à d'autres spectres)
+# BoÃ®te graphique de saisie de s paramÃ¨tres pour la metafonction spc_traite2scalibre
+# IntitulÃ© : Traitement -> calibration (application Ã  d'autres spectres)
 #
 # Auteurs : Benjamin Mauclaire
-# Date de création : 14-07-2006
+# Date de crÃ©ation : 14-07-2006
 # Date de modification : 23-09-06
-# Utilisée par : spc_traite2scalibre
-# Args : nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_profil_lampe methode_reg (reg, spc) methode_détection_spectre (large, serre)  methode_sub_sky (moy, moy2, med, inf, sup, ack, none) methode_binning (add, rober, horne) smooth (o/n)
+# UtilisÃ©e par : spc_traite2scalibre
+# Args : nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_profil_lampe methode_reg (reg, spc) methode_dÃ©tection_spectre (large, serre)  methode_sub_sky (moy, moy2, med, inf, sup, ack, none) methode_binning (add, rober, horne) smooth (o/n)
 ########################################################################
 
 namespace eval ::param_spc_audace_traite2scalibre {
@@ -2311,7 +2311,7 @@ namespace eval ::param_spc_audace_traite2scalibre {
          destroy .param_spc_audace_traite2scalibre
       }
 
-      # === Initialisation des variables qui seront changées
+      # === Initialisation des variables qui seront changÃ©es
       set audace(param_spc_audace,traite2scalibre,config,methreg) "spc"
       set audace(param_spc_audace,traite2scalibre,config,methsel) "large"
       set audace(param_spc_audace,traite2scalibre,config,methsky) "med"
@@ -2740,14 +2740,14 @@ namespace eval ::param_spc_audace_traite2scalibre {
 
 
 ########################################################################
-# Boîte graphique de saisie de s paramètres pour la metafonction spc_traite2calibre
-# Intitulé : Prétraitement -> calibration
+# BoÃ®te graphique de saisie de s paramÃ¨tres pour la metafonction spc_traite2calibre
+# IntitulÃ© : PrÃ©traitement -> calibration
 #
 # Auteurs : Benjamin Mauclaire
-# Date de création : 28-02-2007
+# Date de crÃ©ation : 28-02-2007
 # Date de modification : 28-02-2002
-# Utilisée par : spc_traite2calibre
-# Args : nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu offset nom_spectre_lampe methode_détection_spectre (large, serre) methode_binning (add, rober, horne) methmasters (o/n)
+# UtilisÃ©e par : spc_traite2calibre
+# Args : nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu offset nom_spectre_lampe methode_dÃ©tection_spectre (large, serre) methode_binning (add, rober, horne) methmasters (o/n)
 #        $brut $noir $plu $noirplu $offset $lampe $methcos $methsel $methinv $methbin $methraie
 ########################################################################
 
@@ -2770,7 +2770,7 @@ namespace eval ::param_spc_audace_lampe2calibre {
          destroy .param_spc_audace_lampe2calibre
       }
 
-      # === Initialisation des variables qui seront changées
+      # === Initialisation des variables qui seront changÃ©es
       set audace(param_spc_audace,lampe2calibre,config,methsel) "serre"
       set audace(param_spc_audace,lampe2calibre,config,methsky) "med"
       set audace(param_spc_audace,lampe2calibre,config,methbin) "rober"
@@ -3094,14 +3094,14 @@ if { 1==0 } {
 
 
 ########################################################################
-# Boîte graphique de saisie de s paramètres pour la metafonction spc_traite2rinstrum
-# Intitulé : Traitement -> réponse instrumentale
+# BoÃ®te graphique de saisie de s paramÃ¨tres pour la metafonction spc_traite2rinstrum
+# IntitulÃ© : Traitement -> rÃ©ponse instrumentale
 #
 # Auteurs : Benjamin Mauclaire
-# Date de création : 14-07-2006
+# Date de crÃ©ation : 14-07-2006
 # Date de modification : 14-08-2006
-# Utilisée par : spc_traite2rinstrum
-# Args : nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_spectre_lampe etoile_ref etoile_cat methode_reg (reg, spc) methode_détection_spectre (large, serre)  methode_sub_sky (moy, moy2, med, inf, sup, ack, none) methode_binning (add, rober, horne) smooth (o/n)
+# UtilisÃ©e par : spc_traite2rinstrum
+# Args : nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_spectre_lampe etoile_ref etoile_cat methode_reg (reg, spc) methode_dÃ©tection_spectre (large, serre)  methode_sub_sky (moy, moy2, med, inf, sup, ack, none) methode_binning (add, rober, horne) smooth (o/n)
 ########################################################################
 
 namespace eval ::param_spc_audace_traite2rinstrum {
@@ -3127,7 +3127,7 @@ namespace eval ::param_spc_audace_traite2rinstrum {
          destroy .param_spc_audace_traite2rinstrum
       }
 
-      # === Initialisation des variables qui seront changées
+      # === Initialisation des variables qui seront changÃ©es
       set audace(param_spc_audace,traite2rinstrum,config,offset) "none"
       set audace(param_spc_audace,traite2rinstrum,config,methreg) "spc"
       set audace(param_spc_audace,traite2rinstrum,config,methsel) "serre"
@@ -3564,7 +3564,7 @@ namespace eval ::param_spc_audace_traite2rinstrum {
       pack .param_spc_audace_traite2rinstrum.methmasters -in .param_spc_audace_traite2rinstrum -fill x -pady 1 -padx 12
 
 
-      #--- Message sur les réponses intrumentales :
+      #--- Message sur les rÃ©ponses intrumentales :
       label .param_spc_audace_traite2rinstrum.message1 \
 	      -font [ list {Arial} 12 bold ] -text "$caption(spcaudace,metaboxes,traite2rinstrum,desc_results) " \
 	      -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2rinstrum,color,backpad) \
@@ -3610,7 +3610,7 @@ namespace eval ::param_spc_audace_traite2rinstrum {
       #--- Lancement de la fonction spcaudace :
       #-- Si tous les champs sont != "" on execute le calcul :
       if { [ spc_testguiargs $listeargs ] == 1 } {
-	  #-- Test si le fichier "lampe" est bien calibré :
+	  #-- Test si le fichier "lampe" est bien calibrÃ© :
 	  set flag_calibration [ spc_testcalibre "$lampe" ]
 	  if { $flag_calibration != -1 } {
 	      set fileout [ spc_traite2rinstrum $brut $noir $plu $noirplu $offset $lampe $etoile_cat $methreg $methcos $methsel $methsky $methinv $methbin $methnorma $methsmo $methejbad $methejtilt $methraie $methmasters $flag_calibration $methcalo ]
@@ -3649,14 +3649,14 @@ namespace eval ::param_spc_audace_traite2rinstrum {
 
 
 ########################################################################
-# Boîte graphique de saisie de s paramètres pour la metafonction spc_traite2srinstrum
-# Intitulé : Traitement -> correction réponse instrumentale (application à d'autres spectres)
+# BoÃ®te graphique de saisie de s paramÃ¨tres pour la metafonction spc_traite2srinstrum
+# IntitulÃ© : Traitement -> correction rÃ©ponse instrumentale (application Ã  d'autres spectres)
 #
 # Auteurs : Benjamin Mauclaire
-# Date de création : 14-07-2006
+# Date de crÃ©ation : 14-07-2006
 # Date de modification : 28-08-2006/23-09-06
-# Utilisée par : spc_traite2rinstrum
-# Args : nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_spectre_lampe reponse_instrumentale methode_reg (reg, spc) methode_détection_spectre (large, serre)  methode_sub_sky (moy, moy2, med, inf, sup, ack, none) methode_binning (add, rober, horne) smooth (o/n)
+# UtilisÃ©e par : spc_traite2rinstrum
+# Args : nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_spectre_lampe reponse_instrumentale methode_reg (reg, spc) methode_dÃ©tection_spectre (large, serre)  methode_sub_sky (moy, moy2, med, inf, sup, ack, none) methode_binning (add, rober, horne) smooth (o/n)
 ########################################################################
 
 namespace eval ::param_spc_audace_traite2srinstrum {
@@ -3681,7 +3681,7 @@ namespace eval ::param_spc_audace_traite2srinstrum {
          destroy .param_spc_audace_traite2srinstrum
       }
 
-      # === Initialisation des variables qui seront changées
+      # === Initialisation des variables qui seront changÃ©es
       #- set audace(param_spc_audace,traite2srinstrum,config,rinstrum) "none"
       set audace(param_spc_audace,traite2srinstrum,config,methraie) "o"
       set audace(param_spc_audace,traite2srinstrum,config,offset) "none"
@@ -4152,7 +4152,7 @@ namespace eval ::param_spc_audace_traite2srinstrum {
       }
 
 
-      #--- Test si le fichier "lampe" est bien calibré :
+      #--- Test si le fichier "lampe" est bien calibrÃ© :
       buf$audace(bufNo) load "$audace(rep_images)/$lampe"
       set listemotsclef [ buf$audace(bufNo) getkwds ]
       if { [ lsearch $listemotsclef "NAXIS2" ] ==-1 } {
@@ -4168,7 +4168,7 @@ namespace eval ::param_spc_audace_traite2srinstrum {
       if { $naxis2>=2 } {
 	  ::console::affiche_resultat [format $caption(spcaudace,metaboxes,traite2srinstrum,message1) $conf(extension,defaut)]
 	  tk_messageBox -title "Erreur de saisie" -icon error -message [format $caption(spcaudace,metaboxes,traite2srinstrum,message1) $conf(extension,defaut)]
-	  #-- Boîte de dialogue pour créer le profil calibré de la lampe :
+	  #-- BoÃ®te de dialogue pour crÃ©er le profil calibrÃ© de la lampe :
 	  set err [ catch {
 	      set lampe [ ::param_spc_audace_lampe2calibre::run ]
 	      tkwait window .param_spc_audace_lampe2calibre
@@ -4180,8 +4180,8 @@ namespace eval ::param_spc_audace_traite2srinstrum {
       } elseif { $crval1==1 && $naxis2==1 } {
 	  ::console::affiche_resultat [format $caption(spcaudace,metaboxes,traite2srinstrum,message2) $conf(extension,defaut)]
 	  tk_messageBox -title "Erreur de saisie" -icon error -message [format $caption(spcaudace,metaboxes,traite2srinstrum,message2) $conf(extension,defaut)]
-	  #-- Boîte de dialogue pour calibrer la lampe :
-	  #- Attention : suppose que le profil de la lampe est corrigé géométriquement et inversé si nécessaire.
+	  #-- BoÃ®te de dialogue pour calibrer la lampe :
+	  #- Attention : suppose que le profil de la lampe est corrigÃ© gÃ©omÃ©triquement et inversÃ© si nÃ©cessaire.
 	  set lampe [ spc_calibre $lampe ]
       }
 
@@ -4227,13 +4227,13 @@ namespace eval ::param_spc_audace_traite2srinstrum {
 
 
 ########################################################################
-# Boîte graphique de saisie de s paramètres pour la metafonction spc_traitestellaire
-# Intitulé : Réduction spectrale de spectres stellaires
+# BoÃ®te graphique de saisie de s paramÃ¨tres pour la metafonction spc_traitestellaire
+# IntitulÃ© : RÃ©duction spectrale de spectres stellaires
 #
 # Auteurs : Benjamin Mauclaire
-# Date de création : 15-07-2007
+# Date de crÃ©ation : 15-07-2007
 # Date de modification : 15-07-2007
-# Utilisée par : spc_traitestellaire
+# UtilisÃ©e par : spc_traitestellaire
 # Args :
 ########################################################################
 
@@ -4254,7 +4254,7 @@ namespace eval ::param_spc_audace_traitestellaire {
          destroy .param_spc_audace_traitestellaire
       }
 
-       #-- Options prédéfinies (déclarées dans procédure GO) :
+       #-- Options prÃ©dÃ©finies (dÃ©clarÃ©es dans procÃ©dure GO) :
        #set methreg "spc"
        #set methsky "med"
        #set methsel "serre"
@@ -4265,7 +4265,7 @@ namespace eval ::param_spc_audace_traitestellaire {
        #set rmfpretrait "o"
 
 
-      # === Initialisation des variables qui seront changées
+      # === Initialisation des variables qui seront changÃ©es
       #- set audace(param_spc_audace,traitestellaire,config,rinstrum) "none"
       set audace(param_spc_audace,traitestellaire,config,methinv) "n"
       set audace(param_spc_audace,traitestellaire,config,methraie) "o"
@@ -4622,7 +4622,7 @@ namespace eval ::param_spc_audace_traitestellaire {
       global caption
       global lampe2calibre_fileout
 
-      #-- Options prédéfinies :
+      #-- Options prÃ©dÃ©finies :
       set methreg "$spcaudace(methreg)"
       set methsel "$spcaudace(methsel)"
       set methsky "$spcaudace(methsky)"
@@ -4660,7 +4660,7 @@ namespace eval ::param_spc_audace_traitestellaire {
       #--- Lancement de la fonction spcaudace :
       #-- Si tous les champs sont /= "" on execute le calcul :
       if { [ spc_testguiargs $listeargs ] == 1 } {
-	  #-- Test si le fichier "lampe" est bien calibré :
+	  #-- Test si le fichier "lampe" est bien calibrÃ© :
 	  set flag_calibration [ spc_testcalibre "$lampe" ]
 	  if { $flag_calibration != -1 } {
 	      set fileout [ spc_traitestellaire $lampe $brut $noir $plu $noirplu $offset $rinstrum $methraie $methcos $methinv $methnorma $cal_eau $export_png $export_bess $methreg $methsel $methsky $methbin $methsmo $ejbad $ejtilt $rmfpretrait $flag_2lamps $flag_calibration ]
@@ -4698,13 +4698,13 @@ namespace eval ::param_spc_audace_traitestellaire {
 
 
 ########################################################################
-# Boîte graphique de saisie de s paramètres pour la metafonction spc_traitestellaire
-# Intitulé : Réduction spectrale de spectres non stellaires
+# BoÃ®te graphique de saisie de s paramÃ¨tres pour la metafonction spc_traitestellaire
+# IntitulÃ© : RÃ©duction spectrale de spectres non stellaires
 #
 # Auteurs : Benjamin Mauclaire
-# Date de création : 15-07-2007
+# Date de crÃ©ation : 15-07-2007
 # Date de modification : 15-07-2007
-# Utilisée par : spc_traitenebula
+# UtilisÃ©e par : spc_traitenebula
 # Args :
 ########################################################################
 
@@ -4730,12 +4730,12 @@ namespace eval ::param_spc_audace_traitenebula {
          destroy .param_spc_audace_traitenebula
       }
 
-       #-- Options prédéfinies (déclarées dans procédure GO) :
+       #-- Options prÃ©dÃ©finies (dÃ©clarÃ©es dans procÃ©dure GO) :
        #set methejbad "n"
        #set methejtilt "n"
 
 
-      # === Initialisation des variables qui seront changées
+      # === Initialisation des variables qui seront changÃ©es
       #- set audace(param_spc_audace,traitenebula,config,rinstrum) "none"
       set audace(param_spc_audace,traitenebula,config,methinv) "n"
       set audace(param_spc_audace,traitenebula,config,methraie) "o"
@@ -5154,7 +5154,7 @@ namespace eval ::param_spc_audace_traitenebula {
       global caption
       global lampe2calibre_fileout spc_windowcoords
 
-      #-- Options prédéfinies :
+      #-- Options prÃ©dÃ©finies :
       set methreg "n"
 
       ::param_spc_audace_traitenebula::recup_conf
@@ -5189,7 +5189,7 @@ namespace eval ::param_spc_audace_traitenebula {
       #--- Lancement de la fonction spcaudace :
       #-- Si tous les champs sont /= "" on execute le calcul :
       if { [ spc_testguiargs $listeargs ] == 1 } {
-	  #-- Test si le fichier "lampe" est bien calibré :
+	  #-- Test si le fichier "lampe" est bien calibrÃ© :
 	  set flag_calibration [ spc_testcalibre "$lampe" ]
 	  if { $flag_calibration != -1 } {
 	      set fileout [ spc_traitenebula $lampe $brut $noir $plu $noirplu $offset $rinstrum $methraie $methcos $methinv $methnorma $export_png $methreg $methsky $methbin $methsmo $rmfpretrait $flag_2lamps $flag_calibration ]
