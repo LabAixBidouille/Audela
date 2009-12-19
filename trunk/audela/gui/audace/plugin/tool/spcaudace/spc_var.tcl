@@ -1,9 +1,9 @@
 ####################################################################
-# Spécification des variables utilisées par spcaudace
+# SpÃ©cification des variables utilisÃ©es par spcaudace
 #
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.11 2009-10-23 18:45:32 bmauclaire Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.12 2009-12-19 09:57:48 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -12,14 +12,14 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "1.5.4 - 23/10/2009"
+set spcaudace(version) "1.5.6 - 18/12/2009"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
 
 
-#--- Liste des contributeurs au développement d'SpcAudace :
+#--- Liste des contributeurs au dÃ©veloppement d'SpcAudace :
 set spcaudace(author) "Benjamin MAUCLAIRE"
-set spcaudace(contribs) "Alain Klotz, Michel Pujol, Patrick Lailly, François Cochard"
+set spcaudace(contribs) "Alain Klotz, Michel Pujol, Patrick Lailly, FranÃ§ois Cochard"
 
 
 #--- Extension des fichiers :
@@ -27,7 +27,7 @@ set spcaudace(extdat) ".dat"
 set spcaudace(exttxt) ".txt"
 set spcaudace(extvspec) ".spc"
 
-#--- Répertoire d'SpcAudace :
+#--- RÃ©pertoire d'SpcAudace :
 if { [regexp {1.3.0} $audela(version) match resu ] } {
    set spcaudace(rep_spc) [ file join $audace(rep_scripts) spcaudace ]
 } else {
@@ -35,12 +35,12 @@ if { [regexp {1.3.0} $audela(version) match resu ] } {
 }
 
 
-#--- Chemin des répertoires :
-#-- Répertoire des outils : Gnuplot, Spectrum... :
+#--- Chemin des rÃ©pertoires :
+#-- RÃ©pertoire des outils : Gnuplot, Spectrum... :
 set spcaudace(repgp) [ file join $spcaudace(rep_spc) gp ]
 set spcaudace(spectrum) [ file join $spcaudace(rep_spc) plugins spectrum ]
 
-#-- Répertoire des données chimiques :
+#-- RÃ©pertoire des donnÃ©es chimiques :
 set spcaudace(repchimie) [ file join $spcaudace(rep_spc) data chimie ]
 set spcaudace(reptelluric) [ file join $spcaudace(rep_spc) data telluric ]
 set spcaudace(filetelluric) "$spcaudace(reptelluric)/h2o_calibrage.txt"
@@ -61,18 +61,18 @@ set spcaudace(flag_rmcalo) "o"
 #-- Superflat binne et normalise :
 set spcaudace(binned_flat) "n"
 
-#-- Répertoire de la bibliothèque spectrale :
+#-- RÃ©pertoire de la bibliothÃ¨que spectrale :
 set spcaudace(rep_spcbib) [ file join $spcaudace(rep_spc) data bibliotheque_spectrale ]
 
-#-- Répertoire de la calibration-chimie :
+#-- RÃ©pertoire de la calibration-chimie :
 set spcaudace(rep_spccal) [ file join $spcaudace(rep_spc) data calibration_lambda ]
 
 
-#--- Fichiers tulisés :
+#--- Fichiers tulisÃ©s :
 set spcaudace(sp_eau) "h2o_6500_6700.fit"
 
 
-#--- Répertoire de la calibration-chimie :
+#--- RÃ©pertoire de la calibration-chimie :
 #set spcaudace(motsheader) [ list "OBJNAME" "OBSERVER" "ORIGIN" "TELESCOP" "EQUIPMEN" ]
 #set spcaudace(motsheaderdef) [ list "Current name of the object" "Observer name" "Origin place of FITS image" "Telescop" "System which created data via the camera" ]
 set spcaudace(motsheader) [ list "OBJNAME" "TELESCOP" "EQUIPMEN" ]
@@ -84,7 +84,7 @@ set spcaudace(spcdoc) [ file join $spcaudace(rep_spc) doc liste_fonctions.html ]
 set spcaudace(sitedoc) "http://bmauclaire.free.fr/spcaudace/fonctions.html"
 
 
-#--- Site de bases de données :
+#--- Site de bases de donnÃ©es :
 set spcaudace(webpage) "http://bmauclaire.free.fr/spcaudace/"
 set spcaudace(sitebess) "http://basebe.obspm.fr/basebe/"
 set spcaudace(siteuves) "http://www.sc.eso.org/santiago/uvespop/interface.html"
@@ -94,54 +94,54 @@ set spcaudace(sitebebuil) "http://astrosurf.com/buil/us/becat.htm"
 set spcaudace(sitearasbeam) "http://arasbeam.free.fr/"
 
 
-#--- Option prédéfinies dans les pipelines :
+#--- Option prÃ©dÃ©finies dans les pipelines :
 set spcaudace(methsel) "moy"
 set spcaudace(methreg) "spc"
 set spcaudace(methsky) "med"
 set spcaudace(methbin) "rober"
 
 
-#--- Valeur de paramètres des euristhiques algorithmiques :
-#-- Degré du polynome pour l'extraction du continuum :
+#--- Valeur de paramÃ¨tres des euristhiques algorithmiques :
+#-- DegrÃ© du polynome pour l'extraction du continuum :
 set spcaudace(degpoly_cont) 5
-#-- Fraction des bords ignorés dans certains calculs (spc_divri...) pour la détermination du Imax du profil :
+#-- Fraction des bords ignorÃ©s dans certains calculs (spc_divri...) pour la dÃ©termination du Imax du profil :
 set spcaudace(pourcent_bord) 0.15
-#-- Taux de croissance de l'intensité pour considérer que l'on passe du bord (proche de 0) au continuum :
+#-- Taux de croissance de l'intensitÃ© pour considÃ©rer que l'on passe du bord (proche de 0) au continuum :
 set spcaudace(croissbord) 0.2
-#-- Tolérence sur l'écart à l'intensité maximale (spc_divri) : 5%
+#-- TolÃ©rence sur l'Ã©cart Ã  l'intensitÃ© maximale (spc_divri) : 5%
 set spcaudace(imax_tolerence) 1.05
-#-- Largeur spectrale considérée comme basse résolution :
+#-- Largeur spectrale considÃ©rÃ©e comme basse rÃ©solution :
 set spcaudace(bande_br) 1000.0
-#-- Fraction des bords ignorés dans la détermination de l'angle de TILT :
+#-- Fraction des bords ignorÃ©s dans la dÃ©termination de l'angle de TILT :
 set spcaudace(pourcent_bordt) 0.10
-#-- Fraction des bords mis à 0 du résultat de la division avant lissage pour la RI :
+#-- Fraction des bords mis Ã  0 du rÃ©sultat de la division avant lissage pour la RI :
 #- 0.0127 - 0.04
 set spcaudace(bordsnuls) 0.04
-#-- Dispersion maximale pour un spectre haute résolution (extraction continuum) :
+#-- Dispersion maximale pour un spectre haute rÃ©solution (extraction continuum) :
 set spcaudace(dmax) 0.5
-#-- Bande spectrale considérée comme basse résolution 500 A :
+#-- Bande spectrale considÃ©rÃ©e comme basse rÃ©solution 500 A :
 set spcaudace(bp_br) 500.
-#-- Hauteur max d'un spectre 2D pour ne considérer que du slant :
+#-- Hauteur max d'un spectre 2D pour ne considÃ©rer que du slant :
 set spcaudace(hmax) 300
-#-- Pourcentage de l'intensité moyenne en deça de laquelle il y a mise a 0 (spc_pwl*) :
+#-- Pourcentage de l'intensitÃ© moyenne en deÃ§a de laquelle il y a mise a 0 (spc_pwl*) :
 set spcaudace(nulpcent) 0.6
-#-- Epaisseur de binning en cas de sélection manuelle de raie de calibration :
+#-- Epaisseur de binning en cas de sÃ©lection manuelle de raie de calibration :
 set spcaudace(epaisseur_bin) 100.
 #-- Nombde de coupes verticales pour les detections de profil :
 #set spcaudace(nb_coupes) 5
 set spcaudace(nb_coupes) 10
-#-- Epaisseur de detection (verticale, latérale) pour les tranches de détection lors de spc_findtilt, spc_detect (5% de naxis2) :
+#-- Epaisseur de detection (verticale, latÃ©rale) pour les tranches de dÃ©tection lors de spc_findtilt, spc_detect (5% de naxis2) :
 set spcaudace(epaisseur_detect) 0.05
-#-- Epaisseur binning par défaut :
+#-- Epaisseur binning par dÃ©faut :
 set spcaudace(largeur_binning) 7
-#-- Angle limite en degrès autorisé pour un tilt :
+#-- Angle limite en degrÃ¨s autorisÃ© pour un tilt :
 #set spcaudace(tilt_limit) 0.746
 #set spcaudace(tilt_limit) 1.5
 #set spcaudace(tilt_limit) 2.
 set spcaudace(tilt_limit) 4.
-#-- Rapport limit de I_moy_fond_de_ciel/I_moy pour détectivité de l'angle... : NON UTILISE
+#-- Rapport limit de I_moy_fond_de_ciel/I_moy pour dÃ©tectivitÃ© de l'angle... : NON UTILISE
 #set spcaudace(rapport_imoy) 0.97
-#-- Linéarisation automatique de la loi de calibration en longueur d'onde :
+#-- LinÃ©arisation automatique de la loi de calibration en longueur d'onde :
 set spcaudace(linear_cal) "o"
 #-- Elimination des bords "nuls" :
 set spcaudace(rm_edges) "o"
@@ -156,12 +156,12 @@ set spcaudace(largeur_raie_detect) 8
 
 
 #----------------------------------------------------------------------------------#
-# Couleurs et répertoires : (pris dans spc_cap.tcl et toujours présent -> migration à terminer)
+# Couleurs et rÃ©pertoires : (pris dans spc_cap.tcl et toujours prÃ©sent -> migration Ã  terminer)
 #--- Liste des couleurs disponibles pour les graphes :
 set spcaudace(lgcolors) [ list "darkblue" "green" "lightblue" "red" "blue" "yellow" ]
 #-- Indice de la couleur par defaut (darkblue) :
 set spcaudace(gcolor) 0
-#-- Liste de noms des profils affichés :
+#-- Liste de noms des profils affichÃ©s :
 set spcaudace(gloaded) [ list ]
 
 
