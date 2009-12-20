@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-// Mise a jour $Id: coordserver.c,v 1.3 2009-12-13 17:34:17 michelpujol Exp $
+// Mise a jour $Id: coordserver.c,v 1.4 2009-12-20 16:56:49 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -176,11 +176,18 @@ void socket_writeCoordServerSocket(struct telprop *tel, int returnCode, char * r
    for( index=0; index < MAX_CLIENT_COORD; index++ ) {
       if ( clientCoordSocketList[index] != NULL ) { 
          int tclResult;
+         char ligne[1024];
          int writeResult;
          char notification[1024]; 
          char tu[21];
          char ts[21];
-         char ligne[1024];
+         //double azimut;
+         //double hauteur;
+         //double angleHoraire;
+         float longitude = 0.0;
+         char   estouest = 'E';
+         float latitude = 0.0;
+         float altitude = 0.0;
          
          // je recupere l'heure TU au format ISO8601
          strcpy(ligne,"clock format [clock seconds] -gmt 1 -format %Y-%m-%dT%H:%M:%S");
@@ -194,9 +201,12 @@ void socket_writeCoordServerSocket(struct telprop *tel, int returnCode, char * r
             int tum;
             int tus;
             sscanf(tel->interp->result,"%d-%d-%dT%d:%d:%d", &tuy, &tumo, &tud, &tuh, &tum, &tus);
-            sprintf(tu,"%02dh%02dm%02ds", tuh, tum, tus);
+            sprintf(tu,"%04d-%02d-%02dT%02d:%02d:%02d", tuy, tumo, tud, tuh, tum, tus);
+         }
+
+         if ( tclResult == TCL_OK) {
             // je calcule le temps sideral       
-            sprintf(ligne,"mc_date2lst {%s} {%s}", tel->interp->result, tel->gpsHome);
+            sprintf(ligne,"mc_date2lst {%s} {%s}", tel->interp->result, tel->homePosition);
             tclResult = Tcl_Eval(tel->interp, ligne );
          }
          if ( tclResult == TCL_OK) {
@@ -205,45 +215,69 @@ void socket_writeCoordServerSocket(struct telprop *tel, int returnCode, char * r
             int tsm;
             int tss;
             sscanf(tel->interp->result,"%d %d %d", &tsh, &tsm, &tss);
-            sprintf(ts,"%02dh%02dm%02ds", tsh, tsm, tss);
+            sprintf(ts,"%02d:%02d:%02d", tsh, tsm, tss);
          }
 
-         // je prepare la notification 
-         // !RADEC COORD [Code retour] [TU] [TS] [alpha_corr] [delta_corr] [alpha_0] [delta_0] [calage_alpha] [calage_delta] @\n
-         // Code retour
-         //    0 à OK
-         //    5 à Problème moteur
-         //    6 à Butées atteintes
-         // TU
-         //    Format= %02dh%02dm%02ds
-         // TS
-         //    Format= %02dh%02dm%02ds 
-         // alpha_corr : coordonnée alpha corrigée avec le modèle de pointage
-         //    Format = "%02dh%02dm%05.2fs"
-         // delta_corr : coordonnée delta corrigée avec le modèle de pointage
-         //    Format = "%1s%02dd%02dm%05.2fs"
-         // alpha_0 : coordonnée brute alpha
-         //    Format = "%02dh%02dm%05.2fs"
-         // delta_0 : coordonnée brute delta
-         //    Format = "%1s%02dd%02dm%05.2fs"
-         // calage_alpha
-         //    C : calé
-         //    D : décalé
-         //    A : autre : ni calé ni décalé
-         // calage_delta
-         //    C : calé
-         //    D : décalé
-         //    A : autre : ni calé ni décalé
+         // je recupere la longitude , latitude et altitude
+         if ( tclResult == TCL_OK) {
+            int scanResult; 
+            scanResult = sscanf(tel->homePosition,"GPS %f %c %f %f", &longitude, &estouest, &latitude, &altitude); 
+            if ( scanResult != 4 ) {
+               tclResult = TCL_ERROR;
+            }
+         }
+         
+         
+         if ( tclResult == TCL_OK) {
+            // je prepare la notification 
 
-         sprintf(notification, "!RADEC COORD %d %s %s %s %s %s %s %c %c @\n", 
-            returnCode, tu, ts, ra, dec, raBrut, decBrut, raCalage, decCalage); 
-         writeResult = Tcl_WriteChars(clientCoordSocketList[index], notification, strlen(notification));
-         if ( writeResult == -1) {
-            Tcl_Close( tel->interp, clientCoordSocketList[index]);
-            // je supprime la socket client de la liste            
-            clientCoordSocketList[index] = NULL;
-         } else {
-            Tcl_Flush(clientCoordSocketList[index]);
+            // !RADEC COORD [Code retour] [TU] [TS] [alpha_corr] [delta_corr] [alpha_0] [delta_0] [calage_alpha] [calage_delta] [longitude] [estouest] [latitude] [altitude] [nom_observatoire]\n
+            // Code retour
+            //    0 à OK
+            //    5 à Problème moteur
+            //    6 à Butées atteintes
+            // TU  (format ISO 8601)
+            //    Format= "%04d-%02d-%02dT%02d:%02d:%02d"
+            // TS
+            //    Format= "%02d:%02d:%02d" 
+            // alpha_corr : coordonnée alpha corrigée avec le modèle de pointage
+            //    Format = "%02dh%02dm%05.2fs"
+            // delta_corr : coordonnée delta corrigée avec le modèle de pointage
+            //    Format = "%1s%02dd%02dm%05.2fs"
+            // alpha_0 : coordonnée brute alpha
+            //    Format = "%02dh%02dm%05.2fs"
+            // delta_0 : coordonnée brute delta
+            //    Format = "%1s%02dd%02dm%05.2fs"
+            // calage_alpha
+            //    C : calé
+            //    D : décalé
+            //    A : autre : ni calé ni décalé
+            // calage_delta
+            //    C : calé
+            //    D : décalé
+            //    A : autre : ni calé ni décalé
+            // longitude (en degres)
+            //     Format "%10.6f"
+            // estouest (E ou W)
+            //     Format "%c"
+            // latitude (en degres)
+            //     Format "%10.6f"
+            // altitude (en metre)
+            //     Format "%5.1f"
+            // nom_observatoire  (le nom doit etre entre guillement pour proteger les eventuels espaces)
+            //     Format "\"%s\""
+
+            sprintf(notification, "!RADEC COORD %d %s %s %s %s %s %s %c %c %10.6f %c %10.6f %5.1f \"%s\" @\n", 
+               returnCode, tu, ts, ra, dec, raBrut, decBrut, raCalage, decCalage,
+               longitude, estouest, latitude, altitude, tel->homeName); 
+            writeResult = Tcl_WriteChars(clientCoordSocketList[index], notification, strlen(notification));
+            if ( writeResult == -1) {
+               Tcl_Close( tel->interp, clientCoordSocketList[index]);
+               // je supprime la socket client de la liste            
+               clientCoordSocketList[index] = NULL;
+            } else {
+               Tcl_Flush(clientCoordSocketList[index]);
+            }
          }
       }
    }
