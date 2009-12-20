@@ -2,7 +2,7 @@
 # Fichier : displaycoord.tcl
 # Description : Outil pour l'observation des SnAudes
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: displaycoord.tcl,v 1.2 2009-12-14 18:56:15 michelpujol Exp $
+# Mise a jour $Id: displaycoord.tcl,v 1.3 2009-12-20 17:23:25 michelpujol Exp $
 #
 
 #============================================================
@@ -107,9 +107,7 @@ proc ::displaycoord::createPluginInstance { { tkParent "" } { visuNo 1 } } {
       
    #--- Initialisation
    set private(base) "$tkParent.displaycoord"
-   set audace(posobs,observateur,gps) "GPS 5.7157 E 43.931892 633.9"
    set private(sortie)     "0"
-   set private(home)       $audace(posobs,observateur,gps)
    ###set private(fonttitle)  {arial  75 bold}
    ###set private(font1)      {tahoma 60 bold}
    ###set private(font2)      {tahoma 17 normal}
@@ -124,8 +122,11 @@ proc ::displaycoord::createPluginInstance { { tkParent "" } { visuNo 1 } } {
    set private(font2)      {displayCoordFont2}
    set private(font3)      {displayCoordFont3}
    set private(font4)      {displayCoordFont2}
- 
    
+   set private(ra0)        "00h 00m 00.00s"
+   set private(dec0)       "+00° 00' 00.00''"
+   set private(azimutDms)  "000° 00' 00.0''"
+   set private(hauteurDms) "+00° 00' 00.0''"
 }
 
 #------------------------------------------------------------
@@ -137,7 +138,7 @@ proc ::displaycoord::deletePluginInstance { visuNo } {
    
    #--- je deconnecte le serveur de coordonnnes
    ::displaycoord::closeSocketCoord
-   #--- je morise l'etat de la fentre (normal=0 , maximized=1)
+   #--- je memorise l'etat de la fentre (normal=0 , maximized=1)
    if { [wm state $private(base)] == "zoomed" } {      
       set ::conf(displaycoord,windowMaximize) 1
    } else {
@@ -253,7 +254,6 @@ proc ::displaycoord::createWindow { visuNo } {
    
    button $base.f.titre.configuration  -text $::caption(displaycoord,configuration) \
       -command "::displaycoord::config::run $private(base) $visuNo"   
-   ###pack $base.f.titre.configuration -anchor e -side right
    grid $base.f.titre.configuration -row 0 -column 1 -sticky e -padx 4
    grid columnconfig $base.f.titre 0 -weight 1
    
@@ -262,7 +262,7 @@ proc ::displaycoord::createWindow { visuNo } {
    #--- Etat du telescope   
    label $base.f.lab_etat \
       -bg $private(color,text) -fg $private(color,back) \
-      -font $private(font1)
+      -font $private(font1) -height 2 -anchor center
    pack $base.f.lab_etat -fill none -pady 2 -anchor e
     
    #--- temps
@@ -276,16 +276,7 @@ proc ::displaycoord::createWindow { visuNo } {
    pack $base.f.lab_tu -fill none -pady 2 -anchor w
    pack $base.f.lab_tsl -fill none -pady 2 -anchor w
 
-   #--- coordonnees equatoriales : Alpha et Delta
-   ###label $base.f.lab_ad \
-   ###   -bg $private(color,back) -fg $private(color,text) \
-   ###   -font $private(font1)
-   ###pack $base.f.lab_ad -fill none -pady 2 -anchor w
-   ###label $base.f.lab_dec \
-   ###   -bg $private(color,back) -fg $private(color,text) \
-   ###   -font $private(font1)
-   ###pack $base.f.lab_dec -fill none -pady 2 -anchor w
-   
+   #--- coordonnees equatoriales : Alpha et Delta , calage
    frame $base.f.coord -bg $private(color,back)
       label $base.f.coord.alpha_label -text $::caption(displaycoord,ad) \
         -bg $private(color,back) -fg $private(color,text) \
@@ -318,11 +309,45 @@ proc ::displaycoord::createWindow { visuNo } {
       grid columnconfig $base.f.coord 2 -weight 1      
    pack $base.f.coord -fill x -pady 2 -padx 2 -anchor w
                                                              
-   #--- coordonnees brutes (sans modele de pointage)
-   label $base.f.lab_coord0 \
-      -bg $private(color,back) -fg $couleur_bleuclair \
-      -font $private(font3)
-   pack $base.f.lab_coord0 -fill none -pady 2 -anchor center
+   #--- coordonnees brutes (sans modele de pointage) et azimut
+   frame $base.f.brut -bg $private(color,back)  
+      #--- ascension droite brute
+      label $base.f.brut.ra0_label -text $::caption(displaycoord,ad0) \
+         -bg $private(color,back) -fg $couleur_bleuclair -font $private(font3)
+      grid $base.f.brut.ra0_label -row 0 -column 0 -sticky e -padx 2
+      label $base.f.brut.ra0_value -textvariable ::displaycoord::private(ra0) \
+         -bg $private(color,back) -fg $couleur_bleuclair -font $private(font3)
+      grid $base.f.brut.ra0_value -row 0 -column 1 -sticky w -padx 2
+   
+      #--- declinaison brute
+      label $base.f.brut.dec0_label -text $::caption(displaycoord,dec0) \
+         -bg $private(color,back) -fg $couleur_bleuclair -font $private(font3)
+      grid $base.f.brut.dec0_label -row 1 -column 0 -sticky e
+      label $base.f.brut.dec0_value -textvariable ::displaycoord::private(dec0) \
+         -bg $private(color,back) -fg $couleur_bleuclair -font $private(font3)
+      grid $base.f.brut.dec0_value -row 1 -column 1 -sticky w -padx 2
+   
+      #--- azimut
+      label $base.f.brut.azimut_label -text $::caption(displaycoord,azimut) \
+         -bg $private(color,back) -fg $couleur_bleuclair -font $private(font3)
+      grid $base.f.brut.azimut_label -row 0 -column 2 -sticky e -padx 2
+      label $base.f.brut.azimut_value -textvariable ::displaycoord::private(azimutDms) \
+         -bg $private(color,back) -fg $couleur_bleuclair -font $private(font3)
+      grid $base.f.brut.azimut_value -row 0 -column 3 -sticky w -padx 2
+   
+      #--- hauteur
+      label $base.f.brut.hauteur_label -text $::caption(displaycoord,hauteur) \
+         -bg $private(color,back) -fg $couleur_bleuclair -font $private(font3)
+      grid $base.f.brut.hauteur_label -row 1 -column 2 -sticky e -padx 2
+      label $base.f.brut.hauteur_value -textvariable ::displaycoord::private(hauteurDms) \
+         -bg $private(color,back) -fg $couleur_bleuclair -font $private(font3)
+      grid $base.f.brut.hauteur_value -row 1 -column 3 -sticky w -padx 2
+         
+      grid columnconfig $base.f.brut 0 -weight 1      
+      grid columnconfig $base.f.brut 1 -weight 1      
+      grid columnconfig $base.f.brut 2 -weight 1      
+      grid columnconfig $base.f.brut 3 -weight 1      
+   pack $base.f.brut -fill x -pady 2 -anchor center
    
    #--- angle horaire
    label $base.f.lab_ha \
@@ -337,7 +362,7 @@ proc ::displaycoord::createWindow { visuNo } {
      -text ""
    pack $base.f.lab_ohp -fill none -pady 2 -anchor w  
    
-   #--- donnees GPS OHP - Latitude - Longitude - Altitude   
+   #--- Latitude - Longitude - Altitude   
    label $base.f.lab_altaz \
      -bg $private(color,back) -fg $private(color,text) \
      -font $private(font2) -justify left
@@ -393,7 +418,7 @@ proc onResizeWindow { width height } {
 
 ######################################################################
 #
-#  gestion de la socket de communication avec le serveur de coordonn©es
+#  gestion de la socket de communication avec le serveur de coordonnees
 #
 #######################################################################
 
@@ -482,23 +507,21 @@ proc ::displaycoord::readSocketCoord {  } {
    variable private
 
    set catchError [catch {
-      set tuh    "00"
-      set tum    "00"
-      set tus    "00"
-      set tslh   "00"
-      set tslm   "00"
-      set tsls   "00"
-      set angle_h "00h 00m 00.00s"
-      set az     "0000.00"
-      set alt    "+0000.00"
-      set site_name "OHP"     
-      set pos_obs "Latitude: 43°55'54.8''  Longitude: 05°42'56.5''  Altitude: 633.9 m"
-      set ra     "00h00m00s00" 
-      set dec    "+00d00m00s00" 
-      set ra0    "00h00m00s00" 
-      set dec0   "+00d00m00s00" 
+      set returnCode ""
+      set tu  "0000-00-00T00:00:00"
+      set ts  "00:00:00"
+      set ra  "00h00m00s00"
+      set dec "00d00m00s00"
+      set ra0 "00h00m00s00"
+      set dec0 "00d00m00s00"
       set raCalage "A"
-      set decCalage "A"
+      set decCalage "A"            
+      set longitudeDegres  "000.0"
+      set estouest  "E"
+      set latitudeDegres   "+00.0"
+      set altitude  "0000.0"
+      set nomObservatoire  ""
+      
       
       if { $private(socketChannel) == "" } {
          #--- j'affiche les valeurs par defaut
@@ -520,86 +543,141 @@ proc ::displaycoord::readSocketCoord {  } {
             #     0   OK
             #     5   Probleme moteur
             #     6   Butées atteintes
-            # TU
-            #     Format= ISO8601
+            # TU  (format ISO 8601) 
+            #     Format= "%04d-%02d-%02dT%02d:%02d:%02d"
             # TS
-            #     Format= ISO8601
-            # alpha_corr : coordonn©e alpha corrig©e avec le mod¨le de pointage
+            #     Format= "%02d:%02d:%02d"
+            # alpha_corr : coordonnee alpha corrigee avec le modele de pointage
             #     Format = "%02dh%02dm%05.2fs"
-            # delta_corr : coordonn©e delta corrig©e avec le mod¨le de pointage
+            # delta_corr : coordonnee delta corrigee avec le modele de pointage
             #     Format = "%1s%02dd%02dm%05.2fs"
-            # alpha_0 : coordonn©e brute alpha
+            # alpha_0 : coordonnee brute alpha
             #     Format = "%02dh%02dm%05.2fs"
-            # delta_0 : coordonn©e brute delta
+            # delta_0 : coordonnee brute delta
             #     Format = "%1s%02dd%02dm%05.2fs"
             # calage_alpha
-            #     C : cal©
-            #     D : d©cal©
-            #     A : autre : ni cal© ni d©cal©
+            #     C : cale
+            #     D : decale
+            #     A : autre : ni cale ni decale
             # calage_delta
-            #     C : cal©
-            #     D : d©cal©
-            #     A : autre : ni cal© ni d©cal©
+            #     C : cale
+            #     D : decale
+            #     A : autre : ni cale ni decale
+            # longitude (en degres)
+            #     Format "%10.6f"
+            # estouest (E ou W)
+            #     Format "%c"
+            # latitude (en degres)
+            #     Format "%10.6f"
+            # altitude (en metre)
+            #     Format "%5.1f"
+            # nom_site 
+            #     Format "\"%s\""
             
-            set nbVar [scan $notification "!RADEC COORD %d %s %s %s %s %s %s %s %s @" returnCode tu ts ra dec ra0 dec0 raCalage decCalage ]
-            if { $nbVar == 9 } {
+            set nbVar [scan $notification {!RADEC COORD %d %s %s %s %s %s %s %s %s %f %s %f %f "%[^"]" @} \
+                 returnCode tu ts ra dec ra0 dec0 raCalage decCalage longitudeDegres estouest latitudeDegres altitude nomObservatoire ]
+            if { $nbVar == 14 } {
                if { $returnCode == 0 } {
-                  scan $tu "%dh%dm%ds" tuh tum tus
-                  scan $ts "%dh%dm%ds" tslh tslm tsls
+                  #--- pas d'erreur a signaler
                } else {
-                  console::affiche_erreur "readSocketCoord warning returnCode=$returnCode notification=$notification\n"   
+                  console::affiche_erreur "::displaycoord::readSocketCoord warning returnCode=$returnCode notification=$notification\n"   
+                   set tu     "0000-00-00T00:00:00"
+                   set ts     "0000-00-00T00:00:00"
+                   set ra     "00h00m00s00"
+                   set dec    "00d00m00s00"
+                   set ra0    "00h00m00s00"
+                   set dec0   "00d00m00s00"
+                   set raCalage  "A"
+                   set decCalage "A"            
+                   set longitude "000.0"
+                   set estouest  "E"
+                   set latitude  "+00.0"
+                   set altitude  "0000.0"
+                   set nomObservatoire  ""                  
                }
             } else {
                #--- le message n'a pas le format attendu 
-               console::affiche_erreur "readSocketCoord error nbVar=$nbVar notification=$notification\n"
+               console::affiche_erreur "::displaycoord::readSocketCoord error nbVar=$nbVar notification=$notification\n"
             }         
          }
       }
       
+      #--- je mets en forme l'etat de la connexion       
       switch $private(etat) {
          "NOT_CONNECTED" { 
             set etat $::caption(displaycoord,nonConnecte)          
          }
          "CONNECTED" {
-            set etat $::caption(displaycoord,connecte) 
+            set etat "$::caption(displaycoord,connecte)" 
          }
       }  
 
+      #--- je mets en forme l'heure tu et ts           
+      scan $tu "%d-%d-%dT%d:%d:%ds" tuy tumo tud tuh tum tus      
+      set tuHms [format "%02dh %02dm %02ds" $tuh $tum $tus ]
+      scan $ts "%d:%d:%d" tslh tslm tsls
+      set tsHms [format "%02dh %02dm %02ds" $tslh $tslm $tsls ]
+      
+      #--- je mets en forme l'ascension droite et la declinaison
+      set alpha "[string range $ra 0 1]h [string range $ra 3 4]m [string range $ra) 6 7].[string range $ra 9 10]s "
+      set delta "[string range $dec 0 2]° [string range $dec 4 5]'   [string range $dec) 7 8].[string range $dec 10 10]0'' "
+      set private(ra0) "[string range $ra0 0 1]h [string range $ra0 3 4]m [string range $ra0) 6 7].[string range $ra0 9 10]s "
+      set private(dec0) "[string range $dec0 0 2]° [string range $dec0 4 5]'   [string range $dec0) 7 8].[string range $dec0 10 10]0'' "
+      
+      #--- je mets en forme la longitude et la latitude     
+      set longitudeList [mc_angle2dms $longitudeDegres 180 nozero 1 auto list]
+      set longitudeDms [format "%d° %2d' %0.1f''" [lindex $longitudeList 0] [lindex $longitudeList 1] [lindex $longitudeList 2] ]            
+      set latitudeList [mc_angle2dms $latitudeDegres 90 nozero 1 auto list]
+      set latitudeDms [format "%d° %2d' %0.1f''" [lindex $latitudeList 0] [lindex $latitudeList 1] [lindex $latitudeList 2] ]            
+
+      #--- je calcule l'azimut, la hauteur et la secanteZ
+      if { $returnCode == 0 } {
+         set res [mc_radec2altaz $ra $dec "GPS $longitudeDegres $estouest $latitudeDegres $altitude" $tu]
+         set azimutDegres  [lindex $res 0]
+         set azimutList [mc_angle2dms $azimutDegres 360 nozero 1 auto list]
+         set private(azimutDms) [format " %02d° %02d' %04.1f''" [lindex $azimutList 0] [lindex $azimutList 1] [lindex $azimutList 2] ]            
+         set hauteurDegres [lindex $res 1]
+         set hauteurList [mc_angle2dms $hauteurDegres 90 nozero 1 auto list]
+         set private(hauteurDms) [format "%+02d° %02d' %04.1f''" [lindex $hauteurList 0] [lindex $hauteurList 1] [lindex $hauteurList 2] ]            
+         #--- je calcule secz (masse d'air)   
+         if { $hauteurDegres >= "0" } {
+            set distanceZenithale [ expr 90.0 - $hauteurDegres ]
+            set distanceZenithale [ mc_angle2rad $distanceZenithale ]
+            set secz [format "%5.2f" [ expr 1. / cos($distanceZenithale) ] ]
+         } else {
+            set secz $::caption(displaycoord,horizon)
+         }         
+      } else {
+         set private(azimutDms)  " 00° 00' 00.0''"
+         set private(hauteurDms) "+00° 00' 00.0''"
+         set secz "0.00"
+      }
+
+      #--- je mets en forme le calage des moteurs      
       if { $raCalage != "C" && $raCalage != "D" && $raCalage != "A" } {
          set raCalage "A"
       }
       if { $decCalage != "C" && $decCalage != "D" && $decCalage != "A" } {
          set decCalage "A"
       }
-
-   
-      #--- Affichage de l'etat
+      
+      #--- Affichage de l'etat du telescope
       $private(base).f.lab_etat configure  -text $etat
       
-      #--- Affichage temps (TU, TSL) et coordonn©es (ALPHA, DELTA, ANGLE HORAIRE, Azimut, hauteur du t©lescope)
-      # $private(base).f.lab_tu configure    -text " $::caption(displaycoord,tu)   ${tuh}h ${tum}m ${tus}s"
-      # $private(base).f.lab_tsl configure   -text " $::caption(displaycoord,tsl)  ${tslh}h ${tslm}m ${tsls}s"
-      # $private(base).f.lab_ha configure    -text " $::caption(displaycoord,angle_horaire)   $angle_h"
-      # $private(base).f.lab_altaz configure -text " $pos_obs\t\t$::caption(displaycoord,azimut) ${az}°\t$::caption(displaycoord,hauteur) ${alt}°"
-      $private(base).f.lab_tu configure    -text "$::caption(displaycoord,tu)  ${tuh}h ${tum}m ${tus}s"
-      $private(base).f.lab_tsl configure   -text "$::caption(displaycoord,tsl)  ${tslh}h ${tslm}m ${tsls}s"
-      $private(base).f.lab_ha configure    -text "$::caption(displaycoord,angle_horaire)   $angle_h"
-      $private(base).f.lab_ohp configure   -text "$site_name"
-      $private(base).f.lab_altaz configure -text "$pos_obs \n$::caption(displaycoord,azimut) ${az}°\t$::caption(displaycoord,hauteur) ${alt}°"
+      #--- Affichage temps (TU, TSL) et coordonnees (ALPHA, DELTA, ANGLE HORAIRE, Azimut, hauteur du telescope)
+      $private(base).f.lab_tu configure    -text "$::caption(displaycoord,tu)  $tuHms"
+      $private(base).f.lab_tsl configure   -text "$::caption(displaycoord,tsl)  $tsHms"      
+      $private(base).f.lab_ha configure    -text "SECZ : $secz"
       
-      set alpha "[string range $ra 0 1]h [string range $ra 3 4]m [string range $ra) 6 7].[string range $ra 9 10]s "
-      set delta "[string range $dec 0 2]° [string range $dec 4 5]'   [string range $dec) 7 8].[string range $dec 10 10]0'' "
-      ###$private(base).f.lab_ad configure -text  " $::caption(displaycoord,ad) \t  $alpha  \t $::caption(displaycoord,calage,$raCalage)"
-      ###$private(base).f.lab_dec configure -text " $::caption(displaycoord,dec) \t $delta \t $::caption(displaycoord,calage,$decCalage)"
+      #--- affichage de la position du site 
+      $private(base).f.lab_ohp configure   -text "$::caption(displaycoord,observatoire) $nomObservatoire"
+      $private(base).f.lab_altaz configure -text "$::caption(displaycoord,longitude): $longitudeDms $estouest   $::caption(displaycoord,latitude): $latitudeDms  $::caption(displaycoord,altitude): $altitude m" 
+      
       $private(base).f.coord.alpha_value configure -text $alpha
       $private(base).f.coord.alpha_calage configure -text $::caption(displaycoord,calage,$raCalage)
       $private(base).f.coord.delta_value configure -text $delta
       $private(base).f.coord.delta_calage configure -text $::caption(displaycoord,calage,$decCalage)
       
-      #--- coordonnées brutes (sans correction du modèle de pointage)
-      set alpha0 "[string range $ra0 0 1]h [string range $ra0 3 4]m [string range $ra0) 6 7].[string range $ra0 9 10]s "
-      set delta0 "[string range $dec0 0 2]° [string range $dec0 4 5]'   [string range $dec0) 7 8].[string range $dec0 10 10]0'' "
-      $private(base).f.lab_coord0 configure -text "$::caption(displaycoord,ad0) $alpha0 \n$::caption(displaycoord,dec0) $delta0"
       
    }]
    if { $catchError != 0 } {
