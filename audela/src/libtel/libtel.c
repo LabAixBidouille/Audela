@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.16 2009-12-06 09:52:00 alainklotz Exp $
+// $Id: libtel.c,v 1.17 2009-12-20 17:17:50 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -303,6 +303,14 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 
             // je duplique la commande "mc_angle2rad" dans la thread du telescope
             sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_angle2rad");
+            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
+               sprintf(s, "cmdTelCreate: %s",interp->result);
+               Tcl_SetResult(interp, s, TCL_VOLATILE);
+               return TCL_ERROR;
+            }
+
+            // je duplique la commande "mc_radec2altaz" dans la thread du telescope
+            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_radec2altaz");
             if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
                sprintf(s, "cmdTelCreate: %s",interp->result);
                Tcl_SetResult(interp, s, TCL_VOLATILE);
@@ -842,8 +850,8 @@ int cmdTelHome(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
    int result = TCL_OK;
    struct telprop *tel;
    double longitude,latitude,altitude;
-   if((argc!=2)&&(argc!=3)) {
-      sprintf(ligne,"Usage: %s %s ?{GPS long e|w lat alt}?",argv[0],argv[1]);
+   if((argc!=2)&&(argc!=3)&&(argc!=4)) {
+      sprintf(ligne,"Usage: %s %s ?{GPS long e|w lat alt}? ?{-name xxx}",argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       result = TCL_ERROR;
    } else if(argc==2) {
@@ -854,25 +862,37 @@ int cmdTelHome(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    } else {
       tel = (struct telprop*)clientData;
-	  sprintf(ligne,"lindex {%s} 1",argv[2]);
-      Tcl_Eval(interp,ligne);
-      longitude=(double)atof(interp->result);
-	  sprintf(ligne,"string toupper [lindex {%s} 2]",argv[2]);
-      Tcl_Eval(interp,ligne);
-	  if (strcmp(interp->result,"W")==0) {
-         strcpy(ew,"w");
+      if ( strcmp(argv[2],"name") == 0) {
+         if ( argc == 3) {
+            // je retoune le nom du site
+            Tcl_SetResult(interp,tel->homeName,TCL_VOLATILE);
+         } else {
+            // je memorise le nom du site
+            strncpy( tel->homeName, argv[3], sizeof(tel->homeName));
+            Tcl_SetResult(interp,tel->homeName,TCL_VOLATILE);
+         }
       } else {
-         strcpy(ew,"e");
+         // je memorise la position
+         sprintf(ligne,"lindex {%s} 1",argv[2]);
+         Tcl_Eval(interp,ligne);
+         longitude=(double)atof(interp->result);
+         sprintf(ligne,"string toupper [lindex {%s} 2]",argv[2]);
+         Tcl_Eval(interp,ligne);
+         if (strcmp(interp->result,"W")==0) {
+            strcpy(ew,"w");
+         } else {
+            strcpy(ew,"e");
+         }
+         sprintf(ligne,"lindex {%s} 3",argv[2]);
+         Tcl_Eval(interp,ligne);
+         latitude=(double)atof(interp->result);
+         sprintf(ligne,"lindex {%s} 4",argv[2]);
+         Tcl_Eval(interp,ligne);
+         altitude=(double)atof(interp->result);
+         tel_home_set(tel,longitude,ew,latitude,altitude);
+         tel_home_get(tel,ligne);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       }
-	  sprintf(ligne,"lindex {%s} 3",argv[2]);
-      Tcl_Eval(interp,ligne);
-      latitude=(double)atof(interp->result);
-	  sprintf(ligne,"lindex {%s} 4",argv[2]);
-      Tcl_Eval(interp,ligne);
-      altitude=(double)atof(interp->result);
-      tel_home_set(tel,longitude,ew,latitude,altitude);
-      tel_home_get(tel,ligne);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    }
    return result;
 }
@@ -885,7 +905,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    char ligne[2256],texte[256];
    int result = TCL_OK,k;
    struct telprop *tel;
-   char comment[]="Usage: %s %s ?goto|stop|move|coord|motor|init|state|mindelay(ms)? ?options?";
+   char comment[]="Usage: %s %s ?goto|stop|move|coord|motor|init|state|model|mindelay(ms)? ?options?";
    if (argc<3) {
       sprintf(ligne,comment,argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -931,21 +951,9 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             Tcl_SetResult(interp,texte,TCL_VOLATILE);
       } else if (strcmp(argv[2],"goto")==0) {
          tel->active_backlash = 0;
-         tel->radec_goto_blocking = 0;
-
+         tel->radec_goto_blocking = 0;        
          /* --- goto ---*/
          if (argc>=4) {
-			 /* - call the pointing model if exists -*/
-            sprintf(ligne,"set libtel(radec) {%s}",argv[3]);
-            Tcl_Eval(interp,ligne);
-			if (strcmp(tel->model_cat2tel,"")!=0) {
-               sprintf(ligne,"catch {set libtel(radec) [%s {%s}]}",tel->model_cat2tel,argv[3]);
-               Tcl_Eval(interp,ligne);
-			}
-            Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
-            strcpy(ligne,interp->result);
-			 /* - end of pointing model-*/
-            libtel_Getradec(interp,ligne,&tel->ra0,&tel->dec0);
             if (argc>=5) {
                for (k=4;k<=argc-1;k++) {
                   if (strcmp(argv[k],"-rate")==0) {
@@ -959,11 +967,76 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   }
                }
             }
-            if ( tel_radec_goto(tel) == 0 ) {
-               Tcl_SetResult(interp,"",TCL_VOLATILE);
-            } else {
-               Tcl_SetResult(interp,tel->msg,TCL_VOLATILE);
-               result = TCL_ERROR;
+            /* - call the pointing model if exists -*/
+            sprintf(ligne,"set libtel(radec) {%s}",argv[3]);
+            Tcl_Eval(interp,ligne);
+            if (strcmp(tel->model_cat2tel,"")!=0) {
+               sprintf(ligne,"catch {set libtel(radec) [%s {%s}]}",tel->model_cat2tel,argv[3]);
+               Tcl_Eval(interp,ligne);
+               Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
+               strcpy(ligne,interp->result);
+               libtel_Getradec(interp,ligne,&tel->ra0,&tel->dec0);
+            }
+            /* - end of pointing model-*/
+
+            // correction avec le modele de pointage par la fonction de libmc
+            if (tel->radec_model_enabled == 1 ) {
+               libtel_Getradec(interp,argv[3],&tel->ra0,&tel->dec0);
+               if ( result == TCL_OK) {
+                  char tu[20];
+                  // je recupere la date courante TU
+                  sprintf(ligne, "clock format [clock seconds] -gmt 1 -format \"%Y-%m-%dT%H:%M:%S\""); 
+                  result = Tcl_Eval(interp,ligne);
+                  if ( result == TCL_OK) {
+                     strcpy(tu, interp->result);
+                  
+                     // j'applique le modele de pointage 
+                     // mc_hip2tel $hip $date $home $pressure $temperature $modpoi_symbols $modpoi_coefs
+                     // avec hip = 
+                     //   identifiant hypparcos de l'etoile (nombre entier), si non utilisé =0  
+                     //   mag  : magnitude , si non utilisé = 0.0  (nombre décimal)
+                     //   ra   : ascension droite (en degrés décimaux)
+                     //   dec  : declinaison (en degrés décimaux)
+                     //   equinox : date de l'equinoxe , date du jour=now, ou foramt ISO8601
+                     //   epoch   : date de l'epoque d'origine des mouvements propres , inutilise si mura et mudec sont nuls
+                     //   mura : mouvement propre ra (en degré par an) 
+                     //   mudec : mouvement propre dec (en degré par an)
+                     //   plx   : parallaxe , =0 si inconnu (en mas=milliseconde d'arc)s
+                     
+                     sprintf(ligne, "mc_hip2tel { 0 0 %f %f J2000 0 0 0 0 } %s %s 101325 290 {%s} {%s}", 
+                        tel->ra0, tel->dec0, 
+                        tu, tel->homePosition, tel->radec_model_symbols, tel->radec_model_coefficients);
+                     result = Tcl_Eval(interp,ligne);
+                     if (result == TCL_OK) {
+                        char **listArgv;
+                        int listArgc;
+                        
+                        //  je recupere les coordonnees corrigees a partir des index 10 et 11 de la liste retournee par mc_hip2tel
+                        result = Tcl_SplitList(tel->interp,tel->interp->result,&listArgc,&listArgv) ;
+                        if(result == TCL_OK) {
+                           if ( listArgc == 4 ) {
+                              tel->ra0 = atof ( listArgv[10] ); 
+                              tel->dec0 = atof ( listArgv[11] ); 
+                           } else { 
+                              // rien a faire car la fonction Tcl_SplitList a deja renseigne les message d'erreur
+                           }
+                        } 
+                        Tcl_Free((char*)listArgv);
+                     }
+                  }
+               } else {
+                  // rien a faire car la fonction libtel_Getradec a deja renseigne les message d'erreur
+               }
+
+            }
+
+            if ( result == TCL_OK)  {
+               if ( tel_radec_goto(tel) == 0 ) {
+                  Tcl_SetResult(interp,"",TCL_VOLATILE);
+               } else {
+                  Tcl_SetResult(interp,tel->msg,TCL_VOLATILE);
+                  result = TCL_ERROR;
+               }
             }
          } else {
             sprintf(ligne,"Usage: %s %s goto {angle_ra angle_dec} ?-rate value? ?-blocking boolean? ?-backlash boolean?",argv[0],argv[1]);
@@ -1023,9 +1096,47 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                sprintf(ligne,"delai=%d ms",timerDelay);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                result = TCL_OK;
-            }            
+            }        
+         } else if (strcmp(argv[2],"model")==0) {
+            /* --- model ---*/
+            if (argc>=5) {
+               Tcl_ResetResult(interp);
+
+               for (k=4;k<=argc-1;k++) {
+                  if (strcmp(argv[k],"-symbols")==0) {
+                     if ( strlen(argv[k+1]) < sizeof(tel->radec_model_symbols) ) {
+                        strcpy(tel->radec_model_symbols, argv[k+1]);
+                     } else {
+                        sprintf(ligne,"error: value length>%d for %s %s",
+                           sizeof(tel->radec_model_symbols), argv[k], argv[k+1]);
+                        Tcl_AppendResult(interp, ligne, NULL);
+                     }
+                  }
+                  if (strcmp(argv[k],"-coefficients")==0) {
+                     if ( strlen(argv[k+1]) < sizeof(tel->radec_model_symbols) ) {
+                        strcpy(tel->radec_model_coefficients, argv[k+1]);
+                     } else {
+                        sprintf(ligne,"error: value length>%d for %s %s",
+                           sizeof(tel->radec_model_symbols), argv[k], argv[k+1]);
+                        Tcl_AppendResult(interp, ligne, NULL);
+                     }
+                  }
+                  if (strcmp(argv[k],"-temperature")==0) {
+                     tel->radec_model_temperature =atoi(argv[k+1]);
+                  }
+                  if (strcmp(argv[k],"-pressure")==0) {
+                     tel->radec_model_pressure =atoi(argv[k+1]);
+                  }
+                  if (strcmp(argv[k],"-enabled")==0) {
+                     tel->radec_model_enabled =atoi(argv[k+1]);
+                  }
+               }
+
+            } else if (argc==3) {
+			   
+            }         
          } else {
-            sprintf(ligne,"Usage: %s %s move n|s|e|w ?rate? ?delay (ms)?",argv[0],argv[1]);
+            sprintf(ligne,"Usage: %s %s model -enabled 0|1 -symbols {IH ID NP CH ME MA} -coefficients { symbols vlues} -temperature value -pressure",argv[0],argv[1]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             result = TCL_ERROR;
          }
@@ -1205,6 +1316,64 @@ int cmdTelModel(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    return result;
 }
 
+/*
+   tel2hip
+
+
+   set pi $modpoi(pi)
+   set deg2rad $modpoi(deg2rad)
+   set rad2deg $modpoi(rad2deg)
+   #--- Extract angles from the listvd
+   set rav [lindex $listv 0]
+   set decv [lindex $listv 1]
+   #--- Aberration de l'aberration diurne
+   set radec [mc_aberrationradec diurnal [list $rav $decv] $date $modpoi(var,home) -reverse]
+   #--- Correction de nutation
+   set radec [mc_nutationradec $radec $date -reverse]
+   #--- Correction de precession
+   set radec [mc_precessradec $radec $date $equinox]
+   #--- Aberration annuelle
+   set radec [mc_aberrationradec annual $radec $date -reverse]
+   #--- Return
+   return $radec
+
+
+  */
+int tel2cat( struct telprop *tel, float ra0, float dec0, char *equinox, char* tuDate, float *pra, float *pdec) {
+   char ligne[1024];
+   int result = TCL_OK;
+   
+
+   //--- Aberration de l'aberration diurne
+   //  set radec [mc_aberrationradec diurnal [list $ra $dec] $date $home -reverse]
+   sprintf(ligne,"mc_aberrationradec diurnal { %f %f } %s %s -reverse",
+      ra0, dec0, tuDate, tel->homePosition);
+   result=Tcl_Eval(tel->interp,ligne);
+   if (result == TCL_OK ) {
+      // Correction de nutation
+      //  set radec [mc_nutationradec $radec $date -reverse]
+      sprintf(ligne,"mc_nutationradec %s %s -reverse", tel->interp->result, tuDate);
+      result=Tcl_Eval(tel->interp,ligne);      
+   }
+   if (result == TCL_OK ) {
+      // Correction de precession
+      //  set radec [mc_precessradec $radec $date $equinox]
+      sprintf(ligne,"mc_precessradec {%s} %s %s", tel->interp->result, tuDate, equinox);
+      result=Tcl_Eval(tel->interp,ligne);      
+   }
+   if (result == TCL_OK ) {
+      // Aberration annuelle
+      //  set radec [mc_aberrationradec annual $radec $date ]
+      sprintf(ligne,"mc_aberrationradec annual {%s} %s -reverse", tel->interp->result, tuDate);
+      result=Tcl_Eval(tel->interp,ligne);      
+   }
+   if (result == TCL_OK ) {
+      sscanf(tel->interp->result, "%f %f" , pra , pdec);
+   }
+   
+   return result;
+}
+
 /* -----------------------------------------------------------------------------
  *  cmdTelThreadId()
  *
@@ -1303,9 +1472,16 @@ int tel_init_common(struct telprop *tel, int argc, char **argv)
    tel->focus_move_rate=0;
    tel->minRadecDelay = 0;
    tel->consoleLog = 0;    
+   tel->radec_model_enabled = 0;
+   strcpy(tel->radec_model_symbols,""); 
+   strcpy(tel->radec_model_coefficients,"");
+   tel->radec_model_temperature = 0;
+   tel->radec_model_pressure = 0;
 
    strcpy(tel->model_cat2tel,"");
    strcpy(tel->model_tel2cat,"");
+   strcpy(tel->homeName,"");
+   strcpy(tel->homePosition,"");
    return 0;
 }
 

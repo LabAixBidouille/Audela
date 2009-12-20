@@ -53,8 +53,15 @@
    int focus_goto_blocking;\
    double focus_move_rate;\
    char channel[30];\
+   char homeName[128];\
+   char homePosition[128];\
    char model_cat2tel[50];\
    char model_tel2cat[50];\
+   int  radec_model_enabled; \
+   char radec_model_symbols[50]; \
+   char radec_model_coefficients[100]; \
+   int radec_model_temperature; \
+   int radec_model_pressure; \
    double speed;\
    double focusspeed;\
    int active_backlash;\
