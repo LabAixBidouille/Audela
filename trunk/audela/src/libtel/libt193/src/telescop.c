@@ -1387,7 +1387,7 @@ int mytel_setFocusNotification(struct telprop *tel, int mode )
 //
 // Retourne le status de mmoteur de focus 
 // @param tel   pointeur structure telprop
-// @param gpsHome  chaine de caractere en sortie contenant la position GPS 
+// @param homePosition  chaine de caractere en sortie contenant la position GPS 
 // @return 0 = OK,  1= erreur
 //
 // @TODO il vaudrait mieux demander les cordonnees a l'interface de controle du T193
@@ -1431,15 +1431,15 @@ int tel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s)
 // Exemple : "GPS 5.7157 E 43.931892 633.9"
 //
 // @param tel   pointeur structure telprop
-// @param gpsHome  chaine de caractere en sortie contenant la position GPS 
+// @param homePosition  chaine de caractere en sortie contenant la position GPS 
 // @return 0 = OK,  1= erreur
 //
 // @TODO il vaudrait mieux demander les cordonnees a l'interface de controle du T193
 //
 //-------------------------------------------------------------
-int tel_home_get(struct telprop *tel,char *gpsHome)
+int tel_home_get(struct telprop *tel,char *homePosition)
 {
-   strcpy(gpsHome,tel->gpsHome);
+   strcpy(homePosition,tel->homePosition);
    return 0;
 
 }
@@ -1466,7 +1466,7 @@ int tel_home_get(struct telprop *tel,char *gpsHome)
 //-------------------------------------------------------------
 int tel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,double altitude)
 {
-   sprintf(tel->gpsHome,"GPS %f %s %f %f",longitude,ew,latitude, altitude);
+   sprintf(tel->homePosition,"GPS %f %s %f %f",longitude,ew,latitude, altitude);
    return 0;
 
 }
