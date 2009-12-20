@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: t193.tcl,v 1.24 2009-12-13 17:38:56 michelpujol Exp $
+# Mise a jour $Id: t193.tcl,v 1.25 2009-12-20 17:25:33 michelpujol Exp $
 #
 
 namespace eval ::t193 {
@@ -103,7 +103,8 @@ proc ::t193::initPlugin { } {
    if { ! [ info exists conf(t193,dureeMaxAttenuateur) ] }       { set conf(t193,dureeMaxAttenuateur)       "16" }
    #--- traces dans la Console
    if { ! [ info exists conf(t193,consoleLog) ] }                { set conf(t193,consoleLog)                "0" }
-
+   if { ! [ info exists conf(t193,model,enabled) ] }             { set conf(t193,model,enabled)                "0" }
+      
    #--- modification des valeurs par rapport à la version precedente du 20/09/2009
    if { $::conf(t193,mode) == 0 } {
       set ::conf(t193,mode) "HP1000"
@@ -533,7 +534,15 @@ proc ::t193::configureMonture { } {
       #--- Je configure la position geographique du telescope
       #--- (la position geographique est utilisee pour calculer le temps sideral)
       # tel$telno home GPS long e|w lat alt
-      tel$telNo home $::audace(posobs,observateur,gps)
+      tel$telNo home $::conf(posobs,observateur,gps)  
+      tel$telNo home name $::conf(posobs,nom_observatoire)
+      
+      if { $::conf(t193,model,enabled) == 1 } {
+          tel$telNo home $::conf(posobs,observateur,gps)  
+          tel$telNo radec model -symbols $::conf(t193,model,symbols) -coefficients $::conf(t193,model,symbols) -enabled 1
+      } else {
+          tel$telNo radec model  -enabled 0
+      }
       
       #--- Je parametre le niveau de trace
       tel$telNo consolelog $::conf(t193,consoleLog)
