@@ -1,6 +1,6 @@
 #
 # Fichier : displaycoord.cap
-# Mise a jour $Id: displaycoord.cap,v 1.2 2009-12-14 18:56:15 michelpujol Exp $
+# Mise a jour $Id: displaycoord.cap,v 1.3 2009-12-20 17:23:25 michelpujol Exp $
 #
 
 #=========================================================================
@@ -12,6 +12,7 @@ global caption langage
 # *************** Version anglaise ****************************
 
    set caption(displaycoord,title)          "Coordonnées du télescope"
+   set caption(displaycoord,observatoire)   "Observatory :"   
    set caption(displaycoord,nonConnecte)    "Non connecté \n au serveur de coordonnées"
    set caption(displaycoord,connecte)       "connecté"
    set caption(displaycoord,tu)             "TU"   
@@ -29,11 +30,13 @@ global caption langage
    set caption(displaycoord,calage,A)       "CALAGE ?"
    set caption(displaycoord,serverHost)     "Adresse IP"
    set caption(displaycoord,serverPort)     "Port"
-
+   set caption(displaycoord,horizon)        "The target is below the horizon."
+   
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(displaycoord,title)          "Coordonnées du télescope"
+   set caption(displaycoord,observatoire)   "Observatoire :"
    set caption(displaycoord,nonConnecte)    "Non connecté \n au serveur de coordonnées"
    set caption(displaycoord,connecte)       "connecté"
    set caption(displaycoord,tu)             "TU"   
@@ -44,14 +47,19 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(displaycoord,modeldescr)     "Modèle"
    set caption(displaycoord,ad)             "ALPHA"
    set caption(displaycoord,dec)            "DELTA"
-   set caption(displaycoord,ad0)            "ALPHA (brut)"
-   set caption(displaycoord,dec0)           "DELTA (brut)"
+   set caption(displaycoord,ad0)            "ALPHA (brut) :"
+   set caption(displaycoord,dec0)           "DELTA (brut) :"
    set caption(displaycoord,calage,C)       "CALE"
    set caption(displaycoord,calage,D)       "DECALE"
    set caption(displaycoord,calage,A)       "CALAGE ?"
    set caption(displaycoord,configuration)  "Configuration"  
    set caption(displaycoord,serverHost)     "Adresse IP"
    set caption(displaycoord,serverPort)     "Port"
+   set caption(displaycoord,serverPort)     "Port"   
+   set caption(displaycoord,longitude)      "Longitude"   
+   set caption(displaycoord,latitude)       "Latitude"   
+   set caption(displaycoord,altitude)       "Altitude"   
+   set caption(displaycoord,horizon)        "L'astre est sous l'horizon."   
    
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
