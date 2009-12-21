@@ -482,7 +482,7 @@ List_ModelValues
 	double rat,dect,hat,ht,azt,dra;
 
    if(argc<4) {
-      sprintf(s,"Usage: %s List_coords Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues?", argv[0]);
+      sprintf(s,"Usage: %s List_coords Date_UTC Home Pressure Temperature ?List_ModelSymbols List_ModelValues?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
  	   return TCL_ERROR;
    } else {
@@ -663,6 +663,198 @@ List_ModelValues
 		strcat(s,mc_d2s(az/(DR)));
 		strcat(s," ");
 		strcat(s,mc_d2s(h/(DR)));
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+	}
+	return TCL_OK;
+}
+
+int Cmd_mctcl_tel2cat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Convert telescope coordinates into (RA,DEC)                              */
+/****************************************************************************/
+/*
+mc_tel2cat {12h 36d} EQUATORIAL now {GPS 5 E 43 1230} 101325 290
+
+List_coords = {ra dec}
+Type
+Date
+Home
+Pressure 101325
+Temperature 290
+List_ModelSymbols
+List_ModelValues
+*/
+{
+	char s[1024];
+	double equinox=2451545.00000;
+	int code,argcc;
+	char **argvv=NULL;
+	double jd,longmpc;
+	mc_modpoi_matx *matx=NULL; /* 2*nb_star */
+	mc_modpoi_vecy *vecy=NULL; /* nb_coef */
+	int nb_coef,nb_star,k;
+   double rhocosphip=0.,rhosinphip=0.;
+   double latitude,altitude,latrad;
+	double ra,temperature,pressure;
+	double dec,asd2,dec2;
+	double ha,az,h,ddec=0.,dha=0.,refraction=0.;
+	double dh=0.,daz=0.;
+	double dra;
+	int type=0;
+	double az0,ra0,dec0,h0,ha0;
+
+   if(argc<5) {
+      sprintf(s,"Usage: %s Coords TypeObs Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues?", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+ 	   return TCL_ERROR;
+   } else {
+      /* --- decode les coordonnees catalogue ---*/
+      code=Tcl_SplitList(interp,argv[1],&argcc,&argvv);
+		if (argcc>1) {
+			/* --- decode l'angle RA ou AZ ---*/
+			mctcl_decode_angle(interp,argvv[0],&ra0);
+			ra0*=(DR);
+			az0=ra0;
+			ha0=ra0;
+			/* --- decode l'angle DEC ou ELEV ---*/
+			mctcl_decode_angle(interp,argvv[1],&dec0);
+			dec0*=(DR);
+			h0=dec0;
+			if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+		} else {
+			// traite l'erreur
+			return TCL_ERROR;
+		}
+      /* --- decode le type de coordonnees d'entree ---*/
+		mc_strupr(argv[2],s);
+		if (s[0]=='A') {
+			type=1;
+		}
+		if (s[0]=='H') {
+			type=2;
+		}
+      /* --- decode la Date ---*/
+	  	mctcl_decode_date(interp,argv[3],&jd);
+      /* --- decode le Home ---*/
+      longmpc=0.;
+      rhocosphip=0.;
+      rhosinphip=0.;
+      mctcl_decode_topo(interp,argv[4],&longmpc,&rhocosphip,&rhosinphip);
+		mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
+		latrad=latitude*(DR);
+		/* --- Pressure ---*/
+		pressure=atof(argv[5]);
+		/* --- Temperature ---*/
+		temperature=atof(argv[6]);
+		/* --- decode le Modele de pointage ---*/
+		nb_coef=0;
+		if (argc>=9) {
+			code=Tcl_SplitList(interp,argv[7],&argcc,&argvv);
+			if (argcc>0) {
+				nb_coef=argcc;
+				vecy=(mc_modpoi_vecy*)calloc(nb_coef,sizeof(mc_modpoi_vecy));
+				for (k=0;k<argcc;k++) {
+					vecy[k].k=k;
+					strcpy(vecy[k].type,argvv[k]);
+				}
+				if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+				code=Tcl_SplitList(interp,argv[8],&argcc,&argvv);
+				if (argcc!=nb_coef) {
+					// Traite l'erreur nb_symbol == nb_coef
+					return TCL_ERROR;
+				}
+				for (k=0;k<argcc;k++) {
+					vecy[k].coef=atof(argvv[k]);
+				}
+				if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+			} else {
+				if (argvv!=NULL) { Tcl_Free((char *) argvv); }
+			}
+		}
+		if (type==0) {
+			mc_ad2hd(jd,longmpc,ra0,&ha0);
+		}
+		ha=ha0; az=az0; h=h0; dec=dec0; ra=ra0;
+		/* --- Modele de pointage ---*/
+		if (nb_coef>0) {
+			nb_star=1;
+			matx=(mc_modpoi_matx*)malloc(2*nb_star*nb_coef*sizeof(mc_modpoi_matx));
+			if (type==1) {
+				/* --- altaz corrections ---*/
+				daz=mc_modpoi_addobs_az(az,h,nb_coef,vecy,matx);
+				dh=mc_modpoi_addobs_h(az,h,nb_coef,vecy,matx);
+				az=az0-daz/60*(DR);
+				h=h0-dh/60*(DR);
+				daz=mc_modpoi_addobs_az(az,h,nb_coef,vecy,matx);
+				dh=mc_modpoi_addobs_h(az,h,nb_coef,vecy,matx);
+				az=az0-daz/60*(DR);
+				h=h0-dh/60*(DR);
+				if (h>PISUR2)  { h=PISUR2-(h-PISUR2); az+=(PI); }
+				if (h<-PISUR2) { h=-PISUR2+(-PISUR2-h); az+=(PI); }
+			   az=fmod(4*PI+az,2*PI);
+				mc_ah2hd(az,h,latrad,&ha,&dec);
+				mc_hd2ad(jd,longmpc,ha,&ra);
+			}
+			if ((type==0)||(type==2)) {
+				/* --- hadec corrections ---*/
+				dha=mc_modpoi_addobs_ha(ha,dec,latrad,nb_coef,vecy,matx);
+				ddec=mc_modpoi_addobs_dec(ha,dec,latrad,nb_coef,vecy,matx);
+				ha=ha0-dha/60*(DR);
+				dec=dec0-ddec/60*(DR);
+				dha=mc_modpoi_addobs_ha(ha,dec,latrad,nb_coef,vecy,matx);
+				ddec=mc_modpoi_addobs_dec(ha,dec,latrad,nb_coef,vecy,matx);
+				ha=ha0-dha/60*(DR);
+				dec=dec0-ddec/60*(DR);
+				if (dec>PISUR2)  { dec=PISUR2-(dec-PISUR2); ha+=(PI); }
+				if (dec<-PISUR2) { dec=-PISUR2+(-PISUR2-dec); ha+=(PI); }
+			   ha=fmod(4*PI+ha,2*PI);
+				mc_hd2ah(ha,dec,latrad,&az,&h);
+				mc_hd2ad(jd,longmpc,ha,&ra);
+			}
+			/* --- free pointers ---*/
+			if (matx!=NULL) { free(matx); }
+			if (vecy!=NULL) { free(vecy); }
+		}
+		/* === CALCULS === */
+		/* --- refraction ---*/
+		mc_refraction(h,-1,temperature,pressure,&refraction);
+		h-=refraction;
+		/* --- coordonnees equatoriales ---*/
+		mc_hd2ad(jd,longmpc,ha,&ra);
+		ra0=ra;
+		dec0=dec;
+		/* --- correction de nutation */
+		mc_nutradec(jd,ra,dec,&asd2,&dec2,1);
+		ra=asd2;
+		dec=dec2;
+		/* --- aberration de l'aberration diurne*/
+		mc_aberration_diurne(jd,ra,dec,longmpc,rhocosphip,rhosinphip,&asd2,&dec2,1);
+		ra=asd2;
+		dec=dec2;
+		dra=ra-ra0;
+		if (dra<-PI) { dra+=(2*(PI)); }
+		if (dra> PI) { dra-=(2*(PI)); }
+		ra=ra0-dra;
+		dec=dec0-ddec;
+		/* --- calcul de la precession ---*/
+		mc_precad(jd,ra,dec,equinox,&asd2,&dec2);
+		ra=asd2;
+		dec=dec2;
+		/* --- aberration annuelle ---*/
+		mc_aberration_annuelle(jd,ra,dec,&asd2,&dec2,1);
+		ra=asd2;
+		dec=dec2;
+		dec=dec2;
+		dra=ra-ra0;
+		if (dra<-PI) { dra+=(2*(PI)); }
+		if (dra> PI) { dra-=(2*(PI)); }
+		ra=ra0-dra;
+		dec=dec0-ddec;
+		//
+		strcpy(s,"");
+		strcat(s,mc_d2s(ra/(DR)));
+		strcat(s," ");
+		strcat(s,mc_d2s(dec/(DR)));
       Tcl_SetResult(interp,s,TCL_VOLATILE);
 	}
 	return TCL_OK;
