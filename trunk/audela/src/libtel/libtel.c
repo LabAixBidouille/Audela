@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.18 2009-12-21 22:40:08 michelpujol Exp $
+// $Id: libtel.c,v 1.19 2009-12-21 23:28:41 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -971,7 +971,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             if (strcmp(tel->model_cat2tel,"")!=0) {
                sprintf(ligne,"set libtel(radec) {%s}",argv[3]);
                Tcl_Eval(interp,ligne);
-               sprintf(ligne,"set libtel(radec) [%s {%s}]}",tel->model_cat2tel,argv[3]);
+               sprintf(ligne,"set libtel(radec) [%s {%s}]",tel->model_cat2tel,argv[3]);
                Tcl_Eval(interp,ligne);
                Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
                strcpy(ligne,interp->result);
