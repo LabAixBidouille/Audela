@@ -19,6 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+// Mise a jour $Id: socketT193.h,v 1.3 2009-12-21 22:40:45 michelpujol Exp $
 
 #ifndef __SOCKET_T193_H__
 #define __SOCKET_T193_H__
