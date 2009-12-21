@@ -59,8 +59,8 @@ struct telprop {
    int  telescopeCommandPort;
    int  telescopeNotificationPort;
    void * telescopeNotificationThread;
-   char ra[12] ;   // ascension droite courante
-   char dec[12] ;  // declinaison courante
+   char raBrut[20] ;   // ascension droite courante
+   char decBrut[20] ;  // declinaison courante
    //int radecNotification ; // 1=marche 0=arret des notifications des coordonnees radec
    int radecIsMoving ;   // 1=mouvement en cours 0=pas de mouvement en cours 
    int focusIsMoving ;   // 1=mouvement en cours 0=pas de mouvement en cours de la focalisation
@@ -112,6 +112,7 @@ int mytel_correct(struct telprop *tel,char *direction, double distance);
 #define BACKCMD_MOTORSTOPPED  5 // Moteur déjà arrêté (commande STOP)
 
 #define BACKCMD_BAD_PARAM_NUMBER 101 // nombre de parametres incorrect
+#define BACKCMD_CAT2TEL_ERROR 102 
 
 #endif
 

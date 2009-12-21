@@ -41,8 +41,6 @@
 #include "coordserver.h"
 
 
-
-
 #define DAQmxErrChk(functionCall) if( DAQmxFailed(error=(functionCall)) ) goto Error; else
 
 
@@ -149,8 +147,8 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    tel->telescopeCommandPort = 0;
    tel->telescopeNotificationPort = 0;
 
-   strcpy(tel->ra,"00h00m00.00s"); 
-   strcpy(tel->dec, "+00d00m00.00s"); 
+   strcpy(tel->raBrut,"00h00m00.00s"); 
+   strcpy(tel->decBrut, "+00d00m00.00s"); 
    //tel->radecNotification = 0;
    tel->radec_motor = 0; 
    tel->radecIsMoving = 0;
@@ -415,7 +413,76 @@ int tel_init(struct telprop *tel, int argc, char **argv)
          mytel_tcleval(tel,s);
       }
    } else if ( strcmp(argv[2], "ETHERNET") == 0 ) { 
-      
+      if ( strcmp(usbCardName, "simulation") !=  0 ) {
+         //DAQmxGetSysDevNames
+
+         // je verifie que la carte est presente 
+         if( ! DAQmxFailed(error) ) {
+	         error = DAQmxSelfTestDevice(usbCardName);
+         }
+
+	      // J'ouvre la connexion de la carte USB-6501
+         // je cree la tache de l'attenuateur en ecriture
+         if( ! DAQmxFailed(error) ) {
+   	      error = DAQmxCreateTask("",&tel->outputFilterTaskHandle);
+         }
+         if( ! DAQmxFailed(error) ) {
+            char lines[256];
+
+            sprintf(lines, "%s/%s/line%d, %s/%s/line%d",
+                 usbCardName,usbFilterPort, tel->decreaseFilterRelay,
+                 usbCardName,usbFilterPort, tel->increaseFilterRelay);
+	         error = DAQmxCreateDOChan(tel->outputFilterTaskHandle,lines,"", DAQmx_Val_ChanForAllLines  );  //DAQmx_Val_ChanForAllLines DAQmx_Val_ChanPerLine
+         }
+
+         // je cree la tache de l'attenuateur en lecture
+         if( ! DAQmxFailed(error) ) {
+            // je cree la tache de lecture 
+   	      error = DAQmxCreateTask("",&tel->inputFilterTaskHandle);
+         }
+
+         if( ! DAQmxFailed(error) ) {
+            char lines[256];
+            // je crée le canal en lecture
+            sprintf(lines, "%s/%s/line%d, %s/%s/line%d",
+                 usbCardName,usbFilterPort, tel->minDetectorFilterInput,
+                 usbCardName,usbFilterPort, tel->maxDetectorFilterInput);
+	         error = DAQmxCreateDIChan(tel->inputFilterTaskHandle,lines,"", DAQmx_Val_ChanForAllLines  );  //DAQmx_Val_ChanForAllLines DAQmx_Val_ChanPerLine
+         }
+         
+         // je demarre les taches
+         if( ! DAQmxFailed(error) ) {
+	         error = DAQmxStartTask(tel->outputFilterTaskHandle);
+         }
+         if( ! DAQmxFailed(error) ) {
+	         // je demarre la tache de lecture
+	         error = DAQmxStartTask(tel->inputFilterTaskHandle);
+         }
+         if( ! DAQmxFailed(error) ) {
+            //  je met tous les bits à 1 (position de repos de la commande de l'attenuateur) 
+            tel->outputFilterNotification = 255;
+            result = mytel_sendCommandFilter(tel , tel->outputFilterNotification);
+         } else {
+            char errBuff[2001]={'\0'};
+            // je recupere le message d'erreur
+		      //DAQmxGetExtendedErrorInfo(errBuff,2000);
+            DAQmxGetErrorString(error, errBuff, 2000);
+            //sprintf(tel->msg, "DAQmx error %d", error);
+            sprintf(tel->msg, "Device=%s %s",usbCardName, errBuff) ;
+            result = 1;
+         } 
+
+      } else {
+         //simulation de la carte USB
+         mytel_logConsole(tel, "simul open %s OK",usbCardName);
+      }
+
+      if ( result == 1 ) {
+         // j'arrete l'init s'il y a eu une erreur
+   	   tel_close(tel);
+         return 1;
+      }
+
       // j'ouvre la socket de commande du telescope
       result = socket_openTelescopeCommandSocket(tel, tel->telescopeHost, tel->telescopeCommandPort);
       
@@ -432,7 +499,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
       
       // j'active le suivi
       if ( result == 0 ) {
-         // attention, il faut mettre 0 tel->radec_motor pour activer le suici
+         // attention, il faut mettre 0 tel->radec_motor pour activer le suivi
          tel->radec_motor = 0;
          result = tel_radec_motor(tel);
       }
@@ -551,29 +618,35 @@ int tel_radec_coord(struct telprop *tel,char *coord)
 {
    int result;
    if (tel->telescopeCommandSocket != NULL) {
-      char command[NOTIFICATION_MAX_SIZE];
-      char response[NOTIFICATION_MAX_SIZE];
-      sprintf(command,"!RADEC COORD 2 @\n" );
-      result = socket_writeTelescopeCommandSocket(tel,command,response);
-      if ( result == 0 ) {
-         int returnCode;
-         char ra[NOTIFICATION_MAX_SIZE];
-         char dec[NOTIFICATION_MAX_SIZE];
-
-         int readValue = sscanf(response,"!RADEC COORD %d %s %s @", &returnCode, ra, dec);
-         if (readValue != 3) {
-            sprintf(tel->msg,"tel_radec_coord error: readValue=%d %s", readValue, response );
-            result = 1;
-         } else {
-            if ( returnCode != 0 ) {
-               sprintf(tel->msg,"tel_radec_coord error: returnCode=%d", returnCode );
+      if ( tel->radecIsMoving  == 0 ) {
+         char command[NOTIFICATION_MAX_SIZE];
+         char response[NOTIFICATION_MAX_SIZE];
+         sprintf(command,"!RADEC COORD 2 @\n" );
+         result = socket_writeTelescopeCommandSocket(tel,command,response);
+         if ( result == 0 ) {
+            int returnCode;
+            char ra[NOTIFICATION_MAX_SIZE];
+            char dec[NOTIFICATION_MAX_SIZE];
+            
+            int readValue = sscanf(response,"!RADEC COORD %d %s %s @", &returnCode, ra, dec);
+            if (readValue != 3) {
+               sprintf(tel->msg,"tel_radec_coord error: readValue=%d %s", readValue, response );
                result = 1;
             } else {
-               // je copie les coordonnees dans la variable de sortie
-               sprintf(coord,"%s %s", ra, dec);
-               result = 0;
+               if ( returnCode != 0 ) {
+                  sprintf(tel->msg,"tel_radec_coord error: returnCode=%d", returnCode );
+                  result = 1;
+               } else {
+                  // je copie les coordonnees dans la variable de sortie
+                  sprintf(coord,"%s %s", ra, dec);
+                  result = 0;
+               }
             }
          }
+      } else {
+         // si le telescope est en mouvement, je retourne les coordonnees recuperees dans la derniere notification
+         sprintf(coord,"%s %s", tel->raBrut, tel->decBrut);
+         result = 0;
       }
    } else {
       // je retourne une reponse par defaut 
@@ -658,8 +731,8 @@ int tel_radec_goto(struct telprop *tel) {
 
    if (tel->telescopeCommandSocket != NULL) {
       char ligne[1024];
-      char gotoRa[12];
-      char gotoDec[13];
+      char gotoRa[13];
+      char gotoDec[14];
       char command[NOTIFICATION_MAX_SIZE];
       char response[NOTIFICATION_MAX_SIZE];
       result = 0; 
@@ -684,7 +757,7 @@ int tel_radec_goto(struct telprop *tel) {
             gotoRa[12] = '\0';
          } // gotoRa	= "10h30m20s99" => OK
 
-         sprintf(ligne,"mc_angle2dms %.7f 90 zero 2 + list",tel->dec0);
+         sprintf(ligne,"mc_angle2dms %.7f 90 zero 2 + string",tel->dec0);
          if ( mytel_tcleval(tel,ligne) == TCL_ERROR) {
             sprintf(tel->msg, "tel_radec_goto %s error: %s", ligne, tel->interp->result);
             result = 1; 
@@ -699,7 +772,7 @@ int tel_radec_goto(struct telprop *tel) {
 
       // j'envoi la commande GOTO
       if ( result == 0 ) {
-         sprintf(command,"!RADEC GOTO %s %s@\n", gotoRa, gotoDec );
+         sprintf(command,"!RADEC GOTO %s %s @\n", gotoRa, gotoDec );
          result = socket_writeTelescopeCommandSocket(tel,command,response);
       }
 
@@ -714,8 +787,8 @@ int tel_radec_goto(struct telprop *tel) {
             result = 1;
          } else {
             if ( returnCode == 0 ) {
-               strcpy(tel->ra , newRa);
-               strcpy(tel->dec , newDec);
+               //strcpy(tel->ra , newRa);
+               //strcpy(tel->dec , newDec);
             } else {
                sprintf(tel->msg,"RADEC GOTO error: returnCode=%d", returnCode );
                result = 1;
@@ -730,7 +803,7 @@ int tel_radec_goto(struct telprop *tel) {
             int foundEvent = 1 ;
             tel->radecIsMoving = 1;
             // j'attend la fin du mouvement (tel->moving est mis a jour par mytel_processNotification ) 
-            while (tel->radecIsMoving && foundEvent) {
+            while (tel->radecIsMoving == 1 ) {
                foundEvent = Tcl_DoOneEvent(TCL_ALL_EVENTS);
             }
          }
@@ -1965,22 +2038,54 @@ void mytel_processNotification(struct telprop *tel, char * notification) {
             if ( nbArrayElements == 7 ) {
                // je verifie le code retour 
                if ( returnCode == 0) {
-                  char ligne[1024];                  
+                  char ligne[1024];      
+                  int tclResult; 
                   // je memorise le mouvement
                   tel->radecIsMoving = moveCode;
                   // je corrige les coordonnees avec le modèle de pointage
-                  // TODO : inserer ici le correction avec le modèle de pointage
-                  strcpy(ra, raBrut);   // pour l'instant je copie les coordonnees
-                  strcpy(dec, decBrut); 
-                  // j'envoie les coordonnes aux clients du serveur de coordonnees
-                  socket_writeCoordServerSocket(tel, returnCode, ra, dec, raBrut, decBrut, raCalage, decCalage);
-                  // je notifie les nouvelles coordonnes au thread principal                
-                  if ( strcmp(tel->telThreadId,"") == 0 ) {
-                     sprintf(ligne,"set ::audace(telescope,getra) \"%s\" ; set ::audace(telescope,getdec) \"%s\" ",ra, dec); 
+                  if (strcmp(tel->model_tel2cat,"")!=0) { 
+                     sprintf(ligne,"set libtel(radec) [%s {%s %s}]",tel->model_tel2cat,raBrut,decBrut);
+                     tclResult = Tcl_Eval(tel->interp,ligne);
+                     if ( tclResult == TCL_OK) {
+                        char **listArgv;
+                        int listArgc;
+                        if(Tcl_SplitList(tel->interp,tel->interp->result,&listArgc,&listArgv)!=TCL_OK) {
+                           sprintf(ligne,"Angle struct not valid: must be {angle_ra angle_dec}");
+                           mytel_sendNotificationError(tel, BACKCMD_CAT2TEL_ERROR, ligne);
+                           tclResult = TCL_ERROR;
+                        } else if(listArgc!=2) {
+                           sprintf(ligne,"Angle struct not valid: must be {angle_ra angle_dec}");
+                           mytel_sendNotificationError(tel, BACKCMD_CAT2TEL_ERROR, ligne);
+                           tclResult = TCL_ERROR;
+                        }
+                        if (tclResult == TCL_OK) {
+                           strcpy(ra, listArgv[0]);
+                           strcpy(dec, listArgv[1]);
+                        }
+   
+                     } else {
+                        mytel_sendNotificationError(tel, BACKCMD_CAT2TEL_ERROR, tel->interp->result);
+                     }
                   } else {
-                     sprintf(ligne,"::thread::send -async %s { set ::audace(telescope,getra) \"%s\" ; set ::audace(telescope,getdec) \"%s\" ;update} " , tel->mainThreadId, ra , dec); 
+                     strcpy(ra,raBrut);
+                     strcpy(dec,decBrut);
+                     tclResult = TCL_OK;
                   }
-                  Tcl_Eval(tel->interp,ligne);
+
+                  if (tclResult == TCL_OK) {
+                     // je memorise les coordonnees brutes pour la fonction tel_radec_coord
+                     strcpy(tel->raBrut, raBrut);
+                     strcpy(tel->decBrut, decBrut);
+                     // j'envoie les coordonnes aux clients du serveur de coordonnees
+                     socket_writeCoordServerSocket(tel, returnCode, ra, dec, raBrut, decBrut, raCalage, decCalage);
+                     // je notifie les nouvelles coordonnes au thread principal                
+                     if ( strcmp(tel->telThreadId,"") == 0 ) {
+                        sprintf(ligne,"set ::audace(telescope,getra) \"%s\" ; set ::audace(telescope,getdec) \"%s\" ",ra, dec); 
+                     } else {
+                        sprintf(ligne,"::thread::send -async %s { set ::audace(telescope,getra) \"%s\" ; set ::audace(telescope,getdec) \"%s\" ;update} " , tel->mainThreadId, ra , dec); 
+                     }
+                     Tcl_Eval(tel->interp,ligne);
+                  }
                }
             } else {
                mytel_sendNotificationError(tel, BACKCMD_BAD_PARAM_NUMBER, notification);

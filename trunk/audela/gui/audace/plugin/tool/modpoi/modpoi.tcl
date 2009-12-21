@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi.tcl,v 1.23 2009-12-19 16:38:05 robertdelmas Exp $
+# Mise a jour $Id: modpoi.tcl,v 1.24 2009-12-21 22:37:08 michelpujol Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -2112,6 +2112,21 @@ proc modpoi_load { { fileres "modpoi_res.txt" } } {
       if { [ ::tel::list ] == "" } {
       } else {
          tel$audace(telNo) model modpoi_cat2tel modpoi_tel2cat
+         set telThreadId [tel$audace(telNo)  threadid ]
+         if { $telThreadId != "" } { 
+            #--- je charge les procedures tel2cat et cat2tel dans l'interpreteur du thread du telescope
+            ::thread::send $telThreadId [list uplevel #0 source \"[file join file join $audace(rep_plugin) tool modpoi modpoithread.tcl]\"]    
+            #--- j'initilise les variables du modèle de pointage en copiant toutes les valeurs de modpoi
+            ::thread::send $telThreadId [list array set modpoi [array get modpoi]]  
+            ::thread::copycommand $telThreadId  "gsl_mmult"            
+            ::thread::copycommand $telThreadId  "mc_refraction"   
+            ::thread::copycommand $telThreadId  "mc_altaz2radec"            
+            ::thread::copycommand $telThreadId  "mc_altaz2hadec"   
+            ::thread::copycommand $telThreadId  "mc_aberrationradec"
+            ::thread::copycommand $telThreadId  "mc_nutationradec"
+            ::thread::copycommand $telThreadId  "mc_precessradec"
+            ::thread::copycommand $telThreadId  "mc_aberrationradec"             
+         }                                    
       }
       tk_messageBox -title "$caption(modpoi,wiz1b,warning)" -message "$caption(modpoi,modele_existe)" -type ok
       return $modpoi(vec)
