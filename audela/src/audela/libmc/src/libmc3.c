@@ -699,7 +699,6 @@ List_ModelValues
 	double dec,asd2,dec2;
 	double ha,az,h,ddec=0.,dha=0.,refraction=0.;
 	double dh=0.,daz=0.;
-	double dra;
 	int type=0;
 	double az0,ra0,dec0,h0,ha0;
 
@@ -824,32 +823,19 @@ List_ModelValues
 		ra0=ra;
 		dec0=dec;
 		/* --- correction de nutation */
-		mc_nutradec(jd,ra,dec,&asd2,&dec2,1);
+		mc_nutradec(jd,ra,dec,&asd2,&dec2,-1);
 		ra=asd2;
 		dec=dec2;
 		/* --- aberration de l'aberration diurne*/
-		mc_aberration_diurne(jd,ra,dec,longmpc,rhocosphip,rhosinphip,&asd2,&dec2,1);
-		ra=asd2;
-		dec=dec2;
-		dra=ra-ra0;
-		if (dra<-PI) { dra+=(2*(PI)); }
-		if (dra> PI) { dra-=(2*(PI)); }
-		ra=ra0-dra;
-		dec=dec0-ddec;
+		mc_aberration_diurne(jd,ra,dec,longmpc,rhocosphip,rhosinphip,&asd2,&dec2,-1);
 		/* --- calcul de la precession ---*/
 		mc_precad(jd,ra,dec,equinox,&asd2,&dec2);
 		ra=asd2;
 		dec=dec2;
 		/* --- aberration annuelle ---*/
-		mc_aberration_annuelle(jd,ra,dec,&asd2,&dec2,1);
+		mc_aberration_annuelle(jd,ra,dec,&asd2,&dec2,-1);
 		ra=asd2;
 		dec=dec2;
-		dec=dec2;
-		dra=ra-ra0;
-		if (dra<-PI) { dra+=(2*(PI)); }
-		if (dra> PI) { dra-=(2*(PI)); }
-		ra=ra0-dra;
-		dec=dec0-ddec;
 		//
 		strcpy(s,"");
 		strcat(s,mc_d2s(ra/(DR)));
