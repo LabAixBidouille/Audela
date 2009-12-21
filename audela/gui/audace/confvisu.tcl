@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.119 2009-12-17 22:26:16 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.120 2009-12-21 17:42:39 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -3568,7 +3568,12 @@ namespace eval ::colorRGB {
          #--- lit les mots cles
          set hi [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ]
          set lo [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ]
-
+#--- Correction temporaire (bug acquisition image couleur NAXIS = 3, MIPS-HI et MIPS-LO non definis)
+         if { $hi == "" } {
+            set hi "65535"
+            set lo "0"
+         }
+#--- Correction temporaire (bug acquisition image couleur NAXIS = 3, MIPS-HI et MIPS-LO non definis)
          set private(colorRGB,$visuNo,mycuts) "$hi $lo $hi $lo $hi $lo"
 
       }
