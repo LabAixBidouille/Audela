@@ -113,6 +113,7 @@
    Tcl_CreateCommand(interp,"mc_readhip",(Tcl_CmdProc *)Cmd_mctcl_readhip,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_nearesthip",(Tcl_CmdProc *)Cmd_mctcl_nearesthip,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_hip2tel",(Tcl_CmdProc *)Cmd_mctcl_hip2tel,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"mc_tel2cat",(Tcl_CmdProc *)Cmd_mctcl_tel2cat,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_listamers",(Tcl_CmdProc *)Cmd_mctcl_listamers,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_horizon",(Tcl_CmdProc *)Cmd_mctcl_horizon,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_compute_matrix_modpoi",(Tcl_CmdProc *)Cmd_mctcl_compute_matrix_modpoi,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
