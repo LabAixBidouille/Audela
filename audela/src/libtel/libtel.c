@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.17 2009-12-20 17:17:50 michelpujol Exp $
+// $Id: libtel.c,v 1.18 2009-12-21 22:40:08 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -935,15 +935,15 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
          }
       } else if (strcmp(argv[2],"coord")==0) {
          /* --- coord ---*/
-			tel_radec_coord(tel,texte);
-			 /* - call the pointing model if exists -*/
+         tel_radec_coord(tel,texte);
+         /* - call the pointing model if exists -*/
          sprintf(ligne,"set libtel(radec) {%s}",texte);
          Tcl_Eval(interp,ligne);
          sprintf(ligne,"catch {set libtel(radec) [%s {%s}]}",tel->model_tel2cat,texte);
          Tcl_Eval(interp,ligne);
-            Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
-            strcpy(ligne,interp->result);
-			 /* - end of pointing model-*/
+         Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
+         strcpy(ligne,interp->result);
+         /* - end of pointing model-*/
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       } else if (strcmp(argv[2],"state")==0) {
          /* --- state ---*/
@@ -968,17 +968,20 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                }
             }
             /* - call the pointing model if exists -*/
-            sprintf(ligne,"set libtel(radec) {%s}",argv[3]);
-            Tcl_Eval(interp,ligne);
             if (strcmp(tel->model_cat2tel,"")!=0) {
-               sprintf(ligne,"catch {set libtel(radec) [%s {%s}]}",tel->model_cat2tel,argv[3]);
+               sprintf(ligne,"set libtel(radec) {%s}",argv[3]);
+               Tcl_Eval(interp,ligne);
+               sprintf(ligne,"set libtel(radec) [%s {%s}]}",tel->model_cat2tel,argv[3]);
                Tcl_Eval(interp,ligne);
                Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
                strcpy(ligne,interp->result);
                libtel_Getradec(interp,ligne,&tel->ra0,&tel->dec0);
-            }
-            /* - end of pointing model-*/
+               /* - end of pointing model-*/
 
+            } else {
+               libtel_Getradec(interp,argv[3],&tel->ra0,&tel->dec0);
+            }
+            
             // correction avec le modele de pointage par la fonction de libmc
             if (tel->radec_model_enabled == 1 ) {
                libtel_Getradec(interp,argv[3],&tel->ra0,&tel->dec0);
@@ -1028,7 +1031,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   // rien a faire car la fonction libtel_Getradec a deja renseigne les message d'erreur
                }
 
-            }
+            } 
 
             if ( result == TCL_OK)  {
                if ( tel_radec_goto(tel) == 0 ) {
