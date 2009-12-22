@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: zadkopad.tcl,v 1.42 2009-12-22 09:31:07 myrtillelaas Exp $
+# Mise a jour $Id: zadkopad.tcl,v 1.43 2009-12-22 15:22:27 myrtillelaas Exp $
 #
 
 namespace eval ::zadkopad {
@@ -198,6 +198,7 @@ namespace eval ::zadkopad {
             set paramhorloge(ddec) 0;           # offset (deg) for declination
        }
        
+    	   
 	   #--- Cree les variables dans conf(...) si elles n'existent pas
 	   initConf
 	   #--- J'initialise les variables widget(..)
@@ -771,6 +772,50 @@ namespace eval ::zadkopad {
 		zadko_info "$reponse"	
 		return $reponse
 	}
+	
+	#------------------------------------------------------------
+   #    lcoupole     
+   #------------------------------------------------------------
+	proc lcoupole { ordre } {
+		global ros
+		# --- verifie que le port com est ouvert. Sinon on l'ouvre
+		if {[info exists ros(camera,combit,handler)]==0} {
+	       set err [catch {
+		       load $ros(root,audela)/bin/libcombit[info sharedlibextension]
+		    	zadko_info "Ouverture du port combit"
+		       set ros(camera,combit,portnum) 1
+		       set ros(camera,combit,handler) [open com$ros(camera,combit,portnum) RDWR]
+		    	zadko_info "Port combit ros(camera,combit,handler)=$ros(camera,combit,handler)"
+		       fconfigure $ros(camera,combit,handler) -mode "9600,n,8,1" -buffering none -blocking 0
+		       after 1000
+				combit $ros(camera,combit,portnum) 7 0
+				after 100
+				combit $ros(camera,combit,portnum) 4 0
+				after 1000
+			} msg]
+	    	if {$err==1} {
+		    	zadko_info "PB init, msg=$msg"
+		    	catch {unset ros(camera,combit,handler)}
+	    	}
+    	}
+		if {[info exists ros(camera,combit,handler)]==1} {
+	
+      # --- etat de la lumiere
+      set etat [combit $ros(camera,combit,portnum) 6]      
+      # --- on alume la lumiere avec le telerupteur si elle est eteinte
+      if {($etat==0)&&($ordre==1)} {
+	      zadko_info "Switch on ldome lights"
+         combit $ros(camera,combit,portnum) 3 1 ; after 100 ; combit $ros(camera,combit,portnum) 3 0
+      }
+      # --- on eteind la lumiere avec le telerupteur si elle est allumee
+      if {($etat==1)&&($ordre==0)} {
+	      zadko_info "Switch off ldome lights"
+         combit $ros(camera,combit,portnum) 3 1 ; after 100 ; combit $ros(camera,combit,portnum) 3 0
+      }
+  	}
+		
+	}
+		
 	#------------------------------------------------------------
 	#    met a jour les donnes     
 	#------------------------------------------------------------
@@ -1159,10 +1204,10 @@ namespace eval ::zadkopad {
         pack .zadkopad.light.telescope -in .zadkopad.light -side left
          
         button .zadkopad.light.petalopen -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text ON \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::roscommande {telescope DO LCOUPOLE 1}}
+         -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command { ::zadkopad::lcoupole 1 }
         
         button .zadkopad.light.petalclose -width $geomlx200(20pixels) -relief flat -bg $colorlx200(backkey) -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] -text OFF \
-         -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command {::zadkopad::roscommande {telescope DO LCOUPOLE 0}}
+         -borderwidth 0 -relief flat -bg $colorlx200(backkey) -fg $colorlx200(textkey) -command { ::zadkopad::lcoupole 0 }
         
         pack  .zadkopad.light.petalopen .zadkopad.light.petalclose  -in .zadkopad.light -padx [ expr int(11*$zoom) ] -side left
         
