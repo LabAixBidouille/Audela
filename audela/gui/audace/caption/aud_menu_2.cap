@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_2.cap
-# Mise a jour $Id: aud_menu_2.cap,v 1.16 2009-12-17 22:18:56 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.cap,v 1.17 2009-12-22 18:25:44 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -479,9 +479,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilWindow,intensite)                 "Intensitet:"
    set caption(seuilWindow,intensite_avec_zero)       "104.000000 - R:104.000000 V:175.000000 B:179.000000"
    set caption(seuilWindow,intensite_sans_zero)       "104 - R:104 V:175 B:179"
-   set caption(seuilWindow,intervalle_sh-sb)          "Øvre tærskelværdi - Nedre tærskelværdi (X):"
-   set caption(seuilWindow,exemple>x)                 "Hvis ØT-NT > X      Tærskelværdier: 462"
-   set caption(seuilWindow,exemple<x)                 "Hvis ØT-NT <= X    Tærskelværdier: 4.62e+002"
+   set caption(seuilWindow,intervalle_sh-sb)          "Høj Tærskelværdi - Lav Tærskelværdi (X):"
+   set caption(seuilWindow,exemple>x)                 "Hvis HT-LT > X      Tærskelværdi: 462"
+   set caption(seuilWindow,exemple<x)                 "Hvis HT-LT <= X    Tærskelværdi: 4.62e+002"
    set caption(seuilWindow,dynamique)                 "Dynamik:"
    set caption(seuilWindow,dynamique_max)             "Maximum Dynamik:"
    set caption(seuilWindow,dynamique_min)             "Minimum Dynamik:"
@@ -490,9 +490,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilWindow,parcourir)                 "..."
    set caption(seuilWindow,pas_de_calcul_auto)        "Ingen automatisk udregning"
    set caption(seuilWindow,loadima)                   "Aud'ACE standard-tærskelværdier (statistisk function)"
-   set caption(seuilWindow,iris)                      "Iris standard-værdier:"
-   set caption(seuilWindow,histoauto)                 "Værdier i % af histogram (lav/høj):"
-   set caption(seuilWindow,initiaux)                  "Initial-værdier"
+   set caption(seuilWindow,iris)                      "Iris standard-tærskelværdier:"
+   set caption(seuilWindow,histoauto)                 "Tærskelværdier i % af histogram (lav/høj):"
+   set caption(seuilWindow,initiaux)                  "Initial-tærskelværdier"
    set caption(seuilWindow,previsu)                   "Gennemsyn"
    set caption(seuilWindow,ok)                        "OK"
    set caption(seuilWindow,appliquer)                 "Anvend"
