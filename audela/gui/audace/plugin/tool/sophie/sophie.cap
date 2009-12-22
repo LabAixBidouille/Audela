@@ -1,6 +1,6 @@
 #
 # Fichier : sophie.cap
-# Mise a jour $Id: sophie.cap,v 1.41 2009-11-07 16:27:12 robertdelmas Exp $
+# Mise a jour $Id: sophie.cap,v 1.42 2009-12-22 18:27:12 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -85,7 +85,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,HR)                            "HR"
    set caption(sophie,HE)                            "HE"
 
-  set caption(sophie,configAvancee)                 "Configuration avancée"
+   set caption(sophie,configAvancee)                 "Configuration avancée"
    set caption(sophie,echelle)                       "Echelle"
    set caption(sophie,echelleArcSec)                 "Echelle (arcsec/pixel)"
    set caption(sophie,binning)                       "Binning"

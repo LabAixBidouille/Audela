@@ -1,6 +1,6 @@
 #
 # Fichier : snvisuzoom.cap
-# Mise a jour $Id: snvisuzoom.cap,v 1.7 2009-11-07 16:30:26 robertdelmas Exp $
+# Mise a jour $Id: snvisuzoom.cap,v 1.8 2009-12-22 18:26:51 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -25,7 +25,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-  set caption(snvisuzoom,zoom_main_title)   "Vista Sn - Zoom 1"
+   set caption(snvisuzoom,zoom_main_title)   "Vista Sn - Zoom 1"
    set caption(snvisuzoom,zoom_main_title_d) "Vista Sn - Zoom 2"
    set caption(snvisuzoom,wait)              "Attesa..."
 
