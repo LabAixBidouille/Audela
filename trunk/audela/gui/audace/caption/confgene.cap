@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.40 2009-12-19 09:10:52 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.41 2009-12-22 18:26:05 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -584,7 +584,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,fichier_image)                      "Billedfil"
    set caption(confgene,fichier_image_fits)                 "FITS Filer"
-   set caption(confgene,fichier_images_seuils_visu)         "Gem billedet med vist tærskelværdi\n(kun synlige i 'Initial-værdier' opsætningen)"
+   set caption(confgene,fichier_images_seuils_visu)         "Gem billedet med vist tærskelværdier\n(kun synlige i 'Initial-tærskelværdier' opsætningen)"
    set caption(confgene,fichier_images_choix_format)        "Gem billeder som:"
    set caption(confgene,fichier_images_entier)              "Helt tal (16 bits)"
    set caption(confgene,fichier_images_flottant)            "Flydende (32 bits)"
