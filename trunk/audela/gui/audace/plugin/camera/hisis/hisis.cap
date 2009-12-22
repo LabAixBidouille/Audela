@@ -1,6 +1,6 @@
 #
 # Fichier : hisis.cap
-# Mise a jour $Id: hisis.cap,v 1.8 2009-11-15 13:34:30 michelpujol Exp $
+# Mise a jour $Id: hisis.cap,v 1.9 2009-12-22 18:26:33 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -50,7 +50,7 @@ set caption(hisis,site_web_ref)                 "http://www.europixel.it/europix
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-  set caption(hisis,camera)                    "Hi-SIS"
+   set caption(hisis,camera)                    "Hi-SIS"
 
    set caption(hisis,obtu_ouvert)               "Ouvert"
    set caption(hisis,obtu_ferme)                "Fermé"
@@ -245,7 +245,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-  set caption(hisis,camera)                    "Hi-SIS"
+   set caption(hisis,camera)                    "Hi-SIS"
 
    set caption(hisis,obtu_ouvert)               "Open"
    set caption(hisis,obtu_ferme)                "Closed"

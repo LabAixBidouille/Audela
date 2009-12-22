@@ -1,6 +1,6 @@
 #
 # Fichier : viseur_polaire_taka.cap
-# Mise a jour $Id: viseur_polaire_taka.cap,v 1.8 2009-12-09 16:59:19 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_taka.cap,v 1.9 2009-12-22 18:27:30 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -91,7 +91,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-  set caption(viseur_taka,titre)            "Buscador polar de tipo Takahashi"
+   set caption(viseur_taka,titre)            "Buscador polar de tipo Takahashi"
    set caption(viseur_taka,texte)            "Buscador polar com bolha de nível"
    set caption(viseur_taka,long)             "Longitude:"
    set caption(viseur_taka,ah_polaire)       "Ângulo horário da Polar:"
